@@ -38,6 +38,13 @@
  * $Id$
  */
 
+#ifdef NUT_OS
+#include <sys/version.h>
+#include <dev/board.h>
+#include <dev/urom.h>
+#include <pro/dhcp.h>
+#endif
+
 #include <isc/list.h>
 #include <pro/uhttp/mediatypes.h>
 #include <pro/uhttp/envvars.h>
@@ -46,19 +53,20 @@
 #include <pro/uhttp/modules/mod_ssi.h>
 
 #include <stdio.h>
+#include <string.h>
 
 #define MAJOR_VERSION   1
 #define MINOR_VERSION   0
-
-typedef struct _APPVAR {
-    char *var_name;
-    enum appvar_t var_index;
-} APPVAR;
 
 enum appvar_t {
     APPVAR_VERSION = 1,
     APPVAR_NAME
 };
+
+typedef struct _APPVAR {
+    char *var_name;
+    enum appvar_t var_index;
+} APPVAR;
 
 APPVAR appvar_list[] = {
     { "APPNAME", APPVAR_NAME },
@@ -106,7 +114,18 @@ static int CgiVarList(HTTPD_SESSION *hs)
 
 int main(void)
 {
+#ifdef NUT_OS
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
+#endif
+
     puts("uHTTP server side include sample\nBuild " __DATE__ " " __TIME__);
+
+#ifdef NUT_OS
+    NutRegisterDevice(&DEV_ETHER, 0, 0);
+    NutDhcpIfConfig(DEV_ETHER_NAME, NULL, 60000);
+    NutRegisterDevice(&devUrom, 0, 0);
+#endif
 
     StreamInit();
     MediaTypeInitDefaults();
@@ -119,7 +138,14 @@ int main(void)
     AppVarInit(appvar_list);
     HttpRegisterSsiVarHandler(EnvHandler);
     
-    StreamClientAccept(HttpdClientHandler, "8088");
+    StreamClientAccept(HttpdClientHandler, NULL);
+
+    puts("Exit");
+#ifdef NUT_OS
+    for (;;) ;
+#endif
+
+    return 0;
 }
 
 #endif

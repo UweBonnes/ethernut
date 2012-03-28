@@ -38,15 +38,39 @@
  * $Id$
  */
 
+#ifdef NUT_OS
+#include <sys/version.h>
+#include <dev/board.h>
+#include <dev/urom.h>
+#include <pro/dhcp.h>
+#endif
+
 #include <pro/uhttp/mediatypes.h>
+
+#include <stdio.h>
 
 int main(void)
 {
+#ifdef NUT_OS
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    NutRegisterDevice(&DEV_ETHER, 0, 0);
+    NutDhcpIfConfig(DEV_ETHER_NAME, NULL, 60000);
+    NutRegisterDevice(&devUrom, 0, 0);
+#endif
+
     puts("Tiny uHTTP sample\nBuild " __DATE__ " " __TIME__);
 
     StreamInit();
     MediaTypeInitDefaults();
-    StreamClientAccept(HttpdClientHandler, "8088");
+    StreamClientAccept(HttpdClientHandler, NULL);
+
+    puts("Exit");
+#ifdef NUT_OS
+    for (;;) ;
+#endif
+
+    return 0;
 }
 
 #endif

@@ -40,6 +40,7 @@ WEBIMG = $(WEBDIR).c
 
 include ../Makedefs
 HWDEF += -DHTTPD_SSI_SAMPLE
+HWDEF += -DNUT_OS
 
 SRCS =  $(PROJ).c $(WEBIMG)
 OBJS =  $(SRCS:.c=.o)

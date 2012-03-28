@@ -38,9 +38,20 @@
  * $Id$
  */
 
+#ifdef NUT_OS
+#include <sys/version.h>
+#include <dev/board.h>
+#include <dev/urom.h>
+#include <pro/dhcp.h>
+#endif
+
 #include <pro/uhttp/mediatypes.h>
 #include <pro/uhttp/modules/mod_redir.h>
 #include <pro/uhttp/modules/mod_cgi_func.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 static int SendResult(HTTPD_SESSION *hs, char *first, char *last)
 {
@@ -123,7 +134,18 @@ static int CgiPostForm(HTTPD_SESSION *hs)
 
 int main(void)
 {
+#ifdef NUT_OS
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
+#endif
+
     puts("uHTTP form sample\nBuild " __DATE__ " " __TIME__);
+
+#ifdef NUT_OS
+    NutRegisterDevice(&DEV_ETHER, 0, 0);
+    NutDhcpIfConfig(DEV_ETHER_NAME, NULL, 60000);
+    NutRegisterDevice(&devUrom, 0, 0);
+#endif
 
     StreamInit();
     MediaTypeInitDefaults();
@@ -131,7 +153,14 @@ int main(void)
     HttpRegisterCgiFunction("getform.cgi", CgiGetForm);
     HttpRegisterCgiFunction("postform.cgi", CgiPostForm);
     HttpRegisterMediaType("cgi", NULL, NULL, HttpCgiFunctionHandler);
-    StreamClientAccept(HttpdClientHandler, "8088");
+    StreamClientAccept(HttpdClientHandler, NULL);
+
+    puts("Exit");
+#ifdef NUT_OS
+    for (;;) ;
+#endif
+
+    return 0;
 }
 
 #endif
