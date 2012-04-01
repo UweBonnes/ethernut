@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2009 by Rittal GmbH & Co. KG,
- * Ulrich Prinz <prinz.u@rittal.de> All rights reserved.
+ * Copyright (C) 2009 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,17 +31,20 @@
  *
  */
 
-/*
- * $Log$
- *
- * Revision 1.0  2009/04/13 ulrichprinz
- * First checkin, abstraction interface for EEPROM chips (currently SAM7X256 is 
- * tested only)
- *
+/*!
+ * \verbatim
+ * $Id$
+ *\endverbatim
  */
+
 #ifndef _DEV_EEPROM_H_
 #define _DEV_EEPROM_H_
 
+#include <cfg/os.h>
+#include <cfg/eeprom.h>
+
+#include <sys/timer.h>
+#include <sys/event.h>
 #include <stdint.h>
 #include <dev/twif.h>
 #include <dev/at24c.h>
@@ -54,14 +57,19 @@ int EEInit( void )
 /****************************************************************************/
 {
     uint8_t dummy;
-    at24c32s.PageSize = 32;
-    at24c32s.EepromSize = 32*128;
+    at24c32s.PageSize = AT24C_ROW_SIZE;
+    at24c32s.EepromSize = AT24C_CHIP_SIZE;
     at24c32s.SlaveAddress = NUT_CONFIG_AT24_ADR;
-	at24c32s.IAddrW = 2;
+	at24c32s.IAddrW = AT24C_ADR_SIZE;
+#ifdef AT24C_BLOCK_ADDR
+    at24c32s.BlInSla = 1;
+#endif
 	at24c32s.Timeout = 20;
-    
-    //strcpy (at24c32s.EepromName, "AT24C32" );
-    
+
+    NutEventPost( &at24c32s.ee_mutex);
+
+    if( TwInit(0))
+        return -1;
     /* Do a dummy read for communication test */
     return At24cRead( &at24c32s, &dummy, 1, 0);
 }
@@ -70,13 +78,13 @@ int EEInit( void )
 int EEWriteData( uint16_t addr, CONST void *data, uint16_t len )
 /****************************************************************************/
 {
-	return At24cWrite( &at24c32s, (uint8_t *)data, len, addr );
+    return At24cWrite( &at24c32s, (uint8_t *)data, len, addr );
 }
 
 /****************************************************************************/
 int EEReadData( uint16_t addr, void *data, uint16_t len )
 /****************************************************************************/
 {
-	return At24cRead( &at24c32s, (uint8_t *)data, len, addr );
+    return At24cRead( &at24c32s, (uint8_t *)data, len, addr );
 }
-#endif //_DEV_EEPROM_H_
+#endif /* _DEV_EEPROM_H_ */

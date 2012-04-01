@@ -56,7 +56,8 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
-#include <dev/dm9000.h>
+#include <dev/phy.h>
+#include <dev/dm9000e.h>
 
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -350,10 +351,11 @@ static INLINE uint8_t nic_inb(uint16_t reg)
  * \brief Read contents of PHY register.
  *
  * \param reg PHY register number.
+ * \param val Pointer to value to read to.
  *
- * \return Contents of the specified register.
+ * \return 0 for success, -1 on fail (not implemented)
  */
-static uint16_t phy_inw(uint8_t reg)
+int phy_inw( uint8_t reg, uint16_t *val)
 {
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
@@ -364,7 +366,8 @@ static uint16_t phy_inw(uint8_t reg)
     nic_outb(NIC_EPCR, 0x00);
 
     /* Get data from PHY data register. */
-    return ((uint16_t) nic_inb(NIC_EPDRH) << 8) | (uint16_t) nic_inb(NIC_EPDRL);
+    *val = ((uint16_t) nic_inb(NIC_EPDRH) << 8) | (uint16_t) nic_inb(NIC_EPDRL);
+    return 0;
 }
 
 /*!
@@ -373,28 +376,39 @@ static uint16_t phy_inw(uint8_t reg)
  * \note NIC interrupts must have been disabled before calling this routine.
  *
  * \param reg PHY register number.
- * \param val Value to write.
+ * \param val Pointer to value to write.
+ *
+ * \return 0 for success, -1 on fail (not implemented)
  */
-static void phy_outw(uint8_t reg, uint16_t val)
+static int phy_outw(uint8_t reg, uint16_t *val)
 {
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
 
     /* Store value in PHY data register. */
-    nic_outb(NIC_EPDRL, (uint8_t) val);
-    nic_outb(NIC_EPDRH, (uint8_t) (val >> 8));
+    nic_outb(NIC_EPDRL, (uint8_t) (*val));
+    nic_outb(NIC_EPDRH, (uint8_t) (*val >> 8));
 
     /* PHY write command. */
     nic_outb(NIC_EPCR, 0x0A);
     NutDelay(1);
     nic_outb(NIC_EPCR, 0x00);
+
+    return 0;
 }
 
+/*!
+ * \brief Initialize PHY.
+ *
+ * \note NutRegisterPhy() has to be called before and NIC has to be
+ *       configured to be able to access the PHY through the MDIO
+ *       bus interface.
+ */
 static int NicPhyInit(void)
 {
+    uint16_t phy = 1;
     /* Restart auto negotiation. */
-    phy_outw(NIC_PHY_ANAR, 0x01E1);
-    phy_outw(NIC_PHY_BMCR, 0x1200);
+    NutPhyCtl(PHYSET_AUTORES, &phy);
 
     nic_outb(NIC_GPCR, 1);
     nic_outb(NIC_GPR, 0);
@@ -769,7 +783,8 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;
-
+    uint16_t phy;
+    
     /* Power up the PHY. */
     nic_outb(NIC_GPR, 0);
     NutDelay(5);
@@ -807,8 +822,11 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN | NIC_RCR_ALL);
 
     /* Wait for link. */
-    for (link_wait = 20;; link_wait--) {
-        if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+    for (link_wait = 20;; link_wait--) 
+    {
+        NutPhyCtl(PHYGET_AUTORES, &phy);
+        if (phy==0) {
+            NutPhyCtl(PHYSTAT_AN, &phy);
             break;
         }
         if (link_wait == 0) {
@@ -998,6 +1016,9 @@ int DmInit(NUTDEVICE * dev)
     if (id != 0x90000A46) {
         return -1;
     }
+
+    /* Register PHY */
+    NutRegisterPhy( 1, phy_outw, phy_inw);
 
     /* Reset chip. */
     if (NicReset()) {

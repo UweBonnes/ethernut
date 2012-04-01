@@ -42,8 +42,46 @@
  */
 
 #include <sys/timer.h>
+#include <sys/nutdebug.h>
 
 #include <dev/spibus_gpio.h>
+
+/*!
+ * \brief Set clock rate of a specified SPI device.
+ *
+ * The new clock rate will be used for the next transfer. If the given
+ * rate is beyond the capabilities of the bus controller, it will
+ * automatically adjusted before the transfer starts.
+ *
+ * \param node Specifies the SPI bus node.
+ * \param rate New clock rate, given in bits per second. If the value is
+ *             SPI_CURRENT_RATE, then the current rate is kept.
+ *
+ * \return Previous rate.
+ */
+uint_fast32_t GpioSpiBusSetRate(NUTSPINODE * node, uint_fast32_t rate)
+{
+    uint32_t rc;
+    GSPIREG *gspi;
+
+    /* Sanity check. */
+    NUTASSERT(node != NULL);
+    NUTASSERT(node->node_stat != NULL);
+    gspi = (GSPIREG *)node->node_stat;
+
+    if(gspi->gspi_dly_rate)
+        rc = 500000/ gspi->gspi_dly_rate;
+    else
+        rc = 500000;
+
+    if (rate != SPI_CURRENT_RATE) {
+        gspi->gspi_dly_rate = 500000 / rate;
+        node->node_rate = (gspi->gspi_dly_rate)?
+            (500000 /gspi->gspi_dly_rate):500000;
+        node->node_mode |= SPI_MODE_UPDATE;
+    }
+    return rc;
+}
 
 /*!
  * \brief Update SPI settings.
@@ -52,8 +90,8 @@ int GpioSpiSetup(NUTSPINODE * node)
 {
     /* We support 8 bit only. */
     node->node_bits = 8;
-    /* We may try some rough calculation here. */
-    node->node_rate = 0;
+    /* Calculate rate at the cost of a division*/
+    GpioSpiBusSetRate(node, node->node_rate);
     /* Update done. */
     node->node_mode &= ~SPI_MODE_UPDATE;
 

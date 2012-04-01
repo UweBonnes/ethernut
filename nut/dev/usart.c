@@ -206,6 +206,13 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
     USARTDCB *dcb = dev->dev_dcb;
     RINGBUF *rbf = &dcb->dcb_rx_rbf;
 
+    if (dcb->dcb_modeflags & USART_MF_BLOCKREAD) {
+        rbf->rbf_blockptr = buffer;
+        rbf->rbf_blockcnt = size;
+        (*dcb->dcb_rx_start) ();
+        return size;
+    }
+
     /*
      * No buffer allocated, this device is read only.
      */
@@ -369,6 +376,18 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     USARTDCB *dcb = dev->dev_dcb;
     RINGBUF *rbf = &dcb->dcb_tx_rbf;
 
+    if (dcb->dcb_modeflags & USART_MF_BLOCKWRITE) {
+
+        rbf->rbf_blockptr = (void*)buffer;
+        rbf->rbf_blockcnt = len;
+        (*dcb->dcb_tx_start) ();
+
+        rc = NutEventWaitNext( &rbf->rbf_que, dcb->dcb_wtimeout);
+        if (rc==0)
+            rc = len;
+        return rc;
+    }
+    
     /*
      * No output ring buffer allocated, this device is read only.
      */
@@ -764,6 +783,7 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
             dcb->dcb_modeflags |= USART_MF_LOCALECHO;
         else
             dcb->dcb_modeflags &= ~USART_MF_LOCALECHO;
+        rc = (dcb->dcb_set_flow_control) (dcb->dcb_modeflags);
         break;
     case UART_GETLOCALECHO:
         if (dcb->dcb_modeflags & USART_MF_LOCALECHO)
@@ -773,9 +793,35 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_SETFLOWCONTROL:
-        rc = (*dcb->dcb_set_flow_control) (lv);
+        if (bv)
+            dcb->dcb_modeflags |= USART_MF_XONXOFF;
+        else
+            dcb->dcb_modeflags &= ~USART_MF_XONXOFF;
+        rc = (dcb->dcb_set_flow_control) (dcb->dcb_modeflags);
         break;
     case UART_GETFLOWCONTROL:
+        *lvp = (*dcb->dcb_get_flow_control) ();
+        break;
+
+    case UART_SETBLOCKREAD:
+        if (bv)
+            dcb->dcb_modeflags |= USART_MF_BLOCKREAD;
+        else
+            dcb->dcb_modeflags &= ~USART_MF_BLOCKREAD;
+        rc = (dcb->dcb_set_flow_control) (dcb->dcb_modeflags);
+        break;
+    case UART_GETBLOCKREAD:
+        *lvp = (*dcb->dcb_get_flow_control) ();
+        break;
+
+    case UART_SETBLOCKWRITE:
+        if (bv)
+            dcb->dcb_modeflags |= USART_MF_BLOCKWRITE;
+        else
+            dcb->dcb_modeflags &= ~USART_MF_BLOCKWRITE;
+        rc = (dcb->dcb_set_flow_control) (dcb->dcb_modeflags);
+        break;
+    case UART_GETBLOCKWRITE:
         *lvp = (*dcb->dcb_get_flow_control) ();
         break;
 
@@ -797,6 +843,7 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 			dcb->dcb_modeflags |= USART_MF_HALFDUPLEX;
 		else
 			dcb->dcb_modeflags &= ~USART_MF_HALFDUPLEX;
+        rc = (dcb->dcb_set_flow_control) (dcb->dcb_modeflags);
 		break;
 	case UART_GETHDPXMODE:
 		if (dcb->dcb_modeflags & USART_MF_HALFDUPLEX)

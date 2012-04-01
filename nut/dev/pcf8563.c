@@ -116,7 +116,7 @@ int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcGetClock(struct _tm *tm)
+int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     int rc;
     uint8_t data[7];
@@ -146,7 +146,7 @@ int PcfRtcGetClock(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetClock(CONST struct _tm *tm)
+int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
 {
     uint8_t data[8];
 
@@ -183,7 +183,7 @@ int PcfRtcSetClock(CONST struct _tm *tm)
  * \return 0 on success or -1 in case of an error.
  *
  */
-int PcfRtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
+int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs)
 {
     return -1;
 }
@@ -206,7 +206,7 @@ int PcfRtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
+int PcfRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs)
 {
     return -1;
 }
@@ -221,7 +221,7 @@ int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcGetStatus(uint32_t *sflgs)
+int PcfRtcGetStatus(NUTRTC *rtc, uint32_t *sflgs)
 {
     int rc;
     uint8_t data;
@@ -242,7 +242,7 @@ int PcfRtcGetStatus(uint32_t *sflgs)
  *
  * \return Always 0.
  */
-int PcfRtcClearStatus(uint32_t sflgs)
+int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs)
 {
     rtc_status &= ~sflgs;
 
@@ -255,7 +255,7 @@ int PcfRtcClearStatus(uint32_t sflgs)
  * \return 0 on success or -1 in case of an error.
  *
  */
-int PcfRtcInit(void)
+int PcfRtcInit(NUTRTC *rtc)
 {
     int rc;
     uint32_t tmp;
@@ -267,11 +267,13 @@ int PcfRtcInit(void)
 }
 
 NUTRTC rtcPcf8563 = {
-    PcfRtcInit,         /*!< Hardware initializatiuon, rtc_init */
-    PcfRtcGetClock,     /*!< Read date and time, rtc_gettime */
-    PcfRtcSetClock,     /*!< Set date and time, rtc_settime */
-    PcfRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
-    PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
-    PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
-    PcfRtcClearStatus   /*!< Clear status flags, rtc_clrstatus */
+    .dcb           = NULL,               /*!< Driver control block */
+    .rtc_init      = PcfRtcInit,         /*!< Hardware initializatiuon, rtc_init */
+    .rtc_gettime   = PcfRtcGetClock,     /*!< Read date and time, rtc_gettime */
+    .rtc_settime   = PcfRtcSetClock,     /*!< Set date and time, rtc_settime */
+    .rtc_getalarm  = PcfRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+    .rtc_setalarm  = PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+    .rtc_getstatus = PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+    .rtc_clrstatus = PcfRtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
+    .alarm         = NULL,               /*!< Handle for alarm event queue, not supported right now */ 
 };

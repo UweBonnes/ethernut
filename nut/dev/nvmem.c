@@ -83,6 +83,12 @@
 #include <dev/at49bv.h>
 #elif defined(NUT_CONFIG_AT91EFC)
 #include <arch/arm/atmel/at91_efc.h>
+#elif defined(NUT_CONFIG_STM32FLASH)
+#include <arch/cm3/stm/stm32_flash.h>
+#elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
+#include <arch/cm3/nxp/lpc177x_8x_eeprom.h>
+#elif defined(NUT_CONFIG_LPC17xx_IAP) 
+#include <arch/cm3/nxp/lpc17xx_iap.h>
 #elif defined(NUT_CONFIG_AT24)
 #include <dev/eeprom.h>
 #endif
@@ -118,7 +124,14 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
     return OnChipNvMemLoad(addr, buff, siz);
 #elif defined(NUT_CONFIG_AT91EFC)
     return At91EfcParamRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_STM32FLASH)
+    return Stm32FlashParamRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
+    return Lpc177x_8x_EepromRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_LPC17xx_IAP) 
+    return Lpc17xxIapParamRead(addr, buff, siz);    
 #elif defined(NUT_CONFIG_AT24)
+    EEInit();
     return EEReadData( addr, buff, siz);
 #else
     return -1;
@@ -151,6 +164,12 @@ int NutNvMemSave(unsigned int addr, CONST void *buff, size_t len)
     return OnChipNvMemSave(addr, buff, len);
 #elif defined(NUT_CONFIG_AT91EFC)
     return At91EfcParamWrite(addr, buff, len);
+#elif defined(NUT_CONFIG_STM32FLASH)
+    return Stm32FlashParamWrite(addr, buff, len);
+#elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
+    return Lpc177x_8x_EepromWrite(addr, buff, len);     
+#elif defined(NUT_CONFIG_LPC17xx_IAP) 
+    return Lpc17xxIapParamWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_AT24)
     return EEWriteData( addr, buff, len);
 #else

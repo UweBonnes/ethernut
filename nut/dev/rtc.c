@@ -70,7 +70,7 @@ int NutRegisterRtc(NUTRTC * rtc)
 {
     reg_rtc = rtc;
     if (rtc && reg_rtc->rtc_init) {
-        if ((*reg_rtc->rtc_init) ()) {
+        if ((*reg_rtc->rtc_init) (reg_rtc)) {
             reg_rtc = NULL;
             return -1;
         }
@@ -91,7 +91,7 @@ int NutRegisterRtc(NUTRTC * rtc)
 int NutRtcGetTime(struct _tm *tm)
 {
     if (reg_rtc && reg_rtc->rtc_gettime && tm) {
-        return (*reg_rtc->rtc_gettime) (tm);
+        return (*reg_rtc->rtc_gettime) (reg_rtc, tm);
     }
     return -1;
 }
@@ -109,7 +109,7 @@ int NutRtcGetTime(struct _tm *tm)
 int NutRtcSetTime(CONST struct _tm *tm)
 {
     if (reg_rtc && reg_rtc->rtc_settime && tm) {
-        return (*reg_rtc->rtc_settime) (tm);
+        return (*reg_rtc->rtc_settime) (reg_rtc, tm);
     }
     return -1;
 }
@@ -128,7 +128,7 @@ int NutRtcSetTime(CONST struct _tm *tm)
 int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags)
 {
     if (reg_rtc && reg_rtc->rtc_getalarm) {
-        return (*reg_rtc->rtc_getalarm) (idx, tm, aflags);
+        return (*reg_rtc->rtc_getalarm) (reg_rtc, idx, tm, aflags);
     }
     return -1;
 }
@@ -152,7 +152,7 @@ int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags)
 int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags)
 {
     if (reg_rtc && reg_rtc->rtc_setalarm) {
-        return (*reg_rtc->rtc_setalarm) (idx, tm, aflags);
+        return (*reg_rtc->rtc_setalarm) (reg_rtc, idx, tm, aflags);
     }
     return -1;
 }
@@ -170,7 +170,7 @@ int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags)
 int NutRtcGetStatus(uint32_t * sflags)
 {
     if (reg_rtc && reg_rtc->rtc_getstatus) {
-        return (*reg_rtc->rtc_getstatus) (sflags);
+        return (*reg_rtc->rtc_getstatus) (reg_rtc, sflags);
     }
     return -1;
 }
@@ -185,7 +185,7 @@ int NutRtcGetStatus(uint32_t * sflags)
 int NutRtcClearStatus(uint32_t sflags)
 {
     if (reg_rtc && reg_rtc->rtc_clrstatus) {
-        return (*reg_rtc->rtc_clrstatus) (sflags);
+        return (*reg_rtc->rtc_clrstatus) (reg_rtc, sflags);
     }
     return -1;
 }

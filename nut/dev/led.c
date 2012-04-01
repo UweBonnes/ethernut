@@ -81,13 +81,14 @@
 /*@{*/
 
 /* define inverted LED states as LEDs are driven by low side switching */
+#endif
 
 #ifdef LED_ON_HIGH
-#define LED_IS_ON  1
-#define LED_IS_OFF 0
+#define LED_SET_ON  1
+#define LED_SET_OFF 0
 #else
-#define LED_IS_ON  0
-#define LED_IS_OFF 1
+#define LED_SET_ON  0
+#define LED_SET_OFF 1
 #endif
 
 typedef struct
@@ -238,7 +239,7 @@ void NutSetLed( HANDLE ledh, uint_fast8_t fxin, uint32_t timOn, uint32_t timOff)
             led->state ^= 1;
             led->timOn = timOn;
             led->timOff = timOff;
-            if( led->state==LED_IS_ON)
+            if( led->state==LED_SET_ON)
                 led->tim = timOff;
             else
                 led->tim = timOn;
@@ -247,12 +248,12 @@ void NutSetLed( HANDLE ledh, uint_fast8_t fxin, uint32_t timOn, uint32_t timOff)
             led->state ^= 1;
             break;
         case LED_ON:
-            led->state = LED_IS_ON;
+            led->state = LED_SET_ON;
             led->timOn = led->tim = timOn;
             break;
         case LED_OFF:
         default:
-            led->state = LED_IS_OFF;
+            led->state = LED_SET_OFF;
             led->timOff = led->tim = timOff;
             break;
     }
@@ -301,7 +302,7 @@ int NutRegisterLed( HANDLE * ledh, int bank, int pin)
     memset( led, 0, sizeof( LEDEventT));
     led->bank = bank;
     led->pin = pin;
-    led->state = LED_IS_OFF;
+    led->state = LED_SET_OFF;
 
     /* Assign the led to the chain */
     NutEnterCritical();

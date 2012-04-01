@@ -41,7 +41,7 @@
  * $Id: spi_7seg.c,$
  * \endverbatim
  */
-//#define SPI2SEG_DEBUG
+#define SPI2SEG_DEBUG
 
 #include <cfg/os.h>
 #include <cfg/arch.h>
@@ -79,7 +79,7 @@
 
 #define SEG7_REVERSE
 
-/* AS1108 Register Abbreviations */
+/* AS1106/7/8 Register Abbreviations */
 #define SEGR_NOOP       0x00
 #define SEGR_DIG0       0x01
 #define SEGR_DIG1       0x02
