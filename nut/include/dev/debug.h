@@ -121,7 +121,7 @@ extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 extern NUTDEVICE devDebug2;
 
-#elif defined(__arm__)
+#elif defined(__arm__) && !defined(__CORTEX__)
 #ifdef MCU_AT91R40008
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
@@ -129,14 +129,17 @@ extern NUTDEVICE devDebug1;
 extern NUTDEVICE devDebug;
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;
-#elif defined(MCU_LPC1700)
-extern NUTDEVICE devDebug0;
 #elif defined(MCU_LPC2XXX)
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 #elif defined(MCU_ZERO)
 extern NUTDEVICE devDebug0;
 #endif
+#elif defined(__arm__) && defined(__CORTEX__)
+#if defined(MCU_STM32F10X)
+extern NUTDEVICE *devDebug0;
+#endif
+
 #elif defined(__m68k__)
 
 #elif defined(__AVR32__)

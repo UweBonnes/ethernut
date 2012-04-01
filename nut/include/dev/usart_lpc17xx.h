@@ -1,8 +1,8 @@
-#ifndef _DEV_RESET_H_
-#define	_DEV_RESET_H_
+#ifndef _DEV_USART_LPC17xx_H_
+#define _DEV_USART_LPC17xx_H_
 
 /*
- * Copyright (C) 2008 by egnite GmbH.
+ * Copyright (C) 2012 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
  *
  * All rights reserved.
  *
@@ -35,46 +35,62 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
- * \file dev/reset.h
- * \brief System reset function.
+
+/*
+ * $Id:$
  *
- * \verbatim
- * $Id$
- * \endverbatim
  */
 
-#include <compiler.h>
+
+#include <sys/device.h>
+#include <dev/uart.h>
+#include <dev/usart.h>
 
 /*!
- * \addtogroup xgReset
+ * \file dev/usart_lpc17xx.h
+ * \brief Synchronous/asynchronous serial device definitions.
  */
-/*@{*/
 
-#define NUT_RSTTYP_UNKNOWN  0
-#define NUT_RSTTYP_POWERUP  1
-#define NUT_RSTTYP_WATCHDOG 2
-#define NUT_RSTTYP_EXTERNAL 3
-#define NUT_RSTTYP_SOFTWARE 4
-#define NUT_RSTTYP_BROWNOUT 5
+/* define UARTS (not all accesable at the board) */
 
-#if defined(MCU_AT91)
-#include <arch/arm/atmel/at91_reset.h>
-#elif defined(__AVR32__)
-#include <arch/avr32/reset.h>
-#elif defined(__CORTEX__)
-#include <arch/cm3/cortex_reset.h>
+#ifndef DEV_UART0
+#define DEV_UART0       devUsartLpc17xx_0
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
+#ifndef DEV_UART0_NAME
+#define DEV_UART0_NAME  DEV_UART0.dev_name
+#endif
 
-extern void NutReset(void);
-extern int NutResetCause(void);
 
-__END_DECLS
-/* End of prototypes */
+#ifndef DEV_UART1
+#define DEV_UART1       devUsartLpc17xx_1
+#endif
 
-/*@}*/
+#ifndef DEV_UART1_NAME
+#define DEV_UART1_NAME  DEV_UART1.dev_name
+#endif
+
+
+#ifndef DEV_UART2
+#define DEV_UART2       devUsartLpc17xx_2
+#endif
+
+#ifndef DEV_UART2_NAME
+#define DEV_UART2_NAME  DEV_UART2.dev_name
+#endif
+
+
+#ifndef DEV_UART3
+#define DEV_UART3       devUsartLpc17xx_3
+#endif
+
+#ifndef DEV_UART3_NAME
+#define DEV_UART3_NAME  DEV_UART3.dev_name
+#endif
+
+extern NUTDEVICE devUsartLpc17xx_0;
+extern NUTDEVICE devUsartLpc17xx_1;
+extern NUTDEVICE devUsartLpc17xx_2;
+extern NUTDEVICE devUsartLpc17xx_3;
 
 #endif

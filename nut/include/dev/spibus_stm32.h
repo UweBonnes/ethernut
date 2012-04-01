@@ -1,8 +1,8 @@
-#ifndef _DEV_RESET_H_
-#define	_DEV_RESET_H_
-
+#ifndef _DEV_SPIBUS_STM32_H_
+#define _DEV_SPIBUS_STM32_H_
 /*
- * Copyright (C) 2008 by egnite GmbH.
+ * Copyright (C) 2008-2009 by egnite GmbH
+ * Copyright (C) 2012 Uwe Bonnes
  *
  * All rights reserved.
  *
@@ -36,45 +36,33 @@
  */
 
 /*!
- * \file dev/reset.h
- * \brief System reset function.
+ * \file dev/spibus_stm32.h
+ * \brief STM32 specific SPI bus declarations.
  *
  * \verbatim
- * $Id$
+ * $Id:
  * \endverbatim
  */
 
-#include <compiler.h>
+#include <dev/spibus.h>
 
-/*!
- * \addtogroup xgReset
- */
-/*@{*/
-
-#define NUT_RSTTYP_UNKNOWN  0
-#define NUT_RSTTYP_POWERUP  1
-#define NUT_RSTTYP_WATCHDOG 2
-#define NUT_RSTTYP_EXTERNAL 3
-#define NUT_RSTTYP_SOFTWARE 4
-#define NUT_RSTTYP_BROWNOUT 5
-
-#if defined(MCU_AT91)
-#include <arch/arm/atmel/at91_reset.h>
-#elif defined(__AVR32__)
-#include <arch/avr32/reset.h>
-#elif defined(__CORTEX__)
-#include <arch/cm3/cortex_reset.h>
-#endif
+extern NUTSPIBUS spiBus0Stm32;
+extern NUTSPIBUS spiBus1Stm32;
 
 __BEGIN_DECLS
 /* Prototypes */
+extern int Stm32SpiBus1Select(NUTSPINODE * node, uint32_t tmo);
+extern int Stm32SpiBus1Deselect(NUTSPINODE * node);
 
-extern void NutReset(void);
-extern int NutResetCause(void);
+extern int Stm32SpiBus2Select(NUTSPINODE * node, uint32_t tmo);
+extern int Stm32SpiBus2Deselect(NUTSPINODE * node);
 
+extern int Stm32SpiSetup(NUTSPINODE * node);
+extern int Stm32SpiBusNodeInit(NUTSPINODE * node);
+extern int Stm32SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusWait(NUTSPINODE * node, uint32_t tmo);
+/* Prototypes */
 __END_DECLS
-/* End of prototypes */
-
-/*@}*/
-
 #endif

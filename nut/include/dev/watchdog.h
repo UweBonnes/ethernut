@@ -49,6 +49,7 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <sys/types.h>
 #include <stdint.h>
 
@@ -160,6 +161,11 @@ extern uint32_t Avr32WatchDogStart(uint32_t ms);
 extern void Avr32WatchDogRestart(void);
 extern void Avr32WatchDogDisable(void);
 extern void Avr32WatchDogEnable(void);
+#elif defined(MCU_LPC17xx)
+extern uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode);
+extern void Lpc17xxWatchDogRestart(void);
+extern void Lpc17xxWatchDogDisable(void);
+extern void Lpc17xxWatchDogEnable(void);
 #endif
 
 __END_DECLS

@@ -130,6 +130,23 @@
 #include <arch/arm/board/zero_ek.h>
 #endif
 
+#if defined(USPS)
+#include <arch/cm3/board/usps.h>
+#endif
+
+#if defined(STM32_CAN)
+#include <arch/cm3/board/stm32_can.h>
+#endif
+
+#if defined(F4_DISCOVERY)
+#include <arch/cm3/board/f4_discovery.h>
+#endif
+
+#if defined (KSK_LPC1788_SK)
+#include <arch/cm3/board/ksk_lpc1788_sk.h>
+#endif
+
+
 /*
  * Debug device.
  */
@@ -138,6 +155,10 @@
 #ifndef DEV_DEBUG
 #if defined(OLIMEX_LPCE2294) || defined(HHOPEN_63F) || defined(EVK1104)
 #define DEV_DEBUG       devDebug1
+#elif defined(STM3210E_EVAL)
+#define DEV_DEBUG       devUsartStm32_1
+#elif defined(STM3210C_EVAL)
+#define DEV_DEBUG       devUsartStm32_2
 #elif defined(DBGU_BASE)
 #define DEV_DEBUG       devDebug
 #else
@@ -150,6 +171,10 @@
 #define DEV_DEBUG_NAME  "con"
 #elif defined(OLIMEX_LPCE2294) || defined(HHOPEN_63F) || defined(EVK1104)
 #define DEV_DEBUG_NAME  "uart1"
+#elif defined(STM3210E_EVAL) || defined(STM32_COMSTICK)
+#define DEV_DEBUG_NAME  devUsartStm32_1.dev_name
+#elif defined(STM3210C_EVAL)
+#define DEV_DEBUG_NAME  devUsartStm32_2.dev_name
 #elif defined(DBGU_BASE)
 #define DEV_DEBUG_NAME  "dbgu"
 #else
@@ -209,6 +234,77 @@
 #if defined(EVK1104) && !defined(DEV_UART)
 #define DEV_UART        DEV_UART1
 #define DEV_UART_NAME   DEV_UART1_NAME
+#endif
+
+#elif defined(MCU_STM32)
+
+#include <dev/usartstm32.h>
+
+#ifndef DEV_UART1
+#define DEV_UART1       devUsartStm32_1
+#endif
+
+#ifndef DEV_UART1_NAME
+#define DEV_UART1_NAME  DEV_UART1.dev_name
+#endif
+
+#ifndef DEV_UART2
+#define DEV_UART2       devUsartStm32_2
+#endif
+
+#ifndef DEV_UART2_NAME
+#define DEV_UART2_NAME  DEV_UART2.dev_name
+#endif
+
+#ifndef DEV_UART3
+#define DEV_UART3       devUsartStm32_3
+#endif
+
+#ifndef DEV_UART3_NAME
+#define DEV_UART3_NAME  DEV_UART3.dev_name
+#endif
+
+#ifndef DEV_UART4
+#define DEV_UART4       devUartStm32_4
+#endif
+
+#ifndef DEV_UART4_NAME
+#define DEV_UART4_NAME  DEV_UART4.dev_name
+#endif
+
+#ifndef DEV_UART5
+#define DEV_UART5       devUartStm32_5
+#endif
+
+#ifndef DEV_UART5_NAME
+#define DEV_UART5_NAME  DEV_UART5.dev_name
+#endif
+
+#ifndef DEV_UART
+#if defined(STM3210E_EVAL)
+#define DEV_UART        DEV_UART1
+#define DEV_UART_NAME   DEV_UART1_NAME
+
+#elif defined(STM3210C_EVAL)
+#define DEV_UART        DEV_UART2
+#define DEV_UART_NAME   DEV_UART2_NAME
+
+#elif defined(STM32_COMSTICK)
+#define DEV_UART        DEV_UART1
+#define DEV_UART_NAME   DEV_UART1_NAME
+
+#else
+#define DEV_UART        DEV_UART1
+#define DEV_UART_NAME   DEV_UART1_NAME
+#endif
+#endif
+
+#ifndef DEV_DEBUG
+#define DEV_DEBUG       DEV_UART1
+#endif
+
+#ifndef DEV_DEBUG_NAME
+#define DEV_DEBUG_NAME  DEV_UART1_NAME
 #endif
 
 #elif defined(GBAXPORT2)
@@ -279,6 +375,20 @@
 #endif
 #ifndef DEV_ETHER_NAME
 #define DEV_ETHER_NAME  "eth0"
+#endif
+
+/*
+ * TWI / I2C bus.
+ */
+#ifndef DEF_TWIBUS
+#if defined(MCU_AT91)
+#include <dev/twibus_at91.h>
+#define DEF_TWIBUS      At91TwiBus
+#elif defined(MCU_STM32)
+#include <cfg/twi.h>
+#include <dev/twif.h>
+#include <arch/cm3/stm/stm32_twi.h>
+#endif
 #endif
 
 /*

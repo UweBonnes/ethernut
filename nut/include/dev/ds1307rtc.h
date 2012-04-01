@@ -54,10 +54,10 @@ extern NUTRTC rtcDs1307;
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int DS1307Init(void);
+extern int DS1307Init(NUTRTC *rtc);
 
-extern int DS1307RtcGetClock(struct _tm *tm);
-extern int DS1307RtcSetClock(CONST struct _tm *tm);
+extern int DS1307RtcGetClock(NUTRTC *rtc, struct _tm *tm);
+extern int DS1307RtcSetClock(NUTRTC *rtc, CONST struct _tm *tm);
 extern int DS1307RtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
 extern int DS1307RtcWrite(CONST uint8_t *buff, size_t len);
 

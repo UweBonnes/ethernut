@@ -1,6 +1,5 @@
-#ifndef _DEV_PCF8563_H_
-#define	_DEV_PCF8563_H_
-
+#ifndef _DEV_AT45DB_H_
+#define _DEV_AT45DB_H_
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
  *
@@ -33,35 +32,69 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
+/*!
+ * \file dev/at45db.h
+ * \brief Dataflash helper routines.
+ *
+ * \verbatim
+ *
  * $Log$
- * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * Revision 1.5  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
+ * Revision 1.4  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
- * Revision 1.2  2006/10/05 17:18:49  haraldkipp
- * Hardware independant RTC layer added.
+ * Revision 1.3  2008/02/15 17:10:44  haraldkipp
+ * At25dfPageErase selected the wrong bank. Fixed. Parameter pgn (page number)
+ * of At25dfPageWrite() changed from unsigned int to unsigned long.
+ * New routines At25dfPages() and At25dfPageSize() allow to determine the
+ * chip's layout.
  *
- * Revision 1.1  2006/04/07 13:54:17  haraldkipp
- * PCF8563 RTC driver added.
+ * Revision 1.2  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
  *
+ * Revision 1.1  2006/09/29 12:41:55  haraldkipp
+ * Added support for AT45 serial DataFlash memory chips. Currently limited
+ * to AT91 builds.
+ *
+ *
+ * \endverbatim
  */
 
-#include <dev/rtc.h>
+#include <sys/types.h>
+#include <stdint.h>
+#include <dev/blockdev.h>
+#include <dev/spibus.h>
 
-extern NUTRTC rtcPcf8563;
+/*!
+ * \brief AT25D DataFlash parameter structure type.
+ */
+typedef struct _AT25D_INFO AT25D_INFO;
+
+/*!
+ * \brief AT25D DataFlash parameter structure.
+ */
+struct _AT25D_INFO {
+    /*! \brief Least significant bit of the page parameter. */
+    uint_fast8_t at25d_pshft;
+    /*! \brief Total number of pages. */
+    uint32_t at25d_pages;
+    /*! \brief Number of bytes per page. */
+    size_t at25d_psize;
+    /*! \brief Type determination value. */
+    uint_fast8_t at25d_srval;
+};
+
+extern NUTSPINODE at25df;
+extern NUTDEVICE devDataFlash0;
+
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int PcfRtcInit(NUTRTC *rtc);
-
-extern int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm);
-extern int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm);
-extern int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs);
-extern int PcfRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs);
-extern int PcfRtcGetStatus(NUTRTC *rtc, uint32_t *sflgs);
-extern int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs);
-extern int PcfRtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
-extern int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t len);
+int At25dfInit(NUTDEVICE* dev);
+static uint8_t At25dStatus(NUTSPINODE * node);
 
 __END_DECLS
 /* End of prototypes */

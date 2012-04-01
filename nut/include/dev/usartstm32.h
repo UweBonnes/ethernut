@@ -1,10 +1,8 @@
-#ifndef _DEV_RESET_H_
-#define	_DEV_RESET_H_
+#ifndef _DEV_USARTAVR32_H_
+#define _DEV_USARTAVR32_H_
 
 /*
- * Copyright (C) 2008 by egnite GmbH.
- *
- * All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -19,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -35,46 +33,26 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
- * \file dev/reset.h
- * \brief System reset function.
+/*
+ * $Log: usartavr32.h,v $
  *
- * \verbatim
- * $Id$
- * \endverbatim
  */
 
-#include <compiler.h>
+
+
+#include <sys/device.h>
+#include <dev/uart.h>
+#include <dev/usart.h>
 
 /*!
- * \addtogroup xgReset
+ * \file dev/usartavr32.h
+ * \brief Synchronous/asynchronous serial device definitions.
  */
-/*@{*/
 
-#define NUT_RSTTYP_UNKNOWN  0
-#define NUT_RSTTYP_POWERUP  1
-#define NUT_RSTTYP_WATCHDOG 2
-#define NUT_RSTTYP_EXTERNAL 3
-#define NUT_RSTTYP_SOFTWARE 4
-#define NUT_RSTTYP_BROWNOUT 5
-
-#if defined(MCU_AT91)
-#include <arch/arm/atmel/at91_reset.h>
-#elif defined(__AVR32__)
-#include <arch/avr32/reset.h>
-#elif defined(__CORTEX__)
-#include <arch/cm3/cortex_reset.h>
-#endif
-
-__BEGIN_DECLS
-/* Prototypes */
-
-extern void NutReset(void);
-extern int NutResetCause(void);
-
-__END_DECLS
-/* End of prototypes */
-
-/*@}*/
+extern NUTDEVICE devUsartStm32_1;
+extern NUTDEVICE devUsartStm32_2;
+extern NUTDEVICE devUsartStm32_3;
+extern NUTDEVICE devUartStm32_4;
+extern NUTDEVICE devUartStm32_5;
 
 #endif

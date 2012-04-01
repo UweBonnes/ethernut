@@ -1,8 +1,8 @@
-#ifndef _DEV_RESET_H_
-#define	_DEV_RESET_H_
+#ifndef _DEV_LPC17XX_RTC_H_
+#define	_DEV_LPC17XX_RTC_H_
 
 /*
- * Copyright (C) 2008 by egnite GmbH.
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  *
  * All rights reserved.
  *
@@ -35,46 +35,19 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
- * \file dev/reset.h
- * \brief System reset function.
- *
+/*
  * \verbatim
- * $Id$
+ * $Id:$
  * \endverbatim
  */
 
-#include <compiler.h>
+#include <dev/rtc.h>
 
-/*!
- * \addtogroup xgReset
- */
-/*@{*/
+extern NUTRTC rtcLpc17xx;
 
-#define NUT_RSTTYP_UNKNOWN  0
-#define NUT_RSTTYP_POWERUP  1
-#define NUT_RSTTYP_WATCHDOG 2
-#define NUT_RSTTYP_EXTERNAL 3
-#define NUT_RSTTYP_SOFTWARE 4
-#define NUT_RSTTYP_BROWNOUT 5
-
-#if defined(MCU_AT91)
-#include <arch/arm/atmel/at91_reset.h>
-#elif defined(__AVR32__)
-#include <arch/avr32/reset.h>
-#elif defined(__CORTEX__)
-#include <arch/cm3/cortex_reset.h>
-#endif
-
-__BEGIN_DECLS
 /* Prototypes */
-
-extern void NutReset(void);
-extern int NutResetCause(void);
+__BEGIN_DECLS
 
 __END_DECLS
 /* End of prototypes */
-
-/*@}*/
-
 #endif
