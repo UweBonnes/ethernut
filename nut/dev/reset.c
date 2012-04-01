@@ -60,7 +60,9 @@ void NutReset(void)
 #elif defined(MCU_AT91)
     At91Reset();
 #elif defined(__AVR32__)
-	Avr32Reset();
+    Avr32Reset();
+#elif defined(__CORTEX__)
+    Cortex_Reset();
 #endif
 }
 
@@ -76,7 +78,9 @@ int NutResetCause(void)
 #if defined(MCU_AT91)
     return At91ResetCause();
 #elif defined(__AVR32__)
-	return Avr32ResetCause();
+    return Avr32ResetCause();
+#elif defined(__CORTEX__)
+    return Cortex_ResetCause();
 #else
     return NUT_RSTTYP_UNKNOWN;
 #endif
