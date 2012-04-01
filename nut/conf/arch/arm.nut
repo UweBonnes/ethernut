@@ -1235,7 +1235,7 @@ nutarch_arm =
         brief = "AX88796 Driver (AT91)",
         description = "LAN driver for Asix 88796. AT91 only.",
         requires = { "HW_MCU_AT91R40008", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "arm/dev/ax88796.c" },
     },
     {
@@ -1243,7 +1243,7 @@ nutarch_arm =
         brief = "DM9000E Driver (AT91)",
         description = "LAN driver for Davicom DM9000E. AT91 only.",
         requires = { "HW_EBI_AT91", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "arm/dev/dm9000e.c" },
         options =
         {
@@ -1271,7 +1271,7 @@ nutarch_arm =
         brief = "AT91 EMAC Driver",
         description = "LAN driver for AT91SAM7X and AT91SAM9260 and AT91SAM9G45.",
         requires = { "HW_EMAC_AT91", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "arm/dev/atmel/at91_emac.c" },
         options =
         {
@@ -1345,6 +1345,18 @@ nutarch_arm =
         requires = { "HW_TWI_AT91" },
         provides = { "DEV_TWI" },
         sources = { "arm/dev/atmel/at91_twi.c" },
+        options =
+        {
+        	{
+        		macro = "I2C_DEFAULT_SPEED",
+        		brief = "Default Speed",
+        		description = "Default speed for this bus. Different speeds can be set by software.\n",
+                default = "100",
+                type = "enumerated",
+                choices = { "", "75", "100", "400" },
+        		file = "include/cfg/twi.h"
+            },
+        },
     },
     {
         name = "nutarch_arm_adc_at91",

@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+--
+-- Revision 1.16  2010/10/27 12:22:44  ulrichprinz
+-- 2010-10-27  Ulrich Prinz <uprinz2@netscape.net>
+-- Added configuration support for unified PHY support package.
+--
 -- Revision 1.15  2009/02/22 12:22:44  olereinhardt
 -- 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 -- Added NUT_UDP_ICMP_SUPPORT (ICMP support on UDP sockets)
@@ -290,7 +295,7 @@ nutnet =
         brief = "ARP",
         description = "Address Resolution Protocol, translates a "..
                       "32-bit IP address into a 48-bit Ethernet address.",
-        requires = { "NUT_EVENT", "NET_PHY" },
+        requires = { "NUT_EVENT", "NET_MAC" },
         provides = { "NET_ARP" },
         sources = 
         { 

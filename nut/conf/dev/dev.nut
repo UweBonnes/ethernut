@@ -807,7 +807,7 @@ nutdev =
                               "For the AVR family the on-chip EEPROM is used by default.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45D" },
                 flavor = "booldata",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
                 default = "0",
                 file = "include/cfg/eeprom.h"
             },
@@ -817,7 +817,7 @@ nutdev =
                 description = "Deprecated, uses old SPI routines.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45DB" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -827,7 +827,7 @@ nutdev =
                               "be stored in this chip.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -838,7 +838,40 @@ nutdev =
                 requires = { "HW_EFC_AT91" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC177x_8x_IAP" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_STM32FLASH",
+                brief = "STM32 On-Chip Flash",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                requires = { "HW_FLASH_STM32" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_LPC177x_8x_EEPROM",
+                brief = "LPC177x_8x On-Chip EEPROM",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip eeprom memory.",
+                requires = { "HW_EEPROM_LPC177x_8x" },
+                provides = { "DEV_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_LPC17xx_IAP",
+                brief = "LPC17xx On-Chip Flash",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                requires = { "HW_FLASH_LPC17xx" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -847,7 +880,7 @@ nutdev =
                 description = "If enabled, the EEPROM on the Intersil X1226/X1286 chip is used for non-volatile memory.",
                 provides = { "DEV_NVMEM" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -856,7 +889,7 @@ nutdev =
                 description = "If enabled, a standard EEPROM chip is used for non-volatile memory.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_I2C" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -912,6 +945,7 @@ nutdev =
                 description = "Address of the sector used for configuration data.\n\n"..
                               "Specify the relative memory address, e.g. 0x0000 for the first sector.",
                 requires = { "DEV_NVMEM_NORFLASH" },
+                flavor = "booldata",
                 file = "include/cfg/memory.h"
             },
             {
@@ -1866,22 +1900,22 @@ nutdev =
                       "to the nullDev which discards any output.",
         sources = { "null.c" }
     },
-    {
-        name = "nutdev_sc16is752",
-        brief = "SC16IS752 Dual USART",
-        description = "TWI driver for SC16IS752 dual USART chip. "..
-                      "Currently SAM7X256 is tested only. "..
-                      "ICCAVR disabled due to compiler errors.",
-        sources = {
-            "usart0sc16is752.c",
-            "usart1sc16is752.c",
-            "usart2sc16is752.c",
-            "usart3sc16is752.c",
-            "usartsc16is752.c"
-        },
-        requires = { "DEV_TWI", "TOOL_GCC" },
-        provides = { "DEV_UART_SPECIFIC" },
-    },
+--    {
+--        name = "nutdev_sc16is752",
+--        brief = "SC16IS752 Dual USART",
+--        description = "TWI driver for SC16IS752 dual USART chip. "..
+--                      "Currently SAM7X256 is tested only. "..
+--                      "ICCAVR disabled due to compiler errors.",
+--        sources = {
+--            "usart0sc16is752.c",
+--            "usart1sc16is752.c",
+--            "usart2sc16is752.c",
+--            "usart3sc16is752.c",
+--            "usartsc16is752.c"
+--        },
+--        requires = { "DEV_TWI", "TOOL_GCC" },
+--        provides = { "DEV_UART_SPECIFIC" },
+--    },
     {
         name = "nutdev_hxcodec",
         brief = "Helix Audio Device",
@@ -2273,8 +2307,8 @@ nutdev =
         name = "nutdev_lan91",
         brief = "SMSC LAN91x Driver",
         description = "LAN driver for SMSC LAN91. Currently supports LAN91C111 only.",
-        requires = { "NUT_EVENT", "NUT_TIMER", "HW_GPIO" },
-        provides = { "NET_PHY" },
+        requires = { "NUT_EVENT", "NUT_TIMER", "HW_GPIOxx" },
+        provides = { "NET_MAC" },
         sources = { "lan91.c" },
         options =
         {
@@ -2323,7 +2357,7 @@ nutdev =
         brief = "Davicom DM9000 Driver",
         description = "LAN driver for Davicom DM9000A and DM9000E.",
         requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "dm9000.c" },
         options =
         {
@@ -2354,34 +2388,71 @@ nutdev =
                       "All targets without supported Ethernet hardware will use this driver "..
                       "by default. The main purpose of this driver is to build network applications "..
                       "without compiler and linker errors, even if no Ethernet hardware is available.",
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "null_ether.c" },
     },
-    {
-        name = "nutdev_ether_phy",
+	{
+        name = "nutnet_ether_phy",
         brief = "Ethernet PHYceiver",
+        requires = { "NET_MAC" },
         provides = { "NET_PHY" },
+        sources = { "phy.c" },
         options =
         {
+        	{
+        		macro = "NIC_PHY_TYPE",
+        		brief = "PHY Chip",
+        		description = "Select the Physical Layer Tranceiver (PHYter) for your board.\n\n"..
+                              "Commonly used chips and their IDs:\n"..
+                			  "AUTO: Autodetect chip\n"..
+                			  "AMD:\n"..
+                              "AM79C875: 0x00225540\n"..
+                              "DACOM\n"..
+                              "DM9161: 0x0181B880 (ATMEL EK)\n"..
+                              "DM9161A: 0x0181B8A0 (ATMEL EK)\n"..
+                              "DM9161B: 0x0181B8B0\n"..
+                              "DM9000: 0x0181B8C0 (EIR)\n"..
+                              "DM9000A: 0x0181B8A0\n"..
+                              "DM9000B: 0x0181B8B0\n"..
+                              "National Semiconductors\n"..
+                              "DP83838: 0x20005C90 (EVK1100, EVK1105)\n"..
+                              "DP83848: 0x20005CA0\n"..
+                              "Micrel\n"..
+                              "KS8721: 0x00221610 (Olimex SAM7-EX256)\n"..
+                              "KS8851: 0x00008870\n"..
+                              "STMicroelectronics\n"..
+                              "STE100P: 0x1C040010 (Hitex STM32-comStick)\n"..
+                              "SMSC\n"..
+                              "LAN8700: 0x0007C0C0\n"..
+                              "LAN8710: 0x0007C0F0\n"..
+                              "LAN8720: 0x0007C0F0\n"..
+                              "ANY: 0xFFFFFFFF (Disable PHY ID check - not recommended)",
+                type = "enumerated",
+                choices = { "AUTO", 
+                            "AM79C875", 
+                			"DM9161", "DM9161A", "DM9161B", "DM9000", "DM9000A", "DM9000B",
+                			"DP83838", "DP83848", 
+                			"KS8721", "KS8851",
+                			"STE100P", 
+                			"LAN8700", "LAN8710", "LAN8720",
+                			"ANY" },
+                file = "include/cfg/phycfg.h"
+        	},
             {
                 macro = "NIC_PHY_ADDR",
                 brief = "PHY Address",
                 description = "Default is 1 for EVK1100 and EVK1105.\n\n",
                 flavor = "integer",
-                file = "include/cfg/dev.h"
+                file = "include/cfg/phycfg.h"
             },
             {
                 macro = "NIC_PHY_UID",
                 brief = "PHY ID",
-                description = "ID for the PHY connected to the Ethernet MAC.\n\n"..
-                              "AM79C875: 0x00225540\n"..
-                              "DM9161: 0x0181B8A0 (ATMEL EK)\n"..
-                              "DP83848: 0x20005C90 (EVK1100, EVK1105)\n"..
-                              "MICREL: 0x00221610 (Olimex SAM7-EX256)\n"..
-                              "LAN8700: 0x0007C0C0\n"..
-                              "ANY: 0xFFFFFFFF (Disable PHY ID check - not recommended)",
+                description = "Override ID for the PHY connected to the Ethernet MAC.\n"..
+                              "Pick the right ID out of the list of PHY chips or datasheet.\n"..
+                              "Normally this should be left blank.",
                 flavor = "integer",
-                file = "include/cfg/dev.h"
+                file = "include/cfg/phycfg.h"
             }
         }
     },
@@ -3332,7 +3403,7 @@ nutdev =
                       "the previous VS1001K driver. For now add this to your "..
                       "application's Makefile. ",
         sources = { "vs10xx.c" },
-        requires = { "DEV_SPI", "HW_GPIO" },
+        requires = { "DEV_SPI", "HW_GPIOxx" },
         options =
         {
             {
@@ -4667,7 +4738,7 @@ nutdev =
         name = "nutdev_ppp",
         brief = "PPP Driver",
         requires = { "PROTO_HDLC", "NUT_TIMER", "PROTO_HDLC" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "ppp.c" }
     },
 

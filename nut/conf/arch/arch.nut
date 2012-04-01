@@ -819,25 +819,247 @@ nutarch =
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
+            --
+            -- STM STM32F10X SERIES CONTROLLER
+            --
             {
-                macro = "MCU_LPC1758",
-                brief = "NXP LPC1758",
+                macro = "MCU_STM32F100",
+                brief = "STM STM32F100",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
-                requires = { "TOOL_CC_ARM" },
+                requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
-                    "HW_MCU_ARMV7_M",
-                    "HW_MCU_LPC",
-                    "HW_MCU_LPC1700",
-                    "HW_MCU_LPC1758",
-                    "HW_TIMER_LPC1700",
-                    "HW_UART_LPC"
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F100",
+                    "MCU_STM32F100"
                 },
-                makedefs = { "MCU=cortex-m3" }
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F101",
+                brief = "STM STM32F101",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F101",
+                    "MCU_STM32F101",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F102",
+                brief = "STM STM32F102",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F102",
+                    "MCU_STM32F102",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F103",
+                brief = "STM STM32F103",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F103",
+                    "MCU_STM32F103",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F105",
+                brief = "STM STM32F105",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F105",
+                    "MCU_STM32F105",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
+                macro = "MCU_STM32F107",
+                brief = "STM STM32F107",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F107",
+                    "MCU_STM32F107",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
+                macro = "MCU_STM32L151",
+                brief = "STM STM32L151",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32L1XX",
+                    "HW_MCU_STM32L151",
+                    "MCU_STM32L151",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
+                macro = "MCU_STM32F405",
+                brief = "STM STM32F405",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F405",
+                    "MCU_STM32F405",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m4", "MARCH=cm4" }
+            },
+            {
+                macro = "MCU_STM32F205",
+                brief = "STM STM32F205",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F2XX",
+                    "HW_MCU_STM32F205",
+                    "MCU_STM32F205",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cmc" }
             },
             --
+            -- TI LM3S SERIES CONTROLLER
+            --
+            {
+                macro = "MCU_LM3S9B96",
+                brief = "Luminary LM3S9B96",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->LM3 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LM3",
+                    "HW_MCU_LM3S9B96",
+                    "MCU_LM3S9B96",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            --
+            -- NXP LPC17xx CONTROLLER
+            --
+            {
+                macro = "MCU_LPC176x",
+                brief = "NXP LCP176x series",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->LPC176x Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LPC17xx",
+                    "HW_MCU_LPC176x",
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_LPC177x_8x",
+                brief = "NXP LCP177x_8x series",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->LPC177x_8x Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LPC17xx",
+                    "HW_MCU_LPC177x_8x",
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
             --
             -- UNIX EMULATION FOR NUT/OS
             --
@@ -1079,6 +1301,12 @@ nutarch =
         brief = "ARM",
         requires = { "HW_MCU_ARM" },
         script = "arch/arm.nut"
+    },
+    {
+        name = "nutarch_cm3",
+        brief = "CM3",
+        requires = { "HW_MCU_CM3" },
+        script = "arch/cm3.nut"
     },
     {
         name = "nutarch_avr",

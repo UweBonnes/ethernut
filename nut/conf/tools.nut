@@ -131,7 +131,7 @@
 --
 --
 
-toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "LINUX_GCC", "ICCAVR", "ICCARM"}
+toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "CM3_GCC", "CM3_GCC_NOLIBC", "LINUX_GCC", "ICCAVR", "ICCARM"}
 gcc_output_format = {"ARMELF", "ARMEABI"}
 nuttools =
 {
@@ -152,6 +152,26 @@ nuttools =
                           "Nut/OS provides all required C standard functions.",
             provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
             macro = "ARM_GCC_NOLIBC",
+            flavor = "boolean",
+            exclusivity = toolchain_names,
+            file = "include/cfg/arch.h",
+            makedefs = { "ADDLIBS = -lnutc" }
+        },
+        {
+            brief = "GCC for CortexM",
+            description = "GNU Compiler Collection for ARM CortexM including libc.",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_ARMLIB" },
+            macro = "CM3_GCC",
+            flavor = "boolean",
+            exclusivity = toolchain_names,
+            file = "include/cfg/arch.h"
+        },
+        {
+            brief = "GCC for CortexM (no libc)",
+            description = "GNU Compiler Collection for ARM CortexM excluding libc."..
+                          "Nut/OS provides all required C standard functions.",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
+            macro = "CM3_GCC_NOLIBC",
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
@@ -214,13 +234,24 @@ nuttools =
         {
             {
                 macro = "LDSCRIPT",
-                brief = "Linker Script",
+                brief = "Predefined Linker Script",
                 description = function() return GetLDScriptDescription(); end,
                 requires = { "TOOL_GCC" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetLDScripts(); end,
-                makedefs = function() return { "LDNAME", "LDSCRIPT=" .. GetLDScriptsPath() }; end,
+                makedefs = function() return { "LDNAME", "LDSCRIPT=$(LDNAME).ld", "LDPATH=" .. GetLDScriptsPath() }; end,
+                exclusivity = { "PLDSCRIPT", "LLDSCRIPT" },
+            },
+            {
+                macro = "LLDSCRIPT",
+                brief = "Local Linker Script",
+                description = "Alternatively a local linker script file name can be provided.",
+                requires = { "TOOL_GCC" },
+                flavor = "booldata",
+                type = "bool",
+                makedefs = { "LDNAME", "LDSCRIPT=" .. "$(LDNAME)"},
+                exclusivity = { "PLDSCRIPT", "LLDSCRIPT" },
             },
             {
                 brief = "arm-elf",
@@ -375,6 +406,115 @@ arm_ld_choice = {
                 "zero"
 }
 
+stm32f10x_ld_header = { "Select the matching predefined linker script for your chip\n\n" }
+
+stm32f100_ld_description = {
+				stm32f100x8_flash = "STM32F100x8, code running in FLASH, data in SRAM",
+				stm32f100xB_flash = "STM32F100xB, code running in FLASH, data in SRAM",
+				stm32f100xC_flash = "STM32F100xC, code running in FLASH, data in SRAM",
+				stm32f100xD_flash = "STM32F100xD, code running in FLASH, data in SRAM",
+				stm32f100xE_flash = "STM32F100xE, code running in FLASH, data in SRAM",
+}
+
+stm32f101_ld_description = {
+				stm32f101x8_flash = "STM32F101x8 and STM32F102x8, code running in FLASH, data in SRAM",
+				stm32f101xB_flash = "STM32F101xB and STM32F102xB, code running in FLASH, data in SRAM",
+				stm32f101xC_flash = "STM32F101xC and STM32F102xC, code running in FLASH, data in SRAM",
+				stm32f101xD_flash = "STM32F101xD and STM32F102xD, code running in FLASH, data in SRAM",
+				stm32f101xE_flash = "STM32F101xE and STM32F102xE, code running in FLASH, data in SRAM",
+}
+
+stm32f102_ld_description = {
+                stm32f102x8_flash = "STM32F102x8 and STM32F102x8, code running in FLASH, data in SRAM",
+                stm32f102xB_flash = "STM32F102xB and STM32F102xB, code running in FLASH, data in SRAM",
+}
+
+stm32f103_ld_description = {
+                stm32f103x8_flash = "STM32F103x8 and STM32F102x8, code running in FLASH, data in SRAM",
+                stm32f103xB_flash = "STM32F103xB and STM32F102xB, code running in FLASH, data in SRAM",
+                stm32f103xC_flash = "STM32F103xC and STM32F102xC, code running in FLASH, data in SRAM",
+                stm32f103xD_flash = "STM32F103xD and STM32F102xD, code running in FLASH, data in SRAM",
+                stm32f103xE_flash = "STM32F103xE and STM32F102xE, code running in FLASH, data in SRAM",
+}
+
+stm32f105_ld_description = {
+                stm32f105x8_flash = "STM32F105x8 and STM32F102x8, code running in FLASH, data in SRAM",
+                stm32f105xB_flash = "STM32F105xB and STM32F102xB, code running in FLASH, data in SRAM",
+                stm32f105xC_flash = "STM32F105xC and STM32F102xC, code running in FLASH, data in SRAM",
+}
+
+stm32f107_ld_description = {
+                stm32f107xB_flash = "STM32F107xB and STM32F102xB, code running in FLASH, data in SRAM",
+                stm32f107xC_flash = "STM32F107xC and STM32F102xC, code running in FLASH, data in SRAM",
+}
+
+stm32l151_ld_description = {
+                stm32f151x6_flash = "STM32L151x6 and STM32L152x6, code running in FLASH, data in SRAM",
+                stm32f151x8_flash = "STM32L151x8 and STM32L152x8, code running in FLASH, data in SRAM",
+                stm32f151xB_flash = "STM32L151xB and STM32L152xB, code running in FLASH, data in SRAM",
+}
+stm32f100_ld_choice = {
+				"stm32f100x8_flash",
+				"stm32f100xB_flash",
+				"stm32f100xC_flash",
+				"stm32f100xD_flash",
+				"stm32f100xE_flash",
+}
+
+stm32f101_ld_choice = {
+				"stm32f101x8_flash",
+				"stm32f101xB_flash",
+				"stm32f101xC_flash",
+				"stm32f101xD_flash",
+				"stm32f101xE_flash",
+}
+
+stm32f102_ld_choice = {
+				"stm32f102x8_flash",
+				"stm32f102xB_flash",
+}
+
+stm32f103_ld_choice = {
+				"stm32f103x8_flash",
+				"stm32f103xB_flash",
+				"stm32f103xC_flash",
+				"stm32f103xD_flash",
+				"stm32f103xE_flash",
+}
+stm32f105_ld_choice = {
+				"stm32f105x8_flash",
+				"stm32f105xB_flash",
+				"stm32f105xC_flash",
+}
+stm32f107_ld_choice = {
+				"stm32f107xB_flash",
+				"stm32f107xC_flash",
+}
+
+stm32l151_ld_choice = {
+				"stm32l15Xx6_flash",
+				"stm32f15Xx8_flash",
+				"stm32f15XxB_flash",
+}
+
+lm3_ld_description = {
+    lm3s9b96_flash = "LM3S9B96, code running in FLASH, data in SRAM",
+}
+lm3_ld_choice = {
+    "lm3s9b96_flash",
+}
+
+lpc17xx_ld_description = {
+    lpc1768_flash = "LPC1768, code running in FLASH, data in SRAM",
+    lpc1778_flash = "LPC1778/LPC1788, code running in FLASH, data in SRAM",
+}
+lpc17xx_ld_choice = {
+    "lpc1768_flash",
+    "lpc1778_flash",
+}
+
+
+
 --
 -- Retrieve platform specific ldscript path.
 --
@@ -383,15 +523,15 @@ function GetLDScriptsPath()
 
     basepath = "$(top_srcdir)/arch/"
     if c_is_provided("TOOL_CC_AVR32") then
-        return basepath .. "avr32/ldscripts/$(LDNAME).ld"
+        return basepath .. "avr32/ldscripts"
     end
     if c_is_provided("TOOL_CC_ARM") then
-        if c_is_provided("HW_MCU_LPC1700") then
-            return basepath .. "arm/lpc/lpc1700/ldscripts/$(LDNAME).ld"
-        else
-            return basepath .. "arm/ldscripts/$(LDNAME).ld"
-        end
+        return basepath .. "arm/ldscripts"
     end
+    if c_is_provided("TOOL_CC_CM3") then
+        return basepath .. "cm3/ldscripts"
+    end
+
     return "Unknown Platform - Check GetLDScriptsPath in tools.nut"
 end
 
@@ -405,6 +545,35 @@ function GetLDScripts()
 	if c_is_provided("TOOL_CC_ARM") then
 		return arm_ld_choice
 	end
+	if c_is_provided("TOOL_CC_CM3") then
+		 if c_is_provided("MCU_STM32F100") then
+			  return stm32f100_ld_choice
+		 end
+		 if c_is_provided("MCU_STM32F101") then
+			  return stm32f101_ld_choice
+		 end
+	    if c_is_provided("MCU_STM32F102") then
+	        return stm32f102_ld_choice
+	    end
+	    if c_is_provided("MCU_STM32F103") then
+	        return stm32f103_ld_choice
+	    end
+	    if c_is_provided("MCU_STM32F105") then
+	        return stm32f105_ld_choice
+	    end
+	    if c_is_provided("MCU_STM32F107") then
+	        return stm32f107_ld_choice
+	    end
+	    if c_is_provided("MCU_STM32L151") then
+	        return stm32l151_ld_choice
+	    end
+	    if c_is_provided("HW_MCU_LM3") then
+	        return lm3_ld_choice
+	    end
+	    if c_is_provided("HW_MCU_LPC17xx") then
+	        return lpc17xx_ld_choice
+	    end
+	end
 end
 
 --
@@ -416,6 +585,35 @@ function GetLDScriptDescription()
 	end
 	if c_is_provided("TOOL_CC_ARM") then
 		return FormatLDScriptDescription(arm_ld_description)
+	end
+	if c_is_provided("TOOL_CC_CM3") then
+	   if c_is_provided("MCU_STM32F100") then
+	       return FormatLDScriptDescription(stm32f100_ld_description)
+	   end
+	   if c_is_provided("MCU_STM32F101") then
+	       return FormatLDScriptDescription(stm32f101_ld_description)
+	   end
+	   if c_is_provided("MCU_STM32F102") then
+	       return FormatLDScriptDescription(stm32f102_ld_description)
+	   end
+	   if c_is_provided("MCU_STM32F103") then
+	       return FormatLDScriptDescription(stm32f103_ld_description)
+	   end
+	   if c_is_provided("MCU_STM32F105") then
+	       return FormatLDScriptDescription(stm32f105_ld_description)
+	   end
+	   if c_is_provided("MCU_STM32F107") then
+	       return FormatLDScriptDescription(stm32f107_ld_description)
+	   end      
+	   if c_is_provided("MCU_STM32L151") then
+	       return FormatLDScriptDescription(stm32l151_ld_description)
+	   end      
+           if c_is_provided("HW_MCU_LM3") then
+	       return FormatLDScriptDescription(lm3_ld_description)
+           end   
+           if c_is_provided("HW_MCU_LPC17xx") then
+	       return FormatLDScriptDescription(lpc17xx_ld_description)
+           end   
 	end
 end
 
