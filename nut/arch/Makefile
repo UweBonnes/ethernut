@@ -95,6 +95,11 @@ LIBDIR = $(top_blddir)/lib
 include $(top_blddir)/UserConf.mk
 
 SRCS =
+
+#
+# AVR Controllers
+#
+
 ifeq ($(ARCH), avr)
 SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ih_adc.c \
 	avr/dev/ih_analog_comp.c avr/dev/ih_canit.c avr/dev/ih_ee_ready.c avr/dev/ih_int0.c \
@@ -122,6 +127,10 @@ SRCS += avr/dev/atcan.c
 endif
 
 endif
+
+#
+# ARM7/9 Controllers
+#
 
 ifeq ($(ARCH), arm)
 
@@ -178,71 +187,40 @@ ifeq ($(DEVICE), gba)
 SRCS += arm/dev/gba/ostimer_gba.c arm/dev/gba/ihndlr_gba.c arm/dev/gba/debug_gba.c
 endif
 
-ifeq ($(DEVICE), STM32F105)
-SRCS += cm3/dev/cortex_init.c cm3/dev/cortex_systick.c\
-	  cm3/dev/cortex_interrupt.c arm/dev/cortex_sysctl.c \
-	  cm3/dev/cortex_interrupt1.c \
-	  cm3/dev/cortex_ostimer.c \
-	  cm3/dev/stm32_twi.c arm/dev/ih_stm32_twi.c \
-	  cm3/dev/stm32_rtc.c \
-	  cm3/dev/stm32_gpio.c \
-	  cm3/dev/stm32_debug.c \
-	  cm3/dev/stm32_spi1.c arm/dev/stm32_spi2.c arm/dev/stm32_spi3.c \
-	  cm3/dev/stm32_usart3_spi.c \
-	  cm3/dev/stm32_dma.c \
-	  cm3/dev/stm32_otg.c \
-	  cm3/dev/stm32_otg_hw_config.c \
-	  cm3/dev/stm32_usb_sil.c \
-	  cm3/dev/stm32_usb_pwr.c \
-	  cm3/dev/stm32_usb_core.c \
-	  cm3/dev/stm32_usb_desc.c \
-	  cm3/dev/stm32_usb_init.c \
-	  cm3/dev/stm32_usb_istr.c \
-	  cm3/dev/stm32_usb_prop.c \
-	  cm3/dev/stm32_otgd_fs_pcd.c \
-	  cm3/dev/stm32_otgd_fs_int.c \
-	  cm3/dev/stm32_otgd_fs_dev.c \
-	  cm3/dev/stm32_otgd_fs_cal.c \
-	  cm3/dev/stm32_usart2.c arm/dev/ih_stm32_usart2.c \
-	  cm3/dev/stm32_tim.c
-#	  cm3/dev/stm32_adc.c
-endif
-
-
-ifeq ($(DEVICE), SAM3U)
-SRCS +=	cm3/dev/cmsis/cortex_init.c \
-	  cm3/dev/cmsis/cortex_systick.c \
-	  cm3/dev/cmsis/cortex_interrupt.c \
-	  cm3/dev/cmsis/cortex_sysctl.c \
-	  cm3/dev/cmsis/cortex_interrupt1.c \
-	  cm3/dev/cmsis/cortex_ostimer.c \
-	  cm3/dev/atmel/debug_sam3u.c \
-	  cm3/dev/atmel/ih_sam3udbgu.c \
-	  cm3/dev/atmel/ih_sam3upioa.c \
-	  cm3/dev/atmel/ih_sam3upiob.c \
-	  cm3/dev/atmel/ih_sam3upioc.c \
-	  cm3/dev/atmel/gpio_sam3u.c \
-	  cm3/dev/atmel/gpioa_sam3u.c \
-	  cm3/dev/atmel/gpiob_sam3u.c \
-	  cm3/dev/atmel/gpioc_sam3u.c \
-	  cm3/dev/atmel/ih_udphs_sam3u.c \
-	  cm3/dev/atmel/udphs_sam3u.c
-
-
-endif
-
 OBJ1 = arm/init/crt$(LDNAME).o
 
 endif
+
+#
+# CortexM Controllers
+#
+
+ifeq ($(ARCH), cm3)
+
+SRCS = cm3/os/context.c cm3/cmsis/cortex_init.c
+OBJ1 = cm3/cmsis/cortex_init.o
+
+endif
+
+#
+# AV32 Controllers
+#
 
 ifeq ($(ARCH), avr32)
 SRCS = avr32/os/context.c avr32/os/nutinit.c
 endif
 
+#
+# Unix Emulation
+#
+
 ifeq ($(ARCH), unix)
-SRCS = unix/dev/ostimer.c unix/dev/unix_devs.c unix/os/thread.c \
-       unix/os/nutinit.c unix/os/options.c
+SRCS = unix/dev/ostimer.c unix/dev/unix_devs.c unix/os/thread.c
 endif
+
+#
+# Make Rules
+#
 
 OBJS = $(SRCS:.c=.o)
 
@@ -252,13 +230,12 @@ all: $(PROJ).a $(OBJS) $(OBJ1)
 
 install: $(PROJ).a $(OBJ1)
 	$(CP) $(PROJ).a $(LIBDIR)/$(PROJ).a
-ifneq "$(OBJ1)" ""
-	$(CP) $(OBJ1) $(LIBDIR)/$(notdir $(OBJ1))
-endif
+	-$(CP) $(OBJ1) $(LIBDIR)/$(notdir $(OBJ1))
 
 include $(top_srcdir)/Makerules
 
 .PHONY: clean
 clean: cleancc cleanedit
-	-rm -f $(PROJ).a
-	-rm -f $(OBJ1)
+	@echo "  [CLEANING] $(PROJ)..."
+	@-rm -f $(PROJ).a
+	@-rm -f $(OBJ1)

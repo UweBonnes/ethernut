@@ -39,6 +39,7 @@
  * Initial version.
  */
 
+#include <stddef.h>
 #include <cfg/arch.h>
 #include <arch/cm3/cortexM3.h>
 
@@ -63,8 +64,12 @@
 #define ARM_CPSR_T_BIT      0x20
 
 #ifdef __GNUC__
+#ifndef CONST
 #define CONST      const
+#endif
+#ifndef INLINE
 #define INLINE     inline
+#endif
 #else
 #ifndef CONST
 #define CONST      const
@@ -127,6 +132,70 @@ extern void *__stack;
 #define cbi(_reg, _bit)         outr(_reg, inr(_reg) & ~_BV(_bit))
 #define bit_is_set(_reg, _bit)  ((inr(_reg) & _BV(_bit)) != 0)
 
+
+/*!
+ * \brief Get the Bit position index of the highest bit from a bit value
+ *
+ */
+#define  _BI2(arg) (((arg) & 0x00000002) ? 1: 0)
+#define  _BI4(arg) (((arg) & 0x0000000c) ? ( _BI2(arg>> 2) +  2) :  _BI2(arg))
+#define  _BI8(arg) (((arg) & 0x000000f0) ? ( _BI4(arg>> 4) +  4) :  _BI4(arg))
+#define _BI16(arg) (((arg) & 0x0000ff00) ? ( _BI8(arg>> 8) +  8) :  _BI8(arg))
+#if defined __builtin_clz
+#define _BI32(arg) (31 - __builtin_clz(arg))
+#else
+#define _BI32(arg) (((arg) & 0xffff0000) ? (_BI16(arg>>16) + 16) : _BI16(arg))
+#endif
+
+/*!
+ * \brief Get the address of a device register by its base and the offset  of the register 
+ * in its register structure
+ *
+ * CortexM specific:
+ */
+#define CM3ADDR(base, regstruct, reg) ((base) + offsetof(regstruct, reg))
+
+/*!
+ * \brief Atomic access via register address of CortexM devices.
+ *
+ * CortexM specific:
+ * Translates a register address into a volatile single cycle 
+ * read or write access of the register.
+ *
+ * Constant base part of address allows room for compiler optimization
+ */
+#define CM3MEM(addr)   *((volatile unsigned long *)(addr))
+#define CM3MEM16(addr) *((volatile uint16_t *)     (addr))
+#define CM3MEM8(addr)  *((volatile uint8_t *)      (addr))
+
+#define CM3REG(base, regstruct, reg)   ((regstruct *)(base))->reg
+
+/*!
+ * \brief Atomic bit access via bitband address of CortexM devices.
+ *
+ * CortexM specific:
+ * Translates a register address into a volatile single cycle 
+ * read or write access of the register.
+ *
+ * Constant base part of address allows room for compiler optimization. GCC doesn't (201201)
+ */
+#define CM3BBREG(base, regstruct, reg, bit) *((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) )
+
+/*!
+ * \brief Get Base Address of the Bitband region belonging to Device Register structrure
+ *
+ */
+#define CM3BB_BASE(base) (volatile uint32_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))
+
+/*!
+ * \brief Get Offset of Bitband Bit in the (uint32_t*) Bitband Array
+ *
+ * CM3/4 can do immediate offset access for -255, +4095 bytes around a base. So bits in the first 32 32-bit
+ * registers above the base can be reached witout loading an absolute address in a bitband access
+ *  
+ */
+#define CM3BB_OFFSET(regstruct, reg, bit) ((offsetof(regstruct, reg) <<3) + bit)
+
 #ifdef __IMAGECRAFT__
 #define __attribute__(x)
 #endif
@@ -151,7 +220,7 @@ extern void *__stack;
 /*!
  * \brief Case insensitive string comparisions.
  *
- * Not supported by CrossWorks and temporarly redirected 
+ * Not supported by CrossWorks and temporarly redirected
  * to the stricmp and strnicmp routines.
  *
  */
@@ -174,4 +243,4 @@ char *strdup(CONST char *str);
 #define asm __asm__
 #endif
 
-#endif /* _CM3_H_ */
+#endif /* _ARCH_CM3_H_ */
