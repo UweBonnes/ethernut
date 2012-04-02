@@ -219,6 +219,12 @@
 #include <sys/timer.h>
 #include <sys/nutdebug.h>
 
+#ifdef __CORTEX__
+#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/cortex_systick.h>
+
+#endif
+
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #endif
@@ -230,6 +236,10 @@
 #ifdef __NUT_EMULATION__
 #include <sys/time.h>
 static struct timeval   timeStart;
+#endif
+
+#ifndef NUT_TICK_FREQ
+#define NUT_TICK_FREQ   1000UL
 #endif
 
 #include <string.h>
@@ -276,10 +286,11 @@ uint32_t nut_delay_loops;
  * \brief System timer interrupt handler.
  */
 #ifndef __NUT_EMULATION__
-#ifdef USE_TIMER
+
+#if defined(USE_TIMER)
 SIGNAL( SIG_TIMER )
 #else
-static void NutTimerIntr(void *arg)
+void NutTimerIntr(void *arg)
 #endif
 {
     nut_ticks++;
@@ -310,12 +321,10 @@ void NutTimerInit(void)
 #else
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
+    
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
 #if !defined(NUT_DELAYLOOPS)
-#ifndef NUT_TICK_FREQ
-#define NUT_TICK_FREQ   1000UL
-#endif
     {
         /* Wait for the next tick. */
         uint32_t cnt = NutGetTickCount();
@@ -325,14 +334,17 @@ void NutTimerInit(void)
         while (cnt == NutGetTickCount()) {
             nut_delay_loops++;
         }
+#if defined(__AVR__)
         /*
          * The loop above needs more cycles than the actual delay loop.
          * Apply the correction found by trial and error. Works acceptable
          * with GCC for Ethernut 1 and 3.
          */
-#if defined(__AVR__)
         nut_delay_loops *= 103UL;
         nut_delay_loops /= 26UL;
+#elif defined  __CORTEX__
+        /* arm-none-eabi, gcc version 4.6.0 (GCC), -O0 */
+        nut_delay_loops *= 3UL;
 #else
         nut_delay_loops *= 137UL;
         nut_delay_loops /= 25UL;
@@ -382,6 +394,7 @@ void NutMicroDelay(uint32_t us)
     }
 #endif
 }
+
 
 /*!
  * \brief Loop for a specified number of milliseconds.
@@ -706,9 +719,17 @@ uint32_t NutGetTickCount(void)
     rc = (timeNow.tv_sec - timeStart.tv_sec) * 1000;
     rc += (timeNow.tv_usec - timeStart.tv_usec) / 1000;
 #else
+#ifndef __CORTEX__
     NutEnterCritical();
     rc = nut_ticks;
     NutExitCritical();
+#else
+    /* LST verification shows single atomic access to get this value.
+     * So no additional atomic forcing operations needed here with Cortex. 
+     */
+    // TODO: Check with other ARM architectures.
+    rc = nut_ticks;
+#endif
 #endif
 
     return rc;
