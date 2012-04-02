@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH
+# Copyright (C) 2001-2006 by egnite Software GmbH
 # Copyright (C) 2009 by egnite GmbH
 #
 # All rights reserved.
@@ -35,29 +35,23 @@
 # $Id$
 #
 
+# Set defaults for building in source tree.
+ifeq ($(top_srcdir),)
+top_srcdir = ../..
+endif
+ifeq ($(top_blddir),)
+top_blddir = top_srcdir
+endif
+ifeq ($(top_appdir),)
+top_appdir = top_srcdir
+endif
+ifeq ($(MCU),)
 include $(top_srcdir)/UserConf.mk
+LIBDIR = $(top_blddir)/lib
+endif
 
-DEFS  = $(HWDEF) -D__NUT_EMULATION__
+# Inherit variables from library build
+include $(top_srcdir)/Makedefs.cm3-gcc
 
-LIBDIR = $(top_srcdir)/lib/gcc/$(MCU)
-INCPRE = -I
-INCDIR = $(top_srcdir)/include
-
-include $(top_srcdir)/Makevars.gcc
-
-TRGT   = 
-CP     = cp
-
-# C++ compiler options.
-CPFLAGS = -g -Os -Wall -Werror -Wstrict-prototypes $(DEFS)
-
-# Linker options and flags.
-LDFLAGS = -L$(LIBDIR) $(LIBS)
-
-# Assembler options.
-ASFLAGS =  -Wa,-amhls=$(<:.S=.lst) $(DEFS)
-
-# Librarian options.
-#ARFLAGS = rsv
-# More silent version
-ARFLAGS = rsc
+# Add arm-gcc variables for application build
+include $(top_srcdir)/app/Makevars.cm3-gcc

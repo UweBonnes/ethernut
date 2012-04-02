@@ -35,8 +35,35 @@
 # $Id$
 #
 
-# Command used for copying files.
-CP = @cp
+# Inherit general gcc variables.
+include $(top_srcdir)/Makevars.gcc
 
-# Root directory of Nut/OS header files.
-INCDIR = $(top_srcdir)/include
+# Set target specific variables.
+ARCH       = cm3
+TRGT       = arm-none-eabi-
+MCFLAGS    = -mcpu=$(MCU) -mthumb -mlittle-endian -D__CORTEX__
+
+# CXXFLAGS_OPT = -Os -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti 
+LDFLAGS   = $(MCFLAGS) -g -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
+
+CFLAGS_MCU   = $(MCFLAGS) -ffunction-sections -fdata-sections -fomit-frame-pointer $(MFIX)
+CXXFLAGS_MCU = $(CFLAGS_MCU) -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti 
+
+# C compiler options.
+CFLAGS_ASM = -Wa,-a=$(@:.o=.lst)
+CFLAGS_WRN = -Wall -Wstrict-prototypes -Werror
+CFLAGS_OPT = -Os
+CFLAGS     = $(CFLAGS_MCU) $(CFLAGS_OPT) $(CFLAGS_WRN) $(CFLAGS_ASM) $(UCPFLAGS) $(DEFS)
+
+# C++ compiler options.
+CXXFLAGS_WRN = -Wall
+CXXFLAGS_ASM = $(CFLAGS_ASM)
+CXXFLAGS_OPT = $(CFLAGS_OPT) 
+CXXFLAGS     = $(CXXFLAGS_MCU) $(CXXFLAGS_OPT) $(CXXFLAGS_WRN) $(CXXFLAGS_ASM) $(UCPFLAGS)
+
+ELFCOF    = $(BIN) \
+	--change-section-address .data-0x08000000 \
+	--change-section-address .bss-0x08000000 \
+	--change-section-address .noinit-0x08000000 \
+	--change-section-address .rodata-0x08000000
+
