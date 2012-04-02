@@ -136,17 +136,22 @@ char *(*sbrk_force)(size_t) = _sbrk;
 #endif                          /* STDIO_FLOATING_POINT */
 
 #define	PADSIZE	16
-static char blanks[PADSIZE] = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+#if !defined(__AVR__)
+#define NUTCONST const
+#else
+#define NUTCONST
+#endif
+static NUTCONST char blanks[PADSIZE] = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' '
 };
-static char zeroes[PADSIZE] = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+static NUTCONST char zeroes[PADSIZE] = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
     '0', '0'
 };
 
 /*
  *
  */
-static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch, int count)
+static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, NUTCONST char *padch, int count)
 {
     while (count > PADSIZE) {
         _putb(fd, padch, PADSIZE);
