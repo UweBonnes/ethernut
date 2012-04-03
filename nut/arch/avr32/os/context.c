@@ -99,6 +99,19 @@ void NutThreadEntry(void)
                       :::"r12", "lr", "pc");
 }
 
+/*!
+ * \brief Switch to another thread.
+ *
+ * Stop the current thread, saving its context. Then start the
+ * one with the highest priority, which is ready to run.
+ *
+ * Application programs typically do not call this function.
+ *
+ * \note CPU interrupts must be disabled before calling this function.
+ *
+ */
+          
+
 void NutThreadSwitch(void) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
@@ -128,7 +141,27 @@ void NutThreadSwitch(void)
     critical_nesting_level = 0;
 #endif
 }
-
+/*!
+ * \brief Create a new thread.
+ *
+ * If the current thread's priority is lower or equal than the default
+ * priority (64), then the current thread is stopped and the new one
+ * is started.
+ *
+ * \param name      String containing the symbolic name of the new thread,
+ *                  up to 8 characters long.
+ * \param fn        The thread's entry point, typically created by the
+ *                  THREAD macro.
+ * \param arg       Argument pointer passed to the new thread.
+ * \param stackSize Number of bytes of the stack space allocated for
+ *                  the new thread.
+ *
+ * \note The thread must run in ARM mode. Thumb mode is not supported.
+ *
+ * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
+ *         error.
+ */
+                    
 HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     uint8_t *threadMem;

@@ -96,6 +96,7 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
+#include <dev/phy.h>
 #include <dev/dm9000e.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
@@ -228,14 +229,14 @@
  */
 /*@{*/
 
-#define NIC_NCR     0x00        /* Network control register (0x00). */
+#define NIC_NCR         0x00    /* Network control register (0x00). */
 #define NIC_NCR_LBM     0x06    /* Loopback mode. */
 #define NIC_NCR_LBNORM  0x00    /* Normal mode. */
 #define NIC_NCR_LBMAC   0x02    /* MAC loopback. */
 #define NIC_NCR_LBPHY   0x04    /* PHY loopback. */
 #define NIC_NCR_RST     0x01    /* Software reset, auto clear. */
 
-#define NIC_NSR     0x01        /* Network status register (0x00). */
+#define NIC_NSR         0x01    /* Network status register (0x00). */
 #define NIC_NSR_SPEED   0x80
 #define NIC_NSR_LINKST  0x40
 #define NIC_NSR_WAKEST  0x20
@@ -243,21 +244,21 @@
 #define NIC_NSR_TX1END  0x04
 #define NIC_NSR_RXOV    0x02
 
-#define NIC_TCR     0x02        /* TX control register (0x00). */
-#define NIC_TCR_TXREQ    0x01   /* TX request */
+#define NIC_TCR         0x02    /* TX control register (0x00). */
+#define NIC_TCR_TXREQ   0x01    /* TX request */
 
-#define NIC_TSR1    0x03        /* TX status register I (0x00). */
+#define NIC_TSR1        0x03    /* TX status register I (0x00). */
 
-#define NIC_TSR2    0x04        /* TX status register II (0x00). */
+#define NIC_TSR2        0x04    /* TX status register II (0x00). */
 
-#define NIC_RCR     0x05        /* RX control register (0x00). */
+#define NIC_RCR         0x05    /* RX control register (0x00). */
 #define NIC_RCR_DIS_LONG 0x20   /* Discard long packets. */
 #define NIC_RCR_DIS_CRC 0x10    /* Discard CRC error packets. */
 #define NIC_RCR_ALL		0x08    /* Pass all multicast */
 #define NIC_RCR_PRMSC   0x02    /* Enable promiscuous mode. */
 #define NIC_RCR_RXEN    0x01    /* Enable receiver. */
 
-#define NIC_RSR     0x06        /* RX status register (0x00). */
+#define NIC_RSR         0x06    /* RX status register (0x00). */
 #define NIC_RSR_ERRORS  0xBF    /* Error bit mask. */
 #define NIC_RSR_RF      0x80    /* Runt frame. */
 #define NIC_RSR_MF      0x40    /* Multicast frame. */
@@ -439,8 +440,9 @@ static INLINE uint8_t nic_inb(uint16_t reg)
  *
  * \return Contents of the specified register.
  */
-static uint16_t phy_inw(uint8_t reg)
+int phy_inw( uint8_t reg, uint16_t *val)
 {
+    DMPRINTF("DINW[0x%02x]", reg);
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
 
@@ -450,7 +452,9 @@ static uint16_t phy_inw(uint8_t reg)
     nic_outb(NIC_EPCR, 0x00);
 
     /* Get data from PHY data register. */
-    return ((uint16_t) nic_inb(NIC_EPDRH) << 8) | (uint16_t) nic_inb(NIC_EPDRL);
+    *val = ((uint16_t) nic_inb(NIC_EPDRH) << 8) | (uint16_t) nic_inb(NIC_EPDRL);
+    DMPRINTF("=0x%04x\n", *val);
+    return 0;
 }
 
 /*!
@@ -461,19 +465,23 @@ static uint16_t phy_inw(uint8_t reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-static void phy_outw(uint8_t reg, uint16_t val)
+static int phy_outw(uint8_t reg, uint16_t *val)
 {
+    DMPRINTF("DOUT[0x%02x]=0x%04x\n", reg, *val );
+
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
 
     /* Store value in PHY data register. */
-    nic_outb(NIC_EPDRL, (uint8_t) val);
-    nic_outb(NIC_EPDRH, (uint8_t) (val >> 8));
+    nic_outb(NIC_EPDRL, (uint8_t) (*val));
+    nic_outb(NIC_EPDRH, (uint8_t) (*val >> 8));
 
     /* PHY write command. */
     nic_outb(NIC_EPCR, 0x0A);
     NutDelay(1);
     nic_outb(NIC_EPCR, 0x00);
+
+    return 0;
 }
 
 static int NicPhyInit(void)
@@ -850,7 +858,8 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;
-
+    uint16_t phy;
+    
     /* Power up the PHY. */
     nic_outb(NIC_GPR, 0);
     NutDelay(5);
@@ -888,8 +897,11 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN | NIC_RCR_ALL);
 
     /* Wait for link. */
-    for (link_wait = 20;; link_wait--) {
-        if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+    for (link_wait = 20;; link_wait--) 
+    {
+        NutPhyCtl(PHYGET_AUTORES, &phy);
+        if (phy==0) {
+            NutPhyCtl(PHYSTAT_AN, &phy);
             break;
         }
         if (link_wait == 0) {
@@ -1112,6 +1124,9 @@ int DmInit(NUTDEVICE * dev)
         return -1;
     }
 
+    /* Register PHY */
+    NutRegisterPhy( 1, phy_outw, phy_inw);
+    
     /* Reset chip. */
     if (NicReset()) {
         return -1;

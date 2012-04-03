@@ -114,9 +114,15 @@
 
 #include <dev/irqreg.h>
 #include <dev/at91_emac.h>
+#include <dev/phy.h>
 
+/* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
+#include <arpa/inet.h>
+#define EMPRINTF(args,...) printf(args,##__VA_ARGS__)
+#else
+#define EMPRINTF(args,...)
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -450,6 +456,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
 }
 #endif
 
+#if 0
 /*!
  * \brief Probe PHY.
  * \param timeout for link status from PHY in loops.
@@ -457,9 +464,15 @@ static void phy_outw(uint8_t reg, uint16_t val)
  */
 static int probePhy(uint32_t tmo)
 {
-    uint32_t physID;
+    int rc = 0;
     uint16_t phyval;
 
+    /* Register PHY */
+    rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
+    EMPRINTF("EMRPHY rc = %d\n", rc);
+
+
+#if 0 /*################################################################*/
     /* Read Phy ID. Ignore revision number. */
     physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);   
 #if NIC_PHY_UID != 0xffffffff
@@ -474,13 +487,15 @@ static int probePhy(uint32_t tmo)
     }
 #endif
 
+#endif /*################################################################*/
+
     /* Handle auto negotiation if configured. */
-    phyval = phy_inw(NIC_PHY_BMCR);
+    NutPhyCtl(PHYREG_BMCR, &phyval);
     if (phyval & NIC_PHY_BMCR_ANEGENA) {
         /* Wait for auto negotiation completed. */
-        phy_inw(NIC_PHY_BMSR);  /* Discard previously latched status. */
+        NutPhyGetStatus();  /* Discard previously latched status. */
         while (--tmo) {
-            if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+            if (NutPhyGetStatus()& NIC_PHY_BMSR_ANCOMPL) {
                 break;
             }
         }
@@ -493,7 +508,8 @@ static int probePhy(uint32_t tmo)
         /*
         * Read link partner abilities and configure EMAC.
         */
-        phyval = phy_inw(NIC_PHY_ANLPAR);
+        
+        NutPhyCtl(PHYREG_ANLP, &phyval);
         if (phyval & NIC_PHY_ANEG_TX_FDX) {
             /* 100Mb full duplex. */
             outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_SPD | EMAC_FD);
@@ -515,8 +531,9 @@ static int probePhy(uint32_t tmo)
     /* Disable management port. */
     outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
 
-    return 0;
+    return rc;
 }
+#endif
 
 /*!
  * \brief Reset the Ethernet controller.
@@ -525,6 +542,11 @@ static int probePhy(uint32_t tmo)
  */
 static int EmacReset(uint32_t tmo)
 {
+    int rc = 0;
+    uint16_t phyval;
+
+    EMPRINTF("EmacReset(%lu)\n", tmo);
+
     /* Enable power sources if not yet enabled */
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
@@ -549,20 +571,30 @@ static int EmacReset(uint32_t tmo)
     /* Wait for PHY ready. */
     NutDelay(255);
 
+    /* Register PHY */
+    rc = NutRegisterPhy( 1, phy_outw, phy_inw);
+
 #if NIC_PHY_UID == MII_LAN8710_ID
-    /* Set LAN8710 mode. */
+    /* Set LAN8710 to AUTO-MDIX and MII mode. 
+     * This overides configuration set by config pins of the chip.
+     */
     phy_outw(18, phy_inw(18) | 0x00E0);
+    /* Soft Reset LAN7810 */
     phy_outw(NIC_PHY_BMCR, NIC_PHY_BMCR_RESET);
     NutSleep(100);
 #endif
 
 #ifndef PHY_MODE_RMII
     /* Clear MII isolate. */
-    phy_inw(NIC_PHY_BMCR);
-    phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
+    phyval = 0;
+    NutPhyCtl(PHY_CTL_ISOLATE, &phyval);
+    }
 #endif
 
-    return probePhy(tmo);
+    EMPRINTF("EmacReset() DONE\n");
+
+    return rc;
+//    return probePhy(tmo);
 }
 
 /*
@@ -750,6 +782,9 @@ static int EmacStart(CONST uint8_t * mac)
 {
     unsigned int i;
 
+    EMPRINTF("EmacStart( %s)\n", inet_ntoa(*mac));
+    fflush(stdout);
+    
     /* Set local MAC address. */
     outr(EMAC_SA1L, (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
     outr(EMAC_SA1H, (mac[5] << 8) | mac[4]);
@@ -777,6 +812,8 @@ static int EmacStart(CONST uint8_t * mac)
     /* Enable receiver, transmitter and statistics. */
     outr(EMAC_NCR, inr(EMAC_NCR) | EMAC_TE | EMAC_RE | EMAC_WESTAT);
 
+    EMPRINTF("EmacStart() DONE\n");
+
     return 0;
 }
 
@@ -786,15 +823,14 @@ static int EmacStart(CONST uint8_t * mac)
  */
 THREAD(EmacRxThread, arg)
 {
-    NUTDEVICE *dev;
-    IFNET *ifn;
-    EMACINFO *ni;
+    NUTDEVICE *dev = arg;
+    IFNET *ifn = (IFNET *) dev->dev_icb;
+    EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
     NETBUF *nb;
 
-    dev = arg;
-    ifn = (IFNET *) dev->dev_icb;
-    ni = (EMACINFO *) dev->dev_dcb;
-
+    EMPRINTF("EmacRxThread() INIT\n");
+    fflush(stdout);
+    
     /*
      * This is a temporary hack. Due to a change in initialization,
      * we may not have got a MAC address yet. Wait until a valid one
@@ -810,6 +846,8 @@ THREAD(EmacRxThread, arg)
      * This happens, for example, if no Ethernet cable is plugged
      * in.
      */
+    EMPRINTF(" Call EmacStart()\n");
+    fflush(stdout);
     while (EmacStart(ifn->if_mac)) {
         EmacReset(EMAC_LINK_LOOPS);
         NutSleep(1000);
@@ -944,6 +982,8 @@ int EmacInit(NUTDEVICE * dev)
 {
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
+    EMPRINTF("EmacInit()\n");
+    
     /* Reset the controller. */
     if (EmacReset(EMAC_LINK_LOOPS)) {
         if (EmacReset(EMAC_LINK_LOOPS)) {
@@ -956,14 +996,20 @@ int EmacInit(NUTDEVICE * dev)
 
     /* Register interrupt handler. */
     if (NutRegisterIrqHandler(&sig_EMAC, EmacInterrupt, dev)) {
+        EMPRINTF(" IRQR CRASHED\n");
         return -1;
     }
+
+    EMPRINTF(" IRQR OK\n");
 
     /* Start the receiver thread. */
     if (NutThreadCreate("emacrx", EmacRxThread, dev, 
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
+        EMPRINTF(" THREAD CRASHED\n");
         return -1;
     }
+    
+    EMPRINTF("EmacInit() DONE\n");
     return 0;
 }
 

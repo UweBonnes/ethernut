@@ -62,12 +62,10 @@
 #include <arch/unix/timer.h>
 #elif defined(__AVR__)
 #include <arch/avr/timer.h>
-#elif defined(__arm__)
-#if defined(__ARM_ARCH_7M__)
-#include <arch/arm/lpc/lpc1700/timer.h>
-#else
+#elif defined(__arm__) && !defined(__CORTEX__)
 #include <arch/arm/timer.h>
-#endif
+#elif defined(__arm__) && defined(__CORTEX__)
+#include <arch/cm3/timer.h>
 #elif defined(__AVR32__)
 #include <arch/avr32/timer.h>
 #elif defined(__H8300H__) || defined(__H8300S__)

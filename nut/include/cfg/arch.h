@@ -67,7 +67,7 @@
 
 /*
  * This file is reserved to specify architecture dependant
- * configuration and is currently used as a placeholder 
+ * configuration and is currently used as a placeholder
  * when not using the Configurator.
  */
 
@@ -226,6 +226,34 @@
 #define MCU_AT91SAM9G45
 #endif
 
+#elif defined(STM3210E_EVAL)
+
+#ifndef PLATFORM
+#define PLATFORM STM3210E_EVAL
+#endif
+
+#ifndef CM3_GCC
+#define CM3_GCC
+#endif
+
+#ifndef MCU_STM32F103
+#define MCU_STM32F103 512
+#endif
+
+#elif defined(STM3210C_EVAL)
+
+#ifndef PLATFORM
+#define PLATFORM STM3210C_EVAL
+#endif
+
+#ifndef CM3_GCC
+#define CM3_GCC
+#endif
+
+#ifndef MCU_STM32F107
+#define MCU_STM32F107 256
+#endif
+
 #endif /* Board */
 
 /*
@@ -261,5 +289,15 @@
 #define MCU_AT91
 #endif
 #endif
+
+#if defined(MCU_STM32F100) || defined(MCU_STM32F101)|| defined(MCU_STM32F102) || defined(MCU_STM32F103) || defined(MCU_STM32F105) || defined(MCU_STM32F107)
+#ifndef MCU_STM32
+#define MCU_STM32
+#endif
+#ifndef MCU_STM32F10X
+#define MCU_STM32F10X
+#endif
+#endif
+
 
 #endif

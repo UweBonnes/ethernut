@@ -87,10 +87,17 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
+#include <dev/phy.h>
 #include <dev/at91sam7x_emac.h>
 
+#define NUTDEBUG
+
+/* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
+#define EMPRINTF(args,...) printf(args,##__VA_ARGS__)
+#else
+#define EMPRINTF(args,...)
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -264,7 +271,7 @@ static unsigned int rxBufIdx;
  *
  * \return Contents of the specified register.
  */
-static uint16_t phy_inw(uint8_t reg)
+static int phy_inw(uint8_t reg, uint16_t *val)
 {
     /* PHY read command. */
     outr(EMAC_MAN, _BV(30) | _BV(29) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18));
@@ -273,7 +280,9 @@ static uint16_t phy_inw(uint8_t reg)
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
 
     /* Get data from PHY maintenance register. */
-    return (uint16_t) inr(EMAC_MAN);
+    *val = (uint16_t) inr(EMAC_MAN);
+    
+    return 0;
 }
 
 /*!
@@ -282,10 +291,10 @@ static uint16_t phy_inw(uint8_t reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-static void phy_outw(uint8_t reg, uint16_t val)
+static int phy_outw(uint8_t reg, uint16_t *val)
 {
     /* PHY write command. */
-    outr(EMAC_MAN, _BV(30) | _BV(28) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18) | val);
+    outr(EMAC_MAN, _BV(30) | _BV(28) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18) | *val);
 
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
@@ -298,6 +307,10 @@ static void phy_outw(uint8_t reg, uint16_t val)
  */
 static int EmacReset(void)
 {
+    int rc = 0;
+    uint16_t phy = 0;
+    int link_wait;
+    
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
@@ -327,16 +340,24 @@ static int EmacReset(void)
     /* Wait for PHY ready. */
     NutDelay(255);
 
+    /* Register PHY */
+    rc = NutRegisterPhy( 1, phy_outw, phy_inw);
+    EMPRINTF("EMRPHY rc = %d\n", rc);
+
     /* Clear MII isolate. */
-    phy_inw(NIC_PHY_BMCR);
-    phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
+    NutPhyCtl(PHY_CTL_ISOLATE, &phy);
 
     /* Wait for auto negotiation completed. */
-    phy_inw(NIC_PHY_BMSR);
-    for (;;) {
-        if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+    /* Wait for link. */
+    for (link_wait = 20;; link_wait--) {
+        NutPhyCtl(PHY_GET_LINK, &phy);
+        if (phy==0)
             break;
         }
+        if (link_wait == 0) {
+            return -1;
+        }
+        NutSleep(200);
     }
 
     /* Disable management port. */
@@ -345,7 +366,7 @@ static int EmacReset(void)
     /* Enable receive and transmit clocks. */
     outr(EMAC_USRIO, EMAC_CLKEN);
 
-    return 0;
+    return rc;
 }
 
 /*
@@ -725,6 +746,7 @@ int EmacInit(NUTDEVICE * dev)
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
+   
     return 0;
 }
 

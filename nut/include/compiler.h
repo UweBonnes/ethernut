@@ -73,8 +73,10 @@
 #include <arch/unix.h>
 #elif defined(__AVR__) || defined(ATMEGA)
 #include <arch/avr.h>
-#elif defined(__arm__)
+#elif defined(__arm__) && !defined(__CORTEX__)
 #include <arch/arm.h>
+#elif defined(__arm__) && defined(__CORTEX__)
+#include <arch/cm3.h>
 #elif defined(__AVR32__)
 #include <arch/avr32.h>
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
