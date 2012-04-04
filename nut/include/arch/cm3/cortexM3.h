@@ -64,6 +64,7 @@ extern void (* g_pfnVectors[])(void *);
 extern void (* const g_pfnVectors[])(void *);
 #endif
 
+extern int Cortex_ResetCause(void);
 extern void Cortex_Reset(void);
 extern void Cortex_Start(void);
 extern void Cortex_IntInit(void);
