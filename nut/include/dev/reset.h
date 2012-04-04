@@ -63,7 +63,7 @@
 #elif defined(__AVR32__)
 #include <arch/avr32/reset.h>
 #elif defined(__CORTEX__)
-#include <arch/cm3/cortex_reset.h>
+#include <arch/cm3/cortexM3.h>
 #endif
 
 __BEGIN_DECLS

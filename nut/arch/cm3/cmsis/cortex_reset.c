@@ -42,11 +42,18 @@
 #include <cfg/clock.h>
 #include <cfg/arch.h>
 
+#include <dev/reset.h>
+
 #include <arch/cm3.h>
 #include <arch/cm3/cortexM3.h>
 
 void Cortex_Reset(void)
 {
     NVIC_SystemReset();
+}
+
+int Cortex_ResetCause(void)
+{
+    return NUT_RSTTYP_UNKNOWN;
 }
 
