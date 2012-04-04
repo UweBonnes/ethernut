@@ -1027,6 +1027,23 @@ nutarch =
             -- NXP LPC17xx CONTROLLER
             --
             {
+                macro = "MCU_LPC175x",
+                brief = "NXP LCP175x series",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                			  "Select the correct sub-type in Architecture->CM3->LPC175x Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LPC17xx",
+                    "HW_MCU_LPC175x",
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
                 macro = "MCU_LPC176x",
                 brief = "NXP LCP176x series",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
@@ -1325,12 +1342,6 @@ nutarch =
         brief = "H8/300H",
         requires = { "HW_MCU_H8300" },
         script = "arch/h8300h.nut"
-    },
-    {
-        name = "nutarch_lpc",
-        brief = "LPC",
-        requires = { "HW_MCU_LPC" },
-        script = "arch/lpc.nut"
     },
     {
         name = "nutarch_m68k",

@@ -37,7 +37,7 @@
 --
 --
 
-lpc176x_device_class = { "LPC1768" }
+lpc176x_device_class = { "LPC1758", "LPC1768" }
 
 --
 -- ********************************************************************************
@@ -58,7 +58,11 @@ nutarch_cm3_lpc176x =
         {
             {
                 macro = "MCU_LPC176x",
-                brief = "LPC176x",
+                brief = "LPC175x, LPC176x",
+                description = "Cortex-M3 microcontrollers with advanced peripherals "..
+                              "such as Ethernet, USB, CAN etc. They provide up "..
+                              "to 512kB flash and 96kB RAM while operating "..
+                              "at up to 120MHz. Package: 80 and 100 pins\n\n",
                 type = "integer",
                 default = 1,
                 requires = { "HW_MCU_CM3" },
@@ -86,12 +90,27 @@ nutarch_cm3_lpc176x =
         options =
         {
             {
+                macro = "LPC1758",
+                brief = "LPC1758",
+                description = "NXP LPC1758",
+                flavor = "booldata",
+                exclusivity = lpc176x_device_class,
+                provides = {
+			"MCU_LPC175x",
+                        "MCU_LPC1758",
+                        "HW_UART0_LPC17xx",
+                        "HW_UART1_LPC17xx"
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
                 macro = "LPC1768",
                 brief = "LPC1768",
                 description = "NXP LPC1768",
                 flavor = "booldata",
                 exclusivity = lpc176x_device_class,
                 provides = {
+			"MCU_LPC176x",
                         "MCU_LPC1768",
                         "HW_UART0_LPC17xx",
                         "HW_UART1_LPC17xx"
@@ -106,7 +125,7 @@ nutarch_cm3_lpc176x =
     --
     {
         name = "nutarch_cm3_lpc176x_pll",
-        brief = "LPC176x PLL Setup",
+        brief = "LPC175x / LPC176x PLL Setup",
         description = "PLL configuration. Currently it is hard coded. May be user configurable later.\n",
         requires = { "HW_MCU_LPC176x", "TOOL_CC_CM3", "TOOL_GCC" },
         sources = { "cm3/dev/nxp/system_lpc176x.c",
@@ -123,7 +142,7 @@ nutarch_cm3_lpc176x =
     --
     {
         name = "nutarch_cm3_lpc176x_gpio",
-        brief = "LPC176x GPIO",
+        brief = "LPC175x / LPC176x GPIO",
         description = "Generic port I/O API.",
         requires = { "HW_MCU_LPC176x" },
         provides = { "HW_GPIO_LPC176x" },
@@ -135,7 +154,7 @@ nutarch_cm3_lpc176x =
     --
     {
         name = "nutarch_cm3_lpc176x_usart0",
-        brief = "LPC176x USART0 Driver",
+        brief = "LPC175x / LPC176x USART0 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART0_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -196,7 +215,7 @@ nutarch_cm3_lpc176x =
     --
     {
         name = "nutarch_cm3_lpc176x_usart1",
-        brief = "LPC176x USART1 Driver",
+        brief = "LPC175x / LPC176x USART1 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART1_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -252,7 +271,7 @@ nutarch_cm3_lpc176x =
     --
     {
         name = "nutarch_cm3_lpc176x_usart2",
-        brief = "LPC176x USART2 Driver",
+        brief = "LPC175x / LPC176x USART2 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART2_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -306,7 +325,7 @@ nutarch_cm3_lpc176x =
     --
     {
         name = "nutarch_cm3_lpc176x_usart3",
-        brief = "LPC176x USART3 Driver",
+        brief = "LPC175x / LPC176x USART3 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART3_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },

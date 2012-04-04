@@ -59,6 +59,10 @@ nutarch_cm3_lpc177x_8x=
             {
                 macro = "MCU_LPC177x_8x",
                 brief = "LPC177x_8x",
+                description = "Cortex-M3 microcontrollers with advanced peripherals "..
+                              "such as Ethernet, USB, CAN or LCD controller. They "..
+                              "provide up to 512kB flash and 96kB RAM while operating "..
+                              "at up to 120MHz. Package: up to 208 pins\n\n",
                 type = "integer",
                 default = 1,
                 requires = { "HW_MCU_CM3" },
