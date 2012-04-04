@@ -95,7 +95,7 @@ nutarch_cm3_lpc176x =
                 description = "NXP LPC1758",
                 flavor = "booldata",
                 exclusivity = lpc176x_device_class,
-                provides = {,
+                provides = {
                         "MCU_LPC1758",
                         "HW_UART0_LPC17xx",
                         "HW_UART1_LPC17xx"
