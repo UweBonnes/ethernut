@@ -47,7 +47,7 @@
 
 const uint32_t LPC17XX_CRP __attribute__((section(".crp"), used)) = 0xFFFFFFFF;
 
-uint32_t Lpc176xGetCrpValue(void);
+uint32_t Lpc176xGetCrpValue(void)
 {
     return *(&LPC17XX_CRP);
 }
