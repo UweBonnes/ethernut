@@ -85,7 +85,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     mode = *IOCON;
 
     /* Query pin direction */
-    if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, DIR, bit)) {
+    if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit)) {
         rc |= GPIO_CFG_OUTPUT;
     }
     
@@ -216,9 +216,9 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     }
 
     if (GPIO_CFG_OUTPUT) {
-        CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, DIR) |= mask;
+        CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR) |= mask;
     } else {
-        CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, DIR) &= ~mask;
+        CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR) &= ~mask;
     }
 
     return 0;
@@ -302,9 +302,9 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     *IOCON = mode;
     
     if (flags & GPIO_CFG_OUTPUT) {
-        CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, DIR, bit) = 1;
+        CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) = 1;
     } else {
-        CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, DIR, bit) = 0;
+        CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) = 0;
     }
     
     if (mode != (*IOCON & (IOCON_FUNC_BITMASK | IOCON_MODE_BITMASK |
@@ -315,7 +315,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         rc = -1;
     }
 
-    if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, DIR, bit) != (flags & GPIO_CFG_OUTPUT) ? 1 : 0) {
+    if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) != (flags & GPIO_CFG_OUTPUT) ? 1 : 0) {
         rc = -1;
     }
     

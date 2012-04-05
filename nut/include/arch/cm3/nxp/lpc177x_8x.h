@@ -364,12 +364,12 @@ typedef struct
 /*------------- General Purpose Input/Output (GPIO) --------------------------*/
 typedef struct
 {
-  __IO uint32_t DIR;
+  __IO uint32_t FIODIR;
        uint32_t RESERVED0[3];
-  __IO uint32_t MASK;
-  __IO uint32_t PIN;
-  __IO uint32_t SET;
-  __O  uint32_t CLR;
+  __IO uint32_t FIOMASK;
+  __IO uint32_t FIOPIN;
+  __IO uint32_t FIOSET;
+  __O  uint32_t FIOCLR;
 } LPC_GPIO_TypeDef;
 
 typedef struct
