@@ -119,7 +119,7 @@
 #elif defined(ETHERNUT5)
 #include <arch/arm/board/ethernut5.h>
 #elif defined(FLECX1)
-#include <arch/arm/lpc/lpc1700/board/flecx1.h>
+#include <arch/cm3/board/flecx1.h>
 #elif defined(MMNET01) || defined(MMNET02) || defined(MMNET101) || defined(MMNET102)
 #include <arch/avr/board/mmnet.h>
 #elif defined(SAM7ETH)
