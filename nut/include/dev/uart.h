@@ -388,24 +388,24 @@
  * transmitted.  This allows the PPP layer to tell the HDLC layer about this
  * so that data may be transmitted quicker (no escapes).
  */
-#define HDLC_SETTXACCM          0x012c
+#define HDLC_SETTXACCM          0x012e
 
 /*! \brief AHDLC _ioctl() command code to get the ACCM (Control Character Mask).
  *
  * Just in case someone ever wants to see what it currently is.
  */
-#define HDLC_GETTXACCM          0x012d
+#define HDLC_GETTXACCM          0x012f
 
 /*! \brief UART _ioctl() command code to set physical device to half duplex mode.
  *
  * The configuration parameter specifies the halfduplex mode for device. In raw mode
  */
-#define UART_SETHDPXMODE        0x012e
+#define UART_SETHDPXMODE        0x0130
 
 /*! \brief UART _ioctl() command code to query the halfduplex mode.
  *
  */
-#define UART_GETHDPXMODE        0x012f
+#define UART_GETHDPXMODE        0x0131
 
 /*!
  * \addtogroup xgUARTStatus
