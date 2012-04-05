@@ -230,7 +230,9 @@ int PhatSectorRead(NUTFILE * blkmnt, uint32_t sect, uint8_t * buf)
 int PhatSectorLoad(NUTDEVICE * dev, uint32_t sect)
 {
     int sbn;
+#if PHAT_SECTOR_BUFFERS
     int i;
+#endif
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     /* Search for a buffer. */
@@ -297,7 +299,10 @@ int PhatSectorLoad(NUTDEVICE * dev, uint32_t sect)
     else {
         vol->vol_buf[sbn].sect_num = sect;
         vol->vol_buf[sbn].sect_lock++;
+#if PHAT_SECTOR_BUFFERS
+// TODO: Is this fix correct for non buffered systems?
         vol->vol_usenext = sbn;
+#endif
     }
 
     /* Release mutex access. */
