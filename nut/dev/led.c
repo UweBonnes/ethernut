@@ -81,7 +81,6 @@
 /*@{*/
 
 /* define inverted LED states as LEDs are driven by low side switching */
-#endif
 
 #ifdef LED_ON_HIGH
 #define LED_SET_ON  1
