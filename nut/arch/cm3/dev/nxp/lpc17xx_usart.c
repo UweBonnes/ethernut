@@ -1138,7 +1138,7 @@ static void Lpc17xxUsartTxStart(void)
         // TODO: CTS handling in here
 
         /* Start transmission of the next character. */
-	    CM3REG(USARTn, LPC_UART_TypeDef, THR) = *cp;
+        CM3REG(USARTn, LPC_UART_TypeDef, THR) = *cp;
 
         /* Decrement the number of available bytes in the buffer. */
         DcbUSART.dcb_tx_rbf.rbf_cnt--;
@@ -1209,43 +1209,43 @@ static int Lpc17xxUsartInit(void)
 
     /* Enable UART clock and power */
 #if defined(MCU_LPC176x)     
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART0);
-	} else      
-	if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
+    } else      
+    if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART1);
-	} else
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
+    } else
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART2);
-	} else 
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
+    } else 
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART3);
-	}
+    }
 #elif defined(MCU_LPC177x_8x)     
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART0);
         
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART0);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART0);
-	} else      
-	if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
+    } else      
+    if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART1);
         
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART1);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART1);
-	} else
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
+    } else
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART2);
         
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART2);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART2);
-	} else 
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
+    } else 
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART3);
         
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART3);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART3);
-	}
+    }
 #endif
     /* Disable IRQs */
     CM3REG(USARTn, LPC_UART_TypeDef, IER) = 0;
@@ -1256,25 +1256,25 @@ static int Lpc17xxUsartInit(void)
     /* Disable FIFOs */
     CM3REG(USARTn, LPC_UART_TypeDef, FCR)  = 0;
 
-	/* Dummy reading */
-	while (CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_RDR) {
-		tmp = CM3REG(USARTn, LPC_UART_TypeDef, RBR);
-	}
+    /* Dummy reading */
+    while (CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_RDR) {
+        tmp = CM3REG(USARTn, LPC_UART_TypeDef, RBR);
+    }
 
     /* Enable transmitter */
     CM3REG(USARTn, LPC_UART_TypeDef, TER) = UART_TER_TXEN;
 
-	/* Wait for current transmit complete */
-	while (!(CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_THRE));
+    /* Wait for current transmit complete */
+    while (!(CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_THRE));
 
     /* Disable transmitter */
     CM3REG(USARTn, LPC_UART_TypeDef, TER) = 0;
-    
-	/* Set LCR to default state */
-	CM3REG(USARTn, LPC_UART_TypeDef, LCR) = 0;
 
-	/* Set ACR to default state */
-	CM3REG(USARTn, LPC_UART_TypeDef, ACR) = 0;
+    /* Set LCR to default state */
+    CM3REG(USARTn, LPC_UART_TypeDef, LCR) = 0;
+
+    /* Set ACR to default state */
+    CM3REG(USARTn, LPC_UART_TypeDef, ACR) = 0;
 
 #if defined(MCU_LPC176x) 
     if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
@@ -1288,31 +1288,32 @@ static int Lpc17xxUsartInit(void)
         CM3REG(USARTn, LPC_UART1_TypeDef, ADRMATCH) = 0;
     }
 #elif defined(MCU_LPC177x_8x) 
-	/* Set RS485 control to default state */
-	CM3REG(USARTn, LPC_UART_TypeDef, RS485CTRL) = 0;
+    /* Set RS485 control to default state */
+    CM3REG(USARTn, LPC_UART_TypeDef, RS485CTRL) = 0;
 
-	/* Set RS485 delay timer to default state */
-	CM3REG(USARTn, LPC_UART_TypeDef, RS485DLY) = 0;
+    /* Set RS485 delay timer to default state */
+    CM3REG(USARTn, LPC_UART_TypeDef, RS485DLY) = 0;
 
-	/* Set RS485 addr match to default state */
-	CM3REG(USARTn, LPC_UART_TypeDef, ADRMATCH) = 0;
+    /* Set RS485 addr match to default state */
+    CM3REG(USARTn, LPC_UART_TypeDef, ADRMATCH) = 0;
 #endif   
 
-	/* Dummy reading to clear bits */
-	tmp = CM3REG(USARTn, LPC_UART_TypeDef, LSR);
+    /* Dummy reading to clear bits */
+    tmp = CM3REG(USARTn, LPC_UART_TypeDef, LSR);
 
     if(((LPC_UART1_TypeDef *)USARTn) == LPC_UART1) {
-		/* Set Modem Control to default state */
+        /* Set Modem Control to default state */
         CM3REG(USARTn, LPC_UART1_TypeDef, MCR) = 0;
 
-		/* Dummy Reading to Clear Status */
-		tmp = CM3REG(USARTn, LPC_UART1_TypeDef, MSR);
-	} else 
+        /* Dummy Reading to Clear Status */
+        tmp = CM3REG(USARTn, LPC_UART1_TypeDef, MSR);
+    } 
+#if defined(MCU_LPC177x_8x)
     if(((LPC_UART4_TypeDef *)USARTn) == LPC_UART4) {
-		/* Set IrDA to default state for all UART other than UART1 */
-		CM3REG(USARTn, LPC_UART4_TypeDef, ICR) = 0;
-	}
-    
+        /* Set IrDA to default state for all UART other than UART1 */
+        CM3REG(USARTn, LPC_UART4_TypeDef, ICR) = 0;
+    }
+#endif
     /* Configure USART Tx as alternate function push-pull */
     GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, TX_GPIO_PIN_CFG);
     /* Configure USART Rx as input floating */
@@ -1342,7 +1343,7 @@ static int Lpc17xxUsartInit(void)
     if ((LPC_UART1_TypeDef *) USARTn == LPC_UART1) {
         /* Enable hardware handshake options */
         tmp = 0;
-    
+
 #if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
         tmp |= UART1_MCR_AUTO_RTS_EN;
 #endif
@@ -1356,9 +1357,9 @@ static int Lpc17xxUsartInit(void)
 #ifdef USART_MODE_IRDA
     // TODO: Further IRDA feature configuration
     if(((LPC_UART4_TypeDef *)USARTn) == LPC_UART4) {
-		/* Set IrDA to default state for all UART other than UART1 */
-		CM3REG(USARTn, LPC_UART4_TypeDef, ICR) = UART_ICR_IRDAEN;
-	}    
+        /* Set IrDA to default state for all UART other than UART1 */
+        CM3REG(USARTn, LPC_UART4_TypeDef, ICR) = UART_ICR_IRDAEN;
+    }    
 #endif
 
     NutIrqEnable(&SigUSART);
@@ -1377,7 +1378,7 @@ static int Lpc17xxUsartDeinit(void)
 {
     /* Disable IRQs */
     CM3REG(USARTn, LPC_UART_TypeDef, IER) = 0;
-    
+
     /* Disable interrupts */
     NutIrqDisable(&SigUSART);
 
@@ -1387,45 +1388,45 @@ static int Lpc17xxUsartDeinit(void)
     /* Enable UART clock and power */
 
 #if defined(MCU_LPC176x)     
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART0);
-	} else      
-	if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
+    } else      
+    if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART1);
-	} else
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
+    } else
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART2);
-	} else 
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
+    } else 
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART3);
-	}
+    }
 #elif defined(MCU_LPC177x_8x)     
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART0);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART0);
         
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART0);
-	} else
-	if((LPC_UART1_TypeDef *)USARTn == LPC_UART1) {
+    } else
+    if((LPC_UART1_TypeDef *)USARTn == LPC_UART1) {
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART1);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART1);
 
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART1);
-	} else
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
+    } else
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART2);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART2);
 
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART2);
-	} else 
-	if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
+    } else 
+    if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
         SysCtlPeripheralResetEnable(CLKPWR_RSTCON0_UART3);
         SysCtlPeripheralResetDisable(CLKPWR_RSTCON0_UART3);
 
         SysCtlPeripheralClkDisable(CLKPWR_PCONP_PCUART3);
-	}
+    }
 #endif
-    
+
     return 0;
 }
 
