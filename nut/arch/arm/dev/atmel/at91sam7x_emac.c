@@ -116,33 +116,6 @@
 
 #define NIC_PHY_ADDR	        31
 
-/*!
- * \addtogroup xgDm9161aRegs
- */
-/*@{*/
-#define NIC_PHY_BMCR            0x00    /*!< \brief Basic mode control register. */
-#define NIC_PHY_BMCR_COLTEST    0x0080  /*!< \brief Collision test. */
-#define NIC_PHY_BMCR_FDUPLEX    0x0100  /*!< \brief Full duplex mode. */
-#define NIC_PHY_BMCR_ANEGSTART  0x0200  /*!< \brief Restart auto negotiation. */
-#define NIC_PHY_BMCR_ISOLATE    0x0400  /*!< \brief Isolate from MII. */
-#define NIC_PHY_BMCR_PWRDN      0x0800  /*!< \brief Power-down. */
-#define NIC_PHY_BMCR_ANEGENA    0x1000  /*!< \brief Enable auto negotiation. */
-#define NIC_PHY_BMCR_100MBPS    0x2000  /*!< \brief Select 100 Mbps. */
-#define NIC_PHY_BMCR_LOOPBACK   0x4000  /*!< \brief Enable loopback mode. */
-#define NIC_PHY_BMCR_RESET      0x8000  /*!< \brief Software reset. */
-
-#define NIC_PHY_BMSR            0x01    /*!< \brief Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /*!< \brief Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /*!< \brief Link status. */
-
-#define NIC_PHY_ID1             0x02    /*!< \brief PHY identifier register 1. */
-#define NIC_PHY_ID2             0x03    /*!< \brief PHY identifier register 2. */
-#define NIC_PHY_ANAR            0x04    /*!< \brief Auto negotiation advertisement register. */
-#define NIC_PHY_ANLPAR          0x05    /*!< \brief Auto negotiation link partner availability register. */
-#define NIC_PHY_ANER            0x06    /*!< \brief Auto negotiation expansion register. */
-
-/*@}*/
-
 #define PHY_TXCLK_ISOLATE_BIT   0
 #define PHY_REFCLK_XT2_BIT      0
 #define PHY_TXEN_BIT            1
