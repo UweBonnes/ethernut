@@ -201,18 +201,19 @@ int Stm32I2cBus1Init(void)
  * \brief TWI/I2C bus structure.
  */
 NUTTWIBUS Stm32TwiBus_1 = {
-    I2C1_BASE,              /* Bus base address. */
-    &sig_TWI1_EV,           /* Bus data and event interrupt handler. */
-    &sig_TWI1_ER,           /* Bus error interrupt handler. */
-    NULL,                   /* Bus lock queue. */
-    NULL,                   /* Bus Runtime Data Pointer */
+    .bus_base =    I2C1_BASE,              /* Bus base address. */
+    .bus_sig_ev = &sig_TWI1_EV,            /* Bus data and event interrupt handler. */
+    .bus_sig_er = &sig_TWI1_ER,            /* Bus error interrupt handler. */
+    .bus_mutex =   NULL,                   /* Bus lock queue. */
+    .bus_icb   =   NULL,                   /* Bus Runtime Data Pointer */
 #if defined(I2CBUS1_USE_DMA)
-    I2C1_DMA_CHANNEL_TX,    /* DMA channel for TX direction. */
-    I2C1_DMA_CHANNEL_RX,    /* DMA channel for RX direction. */
+    .bus_dma_tx =  I2C1_DMA_CHANNEL_TX,    /* DMA channel for TX direction. */
+    .bus_dma_rx =  I2C1_DMA_CHANNEL_RX,    /* DMA channel for RX direction. */
 #else
-    0, 0,
+    .bus_dma_tx =  0, 
+    .bus_dma_rx =  0,
 #endif
-    Stm32I2cBus1Init,       /* Initialize bus controller. */
-    Stm32I2cBus1Recover,    /* Recover bus in case a slave hangs with SCL low */
+    .bus_initbus = Stm32I2cBus1Init,       /* Initialize bus controller. */
+    .bus_recover = Stm32I2cBus1Recover,    /* Recover bus in case a slave hangs with SCL low */
 };
 

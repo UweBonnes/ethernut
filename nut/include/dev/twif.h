@@ -107,11 +107,11 @@ struct _NUTTWIICB {
 
     /*! \brief Bus current error condition.
      */
-    uint8_t tw_mm_err;
+    uint_fast8_t tw_mm_err;
 
     /*! \brief Bus last error condition.
      */
-    uint8_t tw_mm_error;
+    uint_fast8_t tw_mm_error;
 
     /*! \brief Bus nodes internal address register length.
      */
@@ -119,7 +119,7 @@ struct _NUTTWIICB {
 
     /*! \brief Bus nodes internal address register.
      */
-    uint8_t tw_mm_iadrlen;
+    uint_fast8_t tw_mm_iadrlen;
 
     /*! \brief Bus transmission data buffer pointer.
      */
@@ -127,7 +127,7 @@ struct _NUTTWIICB {
 
     /*! \brief Bus transmissin data block length.
      */
-    uint16_t tw_mm_txlen;
+    uint_fast16_t tw_mm_txlen;
 
     /*! \brief Bus reception data buffer pointer.
      */
@@ -135,11 +135,11 @@ struct _NUTTWIICB {
 
     /*! \brief Bus reception data block length.
      */
-    uint16_t tw_mm_rxlen;
+    uint_fast16_t tw_mm_rxlen;
 
     /*! \brief Bus data direction.
      */
-    uint8_t tw_mm_dir;
+    uint_fast8_t tw_mm_dir;
 
     /*! \brief Transmission Ongoing Mutex.
      */
@@ -196,39 +196,55 @@ struct _NUTTWIBUS {
 };
 
 
-int NutTwiMasterTranceive( NUTTWIBUS  *bus,
-                           uint8_t     sla,
-                           CONST void *txdata, uint16_t txlen,
-                           void       *rxdata, uint16_t rxsiz,
-                           uint32_t    tmo );
+extern int NutTwiMasterTranceive( NUTTWIBUS  *bus,
+                                  uint8_t     sla,
+                                  CONST void *txdata, uint16_t txlen,
+                                  void       *rxdata, uint16_t rxsiz,
+                                  uint32_t    tmo );
 
-int NutTwiMasterRegRead( NUTTWIBUS *bus,
-                         uint8_t    sla,
-                         uint32_t   iadr, uint8_t iadrlen,
-                         void      *rxdata, uint16_t rxsiz,
-                         uint32_t   tmo );
+extern int NutTwiMasterRegRead( NUTTWIBUS *bus,
+                                uint8_t    sla,
+                                uint32_t   iadr, uint8_t iadrlen,
+                                void      *rxdata, uint16_t rxsiz,
+                                uint32_t   tmo );
 
-int NutTwiMasterRegWrite( NUTTWIBUS  *bus,
-                          uint8_t     sla,
-                          uint32_t    iadr, uint8_t iadrlen,
-                          CONST void *txdata, uint16_t txsiz,
-                          uint32_t    tmo );
+extern int NutTwiMasterRegWrite( NUTTWIBUS  *bus,
+                                 uint8_t     sla,
+                                 uint32_t    iadr, uint8_t iadrlen,
+                                 CONST void *txdata, uint16_t txsiz,
+                                 uint32_t    tmo );
 
-int NutTwiMasterError(NUTTWIBUS *bus);
+extern int NutTwiMasterError(NUTTWIBUS *bus);
 
-uint16_t NutTwiIndexes( NUTTWIBUS *bus, uint8_t idx );
+extern int NutTwiSlaveListen(NUTTWIBUS *bus, uint8_t *sla, void *rxdata, uint16_t rxsiz, uint32_t tmo);
 
-int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf );
+extern int NutTwiSlaveRespond(NUTTWIBUS *bus, void *txdata, uint16_t txlen, uint32_t tmo);
 
-int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla );
+extern int NutTwiSlaveError(NUTTWIBUS *bus);
 
-int NutDestroyTwiBus( NUTTWIBUS *bus);
+extern uint16_t NutTwiIndexes( NUTTWIBUS *bus, uint8_t idx );
+
+extern int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf );
+
+extern int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla );
+
+extern int NutDestroyTwiBus( NUTTWIBUS *bus);
 
 /* Include architecture specific TWI implementation */
 #if defined(__arm__) && defined(__CORTEX__)
+
+#if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32_twi.h>
+#endif
+
 #elif defined(__arm__) && !defined(__CORTEX__)
-#include <arch/arm/at91_twi.h>
+
+#if defined(MCU_AT91R40008)
+#include "dev/twibus_bbif.h"
+#else
+#include "dev/twibus_at91.h"
+#endif
+
 #endif
 
 /*
@@ -243,8 +259,8 @@ int NutDestroyTwiBus( NUTTWIBUS *bus);
 #define TwMasterError(void) NutTwiMasterError(&DEF_TWIBUS)
 #define TwMasterIndexes( idx) NutTwiIndexes(&DEF_TWIBUS, idx)
 
-extern int TwSlaveListen(uint8_t *sla, void *rxdata, uint16_t rxsiz, uint32_t tmo);
-extern int TwSlaveRespond(void *txdata, uint16_t txlen, uint32_t tmo);
-extern int TwSlaveError(void);
+#define TwSlaveListen(sla, rxdata, rxsiz, tmo) NutTwiSlaveListen(&DEF_TWIBUS, rxdata, rxsiz, tmo)
+#define TwSlaveRespond(txdata, txlen, tmo) NutTwiSlaveRespond(&DEF_TWIBUS, txlen, tmo)
+#define TwSlaveError(void) NutTwiSlaveError(&DEF_TWIBUS)
 
 #endif

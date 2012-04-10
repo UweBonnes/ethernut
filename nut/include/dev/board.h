@@ -381,7 +381,10 @@
  * TWI / I2C bus.
  */
 #ifndef DEF_TWIBUS
-#if defined(MCU_AT91)
+#if defined(MCU_AT91R40008)
+#include <dev/twibus_bbif.h>
+#define DEF_TWIBUS      TwBbifBus
+#elif defined(MCU_AT91)
 #include <dev/twibus_at91.h>
 #define DEF_TWIBUS      At91TwiBus
 #elif defined(MCU_STM32)

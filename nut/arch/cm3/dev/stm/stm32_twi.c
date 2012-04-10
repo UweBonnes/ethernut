@@ -717,7 +717,76 @@ int NutTwiMasterRegWrite( NUTTWIBUS  *bus,
  */
 int NutTwiMasterError(NUTTWIBUS *bus)
 {
-    return bus->bus_icb->tw_mm_error;
+    int rc = bus->bus_icb->tw_mm_error;
+    bus->bus_icb->tw_mm_error = 0;
+    return rc;
+}
+
+/*!
+ * \brief Listen for incoming data from a master.
+ *
+ * If this function returns without error, the bus is blocked. The caller
+ * must immediately process the request and return a response by calling
+ * TwSlaveRespond().
+ *
+ * \note Slave mode is not implemented in the STM32 driver.
+ *       Thus the function always returns -1.
+ *
+ * \param sla    Points to a byte variable, which receives the slave
+ *               address sent by the master. This can be used by the
+ *               caller to determine whether the the interface has been
+ *               addressed by a general call or its individual address.
+ * \param rxdata Points to a data buffer where the received data bytes
+ *               are stored.
+ * \param rxsiz  Specifies the maximum number of data bytes to receive.
+ * \param tmo	 Timeout in milliseconds. To disable timeout,
+ *               set this parameter to NUT_WAIT_INFINITE.
+ *
+ * \return The number of bytes received, -1 in case of an error or timeout.
+ *
+ */
+int NutTwiSlaveListen(NUTTWIBUS *bus, uint8_t *sla, void *rxdata, uint16_t rxsiz, uint32_t tmo)
+{
+    return -1;
+}
+
+/*!
+ * \brief Send response to a master.
+ *
+ * This function must be called as soon as possible after TwSlaveListen()
+ * returned successfully, even if no data needs to be returned. Not doing
+ * so will completely block the bus.
+ *
+ * \note Slave mode is not implemented in the STM32 driver.
+ *       Thus the function always returns -1.
+ *
+ * \param txdata Points to the data to transmit. Ignored, if the
+ *      		 number of bytes to transmit is zero.
+ * \param txlen  Number of data bytes to transmit.
+ * \param tmo	 Timeout in milliseconds. To disable timeout,
+ *               set this parameter to NUT_WAIT_INFINITE.
+ *
+ * \return The number of bytes transmitted, -1 in case of an error or timeout.
+ */
+extern int NutTwiSlaveRespond(NUTTWIBUS *bus, void *txdata, uint16_t txlen, uint32_t tmo)
+{
+    return -1;
+}
+
+/*!
+ * \brief Get last slave mode error.
+ *
+ * You may call this function to determine the specific cause
+ * of an error after TwSlaveListen() or TwSlaveRespond() failed.
+ *
+ * \return Error code or 0 if no error occurred.
+ *
+ * \note Slave mode is not implemented in the STM32 driver.
+ *       Thus the function always returns TWERR_BUS.
+ */
+extern int NutTwiSlaveError(NUTTWIBUS *bus)
+{
+    return TWERR_BUS;
 }
 
 /*!
