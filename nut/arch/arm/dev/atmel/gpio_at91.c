@@ -34,6 +34,10 @@
  * $Id$
  */
 
+#include <cfg/os.h>
+#include <cfg/arch.h>
+#include <cfg/arch/gpio.h>
+
 #include <arch/arm.h>
 
 #include <stdlib.h>
