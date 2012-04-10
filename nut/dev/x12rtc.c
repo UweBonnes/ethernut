@@ -560,7 +560,7 @@ int X12Init(NUTRTC *rtc)
     /* Initialize I2C bus. */
     if ((rc = TwInit(0)) == 0) {
         /* Query RTC status. */
-        if ((rc = X12RtcGetStatus(&tmp)) == 0) {
+        if ((rc = X12RtcGetStatus(rtc, &tmp)) == 0) {
             /*
              * If I2C initialization and RTC status query succeeded, try
              * to determine the chip we got. On Ethernut 3.0 Rev-D the

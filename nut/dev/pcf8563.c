@@ -261,7 +261,7 @@ int PcfRtcInit(NUTRTC *rtc)
     uint32_t tmp;
 
     if ((rc = TwInit(0)) == 0) {
-        rc = PcfRtcGetStatus(&tmp);
+        rc = PcfRtcGetStatus(rtc, &tmp);
     }
     return rc;
 }
