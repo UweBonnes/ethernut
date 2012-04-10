@@ -89,11 +89,12 @@
 #include <cfg/phycfg.h>
 
 #define PHY_STATUS_HAS_LINK   0x00000001
-#define PHY_STATUS_100M	      0x00000002
-#define PHY_STATUS_1000M      0x00000004
-#define PHY_STATUS_FULLDUPLEX 0x00000008
-#define PHY_STATUS_AUTONEG_OK 0x00000010
-#define PHY_STATUS_CON_UNKNWN 0x00000020
+#define PHY_STATUS_10M        0x00000002
+#define PHY_STATUS_100M	      0x00000004
+#define PHY_STATUS_1000M      0x00000008
+#define PHY_STATUS_FULLDUPLEX 0x00000010
+#define PHY_STATUS_AUTONEG_OK 0x00000020
+#define PHY_STATUS_CON_UNKNWN 0x00000040
 
 /* PHY ioctl() Control Tokens */    /* Accepted Values */
 #define PHY_CTL_RESET       0x0001  /* 1: Activate reset, wait for completion */
@@ -108,6 +109,7 @@
 #define PHY_GET_LINK        0x0100  /* Request Link Status, 1: link is up */
 #define PHY_GET_STATUS		0x0101  /* Request connection status
 									 *   PHY_STATUS_HAS_LINK   is set when link is up
+                                     *   PHY_STATUS_10M        is set when speed is 10Mbit/s
 									 *   PHY_STATUS_100M       is set when speed is 100Mbit/s
 									 *   PHY_STATUS_1000M      is set when speed is 1000Mbit/s
 									 *   PHY_STATUS_FULLDUPLEX is set when full duplex is true

@@ -71,7 +71,7 @@
 #define PHY_ANTR        0x07    /* Auto-Negotiation Next Page TX Register */
 
 /* 
- * Basic Mode Control Regsiter Options
+ * Basic Mode Control Register Options
  */
 #define PHY_BMCR_RES    0x8000  /* 1: Reset PHY, flips to 0 if reset accomplished. */
 #define PHY_BMCR_LOOP   0x4000  /* 1: Enable Loopback Mode. */
@@ -110,6 +110,15 @@
 
 PHYDCB *phydcb = NULL;
 
+enum {
+    PHY_BIT_DESCR_10M = 0,
+    PHY_BIT_DESCR_100M,
+    PHY_BIT_DESCR_1000M,
+    PHY_BIT_DESCR_DUPLX,
+    PHY_BIT_DESCR_POE,
+    PHY_BIT_DESCR_MAX
+} phy_bit_descr_nr;
+
 typedef struct {
 	uint8_t reg;				/* register number */
 	uint16_t mask;				/* bit mask to identify what we are looking */
@@ -117,21 +126,33 @@ typedef struct {
 
 typedef struct {
 	uint32_t phy_oui;			/* oui chip identifier */
-	phy_bit_descr_t phy_bit_descr[4];
+	phy_bit_descr_t phy_bit_descr[PHY_BIT_DESCR_MAX];
 								/* list of descriptors to identify where to get
-								 *   [0] flag about 100Mbit/s speed
-								 *   [1] flag about 1000Mbit/s speed
-								 *   [2] flag about full duplex
-								 *   [3] flag about POE status */
+								 *   [0] flag about 10Mbit/s speed
+								 *   [1] flag about 100Mbit/s speed
+								 *   [2] flag about 1000Mbit/s speed
+								 *   [3] flag about full duplex
+								 *   [4] flag about POE status */
 } phy_status_descr_t;
 
-#define PHY_BIT_DESCR_100M	0
-#define PHY_BIT_DESCR_1000M 1
-#define PHY_BIT_DESCR_DUPLX 2
-#define PHY_BIT_DESCR_POE   3
-
 phy_status_descr_t phy_status_descr[] = {
-	{ LAN8700r4, { {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } }
+    /* Davicom DM9000 derivates */
+    { DM9000,    { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
+    { DM9000A,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
+    { DM9000B,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
+
+    /* Davicom DM9161 derivates */
+    { DM9161,    { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
+    { DM9161A,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
+    { DM9161B,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
+
+    /* SMSC LAN8700 derivates */
+    { LAN8700,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
+	{ LAN8700r4, { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
+	{ LAN8710,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },  
+
+    /* Micrel KS8721 */
+    { KS8721,    { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },  
 };
 
 /*!
@@ -273,6 +294,10 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 					/* entry in table found */
 					PHPRINTF("  Reading status of known phy\n");
 
+					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].reg);
+					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].mask) {
+						*par |= PHY_STATUS_10M;
+					}                    
 					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].reg);
 					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].mask) {
 						*par |= PHY_STATUS_100M;
@@ -323,11 +348,11 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 		} /* endof case PHY_GET_POE */
 
 		case PHY_GET_REGVAL:
-            phyw( reg, p16);
-			break;
-
-		case PHY_SET_REGVAL:
             *par = (uint32_t)phyr(reg);
+			break;
+                
+		case PHY_SET_REGVAL:
+            phyw( reg, p16);
 			break;
             
         default:
