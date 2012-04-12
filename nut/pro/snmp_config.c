@@ -114,10 +114,10 @@ int SnmpViewFind(char *name)
  * \brief Find community entry by name.
  *
  * \param name      Community name.
- * \param readView  Pointer to a variable that receives the view index 
- *                  for read access. 
- * \param writeView Pointer to a variable that receives the view index 
- *                  for write access. 
+ * \param readView  Pointer to a variable that receives the view index
+ *                  for read access.
+ * \param writeView Pointer to a variable that receives the view index
+ *                  for write access.
  *
  * \return 0 on success, -1 otherwise.
  */
@@ -143,9 +143,9 @@ int SnmpCommunityFind(CONST char *name, int *readView, int *writeView)
  * \brief Create a community entry.
  *
  * \param name      Community name.
- * \param readView  View index for read access, obtained from a previous 
+ * \param readView  View index for read access, obtained from a previous
  *                  call to SnmpViewCreate().
- * \param writeView View index for write access, obtained from a previous 
+ * \param writeView View index for write access, obtained from a previous
  *                  call to SnmpViewCreate().
  *
  * \return 0 on success, -1 otherwise.

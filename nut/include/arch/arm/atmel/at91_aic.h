@@ -61,17 +61,17 @@
  */
 #define AIC_SMR(i)  (AIC_BASE + i * 4)
 
-/*! \brief Priority mask. 
+/*! \brief Priority mask.
  *
  * Priority levels can be between 0 (lowest) and 7 (highest).
  */
 #define AIC_PRIOR                       0x00000007
 
-/*! \brief Interrupt source type mask. 
+/*! \brief Interrupt source type mask.
  *
  * Internal interrupts can level sensitive or edge triggered.
  *
- * External interrupts can triggered on positive or negative levels or 
+ * External interrupts can triggered on positive or negative levels or
  * on rising or falling edges.
  */
 #define AIC_SRCTYPE                     0x00000060
@@ -86,7 +86,7 @@
 
 /*! \name Interrupt Source Vector Registers */
 /*@{*/
-/*! \brief Source vector register array. 
+/*! \brief Source vector register array.
  *
  * Stores the addresses of the corresponding interrupt handlers.
  */

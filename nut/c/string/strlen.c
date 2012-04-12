@@ -78,7 +78,7 @@
 
 /*!
  * \brief Compute the length of a NUL terminated string.
- * 
+ *
  * \param str Pointer to the string.
  *
  * \return The number of characters that precede the terminating NUL

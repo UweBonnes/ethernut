@@ -111,8 +111,8 @@
  *
  * The actual frequency depends on the timer crystal.
  *
- * \note Since version 3.9.8, the default frequency had been changed 
- *       from 16 Hz to 1024 Hz, when the timer is running with an 
+ * \note Since version 3.9.8, the default frequency had been changed
+ *       from 16 Hz to 1024 Hz, when the timer is running with an
  *       external 32 kHz clock crystal.
  */
 #ifndef NUT_TICK_NFREQ
@@ -301,7 +301,7 @@ static uint32_t NutComputeCpuClock(void)
 /*!
  * \brief Initialize system timer hardware.
  *
- * This function is automatically called by Nut/OS during system 
+ * This function is automatically called by Nut/OS during system
  * initialization.
  *
  * \param handler System timer interrupt handler.

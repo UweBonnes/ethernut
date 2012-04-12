@@ -158,7 +158,7 @@ LUALIB_API void luaL_checkanyfunction (lua_State *L, int narg) {
   if (lua_type(L, narg) != LUA_TFUNCTION && lua_type(L, narg) != LUA_TLIGHTFUNCTION) {
     const char *msg = lua_pushfstring(L, "function or lightfunction expected, got %s",
                                       luaL_typename(L, narg));
-    luaL_argerror(L, narg, msg);    
+    luaL_argerror(L, narg, msg);
   }
 }
 
@@ -247,11 +247,11 @@ LUALIB_API void (luaL_register) (lua_State *L, const char *libname,
 
 LUALIB_API void (luaL_register_light) (lua_State *L, const char *libname,
                                 const luaL_Reg *l) {
-#if NUTLUA_OPTIMIZE_MEMORY > 0                              
+#if NUTLUA_OPTIMIZE_MEMORY > 0
   luaI_openlib(L, libname, l, 0, LUA_USELIGHTFUNCTIONS);
 #else
   luaI_openlib(L, libname, l, 0, LUA_USECCLOSURES);
-#endif  
+#endif
 }
 
 static int libsize (const luaL_Reg *l) {

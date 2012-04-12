@@ -66,7 +66,7 @@ static NUTDEVICE *devSysConf;
  * properly initialized. This is normally done by calling NutRegister...
  * in the application. However, the system configuration must be know
  * before entering any application code.
- * 
+ *
  */
 static int SpiAt45dConfigDevice(void)
 {
@@ -226,7 +226,7 @@ int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
                 rc = -1;
                 break;
             }
-        
+
             data_buff += wsize;
             remaining -= wsize;
             offset = 0;
@@ -236,6 +236,6 @@ int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
         }
         free(pbuff);
     }
-        
+
     return rc;
 }

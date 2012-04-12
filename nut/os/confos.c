@@ -103,7 +103,7 @@ CONFOS confos;
  * It tries to read the OS configuration structure \ref CONFOS from
  * non-volatile memory, starting at /ref CONFOS_EE_OFFSET.
  *
- * The routine may fail, if 
+ * The routine may fail, if
  * - non-volatile memory is not supported,
  * - non-volatile memory contains invalid data,
  * - the configuration structure has changed.
@@ -132,9 +132,9 @@ int NutLoadConfig(void)
 /*!
  * \brief Save Nut/OS configuration in non-volatile memory.
  *
- * Since Nut/OS version 4.7.5, this routine is no longer called automatically 
- * during system initialization. Thus, if NutLoadConfig() fails, then the 
- * non-volatile memory remains invalid and NutLoadConfig() will again fail 
+ * Since Nut/OS version 4.7.5, this routine is no longer called automatically
+ * during system initialization. Thus, if NutLoadConfig() fails, then the
+ * non-volatile memory remains invalid and NutLoadConfig() will again fail
  * during the next system start.
  *
  * \return 0 if OK, -1 on failures.

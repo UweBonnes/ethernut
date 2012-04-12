@@ -252,7 +252,7 @@ int Avr32Spi1ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 * \param tmo  Timeout in milliseconds. To disable timeout, set this
 *             parameter to NUT_WAIT_INFINITE.
 *
-* \return 0 on success. In case of an error, -1 is returned and the bus 
+* \return 0 on success. In case of an error, -1 is returned and the bus
 *         is not locked.
 */
 int Avr32SpiBus1Select(NUTSPINODE * node, uint32_t tmo)
@@ -354,7 +354,7 @@ void Avr32SpiBus1Interrupt(void *arg)
     }
 }
 
-/*! 
+/*!
 * \brief Transfer data on the SPI bus using single buffered interrupt mode.
 *
 * A device must have been selected by calling Avr32SpiSelect().

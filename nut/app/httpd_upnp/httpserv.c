@@ -189,7 +189,7 @@ int main(void)
         printf("Add \"All Host\" multicast address...");
         if (NutNetIfAddMcastAddr(DEV_ETHER_NAME, INADDR_ALLHOSTS_GROUP) != 0) {
             /*
-             * It could be possible that your ethernet 
+             * It could be possible that your ethernet
              * driver does not support multicast.
              */
             puts("failed");

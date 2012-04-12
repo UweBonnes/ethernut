@@ -54,8 +54,8 @@
 #define LCD_DATABYTE        0x0405
 #define LCD_DATAWORD16      0x0406
 #define LCD_DATAWORD32      0x0407
-#define LCD_SETCOOKEDMODE   0x0413  /*!< \brief Set raw mode. */ 
-#define LCD_GETCOOKEDMODE   0x0414  /*!< \brief Query raw mode. */ 
+#define LCD_SETCOOKEDMODE   0x0413  /*!< \brief Set raw mode. */
+#define LCD_GETCOOKEDMODE   0x0414  /*!< \brief Query raw mode. */
 #define LCD_SET_AUTOLF      0x0415
 #define LCD_GET_AUTOLF      0x0416
 

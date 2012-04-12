@@ -55,12 +55,12 @@
 
 static int SendResult(HTTPD_SESSION *hs, char *first, char *last)
 {
-    static const char head[] = 
+    static const char head[] =
         "<html>"
         "<head>"
         "<title>Form Result</title>"
         "</head>";
-    static const char body[] = 
+    static const char body[] =
         "<body>"
         "<p>Hello %s %s!</p>"
         "<a href=\"/index.html\">back</a>"

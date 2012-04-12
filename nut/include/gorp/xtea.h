@@ -1,9 +1,9 @@
 #ifndef _XTEA_H_
 #define _XTEA_H_
-/* 
- * Copyright of XTEA encryption algorithm by David Wheeler and Roger Needham 
+/*
+ * Copyright of XTEA encryption algorithm by David Wheeler and Roger Needham
  * at the Computer Laboratory of Cambridge University.
- * 
+ *
  * Kindly released to Public Domain.
  */
 

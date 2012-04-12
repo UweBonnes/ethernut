@@ -147,7 +147,7 @@ void NutInit(void)
 
 #ifdef EARLY_STDIO_DEV
     /* We may optionally initialize stdout as early as possible.
-     ** Be aware, that no heap is available and no threads are 
+     ** Be aware, that no heap is available and no threads are
      ** running. We need a very basic driver here, which won't
      ** use interrupts or call malloc, NutEventXxx, NutSleep etc. */
     {
@@ -169,7 +169,7 @@ void NutInit(void)
     /* Initialize our heap memory. */
     NutHeapAdd(HEAP_START, HEAP_SIZE);
 
-    /* Create idle thread. Note, that the first call to NutThreadCreate 
+    /* Create idle thread. Note, that the first call to NutThreadCreate
      ** will never return. */
     NutThreadCreate("idle", NutIdle, 0, (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 }

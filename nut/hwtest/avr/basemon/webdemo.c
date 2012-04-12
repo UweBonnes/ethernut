@@ -88,7 +88,7 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
     NutHttpSendHeaderBottom(stream, req, "text/html", -1);
-    
+
     fputs_P(head_P, stream);
 
     fputs_P(ttop_P, stream);

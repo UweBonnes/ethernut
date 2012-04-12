@@ -56,7 +56,7 @@
 /*!
  * \brief Coldfire GCC context switch frame layout.
  *
- * This is the layout of the stack after a thread's context has been 
+ * This is the layout of the stack after a thread's context has been
  * switched-out.
  */
 typedef struct {
@@ -120,16 +120,16 @@ void NutThreadSwitch(void)
 /*!
  * \brief Create a new thread.
  *
- * If the current thread's priority is lower or equal than the default 
- * priority (64), then the current thread is stopped and the new one 
+ * If the current thread's priority is lower or equal than the default
+ * priority (64), then the current thread is stopped and the new one
  * is started.
  *
- * \param name      String containing the symbolic name of the new thread, 
+ * \param name      String containing the symbolic name of the new thread,
  *                  up to 8 characters long.
- * \param fn        The thread's entry point, typically created by the 
+ * \param fn        The thread's entry point, typically created by the
  *                  THREAD macro.
  * \param arg       Argument pointer passed to the new thread.
- * \param stackSize Number of bytes of the stack space allocated for 
+ * \param stackSize Number of bytes of the stack space allocated for
  *                  the new thread.
  *
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an

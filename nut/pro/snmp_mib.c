@@ -125,8 +125,8 @@ uint8_t *SnmpMibFind(OID * name, size_t * namelen, uint8_t * type, size_t * len,
     size_t ori_len = 0;
     int found = 0;
 
-    /* 
-     * If not looking for an exact match, keep a copy of the original name. 
+    /*
+     * If not looking for an exact match, keep a copy of the original name.
      */
     if (!exact) {
         if ((ori_oid = malloc(*namelen * sizeof(OID))) == NULL) {
@@ -141,7 +141,7 @@ uint8_t *SnmpMibFind(OID * name, size_t * namelen, uint8_t * type, size_t * len,
      * Walk along the linked list of subtrees.
      */
     for (tp = mibtree; tp; tp = tp->sub_next) {
-        /* 
+        /*
          * Check if name is part of this subtree. Or, if we don't need an exact match,
          * if the name is in front of the subtree.
          */

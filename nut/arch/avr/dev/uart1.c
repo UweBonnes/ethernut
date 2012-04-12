@@ -101,12 +101,12 @@ NUTDEVICE devUart1 = {
     &dcb_uart1,                 /*!< Driver control block. */
     UartAvrInit,                /*!< Driver initialization routine. */
     UartAvrIOCtl,               /*!< Driver specific control function. */
-    UartAvrRead,                /*!< Read from device. */                    
-    UartAvrWrite,               /*!< Write to device. */                     
-    UartAvrWrite_P,             /*!< Write to device from program space. */  
-    UartAvrOpen,                /*!< Open a device or file. */               
-    UartAvrClose,               /*!< Close a device or file. */              
-    UartAvrSize                 /*!< Request file size. */                   
+    UartAvrRead,                /*!< Read from device. */
+    UartAvrWrite,               /*!< Write to device. */
+    UartAvrWrite_P,             /*!< Write to device from program space. */
+    UartAvrOpen,                /*!< Open a device or file. */
+    UartAvrClose,               /*!< Close a device or file. */
+    UartAvrSize                 /*!< Request file size. */
 };
 
 /*@}*/

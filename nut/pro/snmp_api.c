@@ -41,7 +41,7 @@
 /*@{*/
 
 /*
- * generic statistics counter functions 
+ * generic statistics counter functions
  */
 static uint32_t statistics[SNMP_STAT_MAX];
 
@@ -104,7 +104,7 @@ int SnmpOidCmp(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2)
  * \param name2 Tree identifier.
  * \param len2  Length of tree identifier.
  *
- * \return 0 if the object identifier is part of the subtree, -1 if it 
+ * \return 0 if the object identifier is part of the subtree, -1 if it
  *         is located before the tree element or 1 if it is located
  *         after the tree element.
  */
@@ -156,9 +156,9 @@ int SnmpOidCmpIdx(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2
 }
 
 /*
- * This should be faster than doing a SnmpOidCmp for different 
+ * This should be faster than doing a SnmpOidCmp for different
  * length OIDs, since the length is checked first and if != returns
- * immediately.  
+ * immediately.
  *
  * Might be very slighly faster if lengths are ==.
  *

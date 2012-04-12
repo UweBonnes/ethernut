@@ -126,7 +126,7 @@
 /*!
  * \brief Block size.
  *
- * Block size in bytes. Do not change unless you are sure that both, 
+ * Block size in bytes. Do not change unless you are sure that both,
  * the file system and the hardware support it.
  */
 #define MMC_BLOCK_SIZE          512
@@ -136,8 +136,8 @@
 /*!
  * \brief Card init timeout.
  *
- * Max. number of loops waiting for card's idle mode after initialization. 
- * An additional delay of 1 ms is added to each loop after one quarter of 
+ * Max. number of loops waiting for card's idle mode after initialization.
+ * An additional delay of 1 ms is added to each loop after one quarter of
  * this value elapsed.
  */
 #define MMC_MAX_INIT_POLLS      512
@@ -156,8 +156,8 @@
 /*!
  * \brief Card write timeout.
  *
- * Max. number of loops waiting for card's idle mode after resetting it. 
- * An additional delay of 1 ms is added to each loop after 31/32 of this 
+ * Max. number of loops waiting for card's idle mode after resetting it.
+ * An additional delay of 1 ms is added to each loop after 31/32 of this
  * value elapsed.
  */
 #define MMC_MAX_WRITE_POLLS     1024
@@ -194,8 +194,8 @@
 /*!
  * \brief Command acknowledge timeout.
  *
- * Max. number of loops waiting for card's acknowledge of a command. 
- * An additional delay of 1 ms is added to each loop after three quarter 
+ * Max. number of loops waiting for card's acknowledge of a command.
+ * An additional delay of 1 ms is added to each loop after three quarter
  * of this value elapsed.
  */
 #define MMC_MAX_CMDACK_POLLS    1024
@@ -214,7 +214,7 @@
  * \brief Local multimedia card mount information.
  */
 typedef struct _MMCFCB {
-    /*! \brief Attached file system device. 
+    /*! \brief Attached file system device.
      */
     NUTDEVICE *fcb_fsdev;
 
@@ -233,7 +233,7 @@ typedef struct _MMCFCB {
 
     /*! \brief Internal block buffer.
      *
-     * A file system driver may use this one or optionally provide it's 
+     * A file system driver may use this one or optionally provide it's
      * own buffers.
      *
      * Minimal systems may share their external bus interface with
@@ -384,7 +384,7 @@ static int MmCardReset(MMCIFC * ifc)
     }
 
     /*
-     * 80 bits of ones with deactivated chip select will put the card 
+     * 80 bits of ones with deactivated chip select will put the card
      * in SPI mode.
      */
     (*ifc->mmcifc_cs) (0);
@@ -584,13 +584,13 @@ static int MmCardWrite(MMCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous
  *               call to MmCardMount().
  * \param buffer Pointer to the data buffer to fill.
- * \param num    Maximum number of blocks to read. However, reading 
+ * \param num    Maximum number of blocks to read. However, reading
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks actually read. A return value of -1 
+ * \return The number of blocks actually read. A return value of -1
  *         indicates an error.
  */
 int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
@@ -637,13 +637,13 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to MmCardMount().
  * \param buffer Pointer to the data to be written.
  * \param num    Maximum number of blocks to write. However, writing
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
 int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
@@ -685,12 +685,12 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data blocks from program space to a mounted partition.
  *
  * This function is not yet implemented and will always return -1.
  *
- * Similar to MmCardBlockWrite() except that the data is located in 
+ * Similar to MmCardBlockWrite() except that the data is located in
  * program memory.
  *
  * Applications should not call this function directly, but use the
@@ -701,7 +701,7 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
  * \param num    Maximum number of blocks to write. However, writing
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
 int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
@@ -721,13 +721,13 @@ int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
  *
  * \param dev  Pointer to the MMC device.
  * \param name Partition number followed by a slash followed by a name
- *             of the file system device. Both items are optional. If no 
+ *             of the file system device. Both items are optional. If no
  *             file system driver name is given, the first file system
- *             driver found in the list of registered devices will be 
+ *             driver found in the list of registered devices will be
  *             used. If no partition number is specified or if partition
- *             zero is given, the first active primary partition will be 
+ *             zero is given, the first active primary partition will be
  *             used.
- * \param mode Opening mode. Currently ignored, but 
+ * \param mode Opening mode. Currently ignored, but
  *             \code _O_RDWR | _O_BINARY \endcode should be used for
  *             compatibility with future enhancements.
  * \param acc  File attributes, ignored.
@@ -810,7 +810,7 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         return NUTFILE_EOF;
 	}
     /* Check for the partition table. */
-	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' && 
+	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 1] == 'A' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 2] == 'T') {
         /* No partition table. Assume FAT12 and 32MB size. */
@@ -1047,8 +1047,8 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Initialize high level MMC driver.
  *
- * Applications should not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * \param dev  Identifies the device to initialize.

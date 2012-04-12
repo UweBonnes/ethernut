@@ -3,34 +3,34 @@
 *
 *  Copyright (c) 2004 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
-*  Portions Copyright: 
+*  Portions Copyright:
 *
 *  Copyright (c) 2001 Atsushi Onoe
 *  Copyright (c) 2002, 2003 Sam Leffler, Errno Consulting
@@ -65,12 +65,12 @@
 ****************************************************************************
 *  History:
 *
-*  28.02.04  mifi   First Version 
+*  28.02.04  mifi   First Version
 *                   This file is a mix of several FreeBSD header files.
 *                   I have put all the files together, because it was
 *                   difficult to use the original files. I have try this
 *                   but I must comment out to much to get it to work.
-*                   The other "define" file is wlandef.h, 
+*                   The other "define" file is wlandef.h,
 *                   here you will the rest of it.
 *  03.03.04  mifi   Move debug switch to wlancfg.h
 ****************************************************************************/
@@ -113,7 +113,7 @@
 
 /*
  * TX Buffer count
-*/ 
+*/
 #define	WI_NTXBUF               3
 
 /***************************************************************************/
@@ -138,7 +138,7 @@
 /***************************************************************************/
 
 /*
- * ic_flags 
+ * ic_flags
 */
 #define	IEEE80211_F_ASCAN       0x00000001  /* STATUS: active scan */
 #define	IEEE80211_F_SIBSS       0x00000002  /* STATUS: start IBSS */
@@ -251,7 +251,7 @@ struct wi_softc {
   /*
    * This is our Interrupt stuff
    */
-  int                 InterruptInitDone; 
+  int                 InterruptInitDone;
   HANDLE volatile     InterruptEvent;
   u_int16_t           EventStatus;
 
@@ -259,7 +259,7 @@ struct wi_softc {
    * Now here comes the FreeBSD stuff...
    */
   struct ieee80211com sc_ic;
-  
+
   int                 PromiscuousMode;
 
   int                 wi_gone;
@@ -278,7 +278,7 @@ struct wi_softc {
   u_int16_t           sc_portnum;
 
   /*
-   * RSSI interpretation 
+   * RSSI interpretation
    */
   u_int16_t           sc_min_rssi;          /* clamp sc_min_rssi < RSSI */
   u_int16_t           sc_max_rssi;          /* clamp RSSI < sc_max_rssi */

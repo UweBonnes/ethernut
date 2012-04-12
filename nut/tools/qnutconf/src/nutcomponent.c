@@ -431,7 +431,7 @@ static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
 }
 #endif
 
-/*! 
+/*!
  * \brief Get the current script status.
  */
 const int GetScriptStatus(void)
@@ -439,7 +439,7 @@ const int GetScriptStatus(void)
     return errsts;
 }
 
-/*! 
+/*!
  * \brief Get the script's error message.
  */
 const char *GetScriptErrorString(void)
@@ -486,7 +486,7 @@ const char * GetLuaRegString(lua_State *ls, char *key)
  *
  * \param ls Lua state.
  */
-static int l_repo_path(lua_State *ls) 
+static int l_repo_path(lua_State *ls)
 {
     NUTREPOSITORY *repo;
 
@@ -512,7 +512,7 @@ static int l_repo_path(lua_State *ls)
  *
  * \param ls Lua state.
  */
-static int l_nut_source_path(lua_State *ls) 
+static int l_nut_source_path(lua_State *ls)
 {
     const char *str;
 
@@ -537,7 +537,7 @@ static int l_nut_source_path(lua_State *ls)
  *
  * \param ls Lua state.
  */
-static int l_nut_build_path(lua_State *ls) 
+static int l_nut_build_path(lua_State *ls)
 {
     const char *str;
 
@@ -562,7 +562,7 @@ static int l_nut_build_path(lua_State *ls)
  *
  * \param ls Lua state.
  */
-static int l_nut_lib_path(lua_State *ls) 
+static int l_nut_lib_path(lua_State *ls)
 {
     const char *str;
 
@@ -587,7 +587,7 @@ static int l_nut_lib_path(lua_State *ls)
  *
  * \param ls Lua state.
  */
-static int l_nut_sample_path(lua_State *ls) 
+static int l_nut_sample_path(lua_State *ls)
 {
     const char *str;
 
@@ -612,7 +612,7 @@ static int l_nut_sample_path(lua_State *ls)
  *
  * \param ls Lua state.
  */
-static int l_compiler_platform(lua_State *ls) 
+static int l_compiler_platform(lua_State *ls)
 {
     const char *str;
 
@@ -712,7 +712,7 @@ static int GetEnableState(NUTCOMPONENT *compo, const char *name)
  *
  * \param ls Lua state.
  */
-static int l_macro_edit(lua_State *ls) 
+static int l_macro_edit(lua_State *ls)
 {
     char *value = NULL;
     const char *macro = luaL_checkstring(ls, 1);
@@ -746,7 +746,7 @@ static int l_macro_edit(lua_State *ls)
  *
  * \param ls Lua state.
  */
-static int l_is_enabled(lua_State *ls) 
+static int l_is_enabled(lua_State *ls)
 {
     int status = 0;
     const char *name = luaL_checkstring(ls, 1);
@@ -833,14 +833,14 @@ static const struct luaL_reg nutcomp_lib[] = {
     { NULL, NULL }
 };
 
-int luaopen_nutcomp_lib(lua_State *ls) 
+int luaopen_nutcomp_lib(lua_State *ls)
 {
     luaL_openlib(ls, "nutcomp_lib", nutcomp_lib, 0);
 
     return 1;
 }
 
-void RegisterLuaExtension(lua_State *ls, const luaL_reg *reg) 
+void RegisterLuaExtension(lua_State *ls, const luaL_reg *reg)
 {
     for (; reg->name; reg++) {
         lua_pushcfunction(ls, reg->func);
@@ -1419,7 +1419,7 @@ char * GetComponentValue(lua_State * ls, NUTCOMPONENT * compo, char * item)
     lua_getglobal(ls, compo->nc_name);
     if (lua_istable(ls, -1)) {
         rc = GetStringByNameFromTable(ls, -1, item, NULL, 0);
-    } 
+    }
     if (rc == NULL && compo->nc_parent) {
         lua_pop(ls, 1);
         /* Get table of our parent component, which is hopefully global. */
@@ -1458,7 +1458,7 @@ static char ** GetComponentTableValues(lua_State * ls, NUTCOMPONENT * compo, cha
     lua_getglobal(ls, compo->nc_name);
     if (lua_istable(ls, -1)) {
         rc = GetStringArrayByNameFromTable(ls, -1, item);
-    } 
+    }
     if (rc == NULL && compo->nc_parent) {
         lua_pop(ls, 1);
         /* Get table of our parent component, which is hopefully global. */
@@ -1620,7 +1620,7 @@ static char * GetOptionStringValue(lua_State * ls, NUTCOMPONENT * compo, char * 
     lua_getglobal(ls, compo->nc_name);
     if (lua_istable(ls, -1)) {
         rc = GetOptionString(ls, macro, item);
-    } 
+    }
     if (rc == NULL && compo->nc_parent) {
         lua_pop(ls, 1);
         /* Get table of our parent component, which is hopefully global. */
@@ -1657,7 +1657,7 @@ static char * GetOptionStringValue(lua_State * ls, NUTCOMPONENT * compo, char * 
  *
  * \param ls    Lua state.
  * \param compo Pointer to a library component.
- * \param macro 
+ * \param macro
  * \param item
  *
  * \return Pointer to an array of strings, allocated from heap.
@@ -1670,7 +1670,7 @@ static char ** GetOptionTableValues(lua_State * ls, NUTCOMPONENT * compo, char *
     lua_getglobal(ls, compo->nc_name);
     if (lua_istable(ls, -1)) {
         rc = GetOptionTableStrings(ls, macro, item);
-    } 
+    }
     if (rc == NULL && compo->nc_parent) {
         lua_pop(ls, 1);
         /* Get table of our parent component, which is hopefully global. */
@@ -1760,7 +1760,7 @@ static int LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
                         free(script_result);
                     }
                 }
-                /* 
+                /*
                  * For backward compatibility. Drop down boxes of enumerated
                  * values didn't accept empty strings. To allow empty values,
                  * we used a space instead, which was a bad hack. Sigh!
@@ -1902,7 +1902,7 @@ void CloseRepository(NUTREPOSITORY *repo)
  * \param repo Pointer to the repository information.
  * \param path Pointer to the path name.
  */
-int RegisterSourcePath(NUTREPOSITORY *repo, const char *path) 
+int RegisterSourcePath(NUTREPOSITORY *repo, const char *path)
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTSOURCEPATH, path);
 }
@@ -1913,7 +1913,7 @@ int RegisterSourcePath(NUTREPOSITORY *repo, const char *path)
  * \param repo Pointer to the repository information.
  * \param path Pointer to the path name.
  */
-int RegisterBuildPath(NUTREPOSITORY *repo, const char *path) 
+int RegisterBuildPath(NUTREPOSITORY *repo, const char *path)
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTBUILDPATH, path);
 }
@@ -1924,7 +1924,7 @@ int RegisterBuildPath(NUTREPOSITORY *repo, const char *path)
  * \param repo Pointer to the repository information.
  * \param path Pointer to the path name.
  */
-int RegisterLibPath(NUTREPOSITORY *repo, const char *path) 
+int RegisterLibPath(NUTREPOSITORY *repo, const char *path)
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTLIBPATH, path);
 }
@@ -1935,7 +1935,7 @@ int RegisterLibPath(NUTREPOSITORY *repo, const char *path)
  * \param repo Pointer to the repository information.
  * \param path Pointer to the path name.
  */
-int RegisterSamplePath(NUTREPOSITORY *repo, const char *path) 
+int RegisterSamplePath(NUTREPOSITORY *repo, const char *path)
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTSAMPLEPATH, path);
 }
@@ -1946,7 +1946,7 @@ int RegisterSamplePath(NUTREPOSITORY *repo, const char *path)
  * \param repo     Pointer to the repository information.
  * \param platform Pointer to the platform name.
  */
-int RegisterCompilerPlatform(NUTREPOSITORY *repo, const char *platform) 
+int RegisterCompilerPlatform(NUTREPOSITORY *repo, const char *platform)
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTCOMPILERPLATFORM, platform);
 }
@@ -1966,13 +1966,13 @@ void ReleaseComponentOptions(NUTCOMPONENTOPTION *opts)
 	{
 		c = opts->nco_nxt;
 
-		if (opts->nco_name) 
+		if (opts->nco_name)
             free(opts->nco_name);
-        if (opts->nco_active_if) 
+        if (opts->nco_active_if)
             free(opts->nco_active_if);
-        if (opts->nco_value) 
+        if (opts->nco_value)
             free(opts->nco_value);
-        if (opts->nco_exclusivity) 
+        if (opts->nco_exclusivity)
             ReleaseStringArray(opts->nco_exclusivity);
 
 		free(opts);
@@ -1991,13 +1991,13 @@ void ReleaseComponents(NUTCOMPONENT *comp)
 		child = c;
 	}
 
-    if (comp->nc_name) 
+    if (comp->nc_name)
         free (comp->nc_name);
-    if (comp->nc_active_if) 
+    if (comp->nc_active_if)
         free(comp->nc_active_if);
-    if (comp->nc_exclusivity) 
+    if (comp->nc_exclusivity)
         ReleaseStringArray(comp->nc_exclusivity);
-	if (comp->nc_opts) 
+	if (comp->nc_opts)
         ReleaseComponentOptions(comp->nc_opts);
 	free (comp);
 }
@@ -2898,7 +2898,7 @@ void WriteMakeRootLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, ch
  * \todo This function's parameter list is a bit overloaded. Either split the function
  *       or use a parameter structure.
  */
-int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, 
+int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir, const char *src_dir,
                     const char *mak_ext, const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
 {
     FILE *fp;
@@ -3312,7 +3312,7 @@ int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_
  *
  * \return 0 on success, otherwise return -1.
  */
-int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir, 
+int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir,
                           const char *src_dir, const char *lib_dir, const char *mak_ext, const char *prg_ext,
                           const char *ifirst_dir, const char *ilast_dir)
 {

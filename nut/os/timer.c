@@ -345,7 +345,7 @@ void NutTimerInit(void)
 /*!
  * \brief Loop for a specified number of microseconds.
  *
- * This routine can be used for short delays below the system tick 
+ * This routine can be used for short delays below the system tick
  * time, mainly when driving external hardware, where the resolution
  * of NutSleep() wouldn't fit, a thread switch would be undesirable
  * or in early system initialization stage, where the system timer

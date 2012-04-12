@@ -780,7 +780,7 @@ static INLINE void VsSdiPutByte(ureg_t b)
 /*!
  * \brief Enable or disable player interrupts.
  *
- * This routine is typically used by applications when dealing with 
+ * This routine is typically used by applications when dealing with
  * unprotected buffers.
  *
  * \param enable Disables interrupts when zero. Otherwise interrupts
@@ -809,10 +809,10 @@ ureg_t VsPlayerInterrupts(ureg_t enable)
 /*!
  * \brief Throttle decoder activity.
  *
- * When sharing SPI with other devices, this function should be called 
+ * When sharing SPI with other devices, this function should be called
  * to disable (and re-enable) the SPI interface of the VS10XX.
  *
- * Decoder interrupts must have been disabled before calling this 
+ * Decoder interrupts must have been disabled before calling this
  * function.
  *
  * \code
@@ -859,8 +859,8 @@ static void VsSciSelect(ureg_t on)
         SdiDeselect();
 
 #if defined(VS10XX_SDI_SPI0_DEVICE) && !defined(VS10XX_SCI_SPI0_DEVICE)
-        /* Hint given by Jesper Hansen: If data channel uses HW SPI and 
-           command channel uses SW SPI, then disable HW SPI while sending 
+        /* Hint given by Jesper Hansen: If data channel uses HW SPI and
+           command channel uses SW SPI, then disable HW SPI while sending
            using the command channel. */
         cbi(SPCR, SPE);
 #endif
@@ -887,7 +887,7 @@ static void VsSciSelect(ureg_t on)
 /*!
  * \brief Wait for decoder ready.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
 static int VsWaitReady(void)
@@ -905,7 +905,7 @@ static int VsWaitReady(void)
 /*
  * \brief Write a specified number of bytes to the VS10XX data interface.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
 static int VsSdiWrite(CONST uint8_t * data, size_t len)
@@ -921,10 +921,10 @@ static int VsSdiWrite(CONST uint8_t * data, size_t len)
 }
 
 /*
- * \brief Write a specified number of bytes from program space to the 
+ * \brief Write a specified number of bytes from program space to the
  *        VS10XX data interface.
  *
- * This function is similar to VsSdiWrite() except that the data is 
+ * This function is similar to VsSdiWrite() except that the data is
  * located in program space.
  */
 static int VsSdiWrite_P(PGM_P data, size_t len)
@@ -968,7 +968,7 @@ static void VsRegWrite(ureg_t reg, uint16_t data)
  * \brief Read from a register.
  *
  * Decoder interrupts must have been disabled before calling this function.
- * 
+ *
  * \return Register contents.
  */
 static uint16_t VsRegRead(ureg_t reg)
@@ -993,7 +993,7 @@ static uint16_t VsRegRead(ureg_t reg)
 /*
  * \brief Feed the decoder with data.
  *
- * This function serves two purposes: 
+ * This function serves two purposes:
  * - It is called by VsPlayerKick() to initially fill the decoder buffer.
  * - It is used as an interrupt handler for the decoder.
  */
@@ -1006,7 +1006,7 @@ static void VsPlayerFeed(void *arg)
         return;
     }
 
-    /* 
+    /*
      * Feed the decoder until its buffer is full or we ran out of data.
      */
     if (vs_status == VS_STATUS_RUNNING) {
@@ -1049,8 +1049,8 @@ static void VsPlayerFeed(void *arg)
         NutSegBufReadLast(consumed);
     }
 
-    /* 
-     * Flush the internal VS buffer. 
+    /*
+     * Flush the internal VS buffer.
      */
     if(vs_status != VS_STATUS_RUNNING && vs_flush) {
         do {
@@ -1096,7 +1096,7 @@ int VsPlayerKick(void)
 /*!
  * \brief Stops the playback.
  *
- * This routine will stops the MP3 playback, VsPlayerKick() may be used 
+ * This routine will stops the MP3 playback, VsPlayerKick() may be used
  * to resume the playback.
  *
  * \return 0 on success, -1 otherwise.

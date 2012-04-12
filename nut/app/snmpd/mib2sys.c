@@ -207,7 +207,7 @@ static int MibVarsSysSet(int action, uint8_t * var_val, uint8_t var_val_type, si
  * \brief Access the specified MIB variable.
  *
  * \param vp
- * \param name    Contains the name to look for, either exact or one that 
+ * \param name    Contains the name to look for, either exact or one that
  *                is in front. On return the exact name is stored here.
  * \param namelen Number of sub identifiers in the name upon entry. On
  *                return the length of the exact name is stored here.

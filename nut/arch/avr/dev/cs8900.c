@@ -119,7 +119,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -361,7 +361,7 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
     // Wait for buffer space, but only for a while (200ms)
     // If the cable is disconnected this will never become true
     // If we don't get the go ahead within 200ms return 0 (Sucess)
-    // And let the upper layers deal with re-transmission 
+    // And let the upper layers deal with re-transmission
     // If we return failure TCP sockets will close straight away which probably
     // isn't the correct behaviour
     i = 0;
@@ -411,9 +411,9 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
  *              The structure must have been allocated by a previous
  *              call NutNetBufAlloc(). This buffer will be automatically
  *              released in case of an error.
- * 
+ *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 
@@ -444,7 +444,7 @@ int CSNicOutput(NUTDEVICE * dev, NETBUF * nb)
 /*! \fn CSNICrx(void *arg)
  * \brief NIC receiver thread.
  *
- * 
+ *
  * It runs with high priority.
  */
 
@@ -600,7 +600,7 @@ int CSNicInit(NUTDEVICE * dev)
 
     //
     //  Copy our MAC address to the NIC
-    // 
+    //
     for (i = 0; i < 6; i += 2) {
         j = ifn->if_mac[i] << 8;
         j |= ifn->if_mac[i + 1];
@@ -625,7 +625,7 @@ int CSNicInit(NUTDEVICE * dev)
     //i = CSReadPP16(CS_RX_CTL);
     //NutPrintFormat_P(dev_debug,PSTR("CS_RX_CTL = %x\r\n"), i);
 
-    // 
+    //
     // Start receiver thread
     //
     NutThreadCreate("csnicrx", CSNICrx, dev, 500);

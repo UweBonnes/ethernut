@@ -1,9 +1,9 @@
 // prefix all function calls and definitions by NUT_
 
-// rename FILE to NUT_FILE 
+// rename FILE to NUT_FILE
 #define FILE NUT_FILE
 
-// 
+//
 #define NUT_STDIO_PREFIXED
 
 // prefix all stdio calls with NUT_

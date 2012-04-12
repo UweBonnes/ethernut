@@ -192,9 +192,9 @@ int SpiFlashWriteByte(uint8_t high, uint16_t addr, uint8_t data)
         SpiByte(data);
 
         /*
-         * During programming a value of 0x7F appears at the memory location. 
+         * During programming a value of 0x7F appears at the memory location.
          * If we are programming this value, we delay execution by 10 ms.
-         * Otherwise we poll the memory location until we read back the 
+         * Otherwise we poll the memory location until we read back the
          * programmed value.
          */
         if (data == 0x7f)
@@ -286,14 +286,14 @@ int main(void)
     if (fp == 0) {
         printf("ERROR: Failed to open %s\n", filename);
         for(;;);
-    } 
+    }
 
     /*
      * Try to enter programming mode.
      */
     printf("Enable programming...");
     if(SpiFlashEnable()) {
-        puts("failed\n" 
+        puts("failed\n"
              "Make sure that the ISP adapter is connected to the\n"
              "Ethernut ISP port and that the MCU on the adapter\n"
              "is held in reset state.");

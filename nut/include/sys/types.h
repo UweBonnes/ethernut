@@ -201,7 +201,7 @@ __BEGIN_DECLS
 
 #ifndef __NUT_EMULATION__
 
-/*! \brief Unsigned 8-bit value. 
+/*! \brief Unsigned 8-bit value.
  *
  * \todo We should switch to stdint.h as suggested by Dirk Kaufmann. See
  *       feature request #1282721.
@@ -332,7 +332,7 @@ typedef void *HANDLE;
 #else
 #define htons(x) (x)
 #endif
-    
+
 /*!
  * \brief Convert long value from host to network byte order.
  */

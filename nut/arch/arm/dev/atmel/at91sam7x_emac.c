@@ -412,7 +412,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 
     if (fbc) {
         /*
-         * Receiving long packets is unexpected. Let's declare the 
+         * Receiving long packets is unexpected. Let's declare the
          * chip insane. Short packets will be handled by the caller.
          */
         if (fbc > EMAC_TX_BUFSIZ) {
@@ -456,7 +456,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
@@ -466,7 +466,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
     uint8_t *buf;
 
     /*
-     * Calculate the number of bytes to be send. Do not send packets 
+     * Calculate the number of bytes to be send. Do not send packets
      * larger than the Ethernet maximum transfer unit. The MTU
      * consist of 1500 data bytes plus the 14 byte Ethernet header
      * plus 4 bytes CRC. We check the data bytes only.
@@ -602,13 +602,13 @@ THREAD(EmacRxThread, arg)
 
     for (;;) {
         /*
-         * Wait for the arrival of new packets or poll the receiver 
+         * Wait for the arrival of new packets or poll the receiver
          * every two seconds.
          */
         NutEventWait(&ni->ni_rx_rdy, 2000);
 
         /*
-         * Fetch all packets from the NIC's internal buffer and pass 
+         * Fetch all packets from the NIC's internal buffer and pass
          * them to the registered handler.
          */
         while (EmacGetPacket(ni, &nb) == 0) {
@@ -697,8 +697,8 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.
@@ -721,7 +721,7 @@ int EmacInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("emacrx", EmacRxThread, dev, 
+    if (NutThreadCreate("emacrx", EmacRxThread, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
@@ -754,11 +754,11 @@ static IFNET ifn_eth0 = {
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devAt91Emac = {
     0,                          /*!< \brief Pointer to next device. */

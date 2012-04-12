@@ -31,7 +31,7 @@
  *
  */
 
-/* 
+/*
  * unix_thread.c - unix emulation of cooperative threads using pthreads
  *
  * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
@@ -91,7 +91,7 @@ void NutThreadInit(void)
 
 /*
  * This code is executed when entering a thread.
- *  
+ *
  *
  */
 static void *NutThreadEntry(void *arg);
@@ -108,7 +108,7 @@ static void *NutThreadEntry(void *arg)
     pthread_cond_wait(&td->td_cv, &thread_mutex);
     pthread_mutex_unlock(&thread_mutex);
 
-    // set critical section value 
+    // set critical section value
     td->td_cs_level = 0;
 
     // enable interrupts
@@ -122,7 +122,7 @@ static void *NutThreadEntry(void *arg)
     // tell nut/os about it
     NutThreadExit();
 
-    // thread exit routine 
+    // thread exit routine
     pthread_exit(NULL);
 
     // make some compilers happy
@@ -177,7 +177,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
     td->td_name[sizeof(td->td_name) - 1] = 0;
 
-    // set initial critical section value 
+    // set initial critical section value
     td->td_cs_level = 1;
 
     /*
@@ -210,7 +210,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
      * If no thread is active, switch to new thread.
      * this also means, we're called from nutinit
      * (if not, there would be a runningThread..)
-     *  
+     *
      */
     if (runningThread == 0) {
 

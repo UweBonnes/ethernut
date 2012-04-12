@@ -3,7 +3,7 @@
  *
  * All rights reserved.
  *
- * The original code had been released as part of the LoastARM Project 
+ * The original code had been released as part of the LoastARM Project
  * under GPL Version 2 and is published here under the following license
  * with kind permission from the author:
  *

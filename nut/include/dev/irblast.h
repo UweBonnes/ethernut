@@ -39,7 +39,7 @@
  * codes using a simple IR LED. Cool.
  *
  */
- 
+
 #ifndef _IRBLAST_H_
 #define _IRBLAST_H_
 

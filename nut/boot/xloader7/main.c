@@ -2,7 +2,7 @@
  * XMODEM BOOTLOADER FOR ARM USING CODE SOURCERY
 *****************************************************************************/
 
-#include "board.h"   	/* Board Support Package */        
+#include "board.h"   	/* Board Support Package */
 #include "AT91SAM7S.h"
 #include "lib_AT91SAM7S.h"
 
@@ -39,7 +39,7 @@ typedef void (*funct)(void);
 
 //{{{  poll_UART
 
-static unsigned char uart_rxbuf[UART_RXBUFSIZE];  
+static unsigned char uart_rxbuf[UART_RXBUFSIZE];
 static unsigned short rx_index=0,tx_index=0;
 
 __attribute__ ((section (".text.fastcode"))) void poll_UART(void) {
@@ -52,7 +52,7 @@ __attribute__ ((section (".text.fastcode"))) void poll_UART(void) {
 
 //{{{  getc_UART
 
-unsigned char getc_UART() {  
+unsigned char getc_UART() {
 	unsigned char c;
 
 	while(rx_index==tx_index) poll_UART();
@@ -208,7 +208,7 @@ void wait(unsigned long time) {
 void error(unsigned char code) {
 	while(1) {
 		putc_UART(CAN);
-    	switch(code) { 
+    	switch(code) {
 			case 0: puts_UART("Error writing last page\r\n"); break;
 			case 1: puts_UART("CAN received\r\n"); break;
 			case 2: puts_UART("Error writting flash page\r\n"); break;
@@ -264,10 +264,10 @@ int main (void) {
     pPMC->PMC_PLLR = ((AT91C_CKGR_DIV & 0x05)
                       | (AT91C_CKGR_PLLCOUNT & (28 << 8))
                       | (AT91C_CKGR_MUL & (25 << 16)));
-    while ((pPMC->PMC_SR & AT91C_PMC_LOCK) == 0);   
+    while ((pPMC->PMC_SR & AT91C_PMC_LOCK) == 0);
 
 /* Wait the startup time */
-    while ((pPMC->PMC_SR & AT91C_PMC_MCKRDY) == 0); 
+    while ((pPMC->PMC_SR & AT91C_PMC_MCKRDY) == 0);
 //}}}
 
 	//{{{  Switch ARM core clock and master clock to PLL
@@ -293,7 +293,7 @@ int main (void) {
 	AT91F_PIO_CfgPeriph(AT91C_BASE_PIOA,((unsigned int) AT91C_PA22_TXD1)|((unsigned int) AT91C_PA21_RXD1),0);
 #endif
 #if BOOTLOADER_UART == 2
-	AT91F_PIO_CfgPeriph(AT91C_BASE_PIOA,((unsigned int) AT91C_PA9_DRXD)|((unsigned int) AT91C_PA10_DTXD), 0); 
+	AT91F_PIO_CfgPeriph(AT91C_BASE_PIOA,((unsigned int) AT91C_PA9_DRXD)|((unsigned int) AT91C_PA10_DTXD), 0);
 #endif
 
     // Configure UART
@@ -307,17 +307,17 @@ int main (void) {
 
     // Enable Transmitter & receiver
     //-----------------------------------
-    ((AT91PS_USART)BOOTLOADER_UART_BASE)->US_CR = AT91C_US_RXEN | AT91C_US_TXEN;    
+    ((AT91PS_USART)BOOTLOADER_UART_BASE)->US_CR = AT91C_US_RXEN | AT91C_US_TXEN;
        //}}}
 
 	
 	/* Check for bootloader key */
 	wait(200000);
-    puts_UART("\r\nXLoader 7.0"); 
+    puts_UART("\r\nXLoader 7.0");
 	wait(500000*3);
 	if (kbhit_UART()) c = getc_UART();
-	if(c != '\r') { 
-		puts_UART(" - run"); 
+	if(c != '\r') {
+		puts_UART(" - run");
      	goto StartCode;
 	} else {
 		puts_UART(" - x/ymodem 1k/CRC\r\n");
@@ -326,14 +326,14 @@ int main (void) {
     /* Init xmodem variable */
     index = 0;
     xmodem_pktid = 1;
-	pkt_count = 0; 			// Only use is to detect ymodem header packet ID=0  
+	pkt_count = 0; 			// Only use is to detect ymodem header packet ID=0
 	ymodem = 0;				// Set to 1 if detect YMODEM transfer
     page = (CODE_START-(unsigned int)AT91C_IFLASH) / AT91C_IFLASH_PAGE_SIZE;
     page_index = 0;
 	crc16_init();
 
 	/* HANDSHACKING FOR XMODEM CRC/1K OR YMODEM */
-    while(1) {   
+    while(1) {
 
         // Search for SOH or STX start flag
 	    if (kbhit_UART()) {
@@ -341,7 +341,7 @@ int main (void) {
 		    if(c==SOH || c==STX) break;
 	    }
 
-        // Send CRC 
+        // Send CRC
         putc_UART(CRC);
 
         // Wait loop
@@ -358,32 +358,32 @@ int main (void) {
 		/* GET CARACTER FROM SERIAL PORT */
         AT91F_WDTRestart(AT91C_BASE_WDTC);
 		waitloop=0;
-	    while(kbhit_UART()==0) { 
+	    while(kbhit_UART()==0) {
 			waitloop++;
 			if(waitloop==500000) { waitloop=0; putc_UART(NAK); }   // Timeout
 		}
 		c = getc_UART();
-        
+
 		/* FIRST CARACTER: CHECK PACKET TYPE */
-        if(index==0) {   		 
+        if(index==0) {   		
             if(c==EOT) {                                    // End of transfer
 				
 				/* DO NOT FLUSH FLASH BUFFER ON 2ND YMODEM SEQUENCE */
-                if(ymodem<2 && page_index!=0) {           
+                if(ymodem<2 && page_index!=0) {
                     if(AT91F_Flash_Write(page, page_buffer)==0) error(0);
-                }   
+                }
 
                 if(ymodem) {
-					if(ymodem==1) { 
-						putc_UART(NAK);   	// 1st YMODEM end sequence 
-						ymodem++; 
+					if(ymodem==1) {
+						putc_UART(NAK);   	// 1st YMODEM end sequence
+						ymodem++;
 				     } else {
 						 putc_UART(ACK);    // 2nd YMODEM end sequence (reset receiver for next batch)
-						 putc_UART(CRC); 
+						 putc_UART(CRC);
    						 xmodem_pktid = 1;
-					 	 pkt_count = 0; 
+					 	 pkt_count = 0;
 					 }
-				} else { 
+				} else {
 					putc_UART(ACK);         // XMODEM end sequence
 					break;
                 }
@@ -394,17 +394,17 @@ int main (void) {
 		/* RECEIVE PACKET, CHECK FOR END OF BLOCK */
         } else {
             xmodem_buf[index++] = c;
-            if((xmodem_buf[0]==SOH && index==(PACKET_SIZE+PACKET_OVERHEAD_CRC)) || 
+            if((xmodem_buf[0]==SOH && index==(PACKET_SIZE+PACKET_OVERHEAD_CRC)) ||
                (xmodem_buf[0]==STX && index==(PACKET_1K_SIZE+PACKET_OVERHEAD_CRC)) ) {
 
 				// Detect YMODEM transfer, end batch if filename is NULL
-				if(xmodem_buf[1]==0 && pkt_count==0) { 
-					ymodem=1; 
-					index=0; 
-					putc_UART(ACK); 
+				if(xmodem_buf[1]==0 && pkt_count==0) {
+					ymodem=1;
+					index=0;
+					putc_UART(ACK);
 					if(xmodem_buf[3]!=0) {
-						putc_UART(CRC);				// Start new YMODEM transfer 
-						continue; 
+						putc_UART(CRC);				// Start new YMODEM transfer
+						continue;
 					} else {
 						break;                      // Pathname is NULL, end batch transfer
 					}
@@ -419,7 +419,7 @@ int main (void) {
                 putc_UART(ACK);
 
                 // Transfer packet in flash page buffer
-                p = 3; 
+                p = 3;
                 i=(xmodem_buf[0]==SOH?PACKET_SIZE:PACKET_1K_SIZE);
 				while(i--) {
                     poll_UART();
@@ -429,7 +429,7 @@ int main (void) {
 	                if(page_index==AT91C_IFLASH_PAGE_SIZE) {
 	   	                if(AT91F_Flash_Write(page,page_buffer)==0) error(2);
         	            page_index=0;
-            	        page++;  
+            	        page++;
                 	}
                 }
 
@@ -438,7 +438,7 @@ int main (void) {
             }
         }
     }
-     
+
 	 puts_UART("complete\r\n  ");
 
 StartCode:

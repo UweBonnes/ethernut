@@ -62,7 +62,7 @@
  * program memory.
  *
  * \param buffer Pointer to a buffer that receives the output string.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  *
  * \return The number of characters written or a negative value to

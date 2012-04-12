@@ -52,12 +52,12 @@
 /*!
  * \brief Number of bytes available in fast data memory.
  *
- * On most platforms this value specifies the total number of bytes 
- * available in RAM. 
+ * On most platforms this value specifies the total number of bytes
+ * available in RAM.
  *
- * On Harvard architectures this value specifies the size of the data 
- * memory. It will be occupied by global variables and static data. 
- * Any remaining space will be added to the Nut/OS heap during system 
+ * On Harvard architectures this value specifies the size of the data
+ * memory. It will be occupied by global variables and static data.
+ * Any remaining space will be added to the Nut/OS heap during system
  * initialization.
  *
  */
@@ -75,8 +75,8 @@
 /*!
  * \brief Number of bytes reserved for special purposes.
  *
- * Right now this is used with the AVR platform only. The specified 
- * number of bytes may be used by a device driver when the external 
+ * Right now this is used with the AVR platform only. The specified
+ * number of bytes may be used by a device driver when the external
  * memory interface is disabled.
  */
 #define NUTMEM_RESERVED 64
@@ -138,7 +138,7 @@
  */
 #ifndef ARTHERCPLDSTART
 #define ARTHERCPLDSTART  0x1100
-#endif 
+#endif
 
 #ifndef ARTHERCPLDSPI
 #define ARTHERCPLDSPI    0x1200

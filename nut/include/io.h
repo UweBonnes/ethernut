@@ -51,8 +51,8 @@
 
 #ifndef _NUT_IO_H_
 #define	_NUT_IO_H_
- 
- 
+
+
 #include <sys/types.h>
 
 /*!
@@ -60,7 +60,7 @@
  */
 /*@{*/
 
-/* 
+/*
  * Some global definitions for ioctl commands.
  */
 #define IOCTL_GETSTATUS                 0x0001

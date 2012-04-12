@@ -133,10 +133,10 @@ void vsyslog_P(int pri, PGM_P fmt_P, va_list ap)
  *            - LOG_CRIT    Critical conditions, e.g., hard device errors.
  *            - LOG_ERR     Errors.
  *            - LOG_WARNING Warning messages.
- *            - LOG_NOTICE  Conditions that are not error conditions, but should 
+ *            - LOG_NOTICE  Conditions that are not error conditions, but should
  *                          possibly be handled specially.
  *            - LOG_INFO    Informational messages.
- *            - LOG_DEBUG   Messages that contain information normally of use only 
+ *            - LOG_DEBUG   Messages that contain information normally of use only
  *                          when debugging a program.
  * \param fmt_P Format string containing conversion specifications like printf.
  */

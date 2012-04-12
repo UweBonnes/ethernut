@@ -42,7 +42,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -149,7 +149,7 @@ int DhcpTransact(int slen, u_char xtype)
  * On success, this routine will fill some global
  * variables:
  *
- * - local_ip 
+ * - local_ip
  * - server_ip
  * - bootfile
  * - netmask
@@ -157,7 +157,7 @@ int DhcpTransact(int slen, u_char xtype)
  * - gateway
  * - dns
  * - sid
- * 
+ *
  * \return 0 on success, -1 otherwise.
  */
 int DhcpQuery(void)
@@ -202,7 +202,7 @@ int DhcpQuery(void)
         return -1;
     }
     DhcpGetOption(DHCPOPT_SID, &sid, 4);
-    
+
 
     /*
      * Request loop.

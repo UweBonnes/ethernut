@@ -106,7 +106,7 @@ char *NutSegBufReset(void)
  * \brief Initialize the segmented buffer.
  *
  * \param size Number of bytes to allocate for the global buffer.
- *             In systems with banked memory this parameter is 
+ *             In systems with banked memory this parameter is
  *             ignored and all banked memory is occupied for the
  *             global buffer. In systems without banked memory,
  *             the specified number of bytes is taken from heap
@@ -142,7 +142,7 @@ char *NutSegBufInit(size_t size)
  * may disable the current read segment.
  *
  * \param bcp Pointer to a variable, which receives the
- *            number of consecutive bytes available for 
+ *            number of consecutive bytes available for
  *            writing.
  *
  * \return Pointer to the next write position.
@@ -165,7 +165,7 @@ char *NutSegBufWriteRequest(size_t * bcp)
  * may disable the current write segment.
  *
  * \param bcp Pointer to a variable, which receives the
- *            number of consecutive bytes available for 
+ *            number of consecutive bytes available for
  *            reading.
  *
  * \return Pointer to the next read position.
@@ -247,7 +247,7 @@ char *NutSegBufReadCommit(size_t bc)
  * \brief Commit written buffer space and finish write access.
  *
  * The write pointer will be incremented by the specified number of bytes.
- * This call will also enable the current read segment and may disable the 
+ * This call will also enable the current read segment and may disable the
  * current write segment.
  *
  * \param bc Number of bytes to commit.
@@ -273,7 +273,7 @@ void NutSegBufWriteLast(size_t bc)
  * \brief Commit written buffer space and finish read access.
  *
  * The write pointer will be incremented by the specified number of bytes.
- * This call will also enable the current read segment and may disable the 
+ * This call will also enable the current read segment and may disable the
  * current write segment.
  *
  * \param bc Number of bytes to commit.

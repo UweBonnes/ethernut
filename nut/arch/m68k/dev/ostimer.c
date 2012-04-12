@@ -120,7 +120,7 @@ static void NutTimerIntr(void *arg)
 
             /*
              * We can't touch the heap while running in
-             * interrupt context. Oneshot timers are added 
+             * interrupt context. Oneshot timers are added
              * to a pool of available timers.
              */
             else {

@@ -57,19 +57,19 @@
 /*! \name Power Management Registers */
 /*@{*/
 /*! \brief Version register. */
-#define PWRMAN_REG_VERS         0       
+#define PWRMAN_REG_VERS         0
 /*! \brief Feature status register. */
-#define PWRMAN_REG_STA          1       
+#define PWRMAN_REG_STA          1
 /*! \brief Feature enable register. */
-#define PWRMAN_REG_ENA          2       
+#define PWRMAN_REG_ENA          2
 /*! \brief Feature disable register. */
-#define PWRMAN_REG_DIS          3       
+#define PWRMAN_REG_DIS          3
 /*! \brief Board temperature register. */
-#define PWRMAN_REG_TEMP         4       
+#define PWRMAN_REG_TEMP         4
 /*! \brief Auxiliary input voltage register. */
-#define PWRMAN_REG_VAUX         6       
+#define PWRMAN_REG_VAUX         6
 /*! \brief LED blinking timer register. */
-#define PWRMAN_REG_LEDCTL       8       
+#define PWRMAN_REG_LEDCTL       8
 /*@}*/
 
 /* \name Feature flags */
@@ -77,19 +77,19 @@
 /*! \brief 1.8V and 3.3V supply. */
 #define PWRMAN_BOARD    0x01
 /*! \brief VBUS input at device connector. */
-#define PWRMAN_VBIN     0x02    
+#define PWRMAN_VBIN     0x02
 /*! \brief VBUS output at host connector. */
-#define PWRMAN_VBOUT    0x04    
+#define PWRMAN_VBOUT    0x04
 /*! \brief Memory card supply. */
-#define PWRMAN_MMC      0x08    
+#define PWRMAN_MMC      0x08
 /*! \brief RS-232 driver shutdown. */
-#define PWRMAN_RS232    0x10    
+#define PWRMAN_RS232    0x10
 /*! \brief Ethernet clock enable. */
-#define PWRMAN_ETHCLK   0x20    
+#define PWRMAN_ETHCLK   0x20
 /*! \brief Ethernet PHY reset. */
-#define PWRMAN_ETHRST   0x40    
+#define PWRMAN_ETHRST   0x40
 /*! \brief RTC wake-up. */
-#define PWRMAN_WAKEUP   0x80    
+#define PWRMAN_WAKEUP   0x80
 /*@}*/
 
 #define ARM_TTD_DOM_LSB     5
@@ -222,7 +222,7 @@ static void BootMicroDelay(int us)
 /*!
  * \brief Millisecond delay.
  *
- * We are running prior to Nut/OS timer initialization and cannot use 
+ * We are running prior to Nut/OS timer initialization and cannot use
  * NutSleep, not even NutDelay.
  *
  * \param ms Number of milliseconds.

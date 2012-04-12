@@ -120,11 +120,11 @@
  * Opens a directory and associates a directory stream with it.
  *
  * \param name Pathname of the directory. Must be the full pathname
- *             including the device, because Nut/OS doesn't support 
+ *             including the device, because Nut/OS doesn't support
  *             relative paths.
  *
- * \return A pointer used to identify the directory stream in subsequent 
- *         operations. NULL is returned if the directory cannot be accessed, 
+ * \return A pointer used to identify the directory stream in subsequent
+ *         operations. NULL is returned if the directory cannot be accessed,
  *         or if it cannot allocate enough memory.
  */
 DIR *opendir(CONST char *name)
@@ -184,7 +184,7 @@ DIR *opendir(CONST char *name)
  *
  * \param dir Pointer to the directory stream.
  *
- * \return 0 on success. On failure, -1 is returned and the global 
+ * \return 0 on success. On failure, -1 is returned and the global
  *         variable errno is set to indicate the error.
  */
 int closedir(DIR * dir)
@@ -207,7 +207,7 @@ int closedir(DIR * dir)
  *
  * \param dir Pointer to the directory stream.
  *
- * \return A pointer to the next directory entry. It returns NULL upon 
+ * \return A pointer to the next directory entry. It returns NULL upon
  *         reaching the end of the directory.
  */
 struct dirent *readdir(DIR * dir)

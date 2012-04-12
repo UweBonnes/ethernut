@@ -86,7 +86,7 @@ typedef enum
   SCIF_GCCTRL_RC32K  = AVR32_SCIF_GC_USES_RC32K,
   SCIF_GCCTRL_CLK1K  = AVR32_SCIF_GC_USES_CLK_1K,
 #if (UC3L0128 || UC3L0256)
-  SCIF_GCCTRL_PLL0  = AVR32_SCIF_GC_USES_PLL0, 
+  SCIF_GCCTRL_PLL0  = AVR32_SCIF_GC_USES_PLL0,
 #endif
   SCIF_GCCTRL_OSCSEL_INVALID
 } scif_gcctrl_oscsel_t;
@@ -174,7 +174,7 @@ typedef struct
   //! PLL DIV in the PLL formula
   unsigned int    div;
   //! PLL lockount
-  unsigned int    lockcount;                    
+  unsigned int    lockcount;
   //! Specify the scillator input.
   unsigned char   osc;
 } scif_pll_opt_t;
@@ -416,10 +416,10 @@ extern long int scif_enable_osc(scif_osc_t osc, unsigned int startup, bool wait_
 
 /*!
  * \brief This function will setup PLL0.
- * \param opt The configuration of the PLL [INPUT] 
+ * \param opt The configuration of the PLL [INPUT]
  * \return Status.
  *   \retval 0   PLL successfully configured
- *   \retval <0  Error. 
+ *   \retval <0  Error.
  */
 extern long int scif_pll0_setup(const scif_pll_opt_t *opt);
 
@@ -427,7 +427,7 @@ extern long int scif_pll0_setup(const scif_pll_opt_t *opt);
  * \brief This function will enable PLL0.
  * \return Status.
  *   \retval 0   PLL successfully enabled
- *   \retval <0  Error starting the PLL.  
+ *   \retval <0  Error starting the PLL.
  */
 extern long int scif_pll0_enable(void);
 
@@ -435,7 +435,7 @@ extern long int scif_pll0_enable(void);
  * \brief This function will disable PLL0.
  * \return Status.
  *   \retval 0   PLL successfully disabled
- *   \retval <0  Error disabling the PLL.  
+ *   \retval <0  Error disabling the PLL.
  */
 extern long int scif_pll0_disable(void);
 

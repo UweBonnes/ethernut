@@ -67,8 +67,8 @@ __BEGIN_DECLS
  * This function can be used by applications to prevent hang-ups.
  *
  * \param ms    Watch dog time out in milliseconds.
- * \param xmode Hardware specific mode. If 0, the default mode is used. 
- *              In this mode, the watch dog will reset the CPU if not 
+ * \param xmode Hardware specific mode. If 0, the default mode is used.
+ *              In this mode, the watch dog will reset the CPU if not
  *              restarted within the specified time out period.
  *
  * \return The actual time out value, which may differ from the
@@ -92,7 +92,7 @@ __BEGIN_DECLS
  *
  * \todo AVR implementation.
  *
- * \note The AT91 implementation does not calculate the actual time out 
+ * \note The AT91 implementation does not calculate the actual time out
  *       value, but simply returns the specified number of milliseconds.
  */
 extern uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode);
@@ -168,4 +168,4 @@ __END_DECLS
 /*@}*/
 
 #endif
- 
+

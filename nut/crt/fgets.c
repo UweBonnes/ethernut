@@ -56,7 +56,7 @@
 /*!
  * \brief Read a line from a stream.
  *
- * Read at most one less than the specified number of characters from 
+ * Read at most one less than the specified number of characters from
  * a stream or stop when a newline has been read.
  *
  * \param buffer Pointer to the buffer that receives the data
@@ -64,7 +64,7 @@
  * \param count  Maximum number of characters to read.
  * \param stream Pointer to a previously opened stream.
  *
- * \return Pointer to the given buffer or NULL to indicate an error or 
+ * \return Pointer to the given buffer or NULL to indicate an error or
  *         the end of the file.
  *
  * \warning The function will not check, if the stream pointer points

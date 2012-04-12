@@ -97,7 +97,7 @@ int Sbbi0SetMode(ureg_t ix, ureg_t mode)
  *
  * \param ix   The device index, starting at 0.
  * \param rate Transfer rate in bits per second.
- * 
+ *
  */
 void Sbbi0SetSpeed(ureg_t ix, uint32_t rate)
 {
@@ -132,7 +132,7 @@ static INLINE void Sbbi0Delay(void)
  *
  * Enables SPI with the parameters previously set by Sbbi0SetMode().
  *
- * \param ix The device index, starting at 0. The routine will not check 
+ * \param ix The device index, starting at 0. The routine will not check
  *           if this is valid.
  */
 void Sbbi0Enable(ureg_t ix)
@@ -265,11 +265,11 @@ void Sbbi0ChipSelect(ureg_t ix, ureg_t hi)
  * \brief Select the device at a given chip select.
  *
  * Enables the serial peripheral interface with the parameters
- * previously set for the given device by Sbbi0SetMode() and 
+ * previously set for the given device by Sbbi0SetMode() and
  * Sbbi0SetSpeed(). Then the configured chip select line is
  * driven high.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sbbi0SelectDevice(ureg_t ix)
@@ -283,7 +283,7 @@ void Sbbi0SelectDevice(ureg_t ix)
  *
  * The configured chip select line will be driven low.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sbbi0DeselectDevice(ureg_t ix)
@@ -295,11 +295,11 @@ void Sbbi0DeselectDevice(ureg_t ix)
  * \brief Select the device at a given negated chip select.
  *
  * Enables the serial peripheral interface with the parameters
- * previously set for the given device by Sbbi0SetMode() and 
+ * previously set for the given device by Sbbi0SetMode() and
  * Sbbi0SetSpeed(). Then the configured chip select line is
  * driven low.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sbbi0NegSelectDevice(ureg_t ix)
@@ -313,7 +313,7 @@ void Sbbi0NegSelectDevice(ureg_t ix)
  *
  * The configured chip select line will be driven high.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sbbi0NegDeselectDevice(ureg_t ix)
@@ -424,7 +424,7 @@ uint8_t Sbbi0Byte(uint8_t data)
  * initialized by calling Sbbi0SetMode() and optionally Sbbi0SetSpeed().
  *
  * Further it is assumed, that the chip select (if there is one) had
- * been enabled by a previous call to Sbbi0SelectDevice() or 
+ * been enabled by a previous call to Sbbi0SelectDevice() or
  * Sbbi0NegSelectDevice().
  *
  * \param wdata Pointer to the data to transmit.

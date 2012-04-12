@@ -67,7 +67,7 @@
 
 /*
  * This file is reserved to specify architecture dependant
- * configuration and is currently used as a placeholder 
+ * configuration and is currently used as a placeholder
  * when not using the Configurator.
  */
 

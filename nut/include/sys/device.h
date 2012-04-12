@@ -153,7 +153,7 @@ typedef struct _NUTDEVICE NUTDEVICE;
  * Each device driver provides a global variable of this type.
  * Applications use NutRegisterDevice() to bind the device
  * driver to the application code. Except this call, applications
- * refer to device drivers by the name of the device when using 
+ * refer to device drivers by the name of the device when using
  * standard C functions like _open() or fopen().
  *
  * More than one device driver may be available for the same
@@ -163,18 +163,18 @@ typedef struct _NUTDEVICE NUTDEVICE;
  */
 struct _NUTDEVICE {
 
-    /*! 
-     * \brief Link to the next device structure. 
+    /*!
+     * \brief Link to the next device structure.
      */
     NUTDEVICE *dev_next;
 
-    /*! 
-     * \brief Unique device name. 
+    /*!
+     * \brief Unique device name.
      */
     char dev_name[9];
 
-    /*! 
-     * \brief Type of interface. 
+    /*!
+     * \brief Type of interface.
      *
      * May be any of the following:
      * - IFTYP_RAM
@@ -186,78 +186,78 @@ struct _NUTDEVICE {
      */
     uint8_t dev_type;
 
-    /*! 
+    /*!
      * \brief Hardware base address.
      *
-     * Will be set by calling NutRegisterDevice(). On some device 
+     * Will be set by calling NutRegisterDevice(). On some device
      * drivers this address may be fixed.
      */
     uintptr_t dev_base;
 
-    /*! \brief Interrupt registration number. 
+    /*! \brief Interrupt registration number.
      *
-     * Will be set by calling NutRegisterDevice(). On some device 
+     * Will be set by calling NutRegisterDevice(). On some device
      * drivers the interrupt may be fixed.
      */
     uint8_t dev_irq;
 
     /*! \brief Interface control block.
      *
-     * With stream devices, this points to the IFSTREAM structure and 
+     * With stream devices, this points to the IFSTREAM structure and
      * with network devices this is a pointer to the IFNET structure.
      */
     void *dev_icb;
 
-    /*! 
+    /*!
      * \brief Driver control block.
      *
      * Points to a device specific information block.
      */
     void *dev_dcb;
 
-    /*! 
-     * \brief Driver initialization routine. 
+    /*!
+     * \brief Driver initialization routine.
      *
      * This routine is called during device registration.
      */
     int (*dev_init) (NUTDEVICE *);
 
-    /*! 
+    /*!
      * \brief Driver control function.
      *
      * Used to modify or query device specific settings.
      */
     int (*dev_ioctl) (NUTDEVICE *, int, void *);
 
-    /*! 
-     * \brief Read from device. 
+    /*!
+     * \brief Read from device.
      */
     int (*dev_read) (NUTFILE *, void *, int);
 
-    /*! 
-     * \brief Write to device. 
+    /*!
+     * \brief Write to device.
      */
     int (*dev_write) (NUTFILE *, CONST void *, int);
 
-    /*! 
-     * \brief Write to device. 
+    /*!
+     * \brief Write to device.
      */
 #ifdef __HARVARD_ARCH__
     int (*dev_write_P) (NUTFILE *, PGM_P, int);
 #endif
 
-    /*! 
-     * \brief Open a device or file. 
+    /*!
+     * \brief Open a device or file.
      */
     NUTFILE * (*dev_open) (NUTDEVICE *, CONST char *, int, int);
 
-    /*! 
-     * \brief Close a device or file. 
+    /*!
+     * \brief Close a device or file.
      */
     int (*dev_close) (NUTFILE *);
 
-    /*! 
-     * \brief Request file size. 
+    /*!
+     * \brief Request file size.
      */
     long (*dev_size) (NUTFILE *);
 

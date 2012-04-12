@@ -313,7 +313,7 @@ THREAD(Scanner, arg)
 /*!
  * \brief Initialize the MP3 player.
  *
- * Initializes the decoder and the decoder buffer and starts the 
+ * Initializes the decoder and the decoder buffer and starts the
  * player background thread.
  */
 int ScannerInit(void)

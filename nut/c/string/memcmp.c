@@ -78,14 +78,14 @@
 
 /*!
  * \brief Compare memory regions.
- * 
+ *
  * Both memory regions are assumed to be of equal length.
  *
  * \param s1 Pointer to first memory region.
  * \param s2 Pointer to second memory region.
  * \param n  Number of bytes to compare.
  *
- * \return Zero if the two regions are identical, otherwise returns the 
+ * \return Zero if the two regions are identical, otherwise returns the
  *         difference between the first two differing bytes.
  */
 int memcmp(CONST void *s1, CONST void *s2, size_t n)

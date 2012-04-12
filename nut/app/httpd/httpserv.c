@@ -43,31 +43,31 @@
  * Simple multithreaded HTTP daemon.
  */
 
-/* 
- * Unique MAC address of the Ethernut Board. 
+/*
+ * Unique MAC address of the Ethernut Board.
  *
  * Ignored if EEPROM contains a valid configuration.
  */
 #define MY_MAC  "\x00\x06\x98\x30\x00\x35"
 
-/* 
- * Unique IP address of the Ethernut Board. 
+/*
+ * Unique IP address of the Ethernut Board.
  *
- * Ignored if DHCP is used. 
+ * Ignored if DHCP is used.
  */
 #define MY_IPADDR "192.168.192.35"
 
-/* 
+/*
  * IP network mask of the Ethernut Board.
  *
- * Ignored if DHCP is used. 
+ * Ignored if DHCP is used.
  */
 #define MY_IPMASK "255.255.255.0"
 
-/* 
+/*
  * Gateway IP address for the Ethernut Board.
  *
- * Ignored if DHCP is used. 
+ * Ignored if DHCP is used.
  */
 #define MY_IPGATE "192.168.192.1"
 
@@ -97,7 +97,7 @@
 
 /* Ethernut 3 file system. */
 #define MY_FSDEV       devPhat0
-#define MY_FSDEV_NAME  "PHAT0" 
+#define MY_FSDEV_NAME  "PHAT0"
 
 /* Ethernut 3 block device interface. */
 #define MY_BLKDEV      devNplMmc0
@@ -107,7 +107,7 @@
 
 /* SAM7X-EK file system. */
 #define MY_FSDEV       devPhat0
-#define MY_FSDEV_NAME  "PHAT0" 
+#define MY_FSDEV_NAME  "PHAT0"
 
 /* SAM7X-EK block device interface. */
 #define MY_BLKDEV      devAt91SpiMmc0
@@ -117,7 +117,7 @@
 
 /* SAM9260-EK file system. */
 #define MY_FSDEV       devPhat0
-#define MY_FSDEV_NAME  "PHAT0" 
+#define MY_FSDEV_NAME  "PHAT0"
 
 /* SAM9260-EK block device interface. */
 #define MY_BLKDEV      devAt91Mci0
@@ -131,7 +131,7 @@
 #endif
 
 #ifdef MY_FSDEV_NAME
-#define MY_HTTPROOT     MY_FSDEV_NAME ":/" 
+#define MY_HTTPROOT     MY_FSDEV_NAME ":/"
 #endif
 
 
@@ -531,9 +531,9 @@ int SSIDemoCGI(FILE * stream, REQUEST * req)
         int count;
 
         count = NutHttpGetParameterCount(req);
-        
+
         /* Extract count parameters. */
-#ifdef __IMAGECRAFT__        
+#ifdef __IMAGECRAFT__
         fprintf(stream, "CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>");
 #else
         fprintf_P(stream, PSTR("CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>"));
@@ -553,14 +553,14 @@ int SSIDemoCGI(FILE * stream, REQUEST * req)
     } else {
         time_t now;
         tm     loc_time;
-        
+
         /* Called without any parameter, show the current time */
         now = time(NULL);
         localtime_r(&now, &loc_time);
-#ifdef __IMAGECRAFT__        
+#ifdef __IMAGECRAFT__
         fprintf(stream, "CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n",
                   loc_time.tm_mday, loc_time.tm_mon+1, loc_time.tm_year+1900, loc_time.tm_hour, loc_time.tm_min, loc_time.tm_sec);
-#else 
+#else
         fprintf_P(stream, PSTR("CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n"),
                   loc_time.tm_mday, loc_time.tm_mon+1, loc_time.tm_year+1900, loc_time.tm_hour, loc_time.tm_min, loc_time.tm_sec);
 #endif
@@ -698,7 +698,7 @@ int main(void)
 
         printf("initial boot...");
 #ifdef USE_DHCP
-        if (NutDhcpIfConfig(DEV_ETHER_NAME, mac, 60000)) 
+        if (NutDhcpIfConfig(DEV_ETHER_NAME, mac, 60000))
 #endif
         {
             uint32_t ip_addr = inet_addr(MY_IPADDR);
@@ -785,11 +785,11 @@ int main(void)
     NutRegisterCgi("test.cgi", ShowQuery);
 
 #if defined(USE_SSI)
-    /* 
-     * Register a cgi included by the ssi demo. This will show how dynamic 
-     * content is included in a ssi page and how the request parameters for 
+    /*
+     * Register a cgi included by the ssi demo. This will show how dynamic
+     * content is included in a ssi page and how the request parameters for
      * a site are passed down to the included cgi.
-     */    
+     */
     NutRegisterCgi("ssi-demo.cgi", SSIDemoCGI);
 #endif
 
@@ -831,7 +831,7 @@ int main(void)
         char thname[] = "httpd0";
 
         thname[5] = '0' + i;
-        NutThreadCreate(thname, Service, (void *) (uintptr_t) i, HTTPD_SERVICE_STACK); 
+        NutThreadCreate(thname, Service, (void *) (uintptr_t) i, HTTPD_SERVICE_STACK);
     }
 #endif /* DEV_ETHER */
 

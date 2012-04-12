@@ -64,7 +64,7 @@
  * For additional information see http://www.calldirect.com.au/
  * -
  *
- * Portions are 
+ * Portions are
  * Copyright (c) 1989 by Carnegie Mellon University.
  * All rights reserved.
  *
@@ -174,15 +174,15 @@ typedef struct ppp_header {
 } PPPHDR;
 
 typedef struct xcphdr {
-    /*!< \brief Code. 
+    /*!< \brief Code.
      */
     uint8_t  xch_code;
 
-    /*!< \brief Identifier 
+    /*!< \brief Identifier
      */
     uint8_t  xch_id;
 
-    /*!< \brief Length 
+    /*!< \brief Length
      */
     uint16_t xch_len;
 } XCPHDR;

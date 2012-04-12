@@ -71,7 +71,7 @@
  *
  * \param stream Pointer to a previously opened stream.
  *
- * \return Character read or EOF to indicate an error or end of file. In 
+ * \return Character read or EOF to indicate an error or end of file. In
  *         the latter case feof() or ferror() can be used to determine
  *         the cause of the failure.
  *

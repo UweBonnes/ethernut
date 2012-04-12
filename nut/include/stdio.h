@@ -92,10 +92,10 @@
 /*@{*/
 
 #ifndef EOF
-/*! 
+/*!
  * \brief End of file.
  *
- * Returned by an input or output operation when the end of a file is 
+ * Returned by an input or output operation when the end of a file is
  * encountered. Some routines return this value to indicate an error.
  */
 #define EOF	(-1)
@@ -109,8 +109,8 @@
 
 /*!
  * \brief Stream structure type.
- * 
- * A pointer to this type is used for all standard I/O functions to 
+ *
+ * A pointer to this type is used for all standard I/O functions to
  * specify a stream.
  *
  * \note Applications should make any assumptions about the contents

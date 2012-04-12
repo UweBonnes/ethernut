@@ -103,8 +103,8 @@ void NutRegisterTimer(void (*handler) (void *))
 /*!
  * \brief Return the CPU clock in Hertz.
  *
- * On several AT91 CPUs the processor clock may differ from the clock 
- * driving the peripherals. In this case At91GetMasterClock() will 
+ * On several AT91 CPUs the processor clock may differ from the clock
+ * driving the peripherals. In this case At91GetMasterClock() will
  * provide the correct master clock.
  *
  * \return CPU clock frequency in Hertz.

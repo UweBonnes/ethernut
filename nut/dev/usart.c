@@ -98,7 +98,7 @@
 /*!
  * \brief Initialize the USART device.
  *
- * This function is called by NutRegisterDevice(), using the 
+ * This function is called by NutRegisterDevice(), using the
  * _NUTDEVICE::dev_init entry. It will call the low level
  * driver's _USARTDCB::dcb_init routine to initialize the hardware.
  *

@@ -31,9 +31,9 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
- 
+
 /* Copyright (c) 2009 Atmel Corporation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -177,14 +177,14 @@ typedef uint32_t irqflags_t;
         __builtin_ssrf(AVR32_SR_GM_OFFSET);		\
         barrier();								\
     } while (0)
- 
+
 static inline irqflags_t cpu_irq_save(void)
 {
 	irqflags_t flags;
 
 	flags = sysreg_read(AVR32_SR);
 	cpu_irq_disable();
- 
+
 	return flags;
 }
 
@@ -526,7 +526,7 @@ void pm_switch_to_osc0(unsigned int fosc0, unsigned int startup)
 
 // 	// Switch clock source to OSC0
 // 	pm_enable_osc0_crystal( fosc0 );
-// 
+//
 // 	// Configure and start DFLL
 // 	pm_enable_dfll();
 }

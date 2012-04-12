@@ -135,7 +135,7 @@ extern int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, 
  * \param count Number of items to write.
  * \param sp    Pointer to the stream's information structure.
  *
- * \return The number of items written, which may be less than the 
+ * \return The number of items written, which may be less than the
  *         specified number.
  */
 extern int s_write(const void *buf, size_t size, size_t count, HTTP_STREAM *sp);
@@ -179,12 +179,12 @@ extern int s_printf(HTTP_STREAM *sp, const char *fmt, ...);
  *
  * This function is similar to the standard function fflush().
  *
- * The calling thread may be suspended until all buffered output data 
+ * The calling thread may be suspended until all buffered output data
  * has been written.
  *
  * \param sp Pointer to the stream's information structure.
  *
- * \return 0 if the buffer was successfully flushed, EOF if an error 
+ * \return 0 if the buffer was successfully flushed, EOF if an error
  *         occured.
  */
 extern int s_flush(HTTP_STREAM *sp);

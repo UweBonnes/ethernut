@@ -77,7 +77,7 @@
 
 /*!
  * \brief Fill memory region with a specific byte value.
- * 
+ *
  *
  * \param dst Pointer to the memory region.
  * \param c   Byte value.

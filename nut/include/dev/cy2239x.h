@@ -88,7 +88,7 @@
 /*! \brief Clock E output.
  *
  * On Ethernut 3 this is output drives the GCK3 input of the CPLD,
- * if R104 is mounted and R4 is not mounted. By default R104 is not 
+ * if R104 is mounted and R4 is not mounted. By default R104 is not
  * mounted, but R4 is.
  */
 #define CY2239X_CLKE    4

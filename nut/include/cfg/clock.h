@@ -38,7 +38,7 @@
  * \file cfg/clock.h
  * \brief Nut/OS Clock Configuration.
  *
- * This file is reserved for kernel related configurations when building 
+ * This file is reserved for kernel related configurations when building
  * the system in the source tree without using the Configurator.
  *
  * When creating a new build tree with the Configurator, then it will

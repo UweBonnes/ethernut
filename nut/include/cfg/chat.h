@@ -45,7 +45,7 @@
  * \file cfg/chat.h
  * \brief UART chat default configuration.
  *
- * This file serves as a placeholder. 
+ * This file serves as a placeholder.
  * Values can be changed by the configurator.
  *
  */

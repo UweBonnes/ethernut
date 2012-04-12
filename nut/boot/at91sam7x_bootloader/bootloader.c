@@ -18,8 +18,8 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -57,7 +57,7 @@ void init_network(void)
     /* Read Standard Network Parameters */
     if (NutNetLoadConfig(DEV_ETHER_NAME) != 0) {     /* EEPROM net configuration is NOT valid */
         u_char mac[] = DEFAULT_MAC;
-        
+
         /* Try to load the last valid mac address from confnet structure */
         if (NutNvMemLoad(MAC_POSITION, mac, 6) != 0) {
             ERROR("Could not load MAC address\r\n");
@@ -67,7 +67,7 @@ void init_network(void)
         if ((mac[0] != (u_char) DEFAULT_MAC[0]) || (mac[1] == (u_char) DEFAULT_MAC[1]) || (mac[2] == (u_char) DEFAULT_MAC[2])) {
             memcpy(mac, DEFAULT_MAC, sizeof(mac));
         }
-        
+
         confnet.cdn_ip_addr = inet_addr(DEFAULT_IP);
         confnet.cdn_gateway = inet_addr(DEFAULT_GATWAY);
         confnet.cdn_ip_mask = inet_addr(DEFAULT_NETMASK);
@@ -89,7 +89,7 @@ void init_network(void)
            confnet.cdn_mac[3], confnet.cdn_mac[4], confnet.cdn_mac[5]);
     INFO("IP:%s\r\n", inet_ntoa(confnet.cdn_ip_addr));
     INFO("Netmask: %s\r\n", inet_ntoa(confnet.cdn_ip_mask));
-    INFO("Gateway: %s\r\n", inet_ntoa(confnet.cdn_gateway));   
+    INFO("Gateway: %s\r\n", inet_ntoa(confnet.cdn_gateway));
 }
 
 FILE *init_uart(void)
@@ -100,29 +100,29 @@ FILE *init_uart(void)
     FILE *uart0;
 
     /* Init the debug UART */
-    
+
     NutRegisterDevice(&DEV_UART0, 0, 0);
-    
+
     uart0 = fopen(DEV_UART0_NAME, "r+");
-    
+
     _ioctl(_fileno(uart0), UART_SETSPEED, &baud);
     _ioctl(_fileno(uart0), UART_SETCOOKEDMODE, &cookedmode);
-        
+
     freopen(DEV_UART0_NAME, "w", stdout);
     freopen(DEV_UART0_NAME, "r", stdin);
     freopen(DEV_UART0_NAME, "w", stderr);
-    
+
     return uart0;
 }
 
 int main(void)
 {
     FILE *uart0;
-    
+
     uart0 = init_uart();
-    
+
     INFO("At91sam7X Bootloader started.\r\n\r\n");
-    
+
     init_loader();
 
     if (check_or_save_md5(confboot.size, FALSE) != 0) {
@@ -132,6 +132,6 @@ int main(void)
     INFO("Booting...\r\n");
     NutSleep(100);
     boot();
-    
+
     while (1);
 }

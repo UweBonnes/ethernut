@@ -78,8 +78,8 @@
 
 /*!
  * \brief Concatenate two strings.
- * 
- * Append a copy of a NUL terminated string to the end of another NUL 
+ *
+ * Append a copy of a NUL terminated string to the end of another NUL
  * terminated string.
  *
  * \note The function does not perform any overflow checking.

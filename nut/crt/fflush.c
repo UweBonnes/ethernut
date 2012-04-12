@@ -57,12 +57,12 @@
 /*!
  * \brief Flush a stream.
  *
- * The calling thread may be suspended until all buffered output data 
+ * The calling thread may be suspended until all buffered output data
  * has been written.
  *
  * \param stream Pointer to a previously opened stream.
  *
- * \return 0 if the buffer was successfully flushed, EOF if an error 
+ * \return 0 if the buffer was successfully flushed, EOF if an error
  *         occured.
  *
  * \warning The function will not check, if the stream pointer points

@@ -173,7 +173,7 @@ struct udp_socket {
     HANDLE  so_rx_rdy;       /*!< \brief Receiver event queue. */
     int     so_rx_cnt;       /*!< \brief Number of data bytes in the receive buffer. */
     int     so_rx_bsz;       /*!< \brief Receive buffer size. */
-  
+
     uint16_t so_last_error;  /*!< \brief Last error of socket */
     uint32_t so_remote_addr; /*!< \brief Remote IP address in net byte order. Important just in case of an error */
     uint16_t so_remote_port; /*!< \brief Remote port number in net byte order. Important just in case of an error */
@@ -215,7 +215,7 @@ struct tcp_socket {
     int (*so_devwrite_P) (TCPSOCKET *, PGM_P, int); /*!< \brief Write to device. */
 #endif
     int (*so_devioctl) (TCPSOCKET *, int, void *); /*!< \brief Driver control function. */
-    
+
     uint16_t so_devocnt;     /*!< \brief Number of data bytes in output buffer. */
     uint8_t *so_devobuf;     /*!< \brief Pointer to output buffer. */
     uint16_t so_devobsz;     /*!< \brief Output buffer size. */

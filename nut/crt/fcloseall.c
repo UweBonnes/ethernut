@@ -56,7 +56,7 @@
  *
  * The standard streams stdin, stdout and stderr are not closed.
  *
- * The calling thread may be suspended until all buffered output data 
+ * The calling thread may be suspended until all buffered output data
  * has been written.
  *
  */

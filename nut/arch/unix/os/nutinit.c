@@ -31,7 +31,7 @@
  *
  */
 
-/* 
+/*
  * unix_nutinit.c - init for unix emulation
  *
  * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
@@ -134,7 +134,7 @@ int NutRegisterIrqHandler(uint8_t irq, void (*handler) (void *), void *arg)
 
 /*!
  * \brief Register NutEventPostAsync for next NutThreadYield
- * 
+ *
  * Store responsible IRQ and queue to signal in list
  *
  * \param irq responsible IRQ
@@ -188,7 +188,7 @@ static void NutUnixControlC(int signal)
  * Signal handler for SIGUSR1
  * emulates interrupt hardware
  * serializes all interrupts and calls their corresponding handlers
- * 
+ *
  * all IRQs are multiplexed through the same signal handler (using only SIGUSR1)
  * a global array is used to keep track of the interrupts that have been raised
  * further signals are block until interrupt handling has finished
@@ -200,7 +200,7 @@ static void NutUnixControlC(int signal)
  * and its "real" signal is processed - too early, so to say.
  * it doesn't matter, even if the signal is still received as the interrupts_pending table
  * will be empty.
- * 
+ *
  */
 
 static void NutUnixInterruptScheduler(int);
@@ -229,15 +229,15 @@ static void NutUnixInterruptScheduler(int signal)
 
 /*!
  * \brief Emulate a Nut hardware interrupt on Unix
- * 
+ *
  * Add new interrupt to list of pending interrupts.
- * 
+ *
  * \param irq IRQ raised
  *
  * This is a support function which just maintains the table
  * listing raised interrupts. It is called by the non-Nut thread
  * emulating the hardware (e.g. the timer).
- * 
+ *
  * Sending the interrupt to the Nut threads is done by
  * NutInterruptEmulation().
  */
@@ -272,7 +272,7 @@ void NutUnixRaiseInterrupt(int irq)
 
 /*!
  * \brief Send emulated interrupt signal to Nut threads
- * 
+ *
  * Hardware devices, such as timer, usart, etc., raise interrupts
  * to get serviced by NutOS. This function does the same for
  * devices on Unix emulation.
@@ -282,12 +282,12 @@ void NutUnixRaiseInterrupt(int irq)
  * The Nut thread is interrupted using the SIGUSR1 signal.
  * The corresponding signal handler dispatches to the respective
  * interrupt handler. All IRQs are multiplexed through the same signal handler.
- * 
+ *
  * Signalling the interrupt is done in a separate thread so that
  * the "calling/interrupting" thread can go back to emulate the hardware.
  * Otherwise, in case of disabled interrupts, it would be hanging and waiting
  * for interrupts to be re-enabled.
- * 
+ *
  * This thread here does nothing but signal interrupts and can safely hang
  * it they are disabled (by NutEnterCritical, for example).
  *
@@ -368,7 +368,7 @@ static void NutIRQInit()
 /*@{*/
 
 /*!
- * \brief Emulated idle thread. 
+ * \brief Emulated idle thread.
  *
  * After initializing the timers, the idle thread switches to priority 254
  * and enters an endless loop.
@@ -399,8 +399,8 @@ THREAD(NutIdle, arg)
 /*!
  * \brief Nut/OS Initialization.
  *
- * Initializes the memory management and the thread system and starts 
- * an idle thread, which in turn initializes the timer management. 
+ * Initializes the memory management and the thread system and starts
+ * an idle thread, which in turn initializes the timer management.
  * Finally the application's main() function is called.
  */
 #undef main

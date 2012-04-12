@@ -66,7 +66,7 @@
 /*!
  * \brief Close a stream.
  *
- * The calling thread may be suspended until all buffered output data 
+ * The calling thread may be suspended until all buffered output data
  * has been written.
  *
  * \param stream Pointer to a previously opened stream.

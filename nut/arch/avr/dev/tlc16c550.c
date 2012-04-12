@@ -294,8 +294,8 @@ static unsigned int ByteOcrTime(NUTDEVICE * dev)
  * \brief Wait for input.
  *
  * This function checks the input buffer for any data. If
- * the buffer is empty, the calling \ref xrThread "thread" 
- * will be blocked until at least one new character is 
+ * the buffer is empty, the calling \ref xrThread "thread"
+ * will be blocked until at least one new character is
  * received or a timeout occurs.
  *
  * \param dev Indicates the ACE device.
@@ -475,7 +475,7 @@ static void AceDisable(uint16_t base)
  *             function.
  * \return 0 on success, -1 otherwise.
  *
- * \warning Timeout values are given in milliseconds and are limited to 
+ * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer. To disable timeout,
  *          set the parameter to NUT_WAIT_INFINITE.
  *
@@ -837,8 +837,8 @@ int AceInit(NUTDEVICE * dev)
     return 0;
 }
 
-/*! 
- * \brief Read from device. 
+/*!
+ * \brief Read from device.
  */
 int AceRead(NUTFILE * fp, void *buffer, int size)
 {
@@ -898,8 +898,8 @@ int AceRead(NUTFILE * fp, void *buffer, int size)
     return rc;
 }
 
-/*! 
- * \brief Write to device. 
+/*!
+ * \brief Write to device.
  */
 int AcePut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 {
@@ -975,7 +975,7 @@ int AceWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 }
 
 
-/*! 
+/*!
  * \brief Open a device or file.
  */
 NUTFILE *AceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
@@ -999,8 +999,8 @@ NUTFILE *AceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
- * \brief Close a device or file. 
+/*!
+ * \brief Close a device or file.
  */
 int AceClose(NUTFILE * fp)
 {
@@ -1009,7 +1009,7 @@ int AceClose(NUTFILE * fp)
     return 0;
 }
 
-/*! 
+/*!
  * \brief Request file size.
  */
 long AceSize(NUTFILE * fp)

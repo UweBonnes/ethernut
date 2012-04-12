@@ -81,8 +81,8 @@
 
 /*!
  * \brief Compare two strings up to a given number of characters.
- * 
- * The strings are compared lexicographically. The comparison is done 
+ *
+ * The strings are compared lexicographically. The comparison is done
  * using unsigned characters,
  *
  * \param s1 Pointer to the first string.
@@ -90,8 +90,8 @@
  * \param n  Number of bytes to compare.
  *
  * \return An integer greater than, equal to, or less than 0, according
- *         to whether the first string is greater than, equal to, or less 
- *         than the second string after translation of each corresponding 
+ *         to whether the first string is greater than, equal to, or less
+ *         than the second string after translation of each corresponding
  *         character to lower-case.
  */
 int strncmp(CONST char *s1, CONST char *s2, size_t n)

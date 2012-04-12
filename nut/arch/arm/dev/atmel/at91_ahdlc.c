@@ -45,7 +45,7 @@
  *
  */
 
-// TODO - 
+// TODO -
 /*
  - add proper close function
  - add proper ioctrl
@@ -103,7 +103,7 @@ static AHDLCDCB dcb_ahdlc;
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this device driver to the Nut/OS kernel.
  */
 NUTDEVICE devAhdlc1 = {
@@ -440,7 +440,7 @@ THREAD(AhdlcRx, arg)
             while (dcb->dcb_rd_idx == dcb->dcb_rx_idx) {
                 if (dev->dev_icb == 0)
                     break;
-                // TODO: Check for idle timeout. 
+                // TODO: Check for idle timeout.
                 if (NutEventWait(&dcb->dcb_rx_rdy, dcb->dcb_rtimeout)) {
                     continue;
                 }
@@ -934,7 +934,7 @@ int AhdlcAt91Init(NUTDEVICE * dev)
      * If we have been successful so far, start the HDLC receiver thread,
      * set the initial baudrate and enable the UART.
      */
-    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, 
+    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev,
         (NUT_THREAD_AHDLCRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) {
 //        AhdlcAvrIOCtl(dev, UART_SETSPEED, &baudrate);
         return 0;

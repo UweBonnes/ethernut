@@ -51,19 +51,19 @@
 /*@{*/
 
 #ifndef SNMP_PORT
-/*! \brief Standard UDP port for SNMP agents to receive requests messages. 
+/*! \brief Standard UDP port for SNMP agents to receive requests messages.
  */
 #define SNMP_PORT       161
 #endif
 
 #ifndef SNMP_TRAP_PORT
-/*! \brief Standard UDP port for SNMP managers to receive notificaion messages. 
+/*! \brief Standard UDP port for SNMP managers to receive notificaion messages.
  */
 #define SNMP_TRAP_PORT  162
 #endif
 
 #ifndef SNMP_MAX_LEN
-/*! \brief Default maximum message size. 
+/*! \brief Default maximum message size.
  */
 #define SNMP_MAX_LEN    500
 #endif
@@ -76,8 +76,8 @@
 
 /*! \brief SNMPv2c.
  *
- * Community string-based SNMPv2, which was an attempt to combine the 
- * protocol operations of SNMPv2 with the security of SNMPv1, defined 
+ * Community string-based SNMPv2, which was an attempt to combine the
+ * protocol operations of SNMPv2 with the security of SNMPv1, defined
  * by RFCs 1901, 1905, and 1906.
  *
  * Partly supplied by this code, work is in progress.
@@ -86,8 +86,8 @@
 
 /*! \brief SNMPv3.
  *
- * An attempt by the IETF working group to merge the SNMPv2u and SNMPv2* 
- * proposals into a more widely accepted SNMPv3. The original version, 
+ * An attempt by the IETF working group to merge the SNMPv2u and SNMPv2*
+ * proposals into a more widely accepted SNMPv3. The original version,
  * defined by RFC 1157.
  *
  * Not yet supported by this code.
@@ -103,24 +103,24 @@
 #define SNMP_MSG_SET        (ASN_CONTEXT | ASN_CONSTRUCTOR | 0x3)
 
 /*
- * PDU types in SNMPv1. 
+ * PDU types in SNMPv1.
  */
 #define SNMP_MSG_TRAP       (ASN_CONTEXT | ASN_CONSTRUCTOR | 0x4)
 
 /*
- * PDU types in SNMPv2c and SNMPv3 
+ * PDU types in SNMPv2c and SNMPv3
  */
 #define SNMP_MSG_GETBULK    (ASN_CONTEXT | ASN_CONSTRUCTOR | 0x5)
 #define SNMP_MSG_INFORM     (ASN_CONTEXT | ASN_CONSTRUCTOR | 0x6)
 #define SNMP_MSG_TRAP2      (ASN_CONTEXT | ASN_CONSTRUCTOR | 0x7)
 
 /*
- * PDU types in SNMPv3 
+ * PDU types in SNMPv3
  */
 #define SNMP_MSG_REPORT     (ASN_CONTEXT | ASN_CONSTRUCTOR | 0x8)
 
 /*
- * Exception values for SNMPv2c and SNMPv3 
+ * Exception values for SNMPv2c and SNMPv3
  */
 #define SNMP_NOSUCHOBJECT    (ASN_CONTEXT | ASN_PRIMITIVE | 0x0)
 #define SNMP_NOSUCHINSTANCE  (ASN_CONTEXT | ASN_PRIMITIVE | 0x1)
@@ -165,7 +165,7 @@
 #define SNMP_TRAP_ENTERPRISESPECIFIC	6
 
 /*
- * Basic OID values 
+ * Basic OID values
  */
 #define SNMP_OID_INTERNET       1, 3, 6, 1
 #define SNMP_OID_ENTERPRISES    SNMP_OID_INTERNET, 4, 1

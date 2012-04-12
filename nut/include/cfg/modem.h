@@ -81,7 +81,7 @@
 #define UART0_RTS_DDR   DDRE
 /*! \brief RTS handshake control bit.
  *
- * If undefined, RTS handshake is not supported. 
+ * If undefined, RTS handshake is not supported.
  */
 #define UART0_RTS_BIT   2
 
@@ -96,7 +96,7 @@
 #define UART0_CTS_SIGNAL sig_INTERRUPT7
 /*! \brief CTS handshake sense bit.
  *
- * If undefined, CTS handshake is not supported. 
+ * If undefined, CTS handshake is not supported.
  */
 #define UART0_CTS_BIT    7
 
@@ -107,7 +107,7 @@
 #define UART0_HDX_DDR   DDRD
 /*! \brief Half duplex control bit.
  *
- * If undefined, half duplex is not supported. 
+ * If undefined, half duplex is not supported.
  */
 #define UART0_HDX_BIT   4
 
@@ -121,8 +121,8 @@
 /*! Data direction register of \ref UART1_RTS_BIT. */
 #define UART1_RTS_DDR    DDRD
 /*! \brief RTS handshake output bit.
- * 
- * If undefined, RTS handshake is not supported. 
+ *
+ * If undefined, RTS handshake is not supported.
  */
 #define UART1_RTS_BIT    5
 
@@ -135,10 +135,10 @@
 #define UART1_CTS_DDR    DDRE
 /*! Interrupt signal of \ref UART1_CTS_BIT. */
 #define UART1_CTS_SIGNAL sig_INTERRUPT7
-/*! \brief CTS handshake input bit. 
+/*! \brief CTS handshake input bit.
  *
  * If undefined, CTS handshake is not supported.
- * Bits 0 to 3 are not supported. 
+ * Bits 0 to 3 are not supported.
  */
 #define UART1_CTS_BIT    7
 
@@ -149,7 +149,7 @@
 #define UART1_DTR_DDR    DDRD
 /*! \brief DTR handshake output bit.
  *
- * If undefined, DTR handshake is not supported. 
+ * If undefined, DTR handshake is not supported.
  */
 #define UART1_DTR_BIT    7
 

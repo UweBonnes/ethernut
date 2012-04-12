@@ -89,7 +89,7 @@ static mma8bit_t *mmaForce;
 
 
 /*! brief write to MMA7455L via I2C.
- * 
+ *
  * Write one byte to a register in the sensor.
  * \para reg Register in sensor to address.
  * \para val Pointer to value to write.
@@ -104,7 +104,7 @@ int Mma745xWrite( uint_fast8_t reg, void *val, size_t len)
 }
 
 /*! brief read from MMA7455L via I2C.
- * 
+ *
  * Read one byte from a register in the sensor.
  * \para reg Register in sensor to address.
  * \para val Pointer to store the value.
@@ -156,7 +156,7 @@ int Mma745xReadVal10( uint8_t ofs, mma10bit_t *val)
 
 int Mma745xReadG( mma10bit_t *val)
 {
-    int ret; 
+    int ret;
     ret = Mma745xReadVal8( mmaForce);
 
     switch (mmaCfg->rMODE & MMA745X_MCTL_GLVL_MSK) {
@@ -181,7 +181,7 @@ int Mma745xReadG( mma10bit_t *val)
 
 int Mma745xReadCal( mma10bit_t *cal)
 {
-    int ret; 
+    int ret;
     ret = Mma745xReadVal10(MMA745x_REG_XOFFL, cal);
     return ret;
 }
@@ -198,7 +198,7 @@ int Mma745xCtl( uint_fast8_t fkt, void *val)
     int ret = -1;
     uint8_t irqs;
     MPRINTF("MCTL(%u,%p)\n", fkt, val);
-    
+
     switch (fkt) {
         case MMA_GET_STATE:
             ret = Mma745xRead(MMA745x_REG_STATUS, val, 2);
@@ -231,7 +231,7 @@ int Mma745xCtl( uint_fast8_t fkt, void *val)
 }
 
 /*! brief MMA7455L Initialization
- * 
+ *
  * Configure GPIO connections and preset
  * MMA7455L registers.
  *
@@ -241,7 +241,7 @@ int Mma745xInit( uint_fast8_t selftest, mmaInit_t *init)
 {
     int ret = 0;
     uint8_t ctl = 0;
-    
+
     MPRINTF("Init MMA... ");
 
     mmaCfg = NutHeapAlloc(sizeof(mmaInit_t));
@@ -250,7 +250,7 @@ int Mma745xInit( uint_fast8_t selftest, mmaInit_t *init)
     mmaForce = NutHeapAlloc(sizeof(mma8bit_t));
     if (mmaForce==NULL)
         return -1;
-        
+
 	/* Configure INT1/DRDY and INT2 lines from chip */	
 #if defined(MMA745X_IRQ1_PORT) && defined(MMA745X_IRQ1_PIN)
 	GpioPinConfigSet(MMA745X_IRQ1_PORT, MMA745X_IRQ1_PIN, GPIO_CFG_PULLUP);

@@ -485,7 +485,7 @@ static void AvrUsartRxComplete(void *arg) {
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif
-    
+
 }
 
 

@@ -64,7 +64,7 @@
  * program memory.
  *
  * \param stream Pointer to a previously opened stream.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  * \param ap     List of arguments.
  *

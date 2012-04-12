@@ -41,7 +41,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -335,7 +335,7 @@ int EtherOutput(u_char * dmac, u_short type, u_short len)
  *             this value represents approximately the number
  *             of milliseconds to wait.
  *
- * \return The number of bytes received, 0 on timeout 
+ * \return The number of bytes received, 0 on timeout
  *         or -1 in case of a failure.
  */
 int EtherInput(u_short type, u_short tms)
@@ -372,7 +372,7 @@ int EtherInput(u_short type, u_short tms)
         }
 
         /*
-         * Get the current page pointer. It points to the page where the NIC 
+         * Get the current page pointer. It points to the page where the NIC
          * will start saving the next incoming packet.
          */
         NIC_CR = NIC_CR_STA | NIC_CR_RD2 | NIC_CR_PS0;

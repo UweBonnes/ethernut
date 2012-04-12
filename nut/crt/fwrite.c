@@ -70,7 +70,7 @@
  * \param count  Number of items to write.
  * \param stream Pointer to a previously opened stream.
  *
- * \return The number of items written, which may be less than the 
+ * \return The number of items written, which may be less than the
  *         specified number.
  *
  * \warning The function will not check, if the stream pointer points

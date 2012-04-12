@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2009 by Thermotemp GmbH. All rights reserved.
  *
- * This code is based on a public domain implementation of md5.c by 
+ * This code is based on a public domain implementation of md5.c by
  * Colin Plumb, June 1993
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,8 +21,8 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -183,7 +183,7 @@ static void NutMD5Transform(uint32_t buf[4], uint32_t CONST in[16])
  * \brief Start MD5 accumulation.
  *
  * Start MD5 accumulation, set bit count to 0 and buffer to mysterious
- * initialization constants. Call this function to initialize every new 
+ * initialization constants. Call this function to initialize every new
  * MD5 calculation.
  *
  * \param context Points to the md5 context buffer.
@@ -220,7 +220,7 @@ void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len)
     if ((context->bits[0] = t + ((uint32_t) len << 3)) < t) {
         context->bits[1]++;         /* Carry from low to high */
     }
-    
+
     context->bits[1] += len >> 29;
 
     t = (t >> 3) & 0x3f;        /* Bytes already in shsInfo->data */
@@ -264,7 +264,7 @@ void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len)
 /*!
  * \brief Final wrapup, calculate MD5 digest
  *
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  * Fill in the digest into digest buffer
  *

@@ -58,13 +58,13 @@
  * Similar to printf() except that the format string is located in
  * program memory.
  *
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  *
  * \return The number of characters written or a negative value to
  *         indicate an error.
  *
- * \warning Do not use this function with a debug device while running 
+ * \warning Do not use this function with a debug device while running
  *          in interrupt context.
  */
 int printf_P(PGM_P fmt, ...)

@@ -111,7 +111,7 @@ int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
 /*!
  * \brief Get date and time from an PCF8563 hardware clock.
  *
- * \param tm Points to a structure that receives the date and time 
+ * \param tm Points to a structure that receives the date and time
  *           information.
  *
  * \return 0 on success or -1 in case of an error.
@@ -176,7 +176,7 @@ int PcfRtcSetClock(CONST struct _tm *tm)
  * Not implemented.
  *
  * \param idx   Zero based index. Two alarms are supported.
- * \param tm    Points to a structure that receives the date and time 
+ * \param tm    Points to a structure that receives the date and time
  *              information.
  * \param aflgs Points to an unsigned long that receives the enable flags.
  *

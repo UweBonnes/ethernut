@@ -142,7 +142,7 @@ SIGNAL(SIG_INTERRUPT4)
                 if (ncode++) {
                     if (lcode != ccode)
                         ncode = 0;
-                    /* If we have two equal codes, pass it to the 
+                    /* If we have two equal codes, pass it to the
                        application. */
                     else if (ncode > 1) {
                         ncode = 0;
@@ -168,15 +168,15 @@ SIGNAL(SIG_INTERRUPT4)
 int NutIrInitSony(void)
 {
     NutEnterCritical();
-    /* 
+    /*
      * Initialize timer 2 and enable overflow interrupts.
      */
     outb(TCNT2, IRTIMER_START);
     outb(TCCR2, IRTIMER_SCALE);
     sbi(TIMSK, 6);
 
-    /* 
-     * Enable infrared decoder interrupts on both edges. 
+    /*
+     * Enable infrared decoder interrupts on both edges.
      */
     cbi(IR_SIGNAL_DDR, IR_SIGNAL_BIT);
     sbi(EICR, 0);

@@ -192,7 +192,7 @@ struct _RINGBUF {
      */
     HANDLE rbf_que;
 
-#ifdef UART_BLOCKING_READ    
+#ifdef UART_BLOCKING_READ
     /*! \brief Number of bytes for block-read
      *
      * If this is zero, incoming bytes are stored in ringbuffer
@@ -240,8 +240,8 @@ struct _RINGBUF {
 /*! \brief Software handshake.
  *
  * It is recommended to set a proper read timeout with software handshake.
- * In this case a timeout may occur, if the communication peer lost our 
- * last XON character. The application may then use ioctl() to disable the 
+ * In this case a timeout may occur, if the communication peer lost our
+ * last XON character. The application may then use ioctl() to disable the
  * receiver and do the read again. This will send out another XON.
  */
 #define USART_MF_XONXOFF        0x0020
@@ -255,7 +255,7 @@ struct _RINGBUF {
 
 #define USART_MF_HALFDUPLEX     0x0400  /*!< Half duplex control. */
 #define USART_MF_BLOCKREAD		0x0800  /*!< Block read enabled */
- 
+
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */
 #define USART_SF_DTROFF         0x0004  /*!< Set if DTR line is off. */

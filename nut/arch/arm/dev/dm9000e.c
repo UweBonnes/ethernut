@@ -832,7 +832,7 @@ static void NicUpdateMCHardware(NICINFO *ni)
 
     /* Enable broadcast receive. */
     ni->ni_mar[7] |= 0x80;
-    
+
     /* Set multicast address register */
     for (i = 0; i < 7; i++) {
         nic_outb(NIC_MAR + i, ni->ni_mar[i]);
@@ -874,7 +874,7 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
     }
 
     /* Set multicast address register */
-    NicUpdateMCHardware(ni);    
+    NicUpdateMCHardware(ni);
 
     /* Clear interrupts. */
     nic_outb(NIC_ISR, NIC_ISR_ROOS | NIC_ISR_ROS | NIC_ISR_PTS | NIC_ISR_PRS);
@@ -1070,7 +1070,7 @@ int DmInit(NUTDEVICE * dev)
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
 #if defined(ELEKTOR_IR1)
-    
+
     /* @@MF: "Power on reset" the Ethernet controller */
     outr(PIOC_SODR, _BV(PC17_NANDOE_B));
     outr(PIOC_PER,  _BV(PC17_NANDOE_B));
@@ -1150,20 +1150,20 @@ static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
     MCASTENTRY *mcast;
     MCASTENTRY *mcast_prev;
     MCASTENTRY *mcast_next;
-    
+
     uint8_t mac[6];
 
     switch (req) {
-        /* Set interface address */ 
+        /* Set interface address */
         case SIOCSIFADDR:
             /* Set interface hardware address. */
             memcpy(nif->if_mac, conf, sizeof(nif->if_mac));
             break;
-    
+
         /* Add multicast address */
         case SIOCADDMULTI:
             ip_addr = *((uint32_t*)conf);
-            
+
             /* Test if the address is still in the list */
             mcast = nif->if_mcast;
             while(mcast)
@@ -1175,39 +1175,39 @@ static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
                 }
                 mcast = mcast->mca_next;
             }
-           
-            /* Create MAC address */ 
+
+            /* Create MAC address */
             mac[0] = 0x01;
             mac[1] = 0x00;
             mac[2] = 0x5E;
             mac[3] = ((uint8_t*)conf)[1] & 0x7f;
             mac[4] = ((uint8_t*)conf)[2];
             mac[5] = ((uint8_t*)conf)[3];
-            
+
             mcast = malloc(sizeof(MCASTENTRY));
             if (mcast != NULL) {
                 /* Calculate MAR index, range 0...63 */
                 index  = ether_crc32_le(&mac[0], 6);
                 index &= 0x3F;
-            
-                /* Set multicast bit */            
+
+                /* Set multicast bit */
                 ni->ni_mar[index / 8] |= (1 << (index % 8));
-                
+
                 /* Add new mcast to the mcast list */
                 memcpy(mcast->mca_ha, mac, 6);
                 mcast->mca_ip = *((uint32_t*)conf);
                 mcast->mca_next = nif->if_mcast;
                 nif->if_mcast = mcast;
-                
+
                 /* Update the MC hardware */
                 NicUpdateMCHardware(ni);
             }
             else {
                 rc = -1;
-            }    
+            }
             break;
-        
-        /* Delete multicast address */    
+
+        /* Delete multicast address */
         case SIOCDELMULTI:
             ip_addr = *((uint32_t*)conf);
 
@@ -1230,64 +1230,64 @@ static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
                 /* The address is not in the list */
                 return -1;
             }
-            
-            /* 
-             * Remove the address from the list 
+
+            /*
+             * Remove the address from the list
              */
-            mcast_next = mcast->mca_next;  
-             
-            /* Check if the first element must be removed */ 
+            mcast_next = mcast->mca_next;
+
+            /* Check if the first element must be removed */
             if (nif->if_mcast == mcast)
             {
-                /* 
-                 * The element is the first one 
+                /*
+                 * The element is the first one
                  */
-                
+
                 /* The first element is now the "next" element */
                 nif->if_mcast = mcast_next;
-                free(mcast); 
+                free(mcast);
             } else {
                 /*
-                 * The element is in the middle of the list 
+                 * The element is in the middle of the list
                  */
-                 
+
                 /* The next element of the previous is the "next" element */
                 mcast_prev->mca_next = mcast_next;
-                free(mcast); 
+                free(mcast);
             }
-            
+
             /*
              * Clear the multicast filter, and rebuild it
              */
-            
-            /* Clear */ 
+
+            /* Clear */
             for (i = 0; i < 7; i++) {
                 ni->ni_mar[i] = 0;
             }
-             
-            /* Rebuild  */  
+
+            /* Rebuild  */
             mcast = nif->if_mcast;
             while(mcast)
             {
                 /* Calculate MAR index, range 0...63 */
                 index  = ether_crc32_le(&mcast->mca_ha[0], 6);
                 index &= 0x3F;
-            
-                /* Set multicast bit */            
+
+                /* Set multicast bit */
                 ni->ni_mar[index / 8] |= (1 << (index % 8));
-            
+
                 mcast = mcast->mca_next;
             }
-            
+
             /* Update the MC hardware */
             NicUpdateMCHardware(ni);
-            break;  
-              
+            break;
+
         default:
             rc = -1;
             break;
-    }    
-    
+    }
+
     return rc;
 }
 

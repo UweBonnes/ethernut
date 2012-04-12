@@ -62,19 +62,19 @@ typedef struct _BLOCKVOLUME BLOCKVOLUME;
  * \brief Block volume information structure.
  */
 struct _BLOCKVOLUME {
-    /*! \brief Attached file system device. 
+    /*! \brief Attached file system device.
      */
     NUTDEVICE *vol_fsdev;
 
-    /*! \brief Number of blocks available to the file system. 
+    /*! \brief Number of blocks available to the file system.
      */
     uint32_t vol_blk_cnt;
 
-    /*! \brief Number of bytes in a block. 
+    /*! \brief Number of bytes in a block.
      */
     int vol_blk_len;
 
-    /*! \brief First page used by the file system. 
+    /*! \brief First page used by the file system.
      */
     uint32_t vol_blk_off;
 
@@ -89,7 +89,7 @@ struct _BLOCKVOLUME {
 
     /*! \brief Internal block buffer.
      *
-     * A file system driver may use this one or optionally provide it's 
+     * A file system driver may use this one or optionally provide it's
      * own buffers.
      *
      * Minimal systems may share their external bus interface with
@@ -146,13 +146,13 @@ int NutBlockDeviceInit(NUTDEVICE * dev)
  *
  * \param dev  Specifies the block I/O device.
  * \param name Partition number followed by a slash followed by a name
- *             of the file system device. Both items are optional. If no 
+ *             of the file system device. Both items are optional. If no
  *             file system driver name is given, the first file system
- *             driver found in the list of registered devices will be 
+ *             driver found in the list of registered devices will be
  *             used. If no partition number is specified or if partition
- *             zero is given, the first active primary partition will be 
+ *             zero is given, the first active primary partition will be
  *             used.
- * \param mode Opening mode. Currently ignored, but 
+ * \param mode Opening mode. Currently ignored, but
  *             \code _O_RDWR | _O_BINARY \endcode should be used for
  *             compatibility with future enhancements.
  * \param acc  File attributes, ignored.
@@ -341,8 +341,8 @@ int NutBlockDeviceIOCtl(NUTDEVICE * dev, int req, void *conf)
  * \param buffer Pointer to the data buffer to fill.
  * \param num    Number of blocks to read.
  *
- * \return The number of blocks actually read. The current position is 
- *         set to the next unread block. A return value of -1 indicates 
+ * \return The number of blocks actually read. The current position is
+ *         set to the next unread block. A return value of -1 indicates
  *         an error.
  */
 int NutBlockDeviceRead(NUTFILE * nfp, void *buffer, int num)
@@ -394,7 +394,7 @@ int NutBlockDeviceRead(NUTFILE * nfp, void *buffer, int num)
  * \param buffer Pointer to the data to be written.
  * \param num    Number of blocks to write.
  *
- * \return The number of blocks actually written. The current position is 
+ * \return The number of blocks actually written. The current position is
  *         set to the next block. A return value of -1 indicates an error.
  */
 int NutBlockDeviceWrite(NUTFILE * nfp, CONST void *buffer, int num)
@@ -433,10 +433,10 @@ int NutBlockDeviceWrite(NUTFILE * nfp, CONST void *buffer, int num)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data blocks from program space to a mounted volume.
  *
- * Similar to NutBlockDeviceWrite() except that the data is located in 
+ * Similar to NutBlockDeviceWrite() except that the data is located in
  * program memory.
  *
  * Applications should not call this function directly, but use the
@@ -446,7 +446,7 @@ int NutBlockDeviceWrite(NUTFILE * nfp, CONST void *buffer, int num)
  * \param buffer Pointer to the data bytes in program space to be written.
  * \param num    Number of blocks to write.
  *
- * \return The number of blocks actually written. The current position is 
+ * \return The number of blocks actually written. The current position is
  *         set to the next block. A return value of -1 indicates an error.
  */
 int NutBlockDeviceWrite_P(NUTFILE * nfp, PGM_P buffer, int num)

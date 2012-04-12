@@ -79,14 +79,14 @@
  * \param name The name of a registered device, optionally followed by a
  *             colon and a filename.
  * \param mode Operation mode. May be any of the following:
- * - _O_APPEND Always write at the end. 
+ * - _O_APPEND Always write at the end.
  * - _O_BINARY Raw mode.
- * - _O_CREAT Create file if it does not exist. 
- * - _O_EXCL Open only if it does not exist. 
- * - _O_RDONLY Read only. 
- * - _O_RDWR Read and write. 
- * - _O_TEXT End of line translation. 
- * - _O_TRUNC Truncate file if it exists. 
+ * - _O_CREAT Create file if it does not exist.
+ * - _O_EXCL Open only if it does not exist.
+ * - _O_RDONLY Read only.
+ * - _O_RDWR Read and write.
+ * - _O_TEXT End of line translation.
+ * - _O_TRUNC Truncate file if it exists.
  * - _O_WRONLY Write only.
  *
  * \return File descriptor for the opened file or -1 to indicate an error.

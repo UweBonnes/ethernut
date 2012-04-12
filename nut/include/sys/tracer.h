@@ -56,11 +56,11 @@
 #include <sys/atom.h>
 
 /******************************************************************
- * defines 
+ * defines
  ******************************************************************/
 #define TRACE_MODE_FIRST            0
 #define TRACE_MODE_OFF              0
-#define TRACE_MODE_CIRCULAR         1 
+#define TRACE_MODE_CIRCULAR         1
 #define TRACE_MODE_ONESHOT          2
 #define TRACE_MODE_LAST             2
 #define TRACE_MODE_DEFAULT          TRACE_MODE_CIRCULAR
@@ -125,7 +125,7 @@ typedef struct _t_traceitem {
 
 
 /******************************************************************
- * global variables 
+ * global variables
  ******************************************************************/
 /*! \brief Upper 16 bits of microseconds clock, incremented on timer 1 overflow interrupts
 */
@@ -159,9 +159,9 @@ extern char trace_mask[TRACE_TAG_LAST+1];
  * NutTraceInit
  ******************************************************************************/
 /**
- * Initializes the trace buffer and activates tracing. 
+ * Initializes the trace buffer and activates tracing.
  * Starts timer 1 for microsecond clock, enables interrupt on overflow
- * 
+ *
  *
  * @param size Number of items in the trace buffer
  * @param mode Mode of operation
@@ -170,7 +170,7 @@ extern char trace_mask[TRACE_TAG_LAST+1];
  *
  * @return int Status
  */
-extern int  NutTraceInit(int size, char mode); 
+extern int  NutTraceInit(int size, char mode);
 /*******************************************************************************
  * NutTraceStop
  ******************************************************************************/
@@ -183,8 +183,8 @@ extern void NutTraceStop(void);
  ******************************************************************************/
 /**
  * Prints the current contents of the trace buffer
- * 
- * @param size can be used to limit the number of printed items, 
+ *
+ * @param size can be used to limit the number of printed items,
  * if size==0, then all items of the buffer are printed
  */
 extern void NutTracePrint(int size);
@@ -193,7 +193,7 @@ extern void NutTracePrint(int size);
  ******************************************************************************/
 /**
  * Commands to manipulate the tracing facility
- * 
+ *
  * @param arg String containing the commands
  * - print &lt;size&gt; calls NutPrintTrace
  * - oneshot restarts tracing in the oneshot mode
@@ -211,7 +211,7 @@ extern void NutTraceTerminal(char* arg);
  *
  * WARNING: Most likely only works on AVR. Works by inspecting the stack, thus the function
  * breaks when local variables are introduced in NutGetPC
- * 
+ *
  * @return int Program counter
  */
 extern int  NutTraceGetPC(void);
@@ -227,7 +227,7 @@ extern void NutTraceClear(void);
  ******************************************************************************/
 /**
  * Prints the current state of trace_mask, which for every type of event (TRACE_TAG_XXX)
- * determines, whether they are inserted in the trace buffer or not. 
+ * determines, whether they are inserted in the trace buffer or not.
  */
 extern void NutTraceMaskPrint(void);
 /*******************************************************************************
@@ -235,7 +235,7 @@ extern void NutTraceMaskPrint(void);
  ******************************************************************************/
 /**
  * Disables tracing of a particular event type
- * 
+ *
  * @param tag of event to disable
  */
 extern void NutTraceMaskClear(int tag);
@@ -244,7 +244,7 @@ extern void NutTraceMaskClear(int tag);
  ******************************************************************************/
 /**
  * Enables tracing of a particular event type
- * 
+ *
  * @param tag of event to enable
  */
 extern void NutTraceMaskSet(int tag);
@@ -260,14 +260,14 @@ extern void NutTraceStatusPrint(void);
  ******************************************************************************/
 /**
  * Registers a user event type
- * 
+ *
  * @param tag of the new event type (e.g. #define TRACE_USER_SEND 0)
  * @param tag_string name of the event type used when printing the trace buffer
  */
 extern int NutTraceRegisterUserTag(int tag, char* tag_string);
 /**
  * Macro to insert an event in the trace buffer
- * 
+ *
  * @param TAG Type of event
  * @param PC  Additional information, depending on the type of event
  */
@@ -297,9 +297,9 @@ extern int NutTraceRegisterUserTag(int tag, char* tag_string);
         );                                          \
     }
 /**
- * Macro to insert an event in the trace buffer, 
+ * Macro to insert an event in the trace buffer,
  * filling the additional information field with the program counter (PC)
- * 
+ *
  * @param TAG Type of event
  */
 #define TRACE_ADD_ITEM_PC(TAG) TRACE_ADD_ITEM(TAG,NutTraceGetPC())

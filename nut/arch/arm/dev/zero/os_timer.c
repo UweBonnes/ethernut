@@ -101,7 +101,7 @@
  *
  * Timer interrupts are enabled when this function returns.
  *
- * \param handler This routine should be called each time, when a 
+ * \param handler This routine should be called each time, when a
  *                system timer interrupt occurs.
  */
 void NutRegisterTimer(void (*handler) (void *))

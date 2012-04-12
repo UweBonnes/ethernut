@@ -35,7 +35,7 @@
 /*!
  * \file dev/sja1000.c
  * \brief Driver for SJA1000 CAN-Bus controller
- * 
+ *
  *
  * The SJA1000 controller is connected to the memory bus. It's base
  * address and interrupt is set by NutRegisterDevice.
@@ -277,7 +277,7 @@ inline uint8_t SJATxFree(NUTDEVICE * dev)
  * is full the function will block until frames are send.
  *
  * \param dev Pointer to the device structure
- * 
+ *
  * \param frame Pointer to the receive frame
  */
 
@@ -299,9 +299,9 @@ void SJAOutput(NUTDEVICE * dev, CANFRAME * frame)
  * is empty the function will block unitl new frames are received.
  *
  * \param dev Pointer to the device structure
- * 
+ *
  * \param frame Pointer to the receive frame
- * \return 1 if timeout, 0 otherwise 
+ * \return 1 if timeout, 0 otherwise
  */
 
 
@@ -309,15 +309,15 @@ uint8_t SJAInput(NUTDEVICE * dev, CANFRAME * frame)
 {
     uint8_t ready = 0;
     CANINFO *ci;
-    
+
     ci = (CANINFO *) dev->dev_dcb;
     while (!ready)
     {
-        if (CAN_RX_BUF.datalength==0) 
+        if (CAN_RX_BUF.datalength==0)
         {
            uint32_t timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
 
-           if (NutEventWait(&ci->can_rx_rdy, timeout)) 
+           if (NutEventWait(&ci->can_rx_rdy, timeout))
                return 1;
         }
         NutEnterCritical();
@@ -338,7 +338,7 @@ uint8_t SJAInput(NUTDEVICE * dev, CANFRAME * frame)
  *
  *
  * \param dev Pointer to the device structure
- * 
+ *
  * \param ac 4 byte char array with the acceptance code
  */
 
@@ -371,7 +371,7 @@ void SJASetAccCode(NUTDEVICE * dev, uint8_t * ac)
  *
  *
  * \param dev Pointer to the device structure
- * 
+ *
  * \param am 4 byte char array with the acceptance mask
  */
 
@@ -398,11 +398,11 @@ void SJASetAccMask(NUTDEVICE * dev, uint8_t * am)
 
 /*!
  * \fn    SJASetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
- * \brief Sets the baudrate 
+ * \brief Sets the baudrate
  *
  *
  * \param dev Pointer to the device structure
- * 
+ *
  * \param baudrate Baudrate (One of the defined baudrates. See sja1000.h)
  */
 
@@ -534,8 +534,8 @@ void SJARxFrame(CANFRAME * CAN_frame)
 
     if (CAN_frame->ext) {
         CAN_frame->id = (((uint32_t) SJA1000_Rx1 << 24) |
-                         ((uint32_t) SJA1000_Rx2 << 16) | 
-                         ((uint32_t) SJA1000_Rx3 << 8)  | 
+                         ((uint32_t) SJA1000_Rx2 << 16) |
+                         ((uint32_t) SJA1000_Rx3 << 8)  |
                          ((uint32_t) SJA1000_Rx4 & 0xF8)) >> 3;
 
 
@@ -548,7 +548,7 @@ void SJARxFrame(CANFRAME * CAN_frame)
         CAN_frame->byte[6] = SJA1000_Rx11;
         CAN_frame->byte[7] = SJA1000_Rx12;      // just fill the whole struct, less CPU cycles
     } else {
-        CAN_frame->id = (((uint32_t) SJA1000_Rx1 << 24) | 
+        CAN_frame->id = (((uint32_t) SJA1000_Rx1 << 24) |
                           (uint32_t) SJA1000_Rx2 << 16) >> 21;   // id_h and id_l
 
         CAN_frame->byte[0] = SJA1000_Rx3;
@@ -565,11 +565,11 @@ void SJARxFrame(CANFRAME * CAN_frame)
 
 
 
-/*! 
+/*!
  * \fn CAN_Tx(void *arg)
  * \brief CAN transmitter thread.
  *
- * 
+ *
  * This thread transmits data if there's some in the output buffer.
  * It runs with high priority.
  */
@@ -595,10 +595,10 @@ THREAD(CAN_Tx, arg)
     }
 }
 
-/*! 
+/*!
  * \fn  SJAInterrupt (void * arg)
  * \brief SJA interrupt entry.
- * 
+ *
  * The interrupt handler posts events to the rx and tx thread wait queue.
  * receive interrupt will be disabled on reception and will be enabled by the
  * rx thread again. Otherwise interrupt would not stop (level triggered)
@@ -608,7 +608,7 @@ static void SJAInterrupt(void *arg)
     CANINFO *ci;
     volatile uint8_t irq = SJA1000_INT;
     CANFRAME in_frame;
-    
+
     ci = (CANINFO *) (((NUTDEVICE *) arg)->dev_dcb);
 
     ci->can_interrupts++;
@@ -738,7 +738,7 @@ int SJAInit(NUTDEVICE * dev)
     SJA1000_MODECTRL = (AFM_Bit);       // set single filter mode + sleep
     // *** Note - if you change SJA1000_MODECTRL, change it in
     // functions SJASetAccMask and SJASetAccCode also.
-    
+
     do {
         SJA1000_MODECTRL = 0x00;
     }
@@ -762,7 +762,7 @@ int SJAInit(NUTDEVICE * dev)
         cbi(EICR, ((SJA_SIGNAL_BIT - 4) << 1));
         cbi(EICR, ((SJA_SIGNAL_BIT - 4) << 1) + 1);
     }
-    temp = SJA1000_INT;         // Read interrupt register to clear pendin bits    
+    temp = SJA1000_INT;         // Read interrupt register to clear pendin bits
     sbi(EIMSK, SJA_SIGNAL_BIT);
     sbi(PORTE, SJA_SIGNAL_BIT);
     NutThreadCreate("sjacantx", CAN_Tx, dev, 256);
@@ -776,7 +776,7 @@ int SJAInit(NUTDEVICE * dev)
 /*!
  * \brief Interface information structure.
  *
- * This struct stores some interface parameters like bautdate and 
+ * This struct stores some interface parameters like bautdate and
  * acceptance mask / code. Beside this Callback handlers are registered.
  */
 
@@ -801,7 +801,7 @@ IFCAN ifc_sja1000 = {
 /*!
  * \brief Device information structure.
  *
- * Applications must pass this structure to NutRegisterDevice() 
+ * Applications must pass this structure to NutRegisterDevice()
  * to bind this CAN device driver to the Nut/OS kernel.
  */
 

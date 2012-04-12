@@ -91,7 +91,7 @@
  *
  * During write operations a buffer with this size is allocated
  * from heap and may cause memory problems with large sectors.
- * Thus, this value may be less than the size of the configuration 
+ * Thus, this value may be less than the size of the configuration
  * sector, in which case the rest of the sector is unused.
  */
 #ifndef FLASH_CONF_SIZE
@@ -204,7 +204,7 @@ unsigned long long AT49bvReadProtectionRegister(int factory)
         id |= chip[0x87];
         id <<= 16;
         id |= chip[0x88];
-    }        
+    }
     FLASH_UNLOCK(chip);
     FLASH_COMMAND(chip, FLASH_CMD_EXIT_ID);
 

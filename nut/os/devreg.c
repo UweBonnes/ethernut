@@ -108,8 +108,8 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
  *
  * \param dev  Pointer to the ::NUTDEVICE structure, which is
  *             provided by the device driver. This structure
- *             contains a hardware device name, which must be 
- *             unique among all registered devices. Drivers may 
+ *             contains a hardware device name, which must be
+ *             unique among all registered devices. Drivers may
  *             operate in a different mode using the same hardware,
  *             like interrupt driven or polling UART drivers.
  *             Only one of those drivers can be registered, because
@@ -122,7 +122,7 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
  * \return 0 if the device has been registered for the first time
  *         and initialization was successful.
  *         The function returns -1 if any device with the same name
- *         had been registered previously, if the ::NUTDEVICE 
+ *         had been registered previously, if the ::NUTDEVICE
  *         structure is invalid or if the device initialization
  *         failed.
  */

@@ -41,7 +41,7 @@
  *
  * \param Points to a string of the form 'name=value'.
  *
- * \return 0 upon successful completion. Otherwise, -1 is returned and 
+ * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
 #if defined(__arm__) || defined(__AVR32__)

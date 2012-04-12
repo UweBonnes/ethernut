@@ -35,7 +35,7 @@
  * unix_options.c - parsing of command line options
  *
  * 2002.11.13 Oliver Kasten <oliver.kasten@inf.ethz.ch>
- * 2003.06.09 Jan Beutel <j.beutel@ieee.org> 
+ * 2003.06.09 Jan Beutel <j.beutel@ieee.org>
  * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
  *
  */
@@ -87,7 +87,7 @@ void emulation_options_parse(int argc, char *argv[])
     emulation_options.uart_options[1] = uart_1_opt;
     emulation_options.uart_options[2] = uart_2_opt;
 
-    // parse args 
+    // parse args
     while ((opt = getopt(argc, argv, "u:hv::")) != -1) {
 
         switch (opt) {

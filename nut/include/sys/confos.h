@@ -110,7 +110,7 @@
 /*!
  * \brief Maximum number of characters allowed for hostname.
  *
- * Intentionally not MAXHOSTNAMELEN to avoid conflicts with existing 
+ * Intentionally not MAXHOSTNAMELEN to avoid conflicts with existing
  * C libraries.
  */
 #ifndef MAX_HOSTNAME_LEN
@@ -152,7 +152,7 @@ struct __attribute__ ((packed)) _CONFOS {
      */
     uint8_t magic[sizeof(CONFOS_EE_MAGIC) - 1];
 
-    /*! \brief Host name of the system. 
+    /*! \brief Host name of the system.
      */
     char hostname[MAX_HOSTNAME_LEN + 1];
 };

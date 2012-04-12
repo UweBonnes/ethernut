@@ -35,7 +35,7 @@
  * $Log$
  *
  * Revision 1.0  2009/04/13 ulrichprinz
- * First checkin, abstraction interface for EEPROM chips (currently SAM7X256 is 
+ * First checkin, abstraction interface for EEPROM chips (currently SAM7X256 is
  * tested only)
  *
  */
@@ -59,9 +59,9 @@ int EEInit( void )
     at24c32s.SlaveAddress = NUT_CONFIG_AT24_ADR;
 	at24c32s.IAddrW = 2;
 	at24c32s.Timeout = 20;
-    
+
     //strcpy (at24c32s.EepromName, "AT24C32" );
-    
+
     /* Do a dummy read for communication test */
     return At24cRead( &at24c32s, &dummy, 1, 0);
 }

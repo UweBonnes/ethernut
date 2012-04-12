@@ -130,12 +130,12 @@ IFNET ifn_eth0cs = {
 /*
  * \brief Device information structure.
  *
- * Applications must pass this structure to NutRegisterDevice() 
+ * Applications must pass this structure to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
  * Having done that, the application may call NutNetIfConfig()
  * with the name \em eth0 of this driver to initialize the network
  * interface.
- * 
+ *
  */
 NUTDEVICE devEth0cs = {
     0,                          /*!< Pointer to next device. */

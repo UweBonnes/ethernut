@@ -72,7 +72,7 @@
 
 #ifndef BUFSIZ
 #define	BUFSIZ	    128	    /*!< \brief Default maximum size of stream buffers.
-				 Currently not used. 
+				 Currently not used.
 				 \showinitializer */
 #endif
 
@@ -82,7 +82,7 @@
 #endif
 
 #ifndef FILENAME_MAX
-#define	FILENAME_MAX	255 /*!< \brief Default maximum size of filenames. 
+#define	FILENAME_MAX	255 /*!< \brief Default maximum size of filenames.
 				 \showinitializer */
 #endif
 

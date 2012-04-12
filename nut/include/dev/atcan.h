@@ -70,7 +70,7 @@ enum CAN_RESULT
    CAN_PASSIVE       = -5,   ///< Bus is in passive state
    CAN_BUS_OFF       = -6,   ///< Bus is bus-off
 };
- 
+
 int8_t AtCanGetBusState(void);
 
 int8_t AtCanEnableMsgObj(uint8_t mob,

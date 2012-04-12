@@ -284,7 +284,7 @@ const char *StreamInfo(HTTP_STREAM *sp, int item)
         //sprintf(env_value, "%u", sp->strm_saddr.sin_port);
         break;
     }
-    
+
     if (env_value == NULL) {
         env_value = strdup("");
     }

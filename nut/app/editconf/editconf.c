@@ -53,7 +53,7 @@
 
 #include <dev/board.h>
 #include <sys/confnet.h>
- 
+
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -68,7 +68,7 @@ static int EditLine(char *prompt, char *line, int siz)
 {
     int ch;
     int pos = strlen(line);
- 
+
     printf("%s: %s", prompt, line);
     for (;;) {
         ch = getchar();
@@ -91,7 +91,7 @@ static int EditLine(char *prompt, char *line, int siz)
     }
     line[pos] = 0;
     putchar('\n');
- 
+
     return 0;
 }
 
@@ -103,15 +103,15 @@ int main(void)
     uint8_t *cp;
     uint32_t addr;
     char ch;
- 
+
     /* Assign stdin and stdout to the default UART device. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
     freopen(DEV_CONSOLE_NAME, "w", stdout);
-    freopen(DEV_CONSOLE_NAME, "r", stdin);    
+    freopen(DEV_CONSOLE_NAME, "r", stdin);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("\n\nNetwork Configuration Editor - Compiled " __DATE__ " - " __TIME__);
     ShowHardwareConfiguration();
- 
+
     for (;;) {
         /* Load configuration. */
         if (NutNetLoadConfig(DEV_ETHER_NAME)) {
@@ -120,7 +120,7 @@ int main(void)
         } else {
             puts("\nConfiguration loaded");
         }
- 
+
         /* Edit MAC address. */
         do {
             strcpy(buf, ether_ntoa(confnet.cdn_mac));
@@ -128,7 +128,7 @@ int main(void)
             cp = ether_aton(buf);
         } while (cp == NULL);
         memcpy(confnet.cdn_mac, cp, 6);
- 
+
         /* Edit IP address. */
         do {
             strcpy(buf, inet_ntoa(confnet.cdn_cip_addr));
@@ -136,7 +136,7 @@ int main(void)
             addr = inet_addr(buf);
         } while (addr == -1);
         confnet.cdn_cip_addr = addr;
- 
+
         /* Edit IP mask. */
         do {
             strcpy(buf, inet_ntoa(confnet.cdn_ip_mask));
@@ -144,7 +144,7 @@ int main(void)
             addr = inet_addr(buf);
         } while (addr == -1);
         confnet.cdn_ip_mask = addr;
- 
+
         /* Edit IP gate. */
         do {
             strcpy(buf, inet_ntoa(confnet.cdn_gateway));
@@ -152,16 +152,16 @@ int main(void)
             addr = inet_addr(buf);
         } while (addr == -1);
         confnet.cdn_gateway = addr;
- 
+
         /* Prompt for saving. */
         printf("\nPress S to save this configuration ");
- 
+
         /* Flush input buffer and read next character. */
         while (kbhit()) {
             ch = getchar();
         }
         ch = getchar();
- 
+
         /* Save or discard edited configuration. */
         if (ch == 's' || ch == 'S') {
             if (NutNetSaveConfig()) {

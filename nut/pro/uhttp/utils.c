@@ -147,7 +147,7 @@ char *AllocConcatStrings(const char *str, ...)
     int len;
     char *cp;
     char *rp;
-    
+
     va_start(ap, str);
     for (len = strlen(str); (cp = va_arg(ap, char *)) != NULL; len += strlen(cp));
     va_end(ap);

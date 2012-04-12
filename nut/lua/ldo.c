@@ -324,7 +324,7 @@ int luaD_precall (lua_State *L, StkId func, int nresults) {
     if (ttisfunction(func))
       n = (*curr_func(L)->c.f)(L);  /* do the actual call */
     else
-      n = ((lua_CFunction)fvalue(func))(L);  /* do the actual call */    
+      n = ((lua_CFunction)fvalue(func))(L);  /* do the actual call */
     lua_lock(L);
     if (n < 0)  /* yielding? */
       return PCRYIELD;
@@ -373,7 +373,7 @@ int luaD_poscall (lua_State *L, StkId firstResult) {
 ** The arguments are on the stack, right after the function.
 ** When returns, all the results are on the stack, starting at the original
 ** function position.
-*/ 
+*/
 void luaD_call (lua_State *L, StkId func, int nResults) {
   if (++L->nCcalls >= LUAI_MAXCCALLS) {
     if (L->nCcalls == LUAI_MAXCCALLS)

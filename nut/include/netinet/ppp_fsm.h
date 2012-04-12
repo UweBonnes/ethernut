@@ -66,7 +66,7 @@
  *
  * For additional information see http://www.calldirect.com.au/
  * -
- * Portions are 
+ * Portions are
  * Copyright (c) 1989 by Carnegie Mellon University.
  * All rights reserved.
  *

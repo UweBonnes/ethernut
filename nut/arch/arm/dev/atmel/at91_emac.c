@@ -198,8 +198,8 @@
 /*!
  * \brief Check all known PHY IDs.
  *
- * If defined, perform the old PHY checks. This ensures compatibility 
- * at the cost of bloat. Should be removed later on when all boards 
+ * If defined, perform the old PHY checks. This ensures compatibility
+ * at the cost of bloat. Should be removed later on when all boards
  * have their PHY ids in their configuration.
  */
 #define CHECK_ALL_KNOWN_PHY_IDS
@@ -422,7 +422,7 @@ static unsigned int rxBufIdx;
 static uint16_t phy_inw(uint8_t reg)
 {
     /* PHY read command. */
-    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_READ | EMAC_CODE | 
+    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_READ | EMAC_CODE |
         (NIC_PHY_ADDR << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB));
 
     /* Wait until PHY logic completed. */
@@ -442,7 +442,7 @@ static uint16_t phy_inw(uint8_t reg)
 static void phy_outw(uint8_t reg, uint16_t val)
 {
     /* PHY write command. */
-    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_WRITE | EMAC_CODE | 
+    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_WRITE | EMAC_CODE |
         (NIC_PHY_ADDR << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB) | val);
 
     /* Wait until PHY logic completed. */
@@ -461,7 +461,7 @@ static int probePhy(uint32_t tmo)
     uint16_t phyval;
 
     /* Read Phy ID. Ignore revision number. */
-    physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);   
+    physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);
 #if NIC_PHY_UID != 0xffffffff
     if ( physID != (NIC_PHY_UID & 0xFFFFFFF0) ) {
         outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
@@ -640,7 +640,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 
     if (fbc) {
         /*
-         * Receiving long packets is unexpected. Let's declare the 
+         * Receiving long packets is unexpected. Let's declare the
          * chip insane. Short packets will be handled by the caller.
          */
         if (fbc > 1536) {
@@ -684,7 +684,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
@@ -694,7 +694,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
     uint8_t *buf;
 
     /*
-     * Calculate the number of bytes to be send. Do not send packets 
+     * Calculate the number of bytes to be send. Do not send packets
      * larger than the Ethernet maximum transfer unit. The MTU
      * consist of 1500 data bytes plus the 14 byte Ethernet header
      * plus 4 bytes CRC. We check the data bytes only.
@@ -827,14 +827,14 @@ THREAD(EmacRxThread, arg)
 
     for (;;) {
         /*
-         * Wait for the arrival of new packets or poll the receiver every 
+         * Wait for the arrival of new packets or poll the receiver every
          * 200 milliseconds. This short timeout helps a bit to deal with
          * the SAM9260 Ethernet problem.
          */
         NutEventWait(&ni->ni_rx_rdy, 200);
 
         /*
-         * Fetch all packets from the NIC's internal buffer and pass 
+         * Fetch all packets from the NIC's internal buffer and pass
          * them to the registered handler.
          */
         while (EmacGetPacket(ni, &nb) == 0) {
@@ -934,8 +934,8 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.
@@ -960,7 +960,7 @@ int EmacInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("emacrx", EmacRxThread, dev, 
+    if (NutThreadCreate("emacrx", EmacRxThread, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
@@ -993,11 +993,11 @@ static IFNET ifn_eth0 = {
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devAt91Emac = {
     0,                          /*!< \brief Pointer to next device. */

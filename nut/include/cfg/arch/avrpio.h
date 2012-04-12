@@ -54,10 +54,10 @@
  * \file cfg/arch/avrpio.h
  * \brief AVR port configuration.
  *
- * This file collects all port specifications for the AVR platform and 
+ * This file collects all port specifications for the AVR platform and
  * provides an overview of hardware resources in use.
  *
- * Values are geared to the Ethernut reference design and can be changed 
+ * Values are geared to the Ethernut reference design and can be changed
  * by the Configurator. This program creates a file with the same name
  * in the build tree, which replaces this placeholder.
  */

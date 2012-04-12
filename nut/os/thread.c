@@ -50,7 +50,7 @@
  * \file os/thread.c
  * \brief Multi-threading support.
  *
- * This kernel module implements the platform independent part of the Nut/OS 
+ * This kernel module implements the platform independent part of the Nut/OS
  * cooperative multi-threading.
  *
  * \verbatim File version $Id$ \endverbatim
@@ -115,8 +115,8 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
     td->td_qpec = 0;			// start with clean event count
 
     /*
-     * Be most careful not to override an intermediate event from interrupt 
-     * context, which may change a queue from empty to signaled state. Many 
+     * Be most careful not to override an intermediate event from interrupt
+     * context, which may change a queue from empty to signaled state. Many
      * thanks to Michael Jones, who detected and corrected this bug.
      */
     NutEnterCritical();
@@ -124,10 +124,10 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 
     if (tqp == SIGNALED) {
         tqp = 0;
-        td->td_qpec++;			// transfer the signaled state 
+        td->td_qpec++;			// transfer the signaled state
     } else if (tqp) {
         NutExitCritical();		// there are other threads in queue
-						// so its save to leave critical.          
+						// so its save to leave critical.
 
         while (tqp && tqp->td_priority <= td->td_priority) {
             tqpp = &tqp->td_qnxt;
@@ -194,7 +194,7 @@ void NutThreadResume(void)
         cnt = td->td_qpec;
         NutExitCritical();
         if (cnt) {
-            /* In order to reduce context switching time, it is sufficient 
+            /* In order to reduce context switching time, it is sufficient
              * to remove the thread on top of the priority ordered list. */
             qhp = (NUTTHREADINFO **)(td->td_queue);
             NutEnterCritical();

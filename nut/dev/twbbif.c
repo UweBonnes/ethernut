@@ -413,8 +413,8 @@ static uint8_t tw_mm_error;      /* Last master mode error. */
 static int twibb_initialized;
 
 /*
- * Short delay. 
- * 
+ * Short delay.
+ *
  * Our bit banging code relies on pull-up resistors. The I/O ports mimic
  * open collector outputs by switching to input mode for high level and
  * switching to output mode for low level. This is much slower than

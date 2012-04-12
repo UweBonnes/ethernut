@@ -108,7 +108,7 @@ int SpiFlashEnable(void)
      */
 
     /*
-     * SCK and MOSI outputs need configuration, 
+     * SCK and MOSI outputs need configuration,
      * even if SPI mode is enabled.
      */
     cbi(PORTB, 1);
@@ -130,7 +130,7 @@ int SpiFlashEnable(void)
         sbi(DDRB, 4);
 
         /*
-         * Set slave select pin  to output. Otherwise a low signal 
+         * Set slave select pin  to output. Otherwise a low signal
          * on this pin might force us to SPI slave mode.
          */
         sbi(DDRB, 0);
@@ -201,9 +201,9 @@ int SpiFlashWriteByte(uint8_t high, uint16_t addr, uint8_t data)
         SpiByte(data);
 
         /*
-         * During programming a value of 0x7F appears at the memory location. 
+         * During programming a value of 0x7F appears at the memory location.
          * If we are programming this value, we delay execution by 10 ms.
-         * Otherwise we poll the memory location until we read back the 
+         * Otherwise we poll the memory location until we read back the
          * programmed value.
          */
         if (data == 0x7f)

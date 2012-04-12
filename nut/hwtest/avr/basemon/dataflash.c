@@ -129,7 +129,7 @@ static uint8_t SpiMemStatus(uint8_t cs)
 static int SpiMemInit(uint8_t cs, uint16_t *pages, uint16_t *pagesize)
 {
     uint8_t fs;
-    
+
     /* Init SPI memory chip select. */
     if (cs == SPIMEM_CS_BIT) {
         cbi(SPIMEM_CS_PORT, cs);
@@ -137,10 +137,10 @@ static int SpiMemInit(uint8_t cs, uint16_t *pages, uint16_t *pagesize)
         sbi(SPIMEM_CS_PORT, cs);
     }
     sbi(SPIMEM_CS_DDR, cs);
-    
+
     /* Initialize the SPI interface. */
     SpiInit();
-    
+
     /* Read the status register for a rudimentary check. */
     fs = SpiMemStatus(cs);
     if(fs & 0x80) {

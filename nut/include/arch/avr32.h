@@ -34,7 +34,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
 
 /*This file is prepared for Doxygen automatic documentation generation.*/
@@ -183,7 +183,7 @@ extern void *__bss_end;
 #define Tst_bits( value, mask)  (Rd_bits(value, mask) != 0)
 
 
-/*! 
+/*!
  * \brief Gets the value of the \a sysreg system register.
  *
  * \param sysreg  Address of the system register of which to get the value.
@@ -196,7 +196,7 @@ extern void *__bss_end;
 # define Get_system_register(sysreg)         __get_system_register(sysreg)
 #endif
 
-/*! 
+/*!
  * \brief Sets the value of the \a sysreg system register to \a value.
  *
  * \param sysreg  Address of the system register of which to set the value.

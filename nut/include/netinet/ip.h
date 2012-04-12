@@ -125,7 +125,7 @@
 /*@{*/
 
 /* Check if IP is a multicast address */
-#define IP_IS_MULTICAST(_a)   ((ntohl(_a) & 0xF0000000U) == 0xE0000000U)     
+#define IP_IS_MULTICAST(_a)   ((ntohl(_a) & 0xF0000000U) == 0xE0000000U)
 
 #define IPVERSION   4           /*!< \brief IP protocol version. */
 

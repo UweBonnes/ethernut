@@ -94,7 +94,7 @@
 /*!
  * \brief Specify enhanced AVR target.
  *
- * For backward compatibility this macro is automatically defined if 
+ * For backward compatibility this macro is automatically defined if
  * _MCU_enhanced is defined.
  *
  */
@@ -127,7 +127,7 @@
 /*!
  * \brief Redefined standard library routines.
  *
- * ImageCraft has a multipass linker, which is fine for complicated 
+ * ImageCraft has a multipass linker, which is fine for complicated
  * dependencies in most cases. However, there is the potential risk,
  * that standard library calls with the same name are linked from
  * the wrong library. To avoid this, an additional postfix is added

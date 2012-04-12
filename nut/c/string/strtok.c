@@ -82,19 +82,19 @@
  * The tokens are separated in the string by at least one of the
  * characters in the given separator string.
  *
- * The first time this function is called, the string should be 
+ * The first time this function is called, the string should be
  * specified. Subsequent calls, wishing to obtain further tokens
  * from the same string, should pass a null pointer instead.
  *
- * The separator string must be supplied each time, and may change 
+ * The separator string must be supplied each time, and may change
  * between calls.
  *
  * \param s     Pointer to the string to separate.
  * \param delim Pointer to the separator string.
  *
  * \return A pointer to the beginning of each subsequent token
- *         in the string, after replacing the separator character 
- *         itself with a zero character. When no more tokens remain, 
+ *         in the string, after replacing the separator character
+ *         itself with a zero character. When no more tokens remain,
  *         a null pointer is returned.
  */
 char *strtok(char *s, CONST char *delim)
@@ -106,8 +106,8 @@ char *strtok(char *s, CONST char *delim)
 
 /*!
  * \brief Isolate sequential tokens in a NUL terminated string.
- * 
- * Similar to strtok(), but takes an explicit context argument 
+ *
+ * Similar to strtok(), but takes an explicit context argument
  * and thus is reentrant.
  *
  * \param s     Pointer to the string to separate.
@@ -115,8 +115,8 @@ char *strtok(char *s, CONST char *delim)
  * \param last  Used to store the current search context.
  *
  * \return A pointer to the beginning of each subsequent token
- *         in the string, after replacing the separator character 
- *         itself with a zero character. When no more tokens remain, 
+ *         in the string, after replacing the separator character
+ *         itself with a zero character. When no more tokens remain,
  *         a null pointer is returned.
  */
 char *strtok_r(char *s, CONST char *delim, char **last)

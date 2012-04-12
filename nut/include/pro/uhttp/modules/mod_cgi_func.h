@@ -73,7 +73,7 @@ struct _HTTP_CGI_FUNCTION {
 /*!
  * \brief Register a common gateway interface function.
  *
- * 
+ *
  * Usage example:
  *
  * \code

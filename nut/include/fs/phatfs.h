@@ -110,7 +110,7 @@ typedef struct _PHATFILE {
     uint32_t f_de_offs;
     /*! \brief Directory entry change marker. */
     unsigned int f_de_dirty;
-    /*! \brief First cluster of the parent directory, low word. 
+    /*! \brief First cluster of the parent directory, low word.
      *
      * Our directory entry is located in this cluster.
      */

@@ -86,11 +86,11 @@ static int save_env(void)
 /*!
  * \brief Remove an environment variable.
  *
- * \param name  Points to a string, which is the name of the variable. 
+ * \param name  Points to a string, which is the name of the variable.
  * \param value Points to a string, which is the value of the variable.
  * \param force If not zero, existing values will be updated.
  *
- * \return 0 upon successful completion. Otherwise, -1 is returned and 
+ * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
 int setenv(CONST char *name, CONST char *value, int force)
@@ -157,10 +157,10 @@ int setenv(CONST char *name, CONST char *value, int force)
 /*!
  * \brief Remove an environment variable.
  *
- * \param name Points to a string, which is the name of the variable to 
+ * \param name Points to a string, which is the name of the variable to
  *             be removed.
  *
- * \return 0 upon successful completion. Otherwise, -1 is returned and 
+ * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
 #ifdef CRT_UNSETENV_POSIX
@@ -190,7 +190,7 @@ int unsetenv(CONST char *name)
 }
 
 
-#else 
+#else
 
 void unsetenv(CONST char *name)
 {

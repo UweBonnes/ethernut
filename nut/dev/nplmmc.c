@@ -36,7 +36,7 @@
  * Low level MMC hardware routines for the programmable logic provided
  * on the Ethernut 3 reference design.
  *
- * These routines support SPI mode only and are required by the basic MMC 
+ * These routines support SPI mode only and are required by the basic MMC
  * driver.
  *
  * \verbatim
@@ -245,11 +245,11 @@ static void NplMmCard0RemIrq(void *arg)
 /*!
  * \brief Initialize MMC hardware interface.
  *
- * This function is automatically executed during during device 
+ * This function is automatically executed during during device
  * registration via NutRegisterDevice().
  *
  * \todo This routine needs some update to support multiple cards.
- * 
+ *
  * \todo PLL clock changes should be based on NPL version.
  *
  * \param dev Identifies the device to initialize.
@@ -271,10 +271,10 @@ static int NplMmcIfcInit(NUTDEVICE * dev)
         val = Cy2239xPllGetFreq((int)val, 7);
         /* Calculate the required divider value. */
         val = (val + NPL_MMC_CLOCK - 10) / NPL_MMC_CLOCK;
-        /* 
+        /*
          * Not sure about the Cy-routines. The DIVSEL bit specifies which
          * divider is used, which is indirectly connected to S2, which is
-         * high by default. For now set both dividers. 
+         * high by default. For now set both dividers.
          */
         if (Cy2239xSetDivider(NUT_PLL_NPLCLK1, 1, (int)val)) {
             return -1;
@@ -309,13 +309,13 @@ static MMCIFC mmc0_ifc = {
 /*!
  * \brief Multimedia card device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
- * to bind this driver to the Nut/OS kernel. An application may then 
+ * A pointer to this structure must be passed to NutRegisterDevice()
+ * to bind this driver to the Nut/OS kernel. An application may then
  * call
  * /verbatim
  * _open("MMC0:", _O_RDWR | _O_BINARY);
  * /endverbatim
- * to mount the first active primary partition with any previously 
+ * to mount the first active primary partition with any previously
  * registered file system driver (typically devPhat0).
  */
 NUTDEVICE devNplMmc0 = {

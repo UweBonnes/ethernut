@@ -378,7 +378,7 @@ int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
         else
             *(uint32_t *)conf = 0;
         break;
-        
+
     case TIOCGWINSZ:
         win_size = (WINSIZE *)conf;
         win_size->ws_col    = dcb->dcb_nrows;
@@ -608,12 +608,12 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
                 case 'o':
                     TermEraseLineStart(dcb);
                     break;
-                    
+
                 case 'i':
                     dcb->dcb_modeflags |= LCD_MF_INVERTED;
                     (*dcb->dss_cursor_mode) (3);
                     break;
-                    
+
                 case 'n':
                     dcb->dcb_modeflags &= ~LCD_MF_INVERTED;
                     (*dcb->dss_cursor_mode) (2);

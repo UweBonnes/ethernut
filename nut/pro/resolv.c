@@ -92,13 +92,13 @@ typedef struct {
 void DumpDnsHeader(FILE * stream, DNSHEADER * doh)
 {
     fprintf(stream, "HEADER: id=%u flg=%04X #q=%u #an=%u #au=%u #ad=%u\r\n",
-            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers, 
+            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers,
             doh->doh_authrr, doh->doh_addrr);
 }
 
 void DumpDnsQuestion(FILE * stream, DNSQUESTION * doq)
 {
-    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n", 
+    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n",
         doq->doq_name, doq->doq_type, doq->doq_class);
 }
 

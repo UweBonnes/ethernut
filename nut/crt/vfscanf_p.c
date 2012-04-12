@@ -60,13 +60,13 @@
  * program space.
  *
  * \param stream Pointer to a previously opened stream.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  * \param ap	 List of pointer arguments.
  *
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  *
  */

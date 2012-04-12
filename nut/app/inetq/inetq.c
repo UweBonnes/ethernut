@@ -122,7 +122,7 @@ static char buff[1024];
 static uint8_t my_mac[] = MY_MAC;
 
 /*
- * Main application routine. 
+ * Main application routine.
  *
  */
 int main(void)

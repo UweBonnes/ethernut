@@ -56,7 +56,7 @@ static AHDLCDCB dcb_ahdlc;
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this device driver to the Nut/OS kernel.
  */
 NUTDEVICE devAhdlc1 = {

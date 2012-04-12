@@ -57,7 +57,7 @@
  *
  * \param page The page number to program, 0..479. (0..991 on ATMega2561)
  * \param data Pointer to the new page contents.
- * \param len  Number of bytes to program. If this is less than 256, 
+ * \param len  Number of bytes to program. If this is less than 256,
  *             then the remaining bytes will be filled with 0xFF.
  */
 
@@ -79,10 +79,10 @@ static void FlashPage(u_short page, void *data, u_short len)
     if (page >= MAXPAGE)
         return;
 
-    RAMPZ = page >> 8;  // page / 256 = RAMPZ  
+    RAMPZ = page >> 8;  // page / 256 = RAMPZ
     page <<= 8;
 
-    SpmCommand(page, (1 << PGERS) | (1 << SPMEN));    
+    SpmCommand(page, (1 << PGERS) | (1 << SPMEN));
     SpmCommand(0, (1 << RWWSRE) | (1 << SPMEN));
 
     for (i = 0; i < len; i += 2, wp++)

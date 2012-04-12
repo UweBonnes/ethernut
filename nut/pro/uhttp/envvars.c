@@ -127,7 +127,7 @@ const char* HttpSessionInfo(HTTPD_SESSION *hs, int item)
         vp = hs->s_req.req_url;
         break;
     }
-    
+
     if (vp == NULL) {
         vp = "";
     }

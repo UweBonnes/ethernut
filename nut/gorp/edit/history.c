@@ -81,7 +81,7 @@ EDITHISTORY *EditHistoryCreate(int siz)
  *
  * Releases occupied memory.
  *
- * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a 
+ * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a
  *             previous call to \ref EditHistoryCreate.
  */
 void EditHistoryDestroy(EDITHISTORY *hist)
@@ -103,7 +103,7 @@ void EditHistoryDestroy(EDITHISTORY *hist)
  *
  * \param idx  Index in to the history table.
  * \param buf  Pointer to the string that will replace the existing one.
- * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a 
+ * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a
  *             previous call to \ref EditHistoryCreate.
  */
 void EditHistorySet(EDITHISTORY *hist, int idx, char *buf)
@@ -125,7 +125,7 @@ void EditHistorySet(EDITHISTORY *hist, int idx, char *buf)
  * \brief Retrieve the specified history table entry.
  *
  * \param idx  Index in to the history table.
- * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a 
+ * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a
  *             previous call to \ref EditHistoryCreate.
  */
 int EditHistoryGet(EDITHISTORY *hist, int idx, char *buf, int siz)
@@ -153,13 +153,13 @@ int EditHistoryGet(EDITHISTORY *hist, int idx, char *buf, int siz)
 /*!
  * \brief Insert a new history table entry at the specified position.
  *
- * All following entries are moved up by 1. If the table is full, then 
+ * All following entries are moved up by 1. If the table is full, then
  * the top most entry will be removed.
  *
  * \param idx  Index in to the history table.
  * \param buf  Pointer to the new string. If it doesn't differ from
  *             the existing entry, than nothing will be changed.
- * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a 
+ * \param hist Pointer to an \ref EDITHISTORY structure, obtained by a
  *             previous call to \ref EditHistoryCreate.
  */
 void EditHistoryInsert(EDITHISTORY *hist, int idx, char *buf)

@@ -66,7 +66,7 @@ static uint8_t wdt_div;
 /*!
  * \brief Start the AVR hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  *
  * \param ms Desired watchdog timeout in milliseconds.
@@ -84,7 +84,7 @@ uint32_t AvrWatchDogStart(uint32_t ms)
         ticks >>= 1;
     }
     wdt_enable(wdt_div);
-    
+
     nested = 1;
 
     return (16384UL << wdt_div) / (NUT_WDT_FREQ / 1000UL);
@@ -93,7 +93,7 @@ uint32_t AvrWatchDogStart(uint32_t ms)
 /*!
  * \brief Re-start the AVR hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void AvrWatchDogRestart(void)
@@ -104,7 +104,7 @@ void AvrWatchDogRestart(void)
 /*!
  * \brief Disable the AVR hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void AvrWatchDogDisable(void)
@@ -118,7 +118,7 @@ void AvrWatchDogDisable(void)
 /*!
  * \brief Enable the AVR hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void AvrWatchDogEnable(void)

@@ -18,8 +18,8 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -86,16 +86,16 @@ static void init_boot_config(void)
 }
 
 RAMFUNC void boot(void)
-{       
-    NutEnterCritical();    
-    
+{
+    NutEnterCritical();
+
     /* Set all interrupts to be treated */
     outr(AIC_EOICR, 0);
     /* Disable _all_ interrupts */
     outr(AIC_IDCR, 0xFFFFFFFF);
     /* Disable clock to all devices */
     outr(PMC_PCDR, 0xFFFFFFFF);
-    
+
     asm volatile ("@ Start Application" "\n\t"
                   "ldr r0, =" IMAGE_START "\n\t"
                   "bx  r0" "\n\t"
@@ -108,10 +108,10 @@ static int flasher_callback(u_char *buffer, u_short block_size, u_long offset, v
     int pos;
     int size;
     int rc;
-    
+
     pos = 0;
     size = block_size;
-    
+
     do {
         rc = -1;
         /* Write back new data. Maintain region lock. */
@@ -136,11 +136,11 @@ int  check_or_save_md5(int size, int save)
     u_char  digest[16];
     int     idx;
     int     ok = 0;
-    
+
     NutMD5Init(&md5_ctx);
     NutMD5Update(&md5_ctx, (u_char *)(IMAGE_START_ADDR), size);
     NutMD5Final(&md5_ctx, digest);
-    
+
     if (save) {
 #if ((DEBUG_LEVEL) >= (LEVEL_INFO))
         INFO("MD5: ");
@@ -174,7 +174,7 @@ int  check_or_save_md5(int size, int save)
         }
 #endif
     }
-    
+
     return ok;
 }
 
@@ -190,7 +190,7 @@ void loader(FILE *uart)
             if (size < 0) {
                 ERROR("TFTP error loading file %s from %s\r\n", confboot.cb_image, inet_ntoa(confboot.cb_tftp_ip));
             } else {
-                check_or_save_md5(size, TRUE); 
+                check_or_save_md5(size, TRUE);
                 loaded = TRUE;
             }
         } else {
@@ -201,7 +201,7 @@ void loader(FILE *uart)
 
 	retry--;
 	
-	if(!retry) 
+	if(!retry)
 		break;
     }
 }

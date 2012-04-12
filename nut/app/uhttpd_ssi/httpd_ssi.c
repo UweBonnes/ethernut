@@ -137,7 +137,7 @@ int main(void)
     EnvInitDefaults();
     AppVarInit(appvar_list);
     HttpRegisterSsiVarHandler(EnvHandler);
-    
+
     StreamClientAccept(HttpdClientHandler, NULL);
 
     puts("Exit");

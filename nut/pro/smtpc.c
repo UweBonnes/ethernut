@@ -70,18 +70,18 @@
  * This local implementation fixes this and takes a user supplied buffer
  * for the encoded string, avoiding costly heap allocation.
  *
- * In opposite to the original gorp routine, this function will not 
- * insert any line breaks. Note, that the encoder loop will not release 
- * the CPU. Thus, the caller should split large buffers into smaller 
+ * In opposite to the original gorp routine, this function will not
+ * insert any line breaks. Note, that the encoder loop will not release
+ * the CPU. Thus, the caller should split large buffers into smaller
  * chunks and add any required line breaks.
  *
- * \param sptr Pointer to the source buffer that contains the data to 
+ * \param sptr Pointer to the source buffer that contains the data to
  *             encode.
  * \param slen Number of bytes available in the source buffer.
  * \param dptr Pointer to the destination buffer that receives the
  *             encoded data. A terminating zero byte will be appended.
- *             The caller must make sure, that the size of this buffer 
- *             is large enough to hold the resulting string. A save 
+ *             The caller must make sure, that the size of this buffer
+ *             is large enough to hold the resulting string. A save
  *             calculation is (slen / 3) * 4 + 5.
  */
 static void NutBase64Encode(CONST uint8_t * sptr, size_t slen, char *dptr)
@@ -123,7 +123,7 @@ static void NutBase64Encode(CONST uint8_t * sptr, size_t slen, char *dptr)
  * \brief Read a response line from the server.
  *
  * \return Pointer to a buffer containing the response. In case of a
- *         broken connection or a line overflow, a NULL pointer is 
+ *         broken connection or a line overflow, a NULL pointer is
  *         returned.
  */
 CONST char *NutSmtpReceiveResponse(SMTPCLIENTSESSION * si)
@@ -150,10 +150,10 @@ CONST char *NutSmtpReceiveResponse(SMTPCLIENTSESSION * si)
 /*!
  * \brief Send command to the server and return the first response line.
  *
- * If a multi-line response is expected, the caller may use 
+ * If a multi-line response is expected, the caller may use
  * NutSmtpReceiveResponse() to receive additional response lines.
  *
- * \param fmt Format string containing conversion specifications like 
+ * \param fmt Format string containing conversion specifications like
  *            printf.
  */
 CONST char *NutSmtpSendCommand(SMTPCLIENTSESSION * si, CONST char *fmt, ...)
@@ -177,7 +177,7 @@ CONST char *NutSmtpSendCommand(SMTPCLIENTSESSION * si, CONST char *fmt, ...)
  * \brief Terminate an SMTP session.
  *
  * Gracefully closes the SMTP connection.
- * 
+ *
  * \param si Pointer to the \ref SMTPCLIENTSESSION structure, obtained
  *           from a previous call to NutSmtpConnect().
  */
@@ -410,9 +410,9 @@ static int SendMailHeaderRecipient(FILE *stream, MAILENVELOPE * me, uint8_t type
  *
  * Note, that BCC recipients are not included.
  *
- * The caller may add additional headers using stdio functions with the 
+ * The caller may add additional headers using stdio functions with the
  * stream handle available in the \ref SMTPCLIENTSESSION structure.
- * 
+ *
  * \param si Pointer to the \ref SMTPCLIENTSESSION structure, obtained
  *           from a previous call to NutSmtpConnect().
  * \param me Pointer to the \ref MAILENVELOPE structure.
@@ -523,7 +523,7 @@ int NutSmtpSendEncodedLines(SMTPCLIENTSESSION * si, CONST char *text)
  * \endcode
  *
  * More advanced mail transfers may be implemented by using the
- * other routines of this API for sending commands or parts of 
+ * other routines of this API for sending commands or parts of
  * an email individually. Even the stream in the session structure
  * may be used with stdio calls.
  *
@@ -533,8 +533,8 @@ int NutSmtpSendEncodedLines(SMTPCLIENTSESSION * si, CONST char *text)
  *           the caller should inspect the status of each recipient.
  *
  * \return Pointer to a buffer containing the last response. The status
- *         of the recipients in the envelope will have been updated. In 
- *         case of a fatal error or if all recipients had been rejected, 
+ *         of the recipients in the envelope will have been updated. In
+ *         case of a fatal error or if all recipients had been rejected,
  *         a NULL pointer is returned.
  */
 CONST char *NutSmtpSendMail(SMTPCLIENTSESSION * si, MAILENVELOPE * me)

@@ -330,22 +330,22 @@ int Tlv320DacSetRate(unsigned int rate)
         Tlv320DacWriteReg(DAC_SRATE, (3 << DAC_SRATE_SR_LSB) | DAC_SRATE_USB);
 #endif
         break;
-    case 8021:      
+    case 8021:
         Tlv320DacWriteReg(DAC_SRATE, (11 << DAC_SRATE_SR_LSB) | DAC_SRATE_BOSR | DAC_SRATE_USB);
         break;
-    case 44100:     
+    case 44100:
         Tlv320DacWriteReg(DAC_SRATE, (8 << DAC_SRATE_SR_LSB) | DAC_SRATE_BOSR | DAC_SRATE_USB);
         break;
-    case 48000:     
+    case 48000:
         Tlv320DacWriteReg(DAC_SRATE, (0 << DAC_SRATE_SR_LSB) | DAC_SRATE_USB);
         break;
-    case 88200:     
+    case 88200:
         Tlv320DacWriteReg(DAC_SRATE, (15 << DAC_SRATE_SR_LSB) | DAC_SRATE_BOSR | DAC_SRATE_USB);
         break;
-    case 96000:     
+    case 96000:
         Tlv320DacWriteReg(DAC_SRATE, (7 << DAC_SRATE_SR_LSB) | DAC_SRATE_USB);
         break;
-    default:        
+    default:
         return -1;
     }
     return 0;

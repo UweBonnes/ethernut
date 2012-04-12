@@ -52,7 +52,7 @@
  * Bug fix
  *
  */
- 
+
 #include "dencode.h"
 
 int NutDecodeHex(char c)

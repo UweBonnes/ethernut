@@ -89,7 +89,7 @@ static int NullWriteP(NUTFILE * nf, PGM_P buffer, int len)
 
 
 
- 
+
 /*!
  * \brief Read bytes from file
  *
@@ -106,7 +106,7 @@ static int NullRead(NUTFILE * nf, void *buffer, int len)
     return 0;
 }
 
-/*! 
+/*!
  * \brief Close ...
  *
  * \return Always 0.
@@ -153,7 +153,7 @@ NUTDEVICE devNull = {
 
     0,                          /*!< Driver control block. */
     0,                          /*!< Driver initialization routine. */
-    
+
     NullIOCTL,                  /*!< Driver specific control function. */
     NullRead,
     NullWrite,

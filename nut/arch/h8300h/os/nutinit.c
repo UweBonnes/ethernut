@@ -57,7 +57,7 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 /*@{*/
 
 /* \fn NutIdle(void *arg)
- * \brief Idle thread. 
+ * \brief Idle thread.
  *
  * After initializing the timers, the idle thread switches to priority 254
  * and enters an endless loop.
@@ -85,8 +85,8 @@ THREAD(NutIdle, arg)
 /*!
  * \brief Nut/OS Initialization.
  *
- * Initializes the memory management and the thread system and starts 
- * an idle thread, which in turn initializes the timer management. 
+ * Initializes the memory management and the thread system and starts
+ * an idle thread, which in turn initializes the timer management.
  * Finally the application's main() function is called.
  */
 void NutInit(void)

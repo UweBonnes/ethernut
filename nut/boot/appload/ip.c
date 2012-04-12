@@ -54,7 +54,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -124,7 +124,7 @@ u_short IpChkSum(const u_char *data, u_short size)
 /*!
  * \brief Receive an IP packet with the specified protocol type.
  *
- * This function calls EtherInput(). Any incoming Ethernet 
+ * This function calls EtherInput(). Any incoming Ethernet
  * frame, which is not of the specified type will be discarded.
  *
  * \param proto Protocol type.
@@ -133,7 +133,7 @@ u_short IpChkSum(const u_char *data, u_short size)
  *              this value represents approximately the number
  *              of milliseconds to wait.
  *
- * \return The number of bytes received, 0 on timeout or -1 in case of 
+ * \return The number of bytes received, 0 on timeout or -1 in case of
  *         a failure.
  */
 int IpInput(u_char proto, u_short tms)
@@ -188,7 +188,7 @@ int IpInput(u_char proto, u_short tms)
 /*!
  * \brief Send an IP packet.
  *
- * This function fills the IP header of the global send frame and calls 
+ * This function fills the IP header of the global send frame and calls
  * EtherOutput(). Routing is not supported.
  *
  * \param dip   Destination IP address in network byte order.

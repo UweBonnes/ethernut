@@ -57,7 +57,7 @@
 /*!
  * \brief Get the file descriptor associated with a stream.
  *
- * In contrast to other implementations, the standard streams stdin, 
+ * In contrast to other implementations, the standard streams stdin,
  * stdout and stderr do not return 0, 1 and 2 resp.
  *
  * \param stream Pointer to a previously opened stream.

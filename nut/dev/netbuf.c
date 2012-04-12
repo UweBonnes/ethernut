@@ -80,7 +80,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -154,7 +154,7 @@ static int NutNetBufAllocData(NBDATA * nbd, int size, int offs)
 /*!
  * \brief Allocate or re-allocate a network buffer part.
  *
- * \param nb   Points to an existing network buffer structure or NULL, 
+ * \param nb   Points to an existing network buffer structure or NULL,
  *             if a new structure should be created. An existing buffer
  *             must not be used any further if this function returns
  *             a null pointer.
@@ -176,9 +176,9 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
     int offs = 0;
 
     NUTASSERT(size > 0);
-    NUTASSERT(type == NBAF_DATALINK || 
-        type == NBAF_NETWORK || 
-        type == NBAF_TRANSPORT || 
+    NUTASSERT(type == NBAF_DATALINK ||
+        type == NBAF_NETWORK ||
+        type == NBAF_TRANSPORT ||
         type == NBAF_APPLICATION);
 
     /* Allocate a new buffer, if the caller don't provide one. */
@@ -210,7 +210,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
                 NutHeapFree((uint8_t *)nbd->vp - offs);
                 nbd->sz = 0;
             } else {
-                /* 
+                /*
                  * Reduce the size. This is actually a bad idea, because
                  * we may waste too much memory. One option would be to
                  * use the new NutHeapRealloc, but not sure if it will
@@ -224,7 +224,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
             /* Buffer was not allocated from heap. */
             nbd->sz = 0;
         }
-        /* If the size is zero at this point, 
+        /* If the size is zero at this point,
            we need to allocate a new buffer. */
         if (nbd->sz == 0) {
             if (NutNetBufAllocData(nbd, size, offs)) {
@@ -243,9 +243,9 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 /*!
  * \brief Create a referencing copy of an existing network buffer structure.
  *
- * \param nb   Points to an existing network buffer structure, previously 
+ * \param nb   Points to an existing network buffer structure, previously
  *             allocated by NutNetBufAlloc().
- * \param type Part of the buffer to be additionally allocated. This can 
+ * \param type Part of the buffer to be additionally allocated. This can
  *             be any combination of the following flags:
  *             - NBAF_DATALINK
  *             - NBAF_NETWORK
@@ -257,7 +257,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
 {
     NETBUF *cb;
-    
+
     NUTASSERT(nb != NULL);
 
     if ((nb->nb_flags & NBAF_REFCNT) == NBAF_REFCNT) {
@@ -329,7 +329,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         if (e) {
             NutNetBufFree(cb);
             cb = NULL;
-        } 
+        }
         else if (referenced) {
             cb->nb_ref = nb;
             nb->nb_flags++;

@@ -58,7 +58,7 @@
  * program memory.
  *
  * \param stream Pointer to a previously opened stream.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  *
  * \return The number of bytes written or a negative value to indicate
@@ -67,7 +67,7 @@
  * \warning The function will not check, if the stream pointer points
  *          to a valid stream.
  *
- * \warning Do not use this function with a debug device while running 
+ * \warning Do not use this function with a debug device while running
  *          in interrupt context.
  */
 int fprintf_P(FILE * stream, PGM_P fmt, ...)

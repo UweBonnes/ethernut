@@ -121,8 +121,8 @@ static void FatalError(char *msg)
  *
  * If the line contains less than 3 words, then the second
  * parameter pointer is set to NULL. With one word only, also
- * the first parameter pointer is set to NULL. The function 
- * result is NULL on empty lines, including lines containing 
+ * the first parameter pointer is set to NULL. The function
+ * result is NULL on empty lines, including lines containing
  * all spaces.
  *
  * Leading spaces are skipped. Trailing end of line characters
@@ -220,8 +220,8 @@ static void ProcessRequests(FILE * stream)
     fputs("200 Welcome to tcps. Type help to get help.\r\n", stream);
     for (;;) {
 
-        /* 
-         * Flush any pending output and read in a new line. 
+        /*
+         * Flush any pending output and read in a new line.
          *
          * If you want line editing capabilities, check
          * http://www.ethernut.de/nutwiki/Input_Line_Editor
@@ -363,14 +363,14 @@ static void ProcessRequests(FILE * stream)
               "r[eset]   Reset system.\r\n"
               "s[end]    Send <message> to serial port.\r\n"
               "u[ptime]  Query number of seconds the system is running.\r\n"
-              "q[uit]    Terminates connection.\r\n" 
+              "q[uit]    Terminates connection.\r\n"
               ".\r\n", stream);
     }
     free(buff);
 }
 
 /*
- * Main application routine. 
+ * Main application routine.
  *
  * Nut/OS automatically calls this entry after initialization.
  */
@@ -394,7 +394,7 @@ int main(void)
     printf("TCP Server Sample %s\n", APP_VERSION);
 
     /*
-     * Configure the network interface. It is assumed, that 
+     * Configure the network interface. It is assumed, that
      * we got a valid configuration in non-volatile memory.
      *
      * For alternatives see
@@ -434,7 +434,7 @@ int main(void)
                 puts("connected");
 
                 /*
-                 * Open a stream and associate it with the socket, so 
+                 * Open a stream and associate it with the socket, so
                  * we can use standard I/O. Note, that socket streams
                  * currently do support cooked text mode.
                  */

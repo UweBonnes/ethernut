@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions of the following functions are derived from material which is 
+ * Portions of the following functions are derived from material which is
  * Copyright (c) 1985 by Microsoft Corporation.  All rights are reserved.
  */
 /*

@@ -52,7 +52,7 @@
  * \brief Sony remote control device definitions.
  */
 
-/* 
+/*
  * Sony TV codes.
  */
 #define IR_DEVICE       1

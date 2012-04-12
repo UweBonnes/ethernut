@@ -45,15 +45,15 @@
  *
  * telnet x.x.x.x 12345
  *
- * two times on two command prompts, replacing x.x.x.x with the IP address 
- * of your ethernut board. This will start two telnet session. 
+ * two times on two command prompts, replacing x.x.x.x with the IP address
+ * of your ethernut board. This will start two telnet session.
  *
  * Enter help for a list of available commands.
  *
  * Enter query on the first will show the current port status.
  *
- * Then enter wait on this session, which will hang until the port status 
- * changes. 
+ * Then enter wait on this session, which will hang until the port status
+ * changes.
  *
  * On the second telnet session enter set1 to set the first output bit.
  */
@@ -123,8 +123,8 @@
 #define OUTPIN2     9   /* Power LED */
 #elif defined(EVK1100)
 #define INBANK		0   /* PA Joystick */
-#define INPIN1      25  
-#define INPIN2      26  
+#define INPIN1      25
+#define INPIN2      26
 #define INPIN3      27
 #define INPIN4      28
 #define OUTBANK     1    /* PIOB User LEDs */
@@ -421,7 +421,7 @@ THREAD(service_thread, arg)
 #endif /* DEV_ETHER */
 
 /*
- * Main application routine. 
+ * Main application routine.
  *
  * Nut/OS automatically calls this entry after initialization.
  */
@@ -442,7 +442,7 @@ int main(void)
     NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
-     * Configure lan interface. 
+     * Configure lan interface.
      */
     if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000) && NutDhcpIfConfig("eth0", my_mac, 60000)) {
         /*

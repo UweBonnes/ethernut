@@ -113,7 +113,7 @@ void ShowHardwareConfiguration(void)
     puts("MMNet104");
 #elif defined(MORPHOQ1)
     puts("Morphoq 1");
-#elif defined(OLIMEX_LPCE2294) 
+#elif defined(OLIMEX_LPCE2294)
     puts("Olimex LPCE2294");
 #elif defined(XNUT_100)
     puts("XNUT-100");

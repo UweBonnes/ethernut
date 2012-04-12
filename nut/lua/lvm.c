@@ -111,7 +111,7 @@ static void lua_getcstr(char *dest, const TString *src, size_t maxsize) {
   else {
     memcpy(dest, getstr(src), src->tsv.len);
     dest[src->tsv.len] = '\0';
-  } 
+  }
 }
 
 void luaV_gettable(lua_State *L, const TValue *t, TValue *key, StkId val) {
@@ -121,7 +121,7 @@ void luaV_gettable(lua_State *L, const TValue *t, TValue *key, StkId val) {
     if (ttisstring(key)) {
       char keyname[LUA_MAX_ROTABLE_NAME + 1];
       lu_byte keytype;
-      lua_getcstr(keyname, rawtsvalue(key), LUA_MAX_ROTABLE_NAME);      
+      lua_getcstr(keyname, rawtsvalue(key), LUA_MAX_ROTABLE_NAME);
       luaR_result res = luaR_findentry(rvalue(t), keyname, &keytype);
       if (keytype == LUA_TLIGHTFUNCTION)
         setfvalue(val, (void*)(size_t)res)
@@ -148,7 +148,7 @@ void luaV_gettable(lua_State *L, const TValue *t, TValue *key, StkId val) {
       callTMres(L, val, tm, t, key);
       return;
     }
-    t = tm;  /* else repeat with `tm' */ 
+    t = tm;  /* else repeat with `tm' */
   }
   luaG_runerror(L, "loop in gettable");
 }
@@ -175,7 +175,7 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
       callTM(L, tm, t, key, val);
       return;
     }
-    t = tm;  /* else repeat with `tm' */ 
+    t = tm;  /* else repeat with `tm' */
   }
   luaG_runerror(L, "loop in settable");
 }
@@ -282,7 +282,7 @@ int luaV_equalval (lua_State *L, const TValue *t1, const TValue *t2) {
     case LUA_TNIL: return 1;
     case LUA_TNUMBER: return luai_numeq(nvalue(t1), nvalue(t2));
     case LUA_TBOOLEAN: return bvalue(t1) == bvalue(t2);  /* true must be 1 !! */
-    case LUA_TLIGHTUSERDATA: 
+    case LUA_TLIGHTUSERDATA:
     case LUA_TROTABLE:
     case LUA_TLIGHTFUNCTION:
       return pvalue(t1) == pvalue(t2);
@@ -471,8 +471,8 @@ void luaV_execute (lua_State *L, int nexeccalls) {
         else if (keytype == LUA_TLIGHTFUNCTION)
           setfvalue(ra, (void*)(size_t)res)
         else if (keytype == LUA_TNUMBER)
-          setnvalue(ra, (lua_Number)res)        
-        else 
+          setnvalue(ra, (lua_Number)res)
+        else
 #endif
           Protect(luaV_gettable(L, &g, rb, ra));
         continue;

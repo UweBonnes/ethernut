@@ -130,7 +130,7 @@ int Cy2239xGetPll(int clk)
     /* ClkE is fixed to PLL1. */
     if (clk == CY2239X_CLKE) {
         rc = 1;
-    } 
+    }
     /* Register 0x0E contains the PLL index for ClkA-ClkD. */
     else if (TwMasterTransact(I2C_SLA_PLL, &loc, 1, &reg, 1, NUT_WAIT_INFINITE) == 1) {
         rc = (reg >> (2 * clk)) & 0x03;
@@ -144,7 +144,7 @@ int Cy2239xGetPll(int clk)
  * \note Use with great care. This function may destroy your hardware.
  *
  * \param clk Specifies the output. 0 = ClkA, 1 = ClkB etc.
- * \param pll 1 - 3 for PLL1 - PLL3 resp. or 0 to select the reference 
+ * \param pll 1 - 3 for PLL1 - PLL3 resp. or 0 to select the reference
  *            clock.
  *
  * \return 0 on success, -1 otherwise.
@@ -188,10 +188,10 @@ int Cy2239xSetPll(int clk, int pll)
  * \brief Get the current divider value of the specified output.
  *
  * \param clk   Specifies the output. 0 = ClkA, 1 = ClkB etc.
- * \param fctrl Frequency control input status, only valid for clock A 
- *              and B. Otherwise this parameter is ignored. For 
- *              Ethernut 3 the inputs S0 and S1 are high and S2 is 
- *              connected to the CPLD. Thus, this value is either 3 if 
+ * \param fctrl Frequency control input status, only valid for clock A
+ *              and B. Otherwise this parameter is ignored. For
+ *              Ethernut 3 the inputs S0 and S1 are high and S2 is
+ *              connected to the CPLD. Thus, this value is either 3 if
  *              control input S2 is low or 7 if S2 is set high (default).
  *
  * \return Clock's divider value. 0 means, that the output is switched off.
@@ -218,7 +218,7 @@ int Cy2239xGetDivider(int clk, int fctrl)
     }
     else {
         /*
-         * Clock A and B have two dividers, which are indirectly selected 
+         * Clock A and B have two dividers, which are indirectly selected
          * by the frequency control inputs.
          */
         if (clk <= CY2239X_CLKB) {
@@ -246,15 +246,15 @@ int Cy2239xGetDivider(int clk, int fctrl)
  * Clock A through D provide a 7-bit output divider, while the Clock E
  * divider is fixed to 0 (off), 2, 3 or 4.
  *
- * Changing the divider value of an active output may cause a glitch on 
+ * Changing the divider value of an active output may cause a glitch on
  * the output.
  *
  * \note Use with great care. This function may destroy your hardware.
  *
  * \param clk  Specifies the output. 0 = ClkA, 1 = ClkB etc.
- * \param sel  Divider select for Clock A and B, either 0 or 1. For other 
+ * \param sel  Divider select for Clock A and B, either 0 or 1. For other
  *             outputs this parameter is ignored.
- * \param val  New divider value to set. A value of zero powers down the 
+ * \param val  New divider value to set. A value of zero powers down the
  *             divider and forces the output to three-state.
  *
  * \return 0 on success, -1 otherwise.
@@ -303,10 +303,10 @@ int Cy2239xSetDivider(int clk, int sel, int val)
  * \brief Enable or disable a specified PLL.
  *
  * \param pll   Set to 1 - 3 for PLL1 - PLL3 resp.
- * \param fctrl Frequency control input status, only used for PLL1. 
- *              Otherwise this parameter is ignored. For Ethernut 3 the 
- *              inputs S0 and S1 are high and S2 is connected to the 
- *              CPLD. Thus, this value is either 3 if control input S2 
+ * \param fctrl Frequency control input status, only used for PLL1.
+ *              Otherwise this parameter is ignored. For Ethernut 3 the
+ *              inputs S0 and S1 are high and S2 is connected to the
+ *              CPLD. Thus, this value is either 3 if control input S2
  *              is low or 7 if S2 is set to high.
  * \param ena   0 will disable the PLL, 1 will enable it. Any other value
  *              may be used to query the current status.
@@ -363,12 +363,12 @@ int Cy2239xPllEnable(int pll, int fctrl, int ena)
 /*!
  * \brief Get the current frequency of a specified PLL.
  *
- * \param pll   1 - 3 for PLL1 - PLL3 resp. or 0 to query the reference 
+ * \param pll   1 - 3 for PLL1 - PLL3 resp. or 0 to query the reference
  *              clock.
- * \param fctrl Frequency control input status, only used for PLL1. 
- *              Otherwise this parameter is ignored. For Ethernut 3 the 
- *              inputs S0 and S1 are high and S2 is connected to the 
- *              CPLD. Thus, this value is either 3 if control input S2 
+ * \param fctrl Frequency control input status, only used for PLL1.
+ *              Otherwise this parameter is ignored. For Ethernut 3 the
+ *              inputs S0 and S1 are high and S2 is connected to the
+ *              CPLD. Thus, this value is either 3 if control input S2
  *              is low or 7 if S2 is set to high.
  *
  * \return Frequency in Hertz.
@@ -418,16 +418,16 @@ uint32_t Cy2239xPllGetFreq(int pll, int fctrl)
  * F = Fref * (2 * (Pval + 3) + Poff) / (Qval + 2)
  * \endcode
  *
- * It is recommended to use Cypress' CyClocksRT utility for calculating 
+ * It is recommended to use Cypress' CyClocksRT utility for calculating
  * the best parameter values.
- * 
+ *
  * \note Use with great care. This function may destroy your hardware.
  *
  * \param pll   1 - 3 for PLL1 - PLL3 resp.
- * \param fctrl Frequency control input status, only valid for clock A 
- *              and B. Otherwise this parameter is ignored. For 
- *              Ethernut 3 the inputs S0 and S1 are high and S2 is 
- *              connected to the CPLD. Thus, this value is either 3 if 
+ * \param fctrl Frequency control input status, only valid for clock A
+ *              and B. Otherwise this parameter is ignored. For
+ *              Ethernut 3 the inputs S0 and S1 are high and S2 is
+ *              connected to the CPLD. Thus, this value is either 3 if
  *              control input S2 is low or 7 if S2 is set to high.
  * \param pval  10-bit multiplier.
  * \param poff  1-bit offset.
@@ -477,19 +477,19 @@ int Cy2239xPllSetFreq(int pll, int fctrl, unsigned int pval, unsigned int poff, 
 /*!
  * \brief Get the frequency of a specified output.
  *
- * On Ethernut 3 Clock A provides the Ethernet Controller clock and 
+ * On Ethernut 3 Clock A provides the Ethernet Controller clock and
  * Clock C is used as the CPU clock.
  *
- * PLL1 provides two configurations, selectable by the external input 
- * S2, which might be controlled by the Ethernut 3 CPLD. However, NPL 
+ * PLL1 provides two configurations, selectable by the external input
+ * S2, which might be controlled by the Ethernut 3 CPLD. However, NPL
  * version 2 doesn't allow to modify the S2 line, but holds it at a
  * fixed high level.
  *
  * \param clk   Specifies the output. 0 = ClkA, 1 = ClkB etc.
- * \param fctrl Frequency control input status, only valid for clock A 
- *              and B. Otherwise this parameter is ignored. For 
- *              Ethernut 3 the inputs S0 and S1 are high and S2 is 
- *              connected to the CPLD. Thus, this value is either 3 if 
+ * \param fctrl Frequency control input status, only valid for clock A
+ *              and B. Otherwise this parameter is ignored. For
+ *              Ethernut 3 the inputs S0 and S1 are high and S2 is
+ *              connected to the CPLD. Thus, this value is either 3 if
  *              control input S2 is low or 7 if S2 is set to high.
  *
  * \return Frequency in Hertz. 0 is returned if the clock output is
@@ -519,9 +519,9 @@ uint32_t Cy2239xGetFreq(int clk, int fctrl)
         return 0;
     }
 
-    /* 
-     * Get the PLL index for the specified output divider. Index 0 
-     * specifies the reference clock, while 1 to 3 specify PLL1 to 
+    /*
+     * Get the PLL index for the specified output divider. Index 0
+     * specifies the reference clock, while 1 to 3 specify PLL1 to
      * PLL3 resp.
      */
     if (clk == CY2239X_CLKE) {
@@ -557,7 +557,7 @@ uint32_t Cy2239xGetFreq(int clk, int fctrl)
     }
 
     /*
-     * At this point we got the divider input frequency. Now we retrieve 
+     * At this point we got the divider input frequency. Now we retrieve
      * the divider value.
      */
     if (clk <= CY2239X_CLKB) {

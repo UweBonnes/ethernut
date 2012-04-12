@@ -242,7 +242,7 @@ int SpiAt45dPageErase(NUTDEVICE * dev, uint32_t pgn)
     NUTASSERT(dev != NULL);
     NUTASSERT(dev->dev_dcb != NULL);
     blkio = dev->dev_dcb;
-    
+
     info = (AT45D_INFO *) blkio->blkio_info;
     NUTASSERT(blkio->blkio_info != NULL);
 
@@ -264,7 +264,7 @@ int SpiAt45dChipErase(NUTDEVICE * dev)
 /*!
  * \brief Initialize the DataFlash device.
  *
- * This routine determines the DataFlash type. It is internally called 
+ * This routine determines the DataFlash type. It is internally called
  * by Nut/OS during device registration.
  *
  * The driver framework may call this function more than once.
@@ -314,7 +314,7 @@ int SpiAt45dInit(NUTDEVICE * dev)
  * \param data Points to a buffer that receives the data.
  * \param len  Number of bytes to read.
  *
- * \return The number of bytes actually read. A return value of -1 indicates 
+ * \return The number of bytes actually read. A return value of -1 indicates
  *         an error.
  */
 int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
@@ -325,7 +325,7 @@ int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
     NUTASSERT(dev != NULL);
     NUTASSERT(dev->dev_dcb != NULL);
     blkio = dev->dev_dcb;
-    
+
     info = (AT45D_INFO *) blkio->blkio_info;
     NUTASSERT(blkio->blkio_info != NULL);
 
@@ -344,7 +344,7 @@ int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
  * \brief Write data to DataFlash memory.
  *
  * Each page will be automatically erased before writing the data. If the
- * last page is not completely filled with new data, the contents of 
+ * last page is not completely filled with new data, the contents of
  * remaining bytes at the end of the page is undetermined.
  *
  * \param dev  Specifies the registered DataFlash device.
@@ -354,7 +354,7 @@ int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
  *             than the page size, in which case the remaining bytes of
  *             the page will be set to 0xff.
  *
- * \return The number of bytes actually written. A return value of -1 indicates 
+ * \return The number of bytes actually written. A return value of -1 indicates
  *         an error.
  */
 int SpiAt45dPageWrite(NUTDEVICE * dev, uint32_t pgn, CONST void *data, int len)

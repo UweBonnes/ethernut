@@ -52,7 +52,7 @@
 /*@{*/
 
 /*!
- * \brief Read a character from a stream 
+ * \brief Read a character from a stream
  *
  * Same as fgetc().
  *

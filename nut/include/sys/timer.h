@@ -90,7 +90,7 @@
  *
  * Revision 1.2  2003/10/13 10:17:11  haraldkipp
  * Seconds counter added
- * 
+ *
  * Revision 1.1.1.1  2003/05/09 14:41:22  haraldkipp
  * Initial using 3.2.1
  *
@@ -125,25 +125,25 @@ typedef struct _NUTTIMERINFO NUTTIMERINFO;
  * \brief Timer information structure.
  */
 struct _NUTTIMERINFO {
-    /*! \brief Link to next timer. 
+    /*! \brief Link to next timer.
      */
-    NUTTIMERINFO *tn_next;          
-    /*! \brief Link to previous timer. 
+    NUTTIMERINFO *tn_next;
+    /*! \brief Link to previous timer.
      */
-    NUTTIMERINFO *tn_prev;          
-    /*! \brief Number of system ticks. 
+    NUTTIMERINFO *tn_prev;
+    /*! \brief Number of system ticks.
      *  Set to zero on one-shot timers.
      */
-    uint32_t tn_ticks;        
-    /*! \brief Decremented by one on each system tick intervall. 
+    uint32_t tn_ticks;
+    /*! \brief Decremented by one on each system tick intervall.
      */
-    uint32_t tn_ticks_left;   
-    /*! \brief Callback function. 
+    uint32_t tn_ticks_left;
+    /*! \brief Callback function.
      */
-    void (*tn_callback)(HANDLE, void *);    
-    /*! \brief Argument pointer passed to callback function. 
+    void (*tn_callback)(HANDLE, void *);
+    /*! \brief Argument pointer passed to callback function.
      */
-    volatile void *tn_arg;          
+    volatile void *tn_arg;
 };
 
 extern NUTTIMERINFO* nutTimerList;
@@ -202,7 +202,7 @@ extern uint32_t NutClockGet(int idx);
 
 extern int NutClockSet(int idx, uint32_t freq);
 
-/* On some platforms the clock query functions may be defined by 
+/* On some platforms the clock query functions may be defined by
 ** a preprocessor macro to avoid function call overhead. */
 #if !defined(NutGetCpuClock)
 extern uint32_t NutGetCpuClock(void);

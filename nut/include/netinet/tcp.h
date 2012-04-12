@@ -195,12 +195,12 @@ typedef struct _TCPPSEUDOHDR {
                                          IP datagram for Ethernet is 1500. Reduce this
                                          number by 40, 20 bytes TCP header and 20 bytes
                                          IP header.
-                                         \showinitializer 
+                                         \showinitializer
                                      */
 #define TCP_WINSIZE         3216    /*!< \brief Default window size.
                                          It's recommended to set this 6 times the maximum
                                          segment size.
-                                         \showinitializer 
+                                         \showinitializer
                                      */
 
 #define TCP_MAXWIN          65535   /*!< \brief Largest value for (unscaled) window. \showinitializer */

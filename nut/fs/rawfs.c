@@ -198,11 +198,11 @@ static int RawFsFileFlush(NUTFILE * nfp)
 /*!
  * \brief Open a raw file.
  *
- * This function is called by the low level open routine of the C runtime 
+ * This function is called by the low level open routine of the C runtime
  * library, using the _NUTDEVICE::dev_open entry.
  *
  * \param dev  Specifies the file system device.
- * \param path Pathname of the file to open which is ignored here, because 
+ * \param path Pathname of the file to open which is ignored here, because
  *             the raw file system doesn't support multiple file entries.
  * \param mode Operation mode.
  * \param acc  File attribute, ignored.
@@ -239,7 +239,7 @@ NUTFILE *RawFsFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
 /*!
  * \brief Close a raw file.
  *
- * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous
  *            call to RawFsFileOpen().
  *
  * \return 0 on success, -1 otherwise.
@@ -262,13 +262,13 @@ int RawFsFileClose(NUTFILE * nfp)
 /*!
  * \brief Write data to a file.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to RawFsFileOpen().
  * \param buffer Pointer to the data to be written. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
 int RawFsFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
@@ -326,21 +326,21 @@ int RawFsFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data from program space to a file.
  *
  * This function is not yet implemented and will always return -1.
  *
- * Similar to RawFsFileWrite() except that the data is located in 
+ * Similar to RawFsFileWrite() except that the data is located in
  * program memory.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to RawFsFileOpen().
  * \param buffer Pointer to the data in program space. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
 int RawFsFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
@@ -352,12 +352,12 @@ int RawFsFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
 /*!
  * \brief Read data from a file.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to RawFsFileOpen().
  * \param buffer Pointer to the data buffer to fill.
  * \param size   Maximum number of bytes to read.
  *
- * \return The number of bytes actually read. A return value of -1 indicates 
+ * \return The number of bytes actually read. A return value of -1 indicates
  *         an error.
  */
 int RawFsFileRead(NUTFILE * nfp, void *buffer, int size)
@@ -407,10 +407,10 @@ int RawFsFileRead(NUTFILE * nfp, void *buffer, int size)
 /*!
  * \brief Retrieve the size of a previously opened file.
  *
- * This function is called by the low level size routine of the C runtime 
+ * This function is called by the low level size routine of the C runtime
  * library, using the _NUTDEVICE::dev_size entry.
  *
- * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a
  *            previous call to RawFsFileOpen().
  *
  * \return Size of the file.
@@ -772,7 +772,7 @@ static int RawFsApiIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Raw device file system driver information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this file system driver to the Nut/OS kernel.
  * An application may then call
  * /verbatim

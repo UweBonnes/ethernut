@@ -73,7 +73,7 @@ int main(void)
 #if defined(__AVR_ATmega2561__)
     /* unlike ATMega128 the ATMega2561 does not disbale the watchdog */
     /* after a reset, so we need to do this here                     */
- 
+
     MCUSR = 0;
     wdt_disable();
 #endif

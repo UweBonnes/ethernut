@@ -94,7 +94,7 @@ char *cgiBinPath = NULL;
  * This function allows to redfine the cgi-bin path. Default is "cgi-bin/"
  * \param path New path.
  */
-     
+
 void NutRegisterCgiBinPath(char *path)
 {
     if (cgiBinPath) {
@@ -102,15 +102,15 @@ void NutRegisterCgiBinPath(char *path)
     }
     cgiBinPath = strdup(path);
 }
-     
+
 /*!
  * \brief Check if request is a cgi call.
  *
  * This functions checks the request if it's a cgi all and in case calls the cgi
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
- * \param req    Contains the HTTP request.  
+ * \param req    Contains the HTTP request.
  */
 
 int NutCgiCheckRequest(FILE * stream, REQUEST * req)
@@ -156,7 +156,7 @@ int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *))
 {
     int unique_name = 1;
     CGIFUNCTION *cgi;
-    
+
     cgi = cgiFunctionList;
     while (cgi != NULL) {
         if (strcmp(name, cgi->cgi_name) == 0) {
@@ -165,7 +165,7 @@ int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *))
         }
         cgi = cgi->cgi_next;
     }
-    
+
     if ((!unique_name) || ((cgi = malloc(sizeof(CGIFUNCTION))) == 0)) {
         return -1;
     }
@@ -183,19 +183,19 @@ int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *))
  * Applications do not need to call this function. It
  * is automatically called by NutHttpProcessRequest().
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param req    Contains the HTTP request.
  */
 void NutCgiProcessRequest(FILE * stream, REQUEST * req, int name_pos)
 {
     CGIFUNCTION *cgi;
-    
+
     if (req->req_method != METHOD_GET && req->req_method != METHOD_POST) {
         NutHttpSendError(stream, req, 501);
         return;
     }
-    
+
     for (cgi = cgiFunctionList; cgi; cgi = cgi->cgi_next) {
         if (strcasecmp(cgi->cgi_name, req->req_url + name_pos) == 0)
             break;

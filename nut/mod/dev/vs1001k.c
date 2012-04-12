@@ -168,7 +168,7 @@ static INLINE void VsSdiPutByte(u_char b)
 /*!
  * \brief Write a specified number of bytes to the VS1001 data interface.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
 static int VsSdiWrite(CONST u_char * data, u_short len)
@@ -184,10 +184,10 @@ static int VsSdiWrite(CONST u_char * data, u_short len)
 }
 
 /*!
- * \brief Write a specified number of bytes from program space to the 
+ * \brief Write a specified number of bytes from program space to the
  *        VS1001 data interface.
  *
- * This function is similar to VsSdiWrite() except that the data is 
+ * This function is similar to VsSdiWrite() except that the data is
  * located in program space.
  */
 static int VsSdiWrite_P(PGM_P data, u_short len)
@@ -289,7 +289,7 @@ static void VsRegWrite(u_char reg, u_short data)
  * \brief Read from a register.
  *
  * Decoder interrupts must have been disabled before calling this function.
- * 
+ *
  * \return Register contents.
  */
 static u_short VsRegRead(u_char reg)
@@ -326,7 +326,7 @@ static u_short VsRegRead(u_char reg)
 /*
  * \brief Feed the decoder with data.
  *
- * This function serves two purposes: 
+ * This function serves two purposes:
  * - It is called by VsPlayerKick() to initially fill the decoder buffer.
  * - It is used as an interrupt handler for the decoder.
  */
@@ -344,8 +344,8 @@ static void VsPlayerFeed(void *arg)
     else
         j = 0;
 
-    /* 
-     * Feed the decoder until its buffer is full. 
+    /*
+     * Feed the decoder until its buffer is full.
      */
     while (j--) {
 
@@ -372,7 +372,7 @@ static void VsPlayerFeed(void *arg)
                 vs_readptr = vs_databuff;
         }
 
-        /* If DREQ is high, allow 31 bytes to be sent, SPI transfer may 
+        /* If DREQ is high, allow 31 bytes to be sent, SPI transfer may
            still be in progress, which is the 32nd byte. */
         if (bit_is_set(VS_DREQ_PIN, VS_DREQ_BIT))
             j = 31;
@@ -406,7 +406,7 @@ int VsPlayerKick(void)
 /*!
  * \brief Stops the playback.
  *
- * This routine will stops the MP3 playback, VsPlayerKick() may be used 
+ * This routine will stops the MP3 playback, VsPlayerKick() may be used
  * to resume the playback.
  *
  * \return 0 on success, -1 otherwise.
@@ -488,9 +488,9 @@ int VsPlayerInit(void)
     {
         u_char dummy;           /* Required by some compilers. */
 
-        /* 
-         * Init SPI mode to no interrupts, enabled, MSB first, master mode, 
-         * rising clock and fosc/4 clock speed. Send an initial zero byte to 
+        /*
+         * Init SPI mode to no interrupts, enabled, MSB first, master mode,
+         * rising clock and fosc/4 clock speed. Send an initial zero byte to
          * make sure SPIF is set. Note, that the decoder reset line is still
          * active.
          */

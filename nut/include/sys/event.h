@@ -135,7 +135,7 @@
  * handlers to wakeup waiting user threads.
  *
  * Internally a counter is used to keep track of the posted events.
- * This counter will be examined when the currently running thread is 
+ * This counter will be examined when the currently running thread is
  * ready to release the CPU.
  *
  * \note When calling this function, interrupt routines will change

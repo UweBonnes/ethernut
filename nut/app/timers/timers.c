@@ -69,13 +69,13 @@
 /*
  * Timer callback routine.
  *
- * This function is called by the system timer thread. It is executed 
- * at a very high priority and must return as soon as possible and must 
+ * This function is called by the system timer thread. It is executed
+ * at a very high priority and must return as soon as possible and must
  * not call any potentially blocking function.
  *
- * To keep this example as simple as possible, we break the above rule 
- * and call print functions. However, this is not really a problem, 
- * because the UART output queue won't overflow on our few characters 
+ * To keep this example as simple as possible, we break the above rule
+ * and call print functions. However, this is not really a problem,
+ * because the UART output queue won't overflow on our few characters
  * and return immediately after starting transmit interrupts, which are
  * running in the background.
  */
@@ -173,7 +173,7 @@ THREAD(Sleeper4, arg)
 }
 
 /*
- * Main application routine. 
+ * Main application routine.
  *
  */
 int main(void)
@@ -188,7 +188,7 @@ int main(void)
     HANDLE event1 = 0, event2 = 0, event3 = 0, event4 = 0;
 
     /*
-     * Register the UART device, open it, assign stdout to it and set 
+     * Register the UART device, open it, assign stdout to it and set
      * the baudrate.
      */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);

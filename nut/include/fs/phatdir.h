@@ -89,9 +89,9 @@
 typedef struct __attribute__ ((packed)) _PHATDIRENT {
     /*! \brief File name, padded with blanks. */
     uint8_t dent_name[11];
-    /*! \brief File attributes. 
+    /*! \brief File attributes.
      *
-     * See PHAT_FATTR_ flags. 
+     * See PHAT_FATTR_ flags.
      */
     uint8_t dent_attr;
     /*! \brief Reserved byte, possibly used by NT. */
@@ -122,7 +122,7 @@ typedef struct __attribute__ ((packed)) _PHATDIRENT {
      * This is zero for empty files.
      */
     uint16_t dent_clust;
-    /*! \brief Size of the file in bytes. 
+    /*! \brief Size of the file in bytes.
      *
      * For directories, this is always zero.
      */

@@ -3,7 +3,7 @@
  *
  * All rights reserved.
  *
- * The original code had been released as part of the LoastARM Project 
+ * The original code had been released as part of the LoastARM Project
  * under GPL Version 2 and is published here under the following license
  * with kind permission from the author:
  *
@@ -91,7 +91,7 @@
 	/* save the return value here */
 	str	r0,[sp,#(PTRACE_R0_retval_idx*4)]
 	
-	/* Need to go back to old mode and pickup things 
+	/* Need to go back to old mode and pickup things
 	 * When we get there, we will need the sys stack
 	 */
 	mov	r0,sp

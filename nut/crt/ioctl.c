@@ -67,7 +67,7 @@
 /*!
  * \brief Perform device specific control functions.
  *
- * Check the specific device driver for a list of supported control 
+ * Check the specific device driver for a list of supported control
  * functions.
  *
  * \param fd   Descriptor of a previously opened device or

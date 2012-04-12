@@ -47,13 +47,13 @@
 
 #define NIC_BASE            0xC000
 
-/*! 
- * \brief Bank select register. 
+/*!
+ * \brief Bank select register.
  */
 #define NIC_BSR         NIC_BASE + 0x0E
 
-/*! 
- * \brief Bank 0 - Transmit control register. 
+/*!
+ * \brief Bank 0 - Transmit control register.
  */
 #define NIC_TCR         NIC_BASE + 0x00
 
@@ -69,13 +69,13 @@
 #define TCR_TXENA       0x0001  /*!< \ref NIC_TCR bit mask, enables transmitter. */
 
 
-/*! 
- * \brief Bank 0 - EPH status register. 
+/*!
+ * \brief Bank 0 - EPH status register.
  */
 #define NIC_EPHSR       NIC_BASE + 0x02
 
-/*! 
- * \brief Bank 0 - Receive control register. 
+/*!
+ * \brief Bank 0 - Receive control register.
  */
 #define NIC_RCR         NIC_BASE + 0x04
 
@@ -88,17 +88,17 @@
 #define RCR_PRMS        0x0002  /*!< \ref NIC_RCR bit mask, enables promiscuous mode. */
 #define RCR_RX_ABORT    0x0001  /*!< \ref NIC_RCR bit mask, set when receive was aborted. */
 
-/*! 
+/*!
  * \brief Bank 0 - Counter register.
  */
 #define NIC_ECR         NIC_BASE + 0x06
 
-/*! 
+/*!
  * \brief Bank 0 - Memory information register.
  */
 #define NIC_MIR         NIC_BASE + 0x08
 
-/*! 
+/*!
  * \brief Bank 0 - Receive / PHY control register.
  */
 #define NIC_RPCR        NIC_BASE + 0x0A
@@ -109,29 +109,29 @@
 #define RPCR_LEDA_PAT   0x0000  /*!< \ref NIC_RPCR bit mask for LEDA mode. */
 #define RPCR_LEDB_PAT   0x0010  /*!< \ref NIC_RPCR bit mask for LEDB mode. */
 
-/*! 
+/*!
  * \brief Bank 1 - Configuration register.
  */
 #define NIC_CR          NIC_BASE + 0x00
 
 #define CR_EPH_EN       0x8000  /*!< \ref NIC_CR bit mask, . */
 
-/*! 
+/*!
  * \brief Bank 1 - Base address register.
  */
 #define NIC_BAR         NIC_BASE + 0x02
 
-/*! 
+/*!
  * \brief Bank 1 - Individual address register.
  */
 #define NIC_IAR         NIC_BASE + 0x04
 
-/*! 
+/*!
  * \brief Bank 1 - General purpose register.
  */
 #define NIC_GPR         NIC_BASE + 0x0A
 
-/*! 
+/*!
  * \brief Bank 1 - Control register.
  */
 #define NIC_CTR         NIC_BASE + 0x0C

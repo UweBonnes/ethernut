@@ -53,7 +53,7 @@ public:
     CPathValidator(long style = wxFILTER_NONE, wxString *value = NULL);
     CPathValidator(const CPathValidator& src);
     virtual wxObject* Clone() const;
-    
+
     bool Copy(const CPathValidator& val);
 
 

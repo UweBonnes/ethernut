@@ -125,7 +125,7 @@ struct __attribute__ ((packed)) _CONFNET {
      */
     uint8_t cdn_mac[6];
 
-    /*! \brief Last used IP address. 
+    /*! \brief Last used IP address.
      *
      * Each time Nut/Net receives an IP address during boot, it
      * will store the address in here.
@@ -143,14 +143,14 @@ struct __attribute__ ((packed)) _CONFNET {
      */
     uint32_t cdn_ip_mask;
 
-    /*! \brief Default route. 
+    /*! \brief Default route.
      *
      * Nut/Net will redirect IP packets to this node, if the
      * target IP is not located in the local network.
      */
     uint32_t cdn_gateway;
 
-    /*! \brief Configured IP address. 
+    /*! \brief Configured IP address.
      *
      * If this address is set to 0.0.0.0, Nut/Net will try
      * to obtain one from the DHCP server.

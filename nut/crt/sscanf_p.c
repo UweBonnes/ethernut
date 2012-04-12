@@ -58,11 +58,11 @@
  * program space.
  *
  * \param string Pointer to the string that contains the data.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  */
 int sscanf_P(CONST char *string, CONST char *fmt, ...)

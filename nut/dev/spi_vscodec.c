@@ -434,8 +434,8 @@ THREAD(FeederThread, arg)
             }
         }
 
-        /* 
-        ** Record mode processing. 
+        /*
+        ** Record mode processing.
         */
         else if (dcb->dcb_pbstat == CODEC_STATUS_RECORDING) {
             for (;;) {
@@ -502,13 +502,13 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
                 VsCodecReg(dev, VS_OPCODE_WRITE, reg, plg->vsplg_data[i]);
             }
             i++;
-        } 
+        }
         else if (i + cnt <= plg->vsplg_size) {
             while (cnt--) {
                 VsCodecReg(dev, VS_OPCODE_WRITE, reg, plg->vsplg_data[i]);
                 i++;
             }
-        } 
+        }
         else {
             break;
         }
@@ -571,7 +571,7 @@ static int VsCodecWriteWRam(NUTDEVICE *dev, VS_WRAM_DATA *vswd)
         VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
         VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
         VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
-    } 
+    }
     else if (vswd->vswd_data) {
         /*
          * Transfer data, if available.
@@ -790,11 +790,11 @@ static int VsDecoderBufferFlush(NUTDEVICE *dev, uint32_t tmo)
 /*!
  * \brief Read from the encoder.
  *
- * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous
  *             call to VsCodecOpen().
  * \param data Pointer to the data buffer. If NULL, the buffered data
  *             will be flushed.
- * \param len  Number of bytes to read. If 0, all buffered data will be 
+ * \param len  Number of bytes to read. If 0, all buffered data will be
  *             flushed.
  *
  * \return Number of characters sent. If a read timeout had been set,

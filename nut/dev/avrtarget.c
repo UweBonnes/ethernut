@@ -449,7 +449,7 @@ void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data)
 /*!
  * \brief Write page buffer contents to program memory.
  *
- * Calls AvrTargetPollReady(), which may initiate a context switch 
+ * Calls AvrTargetPollReady(), which may initiate a context switch
  * while waiting for the page write to finish.
  *
  * \param page Program memory page number.

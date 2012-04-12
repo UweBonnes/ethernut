@@ -208,7 +208,7 @@ static int AvrInterrupt0Ctl(int cmd, void *param)
     return rc;
 }
 
-/*! 
+/*!
  * \fn SIG_INTERRUPT0(void)
  * \brief External interrupt 0 entry.
  */

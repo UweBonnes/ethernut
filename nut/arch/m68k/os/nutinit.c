@@ -66,7 +66,7 @@
  * Solutions:
  * 1. We do not use main at all, but let the preprocessor
  *    redefine it to NutAppMain() in the application code.
- *    See compiler.h. Note, that the declaration of NutAppMain 
+ *    See compiler.h. Note, that the declaration of NutAppMain
  *    in this module differs from the one in the application
  *    code. Fortunately the linker doesn't detect this hack.
  * 2. We use a linker option to set the symbol main to zero.
@@ -91,7 +91,7 @@ void NutInitXRAM(void)
 #endif
 
 /* \fn NutIdle(void *arg)
- * \brief Idle thread. 
+ * \brief Idle thread.
  *
  * After initializing the timers, the idle thread switches to priority 254
  * and enters an endless loop.
@@ -119,8 +119,8 @@ THREAD(NutIdle, arg)
 /*
  * \brief Nut/OS Initialization.
  *
- * Initializes the memory management and the thread system and starts 
- * an idle thread, which in turn initializes the timer management. 
+ * Initializes the memory management and the thread system and starts
+ * an idle thread, which in turn initializes the timer management.
  * Finally the application's main() function is called.
  *
  * Depending on the compiler, different methods are used to execute this
@@ -130,7 +130,7 @@ THREAD(NutIdle, arg)
  * crtnut.o, which calls NutInit instead of main(). This is done
  * by adding the following compiler options in the project:
  * \code -ucrtnut.o nutinit.o \endcode
- * 
+ *
  * For AVRGCC this function is located in section .init8, which is
  * called immediately before jumping to main(). NutInit is defined
  * as:

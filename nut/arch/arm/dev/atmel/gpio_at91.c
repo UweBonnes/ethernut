@@ -47,7 +47,7 @@
  * \param bank GPIO bank/port number.
  * \param bit  Bit number of the specified bank/port.
  *
- * \return 1 if the pin level is high. 0 is returned if the pin level 
+ * \return 1 if the pin level is high. 0 is returned if the pin level
  *         is low or if the pin is undefined.
  */
 int GpioPinGet(int bank, int bit)
@@ -466,7 +466,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
  *       invalid attributes. If this is required, use GpioPinConfigSet().
  *
  * \param bank  GPIO bank/port number.
- * \param mask  The given attributes are set for a specific pin, if the 
+ * \param mask  The given attributes are set for a specific pin, if the
  *              corresponding bit in this mask is 1.
  * \param flags Attribute flags to set.
  *
@@ -721,7 +721,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 /*!
  * \brief Register a GPIO pin interrupt handler.
  *
- * Generating interrupts on GPIO pin changes is not supported on all 
+ * Generating interrupts on GPIO pin changes is not supported on all
  * platforms. In this case dedicated external interrupt pins may
  * be used with NutRegisterIrqHandler().
  *
@@ -731,7 +731,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
  * After registering, interrupts are disabled. Calling GpioIrqEnable()
  * is required to activate the interrupt.
  *
- * The following code fragment registers an interrupt handler which is 
+ * The following code fragment registers an interrupt handler which is
  * called on each change of bit 4 of the first GPIO port:
  * \code
  * #include <dev/gpio.h>
@@ -752,7 +752,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
  *
  * \param sig     Bank/port interrupt to be associated with this handler.
  * \param bit     Bit number of the specified bank/port.
- * \param handler This routine will be called by Nut/OS, when the specified 
+ * \param handler This routine will be called by Nut/OS, when the specified
  *                pin changes its state.
  * \param arg     Argument to be passed to the interrupt handler routine.
  *

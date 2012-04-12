@@ -59,7 +59,7 @@
  * \param fmt    Format string containing conversion specifications.
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, ff an error occurs or if the end 
+ *         The return value is EOF, ff an error occurs or if the end
  *         of the stream is reached before the first conversion.
  */
 int scanf(CONST char *fmt, ...)

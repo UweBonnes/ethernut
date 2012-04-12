@@ -208,7 +208,7 @@ static void *JtagCable0Open(void)
 /*!
  * \brief Flush all buffered state changes.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
  */
 static void JtagCable0TmsFlush(void *cbl)
@@ -257,10 +257,10 @@ static void JtagCable0TmsFlush(void *cbl)
 /*!
  * \brief Release the cable driver.
  *
- * Any pending state change sequence will be processed before 
+ * Any pending state change sequence will be processed before
  * releasing the cable.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
  */
 static void JtagCable0Close(void *cbl)
@@ -272,10 +272,10 @@ static void JtagCable0Close(void *cbl)
 /*!
  * \brief Activate or deactivate the target reset line.
  *
- * Any pending state change sequence will be processed before 
+ * Any pending state change sequence will be processed before
  * activating the reset line.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
  * \param on  If not zero, the reset line will be activated (pulled
  *            low). Otherwise the target reset will be deactivated.
@@ -296,9 +296,9 @@ static void JtagCable0TargetReset(void *cbl, uint_fast8_t on)
  * State changes may not be done immediately, but stored in a buffer.
  * Call JtagCable0TmsFlush() to execute the buffered state changes.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
- * \param tms TMS sequence, bit 0 is transfered first. 
+ * \param tms TMS sequence, bit 0 is transfered first.
  * \param len Number of state changes. Maximum is 8.
  */
 static void JtagCable0TmsPut(void *cbl, uint_fast8_t tms, uint_fast8_t len)
@@ -340,15 +340,15 @@ static void JtagCable0TmsPut(void *cbl, uint_fast8_t tms, uint_fast8_t len)
  * Before starting the transfer, any pending state change sequence will
  * be flushed.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
- * \param rbuf Points to the buffer that receives the read data. May be 
+ * \param rbuf Points to the buffer that receives the read data. May be
  *             NULL if the caller is not interested.
- * \param wbuf Points to the buffer that contains the write data. If 
+ * \param wbuf Points to the buffer that contains the write data. If
  *             NULL, all outgoing bits are zero.
  * \param len  Number of bits to read and/or write.
  * \param last Indicates the last data transfer. If set, then TMS
- *             will be set high on the last bit and the TAP controller 
+ *             will be set high on the last bit and the TAP controller
  *             will leave the stable state.
  */
 static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, CONST uint8_t *wbuf, uint32_t len, uint_fast8_t last)
@@ -362,7 +362,7 @@ static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, CONST uint8_t *wbuf
         if (wbuf) {
             val = *wbuf++;
         }
-    
+
         while (len && mask) {
             JTAG0_TCK_LO();
             if (val & mask) {
@@ -395,7 +395,7 @@ static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, CONST uint8_t *wbuf
 /*!
  * \brief GPIO cable driver structure.
  *
- * Pass a pointer to this structure when calling TapOpen() to associate 
+ * Pass a pointer to this structure when calling TapOpen() to associate
  * the tap controller with this cable.
  */
 JTAG_CABLE jtag_gpio0 = {

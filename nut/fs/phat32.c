@@ -129,9 +129,9 @@ uint32_t Phat32FreeClusters(NUTDEVICE * dev)
  * \param vol    Mounted volume.
  * \param clust  Cluster number of the entry to locate.
  * \param tabnum Number of the table.
- * \param sect   Pointer to the variable that receives the sector of the 
+ * \param sect   Pointer to the variable that receives the sector of the
  *               table entry.
- * \param pos    Pointer to the variable that receives position within 
+ * \param pos    Pointer to the variable that receives position within
  *               the sector.
  */
 static void PhatTableLoc(PHATVOL * vol, uint32_t clust, int tabnum, uint32_t * sect, uint32_t * pos)

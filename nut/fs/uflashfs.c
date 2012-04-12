@@ -65,11 +65,11 @@
  * single bytes without transfering full pages between the memory
  * chip and the microcontroller's RAM.
  *
- * Although no mechanism has been implemented to replace worn out pages, 
+ * Although no mechanism has been implemented to replace worn out pages,
  * the file system maintains a very well balanced wear levelling. This
  * includes regular movement of static files.
  *
- * Furthermore, previously unfinished write accesses are automatically 
+ * Furthermore, previously unfinished write accesses are automatically
  * detected and reverted when mounting a volume. However, this features
  * still needs to be tested more thoroughly.
  *
@@ -182,7 +182,7 @@ typedef struct __attribute__ ((packed)) _BLOCKFOOT {
  *
  * On each entry block an ENTRYHEAD structure follows the BLOCKHEAD.
  * The ENTRYHEAD is followed by the variable length name of this entry.
- * After the name comes the data, immediatly followed by an optional 
+ * After the name comes the data, immediatly followed by an optional
  * timestamp.
  */
 typedef struct __attribute__ ((packed)) _ENTRYHEAD {
@@ -452,7 +452,7 @@ static void CollectLeastUsed(UFLASHVOLUME * vol, uint8_t * usage)
     }
 
     /*
-       ** If the range of values is equal or greater than half of the full 
+       ** If the range of values is equal or greater than half of the full
        ** range, then some values overflowed. In this case we shift all
        ** values by half of the full range to get a consecutive sequence.
      */
@@ -862,7 +862,7 @@ static long EntryScan(UFLASHVOLUME * vol, blknum_t lbe, time_t * mod)
  *             will be ignored.
  * \param eh   Pointer to the entry header.
  * \param lbs  Logical block to start searching. If set to UFLASH_ENTRIES,
- *             all entry blocks will be searched for an exact match. 
+ *             all entry blocks will be searched for an exact match.
  *             Otherwise the search starts at the specified block for the
  *             next entry that starts with the given name.
  */
@@ -1236,7 +1236,7 @@ static int UFlashFileRename(NUTDEVICE * dev, CONST char *old_path, CONST char *n
     b_old = vol->vol_l2p[lbe];
     vol->vol_l2p[lbe] = b;
 
-    /* Keep the footer and erase the pages of the new block, except the 
+    /* Keep the footer and erase the pages of the new block, except the
        first. The first page of unallocated blocks is already erased. */
     FlashReadBlockFoot(vol->vol_ifc, b, &bf);
     FlashEraseBlockData(vol->vol_ifc, b);
@@ -1246,7 +1246,7 @@ static int UFlashFileRename(NUTDEVICE * dev, CONST char *old_path, CONST char *n
         FlashUnitCopy(vol->vol_ifc, b_old, b, u);
         /* If this is the first unit, write a new version of the header. */
         if (u == 0) {
-            /* Separately copy the block header, because this will 
+            /* Separately copy the block header, because this will
                increment the block's version number. */
             FlashReadBlockHead(vol->vol_ifc, b, &bh);
             FlashWriteBlockHead(vol->vol_ifc, b, &bh);
@@ -1274,10 +1274,10 @@ static int UFlashFileRename(NUTDEVICE * dev, CONST char *old_path, CONST char *n
 /*!
  * \brief Retrieve the size of a previously opened UFLASH file.
  *
- * This function is called by the low level size routine of the C runtime 
+ * This function is called by the low level size routine of the C runtime
  * library, using the _NUTDEVICE::dev_size entry.
  *
- * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a
  *            previous call to UFlashFileOpen().
  *
  * \return Size of the file.
@@ -1293,7 +1293,7 @@ static long UFlashFileSize(NUTFILE * nfp)
 /*!
  * \brief Open a UFLASH file.
  *
- * This function is called by the low level open routine of the C runtime 
+ * This function is called by the low level open routine of the C runtime
  * library, using the _NUTDEVICE::dev_open entry.
  *
  * \param dev  Specifies the file system device.
@@ -1331,8 +1331,8 @@ static NUTFILE *UFlashFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int 
     lbe = EntrySearch(vol, path, &eh);
 
     NutEventWait(&vol->vol_mutex, 0);
-    /* 
-       ** Entry exists. 
+    /*
+       ** Entry exists.
      */
     if (lbe < UFLASH_ENTRIES) {
         if ((mode & (_O_CREAT | _O_EXCL)) == (_O_CREAT | _O_EXCL)) {
@@ -1410,7 +1410,7 @@ static NUTFILE *UFlashFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int 
 /*!
  * \brief Close a UFLASH file.
  *
- * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous
  *            call to UFlashFileOpen().
  *
  * \return Always 0.
@@ -1430,12 +1430,12 @@ static int UFlashFileClose(NUTFILE * nfp)
 /*!
  * \brief Read data from a UFLASH file.
  *
- * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous
  *             call to UFlashFileOpen().
  * \param data Pointer to the data buffer to fill.
  * \param size Maximum number of bytes to read.
  *
- * \return The number of bytes actually read. A return value of -1 indicates 
+ * \return The number of bytes actually read. A return value of -1 indicates
  *         an error.
  */
 static int UFlashFileRead(NUTFILE * nfp, void *data, int size)
@@ -1501,13 +1501,13 @@ static int UFlashFileRead(NUTFILE * nfp, void *data, int size)
 /*!
  * \brief Write data to a UFLASH file.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to UFlashFileOpen().
  * \param buffer Pointer to the data to be written. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
 static int UFlashFileWrite(NUTFILE * nfp, CONST void *data, int len)
@@ -1593,7 +1593,7 @@ static int UFlashFileWrite(NUTFILE * nfp, CONST void *data, int len)
            ** Now erase the remaining units. */
         FlashEraseBlockData(vol->vol_ifc, b);
 
-        /* 
+        /*
            ** Write unit by unit.
          */
         for (u = 0; u < UFLASH_BLOCK_UNITS; u++) {
@@ -1635,21 +1635,21 @@ static int UFlashFileWrite(NUTFILE * nfp, CONST void *data, int len)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data from program space to a file.
  *
  * This function is not yet implemented and will always return -1.
  *
- * Similar to UFlashFileWrite() except that the data is located in 
+ * Similar to UFlashFileWrite() except that the data is located in
  * program memory.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to RawFsFileOpen().
  * \param buffer Pointer to the data in program space. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
 static int UFlashFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
@@ -1893,7 +1893,7 @@ void UFlashDetach(NUTDEVICE * dev)
  *
  * Formatting an UFLASH volume is easy: All blocks are simply erased.
  * Therefore, formatting is required only to remove existing contents,
- * which is incompatible with the current format options. The caller 
+ * which is incompatible with the current format options. The caller
  * must make sure, that the volume is not mounted.
  *
  * \param dev Specifies the file system device.

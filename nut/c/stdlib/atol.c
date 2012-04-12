@@ -84,7 +84,7 @@
 
 /*!
  * \brief Convert string to long integer.
- * 
+ *
  * \param str Pointer to the string.
  *
  * \return Converted value.

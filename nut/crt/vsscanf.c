@@ -69,13 +69,13 @@ static int _sgetb(int fd, void *buffer, size_t count)
     char **spp = (char **) ((uintptr_t) fd);
     char  *dst = (char*) buffer;
     size_t result = 0;
-    
+
     while( count > 0 && **spp != 0) {
         *dst++ = *(*spp)++;  // increment not spp but *spp
         count--;
         result++;
     }
-    
+
     return result;
 }
 
@@ -88,7 +88,7 @@ static int _sgetb(int fd, void *buffer, size_t count)
  *
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  *
  */

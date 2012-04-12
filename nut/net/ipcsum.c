@@ -111,7 +111,7 @@ uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
 #endif
         cp++;
     }
-    
+
     /*
      * Sum up all aligned 32 bit values.
      *

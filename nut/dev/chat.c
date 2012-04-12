@@ -82,7 +82,7 @@ static uint8_t __chat_trf;       /*!< \brief Chat trace flags. */
 /*!
  * \brief Control chat tracing.
  *
- * \param stream Pointer to a previously opened stream or null to 
+ * \param stream Pointer to a previously opened stream or null to
  *               disable trace output.
  * \param flags  Flags to enable specific traces.
  */
@@ -120,13 +120,13 @@ static char *strechr(CONST char *str, int c)
 /*!
  * \brief Wait for a specific string to appear.
  *
- * \param ci  Pointer to a NUTCHAT structure, which must have been 
+ * \param ci  Pointer to a NUTCHAT structure, which must have been
  *            created by NutChatCreate().
  * \param str Expected string. May be empty if nothing is expected.
  *
  * \return 0 on success, 3 in case of a timeout error while waiting
- *         for an expected string, or the index of an abort string 
- *         plus 4, if one has been received. 
+ *         for an expected string, or the index of an abort string
+ *         plus 4, if one has been received.
  */
 int NutChatExpectString(NUTCHAT * ci, char *str)
 {
@@ -346,13 +346,13 @@ static int NutChatSendString(int fd, char *str)
 }
 
 /*
- * \param ci Pointer to a NUTCHAT structure, which must have been 
+ * \param ci Pointer to a NUTCHAT structure, which must have been
  *           created by NutChatCreate().
  *
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 int NutChatExpect(NUTCHAT * ci, char *str)
 {
@@ -401,14 +401,14 @@ int NutChatExpect(NUTCHAT * ci, char *str)
 /*!
  * \brief Process a chat send argument.
  *
- * \param ci  Pointer to a NUTCHAT structure, which must have been 
+ * \param ci  Pointer to a NUTCHAT structure, which must have been
  *            created by NutChatCreate().
  * \param str String containing the chat send argument.
  *
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 int NutChatSend(NUTCHAT * ci, char *str)
 {
@@ -527,7 +527,7 @@ NUTCHAT *NutChatCreate(int fd)
 /*!
  * \brief Destroy a previously created NUTCHAT structure.
  *
- * \param ci Pointer to a NUTCHAT structure, which must have been 
+ * \param ci Pointer to a NUTCHAT structure, which must have been
  *           created by NutChatCreate().
  */
 void NutChatDestroy(NUTCHAT * ci)
@@ -547,7 +547,7 @@ void NutChatDestroy(NUTCHAT * ci)
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 static int NutChatProc(int fd, char *script)
 {
@@ -576,7 +576,7 @@ static int NutChatProc(int fd, char *script)
     _ioctl(fd, UART_SETWRITETIMEOUT, &to);
 
     /*
-     * This loop splits up the chat string into arguments and 
+     * This loop splits up the chat string into arguments and
      * alternating calls NutChatSend and NutChatExpect.
      */
     while (*script && rc == 0) {
@@ -657,7 +657,7 @@ static int NutChatProc(int fd, char *script)
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 int NutChat(int fd, CONST char *script)
 {
@@ -683,7 +683,7 @@ int NutChat(int fd, CONST char *script)
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 #ifdef __HARVARD_ARCH__
 int NutChat_P(int fd, PGM_P script)

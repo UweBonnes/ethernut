@@ -129,7 +129,7 @@ int TapStateChange(uint8_t state)
     }
 
     /*
-     * Keeping TMS high for 5 or more consecutive state transition will put 
+     * Keeping TMS high for 5 or more consecutive state transition will put
      * the TAP controller in Test-Logic-Reset state.
      */
     else if (state == TEST_LOGIC_RESET) {

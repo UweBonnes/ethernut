@@ -284,7 +284,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 #endif /* SBBI0_SCK_BIT */
 }
 
-/*! 
+/*!
  * \brief Transfer data on the SPI bus.
  *
  * A device must have been selected by calling GpioSpi0Select().
@@ -307,7 +307,7 @@ int GpioSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int x
     NUTASSERT(node->node_stat != NULL);
     gspi = (GSPIREG *)node->node_stat;
 
-    /* We use dedicated static routines for each mode in the hope that 
+    /* We use dedicated static routines for each mode in the hope that
     ** this improves the compiler's optimization for the inner loop. */
     switch (node->node_mode & SPI_MODE_3) {
     case SPI_MODE_0:
@@ -326,10 +326,10 @@ int GpioSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int x
     return 0;
 }
 
-/*! 
- * \brief Initialize an SPI bus node. 
+/*!
+ * \brief Initialize an SPI bus node.
  *
- * This routine is called for each SPI node, which is registered via 
+ * This routine is called for each SPI node, which is registered via
  * NutRegisterSpiDevice().
  *
  * \param node Specifies the SPI bus node.
@@ -358,7 +358,7 @@ int GpioSpiBus0NodeInit(NUTSPINODE * node)
  * \param tmo Timeout in milliseconds. To disable timeout, set this
  *            parameter to NUT_WAIT_INFINITE.
  *
- * \return 0 on success. In case of an error, -1 is returned and the bus 
+ * \return 0 on success. In case of an error, -1 is returned and the bus
  *         is not locked.
  */
 int GpioSpiBus0Select(NUTSPINODE * node, uint32_t tmo)

@@ -37,7 +37,7 @@
  * $Log$
  *
  * Revision 1.0  2009/04/13 ulrichprinz
- * First checkin, driver for PCA9555 I2C I/O-Expander (currently SAM7X256 is 
+ * First checkin, driver for PCA9555 I2C I/O-Expander (currently SAM7X256 is
  * tested only)
  *
  */
@@ -92,7 +92,7 @@ THREAD(Thread1, arg)
         printf( "register LED 2 OK\n");
     if( NutRegisterLed( &ds3, IOXP_PORT1, 2) == 0)
         printf( "register LED 3 OK\n");
-    
+
     NutThreadSetPriority(128);
     for (;;) {
         NutSetLed( ds1, (ledmask>>0) & 1, 0, 0);
@@ -101,7 +101,7 @@ THREAD(Thread1, arg)
 
         ledmask <<= 1;
         if( ledmask & (1<<3)) ledmask = 1;
-        
+
         NutSleep(250);
     }
 }
@@ -121,7 +121,7 @@ THREAD(Thread2, arg)
         printf( "register LED 4 OK\n");
 
     oldkey = ~key;
-    
+
     NutThreadSetPriority(128);
     for (;;)
 	{
@@ -132,7 +132,7 @@ THREAD(Thread2, arg)
                 /* flash led if key is pressed */
                 NutSetLed( led3, LED_ON, 200, 0);
             }
-            
+
             oldkey = key;
     		printf( "IOER rc=%d key=0x%02x\n", rc, key);
     		if( rc >= 0)
@@ -173,14 +173,14 @@ int main(void)
     printf("Init TWI... ");
 	baud = 400000;
 	if( TwInit( 0 ) == 0) /* par = slave address but we are master */
-        printf( "OK\n"); 
+        printf( "OK\n");
     else
         printf( "FAIL\n");
 	TwIOCtl( TWI_SETSPEED, &baud);
 
     printf("Init PCA9555... ");
 	if( IOExpInit() == 0)
-        printf( "OK\n"); 
+        printf( "OK\n");
     else
         printf( "FAIL\n");
 

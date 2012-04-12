@@ -2,7 +2,7 @@
 #define _CFG_UDP_H_
 
 /*
- * Copyright (C) 2009 by Ole Reinhardt, Thermotemp GmbH 
+ * Copyright (C) 2009 by Ole Reinhardt, Thermotemp GmbH
  *                       <ole.reinhardt@thermotemp.de>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,10 +23,10 @@
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
  * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED 
- * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
- * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
@@ -39,8 +39,8 @@
  * \file cfg/udp.h
  * \brief UDP configuration.
  *
- * This is used only when building the system in the source tree. If the 
- * Configurator is used, a file with the same name will be created in the 
+ * This is used only when building the system in the source tree. If the
+ * Configurator is used, a file with the same name will be created in the
  * build tree, which replaces this file.
  *
  * \verbatim

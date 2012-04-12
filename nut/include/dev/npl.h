@@ -4,7 +4,7 @@
 /*
  * Copyright (C) 2005 by egnite Software GmbH
  * Copyright (C) 2009 by egnite GmbH
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -48,14 +48,14 @@
 /*!
  * \example events/events.c
  *
- * This sample demonstrates the usage of Nut/OS event queues. It further 
+ * This sample demonstrates the usage of Nut/OS event queues. It further
  * shows how an event queue can be used as a mutual exclusion semaphore.
  *
- * Two additional threads are started, one with a higher and another one 
+ * Two additional threads are started, one with a higher and another one
  * with a lower priority than the main thread.
  *
- * The results are printed on the debug device. Each thread prints the 
- * current action in one of three columns. The first column is used by 
+ * The results are printed on the debug device. Each thread prints the
+ * current action in one of three columns. The first column is used by
  * the highest priority, the last column by the lowest priority thread.
  */
 #include <cfg/os.h>
@@ -75,7 +75,7 @@
 static HANDLE mutex;
 
 /*
- * High priority background thread. 
+ * High priority background thread.
  */
 THREAD(High, arg)
 {
@@ -96,7 +96,7 @@ THREAD(High, arg)
 }
 
 /*
- * Low priority background thread. 
+ * Low priority background thread.
  */
 THREAD(Low, arg)
 {
@@ -116,14 +116,14 @@ THREAD(Low, arg)
 }
 
 /*
- * Main application routine. 
+ * Main application routine.
  */
 int main(void)
 {
     uint32_t baud = 115200;
 
     /*
-     * Register the UART device, open it, assign stdout to it and set 
+     * Register the UART device, open it, assign stdout to it and set
      * the baudrate.
      */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
@@ -137,7 +137,7 @@ int main(void)
     puts("High     Main     Low      ");
 
     /*
-     * Post an initial event. This will put the queue into signaled 
+     * Post an initial event. This will put the queue into signaled
      * state and immediately grant the next call to NutEventWait().
      */
     NutEventPost(&mutex);

@@ -31,7 +31,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
 
 /* This header file is part of the ATMEL AVR-UC3-SoftwareFramework-1.7.0 Release */
