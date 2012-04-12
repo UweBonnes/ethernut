@@ -318,7 +318,7 @@ void *NutInterruptEmulation(void *unused_arg)
             pthread_mutex_unlock(&irq_mutex);
         }
     }
-	return NULL;
+    return NULL;
 }
 
 /*

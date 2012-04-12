@@ -143,55 +143,55 @@
 /*
  * Cirrus Logic CS8900a I/O Registers
  */
-#define	CS_DATA_P0    (cs_base + 0x0000UL)
-#define	CS_DATA_P1		(cs_base + 0x0002UL)
-#define	CS_TX_CMD_I		(cs_base + 0x0004UL)
-#define	CS_TX_LEN_I		(cs_base + 0x0006UL)
-#define	CS_INT_STAT   (cs_base + 0x0008UL)
-#define	CS_PP_PTR		  (cs_base + 0x000AUL)
-#define	CS_PP_DATA0		(cs_base + 0x000CUL)
-#define	CS_PP_DATA1		(cs_base + 0x000EUL)
+#define CS_DATA_P0    (cs_base + 0x0000UL)
+#define CS_DATA_P1      (cs_base + 0x0002UL)
+#define CS_TX_CMD_I     (cs_base + 0x0004UL)
+#define CS_TX_LEN_I     (cs_base + 0x0006UL)
+#define CS_INT_STAT   (cs_base + 0x0008UL)
+#define CS_PP_PTR         (cs_base + 0x000AUL)
+#define CS_PP_DATA0     (cs_base + 0x000CUL)
+#define CS_PP_DATA1     (cs_base + 0x000EUL)
 
 
 // Cirrus Logic CS8900a Packet Page registers
-#define	CS_PROD_ID		0x0000
-#define	CS_IO_BASE		0x0020
-#define	CS_INT_NUM		0x0022
-#define	CS_DMA_CHAN		0x0024
-#define	CS_DMA_SOF		0x0026
-#define	CS_DMA_FCNT		0x0028
-#define	CS_DMA_RXCNT	0x002A
-#define	CS_MEM_BASE		0x002C
-#define	CS_BOOT_BASE	0x0030
-#define	CS_BOOT_MASK	0x0034
-#define	CS_EE_CMD		  0x0040
-#define	CS_EE_DATA		0x0042
-#define	CS_RX_FRM_CNT	0x0050
+#define CS_PROD_ID      0x0000
+#define CS_IO_BASE      0x0020
+#define CS_INT_NUM      0x0022
+#define CS_DMA_CHAN     0x0024
+#define CS_DMA_SOF      0x0026
+#define CS_DMA_FCNT     0x0028
+#define CS_DMA_RXCNT    0x002A
+#define CS_MEM_BASE     0x002C
+#define CS_BOOT_BASE    0x0030
+#define CS_BOOT_MASK    0x0034
+#define CS_EE_CMD         0x0040
+#define CS_EE_DATA      0x0042
+#define CS_RX_FRM_CNT   0x0050
 
-#define	CS_ISQ			  0x0120
-#define	CS_RX_CFG		  0x0102
-#define	CS_RX_EVENT		0x0124
-#define	CS_RX_CTL		  0x0104
-#define	CS_TX_CFG		  0x0106
-#define	CS_TX_EVENT		0x0128
-#define	CS_TX_CMD_P		0x0108
-#define	CS_BUF_CFG		0x010A
-#define	CS_BUF_EVENT	0x012C
-#define	CS_RX_MISS		0x0130
-#define	CS_TX_COLL		0x0132
-#define	CS_LINE_CTRL	0x0112
-#define	CS_LINE_STAT	0x0134
-#define	CS_SELF_CTRL	0x0114
-#define	CS_SELF_STAT	0x0136
-#define	CS_BUS_CTRL		0x0116
-#define	CS_BUS_STAT		0x0138
-#define	CS_TEST_CTRL	0x0118
-#define	CS_AUI_TDR		0x013C
+#define CS_ISQ            0x0120
+#define CS_RX_CFG         0x0102
+#define CS_RX_EVENT     0x0124
+#define CS_RX_CTL         0x0104
+#define CS_TX_CFG         0x0106
+#define CS_TX_EVENT     0x0128
+#define CS_TX_CMD_P     0x0108
+#define CS_BUF_CFG      0x010A
+#define CS_BUF_EVENT    0x012C
+#define CS_RX_MISS      0x0130
+#define CS_TX_COLL      0x0132
+#define CS_LINE_CTRL    0x0112
+#define CS_LINE_STAT    0x0134
+#define CS_SELF_CTRL    0x0114
+#define CS_SELF_STAT    0x0136
+#define CS_BUS_CTRL     0x0116
+#define CS_BUS_STAT     0x0138
+#define CS_TEST_CTRL    0x0118
+#define CS_AUI_TDR      0x013C
 
-#define	CS_PP_TX_CMD	0x0144
-#define	CS_PP_TX_LEN	0x0146
+#define CS_PP_TX_CMD    0x0144
+#define CS_PP_TX_LEN    0x0146
 
-#define	CS_IEEE_ADDR	0x0158
+#define CS_IEEE_ADDR    0x0158
 
 /*!
  * \addtogroup xgNicCs8900

@@ -47,12 +47,12 @@
 #endif
 
 #define DEBUG(_LEVEL, _FORMAT, ...)                                            \
-	do {                                                                       \
-		if((_LEVEL) <= (DEBUG_LEVEL)) {                                        \
-			fprintf(stderr, _FORMAT, ## __VA_ARGS__);                          \
+    do {                                                                       \
+        if((_LEVEL) <= (DEBUG_LEVEL)) {                                        \
+            fprintf(stderr, _FORMAT, ## __VA_ARGS__);                          \
             fflush(stderr);                                                    \
-		}                                                                      \
-	} while(0)
+        }                                                                      \
+    } while(0)
 
 #define ERROR(_FORMAT, ...) DEBUG(LEVEL_ERROR, _FORMAT, ## __VA_ARGS__)
 #define WARN(_FORMAT, ...)  DEBUG(LEVEL_WARN,  _FORMAT, ## __VA_ARGS__)

@@ -66,6 +66,6 @@ typedef unsigned long u_int32_t;
 #define HIWORD(_a) ((((DWORD)(_a)) >> 16) & 0xFFFF)
 #define LOWORD(_a) (((DWORD)(_a)) & 0xFFFF)
 
-#define SWAP(_a)	 ((LOBYTE((_a)) << 8) | HIBYTE((_a)))
+#define SWAP(_a)     ((LOBYTE((_a)) << 8) | HIBYTE((_a)))
 
 #endif /* !__TYPEDEFS_H_ */

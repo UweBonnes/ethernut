@@ -75,11 +75,11 @@
 #define BOARD_NAME  "Custom"
 #endif
 
-#define MAG_SYS_DESCR	    1
-#define MAG_SYS_OID	    2
+#define MAG_SYS_DESCR       1
+#define MAG_SYS_OID     2
 #define MAG_SYS_UPTIME      3
-#define MAG_SYS_CONTACT	    4
-#define MAG_SYS_NAME	    5
+#define MAG_SYS_CONTACT     4
+#define MAG_SYS_NAME        5
 #define MAG_SYS_LOCATION    6
 #define MAG_SYS_SERVICES    7
 

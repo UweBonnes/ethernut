@@ -160,7 +160,7 @@
 /* Default for Arthernet 1. */
 #define PNUTBANK_COUNT 15
 #elif MMNET02  || MMNET03  || MMNET04 ||\
-	  MMNET102 || MMNET103 || MMNET104
+      MMNET102 || MMNET103 || MMNET104
 /* Default for MMnte02. */
 #define PNUTBANK_COUNT 6
 #else

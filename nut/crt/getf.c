@@ -86,22 +86,22 @@
  */
 /*@{*/
 
-#define	CF_LONG		0x01    /* 1: long or double */
-#define	CF_SUPPRESS	0x02    /* suppress assignment */
-#define	CF_SIGNOK	0x04    /* +/- is (still) legal */
-#define	CF_NDIGITS	0x08    /* no digits detected */
-#define	CF_PFXOK	0x10    /* 0x prefix is (still) legal */
-#define	CF_NZDIGITS	0x20    /* no zero digits detected */
-#define	CF_DPTOK	0x10    /* (float) decimal point is still legal */
-#define	CF_EXPOK	0x20    /* (float) exponent (e+3, etc) still legal */
+#define CF_LONG     0x01    /* 1: long or double */
+#define CF_SUPPRESS 0x02    /* suppress assignment */
+#define CF_SIGNOK   0x04    /* +/- is (still) legal */
+#define CF_NDIGITS  0x08    /* no digits detected */
+#define CF_PFXOK    0x10    /* 0x prefix is (still) legal */
+#define CF_NZDIGITS 0x20    /* no zero digits detected */
+#define CF_DPTOK    0x10    /* (float) decimal point is still legal */
+#define CF_EXPOK    0x20    /* (float) exponent (e+3, etc) still legal */
 
 /*
  * Conversion types.
  */
-#define	CT_CHAR		0       /* %c conversion */
-#define	CT_STRING	2       /* %s conversion */
-#define	CT_INT		3       /* integer, i.e., strtoq or strtouq */
-#define	CT_FLOAT	4       /* floating, i.e., strtod */
+#define CT_CHAR     0       /* %c conversion */
+#define CT_STRING   2       /* %s conversion */
+#define CT_INT      3       /* integer, i.e., strtoq or strtouq */
+#define CT_FLOAT    4       /* floating, i.e., strtod */
 
 /*!
  * \brief Read formatted data using a given input function.

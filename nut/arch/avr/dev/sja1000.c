@@ -481,12 +481,12 @@ void SJATxFrame(CANFRAME * CAN_frame)
 
 
     if (CAN_frame->ext) {
-	temp_id = CAN_frame->id << 3;
+    temp_id = CAN_frame->id << 3;
         SJA1000_TxFrameInfo = CAN_frame->len | CAN_29 | (CAN_frame->rtr ? CAN_RTR : 0);
 
         SJA1000_Tx1 = (uint8_t) (temp_id >> 24);        // load High Byte
         SJA1000_Tx2 = (uint8_t) (temp_id >> 16);        // load High Byte
-        SJA1000_Tx3 = (uint8_t) (temp_id >> 8); 	// load High Byte
+        SJA1000_Tx3 = (uint8_t) (temp_id >> 8);     // load High Byte
         SJA1000_Tx4 = (uint8_t) (temp_id & 0x00F8);     // Low Byte and ignore bit 0-2
 
         SJA1000_Tx5 = CAN_frame->byte[0];
@@ -499,7 +499,7 @@ void SJATxFrame(CANFRAME * CAN_frame)
         SJA1000_Tx12 = CAN_frame->byte[7];
 
     } else {
-	temp_id = CAN_frame->id << 21;
+    temp_id = CAN_frame->id << 21;
         SJA1000_TxFrameInfo = CAN_frame->len | (CAN_frame->rtr ? CAN_RTR : 0);
 
         SJA1000_Tx1 = (uint8_t) (temp_id >> 24);        // load High Byte

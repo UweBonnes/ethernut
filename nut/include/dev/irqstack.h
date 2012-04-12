@@ -62,21 +62,21 @@
 #include <sys/types.h>
 
 #define _irq_prolog \
-    asm volatile ("push r24" "\n\t"				/* save r24 to current stack */ \
-                  "push r25" "\n\t"				/* save r25 to current stack */ \
-                  "in r24,__SREG__" "\n\t"		/* load SREG into r24 */ \
-                  "push r24" "\n\t");			/* and push it to current stack */
+    asm volatile ("push r24" "\n\t"             /* save r24 to current stack */ \
+                  "push r25" "\n\t"             /* save r25 to current stack */ \
+                  "in r24,__SREG__" "\n\t"      /* load SREG into r24 */ \
+                  "push r24" "\n\t");           /* and push it to current stack */
 
 #define _irq_epilog \
-    asm volatile ("pop r24" "\n\t"				/* restore r24 from stack */ \
-                  "out __SREG__, r24" "\n\t"	/* write it to SREG */ \
-                  "pop r25" "\n\t"				/* load byte from stack to r25 */ \
-                  "pop r24" "\n\t");			/* load byte from stack to r24 */
+    asm volatile ("pop r24" "\n\t"              /* restore r24 from stack */ \
+                  "out __SREG__, r24" "\n\t"    /* write it to SREG */ \
+                  "pop r25" "\n\t"              /* load byte from stack to r25 */ \
+                  "pop r24" "\n\t");            /* load byte from stack to r24 */
 
-#define NUTSIGNAL(signame,handler)		\
-void signame (void) __attribute__ ((naked));	\
-void signame (void)	\
-{				\
+#define NUTSIGNAL(signame,handler)      \
+void signame (void) __attribute__ ((naked));    \
+void signame (void) \
+{               \
    _irq_prolog \
    asm volatile ("ldi r24, lo8(%0)" "\n\t" \
                  "ldi r25, hi8(%0)" "\n\t" \
@@ -87,8 +87,8 @@ void signame (void)	\
 #else                           /* IRQSTACK_SIZE */
 
 
-#define NUTSIGNAL(signame,handler)	\
-SIGNAL(signame)		\
+#define NUTSIGNAL(signame,handler)  \
+SIGNAL(signame)     \
 { CallHandler (&handler);  }
 
 #endif                          /* !IRQSTACK_SIZE */

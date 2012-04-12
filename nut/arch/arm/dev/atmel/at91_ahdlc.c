@@ -85,9 +85,9 @@
 // rxDMA buffer
 static unsigned char DMA_RxBuf0[NUT_AHDLC_RECV_DMA_SIZE];
 
-#define UART_RECEIVER_TIMEOUT		32      /* in bit-times */
+#define UART_RECEIVER_TIMEOUT       32      /* in bit-times */
 
-#define SIG_UART		sig_UART1
+#define SIG_UART        sig_UART1
 #define US_ID           US1_ID
 #define US_GPIO_PINS    0x00000360
 

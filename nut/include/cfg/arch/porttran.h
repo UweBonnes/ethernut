@@ -367,8 +367,8 @@
 #include <avr32/io.h>
 
 #define  GPIO_PE_REG    &AVR32_GPIO.port[GPIO_ID].gpers
-#define  GPIO_PD_REG	&AVR32_GPIO.port[GPIO_ID].pderc
-#define  GPIO_PS_REG	&AVR32_GPIO.port[GPIO_ID].pder
+#define  GPIO_PD_REG    &AVR32_GPIO.port[GPIO_ID].pderc
+#define  GPIO_PS_REG    &AVR32_GPIO.port[GPIO_ID].pder
 #define  GPIO_OE_REG    &AVR32_GPIO.port[GPIO_ID].oders
 #define  GPIO_OD_REG    &AVR32_GPIO.port[GPIO_ID].oderc
 #define  GPIO_OS_REG    &AVR32_GPIO.port[GPIO_ID].oder

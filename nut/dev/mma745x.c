@@ -71,12 +71,12 @@
 #define Con2Cpl( v) if (v & SGN10BIT) { v ^= ~SGN10BIT; v += SGN10BIT; }
 
 const mmaInit_t mmaDefault = {
-	/* rMODE */     MMA745X_MODE,
+    /* rMODE */     MMA745X_MODE,
     /* rINTRST */   0x00,
-	/* rCONTROL1 */ 0x00 /*MMA745x_CTL1_THOPT*/,
-	/* rCONTROL2 */ 0x00,
-	/* rLEVEL */    127, /* 128/8x8g = 127 == DISABLED */
-	/* rPVALUE */    24, /* 128/8x1,5g = 24*/
+    /* rCONTROL1 */ 0x00 /*MMA745x_CTL1_THOPT*/,
+    /* rCONTROL2 */ 0x00,
+    /* rLEVEL */    127, /* 128/8x8g = 127 == DISABLED */
+    /* rPVALUE */    24, /* 128/8x1,5g = 24*/
     /* rPDUR */     100, /* x0.5ms = 50ms */
     /* rLATTV */      0, /* x1.0ms =  0ms */
     /* rTW */         0, /* x1.0ms =  0ms */
@@ -251,12 +251,12 @@ int Mma745xInit( uint_fast8_t selftest, mmaInit_t *init)
     if (mmaForce==NULL)
         return -1;
 
-	/* Configure INT1/DRDY and INT2 lines from chip */	
+    /* Configure INT1/DRDY and INT2 lines from chip */  
 #if defined(MMA745X_IRQ1_PORT) && defined(MMA745X_IRQ1_PIN)
-	GpioPinConfigSet(MMA745X_IRQ1_PORT, MMA745X_IRQ1_PIN, GPIO_CFG_PULLUP);
+    GpioPinConfigSet(MMA745X_IRQ1_PORT, MMA745X_IRQ1_PIN, GPIO_CFG_PULLUP);
 #endif
 #if defined(MMA745X_IRQ2_PORT) && defined(MMA745X_IRQ2_PIN)
-	GpioPinConfigSet(MMA745X_IRQ2_PORT, MMA745X_IRQ2_PIN, GPIO_CFG_PULLUP);
+    GpioPinConfigSet(MMA745X_IRQ2_PORT, MMA745X_IRQ2_PIN, GPIO_CFG_PULLUP);
 #endif
 
     /* First time initialization of the chip */

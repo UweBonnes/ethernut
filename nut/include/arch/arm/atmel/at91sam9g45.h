@@ -42,7 +42,7 @@
 
 #if 0
 extern int sprintf (char *__restrict __s,
-		    __const char *__restrict __format, ...);
+            __const char *__restrict __format, ...);
 void PrintBlockingDebug(char *Str);
 #endif
 
@@ -326,12 +326,12 @@ void PrintBlockingDebug(char *Str);
 /*! \name AT91SAM9G45-EKES-Specific LAN defintitions */
 /*@{*/
 #define PHY_MODE_RMII
-#define EMAC_PIO_ASR				PIO_ASR_OFF
-#define PHY_MII_PINS_A			(PA10_ETX0_A | PA11_ETX1_A | PA12_ERX0_A | PA13_ERX1_A | PA14_ETXEN_A | PA15_ERXDV_A | PA16_ERXER_A | \
+#define EMAC_PIO_ASR                PIO_ASR_OFF
+#define PHY_MII_PINS_A          (PA10_ETX0_A | PA11_ETX1_A | PA12_ERX0_A | PA13_ERX1_A | PA14_ETXEN_A | PA15_ERXDV_A | PA16_ERXER_A | \
                              PA17_ETXCK_A | PA18_EMDC_A | PA19_EMDIO_A)
-#define EMAC_PIO_BSR				PIO_BSR_OFF
-#define PHY_MII_PINS_B			(PA6_ETX2_B | PA7_ETX3_B | PA27_ETXER_B | PA8_ERX2_B | PA9_ERX3_B | PA28_ERXCK_B | PA29_ECRS_B | PA30_ECOL_B)
-#define EMAC_PIO_PDR				PIOA_PDR
+#define EMAC_PIO_BSR                PIO_BSR_OFF
+#define PHY_MII_PINS_B          (PA6_ETX2_B | PA7_ETX3_B | PA27_ETXER_B | PA8_ERX2_B | PA9_ERX3_B | PA28_ERXCK_B | PA29_ECRS_B | PA30_ECOL_B)
+#define EMAC_PIO_PDR                PIOA_PDR
 /*@}*/
 
 /*! \name ADC Interface Peripheral Multiplexing */

@@ -297,25 +297,25 @@
 *
 * The configuration parameter specifies the block read mode
 */
-#define ACE_SETBLOCKREAD		0x0128
+#define ACE_SETBLOCKREAD        0x0128
 
 /*! \brief ACE _ioctl() command code to query the receive buffer high watermark.
 *
 * The configuration parameter specifies the block read mode
 */
-#define ACE_GETBLOCKREAD		0x0129
+#define ACE_GETBLOCKREAD        0x0129
 
 /*! \brief ACE _ioctl() command code to set the fifo mode and receive fifo trigger level.
 *
 * The configuration parameter specifies the receive fifo trigger level (x,1,4,8,14), x - disables fifo
 */
-#define ACE_SETFIFO		0x012a
+#define ACE_SETFIFO     0x012a
 
 /*! \brief ACE _ioctl() command code to query the fifo mode and receive fifo trigger level.
 *
 * The configuration parameter specifies the receive fifo trigger level (x,1,4,8,14), x - fifo is disabled
 */
-#define ACE_GETFIFO		0x012b
+#define ACE_GETFIFO     0x012b
 
 /*!
  * \addtogroup xgACEStatus

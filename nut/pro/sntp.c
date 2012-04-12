@@ -123,7 +123,7 @@ struct _sntpframe {
 };
 
 
-#define NTP_PORT	123
+#define NTP_PORT    123
 #define SNTP_PORT NTP_PORT
 
 struct SNTP_resync_args {

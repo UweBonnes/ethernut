@@ -33,9 +33,9 @@
 *  Portions Copyright:
 *
 *  Copyright (c) 2002
-*	 M Warner Losh <imp@freebsd.org>.  All rights reserved.
+*    M Warner Losh <imp@freebsd.org>.  All rights reserved.
 *  Copyright (c) 1997, 1998, 1999
-*	 Bill Paul <wpaul@ctr.columbia.edu>.  All rights reserved.
+*    Bill Paul <wpaul@ctr.columbia.edu>.  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
@@ -123,9 +123,9 @@
 /*
  * Length information
  */
-#define WLAN_MIN_ETHERNET_FRAME_LEN	60
-#define WLAN_MAX_ETHERNET_FRAME_LEN	1514
-#define WLAN_ETHERNET_HEADER_LEN		14
+#define WLAN_MIN_ETHERNET_FRAME_LEN 60
+#define WLAN_MAX_ETHERNET_FRAME_LEN 1514
+#define WLAN_ETHERNET_HEADER_LEN        14
 
 /*
  * Interrupt define
@@ -292,7 +292,7 @@ void DumpWlanData(BYTE * pBuffer, WORD wBufferSize)
 static int wi_cmd(struct wi_softc *sc, int cmd, int val0, int val1, int val2)
 {
     unsigned long i;            /* Harald: Changed from int to long. */
-    unsigned int s = 0;			/* Oliver: Changed from signed to unsigned. */
+    unsigned int s = 0;         /* Oliver: Changed from signed to unsigned. */
     static volatile int count = 0;
 
     if (sc->wi_gone) {
@@ -397,7 +397,7 @@ void wi_stop(struct wi_softc *sc, int disable)
 static int wi_seek_bap(struct wi_softc *sc, int id, int off)
 {
     long i;                     /* Harald: from int to long  */
-    unsigned int status;		/* Oliver: from signed to unsigned */
+    unsigned int status;        /* Oliver: from signed to unsigned */
 
     CSR_WRITE_2(sc, WI_SEL0, id);
     CSR_WRITE_2(sc, WI_OFF0, off);
@@ -1162,7 +1162,7 @@ THREAD(RxThread, arg)
 static int wi_alloc_fid(struct wi_softc *sc, int len, int *idp)
 {
     unsigned long i;                     /* Harald: Changed from int to long */
-    									 /* Oliver: Changed from signed to unsigned */
+                                         /* Oliver: Changed from signed to unsigned */
 
     if (wi_cmd(sc, WI_CMD_ALLOC_MEM, len, 0, 0)) {
         Debug(("failed to allocate %d bytes on NIC\n", len));

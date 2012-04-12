@@ -45,50 +45,50 @@ class NutComponentModelFilterProxy;
 
 class MainWindow : public QMainWindow
 {
-	Q_OBJECT
-	Ui::MainWindow ui;
-	QTime time;
+    Q_OBJECT
+    Ui::MainWindow ui;
+    QTime time;
 
 public:
-	MainWindow();
-	~MainWindow();
+    MainWindow();
+    ~MainWindow();
 
 public slots:
-	void on_actionOpen_triggered();
-	void on_actionSave_triggered();
+    void on_actionOpen_triggered();
+    void on_actionSave_triggered();
 
-	void on_actionSave_as_triggered();
-	void on_actionExit_triggered();
-	void on_actionFind_triggered();
-	void on_actionSettings_triggered();
-	void on_actionBuild_Nut_OS_triggered();
-	void on_actionBuildStop_triggered();
-	void on_actionCreate_sample_triggered();
-	void on_actionAbout_triggered();
+    void on_actionSave_as_triggered();
+    void on_actionExit_triggered();
+    void on_actionFind_triggered();
+    void on_actionSettings_triggered();
+    void on_actionBuild_Nut_OS_triggered();
+    void on_actionBuildStop_triggered();
+    void on_actionCreate_sample_triggered();
+    void on_actionAbout_triggered();
 
-	void on_findNext_triggered(const QString &text);
+    void on_findNext_triggered(const QString &text);
 
 private:
-	void readSettings();
-	void writeSettings();
-	void updateWindowTitle();
-	void generateApplicationTree();
-	void saveConfig( QString filename = QString() );
+    void readSettings();
+    void writeSettings();
+    void updateWindowTitle();
+    void generateApplicationTree();
+    void saveConfig( QString filename = QString() );
 
 private slots:
-	void buildFinished( int exitCode );
-	void updateView(const QModelIndex& current, const QModelIndex& previous);
-	void message( const QString& );
-	void resizeComponentTreeToContents();
-	void documentModified();
+    void buildFinished( int exitCode );
+    void updateView(const QModelIndex& current, const QModelIndex& previous);
+    void message( const QString& );
+    void resizeComponentTreeToContents();
+    void documentModified();
 
 private:
-	NutComponentModel* model;
-	NutComponentModelFilterProxy* proxyModel;
-	FindDialog *m_findDialog;
-	QString m_findText;
-	QModelIndexList m_foundItems;
-	int m_foundItemIndex;
+    NutComponentModel* model;
+    NutComponentModelFilterProxy* proxyModel;
+    FindDialog *m_findDialog;
+    QString m_findText;
+    QModelIndexList m_foundItems;
+    int m_foundItemIndex;
 };
 
 #endif // __MAINWINDOW_H__

@@ -4,8 +4,8 @@ const char crurom_rcsid[] = "@(#) $Id$";
  * $Log$
  * Revision 1.5  2008/10/26 18:29:59  olereinhardt
  * 2008-10-26  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- * 	* tools/crurom/crurom.c: Added .svn to the list of directories to
- * 	  ignore when creating urom.c
+ *  * tools/crurom/crurom.c: Added .svn to the list of directories to
+ *    ignore when creating urom.c
  *
  * Revision 1.4  2005/04/28 16:02:43  haraldkipp
  * Autoconfiscated
@@ -69,9 +69,9 @@ int dofile(char *name)
     int rc = 0;
     int fd;
     unsigned char buf[512];
-	int i;
-	int cnt;
-	long total = 0;
+    int i;
+    int cnt;
+    long total = 0;
     char *fsname = name;
 
     if(strnicmp(fsname, rootdir, rootlen) == 0)
@@ -84,39 +84,39 @@ int dofile(char *name)
     if(verbose)
         fprintf(stderr, IDENT ": Reading %s\n", name);
 
-	for(;;) {
-		if((cnt = read(fd, buf, sizeof(buf))) < 0) {
-			fprintf(stderr, IDENT ": Error %d reading %s\n", errno, name);
+    for(;;) {
+        if((cnt = read(fd, buf, sizeof(buf))) < 0) {
+            fprintf(stderr, IDENT ": Error %d reading %s\n", errno, name);
             rc = -1;
             total = 0;
-			break;
-		}
-		if(total == 0) {
-			entryno++;
-			fprintf(fpout, "/*\n * File entry %d: %s\n */\n", entryno, fsname);
-			fprintf(fpout, "prog_char file%ddata[] = {", entryno);
-		}
-		if(cnt == 0)
-			break;
-		total += cnt;
-		for(i = 0; i < cnt; i++) {
-			if((i % 16) == 0)
-				fprintf(fpout, "\n");
-			fprintf(fpout, "0x%02x,", buf[i]);
-		}
-	}
-	close(fd);
+            break;
+        }
+        if(total == 0) {
+            entryno++;
+            fprintf(fpout, "/*\n * File entry %d: %s\n */\n", entryno, fsname);
+            fprintf(fpout, "prog_char file%ddata[] = {", entryno);
+        }
+        if(cnt == 0)
+            break;
+        total += cnt;
+        for(i = 0; i < cnt; i++) {
+            if((i % 16) == 0)
+                fprintf(fpout, "\n");
+            fprintf(fpout, "0x%02x,", buf[i]);
+        }
+    }
+    close(fd);
 
-	fprintf(fpout, "\n};\n\n");
+    fprintf(fpout, "\n};\n\n");
 
-	fprintf(fpout, "prog_char file%dname[] = \"%s\";\n\n", entryno, fsname);
-	
-	fprintf(fpout, "static ROMENTRY file%dentry = { ", entryno);
+    fprintf(fpout, "prog_char file%dname[] = \"%s\";\n\n", entryno, fsname);
+    
+    fprintf(fpout, "static ROMENTRY file%dentry = { ", entryno);
 
-	if(entryno > 1)
-		fprintf(fpout, "&file%dentry, ", entryno - 1);
-	else
-		fprintf(fpout, "0, ", entryno - 1);
+    if(entryno > 1)
+        fprintf(fpout, "&file%dentry, ", entryno - 1);
+    else
+        fprintf(fpout, "0, ", entryno - 1);
 
     fprintf(fpout, "(prog_char *)file%dname, %d, (prog_char *)file%ddata };\n", entryno, total, entryno);
 
@@ -127,9 +127,9 @@ int dodir(char *dirpath)
 {
     int rc = 0;
     char path[256];
-	DIR *dir;
-	struct dirent *dire;
-	struct stat statbuf;
+    DIR *dir;
+    struct dirent *dire;
+    struct stat statbuf;
 
     if((dir = opendir(dirpath)) == NULL) {
         fprintf(stderr, "Failed to scan directory %s\n", dirpath);
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
         rootlen = 2;
         rc = dodir(".");
     }
-	fprintf(fpout, "\nROMENTRY *romEntryList = &file%dentry;\n", entryno);
+    fprintf(fpout, "\nROMENTRY *romEntryList = &file%dentry;\n", entryno);
     if(fpout != stdout)
         fclose(fpout);
     return rc;

@@ -489,9 +489,9 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
 #if VS_HAS_BASS_REG
     VsCodecReg(dev, VS_OPCODE_WRITE, VS_BASS_REG, 0);
 #endif
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
     while (i + 3 <= plg->vsplg_size) {
         reg = (uint_fast8_t)plg->vsplg_data[i++];
         cnt = plg->vsplg_data[i++];
@@ -518,32 +518,32 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
     }
 
 #ifdef VS_SM_ADPCM
-	// set bits 12 and 13 of register SCI_MODE
-	// 12 is the ADPCM bit, 13 is the MIC/LINE bit.
+    // set bits 12 and 13 of register SCI_MODE
+    // 12 is the ADPCM bit, 13 is the MIC/LINE bit.
     VsCodecMode(dev, VS_SM_LINE_IN | VS_SM_ADPCM, VS_SM_LINE_IN | VS_SM_ADPCM);
 #endif
 
 #if VS_HAS_AICTRL0_REG
-	// write 0 to SCI_AICTRL0 (maximum signal level, set by encoder to read later on)
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL0_REG, 0);
+    // write 0 to SCI_AICTRL0 (maximum signal level, set by encoder to read later on)
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL0_REG, 0);
 #endif
 
     // recording gain 0: automatic gain control on
-	//CodecReg(&codec_node, VS_OPCODE_WRITE, VS_AICTRL1_REG, 0);
+    //CodecReg(&codec_node, VS_OPCODE_WRITE, VS_AICTRL1_REG, 0);
 
 #if VS_HAS_AICTRL1_REG
-	// recording gain 1
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL1_REG, 1024);
+    // recording gain 1
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL1_REG, 1024);
 #endif
 
 #if VS_HAS_AICTRL2_REG
-	// maximum autogain amplification, 4096 (=4x) is recommended
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
+    // maximum autogain amplification, 4096 (=4x) is recommended
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
 #endif
 
-#if VS_HAS_AICTRL3_REG	
-	// setting SCI_AICTRL3 should be fine, too...
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
+#if VS_HAS_AICTRL3_REG  
+    // setting SCI_AICTRL3 should be fine, too...
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
 #endif
 
     return 0;
@@ -600,7 +600,7 @@ static int VsCodecWriteWRam(NUTDEVICE *dev, VS_WRAM_DATA *vswd)
         VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
 #endif
 
-#if VS_HAS_AICTRL3_REG	
+#if VS_HAS_AICTRL3_REG  
         VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
 #endif
     }

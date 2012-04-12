@@ -58,8 +58,8 @@
  * \brief ULED status definitions
  *
  */
-#define ULED_ON		1
-#define ULED_OFF	0
+#define ULED_ON     1
+#define ULED_OFF    0
 
 __BEGIN_DECLS
 /* Function prototypes. */

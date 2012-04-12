@@ -63,58 +63,58 @@
  */
 /*@{*/
 
-#define VS_SCK_PORT     PORTB	/*!< Port register of \ref VS_SCK_BIT. */
-#define VS_SCK_DDR      DDRB	/*!< Data direction register of \ref VS_SCK_BIT. */
-#define VS_SCK_BIT      0	/*!< \brief VS1001 serial control interface clock input bit.
-				 * The first rising clock edge after XCS has gone
-				 * low marks the first bit to be written to the decoder.
-				 */
+#define VS_SCK_PORT     PORTB   /*!< Port register of \ref VS_SCK_BIT. */
+#define VS_SCK_DDR      DDRB    /*!< Data direction register of \ref VS_SCK_BIT. */
+#define VS_SCK_BIT      0   /*!< \brief VS1001 serial control interface clock input bit.
+                 * The first rising clock edge after XCS has gone
+                 * low marks the first bit to be written to the decoder.
+                 */
 
-#define VS_SS_PORT      PORTB	/*!< Port output register of \ref VS_SS_BIT. */
-#define VS_SS_DDR       DDRB	/*!< Data direction register of \ref VS_SS_BIT. */
-#define VS_SS_BIT       1	/*!< \brief VS1001 serial data interface clock input bit. */
+#define VS_SS_PORT      PORTB   /*!< Port output register of \ref VS_SS_BIT. */
+#define VS_SS_DDR       DDRB    /*!< Data direction register of \ref VS_SS_BIT. */
+#define VS_SS_BIT       1   /*!< \brief VS1001 serial data interface clock input bit. */
 
-#define VS_SI_PORT      PORTB	/*!< Port output register of \ref VS_SI_BIT. */
-#define VS_SI_DDR       DDRB	/*!< Data direction register of \ref VS_SI_BIT. */
-#define VS_SI_BIT       2	/*!< \brief VS1001 serial control interface data input.
-				 * The decoder samples this input on the
-				 * rising edge of SCK if XCS is low.
-				 */
+#define VS_SI_PORT      PORTB   /*!< Port output register of \ref VS_SI_BIT. */
+#define VS_SI_DDR       DDRB    /*!< Data direction register of \ref VS_SI_BIT. */
+#define VS_SI_BIT       2   /*!< \brief VS1001 serial control interface data input.
+                 * The decoder samples this input on the
+                 * rising edge of SCK if XCS is low.
+                 */
 
-#define VS_SO_PIN       PINB	/*!< Port input register of \ref VS_SO_BIT. */
-#define VS_SO_DDR       DDRB	/*!< Data direction register of \ref VS_SO_BIT. */
-#define VS_SO_BIT       3	/*!< \brief VS1001 serial control interface data output.
-				 * If data is transfered from the decoder, bits
-				 * are shifted out on the falling SCK edge.
-				 * If data is transfered to the decoder,
-				 * SO is at a high impedance state.
-				 */
+#define VS_SO_PIN       PINB    /*!< Port input register of \ref VS_SO_BIT. */
+#define VS_SO_DDR       DDRB    /*!< Data direction register of \ref VS_SO_BIT. */
+#define VS_SO_BIT       3   /*!< \brief VS1001 serial control interface data output.
+                 * If data is transfered from the decoder, bits
+                 * are shifted out on the falling SCK edge.
+                 * If data is transfered to the decoder,
+                 * SO is at a high impedance state.
+                 */
 
-#define VS_XCS_PORT     PORTB	/*!< Port output register of \ref VS_XCS_BIT. */
-#define VS_XCS_DDR      DDRB	/*!< Data direction register of \ref VS_XCS_BIT. */
-#define VS_XCS_BIT      4	/*!< \brief VS1001 active low chip select input.
-				 * A high level forces the serial interface
-				 * into standby mode, ending the current
-				 * operation. A high level also forces serial
-				 * output (SO) to high impedance state.
-				 */
+#define VS_XCS_PORT     PORTB   /*!< Port output register of \ref VS_XCS_BIT. */
+#define VS_XCS_DDR      DDRB    /*!< Data direction register of \ref VS_XCS_BIT. */
+#define VS_XCS_BIT      4   /*!< \brief VS1001 active low chip select input.
+                 * A high level forces the serial interface
+                 * into standby mode, ending the current
+                 * operation. A high level also forces serial
+                 * output (SO) to high impedance state.
+                 */
 
-#define VS_BSYNC_PORT   PORTB	/*!< Port output register of \ref VS_BSYNC_BIT. */
-#define VS_BSYNC_DDR    DDRB	/*!< Data direction register of \ref VS_BSYNC_BIT. */
-#define VS_BSYNC_BIT    5	/*!< \brief VS1001 serial data interface bit sync.
-				 * The first DCLK sampling edge, during
-				 * which BSYNC is high, marks the first
-				 * bit of a data byte.
-				 */
+#define VS_BSYNC_PORT   PORTB   /*!< Port output register of \ref VS_BSYNC_BIT. */
+#define VS_BSYNC_DDR    DDRB    /*!< Data direction register of \ref VS_BSYNC_BIT. */
+#define VS_BSYNC_BIT    5   /*!< \brief VS1001 serial data interface bit sync.
+                 * The first DCLK sampling edge, during
+                 * which BSYNC is high, marks the first
+                 * bit of a data byte.
+                 */
 
-#define VS_RESET_PORT   PORTB	/*!< Port output register of \ref VS_RESET_BIT. */
-#define VS_RESET_DDR    DDRB	/*!< Data direction register of \ref VS_RESET_BIT. */
-#define VS_RESET_BIT    7	/*!< \brief VS1001 hardware reset input. */
+#define VS_RESET_PORT   PORTB   /*!< Port output register of \ref VS_RESET_BIT. */
+#define VS_RESET_DDR    DDRB    /*!< Data direction register of \ref VS_RESET_BIT. */
+#define VS_RESET_BIT    7   /*!< \brief VS1001 hardware reset input. */
 
-#define VS_DREQ_PORT    PORTE	/*!< Port output register of \ref VS_DREQ_BIT. */
-#define VS_DREQ_PIN     PINE	/*!< Port input register of \ref VS_DREQ_BIT. */
-#define VS_DREQ_DDR     DDRE	/*!< Data direction register of \ref VS_DREQ_BIT. */
-#define VS_DREQ_BIT     6	/*!< \brief VS1001 data request output. */
+#define VS_DREQ_PORT    PORTE   /*!< Port output register of \ref VS_DREQ_BIT. */
+#define VS_DREQ_PIN     PINE    /*!< Port input register of \ref VS_DREQ_BIT. */
+#define VS_DREQ_DDR     DDRE    /*!< Data direction register of \ref VS_DREQ_BIT. */
+#define VS_DREQ_BIT     6   /*!< \brief VS1001 data request output. */
 
 
 

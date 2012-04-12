@@ -57,8 +57,8 @@ int EEInit( void )
     at24c32s.PageSize = 32;
     at24c32s.EepromSize = 32*128;
     at24c32s.SlaveAddress = NUT_CONFIG_AT24_ADR;
-	at24c32s.IAddrW = 2;
-	at24c32s.Timeout = 20;
+    at24c32s.IAddrW = 2;
+    at24c32s.Timeout = 20;
 
     //strcpy (at24c32s.EepromName, "AT24C32" );
 
@@ -70,13 +70,13 @@ int EEInit( void )
 int EEWriteData( uint16_t addr, CONST void *data, uint16_t len )
 /****************************************************************************/
 {
-	return At24cWrite( &at24c32s, (uint8_t *)data, len, addr );
+    return At24cWrite( &at24c32s, (uint8_t *)data, len, addr );
 }
 
 /****************************************************************************/
 int EEReadData( uint16_t addr, void *data, uint16_t len )
 /****************************************************************************/
 {
-	return At24cRead( &at24c32s, (uint8_t *)data, len, addr );
+    return At24cRead( &at24c32s, (uint8_t *)data, len, addr );
 }
 #endif //_DEV_EEPROM_H_

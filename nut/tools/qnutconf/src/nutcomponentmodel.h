@@ -44,65 +44,65 @@ class QTextStream;
 
 class NutComponentModel : public QAbstractItemModel
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	class NutComponentModelPrivate;
-	NutComponentModelPrivate* d;
+    class NutComponentModelPrivate;
+    NutComponentModelPrivate* d;
 
-	friend class TreeItem;
-	friend class NutComponentDelegate;
+    friend class TreeItem;
+    friend class NutComponentDelegate;
 
 public:
 
-	enum CustomRoles {
-		Description = Qt::UserRole,
-		Name,
-		Depends,
-		Provides,
-		File,
-		Macro,
-		FullSearch,
-		Enabled,
-		Active,
-		UI_Hint,
-		OptionType,
-		OptionChoices,
-	};
+    enum CustomRoles {
+        Description = Qt::UserRole,
+        Name,
+        Depends,
+        Provides,
+        File,
+        Macro,
+        FullSearch,
+        Enabled,
+        Active,
+        UI_Hint,
+        OptionType,
+        OptionChoices,
+    };
 
-	NutComponentModel(QObject *parent = 0);
-	~NutComponentModel();
+    NutComponentModel(QObject *parent = 0);
+    ~NutComponentModel();
 
-	bool openConfig( const QString& );
-	bool saveConfig( const QString& filename );
+    bool openConfig( const QString& );
+    bool saveConfig( const QString& filename );
 
-	QVariant data(const QModelIndex &index, int role) const;
-	bool setData(const QModelIndex &index, const QVariant &value, int role);
-	Qt::ItemFlags flags(const QModelIndex &index) const;
-	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-	QModelIndex parent(const QModelIndex &index) const;
-	int rowCount(const QModelIndex &parent = QModelIndex()) const;
-	int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+    QModelIndex parent(const QModelIndex &index) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-	NUTREPOSITORY* repository();
-	NUTCOMPONENTOPTION* findOptionByName(NUTCOMPONENT* compo, const char* name);
+    NUTREPOSITORY* repository();
+    NUTCOMPONENTOPTION* findOptionByName(NUTCOMPONENT* compo, const char* name);
 
-	// Build methods
-	bool generateBuildTree();
-	bool generateSampleMakefiles();
+    // Build methods
+    bool generateBuildTree();
+    bool generateSampleMakefiles();
 
 signals:
-	void errorMessage( const QString& );
-	void message(const QString&);
-	void modified();
+    void errorMessage( const QString& );
+    void message(const QString&);
+    void modified();
 
 private:
-	void close();
-	void rebuildTree();
-	bool isOptionActive( const char* );
-	void deactivateOptionList(char **exlist, NUTCOMPONENT* compo = 0);
+    void close();
+    void rebuildTree();
+    bool isOptionActive( const char* );
+    void deactivateOptionList(char **exlist, NUTCOMPONENT* compo = 0);
 
-	void saveComponentOptions( QTextStream& file, NUTCOMPONENT* compo );
+    void saveComponentOptions( QTextStream& file, NUTCOMPONENT* compo );
 };
 
 #endif //__NUTCOMPONENTTREEMODEL_H__

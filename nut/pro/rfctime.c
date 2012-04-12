@@ -40,8 +40,8 @@
  * Revision 1.2  2009/01/04 21:06:53  olereinhardt
  * 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
  *
- * 	* pro/rfctime.c: Fixed time parsing in RfcTimeParse
- * 	                 Thanks to Michael Fischer!
+ *  * pro/rfctime.c: Fixed time parsing in RfcTimeParse
+ *                   Thanks to Michael Fischer!
  *
  * Revision 1.1  2008/02/15 16:46:09  haraldkipp
  * First release.

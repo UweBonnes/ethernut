@@ -1,5 +1,5 @@
 #ifndef _DEV_CY2239X_H_
-#define	_DEV_CY2239X_H_
+#define _DEV_CY2239X_H_
 
 /*
  * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.

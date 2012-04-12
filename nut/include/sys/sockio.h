@@ -48,17 +48,17 @@
  * \endverbatim
  */
 
-#define	SIOCADDMULTI    /*!< \brief Add multicast address. */
-#define	SIOCDELMULTI	/*!< \brief Delete multicast address. */
+#define SIOCADDMULTI    /*!< \brief Add multicast address. */
+#define SIOCDELMULTI    /*!< \brief Delete multicast address. */
 
-#define	SIOCGIFMTU      /*!< \brief Get interface MTU. */
-#define	SIOCSIFMTU	/*!< \brief Set interface MTU. */
+#define SIOCGIFMTU      /*!< \brief Get interface MTU. */
+#define SIOCSIFMTU  /*!< \brief Set interface MTU. */
 
-#define	SIOCADDRT	/*!< \brief Add route. */
-#define	SIOCDELRT	/*!< \brief Delete route. */
+#define SIOCADDRT   /*!< \brief Add route. */
+#define SIOCDELRT   /*!< \brief Delete route. */
 
-#define	SIOCGIFNETMASK	/*!< \brief Get net addr mask. */
-#define	SIOCSIFNETMASK	/*!< \brief Set net addr mask. */
+#define SIOCGIFNETMASK  /*!< \brief Get net addr mask. */
+#define SIOCSIFNETMASK  /*!< \brief Set net addr mask. */
 
 
 #endif

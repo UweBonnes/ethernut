@@ -122,9 +122,9 @@ void NutThreadSwitch(void)
         "ldr     sp, %0\n\t"            /* Restore stack pointer. */
         "ldmfd   sp!, {r4}\n\t"         /* Get saved status... */
         "msr     psr, r4\n\t"           /* ...and save in psr. */
-        "cpsie	 i\n\t"                 /* ...enable interrupts */
+        "cpsie   i\n\t"                 /* ...enable interrupts */
         "ldmfd   sp!, {r4-r11, lr}\n\t" /* Restore registers. */
-        "bx		 lr\n\t"                /* */
+        "bx      lr\n\t"                /* */
         :
         :"m"(runningThread->td_sp)     /* */
         :"r4", "memory"
@@ -235,17 +235,17 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         runningThread->td_state = TDS_RUNNING;
         /* Restore context. */
         __asm__ __volatile__(               /* */
-			"@ Load context\n\t"            /* */
-			"ldr    sp, %0\n\t"            /* Restore stack pointer. */
-			"ldmfd  sp!, {r4}\n\t"         /* Get saved status... */
-			"msr    psr, r4\n\t"           /* ...and save in spsr. */
-			"cpsie	i\n\t"                 /* ...enable interrupts */
-			"ldmfd  sp!, {r4-r11, lr}\n\t" /* Restore registers. */
-			"bx     lr"                     /* */
+            "@ Load context\n\t"            /* */
+            "ldr    sp, %0\n\t"            /* Restore stack pointer. */
+            "ldmfd  sp!, {r4}\n\t"         /* Get saved status... */
+            "msr    psr, r4\n\t"           /* ...and save in spsr. */
+            "cpsie  i\n\t"                 /* ...enable interrupts */
+            "ldmfd  sp!, {r4-r11, lr}\n\t" /* Restore registers. */
+            "bx     lr"                     /* */
                         :
                         :"m"(runningThread->td_sp)     /* */
                         :"r4", "memory"
-		);
+        );
     }
 
     /*

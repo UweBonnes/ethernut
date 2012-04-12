@@ -107,7 +107,7 @@
 #define EMAC_TX_BUFSIZ          1536
 #endif
 
-#define NIC_PHY_ADDR	        31
+#define NIC_PHY_ADDR            31
 
 /*!
  * \addtogroup xgDm9161aRegs

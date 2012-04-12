@@ -155,180 +155,180 @@ typedef union
 #endif
 
 struct genclk_config {
-	uint32_t ctrl;
+    uint32_t ctrl;
 };
 
 struct dfll_config {
-	struct genclk_config    ref_cfg;        //!< Reference clock
-	uint32_t                conf;           //!< DFLLnCONF
-	uint32_t                mul;            //!< DFLLnMUL
-	uint32_t                step;           //!< DFLLnSTEP
-	uint32_t                ssg;            //!< DFLLnSSG
+    struct genclk_config    ref_cfg;        //!< Reference clock
+    uint32_t                conf;           //!< DFLLnCONF
+    uint32_t                mul;            //!< DFLLnMUL
+    uint32_t                step;           //!< DFLLnSTEP
+    uint32_t                ssg;            //!< DFLLnSSG
 };
 
 typedef uint32_t irqflags_t;
 
-#define barrier() 	   asm volatile("" ::: "memory")
+#define barrier()      asm volatile("" ::: "memory")
 #define sysreg_write(reg, val)         __builtin_mtsr(reg, val)
 #define sysreg_read(reg)               __builtin_mfsr(reg)
 
-#define cpu_irq_disable()						\
-	do {										\
-        __builtin_ssrf(AVR32_SR_GM_OFFSET);		\
-        barrier();								\
+#define cpu_irq_disable()                       \
+    do {                                        \
+        __builtin_ssrf(AVR32_SR_GM_OFFSET);     \
+        barrier();                              \
     } while (0)
 
 static inline irqflags_t cpu_irq_save(void)
 {
-	irqflags_t flags;
+    irqflags_t flags;
 
-	flags = sysreg_read(AVR32_SR);
-	cpu_irq_disable();
+    flags = sysreg_read(AVR32_SR);
+    cpu_irq_disable();
 
-	return flags;
+    return flags;
 }
 
 static inline void cpu_irq_restore(irqflags_t flags)
 {
-	barrier();
+    barrier();
 #if defined(__ICCAVR32__)
-	// Barrier " __asm__ __volatile__ ("")"
-	// Don't work with sysreg_write(AVR32_SR, flags)
-	if( cpu_irq_is_enabled_flags(flags) ) {
-		cpu_irq_enable();
-	}
+    // Barrier " __asm__ __volatile__ ("")"
+    // Don't work with sysreg_write(AVR32_SR, flags)
+    if( cpu_irq_is_enabled_flags(flags) ) {
+        cpu_irq_enable();
+    }
 #else
-	sysreg_write(AVR32_SR, flags);
+    sysreg_write(AVR32_SR, flags);
 #endif
-	barrier();
+    barrier();
 }
 
-#define dfll_write_reg(reg, value)										\
-	do {																\
-		irqflags_t dfll_flags;											\
-		while (!(AVR32_SCIF.pclksr & AVR32_SCIF_DFLL0RDY_MASK));		\
-		dfll_flags = cpu_irq_save();									\
-		SCIF_UNLOCK(AVR32_SCIF_##reg);									\
-		*(volatile uint32_t *)(AVR32_SCIF_ADDRESS + AVR32_SCIF_##reg)	\
-				= (value);												\
-		cpu_irq_restore(dfll_flags);									\
-	} while (0)
+#define dfll_write_reg(reg, value)                                      \
+    do {                                                                \
+        irqflags_t dfll_flags;                                          \
+        while (!(AVR32_SCIF.pclksr & AVR32_SCIF_DFLL0RDY_MASK));        \
+        dfll_flags = cpu_irq_save();                                    \
+        SCIF_UNLOCK(AVR32_SCIF_##reg);                                  \
+        *(volatile uint32_t *)(AVR32_SCIF_ADDRESS + AVR32_SCIF_##reg)   \
+                = (value);                                              \
+        cpu_irq_restore(dfll_flags);                                    \
+    } while (0)
 
 
 void dfll_enable_open_loop(const struct dfll_config *cfg,
-		unsigned int dfll_id)
+        unsigned int dfll_id)
 {
-	irqflags_t flags;
+    irqflags_t flags;
 
-	/* First, enable the DFLL, then configure it */
-	flags = cpu_irq_save();
-	SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
-	AVR32_SCIF.dfll0conf = 1U << AVR32_SCIF_DFLL0CONF_EN;
-	cpu_irq_restore(flags);
-	dfll_write_reg(DFLL0CONF, cfg->conf | (1U << AVR32_SCIF_DFLL0CONF_EN));
-	dfll_write_reg(DFLL0SSG, cfg->ssg);
+    /* First, enable the DFLL, then configure it */
+    flags = cpu_irq_save();
+    SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
+    AVR32_SCIF.dfll0conf = 1U << AVR32_SCIF_DFLL0CONF_EN;
+    cpu_irq_restore(flags);
+    dfll_write_reg(DFLL0CONF, cfg->conf | (1U << AVR32_SCIF_DFLL0CONF_EN));
+    dfll_write_reg(DFLL0SSG, cfg->ssg);
 }
 
 static inline void genclk_enable(const struct genclk_config *cfg, unsigned int id)
 {
-	AVR32_SCIF.gcctrl[id] = cfg->ctrl | (1U << AVR32_SCIF_GCCTRL_CEN);
+    AVR32_SCIF.gcctrl[id] = cfg->ctrl | (1U << AVR32_SCIF_GCCTRL_CEN);
 }
 
 void dfll_enable_closed_loop(const struct dfll_config *cfg,
-		unsigned int dfll_id)
+        unsigned int dfll_id)
 {
-	irqflags_t flags;
-	/* Enable the reference clock */
-	genclk_enable(&cfg->ref_cfg, 0);
+    irqflags_t flags;
+    /* Enable the reference clock */
+    genclk_enable(&cfg->ref_cfg, 0);
 
-	/*
-	 * Enable the DFLL first, but don't wait for the DFLL0RDY bit
-	 * because if the DFLL has been disabled before, the DFLL0RDY
-	 * bit stays cleared until it is re-enabled.
-	 */
-	flags = cpu_irq_save();
-	AVR32_SCIF.unlock = 0xaa000000 | AVR32_SCIF_DFLL0CONF;
-	AVR32_SCIF.dfll0conf = 1U << AVR32_SCIF_DFLL0CONF_EN;
-	cpu_irq_restore(flags);
+    /*
+     * Enable the DFLL first, but don't wait for the DFLL0RDY bit
+     * because if the DFLL has been disabled before, the DFLL0RDY
+     * bit stays cleared until it is re-enabled.
+     */
+    flags = cpu_irq_save();
+    AVR32_SCIF.unlock = 0xaa000000 | AVR32_SCIF_DFLL0CONF;
+    AVR32_SCIF.dfll0conf = 1U << AVR32_SCIF_DFLL0CONF_EN;
+    cpu_irq_restore(flags);
 
-	/*
-	 * Then, configure the DFLL, taking care to wait for the
-	 * DFLL0RDY bit before every step.
-	 */
-	dfll_write_reg(DFLL0STEP, cfg->step);
+    /*
+     * Then, configure the DFLL, taking care to wait for the
+     * DFLL0RDY bit before every step.
+     */
+    dfll_write_reg(DFLL0STEP, cfg->step);
 #ifdef AVR32_SCIF_DFLL0FMUL
-	dfll_write_reg(DFLL0FMUL, cfg->mul);
+    dfll_write_reg(DFLL0FMUL, cfg->mul);
 #else
-	dfll_write_reg(DFLL0MUL, cfg->mul);
+    dfll_write_reg(DFLL0MUL, cfg->mul);
 #endif
-	dfll_write_reg(DFLL0SSG, cfg->ssg);
-	dfll_write_reg(DFLL0CONF, cfg->conf | (1U << AVR32_SCIF_DFLL0CONF_EN));
+    dfll_write_reg(DFLL0SSG, cfg->ssg);
+    dfll_write_reg(DFLL0CONF, cfg->conf | (1U << AVR32_SCIF_DFLL0CONF_EN));
 }
 
 static inline void genclk_config_defaults(struct genclk_config *cfg, unsigned int id)
 {
-	cfg->ctrl = 0;
+    cfg->ctrl = 0;
 }
 
 static inline void genclk_config_set_source(struct genclk_config *cfg, int src)
 {
-	cfg->ctrl = (cfg->ctrl & ~AVR32_SCIF_GCCTRL_OSCSEL_MASK)
-	| (src << AVR32_SCIF_GCCTRL_OSCSEL);
+    cfg->ctrl = (cfg->ctrl & ~AVR32_SCIF_GCCTRL_OSCSEL_MASK)
+    | (src << AVR32_SCIF_GCCTRL_OSCSEL);
 }
 
 static inline void genclk_config_set_divider(struct genclk_config *cfg,
-	unsigned int divider)
+    unsigned int divider)
 {
-//	Assert(divider > 0 && divider <= GENCLK_DIV_MAX);
+//  Assert(divider > 0 && divider <= GENCLK_DIV_MAX);
 
-	/* Clear all the bits we're about to modify */
-	cfg->ctrl &= ~(AVR32_SCIF_GCCTRL_DIVEN_MASK
-		| AVR32_SCIF_GCCTRL_DIV_MASK);
+    /* Clear all the bits we're about to modify */
+    cfg->ctrl &= ~(AVR32_SCIF_GCCTRL_DIVEN_MASK
+        | AVR32_SCIF_GCCTRL_DIV_MASK);
 
-	if (divider > 1) {
-		cfg->ctrl |= 1U << AVR32_SCIF_GCCTRL_DIVEN;
-		cfg->ctrl |= (((divider + 1) / 2) - 1) << AVR32_SCIF_GCCTRL_DIV;
-	}
+    if (divider > 1) {
+        cfg->ctrl |= 1U << AVR32_SCIF_GCCTRL_DIVEN;
+        cfg->ctrl |= (((divider + 1) / 2) - 1) << AVR32_SCIF_GCCTRL_DIV;
+    }
 }
 
 static inline void dfll_config_init_open_loop_mode(struct dfll_config *cfg)
 {
-	genclk_config_defaults(&cfg->ref_cfg, 0);
-	cfg->conf = 1;
-	cfg->mul = 0;
-	cfg->step = 0;
-	cfg->ssg = 0;
+    genclk_config_defaults(&cfg->ref_cfg, 0);
+    cfg->conf = 1;
+    cfg->mul = 0;
+    cfg->step = 0;
+    cfg->ssg = 0;
 }
 
 static inline void dfll_config_init_closed_loop_mode(struct dfll_config *cfg,
-		int refclk, uint16_t div, uint16_t mul)
+        int refclk, uint16_t div, uint16_t mul)
 {
-	/*
-	 * Set up generic clock source with specified reference clock
-	 * and divider.
-	 */
-	genclk_config_defaults(&cfg->ref_cfg, 0);
-	genclk_config_set_source(&cfg->ref_cfg, refclk);
-	genclk_config_set_divider(&cfg->ref_cfg, div);
+    /*
+     * Set up generic clock source with specified reference clock
+     * and divider.
+     */
+    genclk_config_defaults(&cfg->ref_cfg, 0);
+    genclk_config_set_source(&cfg->ref_cfg, refclk);
+    genclk_config_set_divider(&cfg->ref_cfg, div);
 
-	cfg->conf = 1U << AVR32_SCIF_DFLL0CONF_MODE;
-	cfg->mul = mul << 16;
-	/*
-	 * Initial step length of 4. If this is set too high, the DFLL
-	 * may fail to lock.
-	 */
-	cfg->step = ((4U << AVR32_SCIF_DFLL0STEP_FSTEP)
-			| (4U << AVR32_SCIF_DFLL0STEP_CSTEP));
-	cfg->ssg = 0;
+    cfg->conf = 1U << AVR32_SCIF_DFLL0CONF_MODE;
+    cfg->mul = mul << 16;
+    /*
+     * Initial step length of 4. If this is set too high, the DFLL
+     * may fail to lock.
+     */
+    cfg->step = ((4U << AVR32_SCIF_DFLL0STEP_FSTEP)
+            | (4U << AVR32_SCIF_DFLL0STEP_CSTEP));
+    cfg->ssg = 0;
 }
 
 static inline void dfll_config_set_initial_tuning(struct dfll_config *cfg,
-		uint16_t coarse, uint16_t fine)
+        uint16_t coarse, uint16_t fine)
 {
-	cfg->conf &= ~(AVR32_SCIF_DFLL0CONF_COARSE_MASK
-			| AVR32_SCIF_DFLL0CONF_FINE_MASK);
-	cfg->conf |= ((coarse << AVR32_SCIF_DFLL0CONF_COARSE)
-			| (fine << AVR32_SCIF_DFLL0CONF_FINE));
+    cfg->conf &= ~(AVR32_SCIF_DFLL0CONF_COARSE_MASK
+            | AVR32_SCIF_DFLL0CONF_FINE_MASK);
+    cfg->conf |= ((coarse << AVR32_SCIF_DFLL0CONF_COARSE)
+            | (fine << AVR32_SCIF_DFLL0CONF_FINE));
 }
 
 /**
@@ -345,44 +345,44 @@ static inline void dfll_config_set_initial_tuning(struct dfll_config *cfg,
  * \par Calculating the DFLL frequency
  *
  * \f{eqnarray*}{
-	f_{DFLL} &=& \left[f_{min} + \left(f_{max} - f_{min}\right)
-		\frac{\mathrm{COARSE}}{\mathrm{COARSE}_{max}}\right]
-		\left(1 + x \frac{\mathrm{FINE}
-			- \mathrm{FINE}_{half}}{\mathrm{FINE}_{max}}\right)
-		= f_{coarse} \left(1 + x
-		\frac{\mathrm{FINE}
-			- \mathrm{FINE}_{half}}{\mathrm{FINE}_{max}}\right) \\
-	\mathrm{COARSE} &=& \frac{\left(f_{DFLL} - f_{min}\right)}
-		{f_{max} - f_{min}} \mathrm{COARSE}_{max} \\
-	f_{coarse} &=& f_{min} + \left(f_{max} - f_{min}\right)
-		\frac{\mathrm{COARSE}}{\mathrm{COARSE}_{max}} \\
-	\mathrm{FINE} &=& \left(10 \frac{f_{DFLL} - f_{coarse}}
-		{f_{coarse}} + \mathrm{FINE}_{half}\right) / 4
+    f_{DFLL} &=& \left[f_{min} + \left(f_{max} - f_{min}\right)
+        \frac{\mathrm{COARSE}}{\mathrm{COARSE}_{max}}\right]
+        \left(1 + x \frac{\mathrm{FINE}
+            - \mathrm{FINE}_{half}}{\mathrm{FINE}_{max}}\right)
+        = f_{coarse} \left(1 + x
+        \frac{\mathrm{FINE}
+            - \mathrm{FINE}_{half}}{\mathrm{FINE}_{max}}\right) \\
+    \mathrm{COARSE} &=& \frac{\left(f_{DFLL} - f_{min}\right)}
+        {f_{max} - f_{min}} \mathrm{COARSE}_{max} \\
+    f_{coarse} &=& f_{min} + \left(f_{max} - f_{min}\right)
+        \frac{\mathrm{COARSE}}{\mathrm{COARSE}_{max}} \\
+    \mathrm{FINE} &=& \left(10 \frac{f_{DFLL} - f_{coarse}}
+        {f_{coarse}} + \mathrm{FINE}_{half}\right) / 4
    \f}
  *
  * \param cfg The DFLL configuration to be tuned.
  * \param target_hz Target frequency in Hz.
  */
 static inline void dfll_config_tune_for_target_hz(struct dfll_config *cfg,
-		uint32_t target_hz)
+        uint32_t target_hz)
 {
-	uint32_t target_khz;
-	uint32_t coarse_khz;
-	uint32_t delta_khz;
-	uint32_t coarse;
-	uint32_t fine;
+    uint32_t target_khz;
+    uint32_t coarse_khz;
+    uint32_t delta_khz;
+    uint32_t coarse;
+    uint32_t fine;
 
-	target_khz = target_hz / 1000;
-	coarse = ((target_khz - SCIF_DFLL_MINFREQ_KHZ) * DFLL_COARSE_MAX)
-			/ (SCIF_DFLL_MAXFREQ_KHZ - SCIF_DFLL_MINFREQ_KHZ);
-	coarse_khz = SCIF_DFLL_MINFREQ_KHZ + (((SCIF_DFLL_MAXFREQ_KHZ - SCIF_DFLL_MINFREQ_KHZ)
-			/ DFLL_COARSE_MAX) * coarse);
-	delta_khz = target_khz - coarse_khz;
-	fine = (((delta_khz * DFLL_FINE_MAX) * 2) / coarse_khz) * 5;
-	fine += DFLL_FINE_HALF;
-	fine /= 4;
+    target_khz = target_hz / 1000;
+    coarse = ((target_khz - SCIF_DFLL_MINFREQ_KHZ) * DFLL_COARSE_MAX)
+            / (SCIF_DFLL_MAXFREQ_KHZ - SCIF_DFLL_MINFREQ_KHZ);
+    coarse_khz = SCIF_DFLL_MINFREQ_KHZ + (((SCIF_DFLL_MAXFREQ_KHZ - SCIF_DFLL_MINFREQ_KHZ)
+            / DFLL_COARSE_MAX) * coarse);
+    delta_khz = target_khz - coarse_khz;
+    fine = (((delta_khz * DFLL_FINE_MAX) * 2) / coarse_khz) * 5;
+    fine += DFLL_FINE_HALF;
+    fine /= 4;
 
-	dfll_config_set_initial_tuning(cfg, coarse, fine);
+    dfll_config_set_initial_tuning(cfg, coarse, fine);
 }
 
 /**
@@ -398,86 +398,86 @@ static inline void dfll_config_tune_for_target_hz(struct dfll_config *cfg,
  * \param pbb_shift The PBB clock will be divided by \f$2^{pbb\_shift}\f$
  */
 void sysclk_set_prescalers(unsigned int cpu_shift,
-		unsigned int pba_shift, unsigned int pbb_shift)
+        unsigned int pba_shift, unsigned int pbb_shift)
 {
-	irqflags_t flags;
-	uint32_t   cpu_cksel = 0;
-	uint32_t   pba_cksel = 0;
-	uint32_t   pbb_cksel = 0;
+    irqflags_t flags;
+    uint32_t   cpu_cksel = 0;
+    uint32_t   pba_cksel = 0;
+    uint32_t   pbb_cksel = 0;
 
-// 	Assert(cpu_shift <= pba_shift);
-// 	Assert(cpu_shift <= pbb_shift);
+//  Assert(cpu_shift <= pba_shift);
+//  Assert(cpu_shift <= pbb_shift);
 
-	if (cpu_shift > 0)
-		cpu_cksel = ((cpu_shift - 1) << AVR32_PM_CPUSEL_CPUSEL)
-				| (1U << AVR32_PM_CPUSEL_CPUDIV);
+    if (cpu_shift > 0)
+        cpu_cksel = ((cpu_shift - 1) << AVR32_PM_CPUSEL_CPUSEL)
+                | (1U << AVR32_PM_CPUSEL_CPUDIV);
 
-	if (pba_shift > 0)
-		pba_cksel = ((pba_shift - 1) << AVR32_PM_PBASEL_PBSEL)
-				| (1U << AVR32_PM_PBASEL_PBDIV);
+    if (pba_shift > 0)
+        pba_cksel = ((pba_shift - 1) << AVR32_PM_PBASEL_PBSEL)
+                | (1U << AVR32_PM_PBASEL_PBDIV);
 
-	if (pbb_shift > 0)
-		pbb_cksel = ((pbb_shift - 1) << AVR32_PM_PBBSEL_PBSEL)
-				| (1U << AVR32_PM_PBBSEL_PBDIV);
+    if (pbb_shift > 0)
+        pbb_cksel = ((pbb_shift - 1) << AVR32_PM_PBBSEL_PBSEL)
+                | (1U << AVR32_PM_PBBSEL_PBDIV);
 
-	flags = cpu_irq_save();
-	AVR32_PM.unlock = 0xaa000000 | AVR32_PM_CPUSEL;
-	AVR32_PM.cpusel = cpu_cksel;
-	AVR32_PM.unlock = 0xaa000000 | AVR32_PM_PBASEL;
-	AVR32_PM.pbasel = pba_cksel;
-	AVR32_PM.unlock = 0xaa000000 | AVR32_PM_PBBSEL;
-	AVR32_PM.pbbsel = pbb_cksel;
-	cpu_irq_restore(flags);
+    flags = cpu_irq_save();
+    AVR32_PM.unlock = 0xaa000000 | AVR32_PM_CPUSEL;
+    AVR32_PM.cpusel = cpu_cksel;
+    AVR32_PM.unlock = 0xaa000000 | AVR32_PM_PBASEL;
+    AVR32_PM.pbasel = pba_cksel;
+    AVR32_PM.unlock = 0xaa000000 | AVR32_PM_PBBSEL;
+    AVR32_PM.pbbsel = pbb_cksel;
+    cpu_irq_restore(flags);
 }
-	
+    
 void pm_enable_osc0_crystal(unsigned int fosc0)
 {
-	AVR32_SCIF.gcctrl[AVR32_SCIF_GCLK_DFLL0_REF] = ((0 << AVR32_SCIF_GCCTRL_DIV_OFFSET)&AVR32_SCIF_GCCTRL_DIV_MASK)
-		|((0 << AVR32_SCIF_GCCTRL_DIVEN_OFFSET)&AVR32_SCIF_GCCTRL_DIVEN_MASK)
-		|((AVR32_SCIF_GC_USES_OSC0 << AVR32_SCIF_GCCTRL_OSCSEL_OFFSET)&AVR32_SCIF_GCCTRL_OSCSEL_MASK)
-		|(AVR32_SCIF_GCCTRL_CEN_MASK);
+    AVR32_SCIF.gcctrl[AVR32_SCIF_GCLK_DFLL0_REF] = ((0 << AVR32_SCIF_GCCTRL_DIV_OFFSET)&AVR32_SCIF_GCCTRL_DIV_MASK)
+        |((0 << AVR32_SCIF_GCCTRL_DIVEN_OFFSET)&AVR32_SCIF_GCCTRL_DIVEN_MASK)
+        |((AVR32_SCIF_GC_USES_OSC0 << AVR32_SCIF_GCCTRL_OSCSEL_OFFSET)&AVR32_SCIF_GCCTRL_OSCSEL_MASK)
+        |(AVR32_SCIF_GCCTRL_CEN_MASK);
 
 }
 #if 0
 static void pm_enable_dfll(void)
 {
-	u_avr32_scif_dfll0conf_t  u_avr32_scif_dfll0conf = {AVR32_SCIF.dfll0conf};
+    u_avr32_scif_dfll0conf_t  u_avr32_scif_dfll0conf = {AVR32_SCIF.dfll0conf};
 
-	u_avr32_scif_dfll0conf.DFLL0CONF.en = 1;
-	SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
-	AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
+    u_avr32_scif_dfll0conf.DFLL0CONF.en = 1;
+    SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
+    AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
 
-	while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
+    while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
 
 #define COARSEMAXSTEP (((DFLL_CPU_FREQ - SCIF_DFLL_MINFREQ_HZ)*255)/(SCIF_DFLL_MAXFREQ_HZ - SCIF_DFLL_MINFREQ_HZ))
-	SCIF_UNLOCK(AVR32_SCIF_DFLL0STEP);
-	AVR32_SCIF.dfll0step = ((COARSEMAXSTEP << AVR32_SCIF_DFLL0STEP_CSTEP_OFFSET) & AVR32_SCIF_DFLL0STEP_CSTEP_MASK) | ((0x0000004 << AVR32_SCIF_DFLL0STEP_FSTEP_OFFSET) & AVR32_SCIF_DFLL0STEP_FSTEP_MASK);
-	
-	while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
+    SCIF_UNLOCK(AVR32_SCIF_DFLL0STEP);
+    AVR32_SCIF.dfll0step = ((COARSEMAXSTEP << AVR32_SCIF_DFLL0STEP_CSTEP_OFFSET) & AVR32_SCIF_DFLL0STEP_CSTEP_MASK) | ((0x0000004 << AVR32_SCIF_DFLL0STEP_FSTEP_OFFSET) & AVR32_SCIF_DFLL0STEP_FSTEP_MASK);
+    
+    while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
 
 #if defined( AVR32_SCIF_DFLL0MUL )
-	SCIF_UNLOCK(AVR32_SCIF_DFLL0MUL);
-	AVR32_SCIF.dfll0mul = ((DFLL_CPU_FMUL << AVR32_SCIF_DFLL0MUL_FMUL_OFFSET)&AVR32_SCIF_DFLL0MUL_FMUL_MASK)
-		| ((DFLL_CPU_IMUL << AVR32_SCIF_DFLL0MUL_IMUL_OFFSET)&AVR32_SCIF_DFLL0MUL_IMUL_MASK);
+    SCIF_UNLOCK(AVR32_SCIF_DFLL0MUL);
+    AVR32_SCIF.dfll0mul = ((DFLL_CPU_FMUL << AVR32_SCIF_DFLL0MUL_FMUL_OFFSET)&AVR32_SCIF_DFLL0MUL_FMUL_MASK)
+        | ((DFLL_CPU_IMUL << AVR32_SCIF_DFLL0MUL_IMUL_OFFSET)&AVR32_SCIF_DFLL0MUL_IMUL_MASK);
 #else
-	SCIF_UNLOCK(AVR32_SCIF_DFLL0FMUL);
-	AVR32_SCIF.dfll0fmul = (DFLL_CPU_FMUL << AVR32_SCIF_DFLL0FMUL_FMUL_OFFSET)&AVR32_SCIF_DFLL0FMUL_FMUL_MASK;
+    SCIF_UNLOCK(AVR32_SCIF_DFLL0FMUL);
+    AVR32_SCIF.dfll0fmul = (DFLL_CPU_FMUL << AVR32_SCIF_DFLL0FMUL_FMUL_OFFSET)&AVR32_SCIF_DFLL0FMUL_FMUL_MASK;
 #endif
 
-	while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
+    while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
 
-	// Set the DFLL0 to operate in closed-loop mode: DFLL0CONF.MODE=1
-	u_avr32_scif_dfll0conf.DFLL0CONF.mode = SCIF_DFLL0_MODE_CLOSEDLOOP;
-	u_avr32_scif_dfll0conf.DFLL0CONF.coarse = COARSEMAXSTEP;
-	SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
-	AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
+    // Set the DFLL0 to operate in closed-loop mode: DFLL0CONF.MODE=1
+    u_avr32_scif_dfll0conf.DFLL0CONF.mode = SCIF_DFLL0_MODE_CLOSEDLOOP;
+    u_avr32_scif_dfll0conf.DFLL0CONF.coarse = COARSEMAXSTEP;
+    SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
+    AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
 
-	// Wait for PCLKSR.DFLL0RDY is high
-	while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
+    // Wait for PCLKSR.DFLL0RDY is high
+    while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
 
-	// Wait until the DFLL is locked on Fine value, and is ready to be selected as
-	// clock source with a highly accurate output clock.
-	while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0LOCKF_MASK));
+    // Wait until the DFLL is locked on Fine value, and is ready to be selected as
+    // clock source with a highly accurate output clock.
+    while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0LOCKF_MASK));
 }
 #endif
 /**
@@ -488,53 +488,53 @@ static void pm_enable_dfll(void)
  */
 void sysclk_set_source(uint_fast8_t src)
 {
-	irqflags_t flags;
-//	Assert(src <= SYSCLK_SRC_RC120M);
+    irqflags_t flags;
+//  Assert(src <= SYSCLK_SRC_RC120M);
 
-	flags = cpu_irq_save();
-	AVR32_PM.unlock = 0xaa000000 | AVR32_PM_MCCTRL;
-	AVR32_PM.mcctrl = src;
-	cpu_irq_restore(flags);
+    flags = cpu_irq_save();
+    AVR32_PM.unlock = 0xaa000000 | AVR32_PM_MCCTRL;
+    AVR32_PM.mcctrl = src;
+    cpu_irq_restore(flags);
 }
 
 static inline int dfll_is_fine_locked(unsigned int dfll_id)
 {
-	return !!(AVR32_SCIF.pclksr & (1U << AVR32_SCIF_PCLKSR_DFLL0LOCKF));
+    return !!(AVR32_SCIF.pclksr & (1U << AVR32_SCIF_PCLKSR_DFLL0LOCKF));
 }
 
 static inline int dfll_wait_for_fine_lock(unsigned int dfll_id)
 {
-	/* TODO: Add timeout mechanism */
-	while (!dfll_is_fine_locked(dfll_id)) {
-		/* Do nothing */
-	}
+    /* TODO: Add timeout mechanism */
+    while (!dfll_is_fine_locked(dfll_id)) {
+        /* Do nothing */
+    }
 
-	return 0;
+    return 0;
 }
 
 void pm_switch_to_osc0(unsigned int fosc0, unsigned int startup)
 {
-	struct dfll_config dcfg;
+    struct dfll_config dcfg;
 
-	dfll_config_init_closed_loop_mode(&dcfg,
-		0, 1,
-		50000000 / AVR32_SCIF_RCOSC_FREQUENCY);
-	dfll_enable_closed_loop(&dcfg, 0);
-	sysclk_set_prescalers(1, 1, 1);
-	dfll_wait_for_fine_lock(0);
-	sysclk_set_source(SYSCLK_SRC_DFLL);
+    dfll_config_init_closed_loop_mode(&dcfg,
+        0, 1,
+        50000000 / AVR32_SCIF_RCOSC_FREQUENCY);
+    dfll_enable_closed_loop(&dcfg, 0);
+    sysclk_set_prescalers(1, 1, 1);
+    dfll_wait_for_fine_lock(0);
+    sysclk_set_source(SYSCLK_SRC_DFLL);
 
-// 	// Switch clock source to OSC0
-// 	pm_enable_osc0_crystal( fosc0 );
+//  // Switch clock source to OSC0
+//  pm_enable_osc0_crystal( fosc0 );
 //
-// 	// Configure and start DFLL
-// 	pm_enable_dfll();
+//  // Configure and start DFLL
+//  pm_enable_dfll();
 }
 
 void Avr32InitClockTree( void )
 {
-	/* Enable one wait state for flash access */
-	AVR32_FLASHCDW.fcr = AVR32_FLASHCDW_FWS_MASK;
-	
-	pm_switch_to_osc0( OSC0_VAL, 0 );
+    /* Enable one wait state for flash access */
+    AVR32_FLASHCDW.fcr = AVR32_FLASHCDW_FWS_MASK;
+    
+    pm_switch_to_osc0( OSC0_VAL, 0 );
 }

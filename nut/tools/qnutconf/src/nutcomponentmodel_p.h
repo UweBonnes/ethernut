@@ -46,84 +46,84 @@ class TreeItem
 {
 public:
 
-	/*!
-		Option types.
-	*/
-	enum nutOptionType {
-		nutOptionTypeNone,
-		nutInteger,
-		nutBool,
-		nutString,
-		nutEnumerated
-	};
+    /*!
+        Option types.
+    */
+    enum nutOptionType {
+        nutOptionTypeNone,
+        nutInteger,
+        nutBool,
+        nutString,
+        nutEnumerated
+    };
 
-	enum nutComponentType {
-		nutConfigTypeNone,
-		nutFolder,
-		nutLibrary,
-		nutModule,
-		nutOption
-	};
+    enum nutComponentType {
+        nutConfigTypeNone,
+        nutFolder,
+        nutLibrary,
+        nutModule,
+        nutOption
+    };
 
-	enum nutOptionFlavor {
-		nutFlavorNone,
-		nutFlavorBool,
-		nutFlavorBoolData,
-		nutFlavorData
-	};
+    enum nutOptionFlavor {
+        nutFlavorNone,
+        nutFlavorBool,
+        nutFlavorBoolData,
+        nutFlavorData
+    };
 
-	enum nutUIHint {
-		nutHintNone,
-		nutHintCheck,
-		nutHintRadio
-	};
+    enum nutUIHint {
+        nutHintNone,
+        nutHintCheck,
+        nutHintRadio
+    };
 
-	TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, TreeItem* parent = 0 );
-	TreeItem( NUTCOMPONENTOPTION *opts, NutComponentModel* parentModel, TreeItem* parent );
+    TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, TreeItem* parent = 0 );
+    TreeItem( NUTCOMPONENTOPTION *opts, NutComponentModel* parentModel, TreeItem* parent );
 
-	~TreeItem();
+    ~TreeItem();
 
-	void clear();
-	void appendChild(TreeItem *child);
-	TreeItem *child(int row);
-	int childCount() const;
-	int columnCount() const;
-	QVariant data(int column, int role) const;
-	Qt::ItemFlags flags(int column) const;
-	int row() const;
-	TreeItem *parent();
-	QPixmap icon(bool enabled) const;
+    void clear();
+    void appendChild(TreeItem *child);
+    TreeItem *child(int row);
+    int childCount() const;
+    int columnCount() const;
+    QVariant data(int column, int role) const;
+    Qt::ItemFlags flags(int column) const;
+    int row() const;
+    TreeItem *parent();
+    QPixmap icon(bool enabled) const;
 
-	QString name() const;
-	QString description() const;
-	QString briefDescription() const;
-	bool isEnabled() const;
-	bool canEdit() const;
-	bool hasBool() const;
-	QVariant value() const;
-	bool setValue( const QVariant& );
-	nutOptionType optionType() const;
-	nutComponentType componentType() const;
-	nutOptionFlavor optionFlavor() const;
-	nutUIHint optionUIHint() const;
+    QString name() const;
+    QString description() const;
+    QString briefDescription() const;
+    bool isEnabled() const;
+    bool canEdit() const;
+    bool hasBool() const;
+    QVariant value() const;
+    bool setValue( const QVariant& );
+    nutOptionType optionType() const;
+    nutComponentType componentType() const;
+    nutOptionFlavor optionFlavor() const;
+    nutUIHint optionUIHint() const;
 
-	QStringList optionChoices() const;
+    QStringList optionChoices() const;
 
-	bool isActive() const;
-	void setActive( bool );
-	QStringList depends() const;
-	QStringList provides() const;
-	QString headerFile() const;
+    bool isActive() const;
+    void setActive( bool );
+    QStringList depends() const;
+    QStringList provides() const;
+    QString headerFile() const;
 
 private:
-	QList<TreeItem*> childItems;
-	QVariant itemData;
-	TreeItem *parentItem;
-	NutComponentModel* model;
-	NUTCOMPONENT* parentComponent;
-	NUTCOMPONENTOPTION* componentOptions;
-	nutComponentType componentTypeValue;
-	nutUIHint uiHint;
+    QList<TreeItem*> childItems;
+    QVariant itemData;
+    TreeItem *parentItem;
+    NutComponentModel* model;
+    NUTCOMPONENT* parentComponent;
+    NUTCOMPONENTOPTION* componentOptions;
+    nutComponentType componentTypeValue;
+    nutUIHint uiHint;
 };
 
 #endif //__NUTCOMPONENTTREEMODEL_P_H__

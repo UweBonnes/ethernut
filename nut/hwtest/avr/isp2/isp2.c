@@ -89,22 +89,22 @@
  */
 static uint8_t SpiByte(uint8_t c)
 {
-	uint8_t i;
+    uint8_t i;
 
-	for(i = 0; i < 8; i++) {
-		if(c & 0x80)
-			sbi(ISPMOSI_PORT, ISPMOSI_BIT);
-		else
-			cbi(ISPMOSI_PORT, ISPMOSI_BIT);
-		sbi(ISPSCK_PORT, ISPSCK_BIT);
-		c <<= 1;
-		if(bit_is_set(ISPMISO_PIN, ISPMISO_BIT))
-			c++;
-		cbi(ISPSCK_PORT, ISPSCK_BIT);
-	}
-	cbi(ISPMOSI_PORT, ISPMOSI_BIT);
+    for(i = 0; i < 8; i++) {
+        if(c & 0x80)
+            sbi(ISPMOSI_PORT, ISPMOSI_BIT);
+        else
+            cbi(ISPMOSI_PORT, ISPMOSI_BIT);
+        sbi(ISPSCK_PORT, ISPSCK_BIT);
+        c <<= 1;
+        if(bit_is_set(ISPMISO_PIN, ISPMISO_BIT))
+            c++;
+        cbi(ISPSCK_PORT, ISPSCK_BIT);
+    }
+    cbi(ISPMOSI_PORT, ISPMOSI_BIT);
 
-	return c;
+    return c;
 }
 
 /*!

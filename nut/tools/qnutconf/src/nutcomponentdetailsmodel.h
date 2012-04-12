@@ -41,20 +41,20 @@ class NutComponentModel;
 
 class NutComponentDetailsModel : public QAbstractTableModel
 {
-	Q_OBJECT
-	NutComponentModel* parentModel;
+    Q_OBJECT
+    NutComponentModel* parentModel;
 
-	QList<QStringList> cache;
+    QList<QStringList> cache;
 public:
-	NutComponentDetailsModel( NutComponentModel* parent );
+    NutComponentDetailsModel( NutComponentModel* parent );
 
-	int rowCount( const QModelIndex& parent = QModelIndex() ) const;
-	int columnCount( const QModelIndex& parent = QModelIndex() ) const;
-	QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const;
-	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+    int rowCount( const QModelIndex& parent = QModelIndex() ) const;
+    int columnCount( const QModelIndex& parent = QModelIndex() ) const;
+    QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const;
+    QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
 public slots:
-	void refresh( const QModelIndex& selected );
+    void refresh( const QModelIndex& selected );
 };
 
 #endif // __NUTCOMPONENTDETAILSMODEL_H__

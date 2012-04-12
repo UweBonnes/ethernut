@@ -287,7 +287,7 @@ extern int NutTraceRegisterUserTag(int tag, char* tag_string);
         trace_current->time_l = TCNT1;              \
         if (trace_head >= trace_size) {             \
             trace_isfull = 1;                       \
-            trace_head = 0;                     	\
+            trace_head = 0;                         \
             if (trace_mode == TRACE_MODE_ONESHOT)   \
                 trace_mode = TRACE_MODE_OFF;        \
         }                                           \

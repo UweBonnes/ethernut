@@ -168,9 +168,9 @@
  * \brief PPP header type.
  */
 typedef struct ppp_header {
-    uint8_t address;		/*!< \brief HDLC Address. */
-    uint8_t control;		/*!< \brief HDLC Control. */
-    uint16_t prot_type;		/*!< \brief Protocol type. */
+    uint8_t address;        /*!< \brief HDLC Address. */
+    uint8_t control;        /*!< \brief HDLC Control. */
+    uint16_t prot_type;     /*!< \brief Protocol type. */
 } PPPHDR;
 
 typedef struct xcphdr {

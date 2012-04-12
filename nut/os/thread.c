@@ -112,7 +112,7 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
     NUTASSERT(td != NULL);
 
     td->td_queue = (HANDLE) tqpp;
-    td->td_qpec = 0;			// start with clean event count
+    td->td_qpec = 0;            // start with clean event count
 
     /*
      * Be most careful not to override an intermediate event from interrupt
@@ -124,17 +124,17 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 
     if (tqp == SIGNALED) {
         tqp = 0;
-        td->td_qpec++;			// transfer the signaled state
+        td->td_qpec++;          // transfer the signaled state
     } else if (tqp) {
-        NutExitCritical();		// there are other threads in queue
-						// so its save to leave critical.
+        NutExitCritical();      // there are other threads in queue
+                        // so its save to leave critical.
 
         while (tqp && tqp->td_priority <= td->td_priority) {
             tqpp = &tqp->td_qnxt;
             tqp = tqp->td_qnxt;
         }
 
-        NutEnterCritical();		// back into critical
+        NutEnterCritical();     // back into critical
     }
 
     td->td_qnxt = tqp;

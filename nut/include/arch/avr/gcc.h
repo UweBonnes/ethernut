@@ -145,31 +145,31 @@
 #endif
 
 #ifndef atof
-#define atof(s)	    strtod(s, 0)
+#define atof(s)     strtod(s, 0)
 #endif
 
 #define EEPROMReadBytes(addr, ptr, size)    eeprom_read_block((char *)(addr), ptr, size)
 /*!
  * \brief Read multibyte types from the EEPROM.
  */
-#define EEPROM_READ(addr, dst)		    eeprom_read_block((char *)(addr), &dst, sizeof(dst))
-#define EEPROMread(addr)	 	    eeprom_read_byte((char *)(addr))
+#define EEPROM_READ(addr, dst)          eeprom_read_block((char *)(addr), &dst, sizeof(dst))
+#define EEPROMread(addr)            eeprom_read_byte((char *)(addr))
 
 /*!
  * \brief Write multibyte types to the EEPROM.
  */
-#define EEPROM_WRITE(addr, src)							\
-{										\
-    unsigned short __i;								\
-    for(__i = 0; __i < sizeof(src); __i++)					\
-	eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(&(src))) + __i)); \
+#define EEPROM_WRITE(addr, src)                         \
+{                                       \
+    unsigned short __i;                             \
+    for(__i = 0; __i < sizeof(src); __i++)                  \
+    eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(&(src))) + __i)); \
 }
 
-#define EEPROMWriteBytes(addr, ptr, size)					\
-{										\
-    unsigned short __i;								\
-    for(__i = 0; __i < size; __i++)						\
-	eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(ptr)) + __i));	\
+#define EEPROMWriteBytes(addr, ptr, size)                   \
+{                                       \
+    unsigned short __i;                             \
+    for(__i = 0; __i < size; __i++)                     \
+    eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(ptr)) + __i));    \
 }
 
 #define main    NutAppMain

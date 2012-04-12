@@ -52,33 +52,33 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-#define TWI_SETSPEED		0x0401	/*!< \brief Set transfer speed. */
-#define TWI_GETSPEED		0x0402	/*!< \brief Query transfer speed. */
-#define TWI_SETSLAVEADDRESS	0x0403	/*!< \brief Set local slave address. */
-#define TWI_GETSLAVEADDRESS	0x0404	/*!< \brief Query local slave address. */
-#define TWI_SETSTATUS		0x0409	/*!< \brief Set status. */
-#define TWI_GETSTATUS		0x040a	/*!< \brief Query status. */
+#define TWI_SETSPEED        0x0401  /*!< \brief Set transfer speed. */
+#define TWI_GETSPEED        0x0402  /*!< \brief Query transfer speed. */
+#define TWI_SETSLAVEADDRESS 0x0403  /*!< \brief Set local slave address. */
+#define TWI_GETSLAVEADDRESS 0x0404  /*!< \brief Query local slave address. */
+#define TWI_SETSTATUS       0x0409  /*!< \brief Set status. */
+#define TWI_GETSTATUS       0x040a  /*!< \brief Query status. */
 
 
-#define TWERR_OK		0	/*!< \brief No error occured. */
-#define TWERR_TIMEOUT		1	/*!< \brief Interface timeout. */
-#define TWERR_BUS		2	/*!< \brief Bus error. */
-#define TWERR_IF_LOCKED		3	/*!< \brief Interface locked. */
-#define TWERR_SLA_NACK		4	/*!< \brief No slave response. */
-#define TWERR_DATA_NACK		5	/*!< \brief Data not acknowledged. */
+#define TWERR_OK        0   /*!< \brief No error occured. */
+#define TWERR_TIMEOUT       1   /*!< \brief Interface timeout. */
+#define TWERR_BUS       2   /*!< \brief Bus error. */
+#define TWERR_IF_LOCKED     3   /*!< \brief Interface locked. */
+#define TWERR_SLA_NACK      4   /*!< \brief No slave response. */
+#define TWERR_DATA_NACK     5   /*!< \brief Data not acknowledged. */
 
 
-#define TWSLA_MIN		17	/*!< \brief Lowest slave address.
-					 * Addresses below are reserved
-					 * for special purposes.
-					 */
-#define TWSLA_MAX		79	/*!< \brief Lowest slave address.
-					 * Addresses above are reserved
-					 * for special purposes.
-					 */
-#define TWSLA_BCAST		0	/*!< \brief Broadcast slave address. */
-#define TWSLA_HOST		16	/*!< \brief Host slave address. */
-#define TWSLA_DEFAULT		193	/*!< \brief Default slave address. */
+#define TWSLA_MIN       17  /*!< \brief Lowest slave address.
+                     * Addresses below are reserved
+                     * for special purposes.
+                     */
+#define TWSLA_MAX       79  /*!< \brief Lowest slave address.
+                     * Addresses above are reserved
+                     * for special purposes.
+                     */
+#define TWSLA_BCAST     0   /*!< \brief Broadcast slave address. */
+#define TWSLA_HOST      16  /*!< \brief Host slave address. */
+#define TWSLA_DEFAULT       193 /*!< \brief Default slave address. */
 
 extern int TwInit(uint8_t sla);
 extern int TwIOCtl(int req, void *conf);

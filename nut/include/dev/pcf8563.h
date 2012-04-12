@@ -1,5 +1,5 @@
 #ifndef _DEV_PCF8563_H_
-#define	_DEV_PCF8563_H_
+#define _DEV_PCF8563_H_
 
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.

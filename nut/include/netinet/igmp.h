@@ -170,37 +170,37 @@ struct __attribute__ ((packed)) igmp_report {
  * \name IGMPv3 Report Types
  */
 /*@{*/
-#define	IGMP_REPORT_MODE_IN	1       /*!< \brief Mode-is-include. */
-#define	IGMP_REPORT_MODE_EX	2       /*!< \brief Mode-is-exclude. */
-#define	IGMP_REPORT_TO_IN	3       /*!< \brief Change-to-include. */
-#define	IGMP_REPORT_TO_EX	4       /*!< \brief Change-to-exclude. */
-#define	IGMP_REPORT_ALLOW_NEW	5       /*!< \brief Allow-new-sources. */
-#define	IGMP_REPORT_BLOCK_OLD	6       /*!< \brief Block-old-sources. */
+#define IGMP_REPORT_MODE_IN 1       /*!< \brief Mode-is-include. */
+#define IGMP_REPORT_MODE_EX 2       /*!< \brief Mode-is-exclude. */
+#define IGMP_REPORT_TO_IN   3       /*!< \brief Change-to-include. */
+#define IGMP_REPORT_TO_EX   4       /*!< \brief Change-to-exclude. */
+#define IGMP_REPORT_ALLOW_NEW   5       /*!< \brief Allow-new-sources. */
+#define IGMP_REPORT_BLOCK_OLD   6       /*!< \brief Block-old-sources. */
 /*@}*/
 
 /*!
  * \name IGMPv3 Report Type Flags
  */
 /*@{*/
-#define	IGMP_MASK_CUR_STATE	0x01    /*!< \brief Report current-state. */
-#define	IGMP_MASK_ALLOW_NEW	0x02    /*!< \brief Report source as allow-new. */
-#define	IGMP_MASK_BLOCK_OLD	0x04    /*!< \brief Report source as block-old. */
-#define	IGMP_MASK_TO_IN		0x08    /*!< \brief Report source as to_in. */
-#define	IGMP_MASK_TO_EX		0x10    /*!< \brief Report source as to_ex. */
-#define	IGMP_MASK_STATE_T1	0x20    /*!< \brief State at T1. */
-#define	IGMP_MASK_STATE_T2	0x40    /*!< \brief State at T2. */
-#define	IGMP_MASK_IF_STATE	0x80    /*!< \brief Report current-state per interface. */
+#define IGMP_MASK_CUR_STATE 0x01    /*!< \brief Report current-state. */
+#define IGMP_MASK_ALLOW_NEW 0x02    /*!< \brief Report source as allow-new. */
+#define IGMP_MASK_BLOCK_OLD 0x04    /*!< \brief Report source as block-old. */
+#define IGMP_MASK_TO_IN     0x08    /*!< \brief Report source as to_in. */
+#define IGMP_MASK_TO_EX     0x10    /*!< \brief Report source as to_ex. */
+#define IGMP_MASK_STATE_T1  0x20    /*!< \brief State at T1. */
+#define IGMP_MASK_STATE_T2  0x40    /*!< \brief State at T2. */
+#define IGMP_MASK_IF_STATE  0x80    /*!< \brief Report current-state per interface. */
 
-#define	IGMP_MASK_STATE_TX	(IGMP_MASK_STATE_T1 | IGMP_MASK_STATE_T2)
-#define	IGMP_MASK_PENDING	(IGMP_MASK_CUR_STATE | IGMP_MASK_ALLOW_NEW | IGMP_MASK_BLOCK_OLD)
+#define IGMP_MASK_STATE_TX  (IGMP_MASK_STATE_T1 | IGMP_MASK_STATE_T2)
+#define IGMP_MASK_PENDING   (IGMP_MASK_CUR_STATE | IGMP_MASK_ALLOW_NEW | IGMP_MASK_BLOCK_OLD)
 /*@}*/
 
 /*!
  * \brief List identifiers
  */
-#define	IGMP_EXCLUDE_LIST	1       /* Exclude list used to tag report. */
-#define	IGMP_INCLUDE_LIST	2       /* Include list used to tag report. */
-#define	IGMP_RECORDED_LIST	3       /* Recorded list used to tag report. */
+#define IGMP_EXCLUDE_LIST   1       /* Exclude list used to tag report. */
+#define IGMP_INCLUDE_LIST   2       /* Include list used to tag report. */
+#define IGMP_RECORDED_LIST  3       /* Recorded list used to tag report. */
 
 
 __BEGIN_DECLS

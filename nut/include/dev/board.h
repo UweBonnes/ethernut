@@ -293,8 +293,8 @@
 #define DEV_SPIBUS0     spiBus0At91
 #elif defined(__AVR32__)
 #include <dev/spibus_avr32.h>
-#define DEV_SPIBUS0		spiBus0Avr32
-#define DEV_SPIBUS1		spiBus1Avr32
+#define DEV_SPIBUS0     spiBus0Avr32
+#define DEV_SPIBUS1     spiBus1Avr32
 #endif
 #endif /* DEV_SPIBUS */
 #ifndef DEV_SPIBUS

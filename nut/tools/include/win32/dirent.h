@@ -22,7 +22,7 @@ struct dirent {
 
 typedef struct _dircontents {
     char *_d_entry;
-    struct _dircontents	*_d_next;
+    struct _dircontents *_d_next;
 } DIRCONT;
 
 typedef struct _dirdesc {

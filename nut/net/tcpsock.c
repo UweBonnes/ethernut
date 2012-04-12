@@ -285,7 +285,7 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
         if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
         else if (sock->so_state != TCPS_CLOSED)
-        	sock->so_last_error = EISCONN;
+            sock->so_last_error = EISCONN;
         else {
             sock->so_mss = *((uint16_t *) optval);
             rc = 0;

@@ -109,28 +109,28 @@ int setenv(CONST char *name, CONST char *value, int force)
             return -1;
         }
 
-	for (nxtp = nut_environ; nxtp; nxtp = nxtp->env_next) {
-	    if (strcmp(envp->env_name, nxtp->env_name) < 0) {
-		if (nxtp->env_prev) {
-		    nxtp->env_prev->env_next = envp;
-		} else {
-		    nut_environ = envp;
-		}
-		envp->env_next = nxtp;
-		envp->env_prev = nxtp->env_prev;
-		nxtp->env_prev = envp;
-		break;
-	    }
+    for (nxtp = nut_environ; nxtp; nxtp = nxtp->env_next) {
+        if (strcmp(envp->env_name, nxtp->env_name) < 0) {
+        if (nxtp->env_prev) {
+            nxtp->env_prev->env_next = envp;
+        } else {
+            nut_environ = envp;
+        }
+        envp->env_next = nxtp;
+        envp->env_prev = nxtp->env_prev;
+        nxtp->env_prev = envp;
+        break;
+        }
             prvp = nxtp;
-	}
-	if (nxtp == NULL) {
-	    if (prvp) {
-		prvp->env_next = envp;
-		envp->env_prev = prvp;
-	    } else {
-		nut_environ = envp;
-	    }
-	}
+    }
+    if (nxtp == NULL) {
+        if (prvp) {
+        prvp->env_next = envp;
+        envp->env_prev = prvp;
+        } else {
+        nut_environ = envp;
+        }
+    }
         force = 1;
     }
     if (force) {
@@ -176,10 +176,10 @@ int unsetenv(CONST char *name)
         envp->env_prev->env_next = envp->env_next;
     }
     if (envp->env_next) {
-	envp->env_next->env_prev = envp->env_prev;
+    envp->env_next->env_prev = envp->env_prev;
     }
     if (nut_environ == envp) {
-	nut_environ = envp->env_next;
+    nut_environ = envp->env_next;
     }
     free(envp->env_name);
     free(envp->env_value);
@@ -204,10 +204,10 @@ void unsetenv(CONST char *name)
         envp->env_prev->env_next = envp->env_next;
     }
     if (envp->env_next) {
-	envp->env_next->env_prev = envp->env_prev;
+    envp->env_next->env_prev = envp->env_prev;
     }
     if (nut_environ == envp) {
-	nut_environ = envp->env_next;
+    nut_environ = envp->env_next;
     }
     free(envp->env_name);
     free(envp->env_value);

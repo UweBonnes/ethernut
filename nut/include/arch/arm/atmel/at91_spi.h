@@ -40,7 +40,7 @@
 
 /*! \name SPI Control Register */
 /*@{*/
-#define	SPI_CR_OFF	    0x00000000  /*!< \brief Control register offset. */
+#define SPI_CR_OFF      0x00000000  /*!< \brief Control register offset. */
 
 #define SPI_SPIEN       0x00000001  /*!< \brief SPI enable. */
 #define SPI_SPIDIS      0x00000002  /*!< \brief SPI disable. */
@@ -50,7 +50,7 @@
 
 /*! \name SPI Mode Register */
 /*@{*/
-#define SPI_MR_OFF		0x00000004  /*!< \brief Mode register offset. */
+#define SPI_MR_OFF      0x00000004  /*!< \brief Mode register offset. */
 
 #define SPI_MSTR        0x00000001  /*!< \brief Master mode. */
 #define SPI_PS          0x00000002  /*!< \brief Peripheral select. */
@@ -70,7 +70,7 @@
 
 /*! \name SPI Receive Data Register */
 /*@{*/
-#define SPI_RDR_OFF		0x00000008  /*!< \brief Receive data register offset. */
+#define SPI_RDR_OFF     0x00000008  /*!< \brief Receive data register offset. */
 
 #define SPI_RD          0x0000FFFF  /*!< \brief Receive data mask. */
 #define SPI_RD_LSB              0   /*!< \brief Least significant bit of receive data. */
@@ -78,7 +78,7 @@
 
 /*! \name SPI Transmit Data Register */
 /*@{*/
-#define SPI_TDR_OFF		0x0000000C  /*!< \brief Transmit data register offset. */
+#define SPI_TDR_OFF     0x0000000C  /*!< \brief Transmit data register offset. */
 
 #define SPI_TD          0x0000FFFF  /*!< \brief Transmit data mask. */
 #define SPI_TD_LSB              0   /*!< \brief Least significant bit of transmit data. */
@@ -86,10 +86,10 @@
 
 /*! \name SPI Status and Interrupt Register */
 /*@{*/
-#define SPI_SR_OFF		0x00000010  /*!< \brief Status register offset. */
-#define SPI_IER_OFF		0x00000014  /*!< \brief Interrupt enable register offset. */
-#define SPI_IDR_OFF		0x00000018  /*!< \brief Interrupt disable register offset. */
-#define SPI_IMR_OFF		0x0000001C  /*!< \brief Interrupt mask register offset. */
+#define SPI_SR_OFF      0x00000010  /*!< \brief Status register offset. */
+#define SPI_IER_OFF     0x00000014  /*!< \brief Interrupt enable register offset. */
+#define SPI_IDR_OFF     0x00000018  /*!< \brief Interrupt disable register offset. */
+#define SPI_IMR_OFF     0x0000001C  /*!< \brief Interrupt mask register offset. */
 
 #define SPI_RDRF        0x00000001  /*!< \brief Receive data register full. */
 #define SPI_TDRE        0x00000002  /*!< \brief Transmit data register empty. */
@@ -106,9 +106,9 @@
 
 /*! \name SPI Chip Select Registers */
 /*@{*/
-#define SPI_CSR0_OFF	0x00000030  /*!< \brief Chip select register 0 offset. */
-#define SPI_CSR1_OFF	0x00000034  /*!< \brief Chip select register 1 offset. */
-#define SPI_CSR2_OFF	0x00000038  /*!< \brief Chip select register 2 offset. */
+#define SPI_CSR0_OFF    0x00000030  /*!< \brief Chip select register 0 offset. */
+#define SPI_CSR1_OFF    0x00000034  /*!< \brief Chip select register 1 offset. */
+#define SPI_CSR2_OFF    0x00000038  /*!< \brief Chip select register 2 offset. */
 #define SPI_CSR3_OFF    0x0000003C  /*!< \brief Chip select register 3 offset. */
 
 #define SPI_CPOL        0x00000001  /*!< \brief Clock polarity. */
@@ -137,18 +137,18 @@
 /*@{*/
 #if defined(SPI_BASE)
 #define SPI0_BASE   SPI_BASE
-#define	SPI_CR		SPI0_CR     /*!< \brief SPI Control Register Write-only. */
-#define SPI_MR		SPI0_MR     /*!< \brief SPI Mode Register Read/Write Reset=0x0. */
-#define SPI_RDR		SPI0_RDR    /*!< \brief SPI Receive Data Register Read-only Reset=0x0. */
-#define SPI_TDR		SPI0_TDR    /*!< \brief SPI Transmit Data Register Write-only . */
-#define SPI_SR		SPI0_SR     /*!< \brief SPI Status Register Read-only Reset=0x000000F0. */
-#define SPI_IER		SPI0_IER    /*!< \brief SPI Interrupt Enable Register Write-only. */
-#define SPI_IDR		SPI0_IDR    /*!< \brief SPI Interrupt Disable Register Write-only. */
-#define SPI_IMR		SPI0_IMR    /*!< \brief SPI Interrupt Mask Register Read-only Reset=0x0. */
-#define SPI_CSR0	SPI0_CSR0   /*!< \brief SPI Chip Select Register 0 Read/Write Reset=0x0. */
-#define SPI_CSR1	SPI0_CSR1   /*!< \brief SPI Chip Select Register 1 Read/Write Reset=0x0. */
-#define SPI_CSR2	SPI0_CSR2   /*!< \brief SPI Chip Select Register 2 Read/Write Reset=0x0. */
-#define SPI_CSR3	SPI0_CSR3   /*!< \brief SPI Chip Select Register 3 Read/Write Reset=0x0. */
+#define SPI_CR      SPI0_CR     /*!< \brief SPI Control Register Write-only. */
+#define SPI_MR      SPI0_MR     /*!< \brief SPI Mode Register Read/Write Reset=0x0. */
+#define SPI_RDR     SPI0_RDR    /*!< \brief SPI Receive Data Register Read-only Reset=0x0. */
+#define SPI_TDR     SPI0_TDR    /*!< \brief SPI Transmit Data Register Write-only . */
+#define SPI_SR      SPI0_SR     /*!< \brief SPI Status Register Read-only Reset=0x000000F0. */
+#define SPI_IER     SPI0_IER    /*!< \brief SPI Interrupt Enable Register Write-only. */
+#define SPI_IDR     SPI0_IDR    /*!< \brief SPI Interrupt Disable Register Write-only. */
+#define SPI_IMR     SPI0_IMR    /*!< \brief SPI Interrupt Mask Register Read-only Reset=0x0. */
+#define SPI_CSR0    SPI0_CSR0   /*!< \brief SPI Chip Select Register 0 Read/Write Reset=0x0. */
+#define SPI_CSR1    SPI0_CSR1   /*!< \brief SPI Chip Select Register 1 Read/Write Reset=0x0. */
+#define SPI_CSR2    SPI0_CSR2   /*!< \brief SPI Chip Select Register 2 Read/Write Reset=0x0. */
+#define SPI_CSR3    SPI0_CSR3   /*!< \brief SPI Chip Select Register 3 Read/Write Reset=0x0. */
 #if defined(SPI_HAS_PDC)
 #define SPI_RPR     SPI0_RPR    /*!< \brief PDC channel 0 receive pointer register. */
 #define SPI_RCR     SPI0_RCR    /*!< \brief PDC channel 0 receive counter register. */
@@ -167,18 +167,18 @@
 /*! \name SPI 0 Register Addresses */
 /*@{*/
 #if defined(SPI0_BASE)
-#define	SPI0_CR		(SPI0_BASE + SPI_CR_OFF)        /*!< \brief SPI Control Register Write-only. */
-#define SPI0_MR		(SPI0_BASE + SPI_MR_OFF)        /*!< \brief SPI Mode Register Read/Write Reset=0x0. */
-#define SPI0_RDR	(SPI0_BASE + SPI_RDR_OFF)       /*!< \brief SPI Receive Data Register Read-only Reset=0x0. */
-#define SPI0_TDR	(SPI0_BASE + SPI_TDR_OFF)       /*!< \brief SPI Transmit Data Register Write-only . */
-#define SPI0_SR		(SPI0_BASE + SPI_SR_OFF)        /*!< \brief SPI Status Register Read-only Reset=0x000000F0. */
-#define SPI0_IER	(SPI0_BASE + SPI_IER_OFF)       /*!< \brief SPI Interrupt Enable Register Write-only. */
-#define SPI0_IDR	(SPI0_BASE + SPI_IDR_OFF)       /*!< \brief SPI Interrupt Disable Register Write-only. */
-#define SPI0_IMR	(SPI0_BASE + SPI_IMR_OFF)       /*!< \brief SPI Interrupt Mask Register Read-only Reset=0x0. */
-#define SPI0_CSR0	(SPI0_BASE + SPI_CSR0_OFF)      /*!< \brief SPI Chip Select Register 0 Read/Write Reset=0x0. */
-#define SPI0_CSR1	(SPI0_BASE + SPI_CSR1_OFF)      /*!< \brief SPI Chip Select Register 1 Read/Write Reset=0x0. */
-#define SPI0_CSR2	(SPI0_BASE + SPI_CSR2_OFF)      /*!< \brief SPI Chip Select Register 2 Read/Write Reset=0x0. */
-#define SPI0_CSR3	(SPI0_BASE + SPI_CSR3_OFF)      /*!< \brief SPI Chip Select Register 3 Read/Write Reset=0x0. */
+#define SPI0_CR     (SPI0_BASE + SPI_CR_OFF)        /*!< \brief SPI Control Register Write-only. */
+#define SPI0_MR     (SPI0_BASE + SPI_MR_OFF)        /*!< \brief SPI Mode Register Read/Write Reset=0x0. */
+#define SPI0_RDR    (SPI0_BASE + SPI_RDR_OFF)       /*!< \brief SPI Receive Data Register Read-only Reset=0x0. */
+#define SPI0_TDR    (SPI0_BASE + SPI_TDR_OFF)       /*!< \brief SPI Transmit Data Register Write-only . */
+#define SPI0_SR     (SPI0_BASE + SPI_SR_OFF)        /*!< \brief SPI Status Register Read-only Reset=0x000000F0. */
+#define SPI0_IER    (SPI0_BASE + SPI_IER_OFF)       /*!< \brief SPI Interrupt Enable Register Write-only. */
+#define SPI0_IDR    (SPI0_BASE + SPI_IDR_OFF)       /*!< \brief SPI Interrupt Disable Register Write-only. */
+#define SPI0_IMR    (SPI0_BASE + SPI_IMR_OFF)       /*!< \brief SPI Interrupt Mask Register Read-only Reset=0x0. */
+#define SPI0_CSR0   (SPI0_BASE + SPI_CSR0_OFF)      /*!< \brief SPI Chip Select Register 0 Read/Write Reset=0x0. */
+#define SPI0_CSR1   (SPI0_BASE + SPI_CSR1_OFF)      /*!< \brief SPI Chip Select Register 1 Read/Write Reset=0x0. */
+#define SPI0_CSR2   (SPI0_BASE + SPI_CSR2_OFF)      /*!< \brief SPI Chip Select Register 2 Read/Write Reset=0x0. */
+#define SPI0_CSR3   (SPI0_BASE + SPI_CSR3_OFF)      /*!< \brief SPI Chip Select Register 3 Read/Write Reset=0x0. */
 #if defined(SPI_HAS_PDC)
 #define SPI0_RPR    (SPI0_BASE + PERIPH_RPR_OFF)    /*!< \brief PDC channel 0 receive pointer register. */
 #define SPI0_RCR    (SPI0_BASE + PERIPH_RCR_OFF)    /*!< \brief PDC channel 0 receive counter register. */
@@ -197,18 +197,18 @@
 /*! \name SPI 1 Register Addresses */
 /*@{*/
 #if defined(SPI1_BASE)
-#define	SPI1_CR		(SPI1_BASE + SPI_CR_OFF)        /*!< \brief SPI Control Register Write-only. */
-#define SPI1_MR		(SPI1_BASE + SPI_MR_OFF)        /*!< \brief SPI Mode Register Read/Write Reset=0x0. */
-#define SPI1_RDR	(SPI1_BASE + SPI_RDR_OFF)       /*!< \brief SPI Receive Data Register Read-only Reset=0x0. */
-#define SPI1_TDR	(SPI1_BASE + SPI_TDR_OFF)       /*!< \brief SPI Transmit Data Register Write-only . */
-#define SPI1_SR		(SPI1_BASE + SPI_SR_OFF)        /*!< \brief SPI Status Register Read-only Reset=0x000000F0. */
-#define SPI1_IER	(SPI1_BASE + SPI_IER_OFF)       /*!< \brief SPI Interrupt Enable Register Write-only. */
-#define SPI1_IDR	(SPI1_BASE + SPI_IDR_OFF)       /*!< \brief SPI Interrupt Disable Register Write-only. */
-#define SPI1_IMR	(SPI1_BASE + SPI_IMR_OFF)       /*!< \brief SPI Interrupt Mask Register Read-only Reset=0x0. */
-#define SPI1_CSR0	(SPI1_BASE + SPI_CSR0_OFF)      /*!< \brief SPI Chip Select Register 0 Read/Write Reset=0x0. */
-#define SPI1_CSR1	(SPI1_BASE + SPI_CSR1_OFF)      /*!< \brief SPI Chip Select Register 1 Read/Write Reset=0x0. */
-#define SPI1_CSR2	(SPI1_BASE + SPI_CSR2_OFF)      /*!< \brief SPI Chip Select Register 2 Read/Write Reset=0x0. */
-#define SPI1_CSR3	(SPI1_BASE + SPI_CSR3_OFF)      /*!< \brief SPI Chip Select Register 3 Read/Write Reset=0x0. */
+#define SPI1_CR     (SPI1_BASE + SPI_CR_OFF)        /*!< \brief SPI Control Register Write-only. */
+#define SPI1_MR     (SPI1_BASE + SPI_MR_OFF)        /*!< \brief SPI Mode Register Read/Write Reset=0x0. */
+#define SPI1_RDR    (SPI1_BASE + SPI_RDR_OFF)       /*!< \brief SPI Receive Data Register Read-only Reset=0x0. */
+#define SPI1_TDR    (SPI1_BASE + SPI_TDR_OFF)       /*!< \brief SPI Transmit Data Register Write-only . */
+#define SPI1_SR     (SPI1_BASE + SPI_SR_OFF)        /*!< \brief SPI Status Register Read-only Reset=0x000000F0. */
+#define SPI1_IER    (SPI1_BASE + SPI_IER_OFF)       /*!< \brief SPI Interrupt Enable Register Write-only. */
+#define SPI1_IDR    (SPI1_BASE + SPI_IDR_OFF)       /*!< \brief SPI Interrupt Disable Register Write-only. */
+#define SPI1_IMR    (SPI1_BASE + SPI_IMR_OFF)       /*!< \brief SPI Interrupt Mask Register Read-only Reset=0x0. */
+#define SPI1_CSR0   (SPI1_BASE + SPI_CSR0_OFF)      /*!< \brief SPI Chip Select Register 0 Read/Write Reset=0x0. */
+#define SPI1_CSR1   (SPI1_BASE + SPI_CSR1_OFF)      /*!< \brief SPI Chip Select Register 1 Read/Write Reset=0x0. */
+#define SPI1_CSR2   (SPI1_BASE + SPI_CSR2_OFF)      /*!< \brief SPI Chip Select Register 2 Read/Write Reset=0x0. */
+#define SPI1_CSR3   (SPI1_BASE + SPI_CSR3_OFF)      /*!< \brief SPI Chip Select Register 3 Read/Write Reset=0x0. */
 #if defined(SPI_HAS_PDC)
 #define SPI1_RPR    (SPI1_BASE + PERIPH_RPR_OFF)    /*!< \brief PDC channel 1 receive pointer register. */
 #define SPI1_RCR    (SPI1_BASE + PERIPH_RCR_OFF)    /*!< \brief PDC channel 1 receive counter register. */

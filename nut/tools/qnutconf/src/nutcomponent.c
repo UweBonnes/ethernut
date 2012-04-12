@@ -1241,7 +1241,7 @@ void LoadOptions(lua_State * ls, NUTCOMPONENT * root, NUTCOMPONENT * compo)
                         if (subc) {
                             LoadComponentOptions(ls, subc);
                         }
-				    	free(name);
+                        free(name);
                     }
                 }
                 lua_pop(ls, 1);
@@ -1892,7 +1892,7 @@ void CloseRepository(NUTREPOSITORY *repo)
         if(repo->nr_ls) {
             lua_close((lua_State *)(repo->nr_ls));
         }
-		free(repo);
+        free(repo);
     }
 }
 
@@ -1953,20 +1953,20 @@ int RegisterCompilerPlatform(NUTREPOSITORY *repo, const char *platform)
 
 void ReleaseStringArray(char **stringarray)
 {
-	int cnt = 0;
-	while (stringarray[cnt])
-		free(stringarray[cnt++]);
-	free(stringarray);
+    int cnt = 0;
+    while (stringarray[cnt])
+        free(stringarray[cnt++]);
+    free(stringarray);
 }
 
 void ReleaseComponentOptions(NUTCOMPONENTOPTION *opts)
 {
-	NUTCOMPONENTOPTION *c;
-	while (opts)
-	{
-		c = opts->nco_nxt;
+    NUTCOMPONENTOPTION *c;
+    while (opts)
+    {
+        c = opts->nco_nxt;
 
-		if (opts->nco_name)
+        if (opts->nco_name)
             free(opts->nco_name);
         if (opts->nco_active_if)
             free(opts->nco_active_if);
@@ -1975,21 +1975,21 @@ void ReleaseComponentOptions(NUTCOMPONENTOPTION *opts)
         if (opts->nco_exclusivity)
             ReleaseStringArray(opts->nco_exclusivity);
 
-		free(opts);
-		opts = c;
-	}
+        free(opts);
+        opts = c;
+    }
 }
 
 
 void ReleaseComponents(NUTCOMPONENT *comp)
 {
-	NUTCOMPONENT *child = comp->nc_child, *c;
-	while (child)
-	{
-		c = child->nc_nxt;
-		ReleaseComponents(child);
-		child = c;
-	}
+    NUTCOMPONENT *child = comp->nc_child, *c;
+    while (child)
+    {
+        c = child->nc_nxt;
+        ReleaseComponents(child);
+        child = c;
+    }
 
     if (comp->nc_name)
         free (comp->nc_name);
@@ -1997,9 +1997,9 @@ void ReleaseComponents(NUTCOMPONENT *comp)
         free(comp->nc_active_if);
     if (comp->nc_exclusivity)
         ReleaseStringArray(comp->nc_exclusivity);
-	if (comp->nc_opts)
+    if (comp->nc_opts)
         ReleaseComponentOptions(comp->nc_opts);
-	free (comp);
+    free (comp);
 }
 
 /*!
@@ -2920,7 +2920,7 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
             fprintf(fp, "# Automatically generated on %s", asctime(ltime));
             fprintf(fp, "#\n# Do not edit, modify UserConf.mk instead!\n#\n\n");
             WriteMakedefLines(fp, repo, root->nc_child);
-		    fprintf(fp, "\n\ninclude $(top_blddir)/UserConf.mk\n");
+            fprintf(fp, "\n\ninclude $(top_blddir)/UserConf.mk\n");
             fclose(fp);
         }
     }
@@ -2963,8 +2963,8 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
                 if (fp) {
                     fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
                     fprintf(fp, "PROJ =\tlib%s\n\n", compo->nc_name);
-					fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
-					fprintf(fp, "top_blddir = %s\n\n", MakeTargetPath(bld_dir, "../.."));
+                    fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
+                    fprintf(fp, "top_blddir = %s\n\n", MakeTargetPath(bld_dir, "../.."));
 
                     fprintf(fp, "VPATH = $(top_srcdir)/%s\n\n", subdir);
 
@@ -3003,7 +3003,7 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
                             fprintf(fp, " $(OBJ%d)", i + 1);
                         }
 
-						strcpy (path, MakeTargetPath(ins_dir, "../.."));
+                        strcpy (path, MakeTargetPath(ins_dir, "../.."));
 
                         fprintf(fp, "\n\t$(CP) $(PROJ).a %s/$(PROJ).a\n", path);
                         for(i = 0; i < targets; i++) {
@@ -3183,11 +3183,11 @@ NUTHEADERFILE *CreateHeaderList(NUTREPOSITORY *repo, NUTCOMPONENT * compo, NUTHE
  */
 void ReleaseHeaderList(NUTHEADERFILE *nh_root)
 {
-	NUTHEADERFILE *nhf;
-	NUTHEADERMACRO *nhm, *c;
-	while (nh_root)
-	{
-		nhm = nh_root->nhf_macros;
+    NUTHEADERFILE *nhf;
+    NUTHEADERMACRO *nhm, *c;
+    while (nh_root)
+    {
+        nhm = nh_root->nhf_macros;
         while (nhm) {
             if (nhm->nhm_name) {
                 free(nhm->nhm_name);
@@ -3195,17 +3195,17 @@ void ReleaseHeaderList(NUTHEADERFILE *nh_root)
             if (nhm->nhm_value) {
                 free(nhm->nhm_value);
             }
-			c = nhm->nhm_nxt;
-			free (nhm);
-			nhm = c;
-		}
-		nhf = nh_root->nhf_nxt;
+            c = nhm->nhm_nxt;
+            free (nhm);
+            nhm = c;
+        }
+        nhf = nh_root->nhf_nxt;
         if (nh_root->nhf_path) {
             free(nh_root->nhf_path);
         }
-		free (nh_root);
-		nh_root = nhf;
-	}
+        free (nh_root);
+        nh_root = nhf;
+    }
 }
 
 /*!
@@ -3283,8 +3283,8 @@ int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_
                 return -1;
             }
         }
-	}
-	ReleaseHeaderList (nh_root);
+    }
+    ReleaseHeaderList (nh_root);
     return 0;
 }
 
@@ -3356,10 +3356,10 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
             fprintf(fp, "top_blddir = %s\n", MakeTargetPath(bld_dir, "../.."));
 
 
-			//fprintf(fp, "top_appdir = %s\n", app_dir);
+            //fprintf(fp, "top_appdir = %s\n", app_dir);
             fprintf(fp, "top_appdir = %s\n\n", MakeTargetPath(app_dir, "../.."));
 
-			//fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
+            //fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
             fprintf(fp, "LIBDIR = %s\n", MakeTargetPath(lib_dir, "../.."));
 
             fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
@@ -3516,7 +3516,7 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
         /* Do not copy dot files or Makefiles for source tree builds. */
         if(dire->d_name[0] == '.' ||
            strcasecmp(dire->d_name, "cvs") == 0 ||
-		   strcasecmp(dire->d_name, ".svn") == 0 ||
+           strcasecmp(dire->d_name, ".svn") == 0 ||
            strncasecmp(dire->d_name, "Makeburn", 8) == 0 ||
            strncasecmp(dire->d_name, "Makedefs", 8) == 0 ||
            strncasecmp(dire->d_name, "Makerules", 9) == 0) {

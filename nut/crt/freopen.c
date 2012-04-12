@@ -76,12 +76,12 @@
  * \param name The name of a registered device, optionally followed by a
  *             colon and a filename.
  * \param mode Specifies the access mode.
- *	       \li \c "r" Read only.
- *	       \li \c "w" Write only.
- *	       \li \c "a" Write only at the end of file.
- *	       \li \c "r+" Read and write existing file.
- *	       \li \c "w+" Read and write, destroys existing file contents.
- *	       \li \c "a+" Read and write, preserves existing file contents.
+ *         \li \c "r" Read only.
+ *         \li \c "w" Write only.
+ *         \li \c "a" Write only at the end of file.
+ *         \li \c "r+" Read and write existing file.
+ *         \li \c "w+" Read and write, destroys existing file contents.
+ *         \li \c "a+" Read and write, preserves existing file contents.
  *             \li \c "b" May be appended to any of the above strings to
  *                        specify binary access.
  *

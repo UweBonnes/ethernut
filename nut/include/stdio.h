@@ -98,13 +98,13 @@
  * Returned by an input or output operation when the end of a file is
  * encountered. Some routines return this value to indicate an error.
  */
-#define EOF	(-1)
+#define EOF (-1)
 #endif
 
 #ifndef _IOFBF
-#define _IOFBF	    0x00        /*!< \brief Fully buffered. */
-#define _IOLBF	    0x01        /*!< \brief Line buffered. */
-#define _IONBF	    0x02        /*!< \brief Unbuffered. */
+#define _IOFBF      0x00        /*!< \brief Fully buffered. */
+#define _IOLBF      0x01        /*!< \brief Line buffered. */
+#define _IONBF      0x02        /*!< \brief Unbuffered. */
 #endif
 
 /*!

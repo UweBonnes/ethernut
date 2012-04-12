@@ -245,9 +245,9 @@ void ADCSetMode(adc_mode_t mode)
         cbi(ADCSR, ADFR);
         break;
     case ADC_OFF:
-    		break;
+            break;
     }
-  	current_mode = mode;
+    current_mode = mode;
 }
 
 uint8_t ADCSetPrescale(uint8_t prescalar)

@@ -91,7 +91,7 @@ int At91DevDebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 static void DebugPut(CONST NUTDEVICE * dev, char ch)
 {
     if (ch == '\n') {
-	    while ((inr(dev->dev_base + US_CSR_OFF) & US_TXRDY) == 0);
+        while ((inr(dev->dev_base + US_CSR_OFF) & US_TXRDY) == 0);
         outr(dev->dev_base + US_THR_OFF, '\r');
     }
     while ((inr(dev->dev_base + US_CSR_OFF) & US_TXRDY) == 0);

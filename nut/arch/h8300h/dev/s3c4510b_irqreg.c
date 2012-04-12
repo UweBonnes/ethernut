@@ -34,8 +34,8 @@ void ISR_IrqHandler(void)
 
 void s3c4510b_int_init()
 {
-	IntPend = 0x1FFFFF;
-	IntMode = INT_MODE_IRQ;
+    IntPend = 0x1FFFFF;
+    IntMode = INT_MODE_IRQ;
 
-	INT_ENABLE(INT_GLOBAL);
+    INT_ENABLE(INT_GLOBAL);
 }

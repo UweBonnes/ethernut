@@ -73,7 +73,7 @@ int EnvInitDefaults(void)
 
     ISC_LIST_INIT(envVarList);
     for (i = 0; i < ENVVAR_DEFAULTS; i++) {
-	ISC_LIST_APPEND(envVarList, &envvar_defaults[i], env_link);
+    ISC_LIST_APPEND(envVarList, &envvar_defaults[i], env_link);
     }
     return 0;
 }

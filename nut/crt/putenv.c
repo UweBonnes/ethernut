@@ -50,14 +50,14 @@ int putenv(char *string)
 int putenv(CONST char *string)
 #endif
 {
-    int	rc = -1;
+    int rc = -1;
     char *value;
     char *name;
 
     NUTASSERT(string != NULL);
     if ((name = strdup(string)) != NULL) {
         if ((value = strchr(name, '=')) != NULL) {
-	    *value++ = 0;
+        *value++ = 0;
         }
         rc = setenv(name, value, 1);
         free(name);

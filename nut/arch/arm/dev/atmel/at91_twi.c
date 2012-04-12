@@ -424,12 +424,12 @@ uint16_t TwMasterIndexes(uint8_t idx)
  * \brief Perform TWI control functions.
  *
  * \param req  Requested control function. May be set to one of the
- *	       following constants:
- *	       - TWI_SETSPEED, if conf points to an uint32_t value containing the bitrate.
- *	       - TWI_GETSPEED, if conf points to an uint32_t value receiving the current bitrate.
+ *         following constants:
+ *         - TWI_SETSPEED, if conf points to an uint32_t value containing the bitrate.
+ *         - TWI_GETSPEED, if conf points to an uint32_t value receiving the current bitrate.
  * \param conf Points to a buffer that contains any data required for
- *	       the given control function or receives data from that
- *	       function.
+ *         the given control function or receives data from that
+ *         function.
  * \return 0 on success, -1 otherwise.
  *
  * \note Timeout is limited to the granularity of the system timer.

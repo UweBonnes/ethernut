@@ -39,23 +39,23 @@
 
 class SettingsDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	SettingsDialog(QWidget *parent = 0);
-	~SettingsDialog();
+    SettingsDialog(QWidget *parent = 0);
+    ~SettingsDialog();
 
 public slots:
-	void accept();
+    void accept();
 
 private slots:
-	void populatePlatform();
-	void populateProgrammer();
-	void browseFolder();
-	void browseFile();
+    void populatePlatform();
+    void populateProgrammer();
+    void browseFolder();
+    void browseFile();
 
 private:
-	Ui::SettingsDialogClass ui;
+    Ui::SettingsDialogClass ui;
 };
 
 #endif // __SETTINGSDIALOG_H__

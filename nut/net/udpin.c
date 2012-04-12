@@ -89,7 +89,7 @@ int NutUdpInput(NUTDEVICE * dev, NETBUF * nb)
     if ((sock = NutUdpFindSocket(uh->uh_dport)) == 0) {
         if ((nb->nb_flags & NBAF_UNICAST) == 0 ||
             NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PORT, 0, nb) == 0) {
-        	NutNetBufFree(nb);
+            NutNetBufFree(nb);
         }
         return 0;
     }

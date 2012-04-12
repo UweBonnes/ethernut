@@ -114,8 +114,8 @@
 #ifdef STDIO_FLOATING_POINT
 
 #include <math.h>
-#define	BUF	16
-#define	DEFPREC	6
+#define BUF 16
+#define DEFPREC 6
 
 #if defined(__arm__)
 /*
@@ -131,11 +131,11 @@ char *(*sbrk_force)(size_t) = _sbrk;
 
 #else
 
-#define	BUF	16
+#define BUF 16
 
 #endif                          /* STDIO_FLOATING_POINT */
 
-#define	PADSIZE	16
+#define PADSIZE 16
 static char blanks[PADSIZE] = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' '
 };
@@ -159,10 +159,10 @@ static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch
 /*
  * Flags used during conversion.
  */
-#define	ALT		0x01    /* alternate form */
-#define	LADJUST		0x04    /* left adjustment */
-#define	LONGINT		0x08    /* long integer */
-#define	ZEROPAD		0x10    /* zero (as opposed to blank) pad */
+#define ALT     0x01    /* alternate form */
+#define LADJUST     0x04    /* left adjustment */
+#define LONGINT     0x08    /* long integer */
+#define ZEROPAD     0x10    /* zero (as opposed to blank) pad */
 
 /*!
  * \brief Write formatted data using a given output function.
@@ -542,7 +542,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
 
         _putpad(_putb, fd, zeroes, dprec - size);
 
-        if (size)		/* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
+        if (size)       /* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
             _putb(fd, cp, size);
 
 #ifdef __HARVARD_ARCH__

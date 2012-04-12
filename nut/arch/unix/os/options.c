@@ -115,8 +115,8 @@ void emulation_options_parse(int argc, char *argv[])
                 // usb device ? hci:x
                 } else if (strncmp(device, "hci", 3) == 0) {
                     emulation_options.uart_options[devno].usbnum = atoi(device + 3);
-				} else {
-					// tcp/ip ? host:port
+                } else {
+                    // tcp/ip ? host:port
                     // tty
 
                 }

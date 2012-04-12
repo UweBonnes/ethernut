@@ -122,11 +122,11 @@
 #define SEGF_BLMASK     (SEGF_BLINK|SEGF_BLSLOW)
 
 /* Test Mode register (0x0f) */
-#define TEST_MODE_OFF	0x00
-#define TEST_MODE_ON	0x01
+#define TEST_MODE_OFF   0x00
+#define TEST_MODE_ON    0x01
 
 /* scan limit register (0x0b) */
-#define DISPLAY_LIMIT	2
+#define DISPLAY_LIMIT   2
 
 #ifndef SPI_RATE_DISP_7SEG
 #define SPI_RATE_DISP_7SEG  400000
@@ -169,70 +169,70 @@ typedef struct {
  */
 /* 7 Segment Display Character Table */
 static CONST uint8_t Seg7CharTab[] = {
-	/* ' ' */(0x00),
-	/* '!' */(0x28),
-	/* '"' */(0x22),
-	/* '#' */(0x00),
-	/* '$' */(0x5B),
-	/* '%' */(0x00),
-	/* '&' */(0x6F),
-	/* '´' */(0x20),
-	/* '(' */(0x4E),
-	/* ')' */(0x78),
-	/* '*' */(0x00),
-	/* '+' */(0x31),
-	/* ''' */(0x20),
-	/* '-' */(0x01),
-	/* '.' */(0x01),
-	/* '/' */(0x15),
-	/* '0' */(0x7E),
-	/* '1' */(0x30),
-	/* '2' */(0x6D),
-	/* '3' */(0x79),
-	/* '4' */(0x33),
-	/* '5' */(0x5B),
-	/* '6' */(0x5F),
-	/* '7' */(0x70),
-	/* '8' */(0x7F),
-	/* '9' */(0x7B),
-	/* ':' */(0x00),
-	/* ';' */(0x00),
-	/* '<' */(0x00),
-	/* '=' */(0x09),
-	/* '>' */(0x00),
-	/* '?' */(0x65),
-	/* '@' */(0x00),
-	/* 'A' */(0x77),
-	/* 'b' */(0x1F),
-	/* 'c' */(0x0D),
-	/* 'd' */(0x3D),
-	/* 'E' */(0x4F),
-	/* 'F' */(0x47),
-	/* 'G' */(0x5F),
-	/* 'H' */(0x37),
-	/* 'i' */(0x10),
-	/* 'J' */(0x3C),
-	/* 'K' */(0x0F),
-	/* 'L' */(0x0E),
-	/* 'M' */(0x76),
-	/* 'N' */(0x15),
-	/* 'O' */(0x1D),
-	/* 'P' */(0x67),
-	/* 'Q' */(0x73),
-	/* 'R' */(0x05),
-	/* 'S' */(0x5B),
-	/* 'T' */(0x0F),
-	/* 'U' */(0x3E),
-	/* 'V' */(0x1C),
-	/* 'W' */(0x3F),
-	/* 'X' */(0x37),
-	/* 'Y' */(0x3B),
-	/* 'Z' */(0x6D),
-	/* '[' */(0x4E),
-	/* '\' */(0x13),
-	/* ']' */(0x78),
-	/* '^' */(0x42),
-	/* '_' */(0x01),
+    /* ' ' */(0x00),
+    /* '!' */(0x28),
+    /* '"' */(0x22),
+    /* '#' */(0x00),
+    /* '$' */(0x5B),
+    /* '%' */(0x00),
+    /* '&' */(0x6F),
+    /* '´' */(0x20),
+    /* '(' */(0x4E),
+    /* ')' */(0x78),
+    /* '*' */(0x00),
+    /* '+' */(0x31),
+    /* ''' */(0x20),
+    /* '-' */(0x01),
+    /* '.' */(0x01),
+    /* '/' */(0x15),
+    /* '0' */(0x7E),
+    /* '1' */(0x30),
+    /* '2' */(0x6D),
+    /* '3' */(0x79),
+    /* '4' */(0x33),
+    /* '5' */(0x5B),
+    /* '6' */(0x5F),
+    /* '7' */(0x70),
+    /* '8' */(0x7F),
+    /* '9' */(0x7B),
+    /* ':' */(0x00),
+    /* ';' */(0x00),
+    /* '<' */(0x00),
+    /* '=' */(0x09),
+    /* '>' */(0x00),
+    /* '?' */(0x65),
+    /* '@' */(0x00),
+    /* 'A' */(0x77),
+    /* 'b' */(0x1F),
+    /* 'c' */(0x0D),
+    /* 'd' */(0x3D),
+    /* 'E' */(0x4F),
+    /* 'F' */(0x47),
+    /* 'G' */(0x5F),
+    /* 'H' */(0x37),
+    /* 'i' */(0x10),
+    /* 'J' */(0x3C),
+    /* 'K' */(0x0F),
+    /* 'L' */(0x0E),
+    /* 'M' */(0x76),
+    /* 'N' */(0x15),
+    /* 'O' */(0x1D),
+    /* 'P' */(0x67),
+    /* 'Q' */(0x73),
+    /* 'R' */(0x05),
+    /* 'S' */(0x5B),
+    /* 'T' */(0x0F),
+    /* 'U' */(0x3E),
+    /* 'V' */(0x1C),
+    /* 'W' */(0x3F),
+    /* 'X' */(0x37),
+    /* 'Y' */(0x3B),
+    /* 'Z' */(0x6D),
+    /* '[' */(0x4E),
+    /* '\' */(0x13),
+    /* ']' */(0x78),
+    /* '^' */(0x42),
+    /* '_' */(0x01),
 };
 
 /*********************************************************************************
@@ -255,7 +255,7 @@ static int disp7segCommand(NUTSPINODE * node, uint8_t addr, CONST void *txbuf, v
     int rc = -1;
     NUTSPIBUS *bus;
     uint8_t *tmp;
-	uint8_t cmd[2];
+    uint8_t cmd[2];
 
     NUTASSERT(node != NULL);
     bus = (NUTSPIBUS *) node->node_bus;
@@ -264,14 +264,14 @@ static int disp7segCommand(NUTSPINODE * node, uint8_t addr, CONST void *txbuf, v
     NUTASSERT(bus->bus_transfer != NULL);
     NUTASSERT(bus->bus_release != NULL);
 
-	/* write address */
-	 cmd[0] = addr;
+    /* write address */
+     cmd[0] = addr;
 
-	tmp = (uint8_t *)txbuf;
-	/* write data */
-	 cmd[1] = tmp[0];
-	//cmd[1] = (uint8_t )txbuf[0];
-	/* write data */
+    tmp = (uint8_t *)txbuf;
+    /* write data */
+     cmd[1] = tmp[0];
+    //cmd[1] = (uint8_t )txbuf[0];
+    /* write data */
     rc = (*bus->bus_alloc) (node, 1000);
     if (rc == 0) {
         rc = (*bus->bus_transfer) (node, cmd, NULL, 2);
@@ -288,9 +288,9 @@ static int disp7segCommand(NUTSPINODE * node, uint8_t addr, CONST void *txbuf, v
  */
 void Spi7SegPush( NUTDEVICE * dev)
 {
-	uint_fast8_t i;
+    uint_fast8_t i;
     DCB_7SEG * dcb;
-	NUTSPINODE *node;
+    NUTSPINODE *node;
 
     NUTASSERT(dev->dev_dcb != NULL);
     NUTASSERT(dev->dev_icb != NULL);
@@ -300,15 +300,15 @@ void Spi7SegPush( NUTDEVICE * dev)
 
 #ifdef SEG7_REVERSE
     NPRINTF("<");
-	for (i=0;i<SEG7_DIGITS;i++)
-	{
+    for (i=0;i<SEG7_DIGITS;i++)
+    {
         /* Display is connected reverse... */
-		disp7segCommand( node, SEG7_DIGITS-i, &(dcb->digit[i]), NULL, 1);
+        disp7segCommand( node, SEG7_DIGITS-i, &(dcb->digit[i]), NULL, 1);
         NPRINTF(" %02x",dcb->digit[i]);
-	}
+    }
     NPRINTF(">\n");
 #else
-	disp7segCommand(node, 0, dcb->digit, NULL, SEG7_DIGITS);
+    disp7segCommand(node, 0, dcb->digit, NULL, SEG7_DIGITS);
 #endif
 }
 
@@ -329,7 +329,7 @@ void Spi7SegPush( NUTDEVICE * dev)
 int Spi7segPutc(NUTDEVICE * dev, char c)
 {
     DCB_7SEG * dcb;
-	NUTSPINODE *node;
+    NUTSPINODE *node;
 
     NUTASSERT(dev->dev_dcb != NULL);
     NUTASSERT(dev->dev_icb != NULL);
@@ -423,7 +423,7 @@ int Spi7segPutc(NUTDEVICE * dev, char c)
     if( dcb->icmd & ICMD_UPDATE)
     {
         dcb->icmd &= ~ICMD_UPDATE;
-		Spi7SegPush( dev);
+        Spi7SegPush( dev);
     }
         return 0;
 }
@@ -483,16 +483,16 @@ void Spi7segDot(NUTDEVICE * dev, uint8_t pos, uint8_t act)
 
     dcb  = dev->dev_dcb;
 
-	if( pos < SEG7_DIGITS)
-	{
-		switch( act)
-		{
-			case DOT_7SEG_FLIP:	dcb->digit[pos] ^= 0x80; break;
-			case DOT_7SEG_SET:	dcb->digit[pos] |= 0x80; break;
-			case DOT_7SEG_CLR:	dcb->digit[pos] &= ~0x80; break;
-		}
-		Spi7SegPush( dev);
-	}
+    if( pos < SEG7_DIGITS)
+    {
+        switch( act)
+        {
+            case DOT_7SEG_FLIP: dcb->digit[pos] ^= 0x80; break;
+            case DOT_7SEG_SET:  dcb->digit[pos] |= 0x80; break;
+            case DOT_7SEG_CLR:  dcb->digit[pos] &= ~0x80; break;
+        }
+        Spi7SegPush( dev);
+    }
 
 }
 
@@ -555,7 +555,7 @@ static int Spi7SegClose(NUTFILE * fp)
  */
 int Spi7segInit(NUTDEVICE * dev)
 {
-	uint8_t data;
+    uint8_t data;
     NUTSPINODE *node;
     DCB_7SEG * dcb;
 
@@ -572,29 +572,29 @@ int Spi7segInit(NUTDEVICE * dev)
 
     NPRINTF("INIT %d Digits...\n", SEG7_DIGITS);
 
-	data = TEST_MODE_OFF;
-	disp7segCommand(node, SEGR_DSP_TEST, &data, NULL, 1);
-	disp7segCommand(node, SEGR_DSP_TEST, &data, NULL, 1);
-	disp7segCommand(node, SEGR_DSP_TEST, &data, NULL, 1);
+    data = TEST_MODE_OFF;
+    disp7segCommand(node, SEGR_DSP_TEST, &data, NULL, 1);
+    disp7segCommand(node, SEGR_DSP_TEST, &data, NULL, 1);
+    disp7segCommand(node, SEGR_DSP_TEST, &data, NULL, 1);
 
-	data = NORM_OP_RESET;
-	disp7segCommand(node, SEGR_SHUTDOWN, &data, NULL, 1);
+    data = NORM_OP_RESET;
+    disp7segCommand(node, SEGR_SHUTDOWN, &data, NULL, 1);
 
-	data = SEG7_DIGITS;
-	disp7segCommand(node, SEGR_SCAN_LIM, &data, NULL, 1);
+    data = SEG7_DIGITS;
+    disp7segCommand(node, SEGR_SCAN_LIM, &data, NULL, 1);
 
-	dcb->freg = NO_DIG_DECODE;
-	disp7segCommand(node, SEGR_DEC_MODE, &dcb->freg, NULL, 1);
+    dcb->freg = NO_DIG_DECODE;
+    disp7segCommand(node, SEGR_DEC_MODE, &dcb->freg, NULL, 1);
 
-	data = 0x0F;
-	disp7segCommand(node, SEGR_INTENSITY, &data, NULL, 1);
+    data = 0x0F;
+    disp7segCommand(node, SEGR_INTENSITY, &data, NULL, 1);
 
-	data = 0;
-	disp7segCommand(node, SEGR_DIG0, &data, NULL, 1);
-	disp7segCommand(node, SEGR_DIG1, &data, NULL, 1);
-	disp7segCommand(node, SEGR_DIG2, &data, NULL, 1);
+    data = 0;
+    disp7segCommand(node, SEGR_DIG0, &data, NULL, 1);
+    disp7segCommand(node, SEGR_DIG1, &data, NULL, 1);
+    disp7segCommand(node, SEGR_DIG2, &data, NULL, 1);
 
-	return 0;
+    return 0;
 
 }
 
@@ -614,22 +614,22 @@ NUTSPINODE nodeSpi7SEG = {
  * \brief 7seg device implementation structure.
  */
 NUTDEVICE devSpi7SEG = {
-    NULL,                       	/*!< \brief Pointer to next device, dev_next. */
+    NULL,                           /*!< \brief Pointer to next device, dev_next. */
     {'7', 'S', 'E', 'G', 0, 0, 0},  /*!< \brief Unique device name, dev_name. */
-    IFTYP_CHAR,                   	/*!< \brief Type of device, dev_type. */
-    0,                          	/*!< \brief Base address, dev_base (not used). */
-    0,                         		/*!< \brief First interrupt number, dev_irq (not used). */
-    &nodeSpi7SEG,             		/*!< \brief Interface control block, dev_icb. */
+    IFTYP_CHAR,                     /*!< \brief Type of device, dev_type. */
+    0,                              /*!< \brief Base address, dev_base (not used). */
+    0,                              /*!< \brief First interrupt number, dev_irq (not used). */
+    &nodeSpi7SEG,                   /*!< \brief Interface control block, dev_icb. */
     0,                              /*!< \brief Driver control block, dev_dcb. */
-    Spi7segInit,               		/*!< \brief Driver initialization routine, dev_init. */
+    Spi7segInit,                    /*!< \brief Driver initialization routine, dev_init. */
     Spi7SegIOCtl,                   /*!< \brief Driver specific control function, dev_ioctl. */
-	0,								/*!< \brief Read from device, dev_read. */
+    0,                              /*!< \brief Read from device, dev_read. */
     Spi7segWrite,                   /*!< \brief Write to device, dev_write. */
 #ifdef __HARVARD_ARCH__
-    0,								/*!< \brief Write data from program space to device, dev_write_P. */
+    0,                              /*!< \brief Write data from program space to device, dev_write_P. */
 #endif
-    Spi7SegOpen,    				/*!< \brief Mount volume, dev_open. */
-    Spi7SegClose,   				/*!< \brief Unmount volume, dev_close. */
-    0 								/*!< \brief Request file size, dev_size. */
+    Spi7SegOpen,                    /*!< \brief Mount volume, dev_open. */
+    Spi7SegClose,                   /*!< \brief Unmount volume, dev_close. */
+    0                               /*!< \brief Request file size, dev_size. */
 };
 

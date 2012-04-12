@@ -199,14 +199,14 @@ struct _RINGBUF {
      * If this not zero, incoming bytes are stored in rbf_blockptr
      * Changed by the receiver interrupt.
      */
-	size_t volatile rbf_blockcnt;
-	
+    size_t volatile rbf_blockcnt;
+    
     /*! \brief Address for block-read
      *
      * If bf_blockbytes is not zero, incoming bytes are stored here
      * Changed by the receiver interrupt.
      */
-	uint8_t* volatile rbf_blockptr;
+    uint8_t* volatile rbf_blockptr;
 #endif
 
 };
@@ -254,7 +254,7 @@ struct _RINGBUF {
 #define USART_MF_BUFFERMASK     0x0300  /*!< Masks buffering mode flags. */
 
 #define USART_MF_HALFDUPLEX     0x0400  /*!< Half duplex control. */
-#define USART_MF_BLOCKREAD		0x0800  /*!< Block read enabled */
+#define USART_MF_BLOCKREAD      0x0800  /*!< Block read enabled */
 
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */

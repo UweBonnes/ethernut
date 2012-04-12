@@ -49,10 +49,10 @@
 /*
 
 #define MYPRINT(fmt, ...) printf ("%s:%s(%d)\t" fmt "\n", \
-   		                       __FILE__,__FUNCTION__,__LINE__, ##__VA_ARGS__);
+                               __FILE__,__FUNCTION__,__LINE__, ##__VA_ARGS__);
 */
 #define MYPRINT(fmt, ...) printf ("%s(%d)\t" fmt "\n", \
-   		                       __FUNCTION__,__LINE__, ##__VA_ARGS__);
+                               __FUNCTION__,__LINE__, ##__VA_ARGS__);
 
 
 #else
@@ -184,7 +184,7 @@ static void Sc16is752UsartTxReady(uint8_t dev, uint8_t ch, RINGBUF *rbf)
 //          */
 //         outr(USARTn_BASE + US_IDR_OFF, US_TXRDY);
 //         return;
-// 	}
+//  }
 //
     if (rbf->rbf_cnt) {
 //
@@ -211,9 +211,9 @@ static void Sc16is752UsartTxReady(uint8_t dev, uint8_t ch, RINGBUF *rbf)
         /*
          * Start transmission of the next character.
          */
-		Sc16is752RegWrite(dev, ch, THR, *cp);
-		MYPRINT("sended %c\n",*cp);
-		NutMicroDelay(500);
+        Sc16is752RegWrite(dev, ch, THR, *cp);
+        MYPRINT("sended %c\n",*cp);
+        NutMicroDelay(500);
         /*
          * Wrap around the buffer pointer if we reached its end.
          */
@@ -230,9 +230,9 @@ static void Sc16is752UsartTxReady(uint8_t dev, uint8_t ch, RINGBUF *rbf)
      * Nothing left to transmit, disable 'THR empty' interrupt.
      */
     else {
-		Sc16is752RegRead(dev, ch, IER, &v);
-		v &= ~(1<<1);
-		Sc16is752RegWrite(dev, ch, IER, v);
+        Sc16is752RegRead(dev, ch, IER, &v);
+        v &= ~(1<<1);
+        Sc16is752RegWrite(dev, ch, IER, v);
         rbf->rbf_cnt = 0;
         NutEventPost(&rbf->rbf_que);
     }
@@ -343,28 +343,28 @@ void Sc16is752UsartProcessChannelInterrupt(uint8_t dev, uint8_t ch, uint8_t iir)
     USARTDCB *dcb = deviceList[dev][ch]->dev_dcb;
     switch(iir)
     {
-		case 0x6:   // (0b00 0110) receiver line status Overrun Error (OE), Framing Error (FE), Parity Error
-				// (PE), or Break Interrupt (BI) errors occur in characters in the RX FIFO
-			break;
-		case 0xc:   // (0b00 1100) RX time-out stale data in RX FIFO
-		//	break;
-		case 0x4:   // (0b00 0100) RHR interrupt receive data ready (FIFO disable) or
-				// RX FIFO above trigger level (FIFO enable)
-			Sc16is752UsartRxReady(dev, ch, &dcb->dcb_rx_rbf);
-			break;
-		case 0x2:   // (0b00 0010) THR interrupt transmit FIFO empty (FIFO disable) or
-				// TX FIFO passes above trigger level (FIFO enable)
-			Sc16is752UsartTxReady(dev, ch, &dcb->dcb_tx_rbf);
-			break;
-		case 0x0:   // (0b00 0000) modem status change of state of modem input pins
-			break;
-		case 0xe:   // (0b00 1110) I/O pins input pins change of state
-			break;
-		case 0x10:  // (0b01 0000) Xoff interrupt receive Xoff character(s)/special character
-			break;
-		case 0x20:  // (0b10 0000) CTS, RTS RTS pin or CTS pin change state from active (LOW)
-				//to inactive (HIGH)
-			break;
+        case 0x6:   // (0b00 0110) receiver line status Overrun Error (OE), Framing Error (FE), Parity Error
+                // (PE), or Break Interrupt (BI) errors occur in characters in the RX FIFO
+            break;
+        case 0xc:   // (0b00 1100) RX time-out stale data in RX FIFO
+        //  break;
+        case 0x4:   // (0b00 0100) RHR interrupt receive data ready (FIFO disable) or
+                // RX FIFO above trigger level (FIFO enable)
+            Sc16is752UsartRxReady(dev, ch, &dcb->dcb_rx_rbf);
+            break;
+        case 0x2:   // (0b00 0010) THR interrupt transmit FIFO empty (FIFO disable) or
+                // TX FIFO passes above trigger level (FIFO enable)
+            Sc16is752UsartTxReady(dev, ch, &dcb->dcb_tx_rbf);
+            break;
+        case 0x0:   // (0b00 0000) modem status change of state of modem input pins
+            break;
+        case 0xe:   // (0b00 1110) I/O pins input pins change of state
+            break;
+        case 0x10:  // (0b01 0000) Xoff interrupt receive Xoff character(s)/special character
+            break;
+        case 0x20:  // (0b10 0000) CTS, RTS RTS pin or CTS pin change state from active (LOW)
+                //to inactive (HIGH)
+            break;
     }
 }
 
@@ -378,21 +378,21 @@ THREAD(Sc16is752UsartInterruptProcessing, arg)
     NutThreadSetPriority(50);
     for(;;)
     {
-		NutEventWait(&irqEvents[dev], NUT_WAIT_INFINITE);
-		MYPRINT("irq proccess\n");
-		Sc16is752RegRead(dev, 0, IIR, &iir);
-		MYPRINT("1\n");
-		if (!(iir&1))
-		{
-			MYPRINT("1\n");
-			Sc16is752UsartProcessChannelInterrupt(dev, 0, iir);
-		}
-		Sc16is752RegRead(dev, 1, IIR, &iir);
-		if (!(iir&1))
-		{
-			MYPRINT("1\n");
-			Sc16is752UsartProcessChannelInterrupt(dev, 1, iir);
-		}
+        NutEventWait(&irqEvents[dev], NUT_WAIT_INFINITE);
+        MYPRINT("irq proccess\n");
+        Sc16is752RegRead(dev, 0, IIR, &iir);
+        MYPRINT("1\n");
+        if (!(iir&1))
+        {
+            MYPRINT("1\n");
+            Sc16is752UsartProcessChannelInterrupt(dev, 0, iir);
+        }
+        Sc16is752RegRead(dev, 1, IIR, &iir);
+        if (!(iir&1))
+        {
+            MYPRINT("1\n");
+            Sc16is752UsartProcessChannelInterrupt(dev, 1, iir);
+        }
     }
 }
 
@@ -408,7 +408,7 @@ static void Sc16is752UsartInterrupt(void *arg)
 {
      NUTDEVICE *nutDev= (NUTDEVICE *)arg;
      uint8_t dev = ((nutDev->dev_base)>>8) & 0xff;
-	MYPRINT("irq\n");
+    MYPRINT("irq\n");
      // Trigger interrupt processing thread (I2C access not allowed from ISR)
      NutEventPostFromIrq(&irqEvents[dev]);
 }
@@ -424,7 +424,7 @@ static void Sc16is752UsartInterrupt(void *arg)
 void Sc16is752UsartEnable(uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     NutEnterCritical();
 //
@@ -445,7 +445,7 @@ void Sc16is752UsartEnable(uint8_t dev, uint8_t ch)
 void Sc16is752UsartDisable(uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     /*
 //      * Disable USART interrupts.
@@ -476,7 +476,7 @@ void Sc16is752UsartDisable(uint8_t dev, uint8_t ch)
 uint32_t Sc16is752UsartGetSpeed(uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     ureg_t cs = inr(USARTn_BASE + US_MR_OFF);
 //     uint32_t clk;
@@ -505,7 +505,7 @@ uint32_t Sc16is752UsartGetSpeed(uint8_t dev, uint8_t ch)
 int Sc16is752UsartSetSpeed(uint32_t rate, uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
     Sc16is752UsartDisable(dev, ch);
 //     outr(USARTn_BASE + US_BRGR_OFF, (NutClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (rate)) + 1) / 2);
@@ -525,7 +525,7 @@ int Sc16is752UsartSetSpeed(uint32_t rate, uint8_t dev, uint8_t ch)
 uint8_t Sc16is752UsartGetDataBits(uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     ureg_t val = inr(USARTn_BASE + US_MR_OFF);
 //
@@ -562,7 +562,7 @@ uint8_t Sc16is752UsartGetDataBits(uint8_t dev, uint8_t ch)
 int Sc16is752UsartSetDataBits(uint8_t bits, uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     ureg_t val = inr(USARTn_BASE + US_MR_OFF);
 //
@@ -610,7 +610,7 @@ int Sc16is752UsartSetDataBits(uint8_t bits, uint8_t dev, uint8_t ch)
 uint8_t Sc16is752UsartGetParity(uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & US_PAR;
 //
@@ -645,7 +645,7 @@ uint8_t Sc16is752UsartGetParity(uint8_t dev, uint8_t ch)
 int Sc16is752UsartSetParity(uint8_t mode, uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_PAR;
 //
@@ -684,7 +684,7 @@ int Sc16is752UsartSetParity(uint8_t mode, uint8_t dev, uint8_t ch)
 uint8_t Sc16is752UsartGetStopBits(uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & US_NBSTOP;
 //     if (val == US_NBSTOP_1) {
@@ -711,7 +711,7 @@ uint8_t Sc16is752UsartGetStopBits(uint8_t dev, uint8_t ch)
 int Sc16is752UsartSetStopBits(uint8_t bits, uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_NBSTOP;
 //
@@ -748,7 +748,7 @@ uint32_t Sc16is752UsartGetStatus(uint8_t dev, uint8_t ch)
 {
     uint32_t rc = 0;
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     /*
 //      * Set receiver error flags.
@@ -820,7 +820,7 @@ uint32_t Sc16is752UsartGetStatus(uint8_t dev, uint8_t ch)
 int Sc16is752UsartSetStatus(uint32_t flags, uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 //     /*
 //      * Process software handshake control.
@@ -899,7 +899,7 @@ uint8_t Sc16is752UsartGetClockMode(uint8_t dev, uint8_t ch)
 {
     uint8_t rc = 0;
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 
     return rc;
@@ -919,7 +919,7 @@ uint8_t Sc16is752UsartGetClockMode(uint8_t dev, uint8_t ch)
 int Sc16is752UsartSetClockMode(uint8_t mode, uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
     /*
      * Verify the result.
@@ -942,7 +942,7 @@ uint32_t Sc16is752UsartGetFlowControl(uint8_t dev, uint8_t ch)
 {
     uint32_t rc = 0;
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
 
     if (flow_control) {
@@ -968,7 +968,7 @@ uint32_t Sc16is752UsartGetFlowControl(uint8_t dev, uint8_t ch)
 int Sc16is752UsartSetFlowControl(uint32_t flags, uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
     /*
      * Set software handshake mode.
@@ -1000,7 +1000,7 @@ void Sc16is752UsartTxStart(uint8_t dev, uint8_t ch)
 {
     uint8_t ier;
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
     /* Enable transmit interrupts. */
     ///TODO Check if Tx interrupt is generated immediately or if a first char needs to sent
@@ -1021,7 +1021,7 @@ void Sc16is752UsartTxStart(uint8_t dev, uint8_t ch)
 void Sc16is752UsartRxStart(uint8_t dev, uint8_t ch)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
     /*
      * Do any required software flow control.
@@ -1056,9 +1056,9 @@ int Sc16is752UsartInit(uint8_t dev, uint8_t ch, NUTDEVICE *nutDev, IRQ_HANDLER *
     uint8_t ier;
 
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
-	MYPRINT("1\n");
+    MYPRINT("1\n");
     /*
      * Register receive and transmit interrupts.
      */
@@ -1068,19 +1068,19 @@ int Sc16is752UsartInit(uint8_t dev, uint8_t ch, NUTDEVICE *nutDev, IRQ_HANDLER *
     // Deinit must happen vice versa: first ch=1, then ch=0
     if (ch==0)
     {
-		/* Start Message Handler Thread. */
-		char threadname[]="usartirq0";
-		threadname[8] = '0'+dev;  // Create unique name
-		MYPRINT("1\n");
-		if (NutThreadCreate(threadname, Sc16is752UsartInterruptProcessing, (void *)(int)dev, 512)==0)
-			return -1;
-		MYPRINT("1\n");
+        /* Start Message Handler Thread. */
+        char threadname[]="usartirq0";
+        threadname[8] = '0'+dev;  // Create unique name
+        MYPRINT("1\n");
+        if (NutThreadCreate(threadname, Sc16is752UsartInterruptProcessing, (void *)(int)dev, 512)==0)
+            return -1;
+        MYPRINT("1\n");
 #if !defined(__linux__)
- 		if (NutRegisterIrqHandler(irq, Sc16is752UsartInterrupt, nutDev))
- 	    	return -1;
-		NutIrqSetMode(irq, NUT_IRQMODE_FALLINGEDGE);
-		MYPRINT("1\n");
- 		NutIrqEnable(irq);
+        if (NutRegisterIrqHandler(irq, Sc16is752UsartInterrupt, nutDev))
+            return -1;
+        NutIrqSetMode(irq, NUT_IRQMODE_FALLINGEDGE);
+        MYPRINT("1\n");
+        NutIrqEnable(irq);
 #endif
     }
 #if 1
@@ -1090,9 +1090,9 @@ MYPRINT("1\n");
     /* Enable receive interrupts. */
     ///TODO Check if Rx interrupt is generated immediately or if a first char needs to sent
     Sc16is752RegRead(dev, ch, IER, &ier);
-	MYPRINT("ier:%d\n",ier);
+    MYPRINT("ier:%d\n",ier);
     ier |= (1<<0);  // Enable Rx interrupt
-	MYPRINT("ier:%d\n",ier);
+    MYPRINT("ier:%d\n",ier);
     Sc16is752RegWrite(dev, ch, IER, ier);
 MYPRINT("1\n");
     /* Set initial baudrate */
@@ -1100,47 +1100,47 @@ MYPRINT("1\n");
 MYPRINT("1\n");
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     Sc16is752RegWrite(dev, ch, LCR, 3);
-	MYPRINT("1\n");
+    MYPRINT("1\n");
 #endif
 #if 0
 {
-uint8_t	reg;
-	uint8_t val;
+uint8_t reg;
+    uint8_t val;
 
-	/* This register causes trubble */
+    /* This register causes trubble */
     /* Reset UART. */
-//	buf[0] = ( IOControl << 3 );
-//	buf[1] = 0x08;												// Software reset
-//	TwMasterTransact( sla, buf, 2, 0, 0, 50 );
+//  buf[0] = ( IOControl << 3 );
+//  buf[1] = 0x08;                                              // Software reset
+//  TwMasterTransact( sla, buf, 2, 0, 0, 50 );
 
-	reg = LCR & 0x1F;
-	val = 0x80;												// eable special registers
-	Sc16is752RegRawWrite( dev, ch, reg, val );
+    reg = LCR & 0x1F;
+    val = 0x80;                                             // eable special registers
+    Sc16is752RegRawWrite( dev, ch, reg, val );
 
     /* Set initial baudrate */
-	// div = 3; // XTAL / INIT_BAUDRATE / 16;
+    // div = 3; // XTAL / INIT_BAUDRATE / 16;
 
-	reg = DLL & 0x1F;
-	val = 3; // div & 0xff;
-	Sc16is752RegRawWrite( dev, ch, reg, val );
-	reg = DLH & 0x1F;
-	val = 0; //div >> 8;											// set baud rate
-	Sc16is752RegRawWrite( dev, ch, reg, val );
+    reg = DLL & 0x1F;
+    val = 3; // div & 0xff;
+    Sc16is752RegRawWrite( dev, ch, reg, val );
+    reg = DLH & 0x1F;
+    val = 0; //div >> 8;                                            // set baud rate
+    Sc16is752RegRawWrite( dev, ch, reg, val );
 
-	/* Set 8N1 */
-	reg = LCR & 0x1F;
-	val = 0x03;												// 8N1
-	Sc16is752RegRawWrite( dev, ch, reg, val );
+    /* Set 8N1 */
+    reg = LCR & 0x1F;
+    val = 0x03;                                             // 8N1
+    Sc16is752RegRawWrite( dev, ch, reg, val );
     // ensure clock divisor is off
 
-	reg = FCR & 0x1F;
-	val = 0x01; 												// FIFO enable
-	Sc16is752RegRawWrite( dev, ch, reg, val );
+    reg = FCR & 0x1F;
+    val = 0x01;                                                 // FIFO enable
+    Sc16is752RegRawWrite( dev, ch, reg, val );
 
-	reg = IER & 0x1F;
-	val = 0x05; 												// FIFO enable
-	Sc16is752RegRawWrite( dev, ch, reg, val );
-	MYPRINT("val:%d\n",val);
+    reg = IER & 0x1F;
+    val = 0x05;                                                 // FIFO enable
+    Sc16is752RegRawWrite( dev, ch, reg, val );
+    MYPRINT("val:%d\n",val);
 }
 #endif
 
@@ -1160,7 +1160,7 @@ uint8_t	reg;
 int Sc16is752UsartDeinit(uint8_t dev, uint8_t ch, IRQ_HANDLER *irq)
 {
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
     /* Reset UART (this implicitely disables all interrupts). */
 //TOE    Sc16is752RegWrite(dev, ch, IOControl, (1<<3));  // SW Reset
@@ -1170,7 +1170,7 @@ int Sc16is752UsartDeinit(uint8_t dev, uint8_t ch, IRQ_HANDLER *irq)
     if (ch==0)
     {
 #if !defined(__linux__)
- 	NutRegisterIrqHandler(irq, 0, 0);
+    NutRegisterIrqHandler(irq, 0, 0);
 #endif
     }
 
@@ -1185,7 +1185,7 @@ int setBaudrate(uint8_t dev, uint8_t ch, int baud)
 {
     uint8_t v;
 #if defined(__linux__)
-	printf("%s\n", __func__);
+    printf("%s\n", __func__);
 #endif
     // ensure clock divisor is off
     Sc16is752RegRead(dev, ch, MCR, &v);
@@ -1194,13 +1194,13 @@ int setBaudrate(uint8_t dev, uint8_t ch, int baud)
     // set baudrate
 
     int div = XTAL / baud / 16;
-	Sc16is752RegRead(dev, ch, LCR, &v);
+    Sc16is752RegRead(dev, ch, LCR, &v);
 
-	Sc16is752RegWrite(dev, ch, LCR, 0x80);
+    Sc16is752RegWrite(dev, ch, LCR, 0x80);
     Sc16is752RegWrite(dev, ch, DLL, div & 0xff);
     Sc16is752RegWrite(dev, ch, DLH, div >> 8);
-   	Sc16is752RegWrite(dev, ch, LCR, v);
-	 return 0;
+    Sc16is752RegWrite(dev, ch, LCR, v);
+     return 0;
 }
 #endif
 
@@ -1225,7 +1225,7 @@ int Sc16is752RegWrite(uint8_t dev, uint8_t ch, uint8_t reg, uint8_t val)
 //     assert(dev<=DEV_MAX);
 //     assert(ch<=CH_MAX);
 
-	//selectRegisterSet(dev, ch, reg);
+    //selectRegisterSet(dev, ch, reg);
     // Now, perform the register access
     return Sc16is752RegRawWrite(dev, ch, reg, val);
 }
@@ -1255,37 +1255,37 @@ int Sc16is752RegRead(uint8_t dev, uint8_t ch, uint8_t reg, uint8_t *val)
  */
 int selectRegisterSet(uint8_t dev, uint8_t ch, uint8_t reg)
 {
-	MYPRINT("selectRegSet");
+    MYPRINT("selectRegSet");
     switch(reg&REGSEL_MASK)
     {
-	case DEFSEL:
-	    if(((reg==MSR) || (reg==SPR)) && regselState[dev][ch].flags & TCRBIT)
-	    {
-			MYPRINT("switchTcrTlrSelect\n");
-			// turn off TCR/TLR register mode
-			switchTcrTlrSelect(dev, ch, 0);
-	    }
-	    else if(regselState[dev][ch].state != DEFSEL)
-	    {
-			MYPRINT("selectDefaultRegisterSet\n");
-			// select default register set
-			selectDefaultRegisterSet(dev, ch);
-	    }
-	case TCRSEL:
-		MYPRINT("switchTcrTlrSelect\n");
-	    // select TCR/TLR registers
-	    switchTcrTlrSelect(dev, ch, 1);
-	    break;
-	case SRSSEL:
-		MYPRINT("selectSpecialRegisterSet\n");
-	    // select Special Registers (DLL/DLH)
-	    selectSpecialRegisterSet(dev, ch);
-	    break;
-	case ERSSEL:
-		MYPRINT("selectEnhancedRegisterSet\n");
-	    // select Enhanced Registers (EFR; XONx, XOFFx)
-	    selectEnhancedRegisterSet(dev, ch);
-	    break;
+    case DEFSEL:
+        if(((reg==MSR) || (reg==SPR)) && regselState[dev][ch].flags & TCRBIT)
+        {
+            MYPRINT("switchTcrTlrSelect\n");
+            // turn off TCR/TLR register mode
+            switchTcrTlrSelect(dev, ch, 0);
+        }
+        else if(regselState[dev][ch].state != DEFSEL)
+        {
+            MYPRINT("selectDefaultRegisterSet\n");
+            // select default register set
+            selectDefaultRegisterSet(dev, ch);
+        }
+    case TCRSEL:
+        MYPRINT("switchTcrTlrSelect\n");
+        // select TCR/TLR registers
+        switchTcrTlrSelect(dev, ch, 1);
+        break;
+    case SRSSEL:
+        MYPRINT("selectSpecialRegisterSet\n");
+        // select Special Registers (DLL/DLH)
+        selectSpecialRegisterSet(dev, ch);
+        break;
+    case ERSSEL:
+        MYPRINT("selectEnhancedRegisterSet\n");
+        // select Enhanced Registers (EFR; XONx, XOFFx)
+        selectEnhancedRegisterSet(dev, ch);
+        break;
 
     }
     return 0;
@@ -1351,13 +1351,13 @@ static uint8_t switchEnhancedFunctions(uint8_t dev, uint8_t ch, uint8_t flag)
     Sc16is752RegRawRead(dev, ch, EFR, &v);
     if(flag)
     {
-		v |= (1<<4);   // switch on enhanced functions bit
-		regselState[dev][ch].flags |= EEFBIT;
+        v |= (1<<4);   // switch on enhanced functions bit
+        regselState[dev][ch].flags |= EEFBIT;
     }
     else
     {
-		v &= ~(1<<4);   // switch off enhanced functions bit
-		regselState[dev][ch].flags &= ~EEFBIT;
+        v &= ~(1<<4);   // switch off enhanced functions bit
+        regselState[dev][ch].flags &= ~EEFBIT;
     }
     Sc16is752RegRawWrite(dev, ch, EFR, v);
     Sc16is752RegRawWrite(dev, ch, LCR, oldLcr);  // select original register set
@@ -1372,13 +1372,13 @@ static uint8_t switchTcrTlrSelect(uint8_t dev, uint8_t ch, uint8_t flag)
     Sc16is752RegRawRead(dev, ch, MCR, &v);
     if(flag)
     {
-		v |= (1<<2);   // switch on TCR/TLR enable
-		regselState[dev][ch].flags |= TCRBIT;
+        v |= (1<<2);   // switch on TCR/TLR enable
+        regselState[dev][ch].flags |= TCRBIT;
     }
     else
     {
-		v &= ~(1<<2);   // switch off TCR/TLR enable
-		regselState[dev][ch].flags &= ~TCRBIT;
+        v &= ~(1<<2);   // switch off TCR/TLR enable
+        regselState[dev][ch].flags &= ~TCRBIT;
     }
     Sc16is752RegRawWrite(dev, ch, MCR, v);
     return 0;
@@ -1392,11 +1392,11 @@ static int Sc16is752RegRawWrite(uint8_t dev, uint8_t ch, uint8_t reg, uint8_t va
     wbuf[1] = val;
 #if defined(__linux__)
     printf("%s(%d,%d,0x%02x,0x%02x) => slave addr:0x%02x data 0x%02x\n",
-		 __func__, dev, ch, reg, val, i2caddr[dev], wbuf[0]);
-	return 0;
+         __func__, dev, ch, reg, val, i2caddr[dev], wbuf[0]);
+    return 0;
 #else
-	 MYPRINT("%s(%d,%d,0x%02x,0x%02x) => slave addr:0x%02x data 0x%02x\n",
-		 __func__, dev, ch, reg, val, i2caddr[dev], wbuf[0]);
+     MYPRINT("%s(%d,%d,0x%02x,0x%02x) => slave addr:0x%02x data 0x%02x\n",
+         __func__, dev, ch, reg, val, i2caddr[dev], wbuf[0]);
 #endif
     return TwMasterTransact(i2caddr[dev], wbuf, 2, 0, 0, 0);
 }
@@ -1408,14 +1408,14 @@ static int Sc16is752RegRawRead(uint8_t dev, uint8_t ch, uint8_t reg, uint8_t *va
     wbuf = REGADDR(reg & 0xf, ch);
 #if defined(__linux__)
     printf("%s(%d,%d,0x%02x) => slave addr:0x%02x data 0x%02x\n",
-		 __func__, dev, ch, reg, i2caddr[dev], wbuf);
-	return 0;
+         __func__, dev, ch, reg, i2caddr[dev], wbuf);
+    return 0;
 #else
   //  return TwMasterTransact(i2caddr[dev], wbuf, 1, val, 1, 0);
-	 rc = TwMasterRegRead (i2caddr[dev], wbuf, 1, val, 1, 0);
-	 MYPRINT("%s(%d,%d,0x%02x,0x%02x) => slave addr:0x%02x data 0x%02x\n",
-		 __func__, dev, ch, reg, *val, i2caddr[dev], wbuf);
-	return rc;
+     rc = TwMasterRegRead (i2caddr[dev], wbuf, 1, val, 1, 0);
+     MYPRINT("%s(%d,%d,0x%02x,0x%02x) => slave addr:0x%02x data 0x%02x\n",
+         __func__, dev, ch, reg, *val, i2caddr[dev], wbuf);
+    return rc;
 #endif
 }
 

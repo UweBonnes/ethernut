@@ -85,9 +85,9 @@ uint32_t Avr32WatchDogStart(uint32_t ms)
     Avr32WatchDogDisable();
 
 #define MIN_US_TIMEOUT_PERIOD  \
-	(((1ULL <<  1 ) * 1000000 + slowclock / 2) / slowclock)
+    (((1ULL <<  1 ) * 1000000 + slowclock / 2) / slowclock)
 #define MAX_US_TIMEOUT_PERIOD  \
-	(((1ULL << (1 << AVR32_WDT_CTRL_PSEL_SIZE)) * 1000000 + slowclock / 2) / slowclock)
+    (((1ULL << (1 << AVR32_WDT_CTRL_PSEL_SIZE)) * 1000000 + slowclock / 2) / slowclock)
 
     // Set the CTRL.EN bit and translate the us timeout to fit in CTRL.PSEL using
     // the formula wdt = 2pow(PSEL+1) / fRCosc in useconds.

@@ -792,18 +792,18 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
             *lvp = 0;
         break;
 
-	case UART_SETHDPXMODE:
-		if (bv)
-			dcb->dcb_modeflags |= USART_MF_HALFDUPLEX;
-		else
-			dcb->dcb_modeflags &= ~USART_MF_HALFDUPLEX;
-		break;
-	case UART_GETHDPXMODE:
-		if (dcb->dcb_modeflags & USART_MF_HALFDUPLEX)
-			*lvp = 1;
-		else
-			*lvp = 0;
-		break;
+    case UART_SETHDPXMODE:
+        if (bv)
+            dcb->dcb_modeflags |= USART_MF_HALFDUPLEX;
+        else
+            dcb->dcb_modeflags &= ~USART_MF_HALFDUPLEX;
+        break;
+    case UART_GETHDPXMODE:
+        if (dcb->dcb_modeflags & USART_MF_HALFDUPLEX)
+            *lvp = 1;
+        else
+            *lvp = 0;
+        break;
 
     case UART_SETCLOCKMODE:
         rc = (*dcb->dcb_set_clock_mode) (lv);

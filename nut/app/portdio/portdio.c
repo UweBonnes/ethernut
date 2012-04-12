@@ -122,7 +122,7 @@
 #define OUTPIN1     6   /* User LED */
 #define OUTPIN2     9   /* Power LED */
 #elif defined(EVK1100)
-#define INBANK		0   /* PA Joystick */
+#define INBANK      0   /* PA Joystick */
 #define INPIN1      25
 #define INPIN2      26
 #define INPIN3      27

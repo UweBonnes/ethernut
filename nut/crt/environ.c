@@ -117,18 +117,18 @@ NUTENVIRONMENT *findenv(CONST char *name)
                         free(envp);
                         break;
                     }
-	            strcpy(envp->env_name, buf);
+                strcpy(envp->env_name, buf);
                     len = read_string(&addr, buf, max_len);
                     if ((envp->env_value = malloc(len + 1)) == NULL) {
                         break;
                     }
                     strcpy(envp->env_value, buf);
-        	    if (prvp) {
-	                prvp->env_next = envp;
+                if (prvp) {
+                    prvp->env_next = envp;
                         envp->env_prev = prvp;
-	            } else {
-		        nut_environ = envp;
-	            }
+                } else {
+                nut_environ = envp;
+                }
                     prvp = envp;
                 }
                 free(buf);
@@ -137,7 +137,7 @@ NUTENVIRONMENT *findenv(CONST char *name)
     }
     for (envp = nut_environ; envp; envp = envp->env_next) {
         if (strcmp(envp->env_name, name) == 0) {
-	    break;
+        break;
         }
     }
     return envp;

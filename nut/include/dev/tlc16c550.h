@@ -55,14 +55,14 @@
  */
 
 /*
-	Chip connections:
-	Ax - to avr address lines
-	CSx - to avr/PGA (chip select)
+    Chip connections:
+    Ax - to avr address lines
+    CSx - to avr/PGA (chip select)
     Dn - to avr data lines
     INTN - to vcc (for 16c554 forces activation of interrupt lines)
     INTx - to avr interrupt lines (can be OR-ed and share common avr interrupt line)
-	OIR - to avr /rd
-	OIW - to avr /wr
+    OIR - to avr /rd
+    OIW - to avr /wr
     RESET - high is active
  */
 
@@ -79,75 +79,75 @@
  */
 /*@{*/
 
-#define ACE_MF_RTSSENSE		0x00000001UL    /*!< DCE input, low on port bit is +12V, which means ON. */
-#define ACE_MF_CTSCONTROL	0x00000002UL    /*!< DCE output. */
-#define ACE_MF_DTRSENSE		0x00000004UL    /*!< DCE input. */
-#define ACE_MF_DSRCONTROL	0x00000008UL    /*!< DCE output. */
-#define ACE_MF_DCDCONTROL	0x00000010UL    /*!< DCE output. */
+#define ACE_MF_RTSSENSE     0x00000001UL    /*!< DCE input, low on port bit is +12V, which means ON. */
+#define ACE_MF_CTSCONTROL   0x00000002UL    /*!< DCE output. */
+#define ACE_MF_DTRSENSE     0x00000004UL    /*!< DCE input. */
+#define ACE_MF_DSRCONTROL   0x00000008UL    /*!< DCE output. */
+#define ACE_MF_DCDCONTROL   0x00000010UL    /*!< DCE output. */
 
-#define ACE_MF_RTSCONTROL	0x00000020UL    /*!< DTE output. */
-#define ACE_MF_CTSSENSE		0x00000040UL    /*!< DTE input. */
-#define ACE_MF_DTRCONTROL	0x00000080UL    /*!< DTE output. */
-#define ACE_MF_DSRSENSE		0x00000100UL    /*!< DTE input. */
-#define ACE_MF_DCDSENSE		0x00000200UL    /*!< DTE input. */
+#define ACE_MF_RTSCONTROL   0x00000020UL    /*!< DTE output. */
+#define ACE_MF_CTSSENSE     0x00000040UL    /*!< DTE input. */
+#define ACE_MF_DTRCONTROL   0x00000080UL    /*!< DTE output. */
+#define ACE_MF_DSRSENSE     0x00000100UL    /*!< DTE input. */
+#define ACE_MF_DCDSENSE     0x00000200UL    /*!< DTE input. */
 
-#define ACE_MF_SENSEMASK	0x0345  /*!< Handshake sense mask. */
-#define ACE_MF_CONTROLMASK	0x00BC  /*!< Handshake control mask. */
+#define ACE_MF_SENSEMASK    0x0345  /*!< Handshake sense mask. */
+#define ACE_MF_CONTROLMASK  0x00BC  /*!< Handshake control mask. */
 
-#define ACE_MF_XONXOFF		0x00000400UL    /*!< Software handshake. */
+#define ACE_MF_XONXOFF      0x00000400UL    /*!< Software handshake. */
 
 #define ACE_MF_HALFDUPLEX   0x00000800UL    /*!< Half duplex bit control */
 
-#define ACE_MF_LOCALECHO	0x00010000UL    /*!< Should be used in stream, not device. */
-#define ACE_MF_COOKEDMODE	0x00020000UL    /*!< Should be used in stream, not device. */
+#define ACE_MF_LOCALECHO    0x00010000UL    /*!< Should be used in stream, not device. */
+#define ACE_MF_COOKEDMODE   0x00020000UL    /*!< Should be used in stream, not device. */
 
-#define ACE_MF_NOBUFFER		0x00100000UL    /*!< No buffering. */
-#define ACE_MF_LINEBUFFER	0x00200000UL    /*!< Line buffered. */
-#define ACE_MF_BUFFERMASK	0x00300000UL    /*!< Masks buffering mode flags. */
+#define ACE_MF_NOBUFFER     0x00100000UL    /*!< No buffering. */
+#define ACE_MF_LINEBUFFER   0x00200000UL    /*!< Line buffered. */
+#define ACE_MF_BUFFERMASK   0x00300000UL    /*!< Masks buffering mode flags. */
 
 
-#define ACE_SF_RTSOFF		0x00000001UL    /*!< Set RTS line is off. */
-#define ACE_SF_CTSOFF	    0x00000002UL        /*!< Set CTS line is off. */
-#define ACE_SF_DTROFF	    0x00000004UL        /*!< Set DTR line is off. */
-#define ACE_SF_DSROFF	    0x00000008UL        /*!< Set DSR line is off. */
-#define ACE_SF_DCDOFF	    0x00000010UL        /*!< Set DCD line is off. */
+#define ACE_SF_RTSOFF       0x00000001UL    /*!< Set RTS line is off. */
+#define ACE_SF_CTSOFF       0x00000002UL        /*!< Set CTS line is off. */
+#define ACE_SF_DTROFF       0x00000004UL        /*!< Set DTR line is off. */
+#define ACE_SF_DSROFF       0x00000008UL        /*!< Set DSR line is off. */
+#define ACE_SF_DCDOFF       0x00000010UL        /*!< Set DCD line is off. */
 
-#define ACE_SF_TXDISABLED	0x00000040UL    /*!< Transmitter disabled. */
-#define ACE_SF_RXDISABLED	0x00000080UL    /*!< Receiver disabled. */
+#define ACE_SF_TXDISABLED   0x00000040UL    /*!< Transmitter disabled. */
+#define ACE_SF_RXDISABLED   0x00000080UL    /*!< Receiver disabled. */
 
-#define ACE_HS_DCERTSCTS	0x00000003UL    /*!< RTS/CTS DCE handshake. */
-#define ACE_HS_DCEFULL	    0x0000001FUL        /*!< Full DCE handshake. */
+#define ACE_HS_DCERTSCTS    0x00000003UL    /*!< RTS/CTS DCE handshake. */
+#define ACE_HS_DCEFULL      0x0000001FUL        /*!< Full DCE handshake. */
 
-#define ACE_HS_DTERTSCTS	0x00000060UL    /*!< RTS/CTS DTE handshake. */
-#define ACE_HS_DTEFULL	    0x000003E0UL        /*!< Full DTE handshake. */
+#define ACE_HS_DTERTSCTS    0x00000060UL    /*!< RTS/CTS DTE handshake. */
+#define ACE_HS_DTEFULL      0x000003E0UL        /*!< Full DTE handshake. */
 
-#define ACE_HS_XONXOFF	    0x00000400UL        /*!< Software handshake. */
+#define ACE_HS_XONXOFF      0x00000400UL        /*!< Software handshake. */
 
 #ifndef ACE_CLOCK
     #define ACE_CLOCK           14745600UL     /* in Hz - common for all devices (should be ok) */
 #endif
 
-#define ACE_FIFO_SIZE	16 /* hardware fifo size */
+#define ACE_FIFO_SIZE   16 /* hardware fifo size */
 
 /* define ACE_HDX_LINE to DTR or RTS to use HDX functionality */
 #ifdef ACE_HDX_LINE
 #undef ACE_HDX_LINE
 #endif
 #ifdef ACE_HDX_USE_RTS
-	#define ACE_HDX_LINE MCR_RTS_MSK
+    #define ACE_HDX_LINE MCR_RTS_MSK
 #endif
 #ifdef ACE_HDX_USE_DTR
-	#define ACE_HDX_LINE MCR_DTR_MSK
-#endif	
+    #define ACE_HDX_LINE MCR_DTR_MSK
+#endif  
 #ifdef ACE_HDX_LINE
     #ifdef ACE_HDX_LINE_FLIP
         #define ACE_HDX_RECEIVE(base) *(uint8_t *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
         #define ACE_HDX_TRANSMIT(base) *(uint8_t *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
-		#define ACE_HDX_IS_TRANSMIT(base) (*(uint8_t *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE)
+        #define ACE_HDX_IS_TRANSMIT(base) (*(uint8_t *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE)
     #else
         #define ACE_HDX_RECEIVE(base) *(uint8_t *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
         #define ACE_HDX_TRANSMIT(base) *(uint8_t *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
-		#define ACE_HDX_IS_TRANSMIT(base) (!(*(uint8_t *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE))
+        #define ACE_HDX_IS_TRANSMIT(base) (!(*(uint8_t *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE))
     #endif
 #endif
 
@@ -197,12 +197,12 @@ struct _ACEDCB {
     uint8_t dcb_wfifo;
 #ifdef ACE_HDX_LINE
     /*! \brief One byte time delay after which HDX pin will be off, in OCR register format.
-     */	
-	unsigned int hdxByteTime;
-	
+     */ 
+    unsigned int hdxByteTime;
+    
     /*! \brief OCR register value at which HDX pin will be off, 0 if not used.
-     */	
-	unsigned int hdxOcrTime;
+     */ 
+    unsigned int hdxOcrTime;
 #endif
 };
 

@@ -53,7 +53,7 @@
  *
  * Revision 1.9  2005/05/27 14:43:28  chaac
  * Fixed bugs on closing AHDLC sessions. Fixed AHDLC ioctl handling. Not all
- * messages were handled correctly	and fixed possible problem of reading memory
+ * messages were handled correctly  and fixed possible problem of reading memory
  * from address zero.
  *
  * Revision 1.8  2005/04/05 17:44:56  haraldkipp
@@ -301,7 +301,7 @@ static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
     shift = shift_mask & ch;
 
     index = ch >> (uint8_t)3;
-	
+    
     /* NOTE:  This assumes that the esc bit field is little endian,
      * which it should have been switched to before being set. */
 

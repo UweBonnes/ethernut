@@ -90,13 +90,13 @@ typedef struct {
     void*    next;      /**< Pointer to next key or NULL on last key */
     HANDLE*  event;     /**< Handle for key event */
     void (*callback)(void);     /**< Function Pointer if key is activated */
-    int      bank;		/**< GPIO bank of key */
+    int      bank;      /**< GPIO bank of key */
     int      pin;       /**< GPIO pin of key */
-	int      lastState;	/**< last state sampled from port */
-	int      newState;	/**< current state sampled from port */
-    int      fx;		/**< Action type of key */
-	uint32_t fxt;		/**< time for action */
-	uint32_t TimeDown;  /**< System time in ms at key down recognized */
+    int      lastState; /**< last state sampled from port */
+    int      newState;  /**< current state sampled from port */
+    int      fx;        /**< Action type of key */
+    uint32_t fxt;       /**< time for action */
+    uint32_t TimeDown;  /**< System time in ms at key down recognized */
 } KEYEventT;
 
 static KEYEventT *first_key;
@@ -119,7 +119,7 @@ HANDLE key_evt = NULL;
  */
 int NutGetKeyState( HANDLE keyh)
 {
-	KEYEventT *key = (KEYEventT *)keyh;
+    KEYEventT *key = (KEYEventT *)keyh;
     int rc = key->newState;
     key->newState &= ~KEY_PENDING;
     return rc;
@@ -137,8 +137,8 @@ int NutGetKeyState( HANDLE keyh)
  */
 uint32_t NutGetKeyTime( HANDLE keyh)
 {
-	KEYEventT *key = (KEYEventT *)keyh;
-	uint32_t now = NutGetMillis();
+    KEYEventT *key = (KEYEventT *)keyh;
+    uint32_t now = NutGetMillis();
 
     return (now - key->TimeDown);
 }
@@ -165,63 +165,63 @@ void KeyTimerCb(HANDLE timer, void *arg)
  */
 THREAD( sys_key, arg)
 {
-	KEYEventT *key;
-	uint32_t now;
+    KEYEventT *key;
+    uint32_t now;
 #ifdef KEY_SUPPORT_IOEXP
-	int ioxread, ioxstate;
+    int ioxread, ioxstate;
 #endif
 
     NUTASSERT( arg != NULL);
 
-	NutThreadSetPriority( 16);
-	for(;;)
-	{
+    NutThreadSetPriority( 16);
+    for(;;)
+    {
 #ifdef KEY_SUPPORT_IOEXP
-		ioxread = 0;
+        ioxread = 0;
 #endif
-		if( NutEventWait( arg, NUT_WAIT_INFINITE)==0) {
-			key = first_key;
-			now = NutGetMillis();
-			while( key)
-			{
-				/*
-				 * Read in keys from ports
-				 */
-				key->newState &= ~KEY_IS_DOWN;
+        if( NutEventWait( arg, NUT_WAIT_INFINITE)==0) {
+            key = first_key;
+            now = NutGetMillis();
+            while( key)
+            {
+                /*
+                 * Read in keys from ports
+                 */
+                key->newState &= ~KEY_IS_DOWN;
 
-				if( key->bank < IOXP_PORT0) {
+                if( key->bank < IOXP_PORT0) {
                     /* Save inverted key state (low-active) */
-					key->newState |= (GpioPinGet( key->bank, key->pin))?0:1;
-				}
+                    key->newState |= (GpioPinGet( key->bank, key->pin))?0:1;
+                }
 #ifdef KEY_SUPPORT_IOEXP
-				else {
-					/* read io-expander only on first key connected
-					** and buffer the result to keep bus silent
-					*/
-					if( ioxread == 0) {
-						IOExpRawRead( key->bank, &ioxstate);
-						ioxread = 1;
- 					}
+                else {
+                    /* read io-expander only on first key connected
+                    ** and buffer the result to keep bus silent
+                    */
+                    if( ioxread == 0) {
+                        IOExpRawRead( key->bank, &ioxstate);
+                        ioxread = 1;
+                    }
                     /* Save inverted key state (low-active) */
-					key->newState |= ((ioxstate & (1<<key->pin))?0:1);
-				}
+                    key->newState |= ((ioxstate & (1<<key->pin))?0:1);
+                }
 #endif
 
-				/*
-				 * Process key status change
-				 */
-				if( (key->newState & KEY_IS_DOWN) > (key->lastState & KEY_IS_DOWN)) {
-					/* key up->down change */
-					key->TimeDown = now;
+                /*
+                 * Process key status change
+                 */
+                if( (key->newState & KEY_IS_DOWN) > (key->lastState & KEY_IS_DOWN)) {
+                    /* key up->down change */
+                    key->TimeDown = now;
                     if( key->fx == KEY_ACTION_DOWN) {
                         KPRINTF("KD %08lx E:%08lx\n", (uint32_t)key, (uint32_t)(key->event));
                         key->newState |= KEY_PENDING;
                         if( key->event) NutEventPost( key->event);
                         if( key->callback) (*key->callback)();
                     }
-				}
-				else if( (key->newState & KEY_IS_DOWN) < (key->lastState & KEY_IS_DOWN)) {
-					/* key down->up change */
+                }
+                else if( (key->newState & KEY_IS_DOWN) < (key->lastState & KEY_IS_DOWN)) {
+                    /* key down->up change */
                     key->newState &= ~KEY_IS_LOCKED;
                     if( key->fx == KEY_ACTION_UP) {
                         KPRINTF("KU %08lx E:%08lx\n", (uint32_t)key, (uint32_t)(key->event));
@@ -235,7 +235,7 @@ THREAD( sys_key, arg)
                         if( key->event) NutEventPost( key->event);
                         if( key->callback) (*key->callback)();
                     }
-				}
+                }
                 else if( (key->newState & KEY_IS_DOWN) && (key->fx==KEY_ACTION_HOLD)) {
                     /* key still down */
                     if( ((now - key->TimeDown) > key->fxt) && ((key->newState & KEY_IS_LOCKED) == 0)) {
@@ -249,11 +249,11 @@ THREAD( sys_key, arg)
 
                 /* Backup new state of key */
                 key->lastState = key->newState;
-				/* Advance to next key */
-				key = key->next;
-			}
-		}
-	}
+                /* Advance to next key */
+                key = key->next;
+            }
+        }
+    }
 }
 
 /*!
@@ -277,7 +277,7 @@ int InitKEY( KEYEventT *key )
         return 0;
     }
 #endif
-	return -1;
+    return -1;
 }
 
 int NutAssignKeyEvt( HANDLE *keyhp, HANDLE *event)
@@ -286,7 +286,7 @@ int NutAssignKeyEvt( HANDLE *keyhp, HANDLE *event)
     if( keyhp==NULL) return -1;
 
     key = (KEYEventT*)keyhp;
-	key->event = event;
+    key->event = event;
     key->newState &= ~KEY_PENDING;
     return 0;
 }
@@ -297,7 +297,7 @@ int NutAssignKeyFkt( HANDLE *keyhp, void (*callback)(void))
     if( keyhp==NULL) return -1;
 
     key = (KEYEventT*)keyhp;
-	key->callback = callback;
+    key->callback = callback;
     key->newState &= ~KEY_PENDING;
     return 0;
 }
@@ -331,11 +331,11 @@ int NutRegisterKey( HANDLE *keyhp, int bank, int pin, int fx, uint32_t fxt)
 
     /* Check memory constraints and assign memory to new led struct */
     key = malloc( sizeof(KEYEventT));
-	*keyhp = (void*)key;
+    *keyhp = (void*)key;
 
-	if( key == NULL) {
-		return -1;
-	}
+    if( key == NULL) {
+        return -1;
+    }
 
     /* Preset new key struct */
     key->bank = bank;
@@ -362,10 +362,10 @@ int NutRegisterKey( HANDLE *keyhp, int bank, int pin, int fx, uint32_t fxt)
     }
     NutExitCritical();
 
-	if( key_tmr == NULL) {
-		NutThreadCreate( "sys_key", sys_key, &key_evt, 192);
-		key_tmr = NutTimerStart(10, KeyTimerCb, &key_evt, 0);
-	}
+    if( key_tmr == NULL) {
+        NutThreadCreate( "sys_key", sys_key, &key_evt, 192);
+        key_tmr = NutTimerStart(10, KeyTimerCb, &key_evt, 0);
+    }
 
     KPRINTF("KREG %08lx E:%08lx\n", (uint32_t)key, (uint32_t)(key->event));
 

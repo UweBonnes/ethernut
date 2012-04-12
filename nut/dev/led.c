@@ -93,12 +93,12 @@
 typedef struct
 {
     void         *next;     /**< Pointer to next LED descriptor. */
-	uint32_t     timOn;     /**< Time the LED is on. */
+    uint32_t     timOn;     /**< Time the LED is on. */
     uint32_t     timOff;    /**< Time the LED is off. */
-	uint32_t     tim;	    /**< Internal current time of a LED  */
+    uint32_t     tim;       /**< Internal current time of a LED  */
     int          bank;      /**< Port where led is connected */
     int          pin;       /**< Pin on port, where led is connected */
-	int          state;		/**< Current state */
+    int          state;     /**< Current state */
     uint_fast8_t fx;        /**< Selected function of led */
 } LEDEventT;
 

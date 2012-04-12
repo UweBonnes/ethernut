@@ -36,7 +36,7 @@
 *  Copyright (c) 2002, 2003 Sam Leffler, Errno Consulting
 *  Copyright (c) 2002 M Warner Losh <imp@freebsd.org>.  All rights reserved.
 *  Copyright (c) 1997, 1998, 1999
-*	 Bill Paul <wpaul@ctr.columbia.edu>.  All rights reserved.
+*    Bill Paul <wpaul@ctr.columbia.edu>.  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
@@ -90,22 +90,22 @@ enum {
   IEEE80211_AUTH_SHARED = 2,
 };
 
-#define	IEEE80211_RATE_BASIC      0x80
-#define	IEEE80211_RATE_VAL			  0x7f
+#define IEEE80211_RATE_BASIC      0x80
+#define IEEE80211_RATE_VAL            0x7f
 
 
 
 /*
  * Maximum acceptable MTU is:
- *	IEEE80211_MAX_LEN - WEP overhead - CRC -
- *		QoS overhead - RSN/WPA overhead
+ *  IEEE80211_MAX_LEN - WEP overhead - CRC -
+ *      QoS overhead - RSN/WPA overhead
  * Min is arbitrarily chosen > IEEE80211_MIN_LEN.  The default
  * mtu is Ethernet-compatible; it's set by ether_ifattach.
  */
-#define	IEEE80211_MTU_MAX			    2290
-#define	IEEE80211_MTU_MIN			    32
+#define IEEE80211_MTU_MAX               2290
+#define IEEE80211_MTU_MIN               32
 
-#define	IEEE80211_MAX_LEN			(2300 + IEEE80211_CRC_LEN + \
+#define IEEE80211_MAX_LEN           (2300 + IEEE80211_CRC_LEN + \
     (IEEE80211_WEP_IVLEN + IEEE80211_WEP_KIDLEN + IEEE80211_WEP_CRCLEN))
 
 
@@ -117,9 +117,9 @@ enum {
  * 802.11 definitions
  */
 #define IEEE80211_CHAN_MAX        32
-#define	IEEE80211_CHAN_ANY	      0xffff  /* token for ``any channel'' */
-#define	IEEE80211_CHAN_ANYC \
-	((struct ieee80211_channel *) IEEE80211_CHAN_ANY)
+#define IEEE80211_CHAN_ANY        0xffff  /* token for ``any channel'' */
+#define IEEE80211_CHAN_ANYC \
+    ((struct ieee80211_channel *) IEEE80211_CHAN_ANY)
 
 /* XXX not really a mode; there are really multiple PHY's */
 enum ieee80211_phymode {
@@ -130,41 +130,41 @@ enum ieee80211_phymode {
   IEEE80211_MODE_FH    = 4,               /* 2GHz, GFSK */
   IEEE80211_MODE_TURBO = 5,               /* 5GHz, OFDM, 2x clock */
 };
-#define	IEEE80211_MODE_MAX	(IEEE80211_MODE_TURBO+1)
+#define IEEE80211_MODE_MAX  (IEEE80211_MODE_TURBO+1)
 
 /* bits 0-3 are for private use by drivers */
 /* channel attributes */
-#define	IEEE80211_CHAN_TURBO      0x0010  /* Turbo channel */
-#define	IEEE80211_CHAN_CCK        0x0020  /* CCK channel */
-#define	IEEE80211_CHAN_OFDM       0x0040  /* OFDM channel */
-#define	IEEE80211_CHAN_2GHZ       0x0080  /* 2 GHz spectrum channel. */
-#define	IEEE80211_CHAN_5GHZ       0x0100  /* 5 GHz spectrum channel */
-#define	IEEE80211_CHAN_PASSIVE    0x0200  /* Only passive scan allowed */
-#define	IEEE80211_CHAN_DYN        0x0400  /* Dynamic CCK-OFDM channel */
-#define	IEEE80211_CHAN_GFSK       0x0800  /* GFSK channel (FHSS PHY) */
+#define IEEE80211_CHAN_TURBO      0x0010  /* Turbo channel */
+#define IEEE80211_CHAN_CCK        0x0020  /* CCK channel */
+#define IEEE80211_CHAN_OFDM       0x0040  /* OFDM channel */
+#define IEEE80211_CHAN_2GHZ       0x0080  /* 2 GHz spectrum channel. */
+#define IEEE80211_CHAN_5GHZ       0x0100  /* 5 GHz spectrum channel */
+#define IEEE80211_CHAN_PASSIVE    0x0200  /* Only passive scan allowed */
+#define IEEE80211_CHAN_DYN        0x0400  /* Dynamic CCK-OFDM channel */
+#define IEEE80211_CHAN_GFSK       0x0800  /* GFSK channel (FHSS PHY) */
 
 /*
  * Useful combinations of channel characteristics.
  */
-#define	IEEE80211_CHAN_FHSS \
-	(IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_GFSK)
-#define	IEEE80211_CHAN_A \
-	(IEEE80211_CHAN_5GHZ | IEEE80211_CHAN_OFDM)
-#define	IEEE80211_CHAN_B \
-	(IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_CCK)
-#define	IEEE80211_CHAN_PUREG \
-	(IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_OFDM)
-#define	IEEE80211_CHAN_G \
-	(IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_DYN)
-#define	IEEE80211_CHAN_T \
-	(IEEE80211_CHAN_5GHZ | IEEE80211_CHAN_OFDM | IEEE80211_CHAN_TURBO)
+#define IEEE80211_CHAN_FHSS \
+    (IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_GFSK)
+#define IEEE80211_CHAN_A \
+    (IEEE80211_CHAN_5GHZ | IEEE80211_CHAN_OFDM)
+#define IEEE80211_CHAN_B \
+    (IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_CCK)
+#define IEEE80211_CHAN_PUREG \
+    (IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_OFDM)
+#define IEEE80211_CHAN_G \
+    (IEEE80211_CHAN_2GHZ | IEEE80211_CHAN_DYN)
+#define IEEE80211_CHAN_T \
+    (IEEE80211_CHAN_5GHZ | IEEE80211_CHAN_OFDM | IEEE80211_CHAN_TURBO)
 
 /***************************************************************************/
 /*                      ieee80211_node.h                                   */
 /***************************************************************************/
 
-#define	IEEE80211_RATE_SIZE	      8       /* 802.11 standard */
-#define	IEEE80211_RATE_MAXSIZE	  15      /* max rates we'll handle */
+#define IEEE80211_RATE_SIZE       8       /* 802.11 standard */
+#define IEEE80211_RATE_MAXSIZE    15      /* max rates we'll handle */
 
 /***************************************************************************/
 /*                          if_wivar.h                                     */
@@ -174,9 +174,9 @@ enum ieee80211_phymode {
  * FirmwareType
 */
 #define WI_NOTYPE                 0
-#define	WI_LUCENT                 1
-#define	WI_INTERSIL               2
-#define	WI_SYMBOL                 3
+#define WI_LUCENT                 1
+#define WI_INTERSIL               2
+#define WI_SYMBOL                 3
 
 /*
  * Encryption controls. We can enable or disable encryption as
@@ -197,13 +197,13 @@ enum ieee80211_phymode {
 #define WI_RID_P2_ENCRYPTION      0xFC28
 #define WI_RID_ROAMING_MODE       0xFC2D
 
-#define	WI_PRISM_MIN_RSSI         0x1b
-#define	WI_PRISM_MAX_RSSI         0x9a
-#define	WI_PRISM_DBM_OFFSET       100
+#define WI_PRISM_MIN_RSSI         0x1b
+#define WI_PRISM_MAX_RSSI         0x9a
+#define WI_PRISM_DBM_OFFSET       100
 
-#define	WI_LUCENT_MIN_RSSI        47
-#define	WI_LUCENT_MAX_RSSI        138
-#define	WI_LUCENT_DBM_OFFSET      149
+#define WI_LUCENT_MIN_RSSI        47
+#define WI_LUCENT_MAX_RSSI        138
+#define WI_LUCENT_DBM_OFFSET      149
 
 /*
  * Various compat hacks/kludges
@@ -215,25 +215,25 @@ enum ieee80211_phymode {
 /*                          if_wireg.h                                     */
 /***************************************************************************/
 
-#define WI_DELAY	5UL /* Harald: Added UL specifiers. However that worked before */
-#define WI_TIMEOUT	(500000UL/WI_DELAY) /* 500 ms */ /* Harald: Same here */
+#define WI_DELAY    5UL /* Harald: Added UL specifiers. However that worked before */
+#define WI_TIMEOUT  (500000UL/WI_DELAY) /* 500 ms */ /* Harald: Same here */
 
-#define WI_PORT0	(0 << 8)
-#define WI_PORT1	(1 << 8)
-#define WI_PORT2	(2 << 8)
-#define WI_PORT3	(3 << 8)
-#define WI_PORT4	(4 << 8)
-#define WI_PORT5	(5 << 8)
+#define WI_PORT0    (0 << 8)
+#define WI_PORT1    (1 << 8)
+#define WI_PORT2    (2 << 8)
+#define WI_PORT3    (3 << 8)
+#define WI_PORT4    (4 << 8)
+#define WI_PORT5    (5 << 8)
 
 #define WI_HFA384X_SWSUPPORT0_OFF 0x28
 #define WI_PRISM2STA_MAGIC        0x4A2D
 
 /* Default port: 0 (only 0 exists on stations) */
-#define WI_DEFAULT_PORT	WI_PORT0
+#define WI_DEFAULT_PORT WI_PORT0
 
-#define WI_DEFAULT_ROAMING	1
+#define WI_DEFAULT_ROAMING  1
 
-#define WI_DEFAULT_AUTHTYPE	1
+#define WI_DEFAULT_AUTHTYPE 1
 
 /*
  * Hermes & Prism2 register definitions
@@ -262,10 +262,10 @@ enum ieee80211_phymode {
 #define WI_CMD_ACCESS           0x0021
 #define WI_CMD_ACCESS_WRITE     0x0121
 #define WI_CMD_PROGRAM          0x0022
-#define WI_CMD_READEE           0x0030	/* symbol only */
-#define WI_CMD_READMIF          0x0030	/* prism2 */
-#define WI_CMD_WRITEMIF         0x0031	/* prism2 */
-#define WI_CMD_DEBUG            0x0038	/* Various test commands */
+#define WI_CMD_READEE           0x0030  /* symbol only */
+#define WI_CMD_READMIF          0x0030  /* prism2 */
+#define WI_CMD_WRITEMIF         0x0031  /* prism2 */
+#define WI_CMD_DEBUG            0x0038  /* Various test commands */
 
 #define WI_CMD_CODE_MASK        0x003F
 
@@ -324,12 +324,12 @@ enum ieee80211_phymode {
 #define WI_OFF_DATAOFF          0x0FFF
 
 /* Event registers */
-#define WI_EVENT_STAT           0x30	  /* Event status */
-#define WI_INT_EN               0x32	  /* Interrupt enable/disable */
-#define WI_EVENT_ACK            0x34	  /* Ack event */
+#define WI_EVENT_STAT           0x30      /* Event status */
+#define WI_INT_EN               0x32      /* Interrupt enable/disable */
+#define WI_EVENT_ACK            0x34      /* Ack event */
 
 /* Events */
-#define WI_EV_TICK              0x8000	/* aux timer tick */
+#define WI_EV_TICK              0x8000  /* aux timer tick */
 #define WI_EV_RES               0x4000  /* controller h/w error (time out) */
 #define WI_EV_INFO_DROP         0x2000  /* no RAM to build unsolicited frame */
 #define WI_EV_NO_CARD           0x0800  /* card removed (hunh?) */
@@ -350,71 +350,71 @@ enum ieee80211_phymode {
 /*
  * Define card ident
 */
-#define	WI_NIC_LUCENT_ID          0x0001
-#define	WI_NIC_LUCENT_STR         "Lucent Technologies, WaveLAN/IEEE"
+#define WI_NIC_LUCENT_ID          0x0001
+#define WI_NIC_LUCENT_STR         "Lucent Technologies, WaveLAN/IEEE"
 
-#define	WI_NIC_SONY_ID            0x0002
-#define	WI_NIC_SONY_STR           "Sony WaveLAN/IEEE"
+#define WI_NIC_SONY_ID            0x0002
+#define WI_NIC_SONY_STR           "Sony WaveLAN/IEEE"
 
-#define	WI_NIC_LUCENT_EMB_ID      0x0005
-#define	WI_NIC_LUCENT_EMB_STR	    "Lucent Embedded WaveLAN/IEEE"
+#define WI_NIC_LUCENT_EMB_ID      0x0005
+#define WI_NIC_LUCENT_EMB_STR       "Lucent Embedded WaveLAN/IEEE"
 
-#define	WI_NIC_EVB2_ID            0x8000
-#define	WI_NIC_EVB2_STR           "RF:PRISM2 MAC:HFA3841"
+#define WI_NIC_EVB2_ID            0x8000
+#define WI_NIC_EVB2_STR           "RF:PRISM2 MAC:HFA3841"
 
-#define	WI_NIC_HWB3763_ID         0x8001
-#define	WI_NIC_HWB3763_STR	      "RF:PRISM2 MAC:HFA3841 CARD:HWB3763 rev.B"
+#define WI_NIC_HWB3763_ID         0x8001
+#define WI_NIC_HWB3763_STR        "RF:PRISM2 MAC:HFA3841 CARD:HWB3763 rev.B"
 
-#define	WI_NIC_HWB3163_ID         0x8002
-#define	WI_NIC_HWB3163_STR        "RF:PRISM2 MAC:HFA3841 CARD:HWB3163 rev.A"
+#define WI_NIC_HWB3163_ID         0x8002
+#define WI_NIC_HWB3163_STR        "RF:PRISM2 MAC:HFA3841 CARD:HWB3163 rev.A"
 
-#define	WI_NIC_HWB3163B_ID        0x8003
-#define	WI_NIC_HWB3163B_STR       "RF:PRISM2 MAC:HFA3841 CARD:HWB3163 rev.B"
+#define WI_NIC_HWB3163B_ID        0x8003
+#define WI_NIC_HWB3163B_STR       "RF:PRISM2 MAC:HFA3841 CARD:HWB3163 rev.B"
 
-#define	WI_NIC_EVB3_ID            0x8004
-#define	WI_NIC_EVB3_STR           "RF:PRISM2 MAC:HFA3842 CARD:HFA3842 EVAL"
+#define WI_NIC_EVB3_ID            0x8004
+#define WI_NIC_EVB3_STR           "RF:PRISM2 MAC:HFA3842 CARD:HFA3842 EVAL"
 
-#define	WI_NIC_HWB1153_ID         0x8007
-#define	WI_NIC_HWB1153_STR        "RF:PRISM1 MAC:HFA3841 CARD:HWB1153"
+#define WI_NIC_HWB1153_ID         0x8007
+#define WI_NIC_HWB1153_STR        "RF:PRISM1 MAC:HFA3841 CARD:HWB1153"
 
-#define	WI_NIC_P2_SST_ID          0x8008  /* Prism2 with SST flush */
-#define	WI_NIC_P2_SST_STR         "RF:PRISM2 MAC:HFA3841 CARD:HWB3163-SST-flash"
+#define WI_NIC_P2_SST_ID          0x8008  /* Prism2 with SST flush */
+#define WI_NIC_P2_SST_STR         "RF:PRISM2 MAC:HFA3841 CARD:HWB3163-SST-flash"
 
-#define	WI_NIC_EVB2_SST_ID        0x8009
-#define	WI_NIC_EVB2_SST_STR       "RF:PRISM2 MAC:HFA3841 CARD:HWB3163-SST-flash"
+#define WI_NIC_EVB2_SST_ID        0x8009
+#define WI_NIC_EVB2_SST_STR       "RF:PRISM2 MAC:HFA3841 CARD:HWB3163-SST-flash"
 
-#define	WI_NIC_3842_EVA_ID        0x800A  /* 3842 Evaluation Board */
-#define	WI_NIC_3842_EVA_STR       "RF:PRISM2 MAC:HFA3842 CARD:HFA3842 EVAL"
+#define WI_NIC_3842_EVA_ID        0x800A  /* 3842 Evaluation Board */
+#define WI_NIC_3842_EVA_STR       "RF:PRISM2 MAC:HFA3842 CARD:HFA3842 EVAL"
 
-#define	WI_NIC_3842_PCMCIA_AMD_ID	0x800B  /* Prism2.5 PCMCIA */
-#define	WI_NIC_3842_PCMCIA_SST_ID	0x800C
-#define	WI_NIC_3842_PCMCIA_ATL_ID	0x800D
-#define	WI_NIC_3842_PCMCIA_ATS_ID	0x800E
-#define	WI_NIC_3842_PCMCIA_STR		"RF:PRISM2.5 MAC:ISL3873"
+#define WI_NIC_3842_PCMCIA_AMD_ID   0x800B  /* Prism2.5 PCMCIA */
+#define WI_NIC_3842_PCMCIA_SST_ID   0x800C
+#define WI_NIC_3842_PCMCIA_ATL_ID   0x800D
+#define WI_NIC_3842_PCMCIA_ATS_ID   0x800E
+#define WI_NIC_3842_PCMCIA_STR      "RF:PRISM2.5 MAC:ISL3873"
 
-#define	WI_NIC_3842_MINI_AMD_ID   0x8012  /* Prism2.5 Mini-PCI */
-#define	WI_NIC_3842_MINI_SST_ID   0x8013
-#define	WI_NIC_3842_MINI_ATL_ID   0x8014
-#define	WI_NIC_3842_MINI_ATS_ID   0x8015
-#define	WI_NIC_3842_MINI_STR      "RF:PRISM2.5 MAC:ISL3874A(Mini-PCI)"
+#define WI_NIC_3842_MINI_AMD_ID   0x8012  /* Prism2.5 Mini-PCI */
+#define WI_NIC_3842_MINI_SST_ID   0x8013
+#define WI_NIC_3842_MINI_ATL_ID   0x8014
+#define WI_NIC_3842_MINI_ATS_ID   0x8015
+#define WI_NIC_3842_MINI_STR      "RF:PRISM2.5 MAC:ISL3874A(Mini-PCI)"
 
-#define	WI_NIC_3842_PCI_AMD_ID    0x8016  /* Prism2.5 PCI-bridge */
-#define	WI_NIC_3842_PCI_SST_ID    0x8017
-#define	WI_NIC_3842_PCI_ATL_ID    0x8018
-#define	WI_NIC_3842_PCI_ATS_ID    0x8019
-#define	WI_NIC_3842_PCI_STR       "RF:PRISM2.5 MAC:ISL3874A(PCI-bridge)"
+#define WI_NIC_3842_PCI_AMD_ID    0x8016  /* Prism2.5 PCI-bridge */
+#define WI_NIC_3842_PCI_SST_ID    0x8017
+#define WI_NIC_3842_PCI_ATL_ID    0x8018
+#define WI_NIC_3842_PCI_ATS_ID    0x8019
+#define WI_NIC_3842_PCI_STR       "RF:PRISM2.5 MAC:ISL3874A(PCI-bridge)"
 
-#define	WI_NIC_P3_PCMCIA_AMD_ID   0x801A  /* Prism3 PCMCIA */
-#define	WI_NIC_P3_PCMCIA_SST_ID   0x801B
-#define	WI_NIC_P3_PCMCIA_ATL_ID   0x801C
-#define	WI_NIC_P3_PCMCIA_ATS_ID   0x801D
-#define	WI_NIC_P3_PCMCIA_STR      "RF:PRISM3(PCMCIA)"
+#define WI_NIC_P3_PCMCIA_AMD_ID   0x801A  /* Prism3 PCMCIA */
+#define WI_NIC_P3_PCMCIA_SST_ID   0x801B
+#define WI_NIC_P3_PCMCIA_ATL_ID   0x801C
+#define WI_NIC_P3_PCMCIA_ATS_ID   0x801D
+#define WI_NIC_P3_PCMCIA_STR      "RF:PRISM3(PCMCIA)"
 
-#define	WI_NIC_P3_MINI_AMD_ID     0x8021  /* Prism3 Mini-PCI */
-#define	WI_NIC_P3_MINI_SST_ID     0x8022
-#define	WI_NIC_P3_MINI_ATL_ID     0x8023
-#define	WI_NIC_P3_MINI_ATS_ID     0x8024
-#define	WI_NIC_P3_MINI_STR        "RF:PRISM3(Mini-PCI)"
+#define WI_NIC_P3_MINI_AMD_ID     0x8021  /* Prism3 Mini-PCI */
+#define WI_NIC_P3_MINI_SST_ID     0x8022
+#define WI_NIC_P3_MINI_ATL_ID     0x8023
+#define WI_NIC_P3_MINI_ATS_ID     0x8024
+#define WI_NIC_P3_MINI_STR        "RF:PRISM3(Mini-PCI)"
 
 /*
  * Connection control characteristics. (0xFC00)
@@ -422,14 +422,14 @@ enum ieee80211_phymode {
  * 1 == Basic Service Set (BSS)
  * 2 == Wireless Distribudion System (WDS)
  * 3 == Pseudo IBSS
- *	(Only PRISM2; not 802.11 compliant mode, testing use only)
+ *  (Only PRISM2; not 802.11 compliant mode, testing use only)
  * 6 == HOST AP (Only PRISM2)
  */
-#define	WI_PORTTYPE_IBSS    0x0
+#define WI_PORTTYPE_IBSS    0x0
 #define WI_PORTTYPE_BSS     0x1
 #define WI_PORTTYPE_WDS     0x2
 #define WI_PORTTYPE_ADHOC   0x3
-#define	WI_PORTTYPE_HOSTAP  0x6
+#define WI_PORTTYPE_HOSTAP  0x6
 
 /*
  * Information frame types.
@@ -439,15 +439,15 @@ enum ieee80211_phymode {
 #define WI_INFO_SCAN_RESULTS            0xF101  /* Scan results */
 #define WI_INFO_HOST_SCAN_RESULTS       0xF104  /* Scan results */
 #define WI_INFO_LINK_STAT               0xF200  /* Link status */
-#define	WI_INFO_LINK_STAT_CONNECTED     1
-#define	WI_INFO_LINK_STAT_DISCONNECTED  2
-#define	WI_INFO_LINK_STAT_AP_CHG        3 /* AP Change */
-#define	WI_INFO_LINK_STAT_AP_OOR        4 /* AP Out Of Range */
-#define	WI_INFO_LINK_STAT_AP_INR        5 /* AP In Range */
-#define	WI_INFO_LINK_STAT_ASSOC_FAILED  6
+#define WI_INFO_LINK_STAT_CONNECTED     1
+#define WI_INFO_LINK_STAT_DISCONNECTED  2
+#define WI_INFO_LINK_STAT_AP_CHG        3 /* AP Change */
+#define WI_INFO_LINK_STAT_AP_OOR        4 /* AP Out Of Range */
+#define WI_INFO_LINK_STAT_AP_INR        5 /* AP In Range */
+#define WI_INFO_LINK_STAT_ASSOC_FAILED  6
 #define WI_INFO_ASSOC_STAT              0xF201  /* Association status */
-#define	WI_INFO_AUTH_REQUEST            0xF202  /* Authentication Request (AP) */
-#define	WI_INFO_POWERSAVE_COUNT         0xF203  /* PowerSave User Count (AP) */
+#define WI_INFO_AUTH_REQUEST            0xF202  /* Authentication Request (AP) */
+#define WI_INFO_POWERSAVE_COUNT         0xF203  /* PowerSave User Count (AP) */
 
 /* Rx Status Field */
 #define WI_STAT_ERRSTAT                 0x0003
@@ -460,13 +460,13 @@ enum ieee80211_phymode {
 /*
  * Network parameters, static configuration entities.
  */
-#define WI_RID_PORTTYPE		        0xFC00  /* Connection control characteristics */
+#define WI_RID_PORTTYPE             0xFC00  /* Connection control characteristics */
 #define WI_RID_MAC_NODE           0xFC01  /* MAC address of this station */
 #define WI_RID_DESIRED_SSID       0xFC02  /* Service Set ID for connection */
 #define WI_RID_OWN_CHNL           0xFC03  /* Comm channel for BSS creation */
 #define WI_RID_OWN_SSID           0xFC04  /* IBSS creation ID */
-#define WI_RID_OWN_ATIM_WIN	      0xFC05  /* ATIM window time for IBSS creation */
-#define WI_RID_SYSTEM_SCALE	      0xFC06  /* scale that specifies AP density */
+#define WI_RID_OWN_ATIM_WIN       0xFC05  /* ATIM window time for IBSS creation */
+#define WI_RID_SYSTEM_SCALE       0xFC06  /* scale that specifies AP density */
 #define WI_RID_MAX_DATALEN        0xFC07  /* Max len of MAC frame body data */
 #define WI_RID_MAC_WDS            0xFC08  /* MAC addr of corresponding WDS node */
 #define WI_RID_PM_ENABLED         0xFC09  /* ESS power management enable */
@@ -495,11 +495,11 @@ enum ieee80211_phymode {
 #define  PRIVACY_INVOKED          0x01
 #define  EXCLUDE_UNENCRYPTED      0x02
 #define  HOST_ENCRYPT             0x10
-#define	 IV_EVERY_FRAME           0x00    /* IV = Initialization Vector */
-#define	 IV_EVERY10_FRAME         0x20    /* every 10 frame IV reuse */
-#define	 IV_EVERY50_FRAME         0x40    /* every 50 frame IV reuse */
-#define	 IV_EVERY100_FRAME        0x60    /* every 100 frame IV reuse */
-#define	 HOST_DECRYPT             0x80
+#define  IV_EVERY_FRAME           0x00    /* IV = Initialization Vector */
+#define  IV_EVERY10_FRAME         0x20    /* every 10 frame IV reuse */
+#define  IV_EVERY50_FRAME         0x40    /* every 50 frame IV reuse */
+#define  IV_EVERY100_FRAME        0x60    /* every 100 frame IV reuse */
+#define  HOST_DECRYPT             0x80
 #define WI_RID_WEP_MAPTABLE       0xFC29
 #define WI_RID_CNFAUTHMODE        0xFC2A
 #define WI_RID_ROAMING_MODE       0xFC2D
@@ -522,12 +522,12 @@ enum ieee80211_phymode {
                                           /* 2 == auto fallback */
 #define WI_RID_PROMISC            0xFC85  /* enable promisc mode */
 #define WI_RID_FRAG_THRESH0       0xFC90
-#define WI_RID_FRAG_THRESH1	      0xFC91
-#define WI_RID_FRAG_THRESH2	      0xFC92
-#define WI_RID_FRAG_THRESH3	      0xFC93
-#define WI_RID_FRAG_THRESH4	      0xFC94
-#define WI_RID_FRAG_THRESH5	      0xFC95
-#define WI_RID_FRAG_THRESH6	      0xFC96
+#define WI_RID_FRAG_THRESH1       0xFC91
+#define WI_RID_FRAG_THRESH2       0xFC92
+#define WI_RID_FRAG_THRESH3       0xFC93
+#define WI_RID_FRAG_THRESH4       0xFC94
+#define WI_RID_FRAG_THRESH5       0xFC95
+#define WI_RID_FRAG_THRESH6       0xFC96
 #define WI_RID_RTS_THRESH0        0xFC97
 #define WI_RID_RTS_THRESH1        0xFC98
 #define WI_RID_RTS_THRESH2        0xFC99
@@ -548,8 +548,8 @@ enum ieee80211_phymode {
 
 
 struct wi_key {
-	u_int16_t		wi_keylen;
-	u_int8_t		wi_keydat[14];
+    u_int16_t       wi_keylen;
+    u_int8_t        wi_keydat[14];
 };
 
 
@@ -559,7 +559,7 @@ struct wi_key {
 #define WI_RID_DNLD_BUF           0xFD01
 #define WI_RID_MEMSZ              0xFD02  /* memory size info (XXX Lucent) */
                                           /*  Looks like on lucnet pri firm too */
-#define	WI_RID_PRI_IDENTITY       0xFD02  /* primary funcs firmware ident (PRISM2) */
+#define WI_RID_PRI_IDENTITY       0xFD02  /* primary funcs firmware ident (PRISM2) */
 #define WI_RID_PRI_SUP_RANGE      0xFD03  /* primary supplier compatibility */
 #define WI_RID_CIF_ACT_RANGE      0xFD04  /* controller sup. compatibility */
 #define WI_RID_SERIALNO           0xFD0A  /* card serial number */
@@ -617,6 +617,6 @@ struct wi_key {
 #define WI_RID_CCA_MODE           0xFDC3  /* clear chan assess mode indication */
 #define WI_RID_CCA_TIME           0xFDC4  /* clear chan assess time */
 #define WI_RID_MAC_PROC_DELAY     0xFDC5  /* MAC processing delay time */
-#define WI_RID_DATA_RATES	        0xFDC6  /* supported data rates */
+#define WI_RID_DATA_RATES           0xFDC6  /* supported data rates */
 
 #endif /* !__WLANDEF_H__ */

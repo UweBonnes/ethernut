@@ -186,80 +186,80 @@ void pm_enable_osc0_crystal(unsigned int fosc0)
 
 void pm_switch_to_osc0(unsigned int fosc0, unsigned int startup)
 {
-	pm_enable_osc0_crystal(fosc0);            // Enable the Osc0 in crystal mode
-	pm_enable_clk0(startup);                  // Crystal startup time - This parameter is critical and depends on the characteristics of the crystal
-	pm_switch_to_clock(AVR32_PM_MCSEL_OSC0);  // Then switch main clock to Osc0
+    pm_enable_osc0_crystal(fosc0);            // Enable the Osc0 in crystal mode
+    pm_enable_clk0(startup);                  // Crystal startup time - This parameter is critical and depends on the characteristics of the crystal
+    pm_switch_to_clock(AVR32_PM_MCSEL_OSC0);  // Then switch main clock to Osc0
 }
 
 void pm_enable_clk0(unsigned int startup)
 {
-	// Read register
-	u_avr32_pm_oscctrl0_t u_avr32_pm_oscctrl0 = {AVR32_PM.oscctrl0};
-	// Modify
-	u_avr32_pm_oscctrl0.OSCCTRL0.startup = startup;
-	// Write back
-	AVR32_PM.oscctrl0 = u_avr32_pm_oscctrl0.oscctrl0;
+    // Read register
+    u_avr32_pm_oscctrl0_t u_avr32_pm_oscctrl0 = {AVR32_PM.oscctrl0};
+    // Modify
+    u_avr32_pm_oscctrl0.OSCCTRL0.startup = startup;
+    // Write back
+    AVR32_PM.oscctrl0 = u_avr32_pm_oscctrl0.oscctrl0;
 
-	AVR32_PM.mcctrl |= AVR32_PM_MCCTRL_OSC0EN_MASK;
+    AVR32_PM.mcctrl |= AVR32_PM_MCCTRL_OSC0EN_MASK;
 
-	// Wait for clk0 ready
-	while (!(AVR32_PM.poscsr & AVR32_PM_POSCSR_OSC0RDY_MASK));
+    // Wait for clk0 ready
+    while (!(AVR32_PM.poscsr & AVR32_PM_POSCSR_OSC0RDY_MASK));
 }
 
 void pm_switch_to_clock(unsigned long clock)
 {
-	// Read
-	u_avr32_pm_mcctrl_t u_avr32_pm_mcctrl = {AVR32_PM.mcctrl};
-	// Modify
-	u_avr32_pm_mcctrl.MCCTRL.mcsel = clock;
-	// Write back
-	AVR32_PM.mcctrl = u_avr32_pm_mcctrl.mcctrl;
+    // Read
+    u_avr32_pm_mcctrl_t u_avr32_pm_mcctrl = {AVR32_PM.mcctrl};
+    // Modify
+    u_avr32_pm_mcctrl.MCCTRL.mcsel = clock;
+    // Write back
+    AVR32_PM.mcctrl = u_avr32_pm_mcctrl.mcctrl;
 }
 
 void pm_pll_setup(volatile avr32_pm_t *pm,
-				  unsigned int pll,
-				  unsigned int mul,
-				  unsigned int div,
-				  unsigned int osc,
-				  unsigned int lockcount)
+                  unsigned int pll,
+                  unsigned int mul,
+                  unsigned int div,
+                  unsigned int osc,
+                  unsigned int lockcount)
 {
-	u_avr32_pm_pll_t u_avr32_pm_pll = {0};
+    u_avr32_pm_pll_t u_avr32_pm_pll = {0};
 
-	u_avr32_pm_pll.PLL.pllosc   = osc;
-	u_avr32_pm_pll.PLL.plldiv   = div;
-	u_avr32_pm_pll.PLL.pllmul   = mul;
-	u_avr32_pm_pll.PLL.pllcount = lockcount;
+    u_avr32_pm_pll.PLL.pllosc   = osc;
+    u_avr32_pm_pll.PLL.plldiv   = div;
+    u_avr32_pm_pll.PLL.pllmul   = mul;
+    u_avr32_pm_pll.PLL.pllcount = lockcount;
 
-	pm->pll[pll] = u_avr32_pm_pll.pll;
+    pm->pll[pll] = u_avr32_pm_pll.pll;
 }
 
 void pm_pll_set_option(volatile avr32_pm_t *pm,
-					   unsigned int pll,
-					   unsigned int pll_freq,
-					   unsigned int pll_div2,
-					   unsigned int pll_wbwdisable)
+                       unsigned int pll,
+                       unsigned int pll_freq,
+                       unsigned int pll_div2,
+                       unsigned int pll_wbwdisable)
 {
-	u_avr32_pm_pll_t u_avr32_pm_pll = {pm->pll[pll]};
-	u_avr32_pm_pll.PLL.pllopt = pll_freq | (pll_div2 << 1) | (pll_wbwdisable << 2);
-	pm->pll[pll] = u_avr32_pm_pll.pll;
+    u_avr32_pm_pll_t u_avr32_pm_pll = {pm->pll[pll]};
+    u_avr32_pm_pll.PLL.pllopt = pll_freq | (pll_div2 << 1) | (pll_wbwdisable << 2);
+    pm->pll[pll] = u_avr32_pm_pll.pll;
 }
 
 void pm_pll_enable(volatile avr32_pm_t *pm,
-				   unsigned int pll)
+                   unsigned int pll)
 {
-	pm->pll[pll] |= AVR32_PM_PLLEN_MASK;
+    pm->pll[pll] |= AVR32_PM_PLLEN_MASK;
 }
 
 typedef union {
-	unsigned long fcr;
-	avr32_flashc_fcr_t FCR;
+    unsigned long fcr;
+    avr32_flashc_fcr_t FCR;
 } u_avr32_flashc_fcr_t;
 
 static void flashc_set_wait_state(unsigned int wait_state)
 {
-	u_avr32_flashc_fcr_t u_avr32_flashc_fcr = { AVR32_FLASHC.fcr };
-	u_avr32_flashc_fcr.FCR.fws = wait_state;
-	AVR32_FLASHC.fcr = u_avr32_flashc_fcr.fcr;
+    u_avr32_flashc_fcr_t u_avr32_flashc_fcr = { AVR32_FLASHC.fcr };
+    u_avr32_flashc_fcr.FCR.fws = wait_state;
+    AVR32_FLASHC.fcr = u_avr32_flashc_fcr.fcr;
 }
 
 void Avr32InitClockTree( void )

@@ -1,5 +1,5 @@
 #ifndef _ARCH_ARM_AT91_ECC_H_
-#define	_ARCH_ARM_AT91_ECC_H_
+#define _ARCH_ARM_AT91_ECC_H_
 
 /*
  * Copyright (C) 2010 by egnite GmbH

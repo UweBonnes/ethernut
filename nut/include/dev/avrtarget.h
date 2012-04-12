@@ -1,5 +1,5 @@
 #ifndef _DEV_AVRTARGET_H_
-#define	_DEV_AVRTARGET_H_
+#define _DEV_AVRTARGET_H_
 
 /*
  * Copyright (C) 2007 by egnite Software GmbH. All rights reserved.

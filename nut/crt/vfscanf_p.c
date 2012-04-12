@@ -62,7 +62,7 @@
  * \param stream Pointer to a previously opened stream.
  * \param fmt    Format string in program space containing conversion
  *               specifications.
- * \param ap	 List of pointer arguments.
+ * \param ap     List of pointer arguments.
  *
  *
  * \return The number of fields successfully converted and assigned.

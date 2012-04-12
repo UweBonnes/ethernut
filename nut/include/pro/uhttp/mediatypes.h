@@ -62,7 +62,7 @@ typedef int (*MEDIATYPE_HANDLER) (HTTPD_SESSION*, const MEDIA_TYPE_ENTRY*, const
 /*! \brief Media type entry structure. */
 struct _MEDIATYPE {
     /*! \brief Chain link. */
-    ISC_LINK(MEDIA_TYPE_ENTRY)	media_link;
+    ISC_LINK(MEDIA_TYPE_ENTRY)  media_link;
     /*! \brief Name of this type. */
     char *media_type;
     /*! \brief Sub-name of this type. */

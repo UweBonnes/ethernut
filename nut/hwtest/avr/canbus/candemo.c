@@ -112,7 +112,7 @@ int main(void)
                  0, // Acceptance mask
                  0, // 0 to receive extended and standard frames, 1 if message ID type must match acceptance code flag
                  0  // 0 to receive remote and standard frames, 1 if remote tag must match acceptance code's remote tag
-				 );
+                 );
 #endif
 
    // Set CAN bit rate

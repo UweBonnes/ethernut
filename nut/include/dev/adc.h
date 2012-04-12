@@ -53,7 +53,7 @@
 
 enum adc_ref_type
 {
-    AVCC	= 0,
+    AVCC    = 0,
     AREF,
     INTERNAL_256
 };

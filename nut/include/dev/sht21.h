@@ -49,11 +49,11 @@
  * Sensirion common sensor commands
  */
 #ifdef SHT_ACK_POLLING
-#define	SHT_GET_TEMP	0xF3    /* Get Temperature Command */
-#define	SHT_GET_HUM     0xF5    /* Get Humidity Command */
+#define SHT_GET_TEMP    0xF3    /* Get Temperature Command */
+#define SHT_GET_HUM     0xF5    /* Get Humidity Command */
 #else
-#define	SHT_GET_TEMP	0xE3    /* Get Temperature Command */
-#define	SHT_GET_HUM     0xE5    /* Get Humidity Command */
+#define SHT_GET_TEMP    0xE3    /* Get Temperature Command */
+#define SHT_GET_HUM     0xE5    /* Get Humidity Command */
 #endif
 #define SHT_SET_USER    0xE6    /* Set User Register Command */
 #define SHT_GET_USER    0xE7    /* Get User Register Command */

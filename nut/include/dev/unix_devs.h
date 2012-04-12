@@ -141,9 +141,9 @@ struct _UNIXDCB {
     */
     int dcb_fd;
 
-	/*! \brief File is Socket
-	*/
-	uint8_t dcb_socket;
+    /*! \brief File is Socket
+    */
+    uint8_t dcb_socket;
 
     /*! \brief Queue of threads waiting for a character in the input buffer.
      */

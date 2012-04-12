@@ -40,25 +40,25 @@ class NutComponentModel;
 
 class NutComponentDelegate : public QItemDelegate
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	mutable bool paintRadio;
+    mutable bool paintRadio;
 
 public:
-	explicit NutComponentDelegate(QObject* parent = 0);
+    explicit NutComponentDelegate(QObject* parent = 0);
 
-	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
-	void setEditorData(QWidget* editor, const QModelIndex& index) const;
-	void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
+    void setEditorData(QWidget* editor, const QModelIndex& index) const;
+    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
 
-	void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
 
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 protected:
-	void drawCheck(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect, Qt::CheckState state) const;
+    void drawCheck(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect, Qt::CheckState state) const;
 };
 
 #endif // __NUTCOMPONENTDELEGATE_H__

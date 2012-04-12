@@ -207,8 +207,8 @@ typedef struct tcp_socket TCPSOCKET;
  */
 struct tcp_socket {
     TCPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
-    void *so_device;	    /*!< \brief Always zero. */
-    uint8_t so_devtype;	    /*!< \brief Device type, always IFTYP_TCPSOCK. */
+    void *so_device;        /*!< \brief Always zero. */
+    uint8_t so_devtype;     /*!< \brief Device type, always IFTYP_TCPSOCK. */
     int (*so_devread) (TCPSOCKET *, void *, int); /*!< \brief Read from device. */
     int (*so_devwrite) (TCPSOCKET *, CONST void *, int); /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__

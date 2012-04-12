@@ -78,7 +78,7 @@ void *NutTimerEmulation(void *arg)
 
         NutUnixRaiseInterrupt(trigger_irq);
     }
-	return NULL;
+    return NULL;
 }
 
 /*!

@@ -183,7 +183,7 @@
  * Any other than 0 seems to create problems with Atmel's evaluation kits.
  */
 #ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR	        0
+#define NIC_PHY_ADDR            0
 #endif
 
 /*!
@@ -903,11 +903,11 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         } else {
             if (inr(EMAC_TSR) & EMAC_UND) {
                 txBufIdx = 0;
-	            outr(EMAC_TSR, EMAC_UND);
-	        }
+                outr(EMAC_TSR, EMAC_UND);
+            }
             if (inr(EMAC_TSR) & EMAC_COMP) {
-	            outr(EMAC_TSR, EMAC_COMP);
-	        }
+                outr(EMAC_TSR, EMAC_COMP);
+            }
 
             if ((rc = EmacPutPacket(txBufIdx, ni, nb)) == 0) {
                 txBufIdx++;

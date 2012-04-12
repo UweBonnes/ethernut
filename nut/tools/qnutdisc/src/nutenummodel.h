@@ -41,52 +41,52 @@
 
 class NutEnumModel : public QAbstractTableModel
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
 
-	NutEnumModel( QObject* parent = 0 );
+    NutEnumModel( QObject* parent = 0 );
 
-	int rowCount(const QModelIndex &parent = QModelIndex()) const;
-	int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
-	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-	QVariant headerData(int section, Qt::Orientation orientation,
-		int role = Qt::DisplayRole) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation,
+        int role = Qt::DisplayRole) const;
 
 
-	void changeDeviceSettings( const QString& mac, const QHostAddress& ip_addr, const QHostAddress& ip_mask, const QHostAddress& gateway );
+    void changeDeviceSettings( const QString& mac, const QHostAddress& ip_addr, const QHostAddress& ip_mask, const QHostAddress& gateway );
 
 public slots:
-	void refresh();
+    void refresh();
 
 private slots:
-	void processPendingDatagrams();
-	void broadcast();
+    void processPendingDatagrams();
+    void broadcast();
 
 private:
-	struct NutDiscoveryData
-	{
-		int version;
-		QString mac;
-		QHostAddress last_ip_addr;
-		QHostAddress ip_mask;
-		QHostAddress gateway;
-		QHostAddress ip_addr;
-		QString hostname;
-		QString custom;
+    struct NutDiscoveryData
+    {
+        int version;
+        QString mac;
+        QHostAddress last_ip_addr;
+        QHostAddress ip_mask;
+        QHostAddress gateway;
+        QHostAddress ip_addr;
+        QString hostname;
+        QString custom;
 
-		bool operator==( const NutDiscoveryData& other )
-		{
-			return mac == other.mac;
-		}
+        bool operator==( const NutDiscoveryData& other )
+        {
+            return mac == other.mac;
+        }
 
-		bool operator!=( const NutDiscoveryData& other )
-		{
-			return ( mac != other.mac || ip_addr != other.ip_addr || ip_mask != other.ip_mask || gateway != other.gateway ||
-				     hostname != other.hostname );
-		}
-	};
-	QList<NutDiscoveryData> entries;
-	QUdpSocket socket;
+        bool operator!=( const NutDiscoveryData& other )
+        {
+            return ( mac != other.mac || ip_addr != other.ip_addr || ip_mask != other.ip_mask || gateway != other.gateway ||
+                     hostname != other.hostname );
+        }
+    };
+    QList<NutDiscoveryData> entries;
+    QUdpSocket socket;
 };
 
 #endif // __NUTENUMMODEL_H__

@@ -84,7 +84,7 @@ static int _sgetb(int fd, void *buffer, size_t count)
  *
  * \param string Pointer to a string that contains the data.
  * \param fmt    Format string containing conversion specifications.
- * \param ap	 List of pointer arguments.
+ * \param ap     List of pointer arguments.
  *
  *
  * \return The number of fields successfully converted and assigned.

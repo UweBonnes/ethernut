@@ -74,7 +74,7 @@ typedef void (*LiLiItemDestroyFunc) (LILI_ITEMREF);
 typedef int (*LiLiItemCompareFunc) (LILI_ITEMREF, LILI_ITEMREF);
 
 /*! \brief Node object type. */
-typedef	struct _LILI_NODE LILI_NODE;
+typedef struct _LILI_NODE LILI_NODE;
 
 /*! \brief Node object structure. */
 struct _LILI_NODE {
@@ -84,7 +84,7 @@ struct _LILI_NODE {
 };
 
 /*! \brief List object type. */
-typedef	struct _LILI LILI;
+typedef struct _LILI LILI;
 
 /*! \brief List object structure. */
 struct _LILI {

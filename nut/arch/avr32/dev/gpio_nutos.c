@@ -120,7 +120,7 @@ static int enable_module_pin(int avr32_bank, int mask, unsigned int function)
         gpio_port->pmr0c = mask;
         gpio_port->pmr1c = mask;
 #ifdef AVR32_GPIO_PMR2C
-		gpio_port->pmr2c = mask;
+        gpio_port->pmr2c = mask;
 #endif
         break;
 
@@ -128,7 +128,7 @@ static int enable_module_pin(int avr32_bank, int mask, unsigned int function)
         gpio_port->pmr0s = mask;
         gpio_port->pmr1c = mask;
 #ifdef AVR32_GPIO_PMR2C
-		gpio_port->pmr2c = mask;
+        gpio_port->pmr2c = mask;
 #endif
         break;
 
@@ -136,7 +136,7 @@ static int enable_module_pin(int avr32_bank, int mask, unsigned int function)
         gpio_port->pmr0c = mask;
         gpio_port->pmr1s = mask;
 #ifdef AVR32_GPIO_PMR2C
-		gpio_port->pmr2c = mask;
+        gpio_port->pmr2c = mask;
 #endif
         break;
 

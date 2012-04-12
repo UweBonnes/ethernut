@@ -156,7 +156,7 @@ typedef struct __attribute__ ((packed)) tcphdr {
 #endif
 #else /* #ifndef __BIG_ENDIAN__ */
     uint8_t  th_off:4,       /*!< \brief Data offset. */
-	    th_x2:4;        /*!< \brief Unused. */
+        th_x2:4;        /*!< \brief Unused. */
 #endif
     uint8_t  th_flags;       /*!< \brief Control flags. */
     uint16_t th_win;         /*!< \brief Number of acceptable octects. */

@@ -219,10 +219,10 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
         NutDumpTcpHeader(__tcp_trs, "OUT", sock, nb);
 #endif
 
-	/*
-	 * To avoid a race condition in tcp state machine, the segment is first
+    /*
+     * To avoid a race condition in tcp state machine, the segment is first
      * appended to the transmission que, and then sent to the network.
-	 */
+     */
 
     /*
      * Append the segment to our transmission queue.
