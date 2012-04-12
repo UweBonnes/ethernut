@@ -196,10 +196,10 @@ static int NicPhyConfig(void)
     uint16_t phy_to;
     uint16_t mode;
 
-    /* 
+    /*
      * Reset the PHY and wait until this self clearing bit
      * becomes zero. We sleep 63 ms before each poll and
-     * give up after 3 retries. 
+     * give up after 3 retries.
      */
     NicPhyWrite(NIC_PHYCR, PHYCR_RST);
     for (phy_to = 0;; phy_to++) {
@@ -538,7 +538,7 @@ void SmscSend(void)
         /* Enable allocation interrupt. */
         nic_outlb(NIC_MSK, INT_ALLOC);
 
-        /* 
+        /*
          * Wait for allocation success. This fails quite often, possibly
          * because we do not clear our receive buffer.
          */
@@ -577,7 +577,7 @@ void SmscSend(void)
         for (i = 0; i < 6; i++) {
             nic_outlb(NIC_DATA, mac[i]);
         }
-            
+
         nic_outlb(NIC_DATA, 0x08);
         nic_outlb(NIC_DATA, 0x00);
 

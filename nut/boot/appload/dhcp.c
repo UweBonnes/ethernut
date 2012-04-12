@@ -65,7 +65,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -163,7 +163,7 @@ u_char *DhcpSetOption(u_char * dst, u_char opt, u_char *src, u_char size)
  * \param slen Length of message to send.
  * \param xtype Expected response type.
  *
- * \return The number of data bytes received, 0 on timeout or -1 in 
+ * \return The number of data bytes received, 0 on timeout or -1 in
  *         case of a failure.
  */
 int DhcpTransact(u_short slen, u_char xtype)
@@ -173,7 +173,7 @@ int DhcpTransact(u_short slen, u_char xtype)
     int rlen = 0;
 
     for (retry = 0; retry < 3; ) {
-        /* 
+        /*
          * Send a message, if nothing has been received yet.
          */
         if (rlen == 0) {
@@ -183,8 +183,8 @@ int DhcpTransact(u_short slen, u_char xtype)
             }
         }
 
-        /* 
-         * Do a retry on timouts or failures. A receive failures may be 
+        /*
+         * Do a retry on timouts or failures. A receive failures may be
          * caused by a hardware failure or a bad frame.
          */
         if ((rlen = UdpInput(DHCP_CLIENTPORT, 5000)) <= 0) {
@@ -196,8 +196,8 @@ int DhcpTransact(u_short slen, u_char xtype)
          * Check if the response contains the expected ID and
          * message type.
          */
-        if (rframe.u.bootp.bp_xid == sframe.u.bootp.bp_xid && 
-            DhcpGetOption(DHCPOPT_MSGTYPE, &type, 1) == 1 && 
+        if (rframe.u.bootp.bp_xid == sframe.u.bootp.bp_xid &&
+            DhcpGetOption(DHCPOPT_MSGTYPE, &type, 1) == 1 &&
             type == xtype) {
             DEBUG("[DHCP]");
             break;
@@ -212,11 +212,11 @@ int DhcpTransact(u_short slen, u_char xtype)
  * On success, this routine will fill some global
  * variables:
  *
- * - my_ip 
+ * - my_ip
  * - server_ip
  * - bootfile
  * - my_netmask
- * 
+ *
  * \return 0 on success, -1 otherwise.
  */
 int DhcpQuery(void)

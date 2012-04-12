@@ -425,11 +425,11 @@
 /*----------------------------------------------------------------------------
   DEFINES
  *----------------------------------------------------------------------------*/
-    
+
 /* F_cco0 = (2 * M * F_in) / N  */
 #define __M               (((PLL0CFG_Val      ) & 0x7FFF) + 1)
 #define __N               (((PLL0CFG_Val >> 16) & 0x00FF) + 1)
-#define __FCCO(__F_IN)    ((2 * __M * __F_IN) / __N) 
+#define __FCCO(__F_IN)    ((2 * __M * __F_IN) / __N)
 #define __CCLK_DIV        (((CCLKCFG_Val      ) & 0x00FF) + 1)
 
 /* Determine core clock frequency according to settings */
@@ -438,7 +438,7 @@
         #define __CORE_CLK (__FCCO(OSC_CLK) / __CCLK_DIV)
     #elif ((CLKSRCSEL_Val & 0x03) == 2)
         #define __CORE_CLK (__FCCO(RTC_CLK) / __CCLK_DIV)
-    #else 
+    #else
         #define __CORE_CLK (__FCCO(IRC_OSC) / __CCLK_DIV)
     #endif
  #else
@@ -454,14 +454,14 @@
 /*----------------------------------------------------------------------------
   Clock Variable definitions
  *----------------------------------------------------------------------------*/
-// TODO: Implemen correct handling of peripheral clocks, USB clock and further clocks 
+// TODO: Implemen correct handling of peripheral clocks, USB clock and further clocks
 uint32_t SystemCoreClock = __CORE_CLK;      /*!< System Clock Frequency (Core Clock)*/
 uint32_t USBClock 		 = (48000000UL);    /*!< USB Clock Frequency - this value will be updated after call SystemCoreClockUpdate, should be 48MHz*/
 
 
 /*----------------  Clock Setup Procedure ------------------------------
- * 
- * For details about the clocking system see chapter 4, page 29 of the 
+ *
+ * For details about the clocking system see chapter 4, page 29 of the
  * LPC176x CPU user manual
  *
  * Call SetSysClock to automaticaly setup the system clocking
@@ -479,19 +479,19 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
         switch (LPC_SC->CLKSRCSEL & 0x03) {
             case 0:                                /* Int. RC oscillator => PLL0    */
             case 3:                                /* Reserved, default to Int. RC  */
-                SystemCoreClock = (IRC_OSC * 
+                SystemCoreClock = (IRC_OSC *
                                   ((2 * ((LPC_SC->PLL0STAT & 0x7FFF) + 1)))  /
                                   (((LPC_SC->PLL0STAT >> 16) & 0xFF) + 1)    /
                                   ((LPC_SC->CCLKCFG & 0xFF)+ 1));
                 break;
             case 1:                                /* Main oscillator => PLL0       */
-                SystemCoreClock = (OSC_CLK * 
+                SystemCoreClock = (OSC_CLK *
                                   ((2 * ((LPC_SC->PLL0STAT & 0x7FFF) + 1)))  /
                                   (((LPC_SC->PLL0STAT >> 16) & 0xFF) + 1)    /
                                   ((LPC_SC->CCLKCFG & 0xFF)+ 1));
                 break;
             case 2:                                /* RTC oscillator => PLL0        */
-                SystemCoreClock = (RTC_CLK * 
+                SystemCoreClock = (RTC_CLK *
                                   ((2 * ((LPC_SC->PLL0STAT & 0x7FFF) + 1)))  /
                                   (((LPC_SC->PLL0STAT >> 16) & 0xFF) + 1)    /
                                   ((LPC_SC->CCLKCFG & 0xFF)+ 1));
@@ -614,10 +614,10 @@ uint32_t Lpc17xx_ClockGet(int idx)
 {
     SystemCoreClockUpdate();
     switch(idx) {
-        case NUT_HWCLK_CPU: 
+        case NUT_HWCLK_CPU:
             return SystemCoreClock;
             break;
-            
+
         case NUT_HWCLK_PCLK:
             /* peripheral base clock is the same as the CPU clock on LPC176x.
                Divided clocks (%1, 2, 4, 8) are possible */

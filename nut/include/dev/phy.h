@@ -43,7 +43,7 @@
 
 /* These are the PHYters OUIs.
  * The Organizationally Unique Identifier consists of a vendors model number
- * and a model revision number. By IEEE the two highest bits are ignored. 
+ * and a model revision number. By IEEE the two highest bits are ignored.
  */
 /* Special tokens */
 #define PHY_AUTO    0x00000000  /* Autodetect chip, not recommended */
@@ -121,22 +121,22 @@
 #define PHY_GET_REGVAL      0x0103  /* Read value of register (par>>16) from the phy */
 #define PHY_SET_REGVAL      0x0104  /* Write value (par & 0xFFFF) to register (par>>16) of the phy */
 
-/* 
+/*
  * Physical Layer Tranceiver - Device Control Block
  *
  */
 typedef struct _PHYDCB PHYDCB;
 
 struct _PHYDCB {
-    /* 
+    /*
      * Vendor OUI ( including model and revision )
-     */ 
-    uint32_t oui;       
-
-    /* 
-     * Address of chip at MDIO bus 
      */
-    uint8_t  addr;      
+    uint32_t oui;
+
+    /*
+     * Address of chip at MDIO bus
+     */
+    uint8_t  addr;
 
     /*
      * Functionpointer filled by EMAC driver to access

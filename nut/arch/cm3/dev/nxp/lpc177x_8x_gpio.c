@@ -73,22 +73,22 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     __IO uint32_t *IOCON;
 
     NUTASSERT(bank < NUTGPIOPORT_MAX);
-    NUTASSERT((bit < 32) && ((bank != NUTGPIOPORT_MAX - 1) || (bit < 5))); 
-    
+    NUTASSERT((bit < 32) && ((bank != NUTGPIOPORT_MAX - 1) || (bit < 5)));
+
     /* Calculate the address of the desired IOCON register */
     IOCON = (uint32_t *)(LPC_IOCON_BASE + ((bank * 32 + bit) * sizeof(uint32_t)));
 
     /*
      * See register description of the IOCON registers of each I/O pin.
      */
-    
+
     mode = *IOCON;
 
     /* Query pin direction */
     if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit)) {
         rc |= GPIO_CFG_OUTPUT;
     }
-    
+
     /* Query currently set alternate function */
     rc |= ((mode >> IOCON_FUNC_POS) & IOCON_FUNC_BITMASK) << GPIO_CFG_PERIPHERAL_POS;
     if (rc & GPIO_CFG_PERIPHERAL_MASK) {
@@ -162,9 +162,9 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     int      i;
 
     __IO uint32_t *IOCON;
-    
+
     NUTASSERT(bank < NUTGPIOPORT_MAX);
-    
+
     /*
      * See register description of the IOCON registers of each I/O pin.
      */
@@ -179,40 +179,40 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     } else
     if (flags & GPIO_CFG_REPEATER) {
         mode |= IOCON_MODE_REPEATER;
-    } 
+    }
 
     if (flags & GPIO_CFG_HYSTERESIS) {
         mode |= IOCON_HYSTERESIS;
-    } 
+    }
 
     if (flags & GPIO_CFG_INVERT) {
         mode |= IOCON_INVERTED;
-    } 
-    
+    }
+
     if (flags & GPIO_CFG_ADMODE) {
         mode |= IOCON_ADMODE;
-    } 
+    }
 
     if (flags & GPIO_CFG_DEBOUNCE) {
         mode |= IOCON_GLITCH_FILTER;
-    } 
+    }
 
     if (flags & GPIO_CFG_SLEWCTRL) {
         mode |= IOCON_SLEW;
-    } 
+    }
 
     if (flags & GPIO_CFG_MULTIDRIVE) {
         mode |= IOCON_ODMODE;
-    } 
-    
+    }
+
     if (flags & GPIO_CFG_DAC_ENABLE) {
         mode |= IOCON_DACEN;
-    } 
-    
+    }
+
     IOCON = (uint32_t *)(LPC_IOCON_BASE + ((bank * 32) * sizeof(uint32_t)));
-    
+
     for (i = 0; i < (bank != NUTGPIO_PORT5 ? 32 : 5); i ++) {
-        *(IOCON ++) = mode;        
+        *(IOCON ++) = mode;
     }
 
     if (GPIO_CFG_OUTPUT) {
@@ -248,15 +248,15 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     __IO uint32_t *IOCON;
 
     NUTASSERT(bank < NUTGPIOPORT_MAX);
-    NUTASSERT((bit < 32) && ((bank != NUTGPIOPORT_MAX - 1) || (bit < 5))); 
-    
+    NUTASSERT((bit < 32) && ((bank != NUTGPIOPORT_MAX - 1) || (bit < 5)));
+
     /* Calculate the address of the desired IOCON register */
     IOCON = (uint32_t *)(LPC_IOCON_BASE + ((bank * 32 + bit) * sizeof(uint32_t)));
 
     /*
      * See register description of the IOCON registers of each I/O pin.
      */
-    
+
     mode = 0;
 
     mode |= ((flags & GPIO_CFG_PERIPHERAL_MASK) >> GPIO_CFG_PERIPHERAL_POS) & IOCON_FUNC_BITMASK;
@@ -269,44 +269,44 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     } else
     if (flags & GPIO_CFG_REPEATER) {
         mode |= IOCON_MODE_REPEATER;
-    } 
+    }
 
     if (flags & GPIO_CFG_HYSTERESIS) {
         mode |= IOCON_HYSTERESIS;
-    } 
+    }
 
     if (flags & GPIO_CFG_INVERT) {
         mode |= IOCON_INVERTED;
-    } 
-    
+    }
+
     if (flags & GPIO_CFG_ADMODE) {
         mode |= IOCON_ADMODE;
-    } 
+    }
 
     if (flags & GPIO_CFG_DEBOUNCE) {
         mode |= IOCON_GLITCH_FILTER;
-    } 
+    }
 
     if (flags & GPIO_CFG_SLEWCTRL) {
         mode |= IOCON_SLEW;
-    } 
+    }
 
     if (flags & GPIO_CFG_MULTIDRIVE) {
         mode |= IOCON_ODMODE;
-    } 
-    
+    }
+
     if (flags & GPIO_CFG_DAC_ENABLE) {
         mode |= IOCON_DACEN;
-    } 
+    }
 
     *IOCON = mode;
-    
+
     if (flags & GPIO_CFG_OUTPUT) {
         CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) = 1;
     } else {
         CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) = 0;
     }
-    
+
     if (mode != (*IOCON & (IOCON_FUNC_BITMASK | IOCON_MODE_BITMASK |
                            IOCON_HYSTERESIS_BITMASK | IOCON_INVERT_BITMASK |
                            IOCON_ADMODE_BITMASK | IOCON_GLITCH_FILTER_BITMASK |
@@ -318,8 +318,8 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) != (flags & GPIO_CFG_OUTPUT) ? 1 : 0) {
         rc = -1;
     }
-    
-    
+
+
     return rc;
 }
 

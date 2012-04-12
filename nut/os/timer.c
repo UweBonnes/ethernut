@@ -321,7 +321,7 @@ void NutTimerInit(void)
 #else
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
-    
+
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
 #if !defined(NUT_DELAYLOOPS)
@@ -357,7 +357,7 @@ void NutTimerInit(void)
 /*!
  * \brief Loop for a specified number of microseconds.
  *
- * This routine can be used for short delays below the system tick 
+ * This routine can be used for short delays below the system tick
  * time, mainly when driving external hardware, where the resolution
  * of NutSleep() wouldn't fit, a thread switch would be undesirable
  * or in early system initialization stage, where the system timer
@@ -725,7 +725,7 @@ uint32_t NutGetTickCount(void)
     NutExitCritical();
 #else
     /* LST verification shows single atomic access to get this value.
-     * So no additional atomic forcing operations needed here with Cortex. 
+     * So no additional atomic forcing operations needed here with Cortex.
      */
     // TODO: Check with other ARM architectures.
     rc = nut_ticks;

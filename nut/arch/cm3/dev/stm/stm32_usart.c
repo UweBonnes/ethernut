@@ -1230,7 +1230,7 @@ static int Stm32UsartInit(void)
 
     /* USART Related GPIO Init */
 #if defined (MCU_STM32F1)
- #ifdef STM_USART_REMAP 
+ #ifdef STM_USART_REMAP
     GPIO_PinRemapConfig(STM_USART_REMAP, STM_USART_DOREMAP);
  #endif
 #else

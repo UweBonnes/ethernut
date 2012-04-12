@@ -76,7 +76,7 @@
  *
  * During write operations a buffer with this size is allocated
  * from heap and may cause memory problems with large sectors.
- * Thus, this value may be less than the size of the configuration 
+ * Thus, this value may be less than the size of the configuration
  * sector, in which case the rest of the sector is unused.
  *
  * Currently only 1 sector can be used for system configurations.
@@ -115,9 +115,9 @@ uint32_t Lpc17xxIapGetSectorNr (uint32_t addr)
     n = addr >> 12;             /*  4kB Sector  */
     if (n >= 0x10) {
         n = 0x0E + (n >> 3);    /* 32kB Sector  */
-    } 
+    }
 
-    return n;                 
+    return n;
 }
 
 
@@ -125,7 +125,7 @@ uint32_t Lpc17xxIapGetSectorNr (uint32_t addr)
  * \brief   Prepare sector(s) for write operation
  *
  * \param   start_sec   Number of start sector
- * \param   end_sec     Number of end sector 
+ * \param   end_sec     Number of end sector
  *
  * \return  CMD_SUCCESS/BUSY/INVALID_SECTOR
  *
@@ -134,7 +134,7 @@ uint32_t Lpc17xxIapGetSectorNr (uint32_t addr)
 static IAP_STATUS_CODE Lpc17xxIapSectorPrepare(uint32_t start_sec, uint32_t end_sec)
 {
     IAP_COMMAND_Type command;
-    
+
     command.cmd      = IAP_PREPARE;             /* Prepare Sector for Write   */
     command.param[0] = start_sec;               /* Start Sector               */
     command.param[1] = end_sec;                 /* End Sector                 */
@@ -157,7 +157,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorRead(uint32_t addr, void *data, size_t len)
     if (data == NULL) {
         return DST_ADDR_ERROR;
     }
-    
+
     memcpy(data, (void *) (uptr_t) (FLASH_CHIP_BASE + addr), len);
 
     return CMD_SUCCESS;
@@ -169,7 +169,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorRead(uint32_t addr, void *data, size_t len)
  *
  * \param   dest        destination buffer (in Flash memory) (must be 256 byte aligned).
  * \param   source      source buffer (in RAM) (should be word aligned)
- * \param   size        the write size. 
+ * \param   size        the write size.
  *
  * \return  CMD_SUCCESS. SRC_ADDR_ERROR/DST_ADDR_ERROR
  *          SRC_ADDR_NOT_MAPPED/DST_ADDR_NOT_MAPPED
@@ -198,7 +198,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorWrite(uint32_t dest, void* source, IAP_WRITE_SIZ
     command.param[2] = size;                    /* Number of bytes            */
     command.param[3] = NutArchClockGet(NUT_HWCLK_CPU) / 1000; /* CCLK in kHz */
     IAP_Call (&command.cmd, &command.status);   /* Call IAP Command           */
-      
+
     return (IAP_STATUS_CODE)command.status;
 }
 
@@ -209,7 +209,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorWrite(uint32_t dest, void* source, IAP_WRITE_SIZ
  * \param   start_sec   Number of start sector
  * \param   end_sec     Number of end sector
  *
- * \return  CMD_SUCCESS, INVALID_SECTOR, 
+ * \return  CMD_SUCCESS, INVALID_SECTOR,
  *          SECTOR_NOT_PREPARED_FOR_WRITE_OPERATION, BUSY
  *
  */
@@ -231,7 +231,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorErase(uint32_t start_sec, uint32_t end_sec)
     command.param[1] = end_sec;                 /* End Sector                 */
     command.param[2] = NutArchClockGet(NUT_HWCLK_CPU) / 1000; /* CCLK in kHz */
     IAP_Call (&command.cmd, &command.status);   /* Call IAP Command           */
-    return (IAP_STATUS_CODE)command.status;  
+    return (IAP_STATUS_CODE)command.status;
 }
 
 
@@ -248,7 +248,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorErase(uint32_t start_sec, uint32_t end_sec)
  */
 
 IAP_STATUS_CODE Lpc17xxIapSectorBlankCheck(uint32_t start_sec, uint32_t end_sec,
-                                 uint32_t *first_nblank_off, 
+                                 uint32_t *first_nblank_off,
 								 uint32_t *first_nblank_val)
 {
     IAP_COMMAND_Type command;
@@ -292,7 +292,7 @@ IAP_STATUS_CODE Lpc17xxIapReadBootCodeVersion(uint8_t *major, uint8_t* minor)
         if(major != NULL) {
             *major = (command.result[0] >> 8) & 0xFF;
         }
-        
+
         if(minor != NULL) {
             *minor = (command.result[0]) & 0xFF;
         }

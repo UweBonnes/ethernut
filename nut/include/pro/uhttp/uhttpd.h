@@ -331,7 +331,7 @@ extern char *HttpArgValue(HTTP_REQUEST * req);
  *
  * A HTTP header line may contain a list of parameter name/value pairs,
  * separated by semicolons.
- * 
+ *
  * <header-name>: <param-name>="<param-value>"; <param-name>="<param-value>"..
  *
  * This function can be used to retrieve a value of a parameter that is

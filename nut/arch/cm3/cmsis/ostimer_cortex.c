@@ -96,7 +96,7 @@ void NutArchMicroDelay(uint32_t us)
     start_ticks = SysTickValueGet();
     start_ms = nut_ticks;
     SysTickIntEnable();
-    
+
     if (us > 2000)
     {
 	int n = us/1000 -1;
@@ -172,10 +172,10 @@ uint32_t NutArchClockGet(int idx)
     RCC_GetClocksFreq(&RCC_ClocksStatus);
 
 	if ( idx == NUT_HWCLK_CPU ) {
-        clock = RCC_ClocksStatus.SYSCLK_Frequency; 
+        clock = RCC_ClocksStatus.SYSCLK_Frequency;
 	}
-	else if ( idx == NUT_HWCLOCK_HCLK){ 
-        clock = RCC_ClocksStatus.HCLK_Frequency; 
+	else if ( idx == NUT_HWCLOCK_HCLK){
+        clock = RCC_ClocksStatus.HCLK_Frequency;
 	}
 	else if ( idx == NUT_HWCLK_PCLK1 ) {
 		clock = RCC_ClocksStatus.PCLK1_Frequency;
@@ -191,12 +191,12 @@ uint32_t NutArchClockGet(int idx)
 #else
 #warning "Unknown STM32 Family"
 #endif
-    
+
 #elif defined(MCU_LPC17xx)
     clock = Lpc17xx_ClockGet(idx);
 #else
 #warning "Unknown CM3 family"
-#endif    
+#endif
 	return clock;
 }
 

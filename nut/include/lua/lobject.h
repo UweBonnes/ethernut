@@ -125,10 +125,10 @@ typedef struct lua_TValue {
 
 #define setpvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value.p=(x); i_o->tt=LUA_TLIGHTUSERDATA; }
-  
+
 #define setrvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value.p=(x); i_o->tt=LUA_TROTABLE; }
-  
+
 #define setfvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value.p=(x); i_o->tt=LUA_TLIGHTFUNCTION; }
 
@@ -347,7 +347,7 @@ typedef struct Node {
 
 typedef struct Table {
   CommonHeader;
-  lu_byte flags;  /* 1<<p means tagmethod(p) is not present */ 
+  lu_byte flags;  /* 1<<p means tagmethod(p) is not present */
   lu_byte lsizenode;  /* log2 of size of `node' array */
   struct Table *metatable;
   TValue *array;  /* array part */

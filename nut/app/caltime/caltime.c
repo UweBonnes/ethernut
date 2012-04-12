@@ -470,7 +470,7 @@ int main(void)
             break;
         case 'Y':
         case 'y':
-            /* Nut/OS uses a global variable to enable/disable DST. 
+            /* Nut/OS uses a global variable to enable/disable DST.
                Toggle the current status and display the result. */
             _daylight = _daylight == 0;
             printf("DST calculation %sabled\n", _daylight ? "en" : "dis");

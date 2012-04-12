@@ -114,7 +114,7 @@ enum {
  * ------------------------------------------------------------------------- */
 
 /*
- * options of one uart 
+ * options of one uart
  * usbnum: a negative usbnum is used to indicate that device name is used
  */
 
@@ -126,7 +126,7 @@ typedef struct {
     signed char usbnum;
 } uart_options_t;
 
-/* 
+/*
  * all command line options
  */
 typedef struct {

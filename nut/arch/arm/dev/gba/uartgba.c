@@ -121,7 +121,7 @@ static void GbaUartTxEmpty(RINGBUF * rbf)
     }
 
     if (flow_control & XOFF_RCVD) {
-        /* 
+        /*
          * If XOFF has been received, we disable the transmit interrupts
          * and return without sending anything.
          */
@@ -175,7 +175,7 @@ static void GbaUartRxFull(RINGBUF * rbf)
 
     /*
      * We read the received character as early as possible to avoid overflows
-     * caused by interrupt latency. However, reading the error flags must come 
+     * caused by interrupt latency. However, reading the error flags must come
      * first, because reading the ATmega128 data register clears the status.
      */
     //TODO rx_errors |= inb(UCSRnA);
@@ -218,7 +218,7 @@ static void GbaUartRxFull(RINGBUF * rbf)
     }
 
     /*
-     * Check the high watermark for software handshake. If the number of 
+     * Check the high watermark for software handshake. If the number of
      * buffered bytes is above this mark, then send XOFF.
      */
     else if (flow_control) {
@@ -235,8 +235,8 @@ static void GbaUartRxFull(RINGBUF * rbf)
         }
     }
 
-    /* 
-     * Store the character and increment and the ring buffer pointer. 
+    /*
+     * Store the character and increment and the ring buffer pointer.
      */
     *rbf->rbf_head++ = ch;
     if (rbf->rbf_head == rbf->rbf_last) {
@@ -304,7 +304,7 @@ static void GbaUartDisable(void)
 /*!
  * \brief Query the USART hardware for the selected speed.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return The currently selected baudrate.
@@ -328,7 +328,7 @@ static uint32_t GbaUartGetSpeed(void)
 /*!
  * \brief Set the USART hardware bit rate.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param rate Number of bits per second.
@@ -359,7 +359,7 @@ static int GbaUartSetSpeed(uint32_t rate)
 /*!
  * \brief Query the USART hardware for the number of data bits.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return The number of data bits set.
@@ -372,7 +372,7 @@ static uint8_t GbaUartGetDataBits(void)
 /*!
  * \brief Set the USART hardware to the number of data bits.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.
@@ -394,7 +394,7 @@ static int GbaUartSetDataBits(uint8_t bits)
 /*!
  * \brief Query the USART hardware for the parity mode.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return Parity mode, either 0 (disabled), 1 (odd) or 2 (even).
@@ -407,7 +407,7 @@ static uint8_t GbaUartGetParity(void)
 /*!
  * \brief Set the USART hardware to the specified parity mode.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param mode 0 (disabled), 1 (odd) or 2 (even)
@@ -431,7 +431,7 @@ static int GbaUartSetParity(uint8_t mode)
 /*!
  * \brief Query the USART hardware for the number of stop bits.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return The number of stop bits set, either 1 or 2.
@@ -444,7 +444,7 @@ static uint8_t GbaUartGetStopBits(void)
 /*!
  * \brief Set the USART hardware to the number of stop bits.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.
@@ -520,7 +520,7 @@ static int GbaUartSetStatus(uint32_t flags)
         NutEnterCritical();
 
         /*
-         * Enabling or disabling the receiver means to behave like 
+         * Enabling or disabling the receiver means to behave like
          * having sent a XON or XOFF character resp.
          */
         if (flags & UART_RXENABLED) {
@@ -530,7 +530,7 @@ static int GbaUartSetStatus(uint32_t flags)
         }
 
         /*
-         * Enabling or disabling the transmitter means to behave like 
+         * Enabling or disabling the transmitter means to behave like
          * having received a XON or XOFF character resp.
          */
         if (flags & UART_TXENABLED) {
@@ -553,10 +553,10 @@ static int GbaUartSetStatus(uint32_t flags)
 /*!
  * \brief Query the USART hardware for synchronous mode.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
- * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER, 
+ * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER,
  *         \ref UART_NCLOCK and \ref UART_HIGHSPEED.
  */
 static uint8_t GbaUartGetClockMode(void)
@@ -567,11 +567,11 @@ static uint8_t GbaUartGetClockMode(void)
 /*!
  * \brief Set asynchronous or synchronous mode.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param mode Must be an or-ed combination of USART_SYNC, USART_MASTER,
- *             USART_NCLOCK and USART_HIGHSPEED. 
+ *             USART_NCLOCK and USART_HIGHSPEED.
  *
  * \return 0 on success, -1 otherwise.
  */
@@ -589,7 +589,7 @@ static int GbaUartSetClockMode(uint8_t mode)
 /*!
  * \brief Query flow control mode.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return See UsartIOCtl().
@@ -610,7 +610,7 @@ static uint32_t GbaUartGetFlowControl(void)
 /*!
  * \brief Set flow control mode.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param flags See UsartIOCtl().
@@ -646,8 +646,8 @@ static int GbaUartSetFlowControl(uint32_t flags)
 /*!
  * \brief Start the USART transmitter hardware.
  *
- * The upper level USART driver will call this function through the 
- * USARTDCB jump table each time it added one or more bytes to the 
+ * The upper level USART driver will call this function through the
+ * USARTDCB jump table each time it added one or more bytes to the
  * transmit buffer.
  */
 static void GbaUartTxStart(void)
@@ -674,8 +674,8 @@ static void GbaUartTxStart(void)
 /*!
  * \brief Start the USART receiver hardware.
  *
- * The upper level USART driver will call this function through the 
- * USARTDCB jump table each time it removed enough bytes from the 
+ * The upper level USART driver will call this function through the
+ * USARTDCB jump table each time it removed enough bytes from the
  * receive buffer. Enough means, that the number of bytes left in
  * the buffer is below the low watermark.
  */
@@ -701,7 +701,7 @@ static void GbaUartRxStart(void)
 /*
  * \brief Initialize the USART hardware driver.
  *
- * This function is called during device registration by the upper level 
+ * This function is called during device registration by the upper level
  * USART driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.
@@ -711,7 +711,7 @@ static int GbaUartInit(void)
     int rc;
 
     /*
-     * Activate MBV2 UART mode by setting SC low and SD high for at 
+     * Activate MBV2 UART mode by setting SC low and SD high for at
      * least 50 milliseconds.
      */
     outw(REG_RCNT, 0x8032);
@@ -750,7 +750,7 @@ static int GbaUartInit(void)
 /*
  * \brief Deinitialize the USART hardware driver.
  *
- * This function is called during device deregistration by the upper 
+ * This function is called during device deregistration by the upper
  * level USART driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.

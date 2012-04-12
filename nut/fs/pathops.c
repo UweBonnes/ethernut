@@ -167,7 +167,7 @@ long lseek(int fh, long pos, int whence)
  * \brief Remove a directory.
  *
  * \param path Pathname of the directory. Must be the full pathname
- *             including the device, because Nut/OS doesn't support 
+ *             including the device, because Nut/OS doesn't support
  *             relative paths.
  *
  * \return 0 if the remove succeeds, otherwise -1 is returned.
@@ -242,7 +242,7 @@ int mkdir(CONST char *path, int mode)
 /*!
   * \brief Rename a file.
   *
-  * New and old filename must contain the name of a registered device, 
+  * New and old filename must contain the name of a registered device,
   * followed by a colon and a filename. Moving a file from one device
   * to another is not supported.
   *

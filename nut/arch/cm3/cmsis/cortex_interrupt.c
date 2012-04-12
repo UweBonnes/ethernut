@@ -36,7 +36,7 @@ static void mprintf( char *s)
 {
     // Disable transmit interrupts.
     USART1->CR1  &= ~(USART_CR1_TXEIE|USART_CR1_TCIE);
-    
+
     while(*s) {
         while( (USART1->SR & USART_SR_TXE) == 0);
         if (*s=='\n') {
@@ -47,8 +47,8 @@ static void mprintf( char *s)
     }
 }
 
-/* Hardfault Handler. 
- * hard fault handler in C, with stack frame location as input parameter 
+/* Hardfault Handler.
+ * hard fault handler in C, with stack frame location as input parameter
  */
 
 static void IntFaultEntry(void *arg)
@@ -94,14 +94,14 @@ static void IntDefaultHandler(void *arg)
 #ifdef OWN_EXCEPTION_HANDLER
     int i;
     unsigned int *hardfault_args = arg;
-    unsigned int stacked_r0; 
-    unsigned int stacked_r1; 
-    unsigned int stacked_r2; 
-    unsigned int stacked_r3; 
-    unsigned int stacked_r12; 
-    unsigned int stacked_lr; 
-    unsigned int stacked_pc; 
-    unsigned int stacked_psr; 
+    unsigned int stacked_r0;
+    unsigned int stacked_r1;
+    unsigned int stacked_r2;
+    unsigned int stacked_r3;
+    unsigned int stacked_r12;
+    unsigned int stacked_lr;
+    unsigned int stacked_pc;
+    unsigned int stacked_psr;
     unsigned int cfsr = (*((volatile unsigned long *)(0xE000ED28)));
     char s[40];
 
@@ -117,47 +117,47 @@ static void IntDefaultHandler(void *arg)
     }
     else {
         mprintf( (char*)s_sirq);
-        sprintf ( s, "VTOR = %08lx\n", (*((volatile unsigned long *)(SCB->VTOR)))); 
+        sprintf ( s, "VTOR = %08lx\n", (*((volatile unsigned long *)(SCB->VTOR))));
         mprintf ( s);
-        sprintf ( s, "ICSR = %08lx\n", (*((volatile unsigned long *)(SCB->ICSR)))); 
+        sprintf ( s, "ICSR = %08lx\n", (*((volatile unsigned long *)(SCB->ICSR))));
         mprintf ( s);
     }
-        
-    stacked_r0 = ((unsigned long) hardfault_args[0]); 
-    stacked_r1 = ((unsigned long) hardfault_args[1]); 
-    stacked_r2 = ((unsigned long) hardfault_args[2]); 
-    stacked_r3 = ((unsigned long) hardfault_args[3]); 
 
-    stacked_r12 = ((unsigned long) hardfault_args[4]); 
-    stacked_lr = ((unsigned long) hardfault_args[5]); 
-    stacked_pc = ((unsigned long) hardfault_args[6]); 
-    stacked_psr = ((unsigned long) hardfault_args[7]); 
+    stacked_r0 = ((unsigned long) hardfault_args[0]);
+    stacked_r1 = ((unsigned long) hardfault_args[1]);
+    stacked_r2 = ((unsigned long) hardfault_args[2]);
+    stacked_r3 = ((unsigned long) hardfault_args[3]);
 
-    sprintf ( s, "R0  = %08x\n", stacked_r0); 
+    stacked_r12 = ((unsigned long) hardfault_args[4]);
+    stacked_lr = ((unsigned long) hardfault_args[5]);
+    stacked_pc = ((unsigned long) hardfault_args[6]);
+    stacked_psr = ((unsigned long) hardfault_args[7]);
+
+    sprintf ( s, "R0  = %08x\n", stacked_r0);
     mprintf ( s);
-    sprintf ( s, "R1  = %08x\n", stacked_r1); 
+    sprintf ( s, "R1  = %08x\n", stacked_r1);
     mprintf ( s);
-    sprintf ( s, "R2  = %08x\n", stacked_r2); 
+    sprintf ( s, "R2  = %08x\n", stacked_r2);
     mprintf ( s);
-    sprintf ( s, "R3  = %08x\n", stacked_r3); 
+    sprintf ( s, "R3  = %08x\n", stacked_r3);
     mprintf ( s);
-    sprintf ( s, "R12 = %08x\n", stacked_r12); 
+    sprintf ( s, "R12 = %08x\n", stacked_r12);
     mprintf ( s);
-    sprintf ( s, "LR  = %08x\n", stacked_lr); 
+    sprintf ( s, "LR  = %08x\n", stacked_lr);
     mprintf ( s);
-    sprintf ( s, "PC  = %08x\n", stacked_pc); 
+    sprintf ( s, "PC  = %08x\n", stacked_pc);
     mprintf ( s);
-    sprintf ( s, "PSR = %08x\n\n", stacked_psr); 
+    sprintf ( s, "PSR = %08x\n\n", stacked_psr);
     mprintf ( s);
-    sprintf ( s, "BFAR = %08lx\n", (*((volatile unsigned long *)(0xE000ED38)))); 
+    sprintf ( s, "BFAR = %08lx\n", (*((volatile unsigned long *)(0xE000ED38))));
     mprintf ( s);
-    sprintf ( s, "CFSR = %08x\n", cfsr); 
+    sprintf ( s, "CFSR = %08x\n", cfsr);
     mprintf ( s);
-    sprintf ( s, "HFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED2C)))); 
+    sprintf ( s, "HFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED2C))));
     mprintf ( s);
-    sprintf ( s, "DFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED30)))); 
+    sprintf ( s, "DFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED30))));
     mprintf ( s);
-    sprintf ( s, "AFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED3C)))); 
+    sprintf ( s, "AFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED3C))));
     mprintf ( s);
 
     while(1) {
@@ -165,7 +165,7 @@ static void IntDefaultHandler(void *arg)
             GPIOB->BSRR = 0x0001;
         for(i=0; i<100000; i++)
             GPIOB->BRR = 0x0001;
-    };        
+    };
 #else
     while(1);
 #endif
@@ -288,7 +288,7 @@ unsigned char IntMasterDisable(void)
 void IntRegister(IRQn_Type ulInterrupt, void (*pfnHandler)(void*))
 {
     uint16_t ulIdx = ulInterrupt+16;
-    
+
     /* Check for valid interrupt number */
     NUTASSERT(ulIdx < NUM_INTERRUPTS);
 
@@ -553,7 +553,7 @@ void IntDisable(IRQn_Type ulInterrupt)
 //!
 //! \param ulInterrupt specifies the interrupt to check.
 //!
-//! Check if the specified interrupt is enabled in the interrupt controller.  
+//! Check if the specified interrupt is enabled in the interrupt controller.
 //!
 //! \return -1 for invalid interrupt, 0 if disabled, 1 if enabled.
 //
@@ -598,11 +598,11 @@ int IntIsEnabled(IRQn_Type ulInterrupt)
     return rc;
 }
 
-void Cortex_IntInit(void) 
+void Cortex_IntInit(void)
 {
     int i;
 
-    for( i=0; i<NUM_INTERRUPTS; i++) 
+    for( i=0; i<NUM_INTERRUPTS; i++)
     {
 
         /* Disable current interrupt */
@@ -617,17 +617,17 @@ void Cortex_IntInit(void)
 #endif
                 break;
             case 2:
-                g_pfnRAMVectors[i] = (void(*)(void*))IntNmiHandler; 
+                g_pfnRAMVectors[i] = (void(*)(void*))IntNmiHandler;
                 break;
             case 3:
-                g_pfnRAMVectors[i] = &IntHardfaultHandler; 
+                g_pfnRAMVectors[i] = &IntHardfaultHandler;
                 break;
             case 4:
-                g_pfnRAMVectors[i] = (void(*)(void*))IntMemfaultHandler; 
+                g_pfnRAMVectors[i] = (void(*)(void*))IntMemfaultHandler;
                 IntEnable(i-16);
                 break;
             case 5:
-                g_pfnRAMVectors[i] = (void(*)(void*))IntBusfaultHandler; 
+                g_pfnRAMVectors[i] = (void(*)(void*))IntBusfaultHandler;
                 IntEnable(i-16);
                 break;
             case 6:
@@ -659,7 +659,7 @@ void Cortex_IntInit(void)
             default:
                 g_pfnRAMVectors[i] = &IntDefaultHandler;
                 break;
-                
+
         }
     }
 

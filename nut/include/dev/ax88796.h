@@ -39,7 +39,7 @@ extern NUTDEVICE devAx88796;
 #endif
 
 
-/*! 
+/*!
  * \brief Charon III Ethernet controller parameters.
  */
 #define ASIX_BASE        0x20000000

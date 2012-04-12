@@ -78,13 +78,13 @@
 
 /*!
  * \brief Locate the last occurrence of a character in a NUL terminated string.
- * 
+ *
  * The terminating NUL character is considered part of the string.
  *
  * \param p  Pointer to the string.
  * \param ch Character to locate.
  *
- * \return A pointer to the located character or NULL if the character 
+ * \return A pointer to the located character or NULL if the character
  *         does not appear in the string.
  */
 char *strrchr(CONST char *p, int ch)

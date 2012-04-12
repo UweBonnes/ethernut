@@ -223,11 +223,11 @@ extern UDPSOCKET *NutUdpFindSocket(uint16_t port);
 extern int NutUdpSetSockOpt(UDPSOCKET *sock, int optname, CONST void *optval, int optlen);
 extern int NutUdpGetSockOpt(UDPSOCKET *sock, int optname, void *optval, int optlen);
 
-#ifdef NUT_UDP_ICMP_SUPPORT    
+#ifdef NUT_UDP_ICMP_SUPPORT
 extern int NutUdpSetSocketError(UDPSOCKET * sock, uint32_t remote_addr, uint16_t remote_port, uint16_t error);
 extern int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port);
 #endif
-    
+
 __END_DECLS
 
 #endif

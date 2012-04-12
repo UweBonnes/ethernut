@@ -33,9 +33,9 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/* Connect a DS18B20 Onewire Device to OWI_PORT/OWI_PIN with a Pullup of 
+/* Connect a DS18B20 Onewire Device to OWI_PORT/OWI_PIN with a Pullup of
  * about 5 k.
- * On startup the unique Hardware ID of the device is  printed and on 
+ * On startup the unique Hardware ID of the device is  printed and on
  * return (CR) from the UART the measuered temperature
  */
 
@@ -67,7 +67,7 @@ THREAD(OneWire, arg)
         if (w1_command( CONVERT_T, NULL))
             printf("w1_command convert_t error\n");
         NutSleep(750);
-        while (!(OWReadBit()) && i < 100)       
+        while (!(OWReadBit()) && i < 100)
         {
             NutSleep(10);
             i++;
@@ -76,11 +76,11 @@ THREAD(OneWire, arg)
         {
             raw = TEMP_GENERAL_ERROR;
         }
-        else 
+        else
         {
             if (i)
             {
-                printf( 
+                printf(
                           "Conversion took additional %d poll cycles\n",
                           i);
                 i = 0;
@@ -150,7 +150,7 @@ int main(void)
      * Stream devices can use low level read and write functions.
      * Writing program space data is supported too.
      */
-    printf("\nNut/OS OWI Sample2 " __DATE__ " " __TIME__ 
+    printf("\nNut/OS OWI Sample2 " __DATE__ " " __TIME__
             "\nPress any key...");
 
 #if defined(LED1_PORT) && defined(LED1_PIN)

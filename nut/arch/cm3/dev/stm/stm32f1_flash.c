@@ -209,7 +209,7 @@ FLASH_Status FLASH_GetStatus(void)
 {
     FLASH_Status rs = FLASH_COMPLETE;
     register uint16_t flash_sr = FLASH->SR;
-    
+
 #if defined(STM32F10X_XL)
     flash_sr |= FLASH->SR2;
 #endif /* STM32F10X_XL */
@@ -249,7 +249,7 @@ FLASH_Status Stm32FlashWaitReady(uint32_t Timeout)
         if(--Timeout == 0 )
             status = FLASH_TIMEOUT;
     } while(status == FLASH_BUSY);
-    
+
     /* Return the operation status */
     return status;
 }
@@ -268,7 +268,7 @@ FLASH_Status FLASH_Unlock( void *addr, size_t len)
 {
     FLASH_Status rs = FLASH_COMPLETE;
     uint16_t flash_cr = 0;
-    
+
     /* Check the parameters */
     NUTASSERT(IS_FLASH_ADDRESS(addr));
 
@@ -386,7 +386,7 @@ void FLASH_ITConfig(uint32_t FLASH_IT, FunctionalState NewState)
 FLASH_Status FLASH_EraseAllBank1Pages(void)
 {
     FLASH_Status status = FLASH_COMPLETE;
-    
+
     /* Wait for last operation to be completed */
     status = Stm32FlashWaitReady( EraseTimeout);
 
@@ -417,7 +417,7 @@ FLASH_Status FLASH_EraseAllBank1Pages(void)
 FLASH_Status FLASH_EraseAllBank2Pages(void)
 {
     FLASH_Status status = FLASH_COMPLETE;
-    
+
     /* Wait for last operation to be completed */
     status = Stm32FlashWaitReady( FLASH_BANK2_START_ADDR, EraseTimeout);
 
@@ -528,7 +528,7 @@ FLASH_Status FLASH_EraseOptionBytes(void)
             }
         }
     }
-    
+
     /* Return the erase status */
     return status;
 }
@@ -547,7 +547,7 @@ FLASH_Status FLASH_ProgramOptionByteData(uint32_t Address, uint8_t Data)
     FLASH_Status status = FLASH_COMPLETE;
     /* Check the parameters */
     NUTASSERT(IS_OB_DATA_ADDRESS(Address));
-    
+
     status = Stm32FlashWaitReady(ProgramTimeout);
 
     if(status == FLASH_COMPLETE) {
@@ -655,13 +655,13 @@ FLASH_Status FLASH_Program16(uint32_t addr, uint16_t Data)
 {
     FLASH_Status status = FLASH_COMPLETE;
     FLASH_BankRegT *bankr = (FLASH_BankRegT*)&FLASH->SR;
-    
+
     /* Check the parameters */
     NUTASSERT(IS_FLASH_ADDRESS(addr));
 
     /* Wait for last operation to be completed */
     status = Stm32FlashWaitReady(ProgramTimeout);
-    if(status == FLASH_COMPLETE) 
+    if(status == FLASH_COMPLETE)
     {
 #if defined(STM32F10X_XL)
         if(addr > (uint32_t)FLASH_BANK1_END_ADDR)
@@ -678,7 +678,7 @@ FLASH_Status FLASH_Program16(uint32_t addr, uint16_t Data)
             bankr->CR &= ~FLASH_CR_PG;
         }
     }
-    
+
     /* Return the Program Status */
     return status;
 }
@@ -849,12 +849,12 @@ int Stm32FlashErasePage(void *page)
     /* Check the parameters */
     NUTASSERT(IS_FLASH_ADDRESS(page));
     NUTASSERT(IS_PAGE_ADDRESS(page));
-    
+
 #if defined(STM32F10X_XL)
     if (page > FLASH_BANK1_END_ADDR)
         bankr = (FLASH_BankRegT*)&FLASH->SR2;
 #endif /* STM32F10X_XL */
-    
+
     /* Wait for last operation to be completed */
     rs = Stm32FlashWaitReady(EraseTimeout);
     if(rs == FLASH_COMPLETE) {
@@ -905,7 +905,7 @@ int Stm32FlashWritePage( void *dst, void *src)
 
     /* Wait for last operation to be completed */
     rs = Stm32FlashWaitReady(ProgramTimeout);
-    if (rs == FLASH_COMPLETE) 
+    if (rs == FLASH_COMPLETE)
     {
         /* Enable Programming Mode */
         bankr->CR |= FLASH_CR_PG;
@@ -944,7 +944,7 @@ int Stm32FlashWrite( void* dst, void* src, size_t len)
     uint8_t *buffer;
     uint8_t *sector;
     uint32_t offset, length;
-    uint8_t *rptr = src; 
+    uint8_t *rptr = src;
     uint8_t *wptr = dst;
     uint8_t *end = wptr+len;
     uint8_t *flashp;
@@ -1011,7 +1011,7 @@ int Stm32FlashWrite( void* dst, void* src, size_t len)
         /* Increase source and destination pointers */
         wptr += length;
         rptr += length;
-    }        
+    }
 
     /* Lock the FLASH again */
     FLASH_Lock(dst, len);
@@ -1037,7 +1037,7 @@ int Stm32FlashWrite( void* dst, void* src, size_t len)
  * \brief Nut/OS specific handling for parameters in FLASH.
  *
  * This function enables to read system specific parameters
- * from processors FLASH. The sectors used for storage are 
+ * from processors FLASH. The sectors used for storage are
  * configureable via nutconf.
  *
  * \param pos Offset of parameter(s) in configured page(s).
@@ -1051,7 +1051,7 @@ int Stm32FlashParamRead(unsigned int pos, void *data, size_t len)
     FLASH_Status rs = FLASH_BOUNDARY;
     uint8_t *addr = (uint8_t *)(FLASH_CONF_SECTOR + pos);
     uint8_t *max = (uint8_t *)(FLASH_CONF_SECTOR+FLASH_CONF_SIZE);
-    
+
     /* Boundary checks */
     if (addr+len > max) {
         return rs;
@@ -1067,7 +1067,7 @@ int Stm32FlashParamRead(unsigned int pos, void *data, size_t len)
  * \brief Nut/OS specific handling for parameters in FLASH.
  *
  * This function enables to store system specific parameters
- * in processors FLASH. The sectors used for storage are 
+ * in processors FLASH. The sectors used for storage are
  * configureable via nutconf.
  * FLASH is only updated if content differs.
  *
@@ -1084,14 +1084,14 @@ int Stm32FlashParamWrite(unsigned int pos, CONST void *data, size_t len)
     uint8_t *max  = (uint8_t*)(FLASH_CONF_SECTOR+FLASH_CONF_SIZE);
 
     /* Boundary checks */
-    if (addr+len < max) 
+    if (addr+len < max)
     {
-     /* Check if content needs update. */    
-        if (memcmp(addr, data, len)) 
+     /* Check if content needs update. */
+        if (memcmp(addr, data, len))
         {
             rs = Stm32FlashWrite( addr, (void*)data, len);
         }
-    }   
+    }
     /* Return success or fault code */
     return (int)rs;
 }

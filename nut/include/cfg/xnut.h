@@ -207,7 +207,7 @@
 /**
  * Returns the status of the RS232 DSR signal input of Ser 0 on
  * SUB-D connector J9
- * 
+ *
  * @note Feature only available for devices with serial number
  *       224 upwards (since PCB Revision C)
  * @return 1 if DSR is asserted
@@ -228,7 +228,7 @@
 /**
  * Asserts the RS232 DTR signal output of Ser 0 on SUB-D
  * connector J9
- * 
+ *
  * @note Feature only available for devices with serial number
  *       224 upwards (since PCB Revision C)
  */
@@ -237,7 +237,7 @@
 /**
  * Clears the RS232 DTR signal output of Ser 0 on SUB-D
  * connector J9
- * 
+ *
  * @note Feature only available for devices with serial number
  *       224 upwards (since PCB Revision C)
  */

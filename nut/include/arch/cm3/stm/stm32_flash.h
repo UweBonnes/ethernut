@@ -84,7 +84,7 @@
  * brief FLASH status returns of any operation.
  */
 typedef enum
-{ 
+{
     FLASH_BUSY          =  1,   /*!< Flash operation pending */
     FLASH_COMPLETE      =  0,   /*!< Flash operation successfull completed */
     FLASH_ERROR_PG      = -1,   /*!< Flash programming failed */
@@ -95,7 +95,7 @@ typedef enum
     FLASH_COMPARE       = -6,   /*!< FLASH compare mismatch */
 } FLASH_Status;
 
-/* Internally used functions that should not be accessef by user 
+/* Internally used functions that should not be accessef by user
  * application without exact knowledge of the flash system.
  */
 extern FLASH_Status FLASH_Unlock( void *addr, size_t len);
@@ -116,4 +116,4 @@ extern int Stm32FlashWrite( void* dst, void* src, size_t len);
 extern int Stm32FlashParamRead(unsigned int pos, void *data, unsigned int len);
 extern int Stm32FlashParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
-#endif /* _STM32_FLASH_H_ */ 
+#endif /* _STM32_FLASH_H_ */

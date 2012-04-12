@@ -78,7 +78,7 @@
 
 /*!
  * \brief Return the length of a file.
- * 
+ *
  * \param fd   Descriptor of a previously opened file, device or
  *             connected socket.
  *

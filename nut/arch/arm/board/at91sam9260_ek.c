@@ -61,7 +61,7 @@
 /*!
  * \brief Delay loop.
  *
- * \param Number of loops to execute. 
+ * \param Number of loops to execute.
  */
 static void Sam9260ekDelay(int n)
 {

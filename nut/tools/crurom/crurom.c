@@ -50,7 +50,7 @@ const char crurom_rcsid[] = "@(#) $Id$";
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
- 
+
 
 #define IDENT   "crurom"
 #undef VERSION
@@ -76,7 +76,7 @@ int dofile(char *name)
 
     if(strnicmp(fsname, rootdir, rootlen) == 0)
         fsname += rootlen;
-        
+
     if((fd = open(name, O_RDONLY | O_BINARY)) == -1) {
         fprintf(stderr, IDENT ": Error %d opening %s\n", errno, name);
         return -1;
@@ -109,7 +109,7 @@ int dofile(char *name)
 
 	fprintf(fpout, "\n};\n\n");
 
-	fprintf(fpout, "prog_char file%dname[] = \"%s\";\n\n", entryno, fsname); 
+	fprintf(fpout, "prog_char file%dname[] = \"%s\";\n\n", entryno, fsname);
 	
 	fprintf(fpout, "static ROMENTRY file%dentry = { ", entryno);
 
@@ -144,10 +144,10 @@ int dodir(char *dirpath)
         strcat(path, "/");
         strcat(path, dire->d_name);
         stat(path, &statbuf);
-  
+
         if(statbuf.st_mode & S_IFDIR)
             rc = dodir(path);
-        else if(statbuf.st_mode & S_IFREG) 
+        else if(statbuf.st_mode & S_IFREG)
             rc = dofile(path);
     }
     closedir(dir);

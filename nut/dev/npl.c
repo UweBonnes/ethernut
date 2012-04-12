@@ -258,7 +258,7 @@ static int NplMmcRemoveCtl(int cmd, void *param)
  * handlers.
  *
  * \param irq     Interrupt to be associated with this handler.
- * \param handler This routine will be called by Nut/OS, when the 
+ * \param handler This routine will be called by Nut/OS, when the
  *                specified interrupt occurs.
  * \param arg     Argument to be passed to the interrupt handler.
  *

@@ -36,7 +36,7 @@
  *
  **************************************************************************
  *
- * Parts taken from lpc17xx_wdt.h      
+ * Parts taken from lpc17xx_wdt.h
  *
  * file	    : lpc17xx_wdt.h
  * brief	: Contains all macro definitions and function prototypes
@@ -79,7 +79,7 @@
 #define WDT_GET_USEC(counter)       (counter * ((WDT_US_INDEX * 4)/PPCLK_WDT))
 
 /*----------------------------------------------------------------------------*
-  WDT Control register 
+  WDT Control register
  *----------------------------------------------------------------------------*/
 
 /* WDT interrupt enable bit */

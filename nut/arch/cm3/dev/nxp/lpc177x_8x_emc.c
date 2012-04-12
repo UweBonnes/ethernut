@@ -40,7 +40,7 @@
  * version	1.0
  * date		02. June. 2011
  * author	NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -72,7 +72,7 @@
 #define DEFAULT_FBCLKDLY  20
 #define DEFAULT_CMDDLY    16
 
-/* variables to save the original delays. Needed for later re-calibration of the 
+/* variables to save the original delays. Needed for later re-calibration of the
    delay lines.
  */
 
@@ -84,7 +84,7 @@ volatile uint32_t initial_calibration_value;
 /*!
  * \brief Initialize EMC
  *
- * Initialize the external memory controller. GPIO pins should be correctly 
+ * Initialize the external memory controller. GPIO pins should be correctly
  * configured when calling this function.
  *
  * \param     none
@@ -136,7 +136,7 @@ void Lpc177x_8x_EmcInit(void)
     * P4.31 - /EMC_CS1
     */
 
-    /* GPIO Pin configuration should be done in the board file according to 
+    /* GPIO Pin configuration should be done in the board file according to
        the hardware configuration
      */
 }
@@ -202,7 +202,7 @@ static unsigned int sdram_optimize_delay(SDRAM sdram, unsigned int shift, unsign
     if (i < 0) {
         i = def_value;
     }
-    
+
     // set new delay value
     LPC_SC->EMCDLYCTL = ( LPC_SC->EMCDLYCTL & ~(DELAY_RANGE << shift) ) | (i << shift);
     return i;
@@ -212,7 +212,7 @@ static unsigned int sdram_optimize_delay(SDRAM sdram, unsigned int shift, unsign
 /*!
  * \brief       Ajust SDRAM SDRAM timing
  *
- * This function should be called regularly to re-calibrate the delay lines 
+ * This function should be called regularly to re-calibrate the delay lines
  * which might change their correct delays due to thermal influences
  *
  * \param       none
@@ -238,7 +238,7 @@ void Lpc177x_8x_EmcSDRAMAdjustTiming(void)
     }
 
     /* Setup new values */
-    LPC_SC->EMCDLYCTL = (DEFAULT_CLKOUTDLY << 24) | (DEFAULT_CLKOUTDLY << 16) | 
+    LPC_SC->EMCDLYCTL = (DEFAULT_CLKOUTDLY << 24) | (DEFAULT_CLKOUTDLY << 16) |
                         (fbclkdelay << 8) | cmdclkdelay;
 }
 
@@ -269,7 +269,7 @@ int Lpc177x_8x_EmcSDRAMCheck(SDRAM sdram, uint32_t offset)
     uint32_t data;
     uint32_t i,j;
     uint32_t blocks;
-    
+
 #define SDRAMTEST_BLOCKSIZE 0x100
 #define SDRAMTEST_JUMPSIZE  0x10000
 
@@ -322,11 +322,11 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
     emc_clock = NutArchClockGet(NUT_HWCLK_EMC);
     cpu_clock = NutArchClockGet(NUT_HWCLK_CPU);
 
-	/* Initialize delay lines */    
+	/* Initialize delay lines */
     LPC_SC->EMCDLYCTL          = 0x00000210;
     LPC_SC->EMCDLYCTL         |= 0x00080808;
 
-    
+
 	/* Init SDRAM controller */
 
     LPC_EMC->Control 	       = 0x00000001;
@@ -351,7 +351,7 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
     /* JEDEC General SDRAM Initialization Sequence
 	   DELAY to allow power and clocks to stabilize ~100 us
 	   NOP
-     */     
+     */
 	LPC_EMC->DynamicControl = 0x0183;
 
     wait_clocks(NS_2_CLKS(cpu_clock, 200000));
@@ -361,7 +361,7 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
 	LPC_EMC->DynamicRefresh = 2;
 
     wait_clocks(256); /* wait > 128 clk */
-    
+
 	LPC_EMC->DynamicRefresh = NS_2_CLKS(emc_clock, sdram.refresh) >> 4;
 
     wait_clocks(256); /* wait > 128 clk */
@@ -383,12 +383,12 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
           bit 6~4: CAS latency: 001(1), 010(2), 011(3)                                       = 010
           bit 3:   Type of Burst: Sequential(0) or Interleaved(1)                            = 0
           bit 2~0: Burst length: 000(1), 001(2), 010(4), 011(8), 111(Full Page)              = 011
-    */              
-    
+    */
+
     (void) *((volatile uint32_t *)(sdram.base_addr | ((sdram.cas_latency << 4) | 0x02) << ((sdram.bus_width == 32)? 13:10)));
 
     wait_clocks(256); /* wait > 128 clk */
-    
+
 	/* NORM */
 	LPC_EMC->DynamicControl = 0x0000;
     /* Reenable buffers */

@@ -243,8 +243,8 @@ THREAD(Player, arg)
                     break;
                 }
 
-                /* 
-                 * Got some MP3 data. 
+                /*
+                 * Got some MP3 data.
                  */
                 if (got) {
                     /* Commit the buffer. */
@@ -282,7 +282,7 @@ THREAD(Player, arg)
                 }
 
                 /*
-                 * Got no MP3 data. 
+                 * Got no MP3 data.
                  */
                 else {
                     printf("[T%u, %u]", to_cnt, NutHeapAvailable());
@@ -303,7 +303,7 @@ THREAD(Player, arg)
                 NutThreadYield();
             }
 
-            /* If play loop is not entered, we may omit the watchdog 
+            /* If play loop is not entered, we may omit the watchdog
                update here and force a system reset. */
             NutThreadYield();
         }
@@ -323,7 +323,7 @@ THREAD(Player, arg)
 /*!
  * \brief Initialize the MP3 player.
  *
- * Initializes the decoder and the decoder buffer and starts the 
+ * Initializes the decoder and the decoder buffer and starts the
  * player background thread.
  */
 int PlayerInit(void)

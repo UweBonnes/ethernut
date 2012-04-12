@@ -83,7 +83,7 @@ int NutRegisterRtc(NUTRTC * rtc)
  *
  * Portable applications should use standard C functions.
  *
- * \param tm Points to a structure that receives the date and time 
+ * \param tm Points to a structure that receives the date and time
  *           information.
  *
  * \return 0 on success or -1 in case of an error.
@@ -118,7 +118,7 @@ int NutRtcSetTime(CONST struct _tm *tm)
  * \brief Get alarm date and time from the registered RTC.
  *
  * \param idx    Zero based index. Two alarms are supported.
- * \param tm     Points to a structure that receives the date and time 
+ * \param tm     Points to a structure that receives the date and time
  *               information.
  * \param aflags Points to an unsigned long that receives the enable flags.
  *

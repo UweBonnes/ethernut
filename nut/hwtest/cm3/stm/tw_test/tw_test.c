@@ -121,7 +121,7 @@ int main(void)
         printf("NutRegisterTwiBus failed\n");
     }
     else
-    { 
+    {
         printf("NutRegisterTwiBus success\n");
     }
 
@@ -132,7 +132,7 @@ int main(void)
         printf("Can't set speed TWI\n");
     }
     else
-    { 
+    {
         NutTwiIOCtl(&DEF_TWIBUS, TWI_GETSPEED, &baud);
         printf("TWI speed is %ld\n", baud );
     }
@@ -146,7 +146,7 @@ int main(void)
             printf("Found I2C device at 0x%02x\n", a);
         }
     }
-    
+
     /*
      * Nut/OS never expects a thread to return. So we enter an
      * endless loop here.

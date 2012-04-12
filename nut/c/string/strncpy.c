@@ -78,7 +78,7 @@
 
 /*!
  * \brief Copy a string up to a given number of characters.
- * 
+ *
  * Copies a source string including the terminating NUL character, if
  * its length is lower than the given number of characters. Otherwise
  * the destination string is left unterminated.

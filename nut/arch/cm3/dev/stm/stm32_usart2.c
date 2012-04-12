@@ -223,7 +223,7 @@ NUTDEVICE devUsartStm32_2 = {
   #else
    #warning "Illegal USART2 CTS pin assignement"
   #endif
-  #if !defined(USART2_RTS_PIN) 
+  #if !defined(USART2_RTS_PIN)
    #if defined(USART2_REMAP_USART)
     #define RTS_GPIO_PORT  NUTGPIO_PORTD
     #define RTS_GPIO_PIN   4
@@ -242,7 +242,7 @@ NUTDEVICE devUsartStm32_2 = {
   #endif
  #endif
 #endif
- 
+
 #ifdef USART2_RS485_CTRL
 #define USART_485_CTRL
 #if defined(USART2_485DE_PORT) && defined(USART2_485DE_PIN)

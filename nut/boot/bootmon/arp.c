@@ -42,7 +42,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -116,7 +116,7 @@ int ArpRequest(unsigned long dip, unsigned char *dmac)
 
     ea = &rframe.eth.arp;
     for (rlen = retry = 0; retry < 3;) {
-        /* 
+        /*
          * Send a message, if nothing has been received yet.
          */
         if (rlen == 0) {
@@ -145,7 +145,7 @@ int ArpRequest(unsigned long dip, unsigned char *dmac)
 /*!
  * \brief Process incoming ARP packets.
  *
- * The incoming IP and hardware address pair is stored. This routine 
+ * The incoming IP and hardware address pair is stored. This routine
  * does not respond to ARP requests.
  */
 
@@ -154,7 +154,7 @@ void ArpRespond(void)
     ETHERARP *ea = &rframe.eth.arp;
 
     if (ea->arp_op == ARPOP_REPLY) {
-        if (ea->arp_tpa == confnet.cdn_ip_addr) {        
+        if (ea->arp_tpa == confnet.cdn_ip_addr) {
             ae.ae_ip = ea->arp_spa;
             memcpy_(ae.ae_ha, ea->arp_sha, 6);
         }
@@ -163,7 +163,7 @@ void ArpRespond(void)
         if (ea->arp_tpa == confnet.cdn_ip_addr) {
             /* Use the request as a basis for our reply. */
             memcpy_((unsigned char *)&arpframe, (unsigned char *)ea, sizeof(ETHERARP));
-            /* The request's source becomes the reply's destination. */ 
+            /* The request's source becomes the reply's destination. */
             memcpy_(arpframe.arp_tha, ea->arp_sha, 6);
             arpframe.arp_tpa = ea->arp_spa;
             /* Use our configuration for the reply's source. */

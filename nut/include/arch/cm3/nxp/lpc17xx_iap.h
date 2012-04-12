@@ -43,7 +43,7 @@
  * version	1.0
  * date		21. November. 2011
  * author	NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -67,7 +67,7 @@
  **********************************************************************/
 
 /*----------------------------------------------------------------------------*
-  General defines 
+  General defines
  *----------------------------------------------------------------------------*/
 
 /* IAP entry location */
@@ -137,7 +137,7 @@ uint32_t Lpc17xxIapGetSectorNr (uint32_t addr);
 IAP_STATUS_CODE Lpc17xxIapSectorRead(uint32_t addr, void *data, size_t len);
 IAP_STATUS_CODE Lpc17xxIapSectorWrite(uint32_t dest, void* source, IAP_WRITE_SIZE size);
 IAP_STATUS_CODE Lpc17xxIapSectorErase(uint32_t start_sec, uint32_t end_sec);
-IAP_STATUS_CODE Lpc17xxIapSectorBlankCheck(uint32_t start_sec, uint32_t end_sec, 
+IAP_STATUS_CODE Lpc17xxIapSectorBlankCheck(uint32_t start_sec, uint32_t end_sec,
                                  uint32_t *first_nblank_off, uint32_t *first_nblank_val);
 IAP_STATUS_CODE Lpc17xxIapReadBootCodeVersion(uint8_t *major, uint8_t* minor);
 IAP_STATUS_CODE Lpc17xxIapReadDeviceSerialNumber(uint32_t *uid);

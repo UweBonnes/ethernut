@@ -2,38 +2,38 @@
 *  Copyright (c) 2011 by Michael Fischer. All rights reserved.
 *
 *  This work based on source from proconX Pty Ltd. Therefore
-*  partial copyright by: Copyright (c) 2010 proconX Pty Ltd. 
+*  partial copyright by: Copyright (c) 2010 proconX Pty Ltd.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 *****************************************************************************
 *  History:
 *
-*  27.05.2011  mifi  First Version based on source from proconX Pty Ltd. 
+*  27.05.2011  mifi  First Version based on source from proconX Pty Ltd.
 *                    Information about UPnP can be found at "www.upnp.org".
 *                    Note: I had no success with the UPnP Device Validator
 *                    from the "Open Software Projects". The old original
@@ -61,7 +61,7 @@
 /*  DEFINE: All Structures and Common Constants                            */
 /*=========================================================================*/
 
-/* 
+/*
  * Enable to fulfil the UPnP specification for notify messages.
  * I think this is not needed to advertise only the device on
  * windows networks.
@@ -116,7 +116,7 @@ static char MSEARCH_RESPONSE[] =
    "USN: %s::upnp:rootdevice\r\n"
    "Content-Length: 0\r\n"
    "\r\n";
-   
+
 /*
  * All listed elements which are not tagged are "REQUIRED" as per
  * UPnP Device Architecture 1.0. Some other are "OPTIONAL" or "RECOMMENDED".
@@ -140,7 +140,7 @@ static char HTML_UPNP[] =
       "<modelURL>http://www.ethernut.de</modelURL>\r\n"                                /* OPTIONAL */
       "<serialNumber>%02X%02X%02X%02X%02X%02X</serialNumber>\r\n"                      /* RECOMMENDED */
       "<UDN>uuid:" UPNP_UUID_PART1 "%02X%02X%02X%02X%02X%02X</UDN>\r\n"
-      
+
       /*
        * Despite being not required by the UPnP standard, we must
        * define at leat one service to make the device show up on Windows XP.
@@ -203,25 +203,25 @@ static int LocationCGIHandler(FILE * stream, REQUEST * req)
     /*
      * Output XML data
      */
-    fprintf(stream, HTML_UPNP, 
+    fprintf(stream, HTML_UPNP,
             inet_ntoa(nif->if_local_ip),      /* URLBase */
-            
+
             nif->if_mac[0], nif->if_mac[1],   /* friendlyName */
-            nif->if_mac[2], nif->if_mac[3], 
-            nif->if_mac[4], nif->if_mac[5], 
-            
+            nif->if_mac[2], nif->if_mac[3],
+            nif->if_mac[4], nif->if_mac[5],
+
             nif->if_mac[0], nif->if_mac[1],   /* modelNumber */
-            nif->if_mac[2], nif->if_mac[3], 
-            nif->if_mac[4], nif->if_mac[5], 
-            
+            nif->if_mac[2], nif->if_mac[3],
+            nif->if_mac[4], nif->if_mac[5],
+
             nif->if_mac[0], nif->if_mac[1],   /* serialNumber */
-            nif->if_mac[2], nif->if_mac[3], 
-            nif->if_mac[4], nif->if_mac[5], 
-            
+            nif->if_mac[2], nif->if_mac[3],
+            nif->if_mac[4], nif->if_mac[5],
+
             nif->if_mac[0], nif->if_mac[1],   /* UDN */
-            nif->if_mac[2], nif->if_mac[3], 
-            nif->if_mac[4], nif->if_mac[5], 
-            
+            nif->if_mac[2], nif->if_mac[3],
+            nif->if_mac[4], nif->if_mac[5],
+
             inet_ntoa(nif->if_local_ip));     /* presentationURL */
 
     return 0;
@@ -241,8 +241,8 @@ static void SendNotifyAliveChunk(char *Buffer, UDPSOCKET * TxSock)
      */
 
     /* Send first alive message */
-    Size = sprintf(Buffer, NOTIFY_ALIVE, 
-                   inet_ntoa(nif->if_local_ip), 
+    Size = sprintf(Buffer, NOTIFY_ALIVE,
+                   inet_ntoa(nif->if_local_ip),
                    "upnp:rootdevice",           /* NT */
                    MyUSN, "::upnp:rootdevice",  /* USN */
                    ServerInfo);
@@ -252,8 +252,8 @@ static void SendNotifyAliveChunk(char *Buffer, UDPSOCKET * TxSock)
 #if (UPNP_FULFIL_SPEC >= 1)
 
     /* Send second alive message */
-    Size = sprintf(Buffer, NOTIFY_ALIVE, 
-                   inet_ntoa(nif->if_local_ip), 
+    Size = sprintf(Buffer, NOTIFY_ALIVE,
+                   inet_ntoa(nif->if_local_ip),
                    MyUSN,     /* NT */
                    MyUSN, "", /* USN */
                    ServerInfo);
@@ -261,8 +261,8 @@ static void SendNotifyAliveChunk(char *Buffer, UDPSOCKET * TxSock)
     NutSleep(25);
 
     /* Send third alive message */
-    Size = sprintf(Buffer, NOTIFY_ALIVE, 
-                   inet_ntoa(nif->if_local_ip), 
+    Size = sprintf(Buffer, NOTIFY_ALIVE,
+                   inet_ntoa(nif->if_local_ip),
                    "urn:schemas-upnp-org:device:Basic:1",            /* NT */
                    MyUSN, "::urn:schemas-upnp-org:device:Basic:1",   /* USN */
                    ServerInfo);
@@ -280,8 +280,8 @@ static void SendNotifyAliveChunk(char *Buffer, UDPSOCKET * TxSock)
     /*
      * Send service discovery messages
      */
-    Size = sprintf(Buffer, NOTIFY_ALIVE, 
-                   inet_ntoa(nif->if_local_ip), 
+    Size = sprintf(Buffer, NOTIFY_ALIVE,
+                   inet_ntoa(nif->if_local_ip),
                    "urn:schemas-upnp-org:service:Dummy:1",           /* NT */
                    MyUSN, "::urn:schemas-upnp-org:service:Dummy:1",  /* USN */
                    ServerInfo);
@@ -353,9 +353,9 @@ THREAD(SSDPTask, arg)
     uint32_t Delay;
 
     sprintf(MyUSN, "uuid:%s%02X%02X%02X%02X%02X%02X",
-            UPNP_UUID_PART1, 
-            nif->if_mac[0], nif->if_mac[1], 
-            nif->if_mac[2], nif->if_mac[3], 
+            UPNP_UUID_PART1,
+            nif->if_mac[0], nif->if_mac[1],
+            nif->if_mac[2], nif->if_mac[3],
             nif->if_mac[4], nif->if_mac[5]);
 
     sprintf(ServerInfo, "NutOS/%d.%d UPnP/1.0", NUT_VERSION_MAJOR, NUT_VERSION_MINOR);
@@ -422,8 +422,8 @@ THREAD(SSDPTask, arg)
                     /*
                      * We must send a M-SEARCH response
                      */
-                    Size = sprintf(Buffer, MSEARCH_RESPONSE, 
-                                   inet_ntoa(nif->if_local_ip), 
+                    Size = sprintf(Buffer, MSEARCH_RESPONSE,
+                                   inet_ntoa(nif->if_local_ip),
                                    ServerInfo, MyUSN);
                     NutUdpSendTo(TxSock, RemoteIP, Port, Buffer, Size);
                     NutSleep(25);
@@ -453,7 +453,7 @@ void upnp_Init(void)
         puts("OK");
 
         /*
-         * Multicast will be supported, 
+         * Multicast will be supported,
          * get device and network interface info for eth0.
          */
         dev = NutDeviceLookup("eth0");

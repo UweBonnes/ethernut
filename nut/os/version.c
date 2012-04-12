@@ -257,7 +257,7 @@
 #if defined(__GNUC__)
 #define NUM2STR(x)  #x
 #define OS_VERSION_STRING(a, b, c, d)   NUM2STR(a) "." NUM2STR(b) "." NUM2STR(c) "." NUM2STR(d)
-static CONST char *os_version_string = 
+static CONST char *os_version_string =
     OS_VERSION_STRING(NUT_VERSION_MAJOR, NUT_VERSION_MINOR, NUT_VERSION_RELEASE, NUT_VERSION_BUILD);
 #else
 static CONST char os_version_string[] = {
@@ -306,8 +306,8 @@ uint32_t NutVersion(void)
  *         The string contains 4 numbers separated by dots. The first
  *         is the major version number, followed by the minor version
  *         number, again followed by the release number and finally
- *         followed by the build number. In non-official releases this 
- *         may be optionally followed by a space and an additional 
+ *         followed by the build number. In non-official releases this
+ *         may be optionally followed by a space and an additional
  *         release state.
  */
 CONST char *NutVersionString(void)

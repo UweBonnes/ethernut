@@ -45,8 +45,8 @@
 #define I2C_SLA_SHT21     0x40
 #endif
 
-/* 
- * Sensirion common sensor commands 
+/*
+ * Sensirion common sensor commands
  */
 #ifdef SHT_ACK_POLLING
 #define	SHT_GET_TEMP	0xF3    /* Get Temperature Command */

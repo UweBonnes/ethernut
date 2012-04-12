@@ -121,7 +121,7 @@
  */
 /*@{*/
 
-/*! \brief Size of a filesystem block. 
+/*! \brief Size of a filesystem block.
  *
  * \showinitializer
  */
@@ -129,17 +129,17 @@
 #define PNUT_BLOCK_SIZE     512
 #endif
 
-/*! 
+/*!
  * \brief Size of a directory entry.
  *
- * 
+ *
  * \showinitializer
  */
 #ifndef PNUT_DIRENT_SIZE
 #define PNUT_DIRENT_SIZE  32
 #endif
 
-/*! 
+/*!
  * \brief Maximum number of blocks per node.
  *
  * Peanut supports only one node per file. Thus, this number
@@ -148,7 +148,7 @@
  *
  * Changings this number will change the size of the node
  * structure, which must fit into a single filesystem block.
- * 
+ *
  * \showinitializer
  */
 #ifndef PNUT_BLOCKS_PER_NODE
@@ -160,7 +160,7 @@
 /* Default for Arthernet 1. */
 #define PNUTBANK_COUNT 15
 #elif MMNET02  || MMNET03  || MMNET04 ||\
-	  MMNET102 || MMNET103 || MMNET104  
+	  MMNET102 || MMNET103 || MMNET104
 /* Default for MMnte02. */
 #define PNUTBANK_COUNT 6
 #else
@@ -189,12 +189,12 @@ typedef short PNUT_BLKNUM;
  *
  * The Peanut filesystem divides the total space into blocks. It
  * distinguishes between unallocated blocks, data blocks and blocks
- * containing node informations. Each allocated data block is 
+ * containing node informations. Each allocated data block is
  * associated to a node block. Unallocated blocks are collected
  * in a linked list.
  *
  * Peanut knows two types of nodes, file nodes and directory nodes.
- * Each file node represents a file entry and the associated data 
+ * Each file node represents a file entry and the associated data
  * blocks contain the contents of this file. Each directory node
  * represents a directory and the associated data blocks contain
  * the entries in this directory. Each directory entry in use
@@ -208,7 +208,7 @@ typedef struct {
     /*!
      * \brief Number of links.
      *
-     * For file nodes this number keeps track of the number of directory 
+     * For file nodes this number keeps track of the number of directory
      * entries pointing to it. PNUT currently doesn't support link type
      * entries, thus in file entries this is always 1.
      *
@@ -258,7 +258,7 @@ typedef struct {
     char dir_name[PNUT_MAX_NAMELEN + 1];
 } PNUT_DIRENTRY;
 
-/*! 
+/*!
  * \brief Maximum size  of a file or directory.
  *
  * This is a calculated value and depends on the definition of the
@@ -271,7 +271,7 @@ typedef struct {
  */
 typedef struct {
     /*!
-     * \brief Node of the entry found. 
+     * \brief Node of the entry found.
      */
     PNUT_BLKNUM fr_node;
 
@@ -280,10 +280,10 @@ typedef struct {
      */
     PNUT_BLKNUM fr_pnode;
 
-    /*! 
+    /*!
      * \brief Last path component.
      *
-     * Set if all parents found. 
+     * Set if all parents found.
      */
     CONST char *fr_name;
 } PNUT_FINDRESULT;
@@ -312,14 +312,14 @@ static PNUT_BLKNUM root;
 #define NUTBANK_SIZE 16384
 #endif
 
-/*! 
+/*!
  * \brief Total number of blocks on this device.
  *
- * This value is calulated by multiplying the number of memory banks 
+ * This value is calulated by multiplying the number of memory banks
  * reserved for the file system by the number of blocks per bank.
  *
- * For example, if all 30 banks, which are available on Ethernut 2, are 
- * reserved for PNUT and if the size of a block is 512 bytes, then 
+ * For example, if all 30 banks, which are available on Ethernut 2, are
+ * reserved for PNUT and if the size of a block is 512 bytes, then
  * 960 blocks are available.
  */
 #ifndef PNUT_TOTAL_BLOCKS
@@ -352,9 +352,9 @@ static PNUT_BLKNUM root;
 void BankSelect(PNUT_BLKNUM blk)
 {
 
-// This is a hack to avoid compiler warning if no banking is enabled... 
+// This is a hack to avoid compiler warning if no banking is enabled...
 // But I don't like moving code to header files at all.. (Ole Reinhardt)
-#if NUTBANK_COUNT 
+#if NUTBANK_COUNT
     int bank = blk / BLOCKS_PER_BANK;
 #endif
     // Bankswitching is now handled in bankmem.h
@@ -379,13 +379,13 @@ PNUT_NODE *BankNodePointer(PNUT_BLKNUM blk)
 /*
  * \brief Index of the first free block.
  *
- * All free blocks are collected in a linked list. This global variable 
- * contains the index of the first free block. Each free block contains 
- * nothing but the index of the next free block, which is -1 in the last 
+ * All free blocks are collected in a linked list. This global variable
+ * contains the index of the first free block. Each free block contains
+ * nothing but the index of the next free block, which is -1 in the last
  * member of this list.
  *
- * If this variable is set to -1, then there are no more free blocks 
- * available. During file system initialization all available blocks are 
+ * If this variable is set to -1, then there are no more free blocks
+ * available. During file system initialization all available blocks are
  * added to this list.
  */
 static PNUT_BLKNUM blockFreeList = -1;
@@ -493,7 +493,7 @@ static void PnutNodeRelease(PNUT_BLKNUM node)
  * \param buffer Receives the pointer to the specified position.
  * \param size   Receives the remaining number of bytes within the block.
  * \param create If the position is beyond the current data size and if
- *               this parameter is not equal zero, then a new data block 
+ *               this parameter is not equal zero, then a new data block
  *               will be allocated.
  *
  * \return 0 on success, otherwise returns an error code.
@@ -519,7 +519,7 @@ static int PnutNodeGetDataPtr(PNUT_BLKNUM node, uint32_t pos, uint8_t **buffer, 
             }
         }
 
-        /* 
+        /*
          * If we got a valid block, then set the pointer at the specified
          * position and the remaining bytes within this block.
          */
@@ -641,7 +641,7 @@ static int PnutDirFindPath(PNUT_BLKNUM node, CONST char *path, PNUT_FINDRESULT *
         path = ".";
     }
 
-    /* 
+    /*
      * Loop for each path component.
      */
     while (*path) {
@@ -658,7 +658,7 @@ static int PnutDirFindPath(PNUT_BLKNUM node, CONST char *path, PNUT_FINDRESULT *
             len++;
         }
 
-        /* 
+        /*
          * If this component is last, we found all parents.
          * Keep the last one stored in the result.
          */
@@ -721,7 +721,7 @@ static int PnutDirOpen(NUTDEVICE * dev, DIR * dir)
         else if ((fp = malloc(sizeof(PNUTFILE))) == 0) {
             rc = -1;
         }
-        /* 
+        /*
          * Initialize the descriptor and store it in the directory
          * information structure.
          */
@@ -824,7 +824,7 @@ static int PnutDirAddEntry(PNUT_BLKNUM dnode, CONST char *name, PNUT_BLKNUM enod
      * blocks.
      */
     for (;;) {
-        /* 
+        /*
          * Get the data pointer to the specified position. Automatically
          * create a new block if we reached the end of the data.
          */
@@ -974,7 +974,7 @@ static int PnutDirCreate(CONST char *path)
 /*!
  * \brief Open a file.
  *
- * This function is called by the low level open routine of the C runtime 
+ * This function is called by the low level open routine of the C runtime
  * library, using the _NUTDEVICE::dev_open entry.
  *
  * \param dev  Pointer to the NUTDEVICE structure.
@@ -1132,7 +1132,7 @@ static int PnutStatus(CONST char *path, struct stat *status)
 /*!
  * \brief Return information about a previously opened file.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param status Pointer to a stat structure for the information returned.
  *
@@ -1152,13 +1152,13 @@ static int PnutFileStatus(PNUTFILE * fp, struct stat *status)
 /*!
  * \brief Write data to a file.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data to be written. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
 static int PnutFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
@@ -1205,12 +1205,12 @@ static int PnutFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
 /*!
  * \brief Read data from a file.
  *
- * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data buffer to fill.
  * \param len    Maximum number of bytes to read.
  *
- * \return The number of bytes actually read. A return value of -1 indicates 
+ * \return The number of bytes actually read. A return value of -1 indicates
  *         an error.
  */
 static int PnutFileRead(NUTFILE * nfp, void *buffer, int len)
@@ -1319,10 +1319,10 @@ int PnutIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Retrieve the size of a previously opened file.
  *
- * This function is called by the low level size routine of the C runtime 
+ * This function is called by the low level size routine of the C runtime
  * library, using the _NUTDEVICE::dev_size entry.
  *
- * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a
  *            previous call to PhatFileOpen().
  *
  * \return Size of the file.

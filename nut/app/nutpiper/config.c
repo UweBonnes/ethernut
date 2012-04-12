@@ -248,8 +248,8 @@ void ConfigResetFactory(void)
     radio.rc_rstation = 2;
     radio.rc_rvolume = 223;
 
-    /* 
-     * Add pre-configured radio stations. 
+    /*
+     * Add pre-configured radio stations.
      */
 
     /* Local server. */
@@ -343,13 +343,13 @@ int ConfigLoad(void)
         ConfigCreate();
         rc = 0;
 
-        /* 
+        /*
          * Read radio settings from EEPROM.
          */
         addr += ConfigLoadBinary(addr, &radio.rc_rstation, sizeof(radio.rc_rstation));
         addr += ConfigLoadBinary(addr, &radio.rc_rvolume, sizeof(radio.rc_rvolume));
 
-        /* 
+        /*
          * Read station configuration from EEPROM.
          */
         for (idx = 0; idx < MAXNUM_STATIONS; idx++) {

@@ -148,7 +148,7 @@ extern void *__stack;
 #endif
 
 /*!
- * \brief Get the address of a device register by its base and the offset  of the register 
+ * \brief Get the address of a device register by its base and the offset  of the register
  * in its register structure
  *
  * CortexM specific:
@@ -159,7 +159,7 @@ extern void *__stack;
  * \brief Atomic access via register address of CortexM devices.
  *
  * CortexM specific:
- * Translates a register address into a volatile single cycle 
+ * Translates a register address into a volatile single cycle
  * read or write access of the register.
  *
  * Constant base part of address allows room for compiler optimization
@@ -174,7 +174,7 @@ extern void *__stack;
  * \brief Atomic bit access via bitband address of CortexM devices.
  *
  * CortexM specific:
- * Translates a register address into a volatile single cycle 
+ * Translates a register address into a volatile single cycle
  * read or write access of the register.
  *
  * Constant base part of address allows room for compiler optimization. GCC doesn't (201201)
@@ -192,7 +192,7 @@ extern void *__stack;
  *
  * CM3/4 can do immediate offset access for -255, +4095 bytes around a base. So bits in the first 32 32-bit
  * registers above the base can be reached witout loading an absolute address in a bitband access
- *  
+ *
  */
 #define CM3BB_OFFSET(regstruct, reg, bit) ((offsetof(regstruct, reg) <<3) + bit)
 

@@ -61,7 +61,7 @@
  * \param ref2 Reference of the second item.
  *
  * \return An integer less than, equal to, or greater than zero, if the
- *         value of the first reference is less than, equal, or greater 
+ *         value of the first reference is less than, equal, or greater
  *         than the value of the second, resp.
  */
 static int LiLiDefaultItemCompare(LILI_ITEMREF ref1, LILI_ITEMREF ref2)
@@ -94,10 +94,10 @@ static void LiLiNodeAddFirst(LILI *list, LILI_NODE *node)
  * Special applications may use this function instead of LiLiPopItem().
  *
  * The caller must make sure, that this node is a member of the specified
- * list. After returning from this function, this pointer is no longer 
+ * list. After returning from this function, this pointer is no longer
  * usable.
  *
- * Note, that this call will not destroy the copy of an associated item 
+ * Note, that this call will not destroy the copy of an associated item
  * object.
  *
  * \param list Pointer to a list object, obtained from a previous call
@@ -131,15 +131,15 @@ void LiLiRemoveNode(LILI *list, LILI_NODE *node)
 /*
  * \brief Insert a new node object after a given node.
  *
- * Note, that list attributes are ignored. Anyway, special applications may 
+ * Note, that list attributes are ignored. Anyway, special applications may
  * use this function instead of LiLiPushItem().
  *
  * \param list Pointer to a list object, obtained from a previous call
  *             to LiLiCreate().
- * \param node Pointer to the node after which the a new node will be 
+ * \param node Pointer to the node after which the a new node will be
  *             inserted. If the list is empty, this must be set to NULL.
  * \param ref  The reference of the item to associate with the new node.
- *             If a function for creating an item copy has been specified, 
+ *             If a function for creating an item copy has been specified,
  *             it will be called before inserting the new node.
  *
  * \return Pointer to the new node object or NULL on errors.
@@ -180,13 +180,13 @@ LILI_NODE *LiLiInsertItemAfterNode(LILI *list, LILI_NODE *node, LILI_ITEMREF ref
 /*
  * \brief Insert new data node before a given node.
  *
- * Note, that list attributes are ignored. Anyway, special applications may 
+ * Note, that list attributes are ignored. Anyway, special applications may
  * use this function instead of LiLiPushItem().
  *
  * \param list Pointer to a list object, obtained from a previous call
  *             to LiLiCreate().
  * \param ref  The reference of the item to associate with the new node.
- *             If a function for creating an item copy has been specified, 
+ *             If a function for creating an item copy has been specified,
  *             it will be called before inserting the new node.
  *
  * \return Pointer to the new node object or NULL on errors.
@@ -227,22 +227,22 @@ LILI_NODE *LiLiInsertItemBeforeNode(LILI *list, LILI_NODE *node, LILI_ITEMREF re
  * \brief Create a linked list.
  *
  * \param flags Attribute flags, either LILI_F_LIFO for a last-in
- *              first-out queue, LILI_F_FIFO for a first-in first-out 
+ *              first-out queue, LILI_F_FIFO for a first-in first-out
  *              queue, or LILI_F_SORT for a sorted list. Any of them
  *              may be or'ed with the attribute flag LILI_F_UNIQUE to
  *              avoid duplicate entries.
  * \param icre  Pointer to a function, which is called to create an
- *              item for adding to the list. If NULL, the item reference 
+ *              item for adding to the list. If NULL, the item reference
  *              itself is used in the list. See LiLiCreateStringItemCopy().
  * \param ides  Pointer to a function, which is called to destroy an
- *              item. Set to NULL, if the item reference is used in the 
+ *              item. Set to NULL, if the item reference is used in the
  *              list. See LiLiDestroyStringItemCopy().
  * \param icmp  Pointer to a function, which is called to compare items.
  *              If NULL, the item reference values are directly compared.
  *              See LiLiCompareStringItems().
  *
- * \return Pointer to a list object on success, otherwise a NULL pointer 
- *         is returned. 
+ * \return Pointer to a list object on success, otherwise a NULL pointer
+ *         is returned.
  */
 LILI *LiLiCreate(uint8_t flags, LiLiItemCreateFunc icre, LiLiItemDestroyFunc ides, LiLiItemCompareFunc icmp)
 {
@@ -295,7 +295,7 @@ void LiLiClean(LILI *list)
  * This function will remove all nodes, destroy item object copies and
  * finally destroy the list object.
  *
- * \param list Pointer to a list object to destroy, obtained from a 
+ * \param list Pointer to a list object to destroy, obtained from a
  *             previous call to LiLiCreate(),
  */
 void LiLiDestroy(LILI *list)

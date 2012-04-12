@@ -43,7 +43,7 @@
  * version	1.0
  * date		02. June. 2011
  * author	NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -254,8 +254,8 @@
   Static Memory Read Delay registers (EMCStaticWaitRd0-3)
  *----------------------------------------------------------------------------*/
 
-#define EMC_StaticWaitRd_WAITRD(n)    ((uint32_t )(n & 0x1f)) /* StaticWaitRd register EMC: Non-page mode read wait 
-                                                                   states or asynchronous page mode read first access 
+#define EMC_StaticWaitRd_WAITRD(n)    ((uint32_t )(n & 0x1f)) /* StaticWaitRd register EMC: Non-page mode read wait
+                                                                   states or asynchronous page mode read first access
                                                                    wait state (WAITRD) */
 
 
@@ -264,7 +264,7 @@
   Static Memory Page Mode Read Delay registers (EMCStaticwaitPage0-3)
  *----------------------------------------------------------------------------*/
 
-#define EMC_StaticwaitPage_WAITPAGE(n)    ((uint32_t )(n & 0x1f)) /* StaticwaitPage register EMC: Asynchronous page mode 
+#define EMC_StaticwaitPage_WAITPAGE(n)    ((uint32_t )(n & 0x1f)) /* StaticwaitPage register EMC: Asynchronous page mode
                                                                      read after the first read wait states (WAITPAGE). */
 
 

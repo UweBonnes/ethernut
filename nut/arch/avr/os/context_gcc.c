@@ -244,7 +244,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     td->td_sp = (uint16_t) sf - 1;
     td->td_memory = threadMem;
 
-    /* 
+    /*
      * Set predefined values at the stack bottom. May be used to detect
      * stack overflows.
      */

@@ -180,7 +180,7 @@ struct _NUTTWIBUS {
     /*! \brief DMA channel for RX direction.
      */
     uint_fast8_t bus_dma_rx;
-    
+
     /*! \brief Initialize bus controller.
      *
      * This routine is called during device registration.

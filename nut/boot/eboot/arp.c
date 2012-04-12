@@ -42,7 +42,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -140,7 +140,7 @@ int ArpRequest(u_long dip, u_char * dmac)
 /*!
  * \brief Process incoming ARP packets.
  *
- * The incoming IP and hardware address pair is stored. This routine 
+ * The incoming IP and hardware address pair is stored. This routine
  * does not respond to ARP requests.
  */
 
@@ -156,10 +156,10 @@ void ArpRespond(void)
             ae.ae_ip = ea->arp_spa;
             for (i = 0; i < 6; i++)
                 ae.ae_ha[i] = ea->arp_sha[i];
-        } 
-    } else 
+        }
+    } else
     if (ea->arp_spa == confnet.cdn_ip_addr) {
-        if (htons(ea->arp_op) == ARPOP_REQUEST) {          
+        if (htons(ea->arp_op) == ARPOP_REQUEST) {
             /*
              * Set ARP header.
              */
@@ -168,14 +168,14 @@ void ArpRespond(void)
             ea->arp_hln = 6;
             ea->arp_pln = 4;
             ea->arp_op = htons(ARPOP_REPLY);
-    
+
             /*
              * Set ARP destination data.
              */
-            for (i = 0; i < 6; i++) 
+            for (i = 0; i < 6; i++)
                 ea->arp_tha[i] = ea->arp_sha[i];
             ea->arp_tpa = ea->arp_spa;
-            
+
             for (i = 0; i < 6; i++)
                 ea->arp_sha[i] = confnet.cdn_mac[i];
             ea->arp_spa = confnet.cdn_ip_addr;

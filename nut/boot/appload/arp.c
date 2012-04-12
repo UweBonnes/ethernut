@@ -65,7 +65,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -145,7 +145,7 @@ int ArpRequest(u_long dip, u_char * dmac)
 
     ea = &(((ARPFRAME *) & rframe)->eth_arp);
     for (rlen = retry = 0; retry < 3;) {
-        /* 
+        /*
          * Send a message, if nothing has been received yet.
          */
         if (rlen == 0) {

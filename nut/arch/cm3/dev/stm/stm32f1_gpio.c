@@ -381,7 +381,7 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit)
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
   * <h2><center>&copy; COPYRIGHT 2010 STMicroelectronics</center></h2>
-  */ 
+  */
 
 #define LSB_MASK                    ((uint16_t)0xFFFF)
 #define DBGAFR_POSITION_MASK        ((uint32_t)0x000F0000)
@@ -415,7 +415,7 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit)
   *     @arg GPIO_Remap_ADC2_ETRGINJ
   *     @arg GPIO_Remap_ADC2_ETRGREG
   *     @arg GPIO_Remap_ETH
-  *     @arg GPIO_Remap_CAN2  
+  *     @arg GPIO_Remap_CAN2
   *     @arg GPIO_Remap_SWJ_NoJTRST
   *     @arg GPIO_Remap_SWJ_JTAGDisable
   *     @arg GPIO_Remap_SWJ_Disable
@@ -426,15 +426,15 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit)
   *     @arg GPIO_Remap_TIM16
   *     @arg GPIO_Remap_TIM17
   *     @arg GPIO_Remap_CEC
-  *     @arg GPIO_Remap_TIM1_DMA 
+  *     @arg GPIO_Remap_TIM1_DMA
   *     @arg GPIO_Remap_TIM9
   *     @arg GPIO_Remap_TIM10
   *     @arg GPIO_Remap_TIM11
   *     @arg GPIO_Remap_TIM13
   *     @arg GPIO_Remap_TIM14
-  *     @arg GPIO_Remap_FSMC_NADV               
-  * @note  If the GPIO_Remap_TIM2ITR1_PTP_SOF is enabled the TIM2 ITR1 is connected 
-  *        to Ethernet PTP output. When Reset TIM2 ITR1 is connected to USB OTG SOF output.       
+  *     @arg GPIO_Remap_FSMC_NADV
+  * @note  If the GPIO_Remap_TIM2ITR1_PTP_SOF is enabled the TIM2 ITR1 is connected
+  *        to Ethernet PTP output. When Reset TIM2 ITR1 is connected to USB OTG SOF output.
   * @param  NewState: new state of the port pin remapping.
   *   This parameter can be: ENABLE or DISABLE.
   * @retval None
@@ -445,8 +445,8 @@ void GPIO_PinRemapConfig(uint32_t GPIO_Remap, FunctionalState NewState)
 
     /* Check the parameters */
     NUTASSERT(IS_GPIO_REMAP(GPIO_Remap));
-    NUTASSERT(IS_FUNCTIONAL_STATE(NewState));  
-  
+    NUTASSERT(IS_FUNCTIONAL_STATE(NewState));
+
     if((GPIO_Remap & 0x80000000) == 0x80000000)
     {
         tmpreg = AFIO->MAPR2;
@@ -488,5 +488,5 @@ void GPIO_PinRemapConfig(uint32_t GPIO_Remap, FunctionalState NewState)
     else
     {
         AFIO->MAPR = tmpreg;
-    }  
+    }
 }

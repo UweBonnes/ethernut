@@ -78,7 +78,7 @@
 
 /*!
  * \brief Locate byte in a memory region.
- * 
+ *
  * This function locates the first occurrence of a byte
  * in a memory region.
  *

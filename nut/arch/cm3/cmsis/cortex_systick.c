@@ -104,7 +104,7 @@ void SysTickIntRegister(void (*pfnHandler)(void*))
     orr(AT91C_NVIC_STICKCSR, AT91C_NVIC_STICKINT);
 #else
     SysTick->CTRL |= (SysTick_CTRL_TICKINT_Msk);
-#endif    
+#endif
 }
 
 //*****************************************************************************

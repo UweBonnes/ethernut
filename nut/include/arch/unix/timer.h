@@ -48,8 +48,8 @@
  * This will need work to individually enable/disable single interrupts
  * For now, this feature is not supported.
  */
-#define NutEnableTimerIrq()    
-#define NutDisableTimerIrq()    
+#define NutEnableTimerIrq()
+#define NutDisableTimerIrq()
 
 /*
  * Previously, the following two setting were used:

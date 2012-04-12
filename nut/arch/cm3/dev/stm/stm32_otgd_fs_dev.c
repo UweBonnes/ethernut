@@ -38,16 +38,16 @@
 * Description    : Initialize the OTG Device IP and EP0.
 * Input          : None.
 * Output         : None.
-* Return         : None. 
+* Return         : None.
 *******************************************************************************/
 void OTG_DEV_Init(void)
 {
   EP_DESCRIPTOR ep_descriptor;
   USB_OTG_EP *ep;
-  
+
   /* Set the OTG_USB base registers address */
   OTGD_FS_SetAddress(USB_OTG_FS1_BASE_ADDR);
-  
+
   /* Disable all global interrupts */
   OTGD_FS_DisableGlobalInt();
 
@@ -59,68 +59,68 @@ void OTG_DEV_Init(void)
 
   /* Init internal driver structure */
   OTGD_FS_PCD_Init();
-  
-  /* Configure and open the IN control EP0 */ 
+
+  /* Configure and open the IN control EP0 */
   ep_descriptor.bEndpointAddress = 0x80;
-  ep_descriptor.wMaxPacketSize = 64;  
-  ep_descriptor.bmAttributes = USB_ENDPOINT_XFER_CONTROL; 
+  ep_descriptor.wMaxPacketSize = 64;
+  ep_descriptor.bmAttributes = USB_ENDPOINT_XFER_CONTROL;
   OTGD_FS_PCD_EP_Open(&ep_descriptor);
-  
-  /* Configure and open the OUT control EP0 */ 
+
+  /* Configure and open the OUT control EP0 */
   ep_descriptor.bEndpointAddress = 0x00;
-  OTGD_FS_PCD_EP_Open(&ep_descriptor);    
+  OTGD_FS_PCD_EP_Open(&ep_descriptor);
 
 
   ep = OTGD_FS_PCD_GetOutEP(0);
   OTGD_FS_EPStartXfer(ep);
-  
-  /* Enable EP0 to start receiving setup packets */  
-  OTGD_FS_PCD_EP0_OutStart();  
-  
+
+  /* Enable EP0 to start receiving setup packets */
+  OTGD_FS_PCD_EP0_OutStart();
+
   /* Enable USB Global interrupt */
-  OTGD_FS_EnableGlobalInt();     
+  OTGD_FS_EnableGlobalInt();
 }
 
 
 /*******************************************************************************
 * Function Name  : OTG_DEV_EP_Init
 * Description    : Initialize the selected endpoint parameters
-* Input          : - bEpAdd: address of the endpoint (epnum|epdir) 
+* Input          : - bEpAdd: address of the endpoint (epnum|epdir)
 *                     expample: EP1 OUT -> 0x01 and EP1 IN 0x81.
-*                  - bEpType: OTG_DEV_EP_TYPE_CONTROL, OTG_DEV_EP_TYPE_ISOC, 
+*                  - bEpType: OTG_DEV_EP_TYPE_CONTROL, OTG_DEV_EP_TYPE_ISOC,
 *                     OTG_DEV_EP_TYPE_BULK, OTG_DEV_EP_TYPE_INT
 *                  - wEpMaxPackSize: The EP max packet size.
 * Output         : None.
-* Return         : Status: New status to be set for the endpoint: 
+* Return         : Status: New status to be set for the endpoint:
 *******************************************************************************/
 void OTG_DEV_EP_Init(uint8_t bEpAdd, uint8_t bEpType, uint16_t wEpMaxPackSize)
 {
   EP_DESCRIPTOR ep_descriptor;
   USB_OTG_EP *ep;
-  
+
   /* Set the EP parameters in a structure */
   ep_descriptor.bEndpointAddress = bEpAdd;
-  ep_descriptor.bmAttributes = bEpType; 
+  ep_descriptor.bmAttributes = bEpType;
   ep_descriptor.wMaxPacketSize = wEpMaxPackSize;
 
   OTGD_FS_PCD_EP_Flush(bEpAdd);
-  
-  /* Open the EP with entered parameters */   
-  OTGD_FS_PCD_EP_Open(&ep_descriptor); 
-  
+
+  /* Open the EP with entered parameters */
+  OTGD_FS_PCD_EP_Open(&ep_descriptor);
+
   /* Activate the EP if it is an OUT EP */
   if ((bEpAdd & 0x80) == 0)
   {
     ep = OTGD_FS_PCD_GetOutEP(bEpAdd & 0x7F);
     OTGD_FS_EPStartXfer(ep);
-  } 
+  }
   else
   {
     ep = OTGD_FS_PCD_GetInEP(bEpAdd & 0x7F);
-    ep->even_odd_frame = 0;    
+    ep->even_odd_frame = 0;
     OTG_DEV_SetEPTxStatus(bEpAdd, DEV_EP_TX_NAK);
   }
-  
+
 }
 
 /*******************************************************************************
@@ -128,18 +128,18 @@ void OTG_DEV_EP_Init(uint8_t bEpAdd, uint8_t bEpType, uint16_t wEpMaxPackSize)
 * Description    : Set the related endpoint status.
 * Input          : Number of the endpoint.
 * Output         : None.
-* Return         : Status: New status to be set for the endpoint: 
+* Return         : Status: New status to be set for the endpoint:
 *******************************************************************************/
-uint32_t OTG_DEV_GetEPTxStatus(uint8_t bEpnum) 
+uint32_t OTG_DEV_GetEPTxStatus(uint8_t bEpnum)
 {
   USB_OTG_EP *ep;
   uint32_t status = 0;
-  
-  ep = OTGD_FS_PCD_GetInEP(bEpnum & 0x7F); 
-  
-  status = OTGD_FS_Dev_GetEPStatus(ep); 
-  
-  return status; 
+
+  ep = OTGD_FS_PCD_GetInEP(bEpnum & 0x7F);
+
+  status = OTGD_FS_Dev_GetEPStatus(ep);
+
+  return status;
 }
 
 /*******************************************************************************
@@ -147,17 +147,17 @@ uint32_t OTG_DEV_GetEPTxStatus(uint8_t bEpnum)
 * Description    : returns the related endpoint status.
 * Input          : Number of the endpoint.
 * Output         : None.
-* Return         : Status: New status to be set for the endpoint: 
+* Return         : Status: New status to be set for the endpoint:
 *******************************************************************************/
 uint32_t OTG_DEV_GetEPRxStatus(uint8_t bEpnum)
 {
   USB_OTG_EP *ep;
   uint32_t status = 0;
-  
-  ep = OTGD_FS_PCD_GetOutEP(bEpnum & 0x7F); 
-  
-  status = OTGD_FS_Dev_GetEPStatus(ep); 
-  
+
+  ep = OTGD_FS_PCD_GetOutEP(bEpnum & 0x7F);
+
+  status = OTGD_FS_Dev_GetEPStatus(ep);
+
   return status;
 }
 
@@ -166,23 +166,23 @@ uint32_t OTG_DEV_GetEPRxStatus(uint8_t bEpnum)
 * Description    : Sets the related endpoint status.
 * Input          : - bEpnum: Number of the endpoint.
 *                  - Status: New status to be set for the endpoint. It can be
-*                    DEV_EP_TX_VALID, DEV_EP_TX_STALL, DEV_EP_TX_NAK or 
+*                    DEV_EP_TX_VALID, DEV_EP_TX_STALL, DEV_EP_TX_NAK or
 *                    DEV_EP_TX_DISABLE.
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
-void OTG_DEV_SetEPTxStatus(uint8_t bEpnum, uint32_t Status) 
+void OTG_DEV_SetEPTxStatus(uint8_t bEpnum, uint32_t Status)
 {
   USB_OTG_EP *ep;
-   
-  ep = OTGD_FS_PCD_GetInEP(bEpnum & 0x7F); 
-  
+
+  ep = OTGD_FS_PCD_GetInEP(bEpnum & 0x7F);
+
   if ((bEpnum == 0x80) && (Status == DEV_EP_TX_STALL))
   {
     ep->is_in = 1;
   }
-  
-  OTGD_FS_Dev_SetEPStatus(ep, Status); 
+
+  OTGD_FS_Dev_SetEPStatus(ep, Status);
 }
 
 /*******************************************************************************
@@ -190,24 +190,24 @@ void OTG_DEV_SetEPTxStatus(uint8_t bEpnum, uint32_t Status)
 * Description    : Sets the related endpoint status.
 * Input          : - bEpnum: Number of the endpoint.
 *                  - Status: New status to be set for the endpoint. It can be
-*                    DEV_EP_RX_VALID, DEV_EP_RX_STALL, DEV_EP_RX_NAK or 
+*                    DEV_EP_RX_VALID, DEV_EP_RX_STALL, DEV_EP_RX_NAK or
 *                    DEV_EP_RX_DISABLE.
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
-void OTG_DEV_SetEPRxStatus(uint8_t bEpnum, uint32_t Status)                           
+void OTG_DEV_SetEPRxStatus(uint8_t bEpnum, uint32_t Status)
 {
   USB_OTG_EP *ep;
- 
-  ep = OTGD_FS_PCD_GetOutEP(bEpnum & 0x7F); 
-  
-  OTGD_FS_Dev_SetEPStatus(ep, Status); 
+
+  ep = OTGD_FS_PCD_GetOutEP(bEpnum & 0x7F);
+
+  OTGD_FS_Dev_SetEPStatus(ep, Status);
 }
 
 /*******************************************************************************
 * Function Name  : USB_DevDisconnect
 * Description    : Disconnect the Pullup resist.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 *                  wState: new state.
 * Output         : None.
 * Return         : None.
@@ -220,7 +220,7 @@ void USB_DevDisconnect(void)
 /*******************************************************************************
 * Function Name  : USB_DevConnect
 * Description    : Disconnect the .
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 *                  wState: new state.
 * Output         : None.
 * Return         : None.
@@ -235,7 +235,7 @@ void USB_DevConnect(void)
 /*******************************************************************************
 * Function Name  : SetEPTxStatus
 * Description    : Set the status of Tx endpoint.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 *                  wState: new state.
 * Output         : None.
 * Return         : None.
@@ -248,7 +248,7 @@ void SetEPTxStatus(uint8_t bEpNum, uint16_t wState)
 /*******************************************************************************
 * Function Name  : SetEPRxStatus
 * Description    : Set the status of Rx endpoint.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 *                  wState: new state.
 * Output         : None.
 * Return         : None.
@@ -261,11 +261,11 @@ void SetEPRxStatus(uint8_t bEpNum, uint16_t wState)
 /*******************************************************************************
 * Function Name  : GetEPTxStatus
 * Description    : Returns the endpoint Tx status.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 * Output         : None.
 * Return         : Endpoint TX Status
 *******************************************************************************/
-uint16_t GetEPTxStatus(uint8_t bEpNum) 
+uint16_t GetEPTxStatus(uint8_t bEpNum)
 {
   return(_GetEPTxStatus(bEpNum));
 }
@@ -273,11 +273,11 @@ uint16_t GetEPTxStatus(uint8_t bEpNum)
 /*******************************************************************************
 * Function Name  : GetEPRxStatus
 * Description    : Returns the endpoint Rx status.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 * Output         : None.
 * Return         : Endpoint RX Status
 *******************************************************************************/
-uint16_t GetEPRxStatus(uint8_t bEpNum) 
+uint16_t GetEPRxStatus(uint8_t bEpNum)
 {
   return(_GetEPRxStatus(bEpNum));
 }
@@ -285,7 +285,7 @@ uint16_t GetEPRxStatus(uint8_t bEpNum)
 /*******************************************************************************
 * Function Name  : SetEPTxValid
 * Description    : Valid the endpoint Tx Status.
-* Input          : bEpNum: Endpoint Number.  
+* Input          : bEpNum: Endpoint Number.
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
@@ -297,7 +297,7 @@ void SetEPTxValid(uint8_t bEpNum)
 /*******************************************************************************
 * Function Name  : SetEPRxValid
 * Description    : Valid the endpoint Rx Status.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
@@ -309,7 +309,7 @@ void SetEPRxValid(uint8_t bEpNum)
 /*******************************************************************************
 * Function Name  : GetTxStallStatus
 * Description    : Returns the Stall status of the Tx endpoint.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 * Output         : None.
 * Return         : Tx Stall status.
 *******************************************************************************/
@@ -320,8 +320,8 @@ uint16_t GetTxStallStatus(uint8_t bEpNum)
 
 /*******************************************************************************
 * Function Name  : GetRxStallStatus
-* Description    : Returns the Stall status of the Rx endpoint. 
-* Input          : bEpNum: Endpoint Number. 
+* Description    : Returns the Stall status of the Rx endpoint.
+* Input          : bEpNum: Endpoint Number.
 * Output         : None.
 * Return         : Rx Stall status.
 *******************************************************************************/
@@ -345,13 +345,13 @@ void SetEPTxCount(uint8_t bEpNum, uint16_t wCount)
 /*******************************************************************************
 * Function Name  : SetEPRxCount
 * Description    : Set the Rx count.
-* Input          : bEpNum: Endpoint Number. 
+* Input          : bEpNum: Endpoint Number.
 *                  wCount: the new count value.
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
 void SetEPRxCount(uint8_t bEpNum, uint16_t wCount)
-{ 
+{
 }
 
 /*******************************************************************************
@@ -379,7 +379,7 @@ uint16_t ByteSwap(uint16_t wSwW)
 {
   uint8_t bTemp = 0;
   uint16_t wRet = 0;
-  
+
   bTemp = (uint8_t)(wSwW & 0xff);
   wRet =  (wSwW >> 8) | ((uint16_t)bTemp << 8);
   return(wRet);

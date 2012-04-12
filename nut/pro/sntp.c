@@ -197,7 +197,7 @@ int NutSNTPGetTime(uint32_t * server_adr, time_t * t)
     len = NutUdpReceiveFrom(sock, &rec_addr, &port, data, sizeof(*data), 5000); /* Receive packet with timeout of 5s */
     if (len <= 0) {
         goto error;             /* error or timeout occured */
-    } 
+    }
 
     if (port != SNTP_PORT || (data->mode & 0xc0) == 0xc0)       /* if source port is not SNTP_PORT or server is not in sync return */
     {
@@ -225,7 +225,7 @@ int NutSNTPStartThread(uint32_t server_addr, uint32_t interval)
         return -1;
     arg->server_addr = server_addr;
     arg->interval = interval;
-    if (NutThreadCreate("sntpc", SNTP_resync, arg, 
+    if (NutThreadCreate("sntpc", SNTP_resync, arg,
         (NUT_THREAD_SNTPSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD))
         return 0;
     else {

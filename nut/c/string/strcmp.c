@@ -78,14 +78,14 @@
 
 /*!
  * \brief Compare two strings.
- * 
+ *
  * The strings are compared lexicographically.
  *
  * \param s1 Pointer to the first string.
  * \param s2 Pointer to the second string.
  *
  * \return An integer greater than, equal to, or less than 0, according
- *         to whether the first string is greater than, equal to, or less 
+ *         to whether the first string is greater than, equal to, or less
  *         than the second string.
  */
 int strcmp(CONST char *s1, CONST char *s2)

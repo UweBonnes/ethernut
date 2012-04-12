@@ -56,7 +56,7 @@
  * \addtogroup xgCrtLowio
  */
 /*@{*/
- 
+
 /*!
  * \brief Return the read/write position of a stream.
  *
@@ -66,13 +66,13 @@
  * \return The current position or -1 on error.
  *
  */
- 
+
 long _tell(int fd)
 {
     NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
     IOCTL_ARG3 conf;
-    
+
     long offset = 0;
     int  origin = SEEK_CUR;
 
@@ -81,7 +81,7 @@ long _tell(int fd)
     conf.arg1 = (void*) fp;
     conf.arg2 = (void*) &offset;
     conf.arg3 = (void*) origin;
-    
+
     if (dev != 0) {
         if ((*dev->dev_ioctl) (dev, FS_FILE_SEEK, &conf)) {
             return offset;

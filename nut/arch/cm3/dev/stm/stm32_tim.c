@@ -38,7 +38,7 @@
  * $Id$
  * \endverbatim
  */
- 
+
 #include <cfg/os.h>
 #include <cfg/clock.h>
 #include <cfg/arch.h>
@@ -58,22 +58,22 @@ void TIM_Init( TIM_TypeDef *TIM )
   //enable clock
   switch( ( uint32_t ) TIM ) {
     case (uint32_t) TIM2:
-      RCC->APB1ENR |= RCC_APB1Periph_TIM2; 
+      RCC->APB1ENR |= RCC_APB1Periph_TIM2;
       break;
     case (uint32_t) TIM3:
-      RCC->APB1ENR |= RCC_APB1Periph_TIM3; 
+      RCC->APB1ENR |= RCC_APB1Periph_TIM3;
       break;
     case (uint32_t) TIM4:
-      RCC->APB1ENR |= RCC_APB1Periph_TIM4; 
+      RCC->APB1ENR |= RCC_APB1Periph_TIM4;
       break;
     case (uint32_t) TIM5:
-      RCC->APB1ENR |= RCC_APB1Periph_TIM5; 
+      RCC->APB1ENR |= RCC_APB1Periph_TIM5;
       break;
     case (uint32_t) TIM6:
-      RCC->APB1ENR |= RCC_APB1Periph_TIM6; 
+      RCC->APB1ENR |= RCC_APB1Periph_TIM6;
       break;
     case (uint32_t) TIM7:
-      RCC->APB1ENR |= RCC_APB1Periph_TIM7; 
+      RCC->APB1ENR |= RCC_APB1Periph_TIM7;
       break;
   }
 }

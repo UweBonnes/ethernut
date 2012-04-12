@@ -105,7 +105,7 @@
  *
  * During write operations a buffer with this size is allocated
  * from heap and may cause memory problems with large sectors.
- * Thus, this value may be less than the size of the configuration 
+ * Thus, this value may be less than the size of the configuration
  * sector, in which case the rest of the sector is unused.
  *
  * Currently only 1 sector can be used for system configurations.
@@ -312,7 +312,7 @@ int At91EfcParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * Applications should call NutNvMemSave().
  *
- * The region that contains the configuration sector will be automatically 
+ * The region that contains the configuration sector will be automatically
  * locked.
  *
  * \param pos   Start location within configuration sector.

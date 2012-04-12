@@ -2,7 +2,7 @@
 #define _PRO_SSI_H_
 
 /*
- * Copyright (C) 2001-2004 by Ole Reinhardt <ole.reinhardt@embedded-it.de>. 
+ * Copyright (C) 2001-2004 by Ole Reinhardt <ole.reinhardt@embedded-it.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,15 +33,15 @@
  *
  * For additional information see http://www.ethernut.de/
  */
- 
+
 /*
  * $Log$
  * Revision 1.1  2005/08/05 11:22:14  olereinhardt
  * Added Server side include support. Initial checkin
  *
- */  
- 
- 
+ */
+
+
 /*!
  * \file pro/ssi.h
  * \brief SSI extension for HTTP daemons.
@@ -61,6 +61,6 @@ __END_DECLS
 
 
 /*@}*/
- 
- 
+
+
 #endif

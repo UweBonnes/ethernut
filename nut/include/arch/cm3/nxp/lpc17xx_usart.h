@@ -61,7 +61,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  Devisior latch defines 
+  Devisior latch defines
  *----------------------------------------------------------------------------*/
 
 /* Macro for loading least significant halfs of divisors into LSB register */
@@ -77,7 +77,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  Interrupt defines 
+  Interrupt defines
  *----------------------------------------------------------------------------*/
 
 /* RBR Interrupt enable */
@@ -116,7 +116,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  UART interrupt identification register defines 
+  UART interrupt identification register defines
  *----------------------------------------------------------------------------*/
 
 /* Interrupt Status - Active low */
@@ -190,7 +190,7 @@
 #define UART_LCR_STOPBIT_SEL    0x00000004
 
 /* UART Parity Enable */
-#define UART_LCR_PARITY_EN_POS  3   
+#define UART_LCR_PARITY_EN_POS  3
 #define UART_LCR_PARITY_EN      0x00000008
 
 #define UART_LCR_PARITY_POS     4
@@ -363,7 +363,7 @@
 #define UART1_RS485CTRL_SEL_DTR         0x00000008
 /* Enable Auto Direction Control */
 #define UART1_RS485CTRL_DCTRL_EN        0x00000010
-/* This bit reverses the polarity of the direction control signal on the RTS (or DTR) pin. 
+/* This bit reverses the polarity of the direction control signal on the RTS (or DTR) pin.
 The direction control pin will be driven to logic "1" when the transmitter has data to be sent */
 #define UART1_RS485CTRL_OINV_1          0x00000020
 

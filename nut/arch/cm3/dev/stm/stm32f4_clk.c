@@ -54,7 +54,7 @@
 #endif
 
 /*----------------  Clock Setup Procedure ------------------------------
- * 
+ *
  * Clock system ist arranged like this:
  *
  *                        /Q------------------------------ USB
@@ -70,16 +70,16 @@
  * 1) Select system clock sources
  *
  * To setup system to use HSI call: SetSysClockSource( SYSCLK_HSI);
- * To setup system to use HSE call: SetSysClockSource( SYSCLK_HSE); 
+ * To setup system to use HSE call: SetSysClockSource( SYSCLK_HSE);
  *
  * To setup system to use the PLL output, first setup the PLL source:
  * SetPllClockSource( PLLCLK_HSI);
- * or 
+ * or
  * SetPllClockSource( PLLCLK_HSE);
- * Then call SetSysClockSource( SYSCLK_PLL); 
+ * Then call SetSysClockSource( SYSCLK_PLL);
  *
  * 2) Configure prescalers
- * After selecting the right clock sources, the prescalers need to 
+ * After selecting the right clock sources, the prescalers need to
  * be configured:
  * Call SetSysClock(); to do this automatically.
  *
@@ -117,7 +117,7 @@ int CtlHseClock( uint8_t ena)
     else {
         /* Disable HSE clock */
         RCC->CR &= ~RCC_CR_HSEON;
-    }        
+    }
 
     return rc;
 }
@@ -154,7 +154,7 @@ int CtlHsiClock( uint8_t ena)
     else {
         /* Disable HSE clock */
         RCC->CR &= ~RCC_CR_HSION;
-    }        
+    }
 
     return rc;
 }
@@ -191,12 +191,12 @@ int CtlPllClock( uint8_t ena)
     else {
         /* Disable HSE clock */
         RCC->CR &= ~RCC_CR_PLLON;
-    }        
+    }
 
     return rc;
 }
 
-    
+
 /*!
  * \brief  Configures the System clock source: HSE or HSI.
  * \note   This function should be used with PLL disables
@@ -219,7 +219,7 @@ int SetPllClockSource( int src)
             CM3BBREG(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC)) = 0;
         }
     }
-    
+
     return rc;
 }
 
@@ -261,26 +261,26 @@ int SetSysClockSource( int src)
             /* Select HSI as system clock source */
             RCC->CFGR &= ~RCC_CFGR_SW;
             RCC->CFGR |= RCC_CFGR_SW_PLL;
-        
+
             /* Wait till PLL is used as system clock source */
             while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
         }
     }
-    
+
     /* Update core clock information */
     SystemCoreClockUpdate();
-    
+
     return rc;
 }
 
 #if (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE)
 /*!
  * \brief  Configures the System clock coming from HSE or HSI oscillator.
- * 
+ *
  * Enable HSI/HSE clock and setup HCLK, PCLK2 and PCLK1 prescalers.
  *
  * \param  None.
- * \return 0 on success, -1 on fault of HSE. 
+ * \return 0 on success, -1 on fault of HSE.
  */
 int SetSysClock(void)
 {
@@ -301,7 +301,7 @@ int SetSysClock(void)
 
     /* PCLK1 = HCLK */
     cfgr |= (uint32_t)RCC_CFGR_PPRE1_DIV1;
-    
+
     RCC->CFGR = cfgr;
 
     rc = SetSysClockSource(SYSCLK_SOURCE);
@@ -324,7 +324,7 @@ int SetSysClock(void)
   * @retval None
   */
 
-/* 
+/*
    Ranges :
    M: 2..63
    N: 64.. 432
@@ -386,7 +386,7 @@ int SetSysClock(void)
     rcc_reg &= ~FLASH_ACR_LATENCY;
     rcc_reg |= NUT_FLASH_LATENCY | FLASH_ACR_PRFTEN ;
     FLASH->ACR = rcc_reg;
-    
+
     rcc_reg = RCC->CFGR;
     rcc_reg  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1);
     /* HCLK = SYSCLK, PCLK2 = HCLK/2 , PCLK1 = HCLK/4 */

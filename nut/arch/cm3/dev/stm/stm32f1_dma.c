@@ -109,10 +109,10 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     uint32_t cc = flags & ~(DMA_CCR1_MEM2MEM|DMA_CCR2_DIR|DMA_CCR1_EN);
     uint32_t cp;
     uint32_t cm;
-    
+
     /* Stop DMA channel */
     channel->CCR = cc;
-    
+
     /* Detect transfer type and set Registers accordingly */
     if ((uint32_t)src & PERIPH_BASE) {
         /* Peripheral to Memory */

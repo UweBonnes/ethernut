@@ -277,7 +277,7 @@ static void DebugPut(char ch)
 /*!
  * \brief Send characters to debug device 0.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -307,7 +307,7 @@ NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return &dbgfile;
 }
 
-/*! 
+/*!
  * \brief Close debug device 0.
  *
  * \return Always 0.

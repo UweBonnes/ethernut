@@ -76,12 +76,12 @@ static int Lpc17xxWatchDogSetTimeOut(uint32_t timeout)
 	if (val < WDT_TIMEOUT_MIN) {
 		val = WDT_TIMEOUT_MIN;
 		rc = -1;
-	} else 
+	} else
     if (val > WDT_TIMEOUT_MAX) {
 		val = WDT_TIMEOUT_MAX;
 		rc = -1;
 	}
-    
+
 	LPC_WDT->TC = val;
 
 	return rc;
@@ -92,7 +92,7 @@ static int Lpc17xxWatchDogSetTimeOut(uint32_t timeout)
 /*!
  * \brief Start the LPC17xx hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode)
@@ -101,7 +101,7 @@ uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode)
     /* Select Watchdog clock source to IRC Clock */
     LPC_WDT->CLKSEL = WDT_WDCLKSEL_RC;
 #endif
-    
+
     Lpc17xxWatchDogDisable();
 
     Lpc17xxWatchDogSetTimeOut(ms * 1000);
@@ -109,16 +109,16 @@ uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode)
     /* Set reset mode to be compatible with other implementations too */
     LPC_WDT->MOD |= WDT_WDMOD_WDRESET;
 
-#if defined (MCU_LPC177x_8x)    
+#if defined (MCU_LPC177x_8x)
     /* Disable watchdog protect mode */
     LPC_WDT->MOD &= ~WDT_WDMOD_WDPROTECT;
 #endif
-    
+
     /* Enable the watchdog */
     LPC_WDT->MOD |= WDT_WDMOD_WDEN;
     /* We have to feed the watchdog once after enabling it */
     Lpc17xxWatchDogRestart();
-    
+
     //nested = 1;
 
     return ms;
@@ -127,13 +127,13 @@ uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode)
 /*!
  * \brief Re-start the LPC17xx hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void Lpc17xxWatchDogRestart(void)
 {
     /* Standard watchdog feed sequence */
-    
+
 	__disable_irq();
 
 	LPC_WDT->FEED = 0xAA;
@@ -148,12 +148,12 @@ void Lpc17xxWatchDogRestart(void)
  *
  * Att: Disabling the watchdog is not supported by hardware
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void Lpc17xxWatchDogDisable(void)
 {
-    /* Disabling the watchdog is not supported by hardware 
+    /* Disabling the watchdog is not supported by hardware
         if (nested) {
             nested++;
         }
@@ -167,17 +167,17 @@ void Lpc17xxWatchDogDisable(void)
  *
  * Att: Disabling and re-enabling the watchdog is not supported by hardware
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void Lpc17xxWatchDogEnable(void)
 {
-    /* Disabling and re-enabling the watchdog is not supported by hardware 
+    /* Disabling and re-enabling the watchdog is not supported by hardware
     if (nested > 1 && --nested == 1) {
 
         LPC_WDT->MOD |= WDT_WDMOD_WDEN;
-        // We have to feed the watchdog once after enabling it 
-        Lpc17xxWatchDogRestart();        
+        // We have to feed the watchdog once after enabling it
+        Lpc17xxWatchDogRestart();
     }
     */
 }

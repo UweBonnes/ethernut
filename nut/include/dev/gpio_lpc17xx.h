@@ -76,7 +76,7 @@
 /*!
  * \brief GPIO input.
  *
- * Will configure the pin as input. This is the default state, when no other 
+ * Will configure the pin as input. This is the default state, when no other
  * config option is given.
  */
 
@@ -125,7 +125,7 @@
  * \brief GPIO input glitch filter enabled.
  *
  */
-#if defined(MCU_LPC176x) 
+#if defined(MCU_LPC176x)
 /*Not supported with the LPC177x family */
 #define GPIO_CFG_DEBOUNCE   0x00000000
 #elif defined(MCU_LPC177x_8x)

@@ -216,10 +216,10 @@ static int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*
  * \brief Enable the link layer to come up.
  *
- * The underlying hardware driver should have established a physical 
+ * The underlying hardware driver should have established a physical
  * connection before calling this function.
  *
- * \param name Physical device name optionally followed by username 
+ * \param name Physical device name optionally followed by username
  *             and password, each separated by a slash.
  *
  */
@@ -308,7 +308,7 @@ static int NutPppClose(NUTFILE * fp)
 /*!
  * \brief Initialize the PPP device.
  *
- * This routine is called during device registration and initializes the 
+ * This routine is called during device registration and initializes the
  * PPP state machine.
  *
  * \param dev  Identifies the device to initialize.

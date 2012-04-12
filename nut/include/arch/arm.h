@@ -299,7 +299,7 @@ static INLINE uint32_t mem_rd32_mb(unsigned int reg)
 /*!
  * \brief Case insensitive string comparisions.
  *
- * Not supported by CrossWorks and temporarly redirected 
+ * Not supported by CrossWorks and temporarly redirected
  * to the stricmp and strnicmp routines.
  *
  */

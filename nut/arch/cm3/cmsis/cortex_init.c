@@ -82,8 +82,8 @@ static void IntDefaultHandler(void *arg) __attribute__ ((naked));
  * \brief CortexM3 memory pointers
  *
  * These pointers are provided by the linker, controlled by the
- * linker script. The list is shrinked to the two basic 
- * entries of the initial stack pointer address and the 
+ * linker script. The list is shrinked to the two basic
+ * entries of the initial stack pointer address and the
  * reset vector. All other interrupt vectors are set up dynamically
  * later after system start.
  */
@@ -126,11 +126,11 @@ extern void * _pspstack_end;    /* Process stack end address */
 extern void * _stack_start;     /* Main stack start address */
 extern void * _stack_end;       /* Main stack end address */
 
-static void IntDefaultHandler(void *arg) 
+static void IntDefaultHandler(void *arg)
 {
     while (1);
 }
-    
+
 /*!
  * \brief CortexM3 Initialization.
  *
@@ -160,7 +160,7 @@ void Cortex_MemInit(void)
     {
         *dst++ = fill;
     }
-    
+
     __set_PSP((uint32_t)&_pspstack_end);
 }
 

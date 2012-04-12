@@ -65,7 +65,7 @@
     asm volatile ("push r24" "\n\t"				/* save r24 to current stack */ \
                   "push r25" "\n\t"				/* save r25 to current stack */ \
                   "in r24,__SREG__" "\n\t"		/* load SREG into r24 */ \
-                  "push r24" "\n\t");			/* and push it to current stack */ 
+                  "push r24" "\n\t");			/* and push it to current stack */
 
 #define _irq_epilog \
     asm volatile ("pop r24" "\n\t"				/* restore r24 from stack */ \

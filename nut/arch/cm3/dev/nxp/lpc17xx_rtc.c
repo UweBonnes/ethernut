@@ -74,13 +74,13 @@ static int Lpc17xxRtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     if (tm) {
         tm->tm_mday= LPC_RTC->DOM   & RTC_DOM_MASK;
-        tm->tm_wday= LPC_RTC->DOW   & RTC_DOW_MASK;     
-        tm->tm_yday= LPC_RTC->DOY   & RTC_DOY_MASK;     
-        tm->tm_hour= LPC_RTC->HOUR  & RTC_HOUR_MASK; 
-        tm->tm_min = LPC_RTC->MIN   & RTC_MIN_MASK;     
-        tm->tm_sec = LPC_RTC->SEC   & RTC_SEC_MASK;     
+        tm->tm_wday= LPC_RTC->DOW   & RTC_DOW_MASK;
+        tm->tm_yday= LPC_RTC->DOY   & RTC_DOY_MASK;
+        tm->tm_hour= LPC_RTC->HOUR  & RTC_HOUR_MASK;
+        tm->tm_min = LPC_RTC->MIN   & RTC_MIN_MASK;
+        tm->tm_sec = LPC_RTC->SEC   & RTC_SEC_MASK;
         tm->tm_mon = LPC_RTC->MONTH & RTC_MONTH_MASK;
-        tm->tm_year= LPC_RTC->YEAR  & RTC_YEAR_MASK; 
+        tm->tm_year= LPC_RTC->YEAR  & RTC_YEAR_MASK;
 
         return 0;
     } else {
@@ -117,13 +117,13 @@ static int Lpc17xxRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
 /*!
  * \brief Interrupt handler for RTC Alarm
  *
- */ 
+ */
 static void Lpc17xxRtcInterrupt(void *arg)
 {
     NUTRTC *rtc = (NUTRTC *)arg;
     /*
      *  there is only 1 interrupt for the RTC, so check here
-     *  if it was the CIIF or the CALF. We need the CALF here 
+     *  if it was the CIIF or the CALF. We need the CALF here
      */
     if (LPC_RTC->ILR & RTC_IRL_RTCCIF) {
         LPC_RTC->ILR |= RTC_IRL_RTCCIF;
@@ -132,7 +132,7 @@ static void Lpc17xxRtcInterrupt(void *arg)
     /* Continue to check the Alarm match*/
     if (LPC_RTC->ILR & RTC_IRL_RTCALF) {
         ((lpc17xx_rtc_dcb *)rtc->dcb)->flags |= RTC_STATUS_AL0;
-        
+
         /* Signal alarm event queue */
         NutEventPostFromIrq(&rtc->alarm);
 
@@ -146,7 +146,7 @@ static void Lpc17xxRtcInterrupt(void *arg)
  *
  * \param Idx is ignored (LPC 17xx only has 1 Alarm)
  *           information.
- * 
+ *
  * \param tm    Points to a structure which contains the date and time
  *              information. May be NULL to clear the alarm.
  * \param aflgs Each bit enables a specific comparision.
@@ -158,7 +158,7 @@ static void Lpc17xxRtcInterrupt(void *arg)
  *              - Bit 7: Day of week (Sunday is zero)
  *              - Bit 8: Year
  *              - Bit 9: Day of year
- * 
+ *
  * \return 0 on success or -1 in case of an error.
  */
 static int Lpc17xxRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflags)
@@ -214,7 +214,7 @@ static int Lpc17xxRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int af
  *           information.
  *
  * \param aflags Points to an unsigned long that receives the enable flags.
- * 
+ *
  * \return 0 on success or -1 in case of an error.
  */
 static int Lpc17xxRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
@@ -227,50 +227,50 @@ static int Lpc17xxRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
     if (aflags == NULL) {
         return -1;
     }
-    
+
     if (tm) {
         /* Inverted mask register */
         amr = ~(LPC_RTC->AMR);
-        
+
         if (amr & RTC_AMR_AMRDOM) {
             tm->tm_mday= LPC_RTC->ALDOM  & RTC_DOM_MASK;
             *aflags |= RTC_ALARM_MDAY;
         }
         if (amr & RTC_AMR_AMRDOW) {
-            tm->tm_wday= LPC_RTC->ALDOW  & RTC_DOW_MASK;     
+            tm->tm_wday= LPC_RTC->ALDOW  & RTC_DOW_MASK;
             *aflags |= RTC_ALARM_WDAY;
         }
 
         if (amr & RTC_AMR_AMRDOY) {
-            tm->tm_yday= LPC_RTC->ALDOY  & RTC_DOY_MASK;     
+            tm->tm_yday= LPC_RTC->ALDOY  & RTC_DOY_MASK;
             *aflags |= RTC_ALARM_YDAY;
         }
 
         if (amr & RTC_AMR_AMRHOUR) {
-            tm->tm_hour= LPC_RTC->ALHOUR & RTC_HOUR_MASK; 
+            tm->tm_hour= LPC_RTC->ALHOUR & RTC_HOUR_MASK;
             *aflags |= RTC_ALARM_HOUR;
         }
 
         if (amr & RTC_AMR_AMRMIN) {
-            tm->tm_min= LPC_RTC->ALMIN & RTC_MIN_MASK; 
+            tm->tm_min= LPC_RTC->ALMIN & RTC_MIN_MASK;
             *aflags |= RTC_ALARM_MINUTE;
         }
 
         if (amr & RTC_AMR_AMRSEC) {
-            tm->tm_sec = LPC_RTC->ALSEC & RTC_SEC_MASK; 
+            tm->tm_sec = LPC_RTC->ALSEC & RTC_SEC_MASK;
             *aflags |= RTC_ALARM_SECOND;
         }
-        
+
         if (amr & RTC_AMR_AMRMON) {
-            tm->tm_mon = LPC_RTC->ALMON & RTC_MONTH_MASK; 
+            tm->tm_mon = LPC_RTC->ALMON & RTC_MONTH_MASK;
             *aflags |= RTC_ALARM_MONTH;
         }
 
         if (amr & RTC_AMR_AMRYEAR) {
-            tm->tm_year= LPC_RTC->ALYEAR & RTC_YEAR_MASK; 
+            tm->tm_year= LPC_RTC->ALYEAR & RTC_YEAR_MASK;
             *aflags |= RTC_ALARM_YEAR;
         }
-        
+
         return 0;
     } else {
         return -1;
@@ -292,7 +292,7 @@ static int Lpc17xxRtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
         ((lpc17xx_rtc_dcb *)rtc->dcb)->flags |= RTC_STATUS_PF;
         LPC_RTC->RTC_AUX |= RTC_AUX_RTC_OSCF;
     }
-    
+
     if (sflags) {
         *sflags = ((lpc17xx_rtc_dcb *)rtc->dcb)->flags;
         return 0;
@@ -312,7 +312,7 @@ static int Lpc17xxRtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
 static int Lpc17xxRtcClearStatus(NUTRTC *rtc, uint32_t sflags)
 {
     ((lpc17xx_rtc_dcb *)rtc->dcb)->flags &= ~sflags;
-    
+
     return 0;
 }
 
@@ -328,7 +328,7 @@ static int Lpc17xxRtcInit(NUTRTC *rtc)
     if (rtc->dcb == NULL) {
         return -1;
     }
-    
+
     if (NutRegisterIrqHandler(&sig_RTC, Lpc17xxRtcInterrupt, rtc) != 0) {
         NutHeapFree(rtc->dcb);
         return -1;
@@ -336,7 +336,7 @@ static int Lpc17xxRtcInit(NUTRTC *rtc)
 
     /* Set up clock and power for RTC module */
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCRTC);
-    
+
     /* Clear all register to be default */
     LPC_RTC->ILR  = 0x00;
     LPC_RTC->CCR  = 0x00;
@@ -351,7 +351,7 @@ static int Lpc17xxRtcInit(NUTRTC *rtc)
     rtc->alarm = NULL;
 
     NutIrqEnable(&sig_RTC);
-    
+
     return(0);
 }
 

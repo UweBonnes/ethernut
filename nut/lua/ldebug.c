@@ -184,7 +184,7 @@ static void collectvalidlines (lua_State *L, Closure *f) {
     int i;
     for (i=0; i<f->l.p->sizelineinfo; i++)
       setbvalue(luaH_setnum(L, t, lineinfo[i]), 1);
-    sethvalue(L, L->top, t); 
+    sethvalue(L, L->top, t);
   }
   incr_top(L);
 }
@@ -255,7 +255,7 @@ LUA_API int lua_getinfo (lua_State *L, const char *what, lua_Debug *ar) {
   }
   status = auxgetinfo(L, what, ar, f, plight, ci);
   if (strchr(what, 'f')) {
-    if (f != NULL) 
+    if (f != NULL)
       setclvalue(L, L->top, f)
     else if (plight != NULL)
       setfvalue(L->top, plight)

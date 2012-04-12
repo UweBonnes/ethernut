@@ -32,14 +32,14 @@
 #define OTG_DEV_EP_TYPE_INT           3
 
 /* Endpoint Addresses (w/direction) */
-#define EP0_OUT                    0x00  
-#define EP0_IN                     0x80  
-#define EP1_OUT                    0x01  
-#define EP1_IN                     0x81  
-#define EP2_OUT                    0x02  
-#define EP2_IN                     0x82  
-#define EP3_OUT                    0x03  
-#define EP3_IN                     0x83  
+#define EP0_OUT                    0x00
+#define EP0_IN                     0x80
+#define EP1_OUT                    0x01
+#define EP1_IN                     0x81
+#define EP2_OUT                    0x02
+#define EP2_IN                     0x82
+#define EP3_OUT                    0x03
+#define EP3_IN                     0x83
 
 
 /*-*-*-*-*-*-*-*-*-* Replace the usb_regs.h defines -*-*-*-*-*-*-*-*-*-*-*-*-*/
@@ -77,7 +77,7 @@
 #define _SetEPRxValid(bEpNum)         (OTG_DEV_SetEPRxStatus(bEpNum, EP_RX_VALID))
 
 #define _GetTxStallStatus(bEpNum)     (OTG_DEV_GetEPTxStatus(bEpNum) == EP_TX_STALL)
-#define _GetRxStallStatus(bEpNum)     (OTG_DEV_GetEPRxStatus(bEpNum) == EP_RX_STALL) 
+#define _GetRxStallStatus(bEpNum)     (OTG_DEV_GetEPRxStatus(bEpNum) == EP_RX_STALL)
 
 /* Define the callbacks for updating the USB state machine */
 #define OTGD_FS_DEVICE_RESET              Device_Property.Reset()
@@ -89,9 +89,9 @@ void OTG_DEV_Init(void);
 void OTG_DEV_EP_Init(uint8_t bEpAdd, uint8_t bEpType, uint16_t wEpMaxPackSize);
 
 void OTG_DEV_SetEPRxStatus(uint8_t bEpnum, uint32_t status);
-void OTG_DEV_SetEPTxStatus(uint8_t bEpnum, uint32_t status); 
-uint32_t OTG_DEV_GetEPRxStatus(uint8_t bEpnum); 
-uint32_t OTG_DEV_GetEPTxStatus(uint8_t bEpnum); 
+void OTG_DEV_SetEPTxStatus(uint8_t bEpnum, uint32_t status);
+uint32_t OTG_DEV_GetEPRxStatus(uint8_t bEpnum);
+uint32_t OTG_DEV_GetEPTxStatus(uint8_t bEpnum);
 
 void USB_DevDisconnect(void);
 void USB_DevConnect(void);

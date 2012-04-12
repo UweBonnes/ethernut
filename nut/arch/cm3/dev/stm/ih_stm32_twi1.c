@@ -42,7 +42,7 @@
 #include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_TWI
-/* According Errata Sheet 14574 Rev. 9 some I2C erratic behaviour can be overcome 
+/* According Errata Sheet 14574 Rev. 9 some I2C erratic behaviour can be overcome
  * by setting IRQ almost non interruptable.
  */
 #define NUT_IRQPRI_TWI  0

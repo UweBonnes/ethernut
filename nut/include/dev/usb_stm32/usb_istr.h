@@ -50,8 +50,8 @@ void EP7_OUT_Callback(void);
 /* Interrupt subroutines user callbacks prototypes.
    These callbacks are called into the respective interrupt sunroutine functinos
    and can be tailored for various user application purposes.
-     Note: Make sure that the correspondant interrupt is enabled through the 
-     definition in usb_conf.h file */ 
+     Note: Make sure that the correspondant interrupt is enabled through the
+     definition in usb_conf.h file */
 void INTR_MODEMISMATCH_Callback(void);
 void INTR_SOFINTR_Callback(void);
 void INTR_RXSTSQLVL_Callback(void);
@@ -72,7 +72,7 @@ void INTR_INCOMPLISOOUT_Callback(void);
 void INTR_WKUPINTR_Callback(void);
 
 /* Isochronous data update */
-void INTR_RXSTSQLVL_ISODU_Callback(void); 
+void INTR_RXSTSQLVL_ISODU_Callback(void);
 
 
 

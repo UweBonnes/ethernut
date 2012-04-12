@@ -129,7 +129,7 @@
 /*!
  * \name DHCP Client States.
  *
- * Applications can request the current state of the DHCP client by 
+ * Applications can request the current state of the DHCP client by
  * calling NutDhcpStatus().
  */
 /*@{*/
@@ -147,11 +147,11 @@
 #define DHCPST_IDLE         0
 
 /*! \brief DHCP state: Starting.
- * 
+ *
  * Indicates that the DHCP client started to request a configuration from
  * the DHCP server. If any previously allocated IP address is available
- * in the non-volatile configuration memory, then the client will continue 
- * with \ref DHCPST_REBOOTING. Otherwise it will move to 
+ * in the non-volatile configuration memory, then the client will continue
+ * with \ref DHCPST_REBOOTING. Otherwise it will move to
  * \ref DHCPST_SELECTING.
  */
 #define DHCPST_INIT         1
@@ -167,7 +167,7 @@
 /*! \brief DHCP state: Requesting.
  *
  * Indicates that the client received and selected an offer from a
- * DHCP server. It is now sending a request for an offered 
+ * DHCP server. It is now sending a request for an offered
  * configuration and waiting for an acknowledge, which will change
  * the client's state to \ref DHCPST_BOUND.
  */
@@ -224,7 +224,7 @@
 #define DHCPST_INFORMING    8
 
 /*! \brief DHCP state: Releasing.
- * 
+ *
  * The client enters this state when the application calls
  * NutDhcpRelease().
  */
@@ -236,7 +236,7 @@
 /*!
  * \name DHCP Error Codes
  *
- * Applications can request the lastest error code of the DHCP client by 
+ * Applications can request the lastest error code of the DHCP client by
  * calling NutDhcpError().
  */
 /*@{*/
@@ -261,7 +261,7 @@
 /*!
  * \brief DHCP state error.
  *
- * Either NutDhcpInform() has been called while not in state 
+ * Either NutDhcpInform() has been called while not in state
  * \ref DHCPST_IDLE or NutDhcpRelease() has been called while not in
  * state \ref DHCPST_BOUND.
  */

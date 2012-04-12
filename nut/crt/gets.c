@@ -64,7 +64,7 @@
  * \return The given argument on success, 0 otherwise.
  *
  * \warning This function is potentially unsafe, because it may write
- *          pass the end of the buffer. 
+ *          pass the end of the buffer.
  */
 char *gets(char *buffer)
 {

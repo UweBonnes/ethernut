@@ -218,15 +218,15 @@ int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq)
  *
  * This call will also disable any previously registered handler.
  *
- * If enabled with NutSysIrqEnable(), the registered handler will be 
- * called on every system interrupt. The handler must check, if the 
+ * If enabled with NutSysIrqEnable(), the registered handler will be
+ * called on every system interrupt. The handler must check, if the
  * interrupt was triggered by the corresponding device.
- * 
- * This function is typically called by device drivers, but applications 
+ *
+ * This function is typically called by device drivers, but applications
  * may also implement their local interrupt handlers.
  *
  * \param irq     Interrupt to be associated with this handler.
- * \param handler This routine will be called by Nut/OS, when the 
+ * \param handler This routine will be called by Nut/OS, when the
  *                specified interrupt occurs.
  * \param arg     Argument to be passed to the interrupt handler.
  *

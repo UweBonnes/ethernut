@@ -42,7 +42,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -133,7 +133,7 @@ unsigned char *DhcpSetOption(unsigned char *dst, unsigned char opt, unsigned cha
  * \param slen Length of message to send.
  * \param xtype Expected response type.
  *
- * \return The number of data bytes received, 0 on timeout or -1 in 
+ * \return The number of data bytes received, 0 on timeout or -1 in
  *         case of a failure.
  */
 int DhcpTransact(unsigned short slen, unsigned char xtype)
@@ -143,7 +143,7 @@ int DhcpTransact(unsigned short slen, unsigned char xtype)
     int rlen = 0;
 
     for (retry = 0; retry < 3;) {
-        /* 
+        /*
          * Send a message, if nothing has been received yet.
          */
         DEBUG("[RQ DHCP]");
@@ -154,8 +154,8 @@ int DhcpTransact(unsigned short slen, unsigned char xtype)
             }
         }
 
-        /* 
-         * Do a retry on timouts or failures. A receive failures may be 
+        /*
+         * Do a retry on timouts or failures. A receive failures may be
          * caused by a hardware failure or a bad frame.
          */
         if ((rlen = UdpInput(DHCP_CLIENTPORT, 500)) <= 0) {
@@ -181,11 +181,11 @@ int DhcpTransact(unsigned short slen, unsigned char xtype)
  * On success, this routine will fill some global
  * variables:
  *
- * - my_ip 
+ * - my_ip
  * - server_ip
  * - bootfile
  * - my_netmask
- * 
+ *
  * \return 0 on success, -1 otherwise.
  */
 int DhcpQuery(void)

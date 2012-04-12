@@ -53,7 +53,7 @@
  * procedure is repeated every hour.
  *
  * By default the application will use 2 serial ports. The first one is
- * used for debugging output on stdout and the second UART will be 
+ * used for debugging output on stdout and the second UART will be
  * connected to a modem.
  *
  * Note, that PPP is not available for all target boards. If this is the

@@ -252,7 +252,7 @@ static unsigned int At91GetPllClock(int plla)
     unsigned int pllr;
     unsigned int divider;
 
-    /* 
+    /*
      * The main oscillator clock frequency is specified by the
      * configuration. It's usually equal to the on-board crystal.
      */
@@ -344,8 +344,8 @@ uint32_t At91GetMasterClock(void)
 /*!
  * \brief Return the CPU clock in Hertz.
  *
- * On several AT91 CPUs the processor clock may differ from the clock 
- * driving the peripherals. In this case At91GetMasterClock() will 
+ * On several AT91 CPUs the processor clock may differ from the clock
+ * driving the peripherals. In this case At91GetMasterClock() will
  * provide the correct master clock.
  *
  * \return CPU clock frequency in Hertz.

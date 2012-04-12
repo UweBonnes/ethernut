@@ -42,7 +42,7 @@
  * version	1.0
  * date		02. June. 2011
  * author	NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -120,7 +120,7 @@
 #define EEPROM_ENDOF_PROG               28
 
 /*----------------------------------------------------------------------------*
- Public functions 
+ Public functions
  *----------------------------------------------------------------------------*/
 
 void Lpc177x_8x_EepromInit(void);

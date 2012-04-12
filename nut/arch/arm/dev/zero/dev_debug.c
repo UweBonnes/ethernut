@@ -346,7 +346,7 @@ static int ZeroDebugClose(NUTFILE * fp)
 /*!
  * \brief Initialize debug device.
  *
- * This function is called by NutRegisterDevice(), using the 
+ * This function is called by NutRegisterDevice(), using the
  * _NUTDEVICE::dev_init entry.
  *
  * Applications must not call this function, they must call
@@ -397,7 +397,7 @@ static NUTFILE dbgfile;
  * }
  * \endcode
  *
- * If not referenced, the driver code (and this structure) will not be 
+ * If not referenced, the driver code (and this structure) will not be
  * included in the final binary.
  *
  * The name of the structure may differ among platforms. Portable

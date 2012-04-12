@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by Ole Reinhardt <ole.reinhardt@embedded-it.de>. 
+ * Copyright (C) 2001-2004 by Ole Reinhardt <ole.reinhardt@embedded-it.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  *
  * For additional information see http://www.ethernut.de/
  */
- 
+
 /*
  * $Log$
  * Revision 1.14  2009/02/13 14:43:11  haraldkipp
@@ -85,7 +85,7 @@
  * Revision 1.1  2005/08/05 11:22:14  olereinhardt
  * Added Server side include support. Initial checkin
  *
- */  
+ */
 
 /*!
  * \addtogroup xgHTTPD
@@ -135,7 +135,7 @@ extern char *cgiBinPath;
  *
  * Load a file from filesystem and send ("include") it to the http-stream
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param filename Name of the included file. e.g."UROM:test.txt"
  */
@@ -154,9 +154,9 @@ static void NutSsiProcessFile(FILE * stream, char *filename)
         fprintf_P(stream, rsp_not_found_P, filename);
         return;
     }
-    
+
     file_len = _filelength(fd);
-    
+
     size = 512;
     if ((data = malloc(size)) != NULL) {
         while (file_len) {
@@ -178,10 +178,10 @@ static void NutSsiProcessFile(FILE * stream, char *filename)
 /*!
  * \brief Send a file or cgi with a path relativ to http-root
  *
- * Processes an included local url with a path relativ to http-root. This could also be a 
+ * Processes an included local url with a path relativ to http-root. This could also be a
  * cgi script. Nearly the same as NutHttpProcessFileRequest
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param url    URL of the file to be included e.g. "/include/test.js"
  * \param http_root The root path of the http-deamon
@@ -209,7 +209,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         fprintf_P(stream, rsp_bad_req_P);
         return;
     }
-  
+
     /*
      * Process CGI.
      */
@@ -228,7 +228,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             req->req_method = METHOD_GET;
             req->req_version = orig_req->req_version;
             req->req_length = 0;
-            
+
             if (orig_req->req_agent != NULL) {
                 if ((req->req_agent = strdup(orig_req->req_agent)) == NULL) {
                     fprintf_P(stream, rsp_intern_err_P);
@@ -290,11 +290,11 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             break;
         }
     }
-    
+
     /*
      * Process file.
      */
-    
+
     for (n = 0, fd = -1; default_files[n]; n++) {
         filename = CreateFilePath(url, default_files[n]);
         if (filename == NULL) {
@@ -319,11 +319,11 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         fprintf_P(stream, rsp_not_found_P, url);
         return;
     }
-    
+
     file_len = _filelength(fd);
     handler = NutGetMimeHandler(filename);
     free(filename);
-    
+
     if (handler == NULL) {
         size = 512;                 // If we have not registered a mime handler handle default.
         if ((data = malloc(size)) != NULL) {
@@ -348,7 +348,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
 /*!
  * \brief Send variable content to the stream.
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param varname Name of the variable.
  */
@@ -384,16 +384,16 @@ static void NutSsiSkipWhitespace(char *buffer, uint16_t *pos, uint16_t end)
 }
 
 /*!
- * \brief Check if a comment is a ssi directive 
+ * \brief Check if a comment is a ssi directive
  *
  * Check if a comment is a ssi directive and replace the directive by the included data.
  * Allowed directives are:
- * 
+ *
  * <!--#include virtual="/news/news.htm" -->
  * <!--#include file="UROM:/news/news.htm" -->
- * <!--#exec cgi="/cgi-bin/counter.cgi" --> 
- * 
- * \param stream Stream of the socket connection, previously opened for 
+ * <!--#exec cgi="/cgi-bin/counter.cgi" -->
+ *
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param buffer Current file buffer so search in. The buffer is set to the start of a html comment
  * \param end    End position of the comment.
@@ -410,15 +410,15 @@ static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char*
     pos = 4;
     NutSsiSkipWhitespace(buffer, &pos, end);        // Skip whitespaces after comment start
     if (pos == end) return 0;
-    
+
     if (strncasecmp(&buffer[pos], "#include", 8) == 0) { // Search include directive
         pos += 8;
         type = SSI_TYPE_VIRTUAL;
-    } else 
+    } else
     if (strncasecmp(&buffer[pos], "#exec", 5) == 0) { // Search include or exec directive
         pos += 5;
         type = SSI_TYPE_EXEC;
-    } else 
+    } else
     if (strncasecmp(&buffer[pos], "#echo", 5) == 0) { // Search echo directive
         pos += 5;
         type = SSI_TYPE_ECHO;
@@ -427,7 +427,7 @@ static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char*
 
     NutSsiSkipWhitespace(buffer, &pos, end);        // Skip whitespaces after #include directive
     if (pos == end) return 0;
-    
+
     if (type == SSI_TYPE_VIRTUAL) {
         if (strncasecmp(&buffer[pos], "virtual", 7) == 0) {  // Search virtual directive
             pos += 7;
@@ -447,16 +447,16 @@ static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char*
         } else return 0;                            // No cgi found. return...
     }
     if (pos >= end) return 0;
-    
+
     NutSsiSkipWhitespace(buffer, &pos, end);        // Skip whitespaces after virtual, file or cgi directive
     if (pos == end) return 0;
 
     if (buffer[pos] != '=') return 0;               // check for assertion
-    pos ++; 
+    pos ++;
 
     NutSsiSkipWhitespace(buffer, &pos, end);        // Skip whitespaces after assertion
-    if (pos == end) return 0;    
-    
+    if (pos == end) return 0;
+
     if (buffer[pos] == '"') {                       // Search for filename and pass to output function
         pos ++;
         if (pos == end) return 0;
@@ -485,16 +485,16 @@ static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char*
 }
 
 /*!
- * \brief Check a file for html comments 
+ * \brief Check a file for html comments
  *
  * Check a file for html comments and then call NutSsiCheckForSsi to seach a ssi directive
  * Allowed diretives are:
- * 
+ *
  * <!--#include virtual="/news/news.htm" -->
  * <!--#include file="UROM:/news/news.htm" -->
- * <!--#exec cgi="/cgi-bin/counter.cgi" --> 
- * 
- * \param stream Stream of the socket connection, previously opened for 
+ * <!--#exec cgi="/cgi-bin/counter.cgi" -->
+ *
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param fd     Filedescriptor pointing to a just opened file.
  * \param file_len length of this file
@@ -519,9 +519,9 @@ static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_
     while (file_len != fpos) {
         memset(buffer, 0, buffsize+1);
         n = _read(fd, buffer, MIN(buffsize, file_len-fpos));
-        
-        if (!in_comment) {        
-            
+
+        if (!in_comment) {
+
             index = strstr(buffer, "<!--");
             if (index == NULL) {                    // Nothing found. print next 412 characters, seek to next startpoint.
                 if (file_len > buffsize) {
@@ -532,7 +532,7 @@ static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_
                     fwrite(buffer, 1, n, stream);
                     fpos += n;
                 }
-                
+
             } else {
                 found = (int)index - (int)buffer;   // We have found a comment initializer. Seek to the startpoint and print the beginning of the buffer.
                 fwrite (buffer, 1, found, stream);
@@ -540,13 +540,13 @@ static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_
                 _seek(fd, fpos, SEEK_SET);
                 in_comment = 1;
             }
-        } else {                                    // Ok, we assume we are "into" a comment.    
+        } else {                                    // Ok, we assume we are "into" a comment.
             index = strstr(buffer, "-->");
             if (index == NULL) {                    // We have not found the end of the comment in the next 512 characters. Byepass this comment.
                 fwrite(buffer, 1, MIN(buffsize, n), stream);
                 fpos += MIN(buffsize, n);
                 in_comment = 0;
-            } else {                                // Ok. This seems to be a comment with maximum length of 512 bytes. We now search for ssi code.    
+            } else {                                // Ok. This seems to be a comment with maximum length of 512 bytes. We now search for ssi code.
                 found = (int)index - (int)buffer;
                 if (!NutSsiCheckForSsi(stream, buffer, found, http_root, req)) {
                     fwrite(buffer, 1, found+3, stream);
@@ -557,13 +557,13 @@ static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_
             }
         }
     }
-    
+
     free(buffer);
 }
 
 /*!
  * \brief Register SSI handler for shtml files.
- * 
+ *
  * shtml files may use the following ssi commands:
  *
  * <!--#include virtual="/news/news.htm" -->

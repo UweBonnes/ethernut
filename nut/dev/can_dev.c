@@ -134,8 +134,8 @@ uint8_t CAN_RxAvail(NUTDEVICE *dev)
  *
  * \param dev Pointer to the device structure
  * \param timeout Timeout in milliseconds, NUT_WAIT_INFINITE = no time-out
- 
- * \warning Timeout values are given in milliseconds and are limited to 
+
+ * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer. To disable timeout,
  *          set the parameter to NUT_WAIT_INFINITE.
  */

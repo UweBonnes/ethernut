@@ -88,7 +88,7 @@ void CallHandler(IRQ_HANDLER * irh)
  * handlers.
  *
  * \param irq     Interrupt to be associated with this handler.
- * \param handler This routine will be called by Nut/OS, when the 
+ * \param handler This routine will be called by Nut/OS, when the
  *                specified interrupt occurs.
  * \param arg     Argument to be passed to the interrupt handler.
  *
@@ -148,8 +148,8 @@ int NutIrqDisable(IRQ_HANDLER * irq)
 /*!
  * \brief Modify the priority level of an interrupt.
  *
- * The function returns the old priority, which makes it easy to 
- * temporarily switch to another priority and later set back the 
+ * The function returns the old priority, which makes it easy to
+ * temporarily switch to another priority and later set back the
  * old one.
  *
  * \note Not all targets support dynamic interrupt prioritization.
@@ -178,11 +178,11 @@ int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
 /*!
  * \brief Modify the interrupt mode.
  *
- * The function returns the old mode, which makes it easy to 
- * temporarily switch to another mode and later set back the 
+ * The function returns the old mode, which makes it easy to
+ * temporarily switch to another mode and later set back the
  * old one.
  *
- * \note Not all targets support all modes. Check the hardware 
+ * \note Not all targets support all modes. Check the hardware
  *       data sheet for valid levels.
  *
  * \param irq  Interrupt to modify.

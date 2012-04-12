@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 by Thermotemp GmbH. All rights reserved. 
+ * Copyright (C) 2009 by Thermotemp GmbH. All rights reserved.
  *
  * These routines where mainly taken from pro/dencode.c
  * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
@@ -53,7 +53,7 @@
  * \endverbatim
  */
 
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <stdint.h>
 
 /*!
@@ -99,7 +99,7 @@ static prog_char base64dtab[96] = {
 };
 
 /*!
- * \brief Do base-64 decoding on a string. 
+ * \brief Do base-64 decoding on a string.
  *
  * Ignore any non-base64 bytes.
  * Return the actual number of bytes generated. The decoded size will
@@ -111,7 +111,7 @@ static prog_char base64dtab[96] = {
  */
 
 /*
- * Do base-64 decoding on a string. 
+ * Do base-64 decoding on a string.
  */
 char *NutDecodeBase64(char * str)
 {

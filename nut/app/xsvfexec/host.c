@@ -314,7 +314,7 @@ uint8_t XsvfGetCmd(void)
  *
  * \param state0 Returned state, if the byte value is zero.
  * \param state1 Returned state, if the byte value is one.
- * 
+ *
  * \return TAP state or UNKNOWN_STATE if an error occured.
  */
 uint8_t XsvfGetState(uint8_t state0, uint8_t state1)

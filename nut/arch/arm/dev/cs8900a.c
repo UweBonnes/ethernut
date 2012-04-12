@@ -134,13 +134,13 @@
 #include <arch/arm/lpc2xxx.h>
 #include <__armlib.h>
 #define cli()   __ARMLIB_disableIRQ()
-#define sei()   __ARMLIB_enableIRQ()   
+#define sei()   __ARMLIB_enableIRQ()
 
 /*=========================================================================*/
 /*  DEFINE: All Structures and Common Constants                            */
 /*=========================================================================*/
 
-/* 
+/*
  * Cirrus Logic CS8900a I/O Registers
  */
 #define	CS_DATA_P0    (cs_base + 0x0000UL)
@@ -232,7 +232,7 @@ void CSWrite16(uint32_t addr, uint16_t data)
     cli();
     *p = data;
     p++;
-    *p = data >> 8;    
+    *p = data >> 8;
     sei();
 }
 
@@ -260,7 +260,7 @@ uint16_t CSRead16(uint32_t addr)
     p  = (uint8_t *) addr;
     d  = *p;
     p++;
-    d |= (*p << 8); 
+    d |= (*p << 8);
     sei();
 
     return d;
@@ -343,7 +343,7 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
     // Wait for buffer space, but only for a while (200ms)
     // If the cable is disconnected this will never become true
     // If we don't get the go ahead within 200ms return 0 (Sucess)
-    // And let the upper layers deal with re-transmission 
+    // And let the upper layers deal with re-transmission
     // If we return failure TCP sockets will close straight away which probably
     // isn't the correct behaviour
     i = 0;
@@ -405,11 +405,11 @@ void CSSoftwareReset(void)
     uint16_t          data;
 
     data = CS_SELF_CTRL;
-    p  = (uint8_t *) CS_PP_PTR;    
+    p  = (uint8_t *) CS_PP_PTR;
     *p = data;
     p++;
     *p = data >> 8;
-        
+
     data = 0x0040;
     p  = (uint8_t *) CS_DATA_P0;
     *p = data;
@@ -450,7 +450,7 @@ THREAD(CSNICrx, arg)
 
         l = *(uint8_t *) (CS_DATA_P0 + 1) << 8 | *(uint8_t *) (CS_DATA_P0);
         l = *(uint8_t *) (CS_DATA_P0 + 1) << 8 | *(uint8_t *) (CS_DATA_P0);
-        
+
         //NutPrintFormat_P(dev_debug,PSTR("RxLength = %x \r\n"), l);
         //NutPrintFlush(dev_debug);
 
@@ -524,12 +524,12 @@ int cs8900Output(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets the CS8900 Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets the CS8900 Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application
@@ -544,7 +544,7 @@ int cs8900Init(NUTDEVICE * dev)
     uint16_t  j;
     IFNET   *ifn;
     NICINFO *ni;
-    
+
 #if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("Enter NicInit  \r\n"));
@@ -553,13 +553,13 @@ int cs8900Init(NUTDEVICE * dev)
 #endif
 
     cs_base = dev->dev_base;
-    
+
 #if defined(OLIMEX_LPCE2294)
     if (cs_base == 0)
     {
       cs_base = 0x82000000UL;
     }
-#endif    
+#endif
 
 
     if (confnet.cd_size == 0)
@@ -575,7 +575,7 @@ int cs8900Init(NUTDEVICE * dev)
     ifn->if_mac[3] = 0x00;
     ifn->if_mac[4] = 0x00;
     ifn->if_mac[5] = 0x00;
-#endif    
+#endif
     memset(dev->dev_dcb, 0, sizeof(NICINFO));
     ni = (NICINFO *) dev->dev_dcb;
 
@@ -591,7 +591,7 @@ int cs8900Init(NUTDEVICE * dev)
 
     //
     //  Copy our MAC address to the NIC
-    // 
+    //
     for (i = 0; i < 6; i += 2) {
         j = ifn->if_mac[i] << 8;
         j |= ifn->if_mac[i + 1];
@@ -616,7 +616,7 @@ int cs8900Init(NUTDEVICE * dev)
     //i = CSReadPP16(CS_RX_CTL);
     //NutPrintFormat_P(dev_debug,PSTR("CS_RX_CTL = %x\r\n"), i);
 
-    // 
+    //
     // Start receiver thread
     //
     NutThreadCreate("csnicrx", CSNICrx, dev, 768);
@@ -650,11 +650,11 @@ static IFNET ifn_eth0 = {
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devCS8900A = {
     0,                          /* Pointer to next device. */

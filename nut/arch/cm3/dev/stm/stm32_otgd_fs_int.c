@@ -66,13 +66,13 @@ uint32_t OTGD_FS_Handle_ModeMismatch_ISR(void)
 {
   USB_OTG_int_sts_data gintsts;
   gintsts.d32 = 0 ;
-  
+
   INTR_MODEMISMATCH_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.modemismatch = 1;
   WRITE_REG32(&core_regs.common_regs->int_sts, gintsts.d32);
-  
+
   return 1;
 }
 
@@ -87,10 +87,10 @@ uint32_t OTGD_FS_Handle_Sof_ISR(void)
 {
   USB_OTG_int_sts_data int_sts ;
   int_sts.d32 = 0;
-  
+
   /* Call user function */
   INTR_SOFINTR_Callback();
-    
+
   /* Clear interrupt */
   int_sts.b.sofintr = 1;
   WRITE_REG32 (&core_regs.common_regs->int_sts, int_sts.d32);
@@ -113,7 +113,7 @@ uint32_t OTGD_FS_Handle_RxStatusQueueLevel_ISR(void)
 
   int_mask.d32 = 0;
   status.d32 = 0;
-  
+
   /* Disable the Rx Status Queue Level interrupt */
   int_mask.b.rxstsqlvl = 1;
   MODIFY_REG32( &core_regs.common_regs->int_msk, int_mask.d32, 0);
@@ -134,23 +134,23 @@ uint32_t OTGD_FS_Handle_RxStatusQueueLevel_ISR(void)
         if (ep->type == EP_TYPE_ISOC)
         {
           /* Call user function */
-          INTR_RXSTSQLVL_ISODU_Callback();         
-          
+          INTR_RXSTSQLVL_ISODU_Callback();
+
           /* Copy the received buffer to the RAM */
           OTGD_FS_ReadPacket((uint8_t*)(IsocBuff + (ISOC_BUFFER_SZE * IsocBufferIdx)), status.b.bcnt);
-          ep->xfer_buff = (uint8_t*)(IsocBuff + (ISOC_BUFFER_SZE * IsocBufferIdx));  
-          
+          ep->xfer_buff = (uint8_t*)(IsocBuff + (ISOC_BUFFER_SZE * IsocBufferIdx));
+
           /* Check if the end of the global buffer has been reached */
           if (IsocBufferIdx == (NUM_SUB_BUFFERS - 1))
           {
             /* Reset the buffer index */
-            IsocBufferIdx = 0;                         
+            IsocBufferIdx = 0;
           }
           else
           {
             /* Increment the buffer index */
             IsocBufferIdx ++;
-          }          
+          }
         }
         else
         {
@@ -158,10 +158,10 @@ uint32_t OTGD_FS_Handle_RxStatusQueueLevel_ISR(void)
           OTGD_FS_ReadPacket(USBD_Data_Buffer, status.b.bcnt);
           ep->xfer_buff = USBD_Data_Buffer;
         }
-        
+
         /* Update the endpoint structure */
         ep->xfer_len  = status.b.bcnt;
-        ep->xfer_count += status.b.bcnt;        
+        ep->xfer_count += status.b.bcnt;
       }
       break;
     case STS_XFER_COMP:
@@ -170,7 +170,7 @@ uint32_t OTGD_FS_Handle_RxStatusQueueLevel_ISR(void)
       break;
     case STS_SETUP_UPDT:
       /* Copy the setup packet received in Fifo into the setup buffer in RAM */
-      OTGD_FS_ReadPacket(USBD_Data_Buffer, 8); 
+      OTGD_FS_ReadPacket(USBD_Data_Buffer, 8);
       ep->xfer_buff = USBD_Data_Buffer;
       ep->xfer_count += status.b.bcnt;
       ep->xfer_len  = status.b.bcnt;
@@ -181,11 +181,11 @@ uint32_t OTGD_FS_Handle_RxStatusQueueLevel_ISR(void)
 
   /* Call the user function */
   INTR_RXSTSQLVL_Callback();
-  
+
   /* Enable the Rx Status Queue Level interrupt */
   MODIFY_REG32( &core_regs.common_regs->int_msk, 0, int_mask.d32);
-  
-  /* Clear interrupt: this is a read only bit, it cannot be cleared by register 
+
+  /* Clear interrupt: this is a read only bit, it cannot be cleared by register
      access */
 
   return 1;
@@ -201,15 +201,15 @@ uint32_t OTGD_FS_Handle_RxStatusQueueLevel_ISR(void)
 uint32_t OTGD_FS_Handle_NPTxFE_ISR(void )
 {
   USB_OTG_int_msk_data gintmsk;
-  gintmsk.d32 = 0; 
-  
+  gintmsk.d32 = 0;
+
   /* Call the user function */
   INTR_NPTXFEMPTY_Callback();
-  
+
   gintmsk.b.nptxfempty = 1;
   MODIFY_REG32(&core_regs.common_regs->int_msk, gintmsk.d32, 0 );
-  
-  /* Clear interrupt: This bit is a read only bit, cannot be cleared 
+
+  /* Clear interrupt: This bit is a read only bit, cannot be cleared
      by register access */
   return 1;
 }
@@ -223,13 +223,13 @@ uint32_t OTGD_FS_Handle_NPTxFE_ISR(void )
 *******************************************************************************/
 uint32_t OTGD_FS_Handle_GInNakEff_ISR(void)
 {
- 
+
   /* Call user function */
   INTR_GINNAKEFF_Callback();
-  
-  /* Clear interrupt: This is a read only bit, it cannot be cleared by register 
+
+  /* Clear interrupt: This is a read only bit, it cannot be cleared by register
      access */
-  
+
   return 1;
 }
 
@@ -243,9 +243,9 @@ uint32_t OTGD_FS_Handle_GInNakEff_ISR(void)
 uint32_t OTGD_FS_Handle_GOutNakEff_ISR(void)
 {
   /* Call user function */
-  INTR_GOUTNAKEFF_Callback();  
-  
-  /* Clear interrupt: This is a read only bit, it cannot be cleared by register 
+  INTR_GOUTNAKEFF_Callback();
+
+  /* Clear interrupt: This is a read only bit, it cannot be cleared by register
      access */
 
   return 1;
@@ -265,11 +265,11 @@ uint32_t OTGD_FS_Handle_EarlySuspend_ISR(void )
 
   gintsts.d32 = 0;
   gintmsk.d32 = 0;
-  
-  
+
+
   /* Call user function */
-  INTR_ERLYSUSPEND_Callback();  
-  
+  INTR_ERLYSUSPEND_Callback();
+
   gintmsk.b.erlysuspend = 1;
   MODIFY_REG32(&core_regs.common_regs->int_msk, gintmsk.d32, 0 );
 
@@ -288,16 +288,16 @@ uint32_t OTGD_FS_Handle_EarlySuspend_ISR(void )
 *******************************************************************************/
 uint32_t OTGD_FS_Handle_USBSuspend_ISR(void)
 {
-  USB_OTG_int_sts_data gintsts;  
-  
+  USB_OTG_int_sts_data gintsts;
+
   gintsts.d32 = 0;
   /* Call user function */
   INTR_USBSUSPEND_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.usbsuspend = 1;
   WRITE_REG32(&core_regs.common_regs->int_sts, gintsts.d32);
-  
+
   return 1;
 }
 
@@ -316,7 +316,7 @@ uint32_t OTGD_FS_Handle_UsbReset_ISR(void)
   USB_OTG_dev_cfg_data dcfg;
   USB_OTG_dev_ctl_data dctl;
   USB_OTG_int_sts_data gintsts;
-  
+
   daintmsk.d32 = 0;
   doepmsk.d32 = 0;
   diepmsk.d32 = 0;
@@ -362,11 +362,11 @@ uint32_t OTGD_FS_Handle_UsbReset_ISR(void)
   WRITE_REG32 (&core_regs.common_regs->int_sts, gintsts.d32);
 
   /* Call the user reset function */
-  OTGD_FS_DEVICE_RESET; 
-  
+  OTGD_FS_DEVICE_RESET;
+
   /* Call user function */
-  INTR_USBRESET_Callback();  
-  
+  INTR_USBRESET_Callback();
+
   return 1;
 }
 
@@ -384,7 +384,7 @@ uint32_t OTGD_FS_Handle_EnumDone_ISR(void)
 
   gintsts.d32 = 0;
   gusbcfg.d32 = 0;
-  
+
   OTGD_FS_EP0Activate();
 
   /* Set USB turnaround time based on device speed and PHY interface. */
@@ -399,7 +399,7 @@ uint32_t OTGD_FS_Handle_EnumDone_ISR(void)
 
   /* Call user function */
   INTR_ENUMDONE_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.enumdone = 1;
   WRITE_REG32( &core_regs.common_regs->int_sts, gintsts.d32 );
@@ -415,16 +415,16 @@ uint32_t OTGD_FS_Handle_EnumDone_ISR(void)
 *******************************************************************************/
 uint32_t OTGD_FS_Handle_IsoOutDrop_ISR(void)
 {
-  USB_OTG_int_sts_data gintsts;  
+  USB_OTG_int_sts_data gintsts;
 
   gintsts.d32 = 0;
   /* Call user function */
   INTR_ISOOUTDROP_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.isooutdrop = 1;
   WRITE_REG32(&core_regs.common_regs->int_sts, gintsts.d32);
-  
+
   return 1;
 }
 
@@ -439,16 +439,16 @@ uint32_t OTGD_FS_Handle_EOPF_ISR(void )
 {
   USB_OTG_int_sts_data gintsts;
   USB_OTG_int_msk_data gintmsk;
-  
+
   gintsts.d32 = 0;
   gintmsk.d32 = 0;
-  
+
   gintmsk.b.eopframe = 1;
   MODIFY_REG32(&core_regs.common_regs->int_msk, gintmsk.d32, 0 );
 
   /* Call user function */
   INTR_EOPFRAME_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.eopframe = 1;
   WRITE_REG32(&core_regs.common_regs->int_sts, gintsts.d32);
@@ -464,17 +464,17 @@ uint32_t OTGD_FS_Handle_EOPF_ISR(void )
 *******************************************************************************/
 uint32_t OTGD_FS_Handle_EPMismatch_ISR(void)
 {
-  USB_OTG_int_sts_data gintsts;  
-  
+  USB_OTG_int_sts_data gintsts;
+
   gintsts.d32 = 0;
-  
+
   /* Call user function */
   INTR_EPMISMATCH_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.epmismatch = 1;
   WRITE_REG32(&core_regs.common_regs->int_sts, gintsts.d32);
-  
+
   return 1;
 }
 
@@ -493,7 +493,7 @@ uint32_t OTGD_FS_Handle_InEP_ISR(void)
   USB_OTG_EP *ep;
   uint32_t fifoemptymsk = 0;
 
-  diepint.d32 = 0;  
+  diepint.d32 = 0;
   ep_intr = OTGD_FS_ReadDevAllInEPItr();
   while ( ep_intr )
   {
@@ -506,14 +506,14 @@ uint32_t OTGD_FS_Handle_InEP_ISR(void)
         fifoemptymsk = 0x1 << ep->num;
         MODIFY_REG32(&core_regs.dev_regs->dev_fifo_empty_msk, fifoemptymsk, 0);
 
-        /* Clear the Interrupt flag */ 
+        /* Clear the Interrupt flag */
         CLEAR_IN_EP_INTR(epnum, xfercompl);
-        
-        if (epnum == 0)  
-        {        
-          /* Call the core IN process for EP0 */ 
+
+        if (epnum == 0)
+        {
+          /* Call the core IN process for EP0 */
           In0_Process();
-          
+
           /* before terminate set Tx & Rx status */
           OTG_DEV_SetEPRxStatus(epnum, SaveRState);
           OTG_DEV_SetEPTxStatus(epnum, SaveTState);
@@ -523,13 +523,13 @@ uint32_t OTGD_FS_Handle_InEP_ISR(void)
           OTG_DEV_SetEPTxStatus((epnum | 0x80 ), DEV_EP_TX_NAK);
 
           (*pEpInt_IN[epnum -1])();
-          
+
           /* Toggle Endpoint frame ID */
           if (ep->even_odd_frame == 0)
             ep->even_odd_frame = 1;
           else
             ep->even_odd_frame = 0;
-        } 
+        }
       }
       if ( diepint.b.ahberr )
       {
@@ -552,21 +552,21 @@ uint32_t OTGD_FS_Handle_InEP_ISR(void)
         CLEAR_IN_EP_INTR(epnum, inepnakeff);
       }
       if (diepint.b.emptyintr)
-      {      
+      {
          if ((epnum == 0) || (OTG_DEV_GetEPTxStatus(epnum) == DEV_EP_TX_VALID))
         {
-          OTGD_FS_PCD_WriteEmptyTxFifo(epnum);          
+          OTGD_FS_PCD_WriteEmptyTxFifo(epnum);
         }
 
-        CLEAR_IN_EP_INTR(epnum, emptyintr);          
+        CLEAR_IN_EP_INTR(epnum, emptyintr);
       }
       if ( diepint.b.epdisabled )
-      { 
+      {
         /* Reset Endpoint Frame ID to 0 */
         ep->even_odd_frame = 0;
 
         CLEAR_IN_EP_INTR(epnum, epdisabled);
-      }      
+      }
     }
     epnum++;
     ep_intr >>= 1;
@@ -574,7 +574,7 @@ uint32_t OTGD_FS_Handle_InEP_ISR(void)
 
   /* Call user function */
   INTR_INEPINTR_Callback();
-  
+
   return 1;
 }
 
@@ -592,12 +592,12 @@ uint32_t OTGD_FS_Handle_OutEP_ISR(void)
   USB_OTG_dev_out_ep_int_data doepint;
   uint32_t epnum = 0;
   USB_OTG_EP *ep;
-  
+
   doepint.d32 = 0;
 
   /* Read in the device interrupt bits */
   ep_intr = OTGD_FS_ReadDevAllOutEp_itr();
-  
+
   while ( ep_intr )
   {
     if (ep_intr&0x1)
@@ -611,9 +611,9 @@ uint32_t OTGD_FS_Handle_OutEP_ISR(void)
       {
         /* Clear the bit in DOEPINTn for this interrupt */
         CLEAR_OUT_EP_INTR(epnum, xfercompl);
-        
-        if (epnum == 0)  
-        { 
+
+        if (epnum == 0)
+        {
           /* Call the OUT process for the EP0 */
           Out0_Process();
         }
@@ -636,19 +636,19 @@ uint32_t OTGD_FS_Handle_OutEP_ISR(void)
       /* Setup Phase Done (control EPs) */
       if ( doepint.b.setup )
       {
-        if (epnum == 0)  
-        {        
+        if (epnum == 0)
+        {
           /* Call the SETUP process for the EP0 */
-          Setup0_Process();  
+          Setup0_Process();
 
           /* Before exit, update the Tx status */
-          OTG_DEV_SetEPTxStatus(0x80, SaveTState);  
+          OTG_DEV_SetEPTxStatus(0x80, SaveTState);
         }
         else
         {
           /* Other control endpoints */
-        }  
-        
+        }
+
         /* Clear the EP Interrupt */
         CLEAR_OUT_EP_INTR(epnum, setup);
       }
@@ -658,8 +658,8 @@ uint32_t OTGD_FS_Handle_OutEP_ISR(void)
   }
 
   /* Call user function */
-  INTR_OUTEPINTR_Callback();  
-  
+  INTR_OUTEPINTR_Callback();
+
   return 1;
 }
 
@@ -672,17 +672,17 @@ uint32_t OTGD_FS_Handle_OutEP_ISR(void)
 *******************************************************************************/
 uint32_t OTGD_FS_Handle_IncomplIsoIn_ISR(void)
 {
-  USB_OTG_int_sts_data gintsts;  
-  
+  USB_OTG_int_sts_data gintsts;
+
   gintsts.d32 = 0;
 
   /* Call user function */
-  INTR_INCOMPLISOIN_Callback(); 
-  
+  INTR_INCOMPLISOIN_Callback();
+
   /* Clear interrupt */
   gintsts.b.incomplisoin = 1;
   WRITE_REG32(&core_regs.common_regs->int_sts, gintsts.d32);
-  
+
   return 1;
 }
 
@@ -695,17 +695,17 @@ uint32_t OTGD_FS_Handle_IncomplIsoIn_ISR(void)
 *******************************************************************************/
 uint32_t OTGD_FS_Handle_IncomplIsoOut_ISR(void)
 {
-  USB_OTG_int_sts_data gintsts;  
+  USB_OTG_int_sts_data gintsts;
 
   gintsts.d32 = 0;
-  
+
   /* Call user function */
   INTR_INCOMPLISOOUT_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.outepintr = 1;
   WRITE_REG32(&core_regs.common_regs->int_sts, gintsts.d32);
-  
+
   return 1;
 }
 
@@ -723,7 +723,7 @@ uint32_t OTGD_FS_Handle_Wakeup_ISR(void)
   gintsts.d32 = 0;
   /* Call user function */
   INTR_WKUPINTR_Callback();
-  
+
   /* Clear interrupt */
   gintsts.b.wkupintr = 1;
   WRITE_REG32 (&core_regs.common_regs->int_sts, gintsts.d32);
@@ -742,9 +742,9 @@ static enum usb_device_speed OTGD_FS_PCD_GetDeviceSpeed(void)
 {
   USB_OTG_dev_sts_data dsts;
   enum usb_device_speed speed = USB_SPEED_UNKNOWN;
-    
+
   dsts.d32 = 0;
-    
+
   dsts.d32 = READ_REG32(&core_regs.dev_regs->dev_sts);
 
   switch (dsts.b.enumspd)
@@ -775,12 +775,12 @@ static enum usb_device_speed OTGD_FS_PCD_GetDeviceSpeed(void)
 static uint32_t OTGD_FS_PCD_ReadDevInEP( USB_OTG_EP *ep)
 {
   uint32_t v = 0, msk = 0, emp=0;
-  
+
   msk = READ_REG32(&core_regs.dev_regs->dev_in_ep_msk);
   emp = READ_REG32(&core_regs.dev_regs->dev_fifo_empty_msk);
   msk |= ((emp >> ep->num) & 0x1) << 7;
   v = READ_REG32(&core_regs.inep_regs[ep->num]->dev_in_ep_int) & msk;
-  
+
   return v;
 }
 
@@ -798,20 +798,20 @@ static uint32_t OTGD_FS_PCD_WriteEmptyTxFifo(uint32_t epnum)
   uint32_t len = 0;
   uint32_t dwords = 0;
   USB_OTG_dev_ep_ctl_data  depctl;
-  
-  
+
+
   txstatus.d32 = 0;
   depctl.d32 = 0;
-  
-  ep = OTGD_FS_PCD_GetInEP(epnum); 
-  
+
+  ep = OTGD_FS_PCD_GetInEP(epnum);
+
   len = ep->xfer_len - ep->xfer_count;
 
   if (len > ep->maxpacket)
   {
     len = ep->maxpacket;
   }
-  
+
   dwords = (len + 3) / 4;
   txstatus.d32 = READ_REG32( &core_regs.inep_regs[epnum]->dev_tx_fifo_sts);
 
@@ -820,7 +820,7 @@ static uint32_t OTGD_FS_PCD_WriteEmptyTxFifo(uint32_t epnum)
   {
     if (ep->num > 0)
     {
-      depctl.d32 = READ_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl);      
+      depctl.d32 = READ_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl);
       if (ep->even_odd_frame == 1)
       {
         depctl.b.setd0pid = 0;
@@ -830,19 +830,19 @@ static uint32_t OTGD_FS_PCD_WriteEmptyTxFifo(uint32_t epnum)
       {
         depctl.b.setd0pid = 1;
         depctl.b.setd1pid = 0;
-      }      
-      WRITE_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl, depctl.d32);           
+      }
+      WRITE_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl, depctl.d32);
     }
   }
 
-  
+
   while  ((txstatus.b.txfspcavail > dwords) &&
           (ep->xfer_count < ep->xfer_len) &&
           (ep->xfer_len) != 0)
   {
     if (ep->num > 0)
     {
-      depctl.d32 = READ_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl);      
+      depctl.d32 = READ_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl);
       if (ep->even_odd_frame == 0)
       {
         depctl.b.setd0pid = 1;
@@ -852,10 +852,10 @@ static uint32_t OTGD_FS_PCD_WriteEmptyTxFifo(uint32_t epnum)
       {
         depctl.b.setd0pid = 0;
         depctl.b.setd1pid = 1;
-      }      
-      WRITE_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl, depctl.d32);           
+      }
+      WRITE_REG32( &core_regs.inep_regs[epnum]->dev_in_ep_ctl, depctl.d32);
     }
-    
+
     /* Write the FIFO */
     len = ep->xfer_len - ep->xfer_count;
 
@@ -865,14 +865,14 @@ static uint32_t OTGD_FS_PCD_WriteEmptyTxFifo(uint32_t epnum)
     }
     dwords = (len + 3) / 4;
 
-    OTGD_FS_WritePacket(ep->xfer_buff, epnum, len);    
-    
-    ep->xfer_count += len;
-    ep->xfer_buff += len; 
+    OTGD_FS_WritePacket(ep->xfer_buff, epnum, len);
 
-    txstatus.d32 = READ_REG32(&core_regs.inep_regs[epnum]->dev_tx_fifo_sts);   
+    ep->xfer_count += len;
+    ep->xfer_buff += len;
+
+    txstatus.d32 = READ_REG32(&core_regs.inep_regs[epnum]->dev_tx_fifo_sts);
   }
-  
+
   return 1;
 }
 /******************* (C) COPYRIGHT 2010 STMicroelectronics *****END OF FILE****/

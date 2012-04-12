@@ -3,7 +3,7 @@
 * Author             : MCD Application Team
 * Version            : V3.1.1
 * Date               : 04/07/2010
-* Description        : Header file of the High Layer device mode interface and 
+* Description        : Header file of the High Layer device mode interface and
 *                      wrapping layer
 ********************************************************************************
 * THE PRESENT SOFTWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS

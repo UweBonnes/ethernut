@@ -37,7 +37,7 @@
  * $Id: stm32_crc.c 3110 2010-09-16 08:32:42Z astralix $
  * \endverbatim
  */
- 
+
 #include <cfg/os.h>
 #include <cfg/clock.h>
 #include <cfg/arch.h>
@@ -72,7 +72,7 @@ uint32_t CRC_CalcCRC(uint32_t Data)
 
 /**
   * @brief  Computes the 32-bit CRC of a given buffer of data word(32-bit).
-  * @param pBuffer: pointer to the buffer containing the data to be 
+  * @param pBuffer: pointer to the buffer containing the data to be
   *   computed
   * @param BufferLength: length of the buffer to be computed					
   * @retval : 32-bit CRC
@@ -112,7 +112,7 @@ void CRC_SetIDRegister(uint8_t IDValue)
 /**
   * @brief  Returns the 8-bit data stored in the Independent Data(ID) register
   * @param  None
-  * @retval : 8-bit value of the ID register 
+  * @retval : 8-bit value of the ID register
   */
 uint8_t CRC_GetIDRegister(void)
 {

@@ -52,18 +52,18 @@ typedef struct _sdram_params {
 
     uint8_t     rows;
     uint8_t     cols;
- 
+
     uint8_t     ras_latency;    /* row address strobe latency (cycles)        */
     uint8_t     cas_latency;	/* collumn address strobe latency (cycles)    */
-    
+
     uint8_t     tRP;            /* precharge to activate time (ns)            */
     uint8_t     tRAS;           /* active to precharge time (ns)              */
-    uint8_t     tSREX;          /* self refresh exit time. (ns) for devices 
-                                   without this parameter use the same value 
+    uint8_t     tSREX;          /* self refresh exit time. (ns) for devices
+                                   without this parameter use the same value
                                    as tXSR                                    */
     uint8_t     tAPR;           /* last active data out to active (cycles)    */
     uint8_t     tDAL;           /* data-in to active time (cycles)            */
-    
+
     uint8_t     tWR;            /* write recovery time (cycles)               */
     uint8_t     tRC;            /* active to active time (ns)                 */
     uint8_t     tRFC;           /* auto-refresh, and auto-refresh to active time (ns) */

@@ -113,7 +113,7 @@
  * \param ap    List of pointer arguments.
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  */
 int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
@@ -132,7 +132,7 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
     char *cp;                   /* Temporary pointer. */
     uint8_t ch_ready = 0;       /* Character available from previous peek
                                    This is necessary as a hack to get around a missing ungetc */
-    
+
     for (;;) {
         cf = *fmt++;
         if (cf == 0)

@@ -183,7 +183,7 @@ static int NplMmc0Reset(NUTDEVICE * dev)
 /*!
  * \brief Initialize MMC driver for socket 0.
  *
- * This function is automatically executed during during device 
+ * This function is automatically executed during during device
  * registration via NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.
@@ -222,13 +222,13 @@ NUTSPINODE nodeSpiMmc0Npl = {
 /*!
  * \brief Multimedia card device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
- * to bind this driver to the Nut/OS kernel. An application may then 
+ * A pointer to this structure must be passed to NutRegisterDevice()
+ * to bind this driver to the Nut/OS kernel. An application may then
  * call
  * /verbatim
  * _open("MMC0:", _O_RDWR | _O_BINARY);
  * /endverbatim
- * to mount the first active primary partition with any previously 
+ * to mount the first active primary partition with any previously
  * registered file system driver (typically devPhat0).
  */
 NUTDEVICE devNplSpiMmc0 = {

@@ -68,7 +68,7 @@
 /*!
  * \brief Writes data from program space to a file, device or socket.
  *
- * Similar to _write() except that the data is located in program 
+ * Similar to _write() except that the data is located in program
  * memory.
  *
  * \param fd    Descriptor of a previously opened file, device or

@@ -84,8 +84,8 @@
 static uint16_t tcpbufsiz = 4288;
 
 /*
- * Maximum segment size, choose 536 up to 1460. Note, that segment 
- * sizes above 536 may result in fragmented packets. Remember, that 
+ * Maximum segment size, choose 536 up to 1460. Note, that segment
+ * sizes above 536 may result in fragmented packets. Remember, that
  * Ethernut doesn't support TCP fragmentation.
  */
 static uint16_t mss = 536;
@@ -188,7 +188,7 @@ static uint16_t UserInput(void)
 #endif /* ARTHERNET1 */
 
 /*
- * If we got a background scanner 
+ * If we got a background scanner
  */
 static void StationList(void)
 {

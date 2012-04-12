@@ -38,9 +38,9 @@ enum nutComponentType {
     /*! \brief No specific type or type not yet assigned. */
     nutConfigTypeNone,
 
-    /*! \brief Folder component. 
+    /*! \brief Folder component.
      *
-     * A folder may contain any number of libraries. 
+     * A folder may contain any number of libraries.
      * Seems to be currently unused.
      */
     nutFolder,
@@ -51,14 +51,14 @@ enum nutComponentType {
      */
     nutLibrary,
 
-    /*! \brief Module component. 
-     * 
+    /*! \brief Module component.
+     *
      * A module may contain any number of options. Modules are
      * typically related to source code files.
      */
     nutModule,
 
-    /*! \brief Component option. 
+    /*! \brief Component option.
      *
      * Each component option specifies a configuration value.
      */
@@ -69,30 +69,30 @@ enum nutComponentType {
  * \brief Option types.
  */
 enum nutOptionType {
-    /*! \brief No specific option. 
+    /*! \brief No specific option.
      *
      */
     nutOptionTypeNone,
 
-    /*! \brief Integer value. 
+    /*! \brief Integer value.
      *
      * Option is used to configure an integer value.
      */
     nutInteger,
 
-    /*! \brief Boolean value. 
+    /*! \brief Boolean value.
      *
      * Option is used to configure a boolean value.
      */
     nutBool,
 
-    /*! \brief String value. 
+    /*! \brief String value.
      *
      * Option is used to configure a textual value.
      */
     nutString,
 
-    /*! \brief Enumerated value. 
+    /*! \brief Enumerated value.
      *
      * Used to select a configuration option from a predefined set.
      */
@@ -103,7 +103,7 @@ enum nutOptionType {
  * \brief Option flavors.
  */
 enum nutOptionFlavor {
-    /*! \brief No specific flavor. 
+    /*! \brief No specific flavor.
      *
      */
     nutFlavorNone,
@@ -193,7 +193,7 @@ private:
     NUTCOMPONENT *m_compo;
     /*! \brief Pointer to the option data structure. */
     NUTCOMPONENTOPTION *m_option;
-    /*! 
+    /*!
      * \brief Component type of this item.
      *
      * Either library, module or option.

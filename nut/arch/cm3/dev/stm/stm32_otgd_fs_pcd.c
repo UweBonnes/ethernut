@@ -122,7 +122,7 @@ uint32_t OTGD_FS_PCD_EP_Open(EP_DESCRIPTOR *epdesc)
     /* Assign a Tx FIFO */
     ep->tx_fifo_num = ep->num;
   }
-  
+
   /* Set initial data PID. */
   if ((epdesc->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_BULK )
   {
@@ -222,7 +222,7 @@ uint32_t  OTGD_FS_PCD_EP_Write (uint8_t ep_addr, uint8_t *pbuf, uint32_t buf_len
   ep->xfer_len = buf_len;
   ep->is_in = 1;
   ep->num = ep_addr & 0x7F;
-  
+
   if ( ep->num == 0 )
   {
     OTGD_FS_EP0StartXfer(ep);
@@ -331,7 +331,7 @@ void  OTGD_FS_PCD_EP_SetAddress (uint8_t address)
   USB_OTG_dev_cfg_data dcfg;
 
   dcfg.d32 = 0;
-  
+
   dcfg.b.devaddr = address;
   MODIFY_REG32( &core_regs.dev_regs->dev_cfg, 0, dcfg.d32);
 }
@@ -347,7 +347,7 @@ void  OTGD_FS_PCD_EP_SetAddress (uint8_t address)
 USB_OTG_EP* OTGD_FS_PCD_GetInEP(uint32_t ep_num)
 {
   uint32_t i = 0;
-  
+
   if (ep_num == 0)
   {
     return &USB_OTG_PCD_dev.ep0;
@@ -372,7 +372,7 @@ USB_OTG_EP* OTGD_FS_PCD_GetInEP(uint32_t ep_num)
 USB_OTG_EP* OTGD_FS_PCD_GetOutEP(uint32_t ep_num)
 {
   uint32_t i = 0;
-  
+
   if (ep_num == 0)
   {
     return &USB_OTG_PCD_dev.ep0;
@@ -399,7 +399,7 @@ void  OTGD_FS_PCD_DevConnect(void)
 {
 
   USB_OTG_dev_ctl_data dctl;
-  
+
   dctl.d32 = 0;
 
   dctl.d32 = READ_REG32(&core_regs.dev_regs->dev_ctl);
@@ -424,7 +424,7 @@ void  OTGD_FS_PCD_DevDisconnect (void)
   USB_OTG_dev_ctl_data dctl;
 
   dctl.d32 = 0;
-  
+
   dctl.d32 = READ_REG32(&core_regs.dev_regs->dev_ctl);
 
   /* Disconnect device for 20ms */
@@ -446,8 +446,8 @@ void OTGD_FS_PCD_EP0_OutStart(void)
 
   USB_OTG_dev_ep_txfer_size0_data doeptsize0;
   doeptsize0.d32 = 0;
-  
-  
+
+
   doeptsize0.b.supcnt = 3;
   doeptsize0.b.pktcnt = 1;
   doeptsize0.b.xfersize = 8 * 3;

@@ -35,8 +35,8 @@
 /*!
  * \brief Basic SPI bus block device driver for multimedia cards.
  *
- * The driver provides generic memory card access, but doesn't include 
- * low level hardware support like card detection. This must be provided 
+ * The driver provides generic memory card access, but doesn't include
+ * low level hardware support like card detection. This must be provided
  * by a hardware specific support module.
  *
  * \verbatim
@@ -79,7 +79,7 @@
 /*!
  * \brief Block size.
  *
- * Block size in bytes. Do not change unless you are sure that both, 
+ * Block size in bytes. Do not change unless you are sure that both,
  * the file system and the hardware support it.
  */
 #define MMC_BLOCK_SIZE          512
@@ -89,8 +89,8 @@
 /*!
  * \brief Card init timeout.
  *
- * Max. number of loops waiting for card's idle mode after initialization. 
- * An additional delay of 1 ms is added to each loop after one quarter of 
+ * Max. number of loops waiting for card's idle mode after initialization.
+ * An additional delay of 1 ms is added to each loop after one quarter of
  * this value elapsed.
  */
 #define MMC_MAX_INIT_POLLS      512
@@ -127,8 +127,8 @@
 /*!
  * \brief Command acknowledge timeout.
  *
- * Max. number of loops waiting for card's acknowledge of a command. 
- * An additional delay of 1 ms is added to each loop after three quarter 
+ * Max. number of loops waiting for card's acknowledge of a command.
+ * An additional delay of 1 ms is added to each loop after three quarter
  * of this value elapsed.
  */
 #define MMC_MAX_CMDACK_POLLS    1024
@@ -139,7 +139,7 @@
  * \brief Card busy timeout.
  *
  * Max. number of loops waiting for card's ready state.
- * An additional delay of 1 ms is added to each loop after one quarter 
+ * An additional delay of 1 ms is added to each loop after one quarter
  * of this value elapsed.
  */
 #define MMC_MAX_READY_POLLS     800
@@ -147,10 +147,10 @@
 
 
 /* HACK!!!
-   Some SPI hardware just shift around data read from MISO pin to the MOSI pin if the SPI data register 
-   is not set manually. At least on the AT91 platform it is impossible to use DMA transfers just for reading  
-   and to hold the MOSI line at high level if no tx data is send out at the same time. So we declare a buffer   
-   filled with 0xFF here, to make sure the MOSI pin is held at high level (0xFF) all the time during a 
+   Some SPI hardware just shift around data read from MISO pin to the MOSI pin if the SPI data register
+   is not set manually. At least on the AT91 platform it is impossible to use DMA transfers just for reading
+   and to hold the MOSI line at high level if no tx data is send out at the same time. So we declare a buffer
+   filled with 0xFF here, to make sure the MOSI pin is held at high level (0xFF) all the time during a
    read only transfer. This buffer is used in CardRXData and several other places too. The buffer is read only.
 
    This is a very very nasty hack and waists 512 Bytes of ram, but I don't see a better solution right now!
@@ -170,7 +170,7 @@ static uint8_t dummy_tx_buf[MMC_BLOCK_SIZE];
  * \brief Local multimedia card status information.
  */
 typedef struct _MMCFCB {
-    /*! \brief Attached file system device. 
+    /*! \brief Attached file system device.
      */
     NUTDEVICE *fcb_fsdev;
 
@@ -189,7 +189,7 @@ typedef struct _MMCFCB {
 
     /*! \brief Internal block buffer.
      *
-     * A file system driver may use this one or optionally provide it's 
+     * A file system driver may use this one or optionally provide it's
      * own buffers.
      *
      * Minimal systems may share their external bus interface with
@@ -311,19 +311,19 @@ static uint8_t CardRxTkn(NUTSPINODE * node)
 /*!
  * \brief Send command to a multimedia card.
  *
- * Allocates the bus, transmits the command with the command parameter 
+ * Allocates the bus, transmits the command with the command parameter
  * set to zero and receives a one or two byte response. Before returning
- * to the caller, the bus is typically released. However, if len is 
+ * to the caller, the bus is typically released. However, if len is
  * neither 1 nor 2, the bus will not be released.
  *
- * In SPI mode, the card sends a 1 byte response after every command 
+ * In SPI mode, the card sends a 1 byte response after every command
  * except after SEND_STATUS and READ_OCR commands, where 2 or 5 bytes
  * are returned resp.
  *
  * \param node Specifies the SPI node.
  * \param cmd  Command code. See MMCMD_ macros.
- * \param len  Length of the expected response, either 1, 2 or 0. If 0, 
- *             then the first byte of the response will be returned and 
+ * \param len  Length of the expected response, either 1, 2 or 0. If 0,
+ *             then the first byte of the response will be returned and
  *             the bus will be kept allocated.
  *
  * \return The 1 or 2 byte response. On time out 0xFFFF is returned and
@@ -423,7 +423,7 @@ static int CardInit(NUTSPINODE * node)
 /*!
  * \brief Read data transaction.
  *
- * This routine is used to read data blocks as well as reading the CSD 
+ * This routine is used to read data blocks as well as reading the CSD
  * and CID registers.
  *
  * \param node  Specifies the SPI node.
@@ -473,13 +473,13 @@ static int CardRxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, uint8_t *b
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous
  *               call to SpiMmcMount().
  * \param buffer Pointer to the data buffer to fill.
- * \param num    Maximum number of blocks to read. However, reading 
+ * \param num    Maximum number of blocks to read. However, reading
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks actually read. A return value of -1 
+ * \return The number of blocks actually read. A return value of -1
  *         indicates an error.
  */
 int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num)
@@ -526,13 +526,13 @@ int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num)
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to SpiMmcMount().
  * \param buffer Pointer to the data to be written. However, writing
  *               multiple blocks is not yet supported by this driver.
  * \param num    Number of blocks to write.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
 int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
@@ -638,12 +638,12 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data blocks from program space to a mounted partition.
  *
  * This function is not yet implemented and will always return -1.
  *
- * Similar to SpiMmcBlockWrite() except that the data is located in 
+ * Similar to SpiMmcBlockWrite() except that the data is located in
  * program memory.
  *
  * Applications should not call this function directly, but use the
@@ -654,7 +654,7 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
  * \param num    Maximum number of blocks to write. However, writing
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
 int SpiMmcBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
@@ -676,13 +676,13 @@ int SpiMmcUnmount(NUTFILE * nfp);
  *
  * \param dev  Pointer to the MMC device.
  * \param name Partition number followed by a slash followed by a name
- *             of the file system device. Both items are optional. If no 
+ *             of the file system device. Both items are optional. If no
  *             file system driver name is given, the first file system
- *             driver found in the list of registered devices will be 
+ *             driver found in the list of registered devices will be
  *             used. If no partition number is specified or if partition
- *             zero is given, the first active primary partition will be 
+ *             zero is given, the first active primary partition will be
  *             used.
- * \param mode Opening mode. Currently ignored, but 
+ * \param mode Opening mode. Currently ignored, but
  *             \code _O_RDWR | _O_BINARY \endcode should be used for
  *             compatibility with future enhancements.
  * \param acc  File attributes, ignored.
@@ -771,7 +771,7 @@ NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         return NUTFILE_EOF;
 	}
     /* Check for the partition table. */
-	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' && 
+	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 1] == 'A' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 2] == 'T') {
         /* No partition table. Assume FAT12 and 32MB size. */
@@ -838,7 +838,7 @@ NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  * Applications should not directly call this function, but use the high
  * level stdio routines for closing a previously opened volume.
  *
- * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous
  *            call to SpiMmcMount().
  * \return 0 on success, -1 otherwise.
  */
@@ -969,8 +969,8 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Initialize MMC driver.
  *
- * Applications should not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.

@@ -416,8 +416,8 @@
 static int twibb_initialized;
 
 /*
- * Short delay. 
- * 
+ * Short delay.
+ *
  * Our bit banging code relies on pull-up resistors. The I/O ports mimic
  * open collector outputs by switching to input mode for high level and
  * switching to output mode for low level. This is much slower than
@@ -596,7 +596,7 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
         icb->tw_mm_error = TWERR_IF_LOCKED;
         return -1;
     }
-    
+
     if (txlen) {
         TwStart();
         /* Send SLA+W and check for ACK. */
@@ -629,7 +629,7 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
 
     /* Release the interface. */
     NutEventPost(&bus->bus_mutex);
-    
+
     return rc;
 }
 
@@ -728,12 +728,12 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
         /* Speed out of range */
         return rc;
     }
-    
+
     if (bus==NULL) {
         /* No bus selected */
         return rc;
     }
-    
+
     return 0;
 }
 
@@ -856,7 +856,7 @@ int NutDestroyTwiBus( NUTTWIBUS *bus)
     if (bus->bus_icb) {
         NutHeapFree( bus->bus_icb);
     }
-    
+
     return 0;
 }
 

@@ -136,7 +136,7 @@
 #define ADC_EOC6                0x00000040      /*!< \brief End of conversion channel 6 */
 #define ADC_EOC7                0x00000080      /*!< \brief End of conversion channel 7 */
 
-#define ADC_OVRE(x)((unsigned long)BV(x+8))     /*!< \brief Macto to acces overrun error flag by channel number */ 
+#define ADC_OVRE(x)((unsigned long)BV(x+8))     /*!< \brief Macto to acces overrun error flag by channel number */
 #define ADC_OVRE0               0x00000100      /*!< \brief Overrun error flag channel 0 */
 #define ADC_OVRE1               0x00000200      /*!< \brief Overrun error flag channel 1 */
 #define ADC_OVRE2               0x00000400      /*!< \brief Overrun error flag channel 2 */

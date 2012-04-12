@@ -34,7 +34,7 @@
  *
  * For additional information see http://www.ethernut.de/
  */
- 
+
 /*
  * $Log$
  * Revision 1.4  2007/08/29 07:43:53  haraldkipp

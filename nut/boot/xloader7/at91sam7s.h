@@ -1913,8 +1913,8 @@ typedef struct _AT91S_UDP {
 #define AT91C_IFLASH_SIZE     ((unsigned int) 0x00010000) // Internal FLASH size in byte (64 Kbytes)
 #define AT91C_IFLASH_PAGE_SIZE     ((unsigned int) 128) // Internal FLASH Page Size: 128 bytes
 #define AT91C_IFLASH_LOCK_REGION_SIZE     ((unsigned int) 4096) // Internal FLASH Lock Region Size: 4 Kbytes
-#define AT91C_IFLASH_NB_OF_PAGES     ((unsigned int) 512) // Internal FLASH Number of Pages: 512 
-#define AT91C_IFLASH_NB_OF_LOCK_BITS     ((unsigned int) 8) // Internal FLASH Number of Lock Bits: 8 
+#define AT91C_IFLASH_NB_OF_PAGES     ((unsigned int) 512) // Internal FLASH Number of Pages: 512
+#define AT91C_IFLASH_NB_OF_LOCK_BITS     ((unsigned int) 8) // Internal FLASH Number of Lock Bits: 8
 #endif
 
 #if defined(at91sam7s128)

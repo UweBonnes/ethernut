@@ -63,7 +63,7 @@ static ureg_t nested;
 /*!
  * \brief Start the AT91 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
@@ -80,7 +80,7 @@ uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
      * upper 4 bits.
      */
     cmval = ((NutGetCpuClock() / 1000) * ms) >> 13;
-    
+
     /* Check if MCK/8 is slow enough. */
     if (cmval < WD_HPCV) {
         cmval = (cmval & WD_HPCV) | WD_WDCLKS_MCK8;
@@ -129,7 +129,7 @@ uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
 /*!
  * \brief Re-start the AT91 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void At91WatchDogRestart(void)
@@ -144,7 +144,7 @@ void At91WatchDogRestart(void)
 /*!
  * \brief Disable the AT91 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void At91WatchDogDisable(void)
@@ -162,7 +162,7 @@ void At91WatchDogDisable(void)
 /*!
  * \brief Enable the AT91 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void At91WatchDogEnable(void)

@@ -128,7 +128,7 @@ void PerCiDump(FILE *stream, char *path)
 /*!
  * \brief Initialize a ring buffer file.
  *
- * If the file doesn't exist, a new file will be created. If the file 
+ * If the file doesn't exist, a new file will be created. If the file
  * exists, any buffered data will be erased.
  *
  * The total size of the file is
@@ -185,7 +185,7 @@ int PerCiInit(char *path, int recs)
  * \code
  * PERCI_WRITER *perci;
  * char *path = "UFLASH0:data.log";
- * 
+ *
  * while ((perci = PerCiOpen(path)) == NULL) {
  *     if (PerCiInit(path, 128)) {
  *         printf("Error %d creating %s\n", errno, path);
@@ -221,8 +221,8 @@ PERCI_WRITER *PerCiOpen(char *path)
             if (writer->pcw_size >= 2 * PERCI_RECSIZE + sizeof(perci_reclen_t)) {
                 writer->pcw_size -= sizeof(perci_reclen_t);
 
-                /* 
-                 * Scan the file for the next available record. 
+                /*
+                 * Scan the file for the next available record.
                  */
                 _seek(writer->pcw_fd, 0, SEEK_SET);
                 for (writer->pcw_recnum = 0; writer->pcw_recnum < PERCI_MAX_RECORDS; writer->pcw_recnum++) {
@@ -263,7 +263,7 @@ PERCI_WRITER *PerCiOpen(char *path)
 /*!
  * \brief Flush the current write buffer.
  *
- * \param writer Pointer to a PERCI_WRITER structure obtained by a 
+ * \param writer Pointer to a PERCI_WRITER structure obtained by a
  *               previous call to PerCiOpen().
  */
 void PerCiFlush(PERCI_WRITER * writer)
@@ -279,7 +279,7 @@ void PerCiFlush(PERCI_WRITER * writer)
 /*!
  * \brief Close a ring buffer file.
  *
- * \param writer Pointer to a PERCI_WRITER structure obtained by a 
+ * \param writer Pointer to a PERCI_WRITER structure obtained by a
  *               previous call to PerCiOpen().
  */
 void PerCiClose(PERCI_WRITER * writer)
@@ -297,7 +297,7 @@ void PerCiClose(PERCI_WRITER * writer)
 /*!
  * \brief Write to a ring buffer file.
  *
- * \param writer Pointer to a PERCI_WRITER structure obtained by a 
+ * \param writer Pointer to a PERCI_WRITER structure obtained by a
  *               previous call to PerCiOpen().
  *
  * \return The number of bytes successfully written or -1 on failure.
@@ -327,7 +327,7 @@ int PerCiWrite(PERCI_WRITER * writer, CONST char *data, int len)
         cnt += num;
         data += num;
 
-        /* If the buffered record is completely filled, then write it 
+        /* If the buffered record is completely filled, then write it
            back to the file and claim the next one. Note, that we write
            a whole record, which is sizeof(perci_reclen_t) larger than
            the real record size. This way we automatically override the
@@ -358,12 +358,12 @@ int PerCiWrite(PERCI_WRITER * writer, CONST char *data, int len)
 /*!
  * \brief Write formatted line to a ring buffer file.
  *
- * Alternate form of PerCiWriteFormat(), in which the arguments have 
+ * Alternate form of PerCiWriteFormat(), in which the arguments have
  * already been captured using the variable-length argument facilities.
  *
- * \param writer Pointer to a PERCI_WRITER structure obtained by a 
+ * \param writer Pointer to a PERCI_WRITER structure obtained by a
  *               previous call to PerCiOpen().
- * \param fmt    Format string containing conversion specifications 
+ * \param fmt    Format string containing conversion specifications
  *               like printf.
  * \param ap     Pointer to the list of arguments.
  *
@@ -394,9 +394,9 @@ int PerCiWriteVarList(PERCI_WRITER * writer, CONST char *fmt, va_list ap)
 /*!
  * \brief Write formatted line to a ring buffer file.
  *
- * \param writer Pointer to a PERCI_WRITER structure obtained by a 
+ * \param writer Pointer to a PERCI_WRITER structure obtained by a
  *               previous call to PerCiOpen().
- * \param fmt    Format string containing conversion specifications 
+ * \param fmt    Format string containing conversion specifications
  *               like printf.
  *
  * \return The number of bytes successfully written or -1 on failure.
@@ -419,7 +419,7 @@ int PerCiWriteFormat(PERCI_WRITER * writer, CONST char *fmt, ...)
 /*!
  * \brief Find next record with data.
  *
- * \param writer Pointer to a PERCI_WRITER structure obtained by a 
+ * \param writer Pointer to a PERCI_WRITER structure obtained by a
  *               previous call to PerCiOpen().
  * \param recnum Pointer to a variable, which contains the number of
  *               the start record upon entry and which will contain
@@ -481,7 +481,7 @@ static perci_fast_reclen_t FindNextData(PERCI_WRITER * writer, perci_fast_recnum
  *
  * Multiple readers may be concurrently attached to the same file.
  *
- * \param writer Pointer to a PERCI_WRITER structure obtained by a 
+ * \param writer Pointer to a PERCI_WRITER structure obtained by a
  *               previous call to PerCiOpen().
  *
  * \return A pointer to a PERCI_READER structure on success. The return
@@ -497,7 +497,7 @@ PERCI_READER *PerCiAttachReader(PERCI_WRITER * writer)
     reader = malloc(sizeof(PERCI_READER));
     reader->pcr_cil = writer;
     reader->pcr_recpos = 0;
-    /* Search the oldest record that contains data. Start with the one 
+    /* Search the oldest record that contains data. Start with the one
        above the current record of the writer. */
     reader->pcr_recnum = writer->pcw_recnum + 1;
     reader->pcr_reclen = FindNextData(writer, &reader->pcr_recnum);
@@ -508,7 +508,7 @@ PERCI_READER *PerCiAttachReader(PERCI_WRITER * writer)
 /*!
  * \brief Stop reading from a ring buffer file.
  *
- * \param reader Pointer to a PERCI_READER structure obtained by a 
+ * \param reader Pointer to a PERCI_READER structure obtained by a
  *               previous call to PerCiAttachReader().
  */
 void PerCiDetachReader(PERCI_READER * reader)
@@ -521,7 +521,7 @@ void PerCiDetachReader(PERCI_READER * reader)
 /*!
  * \brief Read data from a ring buffer file.
  *
- * \param reader Pointer to a PERCI_READER structure obtained by a 
+ * \param reader Pointer to a PERCI_READER structure obtained by a
  *               previous call to PerCiAttachReader().
  * \param data   Pointer to the buffer that receives the data.
  * \param len    Number of bytes to read.
@@ -591,7 +591,7 @@ int PerCiRead(PERCI_READER * reader, char *data, int len)
 /*!
  * \brief Read a text line from a ring buffer file.
  *
- * \param reader Pointer to a PERCI_READER structure obtained by a 
+ * \param reader Pointer to a PERCI_READER structure obtained by a
  *               previous call to PerCiAttachReader().
  * \param data   Pointer to the buffer that receives the data.
  * \param len    Number of bytes to read.

@@ -51,7 +51,7 @@
  * Added $Log keyword for CVS and avoid multiple inclusion of header file.
  *
  */
- 
+
 #ifndef _SYS_SEMAPHORE_H
 #define _SYS_SEMAPHORE_H
 

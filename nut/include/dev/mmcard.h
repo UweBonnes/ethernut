@@ -110,7 +110,7 @@ typedef struct _MMCIFC {
 #define MMCMD_HOST                      0x40
 #define MMCMD_RESET_CRC                 0x95
 
-/*! \brief Reset card to idle state. 
+/*! \brief Reset card to idle state.
  *
  * In idle state the card will not accept any other commands than
  * MMCMD_SEND_OP_COND or MMCMD_READ_OCR.
@@ -196,7 +196,7 @@ typedef struct _MMCIFC {
 /*! \brief Query card's operating condition register. */
 #define MMCMD_READ_OCR                  58
 
-/*! \brief Enable or disable CRC mode. 
+/*! \brief Enable or disable CRC mode.
  *
  * In SPI mode CRC is disabled by default.
  */
@@ -356,7 +356,7 @@ typedef struct __attribute__ ((packed)) _MMC_CSD {
     uint8_t mmcsd_speed;
     /*! \brief Card command classes and max. read block length. */
     uint8_t mmcsd_ccc_bl[2];
-    /*! \brief Read-only fields. 
+    /*! \brief Read-only fields.
      *
      * - [0] 0..1 Device size bits 10..11.
      * - [0] 2..3 Reserved.

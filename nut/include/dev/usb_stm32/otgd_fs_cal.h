@@ -27,7 +27,7 @@
 #elif defined   (  __GNUC__  )
   #define __packed        __attribute__ ((__packed__)) /*!< packing keyword for GNU Compiler */
 #elif defined   (  __TASKING__  )                      /*!< packing keyword for TASKING Compiler */
-  #define __packed   
+  #define __packed
 #endif /* __CC_ARM */
 
 /*******************************************************************************
@@ -45,7 +45,7 @@
 #define DEV_EP_TX_STALL     0x0010
 #define DEV_EP_TX_NAK       0x0020
 #define DEV_EP_TX_VALID     0x0030
- 
+
 #define DEV_EP_RX_DIS       0x0000
 #define DEV_EP_RX_STALL     0x1000
 #define DEV_EP_RX_NAK       0x2000

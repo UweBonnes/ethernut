@@ -48,6 +48,6 @@ extern IRQ_HANDLER sig_USART3;      // USART 3
 extern IRQ_HANDLER sig_USART4;      // USART 4
 
 extern IRQ_HANDLER sig_RTC;         // Real Time Clock
-extern IRQ_HANDLER sig_WDT;         // Watchdog Timer 
+extern IRQ_HANDLER sig_WDT;         // Watchdog Timer
 
 #endif

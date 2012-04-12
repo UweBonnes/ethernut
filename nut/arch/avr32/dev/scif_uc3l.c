@@ -108,8 +108,8 @@ long int scif_start_osc(scif_osc_t osc, const scif_osc_opt_t *opt, bool wait_for
 //# Implementation note: this code doesn't consider the osc input parameter
 //# because UC3L devices only implement OSC0.
   u_avr32_scif_oscctrl0_t   u_avr32_scif_oscctrl0 = {AVR32_SCIF.oscctrl0};
-  
-  
+
+
 #ifdef AVR32SFW_INPUT_CHECK
   // Check that the input frequency is in the supported frequency range.
   if( (opt->freq_hz < SCIF_EXT_CRYSTAL_MIN_FREQ_HZ)
@@ -189,7 +189,7 @@ long int scif_configure_osc_crystalmode(scif_osc_t osc, unsigned int fcrystal)
 //# Implementation note: this code doesn't consider the osc input parameter
 //# because UC3L devices only implement OSC0.
   u_avr32_scif_oscctrl0_t   u_avr32_scif_oscctrl0 = {AVR32_SCIF.oscctrl0};
-  
+
   // Configure the oscillator mode to crystal and set the gain according to the
   // cyrstal frequency.
   u_avr32_scif_oscctrl0.OSCCTRL0.mode = SCIF_OSC_MODE_2PIN_CRYSTAL;
@@ -211,7 +211,7 @@ long int scif_configure_osc_crystalmode(scif_osc_t osc, unsigned int fcrystal)
 long int scif_configure_osc_extmode(scif_osc_t osc)
 {
   u_avr32_scif_oscctrl0_t   u_avr32_scif_oscctrl0 = {AVR32_SCIF.oscctrl0};
-  
+
       // Read Register
     u_avr32_scif_oscctrl0.OSCCTRL0 = AVR32_SCIF.OSCCTRL0 ;
     // Modify : Configure the oscillator mode to crystal and set the gain according to the
@@ -262,8 +262,8 @@ long int scif_enable_osc(scif_osc_t osc, unsigned int startup, bool wait_for_rea
 long int scif_start_osc32(const scif_osc32_opt_t *opt, bool wait_for_ready)
 {
   u_avr32_scif_oscctrl32_t  u_avr32_scif_oscctrl32 = {AVR32_SCIF.oscctrl32};
-  
-  
+
+
 #ifdef AVR32SFW_INPUT_CHECK
   // Check that the input frequency is in the supported frequency range.
   if( (opt->freq_hz < SCIF_EXT_CRYSTAL_MIN_FREQ_HZ)
@@ -287,7 +287,7 @@ long int scif_start_osc32(const scif_osc32_opt_t *opt, bool wait_for_ready)
 #endif  // AVR32SFW_INPUT_CHECK
 
   // Note: RC32K is automatically output on PA20 upon reset, which is the pin
-  // for XOUT32_2 => we must disable this output before setting-up the OSC32K 
+  // for XOUT32_2 => we must disable this output before setting-up the OSC32K
   // (in case the OSC32 is connected to XIN32_2/XOUT32_2).
   scif_disable_rc32out();
 
@@ -298,7 +298,7 @@ long int scif_start_osc32(const scif_osc32_opt_t *opt, bool wait_for_ready)
   u_avr32_scif_oscctrl32.OSCCTRL32.en1k = opt->en1k;
   u_avr32_scif_oscctrl32.OSCCTRL32.startup = opt->startup;
   u_avr32_scif_oscctrl32.OSCCTRL32.osc32en = ENABLE;
-  // Note: the OSCCTRL32 register is protected by a lock. To safely unlock then 
+  // Note: the OSCCTRL32 register is protected by a lock. To safely unlock then
   // write in the register, perform this operation inside a critical region.
   AVR32_ENTER_CRITICAL_REGION( );
   // Unlock the write-protected OSCCTRL32 register
@@ -313,7 +313,7 @@ long int scif_start_osc32(const scif_osc32_opt_t *opt, bool wait_for_ready)
     if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_OSC32RDY_MASK))
       return -1;
   }
-  
+
   return PASS;
 }
 
@@ -363,7 +363,7 @@ long int scif_dfll0_openloop_start(const scif_dfll_openloop_conf_t *pdfllconfig)
   SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
   AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
   AVR32_LEAVE_CRITICAL_REGION( );
-  
+
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
@@ -374,11 +374,11 @@ long int scif_dfll0_openloop_start(const scif_dfll_openloop_conf_t *pdfllconfig)
   SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
   AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
   AVR32_LEAVE_CRITICAL_REGION( );
-  
+
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-  
+
   // Write DFLL0CONF.COARSE & DFLL0CONF.FINE
   u_avr32_scif_dfll0conf.DFLL0CONF.coarse = pdfllconfig->coarse;
   u_avr32_scif_dfll0conf.DFLL0CONF.fine = pdfllconfig->fine;
@@ -390,7 +390,7 @@ long int scif_dfll0_openloop_start(const scif_dfll_openloop_conf_t *pdfllconfig)
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-  
+
   return PASS;
 }
 
@@ -470,37 +470,37 @@ long int scif_dfll0_openloop_updatefreq(const scif_dfll_openloop_conf_t *pdfllco
 long int scif_dfll0_openloop_stop(void)
 {
   u_avr32_scif_dfll0conf_t  u_avr32_scif_dfll0conf = {AVR32_SCIF.dfll0conf};
-  
-    
-  // Before disabling the DFLL, the output freq of the DFLL should be set to a 
+
+
+  // Before disabling the DFLL, the output freq of the DFLL should be set to a
   // minimum: set COARSE to 0x00.
 
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-  
+
   // Write DFLL0CONF.COARSE
   u_avr32_scif_dfll0conf.DFLL0CONF.coarse = 0;
   AVR32_ENTER_CRITICAL_REGION( );
   SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
   AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
   AVR32_LEAVE_CRITICAL_REGION( );
-  
+
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-    
+
   // Disable the DFLL
   u_avr32_scif_dfll0conf.DFLL0CONF.en = 0;
   AVR32_ENTER_CRITICAL_REGION( );
   SCIF_UNLOCK(AVR32_SCIF_DFLL0CONF);
   AVR32_SCIF.dfll0conf = u_avr32_scif_dfll0conf.dfll0conf;
   AVR32_LEAVE_CRITICAL_REGION( );
-  
+
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-    
+
   return PASS;
 }
 
@@ -508,7 +508,7 @@ long int scif_dfll0_openloop_stop(void)
 long int scif_dfll0_ssg_enable(scif_dfll_ssg_conf_t *pssg_conf)
 {
   u_avr32_scif_dfll0ssg_t  u_avr32_scif_dfll0ssg = {AVR32_SCIF.dfll0ssg};
-  
+
 
   u_avr32_scif_dfll0ssg.DFLL0SSG.en = ENABLE;
   u_avr32_scif_dfll0ssg.DFLL0SSG.prbs = pssg_conf->use_random;
@@ -548,7 +548,7 @@ long int scif_dfll0_closedloop_start(const scif_dfll_closedloop_conf_t *pdfllcon
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-    
+
   // Set the maxstep values
   tempo = ((pdfllconfig->coarsemaxstep << AVR32_SCIF_DFLL0STEP_CSTEP_OFFSET)&AVR32_SCIF_DFLL0STEP_CSTEP_MASK)
           | ((pdfllconfig->finemaxstep << AVR32_SCIF_DFLL0STEP_FSTEP_OFFSET)&AVR32_SCIF_DFLL0STEP_FSTEP_MASK);
@@ -560,7 +560,7 @@ long int scif_dfll0_closedloop_start(const scif_dfll_closedloop_conf_t *pdfllcon
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-  
+
   // Set the fmul
   AVR32_ENTER_CRITICAL_REGION( );
 #if AVR32_SCIF_H_VERSION < 110
@@ -572,7 +572,7 @@ long int scif_dfll0_closedloop_start(const scif_dfll_closedloop_conf_t *pdfllcon
     | ((pdfllconfig->imul << AVR32_SCIF_DFLL0MUL_IMUL_OFFSET)&AVR32_SCIF_DFLL0MUL_IMUL_MASK);
 #endif
   AVR32_LEAVE_CRITICAL_REGION( );
-  
+
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
@@ -588,12 +588,12 @@ long int scif_dfll0_closedloop_start(const scif_dfll_closedloop_conf_t *pdfllcon
   // Wait for PCLKSR.DFLL0RDY is high
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0RDY_MASK))
     return -1;
-    
+
   // Wait until the DFLL is locked on Fine value, and is ready to be selected as
   // clock source with a highly accurate output clock.
   if(scif_pclksr_statushigh_wait(AVR32_SCIF_PCLKSR_DFLL0LOCKF_MASK))
     return -1;
-    
+
   return PASS;
 }
 
@@ -630,7 +630,7 @@ long int scif_dfll0_closedloop_configure_and_start( const scif_gclk_opt_t *gc_df
   DfllConfig.coarse = ((unsigned long long)(target_freq_hz - SCIF_DFLL_MINFREQ_HZ)*255)/(SCIF_DFLL_MAXFREQ_HZ - SCIF_DFLL_MINFREQ_HZ);
 
   // imul = (fDFLL)/fref,
-  // fmul = (fDFLL*2^16)/fref - imul*2^16, 
+  // fmul = (fDFLL*2^16)/fref - imul*2^16,
   // with fref being the frequency of the DFLL main reference generic clock
   // and fDFLL being the target frequency of the DFLL
   DfllConfig.imul = ((unsigned long long)target_freq_hz)/gc_source_clock_freq_hz;
@@ -682,7 +682,7 @@ long int scif_pll0_setup(const scif_pll_opt_t *opt)
 
   // Read Register
   u_avr32_scif_pll.PLL0 = AVR32_SCIF.PLL[0] ;
-  // Modify Configuration 
+  // Modify Configuration
   u_avr32_scif_pll.PLL0.pllosc  = opt->osc;
   u_avr32_scif_pll.PLL0.pllopt  = opt->pll_freq | (opt->pll_div2 << 1) | (opt->pll_wbwdisable << 2);
   u_avr32_scif_pll.PLL0.plldiv   = opt->div;
@@ -690,7 +690,7 @@ long int scif_pll0_setup(const scif_pll_opt_t *opt)
   u_avr32_scif_pll.PLL0.pllcount= opt->lockcount;
   AVR32_ENTER_CRITICAL_REGION( );
   // Unlock the write-protected PLL0 register
-  SCIF_UNLOCK(AVR32_SCIF_PLL0); 
+  SCIF_UNLOCK(AVR32_SCIF_PLL0);
   // Write Back
   AVR32_SCIF.PLL[0] = u_avr32_scif_pll.PLL0;
   AVR32_LEAVE_CRITICAL_REGION( );
@@ -705,11 +705,11 @@ long int scif_pll0_enable(void)
 
   // Read Register
   u_avr32_scif_pll.PLL0 = AVR32_SCIF.PLL[0] ;
-  // Modify Configuration 
+  // Modify Configuration
   u_avr32_scif_pll.PLL0.pllen = ENABLE;
   AVR32_ENTER_CRITICAL_REGION( );
   // Unlock the write-protected PLL0 register
-  SCIF_UNLOCK(AVR32_SCIF_PLL0); 
+  SCIF_UNLOCK(AVR32_SCIF_PLL0);
   // Write Back
   AVR32_SCIF.PLL[0] = u_avr32_scif_pll.PLL0;
   AVR32_LEAVE_CRITICAL_REGION( );
@@ -724,11 +724,11 @@ long int scif_pll0_disable(void)
 
   // Read Register
   u_avr32_scif_pll.PLL0 = AVR32_SCIF.PLL[0] ;
-  // Modify Configuration 
+  // Modify Configuration
   u_avr32_scif_pll.PLL0.pllen = DISABLE;
   AVR32_ENTER_CRITICAL_REGION( );
   // Unlock the write-protected PLL0 register
-  SCIF_UNLOCK(AVR32_SCIF_PLL0); 
+  SCIF_UNLOCK(AVR32_SCIF_PLL0);
   // Write Back
   AVR32_SCIF.PLL[0] = u_avr32_scif_pll.PLL0;
   AVR32_LEAVE_CRITICAL_REGION( );
@@ -762,7 +762,7 @@ void scif_start_rc120M(void)
 void scif_stop_rc120M(void)
 {
   unsigned long temp = AVR32_SCIF.rc120mcr;
-  
+
   temp &= ~AVR32_SCIF_RC120MCR_EN_MASK;
   AVR32_ENTER_CRITICAL_REGION( );
   // Unlock the write-protected RC120MCR register
@@ -844,7 +844,7 @@ long int scif_start_gclk(unsigned int gclk, const scif_gclk_opt_t *opt)
 long int scif_stop_gclk(unsigned int gclk)
 {
   unsigned int  timeout = SCIF_POLL_TIMEOUT;
-  
+
 #ifdef AVR32SFW_INPUT_CHECK
   // Check that the generic clock number is correct
   if( gclk > AVR32_SCIF_GCLK_NUM )
@@ -855,14 +855,14 @@ long int scif_stop_gclk(unsigned int gclk)
 
   // Stop the generic clock.
   AVR32_SCIF.gcctrl[gclk] &= ~AVR32_SCIF_GCCTRL_CEN_MASK;
-  
+
   // Wait until the generic clock is actually stopped.
   while(AVR32_SCIF.gcctrl[gclk] & AVR32_SCIF_GCCTRL_CEN_MASK)
   {
     if(--timeout == 0)
       return -1;
   }
-  
+
   return PASS;
 }
 
@@ -870,8 +870,8 @@ long int scif_stop_gclk(unsigned int gclk)
 long int scif_gc_setup(unsigned int gclk, scif_gcctrl_oscsel_t clk_src, unsigned int diven, unsigned int divfactor)
 {
   int restart_gc = false;
-  
-  
+
+
   // Change the division factor to conform to the equation: fgclk = fsrc/divfactor = fsrc/(2*(div+1))
   divfactor = (divfactor>>1) -1;
 
@@ -906,7 +906,7 @@ long int scif_gc_setup(unsigned int gclk, scif_gcctrl_oscsel_t clk_src, unsigned
   AVR32_SCIF.gcctrl[gclk] = ((divfactor << AVR32_SCIF_GCCTRL_DIV_OFFSET)&AVR32_SCIF_GCCTRL_DIV_MASK)
                             |((diven << AVR32_SCIF_GCCTRL_DIVEN_OFFSET)&AVR32_SCIF_GCCTRL_DIVEN_MASK)
                             |((clk_src << AVR32_SCIF_GCCTRL_OSCSEL_OFFSET)&AVR32_SCIF_GCCTRL_OSCSEL_MASK);
-                            
+
   // Restart the gc if it previously was enabled.
   if(true == restart_gc)
     AVR32_SCIF.gcctrl[gclk] |= (AVR32_SCIF_GCCTRL_CEN_MASK);
@@ -928,7 +928,7 @@ long int scif_gc_enable(unsigned int gclk)
   // If the generic clock is already enabled, do nothing.
   if(!(AVR32_SCIF.gcctrl[gclk] & AVR32_SCIF_GCCTRL_CEN_MASK))
     AVR32_SCIF.gcctrl[gclk] |= (AVR32_SCIF_GCCTRL_CEN_MASK);
-    
+
   return PASS;
 }
 
@@ -952,7 +952,7 @@ long int scif_gc_enable(unsigned int gclk)
 long int scif_pclksr_statushigh_wait(unsigned long statusMask)
 {
   unsigned int  timeout = SCIF_POLL_TIMEOUT;
-  
+
   while(!(AVR32_SCIF.pclksr & statusMask))
   {
     if(--timeout == 0)

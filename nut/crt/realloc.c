@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2001-2003 by egnite Software GmbH
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

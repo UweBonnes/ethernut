@@ -37,7 +37,7 @@
 #ifndef _ERRNO_H_
 
 #ifdef __NUT_EMULATION__
-//  on an emulation platform, we need to use the native errno as it might 
+//  on an emulation platform, we need to use the native errno as it might
 //  re-define errno (e.g. on red hat enterprise linux 3)
 #include <errno_orig.h>
 

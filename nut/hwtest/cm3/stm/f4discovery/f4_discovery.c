@@ -135,7 +135,7 @@ int main(void)
         printf("NutRegisterTwiBus failed\n");
     }
     else
-    { 
+    {
         printf("NutRegisterTwiBus success\n");
     }
 
@@ -146,7 +146,7 @@ int main(void)
         printf("Can't set speed TWI\n");
     }
     else
-    { 
+    {
         NutTwiIOCtl(&DEF_TWIBUS, TWI_GETSPEED, &baud);
         printf("TWI speed is %ld\n", baud );
     }
@@ -168,7 +168,7 @@ int main(void)
         NutEventPost(&SPIBUS0.bus_mutex);
     }
     else printf("SPIBUS0 failed\n");
-    
+
     res = (*SPIBUS0.bus_alloc) (&my_node, 1000);
     if (res == 0)
     {
@@ -177,7 +177,7 @@ int main(void)
         printf("Alloc Success\n");
         (*SPIBUS0.bus_transfer) (&my_node, wbuf, rbuf, 2);
         printf("Transfer %02x %02x\n",rbuf[0], rbuf[1]);
-    } 
+    }
     (*SPIBUS0.bus_release) (&my_node);
     res = (*SPIBUS0.bus_alloc) (&my_node, 1000);
     if (res == 0)
@@ -187,9 +187,9 @@ int main(void)
         printf("Alloc Success\n");
         (*SPIBUS0.bus_transfer) (&my_node, wbuf, rbuf, 2);
         printf("Transfer %02x %02x\n",rbuf[0], rbuf[1]);
-    } 
+    }
     (*SPIBUS0.bus_release) (&my_node);
-            
+
     /*
      * Nut/OS never expects a thread to return. So we enter an
      * endless loop here.

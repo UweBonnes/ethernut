@@ -90,8 +90,8 @@
  * \brief UART _ioctl() commands.
  *
  * These commands are used to control and retrieve hardware specific
- * configurations. The definitions are kept independent from the 
- * underlying hardware, but not all commands may be fully implemented 
+ * configurations. The definitions are kept independent from the
+ * underlying hardware, but not all commands may be fully implemented
  * in each UART driver.
  *
  * The _ioctl() function expects three parameters:
@@ -103,42 +103,42 @@
 
 /*! \brief UART _ioctl() command code to set the line speed.
  *
- * The configuration parameter specifies the input and output bit rate 
+ * The configuration parameter specifies the input and output bit rate
  * per second.
  */
 #define UART_SETSPEED           0x0101
 
 /*! \brief UART _ioctl() command code to query the line speed.
  *
- * The configuration parameter is set to the input and output bit rate 
+ * The configuration parameter is set to the input and output bit rate
  * per second.
  */
 #define UART_GETSPEED           0x0102
 
 /*! \brief UART _ioctl() command code to set the number of data bits.
  *
- * The configuration parameter specifies the number of data bits, 5, 6, 
+ * The configuration parameter specifies the number of data bits, 5, 6,
  * 7, 8 or 9.
  */
 #define UART_SETDATABITS        0x0103
 
 /*! \brief UART _ioctl() command code to query the number of data bits.
  *
- * The configuration parameter is set to the number of data bits, 5, 6, 
+ * The configuration parameter is set to the number of data bits, 5, 6,
  * 7, 8 or 9.
  */
 #define UART_GETDATABITS        0x0104
 
 /*! \brief UART _ioctl() command code to set the parity mode.
  *
- * The configuration parameter specifies the type of the parity bit, 
+ * The configuration parameter specifies the type of the parity bit,
  * 0 (none), 1 (odd) or 2 (even).
  */
 #define UART_SETPARITY          0x0105
 
 /*! \brief UART _ioctl() command code to query the parity mode.
  *
- * The configuration parameter is set to the type of the parity bit, 
+ * The configuration parameter is set to the type of the parity bit,
  * 0 (none), 1 (odd) or 2 (even).
  */
 #define UART_GETPARITY          0x0106
@@ -169,42 +169,42 @@
 
 /*! \brief UART _ioctl() command code to set the read timeout.
  *
- * The configuration parameter specifies the read timeout in 
+ * The configuration parameter specifies the read timeout in
  * milliseconds.
  */
 #define UART_SETREADTIMEOUT     0x010b
 
 /*! \brief UART _ioctl() command code to query the read timeout.
  *
- * The configuration parameter is set to the read timeout in 
+ * The configuration parameter is set to the read timeout in
  * milliseconds.
  */
 #define UART_GETREADTIMEOUT     0x010c
 
 /*! \brief UART _ioctl() command code to set the write timeout.
  *
- * The configuration parameter specifies the write timeout in 
+ * The configuration parameter specifies the write timeout in
  * milliseconds.
  */
 #define UART_SETWRITETIMEOUT    0x010d
 
 /*! \brief UART _ioctl() command code to query the write timeout.
  *
- * The configuration parameter is set to the write timeout in 
+ * The configuration parameter is set to the write timeout in
  * milliseconds.
  */
 #define UART_GETWRITETIMEOUT    0x010e
 
 /*! \brief UART _ioctl() command code to set the local echo mode.
  *
- * The configuration parameter specifies the local echo mode, 
+ * The configuration parameter specifies the local echo mode,
  * 0 (off) or 1 (on).
  */
 #define UART_SETLOCALECHO       0x010f
 
 /*! \brief UART _ioctl() command code to query the local echo mode.
  *
- * The configuration parameter is set to the local echo mode, 
+ * The configuration parameter is set to the local echo mode,
  * 0 (off) or 1 (on).
  */
 #define UART_GETLOCALECHO       0x0110
@@ -223,14 +223,14 @@
 
 /*! \brief UART _ioctl() command code to set the cooking mode.
  *
- * The configuration parameter specifies the character cooking mode, 
+ * The configuration parameter specifies the character cooking mode,
  * 0 (raw) or 1 (EOL translation).
  */
 #define UART_SETCOOKEDMODE      0x0113
 
 /*! \brief UART _ioctl() command code to query the cooking mode.
  *
- * The configuration parameter is set to the character cooking mode, 
+ * The configuration parameter is set to the character cooking mode,
  * 0 (raw) or 1 (EOL translation).
  */
 #define UART_GETCOOKEDMODE      0x0114
@@ -412,7 +412,7 @@
  * \brief UART device status flags,
  *
  * A combination of these status flags is used by the _ioctl() commands
- * \ref UART_SETSTATUS and \ref UART_GETSTATUS. 
+ * \ref UART_SETSTATUS and \ref UART_GETSTATUS.
  */
 /*@{*/
 
@@ -422,13 +422,13 @@
  */
 #define UART_FRAMINGERROR   0x00000001UL
 
-/*! \brief Overrun error. 
+/*! \brief Overrun error.
  *
  * \ref UART_SETSTATUS will clear this error.
  */
 #define UART_OVERRUNERROR   0x00000002UL
 
-/*! \brief Parity error. 
+/*! \brief Parity error.
  *
  * \ref UART_SETSTATUS will clear this error.
  */
@@ -440,60 +440,60 @@
  */
 #define UART_ERRORS         (UART_FRAMINGERROR | UART_OVERRUNERROR | UART_PARITYERROR)
 
-/*! \brief Receiver buffer empty. 
+/*! \brief Receiver buffer empty.
  */
 #define UART_RXBUFFEREMPTY  0x00000040UL
 
 /*! \brief Transmitter buffer empty.
  *
- * \ref UART_SETSTATUS will immediately clear the buffer. It will not 
+ * \ref UART_SETSTATUS will immediately clear the buffer. It will not
  * wait until the remaining characters have been transmitted.
  */
 #define UART_TXBUFFEREMPTY  0x00000080UL
 
-/*! \brief RTS handshake output enabled. 
+/*! \brief RTS handshake output enabled.
  */
 #define UART_RTSENABLED     0x00000100UL
 
-/*! \brief RTS handshake output disabled. 
+/*! \brief RTS handshake output disabled.
  */
 #define UART_RTSDISABLED    0x00000200UL
 
-/*! \brief CTS handshake input enabled. 
+/*! \brief CTS handshake input enabled.
  */
 #define UART_CTSENABLED     0x00000400UL
 
-/*! \brief CTS handshake input disabled. 
+/*! \brief CTS handshake input disabled.
  */
 #define UART_CTSDISABLED    0x00000800UL
 
-/*! \brief DTR handshake output enabled. 
+/*! \brief DTR handshake output enabled.
  */
 #define UART_DTRENABLED     0x00001000UL
 
-/*! \brief DTR handshake output disabled. 
+/*! \brief DTR handshake output disabled.
  */
 #define UART_DTRDISABLED    0x00002000UL
 
-/*! \brief Receiver enabled. 
+/*! \brief Receiver enabled.
  */
 #define UART_RXENABLED      0x00010000UL
 
-/*! \brief Receiver enabled. 
+/*! \brief Receiver enabled.
  */
 #define UART_RXDISABLED     0x00020000UL
 
-/*! \brief Transmitter enabled. 
+/*! \brief Transmitter enabled.
  */
 #define UART_TXENABLED      0x00040000UL
 
-/*! \brief Transmitter enabled. 
+/*! \brief Transmitter enabled.
  */
 #define UART_TXDISABLED     0x00080000UL
 
 /*! \brief Receive address frames only.
  *
- * Used in multidrop communication. May only work if 9 databits have 
+ * Used in multidrop communication. May only work if 9 databits have
  * been configured.
  */
 #define UART_RXADDRFRAME    0x00100000UL
@@ -506,7 +506,7 @@
 
 /*! \brief Transmit as address frame.
  *
- * Used in multidrop communication. May only work if 9 databits have 
+ * Used in multidrop communication. May only work if 9 databits have
  * been configured.
  */
 #define UART_TXADDRFRAME    0x00400000UL
@@ -544,8 +544,8 @@
 /*! \brief XON / XOFF software handshake.
  *
  * It is recommended to set a proper read timeout with software handshake.
- * In this case a timeout may occur, if the communication peer lost our 
- * last XON character. The application may then use ioctl() to disable the 
+ * In this case a timeout may occur, if the communication peer lost our
+ * last XON character. The application may then use ioctl() to disable the
  * receiver and do the read again. This will send out another XON.
  */
 #define UART_HS_SOFT        0x0020
@@ -565,8 +565,8 @@
  * \ref UART_SETCLOCKMODE and \ref UART_GETCLOCKMODE. Most drivers
  * require to set the bit rate after modifying the clock mode. In order
  * to avoid unknown clock output frequencies in master mode, set the
- * clock mode to \ref UART_SYNCSLAVE first, than use \ref UART_SETSPEED 
- * to select the bit rate and finally switch to \ref UART_SYNCMASTER or 
+ * clock mode to \ref UART_SYNCSLAVE first, than use \ref UART_SETSPEED
+ * to select the bit rate and finally switch to \ref UART_SYNCMASTER or
  * \ref UART_NSYNCMASTER.
  */
 /*@{*/
@@ -582,28 +582,28 @@
 
 /*! \brief Synchronous slave mode.
  *
- * Transmit data changes on rising edge and receive data is sampled on 
+ * Transmit data changes on rising edge and receive data is sampled on
  * the falling edge of the clock input.
  */
 #define UART_SYNCSLAVE     UART_SYNC
 
 /*! \brief Synchronous master mode.
  *
- * Transmit data changes on rising edge and receive data is sampled on 
+ * Transmit data changes on rising edge and receive data is sampled on
  * the falling edge of the clock output.
  */
 #define UART_SYNCMASTER    (UART_SYNC | UART_MASTER)
 
 /*! \brief Synchronous slave mode, clock negated.
  *
- * Similar to \ref UART_SYNCSLAVE, but transmit data changes on falling 
+ * Similar to \ref UART_SYNCSLAVE, but transmit data changes on falling
  * edge and receive data is sampled on the rising edge of the clock input.
  */
 #define UART_NSYNCSLAVE    (UART_SYNC | UART_NCLOCK)
 
 /*! \brief Synchronous master mode, clock negated
  *
- * Similar to \ref UART_SYNCMASTER, but transmit data changes on falling 
+ * Similar to \ref UART_SYNCMASTER, but transmit data changes on falling
  * edge and receive data is sampled on the rising edge of the clock output.
  */
 #define UART_NSYNCMASTER   (UART_SYNC | UART_NCLOCK | UART_MASTER)

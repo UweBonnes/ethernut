@@ -99,7 +99,7 @@ static void TwInterrupt(void *arg)
     register unsigned int twsr;
     NUTTWIBUS *bus = arg;
     NUTTWIICB *icb = bus->bus_icb;
-    
+
     /* Read the status register and check for errors. */
     twsr = inr(TWI_SR);
     if (twsr & (TWI_NACK | TWI_OVRE | TWI_ARBLST)) {
@@ -272,7 +272,7 @@ int NutTwiMasterRegRead(NUTTWIBUS *bus, uint8_t sla, uint32_t iadr, uint8_t iadr
 {
     int rc = -1;
     NUTTWIICB *icb = bus->bus_icb;
-    
+
     if (rxsiz == 0) {
         return -1;
     }
@@ -343,17 +343,17 @@ int NutTwiMasterRegRead(NUTTWIBUS *bus, uint8_t sla, uint32_t iadr, uint8_t iadr
  *                with NAK.
  */
 
-int NutTwiMasterRegWrite(NUTTWIBUS *bus, 
-                         uint8_t sla, 
-                         uint32_t iadr, 
-                         uint8_t iadrlen, 
-                         const void *txdata, 
-                         uint16_t txsiz, 
+int NutTwiMasterRegWrite(NUTTWIBUS *bus,
+                         uint8_t sla,
+                         uint32_t iadr,
+                         uint8_t iadrlen,
+                         const void *txdata,
+                         uint16_t txsiz,
                          uint32_t tmo)
 {
     int rc = -1;
     NUTTWIICB *icb = bus->bus_icb;
-    
+
     /* This routine is marked reentrant, so lock the interface. */
     if (NutEventWait(&bus->bus_mutex, tmo)) {
         icb->tw_mm_err = TWERR_IF_LOCKED;
@@ -512,7 +512,7 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
         /* Speed out of range */
         return rc;
     }
-    
+
     if (bus==NULL) {
         /* No bus selected */
         return rc;
@@ -536,7 +536,7 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
         outr(TWI_CWGR, (ckdiv << 16) | ((unsigned int) cldiv << 8) | (unsigned int) cldiv);
         rc = 0;
     }
-    
+
     return 0;
 }
 
@@ -636,7 +636,7 @@ int At91TwiInit(void)
     outr(TWI_CR, TWI_SWRST);
     /* Enable master mode. */
     outr(TWI_CR, TWI_MSEN | TWI_SVDIS);
-    
+
     return rc;
 }
 
@@ -708,7 +708,7 @@ int NutDestroyTwiBus( NUTTWIBUS *bus)
         NutIrqDisable(bus->bus_sig_ev);
         NutHeapFree( bus->bus_icb);
     }
-    
+
     return 0;
 }
 

@@ -82,22 +82,22 @@
 #define NUT_HWCLOCK_HCLK 1
 
 /*!
- * Clock for devices on APB1 bus 
+ * Clock for devices on APB1 bus
  */
 #define NUT_HWCLK_PCLK1 2
 
 /*!
- * Clock for devices on APB2 bus 
+ * Clock for devices on APB2 bus
  */
 #define NUT_HWCLK_PCLK2 3
 
 /*!
- * Clock for analog to digital converters 
+ * Clock for analog to digital converters
  */
 #define NUT_HWCLK_ADC   4
 
-/*! 
- * Number of clocks for this device 
+/*!
+ * Number of clocks for this device
  */
 #define NUT_HWCLK_MAX   4
 
@@ -113,7 +113,7 @@
 #define NUT_HWCLK_CPU   0
 
 /*!
- * Clock for devices on APB1/2 bus 
+ * Clock for devices on APB1/2 bus
  */
 #define NUT_HWCLK_PCLK  1
 
@@ -132,8 +132,8 @@
  */
 #define NUT_HWCLK_WDT   4
 
-/*! 
- * Number of clocks for this device 
+/*!
+ * Number of clocks for this device
  */
 #define NUT_HWCLK_MAX   4
 

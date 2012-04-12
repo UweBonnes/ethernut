@@ -1289,7 +1289,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
      * If we have been successful so far, start the HDLC receiver thread,
      * set the initial baudrate and enable the UART.
      */
-    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, 
+    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev,
         (NUT_THREAD_AHDLCRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) {
         AhdlcAvrIOCtl(dev, UART_SETSPEED, &baudrate);
 

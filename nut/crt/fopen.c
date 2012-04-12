@@ -74,10 +74,10 @@ FILE *__iob[FOPEN_MAX] = { (FILE *) 1, (FILE *) 2, (FILE *) 3 };
  *	       \li \c "r+" Read and write existing file.
  *	       \li \c "w+" Read and write, destroys existing file contents.
  *	       \li \c "a+" Read and write, preserves existing file contents.
- *             \li \c "b" May be appended to any of the above strings to 
+ *             \li \c "b" May be appended to any of the above strings to
  *                        specify binary access.
  *
- * \return A pointer to the open stream or a null pointer to indicate 
+ * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
  */
 FILE *fopen(CONST char *name, CONST char *mode)

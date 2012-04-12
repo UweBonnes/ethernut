@@ -57,7 +57,7 @@
  *
  * \param stream Pointer to a previously opened stream.
  *
- * \return 0 if the buffer was successfully purged, EOF if an error 
+ * \return 0 if the buffer was successfully purged, EOF if an error
  *         occured.
  *
  * \warning The function will not check, if the stream pointer points

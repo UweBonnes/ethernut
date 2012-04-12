@@ -64,8 +64,8 @@
  * \brief ACE _ioctl() commands.
  *
  * These commands are used to control and retrieve hardware specific
- * configurations. The definitions are kept independent from the 
- * underlying hardware, but not all commands may be fully implemented 
+ * configurations. The definitions are kept independent from the
+ * underlying hardware, but not all commands may be fully implemented
  * in each ACE driver.
  *
  * The _ioctl() function expects three parameters:
@@ -77,42 +77,42 @@
 
 /*! \brief ACE _ioctl() command code to set the line speed.
  *
- * The configuration parameter specifies the input and output bit rate 
+ * The configuration parameter specifies the input and output bit rate
  * per second.
  */
 #define ACE_SETSPEED           0x0101
 
 /*! \brief ACE _ioctl() command code to query the line speed.
  *
- * The configuration parameter is set to the input and output bit rate 
+ * The configuration parameter is set to the input and output bit rate
  * per second.
  */
 #define ACE_GETSPEED           0x0102
 
 /*! \brief ACE _ioctl() command code to set the number of data bits.
  *
- * The configuration parameter specifies the number of data bits, 5, 6, 
+ * The configuration parameter specifies the number of data bits, 5, 6,
  * 7, 8 or 9.
  */
 #define ACE_SETDATABITS        0x0103
 
 /*! \brief ACE _ioctl() command code to query the number of data bits.
  *
- * The configuration parameter is set to the number of data bits, 5, 6, 
+ * The configuration parameter is set to the number of data bits, 5, 6,
  * 7, 8 or 9.
  */
 #define ACE_GETDATABITS        0x0104
 
 /*! \brief ACE _ioctl() command code to set the parity mode.
  *
- * The configuration parameter specifies the type of the parity bit, 
+ * The configuration parameter specifies the type of the parity bit,
  * 0 (none), 1 (odd), 2 (even), 3 (mark) or 4 (space).
  */
 #define ACE_SETPARITY          0x0105
 
 /*! \brief ACE _ioctl() command code to query the parity mode.
  *
- * The configuration parameter is set to the type of the parity bit, 
+ * The configuration parameter is set to the type of the parity bit,
  * 0 (none), 1 (odd), 2 (even), 3 (mark) or 4 (space).
  */
 #define ACE_GETPARITY          0x0106
@@ -143,42 +143,42 @@
 
 /*! \brief ACE _ioctl() command code to set the read timeout.
  *
- * The configuration parameter specifies the read timeout in 
+ * The configuration parameter specifies the read timeout in
  * milliseconds.
  */
 #define ACE_SETREADTIMEOUT     0x010b
 
 /*! \brief ACE _ioctl() command code to query the read timeout.
  *
- * The configuration parameter is set to the read timeout in 
+ * The configuration parameter is set to the read timeout in
  * milliseconds.
  */
 #define ACE_GETREADTIMEOUT     0x010c
 
 /*! \brief ACE _ioctl() command code to set the write timeout.
  *
- * The configuration parameter specifies the write timeout in 
+ * The configuration parameter specifies the write timeout in
  * milliseconds.
  */
 #define ACE_SETWRITETIMEOUT    0x010d
 
 /*! \brief ACE _ioctl() command code to query the write timeout.
  *
- * The configuration parameter is set to the write timeout in 
+ * The configuration parameter is set to the write timeout in
  * milliseconds.
  */
 #define ACE_GETWRITETIMEOUT    0x010e
 
 /*! \brief ACE _ioctl() command code to set the local echo mode.
  *
- * The configuration parameter specifies the local echo mode, 
+ * The configuration parameter specifies the local echo mode,
  * 0 (off) or 1 (on).
  */
 #define ACE_SETLOCALECHO       0x010f
 
 /*! \brief ACE _ioctl() command code to query the local echo mode.
  *
- * The configuration parameter is set to the local echo mode, 
+ * The configuration parameter is set to the local echo mode,
  * 0 (off) or 1 (on).
  */
 #define ACE_GETLOCALECHO       0x0110
@@ -197,14 +197,14 @@
 
 /*! \brief ACE _ioctl() command code to set the cooking mode.
  *
- * The configuration parameter specifies the character cooking mode, 
+ * The configuration parameter specifies the character cooking mode,
  * 0 (raw) or 1 (EOL translation).
  */
 #define ACE_SETCOOKEDMODE      0x0113
 
 /*! \brief ACE _ioctl() command code to query the cooking mode.
  *
- * The configuration parameter is set to the character cooking mode, 
+ * The configuration parameter is set to the character cooking mode,
  * 0 (raw) or 1 (EOL translation).
  */
 #define ACE_GETCOOKEDMODE      0x0114
@@ -322,7 +322,7 @@
  * \brief ACE device status flags,
  *
  * A combination of these status flags is used by the _ioctl() commands
- * \ref ACE_SETSTATUS and \ref ACE_GETSTATUS. 
+ * \ref ACE_SETSTATUS and \ref ACE_GETSTATUS.
  */
 /*@{*/
 
@@ -332,13 +332,13 @@
  */
 #define ACE_FRAMINGERROR   0x00000001UL
 
-/*! \brief Overrun error. 
+/*! \brief Overrun error.
  *
  * \ref ACE_SETSTATUS will clear this error.
  */
 #define ACE_OVERRUNERROR   0x00000002UL
 
-/*! \brief Parity error. 
+/*! \brief Parity error.
  *
  * \ref ACE_SETSTATUS will clear this error.
  */
@@ -350,54 +350,54 @@
  */
 #define ACE_ERRORS         (ACE_FRAMINGERROR | ACE_OVERRUNERROR | ACE_PARITYERROR)
 
-/*! \brief Receiver buffer empty. 
+/*! \brief Receiver buffer empty.
  */
 #define ACE_RXBUFFEREMPTY  0x00000040UL
 
 /*! \brief Transmitter buffer empty.
  *
- * \ref ACE_SETSTATUS will immediately clear the buffer. It will not 
+ * \ref ACE_SETSTATUS will immediately clear the buffer. It will not
  * wait until the remaining characters have been transmitted.
  */
 #define ACE_TXBUFFEREMPTY  0x00000080UL
 
-/*! \brief RTS handshake output enabled. 
+/*! \brief RTS handshake output enabled.
  */
 #define ACE_RTSENABLED     0x00000100UL
 
-/*! \brief RTS handshake output disabled. 
+/*! \brief RTS handshake output disabled.
  */
 #define ACE_RTSDISABLED    0x00000200UL
 
-/*! \brief CTS handshake input enabled. 
+/*! \brief CTS handshake input enabled.
  */
 #define ACE_CTSENABLED     0x00000400UL
 
-/*! \brief CTS handshake input disabled. 
+/*! \brief CTS handshake input disabled.
  */
 #define ACE_CTSDISABLED    0x00000800UL
 
-/*! \brief DTR handshake output enabled. 
+/*! \brief DTR handshake output enabled.
  */
 #define ACE_DTRENABLED     0x00001000UL
 
-/*! \brief DTR handshake output disabled. 
+/*! \brief DTR handshake output disabled.
  */
 #define ACE_DTRDISABLED    0x00002000UL
 
-/*! \brief Receiver enabled. 
+/*! \brief Receiver enabled.
  */
 #define ACE_RXENABLED      0x00010000UL
 
-/*! \brief Receiver enabled. 
+/*! \brief Receiver enabled.
  */
 #define ACE_RXDISABLED     0x00020000UL
 
-/*! \brief Transmitter enabled. 
+/*! \brief Transmitter enabled.
  */
 #define ACE_TXENABLED      0x00040000UL
 
-/*! \brief Transmitter enabled. 
+/*! \brief Transmitter enabled.
  */
 #define ACE_TXDISABLED     0x00080000UL
 
@@ -427,8 +427,8 @@
 /*! \brief XON / XOFF software handshake.
  *
  * It is recommended to set a proper read timeout with software handshake.
- * In this case a timeout may occur, if the communication peer lost our 
- * last XON character. The application may then use ioctl() to disable the 
+ * In this case a timeout may occur, if the communication peer lost our
+ * last XON character. The application may then use ioctl() to disable the
  * receiver and do the read again. This will send out another XON.
  */
 #define ACE_HS_SOFT        0x0020

@@ -69,7 +69,7 @@ protected:
     void OnNodeConfig(wxCommandEvent& event);
     void OnHide(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
-    void OnScanTimer(wxTimerEvent& event); 
+    void OnScanTimer(wxTimerEvent& event);
     void OnNodeConfigUpdUI(wxUpdateUIEvent& event);
 
 private:

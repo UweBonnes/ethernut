@@ -156,7 +156,7 @@ static int AvrUart0RxIrqCtl(int cmd, void *param)
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
         *ival = (unsigned int) sig_UART0_RECV.ir_count;
-        sig_UART0_RECV.ir_count = 0;            
+        sig_UART0_RECV.ir_count = 0;
         break;
 #endif
     default:

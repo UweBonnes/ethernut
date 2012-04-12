@@ -42,7 +42,7 @@
  * version	1.0
  * date		02. June. 2011
  * author	NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -171,7 +171,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  PHY Support register 
+  PHY Support register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_SUPP_SPEED          0x00000100  /* Reduced MII Logic Current Speed     */
@@ -179,7 +179,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  Test register 
+  Test register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_TEST_SHCUT_PQUANTA  0x00000001  /* Shortcut Pause Quanta               */
@@ -188,7 +188,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  MII Management Configuration register 
+  MII Management Configuration register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_MCFG_SCAN_INC       0x00000001  /* Scan Increment PHY Address          */
@@ -199,7 +199,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  MII Management Command register 
+  MII Management Command register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_MCMD_READ           0x00000001  /* MII Read                            */
@@ -210,7 +210,7 @@
 
 
 /*----------------------------------------------------------------------------*
-  MII Management Address register 
+  MII Management Address register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_MADR_REG_ADR(n)     (n&0x1F)    /* MII Register Address field          */
@@ -218,21 +218,21 @@
 
 
 /*----------------------------------------------------------------------------*
-  MII Management Write Data register 
+  MII Management Write Data register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_MWTD_DATA(n)        (n&0xFFFF)  /* Data field for MMI Management Write Data register */
 
 
 /*----------------------------------------------------------------------------*
-  MII Management Read Data register 
+  MII Management Read Data register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_MRDD_DATA(n)        (n&0xFFFF)  /* Data field for MMI Management Read Data register */
 
 
 /*----------------------------------------------------------------------------*
-  MII Management Indicators register 
+  MII Management Indicators register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_MIND_BUSY           0x00000001  /* MII is Busy                         */
@@ -365,11 +365,11 @@
 
 
 /*============================================================================*
-  Receive filter register register 
+  Receive filter register register
  *============================================================================*/
 
 /*----------------------------------------------------------------------------*
-  Receive filter control register 
+  Receive filter control register
  *----------------------------------------------------------------------------*/
 
 #define EMAC_RFC_UCAST_EN        0x00000001  /* Accept Unicast Frames Enable        */
@@ -430,7 +430,7 @@
 
 
 /*============================================================================*
-  Descriptor and status formats 
+  Descriptor and status formats
  *============================================================================*/
 
 /*----------------------------------------------------------------------------*

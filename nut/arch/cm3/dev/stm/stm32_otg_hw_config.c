@@ -47,7 +47,7 @@ void Set_USBClock(void)
   /* Select USBCLK source */
   RCC->CFGR|=RCC_OTGFSCLKSource_PLLVCO_Div3<<22;
 
-  /* Enable the USB clock */ 
+  /* Enable the USB clock */
   RCC->AHBENR|=RCC_AHBPeriph_OTG_FS;
 #elif  defined(MCU_STM32F2) || defined(MCU_STM32F4)
   RCC->AHB2ENR|=RCC_AHB2ENR_OTGFSEN;

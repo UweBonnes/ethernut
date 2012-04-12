@@ -55,7 +55,7 @@
  * Still contains some debug functions.
  *
  */
- 
+
 #include <sys/heap.h>
 #include <sys/event.h>
 #include <sys/atom.h>
@@ -90,7 +90,7 @@ NUTMSGTMR *nutMsgFreeTimers;
 /*!
  * \brief Allocate a new message que
  *
- * \param bits size of the que in bits 
+ * \param bits size of the que in bits
  *
  * \return Handle of the new que
  *
@@ -176,13 +176,13 @@ int NutMsgQPost(NUTMSGQ * que, uint8_t id, int param, void *data)
     NutExitCritical();
 
     NutEventPostAsync(&que->mq_wait);
-    
+
     return 0;
 }
 
 /*!
- * \brief Send a message to a que and yields so that 
- * a waiting thread can act on the message. 
+ * \brief Send a message to a que and yields so that
+ * a waiting thread can act on the message.
  *
  * The sending thread should have a lower priority than the receiver thread
  *
@@ -300,7 +300,7 @@ static void NutMsgQFreeTimer(NUTMSGQ * que, NUTMSGTMR * handle)
  * \note You must not stop a one shot that has already expired
  * otherwise it *could* have been reused and you will end up stopping
  *  another timer
- * 
+ *
  */
 void NutMsgQStopTimer(HANDLE timer)
 {
@@ -338,7 +338,7 @@ void NutMsgQStopTimer(HANDLE timer)
  * \param que the que to wait on
  * \param msg pointer to memory to return data to
  * \param timeout how long to wait for a message
- * 
+ *
  * \return -1 on timeout, 0 if message retreived
  */
 
@@ -387,7 +387,7 @@ void NutMsgQFlush(NUTMSGQ * que)
     que->mq_read = que->mq_write;
 
     /*
-       // You want to flush only when you are not waitin on it 
+       // You want to flush only when you are not waitin on it
        ASSERT( que->event_wait == SIGNALED || que->event_wait == 0 )
      */
 

@@ -77,7 +77,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
 
     NUTASSERT(bank < NUTGPIOPORT_MAX);
     NUTASSERT(bit < 32);
-    
+
     /*
      * PINSEL
      *
@@ -93,7 +93,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
      * 10   Neither pullup nor pulldown enabled
      * 11   Pulldown enabled
      */
-    
+
     if (bit < 16) {
         PINSEL  = (uint32_t *)&LPC_PINCON->PINSEL0 + bank * 2;
         PINMODE = (uint32_t *)&LPC_PINCON->PINMODE0 + bank * 2;
@@ -103,13 +103,13 @@ uint32_t GpioPinConfigGet(int bank, int bit)
         PINMODE = (uint32_t *)&LPC_PINCON->PINMODE0 + bank * 2 + 1;
         pin_offset = (bit - 16) * 2;
     }
-    
+
     PINMODE_OD = (uint32_t *)&LPC_PINCON->PINMODE_OD0 + bank;
 
     if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit)) {
         rc |= GPIO_CFG_OUTPUT;
     }
-    
+
     switch ((*PINSEL >> pin_offset) & 0x03) {
         case PINCON_PINSEL_AF0:
             /* GPIO mode selected */
@@ -121,7 +121,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
             break;
         case PINCON_PINSEL_AF2:
             /* AF1 selected */
-            rc |= GPIO_CFG_PERIPHERAL2 | GPIO_CFG_DISABLED; 
+            rc |= GPIO_CFG_PERIPHERAL2 | GPIO_CFG_DISABLED;
             break;
         case PINCON_PINSEL_AF3:
             /* AF1 selected */
@@ -132,21 +132,21 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     switch ((*PINMODE >> pin_offset) & 0x03) {
         case PINCON_PINMODE_PULLUP:
             /* Pullup mode selected */
-            rc |= GPIO_CFG_PULLUP; 
+            rc |= GPIO_CFG_PULLUP;
             break;
         case PINCON_PINMODE_REPEATER:
             /* Repeater mode selected */
-            rc |= GPIO_CFG_REPEATER; 
+            rc |= GPIO_CFG_REPEATER;
             break;
         case PINCON_PINMODE_NORMAL:
             /* Neither pullup not pulldown */
             break;
         case PINCON_PINMODE_PULLDOWN:
             /* AF1 selected */
-            rc |= GPIO_CFG_PULLDOWN; 
+            rc |= GPIO_CFG_PULLDOWN;
             break;
     }
-    
+
     if (*PINMODE_OD & bit) {
         rc |= GPIO_CFG_MULTIDRIVE;
     }
@@ -201,7 +201,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 
     PINSEL_L   = (uint32_t *)&LPC_PINCON->PINSEL0 + bank * 2;
     PINSEL_H   = PINSEL_L + 1;
-    
+
     PINMODE_L  = (uint32_t *)&LPC_PINCON->PINMODE0 + bank * 2;
     PINMODE_H  = PINMODE_L + 1;
 
@@ -212,7 +212,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     sel_h  = *PINSEL_H;
     mode_l = *PINMODE_L;
     mode_h = *PINMODE_H;
-    
+
     for (i = 0, j = 16; i < 16; i ++, j++) {
         if (mask & _BV(i)) {
             sel_l  &= ~(PINCON_PINSEL_MASK << (i * 2));
@@ -231,10 +231,10 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 
             if (flags & GPIO_CFG_PULLUP) {
                 mode_l |= PINCON_PINMODE_PULLUP << (i * 2);
-            } else 
+            } else
             if (flags & GPIO_CFG_REPEATER) {
                 mode_l |= PINCON_PINMODE_REPEATER << (i * 2);
-            } else 
+            } else
             if (flags & GPIO_CFG_PULLDOWN) {
                 mode_l |= PINCON_PINMODE_PULLDOWN << (i * 2);
             } else {
@@ -258,10 +258,10 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 
             if (flags & GPIO_CFG_PULLUP) {
                 mode_h |= PINCON_PINMODE_PULLUP << (i * 2);
-            } else 
+            } else
             if (flags & GPIO_CFG_REPEATER) {
                 mode_h |= PINCON_PINMODE_REPEATER << (i * 2);
-            } else 
+            } else
             if (flags & GPIO_CFG_PULLDOWN) {
                 mode_h |= PINCON_PINMODE_PULLDOWN << (i * 2);
             } else {
@@ -281,7 +281,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     } else {
         CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR) &= ~mask;
     }
-    
+
     if (flags & GPIO_CFG_MULTIDRIVE) {
         *PINMODE_OD |= mask;
     } else {
@@ -341,7 +341,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 
     PINSEL_L   = (uint32_t *)&LPC_PINCON->PINSEL0 + bank * 2;
     PINSEL_H   = PINSEL_L + 1;
-    
+
     PINMODE_L  = (uint32_t *)&LPC_PINCON->PINMODE0 + bank * 2;
     PINMODE_H  = PINMODE_L + 1;
 
@@ -359,7 +359,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     }
 
     sel  &= ~(PINCON_PINSEL_MASK << pin_offset);
-    mode &= ~(PINCON_PINMODE_MASK << pin_offset);   
+    mode &= ~(PINCON_PINMODE_MASK << pin_offset);
 
     /* skip flag GPIO_CFG_PERIPHERAL0 */
     if ((flags & GPIO_CFG_PERIPHERAL_MASK) == GPIO_CFG_PERIPHERAL1) {
@@ -374,10 +374,10 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 
     if (flags & GPIO_CFG_PULLUP) {
         mode |= PINCON_PINMODE_PULLUP << pin_offset;
-    } else 
+    } else
     if (flags & GPIO_CFG_REPEATER) {
         mode |= PINCON_PINMODE_REPEATER << pin_offset;
-    } else 
+    } else
     if (flags & GPIO_CFG_PULLDOWN) {
         mode |= PINCON_PINMODE_PULLDOWN << pin_offset;
     } else {
@@ -398,7 +398,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     } else {
         CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) = 0;
     }
-    
+
     if (flags & GPIO_CFG_MULTIDRIVE) {
         *PINMODE_OD |= _BV(bit);
     } else {

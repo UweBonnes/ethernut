@@ -171,7 +171,7 @@
 #define DAC_SRATE_CLKIN         0x0040  /*!< \brief Clock input divider. */
 #define DAC_SRATE_SR            0x003C  /*!< \brief Sampling rate mask. */
 #define DAC_SRATE_SR_LSB            2   /*!< \brief Sampling rate LSB. */
-#define DAC_SRATE_BOSR          0x0002  /*!< \brief Base oversampling rate. 
+#define DAC_SRATE_BOSR          0x0002  /*!< \brief Base oversampling rate.
                                          *
                                          * USB mode   : 0=250 fs, 1=272 fs
                                          * Normal mode: 0=256 fs, 1=384 fs

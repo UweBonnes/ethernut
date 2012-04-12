@@ -99,27 +99,27 @@
  * \name AT25 DataFlash Commands
  */
 /*@{*/
-/*! \brief Continuos read (high frequency). 
+/*! \brief Continuos read (high frequency).
  *
- * Reads a continous stream in high speed mode. 
+ * Reads a continous stream in high speed mode.
  */
 #define DFCMD_READ_PAGE      0x0B
-/*! \brief Block erase 4k. 
+/*! \brief Block erase 4k.
  */
 #define DFCMD_BLOCK_ERASE_4K    0x20
-/*! \brief Block erase 32k. 
+/*! \brief Block erase 32k.
  */
 #define DFCMD_BLOCK_ERASE_32K   0x52
-/*! \brief Block erase 64k. 
+/*! \brief Block erase 64k.
  */
 #define DFCMD_BLOCK_ERASE_64K   0xd8
 /*! \brief Chip erase
  */
 #define DFCMD_CHIP_ERASE	0xC7
-/*! \brief Write bytes/page. 
+/*! \brief Write bytes/page.
  */
 #define DFCMD_WRITE        	0x02
-/*! \brief Read status register. 
+/*! \brief Read status register.
  */
 #define DFCMD_READ_STATUS       0x05
 #define DFCMD_READ_DEVICEID	0x9F
@@ -321,7 +321,7 @@ int SpiAt25PageRead (NUTDEVICE * dev, uint32_t pgn, void * data, int len){//Shou
     NUTASSERT(dev != NULL);
     NUTASSERT(dev->dev_dcb != NULL);
     blkio = dev->dev_dcb;
-    
+
     info = (AT25D_INFO *) blkio->blkio_info;
     NUTASSERT(blkio->blkio_info != NULL);
 

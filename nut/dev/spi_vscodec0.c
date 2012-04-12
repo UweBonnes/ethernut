@@ -174,7 +174,7 @@ static int VsCodec0IsReady(void)
  *
  * This routine will not check the DREQ line.
  *
- * \param cmd  Points to the buffer. On entry it contains the data to 
+ * \param cmd  Points to the buffer. On entry it contains the data to
  *             send. On exit it will contain the data received from
  *             the chip.
  * \param len  Number of bytes to send and receive.
@@ -209,7 +209,7 @@ static int VsCodec0SendCmd(void *cmd, size_t len)
  *
  * This routine will not check the DREQ line.
  *
- * \param cmd  Points to the buffer. On entry it contains the data to 
+ * \param cmd  Points to the buffer. On entry it contains the data to
  *             send. On exit it will contain the data received from
  *             the chip.
  * \param len  Number of bytes to send and receive.
@@ -231,7 +231,7 @@ static int VsCodec0RecvData(void *buf, size_t len)
             /* Activate chip selects. */
 #if defined(VSCODEC0_VSCS_PORT) && defined(VSCODEC0_VSCS_BIT)
             GpioPinSetLow(VSCODEC0_VSCS_PORT, VSCODEC0_VSCS_BIT);
-#endif            
+#endif
             GpioPinSetLow(VSCODEC0_XCS_PORT, VSCODEC0_XCS_BIT); /* XCS=PA31 */
             /* Send command bytes and receive response. */
             rc = (*nodeSpiVsCodec0.node_bus->bus_transfer) (&nodeSpiVsCodec0, cmd, rsp, 4);
@@ -280,7 +280,7 @@ static int VsCodec0SendData(CONST uint8_t *buf, size_t len)
         /* Activate optional XDCS line. */
         GpioPinSetLow(VSCODEC0_XDCS_PORT, VSCODEC0_XDCS_BIT);
 #endif
-        /* Set our internal buffer pointer, either to the start of the 
+        /* Set our internal buffer pointer, either to the start of the
         ** encoded data or to a chunk of zeros. */
         bp = buf ? buf : zero_chunk;
         /* Loop until all data had been sent or DREQ goes low. */
@@ -553,7 +553,7 @@ static int VsCodec0Detect(void)
  * to recover from power-on reset.
  *
  * \param dev Specifies the audio codec device.
- * \param on  If zero, the hardware reset will be released. Otherwise 
+ * \param on  If zero, the hardware reset will be released. Otherwise
  *            the reset is activated.
  */
 static int VsCodec0ResetHardware(int on)
@@ -580,7 +580,7 @@ static int VsCodec0ResetHardware(int on)
         /* Release the reset line. */
         GpioPinSetHigh(VSCODEC0_XRESET_PORT, VSCODEC0_XRESET_BIT);
 #if VSCODEC0_FREQ >= 24000000UL
-        /* With input clocks equal or above 24MHz we must set CLOCKF early 
+        /* With input clocks equal or above 24MHz we must set CLOCKF early
         ** and must not wait for rising DREQ. */
         csrc = VsCodec0SetClock(VSCODEC0_FREQ, 0) == 0;
 #endif /* VSCODEC0_FREQ */
@@ -691,7 +691,7 @@ static int VsCodec0Init(NUTDEVICE * dev)
     }
 
     /* Start the feeder thread. */
-    if (NutThreadCreate(dev->dev_name, FeederThread, dev, 
+    if (NutThreadCreate(dev->dev_name, FeederThread, dev,
         (NUT_THREAD_VSCODEC0STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == 0) {
         return -1;
     }
@@ -701,7 +701,7 @@ static int VsCodec0Init(NUTDEVICE * dev)
 /*!
  * \brief VS10XX device information structure.
  *
- * An application must pass a pointer to this structure to 
+ * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using this driver.
  *
  * The device is named \b audio0.

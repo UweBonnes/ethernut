@@ -102,11 +102,11 @@ static IFNET ifn_eth0 = {
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devEth0 = {
     0,                          /* Pointer to next device. */
@@ -119,7 +119,7 @@ NUTDEVICE devEth0 = {
     NicInit,	    /* Driver initialization routine. */
     0,		    /* Driver specific control function. */
     0,		    /* Read from device. */
-    0,		    /* Write to device. */ 
+    0,		    /* Write to device. */
     0,		    /* Write from program space data to device. */
     0,		    /* Open a device or file. */
     0,		    /* Close a device or file. */

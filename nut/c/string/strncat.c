@@ -78,11 +78,11 @@
 
 /*!
  * \brief Concatenate two strings up to a given number of characters.
- * 
- * Append a copy of a NUL terminated string to the end of another NUL 
+ *
+ * Append a copy of a NUL terminated string to the end of another NUL
  * terminated string.
- * Appends a copy of the source string including the terminating NUL 
- * character, if its length is lower than the given number of characters. 
+ * Appends a copy of the source string including the terminating NUL
+ * character, if its length is lower than the given number of characters.
  * Otherwise the destination string is left unterminated.
  *
  * \param dst Pointer to the destination string.

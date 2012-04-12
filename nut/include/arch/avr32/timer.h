@@ -44,7 +44,7 @@
 #include <cfg/clock.h>
 #include <dev/irqreg.h>
 
-#define NutEnableTimerIrq() 
+#define NutEnableTimerIrq()
 #define NutDisableTimerIrq() NutIrqDisable(&sig_sysCompare)
 
 /*!
@@ -64,7 +64,7 @@
 
 /*!
 	RC Oscillator. Also known as Slow Clock.
-	This is used for the Watchdog timer and can be used as 
+	This is used for the Watchdog timer and can be used as
 	the main clock.
 */
 #define NUT_HWCLK_SLOW_CLOCK 4

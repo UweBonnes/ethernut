@@ -89,13 +89,13 @@
 /*! \brief Interrupt signal handler of \ref RTL_SIGNAL_BIT. */
 #define RTL_SIGNAL  sig_INTERRUPT5
 
-/*! 
+/*!
  * \brief Interrupt signal bit for Ethernut 1.x Ethernet controller.
  */
 #define RTL_SIGNAL_BIT     5
 
 
-/*! 
+/*!
  * \brief Ethernut 2.x Ethernet controller base address.
  */
 #define NIC_BASE            0xC000
@@ -112,7 +112,7 @@
 /*! \brief Interrupt signal handler of \ref LAN_SIGNAL_BIT. */
 #define LAN_SIGNAL          sig_INTERRUPT5
 
-/*! 
+/*!
  * \brief Interrupt signal bit for Ethernut 2.x Ethernet controller.
  */
 #define LAN_SIGNAL_BIT      5

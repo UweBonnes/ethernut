@@ -60,7 +60,7 @@
  * Basic Set Register Map:
  * This register map is valid for all manufactureres and chip.
  * Though some bits might not be supported.
- */ 
+ */
 #define PHY_BMCR        0x00    /* Basic Mode Control Register */
 #define PHY_BMSR        0x01    /* Basic Mode Status Register */
 #define PHY_ID1         0x02    /* OUI High Register */
@@ -70,7 +70,7 @@
 #define PHY_ANER        0x06    /* Auto-Negotiation Expansion Register */
 #define PHY_ANTR        0x07    /* Auto-Negotiation Next Page TX Register */
 
-/* 
+/*
  * Basic Mode Control Register Options
  */
 #define PHY_BMCR_RES    0x8000  /* 1: Reset PHY, flips to 0 if reset accomplished. */
@@ -149,10 +149,10 @@ phy_status_descr_t phy_status_descr[] = {
     /* SMSC LAN8700 derivates */
     { LAN8700,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
 	{ LAN8700r4, { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
-	{ LAN8710,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },  
+	{ LAN8710,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
 
     /* Micrel KS8721 */
-    { KS8721,    { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },  
+    { KS8721,    { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
 };
 
 /*!
@@ -168,10 +168,10 @@ phy_status_descr_t phy_status_descr[] = {
  * \brief Control PHY Options
  *
  * This function controls the physical layer chip.
- * Give 
+ * Give
  *
  * \param  ctl is the PHY option to control or test.
- * \param  par Pointer to value of 1 to set, 0 to reset an option 
+ * \param  par Pointer to value of 1 to set, 0 to reset an option
  *         or the return of a value test.
  * \return 0 on success, -1 on failure.
  */
@@ -208,11 +208,11 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 				}
             }
             break;
-            
+
         case PHY_CTL_LOOPBACK:
-            if (p16) 
-                bmcr |= PHY_BMCR_LOOP; 
-            else 
+            if (p16)
+                bmcr |= PHY_BMCR_LOOP;
+            else
                 bmcr &= ~PHY_BMCR_LOOP;
             phyw( PHY_BMCR, bmcr);
             break;
@@ -238,7 +238,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
                 bmcr &= ~PHY_BMCR_ANEG;
             phyw( PHY_BMCR, bmcr);
             break;
-            
+
         case PHY_CTL_POWERDOWN:
             if( p16)
                 bmcr |= PHY_BMCR_PDWN;
@@ -297,7 +297,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].reg);
 					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].mask) {
 						*par |= PHY_STATUS_10M;
-					}                    
+					}
 					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].reg);
 					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].mask) {
 						*par |= PHY_STATUS_100M;
@@ -350,17 +350,17 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 		case PHY_GET_REGVAL:
             *par = (uint32_t)phyr(reg);
 			break;
-                
+
 		case PHY_SET_REGVAL:
             phyw( reg, p16);
 			break;
-            
+
         default:
             rc = -1;
             break;
     }
-    
-    PHPRINTF("  bmcr=0x%04x, rc=%d, par=%x\n", bmcr, rc, (unsigned int) *par);    
+
+    PHPRINTF("  bmcr=0x%04x, rc=%d, par=%x\n", bmcr, rc, (unsigned int) *par);
     return rc;
 }
 
@@ -368,7 +368,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
  * \brief Register and initialize PHY communication.
  *
  * This function registers a PHY for use by an EMAC.
- * For communication tests, the function reads out the OUI and 
+ * For communication tests, the function reads out the OUI and
  * Model/Revision registers of the PHY.
  *
  * \param  mda id the PHY's address on the MDIO interface bus of the EMAC.
@@ -384,7 +384,7 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
     uint16_t temp1 = 0, temp2 = 0;
 
     PHPRINTF("NRP(%u, %p, %p)\n", mda, mdiow, mdior);
-    
+
     if ((mdiow == NULL)||(mdior == NULL)) {
         /* PHY Access functions are not given */
         return -1;
@@ -418,6 +418,6 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
 		phydcb = NULL;
         return -1;
     }
-    
+
     return rc;
 }

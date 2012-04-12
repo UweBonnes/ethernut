@@ -140,20 +140,20 @@ struct _UNIXDCB {
     /*! \brief Native file descriptor
     */
     int dcb_fd;
-    
-	/*! \brief File is Socket 
+
+	/*! \brief File is Socket
 	*/
 	uint8_t dcb_socket;
 
     /*! \brief Queue of threads waiting for a character in the input buffer.
      */
     HANDLE dcb_rx_rdy;
-    
-    /*! \brief Mutex to protect rx trigger 
+
+    /*! \brief Mutex to protect rx trigger
     */
     pthread_mutex_t dcb_rx_mutex;
 
-    /*! \brief Conditional Variable to trigger read thread 
+    /*! \brief Conditional Variable to trigger read thread
     */
     pthread_cond_t dcb_rx_trigger;
 

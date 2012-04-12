@@ -51,15 +51,15 @@
 /*!
  * \brief Read formatted data from a stream.
  *
- * Similar to fscanf() except that the format string is expected in 
+ * Similar to fscanf() except that the format string is expected in
  * program space.
  *
  * \param stream Pointer to a previously opened stream.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  *
  * \warning The function will not check, if the stream pointer points

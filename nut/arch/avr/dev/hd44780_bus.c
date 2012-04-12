@@ -193,40 +193,40 @@ static void LcdSetCursor(uint8_t pos)
     if (y > 3) y = 3;
 #endif
 
-#if defined(LCD_2x40) 
+#if defined(LCD_2x40)
     uint8_t  offset  [2] = {0x00, 0x40};
     y = pos / 40;
     x = pos % 40;
     if (y > 1) y = 1;
-#endif    
-    
+#endif
+
 #if defined(LCD_4x20) || defined(LCD_2x20)
     uint8_t  offset  [4] = {0x00, 0x40, 0x14, 0x54};
     y = pos / 20;
     x = pos % 20;
     if (y>3) y=3;
-#endif    
-    
+#endif
+
 #if defined(LCD_4x16) || defined(LCD_2x16)
     uint8_t  offset  [4] = {0x00, 0x40, 0x10, 0x50};
     y = pos / 16;
     x = pos % 16;
     if (y>3) y=3;
-#endif    
+#endif
 
 #if defined(LCD_2x8)
     uint8_t  offset  [2] = {0x00, 0x40};
     y = pos / 8;
     x = pos % 8;
     if (y>1) y=1;
-#endif    
+#endif
 
 #if defined(LCD_1x8) || defined(LCD_1x16) || defined(LCD_1x20)
     uint8_t  offset  [1] = { 0x00 };
     y = 0;
     x = pos;
-#endif 
-    
+#endif
+
     pos = x + offset[y];
     LcdWriteCmd(1 << LCD_DDRAM | pos, 0);
 }
@@ -329,38 +329,38 @@ TERMDCB dcb_term = {
     4,                  /*!< \brief Number of rows. */
     16,                 /*!< \brief Number of columns per row. */
     16,                 /*!< \brief Number of visible columns. */
-#endif    
-#ifdef LCD_2x40    
+#endif
+#ifdef LCD_2x40
     2,                  /*!< \brief Number of rows. */
     40,                 /*!< \brief Number of columns per row. */
     40,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_2x20    
+#ifdef LCD_2x20
     2,                  /*!< \brief Number of rows. */
     20,                 /*!< \brief Number of columns per row. */
     20,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_2x16    
+#ifdef LCD_2x16
     2,                  /*!< \brief Number of rows. */
     16,                 /*!< \brief Number of columns per row. */
     16,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_2x8    
+#ifdef LCD_2x8
     2,                  /*!< \brief Number of rows. */
     8,                 /*!< \brief Number of columns per row. */
     8,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_1x20    
+#ifdef LCD_1x20
     1,                  /*!< \brief Number of rows. */
     20,                 /*!< \brief Number of columns per row. */
     20,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_1x16    
+#ifdef LCD_1x16
     1,                  /*!< \brief Number of rows. */
     16,                 /*!< \brief Number of columns per row. */
     16,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_1x8    
+#ifdef LCD_1x8
     1,                  /*!< \brief Number of rows. */
     8,                 /*!< \brief Number of columns per row. */
     8,                 /*!< \brief Number of visible columns. */

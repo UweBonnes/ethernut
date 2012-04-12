@@ -172,26 +172,26 @@ static void DebugUnalloc(HEAPNODE * entry, CONST char *file, int line)
 /*!
  * \brief Allocate a block from heap memory.
  *
- * This functions allocates a memory block of the specified size and 
+ * This functions allocates a memory block of the specified size and
  * returns a pointer to that block.
  *
- * The actual size of the allocated block is larger than the requested 
- * size because of space required for maintenance information. This 
+ * The actual size of the allocated block is larger than the requested
+ * size because of space required for maintenance information. This
  * additional information is invisible to the application.
  *
- * The routine looks for the smallest block that will meet the required 
- * size and releases it to the caller. If the block being requested is 
- * usefully smaller than the smallest free block then the block from 
- * which the request is being met is split in two. The unused portion is 
+ * The routine looks for the smallest block that will meet the required
+ * size and releases it to the caller. If the block being requested is
+ * usefully smaller than the smallest free block then the block from
+ * which the request is being met is split in two. The unused portion is
  * put back into the free-list.
  *
- * The contents of the allocated block is unspecified. To allocate a 
+ * The contents of the allocated block is unspecified. To allocate a
  * block with all bytes set to zero use NutHeapAllocClear().
  *
  * \param root Points to the linked list of free nodes.
  * \param size Size of the requested memory block.
  *
- * \return Pointer to the allocated memory block if the function is 
+ * \return Pointer to the allocated memory block if the function is
  *         successful or NULL if no free block of the requested size
  *         is available.
  */
@@ -223,7 +223,7 @@ void *NutHeapRootAlloc(HEAPNODE ** root, size_t size)
     while (node) {
         /* Found a note that fits? */
         if (node->hn_size >= need) {
-            /* Is it the first one we found or was the previous 
+            /* Is it the first one we found or was the previous
                ** one larger? */
             if (fit == NULL || fit->hn_size > node->hn_size) {
                 /* This is the best fit so far. */
@@ -241,7 +241,7 @@ void *NutHeapRootAlloc(HEAPNODE ** root, size_t size)
     }
 
     if (fit) {
-        /* Is remaining space of the node we found large enough for 
+        /* Is remaining space of the node we found large enough for
            another node? Honor the specified threshold. */
         if (fit->hn_size - need >= NUTMEM_HEAPNODE_MIN) {
             /* Split the node. */
@@ -307,17 +307,17 @@ void *NutHeapRootAllocClear(HEAPNODE ** root, size_t size)
 /*!
  * \brief Return a block to heap memory.
  *
- * An application calls this function, when a previously allocated 
+ * An application calls this function, when a previously allocated
  * memory block is no longer needed.
  *
- * The heap manager checks, if the released block adjoins any other 
- * free regions. If it does, then the adjacent free regions are joined 
+ * The heap manager checks, if the released block adjoins any other
+ * free regions. If it does, then the adjacent free regions are joined
  * together to form one larger region.
  *
  * \param root  Points to the linked list of free nodes.
  * \param block Points to a memory block previously allocated.
  *
- * \return 0 on success, -1 if the caller tried to free a block which 
+ * \return 0 on success, -1 if the caller tried to free a block which
  *         had been previously released, -2 if the block had been
  *         corrupted. Furthermore, -3 is returned if block is a NULL
  *         pointer, but using this may change as C99 allows this.
@@ -396,10 +396,10 @@ int NutHeapRootFree(HEAPNODE ** root, void *block)
             break;
         }
 
-        /* If we are within a free node, somebody may have tried to free 
+        /* If we are within a free node, somebody may have tried to free
            a block twice. The panic below does not make much sense, because
            if we have NUTDEBUG_HEAP then we will also have NUTMEM_GUARD.
-           In that case the guard will have been overridden by the link 
+           In that case the guard will have been overridden by the link
            pointer, which is detected by the ValidateUserArea() above. */
         if (((uintptr_t) node + node->hn_size) > (uintptr_t) fnode) {
 #ifdef NUTDEBUG_HEAP
@@ -426,7 +426,7 @@ int NutHeapRootFree(HEAPNODE ** root, void *block)
  * \brief Add a new memory region to the heap.
  *
  * This function can be called more than once to manage non-continous
- * memory regions. It is automatically called by Nut/OS during 
+ * memory regions. It is automatically called by Nut/OS during
  * initialization.
  *
  * \param addr Start address of the memory region.
@@ -484,15 +484,15 @@ size_t NutHeapRootRegionAvailable(HEAPNODE ** root)
 
 /**
  * \brief Change the size of an allocated memory block.
- * 
+ *
  * If more memory is requested than available at that block the data
  * is copied to a new, bigger block.
- * 
+ *
  * \param block Points to a previously allocated memory block. If NULL,
  *              then this call is equivalent to NutHeapRootAlloc().
  * \param size  The requested new size. If 0, then this call is
  *              equivalent to NutHeapRootFree().
- * 
+ *
  * \return A pointer to the memory block on success or NULL on failures.
  */
 #ifdef NUTDEBUG_HEAP
@@ -564,7 +564,7 @@ void *NutHeapRootRealloc(HEAPNODE ** root, void *block, size_t size)
             node = node->hn_next;
         }
 
-        /* If we found a node and if this node is large enough and 
+        /* If we found a node and if this node is large enough and
            if it directly follows without a gap, then use it. */
         if (node && node->hn_size >= size_miss &&       /* */
             (uintptr_t) fnode + fnode->hn_size == (uintptr_t) node) {
@@ -597,7 +597,7 @@ void *NutHeapRootRealloc(HEAPNODE ** root, void *block, size_t size)
         newmem = NutHeapRootAlloc(root, size);
 #endif
         if (newmem) {
-            memcpy(newmem, block, 
+            memcpy(newmem, block,
                 fnode->hn_size - NUT_HEAP_OVERHEAD - 2 * NUTMEM_GUARD_BYTES);
 #ifdef NUTDEBUG_HEAP
             NutHeapDebugRootFree(root, block, file, line);

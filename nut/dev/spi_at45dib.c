@@ -142,7 +142,7 @@ static int At45dibTransmitCmd(NUTSPINODE * node, uint8_t op, uint32_t parm, uint
  *
  * \return 0 on success, -1 on errors.
  */
-static int At45dibTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, 
+static int At45dibTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen,
                            CONST void *txbuf, void *rxbuf, int xlen)
 {
     int rc;
@@ -479,7 +479,7 @@ static int_fast8_t At45dibAllocate(NUTSERIALFLASH * sfi, sf_unit_t pgn)
 
     at = (AT45DIB *) sfi->sf_info;
     for (;;) {
-        /* 
+        /*
         ** Check, if the page is already loaded.
         */
         for (b = 0; b < 2; b++) {
@@ -650,7 +650,7 @@ static int SpiAt45dibCheck(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
  *
  * \param sfi  Specifies the serial flash interface.
  * \param pgn  Page to read from.
- * \param off  Read offset into the page. If negative, the offset counts 
+ * \param off  Read offset into the page. If negative, the offset counts
  *             from the end of the page.
  * \param data Pointer to the buffer that receives the data.
  * \param len  Number of data bytes to read.
@@ -704,7 +704,7 @@ static int SpiAt45dibRead(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, void *da
  *
  * \param sfi  Specifies the serial flash interface.
  * \param pgn  Page to compare.
- * \param off  Offset into the page. If negative, the offset counts from 
+ * \param off  Offset into the page. If negative, the offset counts from
  *             the end of the page.
  * \param data Pointer to the data to compare.
  * \param len  Number of data bytes to compare.
@@ -806,7 +806,7 @@ static int SpiAt45dibUsed(NUTSERIALFLASH * sfi, sf_unit_t pgn, int skip)
  * \brief Write data to a given page.
  *
  * Loads the page into an internal RAM buffer and replaces the contents
- * with the given data. The buffer will be marked dirty, but not written 
+ * with the given data. The buffer will be marked dirty, but not written
  * back. See SpiAt45dibCommit().
  *
  * \param sfi  Specifies the serial flash interface.
@@ -905,7 +905,7 @@ static int SpiAt45dibCopy(NUTSERIALFLASH * sfi, sf_unit_t spg, sf_unit_t dpg)
 /*!
  * \brief Commit page.
  *
- * If the contents of the given page is in one of the internal RAM 
+ * If the contents of the given page is in one of the internal RAM
  * buffers and if the contents had been changed since the last page
  * load, then the buffer is written back to the flash.
  *

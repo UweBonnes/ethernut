@@ -59,7 +59,7 @@
 /*!
  * \brief Write a string from progam memory to a stream.
  *
- * Similar to fputs() except that the string is located in program 
+ * Similar to fputs() except that the string is located in program
  * space.
  *
  * \param stream Pointer to a previously opened stream.

@@ -192,7 +192,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     ef = (ENTERFRAME *) ((uintptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uintptr_t) ef - sizeof(SWITCHFRAME));
 
-    /* 
+    /*
      * Set predefined values at the stack bottom. May be used to detect
      * stack overflows.
      */
@@ -223,7 +223,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     sf->csf_cpsr = ARM_CPSR_I_BIT | ARM_CPSR_F_BIT | ARM_MODE_SYS;
 
     /*
-     * Initialize the thread info structure and insert it into the 
+     * Initialize the thread info structure and insert it into the
      * thread list and the run queue.
      */
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
@@ -241,7 +241,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
 
     /*
-     * If no thread is running, then this is the first thread ever 
+     * If no thread is running, then this is the first thread ever
      * created. In Nut/OS, the idle thread is created first.
      */
     if (runningThread == 0) {
@@ -273,7 +273,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     }
 
     /*
-     * If current context is not in front of the run queue (highest 
+     * If current context is not in front of the run queue (highest
      * priority), then switch to the thread in front.
      */
     if (runningThread != runQueue) {

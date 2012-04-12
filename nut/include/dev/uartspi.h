@@ -100,13 +100,13 @@ struct _UARTSDCB {
 
     /* \brief Queue of threads waiting for output buffer empty.
      *
-     * Threads are added to this queue when calling UartSpiFlush(). 
+     * Threads are added to this queue when calling UartSpiFlush().
      */
     HANDLE dcb_tx_rdy;
 
     /* \brief Queue of threads waiting for a character in the input buffer.
      *
-     * Threads are added to this queue when calling UartSpiInput(). 
+     * Threads are added to this queue when calling UartSpiInput().
      */
     HANDLE dcb_rx_rdy;
 };

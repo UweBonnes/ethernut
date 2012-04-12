@@ -49,7 +49,7 @@
  * \brief This function is called on fatal errors.
  *
  * The function will enter a critical section and print a description
- * of the problem to stdout. It is assumed, that stdout is available 
+ * of the problem to stdout. It is assumed, that stdout is available
  * and has been assigned to a debug output device, such as devDebug or
  * similar. Then the function will enter an endless loop, which
  * freezes the system.

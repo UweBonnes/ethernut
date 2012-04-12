@@ -72,8 +72,8 @@
 /*
  * \brief LCD Display definitions
  */
- 
-//#define KS0073_CONTROLLER 
+
+//#define KS0073_CONTROLLER
 
 #define LCD_4x20
 

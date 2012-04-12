@@ -59,7 +59,7 @@ int AvrSpiSetup(NUTSPINODE * node)
     /* Select SPI master mode. */
     spireg->avrspi_spcr = _BV(SPE) | _BV(MSTR) | (uint8_t)(node->node_mode & SPI_MODE_3) << 2;
 
-    /* Find the frequency that is below or equal the requested 
+    /* Find the frequency that is below or equal the requested
        ** one, using the double speed bit if available. */
     clk = NutClockGet(NUT_HWCLK_PERIPHERAL);
 #if defined(SPI2X)

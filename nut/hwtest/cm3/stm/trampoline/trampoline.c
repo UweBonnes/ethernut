@@ -37,8 +37,8 @@
  * Flash this file if you compile to "Run from RAM" with Boot selection
  * "Run from Flash"
  *
- * This trampoline on reset loads the stack adress from the value at 
- * 0x20000000 and jumps to the function pointed to by 0x20000004. 
+ * This trampoline on reset loads the stack adress from the value at
+ * 0x20000000 and jumps to the function pointed to by 0x20000004.
  *
  */
 

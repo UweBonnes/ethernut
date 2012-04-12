@@ -56,7 +56,7 @@
  *
  *
  */
- 
+
 #ifndef _SYS_ATOM_H_
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
@@ -72,7 +72,7 @@
  * in order to allow nesting, the current interrupt enable status is
  * saved on the stack.
  *
- * Note, that after calling NutEnterCritical(), a corresponding 
+ * Note, that after calling NutEnterCritical(), a corresponding
  * NutExitCritical() must be called before returning from the
  * currently running subroutine.
  */

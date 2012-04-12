@@ -265,7 +265,7 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit)
  *
  ===============================================================================
                GPIO Alternate functions configuration function
- ===============================================================================  
+ ===============================================================================
 
 @endverbatim
   * @{
@@ -278,10 +278,10 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit)
   *         This parameter can be GPIO_PinSourcex where x can be (0..15).
   * @param  GPIO_AFSelection: selects the pin to used as Alternate function.
   *          This parameter can be one of the following values:
-  *            @arg GPIO_AF_RTC_50Hz: Connect RTC_50Hz pin to AF0 (default after reset) 
-  *            @arg GPIO_AF_MCO: Connect MCO pin (MCO1 and MCO2) to AF0 (default after reset) 
-  *            @arg GPIO_AF_TAMPER: Connect TAMPER pins (TAMPER_1 and TAMPER_2) to AF0 (default after reset) 
-  *            @arg GPIO_AF_SWJ: Connect SWJ pins (SWD and JTAG)to AF0 (default after reset) 
+  *            @arg GPIO_AF_RTC_50Hz: Connect RTC_50Hz pin to AF0 (default after reset)
+  *            @arg GPIO_AF_MCO: Connect MCO pin (MCO1 and MCO2) to AF0 (default after reset)
+  *            @arg GPIO_AF_TAMPER: Connect TAMPER pins (TAMPER_1 and TAMPER_2) to AF0 (default after reset)
+  *            @arg GPIO_AF_SWJ: Connect SWJ pins (SWD and JTAG)to AF0 (default after reset)
   *            @arg GPIO_AF_TRACE: Connect TRACE pins to AF0 (default after reset)
   *            @arg GPIO_AF_TIM1: Connect TIM1 pins to AF1
   *            @arg GPIO_AF_TIM2: Connect TIM2 pins to AF1
@@ -324,12 +324,12 @@ void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_PinSource, uint8_t GPIO
 {
   uint32_t temp = 0x00;
   uint32_t temp_2 = 0x00;
-  
+
   /* Check the parameters */
   NUTASSERT(IS_GPIO_ALL_PERIPH(GPIOx));
   NUTASSERT(IS_GPIO_PIN_SOURCE(GPIO_PinSource));
   NUTASSERT(IS_GPIO_AF(GPIO_AF));
-  
+
   temp = ((uint32_t)(GPIO_AF) << ((uint32_t)((uint32_t)GPIO_PinSource & (uint32_t)0x07) * 4)) ;
   GPIOx->AFR[GPIO_PinSource >> 0x03] &= ~((uint32_t)0xF << ((uint32_t)((uint32_t)GPIO_PinSource & (uint32_t)0x07) * 4)) ;
   temp_2 = GPIOx->AFR[GPIO_PinSource >> 0x03] | temp;

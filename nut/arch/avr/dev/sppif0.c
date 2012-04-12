@@ -79,7 +79,7 @@ int Sppi0SetMode(uint8_t ix, uint8_t mode)
         return -1;
     }
 
-    /* A bit obfuscated, but compact. A simple shift 
+    /* A bit obfuscated, but compact. A simple shift
        correctly sets CPHA and CPOL. */
     sppi0_spcr[ix] = _BV(SPE) | _BV(MSTR) | (mode << 2) | _BV(SPR1) | _BV(SPR0);
 #if defined(SPI2X)
@@ -94,7 +94,7 @@ int Sppi0SetMode(uint8_t ix, uint8_t mode)
  *
  * \param ix   The device index, starting at 0.
  * \param rate Transfer rate in bits per second.
- * 
+ *
  */
 void Sppi0SetSpeed(uint8_t ix, uint32_t rate)
 {
@@ -104,7 +104,7 @@ void Sppi0SetSpeed(uint8_t ix, uint32_t rate)
     fosc = NutGetCpuClock();
 
     sppi0_spcr[ix] &= ~(_BV(SPR1) | _BV(SPR0));
-    /* Find the frequency that is below or equal the requested 
+    /* Find the frequency that is below or equal the requested
        one, using the double speed bit if available. */
 #if defined(SPI2X)
     for (i = 0; i < 7; i++) {
@@ -131,16 +131,16 @@ void Sppi0SetSpeed(uint8_t ix, uint32_t rate)
 /*!
  * \brief Enable the serial peripheral interface 0.
  *
- * Enables SPI with the parameters previously set by Sppi0SetMode() and 
+ * Enables SPI with the parameters previously set by Sppi0SetMode() and
  * Sppi0SetSpeed().
  *
- * \param ix The device index, starting at 0. The routine will not check 
+ * \param ix The device index, starting at 0. The routine will not check
  *           if this is valid.
  */
 void Sppi0Enable(uint8_t ix)
 {
     /*
-     * When configured as SPI master, MOSI (PB2) and SCK (PB1) 
+     * When configured as SPI master, MOSI (PB2) and SCK (PB1)
      * lines are not automatically switched to output.
      */
     if (sppi0_spcr[ix] & _BV(CPOL)) {
@@ -287,11 +287,11 @@ void Sppi0ChipSelect(uint8_t ix, uint8_t hi)
  * \brief Select the device at a given chip select.
  *
  * Enables the serial peripheral interface with the parameters
- * previously set for the given device by Sppi0SetMode() and 
+ * previously set for the given device by Sppi0SetMode() and
  * Sppi0SetSpeed(). Then the configured chip select line is
  * driven high.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sppi0SelectDevice(uint8_t ix)
@@ -305,7 +305,7 @@ void Sppi0SelectDevice(uint8_t ix)
  *
  * The configured chip select line will be driven low.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sppi0DeselectDevice(uint8_t ix)
@@ -317,11 +317,11 @@ void Sppi0DeselectDevice(uint8_t ix)
  * \brief Select the device at a given negated chip select.
  *
  * Enables the serial peripheral interface with the parameters
- * previously set for the given device by Sppi0SetMode() and 
+ * previously set for the given device by Sppi0SetMode() and
  * Sppi0SetSpeed(). Then the configured chip select line is
  * driven low.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sppi0NegSelectDevice(uint8_t ix)
@@ -335,7 +335,7 @@ void Sppi0NegSelectDevice(uint8_t ix)
  *
  * The configured chip select line will be driven high.
  *
- * \param ix The device index, starting at 0. The routine will not 
+ * \param ix The device index, starting at 0. The routine will not
  *           check if this is a valid number.
  */
 void Sppi0NegDeselectDevice(uint8_t ix)
@@ -365,7 +365,7 @@ uint8_t Sppi0Byte(uint8_t data)
  * initialized by calling Sppi0SetMode() and optionally Sppi0SetSpeed().
  *
  * Further it is assumed, that the chip select (if there is one) had
- * been enabled by a previous call to Sppi0SelectDevice() or 
+ * been enabled by a previous call to Sppi0SelectDevice() or
  * Sppi0NegSelectDevice().
  *
  * \param wdata Pointer to the data to transmit.

@@ -88,9 +88,9 @@
 /*!
  * \brief Convert a string to an unsigned long integer.
  *
- * 
+ *
  * \param nptr   Points to a character string to convert.
- * \param endptr Is a result parameter that, if not NULL, returns a string 
+ * \param endptr Is a result parameter that, if not NULL, returns a string
  *               beginning with the first character not converted.
  * \param base   Number base of the string.
  *

@@ -80,7 +80,7 @@
 
 /*!
  * \brief Get absolute value of a long integer.
- * 
+ *
  * \param j Long integer.
  *
  * \return Absolute value.

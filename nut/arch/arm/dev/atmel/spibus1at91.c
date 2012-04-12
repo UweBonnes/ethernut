@@ -229,7 +229,7 @@ int At91Spi1ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
  * \param tmo  Timeout in milliseconds. To disable timeout, set this
  *             parameter to NUT_WAIT_INFINITE.
  *
- * \return 0 on success. In case of an error, -1 is returned and the bus 
+ * \return 0 on success. In case of an error, -1 is returned and the bus
  *         is not locked.
  */
 int At91SpiBus1Select(NUTSPINODE * node, uint32_t tmo)
@@ -329,7 +329,7 @@ void At91SpiBus1Interrupt(void *arg)
     }
 }
 
-/*! 
+/*!
  * \brief Transfer data on the SPI bus using single buffered interrupt mode.
  *
  * A device must have been selected by calling At91SpiSelect().

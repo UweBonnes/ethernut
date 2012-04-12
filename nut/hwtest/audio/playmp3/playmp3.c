@@ -70,7 +70,7 @@ static void PlayMp3File(char *path, int gain);
 /*!
  * \example playmp3/playmp3.c
  *
- * This sample application plays MP3 files from the UROM filesystem. It 
+ * This sample application plays MP3 files from the UROM filesystem. It
  * demonstrates how to use an audio decoder with Nut/OS. It can provide
  * a basis for talking equipment, alarm sound output etc.
  *
@@ -87,13 +87,13 @@ static void PlayMp3File(char *path, int gain);
  * different from the BSD license of Nut/OS.
  *
  * The UROM filesystem is located in program memory. No external file
- * storage device is required. Use the crurom utility to create a C source 
- * file named urom.c from the MP3 files located in subdirectory sounds. 
+ * storage device is required. Use the crurom utility to create a C source
+ * file named urom.c from the MP3 files located in subdirectory sounds.
  * Here's how to call crurom:
- * 
+ *
  * crurom -r -ourom.c sounds
  *
- * The created file will then be compiled and linked to the application 
+ * The created file will then be compiled and linked to the application
  * code.
  */
 int main(void)

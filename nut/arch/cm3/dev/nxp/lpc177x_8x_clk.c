@@ -38,22 +38,22 @@
  *
  *
  *
- * $Id: system_LPC177x_8x.c 7485 2011-06-03 07:57:16Z sgg06786 $         
+ * $Id: system_LPC177x_8x.c 7485 2011-06-03 07:57:16Z sgg06786 $
  *      system_LPC177x_8x.c 2011-06-02
  *//**
  * @file         system_LPC177x_8x.c
  * @brief        CMSIS Cortex-M3 Device Peripheral Access Layer Source File
  *               for the NXP LPC177x_8x Device Series
  *
- *               ARM Limited (ARM) is supplying this software for use with 
- *               Cortex-M processor based microcontrollers.  This file can be 
- *               freely distributed within development tools that are supporting 
+ *               ARM Limited (ARM) is supplying this software for use with
+ *               Cortex-M processor based microcontrollers.  This file can be
+ *               freely distributed within development tools that are supporting
  *               such ARM based processors.
  *
  * @version      1.0
  * @date         02. June. 2011
  * @author       NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -443,7 +443,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
             default:
                 USBClock = 0;  /* this should never happen! */
         }
-    } else 
+    } else
     if(LPC_SC->USBCLKSEL & (0x02<<8)) {   //usb_input_clk = alt_pll (pll1)
         if(LPC_SC->CLKSRCSEL & 0x01) {	  //pll1_clk_in = main_osc
             USBClock = (OSC_CLK * ((LPC_SC->PLL1STAT & 0x1F) + 1));
@@ -500,7 +500,7 @@ int SetSysClock(void)
 #if (FLASH_SETUP == 1)                    /* Flash Accelerator Setup            */
     LPC_SC->FLASHCFG  = FLASHCFG_Val|0x03A;
 #endif
-    
+
     SystemCoreClockUpdate();
     return rc;
 }
@@ -529,10 +529,10 @@ uint32_t Lpc17xx_ClockGet(int idx)
 {
     SystemCoreClockUpdate();
     switch(idx) {
-        case NUT_HWCLK_CPU: 
+        case NUT_HWCLK_CPU:
             return SystemCoreClock;
             break;
-            
+
         case NUT_HWCLK_PCLK:
             return PeripheralClock;
             break;

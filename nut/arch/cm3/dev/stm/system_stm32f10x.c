@@ -101,8 +101,8 @@ void SystemInit_ExtMemCtl(void)
 /*!
  * \brief  Basic setup of the microcontroller system.
  *
- * Initialize the clock sources and reset the PLL. 
- * Additionally enable and configure externally attached 
+ * Initialize the clock sources and reset the PLL.
+ * Additionally enable and configure externally attached
  * memory if available.
  */
 void SystemInit(void)

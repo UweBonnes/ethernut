@@ -162,7 +162,7 @@
 #define LED4_PORT    NUTGPIO_PORTD
 #define LED4_PIN     4
 
-/* For STM3210C-EVAL Kit the 5-way controller is connected to 
+/* For STM3210C-EVAL Kit the 5-way controller is connected to
  * a I2C expander. So we use the few single buttons instead.
  */
 #define KEY_MI_PORT  NUTGPIO_PORTB	/* User Button */
@@ -321,13 +321,13 @@ int main(void)
      * to a different functionality, it executes something after beeing pressed
      * for at least 2s.
      */
-#if !defined(EVK1105)     
+#if !defined(EVK1105)
     NutRegisterKey(&keyDn, KEY_DN_PORT, KEY_DN_PIN, KEY_ACTION_HOLD, 2000);
 #else
     /* The EVK1105 have touch keys, therefore we will not wait 2s here */
     NutRegisterKey(&keyDn, KEY_DN_PORT, KEY_DN_PIN, KEY_ACTION_UP, 0);
-#endif    
-    
+#endif
+
 
     /* Assign event to keyDn too.
      */
@@ -352,7 +352,7 @@ int main(void)
     /* Register threads that wait on keys */
     NutThreadCreate("k1", Key1Thread, NULL, 256);
     NutThreadCreate("k2", Key2Thread, NULL, 256);
-#endif    
+#endif
 
     /*
      * Endless loop in main thread.
@@ -364,10 +364,10 @@ int main(void)
     return 0;
 }
 
-#else  /* defined(AT91SAM7X_EK) || defined(ENET_SAM7X) || 
+#else  /* defined(AT91SAM7X_EK) || defined(ENET_SAM7X) ||
           defined(EVK1100) || defined(EVK1101) || defined(EVK1105) */
 int main(void)
-{   
+{
     uint32_t baud = 115200;
     /*
      * Register the UART device, open it, assign stdout to it and set

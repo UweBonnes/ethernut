@@ -130,13 +130,13 @@ struct _UARTDCB {
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
-     * Threads are added to this queue when calling UartAvrFlush(). 
+     * Threads are added to this queue when calling UartAvrFlush().
      */
     HANDLE dcb_tx_rdy;
 
     /*! \brief Queue of threads waiting for a character in the input buffer.
      *
-     * Threads are added to this queue when calling UartAvrInput(). 
+     * Threads are added to this queue when calling UartAvrInput().
      */
     HANDLE dcb_rx_rdy;
 

@@ -185,7 +185,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
     NUTDEVICE *blkdev = blkmnt->nf_dev;
 
     /*
-     * Allocate the volume information structure 
+     * Allocate the volume information structure
      */
     if ((dev->dev_dcb = malloc(sizeof(PHATVOL))) == 0) {
         return -1;
@@ -233,7 +233,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
     sbn = 0;
 
     /*
-     * We use PhatSectorRead() instead of PhatSectorLoad() for our 
+     * We use PhatSectorRead() instead of PhatSectorLoad() for our
      * very first read to properly initialize the caching status.
      */
     if (PhatSectorRead(blkmnt, 0, vol->vol_buf[sbn].sect_data)) {
@@ -325,9 +325,9 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
     /* First cluster number is 2. */
     vol->vol_last_clust += 2;
 
-    /* 
-     * Having calculated the total number of clusters allows us to 
-     * distinguish between PHAT12 and PHAT16. 
+    /*
+     * Having calculated the total number of clusters allows us to
+     * distinguish between PHAT12 and PHAT16.
      */
     if (vol->vol_type == 0) {
         if (vol->vol_last_clust > 4086) {

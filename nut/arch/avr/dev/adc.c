@@ -340,7 +340,7 @@ void ADCStartLowNoiseConversion()
     }
 #else
     sbi(ADCSR, ADSC);
-#endif    
+#endif
 }
 
 void ADCStopConversion()
@@ -349,7 +349,7 @@ void ADCStopConversion()
         // Send warning message
         return;
     }
-// Terminate and restart the ADC 
+// Terminate and restart the ADC
 // When restarted, start_conversion needs to be
 // called again
     cbi(ADCSR, ADEN);

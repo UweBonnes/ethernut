@@ -75,7 +75,7 @@ static int _sputb(int fd, CONST void *buffer, size_t count)
  * program memory.
  *
  * \param buffer Pointer to a buffer that receives the output string.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
  * \param ap     List of arguments.
  *

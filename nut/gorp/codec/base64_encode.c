@@ -18,8 +18,8 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -63,11 +63,11 @@
 static prog_char base64etab[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /*!
- * \brief Do base-64 encoding on a string. 
+ * \brief Do base-64 encoding on a string.
  *
- * Return newly allocated string filled with the bytes generated. 
- * The encoded size will be at least 4/3 the size of the text, and 
- * may be smaller larger if there needs to be some padding characters 
+ * Return newly allocated string filled with the bytes generated.
+ * The encoded size will be at least 4/3 the size of the text, and
+ * may be smaller larger if there needs to be some padding characters
  * (blanks, newlines).
  *
  * \param str Points to the string to be encoded.
@@ -82,17 +82,17 @@ char *NutEncodeBase64(CONST char* str)
     int     idx, enc_pos;
     int32_t bits;
     int     cols;
-    int     char_count; 
-    
-    /* Calculate buffer size for encoded data 
+    int     char_count;
+
+    /* Calculate buffer size for encoded data
      * 8 Bit code converted into 6 Bit code ==> encoded code will be 4/3 larger
-     * The algorithm will padd the encoded data with == so that the resulting 
+     * The algorithm will padd the encoded data with == so that the resulting
      * length can be exactly deviced by 3
      * Also every 72 chars a <cr><lf> will be added
      */
-    
+
     length = strlen(str);
-    
+
     /* Calc the base code length, add one to the inital length to have space for rounding errors */
     encoded_length = ((length + 1) * 4) / 3;
     /* Add the size for the padding characters */
@@ -101,14 +101,14 @@ char *NutEncodeBase64(CONST char* str)
     encoded_length += (encoded_length / 72) * 2 + 3;
     /* Allocate the memory. */;
     encoded = NutHeapAlloc(encoded_length);
-    
+
     if (encoded == NULL) return NULL;
-    
+
     enc_pos = 0;
     char_count = 0;
     bits = 0;
     cols = 0;
-    
+
     for (idx = 0; idx < length; idx ++) {
         bits += (int32_t)str[idx];
         char_count ++;
@@ -129,7 +129,7 @@ char *NutEncodeBase64(CONST char* str)
             bits <<= 8;
         }
     }
-    
+
     if (char_count != 0) {
         bits <<= 16 - (8 * char_count);
         encoded[enc_pos++] = PRG_RDB(&base64etab[bits >> 18]);

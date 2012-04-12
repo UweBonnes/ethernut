@@ -83,20 +83,20 @@ void _irq_interrupt (IRQ_HANDLER * irh)
                   "lds r24, %2" "\n\t"		/* load _irq_nesting in r24 */
                   "tst r24" "\n\t"				/* test for zero */
                   "brne L_%=" "\n\t"			/* jump to no_switch1 if not zero */
-                  "in r24, __SP_L__" "\n\t"			/* load SP_L into r24 */ 
-                  "sts %3, r24" "\n\t"			/* and save it to _irq_SPL */ 
-                  "in r24, __SP_H__" "\n\t"			/* load SP_H into r24 */ 
-                  "sts %4, r24" "\n\t"			/* and save it to _irq_SPH */ 
-                  "ldi r24, lo8(%0)" "\n\t"			/* load lo addr of begin of irqstack to r24 */ 
-                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */ 
-                  "ldi r24, hi8(%0)" "\n\t"			/* load hi addr of begin of irqstack to r24 */ 
-                  "out __SP_H__, r24" "\n\t"			/* write it to SP_H */ 
+                  "in r24, __SP_L__" "\n\t"			/* load SP_L into r24 */
+                  "sts %3, r24" "\n\t"			/* and save it to _irq_SPL */
+                  "in r24, __SP_H__" "\n\t"			/* load SP_H into r24 */
+                  "sts %4, r24" "\n\t"			/* and save it to _irq_SPH */
+                  "ldi r24, lo8(%0)" "\n\t"			/* load lo addr of begin of irqstack to r24 */
+                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */
+                  "ldi r24, hi8(%0)" "\n\t"			/* load hi addr of begin of irqstack to r24 */
+                  "out __SP_H__, r24" "\n\t"			/* write it to SP_H */
                   "lds r24, %2" "\n\t"		/* load _irq_nesting to r24 */
                   "L_%=:" "\n\t"				/* jump label */
                   "inc r24" "\n\t"				/* increment r24 */
                   "sts %2, r24" "\n\t"		/* save it back to _irq_nesting */
                   ::					
-                  "i" (_irq_stack._stack + IRQSTACK_SIZE - 1), 
+                  "i" (_irq_stack._stack + IRQSTACK_SIZE - 1),
                   "i" (&_irq_stack._temp),
                   "i" (&_irq_stack._nesting),
                   "i" (&_irq_stack._SPL),
@@ -129,21 +129,21 @@ void _irq_interrupt (IRQ_HANDLER * irh)
                   "pop r18" "\n\t"		
                   "pop __zero_reg__" "\n\t"
                   "pop __tmp_reg__" "\n\t"::);
-    asm volatile ("cli" "\n\t"					/* disable interrupts */ 
-                  "lds r24, %0" "\n\t"		/* load _irq_nesting in r24 */ 
-                  "dec r24" "\n\t"				/* decrement r24 */ 
-                  "sts %0, r24" "\n\t"		/* save it back to _irq_nesting */ 
-                  "brne L_%=" "\n\t"			/* jump to no_switch2 if not zero */ 
-                  "lds r24, %1" "\n\t"			/* load _irq_SPL to r24 */ 
-                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */ 
-                  "lds r24, %2" "\n\t"			/* load _irq_SPH to r24 */ 
-                  "out __SP_H__, r24" "\n\t"			/* write it to SP_H */ 
-                  "L_%=:" "\n\t"::				/* jump label */ 
+    asm volatile ("cli" "\n\t"					/* disable interrupts */
+                  "lds r24, %0" "\n\t"		/* load _irq_nesting in r24 */
+                  "dec r24" "\n\t"				/* decrement r24 */
+                  "sts %0, r24" "\n\t"		/* save it back to _irq_nesting */
+                  "brne L_%=" "\n\t"			/* jump to no_switch2 if not zero */
+                  "lds r24, %1" "\n\t"			/* load _irq_SPL to r24 */
+                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */
+                  "lds r24, %2" "\n\t"			/* load _irq_SPH to r24 */
+                  "out __SP_H__, r24" "\n\t"			/* write it to SP_H */
+                  "L_%=:" "\n\t"::				/* jump label */
                   "i" (&_irq_stack._nesting),
                   "i" (&_irq_stack._SPL),
                   "i" (&_irq_stack._SPH));				
     _irq_epilog
-    asm volatile ("reti"::);				/* will enable interrupts */ 
+    asm volatile ("reti"::);				/* will enable interrupts */
 }
 
 

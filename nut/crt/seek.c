@@ -57,7 +57,7 @@
  * \addtogroup xgCrtLowio
  */
 /*@{*/
- 
+
 /*!
  * \brief Move read/write position of a file.
  *
@@ -69,7 +69,7 @@
  * \return 0 if no error occured -1 on error. errno is set
  *
  */
- 
+
 int _seek(int fd, long offset, int origin)
 {
     NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
@@ -81,7 +81,7 @@ int _seek(int fd, long offset, int origin)
     conf.arg1 = (void*) fp;
     conf.arg2 = (void*) &offset;
     conf.arg3 = (void*) origin;
-    
+
     dev = fp->nf_dev;
     if (dev != 0) {
         if ((*dev->dev_ioctl) (dev, FS_FILE_SEEK, &conf)) {

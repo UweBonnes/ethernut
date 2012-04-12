@@ -34,13 +34,13 @@
  * os/tracer.c
  *
  * 22.12.2004 Philipp Blum <blum@tik.ee.ethz.ch>
- * 
+ *
  * \brief Routines to capture traces of nutOS programs
  * \note  Only supported on AVR-GCC platform
- * 
+ *
  */
 #if defined(__GNUC__) && defined(__AVR__)
- 
+
 /************************************************/
 /* includes */
 /************************************************/
@@ -126,7 +126,7 @@ static void NutTraceTimer1IRQ(void *arg)
 
 
 
-int NutTraceInit(int size, char mode) 
+int NutTraceInit(int size, char mode)
 {
     if (!trace_isinit) {
         // start timer1 at CPU frequency/8 and register interrupt service routine
@@ -317,7 +317,7 @@ int NutTraceGetPC(void)
     int pc = ((int)(*((char*)SP+1)));
     pc = (pc<<8)|(0x00ff&(int)(*((char*)SP+2)));
     return pc<<1;
-} 
+}
 
 
 void NutTraceMaskSet(int tag)

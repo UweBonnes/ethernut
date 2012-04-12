@@ -38,7 +38,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -202,10 +202,10 @@ int NicPhyConfig(void)
     u_short phy_to;
     u_short mode;
 
-    /* 
+    /*
      * Reset the PHY and wait until this self clearing bit
      * becomes zero. We sleep 63 ms before each poll and
-     * give up after 3 retries. 
+     * give up after 3 retries.
      */
     NicPhyWrite(NIC_PHYCR, PHYCR_RST);
     for (phy_to = 0;; phy_to++) {
@@ -376,7 +376,7 @@ int EtherOutput(const u_char * dmac, u_short type, u_short len)
     eh->ether_type = type;
 
     /*
-     * The total packet length includes 
+     * The total packet length includes
      * - status word (2 bytes)
      * - byte count (2 bytes)
      * - destination address (6 bytes)
@@ -404,7 +404,7 @@ int EtherOutput(const u_char * dmac, u_short type, u_short len)
     }
 
     /*
-     * An allocation error might appear when incoming packets occupy 
+     * An allocation error might appear when incoming packets occupy
      * all the buffer. Reset the MMU to release all memory. This is
      * very drastic, but OK for our sequential boot loader.
      */
@@ -418,20 +418,20 @@ int EtherOutput(const u_char * dmac, u_short type, u_short len)
         }
     }
 
-    /* 
-     * Read the number of the allcocated packet from the allocation 
+    /*
+     * Read the number of the allcocated packet from the allocation
      * result register and write it to the packet number register.
      */
     nic_outlb(NIC_PNR, nic_inhb(NIC_PNR));
 
     /*
      * Initially set the pointer register address to 2 and enable
-     * auto increment. The first two bytes will be used by the CSMA 
-     * to store the status word upon transmit completion. 
+     * auto increment. The first two bytes will be used by the CSMA
+     * to store the status word upon transmit completion.
      */
     nic_outw(NIC_PTR, PTR_AUTO_INCR | 2);
 
-    /* 
+    /*
      * Transfer the byte count and the data bytes.
      */
     nic_outw(NIC_DATA, len);
@@ -439,8 +439,8 @@ int EtherOutput(const u_char * dmac, u_short type, u_short len)
         nic_outlb(NIC_DATA, *cp);
         cp++;
     }
-    
-    /* 
+
+    /*
      * Transfer the control word. As stated above, we never succeeded
      * in sending an odd number of bytes.
      */
@@ -461,7 +461,7 @@ int EtherOutput(const u_char * dmac, u_short type, u_short len)
  *             this value represents approximately the number
  *             of milliseconds to wait.
  *
- * \return The number of bytes received, 0 on timeout 
+ * \return The number of bytes received, 0 on timeout
  *         or -1 in case of a failure.
  */
 int EtherInput(u_short type, u_short tms)
@@ -470,7 +470,7 @@ int EtherInput(u_short type, u_short tms)
     register u_char *buf;
     u_short fbc;
 
-    /* Check the fifo empty bit. If it is set, then there is 
+    /* Check the fifo empty bit. If it is set, then there is
        nothing in the receiver fifo. */
     nic_bs(2);
     while (tms--) {

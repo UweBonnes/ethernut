@@ -132,10 +132,10 @@ int Avr32SpiSetup(NUTSPINODE * node)
     return 0;
 }
 
-/*! 
- * \brief Initialize an SPI bus node. 
+/*!
+ * \brief Initialize an SPI bus node.
  *
- * This routine is called for each SPI node, which is registered via 
+ * This routine is called for each SPI node, which is registered via
  * NutRegisterSpiDevice().
  *
  * \param node Specifies the SPI bus node.
@@ -174,8 +174,8 @@ int Avr32SpiBusNodeInit(NUTSPINODE * node)
             node->node_stat = (void *) spireg;
             Avr32SpiSetup(node);
 
-            /* 
-             * Register and enable SPI interrupt handler. 
+            /*
+             * Register and enable SPI interrupt handler.
              */
 #if !defined(SPIBUS1_POLLING_MODE) && defined(AVR32_SPI1_ADDRESS)
             if (bus->bus_base == AVR32_SPI1_ADDRESS) {
@@ -209,7 +209,7 @@ int Avr32SpiBusNodeInit(NUTSPINODE * node)
 }
 
 #if defined(SPIBUS0_POLLING_MODE) || defined(SPIBUS1_POLLING_MODE)
-/*! 
+/*!
  * \brief Transfer data on the SPI bus in polling mode.
  *
  * A device must have been selected by calling At91SpiSelect().
@@ -255,12 +255,12 @@ int Avr32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, i
 #endif
 
 #if defined(SPIBUS0_DOUBLE_BUFFER) || defined(SPIBUS1_DOUBLE_BUFFER)
-/*! 
+/*!
  * \brief Transfer data on the SPI bus using double buffered PDC.
  *
  * A device must have been selected by calling Avr32SpiSelect().
  *
- * Note, that the transfer may be still in progress when returning 
+ * Note, that the transfer may be still in progress when returning
  * from this function.
  *
  * \todo Not yet done. Given up after SAM7SE SDRAM problems.
@@ -282,7 +282,7 @@ int Avr32SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf,
 #endif
 
 #if !defined(SPIBUS0_DOUBLE_BUFFER) || !defined(SPIBUS1_DOUBLE_BUFFER)
-/*! 
+/*!
  * \brief Wait until all SPI bus transfers are done.
  *
  * \param node Specifies the SPI bus node.

@@ -63,8 +63,8 @@
 
 /*!
  * \brief Close a file, device or socket.
- * 
- * The calling thread may be suspended until all buffered output data 
+ *
+ * The calling thread may be suspended until all buffered output data
  * has been written.
  *
  * \param fd   Descriptor of a previously opened file, device or

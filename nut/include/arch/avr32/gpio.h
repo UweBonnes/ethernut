@@ -31,9 +31,9 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
- 
+
 
 #ifndef _AVR32_GPIO_H_
 #define _AVR32_GPIO_H_

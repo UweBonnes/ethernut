@@ -41,7 +41,7 @@
     :((timer) == (NUTTIMER5))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM5)) = 1)) \
     :((timer) == (NUTTIMER6))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM6)) = 1)) \
     :((timer) == (NUTTIMER7))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM7)) = 1)) :-1
-  
+
 #define TIM_IntEnable(timer)                            \
     ((timer) == (NUTTIMER2))?IntEnable(TIM2_IRQn)       \
     :((timer) == (NUTTIMER3))?IntEnable(TIM3_IRQn)      \
@@ -80,7 +80,7 @@
     :((timer) == (NUTTIMER4))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM4)) = 1)) \
     :((timer) == (NUTTIMER6))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM6)) = 1)) \
     :((timer) == (NUTTIMER7))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM7)) = 1)) :-1
-  
+
 #define TIM_IntEnable(timer)                            \
     ((timer) == (NUTTIMER2))?IntEnable(TIM2_IRQn)       \
     :((timer) == (NUTTIMER3))?IntEnable(TIM3_IRQn)      \
@@ -116,7 +116,7 @@
     :((timer) == (NUTTIMER5))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM5)) = 1)) \
     :((timer) == (NUTTIMER6))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM6)) = 1)) \
     :((timer) == (NUTTIMER7))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM7)) = 1)) :-1
-  
+
 #define TIM_IntEnable(timer)                            \
     ((timer) == (NUTTIMER2))?IntEnable(TIM2_IRQn)       \
     :((timer) == (NUTTIMER3))?IntEnable(TIM3_IRQn)      \
@@ -152,7 +152,7 @@
 #warning "Unknown STM32 family"
 #endif
 
-#define TIM_AutoReloadValue( timer )       CM3REG(timer, TIM_TypeDef, ARR ) 
+#define TIM_AutoReloadValue( timer )       CM3REG(timer, TIM_TypeDef, ARR )
 #define TIM_Prescaler( timer)              CM3REG(timer, TIM_TypeDef, PSC )
 #define TIM_Compare1( timer)               CM3REG(timer, TIM_TypeDef, CCR1)
 #define TIM_Compare2( timer)               CM3REG(timer, TIM_TypeDef, CCR2)

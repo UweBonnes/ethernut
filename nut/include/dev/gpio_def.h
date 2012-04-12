@@ -70,7 +70,7 @@
 /*!
  * \brief GPIO input.
  *
- * Will configure the pin as input. This is the default state, when no other 
+ * Will configure the pin as input. This is the default state, when no other
  * config option is given.
  */
 

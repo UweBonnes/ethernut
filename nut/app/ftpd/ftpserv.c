@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005 by egnite Software GmbH
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,8 +89,8 @@
  * not available on Ethernut 1.x or Charon II.
  */
 
-/* 
- * Baudrate for debug output. 
+/*
+ * Baudrate for debug output.
  */
 #ifndef DBG_BAUDRATE
 #define DBG_BAUDRATE 115200
@@ -108,35 +108,35 @@
 #define USE_DISCOVERY
 #endif
 
-/* 
- * Unique MAC address of the Ethernut Board. 
+/*
+ * Unique MAC address of the Ethernut Board.
  *
  * Ignored if EEPROM contains a valid configuration.
  */
 #define MY_MAC { 0x00, 0x06, 0x98, 0x30, 0x00, 0x35 }
 
-/* 
- * Unique IP address of the Ethernut Board. 
+/*
+ * Unique IP address of the Ethernut Board.
  *
- * Ignored if DHCP is used. 
+ * Ignored if DHCP is used.
  */
 #define MY_IPADDR "192.168.192.35"
 
-/* 
+/*
  * IP network mask of the Ethernut Board.
  *
- * Ignored if DHCP is used. 
+ * Ignored if DHCP is used.
  */
 #define MY_IPMASK "255.255.255.0"
 
-/* 
+/*
  * Gateway IP address for the Ethernut Board.
  *
- * Ignored if DHCP is used. 
+ * Ignored if DHCP is used.
  */
 #define MY_IPGATE "192.168.192.1"
 
-/* 
+/*
  * NetBIOS name.
  *
  * Use a symbolic name with Win32 Explorer.
@@ -162,10 +162,10 @@
 #define TCPIP_BUFSIZ 5840
 
 /*
- * Maximum segment size. 
+ * Maximum segment size.
  *
- * Choose 536 up to 1460. Note, that segment sizes above 536 may result 
- * in fragmented packets. Remember, that Ethernut doesn't support TCP 
+ * Choose 536 up to 1460. Note, that segment sizes above 536 may result
+ * in fragmented packets. Remember, that Ethernut doesn't support TCP
  * fragmentation.
  */
 #define TCPIP_MSS 1460
@@ -174,7 +174,7 @@
 
 /* Ethernut 3 file system. */
 #define FSDEV       devPhat0
-#define FSDEV_NAME  "PHAT0" 
+#define FSDEV_NAME  "PHAT0"
 
 /* Ethernut 3 block device interface. */
 #define BLKDEV      devNplMmc0
@@ -184,7 +184,7 @@
 
 /* SAM7X-EK file system. */
 #define FSDEV       devPhat0
-#define FSDEV_NAME  "PHAT0" 
+#define FSDEV_NAME  "PHAT0"
 
 /* SAM7X-EK block device interface. */
 #define BLKDEV      devAt91SpiMmc0
@@ -194,7 +194,7 @@
 
 /* SAM9260-EK file system. */
 #define FSDEV       devPhat0
-#define FSDEV_NAME  "PHAT0" 
+#define FSDEV_NAME  "PHAT0"
 
 /* SAM9260-EK block device interface. */
 #define BLKDEV      devAt91Mci0
@@ -206,11 +206,11 @@
  * Ethernut 2 File system
  */
 #define FSDEV       devPnut
-#define FSDEV_NAME  "PNUT" 
+#define FSDEV_NAME  "PNUT"
 
 #else
 
-#define FSDEV_NAME  "NONE" 
+#define FSDEV_NAME  "NONE"
 
 #endif
 
@@ -230,12 +230,12 @@
 /*
  * FTP service.
  *
- * This function waits for client connect, processes the FTP request 
- * and disconnects. Nut/Net doesn't support a server backlog. If one 
- * client has established a connection, further connect attempts will 
- * be rejected. 
+ * This function waits for client connect, processes the FTP request
+ * and disconnects. Nut/Net doesn't support a server backlog. If one
+ * client has established a connection, further connect attempts will
+ * be rejected.
  *
- * Some FTP clients, like the Win32 Explorer, open more than one 
+ * Some FTP clients, like the Win32 Explorer, open more than one
  * connection for background processing. So we run this routine by
  * several threads.
  */
@@ -249,8 +249,8 @@ static void FtpService(void)
      */
     if ((sock = NutTcpCreateSocket()) != 0) {
 
-        /* 
-         * Set specified socket options. 
+        /*
+         * Set specified socket options.
          */
 #ifdef TCPIP_MSS
         {
@@ -446,7 +446,7 @@ static int InitTimeAndDate(void)
 }
 
 /*
- * Main application routine. 
+ * Main application routine.
  *
  * Nut/OS automatically calls this entry after initialization.
  */

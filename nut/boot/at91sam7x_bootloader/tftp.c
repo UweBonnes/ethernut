@@ -51,13 +51,13 @@ int tftp_receive(char *filename, u_long tftp_ip, int (*callback)(u_char *buffer,
     int tx_len = 0;
     unsigned short block = 0;
     char *cp;
-    
+
     UDPSOCKET *tftp_socket;
     u_long  remote_ip;
     u_short remote_port = TFTP_PORT;
     u_long  offset = 0;
-    int     total_bytes = 0;     
-    
+    int     total_bytes = 0;
+
     /*
      * Do nothing if there's no TFTP host configured.
      */
@@ -67,24 +67,24 @@ int tftp_receive(char *filename, u_long tftp_ip, int (*callback)(u_char *buffer,
         ERROR("Could not create TFTP UDP socket\r\n");
         goto error;
     }
-    
+
     /*
      * Prepare the transmit buffer for a file request.
      */
     tx_frame.th_opcode = htons(TFTP_RRQ);
-    
+
     tx_len = 2;
     cp = tx_frame.th_u.tu_stuff;
-    
+
     INFO("TFTP Loading %s\r\n", filename);
     strcpy(cp, filename);
     len     = strlen(filename) + 1;
     tx_len += len;
     cp     += len;
-           
+
     strcpy(cp, "octet");
     tx_len += 6;
-    
+
     /*
      * Loop until we receive a packet with less than 512 bytes of data.
      */
@@ -95,7 +95,7 @@ int tftp_receive(char *filename, u_long tftp_ip, int (*callback)(u_char *buffer,
          */
         for (retry = 0; retry < 3; retry++) {
             if (NutUdpSendTo(tftp_socket, tftp_ip, remote_port, &tx_frame, tx_len) == 0) {
-                rx_len = NutUdpReceiveFrom(tftp_socket, &remote_ip, &remote_port, &rx_frame, sizeof(tftp_header), 5000); 
+                rx_len = NutUdpReceiveFrom(tftp_socket, &remote_ip, &remote_port, &rx_frame, sizeof(tftp_header), 5000);
                 if (rx_len >= 4) break;
             }
         }
@@ -159,9 +159,9 @@ int tftp_receive(char *filename, u_long tftp_ip, int (*callback)(u_char *buffer,
      * Send the last ACK.
      */
     NutUdpSendTo(tftp_socket, tftp_ip, remote_port, &tx_frame, tx_len);
-    
+
     return total_bytes;
-    
-error:    
+
+error:
     return -1;
 }

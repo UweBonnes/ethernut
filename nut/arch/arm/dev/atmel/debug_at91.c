@@ -149,7 +149,7 @@ int At91DevDebugRead(NUTFILE * fp, void *buffer, int size)
     for (rc = 0; rc < size; rc++) {
         while ((inr(fp->nf_dev->dev_base + US_CSR_OFF) & US_RXRDY) == 0) {
             NutSleep(1);
-            if ((rc || bp == NULL) && 
+            if ((rc || bp == NULL) &&
                 (inr(fp->nf_dev->dev_base + US_CSR_OFF) & US_RXRDY) == 0) {
                 return rc;
             }

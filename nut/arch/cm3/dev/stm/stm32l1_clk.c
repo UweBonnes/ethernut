@@ -57,7 +57,7 @@ uint32_t SystemCoreClock;
 const uint32_t MSIFreqTable[8] = {65536, 131072, 262144,  524288, 1048000, 2097000, 4194000, 0};
 
 /*----------------  Clock Setup Procedure ------------------------------
- * 
+ *
  * Clock system ist arranged like this:
  *
  *                            ,--------------------------- USB
@@ -75,16 +75,16 @@ const uint32_t MSIFreqTable[8] = {65536, 131072, 262144,  524288, 1048000, 20970
  * 1) Select system clock sources
  *
  * To setup system to use HSI call: SetSysClockSource( SYSCLK_HSI);
- * To setup system to use HSE call: SetSysClockSource( SYSCLK_HSE); 
+ * To setup system to use HSE call: SetSysClockSource( SYSCLK_HSE);
  *
  * To setup system to use the PLL output, first setup the PLL source:
  * SetPllClockSource( PLLCLK_HSI);
- * or 
+ * or
  * SetPllClockSource( PLLCLK_HSE);
- * Then call SetSysClockSource( SYSCLK_PLL); 
+ * Then call SetSysClockSource( SYSCLK_PLL);
  *
  * 2) Configure prescalers
- * After selecting the right clock sources, the prescalers need to 
+ * After selecting the right clock sources, the prescalers need to
  * be configured:
  * Call SetSysClock(); to do this automatically.
  *
@@ -129,12 +129,12 @@ void SystemCoreClockUpdate(void)
             else if (rcc & RCC_CFGR_PLLMUL32) pllmull = 32;
             else if (rcc & RCC_CFGR_PLLMUL48) pllmull = 48;
             else                              pllmull =  3;
-            
+
             if((rcc & RCC_CFGR_PLLDIV4) == RCC_CFGR_PLLDIV4) plldiv = 4;
             else if (rcc & RCC_CFGR_PLLDIV3)                 plldiv = 3;
             else if (rcc & RCC_CFGR_PLLDIV2)                 plldiv = 2;
             else                                             plldiv = 1;
-            
+
             if (rcc & RCC_CFGR_PLLSRC_HSE)
                 SystemCoreClock = HSE_VALUE * pllmull / plldiv;
             else
@@ -144,7 +144,7 @@ void SystemCoreClockUpdate(void)
 
     /* Compute HCLK clock frequency ----------------*/
     if ((rcc & RCC_CFGR_HPRE_3))
-        SystemCoreClock >>= ((rcc & (RCC_CFGR_HPRE_0 | RCC_CFGR_HPRE_1 |RCC_CFGR_HPRE_2)) +1); 
+        SystemCoreClock >>= ((rcc & (RCC_CFGR_HPRE_0 | RCC_CFGR_HPRE_1 |RCC_CFGR_HPRE_2)) +1);
 }
 
 /* Functional same as F1 */
@@ -179,7 +179,7 @@ int CtlHseClock( uint8_t ena)
     else {
         /* Disable HSE clock */
         RCC->CR &= ~RCC_CR_HSEON;
-    }        
+    }
 
     return rc;
 }
@@ -216,7 +216,7 @@ int CtlHsiClock( uint8_t ena)
     else {
         /* Disable HSE clock */
         RCC->CR &= ~RCC_CR_HSION;
-    }        
+    }
 
     return rc;
 }
@@ -253,12 +253,12 @@ int CtlPllClock( uint8_t ena)
     else {
         /* Disable HSE clock */
         RCC->CR &= ~RCC_CR_PLLON;
-    }        
+    }
 
     return rc;
 }
 
-    
+
 /*!
  * \brief  Configures the System clock source: HSE or HSI.
  * \note   This function should be used with PLL disables
@@ -281,7 +281,7 @@ int SetPllClockSource( int src)
             CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PLLSRC)) = 0;
         }
     }
-    
+
     return rc;
 }
 
@@ -340,26 +340,26 @@ int SetSysClockSource( int src)
             while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
         }
     }
-    
+
     /* Update core clock information */
     SystemCoreClockUpdate();
-    
+
     return rc;
 }
 #if (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE)
 /*!
  * \brief  Configures the System clock coming from HSE or HSI oscillator.
- * 
+ *
  * Enable HSI/HSE clock and setup HCLK, PCLK2 and PCLK1 prescalers.
  *
  * \param  None.
- * \return 0 on success, -1 on fault of HSE. 
+ * \return 0 on success, -1 on fault of HSE.
  */
 int SetSysClock(void)
 {
     int rc = 0;
     register uint32_t cfgr;
-    
+
     /* Fixme: Allow more flexible Flash Setting
      * For the moment, use 32-bit access with no prefetch . Latency has no meaning
      * for 32-bit access
@@ -376,7 +376,7 @@ int SetSysClock(void)
 
     /* PCLK1 = HCLK */
     cfgr |= (uint32_t)RCC_CFGR_PPRE1_DIV1;
-    
+
     RCC->CFGR = cfgr;
 
     rc = SetSysClockSource(SYSCLK_SOURCE);

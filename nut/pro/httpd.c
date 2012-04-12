@@ -340,7 +340,7 @@ void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
  *                    header. Ignored, if negative.
  * \param first2bytes The first two bytes of the file.
  */
- 
+
 static void NutHttpSendHeaderBottomEx(FILE * stream, REQUEST * req, char *mime_type, long bytes, unsigned short first2bytes)
 {
     static prog_char typ_fmt_P[] = "Content-Type: %s\r\n";
@@ -348,7 +348,7 @@ static void NutHttpSendHeaderBottomEx(FILE * stream, REQUEST * req, char *mime_t
     static prog_char enc_fmt_P[] = "Content-Encoding: gzip\r\n";
     static prog_char con_str_P[] = "Connection: ";
     static prog_char ccl_str_P[] = "close\r\n\r\n";
-    
+
 #define GZIP_ID  0x8b1f
 
     if (mime_type)
@@ -685,7 +685,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     }
 
     file_len = _filelength(fd);
-    
+
     /* Use mime handler, if one has been registered. */
     if (handler) {
         NutHttpSendHeaderBottom(stream, req, mime_type, -1);
@@ -693,18 +693,18 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     }
     /* Use default transfer, if no registered mime handler is available. */
     else {
-    
-#if (HTTPD_SUPPORT_GZIP >= 1)    
+
+#if (HTTPD_SUPPORT_GZIP >= 1)
         /* Check for Accept-Encoding: gzip support */
         if (req->req_encoding != NULL) {
             if (strstr(req->req_encoding, "gzip") != NULL) {
                 /* Read first two bytes, needed for gzip header check */
                 _read(fd, &first2bytes, 2);
                 _seek(fd, -2, SEEK_CUR);
-            }            
+            }
         }
-#endif        
-    
+#endif
+
         NutHttpSendHeaderBottomEx(stream, req, mime_type, file_len, first2bytes);
         if (req->req_method != METHOD_HEAD) {
             size_t size = HTTP_FILE_CHUNK_SIZE;
@@ -883,7 +883,7 @@ static int NextHeaderName(FILE * stream, uint_fast8_t *idx)
         if (ch == EOF || ch == '\n') {
             break;
         }
-        
+
         /* Check if the length is correct */
         if (ch == ':') {
             if (i == req_lookup[*idx].rlu_len) {
@@ -895,7 +895,7 @@ static int NextHeaderName(FILE * stream, uint_fast8_t *idx)
                 break;
             }
         }
-        
+
         /* Check if all characters read so far fits with any header
             we are interested in. */
         for (; *idx < NUM_REQUEST_LOOKUP; (*idx)++) {

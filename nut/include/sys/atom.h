@@ -114,16 +114,16 @@
  *
  * NutEnterCritical()
  * Starts a critical section.
- * The global interrupt flag must be disabled to protect the folowing code from 
- * interruption. The state of the global interrupt flag must be saved, to 
+ * The global interrupt flag must be disabled to protect the folowing code from
+ * interruption. The state of the global interrupt flag must be saved, to
  * later restore.
  *
  * NutExitCritical()
- * Finalize a critical section. Must be used only at the end of a critical section 
+ * Finalize a critical section. Must be used only at the end of a critical section
  * to restore the global interrupt flag to the state saved by NutEnterCritical()
  *
  * NutJumpOutCritical()
- * Macro for early leaving the critical section. Must be used in the middle on a 
+ * Macro for early leaving the critical section. Must be used in the middle on a
  * critical section if you want to terminate the critical section.
  *
  */

@@ -119,7 +119,7 @@ int Stm32CanHw1Init(void)
 
     return 0;
 }
- 
+
 CANBUS Stm32CanBus1 = {
     CAN1_BASE,
     CM3BB_BASE(CAN1_BASE),

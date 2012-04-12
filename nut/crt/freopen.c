@@ -82,12 +82,12 @@
  *	       \li \c "r+" Read and write existing file.
  *	       \li \c "w+" Read and write, destroys existing file contents.
  *	       \li \c "a+" Read and write, preserves existing file contents.
- *             \li \c "b" May be appended to any of the above strings to 
+ *             \li \c "b" May be appended to any of the above strings to
  *                        specify binary access.
  *
  * \param stream Pointer to a previously opened stream.
  *
- * \return A pointer to the open stream or a null pointer to indicate 
+ * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
  */
 FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
@@ -109,7 +109,7 @@ FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
 
     //if (stream)
     //    _close(stream->iob_fd);
-    //else 
+    //else
     if ((__iob[i] = malloc(sizeof(FILE))) == 0)
         return 0;
 

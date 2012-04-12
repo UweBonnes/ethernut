@@ -84,10 +84,10 @@
 #define  CLKPWR_PCLKSEL_SYSCON      60  /* SYSCON  */
 #define  CLKPWR_PCLKSEL_MC          62  /* MC      */
 
-/* Peripheral clock devider selection values 
+/* Peripheral clock devider selection values
  * Note: When CCLK_DIV_8, Peripheral's clock is selected to
  * PCLK_xyz = CCLK/8 except for CAN1, CAN2, and CAN filtering
- * when 0b11 selects PCLK_xyz = CCLK/6 
+ * when 0b11 selects PCLK_xyz = CCLK/6
  */
 
 #define  CLKPWR_PCLKSEL_CCLK_DIV_4  0    /* CCLK / 4 */

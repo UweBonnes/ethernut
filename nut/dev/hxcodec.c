@@ -276,8 +276,8 @@ THREAD(FeederThread, arg)
     /* We are a high priority thread. */
     NutThreadSetPriority(7);
     for (;;) {
-        /* 
-        ** Idle mode processing. 
+        /*
+        ** Idle mode processing.
         */
         if (dcb->dcb_pbstat == CODEC_STATUS_IDLE) {
             /* Wait for a request or a buffer update. */
@@ -292,8 +292,8 @@ THREAD(FeederThread, arg)
             }
         }
 
-        /* 
-        ** Play mode processing. 
+        /*
+        ** Play mode processing.
         */
         if (dcb->dcb_pbstat == CODEC_STATUS_PLAYING) {
             /* Process cancel requests. */
@@ -442,8 +442,8 @@ static int HelixIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Flush VLSI audio decoder buffer.
  *
- * Waits until all currently buffered data had been processed by the 
- * decoder. This makes sure that the end of the stream will not be 
+ * Waits until all currently buffered data had been processed by the
+ * decoder. This makes sure that the end of the stream will not be
  * cut off.
  *
  * \param dev Specifies the audio codec device.
@@ -478,7 +478,7 @@ static int HelixPlayerFlush(NUTDEVICE *dev, uint32_t tmo)
 /*!
  * \brief Send data to the decoder.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -521,24 +521,24 @@ static int HelixWrite(NUTFILE * nfp, CONST void *data, int len)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write to device.
  *
  * Similar to HelixWrite() except that the data is expected in program memory.
  *
  * This function is implemented for CPUs with Harvard Architecture only.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write_P entry.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data in program space. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error. Currently this function is not implemented and always
  *         returns -1.
  *
@@ -576,7 +576,7 @@ static NUTFILE *HelixOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return nfp;
 }
 
-/*! 
+/*!
  * \brief Close codec device.
  */
 static int HelixClose(NUTFILE * nfp)
@@ -623,7 +623,7 @@ static int HelixInit(NUTDEVICE * dev)
     }
 
     /* Start the feeder thread. */
-    if (NutThreadCreate(dev->dev_name, FeederThread, dev, 
+    if (NutThreadCreate(dev->dev_name, FeederThread, dev,
         (NUT_THREAD_HXCODEC0STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == 0) {
         return -1;
     }
@@ -633,7 +633,7 @@ static int HelixInit(NUTDEVICE * dev)
 /*!
  * \brief Device information structure.
  *
- * An application must pass a pointer to this structure to 
+ * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using this driver.
  *
  * The device is named \b audio0.

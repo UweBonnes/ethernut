@@ -5,7 +5,7 @@
   * @version V1.0.0
   * @date    31-December-2010
   * @brief   CMSIS Cortex-M3 Device Peripheral Access Layer System Header File.
-  ******************************************************************************  
+  ******************************************************************************
   * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
@@ -16,7 +16,7 @@
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
   * <h2><center>&copy; COPYRIGHT 2010 STMicroelectronics</center></h2>
-  ******************************************************************************  
+  ******************************************************************************
   */
 
 /** @addtogroup CMSIS
@@ -25,8 +25,8 @@
 
 /** @addtogroup stm32l1xx_system
   * @{
-  */  
-  
+  */
+
 /**
   * @brief Define to prevent recursive inclusion
   */
@@ -35,7 +35,7 @@
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /** @addtogroup STM32L1xx_System_Includes
   * @{
@@ -75,7 +75,7 @@ extern uint32_t SystemCoreClock;          /*!< System Clock Frequency (Core Cloc
 /** @addtogroup STM32L1xx_System_Exported_Functions
   * @{
   */
-  
+
 extern void SystemInit(void);
 extern void SystemCoreClockUpdate(void);
 /**
@@ -91,8 +91,8 @@ extern void SystemCoreClockUpdate(void);
 /**
   * @}
   */
-  
+
 /**
   * @}
-  */  
+  */
 /******************* (C) COPYRIGHT 2010 STMicroelectronics *****END OF FILE****/

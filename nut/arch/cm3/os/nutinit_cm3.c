@@ -151,7 +151,7 @@ extern void main(void *);
  *
  * This function runs in an endless loop as a lowest priority thread.
  */
-THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg) 
+THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
 {
 #ifdef NUT_INIT_IDLE
     NutIdleInit();
@@ -167,7 +167,7 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
     NutMainInit();
 #error main
 #endif
-    
+
     /* Create the main application thread. Watch this carefully when
     ** changing compilers and compiler versions. Some handle main()
     ** in a special way, like setting the stack pointer and other
@@ -184,11 +184,11 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
         /* Remove terminated threads. */
         NutThreadDestroy();
 
-#if defined(HW_MCU_LPC17xx)        
+#if defined(HW_MCU_LPC17xx)
         /* We could do some power management. */
         LPC_SC->PCON = 0x00;
         /* Sleep Mode*/
-#endif        
+#endif
         __WFI();
     }
 }
@@ -201,7 +201,7 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
  * an idle thread, which in turn initializes the timer management.
  * Finally the application's main() function is called.
  */
-void ATTRIBUTE_NUTINIT_SECTION NutInit(void) 
+void ATTRIBUTE_NUTINIT_SECTION NutInit(void)
 {
 #if defined(NUTDEBUG_LAZY)
 extern uint32_t _stack_end;
@@ -210,7 +210,7 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
   __asm__ __volatile__
     (
      "ldr sp, %0\n\t"
-     : 
+     :
      : "m"(stack_end)
      : "sp"
     );
@@ -248,7 +248,7 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     }
 #endif
 #ifdef NUT_INIT_BOARD
-    NutBoardInit();   
+    NutBoardInit();
 #endif
     /* Initialize our heap memory. */
     NutHeapAdd(HEAP_START, HEAP_SIZE & ~3);

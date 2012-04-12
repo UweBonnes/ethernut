@@ -141,8 +141,8 @@ int NutDiscoveryAnnTele(DISCOVERY_TELE * dist)
 /*!
  * \brief Apply new configuration.
  *
- * \param dist Pointer to the discovery datagram. It is assumed, that 
- *             the validity of the datagram contents had been checked 
+ * \param dist Pointer to the discovery datagram. It is assumed, that
+ *             the validity of the datagram contents had been checked
  *             by the caller.
  */
 int NutDiscoveryAppConf(DISCOVERY_TELE * dist)
@@ -183,22 +183,22 @@ static int NutDiscoveryHandler(uint32_t ip, uint16_t port, DISCOVERY_TELE * dist
 
     /* Check minimum datagram length. */
     if (len >= minlen) {
-        /* 
-         * Request telegram. 
+        /*
+         * Request telegram.
          */
         if (dist->dist_type == DIST_REQUEST) {
             /* Respond to requests. */
             rc = NutDiscoveryAnnTele(dist);
         }
 
-        /* 
-         * Apply telegram. 
+        /*
+         * Apply telegram.
          */
         else if (dist->dist_type == DIST_APPLY
                    /* Check exchange ID. */
                    && dist->dist_xid == xid
                    /* Required protocol version. */
-                   && dist->dist_ver == DISCOVERY_VERSION) {    
+                   && dist->dist_ver == DISCOVERY_VERSION) {
             xid += NutGetTickCount();
             /* Store configuration. */
             rc = NutDiscoveryAppConf(dist);
@@ -289,13 +289,13 @@ NutDiscoveryCallback NutRegisterDiscoveryCallback(NutDiscoveryCallback func)
 /*!
  * \brief Register discovery telegram responder.
  *
- * The first call will activate the responder thread. Any subsequent 
+ * The first call will activate the responder thread. Any subsequent
  * calls will return a failure.
  *
  * \note Enabling a discovery responder is a potential security hole.
  *
- * \param ipmask Update datagrams from remote hosts, which do not fit to 
- *               this mask are ignored. Set to INADDR_BROADCAST to allow 
+ * \param ipmask Update datagrams from remote hosts, which do not fit to
+ *               this mask are ignored. Set to INADDR_BROADCAST to allow
  *               any. If zero, no updates are allowed.
  * \param port   The responder will listen to this UDP port. If zero,
  *               the default port \ref DISCOVERY_PORT is used.
@@ -311,7 +311,7 @@ int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, unsigned int flags)
         disopt.disopt_ipmask = ipmask;
         disopt.disopt_port = port ? port : DISCOVERY_PORT;
         disopt.disopt_flags = flags;
-        tid = NutThreadCreate("udisc", DiscoveryResponder, NULL, 
+        tid = NutThreadCreate("udisc", DiscoveryResponder, NULL,
             (NUT_THREAD_DISTSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
         if (tid) {
             return 0;

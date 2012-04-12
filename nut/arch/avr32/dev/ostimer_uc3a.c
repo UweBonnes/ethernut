@@ -130,7 +130,7 @@ uint32_t NutArchClockGet(int idx)
             rc /= _BV(AVR32_PM.CKSEL.pbbsel + 1);
         }
     } else if (idx == NUT_HWCLK_SLOW_CLOCK) {
-        /* Can be changed using the RCCR register 
+        /* Can be changed using the RCCR register
            but there is no information on the datasheet yet
            on how to do so. Therefore we don't know how to calculate
            non-default values yet. */

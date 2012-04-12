@@ -44,7 +44,7 @@ static void irq_ow_reset(void *arg)
         owi_sample = GpioPinGet(OWI_PORT, OWI_PIN);
         TIM_C3ClearInterruptFlag(OWI_TIMER);
    }
-    
+
     else if TIM_C4InterruptFlag(OWI_TIMER)
     {
         TIM_C4ClearInterruptFlag(OWI_TIMER);
@@ -69,7 +69,7 @@ int OWTouchReset(void)
     TIM_IntRegister(OWI_TIMER, irq_ow_reset);
     TIM_Counter(OWI_TIMER) =  0;
     /* Reload the values (Counter and Prescaler*/
-    TIM_Update( OWI_TIMER); 
+    TIM_Update( OWI_TIMER);
     TIM_StartTimer( OWI_TIMER );
     NutEventWait(&owi_irq_done, 10);
     TIM_StopTimer( OWI_TIMER);
@@ -97,14 +97,14 @@ static void irq_ow_bit(void *arg)
         owi_sample = GpioPinGet(OWI_PORT, OWI_PIN);
 	TIM_C3ClearInterruptFlag(OWI_TIMER);
     }
-    
+
     else if TIM_C4InterruptFlag(OWI_TIMER)
     {
         GpioPinSetHigh(OWI_PORT, OWI_PIN);
 	TIM_C4ClearInterruptFlag(OWI_TIMER);
         NutEventPostFromIrq(&owi_irq_done);
     }
-   else 
+   else
     {
         TIM_ClearInterruptFlag( OWI_TIMER );
     }
@@ -173,7 +173,7 @@ uint8_t OWRomSearch(uint8_t diff, uint64_t *hid)
     if (OWTouchReset())
         return  PRESENCE_ERR;
     OWWriteByte(SEARCH_ROM);
-  
+
     next_diff = LAST_DEVICE;                      // unchanged on last device
     i = 8 * 8;                                    // 8 bytes
     do{
@@ -206,8 +206,8 @@ uint8_t OWRomSearch(uint8_t diff, uint64_t *hid)
 int w1_command( uint8_t command, uint64_t *hid )
 {
     int i;
-    
-    if (OWTouchReset()) 
+
+    if (OWTouchReset())
     {
         return PRESENCE_ERR;
     }

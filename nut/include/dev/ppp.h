@@ -141,7 +141,7 @@ struct _PPPDCB {
     /*! \brief Current state of the link layer.
      */
     uint8_t dcb_lcp_state;
-    
+
     /*! \brief ID of our last request.
      */
     uint8_t dcb_reqid;
@@ -171,7 +171,7 @@ struct _PPPDCB {
      * TODO: Pass to ahdlc driver. dcb_useACFC dcb_usePFC
      */
     uint8_t dcb_compr;
-    
+
     /*! \brief Authentication type.
      */
     uint16_t dcb_auth;
@@ -226,7 +226,7 @@ struct _PPPDCB {
      */
     uint8_t dcb_retries;
 
-    /*! \brief LCP NAK counter, avoids endless loops. 
+    /*! \brief LCP NAK counter, avoids endless loops.
      */
     uint8_t dcb_lcp_naks;
 
@@ -237,8 +237,8 @@ struct _PPPDCB {
     /*! \brief Current state of the network layer.
      */
     uint8_t dcb_ipcp_state;
-    
-    /*! \brief LCP NAK counter, avoids endless loops. 
+
+    /*! \brief LCP NAK counter, avoids endless loops.
      */
     uint8_t dcb_ipcp_naks;
 

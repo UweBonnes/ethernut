@@ -95,7 +95,7 @@ static int EdLinePutChar(void *param, int ch)
  * Applications may use this function to replace the default character
  * input routine.
  *
- * \param el    Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el    Pointer to an \ref EDLINE structure, obtained by a
  *              previous call to \ref EdLineOpen.
  * \param get   Pointer to the new input routine. If NULL, then the
  *              default routine is restored.
@@ -118,7 +118,7 @@ void EdLineRegisterInput(EDLINE *el, EDLINEGET get, void *param)
  * Applications may use this function to replace the default character
  * output routine.
  *
- * \param el    Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el    Pointer to an \ref EDLINE structure, obtained by a
  *              previous call to \ref EdLineOpen.
  * \param put   Pointer to the new output routine. If NULL, then the
  *              default routine is restored.
@@ -147,7 +147,7 @@ void EdLineRegisterOutput(EDLINE *el, EDLINEPUT put, void *param)
  * \param key Input character to remap.
  * \param seq Pointer to an integer, which is used by the key mapping
  *            routine to store the current state. Note, that its value
- *            must be preserved by the caller between calls to 
+ *            must be preserved by the caller between calls to
  *            \ref EdLineRead.
  *
  * \return The mapped character. If \ref EDIT_KEY_IGNORE is returned
@@ -175,7 +175,7 @@ int EdLineKeyMap(int key, int *seq)
 /*!
  * \brief Register a key mapping routine.
  *
- * \param el    Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el    Pointer to an \ref EDLINE structure, obtained by a
  *              previous call to \ref EdLineOpen.
  * \param map   Pointer to the new mapping routine. If NULL, then the
  *              default routine is restored.
@@ -223,7 +223,7 @@ EDLINE *EdLineOpen(uint16_t mode)
  *
  * Releases all occupied memory.
  *
- * \param el Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el Pointer to an \ref EDLINE structure, obtained by a
  *           previous call to \ref EdLineOpen.
  */
 void EdLineClose(EDLINE *el)
@@ -241,7 +241,7 @@ void EdLineClose(EDLINE *el)
  *
  * Uses the currently registered character output routine.
  *
- * \param el    Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el    Pointer to an \ref EDLINE structure, obtained by a
  *              previous call to \ref EdLineOpen.
  */
 static int PrintString(EDLINE *el, char *str)
@@ -258,7 +258,7 @@ static int PrintString(EDLINE *el, char *str)
  *
  * Uses the currently registered character output routine.
  *
- * \param el  Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el  Pointer to an \ref EDLINE structure, obtained by a
  *            previous call to \ref EdLineOpen.
  * \param ch  The character to print.
  * \param num The number of times the character should be printed.
@@ -278,7 +278,7 @@ static void PrintCharacter(EDLINE *el, int ch, int num)
  * current cursor position. The cursor position is restored by
  * printing the same number of backspace characters.
  *
- * \param el  Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el  Pointer to an \ref EDLINE structure, obtained by a
  *            previous call to \ref EdLineOpen.
  * \param num Number of characters to clear.
  */
@@ -295,7 +295,7 @@ static void ClearLineEnd(EDLINE *el, int num)
  * This functions offers some editing capabilities and is typically
  * used for text input by human users.
  *
- * Line editing can be done by entering any of the following control 
+ * Line editing can be done by entering any of the following control
  * characters:
  *
  * - \ref EDIT_KEY_RESTORE Restores initial default line (default ESC)
@@ -307,10 +307,10 @@ static void ClearLineEnd(EDLINE *el, int num)
  * - \ref EDIT_KEY_UP Walks up the list of previously entered lines (default CTRL-R)
  * - \ref EDIT_KEY_DOWN Walks down the list of previously entered lines (default CTRL-V)
  *
- * Note, that these commands may be modified by the currently registered 
+ * Note, that these commands may be modified by the currently registered
  * remapping routine.
  *
- * \param el  Pointer to an \ref EDLINE structure, obtained by a 
+ * \param el  Pointer to an \ref EDLINE structure, obtained by a
  *            previous call to \ref EdLineOpen.
  * \param buf Pointer to the buffer that receives the text line.
  *            If it contains a string on entry, this will be used

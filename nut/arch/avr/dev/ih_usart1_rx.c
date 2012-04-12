@@ -84,7 +84,7 @@
  */
 /*@{*/
 
-#if defined(SIG_UART1_RECV) || defined(iv_USART1_RX) || defined(SIG_USART1_RECV) 
+#if defined(SIG_UART1_RECV) || defined(iv_USART1_RX) || defined(SIG_USART1_RECV)
 
 static int AvrUart1RxIrqCtl(int cmd, void *param);
 

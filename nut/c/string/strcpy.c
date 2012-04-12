@@ -75,8 +75,8 @@
 
 /*!
  * \brief Copy a string.
- * 
- * Copies a source string including the terminating zero character to 
+ *
+ * Copies a source string including the terminating zero character to
  * a destination string.
  *
  * \note The function does not perform any overflow checking.

@@ -91,6 +91,6 @@
 #ifndef DEV_DEBUG_NAME
 #define DEV_DEBUG_NAME  devUsartStm32_2.dev_name
 #endif
-#ifndef OWI_TIMER 
+#ifndef OWI_TIMER
 #define OWI_TIMER NUTTIMER2
 #endif

@@ -96,7 +96,7 @@ struct __attribute__((packed)) ether_header {
  */
 #define ETHERMTU    (ETHER_MAX_LEN - ETHER_HDR_LEN - ETHER_CRC_LEN)
 
-/*! \brief Ethernet minimum transfer unit. 
+/*! \brief Ethernet minimum transfer unit.
  *
  * Must be checked by the hardware driver.
  */
@@ -105,7 +105,7 @@ struct __attribute__((packed)) ether_header {
 #define ETHERTYPE_IP    0x0800  /*!< \brief IP protocol */
 #define ETHERTYPE_ARP   0x0806  /*!< \brief Address resolution protocol */
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is zero.
  *
  * \param ea Pointer to a character array containing the address.
@@ -114,7 +114,7 @@ struct __attribute__((packed)) ether_header {
  */
 #define	ETHER_IS_ZERO(ea) (((ea)[0] | (ea)[1] | (ea)[2] | (ea)[3] | (ea)[4] | (ea)[5]) == 0)
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is a broadcast address.
  *
  * \param ea Pointer to a character array containing the address.
@@ -123,7 +123,7 @@ struct __attribute__((packed)) ether_header {
  */
 #define	ETHER_IS_BROADCAST(ea) (((ea)[0] & (ea)[1] & (ea)[2] & (ea)[3] & (ea)[4] & (ea)[5]) == 0xFF)
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is a multicast address.
  *
  * The broadcast address is defined as a special multicast address.
@@ -132,9 +132,9 @@ struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is a multicast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_MULTICAST(ea) ((ea)[0] & 1) 
+#define	ETHER_IS_MULTICAST(ea) ((ea)[0] & 1)
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is a unicast address.
  *
  * By definition, an address with all zeros is not a valid unicast address.
@@ -143,7 +143,7 @@ struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is a unicast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea)) 
+#define	ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea))
 
 __BEGIN_DECLS
 /* ASCII conversion function prototypes. */

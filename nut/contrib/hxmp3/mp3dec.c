@@ -1,37 +1,37 @@
-/* ***** BEGIN LICENSE BLOCK ***** 
- * Version: RCSL 1.0/RPSL 1.0 
- *  
- * Portions Copyright (c) 1995-2002 RealNetworks, Inc. All Rights Reserved. 
- *      
- * The contents of this file, and the files included with this file, are 
- * subject to the current version of the RealNetworks Public Source License 
- * Version 1.0 (the "RPSL") available at 
- * http://www.helixcommunity.org/content/rpsl unless you have licensed 
- * the file under the RealNetworks Community Source License Version 1.0 
- * (the "RCSL") available at http://www.helixcommunity.org/content/rcsl, 
- * in which case the RCSL will apply. You may also obtain the license terms 
- * directly from RealNetworks.  You may not use this file except in 
- * compliance with the RPSL or, if you have a valid RCSL with RealNetworks 
- * applicable to this file, the RCSL.  Please see the applicable RPSL or 
- * RCSL for the rights, obligations and limitations governing use of the 
- * contents of the file.  
- *  
- * This file is part of the Helix DNA Technology. RealNetworks is the 
- * developer of the Original Code and owns the copyrights in the portions 
- * it created. 
- *  
- * This file, and the files included with this file, is distributed and made 
- * available on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER 
- * EXPRESS OR IMPLIED, AND REALNETWORKS HEREBY DISCLAIMS ALL SUCH WARRANTIES, 
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS 
- * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. 
- * 
- * Technology Compatibility Kit Test Suite(s) Location: 
- *    http://www.helixcommunity.org/content/tck 
- * 
- * Contributor(s): 
- *  
- * ***** END LICENSE BLOCK ***** */ 
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: RCSL 1.0/RPSL 1.0
+ *
+ * Portions Copyright (c) 1995-2002 RealNetworks, Inc. All Rights Reserved.
+ *
+ * The contents of this file, and the files included with this file, are
+ * subject to the current version of the RealNetworks Public Source License
+ * Version 1.0 (the "RPSL") available at
+ * http://www.helixcommunity.org/content/rpsl unless you have licensed
+ * the file under the RealNetworks Community Source License Version 1.0
+ * (the "RCSL") available at http://www.helixcommunity.org/content/rcsl,
+ * in which case the RCSL will apply. You may also obtain the license terms
+ * directly from RealNetworks.  You may not use this file except in
+ * compliance with the RPSL or, if you have a valid RCSL with RealNetworks
+ * applicable to this file, the RCSL.  Please see the applicable RPSL or
+ * RCSL for the rights, obligations and limitations governing use of the
+ * contents of the file.
+ *
+ * This file is part of the Helix DNA Technology. RealNetworks is the
+ * developer of the Original Code and owns the copyrights in the portions
+ * it created.
+ *
+ * This file, and the files included with this file, is distributed and made
+ * available on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND REALNETWORKS HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ *
+ * Technology Compatibility Kit Test Suite(s) Location:
+ *    http://www.helixcommunity.org/content/tck
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 /**************************************************************************************
  * Fixed-point MP3 decoder
@@ -129,7 +129,7 @@ int MP3FindSyncWord(unsigned char *buf, int nBytes)
  *
  * Notes:       this checks that the first 22 bits of the next frame header are the
  *                same as the current frame header, but it's still not foolproof
- *                (could accidentally find a sequence in the bitstream which 
+ *                (could accidentally find a sequence in the bitstream which
  *                 appears to match but is not actually the next frame header)
  *              this could be made more error-resilient by checking several frames
  *                in a row and verifying that nSlots is the same in each case
@@ -142,7 +142,7 @@ static int MP3FindFreeSync(unsigned char *buf, unsigned char firstFH[4], int nBy
 	int offset = 0;
 	unsigned char *bufPtr = buf;
 
-	/* loop until we either: 
+	/* loop until we either:
 	 *  - run out of nBytes (FindMP3SyncWord() returns -1)
 	 *  - find the next valid frame header (sync word, version, layer, CRC flag, bitrate, and sample rate
 	 *      in next header must match current header)
@@ -168,7 +168,7 @@ static int MP3FindFreeSync(unsigned char *buf, unsigned char firstFH[4], int nBy
 /**************************************************************************************
  * Function:    MP3GetLastFrameInfo
  *
- * Description: get info about last MP3 frame decoded (number of sampled decoded, 
+ * Description: get info about last MP3 frame decoded (number of sampled decoded,
  *                sample rate, bitrate, etc.)
  *
  * Inputs:      valid MP3 decoder instance pointer (HMP3Decoder)
@@ -210,7 +210,7 @@ void MP3GetLastFrameInfo(HMP3Decoder hMP3Decoder, MP3FrameInfo *mp3FrameInfo)
  *
  * Inputs:      valid MP3 decoder instance pointer (HMP3Decoder)
  *              pointer to MP3FrameInfo struct
- *              pointer to buffer containing valid MP3 frame header (located using 
+ *              pointer to buffer containing valid MP3 frame header (located using
  *                MP3FindSyncWord(), above)
  *
  * Outputs:     filled-in MP3FrameInfo struct
@@ -273,7 +273,7 @@ static void MP3ClearBadFrame(MP3DecInfo *mp3DecInfo, short *outbuf)
  *
  * Return:      error code, defined in mp3dec.h (0 means no error, < 0 means error)
  *
- * Notes:       switching useSize on and off between frames in the same stream 
+ * Notes:       switching useSize on and off between frames in the same stream
  *                is not supported (bit reservoir is not maintained if useSize on)
  **************************************************************************************/
 int MP3Decode(HMP3Decoder hMP3Decoder, unsigned char **inbuf, int *bytesLeft, short *outbuf, int useSize)
@@ -318,7 +318,7 @@ int MP3Decode(HMP3Decoder hMP3Decoder, unsigned char **inbuf, int *bytesLeft, sh
 	}
 
 	/* useSize != 0 means we're getting reformatted (RTP) packets (see RFC 3119)
-	 *  - calling function assembles "self-contained" MP3 frames by shifting any main_data 
+	 *  - calling function assembles "self-contained" MP3 frames by shifting any main_data
 	 *      from the bit reservoir (in previous frames) to AFTER the sync word and side info
 	 *  - calling function should set mainDataBegin to 0, and tell us exactly how large this
 	 *      frame is (in bytesLeft)

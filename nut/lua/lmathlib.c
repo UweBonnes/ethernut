@@ -227,7 +227,7 @@ const luaL_reg mathlib[] = {
   {"floor", math_floor},
   {"fmod",  math_fmod},
 #if NUTLUA_OPTIMIZE_MEMORY > 0 && defined(LUA_COMPAT_MOD)
-  {"mod",   math_fmod}, 
+  {"mod",   math_fmod},
 #endif
   {"frexp", math_frexp},
   {"ldexp", math_ldexp},

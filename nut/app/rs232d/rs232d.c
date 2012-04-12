@@ -118,7 +118,7 @@ THREAD(Receiver, arg)
 }
 
 /*
- * Main application routine. 
+ * Main application routine.
  *
  * Nut/OS automatically calls this entry after initialization.
  */
@@ -158,7 +158,7 @@ int main(void)
             uint32_t ip_mask = inet_addr("255.255.255.0");
 
             NutNetIfConfig("eth0", my_mac, ip_addr, ip_mask);
-            /* If not in a local network, we must also call 
+            /* If not in a local network, we must also call
                NutIpRouteAdd() to configure the routing. */
         }
     }

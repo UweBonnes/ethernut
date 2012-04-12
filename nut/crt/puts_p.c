@@ -51,7 +51,7 @@
 /*!
  * \brief Write a string from program memory to stdout.
  *
- * Similar to puts() except that the string is located in program 
+ * Similar to puts() except that the string is located in program
  * memory.
  *
  * \param string String in program memory to write.

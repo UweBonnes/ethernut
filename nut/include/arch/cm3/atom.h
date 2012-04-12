@@ -74,7 +74,7 @@
         "mrs r12, apsr\n" \
         "orr r12, r12, #0xC0\n" \
         "msr psr_c, r12")
- 
+
 #define NutExitCritical() \
     asm("; NutExitCritical\n" \
         "mrs r12, apsr\n" \

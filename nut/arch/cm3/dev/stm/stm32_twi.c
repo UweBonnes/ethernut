@@ -142,8 +142,8 @@ void TwEventIrq( void *arg)
     uint32_t twsr1 = I2Cx->SR1;
     uint32_t twsr2 = I2Cx->SR2;
 //    int i;
-    
-#if 0    
+
+#if 0
     i=16;
     do {
         i--;
@@ -152,7 +152,7 @@ void TwEventIrq( void *arg)
         DBGP1(0);
     } while(i);
 #endif
-    
+
     if( twsr1 & I2C_SR1_SB) {
         /* Send Slave Address and direction bit */
         // TODO: 10-Bit Addressing
@@ -403,7 +403,7 @@ int NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
     I2Cx->CR1 = (I2C_CR1_ACK|I2C_CR1_START|I2C_CR1_PE);
     /* Wait till the START has been sent */
     ret = TwWaitForFlag(&I2Cx->CR1, I2C_CR1_START, I2C_CR1_START);
-    
+
     /* Continue only if START has been sent */
     if (ret == 0) {
         /* Go to background till we are through */
@@ -418,7 +418,7 @@ int NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
         // TODO: Go back into Slave Mode
         I2Cx->CR1 |= I2C_CR1_ACK;
     }
-    
+
     return ret;
 }
 
@@ -591,7 +591,7 @@ int NutTwiMasterRegRead( NUTTWIBUS  *bus,
 
     /* Issue start and wait till transmission completed */
     icb->tw_mm_err = NutTwiStartRolling( bus, tmo);
-    
+
     /* Check for errors that may have been detected
      * by the interrupt routine.
      */
@@ -969,7 +969,7 @@ int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf )
 int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla )
 {
     int rc = -1;
-    
+
     uint32_t speed = 80000; /* Errata Doc 14574 Rev. 9 Chapter 2.11: Avoid 88kHz to 100kHz */
 //    uint16_t tmpreg = 0;
     I2C_TypeDef* I2Cx = (I2C_TypeDef*)bus->bus_base;
@@ -977,7 +977,7 @@ int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla )
 
     DBGP1_INIT();
     DBGP2_INIT();
-    
+
     /* Check if bus was already registered */
     if( bus->bus_icb) {
         return 0;
@@ -1050,9 +1050,9 @@ int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla )
     I2Cx->CR2 &= I2C_CR2_FREQ;
     I2Cx->CR2 |= (NutClockGet(NUT_HWCLK_PCLK1)/1000000);
     I2Cx->CR1 = I2C_CR1_PE;
-    
+
     // TODO: Slave Address Setup
-    
+
     NutIrqSetPriority(bus->bus_sig_ev, 0);
     rc = NutIrqEnable(bus->bus_sig_ev);
     if( rc) {

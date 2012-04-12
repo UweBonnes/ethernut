@@ -38,8 +38,8 @@
  * \file cfg/ip.h
  * \brief IP configuration.
  *
- * This is used only when building the system in the source tree. If the 
- * Configurator is used, a file with the same name will be created in the 
+ * This is used only when building the system in the source tree. If the
+ * Configurator is used, a file with the same name will be created in the
  * build tree, which replaces this file.
  *
  * \verbatim

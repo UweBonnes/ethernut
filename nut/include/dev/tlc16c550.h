@@ -174,13 +174,13 @@ struct _ACEDCB {
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
-     * Threads are added to this queue when calling ACEAvrFlush(). 
+     * Threads are added to this queue when calling ACEAvrFlush().
      */
     HANDLE dcb_tx_rdy;
 
     /*! \brief Queue of threads waiting for a character in the input buffer.
      *
-     * Threads are added to this queue when calling ACEAvrInput(). 
+     * Threads are added to this queue when calling ACEAvrInput().
      */
     HANDLE dcb_rx_rdy;
 
@@ -197,11 +197,11 @@ struct _ACEDCB {
     uint8_t dcb_wfifo;
 #ifdef ACE_HDX_LINE
     /*! \brief One byte time delay after which HDX pin will be off, in OCR register format.
-     */	 
+     */	
 	unsigned int hdxByteTime;
 	
     /*! \brief OCR register value at which HDX pin will be off, 0 if not used.
-     */	 
+     */	
 	unsigned int hdxOcrTime;
 #endif
 };

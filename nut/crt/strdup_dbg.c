@@ -88,7 +88,7 @@
 
 /*!
  * \brief Create a copy of a string.
- * 
+ *
  * Allocates sufficient memory from heap for a copy of the string
  * does the copy.
  *

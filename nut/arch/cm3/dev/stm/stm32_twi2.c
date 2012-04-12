@@ -146,7 +146,7 @@ int Stm32I2cBus2Recover( void)
     GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE);
     GpioPinSetLow( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN);
     NutMicroDelay(10);
-    
+
     /* Run sequence of 8 SCL clocks */
     for( i=0; i<8; i++) {
         GpioPinSetLow( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN);
@@ -159,7 +159,7 @@ int Stm32I2cBus2Recover( void)
     GpioPinSetHigh( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN);
     NutMicroDelay(10);
     GpioPinSetHigh( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN);
-    
+
     GpioPinConfigSet( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|GPIO_CFG_MULTIDRIVE);
     GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|GPIO_CFG_MULTIDRIVE);
     return 0;
@@ -183,13 +183,13 @@ int Stm32I2cBus2Init(void)
     GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN, GPIO_AF_I2C2);
     GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN, GPIO_AF_I2C2);
 #endif
-    GpioPinConfigSet( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN, 
+    GpioPinConfigSet( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN,
 		      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE);
-    GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN, 
+    GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN,
 		      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE);
 #ifdef I2CBUS2_MODE_SMBUS
     GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SMBA_PORT, I2CBUS2_SMBA_PIN, GPIO_AF_I2C2);
-    GpioPinConfigSet( I2CBUS2_SMBA_PORT, I2CBUS2_SMBA_PIN, 
+    GpioPinConfigSet( I2CBUS2_SMBA_PORT, I2CBUS2_SMBA_PIN,
 		      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE);
 #endif
     NVIC_SetPriorityGrouping(4);
@@ -218,7 +218,7 @@ NUTTWIBUS Stm32TwiBus_2 = {
     .bus_dma_tx =  I2C2_DMA_CHANNEL_TX,    /* DMA channel for TX direction. */
     .bus_dma_rx =  I2C2_DMA_CHANNEL_RX,    /* DMA channel for RX direction. */
 #else
-    .bus_dma_tx =  0, 
+    .bus_dma_tx =  0,
     .bus_dma_rx =  0,
 #endif
     .bus_initbus = Stm32I2cBus2Init,       /* Initialize bus controller. */

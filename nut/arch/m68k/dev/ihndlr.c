@@ -41,7 +41,7 @@
  *
  */
 
-/*! 
+/*!
  * \fn SIG_INTERRUPT0(void)
  * \brief External interrupt 0 entry.
  */
@@ -130,7 +130,7 @@ SIGNAL(SIG_INTERRUPT7)
     CallHandler(&irqHandler[IRQ_INT7]);
 }
 
-/*! \fn SIG_OUTPUT_COMPARE2(void) 
+/*! \fn SIG_OUTPUT_COMPARE2(void)
  * \brief Timer 2 output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__

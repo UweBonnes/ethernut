@@ -8,7 +8,7 @@
  * Copyright (C) 2009 ARM Limited. All rights reserved.
  *
  * @par
- * ARM Limited (ARM) is supplying this software for use with Cortex-M 
+ * ARM Limited (ARM) is supplying this software for use with Cortex-M
  * processor based microcontrollers.  This file can be freely distributed
  * within development tools that are supporting such ARM based processors.
  *
@@ -34,7 +34,7 @@
  *   - Error 530: \n
  *    return(__regBasePri); \n
  *     Warning 530: Symbol '__regBasePri' (line 264) not initialized
- * . 
+ * .
  *   - Error 550: \n
  *      __regBasePri = (basePri & 0x1ff); \n
  *     Warning 550: Symbol '__regBasePri' (line 271) not accessed
@@ -79,7 +79,7 @@
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 #define __CM3_CMSIS_VERSION_MAIN  (0x01)                                                       /*!< [31:16] CMSIS HAL main version */
 #define __CM3_CMSIS_VERSION_SUB   (0x30)                                                       /*!< [15:0]  CMSIS HAL sub version  */
@@ -310,7 +310,7 @@ typedef struct
 
 #define SCB_SHCSR_SVCALLACT_Pos             7                                             /*!< SCB SHCSR: SVCALLACT Position */
 #define SCB_SHCSR_SVCALLACT_Msk            (1ul << SCB_SHCSR_SVCALLACT_Pos)               /*!< SCB SHCSR: SVCALLACT Mask */
-                                     
+
 #define SCB_SHCSR_USGFAULTACT_Pos           3                                             /*!< SCB SHCSR: USGFAULTACT Position */
 #define SCB_SHCSR_USGFAULTACT_Msk          (1ul << SCB_SHCSR_USGFAULTACT_Pos)             /*!< SCB SHCSR: USGFAULTACT Mask */
 
@@ -1055,7 +1055,7 @@ static __INLINE void __set_CONTROL(uint32_t control)
 static __INLINE void __enable_fault_irq()         { __ASM ("cpsie f"); }
 static __INLINE void __disable_fault_irq()        { __ASM ("cpsid f"); }
 
-#define __NOP                                     __no_operation            /*!< no operation intrinsic in IAR Compiler */ 
+#define __NOP                                     __no_operation            /*!< no operation intrinsic in IAR Compiler */
 static __INLINE  void __WFI()                     { __ASM ("wfi"); }
 static __INLINE  void __WFE()                     { __ASM ("wfe"); }
 static __INLINE  void __SEV()                     { __ASM ("sev"); }
@@ -1484,7 +1484,7 @@ static __INLINE void NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
   reg_value  = SCB->AIRCR;                                                    /* read old register configuration    */
   reg_value &= ~(SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_PRIGROUP_Msk);             /* clear bits to change               */
   reg_value  =  (reg_value                       |
-                (0x5FA << SCB_AIRCR_VECTKEY_Pos) | 
+                (0x5FA << SCB_AIRCR_VECTKEY_Pos) |
                 (PriorityGroupTmp << 8));                                     /* Insert write key and priorty group */
   SCB->AIRCR = reg_value;
 }
@@ -1492,7 +1492,7 @@ static __INLINE void NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
 /**
  * @brief  Get the Priority Grouping from NVIC Interrupt Controller
  *
- * @return priority grouping field 
+ * @return priority grouping field
  *
  * Get the priority grouping from NVIC Interrupt Controller.
  * priority grouping is SCB->AIRCR [10:8] PRIGROUP field.
@@ -1723,8 +1723,8 @@ static __INLINE uint32_t SysTick_Config(uint32_t ticks)
   SysTick->LOAD  = (ticks & SysTick_LOAD_RELOAD_Msk) - 1;      /* set reload register */
   NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority for Cortex-M3 System Interrupts */
   SysTick->VAL   = 0;                                          /* Load the SysTick Counter Value */
-  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | 
-                   SysTick_CTRL_TICKINT_Msk   | 
+  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk |
+                   SysTick_CTRL_TICKINT_Msk   |
                    SysTick_CTRL_ENABLE_Msk;                    /* Enable SysTick IRQ and SysTick Timer */
   return (0);                                                  /* Function successful */
 }
@@ -1743,8 +1743,8 @@ static __INLINE uint32_t SysTick_Config(uint32_t ticks)
  */
 static __INLINE void NVIC_SystemReset(void)
 {
-  SCB->AIRCR  = ((0x5FA << SCB_AIRCR_VECTKEY_Pos)      | 
-                 (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) | 
+  SCB->AIRCR  = ((0x5FA << SCB_AIRCR_VECTKEY_Pos)      |
+                 (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
                  SCB_AIRCR_SYSRESETREQ_Msk);                   /* Keep priority group unchanged */
   __DSB();                                                                             /* Ensure completion of memory access */
   while(1);                                                                            /* wait until reset */
@@ -1796,9 +1796,9 @@ static __INLINE uint32_t ITM_SendChar (uint32_t ch)
  *
  * @return      received character, -1 = no character received
  *
- * The function inputs a character via variable ITM_RxBuffer. 
- * The function returns when no debugger is connected that has booked the output.  
- * It is blocking when a debugger is connected, but the previous character send is not transmitted. 
+ * The function inputs a character via variable ITM_RxBuffer.
+ * The function returns when no debugger is connected that has booked the output.
+ * It is blocking when a debugger is connected, but the previous character send is not transmitted.
  */
 static __INLINE int ITM_ReceiveChar (void) {
   int ch = -1;                               /* no character available */
@@ -1807,8 +1807,8 @@ static __INLINE int ITM_ReceiveChar (void) {
     ch = ITM_RxBuffer;
     ITM_RxBuffer = ITM_RXBUFFER_EMPTY;       /* ready for next character */
   }
-  
-  return (ch); 
+
+  return (ch);
 }
 
 
@@ -1817,8 +1817,8 @@ static __INLINE int ITM_ReceiveChar (void) {
  *
  * @return      1 = character available, 0 = no character available
  *
- * The function checks  variable ITM_RxBuffer whether a character is available or not. 
- * The function returns '1' if a character is available and '0' if no character is available. 
+ * The function checks  variable ITM_RxBuffer whether a character is available or not.
+ * The function returns '1' if a character is available and '0' if no character is available.
  */
 static __INLINE int ITM_CheckChar (void) {
 

@@ -81,7 +81,7 @@
 /*!
  * \brief Compute absolute value of an integer.
  *
- * 
+ *
  * \param j The integer value.
  *
  * \return The absolute value.

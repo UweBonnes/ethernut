@@ -59,7 +59,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/* Handle the PIN remap possibilities 
+/* Handle the PIN remap possibilities
  * F1/F2/F4
  *        NSS:  PA15/PA4
  *        SCK:  PB3/PC10

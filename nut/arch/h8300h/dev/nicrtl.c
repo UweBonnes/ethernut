@@ -152,8 +152,8 @@ static int NicReset(volatile u_char * base)
     u_char j;
 
     /*
-     * Do the software reset by reading from the reset register followed 
-     * by writing to the reset register. Wait until the controller enters 
+     * Do the software reset by reading from the reset register followed
+     * by writing to the reset register. Wait until the controller enters
      * the reset state.
      */
     for (j = 0; j < 20; j++) {
@@ -189,23 +189,23 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
         return -1;
 
     /*
-     * Mask all interrupts and clear any interrupt status flag to set the 
+     * Mask all interrupts and clear any interrupt status flag to set the
      * INT pin back to low.
      */
     nic_write(NIC_PG0_IMR, 0);
     nic_write(NIC_PG0_ISR, 0xff);
 
     /*
-     * During reset the nic loaded its initial configuration from an 
-     * external eeprom. On the ethernut board we do not have any 
-     * configuration eeprom, but simply tied the eeprom data line to 
-     * high level. So we have to clear some bits in the configuration 
+     * During reset the nic loaded its initial configuration from an
+     * external eeprom. On the ethernut board we do not have any
+     * configuration eeprom, but simply tied the eeprom data line to
+     * high level. So we have to clear some bits in the configuration
      * register. Switch to register page 3.
      */
     nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
 
     /*
-     * The nic configuration registers are write protected unless both 
+     * The nic configuration registers are write protected unless both
      * EEM bits are set to 1.
      */
     nic_write(NIC_PG3_EECR, NIC_EECR_EEM0 | NIC_EECR_EEM1);
@@ -245,8 +245,8 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
     nic_write(NIC_PG0_RBCR1, 0);
 
     /*
-     * Temporarily set receiver to monitor mode and transmitter to 
-     * internal loopback mode. Incoming packets will not be stored 
+     * Temporarily set receiver to monitor mode and transmitter to
+     * internal loopback mode. Incoming packets will not be stored
      * in the nic ring buffer and no data will be send to the network.
      */
     nic_write(NIC_PG0_RCR, NIC_RCR_MON);
@@ -269,7 +269,7 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
     nic_write(NIC_PG0_ISR, 0xff);
 
     /*
-     * Switch to register page 1 and copy our MAC address into the nic. 
+     * Switch to register page 1 and copy our MAC address into the nic.
      * We are still in stop mode.
      */
     nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
@@ -293,7 +293,7 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
     nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
 
     /*
-     * Take receiver out of monitor mode and enable it for accepting 
+     * Take receiver out of monitor mode and enable it for accepting
      * broadcasts.
      */
     nic_write(NIC_PG0_RCR, NIC_RCR_AB);
@@ -305,7 +305,7 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
     nic_write(NIC_PG0_IMR, NIC_IMR_PRXE | NIC_IMR_PTXE | NIC_IMR_RXEE | NIC_IMR_TXEE | NIC_IMR_OVWE);
 
     /*
-     * Fire up the nic by clearing the stop bit and setting the start bit. 
+     * Fire up the nic by clearing the stop bit and setting the start bit.
      * To activate the local receive dma we must also take the nic out of
      * the local loopback mode.
      */
@@ -354,7 +354,7 @@ static void NicCompleteDma(volatile u_char * base)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int NicPutPacket(volatile u_char * base, NETBUF * nb)
@@ -478,7 +478,7 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
     u_short *buf;
 
     /*
-     * Get the current page pointer. It points to the page where the NIC 
+     * Get the current page pointer. It points to the page where the NIC
      * will start saving the next incoming packet.
      */
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2 | NIC_CR_PS0);
@@ -702,8 +702,8 @@ static void NicInterrupt(void *arg)
         NicEnableInt();
     } else {
         /*
-         * If this is a transmit interrupt, then a packet has been sent. 
-         * So we can clear the transmitter busy flag and wake up the 
+         * If this is a transmit interrupt, then a packet has been sent.
+         * So we can clear the transmitter busy flag and wake up the
          * transmitter thread.
          */
         if (isr & (NIC_ISR_PTX | NIC_ISR_TXE)) {
@@ -712,7 +712,7 @@ static void NicInterrupt(void *arg)
         }
 
         /*
-         * If this is a receive interrupt, then wake up the receiver 
+         * If this is a receive interrupt, then wake up the receiver
          * thread.
          */
         if (isr & NIC_ISR_PRX) {
@@ -730,7 +730,7 @@ static void NicInterrupt(void *arg)
 /*! \fn NicRx(void *arg)
  * \brief NIC receiver thread.
  *
- * 
+ *
  * It runs with high priority.
  */
 THREAD(NicRx, arg)
@@ -831,8 +831,8 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
             volatile u_char *base = (u_char *) (dev->dev_base);
 
             /*
-             * If hanging around here too long, there's something wrong 
-             * with the transmit interrupt. Force sending the packet, 
+             * If hanging around here too long, there's something wrong
+             * with the transmit interrupt. Force sending the packet,
              * if the transmitter has become inactive.
              */
             if (NicIntIsEnabled()) {
@@ -868,12 +868,12 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets RTL8019AS Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets RTL8019AS Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application
@@ -889,7 +889,7 @@ int NicInit(NUTDEVICE * dev)
     NICINFO *ni;
 
     /*
-     * We need to know our MAC address. If no configuration is 
+     * We need to know our MAC address. If no configuration is
      * available, load it now.
      */
     if (confnet.cd_size == 0)
@@ -954,11 +954,11 @@ static IFNET ifn_eth0rtl = {
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devEth0 = {
     0,                          /* Pointer to next device. */

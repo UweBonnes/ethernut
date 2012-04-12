@@ -67,7 +67,7 @@
  *
  * Example:
  * 1. Driver Init:
- * FILE * irblast_hdl  = 0; 
+ * FILE * irblast_hdl  = 0;
  * NutRegisterDevice(&devIrblast0, 0, 0);
  * irblast_hdl = fopen("irblast0", "w");
  *
@@ -76,7 +76,7 @@
  * const uint16_t freqCode[CODE_LENGTH] PROGMEM = {100, 200, 200, 200};
  * uint16_t ocrCode[CODE_LENGTH];
  * uint32_t speed;
- * 
+ *
  * speed = (uint32_t)IrblastFreq2Ocr(38);
  * _ioctl(_fileno(irblast_hdl), IRBLAST_SETFREQ, &speed);
  * memcpy_P(ocrCode, freqCode, CODE_LENGTH<<1);
@@ -102,7 +102,7 @@ struct _IRBLASTDCB {
     /* Set if transmitter running */
     volatile uint8_t if_tx_act;
     /* Output buffer */
-    uint16_t if_tx_buf[256];     // 256*2 = 512 bytes...   
+    uint16_t if_tx_buf[256];     // 256*2 = 512 bytes...
 };
 
 static IRBLASTDCB dcb_pwm0;
@@ -430,7 +430,7 @@ static int IrblastClose(NUTFILE * fp)
 /*!
  * \brief Timer1 Initialization.
  *
- * Timer 1 counts ir periods. 
+ * Timer 1 counts ir periods.
  */
 static void IrblastTmr1Init(void)
 {
@@ -450,7 +450,7 @@ static void IrblastTmr1Init(void)
 /*!
  * \brief Timer2 Initialization.
  *
- * Timer 1 serves ir carrier frequency. 
+ * Timer 1 serves ir carrier frequency.
  */
 static void IrblastTmr2Init(void)
 {

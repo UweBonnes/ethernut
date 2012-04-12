@@ -159,12 +159,12 @@ static int aux_close (lua_State *L) {
   {
     lua_pushnil(L);
     lua_pushliteral(L, "cannot close standard file");
-    return 2;  
+    return 2;
   }
   int ok = (fclose(*p) == 0);
   *p = NULL;
   return pushresult(L, ok, NULL);
-#endif 
+#endif
 }
 
 

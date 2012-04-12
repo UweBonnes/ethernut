@@ -109,8 +109,8 @@ extern "C" {
  * \brief ARP packet header type.
  */
 typedef struct __attribute__ ((packed)) arphdr {
-    uint16_t ar_hrd;    /*!< \brief Format of hardware address. 
-                        *   Nut/Net supports ARPHRD_ETHER only. 
+    uint16_t ar_hrd;    /*!< \brief Format of hardware address.
+                        *   Nut/Net supports ARPHRD_ETHER only.
                         */
     uint16_t ar_pro;    /*!< \brief Format of protocol address.
                         *   Only ETHERTYPE_IP is supported by Nut/Net.

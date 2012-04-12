@@ -31,7 +31,7 @@
  * For additional information see http://www.ethernut.de/
  *
  */
- 
+
 /*!
  * \file include/dev/adc.h
  * \brief Header for AVR Adc driver
@@ -40,8 +40,8 @@
 /*!
  * \addtogroup xgAvrAdc
  */
- 
-/*@{*/ 
+
+/*@{*/
 
 #ifndef _ADC_H_
 #define _ADC_H_
@@ -103,24 +103,24 @@ typedef enum adc_channel_type adc_channel_t;
 #define ADC_PRESCALE_DIV128             0x07    ///< 0x07 -> CPU clk/128
 
 
-// ADC_Init                       
-//                                                    
+// ADC_Init
+//
 // This function initializes the ADC based on the
-//  #defines in config.h                       
-//                                                    
+//  #defines in config.h
+//
 // post: ADC initialized and primed for call to
 //       start_conversion
 
 void ADCInit(void);
 
 
-// ADC_SetRef                      
-//                                                    
+// ADC_SetRef
+//
 // Allows setting of reference voltage for ADC.
 //
 // NOTE: This function stops ADC conversion. One must
 //       call ADC_start_conversion to restart the ADC.
-//                                                    
+//
 // pre: "reference" is a valid ADC reference from the
 //       choices given above
 // post: ADC conversion stopped and reference voltage
@@ -129,14 +129,14 @@ void ADCInit(void);
 void ADCSetRef(adc_ref_t reference);
 
 
-// ADC_SetMode                      
-//                                                    
+// ADC_SetMode
+//
 // Allows setting of ADC conversion mode: either
 // single-conversion or free-running.
 //
 // NOTE: This function stops ADC conversion. One must
 //       call ADC_start_conversion to restart the ADC.
-//                                                    
+//
 // pre: "mode" is a valid ADC reference from the
 //       choices given above
 // post: ADC conversion stopped and the ADC mode is
@@ -146,7 +146,7 @@ void ADCSetMode(adc_mode_t mode);
 
 
 // ADC_SetPrescale
-//                                                    
+//
 // Allows setting of ADC clock prescalar (ADC rate).
 // The  ADC rate is given by the system clock rate
 // divided by the prescalar value. Possible prescalar
@@ -154,7 +154,7 @@ void ADCSetMode(adc_mode_t mode);
 //
 // NOTE: This function stops ADC conversion. One must
 //       call ADC_start_conversion to restart the ADC.
-//                                                    
+//
 // pre: "prescalar" is a valid ADC reference from the
 //       choices given above
 // post: ADC conversion stopped and ADC prescalar
@@ -164,10 +164,10 @@ uint8_t ADCSetPrescale(uint8_t prescalar);
 
 
 // ADC_SetChannel
-//                                                    
+//
 // Sets the channel that the ADC reads. The ADC
 // may only read from one channel at a time.
-//                                                    
+//
 // pre: "adc_channel" is a valid ADC reference from the
 //       choices given above
 // post: ADC conversion stopped and ADC channel
@@ -177,13 +177,13 @@ void ADCSetChannel(adc_channel_t adc_channel);
 
 
 // ADC_BufferFlush
-//                                                    
+//
 // Flushes the local buffer used to store ADC values
 // between conversion and the user's call to ADC_read
 //
 // NOTE: It is recommended that one calls buffer flush
 //       if any changes are made to the ADC's state.
-//                                                    
+//
 // pre: none
 // post: Local ADC buffer has been flushed
 
@@ -191,7 +191,7 @@ void ADCBufferFlush(void);
 
 
 // ADC_StartConversion
-//                                                    
+//
 // Begins ADC conversion. If in single-conversion mode,
 // this function will only convert one value. If in
 // free-running mode, this function will begin
@@ -210,8 +210,8 @@ void ADCStartConversion(void);
 
 
 // ADC_StartLowNoiseConversion
-//                                                    
-// Set Conversion Mode to SINGLE_CONVERSION, Enters 
+//
+// Set Conversion Mode to SINGLE_CONVERSION, Enters
 // adc sleep mode and wait until conversion interrupt occurs.
 // CPU will go to sleep mode!!!
 // BE AWARE OF WHAT IS WRITTEN IN THE AVR DATASHEET
@@ -220,7 +220,7 @@ void ADCStartConversion(void);
 //       in a local buffer. The user must call
 //       ADC_read to obtain these values.
 //
-//       Only implemented for avr_gcc. Any other architecture 
+//       Only implemented for avr_gcc. Any other architecture
 //       and compiler will use normal conversion
 // pre:  none
 // post: The ADC has started conversion. Completion of
@@ -230,7 +230,7 @@ void ADCStartConversion(void);
 void ADCStartLowNoiseConversion(void);
 
 // ADC_StopConversion
-//                                                    
+//
 // Stops ADC conversion if ADC is in free-running
 // mode. Has no effect if ADC is in single-conversion
 // mode.
@@ -242,7 +242,7 @@ void ADCStopConversion(void);
 
 
 // ADC_read
-//                                                    
+//
 // Reads ADC values from local buffer. Reads one ADC
 // conversion value at a time.
 //

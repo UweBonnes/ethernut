@@ -30,20 +30,20 @@
   */
 
 /* ********************************************************* */
-/* 
-Netbios WINS (RFC 1002) Name Query. 
+/*
+Netbios WINS (RFC 1002) Name Query.
 Only Query Request Client Routine sending/Positive Name Query Response receiving
-are implemented. 
-When the Netbios Name Query request UDP datagram is on the ethernet network, asking 
-"Who is 'name'?", NutWinsNameQuery answers with the specified 'ipaddr' Ethernut IP address. 
+are implemented.
+When the Netbios Name Query request UDP datagram is on the ethernet network, asking
+"Who is 'name'?", NutWinsNameQuery answers with the specified 'ipaddr' Ethernut IP address.
 Answer to Microsoft Windows/Internet Explorer calls by "http://name" command line
-(and even directly "name" as command line if "name" is not a shared folder). 
+(and even directly "name" as command line if "name" is not a shared folder).
 
 Launch for example :
 THREAD(wins_deamon, arg)
 {
 NutWinsNameQuery  (  "myboard", inet_addr(MYIP) ) ;
-} 
+}
 */
 /* ********************************************************* */
 

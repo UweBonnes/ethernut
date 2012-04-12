@@ -42,7 +42,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -67,15 +67,15 @@
 /*!
  * \brief Receive an UDP datagram on a specified port.
  *
- * This function calls IpInput(). Any incoming Ethernet frame, which is 
+ * This function calls IpInput(). Any incoming Ethernet frame, which is
  * not an UDP datagram to the specified port will be discarded.
  *
  * \param port UDP port to listen to.
- * \param tms  Return with timeout after the specified number of 
- *             waiting loops. On a 14 Mhz ATmega this value represents 
+ * \param tms  Return with timeout after the specified number of
+ *             waiting loops. On a 14 Mhz ATmega this value represents
  *             approximately the number of milliseconds to wait.
  *
- * \return The number of data bytes received, 0 on timeout or -1 in 
+ * \return The number of data bytes received, 0 on timeout or -1 in
  *         case of a failure.
  */
 int UdpInput(u_short port, u_short tms)
@@ -102,7 +102,7 @@ int UdpInput(u_short port, u_short tms)
 /*!
  * \brief Send an UDP datagram.
  *
- * This function fills the UDP header of the global send frame and calls 
+ * This function fills the UDP header of the global send frame and calls
  * IpOutput().
  *
  * \param dip   Destination IP address in network byte order.

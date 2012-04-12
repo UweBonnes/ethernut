@@ -59,7 +59,7 @@
  *
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  *
  */

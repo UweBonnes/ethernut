@@ -1,6 +1,6 @@
 /**************************************************************************//**
  * @file     LPC17xx.h
- * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Header File for 
+ * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Header File for
  *           NXP LPC17xx Device Series
  * @version  V1.07
  * @date     19. October 2009
@@ -9,9 +9,9 @@
  * Copyright (C) 2009 ARM Limited. All rights reserved.
  *
  * @par
- * ARM Limited (ARM) is supplying this software for use with Cortex-M 
- * processor based microcontrollers.  This file can be freely distributed 
- * within development tools that are supporting such ARM based processors. 
+ * ARM Limited (ARM) is supplying this software for use with Cortex-M
+ * processor based microcontrollers.  This file can be freely distributed
+ * within development tools that are supporting such ARM based processors.
  *
  * @par
  * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -36,7 +36,7 @@ typedef enum IRQn
 {
 /******  Cortex-M3 Processor Exceptions Numbers ***************************************************/
   NonMaskableInt_IRQn           = -14,      /*!< 2 Non Maskable Interrupt                         */
-  HardFault_IRQn                = -13,      /*!< 3 Cortex-M3 Hard Fault Interrupt                 */ 
+  HardFault_IRQn                = -13,      /*!< 3 Cortex-M3 Hard Fault Interrupt                 */
   MemoryManagement_IRQn         = -12,      /*!< 4 Cortex-M3 Memory Management Interrupt          */
   BusFault_IRQn                 = -11,      /*!< 5 Cortex-M3 Bus Fault Interrupt                  */
   UsageFault_IRQn               = -10,      /*!< 6 Cortex-M3 Usage Fault Interrupt                */

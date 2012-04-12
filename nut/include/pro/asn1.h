@@ -82,7 +82,7 @@
 #define ASN_TIMETICKS   (ASN_APPLICATION | 3)
 #define ASN_OPAQUE      (ASN_APPLICATION | 4)
 
-/*RFC 1442. */ 
+/*RFC 1442. */
 #define ASN_NSAP        (ASN_APPLICATION | 5)
 #define ASN_COUNTER64   (ASN_APPLICATION | 6)
 #define ASN_UINTEGER    (ASN_APPLICATION | 7)
@@ -95,7 +95,7 @@
 
 typedef uint32_t OID;
 
-/* 
+/*
  * Internal 64 bit representation.
  */
 typedef struct {

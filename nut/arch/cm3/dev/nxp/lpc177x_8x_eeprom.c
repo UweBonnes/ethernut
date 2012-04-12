@@ -39,7 +39,7 @@
  * version	1.0
  * date		02. June. 2011
  * author	NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -83,7 +83,7 @@ void Lpc177x_8x_EepromInit(void)
     if (eeprom_init) {
         return;
     }
-    
+
     /* EEPROM is automate turn on after reset */
     LPC_EEPROM->PWRDWN = 0x0;
 
@@ -127,11 +127,11 @@ int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
     if (addr + size > EEPROM_SIZE) {
         return -1;
     }
-    
+
     if (!eeprom_init) {
         Lpc177x_8x_EepromInit();
     }
-    
+
     page_offs = addr & EEPROM_PAGE_OFFSET_MASK;
     page_nr   = (addr & EEPROM_PAGE_NUM_MASK) >> 6;
 
@@ -145,14 +145,14 @@ int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
         if (page_nr >= EEPROM_PAGE_NUM) {
             return -1;
         }
-        
+
         LPC_EEPROM->INT_CLR_STATUS = _BV(EEPROM_ENDOF_RW);
 
         *(pt++) = (uint8_t)(LPC_EEPROM->RDATA);
         page_offs ++;
 
         while (!(LPC_EEPROM->INT_STATUS & _BV(EEPROM_ENDOF_RW)));
-           
+
         if(page_offs >= EEPROM_PAGE_SIZE) {
             page_offs = 0;
             page_nr++;
@@ -186,11 +186,11 @@ int Lpc177x_8x_EepromWrite(uint16_t addr, CONST void* buff, size_t size)
     if (addr + size > EEPROM_SIZE) {
         return -1;
     }
-    
+
     if (!eeprom_init) {
         Lpc177x_8x_EepromInit();
     }
-    
+
     page_offs = addr & EEPROM_PAGE_OFFSET_MASK;
     page_nr = (addr & EEPROM_PAGE_NUM_MASK) >> 6;
 
@@ -203,17 +203,17 @@ int Lpc177x_8x_EepromWrite(uint16_t addr, CONST void* buff, size_t size)
         LPC_EEPROM->CMD = EEPROM_CMD_8_BIT_WRITE;
         LPC_EEPROM->WDATA = *(pt++);
         page_offs ++;
-            
+
         if ((page_offs >= EEPROM_PAGE_SIZE) | (i == size - 1)) {
             /* Update to EEPROM memory */
-            
+
             LPC_EEPROM->INT_CLR_STATUS = _BV(EEPROM_ENDOF_PROG);
             LPC_EEPROM->ADDR = EEPROM_PAGE_ADRESS(page_nr);
             LPC_EEPROM->CMD = EEPROM_CMD_ERASE_PRG_PAGE;
 
             while (!(LPC_EEPROM->INT_STATUS & _BV(EEPROM_ENDOF_PROG)));
         }
-        
+
         if (page_offs >= EEPROM_PAGE_SIZE) {
             page_offs = 0;
             page_nr ++;

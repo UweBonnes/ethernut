@@ -134,17 +134,17 @@ NUTDEVICE devUsartStm32_3 = {
  * \brief USART3 GPIO configuartion and assignment.
  *
  * Remap         NO     PART  FULL
- * F1:       TX  PB10   PC10  PD8 
- *           RX  PB11   PC11  PD9 
+ * F1:       TX  PB10   PC10  PD8
+ *           RX  PB11   PC11  PD9
  *           CK  PB12   PC12  PD10
  *           CTS PB13   PB13  PD11
  *           RTS PB14   PB14  PD12
  * L1/F2/F4: TX  PA10   PC10  PD8
- *           RX  PB11   PC11  PD9 
+ *           RX  PB11   PC11  PD9
  *           CK  PB12   PC12  PD10
  *           CTS PB13   PD11
  *           RTS PB14   PD12
-  *      
+  *
  */
 
 #if defined(MCU_STM32F1)
@@ -189,7 +189,7 @@ NUTDEVICE devUsartStm32_3 = {
   #endif
  #endif /* USART3_NOREMAP_USART */
 #else /* L1/F2/F4*/
- #define STM_USART_REMAP  GPIO_AF_USART3 
+ #define STM_USART_REMAP  GPIO_AF_USART3
  #if !defined(USART3_TX_PIN)
   #if defined(USART3_PARTREMAP_USART)
    #define TX_GPIO_PORT    NUTGPIO_PORTC

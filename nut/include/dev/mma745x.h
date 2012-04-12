@@ -78,7 +78,7 @@
 
 #define MMA745x_REG_MCTL		0x16        /**< Mode control register */
 #define MMA745x_REG_INTRST     	0x17        /**< Interrupt latch reset register */
-#define MMA745x_REG_CTL1	    0x18        /**< Control register 1 */        
+#define MMA745x_REG_CTL1	    0x18        /**< Control register 1 */
 #define MMA745x_REG_CTL2	    0x19        /**< Control register 2 */
 #define MMA745x_REG_LDTH	    0x1A        /**< Level detection threshold value */
 #define MMA745x_REG_PDTH		0x1B        /**< Pulse detection threshold value */
@@ -169,7 +169,7 @@
  * MMA745x Level Detection Threshold Limit Value.
  * This register is read/write.
  *
- * This register contains the threshold value for level detection. 
+ * This register contains the threshold value for level detection.
  * If THOPT in CTL1 is 0 it is an unsigned 7 bit value and bit 7 should be 0.
  * If THOPT in CTL1 is 1 it is an signed 8 bit value.
  */
@@ -179,7 +179,7 @@
  * MMA745x Pulse Detection Threshold Limit Value.
  * This register is read/write.
  *
- * This register contains the threshold value for pulse detection. 
+ * This register contains the threshold value for pulse detection.
  * This is an unsigned 7 bit value and bit 7 should be 0.
  */
 #define MMA745x_PDTH_SMSK       0x7F        /**< Mask for value if THOPT in CTL1 is 0. */
@@ -188,7 +188,7 @@
  * MMA745x Pulse Duration Value.
  * This register is read/write.
  *
- * This register contains the pulse duration value. 
+ * This register contains the pulse duration value.
  * This is an unsigned 8 bit value in 0.5ms steps.
  */
 #define MMA745x_PW_MSK          0xFF        /**< Pulse duration value mask. */
@@ -197,7 +197,7 @@
  * MMA745x Latency Time Value.
  * This register is read/write.
  *
- * This register contains the latency time for pulse detection. 
+ * This register contains the latency time for pulse detection.
  * This is an unsigned 8 bit value in 1ms steps.
  */
 #define MMA745x_LT_MSK          0xFF        /**< Latency time value mask. */
@@ -206,7 +206,7 @@
  * MMA745x Double Pulse Detection Time Window Value.
  * This register is read/write.
  *
- * This register contains time window for double pulse detection. 
+ * This register contains time window for double pulse detection.
  * This is an unsigned 8 bit value in 1ms steps.
  */
 #define MMA745x_TW_MSK          0xFF        /**< Time window for 2nd pulse value (double-click detection) */
@@ -223,7 +223,7 @@
 
 /*! brief MMA7455L 10-bit values and offset register struct
  */
-typedef struct __attribute__ ((packed)) 
+typedef struct __attribute__ ((packed))
 {
     int16_t x;
     int16_t y;
@@ -232,7 +232,7 @@ typedef struct __attribute__ ((packed))
 
 /*! brief MMA7455L 10-bit values and offset register struct
  */
-typedef struct __attribute__ ((packed)) 
+typedef struct __attribute__ ((packed))
 {
     int8_t x;
     int8_t y;
@@ -241,22 +241,22 @@ typedef struct __attribute__ ((packed))
 
 /*! brief MMA7455L initialization struct
  */
-typedef struct __attribute__ ((packed)) 
+typedef struct __attribute__ ((packed))
 {
     uint8_t rMODE;
     uint8_t rINTRST;
     uint8_t rCONTROL1;
     uint8_t rCONTROL2;
-    uint8_t rLEVEL; 
+    uint8_t rLEVEL;
     uint8_t rPVALUE;
     uint8_t rPDUR;
     uint8_t rLATTV;
     uint8_t rTW;
 } mmaInit_t;
 
-/*! brief MMA7455L combined status register 
+/*! brief MMA7455L combined status register
  */
-typedef struct __attribute__ ((packed)) 
+typedef struct __attribute__ ((packed))
 {
     uint8_t state;
     uint8_t detsrc;

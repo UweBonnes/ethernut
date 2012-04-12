@@ -37,7 +37,7 @@
  * $Id$
  * \endverbatim
  */
- 
+
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>

@@ -111,7 +111,7 @@ int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
 /*!
  * \brief Get date and time from an PCF8563 hardware clock.
  *
- * \param tm Points to a structure that receives the date and time 
+ * \param tm Points to a structure that receives the date and time
  *           information.
  *
  * \return 0 on success or -1 in case of an error.
@@ -176,7 +176,7 @@ int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
  * Not implemented.
  *
  * \param idx   Zero based index. Two alarms are supported.
- * \param tm    Points to a structure that receives the date and time 
+ * \param tm    Points to a structure that receives the date and time
  *              information.
  * \param aflgs Points to an unsigned long that receives the enable flags.
  *
@@ -275,5 +275,5 @@ NUTRTC rtcPcf8563 = {
     .rtc_setalarm  = PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
     .rtc_getstatus = PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
     .rtc_clrstatus = PcfRtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
-    .alarm         = NULL,               /*!< Handle for alarm event queue, not supported right now */ 
+    .alarm         = NULL,               /*!< Handle for alarm event queue, not supported right now */
 };

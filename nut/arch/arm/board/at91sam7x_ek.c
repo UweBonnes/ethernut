@@ -64,7 +64,7 @@
 /*!
  * \brief Delay loop.
  *
- * \param Number of loops to execute. 
+ * \param Number of loops to execute.
  */
 static void Sam7xekDelay(int n)
 {
@@ -97,7 +97,7 @@ static void Sam7xekReset(void)
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
     /* Invoke external reset. */
     outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
-    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles) 
+    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles)
     ** for NRST becoming low. */
     Sam7xekDelay(250);
     /* Wait until reset pin is released. */

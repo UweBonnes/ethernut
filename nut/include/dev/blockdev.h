@@ -111,7 +111,7 @@ typedef struct _NUTBLOCKIO NUTBLOCKIO;
 /*!
  * \brief Generic block I/O device interface structure.
  *
- * This is a virtual structure, used by the generic block I/O device driver. 
+ * This is a virtual structure, used by the generic block I/O device driver.
  *
  * \note Any real implementation must start with the same layout. If this
  *       structure is changed, we must update all implementations.
@@ -141,25 +141,25 @@ struct _NUTBLOCKIO {
      * \brief Number of blocks reserved on top of file system mount.
      */
     uint32_t blkio_vol_top;
-    
-    /*! 
+
+    /*!
      * \brief Read from block I/O device, starting at the specified block.
      */
     int (*blkio_read) (NUTDEVICE *, uint32_t, void *, int);
 
-    /*! 
+    /*!
      * \brief Write to block I/O device, starting at the specified block.
      */
     int (*blkio_write) (NUTDEVICE *, uint32_t, CONST void *, int);
 
 #ifdef __HARVARD_ARCH__
-    /*! 
+    /*!
      * \brief Write program memory to block I/O device, starting at the specified block.
      */
     int (*blkio_write_P) (NUTDEVICE *, uint32_t, PGM_P, int);
 #endif
 
-    /*! 
+    /*!
      * \brief Control functions.
      */
     int (*blkio_ioctl)(NUTDEVICE *, int, void *);

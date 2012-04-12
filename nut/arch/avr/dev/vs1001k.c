@@ -149,10 +149,10 @@
 /*@{*/
 
 #ifndef VS_SCK_BIT
-/*! 
- * \brief VS1001 serial control interface clock input bit. 
+/*!
+ * \brief VS1001 serial control interface clock input bit.
  *
- * The first rising clock edge after XCS has gone low marks the first 
+ * The first rising clock edge after XCS has gone low marks the first
  * bit to be written to the decoder.
  */
 #define VS_SCK_BIT      0
@@ -176,9 +176,9 @@
 
 #ifndef VS_SS_BIT
 /*!
- * \brief VS1001 serial data interface clock input bit. 
+ * \brief VS1001 serial data interface clock input bit.
  */
-#define VS_SS_BIT       1       
+#define VS_SS_BIT       1
 #endif
 
 #if !defined(VS_SS_AVRPORT) || (VS_SS_AVRPORT == AVRPORTB)
@@ -203,7 +203,7 @@
  *
  * The decoder samples this input on the rising edge of SCK if XCS is low.
  */
-#define VS_SI_BIT       2       
+#define VS_SI_BIT       2
 #endif
 
 #if !defined(VS_SI_AVRPORT) || (VS_SI_AVRPORT == AVRPORTB)
@@ -224,10 +224,10 @@
 
 #ifndef VS_SO_BIT
 /*!
- * \brief VS1001 serial control interface data output. 
+ * \brief VS1001 serial control interface data output.
  *
- * If data is transfered from the decoder, bits are shifted out on the 
- * falling SCK edge. If data is transfered to the decoder, SO is at a 
+ * If data is transfered from the decoder, bits are shifted out on the
+ * falling SCK edge. If data is transfered to the decoder, SO is at a
  * high impedance state.
  */
 #define VS_SO_BIT       3
@@ -251,10 +251,10 @@
 
 #ifndef VS_XCS_BIT
 /*!
- * \brief VS1001 active low chip select input. 
+ * \brief VS1001 active low chip select input.
  *
- * A high level forces the serial interface into standby mode, ending 
- * the current operation. A high level also forces serial output (SO) 
+ * A high level forces the serial interface into standby mode, ending
+ * the current operation. A high level also forces serial output (SO)
  * to high impedance state.
  */
 #define VS_XCS_BIT      4
@@ -278,9 +278,9 @@
 
 #ifndef VS_BSYNC_BIT
 /*!
- * \brief VS1001 serial data interface bit sync. 
+ * \brief VS1001 serial data interface bit sync.
  *
- * The first DCLK sampling edge, during which BSYNC is high, marks the 
+ * The first DCLK sampling edge, during which BSYNC is high, marks the
  * first bit of a data byte.
  */
 #define VS_BSYNC_BIT    5
@@ -304,9 +304,9 @@
 
 #ifndef VS_RESET_BIT
 /*!
- * \brief VS1001 hardware reset input. 
+ * \brief VS1001 hardware reset input.
  */
-#define VS_RESET_BIT    7       
+#define VS_RESET_BIT    7
 #endif
 
 #if !defined(VS_RESET_AVRPORT) || (VS_RESET_AVRPORT == AVRPORTB)
@@ -327,7 +327,7 @@
 
 #ifndef VS_SIGNAL_IRQ
 /*!
- * \brief VS1001 data request interrupt. 
+ * \brief VS1001 data request interrupt.
  */
 #define VS_SIGNAL       sig_INTERRUPT6
 #define VS_DREQ_BIT     6
@@ -431,7 +431,7 @@ static INLINE void VsSdiPutByte(uint8_t b)
 /*!
  * \brief Write a specified number of bytes to the VS1001 data interface.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
 static int VsSdiWrite(CONST uint8_t * data, uint16_t len)
@@ -447,10 +447,10 @@ static int VsSdiWrite(CONST uint8_t * data, uint16_t len)
 }
 
 /*!
- * \brief Write a specified number of bytes from program space to the 
+ * \brief Write a specified number of bytes from program space to the
  *        VS1001 data interface.
  *
- * This function is similar to VsSdiWrite() except that the data is 
+ * This function is similar to VsSdiWrite() except that the data is
  * located in program space.
  */
 static int VsSdiWrite_P(PGM_P data, uint16_t len)
@@ -552,7 +552,7 @@ static void VsRegWrite(uint8_t reg, uint16_t data)
  * \brief Read from a register.
  *
  * Decoder interrupts must have been disabled before calling this function.
- * 
+ *
  * \return Register contents.
  */
 static uint16_t VsRegRead(uint8_t reg)
@@ -587,7 +587,7 @@ static uint16_t VsRegRead(uint8_t reg)
 /*!
  * \brief Enable or disable player interrupts.
  *
- * This routine is typically used by applications when dealing with 
+ * This routine is typically used by applications when dealing with
  * unprotected buffers.
  *
  * \param enable Disables interrupts when zero. Otherwise interrupts
@@ -615,7 +615,7 @@ uint8_t VsPlayerInterrupts(uint8_t enable)
 /*
  * \brief Feed the decoder with data.
  *
- * This function serves two purposes: 
+ * This function serves two purposes:
  * - It is called by VsPlayerKick() to initially fill the decoder buffer.
  * - It is used as an interrupt handler for the decoder.
  */
@@ -636,7 +636,7 @@ static void VsPlayerFeed(void *arg)
     ief = VsPlayerInterrupts(0);
     sei();
 
-    /* 
+    /*
      * Feed the decoder until its buffer is full or we ran out of data.
      */
     if (vs_status == VS_STATUS_RUNNING) {
@@ -678,8 +678,8 @@ static void VsPlayerFeed(void *arg)
         NutSegBufReadLast(consumed);
     }
 
-    /* 
-     * Flush the internal VS buffer. 
+    /*
+     * Flush the internal VS buffer.
      */
     if(vs_status != VS_STATUS_RUNNING && vs_flush) {
         do {
@@ -725,7 +725,7 @@ int VsPlayerKick(void)
 /*!
  * \brief Stops the playback.
  *
- * This routine will stops the MP3 playback, VsPlayerKick() may be used 
+ * This routine will stops the MP3 playback, VsPlayerKick() may be used
  * to resume the playback.
  *
  * \return 0 on success, -1 otherwise.
@@ -812,9 +812,9 @@ int VsPlayerInit(void)
     {
         uint8_t dummy;           /* Required by some compilers. */
 
-        /* 
-         * Init SPI mode to no interrupts, enabled, MSB first, master mode, 
-         * rising clock and fosc/4 clock speed. Send an initial zero byte to 
+        /*
+         * Init SPI mode to no interrupts, enabled, MSB first, master mode,
+         * rising clock and fosc/4 clock speed. Send an initial zero byte to
          * make sure SPIF is set. Note, that the decoder reset line is still
          * active.
          */
@@ -916,7 +916,7 @@ int VsPlayerReset(uint16_t mode)
 int VsPlayerSetMode(uint16_t mode)
 {
     uint8_t ief;
-    
+
     ief = VsPlayerInterrupts(0);
     VsRegWrite(VS_MODE_REG, mode);
     VsPlayerInterrupts(ief);

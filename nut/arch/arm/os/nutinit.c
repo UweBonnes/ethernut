@@ -220,7 +220,7 @@ static void InitHW (void)
 
 
 /*!
- * \brief Idle thread. 
+ * \brief Idle thread.
  *
  * \param arg Ignored by the idle thread.
  *
@@ -249,7 +249,7 @@ THREAD(NutIdle, arg)
     ** changing compilers and compiler versions. Some handle main()
     ** in a special way, like setting the stack pointer and other
     ** weird stuff that may break this code. */
-    NutThreadCreate("main", main, 0, 
+    NutThreadCreate("main", main, 0,
         (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     /* Enter an idle loop at the lowest priority. This will run when
@@ -267,8 +267,8 @@ THREAD(NutIdle, arg)
 /*!
  * \brief Nut/OS Initialization.
  *
- * Initializes the memory management and the thread system and starts 
- * an idle thread, which in turn initializes the timer management. 
+ * Initializes the memory management and the thread system and starts
+ * an idle thread, which in turn initializes the timer management.
  * Finally the application's main() function is called.
  */
 void NutInit(void)
@@ -289,7 +289,7 @@ void NutInit(void)
 #endif
 #ifdef EARLY_STDIO_DEV
     /* We may optionally initialize stdout as early as possible.
-    ** Be aware, that no heap is available and no threads are 
+    ** Be aware, that no heap is available and no threads are
     ** running. We need a very basic driver here, which won't
     ** use interrupts or call malloc, NutEventXxx, NutSleep etc. */
     {
@@ -313,9 +313,9 @@ void NutInit(void)
     /* Initialize our heap memory. */
     NutHeapAdd(HEAP_START, HEAP_SIZE & ~3);
 
-    /* Create idle thread. Note, that the first call to NutThreadCreate 
+    /* Create idle thread. Note, that the first call to NutThreadCreate
     ** will never return. */
-    NutThreadCreate("idle", NutIdle, 0, 
+    NutThreadCreate("idle", NutIdle, 0,
         (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 }
 

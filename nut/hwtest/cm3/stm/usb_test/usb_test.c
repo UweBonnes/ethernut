@@ -104,7 +104,7 @@ int main(void)
         printf("Can't open OTG\n");
     else
         printf("OTH open Success\n");
-        
+
     NutSleep(1000); /* Sleep sufficent or next print will stall */
     fprintf(usb, banner);
     /*

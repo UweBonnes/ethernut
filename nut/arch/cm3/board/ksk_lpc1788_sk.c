@@ -123,7 +123,7 @@ void NutBoardInit(void)
      * P4.0-P4.23 - EMC_A[0-23]    - only A0 .. A14 used
      *
      * P4.24 - /EMC_OE   - not used
-     * P4.25 - /EMC_WE   
+     * P4.25 - /EMC_WE
      *
      * P4.30 - /EMC_CS0  - not used
      * P4.31 - /EMC_CS1  - not used
@@ -134,7 +134,7 @@ void NutBoardInit(void)
 	GpioPinConfigSet(NUTGPIO_PORT2, 18, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_HYSTERESIS);
 	
 	GpioPinConfigSet(NUTGPIO_PORT2, 20, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_HYSTERESIS);
-    
+
 	GpioPinConfigSet(NUTGPIO_PORT2, 24, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_HYSTERESIS);
 
 	GpioPinConfigSet(NUTGPIO_PORT2, 28, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_HYSTERESIS);
@@ -153,7 +153,7 @@ void NutBoardInit(void)
 	LPC_IOCON->P2_30 = 0x21;
 	LPC_IOCON->P2_31 = 0x21;
 
-    
+
 	for(i = 0; i < 32; i++) {
 		GpioPinConfigSet(NUTGPIO_PORT3, i, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_PULLUP | GPIO_CFG_HYSTERESIS);
 	}
@@ -162,7 +162,7 @@ void NutBoardInit(void)
         GpioPinConfigSet(NUTGPIO_PORT4, i, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_PULLUP | GPIO_CFG_HYSTERESIS);
     }
 
-    GpioPinConfigSet(NUTGPIO_PORT4, 25, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_PULLUP | GPIO_CFG_HYSTERESIS); 
+    GpioPinConfigSet(NUTGPIO_PORT4, 25, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_PULLUP | GPIO_CFG_HYSTERESIS);
 
     /* Initialize the external memory controller */
     Lpc177x_8x_EmcInit();
@@ -177,7 +177,7 @@ void NutBoardInit(void)
  * This function is called as timer callback which was initialised at NutIdleInit()
  */
 
-static void adjust_sdram_timing(HANDLE this, void* arg) 
+static void adjust_sdram_timing(HANDLE this, void* arg)
 {
     Lpc177x_8x_EmcSDRAMAdjustTiming();
 }
@@ -186,20 +186,20 @@ static void adjust_sdram_timing(HANDLE this, void* arg)
 /*!
  * \brief   Extended system initialisation. Add sdram memory to the available memory
  *
- * This routine is called during system initialisation right before the idle 
+ * This routine is called during system initialisation right before the idle
  * thread is created. We will use it to add the SDRAM memory space to out heap.
  */
 void NutIdleInit(void)
 {
-    /* Sanity check if the sdram is working. If all is fine add the sdram to 
+    /* Sanity check if the sdram is working. If all is fine add the sdram to
        heap space.
      */
     if (Lpc177x_8x_EmcSDRAMCheck(sdram_k4s561632j, 0xaa55) == 0) {
         NutHeapAdd((void*)sdram_k4s561632j.base_addr, sdram_k4s561632j.size);
     }
 
-    /* Initialise a timer that re-calibrates the delay loops once a minute to 
-       compensate temperature drift of the sdram controller 
+    /* Initialise a timer that re-calibrates the delay loops once a minute to
+       compensate temperature drift of the sdram controller
      */
     NutTimerStart(60000, adjust_sdram_timing, NULL, 0);
 }

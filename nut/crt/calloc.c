@@ -93,7 +93,7 @@
  * \param num  Number of elements.
  * \param size Size of a single element.
  *
- * \return A pointer to the allocated space or a null pointer if 
+ * \return A pointer to the allocated space or a null pointer if
  *         not enough memory space is available.
  */
 

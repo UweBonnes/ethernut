@@ -184,7 +184,7 @@ uint8_t *Standard_GetStatus(uint16_t Length)
     else
     {
       ClrBit(StatusInfo0, 1);
-    }      
+    }
 
     /* Bus-powered */
     if (ValBit(Feature, 6))
@@ -452,7 +452,7 @@ void DataStageOut(void)
     pEPinfo->Usb_rLength -= Length;
     pEPinfo->Usb_rOffset += Length;
 
-    OTGD_FS_PCD_EP_Read(ENDP0, Buffer, Length); 
+    OTGD_FS_PCD_EP_Read(ENDP0, Buffer, Length);
   }
 
   if (pEPinfo->Usb_rLength != 0)
@@ -505,15 +505,15 @@ void DataStageIn(void)
       ControlState = LAST_IN_DATA;
       Data_Mul_MaxPacketSize = FALSE;
     }
-    else 
+    else
     {
       /* No more data to send so STALL the TX Status*/
       ControlState = WAIT_STATUS_OUT;
 
       OTGD_FS_PCD_EP_Read (ENDP0, 0, 0);
-    
+
     }
-    
+
     goto Expect_Status_Out;
   }
 
@@ -777,7 +777,7 @@ void Data_Setup0(void)
     }
 
   }
-  
+
   if (CopyRoutine)
   {
     pInformation->Ctrl_Info.Usb_wOffset = wOffset;
@@ -815,13 +815,13 @@ void Data_Setup0(void)
   {
     /* Device ==> Host */
     __IO uint32_t wLength = pInformation->USBwLength;
-     
+
     /* Restrict the data length to be the one host asks for */
     if (pInformation->Ctrl_Info.Usb_wLength > wLength)
     {
       pInformation->Ctrl_Info.Usb_wLength = wLength;
     }
-    
+
     else if (pInformation->Ctrl_Info.Usb_wLength < pInformation->USBwLength)
     {
       if (pInformation->Ctrl_Info.Usb_wLength < pProperty->MaxPacketSize)
@@ -832,7 +832,7 @@ void Data_Setup0(void)
       {
         Data_Mul_MaxPacketSize = TRUE;
       }
-    }   
+    }
 
     pInformation->Ctrl_Info.PacketSize = pProperty->MaxPacketSize;
     DataStageIn();
@@ -864,10 +864,10 @@ uint8_t Setup0_Process(void)
 
   USB_OTG_EP *ep;
   uint16_t offset = 0;
- 
+
   ep = OTGD_FS_PCD_GetOutEP(ENDP0);
   pBuf.b = ep->xfer_buff;
-  
+
   OTGD_FS_EP0StartXfer(ep);
 
   if (pInformation->ControlState != PAUSE)
@@ -986,7 +986,7 @@ uint8_t Out0_Process(void)
 uint8_t Post0_Process(void)
 {
   USB_OTG_EP *ep;
-      
+
   SetEPRxCount(ENDP0, Device_Property.MaxPacketSize);
 
   if (pInformation->ControlState == STALLED)
@@ -1001,17 +1001,17 @@ uint8_t Post0_Process(void)
     ep = OTGD_FS_PCD_GetInEP(0);
     ep->is_in = 0;
     OTGD_FS_EP0StartXfer(ep);
-    
+
     vSetEPTxStatus(EP_TX_VALID);
   }
-  
-  else if ((pInformation->ControlState == IN_DATA) || 
+
+  else if ((pInformation->ControlState == IN_DATA) ||
       (pInformation->ControlState == WAIT_STATUS_IN))
   {
     ep = OTGD_FS_PCD_GetInEP(0);
     ep->is_in = 1;
-    OTGD_FS_EP0StartXfer(ep);    
-  }  
+    OTGD_FS_EP0StartXfer(ep);
+  }
 
   return (pInformation->ControlState == PAUSE);
 }

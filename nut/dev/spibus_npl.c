@@ -80,10 +80,10 @@ static int NplSpiSetup(NUTSPINODE * node)
     /* Calculate the required divider value. */
     clkdiv = (clk + NPL_MMC_CLOCK - 10) / NPL_MMC_CLOCK;
 
-    /* 
+    /*
      * Not sure about the Cy-routines. The DIVSEL bit specifies which
      * divider is used, which is indirectly connected to S2, which is
-     * high by default. For now set both dividers. 
+     * high by default. For now set both dividers.
      */
     if (Cy2239xSetDivider(NUT_PLL_NPLCLK1, 1, (int)clkdiv)) {
         return -1;
@@ -144,7 +144,7 @@ static int NplSpiChipSelect(uint_fast8_t cs, uint_fast8_t hi)
  * \param tmo  Timeout in milliseconds. To disable timeout, set this
  *             parameter to NUT_WAIT_INFINITE.
  *
- * \return 0 on success. In case of an error, -1 is returned and the bus 
+ * \return 0 on success. In case of an error, -1 is returned and the bus
  *         is not locked.
  */
 int NplSpiBusSelect(NUTSPINODE * node, uint32_t tmo)
@@ -198,10 +198,10 @@ int NplSpiBusDeselect(NUTSPINODE * node)
     return 0;
 }
 
-/*! 
- * \brief Initialize an SPI bus node. 
+/*!
+ * \brief Initialize an SPI bus node.
  *
- * This routine is called for each SPI node, which is registered via 
+ * This routine is called for each SPI node, which is registered via
  * NutRegisterSpiDevice().
  *
  * \param node Specifies the SPI bus node.
@@ -224,7 +224,7 @@ int NplSpiBusNodeInit(NUTSPINODE * node)
     return rc;
 }
 
-/*! 
+/*!
  * \brief Transfer data on the SPI bus in polling mode.
  *
  * A device must have been selected by calling NplSpiSelect().

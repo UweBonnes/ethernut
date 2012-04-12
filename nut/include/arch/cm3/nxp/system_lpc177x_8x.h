@@ -51,4 +51,4 @@ uint32_t Lpc176xGetCrpValue(void);
  *         Initialize the System and update the SystemFrequency variable.
  */
 extern void SystemInit (void);
-#endif 
+#endif

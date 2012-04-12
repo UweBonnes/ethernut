@@ -260,13 +260,13 @@ int HttpSendRedirection(HTTPD_SESSION *hs, int code, ...)
     int len;
     char *cp;
     char *loc;
-    
+
     va_start(ap, code);
     for (len = 0; (cp = va_arg(ap, char *)) != NULL; len += strlen(cp));
     va_end(ap);
     loc = malloc(len + 1);
     if (loc) {
-        static const char body[] = 
+        static const char body[] =
                 "<html><body><a href=\"%s\">Continue</a></body></html>\r\n";
         HTTP_STREAM *sp = hs->s_stream;
 
@@ -277,7 +277,7 @@ int HttpSendRedirection(HTTPD_SESSION *hs, int code, ...)
         va_end(ap);
 
 #if HTTP_VERSION >= 0x10
-        s_vputs(sp, ct_Location, ": ", loc, "\r\n", NULL);    
+        s_vputs(sp, ct_Location, ": ", loc, "\r\n", NULL);
         HttpSendHeaderBottom(hs, "text", "html", sizeof(body) - 1 + strlen(loc) - 2);
 #endif
 

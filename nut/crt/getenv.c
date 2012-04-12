@@ -39,7 +39,7 @@ static char empty_envval[1] = {0};
  *
  * \param name Points to a string, which is the name of the variable.
  *
- * \return A pointer to a string containing the value. If the specified 
+ * \return A pointer to a string containing the value. If the specified
  *         name cannot be found a null pointer will be returned.
  */
 char *getenv(CONST char *name)
@@ -58,7 +58,7 @@ char *getenv(CONST char *name)
 /*!
  * \brief Get the name of the next environment variable.
  *
- * \param name Points to a string, which is the name of the previous 
+ * \param name Points to a string, which is the name of the previous
  *             variable. If this pointer is NULL or points to an empty
  *             string, then the name of the first variable is returned.
  *
@@ -73,7 +73,7 @@ char *nextenv(CONST char *name)
         if ((envp = findenv(name)) != NULL && envp->env_next != NULL) {
             return envp->env_next->env_name;
         }
-    } 
+    }
     else if (nut_environ) {
         return nut_environ->env_name;
     }

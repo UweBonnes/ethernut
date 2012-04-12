@@ -127,7 +127,7 @@ int Stm32I2cBus1Recover( void)
     GpioPortConfigSet( I2C_PORT, _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN), GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE);
     GpioPinSetLow( I2C_PORT, I2CBUS1_SDA_PIN);
     NutMicroDelay(10);
-    
+
     /* Run sequence of 8 SCL clocks */
     for( i=0; i<9; i++) {
         GpioPinSetLow( I2C_PORT, I2CBUS1_SCL_PIN);
@@ -140,8 +140,8 @@ int Stm32I2cBus1Recover( void)
     GpioPinSetHigh( I2C_PORT, I2CBUS1_SDA_PIN);
     NutMicroDelay(10);
     GpioPinSetHigh( I2C_PORT, I2CBUS1_SCL_PIN);
-    
-    GpioPortConfigSet(I2C_PORT, _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN), GPIO_CFG_OUTPUT 
+
+    GpioPortConfigSet(I2C_PORT, _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN), GPIO_CFG_OUTPUT
                                                  | GPIO_CFG_PERIPHAL
                                                  | GPIO_CFG_MULTIDRIVE);
 
@@ -210,7 +210,7 @@ NUTTWIBUS Stm32TwiBus_1 = {
     .bus_dma_tx =  I2C1_DMA_CHANNEL_TX,    /* DMA channel for TX direction. */
     .bus_dma_rx =  I2C1_DMA_CHANNEL_RX,    /* DMA channel for RX direction. */
 #else
-    .bus_dma_tx =  0, 
+    .bus_dma_tx =  0,
     .bus_dma_rx =  0,
 #endif
     .bus_initbus = Stm32I2cBus1Init,       /* Initialize bus controller. */

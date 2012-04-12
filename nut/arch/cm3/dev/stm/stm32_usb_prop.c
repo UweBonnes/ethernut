@@ -151,11 +151,11 @@ void Virtual_Com_Port_Reset(void)
   pInformation->Current_Interface = 0;
 
   /* EP0 is already configured by USB_SIL_Init() function */
-  
+
   /* Init EP1 IN as Bulk endpoint */
   OTG_DEV_EP_Init(EP1_IN, OTG_DEV_EP_TYPE_BULK, VIRTUAL_COM_PORT_DATA_SIZE);
   /* Init EP3 OUT as Bulk endpoint */
-  OTG_DEV_EP_Init(EP3_OUT, OTG_DEV_EP_TYPE_BULK, VIRTUAL_COM_PORT_DATA_SIZE);  
+  OTG_DEV_EP_Init(EP3_OUT, OTG_DEV_EP_TYPE_BULK, VIRTUAL_COM_PORT_DATA_SIZE);
 
   bDeviceState = ATTACHED;
 }

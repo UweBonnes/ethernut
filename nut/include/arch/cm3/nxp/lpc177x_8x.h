@@ -7,7 +7,7 @@
 * @version	1.0
 * @date		02. June. 2011
 * @author	NXP MCU SW Application Team
-* 
+*
 * Copyright(C) 2011, NXP Semiconductor
 * All rights reserved.
 *
@@ -157,7 +157,7 @@ typedef struct
   __IO uint32_t IRCTRIM;                    /*!< Offset: 0x1A4 (R/W) Clock Dividers                     */
   __IO uint32_t PCLKSEL;                    /*!< Offset: 0x1A8 (R/W)  Peripheral Clock Selection Register */
        uint32_t RESERVED8;					
-  __IO uint32_t PBOOST;						/*!< Offset: 0x1B0 (R/W)  Power Boost control register */	   
+  __IO uint32_t PBOOST;						/*!< Offset: 0x1B0 (R/W)  Power Boost control register */	
        uint32_t RESERVED9;					
   __IO uint32_t LCD_CFG;                    /*!< Offset: 0x1B8 (R/W)  LCD Configuration and clocking control Register */
        uint32_t RESERVED10[1];
@@ -583,7 +583,7 @@ typedef struct
   __IO uint32_t  ICR;                   /*!< Offset: 0x024 irDA Control Register (R/W) */
   __IO uint32_t  FDR;                   /*!< Offset: 0x028 Fractional Divider Register (R/W) */
   __IO uint32_t  OSR;                   /*!< Offset: 0x02C Over sampling Register (R/W) */
-       uint32_t  RESERVED0[6];               
+       uint32_t  RESERVED0[6];
   __IO uint32_t  SCI_CTRL;				/*!< Offset: 0x048 Smart card Interface Control Register (R/W) */
   __IO uint32_t  RS485CTRL;             /*!< Offset: 0x04C RS-485/EIA-485 Control Register (R/W) */
   __IO uint32_t  ADRMATCH;              /*!< Offset: 0x050 RS-485/EIA-485 address match Register (R/W) */
@@ -1271,12 +1271,12 @@ typedef struct
   struct {
   __O  uint32_t DATA;
   } WR_DATA_DWORD;
-  
+
   struct {
   __O  uint16_t DATA;
        uint16_t RESERVED;
   }WR_DATA_WORD;
-  
+
   struct {
   __O  uint8_t  DATA;
        uint8_t  RESERVED[3];

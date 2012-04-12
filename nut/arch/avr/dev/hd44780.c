@@ -291,9 +291,9 @@
 /*!
  * \brief Wait until controller will be ready again
  *
- * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise 
- * We will either busy loop with NutDelay or sleep with NutSleep. The second 
- * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher 
+ * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise
+ * We will either busy loop with NutDelay or sleep with NutSleep. The second
+ * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher
  * timer resolution.
  *
  * \param xt Delay time in milliseconds
@@ -319,7 +319,7 @@ static INLINE uint8_t LcdReadNibble(void)
 }
 
 static INLINE uint8_t LcdReadByte(void)
-{    
+{
     uint8_t data;
 #if LCD_DATA_BITS == 0x0F
     data = LcdReadNibble();
@@ -349,13 +349,13 @@ static uint8_t LcdReadCmd(void)
 #endif
 
 
-static void LcdDelay(uint8_t xt) 
+static void LcdDelay(uint8_t xt)
 {
     if (during_init) {
         NutDelay(xt);
     } else {
 #if defined(LCD_RW_BIT)
-    while (LcdReadCmd() & (1 << LCD_BUSY)) 
+    while (LcdReadCmd() & (1 << LCD_BUSY))
         LCD_DELAY;
     LCD_DELAY;
     LCD_DELAY;
@@ -368,7 +368,7 @@ static void LcdDelay(uint8_t xt)
     LCD_DELAY;
     LCD_DELAY;
     LCD_DELAY;
-#elif defined(NUT_CPU_FREQ)    
+#elif defined(NUT_CPU_FREQ)
     NutSleep(xt);
 #else
     NutDelay(xt);
@@ -384,22 +384,22 @@ static INLINE void LcdSendNibble(uint8_t nib)
     outb(LCD_DATA_DDR, inb(LCD_DATA_DDR) | LCD_DATA_BITS);
     outb(LCD_DATA_PORT, (inb(LCD_DATA_PORT) & ~LCD_DATA_BITS) | (nib & LCD_DATA_BITS));
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
-    LCD_DELAY; 
-    cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT); 
-    LCD_DELAY; 
+    LCD_DELAY;
+    cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
+    LCD_DELAY;
 }
 
 /*!
  * \brief Send byte to LCD controller.
  *
- * The byte is sent to a 4-bit interface in two nibbles. If one has configured 
+ * The byte is sent to a 4-bit interface in two nibbles. If one has configured
  * LCD_DATA_BITS to 0xFF this will send a whole byte at once
  *
  * \param ch Byte to send.
  * \param xt Delay time in milliseconds.
  */
 static INLINE void LcdSendByte(uint8_t ch, uint8_t xt)
-{    
+{
 #if LCD_DATA_BITS == 0x0F
     LcdSendNibble(ch >> 4);
     if(xt)
@@ -538,7 +538,7 @@ static int LcdInit(NUTDEVICE *dev)
     // move cursor to home
     LcdWriteCmd(1 << LCD_HOME, LCD_LONG_DELAY);
     // set data address to 0
-    LcdWriteCmd(1 << LCD_DDRAM | 0x00, LCD_LONG_DELAY);    
+    LcdWriteCmd(1 << LCD_DDRAM | 0x00, LCD_LONG_DELAY);
     during_init = 0;
 
     return 0;

@@ -189,7 +189,7 @@
 #define US_CTS                  0x00800000      /*!< \brief Clear to send sense status. */
 #endif /* USART_HAS_MODE */
 
-/*! \brief Baud rate calculation helper macro. 
+/*! \brief Baud rate calculation helper macro.
  *
  * \deprecated Use NutGetCpuClock() and calculate the divider value locally.
  */

@@ -339,18 +339,18 @@ static USARTDCB dcb_otg0 = {
 static int Stm32OtgUsartInit( void )
 {
     //OTG initialization
-#if defined(MCU_STM32F2) || defined(MCU_STM32F4) 
+#if defined(MCU_STM32F2) || defined(MCU_STM32F4)
 
     GpioPinConfigSet(NUTGPIO_PORTA, 9, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
     GpioPinConfigSet(NUTGPIO_PORTA, 10, GPIO_CFG_OUTPUT|GPIO_CFG_PULLUP|GPIO_CFG_MULTIDRIVE|GPIO_CFG_PERIPHAL);
     GpioPinConfigSet(NUTGPIO_PORTA, 11, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
     GpioPinConfigSet(NUTGPIO_PORTA, 12, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
 
-    GPIO_PinAFConfig(GPIOA,9,GPIO_AF_OTG1_FS) ; 
-    GPIO_PinAFConfig(GPIOA,11,GPIO_AF_OTG1_FS) ; 
+    GPIO_PinAFConfig(GPIOA,9,GPIO_AF_OTG1_FS) ;
+    GPIO_PinAFConfig(GPIOA,11,GPIO_AF_OTG1_FS) ;
     GPIO_PinAFConfig(GPIOA,12,GPIO_AF_OTG1_FS) ;
-    GPIO_PinAFConfig(GPIOA,10,GPIO_AF_OTG1_FS) ;   
-#endif  
+    GPIO_PinAFConfig(GPIOA,10,GPIO_AF_OTG1_FS) ;
+#endif
 
     Set_USBClock();
     rx_buffer=&(dcb_otg0.dcb_rx_rbf);

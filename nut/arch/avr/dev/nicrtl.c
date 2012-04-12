@@ -1223,7 +1223,7 @@ static void NicInterrupt(void *arg)
 #ifdef RTL_IRQ_RISING_EDGE
     do
     {
-#endif 
+#endif
     isr = NICINB(NIC_PG0_ISR);
     NICOUTB(NIC_PG0_ISR, isr);
 
@@ -1393,7 +1393,7 @@ int NicInit(NUTDEVICE * dev)
     /*
      * Start the receiver thread.
      */
-    NutThreadCreate("rxi5", NicRx, dev, 
+    NutThreadCreate("rxi5", NicRx, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     NutSleep(WAIT500);
 

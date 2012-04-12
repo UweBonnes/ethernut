@@ -31,9 +31,9 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
- 
+
 /* Copyright (c) 2009 Atmel Corporation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -317,7 +317,7 @@ void Avr32InitClockTree( void )
 
     if (CPUFrequency > AVR32_FLASHC_FWS_0_MAX_FREQ) {
         /*
-         * Set one wait-state (WS) for the flash controller if the 
+         * Set one wait-state (WS) for the flash controller if the
          * HSB/CPU is more than AVR32_FLASHC_FWS_0_MAX_FREQ.
          */
         flashc_set_wait_state(1);

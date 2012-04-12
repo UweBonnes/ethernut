@@ -79,9 +79,9 @@
 /*!
  * \brief Locate a substring in a string.
  *
- * Finds the first occurrence of a NUL terminated string in 
+ * Finds the first occurrence of a NUL terminated string in
  * another NUL terminated string.
- * 
+ *
  * \param s    Pointer to the string to be searched.
  * \param find Pointer to the string to look for.
  *

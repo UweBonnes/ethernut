@@ -759,7 +759,7 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
     int i;
     int link_wait = 20;
     uint32_t phy;
-    
+
     /* Power up the PHY. */
     nic_outb(NIC_GPR, 0);
     NutDelay(5);

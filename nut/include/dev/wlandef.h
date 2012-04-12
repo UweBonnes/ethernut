@@ -3,34 +3,34 @@
 *
 *  Copyright (c) 2004 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
-*  Portions Copyright: 
+*  Portions Copyright:
 *
 *  Copyright (c) 2001 Atsushi Onoe
 *  Copyright (c) 2002, 2003 Sam Leffler, Errno Consulting
@@ -65,7 +65,7 @@
 ****************************************************************************
 *  History:
 *
-*  28.02.04  mifi   First Version 
+*  28.02.04  mifi   First Version
 *                   This file is a mix of several FreeBSD header files.
 *                   I have put all the files together, because it was
 *                   difficult to use the original files. I have try this
@@ -92,7 +92,7 @@ enum {
 
 #define	IEEE80211_RATE_BASIC      0x80
 #define	IEEE80211_RATE_VAL			  0x7f
-    
+
 
 
 /*
@@ -104,10 +104,10 @@ enum {
  */
 #define	IEEE80211_MTU_MAX			    2290
 #define	IEEE80211_MTU_MIN			    32
- 
+
 #define	IEEE80211_MAX_LEN			(2300 + IEEE80211_CRC_LEN + \
     (IEEE80211_WEP_IVLEN + IEEE80211_WEP_KIDLEN + IEEE80211_WEP_CRCLEN))
-    
+
 
 /***************************************************************************/
 /*                      ieee80211_var.h                                    */
@@ -236,7 +236,7 @@ enum ieee80211_phymode {
 #define WI_DEFAULT_AUTHTYPE	1
 
 /*
- * Hermes & Prism2 register definitions 
+ * Hermes & Prism2 register definitions
  */
 
 /* Hermes command/status registers. */
@@ -347,8 +347,8 @@ enum ieee80211_phymode {
 #define WI_COR_OFFSET           0x3e0
 #define WI_COR_VALUE            0x41
 
-/* 
- * Define card ident 
+/*
+ * Define card ident
 */
 #define	WI_NIC_LUCENT_ID          0x0001
 #define	WI_NIC_LUCENT_STR         "Lucent Technologies, WaveLAN/IEEE"
@@ -421,7 +421,7 @@ enum ieee80211_phymode {
  * 0 == IBSS (802.11 compliant mode) (Only PRISM2)
  * 1 == Basic Service Set (BSS)
  * 2 == Wireless Distribudion System (WDS)
- * 3 == Pseudo IBSS 
+ * 3 == Pseudo IBSS
  *	(Only PRISM2; not 802.11 compliant mode, testing use only)
  * 6 == HOST AP (Only PRISM2)
  */
@@ -519,7 +519,7 @@ enum ieee80211_phymode {
 #define WI_RID_TX_RATE            0xFC84  /* data rate for message xmit */
                                           /* 0 == Fixed 1mbps */
                                           /* 1 == Fixed 2mbps */
-                                          /* 2 == auto fallback */                                  
+                                          /* 2 == auto fallback */
 #define WI_RID_PROMISC            0xFC85  /* enable promisc mode */
 #define WI_RID_FRAG_THRESH0       0xFC90
 #define WI_RID_FRAG_THRESH1	      0xFC91
