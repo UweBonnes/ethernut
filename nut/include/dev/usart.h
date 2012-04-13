@@ -268,12 +268,9 @@ struct _RINGBUF {
 #define USART_MF_BUFFERMASK     0x0300  /*!< Masks buffering mode flags. */
 
 #define USART_MF_HALFDUPLEX     0x0400  /*!< Half duplex control. */
-<<<<<<< .working
+
 #define USART_MF_BLOCKREAD      0x0800  /*!< Block read mode enabled */
 #define USART_MF_BLOCKWRITE     0x1000  /*!< Block write mode enabled */
-=======
-#define USART_MF_BLOCKREAD      0x0800  /*!< Block read enabled */
->>>>>>> .merge-rechts.r4117
 
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */
