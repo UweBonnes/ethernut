@@ -160,10 +160,10 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
                 break;
             }
         }
-		if (mca == NULL) {
+        if (mca == NULL) {
             NutNetBufFree(nb);
-			return;
-		}
+            return;
+        }
         bcast = 2;
     }
 

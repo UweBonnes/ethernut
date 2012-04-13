@@ -90,18 +90,18 @@ static void irq_ow_bit(void *arg)
             GpioPinSetLow(OWI_PORT, OWI_PIN);
         else
             GpioPinSetHigh(OWI_PORT, OWI_PIN);
-	TIM_C2ClearInterruptFlag(OWI_TIMER);
+    TIM_C2ClearInterruptFlag(OWI_TIMER);
     }
     else if TIM_C3InterruptFlag(OWI_TIMER)
     {
         owi_sample = GpioPinGet(OWI_PORT, OWI_PIN);
-	TIM_C3ClearInterruptFlag(OWI_TIMER);
+    TIM_C3ClearInterruptFlag(OWI_TIMER);
     }
 
     else if TIM_C4InterruptFlag(OWI_TIMER)
     {
         GpioPinSetHigh(OWI_PORT, OWI_PIN);
-	TIM_C4ClearInterruptFlag(OWI_TIMER);
+    TIM_C4ClearInterruptFlag(OWI_TIMER);
         NutEventPostFromIrq(&owi_irq_done);
     }
    else

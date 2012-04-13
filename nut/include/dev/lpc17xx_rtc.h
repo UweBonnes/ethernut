@@ -1,5 +1,5 @@
 #ifndef _DEV_LPC17XX_RTC_H_
-#define	_DEV_LPC17XX_RTC_H_
+#define _DEV_LPC17XX_RTC_H_
 
 /*
  * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)

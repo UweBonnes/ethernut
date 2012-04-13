@@ -54,7 +54,7 @@
 /**
   * @brief  Setup the external memory controller.
   *         Called in startup_stm32f10x_xx.s/.c before jump to main.
-  * 	      This function configures the external SRAM mounted on STM3210E-EVAL
+  *           This function configures the external SRAM mounted on STM3210E-EVAL
   *         board (STM32 High density devices). This SRAM will be used as program
   *         data memory (including heap and stack).
   * @param  None

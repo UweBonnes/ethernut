@@ -489,7 +489,7 @@ static int LcdInit(NUTDEVICE *dev)
     cbi(LCD_RW_PORT, LCD_RW_BIT);
 #endif
 
-	
+    
     /*
      * Send a dummy data byte.
      */

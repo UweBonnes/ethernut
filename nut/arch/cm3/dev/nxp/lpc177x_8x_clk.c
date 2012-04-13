@@ -247,7 +247,7 @@
 #define PLL1_SETUP            1
 #define PLL1CFG_Val           0x00000023
 #define CCLKSEL_Val           (0x00000001|(1<<8))
-#define USBCLK_SETUP		  1
+#define USBCLK_SETUP          1
 #define USBCLKSEL_Val         (0x00000001|(0x02<<8))
 #define EMCCLKSEL_Val         0x00000001
 #define PCLKSEL_Val           0x00000002
@@ -331,8 +331,8 @@
 #define __M                   ((PLL0CFG_Val & 0x1F) + 1)
 #define __PLL0_CLK(__F_IN)    (__F_IN * __M)
 #define __CCLK_DIV            (CCLKSEL_Val & 0x1F)
-#define __PCLK_DIV			  (PCLKSEL_Val & 0x1F)
-#define __ECLK_DIV			  ((EMCCLKSEL_Val & 0x01) + 1)
+#define __PCLK_DIV            (PCLKSEL_Val & 0x1F)
+#define __ECLK_DIV            ((EMCCLKSEL_Val & 0x01) + 1)
 
 /* Determine core clock frequency according to settings */
 #if (CLOCK_SETUP)                       /* Clock Setup                        */
@@ -348,7 +348,7 @@
   #if ((CCLKSEL_Val & 0x100) == 0)      /* cclk = sysclk */
     #if ((CLKSRCSEL_Val & 0x01) == 0)   /* sysclk = irc_clk */
         #define __CORE_CLK (IRC_OSC / __CCLK_DIV)
-		#define __PER_CLK  (IRC_OSC/  __PCLK_DIV)
+        #define __PER_CLK  (IRC_OSC/  __PCLK_DIV)
         #define __EMC_CLK  (IRC_OSC/  __ECLK_DIV)
     #else                               /* sysclk = osc_clk */
         #define __CORE_CLK (OSC_CLK / __CCLK_DIV)
@@ -363,7 +363,7 @@
     #else                               /* sysclk = osc_clk */
         #define __CORE_CLK (__PLL0_CLK(OSC_CLK) / __CCLK_DIV)
         #define __PER_CLK  (__PLL0_CLK(OSC_CLK) / __PCLK_DIV)
-		#define __EMC_CLK  (__PLL0_CLK(OSC_CLK) / __ECLK_DIV)
+        #define __EMC_CLK  (__PLL0_CLK(OSC_CLK) / __ECLK_DIV)
     #endif
   #endif
 
@@ -378,8 +378,8 @@
  *----------------------------------------------------------------------------*/
 uint32_t SystemCoreClock = __CORE_CLK;/*!< System Clock Frequency (Core Clock)*/
 uint32_t PeripheralClock = __PER_CLK; /*!< Peripheral Clock Frequency (Pclk)  */
-uint32_t EMCClock		 = __EMC_CLK; /*!< EMC Clock Frequency 				  */
-uint32_t USBClock 		 = (48000000UL);    /*!< USB Clock Frequency - this value will be updated after call SystemCoreClockUpdate, should be 48MHz*/
+uint32_t EMCClock        = __EMC_CLK; /*!< EMC Clock Frequency                */
+uint32_t USBClock        = (48000000UL);    /*!< USB Clock Frequency - this value will be updated after call SystemCoreClockUpdate, should be 48MHz*/
 
 
 /*----------------------------------------------------------------------------
@@ -408,7 +408,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
         if ((LPC_SC->PLL0STAT & 0x100) == 0) {    /* PLL0 not enabled */
             SystemCoreClock = 0;                  /* this should never happen! */
             PeripheralClock = 0;
-            EMCClock 		= 0;
+            EMCClock        = 0;
         } else {
             if ((LPC_SC->CLKSRCSEL & 0x01) == 0) { /* sysclk = irc_clk */
                 SystemCoreClock = (IRC_OSC * ((LPC_SC->PLL0STAT & 0x1F) + 1) / (LPC_SC->CCLKSEL & 0x1F));
@@ -418,7 +418,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
                 if ((LPC_SC->SCS & 0x40) == 0) {
                     SystemCoreClock = 0;           /* this should never happen! */
                     PeripheralClock = 0;
-                    EMCClock 		  = 0;
+                    EMCClock          = 0;
                 } else {
                     SystemCoreClock = (OSC_CLK * ((LPC_SC->PLL0STAT & 0x1F) + 1) / (LPC_SC->CCLKSEL & 0x1F));
                     PeripheralClock = (OSC_CLK * ((LPC_SC->PLL0STAT & 0x1F) + 1) / (LPC_SC->PCLKSEL & 0x1F));
@@ -435,7 +435,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
                 break;
             case 4:
             case 6:
-                if(LPC_SC->CLKSRCSEL & 0x01)	//pll_clk_in = main_osc
+                if(LPC_SC->CLKSRCSEL & 0x01)    //pll_clk_in = main_osc
                   USBClock = (OSC_CLK * ((LPC_SC->PLL0STAT & 0x1F) + 1) / (LPC_SC->USBCLKSEL & 0x1F));
                 else //pll_clk_in = irc_clk
                   USBClock = (IRC_OSC * ((LPC_SC->PLL0STAT & 0x1F) + 1) / (LPC_SC->USBCLKSEL & 0x1F));
@@ -445,7 +445,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
         }
     } else
     if(LPC_SC->USBCLKSEL & (0x02<<8)) {   //usb_input_clk = alt_pll (pll1)
-        if(LPC_SC->CLKSRCSEL & 0x01) {	  //pll1_clk_in = main_osc
+        if(LPC_SC->CLKSRCSEL & 0x01) {    //pll1_clk_in = main_osc
             USBClock = (OSC_CLK * ((LPC_SC->PLL1STAT & 0x1F) + 1));
         } else {                         //pll1_clk_in = irc_clk
             USBClock = (IRC_OSC * ((LPC_SC->PLL0STAT & 0x1F) + 1));

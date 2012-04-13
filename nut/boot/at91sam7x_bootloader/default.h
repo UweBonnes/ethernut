@@ -43,7 +43,7 @@
 /* EEPROM */
 
 #ifndef EE_OFFSET
-#define EE_OFFSET	 0x200    /* Offset in eeprom we can use to store our own data   */
+#define EE_OFFSET    0x200    /* Offset in eeprom we can use to store our own data   */
 #endif
 
 #ifndef EE_CONFBOOT

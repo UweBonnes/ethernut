@@ -42,26 +42,26 @@
 class MacAddress
 {
 public:
-	MacAddress();
-	MacAddress( const MacAddress& );
-	MacAddress( const QString& );
+    MacAddress();
+    MacAddress( const MacAddress& );
+    MacAddress( const QString& );
 
-	QString toString() const;
-	QByteArray toByteArray() const;
+    QString toString() const;
+    QByteArray toByteArray() const;
 
-	static MacAddress fromString( const QString& a );
-	static MacAddress fromRawData( const QByteArray& );
+    static MacAddress fromString( const QString& a );
+    static MacAddress fromRawData( const QByteArray& );
 
-	bool isValid() const;
-	bool operator==( const MacAddress& ) const;
-	bool operator<( const MacAddress& ) const;
-	bool operator>( const MacAddress& ) const;
-	MacAddress& operator+=(int);
+    bool isValid() const;
+    bool operator==( const MacAddress& ) const;
+    bool operator<( const MacAddress& ) const;
+    bool operator>( const MacAddress& ) const;
+    MacAddress& operator+=(int);
 
-	static QByteArray toByteArray( const QString& );
+    static QByteArray toByteArray( const QString& );
 
 private:
-	QByteArray data;
+    QByteArray data;
 };
 
 QDataStream &operator<<(QDataStream&, const MacAddress&);

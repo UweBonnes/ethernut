@@ -71,9 +71,9 @@ private:
     void OnBrowseBuildPath(wxCommandEvent& event);
     void OnBrowseInstallPath(wxCommandEvent& event);
     void OnBrowseSourceDir(wxCommandEvent& event);
-	void OnBrowseIncludeFirst(wxCommandEvent& event);
-	void OnBrowseIncludeLast(wxCommandEvent& event);
-	void OnPlatformEnter(wxCommandEvent& event);
+    void OnBrowseIncludeFirst(wxCommandEvent& event);
+    void OnBrowseIncludeLast(wxCommandEvent& event);
+    void OnPlatformEnter(wxCommandEvent& event);
     void OnSourceDirChange(wxCommandEvent& event);
     void PopulatePlatform();
 

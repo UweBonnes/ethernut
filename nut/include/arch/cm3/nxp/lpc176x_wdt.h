@@ -38,12 +38,12 @@
  *
  * Parts taken from lpc17xx_wdt.h
  *
- * file	    : lpc17xx_wdt.h
- * brief	: Contains all macro definitions and function prototypes
- * 				support for WDT firmware library on LPC17xx
- * version	: 1.0
- * date	    : 9. April. 2009
- * author	: HieuNguyen
+ * file     : lpc17xx_wdt.h
+ * brief    : Contains all macro definitions and function prototypes
+ *              support for WDT firmware library on LPC17xx
+ * version  : 1.0
+ * date     : 9. April. 2009
+ * author   : HieuNguyen
  **************************************************************************
  * Software that is described herein is for illustrative purposes only
  * which provides customers with programming information regarding the

@@ -258,17 +258,17 @@ static int Dma2IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	    IntDisable(IRQn);
+        IntDisable(IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(IRQn, irqfn);
+        IntRegister(IRQn, irqfn);
         /* Initialize with defined priority. */
-	    IntPrioritySet(IRQn, NUT_IRQPRI_DMA2);
+        IntPrioritySet(IRQn, NUT_IRQPRI_DMA2);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(IRQn);
+        NVIC_ClearPendingIRQ(IRQn);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -294,7 +294,7 @@ static int Dma2IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
         *ival = IntPriorityGet(IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-	    IntPrioritySet(IRQn,*ival);
+        IntPrioritySet(IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -309,7 +309,7 @@ static int Dma2IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	    IntEnable(IRQn);
+        IntEnable(IRQn);
     }
     return rc;
 }

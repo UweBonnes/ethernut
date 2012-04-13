@@ -104,9 +104,9 @@
  * we do the whole buffering and including stdio here would be more weird.
  */
 #ifndef _IOFBF
-#define _IOFBF	    0x00
-#define _IOLBF	    0x01
-#define _IONBF	    0x02
+#define _IOFBF      0x00
+#define _IOLBF      0x01
+#define _IONBF      0x02
 #endif
 
 /*!
@@ -733,8 +733,8 @@ int UartAvrRead(NUTFILE * fp, void *buffer, int size)
             while (ifs->if_rd_idx == ifs->if_rx_idx) {
                 if (UartAvrInput(dev)) {
                     return 0;
-		}
-	    }
+        }
+        }
         }
         ch = ifs->if_rx_buf[ifs->if_rd_idx++];
         if (elmode && (ch == '\r' || ch == '\n')) {

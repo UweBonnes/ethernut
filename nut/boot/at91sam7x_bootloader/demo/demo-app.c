@@ -123,7 +123,7 @@ FILE *init_uart(void)
 static char inbuf[128];
 
 int main(void)
-{	
+{   
     char *cp;
     int i;
 
@@ -140,22 +140,22 @@ int main(void)
         cp = strchr(inbuf, '\n');
         if (cp) {
             *cp = 0;
-	}
+    }
 
-	/* Check if the string is "boot" or "load" */
-	if (strcmp(inbuf, "reset") == 0) {
+    /* Check if the string is "boot" or "load" */
+    if (strcmp(inbuf, "reset") == 0) {
             printf("Reset...\r\n");
             boot();
-	} else
-	if (strcmp(inbuf, "boot") == 0) {
-	    printf("Reboot from tftp server\r\n");
+    } else
+    if (strcmp(inbuf, "boot") == 0) {
+        printf("Reboot from tftp server\r\n");
             read_boot_config();
             memset(confboot.digest, 0, sizeof(confboot.digest));
             write_boot_config();
             boot();
-	} else {
-	    printf("You entered: %s\r\n", inbuf);
-	}
+    } else {
+        printf("You entered: %s\r\n", inbuf);
+    }
     }
     return 0;
 }

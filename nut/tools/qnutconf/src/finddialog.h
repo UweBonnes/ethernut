@@ -40,21 +40,21 @@
 
 class FindDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	FindDialog(QWidget *parent = 0);
-	~FindDialog();
+    FindDialog(QWidget *parent = 0);
+    ~FindDialog();
 
 private slots:
-	void nextClicked();
-	void cancelClicked();
+    void nextClicked();
+    void cancelClicked();
 
 signals:
-	void findNext(const QString &text);
+    void findNext(const QString &text);
 
 private:
-	Ui::FindDialogClass ui;
+    Ui::FindDialogClass ui;
 };
 
 #endif

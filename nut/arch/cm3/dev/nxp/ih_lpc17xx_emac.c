@@ -100,17 +100,17 @@ static int Emac0IrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	    IntDisable(ENET_IRQn);
+        IntDisable(ENET_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(ENET_IRQn, EmacIrqEntry);
+        IntRegister(ENET_IRQn, EmacIrqEntry);
         /* Initialize with defined priority. */
-	    IntPrioritySet(ENET_IRQn, NUT_IRQPRI_EMAC);
+        IntPrioritySet(ENET_IRQn, NUT_IRQPRI_EMAC);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(ENET_IRQn);
+        NVIC_ClearPendingIRQ(ENET_IRQn);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -136,7 +136,7 @@ static int Emac0IrqCtl(int cmd, void *param)
         *ival = IntPriorityGet(ENET_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-	    IntPrioritySet(ENET_IRQn, *ival);
+        IntPrioritySet(ENET_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -151,7 +151,7 @@ static int Emac0IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	    IntEnable(ENET_IRQn);
+        IntEnable(ENET_IRQn);
     }
     return rc;
 }

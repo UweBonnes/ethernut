@@ -664,7 +664,7 @@ int NutTwiMasterError(NUTTWIBUS *bus)
  * \param rxdata Points to a data buffer where the received data bytes
  *               are stored.
  * \param rxsiz  Specifies the maximum number of data bytes to receive.
- * \param tmo	 Timeout in milliseconds. To disable timeout,
+ * \param tmo    Timeout in milliseconds. To disable timeout,
  *               set this parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
@@ -686,9 +686,9 @@ int NutTwiSlaveListen(NUTTWIBUS *bus, uint8_t *sla, void *rxdata, uint16_t rxsiz
  *       Thus the function always returns -1.
  *
  * \param txdata Points to the data to transmit. Ignored, if the
- *      		 number of bytes to transmit is zero.
+ *               number of bytes to transmit is zero.
  * \param txlen  Number of data bytes to transmit.
- * \param tmo	 Timeout in milliseconds. To disable timeout,
+ * \param tmo    Timeout in milliseconds. To disable timeout,
  *               set this parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes transmitted, -1 in case of an error or timeout.
@@ -754,8 +754,8 @@ int NutTwiGetSpeed( NUTTWIBUS *bus)
  *
  * \param req  Requested control function.
  * \param conf Points to a buffer that contains any data required for
- *	       the given control function or receives data from that
- *	       function.
+ *         the given control function or receives data from that
+ *         function.
  *
  * \return Always 0.
  */

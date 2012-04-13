@@ -473,27 +473,27 @@ void IntEnable(IRQn_Type ulInterrupt)
     if(ulInterrupt<0)
     {
         /* Core specific interrupt numbers are below 0 */
-	    switch(ulInterrupt)
+        switch(ulInterrupt)
         {
-		    case MemoryManagement_IRQn:
-		        /* Enable the MemManage interrupt. */
-			    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
-			    break;
-		    case BusFault_IRQn:
-		        /* Enable the bus fault interrupt. */
-			    SCB->SHCSR |= SCB_SHCSR_BUSFAULTENA_Msk;
-			    break;
-		    case UsageFault_IRQn:
-		        /* Enable the usage fault interrupt. */
-			    SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk;
-			    break;
-		    case SysTick_IRQn:
-		        /* Enable the System Tick interrupt. */
-			    SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
-			    break;
-		    default:
-			    break;
-	    }
+            case MemoryManagement_IRQn:
+                /* Enable the MemManage interrupt. */
+                SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+                break;
+            case BusFault_IRQn:
+                /* Enable the bus fault interrupt. */
+                SCB->SHCSR |= SCB_SHCSR_BUSFAULTENA_Msk;
+                break;
+            case UsageFault_IRQn:
+                /* Enable the usage fault interrupt. */
+                SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk;
+                break;
+            case SysTick_IRQn:
+                /* Enable the System Tick interrupt. */
+                SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
+                break;
+            default:
+                break;
+        }
     }
     else {
         /* Enable the general interrupt. */
@@ -516,30 +516,30 @@ void IntEnable(IRQn_Type ulInterrupt)
 //*****************************************************************************
 void IntDisable(IRQn_Type ulInterrupt)
 {
-	if(ulInterrupt<0)
+    if(ulInterrupt<0)
     {
         /* Core specific interrupt numbers are below 0 */
-		switch(ulInterrupt)
+        switch(ulInterrupt)
         {
-			case MemoryManagement_IRQn:
-			        /* Disable the MemManage interrupt. */
-				SCB->SHCSR &= ~SCB_SHCSR_MEMFAULTENA_Msk;
-				break;
-			case BusFault_IRQn:
-			        /* Disable the bus fault interrupt. */
-				SCB->SHCSR &= ~SCB_SHCSR_BUSFAULTENA_Msk;
-				break;
-			case UsageFault_IRQn:
-	   		        /* Disable the usage fault interrupt. */
-				SCB->SHCSR &= ~SCB_SHCSR_USGFAULTENA_Msk;
-				break;
-			case SysTick_IRQn:
-			        /* Disable the System Tick interrupt. */
-				SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
-				break;
-			default:
-				break;
-		}
+            case MemoryManagement_IRQn:
+                    /* Disable the MemManage interrupt. */
+                SCB->SHCSR &= ~SCB_SHCSR_MEMFAULTENA_Msk;
+                break;
+            case BusFault_IRQn:
+                    /* Disable the bus fault interrupt. */
+                SCB->SHCSR &= ~SCB_SHCSR_BUSFAULTENA_Msk;
+                break;
+            case UsageFault_IRQn:
+                    /* Disable the usage fault interrupt. */
+                SCB->SHCSR &= ~SCB_SHCSR_USGFAULTENA_Msk;
+                break;
+            case SysTick_IRQn:
+                    /* Disable the System Tick interrupt. */
+                SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
+                break;
+            default:
+                break;
+        }
     }
     else {
         /* Disable the general interrupt. */
@@ -564,7 +564,7 @@ int IntIsEnabled(IRQn_Type ulInterrupt)
     if(ulInterrupt<0)
     {
         /* Core specific interrupt numbers are below 0 */
-	    switch(ulInterrupt)
+        switch(ulInterrupt)
         {
             case NonMaskableInt_IRQn:
                 rc = 1;
@@ -574,22 +574,22 @@ int IntIsEnabled(IRQn_Type ulInterrupt)
                 rc = 1;
 #endif
                 break;
-		    case MemoryManagement_IRQn:
-			    rc = (SCB->SHCSR & SCB_SHCSR_MEMFAULTENA_Msk)?1:0;
-			    break;
-		    case BusFault_IRQn:
-			    rc = (SCB->SHCSR & SCB_SHCSR_BUSFAULTENA_Msk)?1:0;
-			    break;
-		    case UsageFault_IRQn:
-			    rc = (SCB->SHCSR & SCB_SHCSR_USGFAULTENA_Msk)?1:0;
-			    break;
-		    case SysTick_IRQn:
-			    rc = (SysTick->CTRL & SysTick_CTRL_TICKINT_Msk)?1:0;
-			    break;
-		    default:
+            case MemoryManagement_IRQn:
+                rc = (SCB->SHCSR & SCB_SHCSR_MEMFAULTENA_Msk)?1:0;
+                break;
+            case BusFault_IRQn:
+                rc = (SCB->SHCSR & SCB_SHCSR_BUSFAULTENA_Msk)?1:0;
+                break;
+            case UsageFault_IRQn:
+                rc = (SCB->SHCSR & SCB_SHCSR_USGFAULTENA_Msk)?1:0;
+                break;
+            case SysTick_IRQn:
+                rc = (SysTick->CTRL & SysTick_CTRL_TICKINT_Msk)?1:0;
+                break;
+            default:
                 rc = -1;
-			    break;
-	    }
+                break;
+        }
     }
     else {
         /* Enable the general interrupt. */

@@ -114,7 +114,7 @@
 #define EMAC_TX_BUFSIZ          1536
 #endif
 
-#define NIC_PHY_ADDR	        31
+#define NIC_PHY_ADDR            31
 
 #define PHY_TXCLK_ISOLATE_BIT   0
 #define PHY_REFCLK_XT2_BIT      0

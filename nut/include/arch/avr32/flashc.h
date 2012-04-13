@@ -1,5 +1,5 @@
 #ifndef _ARCH_AVR32_FLASHC_H_
-#define	_ARCH_AVR32_FLASHC_H_
+#define _ARCH_AVR32_FLASHC_H_
 
 /*!
  * Copyright (C) 2001-2010 by egnite Software GmbH

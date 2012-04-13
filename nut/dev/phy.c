@@ -120,19 +120,19 @@ enum {
 } phy_bit_descr_nr;
 
 typedef struct {
-	uint8_t reg;				/* register number */
-	uint16_t mask;				/* bit mask to identify what we are looking */
+    uint8_t reg;                /* register number */
+    uint16_t mask;              /* bit mask to identify what we are looking */
 } phy_bit_descr_t;
 
 typedef struct {
-	uint32_t phy_oui;			/* oui chip identifier */
-	phy_bit_descr_t phy_bit_descr[PHY_BIT_DESCR_MAX];
-								/* list of descriptors to identify where to get
-								 *   [0] flag about 10Mbit/s speed
-								 *   [1] flag about 100Mbit/s speed
-								 *   [2] flag about 1000Mbit/s speed
-								 *   [3] flag about full duplex
-								 *   [4] flag about POE status */
+    uint32_t phy_oui;           /* oui chip identifier */
+    phy_bit_descr_t phy_bit_descr[PHY_BIT_DESCR_MAX];
+                                /* list of descriptors to identify where to get
+                                 *   [0] flag about 10Mbit/s speed
+                                 *   [1] flag about 100Mbit/s speed
+                                 *   [2] flag about 1000Mbit/s speed
+                                 *   [3] flag about full duplex
+                                 *   [4] flag about POE status */
 } phy_status_descr_t;
 
 phy_status_descr_t phy_status_descr[] = {
@@ -148,8 +148,8 @@ phy_status_descr_t phy_status_descr[] = {
 
     /* SMSC LAN8700 derivates */
     { LAN8700,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
-	{ LAN8700r4, { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
-	{ LAN8710,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
+    { LAN8700r4, { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
+    { LAN8710,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
 
     /* Micrel KS8721 */
     { KS8721,    { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
@@ -193,19 +193,19 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
     {
         case PHY_CTL_RESET:
             if (p16) {
-				int wait = 0;
-				
+                int wait = 0;
+                
                 /* Set Reset bit in BMCR register */
                 phyw( PHY_BMCR, PHY_BMCR_RES);
-				
+                
                 /* Wait till reset bit flips back to 0 */
                 while( (phyr( PHY_BMCR) & PHY_BMCR_RES) && wait<10) {
                     NutDelay(100);
-					wait++;
+                    wait++;
                 }
-				if(wait >= 10) {
-					rc = -1;
-				}
+                if(wait >= 10) {
+                    rc = -1;
+                }
             }
             break;
 
@@ -255,105 +255,105 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
             phyw( PHY_BMCR, bmcr);
             break;
 
-		case PHY_CTL_DUPLEX:
-			if( p16)
-				bmcr |= PHY_BMCR_DUPX;
-			else
-				bmcr &= ~PHY_BMCR_DUPX;
-			phyw( PHY_BMCR, bmcr);
-			break;
-			
-		case PHY_CTL_AUTONEG_RE:
-			if( p16) {
-				bmcr |= PHY_BMCR_ANST;
-				phyw (PHY_BMCR, bmcr);
-			}
-			break;
+        case PHY_CTL_DUPLEX:
+            if( p16)
+                bmcr |= PHY_BMCR_DUPX;
+            else
+                bmcr &= ~PHY_BMCR_DUPX;
+            phyw( PHY_BMCR, bmcr);
+            break;
+            
+        case PHY_CTL_AUTONEG_RE:
+            if( p16) {
+                bmcr |= PHY_BMCR_ANST;
+                phyw (PHY_BMCR, bmcr);
+            }
+            break;
 
         case PHY_GET_LINK:
             *par = (uint32_t)(phyr(PHY_BMSR)&PHY_BMSR_LNK);
             break;
 
-		case PHY_GET_STATUS:
-			bmsr = phyr(PHY_BMSR);
-			/* only return a value different to zero if link is true */
-			if(bmsr & PHY_BMSR_LNK) {
-				int count, length;
+        case PHY_GET_STATUS:
+            bmsr = phyr(PHY_BMSR);
+            /* only return a value different to zero if link is true */
+            if(bmsr & PHY_BMSR_LNK) {
+                int count, length;
 
-				*par = 	PHY_STATUS_HAS_LINK |
-						((bmsr & PHY_BMSR_ANEG) ? PHY_STATUS_AUTONEG_OK : 0);
-				length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
-				for(count=0; count<length; count++) {
-					if(phy_status_descr[count].phy_oui == phydcb->oui) {
-						break;
-					}
-				}
-				if(count<length) {
-					uint16_t tempreg;
-					
-					/* entry in table found */
-					PHPRINTF("  Reading status of known phy\n");
+                *par =  PHY_STATUS_HAS_LINK |
+                        ((bmsr & PHY_BMSR_ANEG) ? PHY_STATUS_AUTONEG_OK : 0);
+                length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
+                for(count=0; count<length; count++) {
+                    if(phy_status_descr[count].phy_oui == phydcb->oui) {
+                        break;
+                    }
+                }
+                if(count<length) {
+                    uint16_t tempreg;
+                    
+                    /* entry in table found */
+                    PHPRINTF("  Reading status of known phy\n");
 
-					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].reg);
-					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].mask) {
-						*par |= PHY_STATUS_10M;
-					}
-					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].reg);
-					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].mask) {
-						*par |= PHY_STATUS_100M;
-					}
-					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].reg);
-					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].mask) {
-						*par |= PHY_STATUS_1000M;
-					}
-					tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].reg);
-					if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].mask) {
-						*par |= PHY_STATUS_FULLDUPLEX;
-					}
-				}
-				else {
-					*par |= PHY_STATUS_CON_UNKNWN;
-				}
-			}
-			else {
-				*par = 0;
-			}
-			break;
+                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].reg);
+                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].mask) {
+                        *par |= PHY_STATUS_10M;
+                    }
+                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].reg);
+                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].mask) {
+                        *par |= PHY_STATUS_100M;
+                    }
+                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].reg);
+                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].mask) {
+                        *par |= PHY_STATUS_1000M;
+                    }
+                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].reg);
+                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].mask) {
+                        *par |= PHY_STATUS_FULLDUPLEX;
+                    }
+                }
+                else {
+                    *par |= PHY_STATUS_CON_UNKNWN;
+                }
+            }
+            else {
+                *par = 0;
+            }
+            break;
 
-		case PHY_GET_POE: {
-			int count, length;
-				
-			*par = 0;
-			length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
-			for(count=0; count<length; count++) {
-				if(phy_status_descr[count].phy_oui == phydcb->oui) {
-					break;
-				}
-			}
-			if(count<length) {
-				uint16_t tempreg;
-					
-				/* entry in table found */
-				PHPRINTF("  Reading POE status of known phy\n");
+        case PHY_GET_POE: {
+            int count, length;
+                
+            *par = 0;
+            length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
+            for(count=0; count<length; count++) {
+                if(phy_status_descr[count].phy_oui == phydcb->oui) {
+                    break;
+                }
+            }
+            if(count<length) {
+                uint16_t tempreg;
+                    
+                /* entry in table found */
+                PHPRINTF("  Reading POE status of known phy\n");
 
-				tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_POE].reg);
-				if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_POE].mask) {
-					*par = 1;
-				}
-			}
-			else {
-				rc = -1;
-			}
-			break;
-		} /* endof case PHY_GET_POE */
+                tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_POE].reg);
+                if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_POE].mask) {
+                    *par = 1;
+                }
+            }
+            else {
+                rc = -1;
+            }
+            break;
+        } /* endof case PHY_GET_POE */
 
-		case PHY_GET_REGVAL:
+        case PHY_GET_REGVAL:
             *par = (uint32_t)phyr(reg);
-			break;
+            break;
 
-		case PHY_SET_REGVAL:
+        case PHY_SET_REGVAL:
             phyw( reg, p16);
-			break;
+            break;
 
         default:
             rc = -1;
@@ -390,10 +390,10 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
         return -1;
     }
 
-	if (phydcb != NULL)
-	{
-		NutHeapFree(phydcb);
-	}
+    if (phydcb != NULL)
+    {
+        NutHeapFree(phydcb);
+    }
     phydcb = NutHeapAlloc( sizeof(PHYDCB));
     if (phydcb == NULL) {
         /* Not enough memory to register PHY */
@@ -415,7 +415,7 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
     if (rc) {
         /* Communication failed, give up */
         NutHeapFree(phydcb);
-		phydcb = NULL;
+        phydcb = NULL;
         return -1;
     }
 

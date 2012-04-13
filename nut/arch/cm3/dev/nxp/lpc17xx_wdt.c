@@ -71,20 +71,20 @@
 static int Lpc17xxWatchDogSetTimeOut(uint32_t timeout)
 {
     uint32_t val = WDT_GET_FROM_USEC(timeout);
-	int      rc  = 0;
+    int      rc  = 0;
 
-	if (val < WDT_TIMEOUT_MIN) {
-		val = WDT_TIMEOUT_MIN;
-		rc = -1;
-	} else
+    if (val < WDT_TIMEOUT_MIN) {
+        val = WDT_TIMEOUT_MIN;
+        rc = -1;
+    } else
     if (val > WDT_TIMEOUT_MAX) {
-		val = WDT_TIMEOUT_MAX;
-		rc = -1;
-	}
+        val = WDT_TIMEOUT_MAX;
+        rc = -1;
+    }
 
-	LPC_WDT->TC = val;
+    LPC_WDT->TC = val;
 
-	return rc;
+    return rc;
 }
 
 
@@ -134,13 +134,13 @@ void Lpc17xxWatchDogRestart(void)
 {
     /* Standard watchdog feed sequence */
 
-	__disable_irq();
+    __disable_irq();
 
-	LPC_WDT->FEED = 0xAA;
+    LPC_WDT->FEED = 0xAA;
 
-	LPC_WDT->FEED = 0x55;
+    LPC_WDT->FEED = 0x55;
 
-	__enable_irq();
+    __enable_irq();
 }
 
 /*!

@@ -32,14 +32,14 @@
  * For additional information see http://www.ethernut.de/
  *
  *
- * Parts taken from lpc177x_8x_emc.c			2011-06-02
+ * Parts taken from lpc177x_8x_emc.c            2011-06-02
  *
- * file		lpc177x_8x_emc.c
- * brief	Contains all functions support for EMC firmware library
- *			on LPC177x_8x
- * version	1.0
- * date		02. June. 2011
- * author	NXP MCU SW Application Team
+ * file     lpc177x_8x_emc.c
+ * brief    Contains all functions support for EMC firmware library
+ *          on LPC177x_8x
+ * version  1.0
+ * date     02. June. 2011
+ * author   NXP MCU SW Application Team
  *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
@@ -99,8 +99,8 @@ void Lpc177x_8x_EmcInit(void)
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCEMC);
 
     LPC_SC->EMCDLYCTL   = 0x00001010;
-    LPC_EMC->Control 	= 0x00000001;
-    LPC_EMC->Config  	= 0x00000000;
+    LPC_EMC->Control    = 0x00000001;
+    LPC_EMC->Config     = 0x00000000;
 
     /* Pin configuration:
     * P2.14 - /EMC_CS2
@@ -322,47 +322,47 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
     emc_clock = NutArchClockGet(NUT_HWCLK_EMC);
     cpu_clock = NutArchClockGet(NUT_HWCLK_CPU);
 
-	/* Initialize delay lines */
+    /* Initialize delay lines */
     LPC_SC->EMCDLYCTL          = 0x00000210;
     LPC_SC->EMCDLYCTL         |= 0x00080808;
 
 
-	/* Init SDRAM controller */
+    /* Init SDRAM controller */
 
-    LPC_EMC->Control 	       = 0x00000001;
-    LPC_EMC->Config  	       = 0x00000000;
-	LPC_EMC->DynamicReadConfig = 0x00000001;
-	LPC_EMC->DynamicRasCas0    = ((uint32_t)sdram.cas_latency) << 8 | (uint32_t)sdram.ras_latency;
-	LPC_EMC->DynamicRP         = NS_2_CLKS(emc_clock, sdram.tRP);
-	LPC_EMC->DynamicRAS        = NS_2_CLKS(emc_clock, sdram.tRAS);
-	LPC_EMC->DynamicSREX       = NS_2_CLKS(emc_clock, sdram.tSREX);
-	LPC_EMC->DynamicAPR        = sdram.tAPR;
-	LPC_EMC->DynamicDAL        = sdram.tDAL + NS_2_CLKS(emc_clock, sdram.tRP);
-	LPC_EMC->DynamicWR         = sdram.tWR;
-	LPC_EMC->DynamicRC         = NS_2_CLKS(emc_clock, sdram.tRC);
-	LPC_EMC->DynamicRFC        = NS_2_CLKS(emc_clock, sdram.tRFC);
-	LPC_EMC->DynamicXSR        = NS_2_CLKS(emc_clock, sdram.tXSR);
-	LPC_EMC->DynamicRRD        = NS_2_CLKS(emc_clock, sdram.tRRD);
-	LPC_EMC->DynamicMRD        = sdram.tMRD;
+    LPC_EMC->Control           = 0x00000001;
+    LPC_EMC->Config            = 0x00000000;
+    LPC_EMC->DynamicReadConfig = 0x00000001;
+    LPC_EMC->DynamicRasCas0    = ((uint32_t)sdram.cas_latency) << 8 | (uint32_t)sdram.ras_latency;
+    LPC_EMC->DynamicRP         = NS_2_CLKS(emc_clock, sdram.tRP);
+    LPC_EMC->DynamicRAS        = NS_2_CLKS(emc_clock, sdram.tRAS);
+    LPC_EMC->DynamicSREX       = NS_2_CLKS(emc_clock, sdram.tSREX);
+    LPC_EMC->DynamicAPR        = sdram.tAPR;
+    LPC_EMC->DynamicDAL        = sdram.tDAL + NS_2_CLKS(emc_clock, sdram.tRP);
+    LPC_EMC->DynamicWR         = sdram.tWR;
+    LPC_EMC->DynamicRC         = NS_2_CLKS(emc_clock, sdram.tRC);
+    LPC_EMC->DynamicRFC        = NS_2_CLKS(emc_clock, sdram.tRFC);
+    LPC_EMC->DynamicXSR        = NS_2_CLKS(emc_clock, sdram.tXSR);
+    LPC_EMC->DynamicRRD        = NS_2_CLKS(emc_clock, sdram.tRRD);
+    LPC_EMC->DynamicMRD        = sdram.tMRD;
 
     /* 13 row, 9 - col, SDRAM */
-	LPC_EMC->DynamicConfig0 = dynamic_config;
+    LPC_EMC->DynamicConfig0 = dynamic_config;
 
     /* JEDEC General SDRAM Initialization Sequence
-	   DELAY to allow power and clocks to stabilize ~100 us
-	   NOP
+       DELAY to allow power and clocks to stabilize ~100 us
+       NOP
      */
-	LPC_EMC->DynamicControl = 0x0183;
+    LPC_EMC->DynamicControl = 0x0183;
 
     wait_clocks(NS_2_CLKS(cpu_clock, 200000));
 
     /* PALL */
-	LPC_EMC->DynamicControl = 0x0103;
-	LPC_EMC->DynamicRefresh = 2;
+    LPC_EMC->DynamicControl = 0x0103;
+    LPC_EMC->DynamicRefresh = 2;
 
     wait_clocks(256); /* wait > 128 clk */
 
-	LPC_EMC->DynamicRefresh = NS_2_CLKS(emc_clock, sdram.refresh) >> 4;
+    LPC_EMC->DynamicRefresh = NS_2_CLKS(emc_clock, sdram.refresh) >> 4;
 
     wait_clocks(256); /* wait > 128 clk */
 
@@ -389,10 +389,10 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
 
     wait_clocks(256); /* wait > 128 clk */
 
-	/* NORM */
-	LPC_EMC->DynamicControl = 0x0000;
+    /* NORM */
+    LPC_EMC->DynamicControl = 0x0000;
     /* Reenable buffers */
-	LPC_EMC->DynamicConfig0 |= _BV(19);
+    LPC_EMC->DynamicConfig0 |= _BV(19);
 
     //wait_clocks(NS_2_CPU_CLKS(cpu_clock, 200000));
 
@@ -676,7 +676,7 @@ void Lpc177x_8x_EmcDynMemConfigAM(uint32_t cs, uint32_t addr_mapped)
  * \param     cs            number of chip select, should be from 0 to 3
  * \param     buff_control  buffer control mode, should be:
  *                          0 - buffer disabled
- * 				            EMC_StaticConfig_B: buffer enabled for the selected chip select
+ *                          EMC_StaticConfig_B: buffer enabled for the selected chip select
  *
  * \return    none
  */
@@ -707,7 +707,7 @@ void Lpc177x_8x_EmcDynMemConfigB(uint32_t cs, uint32_t buff_control)
  * \param     cs            number of chip select, should be from 0 to 3
  * \param     permission    permission mode, should be:
  *                          0 - not protected
- * 				            EMC_StaticConfig_P: write protection enabled
+ *                          EMC_StaticConfig_P: write protection enabled
  *
  * \return    none
  */

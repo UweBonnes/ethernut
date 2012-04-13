@@ -41,35 +41,35 @@
 class AbstractFileCopyFilter
 {
 public:
-	virtual ~AbstractFileCopyFilter() {}
+    virtual ~AbstractFileCopyFilter() {}
 
-	virtual bool onFile( const QFileInfo &fileInfo, const QString& dest ) = 0;
+    virtual bool onFile( const QFileInfo &fileInfo, const QString& dest ) = 0;
 };
 
 class AppDirCopyFilter : public AbstractFileCopyFilter
 {
-	bool onFile( const QFileInfo &fileInfo, const QString& dest );
+    bool onFile( const QFileInfo &fileInfo, const QString& dest );
 };
 
 class IccProjectCopyFilter : public AbstractFileCopyFilter
 {
 public:
-	IccProjectCopyFilter( NutComponentModel* model );
-	bool onFile( const QFileInfo& fileInfo, const QString& dest );
+    IccProjectCopyFilter( NutComponentModel* model );
+    bool onFile( const QFileInfo& fileInfo, const QString& dest );
 private:
-	NutComponentModel* m_model;
+    NutComponentModel* m_model;
 };
 
 class DirTraverser
 {
 public:
-	DirTraverser();
-	virtual ~DirTraverser();
-	void insertFilter( AbstractFileCopyFilter* filter );
-	void copyDir( const QString& src, const QString& dest );
+    DirTraverser();
+    virtual ~DirTraverser();
+    void insertFilter( AbstractFileCopyFilter* filter );
+    void copyDir( const QString& src, const QString& dest );
 
 private:
-	QList<AbstractFileCopyFilter*> filters;
+    QList<AbstractFileCopyFilter*> filters;
 };
 
 #endif // __DIRTRAVERSER_H__

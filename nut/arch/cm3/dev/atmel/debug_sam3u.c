@@ -104,14 +104,14 @@ static USARTDCB dcb_dbgu = {
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_tx_rbf */
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_rx_rbf */
     0,                          /* dbc_last_eol */
-    At91UsartInit,    	        /* dcb_init */
+    At91UsartInit,              /* dcb_init */
     At91UsartDeinit,            /* dcb_deinit */
     At91UsartTxStart,           /* dcb_tx_start */
     At91UsartRxStart,           /* dcb_rx_start */
     At91UsartSetFlowControl,    /* dcb_set_flow_control */
     At91UsartGetFlowControl,    /* dcb_get_flow_control */
     At91UsartSetSpeed,          /* dcb_set_speed */
-    At91UsartGetSpeed,	        /* dcb_get_speed */
+    At91UsartGetSpeed,          /* dcb_get_speed */
     At91UsartSetDataBits,       /* dcb_set_data_bits */
     At91UsartGetDataBits,       /* dcb_get_data_bits */
     At91UsartSetParity,         /* dcb_set_parity */
@@ -174,7 +174,7 @@ NUTDEVICE devDebug = {
 #undef UART_RTS_PIN
 #undef UART_CTS_PIN
 #undef UART_MODEM_PINS
-#define UART_RXTX_PINS_ENABLE()	    outr(AT91C_PIOA_PDR, UART_RXTX_PINS)
+#define UART_RXTX_PINS_ENABLE()     outr(AT91C_PIOA_PDR, UART_RXTX_PINS)
 
 #define UART_INIT_BAUDRATE  115200
 

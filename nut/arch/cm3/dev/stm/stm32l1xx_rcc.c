@@ -21,7 +21,7 @@
   *          all peripherals are off except internal SRAM, Flash and JTAG.
   *           - There is no prescaler on High speed (AHB) and Low speed (APB) busses;
   *             all peripherals mapped on these busses are running at MSI speed.
-  *       	  - The clock for all peripherals is switched off, except the SRAM and FLASH.
+  *           - The clock for all peripherals is switched off, except the SRAM and FLASH.
   *           - All GPIOs are in input floating state, except the JTAG pins which
   *             are assigned to be used for debug purpose.
   *
@@ -994,7 +994,7 @@ void RCC_GetClocksFreq(RCC_ClocksTypeDef* RCC_Clocks)
   */
 void RCC_RTCCLKConfig(uint32_t RCC_RTCCLKSource)
 {
-  uint32_t 	tmpreg = 0;
+  uint32_t  tmpreg = 0;
 
   /* Check the parameters */
   assert_param(IS_RCC_RTCCLK_SOURCE(RCC_RTCCLKSource));

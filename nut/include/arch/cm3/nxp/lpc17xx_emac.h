@@ -36,12 +36,12 @@
  *
  *
  * Parts taken from lpc177x_8x_emac.h       2011-06-02
- * file		lpc177x_8x_emac.h
- * brief	Contains all macro definitions and function prototypes
- *			support for Ethernet MAC firmware library on LPC177x_8x
- * version	1.0
- * date		02. June. 2011
- * author	NXP MCU SW Application Team
+ * file     lpc177x_8x_emac.h
+ * brief    Contains all macro definitions and function prototypes
+ *          support for Ethernet MAC firmware library on LPC177x_8x
+ * version  1.0
+ * date     02. June. 2011
+ * author   NXP MCU SW Application Team
  *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
@@ -195,7 +195,7 @@
 #define EMAC_MCFG_SUPP_PREAM     0x00000002  /* Suppress Preamble                   */
 #define EMAC_MCFG_CLK_SEL(n)     ((n&0x0F)<<2)  /* Clock Select Field               */
 #define EMAC_MCFG_RES_MII        0x00008000  /* Reset MII Management Hardware       */
-#define EMAC_MCFG_MII_MAXCLK	 2500000UL   /* MII Clock max                       */
+#define EMAC_MCFG_MII_MAXCLK     2500000UL   /* MII Clock max                       */
 
 
 /*----------------------------------------------------------------------------*

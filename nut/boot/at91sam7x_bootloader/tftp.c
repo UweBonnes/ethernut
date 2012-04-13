@@ -142,7 +142,7 @@ int tftp_receive(char *filename, u_long tftp_ip, int (*callback)(u_char *buffer,
          */
         if (rx_len > 4) {
             //INFO("TFTP received block %d\r\n", block);
-		INFO(".");
+        INFO(".");
             callback(rx_frame.th_data, rx_len-4, offset, user_data);
             total_bytes += rx_len-4;
             offset += MIN(rx_len - 4, 512);

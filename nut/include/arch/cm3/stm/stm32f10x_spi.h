@@ -78,7 +78,7 @@ typedef struct
   * @{
   */
 
-#define SPI_Enable			((uint16_t)0x0040)
+#define SPI_Enable          ((uint16_t)0x0040)
 
 #define SPI_Mode_Master                 ((uint16_t)0x0104)
 #define SPI_Mode_Slave                  ((uint16_t)0x0000)

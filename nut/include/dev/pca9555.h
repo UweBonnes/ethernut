@@ -40,7 +40,7 @@
  *
  */
 #ifndef _DEV_PCA9555_H_
-#define	_DEV_PCA9555_H_
+#define _DEV_PCA9555_H_
 
 #include <cfg/pca9555.h>
 #include <dev/twif.h>

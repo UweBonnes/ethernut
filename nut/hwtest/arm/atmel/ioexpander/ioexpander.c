@@ -110,12 +110,12 @@ THREAD(Thread1, arg)
 THREAD(Thread2, arg)
 /******************************************************************/
 {
-	uint8_t key, oldkey;
-	uint8_t flag = 1;
-	int rc;
+    uint8_t key, oldkey;
+    uint8_t flag = 1;
+    int rc;
     HANDLE led3;
 
-	printf( "Key and LED test for PCA9555\n" );
+    printf( "Key and LED test for PCA9555\n" );
 
     if( NutRegisterLed( &led3, IOXP_PORT1, 3) == 0)
         printf( "register LED 4 OK\n");
@@ -124,9 +124,9 @@ THREAD(Thread2, arg)
 
     NutThreadSetPriority(128);
     for (;;)
-	{
-		key = 0;
-		rc = IOExpRawRead( 0, &key);
+    {
+        key = 0;
+        rc = IOExpRawRead( 0, &key);
         if( key != oldkey) {
             if( key > oldkey) {
                 /* flash led if key is pressed */
@@ -134,23 +134,23 @@ THREAD(Thread2, arg)
             }
 
             oldkey = key;
-    		printf( "IOER rc=%d key=0x%02x\n", rc, key);
-    		if( rc >= 0)
-    		{
-    			if( flag == 0 )
-    			{
-    				flag = 1;
+            printf( "IOER rc=%d key=0x%02x\n", rc, key);
+            if( rc >= 0)
+            {
+                if( flag == 0 )
+                {
+                    flag = 1;
 
-    				if( key & KEY1)	printf( "Key 1 pressed\n" );
-    				if( key & KEY2)	printf( "Key 2 pressed\n" );
-    				if( key & KEY3)	printf( "Key 3 pressed\n" );
-    				if( key & KEY4)	printf( "Key 4 pressed\n" );
-    			}
-    		}
-    		else
-    		{
-    			flag = 0;
-    		}
+                    if( key & KEY1) printf( "Key 1 pressed\n" );
+                    if( key & KEY2) printf( "Key 2 pressed\n" );
+                    if( key & KEY3) printf( "Key 3 pressed\n" );
+                    if( key & KEY4) printf( "Key 4 pressed\n" );
+                }
+            }
+            else
+            {
+                flag = 0;
+            }
         }
         NutSleep(125);
     }
@@ -171,15 +171,15 @@ int main(void)
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     printf("Init TWI... ");
-	baud = 400000;
-	if( TwInit( 0 ) == 0) /* par = slave address but we are master */
+    baud = 400000;
+    if( TwInit( 0 ) == 0) /* par = slave address but we are master */
         printf( "OK\n");
     else
         printf( "FAIL\n");
-	TwIOCtl( TWI_SETSPEED, &baud);
+    TwIOCtl( TWI_SETSPEED, &baud);
 
     printf("Init PCA9555... ");
-	if( IOExpInit() == 0)
+    if( IOExpInit() == 0)
         printf( "OK\n");
     else
         printf( "FAIL\n");
@@ -199,7 +199,7 @@ int main(void)
      * Endless loop in main thread.
      */
     for (;;)
-	{
+    {
         NutSleep(5000);
     }
     return 0;

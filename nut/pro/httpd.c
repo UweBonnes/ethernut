@@ -322,7 +322,7 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
  */
 void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
 {
-	NutHttpSendHeaderBottom( stream, 0, mime_type, bytes);
+    NutHttpSendHeaderBottom( stream, 0, mime_type, bytes);
 }
 
 /*!
@@ -514,7 +514,7 @@ void *NutGetMimeHandler(char *name)
  * the decoded string
  *
  * \warning To save RAM, the str parameter will be
- * 	    overwritten with the encoded string.
+ *      overwritten with the encoded string.
  */
 void NutHttpURLDecode(char *str)
 {

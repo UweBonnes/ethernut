@@ -185,8 +185,8 @@ static int DecodeFrame(uint8_t *buf, int len)
 
     while (len > 2 * MAINBUF_SIZE) {
         if ((skip = MP3FindSyncWord(buf, len)) < 0) {
-		    return -1;
-	    }
+            return -1;
+        }
         if (skip) {
             len -= skip;
             buf += skip;

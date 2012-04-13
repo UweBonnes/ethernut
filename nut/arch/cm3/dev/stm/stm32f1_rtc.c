@@ -57,8 +57,8 @@
 
 static void Stm32RtcRtoffPoll()
 {
-	while((RTC->CRL & RTC_FLAG_RTOFF)==0);
-	return;
+    while((RTC->CRL & RTC_FLAG_RTOFF)==0);
+    return;
 };
 
 /*!

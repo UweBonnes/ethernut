@@ -102,17 +102,17 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	    IntDisable(UART5_IRQn);
+        IntDisable(UART5_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-    	IntRegister(UART5_IRQn,Uart5IrqEntry);
+        IntRegister(UART5_IRQn,Uart5IrqEntry);
         /* Initialize with defined priority. */
-	    IntPrioritySet(UART5_IRQn,NUT_IRQPRI_UART5);
+        IntPrioritySet(UART5_IRQn,NUT_IRQPRI_UART5);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(UART5_IRQn);
+        NVIC_ClearPendingIRQ(UART5_IRQn);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -138,7 +138,7 @@ static int Uart5IrqCtl(int cmd, void *param)
         *ival = IntPriorityGet(UART5_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-	IntPrioritySet(UART5_IRQn,*ival);
+    IntPrioritySet(UART5_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -153,7 +153,7 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	    IntEnable(UART5_IRQn);
+        IntEnable(UART5_IRQn);
     }
     return rc;
 }

@@ -91,7 +91,7 @@
 
 typedef void (*IAP)(uint32_t *cmd, uint32_t *result);
 IAP iap_entry = (IAP) IAP_LOCATION;
-#define IAP_Call 	iap_entry
+#define IAP_Call    iap_entry
 
 
 typedef uint32_t flashdat_t;
@@ -249,7 +249,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorErase(uint32_t start_sec, uint32_t end_sec)
 
 IAP_STATUS_CODE Lpc17xxIapSectorBlankCheck(uint32_t start_sec, uint32_t end_sec,
                                  uint32_t *first_nblank_off,
-								 uint32_t *first_nblank_val)
+                                 uint32_t *first_nblank_val)
 {
     IAP_COMMAND_Type command;
 

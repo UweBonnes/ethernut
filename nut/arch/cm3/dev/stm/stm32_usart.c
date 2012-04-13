@@ -238,10 +238,10 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
      */
     if (flow_control & (XON_PENDING | XOFF_PENDING)) {
         if (flow_control & XON_PENDING) {
-       	    USARTn->DR=ASCII_XOFF;
+            USARTn->DR=ASCII_XOFF;
             flow_control |= XOFF_SENT;
         } else {
-   	        USARTn->DR=ASCII_XON;
+            USARTn->DR=ASCII_XON;
             flow_control &= ~XOFF_SENT;
         }
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
@@ -253,7 +253,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
          * If XOFF has been received, we disable the transmit interrupts
          * and return without sending anything.
          */
-	    USARTn->CR1 &= ~(USART_CR1_TXEIE);
+        USARTn->CR1 &= ~(USART_CR1_TXEIE);
         USARTn->SR;
         return;
     }
@@ -270,7 +270,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
         // TODO: CTS handling in here
 
         /* Start transmission of the next character. */
-	    USARTn->DR=*cp;
+        USARTn->DR=*cp;
 
         /* Decrement the number of available bytes in the buffer. */
         rbf->rbf_cnt--;
@@ -295,7 +295,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
         /* Enable transmit complete interrupt */
         USARTn->CR1 |= USART_CR1_TCIE;
         /* Disable transmit interrupts. */
-	    USARTn->CR1  &= ~USART_CR1_TXEIE;
+        USARTn->CR1  &= ~USART_CR1_TXEIE;
         if( !hdpx_control) {
             /* if half-duplex post the waiting thread after all bits are out.
              * Otherwise he might read back his own echo */
@@ -391,7 +391,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
         if(cnt >= rbf->rbf_hwm) {
             if((flow_control & XOFF_SENT) == 0) {
                 if (USARTn->SR & USART_CR1_TE) {
-		            USARTn->DR= ASCII_XOFF;
+                    USARTn->DR= ASCII_XOFF;
                     flow_control |= XOFF_SENT;
                     flow_control &= ~XOFF_PENDING;
                 } else {
@@ -952,8 +952,8 @@ static int Stm32UsartSetStatus(uint32_t flags)
      * Clear USART receive errors.
      */
     if (flags & UART_ERRORS) {
-    	USARTn->SR;
-    	USARTn->DR;
+        USARTn->SR;
+        USARTn->DR;
     }
 
     /*
@@ -1159,7 +1159,7 @@ static void Stm32UsartRxStart(void)
     if (flow_control && (flow_control & XOFF_SENT) != 0) {
         NutUartIrqDisable();
         if ((USARTn->SR & USART_SR_TXE)) {
-	        USARTn->DR=ASCII_XON;
+            USARTn->DR=ASCII_XON;
             flow_control &= ~XON_PENDING;
         } else {
             flow_control |= XON_PENDING;

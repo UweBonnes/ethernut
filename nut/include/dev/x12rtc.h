@@ -1,5 +1,5 @@
 #ifndef _DEV_X12RTC_H_
-#define	_DEV_X12RTC_H_
+#define _DEV_X12RTC_H_
 
 /*
  * Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.

@@ -805,19 +805,19 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         return NUTFILE_EOF;
     }
     /* Check for the cookie at the end of this sector. */
-	if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
+    if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
         free(fcb);
         return NUTFILE_EOF;
-	}
+    }
     /* Check for the partition table. */
-	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' &&
+    if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 1] == 'A' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 2] == 'T') {
         /* No partition table. Assume FAT12 and 32MB size. */
         fcb->fcb_part.part_type = PTYPE_FAT12;
         fcb->fcb_part.part_sect_offs = 0;
         fcb->fcb_part.part_sects = 65536; /* How to find out? */
-	}
+    }
     else {
         /* Read partition table. */
         part = (DOSPART *) & fcb->fcb_blkbuf[DOSPART_SECTORPOS];

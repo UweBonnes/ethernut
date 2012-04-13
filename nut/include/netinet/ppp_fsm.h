@@ -127,17 +127,17 @@
 #define PPPS_ACKSENT         8  /*!< \brief We've sent a Config Ack */
 #define PPPS_OPENED          9  /*!< \brief Connection available */
 
-#define XCP_CONFREQ          1	/*!< \brief LCP/IPCP Configure-Request Code */
-#define XCP_CONFACK          2	/*!< \brief LCP/IPCP Configure-Ack Code */
-#define XCP_CONFNAK          3	/*!< \brief LCP/IPCP Configure-Nack Code */
-#define XCP_CONFREJ          4	/*!< \brief LCP/IPCP Configure-Reject Code */
-#define XCP_TERMREQ          5	/*!< \brief LCP/IPCP Terminate-Request Code */
-#define XCP_TERMACK          6	/*!< \brief LCP/IPCP Terminate-Ack Code */
-#define XCP_CODEREJ          7	/*!< \brief LCP/IPCP Code-Reject Code */
-#define LCP_PROTREJ          8	/*!< \brief LCP Protocol-Reject Code */
-#define LCP_ERQ              9	/*!< \brief LCP Echo-Request Code */
-#define LCP_ERP             10	/*!< \brief LCP Echo-Response Code */
-#define LCP_DRQ             11	/*!< \brief LCP Discard-Request Code */
+#define XCP_CONFREQ          1  /*!< \brief LCP/IPCP Configure-Request Code */
+#define XCP_CONFACK          2  /*!< \brief LCP/IPCP Configure-Ack Code */
+#define XCP_CONFNAK          3  /*!< \brief LCP/IPCP Configure-Nack Code */
+#define XCP_CONFREJ          4  /*!< \brief LCP/IPCP Configure-Reject Code */
+#define XCP_TERMREQ          5  /*!< \brief LCP/IPCP Terminate-Request Code */
+#define XCP_TERMACK          6  /*!< \brief LCP/IPCP Terminate-Ack Code */
+#define XCP_CODEREJ          7  /*!< \brief LCP/IPCP Code-Reject Code */
+#define LCP_PROTREJ          8  /*!< \brief LCP Protocol-Reject Code */
+#define LCP_ERQ              9  /*!< \brief LCP Echo-Request Code */
+#define LCP_ERP             10  /*!< \brief LCP Echo-Response Code */
+#define LCP_DRQ             11  /*!< \brief LCP Discard-Request Code */
 
 /*
  * PAP client states.

@@ -116,20 +116,20 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     /* Detect transfer type and set Registers accordingly */
     if ((uint32_t)src & PERIPH_BASE) {
         /* Peripheral to Memory */
-    	cp=(uint32_t)src;
-    	cm=(uint32_t)dst;
+        cp=(uint32_t)src;
+        cm=(uint32_t)dst;
     }
     else if ((uint32_t)dst & PERIPH_BASE) {
         /* Memory to Peripheral */
         cc |= DMA_CCR2_DIR;
-    	cp=(uint32_t)dst;
-    	cm=(uint32_t)src;
+        cp=(uint32_t)dst;
+        cm=(uint32_t)src;
     }
     else {
         /* Memory to Memory Transfer */
         cc |= DMA_CCR1_MEM2MEM | DMA_CCR1_DIR;
-    	cp =(uint32_t)dst;
-    	cm =(uint32_t)dst;
+        cp =(uint32_t)dst;
+        cm =(uint32_t)dst;
     }
 
     channel->CCR=cc;
@@ -145,7 +145,7 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
 void DMA_Enable(uint8_t ch)
 {
     DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
-	channel->CCR |= DMA_CCR1_EN;
+    channel->CCR |= DMA_CCR1_EN;
 }
 
 /*
@@ -154,7 +154,7 @@ void DMA_Enable(uint8_t ch)
 void DMA_Disable(uint8_t ch)
 {
     DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
-	channel->CCR &= ~DMA_CCR1_EN;
+    channel->CCR &= ~DMA_CCR1_EN;
 }
 
 
@@ -165,7 +165,7 @@ void DMA_Disable(uint8_t ch)
  */
 void DMA_Init(void)
 {
-	uint8_t i;
+    uint8_t i;
     DMA_Channel_TypeDef *channel;
 
     /* Enable DMA clocks */
@@ -177,7 +177,7 @@ void DMA_Init(void)
     /* Clear pending interrupts in DMA 1 ISR */
     DMA1->IFCR = 0xFFFFFFFF;
     /* Clear interrupt related flags in channels */
-	for(i=0; i<STM_HAS_DMA1; i++) {
+    for(i=0; i<STM_HAS_DMA1; i++) {
         channel = (DMA_Channel_TypeDef*)DmaTab1[i].dma_ch;
         channel->CCR = 0;
         DMA_ClearFlag(i,0xf);
@@ -187,7 +187,7 @@ void DMA_Init(void)
     /* Clear pending interrupts in DMA 2 ISR */
     DMA2->IFCR = 0xFFFFFFFF;
     /* Clear interrupt related flags in channels */
-	for(i=0;i<STM_HAS_DMA2;i++) {
+    for(i=0;i<STM_HAS_DMA2;i++) {
         channel = (DMA_Channel_TypeDef*)DmaTab2[i].dma_ch;
         channel->CCR = 0;
         DMA_ClearFlag(i,0xf);

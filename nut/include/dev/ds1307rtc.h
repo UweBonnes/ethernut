@@ -1,5 +1,5 @@
 #ifndef _DEV_DS1307RTC_H_
-#define	_DEV_DS1307RTC_H_
+#define _DEV_DS1307RTC_H_
 
 /*
  * Copyright (C) 2006 by egnite Software GmbH and Christian Welzel.

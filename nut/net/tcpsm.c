@@ -799,8 +799,8 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
     /*
      * Block application.
      */
-	 if(sock->so_state == TCPS_SYN_SENT)
-		NutEventWait(&sock->so_ac_tq, 0);
+     if(sock->so_state == TCPS_SYN_SENT)
+        NutEventWait(&sock->so_ac_tq, 0);
 
     if (sock->so_state != TCPS_ESTABLISHED && sock->so_state != TCPS_CLOSE_WAIT)
         return -1;
@@ -1039,7 +1039,7 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
         else
             NutTcpAbortSocket(sock, ECONNREFUSED);
         NutNetBufFree(nb);
-    	sock->so_retran_time = 0;
+        sock->so_retran_time = 0;
         NutTcpDiscardBuffers(sock);
         return;
     }

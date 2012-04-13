@@ -36,7 +36,7 @@
 *  Copyright (c) 2002, 2003 Sam Leffler, Errno Consulting
 *  Copyright (c) 2002 M Warner Losh <imp@freebsd.org>.  All rights reserved.
 *  Copyright (c) 1997, 1998, 1999
-*	 Bill Paul <wpaul@ctr.columbia.edu>.  All rights reserved.
+*    Bill Paul <wpaul@ctr.columbia.edu>.  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
@@ -90,8 +90,8 @@
  * Resetport definition
 */
 #define RESET_EN_PORT           DDRD
-#define RESET_PORT		          PORTD
-#define RESET_BIT	 	            0x20
+#define RESET_PORT                PORTD
+#define RESET_BIT                   0x20
 
 /***************************************************************************/
 /*                           if_wivar.h                                    */
@@ -100,37 +100,37 @@
 /*
  * Driver Flags
 */
-#define	WI_FLAGS_ATTACHED       0x0001
-#define	WI_FLAGS_INITIALIZED    0x0002
-#define	WI_FLAGS_OUTRANGE       0x0004
-#define	WI_FLAGS_HAS_MOR        0x0010
-#define	WI_FLAGS_HAS_ROAMING    0x0020
-#define	WI_FLAGS_HAS_DIVERSITY  0x0040
-#define	WI_FLAGS_HAS_SYSSCALE   0x0080
-#define	WI_FLAGS_BUG_AUTOINC    0x0100
-#define	WI_FLAGS_HAS_FRAGTHR    0x0200
-#define	WI_FLAGS_HAS_DBMADJUST  0x0400
+#define WI_FLAGS_ATTACHED       0x0001
+#define WI_FLAGS_INITIALIZED    0x0002
+#define WI_FLAGS_OUTRANGE       0x0004
+#define WI_FLAGS_HAS_MOR        0x0010
+#define WI_FLAGS_HAS_ROAMING    0x0020
+#define WI_FLAGS_HAS_DIVERSITY  0x0040
+#define WI_FLAGS_HAS_SYSSCALE   0x0080
+#define WI_FLAGS_BUG_AUTOINC    0x0100
+#define WI_FLAGS_HAS_FRAGTHR    0x0200
+#define WI_FLAGS_HAS_DBMADJUST  0x0400
 
 /*
  * TX Buffer count
 */
-#define	WI_NTXBUF               3
+#define WI_NTXBUF               3
 
 /***************************************************************************/
 /*                          ieee80211.h                                    */
 /***************************************************************************/
 
 #define IEEE80211_ADDR_LEN      6
-#define	IEEE80211_NWID_LEN      32
+#define IEEE80211_NWID_LEN      32
 
 
-#define	IEEE80211_WEP_KEYLEN    5 /* 40bit */
-#define	IEEE80211_WEP_IVLEN     3	/* 24bit */
-#define	IEEE80211_WEP_KIDLEN    1	/* 1 octet */
-#define	IEEE80211_WEP_CRCLEN    4	/* CRC-32 */
-#define	IEEE80211_WEP_NKID      4	/* number of key ids */
+#define IEEE80211_WEP_KEYLEN    5 /* 40bit */
+#define IEEE80211_WEP_IVLEN     3   /* 24bit */
+#define IEEE80211_WEP_KIDLEN    1   /* 1 octet */
+#define IEEE80211_WEP_CRCLEN    4   /* CRC-32 */
+#define IEEE80211_WEP_NKID      4   /* number of key ids */
 
-#define	IEEE80211_CRC_LEN       4
+#define IEEE80211_CRC_LEN       4
 
 
 /***************************************************************************/
@@ -140,36 +140,36 @@
 /*
  * ic_flags
 */
-#define	IEEE80211_F_ASCAN       0x00000001  /* STATUS: active scan */
-#define	IEEE80211_F_SIBSS       0x00000002  /* STATUS: start IBSS */
-#define	IEEE80211_F_WEPON       0x00000100  /* CONF: WEP enabled */
-#define	IEEE80211_F_IBSSON      0x00000200  /* CONF: IBSS creation enable */
-#define	IEEE80211_F_PMGTON      0x00000400  /* CONF: Power mgmt enable */
-#define	IEEE80211_F_DESBSSID    0x00000800  /* CONF: des_bssid is set */
-#define	IEEE80211_F_SCANAP      0x00001000  /* CONF: Scanning AP */
-#define	IEEE80211_F_ROAMING     0x00002000  /* CONF: roaming enabled */
-#define	IEEE80211_F_SWRETRY     0x00004000  /* CONF: sw tx retry enabled */
-#define	IEEE80211_F_TXPMGT      0x00018000  /* STATUS: tx power */
+#define IEEE80211_F_ASCAN       0x00000001  /* STATUS: active scan */
+#define IEEE80211_F_SIBSS       0x00000002  /* STATUS: start IBSS */
+#define IEEE80211_F_WEPON       0x00000100  /* CONF: WEP enabled */
+#define IEEE80211_F_IBSSON      0x00000200  /* CONF: IBSS creation enable */
+#define IEEE80211_F_PMGTON      0x00000400  /* CONF: Power mgmt enable */
+#define IEEE80211_F_DESBSSID    0x00000800  /* CONF: des_bssid is set */
+#define IEEE80211_F_SCANAP      0x00001000  /* CONF: Scanning AP */
+#define IEEE80211_F_ROAMING     0x00002000  /* CONF: roaming enabled */
+#define IEEE80211_F_SWRETRY     0x00004000  /* CONF: sw tx retry enabled */
+#define IEEE80211_F_TXPMGT      0x00018000  /* STATUS: tx power */
 #define IEEE80211_F_TXPOW_OFF   0x00000000  /* TX Power: radio disabled */
 #define IEEE80211_F_TXPOW_FIXED 0x00008000  /* TX Power: fixed rate */
 #define IEEE80211_F_TXPOW_AUTO  0x00010000  /* TX Power: undefined */
-#define	IEEE80211_F_SHSLOT      0x00020000  /* CONF: short slot time */
-#define	IEEE80211_F_SHPREAMBLE  0x00040000  /* CONF: short preamble */
+#define IEEE80211_F_SHSLOT      0x00020000  /* CONF: short slot time */
+#define IEEE80211_F_SHPREAMBLE  0x00040000  /* CONF: short preamble */
 
 /*
  * ic_caps
 */
-#define	IEEE80211_C_WEP         0x0001  /* CAPABILITY: WEP available  */
-#define	IEEE80211_C_IBSS        0x0002  /* CAPABILITY: IBSS available */
-#define	IEEE80211_C_PMGT        0x0004  /* CAPABILITY: Power mgmt     */
-#define	IEEE80211_C_HOSTAP      0x0008  /* CAPABILITY: HOSTAP avail   */
-#define	IEEE80211_C_AHDEMO      0x0010  /* CAPABILITY: Old Adhoc Demo */
-#define	IEEE80211_C_SWRETRY     0x0020  /* CAPABILITY: sw tx retry    */
-#define	IEEE80211_C_TXPMGT      0x0040  /* CAPABILITY: tx power mgmt  */
-#define	IEEE80211_C_SHSLOT      0x0080  /* CAPABILITY: short slottime */
-#define	IEEE80211_C_SHPREAMBLE  0x0100  /* CAPABILITY: short preamble */
-#define	IEEE80211_C_MONITOR     0x0200  /* CAPABILITY: monitor mode   */
-#define	IEEE80211_C_RCVMGT      0x0400  /* CAPABILITY: rcv mgt frames */
+#define IEEE80211_C_WEP         0x0001  /* CAPABILITY: WEP available  */
+#define IEEE80211_C_IBSS        0x0002  /* CAPABILITY: IBSS available */
+#define IEEE80211_C_PMGT        0x0004  /* CAPABILITY: Power mgmt     */
+#define IEEE80211_C_HOSTAP      0x0008  /* CAPABILITY: HOSTAP avail   */
+#define IEEE80211_C_AHDEMO      0x0010  /* CAPABILITY: Old Adhoc Demo */
+#define IEEE80211_C_SWRETRY     0x0020  /* CAPABILITY: sw tx retry    */
+#define IEEE80211_C_TXPMGT      0x0040  /* CAPABILITY: tx power mgmt  */
+#define IEEE80211_C_SHSLOT      0x0080  /* CAPABILITY: short slottime */
+#define IEEE80211_C_SHPREAMBLE  0x0100  /* CAPABILITY: short preamble */
+#define IEEE80211_C_MONITOR     0x0200  /* CAPABILITY: monitor mode   */
+#define IEEE80211_C_RCVMGT      0x0400  /* CAPABILITY: rcv mgt frames */
 
 enum ieee80211_opmode {
   IEEE80211_M_STA     = 1,      /* infrastructure station */
@@ -187,13 +187,13 @@ enum ieee80211_opmode {
  * 802.11 protocol implementation definitions.
 */
 enum ieee80211_state {
-	IEEE80211_S_INIT	= 0,	      /* default state */
-	IEEE80211_S_SCAN	= 1,	      /* scanning */
-	IEEE80211_S_AUTH	= 2,	      /* try to authenticate */
-	IEEE80211_S_ASSOC	= 3,	      /* try to assoc */
-	IEEE80211_S_RUN		= 4,	      /* associated */
+    IEEE80211_S_INIT    = 0,          /* default state */
+    IEEE80211_S_SCAN    = 1,          /* scanning */
+    IEEE80211_S_AUTH    = 2,          /* try to authenticate */
+    IEEE80211_S_ASSOC   = 3,          /* try to assoc */
+    IEEE80211_S_RUN     = 4,          /* associated */
 };
-#define	IEEE80211_S_MAX		(IEEE80211_S_RUN+1)
+#define IEEE80211_S_MAX     (IEEE80211_S_RUN+1)
 
 /***************************************************************************/
 /*                          ieee80211_crypto.h                             */
@@ -202,7 +202,7 @@ enum ieee80211_state {
 /*
  * 802.11 protocol crypto-related definitions.
  */
-#define	IEEE80211_KEYBUF_SIZE	16
+#define IEEE80211_KEYBUF_SIZE   16
 struct ieee80211_wepkey {
   int wk_len;
   u_int8_t wk_key[IEEE80211_KEYBUF_SIZE];

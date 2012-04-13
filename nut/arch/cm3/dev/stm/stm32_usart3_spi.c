@@ -152,25 +152,25 @@ int Stm32Usart3BusSelect(NUTSPINODE * node, uint32_t tmo)
         USART_TypeDef *spireg = node->node_stat;
 
         RCC->APB1ENR |= RCC_APB1Periph_USART3;
-	RCC->APB2ENR |= RCC_APB2Periph_GPIOD | //USART RX,TX,CK
-			RCC_APB2Periph_AFIO;
+    RCC->APB2ENR |= RCC_APB2Periph_GPIOD | //USART RX,TX,CK
+            RCC_APB2Periph_AFIO;
 
-	//У нас USART3 висит на PD8,9,10
-	AFIO->MAPR |= GPIO_FullRemap_USART3;
+    //У нас USART3 висит на PD8,9,10
+    AFIO->MAPR |= GPIO_FullRemap_USART3;
 
-	//Ставим на альтернативную функцию - как раз на usart1
-	//tx
-	GpioPinConfigSet( NUTGPIO_PORTD, 8,
-			GPIO_CFG_DISABLED|GPIO_CFG_OUTPUT);
-	//rx
-	GpioPinConfigSet( NUTGPIO_PORTD, 9,
-			0);
-	//ck
-	GpioPinConfigSet( NUTGPIO_PORTD, 10,
-			GPIO_CFG_DISABLED|GPIO_CFG_OUTPUT);
-	//На выход - для Chipselect-а
-	GpioPinConfigSet(NUTGPIO_PORTD, 13,
-			GPIO_CFG_OUTPUT);//FIXME: check correct pin
+    //Ставим на альтернативную функцию - как раз на usart1
+    //tx
+    GpioPinConfigSet( NUTGPIO_PORTD, 8,
+            GPIO_CFG_DISABLED|GPIO_CFG_OUTPUT);
+    //rx
+    GpioPinConfigSet( NUTGPIO_PORTD, 9,
+            0);
+    //ck
+    GpioPinConfigSet( NUTGPIO_PORTD, 10,
+            GPIO_CFG_DISABLED|GPIO_CFG_OUTPUT);
+    //На выход - для Chipselect-а
+    GpioPinConfigSet(NUTGPIO_PORTD, 13,
+            GPIO_CFG_OUTPUT);//FIXME: check correct pin
 
         /* If the mode update bit is set, then update our shadow registers. */
         if (node->node_mode & SPI_MODE_UPDATE) {
@@ -178,12 +178,12 @@ int Stm32Usart3BusSelect(NUTSPINODE * node, uint32_t tmo)
         }
 
         /* Enable SPI. */
-	base=node->node_bus->bus_base;
-	//spireg->CR1|=(1<<6);//SPE -spi enable
+    base=node->node_bus->bus_base;
+    //spireg->CR1|=(1<<6);//SPE -spi enable
         /* Set SPI mode. */
-	base->CR2=spireg->CR2;
-	base->BRR=spireg->BRR;
-	base->CR1=spireg->CR1;
+    base->CR2=spireg->CR2;
+    base->BRR=spireg->BRR;
+    base->CR1=spireg->CR1;
 
         /* Finally activate the node's chip select. */
         rc = Stm32Usart3ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) != 0);
@@ -220,16 +220,16 @@ int Stm32UsartSpiSetup(NUTSPINODE * node)
     spireg->CR2 = USART_Clock_Enable|USART_LastBit_Enable;
     spireg->BRR =16;
     switch(node->node_bits){
-	    case 8:
-		    spireg->CR1 &= ~(USART_WordLength_9b);
-		    spireg->CR1 &= ~(1<<10);
-		    break;
-	    case 9:
-		    spireg->CR1 |= USART_WordLength_9b;
-		    spireg->CR1 &= ~(1<<10);
-		    break;
-	    default:
-		    break;
+        case 8:
+            spireg->CR1 &= ~(USART_WordLength_9b);
+            spireg->CR1 &= ~(1<<10);
+            break;
+        case 9:
+            spireg->CR1 |= USART_WordLength_9b;
+            spireg->CR1 &= ~(1<<10);
+            break;
+        default:
+            break;
     };
     if (node->node_mode & SPI_MODE_CPOL) {
         spireg->CR2 |= USART_CPOL_High;
@@ -282,9 +282,9 @@ int Stm32UsartBusNodeInit(NUTSPINODE * node)
         USART_TypeDef *spireg = malloc(sizeof(USART_TypeDef));
         if (spireg) {
             /* Set interface defaults. */
-	    spireg->CR1 =USART_Mode_Rx|USART_Mode_Tx|(1<<13);//fixme: write real values
+        spireg->CR1 =USART_Mode_Rx|USART_Mode_Tx|(1<<13);//fixme: write real values
             spireg->CR2 = USART_Clock_Enable|USART_LastBit_Enable;
-	    spireg->BRR = 16;
+        spireg->BRR = 16;
             /* Update with node's defaults. */
             node->node_stat = (void *)spireg;
             Stm32UsartSpiSetup(node);
@@ -321,20 +321,20 @@ int Stm32UsartBusNodeInit(NUTSPINODE * node)
  */
 int Stm32UsartBusWait(NUTSPINODE * node, uint32_t tmo)
 {//FIXME: check this - do I really need it?
-/*	USART_TypeDef* spi_bus;
-	spi_bus=((USART_TypeDef *) node->node_bus->bus_base);
-	while (spi_bus->SR & USART_FLAG_RXNE) {
-		if (NutEventWait(&node->node_bus->bus_ready, tmo)) {
-		   return -1;
-		}
-	}
-	while (!(spi_bus->SR & USART_FLAG_TXE) ){
-        	if (NutEventWait(&node->node_bus->bus_ready, tmo)) {
-        	   return -1;
-	       }
-	}*/
-	//Not Needed - transfer does this
-	//FIXME: add interrupt support
+/*  USART_TypeDef* spi_bus;
+    spi_bus=((USART_TypeDef *) node->node_bus->bus_base);
+    while (spi_bus->SR & USART_FLAG_RXNE) {
+        if (NutEventWait(&node->node_bus->bus_ready, tmo)) {
+           return -1;
+        }
+    }
+    while (!(spi_bus->SR & USART_FLAG_TXE) ){
+            if (NutEventWait(&node->node_bus->bus_ready, tmo)) {
+               return -1;
+           }
+    }*/
+    //Not Needed - transfer does this
+    //FIXME: add interrupt support
     return 0;
 }
 
@@ -370,12 +370,12 @@ int Stm32UsartBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int
             b = *txp++;
         }
         /* Transmission starts by writing the transmit data. */
-	base->DR=b;
+    base->DR=b;
         /* Wait for receiver data register full. */
         while( (base->SR & USART_FLAG_RXNE) == 0) { ; }
         /* Read incoming data. */
         b = base->DR;
-	//b=(uint8_t)SPI_I2S_ReceiveData(USART1);
+    //b=(uint8_t)SPI_I2S_ReceiveData(USART1);
         if (rxp) {
             *rxp++ = b;
         }

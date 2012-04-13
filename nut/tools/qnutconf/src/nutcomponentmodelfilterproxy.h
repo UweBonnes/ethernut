@@ -35,16 +35,16 @@
 
 class NutComponentModelFilterProxy : public QSortFilterProxyModel
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	NutComponentModelFilterProxy( QObject* parent = 0 );
+    NutComponentModelFilterProxy( QObject* parent = 0 );
 
 public slots:
-	void showDisabledItems( bool enabled );
+    void showDisabledItems( bool enabled );
 
 protected:
-	bool filterAcceptsRow( int source_row, const QModelIndex& source_parent ) const;
+    bool filterAcceptsRow( int source_row, const QModelIndex& source_parent ) const;
 
 public:
-	bool m_showDisabledItems;
+    bool m_showDisabledItems;
 };

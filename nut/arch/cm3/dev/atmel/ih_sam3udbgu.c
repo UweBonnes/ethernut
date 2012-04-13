@@ -98,14 +98,14 @@ static int UartIrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	IntDisable(INT_UART);
+    IntDisable(INT_UART);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         IntRegister(INT_UART,(void*)UartIrqEntry);
         IntPrioritySet(INT_UART,NUT_IRQPRI_UART);
-	outr(AT91C_NVIC_ICPR,_BV(AT91C_ID_DBGU));
+    outr(AT91C_NVIC_ICPR,_BV(AT91C_ID_DBGU));
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -122,10 +122,10 @@ static int UartIrqCtl(int cmd, void *param)
         enabled = 0;
         break;
     case NUT_IRQCTL_GETPRIO:
-	*ival = IntPriorityGet(INT_UART);
+    *ival = IntPriorityGet(INT_UART);
         break;
     case NUT_IRQCTL_SETPRIO:
-	IntPrioritySet(INT_UART, *ival);
+    IntPrioritySet(INT_UART, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -140,7 +140,7 @@ static int UartIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	IntEnable(INT_UART);
+    IntEnable(INT_UART);
     }
     return rc;
 }

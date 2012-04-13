@@ -48,8 +48,8 @@
 #include <sys/heap.h>              // NutHeapAlloc
 #include <sys/timer.h>             // NutGetMillis
 #include <sys/thread.h>            // NUTTHREADINFO
-#include <sys/atom.h>			   // NutEnterCritical_notrace
-#include <dev/irqreg.h>			   // sig_OVERFLOW1
+#include <sys/atom.h>              // NutEnterCritical_notrace
+#include <dev/irqreg.h>            // sig_OVERFLOW1
 #include <stdio.h>                 // printf, sscanf
 #include <string.h>                // strcmp
 
@@ -103,7 +103,7 @@ char* int_string[TRACE_INT_LAST+1] = {
     "TIMER0_OVERFL",
     "TIMER1_OVERFL",
     "SUART_TIMER",
-    "SUART_RX"	
+    "SUART_RX"  
 };
 
 char* mode_string[TRACE_MODE_LAST+1] = {
@@ -113,7 +113,7 @@ char* mode_string[TRACE_MODE_LAST+1] = {
 };
 
 char* user_string[TRACE_MAX_USER];
-	
+    
 /************************************************/
 /* function definitions */
 /************************************************/
@@ -134,10 +134,10 @@ int NutTraceInit(int size, char mode)
         NutRegisterIrqHandler(&sig_OVERFLOW1, NutTraceTimer1IRQ, 0);
         sbi(TIMSK, TOIE1);
         trace_isinit = 1;
-    }		
+    }       
     if (size==0) {
         size = TRACE_SIZE_DEFAULT;
-    }	
+    }   
     if (size != trace_size) {
         // current buffer is not of size that is wanted
         if (trace_items != 0) {
@@ -161,8 +161,8 @@ int NutTraceInit(int size, char mode)
 //      mode = TRACE_MODE_DEFAULT;
 //  }
     trace_mode   = mode;
-    NutTraceClear();	
-    return trace_size;		
+    NutTraceClear();    
+    return trace_size;      
 }
 
 
@@ -223,7 +223,7 @@ void NutTraceTerminal(char* arg)
         return;
     }
 
-	
+    
     NutTraceStatusPrint();
     printf("SYNTAX: trace [print [<size>]|oneshot|circular|size <size>|stop|mask [<tag>]]\n");
 }
@@ -236,7 +236,7 @@ void NutTraceStatusPrint(void)
     if (trace_isfull)
         printf(" is full\n");
     else
-        printf(" contains %d elements\n",trace_head);		
+        printf(" contains %d elements\n",trace_head);       
 }
 
 void NutTracePrint(int size)
@@ -261,7 +261,7 @@ void NutTracePrint(int size)
         if (size > trace_size) {
             size = trace_size;
         }
-    }	
+    }   
     else {
         if (size > trace_head) {
             size = trace_head;
@@ -344,7 +344,7 @@ void NutTraceMaskPrint(void)
             printf("ON\n");
         else
             printf("OFF\n");
-    }					
+    }                   
 }
 
 int NutTraceRegisterUserTag(int tag, char* tag_string)
@@ -353,6 +353,6 @@ int NutTraceRegisterUserTag(int tag, char* tag_string)
         return -1;
 
     user_string[tag] = tag_string;
-    return tag;		
+    return tag;     
 }
 #endif

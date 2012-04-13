@@ -72,7 +72,7 @@
  *
  * The original version, defined by RFC 1157.
  */
-#define SNMP_VERSION_1	    0
+#define SNMP_VERSION_1      0
 
 /*! \brief SNMPv2c.
  *
@@ -82,7 +82,7 @@
  *
  * Partly supplied by this code, work is in progress.
  */
-#define SNMP_VERSION_2C	    1
+#define SNMP_VERSION_2C     1
 
 /*! \brief SNMPv3.
  *
@@ -129,12 +129,12 @@
 /*
  * Error codes in SNMPv1, SNMPv2c and SNMPv3 PDUs.
  */
-#define SNMP_ERR_NOERROR    		0
-#define SNMP_ERR_TOOBIG	    		1
-#define SNMP_ERR_NOSUCHNAME 		2
-#define SNMP_ERR_BADVALUE   		3
-#define SNMP_ERR_READONLY   		4
-#define SNMP_ERR_GENERR	    		5
+#define SNMP_ERR_NOERROR            0
+#define SNMP_ERR_TOOBIG             1
+#define SNMP_ERR_NOSUCHNAME         2
+#define SNMP_ERR_BADVALUE           3
+#define SNMP_ERR_READONLY           4
+#define SNMP_ERR_GENERR             5
 
 /*
  * Error codes in SNMPv2c and SNMPv3 PDUs.
@@ -151,18 +151,18 @@
 #define SNMP_ERR_UNDOFAILED             15
 #define SNMP_ERR_AUTHORIZATIONERROR     16
 #define SNMP_ERR_NOTWRITABLE            17
-#define SNMP_ERR_INCONSISTENTNAME	18
+#define SNMP_ERR_INCONSISTENTNAME   18
 
 /*
  * Values of the generic-trap field in trap PDUs.
  */
-#define SNMP_TRAP_COLDSTART		0
-#define SNMP_TRAP_WARMSTART		1
-#define SNMP_TRAP_LINKDOWN		2
-#define SNMP_TRAP_LINKUP		3
-#define SNMP_TRAP_AUTHFAIL		4
-#define SNMP_TRAP_EGPNEIGHBORLOSS	5
-#define SNMP_TRAP_ENTERPRISESPECIFIC	6
+#define SNMP_TRAP_COLDSTART     0
+#define SNMP_TRAP_WARMSTART     1
+#define SNMP_TRAP_LINKDOWN      2
+#define SNMP_TRAP_LINKUP        3
+#define SNMP_TRAP_AUTHFAIL      4
+#define SNMP_TRAP_EGPNEIGHBORLOSS   5
+#define SNMP_TRAP_ENTERPRISESPECIFIC    6
 
 /*
  * Basic OID values
@@ -175,13 +175,13 @@
 
 
 
-#define SNMP_PARSE_ERROR	-1
-#define SNMP_BUILD_ERROR	-2
+#define SNMP_PARSE_ERROR    -1
+#define SNMP_BUILD_ERROR    -2
 
 /*! \brief Maximum length of a community name. */
-#define MAX_SID_LEN	32
+#define MAX_SID_LEN 32
 /*! \brief Maximum number of sub IDs in an OID. */
-#define MAX_NAME_LEN	128
+#define MAX_NAME_LEN    128
 
 #define SNMP_ACT_RESERVE1    0
 #define SNMP_ACT_RESERVE2    1

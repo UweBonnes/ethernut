@@ -64,42 +64,42 @@
  */
 static int lld_at24_write( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t addr)
 {
-	uint8_t retry = at24cs->Timeout;
-//	int tme;
+    uint8_t retry = at24cs->Timeout;
+//  int tme;
     int rc;
 
 #ifdef AT24C_DEBUG
-		printf("MRW %u\n", len);
+        printf("MRW %u\n", len);
 #endif
 
-	do {
+    do {
         /* Successfull write returns with number of bytes transmitted */
         rc = TwMasterRegWrite( at24cs->SlaveAddress, addr, at24cs->IAddrW, buffer, len, at24cs->Timeout);
 #ifdef AT24C_DEBUG
-		printf(" rc:%d re:%u\n", rc, retry);
+        printf(" rc:%d re:%u\n", rc, retry);
 #endif
-		if( rc > 0)
+        if( rc > 0)
             return rc;
 
-		/* there was an error */
-//		tme = TwMasterError();
+        /* there was an error */
+//      tme = TwMasterError();
 #if 0
-		if( tme == TWERR_OK)
-			return 0;
+        if( tme == TWERR_OK)
+            return 0;
 #endif
-//		if( tme & TWERR_SLA_NACK) {
-			/* slave might be busy so we retry (ACK-Polling) */
-			--retry;
-			NutSleep(1);
-//		}
-//		else {
-			/* it was something else than a NACK */
-//			return -1;
-//		}
-	}
-	while( retry);
+//      if( tme & TWERR_SLA_NACK) {
+            /* slave might be busy so we retry (ACK-Polling) */
+            --retry;
+            NutSleep(1);
+//      }
+//      else {
+            /* it was something else than a NACK */
+//          return -1;
+//      }
+    }
+    while( retry);
 
-	return -2;	// we get here if we ran out of delays for ACK of slave address
+    return -2;  // we get here if we ran out of delays for ACK of slave address
 }
 
 /*!
@@ -114,40 +114,40 @@ static int lld_at24_write( struct at24c *at24cs, uint8_t *buffer, uint16_t len, 
  */
 static int lld_at24_read( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t addr)
 {
-	uint8_t retry = at24cs->Timeout;
+    uint8_t retry = at24cs->Timeout;
     uint32_t wtmo = len*retry/at24cs->PageSize;
-//	int tme;
+//  int tme;
     int rc;
 
 #ifdef AT24C_DEBUG
-		printf("MRD %u\n", len);
+        printf("MRD %u\n", len);
 #endif
 
-	do {
+    do {
         /* Successfull read returns with number of bytes received */
         rc = TwMasterRegRead( at24cs->SlaveAddress, addr, at24cs->IAddrW, buffer, len, wtmo);
-		if( rc > 0)
+        if( rc > 0)
             return rc;
 
-//		tme = TwMasterError();
+//      tme = TwMasterError();
 #ifdef AT24C_DEBUG
-		printf(" rc:%d re:%u\n", rc, retry);
+        printf(" rc:%d re:%u\n", rc, retry);
 #endif
 //        if( tme == TWERR_OK)
 //            return 0;
 
         /* there was an error */
-//		if( tme == TWERR_SLA_NACK) {
-			--retry;
+//      if( tme == TWERR_SLA_NACK) {
+            --retry;
 
-			NutSleep(1);
-//		}
+            NutSleep(1);
+//      }
 //        else
 //            return -2;
 
-	} while( retry);
+    } while( retry);
 
-	return -1;
+    return -1;
 }
 
 /*!
@@ -180,8 +180,8 @@ int At24cRead( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t add
 #ifdef AT24C_DEBUG
     printf(" sa:%x da:%x l:%u\n", at24cs->SlaveAddress, addr, len);
 #endif
-	/* No, on read we definately do not have to wait for internal programming finished! */
-	rc = lld_at24_read( at24cs, buffer, len, addr);
+    /* No, on read we definately do not have to wait for internal programming finished! */
+    rc = lld_at24_read( at24cs, buffer, len, addr);
 
 #ifdef AT24C_BLOCK_ADDR
     if( at24cs->BlInSla) {
@@ -209,8 +209,8 @@ int At24cWrite( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t ad
 /****************************************************************************/
 {
     int rc = 0;
-	uint8_t *ptr = buffer;
-	uint32_t bulk;
+    uint8_t *ptr = buffer;
+    uint32_t bulk;
     uint32_t wl = 0;
 
 #ifdef AT24C_BLOCK_ADDR
@@ -228,15 +228,15 @@ int At24cWrite( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t ad
     rc = NutEventWait( &at24cs->ee_mutex, at24cs->Timeout*(len/at24cs->PageSize));
     if( rc) return rc;
 
-	/* get first bulk of data till page end */
-	while( len>0)
-	{
-    	bulk = at24cs->PageSize-(addr%at24cs->PageSize);
-		if( bulk > len) bulk = len;
-		rc = lld_at24_write( at24cs, ptr, bulk, addr );
+    /* get first bulk of data till page end */
+    while( len>0)
+    {
+        bulk = at24cs->PageSize-(addr%at24cs->PageSize);
+        if( bulk > len) bulk = len;
+        rc = lld_at24_write( at24cs, ptr, bulk, addr );
         if (rc>=0) wl+=rc; else break;
-		ptr+=bulk; addr+=bulk; len-=bulk;
-	}
+        ptr+=bulk; addr+=bulk; len-=bulk;
+    }
 #ifdef AT24C_BLOCK_ADDR
     if( at24cs->BlInSla) {
         /* Reset address to chip without block */
@@ -245,6 +245,6 @@ int At24cWrite( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t ad
 #endif
     if (rc>0) rc = wl;
     NutEventPost( &at24cs->ee_mutex);
-	return rc;
+    return rc;
 }
 

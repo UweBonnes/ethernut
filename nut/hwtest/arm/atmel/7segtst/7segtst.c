@@ -81,11 +81,11 @@ FILE *disp;
 int main(void)
 /******************************************************************/
 {
-	uint32_t baud = 115200;
-	uint8_t rc;
-	unsigned int count=0;
+    uint32_t baud = 115200;
+    uint8_t rc;
+    unsigned int count=0;
 
-	/*
+    /*
      * Register the UART device, open it, assign stdout to it and set
      * the baudrate.
      */
@@ -98,14 +98,14 @@ int main(void)
      */
     printf("initSPI_disp7seg... ");
 
-	rc = NutRegisterSpiDevice(&devSpi7SEG,&NUT_CONFIG_7SEG_SPIBUS,NUT_CONFIG_7SEG_CS);
-	if (rc != 0){
+    rc = NutRegisterSpiDevice(&devSpi7SEG,&NUT_CONFIG_7SEG_SPIBUS,NUT_CONFIG_7SEG_CS);
+    if (rc != 0){
         /* If it fails, leave a message and end here */
-		printf("FAILED\n");
+        printf("FAILED\n");
         fflush(stdout);
-		while(1);
-	}
-	printf("OK\n");
+        while(1);
+    }
+    printf("OK\n");
 
     /* The driver implements simple printf support for the display
      * so it can be opened as a file and used by fprintf()
@@ -113,11 +113,11 @@ int main(void)
     disp = fopen( devSpi7SEG.dev_name, "w");
 
     for (;;)
-	{
+    {
         /* Lets run a counter for a simple demo */
-		fprintf( disp, "%3d\n", count++);
-		if(count >999)count=0;
-		NutSleep(200);
-	}
+        fprintf( disp, "%3d\n", count++);
+        if(count >999)count=0;
+        NutSleep(200);
+    }
     return 0;
 }

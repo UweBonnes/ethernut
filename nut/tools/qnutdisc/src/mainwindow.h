@@ -41,17 +41,17 @@
 
 class MainWindow : public QMainWindow
 {
-	Q_OBJECT	
+    Q_OBJECT    
 
 public:
-	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
-	~MainWindow();
+    MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
+    ~MainWindow();
 
 private:
-	Ui::MainWindow ui;
+    Ui::MainWindow ui;
 
 private slots:
-	void on_action_Sair_triggered();
+    void on_action_Sair_triggered();
 };
 
 #endif // __MAINWINDOW_H__

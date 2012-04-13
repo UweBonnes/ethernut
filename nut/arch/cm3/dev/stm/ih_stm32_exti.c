@@ -68,17 +68,17 @@ static int InterruptCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-		NVIC_DisableIRQ(THIS_IRQn);
+        NVIC_DisableIRQ(THIS_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(THIS_IRQn, THIS_ENTRY);
+        IntRegister(THIS_IRQn, THIS_ENTRY);
         /* Initialize with defined priority. */
-	    IntPrioritySet(THIS_IRQn, THIS_IRQPRI);
+        IntPrioritySet(THIS_IRQn, THIS_IRQPRI);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(THIS_IRQn);
+        NVIC_ClearPendingIRQ(THIS_IRQn);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -97,9 +97,9 @@ static int InterruptCtl(int cmd, void *param)
 /* This needs to be set at pin level configuration for the interrupt
     case NUT_IRQCTL_GETMODE:
         if ( EXTI->FTSR &= (1<<THIS_EXTI))
-			*ival = NUT_IRQMODE_FALLINGEDGE;
+            *ival = NUT_IRQMODE_FALLINGEDGE;
         else if( EXTI->RTSR &= (1<<THIS_EXTI))
-			*ival = NUT_IRQMODE_RISINGEDGE;
+            *ival = NUT_IRQMODE_RISINGEDGE;
         break;
     case NUT_IRQCTL_SETMODE:
         if (*ival == NUT_IRQMODE_NONE) {
@@ -116,7 +116,7 @@ static int InterruptCtl(int cmd, void *param)
         break;
 */
     case NUT_IRQCTL_GETPRIO:
-	    *ival = THIS_IRQPRI;
+        *ival = THIS_IRQPRI;
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -131,7 +131,7 @@ static int InterruptCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-		NVIC_EnableIRQ(THIS_IRQn);
+        NVIC_EnableIRQ(THIS_IRQn);
     }
     return rc;
 }

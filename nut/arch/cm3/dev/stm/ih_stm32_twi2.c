@@ -139,19 +139,19 @@ static int TwoWireIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *par
 
     /* Disable interrupt. */
     if (enabled) {
-	    NVIC_DisableIRQ(IRQn);
+        NVIC_DisableIRQ(IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(IRQn, ifunc);
+        IntRegister(IRQn, ifunc);
         /* Initialize Event IRQ with defined priority. */
-	    IntPrioritySet(IRQn, NUT_IRQPRI_TWI);
+        IntPrioritySet(IRQn, NUT_IRQPRI_TWI);
         /* Initialize Error IRQ with defined priority. */
-	    IntPrioritySet(IRQn+1, NUT_IRQPRI_TWI+1);
+        IntPrioritySet(IRQn+1, NUT_IRQPRI_TWI+1);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(IRQn);
+        NVIC_ClearPendingIRQ(IRQn);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -191,7 +191,7 @@ static int TwoWireIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *par
 
     /* Enable interrupt. */
     if (enabled) {
-	    NVIC_EnableIRQ(IRQn);
+        NVIC_EnableIRQ(IRQn);
     }
     return rc;
 }

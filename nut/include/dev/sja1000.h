@@ -257,7 +257,7 @@
 #define CAN_29                0x80
 #define CAN_RTR               0x40
 
-#define ClrIntEnSJA 	      0x00
+#define ClrIntEnSJA           0x00
 
 extern NUTDEVICE devSJA1000;
 

@@ -452,7 +452,7 @@ void NutInit(void)
      * Load os configuration from EEPROM.
      */
     if (NutLoadConfig())
-    	strcpy (confos.hostname, "ethernut");
+        strcpy (confos.hostname, "ethernut");
     /*
      * Load network configuration from EEPROM.
      */

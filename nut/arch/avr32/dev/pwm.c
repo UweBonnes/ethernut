@@ -52,57 +52,57 @@
 
 static unsigned short FindClockConfiguration(unsigned int frequency, unsigned int mck)
 {
-	unsigned char divisor = 0;
-	unsigned int prescaler;
-	
-	
-	NUTASSERT(frequency < mck);
+    unsigned char divisor = 0;
+    unsigned int prescaler;
+    
+    
+    NUTASSERT(frequency < mck);
 
-	// Find prescaler and divisor values
-	prescaler = (mck / _BV(divisor)) / frequency;
-	while ((prescaler > 255) && (divisor < 11)) {
+    // Find prescaler and divisor values
+    prescaler = (mck / _BV(divisor)) / frequency;
+    while ((prescaler > 255) && (divisor < 11)) {
 
-		divisor++;
-		prescaler = (mck / _BV(divisor)) / frequency;
-	}
+        divisor++;
+        prescaler = (mck / _BV(divisor)) / frequency;
+    }
 
-	// Return result
-	if (divisor < 11) {
-		return prescaler | (divisor << 8);
-	} else {
-		return 0;
-	}
+    // Return result
+    if (divisor < 11) {
+        return prescaler | (divisor << 8);
+    } else {
+        return 0;
+    }
 }
 
 /*!
-	Configures PWM clocks A & B to run at the given frequencies.
-	\param clka  Desired clock A frequency (0 if not used).
-	\param clkb  Desired clock B frequency (0 if not used).
+    Configures PWM clocks A & B to run at the given frequencies.
+    \param clka  Desired clock A frequency (0 if not used).
+    \param clkb  Desired clock B frequency (0 if not used).
 */
 int NutPwmInit(unsigned int clka, unsigned int clkb)
 {
-	unsigned int mode = 0;
-	unsigned int result;
-	unsigned int mck = NutClockGet(NUT_HWCLK_PERIPHERAL_A);
+    unsigned int mode = 0;
+    unsigned int result;
+    unsigned int mck = NutClockGet(NUT_HWCLK_PERIPHERAL_A);
 
-	// Clock A
-	if (clka != 0) {
-		result = FindClockConfiguration(clka, mck);
-		NUTASSERT(result != 0);
-		mode |= (result << AVR32_PWM_MR_DIVA_OFFSET);
-	}
+    // Clock A
+    if (clka != 0) {
+        result = FindClockConfiguration(clka, mck);
+        NUTASSERT(result != 0);
+        mode |= (result << AVR32_PWM_MR_DIVA_OFFSET);
+    }
 
-	// Clock B
-	if (clkb != 0) {
-		result = FindClockConfiguration(clkb, mck);
-		NUTASSERT(result != 0);
-		mode |= (result << AVR32_PWM_DIVB_OFFSET);
-	}
+    // Clock B
+    if (clkb != 0) {
+        result = FindClockConfiguration(clkb, mck);
+        NUTASSERT(result != 0);
+        mode |= (result << AVR32_PWM_DIVB_OFFSET);
+    }
 
-	// Configure clocks
-	AVR32_PWM.mr = mode;
+    // Configure clocks
+    AVR32_PWM.mr = mode;
 
-	return 0;
+    return 0;
 }
 
 
@@ -111,61 +111,61 @@ int NutPwmInit(unsigned int clka, unsigned int clkb)
  */
 int NutPwmChannelInit(unsigned int channel_id, unsigned int mode, unsigned int duty, unsigned int period)
 {
-	NUTASSERT(channel_id <= AVR32_PWM_LINES_MSB);
+    NUTASSERT(channel_id <= AVR32_PWM_LINES_MSB);
 
-	switch (channel_id )
-	{
-	case 0:
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_0_PIN), AVR32_GPIO_PIN(AVR32_PWM_0_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_0_FUNCTION) );
-		break;
-	case 1:
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_1_PIN), AVR32_GPIO_PIN(AVR32_PWM_1_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_1_FUNCTION) );
-		break;
-	case 2:
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_2_PIN), AVR32_GPIO_PIN(AVR32_PWM_2_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_2_FUNCTION) );
-		break;
-	case 3:
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_3_PIN), AVR32_GPIO_PIN(AVR32_PWM_3_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_3_FUNCTION) );
-		break;
-	case 4:
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_4_1_PIN), AVR32_GPIO_PIN(AVR32_PWM_4_1_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_4_1_FUNCTION) );
-		break;
-	case 5:
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_5_1_PIN), AVR32_GPIO_PIN(AVR32_PWM_5_1_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_5_1_FUNCTION) );
-		break;
-	case 6:
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_6_PIN), AVR32_GPIO_PIN(AVR32_PWM_6_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_6_FUNCTION) );
-		break;
-	}
+    switch (channel_id )
+    {
+    case 0:
+        GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_0_PIN), AVR32_GPIO_PIN(AVR32_PWM_0_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_0_FUNCTION) );
+        break;
+    case 1:
+        GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_1_PIN), AVR32_GPIO_PIN(AVR32_PWM_1_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_1_FUNCTION) );
+        break;
+    case 2:
+        GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_2_PIN), AVR32_GPIO_PIN(AVR32_PWM_2_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_2_FUNCTION) );
+        break;
+    case 3:
+        GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_3_PIN), AVR32_GPIO_PIN(AVR32_PWM_3_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_3_FUNCTION) );
+        break;
+    case 4:
+        GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_4_1_PIN), AVR32_GPIO_PIN(AVR32_PWM_4_1_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_4_1_FUNCTION) );
+        break;
+    case 5:
+        GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_5_1_PIN), AVR32_GPIO_PIN(AVR32_PWM_5_1_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_5_1_FUNCTION) );
+        break;
+    case 6:
+        GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_PWM_6_PIN), AVR32_GPIO_PIN(AVR32_PWM_6_PIN), AVR32_GPIO_FUNCTION(AVR32_PWM_6_FUNCTION) );
+        break;
+    }
 
-	AVR32_PWM.channel[channel_id].cmr  = mode;   // Channel mode.
-	AVR32_PWM.channel[channel_id].cdty = duty; // Duty cycle, should be < CPRD.
-	AVR32_PWM.channel[channel_id].cprd = period; // Channel period.
+    AVR32_PWM.channel[channel_id].cmr  = mode;   // Channel mode.
+    AVR32_PWM.channel[channel_id].cdty = duty; // Duty cycle, should be < CPRD.
+    AVR32_PWM.channel[channel_id].cprd = period; // Channel period.
 
-	return 0;
+    return 0;
 }
 
 int NutPwmStartChannel(unsigned int channel)
 {
-	AVR32_PWM.ena = _BV(channel);
-	return 0;
+    AVR32_PWM.ena = _BV(channel);
+    return 0;
 }
 
 int NutPwmStopChannel(unsigned int channel)
 {
-	AVR32_PWM.dis = _BV(channel);
-	return 0;
+    AVR32_PWM.dis = _BV(channel);
+    return 0;
 }
 
 int NutPwmSetPeriod(unsigned int channel, unsigned short period)
 {
-	AVR32_PWM.channel[channel].cprd = period;
-	return 0;
+    AVR32_PWM.channel[channel].cprd = period;
+    return 0;
 }
 
 int NutPwmSetDutyCycle(unsigned int channel, unsigned short duty)
 {
-	AVR32_PWM.channel[channel].cdty = duty;
-	return 0;
+    AVR32_PWM.channel[channel].cdty = duty;
+    return 0;
 }
 /*@}*/

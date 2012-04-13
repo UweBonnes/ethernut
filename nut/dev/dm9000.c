@@ -162,7 +162,7 @@
 #define NIC_RCR     0x05        /* RX control register (0x00). */
 #define NIC_RCR_DIS_LONG 0x20   /* Discard long packets. */
 #define NIC_RCR_DIS_CRC 0x10    /* Discard CRC error packets. */
-#define NIC_RCR_ALL		0x08    /* Pass all multicast */
+#define NIC_RCR_ALL     0x08    /* Pass all multicast */
 #define NIC_RCR_PRMSC   0x02    /* Enable promiscuous mode. */
 #define NIC_RCR_RXEN    0x01    /* Enable receiver. */
 

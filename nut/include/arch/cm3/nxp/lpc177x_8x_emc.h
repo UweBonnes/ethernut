@@ -35,14 +35,14 @@
  * For additional information see http://www.ethernut.de/
  *
  *
- * Parts taken from lpc177x_8x_emc.h			2011-06-02
+ * Parts taken from lpc177x_8x_emc.h            2011-06-02
  *
- * file		lpc177x_8x_emc.h
- * brief	Contains all macro definitions and function prototypes
- *			support for EMC firmware library on LPC177x_8x
- * version	1.0
- * date		02. June. 2011
- * author	NXP MCU SW Application Team
+ * file     lpc177x_8x_emc.h
+ * brief    Contains all macro definitions and function prototypes
+ *          support for EMC firmware library on LPC177x_8x
+ * version  1.0
+ * date     02. June. 2011
+ * author   NXP MCU SW Application Team
  *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.

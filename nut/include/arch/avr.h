@@ -135,7 +135,7 @@
 #define PRG_RDB(addr)       pgm_read_byte(addr)
 #endif
 
-#define __bss_end	__heap_start
+#define __bss_end   __heap_start
 extern void *__heap_start;
 
 #ifdef __AVR_ENHANCED__

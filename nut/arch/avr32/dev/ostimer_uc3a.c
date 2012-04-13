@@ -44,33 +44,33 @@
  */
 static u_int AVR32GetPllClock(int pll)
 {
-	u_int rc;
-	u_int osc = 0;
+    u_int rc;
+    u_int osc = 0;
 
-	if ( AVR32_PM.PLL[pll].pllosc )
-		osc = 0;
-	else
-		osc = OSC0_VAL;
+    if ( AVR32_PM.PLL[pll].pllosc )
+        osc = 0;
+    else
+        osc = OSC0_VAL;
 
-	/*
-	* The main oscillator clock frequency is specified by the
-	* configuration. It's usually equal to the on-board crystal.
-	*/
-	rc = osc;
+    /*
+    * The main oscillator clock frequency is specified by the
+    * configuration. It's usually equal to the on-board crystal.
+    */
+    rc = osc;
 
-	if ( AVR32_PM.PLL[pll].pllen ) {
-		u_int divider = AVR32_PM.PLL[pll].plldiv;
-		u_int multiplier = AVR32_PM.PLL[pll].pllmul;
+    if ( AVR32_PM.PLL[pll].pllen ) {
+        u_int divider = AVR32_PM.PLL[pll].plldiv;
+        u_int multiplier = AVR32_PM.PLL[pll].pllmul;
 
-		if ( divider )
-			rc *= (multiplier +1)/divider;
-		else
-			rc *= 2*(multiplier+1);
+        if ( divider )
+            rc *= (multiplier +1)/divider;
+        else
+            rc *= 2*(multiplier+1);
 
-		if ( AVR32_PM.PLL[pll].pllopt )
-			rc /= 2;
-	}
-	return rc;
+        if ( AVR32_PM.PLL[pll].pllopt )
+            rc /= 2;
+    }
+    return rc;
 }
 
 /*!
@@ -80,33 +80,33 @@ static u_int AVR32GetPllClock(int pll)
  */
 static uint32_t Avr32GetProcessorClock(void)
 {
-	u_int rc = 0;
-	u_int mckr = AVR32_PM.mcctrl;
+    u_int rc = 0;
+    u_int mckr = AVR32_PM.mcctrl;
 
-	/* Determine the clock source. */
-	switch(mckr & AVR32_PM_MCCTRL_MCSEL_MASK) {
-	case AVR32_PM_MCCTRL_MCSEL_OSC0:
-		/* OSC0 clock selected */
-		rc = OSC0_VAL;
-		break;
-	case AVR32_PM_MCCTRL_MCSEL_SLOW:
-		/* Slow clock selected. */
-		rc = AVR32_PM_RCOSC_FREQUENCY;
-		break;
-	case AVR32_PM_MCCTRL_MCSEL_PLL0:
-		/* PLL0 clock selected. */
-		rc = AVR32GetPllClock(0);
-		break;
-	}
+    /* Determine the clock source. */
+    switch(mckr & AVR32_PM_MCCTRL_MCSEL_MASK) {
+    case AVR32_PM_MCCTRL_MCSEL_OSC0:
+        /* OSC0 clock selected */
+        rc = OSC0_VAL;
+        break;
+    case AVR32_PM_MCCTRL_MCSEL_SLOW:
+        /* Slow clock selected. */
+        rc = AVR32_PM_RCOSC_FREQUENCY;
+        break;
+    case AVR32_PM_MCCTRL_MCSEL_PLL0:
+        /* PLL0 clock selected. */
+        rc = AVR32GetPllClock(0);
+        break;
+    }
 
-	/* Handle pre-scaling. */
-	if (AVR32_PM.cksel & AVR32_PM_CKSEL_CPUDIV_MASK) {
-		int cpusel = ( mckr & AVR32_PM_CKSEL_CPUSEL_MASK ) >> AVR32_PM_CKSEL_CPUSEL_OFFSET;
-		/* CPUDIV = 1: CPU Clock equals main clock divided by 2^(CPUSEL+1). */
-		rc /= _BV(cpusel + 1);
-	}
+    /* Handle pre-scaling. */
+    if (AVR32_PM.cksel & AVR32_PM_CKSEL_CPUDIV_MASK) {
+        int cpusel = ( mckr & AVR32_PM_CKSEL_CPUSEL_MASK ) >> AVR32_PM_CKSEL_CPUSEL_OFFSET;
+        /* CPUDIV = 1: CPU Clock equals main clock divided by 2^(CPUSEL+1). */
+        rc /= _BV(cpusel + 1);
+    }
 
-	return rc;
+    return rc;
 }
 
 uint32_t NutArchClockGet(int idx)

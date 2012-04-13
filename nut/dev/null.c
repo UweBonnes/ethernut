@@ -102,7 +102,7 @@ static int NullRead(NUTFILE * nf, void *buffer, int len)
         return 0;
     }
 
-	// otherwise also just return 0 bytes without blocking
+    // otherwise also just return 0 bytes without blocking
     return 0;
 }
 
@@ -113,8 +113,8 @@ static int NullRead(NUTFILE * nf, void *buffer, int len)
  */
 static int NullClose(NUTFILE * nf)
 {
-	if (nf)
-		free (nf);
+    if (nf)
+        free (nf);
     return 0;
 }
 

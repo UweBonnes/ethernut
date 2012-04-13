@@ -151,7 +151,7 @@
  * Any other than 0 seems to create problems with Atmel's evaluation kits.
  */
 #ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR	        0
+#define NIC_PHY_ADDR            0
 #endif
 
 /*!
@@ -480,14 +480,14 @@ static int EmacReset(uint32_t tmo)
     NutPhyCtl(PHY_CTL_ISOLATE, &phyval);
 #endif
 
-	/* Restart autonegotiation */
-	phyval = 1;
-	NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
+    /* Restart autonegotiation */
+    phyval = 1;
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
 
     /* Wait for auto negotiation completed and link established. */
     for (link_wait = 25;; link_wait--) {
         NutPhyCtl(PHY_GET_STATUS, &phyval);
-		if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
+        if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
             /* Check link state and configure EMAC accordingly */
             reg_ncfgr = inr(EMAC_NCFGR);
             if (phyval & PHY_STATUS_FULLDUPLEX) {
@@ -506,7 +506,7 @@ static int EmacReset(uint32_t tmo)
             break;
         }
         if (link_wait == 0) {
-			EMPRINTF("NO LINK!\n");
+            EMPRINTF("NO LINK!\n");
 
             /* Return error on link timeout. */
             outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
@@ -866,11 +866,11 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         } else {
             if (inr(EMAC_TSR) & EMAC_UND) {
                 txBufIdx = 0;
-	            outr(EMAC_TSR, EMAC_UND);
-	        }
+                outr(EMAC_TSR, EMAC_UND);
+            }
             if (inr(EMAC_TSR) & EMAC_COMP) {
-	            outr(EMAC_TSR, EMAC_COMP);
-	        }
+                outr(EMAC_TSR, EMAC_COMP);
+            }
 
             if ((rc = EmacPutPacket(txBufIdx, ni, nb)) == 0) {
                 txBufIdx++;

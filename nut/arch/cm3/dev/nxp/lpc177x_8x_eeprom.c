@@ -32,13 +32,13 @@
  * For additional information see http://www.ethernut.de/
  *
  *
- * Parts taken from lpc177x_8x_eeprom.c			2011-06-02
- * file		lpc177x_8x_eeprom.c
- * brief	Contains all functions support for EEPROM firmware library on
- *			on LPC177x_8x
- * version	1.0
- * date		02. June. 2011
- * author	NXP MCU SW Application Team
+ * Parts taken from lpc177x_8x_eeprom.c         2011-06-02
+ * file     lpc177x_8x_eeprom.c
+ * brief    Contains all functions support for EEPROM firmware library on
+ *          on LPC177x_8x
+ * version  1.0
+ * date     02. June. 2011
+ * author   NXP MCU SW Application Team
  *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
@@ -109,8 +109,8 @@ void Lpc177x_8x_EepromInit(void)
  * \brief       Read data from EEPROM at specific address
  *
  * \param       address EEPROM address that start to write data, it must be
- * 				in range 0..0x1000
- * \param       buff	buffer to place the read data in
+ *              in range 0..0x1000
+ * \param       buff    buffer to place the read data in
  * \param       size    number of bytes to be read
  *
  * \return      none
@@ -139,8 +139,8 @@ int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
     LPC_EEPROM->ADDR = EEPROM_PAGE_ADRESS(page_nr) | EEPROM_PAGE_OFFSET(page_offs);
     LPC_EEPROM->CMD  = EEPROM_CMD_8_BIT_READ | EEPROM_CMD_RDPREFETCH;
 
-	/* Read and store data in buffer */
-	for(i = 0; i < size; i++){
+    /* Read and store data in buffer */
+    for(i = 0; i < size; i++){
         /* Check if we read beyond the eeprom size */
         if (page_nr >= EEPROM_PAGE_NUM) {
             return -1;
@@ -168,8 +168,8 @@ int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
  * \brief       Write data to EEPROM at specific address
  *
  * \param       address EEPROM address that start to write data, it must be
- * 				in range 0..0x1000
- * \param       buff	buffer that contain data that will be written to buffer
+ *              in range 0..0x1000
+ * \param       buff    buffer that contain data that will be written to buffer
  * \param       size    number of bytes to be written
  *
  * \return      none

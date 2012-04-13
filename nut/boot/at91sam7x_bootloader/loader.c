@@ -199,10 +199,10 @@ void loader(FILE *uart)
         }
         NutSleep(1000);
 
-	retry--;
-	
-	if(!retry)
-		break;
+    retry--;
+    
+    if(!retry)
+        break;
     }
 }
 

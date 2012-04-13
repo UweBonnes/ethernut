@@ -178,86 +178,86 @@
  * The Asix Embedded PHY Registers
  */
 
-#define PHY_MR0  0x00	/*!< \brief Control*/
-#define PHY_MR1  0x01	/*!< \brief Status*/
-#define PHY_MR2  0x02	/*!< \brief PHY Identifier 1*/
-#define PHY_MR3  0x03	/*!< \brief PHY Identifier 2*/
-#define PHY_MR4  0x04	/*!< \brief Autonegotiation Advertisement*/
-#define PHY_MR5  0x05	/*!< \brief Autonegotiation Link Partner Ability*/
-#define PHY_MR6  0x06	/*!< \brief Autonegotiation Expansion*/
-#define PHY_MR7  0x07	/*!< \brief Next Page Transmit*/
-#define PHY_MR16 0x10	/*!< \brief PCS Control Register*/
-#define PHY_MR17 0x11	/*!< \brief Autonegotiation (read register A)*/
-#define PHY_MR18 0x12	/*!< \brief Autonegotiation (read register B)*/
-#define PHY_MR19 0x13	/*!< \brief Analog Test Register*/
-#define PHY_MR20 0x14	/*!< \brief User-defined Register*/
-#define PHY_MR21 0x15	/*!< \brief RXER Counter*/
-#define PHY_MR22 0x16	/*!< \brief Analog Test Registers*/
-#define PHY_MR23 0x17	/*!< \brief Analog Test Registers*/
-#define PHY_MR24 0x18	/*!< \brief Analog Test Registers*/
-#define PHY_MR25 0x19	/*!< \brief Analog Test (tuner) Registers*/
-#define PHY_MR26 0x1a	/*!< \brief Analog Test (tuner) Registers*/
-#define PHY_MR27 0x1b	/*!< \brief Analog Test (tuner) Registers*/
-#define PHY_MR28 0x1c	/*!< \brief Device Specific 1*/
-#define PHY_MR29 0x1d	/*!< \brief Device Specific 2*/
-#define PHY_MR30 0x1e	/*!< \brief Device Specific 3*/
-#define PHY_MR31 0x1f	/*!< \brief Quick Status Register*/
+#define PHY_MR0  0x00   /*!< \brief Control*/
+#define PHY_MR1  0x01   /*!< \brief Status*/
+#define PHY_MR2  0x02   /*!< \brief PHY Identifier 1*/
+#define PHY_MR3  0x03   /*!< \brief PHY Identifier 2*/
+#define PHY_MR4  0x04   /*!< \brief Autonegotiation Advertisement*/
+#define PHY_MR5  0x05   /*!< \brief Autonegotiation Link Partner Ability*/
+#define PHY_MR6  0x06   /*!< \brief Autonegotiation Expansion*/
+#define PHY_MR7  0x07   /*!< \brief Next Page Transmit*/
+#define PHY_MR16 0x10   /*!< \brief PCS Control Register*/
+#define PHY_MR17 0x11   /*!< \brief Autonegotiation (read register A)*/
+#define PHY_MR18 0x12   /*!< \brief Autonegotiation (read register B)*/
+#define PHY_MR19 0x13   /*!< \brief Analog Test Register*/
+#define PHY_MR20 0x14   /*!< \brief User-defined Register*/
+#define PHY_MR21 0x15   /*!< \brief RXER Counter*/
+#define PHY_MR22 0x16   /*!< \brief Analog Test Registers*/
+#define PHY_MR23 0x17   /*!< \brief Analog Test Registers*/
+#define PHY_MR24 0x18   /*!< \brief Analog Test Registers*/
+#define PHY_MR25 0x19   /*!< \brief Analog Test (tuner) Registers*/
+#define PHY_MR26 0x1a   /*!< \brief Analog Test (tuner) Registers*/
+#define PHY_MR27 0x1b   /*!< \brief Analog Test (tuner) Registers*/
+#define PHY_MR28 0x1c   /*!< \brief Device Specific 1*/
+#define PHY_MR29 0x1d   /*!< \brief Device Specific 2*/
+#define PHY_MR30 0x1e   /*!< \brief Device Specific 3*/
+#define PHY_MR31 0x1f   /*!< \brief Quick Status Register*/
 
 /*
  * PHY MR0 (Control) access regiser bits.
  */
-#define MR0_SW_RESET	0x8000	/* R/W Reset, all PHY registers will be set to default */
-#define MR0_LOOPBACK	0x4000	/* R/W Loopback */
-#define MR0_SPEED100	0x2000	/* R/W Speed selection, 1 = 100Mbits/s, 0 = 10Mbits/s */
-#define MR0_NWAY_ENA	0x1000	/* R/W Autonegotiation Enable */
-#define MR0_PWRDN		0x0800	/* R/W Powerdown */
-#define MR0_ISOLATE		0x0400	/* R/W Isolate */
-#define MR0_REDONWAY	0x0200	/* R/W Restart autonegotiation */
-#define MR0_FULL_DUP	0x0100	/* R/W Duplex mode selection, 1 = FULL, 0 = HALF */
-#define MR0_COLTST		0x0080	/* R/W Collision Test */
+#define MR0_SW_RESET    0x8000  /* R/W Reset, all PHY registers will be set to default */
+#define MR0_LOOPBACK    0x4000  /* R/W Loopback */
+#define MR0_SPEED100    0x2000  /* R/W Speed selection, 1 = 100Mbits/s, 0 = 10Mbits/s */
+#define MR0_NWAY_ENA    0x1000  /* R/W Autonegotiation Enable */
+#define MR0_PWRDN       0x0800  /* R/W Powerdown */
+#define MR0_ISOLATE     0x0400  /* R/W Isolate */
+#define MR0_REDONWAY    0x0200  /* R/W Restart autonegotiation */
+#define MR0_FULL_DUP    0x0100  /* R/W Duplex mode selection, 1 = FULL, 0 = HALF */
+#define MR0_COLTST      0x0080  /* R/W Collision Test */
 
 /*
  * PHY MR1 (Status) access regiser bits.
  */
-#define MR1_T4ABLE		0x8000	/* R 100Base-T4 Ability. This bit will always be a 0 */
-#define MR1_TXFULDUP	0x4000	/* R 100Base-TX Full-Duplex Ability. This bit will always be a 1 */
-#define MR1_TXHAFDUP	0x2000	/* R 100Base-TX Half-Duplex Ability. This bit will always be a 1 */
-#define MR1_ENFULDUP	0x1000	/* R 10Base-T Full-Duplex Ability. This bit will always be a 1 */
-#define MR1_ENHAFDUP	0x0800	/* R 10Base-T Half-Duplex Ability. This bit will always be a 1 */
-#define MR1_NO_PA_OK	0x0040	/* R Suppress preamble */
-#define MR1_NWAYDONE	0x0020	/* R Autonegotiation complete */
-#define MR1_REM_FLT		0x0010	/* R Remote fault */
-#define MR1_NWAYABLE	0x0008	/* R Autonegotiation ability */
-#define MR1_LSTAT_OK	0x0004	/* R Link status */
-#define MR1_JABBER		0x0002	/* R Jabber detect */
-#define MR1_EXT_ABLE	0x0001	/* R Extended capability */
+#define MR1_T4ABLE      0x8000  /* R 100Base-T4 Ability. This bit will always be a 0 */
+#define MR1_TXFULDUP    0x4000  /* R 100Base-TX Full-Duplex Ability. This bit will always be a 1 */
+#define MR1_TXHAFDUP    0x2000  /* R 100Base-TX Half-Duplex Ability. This bit will always be a 1 */
+#define MR1_ENFULDUP    0x1000  /* R 10Base-T Full-Duplex Ability. This bit will always be a 1 */
+#define MR1_ENHAFDUP    0x0800  /* R 10Base-T Half-Duplex Ability. This bit will always be a 1 */
+#define MR1_NO_PA_OK    0x0040  /* R Suppress preamble */
+#define MR1_NWAYDONE    0x0020  /* R Autonegotiation complete */
+#define MR1_REM_FLT     0x0010  /* R Remote fault */
+#define MR1_NWAYABLE    0x0008  /* R Autonegotiation ability */
+#define MR1_LSTAT_OK    0x0004  /* R Link status */
+#define MR1_JABBER      0x0002  /* R Jabber detect */
+#define MR1_EXT_ABLE    0x0001  /* R Extended capability */
 
 
 /*
  * PHY MR31 (Quick Status) access regiser bits.
  */
-#define MR31_LSTAT_OK	0x0800	/* R Link status */
-#define MR31_SPEED100	0x0200	/* R Link Speed, 0=10Mbits/s, 1=100Mbits/s */
-#define MR31_FULL_DUP	0x0100	/* R Duplex Mode, 0=Half, 1=Full */
+#define MR31_LSTAT_OK   0x0800  /* R Link status */
+#define MR31_SPEED100   0x0200  /* R Link Speed, 0=10Mbits/s, 1=100Mbits/s */
+#define MR31_FULL_DUP   0x0100  /* R Duplex Mode, 0=Half, 1=Full */
 
 
 /*
-0x8000	15
-0x4000	14
-0x2000	13
-0x1000	12
-0x0800	11
-0x0400	10
-0x0200	9
-0x0100	8
-0x0080	7
-0x0040	6
-0x0020	5
-0x0010	4
-0x0008	3
-0x0004	2
-0x0002	1
-0x0001	0
+0x8000  15
+0x4000  14
+0x2000  13
+0x1000  12
+0x0800  11
+0x0400  10
+0x0200  9
+0x0100  8
+0x0080  7
+0x0040  6
+0x0020  5
+0x0010  4
+0x0008  3
+0x0004  2
+0x0002  1
+0x0001  0
 
 */
 

@@ -101,17 +101,17 @@ static int RtcIrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	    IntDisable(RTC_IRQn);
+        IntDisable(RTC_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(RTC_IRQn, RtcIrqEntry);
+        IntRegister(RTC_IRQn, RtcIrqEntry);
         /* Initialize with defined priority. */
-	    IntPrioritySet(RTC_IRQn, NUT_IRQPRI_RTC);
+        IntPrioritySet(RTC_IRQn, NUT_IRQPRI_RTC);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(RTC_IRQn);
+        NVIC_ClearPendingIRQ(RTC_IRQn);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -137,7 +137,7 @@ static int RtcIrqCtl(int cmd, void *param)
         *ival = IntPriorityGet(RTC_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-	    IntPrioritySet(RTC_IRQn, *ival);
+        IntPrioritySet(RTC_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -152,7 +152,7 @@ static int RtcIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	    IntEnable(RTC_IRQn);
+        IntEnable(RTC_IRQn);
     }
     return rc;
 }

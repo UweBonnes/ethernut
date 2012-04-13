@@ -54,7 +54,7 @@ uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     return At91WatchDogStart(ms, xmode);
 #elif defined(__AVR32__)
-	return Avr32WatchDogStart(ms);
+    return Avr32WatchDogStart(ms);
 #elif defined(MCU_LPC17xx)
     return Lpc17xxWatchDogStart(ms, xmode);
 #else
@@ -72,7 +72,7 @@ void NutWatchDogRestart(void)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     At91WatchDogRestart();
 #elif defined(__AVR32__)
-	Avr32WatchDogRestart();
+    Avr32WatchDogRestart();
 #elif defined(MCU_LPC17xx)
     Lpc17xxWatchDogRestart();
 #endif
@@ -88,7 +88,7 @@ void NutWatchDogDisable(void)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     At91WatchDogDisable();
 #elif defined(__AVR32__)
-	Avr32WatchDogDisable();
+    Avr32WatchDogDisable();
 #elif defined(MCU_LPC17xx)
     Lpc17xxWatchDogDisable();
 #endif
@@ -105,7 +105,7 @@ void NutWatchDogEnable(void)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     At91WatchDogEnable();
 #elif defined(__AVR32__)
-	Avr32WatchDogEnable();
+    Avr32WatchDogEnable();
 #elif defined(MCU_LPC17xx)
     Lpc17xxWatchDogEnable();
 #endif

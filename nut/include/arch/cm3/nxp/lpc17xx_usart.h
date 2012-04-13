@@ -46,7 +46,7 @@
  *----------------------------------------------------------------------------*/
 
 /* Accepted Error baud rate value (in percent unit) */
-#define UART_ACCEPTED_BAUDRATE_ERROR	3			
+#define UART_ACCEPTED_BAUDRATE_ERROR    3           
 
 
 /*----------------------------------------------------------------------------*
@@ -89,7 +89,7 @@
 #define UART_IER_THREINT_EN     0x00000002
 
 /* RX line status interrupt enable */
-#define UART_IER_RLSINT_EN_POS  2	
+#define UART_IER_RLSINT_EN_POS  2   
 #define UART_IER_RLSINT_EN      0x00000004
 
 /* Modem status interrupt enable */
@@ -307,7 +307,7 @@
 /* UART Auto-baud time-out interrupt clear */
 #define UART_ACR_ABTOINT_CLR    0x00000200
 /* UART Auto Baudrate register bit mask */
-#define UART_ACR_BITMASK		0x00000307
+#define UART_ACR_BITMASK        0x00000307
 
 
 /*----------------------------------------------------------------------------*
@@ -321,9 +321,9 @@
 /* IrDA fixed pulse width mode */
 #define UART_ICR_FIXPULSE_EN            0x00000004
 /* PulseDiv - Configures the pulse when FixPulseEn = 1 */
-#define UART_ICR_PULSEDIV(n)	        ((uint32_t)(((n) & 0x07) <<3))
+#define UART_ICR_PULSEDIV(n)            ((uint32_t)(((n) & 0x07) <<3))
 /* UART IRDA bit mask */
-#define UART_ICR_BITMASK		        0x0000003F
+#define UART_ICR_BITMASK                0x0000003F
 
 
 /*----------------------------------------------------------------------------*
@@ -344,9 +344,9 @@
 
 /* Transmit enable bit */
 #define UART_TER_TXEN_POS       7
-#define UART_TER_TXEN			0x00000080
+#define UART_TER_TXEN           0x00000080
 /* UART Transmit Enable Register bit mask */
-#define UART_TER_BITMASK		0x00000080
+#define UART_TER_BITMASK        0x00000080
 
 
 /*----------------------------------------------------------------------------*

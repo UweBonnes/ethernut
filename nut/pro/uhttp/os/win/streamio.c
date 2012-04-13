@@ -52,7 +52,7 @@ int StreamInit(void)
 
     if (WSAStartup(MAKEWORD(2,2), &wsa)) {
         printf("Failed. Error Code : %d", WSAGetLastError());
-	return -1;
+    return -1;
     }
     return 0;
 }

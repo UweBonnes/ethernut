@@ -185,7 +185,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
     if (flow_control & (XON_PENDING | XOFF_PENDING)) {
         if (flow_control & XON_PENDING) {
             /* Send XOFF */
-       	    CM3REG(USARTn, LPC_UART_TypeDef, THR) = ASCII_XOFF;
+            CM3REG(USARTn, LPC_UART_TypeDef, THR) = ASCII_XOFF;
             flow_control |= XOFF_SENT;
         } else {
             /* Send XON */
@@ -221,7 +221,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
         // TODO: CTS handling in here
 
         /* Start transmission of the next character. */
-	    CM3REG(USARTn, LPC_UART_TypeDef, THR) = *cp;
+        CM3REG(USARTn, LPC_UART_TypeDef, THR) = *cp;
 
         /* Decrement the number of available bytes in the buffer. */
         rbf->rbf_cnt--;
@@ -388,7 +388,7 @@ static void Lpc17xxUsartInterrupt(void *arg)
         Lpc17xxUsartRxReady(&dcb->dcb_rx_rbf);
     } else
     /* Test for next byte can be transmitted (transmit holding is empty) */
-	if (intid == UART_IIR_INTID_THRE) {
+    if (intid == UART_IIR_INTID_THRE) {
         Lpc17xxUsartTxReady(&dcb->dcb_tx_rbf);
     }
 }
@@ -480,32 +480,32 @@ static uint32_t Lpc17xxUsartGetSpeed(void)
 
 static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 {
-	uint32_t uart_clock;
-	uint32_t calcBaudrate = 0;
-	uint32_t temp = 0;
+    uint32_t uart_clock;
+    uint32_t calcBaudrate = 0;
+    uint32_t temp = 0;
 
-	uint32_t mulFracDiv, dividerAddFracDiv;
-	uint32_t diviser = 0 ;
-	uint32_t bestm = 1;
-	uint32_t bestd = 0;
-	uint32_t best_divisor = 0;
+    uint32_t mulFracDiv, dividerAddFracDiv;
+    uint32_t diviser = 0 ;
+    uint32_t bestm = 1;
+    uint32_t bestd = 0;
+    uint32_t best_divisor = 0;
 
-	uint32_t relativeError = 0;
-	uint32_t best_error = 100000;
+    uint32_t relativeError = 0;
+    uint32_t best_error = 100000;
 
-	/* get UART block clock */
-	uart_clock = NutArchClockGet(NUT_HWCLK_PCLK);
+    /* get UART block clock */
+    uart_clock = NutArchClockGet(NUT_HWCLK_PCLK);
 
-	uart_clock = uart_clock >> 4; /* div by 16 */
+    uart_clock = uart_clock >> 4; /* div by 16 */
 
     /* Baudrate calculation is done according the following formula:
        BaudRate= uart_clock * (mulFracDiv/(mulFracDiv+dividerAddFracDiv) / (16 * (DLL)
 
        To avoid floating point calculation the formulae is adjusted with the
        multiply and divide method.
-	
-	   The value of mulFracDiv and dividerAddFracDiv should comply to the following expressions:
-	   0 < mulFracDiv <= 15, 0 <= dividerAddFracDiv <= 15
+    
+       The value of mulFracDiv and dividerAddFracDiv should comply to the following expressions:
+       0 < mulFracDiv <= 15, 0 <= dividerAddFracDiv <= 15
     */
 
     for (mulFracDiv = 1 ; mulFracDiv <= 15 ;mulFracDiv++)
@@ -547,7 +547,7 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 
     Lpc17xxUsartDisable();
 
-	if (best_error < ((baudrate * UART_ACCEPTED_BAUDRATE_ERROR) / 100)) {
+    if (best_error < ((baudrate * UART_ACCEPTED_BAUDRATE_ERROR) / 100)) {
         /* Set DLAB bit */
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 1;
 
@@ -557,13 +557,13 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
         /* Reset DLAB bit */
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 0;
         CM3REG(USARTn, LPC_UART_TypeDef, FDR)  = (UART_FDR_MULVAL(bestm) | UART_FDR_DIVADDVAL(bestd)) & UART_FDR_BITMASK;
-	} else {
+    } else {
         return -1;
     }
 
     Lpc17xxUsartEnable();
 
-	return 0;
+    return 0;
 }
 
 
@@ -571,82 +571,82 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 #if 0 // 64 bit calculations included... This will raise linker errors... just for testing...
 static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 {
-	uint32_t uart_clock;
-	uint32_t d, m, bestd, bestm, tmp;
-	uint64_t best_divisor, divisor;
-	uint32_t current_error, best_error;
-	uint32_t recalcbaud;
+    uint32_t uart_clock;
+    uint32_t d, m, bestd, bestm, tmp;
+    uint64_t best_divisor, divisor;
+    uint32_t current_error, best_error;
+    uint32_t recalcbaud;
 
-	/* get UART block clock */
-	uart_clock = NutArchClockGet(NUT_HWCLK_PCLK);
+    /* get UART block clock */
+    uart_clock = NutArchClockGet(NUT_HWCLK_PCLK);
 
     /* Baudrate calculation is done according the following formula:
        BaudRate= uart_clock * (mulFracDiv/(mulFracDiv+dividerAddFracDiv) / (16 * (DLL)
 
        To avoid floating point calculation the formulae is adjusted with the
        multiply and divide method.
-	
-	   The value of mulFracDiv and dividerAddFracDiv should comply to the following expressions:
-	   0 < mulFracDiv <= 15, 0 <= dividerAddFracDiv <= 15
+    
+       The value of mulFracDiv and dividerAddFracDiv should comply to the following expressions:
+       0 < mulFracDiv <= 15, 0 <= dividerAddFracDiv <= 15
     */
-	best_error = 0xFFFFFFFF; /* Worst case */
-	bestd = 0;
-	bestm = 0;
-	best_divisor = 0;
-	for (m = 1 ; m <= 15 ;m++) {
-		for (d = 0 ; d < m ; d++) {
-			divisor = ((uint64_t)uart_clock << 28)*m / (baudrate * (m + d));
-			current_error = divisor & 0xFFFFFFFF;
+    best_error = 0xFFFFFFFF; /* Worst case */
+    bestd = 0;
+    bestm = 0;
+    best_divisor = 0;
+    for (m = 1 ; m <= 15 ;m++) {
+        for (d = 0 ; d < m ; d++) {
+            divisor = ((uint64_t)uart_clock << 28)*m / (baudrate * (m + d));
+            current_error = divisor & 0xFFFFFFFF;
 
-			tmp = divisor >> 32;
+            tmp = divisor >> 32;
 
-			/* Adjust error */
-			if(current_error > ((uint32_t)1<<31)) {
-				current_error = -current_error;
-				tmp++;
-			}
-
-			/* Out of range */
-			if(tmp < 1 || tmp > 65536) {
-				continue;
+            /* Adjust error */
+            if(current_error > ((uint32_t)1<<31)) {
+                current_error = -current_error;
+                tmp++;
             }
 
-			if( current_error < best_error) {
-				best_error = current_error;
-				best_divisor = tmp;
-				bestd = d;
-				bestm = m;
-				
-				if(best_error == 0) {
-					break;
+            /* Out of range */
+            if(tmp < 1 || tmp > 65536) {
+                continue;
+            }
+
+            if( current_error < best_error) {
+                best_error = current_error;
+                best_divisor = tmp;
+                bestd = d;
+                bestm = m;
+                
+                if(best_error == 0) {
+                    break;
                 }
-			}
-		} /* end of inner for loop */
+            }
+        } /* end of inner for loop */
 
-		if (best_error == 0) {
-			break;
+        if (best_error == 0) {
+            break;
         }
-	} /* end of outer for loop  */
+    } /* end of outer for loop  */
 
-	/* can not find best match */
-	if(best_divisor == 0) {
-		return -1;
+    /* can not find best match */
+    if(best_divisor == 0) {
+        return -1;
     }
 
-	recalcbaud = (uart_clock >> 4) * bestm / (best_divisor * (bestm + bestd));
+    recalcbaud = (uart_clock >> 4) * bestm / (best_divisor * (bestm + bestd));
 
-	/* reuse best_error to evaluate baud error*/
-	if(baudrate > recalcbaud) {
-		best_error = baudrate - recalcbaud;
+    /* reuse best_error to evaluate baud error*/
+    if(baudrate > recalcbaud) {
+        best_error = baudrate - recalcbaud;
     } else {
-		best_error = recalcbaud - baudrate;
+        best_error = recalcbaud - baudrate;
     }
 
-	best_error = best_error * 100 / baudrate;
+    best_error = best_error * 100 / baudrate;
 
     Lpc17xxUsartDisable();
 
-	if (best_error < UART_ACCEPTED_BAUDRATE_ERROR) {
+    if (best_error < UART_ACCEPTED_BAUDRATE_ERROR) {
         /* Set DLAB bit */
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 1;
 
@@ -657,11 +657,11 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 0;
         CM3REG(USARTn, LPC_UART_TypeDef, FDR)  = (UART_FDR_MULVAL(bestm) | UART_FDR_DIVADDVAL(bestd)) & UART_FDR_BITMASK;
 
-	}
+    }
 
     Lpc17xxUsartEnable();
 
-	return 0;
+    return 0;
 }
 
 #endif
@@ -704,28 +704,28 @@ static int Lpc17xxUsartSetDataBits(uint8_t bits)
     Lpc17xxUsartDisable();
 
     lcr = CM3REG(USARTn, LPC_UART_TypeDef, LCR) & ~UART_LCR_WLEN_BITMASK;
-	switch (bits)
-	{
-		case 5:
+    switch (bits)
+    {
+        case 5:
             lcr |= UART_LCR_WLEN5;
             break;
 
-		case 6:
+        case 6:
             lcr |= UART_LCR_WLEN6;
             break;
 
-		case 7:
+        case 7:
             lcr |= UART_LCR_WLEN7;
             break;
 
-		case 8:
+        case 8:
             lcr |= UART_LCR_WLEN8;
-			break;
+            break;
 
         default:
             Lpc17xxUsartEnable();
             return -1;
-	}
+    }
     CM3REG(USARTn, LPC_UART_TypeDef, LCR) = lcr & UART_LCR_BITMASK;
 
     Lpc17xxUsartEnable();

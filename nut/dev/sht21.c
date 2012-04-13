@@ -89,24 +89,24 @@ HANDLE sht_mutex;
  */
 int ShtCrc(uint8_t *Data, uint8_t Size)
 {
-	uint_fast8_t i   = 0;
-	uint_fast8_t bit = 0;
-	uint_fast8_t checksum = 0;
+    uint_fast8_t i   = 0;
+    uint_fast8_t bit = 0;
+    uint_fast8_t checksum = 0;
 
-	for (i = 0; i < Size; i++)
-	{
-		checksum ^= (Data[i]);
-		for (bit = 8; bit > 0; --bit)
-		{
-			if (checksum & 0x80)
-				checksum = (checksum << 1) ^ POLYNOMIAL;
-			else
-				checksum = (checksum << 1);
-		}
-	}
+    for (i = 0; i < Size; i++)
+    {
+        checksum ^= (Data[i]);
+        for (bit = 8; bit > 0; --bit)
+        {
+            if (checksum & 0x80)
+                checksum = (checksum << 1) ^ POLYNOMIAL;
+            else
+                checksum = (checksum << 1);
+        }
+    }
 
-	if(checksum == Data[Size])
-		return 0;
+    if(checksum == Data[Size])
+        return 0;
     else
         return -1;
 }

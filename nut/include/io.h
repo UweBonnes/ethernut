@@ -50,7 +50,7 @@
  */
 
 #ifndef _NUT_IO_H_
-#define	_NUT_IO_H_
+#define _NUT_IO_H_
 
 
 #include <sys/types.h>

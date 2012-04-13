@@ -80,11 +80,11 @@
 /*! Port output register of \ref RTL_SIGNAL_BIT. */
 #define RTL_SIGNAL_PORT    PORTE
 
-/*! Port input register of \ref RTL_SIGNAL_BIT. */	
-#define RTL_SIGNAL_PIN     PINE	
+/*! Port input register of \ref RTL_SIGNAL_BIT. */  
+#define RTL_SIGNAL_PIN     PINE 
 
 /*! Data direction register of \ref RTL_SIGNAL_BIT. */
-#define RTL_SIGNAL_DDR     DDRE	
+#define RTL_SIGNAL_DDR     DDRE 
 
 /*! \brief Interrupt signal handler of \ref RTL_SIGNAL_BIT. */
 #define RTL_SIGNAL  sig_INTERRUPT5
@@ -103,11 +103,11 @@
 /*! Port output register of \ref LAN_SIGNAL_BIT. */
 #define LAN_SIGNAL_PORT     PORTE
 
-/*! Port input register of \ref LAN_SIGNAL_BIT. */	
-#define LAN_SIGNAL_PIN      PINE	
+/*! Port input register of \ref LAN_SIGNAL_BIT. */  
+#define LAN_SIGNAL_PIN      PINE    
 
 /*! Data direction register of \ref LAN_SIGNAL_BIT. */
-#define LAN_SIGNAL_DDR      DDRE	
+#define LAN_SIGNAL_DDR      DDRE    
 
 /*! \brief Interrupt signal handler of \ref LAN_SIGNAL_BIT. */
 #define LAN_SIGNAL          sig_INTERRUPT5

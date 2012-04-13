@@ -47,22 +47,22 @@
 
 #define NutEnterCritical() \
 { \
-	asm volatile (  \
-		"@ NutEnterCritical"    "\n\t" \
+    asm volatile (  \
+        "@ NutEnterCritical"    "\n\t" \
         "mrs     r0, PRIMASK"   "\n\t" \
         "cpsid   i"             "\n\t" \
-		:::"r0" \
-	); \
+        :::"r0" \
+    ); \
 }
 
 #define NutExitCritical() \
-	{\
-     	asm volatile ( \
-		"@ NutExitCritical"     "\n\t" \
-		"mrs     r0, PRIMASK"   "\n\t" \
-		"cpsie   i"             "\n\t" \
-		:::"r0" \
-	); \
+    {\
+        asm volatile ( \
+        "@ NutExitCritical"     "\n\t" \
+        "mrs     r0, PRIMASK"   "\n\t" \
+        "cpsie   i"             "\n\t" \
+        :::"r0" \
+    ); \
 }
 
 #define NutJumpOutCritical()    NutExitCritical()

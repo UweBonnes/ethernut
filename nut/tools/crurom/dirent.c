@@ -21,7 +21,7 @@ const char dirent_rcsid[] = "@(#) $Id$";
 
 static void free_dircontents(DIRCONT *dp)
 {
-    DIRCONT	*odp;
+    DIRCONT *odp;
 
     while((odp = dp) != NULL) {
         if(dp->_d_entry != NULL)

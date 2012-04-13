@@ -169,14 +169,14 @@ struct _MCASTENTRY {
     uint32_t mca_ip;
 };
 
-#define	SIOCSIFMTU      0x1001  /*!< \brief Set maximum transfer unit. */
-#define	SIOCGIFMTU      0x1002  /*!< \brief Get maximum transfer unit. */
-#define	SIOCSIFFLAGS    0x1003  /*!< \brief Set interface flags. */
-#define	SIOCGIFFLAGS    0x1004  /*!< \brief Get interface flags. */
-#define	SIOCSIFADDR     0x1005  /*!< \brief Set interface address. */
-#define	SIOCGIFADDR     0x1006  /*!< \brief Get interface address. */
-#define	SIOCADDMULTI    0x1007  /*!< \brief Add multicast address.*/
-#define	SIOCDELMULTI    0x1008  /*!< \brief Delete multicast address. */
+#define SIOCSIFMTU      0x1001  /*!< \brief Set maximum transfer unit. */
+#define SIOCGIFMTU      0x1002  /*!< \brief Get maximum transfer unit. */
+#define SIOCSIFFLAGS    0x1003  /*!< \brief Set interface flags. */
+#define SIOCGIFFLAGS    0x1004  /*!< \brief Get interface flags. */
+#define SIOCSIFADDR     0x1005  /*!< \brief Set interface address. */
+#define SIOCGIFADDR     0x1006  /*!< \brief Get interface address. */
+#define SIOCADDMULTI    0x1007  /*!< \brief Add multicast address.*/
+#define SIOCDELMULTI    0x1008  /*!< \brief Delete multicast address. */
 
 /*!
  * \brief Network interface type.
@@ -202,8 +202,8 @@ struct ifnet {
     uint16_t if_pkt_id;     /*!< \brief Packet identifier. */
     ARPENTRY *arpTable;     /*!< \brief Linked list of arp entries. */
     MCASTENTRY *if_mcast;   /*!< \brief Linked list of multicast address entries. */
-    void (*if_recv) (NUTDEVICE *, NETBUF *);	/*!< \brief Receive routine. */
-    int (*if_send) (NUTDEVICE *, NETBUF *);		/*!< \brief Send routine. */
+    void (*if_recv) (NUTDEVICE *, NETBUF *);    /*!< \brief Receive routine. */
+    int (*if_send) (NUTDEVICE *, NETBUF *);     /*!< \brief Send routine. */
     int (*if_output) (NUTDEVICE *, uint16_t, uint8_t *, NETBUF *);  /*!< \brief Media output routine. */
     int (*if_ioctl) (NUTDEVICE *, int, void *); /*!< \brief Interface specific control function. */
 };

@@ -64,7 +64,7 @@
 /********** TODO: Clock setup is done in arch/cm3/dev/nxp/lpc176x_clk.c
                   Correct config values should be made configurable in the
                   configurator... Left this code as reference...
-		  eventually pin setup has to be integrated here later
+          eventually pin setup has to be integrated here later
 */
 
 __attribute__ ((section(".crp"))) const uint32_t CRP_WORD = 0xFFFFFFFF;

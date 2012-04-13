@@ -302,8 +302,8 @@ static int At91SpiMmcIfcInit(NUTDEVICE * dev)
 
     /* MMC chip select is manually controlled. */
     outr(MMC_CS_PER, _BV(MMC_CS_BIT));
-	outr(MMC_CS_SODR, _BV(MMC_CS_BIT));
-	outr(MMC_CS_OER, _BV(MMC_CS_BIT));
+    outr(MMC_CS_SODR, _BV(MMC_CS_BIT));
+    outr(MMC_CS_OER, _BV(MMC_CS_BIT));
 
     /* Enable SPI clock. */
     outr(PMC_PCER, _BV(MMC_SPI_ID));

@@ -1,5 +1,5 @@
 #ifndef _DEV_AT49BV_H_
-#define	_DEV_AT49BV_H_
+#define _DEV_AT49BV_H_
 
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.

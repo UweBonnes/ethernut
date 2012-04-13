@@ -73,7 +73,7 @@
 #define PWR_FLAG_WU               ((uint32_t)0x00000001)
 #define PWR_FLAG_SB               ((uint32_t)0x00000002)
 #define PWR_FLAG_PVDO             ((uint32_t)0x00000004)
-#define PWR_CR_DBP		  ((uint32_t)(1<<8))
+#define PWR_CR_DBP        ((uint32_t)(1<<8))
 #define IS_PWR_GET_FLAG(FLAG) (((FLAG) == PWR_FLAG_WU) || ((FLAG) == PWR_FLAG_SB) || \
                                ((FLAG) == PWR_FLAG_PVDO))
 

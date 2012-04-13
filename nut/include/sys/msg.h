@@ -89,7 +89,7 @@ extern void NutMsgQFlush(NUTMSGQ * que);
 extern HANDLE NutMsgQStartTimer(NUTMSGQ * que, uint32_t ms, int param, void *data, uint8_t flags);
 extern void NutMsgQStopTimer(HANDLE timer);
 
-#define MSG_TIMER	0xfe
-#define MSG_NULL	0xff
+#define MSG_TIMER   0xfe
+#define MSG_NULL    0xff
 
 #endif

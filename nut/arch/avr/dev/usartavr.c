@@ -137,14 +137,14 @@ static ureg_t flow_control;
 static ureg_t tx_aframe;
 
 #ifdef UART_HDX_BIT
-	/* define in cfg/modem.h */
-	#ifdef UART_HDX_FLIP_BIT	/* same as RTS toggle by Windows NT driver */
-		#define UART_HDX_TX		cbi
-		#define UART_HDX_RX		sbi
-	#else						/* previous usage by Ethernut */
-		#define UART_HDX_TX		sbi
-		#define UART_HDX_RX		cbi
-	#endif
+    /* define in cfg/modem.h */
+    #ifdef UART_HDX_FLIP_BIT    /* same as RTS toggle by Windows NT driver */
+        #define UART_HDX_TX     cbi
+        #define UART_HDX_RX     sbi
+    #else                       /* previous usage by Ethernut */
+        #define UART_HDX_TX     sbi
+        #define UART_HDX_RX     cbi
+    #endif
 #endif
 
 
@@ -279,7 +279,7 @@ static void AvrUsartTxEmpty(void *arg) {
         TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
 #endif
         return;
-	}
+    }
 #endif /* UART_NO_SW_FLOWCONTROL */
 
     if (rbf->rbf_cnt) {
@@ -861,14 +861,14 @@ static uint32_t AvrUsartGetStatus(void)
 #endif
 
 #ifdef UART_DTR_BIT
-	/*
-	* Determine DTS status.
-	*/
-	if ( bit_is_set( UART_DTR_PORT, UART_DTR_BIT ) ) {
-		rc |= UART_DTRENABLED;
-	} else {
-		rc |= UART_DTRDISABLED;
-	}
+    /*
+    * Determine DTS status.
+    */
+    if ( bit_is_set( UART_DTR_PORT, UART_DTR_BIT ) ) {
+        rc |= UART_DTRENABLED;
+    } else {
+        rc |= UART_DTRDISABLED;
+    }
 #endif
 
     /*
@@ -963,14 +963,14 @@ static int AvrUsartSetStatus(uint32_t flags)
 #endif
 
 #ifdef UART_DTR_BIT
-	if ( flags & UART_DTRDISABLED ) {
-		sbi(UART_DTR_DDR, UART_DTR_BIT);
-		sbi(UART_DTR_PORT, UART_DTR_BIT);
-	}
-	if ( flags & UART_DTRENABLED ) {
-		sbi(UART_DTR_DDR, UART_DTR_BIT);
-		cbi(UART_DTR_PORT, UART_DTR_BIT);
-	}
+    if ( flags & UART_DTRDISABLED ) {
+        sbi(UART_DTR_DDR, UART_DTR_BIT);
+        sbi(UART_DTR_PORT, UART_DTR_BIT);
+    }
+    if ( flags & UART_DTRENABLED ) {
+        sbi(UART_DTR_DDR, UART_DTR_BIT);
+        cbi(UART_DTR_PORT, UART_DTR_BIT);
+    }
 #endif
 
     /*
@@ -1265,7 +1265,7 @@ static void AvrUsartTxStart(void)
 #ifdef UART_HDX_BIT
     if (hdx_control) {
         /* Enable half duplex transmitter. */
-	UART_HDX_TX(UART_HDX_PORT, UART_HDX_BIT);
+    UART_HDX_TX(UART_HDX_PORT, UART_HDX_BIT);
     }
 #endif
     /* Enable transmit interrupts. */
@@ -1327,11 +1327,11 @@ static int AvrUsartInit(void)
 #endif
 
 #ifdef UART_RTS_BIT
-	sbi(UART_RTS_DDR, UART_RTS_BIT);
+    sbi(UART_RTS_DDR, UART_RTS_BIT);
 #endif
 
 #ifdef UART_DTR_BIT
-	sbi(UART_DTR_DDR, UART_DTR_BIT);
+    sbi(UART_DTR_DDR, UART_DTR_BIT);
 #endif
 
     return 0;
@@ -1384,7 +1384,7 @@ static int AvrUsartDeinit(void)
 #endif
 
 #ifdef UART_DTR_BIT
-	cbi(UART_DTR_DDR, UART_DTR_BIT);
+    cbi(UART_DTR_DDR, UART_DTR_BIT);
 #endif
 
     return 0;

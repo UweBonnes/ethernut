@@ -65,35 +65,35 @@
  */
 /*@{*/
 
-#define _IOUNG	    0x08    /*!< \internal Unget buffer filled. */
-#define _IOERR	    0x10    /*!< \internal Error occured. */
+#define _IOUNG      0x08    /*!< \internal Unget buffer filled. */
+#define _IOERR      0x10    /*!< \internal Error occured. */
 #define _IOEOF      0x20    /*!< \internal End of file reached. */
-#define _IOPGM	    0x40    /*!< \internal Input from program memory. */
+#define _IOPGM      0x40    /*!< \internal Input from program memory. */
 
 #ifndef BUFSIZ
-#define	BUFSIZ	    128	    /*!< \brief Default maximum size of stream buffers.
-				 Currently not used.
-				 \showinitializer */
+#define BUFSIZ      128     /*!< \brief Default maximum size of stream buffers.
+                 Currently not used.
+                 \showinitializer */
 #endif
 
 #ifndef FOPEN_MAX
-#define	FOPEN_MAX	8   /*!< \brief Default maximum number of open streams.
-				 \showinitializer */
+#define FOPEN_MAX   8   /*!< \brief Default maximum number of open streams.
+                 \showinitializer */
 #endif
 
 #ifndef FILENAME_MAX
-#define	FILENAME_MAX	255 /*!< \brief Default maximum size of filenames.
-				 \showinitializer */
+#define FILENAME_MAX    255 /*!< \brief Default maximum size of filenames.
+                 \showinitializer */
 #endif
 
 /*! \internal
  * \brief Stores the current status of a stream.
  */
 struct __iobuf {
-    int     iob_fd;		/*!< \internal Associated file, device or socket descriptor. */
-    uint16_t iob_mode;		/*!< \internal Access mode, see fcntl.h. */
-    uint8_t iob_flags;		/*!< \internal Status flags. */
-    int     iob_unget;		/*!< \internal Unget buffer. */
+    int     iob_fd;     /*!< \internal Associated file, device or socket descriptor. */
+    uint16_t iob_mode;      /*!< \internal Access mode, see fcntl.h. */
+    uint8_t iob_flags;      /*!< \internal Status flags. */
+    int     iob_unget;      /*!< \internal Unget buffer. */
 };
 
 /*@}*/

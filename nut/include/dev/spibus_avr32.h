@@ -48,8 +48,8 @@
 typedef struct _AVR32SPIREG AVR32SPIREG;
 
 struct _AVR32SPIREG {
-	ureg_t mr;
-	ureg_t csr;
+    ureg_t mr;
+    ureg_t csr;
 };
 
 extern NUTSPIBUS spiBus0Avr32;

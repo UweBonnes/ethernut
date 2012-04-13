@@ -50,25 +50,25 @@
  */
 
 /*! \brief Length of an Ethernet address. */
-#define	ETHER_ADDR_LEN      6
+#define ETHER_ADDR_LEN      6
 
 /*! \brief Length of the Ethernet type field. */
-#define	ETHER_TYPE_LEN      2
+#define ETHER_TYPE_LEN      2
 
 /*! \brief Length of the Ethernet CRC. */
-#define	ETHER_CRC_LEN       4
+#define ETHER_CRC_LEN       4
 
 /*! \brief Length of an Ethernet header. */
-#define	ETHER_HDR_LEN       (ETHER_ADDR_LEN + ETHER_ADDR_LEN + ETHER_TYPE_LEN)
+#define ETHER_HDR_LEN       (ETHER_ADDR_LEN + ETHER_ADDR_LEN + ETHER_TYPE_LEN)
 
 #ifndef ETHER_MIN_LEN
 /*! \brief Minimum frame length, including CRC. */
-#define	ETHER_MIN_LEN       64
+#define ETHER_MIN_LEN       64
 #endif
 
 #ifndef ETHER_MAX_LEN
 /*! \brief Maximum frame length, including CRC. */
-#define	ETHER_MAX_LEN       1518
+#define ETHER_MAX_LEN       1518
 #endif
 
 /*!
@@ -112,7 +112,7 @@ struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is zero. Otherwise 0 is returned.
  */
-#define	ETHER_IS_ZERO(ea) (((ea)[0] | (ea)[1] | (ea)[2] | (ea)[3] | (ea)[4] | (ea)[5]) == 0)
+#define ETHER_IS_ZERO(ea) (((ea)[0] | (ea)[1] | (ea)[2] | (ea)[3] | (ea)[4] | (ea)[5]) == 0)
 
 /*!
  * \brief Determine if a given Ethernet address is a broadcast address.
@@ -121,7 +121,7 @@ struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is a broadcast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_BROADCAST(ea) (((ea)[0] & (ea)[1] & (ea)[2] & (ea)[3] & (ea)[4] & (ea)[5]) == 0xFF)
+#define ETHER_IS_BROADCAST(ea) (((ea)[0] & (ea)[1] & (ea)[2] & (ea)[3] & (ea)[4] & (ea)[5]) == 0xFF)
 
 /*!
  * \brief Determine if a given Ethernet address is a multicast address.
@@ -132,7 +132,7 @@ struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is a multicast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_MULTICAST(ea) ((ea)[0] & 1)
+#define ETHER_IS_MULTICAST(ea) ((ea)[0] & 1)
 
 /*!
  * \brief Determine if a given Ethernet address is a unicast address.
@@ -143,7 +143,7 @@ struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is a unicast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea))
+#define ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea))
 
 __BEGIN_DECLS
 /* ASCII conversion function prototypes. */

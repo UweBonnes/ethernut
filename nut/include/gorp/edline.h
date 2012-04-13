@@ -1,5 +1,5 @@
 #ifndef _GORP_EDLINE_EDLINE_H_
-#define	_GORP_EDLINE_EDLINE_H_
+#define _GORP_EDLINE_EDLINE_H_
 
 /*
  * Copyright 2009 by egnite GmbH

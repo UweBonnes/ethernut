@@ -456,7 +456,7 @@
  *----------------------------------------------------------------------------*/
 // TODO: Implemen correct handling of peripheral clocks, USB clock and further clocks
 uint32_t SystemCoreClock = __CORE_CLK;      /*!< System Clock Frequency (Core Clock)*/
-uint32_t USBClock 		 = (48000000UL);    /*!< USB Clock Frequency - this value will be updated after call SystemCoreClockUpdate, should be 48MHz*/
+uint32_t USBClock        = (48000000UL);    /*!< USB Clock Frequency - this value will be updated after call SystemCoreClockUpdate, should be 48MHz*/
 
 
 /*----------------  Clock Setup Procedure ------------------------------

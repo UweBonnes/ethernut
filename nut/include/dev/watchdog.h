@@ -1,5 +1,5 @@
 #ifndef _DEV_WATCHDOG_H_
-#define	_DEV_WATCHDOG_H_
+#define _DEV_WATCHDOG_H_
 
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.

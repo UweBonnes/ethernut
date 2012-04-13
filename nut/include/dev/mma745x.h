@@ -50,12 +50,12 @@
 /*
  * MMA745x Register Map.
  */
-#define MMA745x_REG_XOUTL	    0x00        /**< ro: Value X-Axis 10 bit resolution LSB */
-#define MMA745x_REG_XOUTH	    0x01        /**< ro: Value X-Axis 10 bit resolution MSB */
-#define MMA745x_REG_YOUTL	    0x02        /**< ro: Value Y-Axis 10 bit resolution LSB */
-#define MMA745x_REG_YOUTH	    0x03        /**< ro: Value Y-Axis 10 bit resolution MSB */
-#define MMA745x_REG_ZOUTL	    0x04        /**< ro: Value Z-Axis 10 bit resolution LSB */
-#define MMA745x_REG_ZOUTH	    0x05        /**< ro: Value Z-Axis 10 bit resolution MSB */
+#define MMA745x_REG_XOUTL       0x00        /**< ro: Value X-Axis 10 bit resolution LSB */
+#define MMA745x_REG_XOUTH       0x01        /**< ro: Value X-Axis 10 bit resolution MSB */
+#define MMA745x_REG_YOUTL       0x02        /**< ro: Value Y-Axis 10 bit resolution LSB */
+#define MMA745x_REG_YOUTH       0x03        /**< ro: Value Y-Axis 10 bit resolution MSB */
+#define MMA745x_REG_ZOUTL       0x04        /**< ro: Value Z-Axis 10 bit resolution LSB */
+#define MMA745x_REG_ZOUTH       0x05        /**< ro: Value Z-Axis 10 bit resolution MSB */
 
 #define MMA745x_REG_XOUT8       0x06        /**< ro: Value X-Axis 8 bit resolution */
 #define MMA745x_REG_YOUT8       0x07        /**< ro: Value Y-Axis 8 bit resolution */
@@ -76,12 +76,12 @@
 #define MMA745x_REG_ZOFFL       0x14        /**< Z-Axis offset drift register LSB */
 #define MMA745x_REG_ZOFFH       0x15        /**< Z-Axis offset drift register MSB */
 
-#define MMA745x_REG_MCTL		0x16        /**< Mode control register */
-#define MMA745x_REG_INTRST     	0x17        /**< Interrupt latch reset register */
-#define MMA745x_REG_CTL1	    0x18        /**< Control register 1 */
-#define MMA745x_REG_CTL2	    0x19        /**< Control register 2 */
-#define MMA745x_REG_LDTH	    0x1A        /**< Level detection threshold value */
-#define MMA745x_REG_PDTH		0x1B        /**< Pulse detection threshold value */
+#define MMA745x_REG_MCTL        0x16        /**< Mode control register */
+#define MMA745x_REG_INTRST      0x17        /**< Interrupt latch reset register */
+#define MMA745x_REG_CTL1        0x18        /**< Control register 1 */
+#define MMA745x_REG_CTL2        0x19        /**< Control register 2 */
+#define MMA745x_REG_LDTH        0x1A        /**< Level detection threshold value */
+#define MMA745x_REG_PDTH        0x1B        /**< Pulse detection threshold value */
 #define MMA745x_REG_PW          0x1C        /**< Pulse duration value */
 #define MMA745x_REG_LT          0x1D        /**< Latency time value */
 #define MMA745x_REG_TW          0x1E        /**< Time window for 2nd pulse value (double-click detection) */

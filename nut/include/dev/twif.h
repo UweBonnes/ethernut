@@ -59,12 +59,12 @@
 /*!
  * \brief TWI ioctl() control codes
  */
-#define TWI_SETSPEED		0x0401	/*!< \brief Set transfer speed. */
-#define TWI_GETSPEED		0x0402	/*!< \brief Query transfer speed. */
-#define TWI_SETSLAVEADDRESS	0x0403	/*!< \brief Set local slave address. */
-#define TWI_GETSLAVEADDRESS	0x0404	/*!< \brief Query local slave address. */
-#define TWI_SETSTATUS		0x0409	/*!< \brief Set status. */
-#define TWI_GETSTATUS		0x040a	/*!< \brief Query status. */
+#define TWI_SETSPEED        0x0401  /*!< \brief Set transfer speed. */
+#define TWI_GETSPEED        0x0402  /*!< \brief Query transfer speed. */
+#define TWI_SETSLAVEADDRESS 0x0403  /*!< \brief Set local slave address. */
+#define TWI_GETSLAVEADDRESS 0x0404  /*!< \brief Query local slave address. */
+#define TWI_SETSTATUS       0x0409  /*!< \brief Set status. */
+#define TWI_GETSTATUS       0x040a  /*!< \brief Query status. */
 
 /*!
  * \brief TWI error codes
@@ -79,17 +79,17 @@
 #define TWERR_ARBLOST    -7  /*!< \brief Arbitration lost. */
 #define TWERR_SPCTOUT    -8  /*!< \brief Start/Stop Condition timeout */
 
-#define TWSLA_MIN		 17  /*!< \brief Lowest slave address.
-            				 * Addresses below are reserved
-            				 * for special purposes.
-            				 */
-#define TWSLA_MAX		 79  /*!< \brief Highest slave address.
-        					 * Addresses above are reserved
-        					 * for special purposes.
-        					 */
-#define TWSLA_BCAST		  0  /*!< \brief Broadcast slave address. */
-#define TWSLA_HOST		 16  /*!< \brief Host slave address. */
-#define TWSLA_DEFAULT	193  /*!< \brief Default slave address. */
+#define TWSLA_MIN        17  /*!< \brief Lowest slave address.
+                              * Addresses below are reserved
+                              * for special purposes.
+                              */
+#define TWSLA_MAX        79  /*!< \brief Highest slave address.
+                              * Addresses above are reserved
+                              * for special purposes.
+                              */
+#define TWSLA_BCAST       0  /*!< \brief Broadcast slave address. */
+#define TWSLA_HOST       16  /*!< \brief Host slave address. */
+#define TWSLA_DEFAULT   193  /*!< \brief Default slave address. */
 
 typedef struct _NUTTWIICB NUTTWIICB;
 /*

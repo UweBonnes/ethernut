@@ -1,5 +1,5 @@
 #ifndef _DEV_RTC_H_
-#define	_DEV_RTC_H_
+#define _DEV_RTC_H_
 
 /*
  * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.

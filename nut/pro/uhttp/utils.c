@@ -119,8 +119,8 @@ char *HttpDecodeBase64(char *str)
     char step = 0;
 
     for (tp = sp = str; *sp; ++sp) {
-    	if (*sp < 32)
-    	    continue;
+        if (*sp < 32)
+            continue;
         if ((code = base64dtab[(int) *sp - 32]) == (char)-1)
             continue;
         switch (step++) {

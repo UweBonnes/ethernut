@@ -71,7 +71,7 @@ static void DebugPut(CONST NUTDEVICE * dev, char ch)
     if (ch == '\n') {
         DebugPut(dev, '\r');
     }
-    while ((inr(UART0_LSR) & UART_THRE) == 0);	
+    while ((inr(UART0_LSR) & UART_THRE) == 0);  
     outr(UART0_THR, ch);
 }
 

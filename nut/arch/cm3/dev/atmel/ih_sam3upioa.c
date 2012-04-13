@@ -94,7 +94,7 @@ static int PortIoIrqCtl(int cmd, void *param)
     /* Disable interrupt. */
     if (enabled) {
         //outr(AIC_IDCR, _BV(PIOA_ID));
-	IntDisable(INT_PIOA);
+    IntDisable(INT_PIOA);
     }
 
     switch(cmd) {
@@ -105,12 +105,12 @@ static int PortIoIrqCtl(int cmd, void *param)
         //outr(AIC_SMR(PIOA_ID), AIC_SRCTYPE_INT_EDGE_TRIGGERED | NUT_IRQPRI_PIOA);
         /* Clear interrupt */
         //outr(AIC_ICCR, _BV(PIOA_ID));
-	IntRegister(INT_PIOA,(void*)PortIoIrqEntry);
-	IntPrioritySet(INT_PIOA,NUT_IRQPRI_PIOA);
-	/* set as edge triggered */ //и как? оно делается попиново
-	//outr(AT91C_PIOA_ESR,_BV(AT91C_ID_PIOA);
-	/* clear interrupt */
-	outr(AT91C_NVIC_ICPR,_BV(AT91C_ID_PIOA));
+    IntRegister(INT_PIOA,(void*)PortIoIrqEntry);
+    IntPrioritySet(INT_PIOA,NUT_IRQPRI_PIOA);
+    /* set as edge triggered */ //и как? оно делается попиново
+    //outr(AT91C_PIOA_ESR,_BV(AT91C_ID_PIOA);
+    /* clear interrupt */
+    outr(AT91C_NVIC_ICPR,_BV(AT91C_ID_PIOA));
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -147,10 +147,10 @@ static int PortIoIrqCtl(int cmd, void *param)
         break;*/
     case NUT_IRQCTL_GETPRIO:
         //*ival = inr(AIC_SMR(PIOA_ID)) & AIC_PRIOR;
-	*ival = IntPriorityGet(INT_PIOA);
+    *ival = IntPriorityGet(INT_PIOA);
         break;
     case NUT_IRQCTL_SETPRIO:
-	IntPrioritySet(INT_PIOA, *ival);
+    IntPrioritySet(INT_PIOA, *ival);
         //outr(AIC_SMR(PIOA_ID), (inr(AIC_SMR(PIOA_ID)) & ~AIC_PRIOR) | *ival);
         break;
 #ifdef NUT_PERFMON
@@ -167,7 +167,7 @@ static int PortIoIrqCtl(int cmd, void *param)
     /* Enable interrupt. */
     if (enabled) {
         IntEnable(INT_PIOA);
-	//outr(AIC_IECR, _BV(PIOA_ID));
+    //outr(AIC_IECR, _BV(PIOA_ID));
     }
     return rc;
 }

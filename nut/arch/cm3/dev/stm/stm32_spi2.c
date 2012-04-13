@@ -151,10 +151,10 @@
 
 
 /*Dma Channels
-  * DMA1.2 - spi1_rx		DMA1.3 - spi1_tx
-  * DMA1.4 - spi2_rx (I2c2_tx)	DMA1.5 - spi2_tx (i2c2_rx)
-  * DMA1.6 - i2c1_tx		DMA1.7 - i2c1_rx
-  * DMA2.1 - spi3_rx		DMA2.2 - spi3_tx
+  * DMA1.2 - spi1_rx        DMA1.3 - spi1_tx
+  * DMA1.4 - spi2_rx (I2c2_tx)  DMA1.5 - spi2_tx (i2c2_rx)
+  * DMA1.6 - i2c1_tx        DMA1.7 - i2c1_rx
+  * DMA2.1 - spi3_rx        DMA2.2 - spi3_tx
   */
 //static HANDLE spi2_que;
 

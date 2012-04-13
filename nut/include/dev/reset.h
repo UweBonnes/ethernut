@@ -1,5 +1,5 @@
 #ifndef _DEV_RESET_H_
-#define	_DEV_RESET_H_
+#define _DEV_RESET_H_
 
 /*
  * Copyright (C) 2008 by egnite GmbH.

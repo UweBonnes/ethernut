@@ -99,21 +99,21 @@ void NutArchMicroDelay(uint32_t us)
 
     if (us > 2000)
     {
-	int n = us/1000 -1;
-	NutSleep(n);
-	us -= n*1000;
+    int n = us/1000 -1;
+    NutSleep(n);
+    us -= n*1000;
     }
     end_ticks = start_ticks - (us%1000 * SysTickPeriodGet())/NUT_TICK_FREQ;
     end_ms = start_ms + us/1000;
     /* Wraparounf of Systick*/
     if (end_ticks <= 0)
     {
-	end_ms++;
-	end_ticks += SysTickPeriodGet();
+    end_ms++;
+    end_ticks += SysTickPeriodGet();
     }
     /* Wraparound of nut_ticks*/
     if( end_ms < start_ms)
-	while (nut_ticks) {};
+    while (nut_ticks) {};
     for(;;)
     {
     /* Paranoid check for wraparound of nut_ticks at end of delay*/
@@ -164,29 +164,29 @@ void NutRegisterTimer(void (*handler)(void*))
  */
 uint32_t NutArchClockGet(int idx)
 {
-	uint32_t clock = 0;
+    uint32_t clock = 0;
 #if defined(MCU_STM32)
 #if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F4)
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
 
-	if ( idx == NUT_HWCLK_CPU ) {
+    if ( idx == NUT_HWCLK_CPU ) {
         clock = RCC_ClocksStatus.SYSCLK_Frequency;
-	}
-	else if ( idx == NUT_HWCLOCK_HCLK){
+    }
+    else if ( idx == NUT_HWCLOCK_HCLK){
         clock = RCC_ClocksStatus.HCLK_Frequency;
-	}
-	else if ( idx == NUT_HWCLK_PCLK1 ) {
-		clock = RCC_ClocksStatus.PCLK1_Frequency;
-	}
-	else if ( idx == NUT_HWCLK_PCLK2 ) {
+    }
+    else if ( idx == NUT_HWCLK_PCLK1 ) {
+        clock = RCC_ClocksStatus.PCLK1_Frequency;
+    }
+    else if ( idx == NUT_HWCLK_PCLK2 ) {
         clock = RCC_ClocksStatus.PCLK2_Frequency;
-	}
+    }
 #if defined(MCU_STM32F1)
-	else if ( idx == NUT_HWCLK_ADC) {
+    else if ( idx == NUT_HWCLK_ADC) {
         clock = RCC_ClocksStatus.ADCCLK_Frequency;
-	}
+    }
 #endif
 #else
 #warning "Unknown STM32 Family"
@@ -197,7 +197,7 @@ uint32_t NutArchClockGet(int idx)
 #else
 #warning "Unknown CM3 family"
 #endif
-	return clock;
+    return clock;
 }
 
 /*!

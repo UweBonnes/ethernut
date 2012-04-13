@@ -67,14 +67,14 @@
 
 #define USART_TXBUFSIZ    0
 #define USART_TXHIWMARK   0
-#define USART_TXLOWMARK	  0
+#define USART_TXLOWMARK   0
 #define USART_RXBUFSIZ    256
 #define USART_RXHIWMARK   190
 #define USART_RXLOWMARK   128
 
 #define TX_BUF_SIZE       64
 
-#define MIN(a,b)	((a) < (b) ? (a) : (b))
+#define MIN(a,b)    ((a) < (b) ? (a) : (b))
 
 #include <dev/usart.h>
 //#define static
@@ -99,7 +99,7 @@ static HANDLE OTGTimer = 0;
 static HANDLE OTGEvent = 0;
 
 void Stm32Otg_IRQHandler(void* arg){
-	STM32_PCD_OTG_ISR_Handler();
+    STM32_PCD_OTG_ISR_Handler();
 };
 
 static int Stm32OtgUsartInit(void);
@@ -111,75 +111,75 @@ static int Stm32OtgUsartDeinit(void)
 };
 
 static int Stm32OtgUsartSetSpeed(uint32_t rate){//Работает
-	linecoding.bitrate=rate;
-	return 0;
+    linecoding.bitrate=rate;
+    return 0;
 };
 
 static uint32_t Stm32OtgUsartGetSpeed(void){//Работает
-	return linecoding.bitrate;
+    return linecoding.bitrate;
 };
 
 static int Stm32OtgUsartSetDataBits(uint8_t bits){//Должно работать
-	linecoding.datatype=bits;
-	return 0;
+    linecoding.datatype=bits;
+    return 0;
 };
 
 static uint8_t Stm32OtgUsartGetDataBits(void){//Должно работать
-	return linecoding.datatype;
+    return linecoding.datatype;
 };
 
 static int Stm32OtgUsartSetFlowControl(uint32_t flags){//FIXME: доделать?
-	return 0;
+    return 0;
 };
 
 static uint32_t Stm32OtgUsartGetFlowControl(void){//FIXME: доделать?
-	return 0;
+    return 0;
 };
 
 static int Stm32OtgUsartSetClockMode(uint8_t mode){//не нужно - синхронный режим неприменим
-	return -1;
+    return -1;
 };
 
 static uint8_t Stm32OtgUsartGetClockMode(void){//работает
-	return 0;
+    return 0;
 };
 
 static int Stm32OtgUsartSetParity(uint8_t mode){
-	return 0;
+    return 0;
 };
 
 static uint8_t Stm32OtgUsartGetParity(void){
-	return 0;
+    return 0;
 };
 
 static int Stm32OtgUsartSetStopBits(uint8_t bits){//Скорее всего правильно
-	linecoding.format=bits-1;
-	return 0;
+    linecoding.format=bits-1;
+    return 0;
 };
 
 static uint8_t Stm32OtgUsartGetStopBits(void){//Скорее всего правильно
-	return linecoding.format+1;
+    return linecoding.format+1;
 };
 
 static uint32_t Stm32OtgUsartGetStatus(void){
-	return UART_RXENABLED|UART_TXENABLED;
+    return UART_RXENABLED|UART_TXENABLED;
 };
 
 static int Stm32OtgUsartSetStatus(uint32_t flags){
-	return 0;
+    return 0;
 };
 
 static void Stm32OtgUsartTxStart(void){
-	//Здесь начать передачу по USB
-//	EP1_IN_Callback();
+    //Здесь начать передачу по USB
+//  EP1_IN_Callback();
 };
 
 
 static void FlushTxBuffer(void* arg)
 {
     if(OTGTimer)  {
-	NutTimerStop(OTGTimer);
-	OTGTimer = 0;
+    NutTimerStop(OTGTimer);
+    OTGTimer = 0;
     }
     tx_rdy = 0;
     OTGD_FS_PCD_EP_Write (EP1_IN,tx_buffer,tx_buf_cnt);
@@ -195,9 +195,9 @@ THREAD(OTGTimerEvent, arg)
 {
     NutThreadSetPriority(4);
     for (;;) {
-	if (NutEventWait(arg, 0) == 0){
-	    FlushTxBuffer(NULL);
-	    }
+    if (NutEventWait(arg, 0) == 0){
+        FlushTxBuffer(NULL);
+        }
     }
 }
 
@@ -213,9 +213,9 @@ static int Stm32OtgWrite(NUTFILE * fp, CONST void *buffer, int len)
         }
 
         if(OTGTimer)  {
-	    NutTimerStop(OTGTimer);
-	    OTGTimer = 0;
-	}
+        NutTimerStop(OTGTimer);
+        OTGTimer = 0;
+    }
         int cnt = MIN( TX_BUF_SIZE - tx_buf_cnt, c );
         memcpy( &tx_buffer[ tx_buf_cnt ], cp, cnt );
         tx_buf_cnt += cnt;
@@ -228,7 +228,7 @@ static int Stm32OtgWrite(NUTFILE * fp, CONST void *buffer, int len)
         } else {
             //reset timer counter
             OTGTimer = NutTimerStart(
-		16, OTGTimerCallback, &OTGEvent, TM_ONESHOT);
+        16, OTGTimerCallback, &OTGEvent, TM_ONESHOT);
        }
     }
     return len;
@@ -236,19 +236,19 @@ static int Stm32OtgWrite(NUTFILE * fp, CONST void *buffer, int len)
 
 
 static void Stm32OtgUsartRxStart(void){
-	//Здесь запустить приём данных по нужному EP
-	  USB_OTG_EP *ep;
-	  ep = OTGD_FS_PCD_GetOutEP(EP3_OUT & 0x7F);
-	  /*setup and start the Xfer */
-	  ep->xfer_buff = buffer_out;
-	  ep->xfer_len = VIRTUAL_COM_PORT_DATA_SIZE;
-	  ep->xfer_count = 0;
-	  ep->is_in = 0;
-	  ep->num = EP3_OUT & 0x7F;
-	  if (USB_OTG_PCD_dev.ep0state == 0)
-	  {
-	    OTGD_FS_EPStartXfer( ep );
-	  }
+    //Здесь запустить приём данных по нужному EP
+      USB_OTG_EP *ep;
+      ep = OTGD_FS_PCD_GetOutEP(EP3_OUT & 0x7F);
+      /*setup and start the Xfer */
+      ep->xfer_buff = buffer_out;
+      ep->xfer_len = VIRTUAL_COM_PORT_DATA_SIZE;
+      ep->xfer_count = 0;
+      ep->is_in = 0;
+      ep->num = EP3_OUT & 0x7F;
+      if (USB_OTG_PCD_dev.ep0state == 0)
+      {
+        OTGD_FS_EPStartXfer( ep );
+      }
 };
 
 /*******************************************************************************
@@ -260,7 +260,7 @@ static void Stm32OtgUsartRxStart(void){
 *******************************************************************************/
 void EP1_IN_Callback(void)
 {
-	//NutEventPostFromIrq(&tx_handle);
+    //NutEventPostFromIrq(&tx_handle);
         tx_rdy = 1;
 }
 
@@ -273,32 +273,32 @@ void EP1_IN_Callback(void)
 *******************************************************************************/
 void EP3_OUT_Callback(void)
 {
-	//приём данных - данные пришли - по сути RxReady
-	register size_t cnt;
+    //приём данных - данные пришли - по сути RxReady
+    register size_t cnt;
         uint32_t i = 0;
         USB_OTG_EP *ep;
         /* Get the structure pointer of the selected Endpoint */
         ep = OTGD_FS_PCD_GetOutEP(EP3_OUT);
         /* Use the PCD interface layer function to read the selected endpoint */
-  	/* copy received data into application buffer */
-	cnt = rx_buffer->rbf_cnt;
-//	if (cnt >= rx_buffer->rbf_siz) {
-        //	rx_errors |= UART_OVERRUNERROR;
-		//FIXME: somehow signall overflow
-//	        return;
-//	}
-	for (i = 0 ; i < ep->xfer_len ; i++)
-	{
-		if (cnt++ == 0){
-        		NutEventPostFromIrq(&rx_buffer->rbf_que);
-		}
-		*rx_buffer->rbf_head++ = ep->xfer_buff[i];
-		if (rx_buffer->rbf_head == rx_buffer->rbf_last) {
-		        rx_buffer->rbf_head = rx_buffer->rbf_start;
-		}
-		/* Update the ring buffer counter. */
-		rx_buffer->rbf_cnt = cnt;
-	}
+    /* copy received data into application buffer */
+    cnt = rx_buffer->rbf_cnt;
+//  if (cnt >= rx_buffer->rbf_siz) {
+        //  rx_errors |= UART_OVERRUNERROR;
+        //FIXME: somehow signall overflow
+//          return;
+//  }
+    for (i = 0 ; i < ep->xfer_len ; i++)
+    {
+        if (cnt++ == 0){
+                NutEventPostFromIrq(&rx_buffer->rbf_que);
+        }
+        *rx_buffer->rbf_head++ = ep->xfer_buff[i];
+        if (rx_buffer->rbf_head == rx_buffer->rbf_last) {
+                rx_buffer->rbf_head = rx_buffer->rbf_start;
+        }
+        /* Update the ring buffer counter. */
+        rx_buffer->rbf_cnt = cnt;
+    }
 }
 
 
@@ -308,7 +308,7 @@ static USARTDCB dcb_otg0 = {
     0,                          /* dcb_statusflags */
     0,                          /* dcb_rtimeout */
     0,                          /* dcb_wtimeout */
-    {0, 0, 0, 0, 0, 0, 0, 0},	/* dcb_tx_rbf */
+    {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_tx_rbf */
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_rx_rbf */
     0,                          /* dbc_last_eol */
     Stm32OtgUsartInit,              /* dcb_init */
@@ -370,19 +370,19 @@ static int Stm32OtgUsartInit( void )
  * \brief Stm32Otg device information structure.
  */
 NUTDEVICE devStm32Otg = {
-    0,                          		/*!< Pointer to next device, dev_next. */
-    {'u', 's', 'b', '_', 'o', 't', 'g', 0, 0},	/*!< Unique device name, dev_name. */
-    IFTYP_CHAR,                    		/*!< Type of device, dev_type. */
-    0,                  			/*!< Base address, dev_base. */
-    0,                          		/*!< First interrupt number, dev_irq. */
-    0,                          		/*!< Interface control block, dev_icb. */
-    &dcb_otg0,                  		/*!< Driver control block, dev_dcb. */
-    UsartInit,                  		/*!< Driver initialization routine, dev_init. */
-    UsartIOCtl,                 		/*!< Driver specific control function, dev_ioctl. */
-    UsartRead,                  		/*!< dev_read. */
-    Stm32OtgWrite,                 		/*!< dev_write. */
-    UsartOpen,                  		/*!< dev_opem. */
-    UsartClose,                 		/*!< dev_close. */
-    UsartSize                   		/*!< dev_size. */
+    0,                                  /*!< Pointer to next device, dev_next. */
+    {'u', 's', 'b', '_', 'o', 't', 'g', 0, 0},  /*!< Unique device name, dev_name. */
+    IFTYP_CHAR,                         /*!< Type of device, dev_type. */
+    0,                              /*!< Base address, dev_base. */
+    0,                                  /*!< First interrupt number, dev_irq. */
+    0,                                  /*!< Interface control block, dev_icb. */
+    &dcb_otg0,                          /*!< Driver control block, dev_dcb. */
+    UsartInit,                          /*!< Driver initialization routine, dev_init. */
+    UsartIOCtl,                         /*!< Driver specific control function, dev_ioctl. */
+    UsartRead,                          /*!< dev_read. */
+    Stm32OtgWrite,                      /*!< dev_write. */
+    UsartOpen,                          /*!< dev_opem. */
+    UsartClose,                         /*!< dev_close. */
+    UsartSize                           /*!< dev_size. */
 };
 

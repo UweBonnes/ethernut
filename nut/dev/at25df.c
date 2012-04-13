@@ -115,16 +115,16 @@
 #define DFCMD_BLOCK_ERASE_64K   0xd8
 /*! \brief Chip erase
  */
-#define DFCMD_CHIP_ERASE	0xC7
+#define DFCMD_CHIP_ERASE    0xC7
 /*! \brief Write bytes/page.
  */
-#define DFCMD_WRITE        	0x02
+#define DFCMD_WRITE         0x02
 /*! \brief Read status register.
  */
 #define DFCMD_READ_STATUS       0x05
-#define DFCMD_READ_DEVICEID	0x9F
-#define DFCMD_WRITE_ENABLE	0x06
-#define DFCMD_WRITE_DISABLE	0x04
+#define DFCMD_READ_DEVICEID 0x9F
+#define DFCMD_WRITE_ENABLE  0x06
+#define DFCMD_WRITE_DISABLE 0x04
 /*@}*/
 
 #define MOUNT_OFFSET_AT45D0   0
@@ -366,45 +366,45 @@ int SpiAt25PageWrite (NUTDEVICE * dev, uint32_t pgn, CONST void *data, int len){
         if (step > len) {
             step = len;
         }
-	//TODO: write real code
-	//1. Block erase 4k
-	//2. write page
-	//3. wait ready
-	//4. repeat 2,3,4 up to 8 times
+    //TODO: write real code
+    //1. Block erase 4k
+    //2. write page
+    //3. wait ready
+    //4. repeat 2,3,4 up to 8 times
 
-	//erase page
-	if (At25dCommand(node, DFCMD_WRITE_ENABLE, 0, 1, NULL,NULL,0)){
-		break;
-	};
-	if (At25dCommand(node, DFCMD_BLOCK_ERASE_4K,pgn << pshft, 4, NULL,NULL, 0)){
+    //erase page
+    if (At25dCommand(node, DFCMD_WRITE_ENABLE, 0, 1, NULL,NULL,0)){
+        break;
+    };
+    if (At25dCommand(node, DFCMD_BLOCK_ERASE_4K,pgn << pshft, 4, NULL,NULL, 0)){
             break;
         }
         if (At25dWaitReady(node, AT25_WRITE_POLLS, 1)) {
             break;
         }
-	while(len) {
-		if(sector > len) {
-			sector = len;
-		};
-		if (At25dCommand(node, DFCMD_WRITE_ENABLE, 0, 1, NULL,NULL,0)){
-			break;
-		};
-		if (At25dCommand(node, DFCMD_WRITE, (pgn << pshft)+(uint8_t*)data-dp, 4, dp, NULL, step)){
-			break;
-		};
-       		if (At25dWaitReady(node, AT25_WRITE_POLLS, 1)) {
-	            break;
-        	}
-	        if (rc < 0) {
-        	    rc = 0;
-	        }
-	        rc += sector;
-	        dp += sector;
-	        len -= sector;
-	        if (++pgn >= limit) {
-	            break;
-       		}
-	}
+    while(len) {
+        if(sector > len) {
+            sector = len;
+        };
+        if (At25dCommand(node, DFCMD_WRITE_ENABLE, 0, 1, NULL,NULL,0)){
+            break;
+        };
+        if (At25dCommand(node, DFCMD_WRITE, (pgn << pshft)+(uint8_t*)data-dp, 4, dp, NULL, step)){
+            break;
+        };
+            if (At25dWaitReady(node, AT25_WRITE_POLLS, 1)) {
+                break;
+            }
+            if (rc < 0) {
+                rc = 0;
+            }
+            rc += sector;
+            dp += sector;
+            len -= sector;
+            if (++pgn >= limit) {
+                break;
+            }
+    }
     }
     return rc;
 };
@@ -440,12 +440,12 @@ int SpiAt25IOCtl (NUTDEVICE * dev, int req, void *conf){
 
 
 NUTSPINODE at25df = {
-	NULL,	/* SPI bus */
-	NULL,	/* additional parameters (dcb) */
-	1000000,/* SPI data rate TODO: в каких величинах? */
-	0,	/* SPI mode */
-	8,	/* data bits */
-	0	/* chip select index */
+    NULL,   /* SPI bus */
+    NULL,   /* additional parameters (dcb) */
+    1000000,/* SPI data rate TODO: в каких величинах? */
+    0,  /* SPI mode */
+    8,  /* data bits */
+    0   /* chip select index */
 };
 
 /*!
@@ -471,7 +471,7 @@ NUTDEVICE devDataFlash0 = {
     IFTYP_BLKIO,         /* Type of device, dev_type. */
     0,                  /* Codec number, dev_base. */
     0,                  /* First interrupt number, dev_irq (not used). */
-    &at25df,	        /* Interface control block, dev_icb (not used). */
+    &at25df,            /* Interface control block, dev_icb (not used). */
     &blkIoAt25df,       /* Driver control block, dev_dcb. */
     At25dfInit,       /* Driver initialization routine, dev_init. */
     NutBlockDeviceIOCtl,       /* Driver specific control function, dev_ioctl. */

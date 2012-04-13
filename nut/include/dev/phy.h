@@ -75,7 +75,7 @@
 
 /* SMSC PHY tranceiver */
 #define LAN8700     0x0007C0C0  /* Not recommended for new designs! */
-#define LAN8700r4	0x0007C0C4	/*   revision 4 of the LAN8700 phy */
+#define LAN8700r4   0x0007C0C4  /*   revision 4 of the LAN8700 phy */
 #define LAN8710     0x0007C0F0  /* nn. / LAN8710 and LAN8720 share same IDs */
 #define LAN8720     0x0007C0F0  /* nn. / not a typo, has same OUI as 8710 */
 
@@ -90,7 +90,7 @@
 
 #define PHY_STATUS_HAS_LINK   0x00000001
 #define PHY_STATUS_10M        0x00000002
-#define PHY_STATUS_100M	      0x00000004
+#define PHY_STATUS_100M       0x00000004
 #define PHY_STATUS_1000M      0x00000008
 #define PHY_STATUS_FULLDUPLEX 0x00000010
 #define PHY_STATUS_AUTONEG_OK 0x00000020
@@ -104,19 +104,19 @@
 #define PHY_CTL_POWERDOWN   0x0005  /* 1: Power down, 0: wakeup chip */
 #define PHY_CTL_ISOLATE     0x0006  /* 1: Isolate interface, 0: clear isolate state */
 #define PHY_CTL_DUPLEX      0x0007  /* 1: Enable full duplex */
-#define PHY_CTL_AUTONEG_RE	0x0008  /* 1: Restart autonegotiation process */
+#define PHY_CTL_AUTONEG_RE  0x0008  /* 1: Restart autonegotiation process */
 
 #define PHY_GET_LINK        0x0100  /* Request Link Status, 1: link is up */
-#define PHY_GET_STATUS		0x0101  /* Request connection status
-									 *   PHY_STATUS_HAS_LINK   is set when link is up
+#define PHY_GET_STATUS      0x0101  /* Request connection status
+                                     *   PHY_STATUS_HAS_LINK   is set when link is up
                                      *   PHY_STATUS_10M        is set when speed is 10Mbit/s
-									 *   PHY_STATUS_100M       is set when speed is 100Mbit/s
-									 *   PHY_STATUS_1000M      is set when speed is 1000Mbit/s
-									 *   PHY_STATUS_FULLDUPLEX is set when full duplex is true
-									 *   PHY_STATUS_AUTONEG_OK is set when auto negotiation is finished
-									 *   PHY_STATUS_CON_UNKNWN is set when speed and duplex is unknown
-									 * The value is 0 when link is not established
-									 * The value is negative on error condition */
+                                     *   PHY_STATUS_100M       is set when speed is 100Mbit/s
+                                     *   PHY_STATUS_1000M      is set when speed is 1000Mbit/s
+                                     *   PHY_STATUS_FULLDUPLEX is set when full duplex is true
+                                     *   PHY_STATUS_AUTONEG_OK is set when auto negotiation is finished
+                                     *   PHY_STATUS_CON_UNKNWN is set when speed and duplex is unknown
+                                     * The value is 0 when link is not established
+                                     * The value is negative on error condition */
 #define PHY_GET_POE         0x0102  /* Request PoE status, 1: energy is detected */
 #define PHY_GET_REGVAL      0x0103  /* Read value of register (par>>16) from the phy */
 #define PHY_SET_REGVAL      0x0104  /* Write value (par & 0xFFFF) to register (par>>16) of the phy */

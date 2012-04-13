@@ -347,7 +347,7 @@ typedef struct
   __IO uint32_t IDCODE;
   __IO uint32_t CR;
   __IO uint32_t APB1FZ;
-  __IO uint32_t APB2FZ;	
+  __IO uint32_t APB2FZ; 
 }DBGMCU_TypeDef;
 
 /**
@@ -3392,7 +3392,7 @@ typedef struct
 #define SYSCFG_EXTICR3_EXTI9            ((uint16_t)0x00F0) /*!< EXTI 9 configuration */
 #define SYSCFG_EXTICR3_EXTI10           ((uint16_t)0x0F00) /*!< EXTI 10 configuration */
 #define SYSCFG_EXTICR3_EXTI11           ((uint16_t)0xF000) /*!< EXTI 11 configuration */
-									
+                                    
 /**
   * @brief  EXTI8 configuration
   */

@@ -101,8 +101,8 @@ int DebugInit(NUTDEVICE * dev)
 void DebugPut0(char ch)
 {
   if(ch == '\n') {
-	  while ((U0LSR & U0LSR_THRE) == 0);
-	  U0THR = '\r';
+      while ((U0LSR & U0LSR_THRE) == 0);
+      U0THR = '\r';
   }
   while ((U0LSR & U0LSR_THRE) == 0);
   U0THR = ch;
@@ -117,8 +117,8 @@ void DebugPut0(char ch)
 void DebugPut1(char ch)
 {
   if(ch == '\n') {
-	  while ((U1LSR & U1LSR_THRE) == 0);
-	  U1THR = '\r';
+      while ((U1LSR & U1LSR_THRE) == 0);
+      U1THR = '\r';
   }
   while ((U1LSR & U1LSR_THRE) == 0);
   U1THR = ch;

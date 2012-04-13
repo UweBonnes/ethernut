@@ -219,17 +219,17 @@ static int CanIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	    NVIC_DisableIRQ(IRQn);
+        NVIC_DisableIRQ(IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(IRQn, ifunc);
+        IntRegister(IRQn, ifunc);
         /* Initialize with defined priority. */
-	    IntPrioritySet(IRQn, NUT_IRQPRI_CAN1);
+        IntPrioritySet(IRQn, NUT_IRQPRI_CAN1);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(IRQn);
+        NVIC_ClearPendingIRQ(IRQn);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -269,7 +269,7 @@ static int CanIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	    NVIC_EnableIRQ(IRQn);
+        NVIC_EnableIRQ(IRQn);
     }
     return rc;
 }

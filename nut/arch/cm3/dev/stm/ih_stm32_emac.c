@@ -102,18 +102,18 @@ static int EmacIrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	    NVIC_DisableIRQ(ETH_IRQn);
+        NVIC_DisableIRQ(ETH_IRQn);
     }
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(ETH_IRQn, EmacIrqEntry);
+        IntRegister(ETH_IRQn, EmacIrqEntry);
         /* Initialize with defined priority. */
-	    IntPrioritySet(ETH_IRQn, NUT_IRQPRI_EMAC);
+        IntPrioritySet(ETH_IRQn, NUT_IRQPRI_EMAC);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(ETH_IRQn);
-		break;
+        NVIC_ClearPendingIRQ(ETH_IRQn);
+        break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
             *ival |= 1;
@@ -137,7 +137,7 @@ static int EmacIrqCtl(int cmd, void *param)
         *ival = IntPriorityGet(ETH_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-	    IntPrioritySet(ETH_IRQn,*ival);
+        IntPrioritySet(ETH_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -152,7 +152,7 @@ static int EmacIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	    NVIC_EnableIRQ(ETH_IRQn);
+        NVIC_EnableIRQ(ETH_IRQn);
     }
     return rc;
 }

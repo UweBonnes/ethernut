@@ -54,7 +54,7 @@ typedef struct _sdram_params {
     uint8_t     cols;
 
     uint8_t     ras_latency;    /* row address strobe latency (cycles)        */
-    uint8_t     cas_latency;	/* collumn address strobe latency (cycles)    */
+    uint8_t     cas_latency;    /* collumn address strobe latency (cycles)    */
 
     uint8_t     tRP;            /* precharge to activate time (ns)            */
     uint8_t     tRAS;           /* active to precharge time (ns)              */

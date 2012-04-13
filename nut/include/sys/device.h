@@ -114,17 +114,17 @@ __BEGIN_DECLS
 // has to be overworked
 
 #ifndef __EMULATION__
-#define WAIT5		5
-#define WAIT50		50
-#define WAIT100		100
-#define WAIT250		250
-#define WAIT500		500
+#define WAIT5       5
+#define WAIT50      50
+#define WAIT100     100
+#define WAIT250     250
+#define WAIT500     500
 #else
-#define WAIT5		1
-#define WAIT50		5
-#define WAIT100		10
-#define WAIT250		25
-#define WAIT500		50
+#define WAIT5       1
+#define WAIT50      5
+#define WAIT100     10
+#define WAIT250     25
+#define WAIT500     50
 #endif
 
 /*!
@@ -132,12 +132,12 @@ __BEGIN_DECLS
  */
 /*@{*/
 
-#define IFTYP_RAM       0	/*!< \brief RAM device */
-#define IFTYP_ROM       1	/*!< \brief ROM device */
-#define IFTYP_STREAM    2	/*!< \brief Stream device */
-#define IFTYP_NET       3	/*!< \brief Net device */
-#define IFTYP_TCPSOCK	4	/*!< \brief TCP socket */
-#define IFTYP_CHAR      5	/*!< \brief Character stream device */
+#define IFTYP_RAM       0   /*!< \brief RAM device */
+#define IFTYP_ROM       1   /*!< \brief ROM device */
+#define IFTYP_STREAM    2   /*!< \brief Stream device */
+#define IFTYP_NET       3   /*!< \brief Net device */
+#define IFTYP_TCPSOCK   4   /*!< \brief TCP socket */
+#define IFTYP_CHAR      5   /*!< \brief Character stream device */
 #define IFTYP_CAN       6       /*!< \brief CAN device */
 #define IFTYP_BLKIO     7   /*!< \brief Block I/O device */
 #define IFTYP_FS       16   /*!< \brief file system device */

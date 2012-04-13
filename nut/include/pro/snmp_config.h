@@ -57,7 +57,7 @@
 #define SNMP_VIEW_EXCLUDED  2
 
 typedef struct _viewEntry {
-	struct _viewEntry *next;
+    struct _viewEntry *next;
         int  view_index;
         int  view_type;
         size_t view_subtree_len;
@@ -66,7 +66,7 @@ typedef struct _viewEntry {
 } VIEW_LIST;
 
 typedef struct _communityEntry {
-	struct _communityEntry *next;
+    struct _communityEntry *next;
         int  comm_read_view;
         int  comm_write_view;
         char comm_name[16];

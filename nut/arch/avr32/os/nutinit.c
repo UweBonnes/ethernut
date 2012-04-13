@@ -143,7 +143,7 @@ THREAD(NutIdle, arg)
  */
 void NutInit(void)
 {
-	Avr32InitClockTree();
+    Avr32InitClockTree();
 
 #ifdef EARLY_STDIO_DEV
     /* We may optionally initialize stdout as early as possible.

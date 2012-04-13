@@ -62,8 +62,8 @@
 #define UART_MF_DSRSENSE    0x00000100UL    /*!< DTE input. */
 #define UART_MF_DCDSENSE    0x00000200UL    /*!< DTE input. */
 
-#define UART_MF_SENSEMASK   0x0345	    	/*!< Handshake sense mask. */
-#define UART_MF_CONTROLMASK 0x00BC	    	/*!< Handshake control mask. */
+#define UART_MF_SENSEMASK   0x0345          /*!< Handshake sense mask. */
+#define UART_MF_CONTROLMASK 0x00BC          /*!< Handshake control mask. */
 
 #define UART_MF_XONXOFF     0x00000400UL    /*!< Software handshake. */
 #define UART_MF_HDPXMODE    0x00000800UL    /*!< Halfduplex Mode. */

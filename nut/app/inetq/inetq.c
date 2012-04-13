@@ -92,7 +92,7 @@
  * This sample demonstrates DNS query and default route usage.
  */
 #define DNSSERVERIP     "192.168.192.2"
-#define INETSERVER	"www.kornet.net"
+#define INETSERVER  "www.kornet.net"
 #define INETSERVERPORT  80
 #define INETURL         "/"
 #define MY_MAC          {0x00,0x06,0x98,0x20,0x00,0x00}

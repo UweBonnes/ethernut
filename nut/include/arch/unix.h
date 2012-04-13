@@ -90,11 +90,11 @@
  * emulated IRQs
  * ------------------------------------------------------------------------- */
 enum {
-	IRQ_TIMER0,
+    IRQ_TIMER0,
     IRQ_UART0_RX,
     IRQ_UART1_RX,
     IRQ_UART2_RX,
-	IRQ_MAX
+    IRQ_MAX
 };
 
 /* -------------------------------------------------------------------------
@@ -105,9 +105,9 @@ enum {
 #define RAMSTART    ((void *)0x00100)
 
 /* on linux our malloc function makes the init section crash, so we better rename it */
-#define malloc(...)		NUT_malloc(__VA_ARGS__)
-#define realloc(...)	NUT_realloc(__VA_ARGS__)
-#define free(...)		NUT_free(__VA_ARGS__)
+#define malloc(...)     NUT_malloc(__VA_ARGS__)
+#define realloc(...)    NUT_realloc(__VA_ARGS__)
+#define free(...)       NUT_free(__VA_ARGS__)
 
 /* -------------------------------------------------------------------------
  * parsing of command line options

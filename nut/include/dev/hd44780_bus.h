@@ -85,8 +85,8 @@
 // reading:
 #define LCD_BUSY            7      // DB7: LCD is busy
 
-#define LCD_CTRL_ADDR	(lcd_base + 0x0000)
-#define LCD_DATA_ADDR	(lcd_base + 0x0001)
+#define LCD_CTRL_ADDR   (lcd_base + 0x0000)
+#define LCD_DATA_ADDR   (lcd_base + 0x0001)
 #define LCD_READ_OFFSET 0x0002
 
 

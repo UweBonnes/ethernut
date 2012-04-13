@@ -40,32 +40,32 @@
 
 class Builder : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	QProcess* process;
-	QStringList queue;
+    QProcess* process;
+    QStringList queue;
 
 public:
-	Builder();
-	~Builder();
+    Builder();
+    ~Builder();
 
-	bool build( const QString& target, bool verbose );
-	void stop();
+    bool build( const QString& target, bool verbose );
+    void stop();
 
-	static Builder* instance();
+    static Builder* instance();
 
 private:
-	void runMake( const QString& target );
-	bool verbose_log;
+    void runMake( const QString& target );
+    bool verbose_log;
 
 private slots:
-	void processNextTarget(int exitCode);
-	void readyReadStandardOutput();
-	void readyReadStandardError();
+    void processNextTarget(int exitCode);
+    void readyReadStandardOutput();
+    void readyReadStandardError();
 
 signals:
-	void message( const QString& message );
-	void done( int exitCode );
+    void message( const QString& message );
+    void done( int exitCode );
 };
 
 #endif //__BUILDER_H__

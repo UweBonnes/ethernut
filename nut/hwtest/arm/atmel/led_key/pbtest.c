@@ -165,11 +165,11 @@
 /* For STM3210C-EVAL Kit the 5-way controller is connected to
  * a I2C expander. So we use the few single buttons instead.
  */
-#define KEY_MI_PORT  NUTGPIO_PORTB	/* User Button */
+#define KEY_MI_PORT  NUTGPIO_PORTB  /* User Button */
 #define KEY_MI_PIN   9
-#define KEY_DN_PORT  NUTGPIO_PORTC	/* Tamper Button */
+#define KEY_DN_PORT  NUTGPIO_PORTC  /* Tamper Button */
 #define KEY_DN_PIN   13
-#define KEY_LT_PORT  NUTGPIO_PORTA	/* Wakeup Button */
+#define KEY_LT_PORT  NUTGPIO_PORTA  /* Wakeup Button */
 #define KEY_LT_PIN   0
 //#define KEY_RT_PORT  NUTGPIO_PORTB
 //#define KEY_RT_PIN   24

@@ -79,6 +79,6 @@ extern IRQ_HANDLER sig_DMA2_CH2;    // DMA Controller 2 Channel 2
 extern IRQ_HANDLER sig_DMA2_CH3;    // DMA Controller 2 Channel 3
 extern IRQ_HANDLER sig_DMA2_CH4;    // DMA Controller 2 Channel 4
 extern IRQ_HANDLER sig_DMA2_CH5;    // DMA Controller 2 Channel 5
-extern IRQ_HANDLER sig_EMAC;		// Ethernet global interrupt
+extern IRQ_HANDLER sig_EMAC;        // Ethernet global interrupt
 
 #endif

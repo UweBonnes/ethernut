@@ -60,11 +60,11 @@ int EEInit( void )
     at24c32s.PageSize = AT24C_ROW_SIZE;
     at24c32s.EepromSize = AT24C_CHIP_SIZE;
     at24c32s.SlaveAddress = NUT_CONFIG_AT24_ADR;
-	at24c32s.IAddrW = AT24C_ADR_SIZE;
+    at24c32s.IAddrW = AT24C_ADR_SIZE;
 #ifdef AT24C_BLOCK_ADDR
     at24c32s.BlInSla = 1;
 #endif
-	at24c32s.Timeout = 20;
+    at24c32s.Timeout = 20;
 
     NutEventPost( &at24c32s.ee_mutex);
 

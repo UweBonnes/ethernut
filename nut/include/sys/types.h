@@ -178,27 +178,27 @@ __BEGIN_DECLS
 
 #ifndef NUTMEM_ALIGNMENT
 #if defined(__avr__)
-#define	NUTMEM_ALIGNMENT        1
+#define NUTMEM_ALIGNMENT        1
 #elif defined(__CORTEX__)
-#define	NUTMEM_ALIGNMENT        1
+#define NUTMEM_ALIGNMENT        1
 #elif defined(__ARM__)
-#define	NUTMEM_ALIGNMENT        4
+#define NUTMEM_ALIGNMENT        4
 #elif defined(__AVR32__)
-#define	NUTMEM_ALIGNMENT        4
+#define NUTMEM_ALIGNMENT        4
 #else
-#define	NUTMEM_ALIGNMENT        sizeof(int)
+#define NUTMEM_ALIGNMENT        sizeof(int)
 #endif
 #endif
 
 /*!
  * \brief Return the next lower aligned value.
  */
-#define	NUTMEM_BOTTOM_ALIGN(s)  ((s) & ~(NUTMEM_ALIGNMENT - 1))
+#define NUTMEM_BOTTOM_ALIGN(s)  ((s) & ~(NUTMEM_ALIGNMENT - 1))
 
 /*!
  * \brief Return the next higher aligned value.
  */
-#define	NUTMEM_TOP_ALIGN(s)     NUTMEM_BOTTOM_ALIGN((s + (NUTMEM_ALIGNMENT - 1)))
+#define NUTMEM_TOP_ALIGN(s)     NUTMEM_BOTTOM_ALIGN((s + (NUTMEM_ALIGNMENT - 1)))
 
 
 #ifndef __NUT_EMULATION__
@@ -245,7 +245,7 @@ typedef void *HANDLE;
 #elif defined(__CORTEX__)
     typedef unsigned short ureg_t;
 #elif defined(__AVR32__)
-	typedef unsigned long ureg_t;
+    typedef unsigned long ureg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short ureg_t;
 #elif defined(__m68k__)
@@ -266,7 +266,7 @@ typedef void *HANDLE;
 #elif defined(__CORTEX__)
     typedef unsigned short reg_t;
 #elif defined(__AVR32__)
-	typedef unsigned short reg_t;
+    typedef unsigned short reg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short reg_t;
 #elif defined(__m68k__)
@@ -329,7 +329,7 @@ typedef void *HANDLE;
 
 
 #ifndef __NUT_EMULATION__
-	
+    
     /*!
  * \brief Convert short value from host to network byte order.
  */

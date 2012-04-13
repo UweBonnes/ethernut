@@ -31,12 +31,12 @@ int Sc16is752UsartDeinit(uint8_t dev, uint8_t ch, IRQ_HANDLER *irq);
 
 
 enum {
-    EEFBIT=0x01,	// Enhanced Functions enabled
-    TCRBIT=0x02,   	// TCR, TLR regs enables
-    DEFSEL=0x00,	// Default Selection
-    TCRSEL=0x20,	// Select TCR, TLR regs
-    SRSSEL=0x40,	// Select Special Register Set (DLL, DLH)
-    ERSSEL=0x80,	// Select enhanced register set (EFR, ...XOFF2)
+    EEFBIT=0x01,    // Enhanced Functions enabled
+    TCRBIT=0x02,    // TCR, TLR regs enables
+    DEFSEL=0x00,    // Default Selection
+    TCRSEL=0x20,    // Select TCR, TLR regs
+    SRSSEL=0x40,    // Select Special Register Set (DLL, DLH)
+    ERSSEL=0x80,    // Select enhanced register set (EFR, ...XOFF2)
     REGSEL_MASK=0xf0
 };
 
@@ -47,41 +47,41 @@ typedef struct
 } regselstate_t;
 
 typedef enum {
-    RHR=0,	// Receive Holding Register (RHR)
-    THR=0,	// Transmit Holding Register (THR)
-    IER=1,	// Interrupt Enable Register (IER)
-    IIR=2,	// Interrupt Identification Register (IIR)
-    FCR=2,	// FIFO Control Register (FCR)
-    LCR=3,	// Line Control Register (LCR)
-    MCR=4,	// Modem Control Register (MCR)
-    LSR=5,	// Line Status Register (LSR)
-    MSR=6,	// Modem Status Register (MSR)
-    SPR=7,	// Scratchpad Register (SPR)
-    TCR=6	// Transmission Control Register (TCR)
-	| TCRSEL,
-    TLR=7	// Trigger Level Register (TLR)
-	| TCRSEL,
-    TXLVL=8,	// Transmit FIFO Level register
-    RXLVL=9,	// Receive FIFO Level register
-    IODir=10,	// I/O pin Direction register
-    IOState=11,	// I/O pins State register
+    RHR=0,  // Receive Holding Register (RHR)
+    THR=0,  // Transmit Holding Register (THR)
+    IER=1,  // Interrupt Enable Register (IER)
+    IIR=2,  // Interrupt Identification Register (IIR)
+    FCR=2,  // FIFO Control Register (FCR)
+    LCR=3,  // Line Control Register (LCR)
+    MCR=4,  // Modem Control Register (MCR)
+    LSR=5,  // Line Status Register (LSR)
+    MSR=6,  // Modem Status Register (MSR)
+    SPR=7,  // Scratchpad Register (SPR)
+    TCR=6   // Transmission Control Register (TCR)
+    | TCRSEL,
+    TLR=7   // Trigger Level Register (TLR)
+    | TCRSEL,
+    TXLVL=8,    // Transmit FIFO Level register
+    RXLVL=9,    // Receive FIFO Level register
+    IODir=10,   // I/O pin Direction register
+    IOState=11, // I/O pins State register
     IOIntEna=12, // I/O Interrupt Enable register
     IOControl=14, // I/O pins Control register
-    EFCR=15,	// Extra Features Control Register Extra Features Control Register
-    DLL=0	// Divisor Latch LSB (DLL)
-	| SRSSEL,
-    DLH=1	// Divisor Latch MSB (DLH)
-	| SRSSEL,
-    EFR=2	// Enhanced Features Register (EFR)
-	| ERSSEL,
-    XON1=4	// Xon1 word
-	| ERSSEL,
-    XON2=5	// Xon2 word
-	| ERSSEL,
-    XOFF1=6	// Xoff1 word
-	| ERSSEL,
-    XOFF2=7	// Xoff2 word
-	| ERSSEL
+    EFCR=15,    // Extra Features Control Register Extra Features Control Register
+    DLL=0   // Divisor Latch LSB (DLL)
+    | SRSSEL,
+    DLH=1   // Divisor Latch MSB (DLH)
+    | SRSSEL,
+    EFR=2   // Enhanced Features Register (EFR)
+    | ERSSEL,
+    XON1=4  // Xon1 word
+    | ERSSEL,
+    XON2=5  // Xon2 word
+    | ERSSEL,
+    XOFF1=6 // Xoff1 word
+    | ERSSEL,
+    XOFF2=7 // Xoff2 word
+    | ERSSEL
 } Sc16is752Regs_t;
 
 

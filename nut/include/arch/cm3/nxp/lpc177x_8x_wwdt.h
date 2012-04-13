@@ -37,12 +37,12 @@
  **************************************************************************
  *
  * Parts taken from lpc177x_8x_rtc.h       2011-06-02
- * file		lpc177x_8x_wwdt.h
- * brief	Contains all macro definitions and function prototypes
- *			support forWindow Watchdog Timer firmware library on LPC177x_8x
- * version	1.0
- * date		02. June. 2011
- * author	NXP MCU SW Application Team
+ * file     lpc177x_8x_wwdt.h
+ * brief    Contains all macro definitions and function prototypes
+ *          support forWindow Watchdog Timer firmware library on LPC177x_8x
+ * version  1.0
+ * date     02. June. 2011
+ * author   NXP MCU SW Application Team
  *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.

@@ -124,11 +124,11 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
     } else {
         SPI_TypeDef *spireg = node->node_stat;
 
-    	SPI_ENABLE_CLK;
+        SPI_ENABLE_CLK;
         /* Activate the IO Pins to avoid glitches*/
-	GpioPinConfigSet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_DISABLED);//SCK
-	GpioPinConfigSet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, GPIO_CFG_DISABLED );//MISO
-	GpioPinConfigSet(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_DISABLED);//MOSI
+    GpioPinConfigSet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_DISABLED);//SCK
+    GpioPinConfigSet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, GPIO_CFG_DISABLED );//MISO
+    GpioPinConfigSet(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_DISABLED);//MOSI
 
         /* If the mode update bit is set, then update our shadow registers. */
         if (node->node_mode & SPI_MODE_UPDATE) {
@@ -136,25 +136,25 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
         }
 
         /* Set SPI mode. */
-    	base->CR1 = spireg->CR1;
-    	base->CR1 |= SPI_CR1_SSI|SPI_CR1_MSTR;
-    	base->CR2=spireg->CR2;
+        base->CR1 = spireg->CR1;
+        base->CR1 |= SPI_CR1_SSI|SPI_CR1_MSTR;
+        base->CR2=spireg->CR2;
 #if !defined(STM32L1XX_MD)
-    	base->I2SCFGR=spireg->I2SCFGR;
-    	base->I2SPR=spireg->I2SPR;
+        base->I2SCFGR=spireg->I2SCFGR;
+        base->I2SPR=spireg->I2SPR;
 #endif
-    	//No enable - set it only during transfer
+        //No enable - set it only during transfer
 
 #if defined(MCU_STM32F1) && defined(SPI_REMAP)
-	GPIO_PinRemapConfig(SPI_REMAP, SPI_DOREMAP);
+    GPIO_PinRemapConfig(SPI_REMAP, SPI_DOREMAP);
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
-	GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_GPIO_AF);
-	GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_GPIO_AF);
-	GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_GPIO_AF);
+    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_GPIO_AF);
+    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_GPIO_AF);
+    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_GPIO_AF);
 #endif
-	GpioPinConfigSet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);//SCK
-	GpioPinConfigSet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN,                 GPIO_CFG_PERIPHAL);//MISO
-	GpioPinConfigSet(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);//MOSI
+    GpioPinConfigSet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);//SCK
+    GpioPinConfigSet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN,                 GPIO_CFG_PERIPHAL);//MISO
+    GpioPinConfigSet(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);//MOSI
         /* Finally activate the node's chip select. */
         rc = Stm32SpiChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) != 0);
         if (rc) {
@@ -167,18 +167,18 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
 
 
 /*Dma Channels
-  * DMA1.2 - spi1_rx		DMA1.3 - spi1_tx
-  * DMA1.4 - spi2_rx (I2c2_tx)	DMA1.5 - spi2_tx (i2c2_rx)
-  * DMA1.6 - i2c1_tx		DMA1.7 - i2c1_rx
-  * DMA2.1 - spi3_rx		DMA2.2 - spi3_tx
+  * DMA1.2 - spi1_rx        DMA1.3 - spi1_tx
+  * DMA1.4 - spi2_rx (I2c2_tx)  DMA1.5 - spi2_tx (i2c2_rx)
+  * DMA1.6 - i2c1_tx        DMA1.7 - i2c1_rx
+  * DMA2.1 - spi3_rx        DMA2.2 - spi3_tx
   */
 
 static void Stm32SpiEnable(SPI_TypeDef* SPIx){
-	SPIx->CR1 |= SPI_CR1_SPE;
+    SPIx->CR1 |= SPI_CR1_SPE;
 };
 
 static void Stm32SpiDisable(SPI_TypeDef* SPIx){
-	SPIx->CR1&= ~(SPI_CR1_SPE);
+    SPIx->CR1&= ~(SPI_CR1_SPE);
 };
 
 
@@ -204,14 +204,14 @@ static int Stm32SpiSetup(NUTSPINODE * node)
 
     spireg->CR1 &= ~(SPI_CR1_DFF | SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR);
     switch(node->node_bits){
-	    case 8:
-		    spireg->CR1 &= ~(SPI_CR1_DFF);
-		    break;
-	    case 16:
-		    spireg->CR1 |= SPI_CR1_DFF;
-		    break;
-	    default:
-		    break;
+        case 8:
+            spireg->CR1 &= ~(SPI_CR1_DFF);
+            break;
+        case 16:
+            spireg->CR1 |= SPI_CR1_DFF;
+            break;
+        default:
+            break;
     };
     if (node->node_mode & SPI_MODE_CPOL) {
         spireg->CR1 |= SPI_CR1_CPOL;
@@ -222,11 +222,11 @@ static int Stm32SpiSetup(NUTSPINODE * node)
 
     /* Query peripheral clock. */
     if(node->node_bus->bus_base == SPI1_BASE){
-	    //SPI1
-	    clk = NutClockGet(NUT_HWCLK_PCLK2);
+        //SPI1
+        clk = NutClockGet(NUT_HWCLK_PCLK2);
     }else{
-	    //SPI2,SPI3
-	    clk = NutClockGet(NUT_HWCLK_PCLK1);
+        //SPI2,SPI3
+        clk = NutClockGet(NUT_HWCLK_PCLK1);
     };
     /* Calculate the SPI clock divider. Avoid rounding errors. */
     clkdiv = (clk + node->node_rate - 1) / node->node_rate;
@@ -240,10 +240,10 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     }
 
     for(i=8;i>=1;i--){
-	    if(clkdiv& (1<<i)){
-		    clkdiv=i-1;
-		    break;
-	    };
+        if(clkdiv& (1<<i)){
+            clkdiv=i-1;
+            break;
+        };
     };
     spireg->CR1 |= clkdiv << 3;//FIXME: write real code
 
@@ -286,13 +286,13 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
             /* Set interface defaults. */
             spireg->CR1 = SPI_CR1_SSI | SPI_CR1_SSM | SPI_CR1_MSTR;
             /* Set Prescaler divide by 4 */
-    		spireg->CR1 |= SPI_CR1_BR_0;
+            spireg->CR1 |= SPI_CR1_BR_0;
 
 #if !defined(STM32L1XX_MD)
-//	        spireg->CR2 = SPI_I2S_DMAReq_Tx|SPI_I2S_DMAReq_Rx;//FIXME:
-//	        commented out for debugging
-	        spireg->I2SCFGR=0;
-	        spireg->I2SPR=2; //FIXME: end of
+//          spireg->CR2 = SPI_I2S_DMAReq_Tx|SPI_I2S_DMAReq_Rx;//FIXME:
+//          commented out for debugging
+            spireg->I2SCFGR=0;
+            spireg->I2SPR=2; //FIXME: end of
 #endif
             /* Update with node's defaults. */
             node->node_stat = (void *)spireg;
@@ -333,14 +333,14 @@ static int Stm32SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf
     base = (SPI_TypeDef*)node->node_bus->bus_base;
 
    /* if(base == SPI1_BASE){
-	    channel_rx=DMA1_Channel2;
-	    channel_tx=DMA1_Channel3;
+        channel_rx=DMA1_Channel2;
+        channel_tx=DMA1_Channel3;
     }else if(base == SPI2_BASE){
- 	    channel_rx=DMA1_Channel4;
-	    channel_tx=DMA1_Channel5;
+        channel_rx=DMA1_Channel4;
+        channel_tx=DMA1_Channel5;
     }else if(base == SPI3_BASE){
-	    channel_rx=DMA2_Channel1;
-	    channel_tx=DMA2_Channel2;
+        channel_rx=DMA2_Channel1;
+        channel_tx=DMA2_Channel2;
     };*/
 //    DMA_Setup(channel_rx,(void*)rxbuf,(void*)(&(base->DR)),xlen,DMA_DIR_PeripheralSRC|DMA_MemoryDataSize_Byte|DMA_PeripheralDataSize_Byte|DMA_Priority_VeryHigh|DMA_IT_TC);//rx
 //    DMA_Setup(channel_tx,(void*)txbuf,(void*)(&(base->DR)),xlen,DMA_DIR_PeripheralDST|DMA_MemoryDataSize_Byte|DMA_PeripheralDataSize_Byte|DMA_Priority_VeryHigh|DMA_IT_TC);//tx

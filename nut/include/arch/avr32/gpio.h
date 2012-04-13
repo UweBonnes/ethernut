@@ -53,18 +53,18 @@ extern int gpio_enable_module(const gpio_map_t gpiomap, unsigned int size);
 
 void inline gpio_enable_module_pin(unsigned int pin, unsigned int function)
 {
-	unsigned int peripheral = 0;
-	switch ( function )
-	{
-	case 0:		peripheral = GPIO_CFG_PERIPHERAL0;		break;
-	case 1:		peripheral = GPIO_CFG_PERIPHERAL1;		break;
-	case 2:		peripheral = GPIO_CFG_PERIPHERAL2;		break;
-	default:
-		while(1); // Unrecognized peripheral choice
-		break;
-	}
-	GpioPinConfigSet( pin >> 5, pin & 0x1F, peripheral );
-	//enable_module_pin(pin >> 5, _BV(pin & 0x1F), peripheral);
+    unsigned int peripheral = 0;
+    switch ( function )
+    {
+    case 0:     peripheral = GPIO_CFG_PERIPHERAL0;      break;
+    case 1:     peripheral = GPIO_CFG_PERIPHERAL1;      break;
+    case 2:     peripheral = GPIO_CFG_PERIPHERAL2;      break;
+    default:
+        while(1); // Unrecognized peripheral choice
+        break;
+    }
+    GpioPinConfigSet( pin >> 5, pin & 0x1F, peripheral );
+    //enable_module_pin(pin >> 5, _BV(pin & 0x1F), peripheral);
 }
 
 

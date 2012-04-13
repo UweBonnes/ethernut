@@ -69,7 +69,7 @@
  *
  * State used internally.
  */
-#define KEY_NOT_PRESSED		0x00		/* key is currently not pressed */
+#define KEY_NOT_PRESSED     0x00        /* key is currently not pressed */
 
 /*!
  * \brief Key state KEY_IS_DOWN.

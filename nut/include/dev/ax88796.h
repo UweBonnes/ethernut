@@ -54,9 +54,9 @@ extern NUTDEVICE devAx88796;
 // buffer boundaries - transmit has 6 256-byte pages = 1536
 //   receive has 52 256-byte pages = 14848
 //   entire available packet buffer space is allocated
-#define TXSTART_INIT   	0x40
-#define RXSTART_INIT   	0x46
-#define RXSTOP_INIT    	0x80
+#define TXSTART_INIT    0x40
+#define RXSTART_INIT    0x46
+#define RXSTOP_INIT     0x80
 
 extern int AsixInit(NUTDEVICE *dev);
 extern int AsixOutput(NUTDEVICE *dev, NETBUF *nb);

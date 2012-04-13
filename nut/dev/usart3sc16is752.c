@@ -56,15 +56,15 @@
 #include <dev/irqreg.h>
 #include <dev/usartsc16is752.h>
 
-#define SCDEV 	1
-#define CH_  	1
-#define NUTDEV_	devUsartsc16is752d
+#define SCDEV   1
+#define CH_     1
+#define NUTDEV_ devUsartsc16is752d
 
 #if defined(__linux__)
-#define IRQ_	1
+#define IRQ_    1
 #else
 extern IRQ_HANDLER sig_INTERRUPT0;
-#define IRQ_	sig_INTERRUPT0
+#define IRQ_    sig_INTERRUPT0
 #endif
 
 // static void Sc16is752UsartEnable_(void)

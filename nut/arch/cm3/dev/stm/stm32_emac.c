@@ -80,7 +80,7 @@
 #endif
 
 #ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR			1
+#define NIC_PHY_ADDR            1
 #endif
 
 /*!
@@ -122,10 +122,10 @@ typedef struct _TBufDescriptor {
 } TBufDescriptor_t;
 
 typedef struct _RBufDescriptor {
-	uint32_t RDES0;
-	uint32_t RDES1;
-	uint32_t RDES2;
-	uint32_t RDES3;
+    uint32_t RDES0;
+    uint32_t RDES1;
+    uint32_t RDES2;
+    uint32_t RDES3;
 } RBufDescriptor_t;
 
 static volatile TBufDescriptor_t txBufTab[EMAC_TX_BUFFERS];
@@ -136,70 +136,70 @@ static volatile RBufDescriptor_t rxBufTab[EMAC_RX_BUFFERS];
 static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(8)));
 static unsigned int rxBufIdx = 0;
 
-#define TDES0_OWN			0x80000000  /* Bit set: descriptor is owned by DMA */
-#define TDES0_IC			0x40000000  /* Set transmit interrupt after transmission */
-#define TDES0_LS			0x20000000  /* Indicates last segment of the frame */
-#define TDES0_FS			0x10000000  /* Indicates first segment of the frame */
-#define TDES0_DC			0x08000000  /* Disable CRC on transmit frame */
-#define TDES0_DP			0x04000000  /* Disable padding on short frames */
-#define TDES0_TTSE			0x02000000  /* Transmit time stamp enable */
-#define TDES0_CIC_DIS		0x00000000  /* Checksum insertion disabled */
-#define TDES0_CIC_IP		0x00400000  /* Checksum only for ip header */
-#define TDES0_CIC_FULL		0x00800000  /* Checksum for header and payload */
-#define TDES0_CIC_ALL		0x00C00000  /* Checksum for header and payload + pseudo header */
-#define TDES0_TER			0x00200000  /* Indicates final descriptor */
-#define TDES0_TCH			0x00100000  /* Second address points to next descriptor */
-#define TDES0_TTSS			0x00020000  /* Indicates time stamp captured for transmit frame */
-#define TDES0_IHE			0x00010000  /* MAC indicates ip header error */
-#define TDES0_ES			0x00008000  /* Error summary */
-#define TDES0_JT			0x00004000  /* MAC indicates jabber timeout */
-#define TDES0_FF			0x00002000  /* Indicates that DMA flushed the frame */
-#define TDES0_IPE			0x00001000  /* MAC indicates ip payload error */
-#define TDES0_LCA			0x00000800  /* Indicates loss of carrier */
-#define TDES0_NC			0x00000400  /* Carrier sense signal not asserted */
-#define TDES0_LCO			0x00000200  /* Late collision occured */
-#define TDES0_EC			0x00000100  /* Indicates 16 successive collisions */
-#define TDES0_VF			0x00000080  /* Indicates VLAN-type frame on transmission */
-#define TDES0_CC_MASK		0x00000078  /* Mask for collision counter */
-#define TDES0_CC_SHIFT		3			/* Number of right shifts to get collision number */
-#define TDES0_ED			0x00000004  /* Indicates excessive deferral */
-#define TDES0_UF			0x00000002  /* MAC indicates underflow error on DMA access */
-#define TDES0_DB			0x00000001  /* MAC defers because of the presence of the carrier */
+#define TDES0_OWN           0x80000000  /* Bit set: descriptor is owned by DMA */
+#define TDES0_IC            0x40000000  /* Set transmit interrupt after transmission */
+#define TDES0_LS            0x20000000  /* Indicates last segment of the frame */
+#define TDES0_FS            0x10000000  /* Indicates first segment of the frame */
+#define TDES0_DC            0x08000000  /* Disable CRC on transmit frame */
+#define TDES0_DP            0x04000000  /* Disable padding on short frames */
+#define TDES0_TTSE          0x02000000  /* Transmit time stamp enable */
+#define TDES0_CIC_DIS       0x00000000  /* Checksum insertion disabled */
+#define TDES0_CIC_IP        0x00400000  /* Checksum only for ip header */
+#define TDES0_CIC_FULL      0x00800000  /* Checksum for header and payload */
+#define TDES0_CIC_ALL       0x00C00000  /* Checksum for header and payload + pseudo header */
+#define TDES0_TER           0x00200000  /* Indicates final descriptor */
+#define TDES0_TCH           0x00100000  /* Second address points to next descriptor */
+#define TDES0_TTSS          0x00020000  /* Indicates time stamp captured for transmit frame */
+#define TDES0_IHE           0x00010000  /* MAC indicates ip header error */
+#define TDES0_ES            0x00008000  /* Error summary */
+#define TDES0_JT            0x00004000  /* MAC indicates jabber timeout */
+#define TDES0_FF            0x00002000  /* Indicates that DMA flushed the frame */
+#define TDES0_IPE           0x00001000  /* MAC indicates ip payload error */
+#define TDES0_LCA           0x00000800  /* Indicates loss of carrier */
+#define TDES0_NC            0x00000400  /* Carrier sense signal not asserted */
+#define TDES0_LCO           0x00000200  /* Late collision occured */
+#define TDES0_EC            0x00000100  /* Indicates 16 successive collisions */
+#define TDES0_VF            0x00000080  /* Indicates VLAN-type frame on transmission */
+#define TDES0_CC_MASK       0x00000078  /* Mask for collision counter */
+#define TDES0_CC_SHIFT      3           /* Number of right shifts to get collision number */
+#define TDES0_ED            0x00000004  /* Indicates excessive deferral */
+#define TDES0_UF            0x00000002  /* MAC indicates underflow error on DMA access */
+#define TDES0_DB            0x00000001  /* MAC defers because of the presence of the carrier */
 
-#define TDES1_TBS2_MASK		0x1FFF0000  /* Mask for Transmit buffer 2 size */
-#define TDES1_TBS2_SHIFT	16			/* Number of right shifts to get transmit buffer 2 size */
-#define TDES1_TBS1_MASK		0x00001FFF	/* Mask for Transmit buffer 1 size */
-#define TDES1_TBS1_SHIFT	0			/* Number of right shifts to get transmit buffer 1 size */
+#define TDES1_TBS2_MASK     0x1FFF0000  /* Mask for Transmit buffer 2 size */
+#define TDES1_TBS2_SHIFT    16          /* Number of right shifts to get transmit buffer 2 size */
+#define TDES1_TBS1_MASK     0x00001FFF  /* Mask for Transmit buffer 1 size */
+#define TDES1_TBS1_SHIFT    0           /* Number of right shifts to get transmit buffer 1 size */
 
 
-#define RDES0_OWN			0x80000000  /* Bit set: Descriptor is owned by DMA */
-#define RDES0_AFM			0x40000000  /* Indicates fail of destination address filter in MAC */
-#define RDES0_FL_MASK		0x3FFF0000  /* Mask for frame length */
-#define RDES0_FL_SHIFT		16			/* Number of right shifts to get frame length */
-#define RDES0_ES			0x00008000  /* Error summary */
-#define RDES0_DE			0x00004000  /* Descriptor error */
-#define RDES0_SAF			0x00002000  /* Indicates fail of source address filter in MAC */
-#define RDES0_LE			0x00001000  /* Indicates error in length of received frame */
-#define RDES0_OE			0x00000800  /* Indicates buffer overflow */
-#define RDES0_VLAN			0x00000400  /* Indicates a VLAN frame */
-#define RDES0_FS			0x00000200  /* Indicates descriptor for first buffer of the frame */
-#define RDES0_LS			0x00000100  /* Indicates descriptor for last buffer of the frame */
-#define RDES0_IPHCE			0x00000080  /* Indicates IP header checksum error */
-#define RDES0_LCO			0x00000040  /* Indicates a late collision */
-#define RDES0_FT			0x00000020  /* Indicates that the received frame is of ethernet-type */
-#define RDES0_RWT			0x00000010  /* Indicates receive watchdog timeout */
-#define RDES0_RE			0x00000008  /* Indicates receive error during reception */
-#define RDES0_DBE			0x00000004  /* Indicates non-integer multiple of bytes in frame */
-#define RDES0_CE			0x00000002  /* Indicates a CRC error on received frame */
-#define RDES0_PCE			0x00000001  /* Indicates payload checksum error */
+#define RDES0_OWN           0x80000000  /* Bit set: Descriptor is owned by DMA */
+#define RDES0_AFM           0x40000000  /* Indicates fail of destination address filter in MAC */
+#define RDES0_FL_MASK       0x3FFF0000  /* Mask for frame length */
+#define RDES0_FL_SHIFT      16          /* Number of right shifts to get frame length */
+#define RDES0_ES            0x00008000  /* Error summary */
+#define RDES0_DE            0x00004000  /* Descriptor error */
+#define RDES0_SAF           0x00002000  /* Indicates fail of source address filter in MAC */
+#define RDES0_LE            0x00001000  /* Indicates error in length of received frame */
+#define RDES0_OE            0x00000800  /* Indicates buffer overflow */
+#define RDES0_VLAN          0x00000400  /* Indicates a VLAN frame */
+#define RDES0_FS            0x00000200  /* Indicates descriptor for first buffer of the frame */
+#define RDES0_LS            0x00000100  /* Indicates descriptor for last buffer of the frame */
+#define RDES0_IPHCE         0x00000080  /* Indicates IP header checksum error */
+#define RDES0_LCO           0x00000040  /* Indicates a late collision */
+#define RDES0_FT            0x00000020  /* Indicates that the received frame is of ethernet-type */
+#define RDES0_RWT           0x00000010  /* Indicates receive watchdog timeout */
+#define RDES0_RE            0x00000008  /* Indicates receive error during reception */
+#define RDES0_DBE           0x00000004  /* Indicates non-integer multiple of bytes in frame */
+#define RDES0_CE            0x00000002  /* Indicates a CRC error on received frame */
+#define RDES0_PCE           0x00000001  /* Indicates payload checksum error */
 
-#define RDES1_DIC			0x80000000  /* Disable interrupt on completed reception of frame */
-#define RDES1_RBS2_MASK		0x1FFF0000  /* Receive buffer 2 size */
-#define RDES1_RBS2_SHIFT	16			/* Number of right shifts to get received buffer 2 size */
-#define RDES1_RER			0x00008000  /* End of ring: final descriptor of the list */
-#define RDES1_RCH			0x00004000  /* Second address points to next descriptor */
-#define RDES1_RBS1_MASK		0x00001FFF  /* Receiver buffer 1 size */
-#define RDES1_RBS1_SHIFT	0			/* Number of right shifts to get received buffer 1 size */
+#define RDES1_DIC           0x80000000  /* Disable interrupt on completed reception of frame */
+#define RDES1_RBS2_MASK     0x1FFF0000  /* Receive buffer 2 size */
+#define RDES1_RBS2_SHIFT    16          /* Number of right shifts to get received buffer 2 size */
+#define RDES1_RER           0x00008000  /* End of ring: final descriptor of the list */
+#define RDES1_RCH           0x00004000  /* Second address points to next descriptor */
+#define RDES1_RBS1_MASK     0x00001FFF  /* Receiver buffer 1 size */
+#define RDES1_RBS1_SHIFT    0           /* Number of right shifts to get received buffer 1 size */
 
 /*!
  * \brief Read contents of PHY register.
@@ -210,28 +210,28 @@ static unsigned int rxBufIdx = 0;
  */
 static uint16_t phy_inw(uint8_t reg)
 {
-	uint32_t tempReg;
-	uint16_t val = 0;
+    uint32_t tempReg;
+    uint16_t val = 0;
 
     /* PHY read command. */
-	tempReg = inr(&(ETH->MACMIIAR));
-	tempReg &= ~(ETH_MACMIIAR_PA | ETH_MACMIIAR_MR | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB);
-	tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB;
+    tempReg = inr(&(ETH->MACMIIAR));
+    tempReg &= ~(ETH_MACMIIAR_PA | ETH_MACMIIAR_MR | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB);
+    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB;
     outr(&(ETH->MACMIIAR), tempReg);
 
-	/* Wait until PHY logic completed. */
+    /* Wait until PHY logic completed. */
     while (((inr(&(ETH->MACMIIAR)) & ETH_MACMIIAR_MB) == ETH_MACMIIAR_MB) && val<10)
-	{
-		NutSleep(1);
-		val++;
-	}
+    {
+        NutSleep(1);
+        val++;
+    }
 
-	/* Timeout */
-	if(val>=10)
-	{
-		val = 0xFFFF;
-		EMPRINTF("phy_inw: Could not read phy register.\n");
-	}
+    /* Timeout */
+    if(val>=10)
+    {
+        val = 0xFFFF;
+        EMPRINTF("phy_inw: Could not read phy register.\n");
+    }
 
     /* Get data from PHY maintenance register. */
     val = (uint16_t) (inr(&(ETH->MACMIIDR)) & ETH_MACMIIDR_MD);
@@ -247,27 +247,27 @@ static uint16_t phy_inw(uint8_t reg)
  */
 static void phy_outw(uint8_t reg, uint16_t val)
 {
-	uint32_t tempReg;
-	uint16_t wait = 0;
+    uint32_t tempReg;
+    uint16_t wait = 0;
 
     /* PHY write command. */
-	outr(&(ETH->MACMIIDR), val);
-	tempReg = inr(&(ETH->MACMIIAR));
-	tempReg &= ~(ETH_MACMIIAR_PA | ETH_MACMIIAR_MR | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB);
-	tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB;
+    outr(&(ETH->MACMIIDR), val);
+    tempReg = inr(&(ETH->MACMIIAR));
+    tempReg &= ~(ETH_MACMIIAR_PA | ETH_MACMIIAR_MR | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB);
+    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB;
     outr(&(ETH->MACMIIAR), tempReg);
 
-	/* Wait until PHY logic completed. */
+    /* Wait until PHY logic completed. */
     while (((inr(&(ETH->MACMIIAR)) & ETH_MACMIIAR_MB) == ETH_MACMIIAR_MB) && wait<10)
-	{
-		NutSleep(1);
-		wait++;
-	}
+    {
+        NutSleep(1);
+        wait++;
+    }
 
-	if(wait>=10)
-	{
-		EMPRINTF("phy_outw: Could not set phy register.\n");
-	}
+    if(wait>=10)
+    {
+        EMPRINTF("phy_outw: Could not set phy register.\n");
+    }
 }
 
 /*!
@@ -281,46 +281,46 @@ static int EmacReset(void)
     uint32_t phy = 0;
     int link_wait;
 
-	/* force reset mac */
-	RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, ENABLE);
+    /* force reset mac */
+    RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, ENABLE);
 
-	/* enable clocks for mac */
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ETH_MAC | RCC_AHBPeriph_ETH_MAC_Tx |
-						  RCC_AHBPeriph_ETH_MAC_Rx, ENABLE);
+    /* enable clocks for mac */
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ETH_MAC | RCC_AHBPeriph_ETH_MAC_Tx |
+                          RCC_AHBPeriph_ETH_MAC_Rx, ENABLE);
 
-	/* release reset mac */
-	RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, DISABLE);
+    /* release reset mac */
+    RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, DISABLE);
 
     /* Register PHY to be able to reset it */
     rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
 
-	/* Reset PHY
-	   (Note that this does not set all PHY registers to reset values!) */
-	phy = 1;
-	NutPhyCtl(PHY_CTL_RESET, &phy);
-	NutSleep(250);
+    /* Reset PHY
+       (Note that this does not set all PHY registers to reset values!) */
+    phy = 1;
+    NutPhyCtl(PHY_CTL_RESET, &phy);
+    NutSleep(250);
 
     /* Register PHY again to do all the initianlization */
     rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
 
 #if 0
     /* Clear MII isolate. */
-	phy = 0;
+    phy = 0;
     NutPhyCtl(PHY_CTL_ISOLATE, &phy);
 #endif
 
-	/* Restart autonegotiation */
-	phy = 1;
-	NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
+    /* Restart autonegotiation */
+    phy = 1;
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
 
     /* Wait for auto negotiation completed and link established. */
     for (link_wait = 25;; link_wait--) {
         NutPhyCtl(PHY_GET_STATUS, &phy);
-		if((phy & PHY_STATUS_HAS_LINK) && (phy & PHY_STATUS_AUTONEG_OK)) {
+        if((phy & PHY_STATUS_HAS_LINK) && (phy & PHY_STATUS_AUTONEG_OK)) {
             break;
         }
         if (link_wait == 0) {
-			EMPRINTF("NO LINK!\n");
+            EMPRINTF("NO LINK!\n");
             return -1;
         }
         NutSleep(200);
@@ -339,7 +339,7 @@ static void EmacInterrupt(void *arg)
 
     /* Read interrupt status and reset interrupt flags. */
     isr = inr(&(ETH->DMASR));
-	outr(&(ETH->DMASR), 0x0001E7FF);
+    outr(&(ETH->DMASR), 0x0001E7FF);
 
     /* Receiver interrupt. */
     if ((isr & ETH_DMASR_RS) != 0 || (isr & ETH_DMASR_ROS) != 0) {
@@ -351,12 +351,12 @@ static void EmacInterrupt(void *arg)
         NutEventPostFromIrq(&(ni->ni_tx_rdy));
     }
 
-	/* Handling of corrupted rx buffers is done in reception
-	 * routines without any additional activities here */
+    /* Handling of corrupted rx buffers is done in reception
+     * routines without any additional activities here */
 
-	/* Also clear interrupt status bits in MAC interrupt status register
-	 * although we do not use them now, but who knows. */
-	isr = inr(&(ETH->MACSR));
+    /* Also clear interrupt status bits in MAC interrupt status register
+     * although we do not use them now, but who knows. */
+    isr = inr(&(ETH->MACSR));
 }
 
 /*!
@@ -389,29 +389,29 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
     i = rxBufIdx;
     while ((rxBufTab[i].RDES0 & RDES0_OWN) == 0) {
         if ((rxBufTab[i].RDES0 & RDES0_LS) != 0) {
-			if((rxBufTab[i].RDES0 & RDES0_DE) == 0) {
-				fbc = (rxBufTab[i].RDES0 & RDES0_FL_MASK) >> RDES0_FL_SHIFT;
-			}
-			else {
-				/* Release buffers with corrupted frame data */
-				while((rxBufTab[rxBufIdx].RDES0 & RDES0_OWN) == 0) {
-					if((rxBufTab[rxBufIdx].RDES0 & RDES0_LS) != 0)
-					{
-						rxBufTab[rxBufIdx].RDES0 = RDES0_OWN;
-						rxBufIdx++;
-	                    if (rxBufIdx >= EMAC_RX_BUFFERS) {
-    	                    rxBufIdx = 0;
-        	            }
-						break;
-					}
-					rxBufTab[rxBufIdx].RDES0 = RDES0_OWN;
-					rxBufIdx++;
+            if((rxBufTab[i].RDES0 & RDES0_DE) == 0) {
+                fbc = (rxBufTab[i].RDES0 & RDES0_FL_MASK) >> RDES0_FL_SHIFT;
+            }
+            else {
+                /* Release buffers with corrupted frame data */
+                while((rxBufTab[rxBufIdx].RDES0 & RDES0_OWN) == 0) {
+                    if((rxBufTab[rxBufIdx].RDES0 & RDES0_LS) != 0)
+                    {
+                        rxBufTab[rxBufIdx].RDES0 = RDES0_OWN;
+                        rxBufIdx++;
+                        if (rxBufIdx >= EMAC_RX_BUFFERS) {
+                            rxBufIdx = 0;
+                        }
+                        break;
+                    }
+                    rxBufTab[rxBufIdx].RDES0 = RDES0_OWN;
+                    rxBufIdx++;
                     if (rxBufIdx >= EMAC_RX_BUFFERS) {
                         rxBufIdx = 0;
                     }
-				}
-        	}
-			break;
+                }
+            }
+            break;
         }
         i++;
         if (i >= EMAC_RX_BUFFERS) {
@@ -449,9 +449,9 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
                 }
                 rc = 0;
             }
-			else {
-				EMPRINTF("NutNetBufAlloc Failed!\n");
-			}
+            else {
+                EMPRINTF("NutNetBufAlloc Failed!\n");
+            }
         }
     }
 
@@ -504,21 +504,21 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
         buf += nb->nb_tp.sz;
         memcpy(buf, nb->nb_ap.vp, nb->nb_ap.sz);
 
-		if(bufnum < (EMAC_TX_BUFFERS - 1)) {
-			txBufTab[bufnum].TDES0 = TDES0_LS | TDES0_FS | TDES0_IC | TDES0_TCH;
-			txBufTab[bufnum].TDES3 = (uint32_t) &(txBufTab[bufnum + 1]);
-		}
-		else {
-			txBufTab[bufnum].TDES0 = TDES0_LS | TDES0_FS | TDES0_IC | TDES0_TER;
-    	}
-		txBufTab[bufnum].TDES1 = ((sz & TDES1_TBS1_MASK) << TDES1_TBS1_SHIFT);
-		txBufTab[bufnum].TDES2 = (uint32_t) (txBuf + (bufnum * EMAC_TX_BUFSIZ));
+        if(bufnum < (EMAC_TX_BUFFERS - 1)) {
+            txBufTab[bufnum].TDES0 = TDES0_LS | TDES0_FS | TDES0_IC | TDES0_TCH;
+            txBufTab[bufnum].TDES3 = (uint32_t) &(txBufTab[bufnum + 1]);
+        }
+        else {
+            txBufTab[bufnum].TDES0 = TDES0_LS | TDES0_FS | TDES0_IC | TDES0_TER;
+        }
+        txBufTab[bufnum].TDES1 = ((sz & TDES1_TBS1_MASK) << TDES1_TBS1_SHIFT);
+        txBufTab[bufnum].TDES2 = (uint32_t) (txBuf + (bufnum * EMAC_TX_BUFSIZ));
 
-		/* make descriptor useable for dma controller */
-		txBufTab[bufnum].TDES0 |= TDES0_OWN;
+        /* make descriptor useable for dma controller */
+        txBufTab[bufnum].TDES0 |= TDES0_OWN;
 
-		/* trigger dma polling */
-		outr(&(ETH->DMATPDR), 0);
+        /* trigger dma polling */
+        outr(&(ETH->DMATPDR), 0);
 
         rc = 0;
 #ifdef NUT_PERFMON
@@ -542,102 +542,102 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
 static int EmacStart(CONST uint8_t * mac)
 {
     int i;
-	uint32_t regvalue;
+    uint32_t regvalue;
 
-	/* stop transmission and reception */
-	outr(&(ETH->DMAOMR), (inr(&(ETH->DMAOMR)) & ~(ETH_DMAOMR_ST | ETH_DMAOMR_SR)) | ETH_DMAOMR_FTF);
+    /* stop transmission and reception */
+    outr(&(ETH->DMAOMR), (inr(&(ETH->DMAOMR)) & ~(ETH_DMAOMR_ST | ETH_DMAOMR_SR)) | ETH_DMAOMR_FTF);
 
-	/* waiting for flush to finish */
-	while((inr(&(ETH->DMAOMR)) & ETH_DMAOMR_FTF) == ETH_DMAOMR_FTF);
+    /* waiting for flush to finish */
+    while((inr(&(ETH->DMAOMR)) & ETH_DMAOMR_FTF) == ETH_DMAOMR_FTF);
 
     if (EmacReset()) {
         return -1;
     }
 
     /* Initialize transmit buffer descriptors using chained list */
-	for (i = 0; i < EMAC_TX_BUFFERS - 1; i++) {
-		txBufTab[i].TDES0 = TDES0_TCH;
-		txBufTab[i].TDES1 = 0;
-		txBufTab[i].TDES3 = (uint32_t) &(txBufTab[i+1]);
-	}
-	txBufTab[EMAC_TX_BUFFERS - 1].TDES0 = /*TDES0_TCH |*/ TDES0_TER;
-	txBufTab[EMAC_TX_BUFFERS - 1].TDES1 = 0;
+    for (i = 0; i < EMAC_TX_BUFFERS - 1; i++) {
+        txBufTab[i].TDES0 = TDES0_TCH;
+        txBufTab[i].TDES1 = 0;
+        txBufTab[i].TDES3 = (uint32_t) &(txBufTab[i+1]);
+    }
+    txBufTab[EMAC_TX_BUFFERS - 1].TDES0 = /*TDES0_TCH |*/ TDES0_TER;
+    txBufTab[EMAC_TX_BUFFERS - 1].TDES1 = 0;
 
-	/* Initialize receive buffer descriptors using chained list */
-	for (i = 0; i < EMAC_RX_BUFFERS; i++) {
-		rxBufTab[i].RDES0 = RDES0_OWN;
-		rxBufTab[i].RDES1 = RDES1_RCH | (EMAC_RX_BUFSIZ << RDES1_RBS1_SHIFT);
-		rxBufTab[i].RDES2 = (uint32_t) (rxBuf + (i * EMAC_RX_BUFSIZ));
-		if (i == EMAC_RX_BUFFERS - 1) {
-			rxBufTab[i].RDES1 = RDES1_RER | (EMAC_RX_BUFSIZ << RDES1_RBS1_SHIFT);
-			rxBufTab[i].RDES3 = 0;
-		}
-		else {
-			rxBufTab[i].RDES1 = RDES1_RCH | (EMAC_RX_BUFSIZ << RDES1_RBS1_SHIFT);
-			rxBufTab[i].RDES3 = (uint32_t) &(rxBufTab[i+1]);
-		}
-	}
+    /* Initialize receive buffer descriptors using chained list */
+    for (i = 0; i < EMAC_RX_BUFFERS; i++) {
+        rxBufTab[i].RDES0 = RDES0_OWN;
+        rxBufTab[i].RDES1 = RDES1_RCH | (EMAC_RX_BUFSIZ << RDES1_RBS1_SHIFT);
+        rxBufTab[i].RDES2 = (uint32_t) (rxBuf + (i * EMAC_RX_BUFSIZ));
+        if (i == EMAC_RX_BUFFERS - 1) {
+            rxBufTab[i].RDES1 = RDES1_RER | (EMAC_RX_BUFSIZ << RDES1_RBS1_SHIFT);
+            rxBufTab[i].RDES3 = 0;
+        }
+        else {
+            rxBufTab[i].RDES1 = RDES1_RCH | (EMAC_RX_BUFSIZ << RDES1_RBS1_SHIFT);
+            rxBufTab[i].RDES3 = (uint32_t) &(rxBufTab[i+1]);
+        }
+    }
 
-	/* reset dma and wait until reset is finished */
-	outr(&(ETH->DMABMR), ETH_DMABMR_SR);
-	while((inr(&(ETH->DMABMR)) & ETH_DMABMR_SR) == ETH_DMABMR_SR);
+    /* reset dma and wait until reset is finished */
+    outr(&(ETH->DMABMR), ETH_DMABMR_SR);
+    while((inr(&(ETH->DMABMR)) & ETH_DMABMR_SR) == ETH_DMABMR_SR);
 
     /* Set local MAC address (used e.g. for filtering). */
-	outr(&(ETH->MACA0HR), (mac[5] << 8) | mac[4]);
-	outr(&(ETH->MACA0LR), (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
+    outr(&(ETH->MACA0HR), (mac[5] << 8) | mac[4]);
+    outr(&(ETH->MACA0LR), (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
 
-	/* Set bus mode in register DMABMR */
-	/* leave at reset state */
+    /* Set bus mode in register DMABMR */
+    /* leave at reset state */
 
-	/* Enable dma interrupts */
-	outr(&(ETH->DMAIER), ETH_DMAIER_NISE | ETH_DMAIER_AISE |
-		/*ETH_DMAIER_ERIE |*/ ETH_DMAIER_FBEIE | /*ETH_DMAIER_ETIE |
-		ETH_DMAIER_RWTIE | ETH_DMAIER_RPSIE |*/ ETH_DMAIER_RBUIE |
-		ETH_DMAIER_RIE | /*ETH_DMAIER_TUIE | ETH_DMAIER_ROIE |
-		ETH_DMAIER_TJTIE | ETH_DMAIER_TBUIE | ETH_DMAIER_TPSIE |*/
-		ETH_DMAIER_TIE);
+    /* Enable dma interrupts */
+    outr(&(ETH->DMAIER), ETH_DMAIER_NISE | ETH_DMAIER_AISE |
+        /*ETH_DMAIER_ERIE |*/ ETH_DMAIER_FBEIE | /*ETH_DMAIER_ETIE |
+        ETH_DMAIER_RWTIE | ETH_DMAIER_RPSIE |*/ ETH_DMAIER_RBUIE |
+        ETH_DMAIER_RIE | /*ETH_DMAIER_TUIE | ETH_DMAIER_ROIE |
+        ETH_DMAIER_TJTIE | ETH_DMAIER_TBUIE | ETH_DMAIER_TPSIE |*/
+        ETH_DMAIER_TIE);
 
-	/* Set start address of descriptor lists */
-	outr(&(ETH->DMATDLAR), (uint32_t) txBufTab);
-	outr(&(ETH->DMARDLAR), (uint32_t) rxBufTab);
+    /* Set start address of descriptor lists */
+    outr(&(ETH->DMATDLAR), (uint32_t) txBufTab);
+    outr(&(ETH->DMARDLAR), (uint32_t) rxBufTab);
 
-	/* clear management counters */
-	outr(&(ETH->MMCCR), ETH_MMCCR_CR);
+    /* clear management counters */
+    outr(&(ETH->MMCCR), ETH_MMCCR_CR);
 
-	/* setting speed and duplex to values from autonegotiation process */
-	NutPhyCtl(PHY_GET_STATUS, &regvalue);
+    /* setting speed and duplex to values from autonegotiation process */
+    NutPhyCtl(PHY_GET_STATUS, &regvalue);
 
-	if(regvalue & PHY_STATUS_100M)
-	{
-		/* set emac to 100Mbit/s */
-		outr(&(ETH->MACCR), inr(&(ETH->MACCR)) | ETH_MACCR_FES);
-	}
-	else
-	{
-		/* set emac to 10Mbit/s */
-		outr(&(ETH->MACCR), inr(&(ETH->MACCR)) & ~ETH_MACCR_FES);
-	}
-	if(regvalue & PHY_STATUS_FULLDUPLEX)
-	{
-		/* set emac to full duplex */
-		outr(&(ETH->MACCR), inr(&(ETH->MACCR)) | ETH_MACCR_DM);
-	}
-	else
-	{
-		/* set emac to half duplex */
-		outr(&(ETH->MACCR), inr(&(ETH->MACCR)) & ~ETH_MACCR_DM);
-	}
+    if(regvalue & PHY_STATUS_100M)
+    {
+        /* set emac to 100Mbit/s */
+        outr(&(ETH->MACCR), inr(&(ETH->MACCR)) | ETH_MACCR_FES);
+    }
+    else
+    {
+        /* set emac to 10Mbit/s */
+        outr(&(ETH->MACCR), inr(&(ETH->MACCR)) & ~ETH_MACCR_FES);
+    }
+    if(regvalue & PHY_STATUS_FULLDUPLEX)
+    {
+        /* set emac to full duplex */
+        outr(&(ETH->MACCR), inr(&(ETH->MACCR)) | ETH_MACCR_DM);
+    }
+    else
+    {
+        /* set emac to half duplex */
+        outr(&(ETH->MACCR), inr(&(ETH->MACCR)) & ~ETH_MACCR_DM);
+    }
 
-	/* ToDo: Set up MAC frame filters. ATM we receive all frames */
-	outr(&(ETH->MACFFR), inr(&(ETH->MACFFR)) /*| ETH_MACFFR_RA | ETH_MACFFR_PM | ETH_MACFFR_PAM*/);
+    /* ToDo: Set up MAC frame filters. ATM we receive all frames */
+    outr(&(ETH->MACFFR), inr(&(ETH->MACFFR)) /*| ETH_MACFFR_RA | ETH_MACFFR_PM | ETH_MACFFR_PAM*/);
 
-	/* enable transmitter and receiver state machine */
-	outr(&(ETH->MACCR), inr(&(ETH->MACCR)) | ETH_MACCR_TE | ETH_MACCR_RE);
+    /* enable transmitter and receiver state machine */
+    outr(&(ETH->MACCR), inr(&(ETH->MACCR)) | ETH_MACCR_TE | ETH_MACCR_RE);
 
-	/* start transmission and reception */
-	outr(&(ETH->DMAOMR), inr(&(ETH->DMAOMR)) | ETH_DMAOMR_ST | ETH_DMAOMR_SR
-		/*testing:*/ | ETH_DMAOMR_FEF | ETH_DMAOMR_FUGF);
-	/*outr(&(ETH->DMARPDR), 0);*/
+    /* start transmission and reception */
+    outr(&(ETH->DMAOMR), inr(&(ETH->DMAOMR)) | ETH_DMAOMR_ST | ETH_DMAOMR_SR
+        /*testing:*/ | ETH_DMAOMR_FEF | ETH_DMAOMR_FUGF);
+    /*outr(&(ETH->DMARPDR), 0);*/
 
     return 0;
 }
@@ -682,8 +682,8 @@ THREAD(EmacRxThread, arg)
     NutEventPost(&ni->ni_mutex);
 
     /* Clear pending interrupt flags and enable receive interrupts. */
-	outr(&(ETH->DMASR), ((unsigned int)inr(&(ETH->DMASR))) | 0x0001E7FF);
-	NutIrqEnable(&sig_EMAC);
+    outr(&(ETH->DMASR), ((unsigned int)inr(&(ETH->DMASR))) | 0x0001E7FF);
+    NutIrqEnable(&sig_EMAC);
 
     for (;;) {
         /*
@@ -748,7 +748,7 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         if (NutEventWait(&ni->ni_mutex, mx_wait)) {
             break;
         }
-		
+        
         /* Check for packet queue space. */
         if ((txBufTab[txBufIdx].TDES0 & TDES0_OWN) == TDES0_OWN) {
             if (NutEventWait(&ni->ni_tx_rdy, 500) && (txBufTab[txBufIdx].TDES0 & TDES0_OWN) == TDES0_OWN) {
@@ -759,10 +759,10 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         } else {
             if ((rc = EmacPutPacket(txBufIdx, ni, nb)) == 0) {
                 txBufIdx++;
-				if(txBufIdx >= EMAC_TX_BUFFERS)
-				{
-                	txBufIdx = 0;
-				}
+                if(txBufIdx >= EMAC_TX_BUFFERS)
+                {
+                    txBufIdx = 0;
+                }
             }
         }
         NutEventPost(&ni->ni_mutex);
@@ -804,34 +804,34 @@ int EmacInit(NUTDEVICE * dev)
         return -1;
     }
 
-	/* Pin configuration */
+    /* Pin configuration */
 #ifdef EMAC_USE_RMII_MODE
-	/* Configure RMII lines as alternate function */
-	GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    /* Configure RMII lines as alternate function */
+    GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
 
-	/* switch to RMII mode */
-	GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
+    /* switch to RMII mode */
+    GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
 #else
-	/* Configure MII lines as alternate function */
-	GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTC,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-	GpioPinConfigSet(NUTGPIO_PORTB,  8, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    /* Configure MII lines as alternate function */
+    GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTC,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    GpioPinConfigSet(NUTGPIO_PORTB,  8, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
 
-	/* switch to MII mode */
-	GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
+    /* switch to MII mode */
+    GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
 #endif
 
-	/* Remapping */	
+    /* Remapping */ 
 #ifdef EMAC_REMAP_ENABLE
-	GPIO_PinRemapConfig(GPIO_Remap_ETH, ENABLE);
+    GPIO_PinRemapConfig(GPIO_Remap_ETH, ENABLE);
 #endif
 
     /* Start the receiver thread. */

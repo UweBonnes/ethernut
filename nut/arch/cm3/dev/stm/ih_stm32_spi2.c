@@ -101,18 +101,18 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-	    IntDisable(SPI2_IRQn);
+        IntDisable(SPI2_IRQn);
     }
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	    IntRegister(SPI2_IRQn, SerialPeripheral2IrqEntry);
+        IntRegister(SPI2_IRQn, SerialPeripheral2IrqEntry);
         /* Initialize with defined priority. */
-	    IntPrioritySet(SPI2_IRQn, NUT_IRQPRI_SPI2);
+        IntPrioritySet(SPI2_IRQn, NUT_IRQPRI_SPI2);
         /* Clear interrupt */
-	    NVIC_ClearPendingIRQ(SPI2_IRQn);
-		break;
+        NVIC_ClearPendingIRQ(SPI2_IRQn);
+        break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
             *ival |= 1;
@@ -136,7 +136,7 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
         *ival = IntPriorityGet(SPI2_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-	    IntPrioritySet(SPI2_IRQn,*ival);
+        IntPrioritySet(SPI2_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -151,7 +151,7 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-	    IntEnable(SPI2_IRQn);
+        IntEnable(SPI2_IRQn);
     }
     return rc;
 }

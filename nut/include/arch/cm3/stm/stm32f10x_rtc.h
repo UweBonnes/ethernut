@@ -68,7 +68,7 @@ typedef struct
 #define RTC_FLAG_OW          ((uint16_t)0x0004)  /*!< Overflow flag */
 #define RTC_FLAG_ALR         ((uint16_t)0x0002)  /*!< Alarm flag */
 #define RTC_FLAG_SEC         ((uint16_t)0x0001)  /*!< Second flag */
-#define RTC_FLAG_CNF	     ((uint16_t)0x0010)  /*!< Configuration mode flag */
+#define RTC_FLAG_CNF         ((uint16_t)0x0010)  /*!< Configuration mode flag */
 
 #define IS_RTC_CLEAR_FLAG(FLAG) ((((FLAG) & (uint16_t)0xFFF0) == 0x00) && ((FLAG) != 0x00))
 #define IS_RTC_GET_FLAG(FLAG) (((FLAG) == RTC_FLAG_RTOFF) || ((FLAG) == RTC_FLAG_RSF) || \
