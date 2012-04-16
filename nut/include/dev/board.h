@@ -380,6 +380,9 @@
 /*
  * TWI / I2C bus.
  */
+#include <cfg/twi.h>
+#include <dev/twif.h>
+
 #ifndef DEF_TWIBUS
 #if defined(MCU_AT91R40008)
 #include <dev/twibus_bbif.h>
@@ -388,8 +391,6 @@
 #include <dev/twibus_at91.h>
 #define DEF_TWIBUS      At91TwiBus
 #elif defined(MCU_STM32)
-#include <cfg/twi.h>
-#include <dev/twif.h>
 #include <arch/cm3/stm/stm32_twi.h>
 #endif
 #endif
