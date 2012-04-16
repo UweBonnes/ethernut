@@ -110,7 +110,7 @@ int dofile(char *name)
     fprintf(fpout, "\n};\n\n");
 
     fprintf(fpout, "prog_char file%dname[] = \"%s\";\n\n", entryno, fsname);
-    
+
     fprintf(fpout, "static ROMENTRY file%dentry = { ", entryno);
 
     if(entryno > 1)

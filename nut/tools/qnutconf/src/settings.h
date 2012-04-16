@@ -43,7 +43,7 @@ class Settings : public QObject
 
 public:
     ~Settings();
-    
+
     bool load( const QString& fileName = QString() );
     void save();
 
@@ -82,7 +82,7 @@ public:
 
 private:
     Settings();
-    
+
     static void destroy();
     static QString findRelativePathDepthSearch( const QString& filename, const QDir& startPoint );
 

@@ -748,7 +748,7 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         if (NutEventWait(&ni->ni_mutex, mx_wait)) {
             break;
         }
-        
+
         /* Check for packet queue space. */
         if ((txBufTab[txBufIdx].TDES0 & TDES0_OWN) == TDES0_OWN) {
             if (NutEventWait(&ni->ni_tx_rdy, 500) && (txBufTab[txBufIdx].TDES0 & TDES0_OWN) == TDES0_OWN) {
@@ -829,7 +829,7 @@ int EmacInit(NUTDEVICE * dev)
     GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
 #endif
 
-    /* Remapping */ 
+    /* Remapping */
 #ifdef EMAC_REMAP_ENABLE
     GPIO_PinRemapConfig(GPIO_Remap_ETH, ENABLE);
 #endif

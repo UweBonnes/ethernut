@@ -45,7 +45,7 @@
  *       LPC17xx flash image and ocupy a word at 0x000002FC
  *
  */
-            
+
 const uint32_t LPC17XX_CRP __attribute__((section(".crp"), used)) = 0xFFFFFFFF;
 
 uint32_t Lpc177x_8xGetCrpValue(void)

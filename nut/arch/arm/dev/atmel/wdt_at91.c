@@ -111,7 +111,7 @@ uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
 #elif defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     /* Compute 12-bit timer value for 32Khz(approx) slow clock divided by 128 */
     cmval = (ms * (32000/128)) / 1000;
-    if(cmval>4095) cmval=4095;      
+    if(cmval>4095) cmval=4095;
 
     /* if mode=0, Enable watchdog and disable it when debugging (default value) */
     if (xmode == 0) {

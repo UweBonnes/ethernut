@@ -968,7 +968,7 @@ int Stm32FlashWrite( void* dst, void* src, size_t len)
     }
 
     /* Clear All pending flags */
-    FLASH_ClearFlag( FLASH_SR_EOP | FLASH_SR_PGERR | FLASH_SR_WRPRTERR);    
+    FLASH_ClearFlag( FLASH_SR_EOP | FLASH_SR_PGERR | FLASH_SR_WRPRTERR);
 
     while( (wptr<end) && (rs==FLASH_COMPLETE))
     {

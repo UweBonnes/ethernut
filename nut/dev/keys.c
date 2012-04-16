@@ -125,7 +125,7 @@ int NutGetKeyState( HANDLE *keyhp)
     if( keyhp==NULL) goto error_out;
     rc = key->newState;
     key->newState &= ~KEY_PENDING;
-error_out:  
+error_out:
     return rc;
 }
 
@@ -145,7 +145,7 @@ int NutGetKeyTime( HANDLE *keyhp)
     int rc = -1;
     if( keyhp==NULL) goto error_out;
     rc = (int)(NutGetMillis() - key->TimeDown);
-error_out:  
+error_out:
     return rc;
 }
 
@@ -196,7 +196,7 @@ THREAD( sys_key, arg)
                 key->newState &= ~KEY_IS_DOWN;
 #ifndef KEY_SUPPORT_IOEXP
                 /* Save inverted key state (low-active) */
-                
+
                 key->newState |= (GpioPinGet( key->bank, key->pin))?KEY_NOT_PRESSED:KEY_IS_DOWN;
 #else
 

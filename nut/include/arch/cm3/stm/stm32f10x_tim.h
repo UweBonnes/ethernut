@@ -201,7 +201,7 @@ typedef struct
                                      ((PERIPH) == TIM4) || \
                                      ((PERIPH) == TIM5) || \
                                      ((PERIPH) == TIM8))
-                                    
+
 /* LIST4: TIM 1, 2, 3, 4, 5, 8, 15, 16 and 17 */
 #define IS_TIM_LIST4_PERIPH(PERIPH) (((PERIPH) == TIM1) || \
                                      ((PERIPH) == TIM2) || \

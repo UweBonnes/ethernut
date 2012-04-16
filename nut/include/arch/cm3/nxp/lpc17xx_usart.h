@@ -46,7 +46,7 @@
  *----------------------------------------------------------------------------*/
 
 /* Accepted Error baud rate value (in percent unit) */
-#define UART_ACCEPTED_BAUDRATE_ERROR    3           
+#define UART_ACCEPTED_BAUDRATE_ERROR    3
 
 
 /*----------------------------------------------------------------------------*
@@ -89,7 +89,7 @@
 #define UART_IER_THREINT_EN     0x00000002
 
 /* RX line status interrupt enable */
-#define UART_IER_RLSINT_EN_POS  2   
+#define UART_IER_RLSINT_EN_POS  2
 #define UART_IER_RLSINT_EN      0x00000004
 
 /* Modem status interrupt enable */

@@ -771,7 +771,7 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 
 #define checkresults(L,na,nr) \
      api_check(L, (nr) == LUA_MULTRET || (L->ci->top - L->top >= (nr) - (na)))
-    
+
 
 LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
   StkId func;

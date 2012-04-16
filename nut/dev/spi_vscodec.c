@@ -541,7 +541,7 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
     VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
 #endif
 
-#if VS_HAS_AICTRL3_REG  
+#if VS_HAS_AICTRL3_REG
     // setting SCI_AICTRL3 should be fine, too...
     VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
 #endif
@@ -600,7 +600,7 @@ static int VsCodecWriteWRam(NUTDEVICE *dev, VS_WRAM_DATA *vswd)
         VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
 #endif
 
-#if VS_HAS_AICTRL3_REG  
+#if VS_HAS_AICTRL3_REG
         VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
 #endif
     }

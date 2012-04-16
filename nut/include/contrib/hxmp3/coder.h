@@ -168,7 +168,7 @@ typedef struct _SideInfo {
     int mainDataBegin;
     int privateBits;
     int scfsi[MAX_NCHAN][MAX_SCFBD];                /* 4 scalefactor bands per channel */
-    
+
     SideInfoSub sis[MAX_NGRAN][MAX_NCHAN];
 } SideInfo;
 
@@ -206,7 +206,7 @@ typedef struct _HuffTabLookup {
 } HuffTabLookup;
 
 typedef struct _IMDCTInfo {
-    int outBuf[MAX_NCHAN][BLOCK_SIZE][NBANDS];  /* output of IMDCT */   
+    int outBuf[MAX_NCHAN][BLOCK_SIZE][NBANDS];  /* output of IMDCT */
     int overBuf[MAX_NCHAN][MAX_NSAMP / 2];      /* overlap-add buffer (by symmetry, only need 1/2 size) */
     int numPrevIMDCT[MAX_NCHAN];                /* how many IMDCT's calculated in this channel on prev. granule */
     int prevType[MAX_NCHAN];
@@ -233,7 +233,7 @@ typedef struct _ScaleFactorInfoSub {
 
 /* used in MPEG 2, 2.5 intensity (joint) stereo only */
 typedef struct _ScaleFactorJS {
-    int intensityScale;     
+    int intensityScale;
     int slen[4];
     int nr[4];
 } ScaleFactorJS;

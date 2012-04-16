@@ -503,7 +503,7 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 
        To avoid floating point calculation the formulae is adjusted with the
        multiply and divide method.
-    
+
        The value of mulFracDiv and dividerAddFracDiv should comply to the following expressions:
        0 < mulFracDiv <= 15, 0 <= dividerAddFracDiv <= 15
     */
@@ -585,7 +585,7 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 
        To avoid floating point calculation the formulae is adjusted with the
        multiply and divide method.
-    
+
        The value of mulFracDiv and dividerAddFracDiv should comply to the following expressions:
        0 < mulFracDiv <= 15, 0 <= dividerAddFracDiv <= 15
     */
@@ -616,7 +616,7 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
                 best_divisor = tmp;
                 bestd = d;
                 bestm = m;
-                
+
                 if(best_error == 0) {
                     break;
                 }

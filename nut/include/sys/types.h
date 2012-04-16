@@ -329,7 +329,7 @@ typedef void *HANDLE;
 
 
 #ifndef __NUT_EMULATION__
-    
+
     /*!
  * \brief Convert short value from host to network byte order.
  */

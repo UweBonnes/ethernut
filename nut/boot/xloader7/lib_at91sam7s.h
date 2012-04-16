@@ -1367,8 +1367,8 @@ __inline unsigned int AT91F_RTTSetTimeBase(
 {
     if (ms > 2000)
         return 1;   // AT91C_TIME_OUT_OF_RANGE
-    pRTTC->RTTC_RTMR &= ~0xFFFF;    
-    pRTTC->RTTC_RTMR |= (((ms << 15) /1000) & 0xFFFF);  
+    pRTTC->RTTC_RTMR &= ~0xFFFF;
+    pRTTC->RTTC_RTMR |= (((ms << 15) /1000) & 0xFFFF);
     return 0;
 }
 
@@ -1380,8 +1380,8 @@ __inline unsigned int AT91F_RTTSetPrescaler(
         AT91PS_RTTC pRTTC,
         unsigned int rtpres)
 {
-    pRTTC->RTTC_RTMR &= ~0xFFFF;    
-    pRTTC->RTTC_RTMR |= (rtpres & 0xFFFF);  
+    pRTTC->RTTC_RTMR &= ~0xFFFF;
+    pRTTC->RTTC_RTMR |= (rtpres & 0xFFFF);
     return (pRTTC->RTTC_RTMR);
 }
 
@@ -1392,7 +1392,7 @@ __inline unsigned int AT91F_RTTSetPrescaler(
 __inline void AT91F_RTTRestart(
         AT91PS_RTTC pRTTC)
 {
-    pRTTC->RTTC_RTMR |= AT91C_RTTC_RTTRST;  
+    pRTTC->RTTC_RTMR |= AT91C_RTTC_RTTRST;
 }
 
 
@@ -1478,7 +1478,7 @@ __inline unsigned int AT91F_RTTReadValue(
     {
         val1 = pRTTC->RTTC_RTVR;
         val2 = pRTTC->RTTC_RTVR;
-    }   
+    }
     while(val1 != val2);
     return(val1);
 }//}}}
@@ -1704,7 +1704,7 @@ __inline void AT91F_MC_EFC_PerformCmd (
     AT91PS_MC pMC, // pointer to a MC controller
     unsigned int transfer_cmd)
 {
-    pMC->MC_FCR = transfer_cmd; 
+    pMC->MC_FCR = transfer_cmd;
 }
 
 //----------------------------------------------------------------------------
@@ -1837,7 +1837,7 @@ __inline void AT91F_SPI_CfgMode (
 __inline void AT91F_SPI_CfgPCS (
     AT91PS_SPI pSPI, // pointer to a SPI controller
     char PCS_Device) // PCS of the Device
-{   
+{
     // Write to the MR register
     pSPI->SPI_MR &= 0xFFF0FFFF;
     pSPI->SPI_MR |= ( (PCS_Device<<16) & AT91C_SPI_PCS );
@@ -2044,7 +2044,7 @@ __inline unsigned int AT91F_ADC_GetModeReg (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_MR;    
+    return pADC->ADC_MR;
 }
 
 //----------------------------------------------------------------------------
@@ -2059,11 +2059,11 @@ __inline void AT91F_ADC_CfgTimings (
     unsigned int sample_and_hold_time)  // in ns
 {
     unsigned int prescal,startup,shtim;
-    
+
     prescal = mck_clock/(2*adc_clock) - 1;
     startup = adc_clock*startup_time/8 - 1;
     shtim = adc_clock*sample_and_hold_time/1000 - 1;
-    
+
     // Write to the MR register
     pADC->ADC_MR = ( (prescal<<8) & AT91C_ADC_PRESCAL) | ( (startup<<16) & AT91C_ADC_STARTUP) | ( (shtim<<24) & AT91C_ADC_SHTIM);
 }
@@ -2100,7 +2100,7 @@ __inline unsigned int AT91F_ADC_GetChannelStatus (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CHSR;  
+    return pADC->ADC_CHSR;
 }
 
 //----------------------------------------------------------------------------
@@ -2111,7 +2111,7 @@ __inline void AT91F_ADC_StartConversion (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    pADC->ADC_CR = AT91C_ADC_START; 
+    pADC->ADC_CR = AT91C_ADC_START;
 }
 
 //----------------------------------------------------------------------------
@@ -2122,7 +2122,7 @@ __inline void AT91F_ADC_SoftReset (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    pADC->ADC_CR = AT91C_ADC_SWRST; 
+    pADC->ADC_CR = AT91C_ADC_SWRST;
 }
 
 //----------------------------------------------------------------------------
@@ -2133,7 +2133,7 @@ __inline unsigned int AT91F_ADC_GetLastConvertedData (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_LCDR;  
+    return pADC->ADC_LCDR;
 }
 
 //----------------------------------------------------------------------------
@@ -2144,7 +2144,7 @@ __inline unsigned int AT91F_ADC_GetConvertedDataCH0 (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CDR0;  
+    return pADC->ADC_CDR0;
 }
 
 //----------------------------------------------------------------------------
@@ -2155,7 +2155,7 @@ __inline unsigned int AT91F_ADC_GetConvertedDataCH1 (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CDR1;  
+    return pADC->ADC_CDR1;
 }
 
 //----------------------------------------------------------------------------
@@ -2177,7 +2177,7 @@ __inline unsigned int AT91F_ADC_GetConvertedDataCH3 (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CDR3;  
+    return pADC->ADC_CDR3;
 }
 
 //----------------------------------------------------------------------------
@@ -2188,7 +2188,7 @@ __inline unsigned int AT91F_ADC_GetConvertedDataCH4 (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CDR4;  
+    return pADC->ADC_CDR4;
 }
 
 //----------------------------------------------------------------------------
@@ -2199,7 +2199,7 @@ __inline unsigned int AT91F_ADC_GetConvertedDataCH5 (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CDR5;  
+    return pADC->ADC_CDR5;
 }
 
 //----------------------------------------------------------------------------
@@ -2210,7 +2210,7 @@ __inline unsigned int AT91F_ADC_GetConvertedDataCH6 (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CDR6;  
+    return pADC->ADC_CDR6;
 }
 
 //----------------------------------------------------------------------------
@@ -2221,7 +2221,7 @@ __inline unsigned int AT91F_ADC_GetConvertedDataCH7 (
     AT91PS_ADC pADC // pointer to a ADC controller
     )
 {
-    return pADC->ADC_CDR7;  
+    return pADC->ADC_CDR7;
 }
 //}}}
 

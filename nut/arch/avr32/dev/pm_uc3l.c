@@ -429,7 +429,7 @@ void sysclk_set_prescalers(unsigned int cpu_shift,
     AVR32_PM.pbbsel = pbb_cksel;
     cpu_irq_restore(flags);
 }
-    
+
 void pm_enable_osc0_crystal(unsigned int fosc0)
 {
     AVR32_SCIF.gcctrl[AVR32_SCIF_GCLK_DFLL0_REF] = ((0 << AVR32_SCIF_GCCTRL_DIV_OFFSET)&AVR32_SCIF_GCCTRL_DIV_MASK)
@@ -452,7 +452,7 @@ static void pm_enable_dfll(void)
 #define COARSEMAXSTEP (((DFLL_CPU_FREQ - SCIF_DFLL_MINFREQ_HZ)*255)/(SCIF_DFLL_MAXFREQ_HZ - SCIF_DFLL_MINFREQ_HZ))
     SCIF_UNLOCK(AVR32_SCIF_DFLL0STEP);
     AVR32_SCIF.dfll0step = ((COARSEMAXSTEP << AVR32_SCIF_DFLL0STEP_CSTEP_OFFSET) & AVR32_SCIF_DFLL0STEP_CSTEP_MASK) | ((0x0000004 << AVR32_SCIF_DFLL0STEP_FSTEP_OFFSET) & AVR32_SCIF_DFLL0STEP_FSTEP_MASK);
-    
+
     while(!(AVR32_SCIF.pclksr & AVR32_SCIF_PCLKSR_DFLL0RDY_MASK));
 
 #if defined( AVR32_SCIF_DFLL0MUL )
@@ -535,6 +535,6 @@ void Avr32InitClockTree( void )
 {
     /* Enable one wait state for flash access */
     AVR32_FLASHCDW.fcr = AVR32_FLASHCDW_FWS_MASK;
-    
+
     pm_switch_to_osc0( OSC0_VAL, 0 );
 }

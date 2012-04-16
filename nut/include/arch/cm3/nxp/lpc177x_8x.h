@@ -156,9 +156,9 @@ typedef struct
   __IO uint32_t SCS;                        /*!< Offset: 0x1A0 (R/W)  System Controls and Status Register */
   __IO uint32_t IRCTRIM;                    /*!< Offset: 0x1A4 (R/W) Clock Dividers                     */
   __IO uint32_t PCLKSEL;                    /*!< Offset: 0x1A8 (R/W)  Peripheral Clock Selection Register */
-       uint32_t RESERVED8;                  
-  __IO uint32_t PBOOST;                     /*!< Offset: 0x1B0 (R/W)  Power Boost control register */   
-       uint32_t RESERVED9;                  
+       uint32_t RESERVED8;
+  __IO uint32_t PBOOST;                     /*!< Offset: 0x1B0 (R/W)  Power Boost control register */
+       uint32_t RESERVED9;
   __IO uint32_t LCD_CFG;                    /*!< Offset: 0x1B8 (R/W)  LCD Configuration and clocking control Register */
        uint32_t RESERVED10[1];
   __IO uint32_t USBIntSt;                   /*!< Offset: 0x1C0 (R/W)  USB Interrupt Status Register */
