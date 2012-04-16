@@ -865,13 +865,13 @@ int NutDestroyTwiBus( NUTTWIBUS *bus)
  * \brief TWI/I2C bus structure.
  */
 NUTTWIBUS TwBbifBus = {
-    .bus_base =    0,              /* Bus base address. */
-    .bus_sig_ev =  NULL,           /* Bus data and event interrupt handler. */
-    .bus_sig_er =  NULL,           /* Bus error interrupt handler. */
-    .bus_mutex =   NULL,           /* Bus lock queue. */
-    .bus_icb   =   NULL,           /* Bus Runtime Data Pointer */
-    .bus_dma_tx =  0,              /* DMA channel for TX direction. */
-    .bus_dma_rx =  0,              /* DMA channel for RX direction. */
-    .bus_initbus = TwBbifInit,    /* Initialize bus controller. */
-    .bus_recover = NULL,           /* Recover bus controller */
+  /*.bus_base =   */  0,           /* Bus base address. */
+  /*.bus_sig_ev = */  NULL,        /* Bus data and event interrupt handler. */
+  /*.bus_sig_er = */  NULL,        /* Bus error interrupt handler. */
+  /*.bus_mutex =  */  NULL,        /* Bus lock queue. */
+  /*.bus_icb   =  */  NULL,        /* Bus Runtime Data Pointer */
+  /*.bus_dma_tx = */  0,           /* DMA channel for TX direction. */
+  /*.bus_dma_rx = */  0,           /* DMA channel for RX direction. */
+  /*.bus_initbus =*/  TwBbifInit,  /* Initialize bus controller. */
+  /*.bus_recover =*/  NULL,        /* Recover bus controller */
 };

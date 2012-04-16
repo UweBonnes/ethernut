@@ -91,62 +91,30 @@
 #define TWSLA_HOST       16  /*!< \brief Host slave address. */
 #define TWSLA_DEFAULT   193  /*!< \brief Default slave address. */
 
-typedef struct _NUTTWIICB NUTTWIICB;
-/*
- * Runtime Data container.
- * This is installed in heap at initializaton
- * of a bus.
- */
-struct _NUTTWIICB {
-    /*! \brief Bus current state.
-     */
-    uint32_t bus_state;
-    /*! \brief Bus slave address.
-     */
-    uint16_t tw_mm_sla;
-
-    /*! \brief Bus current error condition.
-     */
-    uint_fast8_t tw_mm_err;
-
-    /*! \brief Bus last error condition.
-     */
-    uint_fast8_t tw_mm_error;
-
-    /*! \brief Bus nodes internal address register length.
-     */
-    uint8_t *tw_mm_iadr;
-
-    /*! \brief Bus nodes internal address register.
-     */
-    uint_fast8_t tw_mm_iadrlen;
-
-    /*! \brief Bus transmission data buffer pointer.
-     */
-    uint8_t *tw_mm_txbuf;
-
-    /*! \brief Bus transmissin data block length.
-     */
-    uint_fast16_t tw_mm_txlen;
-
-    /*! \brief Bus reception data buffer pointer.
-     */
-    uint8_t *tw_mm_rxbuf;
-
-    /*! \brief Bus reception data block length.
-     */
-    uint_fast16_t tw_mm_rxlen;
-
-    /*! \brief Bus data direction.
-     */
-    uint_fast8_t tw_mm_dir;
-
-    /*! \brief Transmission Ongoing Mutex.
-     */
-    HANDLE tw_mm_mtx;
-};
-
 typedef struct _NUTTWIBUS NUTTWIBUS;
+
+
+/* Include architecture specific TWI implementation */
+#if defined(__AVR__)
+
+#include "dev/twibus_avr.h"
+
+#elif defined(__arm__) && defined(__CORTEX__)
+
+#if defined(MCU_STM32)
+#include <arch/cm3/stm/stm32_twi.h>
+#endif
+
+#elif defined(__arm__) && !defined(__CORTEX__)
+
+#if defined(MCU_AT91R40008)
+#include "dev/twibus_bbif.h"
+#else
+#include "dev/twibus_at91.h"
+#endif
+
+#endif
+
 
 /*!
  * \brief TWI/I2C bus structure.
@@ -229,23 +197,6 @@ extern int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf );
 extern int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla );
 
 extern int NutDestroyTwiBus( NUTTWIBUS *bus);
-
-/* Include architecture specific TWI implementation */
-#if defined(__arm__) && defined(__CORTEX__)
-
-#if defined(MCU_STM32)
-#include <arch/cm3/stm/stm32_twi.h>
-#endif
-
-#elif defined(__arm__) && !defined(__CORTEX__)
-
-#if defined(MCU_AT91R40008)
-#include "dev/twibus_bbif.h"
-#else
-#include "dev/twibus_at91.h"
-#endif
-
-#endif
 
 /*
  * Nut/OS Adaption to old TWI implementation

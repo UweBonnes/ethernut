@@ -1,8 +1,5 @@
-#ifndef _STM32_TWI_H_
-#define _STM32_TWI_H_
 /*
- * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  *
  * All rights reserved.
  *
@@ -35,16 +32,11 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
- * \verbatim
- * $Id$
- * \endverbatim
- */
+#ifndef _DEV_TWIBUS_AVR_H_
+#define _DEV_TWIBUS_AVR_H_
 
-/*!
- * \file arch/cm3/dev/stm/stm32_twi.h
- * \brief Header file for STM32F I2C bus
- */
+#include <sys/types.h>
+#include <cfg/arch.h>
 
 typedef struct _NUTTWIICB NUTTWIICB;
 /*
@@ -54,6 +46,10 @@ typedef struct _NUTTWIICB NUTTWIICB;
  */
 struct _NUTTWIICB {
     /********** Master mode *********/
+
+    /*! \brief Flag that interface is busy
+     */
+    volatile uint_fast8_t tw_if_busy;
 
     /*! \brief Bus slave address.
      */
@@ -66,14 +62,6 @@ struct _NUTTWIICB {
     /*! \brief Bus last error condition.
      */
     volatile uint_fast8_t tw_mm_error;
-
-    /*! \brief Bus nodes internal address register length.
-     */
-    uint8_t *tw_mm_iadr;
-
-    /*! \brief Bus nodes internal address register.
-     */
-    volatile uint_fast8_t tw_mm_iadrlen;
 
     /*! \brief Bus transmission data buffer pointer.
      */
@@ -107,23 +95,60 @@ struct _NUTTWIICB {
     /*! \brief Transmission Ongoing Mutex.
      */
     HANDLE tw_mm_mtx;
+
+    /********** Slave mode *********/
+
+
+    /*! \brief Slave address received.
+     */
+    uint_fast8_t tw_sm_sla;
+
+    /*! \brief Current slave mode error.
+     */
+    volatile uint_fast8_t tw_sm_err;
+
+    /*! \brief Last slave mode error.
+     */
+    volatile uint_fast8_t tw_sm_error;
+
+
+    /*! \brief Pointer to the slave transmit buffer.
+     */
+    uint8_t *tw_sm_txbuf;
+
+    /*! \brief Number of bytes to transmit in slave mode.
+     */
+    uint_fast16_t tw_sm_txlen;
+
+    /*! \brief Current slave transmit buffer index.
+     */
+    volatile uint_fast16_t tw_sm_txidx;
+
+    /*! \brief Pointer to the slave receive buffer.
+     */
+    uint8_t *tw_sm_rxbuf;
+
+    /*! \brief Size of the master receive buffer.
+     */
+    volatile uint_fast16_t tw_sm_rxlen;
+
+    /*! \brief Current slave receive buffer index.
+     */
+    volatile uint_fast16_t tw_sm_rxidx;
+
+    /*! \brief Threads waiting for slave receive.
+     */
+    HANDLE tw_sm_rxmtx;
+
+    /*! \brief Threads waiting for slave transmit done.
+     */
+    HANDLE tw_sm_txmtx;
 };
 
-extern NUTTWIBUS Stm32TwiBus_1;
-extern NUTTWIBUS Stm32TwiBus_2;
-
-#define I2C1_DMA_CHANNEL_TX           DMA1_C6
-#define I2C1_DMA_CHANNEL_RX           DMA1_C7
-
-#define I2C2_DMA_CHANNEL_TX           DMA1_C4
-#define I2C2_DMA_CHANNEL_RX           DMA1_C5
+extern NUTTWIBUS TwBbifBus;
 
 #ifndef DEF_TWIBUS
-#ifdef I2CBUS1_AS_DEFAULT
-#define DEF_TWIBUS Stm32TwiBus_1
-#else
-#define DEF_TWIBUS Stm32TwiBus_2
-#endif
+#define DEF_TWIBUS TwBbifBus
 #endif
 
-#endif /* _STM32_TWI_H_ */
+#endif /* _DEV_TWIBUS_AVR_H_ */

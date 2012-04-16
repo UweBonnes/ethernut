@@ -87,9 +87,11 @@
 #define TWI_PIO_MDER    PIOA_MDER
 #endif
 
+#if 0
 static uint8_t *tw_mm_buf;              /* Pointer to the master transfer buffer. */
 static volatile size_t tw_mm_len;       /* Number of bytes to transmit in master mode. */
 static volatile size_t tw_mm_idx;       /* Current master transmit buffer index. */
+#endif
 
 /*
  * TWI interrupt handler.
@@ -114,10 +116,10 @@ static void TwInterrupt(void *arg)
     twsr &= inr(TWI_IMR);
     if (twsr & TWI_TXRDY) {
         /* Byte has been transmitted. */
-        if (tw_mm_idx < tw_mm_len) {
+        if (icb->tw_mm_idx < icb->tw_mm_len) {
             /* More bytes in buffer, send next one. */
-            outb(TWI_THR, tw_mm_buf[tw_mm_idx]);
-            tw_mm_idx++;
+            outb(TWI_THR, icb->tw_mm_buf[icb->tw_mm_idx]);
+            icb->tw_mm_idx++;
         } else {
             /* All bytes sent, wait for completion. */
             outr(TWI_IDR, TWI_TXRDY);
@@ -125,13 +127,13 @@ static void TwInterrupt(void *arg)
         }
     } else if (twsr & TWI_RXRDY) {
         /* Byte has been received. */
-        if (tw_mm_idx < tw_mm_len) {
+        if (icb->tw_mm_idx < icb->tw_mm_len) {
             /* Store byte in receive buffer. */
-            tw_mm_buf[tw_mm_idx++] = inb(TWI_RHR);
-            if (tw_mm_idx == tw_mm_len - 1) {
+            icb->tw_mm_buf[icb->tw_mm_idx++] = inb(TWI_RHR);
+            if (icb->tw_mm_idx == icb->tw_mm_len - 1) {
                 /* Next byte will be last, set STOP condition. */
                 outr(TWI_CR, TWI_STOP);
-            } else if (tw_mm_idx == tw_mm_len) {
+            } else if (icb->tw_mm_idx == icb->tw_mm_len) {
                 /* This was the last byte, wait for completion. */
                 outr(TWI_IDR, TWI_RXRDY);
                 outr(TWI_IER, TWI_TXCOMP);
@@ -187,13 +189,13 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
     /* Check if there is something to transmit. */
     if (txlen) {
         /* Set transmit parameters. */
-        tw_mm_buf = (uint8_t *) txdata;
-        tw_mm_len = (size_t) txlen;
-        tw_mm_idx = 1;
+        icb->tw_mm_buf = (uint8_t *) txdata;
+        icb->tw_mm_len = (size_t) txlen;
+        icb->tw_mm_idx = 1;
 
         /* Start transmit to specified slave address. */
         outr(TWI_MMR, (unsigned int) sla << TWI_DADR_LSB);
-        outr(TWI_THR, tw_mm_buf[0]);
+        outr(TWI_THR, icb->tw_mm_buf[0]);
         outr(TWI_IER, TWI_TXRDY);
 
         /* Wait for transmission complete. */
@@ -206,12 +208,12 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
     if (icb->tw_mm_err == 0) {
         /* Reset receive counter. We need this below to set
         ** the return value. */
-        tw_mm_idx = 0;
+        icb->tw_mm_idx = 0;
         /* Check if there is something to receive. */
         if (rxsiz) {
             /* Set remaining receive parameters. */
-            tw_mm_buf = (uint8_t *) rxdata;
-            tw_mm_len = (size_t) rxsiz;
+            icb->tw_mm_buf = (uint8_t *) rxdata;
+            icb->tw_mm_len = (size_t) rxsiz;
 
             /* Start receive from specified slave address. */
             outr(TWI_MMR, ((unsigned int) sla << TWI_DADR_LSB) | TWI_MREAD);
@@ -237,7 +239,7 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
     if (icb->tw_mm_err) {
         icb->tw_mm_error = icb->tw_mm_err;
     } else {
-        rc = (int) tw_mm_idx;
+        rc = (int) icb->tw_mm_idx;
     }
 
     /* Release the interface. */
@@ -285,9 +287,9 @@ int NutTwiMasterRegRead(NUTTWIBUS *bus, uint8_t sla, uint32_t iadr, uint8_t iadr
     icb->tw_mm_err = 0;
 
     if (rxsiz) {
-        tw_mm_buf = rxdata;
-        tw_mm_len = (size_t) rxsiz;
-        tw_mm_idx = 0;
+        icb->tw_mm_buf = rxdata;
+        icb->tw_mm_len = (size_t) rxsiz;
+        icb->tw_mm_idx = 0;
 
         /* Set TWI Internal Address Register if needed */
         outr(TWI_IADRR, iadr);
@@ -307,7 +309,7 @@ int NutTwiMasterRegRead(NUTTWIBUS *bus, uint8_t sla, uint32_t iadr, uint8_t iadr
         } else if (icb->tw_mm_err) {
             icb->tw_mm_error = icb->tw_mm_err;
         } else {
-            rc = (int) tw_mm_idx;
+            rc = (int) icb->tw_mm_idx;
         }
         outr(TWI_IDR, 0xFFFFFFFF);
     }
@@ -363,15 +365,15 @@ int NutTwiMasterRegWrite(NUTTWIBUS *bus,
    icb->tw_mm_err = 0;
 
     if (txsiz) {
-        tw_mm_buf = (uint8_t *) txdata;
-        tw_mm_len = (size_t) txsiz;
-        tw_mm_idx = 1;
+        icb->tw_mm_buf = (uint8_t *) txdata;
+        icb->tw_mm_len = (size_t) txsiz;
+        icb->tw_mm_idx = 1;
 
         /* Set TWI Internal Address Register */
         outr(TWI_IADRR, iadr);
         /* Set the TWI Master Mode Register */
         outr(TWI_MMR, ((unsigned int) sla << TWI_DADR_LSB) | (((unsigned int) iadrlen & 3) << 8));
-        outb(TWI_THR, tw_mm_buf[0]);
+        outb(TWI_THR, icb->tw_mm_buf[0]);
         outr(TWI_IER, TWI_TXRDY);
 
         /* Wait for master transmission to be done. */
@@ -380,7 +382,7 @@ int NutTwiMasterRegWrite(NUTTWIBUS *bus,
         } else if (icb->tw_mm_err) {
             icb->tw_mm_error = icb->tw_mm_err;
         } else {
-            rc = (int) tw_mm_idx;
+            rc = (int) icb->tw_mm_idx;
         }
         outr(TWI_IDR, 0xFFFFFFFF);
     }
@@ -489,9 +491,9 @@ uint16_t NutTwiIndexes( NUTTWIBUS *bus, uint8_t idx )
     case 0:
         return (uint16_t) icb->tw_mm_error;
     case 1:
-        return (uint16_t) tw_mm_len;
+        return (uint16_t) icb->tw_mm_len;
     case 2:
-        return (uint16_t) tw_mm_len;
+        return (uint16_t) icb->tw_mm_len;
     default:
         return 0;
     }
@@ -599,12 +601,12 @@ int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf )
 
     case TWI_GETSLAVEADDRESS:
         // TODO: Slave handling
-        icb->tw_mm_sla = *((uint16_t*)conf);
+        *(uint32_t*)conf = (uint32_t)icb->tw_mm_sla;
         break;
 
     case TWI_SETSLAVEADDRESS:
         // TODO: Slave handling
-        *(uint32_t*)conf = (uint32_t)icb->tw_mm_sla;
+        icb->tw_mm_sla = *((uint16_t*)conf);
         break;
 
     default:
@@ -657,10 +659,6 @@ int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla )
     uint32_t speed = 100000;
     NUTTWIICB *icb = NULL;
 
-    if (NutRegisterIrqHandler(bus->bus_sig_ev, TwInterrupt, 0)) {
-        return -1;
-    }
-
     /* Check if bus was already registered */
     if( bus->bus_icb) {
         return 0;
@@ -685,12 +683,14 @@ int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla )
     speed = I2C_DEFAULT_SPEED*1000UL;
 #endif
     /* Set initial rate. */
-    if( (rc = NutTwiSetSpeed( bus, speed)))
+    if( (rc = NutTwiSetSpeed( bus, speed))) {
         return rc;
+    }
 
     /* Register IRQ Handler */
-    if( (rc = NutRegisterIrqHandler( bus->bus_sig_ev, TwInterrupt, bus)))
+    if( (rc = NutRegisterIrqHandler( bus->bus_sig_ev, TwInterrupt, bus))) {
         return rc;
+    }
 
     /* Enable level triggered interrupts. */
     NutIrqSetMode(bus->bus_sig_ev, NUT_IRQMODE_LEVEL);
@@ -716,15 +716,15 @@ int NutDestroyTwiBus( NUTTWIBUS *bus)
  * \brief TWI/I2C bus structure.
  */
 NUTTWIBUS At91TwiBus = {
-    .bus_base =    TWI_CR,         /* Bus base address. */
-    .bus_sig_ev = &sig_TWI,        /* Bus data and event interrupt handler. */
-    .bus_sig_er =  NULL,           /* Bus error interrupt handler. */
-    .bus_mutex =   NULL,           /* Bus lock queue. */
-    .bus_icb   =   NULL,           /* Bus Runtime Data Pointer */
-    .bus_dma_tx =  0,              /* DMA channel for TX direction. */
-    .bus_dma_rx =  0,              /* DMA channel for RX direction. */
-    .bus_initbus = At91TwiInit,    /* Initialize bus controller. */
-    .bus_recover = NULL,           /* Recover bus controller */
+  /*.bus_base =   */  TWI_CR,      /* Bus base address. */
+  /*.bus_sig_ev = */ &sig_TWI,     /* Bus data and event interrupt handler. */
+  /*.bus_sig_er = */  NULL,        /* Bus error interrupt handler. */
+  /*.bus_mutex =  */  NULL,        /* Bus lock queue. */
+  /*.bus_icb   =  */  NULL,        /* Bus Runtime Data Pointer */
+  /*.bus_dma_tx = */  0,           /* DMA channel for TX direction. */
+  /*.bus_dma_rx = */  0,           /* DMA channel for RX direction. */
+  /*.bus_initbus =*/  At91TwiInit, /* Initialize bus controller. */
+  /*.bus_recover =*/  NULL,        /* Recover bus controller */
 };
 
 /*@}*/

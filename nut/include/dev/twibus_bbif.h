@@ -2,7 +2,20 @@
 #define _DEV_TWIBUS_BBIF_H_
 
 #include <sys/types.h>
-#include <dev/twif.h>
+
+typedef struct _NUTTWIICB NUTTWIICB;
+/*
+ * Runtime Data container.
+ * This is installed in heap at initializaton
+ * of a bus.
+ */
+struct _NUTTWIICB {
+    /********** Master mode *********/
+
+    /*! \brief Bus last error condition.
+     */
+    volatile uint_fast8_t tw_mm_error;
+};
 
 extern NUTTWIBUS TwBbifBus;
 
