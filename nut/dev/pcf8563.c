@@ -267,13 +267,13 @@ int PcfRtcInit(NUTRTC *rtc)
 }
 
 NUTRTC rtcPcf8563 = {
-    .dcb           = NULL,               /*!< Driver control block */
-    .rtc_init      = PcfRtcInit,         /*!< Hardware initializatiuon, rtc_init */
-    .rtc_gettime   = PcfRtcGetClock,     /*!< Read date and time, rtc_gettime */
-    .rtc_settime   = PcfRtcSetClock,     /*!< Set date and time, rtc_settime */
-    .rtc_getalarm  = PcfRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
-    .rtc_setalarm  = PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
-    .rtc_getstatus = PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
-    .rtc_clrstatus = PcfRtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
-    .alarm         = NULL,               /*!< Handle for alarm event queue, not supported right now */
+  /*.dcb           = */ NULL,               /*!< Driver control block */
+  /*.rtc_init      = */ PcfRtcInit,         /*!< Hardware initializatiuon, rtc_init */
+  /*.rtc_gettime   = */ PcfRtcGetClock,     /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ PcfRtcSetClock,     /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ PcfRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ PcfRtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };

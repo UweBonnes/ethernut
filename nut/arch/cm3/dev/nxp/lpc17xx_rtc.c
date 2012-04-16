@@ -356,13 +356,13 @@ static int Lpc17xxRtcInit(NUTRTC *rtc)
 }
 
 NUTRTC rtcLpc17xx  = {
-    .dcb           = NULL,                   /*!< Driver control block */
-    .rtc_init      = Lpc17xxRtcInit,         /*!< Hardware initialization, rtc_init */
-    .rtc_gettime   = Lpc17xxRtcGetClock,     /*!< Read date and time, rtc_gettime */
-    .rtc_settime   = Lpc17xxRtcSetClock,     /*!< Set date and time, rtc_settime */
-    .rtc_getalarm  = Lpc17xxRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
-    .rtc_setalarm  = Lpc17xxRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
-    .rtc_getstatus = Lpc17xxRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
-    .rtc_clrstatus = Lpc17xxRtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
-    .alarm         = NULL,                   /*!< Handle for alarm event queue */
+  /*.dcb           = */ NULL,                   /*!< Driver control block */
+  /*.rtc_init      = */ Lpc17xxRtcInit,         /*!< Hardware initialization, rtc_init */
+  /*.rtc_gettime   = */ Lpc17xxRtcGetClock,     /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ Lpc17xxRtcSetClock,     /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ Lpc17xxRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ Lpc17xxRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ Lpc17xxRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ Lpc17xxRtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,                   /*!< Handle for alarm event queue */
 };

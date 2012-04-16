@@ -447,15 +447,15 @@ int X12RtcClearStatus(NUTRTC *rtc, uint32_t sflgs)
 }
 
 NUTRTC rtcX12x6 = {
-    .dcb           = NULL,               /*!< Driver control block */
-    .rtc_init      = X12Init,            /*!< Hardware initialization, rtc_init */
-    .rtc_gettime   = X12RtcGetClock,     /*!< Read date and time, rtc_gettime */
-    .rtc_settime   = X12RtcSetClock,     /*!< Set date and time, rtc_settime */
-    .rtc_getalarm  = X12RtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
-    .rtc_setalarm  = X12RtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
-    .rtc_getstatus = X12RtcGetStatus,    /*!< Read status flags, rtc_getstatus */
-    .rtc_clrstatus = X12RtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
-    .alarm         = NULL,               /*!< Handle for alarm event queue, not supported right now */
+  /*.dcb           = */ NULL,               /*!< Driver control block */
+  /*.rtc_init      = */ X12Init,            /*!< Hardware initialization, rtc_init */
+  /*.rtc_gettime   = */ X12RtcGetClock,     /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ X12RtcSetClock,     /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ X12RtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ X12RtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ X12RtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ X12RtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };
 
 

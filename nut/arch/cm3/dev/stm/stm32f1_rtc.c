@@ -143,13 +143,13 @@ int Stm32RtcInit(void)
 }
 
 NUTRTC rtcStm32 = {
-    .dcb           = NULL,               /*!< Driver control block */
-    .rtc_init      = Stm32RtcInit,       /*!< Hardware initializatiuon, rtc_init */
-    .rtc_gettime   = Stm32RtcGetClock,   /*!< Read date and time, rtc_gettime */
-    .rtc_settime   = Stm32RtcSetClock,   /*!< Set date and time, rtc_settime */
-    .rtc_getalarm  = NULL,               /*!< Read alarm date and time, rtc_getalarm */
-    .rtc_setalarm  = NULL,               /*!< Set alarm date and time, rtc_setalarm */
-    .rtc_getstatus = NULL,               /*!< Read status flags, rtc_getstatus */
-    .rtc_clrstatus = NULL                /*!< Clear status flags, rtc_clrstatus */
-    .alarm         = NULL,               /*!< Handle for alarm event queue, not supported right now */
+  /*.dcb           = */ NULL,               /*!< Driver control block */
+  /*.rtc_init      = */ Stm32RtcInit,       /*!< Hardware initializatiuon, rtc_init */
+  /*.rtc_gettime   = */ Stm32RtcGetClock,   /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ Stm32RtcSetClock,   /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ NULL,               /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ NULL,               /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ NULL,               /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ NULL                /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };

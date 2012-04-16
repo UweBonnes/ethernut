@@ -250,14 +250,14 @@ int DS1307Init(NUTRTC *rtc)
 }
 
 NUTRTC rtcDs1307 = {
-    .dcb           = NULL,               /*!< Driver control block */
-    .rtc_init      = DS1307Init,         /*!< Hardware initializatiuon, rtc_init */
-    .rtc_gettime   = DS1307RtcGetClock,  /*!< Read date and time, rtc_gettime */
-    .rtc_settime   = DS1307RtcSetClock,  /*!< Set date and time, rtc_settime */
-    .rtc_getalarm  = NULL,               /*!< Read alarm date and time, rtc_getalarm */
-    .rtc_setalarm  = NULL,               /*!< Set alarm date and time, rtc_setalarm */
-    .rtc_getstatus = NULL,               /*!< Read status flags, rtc_getstatus */
-    .rtc_clrstatus = NULL                /*!< Clear status flags, rtc_clrstatus */
-    .alarm         = NULL,               /*!< Handle for alarm event queue, not supported right now */
+  /*.dcb           = */ NULL,               /*!< Driver control block */
+  /*.rtc_init      = */ DS1307Init,         /*!< Hardware initializatiuon, rtc_init */
+  /*.rtc_gettime   = */ DS1307RtcGetClock,  /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ DS1307RtcSetClock,  /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ NULL,               /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ NULL,               /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ NULL,               /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ NULL                /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };
 
