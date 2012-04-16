@@ -123,7 +123,7 @@ FILE *init_uart(void)
 static char inbuf[128];
 
 int main(void)
-{   
+{
     char *cp;
     int i;
 

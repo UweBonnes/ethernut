@@ -301,7 +301,7 @@ static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
     shift = shift_mask & ch;
 
     index = ch >> (uint8_t)3;
-    
+
     /* NOTE:  This assumes that the esc bit field is little endian,
      * which it should have been switched to before being set. */
 

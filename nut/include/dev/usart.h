@@ -200,7 +200,7 @@ struct _RINGBUF {
      * Changed by the receiver interrupt.
      */
     size_t volatile rbf_blockcnt;
-    
+
     /*! \brief Address for block-read
      *
      * If bf_blockbytes is not zero, incoming bytes are stored here

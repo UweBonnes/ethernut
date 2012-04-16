@@ -113,7 +113,7 @@ void print_udp_icmp_error(uint32_t remote_ip, uint16_t remote_port, int error)
         case ENOPROTOOPT:
             printf("Destination protocol unreachable\r\n");
             break;
-        case ECONNREFUSED:  
+        case ECONNREFUSED:
             printf("Destination port unreachable / connection refused\r\n");
             break;
         case EMSGSIZE:

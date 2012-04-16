@@ -158,7 +158,7 @@ struct _NUTTHREADINFO {
     uint8_t *td_memory;          /*!< \brief Pointer to heap memory used for stack. */
     HANDLE td_timer;            /*!< \brief Event timer. */
     volatile HANDLE td_queue;   /*!< \brief Root entry of the waiting queue. */
-#ifdef __NUT_EMULATION__    
+#ifdef __NUT_EMULATION__
     pthread_t td_pthread;       /*!< \brief pthread for unix emulations. */
     void (*td_fn) (void *);     /*!< \brief thread function */
     void *td_arg;               /*!< \brief args given to NutCreateThread */
@@ -247,7 +247,7 @@ extern NUTTHREADINFO *runQueue;
 
 __BEGIN_DECLS
 /* Function prototypes. */
-#ifndef __NUT_EMULATION__   
+#ifndef __NUT_EMULATION__
 /*!
  * \private
  * \brief Initialize thread handling in the Linux emulation.

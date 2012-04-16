@@ -134,7 +134,7 @@ __attribute__ ((section (".text.fastcode"))) int AT91F_Flash_Write(unsigned int 
 
     // copy the new value
     for (i=0; i<AT91C_IFLASH_PAGE_SIZE; i+=4, Flash++, buff++) { *Flash=*buff; poll_UART(); }
-    
+
     // Write the write page command
     ptMC->MC_FCR = AT91C_MC_CORRECT_KEY | AT91C_MC_FCMD_START_PROG | (AT91C_MC_PAGEN & (page <<8)) ;
 
@@ -231,7 +231,7 @@ int main (void) {
     int index,pkt_count,waitloop;       // Buffer pointer
     unsigned char xmodem_pktid;         // Next packet ID to receive (begin with 1)
     AT91PS_PMC pPMC;
-    
+
     /* BOARD INIT (SWITCH CLOCK TO 48 MHZ) */
     //{{{  Start main clock oscillator at 18.432 MHz
 
@@ -250,7 +250,7 @@ int main (void) {
     /* Set flash wait sate FWS and FMCN at 72(1.5uS) for 48Mhz operation */
     AT91C_BASE_MC->MC_FMR = (72 << 16) | AT91C_MC_FWS_1FWS;
 //}}}
-    
+
     //{{{  Configure PLL for 48Mhz operation
 
     /* Set the PLL and Divider:
@@ -310,7 +310,7 @@ int main (void) {
     ((AT91PS_USART)BOOTLOADER_UART_BASE)->US_CR = AT91C_US_RXEN | AT91C_US_TXEN;
        //}}}
 
-    
+
     /* Check for bootloader key */
     wait(200000);
     puts_UART("\r\nXLoader 7.0");
@@ -321,7 +321,7 @@ int main (void) {
         goto StartCode;
     } else {
         puts_UART(" - x/ymodem 1k/CRC\r\n");
-    }   
+    }
 
     /* Init xmodem variable */
     index = 0;
@@ -365,9 +365,9 @@ int main (void) {
         c = getc_UART();
 
         /* FIRST CARACTER: CHECK PACKET TYPE */
-        if(index==0) {          
+        if(index==0) {
             if(c==EOT) {                                    // End of transfer
-                
+
                 /* DO NOT FLUSH FLASH BUFFER ON 2ND YMODEM SEQUENCE */
                 if(ymodem<2 && page_index!=0) {
                     if(AT91F_Flash_Write(page, page_buffer)==0) error(0);

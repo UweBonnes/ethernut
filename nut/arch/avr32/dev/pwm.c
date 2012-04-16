@@ -54,8 +54,8 @@ static unsigned short FindClockConfiguration(unsigned int frequency, unsigned in
 {
     unsigned char divisor = 0;
     unsigned int prescaler;
-    
-    
+
+
     NUTASSERT(frequency < mck);
 
     // Find prescaler and divisor values

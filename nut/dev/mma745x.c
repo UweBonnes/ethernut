@@ -251,7 +251,7 @@ int Mma745xInit( uint_fast8_t selftest, mmaInit_t *init)
     if (mmaForce==NULL)
         return -1;
 
-    /* Configure INT1/DRDY and INT2 lines from chip */  
+    /* Configure INT1/DRDY and INT2 lines from chip */
 #if defined(MMA745X_IRQ1_PORT) && defined(MMA745X_IRQ1_PIN)
     GpioPinConfigSet(MMA745X_IRQ1_PORT, MMA745X_IRQ1_PIN, GPIO_CFG_PULLUP);
 #endif

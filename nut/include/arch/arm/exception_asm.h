@@ -81,7 +81,7 @@
     /* one fallacy - we always assume
      * sysmode SP is not messed up
      */
-    
+
     /* make room for PTRACE frame */
     sub sp,sp,#(PTRACE_FRAME_size*4)
 
@@ -90,7 +90,7 @@
 
     /* save the return value here */
     str r0,[sp,#(PTRACE_R0_retval_idx*4)]
-    
+
     /* Need to go back to old mode and pickup things
      * When we get there, we will need the sys stack
      */
@@ -128,7 +128,7 @@
 
     /* go to the offending mode */
     msr cpsr_c,#((\whatmode) | ARM_CPSR_F_BIT | ARM_CPSR_I_BIT)
-    
+
     mov lr,r0
     msr spsr,r1
 

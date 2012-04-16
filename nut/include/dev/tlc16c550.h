@@ -138,7 +138,7 @@
 #endif
 #ifdef ACE_HDX_USE_DTR
     #define ACE_HDX_LINE MCR_DTR_MSK
-#endif  
+#endif
 #ifdef ACE_HDX_LINE
     #ifdef ACE_HDX_LINE_FLIP
         #define ACE_HDX_RECEIVE(base) *(uint8_t *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
@@ -197,11 +197,11 @@ struct _ACEDCB {
     uint8_t dcb_wfifo;
 #ifdef ACE_HDX_LINE
     /*! \brief One byte time delay after which HDX pin will be off, in OCR register format.
-     */ 
+     */
     unsigned int hdxByteTime;
-    
+
     /*! \brief OCR register value at which HDX pin will be off, 0 if not used.
-     */ 
+     */
     unsigned int hdxOcrTime;
 #endif
 };
