@@ -47,11 +47,10 @@
 
 #include <dev/phy.h>
 
-
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
-#define PHPRINTF(args,...) printf(args,##__VA_ARGS__)
+#define PHPRINTF(args,...) printf(args,##__VA_ARGS__); fflush(stdout);
 #else
 #define PHPRINTF(args,...)
 #endif
@@ -137,15 +136,16 @@ typedef struct {
 
 phy_status_descr_t phy_status_descr[] = {
     /* Davicom DM9000 derivates */
-    { DM9000,    { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
-    { DM9000A,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
-    { DM9000B,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
+    { DM9000,    { {17, 0x3000}, {17, 0xC000}, {0, 0}, {17, 0xA000}, {0, 0} } },
+    { DM9000A,   { {17, 0x3000}, {17, 0xC000}, {0, 0}, {17, 0xA000}, {0, 0} } },
+    { DM9000B,   { {17, 0x3000}, {17, 0xC000}, {0, 0}, {17, 0xA000}, {0, 0} } },
 
     /* Davicom DM9161 derivates */
-    { DM9161,    { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
-    { DM9161A,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
-    { DM9161B,   { {17, 0x3000}, {31, 0xC000}, {0, 0}, {31, 0xA000}, {0, 0} } },
-
+    { DM9161,    { {17, 0x3000}, {17, 0xC000}, {0, 0}, {17, 0xA000}, {0, 0} } },
+/*  DM9161A is the same as DM9000A and DM9161B is the same as DM9000B
+    { DM9161A,   { {17, 0x3000}, {17, 0xC000}, {0, 0}, {17, 0xA000}, {0, 0} } },
+    { DM9161B,   { {17, 0x3000}, {17, 0xC000}, {0, 0}, {17, 0xA000}, {0, 0} } },
+*/
     /* SMSC LAN8700 derivates */
     { LAN8700,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
     { LAN8700r4, { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
@@ -210,10 +210,11 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
             break;
 
         case PHY_CTL_LOOPBACK:
-            if (p16)
+            if (p16) {
                 bmcr |= PHY_BMCR_LOOP;
-            else
+            } else {
                 bmcr &= ~PHY_BMCR_LOOP;
+            }
             phyw( PHY_BMCR, bmcr);
             break;
 
@@ -221,50 +222,53 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
             if (p16 == 100) {
                 bmcr |= PHY_BMCR_SPEED;
                 phyw( PHY_BMCR, bmcr);
-            }
-            else if (p16==10) {
+            } else
+            if (p16==10) {
                 bmcr &= ~PHY_BMCR_SPEED;
                 phyw( PHY_BMCR, bmcr);
-            }
-            else {
+            } else {
                 rc = -1;
             }
             break;
 
         case PHY_CTL_AUTONEG:
-            if( p16)
+            if (p16) {
                 bmcr |= PHY_BMCR_ANEG;
-            else
+            } else {
                 bmcr &= ~PHY_BMCR_ANEG;
+            }
             phyw( PHY_BMCR, bmcr);
             break;
 
         case PHY_CTL_POWERDOWN:
-            if( p16)
+            if (p16) {
                 bmcr |= PHY_BMCR_PDWN;
-            else
+            } else {
                 bmcr &= ~PHY_BMCR_PDWN;
+            }
             phyw( PHY_BMCR, bmcr);
             break;
 
         case PHY_CTL_ISOLATE:
-            if( p16)
+            if (p16) {
                 bmcr |= PHY_BMCR_ISO;
-            else
+            } else {
                 bmcr &= ~PHY_BMCR_ISO;
+            }
             phyw( PHY_BMCR, bmcr);
             break;
 
         case PHY_CTL_DUPLEX:
-            if( p16)
+            if (p16) {
                 bmcr |= PHY_BMCR_DUPX;
-            else
+            } else {
                 bmcr &= ~PHY_BMCR_DUPX;
+            }
             phyw( PHY_BMCR, bmcr);
             break;
 
         case PHY_CTL_AUTONEG_RE:
-            if( p16) {
+            if (p16) {
                 bmcr |= PHY_BMCR_ANST;
                 phyw (PHY_BMCR, bmcr);
             }
@@ -277,17 +281,19 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
         case PHY_GET_STATUS:
             bmsr = phyr(PHY_BMSR);
             /* only return a value different to zero if link is true */
-            if(bmsr & PHY_BMSR_LNK) {
+            if (bmsr & PHY_BMSR_LNK) {
                 int count, length;
 
                 *par =  PHY_STATUS_HAS_LINK |
                         ((bmsr & PHY_BMSR_ANEG) ? PHY_STATUS_AUTONEG_OK : 0);
+
                 length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
                 for(count=0; count<length; count++) {
                     if(phy_status_descr[count].phy_oui == phydcb->oui) {
                         break;
                     }
                 }
+
                 if(count<length) {
                     uint16_t tempreg;
 
@@ -312,7 +318,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
                     }
                 }
                 else {
-                    *par |= PHY_STATUS_CON_UNKNWN;
+                    *par |= PHY_STATUS_CON_UNKNOWN;
                 }
             }
             else {
@@ -392,7 +398,9 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
 
     if (phydcb != NULL)
     {
-        NutHeapFree(phydcb);
+        /* Phy is just registered */
+        return -1;
+        //NutHeapFree(phydcb);
     }
     phydcb = NutHeapAlloc( sizeof(PHYDCB));
     if (phydcb == NULL) {
