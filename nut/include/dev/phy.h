@@ -54,7 +54,7 @@
 
 /* DAVICOM PHY tranceiver */
 #define DM9161      0x0181B880  /* nn. */
-#define DM9161A     0x0181B8A0  /* ATMEL EK */
+#define DM9161A     0x0181B8A0  /* ATMEL EK, eNet-sam7X */
 #define DM9161B     0x0181B8B0  /* nn. */
 /* DAVICOM EMAC-PHY combinations */
 #define DM9000      0x0181B8C0  /* EIR */
@@ -88,13 +88,13 @@
 
 #include <cfg/phycfg.h>
 
-#define PHY_STATUS_HAS_LINK   0x00000001
-#define PHY_STATUS_10M        0x00000002
-#define PHY_STATUS_100M       0x00000004
-#define PHY_STATUS_1000M      0x00000008
-#define PHY_STATUS_FULLDUPLEX 0x00000010
-#define PHY_STATUS_AUTONEG_OK 0x00000020
-#define PHY_STATUS_CON_UNKNWN 0x00000040
+#define PHY_STATUS_HAS_LINK     0x00000001
+#define PHY_STATUS_10M          0x00000002
+#define PHY_STATUS_100M         0x00000004
+#define PHY_STATUS_1000M        0x00000008
+#define PHY_STATUS_FULLDUPLEX   0x00000010
+#define PHY_STATUS_AUTONEG_OK   0x00000020
+#define PHY_STATUS_CON_UNKNOWN  0x00000040
 
 /* PHY ioctl() Control Tokens */    /* Accepted Values */
 #define PHY_CTL_RESET       0x0001  /* 1: Activate reset, wait for completion */
