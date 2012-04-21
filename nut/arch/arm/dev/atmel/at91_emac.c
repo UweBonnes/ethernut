@@ -116,6 +116,8 @@
 #include <dev/at91_emac.h>
 #include <dev/phy.h>
 
+#include <stdio.h>
+
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -141,7 +143,7 @@
 #endif
 
 #ifndef EMAC_LINK_LOOPS
-#define EMAC_LINK_LOOPS         1000000
+#define EMAC_LINK_LOOPS         1000
 #endif
 
 
@@ -387,6 +389,7 @@ static unsigned int rxBufIdx;
  *
  * \return Contents of the specified register.
  */
+
 static uint16_t phy_inw(uint8_t reg)
 {
     /* PHY read command. */
@@ -421,6 +424,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
  *
  * \return 0 on success, -1 otherwise.
  */
+
 static int EmacReset(uint32_t tmo)
 {
     int rc = 0;
@@ -485,8 +489,10 @@ static int EmacReset(uint32_t tmo)
     NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
 
     /* Wait for auto negotiation completed and link established. */
-    for (link_wait = 25;; link_wait--) {
+    for (link_wait = tmo;; link_wait--) {
+        phyval = 0;
         NutPhyCtl(PHY_GET_STATUS, &phyval);
+
         if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
             /* Check link state and configure EMAC accordingly */
             reg_ncfgr = inr(EMAC_NCFGR);
@@ -512,12 +518,11 @@ static int EmacReset(uint32_t tmo)
             outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
             return -1;
         }
-        NutSleep(200);
+        NutSleep(10);
     }
 
     /* Disable management port. */
     outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-
 
     EMPRINTF("EmacReset() DONE\n");
 
@@ -709,7 +714,7 @@ static int EmacStart(CONST uint8_t * mac)
 {
     unsigned int i;
 
-    EMPRINTF("EmacStart( %s)\n", inet_ntoa(*mac));
+    EMPRINTF("EmacStart(%02x:%02x:%02x:%02x:%02x:%02x)\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5] );
 
     /* Set local MAC address. */
     outr(EMAC_SA1L, (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
@@ -908,7 +913,6 @@ int EmacInit(NUTDEVICE * dev)
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     EMPRINTF("EmacInit()\n");
-
     /* Reset the controller. */
     if (EmacReset(EMAC_LINK_LOOPS)) {
         if (EmacReset(EMAC_LINK_LOOPS)) {
