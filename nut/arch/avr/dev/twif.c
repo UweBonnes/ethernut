@@ -1014,7 +1014,11 @@ int NutDestroyTwiBus( NUTTWIBUS *bus)
  */
 NUTTWIBUS TwBbifBus = {
   /*.bus_base =   */  0,                   /* Bus base address. */
-  /*.bus_sig_ev = */ &sig_2WIRE_SERIAL,    /* Bus data and event interrupt handler. */
+#ifndef __AVR_ENHANCED__
+  /*.bus_sig_ev = */  NULL,                /* Bus data and event interrupt handler. */
+#else
+  /*.bus_sig_ev = */ &sig_2WIRE_SERIAL,    /* Bus data and event interrupt handler. */    
+#endif    
   /*.bus_sig_er = */  NULL,                /* Bus error interrupt handler. */
   /*.bus_mutex =  */  NULL,                /* Bus lock queue. */
   /*.bus_icb   =  */  NULL,                /* Bus Runtime Data Pointer */
