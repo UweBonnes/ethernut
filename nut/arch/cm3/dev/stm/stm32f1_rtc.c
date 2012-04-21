@@ -150,6 +150,6 @@ NUTRTC rtcStm32 = {
   /*.rtc_getalarm  = */ NULL,               /*!< Read alarm date and time, rtc_getalarm */
   /*.rtc_setalarm  = */ NULL,               /*!< Set alarm date and time, rtc_setalarm */
   /*.rtc_getstatus = */ NULL,               /*!< Read status flags, rtc_getstatus */
-  /*.rtc_clrstatus = */ NULL                /*!< Clear status flags, rtc_clrstatus */
+  /*.rtc_clrstatus = */ NULL,               /*!< Clear status flags, rtc_clrstatus */
   /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };
