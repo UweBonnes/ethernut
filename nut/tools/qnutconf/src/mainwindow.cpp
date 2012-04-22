@@ -218,7 +218,7 @@ void MainWindow::on_findNext_triggered(const QString &text)
 	if (m_findText != text || m_foundItems.isEmpty()) {
 		QApplication::setOverrideCursor(Qt::WaitCursor);
 
-		m_foundItems = model->match(model->index(0, 0), NutComponentModel::FullSearch, QVariant::fromValue(text), -1, 
+		m_foundItems = proxyModel->match(proxyModel->index(0, 0), NutComponentModel::FullSearch, QVariant::fromValue(text), -1, 
 			Qt::MatchFixedString | Qt::MatchContains | Qt::MatchRecursive | Qt::MatchWrap);
 
 		QApplication::restoreOverrideCursor();

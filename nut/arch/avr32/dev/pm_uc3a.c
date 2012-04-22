@@ -65,7 +65,7 @@
  *
  */
 
-
+#include <inttypes.h>
 #include <avr32/io.h>
 #include <arch/avr32/pm.h>
 
