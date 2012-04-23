@@ -76,6 +76,7 @@ nutarch_cm3_lpc177x_8x=
                     "HW_CRC32_LPC17xx",
                     "DEV_IRQ_LPC17xx",
                     "HW_WDT_LPC17xx",
+                    "HW_GPDMA_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }

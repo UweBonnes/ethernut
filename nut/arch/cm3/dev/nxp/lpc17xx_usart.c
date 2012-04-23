@@ -64,11 +64,7 @@
 #include <arch/cm3/nxp/lpc17xx_usart.h>
 
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
-#if defined(MCU_LPC176x)
-#include <arch/cm3/nxp/lpc176x_dma.h>
-#elif defined(MCU_LPC177x_8x)
-#include <arch/cm3/nxp/lpc177x_8x_dma.h>
-#endif
+#include <arch/cm3/nxp/lpc17xx_gpdma.h>
 #endif
 
 /*!

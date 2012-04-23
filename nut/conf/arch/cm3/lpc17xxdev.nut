@@ -61,5 +61,15 @@ nutarch_cm3_lpc17xx_devices =
         requires = { "HW_FLASH_LPC17xx" },
         sources = { "cm3/dev/nxp/lpc17xx_iap.c" }
     },
+    --
+    -- LPC17xx General purpose DMA Controller
+    --
+    {
+        name = "nutarch_cm3_lpc17xx_gpdma",
+        brief = "LPC17xx General purpose DMA Controller API",
+        description = "Routines for setup and programming LPC17x series GPDMA controller.\n",
+        requires = { "HW_GPDMA_LPC17xx" },
+        sources = { "cm3/dev/nxp/lpc17xx_gpdma.c" }
+    },
 }
 
