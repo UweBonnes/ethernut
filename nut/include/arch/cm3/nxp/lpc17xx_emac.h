@@ -1,5 +1,5 @@
-#ifndef _LPC17XX_8X_EMAC_H_
-#define _LPC17XX_8X_EMAC_H_
+#ifndef _LPC17XX_EMAC_H_
+#define _LPC17XX_EMAC_H_
 
 /*
  * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
@@ -523,4 +523,4 @@
 #define EMAC_TINFO_NO_DESCR       0x40000000  /* No new Descriptor available        */
 #define EMAC_TINFO_ERR            0x80000000  /* Error Occured (OR of all errors)   */
 
-#endif /* _LPC17XX_8X_EMAC_H_ */
+#endif /* _LPC17XX_EMAC_H_ */
