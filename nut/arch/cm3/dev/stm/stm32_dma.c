@@ -14,16 +14,16 @@ HANDLE* dma2_args[5];
 IRQn_Type DMA_IRQn[12]={
   DMA1_Channel1_IRQn          ,
   DMA1_Channel2_IRQn          ,
-  DMA1_Channel3_IRQn          ,     
+  DMA1_Channel3_IRQn          ,
   DMA1_Channel4_IRQn          ,
   DMA1_Channel5_IRQn          ,
-  DMA1_Channel6_IRQn          ,     
-  DMA1_Channel7_IRQn          ,     
-  DMA2_Channel1_IRQn          ,     
-  DMA2_Channel2_IRQn          ,     
-  DMA2_Channel3_IRQn          ,     
-  DMA2_Channel4_IRQn          ,     
-  DMA2_Channel5_IRQn 
+  DMA1_Channel6_IRQn          ,
+  DMA1_Channel7_IRQn          ,
+  DMA2_Channel1_IRQn          ,
+  DMA2_Channel2_IRQn          ,
+  DMA2_Channel3_IRQn          ,
+  DMA2_Channel4_IRQn          ,
+  DMA2_Channel5_IRQn
 };
 
 //Setup function for DMA transfer

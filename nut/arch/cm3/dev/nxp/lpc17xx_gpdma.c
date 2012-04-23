@@ -40,7 +40,7 @@
  * version  1.0
  * date     02. June. 2011
  * author   NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -247,11 +247,11 @@ void Lpc17xxGPDMA_Init(void)
 /*!
  * \brief Setup GPDMA channel
  *
- * Setup GPDMA channel peripheral according to the specified 
+ * Setup GPDMA channel peripheral according to the specified
  * parameters in the ch_config.
  *
- * \param  ch_config    Pointer to a gpdma_channel_cfg_t structure that 
- *                      contains the configuration information for the specified 
+ * \param  ch_config    Pointer to a gpdma_channel_cfg_t structure that
+ *                      contains the configuration information for the specified
  *                      GPDMA channel peripheral.
  *
  * \return 0 on success, -1 in case of an error
@@ -297,7 +297,7 @@ int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
                                 GPDMA_DMACCxControl_DI |
                                 GPDMA_DMACCxControl_I;
             break;
-            
+
         /* Memory to peripheral */
         case GPDMA_TRANSFERTYPE_M2P:
         case GPDMA_TRANSFERTYPE_M2P_DEST_CTRL:
@@ -313,7 +313,7 @@ int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
                                 GPDMA_DMACCxControl_SI |
                                 GPDMA_DMACCxControl_I;
             break;
-            
+
         /* Peripheral to memory */
         case GPDMA_TRANSFERTYPE_P2M:
         case GPDMA_TRANSFERTYPE_P2M_SRC_CTRL:
@@ -326,10 +326,10 @@ int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
                                 GPDMA_DMACCxControl_DBSize((uint32_t)GPDMA_LUTPerBurst[ch_config->src_conn]) |
                                 GPDMA_DMACCxControl_SWidth((uint32_t)GPDMA_LUTPerWid[ch_config->src_conn]) |
                                 GPDMA_DMACCxControl_DWidth((uint32_t)GPDMA_LUTPerWid[ch_config->src_conn]) |
-                                GPDMA_DMACCxControl_DI | 
+                                GPDMA_DMACCxControl_DI |
                                 GPDMA_DMACCxControl_I;
             break;
-            
+
         /* Peripheral to peripheral */
         case GPDMA_TRANSFERTYPE_P2P:
             /* Assign peripheral source address */
@@ -343,7 +343,7 @@ int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
                                 GPDMA_DMACCxControl_DWidth((uint32_t)GPDMA_LUTPerWid[ch_config->dst_conn]) |
                                 GPDMA_DMACCxControl_I;
             break;
-            
+
         /* Unsupported transfer type, return an error */
         default:
             return -1;
@@ -378,7 +378,7 @@ int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
     tmp2 = ((tmp2 > 15) ? (tmp2 - 16) : tmp2);
 
     /* Configure DMA Channel, enable Error Counter and Terminate counter */
-    pDMAch->CConfig = GPDMA_DMACCxConfig_IE | GPDMA_DMACCxConfig_ITC | /* GPDMA_DMACCxConfig_E |*/ 
+    pDMAch->CConfig = GPDMA_DMACCxConfig_IE | GPDMA_DMACCxConfig_ITC | /* GPDMA_DMACCxConfig_E |*/
                       GPDMA_DMACCxConfig_TransferType((uint32_t)ch_config->transfer_type) |
                       GPDMA_DMACCxConfig_SrcPeripheral(tmp1) |
                       GPDMA_DMACCxConfig_DestPeripheral(tmp2);
@@ -390,7 +390,7 @@ int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
 /*!
  * \brief Enable/Disable DMA channel
  *
- * Setup GPDMA channel peripheral according to the specified 
+ * Setup GPDMA channel peripheral according to the specified
  * parameters in the ch_config.
  *
  * \param  ch        GPDMA channel, should be in range from 0 to 7
@@ -437,42 +437,42 @@ int  Lpc17xxGPDMA_IntGetStatus(gpdma_status_t type, uint8_t ch)
 {
     switch (type) {
         /* check status of DMA channel interrupts */
-        case GPDMA_STAT_INT:    
+        case GPDMA_STAT_INT:
             if (LPC_GPDMA->IntStat & (GPDMA_DMACIntStat_Ch(ch))) {
                 return 1;
             }
             return 0;
 
         /* check terminal count interrupt request status for DMA */
-        case GPDMA_STAT_INTTC:  
+        case GPDMA_STAT_INTTC:
             if (LPC_GPDMA->IntTCStat & GPDMA_DMACIntTCStat_Ch(ch)) {
                 return 1;
             }
             return 0;
 
         /* check interrupt status for DMA channels */
-        case GPDMA_STAT_INTERR: 
+        case GPDMA_STAT_INTERR:
             if (LPC_GPDMA->IntErrStat & GPDMA_DMACIntTCClear_Ch(ch)) {
                 return 1;
             }
             return 0;
-        
+
         /* check status of the terminal count interrupt for DMA channels */
-        case GPDMA_STAT_RAWINTTC:   
+        case GPDMA_STAT_RAWINTTC:
             if (LPC_GPDMA->RawIntErrStat & GPDMA_DMACRawIntTCStat_Ch(ch)) {
                 return 1;
             }
             return 0;
 
         /* check status of the error interrupt for DMA channels */
-        case GPDMA_STAT_RAWINTERR: 
+        case GPDMA_STAT_RAWINTERR:
             if (LPC_GPDMA->RawIntTCStat & GPDMA_DMACRawIntErrStat_Ch(ch)) {
                 return 1;
             }
             return 0;
 
         /* check enable status for DMA channels */
-        default: 
+        default:
             if (LPC_GPDMA->EnbldChns & GPDMA_DMACEnbldChns_Ch(ch)) {
                 return 1;
             }

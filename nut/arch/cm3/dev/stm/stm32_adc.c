@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by EmbeddedIT, 
+ * Copyright (C) 2001-2005 by EmbeddedIT,
  * Ole Reinhardt <ole.reinhardt@embedded-it.de> All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -19,12 +19,12 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EMBEDDED IT
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
@@ -120,10 +120,10 @@ static inline int ADCBufWrite(uint16_t channel, uint16_t write)
  * \param mode  Mode to set
  */
 
-void ADCSetMode(TADCMode mode) 
+void ADCSetMode(TADCMode mode)
 {
     unsigned int regval;
-    
+
     regval = inr(ADC_MR);
     regval &= ~ADC_SLEEP;
     switch (mode) {
@@ -137,7 +137,7 @@ void ADCSetMode(TADCMode mode)
         case FREE_RUNNING_T0:
             regval &= ~ADC_TRGSEL;
             regval |= ADC_TRGEN | ADC_TRGSEL_TIOA0;
-            break;     
+            break;
         case FREE_RUNNING_T1:
             regval &= ~ADC_TRGSEL;
             regval |= ADC_TRGEN | ADC_TRGSEL_TIOA1;
@@ -160,7 +160,7 @@ void ADCSetMode(TADCMode mode)
  * \param channel  Specifies the channel to enable
  */
 
-void ADCEnableChannel(TADCChannel channel) 
+void ADCEnableChannel(TADCChannel channel)
 {
     outr(ADC_CHER, _BV(channel));
     outr(ADC_IER,  _BV(channel));
@@ -172,7 +172,7 @@ void ADCEnableChannel(TADCChannel channel)
  * \param channel  Specifies the channel to disable
  */
 
-void ADCDisableChannel(TADCChannel channel) 
+void ADCDisableChannel(TADCChannel channel)
 {
     outr(ADC_CHER, _BV(channel));
     outr(ADC_IDR,  _BV(channel));
@@ -189,7 +189,7 @@ void ADCSetPrescale(unsigned int prescale)
     if (prescale > 128) prescale = 128;
 
     prescale = (prescale / 2) - 1;
-    outr(ADC_MR, ((inr(ADC_MR) & ~(ADC_PRESCAL | ADC_STARTUP | ADC_SHTIM)) | 
+    outr(ADC_MR, ((inr(ADC_MR) & ~(ADC_PRESCAL | ADC_STARTUP | ADC_SHTIM)) |
                 (prescale << ADC_PRESCAL_LSB) | ADC_STARTUP | ADC_SHTIM));     // set maximum sample & hold and startup time
 }
 
@@ -209,8 +209,8 @@ void ADCStartConversion(void)
 
 static void ADCInterrupt(void *arg)
 {
-    register unsigned int adcsr = inr(ADC_SR);   
-    uint16_t ADC_Value;        
+    register unsigned int adcsr = inr(ADC_SR);
+    uint16_t ADC_Value;
     uint16_t channel;
 
     for (channel = 0; channel < ADC_MAX_CHANNEL; channel ++) {
@@ -230,7 +230,7 @@ static void ADCInterrupt(void *arg)
 void ADCInit(void)
 {
     int channel;
-    
+
     /* Only init once */
     if (ADC_Buffer) return;
 
@@ -242,7 +242,7 @@ void ADCInit(void)
 	    	
     outr(ADC_CR, ADC_SWRST);                  // Reset bus
     outr(ADC_CR, 0x00);
-    
+
     /* Basic configuration: Disable all channels and set mode and prescaler */
     outr(ADC_CHDR, ADC_CH0 | ADC_CH1 | ADC_CH2 | ADC_CH3 | ADC_CH4 | ADC_CH5 | ADC_CH6 | ADC_CH7);
     ADCSetMode(STM32_ADC_INITIAL_MODE);
@@ -253,7 +253,7 @@ void ADCInit(void)
     for (channel = 0; channel < ADC_MAX_CHANNEL; channel ++) {
         ADC_Buffer[channel] = NutHeapAlloc(sizeof(uint16_t) * STM32_ADC_BUF_SIZE + 2);
         ADC_Buffer[channel][_adc_buf_head] = 0;
-        ADC_Buffer[channel][_adc_buf_tail] = 0;        
+        ADC_Buffer[channel][_adc_buf_tail] = 0;
     }
 
     if (NutRegisterIrqHandler(&sig_ADC, ADCInterrupt, NULL)) {

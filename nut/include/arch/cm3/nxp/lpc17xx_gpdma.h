@@ -43,7 +43,7 @@
  * version  1.0
  * date     02. June. 2011
  * author   NXP MCU SW Application Team
- * 
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -360,24 +360,24 @@ typedef struct {
                                Note: DMA channel 0 has the highest priority
                                and DMA channel 7 the lowest priority.
                              */
-    
+
     uint32_t transfer_size; /* Length/Size of transfer */
-    
+
     uint32_t transfer_width;/* Transfer width - used for TransferType is GPDMA_TRANSFERTYPE_M2M only */
-    
+
     uint32_t src_addr;      /* Physical Source Address, used in case TransferType is chosen as
                                GPDMA_TRANSFERTYPE_M2M or GPDMA_TRANSFERTYPE_M2P */
-    
+
     uint32_t dst_addr;      /* Physical Destination Address, used in case TransferType is chosen as
                                GPDMA_TRANSFERTYPE_M2M or GPDMA_TRANSFERTYPE_P2M */
-    
+
     uint32_t transfer_type; /* Transfer Type, should be one of the following:
                                - GPDMA_TRANSFERTYPE_M2M: Memory to memory - DMA control
                                - GPDMA_TRANSFERTYPE_M2P: Memory to peripheral - DMA control
                                - GPDMA_TRANSFERTYPE_P2M: Peripheral to memory - DMA control
                                - GPDMA_TRANSFERTYPE_P2P: Source peripheral to destination peripheral - DMA control
                              */
-    
+
     uint32_t src_conn;      /* Peripheral Source Connection type, used in case TransferType is chosen as
                                GPDMA_TRANSFERTYPE_P2M or GPDMA_TRANSFERTYPE_P2P, should be one of
                                following:
@@ -398,7 +398,7 @@ typedef struct {
                                - GPDMA_CONN_UART3_Tx_MAT3_0: UART3 Tx / MAT3.0
                                - GPDMA_CONN_UART3_Rx_MAT3_1: UART3 Rx / MAT3.1
                              */
-    
+
     uint32_t dst_conn;      /* Peripheral Destination Connection type, used in case TransferType is chosen as
                                GPDMA_TRANSFERTYPE_M2P or GPDMA_TRANSFERTYPE_P2P, should be one of
                                following:
@@ -419,7 +419,7 @@ typedef struct {
                                - GPDMA_CONN_UART3_Tx_MAT3_0: UART3 Tx / MAT3.0
                                - GPDMA_CONN_UART3_Rx_MAT3_1: UART3 Rx / MAT3.1
                              */
-    
+
     uint32_t dma_lli;       /* Linker list item structure data address
                                if there's no linker list, set as '0'
                              */

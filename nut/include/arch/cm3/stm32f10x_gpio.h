@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V3.1.2
   * @date    09/28/2009
-  * @brief   This file contains all the functions prototypes for the GPIO 
+  * @brief   This file contains all the functions prototypes for the GPIO
   *          firmware library.
   ******************************************************************************
   * @copy
@@ -17,7 +17,7 @@
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F10x_GPIO_H
@@ -27,9 +27,9 @@
 #include "stm32f10x.h"
 
 typedef enum
-{ 
+{
   GPIO_Speed_10MHz = 1,
-  GPIO_Speed_2MHz, 
+  GPIO_Speed_2MHz,
   GPIO_Speed_50MHz
 }GPIOSpeed_TypeDef;
 
@@ -57,8 +57,8 @@ typedef struct
 }GPIO_InitTypeDef;
 
 
-/** 
-  * @brief  Bit_SET and Bit_RESET enumeration  
+/**
+  * @brief  Bit_SET and Bit_RESET enumeration
   */
 
 typedef enum
@@ -90,7 +90,7 @@ typedef enum
   * @}
   */
 
-/** @defgroup GPIO_Remap_define 
+/** @defgroup GPIO_Remap_define
   * @{
   */
 
@@ -125,9 +125,9 @@ typedef enum
 #define GPIO_Remap_TIM2ITR1_PTP_SOF ((uint32_t)0x00202000)  /*!< Ethernet PTP output or USB OTG SOF (Start of Frame) connected
                                                                  to TIM2 Internal Trigger 1 for calibration
                                                                  (only for Connectivity line devices) */
-#define GPIO_Remap_PTP_PPS          ((uint32_t)0x00204000)  /*!< Ethernet MAC PPS_PTS output on PB05 (only for Connectivity line devices) */                                                       
+#define GPIO_Remap_PTP_PPS          ((uint32_t)0x00204000)  /*!< Ethernet MAC PPS_PTS output on PB05 (only for Connectivity line devices) */
 
-/** @defgroup GPIO_Port_Sources 
+/** @defgroup GPIO_Port_Sources
   * @{
   */
 
@@ -143,7 +143,7 @@ typedef enum
   * @}
   */
 
-/** @defgroup GPIO_Pin_sources 
+/** @defgroup GPIO_Pin_sources
   * @{
   */
 
@@ -164,11 +164,11 @@ typedef enum
 #define GPIO_PinSource14           ((uint8_t)0x0E)
 #define GPIO_PinSource15           ((uint8_t)0x0F)
 
-/** @defgroup Ethernet_Media_Interface 
+/** @defgroup Ethernet_Media_Interface
   * @{
-  */ 
-#define GPIO_ETH_MediaInterface_MII    ((uint32_t)0x00000000) 
-#define GPIO_ETH_MediaInterface_RMII   ((uint32_t)0x00000001)                                       
+  */
+#define GPIO_ETH_MediaInterface_MII    ((uint32_t)0x00000000)
+#define GPIO_ETH_MediaInterface_RMII   ((uint32_t)0x00000001)
 
 #define IS_GPIO_ETH_MEDIA_INTERFACE(INTERFACE) (((INTERFACE) == GPIO_ETH_MediaInterface_MII) || \
                                                 ((INTERFACE) == GPIO_ETH_MediaInterface_RMII))

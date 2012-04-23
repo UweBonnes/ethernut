@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V3.1.2
   * @date    09/28/2009
-  * @brief   This file contains all the functions prototypes for the DMA firmware 
+  * @brief   This file contains all the functions prototypes for the DMA firmware
   *          library.
   ******************************************************************************
   * @copy
@@ -17,7 +17,7 @@
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F10x_DMA_H
@@ -40,7 +40,7 @@
   * @{
   */
 
-/** @defgroup DMA_data_transfer_direction 
+/** @defgroup DMA_data_transfer_direction
   * @{
   */
 
@@ -50,7 +50,7 @@
   * @}
   */
 
-/** @defgroup DMA_peripheral_incremented_mode 
+/** @defgroup DMA_peripheral_incremented_mode
   * @{
   */
 
@@ -60,7 +60,7 @@
   * @}
   */
 
-/** @defgroup DMA_memory_incremented_mode 
+/** @defgroup DMA_memory_incremented_mode
   * @{
   */
 
@@ -70,7 +70,7 @@
   * @}
   */
 
-/** @defgroup DMA_peripheral_data_size 
+/** @defgroup DMA_peripheral_data_size
   * @{
   */
 
@@ -81,7 +81,7 @@
   * @}
   */
 
-/** @defgroup DMA_memory_data_size 
+/** @defgroup DMA_memory_data_size
   * @{
   */
 
@@ -92,7 +92,7 @@
   * @}
   */
 
-/** @defgroup DMA_circular_normal_mode 
+/** @defgroup DMA_circular_normal_mode
   * @{
   */
 
@@ -102,7 +102,7 @@
   * @}
   */
 
-/** @defgroup DMA_priority_level 
+/** @defgroup DMA_priority_level
   * @{
   */
 
@@ -114,7 +114,7 @@
   * @}
   */
 
-/** @defgroup DMA_memory_to_memory 
+/** @defgroup DMA_memory_to_memory
   * @{
   */
 
@@ -127,7 +127,7 @@
   * @}
   */
 
-/** @defgroup DMA_interrupts_definition 
+/** @defgroup DMA_interrupts_definition
   * @{
   */
 
@@ -189,7 +189,7 @@
   * @}
   */
 
-/** @defgroup DMA_flags_definition 
+/** @defgroup DMA_flags_definition
   * @{
   */
 #define DMA_FLAG_GL(x)		((uint32_t)(1<<(x*4)))
@@ -278,7 +278,7 @@
   * @}
   */
 
-/** @defgroup DMA_Buffer_Size 
+/** @defgroup DMA_Buffer_Size
   * @{
   */
 

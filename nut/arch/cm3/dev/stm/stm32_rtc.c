@@ -135,7 +135,7 @@ int Stm32RtcInit(void)
 
 
    RCC->APB1ENR |= RCC_APB1Periph_BKP|RCC_APB1Periph_PWR;
-   PWR->CR |= PWR_CR_DBP; 
+   PWR->CR |= PWR_CR_DBP;
    RCC->BDCR|= (1<<16);//Backup domain reset;
    RCC->BDCR&= ~(1<<16);//Backup domain reset;
    PWR->CR|= PWR_CR_DBP;

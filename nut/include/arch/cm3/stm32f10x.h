@@ -93,10 +93,10 @@ typedef enum IRQn
   CAN2_RX1_IRQn               = 65,     /*!< CAN2 RX1 Interrupt                                   */
   CAN2_SCE_IRQn               = 66,     /*!< CAN2 SCE Interrupt                                   */
   OTG_FS_IRQn                 = 67      /*!< USB OTG FS global Interrupt                          */
-//#endif /* STM32F10X_CL */     
+//#endif /* STM32F10X_CL */
 } IRQn_Type;
 
-#define STM32_PERIPH_BASE           ((uint32_t)0x40000000) 
+#define STM32_PERIPH_BASE           ((uint32_t)0x40000000)
 #define STM32_APB1PERIPH_BASE       STM32_PERIPH_BASE
 #define STM32_APB2PERIPH_BASE       (STM32_PERIPH_BASE + 0x10000)
 #define STM32_AHBPERIPH_BASE        (STM32_PERIPH_BASE + 0x20000)

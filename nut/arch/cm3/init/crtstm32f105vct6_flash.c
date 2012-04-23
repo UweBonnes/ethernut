@@ -9,7 +9,7 @@ static void Default_Handler(void);
 //
 //*****************************************************************************
 extern void main(void);
-extern void NutInit(void); 
+extern void NutInit(void);
 
 //*****************************************************************************
 //
@@ -91,7 +91,7 @@ Default_Handler
     ,  Default_Handler
     ,  Default_Handler
     ,  Default_Handler
-    ,  Default_Handler  
+    ,  Default_Handler
   ,  0
   ,  0
   ,  0
@@ -99,24 +99,24 @@ Default_Handler
   ,  0
   ,  0
   ,  0
-    ,  Default_Handler            
-    ,  Default_Handler            
-    ,  Default_Handler           
-    ,  Default_Handler           
-    ,  Default_Handler           
-    ,  Default_Handler            
-  , Default_Handler   
-  , Default_Handler   
-  , Default_Handler   
-  , Default_Handler  
-  , Default_Handler   
-    ,  Default_Handler            
-    ,  Default_Handler        
-    ,  Default_Handler         
-    ,  Default_Handler        
-    ,  Default_Handler        
-    ,  Default_Handler        
-    ,  Default_Handler          
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+  , Default_Handler
+  , Default_Handler
+  , Default_Handler
+  , Default_Handler
+  , Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
+    ,  Default_Handler
   , 0
   , 0
   , 0
@@ -124,7 +124,6 @@ Default_Handler
   , 0
   , 0
   , 0
-  , 0           
   , 0
   , 0
   , 0
@@ -132,7 +131,6 @@ Default_Handler
   , 0
   , 0
   , 0
-  , 0            
   , 0
   , 0
   , 0
@@ -140,7 +138,6 @@ Default_Handler
   , 0
   , 0
   , 0
-  , 0            
   , 0
   , 0
   , 0
@@ -148,12 +145,15 @@ Default_Handler
   , 0
   , 0
   , 0
-  , 0            
   , 0
   , 0
   , 0
-  , 0               
-/*  , BootRAM     /* @0x1E0. This is for boot in RAM mode for 
+  , 0
+  , 0
+  , 0
+  , 0
+  , 0
+/*  , BootRAM     /* @0x1E0. This is for boot in RAM mode for
 		            STM32F10x Connectivity line Devices. */
   ,0
 };

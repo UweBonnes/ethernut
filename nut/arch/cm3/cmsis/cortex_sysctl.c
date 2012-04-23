@@ -26,7 +26,7 @@
 //! This function configures the clocking of the device.  The input crystal
 //! frequency, oscillator to be used, use of the PLL, and the system clock
 //! divider are all configured with this function.
-//! 
+//!
 //! \bug ulConfig ignored
 //!
 //! \return None.

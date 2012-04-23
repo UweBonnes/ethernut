@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by EmbeddedIT, 
+ * Copyright (C) 2001-2005 by EmbeddedIT,
  * Ole Reinhardt <ole.reinhardt@embedded-it.de> All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -19,12 +19,12 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EMBEDDED IT
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
@@ -102,48 +102,48 @@ static void TwoWireIrqEntry1ev(void) __attribute__ ((naked));
 static void TwoWireIrqEntry1er(void) __attribute__ ((naked));
 void TwoWireIrqEntry0ev(void)
 {
-    
+
 #ifdef NUT_PERFMON
     sig_TWI0_EV.ir_count++;
 #endif
     if (sig_TWI0_EV.ir_handler) {
         (sig_TWI0_EV.ir_handler) (sig_TWI0_EV.ir_arg);
     }
-    
+
 }
 
 void TwoWireIrqEntry0er(void)
 {
-    
+
 #ifdef NUT_PERFMON
     sig_TWI0_ER.ir_count++;
 #endif
     if (sig_TWI0_ER.ir_handler) {
         (sig_TWI0_ER.ir_handler) (sig_TWI0_ER.ir_arg);
     }
-    
+
 }
 void TwoWireIrqEntry1ev(void)
 {
-    
+
 #ifdef NUT_PERFMON
     sig_TWI1_EV.ir_count++;
 #endif
     if (sig_TWI1_EV.ir_handler) {
         (sig_TWI1_EV.ir_handler) (sig_TWI1_EV.ir_arg);
     }
-    
+
 }
 void TwoWireIrqEntry1er(void)
 {
-    
+
 #ifdef NUT_PERFMON
     sig_TWI1_ER.ir_count++;
 #endif
     if (sig_TWI1_ER.ir_handler) {
         (sig_TWI1_ER.ir_handler) (sig_TWI1_ER.ir_arg);
     }
-    
+
 }
 
 
@@ -306,7 +306,7 @@ static int TwoWireIrqCtl(IRQn_Type interrupt,void (*pfnHandler)(void*),IRQ_HANDL
 
     /* Enable interrupt. */
     if (enabled) {
-	NVIC_EnableIRQ(interrupt);    
+	NVIC_EnableIRQ(interrupt);
     }
     return rc;
 }

@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V3.1.2
   * @date    09/28/2009
-  * @brief   This file contains all the functions prototypes for the RCC firmware 
+  * @brief   This file contains all the functions prototypes for the RCC firmware
   *          library.
   ******************************************************************************
   * @copy
@@ -17,7 +17,7 @@
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F10x_RCC_H
@@ -40,9 +40,9 @@
 
 /**
   * @}
-  */ 
+  */
 
-/** @defgroup PLL_multiplication_factor 
+/** @defgroup PLL_multiplication_factor
   * @{
   */
  #define RCC_PLLMul_4                    ((uint32_t)0x00080000)
@@ -77,13 +77,13 @@
   * @{
   */
 /* PREDIV1 clock source (only for STM32 connectivity line devices) */
- #define  RCC_PREDIV1_Source_HSE         ((uint32_t)0x00000000) 
- #define  RCC_PREDIV1_Source_PLL2        ((uint32_t)0x00010000) 
+ #define  RCC_PREDIV1_Source_HSE         ((uint32_t)0x00000000)
+ #define  RCC_PREDIV1_Source_PLL2        ((uint32_t)0x00010000)
 
 /** @defgroup PREDIV2_division_factor
   * @{
   */
-  
+
  #define  RCC_PREDIV2_Div1               ((uint32_t)0x00000000)
  #define  RCC_PREDIV2_Div2               ((uint32_t)0x00000010)
  #define  RCC_PREDIV2_Div3               ((uint32_t)0x00000020)
@@ -104,7 +104,7 @@
 /** @defgroup PLL2_multiplication_factor
   * @{
   */
-  
+
  #define  RCC_PLL2Mul_8                  ((uint32_t)0x00000600)
  #define  RCC_PLL2Mul_9                  ((uint32_t)0x00000700)
  #define  RCC_PLL2Mul_10                 ((uint32_t)0x00000800)
@@ -129,14 +129,14 @@
  #define  RCC_PLL3Mul_16                 ((uint32_t)0x0000E000)
  #define  RCC_PLL3Mul_20                 ((uint32_t)0x0000F000)
 
-/** @defgroup System_clock_source 
+/** @defgroup System_clock_source
   * @{
   */
 
 #define RCC_SYSCLKSource_HSI             ((uint32_t)0x00000000)
 #define RCC_SYSCLKSource_HSE             ((uint32_t)0x00000001)
 #define RCC_SYSCLKSource_PLLCLK          ((uint32_t)0x00000002)
-/** @defgroup AHB_clock_source 
+/** @defgroup AHB_clock_source
   * @{
   */
 
@@ -150,7 +150,7 @@
 #define RCC_SYSCLK_Div256                ((uint32_t)0x000000E0)
 #define RCC_SYSCLK_Div512                ((uint32_t)0x000000F0)
 
-/** @defgroup APB1_APB2_clock_source 
+/** @defgroup APB1_APB2_clock_source
   * @{
   */
 
@@ -160,7 +160,7 @@
 #define RCC_HCLK_Div8                    ((uint32_t)0x00000600)
 #define RCC_HCLK_Div16                   ((uint32_t)0x00000700)
 
-/** @defgroup RCC_Interrupt_source 
+/** @defgroup RCC_Interrupt_source
   * @{
   */
 
@@ -185,7 +185,7 @@
   * @}
   */
 
-/** @defgroup USB_OTG_FS_clock_source 
+/** @defgroup USB_OTG_FS_clock_source
   * @{
   */
  #define RCC_OTGFSCLKSource_PLLVCO_Div3    ((uint8_t)0x00)
@@ -197,7 +197,7 @@
   * @}
   */
 
-/** @defgroup I2S2_clock_source 
+/** @defgroup I2S2_clock_source
   * @{
   */
  #define RCC_I2S2CLKSource_SYSCLK        ((uint8_t)0x00)
@@ -209,20 +209,20 @@
   * @}
   */
 
-/** @defgroup I2S3_clock_source 
+/** @defgroup I2S3_clock_source
   * @{
   */
  #define RCC_I2S3CLKSource_SYSCLK        ((uint8_t)0x00)
  #define RCC_I2S3CLKSource_PLL3_VCO      ((uint8_t)0x01)
 
  #define IS_RCC_I2S3CLK_SOURCE(SOURCE) (((SOURCE) == RCC_I2S3CLKSource_SYSCLK) || \
-                                        ((SOURCE) == RCC_I2S3CLKSource_PLL3_VCO))    
+                                        ((SOURCE) == RCC_I2S3CLKSource_PLL3_VCO))
 /**
   * @}
   */
-  
 
-/** @defgroup ADC_clock_source 
+
+/** @defgroup ADC_clock_source
   * @{
   */
 
@@ -236,7 +236,7 @@
   * @}
   */
 
-/** @defgroup LSE_configuration 
+/** @defgroup LSE_configuration
   * @{
   */
 
@@ -249,7 +249,7 @@
   * @}
   */
 
-/** @defgroup RTC_clock_source 
+/** @defgroup RTC_clock_source
   * @{
   */
 
@@ -263,7 +263,7 @@
   * @}
   */
 
-/** @defgroup AHB_peripheral 
+/** @defgroup AHB_peripheral
   * @{
   */
 
@@ -284,7 +284,7 @@
   * @}
   */
 
-/** @defgroup APB2_peripheral 
+/** @defgroup APB2_peripheral
   * @{
   */
 
@@ -307,9 +307,9 @@
 #define IS_RCC_APB2_PERIPH(PERIPH) ((((PERIPH) & 0xFFFF0002) == 0x00) && ((PERIPH) != 0x00))
 /**
   * @}
-  */ 
+  */
 
-/** @defgroup APB1_peripheral 
+/** @defgroup APB1_peripheral
   * @{
   */
 
@@ -333,14 +333,14 @@
 #define RCC_APB1Periph_BKP               ((uint32_t)0x08000000)
 #define RCC_APB1Periph_PWR               ((uint32_t)0x10000000)
 #define RCC_APB1Periph_DAC               ((uint32_t)0x20000000)
-#define RCC_APB1Periph_CAN2             ((uint32_t)0x04000000) 
+#define RCC_APB1Periph_CAN2             ((uint32_t)0x04000000)
 #define IS_RCC_APB1_PERIPH(PERIPH) ((((PERIPH) & 0xC10137C0) == 0x00) && ((PERIPH) != 0x00))
 
 /**
   * @}
   */
 
-/** @defgroup Clock_source_to_output_on_MCO_pin 
+/** @defgroup Clock_source_to_output_on_MCO_pin
   * @{
   */
 
@@ -365,7 +365,7 @@
   * @}
   */
 
-/** @defgroup RCC_Flag 
+/** @defgroup RCC_Flag
   * @{
   */
 
@@ -381,8 +381,8 @@
 #define RCC_FLAG_WWDGRST                 ((uint8_t)0x7E)
 #define RCC_FLAG_LPWRRST                 ((uint8_t)0x7F)
 
- #define RCC_FLAG_PLL2RDY                ((uint8_t)0x3B) 
- #define RCC_FLAG_PLL3RDY                ((uint8_t)0x3D) 
+ #define RCC_FLAG_PLL2RDY                ((uint8_t)0x3B)
+ #define RCC_FLAG_PLL3RDY                ((uint8_t)0x3D)
  #define IS_RCC_FLAG(FLAG) (((FLAG) == RCC_FLAG_HSIRDY) || ((FLAG) == RCC_FLAG_HSERDY) || \
                             ((FLAG) == RCC_FLAG_PLLRDY) || ((FLAG) == RCC_FLAG_LSERDY) || \
                             ((FLAG) == RCC_FLAG_PLL2RDY) || ((FLAG) == RCC_FLAG_PLL3RDY) || \
@@ -429,6 +429,6 @@ typedef struct
 #define RCC                 ((RCC_TypeDef *) RCC_BASE)
 
 
-#endif 
+#endif
 
 /******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
