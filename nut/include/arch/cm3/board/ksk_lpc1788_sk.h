@@ -1,8 +1,8 @@
-#ifndef _KSK_LPC1788_SK_H_
-#define _KSK_LPC1788_SK_H_
+#ifndef _BOARD_KSK_LPC1788_SK_H_
+#define _BOARD_KSK_LPC1788_SK_H_
 
 /*
- * Copyright 2012 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  *
  * All rights reserved.
  *
@@ -45,9 +45,6 @@
  */
 
 
-#include <dev/usart_lpc17xx.h>
-
-
 /* LED 1 */
 
 #ifndef LED1_PORT
@@ -75,6 +72,7 @@
 /* USARTs */
 
 #if !defined(DEV_UART)
+#include <dev/usart_lpc17xx.h>
 #define DEV_UART        DEV_UART0
 #define DEV_UART_NAME   DEV_UART0_NAME
 #endif
@@ -87,4 +85,12 @@
 #define DEV_DEBUG_NAME  DEV_UART0_NAME
 #endif
 
+/* define MMC interface */
+
+#ifndef DEV_MMCARD0
+#include <dev/lpc177x_8x_mci.h>
+#define DEV_MMCARD0         devLpcMci0
+#define DEV_MMCARD0_NAME    "MCI0"
 #endif
+
+#endif /* _BOARD_KSK_LPC1788_SK_H_ */

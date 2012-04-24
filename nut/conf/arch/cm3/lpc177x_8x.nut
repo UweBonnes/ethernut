@@ -77,6 +77,7 @@ nutarch_cm3_lpc177x_8x=
                     "DEV_IRQ_LPC17xx",
                     "HW_WDT_LPC17xx",
                     "HW_GPDMA_LPC17xx",
+                    "HW_MCI_LPC177x_8x",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -371,5 +372,28 @@ nutarch_cm3_lpc177x_8x=
                 file = "include/cfg/uart.h"
             }
         }
+    },
+
+    --
+    -- LPC177x_8x MCI SDIO Interface
+    --
+    {
+        name = "nutarch_cm3_lpc177x_8x_mci",
+        brief = "LPC177x_8x MCI (SDIO) MMC driver",
+        description = "Low level MMC interface for LPC177x_8x",
+        requires = { "HW_MCI_LPC177x_8x" },
+        provides = { "DEV_MMCLL" },
+        sources = { "cm3/dev/nxp/lpc177x_8x_mmcard_sdio.c", "cm3/dev/nxp/lpc177x_8x_mci.c" },
+        options =
+        {
+            {
+                macro = "BRD_MCI_POWERED_ACTIVE_LEVEL",
+                brief = "MCI power active level",
+                description = "MCI power active level -> set to (0) or (1) depending your board HW.",
+        		type = "enumerated",
+        		choices = { "1", "0" },
+                file = "include/cfg/mmci.h"
+            },
+        },
     },
 }

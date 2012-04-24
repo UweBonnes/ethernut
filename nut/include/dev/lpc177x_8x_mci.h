@@ -1,5 +1,5 @@
-#ifndef _DEV_IRQREG_ARCH_CM3_LPC17xx_H_
-#define _DEV_IRQREG_ARCH_CM3_LPC17xx_H_
+#ifndef _DEV_LPC177X_8X_MCI_H_
+#define _DEV_LPC177X_8X_MCI_H_
 
 /*
  * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
@@ -35,21 +35,17 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
+/*
  * \verbatim
- * $Id: $
+ * $Id: lpc177x_8x_mci.h $
  * \endverbatim
  */
 
-extern IRQ_HANDLER sig_USART0;      // USART 0
-extern IRQ_HANDLER sig_USART1;      // USART 1
-extern IRQ_HANDLER sig_USART2;      // USART 2
-extern IRQ_HANDLER sig_USART3;      // USART 3
-extern IRQ_HANDLER sig_USART4;      // USART 4
+#include <sys/device.h>
 
-extern IRQ_HANDLER sig_RTC;         // Real Time Clock
-extern IRQ_HANDLER sig_WDT;         // Watchdog Timer
-extern IRQ_HANDLER sig_MCI;         // Watchdog Timer
+/*
+ * Available drivers.
+ */
+extern NUTDEVICE devLpcMci0;
 
-
-#endif
+#endif /* _DEV_LPC177X_8X_MCI_H_ */
