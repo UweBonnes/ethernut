@@ -40,6 +40,7 @@
  *
  */
 
+#include <cfg/mmci.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -766,7 +767,7 @@ static int Lpc177x_8x_MmcardIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 NUTDEVICE devLpcMci0 = {
     0,                          /*!< Pointer to next device, dev_next. */
-    {'M', 'C', 'I', '0', 0, 0, 0, 0, 0}
+    {'M', 'M', 'C', '0', 0, 0, 0, 0, 0}
     ,                           /*!< Unique device name, dev_name. */
     0,                          /*!< Type of device, dev_type. Obsolete. */
     0,                          /*!< Base address, dev_base. Unused. */

@@ -90,7 +90,7 @@
 #ifndef DEV_MMCARD0
 #include <dev/lpc177x_8x_mci.h>
 #define DEV_MMCARD0         devLpcMci0
-#define DEV_MMCARD0_NAME    "MCI0"
+#define DEV_MMCARD0_NAME    "MMC0"
 #endif
 
 #endif /* _BOARD_KSK_LPC1788_SK_H_ */
