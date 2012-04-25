@@ -130,8 +130,6 @@ typedef struct __attribute__ ((packed)) _MMC_CSD {
     u_char mmcsd_crc;
 } MMC_CSD;
 
-extern NUTDEVICE devLpcMci0;
-
 /*@}*/
 
 #endif
