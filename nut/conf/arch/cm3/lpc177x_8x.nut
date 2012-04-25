@@ -383,7 +383,7 @@ nutarch_cm3_lpc177x_8x=
         description = "Low level MMC interface for LPC177x_8x",
         requires = { "HW_MCI_LPC177x_8x" },
         provides = { "DEV_MMCLL" },
-        sources = { "cm3/dev/nxp/lpc177x_8x_mmcard_sdio.c", "cm3/dev/nxp/lpc177x_8x_mci.c" },
+        sources = { "cm3/dev/nxp/lpc177x_8x_mmcard_sdio.c", "cm3/dev/nxp/lpc177x_8x_mci.c", "cm3/dev/nxp/ih_lpc177x_8x_mci.c" },
         options =
         {
             {
