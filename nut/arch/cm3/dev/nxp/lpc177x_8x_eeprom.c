@@ -115,7 +115,7 @@ void Lpc177x_8x_EepromInit(void)
  *
  * \return      none
  */
-#include <stdio.h>
+
 int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
 {
     uint16_t  page_nr;
