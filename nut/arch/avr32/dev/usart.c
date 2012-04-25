@@ -51,6 +51,15 @@
 #include <avr32/io.h>
 #include <arch/avr32/gpio.h>
 
+// Work around missing defines in some AVR32 models
+#if !defined(AVR32_USART_CSR_MASK)
+#define AVR32_USART_CSR_MASK 0xFFFFFFFF
+#endif
+
+#if !defined(AVR32_USART_IDR_MASK)
+#define AVR32_USART_IDR_MASK 0xFFFFFFFF
+#endif
+
 /*!
  * \addtogroup xgNutArchAvr32Usart
  */

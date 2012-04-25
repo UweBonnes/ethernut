@@ -67,11 +67,20 @@
 
 
 #include <avr32/io.h>
+#include <arch/avr32.h>
 #include <arch/avr32/pm.h>
 
-#include "compiler.h"
 
+#include <cfg/os.h>
 #include <cfg/clock.h>
+#include <arch/avr32.h>
+#include <dev/irqreg.h>
+#include <sys/timer.h>
+
+#include <arch/avr32/ihndlr.h>
+
+#include <avr32/io.h>
+#include "compiler.h"
 
 /*! \name PM Writable Bit-Field Registers
  */
