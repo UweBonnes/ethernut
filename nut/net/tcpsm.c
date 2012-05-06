@@ -73,6 +73,8 @@
 /* icc-avr v7.19 used 312 bytes. */
 #define NUT_THREAD_TCPSMSTACK   512
 #endif
+#elif defined(__AVR32__)
+#define NUT_THREAD_TCPSMSTACK 1024
 #else
 /* arm-elf-gcc used 260 bytes with size optimized, 644 bytes with debug code. */
 #define NUT_THREAD_TCPSMSTACK   384

@@ -88,6 +88,8 @@
 /* icc-avr v7.19 uses 244 bytes. */
 #define NUT_THREAD_DISTSTACK  384
 #endif
+#elif defined(__AVR32__)
+#define NUT_THREAD_DISTSTACK 512
 #else
 /* arm-elf-gcc used 232 bytes with size optimized, 476 bytes with debug code. */
 #define NUT_THREAD_DISTSTACK  320
