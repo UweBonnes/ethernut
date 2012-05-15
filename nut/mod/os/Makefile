@@ -53,6 +53,7 @@ all: $(OBJS)
 include $(top_srcdir)/Makerules
 
 clean:
-	-rm -f $(OBJS)
-	-rm -f $(SRCS:.c=.lst)
-	-rm -f $(SRCS:.c=.bak)
+	@echo "  [CLEANING] $(OBJS)..."
+	@-rm -f $(OBJS)
+	@-rm -f $(SRCS:.c=.lst)
+	@-rm -f $(SRCS:.c=.bak)

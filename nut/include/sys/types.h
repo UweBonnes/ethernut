@@ -179,6 +179,8 @@ __BEGIN_DECLS
 #ifndef NUTMEM_ALIGNMENT
 #if defined(__avr__)
 #define NUTMEM_ALIGNMENT        1
+#elif defined(__CORTEX__)
+#define NUTMEM_ALIGNMENT        1
 #elif defined(__ARM__)
 #define NUTMEM_ALIGNMENT        4
 #elif defined(__AVR32__)
@@ -240,6 +242,8 @@ typedef void *HANDLE;
     typedef unsigned char ureg_t;
 #elif defined(__arm__)
     typedef unsigned short ureg_t;
+#elif defined(__CORTEX__)
+    typedef unsigned short ureg_t;
 #elif defined(__AVR32__)
     typedef unsigned long ureg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
@@ -258,6 +262,8 @@ typedef void *HANDLE;
 #if defined(__AVR__)
     typedef unsigned char reg_t;
 #elif defined(__arm__)
+    typedef unsigned short reg_t;
+#elif defined(__CORTEX__)
     typedef unsigned short reg_t;
 #elif defined(__AVR32__)
     typedef unsigned short reg_t;

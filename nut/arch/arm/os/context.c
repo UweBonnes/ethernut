@@ -42,6 +42,9 @@
 
 #include <string.h>
 
+#include <sys/osdebug.h>
+#include <sys/nutdebug.h>
+
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/thread.h>

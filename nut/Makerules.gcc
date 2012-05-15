@@ -38,19 +38,24 @@
 include $(top_srcdir)/Makerules.all
 
 %.dep: %.c
-	$(CC) -MM $(CPPFLAGS) $(CFLAGS) -o $@ $<
+	@echo "  [CC] $<"
+	@$(CC) -MM $(CPPFLAGS) $(CFLAGS) -o $@ $<
 
 %.o : %.c
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
+	@echo "  [CC] $<"
+	@$(CC) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
 
 %.o : %.cc
-	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
+	@echo "  [CXX] $<"
+	@$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
 
 %.o : %.S
-	$(AS) -c $(CPPFLAGS) $(ASFLAGS) -o $@ $<
+	@echo "  [AS] $<"
+	@$(AS) -c $(CPPFLAGS) $(ASFLAGS) -o $@ $<
 
 %.a: $(OBJS)
-	$(AR) $(ARFLAGS) $@ $?
+	@echo "  [AR] $?"
+	@$(AR) $(ARFLAGS) $@ $?
 
 # No idea why the pattern rule above doesn't work on some
 # make versions (No rule to make...). 

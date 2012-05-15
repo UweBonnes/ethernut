@@ -123,7 +123,7 @@ int DS1307RtcWrite(CONST uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RtcGetClock(struct _tm *tm)
+int DS1307RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     int rc;
     uint8_t data[7];
@@ -148,7 +148,7 @@ int DS1307RtcGetClock(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RtcSetClock(CONST struct _tm *tm)
+int DS1307RtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
 {
     uint8_t data[8];
 
@@ -225,7 +225,7 @@ int DS1307RamWrite(uint8_t addr, CONST void *buff, size_t len)
  * \return 0 on success or -1 in case of an error.
  *
  */
-int DS1307Init(void)
+int DS1307Init(NUTRTC *rtc)
 {
     int rc;
     uint8_t data;
@@ -250,11 +250,14 @@ int DS1307Init(void)
 }
 
 NUTRTC rtcDs1307 = {
-    DS1307Init,         /*!< Hardware initializatiuon, rtc_init */
-    DS1307RtcGetClock,  /*!< Read date and time, rtc_gettime */
-    DS1307RtcSetClock,  /*!< Set date and time, rtc_settime */
-    NULL,               /*!< Read alarm date and time, rtc_getalarm */
-    NULL,               /*!< Set alarm date and time, rtc_setalarm */
-    NULL,               /*!< Read status flags, rtc_getstatus */
-    NULL                /*!< Clear status flags, rtc_clrstatus */
+  /*.dcb           = */ NULL,               /*!< Driver control block */
+  /*.rtc_init      = */ DS1307Init,         /*!< Hardware initializatiuon, rtc_init */
+  /*.rtc_gettime   = */ DS1307RtcGetClock,  /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ DS1307RtcSetClock,  /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ NULL,               /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ NULL,               /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ NULL,               /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ NULL,               /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };
+

@@ -146,8 +146,8 @@
 __BEGIN_DECLS
 /* Function prototypes. */
 
-extern int NutGetKeyState( HANDLE keyh);
-extern uint32_t NutGetKeyTime( HANDLE keyh);
+extern int NutGetKeyState( HANDLE *keyhp);
+extern int NutGetKeyTime( HANDLE *keyhp);
 
 int NutRegisterKey( HANDLE *keyhp, int bank, int pin, int fx, uint32_t fxt);
 int NutAssignKeyFkt( HANDLE *keyhp, void (*callback)(void));

@@ -52,14 +52,14 @@ extern NUTRTC rtcPcf8563;
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int PcfRtcInit(void);
+extern int PcfRtcInit(NUTRTC *rtc);
 
-extern int PcfRtcGetClock(struct _tm *tm);
-extern int PcfRtcSetClock(CONST struct _tm *tm);
-extern int PcfRtcGetAlarm(int idx, struct _tm *tm, int *aflgs);
-extern int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs);
-extern int PcfRtcGetStatus(uint32_t *sflgs);
-extern int PcfRtcClearStatus(uint32_t sflgs);
+extern int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm);
+extern int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm);
+extern int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs);
+extern int PcfRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs);
+extern int PcfRtcGetStatus(NUTRTC *rtc, uint32_t *sflgs);
+extern int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs);
 extern int PcfRtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
 extern int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t len);
 

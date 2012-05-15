@@ -191,14 +191,18 @@ nutos =
                               "variables and static data. Any remaining space will "..
                               "be added to the Nut/OS heap during system initialization.\n"..
                               "When running on an AVR MCU, set this to size of the "..
-                              "on-chip SRAM, e.g. 4096 for the ATmega128 and 8192 for the ATmega2561.",
+                              "on-chip SRAM, e.g. 4096 for the ATmega128 and 8192 for the ATmega2561.\n\n"..
+                              "For CortexM3 architecture the size is given by the linker script. "..
+                              "so only enter a value in here if you really know what you do!",
                 default = "4096",
                 file = "include/cfg/memory.h"
             },
             {
                 macro = "NUTMEM_START",
                 brief = "Memory Start",
-                description = "First address of fast data memory.",
+                description = "First address of fast data memory.\n\n"..
+                              "For CortexM3 architecture the address is given by the linker script. "..
+                              "so only enter a value in here if you really know what you do!",
                 file = "include/cfg/memory.h"
             },
             {
@@ -563,6 +567,22 @@ nutos =
             				  "thread.\n\n"..
             				  "This functionality can be enabled without OS Debug to "..
             				  "find out maximum stack usage in your final appliation.",
+                flavor = "boolean",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUTDEBUG_RAM",
+                brief = "Placement of code",
+                description = "Code is placed in ram",
+                 flavor = "boolean",
+                 file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUTDEBUG_LAZY",
+                brief = "Initialize Stack when debugging",
+                description = "When loading new compiled code, stack will be initialized with value read "..
+                              "at 0x00000000 at reset. Either explicit load the value on each load "..
+                              "or use this hack ...\n",
                 flavor = "boolean",
                 file = "include/cfg/os.h"
             }

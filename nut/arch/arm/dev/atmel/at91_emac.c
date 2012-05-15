@@ -114,9 +114,17 @@
 
 #include <dev/irqreg.h>
 #include <dev/at91_emac.h>
+#include <dev/phy.h>
 
+#include <stdio.h>
+
+/* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
+#include <arpa/inet.h>
+#define EMPRINTF(args,...) printf(args,##__VA_ARGS__);fflush(stdout)
+#else
+#define EMPRINTF(args,...)
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -135,46 +143,8 @@
 #endif
 
 #ifndef EMAC_LINK_LOOPS
-#define EMAC_LINK_LOOPS         1000000
+#define EMAC_LINK_LOOPS         1000
 #endif
-
-/*!
- * \addtogroup xgDm9161aRegs
- */
-/*@{*/
-#define NIC_PHY_BMCR            0x00    /*!< \brief Basic mode control register. */
-#define NIC_PHY_BMCR_COLTEST    0x0080  /*!< \brief Collision test. */
-#define NIC_PHY_BMCR_FDUPLEX    0x0100  /*!< \brief Full duplex mode. */
-#define NIC_PHY_BMCR_ANEGSTART  0x0200  /*!< \brief Restart auto negotiation. */
-#define NIC_PHY_BMCR_ISOLATE    0x0400  /*!< \brief Isolate from MII. */
-#define NIC_PHY_BMCR_PWRDN      0x0800  /*!< \brief Power-down. */
-#define NIC_PHY_BMCR_ANEGENA    0x1000  /*!< \brief Enable auto negotiation. */
-#define NIC_PHY_BMCR_100MBPS    0x2000  /*!< \brief Select 100 Mbps. */
-#define NIC_PHY_BMCR_LOOPBACK   0x4000  /*!< \brief Enable loopback mode. */
-#define NIC_PHY_BMCR_RESET      0x8000  /*!< \brief Software reset. */
-
-#define NIC_PHY_BMSR            0x01    /*!< \brief Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /*!< \brief Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /*!< \brief Link status. */
-
-#define NIC_PHY_ID1             0x02    /*!< \brief PHY identifier register 1. */
-#define NIC_PHY_ID2             0x03    /*!< \brief PHY identifier register 2. */
-#define NIC_PHY_ANAR            0x04    /*!< \brief Auto negotiation advertisement register. */
-#define NIC_PHY_ANLPAR          0x05    /*!< \brief Auto negotiation link partner availability register. */
-#define NIC_PHY_ANEG_NP         0x8000  /*!< \brief Next page available. */
-#define NIC_PHY_ANEG_ACK        0x4000  /*!< \brief Ability data reception acknowledged. */
-#define NIC_PHY_ANEG_RF         0x2000  /*!< \brief Remote fault. */
-#define NIC_PHY_ANEG_FCS        0x0400  /*!< \brief Flow control supported. */
-#define NIC_PHY_ANEG_T4         0x0200  /*!< \brief 100BASE-T4 supported. */
-#define NIC_PHY_ANEG_TX_FDX     0x0100  /*!< \brief 100BASE-T full duplex supported. */
-#define NIC_PHY_ANEG_TX_HDX     0x0080  /*!< \brief 100BASE-T half duplex supported. */
-#define NIC_PHY_ANEG_10_FDX     0x0040  /*!< \brief 10BASE-T full duplex supported. */
-#define NIC_PHY_ANEG_10_HDX     0x0020  /*!< \brief 10BASE-T half duplex supported. */
-#define NIC_PHY_ANEG_BINSEL     0x001F  /*!< \brief Binary encoded protocol selector. */
-
-#define NIC_PHY_ANER            0x06    /*!< \brief Auto negotiation expansion register. */
-
-/*@}*/
 
 
 /*!
@@ -419,6 +389,7 @@ static unsigned int rxBufIdx;
  *
  * \return Contents of the specified register.
  */
+
 static uint16_t phy_inw(uint8_t reg)
 {
     /* PHY read command. */
@@ -432,7 +403,6 @@ static uint16_t phy_inw(uint8_t reg)
     return (uint16_t) (inr(EMAC_MAN) >> EMAC_DATA_LSB);
 }
 
-#if !defined(PHY_MODE_RMII) || (NIC_PHY_UID == MII_LAN8710_ID)
 /*!
  * \brief Write value to PHY register.
  *
@@ -448,83 +418,22 @@ static void phy_outw(uint8_t reg, uint16_t val)
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
 }
-#endif
-
-/*!
- * \brief Probe PHY.
- * \param timeout for link status from PHY in loops.
- * \return 0 on success, -1 otherwise.
- */
-static int probePhy(uint32_t tmo)
-{
-    uint32_t physID;
-    uint16_t phyval;
-
-    /* Read Phy ID. Ignore revision number. */
-    physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);
-#if NIC_PHY_UID != 0xffffffff
-    if ( physID != (NIC_PHY_UID & 0xFFFFFFF0) ) {
-        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-        return -1;
-    }
-#elif defined(CHECK_ALL_KNOWN_PHY_IDS)
-    if ( physID != MII_DM9161_ID && physID != MII_AM79C875_ID && physID != MII_MICREL_ID && physID != MII_LAN8700_ID && physID != MII_LAN8710_ID) {
-        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-        return -1;
-    }
-#endif
-
-    /* Handle auto negotiation if configured. */
-    phyval = phy_inw(NIC_PHY_BMCR);
-    if (phyval & NIC_PHY_BMCR_ANEGENA) {
-        /* Wait for auto negotiation completed. */
-        phy_inw(NIC_PHY_BMSR);  /* Discard previously latched status. */
-        while (--tmo) {
-            if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
-                break;
-            }
-        }
-        /* Return error on link timeout. */
-        if (tmo == 0) {
-            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-            return -1;
-        }
-
-        /*
-        * Read link partner abilities and configure EMAC.
-        */
-        phyval = phy_inw(NIC_PHY_ANLPAR);
-        if (phyval & NIC_PHY_ANEG_TX_FDX) {
-            /* 100Mb full duplex. */
-            outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_SPD | EMAC_FD);
-        }
-        else if (phyval & NIC_PHY_ANEG_TX_HDX) {
-            /* 100Mb half duplex. */
-            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_FD) | EMAC_SPD);
-        }
-        else if (phyval & NIC_PHY_ANEG_10_FDX) {
-            /* 10Mb full duplex. */
-            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_SPD) | EMAC_FD);
-        }
-        else {
-            /* 10Mb half duplex. */
-            outr(EMAC_NCFGR, inr(EMAC_NCFGR) & ~(EMAC_SPD | EMAC_FD));
-        }
-    }
-
-    /* Disable management port. */
-    outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-
-    return 0;
-}
 
 /*!
  * \brief Reset the Ethernet controller.
  *
  * \return 0 on success, -1 otherwise.
  */
+
 static int EmacReset(uint32_t tmo)
 {
+    int rc = 0;
+    uint32_t reg_ncfgr;
+    uint32_t phyval;
+    int      link_wait;
+
+    EMPRINTF("EmacReset(%lu)\n", tmo);
+
     /* Enable power sources if not yet enabled */
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
@@ -549,20 +458,75 @@ static int EmacReset(uint32_t tmo)
     /* Wait for PHY ready. */
     NutDelay(255);
 
+    /* Register PHY */
+    rc = NutRegisterPhy( 1, phy_outw, phy_inw);
+
 #if NIC_PHY_UID == MII_LAN8710_ID
-    /* Set LAN8710 mode. */
-    phy_outw(18, phy_inw(18) | 0x00E0);
-    phy_outw(NIC_PHY_BMCR, NIC_PHY_BMCR_RESET);
-    NutSleep(100);
+    /* Set LAN8710 to AUTO-MDIX and MII mode.
+     * This overides configuration set by config pins of the chip.
+     */
+
+    phyval = 18 << 16;  // Store phy register address in upper 16 bits
+    NutPhyCtl (PHY_GET_REGVAL, &phyval);
+    phyval |= 0x00E0;
+
+    phyval |= 18 << 16;  // Store phy register address in upper 16 bits again
+    NutPhyCtl (PHY_SET_REGVAL, &phyval);
+
+    /* Soft Reset LAN7810 */
+    phyval = 1;
+    NutPhyCtl(PHY_CTL_RESET, &phyval);
 #endif
 
 #ifndef PHY_MODE_RMII
     /* Clear MII isolate. */
-    phy_inw(NIC_PHY_BMCR);
-    phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
+    phyval = 0;
+    NutPhyCtl(PHY_CTL_ISOLATE, &phyval);
 #endif
 
-    return probePhy(tmo);
+    /* Restart autonegotiation */
+    phyval = 1;
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
+
+    /* Wait for auto negotiation completed and link established. */
+    for (link_wait = tmo;; link_wait--) {
+        phyval = 0;
+        NutPhyCtl(PHY_GET_STATUS, &phyval);
+
+        if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
+            /* Check link state and configure EMAC accordingly */
+            reg_ncfgr = inr(EMAC_NCFGR);
+            if (phyval & PHY_STATUS_FULLDUPLEX) {
+                reg_ncfgr |= EMAC_FD;
+            } else {
+                reg_ncfgr &= ~EMAC_FD;
+            }
+
+            if (phyval & PHY_STATUS_100M) {
+                reg_ncfgr |= EMAC_SPD;
+            } else {
+                reg_ncfgr &= ~EMAC_SPD;
+            }
+            outr(EMAC_NCFGR, reg_ncfgr);
+
+            break;
+        }
+        if (link_wait == 0) {
+            EMPRINTF("NO LINK!\n");
+
+            /* Return error on link timeout. */
+            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+            return -1;
+        }
+        NutSleep(10);
+    }
+
+    /* Disable management port. */
+    outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+
+    EMPRINTF("EmacReset() DONE\n");
+
+    return rc;
 }
 
 /*
@@ -750,6 +714,8 @@ static int EmacStart(CONST uint8_t * mac)
 {
     unsigned int i;
 
+    EMPRINTF("EmacStart(%02x:%02x:%02x:%02x:%02x:%02x)\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5] );
+
     /* Set local MAC address. */
     outr(EMAC_SA1L, (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
     outr(EMAC_SA1H, (mac[5] << 8) | mac[4]);
@@ -777,6 +743,8 @@ static int EmacStart(CONST uint8_t * mac)
     /* Enable receiver, transmitter and statistics. */
     outr(EMAC_NCR, inr(EMAC_NCR) | EMAC_TE | EMAC_RE | EMAC_WESTAT);
 
+    EMPRINTF("EmacStart() DONE\n");
+
     return 0;
 }
 
@@ -786,14 +754,12 @@ static int EmacStart(CONST uint8_t * mac)
  */
 THREAD(EmacRxThread, arg)
 {
-    NUTDEVICE *dev;
-    IFNET *ifn;
-    EMACINFO *ni;
+    NUTDEVICE *dev = arg;
+    IFNET *ifn = (IFNET *) dev->dev_icb;
+    EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
     NETBUF *nb;
 
-    dev = arg;
-    ifn = (IFNET *) dev->dev_icb;
-    ni = (EMACINFO *) dev->dev_dcb;
+    EMPRINTF("EmacRxThread() INIT\n");
 
     /*
      * This is a temporary hack. Due to a change in initialization,
@@ -810,6 +776,8 @@ THREAD(EmacRxThread, arg)
      * This happens, for example, if no Ethernet cable is plugged
      * in.
      */
+    EMPRINTF(" Call EmacStart()\n");
+
     while (EmacStart(ifn->if_mac)) {
         EmacReset(EMAC_LINK_LOOPS);
         NutSleep(1000);
@@ -944,6 +912,7 @@ int EmacInit(NUTDEVICE * dev)
 {
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
+    EMPRINTF("EmacInit()\n");
     /* Reset the controller. */
     if (EmacReset(EMAC_LINK_LOOPS)) {
         if (EmacReset(EMAC_LINK_LOOPS)) {
@@ -956,14 +925,20 @@ int EmacInit(NUTDEVICE * dev)
 
     /* Register interrupt handler. */
     if (NutRegisterIrqHandler(&sig_EMAC, EmacInterrupt, dev)) {
+        EMPRINTF(" IRQR CRASHED\n");
         return -1;
     }
+
+    EMPRINTF(" IRQR OK\n");
 
     /* Start the receiver thread. */
     if (NutThreadCreate("emacrx", EmacRxThread, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
+        EMPRINTF(" THREAD CRASHED\n");
         return -1;
     }
+
+    EMPRINTF("EmacInit() DONE\n");
     return 0;
 }
 

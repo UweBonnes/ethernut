@@ -95,6 +95,11 @@ LIBDIR = $(top_blddir)/lib
 include $(top_blddir)/UserConf.mk
 
 SRCS =
+
+#
+# AVR Controllers
+#
+
 ifeq ($(ARCH), avr)
 SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ih_adc.c \
 	avr/dev/ih_analog_comp.c avr/dev/ih_canit.c avr/dev/ih_ee_ready.c avr/dev/ih_int0.c \
@@ -122,6 +127,10 @@ SRCS += avr/dev/atcan.c
 endif
 
 endif
+
+#
+# ARM7/9 Controllers
+#
 
 ifeq ($(ARCH), arm)
 
@@ -182,13 +191,36 @@ OBJ1 = arm/init/crt$(LDNAME).o
 
 endif
 
+#
+# CortexM Controllers
+#
+
+ifeq ($(ARCH), cm3)
+
+SRCS = cm3/os/context.c cm3/cmsis/cortex_init.c
+OBJ1 = cm3/cmsis/cortex_init.o
+
+endif
+
+#
+# AV32 Controllers
+#
+
 ifeq ($(ARCH), avr32)
 SRCS = avr32/os/context.c avr32/os/nutinit.c
 endif
 
+#
+# Unix Emulation
+#
+
 ifeq ($(ARCH), unix)
 SRCS = unix/dev/ostimer.c unix/dev/unix_devs.c unix/os/thread.c
 endif
+
+#
+# Make Rules
+#
 
 OBJS = $(SRCS:.c=.o)
 
@@ -204,5 +236,6 @@ include $(top_srcdir)/Makerules
 
 .PHONY: clean
 clean: cleancc cleanedit
-	-rm -f $(PROJ).a
-	-rm -f $(OBJ1)
+	@echo "  [CLEANING] $(PROJ)..."
+	@-rm -f $(PROJ).a
+	@-rm -f $(OBJ1)

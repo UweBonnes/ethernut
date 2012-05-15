@@ -154,11 +154,12 @@ ifeq ($(ARCH), unix)
 endif
 
 clean:
-	-rm -f $(OBJ1) $(OBJ2)
-	-rm -f $(TRG1) $(TRG2)
-	-rm -f $(SRC1:.c=.lst) $(SRC2:.c=.lst)
-	-rm -f $(SRC1:.c=.lis) $(SRC2:.c=.lis)
-	-rm -f $(SRC1:.c=.s) $(SRC2:.c=.s)
-	-rm -f $(SRC1:.c=.bak) $(SRC2:.c=.bak)
-	-rm -f $(SRC1:.c=.c~) $(SRC2:.c=.c~)
-	-rm -f $(SRC1:.c=.i) $(SRC2:.c=.i)
+	@echo "  [CLEANING] $(TARG)..."
+	@-rm -f $(OBJ1) $(OBJ2)
+	@-rm -f $(TRG1) $(TRG2)
+	@-rm -f $(SRC1:.c=.lst) $(SRC2:.c=.lst)
+	@-rm -f $(SRC1:.c=.lis) $(SRC2:.c=.lis)
+	@-rm -f $(SRC1:.c=.s) $(SRC2:.c=.s)
+	@-rm -f $(SRC1:.c=.bak) $(SRC2:.c=.bak)
+	@-rm -f $(SRC1:.c=.c~) $(SRC2:.c=.c~)
+	@-rm -f $(SRC1:.c=.i) $(SRC2:.c=.i)

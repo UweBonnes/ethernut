@@ -173,6 +173,11 @@ mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA256
               "MCU_AT91R40008", "MCU_GBA",
               "MCU_LINUX_EMU", "MCU_H8_3068", "MCU_S3C4510B",
               "MCU_AVR32UC3A0512ES", "MCU_AVR32UC3A0512", "MCU_AVR32UC3A3256", "MCU_AVR32UC3B0256", "MCU_AVR32UC3B164", "MCU_AVR32UC3L064",
+              "MCU_STM32F101", "MCU_STM32F103", "MCU_STM32F105", "MCU_STM32F107",
+              "MCU_STM32F205",
+              "MCU_STM32F405",
+              "MCU_LM3S9B96", 
+              "MCU_LPC1758", "MCU_LPC1768", "MCU_LPC1778", 
               "MCU_ZERO" }
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
@@ -187,6 +192,10 @@ mcu_32bit_choice = { " ",
                      "16", "17", "18", "19", "20", "21", "22", "23",
                      "24", "25", "26", "27", "28", "29", "30", "31"
                    }
+
+stm32_bit_choice = {  " ",
+                     "0", "1", "2", "3", "4", "5", "6", "7",
+                     "8", "9", "10", "11", "12", "13", "14", "15" }
 
 gpio_port_choice = {
                     " ",
@@ -512,6 +521,9 @@ function GetGpioBanks()
     if c_is_provided("HW_MCU_AVR32") then
 		return GetAvr32PioIds()
 	end
+	if c_is_provided("HW_MCU_STM32") then
+		return GetStm32PioIds()
+	end;
     return gpio_port_choice
 end
 
@@ -528,6 +540,9 @@ function GetGpioPortIds()
     if c_is_provided("HW_MCU_AVR32") then
 		return GetAvr32PioIds()
 	end
+	if c_is_provided("HW_MCU_STM32") then
+		return GetStm32PioIds()
+	end;
     return { " " }
 end
 
@@ -546,6 +561,39 @@ end
 --
 function GetAvr32PioIds()
     return { " ", "PIOA_ID", "PIOB_ID", "PIOC_ID", "PIOD_ID" }
+end
+
+--
+-- Retrieve STM32 PIO struct pointers.
+-- These IDs represet an struct pointer value of the port.
+--
+function GetStm32Pio()
+    return { " ", "GPIOA", "GPIOB", "GPIOC", "GPIOD", "GPIOE", "GPIOF", "GPIOG" }
+end
+
+--
+-- Retrieve STM32 PIO IDs.
+-- These IDs represet an struct pointer value of the port.
+--
+function GetStm32PioIds()
+    return {
+	    " ",
+	    "NUTGPIO_PORTA",
+	    "NUTGPIO_PORTB",
+	    "NUTGPIO_PORTC",
+	    "NUTGPIO_PORTD",
+	    "NUTGPIO_PORTE",
+	    "NUTGPIO_PORTF",
+	    "NUTGPIO_PORTG",
+    }
+end
+
+--
+-- Retrieve STM32 PIO Base.
+-- These IDs represet an uint32_t value of the base address of the port.
+--
+function GetStm32PioBase()
+    return { " ", "GPIOA_BASE", "GPIOB_BASE", "GPIOC_BASE", "GPIOD_BASE", "GPIOE_BASE", "GPIOF_BASE", "GPIOG_BASE" }
 end
 
 --
@@ -588,6 +636,9 @@ function GetGpioBits()
     if c_is_provided("HW_MCU_AVR") then
         return avr_bit_choice
     end
+    if c_is_provided("HW_MCU_STM32") then
+        return stm32_bit_choice
+    end
     return mcu_32bit_choice
 end
 
@@ -607,6 +658,9 @@ function GetGpioHeaderPath()
     end
     if c_is_provided("HW_MCU_AVR32") then
         return basepath .. "avr32pio.h"
+    end
+    if c_is_provided("HW_MCU_STM32") then
+        return basepath .. "stm32pio.h"
     end
     return basepath .. "pio.h"
 end

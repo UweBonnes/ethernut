@@ -49,6 +49,7 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/nutdebug.h>
+#include <dev/board.h>
 
 #include <errno.h>
 #include <stdlib.h>
@@ -437,6 +438,6 @@ NUTSPIBUS spiBus0Gpio = {
     GpioSpiBus0Transfer,        /*!< Transfer data to and from a specified device (bus_transfer). */
     NutSpiBusWait,              /*!< Wait for bus transfer ready (bus_wait). */
     NutSpiBusSetMode,           /*!< Set SPI mode of a specified device (bus_set_mode). */
-    NutSpiBusSetRate,           /*!< Set clock rate of a specified device (bus_set_rate). */
+    GpioSpiBusSetRate,          /*!< Set clock rate of a specified device (bus_set_rate). */
     NutSpiBusSetBits            /*!< Set number of data bits of a specified device (bus_set_bits). */
 };

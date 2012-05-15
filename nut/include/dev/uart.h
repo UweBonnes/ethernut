@@ -343,17 +343,29 @@
  */
 #define UART_GETRXBUFHWMARK     0x0127
 
-/*! \brief UART _ioctl() command code to set the block read mode
+/*! \brief UART _ioctl() command code to set the block read mode.
 *
 * The configuration parameter specifies the block read mode.
 */
 #define UART_SETBLOCKREAD       0x0128
 
-/*! \brief UART _ioctl() command code to query the receive buffer high watermark.
+/*! \brief UART _ioctl() command code to query the the block read mode.
 *
 * The configuration parameter specifies the block read mode.
 */
 #define UART_GETBLOCKREAD       0x0129
+
+/*! \brief UART _ioctl() command code to set the block write mode
+*
+* The configuration parameter specifies the block write mode.
+*/
+#define UART_SETBLOCKWRITE      0x012a
+
+/*! \brief UART _ioctl() command code to query the the block write mode.
+*
+* The configuration parameter specifies the block write mode.
+*/
+#define UART_GETBLOCKWRITE      0x012b
 
 /*! \brief UART _ioctl() command code to set physical device to the raw mode.
  *
@@ -361,13 +373,13 @@
  * data encapsulation is not allowed to be done. This allows other processing to
  * be done on physical device.
  */
-#define UART_SETRAWMODE         0x012a
+#define UART_SETRAWMODE         0x012c
 
 /*! \brief UART _ioctl() command code to query the raw mode.
  *
  * The configuration parameter specified the raw mode.
  */
-#define UART_GETRAWMODE         0x012b
+#define UART_GETRAWMODE         0x012d
 
 /*! \brief AHDLC _ioctl() command code to set the ACCM (Control Character Mask).
  *
@@ -376,24 +388,24 @@
  * transmitted.  This allows the PPP layer to tell the HDLC layer about this
  * so that data may be transmitted quicker (no escapes).
  */
-#define HDLC_SETTXACCM          0x012c
+#define HDLC_SETTXACCM          0x012e
 
 /*! \brief AHDLC _ioctl() command code to get the ACCM (Control Character Mask).
  *
  * Just in case someone ever wants to see what it currently is.
  */
-#define HDLC_GETTXACCM          0x012d
+#define HDLC_GETTXACCM          0x012f
 
 /*! \brief UART _ioctl() command code to set physical device to half duplex mode.
  *
  * The configuration parameter specifies the halfduplex mode for device. In raw mode
  */
-#define UART_SETHDPXMODE        0x012c
+#define UART_SETHDPXMODE        0x0130
 
 /*! \brief UART _ioctl() command code to query the halfduplex mode.
  *
  */
-#define UART_GETHDPXMODE        0x012d
+#define UART_GETHDPXMODE        0x0131
 
 /*!
  * \addtogroup xgUARTStatus

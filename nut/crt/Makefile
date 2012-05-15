@@ -137,12 +137,13 @@ ifeq ($(ARCH), unix)
 endif
 
 clean:
-	-rm -f $(OBJS)
-	-rm -f $(OBJF)
-	-rm -f $(TARGS)
-	-rm -f $(SRCS:.c=.lst) $(SRCF:.c=.lst)
-	-rm -f $(SRCS:.c=.lis) $(SRCF:.c=.lis)
-	-rm -f $(SRCS:.c=.s) $(SRCF:.c=.s)
-	-rm -f $(SRCS:.c=.bak) $(SRCF:.c=.bak)
-	-rm -f $(SRCS:.c=.c~) $(SRCF:.c=.c~)
-	-rm -f $(SRCS:.c=.i) $(SRCF:.c=.i)
+	@echo "  [CLEANING] $(TARGS)..."
+	@-rm -f $(OBJS)
+	@-rm -f $(OBJF)
+	@-rm -f $(TARGS)
+	@-rm -f $(SRCS:.c=.lst) $(SRCF:.c=.lst)
+	@-rm -f $(SRCS:.c=.lis) $(SRCF:.c=.lis)
+	@-rm -f $(SRCS:.c=.s) $(SRCF:.c=.s)
+	@-rm -f $(SRCS:.c=.bak) $(SRCF:.c=.bak)
+	@-rm -f $(SRCS:.c=.c~) $(SRCF:.c=.c~)
+	@-rm -f $(SRCS:.c=.i) $(SRCF:.c=.i)

@@ -145,23 +145,21 @@
  */
 typedef struct {
 #ifdef NUT_PERFMON
-    uint32_t ir_count;
+    uint32_t ir_count;                      /* Counter for statistics and performance analysis */
 #endif
-    void *ir_arg;
-    void (*ir_handler) (void *);
-    int (*ir_ctl) (int cmd, void *param);
+    void *ir_arg;                           /* Argument passed to interrupt handler function */
+    void (*ir_handler) (void *);            /* Interrupt handler function */
+    int (*ir_ctl) (int cmd, void *param);   /* Interrupt control function */
 } IRQ_HANDLER;
 
 #ifdef __NUT_EMULATION__
 #include <arch/unix/irqreg.h>
 #elif defined(__AVR__)
 #include <arch/avr/irqreg.h>
-#elif defined(__arm__)
-#if defined(__ARM_ARCH_7M__)
-#include <arch/arm/lpc/lpc1700/irqreg.h>
-#else
+#elif defined(__arm__) && !defined(__CORTEX__)
 #include <arch/arm/irqreg.h>
-#endif
+#elif defined(__arm__) && defined(__CORTEX__)
+#include <arch/cm3/irqreg.h>
 #elif defined(__AVR32__)
 #include <arch/avr32/irqreg.h>
 #elif defined(__H8300H__) || defined(__H8300S__)

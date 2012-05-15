@@ -87,10 +87,17 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
+#include <dev/phy.h>
 #include <dev/at91sam7x_emac.h>
 
+#define NUTDEBUG
+
+/* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
+#define EMPRINTF(args,...) printf(args,##__VA_ARGS__)
+#else
+#define EMPRINTF(args,...)
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -108,33 +115,6 @@
 #endif
 
 #define NIC_PHY_ADDR            31
-
-/*!
- * \addtogroup xgDm9161aRegs
- */
-/*@{*/
-#define NIC_PHY_BMCR            0x00    /*!< \brief Basic mode control register. */
-#define NIC_PHY_BMCR_COLTEST    0x0080  /*!< \brief Collision test. */
-#define NIC_PHY_BMCR_FDUPLEX    0x0100  /*!< \brief Full duplex mode. */
-#define NIC_PHY_BMCR_ANEGSTART  0x0200  /*!< \brief Restart auto negotiation. */
-#define NIC_PHY_BMCR_ISOLATE    0x0400  /*!< \brief Isolate from MII. */
-#define NIC_PHY_BMCR_PWRDN      0x0800  /*!< \brief Power-down. */
-#define NIC_PHY_BMCR_ANEGENA    0x1000  /*!< \brief Enable auto negotiation. */
-#define NIC_PHY_BMCR_100MBPS    0x2000  /*!< \brief Select 100 Mbps. */
-#define NIC_PHY_BMCR_LOOPBACK   0x4000  /*!< \brief Enable loopback mode. */
-#define NIC_PHY_BMCR_RESET      0x8000  /*!< \brief Software reset. */
-
-#define NIC_PHY_BMSR            0x01    /*!< \brief Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /*!< \brief Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /*!< \brief Link status. */
-
-#define NIC_PHY_ID1             0x02    /*!< \brief PHY identifier register 1. */
-#define NIC_PHY_ID2             0x03    /*!< \brief PHY identifier register 2. */
-#define NIC_PHY_ANAR            0x04    /*!< \brief Auto negotiation advertisement register. */
-#define NIC_PHY_ANLPAR          0x05    /*!< \brief Auto negotiation link partner availability register. */
-#define NIC_PHY_ANER            0x06    /*!< \brief Auto negotiation expansion register. */
-
-/*@}*/
 
 #define PHY_TXCLK_ISOLATE_BIT   0
 #define PHY_REFCLK_XT2_BIT      0
@@ -264,7 +244,7 @@ static unsigned int rxBufIdx;
  *
  * \return Contents of the specified register.
  */
-static uint16_t phy_inw(uint8_t reg)
+static int phy_inw(uint8_t reg, uint16_t *val)
 {
     /* PHY read command. */
     outr(EMAC_MAN, _BV(30) | _BV(29) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18));
@@ -273,7 +253,9 @@ static uint16_t phy_inw(uint8_t reg)
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
 
     /* Get data from PHY maintenance register. */
-    return (uint16_t) inr(EMAC_MAN);
+    *val = (uint16_t) inr(EMAC_MAN);
+
+    return 0;
 }
 
 /*!
@@ -282,10 +264,10 @@ static uint16_t phy_inw(uint8_t reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-static void phy_outw(uint8_t reg, uint16_t val)
+static int phy_outw(uint8_t reg, uint16_t *val)
 {
     /* PHY write command. */
-    outr(EMAC_MAN, _BV(30) | _BV(28) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18) | val);
+    outr(EMAC_MAN, _BV(30) | _BV(28) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18) | *val);
 
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
@@ -298,6 +280,10 @@ static void phy_outw(uint8_t reg, uint16_t val)
  */
 static int EmacReset(void)
 {
+    int rc = 0;
+    uint16_t phy = 0;
+    int link_wait;
+
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
@@ -327,16 +313,24 @@ static int EmacReset(void)
     /* Wait for PHY ready. */
     NutDelay(255);
 
+    /* Register PHY */
+    rc = NutRegisterPhy( 1, phy_outw, phy_inw);
+    EMPRINTF("EMRPHY rc = %d\n", rc);
+
     /* Clear MII isolate. */
-    phy_inw(NIC_PHY_BMCR);
-    phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
+    NutPhyCtl(PHY_CTL_ISOLATE, &phy);
 
     /* Wait for auto negotiation completed. */
-    phy_inw(NIC_PHY_BMSR);
-    for (;;) {
-        if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+    /* Wait for link. */
+    for (link_wait = 20;; link_wait--) {
+        NutPhyCtl(PHY_GET_LINK, &phy);
+        if (phy==0)
             break;
         }
+        if (link_wait == 0) {
+            return -1;
+        }
+        NutSleep(200);
     }
 
     /* Disable management port. */
@@ -345,7 +339,7 @@ static int EmacReset(void)
     /* Enable receive and transmit clocks. */
     outr(EMAC_USRIO, EMAC_CLKEN);
 
-    return 0;
+    return rc;
 }
 
 /*
@@ -725,6 +719,7 @@ int EmacInit(NUTDEVICE * dev)
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
+
     return 0;
 }
 

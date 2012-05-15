@@ -127,6 +127,15 @@
 #define USART_TXLOWMARK   40
 #endif
 
+#ifndef ENABLE
+#define ENABLE 1
+#endif
+
+#ifndef DISABLE
+#define DISABLE 0
+#endif
+
+
 /*!
  * \typedef RINGBUF
  * \brief Character device ring buffer type.
@@ -192,7 +201,6 @@ struct _RINGBUF {
      */
     HANDLE rbf_que;
 
-#ifdef UART_BLOCKING_READ
     /*! \brief Number of bytes for block-read
      *
      * If this is zero, incoming bytes are stored in ringbuffer
@@ -207,8 +215,6 @@ struct _RINGBUF {
      * Changed by the receiver interrupt.
      */
     uint8_t* volatile rbf_blockptr;
-#endif
-
 };
 
 /*@}*/
@@ -246,7 +252,15 @@ struct _RINGBUF {
  */
 #define USART_MF_XONXOFF        0x0020
 
+/*! \brief Echo configuration
+ *
+ * For RS232 mode it defines if any received character is
+ * echoed back to the sender. For 485 mode it defines
+ * if on switch to transmitting mode the receiver is left
+ * enabled.
+ */
 #define USART_MF_LOCALECHO      0x0040  /*!< Should be used in stream, not device. */
+
 #define USART_MF_COOKEDMODE     0x0080  /*!< Should be used in stream, not device. */
 
 #define USART_MF_NOBUFFER       0x0100  /*!< No buffering. */
@@ -254,7 +268,9 @@ struct _RINGBUF {
 #define USART_MF_BUFFERMASK     0x0300  /*!< Masks buffering mode flags. */
 
 #define USART_MF_HALFDUPLEX     0x0400  /*!< Half duplex control. */
-#define USART_MF_BLOCKREAD      0x0800  /*!< Block read enabled */
+
+#define USART_MF_BLOCKREAD      0x0800  /*!< Block read mode enabled */
+#define USART_MF_BLOCKWRITE     0x1000  /*!< Block write mode enabled */
 
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */
@@ -264,7 +280,6 @@ struct _RINGBUF {
 
 #define USART_SF_TXDISABLED     0x0040  /*!< Transmitter disabled. */
 #define USART_SF_RXDISABLED     0x0080  /*!< Receiver disabled. */
-
 
 /*!
  * \struct _USARTDCB usart.h dev/usart.h

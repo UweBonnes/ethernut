@@ -120,6 +120,8 @@ INPUT                  = @srcdir@/nutdoc_en.txt \
                          @top_srcdir@/nut/arch/arm \
                          @top_srcdir@/nut/arch/avr \
                          @top_srcdir@/nut/arch/avr32 \
+                         @top_srcdir@/nut/arch/cm3 \
+                         @top_srcdir@/nut/arch/unix \
                          @top_srcdir@/nut/crt \
                          @top_srcdir@/nut/c \
                          @top_srcdir@/nut/cpp \

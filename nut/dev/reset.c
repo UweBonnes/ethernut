@@ -61,6 +61,8 @@ void NutReset(void)
     At91Reset();
 #elif defined(__AVR32__)
     Avr32Reset();
+#elif defined(__CORTEX__)
+    Cortex_Reset();
 #endif
 }
 
@@ -77,6 +79,8 @@ int NutResetCause(void)
     return At91ResetCause();
 #elif defined(__AVR32__)
     return Avr32ResetCause();
+#elif defined(__CORTEX__)
+    return Cortex_ResetCause();
 #else
     return NUT_RSTTYP_UNKNOWN;
 #endif

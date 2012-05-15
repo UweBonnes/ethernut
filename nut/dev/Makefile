@@ -179,7 +179,35 @@ include $(top_srcdir)/Makedefs
 SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c \
        twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c watchdog.c \
        rtc.c ds1307rtc.c at49bv.c avrtarget.c sbbif0.c pcf8563.c \
-       pca9555.c usart0sc16is752.c usartsc16is752.c spi_7seg.c led.c keys.c
+       pca9555.c usart0sc16is752.c usartsc16is752.c spi_7seg.c led.c keys.c \
+       at25df.c
+
+ifeq ($(DEVICE), SAM3U)
+	SRCS+=      usb/CDCDSerialDriver.c \
+		    usb/CDCDSerialDriverDescriptors.c \
+		    usb/CDCLineCoding.c \
+		    usb/CDCSetControlLineStateRequest.c \
+		    usb/USBConfigurationDescriptor.c \
+		    usb/USBDCallbacks_Initialized.c \
+		    usb/USBDCallbacks_Reset.c \
+		    usb/USBDDriver.c \
+		    usb/USBDDriverCb_CfgChanged.c \
+		    usb/USBDDriverCb_IfSettingChanged.c \
+		    usb/USBD_UDPHS.c \
+		    usb/USBEndpointDescriptor.c \
+		    usb/USBFeatureRequest.c \
+		    usb/USBGenericDescriptor.c \
+		    usb/USBGenericRequest.c \
+		    usb/USBGetDescriptorRequest.c \
+		    usb/USBInterfaceRequest.c \
+		    usb/USBSetAddressRequest.c \
+		    usb/USBSetConfigurationRequest.c
+
+endif
+
+ifeq ($(DEVICE), STM32F10X)
+	SRCS += ber_fpga_api.c ber_fpga_upload.c #liu.c
+endif
 
 ifeq ($(DEVICE), AT91R40008)
 SRCS += npluled.c sbimmc.c
@@ -211,11 +239,12 @@ ifeq ($(ARCH), unix)
 endif
 
 clean:
-	-rm -f $(OBJS)
-	-rm -f $(TARG)
-	-rm -f $(SRCS:.c=.lst)
-	-rm -f $(SRCS:.c=.lis)
-	-rm -f $(SRCS:.c=.s)
-	-rm -f $(SRCS:.c=.bak)
-	-rm -f $(SRCS:.c=.c~)
-	-rm -f $(SRCS:.c=.i)
+	@echo "  [CLEANING] $(TARG)..."
+	@-rm -f $(OBJS)
+	@-rm -f $(TARG)
+	@-rm -f $(SRCS:.c=.lst)
+	@-rm -f $(SRCS:.c=.lis)
+	@-rm -f $(SRCS:.c=.s)
+	@-rm -f $(SRCS:.c=.bak)
+	@-rm -f $(SRCS:.c=.c~)
+	@-rm -f $(SRCS:.c=.i)

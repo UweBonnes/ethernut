@@ -56,7 +56,8 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
-#include <dev/dm9000.h>
+#include <dev/phy.h>
+#include <dev/dm9000e.h>
 
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -245,28 +246,6 @@
 #define NIC_IMR_PTM     0x02    /* Enable transmitter interrupts. */
 #define NIC_IMR_PRM     0x01    /* Enable receiver interrupts. */
 
-#define NIC_PHY_BMCR    0x00    /* Basic mode control register. */
-
-#define NIC_PHY_BMSR    0x01    /* Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /* Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /* Link status. */
-
-#define NIC_PHY_ID1     0x02    /* PHY identifier register 1. */
-
-#define NIC_PHY_ID2     0x03    /* PHY identifier register 2. */
-
-#define NIC_PHY_ANAR    0x04    /* Auto negotiation advertisement register. */
-
-#define NIC_PHY_ANLPAR  0x05    /* Auto negotiation link partner availability register. */
-
-#define NIC_PHY_ANER    0x06    /* Auto negotiation expansion register. */
-
-#define NIC_PHY_DSCR    0x10    /* Davicom specified configuration register. */
-
-#define NIC_PHY_DSCSR   0x11    /* Davicom specified configuration and status register. */
-
-#define NIC_PHY_10BTCSR 0x12    /* 10BASE-T configuration and status register. */
-
 /*!
  * \brief Network interface controller information structure.
  */
@@ -350,10 +329,11 @@ static INLINE uint8_t nic_inb(uint16_t reg)
  * \brief Read contents of PHY register.
  *
  * \param reg PHY register number.
+ * \param val Pointer to value to read to.
  *
- * \return Contents of the specified register.
+ * \return 0 for success, -1 on fail (not implemented)
  */
-static uint16_t phy_inw(uint8_t reg)
+static uint16_t phy_inw( uint8_t reg)
 {
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
@@ -373,7 +353,9 @@ static uint16_t phy_inw(uint8_t reg)
  * \note NIC interrupts must have been disabled before calling this routine.
  *
  * \param reg PHY register number.
- * \param val Value to write.
+ * \param val Pointer to value to write.
+ *
+ * \return 0 for success, -1 on fail (not implemented)
  */
 static void phy_outw(uint8_t reg, uint16_t val)
 {
@@ -381,7 +363,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
     nic_outb(NIC_EPAR, 0x40 | reg);
 
     /* Store value in PHY data register. */
-    nic_outb(NIC_EPDRL, (uint8_t) val);
+    nic_outb(NIC_EPDRL, (uint8_t) (val));
     nic_outb(NIC_EPDRH, (uint8_t) (val >> 8));
 
     /* PHY write command. */
@@ -390,11 +372,18 @@ static void phy_outw(uint8_t reg, uint16_t val)
     nic_outb(NIC_EPCR, 0x00);
 }
 
+/*!
+ * \brief Initialize PHY.
+ *
+ * \note NutRegisterPhy() has to be called before and NIC has to be
+ *       configured to be able to access the PHY through the MDIO
+ *       bus interface.
+ */
 static int NicPhyInit(void)
 {
+    uint32_t phy = 1;
     /* Restart auto negotiation. */
-    phy_outw(NIC_PHY_ANAR, 0x01E1);
-    phy_outw(NIC_PHY_BMCR, 0x1200);
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
 
     nic_outb(NIC_GPCR, 1);
     nic_outb(NIC_GPR, 0);
@@ -769,6 +758,7 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;
+    uint32_t phy;
 
     /* Power up the PHY. */
     nic_outb(NIC_GPR, 0);
@@ -806,9 +796,14 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
     /* Enable receiver. */
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN | NIC_RCR_ALL);
 
-    /* Wait for link. */
-    for (link_wait = 20;; link_wait--) {
-        if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+    /* Restart autonegotiation */
+    phy = 1;
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
+
+    /* Wait for auto negotiation completed and link established. */
+    for (link_wait = 25;; link_wait--) {
+        NutPhyCtl(PHY_GET_STATUS, &phy);
+        if((phy & PHY_STATUS_HAS_LINK) && (phy & PHY_STATUS_AUTONEG_OK)) {
             break;
         }
         if (link_wait == 0) {
@@ -998,6 +993,9 @@ int DmInit(NUTDEVICE * dev)
     if (id != 0x90000A46) {
         return -1;
     }
+
+    /* Register PHY */
+    NutRegisterPhy( 1, phy_outw, phy_inw);
 
     /* Reset chip. */
     if (NicReset()) {

@@ -66,10 +66,11 @@ ifeq ($(ARCH), unix)
 endif
 
 clean:
-	-rm -f $(OBJS)
-	-rm -f $(TARG)
-	-rm -f $(SRCS:.cc=.lst)
-	-rm -f $(SRCS:.cc=.lis)
-	-rm -f $(SRCS:.cc=.s)
-	-rm -f $(SRCS:.cc=.bak)
-	-rm -f $(SRCS:.cc=.c~)
+	@echo "  [CLEANING] $(TARG)..."
+	@-rm -f $(OBJS)
+	@-rm -f $(TARG)
+	@-rm -f $(SRCS:.cc=.lst)
+	@-rm -f $(SRCS:.cc=.lis)
+	@-rm -f $(SRCS:.cc=.s)
+	@-rm -f $(SRCS:.cc=.bak)
+	@-rm -f $(SRCS:.cc=.c~)
