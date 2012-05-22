@@ -88,11 +88,9 @@ if test "x$wxwidgets_ok" = "xyes"; then
     AC_MSG_NOTICE([checking for wxpropgrid])
     propgridpath1=/usr/include/wx-`wx-config --release`/wx/propgrid
     propgridpath2=/usr/local/include/wx-`wx-config --release`/wx/propgrid
-    propgrid_local=no
     AC_CHECK_FILE($propgridpath1/propgrid.h,[propgrid_ok="yes"],[propgrid_ok="no"])
     if test "x$propgrid_ok" = "xno"; then
         AC_CHECK_FILE($propgridpath2/propgrid.h,[propgrid_ok="yes"],[propgrid_ok="no"])
-        propgrid_local=yes
     fi
     if test "x$propgrid_ok" = "xno"; then
       AC_MSG_WARN(wxpropgrid not found)
@@ -125,10 +123,12 @@ fi
 WX_CPPFLAGS="`$WXCONFIG --cppflags`"
 WX_CXXFLAGS="`$WXCONFIG --cxxflags`"
 WX_LIBS="`$WXCONFIG --libs`"
- 
+WX_PROPGRID="`$WXCONFIG --optional-libs propgrid`"
+
 AC_SUBST(WX_CPPFLAGS)
 AC_SUBST(WX_CXXFLAGS)
 AC_SUBST(WX_LIBS)
+AC_SUBST(WX_PROPGRID)
 
 AC_PROG_CPP
 AC_PROG_CXX
@@ -137,7 +137,6 @@ AM_PROG_LIBTOOL
 
 # Propagate our conditionals.
 AM_CONDITIONAL(BUILD_NUTDISC, test x$nutdisc_ok = xyes)
-AM_CONDITIONAL(PROPGRID_LOCAL, test x$propgrid_local = xyes)
 
 AC_OUTPUT([
 Makefile

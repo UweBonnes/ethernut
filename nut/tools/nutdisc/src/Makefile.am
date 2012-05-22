@@ -44,14 +44,9 @@ nutdisc_SOURCES = \
 
 nutdisc_CXXFLAGS = @WX_CXXFLAGS@ 
 
-if PROPGRID_LOCAL
-nutdisc_LDADD = /usr/local/lib/$(PROPGRIDLIBNAME)
-else
-nutdisc_LDADD = /usr/lib/$(PROPGRIDLIBNAME)
-endif
-
-nutdisc_LDADD += \
+nutdisc_LDADD = \
 	$(WX_LIBS) \
+	$(WX_PROPGRID) \
 	$(NUTDISC_LIBS)
 
 endif
