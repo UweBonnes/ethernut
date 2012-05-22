@@ -21,7 +21,7 @@ AC_ARG_ENABLE(nutconf-gui,
   [enable_nutconf_gui=yes]
 )
 
-
+REQWX="2.9.1"
 nutconf_gui_ok=no
 if test x$enable_nutconf_gui = xyes; then
 	WXCONFIG=wx-config
@@ -43,6 +43,11 @@ if test x$enable_nutconf_gui = xyes; then
 	    AC_MSG_WARN([wxWidgets is required. Try --with-wx-config.])
 	    nutconf_gui_ok=no
 	fi
+        if test `expr "$wxversion" \< "$REQWX"` = 1 ; then
+            AC_MSG_RESULT([Install wxWidget Version > 2.9 or configure with --disable-nutconf-gui])
+            AC_MSG_ERROR([*** wxWidgets "$REQWX" or later is required.])
+	    nutconf_gui_ok=no
+        fi
 	 
 	WX_CPPFLAGS="`$WXCONFIG --cppflags`"
 	WX_CXXFLAGS="`$WXCONFIG --cxxflags`"
