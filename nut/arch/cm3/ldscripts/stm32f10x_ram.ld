@@ -21,6 +21,7 @@ SECTIONS
         _svect = .;
         KEEP(*(.isr_vector))
         _evect = .;
+        *(.nutinit)
         *(.text .text.* .gnu.linkonce.t.*)
         *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.glue_7t)
