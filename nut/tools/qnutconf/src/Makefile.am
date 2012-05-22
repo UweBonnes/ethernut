@@ -10,8 +10,6 @@ DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DNUTCONF_V
 
 ## UI compiler
 
-UIC=uic-qt4
-
 ui_%.h : %.ui
 	$(UIC) -o "$@" "$<"
 
