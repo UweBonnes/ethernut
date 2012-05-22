@@ -20,7 +20,7 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <dev/usb_stm32/usb_lib.h>
 #include <dev/usb_stm32/usb_prop.h>
