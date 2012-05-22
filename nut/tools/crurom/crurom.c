@@ -30,6 +30,7 @@ const char crurom_rcsid[] = "@(#) $Id$";
 #include <config.h>
 #endif
 
+#include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
