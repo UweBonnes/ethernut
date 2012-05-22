@@ -117,7 +117,7 @@ int dofile(char *name)
     if(entryno > 1)
         fprintf(fpout, "&file%dentry, ", entryno - 1);
     else
-        fprintf(fpout, "0, ", entryno - 1);
+        fprintf(fpout, "0, ");
 
     fprintf(fpout, "(prog_char *)file%dname, %d, (prog_char *)file%ddata };\n", entryno, total, entryno);
 
