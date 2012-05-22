@@ -13,10 +13,10 @@ AM_MAINTAINER_MODE
 
 AC_PROG_CXX
 
-
-
-
-
+AC_CHECK_PROGS([UIC], [uic-qt4 uic], [none])
+if test "$UIC" == "none"; then
+   AC_MSG_ERROR([Qt UI Compiler not found])
+fi
 
 AM_PROG_LIBTOOL
 

@@ -8,10 +8,6 @@ MAINTAINERCLEANFILES = Makefile.in
 
 DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED
 
-## UI compiler
-
-UIC=uic-qt4
-
 ui_%.h : %.ui
 	$(UIC) -o "$@" "$<"
 
