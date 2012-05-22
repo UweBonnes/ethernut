@@ -119,7 +119,7 @@ int dofile(char *name)
     else
         fprintf(fpout, "0, ");
 
-    fprintf(fpout, "(prog_char *)file%dname, %d, (prog_char *)file%ddata };\n", entryno, total, entryno);
+    fprintf(fpout, "(prog_char *)file%dname, %ld, (prog_char *)file%ddata };\n", entryno, total, entryno);
 
     return rc;
 }
