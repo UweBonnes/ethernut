@@ -39,11 +39,16 @@
  * \endverbatim
  */
 
+#ifndef _GORP_MEMTEST_8BIT_H_
+#define _GORP_MEMTEST_8BIT_H_
+
 #include <inttypes.h>
-#include <stdlib.h>
+#include <stddef.h>
 
 typedef uint8_t datum;
 
-datum  MemtestDataBus8(volatile datum* addr);
+datum  MemtestDataBus8(volatile datum *addr);
 datum *MemtestAddrBus8(volatile datum *base, size_t size);
-datum *MemtestDevice8(volatile datum * base, size_t size);
+datum *MemtestDevice8(volatile datum *base, size_t size);
+
+#endif
