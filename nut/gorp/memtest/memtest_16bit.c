@@ -42,9 +42,7 @@
  * Implementation of 16 bit databus memory tests
  */
 
-#include <inttypes.h>
 #include <gorp/memtest_16bit.h>
-
 
 #define MemtestDataBus MemtestDataBus16
 #define MemtestAddrBus MemtestAddrBus16
