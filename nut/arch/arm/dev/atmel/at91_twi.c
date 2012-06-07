@@ -122,6 +122,11 @@ static void TwInterrupt(void *arg)
             icb->tw_mm_idx++;
         } else {
             /* All bytes sent, wait for completion. */
+#if defined(MCU_AT91SAM9XE)
+            /* On the SAM9XE the stop condition is not sent automatically
+               when the transmitter runs out of data. */
+            outr(TWI_CR, TWI_STOP);
+#endif
             outr(TWI_IDR, TWI_TXRDY);
             outr(TWI_IER, TWI_TXCOMP);
         }
