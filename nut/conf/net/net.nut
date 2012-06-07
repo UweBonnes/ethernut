@@ -244,22 +244,7 @@ nutnet =
             "ipout.c",
             "ipdemux.c",
             "route.c"
-        },
-        options = 
-        {
-            {
-                macro = "NUTIPCONF_ICMP_ARPMETHOD",
-                brief = "Enable ARP Method",
-                description = "Allow IP configuration using ARP method.\n\n"..
-                              "When enabling this function, be aware that DHCP servers "..
-                              "may probe an IP/MAC relationship by sending an ICMP request. "..
-                              "This triggers the Nut/Net ARP method and terminates the DHCP "..
-                              "client, leaving the system with default configurations of "..
-                              "the network mask (255.255.255.0) and default gateway (none).",
-                flavor = "booldata",
-                file = "include/cfg/ip.h"
-            },
-        }        
+        }
     },
     {
         name = "nutnet_icmp",

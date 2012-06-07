@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 by egnite GmbH
+ * Copyright (C) 2008-2012 by egnite GmbH
  * Copyright (C) 2001-2007 by egnite Software GmbH
  * Copyright (c) 1983, 1993 by The Regents of the University of California
  * Copyright (c) 1993 by Digital Equipment Corporation
@@ -90,13 +90,12 @@ int (*ip_demux) (NUTDEVICE *, NETBUF *);
 
 /*!
  * \brief Process incoming IP datagrams.
+ * \internal
  *
  * Datagrams addressed to other destinations and datagrams
  * whose version number is not 4 are silently discarded.
  *
- * \note This routine is called by the Ethernet layer on
- *       incoming IP datagrams. Applications typically do
- *       not call this function.
+ * This routine is called by the Ethernet layer on incoming IP datagrams.
  *
  * \param dev Identifies the device that received this datagram.
  * \param nb  The network buffer received.
@@ -138,14 +137,13 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     /* Optional checksum calculation on incoming datagrams. */
 #endif
 
-    /*
-     * Check for broadcast.
-     */
     dst = ip->ip_dst;
     nif = dev->dev_icb;
 
-    if (dst == INADDR_BROADCAST ||
-        (nif->if_local_ip && nif->if_mask != INADDR_BROADCAST && (dst | nif->if_mask) == INADDR_BROADCAST)) {
+    /*
+     * Check for limited broadcast.
+     */
+    if (dst == INADDR_BROADCAST) {
         bcast = 1;
     }
 
@@ -168,30 +166,40 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     }
 
     /*
-     * Packet is unicast.
+     * Check device's local IP address.
      */
-    else {
-        bcast = 0;
-        nb->nb_flags |= NBAF_UNICAST;
-
-#ifdef NUTIPCONF_ICMP_ARPMETHOD
-        /*
-         * Silently discard datagrams for other destinations.
-         * However, if we haven't got an IP address yet, we
-         * allow ICMP datagrams to support dynamic IP ARP method,
-         * if this option had been enabled.
-         */
-        if (nif->if_local_ip == 0 && ip->ip_p == IPPROTO_ICMP && (dst & 0xff000000) != 0xff000000 && (dst & 0xff000000) != 0) {
-            NutNetIfSetup(dev, dst, 0, 0);
-        }
-#endif
-        if (nif->if_local_ip && (dst == 0 || dst != nif->if_local_ip)) {
-            NutNetBufFree(nb);
-            return;
-        }
+    else if (nif->if_local_ip == 0) {
+        /* Not yet configured, discard net-directed datagrams. */
+        NutNetBufFree(nb);
+        return;
     }
 
-    /* Check the IP data length. */
+    /*
+     * Check for unicast.
+     */
+    else if (dst == nif->if_local_ip) {
+        bcast = 0;
+        nb->nb_flags |= NBAF_UNICAST;
+    }
+
+    /*
+     * Check for net-directed broadcast.
+     */
+    else if ((dst & ~nif->if_mask) == ~nif->if_mask) {
+        bcast = 1;
+    }
+
+    /*
+     * Not for us, discard silently.
+     */
+    else {
+        NutNetBufFree(nb);
+        return;
+    }
+
+    /*
+     * Calculate IP data length.
+     */
     nb->nb_tp.sz = htons(ip->ip_len);
     if (nb->nb_tp.sz < hdrlen || nb->nb_tp.sz > nb->nb_nw.sz) {
         NutNetBufFree(nb);
@@ -203,6 +211,9 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         nb->nb_tp.vp = ((char *) ip) + hdrlen;
     }
 
+    /*
+     * Route valid datagram to the related handler.
+     */
     if (ip_demux == NULL || (*ip_demux) (dev, nb)) {
         switch (ip->ip_p) {
         case IPPROTO_ICMP:
