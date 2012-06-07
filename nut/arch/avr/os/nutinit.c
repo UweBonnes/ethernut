@@ -312,8 +312,32 @@ THREAD(NutIdle, arg)
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
     uint8_t sleep_mode;
 #endif
-#ifdef IDLE_HEARTBEAT_BIT
-    uint8_t beat = 0;
+#if defined (IDLE_HEARTBEAT_PIN) && defined (IDLE_HEARTBEAT_AVRPORT)
+#if (IDLE_HEARTBEAT_AVRPORT == AVRPORTA)
+#define IDLE_HEARTBEAT_DDR DDRA
+#define IDLE_HEARTBEAT_PORT PORTA
+#elif (IDLE_HEARTBEAT_AVRPORT == AVRPORTB)
+#define IDLE_HEARTBEAT_DDR DDRB
+#define IDLE_HEARTBEAT_PORT PORTB
+#elif (IDLE_HEARTBEAT_AVRPORT == AVRPORTC)
+#define IDLE_HEARTBEAT_DDR DDRC
+#define IDLE_HEARTBEAT_PORT PORTC
+#elif (IDLE_HEARTBEAT_AVRPORT == AVRPORTD)
+#define IDLE_HEARTBEAT_DDR DDRD
+#define IDLE_HEARTBEAT_PORT PORTD
+#elif (IDLE_HEARTBEAT_AVRPORT == AVRPORTE)
+#define IDLE_HEARTBEAT_DDR DDRE
+#define IDLE_HEARTBEAT_PORT PORTE
+#elif (IDLE_HEARTBEAT_AVRPORT == AVRPORTF)
+#define IDLE_HEARTBEAT_DDR DDRF
+#define IDLE_HEARTBEAT_PORT PORTF
+#elif (IDLE_HEARTBEAT_AVRPORT == AVRPORTG)
+#define IDLE_HEARTBEAT_DDR DDRG
+#define IDLE_HEARTBEAT_PORT PORTG
+#endif
+#endif
+#ifdef IDLE_HEARTBEAT_DDR
+    IDLE_HEARTBEAT_DDR |= _BV(IDLE_HEARTBEAT_PIN);
 #endif
 
 #ifdef NUT_INIT_IDLE
@@ -341,16 +365,6 @@ THREAD(NutIdle, arg)
         NutThreadYield();
         NutThreadDestroy();
 
-#ifdef IDLE_HEARTBEAT_BIT
-        if ((beat = !beat) == 0) {
-            //UDR = '*';
-            cbi(IDLE_HEARTBEAT_PORT, IDLE_HEARTBEAT_BIT);
-        }
-        else {
-            sbi(IDLE_HEARTBEAT_PORT, IDLE_HEARTBEAT_BIT);
-        }
-        sbi(IDLE_HEARTBEAT_DDR, IDLE_HEARTBEAT_BIT);
-#endif
 
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
         if (idle_sleep_mode != SLEEP_MODE_NONE) {
@@ -364,11 +378,17 @@ THREAD(NutIdle, arg)
             uint8_t bitkeeper = bit_is_set(XMCRB, XMBK);
             cbi(XMCRB, XMBK); // disable buskeeper
 #endif
+#ifdef IDLE_HEARTBEAT_PORT
+            IDLE_HEARTBEAT_PORT &= ~ _BV(IDLE_HEARTBEAT_PIN);
+#endif
             /* Note:  avr-libc has a sleep_mode() function, but it's broken for
             AT90CAN128 with avr-libc version earlier than 1.2 */
             AVR_SLEEP_CTRL_REG |= _BV(SE);
             __asm__ __volatile__ ("sleep" "\n\t" :: );
             AVR_SLEEP_CTRL_REG &= ~_BV(SE);
+#ifdef IDLE_HEARTBEAT_PORT
+            IDLE_HEARTBEAT_PORT |= _BV(IDLE_HEARTBEAT_PIN);
+#endif
 #ifdef IDLE_THREAD_ADC_OFF
             if (bitkeeper) {
                 sbi(XMCRB, XMBK); // re-enable buskeeper
