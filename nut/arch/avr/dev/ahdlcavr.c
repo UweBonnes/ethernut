@@ -604,8 +604,9 @@ THREAD(AhdlcRx, arg)
              * Allocate the receive buffer, if this fails, we are in a
              * low memory situation. Take a nap and see, if the
              * situation improved.
+             * Note that we also put the FCS into the receive buffer.
              */
-            if ((rxbuf = NutHeapAlloc(dcb->dcb_rx_mru)) != 0) {
+            if ((rxbuf = NutHeapAlloc(dcb->dcb_rx_mru + 2)) != 0) {
                 break;
             }
             NutSleep(1000);
@@ -672,7 +673,7 @@ THREAD(AhdlcRx, arg)
                      * we should never get a frame which is too long. If it
                      * happens, toss it away and grab the next incoming one.
                      */
-                    if (rxcnt++ < dcb->dcb_rx_mru) {
+                    if (rxcnt++ < dcb->dcb_rx_mru + 2) {
                         /* Update calculated checksum and store character in buffer. */
                         tbx = (uint16_t) ((uint8_t) rxfcs ^ ch) << 1;
                         rxfcs >>= 8;
@@ -683,7 +684,7 @@ THREAD(AhdlcRx, arg)
                     continue;
                 }
 
-                if (rxcnt > 6 && rxfcs == AHDLC_GOODFCS) {
+                if (rxcnt >= 2 && rxfcs == AHDLC_GOODFCS) {
                     /*
                      * If the frame checksum is valid, create a NETBUF
                      * and pass it to the network specific receive handler.
@@ -1144,6 +1145,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         if (ppv && (*ppv != 0)) {
             dev->dev_icb = *ppv;
             dev->dev_type = IFTYP_NET;
+            dcb->dcb_rx_mru = dcb->dcb_tx_mru = ((IFNET *)(((NUTDEVICE *)ppv)->dev_icb))->if_mtu;
             NutEventPost(&dcb->dcb_mf_evt);
         } else {
             dev->dev_type = IFTYP_CHAR;
@@ -1207,8 +1209,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
     dcb->dcb_base = dev->dev_base;
     dcb->dcb_rx_buf = NutHeapAlloc(256);
     dcb->dcb_tx_buf = NutHeapAlloc(256);
-    dcb->dcb_rx_mru = 1500;
-    dcb->dcb_tx_mru = 1500;
+    dcb->dcb_rx_mru = dcb->dcb_tx_mru = ((IFNET *)dev->dev_icb)->if_mtu;
     dcb->dcb_tx_accm = 0xFFFFFFFF;
 
     /*
