@@ -46,7 +46,7 @@ SRC1 =  tcpsock.c tcpsm.c tcpin.c tcpout.c tcputil.c \
 	icmpin.c icmpout.c \
 	lcpin.c ipcpin.c pppsm.c papin.c papout.c
 
-SRC2 =  ipin.c ipout.c ipcsum.c route.c inet.c \
+SRC2 =  ipin.c ipout.c ipcsum.c ipdemux.c route.c inet.c \
 	netdebug.c pppdebug.c \
 	arpin.c arpout.c arpcache.c \
 	ethin.c ethout.c ethdemux.c ifconfig.c confnet.c \
