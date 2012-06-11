@@ -483,7 +483,7 @@ nutarch_cm3_stm32f1 =
         brief = "STM32F DMA Controller 2",
         description = "Generic DMA Support",
         requires = { "HW_MCU_STM32", "HW_DMA2_STM32F1" },
-        provides = { "HW_DMAF1" },
+        provides = { "HW_DMAF2" },
         sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma2.c" }
     },
 }
