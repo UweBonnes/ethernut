@@ -619,12 +619,27 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     {
         /* In case Oversampling mode is 8 Samples */
         integerdivider = ((25 * apbclock) / (2 * rate));
+        if (integerdivider > 200)
+        {
+            /* switch back to 16 Sample Oversampling when possible*/
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)) = 0;
+            integerdivider = ((25 * apbclock) / (4 * rate));
+        }
     }
     else
     {
         /* In case Oversampling mode is 16 Samples */
         integerdivider = ((25 * apbclock) / (4 * rate));
+        if (integerdivider < 100)
+        {
+            /* switch back to 8 Sample Oversampling*/
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)) = 1;
+            integerdivider = ((25 * apbclock) / (2 * rate));
+        }
     }
+    /* Cap rate to highest possible */
+    if (integerdivider <100)
+        integerdivider = 100;
     tmpreg = (integerdivider / 100) << 4;
 
     /* Determine the fractional part */
