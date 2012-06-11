@@ -572,7 +572,7 @@ static void Stm32UsartDisable(void)
  */
 static uint32_t Stm32UsartGetSpeed(void)
 {
-    uint32_t clk;
+    uint32_t clk, frac_div = USARTn->BRR;
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
@@ -582,8 +582,14 @@ static uint32_t Stm32UsartGetSpeed(void)
     else {
         clk = RCC_ClocksStatus.PCLK1_Frequency;
     }
-    // TODO: That must be wrong!
-    return clk / ((USARTn->BRR)&0xFFFF);
+    if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    {
+        uint32_t  frac = frac_div & 7;
+        frac_div >>= 1;
+        frac_div &= ~0x7;
+        frac_div |= frac;
+    }
+    return clk / frac_div;
 }
 
 /*!
