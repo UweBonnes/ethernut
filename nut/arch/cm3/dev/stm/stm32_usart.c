@@ -149,11 +149,13 @@ static uint_fast8_t rs485_control;
 /*!
  * \brief Definition of RS485 DE switching functions.
  */
-// TODO: Figure out fastest way for switching signals
-//#define Rs485DE_L() DE_GPIO_BASE->BRR=_BV(DE_GPIO_PIN)
-//#define Rs485DE_H() DE_GPIO_BASE->BSRR=_BV(DE_GPIO_PIN)
+#ifdef USART_4485DE_INV
+#define Rs485DE_L() GpioPinSetHigh(DE_GPIO_PORT, DE_GPIO_PIN)
+#define Rs485DE_H() GpioPinSetLow(DE_GPIO_PORT, DE_GPIO_PIN)
+#else
 #define Rs485DE_L() GpioPinSetLow(DE_GPIO_PORT, DE_GPIO_PIN)
 #define Rs485DE_H() GpioPinSetHigh(DE_GPIO_PORT, DE_GPIO_PIN)
+#endif
 #else
 #define Rs485DE_L()
 #define Rs485DE_H()
@@ -166,9 +168,15 @@ static uint_fast8_t rs485_control;
 // TODO: Figure out fastest way for switching signals
 //#define Rs485NRE_L() NRE_GPIO_BASE->BRR=_BV(NRE_GPIO_PIN)
 //#define Rs485NRE_H() NRE_GPIO_BASE->BSRR=_BV(NRE_GPIO_PIN)
+#ifdef USART_4485RE_INV
+#define Rs485NRE_L() GpioPinSetHigh(NRE_GPIO_PORT, NRE_GPIO_PIN)
+#define Rs485NRE_H() if( rs485_control == 0) \
+    GpioPinSetLow(NRE_GPIO_PORT, NRE_GPIO_PIN)
+#else
 #define Rs485NRE_L() GpioPinSetLow(NRE_GPIO_PORT, NRE_GPIO_PIN)
 #define Rs485NRE_H() if( rs485_control == 0) \
     GpioPinSetHigh(NRE_GPIO_PORT, NRE_GPIO_PIN)
+#endif
 #else
 #define Rs485NRE_L()
 #define Rs485NRE_H()

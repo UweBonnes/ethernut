@@ -236,6 +236,14 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART1_485DE_INV",
+                brief = "RS485 DE Invert",
+                    description = "Sets the DE signal as active low.\n",
+                requires = { "USART1_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART1_485DE_PORT",
                 brief = "RS485 DE Control Port",
                     description = "Select the port of the DE signal.\n",
@@ -254,6 +262,14 @@ nutarch_cm3_stm32_devices =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
+            },
+            { 
+                macro = "USART1_485RE_INV",
+                brief = "RS485 RE Invert",
+                    description = "Sets the RE signal as active high.\n",
+                requires = { "USART1_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
             },
             {
                 macro = "USART1_485RE_PORT",
@@ -455,6 +471,14 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART2_485DE_INV",
+                brief = "RS485 DE Invert",
+                    description = "Sets the DE signal as active low.\n",
+                requires = { "USART2_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART2_485DE_PORT",
                 brief = "RS485 DE Control Port",
                     description = "Select the port of the DE signal.\n",
@@ -473,6 +497,14 @@ nutarch_cm3_stm32_devices =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
+            },
+            { 
+                macro = "USART2_485RE_INV",
+                brief = "RS485 RE Invert",
+                    description = "Sets the RE signal as active high.\n",
+                requires = { "USART2_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
             },
             {
                 macro = "USART2_485RE_PORT",
@@ -695,6 +727,14 @@ nutarch_cm3_stm32_devices =
 		    provides = { "USART3_RS485_CTRL" },
 		    file = "include/cfg/uart.h"
 		},
+            {
+                macro = "USART3_485DE_INV",
+                brief = "RS485 DE Invert",
+                    description = "Sets the DE signal as active low.\n",
+                requires = { "USART3_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
 		{
 		    macro = "USART3_485DE_PORT",
 		    brief = "RS485 DE Control Port",
@@ -715,6 +755,14 @@ nutarch_cm3_stm32_devices =
 		    choices = function() return GetGpioBits() end,
 		    file = "include/cfg/uart.h"
 		},
+            { 
+                macro = "USART3_485RE_INV",
+                brief = "RS485 RE Invert",
+                    description = "Sets the RE signal as active high.\n",
+                requires = { "USART3_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
         {
             macro = "USART3_485RE_PORT",
             brief = "RS485 /RE Control Port",
@@ -848,6 +896,14 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART4_485DE_INV",
+                brief = "RS485 DE Invert",
+                    description = "Sets the DE signal as active low.\n",
+                requires = { "USART4_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART4_485DE_PORT",
                 brief = "RS485 DE Control Port",
                     description = "Select the port of the DE signal.\n",
@@ -866,6 +922,14 @@ nutarch_cm3_stm32_devices =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
+            },
+            { 
+                macro = "USART4_485RE_INV",
+                brief = "RS485 RE Invert",
+                    description = "Sets the RE signal as active high.\n",
+                requires = { "USART4_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
             },
             {
                 macro = "USART4_485RE_PORT",
@@ -988,6 +1052,14 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART5_485DE_INV",
+                brief = "RS485 DE Invert",
+                    description = "Sets the DE signal as active low.\n",
+                requires = { "USART5_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART5_485DE_PORT",
                 brief = "RS485 DE Control Port",
                     description = "Select the port of the DE signal.\n",
@@ -1006,6 +1078,14 @@ nutarch_cm3_stm32_devices =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
+            },
+            { 
+                macro = "USART5_485RE_INV",
+                brief = "RS485 RE Invert",
+                    description = "Sets the RE signal as active high.\n",
+                requires = { "USART5_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
             },
             {
                 macro = "USART35_485RE_PORT",
