@@ -74,5 +74,11 @@ nutgorp =
         brief = "Cryptography",
         description = "Functions to encrypt and decrypt data.",
         script = "gorp/crypt.nut"
+    },
+    {
+        name = "nutgorp_memtest",
+        brief = "Memory tests",
+        description = "Functions to test RAM memorys, databus and address bus wiring.",
+        script = "gorp/memtest.nut"
     }
 }

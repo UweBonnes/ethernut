@@ -2,21 +2,27 @@
   ******************************************************************************
   * @file    stm32l1xx_rcc.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    31-December-2010
-  * @brief   This file contains all the functions prototypes for the RCC
+  * @version V1.1.1
+  * @date    05-March-2012
+  * @brief   This file contains all the functions prototypes for the RCC 
   *          firmware library.
   ******************************************************************************
   * @attention
   *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
   *
-  * <h2><center>&copy; COPYRIGHT 2010 STMicroelectronics</center></h2>
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  *
   ******************************************************************************
   */
 
@@ -55,7 +61,7 @@ typedef struct
   * @{
   */
 
-/** @defgroup HSE_configuration
+/** @defgroup RCC_HSE_configuration 
   * @{
   */
 
@@ -67,9 +73,9 @@ typedef struct
 
 /**
   * @}
-  */
+  */ 
 
-/** @defgroup MSI_Clock_Range
+/** @defgroup RCC_MSI_Clock_Range 
   * @{
   */
 
@@ -91,9 +97,9 @@ typedef struct
 
 /**
   * @}
-  */
-
-/** @defgroup PLL_Clock_Source
+  */ 
+  
+/** @defgroup RCC_PLL_Clock_Source 
   * @{
   */
 
@@ -104,9 +110,9 @@ typedef struct
                                    ((SOURCE) == RCC_PLLSource_HSE))
 /**
   * @}
-  */
+  */ 
 
-/** @defgroup PLL_Multiplication_Factor
+/** @defgroup RCC_PLL_Multiplication_Factor 
   * @{
   */
 
@@ -130,7 +136,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup PLL_Divider_Factor
+/** @defgroup RCC_PLL_Divider_Factor 
   * @{
   */
 
@@ -144,8 +150,8 @@ typedef struct
 /**
   * @}
   */
-
-/** @defgroup System_Clock_Source
+  
+/** @defgroup RCC_System_Clock_Source 
   * @{
   */
 
@@ -161,7 +167,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup AHB_Clock_Source
+/** @defgroup RCC_AHB_Clock_Source
   * @{
   */
 
@@ -181,9 +187,9 @@ typedef struct
                            ((HCLK) == RCC_SYSCLK_Div512))
 /**
   * @}
-  */
+  */ 
 
-/** @defgroup APB1_APB2_Clock_Source
+/** @defgroup RCC_APB1_APB2_Clock_Source
   * @{
   */
 
@@ -198,9 +204,9 @@ typedef struct
 /**
   * @}
   */
+  
 
-
-/** @defgroup RCC_Interrupt_Source
+/** @defgroup RCC_Interrupt_Source 
   * @{
   */
 
@@ -210,22 +216,23 @@ typedef struct
 #define RCC_IT_HSERDY                    ((uint8_t)0x08)
 #define RCC_IT_PLLRDY                    ((uint8_t)0x10)
 #define RCC_IT_MSIRDY                    ((uint8_t)0x20)
+#define RCC_IT_LSECSS                    ((uint8_t)0x40)
 #define RCC_IT_CSS                       ((uint8_t)0x80)
 
-#define IS_RCC_IT(IT) ((((IT) & (uint8_t)0xC0) == 0x00) && ((IT) != 0x00))
+#define IS_RCC_IT(IT) ((((IT) & (uint8_t)0x80) == 0x00) && ((IT) != 0x00))
 
 #define IS_RCC_GET_IT(IT) (((IT) == RCC_IT_LSIRDY) || ((IT) == RCC_IT_LSERDY) || \
                            ((IT) == RCC_IT_HSIRDY) || ((IT) == RCC_IT_HSERDY) || \
                            ((IT) == RCC_IT_PLLRDY) || ((IT) == RCC_IT_MSIRDY) || \
-                           ((IT) == RCC_IT_CSS))
+                           ((IT) == RCC_IT_CSS)  || ((IT) == RCC_IT_LSECSS))
 
-#define IS_RCC_CLEAR_IT(IT) ((((IT) & (uint8_t)0x40) == 0x00) && ((IT) != 0x00))
+#define IS_RCC_CLEAR_IT(IT) ((((IT) & (uint8_t)0x00) == 0x00) && ((IT) != 0x00))
 
 /**
   * @}
   */
-
-/** @defgroup LSE_Configuration
+  
+/** @defgroup RCC_LSE_Configuration 
   * @{
   */
 
@@ -238,7 +245,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup RTC_Clock_Source
+/** @defgroup RCC_RTC_Clock_Source
   * @{
   */
 
@@ -258,7 +265,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup AHB_Peripherals
+/** @defgroup RCC_AHB_Peripherals 
   * @{
   */
 
@@ -268,19 +275,24 @@ typedef struct
 #define RCC_AHBPeriph_GPIOD               RCC_AHBENR_GPIODEN
 #define RCC_AHBPeriph_GPIOE               RCC_AHBENR_GPIOEEN
 #define RCC_AHBPeriph_GPIOH               RCC_AHBENR_GPIOHEN
+#define RCC_AHBPeriph_GPIOF               RCC_AHBENR_GPIOFEN
+#define RCC_AHBPeriph_GPIOG               RCC_AHBENR_GPIOGEN
 #define RCC_AHBPeriph_CRC                 RCC_AHBENR_CRCEN
 #define RCC_AHBPeriph_FLITF               RCC_AHBENR_FLITFEN
 #define RCC_AHBPeriph_SRAM                RCC_AHBLPENR_SRAMLPEN
 #define RCC_AHBPeriph_DMA1                RCC_AHBENR_DMA1EN
+#define RCC_AHBPeriph_DMA2                RCC_AHBENR_DMA2EN
+#define RCC_AHBPeriph_AES                 RCC_AHBENR_AESEN
+#define RCC_AHBPeriph_FSMC                RCC_AHBENR_FSMCEN
 
-#define IS_RCC_AHB_PERIPH(PERIPH) ((((PERIPH) & 0xFEFF6FC0) == 0x00) && ((PERIPH) != 0x00))
-#define IS_RCC_AHB_LPMODE_PERIPH(PERIPH) ((((PERIPH) & 0xFEFE6FC0) == 0x00) && ((PERIPH) != 0x00))
+#define IS_RCC_AHB_PERIPH(PERIPH) ((((PERIPH) & 0xB4FF6F00) == 0x00) && ((PERIPH) != 0x00))
+#define IS_RCC_AHB_LPMODE_PERIPH(PERIPH) ((((PERIPH) & 0xB4FF6F00) == 0x00) && ((PERIPH) != 0x00))
 
 /**
   * @}
   */
 
-/** @defgroup APB2_Peripherals
+/** @defgroup RCC_APB2_Peripherals 
   * @{
   */
 
@@ -289,28 +301,33 @@ typedef struct
 #define RCC_APB2Periph_TIM10             RCC_APB2ENR_TIM10EN
 #define RCC_APB2Periph_TIM11             RCC_APB2ENR_TIM11EN
 #define RCC_APB2Periph_ADC1              RCC_APB2ENR_ADC1EN
+#define RCC_APB2Periph_SDIO              RCC_APB2ENR_SDIOEN
 #define RCC_APB2Periph_SPI1              RCC_APB2ENR_SPI1EN
 #define RCC_APB2Periph_USART1            RCC_APB2ENR_USART1EN
 
-#define IS_RCC_APB2_PERIPH(PERIPH) ((((PERIPH) & 0xFFFFADE2) == 0x00) && ((PERIPH) != 0x00))
+#define IS_RCC_APB2_PERIPH(PERIPH) ((((PERIPH) & 0xFFFFA5E2) == 0x00) && ((PERIPH) != 0x00))
 /**
   * @}
-  */
+  */ 
 
-/** @defgroup APB1_Peripherals
+/** @defgroup RCC_APB1_Peripherals 
   * @{
   */
 
 #define RCC_APB1Periph_TIM2              RCC_APB1ENR_TIM2EN
 #define RCC_APB1Periph_TIM3              RCC_APB1ENR_TIM3EN
 #define RCC_APB1Periph_TIM4              RCC_APB1ENR_TIM4EN
+#define RCC_APB1Periph_TIM5              RCC_APB1ENR_TIM5EN
 #define RCC_APB1Periph_TIM6              RCC_APB1ENR_TIM6EN
 #define RCC_APB1Periph_TIM7              RCC_APB1ENR_TIM7EN
 #define RCC_APB1Periph_LCD               RCC_APB1ENR_LCDEN
 #define RCC_APB1Periph_WWDG              RCC_APB1ENR_WWDGEN
 #define RCC_APB1Periph_SPI2              RCC_APB1ENR_SPI2EN
+#define RCC_APB1Periph_SPI3              RCC_APB1ENR_SPI3EN
 #define RCC_APB1Periph_USART2            RCC_APB1ENR_USART2EN
 #define RCC_APB1Periph_USART3            RCC_APB1ENR_USART3EN
+#define RCC_APB1Periph_UART4             RCC_APB1ENR_UART4EN
+#define RCC_APB1Periph_UART5             RCC_APB1ENR_UART5EN
 #define RCC_APB1Periph_I2C1              RCC_APB1ENR_I2C1EN
 #define RCC_APB1Periph_I2C2              RCC_APB1ENR_I2C2EN
 #define RCC_APB1Periph_USB               RCC_APB1ENR_USBEN
@@ -318,12 +335,13 @@ typedef struct
 #define RCC_APB1Periph_DAC               RCC_APB1ENR_DACEN
 #define RCC_APB1Periph_COMP              RCC_APB1ENR_COMPEN
 
-#define IS_RCC_APB1_PERIPH(PERIPH) ((((PERIPH) & 0x4F19B5C8) == 0x00) && ((PERIPH) != 0x00))
+
+#define IS_RCC_APB1_PERIPH(PERIPH) ((((PERIPH) & 0x4F0135C0) == 0x00) && ((PERIPH) != 0x00))
 /**
   * @}
   */
 
-/** @defgroup MCO_Clock_Source
+/** @defgroup RCC_MCO_Clock_Source
   * @{
   */
 
@@ -344,7 +362,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup MCO_Output_Divider
+/** @defgroup RCC_MCO_Output_Divider 
   * @{
   */
 
@@ -359,9 +377,9 @@ typedef struct
                              ((DIV) == RCC_MCODiv_16))
 /**
   * @}
-  */
+  */  
 
-/** @defgroup RCC_Flag
+/** @defgroup RCC_Flag 
   * @{
   */
 
@@ -370,6 +388,7 @@ typedef struct
 #define RCC_FLAG_HSERDY                  ((uint8_t)0x31)
 #define RCC_FLAG_PLLRDY                  ((uint8_t)0x39)
 #define RCC_FLAG_LSERDY                  ((uint8_t)0x49)
+#define RCC_FLAG_LSECSS                  ((uint8_t)0x4A)
 #define RCC_FLAG_LSIRDY                  ((uint8_t)0x41)
 #define RCC_FLAG_OBLRST                  ((uint8_t)0x59)
 #define RCC_FLAG_PINRST                  ((uint8_t)0x5A)
@@ -385,7 +404,7 @@ typedef struct
                            ((FLAG) == RCC_FLAG_PINRST) || ((FLAG) == RCC_FLAG_PORRST) || \
                            ((FLAG) == RCC_FLAG_SFTRST) || ((FLAG) == RCC_FLAG_IWDGRST)|| \
                            ((FLAG) == RCC_FLAG_WWDGRST)|| ((FLAG) == RCC_FLAG_LPWRRST)|| \
-                           ((FLAG) == RCC_FLAG_WWDGRST))
+                           ((FLAG) == RCC_FLAG_WWDGRST)|| ((FLAG) == RCC_FLAG_LSECSS))
 
 #define IS_RCC_HSI_CALIBRATION_VALUE(VALUE) ((VALUE) <= 0x1F)
 #define IS_RCC_MSI_CALIBRATION_VALUE(VALUE) ((VALUE) <= 0x3F)
@@ -417,6 +436,7 @@ void RCC_LSICmd(FunctionalState NewState);
 void RCC_PLLConfig(uint8_t RCC_PLLSource, uint8_t RCC_PLLMul, uint8_t RCC_PLLDiv);
 void RCC_PLLCmd(FunctionalState NewState);
 void RCC_ClockSecuritySystemCmd(FunctionalState NewState);
+void RCC_LSEClockSecuritySystemCmd(FunctionalState NewState);
 void RCC_MCOConfig(uint8_t RCC_MCOSource, uint8_t RCC_MCODiv);
 
 /* System, AHB and APB busses clocks configuration functions ******************/
@@ -463,6 +483,6 @@ void RCC_ClearITPendingBit(uint8_t RCC_IT);
 
 /**
   * @}
-  */
+  */ 
 
-/******************* (C) COPYRIGHT 2010 STMicroelectronics *****END OF FILE****/
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
