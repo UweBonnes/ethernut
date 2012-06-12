@@ -505,8 +505,11 @@ static void Stm32UsartInterrupt(void *arg)
     if (csr & USART_SR_RXNE) {
         Stm32UsartRxReady(&dcb->dcb_rx_rbf);
     }
-    /* Test for next byte can be transmitted */
-    if (csr & USART_SR_TXE) {
+    /* Test for next byte can be transmitted
+     * At end of DMA_TX Transfer, both TC and TXE are set.
+     * Do not reinitialize tarnsfer in that case!
+     */
+    if ((csr & USART_SR_TXE) && !CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT))) {
         Stm32UsartTxReady(&dcb->dcb_tx_rbf);
     }
     /* Last byte has been sent completely. */
@@ -1309,6 +1312,9 @@ static int Stm32UsartInit(void)
     /* Enable USART */
     USARTn->CR1 |= USART_CR1_UE|USART_CR1_TE|USART_CR1_RE;
 
+#if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
+    DMA_Init();
+#endif
     NutIrqEnable(&SigUSART);
     return 0;
 }
