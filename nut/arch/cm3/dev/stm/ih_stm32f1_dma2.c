@@ -43,10 +43,13 @@
 #include <arch/cm3/cortex_interrupt.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f10x.h>
-#include <arch/cm3/stm/stm32f1_dma.h>
+#elif defined(MCU_STM32L1)
+#include <arch/cm3/stm/stm32l1xx.h>
 #else
-#warning "Unknown STM32 family"
+#warning "STM32 family has no F1/L1 compatible DMA"
 #endif
+#include <arch/cm3/stm/stm32f1_dma.h>
+#include <arch/cm3/stm/stm32f1_dma.h>
 
 #ifndef NUT_IRQPRI_DMA2
 #define NUT_IRQPRI_DMA2  4

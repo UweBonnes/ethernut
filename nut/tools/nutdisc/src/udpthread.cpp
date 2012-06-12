@@ -152,7 +152,7 @@ void *CUdpThread::Entry()
             memcpy(dist, buf, got);
             if(dist->dist_type == DIST_ANNOUNCE) {
                 wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, UDP_EVENT);
-                event.SetInt((int)dist);
+                event.SetClientData(dist);
                 wxPostEvent(m_frame, event);
             }
             else {

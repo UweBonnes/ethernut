@@ -94,26 +94,26 @@ nutarch_cm3_lpc177x_8x=
         options =
         {
             {
-                macro = "LPC1778",
+                macro = "MCU_LPC1778",
                 brief = "LPC1778",
                 description = "NXP LPC1778",
                 flavor = "booldata",
                 exclusivity = lpc177x_8x_device_class,
                 provides = {
-                        "MCU_LPC1778",
+                        "HW_MCU_LPC1778",
                         "HW_UART0_LPC17xx",
                         "HW_UART1_LPC17xx"
                 },
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "LPC1788",
+                macro = "MCU_LPC1788",
                 brief = "LPC1788",
                 description = "NXP LPC1788",
                 flavor = "booldata",
                 exclusivity = lpc177x_8x_device_class,
                 provides = {
-                        "MCU_LPC1788",
+                        "HW_MCU_LPC1788",
                         "HW_UART0_LPC17xx",
                         "HW_UART1_LPC17xx"
                 },

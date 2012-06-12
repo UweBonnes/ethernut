@@ -39,11 +39,16 @@
  * \endverbatim
  */
 
+#ifndef _GORP_MEMTEST_16BIT_H_
+#define _GORP_MEMTEST_16BIT_H_
+
 #include <inttypes.h>
-#include <stdlib.h>
+#include <stddef.h>
 
 typedef uint16_t datum;
 
-datum  MemtestDataBus16(volatile datum* addr);
+datum  MemtestDataBus16(volatile datum *addr);
 datum *MemtestAddrBus16(volatile datum *base, size_t size);
-datum *MemtestDevice16(volatile datum * base, size_t size);
+datum *MemtestDevice16(volatile datum *base, size_t size);
+
+#endif

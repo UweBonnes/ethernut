@@ -409,6 +409,12 @@ int SpiAt25PageWrite (NUTDEVICE * dev, uint32_t pgn, CONST void *data, int len){
     return rc;
 };
 
+#ifdef __HARVARD_ARCH__
+int SpiAt25PageWrite_P (NUTDEVICE * dev, uint32_t pgn, PGM_P data, int len){
+    return -1;
+}
+#endif
+
 int SpiAt25IOCtl (NUTDEVICE * dev, int req, void *conf){
     int rc = 0;
 

@@ -41,25 +41,7 @@
  * \endverbatim
  */
 
-/*
- * HACK ALERT
- *
- * I gave up to make UART driver using the correct baud rate. Without
- * any output capability, this is a show stopper. For now let's get
- * back to the debug driver, that had been working in the original
- * LPC1758 support (which btw. was an ugly hack as well).
- *
- * As soon as this is fixed, we should remove the following files
- * from directory nut/arch/cm3/board/
- *
- * - debug_flecx1.c
- * - lpc_pincon.h
- * - lpc_sc.h
- * - lpc_uart.h
- */
-#include "debug_flecx1.c"
-
-//#include <arch/cm3.h>
+#include <arch/cm3.h>
 
 /********** TODO: Clock setup is done in arch/cm3/dev/nxp/lpc176x_clk.c
                   Correct config values should be made configurable in the

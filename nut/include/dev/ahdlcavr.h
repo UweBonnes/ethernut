@@ -64,12 +64,7 @@ extern NUTDEVICE devAhdlc1;
 
 extern int AhdlcAvrInit(NUTDEVICE *dev);
 extern int AhdlcAvrIOCtl(NUTDEVICE *dev, int req, void *conf);
-extern int AhdlcAvrInput(NUTDEVICE *dev);
-extern int AhdlcAvrOutput(NUTDEVICE *dev);
-extern int AhdlcAvrFlush(NUTDEVICE *dev);
-
-extern int AhdlcAvrGetRaw(uint8_t *cp);
-extern int AhdlcAvrPutRaw(uint8_t ch);
+extern int AhdlcOutput(NUTDEVICE *dev, NETBUF *nb);
 
 extern int AhdlcAvrRead(NUTFILE *fp, void *buffer, int size);
 extern int AhdlcAvrWrite(NUTFILE *fp, CONST void *buffer, int len);

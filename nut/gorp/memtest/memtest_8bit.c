@@ -42,7 +42,6 @@
  * Implementation of 8 bit databus memory tests
  */
 
-#include <inttypes.h>
 #include <gorp/memtest_8bit.h>
 
 #define MemtestDataBus MemtestDataBus8

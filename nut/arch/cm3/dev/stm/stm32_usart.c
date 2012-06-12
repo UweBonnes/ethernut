@@ -149,11 +149,13 @@ static uint_fast8_t rs485_control;
 /*!
  * \brief Definition of RS485 DE switching functions.
  */
-// TODO: Figure out fastest way for switching signals
-//#define Rs485DE_L() DE_GPIO_BASE->BRR=_BV(DE_GPIO_PIN)
-//#define Rs485DE_H() DE_GPIO_BASE->BSRR=_BV(DE_GPIO_PIN)
+#ifdef USART_4485DE_INV
+#define Rs485DE_L() GpioPinSetHigh(DE_GPIO_PORT, DE_GPIO_PIN)
+#define Rs485DE_H() GpioPinSetLow(DE_GPIO_PORT, DE_GPIO_PIN)
+#else
 #define Rs485DE_L() GpioPinSetLow(DE_GPIO_PORT, DE_GPIO_PIN)
 #define Rs485DE_H() GpioPinSetHigh(DE_GPIO_PORT, DE_GPIO_PIN)
+#endif
 #else
 #define Rs485DE_L()
 #define Rs485DE_H()
@@ -166,9 +168,15 @@ static uint_fast8_t rs485_control;
 // TODO: Figure out fastest way for switching signals
 //#define Rs485NRE_L() NRE_GPIO_BASE->BRR=_BV(NRE_GPIO_PIN)
 //#define Rs485NRE_H() NRE_GPIO_BASE->BSRR=_BV(NRE_GPIO_PIN)
+#ifdef USART_4485RE_INV
+#define Rs485NRE_L() GpioPinSetHigh(NRE_GPIO_PORT, NRE_GPIO_PIN)
+#define Rs485NRE_H() if( rs485_control == 0) \
+    GpioPinSetLow(NRE_GPIO_PORT, NRE_GPIO_PIN)
+#else
 #define Rs485NRE_L() GpioPinSetLow(NRE_GPIO_PORT, NRE_GPIO_PIN)
 #define Rs485NRE_H() if( rs485_control == 0) \
     GpioPinSetHigh(NRE_GPIO_PORT, NRE_GPIO_PIN)
+#endif
 #else
 #define Rs485NRE_L()
 #define Rs485NRE_H()
@@ -214,15 +222,15 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
 #ifdef UART_DMA_TXCHANNEL
     if (block_control & BC_WR_EN) {
         /* Disable TX-Interrupt */
-        USARTn->CR1 &= ~USART_CR1_TXEIE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TXEIE)) = 0;
 
         /* Setup Transfer */
         DMA_Setup(UART_DMA_TXCHANNEL, UART_DR_PTR, rbf->rbf_blockptr, rbf->rbf_blockcnt,
             DMA_CCR1_MINC);
 
         /* Enable TxComplete Interrupt */
-        USARTn->CR3 |= USART_CR3_DMAT;
-        USARTn->CR1 |= USART_CR1_TCIE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT)) = 1;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TCIE)) = 1;
 
         /* Get DMA running */
         DMA_Enable(UART_DMA_TXCHANNEL);
@@ -253,7 +261,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
          * If XOFF has been received, we disable the transmit interrupts
          * and return without sending anything.
          */
-        USARTn->CR1 &= ~(USART_CR1_TXEIE);
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TXEIE)) = 0;
         USARTn->SR;
         return;
     }
@@ -293,9 +301,9 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
          */
 
         /* Enable transmit complete interrupt */
-        USARTn->CR1 |= USART_CR1_TCIE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TCIE))= 1;
         /* Disable transmit interrupts. */
-        USARTn->CR1  &= ~USART_CR1_TXEIE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TXEIE)) = 0;
         if( !hdpx_control) {
             /* if half-duplex post the waiting thread after all bits are out.
              * Otherwise he might read back his own echo */
@@ -320,14 +328,14 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
 #ifdef UART_DMA_RXCHANNEL
     if (block_control & BC_RD_EN) {
         /* Disable TX-Interrupt */
-        USARTn->CR1 &= ~USART_CR1_RXNEIE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RXNEIE)) = 0;
 
         /* Setup Transfer */
         DMA_Setup(UART_DMA_RXCHANNEL, rbf->rbf_blockptr, UART_DR_PTR, rbf->rbf_blockcnt,
             DMA_CCR1_MINC);
 
         /* Enable TxComplete Interrupt */
-        USARTn->CR3 |= USART_CR3_DMAR;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAR))= 1;
 
         /* Get DMA running */
         DMA_Enable(UART_DMA_RXCHANNEL);
@@ -355,13 +363,13 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
     if (flow_control) {
         /* XOFF character disables transmit interrupts. */
         if (ch == ASCII_XOFF) {
-            USARTn->CR1 &= ~(USART_CR1_TE);
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TE))= 0;
             flow_control |= XOFF_RCVD;
             return;
         }
         /* XON enables transmit interrupts. */
         else if (ch == ASCII_XON) {
-            USARTn->CR1 |= USART_CR1_TE;
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TE))= 1;
             flow_control &= ~XOFF_RCVD;
             return;
         }
@@ -390,7 +398,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
     else if (flow_control) {
         if(cnt >= rbf->rbf_hwm) {
             if((flow_control & XOFF_SENT) == 0) {
-                if (USARTn->SR & USART_CR1_TE) {
+                if (CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_CR1_TE))) {
                     USARTn->DR= ASCII_XOFF;
                     flow_control |= XOFF_SENT;
                     flow_control &= ~XOFF_PENDING;
@@ -408,7 +416,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
      * buffered bytes is above this mark, then disable RTS.
      */
     else if (rts_control && cnt >= rbf->rbf_hwm) {
-        USARTn->CR3 |= USART_CR3_RTSE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_RTSE)) = 1;
     }
 #endif
 
@@ -446,10 +454,10 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         /* Clear TX and TX-Complete interrupt */
         USARTn->CR1 &= ~(USART_CR1_TCIE|USART_CR1_TXEIE);
         /* Disable DMA transfer */
-        USARTn->CR3 &= ~USART_CR3_DMAT;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT)) = 0;
 
         /* In case of half-duplex, enable receiver again */
-        USARTn->CR1 |= USART_CR1_RE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE)) = 1;
 
         /* Reset Counter */
         rbf->rbf_blockcnt = 0;
@@ -472,11 +480,11 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         Rs485NRE_L();   /* Enable Receiver */
 
         /* Clear pending TX-Complete Status */
-        USARTn->SR = ~USART_SR_TC;
+        CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TC)) = 0;
 
         if( hdpx_control) {
             /* In case of half-duplex, enable receiver again */
-            USARTn->CR1 |= USART_CR1_RE;
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE))= 1;
         }
         /* Send an event to inform the upper level. */
         NutEventPostFromIrq(&rbf->rbf_que);
@@ -549,7 +557,7 @@ static void Stm32UsartDisable(void)
     /* Disable Usart Interrupts*/
     NutUartIrqDisable();
     /* Wait until all bits had been shifted out. */
-    while((USARTn->SR & USART_SR_TXE) == 0);
+    while (CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TXE)) == 0);
     /* Disable USART. */
     USARTn->CR1 &= ~(USART_CR1_TE|USART_CR1_RE);
 }
@@ -564,7 +572,7 @@ static void Stm32UsartDisable(void)
  */
 static uint32_t Stm32UsartGetSpeed(void)
 {
-    uint32_t clk;
+    uint32_t clk, frac_div = USARTn->BRR;
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
@@ -574,8 +582,14 @@ static uint32_t Stm32UsartGetSpeed(void)
     else {
         clk = RCC_ClocksStatus.PCLK1_Frequency;
     }
-    // TODO: That must be wrong!
-    return clk / ((USARTn->BRR)&0xFFFF);
+    if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    {
+        uint32_t  frac = frac_div & 7;
+        frac_div >>= 1;
+        frac_div &= ~0x7;
+        frac_div |= frac;
+    }
+    return clk / frac_div;
 }
 
 /*!
@@ -607,22 +621,37 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     }
 
     /* Determine the integer part */
-    if ((USARTn->CR1 & USART_CR1_OVER8) != 0)
+    if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
         /* In case Oversampling mode is 8 Samples */
         integerdivider = ((25 * apbclock) / (2 * rate));
+        if (integerdivider > 200)
+        {
+            /* switch back to 16 Sample Oversampling when possible*/
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)) = 0;
+            integerdivider = ((25 * apbclock) / (4 * rate));
+        }
     }
     else
     {
         /* In case Oversampling mode is 16 Samples */
         integerdivider = ((25 * apbclock) / (4 * rate));
+        if (integerdivider < 100)
+        {
+            /* switch back to 8 Sample Oversampling*/
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)) = 1;
+            integerdivider = ((25 * apbclock) / (2 * rate));
+        }
     }
+    /* Cap rate to highest possible */
+    if (integerdivider <100)
+        integerdivider = 100;
     tmpreg = (integerdivider / 100) << 4;
 
     /* Determine the fractional part */
     fractionaldivider = integerdivider - (100 * (tmpreg >> 4));
 
-    if ((USARTn->CR1 & USART_CR1_OVER8) != 0)
+    if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
         /* In case Oversampling mode is 8 Samples */
         tmpreg |= ((((fractionaldivider * 8) + 50) / 100)) & ((uint8_t)0x07);
@@ -1133,13 +1162,13 @@ static void Stm32UsartTxStart(void)
 
     if( hdpx_control) {
         /* Disable Receiver if half-duplex */
-        USARTn->CR1 &= ~USART_CR1_RE;
+        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE)) = 0;
     }
 
     /* Clear Transmit Complete flag */
-    USARTn->SR = ~USART_SR_TC;
+    CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TC)) = 0;
     /* Enable transmit interrupts. */
-    USARTn->CR1 |= USART_CR1_TXEIE;
+    CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TXEIE)) = 1;
 }
 
 /*!
@@ -1158,7 +1187,7 @@ static void Stm32UsartRxStart(void)
      */
     if (flow_control && (flow_control & XOFF_SENT) != 0) {
         NutUartIrqDisable();
-        if ((USARTn->SR & USART_SR_TXE)) {
+        if (CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TXE))) {
             USARTn->DR=ASCII_XON;
             flow_control &= ~XON_PENDING;
         } else {
@@ -1169,7 +1198,7 @@ static void Stm32UsartRxStart(void)
     }
 #endif
     /* Enable receive interrupts. */
-    USARTn->CR1 |= USART_CR1_RXNEIE;
+    CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RXNEIE)) = 1;
 }
 
 /*

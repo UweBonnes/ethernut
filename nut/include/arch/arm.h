@@ -239,26 +239,26 @@ static INLINE uint32_t mem_rd32(unsigned int reg)
 
 static INLINE void mem_wr_mb(unsigned int reg, unsigned int val)
 {
-    mem_wr(reg, val);
     mem_barrier();
+    mem_wr(reg, val);
 }
 
 static INLINE void mem_wr8_mb(unsigned int reg, uint8_t val)
 {
-    mem_wr8(reg, val);
     mem_barrier();
+    mem_wr8(reg, val);
 }
 
 static INLINE void mem_wr16_mb(unsigned int reg, uint16_t val)
 {
-    mem_wr16(reg, val);
     mem_barrier();
+    mem_wr16(reg, val);
 }
 
 static INLINE void mem_wr32_mb(unsigned int reg, uint32_t val)
 {
-    mem_wr32(reg, val);
     mem_barrier();
+    mem_wr32(reg, val);
 }
 
 static INLINE unsigned int mem_rd_mb(unsigned int reg)

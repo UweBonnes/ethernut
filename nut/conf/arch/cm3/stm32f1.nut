@@ -466,25 +466,5 @@ nutarch_cm3_stm32f1 =
         requires = { "HW_MCU_STM32", "HW_GPIO_STM32V1" },
         sources = { "cm3/dev/stm/stm32f1_gpio.c"}
     },
-
-    --
-    -- STM32F DMA Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f1_dma1",
-        brief = "STM32F DMA Controller 1",
-        description = "Generic DMA Support",
-        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F1" },
-        provides = { "HW_DMAF1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma1.c" }
-    },
-    {
-        name = "nutarch_cm3_stm32f1_dma2",
-        brief = "STM32F DMA Controller 2",
-        description = "Generic DMA Support",
-        requires = { "HW_MCU_STM32", "HW_DMA2_STM32F1" },
-        provides = { "HW_DMAF1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma2.c" }
-    },
 }
 

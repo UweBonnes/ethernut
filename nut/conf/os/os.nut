@@ -148,6 +148,29 @@ nutos =
                       "main routine in a separate thread.",
         sources = { "nutinit.c" },
         targets = { "nutinit.o" },
+        options =
+        {
+            {
+                macro = "HEARTBEAT_IDLE_PORT",
+                brief = "Idle Heartbeat Port",
+                description = "If a valid Port/Pin combination is given, set that Pin high when  "..
+                              "ethernut is running and low when idle",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "HEARTBEAT_IDLE_PIN",
+                brief = "Idle Heartbeat PIN",
+                description = "If a valid Port/Pin combination is given, set that Pin high when  "..
+                              "ethernut is running and low when idle",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/os.h"
+            }
+        }        
     },
 
     --

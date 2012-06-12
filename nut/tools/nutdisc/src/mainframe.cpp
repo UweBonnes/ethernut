@@ -283,7 +283,7 @@ void CMainFrame::OnNodeConfig(wxCommandEvent& WXUNUSED(event))
 
 void CMainFrame::OnUdpEvent(wxCommandEvent& event)
 {
-    DISCOVERY_TELE *dist = (DISCOVERY_TELE *)event.GetInt();
+    DISCOVERY_TELE *dist = (DISCOVERY_TELE *)event.GetClientData();
     if(!IsActive()) {
         RequestUserAttention();
     }

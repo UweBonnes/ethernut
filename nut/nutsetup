@@ -1,11 +1,13 @@
 #! /bin/sh
 
 if [ "x`uname`" != "xLinux"  ]; then
+if [ "x`uname`" != "xFreeBSD" ]; then
 if [ "x`uname`" != "xDarwin" ]; then
 if [ "x`uname -o`" != "xCygwin"  ]; then
-  echo "This is not a Linux, Cygwin or Mac OS X system."
+  echo "This is not a Cygwin, FreeBSD, Linux or Mac OS X system."
   echo "I'm so confused!"
   exit 1
+fi
 fi
 fi
 fi
@@ -139,6 +141,7 @@ if [ "$ARCH" = "avr" ]; then
 	    echo ""
 	    echo "  1) stk200, stk300 or compatible"
 	    echo "  2) skt500"
+	    echo "  3) usbasp"
 	    echo ""
 	    echo -n "Selection -> "
 	    read answ
@@ -146,6 +149,7 @@ if [ "$ARCH" = "avr" ]; then
 	    case "$answ" in
 	    1) UISP_PROG=stk200 ;;
 	    2) UISP_PROG=stk500 ;;
+	    3) UISP_PROG=usbasp ;;
 	    *)
 		    echo "invalid choice" ;;
 	    esac
@@ -165,7 +169,13 @@ if [ "$ARCH" = "avr" ]; then
         
         case "$answ" in
         1) PROGRAMMER=usip ; BURNFLAGS="-dprog=$UISP_PROG --erase --upload --verify if=\$(TARG)" ;;
-        2) PROGRAMMER=avrdude ; BURNFLAGS="-p $CPU -c $UISP_PROG -U flash:w:\$(TARG) -E noreset" ;;
+        2) PROGRAMMER=avrdude
+            if [ "$UISP_PROG" = "usbasp" ]; then
+                BURNFLAGS="-p $CPU -c $UISP_PROG -U flash:w:\$(TARG)"
+	    else
+                BURNFLAGS="-p $CPU -c $UISP_PROG -U flash:w:\$(TARG) -E noreset"
+            fi
+        ;;
         9) PROGRAMMER="echo" ; BURNFLAGS="See UserConf.mk" ;;
         *)
             echo "invalid choice" ;;

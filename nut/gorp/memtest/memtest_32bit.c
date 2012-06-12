@@ -42,7 +42,6 @@
  * Implementation of 32 bit databus memory tests
  */
 
-#include <inttypes.h>
 #include <gorp/memtest_32bit.h>
 
 #define MemtestDataBus MemtestDataBus32

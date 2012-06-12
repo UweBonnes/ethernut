@@ -57,6 +57,12 @@
  * use without further testing or modification.
  **********************************************************************/
 
+/*
+ * \verbatim
+ * $Id: $
+ * \endverbatim
+ */
+
 #include <sys/timer.h>
 #include <arch/cm3.h>
 #include <arch/cm3/nxp/lpc177x_8x.h>
@@ -345,20 +351,20 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
     LPC_EMC->DynamicRRD        = NS_2_CLKS(emc_clock, sdram.tRRD);
     LPC_EMC->DynamicMRD        = sdram.tMRD;
 
-    /* 13 row, 9 - col, SDRAM */
+    /* Configure addressing mode */
     LPC_EMC->DynamicConfig0 = dynamic_config;
 
     /* JEDEC General SDRAM Initialization Sequence
        DELAY to allow power and clocks to stabilize ~100 us
        NOP
      */
-    LPC_EMC->DynamicControl = 0x0183;
+    LPC_EMC->DynamicControl = 0x00000183;
 
     wait_clocks(NS_2_CLKS(cpu_clock, 200000));
 
     /* PALL */
-    LPC_EMC->DynamicControl = 0x0103;
-    LPC_EMC->DynamicRefresh = 2;
+    LPC_EMC->DynamicControl = 0x00000103;
+    LPC_EMC->DynamicRefresh = 0x00000002;
 
     wait_clocks(256); /* wait > 128 clk */
 
@@ -385,16 +391,22 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
           bit 2~0: Burst length: 000(1), 001(2), 010(4), 011(8), 111(Full Page)              = 011
     */
 
-    (void) *((volatile uint32_t *)(sdram.base_addr | ((sdram.cas_latency << 4) | 0x02) << ((sdram.bus_width == 32)? 13:10)));
-
+    if (sdram.bus_width == 32) {
+        (void) *((volatile uint32_t *)(sdram.base_addr | ((sdram.cas_latency << 4) | 0x02 /* burst length 4 */) << 
+                                   (((dynamic_config & 0x1000) ? 0 : 1 /* number of bs */) + 2 /* bus width */ + sdram.cols )));
+    } else {
+        (void) *((volatile uint32_t *)(sdram.base_addr | ((sdram.cas_latency << 4) | 0x03 /* burst length 8 */) << 
+                                   (((dynamic_config & 0x1000) ? 0 : 1 /* number of bs */) + 1 /* bus width */ + sdram.cols )));
+    }
+    
     wait_clocks(256); /* wait > 128 clk */
 
     /* NORM */
     LPC_EMC->DynamicControl = 0x0000;
     /* Reenable buffers */
     LPC_EMC->DynamicConfig0 |= _BV(19);
-
-    //wait_clocks(NS_2_CPU_CLKS(cpu_clock, 200000));
+    
+    wait_clocks(NS_2_CLKS(cpu_clock, 200000));
 
     initial_calibration_value = sdram_calibrate();
     original_cmdclkdelay = sdram_optimize_delay(sdram, 0, DEFAULT_CMDDLY);

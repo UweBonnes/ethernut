@@ -45,8 +45,8 @@ nutdisc_SOURCES = \
 nutdisc_CXXFLAGS = @WX_CXXFLAGS@ 
 
 nutdisc_LDADD = \
-	$(WX_LIBS) \
 	$(WX_PROPGRID) \
+	$(WX_LIBS) \
 	$(NUTDISC_LIBS)
 
 endif

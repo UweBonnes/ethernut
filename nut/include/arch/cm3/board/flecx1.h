@@ -36,7 +36,7 @@
  */
 
 /*
- * \file arch/arm/lpc/lpc1700/board/flecx.h
+ * \file arch/cm3/nxp/mach/board/flecx.h
  * \brief FLECX board specific settings.
  *
  * \verbatim

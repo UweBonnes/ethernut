@@ -1,8 +1,10 @@
-#ifndef _ARCH_ARMV7_M_LPC1700_LPC_PINCON_H_
-#define _ARCH_ARMV7_M_LPC1700_LPC_PINCON_H_
+#ifndef _ARCH_ARM_DEV_DEBUG_H_
+#define _ARCH_ARM_DEV_DEBUG_H_
 
 /*
- * Copyright 2011 by egnite GmbH
+ * Copyright (C) 2012 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,44 +36,25 @@
  */
 
 /*!
- * \file arch/arm/lpc/lpc1700/lpc_pincon.h
- * \brief LPC pin connect block definitions
+ * \file arch/cm3/nxp/lpc_debug.h
+ * \brief LPC debug device.
  *
  * \verbatim
  * $Id$
  * \endverbatim
  */
 
-/*!
- * \addtogroup xgNutArchArmLpcPinCon
- */
-/*@{*/
+#include <sys/file.h>
+#include <sys/device.h>
 
+extern NUTFILE *LpcDevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
+extern int LpcDevDebugClose(NUTFILE * fp);
+extern int LpcDevDebugIOCtl(NUTDEVICE * dev, int req, void *conf);
+extern int LpcDevDebugWrite(NUTFILE * fp, const void *buffer, int len);
 
-/*! \name Pin Function Select Registers */
-/*@{*/
-#define PINSEL_OFF(x)       (x * 4)
-#define PINSEL(x)           (LPC_PINCON_BASE + PINSEL_OFF(x))
-/*@}*/
+#ifdef NUT_DEV_DEBUG_READ
+extern int LpcDevDebugRead(NUTFILE * fp, void *buffer, int size);
+extern long LpcDevDebugSize(NUTFILE *fp);
+#endif
 
-/*! \name Pin Mode Select Registers */
-/*@{*/
-#define PINMODE_OFF(x)      (0x00000040 + x * 4)
-#define PINMODE(x)          (LPC_PINCON_BASE + PINMODE_OFF(x))
-/*@}*/
-
-/*! \name Open Drain Mode Control Registers */
-/*@{*/
-#define PINMODE_OD_OFF(x)   (0x00000068 + x * 4)
-#define PINMODE_OD(x)       (LPC_PINCON_BASE + PINMODE_OD_OFF(x))
-/*@}*/
-
-/*! \name I2C Pin Configuration Register */
-/*@{*/
-#define I2CPADCFG_OFF       0x0000007C
-#define I2CPADCFG           (LPC_PINCON_BASE + I2CPADCFG_OFF)
-/*@}*/
-
-
-/*@}*/
 #endif

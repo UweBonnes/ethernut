@@ -63,7 +63,7 @@ AC_PROG_CXX
 
 AM_PROG_LIBTOOL
 
-PKG_CHECK_MODULES(NUTCONF, [lua5.1],,[PKG_CHECK_MODULES(NUTCONF, [lua])])
+PKG_CHECK_MODULES(NUTCONF, [lua5.1],,[PKG_CHECK_MODULES(NUTCONF, [lua-5.1],,[PKG_CHECK_MODULES(NUTCONF, [lua])])])
 
 if test x$nutconf_gui_ok = xyes; then
 	AC_MSG_NOTICE([nutconfgui is enabled])

@@ -123,7 +123,7 @@ include $(top_srcdir)/Makedefs
 
 SRC1 = 	nutinit.c
 SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
-	version.c semaphore.c mutex.c tracer.c condition.c
+	version.c semaphore.c mutex.c tracer.c condition.c fatal.c panic.c
 
 #Add support for memory banks on AVR architecture
 ifeq ($(ARCH), avr)
