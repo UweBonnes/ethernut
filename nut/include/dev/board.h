@@ -146,6 +146,9 @@
 #include <arch/cm3/board/ksk_lpc1788_sk.h>
 #endif
 
+#if defined (LISA)
+#include <arch/cm3/board/lisa.h>
+#endif
 
 /*
  * Debug device.
