@@ -2122,5 +2122,25 @@ nutarch_cm3_stm32_devices =
         provides = { "HW_AUDIO_DAC" },
         sources = { "arm/dev/tlv320dac.c" },
     },
+
+    --
+    -- STM32F1/L1 DMA Interface
+    --
+    {
+        name = "nutarch_cm3_stm32f1_dma1",
+        brief = "STM32F1/L1 DMA1 Controller",
+        description = "Generic DMA Support for F1/L1",
+        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F1" },
+        provides = { "HW_DMA1_F1" },
+        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma1.c" }
+    },
+    {
+        name = "nutarch_cm3_stm32f1_dma2",
+        brief = "STM32F1/L1 DMA2 Controller",
+        description = "Generic DMA Support for F1/L1",
+        requires = { "HW_MCU_STM32", "HW_DMA2_STM32F1" },
+        provides = { "HW_DMA2_F2" },
+        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma2.c" }
+    },
 }
 
