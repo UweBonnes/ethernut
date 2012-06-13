@@ -42,25 +42,28 @@
 nutarch_m68k =
 {
     --
-    -- System Timer Hardware
+    -- Board Initialization
     --
     {
-        name = "nutarch_m68k_ostimer",
-        brief = "System Timer",
-        requires = { "HW_MCU_H8300" },
-        provides = { "NUT_OSTIMER_DEV" },
-        sources = { "m68k/dev/ostimer.c" },
+        name = "nutarch_m68k_coldfire_bs",
+        brief = "Board Support",
+        sources =
+            function()
+                return { "m68k/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
+            end,
+        requires = { "HW_BOARD_SUPPORT" },
     },
-
+    
+	--
+    -- M68K MCU Directory
     --
-    -- Interrupt handling.
-    --
-    {
-        name = "nutarch_m68k_irq",
-        brief = "Interrupt Handler",
-        requires = { "HW_MCU_H8300" },
-        sources = { "m68k/dev/ihndlr.c" },
-    },
+	{
+        name = "nutarch_m68k_coldfire",
+        brief = "Coldfire",
+        requires = { "HW_MCU_COLDFIRE" },
+        description = "Coldfire controllers and processors from Freescale.",
+        script = "arch/coldfire/coldfire.nut"
+    }
 }
 
 

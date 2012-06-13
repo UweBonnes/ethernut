@@ -1287,6 +1287,25 @@ nutarch =
                 },
                 makedefs = { "MCU=uc3l064" }
             },
+            {
+                macro = "MCU_MCF52259",
+                brief = "Freescale MCF52259",
+                description = "32-bit RISC microcontroller, V2 Coldfire Core, 10/100 Ethernet MAC"..
+                              "512K flash, 64K SRAM, 3xUART, 2xI2C, ADC, QSPI, DMA, FlexCAN,"..
+                              "Mini FlexBUS, USB, RTC, Random Number Generator, Cryptographic Accelerator.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_M68K" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_M68K",
+                    "HW_MCU_COLDFIRE",
+                    "HW_MCU_MCF5225X",
+                    "HW_MCU_MCF52259",
+                },
+                makedefs = { "MCU=52259" }
+            },
 
             --
             -- Imaginary Zero CPU

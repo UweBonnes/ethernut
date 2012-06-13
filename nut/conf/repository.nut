@@ -177,7 +177,8 @@ mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA256
               "MCU_STM32F205",
               "MCU_STM32F405",
               "MCU_LM3S9B96", 
-              "MCU_LPC1758", "MCU_LPC1768", "MCU_LPC1778", 
+              "MCU_LPC1758", "MCU_LPC1768", "MCU_LPC1778",
+              "MCU_MCF52259",
               "MCU_ZERO" }
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }

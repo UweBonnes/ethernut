@@ -113,6 +113,8 @@ typedef struct _NUTTWIBUS NUTTWIBUS;
 #include "dev/twibus_at91.h"
 #endif
 
+#elif defined(__m68k__)
+    JS TODO
 #endif
 
 

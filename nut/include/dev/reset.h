@@ -64,6 +64,8 @@
 #include <arch/avr32/reset.h>
 #elif defined(__CORTEX__)
 #include <arch/cm3/cortexM3.h>
+#elif defined(__m68k__)
+#include <arch/m68k/reset.h>
 #endif
 
 __BEGIN_DECLS

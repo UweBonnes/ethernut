@@ -143,8 +143,10 @@ extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 #endif
 
-#elif defined(__m68k__)
-
+#elif defined(MCU_MCF5225X)
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
+extern NUTDEVICE devDebug2;
 #elif defined(__AVR32__)
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;

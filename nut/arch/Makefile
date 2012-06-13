@@ -210,6 +210,14 @@ ifeq ($(ARCH), avr32)
 SRCS = avr32/os/context.c avr32/os/nutinit.c
 endif
 
+
+#
+# M68K Controllers
+#
+ifeq ($(ARCH), m68k)
+
+endif
+
 #
 # Unix Emulation
 #

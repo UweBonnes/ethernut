@@ -345,6 +345,30 @@ void NutTimerInit(void)
 #elif defined  __CORTEX__
         /* arm-none-eabi, gcc version 4.6.0 (GCC), -O0 */
         nut_delay_loops *= 3UL;
+#elif defined  __m68k__
+
+        /*
+         *  Value of nut_delay_loops depends on:
+         *    - cpu speed
+         *    - compiler type and version
+         *    - compiler options (Release vs Debug code optimization)
+         *  So it is better to fine-tune the loop count using following code.
+         *  However, the code may take a lots of time on slow CPUs.
+         */
+        nut_delay_loops *= 10UL;
+        {
+            uint32_t precision = 100;
+            uint32_t us_delay = precision * 1000 * 1000 / NutGetTickClock(); // delay in microsecond required for "precision" ticks
+
+            do {
+                cnt = NutGetTickCount();
+                NutMicroDelay(us_delay);
+                cnt = NutGetTickCount() - cnt;
+
+                nut_delay_loops *= precision;
+                nut_delay_loops /= cnt;
+            } while (cnt != precision);
+        }
 #else
         nut_delay_loops *= 137UL;
         nut_delay_loops /= 25UL;
@@ -719,13 +743,13 @@ uint32_t NutGetTickCount(void)
     rc = (timeNow.tv_sec - timeStart.tv_sec) * 1000;
     rc += (timeNow.tv_usec - timeStart.tv_usec) / 1000;
 #else
-#ifndef __CORTEX__
+#if !(defined __CORTEX__) && !(defined __m68k__)
     NutEnterCritical();
     rc = nut_ticks;
     NutExitCritical();
 #else
     /* LST verification shows single atomic access to get this value.
-     * So no additional atomic forcing operations needed here with Cortex.
+     * So no additional atomic forcing operations needed here with Cortex or m68k.
      */
     // TODO: Check with other ARM architectures.
     rc = nut_ticks;

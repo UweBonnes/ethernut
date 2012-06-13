@@ -149,7 +149,7 @@ volatile uint8_t ms62_5 = 0;
 #include "../arch/avr32/os/nutinit.c"
 #elif defined(__H8300H__) || defined(__H8300S__)
 #include "../arch/h8300h/os/nutinit.c"
-#elif defined(__m68k__)
-#include "../arch/m68k/os/nutinit.c"
+#elif defined(__m68k__) && defined(MCU_COLDFIRE)
+#include "../arch/m68k/coldfire/os/nutinit.c"
 #endif
 
