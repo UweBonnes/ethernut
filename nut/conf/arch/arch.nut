@@ -386,7 +386,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO",
-                    "HW_PDC_AT91"
+                    "HW_PDC_AT91",
+                    "HW_PIT_AT91"
                 },
                 makedefs = { "MCU=arm9" }
             },
