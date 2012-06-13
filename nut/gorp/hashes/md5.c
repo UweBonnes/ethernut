@@ -304,8 +304,8 @@ void NutMD5Final(MD5CONTEXT *context, uint8_t digest[16])
     byteReverse(context->in, 14);
 
     /* Append length in bits and transform */
-    ((uint32_t *) context->in)[14] = context->bits[0];
-    ((uint32_t *) context->in)[15] = context->bits[1];
+    memcpy(context->in + 56, &context->bits[0], sizeof(context->bits[0]));
+    memcpy(context->in + 60, &context->bits[1], sizeof(context->bits[1]));
 
     NutMD5Transform(context->buf, (uint32_t *) context->in);
     byteReverse((unsigned char *) context->buf, 4);
