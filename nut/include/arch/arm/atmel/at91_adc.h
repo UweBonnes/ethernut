@@ -186,6 +186,59 @@
 #define ADC_CDR_MASK           0x000003FF       /*!< \brief Channel data mask (10bit) */
 /*@}*/
 
+#if defined(ADC_HAS_PDC)
+
+/*! \name ADC Receive Pointer Register */
+/*@{*/
+#define ADC_RPR    (ADC_BASE + PERIPH_RPR_OFF)  /*!< \brief PDC receive pointer register address. */
+/*@}*/
+
+/*! \name ADC Receive Counter Register */
+/*@{*/
+#define ADC_RCR    (ADC_BASE + PERIPH_RCR_OFF)  /*!< \brief PDC receive counter register address. */
+/*@}*/
+
+/*! \name ADC Transmit Pointer Register */
+/*@{*/
+#define ADC_TPR    (ADC_BASE + PERIPH_TPR_OFF)  /*!< \brief PDC transmit pointer register address. */
+/*@}*/
+
+/*! \name ADC Transmit Counter Register */
+/*@{*/
+#define ADC_TCR    (ADC_BASE + PERIPH_TCR_OFF)  /*!< \brief PDC transmit counter register address. */
+/*@}*/
+
+/*! \name ADC Receive Next Pointer Register */
+/*@{*/
+#define ADC_RNPR   (ADC_BASE + PERIPH_RNPR_OFF) /*!< \brief PDC receive next pointer register address. */
+/*@}*/
+
+/*! \name ADC Receive Next Counter Register */
+/*@{*/
+#define ADC_RNCR   (ADC_BASE + PERIPH_RNCR_OFF) /*!< \brief PDC receive next counter register address. */
+/*@}*/
+
+/*! \name ADC Transmit Next Pointer Register */
+/*@{*/
+#define ADC_TNPR   (ADC_BASE + PERIPH_TNPR_OFF) /*!< \brief PDC transmit next pointer register address. */
+/*@}*/
+
+/*! \name ADC Transmit Next Counter Register */
+/*@{*/
+#define ADC_TNCR   (ADC_BASE + PERIPH_TNCR_OFF) /*!< \brief PDC transmit next counter register address. */
+/*@}*/
+
+/*! \name ADC Transfer Control Register */
+/*@{*/
+#define ADC_PTCR   (ADC_BASE + PERIPH_PTCR_OFF) /*!< \brief PDC transfer control register address. */
+/*@}*/
+
+/*! \name ADC Transfer Status Register */
+/*@{*/
+#define ADC_PTSR   (ADC_BASE + PERIPH_PTSR_OFF) /*!< \brief PDC transfer status register address. */
+/*@}*/
+
+#endif
 
 
 #endif

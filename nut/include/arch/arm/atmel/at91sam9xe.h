@@ -120,6 +120,7 @@
 #define MCI_HAS_PDC
 #define PMC_HAS_PLLB
 #define PMC_HAS_MDIV
+#define ADC_HAS_PDC
 
 #define PIO_HAS_MULTIDRIVER
 #define PIO_HAS_PULLUP
