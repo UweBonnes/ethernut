@@ -54,5 +54,6 @@ extern NUTDEVICE devUsartStm32_2;
 extern NUTDEVICE devUsartStm32_3;
 extern NUTDEVICE devUartStm32_4;
 extern NUTDEVICE devUartStm32_5;
+extern NUTDEVICE devUsartStm32_6;
 
 #endif

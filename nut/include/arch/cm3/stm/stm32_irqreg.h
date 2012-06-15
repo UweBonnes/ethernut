@@ -66,6 +66,7 @@ extern IRQ_HANDLER sig_USART2;      // USART 2
 extern IRQ_HANDLER sig_USART3;      // USART 3
 extern IRQ_HANDLER sig_UART4;       // UART 4
 extern IRQ_HANDLER sig_UART5;       // UART 5
+extern IRQ_HANDLER sig_USART6;      // USART 6
 extern IRQ_HANDLER sig_OTG_FS;      // USB
 extern IRQ_HANDLER sig_DMA1_CH1;    // DMA Controller 1 Channel 1
 extern IRQ_HANDLER sig_DMA1_CH2;    // DMA Controller 1 Channel 2

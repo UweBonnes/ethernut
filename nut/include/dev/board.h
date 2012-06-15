@@ -283,6 +283,14 @@
 #define DEV_UART5_NAME  DEV_UART5.dev_name
 #endif
 
+#ifndef DEV_UART6
+#define DEV_UART6       devUsartStm32_6
+#endif
+
+#ifndef DEV_UART6_NAME
+#define DEV_UART6_NAME  DEV_USART6.dev_name
+#endif
+
 #ifndef DEV_UART
 #if defined(STM3210E_EVAL)
 #define DEV_UART        DEV_UART1

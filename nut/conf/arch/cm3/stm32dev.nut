@@ -1134,6 +1134,241 @@ nutarch_cm3_stm32_devices =
 --            },
         },
     },
+    --
+    -- STM32F USART6 Interface
+    --
+    {
+        name = "nutarch_cm3_stm32_devices_usart6",
+        brief = "STM32 USART6 Driver",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = { "HW_UART6_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        provides = { "DEV_UART",
+        			 "DEV_UART_STM32",
+        			 "DEV_UART_SPECIFIC",
+                     "DEV_UART6_GPIO_RTS",
+                     "DEV_UART6_GPIO_CTS",
+                     "DEV_UART6_GPIO_HDX" },
+        sources = { "cm3/dev/stm/stm32_usart6.c",
+        	    "cm3/dev/stm/ih_stm32_usart6.c",
+        		  },
+        options =
+        {
+        	{
+        		macro = "USART6_REMAP_USART",
+        		brief = "Use Alternate Pins",
+        		description = "Leaving this option unchecked, the driver will initialize the standard Pins.\n\n"..
+        		              "Pin Mapping is:\n TXD PC6\n RXD PC7 \n CTS PG13\n RTS PG8\n CK PC8"..
+        					  "Enabling the option the driver remaps RXD and TXD to its alternate port pins:\n\n"..
+        		              "Pin Mapping is:\n TXD PG14\n RXD PG9\n CTS PG15\n RTS PG12\n CK PG7"..
+                                      "For L1/F2/F4 Pins may also get assigned individually",
+                flavor = "booldata",
+        		file = "include/cfg/uart.h"
+            },
+        	{
+        		macro = "USART6_TX_PIN",
+        		brief = "USART6 TX Pin selection",
+        		description = "Choose USART6 TX Pin from PC6(default) and PG14",
+                        requires = { "HW_GPIO_STM32V2" },
+                        type = "enumerated",
+		        choices = { "6", "14" },
+         		file = "include/cfg/uart.h"
+                },
+        	{
+        		macro = "USART6_RX_PIN",
+        		brief = "USART6 RX Pin selection",
+        		description = "Choose USART6 RX Pin from PC7(default) and PG9",
+                        requires = { "HW_GPIO_STM32V2" },
+                        type = "enumerated",
+ 		        choices = { "7", "9" },
+         		file = "include/cfg/uart.h"
+                },
+        	{
+        		macro = "USART6_CK_PIN",
+        		brief = "USART6 CK Pin selection",
+        		description = "Choose USART3 CK Pin from PC8(default) and PG7",
+                        requires = { "HW_GPIO_STM32V2" },
+                        type = "enumerated",
+                        default = "8",
+ 		        choices = { "8", "7" },
+         		file = "include/cfg/uart.h"
+                },
+        	{
+        		macro = "USART6_CTS_PIN",
+        		brief = "USART6 CTS Pin selection",
+        		description = "Choose USART6 CTS Pin from PG13(default) and PG15",
+                        requires = { "HW_GPIO_STM32V2", "USART3_HARDWARE_HANDSHAKE" },
+                        type = "enumerated",
+		        choices = { "13", "15" },
+         		file = "include/cfg/uart.h"
+                },
+        	{
+        		macro = "USART6_RTS_PIN",
+        		brief = "USART6 RTS Pin selection",
+        		description = "Choose USART6 RTS Pin from PG8(default) and PG12",
+                        requires = { "HW_GPIO_STM32V2", "USART3_HARDWARE_HANDSHAKE" },
+                        type = "enumerated",
+ 		        choices = { "8", "12" },
+         		file = "include/cfg/uart.h"
+                },
+            {
+                macro = "USART6_HARDWARE_HANDSHAKE",
+                brief = "Hardware Handshake",
+                description = "When selected, the driver will support RTS/CTS hardware handshake.\n"..
+                              "The related GPIO pins are initialized automatically.",
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_HARDWARE_HDX",
+                brief = "Half Duplex Mode",
+                description = "When selected, the driver will be configured for half-duplex mode.\n",
+                flavor = "booldata",
+                provides = { "USART6_HARDWARE_HDX" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_1WIRE",
+                brief = "1Wire Mode",
+                description = "In this mode the UARTs RX pin is not connected but the TX pin is used "..
+                			  "in bidirectional mode.",
+                flavor = "booldata",
+                requires = { "USART6_HARDWARE_HDX" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_XONXOFF_CONTROL",
+                brief = "XON/XOFF Protocol",
+                description = "When selected, the driver will use software XON/XOFF protocol.",
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_INIT_BAUDRATE",
+                brief = "Initial Baudrate",
+                description = "Initial baudrate the Port is set to.",
+                type = "integer",
+                default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_SUPPORT_IRQ",
+                brief = "Use Interrupt Transfer",
+                description = "When selected, the driver will use interrupt for transfers. ",
+                flavor = "booldata",
+                provides = { "USART6_SUPPORT_IRQ" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_SUPPORT_DMA",
+                brief = "Support DMA Blocktransfer",
+                description = "When selected, the driver can use DMA for block transfers.\n"..
+                			  "Block transfers can be enabled or disabled by calling _ioctl "..
+                			  "with the following parameters:\n"..
+                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                flavor = "booldata",
+                requires = { "USART6_SUPPORT_IRQ" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_MODE_IRDA",
+                brief = "Set To IrDA Mode",
+                description = "When selected, the USART will run in IrDA mode.",
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_RS485_CTRL",
+                brief = "Support RS485 control",
+                description = "When selected a GPIO pin must be configured for RS485 direction control.",
+                flavor = "booldata",
+                provides = { "USART6_RS485_CTRL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_485DE_INV",
+                brief = "RS485 DE Invert",
+                    description = "Sets the DE signal as active low.\n",
+                requires = { "USART6_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_485DE_PORT",
+                brief = "RS485 DE Control Port",
+                    description = "Select the port of the DE signal.\n",
+                requires = { "USART6_RS485_CTRL" },
+			    flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_485DE_PIN",
+                brief = "RS485 DE Control Pin",
+                    description = "Select the pin for the DE signal.\n",
+                requires = { "USART6_RS485_CTRL" },
+			    flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/uart.h"
+            },
+            { 
+                macro = "USART6_485RE_INV",
+                brief = "RS485 RE Invert",
+                    description = "Sets the RE signal as active high.\n",
+                requires = { "USART6_RS485_CTRL" },
+	        flavor = "booldata",
+               file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_485RE_PORT",
+                brief = "RS485 /RE Control Port",
+                description = "Select the port of the /RE signal.\n",
+                requires = { "USART6_RS485_CTRL" },
+			    flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_485RE_PIN",
+                brief = "RS485 /RE Control Pin",
+                description = "Select the pin for the /RE signal.\n",
+                requires = { "USART6_RS485_CTRL" },
+			    flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/uart.h"
+            },
+
+--            {
+--                macro = "USART6_MODE_LIN",
+--                brief = "Set To LIN Mode",
+--                description = "When selected, the USART will be configured for LIN bus.",
+--                flavor = "booldata",
+--                file = "include/cfg/uart.h"
+--            },
+--            {
+--                macro = "USART6_RXTX_ONLY",
+--                brief = "Receive/Transmit Only",
+--                description = "When selected, the driver will not support any handshake signals.",
+--                flavor = "boolean",
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                file = "include/cfg/uart.h"
+--            },
+--            {
+--                macro = "USART6_MODEM_CONTROL",
+--                brief = "Full Modem Control",
+--                description = "When selected, the driver will support full modem control. "..
+--                              "Make sure, that all related peripheral pins are available.",
+--                flavor = "boolean",
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                requires = { "HW_UART0_MODEM" },
+--                file = "include/cfg/uart.h"
+--            },
+        },
+    },
 
 	--
 	-- STM32F EMAC Configuration
