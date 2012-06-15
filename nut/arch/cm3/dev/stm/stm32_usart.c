@@ -579,7 +579,7 @@ static uint32_t Stm32UsartGetSpeed(void)
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
-    if (USARTnBase == USART1_BASE) {
+    if ((USARTnBase == USART1_BASE) || (USARTnBase == USART1_BASE) ){
         clk = RCC_ClocksStatus.PCLK2_Frequency;
     }
     else {
@@ -616,7 +616,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     Stm32UsartDisable();
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
-    if (USARTnBase == USART1_BASE) {
+    if ((USARTnBase == USART1_BASE) ||(USARTnBase == USART6_BASE)) {
         apbclock = RCC_ClocksStatus.PCLK2_Frequency;
     }
     else {
@@ -1224,7 +1224,7 @@ static int Stm32UsartInit(void)
     }
 
     /* Enable UART clock */
-    if (USARTn == USART1) {
+    if ((USARTn == USART1) ||(USARTn == USART6)) {
         RCC_APB2PeriphClockCmd(STM_USART_CLK, ENABLE);
         /* Reset USART IP */
         RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
@@ -1337,7 +1337,7 @@ static int Stm32UsartDeinit(void)
     NutRegisterIrqHandler(&SigUSART, 0, 0);
 
     /* Reset UART. */
-    if (USARTn == USART1)
+    if ((USARTn == USART1) ||(USARTn == USART6))
     {
         RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
         RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
