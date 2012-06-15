@@ -133,6 +133,9 @@ NUTDEVICE devUartStm32_5 = {
 /*!
  * \brief UART5 GPIO configuartion and assignment.
  */
+
+/* No alternate pins for F1/L1/F2/F4 so long */
+
 #if defined(MCU_STM32F1)
 #undef STM_USART_REMAP
 #else

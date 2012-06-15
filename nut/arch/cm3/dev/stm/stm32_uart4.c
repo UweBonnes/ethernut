@@ -134,29 +134,18 @@ NUTDEVICE devUartStm32_4 = {
  * \brief UART4 GPIO configuartion and assignment.
  */
 /*
- * F1  NOREMAP REMAP
+ * F1  no alternate pins
+ * L1/F2/F4
  * TX  PA0     PC10
  * RX  PA1     PC11
  */
 #if defined(MCU_STM32F1)
- #if defined(STM32F1_HEADER_ACTUAL)
-  #define STM_USART_REMAP   GPIO_Remap_UART4
- #else
- #warning "Use actual stm32f1 header files"
- #endif
- #if defined(UART4_REMAP_USART)
-  #define STM_USART_DOREMAP ENABLE
-  #define TX_GPIO_PORT    NUTGPIO_PORTC
-  #define TX_GPIO_PIN     10
-  #define RX_GPIO_PORT    NUTGPIO_PORTC
-  #define RX_GPIO_PIN     11
- #else
-  #define STM_USART_DOREMAP DISABLE
-  #define TX_GPIO_PORT    NUTGPIO_PORTA
-  #define TX_GPIO_PIN      0
-  #define RX_GPIO_PORT    NUTGPIO_PORTA
-  #define RX_GPIO_PIN      1
- #endif
+ #undef STM_USART_REMAP
+ #undef STM_USART_DOREMAP
+ #define TX_GPIO_PORT    NUTGPIO_PORTA
+ #define TX_GPIO_PIN      0
+ #define RX_GPIO_PORT    NUTGPIO_PORTA
+ #define RX_GPIO_PIN      1
 #else /* L1/F2/F4*/
  #define STM_USART_REMAP  GPIO_AF_UART4
  #if !defined(UART4_TX_PIN) || UART4_TX_PIN == 0
