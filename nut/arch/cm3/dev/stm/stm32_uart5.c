@@ -55,13 +55,9 @@
 #include <dev/gpio.h>
 #include <dev/usart.h>
 
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f10x.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
-#include <arch/cm3/stm/stm32f10x_rcc.h>
-#else
-#warning "Unknown STM32 family"
-#endif
+#include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -101,11 +97,11 @@ static USARTDCB dcb_uart5 = {
 };
 
 /*!
- * \name STM32 USART5 Device
+ * \name STM32 UART5 Device
  */
 /*@{*/
 /*!
- * \brief USART5 device information structure.
+ * \brief UART5 device information structure.
  *
  * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using the serial communication
@@ -137,32 +133,36 @@ NUTDEVICE devUartStm32_5 = {
 /*!
  * \brief UART5 GPIO configuartion and assignment.
  */
+#if defined(MCU_STM32F1)
 #undef STM_USART_REMAP
+#else
+#define STM_USART_REMAP  GPIO_AF_UART4
+#endif
 
 #define TX_GPIO_PORT    NUTGPIO_PORTC
 #define TX_GPIO_PIN     12
 #define RX_GPIO_PORT    NUTGPIO_PORTD
 #define RX_GPIO_PIN     2
 
-#ifdef USART5_RS485_CTRL
+#ifdef UART5_RS485_CTRL
 #define USART_485_CTRL
-#ifdef USART5_485RE_INV
+#ifdef UART5_485RE_INV
 #define USART_4485RE_INV
 #endif
-#ifdef USART5_485DE_INV
+#ifdef UART5_485DE_INV
 #define USART_4485DE_INV
 #endif
-#if defined(USART2_485DE_PORT) && defined(USART5_485DE_PIN)
-#define DE_GPIO_BASE  GPIO_ID2GPIO(USART5_485DE_PORT)
-#define DE_GPIO_PORT  USART5_485DE_PORT
-#define DE_GPIO_PIN   USART5_485DE_PIN
+#if defined(USART5_485DE_PORT) && defined(UART5_485DE_PIN)
+#define DE_GPIO_BASE  GPIO_ID2GPIO(UART5_485DE_PORT)
+#define DE_GPIO_PORT  UART5_485DE_PORT
+#define DE_GPIO_PIN   UART5_485DE_PIN
 #endif
-#if defined(USART5_485RE_PORT) && defined(USART5_485RE_PIN)
-#define NRE_GPIO_BASE  GPIO_ID2GPIO(USART5_485RE_PORT)
-#define NRE_GPIO_PORT  USART5_485RE_PORT
-#define NRE_GPIO_PIN   USART5_485RE_PIN
+#if defined(UART5_485RE_PORT) && defined(UART5_485RE_PIN)
+#define NRE_GPIO_BASE  GPIO_ID2GPIO(UART5_485RE_PORT)
+#define NRE_GPIO_PORT  UART5_485RE_PORT
+#define NRE_GPIO_PIN   UART5_485RE_PIN
 #endif
-#endif /* USART2_RS485_CTRL */
+#endif /* USART5_RS485_CTRL */
 
 /*!
  * \brief UART5 base configuration.

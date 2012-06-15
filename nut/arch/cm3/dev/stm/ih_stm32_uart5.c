@@ -53,9 +53,9 @@ extern NUTDEVICE devUartStm32_5;
 static int Uart5IrqCtl(int cmd, void *param);
 
 /*!
- * \brief IRQ Handler for USART5.
+ * \brief IRQ Handler for UART5.
  */
-IRQ_HANDLER sig_USART5 = {
+IRQ_HANDLER sig_UART5 = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
@@ -70,10 +70,10 @@ IRQ_HANDLER sig_USART5 = {
 void Uart5IrqEntry(void *arg)
 {
 #ifdef NUT_PERFMON
-    sig_USART5.ir_count++;
+    sig_UART5.ir_count++;
 #endif
-    if (sig_USART5.ir_handler) {
-        (sig_USART5.ir_handler) (sig_USART5.ir_arg);
+    if (sig_UART5.ir_handler) {
+        (sig_UART5.ir_handler) (sig_UART5.ir_arg);
     }
 }
 

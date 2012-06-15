@@ -80,6 +80,7 @@ nutarch_cm3_stm32f4 =
                             "HW_UART2_STM32",      
                             "HW_UART3_STM32",      
                             "HW_UART4_STM32",      
+                            "HW_UART5_STM32",      
                             "HW_UART6_STM32",      
 				},
                 file = "include/cfg/arch.h"
