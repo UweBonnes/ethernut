@@ -829,21 +829,50 @@ nutarch_cm3_stm32_devices =
         		  },
         options =
         {
+        	{
+        		macro = "UART4_REMAP_USART",
+        		brief = "Use Alternate Pins",
+        		description = "Leaving this option unchecked, the driver will initialize the standard Pins.\n\n"..
+        		              "Pin Mapping is:\n TXD PA0\n RXD PA1"..
+        					  "Enabling the option the driver remaps RXD and TXD to its alternate port pins:\n\n"..
+        		              "Pin Mapping is:\n TXD PC10\n RXD PC11"..
+                                      "For L1/F2/F4 Pins may also get assigned individually",
+                flavor = "booldata",
+        		file = "include/cfg/uart.h"
+            },
+        	{
+        		macro = "UART4_TX_PIN",
+        		brief = "UART4 TX Pin selection",
+        		description = "Choose UART4 TX Pin from PA0(default) and PC10",
+                        requires = { "HW_GPIO_STM32V2" },
+                        type = "enumerated",
+		        choices = { "0", "10" },
+         		file = "include/cfg/uart.h"
+                },
+        	{
+        		macro = "UART4_RX_PIN",
+        		brief = "UART4 RX Pin selection",
+        		description = "Choose UART4 RX Pin from PA1(default) and PC11",
+                        requires = { "HW_GPIO_STM32V2" },
+                        type = "enumerated",
+ 		        choices = { "0", "10" },
+         		file = "include/cfg/uart.h"
+                },
             {
                 macro = "UART4_HARDWARE_HDX",
                 brief = "Half Duplex Mode",
                 description = "When selected, the driver will be configured for half-duplex mode.\n",
-                provides = { "USART4_HARDWARE_HDX" },
+                provides = { "UART4_HARDWARE_HDX" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART4_1WIRE",
+                macro = "UART4_1WIRE",
                 brief = "1Wire Mode",
                 description = "In this mode the UARTs RX pin is not connected but the TX pin is used "..
                 			  "in bidirectional mode.",
                 flavor = "booldata",
-                requires = { "USART4_HARDWARE_HDX" },
+                requires = { "UART4_HARDWARE_HDX" },
                 file = "include/cfg/uart.h"
             },
             {
@@ -896,56 +925,56 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART4_485DE_INV",
+                macro = "UART4_485DE_INV",
                 brief = "RS485 DE Invert",
                     description = "Sets the DE signal as active low.\n",
-                requires = { "USART4_RS485_CTRL" },
+                requires = { "UART4_RS485_CTRL" },
 	        flavor = "booldata",
                file = "include/cfg/uart.h"
             },
             {
-                macro = "USART4_485DE_PORT",
+                macro = "UART4_485DE_PORT",
                 brief = "RS485 DE Control Port",
                     description = "Select the port of the DE signal.\n",
-                requires = { "USART4_RS485_CTRL" },
+                requires = { "UART4_RS485_CTRL" },
 			    flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART4_485DE_PIN",
+                macro = "UART4_485DE_PIN",
                 brief = "RS485 DE Control Pin",
                     description = "Select the pin for the DE signal.\n",
-                requires = { "USART4_RS485_CTRL" },
+                requires = { "UART4_RS485_CTRL" },
 			    flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
             },
             { 
-                macro = "USART4_485RE_INV",
+                macro = "UART4_485RE_INV",
                 brief = "RS485 RE Invert",
                     description = "Sets the RE signal as active high.\n",
-                requires = { "USART4_RS485_CTRL" },
+                requires = { "UART4_RS485_CTRL" },
 	        flavor = "booldata",
                file = "include/cfg/uart.h"
             },
             {
-                macro = "USART4_485RE_PORT",
+                macro = "UART4_485RE_PORT",
                 brief = "RS485 /RE Control Port",
                 description = "Select the port of the /RE signal.\n",
-                requires = { "USART4_RS485_CTRL" },
+                requires = { "UART4_RS485_CTRL" },
 			    flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART4_485RE_PIN",
+                macro = "UART4_485RE_PIN",
                 brief = "RS485 /RE Control Pin",
                 description = "Select the pin for the /RE signal.\n",
-                requires = { "USART4_RS485_CTRL" },
+                requires = { "UART4_RS485_CTRL" },
 			    flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,

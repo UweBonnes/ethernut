@@ -53,9 +53,9 @@ extern NUTDEVICE devUartStm32_4;
 static int Uart4IrqCtl(int cmd, void *param);
 
 /*!
- * \breif IRQ Handler for USART4.
+ * \breif IRQ Handler for UART4.
  */
-IRQ_HANDLER sig_USART4 = {
+IRQ_HANDLER sig_UART4 = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
@@ -70,10 +70,10 @@ IRQ_HANDLER sig_USART4 = {
 void Uart4IrqEntry(void *arg)
 {
 #ifdef NUT_PERFMON
-    sig_USART4.ir_count++;
+    sig_UART4.ir_count++;
 #endif
-    if (sig_USART4.ir_handler) {
-        (sig_USART4.ir_handler) (sig_USART4.ir_arg);
+    if (sig_UART4.ir_handler) {
+        (sig_UART4.ir_handler) (sig_UART4.ir_arg);
     }
 }
 
@@ -142,8 +142,8 @@ static int Uart4IrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (unsigned int)sig_USART4.ir_count;
-        sig_USART4.ir_count = 0;
+        *ival = (unsigned int)sig_UART4.ir_count;
+        sig_UART4.ir_count = 0;
         break;
 #endif
     default:
