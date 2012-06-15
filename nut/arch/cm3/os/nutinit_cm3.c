@@ -163,6 +163,13 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
 #if defined(HEARTBEAT_IDLE_PORT) && defined(HEARTBEAT_IDLE_PIN)
     GpioPinConfigSet(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN, GPIO_CFG_OUTPUT);
     GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
+#define HEARTBEAT_ACTIVE() \
+    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN)
+#define HEARTBEAT_IDLE()  \
+    GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN)
+#else
+#define HEARTBEAT_ACTIVE()
+#define HEARTBEAT_IDLE()
 #endif
     /* Read OS configuration from non-volatile memory. We can't do this
     ** earlier, because the low level driver may be interrupt driven. */
@@ -194,13 +201,9 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
         LPC_SC->PCON = 0x00;
         /* Sleep Mode*/
 #endif
-#if defined(HEARTBEAT_IDLE_PORT) && defined(HEARTBEAT_IDLE_PIN)
-        GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
-#endif
+        HEARTBEAT_IDLE();
         __WFI();
-#if defined(HEARTBEAT_IDLE_PORT) && defined(HEARTBEAT_IDLE_PIN)
-        GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
-#endif
+        HEARTBEAT_ACTIVE();
     }
 }
 
