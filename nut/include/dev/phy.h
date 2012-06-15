@@ -78,6 +78,7 @@
 #define LAN8700r4   0x0007C0C4  /*   revision 4 of the LAN8700 phy */
 #define LAN8710     0x0007C0F0  /* nn. / LAN8710 and LAN8720 share same IDs */
 #define LAN8720     0x0007C0F0  /* nn. / not a typo, has same OUI as 8710 */
+#define LAN8720A    0x0007C0F1  /*   revision 1 of the LAN8720 phy */
 
 /* Masks for chip detection */
 #define OUIMSK_VEN  0x3FFFC000  /* Mask for manufacturers OUI */

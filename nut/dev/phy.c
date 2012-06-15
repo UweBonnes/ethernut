@@ -47,6 +47,7 @@
 
 #include <dev/phy.h>
 
+
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -150,6 +151,7 @@ phy_status_descr_t phy_status_descr[] = {
     { LAN8700,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
     { LAN8700r4, { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
     { LAN8710,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
+    { LAN8720A,  { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
 
     /* Micrel KS8721 */
     { KS8721,    { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
@@ -175,6 +177,7 @@ phy_status_descr_t phy_status_descr[] = {
  *         or the return of a value test.
  * \return 0 on success, -1 on failure.
  */
+
 int NutPhyCtl( uint16_t ctl, uint32_t *par)
 {
     int rc = 0;
