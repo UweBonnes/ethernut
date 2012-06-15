@@ -579,12 +579,11 @@ static uint32_t Stm32UsartGetSpeed(void)
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
-    if ((USARTnBase == USART1_BASE) || (USARTnBase == USART1_BASE) ){
-        clk = RCC_ClocksStatus.PCLK2_Frequency;
-    }
-    else {
-        clk = RCC_ClocksStatus.PCLK1_Frequency;
-    }
+#if USARTclk == NUT_HWCLK_PCLK1
+    clk = RCC_ClocksStatus.PCLK2_Frequency;
+#else
+    clk = RCC_ClocksStatus.PCLK1_Frequency;
+#endif
     if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
         uint32_t  frac = frac_div & 7;
@@ -616,12 +615,11 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     Stm32UsartDisable();
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
-    if ((USARTnBase == USART1_BASE) ||(USARTnBase == USART6_BASE)) {
-        apbclock = RCC_ClocksStatus.PCLK2_Frequency;
-    }
-    else {
-        apbclock = RCC_ClocksStatus.PCLK1_Frequency;
-    }
+#if USARTclk == NUT_HWCLK_PCLK1
+    apbclock = RCC_ClocksStatus.PCLK2_Frequency;
+#else
+    apbclock = RCC_ClocksStatus.PCLK1_Frequency;
+#endif
 
     /* Determine the integer part */
     if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
@@ -1224,18 +1222,17 @@ static int Stm32UsartInit(void)
     }
 
     /* Enable UART clock */
-    if ((USARTn == USART1) ||(USARTn == USART6)) {
+#if USARTclk == NUT_HWCLK_PCLK1
         RCC_APB2PeriphClockCmd(STM_USART_CLK, ENABLE);
         /* Reset USART IP */
         RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
         RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
-    else {
+#else
         RCC_APB1PeriphClockCmd(STM_USART_CLK, ENABLE);
         /* Reset USART IP */
         RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
         RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
+#endif
 
     /* Configure USART Tx as alternate function push-pull */
     GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
@@ -1337,16 +1334,13 @@ static int Stm32UsartDeinit(void)
     NutRegisterIrqHandler(&SigUSART, 0, 0);
 
     /* Reset UART. */
-    if ((USARTn == USART1) ||(USARTn == USART6))
-    {
-        RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
-        RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
-    else
-    {
-        RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
-        RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
+#if USARTclk == NUT_HWCLK_PCLK1
+    RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
+    RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
+#else
+    RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
+    RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
+#endif
 
     return 0;
 }
