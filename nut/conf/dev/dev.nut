@@ -2453,7 +2453,14 @@ nutdev =
                               "Normally this should be left blank.",
                 flavor = "integer",
                 file = "include/cfg/phycfg.h"
-            }
+            },
+            {
+                macro = "PHY_MODE_RMII",
+                brief = "PHY_MODE_RMII",
+                description = "Use RMII mode for the phy, default is MII mode",
+                flavor = "boolean",
+                file = "include/cfg/phycfg.h"
+            },
         }
     },
 
