@@ -59,7 +59,7 @@ IRQ_HANDLER sig_EMAC = {
 #endif
     NULL,               /* Passed argument, ir_arg. */
     NULL,               /* Handler subroutine, ir_handler. */
-    EmacIrqCtl         /* Interrupt control, ir_ctl. */
+    EmacIrqCtl          /* Interrupt control, ir_ctl. */
 };
 
 /*!
@@ -92,7 +92,7 @@ void EmacIrqEntry(void *arg)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int Emac0IrqCtl(int cmd, void *param)
+static int EmacIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
