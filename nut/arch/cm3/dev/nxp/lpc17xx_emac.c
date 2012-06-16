@@ -74,12 +74,12 @@
 #include <arch/cm3/nxp/lpc17xx_emac.h>
 
 
-//#define NUTDEBUG
+#define NUTDEBUG
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
 #include <arpa/inet.h>
-#define EMPRINTF(args,...) printf(args"\r",##__VA_ARGS__);fflush(stdout)
+#define EMPRINTF(args,...) printf(args,##__VA_ARGS__);
 #else
 #define EMPRINTF(args,...)
 #endif
@@ -258,7 +258,7 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     int      idx;
     int32_t  tmp;
     
-    EMPRINTF("EmacReset(%lu)\n", tmo);
+    EMPRINTF("Lpc17xxEmacReset(%lu)\n", tmo);
 
     /* Reset all EMAC internal modules */
     LPC_EMAC->MAC1 = EMAC_MAC1_RES_TX | EMAC_MAC1_RES_MCS_TX | EMAC_MAC1_RES_RX |
@@ -324,11 +324,11 @@ static int Lpc17xxEmacReset(uint32_t tmo)
      */
 
     /* All modes capable, autonegotiation enabled */
-    phyval = 18 << 16;   // Store phy register address in upper 16 bits
+    phyval = 18 << 16;   /* Store phy register address in upper 16 bits */
     NutPhyCtl (PHY_GET_REGVAL, &phyval);
     phyval |= 0x00E0;
 
-    phyval |= 18 << 16;  // Store phy register address in upper 16 bits again
+    phyval |= 18 << 16;  /* Store phy register address in upper 16 bits again */
     NutPhyCtl (PHY_SET_REGVAL, &phyval);
 
     /* Soft Reset LAN8710 */
@@ -355,10 +355,10 @@ static int Lpc17xxEmacReset(uint32_t tmo)
             /* Check link state and configure EMAC accordingly */
             if (phyval & PHY_STATUS_100M) {
                 Lpc17xxEmacSetSpeed(1);
-                EMPRINTF("EMAC: Got link: 100 MBit\n");
+                EMPRINTF("EMAC: Got link: 100 MBit ");
             } else {
                 Lpc17xxEmacSetSpeed(0);
-                EMPRINTF("Link: Got link: 10 MBit\n");
+                EMPRINTF("Link: Got link: 10 MBit ");
             }
 
             if (phyval & PHY_STATUS_FULLDUPLEX) {
@@ -375,16 +375,12 @@ static int Lpc17xxEmacReset(uint32_t tmo)
             EMPRINTF("NO LINK!\n");
 
             /* Return error on link timeout. */
-            // TODO: We could disable the management port here
             return -1;
         }
-        NutSleep(10);
+        NutDelay(10);
     }
 
-    /* Disable management port. */
-    // TODO: We could disable the management port here
-
-    EMPRINTF("EmacReset() DONE\n");
+    EMPRINTF("Lpc17xxEmacReset() DONE\n");
 
     return rc;
 }
@@ -624,7 +620,7 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
     if(Lpc17xxEmacGetBufferStatus(EMAC_RX_BUFF) != EMAC_BUFF_EMPTY) {
         /* Get size of the received frame */
         rxlen = ((RX_STAT_INFO(LPC_EMAC->RxConsumeIndex)) & EMAC_RINFO_SIZE) + 1;
-printf("--> rxlen: %ld\r\n", rxlen);NutSleep(50);                
+           
         if(rxlen > 0) {
             /* substract 4 bytes CTC. */
             /* TODO: the sample code substract only 3 bytes, as the size is -1 encoded, 
@@ -638,7 +634,6 @@ printf("--> rxlen: %ld\r\n", rxlen);NutSleep(50);
                  * Receiving long packets is unexpected. Let's declare the
                  * chip insane. Short packets will be handled by the caller.
                  */
-printf("--> rxlen: %ld\r\n", rxlen);NutSleep(50);                
                 if ((rxlen > ETHERMTU) || (rxlen < 0) || ((Lpc17xxEmacGetRxFrameStatus() & EMAC_RINFO_LAST_FLAG) == 0)) {
                     /* TODO: We assume that the "last" flag is always set */
                     /* TODO: There is space for buffer space optimization by 
@@ -651,8 +646,6 @@ printf("--> rxlen: %ld\r\n", rxlen);NutSleep(50);
                 } else {
                     *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t)rxlen);
                     if (*nbp != NULL) {
-                        //uint8_t *bp = (uint8_t *) (* nbp)->nb_dl.vp;
-                        //memcpy(bp, (void*)RX_DESC_PACKET(LPC_EMAC->RxConsumeIndex), rxlen);
                         memcpy((uint8_t *) (* nbp)->nb_dl.vp, (void*)RX_DESC_PACKET(LPC_EMAC->RxConsumeIndex), rxlen);
                     }
 
@@ -722,12 +715,7 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
          */
 
         idx = LPC_EMAC->TxProduceIndex;
-        /*
-            while(EMAC_GetBufferSts(EMAC_TX_BUFF) == EMAC_BUFF_FULL) {
-                //
-                for(i = 0; i < 1000000; i++) ; 
-            }
-        */
+
         buf = (uint8_t*)TX_DESC_PACKET(idx);
 
         /* We always send full packets. So mark this frame as the last one */
@@ -807,11 +795,10 @@ static int Lpc17xxEmacStart(NUTDEVICE *dev)
     LPC_EMAC->Command |= EMAC_CR_TX_EN | EMAC_CR_RX_EN;
 	LPC_EMAC->MAC1 |= EMAC_MAC1_REC_EN;
 
-    EMPRINTF("EmacStart() DONE\n");
+    EMPRINTF("Lpc17xxEmacStart() DONE\n");
 
     return 0;
 }
-
 
 /*! \fn EmacRxThread(void *arg)
  * \brief NIC receiver thread.
@@ -824,19 +811,17 @@ THREAD(Lpc17xxEmacRxThread, arg)
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
     NETBUF *nb;
 
-    EMPRINTF("EmacRxThread() INIT\n");
+    EMPRINTF("Lpc17xxEmacRxThread() INIT\n");
 
     /*
      * This is a temporary hack. Due to a change in initialization,
      * we may not have got a MAC address yet. Wait until a valid one
      * has been set.
      */
-//EMPRINTF("Lpc17xxEmacStart(%02x:%02x:%02x:%02x:%02x:%02x)\n", ifn->if_mac[0], ifn->if_mac[1], ifn->if_mac[2], ifn->if_mac[3], ifn->if_mac[4], ifn->if_mac[5] );    
+
     while (!ETHER_IS_UNICAST(ifn->if_mac)) {
         NutSleep(10);
-        NutThreadYield();
     }
-EMPRINTF("Lpc17xxEmacStart(%02x:%02x:%02x:%02x:%02x:%02x)\n", ifn->if_mac[0], ifn->if_mac[1], ifn->if_mac[2], ifn->if_mac[3], ifn->if_mac[4], ifn->if_mac[5] );    
 
     /*
      * Do not continue unless we managed to start the NIC. We are
@@ -864,15 +849,13 @@ EMPRINTF("Lpc17xxEmacStart(%02x:%02x:%02x:%02x:%02x:%02x)\n", ifn->if_mac[0], if
     NutThreadSetPriority(9);
 
     /* Enable receive and transmit interrupts. */
-
     LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN |
                            EMAC_INT_RX_DONE | EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR |
                            EMAC_INT_TX_FIN | EMAC_INT_TX_DONE;
 
-//EMPRINTF("--> int enable\n"); NutSleep(100);
-    
+
     NutIrqEnable(&sig_EMAC);
-    
+
     for (;;) {
         /*
          * Wait for the arrival of new packets or poll the receiver every
@@ -980,7 +963,7 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     EMPRINTF("Lpc17xxEmacInit()\n");
-
+    
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCENET);
     
 	/* Configure P1 Ethernet pins for RMII interface. */
@@ -1023,8 +1006,6 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
         EMPRINTF("EMAC: Registering IRQ failed\n");
         return -1;
     }
-
-    EMPRINTF("EMAC: Registering IRQ succeeded\n");
 
     /* Start the receiver thread. */
     if (NutThreadCreate("emacrx", Lpc17xxEmacRxThread, dev,
