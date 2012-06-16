@@ -523,4 +523,18 @@
 #define EMAC_TINFO_NO_DESCR       0x40000000  /* No new Descriptor available        */
 #define EMAC_TINFO_ERR            0x80000000  /* Error Occured (OR of all errors)   */
 
+/* EMAC Buffer status definitions */
+typedef enum {
+    EMAC_BUFF_EMPTY,                /* buffer is empty */
+    EMAC_BUFF_PARTIAL_FULL,         /* buffer contains some packets */
+    EMAC_BUFF_FULL,                 /* buffer is full */
+} EMAC_BUFF_STATUS;
+
+/* EMAC Buffer Index definition */
+
+typedef enum {
+    EMAC_TX_BUFF,                   /* transmit buffer */
+    EMAC_RX_BUFF,                   /* receive buffer */
+} EMAC_BUFF_IDX;
+
 #endif /* _LPC17XX_EMAC_H_ */
