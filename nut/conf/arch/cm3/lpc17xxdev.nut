@@ -6,31 +6,6 @@ nutarch_cm3_lpc17xx_devices =
     --
     -- ***********************************
 
-    --
-    -- LPC17xx Debug UART
-    --
-    {
-        name = "nutarch_cm3_lpc17xx_debug",
-        brief = "UART Debug Output (LPC17xx)",
-        requires = { "DEV_UART_LPC17xx" },
-        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        options =
-        {
-            {
-                macro = "DEBUG_USE_UART",
-                brief = "Select Debug Channel",
-                description = "Select the UART to use as debug output\n"..
-                              "This is only to adapt the application examples and to tell them\n"..
-                              "which USART to use as stdout. See next entry.",
-                type = "enumerated",
-                default = "DEV_UART0",
-                choices = { "DEV_UART0", "DEV_UART1", "DEV_UART2", "DEV_UART3"},
-                file = "include/cfg/uart.h",
---                sources = { "cm3/dev/nxp/lpc17xx_usart.c" }
-            }
-        }
-    },
-
     {
         name = "nutarch_cm3_lpc1768_debug",
         brief = "UART Debug Output (LPC1768)",
@@ -86,5 +61,62 @@ nutarch_cm3_lpc17xx_devices =
         requires = { "HW_GPDMA_LPC17xx" },
         sources = { "cm3/dev/nxp/lpc17xx_gpdma.c" }
     },
+    --
+    -- LPC17xx General purpose DMA Controller
+    --
+    {
+        name = "nutarch_cm3_lpc17xx_emac",
+        brief = "LPC17xx EMAC Driver",
+        description = "LAN driver for LPC176x, LPC177x_8x etc.",
+        requires = { "HW_EMAC_LPC17xx", "NUT_EVENT", "NUT_TIMER" },
+        provides = { "NET_MAC" },
+        sources = { "cm3/dev/nxp/lpc17xx_emac.c", "cm3/dev/nxp/ih_lpc17xx_emac.c" },
+        options =
+        {
+            {
+                macro = "NUT_THREAD_NICRXSTACK",
+                brief = "Receiver Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the NIC receive thread.",
+                flavor = "booldata",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_RX_BUFFERS",
+                brief = "Receive Buffers",
+                description = "Number of 128 byte receive buffers.\n"..
+                              "Increase to handle high traffic situations.\n"..
+                              "Decrease to handle low memory situations.\n"..
+                              "Default is 32.\n",
+                flavor = "booldata",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_TX_BUFSIZ",
+                brief = "Transmit Buffer Size",
+                description = "The driver will allocate two transmit buffers.\n"..
+                              "Can be decreased in low memory situations. Be aware, "..
+                              "that this may break your network application. Do not "..
+                              "change this without exactly knowing the consequences.\n"..
+                              "Default is 1536.\n",
+                flavor = "booldata",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_LINK_LOOPS",
+                brief = "Link Polling Loops",
+                description = "This simple implementation runs a dumb polling loop "..
+                              "while waiting for the Ethernet link status.\n"..
+                              "If you experience link problems, increasing this value "..
+                              "may help.\n"..
+                              "Default is 10000.\n",
+                flavor = "booldata",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            },
+        }
+    }
 }
 

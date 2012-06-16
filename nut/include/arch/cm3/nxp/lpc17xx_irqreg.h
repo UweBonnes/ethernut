@@ -49,7 +49,8 @@ extern IRQ_HANDLER sig_USART4;      // USART 4
 
 extern IRQ_HANDLER sig_RTC;         // Real Time Clock
 extern IRQ_HANDLER sig_WDT;         // Watchdog Timer
-extern IRQ_HANDLER sig_MCI;         // Watchdog Timer
+extern IRQ_HANDLER sig_MCI;         // Multimedia Card Interface / SDIO Interface
+extern IRQ_HANDLER sig_EMAC;        // Ethernet MAC
 
 
 #endif

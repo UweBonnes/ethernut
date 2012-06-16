@@ -74,6 +74,7 @@ nutarch_cm3_lpc176x =
                     "HW_CRC32_LPC177x",
                     "DEV_IRQ_LPC17xx",
                     "HW_WDT_LPC17xx",
+                    "HW_EMAC_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }

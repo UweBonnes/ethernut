@@ -78,6 +78,7 @@ nutarch_cm3_lpc177x_8x=
                     "HW_WDT_LPC17xx",
                     "HW_GPDMA_LPC17xx",
                     "HW_MCI_LPC177x_8x",
+                    "HW_EMAC_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -168,6 +169,31 @@ nutarch_cm3_lpc177x_8x=
         requires = { "HW_MCU_LPC177x_8x" },
         provides = { "HW_GPIO_LPC177x_8x" },
         sources = { "cm3/dev/nxp/lpc177x_8x_gpio.c" }
+    },
+
+    --
+    -- LPC177x_8x DEBUG UART Interface
+    --
+    {
+        name = "nutarch_cm3_lpc177x_8x_debug",
+        brief = "LPC177x_8x Debug UART Driver",
+        requires = { "HW_UART0_LPC17xx" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "cm3/dev/nxp/lpc177x_8x_debug0.c",
+                    "cm3/dev/nxp/lpc177x_8x_debug1.c",
+                    "cm3/dev/nxp/lpc177x_8x_debug2.c",
+                    "cm3/dev/nxp/lpc177x_8x_debug3.c" },
+        options =
+        {
+            {
+                macro = "DEBUG_INIT_BAUDRATE",
+                brief = "Initial Baudrate",
+                description = "Initial baudrate the debug UART is set to.",
+                type = "integer",
+                default = 115200,
+                file = "include/cfg/uart.h"
+            }
+        }
     },
 
     --
