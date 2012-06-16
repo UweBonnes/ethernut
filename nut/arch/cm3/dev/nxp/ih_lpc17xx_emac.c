@@ -51,7 +51,7 @@
 static int EmacIrqCtl(int cmd, void *param);
 
 /*!
- * \brief IRQ Handler for USART 1.
+ * \brief IRQ Handler for EMAC.
  */
 IRQ_HANDLER sig_EMAC = {
 #ifdef NUT_PERFMON
