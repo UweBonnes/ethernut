@@ -836,7 +836,6 @@ static uint32_t Lpc17xxUsartGetStatus(void)
 static int Lpc17xxUsartSetStatus(uint32_t flags)
 {
     int rc = 0;
-    volatile uint32_t dummy;
     /*
      * Process software handshake control.
      */
@@ -875,7 +874,7 @@ static int Lpc17xxUsartSetStatus(uint32_t flags)
      */
     if (flags & UART_ERRORS) {
         /* Clear errors by reading the line status register */
-        dummy = USARTn->LSR;
+        (volatile uint32_t)USARTn->LSR;
     }
 
     /*

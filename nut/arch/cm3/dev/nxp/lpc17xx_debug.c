@@ -546,8 +546,6 @@ static int Lpc17xxDevDebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
 {
-    volatile uint32_t tmp;
-
     /* Enable UART clock and power */
 #if defined(MCU_LPC176x)
     if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
@@ -599,7 +597,7 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
 
     /* Dummy reading */
     while (USARTn->LSR & UART_LSR_RDR) {
-        tmp = USARTn->RBR;
+        (volatile uint32_t)USARTn->RBR;
     }
 
     /* Enable transmitter */
@@ -640,14 +638,14 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
 #endif
 
     /* Dummy reading to clear bits */
-    tmp = USARTn->LSR;
+    (volatile uint32_t)USARTn->LSR;
 
     if(((LPC_UART1_TypeDef *)USARTn) == LPC_UART1) {
         /* Set Modem Control to default state */
         ((LPC_UART1_TypeDef *)USARTn)->MCR = 0;
 
         /* Dummy Reading to Clear Status */
-        tmp = ((LPC_UART1_TypeDef *)USARTn)->MSR;
+        (volatile uint32_t)((LPC_UART1_TypeDef *)USARTn)->MSR;
     }
 #if defined(MCU_LPC177x_8x)
     if(((LPC_UART4_TypeDef *)USARTn) == LPC_UART4) {
