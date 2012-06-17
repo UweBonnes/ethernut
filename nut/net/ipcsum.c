@@ -43,7 +43,7 @@
  * $Id$
  * \endverbatim
  */
-
+#define NUT_LEGACY_IPCSUM
 #include <netinet/ipcsum.h>
 
 /*!
