@@ -73,8 +73,6 @@
 #include <dev/phy.h>
 #include <arch/cm3/nxp/lpc17xx_emac.h>
 
-
-#define NUTDEBUG
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -698,10 +696,10 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
     if ((sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz) > ETHERMTU) {
         return -1;
     }
-    
+
     sz += nb->nb_dl.sz;
     if (sz & 1) {
-        sz++;
+        sz++;       
     }
 
     /* Disable EMAC interrupts. */
@@ -721,12 +719,10 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
         /* We always send full packets. So mark this frame as the last one */
         TX_DESC_CTRL(idx) = ((sz-1) & EMAC_TCTRL_SIZE) | (EMAC_TCTRL_INT | EMAC_TCTRL_LAST);
 
-        
-
         /* Copy packet data */
-        memcpy(buf, nb->nb_dl.vp, nb->nb_dl.sz);
+        memcpy(buf, nb->nb_dl.vp, nb->nb_dl.sz);               
         buf += nb->nb_dl.sz;
-        memcpy(buf, nb->nb_nw.vp, nb->nb_nw.sz);
+        memcpy(buf, nb->nb_nw.vp, nb->nb_nw.sz);      
         buf += nb->nb_nw.sz;
         memcpy(buf, nb->nb_tp.vp, nb->nb_tp.sz);
         buf += nb->nb_tp.sz;
