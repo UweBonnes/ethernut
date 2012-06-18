@@ -180,7 +180,7 @@ __BEGIN_DECLS
 #if defined(__avr__)
 #define NUTMEM_ALIGNMENT        1
 #elif defined(__CORTEX__)
-#define NUTMEM_ALIGNMENT        1
+#define NUTMEM_ALIGNMENT        4
 #elif defined(__ARM__)
 #define NUTMEM_ALIGNMENT        4
 #elif defined(__AVR32__)
