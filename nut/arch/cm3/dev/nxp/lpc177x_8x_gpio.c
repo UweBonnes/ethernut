@@ -149,7 +149,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
  *       If NUTDEBUG is enabled accessing an undefined port will rise
  *       an assertion.
  *
- * \note Port P0-7 .. P0-9 pins (W-Mode pins) are a little bit special and need 
+ * \note Port P0-7 .. P0-9 pins (W-Mode pins) are a little bit special and need
          bit 7 always be set for normal operation
  *
  * \param bank  GPIO bank/port number.
@@ -217,7 +217,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     for (i = 0; i < (bank != NUTGPIO_PORT5 ? 32 : 5); i ++) {
         if (mask & _BV(i)) {
             if ((bank == NUTGPIO_PORT0) && (i >= 7) && (i <= 9)) {
-                /* Port P0-7 .. P0-9 pins (W-Mode pins) are a little bit special and need 
+                /* Port P0-7 .. P0-9 pins (W-Mode pins) are a little bit special and need
                    bit 7 always be set for normal operation
                 */
                 mode |= _BV(7);
@@ -311,12 +311,12 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     }
 
     if ((bank == NUTGPIO_PORT0) && (bit >= 7) && (bit <= 9)) {
-        /* Port P0-7 .. P0-9 pins (W-Mode pins) are a little bit special and need 
+        /* Port P0-7 .. P0-9 pins (W-Mode pins) are a little bit special and need
            bit 7 always be set for normal operation
         */
         mode |= _BV(7);
     }
-    
+
     *IOCON = mode;
 
     if (flags & GPIO_CFG_OUTPUT) {

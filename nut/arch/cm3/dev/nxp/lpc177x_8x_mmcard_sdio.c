@@ -390,7 +390,7 @@ static int Lpc177x_8x_MmcardBlockRead(NUTFILE * nfp, void *buffer, int num)
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
     uint32_t blk = fcb->fcb_blknum;
-//    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;    
+//    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
 
     if (buffer == 0)
     {

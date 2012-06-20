@@ -416,7 +416,7 @@ int Avr32SpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int 
 		}
         /* Wait until transfer has finished. */
         NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
-        
+
 		/* Wait for data is send */
 		while ((inr(base + AVR32_SPI_SR) & AVR32_SPI_TXEMPTY_MASK) == 0);
         /* Read incoming data. */

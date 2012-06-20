@@ -502,7 +502,7 @@ static long Lpc17xxDevDebugSize(NUTFILE *fp)
 /*!
  * \brief Handle I/O controls for debug device 2.
  *
- * The debug device supports UART_SETSPEED, UART_SETDATABITS, 
+ * The debug device supports UART_SETSPEED, UART_SETDATABITS,
  *                           UART_SETPARITY and UART_SETSTOPBITS.
  *
  * \return 0 on success, -1 otherwise.
@@ -510,7 +510,7 @@ static long Lpc17xxDevDebugSize(NUTFILE *fp)
 static int Lpc17xxDevDebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     int rc = -1;
-    
+
     switch(req) {
     case UART_SETSPEED:
         rc = Lpc17xxDevDebugSetSpeed(*((uint32_t *)conf));
@@ -531,7 +531,7 @@ static int Lpc17xxDevDebugIOCtl(NUTDEVICE * dev, int req, void *conf)
     default:
         break;
     }
-    
+
     return rc;
 }
 

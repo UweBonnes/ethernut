@@ -116,7 +116,7 @@ typedef struct _BufDescriptor {
  */
 struct _EMACINFO {
 #ifdef NUT_PERFMON
-#warning not yet implemented    
+#warning not yet implemented
     uint32_t ni_rx_packets;       /*!< Number of packets received. */
     uint32_t ni_tx_packets;       /*!< Number of packets sent. */
     uint32_t ni_overruns;         /*!< Number of packet overruns. */
@@ -194,7 +194,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
 
 /*!
  * \brief Set the emac duplex mode.
- * 
+ *
  * \param   full    1: full duplex, 0: half duplex
  *
  * \return  none;
@@ -212,7 +212,7 @@ static void Lpc17xxEmacSetDuplex(uint8_t full)
 
 /*!
  * \brief Set the emac speed.
- * 
+ *
  * \param   full    1: 100MBit, 0: 10 MBit
  *
  * \return  none;
@@ -228,7 +228,7 @@ static void Lpc17xxEmacSetSpeed(uint8_t enable_100mBit)
 
 /*!
  * \brief Set the emac station address.
- * 
+ *
  * \param   mac    MAC address (station address)
  *
  * \return  none;
@@ -255,7 +255,7 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     int      link_wait;
     int      idx;
     int32_t  tmp;
-    
+
     EMPRINTF("Lpc17xxEmacReset(%lu)\n", tmo);
 
     /* Reset all EMAC internal modules */
@@ -283,12 +283,12 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     if(idx >= sizeof (emac_clkdiv)) {
 		return -1;
     }
-    
+
     idx++;
 
 	/* Set maximum frame size. TODO: Better use ifn->if_mtu */
-    LPC_EMAC->MAXF = ETHERMTU; 
-    
+    LPC_EMAC->MAXF = ETHERMTU;
+
     /* Write to MAC configuration register and reset */
     LPC_EMAC->MCFG = EMAC_MCFG_CLK_SEL(idx) | EMAC_MCFG_RES_MII;
 
@@ -301,7 +301,7 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     /* Enable Reduced MII interface. */
     LPC_EMAC->Command = EMAC_CR_RMII | EMAC_CR_PASS_RUNT_FRM;
 #endif
-    
+
     NutDelay(10);
 
     LPC_EMAC->SUPP = 0;
@@ -310,11 +310,11 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     NutDelay(255);
 
     /* Register PHY
-       PHY driver memory is only allocated one, but as NutRegisterPhy reads the 
-       PHY ID we need to have the (R)MII hardware initialised first 
+       PHY driver memory is only allocated one, but as NutRegisterPhy reads the
+       PHY ID we need to have the (R)MII hardware initialised first
     */
     rc = NutRegisterPhy(1, phy_outw, phy_inw);
-    
+
 // TODO: For other PHYs also apply a reset sequence and put them to autonegotiation?
 #if NIC_PHY_UID == LAN8720
     /* Set LAN8710 to AUTO-MDIX and MII mode.
@@ -588,7 +588,7 @@ static void Lpc17xxEmacInterrupt(void *arg)
             /* TODO: Shall we mark the controller insane an post to the tx-event queue? */
         }
 #endif
-        
+
         if (isr & EMAC_INT_RX_DONE) {
             LPC_EMAC->IntEnable &= ~(EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE);
             NutEventPostFromIrq(&ni->ni_rx_rdy);
@@ -618,11 +618,11 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
     if(Lpc17xxEmacGetBufferStatus(EMAC_RX_BUFF) != EMAC_BUFF_EMPTY) {
         /* Get size of the received frame */
         rxlen = ((RX_STAT_INFO(LPC_EMAC->RxConsumeIndex)) & EMAC_RINFO_SIZE) + 1;
-           
+
         if(rxlen > 0) {
             /* substract 4 bytes CTC. */
-            /* TODO: the sample code substract only 3 bytes, as the size is -1 encoded, 
-                     but rxlen was just inceased by one before!!! 
+            /* TODO: the sample code substract only 3 bytes, as the size is -1 encoded,
+                     but rxlen was just inceased by one before!!!
              */
             rxlen -= 4;
 
@@ -634,9 +634,9 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
                  */
                 if ((rxlen > ETHERMTU) || (rxlen < 0) || ((Lpc17xxEmacGetRxFrameStatus() & EMAC_RINFO_LAST_FLAG) == 0)) {
                     /* TODO: We assume that the "last" flag is always set */
-                    /* TODO: There is space for buffer space optimization by 
+                    /* TODO: There is space for buffer space optimization by
                              allowing smaller receive framgments. In this case
-                             We need to implement the receive algorithm like in 
+                             We need to implement the receive algorithm like in
                              the AT91 driver, where we first try to figure out
                              how much space all frame fragments will take together.
                      */
@@ -699,7 +699,7 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
 
     sz += nb->nb_dl.sz;
     if (sz & 1) {
-        sz++;       
+        sz++;
     }
 
     /* Disable EMAC interrupts. */
@@ -707,8 +707,8 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
 
     /* TODO: Check for link. */
     if (ni->ni_insane == 0) {
-        
-        /* Allocate a descriptor for sending frame and get the coressponding 
+
+        /* Allocate a descriptor for sending frame and get the coressponding
            buffer address NIC interrupts must be disabled.
          */
 
@@ -720,22 +720,22 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
         TX_DESC_CTRL(idx) = ((sz-1) & EMAC_TCTRL_SIZE) | (EMAC_TCTRL_INT | EMAC_TCTRL_LAST);
 
         /* Copy packet data */
-        memcpy(buf, nb->nb_dl.vp, nb->nb_dl.sz);               
+        memcpy(buf, nb->nb_dl.vp, nb->nb_dl.sz);
         buf += nb->nb_dl.sz;
-        memcpy(buf, nb->nb_nw.vp, nb->nb_nw.sz);      
+        memcpy(buf, nb->nb_nw.vp, nb->nb_nw.sz);
         buf += nb->nb_nw.sz;
         memcpy(buf, nb->nb_tp.vp, nb->nb_tp.sz);
         buf += nb->nb_tp.sz;
         memcpy(buf, nb->nb_ap.vp, nb->nb_ap.sz);
 
-        /* Update tx produce index 
+        /* Update tx produce index
            Increase the TxProduceIndex (after writting to the Transmit buffer
            to enable the Transmit buffer) and wrap-around the index if it
            reaches the maximum transmit number
         */
-        
+
         /* Get current tx produce index */
-        idx = LPC_EMAC->TxProduceIndex; 
+        idx = LPC_EMAC->TxProduceIndex;
 
         /* Start frame transmission */
         if (++idx == LPC_EMAC->TxDescriptorNumber + 1) {
@@ -766,24 +766,24 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
 static int Lpc17xxEmacStart(NUTDEVICE *dev)
 {
     IFNET    *ifn = (IFNET *) dev->dev_icb;
-    
+
     /* Set local MAC address. */
     Lpc17xxEmacSetMACAddr(ifn->if_mac);
 
     /* Initialize the rx and tx buffer descriptors */
     Lpc17xxEmacRxDescriptorInit();
     Lpc17xxEmacTxDescriptorInit();
-    
+
 	/* Set Receive Filter register: enable broadcast and multicast */
 	LPC_EMAC->RxFilterCtrl = EMAC_RFC_MCAST_EN | EMAC_RFC_BCAST_EN | EMAC_RFC_PERFECT_EN;
 
 	/* Enable Rx Done, Tx Done and error interrupt for EMAC */
-    /* TODO: We will enable the interrupts in the RxThread 
+    /* TODO: We will enable the interrupts in the RxThread
     LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN |
                            EMAC_INT_RX_DONE | EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR |
                            EMAC_INT_TX_FIN | EMAC_INT_TX_DONE;
     */
-    
+
 	/* Reset all interrupts */
 	LPC_EMAC->IntClear  = 0xFFFF;
 
@@ -828,9 +828,9 @@ THREAD(Lpc17xxEmacRxThread, arg)
 
     Lpc17xxEmacStart(dev);
 
-    /* TODO: Current implementation always returns 0 on Lpc17xxEmacStart() 
+    /* TODO: Current implementation always returns 0 on Lpc17xxEmacStart()
              Other implementations return if a link is available.
-    
+
     while (EmacStart(dev)) {
         EmacReset(EMAC_LINK_LOOPS);
         NutSleep(1000);
@@ -871,7 +871,7 @@ THREAD(Lpc17xxEmacRxThread, arg)
                 (*ifn->if_recv) (dev, nb);
             }
         }
-        LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE; 
+        LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE;
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
@@ -914,15 +914,15 @@ int Lpc17xxEmacOutput(NUTDEVICE * dev, NETBUF * nb)
         if (NutEventWait(&ni->ni_mutex, mx_wait)) {
             break;
         }
-        
+
         /* Check for packet queue space. */
         if (Lpc17xxEmacGetBufferStatus(EMAC_TX_BUFF) == EMAC_BUFF_FULL) {
             if (NutEventWait(&ni->ni_tx_rdy, 500)) {
                 /* No queue space. Release the lock and give up. */
                 NutEventPost(&ni->ni_mutex);
                 break;
-            } 
-        } else 
+            }
+        } else
         if (Lpc17xxEmacPutPacket(ni, nb) == 0) {
             /* Ethernet works. Set a long waiting time in case we
                temporarly lose the link next time. */
@@ -959,9 +959,9 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     EMPRINTF("Lpc17xxEmacInit()\n");
-    
+
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCENET);
-    
+
 	/* Configure P1 Ethernet pins for RMII interface. */
 	/* on rev. 'A' and later, P1.6 should NOT be set. */
     GpioPinConfigSet(NUTGPIO_PORT1, 0, GPIO_CFG_PERIPHERAL1);   /* ETH_TXD0 */

@@ -147,11 +147,11 @@ void NutBoardInit(void)
     for(i = 0; i < 11; i++) {
         GpioPinConfigSet(NUTGPIO_PORT4, i, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_SLEWCTRL);
     }
-    
+
     /* Configure A13 (bank select) */
     GpioPinConfigSet(NUTGPIO_PORT4, 13, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_SLEWCTRL);
-    
-    
+
+
     GpioPinConfigSet(NUTGPIO_PORT4, 25, GPIO_CFG_PERIPHERAL1 | GPIO_CFG_SLEWCTRL);
 
     /* Initialize the external memory controller */
@@ -165,7 +165,7 @@ void NutBoardInit(void)
 
     GpioPinConfigSet(NUTGPIO_PORT1, 13, GPIO_CFG_OUTPUT);       /* PHY Reset */
     GpioPinSetLow(NUTGPIO_PORT1, 13);                           /* Put PHY into reset */
-    
+
     GpioPinConfigSet(NUTGPIO_PORT1, 9,  GPIO_CFG_INPUT | GPIO_CFG_PULLUP | GPIO_CFG_PERIPHERAL0);    /* MODE0   -- ETH_RXD0 */
     GpioPinConfigSet(NUTGPIO_PORT1, 10, GPIO_CFG_INPUT | GPIO_CFG_PULLUP | GPIO_CFG_PERIPHERAL0);    /* MODE1   -- ETH_RXD1 */
     GpioPinConfigSet(NUTGPIO_PORT1, 8,  GPIO_CFG_INPUT | GPIO_CFG_PULLUP | GPIO_CFG_PERIPHERAL0);    /* MODE2   -- ETH_CRS  */

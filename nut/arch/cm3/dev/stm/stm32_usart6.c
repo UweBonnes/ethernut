@@ -191,10 +191,10 @@ NUTDEVICE devUsartStm32_6 = {
 
 #ifdef USART6_RS485_CTRL
 #define USART_485_CTRL
-#ifdef USART6_485DE_INV 
+#ifdef USART6_485DE_INV
 #define USART_485DE_INV
 #endif
-#ifdef USART6_485RE_INV 
+#ifdef USART6_485RE_INV
 #define USART_485RE_INV
 #endif
 #if defined(USART6_485DE_PORT) && defined(USART6_485DE_PIN)

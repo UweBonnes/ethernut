@@ -299,10 +299,10 @@ NUTDEVICE devUsartStm32_3 = {
 
 #ifdef USART3_RS485_CTRL
 #define USART_485_CTRL
-#ifdef USART3_485DE_INV 
+#ifdef USART3_485DE_INV
 #define USART_485DE_INV
 #endif
-#ifdef USART3_485RE_INV 
+#ifdef USART3_485RE_INV
 #define USART_485RE_INV
 #endif
 #if defined(USART3_485DE_PORT) && defined(USART3_485DE_PIN)
