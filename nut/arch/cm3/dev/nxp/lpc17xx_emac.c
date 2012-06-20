@@ -605,7 +605,6 @@ static void Lpc17xxEmacInterrupt(void *arg)
  *
  * \return 0 on success, -1 otherwise.
  */
-#include <stdio.h>
 static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 {
     int      rc = -1;
