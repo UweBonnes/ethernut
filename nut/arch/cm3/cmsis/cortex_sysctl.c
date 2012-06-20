@@ -130,99 +130,99 @@ void SysCtlClockSet( unsigned long ulConfig )
 #endif
 #ifdef STM32F105
 void SysCtlClockSet( unsigned long ulConfig ){
-	uint32_t temp;
-	//Включить RC генератор и дождаться его стабильности
-	RCC->CR |= HSION;
-	while( (RCC->CR & HSIRDY)==0)
-		continue;
-	//Выбрать RC генератор в качестве системного
-	temp= RCC->CFGR;
-	temp &= ~((1<<1)|(1<<0));
-	temp |= RCC_SYSCLKSource_HSI;
-	RCC->CFGR=temp;
-	//Включить внешний кварцевый генератор
-	//Дождаться его стабильности и переключится на него
-	RCC->CR |= HSEON;
-	while( (RCC->CR & HSERDY)==0)
-		continue;
-	temp= RCC->CFGR;
-	temp &= ~((1<<1)|(1<<0));
-	temp |= RCC_SYSCLKSource_HSE;
-	RCC->CFGR=temp;
-	//Установить делители для шин и периферии
-	//AHB
-	temp= RCC->CFGR;
-	temp &= ~((1<<4)|(1<<5)|(1<<6)|(1<<7));
-	temp |= RCC_SYSCLK_Div1;//Max 72Mhz
-	RCC->CFGR=temp;
-	//ADC
-	temp= RCC->CFGR;
-	temp &= ~((1<<14)|(1<<15));
-	temp |= RCC_PCLK2_Div8;//max 14Mhz TODO: add clock calculation
-	RCC->CFGR=temp;
-	//ABP1
-	temp= RCC->CFGR;
-	temp &= ~((1<<8)|(1<<9)|(1<<10));
-	if(ulConfig<=36000000){
-		temp |= RCC_HCLK_Div1;//Max 36Mhz
-	}else{
-		temp |= RCC_HCLK_Div2;//Max 36Mhz
-	};
-	RCC->CFGR=temp;
-	//ABP2
-	temp = RCC->CFGR;
-	temp &= ~((1<<11)|(1<<12)|(1<<13));
-	temp |= RCC_HCLK_Div1 << 3;//Max 72Mhz
-	RCC->CFGR=temp;
-	//Настроить состояния ожидания flash-а
-	temp=FLASH->ACR;
-	temp &= ~((1<<0)|(1<<1)|(1<<2));
-	if(ulConfig < 24000000){
-		temp |= FLASH_Latency_0;
-	}else if(ulConfig < 48000000){
-		temp |= FLASH_Latency_1;
-	}else if(ulConfig <= 72000000){
-		temp |= FLASH_Latency_2;
-	}else {
-		temp |= FLASH_Latency_2;
-	};
-	FLASH->ACR=temp|FLASH_PrefetchBuffer_Enable;
-	//Настроить множитель pll-а
-	temp=RCC->CFGR;
-	temp &= ~((1<<21)|(1<<20)|(1<<19)|(1<<18));
-	if(ulConfig<36000000){
-		temp |= RCC_PLLMul_4;
-	}else if(ulConfig<44000000){
-		temp |= RCC_PLLMul_5;
-	}else if(ulConfig<50000000){
-		temp |= RCC_PLLMul_6;
-	}else if(ulConfig<54000000){
-		temp |= RCC_PLLMul_6_5;
-	}else if(ulConfig<58000000){
-		temp |= RCC_PLLMul_7;
-	}else if(ulConfig<66000000){
-		temp |= RCC_PLLMul_8;
-	}else if(ulConfig<=72000000){
-		temp |= RCC_PLLMul_9;
-	}else{
-		temp |= RCC_PLLMul_9;//TODO: сделать управление pll-ем
-	};
-	RCC->CFGR=temp;
-	//Подключить кварц как источник для pll и выставить делитель в 1
-	temp=RCC->CFGR;
-	temp &= ~((1<<16)|(1<<17));
-	temp |= RCC_PLLSource_PREDIV1;
-	RCC->CFGR=temp;
-	//Включить pll
-	RCC->CR |= PLLON;
-	//Дождаться стабилизации pll
-	while ((RCC->CR & PLLRDY)==0)
-		continue;
-	//Переключить clock на pll
-	temp=RCC->CFGR;
-	temp &= ~((1<<1)|(1<<0));
-	temp |= RCC_SYSCLKSource_PLLCLK;
-	RCC->CFGR=temp;
+    uint32_t temp;
+    //Включить RC генератор и дождаться его стабильности
+    RCC->CR |= HSION;
+    while( (RCC->CR & HSIRDY)==0)
+        continue;
+    //Выбрать RC генератор в качестве системного
+    temp= RCC->CFGR;
+    temp &= ~((1<<1)|(1<<0));
+    temp |= RCC_SYSCLKSource_HSI;
+    RCC->CFGR=temp;
+    //Включить внешний кварцевый генератор
+    //Дождаться его стабильности и переключится на него
+    RCC->CR |= HSEON;
+    while( (RCC->CR & HSERDY)==0)
+        continue;
+    temp= RCC->CFGR;
+    temp &= ~((1<<1)|(1<<0));
+    temp |= RCC_SYSCLKSource_HSE;
+    RCC->CFGR=temp;
+    //Установить делители для шин и периферии
+    //AHB
+    temp= RCC->CFGR;
+    temp &= ~((1<<4)|(1<<5)|(1<<6)|(1<<7));
+    temp |= RCC_SYSCLK_Div1;//Max 72Mhz
+    RCC->CFGR=temp;
+    //ADC
+    temp= RCC->CFGR;
+    temp &= ~((1<<14)|(1<<15));
+    temp |= RCC_PCLK2_Div8;//max 14Mhz TODO: add clock calculation
+    RCC->CFGR=temp;
+    //ABP1
+    temp= RCC->CFGR;
+    temp &= ~((1<<8)|(1<<9)|(1<<10));
+    if(ulConfig<=36000000){
+        temp |= RCC_HCLK_Div1;//Max 36Mhz
+    }else{
+        temp |= RCC_HCLK_Div2;//Max 36Mhz
+    };
+    RCC->CFGR=temp;
+    //ABP2
+    temp = RCC->CFGR;
+    temp &= ~((1<<11)|(1<<12)|(1<<13));
+    temp |= RCC_HCLK_Div1 << 3;//Max 72Mhz
+    RCC->CFGR=temp;
+    //Настроить состояния ожидания flash-а
+    temp=FLASH->ACR;
+    temp &= ~((1<<0)|(1<<1)|(1<<2));
+    if(ulConfig < 24000000){
+        temp |= FLASH_Latency_0;
+    }else if(ulConfig < 48000000){
+        temp |= FLASH_Latency_1;
+    }else if(ulConfig <= 72000000){
+        temp |= FLASH_Latency_2;
+    }else {
+        temp |= FLASH_Latency_2;
+    };
+    FLASH->ACR=temp|FLASH_PrefetchBuffer_Enable;
+    //Настроить множитель pll-а
+    temp=RCC->CFGR;
+    temp &= ~((1<<21)|(1<<20)|(1<<19)|(1<<18));
+    if(ulConfig<36000000){
+        temp |= RCC_PLLMul_4;
+    }else if(ulConfig<44000000){
+        temp |= RCC_PLLMul_5;
+    }else if(ulConfig<50000000){
+        temp |= RCC_PLLMul_6;
+    }else if(ulConfig<54000000){
+        temp |= RCC_PLLMul_6_5;
+    }else if(ulConfig<58000000){
+        temp |= RCC_PLLMul_7;
+    }else if(ulConfig<66000000){
+        temp |= RCC_PLLMul_8;
+    }else if(ulConfig<=72000000){
+        temp |= RCC_PLLMul_9;
+    }else{
+        temp |= RCC_PLLMul_9;//TODO: сделать управление pll-ем
+    };
+    RCC->CFGR=temp;
+    //Подключить кварц как источник для pll и выставить делитель в 1
+    temp=RCC->CFGR;
+    temp &= ~((1<<16)|(1<<17));
+    temp |= RCC_PLLSource_PREDIV1;
+    RCC->CFGR=temp;
+    //Включить pll
+    RCC->CR |= PLLON;
+    //Дождаться стабилизации pll
+    while ((RCC->CR & PLLRDY)==0)
+        continue;
+    //Переключить clock на pll
+    temp=RCC->CFGR;
+    temp &= ~((1<<1)|(1<<0));
+    temp |= RCC_SYSCLKSource_PLLCLK;
+    RCC->CFGR=temp;
 };
 #endif
 //*****************************************************************************
@@ -248,30 +248,30 @@ unsigned long SysCtlClockGet( void )
 #endif
 #ifdef STM32F105
   switch(RCC->CFGR & ((1<<21)|(1<<20)|(1<<19)|(1<<18))){
-	  case RCC_PLLMul_4:
-		  ulClk = 8000000*4;
-		  break;
-	  case RCC_PLLMul_5:
-		  ulClk = 8000000*5;
-		  break;
-	  case RCC_PLLMul_6:
-		  ulClk = 8000000*6;
-		  break;
-	  case RCC_PLLMul_7:
-		  ulClk = 8000000*7;
-		  break;
-	  case RCC_PLLMul_8:
-		  ulClk = 8000000*8;
-		  break;
-	  case RCC_PLLMul_9:
-		  ulClk = 8000000*9;
-		  break;
-	  case RCC_PLLMul_6_5:
-  		  ulClk = 8000000*6.5;
-		  break;
-	  default:
-		  ulClk = 8000000;
-		  break;
+      case RCC_PLLMul_4:
+          ulClk = 8000000*4;
+          break;
+      case RCC_PLLMul_5:
+          ulClk = 8000000*5;
+          break;
+      case RCC_PLLMul_6:
+          ulClk = 8000000*6;
+          break;
+      case RCC_PLLMul_7:
+          ulClk = 8000000*7;
+          break;
+      case RCC_PLLMul_8:
+          ulClk = 8000000*8;
+          break;
+      case RCC_PLLMul_9:
+          ulClk = 8000000*9;
+          break;
+      case RCC_PLLMul_6_5:
+          ulClk = 8000000*6.5;
+          break;
+      default:
+          ulClk = 8000000;
+          break;
   };
 #endif
 

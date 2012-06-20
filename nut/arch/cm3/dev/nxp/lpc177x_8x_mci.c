@@ -34,12 +34,12 @@
  *
  * Parts taken from lpc177x_8x_mci.c       2011-06-02
  *
- * file		lpc177x_8x_mci.c
- * brief	Contains all functions support for MCI firmware library
- *			on LPC177x_8x
- * version	2.0
- * date		29. June. 2011
- * author	NXP MCU SW Application Team
+ * file     lpc177x_8x_mci.c
+ * brief    Contains all functions support for MCI firmware library
+ *          on LPC177x_8x
+ * version  2.0
+ * date     29. June. 2011
+ * author   NXP MCU SW Application Team
  *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.

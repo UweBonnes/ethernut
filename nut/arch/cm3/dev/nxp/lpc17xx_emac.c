@@ -236,10 +236,10 @@ static void Lpc17xxEmacSetSpeed(uint8_t enable_100mBit)
 
 static void Lpc17xxEmacSetMACAddr(CONST uint8_t * mac)
 {
-	/* Set the Ethernet MAC Address registers */
-	LPC_EMAC->SA0 = ((uint32_t)mac[5] << 8) | (uint32_t)mac[4];
-	LPC_EMAC->SA1 = ((uint32_t)mac[3] << 8) | (uint32_t)mac[2];
-	LPC_EMAC->SA2 = ((uint32_t)mac[1] << 8) | (uint32_t)mac[0];
+    /* Set the Ethernet MAC Address registers */
+    LPC_EMAC->SA0 = ((uint32_t)mac[5] << 8) | (uint32_t)mac[4];
+    LPC_EMAC->SA1 = ((uint32_t)mac[3] << 8) | (uint32_t)mac[2];
+    LPC_EMAC->SA2 = ((uint32_t)mac[1] << 8) | (uint32_t)mac[0];
 }
 
 /*!
@@ -281,12 +281,12 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     }
 
     if(idx >= sizeof (emac_clkdiv)) {
-		return -1;
+        return -1;
     }
 
     idx++;
 
-	/* Set maximum frame size. TODO: Better use ifn->if_mtu */
+    /* Set maximum frame size. TODO: Better use ifn->if_mtu */
     LPC_EMAC->MAXF = ETHERMTU;
 
     /* Write to MAC configuration register and reset */
@@ -398,22 +398,22 @@ static int Lpc17xxEmacReset(uint32_t tmo)
  */
 static void Lpc17xxEmacRxDescriptorInit(void)
 {
-	unsigned int i;
+    unsigned int i;
 
-	for (i = 0; i < EMAC_NUM_RX_FRAG; i++) {
-		RX_DESC_PACKET(i)  = RX_BUF(i);
-		RX_DESC_CTRL(i)    = EMAC_RCTRL_INT | (EMAC_ETH_MAX_FLEN-1);
-		RX_STAT_INFO(i)    = 0;
-		RX_STAT_HASHCRC(i) = 0;
-	}
+    for (i = 0; i < EMAC_NUM_RX_FRAG; i++) {
+        RX_DESC_PACKET(i)  = RX_BUF(i);
+        RX_DESC_CTRL(i)    = EMAC_RCTRL_INT | (EMAC_ETH_MAX_FLEN-1);
+        RX_STAT_INFO(i)    = 0;
+        RX_STAT_HASHCRC(i) = 0;
+    }
 
-	/* Set EMAC Receive Descriptor Registers. */
-	LPC_EMAC->RxDescriptor    = RX_DESC_BASE;
-	LPC_EMAC->RxStatus        = RX_STAT_BASE;
-	LPC_EMAC->RxDescriptorNumber = EMAC_NUM_RX_FRAG-1;
+    /* Set EMAC Receive Descriptor Registers. */
+    LPC_EMAC->RxDescriptor    = RX_DESC_BASE;
+    LPC_EMAC->RxStatus        = RX_STAT_BASE;
+    LPC_EMAC->RxDescriptorNumber = EMAC_NUM_RX_FRAG-1;
 
-	/* Rx Descriptors Point to 0 */
-	LPC_EMAC->RxConsumeIndex  = 0;
+    /* Rx Descriptors Point to 0 */
+    LPC_EMAC->RxConsumeIndex  = 0;
 }
 
 /*!
@@ -431,22 +431,22 @@ static void Lpc17xxEmacRxDescriptorInit(void)
  */
 static void Lpc17xxEmacTxDescriptorInit (void)
 {
-	unsigned int i;
+    unsigned int i;
 
-	for (i = 0; i < EMAC_NUM_TX_FRAG; i++)
-	{
-		TX_DESC_PACKET(i) = TX_BUF(i);
-		TX_DESC_CTRL(i)   = 0;
-		TX_STAT_INFO(i)   = 0;
-	}
+    for (i = 0; i < EMAC_NUM_TX_FRAG; i++)
+    {
+        TX_DESC_PACKET(i) = TX_BUF(i);
+        TX_DESC_CTRL(i)   = 0;
+        TX_STAT_INFO(i)   = 0;
+    }
 
-	/* Set EMAC Transmit Descriptor Registers. */
-	LPC_EMAC->TxDescriptor    = TX_DESC_BASE;
-	LPC_EMAC->TxStatus        = TX_STAT_BASE;
-	LPC_EMAC->TxDescriptorNumber = EMAC_NUM_TX_FRAG-1;
+    /* Set EMAC Transmit Descriptor Registers. */
+    LPC_EMAC->TxDescriptor    = TX_DESC_BASE;
+    LPC_EMAC->TxStatus        = TX_STAT_BASE;
+    LPC_EMAC->TxDescriptorNumber = EMAC_NUM_TX_FRAG-1;
 
-	/* Tx Descriptors Point to 0 */
-	LPC_EMAC->TxProduceIndex  = 0;
+    /* Tx Descriptors Point to 0 */
+    LPC_EMAC->TxProduceIndex  = 0;
 }
 
 
@@ -483,10 +483,10 @@ EMAC_BUFF_STATUS inline Lpc17xxEmacGetBufferStatus(EMAC_BUFF_IDX idx)
     if ((consume_idx == 0) && (produce_idx == max_frag_num - 1)) {
         return EMAC_BUFF_FULL;
     }
-	
+    
     /* Wrap-around */
     if (consume_idx == produce_idx + 1) {
-        return EMAC_BUFF_FULL;	
+        return EMAC_BUFF_FULL;  
     }
 
     return EMAC_BUFF_PARTIAL_FULL;
@@ -503,10 +503,10 @@ EMAC_BUFF_STATUS inline Lpc17xxEmacGetBufferStatus(EMAC_BUFF_IDX idx)
 
 static inline uint32_t Lpc17xxEmacGetRxFrameStatus(void)
 {
-	uint32_t idx;
+    uint32_t idx;
 
-	idx = LPC_EMAC->RxConsumeIndex;
-	return (RX_STAT_INFO(idx));
+    idx = LPC_EMAC->RxConsumeIndex;
+    return (RX_STAT_INFO(idx));
 }
 
 
@@ -520,10 +520,10 @@ static inline uint32_t Lpc17xxEmacGetRxFrameStatus(void)
 
 static inline uint32_t Lpc17xxEmacGetTxFrameStatus(void)
 {
-	uint32_t idx;
+    uint32_t idx;
 
-	idx = LPC_EMAC->TxProduceIndex;
-	return (TX_STAT_INFO(idx));
+    idx = LPC_EMAC->TxProduceIndex;
+    return (TX_STAT_INFO(idx));
 }
 
 
@@ -531,7 +531,7 @@ static inline uint32_t Lpc17xxEmacGetTxFrameStatus(void)
  * NIC interrupt entry.
  */
 static void Lpc17xxEmacInterrupt(void *arg)
-{	
+{   
     uint32_t isr;
     EMACINFO *ni = (EMACINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
@@ -773,22 +773,22 @@ static int Lpc17xxEmacStart(NUTDEVICE *dev)
     Lpc17xxEmacRxDescriptorInit();
     Lpc17xxEmacTxDescriptorInit();
 
-	/* Set Receive Filter register: enable broadcast and multicast */
-	LPC_EMAC->RxFilterCtrl = EMAC_RFC_MCAST_EN | EMAC_RFC_BCAST_EN | EMAC_RFC_PERFECT_EN;
+    /* Set Receive Filter register: enable broadcast and multicast */
+    LPC_EMAC->RxFilterCtrl = EMAC_RFC_MCAST_EN | EMAC_RFC_BCAST_EN | EMAC_RFC_PERFECT_EN;
 
-	/* Enable Rx Done, Tx Done and error interrupt for EMAC */
+    /* Enable Rx Done, Tx Done and error interrupt for EMAC */
     /* TODO: We will enable the interrupts in the RxThread
     LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN |
                            EMAC_INT_RX_DONE | EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR |
                            EMAC_INT_TX_FIN | EMAC_INT_TX_DONE;
     */
 
-	/* Reset all interrupts */
-	LPC_EMAC->IntClear  = 0xFFFF;
+    /* Reset all interrupts */
+    LPC_EMAC->IntClear  = 0xFFFF;
 
     /* Enable Transmitter and receiver */
     LPC_EMAC->Command |= EMAC_CR_TX_EN | EMAC_CR_RX_EN;
-	LPC_EMAC->MAC1 |= EMAC_MAC1_REC_EN;
+    LPC_EMAC->MAC1 |= EMAC_MAC1_REC_EN;
 
     EMPRINTF("Lpc17xxEmacStart() DONE\n");
 
@@ -961,8 +961,8 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
 
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCENET);
 
-	/* Configure P1 Ethernet pins for RMII interface. */
-	/* on rev. 'A' and later, P1.6 should NOT be set. */
+    /* Configure P1 Ethernet pins for RMII interface. */
+    /* on rev. 'A' and later, P1.6 should NOT be set. */
     GpioPinConfigSet(NUTGPIO_PORT1, 0, GPIO_CFG_PERIPHERAL1);   /* ETH_TXD0 */
     GpioPinConfigSet(NUTGPIO_PORT1, 1, GPIO_CFG_PERIPHERAL1);   /* ETH_TXD1 */
     GpioPinConfigSet(NUTGPIO_PORT1, 4, GPIO_CFG_PERIPHERAL1);   /* ETH_TXEN */

@@ -258,15 +258,15 @@ static int TwoWireIrqCtl(IRQn_Type interrupt,void (*pfnHandler)(void*),IRQ_HANDL
 
     /* Disable interrupt. */
     if (enabled) {
-	    NVIC_DisableIRQ(interrupt);
+        NVIC_DisableIRQ(interrupt);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-	IntRegister(interrupt,pfnHandler);
+    IntRegister(interrupt,pfnHandler);
         /* Clear interrupt */
-	NVIC_ClearPendingIRQ(interrupt);
+    NVIC_ClearPendingIRQ(interrupt);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -306,7 +306,7 @@ static int TwoWireIrqCtl(IRQn_Type interrupt,void (*pfnHandler)(void*),IRQ_HANDL
 
     /* Enable interrupt. */
     if (enabled) {
-	NVIC_EnableIRQ(interrupt);
+    NVIC_EnableIRQ(interrupt);
     }
     return rc;
 }

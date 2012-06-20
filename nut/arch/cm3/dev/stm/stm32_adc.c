@@ -236,10 +236,10 @@ void ADCInit(void)
 
     /* Enable clock int PMC and reset ADC */
     RCC->APB2ENR|=
-	    RCC_APB2Periph_ADC1|
-	    RCC_APB2Periph_ADC2|
-	    RCC_APB2Periph_ADC3;
-	    	
+        RCC_APB2Periph_ADC1|
+        RCC_APB2Periph_ADC2|
+        RCC_APB2Periph_ADC3;
+            
     outr(ADC_CR, ADC_SWRST);                  // Reset bus
     outr(ADC_CR, 0x00);
 

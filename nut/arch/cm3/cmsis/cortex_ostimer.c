@@ -155,34 +155,34 @@ u_long CortexGetMasterClock(void)
  */
 uint32_t NutArchClockGet(int idx)
 {
-	uint32_t clock;
-	if ( idx == NUT_HWCLK_CPU )
-		return SysCtlClockGet();
-	else if ( idx == NUT_HWCLK_PERIPHERAL )
-		return SysCtlClockGet();
-	else if ( idx == NUT_HWCLK_PCLK1 ){//clock frequency for PCLK1
-		clock=SysCtlClockGet(); //Get sysclock
-		switch(RCC->CFGR & ((1<<8)|(1<<9)|(1<<10))){ //Check divider
-			case RCC_HCLK_Div1:
-				break;
-			case RCC_HCLK_Div2:
-				clock>>=1;
-				break;
-		};
-		return clock;
-	}
-	else if ( idx == NUT_HWCLK_PCLK2 ){ //clock frequency for PCLK2
-		clock=SysCtlClockGet(); //Get sysclock
-		switch(RCC->CFGR & ((1<<11)|(1<<12)|(1<<13))){ //Check divider
-			case (RCC_HCLK_Div1<<3):
-				break;
-			case (RCC_HCLK_Div2<<3):
-				clock>>=1;
-				break;
-		};
-		return clock;
-	}
-	return 0;
+    uint32_t clock;
+    if ( idx == NUT_HWCLK_CPU )
+        return SysCtlClockGet();
+    else if ( idx == NUT_HWCLK_PERIPHERAL )
+        return SysCtlClockGet();
+    else if ( idx == NUT_HWCLK_PCLK1 ){//clock frequency for PCLK1
+        clock=SysCtlClockGet(); //Get sysclock
+        switch(RCC->CFGR & ((1<<8)|(1<<9)|(1<<10))){ //Check divider
+            case RCC_HCLK_Div1:
+                break;
+            case RCC_HCLK_Div2:
+                clock>>=1;
+                break;
+        };
+        return clock;
+    }
+    else if ( idx == NUT_HWCLK_PCLK2 ){ //clock frequency for PCLK2
+        clock=SysCtlClockGet(); //Get sysclock
+        switch(RCC->CFGR & ((1<<11)|(1<<12)|(1<<13))){ //Check divider
+            case (RCC_HCLK_Div1<<3):
+                break;
+            case (RCC_HCLK_Div2<<3):
+                clock>>=1;
+                break;
+        };
+        return clock;
+    }
+    return 0;
 }
 
 /*!
