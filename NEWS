@@ -1,2 +1,7 @@
-See ChangeLog
+
+Added:
+
+- The new application sample pingnet to demonstrate IP protocol extensions.
+  The program will regularly send echo requests to all nodes in a local
+  network and print out any status change on the serial port.
 

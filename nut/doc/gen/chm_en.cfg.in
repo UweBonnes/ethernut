@@ -107,6 +107,7 @@ INPUT                  = @srcdir@/nutdoc_en.txt \
                          @top_srcdir@/nut/app/inetq \
                          @top_srcdir@/nut/app/logtime \
                          @top_srcdir@/nut/app/lua \
+                         @top_srcdir@/nut/app/pingnet \
                          @top_srcdir@/nut/app/portdio \
                          @top_srcdir@/nut/app/pppc \
                          @top_srcdir@/nut/app/rs232d \

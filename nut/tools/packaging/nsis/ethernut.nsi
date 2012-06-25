@@ -661,6 +661,10 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3\sounds"
     File ..\..\..\hwtest\audio\playmp3\sounds\*.mp3
 
+    SetOutPath "$INSTDIR\nut\app\pingnet"
+    File ..\..\..\app\pingnet\Makefile
+    File ..\..\..\app\pingnet\*.c
+
     SetOutPath "$INSTDIR\nut\app\portdio"
     File ..\..\..\app\portdio\Makefile
     File ..\..\..\app\portdio\*.c
