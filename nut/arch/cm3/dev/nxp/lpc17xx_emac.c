@@ -807,16 +807,6 @@ THREAD(Lpc17xxEmacRxThread, arg)
 
     Lpc17xxEmacStart(dev);
 
-    /* TODO: Current implementation always returns 0 on Lpc17xxEmacStart()
-             Other implementations return if a link is available.
-
-    while (EmacStart(dev)) {
-        EmacReset(EMAC_LINK_LOOPS);
-        NutSleep(1000);
-    }
-
-    */
-
     /* Initialize the access mutex. */
     NutEventPost(&ni->ni_mutex);
 
@@ -854,12 +844,12 @@ THREAD(Lpc17xxEmacRxThread, arg)
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
-            Lpc17xxEmacReset(EMAC_LINK_LOOPS);
-            if (Lpc17xxEmacStart(dev) == 0) {
+            if (Lpc17xxEmacReset(EMAC_LINK_LOOPS)) {
+                NutSleep(500);
+            } else {
+                Lpc17xxEmacStart(dev);
                 ni->ni_insane = 0;
                 NutIrqEnable(&sig_EMAC);
-            } else {
-                NutSleep(1000);
             }
         }
     }
