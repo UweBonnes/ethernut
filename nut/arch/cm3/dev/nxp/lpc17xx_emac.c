@@ -547,10 +547,9 @@ static void Lpc17xxEmacInterrupt(void *arg)
                 isr &= ~EMAC_INT_RX_ERR;
             } else {
                 /* We could call any kind of error handling here */
-                /* TODO: Shall we mark the controller insane an post to the rx-event queue? */
+                /* TODO: Shall we mark the controller insane and post to the rx-event queue? */
                 ni->ni_insane = 1;
                 NutEventPostFromIrq(&ni->ni_rx_rdy);
-                // TODO: We should log this for debugging purposes
             }
         }
 
@@ -565,7 +564,7 @@ static void Lpc17xxEmacInterrupt(void *arg)
             error |= (frame_status & EMAC_TINFO_NO_DESCR)   ? EMAC_TX_NO_DESC_ERR:0;
 
             /* We could call any kind of error handling here */
-            /* TODO: Shall we mark the controller insane an post to the tx-event queue? */
+            /* TODO: Shall we mark the controller insane and post to the tx-event queue? */
         }
 #endif
 
@@ -647,8 +646,6 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 
 /*!
  * \brief Load a packet into the nic's transmit ring buffer.
- *
- * \todo This routine simply does not work. Any idea?
  *
  * \param nb Network buffer structure containing the packet to be sent.
  *           The structure must have been allocated by a previous
@@ -756,14 +753,7 @@ static int Lpc17xxEmacStart(NUTDEVICE *dev)
     /* Set Receive Filter register: enable broadcast and multicast */
     LPC_EMAC->RxFilterCtrl = EMAC_RFC_MCAST_EN | EMAC_RFC_BCAST_EN | EMAC_RFC_PERFECT_EN;
 
-    /* Enable Rx Done, Tx Done and error interrupt for EMAC */
-    /* TODO: We will enable the interrupts in the RxThread
-    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN |
-                           EMAC_INT_RX_DONE | EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR |
-                           EMAC_INT_TX_FIN | EMAC_INT_TX_DONE;
-    */
-
-    /* Reset all interrupts */
+    /* Reset all interrupts, Interrupts will be enabled in the RX-Thread */
     LPC_EMAC->IntClear  = 0xFFFF;
 
     /* Enable Transmitter and receiver */
