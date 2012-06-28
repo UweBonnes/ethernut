@@ -389,22 +389,21 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 
 int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdior)(uint8_t))
 {
-    int rc = 0;
     uint16_t temp1 = 0, temp2 = 0;
 
     PHPRINTF("NRP(%u, %p, %p)\n", mda, mdiow, mdior);
+
+    if (phydcb != NULL)
+    {
+        /* Phy is just registered */
+        return 0;
+    }
 
     if ((mdiow == NULL)||(mdior == NULL)) {
         /* PHY Access functions are not given */
         return -1;
     }
 
-    if (phydcb != NULL)
-    {
-        /* Phy is just registered */
-        return -1;
-        //NutHeapFree(phydcb);
-    }
     phydcb = NutHeapAlloc( sizeof(PHYDCB));
     if (phydcb == NULL) {
         /* Not enough memory to register PHY */
@@ -421,14 +420,7 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
 
     phydcb->oui = ((uint32_t)temp1<<16)|(uint32_t)temp2;
 
-    PHPRINTF("rc=%d -- OUI=0x%08lx\n", rc, phydcb->oui);
+    PHPRINTF("PHY OUI=0x%08lx\n", rc, phydcb->oui);
 
-    if (rc) {
-        /* Communication failed, give up */
-        NutHeapFree(phydcb);
-        phydcb = NULL;
-        return -1;
-    }
-
-    return rc;
+    return 0;
 }

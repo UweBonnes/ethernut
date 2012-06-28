@@ -307,32 +307,13 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     LPC_EMAC->SUPP = 0;
 
     /* Wait for PHY ready. */
-    NutDelay(255);
+    NutSleep(255);
 
     /* Register PHY
        PHY driver memory is only allocated one, but as NutRegisterPhy reads the
        PHY ID we need to have the (R)MII hardware initialised first
     */
     rc = NutRegisterPhy(1, phy_outw, phy_inw);
-
-// TODO: For other PHYs also apply a reset sequence and put them to autonegotiation?
-#if NIC_PHY_UID == LAN8720
-    /* Set LAN8710 to AUTO-MDIX and MII mode.
-     * This overides configuration set by config pins of the chip.
-     */
-
-    /* All modes capable, autonegotiation enabled */
-    phyval = 18 << 16;   /* Store phy register address in upper 16 bits */
-    NutPhyCtl (PHY_GET_REGVAL, &phyval);
-    phyval |= 0x00E0;
-
-    phyval |= 18 << 16;  /* Store phy register address in upper 16 bits again */
-    NutPhyCtl (PHY_SET_REGVAL, &phyval);
-
-    /* Soft Reset LAN8710 */
-    phyval = 1;
-    NutPhyCtl(PHY_CTL_RESET, &phyval);
-#endif
 
 #ifndef PHY_MODE_RMII
     /* Clear MII isolate. */
@@ -371,11 +352,10 @@ static int Lpc17xxEmacReset(uint32_t tmo)
         }
         if (link_wait == 0) {
             EMPRINTF("NO LINK!\n");
-
             /* Return error on link timeout. */
             return -1;
         }
-        NutDelay(10);
+        NutSleep(10);
     }
 
     EMPRINTF("Lpc17xxEmacReset() DONE\n");
@@ -483,10 +463,10 @@ EMAC_BUFF_STATUS inline Lpc17xxEmacGetBufferStatus(EMAC_BUFF_IDX idx)
     if ((consume_idx == 0) && (produce_idx == max_frag_num - 1)) {
         return EMAC_BUFF_FULL;
     }
-    
+
     /* Wrap-around */
     if (consume_idx == produce_idx + 1) {
-        return EMAC_BUFF_FULL;  
+        return EMAC_BUFF_FULL;
     }
 
     return EMAC_BUFF_PARTIAL_FULL;
@@ -531,7 +511,7 @@ static inline uint32_t Lpc17xxEmacGetTxFrameStatus(void)
  * NIC interrupt entry.
  */
 static void Lpc17xxEmacInterrupt(void *arg)
-{   
+{
     uint32_t isr;
     EMACINFO *ni = (EMACINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
