@@ -142,6 +142,9 @@ QVariant TreeItem::data( int column, int role ) const
 	case NutComponentModel::Provides:
 		return provides();
 
+	case NutComponentModel::Exclusive:
+		return exclusive();
+
 	case NutComponentModel::File:
 		return headerFile();
 	
@@ -554,6 +557,26 @@ QStringList TreeItem::provides() const
 				result.append( QLatin1String(*it++) );
 
 			ReleaseStringArray( requires );
+		}
+	}
+
+	return result;
+}
+
+QStringList TreeItem::exclusive() const
+{
+	QStringList result;
+
+	if (componentOptions)
+	{
+		char** exclusivity = GetOptionExclusivity( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
+		char** it = exclusivity;
+		if ( it )
+		{
+			while ( *it )
+				result.append( QLatin1String(*it++) );
+
+			ReleaseStringArray( exclusivity );
 		}
 	}
 

@@ -2272,6 +2272,18 @@ char **GetOptionProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 }
 
 /*!
+ * \brief Get the provisions of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
+char **GetOptionExclusivity(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionTableValues(ls, comp, name, TKN_EXCLUSIVITY);
+}
+
+/*!
  * \brief Get the available choices of an enumerated component option.
  *
  * \param repo Pointer to the repository information.

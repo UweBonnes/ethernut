@@ -37,6 +37,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDirIterator>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QDir>
 
 #include "mainwindow.h"
 #include "finddialog.h"
@@ -69,6 +72,8 @@ MainWindow::MainWindow()
 
 	NutComponentDetailsModel* detailsModel = new NutComponentDetailsModel( model );
 	ui.detailsView->setModel( detailsModel );
+	ui.detailsView->verticalHeader()->setDefaultSectionSize(20);
+	connect(ui.detailsView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(detailDoubleClicked(const QModelIndex&)));
 
 	connect( model, SIGNAL(errorMessage(const QString&)), SLOT(message(const QString&)) );
 	connect( model, SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
@@ -90,6 +95,16 @@ MainWindow::MainWindow()
 
 	// Run File->Open as soon as we enter the event loop
 	QTimer::singleShot( 100, this, SLOT(on_actionOpen_triggered()) );
+}
+
+void MainWindow::detailDoubleClicked(const QModelIndex& index)
+{
+	QStringList detail = index.data(Qt::UserRole).toStringList();
+	if (detail.at(0) == "File") {
+		QDir blddir(Settings::instance()->buildPath());
+		QString bpath = blddir.absoluteFilePath(detail.at(1));
+		QDesktopServices::openUrl(QUrl(bpath));
+	}
 }
 
 MainWindow::~MainWindow()

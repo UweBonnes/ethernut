@@ -81,6 +81,7 @@ private slots:
     void message( const QString& );
     void resizeComponentTreeToContents();
     void documentModified();
+    void detailDoubleClicked(const QModelIndex& index);
 
 private:
     NutComponentModel* model;
