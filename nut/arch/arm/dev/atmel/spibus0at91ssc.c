@@ -97,8 +97,8 @@ static uint8_t * volatile spi0_txp;
 static uint8_t * volatile spi0_rxp;
 static volatile size_t spi0_xc;
 
-static uint8_t ssc_pdc_txbuf[512] __attribute__ ((section(".ramfunc")));
-static uint8_t ssc_pdc_rxbuf[512] __attribute__ ((section(".ramfunc")));
+static uint8_t ssc_pdc_txbuf[512] SECTION_BSS_IRAM;
+static uint8_t ssc_pdc_rxbuf[512] SECTION_BSS_IRAM;
 
 /*!
  * \brief Set the specified chip select to a given level.

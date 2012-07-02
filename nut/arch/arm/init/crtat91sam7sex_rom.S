@@ -481,6 +481,18 @@ _40:
         strne   r3, [r1], #+4
         bne     _40
 
+#if defined(MCU_AT91SAM7SE)
+        /*
+         * Clear .bss_iram section
+         */
+        ldr     r1, =__bss_iram_start
+        ldr     r2, =__bss_iram_end
+        ldr     r3, =0
+1:      cmp     r1, r2
+        strne   r3, [r1], #+4
+        bne     1b
+#endif
+
         /*
          * Relocate .data section (Copy from ROM to RAM).
          */
@@ -493,6 +505,19 @@ _41:
         ldrlo   r0, [r1], #4
         strlo   r0, [r2], #4
         blo     _41
+
+#if defined(MCU_AT91SAM7SE)
+        /*
+         * Relocate .data_iram section (Copy from ROM to internal RAM).
+         */
+        ldr     r1, =__etext
+        ldr     r2, =__data_iram_start
+        ldr     r3, =__data_iram_end
+1:      cmp     r2, r3
+        ldrlo   r0, [r1], #4
+        strlo   r0, [r2], #4
+        blo     1b
+#endif
 
         /*
          * Initialize user stack pointer.
