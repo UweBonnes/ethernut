@@ -77,6 +77,7 @@
 #include <dev/debug.h>
 
 #include <cfg/os.h>
+#include <cfg/uart.h>
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
@@ -182,6 +183,75 @@ static int DebugWrite_P(NUTFILE * fp, PGM_P buffer, int len)
     return len;
 }
 
+#ifdef NUT_DEV_DEBUG_READ
+/*!
+ * \brief Read characters from debug device.
+ *
+ * This function is called by the low level input routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
+ * entry.
+ *
+ * The function will block the calling thread until at least one
+ * character has been received.
+ *
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
+ *               previous call to At91DevDebugOpen().
+ * \param buffer Pointer to the buffer that receives the data. If zero,
+ *               then all characters in the input buffer will be
+ *               removed.
+ * \param size   Maximum number of bytes to read.
+ *
+ * \return The number of bytes read, which may be less than the number
+ *         of bytes specified. A return value of -1 indicates an error,
+ *         while zero is returned in case of a timeout.
+ */
+int DebugRead(NUTFILE * fp, void *buffer, int size)
+{
+    int rc;
+    unsigned int ch;
+    char *bp = (char *) buffer;
+
+    /* Wait for the first character, forever. */
+    for (rc = 0; rc < size; rc++) {
+        while ((inb(USR) & _BV(RXC)) == 0) {
+            NutSleep(1);
+            if ((rc || bp == NULL) && (inb(USR) & _BV(RXC)) == 0) {
+                return rc;
+            }
+        }
+        ch = inb(UDR);
+        if (bp) {
+            if (ch == '\r') {
+                *bp++ = '\n';
+            } else {
+                *bp++ = (char) ch;
+            }
+        }
+    }
+    return rc;
+}
+
+/*!
+ * \brief Retrieves the number of characters in input buffer.
+ *
+ * This function is called by the low level size routine of the C runtime
+ * library, using the _NUTDEVICE::dev_size entry.
+ *
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
+ *               previous call to UsartOpen().
+ *
+ * \return The number of bytes currently stored in input buffer.
+ */
+long DebugSize(NUTFILE *fp)
+{
+    while (inb(USR) & _BV(RXC)) {
+        return 1;
+    }
+    return 0;
+}
+
+#endif
+
 /*!
  * \brief Open debug device 0.
  *
@@ -219,12 +289,20 @@ NUTDEVICE devDebug0 = {
     0,                          /*!< Driver control block. */
     DebugInit,                  /*!< Driver initialization routine. */
     DebugIOCtl,                 /*!< Driver specific control function. */
-    0,
+#ifdef NUT_DEV_DEBUG_READ
+    DebugRead,
+#else
+    NULL,
+#endif
     DebugWrite,
     DebugWrite_P,
     DebugOpen,
     DebugClose,
-    0
+#ifdef NUT_DEV_DEBUG_READ
+    DebugSize
+#else
+    NULL
+#endif
 };
 
 /*@}*/
