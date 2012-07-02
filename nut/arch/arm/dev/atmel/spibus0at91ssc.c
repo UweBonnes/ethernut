@@ -63,8 +63,7 @@
 #endif
 #endif
 
-#if defined(SSC0SPI_CS0_PIO_BIT)
-#if defined(SSC0SPI_CS0_PIO_ID)
+#if defined(SSC0SPI_CS0_PIO_BIT) && defined(SSC0SPI_CS0_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID SSC0SPI_CS0_PIO_ID
 #include <cfg/arch/porttran.h>
@@ -87,7 +86,6 @@ static INLINE void SSC0SPI_CS0_SO(void)
 #define SSC0SPI_CS0_LO()
 #define SSC0SPI_CS0_HI()
 #define SSC0SPI_CS0_SO()
-#endif
 #endif
 
 
