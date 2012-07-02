@@ -131,6 +131,7 @@ extern void *__stack;
 #define sbi(_reg, _bit)         outr(_reg, inr(_reg) | _BV(_bit))
 #define cbi(_reg, _bit)         outr(_reg, inr(_reg) & ~_BV(_bit))
 #define bit_is_set(_reg, _bit)  ((inr(_reg) & _BV(_bit)) != 0)
+#define bit_is_clear(_reg, _bit) ((inr(_reg) & _BV(_bit)) == 0)
 
 #if !defined (__ASSEMBLER__)
 #define mem_barrier() __asm__ __volatile__("":::"memory")
