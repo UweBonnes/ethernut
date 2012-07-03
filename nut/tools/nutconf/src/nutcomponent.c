@@ -159,6 +159,10 @@
  */
 #define TKN_SOURCES "sources"
 
+/*! \brief List of files a source depends on.
+ */
+#define TKN_DEPENDS "depends"
+
 /*! \brief List of explicit target files.
  */
 #define TKN_TARGETS "targets"
@@ -2025,6 +2029,18 @@ char **GetComponentSources(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 }
 
 /*!
+ * \brief Get the files the source files of a component depends on
+ *
+ * \param repo Pointer to the repository information.
+ */
+char **GetComponentDepends(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentTableValues(ls, comp, TKN_DEPENDS);
+}
+
+/*!
  * \brief Get the target files of a component.
  *
  * \param repo Pointer to the repository information.
@@ -2582,6 +2598,46 @@ int AddMakeSources(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, const c
 }
 
 /*!
+ * \brief Add the list of sources the object files depend on to a Makefile.
+ *
+ * \param repo Pointer to the repository information.
+ */
+int AddMakeDepends(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, const char *sub_dir)
+{
+    int rc = 0;
+    int i;
+    NUTCOMPONENT *cop = compo;
+
+    while (cop) {
+        if(cop->nc_enabled) {
+            char **sources = GetComponentSources(repo, cop);
+            char **depends = GetComponentDepends(repo, cop);
+            if(sources && depends) {
+                for (i = 0; sources[i] && depends[i]; i++) {
+                    char *cq,*cp = strstr(sources[i], ".c");
+                    if (cp == 0)
+                        continue;
+                    for (cq = sources[i]; cq < cp; cq++)
+                        fprintf(fp, "%c", *cq);
+                    fprintf(fp, ".o: ");
+                    if(strchr(depends[i], '/')) {
+                        char path[255];
+                        sprintf(path, "%s/%s", sub_dir, depends[i]);
+                        CreateDirectoryPath(path);
+                    }
+                    fprintf(fp, "%s\n", depends[i]);
+                }
+            }
+            if (cop->nc_child) {
+                rc += AddMakeDepends(fp, repo, cop->nc_child, sub_dir);
+            }
+        }
+        cop = cop->nc_nxt;
+    }
+    return rc;
+}
+
+/*!
  * \brief Add the list of target files to a Makefile.
  *
  * \param repo Pointer to the repository information.
@@ -2864,6 +2920,9 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
                     for(i = 0; i < targets; i++) {
                         fprintf(fp, " $(OBJ%d)", i + 1);
                     }
+                    fprintf(fp, "\n\n");
+
+                    AddMakeDepends(fp, repo, compo->nc_child, path);
                     fprintf(fp, "\n\n");
 
                     if(ins_dir && *ins_dir) {
