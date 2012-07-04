@@ -430,8 +430,7 @@ bool CConfTreeNode::ViewHeaderFile() const
         } else {
             strFile.Prepend(wxT("/"));
             strFile.Prepend(m_configDoc->GetBuildTree());
-            //rc = wxGetApp().Launch(strFile, "notepad.exe");
-            rc = wxGetApp().Launch(strFile, wxEmptyString);
+            rc = wxGetApp().Launch(strFile);
         }
     }
     return rc;

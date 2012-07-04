@@ -183,7 +183,7 @@ bool NutConfApp::OnInit()
     /*
      * Create the document. 
      */
-    m_docManager->CreateDocument(m_settings->m_configname, 0);
+    m_docManager->CreateDocument(m_settings->m_configname);
 #ifdef __WXMSW__
     if(splash) {
         splash->Destroy();
@@ -241,42 +241,13 @@ CSettings* NutConfApp::GetSettings()
     return m_settings; 
 }
 
-bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer)
+bool NutConfApp::Launch(const wxString & strFileName)
 {
-    bool ok = false;
-    wxString cmd;
     wxString filePath(strFileName);
 
     filePath.Replace(wxT("/"), wxString(wxFileName::GetPathSeparator()));
 
-    if (!strViewer.IsEmpty()) {
-        cmd = strViewer + wxString(wxT(" ")) + filePath;
-    } else {
-        wxString path, filename, ext;
-         wxFileName::SplitPath(filePath, &path, &filename, &ext);
-
-        wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(ext);
-        if (ft == NULL) {
-            ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT(".txt"));
-            if (ft == NULL) {
-                return false;
-            }
-        }
-
-        ok = ft->GetOpenCommand(&cmd, wxFileType::MessageParameters(filePath, wxT("")));
-        delete ft;
-
-        if (!ok) {
-            ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT(".txt"));
-            ok = ft->GetOpenCommand(&cmd, wxFileType::MessageParameters(filePath, wxT("")));
-            delete ft;
-        }
-    }
-
-    if (ok) {
-        ok = (wxExecute(cmd, false) != 0);
-    }
-    return ok;
+    return wxLaunchDefaultApplication(filePath);
 }
 
 bool NutConfApp::Build(const wxString &target)
