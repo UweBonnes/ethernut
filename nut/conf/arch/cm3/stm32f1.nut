@@ -251,7 +251,7 @@ nutarch_cm3_stm32f1 =
 	                    "HW_UART5_STM32",
 	                    "HW_TIM6_STM32",
 	                    "HW_TIM7_STM32",
-						"HW_EMAC_STM32",
+--	                    "HW_EMAC_STM32",
 	                    "HW_CAN2_STM32",
                         "HW_DMA2_STM32F1",
 	                },
