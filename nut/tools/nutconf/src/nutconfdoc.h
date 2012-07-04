@@ -48,7 +48,6 @@ class CNutConfDoc:public wxDocument {
     virtual bool OnOpenDocument(const wxString & filename);
     virtual bool OnSaveDocument(const wxString& filename);
     virtual bool OnNewDocument();
-    virtual bool OnCloseDocument();
 
     bool ReadRepository(const wxString & repositoryname, const wxString & configname);
     void ReleaseRepository();

@@ -197,21 +197,6 @@ bool CNutConfDoc::OnSaveDocument(const wxString& filename)
     return false;
 }
 
-/*!
- * \brief Close the document.
- *
- * \return true on success, otherwise false is returned.
- */
-bool CNutConfDoc::OnCloseDocument()
-{
-    if (wxDocument::OnCloseDocument()) {
-        DeleteItems();
-        return true;
-    }
-    return false;
-}
-
-
 void CNutConfDoc::ReleaseRepository()
 {
 	if (m_compo_root)
@@ -280,7 +265,6 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
         wxLogError(wxT("Failed to open repository"));
     }
 
-    wxDocument::OnNewDocument();
     AddAllItems();
     wxGetApp().SetStatusText(wxEmptyString);
 
