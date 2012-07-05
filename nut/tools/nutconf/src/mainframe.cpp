@@ -24,6 +24,7 @@
 
 #include <wx/config.h>
 #include <wx/sysopt.h>
+#include <wx/persist/toplevel.h>
 
 #include "ids.h"
 #include "nutconf.h"
@@ -71,6 +72,7 @@ CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
 , m_smallToolbar(true)
 , m_findDlg(NULL)
 {
+    const bool persistent = wxPersistentRegisterAndRestore(this, "MainFrame");
     SetIcon(wxICON(application));
 
     CreateNutMenuBar();
@@ -78,14 +80,9 @@ CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
     CreateNutStatusBar();
 
     CreateNutWindows();
-
-    /*
-     * Restore frame position and size.
-     */
-    wxConfigBase *pConfig = wxConfigBase::Get();
-    Move(pConfig->Read(wxT("/MainFrame/x"), 50), pConfig->Read(wxT("/MainFrame/y"), 50));
-    SetClientSize(pConfig->Read(wxT("/MainFrame/w"), 550), pConfig->Read(wxT("/MainFrame/h"), 350));
-
+    if (!persistent) {
+        SetClientSize(550, 350);
+    }
 }
 
 /*!
@@ -98,18 +95,6 @@ CMainFrame::~CMainFrame()
     if (pConfig) {
         wxString lastPath = pConfig->GetPath();
         pConfig->SetPath(wxT("/MainFrame"));
-
-        /*
-         * Frame window position and client window size.
-         */
-        int x, y;
-        int w, h;
-        GetPosition(&x, &y);
-        pConfig->Write(wxT("x"), (long) x);
-        pConfig->Write(wxT("y"), (long) y);
-        GetClientSize(&w, &h);
-        pConfig->Write(wxT("w"), (long) w);
-        pConfig->Write(wxT("h"), (long) h);
 
         wxSize sz;
         sz = m_configSashWindow->GetSize();
