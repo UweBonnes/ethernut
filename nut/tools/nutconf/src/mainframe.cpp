@@ -152,9 +152,9 @@ void CMainFrame::CreateNutMenuBar()
     viewMenu->Append(-1, wxT("Toolbar"), toolbarMenu);
 
     wxMenu *buildMenu = new wxMenu(wxEmptyString, wxMENU_TEAROFF);
-    buildMenu->Append(ID_BUILD_LIBRARY, wxT("Build Nut/OS"), wxT("Builds Nut/OS libraries"));
+    buildMenu->Append(ID_BUILD_LIBRARY, wxT("Build Nut/OS Libraries"), wxT("Builds Nut/OS libraries using the current configuration"));
     buildMenu->AppendSeparator();
-    buildMenu->Append(ID_CREATE_SAMPLE_APPS, wxT("Create Sample Directory"), wxT("Creates a directory with Nut/OS sample applications"));
+    buildMenu->Append(ID_CREATE_SAMPLE_APPS, wxT("Update Application Directory"), wxT("Creates or updates the directory containing Nut/OS applications"));
 
     wxMenu *helpMenu = new wxMenu;
     helpMenu->Append(ID_NUTOS_HELP, wxT("Help &Contents"), wxT("Displays help contents"));
