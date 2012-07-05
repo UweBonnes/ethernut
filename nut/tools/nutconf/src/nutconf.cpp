@@ -331,7 +331,7 @@ bool NutConfApp::Build(const wxString &target)
         wxLogMessage(wxT("----- '%s' failed with error %d -----"), cmd.c_str(), code);
     }
     else {
-        wxLogMessage(wxT("----- '%s' terminated successfully -----"), cmd.c_str(), code);
+        wxLogMessage(wxT("----- '%s' terminated successfully -----"), cmd.c_str());
     }
 
     /* 
