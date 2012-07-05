@@ -89,10 +89,12 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
     switch (hintOp) {
     case nutSelChanged:
         if (node) {
-            m_infoText->SetValue(node->GetDescription());
+            wxString content = node->GetDescription();
+            content.Replace("\n", "<br />");
+            m_infoText->SetPage(content);
             m_propertyList->Fill(node);
         } else {
-            m_infoText->Clear();
+            m_infoText->SetPage(wxEmptyString);
             m_propertyList->ClearAll();
         }
         break;
