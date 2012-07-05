@@ -269,9 +269,7 @@ void CMainFrame::CreateNutWindows()
     m_infoSashWindow->SetAlignment(wxLAYOUT_TOP);
 
     wxLogVerbose(wxT("Create CInfoWindow"));
-    m_infoWindow =
-        new CInfoWindow(m_infoSashWindow, ID_SHORT_DESCR_WINDOW, wxDefaultPosition, wxDefaultSize,
-                        wxTE_MULTILINE | wxCLIP_CHILDREN | wxTE_READONLY);
+    m_infoWindow = new CInfoWindow(m_infoSashWindow, ID_SHORT_DESCR_WINDOW);
 
     /* Create the configuration tree control. */
     m_treeCtrl = new CConfTreeCtrl(m_configSashWindow, ID_CONFTREE_CTRL);
