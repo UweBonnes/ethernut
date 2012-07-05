@@ -2396,7 +2396,7 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA Support for F1/L1",
         requires = { "HW_MCU_STM32", "HW_DMA1_STM32F1" },
         provides = { "HW_DMA1_F1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma1.c" }
+        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32_dma1.c" }
     },
     {
         name = "nutarch_cm3_stm32f1_dma2",
@@ -2404,7 +2404,27 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA Support for F1/L1",
         requires = { "HW_MCU_STM32", "HW_DMA2_STM32F1" },
         provides = { "HW_DMA2_F1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma2.c" }
+        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32_dma2.c" }
+    },
+
+    --
+    -- STM32F2/F4 DMA Interface
+    --
+    {
+        name = "nutarch_cm3_stm32f2_dma1",
+        brief = "STM32F2/F4 DMA1 Controller",
+        description = "Generic DMA1 Support for F2/F4",
+        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F2" },
+        provides = { "HW_DMA1_F2" },
+        sources = { "cm3/dev/stm/stm32f2_dma.c", "cm3/dev/stm/ih_stm32_dma1.c" }
+    },
+    {
+        name = "nutarch_cm3_stm32f2_dma2",
+        brief = "STM32F2/F4 DMA2 Controller",
+        description = "Generic DMA2 Support for F2/F4",
+        requires = { "HW_MCU_STM32", "HW_DMA2_STM32F2" },
+        provides = { "HW_DMA2_F2" },
+        sources = { "cm3/dev/stm/stm32f2_dma.c", "cm3/dev/stm/ih_stm32_dma2.c" }
     },
 }
 

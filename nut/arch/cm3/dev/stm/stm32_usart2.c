@@ -299,10 +299,15 @@ NUTDEVICE devUsartStm32_2 = {
 #endif
 
 #ifdef USART2_SUPPORT_DMA
-#define UART_DMA_TXCHANNEL  DMA1_C7
-#define UART_DMA_RXCHANNEL  DMA1_C6
-#define UART_DMA_TXIRQ      sig_DMA1_CH7
-#define UART_DMA_RXIRQ      sig_DMA1_CH6
+ #if defined(MCU_STM32F1)||defined(MCU_STM32L1)
+  #define UART_DMA_TXCHANNEL  DMA1_C7
+  #define UART_DMA_RXCHANNEL  DMA1_C6
+ #elif  defined(MCU_STM32F2)||defined(MCU_STM32F4)
+  #define UART_DMA_TXCHANNEL  DMA_CONTROL0 | DMA_STREAM6 | DMA_CHANNEL4
+  #define UART_DMA_RXCHANNEL  DMA_CONTROL0 | DMA_STREAM5 | DMA_CHANNEL4
+ #else
+  #warning "STM32 family has no implemented DMA"
+ #endif
 #else
 #undef UART_DMA_TXCHANNEL
 #undef UART_DMA_RXCHANNEL

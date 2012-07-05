@@ -69,16 +69,7 @@
 #define STM_HAS_DMA2 5
 #endif
 
-/*!
- * \brief STM32 DMA Status and Interrupt Flags.
- */
-#define DMA_TEIF 0x8  /*< Channel x Transfer Error Flag */
-#define DMA_HTIF 0x4  /*< Channel x Half Transfer Complete Flag */
-#define DMA_TCIF 0x2  /*< Channel x Transfer Complete Flag */
-#define DMA_GIF  0x1  /*< Channel x Global Interrupt Flag */
-
-#define DMA_FLAGMASK 0xF
-#define DMA_IRQMASK  0x1
+#define DMA_MINC DMA_CCR1_MINC
 
 /* Internally used struct and table to align
  * DMA channels and interrupts. */
@@ -89,26 +80,5 @@ typedef struct {
 } DMATAB;
 
 extern const DMATAB DmaTab[];
-
-/*
- * DMA Handles and Interrupt Entry Points
- */
-extern HANDLE* dma1_args[];
-extern void Dma1IrqEntry(void *arg);
-#ifdef STM_HAS_DMA2
-extern HANDLE* dma2_args[];
-extern void Dma2IrqEntry(void *arg);
-#endif
-
-/*
- * DMA Control Functions
- */
-void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flags);
-void DMA_Enable(uint8_t ch);
-void DMA_Disable(uint8_t ch);
-void DMA_Init(void);
-void DMA_IrqMask( uint8_t ch, uint32_t mask, uint8_t ena);
-void DMA_ClearFlag( uint8_t ch, uint32_t flags);
-uint32_t DMA_GetFlag( uint8_t ch);
 
 #endif /* _STM32F1_DMA_H_ */

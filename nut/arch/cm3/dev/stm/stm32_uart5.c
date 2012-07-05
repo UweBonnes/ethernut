@@ -197,8 +197,17 @@ NUTDEVICE devUartStm32_5 = {
 #undef USART_HARDWARE_HDX
 #endif
 
+#ifdef USART1_SUPPORT_DMA
+ #if defined(MCU_STM32F2)||defined(MCU_STM32F4)
+  #define UART_DMA_TXCHANNEL  DMA_CONTROL0 | DMA_STREAM7 | DMA_CHANNEL4
+  #define UART_DMA_RXCHANNEL  DMA_CONTROL0 | DMA_STREAM0 | DMA_CHANNEL4
+ #else
+  #warning "STM32 family has no implemented DMA"
+ #endif
+#else
 #undef UART_DMA_TXCHANNEL
 #undef UART_DMA_RXCHANNEL
+#endif
 
 #define USARTn      UART5
 #define USARTnBase  UART5_BASE

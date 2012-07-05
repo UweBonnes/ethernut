@@ -51,9 +51,10 @@
 #include <arch/cm3/stm/stm32xxxx_gpio.h>
 #include <arch/cm3/stm/stm32xxxx_usart.h>
 #include <arch/cm3/stm/stm32_usart.h>
+#include <arch/cm3/stm/stm32_dma.h>
 
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
-#include <arch/cm3/stm/stm32f1_dma.h>
+#include <arch/cm3/stm/stm32_dma.h>
 #endif
 
 /* Some function renaming for IRQ handling on uarts
@@ -226,7 +227,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
 
         /* Setup Transfer */
         DMA_Setup(UART_DMA_TXCHANNEL, UART_DR_PTR, rbf->rbf_blockptr, rbf->rbf_blockcnt,
-            DMA_CCR1_MINC);
+            DMA_MINC);
 
         /* Enable TxComplete Interrupt */
         CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT)) = 1;
@@ -332,7 +333,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
 
         /* Setup Transfer */
         DMA_Setup(UART_DMA_RXCHANNEL, rbf->rbf_blockptr, UART_DR_PTR, rbf->rbf_blockcnt,
-            DMA_CCR1_MINC);
+            DMA_MINC);
 
         /* Enable TxComplete Interrupt */
         CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAR))= 1;
@@ -456,9 +457,11 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         /* Disable DMA transfer */
         CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT)) = 0;
 
-        /* In case of half-duplex, enable receiver again */
-        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE)) = 1;
-
+        if( hdpx_control) {
+            /* In case of half-duplex, enable receiver again */
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE)) = 1;
+        }
+            
         /* Reset Counter */
         rbf->rbf_blockcnt = 0;
         rbf->rbf_cnt = 0;
@@ -507,7 +510,7 @@ static void Stm32UsartInterrupt(void *arg)
     }
     /* Test for next byte can be transmitted
      * At end of DMA_TX Transfer, both TC and TXE are set.
-     * Do not reinitialize tarnsfer in that case!
+     * Do not reinitialize transfer in that case!
      */
     if ((csr & USART_SR_TXE) && !CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT))) {
         Stm32UsartTxReady(&dcb->dcb_tx_rbf);
@@ -1104,7 +1107,6 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         flow_control = 0;
     }
     NutUartIrqEnable();
-
 #endif
 
     /* Setup half-duplex mode */
@@ -1146,6 +1148,13 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
     }
 #endif
 
+    /*
+     * Verify the result.
+     */
+    if ((Stm32UsartGetFlowControl() & USART_MF_FLOWMASK) !=
+        (flags & USART_MF_FLOWMASK)) {
+        return -1;
+    }
     return 0;
 }
 

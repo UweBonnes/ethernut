@@ -53,7 +53,7 @@
 #else
 #warning "STM32 family has no F1/L1 compatible DMA"
 #endif
-#include <arch/cm3/stm/stm32f1_dma.h>
+#include <arch/cm3/stm/stm32_dma.h>
 
 /*!
  * \brief Table to align channels and interrupts for simpler access
