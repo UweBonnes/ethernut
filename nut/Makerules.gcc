@@ -36,10 +36,7 @@
 #
 
 include $(top_srcdir)/Makerules.all
-
-%.dep: %.c
-	@echo "  [CC] $<"
-	@$(CC) -MM $(CPPFLAGS) $(CFLAGS) -o $@ $<
+CPPFLAGS += -MD -MP
 
 %.o : %.c
 	@echo "  [CC] $<"
@@ -63,9 +60,10 @@ include $(top_srcdir)/Makerules.all
 $(PROJ).a: $(OBJS)
 
 cleancc:
-	-rm -f $(OBJS) $(DEPS)
+	-rm -f $(OBJS) $(SRCS:%.c=%.d) $(OBJ1:.o=.d)
 	-rm -f $(OBJS:.o=.lst) $(OBJ1:.o=.lst) $(OBJ2:.o=.lst) $(OBJ3:.o=.lst) $(OBJ4:.o=.lst) $(OBJ5:.o=.lst)
 
-ifdef DEPS
--include $(DEPS)
+ifndef NODEPS
+# http://www.microhowto.info/howto/automatically_generate_makefile_dependencies.html
+-include $(SRCS:%.c=%.d) $(OBJ1:.o=.d)
 endif
