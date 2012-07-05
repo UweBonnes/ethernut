@@ -117,7 +117,7 @@ nutarch_cm3_stm32_devices =
     --
     {
         name = "nutarch_cm3_stm32_devices_usart1",
-        brief = "STM32L1 USART1 Driver",
+        brief = "STM32 USART1 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART1_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -325,7 +325,7 @@ nutarch_cm3_stm32_devices =
     --
     {
         name = "nutarch_cm3_stm32f_usart2",
-        brief = "STM32F USART2 Driver",
+        brief = "STM32 USART2 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART2_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -559,7 +559,7 @@ nutarch_cm3_stm32_devices =
 	--
 	{
 		name = "nutarch_cm3_stm32_devices_usart3",
-		brief = "STM32F USART3 Driver",
+		brief = "STM32 USART3 Driver",
 		description = "Hardware specific USART driver. Implements hardware "..
 		          "functions for the generic driver framework.",
 		requires = { "HW_UART3_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -816,7 +816,7 @@ nutarch_cm3_stm32_devices =
 	--
     {
         name = "nutarch_cm3_stm32f_uart4",
-        brief = "STM32F UART4 Driver",
+        brief = "STM32 UART4 Driver",
         description = "Hardware specific UART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART4_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -1013,7 +1013,7 @@ nutarch_cm3_stm32_devices =
 	--
     {
         name = "nutarch_cm3_stm32f_uart5",
-        brief = "STM32F UART5 Driver",
+        brief = "STM32 UART5 Driver",
         description = "Hardware specific UART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART5_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
@@ -2403,7 +2403,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F1/L1 DMA2 Controller",
         description = "Generic DMA Support for F1/L1",
         requires = { "HW_MCU_STM32", "HW_DMA2_STM32F1" },
-        provides = { "HW_DMA2_F2" },
+        provides = { "HW_DMA2_F1" },
         sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32f1_dma2.c" }
     },
 }
