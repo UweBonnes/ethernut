@@ -112,6 +112,21 @@
  */
 #define GPIO_CFG_PERIPHAL   0x00000020
 
+/*!
+ * \brief GPIO pin speed
+ *
+ * Speed L1      F2/F2
+ * SLOW  400 kHz   2 MHz
+ * MED     2 MHz  25 MHz
+ * FAST   10 MHz  50 MHz
+ * HIGH   40 MHz 100 MHz
+ */
+#define GPIO_CFG_SPEED       0x000000C0
+#define GPIO_CFG_SPEED_SLOW  0x00000000
+#define GPIO_CFG_SPEED_MED   0x00000040
+#define GPIO_CFG_SPEED_FAST  0x00000080
+#define GPIO_CFG_SPEED_HIGH  0x000000C0
+
 typedef struct {
     void (*iov_handler) (void *);
     void *iov_arg;
