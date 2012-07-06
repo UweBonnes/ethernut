@@ -137,7 +137,6 @@ bool NutConfApp::OnInit()
     m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configurator"));
 
     SetTopWindow(m_mainFrame);
-    m_mainFrame->Show();
 
     if (!m_mainFrame->GetHelpController().Initialize(wxT("nutosapiref"))) {
         wxLogMessage(wxT("Failed to load help file"));

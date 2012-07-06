@@ -198,7 +198,6 @@ void CMainFrame::CreateNutWindows()
     int w;
     int h;
 
-    Show();
     /*
      * Create the bottom sash. Its client is a multiline text control,
      * which acts as a log output window. 
@@ -285,6 +284,8 @@ void CMainFrame::CreateNutWindows()
 
     pConfig->SetPath(lastPath);
     wxLogVerbose(wxT("+++++++++++++++ Windows created +++++++++++++++++"));
+
+    Show();
 }
 
 wxTextCtrl *CMainFrame::GetOutputWindow() const
