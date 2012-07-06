@@ -37,13 +37,8 @@
 IMPLEMENT_CLASS(CBuildOptionsDialog, wxPanel)
 
 BEGIN_EVENT_TABLE(CBuildOptionsDialog, wxPanel)
-    EVT_BUTTON(ID_BROWSE_BUTTON, CBuildOptionsDialog::OnBrowseBuildPath)
-    EVT_BUTTON(ID_BROWSE_SRCDIR, CBuildOptionsDialog::OnBrowseSourceDir)
-    EVT_BUTTON(ID_BROWSE_INSTALL, CBuildOptionsDialog::OnBrowseInstallPath)
-	EVT_BUTTON(ID_BROWSE_INCLFIRST, CBuildOptionsDialog::OnBrowseIncludeFirst)
-	EVT_BUTTON(ID_BROWSE_INCLLAST, CBuildOptionsDialog::OnBrowseIncludeLast)
     EVT_TEXT_ENTER(ID_COMBO_SRCDIR, CBuildOptionsDialog::OnPlatformEnter)
-    EVT_TEXT(ID_ENTRY_SRCDIR, CBuildOptionsDialog::OnSourceDirChange) 
+    EVT_DIRPICKER_CHANGED(ID_BROWSE_SRCDIR, CBuildOptionsDialog::OnSourceDirChange)
 END_EVENT_TABLE()
 
 /*!
@@ -62,26 +57,31 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     CPathValidator libDirValid(VALIDPATH_IS_DIRECTORY | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_lib_dir);
 
     wxStaticBox *grpSource = new wxStaticBox(this, -1, wxT("Source Directory"));
-    m_entSourceDir = new wxTextCtrl(this, ID_ENTRY_SRCDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, srcDirValid);
-    wxButton *btnSourceDir = new wxButton(this, ID_BROWSE_SRCDIR, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    m_pickSourceDir = new wxDirPickerCtrl(this, ID_BROWSE_SRCDIR, wxEmptyString, wxT("Select the source directory"),
+                                        wxDefaultPosition, wxDefaultSize,
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL | wxDIRP_DIR_MUST_EXIST, srcDirValid);
+
     wxStaticText *lblPlatform = new wxStaticText(this, -1, wxT("Platform"));
     m_cbxPlatform = new wxComboBox(this, ID_COMBO_SRCDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0, wxGenericValidator(&opts->m_platform));
 
     wxStaticBox *grpInclude = new wxStaticBox(this, -1, wxT("Include Directories"));
     wxStaticText *lblFirst = new wxStaticText(this, -1, wxT("First"));
-    m_entInclFirstDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, firstIncValid);
-    wxButton *btnBrowseInclFirst = new wxButton(this, ID_BROWSE_INCLFIRST, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    m_pickInclFirstDir = new wxDirPickerCtrl(this, ID_BROWSE_INCLFIRST, wxEmptyString, wxT("Select an include directory to be searched first"),
+                                        wxDefaultPosition, wxDefaultSize,
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, firstIncValid);
     wxStaticText *lblLast = new wxStaticText(this, -1, wxT("Last"));
-    m_entInclLastDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, lastIncValid);
-    wxButton *btnBrowseInclLast = new wxButton(this, ID_BROWSE_INCLLAST, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    m_pickInclLastDir = new wxDirPickerCtrl(this, ID_BROWSE_INCLLAST, wxEmptyString, wxT("Select an include directory to be searched last"),
+                                        wxDefaultPosition, wxDefaultSize,
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, lastIncValid);
 
     wxStaticBox *grpBuild = new wxStaticBox(this, -1, wxT("Build Directory"));
-    m_entBuildDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, bldDirValid);
-    wxButton *btnBrowseBuild = new wxButton(this, ID_BROWSE_BUTTON, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
-
+    m_pickBuildDir = new wxDirPickerCtrl(this, ID_BROWSE_BUILD, wxEmptyString, wxT("Choose a build directory"),
+                                        wxDefaultPosition, wxDefaultSize,
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, lastIncValid);
     wxStaticBox *grpInstall = new wxStaticBox(this, -1, wxT("Install Directory"));
-    m_entInstallDir = new wxTextCtrl(this, ID_PATH_INSTALL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, libDirValid);
-    wxButton *btnBrowseInstall = new wxButton(this, ID_BROWSE_INSTALL, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    m_pickInstallDir = new wxDirPickerCtrl(this, ID_BROWSE_INSTALL, wxEmptyString, wxT("Choose an install directory"),
+                                        wxDefaultPosition, wxDefaultSize,
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, lastIncValid);
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
 
@@ -96,8 +96,7 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     wxSizer *sizerBuildDir = new wxStaticBoxSizer(grpBuild, wxHORIZONTAL);
     wxSizer *sizerInstallDir = new wxStaticBoxSizer(grpInstall, wxHORIZONTAL);
 
-    szrSourceDir->Add(m_entSourceDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
-    szrSourceDir->Add(btnSourceDir, 0, wxALIGN_RIGHT | wxGROW | wxALL, 5);
+    szrSourceDir->Add(m_pickSourceDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
 
     szrPlatform->Add(lblPlatform, 0, wxALIGN_LEFT | wxGROW | wxALL, 5);
     szrPlatform->Add(m_cbxPlatform, 0, wxALIGN_LEFT | wxGROW | wxALL, 5);
@@ -105,25 +104,14 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     szrSource->Add(szrSourceDir, 0, wxGROW | wxALL, 5);
     szrSource->Add(szrPlatform, 0, wxGROW | wxALL, 5);
 
-
-
     szrInclFirst->Add(lblFirst, 0, wxALIGN_LEFT | wxALL, 5);
-    szrInclFirst->Add(m_entInclFirstDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
-    szrInclFirst->Add(btnBrowseInclFirst, 0, wxALIGN_RIGHT | wxALL, 5);
-
+    szrInclFirst->Add(m_pickInclFirstDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
     szrInclLast->Add(lblLast, 0, wxALIGN_LEFT | wxALL, 5);
-    szrInclLast->Add(m_entInclLastDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
-    szrInclLast->Add(btnBrowseInclLast, 0, wxALIGN_RIGHT | wxALL, 5);
-
+    szrInclLast->Add(m_pickInclLastDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
     szrInclude->Add(szrInclFirst, 0, wxGROW | wxALL, 5);
     szrInclude->Add(szrInclLast, 0, wxGROW | wxALL, 5);
-
-
-    sizerBuildDir->Add(m_entBuildDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
-    sizerBuildDir->Add(btnBrowseBuild, 0, wxALIGN_RIGHT | wxALL, 5);
-
-    sizerInstallDir->Add(m_entInstallDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
-    sizerInstallDir->Add(btnBrowseInstall, 0, wxALIGN_RIGHT | wxALL, 5);
+    sizerBuildDir->Add(m_pickBuildDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    sizerInstallDir->Add(m_pickInstallDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
 
     sizerTop->Add(szrSource, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
     sizerTop->Add(szrInclude, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
@@ -157,116 +145,6 @@ bool CBuildOptionsDialog::TransferDataFromWindow()
 }
 
 /*!
- * \brief Browse for the build directory.
- *
- * Executed when user clicks the browse button near the build directory entry.
- *
- * \param event Contains information about the command event.
- */
-void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& WXUNUSED(event))
-{
-    wxString path = ((wxTextCtrl*)FindWindow(ID_PATH_ENTRY))->GetValue();
-
-    wxDirDialog dlg(this, wxT("Choose a build directory"), path, wxDD_NEW_DIR_BUTTON);
-
-    if (dlg.ShowModal() == wxID_OK) {
-        wxString val = dlg.GetPath();
-#ifdef _WIN32
-        val.Replace(wxT("\\"), wxT("/"));
-#endif
-        m_entBuildDir->SetValue(val);
-    }
-}
-
-/*!
-* \brief Browse for the include first directory.
-*
-* Executed when user clicks the browse button near the include first directory entry.
-*
-* \param event Contains information about the command event.
-*/
-void CBuildOptionsDialog::OnBrowseIncludeFirst( wxCommandEvent& WXUNUSED(event) )
-{
-	wxString path = m_entInclFirstDir->GetValue();
-
-	wxDirDialog dlg(this, wxT("Choose a include directory"), path);
-
-	if (dlg.ShowModal() == wxID_OK) {
-		wxString val = dlg.GetPath();
-#ifdef _WIN32
-		val.Replace(wxT("\\"), wxT("/"));
-#endif
-		m_entInclFirstDir->SetValue(val);
-	}
-}
-
-/*!
-* \brief Browse for the include last directory.
-*
-* Executed when user clicks the browse button near the include last directory entry.
-*
-* \param event Contains information about the command event.
-*/
-void CBuildOptionsDialog::OnBrowseIncludeLast( wxCommandEvent& WXUNUSED(event) )
-{
-	wxString path = m_entInclLastDir->GetValue();
-
-	wxDirDialog dlg(this, wxT("Choose a include directory"), path);
-
-	if (dlg.ShowModal() == wxID_OK) {
-		wxString val = dlg.GetPath();
-#ifdef _WIN32
-		val.Replace(wxT("\\"), wxT("/"));
-#endif
-		m_entInclLastDir->SetValue(val);
-	}
-}
-
-/*!
- * \brief Browse for the source directory.
- *
- * Executed when user clicks the browse button near the source directory entry.
- *
- * \param event Contains information about the command event.
- */
-void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& WXUNUSED(event))
-{
-    wxString path = m_entSourceDir->GetValue();
-
-    wxDirDialog dlg(this, wxT("Choose a source directory"), path);
-
-    if (dlg.ShowModal() == wxID_OK) {
-        wxString val = dlg.GetPath();
-#ifdef _WIN32
-        val.Replace(wxT("\\"), wxT("/"));
-#endif
-        m_entSourceDir->SetValue(val);
-    }
-}
-
-/*!
- * \brief Browse for the install directory.
- *
- * Executed when user clicks the browse button near the install directory entry.
- *
- * \param event Contains information about the command event.
- */
-void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& WXUNUSED(event))
-{
-    wxString path = m_entInstallDir->GetValue();
-
-    wxDirDialog dlg(this, wxT("Choose an install directory"), path, wxDD_NEW_DIR_BUTTON);
-
-    if (dlg.ShowModal() == wxID_OK) {
-        wxString val = dlg.GetPath();
-#ifdef _WIN32
-        val.Replace(wxT("\\"), wxT("/"));
-#endif
-        m_entInstallDir->SetValue(val);
-    }
-}
-
-/*!
  * \brief Executed when user presses ENTER in the platform selection combo.
  *
  * This routine doesn't do anything. Shall we remove it?
@@ -285,7 +163,7 @@ void CBuildOptionsDialog::OnPlatformEnter(wxCommandEvent& WXUNUSED(event))
  */
 void CBuildOptionsDialog::PopulatePlatform()
 {
-    wxString src_dir = m_entSourceDir->GetValue();
+    wxString src_dir = m_pickSourceDir->GetPath();
     wxString platform = m_cbxPlatform->GetValue();
 
     if(wxDir::Exists(src_dir)) {
@@ -316,7 +194,7 @@ void CBuildOptionsDialog::PopulatePlatform()
  *
  * \param event Contains information about the command event.
  */
-void CBuildOptionsDialog::OnSourceDirChange(wxCommandEvent& WXUNUSED(event))
+void CBuildOptionsDialog::OnSourceDirChange(wxFileDirPickerEvent& WXUNUSED(event))
 {
     PopulatePlatform();
 }

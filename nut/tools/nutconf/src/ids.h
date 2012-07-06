@@ -79,7 +79,7 @@
 #define ID_SETTINGS_REPOSITORY  2052
 #define ID_SETTINGS_BUILD       2053
 
-#define ID_BROWSE_BUTTON        2054
+#define ID_BROWSE_BUILD         2054
 #define ID_PATH_ENTRY           2055
 #define ID_ENTRY_SRCDIR         2056
 #define ID_BROWSE_SRCDIR        2057

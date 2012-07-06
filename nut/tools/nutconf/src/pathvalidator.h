@@ -25,6 +25,7 @@
  */
 
 #include <wx/wx.h>
+#include <wx/filepicker.h>
 
 /*! \brief Empty entries are not valid. */
 #define VALIDPATH_NOT_EMPTY     0x0001
