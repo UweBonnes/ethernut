@@ -115,6 +115,8 @@ bool CSettingsDialog::TransferDataFromWindow()
 
 bool CSettingsDialog::Validate()
 {
+    int current = m_notebook->GetSelection();
+
     m_notebook->SetSelection(0);
     if (!m_repositoryOptions->Validate()) {
         return false;
@@ -130,6 +132,9 @@ bool CSettingsDialog::Validate()
     m_notebook->SetSelection(3);
     if (!m_appOptions->Validate()) {
         return false;
+    }
+    if (current != wxNOT_FOUND) {
+        m_notebook->SetSelection(current);
     }
     return true;
 }
