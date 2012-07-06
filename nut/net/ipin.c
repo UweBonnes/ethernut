@@ -105,7 +105,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     IPHDR *ip;
     uint_fast8_t hdrlen;
     uint32_t dst;
-    uint_fast8_t bcast;
+    uint_fast8_t bcast = 0;
     IFNET *nif;
 
     ip = nb->nb_nw.vp;
@@ -168,33 +168,28 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     /*
      * Check device's local IP address.
      */
-    else if (nif->if_local_ip == 0) {
-        /* Not yet configured, discard net-directed datagrams. */
-        NutNetBufFree(nb);
-        return;
-    }
+    else if (nif->if_local_ip != 0) {
+        /*
+         * Check for unicast.
+         */
+        if (dst == nif->if_local_ip) {
+            nb->nb_flags |= NBAF_UNICAST;
+        }
 
-    /*
-     * Check for unicast.
-     */
-    else if (dst == nif->if_local_ip) {
-        bcast = 0;
-        nb->nb_flags |= NBAF_UNICAST;
-    }
+        /*
+         * Check for net-directed broadcast.
+         */
+        else if ((dst & ~nif->if_mask) == ~nif->if_mask) {
+            bcast = 1;
+        }
 
-    /*
-     * Check for net-directed broadcast.
-     */
-    else if ((dst & ~nif->if_mask) == ~nif->if_mask) {
-        bcast = 1;
-    }
-
-    /*
-     * Not for us, discard silently.
-     */
-    else {
-        NutNetBufFree(nb);
-        return;
+        /*
+         * Not for us, discard silently.
+         */
+        else {
+            NutNetBufFree(nb);
+            return;
+        }
     }
 
     /*
