@@ -82,9 +82,10 @@
 uint32_t GpioPinConfigGet(int bank, int bit)
 {
     uint32_t rc = 0;
-    uint8_t mode = ((CM3REG(bank, GPIO_TypeDef, MODER))>> (bit *2)) & 0x3;
-    uint8_t pull = ((CM3REG(bank, GPIO_TypeDef, PUPDR))>> (bit *2)) & 0x3;
-    uint8_t dr_oc = CM3BBREG(bank, GPIO_TypeDef, OTYPER, bit);
+    GPIO_TypeDef *gpio = (GPIO_TypeDef *)bank;
+    uint8_t mode = ((gpio->MODER) >> (bit *2)) & 0x3;
+    uint8_t pull = ((gpio->PUPDR) >> (bit *2)) & 0x3;
+    uint8_t dr_oc = ((gpio->OTYPER) >> bit ) & 0x1;
     if (mode == GPIO_Mode_OUT)
     {
         rc = GPIO_CFG_OUTPUT;
@@ -139,30 +140,32 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(IS_GPIO_ALL_PERIPH(bank));
-    CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)/0x400) = 1;
+    __IO uint32_t* gpio_bb = CM3BB_BASE(bank);
+    CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)>>10) = 1;
     /* keep speed at slowest for now */
     if (flags & GPIO_CFG_PERIPHAL)
     {
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ( bit << 1)     ) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ((bit << 1) + 1)) = 1;
-        CM3BBREG(bank, GPIO_TypeDef, OTYPER, bit            ) = (flags & GPIO_CFG_MULTIDRIVE );
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ( bit << 1)     ) = (flags & GPIO_CFG_PULLUP );
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1)    ))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1) + 1))] = 1;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OTYPER, bit)            ] = (flags & GPIO_CFG_MULTIDRIVE );
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP );
     }
     else if (flags & GPIO_CFG_OUTPUT)
     {
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ( bit << 1)     ) = 1;
-        CM3BBREG(bank, GPIO_TypeDef, OTYPER,  bit           ) = (flags & GPIO_CFG_MULTIDRIVE );
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ( bit << 1)     ) = (flags & GPIO_CFG_PULLUP );
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1)    ))] = 1;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OTYPER, bit)            ] = (flags & GPIO_CFG_MULTIDRIVE );
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP );
+
     }
     else if (flags & GPIO_CFG_DISABLED)
     {
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ( bit << 1)     ) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ( bit << 1)     ) = (flags & GPIO_CFG_PULLUP );
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1)    ))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1) + 1))] = 0 ;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP );
     }
     /* Check the result. */
     if( GpioPinConfigGet( bank, bit ) != flags ) {
