@@ -70,3 +70,4 @@ clean:
 	-rm -f $(SRCS:.cc=.s)
 	-rm -f $(SRCS:.cc=.bak)
 	-rm -f $(SRCS:.cc=.i)
+	-rm -f $(SRCS:.cx=.d)

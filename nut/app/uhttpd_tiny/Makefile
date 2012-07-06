@@ -62,4 +62,5 @@ clean:
 	-rm -f $(SRCS:.c=.lst)
 	-rm -f $(SRCS:.c=.bak)
 	-rm -f $(SRCS:.c=.i)
+	-rm -f $(SRCS:.c=.d)
 	-rm -f $(WEBIMG)

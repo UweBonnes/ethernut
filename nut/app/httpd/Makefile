@@ -117,3 +117,4 @@ clean:
 	-rm -f $(SRCS:.c=.bak)
 	-rm -f $(SRCS:.c=.i)
 	-rm -f $(WEBFILE)
+	-rm -f $(SRCS:.c=.d)

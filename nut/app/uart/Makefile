@@ -100,3 +100,4 @@ clean:
 	-rm -f $(SRCS:.c=.s)
 	-rm -f $(SRCS:.c=.bak)
 	-rm -f $(SRCS:.c=.i)
+	-rm -f $(SRCS:.c=.d)
