@@ -35,14 +35,14 @@ public:
     ConfItemRenderer();
 
     virtual bool Render(wxRect rect, wxDC *dc, int state);
-    virtual bool ActivateCell(const wxRect& WXUNUSED(cell),
-                              wxDataViewModel *WXUNUSED(model),
-                              const wxDataViewItem &WXUNUSED(item),
-                              unsigned int WXUNUSED(col),
+    virtual bool ActivateCell(const wxRect& cell,
+                              wxDataViewModel *model,
+                              const wxDataViewItem &item,
+                              unsigned int col,
                               const wxMouseEvent *mouseEvent);
     virtual wxSize GetSize() const;
     virtual bool SetValue(const wxVariant &value);
-    virtual bool GetValue(wxVariant &WXUNUSED(value)) const;
+    virtual bool GetValue(wxVariant &value) const;
     const wxDataViewItemAttr& GetAttr() const;
     void EnableItem(bool set);
     bool GetEnabled() const;

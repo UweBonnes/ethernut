@@ -35,7 +35,7 @@ public:
     ConfValueRenderer(CConfTreeCtrl *tree);
 
     virtual bool SetValue(const wxVariant &value);
-    virtual bool GetValue(wxVariant &WXUNUSED(value)) const;
+    virtual bool GetValue(wxVariant &value) const;
     virtual wxSize GetSize() const;
 
     virtual bool HasEditorCtrl() const;
