@@ -56,9 +56,12 @@ class CConfTreeModel:public wxDataViewModel {
     virtual unsigned GetRow(const wxDataViewItem &item) const;
     wxDataViewItem GetItem(unsigned int row) const;
     void ToggleItem(const wxDataViewItem &item);
+    wxDataViewItem SearchNext(wxDataViewItem& item, const wxString& text, bool checkFirst, bool matchCase, bool matchWord);
 private:
     CNutConfDoc* m_config;
     CConfTreeNode* m_root_node;
+    wxDataViewItem SearchRecursive(wxDataViewItem& root, const wxString& text, bool checkFirst, bool matchCase, bool matchWord);
+    wxDataViewItem SearchSiblings(wxDataViewItem& item, wxDataViewItem& parent, const wxString& text, bool checkFirst, bool matchCase, bool matchWord);
 };
 
 #endif

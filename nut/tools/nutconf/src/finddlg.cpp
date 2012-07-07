@@ -22,6 +22,7 @@
 
 #include "nutconf.h"
 #include "nutconfdoc.h"
+#include "nutconfhint.h"
 #include "finddlg.h"
 
 #include <wx/app.h>
@@ -44,28 +45,32 @@ CFindDialog::CFindDialog(wxWindow *parent, const wxString& title, long style)
 void CFindDialog::OnFind(wxFindDialogEvent& event)
 {
     wxString string = event.GetFindString();
-#if 0
     bool matchCase = ((event.GetFlags() & wxFR_MATCHCASE) != 0);
     bool matchWord = ((event.GetFlags() & wxFR_WHOLEWORD) != 0);
 
     /* Locate the currently selected item. */
-    CConfigTree *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
-    wxTreeItemId sel = treeCtrl->GetSelection();
-    if (!sel.IsOk()) {
-        sel = treeCtrl->GetRootItem();
+    CConfTreeCtrl *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
+    CConfTreeModel *model = static_cast<CConfTreeModel*>(treeCtrl->GetModel());
+    wxDataViewItem sel;
+    if (treeCtrl->HasSelection()) {
+        sel = treeCtrl->GetSelection();
+    } else {
+        sel = model->GetRootItem();
     }
 
-    if (sel.IsOk()) {
-        sel = treeCtrl->FindNextItemId(sel, string, sel != m_lastId, matchCase, matchWord);
-    }
-    if (sel.IsOk()) {
-        m_lastId = sel;
-        treeCtrl->SelectItem(sel);
+    wxDataViewItem got = model->SearchNext(sel, string, sel != m_lastId, matchCase, matchWord);
+    if (got.IsOk()) {
+        treeCtrl->Select(got);
+        treeCtrl->EnsureVisible(got);
+        CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
+        if (doc) {
+            CNutConfHint hint(NULL, nutSelChanged);
+            doc->UpdateAllViews(NULL, &hint);
+        }
     }
     else {
         wxMessageBox(wxT("No more matches."), wxT("Search"), wxOK | wxICON_INFORMATION, this);
     }
-#endif
 }
 
 void CFindDialog::OnClose(wxFindDialogEvent& event)
