@@ -72,12 +72,13 @@ static const uint32_t GPIO_RCCx[] = {
  * \param bit  Bit number of the specified bank/port.
  *
  * \return Attribute flags of the pin.
- */
+    uint8_t cnf; */
 uint32_t GpioPinConfigGet(int bank, int bit)
 {
     uint32_t rc = 0;
     uint8_t mode;
     uint8_t cnf;
+    uint8_t speed;
     GPIO_TypeDef *GPIOx = ((GPIO_TypeDef *)bank);
 
     if( bit < 8 ) {
@@ -88,6 +89,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     }
 
     mode = ( rc >> ( bit * 4 ) );
+    speed = mode & 0x3;
     cnf = ( mode >> 2 ) & 0x3;
     mode &= 0x3;
 
@@ -126,6 +128,16 @@ uint32_t GpioPinConfigGet(int bank, int bit)
             /* Output Open-Drain Alternative Function */
             rc |= (GPIO_CFG_PERIPHAL | GPIO_CFG_DISABLED | GPIO_CFG_MULTIDRIVE);
             break;
+        }
+        switch ( speed) {
+        case 2 : 
+            rc |= GPIO_CFG_SPEED_SLOW;
+            break;
+        case 3 :
+            rc |= GPIO_CFG_SPEED_FAST;
+            break;
+        default : 
+            rc |= GPIO_CFG_SPEED_MED;
         }
     }
     return rc;
@@ -176,8 +188,12 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 
 
     if( flags & GPIO_CFG_OUTPUT ) {
-        /* Configure pin as output 50MHz */
-        cxmx = 0x3;
+        switch (flags && GPIO_CFG_SPEED)
+        {
+        case GPIO_CFG_SPEED_SLOW: cxmx = 0x2; break;
+        case GPIO_CFG_SPEED_MED:  cxmx = 0x1; break;
+        default: cxmx = 0x3;
+        }
 
         /* Configure Open-Drain */
         if( flags & GPIO_CFG_MULTIDRIVE )
