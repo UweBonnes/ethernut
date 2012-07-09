@@ -45,6 +45,7 @@
 
 #include <sys/heap.h>
 #include <sys/event.h>
+#include <sys/timer.h>
 #include <sys/types.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
@@ -63,7 +64,7 @@
 
 
 UDPSOCKET *udpSocketList;       /*!< Global linked list of all UDP sockets. */
-static uint16_t last_local_port = 4096;  /* Unassigned local port. */
+static uint16_t last_local_port;  /* Unassigned local port. */
 static uint_fast8_t registered;
 
 /*!
@@ -80,6 +81,7 @@ static uint_fast8_t registered;
 UDPSOCKET *NutUdpCreateSocket(uint16_t port)
 {
     UDPSOCKET *sock;
+    uint16_t   ticks;
 
     if (!registered) {
         if (NutRegisterIpHandler(IPPROTO_UDP, NutUdpInput)) {
@@ -89,8 +91,21 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
     }
     if (port == 0) {
         do {
-            if (++last_local_port == 0)
-                last_local_port = 4096;
+            /* Each time a new socket is created the local port number in incremented
+               by a more or less randomized value between 1 and 15 (the lowest 4 bit of 
+               NutGetMillis() | 1). The highest two bits are always set to 1.
+               This way a port range of 49152 to 65535 is used according to the IANA 
+               suggestions for ephemeral port usage.
+             */            
+            ticks = (uint16_t) NutGetMillis();
+            if (last_local_port) {
+                last_local_port += (uint16_t) ((ticks & 0x000F) | 1);
+            } else {
+                last_local_port = ticks;
+            }
+
+            last_local_port |= 0xC000;            
+
             port = htons(last_local_port);
             sock = udpSocketList;
             while (sock) {
