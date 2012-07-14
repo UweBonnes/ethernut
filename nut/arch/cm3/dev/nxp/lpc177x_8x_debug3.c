@@ -58,8 +58,10 @@
 static NUTFILE *Lpc17xxDevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 static int Lpc17xxDevDebugClose(NUTFILE * fp);
 static int Lpc17xxDevDebugWrite(NUTFILE * fp, const void *buffer, int len);
+#ifdef NUT_DEV_DEBUG_READ
 static int Lpc17xxDevDebugRead(NUTFILE * fp, void *buffer, int size);
 static long Lpc17xxDevDebugSize(NUTFILE *fp);
+#endif
 static int Lpc17xxDevDebugIOCtl(NUTDEVICE * dev, int req, void *conf);
 static int Lpc17xxDevDebugInit(NUTDEVICE * dev);
 

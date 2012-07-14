@@ -451,6 +451,7 @@ static int Lpc17xxDevDebugWrite(NUTFILE * fp, const void *buffer, int len)
  *         of bytes specified. A return value of -1 indicates an error,
  *         while zero is returned in case of a timeout.
  */
+
 static int Lpc17xxDevDebugRead(NUTFILE * fp, void *buffer, int size)
 {
     int rc;
