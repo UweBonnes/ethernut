@@ -1175,13 +1175,13 @@ static int Lpc17xxUsartInit(void)
 #if defined(MCU_LPC176x)
     if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
         /* Set RS485 control to default state */
-        USARTn->RS485CTRL = 0;
+        ((LPC_UART1_TypeDef*)USARTn)->RS485CTRL = 0;
 
         /* Set RS485 delay timer to default state */
-        USARTn->RS485DLY = 0;
+        ((LPC_UART1_TypeDef*)USARTn)->RS485DLY = 0;
 
         /* Set RS485 addr match to default state */
-        USARTn->ADRMATCH = 0;
+        ((LPC_UART1_TypeDef*)USARTn)->ADRMATCH = 0;
     }
 #elif defined(MCU_LPC177x_8x)
     /* Set RS485 control to default state */
