@@ -168,7 +168,9 @@ nutarch_cm3_lpc177x_8x=
         description = "Generic port I/O API.",
         requires = { "HW_MCU_LPC177x_8x" },
         provides = { "HW_GPIO_LPC177x_8x" },
-        sources = { "cm3/dev/nxp/lpc177x_8x_gpio.c" }
+        sources = { "cm3/dev/nxp/lpc177x_8x_gpio.c",
+                    "cm3/dev/nxp/lpc17xx_gpioirq.c"
+                  }
     },
 
     --
