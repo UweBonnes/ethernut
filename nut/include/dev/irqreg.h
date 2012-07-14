@@ -139,6 +139,7 @@
 #define NUT_IRQMODE_RISINGEDGE  6
 #define NUT_IRQMODE_EDGE        7
 #define NUT_IRQMODE_LEVEL       8
+#define NUT_IRQMODE_BOTHEDGE    9
 
 /*
  * Registered interrupt handler information structure.
