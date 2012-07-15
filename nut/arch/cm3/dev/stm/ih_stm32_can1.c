@@ -44,16 +44,17 @@
 #define NUT_IRQPRI_CAN1  4
 #endif
 
-#if defined(STM32F10X_CL)
-#define CAN_TX_IRQn  CAN1_TX_IRQn
-#define CAN_RX0_IRQn CAN1_RX0_IRQn
-#define CAN_RX1_IRQn CAN1_RX1_IRQn
-#define CAN_SCE_IRQn CAN1_SCE_IRQn
-#else
+#if defined(STM32F10X_LD)|| defined(STM32F10X_MD)|| defined(STM32F10X_HD)|| defined(STM32F10X_XL)
 #define CAN_TX_IRQn  USB_HP_CAN1_TX_IRQn
 #define CAN_RX0_IRQn USB_LP_CAN1_RX0_IRQn
 #define CAN_RX1_IRQn CAN1_RX1_IRQn
 #define CAN_SCE_IRQn CAN1_SCE_IRQn
+#else
+#define CAN_TX_IRQn  CAN1_TX_IRQn
+#define CAN_RX0_IRQn CAN1_RX0_IRQn
+#define CAN_RX1_IRQn CAN1_RX1_IRQn
+#define CAN_SCE_IRQn CAN1_SCE_IRQn
+
 #endif
 
 #ifdef NUT_PERFMON
