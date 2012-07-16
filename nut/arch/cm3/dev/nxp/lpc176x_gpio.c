@@ -510,6 +510,26 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, int bit)
 }
 
 /*!
+ * \brief Query the status of a specified GPIO interrupt.
+ *
+ * A related interrupt handler must have been registered before calling
+ * this function. See GpioRegisterIrqHandler().
+ *
+ * \param sig Interrupt to query
+ * \param bit Bit number of the specified bank/port.
+ *
+ * \return 0 if interrupt is disabled, 1 of enabled
+ */
+
+int GpioIrqStatus(GPIO_SIGNAL * sig, int bit)
+{
+    uint32_t status;
+    (sig->ios_ctl) (sig, NUT_IRQCTL_STATUS, &status, bit);
+
+    return status;
+}
+
+/*!
  * \brief Set the GPIO interrupt mode for a pin
  *
  * \param sig Interrupt to configure.

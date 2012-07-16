@@ -96,14 +96,14 @@ static void Lpc17xxGpioIsr(void *arg)
 static int Lpc17xxGpioCtrl(GPIO_SIGNAL * sig, int cmd, void *param, int bit)
 {
     int rc = 0;
-    unsigned int *ival = (unsigned int *) param;
+    uint32_t *ival = (uint32_t *) param;
 
     switch (cmd) {
         case NUT_IRQCTL_STATUS:
             if (sig->enabled & _BV(bit)) {
-                *ival |= 1;
+                *ival = 1;
             } else {
-                *ival &= ~1;
+                *ival = 0;
             }
             break;
             
