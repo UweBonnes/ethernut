@@ -208,6 +208,7 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);
+extern int GpioIrqStatus(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqDisable(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqSetMode(GPIO_SIGNAL * sig, int bit, int mode);
 
