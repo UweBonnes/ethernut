@@ -146,7 +146,8 @@ nutarch_cm3_lpc176x =
         requires = { "HW_MCU_LPC176x" },
         provides = { "HW_GPIO_LPC176x" },
         sources = { "cm3/dev/nxp/lpc176x_gpio.c",
-                    "cm3/dev/nxp/lpc17xx_gpioirq.c"
+                    "cm3/dev/nxp/lpc17xx_gpioirq.c",
+                    "cm3/dev/nxp/ih_lpc17xx_pio.c"
                   }
     },
 
