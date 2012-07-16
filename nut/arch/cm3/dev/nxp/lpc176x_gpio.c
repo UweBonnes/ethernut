@@ -466,6 +466,10 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
             if (sig_PIO.ir_handler == NULL) {
                 rc = NutRegisterIrqHandler(&sig_PIO, sig->ios_handler, NULL);
                 if (rc == 0) {
+                    /* Clear any pending interrupts */
+                    LPC_GPIOINT->IO0IntClr = 0xFFFFFFFF;
+                    LPC_GPIOINT->IO2IntClr = 0xFFFFFFFF;
+                    
                     rc = NutIrqEnable(&sig_PIO);
                 }
             }

@@ -130,13 +130,13 @@ static int Lpc17xxGpioCtrl(GPIO_SIGNAL * sig, int cmd, void *param, int bit)
             break;
             
         case NUT_IRQCTL_SETMODE:
-            sig->mode_rising_enabled  &= ~_BV(bit);
-            sig->mode_falling_enabled &= ~_BV(bit);                
             switch (*ival) {
                 case NUT_IRQMODE_RISINGEDGE:
                     sig->mode_rising_enabled  |= _BV(bit);
+                    sig->mode_falling_enabled &= ~_BV(bit);
                     break;
                 case NUT_IRQMODE_FALLINGEDGE:
+                    sig->mode_rising_enabled  &= ~_BV(bit);
                     sig->mode_falling_enabled |= _BV(bit);
                     break;
                 case NUT_IRQMODE_BOTHEDGE:
@@ -144,6 +144,8 @@ static int Lpc17xxGpioCtrl(GPIO_SIGNAL * sig, int cmd, void *param, int bit)
                     sig->mode_falling_enabled |= _BV(bit);                
                     break;
                 case NUT_IRQMODE_NONE:
+                    sig->mode_rising_enabled  &= ~_BV(bit);
+                    sig->mode_falling_enabled &= ~_BV(bit);
                     break;
                 default: 
                     rc = -1;
