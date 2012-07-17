@@ -29,7 +29,6 @@
 --
 -- For additional information see http://www.ethernut.de/
 --
-
 -- Operating system functions
 --
 -- $Log$
@@ -4749,6 +4748,14 @@ nutdev =
         sources = { "ppp.c" }
     },
 
+    {
+        name = "nutdev_owibus",
+        brief = "One-Wire Bus implementations",
+        description = "",
+        requires = { "HW_GPIO" },
+        provides = { "DEV_OWI" },
+        sources = { "owibus.c", "owibus_bbif.c", "owibus_uartif.c" },
+    },
     --
     -- Disabled components.
     --
@@ -4789,8 +4796,6 @@ nutdev =
             	flavor = "boolean",
 	           	file = "include/cfg/spi_7seg.h"
 	        },
-
-
         },
     },
 }

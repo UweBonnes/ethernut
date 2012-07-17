@@ -96,6 +96,7 @@ all:
 	$(MAKE) -C logtime
 	$(MAKE) -C lua
 	$(MAKE) -C pingnet
+	$(MAKE) -C owibus
 	$(MAKE) -C portdio
 	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
@@ -141,6 +142,7 @@ clean:
 	$(MAKE) -C inetq clean
 	$(MAKE) -C logtime clean
 	$(MAKE) -C lua clean
+	$(MAKE) -C owibus clean
 	$(MAKE) -C pingnet clean
 	$(MAKE) -C portdio clean
 	$(MAKE) -C pppc clean
