@@ -222,10 +222,6 @@
 #ifdef __CORTEX__
 #include <arch/cm3/cortex_interrupt.h>
 #include <arch/cm3/cortex_systick.h>
-#define DWT_CTRL    ((volatile uint32_t *)0xE0001000)
-#define DWT_CYCCNT  ((volatile uint32_t *)0xE0001004)
-#define CYCCNTENA   (1 << 0)
-#define SCB_DEMCR   ((volatile uint32_t *)0xE000EDFC)
 #endif
 
 #ifdef NUTDEBUG
@@ -324,9 +320,9 @@ void NutTimerInit(void)
 #else
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
-#if defined(__CORTEX__)
-    *SCB_DEMCR |= 0x01000000;
-    *DWT_CTRL |= CYCCNTENA;
+#if defined(MCU_STM32)
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Pos;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 #else
 
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
@@ -391,18 +387,18 @@ void NutMicroDelay(uint32_t us)
 {
 #ifdef __NUT_EMULATION__
     usleep(us);
-#elif defined(__CORTEX__)
+#elif defined(MCU_STM32)
 /* Adapted from 
  * http://code.google.com/p/pipo/source/browse/trunk/pipo32/src/system.c?r=208
  *
  * Interrupts only introduce Jitter at entry and exit of the function
  *
  */
-    uint32_t lastCount = *DWT_CYCCNT;
+    uint32_t lastCount = DWT->CYCCNT;
     uint32_t elapsed = 0;
     uint32_t to_go = us * (NutClockGet(0)/1000000);
     for (;;) {
-        register uint32_t current_count = *DWT_CYCCNT;
+        register uint32_t current_count = DWT->CYCCNT;
 
         // measure the time elapsed since the last time we checked
         elapsed += current_count - lastCount;
