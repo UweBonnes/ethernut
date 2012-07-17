@@ -35,8 +35,20 @@ int main(void)
 
     freopen(DEV_CONSOLE_NAME, "w", stdout);
     fprintf(stdout, banner);
+
 #define USE_UART
 //#define USE_BB
+
+#if defined (USE_BB)
+ #if !defined(OWI_PORT) || !defined (OWI_PIN))
+  #warning "Please defined the Port/Pin to use for the One-Wire Bus for your board"
+ #endif
+#elif defined(USE_UART)
+ #if !defined(OWI_UART)
+  #warning "Please defined the UART to use for the One-Wire Bus for your board"
+ #endif
+#endif
+
 #if defined(USE_BB)
     res= NutRegisterOwiBus_BB(bus, OWI_PORT, OWI_PIN, 0, 0);
     fprintf(stdout, "Using Bitbang\n");
@@ -44,7 +56,8 @@ int main(void)
     res= NutRegisterOwiBus_Uart(bus, &devUsartStm32_1, 0, 0);
     fprintf(stdout, "Using UART");
     /* Switch to Open Drain */
- #if defined(MCU_STM32)
+ #if defined(MCU_STM32) && defined(OWI_PORT) && defined(OWI_PIN)
+    /* Switch to Open Drain */
   #if defined(MCU_STM32F1)
     ((__IO uint32_t*)(CM3BB_BASE(OWI_PORT)))[CM3BB_OFFSET(GPIO_TypeDef, CRL, 4*(OWI_PIN*4))] = 1;
   #else
