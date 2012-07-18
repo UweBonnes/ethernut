@@ -151,9 +151,9 @@
 #endif
 
 #include <stdint.h>                      /* standard types definitions                      */
-#include <core_cmInstr.h>                /* Core Instruction Access                         */
-#include <core_cmFunc.h>                 /* Core Function Access                            */
-#include <core_cm4_simd.h>               /* Compiler specific SIMD Intrinsics               */
+#include <arch/cm3/core_cmInstr.h>       /* Core Instruction Access                         */
+#include <arch/cm3/core_cmFunc.h>        /* Core Function Access                            */
+#include <arch/cm3/core_cm4_simd.h>      /* Compiler specific SIMD Intrinsics               */
 
 #endif /* __CORE_CM4_H_GENERIC */
 
@@ -1521,6 +1521,7 @@ __STATIC_INLINE uint32_t NVIC_GetActive(IRQn_Type IRQn)
 {
   return((uint32_t)((NVIC->IABR[(uint32_t)(IRQn) >> 5] & (1 << ((uint32_t)(IRQn) & 0x1F)))?1:0)); /* Return 1 if active else 0 */
 }
+#define NVIC_GetEnableIRQ NVIC_GetActive
 
 
 /** \brief  Set Interrupt Priority
