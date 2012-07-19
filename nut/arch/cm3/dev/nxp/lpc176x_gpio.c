@@ -464,7 +464,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
             memset(sig->ios_vector, 0, sizeof(GPIO_VECTOR) * 32);
             /* Register our internal PIO interrupt service. */
             if (sig_PIO.ir_handler == NULL) {
-                rc = NutRegisterIrqHandler(&sig_PIO, sig->ios_handler, NULL);
+                rc = NutRegisterIrqHandler(&sig_PIO, sig->ios_handler, sig->ios_vector);
                 if (rc == 0) {
                     /* Clear any pending interrupts */
                     LPC_GPIOINT->IO0IntClr = 0xFFFFFFFF;
@@ -475,7 +475,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
             }
         }
         else {
-            rc = -1;
+            return -1;
         }
     }
     sig->ios_vector[bit].iov_handler = handler;
