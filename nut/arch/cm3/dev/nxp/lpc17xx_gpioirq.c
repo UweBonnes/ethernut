@@ -55,7 +55,7 @@
  */
 static void Lpc17xxGpioIsr(void *arg)
 {
-    GPIO_VECTOR *vct = (GPIO_VECTOR *)arg;
+    GPIO_VECTOR *vct;
 
     uint32_t isr = LPC_GPIOINT->IntStatus;
     uint32_t port_status;
