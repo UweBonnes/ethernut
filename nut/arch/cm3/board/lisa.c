@@ -83,6 +83,22 @@ static SDRAM sdram_is42s16100e = {
 //    .refresh       = 32000,
 };
 
+
+/*!
+ * \brief Delay loop.
+ *
+ * \param Number of loops to execute.
+ */
+
+static void Lisa_Delay(int n)
+{
+    int l;
+
+    for (l = 0; l < n; l++) {
+        _NOP();
+    }
+}
+
 /*!
  * \brief   Early LISA hardware initialization. Especialy SD-RAM
  *
@@ -171,9 +187,9 @@ void NutBoardInit(void)
     GpioPinConfigSet(NUTGPIO_PORT1, 8,  GPIO_CFG_INPUT | GPIO_CFG_PULLUP | GPIO_CFG_PERIPHERAL0);    /* MODE2   -- ETH_CRS  */
     GpioPinConfigSet(NUTGPIO_PORT1, 14, GPIO_CFG_INPUT | GPIO_CFG_PULLDOWN | GPIO_CFG_PERIPHERAL0);  /* PHY_AD0 -- ETH_RXER */
 
-    NutDelay(10);
+    Lisa_Delay(25000);
     GpioPinSetHigh(NUTGPIO_PORT1, 13);                           /* Put PHY into reset */
-    NutDelay(10);
+    Lisa_Delay(1000);
 }
 
 
