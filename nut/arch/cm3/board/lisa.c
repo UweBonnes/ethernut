@@ -87,6 +87,9 @@ static SDRAM sdram_is42s16100e = {
 /*!
  * \brief Delay loop.
  *
+ * We are running prior to Nut/OS timer initialization and cannot use
+ * NutSleep, not even NutDelay.
+ *
  * \param Number of loops to execute.
  */
 

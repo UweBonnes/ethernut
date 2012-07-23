@@ -320,11 +320,13 @@ void NutTimerInit(void)
 #else
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
-#if defined(MCU_STM32)
+
+#ifdef __CORTEX__    
+    /* Enable "Data Watchpoint and Trace" Unit which is used for NutMicroDelay() */
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Pos;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-#else
-
+#endif
+    
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
 #if !defined(NUT_DELAYLOOPS)
@@ -350,7 +352,6 @@ void NutTimerInit(void)
         nut_delay_loops /= 25UL;
 #endif
     }
-#endif
 #endif
 #endif
 }
@@ -387,31 +388,29 @@ void NutMicroDelay(uint32_t us)
 {
 #ifdef __NUT_EMULATION__
     usleep(us);
-#elif defined(MCU_STM32)
-/* Adapted from 
- * http://code.google.com/p/pipo/source/browse/trunk/pipo32/src/system.c?r=208
- *
- * Interrupts only introduce Jitter at entry and exit of the function
- *
- */
-    uint32_t lastCount = DWT->CYCCNT;
-    uint32_t elapsed = 0;
-    uint32_t to_go = us * (NutClockGet(0)/1000000);
-    for (;;) {
-        register uint32_t current_count = DWT->CYCCNT;
+#elif defined __CORTEX__
 
-        // measure the time elapsed since the last time we checked
-        elapsed += current_count - lastCount;
-        lastCount = current_count;
+    /* Calculate clock cycles to delay */
+    uint32_t cycles = (NutClockGet(NUT_HWCLK_CPU)/1000000) * us;
 
-        if (elapsed >= to_go)
-            break;
-#if 0
-        /* Can we schedule here?  How many cycles are resonable safe?*/
-        if (to_go > 500)
-            NutSleep(0);
-#endif
+    /* Use Data Watchpoint and Trace Units clock cycle counter
+       for delay loop.
+
+       DWT->CYCCNT is a 32 bit counter running with the processor clock.
+       Suppose 184 MHz as with the STM32F4, the counter rolls over every
+       23 seconds. As the loop works with a difference, even with rollover
+       the difference is positive.
+     */
+    register uint32_t start = DWT->CYCCNT;
+
+    /* Make comparision a "less or equal" as cycles might be 0xFFFFFFFF in very 
+       rare cases, which would cause an endless loop with a "smaller than" 
+       comparision 
+     */
+    while (DWT->CYCCNT - start <= cycles) {
+        _NOP();
     }
+
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 
