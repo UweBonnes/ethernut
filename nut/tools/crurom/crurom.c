@@ -104,11 +104,15 @@ int dofile(char *name)
                 if(total != 0 || i != 0) {
                     fputc(',', fpout);
                 }
-                fputs("\n   ", fpout);
+                fputs("\n ", fpout);
             } else {
                 fputc(',', fpout);
             }
-            fprintf(fpout, " 0x%02x", buf[i]);
+            if (buf[i] < 32 || buf[i] > 127 || buf[i] == '\'' || buf[i] == '\\') {
+                fprintf(fpout, "%3u", buf[i]);
+            }
+            else
+                fprintf(fpout, "'%c'", buf[i]);
         }
         total += cnt;
     }
