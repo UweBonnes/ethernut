@@ -30,7 +30,6 @@ const char crurom_rcsid[] = "@(#) $Id$";
 #include <config.h>
 #endif
 
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,6 +40,7 @@ const char crurom_rcsid[] = "@(#) $Id$";
 #include <io.h>
 #include "dirent.h"
 #else
+#include <unistd.h>
 #include <dirent.h>
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
@@ -55,7 +55,7 @@ const char crurom_rcsid[] = "@(#) $Id$";
 
 #define IDENT   "crurom"
 #undef VERSION
-#define VERSION "1.3.2"
+#define VERSION "1.3.3"
 
 static int entryno = 0;
 static int verbose = 0;
@@ -99,12 +99,18 @@ int dofile(char *name)
         }
         if(cnt == 0)
             break;
-        total += cnt;
         for(i = 0; i < cnt; i++) {
-            if((i % 16) == 0)
-                fprintf(fpout, "\n");
-            fprintf(fpout, "0x%02x,", buf[i]);
+            if((i % 16) == 0) {
+                if(total != 0 || i != 0) {
+                    fputc(',', fpout);
+                }
+                fputs("\n   ", fpout);
+            } else {
+                fputc(',', fpout);
+            }
+            fprintf(fpout, " 0x%02x", buf[i]);
         }
+        total += cnt;
     }
     close(fd);
 
