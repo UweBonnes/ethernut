@@ -1,31 +1,5 @@
 const char crurom_rcsid[] = "@(#) $Id$";
 
-/*
- * $Log$
- * Revision 1.5  2008/10/26 18:29:59  olereinhardt
- * 2008-10-26  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- *  * tools/crurom/crurom.c: Added .svn to the list of directories to
- *    ignore when creating urom.c
- *
- * Revision 1.4  2005/04/28 16:02:43  haraldkipp
- * Autoconfiscated
- *
- * Revision 1.3  2003/07/20 20:06:28  haraldkipp
- * MSC compilation error fixed.
- *
- * Revision 1.2  2003/07/20 19:27:59  haraldkipp
- * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
- * AVR's flash memory.
- *
- * Revision 1.1  2003/07/20 19:18:16  haraldkipp
- * First check in
- *
- * Revision 1.5  2002/08/08 16:23:19  harald
- * Command line options for verbose mode, outfile name and recursive
- * directory scan added.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
