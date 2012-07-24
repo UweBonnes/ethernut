@@ -53,7 +53,7 @@ int dofile(char *name)
         fsname += rootlen;
 
     if((fd = open(name, O_RDONLY | O_BINARY)) == -1) {
-        fprintf(stderr, IDENT ": Error %d opening %s\n", errno, name);
+        perror(name);
         return -1;
     }
     if(verbose)
@@ -61,7 +61,7 @@ int dofile(char *name)
 
     for(;;) {
         if((cnt = read(fd, buf, sizeof(buf))) < 0) {
-            fprintf(stderr, IDENT ": Error %d reading %s\n", errno, name);
+            perror(name);
             rc = -1;
             total = 0;
             break;
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 
     if(outname[0]) {
         if((fpout = fopen(outname, "w")) == NULL) {
-            fprintf(stderr, "Can't write to %s\n", outname);
+            perror(outname);
             return 3;
         }
     }
