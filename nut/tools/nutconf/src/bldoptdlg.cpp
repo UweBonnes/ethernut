@@ -77,11 +77,11 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     wxStaticBox *grpBuild = new wxStaticBox(this, -1, wxT("Build Directory"));
     m_pickBuildDir = new wxDirPickerCtrl(this, ID_BROWSE_BUILD, wxEmptyString, wxT("Choose a build directory"),
                                         wxDefaultPosition, wxDefaultSize,
-                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, lastIncValid);
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, bldDirValid);
     wxStaticBox *grpInstall = new wxStaticBox(this, -1, wxT("Install Directory"));
     m_pickInstallDir = new wxDirPickerCtrl(this, ID_BROWSE_INSTALL, wxEmptyString, wxT("Choose an install directory"),
                                         wxDefaultPosition, wxDefaultSize,
-                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, lastIncValid);
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, libDirValid);
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
 
@@ -125,7 +125,7 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
 }
 
 /*!
- * \brief Transfers values to child controls from data areas specified by their validators. 
+ * \brief Transfers values to child controls from data areas specified by their validators.
  *
  * \return false if a transfer failed.
  */
@@ -135,7 +135,7 @@ bool CBuildOptionsDialog::TransferDataToWindow()
 }
 
 /*!
- * \brief Transfers values from child controls to data areas specified by their validators. 
+ * \brief Transfers values from child controls to data areas specified by their validators.
  *
  * \return false if a transfer failed.
  */
@@ -158,7 +158,7 @@ void CBuildOptionsDialog::OnPlatformEnter(wxCommandEvent& WXUNUSED(event))
 /*!
  * \brief Fills the platform selection combo box.
  *
- * Scans the source directory for files with a base name of 'Makedefs'. 
+ * Scans the source directory for files with a base name of 'Makedefs'.
  * The extensions of all files found are added to the combo box.
  */
 void CBuildOptionsDialog::PopulatePlatform()
@@ -189,8 +189,8 @@ void CBuildOptionsDialog::PopulatePlatform()
 
 /*!
  * \brief Handle source directory changes.
- * 
- * Executed when text in the source directory entry field changes. 
+ *
+ * Executed when text in the source directory entry field changes.
  *
  * \param event Contains information about the command event.
  */
