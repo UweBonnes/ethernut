@@ -81,10 +81,13 @@ int NutEtherOutput(NUTDEVICE * dev, uint16_t type, uint8_t * ha, NETBUF * nb)
     eh = (ETHERHDR *) nb->nb_dl.vp;
     nif = dev->dev_icb;
     memcpy(eh->ether_shost, nif->if_mac, 6);
-    if (ha)
+    if (ha) {
         memcpy(eh->ether_dhost, ha, 6);
-    else
+        NUT_PERFMON_INC(nif->if_out_ucast_pkts);
+    } else {
         memset(eh->ether_dhost, 0xff, 6);
+        NUT_PERFMON_INC(nif->if_out_n_ucast_pkts);
+    }
     eh->ether_type = htons(type);
 
     /*

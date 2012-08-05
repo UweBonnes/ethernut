@@ -222,6 +222,16 @@ struct ifnet {
 #endif
 };
 
+/* The following macros avoid contamination of the source code with too
+   many #ifdefs. */
+#ifdef NUT_PERFMON
+#define NUT_PERFMON_ADD(s, a)   ((s) += (a))
+#define NUT_PERFMON_INC(s)      ((s)++)
+#else
+#define NUT_PERFMON_ADD(s, a)
+#define NUT_PERFMON_INC(s)
+#endif
+
 /*@}*/
 
 __BEGIN_DECLS

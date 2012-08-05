@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2011 by egnite GmbH
+ * Copyright (C) 2008-2012 by egnite GmbH
  * Copyright (C) 2003-2005 by egnite Software GmbH
  *
  * All rights reserved.
@@ -250,14 +250,6 @@
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {
-#ifdef NUT_PERFMON
-    uint32_t ni_rx_packets;         /*!< Number of packets received. */
-    uint32_t ni_tx_packets;         /*!< Number of packets sent. */
-    uint32_t ni_overruns;           /*!< Number of packet overruns. */
-    uint32_t ni_rx_frame_errors;    /*!< Number of frame errors. */
-    uint32_t ni_rx_crc_errors;      /*!< Number of CRC errors. */
-    uint32_t ni_rx_missed_errors;   /*!< Number of missed packets. */
-#endif
     HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
     HANDLE volatile ni_tx_rdy;  /*!< Transmitter event queue. */
     HANDLE ni_mutex;            /*!< Access mutex semaphore. */
@@ -697,9 +689,6 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb, uint_fast16_t sz)
         }
         ni->ni_tx_queued++;
         rc = 0;
-#ifdef NUT_PERFMON
-        ni->ni_tx_packets++;
-#endif
     }
 
     /* Enable interrupts. */
@@ -872,10 +861,17 @@ THREAD(NicRxLanc, arg)
          * them to the registered handler.
          */
         while (NicGetPacket(ni, &nb) == 0) {
-
+            /* Update monitoring counters. */
+            NUT_PERFMON_ADD(ifn->if_in_octets, nb->nb_dl.sz);
+            if (nic_inb(NIC_RSR) & NIC_RSR_MF) {
+                NUT_PERFMON_INC(ifn->if_in_n_ucast_pkts);
+            } else {
+                NUT_PERFMON_INC(ifn->if_in_ucast_pkts);
+            }
             /* Discard short packets. */
             if (nb->nb_dl.sz < 60) {
                 NutNetBufFree(nb);
+                NUT_PERFMON_INC(ifn->if_in_errors);
             } else {
                 (*ifn->if_recv) (dev, nb);
             }
@@ -913,13 +909,14 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
     int rc = -1;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
     uint_fast16_t sz;
+    IFNET *nif = (IFNET *) dev->dev_icb;
 
     /* Calculate the number of bytes to be send. Do not send packets
        larger than the Ethernet maximum transfer unit. The MTU consist
        of 1500 data bytes plus the 14 byte Ethernet header plus 4 bytes
        CRC. We check the data bytes only. */
     sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz;
-    if (sz > ETHERMTU) {
+    if (sz > nif->if_mtu) {
         return -1;
     }
     /* Add the Ethernet header and make the length even. */
@@ -927,10 +924,9 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
     sz &= ~1;
 
     while (rc) {
-        if (ni->ni_insane) {
-            break;
-        }
-        if (NutEventWait(&ni->ni_mutex, mx_wait)) {
+        if (ni->ni_insane || NutEventWait(&ni->ni_mutex, mx_wait)) {
+            /* Discard the packet, if the controller is out of order. */
+            NUT_PERFMON_INC(nif->if_out_discards);
             break;
         }
 
@@ -939,6 +935,7 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
             if (NutEventWait(&ni->ni_tx_rdy, 500)) {
                 /* No queue space. Release the lock and give up. */
                 NutEventPost(&ni->ni_mutex);
+                NUT_PERFMON_INC(nif->if_out_discards);
                 break;
             }
         } else if (NicPutPacket(ni, nb, sz) == 0) {
@@ -946,6 +943,9 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
                temporarly lose the link next time. */
             rc = 0;
             mx_wait = 5000;
+            NUT_PERFMON_ADD(nif->if_out_octets, sz);
+        } else {
+            NUT_PERFMON_INC(nif->if_out_errors);
         }
         NutEventPost(&ni->ni_mutex);
     }
