@@ -659,25 +659,10 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
  *         will automatically release the network buffer
  *         structure.
  */
-static int NicPutPacket(NICINFO * ni, NETBUF * nb)
+static int NicPutPacket(NICINFO * ni, NETBUF * nb, uint_fast16_t sz)
 {
     int rc = -1;
 #ifdef NIC_BASE_ADDR
-    uint16_t sz;
-
-    /*
-     * Calculate the number of bytes to be send. Do not send packets
-     * larger than the Ethernet maximum transfer unit. The MTU
-     * consist of 1500 data bytes plus the 14 byte Ethernet header
-     * plus 4 bytes CRC. We check the data bytes only.
-     */
-    if ((sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz) > ETHERMTU) {
-        return -1;
-    }
-    sz += nb->nb_dl.sz;
-    if (sz & 1) {
-        sz++;
-    }
 
     /* Disable interrupts. */
     NutIrqDisable(&NIC_SIGNAL);
@@ -922,14 +907,25 @@ THREAD(NicRxLanc, arg)
  */
 int DmOutput(NUTDEVICE * dev, NETBUF * nb)
 {
+    /* After initialization we are waiting for a long time to give the
+       PHY a chance to establish an Ethernet link. */
     static uint32_t mx_wait = 5000;
     int rc = -1;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
+    uint_fast16_t sz;
 
-    /*
-     * After initialization we are waiting for a long time to give
-     * the PHY a chance to establish an Ethernet link.
-     */
+    /* Calculate the number of bytes to be send. Do not send packets
+       larger than the Ethernet maximum transfer unit. The MTU consist
+       of 1500 data bytes plus the 14 byte Ethernet header plus 4 bytes
+       CRC. We check the data bytes only. */
+    sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz;
+    if (sz > ETHERMTU) {
+        return -1;
+    }
+    /* Add the Ethernet header and make the length even. */
+    sz += nb->nb_dl.sz + 1;
+    sz &= ~1;
+
     while (rc) {
         if (ni->ni_insane) {
             break;
@@ -945,7 +941,7 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
                 NutEventPost(&ni->ni_mutex);
                 break;
             }
-        } else if (NicPutPacket(ni, nb) == 0) {
+        } else if (NicPutPacket(ni, nb, sz) == 0) {
             /* Ethernet works. Set a long waiting time in case we
                temporarly lose the link next time. */
             rc = 0;
