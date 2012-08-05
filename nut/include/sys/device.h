@@ -315,6 +315,7 @@ extern NUTDEVICE *nutDeviceList;
 
 extern int NutRegisterDevice(NUTDEVICE * dev, uintptr_t base, uint8_t irq);
 extern NUTDEVICE *NutDeviceLookup(CONST char *name);
+extern NUTDEVICE *NutDeviceLookupType(NUTDEVICE *dev, uint_fast8_t type);
 
 __END_DECLS
 

@@ -100,25 +100,6 @@ struct _BLOCKVOLUME {
 };
 
 /*!
- * \brief Find device entry by type.
- *
- * \param type Device type.
- *
- * \return Pointer to the \ref NUTDEVICE structure.
- */
-static NUTDEVICE *NutDeviceLookupType(uint_fast8_t type)
-{
-    NUTDEVICE *dev;
-
-    for (dev = nutDeviceList; dev; dev = dev->dev_next) {
-        if (dev->dev_type == type) {
-            break;
-        }
-    }
-    return dev;
-}
-
-/*!
  * \brief Initialize the block I/O device.
  *
  * This dummy routine may be used by drivers, which do not need any
@@ -184,7 +165,7 @@ NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc
     if (*name) {
         fsdev = NutDeviceLookup(name);
     } else {
-        fsdev = NutDeviceLookupType(IFTYP_FS);
+        fsdev = NutDeviceLookupType(NULL, IFTYP_FS);
     }
 
     if (fsdev == NULL) {
