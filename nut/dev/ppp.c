@@ -337,7 +337,11 @@ IFNET ifn_ppp = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutPppInput,                /*!< \brief Routine to pass received data to, if_recv(). */
     0,                          /*!< \brief Dynamically attached driver output routine, if_send(). */
-    NutPppOutput                /*!< \brief Media output routine, if_output(). */
+    NutPppOutput,               /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!

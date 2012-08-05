@@ -1440,7 +1440,10 @@ static IFNET ifn_eth0 = {
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     LancOutput,                 /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
-    0                           /*!< \brief Interface specific control function. */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!

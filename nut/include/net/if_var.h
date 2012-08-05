@@ -206,6 +206,20 @@ struct ifnet {
     int (*if_send) (NUTDEVICE *, NETBUF *);     /*!< \brief Send routine. */
     int (*if_output) (NUTDEVICE *, uint16_t, uint8_t *, NETBUF *);  /*!< \brief Media output routine. */
     int (*if_ioctl) (NUTDEVICE *, int, void *); /*!< \brief Interface specific control function. */
+#ifdef NUT_PERFMON
+    uint32_t if_in_octets;
+    uint32_t if_in_ucast_pkts;
+    uint32_t if_in_n_ucast_pkts;
+    uint32_t if_in_discards;
+    uint32_t if_in_errors;
+    uint32_t if_in_unknown_protos;
+    uint32_t if_out_octets;
+    uint32_t if_out_ucast_pkts;
+    uint32_t if_out_n_ucast_pkts;
+    uint32_t if_out_discards;
+    uint32_t if_out_errors;
+    uint32_t if_out_q_len;
+#endif
 };
 
 /*@}*/

@@ -954,6 +954,9 @@ static IFNET ifn_eth0 = {
     Lan91Output,        /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput,     /*!< \brief Media output routine, if_output(). */
     NULL                /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!
