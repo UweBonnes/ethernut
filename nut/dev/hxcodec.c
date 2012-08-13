@@ -84,7 +84,7 @@
 
 #ifndef HXCODEC0_MAX_OUTPUT_BUFSIZ
 /*! \brief Output buffer size limit. */
-#define HXCODEC0_MAX_OUTPUT_BUFSIZ  16384
+#define HXCODEC0_MAX_OUTPUT_BUFSIZ  393216
 #endif
 
 #ifndef DAC_OUTPUT_RATE
