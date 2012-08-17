@@ -133,16 +133,16 @@ typedef struct _NUTOWIBUS NUTOWIBUS;
 struct _NUTOWIBUS {
     uint32_t owibus_info;
     uint32_t mode;
-    int_fast8_t(*OwiTouchReset) (NUTOWIBUS *);
-    int_fast8_t(*OwiReadBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
-    int_fast8_t(*OwiWriteBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
+    int(*OwiTouchReset) (NUTOWIBUS *);
+    int(*OwiReadBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
+    int(*OwiWriteBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
 };
 
-int_fast8_t OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid);
-int_fast8_t OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid);
-int_fast8_t OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
-int_fast8_t OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
-int_fast8_t OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode);
-int_fast8_t OwiGetMode(NUTOWIBUS *bus);
+int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid);
+int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid);
+int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
+int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
+int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode);
+int OwiGetMode(NUTOWIBUS *bus);
 
 #endif

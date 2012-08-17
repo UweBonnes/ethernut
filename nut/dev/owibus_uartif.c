@@ -61,7 +61,7 @@
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiTouchReset(NUTOWIBUS *bus)
+static int Uart_OwiTouchReset(NUTOWIBUS *bus)
 {
     NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *) (bus->owibus_info);
     uint8_t send_data[1] = { OWI_UART_WRITE_RST };
@@ -88,7 +88,7 @@ static int_fast8_t Uart_OwiTouchReset(NUTOWIBUS *bus)
  *
  * \return the Bus State at the read slot on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
+static int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 {
     NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *) (bus->owibus_info);
     uint8_t send_data[1] = { (bit) ? OWI_UART_WRITE_ONE : OWI_UART_WRITE_ZERO };
@@ -112,9 +112,9 @@ static int_fast8_t Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+static int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
-    int_fast8_t res;
+    int res;
     int i;
 
     for (i = 0; i < len; i++) {
@@ -134,9 +134,9 @@ static int_fast8_t Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+static int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
-    int_fast8_t res;
+    int res;
     int i;
 
     memset(data, 0, (len >> 3) + 1);
@@ -160,9 +160,9 @@ static int_fast8_t Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t
  * \param bus  The returned NUTOWIBUS.
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uint_fast8_t pullup_pin)
+int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uint_fast8_t pullup_pin)
 {
-    int_fast8_t res;
+    int res;
     int uart_fd;
     uint32_t timeout = 2, stopbits = 2;
 

@@ -67,6 +67,6 @@ struct _NUTOWIINFO_BB {
 
 typedef struct _NUTOWIINFO_BB NUTOWIINFO_BB;
 
-int_fast8_t NutRegisterOwiBus_BB(NUTOWIBUS *bus, int tx_port, uint_fast8_t tx_pin, int pullup_port, uint_fast8_t pullup_pin);
+int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int tx_port, uint_fast8_t tx_pin, int pullup_port, uint_fast8_t pullup_pin);
 
 #endif

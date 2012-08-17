@@ -77,6 +77,6 @@ struct _NUTOWIINFO_UART {
 
 typedef struct _NUTOWIINFO_UART NUTOWIINFO_UART;
 
-int_fast8_t NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int PARASITIC_PWR_PORT, uint_fast8_t PARASITIC_PWR_PIN);
+int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int PARASITIC_PWR_PORT, uint_fast8_t PARASITIC_PWR_PIN);
 
 #endif

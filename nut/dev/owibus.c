@@ -87,12 +87,12 @@ const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
+int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
 {
     uint_fast8_t i, j, next_diff;
     uint8_t b, c, command;
     uint8_t *id = (uint8_t *) hid;
-    int_fast8_t res;
+    int res;
 
     res = bus->OwiTouchReset(bus);
     if (res) {
@@ -143,9 +143,9 @@ int_fast8_t OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
+int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
 {
-    int_fast8_t res;
+    int res;
     uint8_t command;
 
     res = bus->OwiTouchReset(bus);
@@ -174,7 +174,7 @@ int_fast8_t OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     return bus->OwiReadBlock(bus, data, len);
 }
@@ -187,7 +187,7 @@ int_fast8_t OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     return bus->OwiWriteBlock(bus, data, len);
 }
@@ -199,9 +199,9 @@ int_fast8_t OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode)
+int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode)
 {
-    int_fast8_t res;
+    int res;
 
     if (mode & OWI_OVERDRIVE) {
         uint8_t command[1] = { OWI_OVERDRIVE_SKIP_ROM };
@@ -230,7 +230,7 @@ int_fast8_t OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode)
  *
  * \return Mask of set modes
  */
-int_fast8_t OWIGetMode(NUTOWIBUS *bus)
+int OWIGetMode(NUTOWIBUS *bus)
 {
     return bus->mode;
 }

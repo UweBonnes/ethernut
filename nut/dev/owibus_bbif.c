@@ -61,9 +61,9 @@
  *
  * \return the value read on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
+static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
 {
-    int_fast8_t res;
+    int res;
     NUTOWIINFO_BB *owcb = (NUTOWIINFO_BB *) (bus->owibus_info);
     int16_t delay1 =
         (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE] -
@@ -102,7 +102,7 @@ static int_fast8_t BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fa
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiTouchReset(NUTOWIBUS *bus)
+static int BB_OwiTouchReset(NUTOWIBUS *bus)
 {
     return BB_OwiTransaction(bus, OWI_CMD_RESET, 1);
 }
@@ -127,9 +127,9 @@ static int OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+static int BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
-    int_fast8_t res;
+    int res;
     int i;
 
     for (i = 0; i < len; i++) {
@@ -148,9 +148,9 @@ static int_fast8_t BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t 
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+static int BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
-    int_fast8_t res;
+    int res;
     int i;
 
     memset(data, 0, (len >> 3) + 1);
@@ -174,9 +174,9 @@ static int_fast8_t BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t l
  * \param bus  The returned NUTOWIBUS.
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, int pullup_port, uint_fast8_t pullup_pin)
+int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, int pullup_port, uint_fast8_t pullup_pin)
 {
-    int_fast8_t res;
+    int res;
     NUTOWIINFO_BB *owcb;
 
     owcb = NutHeapAlloc(sizeof(NUTOWIINFO_BB));
