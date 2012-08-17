@@ -47,9 +47,9 @@ include $(top_srcdir)/Makevars.all
 CC     = $(TRGT)gcc
 CXX    = $(TRGT)g++
 AS     = $(TRGT)gcc -x assembler-with-cpp
-AR     = @$(TRGT)ar
-CP     = @cp
-RM     = @rm -f
+AR     = $(TRGT)ar
+CP     = cp
+RM     = rm -f
 RANLIN = $(TRGT)ranlib
 
 # Preprocessor options.

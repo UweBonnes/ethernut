@@ -49,8 +49,7 @@ help: help-libs
 cleanedit: tempclean
 
 tempclean:
-	@echo "  [CLEANING] TEMPS..."
-	@-rm -f $(SRCS:.c=.bak)
-	@-rm -f $(SRCS:.c=.c~)
+	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.c~)
 
 .PHONY: cleanedit tempclean help help-libs help-apps
