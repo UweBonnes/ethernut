@@ -61,23 +61,24 @@
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiTouchReset(NUTOWIBUS* bus)
+static int_fast8_t Uart_OwiTouchReset(NUTOWIBUS *bus)
 {
-    NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *)(bus->owibus_info);
-    uint8_t send_data[1] = {OWI_UART_WRITE_RST};
-    uint8_t rec_data[1] = {0};
-    uint32_t baud_presence = OWI_UART_BAUD_RESET, baud_owi_rwbit= OWI_UART_BAUD_RWBIT;
+    NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *) (bus->owibus_info);
+    uint8_t send_data[1] = { OWI_UART_WRITE_RST };
+    uint8_t rec_data[1] = { 0 };
+    uint32_t baud_presence = OWI_UART_BAUD_RESET, baud_owi_rwbit = OWI_UART_BAUD_RWBIT;
 
-   _ioctl(owcb->uart_fd, UART_SETSPEED, &baud_presence);
+    _ioctl(owcb->uart_fd, UART_SETSPEED, &baud_presence);
     _write(owcb->uart_fd, send_data, 1);
     NutSleep(2);
-    if (_read(owcb->uart_fd, rec_data, 1) == -1)
+    if (_read(owcb->uart_fd, rec_data, 1) == -1) {
         return OWI_HW_ERROR;
-   _ioctl(owcb->uart_fd, UART_SETSPEED, &baud_owi_rwbit);
-     if ((rec_data[0] != 0xf0) && !(rec_data[0] & 0x10) && (rec_data[0] != 0))
+    }
+    _ioctl(owcb->uart_fd, UART_SETSPEED, &baud_owi_rwbit);
+    if ((rec_data[0] != 0xf0) && !(rec_data[0] & 0x10) && (rec_data[0] != 0)) {
         return OWI_SUCCESS;
-    else 
-        return OWI_PRESENCE_ERR;
+    }
+    return OWI_PRESENCE_ERR;
 }
 
 /*!
@@ -87,19 +88,20 @@ static int_fast8_t Uart_OwiTouchReset(NUTOWIBUS* bus)
  *
  * \return the Bus State at the read slot on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiRWBit(NUTOWIBUS* bus, uint_fast8_t bit)
+static int_fast8_t Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 {
-    NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *)(bus->owibus_info);
-    uint8_t send_data[1] = {(bit)?OWI_UART_WRITE_ONE:OWI_UART_WRITE_ZERO};
-    uint8_t rec_data[1] = {0};
+    NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *) (bus->owibus_info);
+    uint8_t send_data[1] = { (bit) ? OWI_UART_WRITE_ONE : OWI_UART_WRITE_ZERO };
+    uint8_t rec_data[1] = { 0 };
 
     _write(owcb->uart_fd, send_data, 1);
-     if (_read(owcb->uart_fd, rec_data, 1) == -1)
+    if (_read(owcb->uart_fd, rec_data, 1) == -1) {
         return OWI_HW_ERROR;
-     if (rec_data[0] & OWI_UART_READ_ONE)
-         return 1;
-     else
-         return 0;
+    }
+    if (rec_data[0] & OWI_UART_READ_ONE) {
+        return 1;
+    }
+    return 0;
 }
 
 /*!
@@ -110,16 +112,16 @@ static int_fast8_t Uart_OwiRWBit(NUTOWIBUS* bus, uint_fast8_t bit)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiWriteBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
+static int_fast8_t Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int_fast8_t res;
     int i;
 
-    for (i=0; i<len; i++)
-    {
-        res = Uart_OwiRWBit(bus, data[i>>3] & (1<< (i & 0x7)));
-        if (res <0 )
+    for (i = 0; i < len; i++) {
+        res = Uart_OwiRWBit(bus, data[i >> 3] & (1 << (i & 0x7)));
+        if (res < 0) {
             return OWI_HW_ERROR;
+        }
     }
     return OWI_SUCCESS;
 }
@@ -132,18 +134,18 @@ static int_fast8_t Uart_OwiWriteBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t Uart_OwiReadBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
+static int_fast8_t Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int_fast8_t res;
     int i;
 
-    memset(data, 0, (len>>3)+1);
-    for (i=0; i<len; i++)
-    {
+    memset(data, 0, (len >> 3) + 1);
+    for (i = 0; i < len; i++) {
         res = Uart_OwiRWBit(bus, 1);
-        if (res<0)
+        if (res < 0) {
             return OWI_HW_ERROR;
-        data[i>>3] |= (res << (i & 0x7));
+        }
+        data[i >> 3] |= (res << (i & 0x7));
     }
     return OWI_SUCCESS;
 }
@@ -158,35 +160,36 @@ static int_fast8_t Uart_OwiReadBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t
  * \param bus  The returned NUTOWIBUS.
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t NutRegisterOwiBus_Uart(NUTOWIBUS* bus, NUTDEVICE * uart, int pullup_port, uint_fast8_t pullup_pin)
+int_fast8_t NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uint_fast8_t pullup_pin)
 {
     int_fast8_t res;
     int uart_fd;
-    uint32_t timeout = 2, stopbits=2;
-    
+    uint32_t timeout = 2, stopbits = 2;
+
     NUTOWIINFO_UART *owcb;
-    owcb =NutHeapAlloc(sizeof(NUTOWIINFO_UART));
-    if( owcb == NULL) {
+    owcb = NutHeapAlloc(sizeof(NUTOWIINFO_UART));
+    if (owcb == NULL) {
         return OWI_OUT_OF_MEM;
     }
-    memset( owcb, 0, sizeof(NUTOWIINFO_UART));
+    memset(owcb, 0, sizeof(NUTOWIINFO_UART));
 
-     res = NutRegisterDevice(uart, 0, 0);
-    if (res)
+    res = NutRegisterDevice(uart, 0, 0);
+    if (res) {
         return OWI_INVALID_HW;
-    uart_fd = _open(uart->dev_name,  _O_RDWR | _O_BINARY);
-    if (uart_fd == -1)
+    }
+    uart_fd = _open(uart->dev_name, _O_RDWR | _O_BINARY);
+    if (uart_fd == -1) {
         return OWI_INVALID_HW;
-    _ioctl( uart_fd , UART_SETREADTIMEOUT, &timeout);
-    _ioctl( uart_fd , UART_SETSTOPBITS , &stopbits);
+    }
+    _ioctl(uart_fd, UART_SETREADTIMEOUT, &timeout);
+    _ioctl(uart_fd, UART_SETSTOPBITS, &stopbits);
     owcb->uart_fd = uart_fd;
-    bus->owibus_info = (uint32_t)owcb;
-    bus->OwiTouchReset= Uart_OwiTouchReset;
+    bus->owibus_info = (uint32_t) owcb;
+    bus->OwiTouchReset = Uart_OwiTouchReset;
     bus->OwiReadBlock = Uart_OwiReadBlock;
     bus->OwiWriteBlock = Uart_OwiWriteBlock;
     bus->mode = 0;
+
     return OWI_SUCCESS;
 
-}    
-
-    
+}

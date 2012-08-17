@@ -50,20 +50,20 @@
 /*!
  * \brief Data to send on the UART for the OWI primitives
  */
-#define OWI_UART_WRITE_RST  0xf0 /*!< \brief UART data for presence impuls */
-#define OWI_UART_WRITE_ONE  0xff /*!< \brief UART data for write '1' and read */
-#define OWI_UART_WRITE_ZERO 0x00 /*!< \brief UART data for write '0' */
+#define OWI_UART_WRITE_RST  0xf0    /*!< \brief UART data for presence impuls */
+#define OWI_UART_WRITE_ONE  0xff    /*!< \brief UART data for write '1' and read */
+#define OWI_UART_WRITE_ZERO 0x00    /*!< \brief UART data for write '0' */
 
 /*!
  * \brief Data to expect from the UART for the OWI primitives
  */
-#define OWI_UART_READ_ONE   0x01 /*!< \brief UART data received for read '1'*/
+#define OWI_UART_READ_ONE   0x01    /*!< \brief UART data received for read '1' */
 
 /*!
  * \brief Baud rates to use for OWI primitives
  */
-#define OWI_UART_BAUD_RESET 9600   /*!< \brief UART baudrate for presence impuls */
-#define OWI_UART_BAUD_RWBIT 115200 /*!< \brief UART baudrate for RW bit */
+#define OWI_UART_BAUD_RESET 9600    /*!< \brief UART baudrate for presence impuls */
+#define OWI_UART_BAUD_RWBIT 115200  /*!< \brief UART baudrate for RW bit */
 
 /*!
  * \brief OWI runtime controlblock container
@@ -74,6 +74,9 @@ struct _NUTOWIINFO_UART {
     int pp_port;
     int pp_pin;
 };
+
 typedef struct _NUTOWIINFO_UART NUTOWIINFO_UART;
-int_fast8_t NutRegisterOwiBus_Uart(NUTOWIBUS* bus, NUTDEVICE * uart, int PARASITIC_PWR_PORT, uint_fast8_t PARASITIC_PWR_PIN);
+
+int_fast8_t NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int PARASITIC_PWR_PORT, uint_fast8_t PARASITIC_PWR_PIN);
+
 #endif

@@ -61,19 +61,19 @@
  *
  * \return the value read on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiTransaction(NUTOWIBUS* bus, int_fast8_t command, int_fast8_t value)
+static int_fast8_t BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
 {
     int_fast8_t res;
-    NUTOWIINFO_BB *owcb = (NUTOWIINFO_BB *)(bus->owibus_info);
+    NUTOWIINFO_BB *owcb = (NUTOWIINFO_BB *) (bus->owibus_info);
     int16_t delay1 =
         (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE] -
-         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SETUP])>>2;
+         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SETUP]) >> 2;
     int16_t delay2 =
         (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RW] -
-         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE])>>2;
+         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE]) >> 2;
     int16_t delay3 =
         (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RELEASE] -
-         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RW])>>2;
+         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RW]) >> 2;
 
     /* Be nice! Allow other thing to happen now before we block cooperative multitasking
      * for up to 480 us
@@ -81,7 +81,7 @@ static int_fast8_t BB_OwiTransaction(NUTOWIBUS* bus, int_fast8_t command, int_fa
     NutSleep(0);
     GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
     NutMicroDelay(delay1);
-    if(value == 0)
+    if (value == 0)
         GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
     else
         GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
@@ -90,7 +90,7 @@ static int_fast8_t BB_OwiTransaction(NUTOWIBUS* bus, int_fast8_t command, int_fa
     if (value)
         /* If the TXRX line is allready pull up, we only need to wait, but no time sensitive
          * action must be performed. We block for up to 410 us now. So be nice again !
-        */
+         */
         NutSleep(0);
     NutMicroDelay(delay3);
     GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
@@ -102,9 +102,9 @@ static int_fast8_t BB_OwiTransaction(NUTOWIBUS* bus, int_fast8_t command, int_fa
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiTouchReset(NUTOWIBUS* bus)
+static int_fast8_t BB_OwiTouchReset(NUTOWIBUS *bus)
 {
-    return  BB_OwiTransaction(bus, OWI_CMD_RESET, 1);
+    return BB_OwiTransaction(bus, OWI_CMD_RESET, 1);
 }
 
 /*!
@@ -114,9 +114,9 @@ static int_fast8_t BB_OwiTouchReset(NUTOWIBUS* bus)
  *
  * \return the Bus State at the read slot on success, -ERROR otherwise.
  */
-static int OwiRWBit(NUTOWIBUS* bus, uint_fast8_t bit)
+static int OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 {
-    return  BB_OwiTransaction(bus, OWI_CMD_RWBIT, bit);
+    return BB_OwiTransaction(bus, OWI_CMD_RWBIT, bit);
 }
 
 /*!
@@ -127,15 +127,14 @@ static int OwiRWBit(NUTOWIBUS* bus, uint_fast8_t bit)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiWriteBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
+static int_fast8_t BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int_fast8_t res;
     int i;
 
-    for (i=0; i<len; i++)
-    {
-        res = OwiRWBit(bus, data[i>>3] & (1<< (i & 0x7)));
-        if (res <0 )
+    for (i = 0; i < len; i++) {
+        res = OwiRWBit(bus, data[i >> 3] & (1 << (i & 0x7)));
+        if (res < 0)
             return OWI_HW_ERROR;
     }
     return OWI_SUCCESS;
@@ -149,18 +148,17 @@ static int_fast8_t BB_OwiWriteBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t 
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-static int_fast8_t BB_OwiReadBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
+static int_fast8_t BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int_fast8_t res;
     int i;
 
-    memset(data, 0, (len>>3)+1);
-    for (i=0; i<len; i++)
-    {
+    memset(data, 0, (len >> 3) + 1);
+    for (i = 0; i < len; i++) {
         res = OwiRWBit(bus, 1);
-        if (res<0)
+        if (res < 0)
             return OWI_HW_ERROR;
-        data[i>>3] |= (res << (i & 0x7));
+        data[i >> 3] |= (res << (i & 0x7));
     }
     return OWI_SUCCESS;
 }
@@ -176,45 +174,42 @@ static int_fast8_t BB_OwiReadBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t l
  * \param bus  The returned NUTOWIBUS.
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t NutRegisterOwiBus_BB(
-    NUTOWIBUS* bus, int txrx_port, uint_fast8_t txrx_pin, int pullup_port, uint_fast8_t pullup_pin)
+int_fast8_t NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, int pullup_port, uint_fast8_t pullup_pin)
 {
     int_fast8_t res;
     NUTOWIINFO_BB *owcb;
-    owcb =NutHeapAlloc(sizeof(NUTOWIINFO_BB));
-    if( owcb == NULL) {
+
+    owcb = NutHeapAlloc(sizeof(NUTOWIINFO_BB));
+    if (owcb == NULL) {
         return OWI_OUT_OF_MEM;
     }
-    memset( owcb, 0, sizeof(NUTOWIINFO_BB));
+    memset(owcb, 0, sizeof(NUTOWIINFO_BB));
 
-    if (GpioPinConfigSet( txrx_port, txrx_pin, GPIO_CFG_PULLUP|GPIO_CFG_OUTPUT| GPIO_CFG_MULTIDRIVE))
-    {
+    if (GpioPinConfigSet(txrx_port, txrx_pin, GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT | GPIO_CFG_MULTIDRIVE)) {
         res = OWI_INVALID_HW;
         goto free_all;
     }
-    if (pullup_pin)
-    {
-        if (GpioPinConfigSet( pullup_pin, pullup_pin, GPIO_CFG_PULLUP|GPIO_CFG_OUTPUT))
-        {
+    if (pullup_pin) {
+        if (GpioPinConfigSet(pullup_pin, pullup_pin, GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT)) {
             res = OWI_INVALID_HW;
             goto free_all;
         }
         GpioPinSetHigh(pullup_pin, pullup_pin);
-        GpioPinConfigSet( pullup_pin, pullup_pin, GPIO_CFG_PULLUP);
+        GpioPinConfigSet(pullup_pin, pullup_pin, GPIO_CFG_PULLUP);
     }
 
     owcb->txrx_port = txrx_port;
     owcb->txrx_pin = txrx_pin;
     owcb->pp_port = pullup_pin;
     owcb->pp_pin = pullup_pin;
-    bus->owibus_info = (uint32_t)owcb;
-    bus->OwiTouchReset= BB_OwiTouchReset;
+    bus->owibus_info = (uint32_t) owcb;
+    bus->OwiTouchReset = BB_OwiTouchReset;
     bus->OwiReadBlock = BB_OwiReadBlock;
     bus->OwiWriteBlock = BB_OwiWriteBlock;
     bus->mode = 0;
     return OWI_SUCCESS;
 
-free_all:
-    NutHeapFree( owcb);
+  free_all:
+    NutHeapFree(owcb);
     return res;
 }

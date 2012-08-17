@@ -47,23 +47,35 @@
 #include <dev/owibus.h>
 
 /* Values from http://www.maxim-ic.com/app-notes/index.mvp/id/126 */
-const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE] =
-{{{4*(3),
-   4*(3 + 480),
-   4*(3 + 480 + 70),
-   4*(3 + 480 + 70 +410)},
-  {4*(3),
-   4*(3 +6),
-   4*(3 +6 +9),
-   4*(3 +6 +9 + 51)}},
- {{10,
-   10 + 280,
-   10 + 280 + 34,
-   10 + 280 + 34 + 160},
-  {10,
-   10 + 4,
-   10 + 4 + 30,
-   10 + 4 + 30 + 30}}
+const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE] = {
+    {
+        {
+            4 * 3,
+            4 * (3 + 480),
+            4 * (3 + 480 + 70),
+            4 * (3 + 480 + 70 + 410)
+        },
+        {
+            4 * 3,
+            4 * (3 + 6),
+            4 * (3 + 6 + 9),
+            4 * (3 + 6 + 9 + 51)
+        }
+    },
+    {
+        {
+            10,
+            10 + 280,
+            10 + 280 + 34,
+            10 + 280 + 34 + 160
+        },
+        {
+            10,
+            10 + 4,
+            10 + 4 + 30,
+            10 + 4 + 30 + 30
+        }
+    }
 };
 
 /*!
@@ -75,48 +87,50 @@ const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiRomSearch(NUTOWIBUS* bus, uint8_t *diff, uint64_t * hid)
+int_fast8_t OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
 {
-    uint_fast8_t i,j, next_diff;
+    uint_fast8_t i, j, next_diff;
     uint8_t b, c, command;
-    uint8_t *id = (uint8_t *)hid;
+    uint8_t *id = (uint8_t *) hid;
     int_fast8_t res;
 
     res = bus->OwiTouchReset(bus);
-    if (res)
+    if (res) {
         return res;
+    }
     command = OWI_SEARCH_ROM;
     res = bus->OwiWriteBlock(bus, &command, 8);
-    if (res)
+    if (res) {
         return res;
-
-    next_diff = OWI_LAST_DEVICE;                  /* unchanged on last device */
-    i = 8 * 8;                                    /* 8 bytes */
-    do{
-        j = 8;                                    /* 8 bits */
-        do{
-            res |= bus->OwiReadBlock(bus,&b, 1);
-            res |= bus->OwiReadBlock(bus,&c, 1);
-            if( c ){                              /* read bit */
-                if( b )                           /* read complement bit */
-                    return OWI_DATA_ERROR;        /* error: no reaction on bus*/
-            }else{
-                if( !b ){                         /* Two devices with different bits here*/
-                    if( *diff > i ||
-                        ((*id & 1) && *diff != i) ){
-                        b = 1;                    /* Choose device with '1' for now*/
-                        next_diff = i;            /* Choose device with '0' on next pass*/
+    }
+    next_diff = OWI_LAST_DEVICE;    /* unchanged on last device */
+    i = 8 * 8;                      /* 8 bytes */
+    do {
+        j = 8;                      /* 8 bits */
+        do {
+            res |= bus->OwiReadBlock(bus, &b, 1);
+            res |= bus->OwiReadBlock(bus, &c, 1);
+            if (c) {                /* read bit */
+                if (b) {            /* read complement bit */
+                    return OWI_DATA_ERROR;      /* error: no reaction on bus */
+                }
+            } else {
+                if (!b) {           /* Two devices with different bits here */
+                    if (*diff > i || ((*id & 1) && *diff != i)) {
+                        b = 1;      /* Choose device with '1' for now */
+                        next_diff = i;  /* Choose device with '0' on next pass */
                     }
                 }
             }
-            res |= bus->OwiWriteBlock(bus,&b,1 ); /* write bit */
+            res |= bus->OwiWriteBlock(bus, &b, 1);  /* write bit */
             *id >>= 1;
-            if( b )                               /* store bit as id */
+            if (b) {                /* store bit as id */
                 *id |= 0x80;
+            }
             i--;
-        }while( --j && !res);
-        id++;                                      /* next byte */
-    }while( i && !res);
+        } while (--j && !res);
+        id++;                       /* next byte */
+    } while (i && !res);
     *diff = next_diff;
     return res;
 }
@@ -129,29 +143,26 @@ int_fast8_t OwiRomSearch(NUTOWIBUS* bus, uint8_t *diff, uint64_t * hid)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiCommand(NUTOWIBUS* bus, uint8_t cmd, uint64_t * hid)
+int_fast8_t OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
 {
     int_fast8_t res;
     uint8_t command;
 
     res = bus->OwiTouchReset(bus);
-    if (res)
-    {
+    if (res) {
         return res;
     }
-    if (hid)
-    {
-        uint8_t *id = (uint8_t *)hid;
+    if (hid) {
+        uint8_t *id = (uint8_t *) hid;
 
         command = OWI_MATCH_ROM;
-        res = bus->OwiWriteBlock(bus, &command, 8 );  /* to a single device*/
+        res = bus->OwiWriteBlock(bus, &command, 8); /* to a single device */
         res = bus->OwiWriteBlock(bus, id, 64);
+    } else {
+        command = OWI_SKIP_ROM; /* to all devices */
+        res = bus->OwiWriteBlock(bus, &command, 8);
     }
-    else {
-        command = OWI_SKIP_ROM;                       /* to all devices*/
-        res = bus->OwiWriteBlock( bus, &command, 8 );
-    }
-    res = bus->OwiWriteBlock( bus, &cmd, 8 );
+    res = bus->OwiWriteBlock(bus, &cmd, 8);
     return 0;
 }
 
@@ -163,7 +174,7 @@ int_fast8_t OwiCommand(NUTOWIBUS* bus, uint8_t cmd, uint64_t * hid)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiReadBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
+int_fast8_t OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     return bus->OwiReadBlock(bus, data, len);
 }
@@ -176,7 +187,7 @@ int_fast8_t OwiReadBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiWriteBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
+int_fast8_t OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     return bus->OwiWriteBlock(bus, data, len);
 }
@@ -188,30 +199,29 @@ int_fast8_t OwiWriteBlock(NUTOWIBUS* bus, uint8_t *data, uint_fast8_t len)
  *
  * \return OWI_SUCCESS on success, -ERROR otherwise.
  */
-int_fast8_t OwiSetMode(NUTOWIBUS* bus, uint_fast8_t mode)
+int_fast8_t OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode)
 {
     int_fast8_t res;
 
-    if (mode & OWI_OVERDRIVE)
-    {
-        uint8_t command[1] = {OWI_OVERDRIVE_SKIP_ROM};
+    if (mode & OWI_OVERDRIVE) {
+        uint8_t command[1] = { OWI_OVERDRIVE_SKIP_ROM };
 
         res = bus->OwiTouchReset(bus);
-        if (res)
+        if (res) {
             return res;
+        }
         bus->OwiWriteBlock(bus, command, 8);
 
         bus->mode |= OWI_OVERDRIVE;
 
         res = bus->OwiTouchReset(bus);
-        if (res )
-        {
-           bus->mode &= ~OWI_OVERDRIVE;
-           return res;
+        if (res) {
+            bus->mode &= ~OWI_OVERDRIVE;
+            return res;
         }
-    }
-    else
+    } else {
         res = bus->OwiTouchReset(bus);
+    }
     return res;
 }
 
@@ -220,7 +230,7 @@ int_fast8_t OwiSetMode(NUTOWIBUS* bus, uint_fast8_t mode)
  *
  * \return Mask of set modes
  */
-int_fast8_t OWIGetMode(NUTOWIBUS* bus)
+int_fast8_t OWIGetMode(NUTOWIBUS *bus)
 {
     return bus->mode;
 }
