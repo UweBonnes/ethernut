@@ -131,7 +131,7 @@ install:
 
 clean:
 	$(MAKE) -C caltime clean
-	$(MAKE) -C cppdemo clean
+#	$(MAKE) -C cppdemo clean
 	$(MAKE) -C editconf clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
