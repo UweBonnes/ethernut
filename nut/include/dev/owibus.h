@@ -139,7 +139,7 @@ typedef struct _NUTOWIBUS NUTOWIBUS;
  * Storage provided by the caller.
  */
 struct _NUTOWIBUS {
-    uint32_t owibus_info;
+    uintptr_t owibus_info;
     uint32_t mode;
     int(*OwiTouchReset) (NUTOWIBUS *);
     int(*OwiReadBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
