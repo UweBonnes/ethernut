@@ -50,6 +50,11 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+/*!
+ * \addtogroup xgOwibusBb
+ */
+/*@{*/
+
 extern const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE];
 
 /*!
@@ -67,5 +72,7 @@ struct _NUTOWIINFO_BB {
 typedef struct _NUTOWIINFO_BB NUTOWIINFO_BB;
 
 int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int tx_port, uint_fast8_t tx_pin, int pullup_port, uint_fast8_t pullup_pin);
+
+/*@}*/
 
 #endif

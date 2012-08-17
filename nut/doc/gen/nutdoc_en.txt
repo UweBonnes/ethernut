@@ -75,21 +75,21 @@
  *
  * \section intro Introduction
  *
- * Ethernut is an Open Source Hardware and Software Project for building 
+ * Ethernut is an Open Source Hardware and Software Project for building
  * Embedded Ethernet Devices.
  *
  * For the hardware part three reference designs are currently available:
- * - Ethernut 1 with ATmega103 or ATmega128 CPU and Realtek RTL8019AS 
+ * - Ethernut 1 with ATmega103 or ATmega128 CPU and Realtek RTL8019AS
  *   Ethernet Controller.
  * - Ethernut 2 with ATmega128 CPU and SMSC LAN91C111 Ethernet Controller.
  * - Ethernut 3 with AT91R40008 CPU and Davicom DM9000E Ethernet Controller.
- * 
- * The software part is based on an Open Source implementation of a Real 
- * Time Operating System called Nut/OS and a TCP/IP protocol suite named 
+ *
+ * The software part is based on an Open Source implementation of a Real
+ * Time Operating System called Nut/OS and a TCP/IP protocol suite named
  * Nut/Net.
  *
  * This document is intended as a programmer's reference to the
- * Nut/OS and Nut/Net API. It has been generated from the source 
+ * Nut/OS and Nut/Net API. It has been generated from the source
  * code by Doxygen, a great tool created by Dimitri van Heesch.
  *
  * As a first step, you may want to set up your Development Environment
@@ -101,11 +101,11 @@
  * \page copyleft Copyright Statement
  *
  * This software includes original and modified code from a number of
- * sources, using different licenses. Nevertheless, special care had been 
+ * sources, using different licenses. Nevertheless, special care had been
  * taken to maintain compatibility to the BSD license, under which all
  * new firmware code is released by default. It allows to use the firmware
  * in commercial products without the need to disclose any source code.
- * This is specifically true for the GNU Lesser General Public License (LGPL), 
+ * This is specifically true for the GNU Lesser General Public License (LGPL),
  * but is definitely not true for the GNU General Public License (GPL).
  *
  * Nut/OS and Nut/Net are
@@ -188,7 +188,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -276,7 +276,7 @@
  * int main(void)
  * {
  *     for (;;);
- * } 
+ * }
  * \endcode
  *
  * Including compiler.h is currently required to fix a problem
@@ -288,7 +288,7 @@
  * \ingroup xgNutOS
  * \brief Nut/OS configuration structure.
  */
- 
+
 
 /*!
  * \defgroup xgEvent Event Management
@@ -323,7 +323,7 @@
  * \defgroup xgTimer Timer Management
  * \ingroup xgNutOS
  * \brief Asynchronous timer support.
- * 
+ *
  * The timer management provides functions to start and stop
  * asynchronous timers, determine the CPU speed and let a
  * thread give up the CPU for a specified time period.
@@ -364,7 +364,7 @@
  *
  * If fast interrupt processing is required, drivers as well as
  * applications should consider using native interrupt handlers.
- * Your compiler documentation is the right source to check how 
+ * Your compiler documentation is the right source to check how
  * this can be done.
  */
 
@@ -391,7 +391,7 @@
 /*!
  * \defgroup xgAppSugar Application Candies
  * \ingroup xgNutOS
- * \brief 
+ * \brief
  *
  * In order to keep the kernel clean and small, it uses very basic functions
  * only:
@@ -412,7 +412,7 @@
  */
 
 /*!
- * \defgroup xgMutex Recursive Mutex 
+ * \defgroup xgMutex Recursive Mutex
  * \ingroup xgAppSugar
  * \brief Thread synchronization support.
  *
@@ -422,7 +422,7 @@
  *
  * A recursive mutex is a mutex that can be locked several
  * times by the thread that already owns the mutex.
- * 
+ *
  */
 
 /*!
@@ -433,26 +433,26 @@
  * In addition to posting and waiting for events, Threads
  * can use the provided semaphore funxtions to handle a pool
  * of shared resources.
- * 
+ *
  */
- 
+
 /*!
  * \defgroup xgConditionVariables Condition Variables
  * \ingroup xgAppSugar
  * \brief Condition variable support.
  *
- * To avoid entering a busy waiting state, threads must be able to 
- * signal each other about events of interest. This capability is 
- * implemented as condition variables. When a function requires a 
- * particular condition to be true before it can proceed, it waits 
- * on an associated condition variable. By waiting, it gives up the 
- * lock and is removed from the set of runnable threads. Any thread 
- * that subsequently causes the condition to be true may then use the 
- * condition variable to notify a thread waiting for the condition. 
+ * To avoid entering a busy waiting state, threads must be able to
+ * signal each other about events of interest. This capability is
+ * implemented as condition variables. When a function requires a
+ * particular condition to be true before it can proceed, it waits
+ * on an associated condition variable. By waiting, it gives up the
+ * lock and is removed from the set of runnable threads. Any thread
+ * that subsequently causes the condition to be true may then use the
+ * condition variable to notify a thread waiting for the condition.
  * A thread that has been notified regains the lock and can proceed.
- * 
+ *
  * As an example look to the following code:
- * 
+ *
  * \code
  * CONDITION cond = NULL;
  * int *current_data = NULL;
@@ -489,46 +489,46 @@
  * \ingroup xgAppSugar
  * \brief Banked RAM support.
  *
- * Even with a hardware decoder like the one used on the Medianut Board, 
- * streaming MP3 data in realtime from a TCP/IP network to the decoder 
+ * Even with a hardware decoder like the one used on the Medianut Board,
+ * streaming MP3 data in realtime from a TCP/IP network to the decoder
  * requires some special techniques to make it work on a tiny 8 bit system.
- * 
- * The key to success is avoidance of data copying. Usually data streams 
- * are moved from the Ethernet Controller to the Ethernet's driver buffer, 
- * then moved to the TCP buffer, again moved to the application buffer and 
- * finally from the application buffer to the MP3 decoder buffer. Some 
- * systems may use additional steps. Nut/OS tries to avoid these copies. In 
- * extreme, the data may be moved directly from the Ethernet controller to 
- * the MP3 controller. In reality this will fail, because TCP isn't realtime, 
- * but playing MP3 is. So at least one buffer stage is required to compensate 
- * the non deterministic arrival of TCP data. Each packet received is moved 
- * from the Ethernet controller into a so called NETBUF. Each NETBUF is 
- * added to a connection specific queue until the application request data 
- * from the connection. For portability reasons and to keep things simple, 
- * the application provides a buffer and calls NutTcpReceive() to get that 
- * buffer filled with application data out of the queued NETBUFs. This is 
- * another copy, but frees the application from dealing with system specific 
+ *
+ * The key to success is avoidance of data copying. Usually data streams
+ * are moved from the Ethernet Controller to the Ethernet's driver buffer,
+ * then moved to the TCP buffer, again moved to the application buffer and
+ * finally from the application buffer to the MP3 decoder buffer. Some
+ * systems may use additional steps. Nut/OS tries to avoid these copies. In
+ * extreme, the data may be moved directly from the Ethernet controller to
+ * the MP3 controller. In reality this will fail, because TCP isn't realtime,
+ * but playing MP3 is. So at least one buffer stage is required to compensate
+ * the non deterministic arrival of TCP data. Each packet received is moved
+ * from the Ethernet controller into a so called NETBUF. Each NETBUF is
+ * added to a connection specific queue until the application request data
+ * from the connection. For portability reasons and to keep things simple,
+ * the application provides a buffer and calls NutTcpReceive() to get that
+ * buffer filled with application data out of the queued NETBUFs. This is
+ * another copy, but frees the application from dealing with system specific
  * NETBUF structures.
  *
- * The smart part is, that Nut/OS offers a special buffer management to avoid 
- * the final copy into the decoder buffer and that the Nut/OS MP3 decoder 
- * driver makes use of this buffer management. As stated, normally the 
- * application buffer is filled by some kind of read statement (first copy) 
- * and transfered to the driver by some kind of write statement (second copy). 
+ * The smart part is, that Nut/OS offers a special buffer management to avoid
+ * the final copy into the decoder buffer and that the Nut/OS MP3 decoder
+ * driver makes use of this buffer management. As stated, normally the
+ * application buffer is filled by some kind of read statement (first copy)
+ * and transfered to the driver by some kind of write statement (second copy).
  *
- * When using the segmented memory management, the application will query the 
- * driver for buffer space first and then pass this buffer to the TCP read 
- * routine. This way the TCP read routine will directly fill the buffer of the 
- * decoder driver. When this has been done, the application commits the buffer 
+ * When using the segmented memory management, the application will query the
+ * driver for buffer space first and then pass this buffer to the TCP read
+ * routine. This way the TCP read routine will directly fill the buffer of the
+ * decoder driver. When this has been done, the application commits the buffer
  * filled and requests a new one and so on.
  *
- * Finally the segmented memory mamagement API can not only handle a continuos 
- * memory space, but also one that is divided into several segments. This is 
+ * Finally the segmented memory mamagement API can not only handle a continuos
+ * memory space, but also one that is divided into several segments. This is
  * usefull with banked memory hardware provided by Ethernut 2 boards.
  *
  * \todo At least some parts should be moved to the device section.
  */
- 
+
 /* ====================================== Nut/Net ==================================== */
 /*!
  * \defgroup xgNutNet Nut/Net API
@@ -555,7 +555,7 @@
  * \ingroup xgNutNet
  * \brief Nut/Nut configuration structure.
  */
- 
+
 /*!
  * \defgroup xgSocket Socket API
  * \ingroup xgNutNet
@@ -578,7 +578,7 @@
  * - NutTcpSend(), NutTcpReceive()
  * - NutTcpCloseSocket()
  *
- * This is quite similar to the traditional Berkley TCP Socket API 
+ * This is quite similar to the traditional Berkley TCP Socket API
  * used on desktop PCs.
  *
  * The order of API calls for TCP servers is
@@ -618,7 +618,7 @@
  * The application programmer can modify some default values of
  * the TCP stack by calling NutTcpSetSockOpt(). This could be
  * useful to fine tune the stack for maximum performance at
- * minimum resource usage. 
+ * minimum resource usage.
  *
  * In addition you may call NutTcpSetSockOpt() to set a receive
  * timeout in order to detect broken connections. That's often
@@ -646,7 +646,7 @@
  *
  * rc = NutTcpReceive(sock, buff, sizeof(buf));
  * if (rc == 0) {
- *     /* 
+ *     /*
  *      * A timeout occured. We will now perform an application specific
  *      * action to check wether our remote is still alive.
  *      */
@@ -658,7 +658,7 @@
  * Note again the difference to the Berkley API, where select() is used
  * to determine receive timeouts.
  *
- * Most socket API calls return -1 in case of a failure. The function 
+ * Most socket API calls return -1 in case of a failure. The function
  * NutTcpError() can be used to query a more specific error code.
  * \code
  * #include <stdio.h>
@@ -702,11 +702,11 @@
  * must use NutUdpSendTo() and NutUdpReceiveFrom().
  *
  * For historical reasons, Nut/Net buffers only the last incoming UDP datagram
- * for a specific port by default. Any previously received datagram will be 
+ * for a specific port by default. Any previously received datagram will be
  * discarded, if it hasn't been passed to the application in the meantime.
  * Most applications will run fine with this. But it will fail for example,
  * if more than one response is expected on a previously broadcasted request.
- * This problem can be solved by calling NutUdpSetSockOpt() to specify a receive 
+ * This problem can be solved by calling NutUdpSetSockOpt() to specify a receive
  * buffer size.
  *
  * \code
@@ -747,7 +747,7 @@
  * \ingroup xgBasePro
  * \brief RFC 793 Transmission Control Protocol
  *
- * TCP provides reliable, in-sequence delivery of a full-duplex 
+ * TCP provides reliable, in-sequence delivery of a full-duplex
  * stream of octets. It is used by applications which need a
  * reliable, connection-oriented data transport.
  *
@@ -764,7 +764,7 @@
  * \brief RFC 768 user datagram protocol.
  *
  * UDP only provides checksumming of data and multiplexing by port
- * number. Therefore, an application program must deal directly with 
+ * number. Therefore, an application program must deal directly with
  * end-to-end communication problems like retransmission, flow
  * control etc., if required.
  *
@@ -777,15 +777,15 @@
  * \ingroup xgBasePro
  * \brief RFC 791 Internet protocol version 4.
  *
- * Before using IP based protocols, you must have registered a network 
- * device driver like PPP or one of the supported Ethernet controller 
+ * Before using IP based protocols, you must have registered a network
+ * device driver like PPP or one of the supported Ethernet controller
  * drivers.
  *
- * You must also have configured the IP network interface with 
+ * You must also have configured the IP network interface with
  * NutDhcpIfConfig() or NutNetIfConfig().
  *
- * Typical applications do not use the IP layer directly, but 
- * call the \ref xgUdpSocket "UDP Socket API" or the 
+ * Typical applications do not use the IP layer directly, but
+ * call the \ref xgUdpSocket "UDP Socket API" or the
  * \ref xgTcpSocket "TCP Socket API". A Raw IP API is currently
  * not supported.
  *
@@ -798,7 +798,7 @@
  * \brief RFC 792 Internet Control Message Protocol.
  *
  * Provides routing, diagnostic and error functionality for IP.
- * Although ICMP messages are encapsulated within IP datagrams, 
+ * Although ICMP messages are encapsulated within IP datagrams,
  * ICMP processing is considered to be part of the IP layer.
  *
  * There is currently no API support for this layer.
@@ -810,7 +810,7 @@
  * \brief RFC 2236 Internet Group Management Protocol.
  *
  */
- 
+
 /*!
  * \defgroup xgARP ARP
  * \ingroup xgBasePro
@@ -872,14 +872,14 @@
  * }
  * \endcode
  *
- * Application programmers often get confused by the fact, that 
+ * Application programmers often get confused by the fact, that
  * NutDhcpIfConfig() is somewhat more general. It also checks
  * non-volatile memory (e.g. EEPROM contents for the AVR devices).
  * If a fixed IP address has been configured, it will use this
  * and will not query DHCP for an IP configuration. The Ethernut
  * Software Manual explains this in more detail.
  *
- * Typical DHCP servers offer more than just the IP configuration. 
+ * Typical DHCP servers offer more than just the IP configuration.
  * The following items are recognized by Nut/Net:
  * - IP address
  * - IP network mask
@@ -892,7 +892,7 @@
  * However, only the first three are used for the Nut/Net IP configuration.
  * The broadcast address is internally created by the IP layer.
  *
- * If provided by the DHCP server, the IP addresses of the primary and 
+ * If provided by the DHCP server, the IP addresses of the primary and
  * the secondary DNS are passed by the DHCP client to NutDnsConfig2().
  *
  * The last two items, host and domain name, are currently discarded.
@@ -901,9 +901,9 @@
  * NutDhcpRelease(). This lowers the burden on some busy DHCP servers
  * with long lease times.
  *
- * Applications doing their own IP configuration, e.g. using a user 
- * interface for their configuration and storing the values in non-volatile 
- * memory, may call NutDhcpInform() to inform DHCP servers about the 
+ * Applications doing their own IP configuration, e.g. using a user
+ * interface for their configuration and storing the values in non-volatile
+ * memory, may call NutDhcpInform() to inform DHCP servers about the
  * address allocation.
  *
  * The function NutDhcpStatus() is provided to enable applications to
@@ -915,14 +915,14 @@
  * \ingroup xgUserPro
  * \brief Discovering Nut/Net nodes.
  */
- 
+
 /*!
  * \defgroup xgFTPD FTP
  * \ingroup xgUserPro
  * \brief File transfer protocol
  *
  * Note, that FTP servers don't make much sense without a file system
- * providing write access. Right now, FTP had been tested with the 
+ * providing write access. Right now, FTP had been tested with the
  * PNUT file system only.
  */
 
@@ -970,19 +970,19 @@
  * Only Query Request Client Routine sending/Positive Name Query Response receiving
  * are implemented.
  *
- * When the Netbios Name Query request UDP datagram is on the ethernet network, 
- * asking "Who is 'name'?", NutWinsNameQuery() answers with the specified 'ipaddr' 
- * Ethernut IP address. 
+ * When the Netbios Name Query request UDP datagram is on the ethernet network,
+ * asking "Who is 'name'?", NutWinsNameQuery() answers with the specified 'ipaddr'
+ * Ethernut IP address.
  *
  * Answer to Microsoft Windows/Internet Explorer calls by "http://name" command line
- * (and even directly "name" as command line if "name" is not a shared folder). 
+ * (and even directly "name" as command line if "name" is not a shared folder).
  *
  * Launch for example :
  * \code
  * THREAD(wins_deamon, arg)
  * {
  *     NutWinsNameQuery("myboard", inet_addr(MYIP));
- * } 
+ * }
  * \endcode
  */
 
@@ -992,7 +992,7 @@
  * \brief XML Parser for tiny systems.
  *
  */
-  
+
 /*!
  * \defgroup xgPppProt PPP
  * \ingroup xgProtos
@@ -1097,13 +1097,13 @@
  * \brief Listing various PHAT structures.
  */
 
- 
+
 /*!
  * \defgroup xgPNut Peanut File System
  * \ingroup xgFileSystem
  * \brief Volatile RAM file system.
  */
- 
+
 /*!
  * \defgroup xgurom Micro-ROM File System
  * \ingroup xgFileSystem
@@ -1135,13 +1135,13 @@
  * \defgroup xgCrt C Runtime Library.
  * \brief Complementary runtime support.
  *
- * Normal C language runtime libraries are too large for small 
- * embedded systems and many functions require an underlying 
- * operating system. Compilers for the AVR provide a limited 
+ * Normal C language runtime libraries are too large for small
+ * embedded systems and many functions require an underlying
+ * operating system. Compilers for the AVR provide a limited
  * subset only, which do not include sufficient device support.
  *
- * Nut/OS includes its own runtime library. When linked with an 
- * application, this library partly overrides the standard library 
+ * Nut/OS includes its own runtime library. When linked with an
+ * application, this library partly overrides the standard library
  * which comes with your compiler.
  *
  * \warning Using these functions requires to link nutcrt or nutcrtf
@@ -1151,23 +1151,23 @@
 /*!
  * \defgroup xgCrtStdio Standard I/O
  * \ingroup xgCrt
- * \brief Standard stream interface to Nut/OS devices. 
+ * \brief Standard stream interface to Nut/OS devices.
  *
  * \code #include <stdio.h> \endcode
  *
- * In contrast to the standard, Nut/OS streams do not maintain there 
- * own buffers. Any input or output buffering is done in the device 
+ * In contrast to the standard, Nut/OS streams do not maintain there
+ * own buffers. Any input or output buffering is done in the device
  * driver.
  *
  * Nut/OS will not associate the standard streams stdin, stdout and
- * stderr to a device when starting the application. Instead, freopen() 
- * can be used by the application to redirect any of these stream to any 
+ * stderr to a device when starting the application. Instead, freopen()
+ * can be used by the application to redirect any of these stream to any
  * previously opened file, device or connected socket.
  *
  * As an extension to the standard, many function come in an additional
- * flavour with \c _P appended to their name. These functions accept 
+ * flavour with \c _P appended to their name. These functions accept
  * specific parameters pointing into program space.
- * 
+ *
  * Output Call Graph
  * \dot
  * digraph outchain {
@@ -1213,7 +1213,7 @@
  *     _write_P -> dev_write_P;
  * }
  * \enddot
- * 
+ *
  * Input Call Graph
  * \dot
  * digraph inchain {
@@ -1258,7 +1258,7 @@
  * \brief Low level input and output operations.
  *
  * \code #include <io.h> \endcode
- * 
+ *
  * Standard C runtime file interface to Nut/OS devices.
  */
 
@@ -1267,8 +1267,8 @@
  * \ingroup xgCrt
  * \brief Implements some standard C time functions.
  *
- * Use these functions to get the current time and convert, 
- * adjust, and store it as necessary. The current time is the system time. 
+ * Use these functions to get the current time and convert,
+ * adjust, and store it as necessary. The current time is the system time.
  *
  */
 
@@ -1283,7 +1283,7 @@
  * \ingroup xgCrt
  * \brief C Standard Library
  */
- 
+
 /*!
  * \defgroup xgCrtString Strings
  * \ingroup xgCrt
@@ -1379,10 +1379,10 @@
  * \brief Universal synchronous/asynchronous receiver/transmitter device driver.
  *
  * The USART device driver implements buffered, interrupt controlled
- * serial communication. It supports software and hardware handshake, 
+ * serial communication. It supports software and hardware handshake,
  * 9-bit communication, half duplex and synchronous operation.
  *
- * The driver's code is devided into a general part and a hardware 
+ * The driver's code is devided into a general part and a hardware
  * dependant part, which simplifies porting it to different USART chips.
  * The \ref xrUsartAvr "AVR USART Devices" provide support for the
  * ATmega128/103 on-chip USARTs.
@@ -1507,10 +1507,24 @@
  */
 
 
-/*! 
+/*!
  * \defgroup xgIrqReg Interrupt Management
  * \ingroup xgDriver
  * \brief Interrupt registration and handling.
+ */
+
+/*!
+ * \defgroup xgOwibus One-Wire Bus Controller
+ * \ingroup xgDriver
+ */
+
+/*!
+ * \defgroup xgOwibusBb One-Wire Bit-Banging Driver
+ * \ingroup xgOwibus
+ */
+/*!
+ * \defgroup xgOwibusUart One-Wire UART Driver
+ * \ingroup xgOwibus
  */
 
 /*!
@@ -1563,7 +1577,7 @@
  * \ingroup xgBlockDev
  * \brief Bit banging SPI for MMC.
  */
- 
+
 /*!
  * \defgroup xgDevTiming Clock Devices
  * \ingroup xgDriver
@@ -1634,16 +1648,16 @@
  * \ingroup xgDriver
  * \brief Read data from and write data to non-volatile memory.
  *
- * Non-volatile data memory is typically used to store configuration 
- * settings. Nut/OS currently supports three types of non-volatile 
+ * Non-volatile data memory is typically used to store configuration
+ * settings. Nut/OS currently supports three types of non-volatile
  * storage:
  * - Intersil X12xx EEPROM, if NUT_CONFIG_X12RTC is defined.
  * - AT49BV flash sector, if NUT_CONFIG_AT49BV is defined.
- * - AVR on-chip EEPROM, if Nut/OS has been build for this platform if 
+ * - AVR on-chip EEPROM, if Nut/OS has been build for this platform if
  * none of the macros listed above is defined.
  *
  * Nut/OS uses non-volatile memory to store the _CONFOS structure at
- * location CONFNET_EE_OFFSET and the _CONFNET structure at location 
+ * location CONFNET_EE_OFFSET and the _CONFNET structure at location
  * CONFNET_EE_OFFSET.
  */
 
@@ -1675,7 +1689,7 @@
  * \brief Ports used by the Medianut MP3 Add-On.
  *
  * Medianut is an add-on board and can be attached to the Ethernut
- * expansion port. It contains a VS1001K MP3 decoder, a LCD interface 
+ * expansion port. It contains a VS1001K MP3 decoder, a LCD interface
  * and an infrared receiver.
  */
 
@@ -1721,7 +1735,7 @@
  *
  * Only the AVR and ARM platforms can be considered stable. The H8/300
  * support has come to halt long time ago and support for the
- * M68K did not even start. 
+ * M68K did not even start.
  *
  * The Emulator running on UNIX has been recently updated and should
  * work again.
@@ -1734,30 +1748,30 @@
  * \brief 8 Bit RISC processor.
  *
  * The ATmega103, ATmega128, AT90CAN128 and the ATmega256 are currently supported.
- * 
+ *
  * Due to a bug in the chip, the AT90CAN128 stack must be located in internal
  * memory. Nut/OS automatically takes care of this when built for that device.
  * However, be aware that the stack space for threads is quite limited.
  */
-  
+
 /*!
  * \defgroup xgNutArchAvrBoot Boot
  * \ingroup xgNutArchAvr
  * \brief Loading the code
  */
- 
+
 /*!
  * \defgroup xgNutArchAvrInit Initialization
  * \ingroup xgNutArchAvr
  * \brief Starting Nut/OS
  */
- 
+
 /*!
  * \defgroup xgNutArchAvrOs System Support
  * \ingroup xgNutArchAvr
  * \brief Hardware dependant functions used by Nut/OS.
  */
- 
+
 /*!
  * \defgroup xgNutArchAvrDev Device Drivers
  * \ingroup xgNutArchAvr
@@ -1778,7 +1792,7 @@
  *
  * Proper documentation is missing.
  */
- 
+
 /*!
  * \defgroup xgDevDebugAvr Debug Device
  * \ingroup xgNutArchAvrDevSerial
@@ -1789,15 +1803,15 @@
  * polling. Therefore it can be used for standard I/O output
  * even within interrupt routines.
  */
- 
+
 /*!
  * \defgroup xgUartAvr UART Device
  * \ingroup xgNutArchAvrDevSerial
  * \anchor xrUartAvr
  * \brief Device driver for ATmega On-Chip UART.
  *
- * This device driver writes data to and reads data from the UART on 
- * the ATmega128/103 chip. Both, input and output data is buffered and 
+ * This device driver writes data to and reads data from the UART on
+ * the ATmega128/103 chip. Both, input and output data is buffered and
  * send resp. transmitted by interrupt routines.
  *
  * Not all ioctl() function are fully implemented. New applications
@@ -1811,8 +1825,8 @@
  * \anchor xrUsartAvr
  * \brief AVR USART hardware dependant implementation.
  *
- * A pointer to \ref devUsartAvr0 or \ref devUsartAvr1 must be passed to 
- * NutRegisterDevice() to bind the corresponding device driver to the 
+ * A pointer to \ref devUsartAvr0 or \ref devUsartAvr1 must be passed to
+ * NutRegisterDevice() to bind the corresponding device driver to the
  * Nut/OS kernel.
  * \code
  * NutRegisterDevice(&devUsartAvr0, 0, 0);
@@ -1829,8 +1843,8 @@
  * \ingroup xgNutArchAvrDevSerial
  * \brief AHDLC Driver.
  *
- * This code contains a modified UART driver with some speed optimizations 
- * for PPP, like table driven FCS calculation. It also implements simple modem 
+ * This code contains a modified UART driver with some speed optimizations
+ * for PPP, like table driven FCS calculation. It also implements simple modem
  * handshaking (RTS, CTS and DTR).
  */
 
@@ -1909,7 +1923,7 @@
  * \ingroup xgHardwareAvr
  * \brief ATmega128 On-Chip ADC.
  */
- 
+
 /*!
  * \defgroup xgCanSJA1000 SJA1000
  * \ingroup xgHardwareAvr
@@ -1933,17 +1947,17 @@
  * \ingroup xgHardwareAvr
  * \brief Infrared Remote Control
  */
- 
-/*! 
+
+/*!
  * \defgroup xgSpiDigIo SPI Digital I/O
  * \ingroup xgHardwareAvr
  * \brief SPI controlled digital input and output ports.
  *
- * This simple driver supports digital I/O ports like 
+ * This simple driver supports digital I/O ports like
  * relay outputs and optocoupler inputs.
  */
 
-/*! 
+/*!
  * \defgroup xgSpiFlash SPI Flash Devices
  * \ingroup xgHardwareAvr
  * \brief Programs SPI attached flash devices.
@@ -1960,19 +1974,19 @@
  * \ingroup xgHardwareAvr
  * \brief ATmega128 on-chip watchdog.
  */
- 
+
 /*!
  * \defgroup xgAvrTarget AVR Target Programming
  * \ingroup xgHardwareAvr
  * \brief AVR target programming via SPI.
  */
- 
+
 /*!
  * \defgroup xgConfigAvr Configuration
  * \ingroup xgNutArchAvr
  * \brief Hardware Settings.
  */
- 
+
 /*!
  * \defgroup xgConfigPortsAvr Ports
  * \ingroup xgConfigAvr
@@ -2000,7 +2014,7 @@
  * \defgroup xgConfigAvr32 Configuration
  * \ingroup xgNutArchAvr32
  * \brief AVR32 hardware configuration.
- */ 
+ */
 
 
 /* =================================== ARM Architectures ================================= */
@@ -2013,7 +2027,7 @@
  * #include <arch/arm.h>
  * \endcode
  *
- * Nut/OS had been successfully tested on some Atmel AT91 and Philips LPC devices and on 
+ * Nut/OS had been successfully tested on some Atmel AT91 and Philips LPC devices and on
  * the GameBoy Advance.
  */
 
@@ -2021,20 +2035,20 @@
  * \defgroup xgNutArchArmBoot Boot
  * \ingroup xgNutArchArm
  * \brief Loading the code
- */ 
- 
+ */
+
 /*!
  * \defgroup xgNutArchArmInit Initialization
  * \ingroup xgNutArchArm
  * \brief Starting Nut/OS
- */ 
+ */
 
 /*!
  * \defgroup xgNutArchArmAt91 AT91 Support
  * \ingroup xgNutArchArm
  * \brief AT91 peripheral registers.
  *
- * AT91 is a family of microcontrollers manufactured by Atmel. They are based on the 
+ * AT91 is a family of microcontrollers manufactured by Atmel. They are based on the
  * 32-bit RISC microprocessors from ARM. The following members had been tested with
  * Nut/OS:
  *
@@ -2044,7 +2058,7 @@
  *
  * The AT91 peripherals are connected to the 32-bit wide advanced peripheral bus.
  * All registers are word accessible only.
- */ 
+ */
 
 /*!
  * \defgroup xgNutArchArmAt91Adc ADC
@@ -2057,7 +2071,7 @@
  * \ingroup xgNutArchArmAt91
  * \brief Advanced interrupt controller registers.
  *
- * The AT91 series provides an 8-level priority, individually maskable, 
+ * The AT91 series provides an 8-level priority, individually maskable,
  * vectored interrupt controller.
  */
 
@@ -2066,64 +2080,64 @@
  * \ingroup xgNutArchArmAt91
  * \brief Chip configuration register.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Dbgu Debug Unit
  * \ingroup xgNutArchArmAt91
  * \brief Debug unit registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Ebi Bus Interface
  * \ingroup xgNutArchArmAt91
  * \brief External bus interface registers.
- */ 
+ */
 
 /*!
  * \defgroup xgAt91Efc Embedded Flash Controller
  * \ingroup xgNutArchArmAt91
  * \brief Embedded flash controller registers.
- */ 
+ */
 
 /*!
  * \defgroup xgNutArchArmAt91Emac EMAC Module
  * \ingroup xgNutArchArmAt91
  * \brief Ethernet MAC module registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Matrix Bus Matrix
  * \ingroup xgNutArchArmAt91
  * \brief Bus matrix registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Mci Multimedia Card
  * \ingroup xgNutArchArmAt91
  * \brief Multimedia card registers.
  */
- 
+
 /*!
  * \defgroup xgAt91Mci MCI Multimedia Card Interface
  * \ingroup xgNutArchArmAt91
  * \brief Multimedia card interface registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Pio Parallel I/O
  * \ingroup xgNutArchArmAt91
  * \brief Parallel I/O controller registers.
  *
- * Most parallel I/O lines are multiplexed with external signals of 
+ * Most parallel I/O lines are multiplexed with external signals of
  * other peripherals to optimize the use of available package pins.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Pit Periodic Interval Timer
  * \ingroup xgNutArchArmAt91
  * \brief Periodic interval timer registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Pmc Power Management Controller
  * \ingroup xgNutArchArmAt91
@@ -2135,15 +2149,15 @@
  * \ingroup xgNutArchArmAt91
  * \brief PWM controller registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Ps Power Saving
  * \ingroup xgNutArchArmAt91
  * \brief Power saving registers.
  *
- * The Power-saving feature optimizes power consumption, enabling the 
+ * The Power-saving feature optimizes power consumption, enabling the
  * software to stop the CPU clock and restarting it on interrupts or
- * on reset. Also, the on-chip peripheral clocks can be enabled or 
+ * on reset. Also, the on-chip peripheral clocks can be enabled or
  * disabled individually.
  */
 
@@ -2170,7 +2184,7 @@
  * \ingroup xgNutArchArmAt91
  * \brief Reset controller registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Sam9x AT91SAM9XE
  * \ingroup xgNutArchArmAt91
@@ -2188,19 +2202,19 @@
  * \ingroup xgNutArchArmAt91
  * \brief SDRAM controller registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Sf Special Function
  * \ingroup xgNutArchArmAt91
  * \brief Special function registers
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Smc Static Memory Controller
  * \ingroup xgNutArchArmAt91
  * \brief Static memory controller registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Spi Serial Peripheral Interface
  * \ingroup xgNutArchArmAt91
@@ -2218,37 +2232,37 @@
  * \ingroup xgNutArchArmAt91
  * \brief Serial synchronous controller registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Tc Timer/Counter
  * \ingroup xgNutArchArmAt91
  * \brief Timer / Counter registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Twi AT91 Two Wire Interface
  * \ingroup xgNutArchArmAt91
  * \brief Two wire interface.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Udp USB Device Port
  * \ingroup xgNutArchArmAt91
  * \brief Universal serial bus device registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Us USART
  * \ingroup xgNutArchArmAt91
  * \brief Universal synchronous / asynchronous receiver / transmitter registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmAt91Wd Watchdog Registers
  * \ingroup xgNutArchArmAt91
  * \brief Watchdog timer registers.
  *
- * The Watch Dog is used to prevent system lock-up if the software becomes 
+ * The Watch Dog is used to prevent system lock-up if the software becomes
  * trapped in a deadlock. It can generate an internal reset or interrupt.
  */
 
@@ -2257,7 +2271,7 @@
  * \ingroup xgNutArchArmAt91
  * \brief Watchdog timer registers.
  *
- * The Watch Dog is used to prevent system lock-up if the software becomes 
+ * The Watch Dog is used to prevent system lock-up if the software becomes
  * trapped in a deadlock. It can generate an internal reset or interrupt.
  */
 
@@ -2272,37 +2286,37 @@
  * \ingroup xgNutArchArmAt91
  * \brief Davicom DM9161A registers.
  */
- 
+
 /*!
  * \defgroup xgEmacSam7x SAM7X EMAC
  * \ingroup xgNutArchArmAt91
  * \brief SAM7X EMAC registers.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmGba Gameboy Advance Support
  * \ingroup xgNutArchArm
  * \brief Nintendo Gameboy Advance
- */ 
- 
+ */
+
 /*!
  * \defgroup xgNutArchArmOs System Support
  * \ingroup xgNutArchArm
  * \brief Hardware dependant functions used by Nut/OS.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmOsTimerAt91 AT91 System Timer
  * \ingroup xgNutArchArmOs
  * \brief Nut/OS System Timer implemented on the AT91
  */
- 
+
 /*!
  * \defgroup xgNutArchArmOsTimerGba GBA System Timer
  * \ingroup xgNutArchArmOs
  * \brief Nut/OS System Timer implemented on the GBA
  */
- 
+
 /*!
  * \defgroup xgNutArchArmDev Device Drivers
  * \ingroup xgNutArchArm
@@ -2325,7 +2339,7 @@
  *
  * \todo Handle AT91 interrupts nicely.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmDevIrqGba GBA Interrupts
  * \ingroup xgNutArchArmDevIrq
@@ -2347,7 +2361,7 @@
  *
  * This code doesn't work.
  */
- 
+
 /*!
  * \defgroup xgNutArchArmDevEthernet Ethernet
  * \ingroup xgNutArchArmDev
@@ -2376,7 +2390,7 @@
  * \brief Debug output driver for AT91 On-Chip UART.
  *
  * This stream device driver writes data to the internal UART.
- * The output is unbuffered and uses polling. Therefore it can 
+ * The output is unbuffered and uses polling. Therefore it can
  * be used for standard I/O output even within interrupt routines.
  */
 
@@ -2385,30 +2399,30 @@
  * \ingroup xgNutArchArmDevDebug
  * \brief Debug output driver for GBA LCD Screen.
  */
- 
+
 /* ================================= Emulator Architecture =============================== */
 /*!
  * \defgroup xgNutArchUnix Emulator (UNIX)
  * \ingroup xgNutArch
- * \brief Running Nut/OS Apps on a UNIX machine 
+ * \brief Running Nut/OS Apps on a UNIX machine
  *
  * Nut/OS can be compiled for a native unix target.
  *
  * The following hardware is currently emulated: RTC and UART.
  * A RTC clock is provided. All AVR UARTS are mapped to STDIO but this can configure
  * at app start-up using command line paramters. Syntax:
- * 
+ *
  * MyNutOSAPP.unix [-u0 deviceName] [-u1 deviceName] [-u2 deviceName]
- * 
+ *
  * The unix emulation provides a third uart for debugging purposes as devDebug2, devUsart2 and devUsartAvr2)
- * 
+ *
  */
 
 /*!
  * \defgroup xgNutArchUnixInit Initialization
  * \ingroup xgNutArchUnix
  * \brief Starting Nut/OS
- */ 
+ */
 
 /*!
  * \defgroup xgNutArchUnixOs System Support
@@ -2421,7 +2435,7 @@
  * \ingroup xgNutArchUnixOs
  * \brief Nut/OS System Timer
  */
- 
+
 /* ================================= H8/300H Architecture ================================ */
 /*!
  * \defgroup xgNutArchH8300h H8/300H
@@ -2435,13 +2449,13 @@
  * \defgroup xgNutArchH8300hBoot Boot
  * \ingroup xgNutArchH8300h
  * \brief Loading the code
- */ 
- 
+ */
+
 /*!
  * \defgroup xgNutArchH8300hInit Initialization
  * \ingroup xgNutArchH8300h
  * \brief Starting Nut/OS
- */ 
+ */
 
 /*!
  * \defgroup xgNutArchH8300hOs System Support
@@ -2454,14 +2468,14 @@
  * \ingroup xgNutArchH8300hOs
  * \brief Context Switching with GCC
  */
- 
+
 /*!
  * \defgroup xgNutArchH8300hOsTimer System Timer
  * \ingroup xgNutArchH8300hOs
  * \brief Nut/OS System Timer implemented on the H8/300H
  */
- 
- 
+
+
 /*!
  * \defgroup xgNutArchH8300hDev Device Drivers
  * \ingroup xgNutArchH8300h
@@ -2495,20 +2509,20 @@
  * \brief Debug output drivers
  *
  */
- 
+
 /*!
  * \defgroup xgNutArchH8300hDevEthernet Ethernet
  * \ingroup xgNutArchH8300hDev
  * \brief Ethernet controller drivers.
  *
  */
- 
+
 /*!
  * \defgroup xgRPortCfg RPort
  * \ingroup xgNutArchH8300h
  * \brief RPort hardware specification.
  */
- 
+
 /* ================================= M68K Architecture =================================== */
 /*!
  * \defgroup xgNutArchM68k M68K
@@ -2522,13 +2536,13 @@
  * \defgroup xgNutArchM68kBoot Boot
  * \ingroup xgNutArchM68k
  * \brief Loading the code
- */ 
- 
+ */
+
 /*!
  * \defgroup xgNutArchM68kInit Initialization
  * \ingroup xgNutArchM68k
  * \brief Starting Nut/OS
- */ 
+ */
 
 /* ===================================== Contribs ======================================== */
 /*!
@@ -2540,7 +2554,7 @@
  * \defgroup xgHelixCodec Helix
  * \ingroup xgContrib
  * \brief Helix MP3 Decoder.
- */ 
+ */
 
 /* ================================= Directories ========================================= */
 /*

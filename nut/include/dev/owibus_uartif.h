@@ -46,6 +46,11 @@
 #include <sys/device.h>
 
 /*!
+ * \addtogroup xgOwibusUart
+ */
+/*@{*/
+
+/*!
  * \brief Data to send on the UART for the OWI primitives.
  */
 #define OWI_UART_WRITE_RST  0xf0    /*!< \brief UART data for presence impulse. */
@@ -77,5 +82,7 @@ struct _NUTOWIINFO_UART {
 typedef struct _NUTOWIINFO_UART NUTOWIINFO_UART;
 
 int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int PARASITIC_PWR_PORT, uint_fast8_t PARASITIC_PWR_PIN);
+
+/*@}*/
 
 #endif

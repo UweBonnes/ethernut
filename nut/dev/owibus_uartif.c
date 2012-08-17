@@ -55,6 +55,11 @@
 #include <stdlib.h>
 
 /*!
+ * \addtogroup xgOwibusUart
+ */
+/*@{*/
+
+/*!
  * \brief Reset the One-Wire bus and check if device(s) present.
  *
  * \param bus Specifies the One-Wire bus.
@@ -197,3 +202,5 @@ int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uin
 
     return OWI_SUCCESS;
 }
+
+/*@}*/

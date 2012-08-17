@@ -52,6 +52,11 @@
 #include <dev/owibus_bbif.h>
 
 /*!
+ * \addtogroup xgOwibusBb
+ */
+/*@{*/
+
+/*!
  * \brief Perform One-Wire transaction.
  *
  * \param bus     Specifies the One-Wire bus.
@@ -220,3 +225,5 @@ int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, i
     free(owcb);
     return res;
 }
+
+/*@}*/

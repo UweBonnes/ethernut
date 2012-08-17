@@ -44,6 +44,11 @@
 #include <stdint.h>
 #include <dev/owibus.h>
 
+/*!
+ * \addtogroup xgOwibus
+ */
+/*@{*/
+
 /* Values from http://www.maxim-ic.com/app-notes/index.mvp/id/126 */
 const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE] = {
     {
@@ -241,3 +246,5 @@ int OWIGetMode(NUTOWIBUS *bus)
 {
     return bus->mode;
 }
+
+/*@}*/

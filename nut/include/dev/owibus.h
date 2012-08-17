@@ -47,6 +47,11 @@
 #include <cfg/arch.h>
 #include <stdint.h>
 
+/*!
+ * \addtogroup xgOwibus
+ */
+/*@{*/
+
 /* Overdrive Commands as in
  * http://www.ovro.caltech.edu/~dwh/correlator/pdf/onewire.pdf
  */
@@ -152,5 +157,7 @@ int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode);
 int OwiGetMode(NUTOWIBUS *bus);
+
+/*@}*/
 
 #endif
