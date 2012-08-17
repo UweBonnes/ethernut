@@ -173,7 +173,6 @@ static int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
  */
 int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uint_fast8_t pullup_pin)
 {
-    int res;
     int uart_fd;
     uint32_t timeout = 2;
     uint32_t stopbits = 2;
