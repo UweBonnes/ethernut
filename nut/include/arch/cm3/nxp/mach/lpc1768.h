@@ -116,7 +116,7 @@
 /* TODO #include <arch/cm3/nxp/mach/lpc_emac.h> */
 /* TODO #include <arch/cm3/nxp/mach/lpc_gpdma.h> */
 #include <arch/cm3/nxp/mach/lpc_gpio.h>
-/* TODO #include <arch/cm3/nxp/mach/lpc_i2c.h> */
+#include <arch/cm3/nxp/mach/lpc_i2c.h>
 /* TODO #include <arch/cm3/nxp/mach/lpc_i2s.h> */
 /* TODO #include <arch/cm3/nxp/mach/lpc_mcpwm.h> */
 #include <arch/cm3/nxp/mach/lpc_pincon.h>
