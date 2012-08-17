@@ -630,9 +630,8 @@ int Tlv320DacFlush(void)
     int rc = 0;
 
     while (bwr_idx != brd_idx) {
-        Tlv320DacStart();
-        if ((rc = NutEventWait(&i2s_que, 500)) != 0) {
-            break;
+        if ((rc = NutEventWait(&i2s_que, 100)) != 0) {
+            Tlv320DacStart();
         }
     }
     return rc;
