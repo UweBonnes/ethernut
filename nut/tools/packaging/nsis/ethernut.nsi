@@ -483,11 +483,12 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\nutdisc\src\bitmaps\*.ico
     File ..\..\..\tools\nutdisc\src\bitmaps\*.xpm
     SetOutPath "$INSTDIR\nut\tools\qnutdisc"
-    File ..\..\..\tools\qnutdisc\*.cpp
-    File ..\..\..\tools\qnutdisc\*.h
-    File ..\..\..\tools\qnutdisc\*.pro
-    File ..\..\..\tools\qnutdisc\*.qrc
-    File ..\..\..\tools\qnutdisc\*.ui
+    File ..\..\..\tools\qnutdisc\src\*.cpp
+    File ..\..\..\tools\qnutdisc\src\*.h
+    File ..\..\..\tools\qnutdisc\src\*.pri
+    File ..\..\..\tools\qnutdisc\src\*.pro
+    File ..\..\..\tools\qnutdisc\src\*.qrc
+    File ..\..\..\tools\qnutdisc\src\*.ui
     SetOutPath "$INSTDIR\nut\tools\include\win32"
     File ..\..\..\tools\include\win32\*.h
   SectionEnd
