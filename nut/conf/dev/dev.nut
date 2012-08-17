@@ -2390,7 +2390,7 @@ nutdev =
         provides = { "NET_MAC" },
         sources = { "null_ether.c" },
     },
-	{
+    {
         name = "nutnet_ether_phy",
         brief = "Ethernet PHYceiver",
         requires = { "NET_MAC" },
@@ -2398,13 +2398,13 @@ nutdev =
         sources = { "phy.c" },
         options =
         {
-        	{
-        		macro = "NIC_PHY_TYPE",
-        		brief = "PHY Chip",
-        		description = "Select the Physical Layer Tranceiver (PHYter) for your board.\n\n"..
+            {
+                macro = "NIC_PHY_TYPE",
+                brief = "PHY Chip",
+                description = "Select the Physical Layer Tranceiver (PHYter) for your board.\n\n"..
                               "Commonly used chips and their IDs:\n"..
-                			  "AUTO: Autodetect chip\n"..
-                			  "AMD:\n"..
+                              "AUTO: Autodetect chip\n"..
+                              "AMD:\n"..
                               "AM79C875: 0x00225540\n"..
                               "DACOM\n"..
                               "DM9161: 0x0181B880 (ATMEL EK)\n"..
@@ -2427,16 +2427,16 @@ nutdev =
                               "LAN8720: 0x0007C0F0\n"..
                               "ANY: 0xFFFFFFFF (Disable PHY ID check - not recommended)",
                 type = "enumerated",
-                choices = { "AUTO", 
-                            "AM79C875", 
-                			"DM9161", "DM9161A", "DM9161B", "DM9000", "DM9000A", "DM9000B",
-                			"DP83838", "DP83848", 
-                			"KS8721", "KS8851",
-                			"STE100P", 
-                			"LAN8700", "LAN8710", "LAN8720",
-                			"ANY" },
+                choices = { "AUTO",
+                            "AM79C875",
+                            "DM9161", "DM9161A", "DM9161B", "DM9000", "DM9000A", "DM9000B",
+                            "DP83838", "DP83848",
+                            "KS8721", "KS8851",
+                            "STE100P",
+                            "LAN8700", "LAN8710", "LAN8720",
+                            "ANY" },
                 file = "include/cfg/phycfg.h"
-        	},
+            },
             {
                 macro = "NIC_PHY_ADDR",
                 brief = "PHY Address",
@@ -2673,7 +2673,7 @@ nutdev =
 --                      "This module also uses the options from the block I/O driver.",
         requires = { "SPIBUS_CONTROLLER" },
         provides = { "SERIALFLASH_INTERFACE" },
-        sources = { 
+        sources = {
                         "spi_at45dib.c",
                         "spi_flash_at45d.c",
                         "spi_blkio_at45d.c",
@@ -2977,7 +2977,7 @@ nutdev =
                 brief = "Card detect GPIO pin number",
                 description = "Number of GPIO pin where the card detect signal is connected.\n\n"..
                               "If disabled it is assumed that the card is always present\n",
-		provides = { "MMC_CD_PIN" },
+                provides = { "MMC_CD_PIN" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
@@ -2997,7 +2997,7 @@ nutdev =
                 brief = "Card write protect GPIO pin number",
                 description = "Number of GPIO pin where the card write protect signal is connected.\n\n"..
                               "If disabled it is assumed that the card is always writable\n",
-		provides = { "MMC_WP_PIN" },
+                provides = { "MMC_WP_PIN" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
@@ -3120,27 +3120,27 @@ nutdev =
         sources = { "at24c.c", "eeprom.c" },
         options =
         {
-        	{
-        		macro = "AT24C_SLAVE_ADDR",
-        		brief = "Address of Slave",
-        		description = "EEPROMs Slave address on the bus.\n"..
-        					  "No convetions here, so the address should be given without R/W bit.\n"..
-        					  "For a AT24C64 it usually will be 0x50.",
-        	    flavour = "integer",
-        	    default = "0x50",
-        	    file = "include/cfg/eeprom.h",
-        	},
-        	{
-        		macro = "AT24C_CHIP_SIZE",
-        		brief = "Memory Size",
-        		description = "Size of your EEPROM.\n"..
-        					  "As manufacturers like to give sizes in bits, as it sound like more "..
-        					  "this value is usually the chips name divided by 8\n"..
-        					  "For a AT24C64 it will be 8192 bytes",
-        	    flavour = "integer",
-        	    default = "8192",
-        	    file = "include/cfg/eeprom.h",
-        	},
+            {
+                macro = "AT24C_SLAVE_ADDR",
+                brief = "Address of Slave",
+                description = "EEPROMs Slave address on the bus.\n"..
+                              "No convetions here, so the address should be given without R/W bit.\n"..
+                              "For a AT24C64 it usually will be 0x50.",
+                flavour = "integer",
+                default = "0x50",
+                file = "include/cfg/eeprom.h",
+            },
+            {
+                macro = "AT24C_CHIP_SIZE",
+                brief = "Memory Size",
+                description = "Size of your EEPROM.\n"..
+                              "As manufacturers like to give sizes in bits, as it sound like more "..
+                              "this value is usually the chips name divided by 8\n"..
+                              "For a AT24C64 it will be 8192 bytes",
+                flavour = "integer",
+                default = "8192",
+                file = "include/cfg/eeprom.h",
+            },
             {
                 macro = "AT24C_ADR_SIZE",
                 brief = "Address Size",
@@ -3149,7 +3149,7 @@ nutdev =
                 default = "2",
                 file = "include/cfg/eeprom.h",
             },
-        	{
+            {
                 macro = "AT24C_ROW_SIZE",
                 brief = "Row Size",
                 description = "Row size of the EEPROM.\n"..
@@ -3160,7 +3160,7 @@ nutdev =
                 flavour = "integer",
                 default = "32",
                 file = "include/cfg/eeprom.h",
-        	},
+            },
             {
                 macro = "AT24C_BLOCK_ADDR",
                 brief = "Block Addressing Mode",
@@ -3169,8 +3169,8 @@ nutdev =
                               "Normally the Slave-Address is used to select the right slave on the bus. "..
                               "Some chips allow to appear on different addresses by pulling some of their pins high or low.\n"..
                               "Now, these EEPROMs needing this item checked, have their address pins internally not "..
-                    		  "connected but use the lower three address bits for the high byte of the internal address...\n"..
-			                  "For these chips, the address length must be 1 even they are larger than 256 bytes.",
+                              "connected but use the lower three address bits for the high byte of the internal address...\n"..
+                              "For these chips, the address length must be 1 even they are larger than 256 bytes.",
                 flavor = "booldata",
                 file = "include/cfg/eeprom.h",
             }
@@ -3180,8 +3180,8 @@ nutdev =
         name = "nutdev_sht21",
         brief = "SHT21 Driver",
         description = "Sensirion SHT21 temperature and humidity sensor driver.\n"..
-        			  "Should work with new SHT25 device too, but not tested.",
-		provides = { "DEV_SHT21" },
+                      "Should work with new SHT25 device too, but not tested.",
+        provides = { "DEV_SHT21" },
         requires = { "DEV_TWI" },
         sources = { "sht21.c" },
         options =
@@ -3193,41 +3193,41 @@ nutdev =
                 type = "enumerated",
                 flavor = "integer",
                 default = "0x40",
-               	file = "include/cfg/sht21.h"
+                   file = "include/cfg/sht21.h"
             },
             {
                 macro = "SHT_ACK_POLLING",
                 brief = "SHT21 ACK-Polling",
                 description = "The SHT2x supports operation modes: ACK polling or ACK-Stretching.\n"..
-                			  "ACK Polling: The driver will poll the SHT2x every about 10ms for a result.\n"..
-                			  "ACK Stretching: The SHT2x will held SCL low until measurement finished. "..
-                			  "This will block the complete bus for other devices too but requires less code.",
+                              "ACK Polling: The driver will poll the SHT2x every about 10ms for a result.\n"..
+                              "ACK Stretching: The SHT2x will held SCL low until measurement finished. "..
+                              "This will block the complete bus for other devices too but requires less code.",
                 flavor = "booldata",
-               	file = "include/cfg/sht21.h"
+                file = "include/cfg/sht21.h"
             },
             {
                 macro = "SHT21_PRECISION",
                 brief = "SHT21 precision",
                 description = "The SHT21 supports several different precisons for measurement:\n"..
-                			  "Possible values are:\n"..
-                			  "0x00: rH=12bit, T=14bit\n"..
-                			  "0x01: rH= 8bit, T=12bit\n"..
-                			  "0x80: rH=10bit, T=13bit\n"..
-                			  "0x81: rH=11bit, T=11bit\n",
+                              "Possible values are:\n"..
+                              "0x00: rH=12bit, T=14bit\n"..
+                              "0x01: rH= 8bit, T=12bit\n"..
+                              "0x80: rH=10bit, T=13bit\n"..
+                              "0x81: rH=11bit, T=11bit\n",
                 type = "enumerated",
                 flavor = "integer",
                 choices = { "0x00", "0x01", "0x80", "0x81" },
                 default = "0x00",
-               	file = "include/cfg/sht21.h"
+                file = "include/cfg/sht21.h"
             }
-            
+
         }
     },
     {
         name = "nutdev_mma745x",
         brief = "MMA745x Driver",
         description = "Freescale MMA745x velocity sensor driver.\n",
-		provides = { "DEV_MMA745X" },
+        provides = { "DEV_MMA745X" },
         requires = { "DEV_TWI" },
         sources = { "mma745x.c" },
         options =
@@ -3236,33 +3236,33 @@ nutdev =
                 macro = "MMA745X_MODE",
                 brief = "Operating Mode",
                 description = "The MMA745x supports measurement modes:\n"..
-                			  "The driver initializes to the given mode. The user can switch the mode at any time.\n"..
-                			  "Possible values are:\n"..
-                			  "0x00: Standby\n"..
-                			  "0x01: Measurement\n"..
-                			  "0x02: Level detection\n"..
-                			  "0x02: Pulse detection\n"..
-                			  "Note that for Measurement Mode INT1/DRDY can only serve as DRDY signal or interrupt.\n"..
-                			  "Level and pulse interrupts are not available.\n",
+                              "The driver initializes to the given mode. The user can switch the mode at any time.\n"..
+                              "Possible values are:\n"..
+                              "0x00: Standby\n"..
+                              "0x01: Measurement\n"..
+                              "0x02: Level detection\n"..
+                              "0x02: Pulse detection\n"..
+                              "Note that for Measurement Mode INT1/DRDY can only serve as DRDY signal or interrupt.\n"..
+                              "Level and pulse interrupts are not available.\n",
                 type = "enumerated",
                 flavor = "integer",
                 choices = { "0x00", "0x01", "0x02", "0x03" },
                 default = "0x00",
-               	file = "include/cfg/mma745x.h"
+                file = "include/cfg/mma745x.h"
             },
             {
                 macro = "MMA745X_RANGE",
                 brief = "Range",
                 description = "The MMA745x supports several different measurement ranges:\n"..
-                			  "Possible values are:\n"..
-                			  "0x00: +/- 8g\n"..
-                			  "0x08: +/- 4g\n"..
-                			  "0x04: +/- 2g\n",
+                              "Possible values are:\n"..
+                              "0x00: +/- 8g\n"..
+                              "0x08: +/- 4g\n"..
+                              "0x04: +/- 2g\n",
                 type = "enumerated",
                 flavor = "integer",
                 choices = { "0x00", "0x08", "0x04" },
                 default = "0x00",
-               	file = "include/cfg/mma745x.h"
+                file = "include/cfg/mma745x.h"
             },
             {
                 macro = "MMA745X_8BIT",
@@ -3270,7 +3270,7 @@ nutdev =
                 description = "The MMA745x supports 10bit and 8 bit data format. Select this to use 8 bit information.\n",
                 type = "enumerated",
                 flavor = "boolean",
-               	file = "include/cfg/mma745x.h"
+                file = "include/cfg/mma745x.h"
             },
             {
                 macro = "MMA745X_IRQ1_PORT",
@@ -3279,7 +3279,7 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
-               	file = "include/cfg/mma745x.h"
+                file = "include/cfg/mma745x.h"
             },
             {
                 macro = "MMA745X_IRQ1_PIN",
@@ -3288,7 +3288,7 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-               	file = "include/cfg/mma745x.h"
+                file = "include/cfg/mma745x.h"
             },
             {
                 macro = "MMA745X_IRQ2_PORT",
@@ -3297,7 +3297,7 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
-               	file = "include/cfg/mma745x.h"
+                file = "include/cfg/mma745x.h"
             },
             {
                 macro = "MMA745X_IRQ2_PIN",
@@ -3306,7 +3306,7 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-               	file = "include/cfg/mma745x.h"
+                file = "include/cfg/mma745x.h"
             },
         }
     },
@@ -3315,7 +3315,7 @@ nutdev =
         brief = "PCA9555 Driver",
         description = "Philips PCA9555 I/O expander. Uses TwMasterRegRead(), which is "..
                       "currently available on AT91 hardware TWI only.",
-		provides = { "DEV_IOEXP" },
+        provides = { "DEV_IOEXP" },
         requires = { "HW_TWI_AT91", "HW_MCU_AT91" },
         sources = { "pca9555.c" },
         options =
@@ -3327,7 +3327,7 @@ nutdev =
                 type = "enumerated",
                 flavor = "integer",
                 default = "0x23",
-               	file = "include/cfg/pca9555.h"
+                file = "include/cfg/pca9555.h"
             },
             {
                 macro = "IOEXP_IRQ_PORT",
@@ -3336,7 +3336,7 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
-               	file = "include/cfg/pca9555.h"
+                file = "include/cfg/pca9555.h"
             },
             {
                 macro = "IOEXP_IRQ_PIN",
@@ -3345,29 +3345,29 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-               	file = "include/cfg/pca9555.h"
+                file = "include/cfg/pca9555.h"
             },
         },
     },
-	{
-		name = "led",
-		brief = "LED Driver",
-		description = "Provides controlling of LEDs connected to GPIO.\n"..
-		              "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
-		              "can be used to address LEDs connected to this chip instead of CPU's GPIOs",
-		provides = { "DEV_LED" },
-		sources = { "led.c" },
-		options =
+    {
+        name = "led",
+        brief = "LED Driver",
+        description = "Provides controlling of LEDs connected to GPIO.\n"..
+                      "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
+                      "can be used to address LEDs connected to this chip instead of CPU's GPIOs",
+        provides = { "DEV_LED" },
+        sources = { "led.c" },
+        options =
         {
             {
                 macro = "LED_SUPPORT_IOEXP",
                 brief = "LEDs on external GPIOs",
                 description = "Enable control of LEDs connected to an external GPIO expanders "..
- 				               	"like PCA9555.",
+                                    "like PCA9555.",
                 type = "enumerated",
                 flavor = "boolean",
                 requires = { "DEV_IOEXP" },
-               	file = "include/cfg/pca9555.h",
+                file = "include/cfg/pca9555.h",
             },
             {
                 macro = "LED_ON_HIGH",
@@ -3375,31 +3375,31 @@ nutdev =
                 description = "Enable this option if the LEDs are on on a logic 1 level of the port pin.",
                 flavor = "boolean",
                 requires = { "DEV_LED" },
-               	file = "include/cfg/led.h",
+                file = "include/cfg/led.h",
             },
-		},
+        },
     },
-	{
-		name = "keys",
-		brief = "Key Driver",
-		description = "Provides controlling of keys / pushbuttons and switches connected to GPIO.\n"..
-		              "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
-		              "can be used to address keys connected to this chip instead of CPU's GPIOs",
-		provides = { "DEV_KEY" },
-		sources = { "keys.c" },
-		options =
+    {
+        name = "keys",
+        brief = "Key Driver",
+        description = "Provides controlling of keys / pushbuttons and switches connected to GPIO.\n"..
+                      "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
+                      "can be used to address keys connected to this chip instead of CPU's GPIOs",
+        provides = { "DEV_KEY" },
+        sources = { "keys.c" },
+        options =
         {
             {
                 macro = "KEY_SUPPORT_IOEXP",
                 brief = "Keys on external GPIOs",
                 description = "Enable control of Keys connected to an external GPIO expanders "..
- 				               	"like PCA9555.",
+                                    "like PCA9555.",
                 type = "enumerated",
                 flavor = "boolean",
                 requires = { "DEV_IOEXP" },
-               	file = "include/cfg/pca9555.h",
+                file = "include/cfg/pca9555.h",
             },
-		},
+        },
     },
     {
         name = "nutdev_vs10xx",
@@ -4765,7 +4765,7 @@ nutdev =
         sources = { "spiflash.c" },
         requires = { "NOT_AVAILABLE" }
     },
-	{
+    {
         name = "nutdev_3_7SEG",
         brief = "3x7 segment driver",
         description = "3x7 segment driver with SPI",
@@ -4779,23 +4779,23 @@ nutdev =
                               "If the exact value can't be set, the driver will choose the "..
                               "next lower one. Bit banging interfaces always run at maximum speed.",
                 default = "4000000",
-               	file = "include/cfg/spi_7seg.h"
+                file = "include/cfg/spi_7seg.h"
             },
-	        {
-	            macro = "SEG7_DIGITS",
-	            brief = "Number of Digits",
-	            description = "Select Number of Digits connected to the AS110x chain.",
-	            type = "integer",
-	            default = "4",
-	           	file = "include/cfg/spi_7seg.h"
-	        },
-	        {
-	            macro = "SEG7_REVERSE",
-	            brief = "Reverse Digits",
-	            description = "Select if Digits are connected reverse ( for upside down mounting).",
-            	flavor = "boolean",
-	           	file = "include/cfg/spi_7seg.h"
-	        },
+            {
+                macro = "SEG7_DIGITS",
+                brief = "Number of Digits",
+                description = "Select Number of Digits connected to the AS110x chain.",
+                type = "integer",
+                default = "4",
+                   file = "include/cfg/spi_7seg.h"
+            },
+            {
+                macro = "SEG7_REVERSE",
+                brief = "Reverse Digits",
+                description = "Select if Digits are connected reverse ( for upside down mounting).",
+                flavor = "boolean",
+                   file = "include/cfg/spi_7seg.h"
+            },
         },
     },
 }
