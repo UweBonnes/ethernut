@@ -48,11 +48,11 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/timer.h>
-#include <sys/heap.h>
 #include <dev/uart.h>
 #include <dev/gpio.h>
 #include <dev/owibus.h>
 #include <dev/owibus_uartif.h>
+#include <stdlib.h>
 
 /*!
  * \brief Reset the One-Wire bus and check if device(s) present.
@@ -170,14 +170,14 @@ int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uin
 {
     int res;
     int uart_fd;
-    uint32_t timeout = 2, stopbits = 2;
-
+    uint32_t timeout = 2;
+    uint32_t stopbits = 2;
     NUTOWIINFO_UART *owcb;
-    owcb = NutHeapAlloc(sizeof(NUTOWIINFO_UART));
+
+    owcb = calloc(1, sizeof(*owcb));
     if (owcb == NULL) {
         return OWI_OUT_OF_MEM;
     }
-    memset(owcb, 0, sizeof(NUTOWIINFO_UART));
 
     res = NutRegisterDevice(uart, 0, 0);
     if (res) {

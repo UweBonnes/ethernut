@@ -44,9 +44,9 @@
 #include <cfg/arch.h>
 #include <string.h>
 #include <stdint.h>
-#include <sys/heap.h>
 #include <sys/timer.h>
 #include <dev/gpio.h>
+#include <stdlib.h>
 
 #include <dev/owibus.h>
 #include <dev/owibus_bbif.h>
@@ -187,11 +187,10 @@ int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, i
     int res;
     NUTOWIINFO_BB *owcb;
 
-    owcb = NutHeapAlloc(sizeof(NUTOWIINFO_BB));
+    owcb = calloc(1, sizeof(*owcb));
     if (owcb == NULL) {
         return OWI_OUT_OF_MEM;
     }
-    memset(owcb, 0, sizeof(NUTOWIINFO_BB));
 
     if (GpioPinConfigSet(txrx_port, txrx_pin, GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT | GPIO_CFG_MULTIDRIVE)) {
         res = OWI_INVALID_HW;
@@ -218,6 +217,6 @@ int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, i
     return OWI_SUCCESS;
 
   free_all:
-    NutHeapFree(owcb);
+    free(owcb);
     return res;
 }
