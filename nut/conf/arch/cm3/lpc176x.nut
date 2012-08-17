@@ -278,8 +278,8 @@ nutarch_cm3_lpc176x =
                       "functions for the generic driver framework.",
         requires = { "HW_UART2_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART",
-        			 "DEV_UART_LPC17xx",
-        			 "DEV_UART_SPECIFIC"
+                     "DEV_UART_LPC17xx",
+                     "DEV_UART_SPECIFIC"
                    },
 --        sources =  { "cm3/dev/nxp/lpc176x_usart2.c",
 --                     "cm3/dev/nxp/ih_lpc17xx_usart2.c"
