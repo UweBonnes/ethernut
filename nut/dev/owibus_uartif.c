@@ -174,13 +174,7 @@ int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uin
     uint32_t stopbits = 2;
     NUTOWIINFO_UART *owcb;
 
-    owcb = calloc(1, sizeof(*owcb));
-    if (owcb == NULL) {
-        return OWI_OUT_OF_MEM;
-    }
-
-    res = NutRegisterDevice(uart, 0, 0);
-    if (res) {
+    if (NutRegisterDevice(uart, 0, 0)) {
         return OWI_INVALID_HW;
     }
     uart_fd = _open(uart->dev_name, _O_RDWR | _O_BINARY);
@@ -189,6 +183,11 @@ int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uin
     }
     _ioctl(uart_fd, UART_SETREADTIMEOUT, &timeout);
     _ioctl(uart_fd, UART_SETSTOPBITS, &stopbits);
+
+    owcb = calloc(1, sizeof(*owcb));
+    if (owcb == NULL) {
+        return OWI_OUT_OF_MEM;
+    }
     owcb->uart_fd = uart_fd;
     bus->owibus_info = (uintptr_t) owcb;
     bus->OwiTouchReset = Uart_OwiTouchReset;
@@ -197,5 +196,4 @@ int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uin
     bus->mode = 0;
 
     return OWI_SUCCESS;
-
 }
