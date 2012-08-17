@@ -35,39 +35,38 @@
  */
 
 /*!
+ * \file dev/owibus_uartif.c
+ * \brief Header for the One-Wire API over UART Implementation.
+ *
  * \verbatim
  * $Id$
  * \endverbatim
  */
 
-/*!
- * \file dev/owibus_uartif.c
- * \brief Header for the One-Wire API over UART Implementation
- */
-
 #include <sys/device.h>
 
 /*!
- * \brief Data to send on the UART for the OWI primitives
+ * \brief Data to send on the UART for the OWI primitives.
  */
-#define OWI_UART_WRITE_RST  0xf0    /*!< \brief UART data for presence impuls */
-#define OWI_UART_WRITE_ONE  0xff    /*!< \brief UART data for write '1' and read */
-#define OWI_UART_WRITE_ZERO 0x00    /*!< \brief UART data for write '0' */
+#define OWI_UART_WRITE_RST  0xf0    /*!< \brief UART data for presence impulse. */
+#define OWI_UART_WRITE_ONE  0xff    /*!< \brief UART data for write '1' and read. */
+#define OWI_UART_WRITE_ZERO 0x00    /*!< \brief UART data for write '0'. */
 
 /*!
- * \brief Data to expect from the UART for the OWI primitives
+ * \brief Data to expect from the UART for the OWI primitives.
  */
-#define OWI_UART_READ_ONE   0x01    /*!< \brief UART data received for read '1' */
+#define OWI_UART_READ_ONE   0x01    /*!< \brief UART data received for read '1'. */
 
 /*!
- * \brief Baud rates to use for OWI primitives
+ * \brief Baud rates to use for OWI primitives.
  */
-#define OWI_UART_BAUD_RESET 9600    /*!< \brief UART baudrate for presence impuls */
-#define OWI_UART_BAUD_RWBIT 115200  /*!< \brief UART baudrate for RW bit */
+#define OWI_UART_BAUD_RESET 9600    /*!< \brief UART baudrate for presence impulse. */
+#define OWI_UART_BAUD_RWBIT 115200  /*!< \brief UART baudrate for RW bit. */
 
 /*!
- * \brief OWI runtime controlblock container
- * This is installed in heap at initializaton
+ * \brief OWI runtime control block container.
+ *
+ * This is installed in heap at initialization.
  */
 struct _NUTOWIINFO_UART {
     int uart_fd;

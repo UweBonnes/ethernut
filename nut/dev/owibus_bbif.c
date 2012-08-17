@@ -33,14 +33,12 @@
  */
 
 /*!
+ * \file dev/owibus_timerif.c
+ * \brief Implementation of One-Wire primitives with Bitbanging.
+ *
  * \verbatim
  * $Id$
  * \endverbatim
- */
-
-/*!
- * \file dev/owibus_timerif.c
- * \brief Implementation of One-Wire primitives with Bitbanging
  */
 
 #include <cfg/arch.h>
@@ -56,10 +54,11 @@
 /*!
  * \brief Perform One-Wire transaction.
  *
- * \param command: Either OWI_CMD_RESET or OWI_CMD_RWBIT.
- * \param value: The value to send.
+ * \param bus     Specifies the One-Wire bus.
+ * \param command Either OWI_CMD_RESET or OWI_CMD_RWBIT.
+ * \param value   The value to send.
  *
- * \return the value read on success, -ERROR otherwise.
+ * \return The value read on success, a negative value otherwise.
  */
 static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
 {
@@ -75,8 +74,8 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
         (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RELEASE] -
          owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RW]) >> 2;
 
-    /* Be nice! Allow other thing to happen now before we block cooperative multitasking
-     * for up to 480 us
+    /* Be nice! Allow other thing to happen now before we block
+     * cooperative multitasking for up to 480 us
      */
     NutSleep(0);
     GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
@@ -88,8 +87,9 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
     NutMicroDelay(delay2);
     res = GpioPinGet(owcb->txrx_port, owcb->txrx_pin);
     if (value)
-        /* If the TXRX line is allready pull up, we only need to wait, but no time sensitive
-         * action must be performed. We block for up to 410 us now. So be nice again !
+        /* If the TXRX line is allready pull up, we only need to wait,
+         * but no time sensitive action must be performed. We block for
+         * up to 410 us now. So be nice again!
          */
         NutSleep(0);
     NutMicroDelay(delay3);
@@ -100,7 +100,9 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
 /*!
  * \brief Reset the One-Wire bus and check if device(s) present.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \param bus Specifies the One-Wire bus.
+ *
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 static int BB_OwiTouchReset(NUTOWIBUS *bus)
 {
@@ -110,9 +112,11 @@ static int BB_OwiTouchReset(NUTOWIBUS *bus)
 /*!
  * \brief Exchange one bit on the One-Wire bus.
  *
+ * \param bus Specifies the One-Wire bus.
  * \param bit Value for the bit to send.
  *
- * \return the Bus State at the read slot on success, -ERROR otherwise.
+ * \return The bus state at the read slot on success, a negative value
+ *         otherwise.
  */
 static int OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 {
@@ -120,12 +124,13 @@ static int OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 }
 
 /*!
- * \brief Write a block of Databits to the One-Wire bus.
+ * \brief Write a block of data bits to the One-Wire bus.
  *
+ * \param bus  Specifies the One-Wire bus.
  * \param data Data bits to send.
- * \param len  Number of Bits to send.
+ * \param len  Number of bits to send.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 static int BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
@@ -141,12 +146,13 @@ static int BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 }
 
 /*!
- * \brief Read a block of Databits from the One-Wire bus.
+ * \brief Read a block of data bits from the One-Wire bus.
  *
+ * \param bus  Specifies the One-Wire bus.
  * \param data Data bits received.
- * \param len  Number of Bits to read.
+ * \param len  Number of bits to read.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 static int BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
@@ -166,13 +172,15 @@ static int BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 /*!
  * \brief Register the One-Wire bus.
  *
- * \param txrx_port The port to use for the One_Wire bus.
- * \param txrx_pin  The pin to use for the One_Wire bus.
- * \param pullup_port If given, port to control strong pullup for parasitic powered deviced.
- * \param pullup_pin  The pin to control strong pullup for parasitic powered deviced.
+ * \param bus         The returned NUTOWIBUS.
+ * \param txrx_port   The port to use for the One_Wire bus.
+ * \param txrx_pin    The pin to use for the One_Wire bus.
+ * \param pullup_port If given, port to control strong pull-up for
+ *                    parasitic powered devices.
+ * \param pullup_pin  The pin to control strong pull-up for parasitic
+ *                    powered devices.
  *
- * \param bus  The returned NUTOWIBUS.
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, int pullup_port, uint_fast8_t pullup_pin)
 {

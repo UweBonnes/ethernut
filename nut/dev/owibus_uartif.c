@@ -33,14 +33,12 @@
  */
 
 /*!
+ * \file dev/owibus_uartif.c
+ * \brief Implementation of the One-Wire via Uart.
+ *
  * \verbatim
  * $Id$
  * \endverbatim
- */
-
-/*!
- * \file dev/owibus_uartif.c
- * \brief Implementation of the One-Wire via Uart
  */
 
 #include <cfg/arch.h>
@@ -59,7 +57,9 @@
 /*!
  * \brief Reset the One-Wire bus and check if device(s) present.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \param bus Specifies the One-Wire bus.
+ *
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 static int Uart_OwiTouchReset(NUTOWIBUS *bus)
 {
@@ -84,9 +84,11 @@ static int Uart_OwiTouchReset(NUTOWIBUS *bus)
 /*!
  * \brief Exchange one bit on the One-Wire bus.
  *
- * \parambit Value for the bit to send.
+ * \param bus Specifies the One-Wire bus.
+ * \param bit Value for the bit to send.
  *
- * \return the Bus State at the read slot on success, -ERROR otherwise.
+ * \return The bus state at the read slot on success, a negative value
+ *         otherwise.
  */
 static int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 {
@@ -105,12 +107,13 @@ static int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 }
 
 /*!
- * \brief Write a block of Databits to the One-Wire bus.
+ * \brief Write a block of data bits to the One-Wire bus.
  *
+ * \param bus  Specifies the One-Wire bus.
  * \param data Data bits to send.
- * \param len  Number of Bits to send.
+ * \param len  Number of bits to send.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 static int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
@@ -127,12 +130,13 @@ static int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 }
 
 /*!
- * \brief Read a block of Databits from the One-Wire bus.
+ * \brief Read a block of data bits from the One-Wire bus.
  *
+ * \param bus  Specifies the One-Wire bus.
  * \param data Data bits received.
- * \param len  Number of Bits to read.
+ * \param len  Number of bits to read.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 static int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
@@ -153,12 +157,14 @@ static int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 /*!
  * \brief Register the One-Wire bus.
  *
- * \param uart The UART device to use.
- * \param pullup_port If given, port to control strong pullup for parasitic powered deviced.
- * \param pullup_pin  The pin to control strong pullup for parasitic powered deviced.
+ * \param bus         The returned NUTOWIBUS.
+ * \param uart        The UART device to use.
+ * \param pullup_port If given, port to control strong pull-up for
+ *                    parasitic powered devices.
+ * \param pullup_pin  The pin to control strong pull-up for parasitic
+ *                    powered devices.
  *
- * \param bus  The returned NUTOWIBUS.
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uint_fast8_t pullup_pin)
 {

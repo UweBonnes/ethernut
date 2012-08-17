@@ -33,14 +33,12 @@
  */
 
 /*!
+ * \file dev/owibus.c
+ * \brief Implementation of the One-Wire API.
+ *
  * \verbatim
  * $Id$
  * \endverbatim
- */
-
-/*!
- * \file dev/owibus.c
- * \brief Implementation of the One-Wire API
  */
 
 #include <stdint.h>
@@ -79,13 +77,16 @@ const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE
 };
 
 /*!
- * \brief Search the connected One-Wire bus for deviced.
+ * \brief Search the connected One-Wire bus for devices.
  *
- * \param diff: On entry, pointer to either OWI_SEARCH_FIRST or the device found in the last call.
- *              On exit, pointer to either OWI_LAST_DEVICE or the diff to use in the next call.
- * \param value: Pointer to the Hardware ID found.
+ * \param bus   Specifies the One-Wire bus.
+ * \param diff  On entry, pointer to either OWI_SEARCH_FIRST or the
+ *              device found in the last call. On exit, pointer to
+ *              either OWI_LAST_DEVICE or the diff to use in the next
+ *              call.
+ * \param value Pointer to the Hardware ID found.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
 {
@@ -112,7 +113,7 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
             res |= bus->OwiReadBlock(bus, &c, 1);
             if (c) {                /* read bit */
                 if (b) {            /* read complement bit */
-                    return OWI_DATA_ERROR;      /* error: no reaction on bus */
+                    return OWI_DATA_ERROR;  /* error: no reaction on bus */
                 }
             } else {
                 if (!b) {           /* Two devices with different bits here */
@@ -138,10 +139,11 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
 /*!
  * \brief Send a command to the connected devices.
  *
- * \param cmd: Command to send.
- * \param hid: Device to select or NULL for broadcast.
+ * \param bus Specifies the One-Wire bus.
+ * \param cmd Command to send.
+ * \param hid Device to select or NULL for broadcast.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
 {
@@ -169,10 +171,11 @@ int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
 /*!
  * \brief Read a block of data
  *
- * \param data: Data read.
- * \param len: Numbers of bit to read.
+ * \param bus  Specifies the One-Wire bus.
+ * \param data Data read.
+ * \param len  Number of bits to read.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
@@ -182,10 +185,11 @@ int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 /*!
  * \brief Write a block of data
  *
- * \param data: Data to write.
- * \param len: Numbers of bit to write.
+ * \param bus  Specifies the One-Wire bus.
+ * \param data Data to write.
+ * \param len  Number of bits to write.
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
@@ -195,9 +199,10 @@ int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 /*!
  * \brief Set/Reset One-Wire Mode(s)
  *
- * \param mode: Bitmask of mode to set, at present only OWI_OVERDRIVE
+ * \param bus  Specifies the One-Wire bus.
+ * \param mode Bitmask of mode to set, at present only OWI_OVERDRIVE
  *
- * \return OWI_SUCCESS on success, -ERROR otherwise.
+ * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode)
 {
@@ -227,6 +232,8 @@ int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode)
 
 /*!
  * \brief Set/Reset One-Wire Mode(s)
+ *
+ * \param bus Specifies the One-Wire bus.
  *
  * \return Mask of set modes
  */

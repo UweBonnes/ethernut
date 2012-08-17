@@ -36,18 +36,16 @@
  */
 
 /*!
+ * \file dev/owibus_uartif.c
+ * \brief Header for the One-Wire API bitbang Implementation
+ *
  * \verbatim
  * $Id$
  * \endverbatim
  */
 
 /*!
- * \file dev/owibus_uartif.c
- * \brief Header for the One-Wire API bitbang Implementation
- */
-
-/*!
- * \brief Array of delay values for the different command phases
+ * \brief Array of delay values for the different command phases.
  */
 #include <stdint.h>
 #include <sys/types.h>
@@ -55,8 +53,9 @@
 extern const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE];
 
 /*!
- * \brief OWI runtime controlblock container
- * This is installed in heap at initializaton
+ * \brief OWI runtime controlblock container.
+ *
+ * This is installed in heap at initialization.
  */
 struct _NUTOWIINFO_BB {
     int txrx_port;
