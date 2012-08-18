@@ -124,6 +124,8 @@
 #include <arch/avr/board/mmnet.h>
 #elif defined(SAM7ETH)
 #include <arch/arm/board/sam7eth.h>
+#elif defined(OLIMEX_LPCE2294)
+#include <arch/arm/board/olimex_lpce2294.h>
 #elif defined(XNUT_100) || defined(XNUT_105)
 #include <arch/avr/board/xnut.h>
 #elif defined(ZERO_EK)
@@ -156,7 +158,7 @@
 #include <dev/debug.h>
 
 #ifndef DEV_DEBUG
-#if defined(OLIMEX_LPCE2294) || defined(HHOPEN_63F) || defined(EVK1104)
+#if defined(HHOPEN_63F) || defined(EVK1104)
 #define DEV_DEBUG       devDebug1
 #elif defined(STM3210E_EVAL)
 #define DEV_DEBUG       devUsartStm32_1
@@ -172,7 +174,7 @@
 #ifndef DEV_DEBUG_NAME
 #if defined(GBAXPORT2)
 #define DEV_DEBUG_NAME  "con"
-#elif defined(OLIMEX_LPCE2294) || defined(HHOPEN_63F) || defined(EVK1104)
+#elif defined(HHOPEN_63F) || defined(EVK1104)
 #define DEV_DEBUG_NAME  "uart1"
 #elif defined(STM3210E_EVAL) || defined(STM32_COMSTICK)
 #define DEV_DEBUG_NAME  devUsartStm32_1.dev_name
@@ -373,8 +375,6 @@
  */
 #if defined(CHARON2)
 #include <dev/nicrtl.h>
-#elif defined(OLIMEX_LPCE2294)
-#include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(MORPHOQ1) || defined(ENET_SAM7X)
 #include <dev/at91_emac.h>
 #elif defined(EVK1100) || defined(EVK1105)

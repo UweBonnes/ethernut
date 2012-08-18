@@ -40,8 +40,6 @@
 #include <cfg/os.h>
 #ifdef MCU_GBA
 #include <dev/irqreg.h>
-#elif defined(MCU_LPC2XXX)
-#include <arch/arm/lpc2xxx.h>
 #else
 #include <arch/arm/at91.h>
 #endif
@@ -106,24 +104,6 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 extern void main(void *);
 #endif
 
-
-#if defined(OLIMEX_LPCE2294)
-/*
- * InitHW for OLIMEX LPC-E2294
- */
-static void InitHW (void)
-{
-  PINSEL0  = 0;
-  PINSEL1  = 0;
-
-  BCFG2    = 0x03501;
-  PINSEL2 |= 0x00804000;
-} /* InitHW */
-
-#endif /* OLIMEX_LPCE2294 */
-
-
-
 /*!
  * \brief Idle thread.
  *
@@ -133,7 +113,7 @@ static void InitHW (void)
  */
 THREAD(NutIdle, arg)
 {
-#if defined(MCU_GBA) || defined(MCU_LPC2XXX)
+#if defined(MCU_GBA)
     InitIrqHandler();
 #endif
 #ifdef NUT_INIT_IDLE
@@ -180,9 +160,7 @@ void NutInit(void)
 {
     /* Do some basic hardware initialization first. Frankly, these
     ** are all hacks and could be done in a more general way. */
-#if defined(OLIMEX_LPCE2294)
-    InitHW();
-#elif defined(MCU_AT91)
+#if defined(MCU_AT91)
     McuInit();
 #endif
 #if defined(MCU_AT91SAM7X) || defined (MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
