@@ -409,7 +409,7 @@ nutos =
     {
         name = "nutos_timer",
         brief = "Timer management",
-        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "NUT_EVENT", "NUT_OSTIMER_DEV" },
+        requires = { "NUT_EVENT", "NUT_OSTIMER_DEV" },
         provides = { "NUT_TIMER" },
         sources = { "timer.c" },
         options =

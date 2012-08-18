@@ -220,8 +220,8 @@
 #include <sys/nutdebug.h>
 
 #ifdef __CORTEX__
-#include <arch/cm3/cortex_interrupt.h>
-#include <arch/cm3/cortex_systick.h>
+#include <arch/cm3/interrupt.h>
+#include <arch/cm3/systick.h>
 #endif
 
 #ifdef NUTDEBUG
@@ -321,12 +321,12 @@ void NutTimerInit(void)
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
 
-#ifdef __CORTEX__    
+#ifdef __CORTEX__
     /* Enable "Data Watchpoint and Trace" Unit which is used for NutMicroDelay() */
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Pos;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 #endif
-    
+
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
 #if !defined(NUT_DELAYLOOPS)
@@ -403,9 +403,9 @@ void NutMicroDelay(uint32_t us)
      */
     register uint32_t start = DWT->CYCCNT;
 
-    /* Make comparision a "less or equal" as cycles might be 0xFFFFFFFF in very 
-       rare cases, which would cause an endless loop with a "smaller than" 
-       comparision 
+    /* Make comparision a "less or equal" as cycles might be 0xFFFFFFFF in very
+       rare cases, which would cause an endless loop with a "smaller than"
+       comparision
      */
     while (DWT->CYCCNT - start <= cycles) {
         _NOP();
