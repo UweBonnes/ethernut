@@ -32,10 +32,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.00  2010/08/10 15:37:39  ulrichprinz
- * Initial version.
- *
+ * $Id$
  */
 
 #include <compiler.h>

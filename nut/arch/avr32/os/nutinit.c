@@ -34,9 +34,7 @@
 
 
 /*
- * $Log: nutinit.c,v $
- *
- *
+ * $Id$
  */
 
 #include <cfg/clock.h>
