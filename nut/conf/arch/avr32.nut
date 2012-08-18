@@ -39,7 +39,7 @@
 
 nutarch_avr32 =
 {
-  
+
     --
     -- Runtime Initialization
     --
@@ -50,7 +50,7 @@ nutarch_avr32 =
         targets = { "avr32/init/crtavr32.o" },
         requires = { "TOOL_CC_AVR32", "TOOL_GCC" },
     },
-    
+
     --
     -- Power Manager
     --
@@ -80,7 +80,7 @@ nutarch_avr32 =
                               "These bitfields determine the ratio of the PLL output frequency "..
                               "(voltage controlled oscillator frequency fVCO) to the source "..
                               "oscillator frequency:\n\n"..
-                              "fVCO = (PLLMUL+1)/(PLLDIV) x fOSC if PLLDIV > 0.\n".. 
+                              "fVCO = (PLLMUL+1)/(PLLDIV) x fOSC if PLLDIV > 0.\n"..
                               "fVCO = 2*(PLLMUL+1) x fOSC if PLLDIV = 0\n"..
                               "Note that the MUL field cannot be equal to 0 or 1, or the behavior of the PLL will be undefined.\n"..
                               "Possible values of PLLMUL are 2...15\n",
@@ -96,7 +96,7 @@ nutarch_avr32 =
                               "These bitfields determine the ratio of the PLL output frequency "..
                               "(voltage controlled oscillator frequency fVCO) to the source "..
                               "oscillator frequency:\n\n"..
-                              "fVCO = (PLLMUL+1)/(PLLDIV) x fOSC if PLLDIV > 0.\n".. 
+                              "fVCO = (PLLMUL+1)/(PLLDIV) x fOSC if PLLDIV > 0.\n"..
                               "fVCO = 2*(PLLMUL+1) x fOSC if PLLDIV = 0\n"..
                               "Note that the MUL field cannot be equal to 0 or 1, or the behavior of the PLL will be undefined.\n"..
                               "Possible values of PLLDIV are 0...15\n",
@@ -249,7 +249,7 @@ nutarch_avr32 =
             },
         },
     },
-    
+
     --
     -- SDRAM Controler
     --
@@ -373,9 +373,9 @@ nutarch_avr32 =
     {
         name = "nutarch_avr32_bs",
         brief = "Board Support",
-        sources = 
-            function() 
-                return { "avr32/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" }; 
+        sources =
+            function()
+                return { "avr32/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
             end,
         requires = { "HW_BOARD_SUPPORT" },
     },
@@ -390,7 +390,7 @@ nutarch_avr32 =
         requires = { "HW_MCU_AVR32", "TOOL_GCC" },
         sources = { "avr32/os/context.c" },
     },
-    
+
     --
     -- System Timer Hardware
     --
@@ -446,110 +446,110 @@ nutarch_avr32 =
         },
         options =
         {
-			{
-				macro = "INTERRUPT0_ALT_PIN",
-				brief = "External Interrupt 0 Pin",
+            {
+                macro = "INTERRUPT0_ALT_PIN",
+                brief = "External Interrupt 0 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT0_ALT_PINSET",
-				brief = "External Interrupt 0 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT0_ALT_PINSET",
+                brief = "External Interrupt 0 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT1_ALT_PIN",
-				brief = "External Interrupt 1 Pin",
+            },
+            {
+                macro = "INTERRUPT1_ALT_PIN",
+                brief = "External Interrupt 1 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT1_ALT_PINSET",
-				brief = "External Interrupt 1 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT1_ALT_PINSET",
+                brief = "External Interrupt 1 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT2_ALT_PIN",
-				brief = "External Interrupt 2 Pin",
+            },
+            {
+                macro = "INTERRUPT2_ALT_PIN",
+                brief = "External Interrupt 2 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT2_ALT_PINSET",
-				brief = "External Interrupt 2 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT2_ALT_PINSET",
+                brief = "External Interrupt 2 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT3_ALT_PIN",
-				brief = "External Interrupt 3 Pin",
+            },
+            {
+                macro = "INTERRUPT3_ALT_PIN",
+                brief = "External Interrupt 3 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT3_ALT_PINSET",
-				brief = "External Interrupt 3 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT3_ALT_PINSET",
+                brief = "External Interrupt 3 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT4_ALT_PIN",
-				brief = "External Interrupt 4 Pin",
+            },
+            {
+                macro = "INTERRUPT4_ALT_PIN",
+                brief = "External Interrupt 4 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT4_ALT_PINSET",
-				brief = "External Interrupt 4 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT4_ALT_PINSET",
+                brief = "External Interrupt 4 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT5_ALT_PIN",
-				brief = "External Interrupt 5 Pin",
+            },
+            {
+                macro = "INTERRUPT5_ALT_PIN",
+                brief = "External Interrupt 5 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT5_ALT_PINSET",
-				brief = "External Interrupt 5 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT5_ALT_PINSET",
+                brief = "External Interrupt 5 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT6_ALT_PIN",
-				brief = "External Interrupt 6 Pin",
+            },
+            {
+                macro = "INTERRUPT6_ALT_PIN",
+                brief = "External Interrupt 6 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT6_ALT_PINSET",
-				brief = "External Interrupt 6 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT6_ALT_PINSET",
+                brief = "External Interrupt 6 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT7_ALT_PIN",
-				brief = "External Interrupt 7 Pin",
+            },
+            {
+                macro = "INTERRUPT7_ALT_PIN",
+                brief = "External Interrupt 7 Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT7_ALT_PINSET",
-				brief = "External Interrupt 7 Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT7_ALT_PINSET",
+                brief = "External Interrupt 7 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
+            },
             {
                 macro = "INTERRUPT_NMI_ENABLE",
                 brief = "Enable NMI",
@@ -557,20 +557,20 @@ nutarch_avr32 =
                 flavor = "boolean",
                 file = "include/cfg/arch/avr32pio.h"
             },
-			{
-				macro = "INTERRUPT_NMI_ALT_PIN",
-				brief = "External Interrupt NMI Pin",
+            {
+                macro = "INTERRUPT_NMI_ALT_PIN",
+                brief = "External Interrupt NMI Pin",
                 type = "integer",
                 file = "include/cfg/arch/avr32pio.h"
-			},
-			{
-				macro = "INTERRUPT_NMI_ALT_PINSET",
-				brief = "External Interrupt NMI Alternative Pinset",
+            },
+            {
+                macro = "INTERRUPT_NMI_ALT_PINSET",
+                brief = "External Interrupt NMI Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
-			},
-		},
+            },
+        },
     },
 
     --
@@ -589,9 +589,9 @@ nutarch_avr32 =
                       "available",
         requires = { "HW_UART_AVR32" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        sources = 
-		{ 
-			"avr32/dev/debug.c",
+        sources =
+        {
+            "avr32/dev/debug.c",
         },
     },
     {
@@ -601,21 +601,21 @@ nutarch_avr32 =
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
-        sources = 
-		{ 
-			"avr32/dev/usart0.c",
-			"avr32/dev/ih_uart0.c"
-		},
+        sources =
+        {
+            "avr32/dev/usart0.c",
+            "avr32/dev/ih_uart0.c"
+        },
         options =
         {
-			{
-				macro = "UART0_ALT_PINSET",
-				brief = "USART0 Alternative Pinset",
+            {
+                macro = "UART0_ALT_PINSET",
+                brief = "USART0 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/uart.h"
-				
-			},
+
+            },
             {
                 macro = "UART0_RXTX_ONLY",
                 brief = "Receive/Transmit Only",
@@ -647,13 +647,13 @@ nutarch_avr32 =
             {
                 macro = "AVR32_UART0_RS485",
                 brief = "USE HW RS485 on UART0",
-				description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
+                description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
                       "The UART0 RTS pin is used for RS485 direction switching.",
                 provides = { "AVR32_UART0_RS485" },
                 flavor = "booldata",
             },
 
-		},
+        },
     },
     {
         name = "nutarch_avr32_usart1",
@@ -662,21 +662,21 @@ nutarch_avr32 =
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
-        sources = 
-		{ 
-			"avr32/dev/usart1.c",
-			"avr32/dev/ih_uart1.c",
-		},
+        sources =
+        {
+            "avr32/dev/usart1.c",
+            "avr32/dev/ih_uart1.c",
+        },
         options =
         {
-			{
-				macro = "UART1_ALT_PINSET",
-				brief = "USART1 Alternative Pinset",
+            {
+                macro = "UART1_ALT_PINSET",
+                brief = "USART1 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/uart.h"
-				
-			},
+
+            },
             {
                 macro = "UART1_RXTX_ONLY",
                 brief = "Receive/Transmit Only",
@@ -708,13 +708,13 @@ nutarch_avr32 =
             {
                 macro = "AVR32_UART1_RS485",
                 brief = "USE HW RS485 on UART1",
-				description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
+                description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
                       "The UART1 RTS pin is used for RS485 direction switching.",
                 provides = { "AVR32_UART1_RS485" },
                 flavor = "booldata",
             },
 
-		},
+        },
     },
     {
         name = "nutarch_avr32_usart2",
@@ -723,21 +723,21 @@ nutarch_avr32 =
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "HW_UART2_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
-        sources = 
-		{ 
-			"avr32/dev/usart2.c",
-			"avr32/dev/ih_uart2.c",
-		},
+        sources =
+        {
+            "avr32/dev/usart2.c",
+            "avr32/dev/ih_uart2.c",
+        },
         options =
         {
-			{
-				macro = "UART2_ALT_PINSET",
-				brief = "USART2 Alternative Pinset",
+            {
+                macro = "UART2_ALT_PINSET",
+                brief = "USART2 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/uart.h"
-				
-			},
+
+            },
             {
                 macro = "UART2_RXTX_ONLY",
                 brief = "Receive/Transmit Only",
@@ -769,13 +769,13 @@ nutarch_avr32 =
             {
                 macro = "AVR32_UART2_RS485",
                 brief = "USE HW RS485 on UART1",
-				description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
+                description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
                       "The UART1 RTS pin is used for RS485 direction switching.",
                 provides = { "AVR32_UART2_RS485" },
                 flavor = "booldata",
             },
 
-		},
+        },
     },
     {
         name = "nutarch_avr32_macb",
@@ -783,9 +783,10 @@ nutarch_avr32 =
         description = "LAN driver for AVR32.",
         requires = { "HW_MACB_AVR32", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
-        sources = { 
-                    "avr32/dev/macb.c",
-                    "avr32/dev/ih_macb.c",
+        sources =
+        {
+            "avr32/dev/macb.c",
+            "avr32/dev/ih_macb.c"
         },
         options =
         {
@@ -849,9 +850,10 @@ nutarch_avr32 =
         brief = "GPIO Controller",
         description = "Generic port I/O API.",
         requires = { "HW_MCU_AVR32" },
-        sources = { 
-          "avr32/dev/gpio_nutos.c",
-          "avr32/dev/gpio.c",
+        sources =
+        {
+            "avr32/dev/gpio_nutos.c",
+            "avr32/dev/gpio.c",
         },
     },
     {
@@ -869,8 +871,8 @@ nutarch_avr32 =
                       "functions for the SPI0 bus.",
         requires = { "HW_SPI_AVR32_0" },
         provides = { "SPIBUS_CONTROLLER" },
-        sources = 
-        { 
+        sources =
+        {
             "avr32/dev/spibus.c",
             "avr32/dev/spibus0.c",
             "avr32/dev/ih_spi0.c",
@@ -971,8 +973,8 @@ nutarch_avr32 =
                       "functions for the SPI1 bus.",
         requires = { "HW_SPI_AVR32_1" },
         provides = { "SPIBUS_CONTROLLER" },
-        sources = 
-        { 
+        sources =
+        {
             "avr32/dev/spibus1.c",
             "avr32/dev/ih_spi1.c",
         },

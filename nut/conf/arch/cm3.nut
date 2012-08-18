@@ -67,12 +67,12 @@ nutarch_cm3 =
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_CM3" },
         sources = { "cm3/cmsis/core_cm3.c",
-		        	"cm3/cmsis/cortex_init.c",
---			       	"cm3/cmsis/cortex_sysctl.c",
-       	},
+                    "cm3/cmsis/cortex_init.c",
+--                       "cm3/cmsis/cortex_sysctl.c",
+           },
         options =
         {
-        	{
+            {
                 macro = "NUT_BOOT_FUNCTION",
                 brief = "Boot Function",
                 description = "This function is given for the reset entry vecor.\n"..
@@ -80,7 +80,7 @@ nutarch_cm3 =
                               "The function must be declarated as int function(void).",
                 flavor = "booldata",
                 file = "include/cfg/arch.h"
-        	},
+            },
             {
                 macro = "MSP_STACK_SIZE",
                 brief = "Main Stack Size",
@@ -113,8 +113,8 @@ nutarch_cm3 =
         requires = { "HW_MCU_CM3" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "cm3/cmsis/ostimer_cortex.c",
-		        	"cm3/cmsis/cortex_systick.c" },
-	},
+                    "cm3/cmsis/cortex_systick.c" },
+    },
 
     --
     -- CortexM3 Context Switching
@@ -147,11 +147,12 @@ nutarch_cm3 =
         brief = "NVIC Interrupt Handler (CortexM3)",
         requires = { "HW_MCU_CM3" },
         provides = { "DEV_IRQ_CM3" },
-        sources = { 
-        			"cm3/cmsis/cortex_reset.c",
-        			"cm3/cmsis/cortex_interrupt1.c",
-            	    "cm3/cmsis/cortex_interrupt.c" 
-            	  },
+        sources =
+        {
+            "cm3/cmsis/cortex_reset.c",
+            "cm3/cmsis/cortex_interrupt1.c",
+            "cm3/cmsis/cortex_interrupt.c"
+        },
     },
 
     --
@@ -198,6 +199,5 @@ nutarch_cm3 =
         description = "NXP LPC17xx Series",
         script = "arch/cm3/lpc17xxfam.nut"
     }
-
 }
 

@@ -43,7 +43,8 @@ nutgorp_codec =
         name = "nutgorp_codec_base64",
         brief = "Base64 Codec",
         description = "Base64 encoder and decoder, typically used for MIME content transfer.\n\n",
-        sources = { 
+        sources =
+        {
             "codec/base64_decode.c",
             "codec/base64_encode.c"
         }

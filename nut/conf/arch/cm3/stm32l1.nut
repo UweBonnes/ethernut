@@ -60,24 +60,25 @@ nutarch_cm3_stm32l1 =
                 type = "integer",
                 default = 1,
                 requires = { "HW_MCU_CM3" },
-                provides = {
-	                    "HW_PLL_STM32L1",
-	                    "HW_RCC_STM32",
-	                    "HW_GPIO_STM32V2",
-                            "HW_CRC32_STM32",
-	                    "DEV_IRQ_STM32",
-	                    "HW_DMA1_STM32F1",
-	                    "HW_EXTI04_STM32",
-	                    "HW_EXTI95_STM32",
-	                    "HW_EXTI1510_STM32",
-                            "HW_I2C1_STM32",      
-                            "HW_I2C2_STM32",      
- 	                    "HW_SPI1_STM32",
- 	                    "HW_SPI2_STM32",
-                                         "HW_UART1_STM32",      
-                                         "HW_UART2_STM32",      
-                                         "HW_UART3_STM32",      
-				},
+                provides =
+                {
+                    "HW_PLL_STM32L1",
+                    "HW_RCC_STM32",
+                    "HW_GPIO_STM32V2",
+                    "HW_CRC32_STM32",
+                    "DEV_IRQ_STM32",
+                    "HW_DMA1_STM32F1",
+                    "HW_EXTI04_STM32",
+                    "HW_EXTI95_STM32",
+                    "HW_EXTI1510_STM32",
+                    "HW_I2C1_STM32",
+                    "HW_I2C2_STM32",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_UART1_STM32",
+                    "HW_UART2_STM32",
+                    "HW_UART3_STM32",
+                },
                 file = "include/cfg/arch.h"
             }
         }
@@ -85,44 +86,42 @@ nutarch_cm3_stm32l1 =
     --
     -- STM32L1 MCU Classes
     --
-	{
-		name = "nutarch_cm3_stm32l1_class",
-		brief = "STM32L1 Device Classes",
-		requires = { "HW_MCU_STM32" },
-		options =
-		{
-			{
-				macro = "STM32L1XX_MD",
-				brief = "STM32L1 MD Series",
-				description = "STM32L1 Medium Density devices.",
-				flavor = "booldata",
-				exclusivity = stm32l1_device_class,
-                                makedefs = { "HWDEF+=-DSTM32L1XX_MD" },
-				provides = {
-				         "STM32L1XX_MD",
-					},
-				file = "include/cfg/arch.h"
-			},
-                  }
-    },                       
+    {
+        name = "nutarch_cm3_stm32l1_class",
+        brief = "STM32L1 Device Classes",
+        requires = { "HW_MCU_STM32" },
+        options =
+        {
+            {
+                macro = "STM32L1XX_MD",
+                brief = "STM32L1 MD Series",
+                description = "STM32L1 Medium Density devices.",
+                flavor = "booldata",
+                exclusivity = stm32l1_device_class,
+                makedefs = { "HWDEF+=-DSTM32L1XX_MD" },
+                provides = { "STM32L1XX_MD" },
+                file = "include/cfg/arch.h"
+            },
+        }
+    },
     {
         name = "nutarch_cm3_stm32l1_memory",
         brief = "STM32L1 Device Memory",
         requires = { "HW_MCU_STM32" },
         options =
         {
-        	{
-        		macro = "MCU_STM32L15X",
-        		brief = "STM32L1xx memory",
-        		description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
-        					  "STM32L1xx>Y<zz where Y is one of the list below.\n\n"..
-              					  "6 =   32 kbytes Flash\n"..
-                                                  "8 =   64 kbytes Flash\n"..
-        					  "B =  128 kbytes Flash\n",
+            {
+                macro = "MCU_STM32L15X",
+                brief = "STM32L1xx memory",
+                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
+                              "STM32L1xx>Y<zz where Y is one of the list below.\n\n"..
+                              "6 =   32 kbytes Flash\n"..
+                              "8 =   64 kbytes Flash\n"..
+                              "B =  128 kbytes Flash\n",
 
                 requires = { "HW_MCU_STM32L1XX" },
-        		type = "enumerated",
---        		choices = stm32_memory_l1xx,
+                type = "enumerated",
+--                choices = stm32_memory_l1xx,
                 file = "include/cfg/arch.h"
             },
         }
@@ -134,30 +133,30 @@ nutarch_cm3_stm32l1 =
         name = "nutarch_cm3_stm32L1_pll",
         brief = "STM32L1 PLL Setup",
         sources = { "cm3/dev/stm/system_stm32l1xx.c",
-        			"cm3/dev/stm/stm32l1_clk.c"
-        		  },
+                    "cm3/dev/stm/stm32l1_clk.c"
+                  },
         requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
         options =
         {
-        	{
-        	    macro = "SYSCLK_SOURCE",
-        	    brief = "SYSCLK Source",
-        	    description = "Select where SYSCLK should get its clock from.\n\n"..
-        	    			  "SYSCLK_HSI is the internal 8MHz clock.\n"..
-        	    			  "SYSCLK_PLL is the internal PLL output. Select the source for the PLL in the next option.\n"..
-        	    			  "SYSCLK_HSE is the external oscillator or crystal input.\n",
-        		requires = { "HW_PLL_STM32L1" },
+            {
+                macro = "SYSCLK_SOURCE",
+                brief = "SYSCLK Source",
+                description = "Select where SYSCLK should get its clock from.\n\n"..
+                              "SYSCLK_HSI is the internal 8MHz clock.\n"..
+                              "SYSCLK_PLL is the internal PLL output. Select the source for the PLL in the next option.\n"..
+                              "SYSCLK_HSE is the external oscillator or crystal input.\n",
+                requires = { "HW_PLL_STM32L1" },
                 type = "enumerated",
                 choices = { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE" },
                 file = "include/cfg/clock.h"
             },
-        	{
-        	    macro = "PLLCLK_SOURCE",
-        	    brief = "PLL Clock Source",
-        	    description = "Select where the PLL should get its clock from.\n\n"..
-        	    			  "SYSCLK_HSI is the internal 8MHz clock. PLL is fed with SYSCLK_HSI/2.\n"..
-        	    			  "SYSCLK_HSE is the external oscillator or crystal input.\n",
-        		requires = { "HW_PLL_STM32L1" },
+            {
+                macro = "PLLCLK_SOURCE",
+                brief = "PLL Clock Source",
+                description = "Select where the PLL should get its clock from.\n\n"..
+                              "SYSCLK_HSI is the internal 8MHz clock. PLL is fed with SYSCLK_HSI/2.\n"..
+                              "SYSCLK_HSE is the external oscillator or crystal input.\n",
+                requires = { "HW_PLL_STM32L1" },
                 type = "enumerated",
                 choices = { "PLLCLK_HSI", "PLLCLK_HSE" },
                 file = "include/cfg/clock.h"
@@ -181,20 +180,20 @@ nutarch_cm3_stm32l1 =
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
-        	{
-        		macro = "HSE_VALUE",
-        		brief = "External Oszillator Frequency",
-        		description = "Value of the external oscillator in Herz.\n"..
-        					  "Typical Values are:\n"..
-        					  "STM32F Conectivity Line Devices: 25MHz\n"..
-        					  "STM32F Value Line devices asr limited to 24MHz and do not have a PLL."..
-        					  "Other devices: 8MHz.",
-        		requires = { "HW_PLL_STM32L1" },
+            {
+                macro = "HSE_VALUE",
+                brief = "External Oszillator Frequency",
+                description = "Value of the external oscillator in Herz.\n"..
+                              "Typical Values are:\n"..
+                              "STM32F Conectivity Line Devices: 25MHz\n"..
+                              "STM32F Value Line devices asr limited to 24MHz and do not have a PLL."..
+                              "Other devices: 8MHz.",
+                requires = { "HW_PLL_STM32L1" },
                 flavor = "booldata",
                 type = "long",
                 default = "8000000",
                 file = "include/cfg/clock.h"
-        	},
+            },
             {
                 macro = "SYSCLK_FREQ",
                 brief = "CM3 System Clock",
@@ -225,7 +224,7 @@ nutarch_cm3_stm32l1 =
                 macro = "PLL_DIV_APB1",
                 brief = "APB1 Prescaler",
                 description = "This is the divider for the slow peripheral bus (APB1). It is upplied by the AHB clock and "..
-                			  "it must not exceed 36MHz.\n"..
+                              "it must not exceed 36MHz.\n"..
                               "To override auto calculation enter a value n here where the division is 2^n\n"..
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "specific BoardInit() function.\n\n",
@@ -237,7 +236,7 @@ nutarch_cm3_stm32l1 =
                 macro = "PLL_DIV_APB2",
                 brief = "APB2 Prescaler",
                 description = "This is the divider for the fast peripheral bus (APB2). It is upplied by the AHB clock and "..
-                			  "it must not exceed 36MHz.\n"..
+                              "it must not exceed 36MHz.\n"..
                               "To override auto calculation enter a value n here where the division is 2^n\n"..
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "specific BoardInit() function.\n\n",

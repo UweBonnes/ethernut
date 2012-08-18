@@ -170,7 +170,7 @@ nutos =
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/os.h"
             }
-        }        
+        }
     },
 
     --
@@ -580,16 +580,16 @@ nutos =
                 file = "include/cfg/os.h"
             },
             {
-            	macro = "NUTDEBUG_CHECK_STACK",
-            	brief = "Thread Stack Checking",
-            	description = "Used for thread stack checking.\n"..
-            				  "Enabling this will fill any threads stack area "..
-            				  "with a pattern at the point of creating the thread.\n"..
-            				  "By using NutThreadStackAvailable() one can now check "..
-            				  "for the maximum ammount of stack ever used by this "..
-            				  "thread.\n\n"..
-            				  "This functionality can be enabled without OS Debug to "..
-            				  "find out maximum stack usage in your final appliation.",
+                macro = "NUTDEBUG_CHECK_STACK",
+                brief = "Thread Stack Checking",
+                description = "Used for thread stack checking.\n"..
+                              "Enabling this will fill any threads stack area "..
+                              "with a pattern at the point of creating the thread.\n"..
+                              "By using NutThreadStackAvailable() one can now check "..
+                              "for the maximum ammount of stack ever used by this "..
+                              "thread.\n\n"..
+                              "This functionality can be enabled without OS Debug to "..
+                              "find out maximum stack usage in your final appliation.",
                 flavor = "boolean",
                 file = "include/cfg/os.h"
             },

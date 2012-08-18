@@ -54,9 +54,9 @@
 -- It builds, but doesn't seam to run properly at this time.
 --
 -- Revision 1.23  2008/07/19 02:54:52  thiagocorrea
--- 	* conf/arch/avr.nut: Fix LCD size configuration for AVR.
--- 	  Previously, LCD Bus config settings would be used instead
--- 	  of the actual LCD Driver config settings.
+--     * conf/arch/avr.nut: Fix LCD size configuration for AVR.
+--       Previously, LCD Bus config settings would be used instead
+--       of the actual LCD Driver config settings.
 --
 -- Revision 1.22  2008/06/16 13:02:50  haraldkipp
 -- Temporarily removed wlandrv.c from build due to GCC 4.3 warnings.
@@ -144,14 +144,16 @@ nutarch_avr =
                       "crtenutram.s, same as above but including EEPROM emulation.\n\n"..
                       "crtnutm256.s, for the ATmega2560 and ATmega2561.\n\n"..
                       "Ethernut 1.3 Rev-G boards require EEPROM emulation.",
-        sources = {
+        sources =
+        {
             "avr/init/crtnut.s",
             "avr/init/crtnutram.s",
             "avr/init/crtenut.s",
             "avr/init/crtenutram.s",
             "avr/init/crtnutm256.s"
         },
-        targets = {
+        targets =
+        {
             "avr/init/crtnut.o",
             "avr/init/crtnutram.o",
             "avr/init/crtenut.o",
@@ -167,9 +169,9 @@ nutarch_avr =
     {
         name = "nutarch_avr_bs",
         brief = "Board Support",
-        sources = 
-            function() 
-                return { "avr/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" }; 
+        sources =
+            function()
+                return { "avr/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
             end,
         requires = { "HW_BOARD_SUPPORT" },
     },
@@ -404,9 +406,13 @@ nutarch_avr =
         brief = "USART1 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = {
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
-                        "NUT_EVENT", "CRT_HEAPMEM"
+        requires =
+        {
+            "HW_MCU_AVR",
+            "DEV_IRQ_AVR",
+            "DEV_UART_GENERIC",
+            "NUT_EVENT",
+            "CRT_HEAPMEM"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart1avr.c" },
@@ -493,9 +499,14 @@ nutarch_avr =
         brief = "USART2 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = {
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
-                        "NUT_EVENT", "CRT_HEAPMEM", "HW_AVR_HAVE_UART2"
+        requires =
+        {
+            "HW_MCU_AVR",
+            "DEV_IRQ_AVR",
+            "DEV_UART_GENERIC",
+            "NUT_EVENT",
+            "CRT_HEAPMEM",
+            "HW_AVR_HAVE_UART2"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart2avr.c", "avr/dev/ih_usart2_rx.c", "avr/dev/ih_usart2_tx.c", "avr/dev/ih_usart2_udre.c" },
@@ -578,9 +589,14 @@ nutarch_avr =
         brief = "USART3 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = {
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
-                        "NUT_EVENT", "CRT_HEAPMEM", "HW_AVR_HAVE_UART3"
+        requires =
+        {
+            "HW_MCU_AVR",
+            "DEV_IRQ_AVR",
+            "DEV_UART_GENERIC",
+            "NUT_EVENT",
+            "CRT_HEAPMEM",
+            "HW_AVR_HAVE_UART3"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart3avr.c" },
@@ -1239,8 +1255,8 @@ nutarch_avr =
         brief = "AVR SPI Bus Controller",
         description = "SPI bus controllers.\n\n",
         provides = { "SPIBUS_CONTROLLER" },
-        sources = 
-        { 
+        sources =
+        {
             "avr/dev/spibus_avr.c",
             "avr/dev/spibus0avr.c"
         },
@@ -1595,7 +1611,7 @@ nutarch_avr =
             },
         },
     },
-    
+
     {
         name = "nutarch_avr_spidigio",
         brief = "Shift Register I/O",

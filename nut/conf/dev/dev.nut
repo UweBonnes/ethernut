@@ -806,7 +806,18 @@ nutdev =
                               "For the AVR family the on-chip EEPROM is used by default.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45D" },
                 flavor = "booldata",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 default = "0",
                 file = "include/cfg/eeprom.h"
             },
@@ -816,7 +827,18 @@ nutdev =
                 description = "Deprecated, uses old SPI routines.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45DB" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -826,7 +848,18 @@ nutdev =
                               "be stored in this chip.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -837,7 +870,18 @@ nutdev =
                 requires = { "HW_EFC_AT91" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC177x_8x_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -848,7 +892,18 @@ nutdev =
                 requires = { "HW_FLASH_STM32" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -859,7 +914,18 @@ nutdev =
                 requires = { "HW_EEPROM_LPC177x_8x" },
                 provides = { "DEV_NVMEM" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -870,7 +936,18 @@ nutdev =
                 requires = { "HW_FLASH_LPC17xx" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -879,7 +956,18 @@ nutdev =
                 description = "If enabled, the EEPROM on the Intersil X1226/X1286 chip is used for non-volatile memory.",
                 provides = { "DEV_NVMEM" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -888,7 +976,18 @@ nutdev =
                 description = "If enabled, a standard EEPROM chip is used for non-volatile memory.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_I2C" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC", "HW_FLASH_STM32", "NUT_CONFIG_LPC177x_8x_EEPROM", "NUT_CONFIG_LPC17xx_IAP" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -1905,7 +2004,8 @@ nutdev =
 --        description = "TWI driver for SC16IS752 dual USART chip. "..
 --                      "Currently SAM7X256 is tested only. "..
 --                      "ICCAVR disabled due to compiler errors.",
---        sources = {
+--        sources =
+--        {
 --            "usart0sc16is752.c",
 --            "usart1sc16is752.c",
 --            "usart2sc16is752.c",
@@ -1970,7 +2070,8 @@ nutdev =
                 brief = "Auto Detect",
                 description = "Generates significantly more code. Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -1987,7 +2088,8 @@ nutdev =
                 brief = "VS1001K",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -2004,7 +2106,8 @@ nutdev =
                 brief = "VS1011E",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -2021,7 +2124,8 @@ nutdev =
                 brief = "VS1002D",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -2038,7 +2142,8 @@ nutdev =
                 brief = "VS1003B",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -2055,7 +2160,8 @@ nutdev =
                 brief = "VS1033C",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -2072,7 +2178,8 @@ nutdev =
                 brief = "VS1053B",
                 description = "Tested with SAM7SE.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -2089,7 +2196,8 @@ nutdev =
                 brief = "VS1063A",
                 description = "Tested with SAM7SE.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
@@ -2427,14 +2535,26 @@ nutdev =
                               "LAN8720: 0x0007C0F0\n"..
                               "ANY: 0xFFFFFFFF (Disable PHY ID check - not recommended)",
                 type = "enumerated",
-                choices = { "AUTO",
-                            "AM79C875",
-                            "DM9161", "DM9161A", "DM9161B", "DM9000", "DM9000A", "DM9000B",
-                            "DP83838", "DP83848",
-                            "KS8721", "KS8851",
-                            "STE100P",
-                            "LAN8700", "LAN8710", "LAN8720",
-                            "ANY" },
+                choices =
+                {
+                    "AUTO",
+                    "AM79C875",
+                    "DM9161",
+                    "DM9161A",
+                    "DM9161B",
+                    "DM9000",
+                    "DM9000A",
+                    "DM9000B",
+                    "DP83838",
+                    "DP83848",
+                    "KS8721",
+                    "KS8851",
+                    "STE100P",
+                    "LAN8700",
+                    "LAN8710",
+                    "LAN8720",
+                    "ANY"
+                },
                 file = "include/cfg/phycfg.h"
             },
             {
@@ -2673,13 +2793,14 @@ nutdev =
 --                      "This module also uses the options from the block I/O driver.",
         requires = { "SPIBUS_CONTROLLER" },
         provides = { "SERIALFLASH_INTERFACE" },
-        sources = {
-                        "spi_at45dib.c",
-                        "spi_flash_at45d.c",
-                        "spi_blkio_at45d.c",
-                        "spi_node_at45d.c",
-                        "spi_at45d_info.c"
-                  },
+        sources =
+        {
+            "spi_at45dib.c",
+            "spi_flash_at45d.c",
+            "spi_blkio_at45d.c",
+            "spi_node_at45d.c",
+            "spi_at45d_info.c"
+        },
         options =
         {
             {
@@ -3429,7 +3550,8 @@ nutdev =
                               "Currently supported on the AVR platform only.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -3445,7 +3567,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -3461,7 +3584,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -3477,7 +3601,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -3493,7 +3618,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -3529,7 +3655,8 @@ nutdev =
                               "Currently supported on the AVR platform only.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3543,7 +3670,8 @@ nutdev =
                 brief = "Data Software SPI0",
                 description = "Use software SPI 0 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3557,7 +3685,8 @@ nutdev =
                 brief = "Data Software SPI1",
                 description = "Use software SPI 1 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3571,7 +3700,8 @@ nutdev =
                 brief = "Data Software SPI2",
                 description = "Use software SPI 2 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3585,7 +3715,8 @@ nutdev =
                 brief = "Data Software SPI3",
                 description = "Use software SPI 3 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3883,7 +4014,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3898,7 +4030,8 @@ nutdev =
                 description = "Use software SPI 0 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3913,7 +4046,8 @@ nutdev =
                 description = "Use software SPI 1 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3928,7 +4062,8 @@ nutdev =
                 description = "Use software SPI 2 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3943,7 +4078,8 @@ nutdev =
                 description = "Use software SPI 3 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",

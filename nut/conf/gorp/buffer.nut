@@ -49,9 +49,7 @@ nutgorp_buffer =
                       "overwritten when new data is added to a completely filled "..
                       "file.",
         requires = { "NUT_FS_READ", "NUT_FS_WRITE" },
-        sources = { 
-            "buffer/perci.c"
-        },
+        sources = { "buffer/perci.c" },
         options =
         {
             {

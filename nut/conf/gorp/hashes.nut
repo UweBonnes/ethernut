@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>. 
+-- Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>.
 --
 -- All rights reserved.
 --
@@ -43,9 +43,7 @@ nutgorp_hashes =
         name = "nutgorp_hashes_md5",
         brief = "MD5 Hash",
         description = "Function for message digest algorithm 5 support.\n\n",
-        sources = { 
-            "hashes/md5.c"
-        }
+        sources = { "hashes/md5.c" }
     }
 }
 

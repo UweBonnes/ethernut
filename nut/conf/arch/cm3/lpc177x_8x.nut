@@ -66,7 +66,8 @@ nutarch_cm3_lpc177x_8x=
                 type = "integer",
                 default = 1,
                 requires = { "HW_MCU_CM3" },
-                provides = {
+                provides =
+                {
                     "HW_PLL_LPC17xx",
                     "HW_RTC_LPC17xx",
                     "HW_EMC_LPC177x_8x",
@@ -100,10 +101,11 @@ nutarch_cm3_lpc177x_8x=
                 description = "NXP LPC1778",
                 flavor = "booldata",
                 exclusivity = lpc177x_8x_device_class,
-                provides = {
-                        "HW_MCU_LPC1778",
-                        "HW_UART0_LPC17xx",
-                        "HW_UART1_LPC17xx"
+                provides =
+                {
+                    "HW_MCU_LPC1778",
+                    "HW_UART0_LPC17xx",
+                    "HW_UART1_LPC17xx"
                 },
                 file = "include/cfg/arch.h"
             },
@@ -113,10 +115,11 @@ nutarch_cm3_lpc177x_8x=
                 description = "NXP LPC1788",
                 flavor = "booldata",
                 exclusivity = lpc177x_8x_device_class,
-                provides = {
-                        "HW_MCU_LPC1788",
-                        "HW_UART0_LPC17xx",
-                        "HW_UART1_LPC17xx"
+                provides =
+                {
+                    "HW_MCU_LPC1788",
+                    "HW_UART0_LPC17xx",
+                    "HW_UART1_LPC17xx"
                 },
                 file = "include/cfg/arch.h"
             }
@@ -150,9 +153,11 @@ nutarch_cm3_lpc177x_8x=
         brief = "LPC177x_8x PLL Setup",
         description = "PLL configuration. Currently it is hard coded. May be user configurable later.\n",
         requires = { "HW_MCU_LPC177x_8x", "TOOL_CC_CM3", "TOOL_GCC" },
-        sources = { "cm3/dev/nxp/system_lpc177x_8x.c",
-        			"cm3/dev/nxp/lpc177x_8x_clk.c"
-        		  }
+        sources =
+        {
+            "cm3/dev/nxp/system_lpc177x_8x.c",
+            "cm3/dev/nxp/lpc177x_8x_clk.c"
+        }
     },
 
     --
@@ -168,10 +173,12 @@ nutarch_cm3_lpc177x_8x=
         description = "Generic port I/O API.",
         requires = { "HW_MCU_LPC177x_8x" },
         provides = { "HW_GPIO_LPC177x_8x" },
-        sources = { "cm3/dev/nxp/lpc177x_8x_gpio.c",
-                    "cm3/dev/nxp/lpc17xx_gpioirq.c",
-                    "cm3/dev/nxp/ih_lpc17xx_pio.c"
-                  }
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_gpio.c",
+            "cm3/dev/nxp/lpc17xx_gpioirq.c",
+            "cm3/dev/nxp/ih_lpc17xx_pio.c"
+        }
     },
 
     --
@@ -182,10 +189,13 @@ nutarch_cm3_lpc177x_8x=
         brief = "LPC177x_8x Debug UART Driver",
         requires = { "HW_UART0_LPC17xx" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        sources = { "cm3/dev/nxp/lpc177x_8x_debug0.c",
-                    "cm3/dev/nxp/lpc177x_8x_debug1.c",
-                    "cm3/dev/nxp/lpc177x_8x_debug2.c",
-                    "cm3/dev/nxp/lpc177x_8x_debug3.c" },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_debug0.c",
+            "cm3/dev/nxp/lpc177x_8x_debug1.c",
+            "cm3/dev/nxp/lpc177x_8x_debug2.c",
+            "cm3/dev/nxp/lpc177x_8x_debug3.c"
+        },
         options =
         {
             {
@@ -208,15 +218,19 @@ nutarch_cm3_lpc177x_8x=
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART0_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-                     "DEV_UART_LPC17xx",
-                     "DEV_UART_SPECIFIC",
-                     "DEV_UART0_GPIO_RTS",
-                     "DEV_UART0_GPIO_CTS"
-                   },
-        sources = { "cm3/dev/nxp/lpc177x_8x_usart0.c",
-                    "cm3/dev/nxp/ih_lpc17xx_usart0.c"
-                  },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC",
+            "DEV_UART0_GPIO_RTS",
+            "DEV_UART0_GPIO_CTS"
+        },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_usart0.c",
+            "cm3/dev/nxp/ih_lpc17xx_usart0.c"
+        },
         options =
         {
             {
@@ -239,9 +253,9 @@ nutarch_cm3_lpc177x_8x=
                 macro = "USART0_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART0_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"
@@ -264,15 +278,19 @@ nutarch_cm3_lpc177x_8x=
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART1_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-                     "DEV_UART_LPC17xx",
-                     "DEV_UART_SPECIFIC",
-                     "DEV_UART1_GPIO_RTS",
-                     "DEV_UART1_GPIO_CTS" 
-                   },
-        sources = { "cm3/dev/nxp/lpc177x_8x_usart1.c",
-                    "cm3/dev/nxp/ih_lpc17xx_usart1.c"
-                  },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC",
+            "DEV_UART1_GPIO_RTS",
+            "DEV_UART1_GPIO_CTS"
+        },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_usart1.c",
+            "cm3/dev/nxp/ih_lpc17xx_usart1.c"
+        },
         options =
         {
             {
@@ -295,9 +313,9 @@ nutarch_cm3_lpc177x_8x=
                 macro = "USART1_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART1_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"
@@ -313,15 +331,19 @@ nutarch_cm3_lpc177x_8x=
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART1_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-                     "DEV_UART_LPC17xx",
-                     "DEV_UART_SPECIFIC",
-                     "DEV_UART2_GPIO_RTS",
-                     "DEV_UART2_GPIO_CTS" 
-                   },
-        sources = { "cm3/dev/nxp/lpc177x_8x_usart2.c",
-                    "cm3/dev/nxp/ih_lpc17xx_usart2.c"
-                  },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC",
+            "DEV_UART2_GPIO_RTS",
+            "DEV_UART2_GPIO_CTS"
+        },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_usart2.c",
+            "cm3/dev/nxp/ih_lpc17xx_usart2.c"
+        },
         options =
         {
             {
@@ -344,9 +366,9 @@ nutarch_cm3_lpc177x_8x=
                 macro = "USART2_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART2_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"
@@ -362,15 +384,19 @@ nutarch_cm3_lpc177x_8x=
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART1_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-                     "DEV_UART_LPC17xx",
-                     "DEV_UART_SPECIFIC",
-                     "DEV_UART3_GPIO_RTS",
-                     "DEV_UART3_GPIO_CTS" 
-                   },
-        sources = { "cm3/dev/nxp/lpc177x_8x_usart3.c",
-                    "cm3/dev/nxp/ih_lpc17xx_usart3.c"
-                  },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC",
+            "DEV_UART3_GPIO_RTS",
+            "DEV_UART3_GPIO_CTS"
+        },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_usart3.c",
+            "cm3/dev/nxp/ih_lpc17xx_usart3.c"
+        },
         options =
         {
             {
@@ -393,9 +419,9 @@ nutarch_cm3_lpc177x_8x=
                 macro = "USART3_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART3_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"
@@ -412,15 +438,20 @@ nutarch_cm3_lpc177x_8x=
         description = "Low level MMC interface for LPC177x_8x",
         requires = { "HW_MCI_LPC177x_8x" },
         provides = { "DEV_MMCLL" },
-        sources = { "cm3/dev/nxp/lpc177x_8x_mmcard_sdio.c", "cm3/dev/nxp/lpc177x_8x_mci.c", "cm3/dev/nxp/ih_lpc177x_8x_mci.c" },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_mmcard_sdio.c",
+            "cm3/dev/nxp/lpc177x_8x_mci.c",
+            "cm3/dev/nxp/ih_lpc177x_8x_mci.c"
+        },
         options =
         {
             {
                 macro = "BRD_MCI_POWERED_ACTIVE_LEVEL",
                 brief = "MCI power active level",
                 description = "MCI power active level -> set to (0) or (1) depending your board HW.",
-        		type = "enumerated",
-        		choices = { "1", "0" },
+                type = "enumerated",
+                choices = { "1", "0" },
                 file = "include/cfg/mmci.h"
             },
         },

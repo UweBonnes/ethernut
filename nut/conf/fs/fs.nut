@@ -174,16 +174,17 @@ nutfs =
         requires = { "DEV_BLOCK" },
         provides = { "NUT_FS", "NUT_FS_READ", "NUT_FS_WRITE", "NUT_FS_DIR" },
         description = "FAT compatible file system.",
-        sources = { 
-                "phatfs.c", 
-                "phatvol.c", 
-                "phatdir.c", 
-                "phatio.c", 
-                "phat12.c", 
-                "phat16.c", 
-                "phat32.c", 
-                "phatutil.c",
-                "phatdbg.c"
+        sources =
+        {
+            "phatfs.c",
+            "phatvol.c",
+            "phatdir.c",
+            "phatio.c",
+            "phat12.c",
+            "phat16.c",
+            "phat32.c",
+            "phatutil.c",
+            "phatdbg.c"
         },
         options =
         {
