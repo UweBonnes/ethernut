@@ -51,7 +51,7 @@ nutarch_cm3_stm32f2 =
     {
         name = "nutarch_cm3_stm32f2_family",
         brief = "MCU F2 Family",
-        requires = { "HW_MCU_STM32F2XX" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32F2XX" },
         options =
         {
             {
@@ -91,7 +91,7 @@ nutarch_cm3_stm32f2 =
     {
         name = "nutarch_cm3_stm32F2_class",
         brief = "STM32F2 Device Classes",
-        requires = { "HW_MCU_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32" },
         options =
         {
             {
@@ -109,7 +109,7 @@ nutarch_cm3_stm32f2 =
     {
         name = "nutarch_cm3_stm32F2_memory",
         brief = "STM32F2 Device Memory",
-        requires = { "HW_MCU_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32" },
         options =
         {
             {
@@ -141,7 +141,7 @@ nutarch_cm3_stm32f2 =
             "cm3/dev/stm/system_stm32f2xx.c",
             "cm3/dev/stm/stm32f4_clk.c"
         },
-        requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
         options =
         {
             {
@@ -260,7 +260,7 @@ nutarch_cm3_stm32f2 =
         name = "nutarch_cm3_stm32f2_rcc",
         brief = "STM32F2 RCC",
         description = "STM32F2 Clock Controller.",
-        requires = { "HW_RCC_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
         sources = { "cm3/dev/stm/stm32f2xx_rcc.c" }
     },
 }

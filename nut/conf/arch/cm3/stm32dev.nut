@@ -10,7 +10,7 @@ nutarch_cm3_stm32_devices =
     {
         name = "nutarch_cm3_stm32_devices_debug",
         brief = "UART Debug Output (STM32)",
-        requires = { "DEV_UART_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "DEV_UART_STM32" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
         options =
         {
@@ -35,7 +35,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32_gpio",
         brief = "STM32F2 GPIO",
         description = "Generic port I/O API.",
-        requires = { "HW_GPIO_STM32V2" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_GPIO_STM32V2" },
         sources = { "cm3/dev/stm/stm32_gpio.c"}
     },
     --
@@ -45,7 +45,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32_devices_exti04",
         brief = "STM32F External Interrupt 4..0",
         description = "Interrupt Configuration for external interrups through GPIO.",
-        requires = { "HW_MCU_STM32", "HW_EXTI04_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_EXTI04_STM32" },
         sources = { "cm3/dev/stm/ih_stm32_exti0.c",
                     "cm3/dev/stm/ih_stm32_exti1.c",
                     "cm3/dev/stm/ih_stm32_exti2.c",
@@ -57,14 +57,14 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32_devices_exti95",
         brief = "STM32F External Interrupts 9..5",
         description = "Interrupt Configuration for external interrups through GPIO.",
-        requires = { "HW_MCU_STM32", "HW_EXTI95_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_EXTI95_STM32" },
         sources = { "cm3/dev/stm/ih_stm32_exti9_5.c" }
     },
     {
         name = "nutarch_cm3_stm32_devices_exti1510",
         brief = "STM32F External Interrupts 15..10",
         description = "Interrupt Configuration for external interrups through GPIO.",
-        requires = { "HW_MCU_STM32", "HW_EXTI1510_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_EXTI1510_STM32" },
         sources = { "cm3/dev/stm/ih_stm32_exti15_10.c" }
     },
 
@@ -75,7 +75,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32_devices_otg1",
         brief = "USB OTG",
         description = "Generic port I/O API.",
-        requires = { "HW_MCU_STM32", "HW_OTG1_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_OTG1_STM32" },
         sources =
         {
             "cm3/dev/stm/stm32_otg.c",
@@ -99,7 +99,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32_devices_otg2",
         brief = "USB OTG1",
         description = "Generic port I/O API.",
-        requires = { "HW_MCU_STM32", "HW_OTG2_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_OTG2_STM32" },
         sources =
         {
             "cm3/dev/stm/stm32_otg.c",
@@ -124,7 +124,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART1 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART1_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART1_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -337,7 +337,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART2 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART2_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART2_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -576,7 +576,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART3 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                   "functions for the generic driver framework.",
-        requires = { "HW_UART3_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART3_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -838,7 +838,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 UART4 Driver",
         description = "Hardware specific UART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART4_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART4_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -1040,7 +1040,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 UART5 Driver",
         description = "Hardware specific UART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART5_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART5_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -1200,7 +1200,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART6 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART6_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART6_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -1440,7 +1440,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f_emac",
         brief = "STM32F EMAC Driver",
         description = "LAN driver for STM32F107xx.",
-        requires = { "HW_EMAC_STM32", "NUT_EVENT", "NUT_TIMER" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_EMAC_STM32", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_MAC" },
         sources = { "cm3/dev/stm/stm32_emac.c", "cm3/dev/stm/ih_stm32_emac.c" },
         options =
@@ -1516,7 +1516,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f_i2c1",
         brief = "STM32F I2C Bus 1 Controller",
         description = "STM32F hardware I2C support.",
-        requires = { "HW_I2C1_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_I2C1_STM32" },
         provides = { "DEV_TWI" },
         sources =
         {
@@ -1604,7 +1604,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F I2C Bus 2 Controller",
         description = "STM32F hardware I2C support.\n\n This bus cannot be remapped on F1/L1. Pins used are:\n"..
                       "SCL PB10\nSDA PB11\n",
-        requires = { "HW_I2C2_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_I2C2_STM32" },
         provides = { "DEV_TWI" },
         sources =
         {
@@ -1689,7 +1689,7 @@ nutarch_cm3_stm32_devices =
         description = "CAN support for STM32F.\n\n"..
                       "On some devices this bus shares pins and interrupts with USB bus!\n"..
                       "You cannot use them together!",
-        requires = { "HW_CAN1_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_CAN1_STM32" },
         provides = { "DEV_CAN" },
         sources =
         {
@@ -1718,7 +1718,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f_can2",
         brief = "STM32F CAN 2",
         description = "CAN Bus 2 support for STM32F.",
-        requires = { "HW_CAN2_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_CAN2_STM32" },
         provides = { "DEV_CAN" },
         sources =
         {
@@ -1749,7 +1749,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f_crc",
         brief = "STM32F CRC32 Generator",
         description = "hardware CRC32 Generator support for STM32F.",
-        requires = { "HW_CRC32_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_CRC32_STM32" },
         provides = { "DEV_CRC" },
         sources = { "cm3/dev/stm/stm32_crc.c" },
     },
@@ -1761,7 +1761,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f_adc",
         brief = "STM32F ADC Channel 1,2",
         description = "ADC channel 1 & 2 support for STM32F.",
-        requires = { "HW_ADCF1_12_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_ADCF1_12_STM32" },
         provides = { "DEV_ADC" },
 --        sources = { "cm3/dev/stm/stm32f1_adc.c" },
     },
@@ -1774,7 +1774,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F SD-Card Access",
         description = "Low level SD-Card interface for STM32F.\n\n"..
                       "Under development.",
-        requires = { "HW_SPI_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI_STM32" },
         provides = { "DEV_MMCLL" },
 --        sources = { "cm3/dev/stm/stm32_sdio.c" },
     },
@@ -1787,7 +1787,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F SPI1 Bus Controller",
         description = "Supports up to two bus controllers.\n\n"..
                       "This early release had been tested on the STM32F103 and STM32F107 only.",
-        requires = { "HW_SPI1_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI1_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi1.c", "cm3/dev/stm/ih_stm32_spi1.c" },
         makedefs = { "HWDEF+=-DSTM32_SPI1" },
@@ -1886,7 +1886,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F SPI2 Bus Controller",
         description = "Supports up to two bus controllers.\n\n"..
                       "This early release had been tested on the STM32F103 and STM32F107 only.",
-        requires = { "HW_SPI2_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI2_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi2.c", "cm3/dev/stm/ih_stm32_spi2.c" },
         makedefs = { "HWDEF+=-DSTM32_SPI2" },
@@ -1974,7 +1974,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F SPI3 Bus Controller",
         description = "Supports up to two bus controllers.\n\n"..
                       "This early release had been tested on the STM32F103 and STM32F107 only.",
-        requires = { "HW_SPI3_STM32" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI3_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi3.c", "cm3/dev/stm/ih_stm32_spi3.c" },
         makedefs = { "HWDEF+=-DSTM32_SPI3" },
@@ -2072,7 +2072,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f_tim",
         brief = "STM32F TIM",
         description = "Timer API.",
-        requires = { "HW_MCU_STM32", "HW_GPIO_STM32V1" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_GPIO_STM32V1" },
         provides = { "HW_TIM_STM32" },
         sources = { "cm3/dev/stm/stm32f10x_tim.c" }
     },
@@ -2085,7 +2085,7 @@ nutarch_cm3_stm32_devices =
         brief = "Character LCD Driver (STM32F)",
         description = "Parallel or serial connected displays like\n"..
                       "HD44780, KS0066, KS0073 and others.\n",
-        requires = { "HW_MCU_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32" },
         provides = { "DEV_FILE", "DEV_WRITE" },
 --        sources = { "arm/dev/stm32_charlcd.c" },
         options =
@@ -2440,7 +2440,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f1_dma1",
         brief = "STM32F1/L1 DMA1 Controller",
         description = "Generic DMA Support for F1/L1",
-        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F1" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA1_STM32F1" },
         provides = { "HW_DMA1_F1" },
         sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32_dma1.c" }
     },
@@ -2448,7 +2448,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f1_dma2",
         brief = "STM32F1/L1 DMA2 Controller",
         description = "Generic DMA Support for F1/L1",
-        requires = { "HW_MCU_STM32", "HW_DMA2_STM32F1" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA2_STM32F1" },
         provides = { "HW_DMA2_F1" },
         sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32_dma2.c" }
     },
@@ -2460,7 +2460,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f2_dma1",
         brief = "STM32F2/F4 DMA1 Controller",
         description = "Generic DMA1 Support for F2/F4",
-        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F2" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA1_STM32F2" },
         provides = { "HW_DMA1_F2" },
         sources = { "cm3/dev/stm/stm32f2_dma.c", "cm3/dev/stm/ih_stm32_dma1.c" }
     },
@@ -2468,7 +2468,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f2_dma2",
         brief = "STM32F2/F4 DMA2 Controller",
         description = "Generic DMA2 Support for F2/F4",
-        requires = { "HW_MCU_STM32", "HW_DMA2_STM32F2" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA2_STM32F2" },
         provides = { "HW_DMA2_F2" },
         sources = { "cm3/dev/stm/stm32f2_dma.c", "cm3/dev/stm/ih_stm32_dma2.c" }
     },
