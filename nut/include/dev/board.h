@@ -120,6 +120,8 @@
 #include <arch/arm/board/ethernut5.h>
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
+#elif defined(GBAXPORT2)
+#include <arch/cm3/board/gba_xport2.h>
 #elif defined(MMNET01) || defined(MMNET02) || defined(MMNET101) || defined(MMNET102)
 #include <arch/avr/board/mmnet.h>
 #elif defined(SAM7ETH)
@@ -172,9 +174,7 @@
 #endif
 
 #ifndef DEV_DEBUG_NAME
-#if defined(GBAXPORT2)
-#define DEV_DEBUG_NAME  "con"
-#elif defined(HHOPEN_63F) || defined(EVK1104)
+#if defined(HHOPEN_63F) || defined(EVK1104)
 #define DEV_DEBUG_NAME  "uart1"
 #elif defined(STM3210E_EVAL) || defined(STM32_COMSTICK)
 #define DEV_DEBUG_NAME  devUsartStm32_1.dev_name
@@ -319,11 +319,6 @@
 #ifndef DEV_DEBUG_NAME
 #define DEV_DEBUG_NAME  DEV_UART1_NAME
 #endif
-
-#elif defined(GBAXPORT2)
-
-#define DEV_UART        DEV_DEBUG
-#define DEV_UART_NAME   DEV_DEBUG_NAME
 
 #endif
 

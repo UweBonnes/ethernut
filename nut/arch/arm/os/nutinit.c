@@ -38,9 +38,7 @@
 #include <cfg/arch.h>
 #include <cfg/memory.h>
 #include <cfg/os.h>
-#ifdef MCU_GBA
-#include <dev/irqreg.h>
-#else
+#ifdef MCU_AT91
 #include <arch/arm/at91.h>
 #endif
 
@@ -113,9 +111,6 @@ extern void main(void *);
  */
 THREAD(NutIdle, arg)
 {
-#if defined(MCU_GBA)
-    InitIrqHandler();
-#endif
 #ifdef NUT_INIT_IDLE
     NutIdleInit();
 #endif
