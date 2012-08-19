@@ -108,8 +108,16 @@
 
 #if defined(ARTHERNET1)
 #include <arch/avr/board/arthernet1.h>
+#elif defined(AT91SAM7X_EK)
+#include <arch/arm/board/at91sam7x_ek.h>
+#elif defined(AT91SAM9260_EK)
+#include <arch/arm/board/at91sam9260_ek.h>
+#elif defined(CHARON2)
+#include <arch/avr/board/charon2.h>
 #elif defined(ELEKTOR_IR1)
 #include <arch/arm/board/elektor_ir1.h>
+#elif defined(ENET_SAM7X)
+#include <arch/avr/board/enet_sam7x.h>
 #elif defined(ETHERNUT1)
 #include <arch/avr/board/ethernut1.h>
 #elif defined(ETHERNUT2)
@@ -118,14 +126,30 @@
 #include <arch/arm/board/ethernut3.h>
 #elif defined(ETHERNUT5)
 #include <arch/arm/board/ethernut5.h>
+#elif defined(EVK1100)
+#include <arch/avr32/board/evk1100.h>
+#elif defined(EVK1101)
+#include <arch/avr32/board/evk1101.h>
+#elif defined(EVK1104)
+#include <arch/avr32/board/evk1104.h>
+#elif defined(EVK1105)
+#include <arch/avr32/board/evk1105.h>
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
 #elif defined(GBAXPORT2)
 #include <arch/cm3/board/gba_xport2.h>
 #elif defined(MMNET01) || defined(MMNET02) || defined(MMNET101) || defined(MMNET102)
 #include <arch/avr/board/mmnet.h>
+#elif defined(MORPHOQ1)
+#include <arch/arm/board/morphoq1.h>
 #elif defined(SAM7ETH)
 #include <arch/arm/board/sam7eth.h>
+#elif defined(STM3210C_EVAL)
+#include <arch/cm3/board/stm3210c_eval.h>
+#elif defined(STM3210E_EVAL)
+#include <arch/cm3/board/stm3210e_eval.h>
+#elif defined(STM32_COMSTICK)
+#include <arch/cm3/board/stm32_comstick.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <arch/arm/board/olimex_lpce2294.h>
 #elif defined(XNUT_100) || defined(XNUT_105)
@@ -160,12 +184,8 @@
 #include <dev/debug.h>
 
 #ifndef DEV_DEBUG
-#if defined(HHOPEN_63F) || defined(EVK1104)
+#if defined(HHOPEN_63F)
 #define DEV_DEBUG       devDebug1
-#elif defined(STM3210E_EVAL)
-#define DEV_DEBUG       devUsartStm32_1
-#elif defined(STM3210C_EVAL)
-#define DEV_DEBUG       devUsartStm32_2
 #elif defined(DBGU_BASE)
 #define DEV_DEBUG       devDebug
 #else
@@ -174,12 +194,8 @@
 #endif
 
 #ifndef DEV_DEBUG_NAME
-#if defined(HHOPEN_63F) || defined(EVK1104)
+#if defined(HHOPEN_63F)
 #define DEV_DEBUG_NAME  "uart1"
-#elif defined(STM3210E_EVAL) || defined(STM32_COMSTICK)
-#define DEV_DEBUG_NAME  devUsartStm32_1.dev_name
-#elif defined(STM3210C_EVAL)
-#define DEV_DEBUG_NAME  devUsartStm32_2.dev_name
 #elif defined(DBGU_BASE)
 #define DEV_DEBUG_NAME  "dbgu"
 #else
@@ -236,11 +252,6 @@
 #define DEV_UART2       devUsartAvr322
 #endif
 
-#if defined(EVK1104) && !defined(DEV_UART)
-#define DEV_UART        DEV_UART1
-#define DEV_UART_NAME   DEV_UART1_NAME
-#endif
-
 #elif defined(MCU_STM32)
 
 #include <dev/usartstm32.h>
@@ -294,22 +305,8 @@
 #endif
 
 #ifndef DEV_UART
-#if defined(STM3210E_EVAL)
 #define DEV_UART        DEV_UART1
 #define DEV_UART_NAME   DEV_UART1_NAME
-
-#elif defined(STM3210C_EVAL)
-#define DEV_UART        DEV_UART2
-#define DEV_UART_NAME   DEV_UART2_NAME
-
-#elif defined(STM32_COMSTICK)
-#define DEV_UART        DEV_UART1
-#define DEV_UART_NAME   DEV_UART1_NAME
-
-#else
-#define DEV_UART        DEV_UART1
-#define DEV_UART_NAME   DEV_UART1_NAME
-#endif
 #endif
 
 #ifndef DEV_DEBUG
@@ -368,14 +365,6 @@
 /*
  * Ethernet device.
  */
-#if defined(CHARON2)
-#include <dev/nicrtl.h>
-#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(MORPHOQ1) || defined(ENET_SAM7X)
-#include <dev/at91_emac.h>
-#elif defined(EVK1100) || defined(EVK1105)
-#include <dev/avr32_macb.h>
-#endif
-
 #ifndef DEV_ETHER
 #include <dev/null_ether.h>
 #endif
@@ -432,11 +421,6 @@
 /*
  * RTC chip.
  */
-#if defined(ENET_SAM7X)
-#define RTC_CHIP0 rtcPcf8563
-#include <dev/pcf8563.h>
-#endif
-
 #ifdef RTC_CHIP0
 #ifndef RTC_CHIP
 #define RTC_CHIP RTC_CHIP0
@@ -446,19 +430,6 @@
 /*
  * MultiMedia Card.
  */
-#if defined(AT91SAM7X_EK)
-#define DEV_MMCARD0         devAt91SpiMmc0
-#include <dev/spimmc_at91.h>
-#elif defined(AT91SAM9260_EK)
-#define DEV_MMCARD0         devAt91Mci0
-#define DEV_MMCARD0_NAME    "MCI0"
-#include <dev/at91_mci.h>
-#elif defined (ENET_SAM7X)
-#include <dev/spi_mmc_gpio.h>
-#define DEV_MMCARD0_SPIBUS  devSpiMmcGpio
-#define DEV_MMCARD0         DEV_MMCARD0_SPIBUS
-#endif
-
 #if defined(DEV_MMCARD0)
 #ifndef DEV_MMCARD
 #define DEV_MMCARD          DEV_MMCARD0
