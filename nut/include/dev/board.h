@@ -2,7 +2,10 @@
 #define _DEV_BOARD_H_
 
 /*
- * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH
+ * Copyright (C) 2012 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +20,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,73 +36,13 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
- * $Log$
- * Revision 1.20  2009/09/20 13:24:58  ulrichprinz
- * Added limited USART support for DBGU.
+/*!
+ * \file dev/board.h
+ * \brief Default board configuration.
  *
- * Revision 1.19  2009/03/08 20:19:34  haraldkipp
- * Fixed missing UART device for AVR.
- *
- * Revision 1.18  2009/03/05 22:16:57  freckle
- * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
- *
- * Revision 1.17  2009/01/09 17:54:28  haraldkipp
- * Added SPI bus controller for AVR and AT91.
- *
- * Revision 1.16  2008/10/23 08:56:56  haraldkipp
- * Added default MMC interfaces.
- *
- * Revision 1.15  2008/08/27 07:01:10  thornen
- * Added:
- *  - RTL          support for MMnet01..04
- *  - LANC111 support for MMnet101..104
- *  - RTC         support for MMnet02..04 and MMnet102..104
- *
- * Revision 1.14  2008/08/26 17:36:45  haraldkipp
- * Revoked changes 2008/08/26 by thornen.
- *
- * Revision 1.12  2008/08/06 12:51:12  haraldkipp
- * Added support for Ethernut 5 (AT91SAM9XE reference design).
- *
- * Revision 1.11  2008/02/15 17:09:44  haraldkipp
- * Added support for the Elektor Internet Radio.
- *
- * Revision 1.10  2007/10/08 06:37:51  hwmaier
- * Added RTC DS1307 for XNUT-100 and XNUT-105 units
- *
- * Revision 1.9  2007/10/04 20:32:24  olereinhardt
- * Support for SAM7S256 added
- *
- * Revision 1.8  2007/06/03 08:51:30  haraldkipp
- * RTC_CHIP definition now visible for ETHERNUT3 and MMNET02 only.
- *
- * Revision 1.7  2006/10/05 17:18:49  haraldkipp
- * Hardware independant RTC layer added.
- *
- * Revision 1.6  2006/08/31 19:01:08  haraldkipp
- * Using devDebug2 for the DBGU output was a bad idea. Some AT91 chips
- * provide more than two UARTs. We now use devDebug to specify the DBGU
- * device. Baudrate calculations failed on CPUs running on a processor
- * clock, which differs from a futher divided main clock. This had been
- * fixed.
- *
- * Revision 1.5  2006/07/05 07:45:29  haraldkipp
- * Split on-chip interface definitions.
- *
- * Revision 1.4  2006/06/28 17:17:50  haraldkipp
- * Added initial support for Atmel's AT91SAM7X-EK.
- *
- * Revision 1.3  2006/02/23 15:34:00  haraldkipp
- * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
- * Many thanks to Michael Fischer for this port.
- *
- * Revision 1.2  2005/11/22 09:19:03  haraldkipp
- * Include condition corrected.
- *
- * Revision 1.1  2005/11/20 14:43:38  haraldkipp
- * First check-in
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/arch.h>
