@@ -351,7 +351,7 @@ HANDLE GetThreadByName(char * name)
     return NULL;
 }
 
-#if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
+
 /* Calculate the size if untouched stack space. */
 static size_t StackAvail(NUTTHREADINFO *td)
 {
@@ -369,6 +369,7 @@ size_t NutThreadStackAvailable(char *name)
     return tdp ? StackAvail(tdp) : 0;
 }
 
+#if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
 NUTTHREADINFO *NutThreadStackCheck(size_t minsiz)
 {
     NUTTHREADINFO *tdp;
