@@ -184,9 +184,7 @@
 #include <dev/debug.h>
 
 #ifndef DEV_DEBUG
-#if defined(HHOPEN_63F)
-#define DEV_DEBUG       devDebug1
-#elif defined(DBGU_BASE)
+#if defined(DBGU_BASE)
 #define DEV_DEBUG       devDebug
 #else
 #define DEV_DEBUG       devDebug0
@@ -194,9 +192,7 @@
 #endif
 
 #ifndef DEV_DEBUG_NAME
-#if defined(HHOPEN_63F)
-#define DEV_DEBUG_NAME  "uart1"
-#elif defined(DBGU_BASE)
+#if defined(DBGU_BASE)
 #define DEV_DEBUG_NAME  "dbgu"
 #else
 #define DEV_DEBUG_NAME  "uart0"
