@@ -324,6 +324,7 @@ void NutTimerInit(void)
 #ifdef __CORTEX__
     /* Enable "Data Watchpoint and Trace" Unit which is used for NutMicroDelay() */
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Pos;
+    DWT->CYCCNT = 0;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 #endif
 
