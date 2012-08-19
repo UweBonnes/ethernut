@@ -321,7 +321,7 @@ void NutTimerInit(void)
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
 
-#ifdef __CORTEX__
+#if defined(__CORTEX__) && defined(NUT_MICRODELAY_CM3_CYCCNT)
     /* Enable "Data Watchpoint and Trace" Unit which is used for NutMicroDelay() */
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Pos;
     DWT->CYCCNT = 0;
@@ -389,7 +389,7 @@ void NutMicroDelay(uint32_t us)
 {
 #ifdef __NUT_EMULATION__
     usleep(us);
-#elif defined __CORTEX__
+#elif defined(__CORTEX__) && defined(NUT_MICRODELAY_CM3_CYCCNT)
 
     /* Calculate clock cycles to delay */
     uint32_t cycles = (NutClockGet(NUT_HWCLK_CPU)/1000000) * us;
@@ -411,7 +411,6 @@ void NutMicroDelay(uint32_t us)
     while (DWT->CYCCNT - start <= cycles) {
         _NOP();
     }
-
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 

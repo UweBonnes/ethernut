@@ -432,6 +432,16 @@ nutos =
                               "determine a rough approximation.",
                 flavor = "booldata",
                 file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUT_MICRODELAY_CM3_CYCCNT",
+                brief = "Enable usage of Cortex M3 CoreDebug Cycle Counter to for NutMicroDelay",
+                description = "The CoreDebug Unit Cycle Counter can be used to exactly calculate the elapsed.\n\n"..
+                              "CPU cycles. Therefor it is well suited to be used for exact delay loops"..
+                              "Unfortunately it seems that it can not be controlled by software on each "..
+                              "CPU. So we keep this optional.",
+                flavor = "boolean",
+                file = "include/cfg/os.h"
             }
         }
     },
