@@ -60,7 +60,7 @@
 #elif defined(ELEKTOR_IR1)
 #include <arch/arm/board/elektor_ir1.h>
 #elif defined(ENET_SAM7X)
-#include <arch/avr/board/enet_sam7x.h>
+#include <arch/arm/board/enet_sam7x.h>
 #elif defined(ETHERNUT1)
 #include <arch/avr/board/ethernut1.h>
 #elif defined(ETHERNUT2)
