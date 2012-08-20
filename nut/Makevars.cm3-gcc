@@ -53,20 +53,6 @@ CXXFLAGS_MCU = $(CFLAGS_MCU) -fno-delete-null-pointer-checks -fno-exceptions -fn
 CFLAGS_ASM = -Wa,-a=$(@:.o=.lst)
 CFLAGS_WRN = -Wall -Wstrict-prototypes -Werror
 CFLAGS_OPT = -Os
-# Temporarily fixes alignment problems with STM32 CAN driver.
-ifeq ($(PLATFORM), STM32_COMSTICK)
-CFLAGS_OPT += -fno-strict-aliasing
-endif
-ifeq ($(PLATFORM), STM32_CAN)
-CFLAGS_OPT += -fno-strict-aliasing
-endif
-ifeq ($(PLATFORM), STM3210E_EVAL)
-CFLAGS_OPT += -fno-strict-aliasing
-endif
-ifeq ($(PLATFORM), USPS)
-CFLAGS_OPT += -fno-strict-aliasing
-endif
-# End of STM32 CAN driver fix.
 CFLAGS     = $(CFLAGS_MCU) $(CFLAGS_OPT) $(CFLAGS_WRN) $(CFLAGS_ASM) $(UCPFLAGS) $(DEFS)
 
 # C++ compiler options.
