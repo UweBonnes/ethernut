@@ -66,6 +66,7 @@
 /* define RTC */
 
 #ifndef RTC_CHIP
+#include <dev/lpc17xx_rtc.h>
 #define RTC_CHIP rtcLpc17xx
 #endif
 
