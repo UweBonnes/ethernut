@@ -221,7 +221,6 @@
 
 #ifdef __CORTEX__
 #include <arch/cm3/interrupt.h>
-#include <arch/cm3/systick.h>
 #endif
 
 #ifdef NUTDEBUG
