@@ -68,7 +68,6 @@ nutarch_cm3 =
         requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "HW_MCU_CM3" },
         sources = { "cm3/cmsis/core_cm3.c",
                     "cm3/cmsis/cortex_init.c",
---                       "cm3/cmsis/cortex_sysctl.c",
            },
         options =
         {
