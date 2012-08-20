@@ -60,7 +60,6 @@
 #warning "Unknown CM3 family"
 #endif
 #include <arch/cm3/cortex_interrupt.h>
-#include <arch/cm3/cortex_clk.h>
 /*
 #include <arch/cm3/cortex_sysctl.h>
 */

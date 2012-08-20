@@ -59,14 +59,15 @@
 #include <arch/cm3/core_cm3.h>
 #endif
 #include <arch/cm3/cortex_interrupt.h>
-#include <arch/cm3/cortex_clk.h>
 #if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32_clk.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #elif defined(MCU_LPC176x)
 #include <arch/cm3/nxp/lpc176x.h>
+#include <arch/cm3/nxp/lpc176x_clk.h>
 #elif defined(MCU_LPC177x_8x)
 #include <arch/cm3/nxp/lpc177x_8x.h>
+#include <arch/cm3/nxp/lpc177x_8x_clk.h>
 #else
 #warning "Unknown CM3 family"
 #endif
