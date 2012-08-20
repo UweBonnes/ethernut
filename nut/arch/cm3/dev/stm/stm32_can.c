@@ -843,6 +843,13 @@ static int CANGetFreeMailbox(NUTCANBUS *bus)
     return CAN_TXBUF_FULL;
 }
 
+/* Fixme: This definition has to go to a common header to be agreed on*/
+#if defined(GCC)
+#define __MAY_ALIAS (__attribute__((__may_alias__)))
+#else
+#define __MAY_ALIAS
+#endif
+
 /**
  * Send a CAN message
  *
@@ -855,6 +862,8 @@ static int StmCanSendMsg(NUTCANBUS  *bus, CANFRAME *frame)
 {
     CAN_TypeDef *CANx = (CAN_TypeDef*)bus->bus_base;
     __IO uint32_t *CANBBx = bus->bb_base;
+    uint32_t __MAY_ALIAS *tdlr = (uint32_t*) &(frame->byte[0]);
+    uint32_t __MAY_ALIAS *tdhr = (uint32_t*) &(frame->byte[4]);
     uint32_t tir;
     CAN_TxMailBox_TypeDef *tx_mailbox;
     int index = CANGetFreeMailbox(bus);
@@ -866,8 +875,8 @@ static int StmCanSendMsg(NUTCANBUS  *bus, CANFRAME *frame)
     }
 
     tx_mailbox = &(CANx->sTxMailBox[index]);
-    tx_mailbox->TDLR = *(uint32_t*) &(frame->byte[0]);
-    tx_mailbox->TDHR = *(uint32_t*) &(frame->byte[4]);
+    tx_mailbox->TDLR = *tdlr;
+    tx_mailbox->TDHR = *tdhr;
     tx_mailbox->TDTR = frame->len;
     if (frame->ext)
     {
@@ -912,8 +921,10 @@ int CanInput(NUTCANBUS *bus, CANFRAME * frame)
 {
     CANBUSINFO *ci = bus->bus_ci;
     __IO uint32_t *CANBBx = bus->bb_base;
+    uint32_t __MAY_ALIAS *rdlr = (uint32_t*) &(frame->byte[0]);
+    uint32_t __MAY_ALIAS *rdhr = (uint32_t*) &(frame->byte[4]);
     CANBUFFER *rxbuf = &(ci->can_RxBuf);
-   CAN_FIFOMailBox_TypeDef *dataPtr ;
+    CAN_FIFOMailBox_TypeDef *dataPtr ;
 
     while (rxbuf->datalength == 0)
     {
@@ -940,8 +951,8 @@ int CanInput(NUTCANBUS *bus, CANFRAME * frame)
         frame->id &= 0x3ff;
     frame->ext = (dataPtr->RIR & CAN_RI0R_IDE)?1:0;
     frame->rtr = (dataPtr->RIR & CAN_RI0R_RTR)?1:0;
-    *(uint32_t*)&frame->byte[0] = dataPtr->RDLR;
-    *(uint32_t*)&frame->byte[4] = dataPtr->RDHR;
+    *rdlr = dataPtr->RDLR;
+    *rdhr = dataPtr->RDHR;
     frame->len = dataPtr->RDTR & 0xf;
     return 0;
 }
