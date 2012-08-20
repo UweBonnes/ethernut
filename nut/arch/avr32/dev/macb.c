@@ -622,7 +622,7 @@ static int EmacPutPacket(int bufnum, NUTDEVICE * dev, NETBUF * nb)
 *
 * \param mac Six byte unique MAC address.
 */
-static int EmacStart(volatile avr32_macb_t * macb, CONST uint8_t * mac)
+static int EmacStart(volatile avr32_macb_t * macb, const uint8_t * mac)
 {
     unsigned int i;
 

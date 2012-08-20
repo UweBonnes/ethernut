@@ -114,8 +114,8 @@
  * \brief IP checksum definitions.
  */
 
-extern uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len);
-extern uint16_t NutIpChkSum(uint16_t ics, CONST void *buf, int len);
+extern uint16_t NutIpChkSumPartial(uint16_t ics, const void *buf, int len);
+extern uint16_t NutIpChkSum(uint16_t ics, const void *buf, int len);
 
 extern uint32_t NutIpPseudoChkSumPartial(uint32_t src_addr, uint32_t dest_addr, uint8_t protocol, int len);
 

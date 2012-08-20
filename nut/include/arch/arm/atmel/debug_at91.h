@@ -47,9 +47,9 @@
 #include <sys/file.h>
 #include <sys/device.h>
 
-extern NUTFILE *At91DevDebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *At91DevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int At91DevDebugClose(NUTFILE * fp);
-extern int At91DevDebugWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int At91DevDebugWrite(NUTFILE * fp, const void *buffer, int len);
 extern int At91DevDebugRead(NUTFILE * fp, void *buffer, int size);
 extern long At91DevDebugSize(NUTFILE *fp);
 extern int At91DevDebugIOCtl(NUTDEVICE * dev, int req, void *conf);

@@ -187,7 +187,7 @@
 
 #if defined(__AVR_LIBC_VERSION__)
 extern void *calloc(size_t num, size_t size);
-extern char *strdup(CONST char *str);
+extern char *strdup(const char *str);
 #endif
 
 #endif /* _ARCH_AVR_GCC_H_ */

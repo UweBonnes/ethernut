@@ -74,7 +74,7 @@ static prog_char base64etab[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrs
  * \return Newly allocated string containing the encoded data. Must be freed later
  */
 
-char *NutEncodeBase64(CONST char* str)
+char *NutEncodeBase64(const char* str)
 {
     char    *encoded;
     size_t  length;

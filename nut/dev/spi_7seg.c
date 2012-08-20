@@ -168,7 +168,7 @@ typedef struct {
  *      --D--  dp
  */
 /* 7 Segment Display Character Table */
-static CONST uint8_t Seg7CharTab[] = {
+static const uint8_t Seg7CharTab[] = {
     /* ' ' */(0x00),
     /* '!' */(0x28),
     /* '"' */(0x22),
@@ -250,7 +250,7 @@ static CONST uint8_t Seg7CharTab[] = {
  * \param rxbuf Pointer to the receive data buffer, may be set to NULL.
  * \param xlen  Number of byte to receive and/or transmit.
  */
-static int disp7segCommand(NUTSPINODE * node, uint8_t addr, CONST void *txbuf, void *rxbuf, int xlen)
+static int disp7segCommand(NUTSPINODE * node, uint8_t addr, const void *txbuf, void *rxbuf, int xlen)
 {
     int rc = -1;
     NUTSPIBUS *bus;
@@ -454,10 +454,10 @@ static int Spi7SegIOCtl(NUTDEVICE * dev, int req, void *conf)
  *
  * \return Number of characters sent.
  */
-int Spi7segWrite(NUTFILE * fp, CONST void *buffer, int len)
+int Spi7segWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int i=len;
-    CONST char *cp = buffer;
+    const char *cp = buffer;
 
     NUTASSERT(fp->nf_dev != NULL);
 
@@ -503,7 +503,7 @@ void Spi7segDot(NUTDEVICE * dev, uint8_t pos, uint8_t act)
  *
  * \return 0 on success or -1 if no valid 7seg was found.
  */
-NUTFILE *Spi7SegOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *Spi7SegOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp;
 

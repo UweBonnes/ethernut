@@ -89,7 +89,7 @@
  *
  * \return The original destination pointer.
  */
-char *strcat(char *dst, CONST char *src)
+char *strcat(char *dst, const char *src)
 {
     char *ret = dst;
 

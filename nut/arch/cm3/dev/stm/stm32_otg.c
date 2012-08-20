@@ -201,7 +201,7 @@ THREAD(OTGTimerEvent, arg)
     }
 }
 
-static int Stm32OtgWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int Stm32OtgWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int c = len;
     uint8_t *cp = (uint8_t *) buffer;

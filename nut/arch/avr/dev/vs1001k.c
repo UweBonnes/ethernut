@@ -434,7 +434,7 @@ static INLINE void VsSdiPutByte(uint8_t b)
  * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST uint8_t * data, uint16_t len)
+static int VsSdiWrite(const uint8_t * data, uint16_t len)
 {
     uint16_t try = 5000;
 

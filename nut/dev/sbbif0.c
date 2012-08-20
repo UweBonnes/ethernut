@@ -433,9 +433,9 @@ uint8_t Sbbi0Byte(uint8_t data)
  *              tranmit buffer, in which case the transmitted bytes are
  *              replaced by the bytes received.
  */
-void Sbbi0Transact(CONST void *wdata, void *rdata, size_t len)
+void Sbbi0Transact(const void *wdata, void *rdata, size_t len)
 {
-    CONST uint8_t *wp = (CONST uint8_t *)wdata;
+    const uint8_t *wp = (const uint8_t *)wdata;
 
     if (rdata) {
         uint8_t *rp = (uint8_t *)rdata;

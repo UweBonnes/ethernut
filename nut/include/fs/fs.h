@@ -156,12 +156,12 @@ typedef struct _FSCP_VOL_MOUNT {
 } FSCP_VOL_MOUNT;
 
 typedef struct _FSCP_RENAME {
-    CONST char *par_old;
-    CONST char *par_new;
+    const char *par_old;
+    const char *par_new;
 } FSCP_RENAME;
 
 typedef struct _FSCP_STATUS {
-    CONST char *par_path;
+    const char *par_path;
     struct stat *par_stp;
 } FSCP_STATUS;
 

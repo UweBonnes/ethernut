@@ -106,7 +106,7 @@ int NutRtcGetTime(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutRtcSetTime(CONST struct _tm *tm)
+int NutRtcSetTime(const struct _tm *tm)
 {
     if (reg_rtc && reg_rtc->rtc_settime && tm) {
         return (*reg_rtc->rtc_settime) (reg_rtc, tm);
@@ -149,7 +149,7 @@ int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags)
+int NutRtcSetAlarm(int idx, const struct _tm *tm, int aflags)
 {
     if (reg_rtc && reg_rtc->rtc_setalarm) {
         return (*reg_rtc->rtc_setalarm) (reg_rtc, idx, tm, aflags);

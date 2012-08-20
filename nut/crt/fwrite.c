@@ -76,7 +76,7 @@
  * \warning The function will not check, if the stream pointer points
  *          to a valid stream.
  */
-size_t fwrite(CONST void *data, size_t size, size_t count, FILE * stream)
+size_t fwrite(const void *data, size_t size, size_t count, FILE * stream)
 {
     size_t rc;
 

@@ -88,10 +88,10 @@
  * \return Zero if the two regions are identical, otherwise returns the
  *         difference between the first two differing bytes.
  */
-int memcmp(CONST void *s1, CONST void *s2, size_t n)
+int memcmp(const void *s1, const void *s2, size_t n)
 {
     if (n) {
-        CONST unsigned char *p1 = s1, *p2 = s2;
+        const unsigned char *p1 = s1, *p2 = s2;
 
         do {
             if (*p1++ != *p2++) {

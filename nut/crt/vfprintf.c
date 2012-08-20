@@ -65,7 +65,7 @@
  * \return The number of characters written or a negative value to
  *         indicate an error.
  */
-int vfprintf(FILE * stream, CONST char *fmt, va_list ap)
+int vfprintf(FILE * stream, const char *fmt, va_list ap)
 {
     NUTASSERT(stream != NULL);
     return _putf(_write, stream->iob_fd, fmt, ap);

@@ -81,8 +81,8 @@ struct stat {
 
 /*@}*/
 
-extern int stat(CONST char *path, struct stat *s);
+extern int stat(const char *path, struct stat *s);
 extern int fstat(int fh, struct stat *s);
-extern int mkdir(CONST char *path, int mode);
+extern int mkdir(const char *path, int mode);
 
 #endif

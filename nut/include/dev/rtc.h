@@ -83,9 +83,9 @@ struct _NUTRTC {
     void *dcb;
     int (*rtc_init) (NUTRTC *rtc);
     int (*rtc_gettime) (NUTRTC *rtc, struct _tm *);
-    int (*rtc_settime) (NUTRTC *rtc, CONST struct _tm *);
+    int (*rtc_settime) (NUTRTC *rtc, const struct _tm *);
     int (*rtc_getalarm) (NUTRTC *rtc, int idx, struct _tm *, int *);
-    int (*rtc_setalarm) (NUTRTC *rtc, int idx, CONST struct _tm *, int);
+    int (*rtc_setalarm) (NUTRTC *rtc, int idx, const struct _tm *, int);
     int (*rtc_getstatus) (NUTRTC *rtc, uint32_t *);
     int (*rtc_clrstatus) (NUTRTC *rtc, uint32_t);
     HANDLE alarm;
@@ -94,10 +94,10 @@ struct _NUTRTC {
 extern int NutRegisterRtc(NUTRTC *rtc);
 
 extern int NutRtcGetTime(struct _tm *tm);
-extern int NutRtcSetTime(CONST struct _tm *tm);
+extern int NutRtcSetTime(const struct _tm *tm);
 
 extern int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags);
-extern int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags);
+extern int NutRtcSetAlarm(int idx, const struct _tm *tm, int aflags);
 
 extern int NutRtcGetStatus(uint32_t *sflags);
 extern int NutRtcClearStatus(uint32_t sflags);

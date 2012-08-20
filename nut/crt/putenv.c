@@ -47,7 +47,7 @@
 #if defined(__arm__) || defined(__AVR32__)
 int putenv(char *string)
 #else
-int putenv(CONST char *string)
+int putenv(const char *string)
 #endif
 {
     int rc = -1;

@@ -84,9 +84,9 @@
  * \return The number of characters that precede the terminating NUL
  *         character.
  */
-size_t strlen(CONST char *str)
+size_t strlen(const char *str)
 {
-    CONST char *s;
+    const char *s;
 
     for (s = str; *s; ++s);
     return (s - str);

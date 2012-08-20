@@ -69,6 +69,6 @@ extern NUTDEVICE devSpi7SEG;
 #define DOT_7SEG_FLIP 2     /*< \brief Invert the decimal dot of a digit. */
 
 void Spi7segDot(NUTDEVICE * dev, uint8_t pos, uint8_t act);
-extern int Spi7segCommand(NUTDEVICE * dev, uint8_t addr, CONST void *txbuf, void *rxbuf, int xlen);
+extern int Spi7segCommand(NUTDEVICE * dev, uint8_t addr, const void *txbuf, void *rxbuf, int xlen);
 
 #endif

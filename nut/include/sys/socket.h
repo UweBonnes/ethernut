@@ -188,12 +188,12 @@
  */
 
 extern TCPSOCKET *NutTcpCreateSocket(void);
-extern int NutTcpSetSockOpt(TCPSOCKET *sock, int optname, CONST void *optval, int optlen);
+extern int NutTcpSetSockOpt(TCPSOCKET *sock, int optname, const void *optval, int optlen);
 extern int NutTcpGetSockOpt(TCPSOCKET *sock, int optname, void *optval, int optlen);
 extern int NutTcpConnect(TCPSOCKET *sock, uint32_t addr, uint16_t port);
 extern int NutTcpAccept(TCPSOCKET *sock, uint16_t port);
 extern int NutTcpInput(NUTDEVICE * dev, NETBUF *nb);
-extern int NutTcpSend(TCPSOCKET *sock, CONST void *data, int len);
+extern int NutTcpSend(TCPSOCKET *sock, const void *data, int len);
 #ifdef __HARVARD_ARCH__
 extern int NutTcpSend_P(TCPSOCKET *sock, PGM_P data, int len);
 #endif
@@ -206,7 +206,7 @@ extern int NutTcpAbortSocket(TCPSOCKET *sock, uint16_t last_error);
 extern void NutTcpDiscardBuffers(TCPSOCKET * sock);
 
 extern int NutTcpDeviceRead(TCPSOCKET *sock, void *buffer, int size);
-extern int NutTcpDeviceWrite(TCPSOCKET *sock, CONST void *buffer, int size);
+extern int NutTcpDeviceWrite(TCPSOCKET *sock, const void *buffer, int size);
 #ifdef __HARVARD_ARCH__
 extern int NutTcpDeviceWrite_P(TCPSOCKET *sock, PGM_P buffer, int size);
 #endif
@@ -218,7 +218,7 @@ extern int NutUdpSendTo(UDPSOCKET *sock, uint32_t addr, uint16_t port, void *dat
 extern int NutUdpReceiveFrom(UDPSOCKET *sock, uint32_t *addr, uint16_t *port, void *data, int size, uint32_t timeout);
 extern int NutUdpDestroySocket(UDPSOCKET *sock);
 extern UDPSOCKET *NutUdpFindSocket(uint16_t port);
-extern int NutUdpSetSockOpt(UDPSOCKET *sock, int optname, CONST void *optval, int optlen);
+extern int NutUdpSetSockOpt(UDPSOCKET *sock, int optname, const void *optval, int optlen);
 extern int NutUdpGetSockOpt(UDPSOCKET *sock, int optname, void *optval, int optlen);
 
 #ifdef NUT_UDP_ICMP_SUPPORT

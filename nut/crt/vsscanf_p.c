@@ -94,9 +94,9 @@ static int _sgetb(int fd, void *buffer, size_t count)
  *         of the stream is reached before the first conversion.
  *
  */
-int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap)
+int vsscanf_P(const char *string, PGM_P fmt, va_list ap)
 {
-    CONST char *ptr = string;
+    const char *ptr = string;
     int rc;
     char *rp;
     size_t rl;

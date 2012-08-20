@@ -111,10 +111,10 @@ typedef long word;      /* "word" used for optimal copy speed */
  * This is the routine that actually implements
  * (the portable versions of) bcopy, memcpy, and memmove.
  */
-void *memcpy(void *dst0, CONST void *src0, size_t length)
+void *memcpy(void *dst0, const void *src0, size_t length)
 {
     register char *dst = dst0;
-    register CONST char *src = src0;
+    register const char *src = src0;
     register size_t t;
 
     if (length == 0 || dst == src)      /* nothing to do */

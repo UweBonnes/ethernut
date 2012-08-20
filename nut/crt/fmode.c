@@ -67,7 +67,7 @@
  *
  * \return Flags or EOF to indicate an error.
  */
-int _fmode(CONST char *mode)
+int _fmode(const char *mode)
 {
     int mflags;
     int pflags;

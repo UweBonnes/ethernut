@@ -1016,6 +1016,6 @@ extern void Sbbi0DeselectDevice(ureg_t ix);
 extern void Sbbi0NegSelectDevice(ureg_t ix);
 extern void Sbbi0NegDeselectDevice(ureg_t ix);
 extern uint8_t Sbbi0Byte(uint8_t data);
-extern void Sbbi0Transact(CONST void *wdata, void *rdata, size_t len);
+extern void Sbbi0Transact(const void *wdata, void *rdata, size_t len);
 
 #endif

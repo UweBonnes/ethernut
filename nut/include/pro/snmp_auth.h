@@ -45,7 +45,7 @@
 
 #include <pro/snmp_agent.h>
 
-extern CONST uint8_t *SnmpAuthParse(CONST uint8_t *, size_t *, uint8_t *, size_t *, long *);
+extern const uint8_t *SnmpAuthParse(const uint8_t *, size_t *, uint8_t *, size_t *, long *);
 extern uint8_t *SnmpAuthBuild(SNMP_SESSION *, uint8_t *, size_t *, size_t);
 
 #endif

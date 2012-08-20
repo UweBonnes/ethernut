@@ -67,7 +67,7 @@
  * \warning The function will not check, if the stream pointer points
  *          to a valid stream.
  */
-int fputs(CONST char *string, FILE * stream)
+int fputs(const char *string, FILE * stream)
 {
     NUTASSERT(stream != NULL);
     NUTASSERT(string != NULL);

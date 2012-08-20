@@ -537,7 +537,7 @@ int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num)
  * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
-int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
+int SpiMmcBlockWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     MMCFCB *fcb;
     NUTDEVICE *dev;
@@ -696,7 +696,7 @@ int SpiMmcUnmount(NUTFILE * nfp);
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *SpiMmcMount(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     int partno = 0;
     int i;

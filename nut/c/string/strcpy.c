@@ -86,7 +86,7 @@
  *
  * \return The original destination pointer.
  */
-char *strcpy(char *dst, CONST char *src)
+char *strcpy(char *dst, const char *src)
 {
     char *save = dst;
 

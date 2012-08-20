@@ -64,7 +64,7 @@
  *         function is successful or NULL if the requested
  *         amount of memory is not available.
  */
-void *dbg_malloc(size_t len, CONST char *file, int line)
+void *dbg_malloc(size_t len, const char *file, int line)
 {
     void *p;
 
@@ -84,7 +84,7 @@ void *dbg_malloc(size_t len, CONST char *file, int line)
  * \param p Points to a memory block previously allocated
  *          through a call to malloc().
  */
-void dbg_free(void *p, CONST char *file, int line)
+void dbg_free(void *p, const char *file, int line)
 {
     NutHeapDebugRootFree(&heapFreeList, p, file, line);
 }

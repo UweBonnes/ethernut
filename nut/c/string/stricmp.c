@@ -86,7 +86,7 @@ typedef unsigned char uint8_t;
  * together for a case independent comparison.  The mappings are
  * based upon ascii character sequences.
  */
-static CONST uint8_t charmap[] = {
+static const uint8_t charmap[] = {
     '\000', '\001', '\002', '\003', '\004', '\005', '\006', '\007',
     '\010', '\011', '\012', '\013', '\014', '\015', '\016', '\017',
     '\020', '\021', '\022', '\023', '\024', '\025', '\026', '\027',
@@ -135,11 +135,11 @@ static CONST uint8_t charmap[] = {
  *         than the second string after translation of each corresponding
  *         character to lower-case.
  */
-int stricmp(CONST char *s1, CONST char *s2)
+int stricmp(const char *s1, const char *s2)
 {
-    CONST uint8_t *cm = charmap;
-    CONST uint8_t *us1 = (CONST uint8_t *) s1;
-    CONST uint8_t *us2 = (CONST uint8_t *) s2;
+    const uint8_t *cm = charmap;
+    const uint8_t *us1 = (const uint8_t *) s1;
+    const uint8_t *us2 = (const uint8_t *) s2;
 
     while (cm[*us1] == cm[*us2++]) {
         if (*us1++ == '\0') {
@@ -165,12 +165,12 @@ int stricmp(CONST char *s1, CONST char *s2)
  *         than the second string after translation of each corresponding
  *         character to lower-case.
  */
-int strnicmp(CONST char *s1, CONST char *s2, size_t n)
+int strnicmp(const char *s1, const char *s2, size_t n)
 {
     if (n != 0) {
-        CONST uint8_t *cm = charmap;
-        CONST uint8_t *us1 = (CONST uint8_t *) s1;
-        CONST uint8_t *us2 = (CONST uint8_t *) s2;
+        const uint8_t *cm = charmap;
+        const uint8_t *us1 = (const uint8_t *) s1;
+        const uint8_t *us2 = (const uint8_t *) s2;
 
         do {
             if (cm[*us1] != cm[*us2++]) {

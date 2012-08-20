@@ -63,9 +63,9 @@ extern void At91SpiBus1Interrupt(void *arg);
 
 extern int At91SpiSetup(NUTSPINODE * node);
 extern int At91SpiBusNodeInit(NUTSPINODE * node);
-extern int At91SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
+extern int At91SpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int At91SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int At91SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
 extern int At91SpiBusWait(NUTSPINODE * node, uint32_t tmo);
 
 #endif

@@ -432,7 +432,7 @@ int AvrTargetChipErase(void)
  * \param data Points to the data.
  *
  */
-void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data)
+void AvrTargetPageLoad(uint32_t page, const uint8_t * data)
 {
     ureg_t bc;
 
@@ -472,7 +472,7 @@ int AvrTargetPageWrite(uint32_t page)
  * \return 0 if the buffer contents equals the memory page contents or
  *         -1 if it doesn't.
  */
-int AvrTargetPageVerify(uint32_t page, CONST uint8_t * data)
+int AvrTargetPageVerify(uint32_t page, const uint8_t * data)
 {
     uint32_t waddr = page << 6;
     ureg_t bc;

@@ -163,7 +163,7 @@ size_t ConfigSize(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int ConfigStation(uint8_t idx, CONST char * url)
+int ConfigStation(uint8_t idx, const char * url)
 {
     uint32_t ip;
     uint16_t port = 80;

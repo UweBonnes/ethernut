@@ -504,11 +504,11 @@ static int HelixPlayerFlush(NUTDEVICE *dev, uint32_t tmo)
  *
  * \return Number of characters sent.
  */
-static int HelixWrite(NUTFILE * nfp, CONST void *data, int len)
+static int HelixWrite(NUTFILE * nfp, const void *data, int len)
 {
     int rc = 0;
     uint8_t *bp;
-    CONST uint8_t *dp;
+    const uint8_t *dp;
     size_t rbytes;
     HXDCB *dcb = nfp->nf_dev->dev_dcb;
 
@@ -575,7 +575,7 @@ static int HelixWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *HelixOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *HelixOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nfp;
 

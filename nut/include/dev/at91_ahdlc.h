@@ -62,9 +62,9 @@ extern int AhdlcAt91Input(NUTDEVICE *dev);
 extern int AhdlcAt91Output(NUTDEVICE *dev);
 
 extern int AhdlcAt91Read(NUTFILE *fp, void *buffer, int size);
-extern int AhdlcAt91Write(NUTFILE *fp, CONST void *buffer, int len);
+extern int AhdlcAt91Write(NUTFILE *fp, const void *buffer, int len);
 
-extern NUTFILE *AhdlcAt91Open(NUTDEVICE *dev, CONST char *name, int mode, int acc);
+extern NUTFILE *AhdlcAt91Open(NUTDEVICE *dev, const char *name, int mode, int acc);
 extern int AhdlcAt91Close(NUTFILE *fp);
 
 #endif

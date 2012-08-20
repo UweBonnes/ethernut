@@ -447,9 +447,9 @@ extern int AceGetRaw(uint8_t * cp);
 extern int AcePutRaw(uint8_t ch);
 
 extern int AceRead(NUTFILE * fp, void *buffer, int size);
-extern int AceWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int AceWrite(NUTFILE * fp, const void *buffer, int len);
 extern int AceWrite_P(NUTFILE * fp, PGM_P buffer, int len);
-extern NUTFILE *AceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *AceOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern long AceSize(NUTFILE * fp);
 extern int AceClose(NUTFILE * fp);
 

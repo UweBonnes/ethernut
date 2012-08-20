@@ -53,12 +53,12 @@ extern NUTRTC rtcPcf8563;
 extern int PcfRtcInit(NUTRTC *rtc);
 
 extern int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm);
-extern int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm);
+extern int PcfRtcSetClock(NUTRTC *rtc, const struct _tm *tm);
 extern int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs);
-extern int PcfRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs);
+extern int PcfRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs);
 extern int PcfRtcGetStatus(NUTRTC *rtc, uint32_t *sflgs);
 extern int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs);
 extern int PcfRtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
-extern int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t len);
+extern int PcfRtcWrite(int nv, const uint8_t *buff, size_t len);
 
 #endif

@@ -62,7 +62,7 @@
  *         The return value is EOF, ff an error occurs or if the end
  *         of the stream is reached before the first conversion.
  */
-int scanf(CONST char *fmt, ...)
+int scanf(const char *fmt, ...)
 {
     int rc;
     va_list ap;

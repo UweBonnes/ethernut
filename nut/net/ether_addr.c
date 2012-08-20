@@ -68,10 +68,10 @@ static char hexdigit[] = "0123456789ABCDEF";
  * \return Pointer to a static string that contains the converted
  *         binary address.
  */
-uint8_t *ether_aton(CONST char *str)
+uint8_t *ether_aton(const char *str)
 {
     static uint8_t mac[6];
-    CONST char *cp = str;
+    const char *cp = str;
     int n = 0;
 
     memset(mac, 0, sizeof(mac));
@@ -107,7 +107,7 @@ uint8_t *ether_aton(CONST char *str)
  * \return Pointer to a static string that contains the converted
  *         ASCII string.
  */
-char *ether_ntoa(CONST uint8_t *mac)
+char *ether_ntoa(const uint8_t *mac)
 {
     static char str[18];
     uint_fast8_t i;

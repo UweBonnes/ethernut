@@ -200,8 +200,8 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
     char *cp;
     REQUEST * req;
-    CONST char *cgi_bin = cgiBinPath ? cgiBinPath : "cgi-bin/";
-    CONST char * tmp;
+    const char *cgi_bin = cgiBinPath ? cgiBinPath : "cgi-bin/";
+    const char * tmp;
     size_t len;
 
     tmp = cgi_bin;

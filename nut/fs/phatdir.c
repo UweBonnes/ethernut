@@ -163,7 +163,7 @@ static INLINE uint8_t GenShortNameChecksum(char *sfn)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GenShortName(NUTFILE * ndp, CONST char *lfn, char *sfn)
+static int GenShortName(NUTFILE * ndp, const char *lfn, char *sfn)
 {
     int rc = -1;
     int i;
@@ -278,7 +278,7 @@ static int GenShortName(NUTFILE * ndp, CONST char *lfn, char *sfn)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entry)
+static int PhatDirEntryAlloc(NUTFILE * ndp, const char *fname, PHATDIRENT * entry)
 {
     int rc;
     int pos = 0;
@@ -472,7 +472,7 @@ static int PhatDirEntryRelease(NUTFILE * ndp, uint32_t pos, int lfncnt)
  *
  * \return 0 on success. Otherwise -1 is returned.
  */
-int PhatDirEntryCreate(NUTFILE * ndp, CONST char *name, int acc, PHATDIRENT * dirent)
+int PhatDirEntryCreate(NUTFILE * ndp, const char *name, int acc, PHATDIRENT * dirent)
 {
     dirent->dent_attr = (uint8_t) acc;
     GetDosTimeStamp(&dirent->dent_ctime, &dirent->dent_cdate);
@@ -636,7 +636,7 @@ static int PhatDirEntryRead(NUTFILE * ndp, PHATFIND * srch)
  *
  * \return 0 if an entry was found, otherwise -1 is returned.
  */
-int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, uint32_t attmsk, PHATFIND * srch)
+int PhatDirEntryFind(NUTFILE * ndp, const char *spec, uint32_t attmsk, PHATFIND * srch)
 {
     int rc;
     PHATFIND *temps;
@@ -677,7 +677,7 @@ int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, uint32_t attmsk, PHATFIND 
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-NUTFILE *PhatDirOpenParent(NUTDEVICE * dev, CONST char *path, CONST char **basename)
+NUTFILE *PhatDirOpenParent(NUTDEVICE * dev, const char *path, const char **basename)
 {
     NUTFILE *rc = NUTFILE_EOF;
     char *parent;
@@ -698,10 +698,10 @@ NUTFILE *PhatDirOpenParent(NUTDEVICE * dev, CONST char *path, CONST char **basen
  *
  * \return 0 on success, -1 otherwise.
  */
-int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_path)
+int PhatDirRenameEntry(NUTDEVICE * dev, const char *old_path, const char *new_path)
 {
     int rc = -1;
-    CONST char *fname;
+    const char *fname;
     NUTFILE *old_ndp;
     NUTFILE *new_ndp;
     PHATFIND *srch;
@@ -789,12 +789,12 @@ int PhatDirReleaseChain(NUTDEVICE * dev, PHATDIRENT *dent)
  *
  * \return 0 if successful. Otherwise returns an error code.
  */
-int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, uint32_t flags)
+int PhatDirDelEntry(NUTDEVICE * dev, const char *path, uint32_t flags)
 {
     int rc = -1;
     PHATFIND *srch;
     NUTFILE *ndp;
-    CONST char *fname;
+    const char *fname;
 
     /* Open the parent directory. */
     if ((ndp = PhatDirOpenParent(dev, path, &fname)) != NUTFILE_EOF) {
@@ -823,7 +823,7 @@ int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, uint32_t flags)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath)
+NUTFILE *PhatDirOpen(NUTDEVICE * dev, const char *dpath)
 {
     NUTFILE *ndp;
     PHATFILE *dfcb;
@@ -1153,10 +1153,10 @@ int PhatDirRemove(NUTDEVICE * dev, char *path)
  *
  * return 0 on success, -1 otherwise.
  */
-int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *stp)
+int PhatDirEntryStatus(NUTDEVICE * dev, const char *path, struct stat *stp)
 {
     int rc;
-    CONST char *fname;
+    const char *fname;
     NUTFILE *ndp;
     PHATFIND *srch;
     unsigned int val;

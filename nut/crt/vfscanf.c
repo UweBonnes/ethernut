@@ -63,7 +63,7 @@
  *         of the stream is reached before the first conversion.
  *
  */
-int vfscanf(FILE * stream, CONST char *fmt, va_list ap)
+int vfscanf(FILE * stream, const char *fmt, va_list ap)
 {
     return _getf(_read, _fileno(stream), fmt, ap);
 }

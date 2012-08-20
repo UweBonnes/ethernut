@@ -213,11 +213,11 @@ struct _TERMDCB {
 
 extern int TermInit(NUTDEVICE * dev);
 extern int TermIOCtl(NUTDEVICE * dev, int req, void *conf);
-extern int TermWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int TermWrite(NUTFILE * fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int TermWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *TermOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *TermOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int TermClose(NUTFILE * fp);
 
 #endif

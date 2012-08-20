@@ -289,7 +289,7 @@ static int FlashUnitRead(NUTSERIALFLASH * ifc, blknum_t b, sf_unit_t unit, int u
 /*!
  * \brief Write unit.
  */
-static int FlashUnitWrite(NUTSERIALFLASH * ifc, blknum_t b, sf_unit_t unit, int upos, CONST void *data, int len)
+static int FlashUnitWrite(NUTSERIALFLASH * ifc, blknum_t b, sf_unit_t unit, int upos, const void *data, int len)
 {
     int rc = ifc->sf_unit_size - upos;
 
@@ -355,7 +355,7 @@ static int FlashReadEntry(NUTSERIALFLASH * ifc, blknum_t b, ENTRYHEAD * eh, char
 /*!
  * \brief Compare entry name of a given block.
  */
-static int FlashBlockCmpEntryName(NUTSERIALFLASH * ifc, blknum_t b, CONST char *name, uint8_t len)
+static int FlashBlockCmpEntryName(NUTSERIALFLASH * ifc, blknum_t b, const char *name, uint8_t len)
 {
     return (*ifc->sf_compare) (ifc, b * UFLASH_BLOCK_UNITS + ifc->sf_rsvbot, sizeof(BLOCKHEAD) + sizeof(ENTRYHEAD), name, len);
 }
@@ -363,7 +363,7 @@ static int FlashBlockCmpEntryName(NUTSERIALFLASH * ifc, blknum_t b, CONST char *
 /*!
  * \brief Write entry of a given block.
  */
-static int FlashWriteEntry(NUTSERIALFLASH * ifc, blknum_t b, CONST ENTRYHEAD * eh, CONST char *name)
+static int FlashWriteEntry(NUTSERIALFLASH * ifc, blknum_t b, const ENTRYHEAD * eh, const char *name)
 {
     int rc;
 
@@ -866,7 +866,7 @@ static long EntryScan(UFLASHVOLUME * vol, blknum_t lbe, time_t * mod)
  *             Otherwise the search starts at the specified block for the
  *             next entry that starts with the given name.
  */
-static int EntrySearchNext(UFLASHVOLUME * vol, CONST char *name, ENTRYHEAD * eh, blknum_t lbs)
+static int EntrySearchNext(UFLASHVOLUME * vol, const char *name, ENTRYHEAD * eh, blknum_t lbs)
 {
     blknum_t lbe;
     blknum_t b;
@@ -899,7 +899,7 @@ static int EntrySearchNext(UFLASHVOLUME * vol, CONST char *name, ENTRYHEAD * eh,
  *
  * \param vol Pointer to the information structure of a mounted volume.
  */
-static int EntrySearch(UFLASHVOLUME * vol, CONST char *name, ENTRYHEAD * eh)
+static int EntrySearch(UFLASHVOLUME * vol, const char *name, ENTRYHEAD * eh)
 {
     return EntrySearchNext(vol, name, eh, UFLASH_ENTRIES);
 }
@@ -978,7 +978,7 @@ static int EntryTruncate(UFLASHVOLUME * vol, blknum_t lbe)
  *
  * \param vol Pointer to the information structure of a mounted volume.
  */
-static int EntryCreate(UFLASHVOLUME * vol, blknum_t lbe, ENTRYHEAD * eh, CONST char *name)
+static int EntryCreate(UFLASHVOLUME * vol, blknum_t lbe, ENTRYHEAD * eh, const char *name)
 {
     BLOCKHEAD bh;
     BLOCKFOOT bf;
@@ -1011,7 +1011,7 @@ static int EntryCreate(UFLASHVOLUME * vol, blknum_t lbe, ENTRYHEAD * eh, CONST c
 /*!
  * \brief Remove an entry.
  */
-static int UFlashFileRemove(NUTDEVICE * dev, CONST char *name)
+static int UFlashFileRemove(NUTDEVICE * dev, const char *name)
 {
     blknum_t lbe;
     ENTRYHEAD eh;
@@ -1037,7 +1037,7 @@ static int UFlashFileRemove(NUTDEVICE * dev, CONST char *name)
 /*!
  * \brief Retrieve the status of an entry.
  */
-static int UFlashFileStatus(NUTDEVICE * dev, CONST char *name, struct stat *st)
+static int UFlashFileStatus(NUTDEVICE * dev, const char *name, struct stat *st)
 {
     blknum_t lbe;
     ENTRYHEAD eh;
@@ -1088,7 +1088,7 @@ static int UFlashFileStatus(NUTDEVICE * dev, CONST char *name, struct stat *st)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-static NUTFILE *UFlashDirOpen(NUTDEVICE * dev, CONST char *dpath)
+static NUTFILE *UFlashDirOpen(NUTDEVICE * dev, const char *dpath)
 {
     NUTFILE *ndp;
     UFLASHFIND *uff;
@@ -1179,7 +1179,7 @@ static int UFlashDirRead(DIR * dir)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int UFlashFileRename(NUTDEVICE * dev, CONST char *old_path, CONST char *new_path)
+static int UFlashFileRename(NUTDEVICE * dev, const char *old_path, const char *new_path)
 {
     blknum_t lbe;
     blknum_t b;
@@ -1303,7 +1303,7 @@ static long UFlashFileSize(NUTFILE * nfp)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-static NUTFILE *UFlashFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+static NUTFILE *UFlashFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     int rc = -1;
     NUTFILE *nfp = NUTFILE_EOF;
@@ -1510,7 +1510,7 @@ static int UFlashFileRead(NUTFILE * nfp, void *data, int size)
  * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
-static int UFlashFileWrite(NUTFILE * nfp, CONST void *data, int len)
+static int UFlashFileWrite(NUTFILE * nfp, const void *data, int len)
 {
     int u;
     blknum_t b;

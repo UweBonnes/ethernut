@@ -116,8 +116,8 @@ extern uint32_t AvrTargetFusesWriteSafe(uint32_t fuses);
 extern int AvrTargetProgEnable(void);
 extern int AvrTargetPollReady(unsigned int tmo);
 extern int AvrTargetChipErase(void);
-extern void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data);
+extern void AvrTargetPageLoad(uint32_t page, const uint8_t * data);
 extern int AvrTargetPageWrite(uint32_t page);
-extern int AvrTargetPageVerify(uint32_t page, CONST uint8_t * data);
+extern int AvrTargetPageVerify(uint32_t page, const uint8_t * data);
 
 #endif

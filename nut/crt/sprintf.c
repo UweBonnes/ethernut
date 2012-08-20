@@ -62,7 +62,7 @@
  * \return The number of characters written or a negative value to
  *         indicate an error.
  */
-int sprintf(char *buffer, CONST char *fmt, ...)
+int sprintf(char *buffer, const char *fmt, ...)
 {
     int rc;
     va_list ap;

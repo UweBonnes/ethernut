@@ -103,7 +103,7 @@ int PcfRtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
+int PcfRtcWrite(int nv, const uint8_t *buff, size_t cnt)
 {
     return TwMasterTransact(I2C_SLA_RTC, buff, cnt, 0, 0, NUT_WAIT_INFINITE);
 }
@@ -146,7 +146,7 @@ int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
+int PcfRtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint8_t data[8];
 
@@ -206,7 +206,7 @@ int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs)
+int PcfRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs)
 {
     return -1;
 }

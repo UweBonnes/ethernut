@@ -87,7 +87,7 @@
  * \return A pointer to the located character or NULL if the character
  *         does not appear in the string.
  */
-char *strrchr(CONST char *p, int ch)
+char *strrchr(const char *p, int ch)
 {
     char *save;
 

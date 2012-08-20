@@ -234,7 +234,7 @@ static void Lpc17xxEmacSetSpeed(uint8_t enable_100mBit)
  * \return  none;
  */
 
-static void Lpc17xxEmacSetMACAddr(CONST uint8_t * mac)
+static void Lpc17xxEmacSetMACAddr(const uint8_t * mac)
 {
     /* Set the Ethernet MAC Address registers */
     LPC_EMAC->SA0 = ((uint32_t)mac[5] << 8) | (uint32_t)mac[4];

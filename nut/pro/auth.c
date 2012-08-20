@@ -84,7 +84,7 @@ AUTHINFO *authList = 0;
 /*!
  * \brief Look up an authorization entry.
  */
-static AUTHINFO *NutHttpAuthLookup(CONST char *dirname, CONST char *login)
+static AUTHINFO *NutHttpAuthLookup(const char *dirname, const char *login)
 {
     AUTHINFO *auth;
 
@@ -113,7 +113,7 @@ static AUTHINFO *NutHttpAuthLookup(CONST char *dirname, CONST char *login)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutRegisterAuth(CONST char *dirname, CONST char *login)
+int NutRegisterAuth(const char *dirname, const char *login)
 {
     AUTHINFO *auth;
 

@@ -96,7 +96,7 @@
  *
  * \return A pointer to the new string or NULL if allocating memory failed.
  */
-char *dbg_strdup(CONST char *str, CONST char *file, int line)
+char *dbg_strdup(const char *str, const char *file, int line)
 {
     size_t siz;
     char *copy;

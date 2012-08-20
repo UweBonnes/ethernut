@@ -61,7 +61,7 @@
  * \return The number of characters written or a negative value to
  *         indicate an error.
  */
-int printf(CONST char *fmt, ...)
+int printf(const char *fmt, ...)
 {
     int rc;
     va_list ap;

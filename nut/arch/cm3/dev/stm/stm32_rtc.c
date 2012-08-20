@@ -108,7 +108,7 @@ int Stm32RtcGetClock(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int Stm32RtcSetClock(CONST struct _tm *tm)
+int Stm32RtcSetClock(const struct _tm *tm)
 {
    time_t time;
    Stm32RtcRtoffPoll();

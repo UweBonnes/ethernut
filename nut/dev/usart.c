@@ -364,10 +364,10 @@ static size_t UsartFlushOutput(USARTDCB *dcb, size_t added, size_t left)
  * \return The number of bytes written. In case of a write timeout, this
  *         may be less than the specified length.
  */
-static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t lbmode;
     ureg_t cooked;
     uint8_t ch;
@@ -497,7 +497,7 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
-int UsartWrite(NUTFILE * fp, CONST void *buffer, int len)
+int UsartWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return UsartPut(fp->nf_dev, buffer, len, 0);
 }
@@ -525,7 +525,7 @@ int UsartWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return UsartPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return UsartPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 /*!
@@ -577,7 +577,7 @@ int UsartClose(NUTFILE * fp)
  *
  * \todo We may support shared open and use dev_irq as an open counter.
  */
-NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     USARTDCB *dcb = dev->dev_dcb;
     NUTFILE *fp;

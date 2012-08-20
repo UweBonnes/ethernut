@@ -257,10 +257,10 @@
 #if defined(__GNUC__)
 #define NUM2STR(x)  #x
 #define OS_VERSION_STRING(a, b, c, d)   NUM2STR(a) "." NUM2STR(b) "." NUM2STR(c) "." NUM2STR(d)
-static CONST char *os_version_string =
+static const char *os_version_string =
     OS_VERSION_STRING(NUT_VERSION_MAJOR, NUT_VERSION_MINOR, NUT_VERSION_RELEASE, NUT_VERSION_BUILD);
 #else
-static CONST char os_version_string[] = {
+static const char os_version_string[] = {
 #if NUT_VERSION_MAJOR >= 10
     (NUT_VERSION_MAJOR / 10) + '0',
 #endif
@@ -310,7 +310,7 @@ uint32_t NutVersion(void)
  *         may be optionally followed by a space and an additional
  *         release state.
  */
-CONST char *NutVersionString(void)
+const char *NutVersionString(void)
 {
     return os_version_string;
 }

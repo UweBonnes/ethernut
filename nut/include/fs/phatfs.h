@@ -161,9 +161,9 @@ extern NUTDEVICE devPhat1;
 
 extern uint32_t AllocFirstCluster(NUTFILE * nfp);
 
-extern NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc);
+extern NUTFILE *PhatFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc);
 extern int PhatFileClose(NUTFILE * nfp);
-extern int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len);
+extern int PhatFileWrite(NUTFILE * nfp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif

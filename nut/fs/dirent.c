@@ -127,13 +127,13 @@
  *         operations. NULL is returned if the directory cannot be accessed,
  *         or if it cannot allocate enough memory.
  */
-DIR *opendir(CONST char *name)
+DIR *opendir(const char *name)
 {
     DIR *dir = 0;
     NUTDEVICE *dev;
     char dev_name[9];
     uint8_t nidx;
-    CONST char *nptr = name;
+    const char *nptr = name;
 
     /* Extract the device name. */
     for (nidx = 0; *nptr && *nptr != ':' && nidx < 8; nidx++) {

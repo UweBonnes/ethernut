@@ -528,7 +528,7 @@ static int MmCardReadOrVerify(MMCIFC * ifc, uint32_t blk, uint8_t * buf, int vfl
  *
  * \return 0 on success, -1 otherwise.
  */
-static int MmCardWrite(MMCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
+static int MmCardWrite(MMCIFC * ifc, uint32_t blk, const uint8_t * buf)
 {
     int rc = -1;
     int retries = MMC_MAX_WRITE_RETRIES;
@@ -646,7 +646,7 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
  * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
-int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
+int MmCardBlockWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
     uint32_t blk = fcb->fcb_blknum;
@@ -735,7 +735,7 @@ int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *MmCardMount(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     int partno = 0;
     int i;

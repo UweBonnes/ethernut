@@ -295,11 +295,11 @@ static int IrblastFlush(NUTDEVICE * dev)
  *
  * \return number of bytes sent.
  */
-static int IrblastPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+static int IrblastPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc = 0;
     IRBLASTDCB *dcb = dev->dev_dcb;
-    CONST uint16_t *cp;
+    const uint16_t *cp;
     uint16_t ch;
 
     /* Call without data pointer starts transmission */
@@ -339,7 +339,7 @@ static int IrblastPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *
  * \return number of bytes sent.
  */
-static int IrblastWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int IrblastWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return IrblastPut(fp->nf_dev, buffer, len, 0);
 }
@@ -355,7 +355,7 @@ static int IrblastWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 static int IrblastWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return IrblastPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return IrblastPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 /*!
@@ -407,7 +407,7 @@ static int IrblastIOCtl(NUTDEVICE * dev, int req, void *conf)
  *
  * \return 0-success, -1-error.
  */
-static NUTFILE *IrblastOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *IrblastOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     file.nf_next = 0;
     file.nf_dev = dev;

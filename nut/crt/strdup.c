@@ -90,7 +90,7 @@
  *
  * \return A pointer to the new string or NULL if allocating memory failed.
  */
-char *strdup(CONST char *str)
+char *strdup(const char *str)
 {
     size_t siz;
     char *copy;

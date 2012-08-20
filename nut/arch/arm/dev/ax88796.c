@@ -359,7 +359,7 @@ static int NicReset(void)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(const uint8_t * mac)
 {
     uint8_t i;
 

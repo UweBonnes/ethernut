@@ -62,10 +62,10 @@
  * \return Pointer to the first byte past the end of this name/value pair.
  *         Returns NULL on any error.
  */
-CONST uint8_t *SnmpVarParse(CONST uint8_t * data, size_t * dlen, OID * name, size_t * nlen, uint8_t * type,
+const uint8_t *SnmpVarParse(const uint8_t * data, size_t * dlen, OID * name, size_t * nlen, uint8_t * type,
                            uint8_t ** value, size_t * vlen)
 {
-    CONST uint8_t *dp;
+    const uint8_t *dp;
     uint8_t vtype = ASN_SEQUENCE | ASN_CONSTRUCTOR;
     size_t len = *dlen;
 
@@ -111,7 +111,7 @@ CONST uint8_t *SnmpVarParse(CONST uint8_t * data, size_t * dlen, OID * name, siz
  * \return Pointer to the first byte past the end of this name/value pair.
  *         Returns NULL on any error.
  */
-uint8_t *SnmpVarBuild(uint8_t * data, size_t * dlen, CONST OID * name, size_t nlen, uint8_t type, CONST uint8_t * value, size_t vlen)
+uint8_t *SnmpVarBuild(uint8_t * data, size_t * dlen, const OID * name, size_t nlen, uint8_t type, const uint8_t * value, size_t vlen)
 {
     size_t headerLen = 4;
     uint8_t *dp;

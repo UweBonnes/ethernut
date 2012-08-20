@@ -116,7 +116,7 @@
  *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  */
-int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
+int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
 {
 
     uint8_t cf;                 /* Character from format. */

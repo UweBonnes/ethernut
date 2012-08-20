@@ -96,7 +96,7 @@ static int Lpc17xxRtcGetClock(NUTRTC *rtc, struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int Lpc17xxRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
+static int Lpc17xxRtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     if (tm) {
         LPC_RTC->DOM  =  tm->tm_mday & RTC_DOM_MASK;
@@ -161,7 +161,7 @@ static void Lpc17xxRtcInterrupt(void *arg)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int Lpc17xxRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflags)
+static int Lpc17xxRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflags)
 {
     uint32_t amr = 0;
 

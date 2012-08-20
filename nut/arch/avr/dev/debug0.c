@@ -153,10 +153,10 @@ static void DebugPut(char ch)
  *
  * \return Number of characters sent.
  */
-static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int DebugWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int c = len;
-    CONST char *cp = buffer;
+    const char *cp = buffer;
 
     while(c--)
         DebugPut(*cp++);
@@ -257,7 +257,7 @@ long DebugSize(NUTFILE *fp)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     dbgfile.nf_next = 0;
     dbgfile.nf_dev = dev;

@@ -60,7 +60,7 @@
  */
 /*@{*/
 
-static int _sputb(int fd, CONST void *buffer, size_t count)
+static int _sputb(int fd, const void *buffer, size_t count)
 {
     char **spp = (char **) ((uintptr_t) fd);
 
@@ -80,7 +80,7 @@ static int _sputb(int fd, CONST void *buffer, size_t count)
  * \return The number of characters written or a negative value to
  *         indicate an error.
  */
-int vsprintf(char *buffer, CONST char *fmt, va_list ap)
+int vsprintf(char *buffer, const char *fmt, va_list ap)
 {
     int rc;
 

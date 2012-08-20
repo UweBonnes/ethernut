@@ -87,7 +87,7 @@ NUTDEVICE *nutDeviceList = 0;
  *
  * \return Pointer to the ::NUTDEVICE structure.
  */
-NUTDEVICE *NutDeviceLookup(CONST char *name)
+NUTDEVICE *NutDeviceLookup(const char *name)
 {
     NUTDEVICE *dev;
 

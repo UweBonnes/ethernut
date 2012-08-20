@@ -104,7 +104,7 @@ extern int At91SpiSetTxDelay(unsigned int base, unsigned int cs, unsigned int dl
 extern unsigned int At91SpiGetCsDelay(unsigned int base);
 extern int At91SpiSetCsDelay(unsigned int base, unsigned int dly);
 
-extern int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen,
-                           CONST void *txnbuf, void *rxnbuf, int xnlen);
+extern int At91SpiTransfer2(unsigned int base, unsigned int cs, const void *txbuf, void *rxbuf, int xlen,
+                           const void *txnbuf, void *rxnbuf, int xnlen);
 
 #endif

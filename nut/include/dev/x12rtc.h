@@ -167,15 +167,15 @@ extern NUTRTC rtcX12x6;
 extern int X12Init(NUTRTC *rtc) NUT_DEPRECATED;
 
 extern int X12RtcGetClock(NUTRTC *rtc, struct _tm *tm) NUT_DEPRECATED;
-extern int X12RtcSetClock(NUTRTC *rtc, CONST struct _tm *tm) NUT_DEPRECATED;
+extern int X12RtcSetClock(NUTRTC *rtc, const struct _tm *tm) NUT_DEPRECATED;
 extern int X12RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs) NUT_DEPRECATED;
-extern int X12RtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs) NUT_DEPRECATED;
+extern int X12RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs) NUT_DEPRECATED;
 extern int X12RtcGetStatus(NUTRTC *rtc, uint32_t *sflgs) NUT_DEPRECATED;
 extern int X12RtcClearStatus(NUTRTC *rtc, uint32_t sflgs) NUT_DEPRECATED;
 extern int X12RtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
-extern int X12RtcWrite(int nv, CONST uint8_t *buff, size_t len);
+extern int X12RtcWrite(int nv, const uint8_t *buff, size_t len);
 
 extern int X12EepromRead(unsigned int addr, void *buff, size_t len);
-extern int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len);
+extern int X12EepromWrite(unsigned int addr, const void *buff, size_t len);
 
 #endif

@@ -89,9 +89,9 @@
 /*@}*/
 
 extern int _close(int fd);
-extern int _open(CONST char *name, int mode);
+extern int _open(const char *name, int mode);
 extern int _read(int fd, void *buffer, size_t count);
-extern int _write(int fd, CONST void *buffer, size_t count);
+extern int _write(int fd, const void *buffer, size_t count);
 #ifdef __HARVARD_ARCH__
 extern int _write_P(int fd, PGM_P buffer, size_t count);
 #else

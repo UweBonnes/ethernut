@@ -563,7 +563,7 @@ static int At91MciReadSingle(MCIFC * ifc, uint32_t blk, uint8_t * buf)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91MciWriteSingle(MCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
+static int At91MciWriteSingle(MCIFC * ifc, uint32_t blk, const uint8_t * buf)
 {
     int rc = -1;
     uint32_t sr;
@@ -638,7 +638,7 @@ static int At91MciBlockRead(NUTFILE * nfp, void *buffer, int num)
  * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
-static int At91MciBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
+static int At91MciBlockWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     MCIFCB *fcb = (MCIFCB *) nfp->nf_fcb;
     uint32_t blk = fcb->fcb_blknum;
@@ -705,7 +705,7 @@ static int At91MciUnmount(NUTFILE * nfp)
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-static NUTFILE *At91MciMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *At91MciMount(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     int partno = 0;
     int i;

@@ -47,7 +47,7 @@
 #define NUTASSERT(c)
 #endif
 
-extern void NUTPANIC(CONST char *fmt, ...);
-extern void NUTFATAL(CONST char *, CONST char *, int, CONST char *);
+extern void NUTPANIC(const char *fmt, ...);
+extern void NUTFATAL(const char *, const char *, int, const char *);
 
 #endif

@@ -96,9 +96,9 @@
  *
  * \return Converted value.
  */
-unsigned long strtoul(CONST char *nptr, char **endptr, int base)
+unsigned long strtoul(const char *nptr, char **endptr, int base)
 {
-    register CONST char *s;
+    register const char *s;
     register unsigned long acc, cutoff;
     register int c;
     register int neg, any, cutlim;

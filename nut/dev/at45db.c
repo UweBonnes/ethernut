@@ -301,7 +301,7 @@ static int dd_param = -1;
  * \param rdata   Receive data buffer.
  * \param datalen Data length.
  */
-int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen)
+int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, const void *tdata, void *rdata, int datalen)
 {
     uint8_t *cb = dcbtab[dd].dcb_cmdbuf;
 
@@ -441,7 +441,7 @@ int At45dbPageRead(int dd, uint32_t pgn, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, unsigned int len)
+int At45dbPageWrite(int dd, uint32_t pgn, const void *data, unsigned int len)
 {
     int rc = -1;
     void *rp;
@@ -540,7 +540,7 @@ int At45dbParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbParamWrite(unsigned int pos, CONST void *data, unsigned int len)
+int At45dbParamWrite(unsigned int pos, const void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

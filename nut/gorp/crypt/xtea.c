@@ -66,7 +66,7 @@
  * \para v  Source pointer of 2x32 bit plain text block.
  * \para k  Pointer to 128 bit (4*32bit) key block.
  */
-void XTeaCrypt(uint32_t *w,  CONST uint32_t *v, CONST XTeaKeyBlock_t k)
+void XTeaCrypt(uint32_t *w,  const uint32_t *v, const XTeaKeyBlock_t k)
 {
     register uint32_t y=v[0];
     register uint32_t z=v[1];
@@ -90,7 +90,7 @@ void XTeaCrypt(uint32_t *w,  CONST uint32_t *v, CONST XTeaKeyBlock_t k)
  * \para v  Source pointer of 2x32 bit encrypted block.
  * \para k  Pointer to 128 bit (4*32bit) key block.
  */
-void XTeaDecrypt(uint32_t *w, CONST uint32_t *v, CONST XTeaKeyBlock_t k)
+void XTeaDecrypt(uint32_t *w, const uint32_t *v, const XTeaKeyBlock_t k)
 {
     register uint32_t y=v[0];
     register uint32_t z=v[1];
@@ -119,7 +119,7 @@ void XTeaDecrypt(uint32_t *w, CONST uint32_t *v, CONST XTeaKeyBlock_t k)
  * \para len  Length of the string to encrypt.
  * \para pass Buffer of 64 bytes used as passphrase.
  */
-void XTeaCryptStr( char *dst, CONST char *src, uint16_t len, CONST char *pass)
+void XTeaCryptStr( char *dst, const char *src, uint16_t len, const char *pass)
 {
     uint16_t l;
     uint16_t i;
@@ -134,7 +134,7 @@ void XTeaCryptStr( char *dst, CONST char *src, uint16_t len, CONST char *pass)
     i = 0; l = strlen( src);
 
     while (i<len) {
-        XTeaCrypt( (uint32_t*)dst, (CONST uint32_t*)src, K);
+        XTeaCrypt( (uint32_t*)dst, (const uint32_t*)src, K);
         src+=8; dst+=8; i+=8;
     }
 }
@@ -151,7 +151,7 @@ void XTeaCryptStr( char *dst, CONST char *src, uint16_t len, CONST char *pass)
  * \para len  Length of the string to decrypt.
  * \para pass Buffer of 64 bytes used as passphrase.
  */
-void XTeaDecryptStr( char * dst, CONST char *src, uint16_t len, CONST char *pass)
+void XTeaDecryptStr( char * dst, const char *src, uint16_t len, const char *pass)
 {
     uint16_t l;
     uint16_t i;
@@ -166,7 +166,7 @@ void XTeaDecryptStr( char * dst, CONST char *src, uint16_t len, CONST char *pass
     i = 0; l = strlen( src);
 
     while (i<len) {
-        XTeaDecrypt( (uint32_t*)dst, (uint32_t CONST*)src, K);
+        XTeaDecrypt( (uint32_t*)dst, (uint32_t const*)src, K);
         src+=8; dst+=8; i+=8;
     }
 }

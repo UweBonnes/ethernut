@@ -150,7 +150,7 @@ struct _NUTBLOCKIO {
     /*!
      * \brief Write to block I/O device, starting at the specified block.
      */
-    int (*blkio_write) (NUTDEVICE *, uint32_t, CONST void *, int);
+    int (*blkio_write) (NUTDEVICE *, uint32_t, const void *, int);
 
 #ifdef __HARVARD_ARCH__
     /*!
@@ -168,11 +168,11 @@ struct _NUTBLOCKIO {
 /*@}*/
 
 extern int NutBlockDeviceInit(NUTDEVICE * dev);
-extern NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int NutBlockDeviceClose(NUTFILE * nfp);
 extern int NutBlockDeviceIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int NutBlockDeviceRead(NUTFILE * nfp, void *buffer, int num);
-extern int NutBlockDeviceWrite(NUTFILE *nfp, CONST void *buffer, int num);
+extern int NutBlockDeviceWrite(NUTFILE *nfp, const void *buffer, int num);
 extern long NutBlockDeviceSize(NUTFILE *nfp);
 #ifdef __HARVARD_ARCH__
 extern int NutBlockDeviceWrite_P(NUTFILE * nfp, PGM_P buffer, int num);

@@ -90,7 +90,7 @@
  * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
  */
-FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
+FILE *freopen(const char *name, const char *mode, FILE * stream)
 {
     int mflags = _O_TEXT;
     uint_fast8_t i;

@@ -97,7 +97,7 @@ int _days[] = {
  * \return Returns nonzero value if any error occured.
  *
  */
-int gmtime_r(CONST time_t * timer, tm * ptm)
+int gmtime_r(const time_t * timer, tm * ptm)
 {
     time_t ctimer = *timer;     /* var to calculate with */
     uint8_t isleapyear = 0;     /* current year is leap year */
@@ -192,7 +192,7 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
  * and the usage of the returned pointer with ::NutEnterCritical() and ::NutExitCritical()!
  *
  */
-tm *gmtime(CONST time_t * timer)
+tm *gmtime(const time_t * timer)
 {
     if (gmtime_r(timer, &_tb))
         return NULL;

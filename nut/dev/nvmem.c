@@ -150,7 +150,7 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutNvMemSave(unsigned int addr, CONST void *buff, size_t len)
+int NutNvMemSave(unsigned int addr, const void *buff, size_t len)
 {
 #if defined(NUT_CONFIG_X12RTC)
     return X12EepromWrite(addr, buff, len);

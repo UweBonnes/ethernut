@@ -78,7 +78,7 @@
  * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
  */
-FILE *_fdopen(int fd, CONST char *mode)
+FILE *_fdopen(int fd, const char *mode)
 {
     int mflags = _O_TEXT;
     uint_fast8_t i;

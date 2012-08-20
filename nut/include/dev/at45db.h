@@ -66,17 +66,17 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-extern int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen);
+extern int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, const void *tdata, void *rdata, int datalen);
 extern uint8_t At45dbGetStatus(int dd);
 extern int At45dbWaitReady(int dd, uint32_t tmo, int poll);
 extern int At45dbInit(unsigned int spibas, unsigned int spipcs);
 extern int At45dbPageErase(int dd, uint32_t pgn);
 extern int At45dbChipErase(void);
 extern int At45dbPageRead(int dd, uint32_t pgn, void *data, unsigned int len);
-extern int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, unsigned int len);
+extern int At45dbPageWrite(int dd, uint32_t pgn, const void *data, unsigned int len);
 extern uint32_t At45dbPages(int dd);
 extern unsigned int At45dbPageSize(int dd);
 extern int At45dbParamRead(unsigned int pos, void *data, unsigned int len);
-extern int At45dbParamWrite(unsigned int pos, CONST void *data, unsigned int len);
+extern int At45dbParamWrite(unsigned int pos, const void *data, unsigned int len);
 
 #endif

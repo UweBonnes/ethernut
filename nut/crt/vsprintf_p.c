@@ -58,7 +58,7 @@
  */
 /*@{*/
 
-static int _sputb(int fd, CONST void *buffer, size_t count)
+static int _sputb(int fd, const void *buffer, size_t count)
 {
     char **spp = (char **) ((uintptr_t) fd);
 

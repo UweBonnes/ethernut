@@ -169,11 +169,11 @@ extern char *syslog_buf;
 #endif /* SYSLOG_INTERNAL */
 
 extern void closelog(void);
-extern void openlog(CONST char *, int, int);
+extern void openlog(const char *, int, int);
 extern int setlogmask(int);
 extern uint32_t setlogserver(uint32_t ip, uint16_t port);
-extern void syslog(int, CONST char *, ...);
-extern void vsyslog(int, CONST char *, va_list);
+extern void syslog(int, const char *, ...);
+extern void vsyslog(int, const char *, va_list);
 #ifdef __HARVARD_ARCH__
 #ifdef SYSLOG_INTERNAL
 extern size_t syslog_header(int pri);

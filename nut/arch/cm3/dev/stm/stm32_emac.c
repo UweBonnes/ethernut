@@ -539,7 +539,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
  *
  * \param mac Six byte unique MAC address.
  */
-static int EmacStart(CONST uint8_t * mac)
+static int EmacStart(const uint8_t * mac)
 {
     int i;
     uint32_t regvalue;

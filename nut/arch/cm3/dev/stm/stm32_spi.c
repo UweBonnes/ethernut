@@ -320,7 +320,7 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
  *
  * \return Always 0.
  */
-static int Stm32SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+static int Stm32SpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     SPI_TypeDef* base;
   //  DMA_Channel_TypeDef* channel_rx,*channel_tx;

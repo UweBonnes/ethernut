@@ -117,7 +117,7 @@ typedef struct {
 /*@}*/
 
 
-extern int NutRegisterFtpRoot(CONST char *path);
+extern int NutRegisterFtpRoot(const char *path);
 extern int NutFtpServerSession(TCPSOCKET * sock);
 
 #endif

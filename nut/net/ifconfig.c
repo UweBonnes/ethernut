@@ -175,7 +175,7 @@ int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t 
  * \note The whole interface configuration has become a mess over
  *       the years and need a major redesign.
  */
-int NutNetIfConfig(CONST char *name, void *params, uint32_t ip_addr, uint32_t ip_mask)
+int NutNetIfConfig(const char *name, void *params, uint32_t ip_addr, uint32_t ip_mask)
 {
     return NutNetIfConfig2(name, params, ip_addr, ip_mask, 0);
 }
@@ -210,7 +210,7 @@ int NutNetIfConfig(CONST char *name, void *params, uint32_t ip_addr, uint32_t ip
  *       be handled by NutIpRouteAdd(). It's not yet deprecated, but I
  *       recommend not to use it in application code.
  */
-int NutNetIfConfig2(CONST char *name, void *params, uint32_t ip_addr, uint32_t ip_mask, uint32_t gateway)
+int NutNetIfConfig2(const char *name, void *params, uint32_t ip_addr, uint32_t ip_mask, uint32_t gateway)
 {
     NUTDEVICE *dev;
     IFNET *nif;
@@ -269,7 +269,7 @@ int NutNetIfConfig2(CONST char *name, void *params, uint32_t ip_addr, uint32_t i
     return -1;
 }
 
-int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr)
+int NutNetIfAddMcastAddr(const char *name, uint32_t ip_addr)
 {
     NUTDEVICE *dev;
     IFNET *nif;
@@ -299,7 +299,7 @@ int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr)
     return rc;
 }
 
-int NutNetIfDelMcastAddr(CONST char *name, uint32_t ip_addr)
+int NutNetIfDelMcastAddr(const char *name, uint32_t ip_addr)
 {
     NUTDEVICE *dev;
     IFNET *nif;

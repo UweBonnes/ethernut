@@ -146,8 +146,8 @@ struct __attribute__((packed)) ether_header {
 #define ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea))
 
 /* ASCII conversion function prototypes. */
-extern uint8_t *ether_aton(CONST char *str);
-extern char *ether_ntoa(CONST uint8_t *mac);
+extern uint8_t *ether_aton(const char *str);
+extern char *ether_ntoa(const uint8_t *mac);
 
 /*!
  * \struct ether_arp if_ether.h netinet/if_ether.h

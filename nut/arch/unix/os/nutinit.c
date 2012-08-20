@@ -410,7 +410,7 @@ uint8_t PSEUDO_RAM[PSEUDO_RAM_SIZE];
 
 extern void NutThreadInit(void);
 
-extern NUTFILE *NUT_freopen(CONST char *name, CONST char *mode, NUTFILE * stream);
+extern NUTFILE *NUT_freopen(const char *name, const char *mode, NUTFILE * stream);
 extern NUTFILE *__iob[];
 
 int main(int argc, char *argv[])

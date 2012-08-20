@@ -433,7 +433,7 @@ static int Lpc177x_8x_MmcardBlockRead(NUTFILE * nfp, void *buffer, int num)
  * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
-static int Lpc177x_8x_MmcardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
+static int Lpc177x_8x_MmcardBlockWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
     uint32_t blk = fcb->fcb_blknum;
@@ -480,7 +480,7 @@ static int Lpc177x_8x_MmcardBlockWrite(NUTFILE * nfp, CONST void *buffer, int nu
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     int partno = 0;
     u_int i;

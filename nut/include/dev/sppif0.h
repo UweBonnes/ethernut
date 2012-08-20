@@ -652,6 +652,6 @@ extern void Sppi0DeselectDevice(ureg_t ix);
 extern void Sppi0NegSelectDevice(ureg_t ix);
 extern void Sppi0NegDeselectDevice(ureg_t ix);
 extern uint8_t Sppi0Byte(uint8_t data);
-extern void Sppi0Transact(CONST void *wdata, void *rdata, size_t len);
+extern void Sppi0Transact(const void *wdata, void *rdata, size_t len);
 
 #endif

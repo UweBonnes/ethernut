@@ -55,7 +55,7 @@
  * \return A pointer to the first byte after this length field (aka: the
  *         start of the data field). Returns NULL on any error.
  */
-static CONST uint8_t *AsnLenParse(CONST uint8_t * data, uint32_t * length)
+static const uint8_t *AsnLenParse(const uint8_t * data, uint32_t * length)
 {
     uint8_t lengthbyte = *data++;
 
@@ -133,11 +133,11 @@ static uint8_t *AsnLenBuild(uint8_t * data, size_t * datalength, size_t length)
  * \return A pointer to the first byte following ID and length (aka the
  *         start of the data field). Returns NULL on any error.
  */
-CONST uint8_t *AsnHeaderParse(CONST uint8_t * data, size_t * datalength, uint8_t * type)
+const uint8_t *AsnHeaderParse(const uint8_t * data, size_t * datalength, uint8_t * type)
 {
     size_t header_len;
     uint32_t asn_length;
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
 
     if (*datalength <= 0) {
         return NULL;
@@ -212,7 +212,7 @@ uint8_t *AsnHeaderBuild(uint8_t * data, size_t * datalength, uint8_t type, size_
  * \return A pointer to the first byte following ID and length (aka the
  *         start of the data field). Returns NULL on any error.
  */
-CONST uint8_t *AsnSequenceParse(CONST uint8_t * data, size_t * datalength, uint8_t type)
+const uint8_t *AsnSequenceParse(const uint8_t * data, size_t * datalength, uint8_t type)
 {
     uint8_t t;
 
@@ -274,9 +274,9 @@ uint8_t *AsnSequenceBuild(uint8_t * data, size_t * datalength, uint8_t type, siz
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnIntegerParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, long *intp)
+const uint8_t *AsnIntegerParse(const uint8_t * data, size_t * datalength, uint8_t * type, long *intp)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     /* Get the type. */
@@ -372,9 +372,9 @@ uint8_t *AsnIntegerBuild(uint8_t * data, size_t * datalength, uint8_t type, long
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnUnsignedParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, uint32_t * intp)
+const uint8_t *AsnUnsignedParse(const uint8_t * data, size_t * datalength, uint8_t * type, uint32_t * intp)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     /* Get the type. */
@@ -488,9 +488,9 @@ uint8_t *AsnUnsignedBuild(uint8_t * data, size_t * datalength, uint8_t type, uin
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnOctetStringParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
+const uint8_t *AsnOctetStringParse(const uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     /* Get the type. */
@@ -530,7 +530,7 @@ CONST uint8_t *AsnOctetStringParse(CONST uint8_t * data, size_t * datalength, ui
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnOctetStringBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST uint8_t * string, size_t strlength)
+uint8_t *AsnOctetStringBuild(uint8_t * data, size_t * datalength, uint8_t type, const uint8_t * string, size_t strlength)
 {
     if ((data = AsnHeaderBuild(data, datalength, type, strlength)) == NULL) {
         return NULL;
@@ -571,9 +571,9 @@ uint8_t *AsnOctetStringBuild(uint8_t * data, size_t * datalength, uint8_t type, 
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnOidParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, OID * objid, size_t * objidlength)
+const uint8_t *AsnOidParse(const uint8_t * data, size_t * datalength, uint8_t * type, OID * objid, size_t * objidlength)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     OID *oidp = objid + 1;
     uint32_t subidentifier;
     long length;
@@ -647,13 +647,13 @@ CONST uint8_t *AsnOidParse(CONST uint8_t * data, size_t * datalength, uint8_t * 
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnOidBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST OID * objid, size_t objidlength)
+uint8_t *AsnOidBuild(uint8_t * data, size_t * datalength, uint8_t type, const OID * objid, size_t objidlength)
 {
     uint8_t *buf;
     uint32_t objid_val;
     uint32_t first_objid_val;
     size_t asnlength;
-    CONST OID *op = objid;
+    const OID *op = objid;
     size_t i;
 
     if (objidlength == 0) {
@@ -772,9 +772,9 @@ uint8_t *AsnOidBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST OI
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnNullParse(CONST uint8_t * data, size_t * datalength, uint8_t * type)
+const uint8_t *AsnNullParse(const uint8_t * data, size_t * datalength, uint8_t * type)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     *type = *bufp++;
@@ -828,9 +828,9 @@ uint8_t *AsnNullBuild(uint8_t * data, size_t * datalength, uint8_t type)
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnBitStringParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
+const uint8_t *AsnBitStringParse(const uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     *type = *bufp++;
@@ -870,7 +870,7 @@ CONST uint8_t *AsnBitStringParse(CONST uint8_t * data, size_t * datalength, uint
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnBitStringBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST uint8_t * string, size_t strlength)
+uint8_t *AsnBitStringBuild(uint8_t * data, size_t * datalength, uint8_t type, const uint8_t * string, size_t strlength)
 {
     if ((data = AsnHeaderBuild(data, datalength, type, strlength)) == NULL) {
         return NULL;
@@ -903,9 +903,9 @@ uint8_t *AsnBitStringBuild(uint8_t * data, size_t * datalength, uint8_t type, CO
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnUnsigned64Parse(CONST uint8_t * data, size_t * datalength, uint8_t * type, UNSIGNED64 * cp)
+const uint8_t *AsnUnsigned64Parse(const uint8_t * data, size_t * datalength, uint8_t * type, UNSIGNED64 * cp)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
     uint32_t low = 0;
     uint32_t high = 0;
@@ -950,7 +950,7 @@ CONST uint8_t *AsnUnsigned64Parse(CONST uint8_t * data, size_t * datalength, uin
  *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnUnsigned64Build(uint8_t * data, size_t * datalength, uint8_t type, CONST UNSIGNED64 * cp)
+uint8_t *AsnUnsigned64Build(uint8_t * data, size_t * datalength, uint8_t type, const UNSIGNED64 * cp)
 {
     uint32_t low;
     uint32_t high;

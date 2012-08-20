@@ -479,7 +479,7 @@ static int SpiAt45dFlashRead(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, void 
  *
  * \return 0 on success or -1 if the contents differs or in case of an error.
  */
-static int SpiAt45dFlashCompare(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, CONST void *data, int len)
+static int SpiAt45dFlashCompare(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, const void *data, int len)
 {
     int rc = 0;
 
@@ -580,7 +580,7 @@ static int SpiAt45dFlashUsed(NUTSERIALFLASH * sfi, sf_unit_t pgn, int skip)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int SpiAt45dFlashWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, CONST void *data, int len)
+static int SpiAt45dFlashWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, const void *data, int len)
 {
     int rc = 0;
 

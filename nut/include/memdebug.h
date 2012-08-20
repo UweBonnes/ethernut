@@ -53,10 +53,10 @@
 #define strdup(s) dbg_strdup(s, __FILE__, __LINE__)
 #endif
 
-extern void *dbg_malloc(size_t len, CONST char *file, int line);
-extern void *dbg_calloc(size_t num, size_t size, CONST char *file, int line);
-extern void dbg_free(void *p, CONST char *file, int line);
-extern void *dbg_realloc(void* ptr, size_t len, CONST char *file, int line);
-extern char *dbg_strdup(CONST char *str, CONST char *file, int line);
+extern void *dbg_malloc(size_t len, const char *file, int line);
+extern void *dbg_calloc(size_t num, size_t size, const char *file, int line);
+extern void dbg_free(void *p, const char *file, int line);
+extern void *dbg_realloc(void* ptr, size_t len, const char *file, int line);
+extern char *dbg_strdup(const char *str, const char *file, int line);
 
 #endif

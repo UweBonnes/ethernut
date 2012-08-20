@@ -89,11 +89,11 @@
  *
  * \return The original destination pointer.
  */
-char *strncpy(char *dst, CONST char *src, size_t n)
+char *strncpy(char *dst, const char *src, size_t n)
 {
     if (n != 0) {
         char *d = dst;
-        CONST char *s = src;
+        const char *s = src;
 
         do {
             if ((*d++ = *s++) == 0) {

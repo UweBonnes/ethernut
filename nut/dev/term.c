@@ -87,7 +87,7 @@
 
 static prog_char termid[] = "Term 1.0";
 
-static void TermRefreshLineEnd(CONST TERMDCB * dcb, uint8_t row, uint8_t col)
+static void TermRefreshLineEnd(const TERMDCB * dcb, uint8_t row, uint8_t col)
 {
     uint8_t i = col;
     uint8_t *cp = dcb->dcb_smem + row * dcb->dcb_vcols + col;
@@ -442,10 +442,10 @@ int TermInit(NUTDEVICE * dev)
  * \return The number of bytes written.
  *
  */
-static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+static int TermPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t ch;
     TERMDCB *dcb = dev->dev_dcb;
 
@@ -724,7 +724,7 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *      mode has been enabled. Applications should use _ioctl()
  *      functions to switch modes.
  */
-int TermWrite(NUTFILE * fp, CONST void *buffer, int len)
+int TermWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return TermPut(fp->nf_dev, buffer, len, 0);
 }
@@ -746,7 +746,7 @@ int TermWrite(NUTFILE * fp, CONST void *buffer, int len)
 #ifdef __HARVARD_ARCH__
 int TermWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return TermPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return TermPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 #endif
 
@@ -767,7 +767,7 @@ int TermWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  *
  * \return Pointer to a NUTFILE structure or –1 to indicate an error.
  */
-NUTFILE *TermOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *TermOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     TERMDCB *dcb = dev->dev_dcb;
     NUTFILE *fp = malloc(sizeof(NUTFILE));

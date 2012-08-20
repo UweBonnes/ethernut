@@ -99,9 +99,9 @@ struct __iobuf {
 /*@}*/
 
 
-extern int _fmode(CONST char *mode);
+extern int _fmode(const char *mode);
 
-extern int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list ap);
-extern int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap);
+extern int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list ap);
+extern int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap);
 
 #endif

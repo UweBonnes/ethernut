@@ -93,7 +93,7 @@ int OnChipNvMemLoad(unsigned int addr, void *buff, size_t siz)
  *
  * \return Allways 0.
  */
-int OnChipNvMemSave(unsigned int addr, CONST void *buff, size_t len)
+int OnChipNvMemSave(unsigned int addr, const void *buff, size_t len)
 {
     uint8_t *cp;
     size_t i;

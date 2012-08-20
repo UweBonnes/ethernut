@@ -368,7 +368,7 @@ void Avr32SpiBus1Interrupt(void *arg)
 *
 * \return Always 0.
 */
-int Avr32SpiBus1Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int Avr32SpiBus1Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint16_t b = 0xff;
     uintptr_t base;
@@ -394,11 +394,11 @@ int Avr32SpiBus1Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int 
             outr(base + AVR32_SPI_TDR, (b << AVR32_SPI_TDR_TD_OFFSET));
         }
         else if (node->node_bits == 16) {
-            outr(base + AVR32_SPI_TDR, b);  
+            outr(base + AVR32_SPI_TDR, b);
         }
         /* Wait until transfer has finished. */
         NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
-        
+
         /* Wait for data is send */
         while ((inr(base + AVR32_SPI_SR) & AVR32_SPI_TXEMPTY_MASK) == 0);
         /* Read incoming data. */
@@ -416,7 +416,7 @@ int Avr32SpiBus1Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int 
                 *(uint16_t *)rxbuf++ = b;
             }
         }
-        
+
         outr(base + AVR32_SPI_IDR, (unsigned int) -1);
     }
     return 0;

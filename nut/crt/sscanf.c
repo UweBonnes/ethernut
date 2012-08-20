@@ -58,7 +58,7 @@
  *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  */
-int sscanf(CONST char *string, CONST char *fmt, ...)
+int sscanf(const char *string, const char *fmt, ...)
 {
     int rc;
     va_list ap;

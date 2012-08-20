@@ -151,7 +151,7 @@ static NUTCONST char zeroes[PADSIZE] = { '0', '0', '0', '0', '0', '0', '0', '0',
 /*
  *
  */
-static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, NUTCONST char *padch, int count)
+static void _putpad(int _putb(int fd, const void *, size_t), int fd, NUTCONST char *padch, int count)
 {
     while (count > PADSIZE) {
         _putb(fd, padch, PADSIZE);
@@ -180,7 +180,7 @@ static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, NUTCONST ch
  *
  *
  */
-int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list ap)
+int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list ap)
 {
     uint8_t ch;                 /* character from fmt */
     int n;                      /* handy integer (short term usage) */

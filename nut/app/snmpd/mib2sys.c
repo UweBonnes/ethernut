@@ -83,7 +83,7 @@
 #define MAG_SYS_LOCATION    6
 #define MAG_SYS_SERVICES    7
 
-static uint8_t *MibVarsSysGet(CONST SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
+static uint8_t *MibVarsSysGet(const SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
 
 static OID base_oid[] = { SNMP_OID_MIB2, 1 };
 static size_t base_oidlen = sizeof(base_oid) / sizeof(OID);
@@ -215,7 +215,7 @@ static int MibVarsSysSet(int action, uint8_t * var_val, uint8_t var_val_type, si
  *                want the first name that is following the given one.
  * \param varlen  Size of the variable.
  */
-static uint8_t *MibVarsSysGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
+static uint8_t *MibVarsSysGet(const SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
 {
     static uint8_t empty[1];
     int rc;

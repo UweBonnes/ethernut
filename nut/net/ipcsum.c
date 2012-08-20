@@ -67,7 +67,7 @@
  *
  * \return Partial checksum in network byte order.
  */
-uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
+uint16_t NutIpChkSumPartial(uint16_t ics, const void *buf, int len)
 {
     register uint32_t sum = ics;
     register uint8_t *cp = (uint8_t *) buf;
@@ -163,7 +163,7 @@ uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
  * Unlike the partial checksum in NutIpChkSumPartial(), this function takes
  * the one's complement of the final result, thus making it the full checksum.
  */
-uint16_t NutIpChkSum(uint16_t ics, CONST void *buf, int len)
+uint16_t NutIpChkSum(uint16_t ics, const void *buf, int len)
 {
     return ~NutIpChkSumPartial(ics, buf, len);
 }

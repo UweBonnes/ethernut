@@ -128,7 +128,7 @@ int NutChatExpect(NUTCHAT *ci, char *str);
 int NutChatSend(NUTCHAT *ci, char *str);
 NUTCHAT *NutChatCreate(int fd);
 void NutChatDestroy(NUTCHAT *ci);
-int NutChat(int fd, CONST char *script);
+int NutChat(int fd, const char *script);
 #ifdef __HARVARD_ARCH__
 int NutChat_P(int fd, PGM_P script);
 #endif

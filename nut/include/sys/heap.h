@@ -64,7 +64,7 @@ struct _HEAPNODE {
 #ifdef NUTDEBUG_HEAP
     HEAPNODE *ht_next;
     size_t ht_size;
-    CONST char *ht_file;
+    const char *ht_file;
     int ht_line;
 #endif
     HEAPNODE *hn_next;  /*!< \brief Link to next free node. */
@@ -130,10 +130,10 @@ extern size_t NutHeapRootAvailable(HEAPNODE** root);
 extern size_t NutHeapRootRegionAvailable(HEAPNODE** root);
 
 #ifdef NUTDEBUG_HEAP
-extern void *NutHeapDebugRootAlloc(HEAPNODE** root, size_t size, CONST char *file, int line);
-extern void *NutHeapDebugRootAllocClear(HEAPNODE** root, size_t size, CONST char *file, int line);
-extern int NutHeapDebugRootFree(HEAPNODE** root, void *block, CONST char *file, int line);
-extern void *NutHeapDebugRootRealloc(HEAPNODE** root, void * block, size_t size, CONST char *file, int line);
+extern void *NutHeapDebugRootAlloc(HEAPNODE** root, size_t size, const char *file, int line);
+extern void *NutHeapDebugRootAllocClear(HEAPNODE** root, size_t size, const char *file, int line);
+extern int NutHeapDebugRootFree(HEAPNODE** root, void *block, const char *file, int line);
+extern void *NutHeapDebugRootRealloc(HEAPNODE** root, void * block, size_t size, const char *file, int line);
 #else
 extern void *NutHeapRootAlloc(HEAPNODE** root, size_t size);
 extern void *NutHeapRootAllocClear(HEAPNODE** root, size_t size);

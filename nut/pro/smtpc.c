@@ -84,9 +84,9 @@
  *             is large enough to hold the resulting string. A save
  *             calculation is (slen / 3) * 4 + 5.
  */
-static void NutBase64Encode(CONST uint8_t * sptr, size_t slen, char *dptr)
+static void NutBase64Encode(const uint8_t * sptr, size_t slen, char *dptr)
 {
-    static CONST char base64set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    static const char base64set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     uint_fast8_t i;
     uint32_t blk;
     uint_fast8_t pad = 0;
@@ -126,7 +126,7 @@ static void NutBase64Encode(CONST uint8_t * sptr, size_t slen, char *dptr)
  *         broken connection or a line overflow, a NULL pointer is
  *         returned.
  */
-CONST char *NutSmtpReceiveResponse(SMTPCLIENTSESSION * si)
+const char *NutSmtpReceiveResponse(SMTPCLIENTSESSION * si)
 {
     char *cp;
 
@@ -156,7 +156,7 @@ CONST char *NutSmtpReceiveResponse(SMTPCLIENTSESSION * si)
  * \param fmt Format string containing conversion specifications like
  *            printf.
  */
-CONST char *NutSmtpSendCommand(SMTPCLIENTSESSION * si, CONST char *fmt, ...)
+const char *NutSmtpSendCommand(SMTPCLIENTSESSION * si, const char *fmt, ...)
 {
     va_list ap;
 
@@ -236,7 +236,7 @@ SMTPCLIENTSESSION *NutSmtpConnect(uint32_t ip, uint16_t port)
  *
  * \return
  */
-static CONST char *SayHello(SMTPCLIENTSESSION * si, char *cmd, char *host)
+static const char *SayHello(SMTPCLIENTSESSION * si, char *cmd, char *host)
 {
     if (host) {
         return NutSmtpSendCommand(si, "%s %s", cmd, host);
@@ -257,7 +257,7 @@ static CONST char *SayHello(SMTPCLIENTSESSION * si, char *cmd, char *host)
  */
 int NutSmtpLogin(SMTPCLIENTSESSION * si, char *host, char *user, char *pass)
 {
-    CONST char *rsp;
+    const char *rsp;
 
     /* Normally we do not check for NULL pointers. */
     NUTASSERT(si != NULL);
@@ -328,7 +328,7 @@ int NutSmtpLogin(SMTPCLIENTSESSION * si, char *host, char *user, char *pass)
 int NutSmtpSendMailRequest(SMTPCLIENTSESSION * si, MAILENVELOPE * me)
 {
     int rc = 0;
-    CONST char *rsp;
+    const char *rsp;
 
     /* Normally we do not check for NULL pointers. */
     NUTASSERT(me != NULL);
@@ -456,7 +456,7 @@ int NutSmtpSendMailHeader(SMTPCLIENTSESSION * si, MAILENVELOPE * me)
  * \return 0 on success, -1 otherwise. An error typically indicates a
  *         broken connection.
  */
-int NutSmtpSendEncodedLines(SMTPCLIENTSESSION * si, CONST char *text)
+int NutSmtpSendEncodedLines(SMTPCLIENTSESSION * si, const char *text)
 {
     /* Sanity checks. */
     NUTASSERT(si != NULL);
@@ -537,9 +537,9 @@ int NutSmtpSendEncodedLines(SMTPCLIENTSESSION * si, CONST char *text)
  *         case of a fatal error or if all recipients had been rejected,
  *         a NULL pointer is returned.
  */
-CONST char *NutSmtpSendMail(SMTPCLIENTSESSION * si, MAILENVELOPE * me)
+const char *NutSmtpSendMail(SMTPCLIENTSESSION * si, MAILENVELOPE * me)
 {
-    CONST char *rsp = NULL;
+    const char *rsp = NULL;
 
     /* Normally we do not check for NULL pointers. */
     NUTASSERT(si != NULL);

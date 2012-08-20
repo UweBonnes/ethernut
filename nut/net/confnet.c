@@ -86,7 +86,7 @@ CONFNET confnet;
  * \return 0 if configuration has been read. Otherwise the
  *         return value is -1.
  */
-int NutNetLoadConfig(CONST char *name)
+int NutNetLoadConfig(const char *name)
 {
 #ifndef CONFNET_HARDCODED
     /* Read non-volatile memory. */

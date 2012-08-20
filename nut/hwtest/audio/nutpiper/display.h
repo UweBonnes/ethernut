@@ -42,7 +42,7 @@
 
 extern int DisplayInit(char *name);
 extern void DisplayStatus(uint8_t status);
-extern void DisplayMessage(uint8_t row, uint8_t secs, CONST char *fmt, ...);
+extern void DisplayMessage(uint8_t row, uint8_t secs, const char *fmt, ...);
 extern void DisplayEntry(uint8_t rs);
 
 #endif

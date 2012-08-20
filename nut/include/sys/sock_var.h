@@ -208,7 +208,7 @@ struct tcp_socket {
     void *so_device;        /*!< \brief Always zero. */
     uint8_t so_devtype;     /*!< \brief Device type, always IFTYP_TCPSOCK. */
     int (*so_devread) (TCPSOCKET *, void *, int); /*!< \brief Read from device. */
-    int (*so_devwrite) (TCPSOCKET *, CONST void *, int); /*!< \brief Write to device. */
+    int (*so_devwrite) (TCPSOCKET *, const void *, int); /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__
     int (*so_devwrite_P) (TCPSOCKET *, PGM_P, int); /*!< \brief Write to device. */
 #endif
@@ -274,7 +274,7 @@ struct tcp_socket {
 
 #include <netinet/tcp_fsm.h>
 
-extern int NutTcpOutput(TCPSOCKET *sock, CONST uint8_t *data, uint16_t size);
+extern int NutTcpOutput(TCPSOCKET *sock, const uint8_t *data, uint16_t size);
 extern int NutTcpReject(NETBUF *nb);
 
 #endif

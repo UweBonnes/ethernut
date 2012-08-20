@@ -103,7 +103,7 @@ void NutTraceChat(FILE * stream, uint8_t flags)
 /*
  * Special version of strchr, handling escaped characters.
  */
-static char *strechr(CONST char *str, int c)
+static char *strechr(const char *str, int c)
 {
     while (*str) {
         if (*str == '\\') {
@@ -659,7 +659,7 @@ static int NutChatProc(int fd, char *script)
  *         for an expected string, or the index of an abort string plus
  *         4, if one has been received.
  */
-int NutChat(int fd, CONST char *script)
+int NutChat(int fd, const char *script)
 {
     int rc = -1;
     char *buf;

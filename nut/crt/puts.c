@@ -55,7 +55,7 @@
  *
  * \return A non-negative value or EOF to indicate an error.
  */
-int puts(CONST char *string)
+int puts(const char *string)
 {
     if (fputs(string, stdout) == EOF)
         return EOF;

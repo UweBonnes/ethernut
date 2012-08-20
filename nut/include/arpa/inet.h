@@ -67,7 +67,7 @@
  * \file arpa/inet.h
  * \brief Internet address conversion.
  */
-extern uint32_t inet_addr(CONST char *str);
+extern uint32_t inet_addr(const char *str);
 extern char *inet_ntoa(uint32_t addr);
 extern char *inet_mtoa(uint8_t *mac);
 

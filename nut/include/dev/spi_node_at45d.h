@@ -65,7 +65,7 @@ extern NUTDEVICE devSpiBlkAt45d3;
 extern AT45D_INFO *At45dNodeProbe(NUTSPINODE *node);
 extern int At45dNodeLock(NUTSPINODE * node);
 extern void At45dNodeUnlock(NUTSPINODE * node);
-extern int At45dNodeTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, CONST void *txbuf, void *rxbuf, int xlen);
+extern int At45dNodeTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, const void *txbuf, void *rxbuf, int xlen);
 extern int At45dNodeCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen);
 extern int At45dNodeWaitReady(NUTSPINODE * node, uint32_t tmo, int poll);
 extern uint8_t At45dNodeStatus(NUTSPINODE * node);

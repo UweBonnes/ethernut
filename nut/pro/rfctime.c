@@ -67,7 +67,7 @@ static char *months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Au
  *
  * \return Pointer into the string after the last space character.
  */
-static char *skip_spaces(CONST char *str)
+static char *skip_spaces(const char *str)
 {
     while (*str == ' ' || *str == '\t')
         str++;
@@ -84,7 +84,7 @@ static char *skip_spaces(CONST char *str)
  *
  * \return Pointer into the string after the parsed characters.
  */
-static char *parse_digits(CONST char *str, int *val)
+static char *parse_digits(const char *str, int *val)
 {
     *val = 0;
     while (isdigit((unsigned char)*str)) {
@@ -106,7 +106,7 @@ static char *parse_digits(CONST char *str, int *val)
  *
  * \return Pointer into the string after the parsed characters.
  */
-char *TimeParseYear(CONST char *str, int *year)
+char *TimeParseYear(const char *str, int *year)
 {
     str = parse_digits(str, year);
     if (*year < 70) {
@@ -132,7 +132,7 @@ char *TimeParseYear(CONST char *str, int *year)
  *
  * \return Pointer into the string after the parsed characters.
  */
-char *TimeParseMonth(CONST char *str, int *month)
+char *TimeParseMonth(const char *str, int *month)
 {
     if (*str == 'A') {
         if (*++str == 'p' || *str == 'P') {
@@ -207,7 +207,7 @@ char *TimeParseMonth(CONST char *str, int *month)
  *
  * \return Pointer into the string after the parsed characters.
  */
-char *TimeParseDmy(CONST char *str, int *mday, int *mon, int *year)
+char *TimeParseDmy(const char *str, int *mday, int *mon, int *year)
 {
     str = parse_digits(str, mday);
     while (*str && !isalpha((unsigned char)*str)) {
@@ -234,7 +234,7 @@ char *TimeParseDmy(CONST char *str, int *mday, int *mon, int *year)
  *
  * \return Pointer into the string after the parsed characters.
  */
-char *TimeParseHms(CONST char *str, int *hour, int *min, int *sec)
+char *TimeParseHms(const char *str, int *hour, int *min, int *sec)
 {
     str = parse_digits(str, hour);
     if (*str == ':') {
@@ -261,7 +261,7 @@ char *TimeParseHms(CONST char *str, int *hour, int *min, int *sec)
  *
  * \return Number of seconds since epoch or -1 in case of any error.
  */
-time_t RfcTimeParse(CONST char *str)
+time_t RfcTimeParse(const char *str)
 {
     struct _tm dts = { 0, 0, 0, 1, 0, 0, 0, 0, 0 };
 

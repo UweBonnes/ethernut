@@ -234,7 +234,7 @@ int At91SpiBusNodeInit(NUTSPINODE * node)
  *
  * \return Always 0.
  */
-int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int At91SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t b = 0xff;
     uint8_t *txp = (uint8_t *) txbuf;
@@ -285,7 +285,7 @@ int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, in
  *
  * \return Always 0.
  */
-int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int At91SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uintptr_t base;
     uint32_t cr;

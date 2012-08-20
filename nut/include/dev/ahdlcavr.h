@@ -67,11 +67,11 @@ extern int AhdlcAvrIOCtl(NUTDEVICE *dev, int req, void *conf);
 extern int AhdlcOutput(NUTDEVICE *dev, NETBUF *nb);
 
 extern int AhdlcAvrRead(NUTFILE *fp, void *buffer, int size);
-extern int AhdlcAvrWrite(NUTFILE *fp, CONST void *buffer, int len);
+extern int AhdlcAvrWrite(NUTFILE *fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int AhdlcAvrWrite_P(NUTFILE *fp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *AhdlcAvrOpen(NUTDEVICE *dev, CONST char *name, int mode, int acc);
+extern NUTFILE *AhdlcAvrOpen(NUTDEVICE *dev, const char *name, int mode, int acc);
 extern int AhdlcAvrClose(NUTFILE *fp);
 
 #endif

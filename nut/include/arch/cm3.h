@@ -331,9 +331,9 @@ static INLINE uint32_t mem_rd32_mb(unsigned int reg)
 /*
  * Not supported by CrossWorks, added prototypes here.
  */
-int   stricmp(CONST char *s1, CONST char *s2);
-int   strnicmp(CONST char *s1, CONST char *s2, size_t n);
-char *strdup(CONST char *str);
+int   stricmp(const char *s1, const char *s2);
+int   strnicmp(const char *s1, const char *s2, size_t n);
+char *strdup(const char *str);
 
 /*
  * If "Enforce ANSI Checking" is enabled, which is

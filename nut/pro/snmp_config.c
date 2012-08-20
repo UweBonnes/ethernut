@@ -53,7 +53,7 @@ static COMMUNITY_LIST *communities;
  *
  * \return View index on success. Otherwise -1 is returned.
  */
-int SnmpViewCreate(CONST char *name, CONST OID * subtree, size_t subtreelen, int type)
+int SnmpViewCreate(const char *name, const OID * subtree, size_t subtreelen, int type)
 {
     static int nextview = 1;
     VIEW_LIST *vp;
@@ -121,7 +121,7 @@ int SnmpViewFind(char *name)
  *
  * \return 0 on success, -1 otherwise.
  */
-int SnmpCommunityFind(CONST char *name, int *readView, int *writeView)
+int SnmpCommunityFind(const char *name, int *readView, int *writeView)
 {
     COMMUNITY_LIST *cp;
 
@@ -150,7 +150,7 @@ int SnmpCommunityFind(CONST char *name, int *readView, int *writeView)
  *
  * \return 0 on success, -1 otherwise.
  */
-int SnmpCommunityCreate(CONST char *name, int readView, int writeView)
+int SnmpCommunityCreate(const char *name, int readView, int writeView)
 {
     COMMUNITY_LIST *cp;
     COMMUNITY_LIST *prev = 0;

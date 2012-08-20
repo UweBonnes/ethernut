@@ -116,10 +116,10 @@ typedef long time_t;
 
 
 time_t time(time_t * timer);
-int gmtime_r(CONST time_t * timer, tm * theTime);
-tm *gmtime(CONST time_t * timer);
-int localtime_r(CONST time_t * timer, tm * theTime);
-tm *localtime(CONST time_t * timer);
+int gmtime_r(const time_t * timer, tm * theTime);
+tm *gmtime(const time_t * timer);
+int localtime_r(const time_t * timer, tm * theTime);
+tm *localtime(const time_t * timer);
 
 int stime(time_t * timer);
 time_t mktime(tm * timeptr);

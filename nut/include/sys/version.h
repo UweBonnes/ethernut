@@ -62,7 +62,7 @@
                             (uint32_t)NUT_VERSION_BUILD)
 
 extern uint32_t NutVersion(void);
-extern CONST char *NutVersionString(void);
+extern const char *NutVersionString(void);
 
 #endif
 

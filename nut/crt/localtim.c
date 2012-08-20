@@ -81,7 +81,7 @@
  * \return Always return 0.
  *
  */
-int localtime_r(CONST time_t * timer, tm * ptm)
+int localtime_r(const time_t * timer, tm * ptm)
 {
     long ltime;
 
@@ -206,7 +206,7 @@ int localtime_r(CONST time_t * timer, tm * ptm)
   _and_ the usage of the returned pointer with NutEnterCritical() and NutExitCritical()!
   Provided for compatibility to std c lib.
 */
-tm *localtime(CONST time_t * timer)
+tm *localtime(const time_t * timer)
 {
     if (localtime_r(timer, &_tb))
         return NULL;

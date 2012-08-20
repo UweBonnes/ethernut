@@ -94,7 +94,7 @@
  *         than the second string after translation of each corresponding
  *         character to lower-case.
  */
-int strncmp(CONST char *s1, CONST char *s2, size_t n)
+int strncmp(const char *s1, const char *s2, size_t n)
 {
 
     if (n == 0)

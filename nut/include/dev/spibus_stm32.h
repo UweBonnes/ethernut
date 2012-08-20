@@ -57,9 +57,9 @@ extern int Stm32SpiBus2Deselect(NUTSPINODE * node);
 
 extern int Stm32SpiSetup(NUTSPINODE * node);
 extern int Stm32SpiBusNodeInit(NUTSPINODE * node);
-extern int Stm32SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int Stm32SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int Stm32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
 extern int Stm32SpiBusWait(NUTSPINODE * node, uint32_t tmo);
 
 #endif

@@ -137,7 +137,7 @@ typedef struct _dirdesc {
 
 /*@}*/
 
-extern DIR *opendir(CONST char *);
+extern DIR *opendir(const char *);
 extern struct dirent *readdir(DIR *);
 extern int closedir(DIR *);
 

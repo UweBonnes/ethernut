@@ -66,7 +66,7 @@
  * \warning The function will not check, if the stream pointer points
  *          to a valid stream.
  */
-int fscanf(FILE * stream, CONST char *fmt, ...)
+int fscanf(FILE * stream, const char *fmt, ...)
 {
     int rc;
     va_list ap;

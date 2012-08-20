@@ -266,7 +266,7 @@ int At49bvSectorRead(unsigned int off, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At49bvSectorWrite(unsigned int off, CONST void *data, unsigned int len)
+int At49bvSectorWrite(unsigned int off, const void *data, unsigned int len)
 {
     int rc = 0;
     flashptr_t sp = (flashptr_t) data;
@@ -313,7 +313,7 @@ int At49bvParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At49bvParamWrite(unsigned int pos, CONST void *data, unsigned int len)
+int At49bvParamWrite(unsigned int pos, const void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

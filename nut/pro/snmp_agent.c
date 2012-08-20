@@ -58,7 +58,7 @@
  */
 static uint8_t *packet_end;
 
-static void SetVariable(CONST uint8_t * var_val, uint8_t var_val_type, uint8_t * statP, size_t statLen)
+static void SetVariable(const uint8_t * var_val, uint8_t var_val_type, uint8_t * statP, size_t statLen)
 {
     size_t buffersize = 1000;
 
@@ -97,7 +97,7 @@ static void SetVariable(CONST uint8_t * var_val, uint8_t var_val_type, uint8_t *
  * \return 0 on success. Otherwise an error code is returned.
  *
  */
-static int SnmpVarListParse(SNMP_SESSION * sess, CONST uint8_t * data, size_t length, uint8_t * out_data, size_t out_length,
+static int SnmpVarListParse(SNMP_SESSION * sess, const uint8_t * data, size_t length, uint8_t * out_data, size_t out_length,
                             long *index, int msgtype, int action)
 {
     OID var_name[MAX_OID_LEN];
@@ -234,7 +234,7 @@ static int SnmpVarListParse(SNMP_SESSION * sess, CONST uint8_t * data, size_t le
  *
  * \return 0 upon success and -1 upon failure.
  */
-static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST uint8_t * snmp_in, uint8_t * snmp_out, size_t snmp_length, long errstat,
+static int SnmpCreateIdentical(SNMP_SESSION * sess, const uint8_t * snmp_in, uint8_t * snmp_out, size_t snmp_length, long errstat,
                                long errindex)
 {
     uint8_t *data;
@@ -243,10 +243,10 @@ static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST uint8_t * snmp_in, uin
     size_t length;
     size_t headerLength;
     uint8_t *headerPtr;
-    CONST uint8_t *reqidPtr;
+    const uint8_t *reqidPtr;
     uint8_t *errstatPtr;
     uint8_t *errindexPtr;
-    CONST uint8_t *varListPtr;
+    const uint8_t *varListPtr;
 
     /* Copy packet contents. */
     memcpy(snmp_out, snmp_in, snmp_length);
@@ -304,7 +304,7 @@ static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST uint8_t * snmp_in, uin
  *
  * \return 0 upon success and -1 upon failure.
  */
-int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t in_len, uint8_t * out_data, size_t * out_len)
+int SnmpAgentProcessRequest(SNMP_SESSION * sess, const uint8_t * in_data, size_t in_len, uint8_t * out_data, size_t * out_len)
 {
     long zero = 0;
     uint8_t msgtype;
@@ -316,7 +316,7 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t
     uint8_t *out_auth;
     uint8_t *out_header;
     uint8_t *out_reqid;
-    CONST uint8_t *data;
+    const uint8_t *data;
     size_t len;
 
     SnmpStatsInc(SNMP_STAT_INPKTS);

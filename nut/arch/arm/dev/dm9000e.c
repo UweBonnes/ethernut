@@ -825,7 +825,7 @@ static void NicUpdateMCHardware(NICINFO *ni)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac, NICINFO * ni)
+static int NicStart(const uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;

@@ -89,11 +89,11 @@
 
 /*@}*/
 
-extern int SnmpOidCmp(CONST OID *, size_t, CONST OID *, size_t);
-extern int SnmpOidLenCmp(CONST OID *name1, CONST OID *name2, size_t len);
-extern int SnmpOidTreeCmp(CONST OID *, size_t, CONST OID *, size_t);
-extern int SnmpOidCmpIdx(CONST OID *name1, size_t len1, CONST OID *name2, size_t len2, OID index);
-extern int SnmpOidEquals(CONST OID *, size_t, CONST OID *, size_t);
+extern int SnmpOidCmp(const OID *, size_t, const OID *, size_t);
+extern int SnmpOidLenCmp(const OID *name1, const OID *name2, size_t len);
+extern int SnmpOidTreeCmp(const OID *, size_t, const OID *, size_t);
+extern int SnmpOidCmpIdx(const OID *name1, size_t len1, const OID *name2, size_t len2, OID index);
+extern int SnmpOidEquals(const OID *, size_t, const OID *, size_t);
 
 extern void SnmpStatsInc(int);
 extern uint32_t SnmpStatsGet(int);

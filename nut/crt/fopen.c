@@ -80,7 +80,7 @@ FILE *__iob[FOPEN_MAX] = { (FILE *) 1, (FILE *) 2, (FILE *) 3 };
  * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
  */
-FILE *fopen(CONST char *name, CONST char *mode)
+FILE *fopen(const char *name, const char *mode)
 {
     int mflags = _O_TEXT;
     uint_fast8_t i;

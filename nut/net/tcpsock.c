@@ -273,7 +273,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
  * \return 0 on success, -1 otherwise. The specific error code
  *         can be retrieved by calling NutTcpError().
  */
-int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optlen)
+int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, const void *optval, int optlen)
 {
     int rc = -1;
 
@@ -458,9 +458,9 @@ int NutTcpConnect(TCPSOCKET * sock, uint32_t addr, uint16_t port)
      */
     do {
         /* Each time a new socket is created the local port number in incremented
-           by a more or less randomized value between 1 and 15 (the lowest 4 bit of 
+           by a more or less randomized value between 1 and 15 (the lowest 4 bit of
            NutGetMillis() | 1). The highest two bits are always set to 1.
-           This way a port range of 49152 to 65535 is used according to the IANA 
+           This way a port range of 49152 to 65535 is used according to the IANA
            suggestions for ephemeral port usage.
          */
         ticks = (uint16_t) NutGetMillis();
@@ -545,7 +545,7 @@ int NutTcpAccept(TCPSOCKET * sock, uint16_t port)
  *         bytes to send. The return value -1 indicates a fatal error.
  *         On time out, a value of 0 is returned.
  */
-int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
+int NutTcpSend(TCPSOCKET * sock, const void *data, int len)
 {
     uint16_t unacked;
 
@@ -795,7 +795,7 @@ int NutTcpDeviceRead(TCPSOCKET * sock, void *buffer, int size)
     return NutTcpReceive(sock, buffer, size);
 }
 
-static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
+static int SendBuffer(TCPSOCKET * sock, const void *buffer, int size)
 {
     int rc;
     int bite;
@@ -830,7 +830,7 @@ static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
  *         an error.
  *
  */
-int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
+int NutTcpDeviceWrite(TCPSOCKET * sock, const void *buf, int size)
 {
     int rc;
     uint16_t sz;

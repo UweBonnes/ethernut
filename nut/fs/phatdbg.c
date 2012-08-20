@@ -82,7 +82,7 @@ void PhatDbgAttrList(FILE * fp, uint8_t attr)
     }
 }
 
-void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent)
+void PhatDbgDirEntry(FILE * fp, const char *title, PHATDIRENT * dent)
 {
     if (title) {
         fprintf(fp, "--- %s ---\n", title);
@@ -99,7 +99,7 @@ void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent)
     fprintf(fp, "DentFSize: %lu\n", dent->dent_fsize);
 }
 
-void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp)
+void PhatDbgFileInfo(FILE * fp, const char *title, PHATFILE * nfp)
 {
     if (title) {
         fprintf(fp, "--- %s ---\n", title);
@@ -115,7 +115,7 @@ void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp)
     fprintf(fp, "DirEnt Dirty: %u\n", nfp->f_de_dirty);
 }
 
-void PhatDbgVbr(FILE * fp, CONST char *title, PHATVBR * vbr)
+void PhatDbgVbr(FILE * fp, const char *title, PHATVBR * vbr)
 {
     if (title) {
         fprintf(fp, "--- %s ---\n", title);

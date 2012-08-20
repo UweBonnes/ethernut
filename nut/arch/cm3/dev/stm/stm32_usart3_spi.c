@@ -352,7 +352,7 @@ int Stm32UsartBusWait(NUTSPINODE * node, uint32_t tmo)
  *
  * \return Always 0.
  */
-int Stm32UsartBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int Stm32UsartBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     USART_TypeDef* base;
     uint8_t b=0xff;

@@ -97,7 +97,7 @@
  *         itself with a zero character. When no more tokens remain,
  *         a null pointer is returned.
  */
-char *strtok(char *s, CONST char *delim)
+char *strtok(char *s, const char *delim)
 {
     static char *last;
 
@@ -119,7 +119,7 @@ char *strtok(char *s, CONST char *delim)
  *         itself with a zero character. When no more tokens remain,
  *         a null pointer is returned.
  */
-char *strtok_r(char *s, CONST char *delim, char **last)
+char *strtok_r(char *s, const char *delim, char **last)
 {
     char *spanp;
     int c, sc;

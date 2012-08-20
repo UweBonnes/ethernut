@@ -210,7 +210,7 @@ int X12RtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
+int X12RtcWrite(int nv, const uint8_t *buff, size_t cnt)
 {
     int rc;
 
@@ -279,7 +279,7 @@ int X12RtcGetClock(NUTRTC *rtc, struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
+int X12RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint8_t data[10];
 
@@ -377,7 +377,7 @@ int X12RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs)
+int X12RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs)
 {
     uint8_t data[10];
 
@@ -493,12 +493,12 @@ int X12EepromRead(unsigned int addr, void *buff, size_t len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len)
+int X12EepromWrite(unsigned int addr, const void *buff, size_t len)
 {
     int rc = 0;
     uint8_t *wbuf;
     size_t wlen;
-    CONST uint8_t *wp = buff;
+    const uint8_t *wp = buff;
 
     /*
      * Loop for each page to be written to.

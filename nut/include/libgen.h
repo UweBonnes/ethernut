@@ -44,7 +44,7 @@
 
 #include <sys/types.h>
 
-char *basename(CONST char *);
-char *dirname(CONST char *);
+char *basename(const char *);
+char *dirname(const char *);
 
 #endif /* _LIBGEN_H_ */

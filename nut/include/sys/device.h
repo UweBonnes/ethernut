@@ -235,7 +235,7 @@ struct _NUTDEVICE {
     /*!
      * \brief Write to device.
      */
-    int (*dev_write) (NUTFILE *, CONST void *, int);
+    int (*dev_write) (NUTFILE *, const void *, int);
 
     /*!
      * \brief Write to device.
@@ -247,7 +247,7 @@ struct _NUTDEVICE {
     /*!
      * \brief Open a device or file.
      */
-    NUTFILE * (*dev_open) (NUTDEVICE *, CONST char *, int, int);
+    NUTFILE * (*dev_open) (NUTDEVICE *, const char *, int, int);
 
     /*!
      * \brief Close a device or file.
@@ -274,7 +274,7 @@ struct _NUTVIRTUALDEVICE {
     NUTVIRTUALDEVICE *vdv_zero;
     uint8_t vdv_type;
     int (*vdv_read) (void *, void *, int);
-    int (*vdv_write) (void *, CONST void *, int);
+    int (*vdv_write) (void *, const void *, int);
 #ifdef __HARVARD_ARCH__
     int (*vdv_write_P) (void *, PGM_P, int);
 #endif
@@ -312,7 +312,7 @@ struct _IFSTREAM {
 extern NUTDEVICE *nutDeviceList;
 
 extern int NutRegisterDevice(NUTDEVICE * dev, uintptr_t base, uint8_t irq);
-extern NUTDEVICE *NutDeviceLookup(CONST char *name);
+extern NUTDEVICE *NutDeviceLookup(const char *name);
 extern NUTDEVICE *NutDeviceLookupType(NUTDEVICE *dev, uint_fast8_t type);
 
 #endif

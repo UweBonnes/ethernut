@@ -303,11 +303,11 @@
 
 /*@}*/
 
-extern int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout);
-extern int NutDhcpRelease(CONST char *name, uint32_t timeout);
-extern int NutDhcpInform(CONST char *name, uint32_t timeout);
-extern int NutDhcpStatus(CONST char *name);
-extern int NutDhcpError(CONST char *name);
+extern int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout);
+extern int NutDhcpRelease(const char *name, uint32_t timeout);
+extern int NutDhcpInform(const char *name, uint32_t timeout);
+extern int NutDhcpStatus(const char *name);
+extern int NutDhcpError(const char *name);
 
 extern int NutDhcpIsConfigured(void) NUT_DEPRECATED;
 

@@ -285,7 +285,7 @@ typedef struct {
      *
      * Set if all parents found.
      */
-    CONST char *fr_name;
+    const char *fr_name;
 } PNUT_FINDRESULT;
 
 /*!
@@ -583,7 +583,7 @@ static int PnutDirIsEmpty(PNUT_BLKNUM node)
  *
  * \return 0 on succes, otherwise an error code is returned.
  */
-static int PnutDirFindEntry(PNUT_BLKNUM node, CONST char *path, size_t len, PNUT_DIRENTRY ** entry)
+static int PnutDirFindEntry(PNUT_BLKNUM node, const char *path, size_t len, PNUT_DIRENTRY ** entry)
 {
     int rc = ENOENT;
     uint32_t pos;
@@ -623,7 +623,7 @@ static int PnutDirFindEntry(PNUT_BLKNUM node, CONST char *path, size_t len, PNUT
  *
  * \return Error code.
  */
-static int PnutDirFindPath(PNUT_BLKNUM node, CONST char *path, PNUT_FINDRESULT * result)
+static int PnutDirFindPath(PNUT_BLKNUM node, const char *path, PNUT_FINDRESULT * result)
 {
     int rc = 0;
     size_t len;
@@ -645,7 +645,7 @@ static int PnutDirFindPath(PNUT_BLKNUM node, CONST char *path, PNUT_FINDRESULT *
      * Loop for each path component.
      */
     while (*path) {
-        CONST char *cp;
+        const char *cp;
 
         /* Make sure that this is a directory node. */
         if (BankNodePointer(node)->node_type != NODETYPE_DIR) {
@@ -809,7 +809,7 @@ static int PnutDirRead(DIR * dir)
  *
  * \return 0 if successful. Otherwise returns an error code.
  */
-static int PnutDirAddEntry(PNUT_BLKNUM dnode, CONST char *name, PNUT_BLKNUM enode)
+static int PnutDirAddEntry(PNUT_BLKNUM dnode, const char *name, PNUT_BLKNUM enode)
 {
     int rc = 0;
     uint32_t pos = 0;
@@ -877,7 +877,7 @@ static int PnutDirAddEntry(PNUT_BLKNUM dnode, CONST char *name, PNUT_BLKNUM enod
  *
  * \return 0 if successful. Otherwise returns an error code.
  */
-static int PnutDirDelEntry(PNUT_BLKNUM node, CONST char *name)
+static int PnutDirDelEntry(PNUT_BLKNUM node, const char *name)
 {
     int rc;
     PNUT_DIRENTRY *entry = NULL;
@@ -927,7 +927,7 @@ static int PnutDirDelEntry(PNUT_BLKNUM node, CONST char *name)
  *
  * \return 0 on success. Otherwise -1 is returned.
  */
-static int PnutDirCreate(CONST char *path)
+static int PnutDirCreate(const char *path)
 {
     PNUT_BLKNUM node;
     PNUT_FINDRESULT found;
@@ -993,7 +993,7 @@ static int PnutDirCreate(CONST char *path)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-static NUTFILE *PnutFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+static NUTFILE *PnutFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     PNUT_BLKNUM node = -1;
     PNUT_FINDRESULT found;
@@ -1114,7 +1114,7 @@ static int PnutDelete(char *path)
  *
  * \return 0 on success. Otherwise -1 is returned.
  */
-static int PnutStatus(CONST char *path, struct stat *status)
+static int PnutStatus(const char *path, struct stat *status)
 {
     int rc;
     PNUT_FINDRESULT found;
@@ -1161,7 +1161,7 @@ static int PnutFileStatus(PNUTFILE * fp, struct stat *status)
  * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
-static int PnutFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+static int PnutFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     PNUTFILE *fp = nfp->nf_fcb;
     int ec = 0;
@@ -1169,7 +1169,7 @@ static int PnutFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
     PNUT_BLKNUM node = fp->f_node;
     uint8_t *blkptr;
     size_t blksiz;
-    CONST char *buf = buffer;
+    const char *buf = buffer;
 
     while (len) {
         if ((ec = PnutNodeGetDataPtr(node, fp->f_pos, &blkptr, &blksiz, 1)) != 0) {

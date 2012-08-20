@@ -151,7 +151,7 @@ static int NutPppRead(NUTFILE * fp, void *buffer, int size)
 /*
  * Pass writes to the physical driver for now.
  */
-static int NutPppWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int NutPppWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return _write(((PPPDCB *) (fp->nf_dev->dev_dcb))->dcb_fd, buffer, len);
 }
@@ -223,7 +223,7 @@ static int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf)
  *             and password, each separated by a slash.
  *
  */
-static NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *NutPppOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp;
     uint8_t i;

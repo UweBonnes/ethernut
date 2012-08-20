@@ -91,12 +91,12 @@
  *
  * \return File descriptor for the opened file or -1 to indicate an error.
  */
-int _open(CONST char *name, int mode)
+int _open(const char *name, int mode)
 {
     NUTDEVICE *dev;
     char dev_name[9];
     uint_fast8_t nidx;
-    CONST char *nptr = name;
+    const char *nptr = name;
 
     NUTASSERT(name != NULL);
 

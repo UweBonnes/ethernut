@@ -124,7 +124,7 @@ void GetDosTimeStamp(uint16_t * dostim, uint16_t * dosdat)
  * \return 0 on success, 1 if the name contains wildcards or
  *         -1 if the name is malformed.
  */
-int MakePhatName(CONST char *src, uint8_t * dst)
+int MakePhatName(const char *src, uint8_t * dst)
 {
     int rc = 0;
     int i;
@@ -209,7 +209,7 @@ int MakePhatName(CONST char *src, uint8_t * dst)
  * \return 0 on success, 1 if the name contains wildcards or
  *         -1 if the name is malformed.
  */
-void MakeVisibleName(CONST uint8_t * src, char *dst)
+void MakeVisibleName(const uint8_t * src, char *dst)
 {
     int i;
 
@@ -246,7 +246,7 @@ void MakeVisibleName(CONST uint8_t * src, char *dst)
  *         or NULL in case of an error. The allocated buffer must be
  *         released by the caller.
  */
-char *GetParentPath(CONST char *path, CONST char **comp)
+char *GetParentPath(const char *path, const char **comp)
 {
     char *parent;
     int len;

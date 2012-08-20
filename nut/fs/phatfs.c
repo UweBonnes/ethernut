@@ -369,14 +369,14 @@ int PhatFileClose(NUTFILE * nfp)
  *
  * \bug Append mode not working as expected.
  */
-NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+NUTFILE *PhatFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *nfp = NUTFILE_EOF;
     NUTFILE *ndp = NUTFILE_EOF;
     PHATFILE *ffcb;
     PHATFILE *dfcb;
     PHATFIND *srch;
-    CONST char *fname;
+    const char *fname;
 
     /* Open the parent directory and return the basename. */
     if ((ndp = PhatDirOpenParent(dev, path, &fname)) == NUTFILE_EOF) {
@@ -535,7 +535,7 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
  * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
-int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+int PhatFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     int step;
@@ -968,7 +968,7 @@ static int PhatInit(NUTDEVICE * dev)
 /*!
  * \brief Reentrant variant of PhatFileOpen().
  */
-static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *rc;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -1011,7 +1011,7 @@ static int PhatApiFileClose(NUTFILE * nfp)
 /*!
  * \brief Reentrant variant of PhatFileWrite().
  */
-static int PhatApiFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+static int PhatApiFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     NUTDEVICE *dev = nfp->nf_dev;

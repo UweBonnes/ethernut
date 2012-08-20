@@ -56,8 +56,8 @@ extern unsigned long long AT49bvReadProtectionRegister(int factory);
 extern int At49bvChipErase(void);
 extern int At49bvSectorErase(unsigned int off);
 extern int At49bvSectorRead(unsigned int off, void *data, unsigned int len);
-extern int At49bvSectorWrite(unsigned int off, CONST void *data, unsigned int len);
+extern int At49bvSectorWrite(unsigned int off, const void *data, unsigned int len);
 extern int At49bvParamRead(unsigned int pos, void *data, unsigned int len);
-extern int At49bvParamWrite(unsigned int pos, CONST void *data, unsigned int len);
+extern int At49bvParamWrite(unsigned int pos, const void *data, unsigned int len);
 
 #endif

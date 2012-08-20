@@ -684,7 +684,7 @@ static void EmulateNicEeprom(void)
  * should have been disabled when calling this
  * function.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(const uint8_t * mac)
 {
     uint8_t i;
 

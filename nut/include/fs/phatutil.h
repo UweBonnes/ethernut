@@ -57,10 +57,10 @@
 
 extern void GetDosTimeStamp(uint16_t * dostim, uint16_t * dosdat);
 
-extern int MakePhatName(CONST char *src, uint8_t * dst);
-extern void MakeVisibleName(CONST uint8_t * src, char *dst);
+extern int MakePhatName(const char *src, uint8_t * dst);
+extern void MakeVisibleName(const uint8_t * src, char *dst);
 
-extern char *GetParentPath(CONST char *path, CONST char **comp);
+extern char *GetParentPath(const char *path, const char **comp);
 
 extern int IsFixedRootDir(NUTFILE * ndp);
 

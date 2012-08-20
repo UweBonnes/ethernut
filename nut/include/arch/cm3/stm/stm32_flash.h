@@ -114,6 +114,6 @@ extern int Stm32FlashWrite( void* dst, void* src, size_t len);
 /* Nut/OS specific API functions to read and write configuration data.
  */
 extern int Stm32FlashParamRead(unsigned int pos, void *data, unsigned int len);
-extern int Stm32FlashParamWrite(unsigned int pos, CONST void *data, unsigned int len);
+extern int Stm32FlashParamWrite(unsigned int pos, const void *data, unsigned int len);
 
 #endif /* _STM32_FLASH_H_ */

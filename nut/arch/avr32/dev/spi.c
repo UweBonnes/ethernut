@@ -588,7 +588,7 @@ int At91SpiSetCsDelay(unsigned int base, unsigned int dly)
  * \param rxnbuf Second receive buffer.
  * \param xnlen  Length of second transfer.
  */
-int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen, CONST void *txnbuf, void *rxnbuf,
+int At91SpiTransfer2(unsigned int base, unsigned int cs, const void *txbuf, void *rxbuf, int xlen, const void *txnbuf, void *rxnbuf,
                      int xnlen)
 {
     int rc = -1;

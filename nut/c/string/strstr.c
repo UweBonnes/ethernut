@@ -90,7 +90,7 @@
  *         pointer is returned. If the substring does not occur in
  *         the string to be searched, then a null pointer is returned.
  */
-char *strstr(CONST char *s, CONST char *find)
+char *strstr(const char *s, const char *find)
 {
     char c, sc;
     size_t len;

@@ -1213,7 +1213,7 @@ static int FATInit(NUTDEVICE * pDevice)
 /*                                                          */
 /*              A return value of -1 indicates an error.    */
 /************************************************************/
-static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName, int nMode, int nAccess)
+static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, const char *pName, int nMode, int nAccess)
 {
     int i, x;
     int nError;
@@ -1738,7 +1738,7 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
     return (nBytesRead);
 }
 
-static int FATFileWrite(NUTFILE * hNUTFile, CONST void *pData, int nSize)
+static int FATFileWrite(NUTFILE * hNUTFile, const void *pData, int nSize)
 {
     int nError;
 

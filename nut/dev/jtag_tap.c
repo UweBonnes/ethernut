@@ -192,7 +192,7 @@ void TapSetIrSize(JTAG_TAP *tap, uint_fast8_t len)
  *             controller will move to the Exit1-DR state on the
  *             last clock cycle.
  */
-void TapData(JTAG_TAP *tap, uint8_t *rbuf, CONST uint8_t *wbuf, uint32_t len, uint_fast8_t last)
+void TapData(JTAG_TAP *tap, uint8_t *rbuf, const uint8_t *wbuf, uint32_t len, uint_fast8_t last)
 {
     TapStateWalk(tap, JTAG_SHIFT_DR);
     tap->tap_cable->cable_transfer_data(tap->tap_cib, rbuf, wbuf, len, last);

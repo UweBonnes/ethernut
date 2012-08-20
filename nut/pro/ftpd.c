@@ -248,7 +248,7 @@ static void SplitCmdArg(char * line, char ** cmd, char ** args)
  *
  * \return The number of converted byte values. Should be 6.
  */
-static int ParseIpPort(CONST char * arg, uint32_t * ip, uint16_t * port)
+static int ParseIpPort(const char * arg, uint32_t * ip, uint16_t * port)
 {
     int rc;
 
@@ -513,7 +513,7 @@ TCPSOCKET *NutFtpDataConnect(FTPSESSION * session)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutRegisterFtpRoot(CONST char *path)
+int NutRegisterFtpRoot(const char *path)
 {
     /* Reset path to default. */
     if (path == NULL || *path == 0) {
@@ -573,7 +573,7 @@ int NutRegisterFtpRoot(CONST char *path)
  * \return 0 on success. -1 is returned on failures, in which case
  *         no protection may be assumed.
  */
-int NutRegisterFtpUser(CONST char *user, CONST char *pass)
+int NutRegisterFtpUser(const char *user, const char *pass)
 {
     if (ftp_user) {
         free(ftp_user);

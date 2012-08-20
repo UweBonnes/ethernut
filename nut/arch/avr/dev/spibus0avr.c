@@ -252,7 +252,7 @@ static void AvrSpi0Interrupt(void *arg)
  *
  * \return Always 0.
  */
-int AvrSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int AvrSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t b = 0xff;
 

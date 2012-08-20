@@ -382,7 +382,7 @@
 #define eeprom_read_byte(addr)              EEPROMread((int)addr)
 
 extern void *calloc(size_t num, size_t size);
-extern char *strdup(CONST char *str);
+extern char *strdup(const char *str);
 
 #include <string.h>
 

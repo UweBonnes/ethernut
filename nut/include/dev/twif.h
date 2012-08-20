@@ -166,7 +166,7 @@ struct _NUTTWIBUS {
 
 extern int NutTwiMasterTranceive( NUTTWIBUS  *bus,
                                   uint8_t     sla,
-                                  CONST void *txdata, uint16_t txlen,
+                                  const void *txdata, uint16_t txlen,
                                   void       *rxdata, uint16_t rxsiz,
                                   uint32_t    tmo );
 
@@ -179,7 +179,7 @@ extern int NutTwiMasterRegRead( NUTTWIBUS *bus,
 extern int NutTwiMasterRegWrite( NUTTWIBUS  *bus,
                                  uint8_t     sla,
                                  uint32_t    iadr, uint8_t iadrlen,
-                                 CONST void *txdata, uint16_t txsiz,
+                                 const void *txdata, uint16_t txsiz,
                                  uint32_t    tmo );
 
 extern int NutTwiMasterError(NUTTWIBUS *bus);

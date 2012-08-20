@@ -92,10 +92,10 @@ static int _sgetb(int fd, void *buffer, size_t count)
  *         of the stream is reached before the first conversion.
  *
  */
-int vsscanf(CONST char *string, CONST char *fmt, va_list ap)
+int vsscanf(const char *string, const char *fmt, va_list ap)
 {
     /* Bugfix kindly provided by Tomasz Niewegowski. */
-    CONST char *ptr = string;
+    const char *ptr = string;
 
     return _getf(_sgetb, (int) ((uintptr_t) &ptr), fmt, ap);
 }

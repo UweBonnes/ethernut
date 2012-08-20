@@ -357,7 +357,7 @@ static int TwBitInit(uint8_t sla)
     return 0;
 }
 
-static int TwBitMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
+static int TwBitMasterTransact(uint8_t sla, const void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
 {
     int rc = 0;
     uint8_t *cp;

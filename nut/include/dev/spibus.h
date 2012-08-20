@@ -113,7 +113,7 @@ struct _NUTSPIBUS {
 
     /*! \brief Transfer data.
      */
-    int (*bus_transfer) (NUTSPINODE *, CONST void *, void *, int);
+    int (*bus_transfer) (NUTSPINODE *, const void *, void *, int);
 
     /*! \brief Wait for transfer ready.
      */

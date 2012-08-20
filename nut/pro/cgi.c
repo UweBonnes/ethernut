@@ -121,8 +121,8 @@ int NutCgiCheckRequest(FILE * stream, REQUEST * req)
      * so let's keep Ole's variant for GCC.
      */
     size_t len;
-    CONST char *cp;
-    CONST char *cgi_bin = cgiBinPath ? cgiBinPath : "cgi-bin/";
+    const char *cp;
+    const char *cgi_bin = cgiBinPath ? cgiBinPath : "cgi-bin/";
 
     while (*cgi_bin) {
         /* Skip leading path separators. */

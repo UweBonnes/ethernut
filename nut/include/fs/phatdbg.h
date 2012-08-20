@@ -55,8 +55,8 @@
 #include <fs/phatfs.h>
 
 extern void PhatDbgAttrList(FILE * fp, uint8_t attr);
-extern void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent);
-extern void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp);
-extern void PhatDbgVbr(FILE * fp, CONST char *title, PHATVBR * vbr);
+extern void PhatDbgDirEntry(FILE * fp, const char *title, PHATDIRENT * dent);
+extern void PhatDbgFileInfo(FILE * fp, const char *title, PHATFILE * nfp);
+extern void PhatDbgVbr(FILE * fp, const char *title, PHATVBR * vbr);
 
 #endif

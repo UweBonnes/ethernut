@@ -155,11 +155,11 @@ typedef struct {
     uint32_t doc_ip2;
 } DNSCONFIG;
 
-extern void NutDnsConfig2(CONST uint8_t * hostname, CONST uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
+extern void NutDnsConfig2(const uint8_t * hostname, const uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
 extern void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip);
-extern void NutDnsConfig(CONST uint8_t *hostname, CONST uint8_t *domain, uint32_t dnsip) NUT_DEPRECATED;
-extern uint32_t NutDnsGetHostByName(CONST uint8_t *hostname);
-extern uint8_t NutDnsGetHostsByName(CONST uint8_t * hostname, uint32_t * ip_all);
-extern uint32_t NutDnsGetMxByDomain(CONST uint8_t * hostname);
+extern void NutDnsConfig(const uint8_t *hostname, const uint8_t *domain, uint32_t dnsip) NUT_DEPRECATED;
+extern uint32_t NutDnsGetHostByName(const uint8_t *hostname);
+extern uint8_t NutDnsGetHostsByName(const uint8_t * hostname, uint32_t * ip_all);
+extern uint32_t NutDnsGetMxByDomain(const uint8_t * hostname);
 
 #endif

@@ -103,7 +103,7 @@
  *         the data has been successfully delivered, because flow control
  *         and retransmission is still handled in the background.
  */
-int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
+int NutTcpOutput(TCPSOCKET * sock, const uint8_t * data, uint16_t size)
 {
     NETBUF *nb;
     NETBUF *nb_clone = 0;

@@ -141,7 +141,7 @@ int NutBlockDeviceInit(NUTDEVICE * dev)
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTDEVICE *fsdev;
 
@@ -378,11 +378,11 @@ int NutBlockDeviceRead(NUTFILE * nfp, void *buffer, int num)
  * \return The number of blocks actually written. The current position is
  *         set to the next block. A return value of -1 indicates an error.
  */
-int NutBlockDeviceWrite(NUTFILE * nfp, CONST void *buffer, int num)
+int NutBlockDeviceWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     int rc;
     int cnt;
-    CONST uint8_t *bp = buffer;
+    const uint8_t *bp = buffer;
     NUTBLOCKIO *blkio;
     BLOCKVOLUME *fcb;
 

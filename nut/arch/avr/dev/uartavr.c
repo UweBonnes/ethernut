@@ -755,12 +755,12 @@ int UartAvrRead(NUTFILE * fp, void *buffer, int size)
 /*!
  * \brief Write to device.
  */
-int UartAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+int UartAvrPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
     IFSTREAM *ifs;
     UARTDCB *dcb;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t lbmode;
     uint8_t elmode;
     uint8_t ch;
@@ -818,21 +818,21 @@ int UartAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     return rc;
 }
 
-int UartAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
+int UartAvrWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return UartAvrPut(fp->nf_dev, buffer, len, 0);
 }
 
 int UartAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return UartAvrPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return UartAvrPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 
 /*!
  * \brief Open a device or file.
  */
-NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *UartAvrOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = NutHeapAlloc(sizeof(NUTFILE));
     UARTDCB *dcb;

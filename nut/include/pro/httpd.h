@@ -157,7 +157,7 @@ struct _AUTHINFO {
 };
 
 extern int NutHttpAuthValidate(REQUEST * req);
-extern int NutRegisterAuth(CONST char *dirname, CONST char *login);
+extern int NutRegisterAuth(const char *dirname, const char *login);
 extern void NutClearAuth(void);
 
 /*

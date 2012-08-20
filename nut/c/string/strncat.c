@@ -91,11 +91,11 @@
  *
  * \return The original destination pointer.
  */
-char *strncat(char *dst, CONST char *src, size_t n)
+char *strncat(char *dst, const char *src, size_t n)
 {
     if (n != 0) {
         char *d = dst;
-        CONST char *s = src;
+        const char *s = src;
 
         while (*d != 0)
             d++;

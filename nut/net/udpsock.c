@@ -92,11 +92,11 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
     if (port == 0) {
         do {
             /* Each time a new socket is created the local port number in incremented
-               by a more or less randomized value between 1 and 15 (the lowest 4 bit of 
+               by a more or less randomized value between 1 and 15 (the lowest 4 bit of
                NutGetMillis() | 1). The highest two bits are always set to 1.
-               This way a port range of 49152 to 65535 is used according to the IANA 
+               This way a port range of 49152 to 65535 is used according to the IANA
                suggestions for ephemeral port usage.
-             */            
+             */
             ticks = (uint16_t) NutGetMillis();
             if (last_local_port) {
                 last_local_port += (uint16_t) ((ticks & 0x000F) | 1);
@@ -104,7 +104,7 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
                 last_local_port = ticks;
             }
 
-            last_local_port |= 0xC000;            
+            last_local_port |= 0xC000;
 
             port = htons(last_local_port);
             sock = udpSocketList;
@@ -350,7 +350,7 @@ UDPSOCKET *NutUdpFindSocket(uint16_t port)
  * \param optlen  Length of the value.
  * \return 0 on success, -1 otherwise.
  */
-int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optlen)
+int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, const void *optval, int optlen)
 {
     int rc = -1;
 

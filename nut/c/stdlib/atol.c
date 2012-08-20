@@ -89,7 +89,7 @@
  *
  * \return Converted value.
  */
-long atol(CONST char *str)
+long atol(const char *str)
 {
     return (strtol(str, (char **) NULL, 10));
 }

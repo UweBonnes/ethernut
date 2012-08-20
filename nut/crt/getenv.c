@@ -42,7 +42,7 @@ static char empty_envval[1] = {0};
  * \return A pointer to a string containing the value. If the specified
  *         name cannot be found a null pointer will be returned.
  */
-char *getenv(CONST char *name)
+char *getenv(const char *name)
 {
     NUTENVIRONMENT *envp;
 
@@ -65,7 +65,7 @@ char *getenv(CONST char *name)
  * \return A pointer to a string containing the name of the next variable,
  *         or NULL if no more variables are available.
  */
-char *nextenv(CONST char *name)
+char *nextenv(const char *name)
 {
     NUTENVIRONMENT *envp;
 

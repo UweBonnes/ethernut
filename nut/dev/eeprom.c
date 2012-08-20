@@ -75,7 +75,7 @@ int EEInit( void )
 }
 
 /****************************************************************************/
-int EEWriteData( uint16_t addr, CONST void *data, uint16_t len )
+int EEWriteData( uint16_t addr, const void *data, uint16_t len )
 /****************************************************************************/
 {
     return At24cWrite( &at24c32s, (uint8_t *)data, len, addr );

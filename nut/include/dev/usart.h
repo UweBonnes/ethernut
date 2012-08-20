@@ -421,11 +421,11 @@ typedef struct _USARTDCB USARTDCB;
 extern int UsartInit(NUTDEVICE * dev);
 extern int UsartIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int UsartRead(NUTFILE * fp, void *buffer, int size);
-extern int UsartWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int UsartWrite(NUTFILE * fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int UsartClose(NUTFILE * fp);
 extern long UsartSize (NUTFILE *fp);
 

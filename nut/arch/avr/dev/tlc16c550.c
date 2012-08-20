@@ -161,7 +161,7 @@ typedef struct tagIRQDEFS {
 } IRQDEFS;
 
 // define the interrupt handlers
-static CONST PROGMEM IRQDEFS atIrqDefs[] = {
+static const PROGMEM IRQDEFS atIrqDefs[] = {
     {&sig_INTERRUPT0, &EICRA, 0x00},
     {&sig_INTERRUPT1, &EICRA, 0x00},
     {&sig_INTERRUPT2, &EICRA, 0x00},
@@ -901,12 +901,12 @@ int AceRead(NUTFILE * fp, void *buffer, int size)
 /*!
  * \brief Write to device.
  */
-int AcePut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+int AcePut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
     IFSTREAM *ifs;
     ACEDCB *dcb;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t lbmode;
     uint8_t elmode;
     uint8_t ch;
@@ -964,21 +964,21 @@ int AcePut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     return rc;
 }
 
-int AceWrite(NUTFILE * fp, CONST void *buffer, int len)
+int AceWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return AcePut(fp->nf_dev, buffer, len, 0);
 }
 
 int AceWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return AcePut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return AcePut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 
 /*!
  * \brief Open a device or file.
  */
-NUTFILE *AceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *AceOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = NutHeapAlloc(sizeof(NUTFILE));
     ACEDCB *dcb;

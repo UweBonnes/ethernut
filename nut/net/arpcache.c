@@ -338,7 +338,7 @@ void NutArpCacheUpdate(NUTDEVICE * dev, uint32_t ip, uint8_t * ha)
  *
  * \return 0 if address resolved, -1 otherwise.
  */
-int NutArpCacheQuery(NUTDEVICE * dev, CONST uint32_t ip, uint8_t * mac)
+int NutArpCacheQuery(NUTDEVICE * dev, const uint32_t ip, uint8_t * mac)
 {
     int rc = -1;
     ARPENTRY *entry;
