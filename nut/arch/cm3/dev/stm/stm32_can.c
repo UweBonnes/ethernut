@@ -212,9 +212,9 @@ static void STMCanErrorInterrupt( void *arg)
  * FILTER_EXPLICIT and replace this placeholder on the write of the second 29E entry. A 16(M|E) entry must
  * have the high 16 id/ask bits NULL
  *
- * We don't explicit stop reception, so when adding 29E/16M/16E to a partial populated 
+ * We don't explicit stop reception, so when adding 29E/16M/16E to a partial populated
  * filter bank, the other entries of that filter bank are temporary inactive
- * 
+ *
  */
 int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
 {
@@ -672,8 +672,10 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
     { /* for the companion, we only check that CAN1/2 is clock */
         if (bus->bus_base == CAN1_BASE)
             rc = CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
+#ifdef RCC_APB1ENR_CAN2EN
         else
             rc = CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN));
+#endif
         if (rc)
             return 0;
         else
@@ -1000,17 +1002,17 @@ int CanGetCounter(NUTCANBUS *bus, enum CAN_COUNTERS index)
     {
     case CAN_RX_FRAMES: return ci->can_rx_frames;
     case CAN_TX_FRAMES: return ci->can_tx_frames;
-    case CAN_INTERRUPTS: 
+    case CAN_INTERRUPTS:
         return (ci->can_rx_interrupts +ci->can_tx_interrupts +ci->can_sce_interrupts);
-    case CAN_RX_INTERRUPTS: 
+    case CAN_RX_INTERRUPTS:
         return ci->can_rx_interrupts;
-    case CAN_TX_INTERRUPTS: 
+    case CAN_TX_INTERRUPTS:
         return ci->can_tx_interrupts;
-    case CAN_SCE_INTERRUPTS: 
+    case CAN_SCE_INTERRUPTS:
         return ci->can_sce_interrupts;
-    case CAN_OVERRUNS: 
+    case CAN_OVERRUNS:
         return ci->can_overruns;
-    case CAN_ERRORS: 
+    case CAN_ERRORS:
         return ci->can_errors;
     default:
         return -1;
