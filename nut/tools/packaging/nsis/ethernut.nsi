@@ -648,13 +648,10 @@ SectionGroup "Application Samples"
     File ..\..\..\app\lua\Makefile
     File ..\..\..\app\lua\*.c
 
-    SetOutPath "$INSTDIR\nut\app\nutpiper"
-    File ..\..\..\app\nutpiper\Makefile
-    File ..\..\..\app\nutpiper\*.c
-    File ..\..\..\app\nutpiper\*.h
-    SetOutPath "$INSTDIR\nut\appicc\nutpiper"
-    File ..\..\..\appicc\nutpiper\*.prj
-    File ..\..\..\appicc\nutpiper\*.SRC
+    SetOutPath "$INSTDIR\nut\hwtest\audio\nutpiper"
+    File ..\..\..\hwtest\audio\nutpiper\Makefile
+    File ..\..\..\hwtest\audio\nutpiper\*.c
+    File ..\..\..\hwtest\audio\nutpiper\*.h
 
     SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3"
     File ..\..\..\hwtest\audio\playmp3\Makefile
