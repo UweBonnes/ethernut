@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -114,17 +114,17 @@ __xcpt_dummy:
         .ltorg
         .global _start
 _start:
-        
-        /* 
-         * Set supervisor mode. 
+
+        /*
+         * Set supervisor mode.
          */
         mrs     r0, cpsr
         bic     r0, r0, #ARM_MODE_MASK
         orr     r0, r0, #ARM_MODE_SVC
         msr     cpsr, r0
 
-        /* 
-         * Remapping memory. 
+        /*
+         * Remapping memory.
          */
         adr     r10, _rmap_tab      /* Load remap table address. */
         ldr     r12, _rmap_endp     /* Load jump target. */
@@ -136,17 +136,17 @@ _rmap_endp:
         .long   remapmem_end
 
 _rmap_tab:
-        /* 
-         * Chip select NCS0 enables 16-bit Flash memory at 0x10000000. 
-         * We need 4 wait states. 
+        /*
+         * Chip select NCS0 enables 16-bit Flash memory at 0x10000000.
+         * We need 4 wait states.
          */
         .long   0x10000000 | EBI_CSEN | EBI_PAGES_16M | EBI_WSE | EBI_NWS_4 | EBI_DBW_16
-        /* 
+        /*
          * Chip select NCS1 enables 16-bit Ethernet controller at 0x20000000.
-         * We need 3 wait states. 
+         * We need 3 wait states.
          */
         .long   0x20000000 | EBI_CSEN | EBI_BAT_BYTE_SELECT | EBI_PAGES_1M | EBI_WSE | EBI_NWS_3 | EBI_DBW_16
-        /* 
+        /*
          * Chip select NCS2 selects 8-bit NPL registers at 0x21000000.
          * The CPLD is quite fast and may run at one or zero wait states.
          * This pin is shared with GPIO pin 26.
@@ -157,7 +157,7 @@ _rmap_tab:
          * This pin os shared with GPIO pin 27 and available at the expansion port.
          */
         .long   0x30000000
-        /* 
+        /*
          * Chip select CS4 selects the 8-bit NPL expansion bus at 0x22000000.
          * This pin is shared with GPIO pin 31 and address bit 23.
          */
@@ -175,19 +175,19 @@ _rmap_tab:
          * Chip select CS7 is not available, but used as address bit 20.
          */
         .long   0x70000000
-        /* 
+        /*
          * EBI remap command.
          */
         .long   EBI_RCB
-        /* 
+        /*
          * Maximum address space of 4 MBytes per chip select.
          * This occupies A0 to A21.
          */
         .long   EBI_ALE_4M
-        /* 
+        /*
          * EBI base address.
          */
-        .long   EBI_BASE                    
+        .long   EBI_BASE
 
 remapmem_end:
 
@@ -201,12 +201,12 @@ remapmem_end:
         ldmia   r0!, {r2-r9}
         stmia   r1!, {r2-r9}
 
-        /* Jump to next section. */        
+        /* Jump to next section. */
         b       __hw_init
-        
+
         /* Literal pool of section 0. */
         .ltorg
-        
+
 /*
  * Section 1: Hardware initialization.
  */
@@ -282,7 +282,7 @@ __set_stacks:
         msr     CPSR_c, #ARM_MODE_SVC | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         b       __enter_mode
-        
+
         .ltorg
 
 /*
@@ -333,7 +333,7 @@ _41:
         /*
          * Initialize user stack pointer.
          */
-_42:         
+_42:
         ldr     r13, =__stack
         b       __call_rtos
 

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -214,8 +214,8 @@ __vectors:
         ldr     pc, [pc, #24]   /* Software interrupt */
         ldr     pc, [pc, #24]   /* Prefetch abort */
         ldr     pc, [pc, #24]   /* Data abort */
-        /* The following vector is reserved. Atmel obviously interpreted 
-           this as "reserved for Atmel", because SAM-BA uses it to store 
+        /* The following vector is reserved. Atmel obviously interpreted
+           this as "reserved for Atmel", because SAM-BA uses it to store
            the size of the boot image. */
         .word   0
 
@@ -257,7 +257,7 @@ __xcpt_dummy:
 _start:
 
         /*
-         * Disable all interrupts and clear any pending ones. 
+         * Disable all interrupts and clear any pending ones.
          * Useful for debugging w/o target reset.
          */
         ldr     r1, =AIC_BASE
@@ -265,9 +265,9 @@ _start:
         str     r0, [r1, #AIC_IDCR_OFF]
         str     r0, [r1, #AIC_ICCR_OFF]
 
-        /* 
+        /*
          * Perform 8 "End Of Interrupt" commands to make sure that
-         * the AIC will not lock out nIRQ. 
+         * the AIC will not lock out nIRQ.
          */
         str     r0, [r1, #AIC_EOICR_OFF]
         str     r0, [r1, #AIC_EOICR_OFF]
@@ -292,7 +292,7 @@ _start:
         /* Configure the watchdog. */
         ldr     r1, =WDT_BASE
         ldr     r0, =NUT_WDT_START
-        str     r0, [r1, #WDT_MR_OFF]        
+        str     r0, [r1, #WDT_MR_OFF]
 #endif /* if NUT_WDT_START */
 #else /* ifdef NUT_WDT_START */
         /* Disable the watchdog. */
@@ -308,9 +308,9 @@ _start:
         ldr     r0, [r1, #PMC_SR_OFF]
         tst     r0, #PMC_MOSCS
         bne     sel_mainck
-        
+
         /*
-         * If not running, enable the main oscillator. Set startup time 
+         * If not running, enable the main oscillator. Set startup time
          * of 64 * 8 slow clock cycles and wait until oscillator is stable.
          */
         mov     r0, #(64 << CKGR_OSCOUNT_LSB)
@@ -323,11 +323,11 @@ _start:
 
         /*
          * CKGR_MCFR contains the number of main clock cycles within
-         * 16 slow clock cycles. Use this value to test if the main 
-         * clock is running at higher frequency than the slow clock. 
+         * 16 slow clock cycles. Use this value to test if the main
+         * clock is running at higher frequency than the slow clock.
          * If yes, select the main clock.
          */
-sel_mainck:         
+sel_mainck:
         ldr     r0, [r1, #CKGR_MCFR_OFF]
         mov     r0, r0, asl #16 /* Main clock is in lower 16 bits. */
         mov     r0, r0, lsr #16
@@ -351,7 +351,7 @@ set_pll:
         beq     1b
 
         /*
-         * Select PLL A for the processor clock (PCK) and set the master 
+         * Select PLL A for the processor clock (PCK) and set the master
          * clock prescaler and divider.
          */
         ldr     r0, =(PMC_CSS_PLLA_CLK | AT91MCK_PRES | AT91MCK_MDIV)
@@ -428,14 +428,14 @@ set_pll:
 
         /* 200us delay minimum. */
         mov     r3, #0x2000
-1:        
+1:
         subs    r3, r3, #1
         bne     1b
         /* Leave with r3 = 0! */
 
         /* SDRAM base address kept in r2. */
         mov     r2, #NUTMEM_SDRAM_BASE
-        
+
         /* Issue SDRAM command: NOP. */
         ldr     r0, =(SDRAMC_MODE_NOP)
         str     r0, [r1, #SDRAMC_MR_OFF]
@@ -448,7 +448,7 @@ set_pll:
 
         /* Delay. */
         mov     r3, #0x20000
-1:        
+1:
         subs    r3, r3, #1
         bne     1b
 
@@ -525,7 +525,7 @@ set_pll:
 /*
  * Section 2: Set stack pointers.
  */
-        .section .init2,"ax",%progbits        
+        .section .init2,"ax",%progbits
         .global __set_stacks
 __set_stacks:
 
@@ -549,7 +549,7 @@ __set_stacks:
         mov     r13, r0
 
         b       __enter_mode
-        
+
         .ltorg
 
 /*

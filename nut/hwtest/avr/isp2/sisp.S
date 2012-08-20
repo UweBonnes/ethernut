@@ -16,11 +16,11 @@
 ;    This product includes software developed by egnite Software GmbH
 ;    and its contributors.
 ;
-; THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ; ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-; FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
-; SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+; FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+; COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 ; INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 ; BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 ; OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -222,7 +222,7 @@ cmdnxt:
         sbi     _SFR_IO_ADDR(PORTB), LEDIND   ; LED off
         rcall   getc
         cbi     _SFR_IO_ADDR(PORTB), LEDIND   ; LED on
-        
+
 ; *********************************************************************
 ; Version output
 
@@ -265,7 +265,7 @@ cmdfirm:
         rcall   putc
 
         rjmp    cmdnxt          ; Wait for next command
-                
+
 ; *********************************************************************
 ; PC command: Check if starterkit present.
 ;
@@ -387,7 +387,7 @@ c50a:
         rcall   xdelay
         cbi     _SFR_IO_ADDR(PORTB), ISPRST
         rcall   xdelay
-        
+
         dec     r_retry         ; Loop for retries
         brne    c50a
         rjmp    cmdok           ; Send positive resopnse
@@ -551,7 +551,7 @@ c64c:
         lds     r_isp, paddrl
         rcall   ispxcg
         rcall   ispget
-        
+
         ldi     r_delay, 168    ; Target requires delay after each write
         rcall   delay           ; We use 35 milliseconds, OK for most targets
 
@@ -746,7 +746,7 @@ c75:
 
         mov     r_data, r_isp
         rcall   putc
-            
+
         rjmp    cmdfirm
 
 ; *********************************************************************
@@ -1020,7 +1020,7 @@ ispxcg:
 
         ;
         ; Start of 8-bit loop
-_ispa:  
+_ispa:
         rol     r_isp                           ; (1)
         brcc    _ispb                           ; (2/1)
         sbi     _SFR_IO_ADDR(PORTB), ISPMOSI    ; (2)
