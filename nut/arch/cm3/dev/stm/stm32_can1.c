@@ -67,14 +67,7 @@
  * \brief CANBUS1 GPIO configuartion and assignment.
  */
 #if defined(MCU_STM32F1)
- #if (CANBUS1_REMAP_CAN == 0)
-  #undef CANBUS_REMAP
-  #define CAN1RX_GPIO_PORT   NUTGPIO_PORTA
-  #define CAN1TX_GPIO_PORT   NUTGPIO_PORTA
-  #define CAN1RX_GPIO_PIN    11
-  #define CAN1TX_GPIO_PIN    12
-
- #elif (CANBUS1_REMAP_CAN == 1)
+ #if (CANBUS1_REMAP_CAN == 1)
   #define CANBUS_REMAP       GPIO_Remap1_CAN1
   #define CAN1RX_GPIO_PORT   NUTGPIO_PORTB
   #define CAN1TX_GPIO_PORT   NUTGPIO_PORTB
@@ -88,7 +81,11 @@
   #define CAN1RX_GPIO_PIN    0
   #define CAN1TX_GPIO_PIN    1
  #else
-  #error "Illegal CANBUS1_REMAP_CAN value"
+  #undef CANBUS_REMAP
+  #define CAN1RX_GPIO_PORT   NUTGPIO_PORTA
+  #define CAN1TX_GPIO_PORT   NUTGPIO_PORTA
+  #define CAN1RX_GPIO_PIN    11
+  #define CAN1TX_GPIO_PIN    12
  #endif
 #else /*L1/F2/F4*/
  #if !defined(CAN1_TX_PIN)
