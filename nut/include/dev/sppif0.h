@@ -642,9 +642,6 @@
 
 #endif                          /* MCU */
 
-__BEGIN_DECLS
-/* Function prototypes */
-
 extern int Sppi0SetMode(ureg_t ix, ureg_t mode);
 extern void Sppi0SetSpeed(ureg_t ix, uint32_t rate);
 extern void Sppi0Enable(ureg_t ix);
@@ -656,8 +653,5 @@ extern void Sppi0NegSelectDevice(ureg_t ix);
 extern void Sppi0NegDeselectDevice(ureg_t ix);
 extern uint8_t Sppi0Byte(uint8_t data);
 extern void Sppi0Transact(CONST void *wdata, void *rdata, size_t len);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

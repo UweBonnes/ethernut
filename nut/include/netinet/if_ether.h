@@ -145,12 +145,9 @@ struct __attribute__((packed)) ether_header {
  */
 #define ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea))
 
-__BEGIN_DECLS
 /* ASCII conversion function prototypes. */
 extern uint8_t *ether_aton(CONST char *str);
 extern char *ether_ntoa(CONST uint8_t *mac);
-
-__END_DECLS
 
 /*!
  * \struct ether_arp if_ether.h netinet/if_ether.h
@@ -170,15 +167,11 @@ typedef struct __attribute__((packed)) ether_arp {
     uint32_t arp_tpa;       /*!< \brief Target protocol address. */
 } ETHERARP;
 
-__BEGIN_DECLS
 /* ARP function prototypes. */
 extern void NutArpInput(NUTDEVICE *dev, NETBUF *nb);
 extern NETBUF *NutArpAllocNetBuf(uint16_t type, uint32_t ip, uint8_t *mac);
 extern int NutArpOutput(NUTDEVICE *dev, NETBUF *nb);
 extern void NutArpCacheUpdate(NUTDEVICE *dev, uint32_t ip, uint8_t *ha);
 extern int NutArpCacheQuery(NUTDEVICE *dev, uint32_t ip, uint8_t *mac);
-
-__END_DECLS
-/* */
 
 #endif

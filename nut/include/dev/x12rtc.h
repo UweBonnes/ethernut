@@ -164,8 +164,6 @@
 
 extern NUTRTC rtcX12x6;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int X12Init(NUTRTC *rtc) NUT_DEPRECATED;
 
 extern int X12RtcGetClock(NUTRTC *rtc, struct _tm *tm) NUT_DEPRECATED;
@@ -180,6 +178,4 @@ extern int X12RtcWrite(int nv, CONST uint8_t *buff, size_t len);
 extern int X12EepromRead(unsigned int addr, void *buff, size_t len);
 extern int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

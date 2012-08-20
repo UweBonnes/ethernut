@@ -117,11 +117,7 @@ typedef struct {
 /*@}*/
 
 
-__BEGIN_DECLS
-/* Function prototypes. */
 extern int NutRegisterFtpRoot(CONST char *path);
 extern int NutFtpServerSession(TCPSOCKET * sock);
 
-__END_DECLS
-/* */
 #endif

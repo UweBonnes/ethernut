@@ -1006,9 +1006,6 @@
     SBBI0_MISO_ENA(); \
 }
 
-__BEGIN_DECLS
-/* Function prototypes */
-
 extern int Sbbi0SetMode(ureg_t ix, ureg_t mode);
 extern void Sbbi0SetSpeed(ureg_t ix, uint32_t rate);
 extern void Sbbi0Enable(ureg_t ix);
@@ -1020,8 +1017,5 @@ extern void Sbbi0NegSelectDevice(ureg_t ix);
 extern void Sbbi0NegDeselectDevice(ureg_t ix);
 extern uint8_t Sbbi0Byte(uint8_t data);
 extern void Sbbi0Transact(CONST void *wdata, void *rdata, size_t len);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

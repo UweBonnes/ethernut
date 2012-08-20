@@ -45,14 +45,9 @@
  * keep it running on broken hardware.
  */
 
-__BEGIN_DECLS
-
 extern int RealtekDetect(void);
 extern int RealtekTest(void);
 extern void RealtekSend(void);
 extern void RealtekLoop(void);
-
-__END_DECLS
-
 
 #endif

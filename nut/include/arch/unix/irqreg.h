@@ -53,15 +53,11 @@
 
 #include <signal.h>
 
-__BEGIN_DECLS
-
 extern uint8_t irq_processed;
 extern pthread_cond_t irq_cv;
 extern sigset_t irq_signal;
 
 extern void NutUnixIrqEventPostAsync(uint8_t irq_nr, HANDLE * queue );
 extern void NutUnixRaiseInterrupt(int irq);
-
-__END_DECLS
 
 #endif

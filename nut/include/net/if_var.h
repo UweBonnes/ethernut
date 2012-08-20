@@ -234,8 +234,6 @@ struct ifnet {
 
 /*@}*/
 
-__BEGIN_DECLS
-
 extern int NutNetIfConfig2(CONST char *name, void *mac_dev, uint32_t ip_addr,
                           uint32_t ip_mask, uint32_t gateway);
 extern int NutNetIfConfig(CONST char *name, void *mac_dev, uint32_t ip_addr,
@@ -248,7 +246,5 @@ extern int NutNetIfDelMcastAddr(CONST char *name, uint32_t ip_addr);
 
 extern int NutNetLoadConfig(CONST char *name);
 extern int NutNetSaveConfig(void);
-
-__END_DECLS
 
 #endif

@@ -56,10 +56,6 @@
 
 
 
-__BEGIN_DECLS
-/* Function prototypes. */
 extern int NutWinsNameQuery(char * name, uint32_t ipaddr);
 
-__END_DECLS
-/* */
 #endif

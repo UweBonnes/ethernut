@@ -78,9 +78,6 @@
 #define IRCMD_SELECT    56
 #define IRCMD_VTEXT     63
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int NutIrInitSony(void);
 
-__END_DECLS
 #endif

@@ -51,9 +51,6 @@
 
 #include <sys/types.h>
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern unsigned long At49bvInit(void);
 extern unsigned long long AT49bvReadProtectionRegister(int factory);
 extern int At49bvChipErase(void);
@@ -63,6 +60,4 @@ extern int At49bvSectorWrite(unsigned int off, CONST void *data, unsigned int le
 extern int At49bvParamRead(unsigned int pos, void *data, unsigned int len);
 extern int At49bvParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

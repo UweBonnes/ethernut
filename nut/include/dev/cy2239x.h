@@ -120,9 +120,6 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern uint32_t Cy2239xGetFreq(int clk, int fctrl);
 
 extern int Cy2239xGetPll(int clk);
@@ -136,6 +133,4 @@ extern int Cy2239xPllEnable(int pll, int fctrl, int ena);
 extern uint32_t Cy2239xPllGetFreq(int pll, int fctrl);
 extern int Cy2239xPllSetFreq(int pll, int fctrl, unsigned int pval, unsigned int poff, unsigned int qval, unsigned int fval);
 
-__END_DECLS
-/* End of prototypes */
 #endif

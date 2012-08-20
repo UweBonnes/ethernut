@@ -159,14 +159,8 @@ struct __attribute__ ((packed)) _CONFOS {
 
 extern CONFOS confos;
 
-__BEGIN_DECLS
-/* Function prototypes */
-
 extern int NutLoadConfig(void);
 extern int NutSaveConfig(void);
-
-__END_DECLS
-/* End of prototypes */
 
 /*@}*/
 

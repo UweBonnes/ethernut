@@ -61,11 +61,9 @@
 #define ULED_ON     1
 #define ULED_OFF    0
 
-__BEGIN_DECLS
-/* Function prototypes. */
 extern void NplUledCntl(int status);
 extern int NplUledStatus(void);
-__END_DECLS
-/* */
+
 /*@}*/
+
 #endif

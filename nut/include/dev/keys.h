@@ -143,17 +143,11 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes. */
-
 extern int NutGetKeyState( HANDLE *keyhp);
 extern int NutGetKeyTime( HANDLE *keyhp);
 
 int NutRegisterKey( HANDLE *keyhp, int bank, int pin, int fx, uint32_t fxt);
 int NutAssignKeyFkt( HANDLE *keyhp, void (*callback)(void));
 int NutAssignKeyEvt( HANDLE *keyhp, HANDLE *event);
-
-__END_DECLS
-/* */
 
 #endif

@@ -56,14 +56,10 @@
 #include <sys/device.h>
 #include <sys/file.h>
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int PhatSectorRead(NUTFILE * blkmnt, uint32_t sect, uint8_t * buf);
 extern int PhatSectorLoad(NUTDEVICE * dev, uint32_t sect);
 extern void PhatSectorBufferRelease(NUTDEVICE * dev, int bufnum);
 extern int PhatSectorFlush(NUTDEVICE * dev, int bufnum);
 extern int PhatSectorWrite(NUTDEVICE * dev, uint32_t sect, const void *data, int num);
 
-__END_DECLS
-/* End of prototypes */
 #endif

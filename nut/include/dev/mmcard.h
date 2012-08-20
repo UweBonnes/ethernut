@@ -394,8 +394,6 @@ typedef struct __attribute__ ((packed)) _MMC_CSD {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int MmCardDevInit(NUTDEVICE * dev);
 extern int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int MmCardBlockRead(NUTFILE * nfp, void *buffer, int len);
@@ -416,6 +414,4 @@ extern int SpiMmcBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 extern NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc);
 extern int SpiMmcUnmount(NUTFILE * nfp);
 
-__END_DECLS
-/* End of prototypes */
 #endif

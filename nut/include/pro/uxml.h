@@ -65,8 +65,6 @@ typedef struct _UXML_NODE {
     UXML_ATTRIB *xmln_attribs;  /*!< \brief Pointer to the linked list of attributes. */
 } UXML_NODE;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attribs);
 extern char *UxmlParseTag(char *data, char *tkn, size_t size);
 
@@ -79,6 +77,4 @@ extern int UxmlNodeAddAttrib(UXML_NODE * node, char *name, char *value);
 
 extern int UxmlFilterMatch(char *name, char **filt);
 
-__END_DECLS
-/* End of prototypes */
 #endif

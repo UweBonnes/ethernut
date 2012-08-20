@@ -57,8 +57,6 @@
 #include <compiler.h>
 #include <sys/thread.h>
 
-__BEGIN_DECLS
-
 extern FILE *__os_trs;
 extern uint_fast8_t __os_trf;
 
@@ -72,7 +70,5 @@ extern uint_fast8_t __heap_trf;
 
 extern void NutTraceHeap(FILE *stream, uint8_t flags);
 extern void NutDumpHeap(FILE *stream);
-
-__END_DECLS
 
 #endif

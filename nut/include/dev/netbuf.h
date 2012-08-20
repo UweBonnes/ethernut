@@ -169,14 +169,10 @@ struct _NETBUF {
 
 /*@}*/
 
-__BEGIN_DECLS
-
 extern NETBUF *NutNetBufAlloc(NETBUF *nb, uint8_t type, int size);
 extern NETBUF *NutNetBufClone(NETBUF *nb);
 extern NETBUF *NutNetBufClonePart(NETBUF *nb, uint8_t types);
 extern void NutNetBufFree(NETBUF *nb);
 extern int NutNetBufCollect(NETBUF * nbq, int total);
-
-__END_DECLS
 
 #endif

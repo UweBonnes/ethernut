@@ -159,9 +159,6 @@ extern GPIO_SIGNAL sig_GPIO2;
 extern GPIO_SIGNAL sig_GPIO3;
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags);
@@ -179,8 +176,5 @@ extern void GpioPortSetHigh(int bank, unsigned int mask);
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqDisable(GPIO_SIGNAL * sig, int bit);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif /* _DEV_GPIO_DEF_H_ */

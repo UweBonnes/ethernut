@@ -247,12 +247,8 @@ typedef struct _PHATVOL {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type);
 extern int PhatVolUnmount(NUTDEVICE * dev);
 extern uint32_t PhatClusterSector(NUTFILE * nfp, uint32_t clust);
 
-__END_DECLS
-/* End of prototypes */
 #endif

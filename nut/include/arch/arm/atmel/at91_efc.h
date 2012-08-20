@@ -47,9 +47,6 @@
 
 #include <sys/types.h>
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern int At91EfcSectorErase(unsigned int off);
 extern int At91EfcSectorRead(unsigned int off, void *data, unsigned int len);
 extern int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len);
@@ -60,6 +57,4 @@ extern int At91EfcRegionUnlock(unsigned int off);
 extern int At91EfcParamRead(unsigned int pos, void *data, unsigned int len);
 extern int At91EfcParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

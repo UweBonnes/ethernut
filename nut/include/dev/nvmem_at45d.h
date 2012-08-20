@@ -45,11 +45,8 @@
 
 #include <sys/types.h>
 
-__BEGIN_DECLS
-/* Prototypes */
 extern size_t SpiAt45dConfigSize(void);
 extern int SpiAt45dConfigRead(size_t pos, void *data, size_t len);
 extern int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len);
-/* Prototypes */
-__END_DECLS
+
 #endif

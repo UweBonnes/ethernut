@@ -38,9 +38,6 @@
 
 #include <sys/types.h>
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern int Avr32FlashcSectorErase(unsigned int off);
 extern int Avr32FlashcSectorRead(unsigned int off, void *data, unsigned int len);
 extern int Avr32FlashcSectorWrite(unsigned int off, CONST void *data, unsigned int len);
@@ -51,6 +48,4 @@ extern int Avr32FlashcRegionUnlock(unsigned int off);
 extern int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len);
 extern int Avr32FlashcParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

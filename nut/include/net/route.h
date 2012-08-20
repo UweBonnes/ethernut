@@ -120,14 +120,10 @@ struct _RTENTRY {
     NUTDEVICE *rt_dev;          //!< \brief Device to use.
 };
 
-__BEGIN_DECLS
-/* Function prototypes. */
 extern int NutIpRouteAdd(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev);
 extern NUTDEVICE *NutIpRouteQuery(uint32_t ip, uint32_t * gate);
 extern int NutIpRouteDelAll(NUTDEVICE * dev);
 extern int NutIpRouteDel(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev);
 extern RTENTRY *NutIpRouteList(int *numEntries);
 
-__END_DECLS
-/* */
 #endif

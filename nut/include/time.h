@@ -77,7 +77,6 @@
  * @{
  */
 
-__BEGIN_DECLS
 /*!
  * \brief Type definition for struct _tm
  */
@@ -160,6 +159,5 @@ extern long _timezone;
  */
 extern long _dstbias;
 
-__END_DECLS
 /*@}*/
 #endif

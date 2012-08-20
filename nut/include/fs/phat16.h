@@ -59,12 +59,8 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int Phat16GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link);
 extern int Phat16SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link);
 extern int Phat16ReleaseChain(NUTDEVICE * dev, uint32_t first);
 
-__END_DECLS
-/* End of prototypes */
 #endif

@@ -214,7 +214,6 @@ struct __attribute__ ((packed)) ip_opt {
 
 /*@}*/
 
-__BEGIN_DECLS
 /*
  * API declarations.
  */
@@ -236,6 +235,4 @@ extern void NutIpSetInputFilter(NutIpFilterFunc callbackFunc);
 extern int NutRegisterIpHandler(uint8_t prot, int (*hdlr)(NUTDEVICE *, NETBUF *));
 extern int (*ip_demux) (NUTDEVICE *, NETBUF *);
 
-__END_DECLS
-/* */
 #endif

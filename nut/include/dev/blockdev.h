@@ -167,8 +167,6 @@ struct _NUTBLOCKIO {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int NutBlockDeviceInit(NUTDEVICE * dev);
 extern NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
 extern int NutBlockDeviceClose(NUTFILE * nfp);
@@ -179,7 +177,5 @@ extern long NutBlockDeviceSize(NUTFILE *nfp);
 #ifdef __HARVARD_ARCH__
 extern int NutBlockDeviceWrite_P(NUTFILE * nfp, PGM_P buffer, int num);
 #endif
-/* Prototypes */
-__END_DECLS
 
 #endif

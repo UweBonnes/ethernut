@@ -144,8 +144,6 @@
  * \brief UDP and TCP socket interface definitions.
  */
 
-__BEGIN_DECLS
-
 /*********************************************************************\
  * UDP
 \*********************************************************************/
@@ -278,7 +276,5 @@ struct tcp_socket {
 
 extern int NutTcpOutput(TCPSOCKET *sock, CONST uint8_t *data, uint16_t size);
 extern int NutTcpReject(NETBUF *nb);
-
-__END_DECLS
 
 #endif

@@ -55,8 +55,6 @@ struct _AT91SPIREG {
 extern NUTSPIBUS spiBus0At91;
 extern NUTSPIBUS spiBus1At91;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int At91Spi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi);
 extern void At91SpiBus0Interrupt(void *arg);
 
@@ -69,6 +67,5 @@ extern int At91SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf,
 extern int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
 extern int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
 extern int At91SpiBusWait(NUTSPINODE * node, uint32_t tmo);
-/* Prototypes */
-__END_DECLS
+
 #endif

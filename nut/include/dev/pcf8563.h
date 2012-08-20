@@ -50,8 +50,6 @@
 
 extern NUTRTC rtcPcf8563;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int PcfRtcInit(NUTRTC *rtc);
 
 extern int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm);
@@ -63,6 +61,4 @@ extern int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs);
 extern int PcfRtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
 extern int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

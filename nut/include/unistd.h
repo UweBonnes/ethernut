@@ -111,17 +111,12 @@
 
 #endif /* unix emulation */
 
-__BEGIN_DECLS
-/* */
 extern int access(CONST char *path, int what);
 extern long lseek(int fh, long pos, int whence);
 extern int rmdir(CONST char *path);
 extern int unlink(CONST char *path);
 
 extern unsigned int sleep(unsigned int);
-__END_DECLS
-/* */
-
 
 #endif /* _UNISTD_VIRTUAL_H_ */
 

@@ -55,8 +55,6 @@
  * \brief Network interface controller definitions.
  */
 
-__BEGIN_DECLS
-
 /*
  * Available drivers.
  */
@@ -71,7 +69,5 @@ extern NUTDEVICE devSmsc111;
  */
 extern int LancInit(NUTDEVICE *dev);
 extern int LancOutput(NUTDEVICE *dev, NETBUF *nb);
-
-__END_DECLS
 
 #endif

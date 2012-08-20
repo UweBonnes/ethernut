@@ -108,9 +108,6 @@ typedef struct _PERCI_READER {
     perci_fast_reclen_t pcr_recpos;
 } PERCI_READER;
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern int PerCiInit(char *path, int recs);
 
 extern PERCI_WRITER *PerCiOpen(char *path);
@@ -129,6 +126,4 @@ extern int PerCiReadLine(PERCI_READER * reader, char *line, int len);
 
 extern void PerCiDump(FILE *stream, char *path);
 
-__END_DECLS
-/* End of prototypes */
 #endif

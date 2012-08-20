@@ -303,8 +303,6 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes. */
 extern int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout);
 extern int NutDhcpRelease(CONST char *name, uint32_t timeout);
 extern int NutDhcpInform(CONST char *name, uint32_t timeout);
@@ -313,6 +311,4 @@ extern int NutDhcpError(CONST char *name);
 
 extern int NutDhcpIsConfigured(void) NUT_DEPRECATED;
 
-__END_DECLS
-/* */
 #endif

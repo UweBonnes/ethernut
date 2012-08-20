@@ -203,15 +203,11 @@ struct __attribute__ ((packed)) igmp_report {
 #define IGMP_RECORDED_LIST  3       /* Recorded list used to tag report. */
 
 
-__BEGIN_DECLS
-/* Function prototypes */
 extern void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb);
 extern int NutIgmpOutput(uint8_t type, uint32_t dest, NETBUF * nb);
 
 extern void NutIgmpJoinGroup(NUTDEVICE *dev, uint32_t ip_addr);
 extern void NutIgmpLeaveGroup(NUTDEVICE *dev, uint32_t ip_addr);
 
-__END_DECLS
-/* End of prototypes */
 /*@}*/
 #endif

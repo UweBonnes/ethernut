@@ -91,11 +91,7 @@ extern NUTSPINODE at25df;
 extern NUTDEVICE devDataFlash0;
 
 
-__BEGIN_DECLS
-/* Prototypes */
 int At25dfInit(NUTDEVICE* dev);
 static uint8_t At25dStatus(NUTSPINODE * node);
 
-__END_DECLS
-/* End of prototypes */
 #endif

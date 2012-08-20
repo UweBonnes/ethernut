@@ -418,10 +418,6 @@ typedef struct _USARTDCB USARTDCB;
 /*@}*/
 
 
-__BEGIN_DECLS
-
-/*! \name Function Prototypes */
-/*@{*/
 extern int UsartInit(NUTDEVICE * dev);
 extern int UsartIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int UsartRead(NUTFILE * fp, void *buffer, int size);
@@ -432,8 +428,5 @@ extern int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 extern NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
 extern int UsartClose(NUTFILE * fp);
 extern long UsartSize (NUTFILE *fp);
-/*@}*/
-
-__END_DECLS
 
 #endif

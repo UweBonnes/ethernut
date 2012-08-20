@@ -163,8 +163,6 @@ typedef struct _PHATFIND {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int PhatDirEntryCreate(NUTFILE * ndp, CONST char *name, int acc, PHATDIRENT * dirent);
 
 extern int PhatDirEntryUpdate(NUTFILE * ndp);
@@ -184,6 +182,4 @@ extern int PhatDirRemove(NUTDEVICE * dev, char *path);
 
 extern int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *s);
 
-__END_DECLS
-/* End of prototypes */
 #endif

@@ -120,7 +120,7 @@
  * MED     2 MHz  25 MHz
  * FAST   10 MHz  50 MHz
  * HIGH   40 MHz 100 MHz
- * 
+ *
  * As default, we set GPIO_CFG_SPEED_MED
  */
 #define GPIO_CFG_SPEED       0x000000C0
@@ -154,9 +154,6 @@ extern GPIO_SIGNAL sig_GPIO2;
 extern GPIO_SIGNAL sig_GPIO3;
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
@@ -179,7 +176,3 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, uint8_t bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, uint8_t bit);
 extern int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit);
-
-__END_DECLS
-/* End of prototypes */
-

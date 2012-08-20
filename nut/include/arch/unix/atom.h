@@ -57,7 +57,6 @@
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
 
-__BEGIN_DECLS
 #include <pthread.h>
 #include <signal.h>
 #include <sys/thread.h>
@@ -144,5 +143,3 @@ extern void NutEnterCritical(void);
 #endif
 
 #define NutJumpOutCritical() NutExitCritical()
-
-__END_DECLS

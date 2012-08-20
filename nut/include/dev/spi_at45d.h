@@ -58,8 +58,6 @@ extern NUTDEVICE devSpiAt45d2;
 extern NUTSPINODE nodeSpiAt45d3;
 extern NUTDEVICE devSpiAt45d3;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int SpiAt45dInit(NUTDEVICE *dev);
 extern int SpiAt45dCommand(NUTDEVICE *dev, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen);
 extern uint8_t SpiAt45dStatus(NUTDEVICE *dev);
@@ -74,7 +72,5 @@ extern int SpiAt45dPageSize(NUTDEVICE *dev);
 extern int SpiAt45dPageWrite_P(NUTDEVICE *dev, uint32_t pgn, PGM_P data, int len);
 #endif
 extern int SpiAt45dIOCtl(NUTDEVICE * dev, int req, void *conf);
-/* Prototypes */
-__END_DECLS
 
 #endif

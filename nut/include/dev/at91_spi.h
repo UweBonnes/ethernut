@@ -79,8 +79,6 @@
 /* dev/spi.h. */
 
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int At91Spi0Init(void);
 extern int At91Spi0InitChipSelects(unsigned int mask);
 extern int At91Spi0Enable(void);
@@ -109,6 +107,4 @@ extern int At91SpiSetCsDelay(unsigned int base, unsigned int dly);
 extern int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen,
                            CONST void *txnbuf, void *rxnbuf, int xnlen);
 
-__END_DECLS
-/* End of prototypes */
 #endif

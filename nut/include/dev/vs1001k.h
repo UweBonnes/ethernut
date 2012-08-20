@@ -194,9 +194,6 @@ typedef struct {
 } VS_HEADERINFO;
 #endif
 
-__BEGIN_DECLS
-/* Function prototypes */
-
 extern int VsPlayerInit(void);
 extern int VsPlayerReset(uint16_t mode);
 extern int VsPlayerSetMode(uint16_t mode);
@@ -222,8 +219,5 @@ extern int VsSetVolume(uint8_t left, uint8_t right);
 extern int VsBeep(uint8_t fsin, uint8_t ms);
 
 /*@}*/
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

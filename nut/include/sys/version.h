@@ -61,12 +61,8 @@
                             ((uint32_t)NUT_VERSION_RELEASE << 8) | \
                             (uint32_t)NUT_VERSION_BUILD)
 
-__BEGIN_DECLS
-/* */
 extern uint32_t NutVersion(void);
 extern CONST char *NutVersionString(void);
 
-__END_DECLS
-/* */
 #endif
 

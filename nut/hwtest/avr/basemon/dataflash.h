@@ -54,10 +54,6 @@
 #define SPIMEM_CS_BIT     4
 #define SPIMEM_CS_BIT_ALT 5
 
-__BEGIN_DECLS
-/* Prototypes */
 extern long SpiMemTest(void);
-/* Prototypes */
-__BEGIN_DECLS
 
 #endif

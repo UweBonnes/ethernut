@@ -173,7 +173,6 @@ typedef struct {
 
 /*@}*/
 
-__BEGIN_DECLS
 /* NutRegisterInterrupt is obsolete, use NutRegisterIrqHandler instead */
 //extern int NutRegisterInterrupt(int irq, void (*handler)(void *), void *arg) __attribute__ ((obsolete)) ;
 extern void CallHandler(IRQ_HANDLER * irh);
@@ -188,5 +187,4 @@ extern int NutIrqSetPriority(IRQ_HANDLER * irq, int level);
 extern int NutIrqSetMode(IRQ_HANDLER * irq, int mode);
 #endif
 
-__END_DECLS
 #endif

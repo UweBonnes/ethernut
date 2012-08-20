@@ -69,13 +69,8 @@
 
 extern int (*ether_demux) (NUTDEVICE *, NETBUF *);
 
-__BEGIN_DECLS
-/* Function prototypes. */
 extern void NutEtherInput(NUTDEVICE *dev, NETBUF *nb);
 extern int NutEtherOutput(NUTDEVICE *dev, uint16_t type, uint8_t *ha, NETBUF *nb);
 extern int NutRegisterEthHandler(uint16_t type, uint16_t mask, int (*hdlr)(NUTDEVICE *, NETBUF *));
-
-__END_DECLS
-/* */
 
 #endif

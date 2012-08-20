@@ -103,15 +103,9 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes. */
-
 extern void NutSetLed( HANDLE ledh, uint_fast8_t fxin, uint32_t timOn, uint32_t timOff);
 extern void SetLedEvent( uint8_t led, uint32_t interval, uint32_t duration );
 
 extern int NutRegisterLed( HANDLE * ledh, int port, int pin);
-
-__END_DECLS
-/* */
 
 #endif

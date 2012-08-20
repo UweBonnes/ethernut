@@ -437,8 +437,6 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* */
 extern int AceInit(NUTDEVICE * dev);
 extern int AceIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int AceInput(NUTDEVICE * dev);
@@ -455,5 +453,4 @@ extern NUTFILE *AceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
 extern long AceSize(NUTFILE * fp);
 extern int AceClose(NUTFILE * fp);
 
-__END_DECLS
 #endif

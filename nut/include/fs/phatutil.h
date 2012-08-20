@@ -55,8 +55,6 @@
 
 #include <fs/phatfs.h>
 
-__BEGIN_DECLS
-/* Prototypes */
 extern void GetDosTimeStamp(uint16_t * dostim, uint16_t * dosdat);
 
 extern int MakePhatName(CONST char *src, uint8_t * dst);
@@ -69,6 +67,4 @@ extern int IsFixedRootDir(NUTFILE * ndp);
 extern void PhatFilePosRewind(PHATFILE * fcb);
 extern int PhatFilePosSet(NUTFILE * nfp, uint32_t pos);
 
-__END_DECLS
-/* End of prototypes */
 #endif

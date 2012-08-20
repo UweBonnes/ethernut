@@ -62,11 +62,7 @@
 
 #define PPP_MRU     1500
 
-__BEGIN_DECLS
-
 extern void NutPppInput(NUTDEVICE *dev, NETBUF *nb);
 extern int NutPppOutput(NUTDEVICE *dev, uint16_t type, uint8_t *ha, NETBUF *nb);
-
-__END_DECLS
 
 #endif

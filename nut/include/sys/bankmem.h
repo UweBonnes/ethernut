@@ -104,8 +104,6 @@
 #endif
 
 
-__BEGIN_DECLS
-/* Prototypes */
 extern char *NutSegBufReset(void);
 extern char *NutSegBufInit(size_t size);
 extern char *NutSegBufWriteRequest(size_t * bcp);
@@ -116,6 +114,5 @@ extern void NutSegBufWriteLast(size_t bc);
 extern void NutSegBufReadLast(size_t bc);
 extern uint32_t NutSegBufAvailable(void);
 extern uint32_t NutSegBufUsed(void);
-/* */
-__END_DECLS
+
 #endif

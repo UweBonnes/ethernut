@@ -119,8 +119,6 @@ extern uint8_t *chat_report;
 #include <stdio.h>
 #endif
 
-__BEGIN_DECLS
-
 #ifdef NUTDEBUG
 void NutTraceChat(FILE * stream, uint8_t flags);
 #endif
@@ -134,7 +132,5 @@ int NutChat(int fd, CONST char *script);
 #ifdef __HARVARD_ARCH__
 int NutChat_P(int fd, PGM_P script);
 #endif
-
-__END_DECLS
 
 #endif

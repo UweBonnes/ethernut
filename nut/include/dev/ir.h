@@ -64,8 +64,6 @@
 extern long nut_ircode;
 extern HANDLE nut_irqueue;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern long NutIrGet(uint32_t tmo);
-__END_DECLS
+
 #endif

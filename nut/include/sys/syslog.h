@@ -168,7 +168,6 @@ extern char *syslog_buf;
 
 #endif /* SYSLOG_INTERNAL */
 
-__BEGIN_DECLS                   /* */
 extern void closelog(void);
 extern void openlog(CONST char *, int, int);
 extern int setlogmask(int);
@@ -186,5 +185,5 @@ extern void vsyslog_P(int pri, PGM_P fmt, va_list ap);
 #define syslog_P    syslog
 #define vsyslog_P   vsyslog
 #endif
-__END_DECLS                     /* */
+
 #endif

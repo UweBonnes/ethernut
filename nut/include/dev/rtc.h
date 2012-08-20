@@ -91,8 +91,6 @@ struct _NUTRTC {
     HANDLE alarm;
 };
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int NutRegisterRtc(NUTRTC *rtc);
 
 extern int NutRtcGetTime(struct _tm *tm);
@@ -104,6 +102,4 @@ extern int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags);
 extern int NutRtcGetStatus(uint32_t *sflags);
 extern int NutRtcClearStatus(uint32_t sflags);
 
-__END_DECLS
-/* End of prototypes */
 #endif

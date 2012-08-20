@@ -63,8 +63,6 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-__BEGIN_DECLS
-
 /*!
  * \file arpa/inet.h
  * \brief Internet address conversion.
@@ -72,7 +70,5 @@ __BEGIN_DECLS
 extern uint32_t inet_addr(CONST char *str);
 extern char *inet_ntoa(uint32_t addr);
 extern char *inet_mtoa(uint8_t *mac);
-
-__END_DECLS
 
 #endif

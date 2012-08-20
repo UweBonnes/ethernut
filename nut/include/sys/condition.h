@@ -69,8 +69,6 @@ struct _CONDITION {
 };
 
 
-__BEGIN_DECLS
-
 extern int NutConditionInit(CONDITION * cond);
 extern void NutConditionLock(CONDITION * cond);
 extern void NutConditionUnlock(CONDITION * cond);
@@ -78,8 +76,6 @@ extern int NutConditionWait(CONDITION * cond);
 extern int NutConditionSignal(CONDITION * cond);
 extern int NutConditionBroadcast(CONDITION * cond);
 extern void NutConditionFree(CONDITION * cond);
-
-__END_DECLS
 
 /*@}*/
 

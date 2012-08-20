@@ -66,14 +66,8 @@
 #include <arch/cm3/cortexM3.h>
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern void NutReset(void);
 extern int NutResetCause(void);
-
-__END_DECLS
-/* End of prototypes */
 
 /*@}*/
 

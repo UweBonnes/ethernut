@@ -61,9 +61,6 @@
 #include <cfg/eeprom.h>
 #include <sys/types.h>
 
-__BEGIN_DECLS
-/* Function prototypes */
-
 extern int NutNvMemLoad(unsigned int addr, void *buff, size_t siz);
 extern int NutNvMemSave(unsigned int addr, CONST void *buff, size_t len);
 
@@ -72,8 +69,5 @@ extern int OnChipNvMemSave(unsigned int addr, CONST void *buff, size_t len);
 
 extern int NutNvMemLock(void);
 extern int NutNvMemUnlock(void);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

@@ -157,9 +157,6 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes. */
-
 extern void NutEventTimeout(HANDLE timer, void *arg);
 
 extern int NutEventWait(volatile HANDLE *qhp, uint32_t ms);
@@ -168,8 +165,5 @@ extern int NutEventPostAsync(volatile HANDLE *qhp);
 extern int NutEventPost(volatile HANDLE *qhp);
 extern int NutEventBroadcastAsync(volatile HANDLE *qhp);
 extern int NutEventBroadcast(volatile HANDLE *qhp);
-
-__END_DECLS
-/* */
 
 #endif

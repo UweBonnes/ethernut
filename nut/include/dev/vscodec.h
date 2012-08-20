@@ -1317,8 +1317,6 @@ extern NUTDEVICE devSpiVsCodec0;
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes */
 extern int VsCodecWaitReady(NUTDEVICE *dev, uint32_t tmo);
 extern uint16_t VsCodecReg(NUTDEVICE *dev, uint_fast8_t op, uint_fast8_t reg, uint_fast16_t val);
 extern uint16_t VsCodecMode(NUTDEVICE *dev, uint_fast16_t flags, uint_fast16_t mask);
@@ -1337,8 +1335,5 @@ extern int VsCodecWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif
 
 extern void FeederThread(void *arg) __attribute__ ((noreturn));
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

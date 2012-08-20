@@ -167,9 +167,6 @@ extern NUTTIMERINFO* nutTimerList;
 #endif
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
-
 /*
  * Functions used by the kernel.
  */
@@ -212,8 +209,5 @@ extern int NutClockSet(int idx, uint32_t freq);
 #if !defined(NutGetCpuClock)
 extern uint32_t NutGetCpuClock(void);
 #endif
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

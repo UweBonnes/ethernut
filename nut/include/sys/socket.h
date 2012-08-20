@@ -187,8 +187,6 @@
  * \brief UDP and TCP socket interface definitions.
  */
 
-__BEGIN_DECLS
-
 extern TCPSOCKET *NutTcpCreateSocket(void);
 extern int NutTcpSetSockOpt(TCPSOCKET *sock, int optname, CONST void *optval, int optlen);
 extern int NutTcpGetSockOpt(TCPSOCKET *sock, int optname, void *optval, int optlen);
@@ -227,7 +225,5 @@ extern int NutUdpGetSockOpt(UDPSOCKET *sock, int optname, void *optval, int optl
 extern int NutUdpSetSocketError(UDPSOCKET * sock, uint32_t remote_addr, uint16_t remote_port, uint16_t error);
 extern int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port);
 #endif
-
-__END_DECLS
 
 #endif

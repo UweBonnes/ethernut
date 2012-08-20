@@ -49,8 +49,6 @@
  * \brief Network interface controller definitions.
  */
 
-__BEGIN_DECLS
-
 /*
  * Available drivers.
  */
@@ -65,8 +63,6 @@ extern NUTDEVICE devCS8900A;
  */
 extern int cs8900Init(NUTDEVICE *dev);
 extern int cs8900Output(NUTDEVICE *dev, NETBUF *nb);
-
-__END_DECLS
 
 #endif /* !__CS8900A_H__ */
 /*** EOF ***/

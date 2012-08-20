@@ -162,8 +162,6 @@ typedef long long longlong;
 
 #include <compiler.h>
 
-__BEGIN_DECLS
-
 // Definition of size_t
 #ifdef __cplusplus
 #include <cstddef>
@@ -370,8 +368,6 @@ typedef void *HANDLE;
 
 /*@}*/
 
-__END_DECLS
-/* */
 #endif                          /* #ifndef _SYS_VIRTUAL_TYPES_H_ */
 
 #endif                          /* #ifndef _SYS_TYPES_H_ */

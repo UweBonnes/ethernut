@@ -162,12 +162,10 @@ extern IRQ_HANDLER sig_NRSINVAL;
 extern IRQ_HANDLER sig_MMCD;
 extern IRQ_HANDLER sig_NMMCD;
 
-__BEGIN_DECLS
-/* Function prototypes. */
 extern int NplRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *), void *arg);
 extern int NplIrqEnable(IRQ_HANDLER * irq);
 extern int NplIrqDisable(IRQ_HANDLER * irq);
-__END_DECLS
-/* */
+
 /*@}*/
+
 #endif

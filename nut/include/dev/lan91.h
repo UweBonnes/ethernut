@@ -361,8 +361,6 @@
 /*@}*/
 
 
-__BEGIN_DECLS
-
 /*
  * Available drivers.
  */
@@ -371,8 +369,5 @@ extern NUTDEVICE devLan91;
 #ifndef DEV_ETHER
 #define DEV_ETHER   devLan91
 #endif
-
-
-__END_DECLS
 
 #endif

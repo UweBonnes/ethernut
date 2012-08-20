@@ -753,15 +753,9 @@
 #endif
 
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern void NutBoardInit(void);
 extern void NutIdleInit(void);
 extern void NutMainInit(void);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif
 

@@ -74,9 +74,6 @@
 #include <arch/m68k/timer.h>
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
-
 /*
  * Architecture dependent functions.
  */
@@ -84,8 +81,5 @@ extern void NutRegisterTimer(void (*handler) (void *));
 extern uint32_t NutArchClockGet(int idx);
 extern uint32_t NutGetTickClock(void);
 extern uint32_t NutTimerMillisToTicks(uint32_t ms);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

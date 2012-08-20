@@ -196,9 +196,6 @@
 #define DAC_MAX_VOLUME  6
 #define DAC_MIN_VOLUME  -73
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern int Tlv320DacInit(unsigned int rate);
 extern int Tlv320DacWrite(void *buf, int len);
 extern int Tlv320DacFlush(void);
@@ -209,8 +206,5 @@ extern void Tlv320DacWriteReg(unsigned int reg, unsigned int val);
 extern int Tlv320DacSetVolume(int left, int right);
 extern int Tlv320DacSetRate(unsigned int rate);
 extern int Tlv320SwitchMode(void);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

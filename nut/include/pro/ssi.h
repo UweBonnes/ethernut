@@ -53,12 +53,7 @@
 
 /*@{*/
 
-__BEGIN_DECLS
-
 extern void NutRegisterSsi(void);
-
-__END_DECLS
-
 
 /*@}*/
 

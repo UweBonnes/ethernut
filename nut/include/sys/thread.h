@@ -245,8 +245,6 @@ extern NUTTHREADINFO *nutThreadList;
  */
 extern NUTTHREADINFO *runQueue;
 
-__BEGIN_DECLS
-/* Function prototypes. */
 #ifndef __NUT_EMULATION__
 /*!
  * \private
@@ -485,6 +483,4 @@ void threadfn(void *arg)
 
 /*@}*/
 
-__END_DECLS
-/* */
 #endif

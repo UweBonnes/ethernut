@@ -49,8 +49,6 @@
  * \brief MD5 hash implementation
  */
 
-__BEGIN_DECLS
-
 /*!
  * \struct MD5CONTEXT md5.h
  * \brief MD5 context structure.
@@ -61,13 +59,9 @@ typedef struct _MD5CONTEXT {
     uint8_t  in[64];
 } MD5CONTEXT;
 
-/* Function prototypes. */
-
 void NutMD5Init(MD5CONTEXT *context);
 void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len);
 void NutMD5Final(MD5CONTEXT *context, uint8_t digest[16]);
-
-__END_DECLS
 
 /*@}*/
 

@@ -125,9 +125,6 @@ extern HEAPNODE *heapFastMemFreeList;
 
 #endif /* NUTMEM_SPLIT_FAST */
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern void NutHeapRootAdd(HEAPNODE** root, void *addr, size_t size);
 extern size_t NutHeapRootAvailable(HEAPNODE** root);
 extern size_t NutHeapRootRegionAvailable(HEAPNODE** root);
@@ -146,8 +143,5 @@ extern void *NutHeapRootRealloc(HEAPNODE** root, void * block, size_t size);
 
 extern int NutHeapCheck(void);
 extern void NutHeapDump(void * stream);
-
-/* Prototypes */
-__END_DECLS
 
 #endif

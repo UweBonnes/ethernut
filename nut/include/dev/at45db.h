@@ -66,8 +66,6 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen);
 extern uint8_t At45dbGetStatus(int dd);
 extern int At45dbWaitReady(int dd, uint32_t tmo, int poll);
@@ -81,6 +79,4 @@ extern unsigned int At45dbPageSize(int dd);
 extern int At45dbParamRead(unsigned int pos, void *data, unsigned int len);
 extern int At45dbParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

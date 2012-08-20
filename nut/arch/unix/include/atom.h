@@ -49,7 +49,6 @@
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
 
-__BEGIN_DECLS
 #include <pthread.h>
 #include <signal.h>
 #include <sys/thread.h>
@@ -116,5 +115,3 @@ extern uint8_t __os_trf;
 #endif
 
 #define NutJumpOutCritical() NutExitCritical()
-
-__END_DECLS

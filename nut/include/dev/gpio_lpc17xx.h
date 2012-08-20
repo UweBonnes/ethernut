@@ -181,9 +181,6 @@ struct _gpio_signal {
 };
 
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern GPIO_SIGNAL sig_GPIO0;
 extern GPIO_SIGNAL sig_GPIO2;
 
@@ -211,7 +208,3 @@ extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqStatus(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqDisable(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqSetMode(GPIO_SIGNAL * sig, int bit, int mode);
-
-__END_DECLS
-/* End of prototypes */
-

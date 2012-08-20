@@ -59,9 +59,6 @@
 /*@{*/
 
 
-__BEGIN_DECLS
-/* Prototypes */
-
 /*!
  * \brief Start the watch dog timer.
  *
@@ -167,9 +164,6 @@ extern void Lpc17xxWatchDogRestart(void);
 extern void Lpc17xxWatchDogDisable(void);
 extern void Lpc17xxWatchDogEnable(void);
 #endif
-
-__END_DECLS
-/* End of prototypes */
 
 /*@}*/
 

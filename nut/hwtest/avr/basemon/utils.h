@@ -45,16 +45,11 @@
  * keep it running on broken hardware.
  */
 
-__BEGIN_DECLS
-
 extern void Delay(long nops);
 extern int hex2bin(char c);
 
 #ifdef HEARTBEAT_BIT
 extern void HeartBeat(void);
 #endif
-
-__END_DECLS
-
 
 #endif

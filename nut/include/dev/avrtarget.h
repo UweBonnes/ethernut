@@ -106,8 +106,6 @@
 #define AVRCMD_READ_CALIBRATION_BYTE    0x38000000UL
 #define AVRCMD_POLL_READY               0xF0000000UL
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int AvrTargetInit(void);
 extern void AvrTargetSelect(ureg_t act);
 extern void AvrTargetReset(ureg_t on);
@@ -122,6 +120,4 @@ extern void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data);
 extern int AvrTargetPageWrite(uint32_t page);
 extern int AvrTargetPageVerify(uint32_t page, CONST uint8_t * data);
 
-__END_DECLS
-/* End of prototypes */
 #endif
