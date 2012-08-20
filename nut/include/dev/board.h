@@ -285,6 +285,61 @@
 #define DEF_TWIBUS      At91TwiBus
 #endif
 
+#elif defined(MCU_LPC17xx)
+/*
+ * UART devices for the ARM based LPC17xx family.
+ *
+ * \note Instead of providing literal names, references to the
+ *       driver structure are used here. Therefore all names are
+ *       given here, even it they use the system wide default
+ *       name. Furthermore, all possible devices seem to have
+ *       been added here, which makes it hard for applications
+ *       to figure out, if they are available at all on the
+ *       target hardware.
+ */
+#include <dev/usart_lpc17xx.h>
+
+#if defined(MCU_LPC176x)
+
+#ifndef DEV_UART0
+#define DEV_UART0       devUsartLpc176x_0
+#endif
+#ifndef DEV_UART0_NAME
+#define DEV_UART0_NAME  "usart0"
+#endif
+
+#else
+
+#ifndef DEV_UART0
+#define DEV_UART0       devUsartLpc17xx_0
+#endif
+#ifndef DEV_UART0_NAME
+#define DEV_UART0_NAME  DEV_UART0.dev_name
+#endif
+
+#ifndef DEV_UART1
+#define DEV_UART1       devUsartLpc17xx_1
+#endif
+#ifndef DEV_UART1_NAME
+#define DEV_UART1_NAME  DEV_UART1.dev_name
+#endif
+
+#ifndef DEV_UART2
+#define DEV_UART2       devUsartLpc17xx_2
+#endif
+#ifndef DEV_UART2_NAME
+#define DEV_UART2_NAME  DEV_UART2.dev_name
+#endif
+
+#ifndef DEV_UART3
+#define DEV_UART3       devUsartLpc17xx_3
+#endif
+#ifndef DEV_UART3_NAME
+#define DEV_UART3_NAME  DEV_UART3.dev_name
+#endif
+
+#endif
+
 #elif defined(__AVR32__)
 /*
  * UART devices for Atmel's AVR 32-bit family.
