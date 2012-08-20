@@ -43,6 +43,7 @@
 #include <dev/irqreg.h>
 #include <sys/device.h>
 #include <arch/cm3/cortex_interrupt.h>
+#define GPIO_IRQn   38
 
 #ifndef NUT_IRQPRI_GPIO
 #define NUT_IRQPRI_GPIO  4
