@@ -60,7 +60,6 @@
 #warning "Unknown CM3 family"
 #endif
 #include <arch/cm3/cortex_interrupt.h>
-#include <arch/cm3/cortex_systick.h>
 #include <arch/cm3/cortex_clk.h>
 /*
 #include <arch/cm3/cortex_sysctl.h>
@@ -92,10 +91,10 @@ void NutArchMicroDelay(uint32_t us)
     uint32_t end_ms, start_ms;
     int32_t end_ticks;
 
-    SysTickIntDisable();
-    start_ticks = SysTickValueGet();
+    SysTick->CTRL&= ~(SysTick_CTRL_ENABLE_Msk);
+    start_ticks = SysTick->VAL;
     start_ms = nut_ticks;
-    SysTickIntEnable();
+    SysTick->CTRL |= (SysTick_CTRL_TICKINT_Msk);
 
     if (us > 2000)
     {
@@ -103,13 +102,13 @@ void NutArchMicroDelay(uint32_t us)
     NutSleep(n);
     us -= n*1000;
     }
-    end_ticks = start_ticks - (us%1000 * SysTickPeriodGet())/NUT_TICK_FREQ;
+    end_ticks = start_ticks - (us%1000 * (SysTick->LOAD +1))/NUT_TICK_FREQ;
     end_ms = start_ms + us/1000;
     /* Wraparounf of Systick*/
     if (end_ticks <= 0)
     {
     end_ms++;
-    end_ticks += SysTickPeriodGet();
+    end_ticks += SysTick->LOAD +1;
     }
     /* Wraparound of nut_ticks*/
     if( end_ms < start_ms)
@@ -124,7 +123,7 @@ void NutArchMicroDelay(uint32_t us)
            break;
         if (nut_ticks < end_ms)
             continue;
-        if (SysTickValueGet() > end_ticks)
+        if (SysTick->VAL > end_ticks)
             continue;
         break;
     }
