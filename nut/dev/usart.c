@@ -525,6 +525,7 @@ int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  */
 int UsartClose(NUTFILE * fp)
 {
+    int rc = 0;
     NUTDEVICE *dev;
     USARTDCB *dcb;
 
@@ -532,6 +533,11 @@ int UsartClose(NUTFILE * fp)
     dev = fp->nf_dev;
     dcb = (USARTDCB *) dev->dev_dcb;
 
+    /* Flush the complete output buffer. If this fails, let the caller
+       know, that not all bytes had been transmitted. */
+    if (UsartFlushOutput(dcb, 0, 0)) {
+        rc = -1;
+    }
     (*dcb->dcb_set_status) (UART_RTSDISABLED);
     free(fp);
     UsartResetBuffer(&dcb->dcb_tx_rbf, 0, 0, 0);
@@ -539,7 +545,7 @@ int UsartClose(NUTFILE * fp)
     /* Wake-up all threads waiting for incoming data. */
     NutEventBroadcast(&dcb->dcb_rx_rbf.rbf_que);
 
-    return 0;
+    return rc;
 }
 
 /*!
