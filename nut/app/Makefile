@@ -105,6 +105,7 @@ all:
 	$(MAKE) -C threads
 	$(MAKE) -C timers
 	$(MAKE) -C uart
+	$(MAKE) -C owibus
 
 install:
 	$(MAKE) -C caltime install
@@ -128,6 +129,7 @@ install:
 	$(MAKE) -C threads install
 	$(MAKE) -C timers install
 	$(MAKE) -C uart install
+	$(MAKE) -C owibus install
 
 clean:
 	$(MAKE) -C caltime clean
@@ -151,6 +153,7 @@ clean:
 	$(MAKE) -C threads clean
 	$(MAKE) -C timers clean
 	$(MAKE) -C uart clean
+	$(MAKE) -C owibus clean
 
 at90can:
 	$(MAKE) -C caltime
@@ -171,3 +174,4 @@ at90can:
 	$(MAKE) -C threads
 	$(MAKE) -C timers
 	$(MAKE) -C uart
+	$(MAKE) -C owibus

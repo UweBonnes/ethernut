@@ -10,6 +10,9 @@
 #include <dev/gpio.h>
 #include <dev/owibus.h>
 
+#define USE_UART
+//#define USE_BB
+
 static char *banner = "\nNut/OS OWI Bus "__DATE__ " " __TIME__"\n";
 /*
  * UART sample.
@@ -17,6 +20,12 @@ static char *banner = "\nNut/OS OWI Bus "__DATE__ " " __TIME__"\n";
  */
 int main(void)
 {
+#if defined (USE_BB) && (!defined(OWI_PORT) || !defined (OWI_PIN))
+    puts("Please defined the Port/Pin to use for the One-Wire Bus for your board");
+#elif defined(USE_UART) && !defined(OWI_UART)
+    puts("Please defined the UART to use for the One-Wire Bus for your board");
+#else
+
     uint32_t baud = 38400;
     FILE *uart;
     int res, i = 0;
@@ -35,19 +44,6 @@ int main(void)
 
     freopen(DEV_CONSOLE_NAME, "w", stdout);
     fprintf(stdout, banner);
-
-#define USE_UART
-//#define USE_BB
-
-#if defined (USE_BB)
- #if !defined(OWI_PORT) || !defined (OWI_PIN))
-  #warning "Please defined the Port/Pin to use for the One-Wire Bus for your board"
- #endif
-#elif defined(USE_UART)
- #if !defined(OWI_UART)
-  #warning "Please defined the UART to use for the One-Wire Bus for your board"
- #endif
-#endif
 
 #if defined(USE_BB)
     res= NutRegisterOwiBus_BB(bus, OWI_PORT, OWI_PIN, 0, 0);
@@ -115,5 +111,6 @@ int main(void)
         fprintf(stdout,"Run %3d: Temp %d.%04d\r",
                 run++, xcelsius/10000, xcelsius%10000);
     }
+#endif
     return 0;
 }
