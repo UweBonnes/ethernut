@@ -374,12 +374,12 @@ static int QueryTimeServer(void)
             puts("OK");
             rc = 0;
             stime(&now);
-#ifdef X12RTC_DEV
+#ifdef RTC_CHIP
             /* If RTC hardware is available, update it. */
             {
                 struct _tm *gmt = gmtime(&now);
 
-                if (X12RtcSetClock(gmt)) {
+                if (NutRtcSetTime(gmt)) {
                     puts("RTC update failed");
                 }
             }
@@ -404,36 +404,29 @@ static int InitTimeAndDate(void)
     /* Set the local time zone. */
     _timezone = MYTZ * 60L * 60L;
 
-#ifdef X12RTC_DEV
-    /* Query RTC hardware if available. */
-    {
+#ifdef RTC_CHIP
+    /* Register and query hardware RTC, if available. */
+    if (NutRegisterRtc(&RTC_CHIP)) {
+        puts("No hardware RTC");
+        rc = QueryTimeServer();
+    } else {
         uint32_t rs;
 
-        /* Query the status. If it fails, we do not have an RTC. */
-        if (X12RtcGetStatus(&rs)) {
-            puts("No hardware RTC");
+        NutRtcGetStatus(&rs);
+        if (rs & RTC_STATUS_PF) {
+            puts("RTC power fail detected");
             rc = QueryTimeServer();
-        }
-        else {
-            /* RTC hardware seems to be available. Check for power failure. */
-            //rs = RTC_STATUS_PF;
-            if ((rs & RTC_STATUS_PF) == RTC_STATUS_PF) {
-                puts("RTC power fail detected");
-                rc = QueryTimeServer();
-            }
-
+        } else {
             /* RTC hardware status is fine, update our system clock. */
-            else {
-                struct _tm gmt;
+            struct _tm gmt;
 
+            if (NutRtcGetTime(&gmt) == 0) {
                 /* Assume that RTC is running at GMT. */
-                if (X12RtcGetClock(&gmt) == 0) {
-                    time_t now = _mkgmtime(&gmt);
+                time_t now = _mkgmtime(&gmt);
 
-                    if (now != -1) {
-                        stime(&now);
-                        rc = 0;
-                    }
+                if (now != -1) {
+                    stime(&now);
+                    rc = 0;
                 }
             }
         }
