@@ -388,7 +388,8 @@ void NutMicroDelay(uint32_t us)
 {
 #ifdef __NUT_EMULATION__
     usleep(us);
-#elif defined(__CORTEX__) && defined(NUT_MICRODELAY_CM3_CYCCNT)
+#elif defined(__CORTEX__)
+#if defined(NUT_MICRODELAY_CM3_CYCCNT)
 
     /* Calculate clock cycles to delay */
     uint32_t cycles = (NutClockGet(NUT_HWCLK_CPU)/1000000) * us;
@@ -410,6 +411,24 @@ void NutMicroDelay(uint32_t us)
     while (DWT->CYCCNT - start <= cycles) {
         _NOP();
     }
+#else
+    int32_t start_ticks;
+    int32_t current_ticks, summed_ticks=0;
+    int32_t end_ticks;
+
+    start_ticks = SysTick->VAL;
+    end_ticks = (us * (SysTick->LOAD +1))/NUT_TICK_FREQ;
+/* Systick counts backwards! */
+    while (summed_ticks < end_ticks)
+    {
+        current_ticks = SysTick->VAL;
+        summed_ticks += start_ticks - current_ticks ;
+        if (current_ticks > start_ticks)
+            summed_ticks += (SysTick->LOAD +1);
+        start_ticks = current_ticks;
+    }
+
+#endif
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 
