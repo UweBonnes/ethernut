@@ -30,39 +30,13 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
- * $Log$
- * Revision 1.10  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
+/*!
+ * \file dev/usart.c
+ * \brief Hardware independent part of the U(S)ART driver.
  *
- * Revision 1.9  2008/08/11 06:59:42  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.8  2007/03/17 14:33:21  haraldkipp
- * Workaround for AVRGCC 4.1.1 bug, which failed to compile UsartIOCtl().
- *
- * Revision 1.7  2006/10/05 17:20:54  haraldkipp
- * Added a comment to warn the user about ioctl() functions, that may not be
- * supported.
- *
- * Revision 1.6  2006/08/23 09:20:47  freckle
- * fix bug #1541139
- *
- * Revision 1.5  2004/10/14 16:43:06  drsung
- * Fixed compiler warning "comparison between signed and unsigned"
- *
- * Revision 1.4  2004/05/24 20:17:15  drsung
- * Added function UsartSize to return number of chars in input buffer.
- *
- * Revision 1.3  2004/05/20 09:05:07  drsung
- * Memory was allocated twice for NUTFILE in UsartOpen.
- *
- * Revision 1.2  2004/03/18 13:59:14  haraldkipp
- * Comment updated
- *
- * Revision 1.1  2003/12/15 19:25:33  haraldkipp
- * New USART driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <compiler.h>
