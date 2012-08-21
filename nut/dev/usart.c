@@ -72,6 +72,7 @@
 
 /*!
  * \brief Initialize the USART device.
+ * \internal
  *
  * This function is called by NutRegisterDevice(), using the
  * _NUTDEVICE::dev_init entry. It will call the low level
@@ -97,7 +98,7 @@ int UsartInit(NUTDEVICE * dev)
 }
 
 /*!
- * \brief Reset an USART ring buffer.
+ * \brief Reset a USART ring buffer.
  *
  * \param rbf Pointer to the ring buffer structure.
  * \param size Buffer size.
@@ -146,6 +147,7 @@ static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm
 
 /*!
  * \brief Read from device.
+ * \internal
  *
  * This function is called by the low level input routines of the
  * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
@@ -290,17 +292,16 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
 /*!
  * \brief Flush output buffer.
  *
- * The current thread will be blocked until all characters upto a specified
- * value have been written or until a timeout occured.
+ * The current thread will be blocked until all characters up to a
+ * specified count have been written or until a timeout occurred.
  *
- * \param  rbf   Pointer to a ring buffer structure.
+ * \param  dcb   Pointer to the device's control block structure.
  * \param  added Number of bytes to add to the ring buffer counter. The
  *               characters must have been added without updating the
  *               counter. Because access to the counter has to be atomic,
  *               this parameter simplifies the calling routine a bit.
- * \param  left  The number of bytes left in the buffer before this
- *               function returns.
- * \param  tmo   Timeout in milliseconds.
+ * \param  left  The maximum number of bytes left in the buffer before
+ *               this function returns.
  *
  * \return Number of bytes left in the output buffer, which is greater
  *         than the specified value in case of a timeout.
@@ -336,10 +337,10 @@ static size_t UsartFlushOutput(USARTDCB *dcb, size_t added, size_t left)
  * \brief Write to device.
  *
  * \param dev    Pointer to a previously registered NUTDEVICE structure.
- * \param buffer Pointer the data to write.
+ * \param buffer Pointer to the data to write.
  * \param len    Number of data bytes to write.
- * \param pflg   If this flag is set, then the buffer is located in program
- *               space.
+ * \param pflg   If this flag is set, then the buffer is located in
+ *               program space. Used by Harvard architectures only.
  *
  * \return The number of bytes written. In case of a write timeout, this
  *         may be less than the specified length.
@@ -460,6 +461,7 @@ static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 
 /*!
  * \brief Write a device or file.
+ * \internal
  *
  * This function is called by the low level output routines of the
  * \ref xrCrtLowio "C runtime library", using the
@@ -474,8 +476,12 @@ static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1
+ *         of bytes specified if a timeout occurred. A return value of -1
  *         indicates an error.
+ *
+ * \note Using a NULL pointer to flush the output buffer is a Nut/OS
+ *       specific extension and will most probably not work on other
+ *       systems.
  */
 int UsartWrite(NUTFILE * fp, const void *buffer, int len)
 {
@@ -485,13 +491,14 @@ int UsartWrite(NUTFILE * fp, const void *buffer, int len)
 
 /*!
  * \brief Write a device or file.
+ * \internal
  *
  * Similar to UsartWrite() except that the data is located in program
  * memory.
  *
  * This function is called by the low level output routines of the
  * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P
- * entry.
+ * entry. Used by Harvard architectures only.
  *
  * The function may block the calling thread.
  *
@@ -501,7 +508,7 @@ int UsartWrite(NUTFILE * fp, const void *buffer, int len)
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1
+ *         of bytes specified if a timeout occurred. A return value of -1
  *         indicates an error.
  */
 int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
@@ -511,10 +518,11 @@ int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 }
 
 /*!
- * \brief Close an USART device.
+ * \brief Close a USART device.
+ * \internal
  *
- * This function is called by the low level close routine of the C runtime
- * library, using the _NUTDEVICE::dev_close entry.
+ * This function is called by the low level _close() routine of the C
+ * runtime library, using the _NUTDEVICE::dev_close entry.
  *
  * \param fp Pointer to a _NUTFILE structure, obtained by a previous call
  *           to UsartOpen().
@@ -549,20 +557,22 @@ int UsartClose(NUTFILE * fp)
 }
 
 /*!
- * \brief Open an USART device.
+ * \brief Open a USART device.
+ * \internal
  *
- * This function is called by the low level open routine of the C runtime
- * library, using the _NUTDEVICE::dev_open entry.
+ * This function is called by the low level _open() routine of the C
+ * runtime library, using the _NUTDEVICE::dev_open entry.
  *
- * \param dev Pointer to the NUTDEVICE structure.
+ * \param dev  Pointer to the NUTDEVICE structure.
  * \param name Ignored, should point to an empty string.
  * \param mode Operation mode. Any of the following values may be or-ed:
  * - \ref _O_BINARY
  * - \ref _O_RDONLY
  * - \ref _O_WRONLY
- * \param acc Ignored, should be zero.
+ * \param acc  Ignored, should be zero.
  *
- * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
+ * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF
+ *         otherwise.
  *
  * \todo We may support shared open and use dev_irq as an open counter.
  */
@@ -572,7 +582,7 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     NUTFILE *fp;
 
     /*
-     * Create the tranmit buffer unless this is used for read only.
+     * Create the transmit buffer unless this is used for read only.
      */
     if ((mode & 0x0003) != _O_RDONLY) {
         if (UsartResetBuffer(&dcb->dcb_tx_rbf, USART_TXBUFSIZ, USART_TXLOWMARK, USART_TXHIWMARK)) {
@@ -624,8 +634,9 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 
 /*!
  * \brief Perform USART control functions.
+ * \internal
  *
- * This function is called by the ioctl() function of the C runtime
+ * This function is called by the _ioctl() function of the C runtime
  * library.
  *
  * \param dev  Identifies the device that receives the device-control
@@ -676,8 +687,6 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
  *
  * \note Not all control functions may be supported on all platforms.
  *       In any case applications should check the returned result.
- *
- * \todo Hardware handshake is not available with AT91 targets.
  *
  * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer. To disable timeout,
@@ -927,12 +936,19 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 
 /*!
  * \brief Retrieves the number of characters in input buffer.
+ * \internal
  *
- * This function is called by the low level size routine of the C runtime
- * library, using the _NUTDEVICE::dev_size entry.
+ * This function allows to query the number of bytes in the input buffer
+ * by using standard C function for querying the size of an open file.
  *
- * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
- *               previous call to UsartOpen().
+ * This function is called by the low level _filelength() routine of
+ * the C runtime library, using the _NUTDEVICE::dev_size entry.
+ *
+ * \note This is a Nut/OS specific extension and will most probably not
+ *       work on other systems.
+ *
+ * \param fp Pointer to a \ref _NUTFILE structure, obtained by a
+ *           previous call to UsartOpen().
  *
  * \return The number of bytes currently stored in input buffer.
  */
