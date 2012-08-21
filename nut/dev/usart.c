@@ -74,6 +74,7 @@
 #include <sys/heap.h>
 #include <sys/event.h>
 #include <sys/timer.h>
+#include <sys/nutdebug.h>
 
 #include <dev/irqreg.h>
 #include <dev/usart.h>
@@ -202,9 +203,14 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
     size_t taken = 0;
     uint8_t ch;
     uint8_t *cp = buffer;
-    NUTDEVICE *dev = fp->nf_dev;
-    USARTDCB *dcb = dev->dev_dcb;
-    RINGBUF *rbf = &dcb->dcb_rx_rbf;
+    NUTDEVICE *dev;
+    USARTDCB *dcb;
+    RINGBUF *rbf;
+
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
+    dev = fp->nf_dev;
+    dcb = dev->dev_dcb;
+    rbf = &dcb->dcb_rx_rbf;
 
     if (dcb->dcb_modeflags & USART_MF_BLOCKREAD) {
         rbf->rbf_blockptr = buffer;
@@ -499,6 +505,7 @@ static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
  */
 int UsartWrite(NUTFILE * fp, const void *buffer, int len)
 {
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
     return UsartPut(fp->nf_dev, buffer, len, 0);
 }
 
@@ -525,6 +532,7 @@ int UsartWrite(NUTFILE * fp, const void *buffer, int len)
  */
 int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
     return UsartPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
@@ -543,11 +551,12 @@ int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  */
 int UsartClose(NUTFILE * fp)
 {
-    NUTDEVICE *dev = fp->nf_dev;
-    USARTDCB *dcb = dev->dev_dcb;
+    NUTDEVICE *dev;
+    USARTDCB *dcb;
 
-    if (fp == 0 || fp == NUTFILE_EOF)
-        return -1;
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
+    dev = fp->nf_dev;
+    dcb = (USARTDCB *) dev->dev_dcb;
 
     (*dcb->dcb_set_status) (UART_RTSDISABLED);
     free(fp);
@@ -950,9 +959,14 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 long UsartSize (NUTFILE *fp)
 {
     long avail;
-    NUTDEVICE *dev = fp->nf_dev;
-    USARTDCB *dcb = dev->dev_dcb;
-    RINGBUF *rbf = &dcb->dcb_rx_rbf;
+    NUTDEVICE *dev;
+    USARTDCB *dcb;
+    RINGBUF *rbf;
+
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
+    dev = fp->nf_dev;
+    dcb = dev->dev_dcb;
+    rbf = &dcb->dcb_rx_rbf;
 
     /* Atomic access to the ring buffer counter. */
     NutEnterCritical();
