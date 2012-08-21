@@ -86,6 +86,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     }
     else {
         rc = GPIOx->CRH;
+        bit -=8;
     }
 
     mode = ( rc >> ( bit * 4 ) );
@@ -104,10 +105,12 @@ uint32_t GpioPinConfigGet(int bank, int bit)
         case 1:
             /* Input Floating */
             rc = 0;
-            break;
-        case 2:
+            break;        case 2:
             /* Input with Pullup */
-            rc |= GPIO_CFG_PULLUP;
+            if (GPIOx->ODR & _BV(bit))
+                rc |= GPIO_CFG_PULLUP;
+            else
+                rc |= GPIO_CFG_PULLDOWN;
             break;
         }
     }
@@ -156,7 +159,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
  *              corresponding bit in this mask is 1.
  * \param flags Attribute flags to set.
  *
- * \return Always 0.
+ * \return Corrected flags
  */
 int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 {
@@ -168,6 +171,12 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     GPIO_TypeDef *GPIOx = ((GPIO_TypeDef *)bank);
 
     clock = GPIO_RCCx[(bank-GPIOA_BASE)/0x400];
+
+    /* Pull-up/down can only be configured for input mode*/
+    if (flags & (GPIO_CFG_OUTPUT|GPIO_CFG_DISABLED))
+        if(flags & (GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN))
+            flags &= ~(GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN);
+        
 
     /*
      * cnf  mode  Meaning
@@ -191,8 +200,8 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
         switch (flags && GPIO_CFG_SPEED)
         {
         case GPIO_CFG_SPEED_SLOW: cxmx = 0x2; break;
-        case GPIO_CFG_SPEED_MED:  cxmx = 0x1; break;
-        default: cxmx = 0x3;
+        case GPIO_CFG_SPEED_FAST: cxmx = 0x3; break;
+        default: cxmx = 0x1;
         }
 
         /* Configure Open-Drain */
@@ -216,9 +225,13 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
         cxmx = 0x4;
 
         /* Configure pin as input PullUp/Down */
-        if( flags & GPIO_CFG_PULLUP )
+        if( flags & (GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN)) {
             cxmx = 0x8;
-
+            if (flags & GPIO_CFG_PULLUP)
+                GPIOx->ODR |= mask;
+            else
+                GPIOx->ODR &= ~mask;
+        }
         /* Configure pin as analog input */
         if( flags & GPIO_CFG_DISABLED )
             cxmx = 0x0;
@@ -263,7 +276,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     GPIOx->CRL = crl;
     GPIOx->CRH = crh;
 
-    return 0;
+    return flags;
 }
 
 /*!
@@ -287,10 +300,8 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(bank<NUTGPIOPORT_MAX);
 
-    GpioPortConfigSet( bank, _BV( bit ), flags );
-
-    /* Check the result. */
-    if( GpioPinConfigGet( bank, bit ) != flags ) {
+    if (GpioPortConfigSet( bank, _BV( bit ), flags ) !=
+        GpioPinConfigGet( bank, bit )) {
         return -1;
     }
     return 0;

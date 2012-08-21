@@ -91,6 +91,11 @@
 #define GPIO_CFG_PULLUP     0x00000004
 
 /*!
+ * \brief GPIO pull-down enabled.
+ */
+#define GPIO_CFG_PULLDOWN   0x00000100
+
+/*!
  * \brief GPIO open drain output feature enabled.
  *
  * If not set, the output will use push pull mode.
