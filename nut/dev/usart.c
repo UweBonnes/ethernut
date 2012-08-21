@@ -90,7 +90,8 @@ int UsartInit(NUTDEVICE * dev)
     USARTDCB *dcb = dev->dev_dcb;
 
     /* Initialize the low level hardware driver. */
-    if ((rc = (*dcb->dcb_init) ()) == 0) {
+    rc = (*dcb->dcb_init) ();
+    if (rc == 0) {
         /* Ignore errors on initial configuration. */
         (*dcb->dcb_set_speed) (USART_INITSPEED);
     }
@@ -119,11 +120,14 @@ static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm
 
     /* Resize the buffer, if required. */
     if (xsz != size) {
-        if (xsz && xbp) {
+        if (xsz) {
             free(xbp);
         }
-        if (size && (xbp = malloc(size)) == 0) {
-            return -1;
+        if (size) {
+            xbp = malloc(size);
+            if (xbp == NULL) {
+                return -1;
+            }
         }
     }
 
@@ -205,7 +209,7 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
     /*
      * Call without data pointer discards receive buffer.
      */
-    if (buffer == 0) {
+    if (buffer == NULL) {
         UsartResetBuffer(rbf, rbf->rbf_siz, rbf->rbf_lwm, rbf->rbf_hwm);
         (*dcb->dcb_rx_start) ();
         return 0;
@@ -268,8 +272,10 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
      * Get raw characters from receive buffer.
      */
     else {
-        if ((rc = size) > avail)
+        rc = size;
+        if (rc > avail) {
             rc = avail;
+        }
         for (taken = 0; taken < rc; taken++) {
             *cp++ = *rbf->rbf_tail++;
             if (rbf->rbf_tail == rbf->rbf_last) {
@@ -364,8 +370,9 @@ static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
         (*dcb->dcb_tx_start) ();
 
         rc = NutEventWaitNext( &rbf->rbf_que, dcb->dcb_wtimeout);
-        if (rc==0)
+        if (rc == 0) {
             rc = len;
+        }
         return rc;
     }
 
@@ -380,19 +387,20 @@ static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
      * Call without data pointer flushes the buffer. In this case a return
      * value not equal zero indicates write timeout.
      */
-    if (buffer == 0) {
+    if (buffer == NULL) {
         return UsartFlushOutput(dcb, 0, 0);
     }
 
-    if (dcb->dcb_modeflags & USART_MF_LINEBUFFER)
+    if (dcb->dcb_modeflags & USART_MF_LINEBUFFER) {
         lbmode = 1;
-    else
+    } else {
         lbmode = 0;
-
-    if (dcb->dcb_modeflags & USART_MF_COOKEDMODE)
+    }
+    if (dcb->dcb_modeflags & USART_MF_COOKEDMODE) {
         cooked = 1;
-    else
+    } else {
         cooked = 0;
+    }
 
     /*
      * Get the number of buffered bytes. The transmit interrupt will modify
@@ -434,11 +442,13 @@ static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
         if (cooked == 1 && ch == '\n') {
             cooked = 2;
             ch = '\r';
-            if (lbmode == 1)
+            if (lbmode == 1) {
                 lbmode = 2;
+            }
         } else {
-            if (cooked == 2)
+            if (cooked == 2) {
                 cooked = 1;
+            }
             cp++;
             rc++;
         }
@@ -603,7 +613,8 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     /*
      * Allocate memory for the file structure.
      */
-    if ((fp = malloc(sizeof(NUTFILE))) == 0) {
+    fp = malloc(sizeof(*fp));
+    if (fp == NULL) {
         free(dcb->dcb_tx_rbf.rbf_start);
         free(dcb->dcb_rx_rbf.rbf_start);
         return NUTFILE_EOF;
@@ -621,9 +632,9 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
      * a file creation routine to get a linked list of all opened
      * files in the system.
      */
-    fp->nf_next = 0;
+    fp->nf_next = NULL;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     if ((mode & 0x0003) != _O_WRONLY) {
         (*dcb->dcb_rx_start) ();
@@ -778,44 +789,51 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETLOCALECHO:
         lv = dcb->dcb_modeflags;
-        if (bv)
+        if (bv) {
             lv |= USART_MF_LOCALECHO;
-        else
+        } else {
             lv &= ~USART_MF_LOCALECHO;
+        }
         rc = (dcb->dcb_set_flow_control) (lv);
-        if (rc == 0)
+        if (rc == 0) {
             dcb->dcb_modeflags = lv;
+        }
         break;
     case UART_GETLOCALECHO:
-        if (dcb->dcb_modeflags & USART_MF_LOCALECHO)
+        if (dcb->dcb_modeflags & USART_MF_LOCALECHO) {
             *lvp = 1;
-        else
+        } else {
             *lvp = 0;
+        }
         break;
 
     case UART_SETFLOWCONTROL:
         lv = dcb->dcb_modeflags;
-        if (bv)
+        if (bv) {
             lv |= USART_MF_XONXOFF;
-        else
+        } else {
             lv &= ~USART_MF_XONXOFF;
+        }
         rc = (dcb->dcb_set_flow_control) (lv);
-        if (rc == 0)
+        if (rc == 0) {
             dcb->dcb_modeflags = lv;
-         break;
+        }
+        break;
     case UART_GETFLOWCONTROL:
         *lvp = (*dcb->dcb_get_flow_control) ();
         break;
 
     case UART_SETBLOCKREAD:
         lv = dcb->dcb_modeflags;
-        if (bv)
+        if (bv) {
             lv |= USART_MF_BLOCKREAD;
-        else
+        } else {
             lv &= ~USART_MF_BLOCKREAD;
+        }
         rc = (dcb->dcb_set_flow_control) (lv);
-        if (rc == 0)
+        if (rc == 0) {
             dcb->dcb_modeflags = lv;
+        }
         break;
     case UART_GETBLOCKREAD:
         *lvp = (*dcb->dcb_get_flow_control) ();
@@ -823,46 +841,53 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETBLOCKWRITE:
         lv = dcb->dcb_modeflags;
-        if (bv)
+        if (bv) {
             lv |= USART_MF_BLOCKWRITE;
-        else
+        } else {
             lv &= ~USART_MF_BLOCKWRITE;
+        }
         rc = (dcb->dcb_set_flow_control) (lv);
-        if (rc == 0)
+        if (rc == 0) {
             dcb->dcb_modeflags = lv;
-         break;
+        }
+        break;
     case UART_GETBLOCKWRITE:
         *lvp = (*dcb->dcb_get_flow_control) ();
         break;
 
     case UART_SETCOOKEDMODE:
-        if (bv)
+        if (bv) {
             dcb->dcb_modeflags |= USART_MF_COOKEDMODE;
-        else
+        } else {
             dcb->dcb_modeflags &= ~USART_MF_COOKEDMODE;
+        }
         break;
     case UART_GETCOOKEDMODE:
-        if (dcb->dcb_modeflags & USART_MF_COOKEDMODE)
+        if (dcb->dcb_modeflags & USART_MF_COOKEDMODE) {
             *lvp = 1;
-        else
+        } else {
             *lvp = 0;
+        }
         break;
 
     case UART_SETHDPXMODE:
         lv = dcb->dcb_modeflags;
-        if (bv)
+        if (bv) {
             lv |= USART_MF_HALFDUPLEX;
-        else
+        } else {
             lv &= ~USART_MF_HALFDUPLEX;
+        }
         rc = (dcb->dcb_set_flow_control) (lv);
-        if (rc == 0)
+        if (rc == 0) {
             dcb->dcb_modeflags = lv;
+        }
         break;
     case UART_GETHDPXMODE:
-        if (dcb->dcb_modeflags & USART_MF_HALFDUPLEX)
+        if (dcb->dcb_modeflags & USART_MF_HALFDUPLEX) {
             *lvp = 1;
-        else
+        } else {
             *lvp = 0;
+        }
         break;
 
     case UART_SETCLOCKMODE:
