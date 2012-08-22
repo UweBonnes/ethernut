@@ -57,31 +57,21 @@
 #define NUM_INTERRUPTS       41
 #endif
 
-/*!
- * \brief Macro to generate an interrupt priority mask.
- *
- * Based on the number of bits of priority supported by the hardware.
- */
-#define INT_PRIORITY_MASK   ((0xFF << (8 - NUM_PRIORITY_BITS)) & 0xFF)
-
-extern int IntMasterEnable(void);
-extern int IntMasterDisable(void);
-
-extern void IntRegister(unsigned long ulInterrupt, void (*pfnHandler)(void));
-extern void IntUnregister(unsigned long ulInterrupt);
+extern void IntRegister(IRQn_Type ulInterrupt, void (*pfnHandler)(void*));
+extern void IntUnregister(IRQn_Type ulInterrupt);
 
 extern void IntPriorityGroupingSet(unsigned long ulBits);
 extern unsigned long IntPriorityGroupingGet(void);
 
-extern void IntPrioritySet(unsigned long ulInterrupt, unsigned char ucPriority);
-extern long IntPriorityGet(unsigned long ulInterrupt);
+extern void IntPrioritySet(IRQn_Type ulInterrupt, uint32_t ucPriority);
+extern uint32_t IntPriorityGet(IRQn_Type ulInterrupt);
 
-extern void IntEnable(unsigned long ulInterrupt);
-extern void IntDisable(unsigned long ulInterrupt);
-extern unsigned long IntIsEnabled(unsigned long ulInterrupt);
+extern void IntEnable(IRQn_Type ulInterrupt);
+extern void IntDisable(IRQn_Type ulInterrupt);
+extern int IntIsEnabled(IRQn_Type ulInterrupt);
 
-extern void IntPendSet(unsigned long ulInterrupt);
-extern void IntPendClear(unsigned long ulInterrupt);
+extern void IntPendSet(IRQn_Type ulInterrupt);
+extern void IntPendClear(IRQn_Type ulInterrupt);
 
 extern void IntPriorityMaskSet(unsigned long ulPriorityMask);
 extern unsigned long IntPriorityMaskGet(void);
