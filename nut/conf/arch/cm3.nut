@@ -148,7 +148,6 @@ nutarch_cm3 =
         sources =
         {
             "cm3/cmsis/cortex_reset.c",
-            "cm3/cmsis/cortex_interrupt1.c",
             "cm3/cmsis/cortex_interrupt.c"
         },
     },
