@@ -41,7 +41,7 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/interrupt.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f10x.h>
 #include <arch/cm3/stm/stm32f10x_gpio.h>

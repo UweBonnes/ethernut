@@ -50,7 +50,7 @@
 #include <dev/gpio.h>
 
 #include <sys/event.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/interrupt.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32xxxx_gpio.h>
 #include <dev/usb_stm32/stm32_otg.h>

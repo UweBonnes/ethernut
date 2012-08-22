@@ -37,7 +37,7 @@
 
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_PIOC
 #define NUT_IRQPRI_PIOC 4

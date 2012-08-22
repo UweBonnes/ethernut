@@ -40,7 +40,7 @@
 
 #include <cfg/arch.h>
 #include <arch/cm3.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/interrupt.h>
 #include <sys/nutdebug.h>
 #include <sys/timer.h>
 #include <sys/atom.h>

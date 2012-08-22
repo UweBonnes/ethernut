@@ -47,7 +47,7 @@
 #include <dev/rtc.h>
 #include <sys/heap.h>
 #include <arch/cm3/cortexM3.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/interrupt.h>
 
 #ifndef MSP_STACK_SIZE
 #define MSP_STACK_SIZE 128

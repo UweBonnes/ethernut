@@ -45,7 +45,7 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_SPI1
 #define NUT_IRQPRI_SPI1  4

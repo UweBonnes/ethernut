@@ -59,10 +59,7 @@
 #else
 #warning "Unknown CM3 family"
 #endif
-#include <arch/cm3/cortex_interrupt.h>
-/*
-#include <arch/cm3/cortex_sysctl.h>
-*/
+#include <arch/cm3/interrupt.h>
 
 /*!
  * \addtogroup xgNutArchArmOsTimerCm3

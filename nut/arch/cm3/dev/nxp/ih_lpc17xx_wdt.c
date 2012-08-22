@@ -42,7 +42,7 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_WDT
 #define NUT_IRQPRI_WDT  4
