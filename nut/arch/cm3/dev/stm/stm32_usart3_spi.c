@@ -43,7 +43,6 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32f10x_rcc.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
 #include <arch/cm3/stm/stm32f10x_usart.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>

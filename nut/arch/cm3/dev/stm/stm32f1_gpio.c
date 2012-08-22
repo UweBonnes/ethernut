@@ -46,7 +46,6 @@
 
 #include <arch/cm3.h>
 #include <dev/gpio.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
 #include <arch/cm3/stm/stm32f10x_rcc.h>
 
 #define NUTGPIOPORT_MAX NUTGPIO_PORTG+1

@@ -55,7 +55,6 @@
 
 #include <arch/cm3/stm/stm32f10x.h>
 #include <arch/cm3/stm/stm32f10x_rcc.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG

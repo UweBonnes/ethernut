@@ -48,7 +48,6 @@
 #include <dev/irqreg.h>
 #include <dev/usart.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
 #include <arch/cm3/stm/stm32xxxx_usart.h>
 #include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
