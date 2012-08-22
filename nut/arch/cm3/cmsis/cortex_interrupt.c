@@ -45,62 +45,6 @@
 #include <sys/timer.h>
 #include <sys/atom.h>
 
-//#define OWN_EXCEPTION_HANDLER
-
-#ifdef OWN_EXCEPTION_HANDLER
-#include <stdio.h>
-#include <string.h>
-
-const char s_fault[] = "\n*** HardFault ***\n";
-const char s_fbus[] = "[BusFault]\n";
-const char s_fmem[] = "[MemManageFault]\n";
-const char s_fuse[] = "[UsageFault]\n";
-const char s_sirq[] = "[UnregIRQ]\n";
-
-static void IntDefaultHandler(void *arg);
-
-static void mprintf( char *s)
-{
-    // Disable transmit interrupts.
-    USART1->CR1  &= ~(USART_CR1_TXEIE|USART_CR1_TCIE);
-
-    while(*s) {
-        while( (USART1->SR & USART_SR_TXE) == 0);
-        if (*s=='\n') {
-            USART1->DR = '\r';
-            while( (USART1->SR & USART_SR_TXE) == 0);
-        }
-        USART1->DR = *s++;
-    }
-}
-
-/* Hardfault Handler.
- * hard fault handler in C, with stack frame location as input parameter
- */
-
-static void IntFaultEntry(void *arg)
-{
-    asm volatile (
-        "tst lr, #4 \n\t"
-        "ite eq \n\t"
-        "mrseq r0, MSP \n\t"
-        "mrsne r0, PSP \n\t"
-        "/* check that r0 is a valid stack */\n\t"
-        "/* pointer to avoid a second fault */\n\t"
-        "tst r0, #3 \n\t"
-        "bne skip \n\t"
-        "ldr r1, =_stack_start \n\t"
-        "cmp r0, r1 \n\t"
-        "bmi skip \n\t"
-        "ldr r1, =_stack_end - 32 \n\t"
-        "cmp r0, r1 \n\t"
-        "bpl skip \n\t"
-        "ldr r1, [r0, #24] /* r1 <= stacked PC */\n\t"
-        "skip: \n\t"
-        "b IntDefaultHandler \n\t"
-    );
-}
-#endif
 //*****************************************************************************
 //
 //! \internal
@@ -118,84 +62,7 @@ static void IntFaultEntry(void *arg)
 static void IntDefaultHandler(void *arg)
 {
 
-#ifdef OWN_EXCEPTION_HANDLER
-    int i;
-    unsigned int *hardfault_args = arg;
-    unsigned int stacked_r0;
-    unsigned int stacked_r1;
-    unsigned int stacked_r2;
-    unsigned int stacked_r3;
-    unsigned int stacked_r12;
-    unsigned int stacked_lr;
-    unsigned int stacked_pc;
-    unsigned int stacked_psr;
-    unsigned int cfsr = (*((volatile unsigned long *)(0xE000ED28)));
-    char s[40];
-
-    mprintf( (char*)s_fault);
-    if (cfsr & SCB_CFSR_MEMFAULTSR_Msk) {
-        mprintf( (char*)s_fmem);
-    }
-    else if (cfsr & SCB_CFSR_BUSFAULTSR_Msk) {
-        mprintf( (char*)s_fbus);
-    }
-    else if (cfsr & SCB_CFSR_USGFAULTSR_Msk) {
-        mprintf( (char*)s_fuse);
-    }
-    else {
-        mprintf( (char*)s_sirq);
-        sprintf ( s, "VTOR = %08lx\n", (*((volatile unsigned long *)(SCB->VTOR))));
-        mprintf ( s);
-        sprintf ( s, "ICSR = %08lx\n", (*((volatile unsigned long *)(SCB->ICSR))));
-        mprintf ( s);
-    }
-
-    stacked_r0 = ((unsigned long) hardfault_args[0]);
-    stacked_r1 = ((unsigned long) hardfault_args[1]);
-    stacked_r2 = ((unsigned long) hardfault_args[2]);
-    stacked_r3 = ((unsigned long) hardfault_args[3]);
-
-    stacked_r12 = ((unsigned long) hardfault_args[4]);
-    stacked_lr = ((unsigned long) hardfault_args[5]);
-    stacked_pc = ((unsigned long) hardfault_args[6]);
-    stacked_psr = ((unsigned long) hardfault_args[7]);
-
-    sprintf ( s, "R0  = %08x\n", stacked_r0);
-    mprintf ( s);
-    sprintf ( s, "R1  = %08x\n", stacked_r1);
-    mprintf ( s);
-    sprintf ( s, "R2  = %08x\n", stacked_r2);
-    mprintf ( s);
-    sprintf ( s, "R3  = %08x\n", stacked_r3);
-    mprintf ( s);
-    sprintf ( s, "R12 = %08x\n", stacked_r12);
-    mprintf ( s);
-    sprintf ( s, "LR  = %08x\n", stacked_lr);
-    mprintf ( s);
-    sprintf ( s, "PC  = %08x\n", stacked_pc);
-    mprintf ( s);
-    sprintf ( s, "PSR = %08x\n\n", stacked_psr);
-    mprintf ( s);
-    sprintf ( s, "BFAR = %08lx\n", (*((volatile unsigned long *)(0xE000ED38))));
-    mprintf ( s);
-    sprintf ( s, "CFSR = %08x\n", cfsr);
-    mprintf ( s);
-    sprintf ( s, "HFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED2C))));
-    mprintf ( s);
-    sprintf ( s, "DFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED30))));
-    mprintf ( s);
-    sprintf ( s, "AFSR = %08lx\n", (*((volatile unsigned long *)(0xE000ED3C))));
-    mprintf ( s);
-
-    while(1) {
-        for(i=0; i<100000; i++)
-            GPIOB->BSRR = 0x0001;
-        for(i=0; i<100000; i++)
-            GPIOB->BRR = 0x0001;
-    };
-#else
     while(1);
-#endif
 }
 
 static void IntNmiHandler(void *arg)
@@ -248,40 +115,6 @@ static __attribute__((section(".vtable")))
 void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void*);
 #endif
 #endif
-
-//*****************************************************************************
-//
-//! Enables the processor interrupt.
-//!
-//! Allows the processor to respond to interrupts.  This does not affect the
-//! set of interrupts enabled in the interrupt controller; it just gates the
-//! single interrupt from the controller to the processor.
-//!
-//! \return Returns \b true if interrupts were disabled when the function was
-//! called or \b false if they were initially enabled.
-//
-//*****************************************************************************
-unsigned char IntMasterEnable(void)
-{
-    return(CPUcpsie());
-}
-
-//*****************************************************************************
-//
-//! Disables the processor interrupt.
-//!
-//! Prevents the processor from receiving interrupts.  This does not affect the
-//! set of interrupts enabled in the interrupt controller; it just gates the
-//! single interrupt from the controller to the processor.
-//!
-//! \return Returns \b true if interrupts were already disabled when the
-//! function was called or \b false if they were initially enabled.
-//
-//*****************************************************************************
-unsigned char IntMasterDisable(void)
-{
-    return(CPUcpsid());
-}
 
 //*****************************************************************************
 //
@@ -351,85 +184,6 @@ void IntUnregister(IRQn_Type ulInterrupt)
     g_pfnRAMVectors[ulInterrupt+16] = (void *)IntDefaultHandler;
 }
 
-//*****************************************************************************
-//
-//! Sets the priority grouping of the interrupt controller.
-//!
-//! \param ulBits specifies the number of bits of preemptable priority.
-//!
-//! This function specifies the split between preemptable priority levels and
-//! subpriority levels in the interrupt priority specification.  The range of
-//! the grouping values are dependent upon the hardware implementation; on
-//! the Stellaris family, three bits are available for hardware interrupt
-//! prioritization and therefore priority grouping values of three through
-//! seven have the same effect.
-//!
-//! \return None.
-//
-//*****************************************************************************
-/*void
-IntPriorityGroupingSet(unsigned long ulBits)
-{
-    //
-    // Check the arguments.
-    //
-    NUTASSERT(ulBits < NUM_PRIORITY);
-
-    //
-    // Set the priority grouping.
-    //
-#if defined(SAM3U)
-    outr(AT91C_NVIC_AIRCR, AT91C_NVIC_VECTKEY | g_pulPriority[ulBits]);
-#endif
-#if defined(MCU_STM32F10X)
-    outr(SCB->AIRCR, NVIC_AIRCR_VECTKEY | g_pulPriority[ulBits]);
-#endif
-}*/
-
-//*****************************************************************************
-//
-//! Gets the priority grouping of the interrupt controller.
-//!
-//! This function returns the split between preemptable priority levels and
-//! subpriority levels in the interrupt priority specification.
-//!
-//! \return The number of bits of preemptable priority.
-//
-//*****************************************************************************
-/*unsigned long
-IntPriorityGroupingGet(void)
-{
-    unsigned long ulLoop, ulValue;
-
-    //
-    // Read the priority grouping.
-    //
-#if defined(SAM3U)
-    ulValue = inr(AT91C_NVIC_AIRCR) & AT91C_NVIC_PRIGROUP;
-#endif
-#if defined(MCU_STM32F10X)
-    ulValue = inr(SCB->AIRCR) & 0x0700;
-#endif
-
-    //
-    // Loop through the priority grouping values.
-    //
-    for(ulLoop = 0; ulLoop < NUM_PRIORITY; ulLoop++)
-    {
-        //
-        // Stop looping if this value matches.
-        //
-        if(ulValue == g_pulPriority[ulLoop])
-        {
-            break;
-        }
-    }
-
-    //
-    // Return the number of priority bits.
-    //
-    return(ulLoop);
-}*/
 
 //*****************************************************************************
 //
@@ -700,26 +454,6 @@ void Cortex_IntInit(void)
     __enable_irq();
 }
 
-
-void CortexExceptHandler(int state)
-{
-#ifdef OWN_EXCEPTION_HANDLER
-    uint32_t control;
-
-    /* Set privileged mode */
-    control = __get_CONTROL();
-    __set_CONTROL(0x0);
-    if (state) {
-        SCB->SHCSR |= (SCB_SHCSR_MEMFAULTENA|SCB_SHCSR_BUSFAULTENA|SCB_SHCSR_USGFAULTENA);
-    }
-    else {
-        SCB->SHCSR &= ~(SCB_SHCSR_MEMFAULTENA|SCB_SHCSR_BUSFAULTENA|SCB_SHCSR_USGFAULTENA);
-    }
-
-    /* Set back Thread mode */
-    __set_CONTROL(control);
-#endif
-}
 
 //*****************************************************************************
 //

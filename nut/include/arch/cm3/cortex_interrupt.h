@@ -32,31 +32,14 @@ extern "C"
 {
 #endif
 
-
-//*****************************************************************************
-//
-// Macro to generate an interrupt priority mask based on the number of bits
-// of priority supported by the hardware.
-//
-//*****************************************************************************
-#define INT_PRIORITY_MASK       ((0xFF << (8 - NUM_PRIORITY_BITS)) & 0xFF)
-
 //*****************************************************************************
 //
 // Prototypes for the APIs.
 //
 //*****************************************************************************
-extern unsigned long CPUcpsid(void);
-extern unsigned long CPUcpsie(void);
-
-extern unsigned char IntMasterEnable(void);
-extern unsigned char IntMasterDisable(void);
-
 extern void IntRegister(IRQn_Type ulInterrupt, void (*pfnHandler)(void*));
 extern void IntUnregister(IRQn_Type ulInterrupt);
 
-/*extern void IntPriorityGroupingSet(unsigned long ulBits);
-extern unsigned long IntPriorityGroupingGet(void);*/
 extern void IntPrioritySet(IRQn_Type Interrupt, uint32_t Priority);
 extern uint32_t IntPriorityGet(IRQn_Type ulInterrupt);
 
