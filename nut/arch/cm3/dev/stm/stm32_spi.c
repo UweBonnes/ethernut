@@ -145,8 +145,10 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
 #endif
         //No enable - set it only during transfer
 
-#if defined(MCU_STM32F1) && defined(SPI_REMAP)
-    GPIO_PinRemapConfig(SPI_REMAP, SPI_DOREMAP);
+#if defined(MCU_STM32F1)
+ #if defined(SPIBUS_REMAP_BB)
+        SPIBUS_REMAP_BB = SPI_DOREMAP;
+ #endif
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
     GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_GPIO_AF);
     GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_GPIO_AF);

@@ -140,8 +140,7 @@ NUTDEVICE devUartStm32_4 = {
  * RX  PA1     PC11
  */
 #if defined(MCU_STM32F1)
- #undef STM_USART_REMAP
- #undef STM_USART_DOREMAP
+ #undef STM_USART_REMAP_MASK
  #define TX_GPIO_PORT    NUTGPIO_PORTA
  #define TX_GPIO_PIN      0
  #define RX_GPIO_PORT    NUTGPIO_PORTA

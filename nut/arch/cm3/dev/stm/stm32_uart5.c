@@ -137,7 +137,7 @@ NUTDEVICE devUartStm32_5 = {
 /* No alternate pins for F1/L1/F2/F4 so long */
 
 #if defined(MCU_STM32F1)
-#undef STM_USART_REMAP
+#undef  STM_USART_REMAP_MASK
 #else
 #define STM_USART_REMAP  GPIO_AF_UART4
 #endif

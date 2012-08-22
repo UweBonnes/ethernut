@@ -67,18 +67,14 @@
  */
 #define CAN2_GPIO_PORT   NUTGPIO_PORTB
 #if defined(MCU_STM32F1)
- #if (CANBUS2_REMAP_CAN == 0)
-  #undef CANBUS_REMAP
-  #define CAN2RX_GPIO_PIN    12
-  #define CAN2TX_GPIO_PIN    13
-
- #elif (CANBUS2_REMAP_CAN == 1)
-  #define CANBUS_REMAP       GPIO_Remap_CAN2
+ #if (CANBUS2_REMAP_CAN == 1)
+  #define CANBUS_REMAP       1
   #define CAN2RX_GPIO_PIN    5
   #define CAN2TX_GPIO_PIN    6
-
  #else
-  #error "Illegal CANBUS2_REMAP_CAN value"
+  #undef CANBUS_REMAP        0
+  #define CAN2RX_GPIO_PIN    12
+  #define CAN2TX_GPIO_PIN    13
  #endif
 #else /*L1/F2/F4*/
  #if !defined(CAN2_TX_PIN)
@@ -152,10 +148,7 @@ int Stm32CanHw2Init(void)
     GpioPinConfigSet(CAN2_GPIO_PORT, CAN2TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
 
 #if defined (MCU_STM32F1)
- #if defined (CANBUS_REMAP)
-    /* Configure alternate configuration. */
-    GPIO_PinRemapConfig(CANBUS_REMAP, ENABLE);
- #endif
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_CAN2_REMAP)) = CANBUS_REMAP;
 #else
     GPIO_PinAFConfig((GPIO_TypeDef*) CAN2_GPIO_PORT, CAN2RX_GPIO_PIN, GPIO_AF_CAN2);
     GPIO_PinAFConfig((GPIO_TypeDef*) CAN2_GPIO_PORT, CAN2TX_GPIO_PIN, GPIO_AF_CAN2);

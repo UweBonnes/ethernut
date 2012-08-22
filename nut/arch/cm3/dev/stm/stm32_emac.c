@@ -828,10 +828,7 @@ int EmacInit(NUTDEVICE * dev)
     GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
 #endif
 
-    /* Remapping */
-#ifdef EMAC_REMAP_ENABLE
-    GPIO_PinRemapConfig(GPIO_Remap_ETH, ENABLE);
-#endif
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = EMAC_REMAP_ENABLE;
 
     /* Start the receiver thread. */
     if (NutThreadCreate("emacrx", EmacRxThread, dev,

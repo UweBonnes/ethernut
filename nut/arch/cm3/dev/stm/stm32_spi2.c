@@ -87,6 +87,7 @@
  #define SPIBUS_CS_PIN SPIBUS2_CS_PIN
 #endif
 #if defined(MCU_STM32F1)
+ #undef SPIBUS_REMAP_BB
  #define SPIBUS_SCK_PIN 13
  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
  #define SPIBUS_MISO_PIN 14
