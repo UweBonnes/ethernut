@@ -40,7 +40,6 @@
 
 #include <cfg/arch.h>
 #if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f10x_gpio.h>
 #elif defined(MCU_STM32L1)
 #include <arch/cm3/stm/stm32l1xx_gpio.h>
 #elif defined(MCU_STM32F2)
