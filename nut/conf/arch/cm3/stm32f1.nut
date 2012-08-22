@@ -453,7 +453,7 @@ nutarch_cm3_stm32f1 =
         brief = "STM32F RCC",
         description = "STM32F Clock Controller.",
         requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
-        sources = { "cm3/dev/stm/stm32_rcc.c" }
+        sources = { "cm3/dev/stm/stm32f10x_rcc.c" }
     },
 
     --
