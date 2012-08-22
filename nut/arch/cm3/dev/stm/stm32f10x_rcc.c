@@ -20,7 +20,16 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f10x_rcc.h"
+
+#include <arch/cm3.h>
+#include <arch/cm3/stm/stm32f10x_rcc.h>
+
+#include <sys/nutdebug.h>
+
+#include <stdlib.h>
+#include <errno.h>
+
+#define assert_param NUTASSERT
 
 /** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
