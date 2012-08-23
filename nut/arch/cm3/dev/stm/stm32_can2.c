@@ -72,7 +72,7 @@
   #define CAN2RX_GPIO_PIN    5
   #define CAN2TX_GPIO_PIN    6
  #else
-  #undef CANBUS_REMAP        0
+  #define CANBUS_REMAP       0
   #define CAN2RX_GPIO_PIN    12
   #define CAN2TX_GPIO_PIN    13
  #endif
