@@ -50,6 +50,9 @@
 #ifndef __STM32F10x_H
 #define __STM32F10x_H
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifdef __cplusplus
  extern "C" {
 #endif 
@@ -475,8 +478,8 @@ typedef enum IRQn
   * @}
   */
 
-#include "core_cm3.h"
-#include "system_stm32f10x.h"
+#include <arch/cm3/core_cm3.h>
+#include <arch/cm3/stm/system_stm32f10x.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types
