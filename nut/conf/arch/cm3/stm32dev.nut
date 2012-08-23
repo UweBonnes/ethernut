@@ -1439,12 +1439,22 @@ nutarch_cm3_stm32_devices =
     {
         name = "nutarch_cm3_stm32f_emac",
         brief = "STM32F EMAC Driver",
-        description = "LAN driver for STM32F107xx.",
+        description = "LAN driver for STM32Fxx7xx.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_EMAC_STM32", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_MAC" },
         sources = { "cm3/dev/stm/stm32_emac.c", "cm3/dev/stm/ih_stm32_emac.c" },
         options =
         {
+            {
+                macro = "EMAC_REMAP",
+                brief = "Use Alternate Pins",
+                description = "Leaving this option unchecked, the driver will initialize the standard Pins.\n\n"..
+                              "Pin Mapping is:\n RX_DV-CRS PA7\n RXD0 PC4 \n RXD1 PC5\n RXD2 PB0\n RXD3 PB1\n"..
+                              "Enabling the option the driver remaps to its alternate port pins:\n\n"..
+                              "Pin Mapping is:\n RX_DV-CRS PD8\n RXD0 PD9 \n RXD1 PD10\n RXD2 PD11\n RXD3 PD12\n",
+                flavor = "booldata",
+                file = "include/cfg/dev.h"
+            },
             {
                 macro = "PHY_PWRDN_BIT",
                 brief = "PHY Power Down Bit",

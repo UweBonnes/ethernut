@@ -33,7 +33,6 @@
  */
 
 #include <cfg/os.h>
-#include <arch/arm.h>
 
 #include <string.h>
 
@@ -813,7 +812,8 @@ int EmacInit(NUTDEVICE * dev)
     GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
 
     /* switch to RMII mode */
-    GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL)) = 1;
+//    GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
 #else
     /* Configure MII lines as alternate function */
     GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
@@ -825,11 +825,14 @@ int EmacInit(NUTDEVICE * dev)
     GpioPinConfigSet(NUTGPIO_PORTB,  8, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
 
     /* switch to MII mode */
-    GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL)) = 0;
 #endif
 
-    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = EMAC_REMAP_ENABLE;
-
+#if defined (EMAC_REMAP_ENABLE)
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 1;
+#else
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 0;
+#endif
     /* Start the receiver thread. */
     if (NutThreadCreate("emacrx", EmacRxThread, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
