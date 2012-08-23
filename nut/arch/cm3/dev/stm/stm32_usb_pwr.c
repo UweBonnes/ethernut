@@ -33,7 +33,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 __IO DEVICE_STATE bDeviceState = UNCONNECTED; /* USB device status */
-__IO bool fSuspendEnabled = TRUE;  /* true when suspend is possible */
+__IO int fSuspendEnabled = ENABLE;  /* enable when suspend is possible */
 
 struct
 {

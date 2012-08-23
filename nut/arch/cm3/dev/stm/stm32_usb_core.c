@@ -42,7 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 uint16_t_uint8_t StatusInfo;
 
-bool Data_Mul_MaxPacketSize = FALSE;
+int Data_Mul_MaxPacketSize = DISABLE;
 /* Private function prototypes -----------------------------------------------*/
 static void DataStageOut(void);
 static void DataStageIn(void);
@@ -498,12 +498,12 @@ void DataStageIn(void)
 
   if ((save_wLength == 0) && (ControlState == LAST_IN_DATA))
   {
-    if(Data_Mul_MaxPacketSize == TRUE)
+    if(Data_Mul_MaxPacketSize == ENABLE)
     {
       /* No more data to send and empty packet */
       Send0LengthData();
       ControlState = LAST_IN_DATA;
-      Data_Mul_MaxPacketSize = FALSE;
+      Data_Mul_MaxPacketSize = DISABLE;
     }
     else
     {
@@ -826,11 +826,11 @@ void Data_Setup0(void)
     {
       if (pInformation->Ctrl_Info.Usb_wLength < pProperty->MaxPacketSize)
       {
-        Data_Mul_MaxPacketSize = FALSE;
+        Data_Mul_MaxPacketSize = DISABLE;
       }
       else if ((pInformation->Ctrl_Info.Usb_wLength % pProperty->MaxPacketSize) == 0)
       {
-        Data_Mul_MaxPacketSize = TRUE;
+        Data_Mul_MaxPacketSize = ENABLE;
       }
     }
 

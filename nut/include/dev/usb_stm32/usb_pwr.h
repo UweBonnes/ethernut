@@ -50,7 +50,7 @@ void Resume(RESUME_STATE eResumeSetVal);
 
 /* External variables --------------------------------------------------------*/
 extern  __IO DEVICE_STATE bDeviceState; /* USB device status */
-extern __IO bool fSuspendEnabled;  /* true when suspend is possible */
+extern __IO int fSuspendEnabled;  /* true when suspend is possible */
 
 #endif  /*__USB_PWR_H*/
 
