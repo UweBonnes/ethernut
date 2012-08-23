@@ -1014,6 +1014,26 @@ nutarch =
                 },
                 makedefs = { "MCU=cortex-m3", "MARCH=cmc" }
             },
+            {
+                macro = "MCU_STM32F207",
+                brief = "STM STM32F207",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F2XX",
+                    "HW_MCU_STM32F207",
+                    "MCU_STM32F207",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cmc" }
+            },
             --
             -- TI LM3S SERIES CONTROLLER
             --

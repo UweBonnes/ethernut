@@ -35,7 +35,7 @@
 --
 --
 stm32_memory_f2 = { "128", "256", "512", "768", "1024" }
-stm32f2_device_class = { "STM32F2XX" }
+stm32f2_device_class = { "STM32F205", "STM32F207", "STM32F215", "STM32F217" }
 
 -- *****************************************************************************
 -- STM32F2 Family
@@ -70,6 +70,8 @@ nutarch_cm3_stm32f2 =
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
                     "HW_EXTI1510_STM32",
+                    "HW_DMA1_STM32F2",
+                    "HW_DMA2_STM32F2",
                     "HW_OTG1_STM32",
                     "HW_I2C1_STM32",
                     "HW_I2C2_STM32",
@@ -80,6 +82,11 @@ nutarch_cm3_stm32f2 =
                     "HW_UART1_STM32",
                     "HW_UART2_STM32",
                     "HW_UART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_UART6_STM32",
+                    "HW_CAN1_STM32",
+                    "HW_CAN2_STM32",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -91,19 +98,31 @@ nutarch_cm3_stm32f2 =
     {
         name = "nutarch_cm3_stm32F2_class",
         brief = "STM32F2 Device Classes",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32F2XX" },
         options =
         {
             {
-                macro = "STM32F2XX",
-                brief = "STM32F2 Series",
-                description = "STM32F2 devices.",
+                macro = "STM32F205",
+                brief = "STM32F205",
+                description = "STM32F2 w/o Ethernet and Crypto.",
                 flavor = "booldata",
                 exclusivity = stm32F2_device_class,
-                makedefs = { "HWDEF+=-DSTM32F2XX" },
-                provides = { "STM32F2XX" },
+                provides = { "STM32F205" },
                 file = "include/cfg/arch.h"
-            }
+            },
+            {
+                macro = "STM32F207",
+                brief = "STM32F207",
+                description = "STM32F2 w/o Crypto.",
+                flavor = "booldata",
+                exclusivity = stm32F2_device_class,
+                provides =
+                {
+                    "STM32F207",
+--                    "HW_EMAC_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
         }
     },
     {

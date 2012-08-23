@@ -458,6 +458,23 @@ stm32f107_ld_description =
     stm32f107xC_flash = "STM32F107xC and STM32F102xC, code running in FLASH, data in SRAM",
 }
 
+stm32f2x5_ld_description =
+{
+    stm32f205xB_flash = "STM32F205xB and STM32F215xB, code running in FLASH, data in SRAM",
+    stm32f205xC_flash = "STM32F205xC and STM32F215xC, code running in FLASH, data in SRAM",
+    stm32f205xE_flash = "STM32F205xE and STM32F215xE, code running in FLASH, data in SRAM",
+    stm32f205xF_flash = "STM32F205xF and STM32F215xF, code running in FLASH, data in SRAM",
+    stm32f205xG_flash = "STM32F205xG and STM32F215xG, code running in FLASH, data in SRAM",
+}
+
+stm32f2x7_ld_description =
+{
+    stm32f207xC_flash = "STM32F207xC and STM32F217xC, code running in FLASH, data in SRAM",
+    stm32f207xE_flash = "STM32F207xE and STM32F217xE, code running in FLASH, data in SRAM",
+    stm32f207xF_flash = "STM32F207xF and STM32F217xF, code running in FLASH, data in SRAM",
+    stm32f207xG_flash = "STM32F207xG and STM32F217xG, code running in FLASH, data in SRAM",
+}
+
 stm32l151_ld_description =
 {
     stm32f151x6_flash = "STM32L151x6 and STM32L152x6, code running in FLASH, data in SRAM",
@@ -506,6 +523,23 @@ stm32f107_ld_choice =
 {
     "stm32f107xB_flash",
     "stm32f107xC_flash",
+}
+
+stm32f2x5_ld_choice =
+{
+    "stm32f2x5xB_flash",
+    "stm32f2x5xC_flash",
+    "stm32f2x5xE_flash",
+    "stm32f2x5xF_flash",
+    "stm32f2x5xG_flash",
+}
+
+stm32f2x7_ld_choice =
+{
+    "stm32f2x7xC_flash",
+    "stm32f2x7xE_flash",
+    "stm32f2x7xF_flash",
+    "stm32f2x7xG_flash",
 }
 
 stm32l151_ld_choice =
@@ -586,6 +620,12 @@ function GetLDScripts()
         if c_is_provided("MCU_STM32F107") then
             return stm32f107_ld_choice
         end
+        if c_is_provided("MCU_STM32F205") then
+            return stm32f2x5_ld_choice
+        end
+        if c_is_provided("MCU_STM32F207") then
+            return stm32f2x7_ld_choice
+        end
         if c_is_provided("MCU_STM32L151") then
             return stm32l151_ld_choice
         end
@@ -626,6 +666,12 @@ function GetLDScriptDescription()
        end
        if c_is_provided("MCU_STM32F107") then
            return FormatLDScriptDescription(stm32f107_ld_description)
+       end
+       if c_is_provided("MCU_STM32F205") then
+           return FormatLDScriptDescription(stm32f2x5_ld_description)
+       end
+       if c_is_provided("MCU_STM32F207") then
+           return FormatLDScriptDescription(stm32f2x7_ld_description)
        end
        if c_is_provided("MCU_STM32L151") then
            return FormatLDScriptDescription(stm32l151_ld_description)

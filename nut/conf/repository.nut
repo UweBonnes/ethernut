@@ -202,6 +202,7 @@ mcu_names = {
     "MCU_STM32F105",
     "MCU_STM32F107",
     "MCU_STM32F205",
+    "MCU_STM32F207",
     "MCU_STM32F405",
     "MCU_LM3S9B96",
     "MCU_LPC1758",
