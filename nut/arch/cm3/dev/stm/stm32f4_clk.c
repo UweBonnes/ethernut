@@ -379,12 +379,12 @@ int SetSysClock(void)
     /* Select regulator voltage output Scale 1 mode*/
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
     PWR->CR |= PWR_CR_VOS;
- #elif((PLLCLK_IN > 1999999) &&  (PLLCLK_IN < 26000001) && ((PLLCLK_IN % 1000000L) == 0)
+#elif ((PLLCLK_IN > 1999999) &&  (PLLCLK_IN < 26000001) && ((PLLCLK_IN % 1000000L) == 0))
   #define  PLLM (PLLCLK_IN/1000000)
-  #define  PLLN ((240/1) << _BI32(RCC_PLLCFGR_PLLN_0))
+  #define  PLLN ((336/1) << _BI32(RCC_PLLCFGR_PLLN_0))
   #define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
-  #define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
-  #define  NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_3WS
+  #define  PLLQ (7 << _BI32(RCC_PLLCFGR_PLLQ_0))
+  #define  NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_5WS
  #else
   #warning "PLL Source frequency isn't a multiple of 1 MHz or is smaller 2 MHz"
  #endif
