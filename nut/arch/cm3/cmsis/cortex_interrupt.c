@@ -350,7 +350,7 @@ int IntIsEnabled(IRQn_Type ulInterrupt)
             case NonMaskableInt_IRQn:
                 rc = 1;
                 break;
-#if defined(MCU_STM32F1)
+#if defined(HardFault_IRQn)
             case HardFault_IRQn:
                 rc = 1;
 #endif
