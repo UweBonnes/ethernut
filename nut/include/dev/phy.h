@@ -72,6 +72,7 @@
 
 /* ST Microelectronics PHY tranceiver */
 #define STE100P     0x1C040010  /* Hitex STM32-comStick */
+#define ST802RT1    0x02038461  /* STEVAL_PCC0101V2 */
 
 /* SMSC PHY tranceiver */
 #define LAN8700     0x0007C0C0  /* Not recommended for new designs! */
