@@ -95,9 +95,10 @@
  * \endverbatim
  */
 
+#include <cfg/os.h>
 #include <cfg/mmci.h>
 
-#if defined (NUTDEBUG)
+#if defined(NUTDEBUG)
 #include <stdio.h>
 #endif
 
