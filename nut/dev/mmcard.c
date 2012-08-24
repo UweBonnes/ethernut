@@ -97,9 +97,7 @@
 
 #include <cfg/mmci.h>
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined (NUTDEBUG)
 #include <stdio.h>
 #endif
 

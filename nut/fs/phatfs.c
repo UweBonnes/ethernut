@@ -121,9 +121,7 @@
 #include <fcntl.h>
 #include <memdebug.h>
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined(NUTDEBUG)
 #include <stdio.h>
 #include <fs/phatdbg.h>
 #endif
