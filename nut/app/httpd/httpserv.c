@@ -682,7 +682,7 @@ int main(void)
     NutTraceTcp(stdout, 0);
     NutTraceOs(stdout, 0);
     NutTraceHeap(stdout, 0);
-    NutTracePPP(stdout, 0);
+/*    NutTracePPP(stdout, 0);*/
 #endif
 
     /*
