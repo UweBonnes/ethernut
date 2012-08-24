@@ -82,3 +82,11 @@
 #ifndef SW1_PIN
 #define SW1_PIN  4
 #endif
+
+/* Ethernet interface */
+
+#include <dev/stm32_emac.h>
+#ifndef DEV_ETHER_NAME
+#define DEV_ETHER_NAME  "eth0"
+#endif
+
