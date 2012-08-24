@@ -119,7 +119,7 @@ nutarch_cm3_stm32f2 =
                 provides =
                 {
                     "STM32F207",
---                    "HW_EMAC_STM32",
+                    "HW_EMAC_STM32",
                 },
                 file = "include/cfg/arch.h"
             },

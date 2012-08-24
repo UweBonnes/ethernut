@@ -39,8 +39,6 @@
  *
  */
 
-#ifdef STM32_EMAC
-
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
@@ -156,5 +154,3 @@ static int EmacIrqCtl(int cmd, void *param)
     }
     return rc;
 }
-
-#endif /* STM32_EMAC */
