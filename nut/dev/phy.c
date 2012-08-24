@@ -420,7 +420,7 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
 
     phydcb->oui = ((uint32_t)temp1<<16)|(uint32_t)temp2;
 
-    PHPRINTF("PHY OUI=0x%08lx\n", rc, phydcb->oui);
+    PHPRINTF("PHY OUI=0x%08lx\n", phydcb->oui);
 
     return 0;
 }
