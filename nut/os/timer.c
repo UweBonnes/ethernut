@@ -320,13 +320,6 @@ void NutTimerInit(void)
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
 
-#if defined(__CORTEX__) && defined(NUT_MICRODELAY_CM3_CYCCNT)
-    /* Enable "Data Watchpoint and Trace" Unit which is used for NutMicroDelay() */
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Pos;
-    DWT->CYCCNT = 0;
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-#endif
-
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
 #if !defined(NUT_DELAYLOOPS)
