@@ -379,8 +379,8 @@ void NutTimerInit(void)
  * In any case, if you need exact timing, use timer/counter hardware
  * instead.
  *
- * \param us Delay time in microseconds. Values above 255 milliseconds
- *           may not work.
+ * \param us Delay time in microseconds. Do not use values larger than 10ms
+ *           to prevent integer overflows on fast CPUs
  *
  * \todo Overflow handling.
  */
@@ -452,7 +452,9 @@ void NutMicroDelay(uint32_t us)
  */
 void NutDelay(uint8_t ms)
 {
-    NutMicroDelay((uint32_t)ms * 1000);
+    while (ms--){
+        NutMicroDelay(1000);
+    }
 }
 
 /*!
