@@ -389,29 +389,6 @@ void NutMicroDelay(uint32_t us)
 #ifdef __NUT_EMULATION__
     usleep(us);
 #elif defined(__CORTEX__)
-#if defined(NUT_MICRODELAY_CM3_CYCCNT)
-
-    /* Calculate clock cycles to delay */
-    uint32_t cycles = (NutClockGet(NUT_HWCLK_CPU)/1000000) * us;
-
-    /* Use Data Watchpoint and Trace Units clock cycle counter
-       for delay loop.
-
-       DWT->CYCCNT is a 32 bit counter running with the processor clock.
-       Suppose 184 MHz as with the STM32F4, the counter rolls over every
-       23 seconds. As the loop works with a difference, even with rollover
-       the difference is positive.
-     */
-    register uint32_t start = DWT->CYCCNT;
-
-    /* Make comparision a "less or equal" as cycles might be 0xFFFFFFFF in very
-       rare cases, which would cause an endless loop with a "smaller than"
-       comparision
-     */
-    while (DWT->CYCCNT - start <= cycles) {
-        _NOP();
-    }
-#else
     int32_t start_ticks;
     int32_t current_ticks, summed_ticks=0;
     int32_t end_ticks;
@@ -427,8 +404,6 @@ void NutMicroDelay(uint32_t us)
             summed_ticks += (SysTick->LOAD +1);
         start_ticks = current_ticks;
     }
-
-#endif
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 
