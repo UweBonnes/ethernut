@@ -73,5 +73,5 @@ SIGNAL(IH_PIT0)
 SIGNAL(IH_PIT1)
 {
     MCF_PIT1_PCSR |= MCF_PIT_PCSR_PIF;
-    CallHandler(&sig_PIT0);
+    CallHandler(&sig_PIT1);
 }
