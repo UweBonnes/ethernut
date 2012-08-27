@@ -26,7 +26,7 @@ int main(void)
     puts("Please defined the UART to use for the One-Wire Bus for your board");
 #else
 
-    uint32_t baud = 38400;
+    uint32_t baud = 115200;
     FILE *uart;
     int res, i = 0;
     uint64_t hid  = 0;
