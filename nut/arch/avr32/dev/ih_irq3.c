@@ -47,7 +47,7 @@
 
 #include <avr32/io.h>
 
-#ifdef AVR32_EIC_IRQ_3
+#if defined(AVR32_EIC_IRQ_3) && defined(INTERRUPT3_ALT_PIN) && defined(INTERRUPT3_ALT_PINSET)
 
 #ifndef NUT_IRQPRI_IRQ3
 #define NUT_IRQPRI_IRQ3  AVR32_INTC_INT3

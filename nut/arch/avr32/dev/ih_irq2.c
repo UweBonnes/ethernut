@@ -49,7 +49,7 @@
 
 #include <cfg/arch/avr32pio.h>
 
-#ifdef AVR32_EIC_IRQ_2
+#if defined(AVR32_EIC_IRQ_2) && defined(INTERRUPT2_ALT_PIN) && defined(INTERRUPT2_ALT_PINSET)
 
 #ifndef NUT_IRQPRI_IRQ2
 #define NUT_IRQPRI_IRQ2  AVR32_INTC_INT3
