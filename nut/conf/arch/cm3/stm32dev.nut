@@ -1998,6 +1998,7 @@ nutarch_cm3_stm32_devices =
                               "Enabling the option alternate port pins are used:\n\n"..
                               "Pin Mapping is:\n SPI1_NSS PA4\n SPI1_SCK PC10\n SPI1_MISO PC11\n SPI1_MOSI PC12\n"..
                                       "For L1/F2/F4 Pins may also get assigned individually",
+                requires = { "STM32F10X_CL" },
                 flavor = "booldata",
                 file = "include/cfg/spi.h"
             },

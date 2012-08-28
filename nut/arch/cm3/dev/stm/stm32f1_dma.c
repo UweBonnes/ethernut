@@ -172,7 +172,11 @@ void DMA_Init(void)
 
     /* Enable DMA clocks */
     RCC->AHBENR |= RCC_AHBENR_DMA1EN;
-#ifdef STM_HAS_DMA2
+/* FIXME: The ST defined headers don't define RCC_AHBENR_DMA2EN for XL
+ * devices,  but RM0008 says that XL devices have DMA2
+ * Assume no DMA2 for XL devices for now
+ */
+#if defined(STM_HAS_DMA2) && defined(RCC_AHBENR_DMA2EN)
     RCC->AHBENR |= RCC_AHBENR_DMA2EN;
 #endif
 

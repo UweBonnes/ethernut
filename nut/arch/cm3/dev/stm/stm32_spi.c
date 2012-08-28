@@ -145,7 +145,7 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
 #endif
         //No enable - set it only during transfer
 
-#if defined(MCU_STM32F1)
+#if defined(STM32F10X_CL)
  #if defined(SPIBUS_REMAP_BB)
         SPIBUS_REMAP_BB = SPI_DOREMAP;
  #endif

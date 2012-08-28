@@ -60,12 +60,12 @@
 #include <errno.h>
 
 /* Handle the PIN remap possibilities
- * F1/F2/F4
+ * F1_CL/F2/F4
  *        NSS:  PA15/PA4
  *        SCK:  PB3/PC10
  *        MISO: PB4/PC11
  *        MOSI: PB5/PC12
- * No SPI3 on L1
+ * No SPI3 on L1, for F1 only STM32F10X_CL can remap
  *
  * For Chip select, we use NSS pin as default or any other pin as pure GPIO
 */
@@ -84,7 +84,9 @@
  #define SPIBUS_CS_PIN SPIBUS3_CS_PIN
 #endif
 #if defined(MCU_STM32F1)
- #define SPIBUS_REMAP_BB CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_SPI3_REMAP))
+ #if defined(STM32F10X_CL)
+  #define SPIBUS_REMAP_BB CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_SPI3_REMAP))
+ #endif
  #if defined(SPIBUS3_REMAP_SPI)
   #define SPI_DOREMAP DISABLE
   #define SPIBUS_SCK_PIN 10
@@ -102,7 +104,7 @@
   #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #endif
-#else
+#elif defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F4)
  #if !defined(SPIBUS3_SCK_PIN)
   #define SPIBUS_SCK_PIN 3
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
