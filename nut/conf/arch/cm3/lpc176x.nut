@@ -129,7 +129,7 @@ nutarch_cm3_lpc176x =
         name = "nutarch_cm3_lpc176x_pll",
         brief = "LPC175x / LPC176x PLL Setup",
         description = "PLL configuration. Currently it is hard coded. May be user configurable later.\n",
-        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "HW_MCU_LPC176x", "TOOL_CC_CM3", "TOOL_GCC" },
+        requires = { "HW_MCU_LPC176x", "TOOL_CC_CM3", "TOOL_GCC" },
         sources =
         {
             "cm3/dev/nxp/system_lpc176x.c",
