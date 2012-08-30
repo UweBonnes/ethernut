@@ -65,7 +65,7 @@ nutarch_cm3 =
         name = "nutarch_cm3_init",
         brief = "Initialization (CortexM3)",
         description = "Contains spurious interrupt handler.",
-        requires = { "HW_MCU_CM3" },
+        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "HW_MCU_CM3" },
         sources = { "cm3/cmsis/core_cm3.c",
                     "cm3/cmsis/cortex_init.c",
            },
@@ -109,7 +109,7 @@ nutarch_cm3 =
     {
         name = "nutarch_cm3_ostimer",
         brief = "System Timer (CortexM3)",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_CM3" },
+        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_CM3" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "cm3/cmsis/ostimer_cortex.c" },
     },
@@ -143,7 +143,7 @@ nutarch_cm3 =
     {
         name = "nutarch_cm3_irq",
         brief = "NVIC Interrupt Handler (CortexM3)",
-        requires = { "HW_MCU_CM3" },
+        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "HW_MCU_CM3" },
         provides = { "DEV_IRQ_CM3" },
         sources =
         {

@@ -152,7 +152,7 @@ nutarch_cm3_lpc177x_8x=
         name = "nutarch_cm3_lpc177x_8x_pll",
         brief = "LPC177x_8x PLL Setup",
         description = "PLL configuration. Currently it is hard coded. May be user configurable later.\n",
-        requires = { "HW_MCU_LPC177x_8x", "TOOL_CC_CM3", "TOOL_GCC" },
+        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "HW_MCU_LPC177x_8x", "TOOL_CC_CM3", "TOOL_GCC" },
         sources =
         {
             "cm3/dev/nxp/system_lpc177x_8x.c",

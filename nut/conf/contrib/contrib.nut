@@ -68,6 +68,21 @@ nutcontrib =
             provides = { "LICENSE_MCD_ST_LIBERTY" },
             macro = "LICENSE_MCD_ST_LIBERTY",
             flavor = "boolean"
+        },
+        {
+            brief = "Luminary Software License Agreement",
+            description = "This is not an OSI approved license. Specifically "..
+                          "commercial use and redistribution is unclear. You may "..
+                          "not combine this software with viral open-source software "..
+                          "in order to form a larger program. Any use in violation of "..
+                          "the foregoing restrictions may subject the user to criminal "..
+                          "sanctions under applicable laws.\n\n"..
+                          "Carefully check the copyright claimer in the individual "..
+                          "source files.\n\n"..
+                          "Enable this option only, if you agree to this.",
+            provides = { "LICENSE_LUMINARY_ANTI_VIRAL" },
+            macro = "LICENSE_LUMINARY_ANTI_VIRAL",
+            flavor = "boolean"
         }
     },
     {
