@@ -7,14 +7,16 @@ nutarch_m68k_coldfire_mcf5225x =
         name = "nutarch_m68k_coldfire_mcf5225x_family",
         brief = "Family",
         provides = {
-	        	"HW_UART",
-	        	"HW_PIT",
-	        	"HW_CWD",
+	        	"HW_UART_COLDFIRE",
+	        	"HW_PIT_COLDFIRE",
+	        	"HW_CWD_COLDFIRE",
+	        	"HW_I2C_COLDFIRE",
 		},
         options =
         {
             {
                 macro = "MCU_MCF5225X",
+                brief = "MCF5225X",
                 description = "MCF5225X Coldfire Family",
                 type = "integer",
                 default = 1,
@@ -24,35 +26,49 @@ nutarch_m68k_coldfire_mcf5225x =
                 macro = "PIT0",
                 type = "integer",
                 default = 1,
-                provides = { "HW_PIT0_MCF5225X" },
+                provides = { "HW_PIT0" },
                 file = "include/cfg/peripherals.h"
             },
             {
                 macro = "PIT1",
                 type = "integer",
                 default = 1,
-                provides = { "HW_PIT1_MCF5225X" },
+                provides = { "HW_PIT1" },
                 file = "include/cfg/peripherals.h"
             },
             {
                 macro = "UART0",
                 type = "integer",
                 default = 1,
-                provides = { "HW_UART0_MCF5225X" },
+                provides = { "HW_UART0" },
                 file = "include/cfg/peripherals.h"
             },
             {
                 macro = "UART1",
                 type = "integer",
                 default = 1,
-                provides = { "HW_UART1_MCF5225X" },
+                provides = { "HW_UART1" },
                 file = "include/cfg/peripherals.h"
             },
             {
                 macro = "UART2",
                 type = "integer",
                 default = 1,
-                provides = { "HW_UART2_MCF5225X" },
+                provides = { "HW_UART2" },
+                file = "include/cfg/peripherals.h"
+            },
+            {
+                macro = "I2C0",
+                type = "integer",
+                default = 1,
+                provides = { "HW_I2C0" },
+                file = "include/cfg/peripherals.h"
+            },
+            {
+                macro = "I2C1",
+                type = "integer",
+                default = 1,
+                provides = { "HW_I2C1" },
                 file = "include/cfg/peripherals.h"
             },
         }
@@ -85,7 +101,8 @@ nutarch_m68k_coldfire_mcf5225x =
         provides = { "DEV_IRQ_MCF5225X" },
         sources = { "m68k/coldfire/dev/mcf5225x/ih/ih_common.c",
         			"m68k/coldfire/dev/mcf5225x/ih/ih_pit.c",
-        			"m68k/coldfire/dev/mcf5225x/ih/ih_cwd.c"}
+        			"m68k/coldfire/dev/mcf5225x/ih/ih_cwd.c",
+        			"m68k/coldfire/dev/mcf5225x/ih/ih_i2c.c"}
     },
 
     --
@@ -94,7 +111,7 @@ nutarch_m68k_coldfire_mcf5225x =
     {
         name = "nutarch_m68k_coldfire_mcf5225x_ostimer",
         brief = "System Timer",
-        requires = { "HW_PIT0_MCF5225X", "DEV_IRQ_MCF5225X" },
+        requires = { "HW_PIT_COLDFIRE", "HW_PIT0", "DEV_IRQ_MCF5225X" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "m68k/coldfire/dev/mcf5225x/ostimer.c" },
     },
@@ -113,7 +130,7 @@ nutarch_m68k_coldfire_mcf5225x =
     {
         name = "nutarch_m68k_coldfire_mcf5225x_cwd",
         brief = "Core Watchdog",
-        requires = {"HW_CWD", "DEV_IRQ_MCF5225X" },
+        requires = {"HW_CWD_COLDFIRE", "DEV_IRQ_MCF5225X" },
         sources = { "m68k/coldfire/dev/mcf5225x/cwd.c" }
     },
 }

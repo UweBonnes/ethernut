@@ -30,33 +30,48 @@
  * For additional information see http://www.ethernut.de/
  */
 
-#ifndef _DEV_IRQREG_H_
-#error "Do not include this file directly. Use dev/irqreg.h instead!"
+#include <arch/m68k.h>
+#include <dev/irqreg.h>
+
+static int IrqCtl0(int cmd, void *param);
+static int IrqCtl1(int cmd, void *param);
+
+IRQ_HANDLER sig_I2C0 = {
+#ifdef NUT_PERFMON
+        0,
 #endif
+        NULL,
+        NULL,
+        IrqCtl0
+    };
 
-/*
- * Interrupt level & priority setup
- *
- * IMPORTANT: Interrupt level and priority combination MUST be unique
- */
-#define IPL_I2C0    (MCF_INTC_ICR_IL(2) | MCF_INTC_ICR_IP(5))
-#define IPL_I2C1    (MCF_INTC_ICR_IL(2) | MCF_INTC_ICR_IP(6))
-#define IPL_PIT0	(MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(4))
-#define IPL_PIT1	(MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(5))
-#define IPL_CWD     (MCF_INTC_ICR_IL(7) | MCF_INTC_ICR_IP(7))
+IRQ_HANDLER sig_I2C1 = {
+#ifdef NUT_PERFMON
+        0,
+#endif
+        NULL,
+        NULL,
+        IrqCtl1
+    };
 
-/*
- * Interrupt handlers
- */
-extern IRQ_HANDLER sig_I2C0;
-extern IRQ_HANDLER sig_I2C1;
-extern IRQ_HANDLER sig_PIT0;
-extern IRQ_HANDLER sig_PIT1;
-extern IRQ_HANDLER sig_CWD;
+static int IrqCtl0(int cmd, void *param)
+{
+    return IrqCtlCommon(&sig_I2C0, cmd, param, &MCF_INTC0_IMRL, &MCF_INTC0_ICR17, MCF_INTC_IMRL_INT_MASK17, IPL_I2C0);
+}
 
-/*
- * Common Interrupt control
- */
-extern int IrqCtlCommon(IRQ_HANDLER *sig_handler, int cmd, void *param, volatile uint32_t *reg_imr, volatile uint8_t *reg_icr,
-        uint32_t imr_mask, uint8_t ipl);
+static int IrqCtl1(int cmd, void *param)
+{
+    return IrqCtlCommon(&sig_I2C1, cmd, param, &MCF_INTC0_IMRH, &MCF_INTC0_ICR62, MCF_INTC_IMRH_INT_MASK62, IPL_I2C1);
+}
 
+SIGNAL(IH_I2C0)
+{
+    MCF_I2C_I2SR(0) &= ~MCF_I2C_I2SR_IIF;
+    CallHandler(&sig_I2C0);
+}
+
+SIGNAL(IH_I2C1)
+{
+    MCF_I2C_I2SR(1) &= ~MCF_I2C_I2SR_IIF;
+    CallHandler(&sig_I2C1);
+}

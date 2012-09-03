@@ -30,33 +30,36 @@
  * For additional information see http://www.ethernut.de/
  */
 
-#ifndef _DEV_IRQREG_H_
-#error "Do not include this file directly. Use dev/irqreg.h instead!"
-#endif
+#include <arch/m68k.h>
+#include <cfg/twi.h>
+#include <dev/twif.h>
 
-/*
- * Interrupt level & priority setup
+/*!
+ * \brief Processor specific Hardware Initiliaization
  *
- * IMPORTANT: Interrupt level and priority combination MUST be unique
  */
-#define IPL_I2C0    (MCF_INTC_ICR_IL(2) | MCF_INTC_ICR_IP(5))
-#define IPL_I2C1    (MCF_INTC_ICR_IL(2) | MCF_INTC_ICR_IP(6))
-#define IPL_PIT0	(MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(4))
-#define IPL_PIT1	(MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(5))
-#define IPL_CWD     (MCF_INTC_ICR_IL(7) | MCF_INTC_ICR_IP(7))
+int Mcf5I2cBus0Init(void)
+{
+    /* Enable the I2C signals */
+#if I2CBUS0_PINSET_MCF5225X == PIN_SET2
+    MCF_GPIO_PQSPAR |= MCF_GPIO_PQSPAR_QSPI_CS0_SDA0 | MCF_GPIO_PQSPAR_QSPI_CLK_SCL0;
+#else // PIN_SET1
+    MCF_GPIO_PASPAR |= MCF_GPIO_PASPAR_SDA0_SDA0 | MCF_GPIO_PASPAR_SCL0_SCL0;
+#endif
+    return 0;
+}
 
-/*
- * Interrupt handlers
+/*!
+ * \brief TWI/I2C bus structure.
  */
-extern IRQ_HANDLER sig_I2C0;
-extern IRQ_HANDLER sig_I2C1;
-extern IRQ_HANDLER sig_PIT0;
-extern IRQ_HANDLER sig_PIT1;
-extern IRQ_HANDLER sig_CWD;
-
-/*
- * Common Interrupt control
- */
-extern int IrqCtlCommon(IRQ_HANDLER *sig_handler, int cmd, void *param, volatile uint32_t *reg_imr, volatile uint8_t *reg_icr,
-        uint32_t imr_mask, uint8_t ipl);
-
+NUTTWIBUS Mcf5TwiBus0 = {
+  /*.bus_base =    */  0,               /* Bus base address. */
+  /*.bus_sig_ev =  */  &sig_I2C0,       /* Bus data and event interrupt handler. */
+  /*.bus_sig_er =  */  NULL,            /* Bus error interrupt handler. */
+  /*.bus_mutex =   */  NULL,            /* Bus lock queue. */
+  /*.bus_icb   =   */  NULL,            /* Bus Runtime Data Pointer */
+  /*.bus_dma_tx =  */  0,
+  /*.bus_dma_rx =  */  0,
+  /*.bus_initbus = */  Mcf5I2cBus0Init, /* Initialize bus controller. */
+  /*.bus_recover = */  NULL,            /* Recover bus in case a slave hangs with SCL low */
+};
