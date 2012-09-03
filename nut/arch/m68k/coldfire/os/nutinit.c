@@ -79,12 +79,52 @@ extern void *__stack_heap_size;
 #define STACK_HEAP_SIZE		((size_t)&__stack_heap_size)
 #endif
 
+#define NUT_THREAD_CONFIGSTACK  NUT_THREAD_IDLESTACK
+
+extern void main(void *arg) __attribute__ ((noreturn));
+
 /*!
- * \brief M68K Idle thread.
+ * \brief M68K Start thread.
+ *
+ * Configures OS and starts the main application thread.
+ *
+ */
+
+THREAD( NutStart, arg)
+{
+    /*
+     * Read OS configuration from non-volatile memory.
+     * This cannot be called sooner, because NonVolatile memory driver
+     * may use interrupts, timers and thread switching.
+     */
+    NutLoadConfig();
+
+#ifdef NUT_INIT_MAIN
+    /*
+     * Call custom initialization.
+     * NOTE: All OS parts are ready. Whole Nut/OS API may be used.
+     */
+    NutMainInit();
+#endif
+
+    /*
+     * Create the main application thread.
+     */
+    NutThreadCreate("main", main, 0, (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+
+    /*
+     * Terminate the thread
+     */
+    NutThreadExit();
+    while(1)
+        NutThreadYield();
+}
+
+/*!
+ * \brief Idle thread.
  *
  * Running at priority 254 in an endless loop.
  */
-extern void main(void *arg) __attribute__ ((noreturn));
 
 THREAD( NutIdle, arg)
 {
@@ -95,10 +135,11 @@ THREAD( NutIdle, arg)
      */
     MCF_INTC0_IMRL &= ~MCF_INTC_IMRL_MASKALL;
 
+#ifdef NUT_INIT_IDLE
     /*
      * Call custom initialization
+     * NOTE: context switching and timers cannot be used yet.
      */
-#ifdef NUT_INIT_IDLE
     NutIdleInit();
 #endif
 
@@ -108,19 +149,9 @@ THREAD( NutIdle, arg)
     NutTimerInit();
 
     /*
-     * Read OS configuration from non-volatile memory.
-     * NOTE:
-     *   This function should NOT be called earlier, because the non-volatile
-     *   memory driver may need interrupts and timers.
+     * Create the Start thread.
      */
-    NutLoadConfig();
-
-#ifdef NUT_INIT_MAIN
-    NutMainInit();
-#endif
-
-    /* Create the main application thread. */
-    NutThreadCreate("main", main, 0, (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    NutThreadCreate("config", NutStart, 0, (NUT_THREAD_CONFIGSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
