@@ -191,7 +191,7 @@ int At24cRead( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t add
 #endif
 
     NutEventPost( &at24cs->ee_mutex);
-    return rc;
+    return (rc >= 0) ? 0 : -1;
 }
 
 /*!
