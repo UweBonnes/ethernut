@@ -179,7 +179,7 @@ typedef long long longlong;
 #define NUTMEM_ALIGNMENT        1
 #elif defined(__CORTEX__)
 #define NUTMEM_ALIGNMENT        4
-#elif defined(__ARM__)
+#elif defined(__arm__)
 #define NUTMEM_ALIGNMENT        4
 #elif defined(__AVR32__)
 #define NUTMEM_ALIGNMENT        4
