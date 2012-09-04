@@ -33,7 +33,7 @@
 OUTPUT_ARCH(m68k)
 STARTUP(crt_common.o)
 INPUT(crt_mcf5225x.o)
-INPUT(libnutarch.a)     /* JS TODO Remove this temporary fix */
+INPUT(libnutarch.a)     /* FIXME: Remove this temporary fix */
 INPUT(crt_mcf5225x_512_rom_512_extram.o)
 ENTRY(_start)
 

@@ -19,25 +19,6 @@ nutarch_m68k_coldfire =
     },
     
     --
-    -- Runtime Initialization
-    --
-    {
-        name = "nutarch_m68k_coldfire_init",
-        brief = "Initialization",
-		description = "System startup code common for all Coldfire families:\n"..
-		              "  - C initialization\n"..
-		              "  - Vector table relocation\n"..
-		              "  - Jump to NutInit\n"..
-					  "It does not include family dependant parts. They are included in the family initialization code.",
-        sources = {	"m68k/coldfire/init/crt_common.S",
-        			"m68k/coldfire/init/crt_$(LDNAME).S",
-        			"m68k/coldfire/init/crt_common_c.c" },
-        targets = { "m68k/coldfire/init/crt_common.o",
-                    "m68k/coldfire/init/crt_$(LDNAME).o" },
-        requires = { "TOOL_CC_M68K", "TOOL_GCC"},
-    },
-    
-    --
     -- Interrupt Handler
     --
     {
