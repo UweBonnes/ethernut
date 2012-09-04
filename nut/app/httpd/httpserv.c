@@ -81,7 +81,7 @@
 /* Wether to use PHAT file system. */
 //#define USE_PHAT
 
-#if defined(__arm__)
+#if defined(__arm__) || defined(__CORTEX__)
 /* Wether we should use ASP. */
 #define USE_ASP
 /* Wether we should use SSI. */
