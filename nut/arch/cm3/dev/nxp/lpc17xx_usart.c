@@ -94,10 +94,8 @@
 #define USART_INIT_BAUTRATE USART_INITSPEED
 #endif
 
-
 #define NutUartIrqEnable    NutIrqEnable
 #define NutUartIrqDisable   NutIrqDisable
-
 
 /*!
  * \brief Receiver error flags.
@@ -166,7 +164,7 @@ static void Lpc17xxUsartDmaRxIrq(void* arg)
  *
  * \param rbf Pointer to the transmitter ring buffer.
  */
-static void Lpc17xxUsartTxReady(RINGBUF * rbf)
+static void Lpc17xxUsartTxReady(RINGBUF * rbf, uint32_t lsr)
 {
     register uint8_t *cp = rbf->rbf_tail;
 
@@ -248,19 +246,16 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
  *
  * \param rbf Pointer to the receiver ring buffer.
  */
-static void Lpc17xxUsartRxReady(RINGBUF * rbf)
+static void Lpc17xxUsartRxReady(RINGBUF * rbf, uint32_t lsr)
 {
     register size_t cnt;
     register uint8_t ch;
-    register uint32_t lsr;
-
-
 
 #ifdef UART_DMA_RXCHANNEL
     // TODO: Implement DMA support
 #endif
 
-    while ((lsr = USARTn->LSR) & UART_LSR_RDR) {
+    while (lsr & UART_LSR_RDR) {
 
         /*
          * We read the received character as early as possible to avoid overflows
@@ -326,7 +321,7 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf)
                 if((flow_control & XOFF_SENT) == 0) {
                     /* Check it TX on and space in the FIFO, then send xoff */
                     if ((CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS)) &&
-                        (USARTn->LSR & UART_LSR_THRE)) {
+                        (lsr & UART_LSR_THRE)) {
                         USARTn->THR = ASCII_XOFF;
                         flow_control |= XOFF_SENT;
                         flow_control &= ~XOFF_PENDING;
@@ -359,6 +354,9 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf)
 
         /* Update the ring buffer counter. */
         rbf->rbf_cnt = cnt;
+
+        /* update the LSR shadow variable */
+        lsr = USARTn->LSR;
     }
 }
 
@@ -372,8 +370,9 @@ static void Lpc17xxUsartInterrupt(void *arg)
     USARTDCB *dcb = (USARTDCB *) arg;
 
     /* Read line status and interrupt identification register */
-    uint32_t iir = USARTn->IIR & UART_IIR_INTID_MASK;
+    uint32_t iir   = USARTn->IIR & UART_IIR_INTID_MASK;
     uint32_t intid = iir & UART_IIR_INTID_MASK;
+    uint32_t lsr   = USARTn->LSR;
 
     if (intid == UART_IIR_INTID_RLS) {
         // TODO: Implement Line Status
@@ -381,11 +380,11 @@ static void Lpc17xxUsartInterrupt(void *arg)
     } else
     /* Test for byte received or character timeout */
     if ((intid == UART_IIR_INTID_RDA) || (intid == UART_IIR_INTID_CTI)) {
-        Lpc17xxUsartRxReady(&dcb->dcb_rx_rbf);
+        Lpc17xxUsartRxReady(&dcb->dcb_rx_rbf, lsr);
     } else
     /* Test for next byte can be transmitted (transmit holding is empty) */
     if (intid == UART_IIR_INTID_THRE) {
-        Lpc17xxUsartTxReady(&dcb->dcb_tx_rbf);
+        Lpc17xxUsartTxReady(&dcb->dcb_tx_rbf, lsr);
     }
 }
 
@@ -1147,10 +1146,7 @@ static int Lpc17xxUsartInit(void)
     USARTn->IER = 0;
 
     /* Clear FIFOs */
-    USARTn->FCR |= UART_FCR_FIFO_EN | UART_FCR_RX_RS | UART_FCR_TX_RS;
-
-    /* Disable FIFOs */
-    USARTn->FCR  = 0;
+    USARTn->FCR = UART_FCR_FIFO_EN | UART_FCR_RX_RS | UART_FCR_TX_RS | UART_FCR_TRG_LEV2;
 
     /* Dummy reading */
     while (USARTn->LSR & UART_LSR_RDR) {
@@ -1229,7 +1225,7 @@ static int Lpc17xxUsartInit(void)
 
     Lpc17xxUsartSetSpeed(USART_INIT_BAUTRATE);
     Lpc17xxUsartSetDataBits(8);
-    Lpc17xxUsartSetStopBits(2);
+    Lpc17xxUsartSetStopBits(1);
     Lpc17xxUsartSetParity(0);
 
     /* Enable additional features */
