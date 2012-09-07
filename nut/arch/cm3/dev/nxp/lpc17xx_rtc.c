@@ -73,14 +73,14 @@ struct _lpc17xx_rtc_dcb {
 static int Lpc17xxRtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     if (tm) {
-        tm->tm_mday= LPC_RTC->DOM   & RTC_DOM_MASK;
-        tm->tm_wday= LPC_RTC->DOW   & RTC_DOW_MASK;
-        tm->tm_yday= LPC_RTC->DOY   & RTC_DOY_MASK;
-        tm->tm_hour= LPC_RTC->HOUR  & RTC_HOUR_MASK;
-        tm->tm_min = LPC_RTC->MIN   & RTC_MIN_MASK;
-        tm->tm_sec = LPC_RTC->SEC   & RTC_SEC_MASK;
-        tm->tm_mon = LPC_RTC->MONTH & RTC_MONTH_MASK;
-        tm->tm_year= LPC_RTC->YEAR  & RTC_YEAR_MASK;
+        tm->tm_mday=  LPC_RTC->DOM   & RTC_DOM_MASK;
+        tm->tm_wday=  LPC_RTC->DOW   & RTC_DOW_MASK;
+        tm->tm_yday= (LPC_RTC->DOY   & RTC_DOY_MASK) - 1;
+        tm->tm_hour=  LPC_RTC->HOUR  & RTC_HOUR_MASK;
+        tm->tm_min =  LPC_RTC->MIN   & RTC_MIN_MASK;
+        tm->tm_sec =  LPC_RTC->SEC   & RTC_SEC_MASK;
+        tm->tm_mon = (LPC_RTC->MONTH & RTC_MONTH_MASK) - 1;
+        tm->tm_year= (LPC_RTC->YEAR  & RTC_YEAR_MASK) - 1900;
 
         return 0;
     } else {
@@ -99,14 +99,14 @@ static int Lpc17xxRtcGetClock(NUTRTC *rtc, struct _tm *tm)
 static int Lpc17xxRtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     if (tm) {
-        LPC_RTC->DOM  =  tm->tm_mday & RTC_DOM_MASK;
-        LPC_RTC->DOW  =  tm->tm_wday & RTC_DOW_MASK;
-        LPC_RTC->DOY  =  tm->tm_yday & RTC_DOY_MASK;
-        LPC_RTC->HOUR =  tm->tm_hour & RTC_HOUR_MASK;
-        LPC_RTC->MIN  =  tm->tm_min  & RTC_MIN_MASK;
-        LPC_RTC->SEC  =  tm->tm_sec  & RTC_SEC_MASK;
-        LPC_RTC->MONTH = tm->tm_mon  & RTC_MONTH_MASK;
-        LPC_RTC->YEAR =  tm->tm_year & RTC_YEAR_MASK;
+        LPC_RTC->DOM  =   tm->tm_mday & RTC_DOM_MASK;
+        LPC_RTC->DOW  =   tm->tm_wday & RTC_DOW_MASK;
+        LPC_RTC->DOY  =  (tm->tm_yday & RTC_DOY_MASK) + 1;
+        LPC_RTC->HOUR =   tm->tm_hour & RTC_HOUR_MASK;
+        LPC_RTC->MIN  =   tm->tm_min  & RTC_MIN_MASK;
+        LPC_RTC->SEC  =   tm->tm_sec  & RTC_SEC_MASK;
+        LPC_RTC->MONTH = (tm->tm_mon  & RTC_MONTH_MASK) + 1;
+        LPC_RTC->YEAR =  (tm->tm_year & RTC_YEAR_MASK) + 1900;
 
         return 0;
     } else {
@@ -183,7 +183,7 @@ static int Lpc17xxRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int af
             amr |= RTC_AMR_AMRDOM;
         }
         if (aflags & RTC_ALARM_MONTH) {
-            LPC_RTC->ALMON  = tm->tm_mon  & RTC_MONTH_MASK;
+            LPC_RTC->ALMON  = (tm->tm_mon  & RTC_MONTH_MASK) + 1;
             amr |= RTC_AMR_AMRMON;
         }
         if (aflags & RTC_ALARM_WDAY) {
@@ -191,11 +191,11 @@ static int Lpc17xxRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int af
             amr |= RTC_AMR_AMRDOW;
         }
         if (aflags & RTC_ALARM_YEAR) {
-            LPC_RTC->ALYEAR = tm->tm_year & RTC_YEAR_MASK;
+            LPC_RTC->ALYEAR = (tm->tm_year & RTC_YEAR_MASK) + 1900;
             amr |= RTC_AMR_AMRYEAR;
         }
         if (aflags & RTC_ALARM_YDAY) {
-            LPC_RTC->ALDOY  = tm->tm_yday & RTC_DOY_MASK;
+            LPC_RTC->ALDOY  = (tm->tm_yday & RTC_DOY_MASK) + 1;
             amr |= RTC_AMR_AMRDOY;
         }
         LPC_RTC->AMR = (~amr) & RTC_AMR_BITMASK;
@@ -242,7 +242,7 @@ static int Lpc17xxRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
         }
 
         if (amr & RTC_AMR_AMRDOY) {
-            tm->tm_yday= LPC_RTC->ALDOY  & RTC_DOY_MASK;
+            tm->tm_yday= (LPC_RTC->ALDOY  & RTC_DOY_MASK) - 1;
             *aflags |= RTC_ALARM_YDAY;
         }
 
@@ -262,12 +262,12 @@ static int Lpc17xxRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
         }
 
         if (amr & RTC_AMR_AMRMON) {
-            tm->tm_mon = LPC_RTC->ALMON & RTC_MONTH_MASK;
+            tm->tm_mon = (LPC_RTC->ALMON & RTC_MONTH_MASK) - 1;
             *aflags |= RTC_ALARM_MONTH;
         }
 
         if (amr & RTC_AMR_AMRYEAR) {
-            tm->tm_year= LPC_RTC->ALYEAR & RTC_YEAR_MASK;
+            tm->tm_year= (LPC_RTC->ALYEAR & RTC_YEAR_MASK) - 1900;
             *aflags |= RTC_ALARM_YEAR;
         }
 
@@ -338,7 +338,7 @@ static int Lpc17xxRtcInit(NUTRTC *rtc)
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCRTC);
 
     /* Clear all register to be default */
-    LPC_RTC->ILR  = 0x00;
+    LPC_RTC->ILR  = 0x03;
     LPC_RTC->CCR  = 0x00;
     LPC_RTC->CIIR = 0x00;
     LPC_RTC->AMR  = 0xFF;
