@@ -232,7 +232,7 @@ static void AvrUsartTxComplete(void *arg)
  */
 #ifdef USE_USART
 
-SIGNAL( SIG_UART_DATA ) {
+SIGNAL( SIG_AVRUART_DATA ) {
     register RINGBUF *rbf = &dcb_usart.dcb_tx_rbf;
 
 #else
@@ -350,7 +350,7 @@ static void AvrUsartTxEmpty(void *arg) {
  */
 
 #ifdef USE_USART
-SIGNAL( SIG_UART_RECV ){
+SIGNAL( SIG_AVRUART_RECV ){
     register RINGBUF *rbf = &dcb_usart.dcb_rx_rbf;
 
 #else

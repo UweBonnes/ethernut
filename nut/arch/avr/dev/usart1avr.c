@@ -418,9 +418,9 @@ NUTDEVICE devUsartAvr1 = {
 #define sig_UART_DATA   sig_UART1_DATA
 #define sig_UART_TRANS  sig_UART1_TRANS
 
-#define SIG_UART_RECV   SIG_UART1_RECV
-#define SIG_UART_DATA   SIG_UART1_DATA
-#define SIG_UART_TRANS  SIG_UART1_TRANS
+#define SIG_AVRUART_RECV   SIG_UART1_RECV
+#define SIG_AVRUART_DATA   SIG_UART1_DATA
+#define SIG_AVRUART_TRANS  SIG_UART1_TRANS
 
 #define dcb_usart   dcb_usart1
 
