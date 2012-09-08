@@ -58,7 +58,7 @@
 /*
  * Received Configure-Request.
  */
-void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     int rc = XCP_CONFACK;
@@ -212,7 +212,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Configure-Ack received.
  */
-void IpcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -383,7 +383,7 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t r
 /*
  * \brief Terminate request received.
  */
-void IpcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -405,7 +405,7 @@ void IpcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Terminate-Ack received.
  */
-void IpcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
