@@ -121,8 +121,8 @@ static int AvrCanOvrIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (unsigned int) SIG_CAN_OVERFLOW1.ir_count;
-        SIG_CAN_OVERFLOW1.ir_count = 0;
+        *ival = (unsigned int) sig_CAN_OVERRUN.ir_count;
+        sig_CAN_OVERRUN.ir_count = 0;
         break;
 #endif
     default:
