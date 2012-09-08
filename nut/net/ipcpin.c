@@ -50,10 +50,23 @@
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
 #include <netinet/in.h>
+
 /*!
  * \addtogroup xgIPCP
  */
 /*@{*/
+
+static uint16_t IpcpValidateIpReq(uint32_t *expected_ip, uint32_t *requested_ip)
+{
+    if (*expected_ip == 0 && *requested_ip) {
+        *expected_ip = *requested_ip;
+    }
+    else if (*expected_ip != *requested_ip) {
+        *requested_ip = *expected_ip;
+        return 6;
+    }
+    return 0;
+}
 
 /*
  * Received Configure-Request.
@@ -68,6 +81,7 @@ static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     uint16_t xcps;
     uint16_t len = 0;
     uint_fast8_t i;
+    uint32_t ip;
 
     switch (dcb->dcb_ipcp_state) {
     case PPPS_CLOSED:
@@ -116,11 +130,15 @@ static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
             len = xcpl;
         else {
             switch (xcpo->xcpo_type) {
-            case IPCP_COMPRESSTYPE:
-                break;
-            case IPCP_ADDR:
             case IPCP_MS_DNS1:
+                if (xcpo->xcpo_.ul == 0 && dcb->dcb_ip_dns1 == 0) {
+                    break;
+                }
             case IPCP_MS_DNS2:
+                if (xcpo->xcpo_.ul == 0 && dcb->dcb_ip_dns2 == 0) {
+                    break;
+                }
+            case IPCP_ADDR:
                 if (xcpo->xcpo_len == 6)
                     len = 0;
                 break;
@@ -132,7 +150,6 @@ static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                 xcpr->xcpo_type = xcpo->xcpo_type;
                 xcpr->xcpo_len = len;
                 for (i = 0; i < len - 2; i++)
-                    /* Bug fix by Michel Hendriks. Thanks! */
                     xcpr->xcpo_.uc[i] = xcpo->xcpo_.uc[i];
             }
             xcpr = (XCPOPT *) ((char *) xcpr + len);
@@ -157,24 +174,16 @@ static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         xcps = 0;
         len = 0;
         while (xcpl >= 2) {
+            ip = xcpo->xcpo_.ul;
             switch (xcpo->xcpo_type) {
             case IPCP_ADDR:
-                if (xcpo->xcpo_.ul)
-                    dcb->dcb_remote_ip = xcpo->xcpo_.ul;
-                else if (dcb->dcb_remote_ip == 0)
-                    len = xcpo->xcpo_len;
-                break;
-            case IPCP_COMPRESSTYPE:
-                len = 6;
-                xcpr->xcpo_.ul = 0;
+                len = IpcpValidateIpReq(&dcb->dcb_remote_ip, &ip);
                 break;
             case IPCP_MS_DNS1:
-                if (xcpo->xcpo_.ul)
-                    dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
+                len = IpcpValidateIpReq(&dcb->dcb_ip_dns1, &ip);
                 break;
             case IPCP_MS_DNS2:
-                if (xcpo->xcpo_.ul)
-                    dcb->dcb_ip_dns2 = xcpo->xcpo_.ul;
+                len = IpcpValidateIpReq(&dcb->dcb_ip_dns2, &ip);
                 break;
             }
 
@@ -182,6 +191,7 @@ static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                 if (xcpr != xcpo) {
                     xcpr->xcpo_type = xcpo->xcpo_type;
                     xcpr->xcpo_len = len;
+                    xcpr->xcpo_.ul = ip;
                 }
                 xcpr = (XCPOPT *) ((char *) xcpr + len);
                 xcps += len;
