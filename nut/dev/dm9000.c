@@ -598,7 +598,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
              * If we got an error packet or failed to allocated the
              * buffer, then silently discard the packet.
              */
-            if (fsw || (*nbp = NutNetBufAlloc(0, NBAF_DATALINK, fbc - 4)) == NULL) {
+            if (fsw || (*nbp = NutNetBufAlloc(0, NBAF_DATALINK + (2 & (NUTMEM_ALIGNMENT - 1)), fbc - 4)) == NULL) {
                 if (ni->ni_iomode == NIC_ISR_M16) {
                     fbc = (fbc + 1) / 2;
                     while (fbc--) {
