@@ -610,7 +610,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
         if (fbc > 1536) {
             ni->ni_insane = 1;
         } else {
-            *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t)fbc);
+            *nbp = NutNetBufAlloc(0, NBAF_DATALINK + 2, (uint16_t)fbc);
             if (*nbp != NULL) {
                 uint8_t *bp = (uint8_t *) (* nbp)->nb_dl.vp;
                 unsigned int len;
