@@ -146,7 +146,7 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
      * Until we get past the authentication phase, toss all packets
      * except LCP, LQR and authentication packets.
      */
-    if (dcb->dcb_auth_state != PAPCS_OPEN &&
+    if (dcb->dcb_auth == PPP_PAP && dcb->dcb_auth_state != PAPCS_OPEN &&
         !(protocol == PPP_LCP || protocol == PPP_LQR || protocol == PPP_PAP || protocol == PPP_CHAP)) {
         NutNetBufFree(nb);
         return;
