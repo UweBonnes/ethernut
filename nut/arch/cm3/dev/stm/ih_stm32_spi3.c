@@ -97,11 +97,11 @@ static int SerialPeripheral3IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
-    int enabled = IntIsEnabled(SPI3_IRQn);
+    int enabled = NVIC_GetEnableIRQ(SPI3_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(SPI3_IRQn);
+        NVIC_DisableIRQ(SPI3_IRQn);
     }
 
     switch (cmd) {
@@ -151,7 +151,7 @@ static int SerialPeripheral3IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(SPI3_IRQn);
+        NVIC_EnableIRQ(SPI3_IRQn);
     }
     return rc;
 }

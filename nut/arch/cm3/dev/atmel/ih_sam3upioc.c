@@ -94,7 +94,7 @@ static int PortIoIrqCtl(int cmd, void *param)
     /* Disable interrupt. */
     if (enabled) {
         //outr(AIC_IDCR, _BV(PIOC_ID));
-    IntDisable(INT_PIOC);
+    NVIC_DisableIRQ(INT_PIOC);
     }
 
     switch(cmd) {
@@ -166,7 +166,7 @@ static int PortIoIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(INT_PIOC);
+        NVIC_EnableIRQ(INT_PIOC);
 //        outr(AIC_IECR, _BV(PIOC_ID));
     }
     return rc;

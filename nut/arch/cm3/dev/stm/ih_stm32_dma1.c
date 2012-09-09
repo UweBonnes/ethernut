@@ -286,7 +286,7 @@ static int Dma1IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(IRQn);
+        NVIC_DisableIRQ(IRQn);
     }
 
     switch(cmd) {
@@ -337,7 +337,7 @@ static int Dma1IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(IRQn);
+        NVIC_EnableIRQ(IRQn);
     }
     return rc;
 }

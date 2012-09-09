@@ -97,11 +97,11 @@ static int MciIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(MCI_IRQn);
+    int enabled = NVIC_GetEnableIRQ(MCI_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(MCI_IRQn);
+        NVIC_DisableIRQ(MCI_IRQn);
     }
 
     switch(cmd) {
@@ -152,7 +152,7 @@ static int MciIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(MCI_IRQn);
+        NVIC_EnableIRQ(MCI_IRQn);
     }
     return rc;
 }

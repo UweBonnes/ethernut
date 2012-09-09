@@ -106,7 +106,7 @@ static int Stm32OtgUsartInit(void);
 
 static int Stm32OtgUsartDeinit(void)
 {
-    IntDisable(OTG_FS_IRQn);
+    NVIC_DisableIRQ(OTG_FS_IRQn);
     return 0;
 };
 
@@ -358,7 +358,7 @@ static int Stm32OtgUsartInit( void )
     tx_buf_cnt=0;
     //Register interrupts
     IntRegister(OTG_FS_IRQn, Stm32Otg_IRQHandler);
-    IntEnable(OTG_FS_IRQn);
+    NVIC_EnableIRQ(OTG_FS_IRQn);
     USB_Init();
 
     NutThreadCreate("otgt", OTGTimerEvent, &OTGEvent, 256);

@@ -97,11 +97,11 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
-    int enabled = IntIsEnabled(SPI2_IRQn);
+    int enabled = NVIC_GetEnableIRQ(SPI2_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(SPI2_IRQn);
+        NVIC_DisableIRQ(SPI2_IRQn);
     }
 
     switch (cmd) {
@@ -151,7 +151,7 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(SPI2_IRQn);
+        NVIC_EnableIRQ(SPI2_IRQn);
     }
     return rc;
 }

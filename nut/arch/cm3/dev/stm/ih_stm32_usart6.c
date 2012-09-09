@@ -99,11 +99,11 @@ static int Uart6IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(USART6_IRQn);
+    int enabled = NVIC_GetEnableIRQ(USART6_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(USART6_IRQn);
+        NVIC_DisableIRQ(USART6_IRQn);
     }
 
     switch(cmd) {
@@ -154,7 +154,7 @@ static int Uart6IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(USART6_IRQn);
+        NVIC_EnableIRQ(USART6_IRQn);
     }
     return rc;
 }

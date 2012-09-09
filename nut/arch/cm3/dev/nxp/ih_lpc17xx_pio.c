@@ -97,11 +97,11 @@ static int GpioIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(GPIO_IRQn);
+    int enabled = NVIC_GetEnableIRQ(GPIO_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(GPIO_IRQn);
+        NVIC_DisableIRQ(GPIO_IRQn);
     }
 
     switch(cmd) {
@@ -152,7 +152,7 @@ static int GpioIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(GPIO_IRQn);
+        NVIC_EnableIRQ(GPIO_IRQn);
     }
     return rc;
 }

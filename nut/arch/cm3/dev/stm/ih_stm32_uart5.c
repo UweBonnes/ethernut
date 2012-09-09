@@ -102,7 +102,7 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(UART5_IRQn);
+        NVIC_DisableIRQ(UART5_IRQn);
     }
 
     switch(cmd) {
@@ -153,7 +153,7 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(UART5_IRQn);
+        NVIC_EnableIRQ(UART5_IRQn);
     }
     return rc;
 }

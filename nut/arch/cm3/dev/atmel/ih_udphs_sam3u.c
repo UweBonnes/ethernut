@@ -91,7 +91,7 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-    IntDisable(INT_UDPHS);
+    NVIC_DisableIRQ(INT_UDPHS);
     }
 
     switch(cmd) {
@@ -157,7 +157,7 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(INT_UDPHS);
+        NVIC_EnableIRQ(INT_UDPHS);
     }
     return rc;
 }

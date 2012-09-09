@@ -96,11 +96,11 @@ static int EmacIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(ENET_IRQn);
+    int enabled = NVIC_GetEnableIRQ(ENET_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(ENET_IRQn);
+        NVIC_DisableIRQ(ENET_IRQn);
     }
 
     switch(cmd) {
@@ -151,7 +151,7 @@ static int EmacIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(ENET_IRQn);
+        NVIC_EnableIRQ(ENET_IRQn);
     }
     return rc;
 }

@@ -80,7 +80,7 @@ void DMA_Init(){
     for(i=0;i<sizeof(dma2_args)/sizeof(HANDLE*);i++) dma2_args[i]=NULL;
     for(i=0;i<sizeof(DMA_IRQn)/sizeof(IRQn_Type);i++){
         IntRegister(DMA_IRQn[i],DMA_Handler_IRQ);
-        IntEnable(DMA_IRQn[i]);
+        NVIC_EnableIRQ(DMA_IRQn[i]);
     };
 };
 

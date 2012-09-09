@@ -102,7 +102,7 @@ static int Uart3IrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(USART3_IRQn);
+        NVIC_DisableIRQ(USART3_IRQn);
     }
 
     switch(cmd) {
@@ -153,7 +153,7 @@ static int Uart3IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(USART3_IRQn);
+        NVIC_EnableIRQ(USART3_IRQn);
     }
     return rc;
 }

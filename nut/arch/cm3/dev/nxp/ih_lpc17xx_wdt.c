@@ -97,11 +97,11 @@ static int WdtIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(WDT_IRQn);
+    int enabled = NVIC_GetEnableIRQ(WDT_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(WDT_IRQn);
+        NVIC_DisableIRQ(WDT_IRQn);
     }
 
     switch(cmd) {
@@ -152,7 +152,7 @@ static int WdtIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(WDT_IRQn);
+        NVIC_EnableIRQ(WDT_IRQn);
     }
     return rc;
 }

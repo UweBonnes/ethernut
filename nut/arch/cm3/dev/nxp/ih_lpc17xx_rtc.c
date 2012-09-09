@@ -97,11 +97,11 @@ static int RtcIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(RTC_IRQn);
+    int enabled = NVIC_GetEnableIRQ(RTC_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(RTC_IRQn);
+        NVIC_DisableIRQ(RTC_IRQn);
     }
 
     switch(cmd) {
@@ -152,7 +152,7 @@ static int RtcIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(RTC_IRQn);
+        NVIC_EnableIRQ(RTC_IRQn);
     }
     return rc;
 }
