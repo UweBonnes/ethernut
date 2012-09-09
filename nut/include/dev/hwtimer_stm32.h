@@ -72,29 +72,29 @@
     :((timer) == (NUTTIMER6))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM6)) = 1)) \
     :((timer) == (NUTTIMER7))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM7)) = 1)) :-1
 
-#define TIM_IntEnable(timer)                            \
-    ((timer) == (NUTTIMER2))?IntEnable(TIM2_IRQn)       \
-    :((timer) == (NUTTIMER3))?IntEnable(TIM3_IRQn)      \
-    :((timer) == (NUTTIMER4))?IntEnable(TIM4_IRQn)      \
-    :((timer) == (NUTTIMER5))?IntEnable(TIM5_IRQn)      \
-    :((timer) == (NUTTIMER6))?IntEnable(TIM6_IRQn)      \
-    :((timer) == (NUTTIMER7))?IntEnable(TIM7_IRQn):0
+#define TIM_NVIC_EnableIRQ(timer)                            \
+    ((timer) == (NUTTIMER2))?NVIC_EnableIRQ(TIM2_IRQn)       \
+    :((timer) == (NUTTIMER3))?NVIC_EnableIRQ(TIM3_IRQn)      \
+    :((timer) == (NUTTIMER4))?NVIC_EnableIRQ(TIM4_IRQn)      \
+    :((timer) == (NUTTIMER5))?NVIC_EnableIRQ(TIM5_IRQn)      \
+    :((timer) == (NUTTIMER6))?NVIC_EnableIRQ(TIM6_IRQn)      \
+    :((timer) == (NUTTIMER7))?NVIC_EnableIRQ(TIM7_IRQn):0
 
-#define TIM_IntDisable(timer)                             \
-    ((timer) == (NUTTIMER2))?IntDisable(TIM2_IRQn)       \
-    :((timer) == (NUTTIMER3))?IntDisable(TIM3_IRQn)      \
-    :((timer) == (NUTTIMER4))?IntDisable(TIM4_IRQn)      \
-    :((timer) == (NUTTIMER5))?IntDisable(TIM5_IRQn)      \
-    :((timer) == (NUTTIMER6))?IntDisable(TIM6_IRQn)      \
-    :((timer) == (NUTTIMER7))?IntDisable(TIM7_IRQn):0
+#define TIM_NVIC_DisableIRQ(timer)                             \
+    ((timer) == (NUTTIMER2))?NVIC_DisableIRQ(TIM2_IRQn)       \
+    :((timer) == (NUTTIMER3))?NVIC_DisableIRQ(TIM3_IRQn)      \
+    :((timer) == (NUTTIMER4))?NVIC_DisableIRQ(TIM4_IRQn)      \
+    :((timer) == (NUTTIMER5))?NVIC_DisableIRQ(TIM5_IRQn)      \
+    :((timer) == (NUTTIMER6))?NVIC_DisableIRQ(TIM6_IRQn)      \
+    :((timer) == (NUTTIMER7))?NVIC_DisableIRQ(TIM7_IRQn):0
 
-#define TIM_IntRegister(timer, pfnHandler) \
-    ((timer) == (NUTTIMER2))?IntRegister(TIM2_IRQn, pfnHandler)         \
-    :((timer) == (NUTTIMER3))?IntRegister(TIM3_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER4))?IntRegister(TIM4_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER5))?IntRegister(TIM5_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER6))?IntRegister(TIM6_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER7))?IntRegister(TIM7_IRQn, pfnHandler):0
+#define TIM_Cortex_RegisterInt(timer, pfnHandler) \
+    ((timer) == (NUTTIMER2))?Cortex_RegisterInt(TIM2_IRQn, pfnHandler)         \
+    :((timer) == (NUTTIMER3))?Cortex_RegisterInt(TIM3_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER4))?Cortex_RegisterInt(TIM4_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER5))?Cortex_RegisterInt(TIM5_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER6))?Cortex_RegisterInt(TIM6_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER7))?Cortex_RegisterInt(TIM7_IRQn, pfnHandler):0
 
 #define TIM_ClockVal(timer) \
     ((timer) == (NUTTIMER2))?NutClockGet(NUT_HWCLK_PCLK1)         \
@@ -111,26 +111,26 @@
     :((timer) == (NUTTIMER6))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM6)) = 1)) \
     :((timer) == (NUTTIMER7))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM7)) = 1)) :-1
 
-#define TIM_IntEnable(timer)                            \
-    ((timer) == (NUTTIMER2))?IntEnable(TIM2_IRQn)       \
-    :((timer) == (NUTTIMER3))?IntEnable(TIM3_IRQn)      \
-    :((timer) == (NUTTIMER4))?IntEnable(TIM4_IRQn)      \
-    :((timer) == (NUTTIMER6))?IntEnable(TIM6_IRQn)      \
-    :((timer) == (NUTTIMER7))?IntEnable(TIM7_IRQn):0
+#define TIM_NVIC_EnableIRQ(timer)                            \
+    ((timer) == (NUTTIMER2))?NVIC_EnableIRQ(TIM2_IRQn)       \
+    :((timer) == (NUTTIMER3))?NVIC_EnableIRQ(TIM3_IRQn)      \
+    :((timer) == (NUTTIMER4))?NVIC_EnableIRQ(TIM4_IRQn)      \
+    :((timer) == (NUTTIMER6))?NVIC_EnableIRQ(TIM6_IRQn)      \
+    :((timer) == (NUTTIMER7))?NVIC_EnableIRQ(TIM7_IRQn):0
 
-#define TIM_IntDisable(timer)                            \
-    ((timer) == (NUTTIMER2))?IntDisable(TIM2_IRQn)       \
-    :((timer) == (NUTTIMER3))?IntDisable(TIM3_IRQn)      \
-    :((timer) == (NUTTIMER4))?IntDisable(TIM4_IRQn)      \
-    :((timer) == (NUTTIMER6))?IntDisable(TIM6_IRQn)      \
-    :((timer) == (NUTTIMER7))?IntDisable(TIM7_IRQn):0
+#define TIM_NVIC_DisableIRQ(timer)                            \
+    ((timer) == (NUTTIMER2))?NVIC_DisableIRQ(TIM2_IRQn)       \
+    :((timer) == (NUTTIMER3))?NVIC_DisableIRQ(TIM3_IRQn)      \
+    :((timer) == (NUTTIMER4))?NVIC_DisableIRQ(TIM4_IRQn)      \
+    :((timer) == (NUTTIMER6))?NVIC_DisableIRQ(TIM6_IRQn)      \
+    :((timer) == (NUTTIMER7))?NVIC_DisableIRQ(TIM7_IRQn):0
 
-#define TIM_IntRegister(timer, pfnHandler) \
-    ((timer) == (NUTTIMER2))?IntRegister(TIM2_IRQn, pfnHandler)         \
-    :((timer) == (NUTTIMER3))?IntRegister(TIM3_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER4))?IntRegister(TIM4_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER6))?IntRegister(TIM6_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER7))?IntRegister(TIM7_IRQn, pfnHandler):0
+#define TIM_Cortex_RegisterInt(timer, pfnHandler) \
+    ((timer) == (NUTTIMER2))?Cortex_RegisterInt(TIM2_IRQn, pfnHandler)         \
+    :((timer) == (NUTTIMER3))?Cortex_RegisterInt(TIM3_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER4))?Cortex_RegisterInt(TIM4_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER6))?Cortex_RegisterInt(TIM6_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER7))?Cortex_RegisterInt(TIM7_IRQn, pfnHandler):0
 
 #define TIM_ClockVal(timer) \
     ((timer) == (NUTTIMER2))?NutClockGet(NUT_HWCLK_PCLK1)         \
@@ -147,29 +147,29 @@
     :((timer) == (NUTTIMER6))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM6)) = 1)) \
     :((timer) == (NUTTIMER7))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM7)) = 1)) :-1
 
-#define TIM_IntEnable(timer)                            \
-    ((timer) == (NUTTIMER2))?IntEnable(TIM2_IRQn)       \
-    :((timer) == (NUTTIMER3))?IntEnable(TIM3_IRQn)      \
-    :((timer) == (NUTTIMER4))?IntEnable(TIM4_IRQn)      \
-    :((timer) == (NUTTIMER5))?IntEnable(TIM5_IRQn)      \
-    :((timer) == (NUTTIMER6))?IntEnable(TIM6_DAC_IRQn)  \
-    :((timer) == (NUTTIMER7))?IntEnable(TIM7_IRQn):0
+#define TIM_NVIC_EnableIRQ(timer)                            \
+    ((timer) == (NUTTIMER2))?NVIC_EnableIRQ(TIM2_IRQn)       \
+    :((timer) == (NUTTIMER3))?NVIC_EnableIRQ(TIM3_IRQn)      \
+    :((timer) == (NUTTIMER4))?NVIC_EnableIRQ(TIM4_IRQn)      \
+    :((timer) == (NUTTIMER5))?NVIC_EnableIRQ(TIM5_IRQn)      \
+    :((timer) == (NUTTIMER6))?NVIC_EnableIRQ(TIM6_DAC_IRQn)  \
+    :((timer) == (NUTTIMER7))?NVIC_EnableIRQ(TIM7_IRQn):0
 
-#define TIM_IntDisable(timer)                              \
-    ((timer) == (NUTTIMER2))?IntDisable(TIM2_IRQn)       \
-    :((timer) == (NUTTIMER3))?IntDisable(TIM3_IRQn)      \
-    :((timer) == (NUTTIMER4))?IntDisable(TIM4_IRQn)      \
-    :((timer) == (NUTTIMER5))?IntDisable(TIM5_IRQn)      \
-    :((timer) == (NUTTIMER6))?IntDisable(TIM6_DAC_IRQn)  \
-    :((timer) == (NUTTIMER7))?IntDisable(TIM7_IRQn):0
+#define TIM_NVIC_DisableIRQ(timer)                              \
+    ((timer) == (NUTTIMER2))?NVIC_DisableIRQ(TIM2_IRQn)       \
+    :((timer) == (NUTTIMER3))?NVIC_DisableIRQ(TIM3_IRQn)      \
+    :((timer) == (NUTTIMER4))?NVIC_DisableIRQ(TIM4_IRQn)      \
+    :((timer) == (NUTTIMER5))?NVIC_DisableIRQ(TIM5_IRQn)      \
+    :((timer) == (NUTTIMER6))?NVIC_DisableIRQ(TIM6_DAC_IRQn)  \
+    :((timer) == (NUTTIMER7))?NVIC_DisableIRQ(TIM7_IRQn):0
 
-#define TIM_IntRegister(timer, pfnHandler) \
-    ((timer) == (NUTTIMER2))?IntRegister(TIM2_IRQn, pfnHandler)         \
-    :((timer) == (NUTTIMER3))?IntRegister(TIM3_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER4))?IntRegister(TIM4_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER5))?IntRegister(TIM5_IRQn, pfnHandler)        \
-    :((timer) == (NUTTIMER6))?IntRegister(TIM6_DAC_IRQn, pfnHandler)    \
-    :((timer) == (NUTTIMER7))?IntRegister(TIM7_IRQn, pfnHandler):0
+#define TIM_Cortex_RegisterInt(timer, pfnHandler) \
+    ((timer) == (NUTTIMER2))?Cortex_RegisterInt(TIM2_IRQn, pfnHandler)         \
+    :((timer) == (NUTTIMER3))?Cortex_RegisterInt(TIM3_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER4))?Cortex_RegisterInt(TIM4_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER5))?Cortex_RegisterInt(TIM5_IRQn, pfnHandler)        \
+    :((timer) == (NUTTIMER6))?Cortex_RegisterInt(TIM6_DAC_IRQn, pfnHandler)    \
+    :((timer) == (NUTTIMER7))?Cortex_RegisterInt(TIM7_IRQn, pfnHandler):0
 
 #define TIM_ClockVal(timer) \
     ((timer) == (NUTTIMER2))?NutClockGet(NUT_HWCLK_PCLK1)         \
