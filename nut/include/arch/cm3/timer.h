@@ -65,8 +65,8 @@
 #include <cfg/clock.h>
 #include <compiler.h> // For deprecated warning.
 
-#define NutEnableTimerIrq()     IntEnable(SysTick_IRQn)
-#define NutDisableTimerIrq()    IntDisable(SysTick_IRQn)
+#define NutEnableTimerIrq()     SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk
+#define NutDisableTimerIrq()    SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk
 
 #if defined(MCU_STM32)
 #if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2)|| defined(MCU_STM32F4)
