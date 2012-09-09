@@ -99,7 +99,7 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
         /* Set the vector. */
     IntRegister(INT_UDPHS,(void*)UsbHighSpeedIrqEntry);
         /* Initialize with defined priority. */
-    IntPrioritySet(INT_UDPHS,NUT_IRQPRI_UDPHS);
+    NVIC_SetPriority(INT_UDPHS,NUT_IRQPRI_UDPHS);
     /* set as edge triggered */ //и как? оно делается попиново
     //outr(AT91C_PIOA_ESR,_BV(AT91C_ID_PIOA);
         /* Clear interrupt */
@@ -139,10 +139,10 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
         }
         break;*/
     case NUT_IRQCTL_GETPRIO:
-    *ival = IntPriorityGet(INT_UDPHS);
+    *ival = NVIC_GetPriority(INT_UDPHS);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(INT_UDPHS, *ival);
+    NVIC_SetPriority(INT_UDPHS, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

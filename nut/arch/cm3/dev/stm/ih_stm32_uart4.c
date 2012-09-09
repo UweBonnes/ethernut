@@ -110,7 +110,7 @@ static int Uart4IrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(UART4_IRQn,Uart4IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(UART4_IRQn,NUT_IRQPRI_UART4);
+        NVIC_SetPriority(UART4_IRQn,NUT_IRQPRI_UART4);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(UART4_IRQn);
         break;
@@ -135,10 +135,10 @@ static int Uart4IrqCtl(int cmd, void *param)
             rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(UART4_IRQn);
+        *ival = NVIC_GetPriority(UART4_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(UART4_IRQn,*ival);
+    NVIC_SetPriority(UART4_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

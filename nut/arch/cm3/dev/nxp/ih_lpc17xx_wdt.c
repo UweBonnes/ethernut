@@ -109,7 +109,7 @@ static int WdtIrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(WDT_IRQn, WdtIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(WDT_IRQn, NUT_IRQPRI_WDT);
+        NVIC_SetPriority(WDT_IRQn, NUT_IRQPRI_WDT);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(WDT_IRQn);
         break;
@@ -134,10 +134,10 @@ static int WdtIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(WDT_IRQn);
+        *ival = NVIC_GetPriority(WDT_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(WDT_IRQn, *ival);
+        NVIC_SetPriority(WDT_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

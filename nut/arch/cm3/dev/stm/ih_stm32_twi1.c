@@ -147,9 +147,9 @@ static int TwoWireIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *par
         /* Set the vector. */
         IntRegister(IRQn, ifunc);
         /* Initialize Event IRQ with defined priority. */
-        IntPrioritySet(IRQn, NUT_IRQPRI_TWI);
+        NVIC_SetPriority(IRQn, NUT_IRQPRI_TWI);
         /* Initialize Error IRQ with defined priority. */
-        IntPrioritySet(IRQn+1, NUT_IRQPRI_TWI+1);
+        NVIC_SetPriority(IRQn+1, NUT_IRQPRI_TWI+1);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(IRQn);
         break;

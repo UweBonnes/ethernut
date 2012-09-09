@@ -110,7 +110,7 @@ static int Uart2IrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(UART2_IRQn, Uart2IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(UART2_IRQn, NUT_IRQPRI_UART2);
+        NVIC_SetPriority(UART2_IRQn, NUT_IRQPRI_UART2);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(UART2_IRQn);
         break;
@@ -135,10 +135,10 @@ static int Uart2IrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(UART2_IRQn);
+        *ival = NVIC_GetPriority(UART2_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(UART2_IRQn, *ival);
+        NVIC_SetPriority(UART2_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

@@ -109,7 +109,7 @@ static int SerialPeripheral1IrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(SPI1_IRQn, SerialPeripheral1IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(SPI1_IRQn, NUT_IRQPRI_SPI1);
+        NVIC_SetPriority(SPI1_IRQn, NUT_IRQPRI_SPI1);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(SPI1_IRQn);
         break;
@@ -133,10 +133,10 @@ static int SerialPeripheral1IrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(SPI1_IRQn);
+        *ival = NVIC_GetPriority(SPI1_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(SPI1_IRQn,*ival);
+        NVIC_SetPriority(SPI1_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

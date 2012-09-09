@@ -228,7 +228,7 @@ static int CanIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *param)
         /* Set the vector. */
         IntRegister(IRQn, ifunc);
         /* Initialize with defined priority. */
-        IntPrioritySet(IRQn, NUT_IRQPRI_CAN1);
+        NVIC_SetPriority(IRQn, NUT_IRQPRI_CAN1);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(IRQn);
         break;

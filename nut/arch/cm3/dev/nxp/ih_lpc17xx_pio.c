@@ -109,7 +109,7 @@ static int GpioIrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(GPIO_IRQn, GpioIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(GPIO_IRQn, NUT_IRQPRI_GPIO);
+        NVIC_SetPriority(GPIO_IRQn, NUT_IRQPRI_GPIO);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(GPIO_IRQn);
         break;
@@ -134,10 +134,10 @@ static int GpioIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(GPIO_IRQn);
+        *ival = NVIC_GetPriority(GPIO_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(GPIO_IRQn, *ival);
+        NVIC_SetPriority(GPIO_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

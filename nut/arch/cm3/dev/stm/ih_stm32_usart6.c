@@ -111,7 +111,7 @@ static int Uart6IrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(USART6_IRQn, Uart6IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(USART6_IRQn, NUT_IRQPRI_UART6);
+        NVIC_SetPriority(USART6_IRQn, NUT_IRQPRI_UART6);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(USART6_IRQn);
         break;
@@ -136,10 +136,10 @@ static int Uart6IrqCtl(int cmd, void *param)
             rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(USART6_IRQn);
+        *ival = NVIC_GetPriority(USART6_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(USART6_IRQn,*ival);
+        NVIC_SetPriority(USART6_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

@@ -108,7 +108,7 @@ static int EmacIrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(ETH_IRQn, EmacIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(ETH_IRQn, NUT_IRQPRI_EMAC);
+        NVIC_SetPriority(ETH_IRQn, NUT_IRQPRI_EMAC);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(ETH_IRQn);
         break;
@@ -132,10 +132,10 @@ static int EmacIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(ETH_IRQn);
+        *ival = NVIC_GetPriority(ETH_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(ETH_IRQn,*ival);
+        NVIC_SetPriority(ETH_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

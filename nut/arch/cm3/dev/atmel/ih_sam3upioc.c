@@ -106,7 +106,7 @@ static int PortIoIrqCtl(int cmd, void *param)
         /* Clear interrupt */
         //outr(AIC_ICCR, _BV(PIOC_ID));
     IntRegister(INT_PIOC,PortIoIrqEntry);
-    IntPrioritySet(INT_PIOC,NUT_IRQPRI_PIOC);
+    NVIC_SetPriority(INT_PIOC,NUT_IRQPRI_PIOC);
     /* set as edge triggered */ //и как? оно делается попиново
     //outr(AT91C_PIOC_ESR,_BV(AT91C_ID_PIOC);
     /* clear interrupt */
@@ -147,10 +147,10 @@ static int PortIoIrqCtl(int cmd, void *param)
         break;*/
     case NUT_IRQCTL_GETPRIO:
         //*ival = inr(AIC_SMR(PIOC_ID)) & AIC_PRIOR;
-    *ival = IntPriorityGet(INT_PIOC);
+    *ival = NVIC_GetPriority(INT_PIOC);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(INT_PIOC, *ival);
+    NVIC_SetPriority(INT_PIOC, *ival);
         //outr(AIC_SMR(PIOC_ID), (inr(AIC_SMR(PIOC_ID)) & ~AIC_PRIOR) | *ival);
         break;
 #ifdef NUT_PERFMON

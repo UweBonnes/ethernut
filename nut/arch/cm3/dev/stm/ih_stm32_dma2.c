@@ -356,7 +356,7 @@ static int Dma2IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
         /* Set the vector. */
         IntRegister(IRQn, irqfn);
         /* Initialize with defined priority. */
-        IntPrioritySet(IRQn, NUT_IRQPRI_DMA2);
+        NVIC_SetPriority(IRQn, NUT_IRQPRI_DMA2);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(IRQn);
         break;
@@ -381,10 +381,10 @@ static int Dma2IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
             rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(IRQn);
+        *ival = NVIC_GetPriority(IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(IRQn,*ival);
+        NVIC_SetPriority(IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

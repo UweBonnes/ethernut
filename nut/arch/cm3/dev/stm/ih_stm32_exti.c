@@ -76,7 +76,7 @@ static int InterruptCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(THIS_IRQn, THIS_ENTRY);
         /* Initialize with defined priority. */
-        IntPrioritySet(THIS_IRQn, THIS_IRQPRI);
+        NVIC_SetPriority(THIS_IRQn, THIS_IRQPRI);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(THIS_IRQn);
         break;

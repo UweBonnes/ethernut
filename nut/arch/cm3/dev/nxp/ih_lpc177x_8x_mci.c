@@ -109,7 +109,7 @@ static int MciIrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(MCI_IRQn, MciIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(MCI_IRQn, NUT_IRQPRI_MCI);
+        NVIC_SetPriority(MCI_IRQn, NUT_IRQPRI_MCI);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(MCI_IRQn);
         break;
@@ -134,10 +134,10 @@ static int MciIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(MCI_IRQn);
+        *ival = NVIC_GetPriority(MCI_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(MCI_IRQn, *ival);
+        NVIC_SetPriority(MCI_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

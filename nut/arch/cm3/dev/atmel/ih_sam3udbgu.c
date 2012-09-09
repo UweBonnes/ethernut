@@ -104,7 +104,7 @@ static int UartIrqCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         IntRegister(INT_UART,(void*)UartIrqEntry);
-        IntPrioritySet(INT_UART,NUT_IRQPRI_UART);
+        NVIC_SetPriority(INT_UART,NUT_IRQPRI_UART);
     outr(AT91C_NVIC_ICPR,_BV(AT91C_ID_DBGU));
         break;
     case NUT_IRQCTL_STATUS:
@@ -122,10 +122,10 @@ static int UartIrqCtl(int cmd, void *param)
         enabled = 0;
         break;
     case NUT_IRQCTL_GETPRIO:
-    *ival = IntPriorityGet(INT_UART);
+    *ival = NVIC_GetPriority(INT_UART);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(INT_UART, *ival);
+    NVIC_SetPriority(INT_UART, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:

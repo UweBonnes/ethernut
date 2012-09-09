@@ -109,7 +109,7 @@ static int RtcIrqCtl(int cmd, void *param)
         /* Set the vector. */
         IntRegister(RTC_IRQn, RtcIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(RTC_IRQn, NUT_IRQPRI_RTC);
+        NVIC_SetPriority(RTC_IRQn, NUT_IRQPRI_RTC);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(RTC_IRQn);
         break;
@@ -134,10 +134,10 @@ static int RtcIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(RTC_IRQn);
+        *ival = NVIC_GetPriority(RTC_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(RTC_IRQn, *ival);
+        NVIC_SetPriority(RTC_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
