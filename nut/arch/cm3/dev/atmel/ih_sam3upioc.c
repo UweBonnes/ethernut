@@ -105,7 +105,7 @@ static int PortIoIrqCtl(int cmd, void *param)
         //outr(AIC_SMR(PIOC_ID), AIC_SRCTYPE_INT_EDGE_TRIGGERED | NUT_IRQPRI_PIOC);
         /* Clear interrupt */
         //outr(AIC_ICCR, _BV(PIOC_ID));
-    IntRegister(INT_PIOC,PortIoIrqEntry);
+    Cortex_RegisterInt(INT_PIOC,PortIoIrqEntry);
     NVIC_SetPriority(INT_PIOC,NUT_IRQPRI_PIOC);
     /* set as edge triggered */ //и как? оно делается попиново
     //outr(AT91C_PIOC_ESR,_BV(AT91C_ID_PIOC);

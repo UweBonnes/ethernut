@@ -107,7 +107,7 @@ static int GpioIrqCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(GPIO_IRQn, GpioIrqEntry);
+        Cortex_RegisterInt(GPIO_IRQn, GpioIrqEntry);
         /* Initialize with defined priority. */
         NVIC_SetPriority(GPIO_IRQn, NUT_IRQPRI_GPIO);
         /* Clear interrupt */

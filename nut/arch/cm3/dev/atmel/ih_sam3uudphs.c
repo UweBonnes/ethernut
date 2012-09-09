@@ -97,7 +97,7 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-    IntRegister(INT_UDPHS,(void*)UsbHighSpeedIrqEntry);
+    Cortex_RegisterInt(INT_UDPHS,(void*)UsbHighSpeedIrqEntry);
         /* Initialize with defined priority. */
     NVIC_SetPriority(INT_UDPHS,NUT_IRQPRI_UDPHS);
     /* set as edge triggered */ //и как? оно делается попиново

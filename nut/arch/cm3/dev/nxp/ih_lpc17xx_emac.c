@@ -106,7 +106,7 @@ static int EmacIrqCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(ENET_IRQn, EmacIrqEntry);
+        Cortex_RegisterInt(ENET_IRQn, EmacIrqEntry);
         /* Initialize with defined priority. */
         NVIC_SetPriority(ENET_IRQn, NUT_IRQPRI_EMAC);
         /* Clear interrupt */

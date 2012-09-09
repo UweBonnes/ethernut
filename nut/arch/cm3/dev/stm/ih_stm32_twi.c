@@ -264,7 +264,7 @@ static int TwoWireIrqCtl(IRQn_Type interrupt,void (*pfnHandler)(void*),IRQ_HANDL
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-    IntRegister(interrupt,pfnHandler);
+    Cortex_RegisterInt(interrupt,pfnHandler);
         /* Clear interrupt */
     NVIC_ClearPendingIRQ(interrupt);
         break;

@@ -107,7 +107,7 @@ static int SerialPeripheral1IrqCtl(int cmd, void *param)
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(SPI1_IRQn, SerialPeripheral1IrqEntry);
+        Cortex_RegisterInt(SPI1_IRQn, SerialPeripheral1IrqEntry);
         /* Initialize with defined priority. */
         NVIC_SetPriority(SPI1_IRQn, NUT_IRQPRI_SPI1);
         /* Clear interrupt */

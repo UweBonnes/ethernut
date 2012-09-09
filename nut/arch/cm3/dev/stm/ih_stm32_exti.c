@@ -74,7 +74,7 @@ static int InterruptCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(THIS_IRQn, THIS_ENTRY);
+        Cortex_RegisterInt(THIS_IRQn, THIS_ENTRY);
         /* Initialize with defined priority. */
         NVIC_SetPriority(THIS_IRQn, THIS_IRQPRI);
         /* Clear interrupt */

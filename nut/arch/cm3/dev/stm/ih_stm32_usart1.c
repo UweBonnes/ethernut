@@ -108,7 +108,7 @@ static int Uart1IrqCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(USART1_IRQn, Uart1IrqEntry);
+        Cortex_RegisterInt(USART1_IRQn, Uart1IrqEntry);
         /* Initialize with defined priority. */
         NVIC_SetPriority(USART1_IRQn, NUT_IRQPRI_UART1);
         /* Clear interrupt */

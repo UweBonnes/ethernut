@@ -354,7 +354,7 @@ static int Dma2IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(IRQn, irqfn);
+        Cortex_RegisterInt(IRQn, irqfn);
         /* Initialize with defined priority. */
         NVIC_SetPriority(IRQn, NUT_IRQPRI_DMA2);
         /* Clear interrupt */

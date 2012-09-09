@@ -107,7 +107,7 @@ static int MciIrqCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(MCI_IRQn, MciIrqEntry);
+        Cortex_RegisterInt(MCI_IRQn, MciIrqEntry);
         /* Initialize with defined priority. */
         NVIC_SetPriority(MCI_IRQn, NUT_IRQPRI_MCI);
         /* Clear interrupt */

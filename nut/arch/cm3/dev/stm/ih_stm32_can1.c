@@ -226,7 +226,7 @@ static int CanIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(IRQn, ifunc);
+        Cortex_RegisterInt(IRQn, ifunc);
         /* Initialize with defined priority. */
         NVIC_SetPriority(IRQn, NUT_IRQPRI_CAN1);
         /* Clear interrupt */

@@ -357,7 +357,7 @@ static int Stm32OtgUsartInit( void )
     //tx_buffer=malloc( TX_BUF_SIZE );
     tx_buf_cnt=0;
     //Register interrupts
-    IntRegister(OTG_FS_IRQn, Stm32Otg_IRQHandler);
+    Cortex_RegisterInt(OTG_FS_IRQn, Stm32Otg_IRQHandler);
     NVIC_EnableIRQ(OTG_FS_IRQn);
     USB_Init();
 

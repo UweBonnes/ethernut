@@ -145,7 +145,7 @@ static int TwoWireIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *par
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(IRQn, ifunc);
+        Cortex_RegisterInt(IRQn, ifunc);
         /* Initialize Event IRQ with defined priority. */
         NVIC_SetPriority(IRQn, NUT_IRQPRI_TWI);
         /* Initialize Error IRQ with defined priority. */

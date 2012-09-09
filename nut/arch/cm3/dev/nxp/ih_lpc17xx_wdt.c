@@ -107,7 +107,7 @@ static int WdtIrqCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(WDT_IRQn, WdtIrqEntry);
+        Cortex_RegisterInt(WDT_IRQn, WdtIrqEntry);
         /* Initialize with defined priority. */
         NVIC_SetPriority(WDT_IRQn, NUT_IRQPRI_WDT);
         /* Clear interrupt */

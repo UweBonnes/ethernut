@@ -103,7 +103,7 @@ static int UartIrqCtl(int cmd, void *param)
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
-        IntRegister(INT_UART,(void*)UartIrqEntry);
+        Cortex_RegisterInt(INT_UART,(void*)UartIrqEntry);
         NVIC_SetPriority(INT_UART,NUT_IRQPRI_UART);
     outr(AT91C_NVIC_ICPR,_BV(AT91C_ID_DBGU));
         break;
