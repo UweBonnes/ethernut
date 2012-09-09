@@ -518,7 +518,7 @@ static void Lpc17xxEmacInterrupt(void *arg)
     /* EMAC Ethernet Controller Interrupt function. */
 
     /* Get EMAC interrupt status */
-    while ((isr = (LPC_EMAC->IntStatus & LPC_EMAC->NVIC_EnableIRQ)) != 0) {
+    while ((isr = (LPC_EMAC->IntStatus & LPC_EMAC->IntEnable)) != 0) {
         /* Clear interrupt status */
         LPC_EMAC->IntClear = isr;
 
@@ -569,7 +569,7 @@ static void Lpc17xxEmacInterrupt(void *arg)
 #endif
 
         if (isr & EMAC_INT_RX_DONE) {
-            LPC_EMAC->NVIC_EnableIRQ &= ~(EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE);
+            LPC_EMAC->IntEnable &= ~(EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE);
             NutEventPostFromIrq(&ni->ni_rx_rdy);
         }
 
@@ -804,7 +804,7 @@ THREAD(Lpc17xxEmacRxThread, arg)
     NutThreadSetPriority(9);
 
     /* Enable receive and transmit interrupts. */
-    LPC_EMAC->NVIC_EnableIRQ |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN |
+    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN |
                            EMAC_INT_RX_DONE | EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR |
                            EMAC_INT_TX_FIN | EMAC_INT_TX_DONE;
 
@@ -830,7 +830,7 @@ THREAD(Lpc17xxEmacRxThread, arg)
                 (*ifn->if_recv) (dev, nb);
             }
         }
-        LPC_EMAC->NVIC_EnableIRQ |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE;
+        LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE;
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
