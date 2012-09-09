@@ -144,11 +144,11 @@ void NutRegisterTimer(void (*handler)(void*))
      * vectors from flash to ram.
      * Then it programs the timer and starts it.
      */
-    IntRegister(SysTick_IRQn, handler);
+    Cortex_RegisterInt(SysTick_IRQn, handler);
     /* Program frequency and enable is done by CMSIS function */
     SysTick_Config(SysCtlClockGet()/NUT_TICK_FREQ);
 
-//    SysTickIntRegister(handler);
+//    SysTickCortex_RegisterInt(handler);
 }
 
 /*!
