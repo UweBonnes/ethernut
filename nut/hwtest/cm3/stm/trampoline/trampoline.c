@@ -43,7 +43,7 @@
  */
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/coreCM3.h>
+#include <arch/cm3/cortexM3.h>
 #if defined(MCU_STM32F4)
 #include <arch/cm3/core_cmFunc.h>
 #endif
