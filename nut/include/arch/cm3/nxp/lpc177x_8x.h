@@ -93,9 +93,9 @@ typedef enum IRQn
   LCD_IRQn                      = 37,       /*!< LCD Interrupt                                    */
   GPIO_IRQn                     = 38,       /*!< GPIO Interrupt                                   */
   PWM0_IRQn                     = 39,       /*!< PWM0 Interrupt                                   */
-  EEPROM_IRQn                   = 40,       /*!< EEPROM Interrupt                           */
+  EEPROM_IRQn                   = 40,       /*!< EEPROM Interrupt                                 */
+  IRQn_MAX                                  /*!< Total number of interrupts                       */
 } IRQn_Type;
-
 
 /*
  * ==========================================================================

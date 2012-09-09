@@ -230,7 +230,7 @@ typedef enum IRQn
   USB_FS_WKUP_IRQn            = 42,     /*!< USB FS WakeUp from suspend through EXTI Line Interrupt  */
   TIM6_IRQn                   = 43,     /*!< TIM6 global Interrupt                                   */
 #ifdef STM32L1XX_MD
-  TIM7_IRQn                   = 44      /*!< TIM7 global Interrupt                                   */
+  TIM7_IRQn                   = 44,     /*!< TIM7 global Interrupt                                   */
 #endif
 
 #ifdef STM32L1XX_MDP
@@ -243,7 +243,7 @@ typedef enum IRQn
   DMA2_Channel4_IRQn          = 53,     /*!< DMA2 Channel 4 global Interrupt                         */
   DMA2_Channel5_IRQn          = 54,     /*!< DMA2 Channel 5 global Interrupt                         */
   AES_IRQn                    = 55,     /*!< AES global Interrupt                                    */
-  COMP_ACQ_IRQn               = 56      /*!< Comparator Channel Acquisition global Interrupt         */
+  COMP_ACQ_IRQn               = 56,     /*!< Comparator Channel Acquisition global Interrupt         */
 #endif
 
 #ifdef STM32L1XX_HD
@@ -259,8 +259,9 @@ typedef enum IRQn
   DMA2_Channel4_IRQn          = 53,     /*!< DMA2 Channel 4 global Interrupt                         */
   DMA2_Channel5_IRQn          = 54,     /*!< DMA2 Channel 5 global Interrupt                         */
   AES_IRQn                    = 55,     /*!< AES global Interrupt                                    */
-  COMP_ACQ_IRQn               = 56      /*!< Comparator Channel Acquisition global Interrupt         */
+  COMP_ACQ_IRQn               = 56,     /*!< Comparator Channel Acquisition global Interrupt         */
 #endif
+  IRQn_MAX	           		/*!< Total number of interrupts                              */
 } IRQn_Type;
 
 /**
