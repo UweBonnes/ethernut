@@ -862,6 +862,29 @@ nutarch_arm =
 --        },
     },
     {
+        name = "nutarch_arm_usartcb_at91ctl",
+        brief = "USART Hardware Control",
+        requires = { "HW_UART_AT91" },
+        provides = { "DEV_UART_HWCTRL" },
+        sources = { "arm/dev/atmel/usart_at91ctl.c" }
+    },
+    {
+        name = "nutarch_arm_usartcb_at91npl",
+        brief = "USART NPL Support",
+        requires = { "DEV_UART_HWCTRL", "DEV_NPL", "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT" },
+        provides = { "DEV_UART_CBRXTX" },
+        sources = {
+            "arm/dev/atmel/usart_cb_at91npl.c",
+            "arm/dev/atmel/usart0cb_at91npl.c"
+        }
+    },
+    {
+        name = "nutarch_arm_usart0cb_at91npl",
+        brief = "USART0 NPL",
+        requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
+        sources = { "arm/dev/atmel/usart0cb_at91npl.c" }
+    },
+    {
         name = "nutarch_arm_ahdlc",
         brief = "AHDLC Protocol",
         description = "HDLC driver, required for PPP. This is an EXPERIMENTAL driver!",

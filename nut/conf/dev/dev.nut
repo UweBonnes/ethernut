@@ -265,6 +265,14 @@ nutdev =
         }
     },
     {
+        name = "nutdev_usartcb",
+        brief = "USART Driver Framework (Experimental)",
+        description = "Experimental USART driver framework.",
+        requires = { "CRT_HEAPMEM", "DEV_UART_CBRXTX", "DEV_CIRCBUF" },
+        provides = { "DEV_UART_GENERIC", "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "usart_cb.c" },
+    },
+    {
         name = "nutdev_usart",
         brief = "USART Driver Framework",
         description = "Generic USART driver framework.",
@@ -773,6 +781,12 @@ nutdev =
         brief = "Terminal Emulation",
         requires = { "CRT_HEAPMEM" },
         sources = { "term.c" }
+    },
+    {
+        name = "nutdev_circbuf",
+        brief = "Circular Buffers",
+        provides = { "DEV_CIRCBUF" },
+        sources = { "circbuff.c" }
     },
     {
         name = "nutdev_netbuf",
