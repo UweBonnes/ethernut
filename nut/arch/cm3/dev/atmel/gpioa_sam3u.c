@@ -34,7 +34,7 @@
  * $Id$
  */
 
-#include <arch/arm.h>
+#include <arch/cm3.h>
 
 #include <stdlib.h>
 #include <string.h>

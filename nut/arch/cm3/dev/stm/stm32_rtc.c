@@ -66,9 +66,9 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <dev/rtc.h>
-#include <arch/arm/stm32f10x_rtc.h>
-#include <arch/arm/stm32f10x_rcc.h>
-#include <arch/arm/stm32f10x_pwr.h>
+#include <arch/cm3/stm/stm32f10x_rtc.h>
+#include <arch/cm3/stm/stm32f10x_rcc.h>
+#include <arch/cm3/stm/stm32f10x_pwr.h>
 #include <time.h>
 
 #include <stdlib.h>

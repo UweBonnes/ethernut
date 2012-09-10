@@ -45,7 +45,7 @@
  *
  */
 
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <dev/irqreg.h>
 
 #include <sys/event.h>
@@ -55,8 +55,8 @@
 #include <sys/heap.h>
 
 #include <dev/irqreg.h>
-#include <arch/arm/stm32f10x_rcc.h>
-#include <arch/arm/stm32f10x_adc.h>
+#include <arch/cm3/stm/stm32f10x_rcc.h>
+#include <arch/cm3/stm/stm32f10x_adc.h>
 
 /*!
  * \addtogroup xgStm32Adc
