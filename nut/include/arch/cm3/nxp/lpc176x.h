@@ -84,6 +84,8 @@ typedef enum IRQn
   IRQn_MAX                                  /*!< Total number of interrupts                       */
 } IRQn_Type;
 
+#define GPIO_IRQn   EINT3_IRQn              /*!< External interrupt 3 is shared with the GPIO interrupts */
+
 /*
  * ==========================================================================
  * ----------- Processor and Core Peripheral Section ------------------------
