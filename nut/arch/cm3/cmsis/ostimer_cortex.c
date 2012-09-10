@@ -146,8 +146,6 @@ void NutRegisterTimer(void (*handler)(void*))
     Cortex_RegisterInt(SysTick_IRQn, handler);
     /* Program frequency and enable is done by CMSIS function */
     SysTick_Config(SysCtlClockGet()/NUT_TICK_FREQ);
-
-//    SysTickCortex_RegisterInt(handler);
 }
 
 /*!
@@ -193,25 +191,6 @@ uint32_t NutArchClockGet(int idx)
 #endif
     return clock;
 }
-
-/*!
- * \brief Return the CPU clock in Hertz.
- *
- * On several AT91 CPUs the processor clock may differ from the clock
- * driving the peripherals. In this case At91GetMasterClock() will
- * provide the correct master clock.
- *
- * \return CPU clock frequency in Hertz.
- */
-
-/*u_long NutGetCpuClock(void)
-{
-#if defined(NUT_CPU_FREQ)
-    return NUT_CPU_FREQ;
-#else
-    return SysCtlClockGet();
-#endif
-}*/
 
 /*!
  * \brief Return the number of system ticks per second.
