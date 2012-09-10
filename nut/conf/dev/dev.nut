@@ -4891,6 +4891,13 @@ nutdev =
     -- WAN Drivers.
     --
     {
+        name = "nutdev_ppp_hdlc",
+        brief = "PPP HDLC Driver",
+        requires = { "DEV_UART_GENERIC", "NUT_TIMER" },
+        provides = { "PROTO_HDLC" },
+        sources = { "ppp_hdlc.c" }
+    },
+    {
         name = "nutdev_ppp",
         brief = "PPP Driver",
         requires = { "PROTO_HDLC", "NUT_TIMER", "PROTO_HDLC" },
