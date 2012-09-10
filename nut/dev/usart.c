@@ -809,11 +809,6 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETFLOWCONTROL:
         lv = dcb->dcb_modeflags;
-        if (bv) {
-            lv |= USART_MF_XONXOFF;
-        } else {
-            lv &= ~USART_MF_XONXOFF;
-        }
         rc = (dcb->dcb_set_flow_control) (lv);
         if (rc == 0) {
             dcb->dcb_modeflags = lv;
