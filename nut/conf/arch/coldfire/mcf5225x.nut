@@ -1,3 +1,16 @@
+            
+mcf5225x_i2c0_scl_pins = { "PAS0", "PQS2" }
+mcf5225x_i2c0_sda_pins = { "PAS1", "PQS3" }
+
+mcf5225x_i2c0_scl_pins_descr = "Choose I2C 0 SCL pin:\n\tPAS0 (I2C_SCL0)\n\tPQS2 (QSPI_CLK)"
+mcf5225x_i2c0_sda_pins_descr = "Choose I2C 0 SDA pin:\n\tPAS1 (I2C_SDA0)\n\tPQS3 (QSPI_CS0)"
+
+mcf5225x_i2c1_scl_pins = { "PQS0", "PUB0", "PUC3", "PTH3" }
+mcf5225x_i2c1_sda_pins = { "PQS1", "PUB1", "PUC2", "PTH2" }
+
+mcf5225x_i2c1_scl_pins_descr = "Choose I2C 1 SCL pin:\n\tPQS0 (QSPI_DOUT)\n\tPUB0 (UTXD1)\n\tPUC3 (UCTS2)\n\tPTH3 (FB_D5)"
+mcf5225x_i2c1_sda_pins_descr = "Choose I2C 1 SDL pin:\n\tPQS1 (QSPI_IN)  \n\tPUB1 (URXD1)\n\tPUC2 (URTS2)\n\tPTH2 (FB_D4)"
+
 nutarch_m68k_coldfire_mcf5225x =
 {
    	--
@@ -7,6 +20,7 @@ nutarch_m68k_coldfire_mcf5225x =
         name = "nutarch_m68k_coldfire_mcf5225x_family",
         brief = "Family",
         provides = {
+                "HW_GPIO_COLDFIRE",
 	        	"HW_UART_COLDFIRE",
 	        	"HW_PIT_COLDFIRE",
 	        	"HW_CWD_COLDFIRE",
@@ -134,11 +148,16 @@ nutarch_m68k_coldfire_mcf5225x =
         name = "nutarch_m68k_coldfire_mcf5225x_ihndlr",
         brief = "Interrupt Handler",
         description = "Peripheral interrupt handlers for MCF5225X family.",
-        provides = { "DEV_IRQ_MCF5225X" },
+        provides = { "DEV_IRQ_PIT0",
+                     "DEV_IRQ_PIT1",
+                     "DEV_IRQ_CWD",
+                     "DEV_IRQ_I2C0",
+                     "DEV_IRQ_I2C1",
+                   },
         sources = { "m68k/coldfire/dev/mcf5225x/ih/ih_common.c",
         			"m68k/coldfire/dev/mcf5225x/ih/ih_pit.c",
         			"m68k/coldfire/dev/mcf5225x/ih/ih_cwd.c",
-        			"m68k/coldfire/dev/mcf5225x/ih/ih_i2c.c"}
+        			"m68k/coldfire/dev/mcf5225x/ih/ih_i2c.c"},
     },
 
     --
@@ -147,7 +166,7 @@ nutarch_m68k_coldfire_mcf5225x =
     {
         name = "nutarch_m68k_coldfire_mcf5225x_ostimer",
         brief = "System Timer",
-        requires = { "HW_PIT_COLDFIRE", "HW_PIT0", "DEV_IRQ_MCF5225X" },
+        requires = { "HW_PIT_COLDFIRE", "HW_PIT0", "DEV_IRQ_PIT0" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "m68k/coldfire/dev/mcf5225x/ostimer.c" },
     },
@@ -157,7 +176,6 @@ nutarch_m68k_coldfire_mcf5225x =
     {
         name = "nutarch_m68k_coldfire_mcf5225x_reset",
         brief = "Reset Controller",
-        provides = { "DEV_MCU_RESET" },
         sources = { "m68k/coldfire/dev/mcf5225x/reset.c" },
     },
     --
@@ -166,7 +184,7 @@ nutarch_m68k_coldfire_mcf5225x =
     {
         name = "nutarch_m68k_coldfire_mcf5225x_cwd",
         brief = "Core Watchdog",
-        requires = {"HW_CWD_COLDFIRE", "DEV_IRQ_MCF5225X" },
+        requires = {"HW_CWD_COLDFIRE", "DEV_IRQ_CWD" },
         sources = { "m68k/coldfire/dev/mcf5225x/cwd.c" }
     },
 }

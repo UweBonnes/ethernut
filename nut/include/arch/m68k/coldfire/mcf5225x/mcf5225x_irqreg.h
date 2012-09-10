@@ -39,10 +39,10 @@
  *
  * IMPORTANT: Interrupt level and priority combination MUST be unique
  */
-#define IPL_I2C0    (MCF_INTC_ICR_IL(2) | MCF_INTC_ICR_IP(5))
-#define IPL_I2C1    (MCF_INTC_ICR_IL(2) | MCF_INTC_ICR_IP(6))
-#define IPL_PIT0	(MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(4))
-#define IPL_PIT1	(MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(5))
+#define IPL_I2C0    (MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(3))
+#define IPL_I2C1    (MCF_INTC_ICR_IL(3) | MCF_INTC_ICR_IP(4))
+#define IPL_PIT0	(MCF_INTC_ICR_IL(4) | MCF_INTC_ICR_IP(0))
+#define IPL_PIT1	(MCF_INTC_ICR_IL(4) | MCF_INTC_ICR_IP(1))
 #define IPL_CWD     (MCF_INTC_ICR_IL(7) | MCF_INTC_ICR_IP(7))
 
 /*

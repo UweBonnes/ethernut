@@ -115,7 +115,7 @@ typedef struct _NUTTWIBUS NUTTWIBUS;
 #endif
 
 #elif defined(__m68k__) && defined(MCU_COLDFIRE)
-#include <arch/m68k/coldfire/mcf5_twif.h>
+#include <arch/m68k/coldfire/mcf5_twi.h>
 #endif
 
 

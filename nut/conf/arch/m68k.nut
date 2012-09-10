@@ -45,7 +45,7 @@ nutarch_m68k =
     -- Board Initialization
     --
     {
-        name = "nutarch_m68k_coldfire_bs",
+        name = "nutarch_m68k_bs",
         brief = "Board Support",
         sources =
             function()
@@ -59,9 +59,9 @@ nutarch_m68k =
     --
 	{
         name = "nutarch_m68k_coldfire",
-        brief = "Coldfire",
+        brief = "Coldfire/Coldfire+ (MCF5x)",
         requires = { "HW_MCU_COLDFIRE" },
-        description = "Coldfire controllers and processors from Freescale.",
+        description = "Coldfire/Coldfire+ controllers and processors from Freescale.",
         script = "arch/coldfire/coldfire.nut"
     }
 }

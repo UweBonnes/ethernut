@@ -396,6 +396,10 @@
 #include <cfg/twi.h>
 #include <dev/twif.h>
 #include <arch/cm3/stm/stm32_twi.h>
+#elif defined(MCU_COLDFIRE)
+#include <cfg/twi.h>
+#include <dev/twif.h>
+#include <arch/m68k/coldfire/mcf5_twi.h>
 #endif
 #endif
 

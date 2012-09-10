@@ -31,21 +31,17 @@
 #define strcmp_P(x, y)          strcmp(x, y)
 #define strcasecmp_P(x,y)       strcasecmp(x,y)
 #define strstr_P(x,y)         	strstr(x,y)
-#define memcpy_P(x, y, z)       memcpy(x, y, z)
+#define memcpy_P(x,y,z)         memcpy(x,y,z)
 
-#define outb(_reg, _val)  (*((volatile unsigned char *)(_reg)) = (_val))
-#define outw(_reg, _val)  (*((volatile unsigned short *)(_reg)) = (_val))
-#define outr(_reg, _val)  (*((volatile unsigned int *)(_reg)) = (_val))
+#define outb(_reg, _val)  (*((volatile uint8_t *)(_reg)) = (_val))
+#define outw(_reg, _val)  (*((volatile uint16_t *)(_reg)) = (_val))
+#define outr(_reg, _val)  (*((volatile uint32_t *)(_reg)) = (_val))
 
-#define inb(_reg)   (*((volatile unsigned char *)(_reg)))
-#define inw(_reg)   (*((volatile unsigned short *)(_reg)))
-#define inr(_reg)   (*((volatile unsigned int *)(_reg)))
+#define inb(_reg)   (*((volatile uint8_t *)(_reg)))
+#define inw(_reg)   (*((volatile uint16_t *)(_reg)))
+#define inr(_reg)   (*((volatile uint32_t *)(_reg)))
 
 #define _BV(bit)    (1 << (bit))
-
-#define sbi(_reg, _bit)         outr(_reg, inr(_reg) | _BV(_bit))
-#define cbi(_reg, _bit)         outr(_reg, inr(_reg) & ~_BV(_bit))
-#define bit_is_set(_reg, _bit)  ((inr(_reg) & _BV(_bit)) != 0)
 
 #ifndef _NOP
 #define _NOP() __asm__ __volatile__ ("nop")

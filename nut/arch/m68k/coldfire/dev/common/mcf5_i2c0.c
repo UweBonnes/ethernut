@@ -33,6 +33,39 @@
 #include <arch/m68k.h>
 #include <cfg/twi.h>
 #include <dev/twif.h>
+#include <dev/gpio.h>
+
+#ifndef I2CBUS0_SCL_PIN
+#define I2CBUS0_SCL_PIN PAS0
+#endif
+
+#ifndef I2CBUS0_SDA_PIN
+#define I2CBUS0_SDA_PIN PAS1
+#endif
+
+#if I2CBUS0_SCL_PIN == PAS0
+#define SCL_PORT        PORTAS
+#define SCL_PIN         0
+#define SCL_PERIPHERAL  GPIO_CFG_PERIPHERAL0
+#elif I2CBUS0_SCL_PIN == PQS2
+#define SCL_PORT        PORTQS
+#define SCL_PIN         2
+#define SCL_PERIPHERAL  GPIO_CFG_PERIPHERAL1
+#else
+#warning "Illegal I2C0 SCL pin assignement"
+#endif
+
+#if I2CBUS0_SDA_PIN == PAS1
+#define SDA_PORT        PORTAS
+#define SDA_PIN         1
+#define SDA_PERIPHERAL  GPIO_CFG_PERIPHERAL0
+#elif I2CBUS0_SDA_PIN == PQS3
+#define SDA_PORT        PORTQS
+#define SDA_PIN         3
+#define SDA_PERIPHERAL  GPIO_CFG_PERIPHERAL1
+#else
+#warning "Illegal I2C0 SDA pin assignement"
+#endif
 
 /*!
  * \brief Processor specific Hardware Initiliaization
@@ -41,11 +74,9 @@
 int Mcf5I2cBus0Init(void)
 {
     /* Enable the I2C signals */
-#if I2CBUS0_PINSET_MCF5225X == PIN_SET2
-    MCF_GPIO_PQSPAR |= MCF_GPIO_PQSPAR_QSPI_CS0_SDA0 | MCF_GPIO_PQSPAR_QSPI_CLK_SCL0;
-#else // PIN_SET1
-    MCF_GPIO_PASPAR |= MCF_GPIO_PASPAR_SDA0_SDA0 | MCF_GPIO_PASPAR_SCL0_SCL0;
-#endif
+    GpioPinConfigSet(SCL_PORT, SCL_PIN, SCL_PERIPHERAL);
+    GpioPinConfigSet(SDA_PORT, SDA_PIN, SDA_PERIPHERAL);
+
     return 0;
 }
 

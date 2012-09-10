@@ -56,12 +56,9 @@ int IrqCtlCommon(IRQ_HANDLER *sig_handler, int cmd, void *param, volatile uint32
 
     /*
      * Disable interrupt.
-     * Critical sections are required to prevent spurious interrupts.
      */
     if (enabled) {
-        NutEnterCritical();
-        *reg_imr |= imr_mask;
-        NutExitCritical();
+        PREVENT_SPURIOUS_INTERRUPT(*reg_imr |= imr_mask);
     }
 
     /*
@@ -98,12 +95,9 @@ int IrqCtlCommon(IRQ_HANDLER *sig_handler, int cmd, void *param, volatile uint32
 
     /*
      * Enable interrupt.
-     * Critical sections are required to prevent spurious interrupts.
      */
     if (enabled) {
-        NutEnterCritical();
-        *reg_imr &= ~imr_mask;
-        NutExitCritical();
+        PREVENT_SPURIOUS_INTERRUPT(*reg_imr &= ~imr_mask);
     }
 
     return rc;

@@ -249,7 +249,7 @@ typedef void *HANDLE;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short ureg_t;
 #elif defined(__m68k__)
-    typedef unsigned short ureg_t;
+    typedef uint_fast8_t ureg_t;
 #else
     typedef unsigned short ureg_t;
 #endif
@@ -270,7 +270,7 @@ typedef void *HANDLE;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short reg_t;
 #elif defined(__m68k__)
-    typedef unsigned short reg_t;
+    typedef int_fast8_t reg_t;
 #else
     typedef unsigned short reg_t;
 #endif

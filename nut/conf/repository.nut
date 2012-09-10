@@ -197,7 +197,8 @@ mcu_32bit_choice = { " ",
 stm32_bit_choice = {  " ",
                      "0", "1", "2", "3", "4", "5", "6", "7",
                      "8", "9", "10", "11", "12", "13", "14", "15" }
-
+mcf5_bit_choice = { " ",
+                    "0", "1", "2", "3", "4", "5", "6", "7" }
 gpio_port_choice = {
                     " ",
                     "NUTGPIO_PORTA",
@@ -544,6 +545,9 @@ function GetGpioPortIds()
 	if c_is_provided("HW_MCU_STM32") then
 		return GetStm32PioIds()
 	end;
+    if c_is_provided("HW_MCU_COLDFIRE") then
+        return GetColdfirePioIds()
+    end;
     return { " " }
 end
 
@@ -598,6 +602,35 @@ function GetStm32PioBase()
 end
 
 --
+-- Retrieve COLDFIRE PIO IDs.
+-- These IDs represet an struct pointer value of the port.
+--
+function GetColdfirePioIds()
+    if c_is_provided("HW_MCU_MCF5225X") then
+        return {
+            " ",
+            "PORTTE",
+            "PORTTF",
+            "PORTTG",
+            "PORTTH",
+            "PORTTI",
+            "PORTTJ",
+            "PORTNQ",
+            "PORTAN",
+            "PORTAS",
+            "PORTQS",
+            "PORTTA",
+            "PORTTC",
+            "PORTUA",
+            "PORTUB",
+            "PORTUC",
+            "PORTDD",
+        }
+    end
+    return { " " }
+end
+
+--
 -- Retrieve AVR Port IDs.
 --
 function GetAvrPorts()
@@ -640,6 +673,9 @@ function GetGpioBits()
     if c_is_provided("HW_MCU_STM32") then
         return stm32_bit_choice
     end
+    if c_is_provided("HW_MCU_COLDFIRE") then
+        return mcf5_bit_choice
+    end
     return mcu_32bit_choice
 end
 
@@ -662,6 +698,9 @@ function GetGpioHeaderPath()
     end
     if c_is_provided("HW_MCU_STM32") then
         return basepath .. "stm32pio.h"
+    end
+    if c_is_provided("HW_MCU_COLDFIRE") then
+        return basepath .. "mcf5pio.h"
     end
     return basepath .. "pio.h"
 end
