@@ -1,8 +1,5 @@
-#ifndef _ARCH_CM3_INTERRUPT_H_
-#define _ARCH_CM3_INTERRUPT_H_
-
 /*
- * Copyright (c) 2005-2012 Texas Instruments Incorporated
+ * Copyright (C) 2012 by egnite GmbH
  *
  * All rights reserved.
  *
@@ -32,48 +29,32 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This is part of revision 9107 of the Stellaris Peripheral Driver Library.
+ * For additional information see http://www.ethernut.de/
  */
 
-/*!
- * \file arch/cm3/systick.h
- * \brief Prototypes for the NVIC Interrupt Controller Driver.
- *
- * \verbatim
- * $Id$
- * \endverbatim
- */
+#include <stdlib.h>
 
-#if defined(SAM3U)
-#define NUM_INTERRUPTS       48
-#endif
-#if defined(MCU_STM32)
-#define NUM_INTERRUPTS      121
-#endif
-#if defined(MCU_LPC176x)
-#define NUM_INTERRUPTS       35
-#endif
-#if defined(MCU_LPC177x_8x)
-#define NUM_INTERRUPTS       41
-#endif
+#include <dev/circbuff.h>
 
-extern void IntRegister(IRQn_Type ulInterrupt, void (*pfnHandler)(void*));
-extern void IntUnregister(IRQn_Type ulInterrupt);
+int CircBuffReset(CIRCBUFF *cb, size_t size)
+{
+    cb->cb_ridx = 0;
+    cb->cb_widx = 0;
+    size = size <= CIRCBUFF_MAX ? size : CIRCBUFF_MAX;
+    if (size != cb->cb_size) {
+        free(cb->cb_buff);
+        cb->cb_buff = NULL;
+        cb->cb_size = 0;
+        if (size) {
+            cb_size_t m;
 
-extern void IntPriorityGroupingSet(unsigned long ulBits);
-extern unsigned long IntPriorityGroupingGet(void);
-
-extern void IntPrioritySet(IRQn_Type ulInterrupt, uint32_t ucPriority);
-extern uint32_t IntPriorityGet(IRQn_Type ulInterrupt);
-
-extern void IntEnable(IRQn_Type ulInterrupt);
-extern void IntDisable(IRQn_Type ulInterrupt);
-extern int IntIsEnabled(IRQn_Type ulInterrupt);
-
-extern void IntPendSet(IRQn_Type ulInterrupt);
-extern void IntPendClear(IRQn_Type ulInterrupt);
-
-extern void IntPriorityMaskSet(unsigned long ulPriorityMask);
-extern unsigned long IntPriorityMaskGet(void);
-
-#endif
+            for (m = 31; m < (cb_size_t) size; m = (m << 1) | 1);
+            cb->cb_buff = malloc((size_t) m + 1);
+            if (cb->cb_buff == NULL) {
+                return -1;
+            }
+            cb->cb_size = m;
+        }
+    }
+    return 0;
+}

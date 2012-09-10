@@ -57,6 +57,8 @@
 #warning "Unknown CM3 family"
 #endif
 
+#define	NUM_INTERRUPTS 	(IRQn_MAX + 16)
+
 /* Export initial startup vectors */
 #if defined(NUTDEBUG_RAM)
 extern void (* g_pfnVectors[])(void *);
@@ -64,12 +66,10 @@ extern void (* g_pfnVectors[])(void *);
 extern void (* const g_pfnVectors[])(void *);
 #endif
 
-extern int Cortex_ResetCause(void);
+extern void Cortex_RegisterInt(IRQn_Type int_id, void (*pfnHandler)(void*));
+extern int  Cortex_ResetCause(void);
 extern void Cortex_Reset(void);
 extern void Cortex_Start(void);
-extern void Cortex_IntInit(void);
-
-extern void CortexExceptHandler(int state);
 
 /*! \addtogroup xgNutArchCm3 */
 /*@{*/

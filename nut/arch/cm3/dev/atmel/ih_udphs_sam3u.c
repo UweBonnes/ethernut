@@ -31,9 +31,8 @@
  *
  */
 
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/arm/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_UDPHS
 #define NUT_IRQPRI_UDPHS  0
@@ -91,15 +90,15 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-    IntDisable(INT_UDPHS);
+    NVIC_DisableIRQ(INT_UDPHS);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-    IntRegister(INT_UDPHS,(void*)UsbHighSpeedIrqEntry);
+    Cortex_RegisterInt(INT_UDPHS,(void*)UsbHighSpeedIrqEntry);
         /* Initialize with defined priority. */
-    IntPrioritySet(INT_UDPHS,NUT_IRQPRI_UDPHS);
+    NVIC_SetPriority(INT_UDPHS,NUT_IRQPRI_UDPHS);
     /* set as edge triggered */ //и как? оно делается попиново
     //outr(AT91C_PIOA_ESR,_BV(AT91C_ID_PIOA);
         /* Clear interrupt */
@@ -139,10 +138,10 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
         }
         break;*/
     case NUT_IRQCTL_GETPRIO:
-    *ival = IntPriorityGet(INT_UDPHS);
+    *ival = NVIC_GetPriority(INT_UDPHS);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(INT_UDPHS, *ival);
+    NVIC_SetPriority(INT_UDPHS, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -157,7 +156,7 @@ static int UsbHighSpeedIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(INT_UDPHS);
+        NVIC_EnableIRQ(INT_UDPHS);
     }
     return rc;
 }

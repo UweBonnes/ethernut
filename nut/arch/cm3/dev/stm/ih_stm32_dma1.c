@@ -40,7 +40,6 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/interrupt.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_dma.h>
@@ -286,15 +285,15 @@ static int Dma1IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(IRQn);
+        NVIC_DisableIRQ(IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(IRQn, irqfn);
+        Cortex_RegisterInt(IRQn, irqfn);
         /* Initialize with defined priority. */
-        IntPrioritySet(IRQn, NUT_IRQPRI_DMA1);
+        NVIC_SetPriority(IRQn, NUT_IRQPRI_DMA1);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(IRQn);
         break;
@@ -319,10 +318,10 @@ static int Dma1IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
             rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(IRQn);
+        *ival = NVIC_GetPriority(IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(IRQn,*ival);
+        NVIC_SetPriority(IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -337,7 +336,7 @@ static int Dma1IrqCtl(IRQn_Type IRQn, void(*irqfn)(void*), int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(IRQn);
+        NVIC_EnableIRQ(IRQn);
     }
     return rc;
 }

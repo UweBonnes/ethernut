@@ -46,9 +46,8 @@
  *
  */
 
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/arm/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_TWI
 #define NUT_IRQPRI_TWI  4
@@ -264,7 +263,7 @@ static int TwoWireIrqCtl(IRQn_Type interrupt,void (*pfnHandler)(void*),IRQ_HANDL
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-    IntRegister(interrupt,pfnHandler);
+    Cortex_RegisterInt(interrupt,pfnHandler);
         /* Clear interrupt */
     NVIC_ClearPendingIRQ(interrupt);
         break;

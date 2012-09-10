@@ -42,8 +42,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/interrupt.h>
-#define GPIO_IRQn   38
 
 #ifndef NUT_IRQPRI_GPIO
 #define NUT_IRQPRI_GPIO  4
@@ -97,19 +95,19 @@ static int GpioIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(GPIO_IRQn);
+    int enabled = NVIC_GetEnableIRQ(GPIO_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(GPIO_IRQn);
+        NVIC_DisableIRQ(GPIO_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(GPIO_IRQn, GpioIrqEntry);
+        Cortex_RegisterInt(GPIO_IRQn, GpioIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(GPIO_IRQn, NUT_IRQPRI_GPIO);
+        NVIC_SetPriority(GPIO_IRQn, NUT_IRQPRI_GPIO);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(GPIO_IRQn);
         break;
@@ -134,10 +132,10 @@ static int GpioIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(GPIO_IRQn);
+        *ival = NVIC_GetPriority(GPIO_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(GPIO_IRQn, *ival);
+        NVIC_SetPriority(GPIO_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -152,7 +150,7 @@ static int GpioIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(GPIO_IRQn);
+        NVIC_EnableIRQ(GPIO_IRQn);
     }
     return rc;
 }

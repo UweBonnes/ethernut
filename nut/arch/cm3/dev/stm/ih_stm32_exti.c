@@ -42,7 +42,6 @@
 #include <dev/irqreg.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/interrupt.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx_gpio.h>
 
@@ -74,9 +73,9 @@ static int InterruptCtl(int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(THIS_IRQn, THIS_ENTRY);
+        Cortex_RegisterInt(THIS_IRQn, THIS_ENTRY);
         /* Initialize with defined priority. */
-        IntPrioritySet(THIS_IRQn, THIS_IRQPRI);
+        NVIC_SetPriority(THIS_IRQn, THIS_IRQPRI);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(THIS_IRQn);
         break;

@@ -43,7 +43,6 @@
 #include <dev/irqreg.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/interrupt.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx_gpio.h>
 

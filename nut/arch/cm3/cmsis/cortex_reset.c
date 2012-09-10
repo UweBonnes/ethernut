@@ -45,7 +45,6 @@
 #include <dev/reset.h>
 
 #include <arch/cm3.h>
-#include <arch/cm3/cortexM3.h>
 
 void Cortex_Reset(void)
 {

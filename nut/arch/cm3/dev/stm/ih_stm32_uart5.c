@@ -42,7 +42,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_UART5
 #define NUT_IRQPRI_UART5  4
@@ -102,15 +101,15 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(UART5_IRQn);
+        NVIC_DisableIRQ(UART5_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(UART5_IRQn,Uart5IrqEntry);
+        Cortex_RegisterInt(UART5_IRQn,Uart5IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(UART5_IRQn,NUT_IRQPRI_UART5);
+        NVIC_SetPriority(UART5_IRQn,NUT_IRQPRI_UART5);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(UART5_IRQn);
         break;
@@ -135,10 +134,10 @@ static int Uart5IrqCtl(int cmd, void *param)
             rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(UART5_IRQn);
+        *ival = NVIC_GetPriority(UART5_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(UART5_IRQn,*ival);
+    NVIC_SetPriority(UART5_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -153,7 +152,7 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(UART5_IRQn);
+        NVIC_EnableIRQ(UART5_IRQn);
     }
     return rc;
 }

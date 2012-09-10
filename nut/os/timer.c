@@ -219,10 +219,6 @@
 #include <sys/timer.h>
 #include <sys/nutdebug.h>
 
-#ifdef __CORTEX__
-#include <arch/cm3/interrupt.h>
-#endif
-
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #endif

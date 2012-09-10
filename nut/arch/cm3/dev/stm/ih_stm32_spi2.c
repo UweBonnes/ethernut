@@ -45,7 +45,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_SPI2
 #define NUT_IRQPRI_SPI2  4
@@ -97,19 +96,19 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
-    int enabled = IntIsEnabled(SPI2_IRQn);
+    int enabled = NVIC_GetEnableIRQ(SPI2_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(SPI2_IRQn);
+        NVIC_DisableIRQ(SPI2_IRQn);
     }
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(SPI2_IRQn, SerialPeripheral2IrqEntry);
+        Cortex_RegisterInt(SPI2_IRQn, SerialPeripheral2IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(SPI2_IRQn, NUT_IRQPRI_SPI2);
+        NVIC_SetPriority(SPI2_IRQn, NUT_IRQPRI_SPI2);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(SPI2_IRQn);
         break;
@@ -133,10 +132,10 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(SPI2_IRQn);
+        *ival = NVIC_GetPriority(SPI2_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(SPI2_IRQn,*ival);
+        NVIC_SetPriority(SPI2_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -151,7 +150,7 @@ static int SerialPeripheral2IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(SPI2_IRQn);
+        NVIC_EnableIRQ(SPI2_IRQn);
     }
     return rc;
 }

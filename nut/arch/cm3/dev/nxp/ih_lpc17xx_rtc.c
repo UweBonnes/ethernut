@@ -42,7 +42,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_RTC
 #define NUT_IRQPRI_RTC  4
@@ -97,19 +96,19 @@ static int RtcIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(RTC_IRQn);
+    int enabled = NVIC_GetEnableIRQ(RTC_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(RTC_IRQn);
+        NVIC_DisableIRQ(RTC_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(RTC_IRQn, RtcIrqEntry);
+        Cortex_RegisterInt(RTC_IRQn, RtcIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(RTC_IRQn, NUT_IRQPRI_RTC);
+        NVIC_SetPriority(RTC_IRQn, NUT_IRQPRI_RTC);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(RTC_IRQn);
         break;
@@ -134,10 +133,10 @@ static int RtcIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(RTC_IRQn);
+        *ival = NVIC_GetPriority(RTC_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(RTC_IRQn, *ival);
+        NVIC_SetPriority(RTC_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -152,7 +151,7 @@ static int RtcIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(RTC_IRQn);
+        NVIC_EnableIRQ(RTC_IRQn);
     }
     return rc;
 }

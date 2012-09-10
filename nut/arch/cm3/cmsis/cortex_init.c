@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
+ * Copyright (C) 2012 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
  *
  * All rights reserved.
  *
@@ -46,8 +47,8 @@
 #include <arch/cm3.h>
 #include <dev/rtc.h>
 #include <sys/heap.h>
-#include <arch/cm3/cortexM3.h>
-#include <arch/cm3/interrupt.h>
+#include <sys/nutdebug.h>
+#include <sys/atom.h>
 
 #ifndef MSP_STACK_SIZE
 #define MSP_STACK_SIZE 128
@@ -77,6 +78,11 @@ volatile static uint32_t pspStack[PSP_STACK_SIZE];
 
 
 static void IntDefaultHandler(void *arg) __attribute__ ((naked));
+static void IntNmiHandler(void *arg) __attribute__ ((naked));
+static void IntHardfaultHandler(void *arg) __attribute__ ((naked));
+static void IntMemfaultHandler(void *arg) __attribute__ ((naked));
+static void IntBusfaultHandler(void *arg) __attribute__ ((naked));
+static void IntUsagefaultHandler(void *arg) __attribute__ ((naked));
 
 /*!
  * \brief CortexM3 memory pointers
@@ -95,17 +101,37 @@ void (* const g_pfnVectors[])(void *) =
 #endif
 {
     (void (*)(void *))((uint32_t)mspStack + sizeof(mspStack)), /* Initial Stack Pointer */
-    NUT_BOOT_FUNCTION, /* Reset_Handler */
-    IntDefaultHandler, /* NMI_Handler */
-    IntDefaultHandler, /* HardFault_Handler */
-    IntDefaultHandler, /* MemManage_Handler */
-    IntDefaultHandler, /* BusFault_Handler */
-    IntDefaultHandler, /* UsageFault_Handler */
-    0,                 /* Reserved */
-    0,                 /* Reserved */
-    0,                 /* Reserved */
-    0,                 /* Reserved */
+    NUT_BOOT_FUNCTION,   /* Reset_Handler */
+    IntNmiHandler,       /* NMI_Handler */
+    IntHardfaultHandler, /* HardFault_Handler */
+    IntMemfaultHandler,  /* MemManage_Handler */
+    IntBusfaultHandler,  /* BusFault_Handler */
+    IntUsagefaultHandler,/* UsageFault_Handler */
+    0,                   /* Reserved */
+    0,                   /* Reserved */
+    0,                   /* Reserved */
+    0,                   /* Reserved */
 };
+
+
+/*!
+ * \brief Dynamic interrupt vector table in RAM
+ *
+ * Copy of the interrupt vector table in RAM. The vector table layout is
+ * defined by the hardware. The list CM3 CPUs can handle a maximum of 256
+ * interrupt vectors. The maximum number of handlers used by a specific CPU
+ * implementation is defined in NUM_INTERRUPTS which should be defined in each
+ * CPU header as the last entry in IRQn_Type enum.
+ */
+
+#if defined(NUTDEBUG_RAM)
+/* Code is just running in RAM, so re-use the g_pfnVectors */
+#define g_pfnRAMVectors g_pfnVectors
+#else
+static __attribute__((section(".vtable")))
+void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void*);
+#endif
+
 
 /*!
  * \brief CortexM3 memory pointers
@@ -126,10 +152,81 @@ extern void * _pspstack_end;    /* Process stack end address */
 extern void * _stack_start;     /* Main stack start address */
 extern void * _stack_end;       /* Main stack end address */
 
+/* Default interrupt handler */
 static void IntDefaultHandler(void *arg)
 {
-    while (1);
+    for (;;);
 }
+
+/* Below the default exception handler follow */
+
+/*!
+ * \brief Non mascable interrupt handler
+ */
+static void IntNmiHandler(void *arg)
+{
+    for (;;);
+}
+
+/*!
+ * \brief Hard fault handler
+ */
+static void IntHardfaultHandler(void *arg)
+{
+    for (;;);
+}
+
+/*!
+ * \brief Mem fault handler
+ */
+static void IntMemfaultHandler(void *arg)
+{
+    for (;;);
+}
+
+/*!
+ * \brief Bus fault handler
+ */
+static void IntBusfaultHandler(void *arg)
+{
+    for (;;);
+}
+
+/*!
+ * \brief Usage fault handler
+ */
+static void IntUsagefaultHandler(void *arg)
+{
+    for (;;);
+}
+
+
+/*!
+ * \brief Register interrupt handler in RAM vector table
+ *
+ * \param int_id	Specifies interrupt ID to register
+ *
+ * \param pfnHandler Interrupt handler function to be called
+ */
+void Cortex_RegisterInt(IRQn_Type int_id, void (*pfnHandler)(void*))
+{
+    uint16_t idx = int_id + 16;
+
+    /* Check for valid interrupt number */
+    NUTASSERT(idx < NUM_INTERRUPTS);
+
+    /* Make sure that the RAM vector table is correctly aligned. */
+    NUTASSERT(((uint32_t)g_pfnRAMVectors & 0x000003ff) == 0);
+
+	if (pfnHandler != NULL) {
+		/* Save the interrupt handler. */
+		g_pfnRAMVectors[idx] = pfnHandler;
+	} else {
+		/* Reset to default interrupt handler */
+		g_pfnRAMVectors[idx] = &IntDefaultHandler;
+	}
+}
+
 
 /*!
  * \brief CortexM3 Initialization.
@@ -137,7 +234,7 @@ static void IntDefaultHandler(void *arg)
  * This function copies over the data segment from flash to ram
  * and fills the bss segment with 0.
  */
-void Cortex_MemInit(void)
+static void Cortex_MemInit(void)
 {
     register uint32_t *src, *dst, *end;
     register uint32_t fill = 0;
@@ -163,6 +260,72 @@ void Cortex_MemInit(void)
 
     __set_PSP((uint32_t)&_pspstack_end);
 }
+
+static void Cortex_IntInit(void)
+{
+    int int_id;
+
+	/* Disable exceptions */
+	SCB->SHCSR &= ~(SCB_SHCSR_USGFAULTENA_Msk |
+	                SCB_SHCSR_BUSFAULTENA_Msk |
+	                SCB_SHCSR_MEMFAULTENA_Msk);
+
+	/* Disable SysTick interrupt */
+	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
+
+#ifndef NUTDEBUG_RAM
+	/* Copy Reset vector to RAM vector table */
+	g_pfnRAMVectors[0] = (void(*)(void*))g_pfnVectors[0];
+
+	/* Copy Stackpointer to RAM vector table */
+    g_pfnRAMVectors[1] = (void(*)(void*))g_pfnVectors[1];
+#endif
+
+	/* Set the exception handler */
+	g_pfnRAMVectors[2] = &IntNmiHandler;
+	g_pfnRAMVectors[3] = &IntHardfaultHandler;
+	g_pfnRAMVectors[4] = &IntMemfaultHandler;
+	g_pfnRAMVectors[5] = &IntBusfaultHandler;
+	g_pfnRAMVectors[6] = &IntUsagefaultHandler;
+
+	/* Init reserved vectors with NULL */
+	g_pfnRAMVectors[7]  = NULL;
+	g_pfnRAMVectors[8]  = NULL;
+	g_pfnRAMVectors[9]  = NULL;
+	g_pfnRAMVectors[10] = NULL;
+	g_pfnRAMVectors[12] = NULL;
+	g_pfnRAMVectors[13] = NULL;
+
+	/* Init all other exception handler and system interrupts with the
+	   default handler
+	 */
+	g_pfnRAMVectors[10] = &IntDefaultHandler;
+	g_pfnRAMVectors[11] = &IntDefaultHandler;
+	g_pfnRAMVectors[14] = &IntDefaultHandler;
+	g_pfnRAMVectors[15] = &IntDefaultHandler;
+
+	/* Enable exceptions again. The NMI and Hard-Fault handler are always enabled */
+	SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk |
+	              SCB_SHCSR_BUSFAULTENA_Msk |
+	              SCB_SHCSR_MEMFAULTENA_Msk;
+
+	for (int_id = 0; int_id < NUM_INTERRUPTS - 16; int_id ++) {
+		/* Make sure the interrupt is disabled */
+		NVIC_DisableIRQ(int_id);
+		g_pfnRAMVectors[int_id] = &IntDefaultHandler;
+	}
+
+    /* Basic interrupt system setup */
+	//SCB->AIRCR = (0x05fa0000|SCB_AIRCR_PRIGROUP0);
+	/* Clear pending bits for SysTick interrupt, PendSV exception and ISRs */
+    SCB->ICSR |= (SCB_ICSR_PENDSTCLR_Msk | SCB_ICSR_PENDSVCLR_Msk | SCB_ICSR_ISRPENDING_Msk);
+
+    /* Point NVIC at the RAM vector table. */
+    SCB->VTOR = (uint32_t)g_pfnRAMVectors;
+    __enable_fault_irq();
+    __enable_irq();
+}
+
 
 /*!
  * \brief CortexM3 Startup.
