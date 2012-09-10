@@ -75,7 +75,7 @@ volatile uint8_t ms62_5 = 0;
 #elif defined(__arm__) && !defined(__CORTEX__)
 #include "../arch/arm/os/nutinit.c"
 #elif defined(__arm__) && defined(__CORTEX__)
-#include "../arch/cm3/os/nutinit_cm3.c"
+#include "../arch/cm3/os/nutinit.c"
 #elif defined(__AVR32__)
 #include "../arch/avr32/os/nutinit.c"
 #elif defined(__H8300H__) || defined(__H8300S__)
