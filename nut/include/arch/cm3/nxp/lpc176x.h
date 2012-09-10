@@ -80,8 +80,8 @@ typedef enum IRQn
   QEI_IRQn                      = 31,       /*!< Quadrature Encoder Interface Interrupt           */
   PLL1_IRQn                     = 32,       /*!< PLL1 Lock (USB PLL) Interrupt                    */
   USBActivity_IRQn              = 33,       /* USB Activity interrupt                             */
-  CANActivity_IRQn              = 34,       /* CAN Activity interrupt                             */ 
-  IRQn_MAX                                  /*!< Total number of interrupts                       */ 
+  CANActivity_IRQn              = 34,       /* CAN Activity interrupt                             */
+  IRQn_MAX                                  /*!< Total number of interrupts                       */
 } IRQn_Type;
 
 /*

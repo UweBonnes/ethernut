@@ -62,7 +62,7 @@ static void Lpc17xxGpioIsr(void *arg)
 
     if (isr & _BV(NUTGPIO_PORT0)) {
         port_status = LPC_GPIOINT->IO0IntStatR | LPC_GPIOINT->IO0IntStatF;
-        
+
         vct = sig_GPIO0.ios_vector;
         while (port_status) {
             if ((port_status & 1) != 0 && vct->iov_handler) {
@@ -70,9 +70,9 @@ static void Lpc17xxGpioIsr(void *arg)
             }
             port_status >>= 1;
             vct++;
-        }        
-        
-        LPC_GPIOINT->IO0IntClr = 0xFFFFFFFF;     
+        }
+
+        LPC_GPIOINT->IO0IntClr = 0xFFFFFFFF;
     }
     if (isr & _BV(NUTGPIO_PORT2)) {
         port_status = LPC_GPIOINT->IO2IntStatR | LPC_GPIOINT->IO2IntStatF;
@@ -84,10 +84,10 @@ static void Lpc17xxGpioIsr(void *arg)
             }
             port_status >>= 1;
             vct++;
-        }        
-        
+        }
+
         LPC_GPIOINT->IO2IntClr = 0xFFFFFFFF;
-    }    
+    }
 }
 
 /*!
@@ -106,11 +106,11 @@ static int Lpc17xxGpioCtrl(GPIO_SIGNAL * sig, int cmd, void *param, int bit)
                 *ival = 0;
             }
             break;
-            
+
         case NUT_IRQCTL_ENABLE:
             sig->enabled |= _BV(bit);
             break;
-            
+
         case NUT_IRQCTL_DISABLE:
             sig->enabled &= ~_BV(bit);
             break;
@@ -118,17 +118,17 @@ static int Lpc17xxGpioCtrl(GPIO_SIGNAL * sig, int cmd, void *param, int bit)
         case NUT_IRQCTL_GETMODE:
             if ((sig->mode_rising_enabled & _BV(bit)) && ((sig->mode_falling_enabled & _BV(bit)) == 0)) {
                 *ival = NUT_IRQMODE_RISINGEDGE;
-            } else 
+            } else
             if (((sig->mode_rising_enabled & _BV(bit)) == 0) && (sig->mode_falling_enabled & _BV(bit))) {
                 *ival = NUT_IRQMODE_FALLINGEDGE;
-            } else 
+            } else
             if ((sig->mode_rising_enabled & _BV(bit)) && (sig->mode_falling_enabled & _BV(bit))) {
                 *ival = NUT_IRQMODE_BOTHEDGE;
             } else {
                 *ival = NUT_IRQMODE_NONE;
             }
             break;
-            
+
         case NUT_IRQCTL_SETMODE:
             switch (*ival) {
                 case NUT_IRQMODE_RISINGEDGE:
@@ -141,18 +141,18 @@ static int Lpc17xxGpioCtrl(GPIO_SIGNAL * sig, int cmd, void *param, int bit)
                     break;
                 case NUT_IRQMODE_BOTHEDGE:
                     sig->mode_rising_enabled  |= _BV(bit);
-                    sig->mode_falling_enabled |= _BV(bit);                
+                    sig->mode_falling_enabled |= _BV(bit);
                     break;
                 case NUT_IRQMODE_NONE:
                     sig->mode_rising_enabled  &= ~_BV(bit);
                     sig->mode_falling_enabled &= ~_BV(bit);
                     break;
-                default: 
+                default:
                     rc = -1;
             }
             break;
 
-                
+
         default:
             rc = -1;
             break;
@@ -194,5 +194,5 @@ GPIO_SIGNAL sig_GPIO2 = {
     NULL,            /* ios_vector */
     0,               /* mode_rising_enabled */
     0                /* mode_falling_enabled */
-        
+
 };

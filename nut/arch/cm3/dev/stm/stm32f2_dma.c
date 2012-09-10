@@ -95,7 +95,7 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     DMA_ClearFlag( ch, DMA_TEIF| DMA_HTIF| DMA_TCIF);
     cc |= (ch & 0x7)<<_BI32(DMA_SxCR_CHSEL_0);
     /* if DMA stream running, Stop DMA stream */
-    if (CM3BBREG(stream_base, DMA_Stream_TypeDef, 
+    if (CM3BBREG(stream_base, DMA_Stream_TypeDef,
                  CR, _BI32(DMA_SxCR_EN)))
     {
         /* Disable stream */

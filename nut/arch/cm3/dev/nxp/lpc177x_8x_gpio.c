@@ -351,7 +351,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
  * platforms. In this case dedicated external interrupt pins may
  * be used with NutRegisterIrqHandler().
  *
- * On the LPC17xx interrupts are triggered on rising, falling or both 
+ * On the LPC17xx interrupts are triggered on rising, falling or both
  * edges. Level triggering is not supported.
  *
  * After registering, interrupts are disabled. Calling GpioIrqEnable()
@@ -401,7 +401,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
                     /* Clear any pending interrupts */
                     LPC_GPIOINT->IO0IntClr = 0xFFFFFFFF;
                     LPC_GPIOINT->IO2IntClr = 0xFFFFFFFF;
-                    
+
                     rc = NutIrqEnable(&sig_PIO);
                 }
             }
@@ -474,7 +474,7 @@ int GpioIrqStatus(GPIO_SIGNAL * sig, int bit)
  *          NUT_IRQMODE_RISINGEDGE,
  *          NUT_IRQMODE_FALLINGEDGE,
  *          NUT_IRQMODE_BOTHEDGE,
- *          NUT_IRQMODE_NONE, 
+ *          NUT_IRQMODE_NONE,
  *
  * \return 0 on success, -1 otherwise.
  */

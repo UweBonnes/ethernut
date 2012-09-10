@@ -618,37 +618,37 @@ int CanSetBaud( NUTCANBUS *bus, uint8_t baud, uint32_t alt_btr)
     switch (baud)
     {
        case CAN_SPEED_10K:
-	   btr = STM_CAN_BTR_10k;
-	   break;
+       btr = STM_CAN_BTR_10k;
+       break;
        case CAN_SPEED_20K:
-	   btr = STM_CAN_BTR_20k;
-	   break;
+       btr = STM_CAN_BTR_20k;
+       break;
        case CAN_SPEED_50K:
-	   btr = STM_CAN_BTR_50k;
-	   break;
+       btr = STM_CAN_BTR_50k;
+       break;
        case CAN_SPEED_100K:
-	   btr = STM_CAN_BTR_100k;
-	   break;
+       btr = STM_CAN_BTR_100k;
+       break;
        case CAN_SPEED_125K:
-	   btr = STM_CAN_BTR_125k;
-	   break;
+       btr = STM_CAN_BTR_125k;
+       break;
        case CAN_SPEED_250K:
-	   btr = STM_CAN_BTR_250k;
-	   break;
+       btr = STM_CAN_BTR_250k;
+       break;
        case CAN_SPEED_500K:
-	   btr = STM_CAN_BTR_500k;
-	   break;
+       btr = STM_CAN_BTR_500k;
+       break;
        case CAN_SPEED_800K:
-	   btr = STM_CAN_BTR_800k;
-	   break;
+       btr = STM_CAN_BTR_800k;
+       break;
        case CAN_SPEED_1M:
-	   btr = STM_CAN_BTR_1M;
-	   break;
+       btr = STM_CAN_BTR_1M;
+       break;
         case CAN_SPEED_CUSTOM:
            btr = alt_btr;
     }
     if (btr == 0)
-	return CAN_ERROR;
+    return CAN_ERROR;
     CANx->BTR &= ~0x03ff03ff ;
     CANx->BTR |= btr;
     if (CanSetState(bus, 1))
@@ -835,11 +835,11 @@ static int CANGetFreeMailbox(NUTCANBUS *bus)
     CAN_TypeDef *CANx = (CAN_TypeDef*)bus->bus_base;
     uint32_t tsr = CANx->TSR;
     if (tsr & CAN_TSR_TME0)
-	return 0;
+    return 0;
     if (tsr & CAN_TSR_TME1)
-	return 1;
+    return 1;
     if (tsr & CAN_TSR_TME2)
-	return 2;
+    return 2;
     return CAN_TXBUF_FULL;
 }
 
@@ -880,12 +880,12 @@ static int StmCanSendMsg(NUTCANBUS  *bus, CANFRAME *frame)
     tx_mailbox->TDTR = frame->len;
     if (frame->ext)
     {
-	tir = frame->id << 3;
-	tir |= CAN_TI0R_IDE;
+    tir = frame->id << 3;
+    tir |= CAN_TI0R_IDE;
     }
     else
     {
-	tir = frame->id << 21;
+    tir = frame->id << 21;
     }
     tir |= CAN_TI0R_TXRQ | ((frame->rtr)?CAN_TI0R_RTR : 0);
     tx_mailbox->TIR = tir;

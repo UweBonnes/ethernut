@@ -132,13 +132,13 @@ uint32_t GpioPinConfigGet(int bank, int bit)
             break;
         }
         switch ( speed) {
-        case 2 : 
+        case 2 :
             rc |= GPIO_CFG_SPEED_SLOW;
             break;
         case 3 :
             rc |= GPIO_CFG_SPEED_FAST;
             break;
-        default : 
+        default :
             rc |= GPIO_CFG_SPEED_MED;
         }
     }
@@ -175,7 +175,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     if (flags & (GPIO_CFG_OUTPUT|GPIO_CFG_DISABLED))
         if(flags & (GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN))
             flags &= ~(GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN);
-        
+
 
     /*
      * cnf  mode  Meaning

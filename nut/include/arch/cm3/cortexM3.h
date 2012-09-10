@@ -57,7 +57,7 @@
 #warning "Unknown CM3 family"
 #endif
 
-#define	NUM_INTERRUPTS 	(IRQn_MAX + 16)
+#define NUM_INTERRUPTS  (IRQn_MAX + 16)
 
 /* Export initial startup vectors */
 #if defined(NUTDEBUG_RAM)
