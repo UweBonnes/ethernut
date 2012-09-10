@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <cfg/arch.h>
+#include <arch/arm/cm3.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f10x.h>
 #include <arch/cm3/stm/stm32f10x_rcc.h>
@@ -13,7 +14,6 @@
 #else
 #warning "Unknown STM32 family"
 #endif
-#include <arch/cm3/cortex_interrupt.h>
 
 #define NUTTIMER1   TIM1_BASE
 #define NUTTIMER2   TIM2_BASE

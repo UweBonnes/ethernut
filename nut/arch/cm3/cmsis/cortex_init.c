@@ -49,8 +49,6 @@
 #include <sys/heap.h>
 #include <sys/nutdebug.h>
 #include <sys/atom.h>
-#include <arch/cm3/cortexM3.h>
-#include <arch/cm3/interrupt.h>
 
 #ifndef MSP_STACK_SIZE
 #define MSP_STACK_SIZE 128

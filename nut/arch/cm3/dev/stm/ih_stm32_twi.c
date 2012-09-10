@@ -46,9 +46,8 @@
  *
  */
 
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/arm/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_TWI
 #define NUT_IRQPRI_TWI  4

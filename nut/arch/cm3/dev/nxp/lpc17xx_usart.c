@@ -47,8 +47,6 @@
 #include <dev/irqreg.h>
 #include <dev/usart.h>
 
-#include <arch/cm3/interrupt.h>
-
 #if defined(MCU_LPC176x)
 #include <arch/cm3/nxp/lpc176x.h>
 #include <arch/cm3/nxp/lpc176x_clk.h>

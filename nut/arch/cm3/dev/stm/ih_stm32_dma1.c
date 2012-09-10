@@ -40,7 +40,6 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/interrupt.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_dma.h>

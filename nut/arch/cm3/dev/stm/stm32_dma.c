@@ -1,6 +1,6 @@
 #include <arch/arm.h>
 #include <dev/irqreg.h>
-#include <arch/arm/cortex_interrupt.h>
+#include <arch/arm/cm3.h>
 #include <arch/arm/stm32f10x.h>
 #include <arch/arm/stm32f10x_dma.h>
 #include <arch/arm/stm32f10x_rcc.h>

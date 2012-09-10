@@ -41,9 +41,9 @@
 #include <stddef.h>
 #include <string.h>
 #include <cfg/arch.h>
+#include <arch/arm/cm3.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #define NUTTIMER1   TIM1_BASE
 #define NUTTIMER2   TIM2_BASE

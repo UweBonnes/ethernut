@@ -58,7 +58,7 @@
 #else
 #include <arch/cm3/core_cm3.h>
 #endif
-#include <arch/cm3/interrupt.h>
+
 #if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32_clk.h>
 #include <arch/cm3/stm/stm32xxxx.h>

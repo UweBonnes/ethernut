@@ -47,7 +47,7 @@
 #include <sys/timer.h>
 #include <sys/thread.h>
 #include <sys/event.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/arm/cm3.h>
 #include <dev/gpio.h>
 #include <dev/hwtimer_stm32.h>
 #include <dev/owi.h>

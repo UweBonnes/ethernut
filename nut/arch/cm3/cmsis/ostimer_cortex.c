@@ -59,7 +59,6 @@
 #else
 #warning "Unknown CM3 family"
 #endif
-#include <arch/cm3/interrupt.h>
 
 /*!
  * \addtogroup xgNutArchArmOsTimerCm3

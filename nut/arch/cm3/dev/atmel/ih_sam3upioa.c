@@ -37,7 +37,6 @@
 
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_PIOA
 #define NUT_IRQPRI_PIOA  4

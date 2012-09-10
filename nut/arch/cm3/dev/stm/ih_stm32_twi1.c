@@ -39,7 +39,6 @@
 
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/interrupt.h>
 
 #ifndef NUT_IRQPRI_TWI
 /* According Errata Sheet 14574 Rev. 9 some I2C erratic behaviour can be overcome
