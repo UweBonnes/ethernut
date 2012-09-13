@@ -191,8 +191,8 @@ static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                 if (xcpr != xcpo) {
                     xcpr->xcpo_type = xcpo->xcpo_type;
                     xcpr->xcpo_len = len;
-                    xcpr->xcpo_.ul = ip;
                 }
+                xcpr->xcpo_.ul = ip;
                 xcpr = (XCPOPT *) ((char *) xcpr + len);
                 xcps += len;
                 len = 0;
