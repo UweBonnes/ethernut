@@ -136,10 +136,8 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                     len = 0;
                 break;
             case LCP_PCOMPRESSION:
-                len = 0;
                 break;
             case LCP_ACCOMPRESSION:
-                len = 0;
                 break;
             }
         }
