@@ -76,7 +76,7 @@
 #endif
 
 #ifndef OWI_UART
-#define OWI_UART devUsartStm32_1 
+#define OWI_UART devUsartStm32_1
 #endif
 
 #ifndef DEV_UART

@@ -70,61 +70,6 @@
 #endif
 
 /*!
- * \brief Loop for a specified number of microseconds.
- *
- * This call will release the CPU for delays longer than 2 ms
- * at the expense of waiting 1 ms longer in very rare cases
- *
- *
- * \param us Delay time in microseconds.
- */
-
-extern uint32_t nut_ticks;
-void NutArchMicroDelay(uint32_t us)
-{
-    uint32_t start_ticks;
-    uint32_t end_ms, start_ms;
-    int32_t end_ticks;
-
-    SysTick->CTRL&= ~(SysTick_CTRL_ENABLE_Msk);
-    start_ticks = SysTick->VAL;
-    start_ms = nut_ticks;
-    SysTick->CTRL |= (SysTick_CTRL_TICKINT_Msk);
-
-    if (us > 2000)
-    {
-    int n = us/1000 -1;
-    NutSleep(n);
-    us -= n*1000;
-    }
-    end_ticks = start_ticks - (us%1000 * (SysTick->LOAD +1))/NUT_TICK_FREQ;
-    end_ms = start_ms + us/1000;
-    /* Wraparounf of Systick*/
-    if (end_ticks <= 0)
-    {
-    end_ms++;
-    end_ticks += SysTick->LOAD +1;
-    }
-    /* Wraparound of nut_ticks*/
-    if( end_ms < start_ms)
-    while (nut_ticks) {};
-    for(;;)
-    {
-    /* Paranoid check for wraparound of nut_ticks at end of delay*/
-        if ((end_ms == (uint32_t)-1) && (nut_ticks == 0))
-            break;
-    /* Check for wraparound of SysTickValue at end of delay*/
-        if(nut_ticks > end_ms)
-           break;
-        if (nut_ticks < end_ms)
-            continue;
-        if (SysTick->VAL > end_ticks)
-            continue;
-        break;
-    }
-}
-
-/*!
  * \brief Initialize system timer.
  *
  * This function is automatically called by Nut/OS
@@ -146,8 +91,6 @@ void NutRegisterTimer(void (*handler)(void*))
     Cortex_RegisterInt(SysTick_IRQn, handler);
     /* Program frequency and enable is done by CMSIS function */
     SysTick_Config(SysCtlClockGet()/NUT_TICK_FREQ);
-
-//    SysTickCortex_RegisterInt(handler);
 }
 
 /*!
@@ -193,25 +136,6 @@ uint32_t NutArchClockGet(int idx)
 #endif
     return clock;
 }
-
-/*!
- * \brief Return the CPU clock in Hertz.
- *
- * On several AT91 CPUs the processor clock may differ from the clock
- * driving the peripherals. In this case At91GetMasterClock() will
- * provide the correct master clock.
- *
- * \return CPU clock frequency in Hertz.
- */
-
-/*u_long NutGetCpuClock(void)
-{
-#if defined(NUT_CPU_FREQ)
-    return NUT_CPU_FREQ;
-#else
-    return SysCtlClockGet();
-#endif
-}*/
 
 /*!
  * \brief Return the number of system ticks per second.

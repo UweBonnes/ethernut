@@ -1,9 +1,9 @@
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/arm/cm3.h>
-#include <arch/arm/stm32f10x.h>
-#include <arch/arm/stm32f10x_dma.h>
-#include <arch/arm/stm32f10x_rcc.h>
+#include <arch/cm3.h>
+#include <arch/cm3/stm/stm32f10x.h>
+#include <arch/cm3/stm/stm32f10x_dma.h>
+#include <arch/cm3/stm/stm32f10x_rcc.h>
 
 //HANDLE pointer on which to generate event in the end of DMA transfer
 //They are modified in DMA_Register_Interrupt

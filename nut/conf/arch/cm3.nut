@@ -63,12 +63,13 @@ nutarch_cm3 =
     --
     {
         name = "nutarch_cm3_init",
-        brief = "Initialization (CortexM3)",
+        brief = "Initialization and interrupt registration(CortexM3)",
         description = "Contains spurious interrupt handler.",
-        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "HW_MCU_CM3" },
+        requires = { "HW_MCU_CM3" },
+	provides = { "DEV_IRQ_CM3" },
         sources = { "cm3/cmsis/core_cm3.c",
                     "cm3/cmsis/cortex_init.c",
-           },
+                  },
         options =
         {
             {
@@ -109,7 +110,7 @@ nutarch_cm3 =
     {
         name = "nutarch_cm3_ostimer",
         brief = "System Timer (CortexM3)",
-        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_CM3" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_CM3" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "cm3/cmsis/ostimer_cortex.c" },
     },
@@ -128,23 +129,10 @@ nutarch_cm3 =
     --
     -- CortexM3 Reset Controller
     --
---    {
---        name = "nutarch_arm_rstc",
---        brief = "AT91 Reset Controller",
---        description = "AT91 reset controller support.",
---        requires = { "HW_MCU_CM3" },
---        provides = { "DEV_MCU_RESET" },
---        sources = { "cm3/cmsis/cortex_reset.c" },
---    },
-
-    --
-    -- CortexM3 Interrupt handling (NVIC).
-    --
     {
-        name = "nutarch_cm3_irq",
-        brief = "NVIC Interrupt Handler (CortexM3)",
-        requires = { "LICENSE_LUMINARY_ANTI_VIRAL", "HW_MCU_CM3" },
-        provides = { "DEV_IRQ_CM3" },
+        name = "nutarch_cm3_reset",
+        brief = "Cortex Reset Controller support",
+        requires = { "HW_MCU_CM3" },
         sources =
         {
             "cm3/cmsis/cortex_reset.c",

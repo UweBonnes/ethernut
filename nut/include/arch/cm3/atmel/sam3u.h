@@ -5913,7 +5913,7 @@ typedef enum IRQn
  IROn_ADCC1               = AT91C_ID_ADCC1, // ADC controller1
  IROn_HDMA                = AT91C_ID_HDMA , // HDMA
  IROn_UDPHS               = AT91C_ID_UDPHS, // USB Device High Speed
- IRQn_MAX	           		    // Total number of interrupts
+ IRQn_MAX                       // Total number of interrupts
 } IRQn_Type;
 
 #endif

@@ -204,7 +204,7 @@ static void IntUsagefaultHandler(void *arg)
 /*!
  * \brief Register interrupt handler in RAM vector table
  *
- * \param int_id	Specifies interrupt ID to register
+ * \param int_id    Specifies interrupt ID to register
  *
  * \param pfnHandler Interrupt handler function to be called
  */
@@ -218,13 +218,13 @@ void Cortex_RegisterInt(IRQn_Type int_id, void (*pfnHandler)(void*))
     /* Make sure that the RAM vector table is correctly aligned. */
     NUTASSERT(((uint32_t)g_pfnRAMVectors & 0x000003ff) == 0);
 
-	if (pfnHandler != NULL) {
-		/* Save the interrupt handler. */
-		g_pfnRAMVectors[idx] = pfnHandler;
-	} else {
-		/* Reset to default interrupt handler */
-		g_pfnRAMVectors[idx] = &IntDefaultHandler;
-	}
+    if (pfnHandler != NULL) {
+        /* Save the interrupt handler. */
+        g_pfnRAMVectors[idx] = pfnHandler;
+    } else {
+        /* Reset to default interrupt handler */
+        g_pfnRAMVectors[idx] = &IntDefaultHandler;
+    }
 }
 
 
@@ -265,59 +265,59 @@ static void Cortex_IntInit(void)
 {
     int int_id;
 
-	/* Disable exceptions */
-	SCB->SHCSR &= ~(SCB_SHCSR_USGFAULTENA_Msk |
-	                SCB_SHCSR_BUSFAULTENA_Msk |
-	                SCB_SHCSR_MEMFAULTENA_Msk);
+    /* Disable exceptions */
+    SCB->SHCSR &= ~(SCB_SHCSR_USGFAULTENA_Msk |
+                    SCB_SHCSR_BUSFAULTENA_Msk |
+                    SCB_SHCSR_MEMFAULTENA_Msk);
 
-	/* Disable SysTick interrupt */
-	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
+    /* Disable SysTick interrupt */
+    SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 
 #ifndef NUTDEBUG_RAM
-	/* Copy Reset vector to RAM vector table */
-	g_pfnRAMVectors[0] = (void(*)(void*))g_pfnVectors[0];
+    /* Copy Reset vector to RAM vector table */
+    g_pfnRAMVectors[0] = (void(*)(void*))g_pfnVectors[0];
 
-	/* Copy Stackpointer to RAM vector table */
+    /* Copy Stackpointer to RAM vector table */
     g_pfnRAMVectors[1] = (void(*)(void*))g_pfnVectors[1];
 #endif
 
-	/* Set the exception handler */
-	g_pfnRAMVectors[2] = &IntNmiHandler;
-	g_pfnRAMVectors[3] = &IntHardfaultHandler;
-	g_pfnRAMVectors[4] = &IntMemfaultHandler;
-	g_pfnRAMVectors[5] = &IntBusfaultHandler;
-	g_pfnRAMVectors[6] = &IntUsagefaultHandler;
+    /* Set the exception handler */
+    g_pfnRAMVectors[2] = &IntNmiHandler;
+    g_pfnRAMVectors[3] = &IntHardfaultHandler;
+    g_pfnRAMVectors[4] = &IntMemfaultHandler;
+    g_pfnRAMVectors[5] = &IntBusfaultHandler;
+    g_pfnRAMVectors[6] = &IntUsagefaultHandler;
 
-	/* Init reserved vectors with NULL */
-	g_pfnRAMVectors[7]  = NULL;
-	g_pfnRAMVectors[8]  = NULL;
-	g_pfnRAMVectors[9]  = NULL;
-	g_pfnRAMVectors[10] = NULL;
-	g_pfnRAMVectors[12] = NULL;
-	g_pfnRAMVectors[13] = NULL;
+    /* Init reserved vectors with NULL */
+    g_pfnRAMVectors[7]  = NULL;
+    g_pfnRAMVectors[8]  = NULL;
+    g_pfnRAMVectors[9]  = NULL;
+    g_pfnRAMVectors[10] = NULL;
+    g_pfnRAMVectors[12] = NULL;
+    g_pfnRAMVectors[13] = NULL;
 
-	/* Init all other exception handler and system interrupts with the
-	   default handler
-	 */
-	g_pfnRAMVectors[10] = &IntDefaultHandler;
-	g_pfnRAMVectors[11] = &IntDefaultHandler;
-	g_pfnRAMVectors[14] = &IntDefaultHandler;
-	g_pfnRAMVectors[15] = &IntDefaultHandler;
+    /* Init all other exception handler and system interrupts with the
+       default handler
+     */
+    g_pfnRAMVectors[10] = &IntDefaultHandler;
+    g_pfnRAMVectors[11] = &IntDefaultHandler;
+    g_pfnRAMVectors[14] = &IntDefaultHandler;
+    g_pfnRAMVectors[15] = &IntDefaultHandler;
 
-	/* Enable exceptions again. The NMI and Hard-Fault handler are always enabled */
-	SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk |
-	              SCB_SHCSR_BUSFAULTENA_Msk |
-	              SCB_SHCSR_MEMFAULTENA_Msk;
+    /* Enable exceptions again. The NMI and Hard-Fault handler are always enabled */
+    SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk |
+                  SCB_SHCSR_BUSFAULTENA_Msk |
+                  SCB_SHCSR_MEMFAULTENA_Msk;
 
-	for (int_id = 0; int_id < NUM_INTERRUPTS - 16; int_id ++) {
-		/* Make sure the interrupt is disabled */
-		NVIC_DisableIRQ(int_id);
-		g_pfnRAMVectors[int_id] = &IntDefaultHandler;
-	}
+    for (int_id = 0; int_id < NUM_INTERRUPTS - 16; int_id ++) {
+        /* Make sure the interrupt is disabled */
+        NVIC_DisableIRQ(int_id);
+        g_pfnRAMVectors[int_id] = &IntDefaultHandler;
+    }
 
     /* Basic interrupt system setup */
-	//SCB->AIRCR = (0x05fa0000|SCB_AIRCR_PRIGROUP0);
-	/* Clear pending bits for SysTick interrupt, PendSV exception and ISRs */
+    //SCB->AIRCR = (0x05fa0000|SCB_AIRCR_PRIGROUP0);
+    /* Clear pending bits for SysTick interrupt, PendSV exception and ISRs */
     SCB->ICSR |= (SCB_ICSR_PENDSTCLR_Msk | SCB_ICSR_PENDSVCLR_Msk | SCB_ICSR_ISRPENDING_Msk);
 
     /* Point NVIC at the RAM vector table. */

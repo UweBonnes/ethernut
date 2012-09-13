@@ -146,7 +146,6 @@ nutos =
                       "It will initialize memory and timer hardware and start the "..
                       "Nut/OS idle thread, which in turn starts the application's "..
                       "main routine in a separate thread.",
-        requires = { "LICENSE_LUMINARY_ANTI_VIRAL" },
         sources = { "nutinit.c" },
         targets = { "nutinit.o" },
         options =

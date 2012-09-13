@@ -460,7 +460,7 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
             /* In case of half-duplex, enable receiver again */
             CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE)) = 1;
         }
-            
+
         /* Reset Counter */
         rbf->rbf_blockcnt = 0;
         rbf->rbf_cnt = 0;

@@ -572,8 +572,8 @@ static int EmacStart(const uint8_t * mac)
     outr(&(ETH->DMAOMR), (inr(&(ETH->DMAOMR)) & ~(ETH_DMAOMR_ST | ETH_DMAOMR_SR)) | ETH_DMAOMR_FTF);
 
     /* waiting for flush to finish */
-    i=0; 
-    while(((inr(&(ETH->DMAOMR)) & ETH_DMAOMR_FTF) == ETH_DMAOMR_FTF) && i <100) 
+    i=0;
+    while(((inr(&(ETH->DMAOMR)) & ETH_DMAOMR_FTF) == ETH_DMAOMR_FTF) && i <100)
     {
         NutSleep(1);
         i++;
@@ -613,7 +613,7 @@ static int EmacStart(const uint8_t * mac)
 
     /* reset dma and wait until reset is finished */
     outr(&(ETH->DMABMR), ETH_DMABMR_SR);
-    i=0; 
+    i=0;
     while(((inr(&(ETH->DMABMR)) & ETH_DMABMR_SR) == ETH_DMABMR_SR)&& i <100)
     {
         NutSleep(1);
@@ -889,7 +889,7 @@ int EmacInit(NUTDEVICE * dev)
     GpioPinConfigSet(NUTGPIO_PORTB, 12,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTB, 13,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTB,  5,  GPIO_CFG_PERIPHAL);
-  #else                                                   
+  #else
     GpioPinConfigSet(NUTGPIO_PORTC,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTC,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTC,  3,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
@@ -924,7 +924,7 @@ int EmacInit(NUTDEVICE * dev)
     GpioPinConfigSet(NUTGPIO_PORTB, 12,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTB, 13,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTB,  5,  GPIO_CFG_PERIPHAL);
-  #else                                                   
+  #else
     GpioPinConfigSet(NUTGPIO_PORTC,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTC,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(NUTGPIO_PORTC,  3,  GPIO_CFG_PERIPHAL);

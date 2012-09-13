@@ -58,7 +58,7 @@ int main(void)
     ((__IO uint32_t*)(CM3BB_BASE(OWI_PORT)))[CM3BB_OFFSET(GPIO_TypeDef, CRL, 4*(OWI_PIN*4))] = 1;
   #else
     CM3BB_BASE(OWI_PORT)[CM3BB_OFFSET(GPIO_TypeDef, OTYPER, OWI_PIN)] = 1;
-  #endif    
+  #endif
 /*   Switch to Half Duplex */
     CM3BBREG((devUsartStm32_1.dev_base), USART_TypeDef, CR3, _BI32(USART_CR3_HDSEL))=1;
     fprintf(stdout, " with RX connected internal to TX and TX configured as Open Drain\n");
@@ -69,7 +69,7 @@ int main(void)
 #endif
 
     if (res)
-    {   
+    {
         fprintf(stdout, "NutRegisterOwiBus_Timer failed %d\n", res);
         while(1)
             NutSleep(100);
@@ -77,7 +77,7 @@ int main(void)
     diff = OWI_SEARCH_FIRST;
     res = OwiRomSearch(bus, &diff, &hid);
     if(res)
-    {   
+    {
         printf("OwiRomSearch failed\n");
         while(1)
             NutSleep(10);

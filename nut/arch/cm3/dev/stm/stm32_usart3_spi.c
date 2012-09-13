@@ -35,7 +35,7 @@
  * $Id$
  */
 
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <sys/timer.h>
 #include <cfg/spi.h>
 #include <cfg/arch/gpio.h>

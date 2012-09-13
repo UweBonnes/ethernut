@@ -538,6 +538,9 @@ NUTDEVICE devPppHdlc0 = {
     PppHdlcIoCtl,   /* Driver specific control function, dev_ioctl. */
     PppHdlcRead,    /* Read from device, dev_read. */
     PppHdlcWrite,   /* Write to device, dev_write. */
+#ifdef __HARVARD_ARCH__
+    NULL,           /* Write data from program space to device, dev_write_P. */
+#endif
     PppHdlcOpen,    /* Open a device or file, dev_open. */
     PppHdlcClose,   /* Close a device or file, dev_close. */
     NULL            /* Request file size, dev_size. */

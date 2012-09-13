@@ -147,7 +147,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(IS_GPIO_ALL_PERIPH(bank));
     __IO uint32_t* gpio_bb = CM3BB_BASE(bank);
-    
+
     CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)>>10) = 1;
     /* keep speed at slowest for now */
     if (flags & GPIO_CFG_PERIPHAL)
@@ -160,10 +160,10 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     }
     else if (flags & GPIO_CFG_OUTPUT)
     {
-        uint32_t speed_flags_lo = 
-	     (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_MED) |
+        uint32_t speed_flags_lo =
+         (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_MED) |
               ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
-        uint32_t speed_flags_hi = 
+        uint32_t speed_flags_hi =
              (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_HIGH) |
               ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OSPEEDR, ((bit << 1)    ))] = speed_flags_lo;
@@ -172,9 +172,9 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         if ((flags & GPIO_CFG_SPEED_HIGH) == GPIO_CFG_SPEED_HIGH)
         {
            /* On F4, if even one pin needs fastest (high) speed, we need to enable the SYSCFG clock
-	     and the IO compensation cell (whatever this compensation cell is ?)*/
-	  CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN)) = 1;
-	  CM3BBREG(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD)) = 1;
+         and the IO compensation cell (whatever this compensation cell is ?)*/
+      CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN)) = 1;
+      CM3BBREG(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD)) = 1;
         /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
     }
 #endif
@@ -192,8 +192,8 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP )?1:0;
     }
-    
-    
+
+
     /* Check the result. */
     if( GpioPinConfigGet( bank, bit ) != flags ) {
         return -1;

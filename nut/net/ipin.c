@@ -179,7 +179,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         /*
          * Check for net-directed broadcast.
          */
-        else if ((dst & ~nif->if_mask) == ~nif->if_mask) {
+        else if (~nif->if_mask && (dst & ~nif->if_mask) == ~nif->if_mask) {
             bcast = 1;
         }
 
