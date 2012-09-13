@@ -401,7 +401,9 @@ static int PppHdlcAttach(NUTDEVICE *dev, NUTDEVICE *netdev)
 static int PppHdlcIoCtl(NUTDEVICE *dev, int req, void *conf)
 {
     int rc = 0;
+    PPPHDLC_DCB *dcb;
 
+    dcb = (PPPHDLC_DCB *) dev->dev_dcb;
     switch (req) {
     case HDLC_SETIFNET:
         rc = PppHdlcAttach(dev, *(NUTDEVICE **) conf);
@@ -409,6 +411,14 @@ static int PppHdlcIoCtl(NUTDEVICE *dev, int req, void *conf)
     case HDLC_GETIFNET:
         *(NUTDEVICE **)conf = (NUTDEVICE *) dev->dev_icb;
         break;
+
+    case HDLC_SETTXACCM:
+        dcb->dcb_tx_accm = *((uint32_t *) conf);
+        break;
+    case HDLC_GETTXACCM:
+        *((uint32_t *) conf) = dcb->dcb_tx_accm;
+        break;
+
     default:
         rc = _ioctl(((PPPHDLC_DCB *) (dev->dev_dcb))->dcb_fd, req, conf);
         break;
@@ -456,6 +466,8 @@ static NUTFILE *PppHdlcOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     if (dcb->dcb_fd == -1) {
         return NUTFILE_EOF;
     }
+    /* Set transmit ACCM prior to negotiation. */
+    dcb->dcb_tx_accm = 0xffffffff;
     /* Allocate a file structure to return. */
     nfp = calloc(1, sizeof(*nfp));
     if (nfp == NULL) {
