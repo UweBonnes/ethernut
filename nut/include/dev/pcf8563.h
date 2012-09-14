@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -50,19 +50,15 @@
 
 extern NUTRTC rtcPcf8563;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int PcfRtcInit(NUTRTC *rtc);
 
 extern int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm);
-extern int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm);
+extern int PcfRtcSetClock(NUTRTC *rtc, const struct _tm *tm);
 extern int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs);
-extern int PcfRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs);
+extern int PcfRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs);
 extern int PcfRtcGetStatus(NUTRTC *rtc, uint32_t *sflgs);
 extern int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs);
 extern int PcfRtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
-extern int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t len);
+extern int PcfRtcWrite(int nv, const uint8_t *buff, size_t len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

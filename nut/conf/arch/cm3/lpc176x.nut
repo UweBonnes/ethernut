@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -66,7 +66,8 @@ nutarch_cm3_lpc176x =
                 type = "integer",
                 default = 1,
                 requires = { "HW_MCU_CM3" },
-                provides = {
+                provides =
+                {
                     "HW_PLL_LPC17xx",
                     "HW_RTC_LPC17xx",
                     "HW_FLASH_LPC17xx",
@@ -74,6 +75,7 @@ nutarch_cm3_lpc176x =
                     "HW_CRC32_LPC177x",
                     "DEV_IRQ_LPC17xx",
                     "HW_WDT_LPC17xx",
+                    "HW_EMAC_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -95,10 +97,11 @@ nutarch_cm3_lpc176x =
                 description = "NXP LPC1758",
                 flavor = "booldata",
                 exclusivity = lpc176x_device_class,
-                provides = {
-                        "HW_MCU_LPC1758",
-                        "HW_UART0_LPC17xx",
-                        "HW_UART1_LPC17xx"
+                provides =
+                {
+                    "HW_MCU_LPC1758",
+                    "HW_UART0_LPC17xx",
+                    "HW_UART1_LPC17xx"
                 },
                 file = "include/cfg/arch.h"
             },
@@ -108,10 +111,11 @@ nutarch_cm3_lpc176x =
                 description = "NXP LPC1768",
                 flavor = "booldata",
                 exclusivity = lpc176x_device_class,
-                provides = {
-                        "HW_MCU_LPC1768",
-                        "HW_UART0_LPC17xx",
-                        "HW_UART1_LPC17xx"
+                provides =
+                {
+                    "HW_MCU_LPC1768",
+                    "HW_UART0_LPC17xx",
+                    "HW_UART1_LPC17xx"
                 },
                 file = "include/cfg/arch.h"
             }
@@ -126,9 +130,11 @@ nutarch_cm3_lpc176x =
         brief = "LPC175x / LPC176x PLL Setup",
         description = "PLL configuration. Currently it is hard coded. May be user configurable later.\n",
         requires = { "HW_MCU_LPC176x", "TOOL_CC_CM3", "TOOL_GCC" },
-        sources = { "cm3/dev/nxp/system_lpc176x.c",
-        			"cm3/dev/nxp/lpc176x_clk.c"
-        		  }
+        sources =
+        {
+            "cm3/dev/nxp/system_lpc176x.c",
+            "cm3/dev/nxp/lpc176x_clk.c"
+        }
     },
 
     --
@@ -144,7 +150,12 @@ nutarch_cm3_lpc176x =
         description = "Generic port I/O API.",
         requires = { "HW_MCU_LPC176x" },
         provides = { "HW_GPIO_LPC176x" },
-        sources = { "cm3/dev/nxp/lpc176x_gpio.c" }
+        sources =
+        {
+            "cm3/dev/nxp/lpc176x_gpio.c",
+            "cm3/dev/nxp/lpc17xx_gpioirq.c",
+            "cm3/dev/nxp/ih_lpc17xx_pio.c"
+        }
     },
 
     --
@@ -156,13 +167,17 @@ nutarch_cm3_lpc176x =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART0_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-        			 "DEV_UART_LPC17xx",
-        			 "DEV_UART_SPECIFIC" 
-                   },
-        sources =  { "cm3/dev/nxp/lpc176x_usart0.c",
-                     "cm3/dev/nxp/ih_lpc17xx_usart0.c"
-                   },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC"
+        },
+        sources =
+        {
+            "cm3/dev/nxp/lpc176x_usart0.c",
+            "cm3/dev/nxp/ih_lpc17xx_usart0.c"
+        },
         options =
         {
             {
@@ -185,9 +200,9 @@ nutarch_cm3_lpc176x =
                 macro = "USART0_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART0_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"
@@ -217,12 +232,14 @@ nutarch_cm3_lpc176x =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART1_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-        			 "DEV_UART_LPC17xx",
-        			 "DEV_UART_SPECIFIC",
-                     "DEV_UART1_GPIO_RTS",
-                     "DEV_UART1_GPIO_CTS" 
-                   },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC",
+            "DEV_UART1_GPIO_RTS",
+            "DEV_UART1_GPIO_CTS"
+        },
 --        sources =  { "cm3/dev/nxp/lpc176x_usart1.c",
 --                     "cm3/dev/nxp/ih_lpc17xx_usart1.c"
 --                   },
@@ -248,9 +265,9 @@ nutarch_cm3_lpc176x =
                 macro = "USART1_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART1_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"
@@ -273,10 +290,12 @@ nutarch_cm3_lpc176x =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART2_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-        			 "DEV_UART_LPC17xx",
-        			 "DEV_UART_SPECIFIC" 
-                   },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC"
+        },
 --        sources =  { "cm3/dev/nxp/lpc176x_usart2.c",
 --                     "cm3/dev/nxp/ih_lpc17xx_usart2.c"
 --                   },
@@ -302,9 +321,9 @@ nutarch_cm3_lpc176x =
                 macro = "USART2_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART2_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"
@@ -327,10 +346,12 @@ nutarch_cm3_lpc176x =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART3_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART",
-        			 "DEV_UART_LPC17xx",
-        			 "DEV_UART_SPECIFIC"
-                   },
+        provides =
+        {
+            "DEV_UART",
+            "DEV_UART_LPC17xx",
+            "DEV_UART_SPECIFIC"
+        },
 --        sources =  {  "cm3/dev/nxp/lpc176x_usart3.c",
 --                    "cm3/dev/nxp/ih_lpc17xx_usart3.c"
 --                  },
@@ -356,9 +377,9 @@ nutarch_cm3_lpc176x =
                 macro = "USART3_SUPPORT_DMA",
                 brief = "Support DMA Blocktransfer",
                 description = "When selected, the driver can use DMA for block transfers.\n"..
-                			  "Block transfers can be enabled or disabled by calling _ioctl "..
-                			  "with the following parameters:\n"..
-                			  "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
+                              "Block transfers can be enabled or disabled by calling _ioctl "..
+                              "with the following parameters:\n"..
+                              "UART_SETBLOCKREAD\nUART_SETBLOCKWRITE",
                 flavor = "booldata",
                 requires = { "USART3_SUPPORT_IRQ" },
                 file = "include/cfg/uart.h"

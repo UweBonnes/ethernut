@@ -45,10 +45,6 @@
  * keep it running on broken hardware.
  */
 
-__BEGIN_DECLS
-
 extern void WebDemo(void *arg) __attribute__ ((noreturn));
-
-__END_DECLS
 
 #endif

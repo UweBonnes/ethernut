@@ -46,7 +46,6 @@
 
 #include <arch/cm3.h>
 #include <dev/gpio.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
 #include <arch/cm3/stm/stm32f10x_rcc.h>
 
 #define NUTGPIOPORT_MAX NUTGPIO_PORTG+1
@@ -72,12 +71,13 @@ static const uint32_t GPIO_RCCx[] = {
  * \param bit  Bit number of the specified bank/port.
  *
  * \return Attribute flags of the pin.
- */
+    uint8_t cnf; */
 uint32_t GpioPinConfigGet(int bank, int bit)
 {
     uint32_t rc = 0;
     uint8_t mode;
     uint8_t cnf;
+    uint8_t speed;
     GPIO_TypeDef *GPIOx = ((GPIO_TypeDef *)bank);
 
     if( bit < 8 ) {
@@ -85,9 +85,11 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     }
     else {
         rc = GPIOx->CRH;
+        bit -=8;
     }
 
     mode = ( rc >> ( bit * 4 ) );
+    speed = mode & 0x3;
     cnf = ( mode >> 2 ) & 0x3;
     mode &= 0x3;
 
@@ -102,10 +104,12 @@ uint32_t GpioPinConfigGet(int bank, int bit)
         case 1:
             /* Input Floating */
             rc = 0;
-            break;
-        case 2:
+            break;        case 2:
             /* Input with Pullup */
-            rc |= GPIO_CFG_PULLUP;
+            if (GPIOx->ODR & _BV(bit))
+                rc |= GPIO_CFG_PULLUP;
+            else
+                rc |= GPIO_CFG_PULLDOWN;
             break;
         }
     }
@@ -127,6 +131,16 @@ uint32_t GpioPinConfigGet(int bank, int bit)
             rc |= (GPIO_CFG_PERIPHAL | GPIO_CFG_DISABLED | GPIO_CFG_MULTIDRIVE);
             break;
         }
+        switch ( speed) {
+        case 2 :
+            rc |= GPIO_CFG_SPEED_SLOW;
+            break;
+        case 3 :
+            rc |= GPIO_CFG_SPEED_FAST;
+            break;
+        default :
+            rc |= GPIO_CFG_SPEED_MED;
+        }
     }
     return rc;
 }
@@ -144,7 +158,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
  *              corresponding bit in this mask is 1.
  * \param flags Attribute flags to set.
  *
- * \return Always 0.
+ * \return Corrected flags
  */
 int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 {
@@ -156,6 +170,12 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     GPIO_TypeDef *GPIOx = ((GPIO_TypeDef *)bank);
 
     clock = GPIO_RCCx[(bank-GPIOA_BASE)/0x400];
+
+    /* Pull-up/down can only be configured for input mode*/
+    if (flags & (GPIO_CFG_OUTPUT|GPIO_CFG_DISABLED))
+        if(flags & (GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN))
+            flags &= ~(GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN);
+
 
     /*
      * cnf  mode  Meaning
@@ -176,8 +196,12 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 
 
     if( flags & GPIO_CFG_OUTPUT ) {
-        /* Configure pin as output 50MHz */
-        cxmx = 0x3;
+        switch (flags && GPIO_CFG_SPEED)
+        {
+        case GPIO_CFG_SPEED_SLOW: cxmx = 0x2; break;
+        case GPIO_CFG_SPEED_FAST: cxmx = 0x3; break;
+        default: cxmx = 0x1;
+        }
 
         /* Configure Open-Drain */
         if( flags & GPIO_CFG_MULTIDRIVE )
@@ -200,9 +224,13 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
         cxmx = 0x4;
 
         /* Configure pin as input PullUp/Down */
-        if( flags & GPIO_CFG_PULLUP )
+        if( flags & (GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN)) {
             cxmx = 0x8;
-
+            if (flags & GPIO_CFG_PULLUP)
+                GPIOx->ODR |= mask;
+            else
+                GPIOx->ODR &= ~mask;
+        }
         /* Configure pin as analog input */
         if( flags & GPIO_CFG_DISABLED )
             cxmx = 0x0;
@@ -247,7 +275,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     GPIOx->CRL = crl;
     GPIOx->CRH = crh;
 
-    return 0;
+    return flags;
 }
 
 /*!
@@ -271,10 +299,8 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(bank<NUTGPIOPORT_MAX);
 
-    GpioPortConfigSet( bank, _BV( bit ), flags );
-
-    /* Check the result. */
-    if( GpioPinConfigGet( bank, bit ) != flags ) {
+    if (GpioPortConfigSet( bank, _BV( bit ), flags ) !=
+        GpioPinConfigGet( bank, bit )) {
         return -1;
     }
     return 0;
@@ -363,130 +389,3 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit)
   return 0;
 }
 
-/**
-  ******************************************************************************
-  * @file    stm32f10x_gpio.c
-  * @author  MCD Application Team
-  * @version V3.3.0
-  * @date    04/16/2010
-  * @brief   This file provides all the GPIO firmware functions.
-  ******************************************************************************
-  * @copy
-  *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-  *
-  * <h2><center>&copy; COPYRIGHT 2010 STMicroelectronics</center></h2>
-  */
-
-#define LSB_MASK                    ((uint16_t)0xFFFF)
-#define DBGAFR_POSITION_MASK        ((uint32_t)0x000F0000)
-#define DBGAFR_SWJCFG_MASK          ((uint32_t)0xF0FFFFFF)
-#define DBGAFR_LOCATION_MASK        ((uint32_t)0x00200000)
-#define DBGAFR_NUMBITS_MASK         ((uint32_t)0x00100000)
-/**
-  * @brief  Changes the mapping of the specified pin.
-  * @param  GPIO_Remap: selects the pin to remap.
-  *   This parameter can be one of the following values:
-  *     @arg GPIO_Remap_SPI1
-  *     @arg GPIO_Remap_I2C1
-  *     @arg GPIO_Remap_USART1
-  *     @arg GPIO_Remap_USART2
-  *     @arg GPIO_PartialRemap_USART3
-  *     @arg GPIO_FullRemap_USART3
-  *     @arg GPIO_PartialRemap_TIM1
-  *     @arg GPIO_FullRemap_TIM1
-  *     @arg GPIO_PartialRemap1_TIM2
-  *     @arg GPIO_PartialRemap2_TIM2
-  *     @arg GPIO_FullRemap_TIM2
-  *     @arg GPIO_PartialRemap_TIM3
-  *     @arg GPIO_FullRemap_TIM3
-  *     @arg GPIO_Remap_TIM4
-  *     @arg GPIO_Remap1_CAN1
-  *     @arg GPIO_Remap2_CAN1
-  *     @arg GPIO_Remap_PD01
-  *     @arg GPIO_Remap_TIM5CH4_LSI
-  *     @arg GPIO_Remap_ADC1_ETRGINJ
-  *     @arg GPIO_Remap_ADC1_ETRGREG
-  *     @arg GPIO_Remap_ADC2_ETRGINJ
-  *     @arg GPIO_Remap_ADC2_ETRGREG
-  *     @arg GPIO_Remap_ETH
-  *     @arg GPIO_Remap_CAN2
-  *     @arg GPIO_Remap_SWJ_NoJTRST
-  *     @arg GPIO_Remap_SWJ_JTAGDisable
-  *     @arg GPIO_Remap_SWJ_Disable
-  *     @arg GPIO_Remap_SPI3
-  *     @arg GPIO_Remap_TIM2ITR1_PTP_SOF
-  *     @arg GPIO_Remap_PTP_PPS
-  *     @arg GPIO_Remap_TIM15
-  *     @arg GPIO_Remap_TIM16
-  *     @arg GPIO_Remap_TIM17
-  *     @arg GPIO_Remap_CEC
-  *     @arg GPIO_Remap_TIM1_DMA
-  *     @arg GPIO_Remap_TIM9
-  *     @arg GPIO_Remap_TIM10
-  *     @arg GPIO_Remap_TIM11
-  *     @arg GPIO_Remap_TIM13
-  *     @arg GPIO_Remap_TIM14
-  *     @arg GPIO_Remap_FSMC_NADV
-  * @note  If the GPIO_Remap_TIM2ITR1_PTP_SOF is enabled the TIM2 ITR1 is connected
-  *        to Ethernet PTP output. When Reset TIM2 ITR1 is connected to USB OTG SOF output.
-  * @param  NewState: new state of the port pin remapping.
-  *   This parameter can be: ENABLE or DISABLE.
-  * @retval None
-  */
-void GPIO_PinRemapConfig(uint32_t GPIO_Remap, FunctionalState NewState)
-{
-    uint32_t tmp = 0x00, tmp1 = 0x00, tmpreg = 0x00, tmpmask = 0x00;
-
-    /* Check the parameters */
-    NUTASSERT(IS_GPIO_REMAP(GPIO_Remap));
-    NUTASSERT(IS_FUNCTIONAL_STATE(NewState));
-
-    if((GPIO_Remap & 0x80000000) == 0x80000000)
-    {
-        tmpreg = AFIO->MAPR2;
-    }
-    else
-    {
-        tmpreg = AFIO->MAPR;
-    }
-
-    tmpmask = (GPIO_Remap & DBGAFR_POSITION_MASK) >> 0x10;
-    tmp = GPIO_Remap & LSB_MASK;
-
-    if ((GPIO_Remap & (DBGAFR_LOCATION_MASK | DBGAFR_NUMBITS_MASK)) == (DBGAFR_LOCATION_MASK | DBGAFR_NUMBITS_MASK))
-    {
-        tmpreg &= DBGAFR_SWJCFG_MASK;
-        AFIO->MAPR &= DBGAFR_SWJCFG_MASK;
-    }
-    else if ((GPIO_Remap & DBGAFR_NUMBITS_MASK) == DBGAFR_NUMBITS_MASK)
-    {
-        tmp1 = ((uint32_t)0x03) << tmpmask;
-        tmpreg &= ~tmp1;
-        tmpreg |= ~DBGAFR_SWJCFG_MASK;
-    }
-    else
-    {
-        tmpreg &= ~(tmp << ((GPIO_Remap >> 0x15)*0x10));
-        tmpreg |= ~DBGAFR_SWJCFG_MASK;
-    }
-
-    if (NewState != DISABLE)
-    {
-        tmpreg |= (tmp << ((GPIO_Remap >> 0x15)*0x10));
-    }
-
-    if((GPIO_Remap & 0x80000000) == 0x80000000)
-    {
-        AFIO->MAPR2 = tmpreg;
-    }
-    else
-    {
-        AFIO->MAPR = tmpreg;
-    }
-}

@@ -82,7 +82,6 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <arch/cm3/timer.h>
-#include <arch/cm3/cortex_clk.h>
 #include <arch/cm3/nxp/lpc177x_8x_clk.h>
 #include <cfg/clock.h>
 

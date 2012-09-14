@@ -93,7 +93,7 @@ static int save_env(void)
  * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
-int setenv(CONST char *name, CONST char *value, int force)
+int setenv(const char *name, const char *value, int force)
 {
     NUTENVIRONMENT *envp;
     NUTENVIRONMENT *nxtp;
@@ -164,7 +164,7 @@ int setenv(CONST char *name, CONST char *value, int force)
  *         errno is set to indicate the error.
  */
 #ifdef CRT_UNSETENV_POSIX
-int unsetenv(CONST char *name)
+int unsetenv(const char *name)
 {
     NUTENVIRONMENT *envp;
 
@@ -192,7 +192,7 @@ int unsetenv(CONST char *name)
 
 #else
 
-void unsetenv(CONST char *name)
+void unsetenv(const char *name)
 {
     NUTENVIRONMENT *envp;
 

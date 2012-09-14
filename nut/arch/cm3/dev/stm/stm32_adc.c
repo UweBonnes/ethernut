@@ -45,7 +45,7 @@
  *
  */
 
-#include <arch/arm.h>
+#include <arch/cm3.h>
 #include <dev/irqreg.h>
 
 #include <sys/event.h>
@@ -55,8 +55,8 @@
 #include <sys/heap.h>
 
 #include <dev/irqreg.h>
-#include <arch/arm/stm32f10x_rcc.h>
-#include <arch/arm/stm32f10x_adc.h>
+#include <arch/cm3/stm/stm32f10x_rcc.h>
+#include <arch/cm3/stm/stm32f10x_adc.h>
 
 /*!
  * \addtogroup xgStm32Adc
@@ -236,10 +236,10 @@ void ADCInit(void)
 
     /* Enable clock int PMC and reset ADC */
     RCC->APB2ENR|=
-	    RCC_APB2Periph_ADC1|
-	    RCC_APB2Periph_ADC2|
-	    RCC_APB2Periph_ADC3;
-	    	
+        RCC_APB2Periph_ADC1|
+        RCC_APB2Periph_ADC2|
+        RCC_APB2Periph_ADC3;
+
     outr(ADC_CR, ADC_SWRST);                  // Reset bus
     outr(ADC_CR, 0x00);
 

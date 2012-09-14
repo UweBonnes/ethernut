@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -121,9 +121,7 @@
 #include <fcntl.h>
 #include <memdebug.h>
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined(NUTDEBUG)
 #include <stdio.h>
 #include <fs/phatdbg.h>
 #endif
@@ -369,14 +367,14 @@ int PhatFileClose(NUTFILE * nfp)
  *
  * \bug Append mode not working as expected.
  */
-NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+NUTFILE *PhatFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *nfp = NUTFILE_EOF;
     NUTFILE *ndp = NUTFILE_EOF;
     PHATFILE *ffcb;
     PHATFILE *dfcb;
     PHATFIND *srch;
-    CONST char *fname;
+    const char *fname;
 
     /* Open the parent directory and return the basename. */
     if ((ndp = PhatDirOpenParent(dev, path, &fname)) == NUTFILE_EOF) {
@@ -535,7 +533,7 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
  * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
-int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+int PhatFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     int step;
@@ -968,7 +966,7 @@ static int PhatInit(NUTDEVICE * dev)
 /*!
  * \brief Reentrant variant of PhatFileOpen().
  */
-static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *rc;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -1011,7 +1009,7 @@ static int PhatApiFileClose(NUTFILE * nfp)
 /*!
  * \brief Reentrant variant of PhatFileWrite().
  */
-static int PhatApiFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+static int PhatApiFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     NUTDEVICE *dev = nfp->nf_dev;

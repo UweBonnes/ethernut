@@ -106,6 +106,12 @@ void NutEtherInput(NUTDEVICE * dev, NETBUF * nb)
         default:
             /* No handler found. Silently discard the frame. */
             NutNetBufFree(nb);
+#ifdef NUT_PERFMON
+            {
+                IFNET *nif = (IFNET *) dev->dev_icb;
+                nif->if_in_unknown_protos++;
+            }
+#endif
             break;
         }
     }

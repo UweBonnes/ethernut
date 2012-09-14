@@ -48,12 +48,12 @@
 #include <dev/irqreg.h>
 #include <dev/usart.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
 #include <arch/cm3/stm/stm32xxxx_usart.h>
 #include <arch/cm3/stm/stm32_usart.h>
+#include <arch/cm3/stm/stm32_dma.h>
 
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
-#include <arch/cm3/stm/stm32f1_dma.h>
+#include <arch/cm3/stm/stm32_dma.h>
 #endif
 
 /* Some function renaming for IRQ handling on uarts
@@ -226,7 +226,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
 
         /* Setup Transfer */
         DMA_Setup(UART_DMA_TXCHANNEL, UART_DR_PTR, rbf->rbf_blockptr, rbf->rbf_blockcnt,
-            DMA_CCR1_MINC);
+            DMA_MINC);
 
         /* Enable TxComplete Interrupt */
         CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT)) = 1;
@@ -332,7 +332,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
 
         /* Setup Transfer */
         DMA_Setup(UART_DMA_RXCHANNEL, rbf->rbf_blockptr, UART_DR_PTR, rbf->rbf_blockcnt,
-            DMA_CCR1_MINC);
+            DMA_MINC);
 
         /* Enable TxComplete Interrupt */
         CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAR))= 1;
@@ -456,8 +456,10 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         /* Disable DMA transfer */
         CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT)) = 0;
 
-        /* In case of half-duplex, enable receiver again */
-        CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE)) = 1;
+        if( hdpx_control) {
+            /* In case of half-duplex, enable receiver again */
+            CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_RE)) = 1;
+        }
 
         /* Reset Counter */
         rbf->rbf_blockcnt = 0;
@@ -505,8 +507,11 @@ static void Stm32UsartInterrupt(void *arg)
     if (csr & USART_SR_RXNE) {
         Stm32UsartRxReady(&dcb->dcb_rx_rbf);
     }
-    /* Test for next byte can be transmitted */
-    if (csr & USART_SR_TXE) {
+    /* Test for next byte can be transmitted
+     * At end of DMA_TX Transfer, both TC and TXE are set.
+     * Do not reinitialize transfer in that case!
+     */
+    if ((csr & USART_SR_TXE) && !CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT))) {
         Stm32UsartTxReady(&dcb->dcb_tx_rbf);
     }
     /* Last byte has been sent completely. */
@@ -576,12 +581,11 @@ static uint32_t Stm32UsartGetSpeed(void)
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
-    if (USARTnBase == USART1_BASE) {
-        clk = RCC_ClocksStatus.PCLK2_Frequency;
-    }
-    else {
-        clk = RCC_ClocksStatus.PCLK1_Frequency;
-    }
+#if USARTclk == NUT_HWCLK_PCLK1
+    clk = RCC_ClocksStatus.PCLK2_Frequency;
+#else
+    clk = RCC_ClocksStatus.PCLK1_Frequency;
+#endif
     if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
         uint32_t  frac = frac_div & 7;
@@ -613,12 +617,11 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     Stm32UsartDisable();
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);
-    if (USARTnBase == USART1_BASE) {
-        apbclock = RCC_ClocksStatus.PCLK2_Frequency;
-    }
-    else {
-        apbclock = RCC_ClocksStatus.PCLK1_Frequency;
-    }
+#if USARTclk == NUT_HWCLK_PCLK1
+    apbclock = RCC_ClocksStatus.PCLK2_Frequency;
+#else
+    apbclock = RCC_ClocksStatus.PCLK1_Frequency;
+#endif
 
     /* Determine the integer part */
     if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
@@ -1103,7 +1106,6 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         flow_control = 0;
     }
     NutUartIrqEnable();
-
 #endif
 
     /* Setup half-duplex mode */
@@ -1145,6 +1147,13 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
     }
 #endif
 
+    /*
+     * Verify the result.
+     */
+    if ((Stm32UsartGetFlowControl() & USART_MF_FLOWMASK) !=
+        (flags & USART_MF_FLOWMASK)) {
+        return -1;
+    }
     return 0;
 }
 
@@ -1221,18 +1230,17 @@ static int Stm32UsartInit(void)
     }
 
     /* Enable UART clock */
-    if (USARTn == USART1) {
+#if USARTclk == NUT_HWCLK_PCLK1
         RCC_APB2PeriphClockCmd(STM_USART_CLK, ENABLE);
         /* Reset USART IP */
         RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
         RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
-    else {
+#else
         RCC_APB1PeriphClockCmd(STM_USART_CLK, ENABLE);
         /* Reset USART IP */
         RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
         RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
+#endif
 
     /* Configure USART Tx as alternate function push-pull */
     GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
@@ -1259,8 +1267,9 @@ static int Stm32UsartInit(void)
 
     /* USART Related GPIO Init */
 #if defined (MCU_STM32F1)
- #ifdef STM_USART_REMAP
-    GPIO_PinRemapConfig(STM_USART_REMAP, STM_USART_DOREMAP);
+ #ifdef STM_USART_REMAP_MASK
+    AFIO->MAPR &= ~STM_USART_REMAP_MASK;
+    AFIO->MAPR |=  STM_USART_REMAP_VALUE;
  #endif
 #else
     GPIO_PinAFConfig((GPIO_TypeDef*) TX_GPIO_PORT, TX_GPIO_PIN,  STM_USART_REMAP);
@@ -1309,6 +1318,9 @@ static int Stm32UsartInit(void)
     /* Enable USART */
     USARTn->CR1 |= USART_CR1_UE|USART_CR1_TE|USART_CR1_RE;
 
+#if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
+    DMA_Init();
+#endif
     NutIrqEnable(&SigUSART);
     return 0;
 }
@@ -1331,16 +1343,13 @@ static int Stm32UsartDeinit(void)
     NutRegisterIrqHandler(&SigUSART, 0, 0);
 
     /* Reset UART. */
-    if (USARTn == USART1)
-    {
-        RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
-        RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
-    else
-    {
-        RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
-        RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
-    }
+#if USARTclk == NUT_HWCLK_PCLK1
+    RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
+    RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
+#else
+    RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
+    RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
+#endif
 
     return 0;
 }

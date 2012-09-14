@@ -55,8 +55,6 @@ struct _AVR32SPIREG {
 extern NUTSPIBUS spiBus0Avr32;
 extern NUTSPIBUS spiBus1Avr32;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int Avr32Spi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi);
 extern void Avr32SpiBus0Interrupt(void *arg);
 
@@ -65,10 +63,9 @@ extern void Avr32SpiBus1Interrupt(void *arg);
 
 extern int Avr32SpiSetup(NUTSPINODE * node);
 extern int Avr32SpiBusNodeInit(NUTSPINODE * node);
-extern int Avr32SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int Avr32SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int Avr32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
+extern int Avr32SpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int Avr32SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int Avr32SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
 extern int Avr32SpiBusWait(NUTSPINODE * node, uint32_t tmo);
-/* Prototypes */
-__END_DECLS
+
 #endif

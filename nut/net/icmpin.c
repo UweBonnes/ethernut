@@ -61,7 +61,7 @@
  * \brief Translation table from icmp error code to errno.
  */
 
-static CONST int icmp_code2errno[16] =
+static const int icmp_code2errno[16] =
 {
     ENETUNREACH,
     EHOSTUNREACH,

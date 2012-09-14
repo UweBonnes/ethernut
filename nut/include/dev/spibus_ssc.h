@@ -62,9 +62,6 @@ struct _GSPIREG {
 
 extern NUTSPIBUS spiBus0Ssc;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int SscSpiSetup(NUTSPINODE * node);
-/* Prototypes */
-__END_DECLS
+
 #endif

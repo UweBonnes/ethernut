@@ -27,10 +27,11 @@
 #include <wx/font.h>
 
 ConfItemRenderer::ConfItemRenderer()
-    : wxDataViewCustomRenderer(
-        "CStateIconText", // Variant type.
-        wxDATAVIEW_CELL_ACTIVATABLE) // Will call ActivateCell() if the icon is clicked.
+    : wxDataViewCustomRenderer("CStateIconText", wxDATAVIEW_CELL_ACTIVATABLE, 0)
 {
+    /* GTK requires to set mode and alignment after creating the base class. */
+    SetMode(wxDATAVIEW_CELL_ACTIVATABLE);
+    SetAlignment(0);
 }
 
 bool ConfItemRenderer::Render(wxRect rect, wxDC *dc, int state)

@@ -63,11 +63,11 @@ static MEDIA_TYPE_ENTRY mt_defaults[] = {
 #ifdef HTTP_MEDIATYPE_PDF
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_application, NULL, MTFLAG_INITIAL, MediaTypeHandlerBinary, "pdf" },
 #endif
+#ifdef HTTP_MEDIATYPE_JS
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY),  mtc_text, "javascript", MTFLAG_INITIAL, MediaTypeHandlerText, "js" },
+#endif
 #ifdef HTTP_MEDIATYPE_JPG
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_image, "jpeg", MTFLAG_INITIAL, MediaTypeHandlerBinary, "jpg" },
-#endif
-#ifdef HTTP_MEDIATYPE_JS
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY),  mtc_application, "x-javascript", MTFLAG_INITIAL, MediaTypeHandlerText, "js" },
 #endif
 #ifdef HTTP_MEDIATYPE_JAR
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_application, "x-java-archive", MTFLAG_INITIAL, MediaTypeHandlerBinary, "jar" },

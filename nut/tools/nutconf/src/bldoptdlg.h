@@ -28,6 +28,7 @@
 
 #include <wx/wx.h>
 #include <wx/config.h>
+#include <wx/filepicker.h>
 
 /*!
  * \brief Settings dialog for build options.
@@ -46,35 +47,30 @@ private:
 
     /*! \brief Text control used to specify the source directory path.
     */
-    wxTextCtrl *m_entSourceDir;
+    wxDirPickerCtrl *m_pickSourceDir;
 
     /*! \brief Text control used to specify the include directory path that is searched first.
     */
-    wxTextCtrl *m_entInclFirstDir;
+    wxDirPickerCtrl *m_pickInclFirstDir;
 
     /*! \brief Text control used to specify the include directory path that is searched last.
     */
-    wxTextCtrl *m_entInclLastDir;
+    wxDirPickerCtrl *m_pickInclLastDir;
 
     /*! \brief Text control used to specify the build directory path.
     */
-    wxTextCtrl *m_entBuildDir;
+    wxDirPickerCtrl *m_pickBuildDir;
 
     /*! \brief Text control used to specify the install directory path.
     */
-    wxTextCtrl *m_entInstallDir;
+    wxDirPickerCtrl *m_pickInstallDir;
 
     /*! \brief The source directory path scanned last time.
     */
     wxString m_lastSourceDir;
 
-    void OnBrowseBuildPath(wxCommandEvent& event);
-    void OnBrowseInstallPath(wxCommandEvent& event);
-    void OnBrowseSourceDir(wxCommandEvent& event);
-    void OnBrowseIncludeFirst(wxCommandEvent& event);
-    void OnBrowseIncludeLast(wxCommandEvent& event);
     void OnPlatformEnter(wxCommandEvent& event);
-    void OnSourceDirChange(wxCommandEvent& event);
+    void OnSourceDirChange(wxFileDirPickerEvent& event);
     void PopulatePlatform();
 
     DECLARE_EVENT_TABLE()

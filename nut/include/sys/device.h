@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -107,8 +107,6 @@
  * \file sys/device.h
  * \brief Nut/OS device definitions.
  */
-
-__BEGIN_DECLS
 
 // wait times for emulation and reality
 // has to be overworked
@@ -237,7 +235,7 @@ struct _NUTDEVICE {
     /*!
      * \brief Write to device.
      */
-    int (*dev_write) (NUTFILE *, CONST void *, int);
+    int (*dev_write) (NUTFILE *, const void *, int);
 
     /*!
      * \brief Write to device.
@@ -249,7 +247,7 @@ struct _NUTDEVICE {
     /*!
      * \brief Open a device or file.
      */
-    NUTFILE * (*dev_open) (NUTDEVICE *, CONST char *, int, int);
+    NUTFILE * (*dev_open) (NUTDEVICE *, const char *, int, int);
 
     /*!
      * \brief Close a device or file.
@@ -276,7 +274,7 @@ struct _NUTVIRTUALDEVICE {
     NUTVIRTUALDEVICE *vdv_zero;
     uint8_t vdv_type;
     int (*vdv_read) (void *, void *, int);
-    int (*vdv_write) (void *, CONST void *, int);
+    int (*vdv_write) (void *, const void *, int);
 #ifdef __HARVARD_ARCH__
     int (*vdv_write_P) (void *, PGM_P, int);
 #endif
@@ -314,8 +312,7 @@ struct _IFSTREAM {
 extern NUTDEVICE *nutDeviceList;
 
 extern int NutRegisterDevice(NUTDEVICE * dev, uintptr_t base, uint8_t irq);
-extern NUTDEVICE *NutDeviceLookup(CONST char *name);
-
-__END_DECLS
+extern NUTDEVICE *NutDeviceLookup(const char *name);
+extern NUTDEVICE *NutDeviceLookupType(NUTDEVICE *dev, uint_fast8_t type);
 
 #endif

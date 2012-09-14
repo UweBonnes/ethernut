@@ -1077,7 +1077,7 @@ int Stm32FlashParamRead(unsigned int pos, void *data, size_t len)
  *
  * \return FLASH_Status.
  */
-int Stm32FlashParamWrite(unsigned int pos, CONST void *data, size_t len)
+int Stm32FlashParamWrite(unsigned int pos, const void *data, size_t len)
 {
     FLASH_Status rs = 0;
     uint8_t *addr = (uint8_t*)(FLASH_CONF_SECTOR+pos);

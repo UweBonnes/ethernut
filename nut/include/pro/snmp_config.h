@@ -74,10 +74,10 @@ typedef struct _communityEntry {
 
 /*@}*/
 
-extern int SnmpViewCreate(CONST char *, CONST OID *, size_t, int);
+extern int SnmpViewCreate(const char *, const OID *, size_t, int);
 extern int SnmpViewFind(char *);
 
-extern int SnmpCommunityCreate(CONST char *, int, int);
-extern int SnmpCommunityFind(CONST char *, int *, int *);
+extern int SnmpCommunityCreate(const char *, int, int);
+extern int SnmpCommunityFind(const char *, int *, int *);
 
 #endif

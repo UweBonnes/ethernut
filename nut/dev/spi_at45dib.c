@@ -143,7 +143,7 @@ static int At45dibTransmitCmd(NUTSPINODE * node, uint8_t op, uint32_t parm, uint
  * \return 0 on success, -1 on errors.
  */
 static int At45dibTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen,
-                           CONST void *txbuf, void *rxbuf, int xlen)
+                           const void *txbuf, void *rxbuf, int xlen)
 {
     int rc;
     NUTSPIBUS *bus;
@@ -194,7 +194,7 @@ static int At45dibCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fas
  *
  * \return 0 on success, -1 on errors.
  */
-static int At45dibCompare(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, CONST void *buf, int xlen)
+static int At45dibCompare(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, const void *buf, int xlen)
 {
     int rc;
     NUTSPIBUS *bus;
@@ -711,7 +711,7 @@ static int SpiAt45dibRead(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, void *da
  *
  * \return 0 on success or -1 if the contents differs or in case of an error.
  */
-static int SpiAt45dibCompare(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, CONST void *data, int len)
+static int SpiAt45dibCompare(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, const void *data, int len)
 {
     int rc = 0;
 
@@ -818,7 +818,7 @@ static int SpiAt45dibUsed(NUTSERIALFLASH * sfi, sf_unit_t pgn, int skip)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int SpiAt45dibWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, CONST void *data, int len)
+static int SpiAt45dibWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, const void *data, int len)
 {
     int rc = 0;
 

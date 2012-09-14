@@ -69,11 +69,20 @@ BURNCMDS  = -c init
 ## -----------------------------------------
 ##
 ifeq ($(PLATFORM), AT91SAM7X_EK)
-BURNBOARD = olimex_sam7_ex256
+BURNBOARD = at91sam7x-ek
+BURNCMDS += -c "reset halt"
+BURNCMDS += -c "flash write_image erase $(ITARG) 0x100000 bin"
+# BURNCMDS += -c "verify_image $(ITARG) 0x100000 bin"
+BURNCMDS += -c "at91sam7 gpnvm 2 set"
+BURNCMDS += -c "reset"
 endif
 
 ifeq ($(PLATFORM), AT91SAM9260_EK)
 BURNBOARD = atmel_at91sam9260-ek
+BURNCMDS += -c "reset init"
+BURNCMDS += -c "load_image $(ITARG) 0x20000000"
+BURNCMDS += -c "verify_image $(ITARG) 0x20000000"
+BURNCMDS += -c "resume 0x20000000"
 endif
 
 ifeq ($(PLATFORM), ELEKTOR_IR1)
@@ -117,28 +126,45 @@ ifeq ($(PLATFORM), ETHERNUT5)
 BURNBOARD = ethernut5
 # Initialize clocks and SDRAM.
 BURNCMDS += -c "reset init"
-ifeq ($(LDNAME), at91sam9xe_sdram.ld)
+ifeq ($(LDNAME), at91sam9xe512_ram)
 # Load image into external SDRAM.
 BURNCMDS += -c "load_image $(ITARG) 0x20000000"
 BURNCMDS += -c "verify_image $(ITARG) 0x20000000"
 BURNCMDS += -c "resume 0x20000000"
 endif
 # Programming AT91SAM9XE internal flash is not supported by OpenOCD.
+ifeq ($(LDNAME), at91sam9xe512_iram)
+# Load image into internal SRAM.
+BURNCMDS += -c "mww 0xFFFFEF00 0x00000003"
+BURNCMDS += -c "load_image $(ITARG) 0x00000000"
+BURNCMDS += -c "verify_image $(ITARG) 0x00000000"
+BURNCMDS += -c "resume 0x00000000"
+endif
 endif
 
 ifeq ($(PLATFORM), FLECX1)
 BURNBOARD = flecx
 # It is not fully clear how to program the LPC1768 flash.
 # The following sequence was found by trial and error.
-BURNCMDS += -c soft_reset_halt
+BURNCMDS += -c reset
 BURNCMDS += -c halt
-BURNCMDS += -c "mww 0x400FC040 1"
+# BURNCMDS += -c "mww 0x400FC040 1"
 BURNCMDS += -c "flash write_image erase $(ITARG) 0 bin"
-BURNCMDS += -c soft_reset_halt
+BURNCMDS += -c reset
 BURNCMDS += -c halt
-BURNCMDS += -c "reg pc 0xd1"
-BURNCMDS += -c step
-BURNCMDS += -c resume
+BURNCMDS += -c "flash write_image erase $(ITARG) 0 bin"
+# BURNCMDS += -c soft_reset_halt
+# BURNCMDS += -c halt
+# BURNCMDS += -c "reg pc 0xd1"
+# BURNCMDS += -c step
+BURNCMDS += -c "reset run"
+endif
+
+ifeq ($(PLATFORM), SAM7ETH)
+BURNBOARD = sam7eth
+BURNCMDS += -c "reset halt"
+BURNCMDS += -c "flash write_image erase $(ITARG) 0x100000 bin"
+BURNCMDS += -c reset
 endif
 
 ## Terminate OpenOCD. Use with all targets.

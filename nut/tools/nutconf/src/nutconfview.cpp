@@ -42,6 +42,8 @@ CNutConfView::CNutConfView()
     m_propertyList = NULL;
     m_infoText = NULL;
     m_expandedForFind = wxTreeItemId();
+    wxFrame *frame = (wxFrame *)wxGetApp().GetTopWindow();
+    SetFrame(frame);
 }
 
 bool CNutConfView::OnCreate(wxDocument* doc, long flags)
@@ -87,10 +89,12 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
     switch (hintOp) {
     case nutSelChanged:
         if (node) {
-            m_infoText->SetValue(node->GetDescription());
+            wxString content = node->GetDescription();
+            content.Replace("\n", "<br />");
+            m_infoText->SetPage(content);
             m_propertyList->Fill(node);
         } else {
-            m_infoText->Clear();
+            m_infoText->SetPage(wxEmptyString);
             m_propertyList->ClearAll();
         }
         break;
@@ -129,21 +133,6 @@ bool CNutConfView::OnClose(bool WXUNUSED(deleteWindow))
     Activate(false);
 
     return true;
-}
-
-void CNutConfView::OnChangeFilename()
-{
-    if (wxGetApp().GetTopWindow() && GetDocument()) {
-        wxString docTitle(wxFileNameFromPath(GetDocument()->GetFilename()));
-
-        docTitle = wxFileName::StripExtension(docTitle);
-        GetDocument()->SetTitle(docTitle);
-
-        wxString title = wxT("Nut/OS Configurator - ") + docTitle;
-
-		// For wxWindow "label" is the Window Title.
-		wxGetApp().GetTopWindow()->SetLabel(title);
-    }
 }
 
 void CNutConfView::Refresh(const wxString & WXUNUSED(macroName))

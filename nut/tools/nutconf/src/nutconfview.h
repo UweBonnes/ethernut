@@ -50,7 +50,6 @@ class CNutConfView:public wxView {
     virtual void OnDraw(wxDC * dc);
     void OnUpdate(wxView * sender, wxObject * hint = (wxObject *) NULL);
     bool OnClose(bool deleteWindow = true);
-    void OnChangeFilename();
 
     void Refresh(const wxString & macroName);
     void Refresh(wxTreeItemId h);

@@ -40,13 +40,8 @@
 
 #include <sys/types.h>
 
-/* Function prototypes. */
-__BEGIN_DECLS
-
-extern char *NutEncodeBase64(CONST char *str);
+extern char *NutEncodeBase64(const char *str);
 extern char *NutDecodeBase64(char *str);
-
-__END_DECLS
 
 /*@}*/
 

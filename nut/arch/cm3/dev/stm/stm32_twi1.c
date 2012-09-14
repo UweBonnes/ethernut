@@ -170,7 +170,7 @@ int Stm32I2cBus1Init(void)
 #endif
 #if defined (MCU_STM32F1)
     /* Configure alternate configuration. */
-    GPIO_PinRemapConfig(GPIO_Remap_I2C1, I2C_DOREMAP);
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP)) = I2C_DOREMAP;
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SDA_PIN, GPIO_AF_I2C1);
     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SCL_PIN, GPIO_AF_I2C1);

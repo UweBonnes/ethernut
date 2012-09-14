@@ -8,7 +8,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT  "Nut/OS"
 !define NUTVERSION  "5.0"
-!define NUTRELEASE  "4"
+!define NUTRELEASE  "5"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
@@ -483,11 +483,12 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\nutdisc\src\bitmaps\*.ico
     File ..\..\..\tools\nutdisc\src\bitmaps\*.xpm
     SetOutPath "$INSTDIR\nut\tools\qnutdisc"
-    File ..\..\..\tools\qnutdisc\*.cpp
-    File ..\..\..\tools\qnutdisc\*.h
-    File ..\..\..\tools\qnutdisc\*.pro
-    File ..\..\..\tools\qnutdisc\*.qrc
-    File ..\..\..\tools\qnutdisc\*.ui
+    File ..\..\..\tools\qnutdisc\src\*.cpp
+    File ..\..\..\tools\qnutdisc\src\*.h
+    File ..\..\..\tools\qnutdisc\src\*.pri
+    File ..\..\..\tools\qnutdisc\src\*.pro
+    File ..\..\..\tools\qnutdisc\src\*.qrc
+    File ..\..\..\tools\qnutdisc\src\*.ui
     SetOutPath "$INSTDIR\nut\tools\include\win32"
     File ..\..\..\tools\include\win32\*.h
   SectionEnd
@@ -647,19 +648,20 @@ SectionGroup "Application Samples"
     File ..\..\..\app\lua\Makefile
     File ..\..\..\app\lua\*.c
 
-    SetOutPath "$INSTDIR\nut\app\nutpiper"
-    File ..\..\..\app\nutpiper\Makefile
-    File ..\..\..\app\nutpiper\*.c
-    File ..\..\..\app\nutpiper\*.h
-    SetOutPath "$INSTDIR\nut\appicc\nutpiper"
-    File ..\..\..\appicc\nutpiper\*.prj
-    File ..\..\..\appicc\nutpiper\*.SRC
+    SetOutPath "$INSTDIR\nut\hwtest\audio\nutpiper"
+    File ..\..\..\hwtest\audio\nutpiper\Makefile
+    File ..\..\..\hwtest\audio\nutpiper\*.c
+    File ..\..\..\hwtest\audio\nutpiper\*.h
 
     SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3"
     File ..\..\..\hwtest\audio\playmp3\Makefile
     File ..\..\..\hwtest\audio\playmp3\*.c
     SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3\sounds"
     File ..\..\..\hwtest\audio\playmp3\sounds\*.mp3
+
+    SetOutPath "$INSTDIR\nut\app\pingnet"
+    File ..\..\..\app\pingnet\Makefile
+    File ..\..\..\app\pingnet\*.c
 
     SetOutPath "$INSTDIR\nut\app\portdio"
     File ..\..\..\app\portdio\Makefile

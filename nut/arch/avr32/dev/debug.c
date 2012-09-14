@@ -179,7 +179,7 @@ static int DebugInit(NUTDEVICE * dev)
  * A newline character will be automatically prepended
  * by a carriage return.
  */
-static void DebugPut(CONST NUTDEVICE * dev, char ch)
+static void DebugPut(const NUTDEVICE * dev, char ch)
 {
     volatile avr32_usart_t *usart = (avr32_usart_t *) dev->dev_base;
 
@@ -203,10 +203,10 @@ static void DebugPut(CONST NUTDEVICE * dev, char ch)
  *
  * \return Number of characters sent.
  */
-static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int DebugWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int c = len;
-    CONST char *cp = buffer;
+    const char *cp = buffer;
 
     while (c--) {
         DebugPut(fp->nf_dev, *cp++);
@@ -219,7 +219,7 @@ static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 

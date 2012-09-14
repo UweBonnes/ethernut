@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -63,16 +63,16 @@ nutarch_cm3 =
     --
     {
         name = "nutarch_cm3_init",
-        brief = "Initialization (CortexM3)",
+        brief = "Initialization and interrupt registration(CortexM3)",
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_CM3" },
+	provides = { "DEV_IRQ_CM3" },
         sources = { "cm3/cmsis/core_cm3.c",
-		        	"cm3/cmsis/cortex_init.c",
---			       	"cm3/cmsis/cortex_sysctl.c",
-       	},
+                    "cm3/cmsis/cortex_init.c",
+                  },
         options =
         {
-        	{
+            {
                 macro = "NUT_BOOT_FUNCTION",
                 brief = "Boot Function",
                 description = "This function is given for the reset entry vecor.\n"..
@@ -80,7 +80,7 @@ nutarch_cm3 =
                               "The function must be declarated as int function(void).",
                 flavor = "booldata",
                 file = "include/cfg/arch.h"
-        	},
+            },
             {
                 macro = "MSP_STACK_SIZE",
                 brief = "Main Stack Size",
@@ -110,11 +110,10 @@ nutarch_cm3 =
     {
         name = "nutarch_cm3_ostimer",
         brief = "System Timer (CortexM3)",
-        requires = { "HW_MCU_CM3" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_CM3" },
         provides = { "NUT_OSTIMER_DEV" },
-        sources = { "cm3/cmsis/ostimer_cortex.c",
-		        	"cm3/cmsis/cortex_systick.c" },
-	},
+        sources = { "cm3/cmsis/ostimer_cortex.c" },
+    },
 
     --
     -- CortexM3 Context Switching
@@ -130,28 +129,14 @@ nutarch_cm3 =
     --
     -- CortexM3 Reset Controller
     --
---    {
---        name = "nutarch_arm_rstc",
---        brief = "AT91 Reset Controller",
---        description = "AT91 reset controller support.",
---        requires = { "HW_MCU_CM3" },
---        provides = { "DEV_MCU_RESET" },
---        sources = { "cm3/cmsis/cortex_reset.c" },
---    },
-
-    --
-    -- CortexM3 Interrupt handling (NVIC).
-    --
     {
-        name = "nutarch_cm3_irq",
-        brief = "NVIC Interrupt Handler (CortexM3)",
+        name = "nutarch_cm3_reset",
+        brief = "Cortex Reset Controller support",
         requires = { "HW_MCU_CM3" },
-        provides = { "DEV_IRQ_CM3" },
-        sources = { 
-        			"cm3/cmsis/cortex_reset.c",
-        			"cm3/cmsis/cortex_interrupt1.c",
-            	    "cm3/cmsis/cortex_interrupt.c" 
-            	  },
+        sources =
+        {
+            "cm3/cmsis/cortex_reset.c",
+        },
     },
 
     --
@@ -198,6 +183,5 @@ nutarch_cm3 =
         description = "NXP LPC17xx Series",
         script = "arch/cm3/lpc17xxfam.nut"
     }
-
 }
 

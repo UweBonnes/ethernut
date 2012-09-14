@@ -1,5 +1,5 @@
-#ifndef _ARCH_ARM_BOARD_ZERO_EK_H_
-#define _ARCH_ARM_BOARD_ZERO_EK_H_
+#ifndef _ARCH_ARM_BOARD_FLECX1_H_
+#define _ARCH_ARM_BOARD_FLECX1_H_
 
 /*
  * Copyright 2011 by egnite GmbH
@@ -36,8 +36,8 @@
  */
 
 /*
- * \file arch/cm3/nxp/mach/board/flecx.h
- * \brief FLECX board specific settings.
+ * \file arch/cm3/board/flecx.h
+ * \brief FLECX board revisin 1.0 specific settings.
  *
  * \verbatim
  * $Id$

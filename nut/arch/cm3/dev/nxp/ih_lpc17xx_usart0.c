@@ -42,13 +42,16 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_UART0
 #define NUT_IRQPRI_UART0  4
 #endif
 
+#if defined(MCU_LPC176x)
+extern NUTDEVICE devUsartLpc176x_0;
+#else
 extern NUTDEVICE devUsartLpc17xx_0;
+#endif
 
 static int Uart0IrqCtl(int cmd, void *param);
 
@@ -59,7 +62,11 @@ IRQ_HANDLER sig_USART0 = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
+#if defined(MCU_LPC176x)
+    &devUsartLpc176x_0,
+#else
     &devUsartLpc17xx_0, /* Passed argument, ir_arg. */
+#endif
     NULL,               /* Handler subroutine, ir_handler. */
     Uart0IrqCtl         /* Interrupt control, ir_ctl. */
 };
@@ -98,19 +105,19 @@ static int Uart0IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(UART0_IRQn);
+    int enabled = NVIC_GetEnableIRQ(UART0_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(UART0_IRQn);
+        NVIC_DisableIRQ(UART0_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(UART0_IRQn, Uart0IrqEntry);
+        Cortex_RegisterInt(UART0_IRQn, Uart0IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(UART0_IRQn, NUT_IRQPRI_UART0);
+        NVIC_SetPriority(UART0_IRQn, NUT_IRQPRI_UART0);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(UART0_IRQn);
         break;
@@ -135,10 +142,10 @@ static int Uart0IrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(UART0_IRQn);
+        *ival = NVIC_GetPriority(UART0_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(UART0_IRQn, *ival);
+        NVIC_SetPriority(UART0_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -153,7 +160,7 @@ static int Uart0IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(UART0_IRQn);
+        NVIC_EnableIRQ(UART0_IRQn);
     }
     return rc;
 }

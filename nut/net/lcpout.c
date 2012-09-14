@@ -101,7 +101,11 @@ static INLINE void LcpResetOptions(NUTDEVICE * dev)
     PPPDCB *dcb = dev->dev_dcb;
 
     dcb->dcb_compr = 0;
-    dcb->dcb_auth = PPP_PAP;
+    if ((dcb->dcb_user && *dcb->dcb_user) || (dcb->dcb_pass && *dcb->dcb_pass)) {
+        dcb->dcb_auth = PPP_PAP;
+    } else {
+        dcb->dcb_auth = 0;
+    }
     dcb->dcb_neg_magic = new_magic;
     dcb->dcb_loc_magic = 0;
     dcb->dcb_rem_magic = 0;

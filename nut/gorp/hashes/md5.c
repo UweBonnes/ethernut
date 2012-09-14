@@ -41,7 +41,7 @@
  *
  * $Log$
  * Revision 1.3  2009/03/08 20:19:10  haraldkipp
- * Replaced const by CONST to make it compile with ICCAVR.
+ * Replaced const by const to make it compile with ICCAVR.
  *
  * Revision 1.2  2009/03/06 23:51:38  olereinhardt
  * Fixed minor compile bugs
@@ -96,7 +96,7 @@ static void byteReverse(uint8_t *buf, size_t longs)
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-static void NutMD5Transform(uint32_t buf[4], uint32_t CONST in[16])
+static void NutMD5Transform(uint32_t buf[4], uint32_t const in[16])
 {
     register uint32_t a, b, c, d;
 
@@ -210,7 +210,7 @@ void NutMD5Init(MD5CONTEXT *context)
  * \param len     Length of the data buffer
  */
 
-void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len)
+void NutMD5Update(MD5CONTEXT *context, uint8_t const *buf, uint32_t len)
 {
     uint32_t t;
 
@@ -304,8 +304,8 @@ void NutMD5Final(MD5CONTEXT *context, uint8_t digest[16])
     byteReverse(context->in, 14);
 
     /* Append length in bits and transform */
-    ((uint32_t *) context->in)[14] = context->bits[0];
-    ((uint32_t *) context->in)[15] = context->bits[1];
+    memcpy(context->in + 56, &context->bits[0], sizeof(context->bits[0]));
+    memcpy(context->in + 60, &context->bits[1], sizeof(context->bits[1]));
 
     NutMD5Transform(context->buf, (uint32_t *) context->in);
     byteReverse((unsigned char *) context->buf, 4);

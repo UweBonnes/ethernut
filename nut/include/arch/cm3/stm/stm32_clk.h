@@ -57,7 +57,9 @@ extern int CtlHsiClock( uint8_t ena);
 extern int CtlPllClock( uint8_t ena);
 
 /* Selection functions for the clock sources */
+extern int SetPllClock( int src);
 extern int SetPllClockSource( int src);
-extern int SetSysClockSource( int src);
+extern int SetSysClock(void);
+extern uint32_t SysCtlClockGet(void);
 
 #endif /* _STM32_CLK_H_ */

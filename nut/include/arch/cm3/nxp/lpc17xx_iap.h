@@ -142,7 +142,7 @@ IAP_STATUS_CODE Lpc17xxIapSectorBlankCheck(uint32_t start_sec, uint32_t end_sec,
 IAP_STATUS_CODE Lpc17xxIapReadBootCodeVersion(uint8_t *major, uint8_t* minor);
 IAP_STATUS_CODE Lpc17xxIapReadDeviceSerialNumber(uint32_t *uid);
 int Lpc17xxIapParamRead(unsigned int pos, void *data, size_t len);
-int Lpc17xxIapParamWrite(unsigned int pos, CONST void *data, size_t len);
+int Lpc17xxIapParamWrite(unsigned int pos, const void *data, size_t len);
 
 #endif /* _LPC177X_IAP_H_ */
 

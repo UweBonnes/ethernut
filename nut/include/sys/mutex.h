@@ -67,8 +67,6 @@
  */
 /*@{*/
 
-__BEGIN_DECLS
-
 /*!
  * \brief Recursive mutex type.
  */
@@ -90,7 +88,6 @@ extern void NutMutexLock(MUTEX * mutex);
 extern int NutMutexUnlock(MUTEX * mutex);
 extern int NutMutexTrylock(MUTEX * mutex);
 extern int NutMutexDestroy(MUTEX * mutex);
-__END_DECLS
 
 /*@}*/
 

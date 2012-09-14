@@ -67,10 +67,10 @@
  *         is returned and the global variable errno is set to
  *         indicate the error.
  */
-char *dirname(CONST char *path)
+char *dirname(const char *path)
 {
     static char *bname;
-    CONST char *endp;
+    const char *endp;
 
     if (bname == NULL) {
         bname = (char *) malloc(MAXPATHLEN);

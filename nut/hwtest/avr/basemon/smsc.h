@@ -45,13 +45,9 @@
  * keep it running on broken hardware.
  */
 
-__BEGIN_DECLS
-
 extern int SmscDetect(void);
 extern int SmscTest(void);
 extern void SmscSend(void);
 extern void SmscLoop(void);
-
-__END_DECLS
 
 #endif

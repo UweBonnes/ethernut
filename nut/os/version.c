@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -257,10 +257,10 @@
 #if defined(__GNUC__)
 #define NUM2STR(x)  #x
 #define OS_VERSION_STRING(a, b, c, d)   NUM2STR(a) "." NUM2STR(b) "." NUM2STR(c) "." NUM2STR(d)
-static CONST char *os_version_string =
+static const char *os_version_string =
     OS_VERSION_STRING(NUT_VERSION_MAJOR, NUT_VERSION_MINOR, NUT_VERSION_RELEASE, NUT_VERSION_BUILD);
 #else
-static CONST char os_version_string[] = {
+static const char os_version_string[] = {
 #if NUT_VERSION_MAJOR >= 10
     (NUT_VERSION_MAJOR / 10) + '0',
 #endif
@@ -310,7 +310,7 @@ uint32_t NutVersion(void)
  *         may be optionally followed by a space and an additional
  *         release state.
  */
-CONST char *NutVersionString(void)
+const char *NutVersionString(void)
 {
     return os_version_string;
 }

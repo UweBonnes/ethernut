@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -213,11 +213,11 @@ struct _TERMDCB {
 
 extern int TermInit(NUTDEVICE * dev);
 extern int TermIOCtl(NUTDEVICE * dev, int req, void *conf);
-extern int TermWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int TermWrite(NUTFILE * fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int TermWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *TermOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *TermOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int TermClose(NUTFILE * fp);
 
 #endif

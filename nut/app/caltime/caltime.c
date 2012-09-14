@@ -80,7 +80,7 @@ static char *weekday_name[7] = {
 /*
  * Print content of tm structure.
  */
-static void PrintDateTime(CONST struct _tm *stm)
+static void PrintDateTime(const struct _tm *stm)
 {
     printf("%s, %04d/%02d/%02d, %02d:%02d:%02d%s"
            , weekday_name[stm->tm_wday]

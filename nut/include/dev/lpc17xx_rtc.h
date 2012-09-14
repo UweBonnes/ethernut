@@ -45,9 +45,4 @@
 
 extern NUTRTC rtcLpc17xx;
 
-/* Prototypes */
-__BEGIN_DECLS
-
-__END_DECLS
-/* End of prototypes */
 #endif

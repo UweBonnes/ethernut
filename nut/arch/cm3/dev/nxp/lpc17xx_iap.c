@@ -356,7 +356,7 @@ int Lpc17xxIapParamRead(unsigned int pos, void *data, size_t len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int Lpc17xxIapParamWrite(unsigned int pos, CONST void *data, size_t len)
+int Lpc17xxIapParamWrite(unsigned int pos, const void *data, size_t len)
 {
     int rc = -1;
     uint8_t *buff;

@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -55,13 +55,9 @@
 #include <dev/gpio.h>
 #include <dev/usart.h>
 
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f10x.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
-#include <arch/cm3/stm/stm32f10x_rcc.h>
-#else
-#warning "Unknown STM32 family"
-#endif
+#include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -135,41 +131,69 @@ NUTDEVICE devUartStm32_4 = {
 /*@}*/
 
 /*!
- * \brief USART4 GPIO configuartion and assignment.
+ * \brief UART4 GPIO configuartion and assignment.
  */
-#undef STM_USART_REMAP
+/*
+ * F1  no alternate pins
+ * L1/F2/F4
+ * TX  PA0     PC10
+ * RX  PA1     PC11
+ */
+#if defined(MCU_STM32F1)
+ #undef STM_USART_REMAP_MASK
+ #define TX_GPIO_PORT    NUTGPIO_PORTA
+ #define TX_GPIO_PIN      0
+ #define RX_GPIO_PORT    NUTGPIO_PORTA
+ #define RX_GPIO_PIN      1
+#else /* L1/F2/F4*/
+ #define STM_USART_REMAP  GPIO_AF_UART4
+ #if !defined(UART4_TX_PIN) || UART4_TX_PIN == 0
+  #define TX_GPIO_PORT    NUTGPIO_PORTA
+  #define TX_GPIO_PIN      0
+ #elif UART4_TX_PIN == 10
+  #define TX_GPIO_PORT    NUTGPIO_PORTC
+  #define TX_GPIO_PIN     10
+ #else
+  #warning "Illegal USART TX pin assignement"
+ #endif
+ #if !defined(UART4_RX_PIN) || UART4_RX_PIN == 1
+  #define RX_GPIO_PORT    NUTGPIO_PORTA
+  #define RX_GPIO_PIN      1
+ #elif UART4_RX_PIN == 11
+  #define RX_GPIO_PORT    NUTGPIO_PORTC
+  #define RX_GPIO_PIN      11
+ #else
+  #warning "Illegal UART4 RX pin assignement"
+ #endif
+#endif
 
-#define TX_GPIO_PORT  NUTGPIO_PORTC
-#define TX_GPIO_PIN   10
-#define RX_GPIO_PORT  NUTGPIO_PORTC
-#define RX_GPIO_PIN   11
 
-#ifdef USART4_RS485_CTRL
+#ifdef UART4_RS485_CTRL
 #define USART_485_CTRL
-#ifdef USART4_485RE_INV
+#ifdef UART4_485RE_INV
 #define USART_4485RE_INV
 #endif
-#ifdef USART4_485DE_INV
+#ifdef UART4_485DE_INV
 #define USART_4485DE_INV
 #endif
-#if defined(USART2_485DE_PORT) && defined(USART4_485DE_PIN)
-#define DE_GPIO_BASE  GPIO_ID2GPIO(USART4_485DE_PORT)
-#define DE_GPIO_PORT  USART4_485DE_PORT
-#define DE_GPIO_PIN   USART4_485DE_PIN
+#if defined(USART4_485DE_PORT) && defined(UART4_485DE_PIN)
+#define DE_GPIO_BASE  GPIO_ID2GPIO(UART4_485DE_PORT)
+#define DE_GPIO_PORT  UART4_485DE_PORT
+#define DE_GPIO_PIN   UART4_485DE_PIN
 #endif
-#if defined(USART4_485RE_PORT) && defined(USART4_485RE_PIN)
-#define NRE_GPIO_BASE  GPIO_ID2GPIO(USART4_485RE_PORT)
-#define NRE_GPIO_PORT  USART4_485RE_PORT
-#define NRE_GPIO_PIN   USART4_485RE_PIN
+#if defined(UART4_485RE_PORT) && defined(UART4_485RE_PIN)
+#define NRE_GPIO_BASE  GPIO_ID2GPIO(UART4_485RE_PORT)
+#define NRE_GPIO_PORT  UART4_485RE_PORT
+#define NRE_GPIO_PIN   UART4_485RE_PIN
 #endif
-#endif /* USART2_RS485_CTRL */
+#endif /* USART4_RS485_CTRL */
 
 /*!
- * \brief USART4 base configuration.
+ * \brief UART4 base configuration.
  */
 #define STM_USART_CLK     RCC_APB1Periph_UART4
 
-#ifdef USART2_INIT_BAUDRATE
+#ifdef USART4_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE UART4_INIT_BAUDRATE
 #endif
 
@@ -194,11 +218,16 @@ NUTDEVICE devUartStm32_4 = {
 #undef USART_HARDWARE_HDX
 #endif
 
-#ifdef USART4_SUPPORT_DMA
-#define UART_DMA_TXCHANNEL  DMA2_C5
-#define UART_DMA_RXCHANNEL  DMA2_C3
-#define UART_DMA_TXIRQ      sig_DMA2_CH2
-#define UART_DMA_RXIRQ      sig_DMA2_CH3
+#ifdef UART4_SUPPORT_DMA
+ #if defined(MCU_STM32F1)||defined(MCU_STM32L1)
+  #define UART_DMA_TXCHANNEL  DMA2_C5
+  #define UART_DMA_RXCHANNEL  DMA2_C3
+ #elif  defined(MCU_STM32F2)||defined(MCU_STM32F4)
+  #define UART_DMA_TXCHANNEL  DMA_CONTROL0 | DMA_STREAM4 | DMA_CHANNEL4
+  #define UART_DMA_RXCHANNEL  DMA_CONTROL0 | DMA_STREAM2 | DMA_CHANNEL4
+ #else
+  #warning "STM32 family has no implemented DMA"
+ #endif
 #else
 #undef UART_DMA_TXCHANNEL
 #undef UART_DMA_RXCHANNEL

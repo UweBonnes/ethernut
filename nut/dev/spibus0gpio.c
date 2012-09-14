@@ -134,7 +134,7 @@ static GSPIREG *GpioSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 }
 
 /* Idle clock is low and data is captured on the rising edge. */
-static void SpiMode0Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -172,7 +172,7 @@ static void SpiMode0Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is low and data is captured on the falling edge. */
-static void SpiMode1Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -210,7 +210,7 @@ static void SpiMode1Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is high and data is captured on the falling edge. */
-static void SpiMode2Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -248,7 +248,7 @@ static void SpiMode2Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is high and data is captured on the rising edge. */
-static void SpiMode3Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -299,7 +299,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
  *
  * \return Always 0.
  */
-int GpioSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int GpioSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     GSPIREG *gspi;
 

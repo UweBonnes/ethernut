@@ -274,7 +274,7 @@ typedef struct _VS_PLUGIN_INFO VS_PLUGIN_INFO;
 
 struct _VS_PLUGIN_INFO {
     size_t vsplg_size;
-    CONST uint16_t *vsplg_data;
+    const uint16_t *vsplg_data;
 };
 
 typedef struct _VS_WRAM_DATA VS_WRAM_DATA;
@@ -1300,7 +1300,7 @@ typedef struct _VSDCB {
     uint32_t dcb_cod_mode;  /*!< \brief Encoder mode. */
     int (*dcb_isready)(void);
     int (*dcb_sendcmd)(void *, size_t);
-    int (*dcb_senddata)(CONST uint8_t *, size_t);
+    int (*dcb_senddata)(const uint8_t *, size_t);
     int (*dcb_control)(int req, void *conf);
     int (*dcb_recvdata)(void *, size_t);
 } VSDCB;
@@ -1317,8 +1317,6 @@ extern NUTDEVICE devSpiVsCodec0;
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes */
 extern int VsCodecWaitReady(NUTDEVICE *dev, uint32_t tmo);
 extern uint16_t VsCodecReg(NUTDEVICE *dev, uint_fast8_t op, uint_fast8_t reg, uint_fast16_t val);
 extern uint16_t VsCodecMode(NUTDEVICE *dev, uint_fast16_t flags, uint_fast16_t mask);
@@ -1328,8 +1326,8 @@ extern uint16_t VsCodecBeep(NUTDEVICE *dev, uint16_t fsin);
 extern int VsDecoderBufferInit(NUTDEVICE *dev, uint32_t size);
 extern int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int VsCodecRead(NUTFILE * nfp, void *data, int len);
-extern int VsCodecWrite(NUTFILE * nfp, CONST void *data, int len);
-NUTFILE *VsCodecOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern int VsCodecWrite(NUTFILE * nfp, const void *data, int len);
+NUTFILE *VsCodecOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int VsCodecClose(NUTFILE * nfp);
 
 #ifdef __HARVARD_ARCH__
@@ -1337,8 +1335,5 @@ extern int VsCodecWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif
 
 extern void FeederThread(void *arg) __attribute__ ((noreturn));
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

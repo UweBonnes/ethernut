@@ -18,8 +18,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -32,8 +32,9 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <cfg/os.h>
-#include <arch/arm.h>
+#include <cfg/clock.h>
 
 #include <string.h>
 
@@ -53,9 +54,9 @@
 #include <dev/phy.h>
 #include <dev/stm32_emac.h>
 
-#include <arch/cm3/stm/stm32f10x.h>
-#include <arch/cm3/stm/stm32f10x_rcc.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
+#include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32xxxx_rcc.h>
+#include <arch/cm3/stm/stm32xxxx_gpio.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
@@ -63,6 +64,18 @@
 #define EMPRINTF(args,...) printf(args,##__VA_ARGS__)
 #else
 #define EMPRINTF(args,...)
+#endif
+
+#if SYSCLK_FREQ < 35000001L
+#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div16
+#elif SYSCLK_FREQ < 60000001L
+#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div26
+#elif SYSCLK_FREQ < 100000001L
+#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div42
+#elif SYSCLK_FREQ < 150000001L
+#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div62
+#elif SYSCLK_FREQ < 168000001L
+#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div102
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -215,8 +228,8 @@ static uint16_t phy_inw(uint8_t reg)
 
     /* PHY read command. */
     tempReg = inr(&(ETH->MACMIIAR));
-    tempReg &= ~(ETH_MACMIIAR_PA | ETH_MACMIIAR_MR | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB);
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB;
+    tempReg &= 0xffff0020;
+    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
     outr(&(ETH->MACMIIAR), tempReg);
 
     /* Wait until PHY logic completed. */
@@ -253,8 +266,8 @@ static void phy_outw(uint8_t reg, uint16_t val)
     /* PHY write command. */
     outr(&(ETH->MACMIIDR), val);
     tempReg = inr(&(ETH->MACMIIAR));
-    tempReg &= ~(ETH_MACMIIAR_PA | ETH_MACMIIAR_MR | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB);
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB;
+    tempReg &= 0xffff0020;
+    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
     outr(&(ETH->MACMIIAR), tempReg);
 
     /* Wait until PHY logic completed. */
@@ -281,6 +294,7 @@ static int EmacReset(void)
     uint32_t phy = 0;
     int link_wait;
 
+#ifdef STM32F10X_CL
     /* force reset mac */
     RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, ENABLE);
 
@@ -290,7 +304,17 @@ static int EmacReset(void)
 
     /* release reset mac */
     RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, DISABLE);
+#else
+    /* force reset mac */
+    RCC_AHB1PeriphResetCmd(RCC_AHB1RSTR_ETHMACRST, ENABLE);
 
+    /* enable clocks for mac */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1ENR_ETHMACEN| RCC_AHB1ENR_ETHMACTXEN |
+                           RCC_AHB1ENR_ETHMACRXEN , ENABLE);
+
+    /* release reset mac */
+    RCC_AHB1PeriphResetCmd(RCC_AHB1RSTR_ETHMACRST, DISABLE);
+#endif
     /* Register PHY to be able to reset it */
     rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
 
@@ -539,7 +563,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
  *
  * \param mac Six byte unique MAC address.
  */
-static int EmacStart(CONST uint8_t * mac)
+static int EmacStart(const uint8_t * mac)
 {
     int i;
     uint32_t regvalue;
@@ -548,8 +572,17 @@ static int EmacStart(CONST uint8_t * mac)
     outr(&(ETH->DMAOMR), (inr(&(ETH->DMAOMR)) & ~(ETH_DMAOMR_ST | ETH_DMAOMR_SR)) | ETH_DMAOMR_FTF);
 
     /* waiting for flush to finish */
-    while((inr(&(ETH->DMAOMR)) & ETH_DMAOMR_FTF) == ETH_DMAOMR_FTF);
-
+    i=0;
+    while(((inr(&(ETH->DMAOMR)) & ETH_DMAOMR_FTF) == ETH_DMAOMR_FTF) && i <100)
+    {
+        NutSleep(1);
+        i++;
+    }
+    if (i >= 100)
+    {
+        EMPRINTF("EmacStart: Could not flush\n");
+        return -1;
+    }
     if (EmacReset()) {
         return -1;
     }
@@ -580,7 +613,17 @@ static int EmacStart(CONST uint8_t * mac)
 
     /* reset dma and wait until reset is finished */
     outr(&(ETH->DMABMR), ETH_DMABMR_SR);
-    while((inr(&(ETH->DMABMR)) & ETH_DMABMR_SR) == ETH_DMABMR_SR);
+    i=0;
+    while(((inr(&(ETH->DMABMR)) & ETH_DMABMR_SR) == ETH_DMABMR_SR)&& i <100)
+    {
+        NutSleep(1);
+        i++;
+    }
+    if (i >= 100)
+    {
+        EMPRINTF("EmacStart: Could not reset dma\n");
+        return -1;
+    }
 
     /* Set local MAC address (used e.g. for filtering). */
     outr(&(ETH->MACA0HR), (mac[5] << 8) | mac[4]);
@@ -795,6 +838,19 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 int EmacInit(NUTDEVICE * dev)
 {
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
+    EMPRINTF("Using Mode %s, Remap %s, NIC_PHY_ADDR %d, \n",
+#ifdef EMAC_USE_RMII_MODE
+             "RMII",
+#else
+             "MII",
+#endif
+#ifdef EMAC_USE_RMII_MODE
+             "enabled",
+#else
+             "disabled",
+#endif
+             NIC_PHY_ADDR
+        );
 
     /* Clear EMACINFO structure. */
     memset(ni, 0, sizeof(EMACINFO));
@@ -804,42 +860,187 @@ int EmacInit(NUTDEVICE * dev)
         return -1;
     }
 
-    /* Pin configuration */
-#ifdef EMAC_USE_RMII_MODE
-    /* Configure RMII lines as alternate function */
-    GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+#ifdef STM32F10X_CL
+    /* disable clocks for mac */
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ETH_MAC | RCC_AHBPeriph_ETH_MAC_Tx |
+                          RCC_AHBPeriph_ETH_MAC_Rx, DISABLE);
 
-    /* switch to RMII mode */
-    GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
 #else
-    /* Configure MII lines as alternate function */
-    GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTC,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
-    GpioPinConfigSet(NUTGPIO_PORTB,  8, GPIO_CFG_OUTPUT | GPIO_CFG_DISABLED);
+    /* enable clocks for mac */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1ENR_ETHMACEN| RCC_AHB1ENR_ETHMACTXEN |
+                           RCC_AHB1ENR_ETHMACRXEN , DISABLE);
 
+    /* Switch on SYSCFG Clock*/
+    CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN)) = 1;
+#endif
+
+#if defined (EMAC_REMAP_ENABLE)
+ #ifdef STM32F10X_CL
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 1;
+ #else
+  #ifdef EMAC_USE_RMII_MODE
+    GpioPinConfigSet(NUTGPIO_PORTC,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTD,  8,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTD,  9,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTD, 10,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 11,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 12,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 13,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB,  5,  GPIO_CFG_PERIPHAL);
+  #else
+    GpioPinConfigSet(NUTGPIO_PORTC,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTC,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTC,  3,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  0,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  3,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTD,  9,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTD, 10,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTD, 11,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTD, 12,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 10,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 11,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 12,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 13,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB,  5,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB,  8,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+  #endif
+ #endif
+#else
+ #ifdef STM32F10X_CL
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 0;
+ #else
+  #ifdef EMAC_USE_RMII_MODE
+    GpioPinConfigSet(NUTGPIO_PORTC,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  1,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTA,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  7,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTC,  4,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTC,  5,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTB, 11,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 12,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 13,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB,  5,  GPIO_CFG_PERIPHAL);
+  #else
+    GpioPinConfigSet(NUTGPIO_PORTC,  1,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTC,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTC,  3,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTA,  0,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTA,  1,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTA,  2,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTA,  3,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTA,  7,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTC,  4,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTC,  5,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTB,  0,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTB,  1,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTB, 10,  GPIO_CFG_PERIPHAL);
+    GpioPinConfigSet(NUTGPIO_PORTB, 11,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 12,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB, 13,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB,  5,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+    GpioPinConfigSet(NUTGPIO_PORTB,  8,  GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT| GPIO_CFG_SPEED_FAST);
+  #endif
+ #endif
+#endif
+
+#ifdef EMAC_USE_RMII_MODE
+    /* switch to RMII mode */
+ #ifdef STM32F10X_CL
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL)) = 1;
+ #else
+    CM3BBREG(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII)) = 1;
+ #endif
+#else
     /* switch to MII mode */
-    GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
+ #ifdef STM32F10X_CL
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL)) = 0;
+ #else
+    CM3BBREG(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII)) = 0;
+ #endif
 #endif
 
-    /* Remapping */
-#ifdef EMAC_REMAP_ENABLE
-    GPIO_PinRemapConfig(GPIO_Remap_ETH, ENABLE);
+#if defined (EMAC_REMAP_ENABLE)
+ #ifdef STM32F10X_CL
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 1;
+ #else
+  #ifdef EMAC_USE_RMII_MODE
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  2,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTD,  8,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTD,  9,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTD, 10,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 11,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 12,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 13,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  5,  GPIO_AF_ETH);
+  #else
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  2,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  3,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  0,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  2,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  3,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  7,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTD,  9,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTD, 10,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTD, 11,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTD, 12,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 10,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 11,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 12,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 13,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  5,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  8,  GPIO_AF_ETH);
+  #endif
+ #endif
+#else
+ #ifdef STM32F10X_CL
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 0;
+ #else
+  #ifdef EMAC_USE_RMII_MODE
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  2,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  7,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  4,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  5,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 11,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 12,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 13,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  5,  GPIO_AF_ETH);
+  #else
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  2,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  3,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  0,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  2,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  7,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA,  3,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  4,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTC,  5,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  0,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  1,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 10,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 11,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 12,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB, 13,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  5,  GPIO_AF_ETH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  8,  GPIO_AF_ETH);
+  #endif
+ #endif
 #endif
-
     /* Start the receiver thread. */
     if (NutThreadCreate("emacrx", EmacRxThread, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
-
     return 0;
 }
 
@@ -863,7 +1064,11 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     EmacOutput,                 /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!

@@ -347,7 +347,7 @@ void At91SpiBus0Interrupt(void *arg)
  *
  * \return Always 0.
  */
-int At91SpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int At91SpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t b = 0xff;
     uintptr_t base;

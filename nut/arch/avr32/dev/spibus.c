@@ -223,7 +223,7 @@ int Avr32SpiBusNodeInit(NUTSPINODE * node)
  *
  * \return Always 0.
  */
-int Avr32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int Avr32SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t b = 0xff;
     uint8_t *txp = (uint8_t *) txbuf;
@@ -274,7 +274,7 @@ int Avr32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, i
  *
  * \return Always -1.
  */
-int Avr32SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int Avr32SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
 #error not implemented
     return -1;

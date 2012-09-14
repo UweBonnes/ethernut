@@ -130,7 +130,7 @@ static int At45dNodeTransmitCmd(NUTSPINODE * node, uint8_t op, uint32_t parm, ui
  * \return 0 on success, -1 on errors.
  */
 int At45dNodeTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen,
-                      CONST void *txbuf, void *rxbuf, int xlen)
+                      const void *txbuf, void *rxbuf, int xlen)
 {
     int rc;
     NUTSPIBUS *bus;

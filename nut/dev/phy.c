@@ -47,6 +47,7 @@
 
 #include <dev/phy.h>
 
+
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -150,9 +151,13 @@ phy_status_descr_t phy_status_descr[] = {
     { LAN8700,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
     { LAN8700r4, { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
     { LAN8710,   { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
+    { LAN8720A,  { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
 
     /* Micrel KS8721 */
     { KS8721,    { {31, 0x0004}, {31, 0x0008}, {0, 0}, {31, 0x0010}, {0, 0} } },
+
+    /* STM */
+    { ST802RT1,  { {0,0}       , {17, 0x0200}, {0, 0}, {17, 0x0100}, {0, 0} } },
 };
 
 /*!
@@ -175,6 +180,7 @@ phy_status_descr_t phy_status_descr[] = {
  *         or the return of a value test.
  * \return 0 on success, -1 on failure.
  */
+
 int NutPhyCtl( uint16_t ctl, uint32_t *par)
 {
     int rc = 0;
@@ -386,22 +392,21 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 
 int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdior)(uint8_t))
 {
-    int rc = 0;
     uint16_t temp1 = 0, temp2 = 0;
 
     PHPRINTF("NRP(%u, %p, %p)\n", mda, mdiow, mdior);
+
+    if (phydcb != NULL)
+    {
+        /* Phy is just registered */
+        return 0;
+    }
 
     if ((mdiow == NULL)||(mdior == NULL)) {
         /* PHY Access functions are not given */
         return -1;
     }
 
-    if (phydcb != NULL)
-    {
-        /* Phy is just registered */
-        return -1;
-        //NutHeapFree(phydcb);
-    }
     phydcb = NutHeapAlloc( sizeof(PHYDCB));
     if (phydcb == NULL) {
         /* Not enough memory to register PHY */
@@ -418,14 +423,7 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
 
     phydcb->oui = ((uint32_t)temp1<<16)|(uint32_t)temp2;
 
-    PHPRINTF("rc=%d -- OUI=0x%08lx\n", rc, phydcb->oui);
+    PHPRINTF("PHY OUI=0x%08lx\n", phydcb->oui);
 
-    if (rc) {
-        /* Communication failed, give up */
-        NutHeapFree(phydcb);
-        phydcb = NULL;
-        return -1;
-    }
-
-    return rc;
+    return 0;
 }

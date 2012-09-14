@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2008 by egnite GmbH. 
+-- Copyright (C) 2008 by egnite GmbH.
 --
 -- All rights reserved.
 --
@@ -46,7 +46,8 @@ nutlua =
                       "Not all targets offer enough memory to load "..
                       "all libraries.",
         requires = { "TOOL_GCC" },
-        sources = { 
+        sources =
+        {
             "lapi.c",
             "ldo.c",
             "ldump.c",

@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -66,21 +66,17 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-__BEGIN_DECLS
-/* Prototypes */
-extern int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen);
+extern int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, const void *tdata, void *rdata, int datalen);
 extern uint8_t At45dbGetStatus(int dd);
 extern int At45dbWaitReady(int dd, uint32_t tmo, int poll);
 extern int At45dbInit(unsigned int spibas, unsigned int spipcs);
 extern int At45dbPageErase(int dd, uint32_t pgn);
 extern int At45dbChipErase(void);
 extern int At45dbPageRead(int dd, uint32_t pgn, void *data, unsigned int len);
-extern int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, unsigned int len);
+extern int At45dbPageWrite(int dd, uint32_t pgn, const void *data, unsigned int len);
 extern uint32_t At45dbPages(int dd);
 extern unsigned int At45dbPageSize(int dd);
 extern int At45dbParamRead(unsigned int pos, void *data, unsigned int len);
-extern int At45dbParamWrite(unsigned int pos, CONST void *data, unsigned int len);
+extern int At45dbParamWrite(unsigned int pos, const void *data, unsigned int len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

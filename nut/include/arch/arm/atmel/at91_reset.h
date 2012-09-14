@@ -45,13 +45,7 @@
 
 #include <compiler.h>
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern void At91Reset(void);
 extern int At91ResetCause(void);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif /* _ARCH_ARM_AT91_RESET_H_ */

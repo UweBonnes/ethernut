@@ -351,7 +351,7 @@ static void JtagCable0TmsPut(void *cbl, uint_fast8_t tms, uint_fast8_t len)
  *             will be set high on the last bit and the TAP controller
  *             will leave the stable state.
  */
-static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, CONST uint8_t *wbuf, uint32_t len, uint_fast8_t last)
+static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, const uint8_t *wbuf, uint32_t len, uint_fast8_t last)
 {
     JtagCable0TmsFlush(cbl);
 

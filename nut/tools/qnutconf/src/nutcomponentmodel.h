@@ -59,6 +59,7 @@ public:
         Name,
         Depends,
         Provides,
+        Exclusive,
         File,
         Macro,
         FullSearch,

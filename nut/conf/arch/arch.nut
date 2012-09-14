@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -259,7 +259,13 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU = $(MCU_ATMEGA2560)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2560", "HWDEF += -D__AVR_3_BYTE_PC__" }
+                makedefs =
+                {
+                    "MCU = $(MCU_ATMEGA2560)",
+                    "HWDEF += -D__HARVARD_ARCH__",
+                    "HWDEF += -DATMega2560",
+                    "HWDEF += -D__AVR_3_BYTE_PC__"
+                }
             },
             {
                 macro = "MCU_ATMEGA2561",
@@ -280,7 +286,13 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561", "HWDEF += -D__AVR_3_BYTE_PC__" }
+                makedefs =
+                {
+                    "MCU = $(MCU_ATMEGA2561)",
+                    "HWDEF += -D__HARVARD_ARCH__",
+                    "HWDEF += -DATMega2561",
+                    "HWDEF += -D__AVR_3_BYTE_PC__"
+                }
             },
             {
                 macro = "MCU_AT91SAM9260",
@@ -386,7 +398,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO",
-                    "HW_PDC_AT91"
+                    "HW_PDC_AT91",
+                    "HW_PIT_AT91"
                 },
                 makedefs = { "MCU=arm9" }
             },
@@ -826,7 +839,7 @@ nutarch =
                 macro = "MCU_STM32F100",
                 brief = "STM STM32F100",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -845,7 +858,7 @@ nutarch =
                 macro = "MCU_STM32F101",
                 brief = "STM STM32F101",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -885,7 +898,7 @@ nutarch =
                 macro = "MCU_STM32F103",
                 brief = "STM STM32F103",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -905,7 +918,7 @@ nutarch =
                 macro = "MCU_STM32F105",
                 brief = "STM STM32F105",
                 description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -925,7 +938,7 @@ nutarch =
                 macro = "MCU_STM32F107",
                 brief = "STM STM32F107",
                 description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -945,7 +958,7 @@ nutarch =
                 macro = "MCU_STM32L151",
                 brief = "STM STM32L151",
                 description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -965,7 +978,7 @@ nutarch =
                 macro = "MCU_STM32F405",
                 brief = "STM STM32F405",
                 description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -985,7 +998,7 @@ nutarch =
                 macro = "MCU_STM32F205",
                 brief = "STM STM32F205",
                 description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1001,6 +1014,26 @@ nutarch =
                 },
                 makedefs = { "MCU=cortex-m3", "MARCH=cmc" }
             },
+            {
+                macro = "MCU_STM32F207",
+                brief = "STM STM32F207",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F2XX",
+                    "HW_MCU_STM32F207",
+                    "MCU_STM32F207",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MARCH=cmc" }
+            },
             --
             -- TI LM3S SERIES CONTROLLER
             --
@@ -1008,7 +1041,7 @@ nutarch =
                 macro = "MCU_LM3S9B96",
                 brief = "Luminary LM3S9B96",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->LM3 Family.",
+                              "Select the correct sub-type in Architecture->CM3->LM3 Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1030,7 +1063,7 @@ nutarch =
                 macro = "MCU_LPC175x",
                 brief = "NXP LCP175x series",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->LPC175x Family.",
+                              "Select the correct sub-type in Architecture->CM3->LPC175x Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1047,7 +1080,7 @@ nutarch =
                 macro = "MCU_LPC176x",
                 brief = "NXP LCP176x series",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->LPC176x Family.",
+                              "Select the correct sub-type in Architecture->CM3->LPC176x Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1064,7 +1097,7 @@ nutarch =
                 macro = "MCU_LPC177x_8x",
                 brief = "NXP LCP177x_8x series",
                 description = "CortexM3 32-bit RISC microcontroller.\n\n"..
-                			  "Select the correct sub-type in Architecture->CM3->LPC177x_8x Family.",
+                              "Select the correct sub-type in Architecture->CM3->LPC177x_8x Family.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1121,7 +1154,7 @@ nutarch =
                     "HW_UART_S3C45"
                 }
             },
-            
+
             --
             -- AVR32
             --
@@ -1219,7 +1252,7 @@ nutarch =
                 description = "32-bit AVR UC3 RISC microcontroller with 256k Flash, 32k SRAM,\n"..
                               "Full-Speed + Mini-Host USB device and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {
@@ -1243,7 +1276,7 @@ nutarch =
                 description = "32-bit AVR UC3 RISC microcontroller with 64k Flash, 16k SRAM,\n"..
                               "Full-Speed + Mini-Host USB device and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {
@@ -1268,7 +1301,7 @@ nutarch =
                 description = "32-bit AVR UC3 RISC microcontroller with 64k Flash, 16k SRAM,\n"..
                               "Full-Speed + Mini-Host USB device and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {
@@ -1315,7 +1348,7 @@ nutarch =
                 brief = "Zero Dummy CPU",
                 description = "Imaginary ARM9 CPU, useful as a porting template.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {

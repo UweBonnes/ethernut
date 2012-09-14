@@ -55,13 +55,9 @@
 #endif
 #endif
 
-__BEGIN_DECLS
-
 extern size_t XMemTest(void);
 extern int XMemBankTest(size_t *xramsize);
 
 extern void LoopSRAM(void);
-
-__END_DECLS
 
 #endif

@@ -26,11 +26,11 @@
  */
 
 #include <wx/wx.h>
+#include <wx/wxhtml.h>
 
-class CInfoWindow:public wxTextCtrl {
+class CInfoWindow:public wxHtmlWindow {
   public:
-    CInfoWindow(wxWindow * parent, wxWindowID id = -1, const wxPoint & pos = wxDefaultPosition, const wxSize & size =
-                wxDefaultSize, long style = 0);
+    CInfoWindow(wxWindow * parent, wxWindowID id = wxID_ANY);
     ~CInfoWindow();
 
     void OnMouseEvent(wxMouseEvent & event);

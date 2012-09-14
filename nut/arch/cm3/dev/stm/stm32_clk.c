@@ -496,9 +496,12 @@ int SetSysClock(void)
     /* PCLK2 = HCLK */
     RCC->CFGR |= RCC_CFGR_PPRE2_DIV1;
 
-    /* PCLK1 = HCLK */
     if( SYSCLK_FREQ > 36000000)
+        /* PCLK1 = HCLK/2 */
         RCC->CFGR |= RCC_CFGR_PPRE1_DIV2;
+    else
+        /* PCLK1 = HCLK */
+        RCC->CFGR |= RCC_CFGR_PPRE1_DIV1;
 
 #ifdef STM32F10X_CL
     /*  PLL configuration for Conetctivity Line Devices */

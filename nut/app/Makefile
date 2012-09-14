@@ -95,6 +95,7 @@ all:
 	$(MAKE) -C inetq
 	$(MAKE) -C logtime
 	$(MAKE) -C lua
+	$(MAKE) -C pingnet
 	$(MAKE) -C portdio
 	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
@@ -104,6 +105,7 @@ all:
 	$(MAKE) -C threads
 	$(MAKE) -C timers
 	$(MAKE) -C uart
+	$(MAKE) -C owibus
 
 install:
 	$(MAKE) -C caltime install
@@ -117,6 +119,7 @@ install:
 	$(MAKE) -C inetq install
 	$(MAKE) -C logtime install
 	$(MAKE) -C lua install
+	$(MAKE) -C pingnet install
 	$(MAKE) -C portdio install
 	$(MAKE) -C pppc install
 	$(MAKE) -C rs232d install
@@ -126,10 +129,11 @@ install:
 	$(MAKE) -C threads install
 	$(MAKE) -C timers install
 	$(MAKE) -C uart install
+	$(MAKE) -C owibus install
 
 clean:
 	$(MAKE) -C caltime clean
-	$(MAKE) -C cppdemo clean
+#	$(MAKE) -C cppdemo clean
 	$(MAKE) -C editconf clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
@@ -139,6 +143,7 @@ clean:
 	$(MAKE) -C inetq clean
 	$(MAKE) -C logtime clean
 	$(MAKE) -C lua clean
+	$(MAKE) -C pingnet clean
 	$(MAKE) -C portdio clean
 	$(MAKE) -C pppc clean
 	$(MAKE) -C rs232d clean
@@ -148,6 +153,7 @@ clean:
 	$(MAKE) -C threads clean
 	$(MAKE) -C timers clean
 	$(MAKE) -C uart clean
+	$(MAKE) -C owibus clean
 
 at90can:
 	$(MAKE) -C caltime
@@ -158,6 +164,7 @@ at90can:
 	$(MAKE) -C httpd_simple
 	$(MAKE) -C inetq
 	$(MAKE) -C logtime
+	$(MAKE) -C pingnet
 	$(MAKE) -C portdio
 	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
@@ -167,3 +174,4 @@ at90can:
 	$(MAKE) -C threads
 	$(MAKE) -C timers
 	$(MAKE) -C uart
+	$(MAKE) -C owibus

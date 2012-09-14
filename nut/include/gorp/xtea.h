@@ -53,10 +53,10 @@
 
 typedef uint32_t XTeaKeyBlock_t[4];
 
-extern void XTeaCrypt(uint32_t *w,  CONST uint32_t *v, CONST XTeaKeyBlock_t k);
-extern void XTeaDecrypt(uint32_t *w, CONST uint32_t *v, CONST XTeaKeyBlock_t k);
+extern void XTeaCrypt(uint32_t *w,  const uint32_t *v, const XTeaKeyBlock_t k);
+extern void XTeaDecrypt(uint32_t *w, const uint32_t *v, const XTeaKeyBlock_t k);
 
-extern void XTeaCryptStr( char *dst, CONST char *src, uint16_t len, CONST char *pass);
-extern void XTeaDecryptStr( char * dst, CONST char *src, uint16_t len, CONST char *pass);
+extern void XTeaCryptStr( char *dst, const char *src, uint16_t len, const char *pass);
+extern void XTeaDecryptStr( char * dst, const char *src, uint16_t len, const char *pass);
 
 #endif /* _XTEA_H_ */

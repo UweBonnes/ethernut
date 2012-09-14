@@ -438,8 +438,8 @@
  *----------------------------------------------------------------------------*/
 
 /* EMAC Memory Buffer configuration for 16K Ethernet RAM */
-#define EMAC_NUM_RX_FRAG          4          /* Num.of RX Fragments 4*1536= 6.0kB   */
-#define EMAC_NUM_TX_FRAG          3          /* Num.of TX Fragments 3*1536= 4.6kB   */
+#define EMAC_NUM_RX_FRAG          6          /* Num.of RX Fragments 6*1536= 9.0kB   */
+#define EMAC_NUM_TX_FRAG          4          /* Num.of TX Fragments 4*1536= 6.0kB   */
 #define EMAC_ETH_MAX_FLEN         1536       /* Max. Ethernet Frame Size            */
 #define EMAC_TX_FRAME_TOUT        0x00100000 /* Frame Transmit timeout count        */
 
@@ -522,5 +522,19 @@
 #define EMAC_TINFO_UNDERRUN       0x20000000  /* Transmit Underrun                  */
 #define EMAC_TINFO_NO_DESCR       0x40000000  /* No new Descriptor available        */
 #define EMAC_TINFO_ERR            0x80000000  /* Error Occured (OR of all errors)   */
+
+/* EMAC Buffer status definitions */
+typedef enum {
+    EMAC_BUFF_EMPTY,                /* buffer is empty */
+    EMAC_BUFF_PARTIAL_FULL,         /* buffer contains some packets */
+    EMAC_BUFF_FULL,                 /* buffer is full */
+} EMAC_BUFF_STATUS;
+
+/* EMAC Buffer Index definition */
+
+typedef enum {
+    EMAC_TX_BUFF,                   /* transmit buffer */
+    EMAC_RX_BUFF,                   /* receive buffer */
+} EMAC_BUFF_IDX;
 
 #endif /* _LPC17XX_EMAC_H_ */

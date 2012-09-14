@@ -66,6 +66,7 @@
 /* define RTC */
 
 #ifndef RTC_CHIP
+#include <dev/lpc17xx_rtc.h>
 #define RTC_CHIP rtcLpc17xx
 #endif
 
@@ -78,11 +79,11 @@
 #endif
 
 #ifndef DEV_DEBUG
-#define DEV_DEBUG       DEV_UART0
+#define DEV_DEBUG       devDebug0
 #endif
 
 #ifndef DEV_DEBUG_NAME
-#define DEV_DEBUG_NAME  DEV_UART0_NAME
+#define DEV_DEBUG_NAME  "uart0"
 #endif
 
 /* define MMC interface */

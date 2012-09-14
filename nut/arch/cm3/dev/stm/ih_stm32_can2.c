@@ -39,7 +39,6 @@
 
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_CAN2
 #define NUT_IRQPRI_CAN2  4
@@ -220,9 +219,9 @@ static int CanIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *param)
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(IRQn, ifunc);
+        Cortex_RegisterInt(IRQn, ifunc);
         /* Initialize with defined priority. */
-        IntPrioritySet(IRQn, NUT_IRQPRI_CAN2);
+        NVIC_SetPriority(IRQn, NUT_IRQPRI_CAN2);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(IRQn);
         break;

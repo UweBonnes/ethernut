@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -1974,7 +1974,7 @@ THREAD(NutDhcpClient, arg)
  *                This value must be larger than 3 times of \ref MIN_DHCP_WAIT
  *                to enable collection of offers from multiple servers.
  */
-static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
+static int DhcpKick(const char *name, uint8_t state, uint32_t timeout)
 {
     NUTDEVICE *dev;
     IFNET *nif;
@@ -2045,7 +2045,7 @@ static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
  *         NutDhcpError() can be called to get a more specific error
  *         code.
  */
-int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
+int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout)
 {
     NUTDEVICE *dev;
     IFNET *nif = NULL;
@@ -2184,7 +2184,7 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutDhcpRelease(CONST char *name, uint32_t timeout)
+int NutDhcpRelease(const char *name, uint32_t timeout)
 {
     /* Check the state. */
     if (dhcpState != DHCPST_BOUND) {
@@ -2206,7 +2206,7 @@ int NutDhcpRelease(CONST char *name, uint32_t timeout)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutDhcpInform(CONST char *name, uint32_t timeout)
+int NutDhcpInform(const char *name, uint32_t timeout)
 {
     /* Check the state. */
     if (dhcpState != DHCPST_IDLE) {
@@ -2235,7 +2235,7 @@ int NutDhcpInform(CONST char *name, uint32_t timeout)
  *         - \ref DHCPST_RELEASING
  *         - \ref DHCPST_IDLE
  */
-int NutDhcpStatus(CONST char *name)
+int NutDhcpStatus(const char *name)
 {
     return dhcpState;
 }
@@ -2258,7 +2258,7 @@ int NutDhcpStatus(CONST char *name)
  *
  * \return DHCP error code or 0 if no error occured.
  */
-int NutDhcpError(CONST char *name)
+int NutDhcpError(const char *name)
 {
     int rc = dhcpError;
     dhcpError = 0;

@@ -49,9 +49,7 @@
 #include <cfg/mmci.h>
 #include <sys/nutdebug.h>
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined (NUTDEBUG)
 #include <stdio.h>
 #endif
 
@@ -461,6 +459,8 @@ static int CardRxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, uint8_t *b
                     rc = 0;
                 }
             }
+            /* Send 8 additional clocks and release the bus. */
+            (*bus->bus_transfer) (node, NULL, NULL, 1);
             (*bus->bus_release) (node);
         }
     }
@@ -535,7 +535,7 @@ int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num)
  * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
-int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
+int SpiMmcBlockWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     MMCFCB *fcb;
     NUTDEVICE *dev;
@@ -579,6 +579,8 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
                     /* Get data response. */
                     tkn = CardRxTkn(node);
                     if (tkn == 0xE5) {
+                        /* Send 8 additional clocks and release the bus. */
+                        (*bus->bus_transfer) (node, NULL, NULL, 1);
                         (*bus->bus_release) (node);
                         /* Deactivate the indicator. */
                         msc->mcs_act(NUTMC_IND_OFF);
@@ -623,6 +625,8 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
                         uint8_t b = 0xfd;
                         (*bus->bus_transfer) (node, &b, NULL, 1);
                     }
+                    /* Send 8 additional clocks and release the bus. */
+                    (*bus->bus_transfer) (node, NULL, NULL, 1);
                     (*bus->bus_release) (node);
                     /* Deactivate the indicator. */
                     msc->mcs_act(NUTMC_IND_OFF);
@@ -690,7 +694,7 @@ int SpiMmcUnmount(NUTFILE * nfp);
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *SpiMmcMount(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     int partno = 0;
     int i;

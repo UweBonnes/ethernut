@@ -264,10 +264,10 @@ static int VsCodec0RecvData(void *buf, size_t len)
  * \return The number of bytes actually sent. This may be less than the
  *         specified data length. Zero is returned in case of an error.
  */
-static int VsCodec0SendData(CONST uint8_t *buf, size_t len)
+static int VsCodec0SendData(const uint8_t *buf, size_t len)
 {
     int rc = 0;
-    CONST uint8_t *bp;
+    const uint8_t *bp;
     size_t chunk;
 
     /* Allocate the SPI bus. */

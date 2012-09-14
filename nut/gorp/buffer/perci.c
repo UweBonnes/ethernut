@@ -302,7 +302,7 @@ void PerCiClose(PERCI_WRITER * writer)
  *
  * \return The number of bytes successfully written or -1 on failure.
  */
-int PerCiWrite(PERCI_WRITER * writer, CONST char *data, int len)
+int PerCiWrite(PERCI_WRITER * writer, const char *data, int len)
 {
     perci_fast_reclen_t cnt = 0;
     perci_fast_reclen_t num;
@@ -369,7 +369,7 @@ int PerCiWrite(PERCI_WRITER * writer, CONST char *data, int len)
  *
  * \return The number of bytes successfully written or -1 on failure.
  */
-int PerCiWriteVarList(PERCI_WRITER * writer, CONST char *fmt, va_list ap)
+int PerCiWriteVarList(PERCI_WRITER * writer, const char *fmt, va_list ap)
 {
     int cnt;
     char *line;
@@ -401,7 +401,7 @@ int PerCiWriteVarList(PERCI_WRITER * writer, CONST char *fmt, va_list ap)
  *
  * \return The number of bytes successfully written or -1 on failure.
  */
-int PerCiWriteFormat(PERCI_WRITER * writer, CONST char *fmt, ...)
+int PerCiWriteFormat(PERCI_WRITER * writer, const char *fmt, ...)
 {
     int rc;
     va_list ap;

@@ -52,7 +52,7 @@ char *default_files[] = {
 * \param addon Filename to be appended to the path
 */
 
-char *CreateFilePath(CONST char *url, CONST char *addon)
+char *CreateFilePath(const char *url, const char *addon)
 {
     char *root = http_root ? http_root : HTTP_DEFAULT_ROOT;
     size_t urll = strlen(url);

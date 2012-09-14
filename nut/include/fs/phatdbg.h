@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -54,13 +54,9 @@
 #include <fs/phatvol.h>
 #include <fs/phatfs.h>
 
-__BEGIN_DECLS
-/* Prototypes */
 extern void PhatDbgAttrList(FILE * fp, uint8_t attr);
-extern void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent);
-extern void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp);
-extern void PhatDbgVbr(FILE * fp, CONST char *title, PHATVBR * vbr);
+extern void PhatDbgDirEntry(FILE * fp, const char *title, PHATDIRENT * dent);
+extern void PhatDbgFileInfo(FILE * fp, const char *title, PHATFILE * nfp);
+extern void PhatDbgVbr(FILE * fp, const char *title, PHATVBR * vbr);
 
-__END_DECLS
-/* End of prototypes */
 #endif

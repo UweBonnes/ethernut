@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -755,12 +755,12 @@ int UartAvrRead(NUTFILE * fp, void *buffer, int size)
 /*!
  * \brief Write to device.
  */
-int UartAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+int UartAvrPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
     IFSTREAM *ifs;
     UARTDCB *dcb;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t lbmode;
     uint8_t elmode;
     uint8_t ch;
@@ -818,21 +818,21 @@ int UartAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     return rc;
 }
 
-int UartAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
+int UartAvrWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return UartAvrPut(fp->nf_dev, buffer, len, 0);
 }
 
 int UartAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return UartAvrPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return UartAvrPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 
 /*!
  * \brief Open a device or file.
  */
-NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *UartAvrOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = NutHeapAlloc(sizeof(NUTFILE));
     UARTDCB *dcb;

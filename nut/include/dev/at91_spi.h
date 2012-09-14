@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -79,8 +79,6 @@
 /* dev/spi.h. */
 
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int At91Spi0Init(void);
 extern int At91Spi0InitChipSelects(unsigned int mask);
 extern int At91Spi0Enable(void);
@@ -106,9 +104,7 @@ extern int At91SpiSetTxDelay(unsigned int base, unsigned int cs, unsigned int dl
 extern unsigned int At91SpiGetCsDelay(unsigned int base);
 extern int At91SpiSetCsDelay(unsigned int base, unsigned int dly);
 
-extern int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen,
-                           CONST void *txnbuf, void *rxnbuf, int xnlen);
+extern int At91SpiTransfer2(unsigned int base, unsigned int cs, const void *txbuf, void *rxbuf, int xlen,
+                           const void *txnbuf, void *rxnbuf, int xnlen);
 
-__END_DECLS
-/* End of prototypes */
 #endif

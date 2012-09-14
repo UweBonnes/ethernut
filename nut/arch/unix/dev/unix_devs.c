@@ -611,7 +611,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
  *
  * \return Number of characters sent.
  */
-static int UnixDevWrite(NUTFILE * nf, CONST void *buffer, int len)
+static int UnixDevWrite(NUTFILE * nf, const void *buffer, int len)
 {
     int rc;
     int remaining = len;

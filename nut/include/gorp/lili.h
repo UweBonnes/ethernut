@@ -148,9 +148,6 @@ struct _LILI {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern LILI *LiLiCreate(uint8_t flags, LiLiItemCreateFunc cre, LiLiItemDestroyFunc des, LiLiItemCompareFunc cmp);
 extern void LiLiClean(LILI *list);
 extern void LiLiDestroy(LILI *list);
@@ -169,6 +166,4 @@ extern LILI_ITEMREF LiLiCreateStringItemCopy(LILI_ITEMREF ref);
 extern void LiLiDestroyStringItemCopy(LILI_ITEMREF ref);
 extern int LiLiCompareStringItems(LILI_ITEMREF ref1, LILI_ITEMREF ref2);
 
-__END_DECLS
-/* End of prototypes */
 #endif

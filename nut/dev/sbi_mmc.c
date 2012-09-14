@@ -52,6 +52,10 @@
  */
 /*@{*/
 
+#if defined (NUTDEBUG)
+#include <stdio.h>
+#endif
+
 #if defined(MMC_CLK_PIO_BIT) && defined(MMC_CLK_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID MMC_CLK_PIO_ID

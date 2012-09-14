@@ -175,7 +175,7 @@ int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
  * \return      none
  */
 
-int Lpc177x_8x_EepromWrite(uint16_t addr, CONST void* buff, size_t size)
+int Lpc177x_8x_EepromWrite(uint16_t addr, const void* buff, size_t size)
 {
     uint16_t  page_nr;
     uint16_t  page_offs;

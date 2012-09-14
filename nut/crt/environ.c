@@ -78,7 +78,7 @@ static size_t read_string(int *addr, char *buf, size_t siz)
  * \return A pointer to the entry with the specified name. If the name
  *         cannot be found, then a null pointer is returned.
  */
-NUTENVIRONMENT *findenv(CONST char *name)
+NUTENVIRONMENT *findenv(const char *name)
 {
     NUTENVIRONMENT *envp;
     size_t len;

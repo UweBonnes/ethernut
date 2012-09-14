@@ -39,7 +39,6 @@
 
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_TWI
 /* According Errata Sheet 14574 Rev. 9 some I2C erratic behaviour can be overcome
@@ -145,11 +144,11 @@ static int TwoWireIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *par
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(IRQn, ifunc);
+        Cortex_RegisterInt(IRQn, ifunc);
         /* Initialize Event IRQ with defined priority. */
-        IntPrioritySet(IRQn, NUT_IRQPRI_TWI);
+        NVIC_SetPriority(IRQn, NUT_IRQPRI_TWI);
         /* Initialize Error IRQ with defined priority. */
-        IntPrioritySet(IRQn+1, NUT_IRQPRI_TWI+1);
+        NVIC_SetPriority(IRQn+1, NUT_IRQPRI_TWI+1);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(IRQn);
         break;

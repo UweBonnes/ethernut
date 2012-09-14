@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -39,13 +39,10 @@
  *
  */
 
-#ifdef STM32_EMAC
-
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_EMAC
 #define NUT_IRQPRI_EMAC  4
@@ -108,9 +105,9 @@ static int EmacIrqCtl(int cmd, void *param)
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(ETH_IRQn, EmacIrqEntry);
+        Cortex_RegisterInt(ETH_IRQn, EmacIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(ETH_IRQn, NUT_IRQPRI_EMAC);
+        NVIC_SetPriority(ETH_IRQn, NUT_IRQPRI_EMAC);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(ETH_IRQn);
         break;
@@ -134,10 +131,10 @@ static int EmacIrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(ETH_IRQn);
+        *ival = NVIC_GetPriority(ETH_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(ETH_IRQn,*ival);
+        NVIC_SetPriority(ETH_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -156,5 +153,3 @@ static int EmacIrqCtl(int cmd, void *param)
     }
     return rc;
 }
-
-#endif /* STM32_EMAC */

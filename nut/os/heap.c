@@ -121,7 +121,7 @@ static INLINE void *PrepareUserArea(HEAPNODE * node)
  * then zero is returned.
  */
 #ifdef NUTDEBUG_HEAP
-static INLINE int DebugValidateUserArea(HEAPNODE * node, CONST char *file, int line)
+static INLINE int DebugValidateUserArea(HEAPNODE * node, const char *file, int line)
 #else
 static INLINE int ValidateUserArea(HEAPNODE * node)
 #endif
@@ -152,7 +152,7 @@ static INLINE int ValidateUserArea(HEAPNODE * node)
 /*
  * Remove a node from the allocation list.
  */
-static void DebugUnalloc(HEAPNODE * entry, CONST char *file, int line)
+static void DebugUnalloc(HEAPNODE * entry, const char *file, int line)
 {
     HEAPNODE *ht = heapAllocList;
     HEAPNODE **htp = &heapAllocList;
@@ -196,7 +196,7 @@ static void DebugUnalloc(HEAPNODE * entry, CONST char *file, int line)
  *         is available.
  */
 #ifdef NUTDEBUG_HEAP
-void *NutHeapDebugRootAlloc(HEAPNODE ** root, size_t size, CONST char *file, int line)
+void *NutHeapDebugRootAlloc(HEAPNODE ** root, size_t size, const char *file, int line)
 #else
 void *NutHeapRootAlloc(HEAPNODE ** root, size_t size)
 #endif
@@ -283,7 +283,7 @@ void *NutHeapRootAlloc(HEAPNODE ** root, size_t size)
  *         amount of memory is not available.
  */
 #ifdef NUTDEBUG_HEAP
-void *NutHeapDebugRootAllocClear(HEAPNODE ** root, size_t size, CONST char *file, int line)
+void *NutHeapDebugRootAllocClear(HEAPNODE ** root, size_t size, const char *file, int line)
 {
     void *ptr;
 
@@ -323,7 +323,7 @@ void *NutHeapRootAllocClear(HEAPNODE ** root, size_t size)
  *         pointer, but using this may change as C99 allows this.
  */
 #ifdef NUTDEBUG_HEAP
-int NutHeapDebugRootFree(HEAPNODE ** root, void *block, CONST char *file, int line)
+int NutHeapDebugRootFree(HEAPNODE ** root, void *block, const char *file, int line)
 #else
 int NutHeapRootFree(HEAPNODE ** root, void *block)
 #endif
@@ -496,7 +496,7 @@ size_t NutHeapRootRegionAvailable(HEAPNODE ** root)
  * \return A pointer to the memory block on success or NULL on failures.
  */
 #ifdef NUTDEBUG_HEAP
-void *NutHeapDebugRootRealloc(HEAPNODE ** root, void *block, size_t size, CONST char *file, int line)
+void *NutHeapDebugRootRealloc(HEAPNODE ** root, void *block, size_t size, const char *file, int line)
 #else
 void *NutHeapRootRealloc(HEAPNODE ** root, void *block, size_t size)
 #endif

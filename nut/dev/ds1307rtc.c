@@ -18,8 +18,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -107,7 +107,7 @@ int DS1307RtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RtcWrite(CONST uint8_t *buff, size_t cnt)
+int DS1307RtcWrite(const uint8_t *buff, size_t cnt)
 {
     int rc;
 
@@ -148,7 +148,7 @@ int DS1307RtcGetClock(NUTRTC *rtc, struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
+int DS1307RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint8_t data[8];
 
@@ -196,11 +196,11 @@ int DS1307RamRead(uint8_t addr, uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RamWrite(uint8_t addr, CONST void *buff, size_t len)
+int DS1307RamWrite(uint8_t addr, const void *buff, size_t len)
 {
     int rc = 0;
     uint8_t *wbuf;
-    CONST uint8_t *wp = buff;
+    const uint8_t *wp = buff;
 
     /* Allocate and set a TWI write buffer. */
     if ((wbuf = malloc(len + 1)) == 0) {

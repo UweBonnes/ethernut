@@ -57,7 +57,7 @@
  *
  * \return IP address in network byte order.
  */
-uint32_t inet_addr(CONST char * str)
+uint32_t inet_addr(const char * str)
 {
     uint_fast16_t num;
     uint32_t addr = 0;

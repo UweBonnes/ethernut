@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -302,12 +302,12 @@ static int GenCharRead(NUTFILE * fp, void *buffer, int size)
  *         less than the number of bytes specified if a timeout occured.
  *         A return value of -1 indicates an error.
  */
-static int GenCharWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int GenCharWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int rc = 0;
     int cnt;
     int pend;
-    CONST char *cp = buffer;
+    const char *cp = buffer;
     NUTDEVICE *dev = fp->nf_dev;
     DEVDCB *dcb = dev->dev_dcb;
 
@@ -401,7 +401,7 @@ int GenCharWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF if
  *         the open failed.
  */
-static NUTFILE *GenCharOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *GenCharOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 

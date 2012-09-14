@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -84,7 +84,7 @@ AUTHINFO *authList = 0;
 /*!
  * \brief Look up an authorization entry.
  */
-static AUTHINFO *NutHttpAuthLookup(CONST char *dirname, CONST char *login)
+static AUTHINFO *NutHttpAuthLookup(const char *dirname, const char *login)
 {
     AUTHINFO *auth;
 
@@ -113,7 +113,7 @@ static AUTHINFO *NutHttpAuthLookup(CONST char *dirname, CONST char *login)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutRegisterAuth(CONST char *dirname, CONST char *login)
+int NutRegisterAuth(const char *dirname, const char *login)
 {
     AUTHINFO *auth;
 

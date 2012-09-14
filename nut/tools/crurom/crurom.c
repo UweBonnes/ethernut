@@ -1,36 +1,9 @@
 const char crurom_rcsid[] = "@(#) $Id$";
 
-/*
- * $Log$
- * Revision 1.5  2008/10/26 18:29:59  olereinhardt
- * 2008-10-26  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- *  * tools/crurom/crurom.c: Added .svn to the list of directories to
- *    ignore when creating urom.c
- *
- * Revision 1.4  2005/04/28 16:02:43  haraldkipp
- * Autoconfiscated
- *
- * Revision 1.3  2003/07/20 20:06:28  haraldkipp
- * MSC compilation error fixed.
- *
- * Revision 1.2  2003/07/20 19:27:59  haraldkipp
- * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
- * AVR's flash memory.
- *
- * Revision 1.1  2003/07/20 19:18:16  haraldkipp
- * First check in
- *
- * Revision 1.5  2002/08/08 16:23:19  harald
- * Command line options for verbose mode, outfile name and recursive
- * directory scan added.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,6 +14,7 @@ const char crurom_rcsid[] = "@(#) $Id$";
 #include <io.h>
 #include "dirent.h"
 #else
+#include <unistd.h>
 #include <dirent.h>
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
@@ -55,7 +29,7 @@ const char crurom_rcsid[] = "@(#) $Id$";
 
 #define IDENT   "crurom"
 #undef VERSION
-#define VERSION "1.3.2"
+#define VERSION "1.3.3"
 
 static int entryno = 0;
 static int verbose = 0;
@@ -79,7 +53,7 @@ int dofile(char *name)
         fsname += rootlen;
 
     if((fd = open(name, O_RDONLY | O_BINARY)) == -1) {
-        fprintf(stderr, IDENT ": Error %d opening %s\n", errno, name);
+        perror(name);
         return -1;
     }
     if(verbose)
@@ -87,7 +61,7 @@ int dofile(char *name)
 
     for(;;) {
         if((cnt = read(fd, buf, sizeof(buf))) < 0) {
-            fprintf(stderr, IDENT ": Error %d reading %s\n", errno, name);
+            perror(name);
             rc = -1;
             total = 0;
             break;
@@ -99,12 +73,22 @@ int dofile(char *name)
         }
         if(cnt == 0)
             break;
-        total += cnt;
         for(i = 0; i < cnt; i++) {
-            if((i % 16) == 0)
-                fprintf(fpout, "\n");
-            fprintf(fpout, "0x%02x,", buf[i]);
+            if((i % 16) == 0) {
+                if(total != 0 || i != 0) {
+                    fputc(',', fpout);
+                }
+                fputs("\n ", fpout);
+            } else {
+                fputc(',', fpout);
+            }
+            if (buf[i] < 32 || buf[i] > 127 || buf[i] == '\'' || buf[i] == '\\') {
+                fprintf(fpout, "%3u", buf[i]);
+            }
+            else
+                fprintf(fpout, "'%c'", buf[i]);
         }
+        total += cnt;
     }
     close(fd);
 
@@ -192,7 +176,7 @@ int main(int argc, char **argv)
 
     if(outname[0]) {
         if((fpout = fopen(outname, "w")) == NULL) {
-            fprintf(stderr, "Can't write to %s\n", outname);
+            perror(outname);
             return 3;
         }
     }

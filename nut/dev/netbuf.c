@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -143,8 +143,9 @@
 
 static int NutNetBufAllocData(NBDATA * nbd, int size, int offs)
 {
-    nbd->vp = (uint8_t *)NutHeapAlloc(size + offs) + offs;
+    nbd->vp = NutHeapAlloc(size + offs);
     if (nbd->vp) {
+        nbd->vp = (void *) ((uint8_t *) nbd->vp + offs);
         nbd->sz = size;
         return 0;
     }
@@ -173,10 +174,10 @@ static int NutNetBufAllocData(NBDATA * nbd, int size, int offs)
 NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 {
     NBDATA * nbd;
-    int offs = 0;
+    int offs = type & ~NBAF_ALL;
 
     NUTASSERT(size > 0);
-    NUTASSERT(type == NBAF_DATALINK ||
+    NUTASSERT((type & NBAF_ALL) == NBAF_DATALINK ||
         type == NBAF_NETWORK ||
         type == NBAF_TRANSPORT ||
         type == NBAF_APPLICATION);
@@ -191,7 +192,6 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
         switch(type) {
         case NBAF_DATALINK:
             nbd = &nb->nb_dl;
-            offs = 2;
             break;
         case NBAF_NETWORK:
             nbd = &nb->nb_nw;
@@ -207,7 +207,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
         if (nb->nb_flags & type) {
             if (nbd->sz < size) {
                 /* Existing buffer is too small. */
-                NutHeapFree((uint8_t *)nbd->vp - offs);
+                NutHeapFree((void *)NUTMEM_BOTTOM_ALIGN((uintptr_t) nbd->vp));
                 nbd->sz = 0;
             } else {
                 /*
@@ -273,7 +273,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_dl.sz;
         if (s) {
             if (inserts & NBAF_DATALINK) {
-                e = NutNetBufAllocData(&cb->nb_dl, s, 2);
+                e = NutNetBufAllocData(&cb->nb_dl, s, (intptr_t)nb->nb_dl.vp & (NUTMEM_ALIGNMENT - 1));
                 if (e == 0) {
                     memcpy(cb->nb_dl.vp, nb->nb_dl.vp, s);
                     cb->nb_flags |= NBAF_DATALINK;
@@ -371,7 +371,7 @@ void NutNetBufFree(NETBUF * nb)
         nb->nb_flags--;
     } else {
         if (nb->nb_flags & NBAF_DATALINK) {
-            NutHeapFree((uint8_t *) nb->nb_dl.vp - 2);
+            NutHeapFree((void *) NUTMEM_BOTTOM_ALIGN((uintptr_t) nb->nb_dl.vp));
         }
         if (nb->nb_flags & NBAF_NETWORK) {
             NutHeapFree(nb->nb_nw.vp);

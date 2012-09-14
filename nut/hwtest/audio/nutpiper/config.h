@@ -93,6 +93,6 @@ extern int ConfigLoad(void);
 extern void ConfigResetFactory(void);
 extern void ConfigSave(void);
 extern void ConfigSaveControl(void);
-extern int ConfigStation(uint8_t idx, CONST char * url);
+extern int ConfigStation(uint8_t idx, const char * url);
 
 #endif

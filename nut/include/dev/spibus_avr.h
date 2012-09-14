@@ -56,9 +56,6 @@ struct _AVRSPIREG {
 
 extern NUTSPIBUS spiBus0Avr;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int AvrSpiSetup(NUTSPINODE * node);
-/* Prototypes */
-__END_DECLS
+
 #endif

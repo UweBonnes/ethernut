@@ -252,8 +252,8 @@ uint16_t VsCodecBeep(NUTDEVICE *dev, uint16_t fsin)
 {
     uint16_t rc = 0;
     static uint8_t on[] = { 0x53, 0xEF, 0x6E, 0x3F, 0x00, 0x00, 0x00, 0x00 };
-    static CONST uint8_t off[] = { 0x45, 0x78, 0x69, 0x74, 0x00, 0x00, 0x00, 0x00 };
-    static CONST uint16_t ftab[] = { 44100, 48000, 32000, 22050, 24000, 16000, 11025, 12000 };
+    static const uint8_t off[] = { 0x45, 0x78, 0x69, 0x74, 0x00, 0x00, 0x00, 0x00 };
+    static const uint16_t ftab[] = { 44100, 48000, 32000, 22050, 24000, 16000, 11025, 12000 };
     static uint16_t mode;
     VSDCB *dcb = (VSDCB *)dev->dev_dcb;
 
@@ -863,11 +863,11 @@ int VsCodecRead(NUTFILE * nfp, void *data, int len)
  * \return Number of characters sent. If a write timeout had been set,
  *         then this may be less than the specified length.
  */
-int VsCodecWrite(NUTFILE * nfp, CONST void *data, int len)
+int VsCodecWrite(NUTFILE * nfp, const void *data, int len)
 {
     int rc = 0;
     uint8_t *bp;
-    CONST uint8_t *dp;
+    const uint8_t *dp;
     size_t rbytes;
     VSDCB *dcb = nfp->nf_dev->dev_dcb;
 
@@ -931,7 +931,7 @@ int VsCodecWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
 /*
  * Open codec stream.
  */
-NUTFILE *VsCodecOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *VsCodecOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nfp;
     VSDCB *dcb;

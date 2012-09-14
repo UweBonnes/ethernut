@@ -63,8 +63,7 @@
 #endif
 #endif
 
-#if defined(SSC0SPI_CS0_PIO_BIT)
-#if defined(SSC0SPI_CS0_PIO_ID)
+#if defined(SSC0SPI_CS0_PIO_BIT) && defined(SSC0SPI_CS0_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID SSC0SPI_CS0_PIO_ID
 #include <cfg/arch/porttran.h>
@@ -88,7 +87,6 @@ static INLINE void SSC0SPI_CS0_SO(void)
 #define SSC0SPI_CS0_HI()
 #define SSC0SPI_CS0_SO()
 #endif
-#endif
 
 
 static AT91SSCREG gspi_reg0;
@@ -97,8 +95,8 @@ static uint8_t * volatile spi0_txp;
 static uint8_t * volatile spi0_rxp;
 static volatile size_t spi0_xc;
 
-static uint8_t ssc_pdc_txbuf[512] __attribute__ ((section(".ramfunc")));
-static uint8_t ssc_pdc_rxbuf[512] __attribute__ ((section(".ramfunc")));
+static uint8_t ssc_pdc_txbuf[512] SECTION_BSS_IRAM;
+static uint8_t ssc_pdc_rxbuf[512] SECTION_BSS_IRAM;
 
 /*!
  * \brief Set the specified chip select to a given level.
@@ -195,7 +193,7 @@ static void SscSpiBus0WriteRead(const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
  *
  * \return Always 0.
  */
-static int SscSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+static int SscSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     if (xlen < 32) {
         if (txbuf) {

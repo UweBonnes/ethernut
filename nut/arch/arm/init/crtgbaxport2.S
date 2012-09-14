@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -55,7 +55,7 @@ _reset:
 rom_header:
         b       rom_header_end
 
-        /* 
+        /*
          * 156 bytes compressed bitmap of Nintendo logo. The BIOS
          * will compare this with an internal copy and lock the
          * GBA if they differ.
@@ -71,7 +71,7 @@ rom_header:
         .byte   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  /* 0x80..0x8F */
         .byte   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0              /* 0x90..0x9B */
         .byte   0 /* If bits 2 and 7 are set, enables BIOS FIQ/Undef handler. */
-        .byte   0 /* Bits 0 and 1 are used for the cartridge key. */  
+        .byte   0 /* Bits 0 and 1 are used for the cartridge key. */
         .byte   0
         .byte   0
 
@@ -112,7 +112,7 @@ rom_header:
 rom_header_end:
         b       _start
 
-        /* 
+        /*
          * Boot method, set by the BIOS:
          * - 1 = joybus mode
          * - 2 = normal mode
@@ -120,8 +120,8 @@ rom_header_end:
          */
         .byte   0
 
-        /* 
-         * Slave ID, set to 1..3 by the BIOS in multiboot mode. 
+        /*
+         * Slave ID, set to 1..3 by the BIOS in multiboot mode.
          * In normal mode this is set to 1.
          */
         .byte   0

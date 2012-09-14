@@ -1707,9 +1707,10 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
         }
         if ((cp = strrchr(repo->nr_dir, '/')) != NULL) {
             *cp++ = 0;
-            repo->nr_name = cp;
+            repo->nr_name = strdup(cp);
         } else {
-            repo->nr_dir[0] = 0;
+            repo->nr_name = repo->nr_dir;
+            repo->nr_dir = strdup(".");
         }
 
         /*
@@ -1759,9 +1760,8 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
 void CloseRepository(NUTREPOSITORY *repo)
 {
     if(repo) {
-        if(repo->nr_dir) {
-            free(repo->nr_dir);
-        }
+        free(repo->nr_dir);
+        free(repo->nr_name);
         if(repo->nr_ls) {
             lua_close((lua_State *)(repo->nr_ls));
         }

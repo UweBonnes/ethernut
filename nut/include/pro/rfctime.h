@@ -50,18 +50,12 @@
 #include <time.h>
 
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern char *Rfc1123TimeString(struct _tm *tm);
 
-extern time_t RfcTimeParse(CONST char *str);
-extern char *TimeParseHms(CONST char *str, int *hour, int *min, int *sec);
-extern char *TimeParseDmy(CONST char *str, int *mday, int *mon, int *year);
-extern char *TimeParseMonth(CONST char *str, int *month);
-extern char *TimeParseYear(CONST char *str, int *year);
-
-__END_DECLS
-/* End of prototypes */
+extern time_t RfcTimeParse(const char *str);
+extern char *TimeParseHms(const char *str, int *hour, int *min, int *sec);
+extern char *TimeParseDmy(const char *str, int *mday, int *mon, int *year);
+extern char *TimeParseMonth(const char *str, int *month);
+extern char *TimeParseYear(const char *str, int *year);
 
 #endif

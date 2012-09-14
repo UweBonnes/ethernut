@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -45,7 +45,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_SPI3
 #define NUT_IRQPRI_SPI3  4
@@ -97,19 +96,19 @@ static int SerialPeripheral3IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
-    int enabled = IntIsEnabled(SPI3_IRQn);
+    int enabled = NVIC_GetEnableIRQ(SPI3_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(SPI3_IRQn);
+        NVIC_DisableIRQ(SPI3_IRQn);
     }
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(SPI3_IRQn, SerialPeripheral3IrqEntry);
+        Cortex_RegisterInt(SPI3_IRQn, SerialPeripheral3IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(SPI3_IRQn, NUT_IRQPRI_SPI3);
+        NVIC_SetPriority(SPI3_IRQn, NUT_IRQPRI_SPI3);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(SPI3_IRQn);
         break;
@@ -133,10 +132,10 @@ static int SerialPeripheral3IrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(SPI3_IRQn);
+        *ival = NVIC_GetPriority(SPI3_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(SPI3_IRQn,*ival);
+        NVIC_SetPriority(SPI3_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -151,7 +150,7 @@ static int SerialPeripheral3IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(SPI3_IRQn);
+        NVIC_EnableIRQ(SPI3_IRQn);
     }
     return rc;
 }

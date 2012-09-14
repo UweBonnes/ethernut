@@ -32,9 +32,11 @@ QVariant NutComponentDetailsModel::headerData( int section, Qt::Orientation orie
 
 QVariant NutComponentDetailsModel::data( const QModelIndex& index, int role /*= Qt::DisplayRole */ ) const
 {
-	if ( role == Qt::DisplayRole )
+	if ( role == Qt::DisplayRole || role == Qt::UserRole)
 	{
 		QStringList row = cache.at( index.row() );
+		if (role == Qt::UserRole)
+			return row;
 		return row.at( index.column() );
 	}
 	return QVariant();
@@ -63,17 +65,7 @@ void NutComponentDetailsModel::refresh( const QModelIndex& selected )
 	if ( !selected.isValid() )
 		return;
 
-	cache.append( QStringList() << tr("Enabled") << (selected.flags() & Qt::ItemIsEnabled ? tr("Yes") : tr("No")) );
-
 	QString value;
-	value = selected.data( NutComponentModel::Depends ).toStringList().join(", ");
-	if ( !value.isEmpty() )
-		cache.append( QStringList() << tr("Requires") << value );
-
-	value = selected.data( NutComponentModel::Provides ).toStringList().join(", ");
-	if ( !value.isEmpty() )
-		cache.append( QStringList() << tr("Provides") << value );
-
 	value = selected.data( NutComponentModel::File ).toString();
 	if ( !value.isEmpty() )
 		cache.append( QStringList() << tr("File") << value );
@@ -82,8 +74,22 @@ void NutComponentDetailsModel::refresh( const QModelIndex& selected )
 	if ( !value.isEmpty() )
 		cache.append( QStringList() << tr("Macro") << value );
 
-	value = selected.data( NutComponentModel::Active ).toBool() ? tr("Yes") : tr("No");
+	value = selected.data( NutComponentModel::Active ).toBool() ? tr("True") : tr("False");
 	cache.append( QStringList() << tr("Active") << value );
+
+	cache.append( QStringList() << tr("Enabled") << (selected.flags() & Qt::ItemIsEnabled ? tr("Yes") : tr("No")) );
+
+	value = selected.data( NutComponentModel::Depends ).toStringList().join(", ");
+	if ( !value.isEmpty() )
+		cache.append( QStringList() << tr("Requires") << value );
+
+	value = selected.data( NutComponentModel::Provides ).toStringList().join(", ");
+	if ( !value.isEmpty() )
+		cache.append( QStringList() << tr("Provides") << value );
+
+	value = selected.data( NutComponentModel::Exclusive ).toStringList().join(", ");
+	if ( !value.isEmpty() )
+		cache.append( QStringList() << tr("Exclusivity") << value );
 
 #if QT_VERSION >= 0x040600
 	endResetModel();

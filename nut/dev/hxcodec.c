@@ -84,7 +84,7 @@
 
 #ifndef HXCODEC0_MAX_OUTPUT_BUFSIZ
 /*! \brief Output buffer size limit. */
-#define HXCODEC0_MAX_OUTPUT_BUFSIZ  16384
+#define HXCODEC0_MAX_OUTPUT_BUFSIZ  393216
 #endif
 
 #ifndef DAC_OUTPUT_RATE
@@ -182,10 +182,11 @@ static int DecodeFrame(uint8_t *buf, int len)
 {
     int rc = len;
     int skip;
+    static void *hres;
 
     while (len > 2 * MAINBUF_SIZE) {
         if ((skip = MP3FindSyncWord(buf, len)) < 0) {
-            return -1;
+            return len;
         }
         if (skip) {
             len -= skip;
@@ -214,7 +215,6 @@ static int DecodeFrame(uint8_t *buf, int len)
 #ifdef HXCODEC0_RESAMPLER
                 /* If needed, initialize resampler. */
                 if (samprate != DAC_OUTPUT_RATE) {
-                    void *hres;
 
                     if ((hres = RAInitResamplerHermite(samprate, DAC_OUTPUT_RATE, mpi.mpi_frameinfo.nChans)) == NULL) {
                         return -1;
@@ -227,8 +227,28 @@ static int DecodeFrame(uint8_t *buf, int len)
 #endif
                 first_frame = 0;
             }
-            if (Tlv320DacWrite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps)) {
-                return -1;
+#ifdef HXCODEC0_RESAMPLER
+            if (hres) {
+                int os;
+
+                if (mpi.mpi_frameinfo.nChans == 1) {
+                    os = RAResampleMonoHermite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps, rs_pcmbuf, hres);
+                }
+                else {
+                    os = RAResampleStereoHermite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps, rs_pcmbuf, hres);
+                }
+                if (os <= 0) {
+                    break;
+                }
+                if (Tlv320DacWrite(rs_pcmbuf, os)) {
+                    break;
+                }
+            } else
+#endif
+            {
+                if (Tlv320DacWrite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps)) {
+                    return -1;
+                }
             }
             break;
         }
@@ -472,6 +492,7 @@ static int HelixPlayerFlush(NUTDEVICE *dev, uint32_t tmo)
             break;
         }
     }
+    Tlv320DacFlush();
     return rc;
 }
 
@@ -483,11 +504,11 @@ static int HelixPlayerFlush(NUTDEVICE *dev, uint32_t tmo)
  *
  * \return Number of characters sent.
  */
-static int HelixWrite(NUTFILE * nfp, CONST void *data, int len)
+static int HelixWrite(NUTFILE * nfp, const void *data, int len)
 {
     int rc = 0;
     uint8_t *bp;
-    CONST uint8_t *dp;
+    const uint8_t *dp;
     size_t rbytes;
     HXDCB *dcb = nfp->nf_dev->dev_dcb;
 
@@ -554,7 +575,7 @@ static int HelixWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *HelixOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *HelixOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nfp;
 
@@ -582,8 +603,9 @@ static NUTFILE *HelixOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 static int HelixClose(NUTFILE * nfp)
 {
     HXDCB *dcb = nfp->nf_dev->dev_dcb;
-    int rc = HelixPlayerFlush(nfp->nf_dev, dcb->dcb_wtmo);
+    int rc;
 
+    rc = HelixPlayerFlush(nfp->nf_dev, dcb->dcb_wtmo);
     if (nfp) {
         if (mpi.mpi_mp3dec) {
             MP3FreeDecoder(mpi.mpi_mp3dec);

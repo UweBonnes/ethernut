@@ -23,6 +23,8 @@
  */
 
 #include <wx/notebook.h>
+#include <wx/persist/toplevel.h>
+#include <wx/persist/bookctrl.h>
 
 #include "ids.h"
 #include "nutconf.h"
@@ -34,6 +36,8 @@ CSettingsDialog::CSettingsDialog(wxWindow* parent)
 : wxDialog(parent, -1, wxGetApp().GetAppName() + wxT(" Settings"), wxDefaultPosition, 
            wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    const bool persistent = wxPersistentRegisterAndRestore(this, "SettingsDlg");
+
     m_notebook = new wxNotebook(this, ID_SETTINGS_NOTEBOOK);
 
     m_repositoryOptions = new CRepositoryOptionsDialog(m_notebook);
@@ -60,17 +64,11 @@ CSettingsDialog::CSettingsDialog(wxWindow* parent)
     sizerTop->Add(4, 4, 0, wxALIGN_CENTRE|wxALL, 0);
     sizerTop->Add(sizerBot, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 0);
 
-    /*
-     * Restore frame position and size.
-     */
-    wxConfigBase *pConfig = wxConfigBase::Get();
-    if(pConfig) {
-        wxString lastPath = pConfig->GetPath();
-        pConfig->SetPath(wxT("/SettingsDlg"));
-        SetSize(pConfig->Read(wxT("x"), 50), pConfig->Read(wxT("y"), 50),
-                pConfig->Read(wxT("w"), 400), pConfig->Read(wxT("h"), 460));
-        m_notebook->SetSelection((long)pConfig->Read(wxT("page"), (long)0));
-        pConfig->SetPath(lastPath);
+    if (!persistent) {
+        SetSize(50, 50, 400, 460);
+    }
+    if (!wxPersistentRegisterAndRestore(m_notebook, "SettingsBook")) {
+        m_notebook->SetSelection(0);
     }
 
     this->SetAutoLayout(true);
@@ -91,28 +89,6 @@ CSettingsDialog::CSettingsDialog(wxWindow* parent)
  */
 CSettingsDialog::~CSettingsDialog()
 {
-    // Save frame size and position.
-    wxConfigBase *pConfig = wxConfigBase::Get();
-    if (pConfig) {
-        wxString lastPath = pConfig->GetPath();
-        pConfig->SetPath(wxT("/SettingsDlg"));
-
-        /*
-         * Dialog frame window position and client window size.
-         */
-        int x, y;
-        int w, h;
-        GetPosition(&x, &y);
-        pConfig->Write(wxT("x"), (long) x);
-        pConfig->Write(wxT("y"), (long) y);
-        GetSize(&w, &h);
-        pConfig->Write(wxT("w"), (long) w);
-        pConfig->Write(wxT("h"), (long) h);
-
-        pConfig->Write(wxT("page"), m_notebook->GetSelection());
-
-        pConfig->SetPath(lastPath);
-    }
 }
 
 bool CSettingsDialog::TransferDataToWindow()
@@ -139,6 +115,8 @@ bool CSettingsDialog::TransferDataFromWindow()
 
 bool CSettingsDialog::Validate()
 {
+    int current = m_notebook->GetSelection();
+
     m_notebook->SetSelection(0);
     if (!m_repositoryOptions->Validate()) {
         return false;
@@ -154,6 +132,9 @@ bool CSettingsDialog::Validate()
     m_notebook->SetSelection(3);
     if (!m_appOptions->Validate()) {
         return false;
+    }
+    if (current != wxNOT_FOUND) {
+        m_notebook->SetSelection(current);
     }
     return true;
 }

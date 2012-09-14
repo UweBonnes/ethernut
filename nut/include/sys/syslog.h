@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -168,13 +168,12 @@ extern char *syslog_buf;
 
 #endif /* SYSLOG_INTERNAL */
 
-__BEGIN_DECLS                   /* */
 extern void closelog(void);
-extern void openlog(CONST char *, int, int);
+extern void openlog(const char *, int, int);
 extern int setlogmask(int);
 extern uint32_t setlogserver(uint32_t ip, uint16_t port);
-extern void syslog(int, CONST char *, ...);
-extern void vsyslog(int, CONST char *, va_list);
+extern void syslog(int, const char *, ...);
+extern void vsyslog(int, const char *, va_list);
 #ifdef __HARVARD_ARCH__
 #ifdef SYSLOG_INTERNAL
 extern size_t syslog_header(int pri);
@@ -186,5 +185,5 @@ extern void vsyslog_P(int pri, PGM_P fmt, va_list ap);
 #define syslog_P    syslog
 #define vsyslog_P   vsyslog
 #endif
-__END_DECLS                     /* */
+
 #endif

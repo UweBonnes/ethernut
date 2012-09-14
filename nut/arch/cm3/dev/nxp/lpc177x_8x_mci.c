@@ -17,8 +17,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -34,13 +34,13 @@
  *
  * Parts taken from lpc177x_8x_mci.c       2011-06-02
  *
- * file		lpc177x_8x_mci.c
- * brief	Contains all functions support for MCI firmware library
- *			on LPC177x_8x
- * version	2.0
- * date		29. June. 2011
- * author	NXP MCU SW Application Team
- * 
+ * file     lpc177x_8x_mci.c
+ * brief    Contains all functions support for MCI firmware library
+ *          on LPC177x_8x
+ * version  2.0
+ * date     29. June. 2011
+ * author   NXP MCU SW Application Team
+ *
  * Copyright(C) 2011, NXP Semiconductor
  * All rights reserved.
  *
@@ -755,14 +755,14 @@ int32_t Lpc177x_8x_MciInit(uint8_t powerActiveLevel )
     GpioPinConfigSet(NUTGPIO_PORT1, 11, GPIO_CFG_OUTPUT);
     GpioPinConfigSet(NUTGPIO_PORT1, 12, GPIO_CFG_OUTPUT);
 
-/*    
-    LPC_IOCON->P1_2  &= ~0x1F; // SD_CLK @ P1.2 
-    LPC_IOCON->P1_3  &= ~0x1F; // SD_CMD @ P1.3 
-    LPC_IOCON->P1_5  &= ~0x1F; // SD_PWR @ P1.5 
-    LPC_IOCON->P1_6  &= ~0x1F; // SD_DAT_0 @ P1.6 
-    LPC_IOCON->P1_7  &= ~0x1F; // SD_DAT_1 @ P1.7 
-    LPC_IOCON->P1_11 &= ~0x1F; // SD_DAT_2 @ P1.11 
-    LPC_IOCON->P1_12 &= ~0x1F; // SD_DAT_3 @ P1.12 
+/*
+    LPC_IOCON->P1_2  &= ~0x1F; // SD_CLK @ P1.2
+    LPC_IOCON->P1_3  &= ~0x1F; // SD_CMD @ P1.3
+    LPC_IOCON->P1_5  &= ~0x1F; // SD_PWR @ P1.5
+    LPC_IOCON->P1_6  &= ~0x1F; // SD_DAT_0 @ P1.6
+    LPC_IOCON->P1_7  &= ~0x1F; // SD_DAT_1 @ P1.7
+    LPC_IOCON->P1_11 &= ~0x1F; // SD_DAT_2 @ P1.11
+    LPC_IOCON->P1_12 &= ~0x1F; // SD_DAT_3 @ P1.12
 
     // Set all MCI pins to outputs
     LPC_GPIO1->DIR |= 0x18EC;
@@ -787,7 +787,7 @@ int32_t Lpc177x_8x_MciInit(uint8_t powerActiveLevel )
     LPC_GPIO1->CLR = 0x0008;
     LPC_GPIO1->CLR = 0x0004;
     */
-    
+
     // Crude delay of 50ms at 120MHz
     NutDelay(50);
 
@@ -867,7 +867,7 @@ int32_t Lpc177x_8x_MciInit(uint8_t powerActiveLevel )
     LPC_MCI->POWER |= 0x01;     /* bit 1 is set already, from power up to power on */
 
     // delay
-    NutDelay(2);    
+    NutDelay(2);
 //    for (i = 0; i < 0x2000; i++);
 
     NutRegisterIrqHandler(&sig_MCI, Lpc177x_8x_MciIRQHandler, 0);

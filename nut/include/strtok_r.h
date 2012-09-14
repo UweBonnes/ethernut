@@ -21,9 +21,9 @@
 #include <compiler.h>
 
 #ifdef __IMAGECRAFT__
-char *strtok_r(char *s, CONST char *delim, char **save_ptr) NUT_DEPRECATED;
+char *strtok_r(char *s, const char *delim, char **save_ptr) NUT_DEPRECATED;
 #endif
-char * strsep_r(  char ** pp_str, CONST char * p_delim );
-char * strsep_rs( char ** pp_str, CONST char * p_delim, char * p_term );
+char * strsep_r(  char ** pp_str, const char * p_delim );
+char * strsep_rs( char ** pp_str, const char * p_delim, char * p_term );
 
 /*------------------------- end of file STRTOK_R.H -------------------------*/

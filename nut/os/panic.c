@@ -60,7 +60,7 @@
  *
  * \param fmt Format string containing conversion specifications.
  */
-void NUTPANIC(CONST char *fmt, ...)
+void NUTPANIC(const char *fmt, ...)
 {
     va_list ap;
 

@@ -61,7 +61,7 @@
  *         not enough memory space is available.
  */
 
-void *dbg_calloc(size_t num, size_t size, CONST char *file, int line)
+void *dbg_calloc(size_t num, size_t size, const char *file, int line)
 {
     register void *p;
 

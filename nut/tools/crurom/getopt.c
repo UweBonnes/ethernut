@@ -25,17 +25,6 @@ const char getopt_rcsid[] = "@(#) $Id$";
  *
  */
 
-/*
- * $Log$
- * Revision 1.1  2003/07/20 19:18:16  haraldkipp
- * First check in
- *
- * Revision 1.1  2002/08/08 16:24:05  harald
- * *** empty log message ***
- *
- */
-
-
 #include <string.h>
 #include <stdio.h>
 

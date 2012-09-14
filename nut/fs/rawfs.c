@@ -211,7 +211,7 @@ static int RawFsFileFlush(NUTFILE * nfp)
  *
  * \bug Append mode not working as expected.
  */
-NUTFILE *RawFsFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+NUTFILE *RawFsFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *nfp;
     RAWFILE *fcb;
@@ -271,7 +271,7 @@ int RawFsFileClose(NUTFILE * nfp)
  * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
-int RawFsFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+int RawFsFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     int step;
@@ -632,7 +632,7 @@ static int RawFsInit(NUTDEVICE * dev)
 /*!
  * \brief Reentrant variant of RawFsFileOpen().
  */
-static NUTFILE *RawFsApiFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+static NUTFILE *RawFsApiFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *rc;
     RAWVOLUME *vol;
@@ -677,7 +677,7 @@ static int RawFsApiFileClose(NUTFILE * nfp)
 /*!
  * \brief Reentrant variant of RawFsFileWrite().
  */
-static int RawFsApiFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+static int RawFsApiFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     RAWVOLUME *vol;

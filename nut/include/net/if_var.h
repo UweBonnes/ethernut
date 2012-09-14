@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -206,25 +206,45 @@ struct ifnet {
     int (*if_send) (NUTDEVICE *, NETBUF *);     /*!< \brief Send routine. */
     int (*if_output) (NUTDEVICE *, uint16_t, uint8_t *, NETBUF *);  /*!< \brief Media output routine. */
     int (*if_ioctl) (NUTDEVICE *, int, void *); /*!< \brief Interface specific control function. */
+#ifdef NUT_PERFMON
+    uint32_t if_in_octets;
+    uint32_t if_in_ucast_pkts;
+    uint32_t if_in_n_ucast_pkts;
+    uint32_t if_in_discards;
+    uint32_t if_in_errors;
+    uint32_t if_in_unknown_protos;
+    uint32_t if_out_octets;
+    uint32_t if_out_ucast_pkts;
+    uint32_t if_out_n_ucast_pkts;
+    uint32_t if_out_discards;
+    uint32_t if_out_errors;
+    uint32_t if_out_q_len;
+#endif
 };
+
+/* The following macros avoid contamination of the source code with too
+   many #ifdefs. */
+#ifdef NUT_PERFMON
+#define NUT_PERFMON_ADD(s, a)   ((s) += (a))
+#define NUT_PERFMON_INC(s)      ((s)++)
+#else
+#define NUT_PERFMON_ADD(s, a)
+#define NUT_PERFMON_INC(s)
+#endif
 
 /*@}*/
 
-__BEGIN_DECLS
-
-extern int NutNetIfConfig2(CONST char *name, void *mac_dev, uint32_t ip_addr,
+extern int NutNetIfConfig2(const char *name, void *mac_dev, uint32_t ip_addr,
                           uint32_t ip_mask, uint32_t gateway);
-extern int NutNetIfConfig(CONST char *name, void *mac_dev, uint32_t ip_addr,
+extern int NutNetIfConfig(const char *name, void *mac_dev, uint32_t ip_addr,
                           uint32_t ip_mask);
 extern int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask,
                          uint32_t gateway);
-extern int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr);
-extern int NutNetIfDelMcastAddr(CONST char *name, uint32_t ip_addr);
+extern int NutNetIfAddMcastAddr(const char *name, uint32_t ip_addr);
+extern int NutNetIfDelMcastAddr(const char *name, uint32_t ip_addr);
 
 
-extern int NutNetLoadConfig(CONST char *name);
+extern int NutNetLoadConfig(const char *name);
 extern int NutNetSaveConfig(void);
-
-__END_DECLS
 
 #endif

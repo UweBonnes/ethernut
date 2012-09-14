@@ -49,8 +49,6 @@
 extern NUTSPIBUS spiBus0Stm32;
 extern NUTSPIBUS spiBus1Stm32;
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int Stm32SpiBus1Select(NUTSPINODE * node, uint32_t tmo);
 extern int Stm32SpiBus1Deselect(NUTSPINODE * node);
 
@@ -59,10 +57,9 @@ extern int Stm32SpiBus2Deselect(NUTSPINODE * node);
 
 extern int Stm32SpiSetup(NUTSPINODE * node);
 extern int Stm32SpiBusNodeInit(NUTSPINODE * node);
-extern int Stm32SpiBusTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int Stm32SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
-extern int Stm32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
+extern int Stm32SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
 extern int Stm32SpiBusWait(NUTSPINODE * node, uint32_t tmo);
-/* Prototypes */
-__END_DECLS
+
 #endif

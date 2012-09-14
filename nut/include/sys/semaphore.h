@@ -64,8 +64,6 @@
  */
 /*@{*/
 
-__BEGIN_DECLS
-
 /*!
  * \brief Sempahore type.
  */
@@ -86,8 +84,6 @@ extern void NutSemWait(SEM * sem);
 extern int NutSemTryWait(SEM * sem);
 extern void NutSemPost(SEM * sem);
 extern int NutSemDestroy(SEM * sem);
-
-__END_DECLS
 
 /*@}*/
 

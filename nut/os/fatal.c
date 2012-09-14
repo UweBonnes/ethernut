@@ -63,7 +63,7 @@
  * \param line Line number within the source file.
  * \param expected Assertion which should have been true, but is not.
  */
-void NUTFATAL(CONST char *func, CONST char *file, int line, CONST char *expected)
+void NUTFATAL(const char *func, const char *file, int line, const char *expected)
 {
     NUTPANIC("%s:%d: Fatal: Expected %s in %s\n", file, line, expected, func);
 }

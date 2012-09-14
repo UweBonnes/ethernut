@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -131,6 +131,7 @@ extern void *__stack;
 #define sbi(_reg, _bit)         outr(_reg, inr(_reg) | _BV(_bit))
 #define cbi(_reg, _bit)         outr(_reg, inr(_reg) & ~_BV(_bit))
 #define bit_is_set(_reg, _bit)  ((inr(_reg) & _BV(_bit)) != 0)
+#define bit_is_clear(_reg, _bit) ((inr(_reg) & _BV(_bit)) == 0)
 
 #if !defined (__ASSEMBLER__)
 #define mem_barrier() __asm__ __volatile__("":::"memory")
@@ -330,9 +331,9 @@ static INLINE uint32_t mem_rd32_mb(unsigned int reg)
 /*
  * Not supported by CrossWorks, added prototypes here.
  */
-int   stricmp(CONST char *s1, CONST char *s2);
-int   strnicmp(CONST char *s1, CONST char *s2, size_t n);
-char *strdup(CONST char *str);
+int   stricmp(const char *s1, const char *s2);
+int   strnicmp(const char *s1, const char *s2, size_t n);
+char *strdup(const char *str);
 
 /*
  * If "Enforce ANSI Checking" is enabled, which is

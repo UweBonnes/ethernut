@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -103,7 +103,7 @@ int PcfRtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
+int PcfRtcWrite(int nv, const uint8_t *buff, size_t cnt)
 {
     return TwMasterTransact(I2C_SLA_RTC, buff, cnt, 0, 0, NUT_WAIT_INFINITE);
 }
@@ -146,7 +146,7 @@ int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetClock(NUTRTC *rtc, CONST struct _tm *tm)
+int PcfRtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint8_t data[8];
 
@@ -206,7 +206,7 @@ int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetAlarm(NUTRTC *rtc, int idx, CONST struct _tm *tm, int aflgs)
+int PcfRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs)
 {
     return -1;
 }

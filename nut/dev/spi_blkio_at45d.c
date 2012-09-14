@@ -137,7 +137,7 @@ static int At45dBlkIoRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
  * \return The number of bytes actually written. A return value of -1 indicates
  *         an error.
  */
-static int At45dBlkIoWrite(NUTDEVICE * dev, uint32_t pgn, CONST void *data, int len)
+static int At45dBlkIoWrite(NUTDEVICE * dev, uint32_t pgn, const void *data, int len)
 {
     int rc = -1;
     uint8_t *dp = (uint8_t *) data;

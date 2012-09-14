@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -98,7 +98,7 @@ nutpro =
                       "application.",
         requires = { "NET_UDP" },
         sources = { "discover.c" },
-        options = 
+        options =
         {
             {
                 macro = "DISCOVERY_VERSION",
@@ -136,23 +136,23 @@ nutpro =
         name = "nutpro_dhcpc",
         brief = "DHCP/BOOTP Client",
         requires = { "NET_UDP", "NUT_EVENT" },
-        sources = 
-        { 
+        sources =
+        {
             "dhcpc.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "DHCP_SERVERPORT",
                 brief = "Server Port",
-                description = "UDP port of the DHCP server. Default is 67.", 
+                description = "UDP port of the DHCP server. Default is 67.",
                 flavor = "booldata",
                 file = "include/cfg/dhcp.h"
             },
             {
                 macro = "DHCP_CLIENTPORT",
                 brief = "Client Port",
-                description = "UDP port of the DHCP client. Default is 68.", 
+                description = "UDP port of the DHCP client. Default is 68.",
                 flavor = "booldata",
                 file = "include/cfg/dhcp.h"
             },
@@ -253,8 +253,8 @@ nutpro =
         name = "nutpro_resolv",
         brief = "DNS Client API",
         requires = { "NET_UDP" },
-        sources = 
-        { 
+        sources =
+        {
             "confdns.c",
             "resolv.c"
         }
@@ -263,15 +263,15 @@ nutpro =
         name = "nutpro_ftpd",
         brief = "FTP Server API",
         description = "File transfer protocol server.",
-        requires = 
+        requires =
         {
             "NET_TCP",
             "NET_UDP",
-            "CRT_STREAM_READ", 
-            "CRT_STREAM_WRITE", 
-            "NUT_FS_DIR", 
-            "NUT_FS_READ", 
-            "NUT_FS_WRITE" 
+            "CRT_STREAM_READ",
+            "CRT_STREAM_WRITE",
+            "NUT_FS_DIR",
+            "NUT_FS_READ",
+            "NUT_FS_WRITE"
         },
         sources = { "ftpd.c" }
     },
@@ -280,11 +280,11 @@ nutpro =
         brief = "SMTP Client API",
         description = "Provides email transfer via SMTP.",
         requires = { "NET_TCP", "CRT_STREAM_READ" },
-        sources = 
-        { 
+        sources =
+        {
             "smtpc.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "MAX_MAIL_RCPTS",
@@ -308,8 +308,8 @@ nutpro =
         brief = "uHTTP API",
         description = "Micro HTTP library.",
         requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
-        sources = 
-        { 
+        sources =
+        {
             "uhttp/uhttpd.c",
             "uhttp/envinit.c",
             "uhttp/envreg.c",
@@ -325,7 +325,7 @@ nutpro =
             "uhttp/modules/mod_ssi.c",
             "uhttp/os/nut/streamio.c",
         },
-        options = 
+        options =
         {
             {
                 macro = "HTTP_MEDIATYPE_BMP",
@@ -412,8 +412,8 @@ nutpro =
         description = "Webserver helper routines. Provides simple authorization "..
                       "and registration of C functions as CGI routines",
         requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
-        sources = 
-        { 
+        sources =
+        {
             "auth.c",
             "cgi.c",
             "dencode.c",
@@ -425,7 +425,7 @@ nutpro =
             "ssi.c",
             "rfctime.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "HTTP_MAJOR_VERSION",
@@ -499,7 +499,7 @@ nutpro =
         brief = "SNMP",
         description = "Simple network management protocol.",
         sources =
-        { 
+        {
             "snmp.c",
             "snmp_api.c",
             "snmp_auth.c",
@@ -515,7 +515,7 @@ nutpro =
         description = "SNMP agent module.",
         requires = { "NET_UDP" },
         sources =
-        { 
+        {
             "snmp_agent.c",
             "snmp_session.c"
         }
@@ -527,7 +527,7 @@ nutpro =
         requires = { "NET_UDP" },
         provides = { "PRO_SNTP" },
         sources =  { "sntp.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUT_THREAD_SNTPSTACK",
@@ -542,11 +542,11 @@ nutpro =
         name = "nutpro_smtpc",
         brief = "SMTP Client API",
         description = "Simple mail transfer protocol. Not implemented.",
-        requires = 
+        requires =
         {
             "NOT_AVAILABLE",
             "NET_TCP",
-            "CRT_STREAM_READ", 
+            "CRT_STREAM_READ",
             "CRT_STREAM_WRITE"
         }
     },
@@ -556,7 +556,7 @@ nutpro =
         description = "Logs system and debug information to a remote server.",
         requires = { "PRO_SNTP", "NET_UDP" },
         sources =  { "syslog.c", "syslog_P.c" },
-        options = 
+        options =
         {
             {
                 macro = "SYSLOG_PERROR_ONLY",
@@ -630,5 +630,5 @@ nutpro =
         brief = "XML Stream Parser",
         description = "Quite limited parser. See API documentation.",
         sources =  { "uxmlparse.c", "uxmlstream.c", "uxmltree.c" }
-    }    
+    }
 }

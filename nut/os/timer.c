@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -219,12 +219,6 @@
 #include <sys/timer.h>
 #include <sys/nutdebug.h>
 
-#ifdef __CORTEX__
-#include <arch/cm3/cortex_interrupt.h>
-#include <arch/cm3/cortex_systick.h>
-
-#endif
-
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #endif
@@ -342,33 +336,6 @@ void NutTimerInit(void)
          */
         nut_delay_loops *= 103UL;
         nut_delay_loops /= 26UL;
-#elif defined  __CORTEX__
-        /* arm-none-eabi, gcc version 4.6.0 (GCC), -O0 */
-        nut_delay_loops *= 3UL;
-#elif defined  __m68k__
-
-        /*
-         *  Value of nut_delay_loops depends on:
-         *    - cpu speed
-         *    - compiler type and version
-         *    - compiler options (Release vs Debug code optimization)
-         *  So it is better to fine-tune the loop count using following code.
-         *  However, the code may take a lots of time on slow CPUs.
-         */
-        nut_delay_loops *= 10UL;
-        {
-            uint32_t precision = 100;
-            uint32_t us_delay = precision * 1000 * 1000 / NutGetTickClock(); // delay in microsecond required for "precision" ticks
-
-            do {
-                cnt = NutGetTickCount();
-                NutMicroDelay(us_delay);
-                cnt = NutGetTickCount() - cnt;
-
-                nut_delay_loops *= precision;
-                nut_delay_loops /= cnt;
-            } while (cnt != precision);
-        }
 #else
         nut_delay_loops *= 137UL;
         nut_delay_loops /= 25UL;
@@ -401,8 +368,8 @@ void NutTimerInit(void)
  * In any case, if you need exact timing, use timer/counter hardware
  * instead.
  *
- * \param us Delay time in microseconds. Values above 255 milliseconds
- *           may not work.
+ * \param us Delay time in microseconds. Do not use values larger than 10ms
+ *           to prevent integer overflows on fast CPUs
  *
  * \todo Overflow handling.
  */
@@ -410,6 +377,22 @@ void NutMicroDelay(uint32_t us)
 {
 #ifdef __NUT_EMULATION__
     usleep(us);
+#elif defined(__CORTEX__)
+    int32_t start_ticks;
+    int32_t current_ticks, summed_ticks=0;
+    int32_t end_ticks;
+
+    start_ticks = SysTick->VAL;
+    end_ticks = (us * (SysTick->LOAD +1))/NUT_TICK_FREQ;
+/* Systick counts backwards! */
+    while (summed_ticks < end_ticks)
+    {
+        current_ticks = SysTick->VAL;
+        summed_ticks += start_ticks - current_ticks ;
+        if (current_ticks > start_ticks)
+            summed_ticks += (SysTick->LOAD +1);
+        start_ticks = current_ticks;
+    }
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 
@@ -433,7 +416,9 @@ void NutMicroDelay(uint32_t us)
  */
 void NutDelay(uint8_t ms)
 {
-    NutMicroDelay((uint32_t)ms * 1000);
+    while (ms--){
+        NutMicroDelay(1000);
+    }
 }
 
 /*!
@@ -743,13 +728,13 @@ uint32_t NutGetTickCount(void)
     rc = (timeNow.tv_sec - timeStart.tv_sec) * 1000;
     rc += (timeNow.tv_usec - timeStart.tv_usec) / 1000;
 #else
-#if !(defined __CORTEX__) && !(defined __m68k__)
+#ifndef __CORTEX__
     NutEnterCritical();
     rc = nut_ticks;
     NutExitCritical();
 #else
     /* LST verification shows single atomic access to get this value.
-     * So no additional atomic forcing operations needed here with Cortex or m68k.
+     * So no additional atomic forcing operations needed here with Cortex.
      */
     // TODO: Check with other ARM architectures.
     rc = nut_ticks;

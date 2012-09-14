@@ -282,6 +282,19 @@ wxVariant CConfTreeNode::GetStateIconText() const
     return var;
 }
 
+wxString CConfTreeNode::GetBriefDescription() const
+{
+    wxString str;
+
+    if (m_compo) {
+        str = m_configDoc->GetBriefDescription(m_compo);
+    }
+    if (m_option) {
+        str = m_configDoc->GetBriefDescription(m_option);
+    }
+    return str;
+}
+
 wxString CConfTreeNode::GetDescription() const
 {
     wxString str;
@@ -430,8 +443,7 @@ bool CConfTreeNode::ViewHeaderFile() const
         } else {
             strFile.Prepend(wxT("/"));
             strFile.Prepend(m_configDoc->GetBuildTree());
-            //rc = wxGetApp().Launch(strFile, "notepad.exe");
-            rc = wxGetApp().Launch(strFile, wxEmptyString);
+            rc = wxGetApp().Launch(strFile);
         }
     }
     return rc;

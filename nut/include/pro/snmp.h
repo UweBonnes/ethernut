@@ -191,7 +191,7 @@
 
 /*@}*/
 
-extern CONST uint8_t *SnmpVarParse(CONST uint8_t *, size_t *, OID *, size_t *, uint8_t *, uint8_t **, size_t *);
-extern uint8_t *SnmpVarBuild(uint8_t *, size_t *, CONST OID *, size_t, uint8_t , CONST uint8_t *, size_t);
+extern const uint8_t *SnmpVarParse(const uint8_t *, size_t *, OID *, size_t *, uint8_t *, uint8_t **, size_t *);
+extern uint8_t *SnmpVarBuild(uint8_t *, size_t *, const OID *, size_t, uint8_t , const uint8_t *, size_t);
 
 #endif

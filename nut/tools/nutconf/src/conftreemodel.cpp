@@ -24,6 +24,7 @@
 #include "nutconf.h"
 #include "conftreemodel.h"
 #include "nutconfdoc.h"
+#include "utils.h"
 
 CConfTreeModel::CConfTreeModel()
 {
@@ -199,3 +200,84 @@ wxDataViewItem CConfTreeModel::GetItem(unsigned int WXUNUSED(row)) const
 {
     return wxDataViewItem();
 }
+
+wxDataViewItem CConfTreeModel::SearchRecursive(wxDataViewItem& root, const wxString& text, bool checkFirst, bool matchCase, bool matchWord)
+{
+    CConfTreeNode *node = (CConfTreeNode*) root.GetID();
+
+    wxString name = node->GetMacro();
+    wxString brief = node->GetBriefDescription();
+    wxString desc = node->GetDescription();
+    if (!matchCase) {
+        name.MakeLower();
+        brief.MakeLower();
+        desc.MakeLower();
+    }
+    if (CUtils::FindString(name, text, matchWord) ||
+        CUtils::FindString(brief, text, matchWord) ||
+        CUtils::FindString(desc, text, matchWord)) {
+        return wxDataViewItem(node);
+    }
+    if (IsContainer(root)) {
+        wxDataViewItemArray children;
+        unsigned int n = GetChildren(root, children);
+        unsigned int i;
+        for (i = 0; i < n; i++) {
+            wxDataViewItem found = SearchRecursive(children[i], text, checkFirst, matchCase, matchWord);
+            if (found.IsOk()) {
+                return found;
+            }
+        }
+    }
+    return wxDataViewItem(NULL);
+}
+
+wxDataViewItem CConfTreeModel::SearchSiblings(wxDataViewItem& item, wxDataViewItem& parent, const wxString& text, bool checkFirst, bool matchCase, bool matchWord)
+{
+    wxDataViewItemArray siblings;
+    unsigned int n = GetChildren(parent, siblings);
+    unsigned int i;
+
+    for (i = 0; i < n; i++) {
+        if (item.GetID() == siblings[i].GetID()) {
+            i++;
+            break;
+        }
+    }
+    siblings.RemoveAt(0, i);
+    n -= i;
+    for (i = 0; i < n; i++) {
+        wxDataViewItem found = SearchRecursive(siblings[i], text, checkFirst, matchCase, matchWord);
+        if (found.IsOk()) {
+            return found;
+        }
+    }
+    return wxDataViewItem(NULL);
+}
+
+wxDataViewItem CConfTreeModel::SearchNext(wxDataViewItem& item, const wxString& text, bool checkFirst, bool matchCase, bool matchWord)
+{
+    wxDataViewItem parent;
+    wxDataViewItem found;
+
+    wxString ctext(text);
+    if (!matchCase) {
+        ctext.MakeLower();
+    }
+
+    parent = GetParent(item);
+    if (!parent.IsOk()) {
+        wxDataViewItem root = wxDataViewItem(m_root_node);
+        return SearchRecursive(root, ctext, checkFirst, matchCase, matchWord);
+    }
+    while (parent.IsOk()) {
+        found = SearchSiblings(item, parent, ctext, checkFirst, matchCase, matchWord);
+        if (found.IsOk()) {
+            return found;
+        }
+        item = parent;
+        parent = GetParent(parent);
+    }
+    return wxDataViewItem(NULL);
+}
+

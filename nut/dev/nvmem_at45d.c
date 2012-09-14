@@ -184,7 +184,7 @@ int SpiAt45dConfigRead(size_t pos, void *data, size_t len)
  * \return 0 on success or -1 in case of an error.
  */
 
-int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
+int SpiAt45dConfigWrite(size_t pos, const void *data, size_t len)
 {
     int rc = -1;
     uint8_t *pbuff;

@@ -42,7 +42,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_EMAC
 #define NUT_IRQPRI_EMAC  4
@@ -51,7 +50,7 @@
 static int EmacIrqCtl(int cmd, void *param);
 
 /*!
- * \brief IRQ Handler for USART 1.
+ * \brief IRQ Handler for EMAC.
  */
 IRQ_HANDLER sig_EMAC = {
 #ifdef NUT_PERFMON
@@ -59,7 +58,7 @@ IRQ_HANDLER sig_EMAC = {
 #endif
     NULL,               /* Passed argument, ir_arg. */
     NULL,               /* Handler subroutine, ir_handler. */
-    EmacIrqCtl         /* Interrupt control, ir_ctl. */
+    EmacIrqCtl          /* Interrupt control, ir_ctl. */
 };
 
 /*!
@@ -92,23 +91,23 @@ void EmacIrqEntry(void *arg)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int Emac0IrqCtl(int cmd, void *param)
+static int EmacIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(ENET_IRQn);
+    int enabled = NVIC_GetEnableIRQ(ENET_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(ENET_IRQn);
+        NVIC_DisableIRQ(ENET_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(ENET_IRQn, EmacIrqEntry);
+        Cortex_RegisterInt(ENET_IRQn, EmacIrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(ENET_IRQn, NUT_IRQPRI_EMAC);
+        NVIC_SetPriority(ENET_IRQn, NUT_IRQPRI_EMAC);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(ENET_IRQn);
         break;
@@ -133,10 +132,10 @@ static int Emac0IrqCtl(int cmd, void *param)
         rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(ENET_IRQn);
+        *ival = NVIC_GetPriority(ENET_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(ENET_IRQn, *ival);
+        NVIC_SetPriority(ENET_IRQn, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -151,7 +150,7 @@ static int Emac0IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(ENET_IRQn);
+        NVIC_EnableIRQ(ENET_IRQn);
     }
     return rc;
 }

@@ -37,9 +37,7 @@
 IMPLEMENT_CLASS(CAppOptionsDialog, wxPanel)
 
 BEGIN_EVENT_TABLE(CAppOptionsDialog, wxPanel)
-    EVT_BUTTON(ID_BROWSE_APPDIR, CAppOptionsDialog::OnBrowseAppDir)
     EVT_TEXT_ENTER(ID_COMBO_APPDIR, CAppOptionsDialog::OnProgrammerEnter)
-    EVT_TEXT(ID_ENTRY_APPDIR, CAppOptionsDialog::OnAppDirChange) 
 END_EVENT_TABLE()
 
 CAppOptionsDialog::CAppOptionsDialog(wxWindow* parent)
@@ -49,8 +47,9 @@ CAppOptionsDialog::CAppOptionsDialog(wxWindow* parent)
     CPathValidator appDirValid(VALIDPATH_NOT_EMPTY | VALIDPATH_IS_DIRECTORY | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_app_dir);
 
     wxStaticBox *grpApp = new wxStaticBox(this, -1, wxT("Application Directory"));
-    m_entAppDir = new wxTextCtrl(this, ID_ENTRY_APPDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, appDirValid);
-    wxButton *btnAppDir = new wxButton(this, ID_BROWSE_APPDIR, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    m_pickAppDir = new wxDirPickerCtrl(this, ID_BROWSE_APPDIR, wxEmptyString, wxT("Choose an application directory"),
+                                        wxDefaultPosition, wxDefaultSize,
+                                        wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL, appDirValid);
     wxStaticText *lblProgrammer = new wxStaticText(this, -1, wxT("Programmer"));
     m_cbxProgrammer = new wxComboBox(this, ID_COMBO_APPDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0, wxGenericValidator(&opts->m_programmer));
 
@@ -60,8 +59,7 @@ CAppOptionsDialog::CAppOptionsDialog(wxWindow* parent)
     wxSizer *szrAppDir = new wxBoxSizer(wxHORIZONTAL);
     wxSizer *szrProgrammer = new wxBoxSizer(wxHORIZONTAL);
 
-    szrAppDir->Add(m_entAppDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
-    szrAppDir->Add(btnAppDir, 0, wxALIGN_RIGHT | wxGROW | wxALL, 5);
+    szrAppDir->Add(m_pickAppDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
 
     szrProgrammer->Add(lblProgrammer, 0, wxALIGN_LEFT | wxGROW | wxALL, 5);
     szrProgrammer->Add(m_cbxProgrammer, 0, wxALIGN_LEFT | wxGROW | wxALL, 5);
@@ -95,26 +93,6 @@ bool CAppOptionsDialog::TransferDataToWindow()
 bool CAppOptionsDialog::TransferDataFromWindow()
 {
     return wxPanel::TransferDataFromWindow();
-}
-
-/*! 
- * \brief Executed when user clicks the browse button. 
- *
- * \param event Contains information about the command event.
- */
-void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& WXUNUSED(event))
-{
-    wxString path = m_entAppDir->GetValue();
-
-    wxDirDialog dlg(this, wxT("Choose a source directory"), path);
-
-    if (dlg.ShowModal() == wxID_OK) {
-        wxString val = dlg.GetPath();
-#ifdef _WIN32
-        val.Replace(wxT("\\"), wxT("/"));
-#endif
-        m_entAppDir->SetValue(val);
-    }
 }
 
 /*!

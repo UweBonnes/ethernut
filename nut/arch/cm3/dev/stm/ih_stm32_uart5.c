@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -42,7 +42,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_UART5
 #define NUT_IRQPRI_UART5  4
@@ -53,9 +52,9 @@ extern NUTDEVICE devUartStm32_5;
 static int Uart5IrqCtl(int cmd, void *param);
 
 /*!
- * \brief IRQ Handler for USART5.
+ * \brief IRQ Handler for UART5.
  */
-IRQ_HANDLER sig_USART5 = {
+IRQ_HANDLER sig_UART5 = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
@@ -70,10 +69,10 @@ IRQ_HANDLER sig_USART5 = {
 void Uart5IrqEntry(void *arg)
 {
 #ifdef NUT_PERFMON
-    sig_USART5.ir_count++;
+    sig_UART5.ir_count++;
 #endif
-    if (sig_USART5.ir_handler) {
-        (sig_USART5.ir_handler) (sig_USART5.ir_arg);
+    if (sig_UART5.ir_handler) {
+        (sig_UART5.ir_handler) (sig_UART5.ir_arg);
     }
 }
 
@@ -102,15 +101,15 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(UART5_IRQn);
+        NVIC_DisableIRQ(UART5_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(UART5_IRQn,Uart5IrqEntry);
+        Cortex_RegisterInt(UART5_IRQn,Uart5IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(UART5_IRQn,NUT_IRQPRI_UART5);
+        NVIC_SetPriority(UART5_IRQn,NUT_IRQPRI_UART5);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(UART5_IRQn);
         break;
@@ -135,10 +134,10 @@ static int Uart5IrqCtl(int cmd, void *param)
             rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(UART5_IRQn);
+        *ival = NVIC_GetPriority(UART5_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(UART5_IRQn,*ival);
+    NVIC_SetPriority(UART5_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -153,7 +152,7 @@ static int Uart5IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(UART5_IRQn);
+        NVIC_EnableIRQ(UART5_IRQn);
     }
     return rc;
 }

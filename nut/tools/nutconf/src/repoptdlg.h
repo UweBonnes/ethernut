@@ -27,7 +27,7 @@
 
 #include <wx/wx.h>
 #include <wx/config.h>
-
+#include <wx/filepicker.h>
 
 class CRepositoryOptionsDialog: public wxPanel
 {
@@ -37,15 +37,9 @@ public:
     virtual bool TransferDataToWindow();
     virtual bool TransferDataFromWindow();
 private:
-    void OnBrowseRepositoryFile(wxCommandEvent& event);
-
     wxString m_repositoryPath;
-    wxTextCtrl *m_entryPath;
+    wxFilePickerCtrl *m_pickPath;
     wxCheckBox *m_chkBoxConfig;
-
-
-    DECLARE_EVENT_TABLE()
-
 };
 
 #endif

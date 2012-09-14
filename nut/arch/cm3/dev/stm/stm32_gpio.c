@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2011 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2011/2012 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -40,7 +40,6 @@
  */
 
 /* GPIO Configuration for the GPIO of L1/F2/F4 */
-/* Fixme: Pulldown and speed options missing*/
 
 #include <cfg/os.h>
 #include <cfg/arch.h>
@@ -82,9 +81,11 @@
 uint32_t GpioPinConfigGet(int bank, int bit)
 {
     uint32_t rc = 0;
-    uint8_t mode = ((CM3REG(bank, GPIO_TypeDef, MODER))>> (bit *2)) & 0x3;
-    uint8_t pull = ((CM3REG(bank, GPIO_TypeDef, PUPDR))>> (bit *2)) & 0x3;
-    uint8_t dr_oc = CM3BBREG(bank, GPIO_TypeDef, OTYPER, bit);
+    GPIO_TypeDef *gpio = (GPIO_TypeDef *)bank;
+    uint8_t mode = ((gpio->MODER) >> (bit *2)) & 0x3;
+    uint8_t pull = ((gpio->PUPDR) >> (bit *2)) & 0x3;
+    uint8_t dr_oc = ((gpio->OTYPER) >> bit ) & 0x1;
+    uint8_t speed = ((gpio->OSPEEDR) >> (bit *2)) & 0x3;
     if (mode == GPIO_Mode_OUT)
     {
         rc = GPIO_CFG_OUTPUT;
@@ -105,6 +106,12 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     {
         rc |= (pull == GPIO_PuPd_UP)?GPIO_CFG_PULLUP : 0;
     }
+    switch (speed)
+    {
+    case 0:  rc |= GPIO_CFG_SPEED_SLOW; break;
+    case 2:  rc |= GPIO_CFG_SPEED_HIGH; break;
+    case 3:  rc |= GPIO_CFG_SPEED_FAST; break;
+     }
     return rc;
 }
 
@@ -139,31 +146,54 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(IS_GPIO_ALL_PERIPH(bank));
-    CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)/0x400) = 1;
+    __IO uint32_t* gpio_bb = CM3BB_BASE(bank);
+
+    CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)>>10) = 1;
     /* keep speed at slowest for now */
     if (flags & GPIO_CFG_PERIPHAL)
     {
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ( bit << 1)     ) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ((bit << 1) + 1)) = 1;
-        CM3BBREG(bank, GPIO_TypeDef, OTYPER, bit            ) = (flags & GPIO_CFG_MULTIDRIVE );
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ( bit << 1)     ) = (flags & GPIO_CFG_PULLUP );
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1)    ))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1) + 1))] = 1;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OTYPER, bit)            ] = (flags & GPIO_CFG_MULTIDRIVE )?1:0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP )?1:0;
     }
     else if (flags & GPIO_CFG_OUTPUT)
     {
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ( bit << 1)     ) = 1;
-        CM3BBREG(bank, GPIO_TypeDef, OTYPER,  bit           ) = (flags & GPIO_CFG_MULTIDRIVE );
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ( bit << 1)     ) = (flags & GPIO_CFG_PULLUP );
+        uint32_t speed_flags_lo =
+         (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_MED) |
+              ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
+        uint32_t speed_flags_hi =
+             (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_HIGH) |
+              ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OSPEEDR, ((bit << 1)    ))] = speed_flags_lo;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OSPEEDR, ((bit << 1) +1 ))] = speed_flags_hi;
+#if defined(SYSCFG_CMPCR_CMP_PD)
+        if ((flags & GPIO_CFG_SPEED_HIGH) == GPIO_CFG_SPEED_HIGH)
+        {
+           /* On F4, if even one pin needs fastest (high) speed, we need to enable the SYSCFG clock
+         and the IO compensation cell (whatever this compensation cell is ?)*/
+      CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN)) = 1;
+      CM3BBREG(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD)) = 1;
+        /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
+    }
+#endif
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1)    ))] = 1;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OTYPER, bit)            ] = (flags & GPIO_CFG_MULTIDRIVE )?1:0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP )?1:0;
+
     }
     else if (flags & GPIO_CFG_DISABLED)
     {
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ( bit << 1)     ) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, MODER, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ((bit << 1) + 1)) = 0;
-        CM3BBREG(bank, GPIO_TypeDef, PUPDR, ( bit << 1)     ) = (flags & GPIO_CFG_PULLUP );
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1)    ))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, MODER, ((bit << 1) + 1))] = 0 ;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP )?1:0;
     }
+
+
     /* Check the result. */
     if( GpioPinConfigGet( bank, bit ) != flags ) {
         return -1;

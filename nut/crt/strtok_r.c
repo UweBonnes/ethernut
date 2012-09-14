@@ -70,9 +70,9 @@
 
 /*--------------------------------------------------------------------------*/
 
-static char *end_tok(char **pp_str, CONST char *p_delim, char *p_sep)
+static char *end_tok(char **pp_str, const char *p_delim, char *p_sep)
 {
-    register CONST char *sp;
+    register const char *sp;
     char *p_tok;
     char *p_ch;
 
@@ -109,7 +109,7 @@ static char *end_tok(char **pp_str, CONST char *p_delim, char *p_sep)
  * This function is identical in operation to strsep_r(), except it returns the
  * deliminating character.
  */
-char *strsep_rs(char **pp_str, CONST char *p_delim, char *p_sep)
+char *strsep_rs(char **pp_str, const char *p_delim, char *p_sep)
 {
     char *p_ch;
 
@@ -157,7 +157,7 @@ char *strsep_rs(char **pp_str, CONST char *p_delim, char *p_sep)
  *
  * If delim is NULL or the empty string, strsep_r() returns *str.
  */
-char *strsep_r(char **pp_str, CONST char *p_delim)
+char *strsep_r(char **pp_str, const char *p_delim)
 {
     return strsep_rs(pp_str, p_delim, NULL);
 }
@@ -188,7 +188,7 @@ char *strsep_r(char **pp_str, CONST char *p_delim)
     x = strtok_r(NULL, "=", &sp);   // x = NULL
         // s = "abc\\0-def\\0"
 */
-char *strtok_r(char *s, CONST char *delim, char **save_ptr)
+char *strtok_r(char *s, const char *delim, char **save_ptr)
 {
     char *token;
 

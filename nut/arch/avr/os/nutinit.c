@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -32,112 +32,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.17  2009/02/06 15:37:40  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
- *
- * Revision 1.16  2009/01/16 17:02:19  haraldkipp
- * No longer save any default OS configuration in non-volatile RAM.
- * All platforms will now call NutLoadConfig().
- *
- * Revision 1.15  2008/08/27 06:40:41  thornen
- * Added MMnet03..04 and MMnet102..104 CPLD initialization.
- *
- * Revision 1.14  2008/08/26 17:36:45  haraldkipp
- * Revoked changes 2008/08/26 by thornen.
- *
- * Revision 1.12  2008/08/11 11:51:19  thiagocorrea
- * Preliminary Atmega2560 compile options, but not yet supported.
- * It builds, but doesn't seam to run properly at this time.
- *
- * Revision 1.11  2008/08/11 06:59:39  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.10  2007/06/14 07:24:38  freckle
- * Disable ADC and buskeeper during idle thread sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined
- *
- * Revision 1.9  2006/10/07 00:24:14  hwmaier
- * Include of sys/heap.h added.
- *
- * Revision 1.8  2006/09/29 12:39:23  haraldkipp
- * Added support for ATmega2561.
- *
- * Revision 1.7  2006/07/04 03:38:56  hwmaier
- * Changed binary constants to hex constants in XNUT board
- * initialization code.
- *
- * Revision 1.6  2006/05/15 11:46:49  haraldkipp
- * Added heartbeat port bit, which is regularly toggled by the idle thread.
- * Helps to develop on boards with external watchdog hardware that can't be
- * disabled.
- *
- * Revision 1.5  2005/10/17 08:24:55  hwmaier
- * All platform specific initialisation (CPLD, IO pins etc.) has been consolidated using the new PLATFORM macro into a new function called NutCustomInit()
- *
- * Revision 1.4  2005/10/04 06:11:11  hwmaier
- * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
- *
- * Revision 1.3  2005/09/07 16:22:45  christianwelzel
- * Added MMnet02 CPLD initialization
- *
- * Revision 1.2  2005/08/02 17:46:46  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/05/27 17:17:31  drsung
- * Moved the file
- *
- * Revision 1.18  2005/05/16 08:49:37  haraldkipp
- * Arthernet requires different wait state settings.
- *
- * Revision 1.17  2005/02/28 08:44:54  drsung
- * Fixed missing return type of NutInitSP
- * Removed inlcude file avrpio.h
- *
- * Revision 1.16  2005/02/26 12:09:28  drsung
- * Moved heap initialization to section .init5 to support c++ constructors for static objects.
- *
- * Revision 1.15  2005/02/10 07:06:48  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.12  2005/01/22 19:30:56  haraldkipp
- * Fixes Ethernut 1.3G memory bug.
- *
- * Revision 1.11  2004/11/08 18:58:59  haraldkipp
- * Configurable stack sizes
- *
- * Revision 1.10  2004/09/01 14:27:03  haraldkipp
- * Using configuration values from cfg/memory.h.
- * Added configurable reserved memory area.
- * Automatic check for external memory removed.
- *
- * Revision 1.9  2004/07/28 13:43:25  drsung
- * Corrected a misplaced #endif after last change.
- *
- * Revision 1.8  2004/07/09 19:51:17  freckle
- * Added new function NutThreadSetSleepMode to tell nut/os to set the MCU
- * into sleep mode when idle (avr-gcc && avr128 only)
- *
- * Revision 1.7  2004/07/09 14:40:43  freckle
- * Moved ((volatile u_char *) NUTRAMEND) cast into NUTRAMENDPTR define
- *
- * Revision 1.6  2004/07/09 14:23:13  freckle
- * Allow setting of NUTRAMEND by giving it as a compiler flag
- *
- * Revision 1.5  2004/05/25 17:13:48  drsung
- * Bit name SRW10 is not defined for atmega103, so added some defines to make it compatible.. :-X
- *
- * Revision 1.4  2004/05/25 12:03:37  olereinhardt
- * Sorry, fixed typing bug
- *
- * Revision 1.3  2004/05/25 12:00:37  olereinhardt
- * Newly added 3Waitstate support now needs to be enabled by
- * defining NUT_3WAITSTATES. By default this behaves like normal
- *
- *
- * Revision 1.1  2004/03/16 16:48:46  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- *
+ * $Id$
  */
 
 #include <sys/thread.h>

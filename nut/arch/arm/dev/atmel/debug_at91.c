@@ -88,7 +88,7 @@ int At91DevDebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  * A newline character will be automatically prepended
  * by a carriage return.
  */
-static void DebugPut(CONST NUTDEVICE * dev, char ch)
+static void DebugPut(const NUTDEVICE * dev, char ch)
 {
     if (ch == '\n') {
         while ((inr(dev->dev_base + US_CSR_OFF) & US_TXRDY) == 0);
@@ -106,10 +106,10 @@ static void DebugPut(CONST NUTDEVICE * dev, char ch)
  *
  * \return Number of characters sent.
  */
-int At91DevDebugWrite(NUTFILE * fp, CONST void *buffer, int len)
+int At91DevDebugWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int c = len;
-    CONST char *cp = buffer;
+    const char *cp = buffer;
 
     while (c--) {
         DebugPut(fp->nf_dev, *cp++);
@@ -192,7 +192,7 @@ long At91DevDebugSize(NUTFILE *fp)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-NUTFILE *At91DevDebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *At91DevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 

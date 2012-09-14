@@ -238,7 +238,7 @@ int NplSpiBusNodeInit(NUTSPINODE * node)
  *
  * \return Always 0.
  */
-int NplSpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int NplSpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t rxc;
     uint8_t txc = 0xFF;

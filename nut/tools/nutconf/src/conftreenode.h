@@ -159,6 +159,7 @@ public:
     wxString GetOptionText() const;
 
     wxVariant GetStateIconText() const;
+    wxString GetBriefDescription() const;
     wxString GetDescription() const;
     int GetEnumStrings(wxArrayString & arEnumStrings) const;
 

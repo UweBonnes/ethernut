@@ -113,6 +113,7 @@ public:
     void setActive( bool );
     QStringList depends() const;
     QStringList provides() const;
+    QStringList exclusive() const;
     QString headerFile() const;
 
 private:

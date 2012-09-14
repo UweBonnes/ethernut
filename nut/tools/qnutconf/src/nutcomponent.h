@@ -194,6 +194,7 @@ extern char * GetOptionFlavour(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * n
 extern char * GetOptionTypeString(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
 extern char **GetOptionRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
 extern char **GetOptionProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char **GetOptionExclusivity(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
 extern char **GetOptionChoices(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
 extern char **GetOptionMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
 

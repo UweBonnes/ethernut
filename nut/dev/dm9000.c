@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2011 by egnite GmbH
+ * Copyright (C) 2008-2012 by egnite GmbH
  * Copyright (C) 2003-2005 by egnite Software GmbH
  *
  * All rights reserved.
@@ -250,14 +250,6 @@
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {
-#ifdef NUT_PERFMON
-    uint32_t ni_rx_packets;         /*!< Number of packets received. */
-    uint32_t ni_tx_packets;         /*!< Number of packets sent. */
-    uint32_t ni_overruns;           /*!< Number of packet overruns. */
-    uint32_t ni_rx_frame_errors;    /*!< Number of frame errors. */
-    uint32_t ni_rx_crc_errors;      /*!< Number of CRC errors. */
-    uint32_t ni_rx_missed_errors;   /*!< Number of missed packets. */
-#endif
     HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
     HANDLE volatile ni_tx_rdy;  /*!< Transmitter event queue. */
     HANDLE ni_mutex;            /*!< Access mutex semaphore. */
@@ -606,7 +598,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
              * If we got an error packet or failed to allocated the
              * buffer, then silently discard the packet.
              */
-            if (fsw || (*nbp = NutNetBufAlloc(0, NBAF_DATALINK, fbc - 4)) == NULL) {
+            if (fsw || (*nbp = NutNetBufAlloc(0, NBAF_DATALINK + (2 & (NUTMEM_ALIGNMENT - 1)), fbc - 4)) == NULL) {
                 if (ni->ni_iomode == NIC_ISR_M16) {
                     fbc = (fbc + 1) / 2;
                     while (fbc--) {
@@ -659,25 +651,10 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
  *         will automatically release the network buffer
  *         structure.
  */
-static int NicPutPacket(NICINFO * ni, NETBUF * nb)
+static int NicPutPacket(NICINFO * ni, NETBUF * nb, uint_fast16_t sz)
 {
     int rc = -1;
 #ifdef NIC_BASE_ADDR
-    uint16_t sz;
-
-    /*
-     * Calculate the number of bytes to be send. Do not send packets
-     * larger than the Ethernet maximum transfer unit. The MTU
-     * consist of 1500 data bytes plus the 14 byte Ethernet header
-     * plus 4 bytes CRC. We check the data bytes only.
-     */
-    if ((sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz) > ETHERMTU) {
-        return -1;
-    }
-    sz += nb->nb_dl.sz;
-    if (sz & 1) {
-        sz++;
-    }
 
     /* Disable interrupts. */
     NutIrqDisable(&NIC_SIGNAL);
@@ -712,9 +689,6 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
         }
         ni->ni_tx_queued++;
         rc = 0;
-#ifdef NUT_PERFMON
-        ni->ni_tx_packets++;
-#endif
     }
 
     /* Enable interrupts. */
@@ -754,7 +728,7 @@ static void NicUpdateMCHardware(NICINFO * ni)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac, NICINFO * ni)
+static int NicStart(const uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;
@@ -887,10 +861,17 @@ THREAD(NicRxLanc, arg)
          * them to the registered handler.
          */
         while (NicGetPacket(ni, &nb) == 0) {
-
+            /* Update monitoring counters. */
+            NUT_PERFMON_ADD(ifn->if_in_octets, nb->nb_dl.sz);
+            if (nic_inb(NIC_RSR) & NIC_RSR_MF) {
+                NUT_PERFMON_INC(ifn->if_in_n_ucast_pkts);
+            } else {
+                NUT_PERFMON_INC(ifn->if_in_ucast_pkts);
+            }
             /* Discard short packets. */
             if (nb->nb_dl.sz < 60) {
                 NutNetBufFree(nb);
+                NUT_PERFMON_INC(ifn->if_in_errors);
             } else {
                 (*ifn->if_recv) (dev, nb);
             }
@@ -922,19 +903,30 @@ THREAD(NicRxLanc, arg)
  */
 int DmOutput(NUTDEVICE * dev, NETBUF * nb)
 {
+    /* After initialization we are waiting for a long time to give the
+       PHY a chance to establish an Ethernet link. */
     static uint32_t mx_wait = 5000;
     int rc = -1;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
+    uint_fast16_t sz;
+    IFNET *nif = (IFNET *) dev->dev_icb;
 
-    /*
-     * After initialization we are waiting for a long time to give
-     * the PHY a chance to establish an Ethernet link.
-     */
+    /* Calculate the number of bytes to be send. Do not send packets
+       larger than the Ethernet maximum transfer unit. The MTU consist
+       of 1500 data bytes plus the 14 byte Ethernet header plus 4 bytes
+       CRC. We check the data bytes only. */
+    sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz;
+    if (sz > nif->if_mtu) {
+        return -1;
+    }
+    /* Add the Ethernet header and make the length even. */
+    sz += nb->nb_dl.sz + 1;
+    sz &= ~1;
+
     while (rc) {
-        if (ni->ni_insane) {
-            break;
-        }
-        if (NutEventWait(&ni->ni_mutex, mx_wait)) {
+        if (ni->ni_insane || NutEventWait(&ni->ni_mutex, mx_wait)) {
+            /* Discard the packet, if the controller is out of order. */
+            NUT_PERFMON_INC(nif->if_out_discards);
             break;
         }
 
@@ -943,13 +935,17 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
             if (NutEventWait(&ni->ni_tx_rdy, 500)) {
                 /* No queue space. Release the lock and give up. */
                 NutEventPost(&ni->ni_mutex);
+                NUT_PERFMON_INC(nif->if_out_discards);
                 break;
             }
-        } else if (NicPutPacket(ni, nb) == 0) {
+        } else if (NicPutPacket(ni, nb, sz) == 0) {
             /* Ethernet works. Set a long waiting time in case we
                temporarly lose the link next time. */
             rc = 0;
             mx_wait = 5000;
+            NUT_PERFMON_ADD(nif->if_out_octets, sz);
+        } else {
+            NUT_PERFMON_INC(nif->if_out_errors);
         }
         NutEventPost(&ni->ni_mutex);
     }

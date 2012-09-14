@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -59,12 +59,6 @@
 #else
 #warning "Unknown CM3 family"
 #endif
-#include <arch/cm3/cortex_interrupt.h>
-#include <arch/cm3/cortex_systick.h>
-#include <arch/cm3/cortex_clk.h>
-/*
-#include <arch/cm3/cortex_sysctl.h>
-*/
 
 /*!
  * \addtogroup xgNutArchArmOsTimerCm3
@@ -74,61 +68,6 @@
 #ifndef NUT_TICK_FREQ
 #define NUT_TICK_FREQ   1000UL
 #endif
-
-/*!
- * \brief Loop for a specified number of microseconds.
- *
- * This call will release the CPU for delays longer than 2 ms
- * at the expense of waiting 1 ms longer in very rare cases
- *
- *
- * \param us Delay time in microseconds.
- */
-
-extern uint32_t nut_ticks;
-void NutArchMicroDelay(uint32_t us)
-{
-    uint32_t start_ticks;
-    uint32_t end_ms, start_ms;
-    int32_t end_ticks;
-
-    SysTickIntDisable();
-    start_ticks = SysTickValueGet();
-    start_ms = nut_ticks;
-    SysTickIntEnable();
-
-    if (us > 2000)
-    {
-    int n = us/1000 -1;
-    NutSleep(n);
-    us -= n*1000;
-    }
-    end_ticks = start_ticks - (us%1000 * SysTickPeriodGet())/NUT_TICK_FREQ;
-    end_ms = start_ms + us/1000;
-    /* Wraparounf of Systick*/
-    if (end_ticks <= 0)
-    {
-    end_ms++;
-    end_ticks += SysTickPeriodGet();
-    }
-    /* Wraparound of nut_ticks*/
-    if( end_ms < start_ms)
-    while (nut_ticks) {};
-    for(;;)
-    {
-    /* Paranoid check for wraparound of nut_ticks at end of delay*/
-        if ((end_ms == (uint32_t)-1) && (nut_ticks == 0))
-            break;
-    /* Check for wraparound of SysTickValue at end of delay*/
-        if(nut_ticks > end_ms)
-           break;
-        if (nut_ticks < end_ms)
-            continue;
-        if (SysTickValueGet() > end_ticks)
-            continue;
-        break;
-    }
-}
 
 /*!
  * \brief Initialize system timer.
@@ -149,11 +88,9 @@ void NutRegisterTimer(void (*handler)(void*))
      * vectors from flash to ram.
      * Then it programs the timer and starts it.
      */
-    IntRegister(SysTick_IRQn, handler);
+    Cortex_RegisterInt(SysTick_IRQn, handler);
     /* Program frequency and enable is done by CMSIS function */
     SysTick_Config(SysCtlClockGet()/NUT_TICK_FREQ);
-
-//    SysTickIntRegister(handler);
 }
 
 /*!
@@ -199,25 +136,6 @@ uint32_t NutArchClockGet(int idx)
 #endif
     return clock;
 }
-
-/*!
- * \brief Return the CPU clock in Hertz.
- *
- * On several AT91 CPUs the processor clock may differ from the clock
- * driving the peripherals. In this case At91GetMasterClock() will
- * provide the correct master clock.
- *
- * \return CPU clock frequency in Hertz.
- */
-
-/*u_long NutGetCpuClock(void)
-{
-#if defined(NUT_CPU_FREQ)
-    return NUT_CPU_FREQ;
-#else
-    return SysCtlClockGet();
-#endif
-}*/
 
 /*!
  * \brief Return the number of system ticks per second.

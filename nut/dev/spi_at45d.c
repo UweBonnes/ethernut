@@ -95,7 +95,7 @@ uint_fast8_t at45d_known_types = sizeof(at45d_info) / sizeof(AT45D_INFO);
  * \param rxbuf Pointer to the receive data buffer, may be set to NULL.
  * \param xlen  Number of byte to receive and/or transmit.
  */
-static int At45dCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, int oplen, CONST void *txbuf, void *rxbuf, int xlen)
+static int At45dCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, int oplen, const void *txbuf, void *rxbuf, int xlen)
 {
     int rc = -1;
     NUTSPIBUS *bus;
@@ -194,7 +194,7 @@ static int At45dWaitReady(NUTSPINODE * node, uint32_t tmo, int poll)
  * \param rxbuf Pointer to the receive data buffer, may be set to NULL.
  * \param xlen  Number of byte to receive and/or transmit.
  */
-int SpiAt45dCommand(NUTDEVICE * dev, uint8_t op, uint32_t parm, int oplen, CONST void *txbuf, void *rxbuf, int xlen)
+int SpiAt45dCommand(NUTDEVICE * dev, uint8_t op, uint32_t parm, int oplen, const void *txbuf, void *rxbuf, int xlen)
 {
     NUTASSERT(dev != NULL);
     return At45dCommand(dev->dev_icb, op, parm, oplen, txbuf, rxbuf, xlen);
@@ -357,7 +357,7 @@ int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
  * \return The number of bytes actually written. A return value of -1 indicates
  *         an error.
  */
-int SpiAt45dPageWrite(NUTDEVICE * dev, uint32_t pgn, CONST void *data, int len)
+int SpiAt45dPageWrite(NUTDEVICE * dev, uint32_t pgn, const void *data, int len)
 {
     int rc = -1;
     uint8_t *dp = (uint8_t *) data;

@@ -48,9 +48,23 @@ bool CPathValidator::Validate(wxWindow* parent)
 {
     bool valid = true;
     wxString errormsg;
+    wxTextCtrl *control = NULL;
 
-    wxTextCtrl *control = (wxTextCtrl *) m_validatorWindow;
-
+    if (m_validatorWindow->IsKindOf(CLASSINFO(wxDirPickerCtrl))) {
+        wxDirPickerCtrl *ctrl = (wxDirPickerCtrl *) m_validatorWindow;
+        control = ctrl->GetTextCtrl();
+    }
+    else if (m_validatorWindow->IsKindOf(CLASSINFO(wxFilePickerCtrl))) {
+        wxFilePickerCtrl *ctrl = (wxFilePickerCtrl *) m_validatorWindow;
+        control = ctrl->GetTextCtrl();
+    }
+    else if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) {
+        wxTextCtrl *ctrl = (wxTextCtrl *) m_validatorWindow;
+        control = ctrl;
+    }
+    if (control == NULL) {
+        return true;
+    }
     wxString str(control->GetValue());
 
     if (str.IsEmpty()) {
@@ -103,18 +117,29 @@ bool CPathValidator::Validate(wxWindow* parent)
 
     if (!valid) {
         wxMessageBox(errormsg, _("Bad file or directory"), wxOK | wxICON_EXCLAMATION, parent);
-        control->SetFocus();
-        control->SetSelection(-1, -1);
+        if (control) {
+            control->SetFocus();
+            control->SetSelection(-1, -1);
+        }
     }
     return valid;
 }
 
 bool CPathValidator::TransferFromWindow(void)
 {
-    if (m_value && m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) {
-        wxTextCtrl *ctrl = (wxTextCtrl *) m_validatorWindow;
-        *m_value = ctrl->GetValue();
-
+    if (m_value) {
+        if (m_validatorWindow->IsKindOf(CLASSINFO(wxDirPickerCtrl))) {
+            wxDirPickerCtrl *ctrl = (wxDirPickerCtrl *) m_validatorWindow;
+            *m_value = ctrl->GetPath();
+        }
+        else if (m_validatorWindow->IsKindOf(CLASSINFO(wxFilePickerCtrl))) {
+            wxFilePickerCtrl *ctrl = (wxFilePickerCtrl *) m_validatorWindow;
+            *m_value = ctrl->GetPath();
+        }
+        else if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) {
+            wxTextCtrl *ctrl = (wxTextCtrl *) m_validatorWindow;
+            *m_value = ctrl->GetValue();
+        }
         if (m_style & VALIDPATH_TO_UNIX) {
             m_value->Replace(wxString(wxFileName::GetPathSeparator()), wxT("/"));
         }
@@ -124,13 +149,22 @@ bool CPathValidator::TransferFromWindow(void)
 
 bool CPathValidator::TransferToWindow(void)
 {
-    if (m_value && m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) {
-        wxTextCtrl *control = (wxTextCtrl *) m_validatorWindow;
-
+    if (m_value) {
         if (m_style & VALIDPATH_SHOW_NATIVE) {
             m_value->Replace(wxT("/"), wxString(wxFileName::GetPathSeparator()));
         }
-        control->SetValue(* m_value);
+        if (m_validatorWindow->IsKindOf(CLASSINFO(wxDirPickerCtrl))) {
+            wxDirPickerCtrl *control = (wxDirPickerCtrl *) m_validatorWindow;
+            control->SetPath(* m_value);
+        }
+        else if (m_validatorWindow->IsKindOf(CLASSINFO(wxFilePickerCtrl))) {
+            wxFilePickerCtrl *control = (wxFilePickerCtrl *) m_validatorWindow;
+            control->SetPath(* m_value);
+        }
+        else if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) {
+            wxTextCtrl *control = (wxTextCtrl *) m_validatorWindow;
+            control->SetValue(* m_value);
+        }
     }
     return true;
 }

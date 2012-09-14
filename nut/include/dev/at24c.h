@@ -23,10 +23,7 @@ struct at24c{
 //   unsigned int EepromName;
 };
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int At24cWrite( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t addr);
 extern int At24cRead( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t addr );
-__END_DECLS
-/* End of prototypes */
+
 #endif

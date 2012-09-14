@@ -827,7 +827,7 @@ uint32_t NutHttpGetOptionFlags(void)
  *
  * \return -1 if out of memory, otherwise 0.
  */
-static int HeaderFieldValue(char **hfvp, CONST char *str)
+static int HeaderFieldValue(char **hfvp, const char *str)
 {
     /* Do not override existing values. */
     if (*hfvp == NULL) {

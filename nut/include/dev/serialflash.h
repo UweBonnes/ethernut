@@ -89,11 +89,11 @@ struct _NUTSERIALFLASH {
     /*! \brief Read bytes from a unit. */
     int (*sf_read) (NUTSERIALFLASH *, sf_unit_t, int, void *, int);
     /*! \brief Compare bytes of a unit. */
-    int (*sf_compare) (NUTSERIALFLASH *, sf_unit_t, int, CONST void *, int);
+    int (*sf_compare) (NUTSERIALFLASH *, sf_unit_t, int, const void *, int);
     /*! \brief Find first used byte. */
     int (*sf_used) (NUTSERIALFLASH *, sf_unit_t, int);
     /*! \brief Write bytes from a unit. */
-    int (*sf_write) (NUTSERIALFLASH *, sf_unit_t, int, CONST void *, int);
+    int (*sf_write) (NUTSERIALFLASH *, sf_unit_t, int, const void *, int);
     /*! \brief Copy a unit. */
     int (*sf_copy) (NUTSERIALFLASH *, sf_unit_t, sf_unit_t);
     /*! \brief Commit changes. */

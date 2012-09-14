@@ -142,15 +142,15 @@ NUTDEVICE devUsartStm32_1 = {
  * RTS PA12    PA12
  */
 #if defined(MCU_STM32F1)
- #define STM_USART_REMAP   GPIO_Remap_USART1
+ #define STM_USART_REMAP_MASK AFIO_MAPR_USART1_REMAP
  #if defined(USART1_REMAP_USART)
-  #define STM_USART_DOREMAP ENABLE
+  #define STM_USART_REMAP_VALUE AFIO_MAPR_USART1_REMAP
   #define TX_GPIO_PORT    NUTGPIO_PORTB
   #define TX_GPIO_PIN     6
   #define RX_GPIO_PORT    NUTGPIO_PORTB
   #define RX_GPIO_PIN     7
  #else
-  #define STM_USART_DOREMAP DISABLE
+  #define STM_USART_REMAP_VALUE DISABLE
   #define TX_GPIO_PORT    NUTGPIO_PORTA
   #define TX_GPIO_PIN      9
   #define RX_GPIO_PORT    NUTGPIO_PORTA
@@ -193,10 +193,10 @@ NUTDEVICE devUsartStm32_1 = {
 
 #ifdef USART1_RS485_CTRL
 #define USART_485_CTRL
-#ifdef USART1_485DE_INV 
+#ifdef USART1_485DE_INV
 #define USART_485DE_INV
 #endif
-#ifdef USART1_485RE_INV 
+#ifdef USART1_485RE_INV
 #define USART_485RE_INV
 #endif
 #if defined(USART1_485DE_PORT) && defined(USART1_485DE_PIN)
@@ -247,10 +247,15 @@ NUTDEVICE devUsartStm32_1 = {
 #endif
 
 #ifdef USART1_SUPPORT_DMA
-#define UART_DMA_TXCHANNEL  DMA1_C4
-#define UART_DMA_RXCHANNEL  DMA1_C5
-#define UART_DMA_TXIRQ      sig_DMA1_CH4
-#define UART_DMA_RXIRQ      sig_DMA1_CH5
+ #if defined(MCU_STM32F1)||defined(MCU_STM32L1)
+  #define UART_DMA_TXCHANNEL  DMA1_C4
+  #define UART_DMA_RXCHANNEL  DMA1_C5
+ #elif  defined(MCU_STM32F2)||defined(MCU_STM32F4)
+  #define UART_DMA_TXCHANNEL  DMA_CONTROL1 | DMA_STREAM7 | DMA_CHANNEL4
+  #define UART_DMA_RXCHANNEL  DMA_CONTROL1 | DMA_STREAM2 | DMA_CHANNEL4
+ #else
+  #warning "STM32 family has no implemented DMA"
+ #endif
 #else
 #undef UART_DMA_TXCHANNEL
 #undef UART_DMA_RXCHANNEL

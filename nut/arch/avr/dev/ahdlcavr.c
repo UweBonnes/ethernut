@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -464,7 +464,7 @@ static int SendRawByte(AHDLCDCB * dcb, uint8_t ch, uint8_t flush)
  *
  * \return 0 on success, -1 in case of any errors.
  */
-static int SendHdlcData(AHDLCDCB * dcb, CONST uint8_t * data, uint16_t len, uint16_t * txfcs)
+static int SendHdlcData(AHDLCDCB * dcb, const uint8_t * data, uint16_t len, uint16_t * txfcs)
 {
     uint16_t tbx;
     register uint16_t fcs;
@@ -1372,11 +1372,11 @@ int AhdlcAvrRead(NUTFILE * fp, void *buffer, int size)
  * \return The number of bytes written. In case of a write timeout, this
  *         may be less than the specified length.
  */
-int AhdlcAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+int AhdlcAvrPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc = 0;
     AHDLCDCB *dcb = dev->dev_dcb;
-    CONST uint8_t *cp = buffer;
+    const uint8_t *cp = buffer;
 
     /*
      * Put characters in transmit buffer.
@@ -1426,7 +1426,7 @@ int AhdlcAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
-int AhdlcAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
+int AhdlcAvrWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return AhdlcAvrPut(fp->nf_dev, buffer, len, 0);
 }
@@ -1454,7 +1454,7 @@ int AhdlcAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 int AhdlcAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return AhdlcAvrPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return AhdlcAvrPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 /*!
@@ -1473,7 +1473,7 @@ int AhdlcAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp;
 

@@ -46,7 +46,7 @@ SEARCH_DIR(.)
 MEMORY
 {
   rom(rx)  : org = 0x00000000, len = 512k
-  ram(rw)  : org = 0x20000000, len = 64M
+  xram(rw) : org = 0x20000000, len = 64M
   iram(rw) : org = 0x00200000, len = 32k
 }
 
@@ -92,14 +92,27 @@ SECTIONS
     *(.data)
     . = ALIGN(4);
     *(.ramfunc)
+    . = ALIGN(4);
+    *(.text_xram)
     _edata = .;
     PROVIDE (__data_end = .);
-  } > ram
+  } > xram
+
+  .data_iram : AT (_edata)
+  {
+    PROVIDE (__data_iram_start = .);
+    . = ALIGN(4);
+    *(.text_iram)
+    . = ALIGN(4);
+    *(.data_iram)
+    PROVIDE (__data_iram_end = .);
+  } > iram
 
   .bss :
   {
     PROVIDE (__bss_start = .);
     *(.bss)
+    *(.bss_xram)
     *(COMMON)
     . = ALIGN(4);
     PROVIDE (__bss_end = .);
@@ -108,7 +121,15 @@ SECTIONS
     . += 0x400;
     PROVIDE (__stack = .);
     PROVIDE (__heap_start = .);
-  } > ram
+  } > xram
+
+  .bss_iram (NOLOAD) :
+  {
+    PROVIDE (__bss_iram_start = .);
+    *(.bss_iram)
+    . = ALIGN(4);
+    PROVIDE (__bss_iram_end = .);
+  } > iram
 
   .stab 0 (NOLOAD) :
   {

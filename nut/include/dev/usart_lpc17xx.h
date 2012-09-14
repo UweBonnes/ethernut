@@ -50,47 +50,13 @@
  * \file dev/usart_lpc17xx.h
  * \brief Synchronous/asynchronous serial device definitions.
  */
-
-/* define UARTS (not all accesable at the board) */
-
-#ifndef DEV_UART0
-#define DEV_UART0       devUsartLpc17xx_0
-#endif
-
-#ifndef DEV_UART0_NAME
-#define DEV_UART0_NAME  DEV_UART0.dev_name
-#endif
-
-
-#ifndef DEV_UART1
-#define DEV_UART1       devUsartLpc17xx_1
-#endif
-
-#ifndef DEV_UART1_NAME
-#define DEV_UART1_NAME  DEV_UART1.dev_name
-#endif
-
-
-#ifndef DEV_UART2
-#define DEV_UART2       devUsartLpc17xx_2
-#endif
-
-#ifndef DEV_UART2_NAME
-#define DEV_UART2_NAME  DEV_UART2.dev_name
-#endif
-
-
-#ifndef DEV_UART3
-#define DEV_UART3       devUsartLpc17xx_3
-#endif
-
-#ifndef DEV_UART3_NAME
-#define DEV_UART3_NAME  DEV_UART3.dev_name
-#endif
-
+#if defined(MCU_LPC176x)
+extern NUTDEVICE devUsartLpc176x_0;
+#else
 extern NUTDEVICE devUsartLpc17xx_0;
 extern NUTDEVICE devUsartLpc17xx_1;
 extern NUTDEVICE devUsartLpc17xx_2;
 extern NUTDEVICE devUsartLpc17xx_3;
+#endif
 
 #endif

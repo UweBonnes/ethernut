@@ -100,25 +100,6 @@ struct _BLOCKVOLUME {
 };
 
 /*!
- * \brief Find device entry by type.
- *
- * \param type Device type.
- *
- * \return Pointer to the \ref NUTDEVICE structure.
- */
-static NUTDEVICE *NutDeviceLookupType(uint_fast8_t type)
-{
-    NUTDEVICE *dev;
-
-    for (dev = nutDeviceList; dev; dev = dev->dev_next) {
-        if (dev->dev_type == type) {
-            break;
-        }
-    }
-    return dev;
-}
-
-/*!
  * \brief Initialize the block I/O device.
  *
  * This dummy routine may be used by drivers, which do not need any
@@ -160,7 +141,7 @@ int NutBlockDeviceInit(NUTDEVICE * dev)
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTDEVICE *fsdev;
 
@@ -184,7 +165,7 @@ NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc
     if (*name) {
         fsdev = NutDeviceLookup(name);
     } else {
-        fsdev = NutDeviceLookupType(IFTYP_FS);
+        fsdev = NutDeviceLookupType(NULL, IFTYP_FS);
     }
 
     if (fsdev == NULL) {
@@ -397,11 +378,11 @@ int NutBlockDeviceRead(NUTFILE * nfp, void *buffer, int num)
  * \return The number of blocks actually written. The current position is
  *         set to the next block. A return value of -1 indicates an error.
  */
-int NutBlockDeviceWrite(NUTFILE * nfp, CONST void *buffer, int num)
+int NutBlockDeviceWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     int rc;
     int cnt;
-    CONST uint8_t *bp = buffer;
+    const uint8_t *bp = buffer;
     NUTBLOCKIO *blkio;
     BLOCKVOLUME *fcb;
 

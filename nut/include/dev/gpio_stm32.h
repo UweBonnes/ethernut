@@ -91,6 +91,11 @@
 #define GPIO_CFG_PULLUP     0x00000004
 
 /*!
+ * \brief GPIO pull-down enabled.
+ */
+#define GPIO_CFG_PULLDOWN   0x00000100
+
+/*!
  * \brief GPIO open drain output feature enabled.
  *
  * If not set, the output will use push pull mode.
@@ -111,6 +116,23 @@
  * Enables alternate function of the pin.
  */
 #define GPIO_CFG_PERIPHAL   0x00000020
+
+/*!
+ * \brief GPIO pin speed
+ *
+ * Speed L1      F2/F2
+ * SLOW  400 kHz   2 MHz
+ * MED     2 MHz  25 MHz
+ * FAST   10 MHz  50 MHz
+ * HIGH   40 MHz 100 MHz
+ *
+ * As default, we set GPIO_CFG_SPEED_MED
+ */
+#define GPIO_CFG_SPEED       0x000000C0
+#define GPIO_CFG_SPEED_SLOW  0x00000040
+#define GPIO_CFG_SPEED_MED   0x00000000
+#define GPIO_CFG_SPEED_FAST  0x00000080
+#define GPIO_CFG_SPEED_HIGH  0x000000C0
 
 typedef struct {
     void (*iov_handler) (void *);
@@ -137,9 +159,6 @@ extern GPIO_SIGNAL sig_GPIO2;
 extern GPIO_SIGNAL sig_GPIO3;
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
@@ -162,7 +181,3 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, uint8_t bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, uint8_t bit);
 extern int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit);
-
-__END_DECLS
-/* End of prototypes */
-

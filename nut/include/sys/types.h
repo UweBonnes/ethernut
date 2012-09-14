@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -162,8 +162,6 @@ typedef long long longlong;
 
 #include <compiler.h>
 
-__BEGIN_DECLS
-
 // Definition of size_t
 #ifdef __cplusplus
 #include <cstddef>
@@ -180,8 +178,8 @@ __BEGIN_DECLS
 #if defined(__avr__)
 #define NUTMEM_ALIGNMENT        1
 #elif defined(__CORTEX__)
-#define NUTMEM_ALIGNMENT        1
-#elif defined(__ARM__)
+#define NUTMEM_ALIGNMENT        4
+#elif defined(__arm__)
 #define NUTMEM_ALIGNMENT        4
 #elif defined(__AVR32__)
 #define NUTMEM_ALIGNMENT        4
@@ -249,7 +247,7 @@ typedef void *HANDLE;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short ureg_t;
 #elif defined(__m68k__)
-    typedef uint_fast8_t ureg_t;
+    typedef unsigned short ureg_t;
 #else
     typedef unsigned short ureg_t;
 #endif
@@ -270,7 +268,7 @@ typedef void *HANDLE;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short reg_t;
 #elif defined(__m68k__)
-    typedef int_fast8_t reg_t;
+    typedef unsigned short reg_t;
 #else
     typedef unsigned short reg_t;
 #endif
@@ -370,8 +368,6 @@ typedef void *HANDLE;
 
 /*@}*/
 
-__END_DECLS
-/* */
 #endif                          /* #ifndef _SYS_VIRTUAL_TYPES_H_ */
 
 #endif                          /* #ifndef _SYS_TYPES_H_ */

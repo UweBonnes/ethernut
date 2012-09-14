@@ -24,6 +24,7 @@
 
 #include <wx/config.h>
 #include <wx/sysopt.h>
+#include <wx/persist/toplevel.h>
 
 #include "ids.h"
 #include "nutconf.h"
@@ -71,6 +72,7 @@ CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
 , m_smallToolbar(true)
 , m_findDlg(NULL)
 {
+    const bool persistent = wxPersistentRegisterAndRestore(this, "MainFrame");
     SetIcon(wxICON(application));
 
     CreateNutMenuBar();
@@ -78,14 +80,9 @@ CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
     CreateNutStatusBar();
 
     CreateNutWindows();
-
-    /*
-     * Restore frame position and size.
-     */
-    wxConfigBase *pConfig = wxConfigBase::Get();
-    Move(pConfig->Read(wxT("/MainFrame/x"), 50), pConfig->Read(wxT("/MainFrame/y"), 50));
-    SetClientSize(pConfig->Read(wxT("/MainFrame/w"), 550), pConfig->Read(wxT("/MainFrame/h"), 350));
-
+    if (!persistent) {
+        SetClientSize(550, 350);
+    }
 }
 
 /*!
@@ -98,18 +95,6 @@ CMainFrame::~CMainFrame()
     if (pConfig) {
         wxString lastPath = pConfig->GetPath();
         pConfig->SetPath(wxT("/MainFrame"));
-
-        /*
-         * Frame window position and client window size.
-         */
-        int x, y;
-        int w, h;
-        GetPosition(&x, &y);
-        pConfig->Write(wxT("x"), (long) x);
-        pConfig->Write(wxT("y"), (long) y);
-        GetClientSize(&w, &h);
-        pConfig->Write(wxT("w"), (long) w);
-        pConfig->Write(wxT("h"), (long) h);
 
         wxSize sz;
         sz = m_configSashWindow->GetSize();
@@ -152,9 +137,9 @@ void CMainFrame::CreateNutMenuBar()
     viewMenu->Append(-1, wxT("Toolbar"), toolbarMenu);
 
     wxMenu *buildMenu = new wxMenu(wxEmptyString, wxMENU_TEAROFF);
-    buildMenu->Append(ID_BUILD_LIBRARY, wxT("Build Nut/OS"), wxT("Builds Nut/OS libraries"));
+    buildMenu->Append(ID_BUILD_LIBRARY, wxT("Build Nut/OS Libraries"), wxT("Builds Nut/OS libraries using the current configuration"));
     buildMenu->AppendSeparator();
-    buildMenu->Append(ID_CREATE_SAMPLE_APPS, wxT("Create Sample Directory"), wxT("Creates a directory with Nut/OS sample applications"));
+    buildMenu->Append(ID_CREATE_SAMPLE_APPS, wxT("Update Application Directory"), wxT("Creates or updates the directory containing Nut/OS applications"));
 
     wxMenu *helpMenu = new wxMenu;
     helpMenu->Append(ID_NUTOS_HELP, wxT("Help &Contents"), wxT("Displays help contents"));
@@ -213,7 +198,6 @@ void CMainFrame::CreateNutWindows()
     int w;
     int h;
 
-    Show();
     /*
      * Create the bottom sash. Its client is a multiline text control,
      * which acts as a log output window. 
@@ -269,9 +253,7 @@ void CMainFrame::CreateNutWindows()
     m_infoSashWindow->SetAlignment(wxLAYOUT_TOP);
 
     wxLogVerbose(wxT("Create CInfoWindow"));
-    m_infoWindow =
-        new CInfoWindow(m_infoSashWindow, ID_SHORT_DESCR_WINDOW, wxDefaultPosition, wxDefaultSize,
-                        wxTE_MULTILINE | wxCLIP_CHILDREN | wxTE_READONLY);
+    m_infoWindow = new CInfoWindow(m_infoSashWindow, ID_SHORT_DESCR_WINDOW);
 
     /* Create the configuration tree control. */
     m_treeCtrl = new CConfTreeCtrl(m_configSashWindow, ID_CONFTREE_CTRL);
@@ -302,6 +284,8 @@ void CMainFrame::CreateNutWindows()
 
     pConfig->SetPath(lastPath);
     wxLogVerbose(wxT("+++++++++++++++ Windows created +++++++++++++++++"));
+
+    Show();
 }
 
 wxTextCtrl *CMainFrame::GetOutputWindow() const

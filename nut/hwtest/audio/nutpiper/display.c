@@ -181,7 +181,7 @@ void DisplayStatus(uint8_t status)
  *             permanent display.
  * \param fmt  Format string containing conversion specifications.
  */
-void DisplayMessage(uint8_t row, uint8_t secs, CONST char *fmt, ...)
+void DisplayMessage(uint8_t row, uint8_t secs, const char *fmt, ...)
 {
     va_list ap;
 

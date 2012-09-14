@@ -56,7 +56,7 @@
 #define PHY_NAME    "Ethernet"
 #endif
 
-static uint8_t *MibVarsIfGet(CONST SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
+static uint8_t *MibVarsIfGet(const SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
 
 #define MAG_IF_NUMBER           0
 
@@ -168,7 +168,7 @@ static int MibVarsIfSet(int action, uint8_t * var_val, uint8_t var_val_type, siz
     return 0;
 }
 
-static uint8_t *MibVarsIfGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
+static uint8_t *MibVarsIfGet(const SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
 {
     int rc;
     int ifc = 0;

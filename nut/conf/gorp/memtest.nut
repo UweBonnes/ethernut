@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>. 
+-- Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>.
 --
 -- All rights reserved.
 --
@@ -43,7 +43,8 @@ nutgorp_memtest =
         name = "nutgorp_memtest",
         brief = "8, 16 and 32 Bit bus width memory test library",
         description = "8, 16 and 32 Bit bus width memory test library with address bus, data bus and device tests.\n\n",
-        sources = { 
+        sources =
+        {
             "memtest/memtest_8bit.c",
             "memtest/memtest_16bit.c",
             "memtest/memtest_32bit.c"

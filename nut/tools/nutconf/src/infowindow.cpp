@@ -26,14 +26,14 @@
 #include "nutconf.h"
 #include "infowindow.h"
 
-IMPLEMENT_CLASS(CInfoWindow, wxTextCtrl)
+IMPLEMENT_CLASS(CInfoWindow, wxHtmlWindow)
 
-    BEGIN_EVENT_TABLE(CInfoWindow, wxTextCtrl)
+    BEGIN_EVENT_TABLE(CInfoWindow, wxHtmlWindow)
     EVT_MOUSE_EVENTS(CInfoWindow::OnMouseEvent)
     END_EVENT_TABLE();
 
-CInfoWindow::CInfoWindow(wxWindow * parent, wxWindowID id, const wxPoint & pt, const wxSize & sz, long style)
-: wxTextCtrl(parent, id, wxEmptyString, pt, sz, style)
+CInfoWindow::CInfoWindow(wxWindow * parent, wxWindowID id)
+: wxHtmlWindow(parent, id)
 {
     m_propertiesMenu = new wxMenu;
     m_propertiesMenu->Append(ID_WHATS_THIS, wxT("&What's This?"));

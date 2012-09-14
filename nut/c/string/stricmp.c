@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -86,7 +86,7 @@ typedef unsigned char uint8_t;
  * together for a case independent comparison.  The mappings are
  * based upon ascii character sequences.
  */
-static CONST uint8_t charmap[] = {
+static const uint8_t charmap[] = {
     '\000', '\001', '\002', '\003', '\004', '\005', '\006', '\007',
     '\010', '\011', '\012', '\013', '\014', '\015', '\016', '\017',
     '\020', '\021', '\022', '\023', '\024', '\025', '\026', '\027',
@@ -135,11 +135,11 @@ static CONST uint8_t charmap[] = {
  *         than the second string after translation of each corresponding
  *         character to lower-case.
  */
-int stricmp(CONST char *s1, CONST char *s2)
+int stricmp(const char *s1, const char *s2)
 {
-    CONST uint8_t *cm = charmap;
-    CONST uint8_t *us1 = (CONST uint8_t *) s1;
-    CONST uint8_t *us2 = (CONST uint8_t *) s2;
+    const uint8_t *cm = charmap;
+    const uint8_t *us1 = (const uint8_t *) s1;
+    const uint8_t *us2 = (const uint8_t *) s2;
 
     while (cm[*us1] == cm[*us2++]) {
         if (*us1++ == '\0') {
@@ -165,12 +165,12 @@ int stricmp(CONST char *s1, CONST char *s2)
  *         than the second string after translation of each corresponding
  *         character to lower-case.
  */
-int strnicmp(CONST char *s1, CONST char *s2, size_t n)
+int strnicmp(const char *s1, const char *s2, size_t n)
 {
     if (n != 0) {
-        CONST uint8_t *cm = charmap;
-        CONST uint8_t *us1 = (CONST uint8_t *) s1;
-        CONST uint8_t *us2 = (CONST uint8_t *) s2;
+        const uint8_t *cm = charmap;
+        const uint8_t *us1 = (const uint8_t *) s1;
+        const uint8_t *us2 = (const uint8_t *) s2;
 
         do {
             if (cm[*us1] != cm[*us2++]) {

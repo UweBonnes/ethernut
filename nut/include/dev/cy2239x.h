@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -120,9 +120,6 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern uint32_t Cy2239xGetFreq(int clk, int fctrl);
 
 extern int Cy2239xGetPll(int clk);
@@ -136,6 +133,4 @@ extern int Cy2239xPllEnable(int pll, int fctrl, int ena);
 extern uint32_t Cy2239xPllGetFreq(int pll, int fctrl);
 extern int Cy2239xPllSetFreq(int pll, int fctrl, unsigned int pval, unsigned int poff, unsigned int qval, unsigned int fval);
 
-__END_DECLS
-/* End of prototypes */
 #endif

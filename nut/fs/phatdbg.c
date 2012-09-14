@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -82,7 +82,7 @@ void PhatDbgAttrList(FILE * fp, uint8_t attr)
     }
 }
 
-void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent)
+void PhatDbgDirEntry(FILE * fp, const char *title, PHATDIRENT * dent)
 {
     if (title) {
         fprintf(fp, "--- %s ---\n", title);
@@ -99,7 +99,7 @@ void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent)
     fprintf(fp, "DentFSize: %lu\n", dent->dent_fsize);
 }
 
-void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp)
+void PhatDbgFileInfo(FILE * fp, const char *title, PHATFILE * nfp)
 {
     if (title) {
         fprintf(fp, "--- %s ---\n", title);
@@ -115,7 +115,7 @@ void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp)
     fprintf(fp, "DirEnt Dirty: %u\n", nfp->f_de_dirty);
 }
 
-void PhatDbgVbr(FILE * fp, CONST char *title, PHATVBR * vbr)
+void PhatDbgVbr(FILE * fp, const char *title, PHATVBR * vbr)
 {
     if (title) {
         fprintf(fp, "--- %s ---\n", title);

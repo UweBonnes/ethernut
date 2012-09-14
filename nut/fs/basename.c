@@ -68,10 +68,10 @@
  *         error, a NULL pointer is returned and the global variable errno is
  *         set to indicate the error.
  */
-char *basename(CONST char *path)
+char *basename(const char *path)
 {
     static char *bname = NULL;
-    CONST char *endp, *startp;
+    const char *endp, *startp;
 
     if (bname == NULL) {
         bname = (char *) malloc(MAXPATHLEN);

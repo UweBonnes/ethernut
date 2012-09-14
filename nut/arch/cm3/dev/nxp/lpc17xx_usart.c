@@ -47,8 +47,6 @@
 #include <dev/irqreg.h>
 #include <dev/usart.h>
 
-#include <arch/cm3/cortex_interrupt.h>
-
 #if defined(MCU_LPC176x)
 #include <arch/cm3/nxp/lpc176x.h>
 #include <arch/cm3/nxp/lpc176x_clk.h>
@@ -94,10 +92,8 @@
 #define USART_INIT_BAUTRATE USART_INITSPEED
 #endif
 
-
 #define NutUartIrqEnable    NutIrqEnable
 #define NutUartIrqDisable   NutIrqDisable
-
 
 /*!
  * \brief Receiver error flags.
@@ -166,7 +162,7 @@ static void Lpc17xxUsartDmaRxIrq(void* arg)
  *
  * \param rbf Pointer to the transmitter ring buffer.
  */
-static void Lpc17xxUsartTxReady(RINGBUF * rbf)
+static void Lpc17xxUsartTxReady(RINGBUF * rbf, uint32_t lsr)
 {
     register uint8_t *cp = rbf->rbf_tail;
 
@@ -181,11 +177,11 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
     if (flow_control & (XON_PENDING | XOFF_PENDING)) {
         if (flow_control & XON_PENDING) {
             /* Send XOFF */
-            CM3REG(USARTn, LPC_UART_TypeDef, THR) = ASCII_XOFF;
+            USARTn->THR = ASCII_XOFF;
             flow_control |= XOFF_SENT;
         } else {
             /* Send XON */
-            CM3REG(USARTn, LPC_UART_TypeDef, THR) = ASCII_XON;
+            USARTn->THR = ASCII_XON;
             flow_control &= ~XOFF_SENT;
         }
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
@@ -199,7 +195,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
          */
 
         /* Disable transmitter and transmitter interrupt */
-        CM3REG(USARTn, LPC_UART_TypeDef, TER) = 0;
+        USARTn->TER = 0;
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 0;
 
         return;
@@ -209,7 +205,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
     /*
      * Check if we have more bytes to transmit anf if there is still space in the TX FIFO
      */
-    while ((rbf->rbf_cnt) && (CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_THRE)) {
+    while ((rbf->rbf_cnt) && (USARTn->LSR & UART_LSR_THRE)) {
         /*
          * If CTS has been disabled, we disable the transmit interrupts,
          * enable CTS interrupts and return without sending anything.
@@ -217,7 +213,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
         // TODO: CTS handling in here
 
         /* Start transmission of the next character. */
-        CM3REG(USARTn, LPC_UART_TypeDef, THR) = *cp;
+        USARTn->THR = *cp;
 
         /* Decrement the number of available bytes in the buffer. */
         rbf->rbf_cnt--;
@@ -248,26 +244,23 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf)
  *
  * \param rbf Pointer to the receiver ring buffer.
  */
-static void Lpc17xxUsartRxReady(RINGBUF * rbf)
+static void Lpc17xxUsartRxReady(RINGBUF * rbf, uint32_t lsr)
 {
     register size_t cnt;
     register uint8_t ch;
-    register uint32_t lsr;
-
-
 
 #ifdef UART_DMA_RXCHANNEL
     // TODO: Implement DMA support
 #endif
 
-    while ((lsr = CM3REG(USARTn, LPC_UART_TypeDef, LSR)) & UART_LSR_RDR) {
+    while (lsr & UART_LSR_RDR) {
 
         /*
          * We read the received character as early as possible to avoid overflows
          * caused by interrupt latency.
          */
 
-        ch = CM3REG(USARTn, LPC_UART_TypeDef, RBR) & UART_RBR_MASK;
+        ch = USARTn->RBR & UART_RBR_MASK;
 
         /* Collect receiver errors. */
         rx_errors |= lsr & (UART_LSR_OE | UART_LSR_PE | UART_LSR_FE | UART_LSR_BI);
@@ -282,7 +275,7 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf)
             /* XOFF character disables transmit interrupts. */
             if (ch == ASCII_XOFF) {
                 /* Disable transmitter and transmitter interrupt */
-                CM3REG(USARTn, LPC_UART_TypeDef, TER) = 0;
+                USARTn->TER = 0;
 
                 CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 0;
 
@@ -292,7 +285,7 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf)
             /* XON enables transmit interrupts. */
             else if (ch == ASCII_XON) {
                 /* Disable transmitter and transmitter interrupt */
-                CM3REG(USARTn, LPC_UART_TypeDef, TER) = UART_TER_TXEN;
+                USARTn->TER = UART_TER_TXEN;
                 CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 1;
 
                 flow_control &= ~XOFF_RCVD;
@@ -326,8 +319,8 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf)
                 if((flow_control & XOFF_SENT) == 0) {
                     /* Check it TX on and space in the FIFO, then send xoff */
                     if ((CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS)) &&
-                        (CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_THRE)) {
-                        CM3REG(USARTn, LPC_UART_TypeDef, THR) = ASCII_XOFF;
+                        (lsr & UART_LSR_THRE)) {
+                        USARTn->THR = ASCII_XOFF;
                         flow_control |= XOFF_SENT;
                         flow_control &= ~XOFF_PENDING;
                     } else {
@@ -359,6 +352,9 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf)
 
         /* Update the ring buffer counter. */
         rbf->rbf_cnt = cnt;
+
+        /* update the LSR shadow variable */
+        lsr = USARTn->LSR;
     }
 }
 
@@ -372,8 +368,9 @@ static void Lpc17xxUsartInterrupt(void *arg)
     USARTDCB *dcb = (USARTDCB *) arg;
 
     /* Read line status and interrupt identification register */
-    uint32_t iir = CM3REG(USARTn, LPC_UART_TypeDef, IIR) & UART_IIR_INTID_MASK;
+    uint32_t iir   = USARTn->IIR & UART_IIR_INTID_MASK;
     uint32_t intid = iir & UART_IIR_INTID_MASK;
+    uint32_t lsr   = USARTn->LSR;
 
     if (intid == UART_IIR_INTID_RLS) {
         // TODO: Implement Line Status
@@ -381,11 +378,11 @@ static void Lpc17xxUsartInterrupt(void *arg)
     } else
     /* Test for byte received or character timeout */
     if ((intid == UART_IIR_INTID_RDA) || (intid == UART_IIR_INTID_CTI)) {
-        Lpc17xxUsartRxReady(&dcb->dcb_rx_rbf);
+        Lpc17xxUsartRxReady(&dcb->dcb_rx_rbf, lsr);
     } else
     /* Test for next byte can be transmitted (transmit holding is empty) */
     if (intid == UART_IIR_INTID_THRE) {
-        Lpc17xxUsartTxReady(&dcb->dcb_tx_rbf);
+        Lpc17xxUsartTxReady(&dcb->dcb_tx_rbf, lsr);
     }
 }
 
@@ -403,7 +400,7 @@ static void Lpc17xxUsartEnable(void)
        good idea?
      */
 
-    CM3REG(USARTn, LPC_UART_TypeDef, TER) = UART_TER_TXEN;
+    USARTn->TER = UART_TER_TXEN;
 
     /* Enable Usart Interrupts */
     NutUartIrqEnable(&SigUSART);
@@ -438,14 +435,14 @@ static void Lpc17xxUsartDisable(void)
     NutUartIrqDisable(&SigUSART);
 
     /* If the transmitter is enabled, wait until all bits had been shifted out. */
-    if (CM3REG(USARTn, LPC_UART_TypeDef, TER) & UART_TER_TXEN) {
-        while ((CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_TEMT) == 0);
+    if (USARTn->TER & UART_TER_TXEN) {
+        while ((USARTn->LSR & UART_LSR_TEMT) == 0);
     }
 
     /* Disable Transmitter, receiver can not be disabled on the LPC
        architecture. We just could disable the RX FIFOs, is this a good idea?
      */
-    CM3REG(USARTn, LPC_UART_TypeDef, TER) = 0;
+    USARTn->TER = 0;
 }
 
 /*!
@@ -547,12 +544,12 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
         /* Set DLAB bit */
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 1;
 
-        CM3REG(USARTn, LPC_UART_TypeDef, DLM)  = UART_LOAD_DLM(best_divisor);
-        CM3REG(USARTn, LPC_UART_TypeDef, DLL)  = UART_LOAD_DLL(best_divisor);
+        USARTn->DLM  = UART_LOAD_DLM(best_divisor);
+        USARTn->DLL  = UART_LOAD_DLL(best_divisor);
 
         /* Reset DLAB bit */
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 0;
-        CM3REG(USARTn, LPC_UART_TypeDef, FDR)  = (UART_FDR_MULVAL(bestm) | UART_FDR_DIVADDVAL(bestd)) & UART_FDR_BITMASK;
+        USARTn->FDR  = (UART_FDR_MULVAL(bestm) | UART_FDR_DIVADDVAL(bestd)) & UART_FDR_BITMASK;
     } else {
         return -1;
     }
@@ -561,106 +558,6 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 
     return 0;
 }
-
-
-
-#if 0 // 64 bit calculations included... This will raise linker errors... just for testing...
-static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
-{
-    uint32_t uart_clock;
-    uint32_t d, m, bestd, bestm, tmp;
-    uint64_t best_divisor, divisor;
-    uint32_t current_error, best_error;
-    uint32_t recalcbaud;
-
-    /* get UART block clock */
-    uart_clock = NutArchClockGet(NUT_HWCLK_PCLK);
-
-    /* Baudrate calculation is done according the following formula:
-       BaudRate= uart_clock * (mulFracDiv/(mulFracDiv+dividerAddFracDiv) / (16 * (DLL)
-
-       To avoid floating point calculation the formulae is adjusted with the
-       multiply and divide method.
-
-       The value of mulFracDiv and dividerAddFracDiv should comply to the following expressions:
-       0 < mulFracDiv <= 15, 0 <= dividerAddFracDiv <= 15
-    */
-    best_error = 0xFFFFFFFF; /* Worst case */
-    bestd = 0;
-    bestm = 0;
-    best_divisor = 0;
-    for (m = 1 ; m <= 15 ;m++) {
-        for (d = 0 ; d < m ; d++) {
-            divisor = ((uint64_t)uart_clock << 28)*m / (baudrate * (m + d));
-            current_error = divisor & 0xFFFFFFFF;
-
-            tmp = divisor >> 32;
-
-            /* Adjust error */
-            if(current_error > ((uint32_t)1<<31)) {
-                current_error = -current_error;
-                tmp++;
-            }
-
-            /* Out of range */
-            if(tmp < 1 || tmp > 65536) {
-                continue;
-            }
-
-            if( current_error < best_error) {
-                best_error = current_error;
-                best_divisor = tmp;
-                bestd = d;
-                bestm = m;
-
-                if(best_error == 0) {
-                    break;
-                }
-            }
-        } /* end of inner for loop */
-
-        if (best_error == 0) {
-            break;
-        }
-    } /* end of outer for loop  */
-
-    /* can not find best match */
-    if(best_divisor == 0) {
-        return -1;
-    }
-
-    recalcbaud = (uart_clock >> 4) * bestm / (best_divisor * (bestm + bestd));
-
-    /* reuse best_error to evaluate baud error*/
-    if(baudrate > recalcbaud) {
-        best_error = baudrate - recalcbaud;
-    } else {
-        best_error = recalcbaud - baudrate;
-    }
-
-    best_error = best_error * 100 / baudrate;
-
-    Lpc17xxUsartDisable();
-
-    if (best_error < UART_ACCEPTED_BAUDRATE_ERROR) {
-        /* Set DLAB bit */
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 1;
-
-        CM3REG(USARTn, LPC_UART_TypeDef, DLM)  = UART_LOAD_DLM(best_divisor);
-        CM3REG(USARTn, LPC_UART_TypeDef, DLL)  = UART_LOAD_DLL(best_divisor);
-
-        /* Reset DLAB bit */
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 0;
-        CM3REG(USARTn, LPC_UART_TypeDef, FDR)  = (UART_FDR_MULVAL(bestm) | UART_FDR_DIVADDVAL(bestd)) & UART_FDR_BITMASK;
-
-    }
-
-    Lpc17xxUsartEnable();
-
-    return 0;
-}
-
-#endif
 
 /*!
  * \brief Query the USART hardware for the number of data bits.
@@ -672,7 +569,7 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
  */
 static uint8_t Lpc17xxUsartGetDataBits(void)
 {
-    uint32_t lcr = CM3REG(USARTn, LPC_UART_TypeDef, LCR);
+    uint32_t lcr = USARTn->LCR;
 
     switch(lcr & UART_LCR_WLEN_BITMASK) {
         case UART_LCR_WLEN5: return 5;
@@ -699,7 +596,7 @@ static int Lpc17xxUsartSetDataBits(uint8_t bits)
 
     Lpc17xxUsartDisable();
 
-    lcr = CM3REG(USARTn, LPC_UART_TypeDef, LCR) & ~UART_LCR_WLEN_BITMASK;
+    lcr = USARTn->LCR & ~UART_LCR_WLEN_BITMASK;
     switch (bits)
     {
         case 5:
@@ -722,7 +619,7 @@ static int Lpc17xxUsartSetDataBits(uint8_t bits)
             Lpc17xxUsartEnable();
             return -1;
     }
-    CM3REG(USARTn, LPC_UART_TypeDef, LCR) = lcr & UART_LCR_BITMASK;
+    USARTn->LCR = lcr & UART_LCR_BITMASK;
 
     Lpc17xxUsartEnable();
 
@@ -739,7 +636,7 @@ static int Lpc17xxUsartSetDataBits(uint8_t bits)
  */
 static uint8_t Lpc17xxUsartGetParity(void)
 {
-    uint32_t lcr = CM3REG(USARTn, LPC_UART_TypeDef, LCR);
+    uint32_t lcr = USARTn->LCR;
 
     switch(lcr & UART_LCR_PARITY_BITMASK) {
         case UART_LCR_PARITY_EN | UART_LCR_PARITY_ODD:  return 1;
@@ -769,7 +666,7 @@ static int Lpc17xxUsartSetParity(uint8_t mode)
 
     Lpc17xxUsartDisable();
 
-    lcr = CM3REG(USARTn, LPC_UART_TypeDef, LCR) & ~UART_LCR_PARITY_BITMASK;
+    lcr = USARTn->LCR & ~UART_LCR_PARITY_BITMASK;
 
     switch (mode) {
         case 0:
@@ -792,7 +689,7 @@ static int Lpc17xxUsartSetParity(uint8_t mode)
             return -1;
     }
 
-    CM3REG(USARTn, LPC_UART_TypeDef, LCR) = lcr & UART_LCR_BITMASK;
+    USARTn->LCR = lcr & UART_LCR_BITMASK;
 
     Lpc17xxUsartEnable();
 
@@ -809,7 +706,7 @@ static int Lpc17xxUsartSetParity(uint8_t mode)
  */
 static uint8_t Lpc17xxUsartGetStopBits(void)
 {
-    uint32_t lcr = CM3REG(USARTn, LPC_UART_TypeDef, LCR);
+    uint32_t lcr = USARTn->LCR;
 
     if (lcr & UART_LCR_STOPBIT_SEL) {
         if ((lcr & UART_LCR_WLEN_BITMASK) == UART_LCR_WLEN5) {
@@ -844,7 +741,7 @@ static int Lpc17xxUsartSetStopBits(uint8_t bits)
             CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 1;
             break;
         case 3:
-            if ((CM3REG(USARTn, LPC_UART_TypeDef, LCR) & UART_LCR_WLEN_BITMASK) == UART_LCR_WLEN5) {
+            if ((USARTn->LCR & UART_LCR_WLEN_BITMASK) == UART_LCR_WLEN5) {
                 CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 1;
             } else {
                 Lpc17xxUsartEnable();
@@ -974,7 +871,7 @@ static int Lpc17xxUsartSetStatus(uint32_t flags)
      */
     if (flags & UART_ERRORS) {
         /* Clear errors by reading the line status register */
-        CM3REG(USARTn, LPC_UART_TypeDef, LSR);
+        (volatile uint32_t)USARTn->LSR;
     }
 
     /*
@@ -1118,7 +1015,7 @@ static void Lpc17xxUsartTxStart(void)
     register uint8_t *cp;
     /* Enable transmit interrupts. */
     CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 1;
-    CM3REG(USARTn, LPC_UART_TypeDef, TER) = UART_TER_TXEN;
+    USARTn->TER = UART_TER_TXEN;
 
 
     /*
@@ -1126,7 +1023,7 @@ static void Lpc17xxUsartTxStart(void)
      */
     NutEnterCritical();
     cp = DcbUSART.dcb_tx_rbf.rbf_tail;
-    if ((DcbUSART.dcb_tx_rbf.rbf_cnt) && (CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_THRE)) {
+    if ((DcbUSART.dcb_tx_rbf.rbf_cnt) && (USARTn->LSR & UART_LSR_THRE)) {
         /*
          * If CTS has been disabled, we disable the transmit interrupts,
          * enable CTS interrupts and return without sending anything.
@@ -1134,7 +1031,7 @@ static void Lpc17xxUsartTxStart(void)
         // TODO: CTS handling in here
 
         /* Start transmission of the next character. */
-        CM3REG(USARTn, LPC_UART_TypeDef, THR) = *cp;
+        USARTn->THR = *cp;
 
         /* Decrement the number of available bytes in the buffer. */
         DcbUSART.dcb_tx_rbf.rbf_cnt--;
@@ -1170,8 +1067,8 @@ static void Lpc17xxUsartRxStart(void)
     if (flow_control && (flow_control & XOFF_SENT) != 0) {
         NutUartIrqDisable(&SigUSART);
         /* Check if the transmit holding register is empty */
-        if (CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_THRE) {
-            CM3REG(USARTn, LPC_UART_TypeDef, THR) = ASCII_XON;
+        if (USARTn->LSR & UART_LSR_THRE) {
+            USARTn->THR = ASCII_XON;
             flow_control &= ~XON_PENDING;
         } else {
             flow_control |= XON_PENDING;
@@ -1244,70 +1141,67 @@ static int Lpc17xxUsartInit(void)
     }
 #endif
     /* Disable IRQs */
-    CM3REG(USARTn, LPC_UART_TypeDef, IER) = 0;
+    USARTn->IER = 0;
 
     /* Clear FIFOs */
-    CM3REG(USARTn, LPC_UART_TypeDef, FCR) |= UART_FCR_FIFO_EN | UART_FCR_RX_RS | UART_FCR_TX_RS;
-
-    /* Disable FIFOs */
-    CM3REG(USARTn, LPC_UART_TypeDef, FCR)  = 0;
+    USARTn->FCR = UART_FCR_FIFO_EN | UART_FCR_RX_RS | UART_FCR_TX_RS | UART_FCR_TRG_LEV2;
 
     /* Dummy reading */
-    while (CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_RDR) {
-        tmp = CM3REG(USARTn, LPC_UART_TypeDef, RBR);
+    while (USARTn->LSR & UART_LSR_RDR) {
+        tmp = USARTn->RBR;
     }
 
     /* Enable transmitter */
-    CM3REG(USARTn, LPC_UART_TypeDef, TER) = UART_TER_TXEN;
+    USARTn->TER = UART_TER_TXEN;
 
     /* Wait for current transmit complete */
-    while (!(CM3REG(USARTn, LPC_UART_TypeDef, LSR) & UART_LSR_THRE));
+    while (!(USARTn->LSR & UART_LSR_THRE));
 
     /* Disable transmitter */
-    CM3REG(USARTn, LPC_UART_TypeDef, TER) = 0;
+    USARTn->TER = 0;
 
     /* Set LCR to default state */
-    CM3REG(USARTn, LPC_UART_TypeDef, LCR) = 0;
+    USARTn->LCR = 0;
 
     /* Set ACR to default state */
-    CM3REG(USARTn, LPC_UART_TypeDef, ACR) = 0;
+    USARTn->ACR = 0;
 
 #if defined(MCU_LPC176x)
     if((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
         /* Set RS485 control to default state */
-        CM3REG(USARTn, LPC_UART1_TypeDef, RS485CTRL) = 0;
+        ((LPC_UART1_TypeDef*)USARTn)->RS485CTRL = 0;
 
         /* Set RS485 delay timer to default state */
-        CM3REG(USARTn, LPC_UART1_TypeDef, RS485DLY) = 0;
+        ((LPC_UART1_TypeDef*)USARTn)->RS485DLY = 0;
 
         /* Set RS485 addr match to default state */
-        CM3REG(USARTn, LPC_UART1_TypeDef, ADRMATCH) = 0;
+        ((LPC_UART1_TypeDef*)USARTn)->ADRMATCH = 0;
     }
 #elif defined(MCU_LPC177x_8x)
     /* Set RS485 control to default state */
-    CM3REG(USARTn, LPC_UART_TypeDef, RS485CTRL) = 0;
+    USARTn->RS485CTRL = 0;
 
     /* Set RS485 delay timer to default state */
-    CM3REG(USARTn, LPC_UART_TypeDef, RS485DLY) = 0;
+    USARTn->RS485DLY = 0;
 
     /* Set RS485 addr match to default state */
-    CM3REG(USARTn, LPC_UART_TypeDef, ADRMATCH) = 0;
+    USARTn->ADRMATCH = 0;
 #endif
 
     /* Dummy reading to clear bits */
-    tmp = CM3REG(USARTn, LPC_UART_TypeDef, LSR);
+    tmp = USARTn->LSR;
 
     if(((LPC_UART1_TypeDef *)USARTn) == LPC_UART1) {
         /* Set Modem Control to default state */
-        CM3REG(USARTn, LPC_UART1_TypeDef, MCR) = 0;
+        ((LPC_UART1_TypeDef *)USARTn)->MCR = 0;
 
         /* Dummy Reading to Clear Status */
-        tmp = CM3REG(USARTn, LPC_UART1_TypeDef, MSR);
+        tmp = ((LPC_UART1_TypeDef *)USARTn)->MSR;
     }
 #if defined(MCU_LPC177x_8x)
     if(((LPC_UART4_TypeDef *)USARTn) == LPC_UART4) {
         /* Set IrDA to default state for all UART other than UART1 */
-        CM3REG(USARTn, LPC_UART4_TypeDef, ICR) = 0;
+        ((LPC_UART4_TypeDef *)USARTn)->ICR = 0;
     }
 #endif
     /* Configure USART Tx as alternate function push-pull */
@@ -1329,7 +1223,7 @@ static int Lpc17xxUsartInit(void)
 
     Lpc17xxUsartSetSpeed(USART_INIT_BAUTRATE);
     Lpc17xxUsartSetDataBits(8);
-    Lpc17xxUsartSetStopBits(2);
+    Lpc17xxUsartSetStopBits(1);
     Lpc17xxUsartSetParity(0);
 
     /* Enable additional features */
@@ -1346,7 +1240,7 @@ static int Lpc17xxUsartInit(void)
 #if defined(CTS_GPIO_PORT) && defined(CTS_GPIO_PIN)
         tmp |= UART1_MCR_AUTO_CTS_EN;
 #endif
-        CM3REG(USARTn, LPC_UART1_TypeDef, MCR) = tmp;
+        ((LPC_UART1_TypeDef *)USARTn)->MCR = tmp;
     }
 #endif
 
@@ -1354,7 +1248,7 @@ static int Lpc17xxUsartInit(void)
     // TODO: Further IRDA feature configuration
     if(((LPC_UART4_TypeDef *)USARTn) == LPC_UART4) {
         /* Set IrDA to default state for all UART other than UART1 */
-        CM3REG(USARTn, LPC_UART4_TypeDef, ICR) = UART_ICR_IRDAEN;
+        USARTn->ICR = UART_ICR_IRDAEN;
     }
 #endif
 
@@ -1373,7 +1267,7 @@ static int Lpc17xxUsartInit(void)
 static int Lpc17xxUsartDeinit(void)
 {
     /* Disable IRQs */
-    CM3REG(USARTn, LPC_UART_TypeDef, IER) = 0;
+    USARTn->IER = 0;
 
     /* Disable interrupts */
     NutIrqDisable(&SigUSART);
@@ -1381,7 +1275,7 @@ static int Lpc17xxUsartDeinit(void)
     /* Deregister receive and transmit interrupts. */
     NutRegisterIrqHandler(&SigUSART, 0, 0);
 
-    /* Enable UART clock and power */
+    /* Disable UART clock and power */
 
 #if defined(MCU_LPC176x)
     if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {

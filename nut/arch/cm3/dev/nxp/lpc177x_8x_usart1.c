@@ -55,9 +55,32 @@
 #include <arch/cm3/nxp/lpc17xx_usart.h>
 
 /*!
- * \addtogroup xgNutArchCm3Lpc176xUsart
+ * \addtogroup xgNutArchCm3Lpc177x_8xUsart
  */
 /*@{*/
+
+/*----------------------------------------------------------------------------*
+  Public functions
+ *----------------------------------------------------------------------------*/
+
+static uint32_t Lpc17xxUsartGetSpeed(void);
+static int Lpc17xxUsartSetSpeed(uint32_t baudrate);
+static uint8_t Lpc17xxUsartGetDataBits(void);
+static int Lpc17xxUsartSetDataBits(uint8_t bits);
+static uint8_t Lpc17xxUsartGetParity(void);
+static int Lpc17xxUsartSetParity(uint8_t mode);
+static uint8_t Lpc17xxUsartGetStopBits(void);
+static int Lpc17xxUsartSetStopBits(uint8_t bits);
+static uint32_t Lpc17xxUsartGetFlowControl(void);
+static int Lpc17xxUsartSetFlowControl(uint32_t flags);
+static uint32_t Lpc17xxUsartGetStatus(void);
+static int Lpc17xxUsartSetStatus(uint32_t flags);
+static uint8_t Lpc17xxUsartGetClockMode(void);
+static int Lpc17xxUsartSetClockMode(uint8_t mode);
+static void Lpc17xxUsartTxStart(void);
+static void Lpc17xxUsartRxStart(void);
+static int Lpc17xxUsartInit(void);
+static int Lpc17xxUsartDeinit(void);
 
 /*
  * USART1 device control block structure.

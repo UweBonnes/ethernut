@@ -50,13 +50,9 @@
 extern prog_char presskey_P[];
 extern char inbuff[32];
 
-__BEGIN_DECLS
-
 extern int DetectSpeed(void);
 extern uint8_t GetChar(void);
 extern int GetLine(char * line, int size);
 extern char *GetIP(char * prompt, char * value);
-
-__END_DECLS
 
 #endif

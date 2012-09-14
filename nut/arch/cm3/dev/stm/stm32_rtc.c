@@ -18,8 +18,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -66,9 +66,9 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <dev/rtc.h>
-#include <arch/arm/stm32f10x_rtc.h>
-#include <arch/arm/stm32f10x_rcc.h>
-#include <arch/arm/stm32f10x_pwr.h>
+#include <arch/cm3/stm/stm32f10x_rtc.h>
+#include <arch/cm3/stm/stm32f10x_rcc.h>
+#include <arch/cm3/stm/stm32f10x_pwr.h>
 #include <time.h>
 
 #include <stdlib.h>
@@ -76,8 +76,8 @@
 
 static void Stm32RtcRtoffPoll()
 {
-	while((RTC->CRL & RTC_FLAG_RTOFF)==0);
-	return;
+    while((RTC->CRL & RTC_FLAG_RTOFF)==0);
+    return;
 };
 
 /*!
@@ -108,7 +108,7 @@ int Stm32RtcGetClock(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int Stm32RtcSetClock(CONST struct _tm *tm)
+int Stm32RtcSetClock(const struct _tm *tm)
 {
    time_t time;
    Stm32RtcRtoffPoll();

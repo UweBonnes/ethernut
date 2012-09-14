@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -42,7 +42,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 #include <sys/device.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_UART1
 #define NUT_IRQPRI_UART1  4
@@ -98,19 +97,19 @@ static int Uart1IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     uint32_t *ival = (uint32_t *)param;
-    int enabled = IntIsEnabled(USART1_IRQn);
+    int enabled = NVIC_GetEnableIRQ(USART1_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
-        IntDisable(USART1_IRQn);
+        NVIC_DisableIRQ(USART1_IRQn);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        IntRegister(USART1_IRQn, Uart1IrqEntry);
+        Cortex_RegisterInt(USART1_IRQn, Uart1IrqEntry);
         /* Initialize with defined priority. */
-        IntPrioritySet(USART1_IRQn, NUT_IRQPRI_UART1);
+        NVIC_SetPriority(USART1_IRQn, NUT_IRQPRI_UART1);
         /* Clear interrupt */
         NVIC_ClearPendingIRQ(USART1_IRQn);
         break;
@@ -135,10 +134,10 @@ static int Uart1IrqCtl(int cmd, void *param)
             rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = IntPriorityGet(USART1_IRQn);
+        *ival = NVIC_GetPriority(USART1_IRQn);
         break;
     case NUT_IRQCTL_SETPRIO:
-        IntPrioritySet(USART1_IRQn,*ival);
+        NVIC_SetPriority(USART1_IRQn,*ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -153,7 +152,7 @@ static int Uart1IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(USART1_IRQn);
+        NVIC_EnableIRQ(USART1_IRQn);
     }
     return rc;
 }

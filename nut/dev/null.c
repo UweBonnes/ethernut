@@ -57,7 +57,7 @@
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *NullOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *NullOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nf;
 
@@ -76,7 +76,7 @@ static NUTFILE *NullOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  *
  * \return Number of characters sent.
  */
-static int NullWrite(NUTFILE * nf, CONST void *buffer, int len)
+static int NullWrite(NUTFILE * nf, const void *buffer, int len)
 {
     return len;
 }

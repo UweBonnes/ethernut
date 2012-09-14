@@ -36,7 +36,7 @@
 #
 
 # Command used for copying files.
-CP = @cp
+CP = cp
 
 # Root directory of Nut/OS header files.
 INCDIR = $(top_srcdir)/include

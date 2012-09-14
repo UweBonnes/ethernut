@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -170,7 +170,7 @@ nutos =
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/os.h"
             }
-        }        
+        }
     },
 
     --
@@ -431,7 +431,7 @@ nutos =
                               "determine a rough approximation.",
                 flavor = "booldata",
                 file = "include/cfg/os.h"
-            }
+            },
         }
     },
 
@@ -580,16 +580,16 @@ nutos =
                 file = "include/cfg/os.h"
             },
             {
-            	macro = "NUTDEBUG_CHECK_STACK",
-            	brief = "Thread Stack Checking",
-            	description = "Used for thread stack checking.\n"..
-            				  "Enabling this will fill any threads stack area "..
-            				  "with a pattern at the point of creating the thread.\n"..
-            				  "By using NutThreadStackAvailable() one can now check "..
-            				  "for the maximum ammount of stack ever used by this "..
-            				  "thread.\n\n"..
-            				  "This functionality can be enabled without OS Debug to "..
-            				  "find out maximum stack usage in your final appliation.",
+                macro = "NUTDEBUG_CHECK_STACK",
+                brief = "Thread Stack Checking",
+                description = "Used for thread stack checking.\n"..
+                              "Enabling this will fill any threads stack area "..
+                              "with a pattern at the point of creating the thread.\n"..
+                              "By using NutThreadStackAvailable() one can now check "..
+                              "for the maximum ammount of stack ever used by this "..
+                              "thread.\n\n"..
+                              "This functionality can be enabled without OS Debug to "..
+                              "find out maximum stack usage in your final appliation.",
                 flavor = "boolean",
                 file = "include/cfg/os.h"
             },

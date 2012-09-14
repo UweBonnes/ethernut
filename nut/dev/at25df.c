@@ -150,7 +150,7 @@ uint_fast8_t at25d_known_types = sizeof(at25d_info) / sizeof(AT25D_INFO);
  * \param rxbuf Pointer to the receive data buffer, may be set to NULL.
  * \param xlen  Number of byte to receive and/or transmit.
  */
-static int At25dCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, int oplen, CONST void *txbuf, void *rxbuf, int xlen)
+static int At25dCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, int oplen, const void *txbuf, void *rxbuf, int xlen)
 {
     int rc = -1;
     NUTSPIBUS *bus;
@@ -336,7 +336,7 @@ int SpiAt25PageRead (NUTDEVICE * dev, uint32_t pgn, void * data, int len){//Shou
     return len;
 };
 
-int SpiAt25PageWrite (NUTDEVICE * dev, uint32_t pgn, CONST void *data, int len){//FIXME: fix for at25
+int SpiAt25PageWrite (NUTDEVICE * dev, uint32_t pgn, const void *data, int len){//FIXME: fix for at25
     int rc = -1;
     uint8_t *dp = (uint8_t *) data;
     int step;

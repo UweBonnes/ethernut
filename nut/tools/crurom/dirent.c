@@ -1,13 +1,4 @@
 const char dirent_rcsid[] = "@(#) $Id$";
-/*
- * $Log$
- * Revision 1.1  2003/07/20 19:18:16  haraldkipp
- * First check in
- *
- * Revision 1.3  2002/08/08 16:23:33  harald
- * *** empty log message ***
- *
- */
 
 #include <fcntl.h>
 #include <sys/types.h>

@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -163,27 +163,23 @@ typedef struct _PHATFIND {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
-extern int PhatDirEntryCreate(NUTFILE * ndp, CONST char *name, int acc, PHATDIRENT * dirent);
+extern int PhatDirEntryCreate(NUTFILE * ndp, const char *name, int acc, PHATDIRENT * dirent);
 
 extern int PhatDirEntryUpdate(NUTFILE * ndp);
 
 extern int PhatDirReleaseChain(NUTDEVICE * dev, PHATDIRENT * dent);
 
-extern int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, uint32_t flags);
-extern int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_path);
+extern int PhatDirDelEntry(NUTDEVICE * dev, const char *path, uint32_t flags);
+extern int PhatDirRenameEntry(NUTDEVICE * dev, const char *old_path, const char *new_path);
 
-extern NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath);
-extern NUTFILE *PhatDirOpenParent(NUTDEVICE * dev, CONST char *path, CONST char **basename);
-extern int PhatDirEntryFind(NUTFILE * nfp, CONST char *spec, uint32_t flags, PHATFIND * srch);
+extern NUTFILE *PhatDirOpen(NUTDEVICE * dev, const char *dpath);
+extern NUTFILE *PhatDirOpenParent(NUTDEVICE * dev, const char *path, const char **basename);
+extern int PhatDirEntryFind(NUTFILE * nfp, const char *spec, uint32_t flags, PHATFIND * srch);
 extern int PhatDirRead(DIR * dir);
 
 extern int PhatDirCreate(NUTDEVICE * dev, char *path);
 extern int PhatDirRemove(NUTDEVICE * dev, char *path);
 
-extern int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *s);
+extern int PhatDirEntryStatus(NUTDEVICE * dev, const char *path, struct stat *s);
 
-__END_DECLS
-/* End of prototypes */
 #endif

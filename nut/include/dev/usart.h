@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -272,6 +272,8 @@ struct _RINGBUF {
 #define USART_MF_BLOCKREAD      0x0800  /*!< Block read mode enabled */
 #define USART_MF_BLOCKWRITE     0x1000  /*!< Block write mode enabled */
 
+#define USART_MF_FLOWMASK       (USART_MF_XONXOFF| USART_MF_HALFDUPLEX|USART_MF_LOCALECHO|USART_MF_BLOCKREAD|USART_MF_BLOCKWRITE)
+
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */
 #define USART_SF_DTROFF         0x0004  /*!< Set if DTR line is off. */
@@ -416,22 +418,15 @@ typedef struct _USARTDCB USARTDCB;
 /*@}*/
 
 
-__BEGIN_DECLS
-
-/*! \name Function Prototypes */
-/*@{*/
 extern int UsartInit(NUTDEVICE * dev);
 extern int UsartIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int UsartRead(NUTFILE * fp, void *buffer, int size);
-extern int UsartWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int UsartWrite(NUTFILE * fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int UsartClose(NUTFILE * fp);
 extern long UsartSize (NUTFILE *fp);
-/*@}*/
-
-__END_DECLS
 
 #endif

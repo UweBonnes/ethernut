@@ -18,8 +18,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -41,19 +41,17 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/cortex_interrupt.h>
+
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f10x.h>
-#include <arch/cm3/stm/stm32f10x_gpio.h>
 #include <arch/cm3/stm/stm32f10x_rcc.h>
 #elif defined(MCU_STM32L1)
 #include <arch/cm3/stm/stm32l1xx.h>
-#include <arch/cm3/stm/stm32l1xx_gpio.h>
 #include <arch/cm3/stm/stm32l1xx_rcc.h>
 #else
 #warning "STM32 family has no F1/L1 compatible DMA"
 #endif
-#include <arch/cm3/stm/stm32f1_dma.h>
+#include <arch/cm3/stm/stm32_dma.h>
 
 /*!
  * \brief Table to align channels and interrupts for simpler access
@@ -174,7 +172,11 @@ void DMA_Init(void)
 
     /* Enable DMA clocks */
     RCC->AHBENR |= RCC_AHBENR_DMA1EN;
-#ifdef STM_HAS_DMA2
+/* FIXME: The ST defined headers don't define RCC_AHBENR_DMA2EN for XL
+ * devices,  but RM0008 says that XL devices have DMA2
+ * Assume no DMA2 for XL devices for now
+ */
+#if defined(STM_HAS_DMA2) && defined(RCC_AHBENR_DMA2EN)
     RCC->AHBENR |= RCC_AHBENR_DMA2EN;
 #endif
 

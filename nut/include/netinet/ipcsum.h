@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -114,13 +114,9 @@
  * \brief IP checksum definitions.
  */
 
-__BEGIN_DECLS
-/* Prototypes */
-extern uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len);
-extern uint16_t NutIpChkSum(uint16_t ics, CONST void *buf, int len);
+extern uint16_t NutIpChkSumPartial(uint16_t ics, const void *buf, int len);
+extern uint16_t NutIpChkSum(uint16_t ics, const void *buf, int len);
 
 extern uint32_t NutIpPseudoChkSumPartial(uint32_t src_addr, uint32_t dest_addr, uint8_t protocol, int len);
 
-__END_DECLS
-/* */
 #endif

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -292,7 +292,7 @@ void syslog_flush(size_t len)
  * \param fmt Format string containing conversion specifications like printf.
  * \param ap  List of arguments.
  */
-void vsyslog(int pri, CONST char *fmt, va_list ap)
+void vsyslog(int pri, const char *fmt, va_list ap)
 {
     /* Build the header. */
     size_t cnt = syslog_header(pri);
@@ -333,7 +333,7 @@ void vsyslog(int pri, CONST char *fmt, va_list ap)
  *                          when debugging a program.
  * \param fmt Format string containing conversion specifications like printf.
  */
-void syslog(int pri, CONST char *fmt, ...)
+void syslog(int pri, const char *fmt, ...)
 {
     va_list ap;
 
@@ -416,7 +416,7 @@ uint32_t setlogserver(uint32_t ip, uint16_t port)
  *                - LOG_UUCP     The UUCP system.
  *                - LOG_LOCAL0..LOG_LOCAL7 Reserved for local use.
  */
-void openlog(CONST char *ident, int logstat, int logfac)
+void openlog(const char *ident, int logstat, int logfac)
 {
     if (ident == 0) {
         ident = syslog_tag;

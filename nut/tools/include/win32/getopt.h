@@ -5,16 +5,6 @@
  * $Id$
  */
 
-/*
- * $Log$
- * Revision 1.1  2005/05/22 14:41:01  haraldkipp
- * Moved from tools/nutconf and tools/crurom.
- *
- * Revision 1.1  2005/04/22 15:12:04  haraldkipp
- * Added to support non-GUI Configurator.
- *
- */
-
 #ifdef __cplusplus
     extern "C" {
 #endif

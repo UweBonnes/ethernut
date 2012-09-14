@@ -71,8 +71,6 @@
 #define NUTGPIO_EXTINT4     5
 
 
-
-
 /*!
  * \brief GPIO input.
  *
@@ -170,16 +168,21 @@ typedef struct {
     void *iov_arg;
 } GPIO_VECTOR;
 
-typedef struct {
-    IRQ_HANDLER *ios_sig;
+typedef struct _gpio_signal GPIO_SIGNAL;
+
+struct _gpio_signal {
+    int   ios_port;
     void (*ios_handler) (void *);
-    int (*ios_ctl) (int cmd, void *param, int bit);
+    int (*ios_ctl) (GPIO_SIGNAL * sig, int cmd, void *param, int bit);
     GPIO_VECTOR *ios_vector;
-} GPIO_SIGNAL;
+    uint32_t enabled;
+    uint32_t mode_rising_enabled;
+    uint32_t mode_falling_enabled;
+};
 
 
-__BEGIN_DECLS
-/* Prototypes */
+extern GPIO_SIGNAL sig_GPIO0;
+extern GPIO_SIGNAL sig_GPIO2;
 
 extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
@@ -202,8 +205,6 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);
+extern int GpioIrqStatus(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqDisable(GPIO_SIGNAL * sig, int bit);
-
-__END_DECLS
-/* End of prototypes */
-
+extern int GpioIrqSetMode(GPIO_SIGNAL * sig, int bit, int mode);

@@ -29,6 +29,7 @@
 
 #include <wx/wx.h>
 #include <wx/config.h>
+#include <wx/filepicker.h>
 
 /*!
  * \brief Settings dialog for application tree options.
@@ -47,9 +48,8 @@ private:
 
     /*! \brief Text control used to specify the sample directory path.
     */
-    wxTextCtrl *m_entAppDir;
+    wxDirPickerCtrl *m_pickAppDir;
 
-    void OnBrowseAppDir(wxCommandEvent& event);
     void OnProgrammerEnter(wxCommandEvent& event);
     void OnAppDirChange(wxCommandEvent& event);
     void PopulateProgrammer();

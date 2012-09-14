@@ -37,7 +37,6 @@
 
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <arch/cm3/cortex_interrupt.h>
 
 #ifndef NUT_IRQPRI_PIOA
 #define NUT_IRQPRI_PIOA  4
@@ -94,7 +93,7 @@ static int PortIoIrqCtl(int cmd, void *param)
     /* Disable interrupt. */
     if (enabled) {
         //outr(AIC_IDCR, _BV(PIOA_ID));
-    IntDisable(INT_PIOA);
+    NVIC_DisableIRQ(INT_PIOA);
     }
 
     switch(cmd) {
@@ -105,8 +104,8 @@ static int PortIoIrqCtl(int cmd, void *param)
         //outr(AIC_SMR(PIOA_ID), AIC_SRCTYPE_INT_EDGE_TRIGGERED | NUT_IRQPRI_PIOA);
         /* Clear interrupt */
         //outr(AIC_ICCR, _BV(PIOA_ID));
-    IntRegister(INT_PIOA,(void*)PortIoIrqEntry);
-    IntPrioritySet(INT_PIOA,NUT_IRQPRI_PIOA);
+    Cortex_RegisterInt(INT_PIOA,(void*)PortIoIrqEntry);
+    NVIC_SetPriority(INT_PIOA,NUT_IRQPRI_PIOA);
     /* set as edge triggered */ //и как? оно делается попиново
     //outr(AT91C_PIOA_ESR,_BV(AT91C_ID_PIOA);
     /* clear interrupt */
@@ -147,10 +146,10 @@ static int PortIoIrqCtl(int cmd, void *param)
         break;*/
     case NUT_IRQCTL_GETPRIO:
         //*ival = inr(AIC_SMR(PIOA_ID)) & AIC_PRIOR;
-    *ival = IntPriorityGet(INT_PIOA);
+    *ival = NVIC_GetPriority(INT_PIOA);
         break;
     case NUT_IRQCTL_SETPRIO:
-    IntPrioritySet(INT_PIOA, *ival);
+    NVIC_SetPriority(INT_PIOA, *ival);
         //outr(AIC_SMR(PIOA_ID), (inr(AIC_SMR(PIOA_ID)) & ~AIC_PRIOR) | *ival);
         break;
 #ifdef NUT_PERFMON
@@ -166,7 +165,7 @@ static int PortIoIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        IntEnable(INT_PIOA);
+        NVIC_EnableIRQ(INT_PIOA);
     //outr(AIC_IECR, _BV(PIOA_ID));
     }
     return rc;

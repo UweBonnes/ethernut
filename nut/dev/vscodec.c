@@ -339,7 +339,7 @@ static int VsWaitReady(void)
  * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST uint8_t * data, size_t len)
+static int VsSdiWrite(const uint8_t * data, size_t len)
 {
     while (len--) {
         if (!VS10XX_DREQ_TST() && VsWaitReady()) {
@@ -599,7 +599,7 @@ static int VsPlayerFlush(void)
  *
  * \return Number of characters sent.
  */
-static int VsWrite(NUTFILE * fp, CONST void *data, int len)
+static int VsWrite(NUTFILE * fp, const void *data, int len)
 {
     char *buf;
     size_t rbytes;
@@ -655,7 +655,7 @@ static int VsWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *VsOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *VsOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nfp;
 

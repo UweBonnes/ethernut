@@ -50,7 +50,7 @@
 #include <dev/gpio.h>
 
 #include <sys/event.h>
-#include <arch/cm3/cortex_interrupt.h>
+#include <arch/cm3.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32xxxx_gpio.h>
 #include <dev/usb_stm32/stm32_otg.h>
@@ -106,7 +106,7 @@ static int Stm32OtgUsartInit(void);
 
 static int Stm32OtgUsartDeinit(void)
 {
-    IntDisable(OTG_FS_IRQn);
+    NVIC_DisableIRQ(OTG_FS_IRQn);
     return 0;
 };
 
@@ -201,7 +201,7 @@ THREAD(OTGTimerEvent, arg)
     }
 }
 
-static int Stm32OtgWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int Stm32OtgWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int c = len;
     uint8_t *cp = (uint8_t *) buffer;
@@ -357,8 +357,8 @@ static int Stm32OtgUsartInit( void )
     //tx_buffer=malloc( TX_BUF_SIZE );
     tx_buf_cnt=0;
     //Register interrupts
-    IntRegister(OTG_FS_IRQn, Stm32Otg_IRQHandler);
-    IntEnable(OTG_FS_IRQn);
+    Cortex_RegisterInt(OTG_FS_IRQn, Stm32Otg_IRQHandler);
+    NVIC_EnableIRQ(OTG_FS_IRQn);
     USB_Init();
 
     NutThreadCreate("otgt", OTGTimerEvent, &OTGEvent, 256);

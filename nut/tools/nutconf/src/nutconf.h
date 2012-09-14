@@ -48,7 +48,7 @@ class NutConfApp:public wxApp {
     wxString GetRepositoryPath();
 
     void SetStatusText(const wxString & text);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    bool Launch(const wxString & strFileName);
 
     CSettings* GetSettings();
     bool Build(const wxString &target = wxT("all"));
