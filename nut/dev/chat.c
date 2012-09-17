@@ -31,34 +31,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.11  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.10  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.9  2008/08/11 06:59:41  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.8  2007/08/17 11:34:00  haraldkipp
- * Default timeout needs to be multiplied by 1000.
- *
- * Revision 1.7  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.5  2004/03/08 11:12:59  haraldkipp
- * Debug output added.
- *
- * Revision 1.4  2004/01/15 08:02:35  drsung
- * Copyright added
- *
+ * $Id$
  */
 
 #include <cfg/os.h>
