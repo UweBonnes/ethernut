@@ -110,6 +110,7 @@
  *
  */
 
+#include <cfg/ip.h>
 #include <net/if_arp.h>
 
 /*!

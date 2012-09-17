@@ -224,7 +224,8 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
 /*!
  * \brief Forward IP datagram.
  *
- * Forwards IP datagram to the proper destination.
+ * Forwards IP datagram to the proper destination if NET_IP_FORWARD has
+ * been configured.
  *
  * \param nb    Network buffer structure containing the datagram.
  *              This buffer will be released if the function returns
@@ -234,6 +235,8 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
  */
 int NutIpForward(NETBUF *nb)
 {
+#ifdef NUT_IP_FORWARDING
+
     NUTDEVICE *dev;
     IFNET *nif;
     NETBUF *r_nb;
@@ -292,7 +295,7 @@ int NutIpForward(NETBUF *nb)
         }
     }
     NutNetBufFree(r_nb);
-
+#endif
     return 0;
 }
 
