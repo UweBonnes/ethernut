@@ -74,7 +74,9 @@
 
 uint8_t *chat_report;
 
-#ifdef NUTDEBUG
+#ifdef NUTDEBUG_CHAT
+
+#include <stdio.h>
 
 static FILE *__chat_trs;        /*!< \brief Chat trace output stream. */
 static uint8_t __chat_trf;       /*!< \brief Chat trace flags. */
@@ -91,12 +93,43 @@ void NutTraceChat(FILE * stream, uint8_t flags)
     if (stream)
         __chat_trs = stream;
     if (__chat_trs) {
-        static prog_char dbgfmt[] = "Chat trace flags=0x%02X\n";
         __chat_trf = flags;
-        fprintf_P(__chat_trs, dbgfmt, flags);
+        fprintf(__chat_trs, "Chat trace flags=0x%02x\n", flags);
     } else
         __chat_trf = 0;
 }
+
+static INLINE void NutTracePrintf(const char *fmt, ...)
+{
+    if (__chat_trf) {
+        va_list ap;
+
+        va_start(ap, fmt);
+        vfprintf(__chat_trs, fmt, ap);
+        va_end(ap);
+    }
+}
+
+static INLINE void NutTracePutChar(int ch)
+{
+    if (__chat_trf) {
+        if (ch > 31 && ch < 127) {
+            fputc(ch, __chat_trs);
+        } else {
+            fprintf(__chat_trs, "\\x%02x", ch);
+        }
+    }
+}
+
+#else
+
+#ifdef __GNUC__
+#define NutTracePrintf(fmt,...)
+#else
+static INLINE void NutTracePrintf(const char *fmt, ...) {}
+#endif
+
+#define NutTracePutChar(ch)
 
 #endif
 
@@ -135,36 +168,18 @@ int NutChatExpectString(NUTCHAT * ci, char *str)
     uint8_t i;
     char *cp = str;
 
-#ifdef NUTDEBUG
-    if (__chat_trf) {
-        static prog_char dbgfmt[] = "Expect '%s', got '";
-        fprintf_P(__chat_trs, dbgfmt, str);
-    }
-#endif
-
+    NutTracePrintf("Expect '%s', got '", str);
     while (*cp) {
 
         /*
          * Read the next character. Return on timeout.
          */
         if (_read(ci->chat_fd, &ch, 1) != 1) {
-#ifdef NUTDEBUG
-            if (__chat_trf) {
-                static prog_char dbgmsg[] = "' TIMEOUT\n";
-                fputs_P(dbgmsg, __chat_trs);
-            }
-#endif
+            NutTracePrintf("' TIMEOUT\n");
             return 3;
         }
-#ifdef NUTDEBUG
-        if (__chat_trf) {
-            if (ch > 31 && ch < 127) {
-                fputc(ch, __chat_trs);
-            } else {
-                fprintf(__chat_trs, "\\x%02X", ch);
-            }
-        }
-#endif
+        NutTracePutChar(ch);
+
         /*
          * If the character doesn't match the next expected one,
          * then restart from the beginning of the expected string.
@@ -188,12 +203,7 @@ int NutChatExpectString(NUTCHAT * ci, char *str)
             m = ci->chat_abomat[i];
             if (ch == ci->chat_abort[i][m]) {
                 if (ci->chat_abort[i][++m] == 0) {
-#ifdef NUTDEBUG
-                    if (__chat_trf) {
-                        static prog_char dbgmsg[] = "' ABORT\n";
-                        fputs_P(dbgmsg, __chat_trs);
-                    }
-#endif
+                    NutTracePrintf("' ABORT\n");
                     return i + 4;
                 }
             } else
@@ -230,26 +240,12 @@ int NutChatExpectString(NUTCHAT * ci, char *str)
                 break;
             }
             chat_report[m++] = ch;
-
-#ifdef NUTDEBUG
-            if (__chat_trf) {
-                if (ch > 31 && ch < 127) {
-                    fputc(ch, __chat_trs);
-                } else {
-                    fprintf(__chat_trs, "\\x%02X", ch);
-                }
-            }
-#endif
+            NutTracePutChar(ch);
         }
         ci->chat_report_state = 0;      /* Only find first occurence */
         chat_report[m] = 0;
     }
-#ifdef NUTDEBUG
-    if (__chat_trf) {
-        static prog_char dbgmsg[] = "'\n";
-        fputs_P(dbgmsg, __chat_trs);
-    }
-#endif
+    NutTracePrintf("'\n");
 
     return 0;
 }
@@ -264,12 +260,7 @@ static int NutChatSendString(int fd, char *str)
     uint8_t skip;
     char ch;
 
-#ifdef NUTDEBUG
-    if (__chat_trf) {
-        static prog_char dbgfmt[] = "Send '%s'\n";
-        fprintf_P(__chat_trs, dbgfmt, str);
-    }
-#endif
+    NutTracePrintf("Send '%s'\n", str);
 
     /* Flush input buffer. */
     _read(fd, 0, 0);
