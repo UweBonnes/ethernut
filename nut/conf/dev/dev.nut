@@ -773,6 +773,13 @@ nutdev =
                 description = "Specify the number of seconds. "..
                               "Default is 45",
                 file = "include/cfg/chat.h"
+            },
+            {
+                macro = "NUTDEBUG_CHAT",
+                brief = "Debug Output",
+                description = "Enables debug output.\n\n"..
+                              "Applications must call NutTraceChat() to activate it.",
+                file = "include/cfg/chat.h"
             }
         }
     },
