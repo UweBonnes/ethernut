@@ -169,6 +169,14 @@ nutos =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/os.h"
+            },
+            {
+                macro = "HEARTBEAT_IDLE_INVERT",
+                brief = "Idle Heartbeat Polarity",
+                description = "Define if the LED at the HEARTBEAT Port/Pin combination is light with a Low Level",
+                flavor = "booldata",
+                type = "enumerated",
+                file = "include/cfg/os.h"
             }
         }
     },
