@@ -80,6 +80,17 @@
 #endif
 #endif
 
+/* Running with avr-gccdbg and only internal stack may result in hard to
+ * find errors where the stack got overwritten
+ *
+ * Do some sanity check!
+ */
+#if defined(__GNUC__) && defined(NUT_THREAD_MAINSTACK) && defined(NUT_THREAD_IDLESTACK) && defined(NUT_THREAD_STACK_MULT) && defined(NUT_THREAD_STACK_ADD)
+#if ((((NUT_THREAD_MAINSTACK+NUT_THREAD_IDLESTACK) * NUT_THREAD_STACK_MULT) + 2* NUT_THREAD_STACK_ADD) > (NUTMEM_SIZE - 1000))
+#error "Can't run  avr-gccdbg only with internal stack"
+#endif
+#endif
+
 #ifdef NUTMEM_RESERVED
 /*!
  * \brief Number of bytes reserved in on-chip memory.
