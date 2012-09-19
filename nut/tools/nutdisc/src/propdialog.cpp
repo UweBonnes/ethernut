@@ -120,11 +120,11 @@ bool CPropDialog::GetValues()
             ::wxMessageBox(wxT("Host Name too long!"), wxT("Error"), wxOK | wxICON_ERROR, this);
             return false;
         }
-        strncpy((char *)m_dist.dist_appendix, val, 7);
+        strncpy((char *)m_dist.dist_appendix, val.c_str(), 7);
         m_dist.dist_appendix[7] = 0;
     } else {
         m_dist.dist_appendix[0] = (u_char)val.Len();
-        strncpy((char *)&m_dist.dist_appendix[1], val, val.Len());
+        strncpy((char *)&m_dist.dist_appendix[1], val.c_str(), val.Len());
     }
 
     val = m_grid->GetPropertyValueAsString("ics_cip_addr");

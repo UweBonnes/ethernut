@@ -98,7 +98,7 @@ bool CUdpThread::Broadcast(DISCOVERY_TELE *dist)
     memset(&client, 0, sizeof(client));
     client.sin_family = AF_INET;
     client.sin_port = htons((unsigned short) wxAtoi(g_options->m_scanport));
-    client.sin_addr.s_addr = inet_addr(g_options->m_scanip);
+    client.sin_addr.s_addr = inet_addr((g_options->m_scanip).c_str());
     if(dist) {
         rc = sendto(sock, (char *)dist, sizeof(DISCOVERY_TELE), 0, (struct sockaddr *)&client, sizeof(client));
     }

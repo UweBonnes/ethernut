@@ -208,9 +208,9 @@ void CNutConfDoc::ReleaseRepository()
  */
 void CNutConfDoc::DeleteItems()
 {
-    wxNode *node = m_items.GetFirst();
+    wxObjectList::compatibility_iterator node= m_items.GetFirst();
     while (node) {
-        wxNode *next = node->GetNext();
+        wxObjectList::compatibility_iterator next = node->GetNext();
         node = next;
     }
 }

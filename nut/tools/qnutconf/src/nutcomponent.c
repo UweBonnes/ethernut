@@ -818,7 +818,9 @@ static int l_is_provided(lua_State *ls)
 
     return 1;
 }
-
+#if !defined(luaL_reg)
+#define luaL_reg luaL_Reg
+#endif
 static const struct luaL_reg nutcomp_lib[] = {
     { "c_repo_path", l_repo_path },
     { "c_nut_source_path", l_nut_source_path },
@@ -1842,7 +1844,11 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
         /*
          * Create a LUA state.
          */
+#if defined(lua_open)
         ls = lua_open();
+#else
+        ls = luaL_newstate();
+#endif
         if (ls) {
             repo->nr_ls = (void *)ls;
             //lua_atpanic(ls, LuaPanic);
