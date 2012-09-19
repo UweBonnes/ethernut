@@ -245,6 +245,33 @@ nutarch =
                 }
             },
             {
+                macro = "MCU_AT90USB1287",
+                brief = "Atmel AT90USB1287",
+                description = "8-bit RISC microcontroller with 128K bytes flash, 8K bytes RAM, "..
+                              "4K bytes EEPROM, 64K bytes data memory space, 1 USARTs, 4 timers, "..
+                              "8-channel ADC, SPI, TWI and USB controller.\n"..
+                              "\n"..
+                              "Please configure appropriate stack settings in category "..
+                              "Memory Management. ",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_AVR" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR",
+                    "HW_MCU_AVR_ENHANCED",
+                    "HW_TIMER_AVR",
+                    "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART1",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=at90usb1287", "HWDEF+=-D__HARVARD_ARCH__" },
+                options =
+                {
+                }
+            },
+            {
                 macro = "MCU_ATMEGA2560",
                 brief = "Atmel ATmega 2560",
                 description = "8-bit RISC microcontroller with 256K bytes flash, 8K bytes RAM, "..
