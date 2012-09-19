@@ -99,9 +99,9 @@ static NUTFILE dbgfile;
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-#if defined(__AVR_ENHANCED__) && ((NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000))
-        /* On enhanced MCUs with 12.0 or 16.0 MHz we use double rate mode,
-         * so we can use 115200 bps with 12.0 MHz crystals
+#if defined(__AVR_ENHANCED__) && ((NUT_CPU_FREQ == 8000000) || (NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000))
+        /* On enhanced MCUs with 8.0, 12.0 or 16.0 MHz we use double rate mode,
+         * so we can use 115200 bps with 8/12.0 MHz crystals
          * and 57600 with 16.0 MHz crystals.
          */
         sbi(UCSR0A, U2X0);
