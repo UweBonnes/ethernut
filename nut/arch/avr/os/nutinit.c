@@ -146,7 +146,7 @@ extern void main(void *);
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(MCU_AT90USB1287)
 /*
  * Note: Register structure of ATCAN128 differs from ATMEGA128 in regards
  * to wait states.

@@ -87,7 +87,7 @@
 
 #include <dev/irqreg.h>
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561) || defined(MCU_AT90USB1287)
 #define INT_MASK_REG    TIMSK2
 #define INT_STATUS_REG  TIFR2
 #define INT_ENABLE_BIT  OCIE2A
@@ -196,7 +196,7 @@ static int AvrTimer2CompIrqCtl(int cmd, void *param)
 #endif
 NUTSIGNAL(TIMER2_COMP_vect, sig_OUTPUT_COMPARE2)
 #else
-#if defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561) || defined(MCU_AT90USB1287)
 NUTSIGNAL(TIMER2_COMPA_vect, sig_OUTPUT_COMPARE2)
 #else
 NUTSIGNAL(TIMER2_COMP_vect, sig_OUTPUT_COMPARE2)

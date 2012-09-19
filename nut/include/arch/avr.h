@@ -187,7 +187,7 @@ extern void *__heap_start;
 
 /* Some ATC90CAN128 SFR names are different to ATMEGA128. Define some
    compatibilty macros. */
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) ||  defined(__AVR_AT90USB1287__)
 #ifndef ADCW
 #define ADCW    ADC
 #endif
@@ -215,7 +215,7 @@ extern void *__heap_start;
 #ifndef TIFR
 #define TIFR   TIFR0
 #endif
-#endif /* __AVR_AT90CAN128__ || __AVR_ATmega2560__ || __AVR_ATmega2561__*/
+#endif /* __AVR_AT90CAN128__ || __AVR_ATmega2560__ || __AVR_ATmega2561__ || __AVR_AT90USB1287__)*/
 
 
 #endif /* __AVR_ENHANCED__ */

@@ -155,6 +155,9 @@
 #elif defined(MCU_ATMEGA2561)
 #define TCCR_FLAGS  (_BV(WGM21))
 #define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
+#elif defined(MCU_AT90USB1287)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
 #elif defined(MCU_ATMEGA103)    /* MCU_ATMEGA103 */
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(CTC0))
 #else                           /* MCU_ATMEGA128 */
@@ -176,7 +179,7 @@
 #endif
 #endif                          /* ----- NUT_CPU_FREQ */
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561) || defined(MCU_AT90USB1287)
 #define TCCRx       TCCR2A
 #define TCNTx       TCNT2
 #define OCRx        OCR2A

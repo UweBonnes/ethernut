@@ -397,7 +397,7 @@ NUTDEVICE devUsartAvr1 = {
 
 #ifdef __IMAGECRAFT__
 #define TXB8    TXB81
-#if defined(ATMega2560) || defined(ATMega2561)
+#if defined(ATMega2560) || defined(ATMega2561) || defined(MCU_AT90USB1287)
 #define UMSEL   UMSEL01
 #else
 #define UMSEL   UMSEL1
