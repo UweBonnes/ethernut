@@ -46,7 +46,19 @@
 #endif
 
 #ifndef DEV_UART
-#define DEV_UART DEV_UART1
+#define DEV_UART devUsartAvr1
+#endif
+
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME devUsartAvr1.dev_name
+#endif
+
+#ifndef DEV_DEBUG
+#define DEV_DEBUG devDebug1
+#endif
+
+#ifndef DEV_DEBUG_NAME
+#define DEV_DEBUG_NAME devDebug1.dev_name
 #endif
 
 #ifndef LED1_PORT
