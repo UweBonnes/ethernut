@@ -180,6 +180,8 @@ nutarch =
                     "HW_MCU_AVR",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_GPIO"
                 },
                 flavor = "boolean",
@@ -201,6 +203,8 @@ nutarch =
                     "HW_MCU_ATMEGA128",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_GPIO"
                 },
                 flavor = "boolean",
@@ -230,6 +234,8 @@ nutarch =
                     "HW_MCU_AVR_ENHANCED",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_CAN_AVR",
                     "HW_GPIO"
                 },
@@ -252,6 +258,8 @@ nutarch =
                     "HW_MCU_ATMEGA2560",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
 --                    "HW_AVR_HAVE_UART2",
 --                    "HW_AVR_HAVE_UART3",
                     "HW_GPIO"
@@ -281,6 +289,8 @@ nutarch =
                     "HW_MCU_ATMEGA2561",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_GPIO"
                 },
                 flavor = "boolean",
