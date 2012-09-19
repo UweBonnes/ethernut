@@ -91,7 +91,15 @@
  */
 /*@{*/
 
-#if defined(SIG_UART1_TRANS) || defined(iv_USART1_TX) || defined(SIG_USART1_TRANS)
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(USART1_TX_vect) && defined(UART1_TX_vect)
+#define USART1_TX_vect UART1_TX_vect
+#endif
+
+#if defined(USART1_TX_vect) || defined(iv_USART1_TX)
 
 static int AvrUart1TxIrqCtl(int cmd, void *param);
 
@@ -172,17 +180,13 @@ static int AvrUart1TxIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_UART1_TRANS(void)
+/*! \fn sig_UART1_TRANS(void)
  * Uart1 transmit complete interrupt entry.
  */
-#if defined(SIG_UART1_TRANS) || defined(iv_USART1_TX)
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART1_TRANS:iv_USART1_TX
+#pragma interrupt_handler USART1_TX_vect:iv_USART1_TX
 #endif
-NUTSIGNAL(SIG_UART1_TRANS, sig_UART1_TRANS)
-#elif defined(SIG_USART1_TRANS)
-NUTSIGNAL(SIG_USART1_TRANS, sig_UART1_TRANS)
-#endif
+NUTSIGNAL(USART1_TX_vect, sig_UART1_TRANS)
 
 #endif
 /*@}*/

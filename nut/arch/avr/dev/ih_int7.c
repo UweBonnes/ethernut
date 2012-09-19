@@ -193,13 +193,13 @@ static int AvrInterrupt7Ctl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_INTERRUPT7(void)
+/*! \fn INT7_vect(void)
  * \brief External interrupt 7 entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT7:iv_INT7
+#pragma interrupt_handler INT7_vect:iv_INT7
 #endif
-NUTSIGNAL(SIG_INTERRUPT7, sig_INTERRUPT7)
+NUTSIGNAL(INT7_vect, sig_INTERRUPT7)
 
 
 /*@}*/

@@ -108,7 +108,7 @@
  */
 /*@{*/
 
-#if defined(SIG_INPUT_CAPTURE3) || defined(iv_TIMER3_CAPT)
+#if defined(TIMER3_CAPT_vect) || defined(iv_TIMER3_CAPT)
 
 static int AvrTimer3InCaptIrqCtl(int cmd, void *param);
 
@@ -187,12 +187,12 @@ static int AvrTimer3InCaptIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_INPUT_CAPTURE3(void)
+/*! \fn TIMER3_CAPT_vect(void)
  * \brief Timer 3 input capture interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INPUT_CAPTURE3:iv_TIMER3_CAPT
+#pragma interrupt_handler TIMER3_CAPT_vect:iv_TIMER3_CAPT
 #endif
-NUTSIGNAL(SIG_INPUT_CAPTURE3, sig_INPUT_CAPTURE3)
+NUTSIGNAL(TIMER3_CAPT_vect, sig_INPUT_CAPTURE3)
 #endif
 /*@}*/

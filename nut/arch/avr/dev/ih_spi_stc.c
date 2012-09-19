@@ -159,13 +159,13 @@ static int AvrSpiIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_SPI(void)
+/*! \fn SPI_STC_vect(void)
  * \brief SPI interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_SPI:iv_SPI_STC
+#pragma interrupt_handler SPI_STC_vect:iv_SPI_STC
 #endif
-NUTSIGNAL(SIG_SPI, sig_SPI)
+NUTSIGNAL(SPI_STC_vect, sig_SPI)
 
 
 /*@}*/

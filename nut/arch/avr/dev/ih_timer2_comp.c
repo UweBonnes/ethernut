@@ -185,21 +185,21 @@ static int AvrTimer2CompIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OUTPUT_COMPARE2(void)
+/*! \fn TIMER2_COMP_vect(void)
  * \brief Timer 2 output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
 #if defined(ATMega2560) || defined(ATMega2561)
-#pragma interrupt_handler SIG_OUTPUT_COMPARE2:iv_TIMER2_COMPA
+#pragma interrupt_handler TIMER2_COMP_vect:iv_TIMER2_COMPA
 #else
-#pragma interrupt_handler SIG_OUTPUT_COMPARE2:iv_TIMER2_COMP
+#pragma interrupt_handler TIMER2_COMP_vect:iv_TIMER2_COMP
 #endif
-NUTSIGNAL(SIG_OUTPUT_COMPARE2, sig_OUTPUT_COMPARE2)
+NUTSIGNAL(TIMER2_COMP_vect, sig_OUTPUT_COMPARE2)
 #else
 #if defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
-NUTSIGNAL(SIG_OUTPUT_COMPARE2A, sig_OUTPUT_COMPARE2)
+NUTSIGNAL(TIMER2_COMPA_vect, sig_OUTPUT_COMPARE2)
 #else
-NUTSIGNAL(SIG_OUTPUT_COMPARE2, sig_OUTPUT_COMPARE2)
+NUTSIGNAL(TIMER2_COMP_vect, sig_OUTPUT_COMPARE2)
 #endif
 #endif
 

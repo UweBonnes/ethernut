@@ -170,27 +170,27 @@ static int AvrUart0TxDataIrqCtl(int cmd, void *param)
     return rc;
 }
 
-#if defined(SIG_UART0_DATA) || defined(iv_USART0_UDRE)
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(USART0_UDRE_vect) && defined(UART0_UDRE_vect)
+#define USART0_UDRE_vect UART0_UDRE_vect
+#elif !defined(USART0_UDRE_vect) && defined(UART_UDRE_vect)
+#define USART0_UDRE_vect UART_UDRE_vect
+#endif
 
-/*! \fn SIG_UART0_DATA(void)
+/*! \fn sig_UART0_DATA(void)
  * \brief Uart0 data register empty interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART0_DATA:iv_USART0_UDRE
-#endif
-NUTSIGNAL(SIG_UART0_DATA, sig_UART0_DATA)
-#elif defined(SIG_USART0_DATA)
-
-NUTSIGNAL(SIG_USART0_DATA, sig_USART0_DATA)
-
+#if defined(iv_USART0_UDRE)
+#pragma interrupt_handler USART0_UDRE_vect:iv_USART0_UDRE
 #else
+#pragma interrupt_handler USART0_UDRE_vect:iv_UART_UDRE
+#endif
+#endif
 
-/*! \fn SIG_UART_DATA(void)
- * \brief Uart0 data register empty interrupt entry.
- */
-#ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART_DATA:iv_UART_UDRE
-#endif
-NUTSIGNAL(SIG_UART_DATA, sig_UART0_DATA)
-#endif
+NUTSIGNAL(USART0_UDRE_vect, sig_UART0_DATA)
+
 /*@}*/

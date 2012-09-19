@@ -78,7 +78,7 @@
  */
 /*@{*/
 
-#if defined(SIG_CAN_OVERFLOW1) || defined(iv_CAN_TIM_OVR)
+#if defined(OVRIT_vect) || defined(iv_CAN_TIM_OVR)
 
 static int AvrCanOvrIrqCtl(int cmd, void *param);
 
@@ -137,12 +137,12 @@ static int AvrCanOvrIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_CAN_OVERFLOW1(void)
+/*! \fn OVRIT_vect(void)
  * \brief CAN overflow interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_CAN_OVERFLOW1:iv_CAN_TIM_OVR
+#pragma interrupt_handler OVRIT_vect:iv_CAN_TIM_OVR
 #endif
-NUTSIGNAL(SIG_CAN_OVERFLOW1, sig_CAN_OVERRUN)
+NUTSIGNAL(OVRIT_vect, sig_CAN_OVERRUN)
 #endif
 /*@}*/

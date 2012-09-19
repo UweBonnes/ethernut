@@ -55,8 +55,8 @@
 #include <sys/event.h>
 
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT4:iv_INT4
-#pragma interrupt_handler SIG_OVERFLOW2:iv_TIMER2_OVF
+#pragma interrupt_handler INT4_vect:iv_INT4
+#pragma interrupt_handler TIMER2_OVF_vect:iv_TIMER2_OVF
 #endif
 
 /*!
@@ -90,10 +90,10 @@ static uint16_t irticks;
  */
 static uint8_t irbitnum;
 
-/*! \fn SIG_OVERFLOW2(void)
+/*! \fn TIMER2_OVF_vect(void)
  * \brief Timer 2 overflow handler.
  */
-SIGNAL(SIG_OVERFLOW2)
+SIGNAL(TIMER2_OVF_vect)
 {
     /* Set the timer value. */
     outb(TCNT2, IRTIMER_START);
@@ -108,10 +108,10 @@ SIGNAL(SIG_OVERFLOW2)
     }
 }
 
-/*! \fn SIG_INTERRUPT4(void)
+/*! \fn INT4_vect(void)
  * \brief Infrared decoder signal edge handler.
  */
-SIGNAL(SIG_INTERRUPT4)
+SIGNAL(INT4_vect)
 {
     static uint16_t minset;      /* Min. length of bit value 1, calculated from start bit. */
     static uint16_t ccode;       /* Current code. */

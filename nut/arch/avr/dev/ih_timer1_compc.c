@@ -105,7 +105,7 @@
  */
 /*@{*/
 
-#if defined(SIG_OUTPUT_COMPARE1C) || defined(iv_TIMER1_COMPC)
+#if defined(TIMER1_COMPC_vect) || defined(iv_TIMER1_COMPC)
 
 static int AvrTimer1CompCIrqCtl(int cmd, void *param);
 
@@ -186,12 +186,12 @@ static int AvrTimer1CompCIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OUTPUT_COMPARE1C(void)
+/*! \fn TIMER1_COMPC_vect(void)
  * \brief Timer 1C output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OUTPUT_COMPARE1C:iv_TIMER1_COMPC
+#pragma interrupt_handler TIMER1_COMPC_vect:iv_TIMER1_COMPC
 #endif
-NUTSIGNAL(SIG_OUTPUT_COMPARE1C, sig_OUTPUT_COMPARE1C)
+NUTSIGNAL(TIMER1_COMPC_vect, sig_OUTPUT_COMPARE1C)
 #endif
 /*@}*/

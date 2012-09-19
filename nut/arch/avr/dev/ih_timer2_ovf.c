@@ -160,12 +160,12 @@ static int AvrTimer2OvfIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OVERFLOW2(void)
+/*! \fn TIMER2_OVF_vect(void)
  * \brief Timer 2 overflow interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OVERFLOW2:iv_TIMER2_OVF
+#pragma interrupt_handler TIMER2_OVF_vect:iv_TIMER2_OVF
 #endif
-NUTSIGNAL(SIG_OVERFLOW2, sig_OVERFLOW2)
+NUTSIGNAL(TIMER2_OVF_vect, sig_OVERFLOW2)
 
 /*@}*/

@@ -160,13 +160,13 @@ static int AvrTimer1CompBIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OUTPUT_COMPARE1B(void)
+/*! \fn TIMER1_COMPB_vect(void)
  * \brief Timer 1B output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OUTPUT_COMPARE1B:iv_TIMER1_COMPB
+#pragma interrupt_handler TIMER1_COMPB_vect:iv_TIMER1_COMPB
 #endif
-NUTSIGNAL(SIG_OUTPUT_COMPARE1B, sig_OUTPUT_COMPARE1B)
+NUTSIGNAL(TIMER1_COMPB_vect, sig_OUTPUT_COMPARE1B)
 
 
 /*@}*/

@@ -80,7 +80,7 @@
  */
 /*@{*/
 
-#if defined(SIG_2WIRE_SERIAL) || defined(iv_TWI)
+#if defined(TWI_vect) || defined(iv_TWI)
 
 static int AvrTwiIrqCtl(int cmd, void *param);
 
@@ -164,12 +164,12 @@ static int AvrTwiIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_2WIRE_SERIAL(void)
+/*! \fn TWI_vect(void)
  * \brief Two-wire serial interface interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_2WIRE_SERIAL:iv_TWI
+#pragma interrupt_handler TWI_vect:iv_TWI
 #endif
-NUTSIGNAL(SIG_2WIRE_SERIAL, sig_2WIRE_SERIAL)
+NUTSIGNAL(TWI_vect, sig_2WIRE_SERIAL)
 #endif
 /*@}*/

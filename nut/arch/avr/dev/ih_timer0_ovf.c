@@ -160,13 +160,13 @@ static int AvrTimer0OvfIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OVERFLOW0(void)
+/*! \fn TIMER0_OVF_vect(void)
  * \brief Timer 0 overflow interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OVERFLOW0:iv_TIMER0_OVF
+#pragma interrupt_handler TIMER0_OVF_vect:iv_TIMER0_OVF
 #endif
-NUTSIGNAL(SIG_OVERFLOW0, sig_OVERFLOW0)
+NUTSIGNAL(TIMER0_OVF_vect, sig_OVERFLOW0)
 
 
 /*@}*/

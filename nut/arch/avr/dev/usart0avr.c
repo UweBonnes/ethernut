@@ -428,15 +428,30 @@ NUTDEVICE devUsartAvr0 = {
 #define sig_UART_DATA   sig_UART0_DATA
 #define sig_UART_TRANS  sig_UART0_TRANS
 
-#ifndef SIG_UART_RECV
-#define SIG_UART_RECV   SIG_UART0_RECV
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(USART0_RX_vect) && defined( UART0_RX_vect)
+#define USART0_RX_vect  UART0_RX_vect
+#elif !defined(USART0_RX_vect) && defined(UART_RX_vect)
+#define USART0_RX_vect UART_RX_vect
 #endif
-#ifndef SIG_UART_DATA
-#define SIG_UART_DATA   SIG_UART0_DATA
+#define SIG_AVRUART_RECV   USART0_RX_vect
+
+#if !defined(USART0_UDRE_vect) && defined(UART0_UDRE_vect)
+#define USART0_UDRE_vect UART0_UDRE_vect
+#elif !defined(USART0_UDRE_vect) && defined(UART_UDRE_vect)
+#define USART0_UDRE_vect UART_UDRE_vect
 #endif
-#ifndef SIG_UART_TRANS
-#define SIG_UART_TRANS  SIG_UART0_TRANS
+#define SIG_AVRUART_DATA   USART0_UDRE_vect
+
+#if !defined(USART0_TX_vect) && defined( UART0_TX_vect)
+#define USART0_TX_vect  UART0_TX_vect
+#elif !defined(USART0_TX_vect) && defined(UART_TX_vect)
+#define USART0_TX_vect UART_TX_vect
 #endif
+#define SIG_AVRUART_TRANS  USART0_TX_vect
 
 #define dcb_usart   dcb_usart0
 

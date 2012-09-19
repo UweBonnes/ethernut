@@ -418,9 +418,22 @@ NUTDEVICE devUsartAvr1 = {
 #define sig_UART_DATA   sig_UART1_DATA
 #define sig_UART_TRANS  sig_UART1_TRANS
 
-#define SIG_AVRUART_RECV   SIG_UART1_RECV
-#define SIG_AVRUART_DATA   SIG_UART1_DATA
-#define SIG_AVRUART_TRANS  SIG_UART1_TRANS
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(USART1_RX_vect) && defined(UART1_RX_vect)
+#define USART1_RX_vect UART1_RX_vect
+#endif
+#define SIG_AVRUART_RECV   USART1_RX_vect
+#if !defined(USART1_UDRE_vect) && defined(UART1_UDRE_vect)
+#define USART1_UDRE_vect UART1_UDRE_vect
+#endif
+#define SIG_AVRUART_DATA   USART1_UDRE_vect
+#if !defined(USART1_TX_vect) && defined(UART1_TX_vect)
+#define USART1_TX_vect UART1_TX_vect
+#endif
+#define SIG_AVRUART_TRANS  USART1_TX_vect
 
 #define dcb_usart   dcb_usart1
 

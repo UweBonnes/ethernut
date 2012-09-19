@@ -84,7 +84,15 @@
  */
 /*@{*/
 
-#if defined(SIG_SPM_READY) || defined(iv_SPM_READY)
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(SPM_READY_vect) && defined(SPM_RDY_vect)
+#define SPM_READY_vect SPM_RDY_vect
+#endif
+
+#if defined(SPM_READY_vect) || defined(iv_SPM_READY)
 
 static int AvrSpmRdyIrqCtl(int cmd, void *param);
 
@@ -148,12 +156,12 @@ static int AvrSpmRdyIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_SPM_READY(void)
+/*! \fn SPM_RDY_vect(void)
  * \brief Store program memory interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_SPM_READY:iv_SPM_READY
+#pragma interrupt_handler SPM_READY_vect:iv_SPM_READY
 #endif
-NUTSIGNAL(SIG_SPM_READY, sig_SPM_READY)
+NUTSIGNAL(SPM_READY_vect, sig_SPM_READY)
 #endif
 /*@}*/

@@ -146,15 +146,23 @@ static int AvrEepromRdyIrqCtl(int cmd, void *param)
     return rc;
 }
 
-#if defined(SIG_EEPROM_READY) || defined(iv_EE_READY)
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(EE_READY_vect) && defined(EE_RDY_vect)
+#define EE_READY_vect EE_RDY_vect
+#endif
 
-/*! \fn SIG_EEPROM_READY(void)
+#if defined(EE_READY_vect) || defined(iv_EE_READY)
+
+/*! \fn EE_READY_vect(void)
  * \brief EEPROM ready interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_EEPROM_READY:iv_EE_READY
+#pragma interrupt_handler EE_READY_vect:iv_EE_READY
 #endif
-NUTSIGNAL(SIG_EEPROM_READY, sig_EEPROM_READY)
+NUTSIGNAL(EE_READY_vect, sig_EEPROM_READY)
 #else
 
 /*! \fn SIG_EEPROM(void)
