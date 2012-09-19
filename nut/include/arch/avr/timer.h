@@ -46,14 +46,16 @@
  * First check in
  *
  */
+#if !defined(TIMSK2) && defined(TIMSK)
+#define TIMSK2 TIMSK
+#endif
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if !defined(OCIE2A) && defined(OCIE0)
+#define OCIE2A OCIE0
+#endif
+
 #define NutEnableTimerIrq()     sbi(TIMSK2, OCIE2A)
 #define NutDisableTimerIrq()    cbi(TIMSK2, OCIE2A)
-#else
-#define NutEnableTimerIrq()     sbi(TIMSK, OCIE0)
-#define NutDisableTimerIrq()    cbi(TIMSK, OCIE0)
-#endif
 
 #endif
 
