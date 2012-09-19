@@ -92,7 +92,10 @@ int _write(int fd, const void *data, unsigned int count)
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
         return (*vdv->vdv_write) (vdv, data, count);
     }
-    return (*dev->dev_write) (fp, data, count);
+    if (dev->dev_write)
+        return (*dev->dev_write) (fp, data, count);
+    else
+        return -1;
 }
 
 /*@}*/

@@ -83,7 +83,10 @@ int _read(int fd, void *buffer, unsigned int count)
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
         return (*vdv->vdv_read) (fp, buffer, count);
     }
-    return (*dev->dev_read) (fp, buffer, count);
+    if(dev->dev_read)
+        return (*dev->dev_read) (fp, buffer, count);
+    else
+        return -1;
 }
 
 /*@}*/
