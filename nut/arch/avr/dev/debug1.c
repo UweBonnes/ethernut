@@ -68,6 +68,7 @@
 #include <dev/debug.h>
 
 #include <cfg/os.h>
+#include <cfg/uart.h>
 #include <sys/timer.h>
 #include <sys/device.h>
 #include <sys/file.h>
@@ -84,9 +85,9 @@ static NUTFILE dbgfile;
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-#if defined(__AVR_ENHANCED__) && ((NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000))
+#if defined(__AVR_ENHANCED__) && ((NUT_CPU_FREQ == 8000000) || (NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000))
         /* On enhanced MCUs we use double rate mode, so we can use 115200 bps
-        * with 12.0 and 16.0 crystals.
+        * with 8.0, 12.0 and 16.0 crystals.
         */
         sbi(UCSR1A, U2X1);
         outb(UBRR1L, (uint8_t) ((((2UL * NutGetCpuClock()) / (*((uint32_t *)conf) * 8UL)) + 1UL) / 2UL) - 1UL);
@@ -146,6 +147,75 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     return &dbgfile;
 }
 
+#ifdef NUT_DEV_DEBUG_READ
+/*!
+ * \brief Read characters from debug device.
+ *
+ * This function is called by the low level input routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
+ * entry.
+ *
+ * The function will block the calling thread until at least one
+ * character has been received.
+ *
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
+ *               previous call to At91DevDebugOpen().
+ * \param buffer Pointer to the buffer that receives the data. If zero,
+ *               then all characters in the input buffer will be
+ *               removed.
+ * \param size   Maximum number of bytes to read.
+ *
+ * \return The number of bytes read, which may be less than the number
+ *         of bytes specified. A return value of -1 indicates an error,
+ *         while zero is returned in case of a timeout.
+ */
+int DebugRead(NUTFILE * fp, void *buffer, int size)
+{
+    int rc;
+    unsigned int ch;
+    char *bp = (char *) buffer;
+
+    /* Wait for the first character, forever. */
+    for (rc = 0; rc < size; rc++) {
+        while ((inb(UCSR1A) & _BV(RXC)) == 0) {
+            NutSleep(1);
+            if ((rc || bp == NULL) && (inb(UCSR1A) & _BV(RXC1)) == 0) {
+                return rc;
+            }
+        }
+        ch = inb(UDR1);
+        if (bp) {
+            if (ch == '\r') {
+                *bp++ = '\n';
+            } else {
+                *bp++ = (char) ch;
+            }
+        }
+    }
+    return rc;
+}
+
+/*!
+ * \brief Retrieves the number of characters in input buffer.
+ *
+ * This function is called by the low level size routine of the C runtime
+ * library, using the _NUTDEVICE::dev_size entry.
+ *
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
+ *               previous call to UsartOpen().
+ *
+ * \return The number of bytes currently stored in input buffer.
+ */
+long DebugSize(NUTFILE *fp)
+{
+    while (inb(UCSR1A) & _BV(RXC1)) {
+        return 1;
+    }
+    return 0;
+}
+
+#endif
+
 /*!
  * \brief Close a device or file.
  */
@@ -167,12 +237,20 @@ NUTDEVICE devDebug1 = {
     0,                          /*!< Driver control block. */
     DebugInit,                  /*!< Driver initialization routine. */
     DebugIOCtl,                 /*!< Driver specific control function. */
-    0,
+#ifdef NUT_DEV_DEBUG_READ
+    DebugRead,
+#else
+    NULL,
+#endif
     DebugWrite,
     DebugWrite_P,
     DebugOpen,
     DebugClose,
-    0
+#ifdef NUT_DEV_DEBUG_READ
+    DebugSize
+#else
+    NULL
+#endif
 };
 
 #endif

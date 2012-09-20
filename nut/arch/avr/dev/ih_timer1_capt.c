@@ -83,7 +83,7 @@
 
 #include <dev/irqreg.h>
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)|| defined(MCU_AT90USB1287)
 #define INT_MASK_REG    TIMSK1
 #define INT_STATUS_REG  TIFR1
 #define INT_ENABLE_BIT  ICIE1
@@ -181,13 +181,13 @@ static int AvrTimer1CaptIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_INPUT_CAPTURE1(void)
+/*! \fn TIMER1_CAPT_vect(void)
  * \brief Timer 1 input capture interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INPUT_CAPTURE1:iv_TIMER1_CAPT
+#pragma interrupt_handler TIMER1_CAPT_vect:iv_TIMER1_CAPT
 #endif
-NUTSIGNAL(SIG_INPUT_CAPTURE1, sig_INPUT_CAPTURE1)
+NUTSIGNAL(TIMER1_CAPT_vect, sig_INPUT_CAPTURE1)
 
 
 /*@}*/

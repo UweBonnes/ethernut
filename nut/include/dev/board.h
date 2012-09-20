@@ -142,6 +142,8 @@
 #include <arch/avr/board/ethernut1.h>
 #elif defined(ETHERNUT2)
 #include <arch/avr/board/ethernut2.h>
+#elif defined(AT90USBKEY)
+#include <arch/avr/board/at90usbkey.h>
 #elif defined(ETHERNUT3)
 #include <arch/arm/board/ethernut3.h>
 #elif defined(ETHERNUT5)

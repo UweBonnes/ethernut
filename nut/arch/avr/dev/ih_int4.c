@@ -193,13 +193,13 @@ static int AvrInterrupt4Ctl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_INTERRUPT4(void)
+/*! \fn INT4_vect(void)
  * \brief External interrupt 4 entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT4:iv_INT4
+#pragma interrupt_handler INT4_vect:iv_INT4
 #endif
-NUTSIGNAL(SIG_INTERRUPT4, sig_INTERRUPT4)
+NUTSIGNAL(INT4_vect, sig_INTERRUPT4)
 
 
 /*@}*/

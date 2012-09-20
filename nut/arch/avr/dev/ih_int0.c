@@ -209,12 +209,12 @@ static int AvrInterrupt0Ctl(int cmd, void *param)
 }
 
 /*!
- * \fn SIG_INTERRUPT0(void)
+ * \fn INT0_vect(void)
  * \brief External interrupt 0 entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT0:iv_INT0
+#pragma interrupt_handler INT0_vect:iv_INT0
 #endif
-NUTSIGNAL(SIG_INTERRUPT0, sig_INTERRUPT0)
+NUTSIGNAL(INT0_vect, sig_INTERRUPT0)
 
 /*@}*/

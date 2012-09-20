@@ -163,12 +163,12 @@ static int AvrAdcIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_ADC(void)
+/*! \fn ADC_vect(void)
  * \brief ADC conversion complete interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_ADC:iv_ADC
+#pragma interrupt_handler ADC_vect:iv_ADC
 #endif
-NUTSIGNAL(SIG_ADC, sig_ADC)
+NUTSIGNAL(ADC_vect, sig_ADC)
 
 /*@}*/

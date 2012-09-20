@@ -162,13 +162,20 @@ static int AvrAnalogCompIrqCtl(int cmd, void *param)
     }
     return rc;
 }
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(ANALOG_COMP_vect) && defined(ANA_COMP_vect)
+#define ANALOG_COMP_vect ANA_COMP_vect
+#endif
 
-/*! \fn SIG_COMPARATOR(void)
+/*! \fn ANA_COMP_vect(void)
  * \brief Analog comparator interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_COMPARATOR:iv_ANALOG_COMP
+#pragma interrupt_handler ANALOG_COMP_vect:iv_ANALOG_COMP
 #endif
-NUTSIGNAL(SIG_COMPARATOR, sig_COMPARATOR)
+NUTSIGNAL(ANALOG_COMP_vect, sig_COMPARATOR)
 
 /*@}*/

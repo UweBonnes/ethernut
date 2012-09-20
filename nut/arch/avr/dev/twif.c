@@ -520,6 +520,9 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
 
     while(icb->tw_if_busy) {
         NutSleep(63);
+        if (tmo < 63)
+            return -1;
+        tmo -= 63;
     }
     NutEnterCritical();
     /*

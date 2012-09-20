@@ -82,6 +82,8 @@
 #define EMPRINTF(args,...)
 #endif
 
+#define NUT_THREAD_NICLINKSTACK 512
+
 #ifndef NUT_THREAD_NICRXSTACK
 /* arm-elf-gcc used 168 bytes with optimized, 412 bytes with debug code. */
 #define NUT_THREAD_NICRXSTACK   512
@@ -242,17 +244,64 @@ static void Lpc17xxEmacSetMACAddr(const uint8_t * mac)
     LPC_EMAC->SA2 = ((uint32_t)mac[1] << 8) | (uint32_t)mac[0];
 }
 
+/*! \fn Lpc17xxEmacWaitLinkThread(void *arg)
+ * \brief Wait for link establishment and configure the NIC
+ *        accordingly.
+ */
+
+THREAD(Lpc17xxEmacWaitLinkThread, arg)
+{
+    uint32_t phyval;
+    int      link_wait;
+
+    for (;;) {
+        /* Restart autonegotiation */
+        phyval = 1;
+        NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
+
+        /* Wait for auto negotiation completed and link established. */
+        for (link_wait = EMAC_LINK_LOOPS;; link_wait--) {
+            phyval = 0;
+            NutPhyCtl(PHY_GET_STATUS, &phyval);
+
+            if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
+                /* Check link state and configure EMAC accordingly */
+                if (phyval & PHY_STATUS_100M) {
+                    Lpc17xxEmacSetSpeed(1);
+                    EMPRINTF("EMAC: Got link: 100 MBit ");
+                } else {
+                    Lpc17xxEmacSetSpeed(0);
+                    EMPRINTF("Link: Got link: 10 MBit ");
+                }
+
+                if (phyval & PHY_STATUS_FULLDUPLEX) {
+                    Lpc17xxEmacSetDuplex(1);
+                    EMPRINTF("Full Duplex\n");
+                } else {
+                    Lpc17xxEmacSetDuplex(0);
+                    EMPRINTF("Half Duplex\n");
+                }
+                NutThreadExit();
+                break;
+            }
+            if (link_wait == 0) {
+                EMPRINTF("NO LINK!\n");
+            }
+            NutSleep(10);
+        }
+    }
+}
+
 /*!
  * \brief Reset the Ethernet controller.
  *
- * \return 0 on success, -1 otherwise.
+ * \return 0 on success, -1 on error
  */
 
-static int Lpc17xxEmacReset(uint32_t tmo)
+static int Lpc17xxEmacReset(void)
 {
     int      rc = 0;
     uint32_t phyval;
-    int      link_wait;
     int      idx;
     int32_t  tmp;
 
@@ -265,7 +314,7 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     LPC_EMAC->Command = EMAC_CR_REG_RES | EMAC_CR_TX_RES | EMAC_CR_RX_RES | EMAC_CR_PASS_RUNT_FRM;
 
     /* A short delay after reset. */
-    NutDelay(10);
+    NutSleep(10);
 
     /* Initialize MAC control registers. */
     LPC_EMAC->MAC1 = EMAC_MAC1_PASS_ALL;
@@ -302,7 +351,7 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     LPC_EMAC->Command = EMAC_CR_RMII | EMAC_CR_PASS_RUNT_FRM;
 #endif
 
-    NutDelay(10);
+    NutSleep(10);
 
     LPC_EMAC->SUPP = 0;
 
@@ -325,37 +374,10 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     phyval = 1;
     NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
 
-    /* Wait for auto negotiation completed and link established. */
-    for (link_wait = tmo;; link_wait--) {
-        phyval = 0;
-        NutPhyCtl(PHY_GET_STATUS, &phyval);
-
-        if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
-            /* Check link state and configure EMAC accordingly */
-            if (phyval & PHY_STATUS_100M) {
-                Lpc17xxEmacSetSpeed(1);
-                EMPRINTF("EMAC: Got link: 100 MBit ");
-            } else {
-                Lpc17xxEmacSetSpeed(0);
-                EMPRINTF("Link: Got link: 10 MBit ");
-            }
-
-            if (phyval & PHY_STATUS_FULLDUPLEX) {
-                Lpc17xxEmacSetDuplex(1);
-                EMPRINTF("Full Duplex\n");
-            } else {
-                Lpc17xxEmacSetDuplex(0);
-                EMPRINTF("Half Duplex\n");
-            }
-
-            break;
-        }
-        if (link_wait == 0) {
-            EMPRINTF("NO LINK!\n");
-            /* Return error on link timeout. */
-            return -1;
-        }
-        NutSleep(10);
+    if (NutThreadCreate("emaclink", Lpc17xxEmacWaitLinkThread, NULL,
+        (NUT_THREAD_NICLINKSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
+        EMPRINTF("Lpc17xxEmacReset() Could not create link establishment thread\n");
+        rc = -1;
     }
 
     EMPRINTF("Lpc17xxEmacReset() DONE\n");
@@ -834,7 +856,7 @@ THREAD(Lpc17xxEmacRxThread, arg)
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
-            if (Lpc17xxEmacReset(EMAC_LINK_LOOPS)) {
+            if (Lpc17xxEmacReset()) {
                 NutSleep(500);
             } else {
                 Lpc17xxEmacStart(dev);
@@ -947,10 +969,8 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
 #endif
 
     /* Reset the controller. */
-    if (Lpc17xxEmacReset(EMAC_LINK_LOOPS)) {
-        if (Lpc17xxEmacReset(EMAC_LINK_LOOPS)) {
-            return -1;
-        }
+    if (Lpc17xxEmacReset() == -1) {
+        return -1;
     }
 
     /* Clear EMACINFO structure. */

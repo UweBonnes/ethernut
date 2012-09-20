@@ -78,7 +78,7 @@
  */
 /*@{*/
 
-#if defined(SIG_CAN_INTERRUPT1) || defined(iv_CAN_TRANSFER)
+#if defined(CANIT_vect) || defined(iv_CAN_TRANSFER)
 
 static int AvrCanTxIrqCtl(int cmd, void *param);
 
@@ -137,12 +137,12 @@ static int AvrCanTxIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_CAN_INTERRUPT1(void)
+/*! \fn CANIT_vect(void)
  * \brief CAN serial transfer interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_CAN_INTERRUPT1:iv_CAN_TRANSFER
+#pragma interrupt_handler CANIT_vect:iv_CAN_TRANSFER
 #endif
-NUTSIGNAL(SIG_CAN_INTERRUPT1, sig_CAN_TRANSFER)
+NUTSIGNAL(CANIT_vect, sig_CAN_TRANSFER)
 #endif
 /*@}*/

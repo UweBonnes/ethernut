@@ -86,7 +86,7 @@
 
 #include <dev/irqreg.h>
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561) || defined(MCU_AT90USB1287)
 #define INT_MASK_REG    TIMSK3
 #define INT_STATUS_REG  TIFR3
 #define INT_ENABLE_BIT  OCIE3A
@@ -105,7 +105,7 @@
  */
 /*@{*/
 
-#if defined(SIG_OUTPUT_COMPARE3A) || defined(iv_TIMER3_COMPA)
+#if defined(TIMER3_COMPA_vect) || defined(iv_TIMER3_COMPA)
 
 static int AvrTimer3CompAIrqCtl(int cmd, void *param);
 
@@ -186,12 +186,12 @@ static int AvrTimer3CompAIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OUTPUT_COMPARE3A(void)
+/*! \fn TIMER3_COMPA_vect(void)
  * \brief Timer 3A output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OUTPUT_COMPARE3A:iv_TIMER3_COMPA
+#pragma interrupt_handler TIMER3_COMPA_vect:iv_TIMER3_COMPA
 #endif
-NUTSIGNAL(SIG_OUTPUT_COMPARE3A, sig_OUTPUT_COMPARE3A)
+NUTSIGNAL(TIMER3_COMPA_vect, sig_OUTPUT_COMPARE3A)
 #endif
 /*@}*/

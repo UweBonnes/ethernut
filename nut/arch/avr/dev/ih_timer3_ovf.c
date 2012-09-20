@@ -86,7 +86,7 @@
 
 #include <dev/irqreg.h>
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561) || defined(MCU_AT90USB1287)
 #define INT_MASK_REG    TIMSK3
 #define INT_STATUS_REG  TIFR3
 #define INT_ENABLE_BIT  OCIE3A
@@ -105,7 +105,7 @@
  */
 /*@{*/
 
-#if defined(SIG_OVERFLOW3) || defined(iv_TIMER3_OVF)
+#if defined(TIMER3_OVF_vect) || defined(iv_TIMER3_OVF)
 
 static int AvrTimer3OvfIrqCtl(int cmd, void *param);
 
@@ -186,12 +186,12 @@ static int AvrTimer3OvfIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OVERFLOW3(void)
+/*! \fn TIMER3_OVF_vect(void)
  * \brief Timer 3 overflow interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OVERFLOW3:iv_TIMER3_OVF
+#pragma interrupt_handler TIMER3_OVF_vect:iv_TIMER3_OVF
 #endif
-NUTSIGNAL(SIG_OVERFLOW3, sig_OVERFLOW3)
+NUTSIGNAL(TIMER3_OVF_vect, sig_OVERFLOW3)
 #endif
 /*@}*/

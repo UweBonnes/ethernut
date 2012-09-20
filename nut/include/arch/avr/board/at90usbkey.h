@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright 2011 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,65 +30,67 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*
- * $Log$
- * Revision 1.4  2009/01/17 15:37:52  haraldkipp
- * Added some NUTASSERT macros to check function parameters.
+ * \file arch/avr/board/at90usbkey.h
+ * \brief  AT90USBKEY board specific settings.
  *
- * Revision 1.3  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.2  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:32  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/02/04 17:49:08  harald
- * *** empty log message ***
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
-#include "nut_io.h"
+#ifndef _DEV_BOARD_H_
+#error "Do not include this file directly. Use dev/board.h instead!"
+#endif
 
-#include <sys/device.h>
-#include <sys/nutdebug.h>
+#ifndef DEV_UART
+#define DEV_UART devUsartAvr1
+#endif
 
-/*!
- * \addtogroup xgCrtLowio
- */
-/*@{*/
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME devUsartAvr1.dev_name
+#endif
 
-/*!
- * \brief Read data from a file, device or socket.
- *
- * \param fd     Descriptor of a previously opened file, device or
- *               connected socket.
- * \param buffer Pointer to the buffer that receives the data.
- * \param count  Maximum number of bytes to read.
- *
- * \return The number of bytes read, which may be less than the number
- *         of bytes specified. A return value of -1 indicates an error.
- */
-int _read(int fd, void *buffer, unsigned int count)
-{
-    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
-    NUTDEVICE *dev;
+#ifndef DEV_DEBUG
+#define DEV_DEBUG devDebug1
+#endif
 
-    NUTASSERT(fp != NULL);
-    dev = fp->nf_dev;
-    if (dev == 0) {
-        NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
-        return (*vdv->vdv_read) (fp, buffer, count);
-    }
-    if(dev->dev_read)
-        return (*dev->dev_read) (fp, buffer, count);
-    else
-        return -1;
-}
+#ifndef DEV_DEBUG_NAME
+#define DEV_DEBUG_NAME devDebug1.dev_name
+#endif
 
-/*@}*/
+#ifndef LED1_PORT
+#define LED1_PORT NUTGPIO_PORTD
+#endif
+
+#ifndef LED1_PIN
+#define LED1_PIN 4
+#endif
+
+#ifndef LED2_PORT
+#define LED2_PORT NUTGPIO_PORTD
+#endif
+
+#ifndef LED2_PIN
+#define LED2_PIN 5
+#endif
+
+#ifndef LED3_PORT
+#define LED3_PORT NUTGPIO_PORTD
+#endif
+
+#ifndef LED3_PIN
+#define LED3_PIN 6
+#endif
+
+#ifndef LED4_PORT
+#define LED4_PORT NUTGPIO_PORTD
+#endif
+
+#ifndef LED4_PIN
+#define LED4_PIN 7
+#endif
+
+

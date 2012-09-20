@@ -171,27 +171,25 @@ static int AvrUart0RxIrqCtl(int cmd, void *param)
     return rc;
 }
 
-#if defined(SIG_UART0_RECV) || defined(iv_USART0_RX)
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(USART0_RX_vect) && defined( UART0_RX_vect)
+#define USART0_RX_vect  UART0_RX_vect
+#elif !defined(USART0_RX_vect) && defined(UART_RX_vect)
+#define USART0_RX_vect UART_RX_vect
+#endif
 
-/*! \fn SIG_UART0_RECV(void)
+/*! \fn  UART0_RX_vect(void)
  * \brief Uart0 receive complete interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART0_RECV:iv_USART0_RX
-#endif
-NUTSIGNAL(SIG_UART0_RECV, sig_UART0_RECV)
-#elif defined(SIG_USART0_RECV)
-
-NUTSIGNAL(SIG_USART0_RECV, sig_UART0_RECV)
-
+#if defined(iv_USART0_RX)
+#pragma interrupt_handler USART0_RX_vect:iv_USART0_RX
 #else
-
-/*! \fn SIG_UART_RECV(void)
- * \brief Uart0 receive complete interrupt entry.
- */
-#ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART_RECV:iv_UART_RX
+#pragma interrupt_handler USART0_RX_vect:iv_UART_RX
 #endif
-NUTSIGNAL(SIG_UART_RECV, sig_UART0_RECV)
 #endif
+NUTSIGNAL(USART0_RX_vect, sig_UART0_RECV)
 /*@}*/

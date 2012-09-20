@@ -88,7 +88,18 @@
  */
 /*@{*/
 
-#if defined(SIG_UART1_DATA) || defined(iv_USART1_UDRE) || defined(SIG_USART1_DATA)
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(USART1_UDRE_vect) && defined(UART1_UDRE_vect)
+#define USART1_UDRE_vect UART1_UDRE_vect
+#endif
+#if defined(USART1_UDRE_vect) || defined(iv_USART1_UDRE)
 
 static int AvrUart1TxDataIrqCtl(int cmd, void *param);
 
@@ -166,17 +177,13 @@ static int AvrUart1TxDataIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_UART1_DATA(void)
+/*! \fn UART1_UDRE_vect(void)
  * Uart1 data register empty interrupt entry.
  */
-#if defined(SIG_UART1_DATA) || defined(iv_USART1_UDRE)
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART1_DATA:iv_USART1_UDRE
+#pragma interrupt_handler USART1_UDRE_vect:iv_USART1_UDRE
 #endif
-NUTSIGNAL(SIG_UART1_DATA, sig_UART1_DATA)
-#elif defined(SIG_USART1_DATA)
-NUTSIGNAL(SIG_USART1_DATA, sig_UART1_DATA)
-#endif
+NUTSIGNAL(USART1_UDRE_vect, sig_UART1_DATA)
 
 #endif
 /*@}*/

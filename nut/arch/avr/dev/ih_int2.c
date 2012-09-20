@@ -207,13 +207,13 @@ static int AvrInterrupt2Ctl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_INTERRUPT2(void)
+/*! \fn INT2_vect(void)
  * \brief External interrupt 2 entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT2:iv_INT2
+#pragma interrupt_handler INT2_vect:iv_INT2
 #endif
-NUTSIGNAL(SIG_INTERRUPT2, sig_INTERRUPT2)
+NUTSIGNAL(INT2_vect, sig_INTERRUPT2)
 
 
 /*@}*/

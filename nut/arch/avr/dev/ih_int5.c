@@ -193,13 +193,13 @@ static int AvrInterrupt5Ctl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_INTERRUPT5(void)
+/*! \fn INT5_vect(void)
  * \brief External interrupt 5 entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT5:iv_INT5
+#pragma interrupt_handler INT5_vect:iv_INT5
 #endif
-NUTSIGNAL(SIG_INTERRUPT5, sig_INTERRUPT5)
+NUTSIGNAL(INT5_vect, sig_INTERRUPT5)
 
 
 /*@}*/
