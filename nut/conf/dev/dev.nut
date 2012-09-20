@@ -777,6 +777,7 @@ nutdev =
             {
                 macro = "NUTDEBUG_CHAT",
                 brief = "Debug Output",
+                flavor = "boolean",
                 description = "Enables debug output.\n\n"..
                               "Applications must call NutTraceChat() to activate it.",
                 file = "include/cfg/chat.h"
