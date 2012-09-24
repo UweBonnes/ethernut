@@ -88,7 +88,7 @@ static char *version = "1.0.1";
 #define MYTIMED "130.149.17.21"
 
 /*! \brief Device name used for UART output. */
-#define MYUART  DEV_CONSOLE_NAME
+#define MYUART  DEV_CONSOLE.dev_name
 
 /*! \brief UART baudrate. */
 #define MYBAUD  115200

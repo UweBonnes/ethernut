@@ -53,7 +53,7 @@ int main(void)
 {
 #ifdef NUT_OS
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     NutRegisterDevice(&DEV_ETHER, 0, 0);
     NutDhcpIfConfig(DEV_ETHER_NAME, NULL, 60000);
     NutRegisterDevice(&devUrom, 0, 0);

@@ -100,7 +100,7 @@ int main(void)
 {
     /* Assign stdout to the default console device. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     printf("\n\nPlay MP3 files on Nut/OS %s\n", NutVersionString());
 
     /* Initialize the file system driver. */

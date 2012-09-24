@@ -38,11 +38,11 @@ int main(void)
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
-    uart = fopen(DEV_CONSOLE_NAME, "r+");
+    uart = fopen(DEV_CONSOLE.dev_name, "r+");
 
     _ioctl(_fileno(uart), UART_SETSPEED, &baud);
 
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     fprintf(stdout, banner);
 
 #if defined(USE_BB)

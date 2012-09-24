@@ -145,7 +145,7 @@ static void DebugPortOpen(void)
     /* Register debug UART. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
     /* Open debug device for standard output. */
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     /* Set baud rate. */
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 }

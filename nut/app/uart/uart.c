@@ -93,7 +93,7 @@ int main(void)
      * function returns a pointer to a FILE structure, which we use
      * for subsequent reading and writing.
      */
-    uart = fopen(DEV_CONSOLE_NAME, "r+");
+    uart = fopen(DEV_CONSOLE.dev_name, "r+");
 
     /*
      * Before doing the first read or write, we set the baudrate.

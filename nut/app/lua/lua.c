@@ -321,9 +321,9 @@ int main(void)
 
     /* Initialize the console. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
-    freopen(DEV_CONSOLE_NAME, "w", stderr);
-    freopen(DEV_CONSOLE_NAME, "r", stdin);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stderr);
+    freopen(DEV_CONSOLE.dev_name, "r", stdin);
     _ioctl(_fileno(stdin), UART_SETSPEED, &baud);
 
     /* Display banner. */

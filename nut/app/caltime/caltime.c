@@ -377,8 +377,8 @@ int main(void)
 
     /* Use UART device for stdin and stdout. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
-    freopen(DEV_CONSOLE_NAME, "r", stdin);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "r", stdin);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     printf("\n\nCalendar Time %s running on Nut/OS %s\n"
            , version, NutVersionString());

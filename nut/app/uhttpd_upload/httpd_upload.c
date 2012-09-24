@@ -235,7 +235,7 @@ int main(void)
 {
 #ifdef NUT_OS
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
 #endif
 
     puts("uHTTP upload sample\nBuild " __DATE__ " " __TIME__);
