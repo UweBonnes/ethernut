@@ -74,6 +74,26 @@
 #define OWI_SEARCH_FIRST    0xFF        /*!< \brief Start value for ID search. */
 
 /*!
+ * \brief Known Owi-Wire families
+ */
+#define W1_FAMILY_DEFAULT       0
+#define W1_FAMILY_SMEM_01       0x01
+#define W1_FAMILY_SMEM_81       0x81
+#define W1_THERM_DS18S20        0x10
+#define W1_FAMILY_DS28E04       0x1C
+#define W1_COUNTER_DS2423       0x1D
+#define W1_THERM_DS1822         0x22
+#define W1_EEPROM_DS2433        0x23
+#define W1_THERM_DS18B20        0x28
+#define W1_FAMILY_DS2408        0x29
+#define W1_EEPROM_DS2431        0x2D
+#define W1_FAMILY_DS2760        0x30
+#define W1_FAMILY_DS2780        0x32
+#define W1_THERM_DS1825         0x3B
+#define W1_FAMILY_DS2781        0x3D
+#define W1_THERM_DS28EA00       0x42
+
+/*!
  * \brief OWI return codes.
  *
  * \note The enum type itself is never used.
