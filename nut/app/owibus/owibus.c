@@ -48,9 +48,10 @@ int main(void)
 #if defined(USE_BB)
     res= NutRegisterOwiBus_BB(bus, OWI_PORT, OWI_PIN, 0, 0);
     fprintf(stdout, "Using Bitbang\n");
-#else
-    res= NutRegisterOwiBus_Uart(bus, &devUsartStm32_1, 0, 0);
+#elif defined(USE_UART)
+    res= NutRegisterOwiBus_Uart(bus, &OWI_UART, 0, 0);
     fprintf(stdout, "Using UART");
+
     /* Switch to Open Drain */
  #if defined(MCU_STM32) && defined(OWI_PORT) && defined(OWI_PIN)
     /* Switch to Open Drain */
@@ -65,7 +66,8 @@ int main(void)
  #else
     fprintf(stdout, "Make sure TX drives the OWI device as Open Drain and RX is connected to OWI\n");
  #endif
-
+#else
+    fprintf(stdout, "Please define the OWI access method, either OWI_BB or OWI_UART\n");
 #endif
 
     if (res)
