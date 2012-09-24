@@ -172,6 +172,8 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioPinSetHigh(bank, bit)   CM3BBREG(bank, GPIO_TypeDef, BSRRL, bit) = 1
 #define GpioPinSetLow(bank, bit)    CM3BBREG(bank, GPIO_TypeDef, BSRRH, bit) = 1
 #endif
+#define GpioPinDrive(bank, bit)
+#define GpioPinRelease(bank, bit)
 
 #define GpioPortGet(bank)       CM3REG(bank, GPIO_TypeDef, IDR )
 #define GpioPortSet(bank, value)    CM3REG(bank, GPIO_TypeDef, ODR ) = value

@@ -83,12 +83,13 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
      * cooperative multitasking for up to 480 us
      */
     NutSleep(0);
+    GpioPinDrive(owcb->txrx_port, owcb->txrx_pin);
     GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
     NutMicroDelay(delay1);
     if (value == 0)
-        GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
+        GpioPinDrive(owcb->txrx_port, owcb->txrx_pin);
     else
-        GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
+        GpioPinRelease(owcb->txrx_port, owcb->txrx_pin);
     NutMicroDelay(delay2);
     res = GpioPinGet(owcb->txrx_port, owcb->txrx_pin);
     if (value)
@@ -98,7 +99,8 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
          */
         NutSleep(0);
     NutMicroDelay(delay3);
-    GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
+    GpioPinRelease(owcb->txrx_port, owcb->txrx_pin);
+    NutSleep(1);
     return res;
 }
 
