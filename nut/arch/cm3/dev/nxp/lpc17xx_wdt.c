@@ -102,6 +102,9 @@ uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode)
     LPC_WDT->CLKSEL = WDT_WDCLKSEL_RC;
 #endif
 
+    /* Clear the Watchdog timeout flag */
+    LPC_WDT->MOD &= ~WDT_WDMOD_WDTOF;
+
     Lpc17xxWatchDogDisable();
 
     Lpc17xxWatchDogSetTimeOut(ms * 1000);
@@ -153,6 +156,9 @@ void Lpc17xxWatchDogRestart(void)
  */
 void Lpc17xxWatchDogDisable(void)
 {
+    /* Clear the Watchdog timeout flag */
+    LPC_WDT->MOD &= ~WDT_WDMOD_WDTOF;
+
     /* Disabling the watchdog is not supported by hardware
         if (nested) {
             nested++;
