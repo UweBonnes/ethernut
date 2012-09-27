@@ -171,7 +171,7 @@
 #else                           /* ----- !NUT_CPU_FREQ */
 /* Setup for timer clocked from TOSC with 32768 Hz and 1024 Hz timer tick*/
 #if defined(MCU_AT90CAN128)
-#define TCCR_FLAGS  (_BV(CS20)  _BV(WGM21))
+#define TCCR_FLAGS  (_BV(CS20)  |_BV(WGM21))
 #define TCCR_AFLAGS _BV(CS01)
 #define ASSR_BIT    AS2
 #define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
@@ -317,6 +317,9 @@ static uint32_t NutComputeCpuClock(void)
 
     /* Set prescaler to 8. Overflow will occur every 62.5 ms. */
     outb(TCCRx, TCCR_AFLAGS);
+#ifdef TCCR2B_AFLAGS
+    outb(TCCR2B, TCCR2B_AFLAGS);
+#endif
 
     /* Wait for asynchronous busy clear. */
     while ((inb(ASSR) & ASSR_BUSY) != 0);
