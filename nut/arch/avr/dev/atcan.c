@@ -111,7 +111,7 @@
  * which is recommended by CiA for CANOpen. DeviceNet specifies a
  * sampling point > 80%. SQW is 2.
  *****************************************************************************/
-
+#if defined(NUT_CPU_FREQ)
 //
 // 8.00 MHz
 //
@@ -220,6 +220,7 @@
 #define CAN_BT3_1M 0x18
 #else
 #  error Frequency not supported or not set to a Fixed MCU clock!
+#endif
 #endif
 
 
@@ -657,6 +658,9 @@ void AtCanSetAccMask(NUTDEVICE * dev, uint8_t * am)
  */
 uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
 {
+#if !defined(NUT_CPU_FREQ)
+    return -1;
+#else
     switch (baudrate)
     {
 #if NUT_CPU_FREQ != 8000000
@@ -716,6 +720,7 @@ uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
     }
     ((IFCAN *) (dev->dev_icb))->can_baudrate = baudrate;
     return 0;
+#endif
 }
 
 
@@ -732,6 +737,9 @@ uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
 int AtCanInit(NUTDEVICE * dev)
 {
     int8_t mob, i;
+#if !defined( NUT_CPU_FREQ)
+    return -1;
+#endif
 
     memset(dev->dev_dcb, 0, sizeof(CANINFO));
 
