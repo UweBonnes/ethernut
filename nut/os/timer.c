@@ -391,6 +391,14 @@ void NutMicroDelay(uint32_t us)
         start_ticks = current_ticks;
     }
 #elif defined(__AVR__)
+/* Try to keep the overhead low, especially try to avoid 
+ * a run-time 32 bit division
+ * Try to avoid large intermediate results
+ * nut_delay_loops consumes 4 clock ticks per loop 
+ *
+ * Fixme: Estimate loop setup and control loop overhead
+ */
+#if defined(NUT_CPU_FREQ)
 #if  (NUT_CPU_FREQ/4000000) && ((NUT_CPU_FREQ%4000000) == 0)
     uint32_t __tmp = us * (NUT_CPU_FREQ/4000000);
 #elif (NUT_CPU_FREQ/2000000) && ((NUT_CPU_FREQ%2000000) == 0)
@@ -403,7 +411,12 @@ void NutMicroDelay(uint32_t us)
     uint32_t __tmp = us * (NUT_CPU_FREQ/500000);
     __tmp >>= 3;
 #else
+    /* Range 858 ms @ 20 MHz*/
     uint32_t __tmp = (us * (NUT_CPU_FREQ/4000))/1000;
+#endif
+#else
+    /* Range 54 ms @ 20 MHz) */
+    uint32_t __tmp = (us *(NutGetCpuClock()>>8))/(400000000/256);
 #endif
     while (__tmp > 0xffff)
     {
