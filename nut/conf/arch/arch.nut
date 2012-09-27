@@ -889,7 +889,7 @@ nutarch =
                     "HW_MCU_STM32F100",
                     "MCU_STM32F100"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             {
                 macro = "MCU_STM32F101",
@@ -909,7 +909,7 @@ nutarch =
                     "MCU_STM32F101",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             {
                 macro = "MCU_STM32F102",
@@ -929,7 +929,7 @@ nutarch =
                     "MCU_STM32F102",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             {
                 macro = "MCU_STM32F103",
@@ -949,7 +949,7 @@ nutarch =
                     "MCU_STM32F103",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             {
                 macro = "MCU_STM32F105",
@@ -969,7 +969,7 @@ nutarch =
                     "MCU_STM32F105",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" }
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
             },
             {
                 macro = "MCU_STM32F107",
@@ -989,7 +989,7 @@ nutarch =
                     "MCU_STM32F107",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" }
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
             },
             {
                 macro = "MCU_STM32L151",
@@ -1009,7 +1009,7 @@ nutarch =
                     "MCU_STM32L151",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" }
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
             },
             {
                 macro = "MCU_STM32F405",
@@ -1029,7 +1029,7 @@ nutarch =
                     "MCU_STM32F405",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m4", "MARCH=cm4" }
+                makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F205",
@@ -1049,7 +1049,7 @@ nutarch =
                     "MCU_STM32F205",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cmc" }
+                makedefs = { "MCU=cortex-m3" }
             },
             {
                 macro = "MCU_STM32F207",
@@ -1069,7 +1069,7 @@ nutarch =
                     "MCU_STM32F207",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cmc" }
+                makedefs = { "MCU=cortex-m3" }
             },
             --
             -- TI LM3S SERIES CONTROLLER
@@ -1091,7 +1091,7 @@ nutarch =
                     "MCU_LM3S9B96",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             --
             -- NXP LPC17xx CONTROLLER
@@ -1111,7 +1111,7 @@ nutarch =
                     "HW_MCU_LPC17xx",
                     "HW_MCU_LPC175x",
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             {
                 macro = "MCU_LPC176x",
@@ -1128,7 +1128,7 @@ nutarch =
                     "HW_MCU_LPC17xx",
                     "HW_MCU_LPC176x",
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             {
                 macro = "MCU_LPC177x_8x",
@@ -1145,7 +1145,7 @@ nutarch =
                     "HW_MCU_LPC17xx",
                     "HW_MCU_LPC177x_8x",
                 },
-                makedefs = { "MCU=cortex-m3", "MARCH=cm3", "MFIX=-mfix-cortex-m3-ldrd" },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
             },
             --
             -- UNIX EMULATION FOR NUT/OS
