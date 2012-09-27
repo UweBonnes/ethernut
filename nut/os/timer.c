@@ -325,7 +325,7 @@ void NutTimerInit(void)
 
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
-#if !defined(NUT_DELAYLOOPS) && !defined(__AVR) && !defined(__CORTEX__)
+#if !defined(NUT_DELAYLOOPS) && !defined(__AVR__) && !defined(__CORTEX__)
     {
         /* Wait for the next tick. */
         uint32_t cnt = NutGetTickCount();
