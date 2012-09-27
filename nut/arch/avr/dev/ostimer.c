@@ -147,6 +147,9 @@
 
 
 #ifdef NUT_CPU_FREQ             /* ----- NUT_CPU_FREQ */
+/* Setup for timer clocked from main clock with NUT_CPU_FREQ 
+ * and 1000 Hz timer tick
+ */
 #if defined(MCU_AT90CAN128)
 #define TCCR_FLAGS  (_BV(CS20) | _BV(CS22) | _BV(WGM21))
 #elif defined(MCU_ATMEGA2560)
@@ -160,11 +163,37 @@
 #define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
 #elif defined(MCU_ATMEGA103)    /* MCU_ATMEGA103 */
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(CTC0))
-#else                           /* MCU_ATMEGA128 */
+#elif defined(MCU_ATMEGA128) 
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(WGM01))
+#else
+#warning Unknown CPU Type
 #endif
 #else                           /* ----- !NUT_CPU_FREQ */
-#if defined(MCU_ATMEGA103)      /* MCU_ATMEGA103 */
+/* Setup for timer clocked from TOSC with 32768 Hz and 1024 Hz timer tick*/
+#if defined(MCU_AT90CAN128)
+#define TCCR_FLAGS  (_BV(CS20)  _BV(WGM21))
+#define TCCR_AFLAGS _BV(CS01)
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#elif defined(MCU_ATMEGA2560)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20))
+#define TCCR2B_AFLAGS  (_BV(CS21))
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#elif defined(MCU_ATMEGA2561)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20))
+#define TCCR2B_AFLAGS  (_BV(CS21))
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#define TCCR2B_AFLAGS  (_BV(CS21))
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#elif defined(MCU_AT90USB1287)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
+#elif defined(MCU_ATMEGA103)      /* MCU_ATMEGA103 */
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CTC0))
 #define TCCR_AFLAGS _BV(CS01)
 #define ASSR_BIT    AS0
@@ -175,7 +204,7 @@
 #define ASSR_BIT    AS0
 #define ASSR_BUSY   (_BV(TCN0UB) | _BV(OCR0UB) | _BV(TCR0UB))
 #else                           /* Other MCU */
-#error Define NUT_CPU_FREQ to compile for this CPU.
+#error  Unknown CPU Type
 #endif
 #endif                          /* ----- NUT_CPU_FREQ */
 
@@ -266,6 +295,8 @@ static uint32_t CountCpuLoops(void)
  *
  * This function determines the CPU clock by running
  * a counter loop between two timer interrupts.
+ *
+ * The setup requires a 32768 Hz crystal on the TOSC pins!
  *
  * \return CPU clock in Hertz.
  *
