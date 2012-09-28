@@ -238,7 +238,7 @@ static struct timeval   timeStart;
 
 #include <string.h>
 
-#if defined(__AVR__)
+#if defined(__AVR_LIBC_VERSION__)
 #include <util/delay_basic.h>
 #endif
 
@@ -266,7 +266,7 @@ volatile uint32_t nut_ticks;
 
 static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 
-#if defined(__CORTEX__) || defined(__AVR__)
+#if defined(__CORTEX__) || defined(__AVR_LIBC_VERSION__)
 #else
 /*!
  *  \brief Loops per microsecond.
@@ -325,7 +325,7 @@ void NutTimerInit(void)
 
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
-#if !defined(NUT_DELAYLOOPS) && !defined(__AVR__) && !defined(__CORTEX__)
+#if !defined(NUT_DELAYLOOPS) && !defined(__AVR_LIBC_VERSION__) && !defined(__CORTEX__)
     {
         /* Wait for the next tick. */
         uint32_t cnt = NutGetTickCount();
@@ -390,11 +390,11 @@ void NutMicroDelay(uint32_t us)
             summed_ticks += (SysTick->LOAD +1);
         start_ticks = current_ticks;
     }
-#elif defined(__AVR__)
-/* Try to keep the overhead low, especially try to avoid 
+#elif defined(__AVR_LIBC_VERSION__)
+/* Try to keep the overhead low, especially try to avoid
  * a run-time 32 bit division
  * Try to avoid large intermediate results
- * nut_delay_loops consumes 4 clock ticks per loop 
+ * nut_delay_loops consumes 4 clock ticks per loop
  *
  * Fixme: Estimate loop setup and control loop overhead
  */
