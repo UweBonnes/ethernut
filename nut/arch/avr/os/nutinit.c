@@ -69,6 +69,7 @@
 #ifndef NUT_THREAD_MAINSTACK
 #define NUT_THREAD_MAINSTACK    1024
 #endif
+#define MAINTHREAD_STACK_SIZE   (((NUT_THREAD_MAINSTACK) * (NUT_THREAD_STACK_MULT)) + (NUT_THREAD_STACK_ADD))
 
 #ifndef NUT_THREAD_IDLESTACK
 #if defined(__GNUC__)
@@ -79,15 +80,16 @@
 #define NUT_THREAD_IDLESTACK    256
 #endif
 #endif
+#define IDLETHREAD_STACK_SIZE   (((NUT_THREAD_IDLESTACK) * (NUT_THREAD_STACK_MULT)) + (NUT_THREAD_STACK_ADD))
 
 /* Running with avr-gccdbg and only internal stack may result in hard to
  * find errors where the stack got overwritten
  *
  * Do some sanity check!
  */
-#if defined(__GNUC__) && defined(NUT_THREAD_MAINSTACK) && defined(NUT_THREAD_IDLESTACK) && defined(NUT_THREAD_STACK_MULT) && defined(NUT_THREAD_STACK_ADD)
-#if ((((NUT_THREAD_MAINSTACK+NUT_THREAD_IDLESTACK) * NUT_THREAD_STACK_MULT) + 2* NUT_THREAD_STACK_ADD) > (NUTMEM_SIZE - 1000))
-#error "Can't run  avr-gccdbg only with internal stack"
+#ifndef NUTXMEM_SIZE
+#if MAINTHREAD_STACK_SIZE + IDLETHREAD_STACK_SIZE + 1024 > NUTMEM_SIZE
+#warning "Potential stack overflow, reduce stack sizes of main or idle thread."
 #endif
 #endif
 
@@ -269,8 +271,7 @@ THREAD(NutIdle, arg)
 #endif
 
     /* Create the main application thread. */
-    NutThreadCreate("main", main, 0,
-        (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    NutThreadCreate("main", main, 0, MAINTHREAD_STACK_SIZE);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
@@ -414,8 +415,7 @@ void NutInit(void)
 
     /* Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0,
-        (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    NutThreadCreate("idle", NutIdle, 0, IDLETHREAD_STACK_SIZE);
 }
 
 /*@}*/
