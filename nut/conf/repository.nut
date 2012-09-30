@@ -288,6 +288,23 @@ hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
 pca9555_port_choice = { "IOXP_PORT0", "IOXP_PORT1" }
 pca9555_pin_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 
+function CheckCustomConfig()
+    local fp
+
+    fp = io.open(c_repo_path() .. "/custom/custom.nut", "r")
+    if fp == nil then
+        return {}
+    end
+    fp:close()
+    return
+        {
+            name = "nutcustom",
+            brief = "Custom Configuration",
+            description = "Allows to add custom specific configuration items.\n",
+            subdir = "custom",
+            script = "custom/custom.nut"
+        }
+end
 
 repository =
 {
@@ -482,7 +499,8 @@ repository =
         requires = { "HW_TARGET" },
         subdir = "contrib",
         script = "contrib/contrib.nut"
-    }
+    },
+    CheckCustomConfig()
 }
 
 --
