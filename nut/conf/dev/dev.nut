@@ -793,6 +793,7 @@ nutdev =
     {
         name = "nutdev_circbuf",
         brief = "Circular Buffers",
+        requires = { "TOOL_GCC" },
         provides = { "DEV_CIRCBUF" },
         sources = { "circbuff.c" }
     },
@@ -4917,7 +4918,7 @@ nutdev =
         name = "nutdev_owibus",
         brief = "One-Wire Bus implementations",
         description = "",
-        requires = { "HW_GPIO" },
+        requires = { "HW_GPIO", "TOOL_GCC" },
         provides = { "DEV_OWI" },
         sources = { "owibus.c", "owibus_bbif.c", "owibus_uartif.c" },
     },
