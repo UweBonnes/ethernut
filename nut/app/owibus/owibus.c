@@ -118,9 +118,9 @@ int main(void)
  #if defined(MCU_STM32) && defined(OWI_PORT) && defined(OWI_PIN)
     /* Switch to Open Drain */
   #if defined(MCU_STM32F1)
-    CM3BB_BASE(OWI_PORT)[CM3BB_OFFSET(GPIO_TypeDef, CRL, 4*(OWI_PIN*4))] = 1;
+    CM3BBREG(OWI_PORT, GPIO_TypeDef, CRL, 4*(OWI_PIN*4)) = 1;
   #else
-    CM3BB_BASE(OWI_PORT)[CM3BB_OFFSET(GPIO_TypeDef, OTYPER, OWI_PIN)] = 1;
+    CM3BBREG(OWI_PORT, GPIO_TypeDef, OTYPER, OWI_PIN) = 1;
   #endif
 /*   Switch to Half Duplex */
     CM3BBREG((devUsartStm32_1.dev_base), USART_TypeDef, CR3,
