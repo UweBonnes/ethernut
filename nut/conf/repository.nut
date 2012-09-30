@@ -293,21 +293,6 @@ repository =
 {
     {
         name = "nutinfo",
--- First version of a dynamic item:
--- The string contains a Lua script, which is compiled and executed by the Configurator.
--- This version is deprecated.
---        brief = "--\n".. -- Strings starting with this sequence are executed.
---                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
-
--- Second version of a dynamic item:
--- A function result is combined with a static string. Note, that the function
--- is executed when this script file is loaded and must have been defined
--- previously.
---        brief = "Nut/OS " .. GetNutOsVersion(),
-
--- Third version of a dynamic item:
--- The value is specified as a function returning a string. In this case any function
--- used in our function body may be defined later.
         brief = "Hardware Platform",
         description = "Board specific settings.",
         options =
@@ -518,6 +503,22 @@ end
 
 --
 -- Read OS Version from C source file.
+--
+-- First version of a dynamic item:
+-- The string contains a Lua script, which is compiled and executed by the Configurator.
+-- This version is deprecated.
+--        brief = "--\n".. -- Strings starting with this sequence are executed.
+--                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
+
+-- Second version of a dynamic item:
+-- A function result is combined with a static string. Note, that the function
+-- is executed when this script file is loaded and must have been defined
+-- previously.
+--        brief = "Nut/OS " .. GetNutOsVersion(),
+
+-- Third version of a dynamic item:
+-- The value is specified as a function returning a string. In this case any function
+-- used in our function body may be defined later.
 --
 function GetNutOsVersion()
     local buf, p1, p2, vers, subvers
