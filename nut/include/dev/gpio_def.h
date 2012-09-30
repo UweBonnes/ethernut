@@ -167,8 +167,8 @@ extern int GpioPinGet(int bank, int bit);
 extern void GpioPinSet(int bank, int bit, int value);
 extern void GpioPinSetLow(int bank, int bit);
 extern void GpioPinSetHigh(int bank, int bit);
-void GpioPinRelease(int bank, int bit){};
-void GpioPinDrive(int bank, int bit){};
+#define GpioPinRelease(bank, bit)
+#define GpioPinDrive(bank, bit)
 
 extern unsigned int GpioPortGet(int bank);
 extern void GpioPortSet(int bank, unsigned int value);
