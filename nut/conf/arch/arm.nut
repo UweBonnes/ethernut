@@ -871,7 +871,8 @@ nutarch_arm =
     {
         name = "nutarch_arm_usartcb_at91npl",
         brief = "USART NPL Support",
-        requires = { "DEV_UART_HWCTRL", "DEV_NPL", "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT" },
+        description = "Currently available for AT91R40008 CPUs only.",
+        requires = { "HW_MCU_AT91R40008", "DEV_UART_HWCTRL", "DEV_NPL", "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT" },
         provides = { "DEV_UART_CBRXTX" },
         sources = {
             "arm/dev/atmel/usart_cb_at91npl.c",
