@@ -173,7 +173,7 @@ top_srcdir = ..
 top_blddir = ..
 
 LIBDIR = $(top_blddir)/lib
-include $(top_srcdir)/UserConf.mk
+include $(top_srcdir)/NutConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c \

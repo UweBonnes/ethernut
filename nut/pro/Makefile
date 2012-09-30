@@ -114,7 +114,7 @@ top_srcdir = ..
 top_blddir = ..
 
 LIBDIR = $(top_blddir)/lib
-include $(top_srcdir)/UserConf.mk
+include $(top_srcdir)/NutConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCS =  dhcpc.c resolv.c httpd.c httpd_p.c httpopt.c ssi.c asp.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c \

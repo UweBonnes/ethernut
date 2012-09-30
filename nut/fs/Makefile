@@ -88,7 +88,7 @@ top_srcdir = ..
 top_blddir = ..
 
 LIBDIR = $(top_blddir)/lib
-include $(top_srcdir)/UserConf.mk
+include $(top_srcdir)/NutConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCS = pathops.c dirent.c fat.c uromfs.c pnutfs.c \

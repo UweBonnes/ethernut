@@ -92,7 +92,7 @@ VPATH = $(top_srcdir)/arch
 
 LIBDIR = $(top_blddir)/lib
 
-include $(top_blddir)/UserConf.mk
+include $(top_blddir)/NutConf.mk
 
 SRCS =
 

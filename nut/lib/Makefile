@@ -111,7 +111,7 @@
 #
 
 top_srcdir = ..
-include $(top_srcdir)/UserConf.mk
+include $(top_srcdir)/NutConf.mk
 
 all:
 ifneq (, $(findstring h8300, $(ARCH)))

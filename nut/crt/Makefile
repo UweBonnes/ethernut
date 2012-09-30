@@ -83,7 +83,7 @@ top_srcdir = ..
 top_blddir = ..
 
 LIBDIR = $(top_blddir)/lib
-include $(top_srcdir)/UserConf.mk
+include $(top_srcdir)/NutConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCC =  close.c clrerr.c ioctl.c open.c getf.c read.c putf.c write.c fclose.c \
