@@ -1,6 +1,8 @@
 #
-# Copyright (C) 2008 by egnite GmbH. All rights reserved.
-# Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2008 by egnite GmbH
+# Copyright (C) 2004-2006 by egnite Software GmbH
+#
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -11,17 +13,15 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this
-#    software must display the following acknowledgement:
+# 3. Neither the name of the copyright holders nor the names of
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
 #
-#    This product includes software developed by egnite Software GmbH
-#    and its contributors.
-#
-# THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
-# SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 # BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 # OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,56 +31,6 @@
 # SUCH DAMAGE.
 #
 # For additional information see http://www.ethernut.de/
-#
-# $Log: Makefile,v $
-# Revision 1.14  2008/06/16 13:02:49  haraldkipp
-# Temporarily removed wlandrv.c from build due to GCC 4.3 warnings.
-#
-# Revision 1.13  2008/02/15 17:29:59  haraldkipp
-# Added missing files. Hopefully not broken after late commit.
-#
-# Revision 1.12  2008/02/09 02:10:36  olereinhardt
-# 2008-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-# 	* arch/Makefile: Added ih_at91spi for sam7x, Support for
-# 	  at91sam7s added
-#
-# Revision 1.11  2007/12/09 21:39:31  olereinhardt
-# Support for at91_adc driver added
-#
-# Revision 1.10  2007/09/06 19:32:49  olereinhardt
-# Added at91_twi driver
-#
-# Revision 1.9  2007/07/17 18:07:44  haraldkipp
-# Building in the source tree should work again for AT91 devices.
-#
-# Revision 1.8  2006/05/25 09:26:46  haraldkipp
-# ICCAVR context switch replaced with the one for GCC.
-# Added all AT91 specific sources to support building for ARM in the
-# source tree.
-# Corrected a typo, which checked for unix, but should check for arm.
-#
-# Revision 1.7  2006/02/08 15:18:49  haraldkipp
-# ATmega2561 Support
-#
-# Revision 1.6  2006/02/02 11:32:15  olereinhardt
-# Added eeprom.c to avr target list
-#
-# Revision 1.5  2006/01/26 15:31:24  going_nuts
-# adapted to new interrupt handling scheme for unix emulation
-# now uses Unix timer and runs without interrupts unless you emulate other hardware
-#
-# Revision 1.4  2005/10/17 11:45:20  olereinhardt
-# Added compilation of atcan.c if MCU=at90can128 is set
-#
-# Revision 1.3  2005/09/17 09:25:15  drsung
-# irqstack.c also moved to arch
-#
-# Revision 1.2  2005/07/26 16:18:28  haraldkipp
-# Build new architecture library.
-#
-# Revision 1.1  2004/09/19 12:37:42  haraldkipp
-# ARM7 initialization added
-#
 #
 
 PROJ = libnutarch
