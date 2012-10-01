@@ -46,255 +46,6 @@
 #include <dev/gpio.h>
 
 /*!
- * \brief Get pin level.
- *
- * \param bank GPIO bank/port number.
- * \param bit  Bit number of the specified bank/port.
- *
- * \return 1 if the pin level is high. 0 is returned if the pin level
- *         is low or if the pin is undefined.
- */
-int GpioPinGet(int bank, int bit)
-{
-    int rc = 0;
-
-    switch(bank) {
-#ifdef PIO_PDSR
-    case NUTGPIO_PORT:
-        rc = (inr(PIO_PDSR) & _BV(bit)) != 0;
-        break;
-#endif /* PIO_PDSR */
-
-#ifdef PIOA_PDSR
-    case NUTGPIO_PORTA:
-        rc = (inr(PIOA_PDSR) & _BV(bit)) != 0;
-        break;
-#endif /* PIOA_PDSR */
-
-#ifdef PIOB_PDSR
-    case NUTGPIO_PORTB:
-        rc = (inr(PIOB_PDSR) & _BV(bit)) != 0;
-        break;
-#endif /* PIOB_PDSR */
-
-#ifdef PIOC_PDSR
-    case NUTGPIO_PORTC:
-        rc = (inr(PIOC_PDSR) & _BV(bit)) != 0;
-        break;
-#endif /* PIOC_PDSR */
-    }
-    return rc;
-}
-
-/*!
- * \brief Set pin level to low.
- *
- * Trying to set undefined pins is silently ignored.
- *
- * \param bank GPIO bank/port number.
- * \param bit  Bit number of the specified bank/port.
- */
-void GpioPinSetLow(int bank, int bit)
-{
-    switch(bank) {
-#ifdef PIO_CODR
-    case NUTGPIO_PORT:
-        outr(PIO_CODR, _BV(bit));
-        break;
-#endif /* PIO_CODR */
-
-#ifdef PIOA_CODR
-    case NUTGPIO_PORTA:
-        outr(PIOA_CODR, _BV(bit));
-        break;
-#endif /* PIOA_CODR */
-
-#ifdef PIOB_CODR
-    case NUTGPIO_PORTB:
-        outr(PIOB_CODR, _BV(bit));
-        break;
-#endif /* PIOB_CODR */
-
-#ifdef PIOC_CODR
-    case NUTGPIO_PORTC:
-        outr(PIOC_CODR, _BV(bit));
-        break;
-#endif /* PIOC_CODR */
-    }
-}
-
-/*!
- * \brief Set pin level to high.
- *
- * Trying to set undefined pins is silently ignored.
- *
- * \param bank GPIO bank/port number.
- * \param bit  Bit number of the specified bank/port.
- */
-void GpioPinSetHigh(int bank, int bit)
-{
-    switch(bank) {
-#ifdef PIO_SODR
-    case NUTGPIO_PORT:
-        outr(PIO_SODR, _BV(bit));
-        break;
-#endif /* PIO_SODR */
-
-#ifdef PIOA_SODR
-    case NUTGPIO_PORTA:
-        outr(PIOA_SODR, _BV(bit));
-        break;
-#endif /* PIOA_SODR */
-
-#ifdef PIOB_SODR
-    case NUTGPIO_PORTB:
-        outr(PIOB_SODR, _BV(bit));
-        break;
-#endif /* PIOB_SODR */
-
-#ifdef PIOC_SODR
-    case NUTGPIO_PORTC:
-        outr(PIOC_SODR, _BV(bit));
-        break;
-#endif /* PIOC_SODR */
-    }
-}
-
-/*!
- * \brief Set pin level.
- *
- * Trying to set undefined pins is silently ignored.
- *
- * \param bank  GPIO bank/port number.
- * \param bit   Bit number of the specified bank/port.
- * \param value Level, 0 for low or any other value for high.
- */
-void GpioPinSet(int bank, int bit, int value)
-{
-    if (value) {
-        GpioPinSetHigh(bank, bit);
-    }
-    else {
-        GpioPinSetLow(bank, bit);
-    }
-}
-
-/*!
- * \brief Get all pin levels of a specified bank/port.
- *
- * \param bank GPIO bank/port number.
- *
- * \return Pin levels. 0 is returned for unknown banks and pins.
- */
-unsigned int GpioPortGet(int bank)
-{
-    unsigned int rc = 0;
-
-    switch(bank) {
-#ifdef PIO_PDSR
-    case NUTGPIO_PORT:
-        rc = inr(PIO_PDSR);
-        break;
-#endif /* PIO_PDSR */
-
-#ifdef PIOA_PDSR
-    case NUTGPIO_PORTA:
-        rc = inr(PIOA_PDSR);
-        break;
-#endif /* PIO_PDSR */
-
-#ifdef PIOB_PDSR
-    case NUTGPIO_PORTB:
-        rc = inr(PIOB_PDSR);
-        break;
-#endif /* PIOB_PDSR */
-
-#ifdef PIOC_PDSR
-    case NUTGPIO_PORTC:
-        rc = inr(PIOC_PDSR);
-        break;
-#endif /* PIOC_PDSR */
-    }
-    return rc;
-}
-
-/*!
- * \brief Set multiple pin levels of a bank/port to low.
- *
- * \param bank GPIO bank/port number.
- * \param mask Pin levels are set to low, if the corresponding
- *             bit in this mask is 1.
- *
- * \return Levels.
- */
-void GpioPortSetLow(int bank, unsigned int mask)
-{
-    switch(bank) {
-#ifdef PIO_CODR
-    case NUTGPIO_PORT:
-        outr(PIO_CODR, mask);
-        break;
-#endif /* PIO_CODR */
-
-#ifdef PIOA_CODR
-    case NUTGPIO_PORTA:
-        outr(PIOA_CODR, mask);
-        break;
-#endif /* PIOA_CODR */
-
-#ifdef PIOB_CODR
-    case NUTGPIO_PORTB:
-        outr(PIOB_CODR, mask);
-        break;
-#endif /* PIOB_CODR */
-
-#ifdef PIOC_CODR
-    case NUTGPIO_PORTC:
-        outr(PIOC_CODR, mask);
-        break;
-#endif /* PIOC_CODR */
-    }
-}
-
-/*!
- * \brief Set multiple pin levels of a bank/port to high.
- *
- * Trying to set undefined ports is silently ignored.
- *
- * \param bank GPIO bank/port number.
- * \param mask Pin levels are set to high, if the corresponding
- *             bit in this mask is 1.
- */
-void GpioPortSetHigh(int bank, unsigned int mask)
-{
-    switch(bank) {
-#ifdef PIO_SODR
-    case NUTGPIO_PORT:
-        outr(PIO_SODR, mask);
-        break;
-#endif /* PIO_SODR */
-
-#ifdef PIOA_SODR
-    case NUTGPIO_PORTA:
-        outr(PIOA_SODR, mask);
-        break;
-#endif /* PIOA_SODR */
-
-#ifdef PIOB_SODR
-    case NUTGPIO_PORTB:
-        outr(PIOB_SODR, mask);
-        break;
-#endif /* PIOB_SODR */
-
-#ifdef PIOC_SODR
-    case NUTGPIO_PORTC:
-        outr(PIOC_SODR, mask);
-        break;
-#endif /* PIOC_SODR */
-    }
-}
-
-/*!
  * \brief Set all pin levels of a bank/port.
  *
  * This routine can be used to simultaneously set all pins of a specific
@@ -307,15 +58,10 @@ void GpioPortSetHigh(int bank, unsigned int mask)
  *              bit in this mask is 1. All other pin levels are
  *              set to low.
  */
-void GpioPortSet(int bank, unsigned int value)
+static inline void GpioPortSet(int bank, unsigned int value)
 {
-    if (value) {
-        GpioPortSetHigh(bank, value);
-    }
-    value = ~value;
-    if (value) {
-        GpioPortSetLow(bank, value);
-    }
+    GpioPortSetHigh(bank, value);
+    GpioPortSetLow(bank, ~value);
 }
 
 /*!
@@ -329,138 +75,60 @@ void GpioPortSet(int bank, unsigned int value)
 uint32_t GpioPinConfigGet(int bank, int bit)
 {
     uint32_t rc = 0;
-
-    switch(bank) {
-    case NUTGPIO_PORT:
-#ifdef PIO_PSR
-        if ((inr(PIO_PSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_DISABLED;
-        }
-#endif /* PIO_PSR */
-
-#ifdef PIO_OSR
-        if (inr(PIO_OSR) & _BV(bit)) {
-            rc |= GPIO_CFG_OUTPUT;
-        }
-#endif /* PIO_OSR */
+    rc |= (inr(bank + PIO_PSR_OFF) & _BV(bit))?GPIO_CFG_DISABLED:0;
+    rc |= (inr(bank + PIO_OSR_OFF) & _BV(bit))?GPIO_CFG_OUTPUT:0;
 
 #ifdef PIO_IFSR
-        if (inr(PIO_IFSR) & _BV(bit)) {
-            rc |= GPIO_CFG_DEBOUNCE;
-        }
+    rc |= (inr(bank + PIO_IFSR_OFF) & _BV(bit))?GPIO_CFG_DEBOUNCE:0;
 #endif /* PIO_IFSR */
 
 #ifdef PIO_MDSR
-        if (inr(PIO_MDSR) & _BV(bit)) {
-            rc |= GPIO_CFG_MULTIDRIVE;
-        }
+    rc |= (inr(bank + PIO_MDSR_OFF) & _BV(bit))?GPIO_CFG_MULTIDRIVE:0;
 #endif /* PIO_MDSR */
 
 #ifdef PIO_PUSR
-        if ((inr(PIO_PUSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_PULLUP;
-        }
+    rc |= (inr(bank + PIO_PUSR_OFF) & _BV(bit))?0:GPIO_CFG_PULLUP;
 #endif /* PIO_PUSR */
-        break;
-
-    case NUTGPIO_PORTA:
-#ifdef PIOA_PSR
-        if ((inr(PIOA_PSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_DISABLED;
-        }
-#endif /* PIOA_PSR */
-
-#ifdef PIOA_OSR
-        if (inr(PIOA_OSR) & _BV(bit)) {
-            rc |= GPIO_CFG_OUTPUT;
-        }
-#endif /* PIOA_OSR */
-
-#ifdef PIOA_IFSR
-        if (inr(PIOA_IFSR) & _BV(bit)) {
-            rc |= GPIO_CFG_DEBOUNCE;
-        }
-#endif /* PIOA_IFSR */
-
-#ifdef PIOA_MDSR
-        if (inr(PIOA_MDSR) & _BV(bit)) {
-            rc |= GPIO_CFG_MULTIDRIVE;
-        }
-#endif /* PIOA_MDSR */
-
-#ifdef PIOA_PUSR
-        if ((inr(PIOA_PUSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_PULLUP;
-        }
-#endif /* PIOA_PUSR */
-        break;
-
-    case NUTGPIO_PORTB:
-#ifdef PIOB_PSR
-        if ((inr(PIOB_PSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_DISABLED;
-        }
-#endif /* PIOB_PSR */
-
-#ifdef PIOB_OSR
-        if (inr(PIOB_OSR) & _BV(bit)) {
-            rc |= GPIO_CFG_OUTPUT;
-        }
-#endif /* PIOB_OSR */
-
-#ifdef PIOB_IFSR
-        if (inr(PIOB_IFSR) & _BV(bit)) {
-            rc |= GPIO_CFG_DEBOUNCE;
-        }
-#endif /* PIOB_IFSR */
-
-#ifdef PIOB_MDSR
-        if (inr(PIOB_MDSR) & _BV(bit)) {
-            rc |= GPIO_CFG_MULTIDRIVE;
-        }
-#endif /* PIOB_MDSR */
-
-#ifdef PIOB_PUSR
-        if ((inr(PIOB_PUSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_PULLUP;
-        }
-#endif /* PIOB_PUSR */
-        break;
-
-    case NUTGPIO_PORTC:
-#ifdef PIOC_PSR
-        if ((inr(PIOC_PSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_DISABLED;
-        }
-#endif /* PIOC_PSR */
-
-#ifdef PIOC_OSR
-        if (inr(PIOC_OSR) & _BV(bit)) {
-            rc |= GPIO_CFG_OUTPUT;
-        }
-#endif /* PIOC_OSR */
-
-#ifdef PIOC_IFSR
-        if (inr(PIOC_IFSR) & _BV(bit)) {
-            rc |= GPIO_CFG_DEBOUNCE;
-        }
-#endif /* PIOC_IFSR */
-
-#ifdef PIOC_MDSR
-        if (inr(PIOC_MDSR) & _BV(bit)) {
-            rc |= GPIO_CFG_MULTIDRIVE;
-        }
-#endif /* PIOC_MDSR */
-
-#ifdef PIOC_PUSR
-        if ((inr(PIOC_PUSR) & _BV(bit)) == 0) {
-            rc |= GPIO_CFG_PULLUP;
-        }
-#endif /* PIOC_PUSR */
-        break;
-
-    }
     return rc;
+}
+
+void PIO_PMC_ENABLE(int bank)
+{
+#ifdef PMC_PCER
+    switch (bank)
+    {
+#if defined (NUTGPIO_PORT) && defined(PIO_ID)
+    case NUTGPIO_PORT:
+            outr(PMC_PCER, _BV(PIO_ID));
+            break;
+#endif
+#if defined (NUTGPIO_PORTA) && defined(PIOA_ID)
+    case NUTGPIO_PORTA:
+            outr(PMC_PCER, _BV(PIOA_ID));
+            break;
+#endif
+#if defined (NUTGPIO_PORTB) && defined(PIOB_ID)
+    case NUTGPIO_PORTB:
+            outr(PMC_PCER, _BV(PIOB_ID));
+            break;
+#endif
+#if defined (NUTGPIO_PORTC) && defined(PIOC_ID)
+    case NUTGPIO_PORTC:
+            outr(PMC_PCER, _BV(PIOC_ID));
+            break;
+#endif
+#if defined (NUTGPIO_PORTD) && defined(PIOD_ID)
+    case NUTGPIO_PORTD:
+            outr(PMC_PCER, _BV(PIOD_ID));
+            break;
+#endif
+#if defined (NUTGPIO_PORTE) && defined(PIOE_ID)
+    case NUTGPIO_PORTE:
+            outr(PMC_PCER, _BV(PIOE_ID));
+            break;
+#endif
+    }
+#endif
 }
 
 /*!
@@ -476,221 +144,38 @@ uint32_t GpioPinConfigGet(int bank, int bit)
  *
  * \return Always 0.
  */
-int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
+int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 {
-    switch(bank) {
-    case NUTGPIO_PORT:
-#ifdef PIO_PDR
-        if (flags & GPIO_CFG_DISABLED) {
-            outr(PIO_PDR, mask);
-        }
-        else {
-            outr(PIO_PER, mask);
-#ifdef PMC_PCER
-            outr(PMC_PCER, _BV(PIO_ID));
-#endif /* PMC_PCER */
-        }
-#endif /* PIO_PDR */
-
-#ifdef PIO_PUER
-        if (flags & GPIO_CFG_PULLUP) {
-            outr(PIO_PUER, mask);
-        }
-        else {
-            outr(PIO_PUDR, mask);
-        }
-#endif /* PIO_PUER */
-
-#ifdef PIO_IFER
-        if (flags & GPIO_CFG_DEBOUNCE) {
-            outr(PIO_IFER, mask);
-        }
-        else {
-            outr(PIO_IFDR, mask);
-        }
-#endif /* PIO_IFER */
-
-#ifdef PIO_ODR
-        if ((flags & GPIO_CFG_OUTPUT) == 0) {
-            outr(PIO_ODR, mask);
-        }
-#endif /* PIO_ODR */
-
+    if (flags & GPIO_CFG_DISABLED)
+        outr(bank + PIO_PDR_OFF, mask);
+    else
+    {
+        outr(bank + PIO_PER_OFF, mask);
+        PIO_PMC_ENABLE(bank);
+    }
+#if defined(PIO_HAS_PULLUP)
+    if (flags & GPIO_CFG_PULLUP)
+        outr(bank + PIO_PUER_OFF, mask);
+    else
+        outr(bank + PIO_PUDR_OFF, mask);
+#endif        
+    if (flags & GPIO_CFG_DEBOUNCE)
+        outr(bank + PIO_IFER_OFF, mask);
+    else
+        outr(bank + PIO_IFDR_OFF, mask);
+    if (flags & GPIO_CFG_OUTPUT)
+        outr(bank + PIO_OER_OFF, mask);
+    else
+        outr(bank + PIO_ODR_OFF, mask);
 #ifdef PIO_MDER
-        if (flags & GPIO_CFG_MULTIDRIVE) {
-            outr(PIO_MDER, mask);
+     if (flags & GPIO_CFG_MULTIDRIVE) {
+            outr(bank + PIO_MDER_OFF, mask);
         }
         else {
-            outr(PIO_MDDR, mask);
+            outr(bank + PIO_MDDR_OFF, mask);
         }
 #endif /* PIO_MDER */
 
-#ifdef PIO_OER
-        if (flags & GPIO_CFG_OUTPUT) {
-            outr(PIO_OER, mask);
-        }
-#endif /* PIO_OER */
-        break;
-
-    case NUTGPIO_PORTA:
-#ifdef PIOA_PDR
-        if (flags & GPIO_CFG_DISABLED) {
-            outr(PIOA_PDR, mask);
-        }
-        else {
-            outr(PIOA_PER, mask);
-#ifdef PMC_PCER
-            outr(PMC_PCER, _BV(PIOA_ID));
-#endif /* PMC_PCER */
-        }
-#endif /* PIOA_PDR */
-
-#ifdef PIOA_PUER
-        if (flags & GPIO_CFG_PULLUP) {
-            outr(PIOA_PUER, mask);
-        }
-        else {
-            outr(PIOA_PUDR, mask);
-        }
-#endif /* PIOA_PUER */
-
-#ifdef PIOA_IFER
-        if (flags & GPIO_CFG_DEBOUNCE) {
-            outr(PIOA_IFER, mask);
-        }
-        else {
-            outr(PIOA_IFDR, mask);
-        }
-#endif /* PIOA_IFER */
-
-#ifdef PIOA_ODR
-        if ((flags & GPIO_CFG_OUTPUT) == 0) {
-            outr(PIOA_ODR, mask);
-        }
-#endif /* PIOA_ODR */
-
-#ifdef PIOA_MDER
-        if (flags & GPIO_CFG_MULTIDRIVE) {
-            outr(PIOA_MDER, mask);
-        }
-        else {
-            outr(PIOA_MDDR, mask);
-        }
-#endif /* PIOA_MDER */
-
-#ifdef PIOA_OER
-        if (flags & GPIO_CFG_OUTPUT) {
-            outr(PIOA_OER, mask);
-        }
-#endif /* PIOA_OER */
-        break;
-
-    case NUTGPIO_PORTB:
-#ifdef PIOB_PDR
-        if (flags & GPIO_CFG_DISABLED) {
-            outr(PIOB_PDR, mask);
-        }
-        else {
-            outr(PIOB_PER, mask);
-#ifdef PMC_PCER
-            outr(PMC_PCER, _BV(PIOB_ID));
-#endif /* PMC_PCER */
-        }
-#endif /* PIOB_PDR */
-
-#ifdef PIOB_PUER
-        if (flags & GPIO_CFG_PULLUP) {
-            outr(PIOB_PUER, mask);
-        }
-        else {
-            outr(PIOB_PUDR, mask);
-        }
-#endif /* PIOB_PUER */
-
-#ifdef PIOB_IFER
-        if (flags & GPIO_CFG_DEBOUNCE) {
-            outr(PIOB_IFER, mask);
-        }
-        else {
-            outr(PIOB_IFDR, mask);
-        }
-#endif /* PIOB_IFER */
-
-#ifdef PIOB_ODR
-        if ((flags & GPIO_CFG_OUTPUT) == 0) {
-            outr(PIOB_ODR, mask);
-        }
-#endif /* PIOB_ODR */
-
-#ifdef PIOB_MDER
-        if (flags & GPIO_CFG_MULTIDRIVE) {
-            outr(PIOB_MDER, mask);
-        }
-        else {
-            outr(PIOB_MDDR, mask);
-        }
-#endif /* PIOB_MDER */
-
-#ifdef PIOB_OER
-        if (flags & GPIO_CFG_OUTPUT) {
-            outr(PIOB_OER, mask);
-        }
-#endif /* PIOB_OER */
-        break;
-
-    case NUTGPIO_PORTC:
-#ifdef PIOC_PDR
-        if (flags & GPIO_CFG_DISABLED) {
-            outr(PIOC_PDR, mask);
-        }
-        else {
-            outr(PIOC_PER, mask);
-#ifdef PMC_PCER
-            outr(PMC_PCER, _BV(PIOC_ID));
-#endif /* PMC_PCER */
-        }
-#endif /* PIOC_PDR */
-
-#ifdef PIOC_PUER
-        if (flags & GPIO_CFG_PULLUP) {
-            outr(PIOC_PUER, mask);
-        }
-        else {
-            outr(PIOC_PUDR, mask);
-        }
-#endif /* PIOC_PUER */
-
-#ifdef PIOC_IFER
-        if (flags & GPIO_CFG_DEBOUNCE) {
-            outr(PIOC_IFER, mask);
-        }
-        else {
-            outr(PIOC_IFDR, mask);
-        }
-#endif /* PIOC_IFER */
-
-#ifdef PIOC_ODR
-        if ((flags & GPIO_CFG_OUTPUT) == 0) {
-            outr(PIOC_ODR, mask);
-        }
-#endif /* PIOC_ODR */
-
-#ifdef PIOC_MDER
-        if (flags & GPIO_CFG_MULTIDRIVE) {
-            outr(PIOC_MDER, mask);
-        }
-        else {
-            outr(PIOC_MDDR, mask);
-        }
-#endif /* PIOC_MDER */
-
-#ifdef PIOC_OER
-        if (flags & GPIO_CFG_OUTPUT) {
-            outr(PIOC_OER, mask);
-        }
-#endif /* PIOC_OER */
-        break;
-    }
     return 0;
 }
 
