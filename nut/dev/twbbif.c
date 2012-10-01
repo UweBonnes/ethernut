@@ -597,14 +597,12 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
         return -1;
     }
 
-    if (txlen) {
-        TwStart();
-        /* Send SLA+W and check for ACK. */
-        if ((rc = TwPut(sla << 1)) == 0) {
-            for (cp = (uint8_t *)txdata; txlen--; cp++) {
-                if ((rc = TwPut(*cp)) != 0) {
-                    break;
-                }
+    TwStart();
+    /* Send SLA+W and check for ACK. */
+    if ((rc = TwPut(sla << 1)) == 0) {
+        for (cp = (uint8_t *)txdata; txlen--; cp++) {
+            if ((rc = TwPut(*cp)) != 0) {
+                break;
             }
         }
     }
