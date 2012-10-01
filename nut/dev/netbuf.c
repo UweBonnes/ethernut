@@ -161,7 +161,7 @@ static int NutNetBufAllocData(NBDATA * nbd, int size, int offs)
  *             a null pointer.
  * \param type Part of the buffer to be allocated. This can be any of
  *             the following:
- *             - NBAF_DATALINK
+ *             - NBAF_DATALINK + 0 <= OFFSET <= 0xf
  *             - NBAF_NETWORK
  *             - NBAF_TRANSPORT
  *             - NBAF_APPLICATION
@@ -176,8 +176,11 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
     NBDATA * nbd;
     int offs = type & ~NBAF_ALL;
 
+    if ((type & NBAF_ALL) == NBAF_DATALINK)
+        type = NBAF_DATALINK;
+
     NUTASSERT(size > 0);
-    NUTASSERT((type & NBAF_ALL) == NBAF_DATALINK ||
+    NUTASSERT(type  == NBAF_DATALINK ||
         type == NBAF_NETWORK ||
         type == NBAF_TRANSPORT ||
         type == NBAF_APPLICATION);
