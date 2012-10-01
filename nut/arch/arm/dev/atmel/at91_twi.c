@@ -564,6 +564,8 @@ uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
 
         rc = NutGetCpuClock() / ((cldiv * 2 << ckdiv) - 3);
     }
+    else
+        rc = -1;
     return rc;
 }
 /*!
