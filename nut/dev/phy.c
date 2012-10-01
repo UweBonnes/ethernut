@@ -393,6 +393,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdior)(uint8_t))
 {
     uint16_t temp1 = 0, temp2 = 0;
+    uint_fast16_t count, length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
 
     PHPRINTF("NRP(%u, %p, %p)\n", mda, mdiow, mdior);
 
@@ -421,7 +422,17 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
     temp1 = phyr(PHY_ID1);
     temp2 = phyr(PHY_ID2);
 
-    phydcb->oui = ((uint32_t)temp1<<16)|(uint32_t)temp2;
+    phydcb->oui = (((uint32_t)temp1<<16)|(uint32_t)temp2);
+
+    /* Mask out revision bits */
+    phydcb->oui &=  ~OUIMSK_REV;
+    for(count=0; count<length; count++) {
+        if(phy_status_descr[count].phy_oui == phydcb->oui) {
+            break;
+        }
+    }
+    if(count>=length)
+        PHPRINTF("Unknown tranceiver ");
 
     PHPRINTF("PHY OUI=0x%08lx\n", phydcb->oui);
 
