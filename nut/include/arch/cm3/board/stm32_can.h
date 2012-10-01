@@ -92,3 +92,56 @@
 #ifndef DEV_DEBUG_NAME
 #define DEV_DEBUG_NAME  devUsartStm32_2.dev_name
 #endif
+
+#ifndef DEV_TWIBUS
+#define DEV_TWIBUS Stm32TwiBus_2
+#endif
+
+#if !defined(JTAG0_TDO_PIO_ID)
+#define JTAG0_TDO_PIO_ID    NUTGPIO_PORTC
+#endif
+
+#if !defined(JTAG0_TDO_PIO_BIT)
+#define JTAG0_TDO_PIO_BIT   11
+#endif
+
+#if !defined(JTAG0_TDI_PIO_ID)
+#define JTAG0_TDI_PIO_ID    NUTGPIO_PORTC
+#endif
+
+#if !defined(JTAG0_TDI_PIO_BIT)
+#define JTAG0_TDI_PIO_BIT   12
+#endif
+
+#if !defined(JTAG0_TMS_PIO_ID)
+#define JTAG0_TMS_PIO_ID    NUTGPIO_PORTB
+#endif
+
+#if !defined(JTAG0_TMS_PIO_BIT)
+#define JTAG0_TMS_PIO_BIT   15
+#endif
+
+#if !defined(JTAG0_TCK_PIO_ID)
+#define JTAG0_TCK_PIO_ID    NUTGPIO_PORTC
+#endif
+
+#if !defined(JTAG0_TCK_PIO_BIT)
+#define JTAG0_TCK_PIO_BIT   10
+#endif
+
+#if !defined(JTAG0_NTRST_PIO_ID)
+#define JTAG0_NTRST_PIO_ID    NUTGPIO_PORTC
+#endif
+
+#if !defined(JTAG0_NTRST_PIO_BIT)
+#define JTAG0_NTRST_PIO_BIT   9
+#endif
+
+#if !defined(JTAG0_CLOCK_RATE)
+#define JTAG0_CLOCK_RATE    100000
+#endif
+
+#if !defined(DEF_JTAG_CABLE)
+#define DEF_JTAG_CABLE jtag_gpio0
+#include <dev/jtag_gpio.h>
+#endif
