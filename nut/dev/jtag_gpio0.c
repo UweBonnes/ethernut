@@ -52,24 +52,6 @@
 
 #include <dev/jtag_gpio.h>
 
-#if defined(ETHERNUT3)
-/*
- * We do not have any config settings right now. So I add my
- * Ethernut 3 settings here, which I used for testing the code.
- *
- * - P16 TMS output.
- * - P18 TCK output.
- * - P19 TDO input.
- * - P20 RST output.
- * - P23 TDI output.
- */
-#define JTAG0_TDO_PIO_BIT   19
-#define JTAG0_TDI_PIO_BIT   23
-#define JTAG0_TMS_PIO_BIT   16
-#define JTAG0_TCK_PIO_BIT   18
-#define JTAG0_CLOCK_RATE    100000
-#endif
-
 #if !defined(JTAG0_TDO_PIO_ID) && defined(PIO_ID)
 #define JTAG0_TDO_PIO_ID    PIO_ID
 #endif
