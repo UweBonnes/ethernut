@@ -56,63 +56,52 @@
 #include <stdio.h>
 #endif
 
+#include <dev/gpio.h>
+
 #if defined(MMC_CLK_PIO_BIT) && defined(MMC_CLK_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID MMC_CLK_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void MMC_CLK_LO(void) { GPIO_SET_LO(MMC_CLK_PIO_BIT); }
-static INLINE void MMC_CLK_HI(void) { GPIO_SET_HI(MMC_CLK_PIO_BIT); }
-static INLINE void MMC_CLK_EN(void) { GPIO_ENABLE(MMC_CLK_PIO_BIT); }
-static INLINE void MMC_CLK_SO(void) { GPIO_OUTPUT(MMC_CLK_PIO_BIT); }
+static INLINE void MMC_CLK_LO(void)   { GpioPinSetLow   (MMC_CLK_PIO_ID, MMC_CLK_PIO_BIT); }
+static INLINE void MMC_CLK_HI(void)   { GpioPinSetHigh  (MMC_CLK_PIO_ID, MMC_CLK_PIO_BIT); }
+static INLINE void MMC_CLK_INIT(void) { GpioPinConfigSet(MMC_CLK_PIO_ID, MMC_CLK_PIO_BIT, GPIO_CFG_INPUT); }
+static INLINE void MMC_CLK_SO(void)   { GpioPinConfigSet(MMC_CLK_PIO_ID, MMC_CLK_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define MMC_CLK_LO()
 #define MMC_CLK_HI()
-#define MMC_CLK_EN()
+#define MMC_CLK_INIT()
 #define MMC_CLK_SO()
 #endif
 
 #if defined(MMC_MOSI_PIO_BIT) && defined(MMC_MOSI_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID    MMC_MOSI_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void MMC_MOSI_LO(void) { GPIO_SET_LO(MMC_MOSI_PIO_BIT); }
-static INLINE void MMC_MOSI_HI(void) { GPIO_SET_HI(MMC_MOSI_PIO_BIT); }
-static INLINE void MMC_MOSI_EN(void) { GPIO_ENABLE(MMC_MOSI_PIO_BIT); }
-static INLINE void MMC_MOSI_SO(void) { GPIO_OUTPUT(MMC_MOSI_PIO_BIT); }
+static INLINE void MMC_MOSI_LO(void)   { GpioPinSetLow   (MMC_MOSI_PIO_ID, MMC_MOSI_PIO_BIT); }
+static INLINE void MMC_MOSI_HI(void)   { GpioPinSetHigh  (MMC_MOSI_PIO_ID, MMC_MOSI_PIO_BIT); }
+static INLINE void MMC_MOSI_INIT(void) { GpioPinConfigSet(MMC_MOSI_PIO_ID, MMC_MOSI_PIO_BIT, GPIO_CFG_INPUT); }
+static INLINE void MMC_MOSI_SO(void)   { GpioPinConfigSet(MMC_MOSI_PIO_ID, MMC_MOSI_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define MMC_MOSI_LO()
 #define MMC_MOSI_HI()
-#define MMC_MOSI_EN()
+#define MMC_MOSI_INIT()
 #define MMC_MOSI_SO()
 #endif
 
 #if defined(MMC_MISO_PIO_BIT) && defined(MMC_MISO_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID    MMC_MISO_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE int MMC_MISO_TEST(void) { return GPIO_GET(MMC_MISO_PIO_BIT); }
-static INLINE void MMC_MISO_EN(void) { GPIO_ENABLE(MMC_MISO_PIO_BIT); }
-static INLINE void MMC_MISO_SI(void) { GPIO_INPUT(MMC_MISO_PIO_BIT); }
+static INLINE int MMC_MISO_TEST(void) { return GpioPinGet(MMC_MISO_PIO_ID, MMC_MISO_PIO_BIT); }
+static INLINE void MMC_MISO_INIT(void) { GpioPinConfigSet(MMC_MISO_PIO_ID, MMC_MISO_PIO_BIT, GPIO_CFG_INPUT); }
 #else
 #define MMC_MISO_TEST() (1)
-#define MMC_MISO_EN()
-#define MMC_MISO_SI()
+#define MMC_MISO_INIT()
+#define MMC_MISO_SO()
 #endif
 
 #if defined(MMC_CS_PIO_BIT) && defined(MMC_CS_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID    MMC_CS_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void MMC_CS_LO(void) { GPIO_SET_LO(MMC_CS_PIO_BIT); }
-static INLINE void MMC_CS_HI(void) { GPIO_SET_HI(MMC_CS_PIO_BIT); }
-static INLINE int MMC_CS_IS(void) { return GPIO_IS_HI(MMC_CS_PIO_BIT); }
-static INLINE void MMC_CS_EN(void) { GPIO_ENABLE(MMC_CS_PIO_BIT); }
-static INLINE void MMC_CS_SO(void) { GPIO_OUTPUT(MMC_CS_PIO_BIT); }
+static INLINE void MMC_CS_LO(void)   {    GpioPinSetLow(MMC_CS_PIO_ID, MMC_CS_PIO_BIT); }
+static INLINE void MMC_CS_HI(void)   {   GpioPinSetHigh(MMC_CS_PIO_ID, MMC_CS_PIO_BIT); }
+static INLINE int  MMC_CS_IS(void) { return  GpioPinGet(MMC_CS_PIO_ID, MMC_CS_PIO_BIT); }
+static INLINE void MMC_CS_INIT(void) { GpioPinConfigSet(MMC_CS_PIO_ID, MMC_CS_PIO_BIT, GPIO_CFG_INPUT); }
+static INLINE void MMC_CS_SO(void)   { GpioPinConfigSet(MMC_CS_PIO_ID, MMC_CS_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define MMC_CS_LO()
 #define MMC_CS_HI()
 #define MMC_CS_IS()    (1)
-#define MMC_CS_EN()
+#define MMC_CS_INIT()
 #define MMC_CS_SO()
 #endif
 
@@ -257,43 +246,24 @@ static int SbiMmCardWrProt(void)
  */
 static int SbiMmcIfcInit(NUTDEVICE * dev)
 {
-    /* Enable all clocks. */
-#if defined(PMC_PCER)
-#if defined(MMC_CLK_PIO_ID)
-    outr(PMC_PCER, _BV(MMC_CLK_PIO_ID));
-#endif
-#if defined(MMC_MOSI_PIO_ID)
-    outr(PMC_PCER, _BV(MMC_MOSI_PIO_ID));
-#endif
-#if defined(MMC_MISO_PIO_ID)
-    outr(PMC_PCER, _BV(MMC_MISO_PIO_ID));
-#endif
-#if defined(MMC_CS_PIO_ID)
-    outr(PMC_PCER, _BV(MMC_CS_PIO_ID));
-#endif
-#if defined(MMC_CD_PIO_ID)
-    outr(PMC_PCER, _BV(MMC_CD_PIO_ID));
-#endif
-#if defined(MMC_WP_PIO_ID)
-    outr(PMC_PCER, _BV(MMC_WP_PIO_ID));
-#endif
-#endif /* PMC_PCER */
+    /* Enable all clocks.
+     * To make sure we don't touch a line during setup
+     * with an unwanted level, we first configure as
+     * input
+     */
+    MMC_CLK_INIT();
+    MMC_MOSI_INIT();
+    MMC_MISO_INIT();
+    MMC_CS_INIT();
 
     /* Set all outputs high. */
     MMC_CLK_HI();
     MMC_MOSI_HI();
     MMC_CS_HI();
 
-    /* Enable GPIO on all lines. */
-    MMC_CLK_EN();
-    MMC_MOSI_EN();
-    MMC_MISO_EN();
-    MMC_CS_EN();
-
     /* Set line directions. */
     MMC_CLK_SO();
     MMC_MOSI_SO();
-    MMC_MISO_SI();
     MMC_CS_SO();
 
     mmc_dcb.dcb_avail = 1;

@@ -50,96 +50,80 @@
 #include <sys/timer.h>
 #include <stdlib.h>
 
+#include <dev/board.h>
 #include <dev/jtag_gpio.h>
+#include <dev/gpio.h>
 
-#if !defined(JTAG0_TDO_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TDO_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TDO_PIO_BIT) && defined(JTAG0_TDO_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TDO_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE int JTAG0_TDO_IS_ON(void) { return GPIO_GET(JTAG0_TDO_PIO_BIT); }
-static INLINE void JTAG0_TDO_SI(void) { GPIO_INPUT(JTAG0_TDO_PIO_BIT); GPIO_ENABLE(JTAG0_TDO_PIO_BIT); }
+#if defined(JTAG0_TDO_PIO_ID) && defined(JTAG0_TDO_PIO_BIT)
+static INLINE int JTAG0_TDO_IS_ON(void) { return GpioPinGet(JTAG0_TDO_PIO_ID, JTAG0_TDO_PIO_BIT); }
+static INLINE void JTAG0_TDO_SI(void) \
+{ GpioPinConfigSet(JTAG0_TDO_PIO_ID, JTAG0_TDO_PIO_BIT, GPIO_CFG_INPUT); }
 #else
 #define JTAG0_TDO_IS_ON()   (1)
 #define JTAG0_TDO_SI()
 #endif
 
-#if !defined(JTAG0_TDI_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TDI_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TDI_PIO_BIT) && defined(JTAG0_TDI_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TDI_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_TDI_LO(void) { GPIO_SET_LO(JTAG0_TDI_PIO_BIT); }
-static INLINE void JTAG0_TDI_HI(void) { GPIO_SET_HI(JTAG0_TDI_PIO_BIT); }
-static INLINE void JTAG0_TDI_SO(void) { GPIO_OUTPUT(JTAG0_TDI_PIO_BIT); GPIO_ENABLE(JTAG0_TDI_PIO_BIT); }
+#if defined(JTAG0_TDI_PIO_ID) && defined(JTAG0_TDI_PIO_BIT)
+static INLINE void JTAG0_TDI_LO(void) {  GpioPinSetLow(JTAG0_TDI_PIO_ID, JTAG0_TDI_PIO_BIT); }
+static INLINE void JTAG0_TDI_HI(void) { GpioPinSetHigh(JTAG0_TDI_PIO_ID, JTAG0_TDI_PIO_BIT); }
+static INLINE void JTAG0_TDI_SO(void) \
+{ GpioPinConfigSet(JTAG0_TDI_PIO_ID, JTAG0_TDI_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define JTAG0_TDI_LO()
 #define JTAG0_TDI_HI()
 #define JTAG0_TDI_SO()
 #endif
 
-#if !defined(JTAG0_TMS_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TMS_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TMS_PIO_BIT) && defined(JTAG0_TMS_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TMS_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_TMS_LO(void) { GPIO_SET_LO(JTAG0_TMS_PIO_BIT); }
-static INLINE void JTAG0_TMS_HI(void) { GPIO_SET_HI(JTAG0_TMS_PIO_BIT); }
-static INLINE void JTAG0_TMS_SO(void) { GPIO_OUTPUT(JTAG0_TMS_PIO_BIT); GPIO_ENABLE(JTAG0_TMS_PIO_BIT); }
+#if defined(JTAG0_TMS_PIO_ID) && defined(JTAG0_TMS_PIO_BIT)
+static INLINE void JTAG0_TMS_LO(void) {  GpioPinSetLow(JTAG0_TMS_PIO_ID, JTAG0_TMS_PIO_BIT); }
+static INLINE void JTAG0_TMS_HI(void) { GpioPinSetHigh(JTAG0_TMS_PIO_ID, JTAG0_TMS_PIO_BIT); }
+static INLINE void JTAG0_TMS_SO(void) \
+{ GpioPinConfigSet(JTAG0_TMS_PIO_ID, JTAG0_TMS_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define JTAG0_TMS_LO()
 #define JTAG0_TMS_HI()
 #define JTAG0_TMS_SO()
 #endif
 
-#if !defined(JTAG0_TCK_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TCK_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TCK_PIO_BIT) && defined(JTAG0_TCK_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TCK_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_TCK_LO(void) { GPIO_SET_LO(JTAG0_TCK_PIO_BIT); }
-static INLINE void JTAG0_TCK_HI(void) { GPIO_SET_HI(JTAG0_TCK_PIO_BIT); }
-static INLINE void JTAG0_TCK_SO(void) { GPIO_OUTPUT(JTAG0_TCK_PIO_BIT); GPIO_ENABLE(JTAG0_TCK_PIO_BIT); }
+#if defined(JTAG0_TCK_PIO_ID) && defined(JTAG0_TCK_PIO_BIT)
+static INLINE void JTAG0_TCK_LO(void) {  GpioPinSetLow(JTAG0_TCK_PIO_ID, JTAG0_TCK_PIO_BIT); }
+static INLINE void JTAG0_TCK_HI(void) { GpioPinSetHigh(JTAG0_TCK_PIO_ID, JTAG0_TCK_PIO_BIT); }
+static INLINE void JTAG0_TCK_SO(void) \
+{ GpioPinConfigSet(JTAG0_TCK_PIO_ID, JTAG0_TCK_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define JTAG0_TCK_LO()
 #define JTAG0_TCK_HI()
 #define JTAG0_TCK_SO()
 #endif
 
-#if !defined(JTAG0_NSRST_PIO_ID) && defined(PIO_ID)
-#define JTAG0_NSRST_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_NSRST_PIO_BIT) && defined(JTAG0_NSRST_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_NSRST_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_NSRST_LO(void) { GPIO_SET_LO(JTAG0_NSRST_PIO_BIT); }
-static INLINE void JTAG0_NSRST_HI(void) { GPIO_SET_HI(JTAG0_NSRST_PIO_BIT); }
-static INLINE void JTAG0_NSRST_SO(void) { GPIO_OPENDRAIN(JTAG0_NSRST_PIO_BIT); GPIO_OUTPUT(JTAG0_NSRST_PIO_BIT); GPIO_ENABLE(JTAG0_NSRST_PIO_BIT); }
+#if defined(JTAG0_NSRST_PIO_ID) && defined(JTAG0_NSRST_PIO_BIT)
+static INLINE void JTAG0_NSRST_LO(void)                   \
+{  GpioPinSetLow(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT);\
+    GpioPinDrive(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT);}
+static INLINE void JTAG0_NSRST_HI(void)                      \
+{   GpioPinRelease(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT); \
+    GpioPinSetHigh(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT); }
+static INLINE void JTAG0_NSRST_SO(void)                                       \
+{ GpioPinConfigSet(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT, GPIO_CFG_INPUT);  \
+    GpioPinSetHigh  (JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT);                \
+    GpioPinConfigSet(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT, GPIO_CFG_OUTPUT| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP);}
 #else
 #define JTAG0_NSRST_LO()
 #define JTAG0_NSRST_HI()
 #define JTAG0_NSRST_SO()
 #endif
 
-#if !defined(JTAG0_NTRST_PIO_ID) && defined(PIO_ID)
-#define JTAG0_NTRST_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_NTRST_PIO_BIT) && defined(JTAG0_NTRST_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_NTRST_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_NTRST_LO(void) { GPIO_SET_LO(JTAG0_NTRST_PIO_BIT); }
-static INLINE void JTAG0_NTRST_HI(void) { GPIO_SET_HI(JTAG0_NTRST_PIO_BIT); }
-static INLINE void JTAG0_NTRST_SO(void) { GPIO_OPENDRAIN(JTAG0_NTRST_PIO_BIT); GPIO_OUTPUT(JTAG0_NTRST_PIO_BIT); GPIO_ENABLE(JTAG0_NTRST_PIO_BIT); }
+#if defined(JTAG0_NTRST_PIO_ID) && defined(JTAG0_NTRST_PIO_BIT)
+static INLINE void JTAG0_NTRST_LO(void)                   \
+{  GpioPinSetLow(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT);\
+    GpioPinDrive(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT);}
+static INLINE void JTAG0_NTRST_HI(void)                      \
+{   GpioPinRelease(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT); \
+    GpioPinSetHigh(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT); }
+static INLINE void JTAG0_NTRST_SO(void)                                       \
+{   GpioPinConfigSet(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT, GPIO_CFG_INPUT);\
+    GpioPinSetHigh  (JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT);                \
+    GpioPinConfigSet(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT, GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP);}
 #else
 #define JTAG0_NTRST_LO()
 #define JTAG0_NTRST_HI()
@@ -170,13 +154,6 @@ static void *JtagCable0Open(void)
 
     cib = calloc(1, sizeof(CABLE_INFO));
     if (cib) {
-#if defined(MCU_AT91) && defined(JTAG0_TDO_PIO_ID)
-#if defined(PS_PCER)
-        outr(PS_PCER, _BV(JTAG0_TDO_PIO_ID));
-#elif defined(PMC_PCER)
-        outr(PMC_PCER, _BV(JTAG0_TDO_PIO_ID));
-#endif
-#endif
         JTAG0_TDO_SI();
         JTAG0_TDI_SO();
         JTAG0_TMS_SO();
