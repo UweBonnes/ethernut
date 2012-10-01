@@ -62,6 +62,11 @@
 #endif
 #endif
 
+#ifndef DEV_CONSOLE_NAME
+/* Removed in dev/board.h, but added here again for backward compatibility. */
+#define DEV_CONSOLE_NAME "uart0"
+#endif
+
 /*
  * Ethernet devices
  */

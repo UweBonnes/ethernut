@@ -45,6 +45,15 @@
 #error "Do not include this file directly. Use dev/board.h instead!"
 #endif
 
+#ifndef DEV_CONSOLE_NAME
+/* Removed in dev/board.h, but added here again for backward compatibility. */
+#ifdef NUT_DEV_DEBUG_READ
+#define DEV_CONSOLE_NAME "dbgu"
+#else
+#define DEV_CONSOLE_NAME "uart0"
+#endif
+#endif
+
 /*
  * Ethernet devices
  */
