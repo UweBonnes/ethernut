@@ -61,11 +61,11 @@ struct _NUTTWIICB {
 
     /*! \brief Bus current error condition.
      */
-    volatile uint_fast8_t tw_mm_err;
+    volatile int_fast8_t tw_mm_err;
 
     /*! \brief Bus last error condition.
      */
-    volatile uint_fast8_t tw_mm_error;
+    volatile int_fast8_t tw_mm_error;
 
     /*! \brief Bus nodes internal address register length.
      */

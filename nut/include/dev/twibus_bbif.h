@@ -14,7 +14,7 @@ struct _NUTTWIICB {
 
     /*! \brief Bus last error condition.
      */
-    volatile uint_fast8_t tw_mm_error;
+    volatile int_fast8_t tw_mm_error;
 };
 
 extern NUTTWIBUS TwBbifBus;
