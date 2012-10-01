@@ -104,6 +104,7 @@ all:
 	$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
+	$(MAKE) -C twitest
 	$(MAKE) -C uart
 	$(MAKE) -C owibus
 
@@ -152,6 +153,7 @@ clean:
 	$(MAKE) -C tcps clean
 	$(MAKE) -C threads clean
 	$(MAKE) -C timers clean
+	$(MAKE) -C twitest clean
 	$(MAKE) -C uart clean
 	$(MAKE) -C owibus clean
 
