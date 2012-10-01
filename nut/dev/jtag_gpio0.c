@@ -178,6 +178,9 @@ static void JtagCable0TmsFlush(void *cbl)
     int j;
     int n;
 
+    if ((cib->cib_bidx == 0) && (cib->cib_bbit == 0))
+        return;
+
     n = cib->cib_bidx + (cib->cib_bbit == 0);
     for (i = 0; i < n; i++) {
         tms = cib->cib_buf[i];
