@@ -742,7 +742,7 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
  *
  * \return always 10000 which is just a dummy value
  */
-int NutTwiGetSpeed( NUTTWIBUS *bus)
+uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
 {
     return 10000;
 }
@@ -770,7 +770,7 @@ int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf )
         break;
 
     case TWI_GETSPEED:
-        rc = NutTwiGetSpeed(bus);
+        *((uint32_t *)conf) = NutTwiGetSpeed(bus);
         break;
 
     case TWI_GETSTATUS:

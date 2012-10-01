@@ -841,12 +841,11 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
  *
  * \return 0..400000 for speed, -1 in case of error.
  */
-int NutTwiGetSpeed( NUTTWIBUS *bus)
+int NutTwiGetSpeed( NUTTWIBUS *bus, uint32_t *speed)
 {
 #ifndef __AVR_ENHANCED__
     return -1;
 #else
-    int rc = -1;
     uint32_t lval;
 
     if (bus) {
@@ -857,9 +856,9 @@ int NutTwiGetSpeed( NUTTWIBUS *bus)
         if (bit_is_set(TWSR, TWPS1)) {
             lval *= 16UL;
         }
-        rc = NutGetCpuClock() / (16UL + lval * (uint32_t) inb(TWBR));
+        *speed = NutGetCpuClock() / (16UL + lval * (uint32_t) inb(TWBR));
     }
-    return rc;
+    return 0;
 #endif
 }
 
@@ -896,7 +895,7 @@ int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf )
         break;
 
     case TWI_GETSPEED:
-        rc = NutTwiGetSpeed(bus);
+        rc = NutTwiGetSpeed(bus, ((uint32_t *)conf));
         break;
 
     case TWI_GETSTATUS:

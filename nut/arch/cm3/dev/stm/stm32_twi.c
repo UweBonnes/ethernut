@@ -881,9 +881,9 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
  * \brief Request Current Speed of I2C Interface.
  *
  */
-int NutTwiGetSpeed( NUTTWIBUS *bus)
+uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
 {
-    int rc = 0;
+    uint32_t speed = 0;
     uint32_t ccr = 0;
     uint32_t apbclk = NutClockGet(NUT_HWCLK_PCLK1);
     I2C_TypeDef* I2Cx = (I2C_TypeDef*)bus->bus_base;
@@ -892,13 +892,13 @@ int NutTwiGetSpeed( NUTTWIBUS *bus)
 
     if(ccr & I2C_CCR_FS) {
         /* High speed */
-        rc=(int)(apbclk/(25UL*(ccr&I2C_CCR_CCR)));
+        speed=(int)(apbclk/(25UL*(ccr&I2C_CCR_CCR)));
     }
     else {
         /* Low speed */
-        rc=(int)(apbclk/(2UL*(ccr&I2C_CCR_CCR)));
+        speed=(int)(apbclk/(2UL*(ccr&I2C_CCR_CCR)));
     }
-    return rc;
+    return speed;
 }
 
 /*!
