@@ -1015,7 +1015,7 @@ int NutDestroyTwiBus( NUTTWIBUS *bus)
 /*!
  * \brief TWI/I2C bus structure.
  */
-NUTTWIBUS TwBbifBus = {
+NUTTWIBUS AVRTwiBus = {
   /*.bus_base =   */  0,                   /* Bus base address. */
 #ifndef __AVR_ENHANCED__
   /*.bus_sig_ev = */  NULL,                /* Bus data and event interrupt handler. */
