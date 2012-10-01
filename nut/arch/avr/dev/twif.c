@@ -512,17 +512,18 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
     NUTTWIICB *icb = bus->bus_icb;
     int rc = -1;
     /* This routine is marked reentrant, so lock the interface. */
-    if(NutEventWait(&bus->bus_mutex, 500)) {
+    if(NutEventWait(&bus->bus_mutex, tmo)) {
         icb->tw_mm_err = TWERR_IF_LOCKED;
         NutEventPost(&bus->bus_mutex);
         return -1;
     }
-
+    if (icb->tw_if_busy)
+        NutSleep(1);
     while(icb->tw_if_busy) {
-        NutSleep(63);
-        if (tmo < 63)
+        if (tmo == 1)
             return -1;
-        tmo -= 63;
+        NutSleep(1);
+        tmo --;
     }
     NutEnterCritical();
     /*
