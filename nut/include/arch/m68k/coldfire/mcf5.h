@@ -30,13 +30,16 @@
  * For additional information see http://www.ethernut.de/
  */
 
-#ifndef _CPU_MCF5XXX_H
-#define _CPU_MCF5XXX_H
+#ifndef _MCF5_H
+#define _MCF5_H
 
+#include <stdint.h>
 #include <cfg/arch.h>
 
 #if defined (MCU_MCF5225X)
 #include <arch/m68k/coldfire/mcf5225x/mcf5225x.h>
+#elif defined (MCU_MCF51CN)
+#include <arch/m68k/coldfire/mcf51cn/mcf51cn.h>
 #else
 #warning "Unknown Coldfire MCU Family defined"
 #endif
@@ -47,7 +50,7 @@
  *        3322222222221111 111111
  *        1098765432109876 5432109876543210
  *       +----------------+----------------+
- * A7--> |FS/Fmt/Vector/FS|      SR        |
+ * A7--> |Fmt/FS/Vector/FS|      SR        |
  *       +----------------+----------------+
  * +0x04 |         Program Counter         |
  *       +----------------+----------------+
@@ -64,5 +67,5 @@
 #define MCF5_SF_SR(PTR)  *((uint16_t *)(PTR)+1)
 #define MCF5_SF_PC(PTR)  *((uint32_t *)(PTR)+1)
 
-#endif  /* _CPU_MCF5XXX_H */
+#endif  /* _MCF5_H */
 

@@ -31,8 +31,8 @@
  */
 
 #include <string.h>
-#include <arch/m68k.h>
 #include <cfg/twi.h>
+#include <arch/m68k.h>
 #include <dev/twif.h>
 #include <sys/event.h>
 #include <sys/timer.h>

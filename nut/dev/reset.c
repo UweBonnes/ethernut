@@ -65,6 +65,8 @@ void NutReset(void)
     Cortex_Reset();
 #elif defined(MCU_MCF5225X)
     Mcf5225x_Reset();
+#elif defined(MCU_MCF51CN)
+    Mcf51cn_Reset();
 #endif
 }
 
@@ -85,6 +87,8 @@ int NutResetCause(void)
     return Cortex_ResetCause();
 #elif defined(MCU_MCF5225X)
     return Mcf5225x_ResetCause();
+#elif defined(MCU_MCF51CN)
+    return Mcf51cn_ResetCause();
 #else
     return NUT_RSTTYP_UNKNOWN;
 #endif

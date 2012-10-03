@@ -34,8 +34,8 @@
 #error "Do not include this file directly. Use dev/reset.h instead!"
 #endif
 
-#if defined(MCU_MCF5225X)
-#include <arch/m68k/coldfire/mcf5225x/mcf5225x_reset.h>
+#if defined(MCU_COLDFIRE)
+#include <arch/m68k/coldfire/reset_mcf5.h>
 #else
-#warning "Unknown Coldfire MCU Family defined"
+#warning "Unknown M68K MCU Family defined"
 #endif

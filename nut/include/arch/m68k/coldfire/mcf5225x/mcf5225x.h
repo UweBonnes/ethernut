@@ -30,36 +30,17 @@
  * For additional information see http://www.ethernut.de/
  */
 
-#ifndef __MCF5225X225X_H__
-#define __MCF5225X225X_H__
+#ifndef MCF5225X_H_
+#define MCF5225X_H_
 
-/* Peripherals */
-#include "mcf52259_scm.h"
-#include "mcf52259_fbcs.h"
-#include "mcf52259_dma.h"
-#include "mcf52259_uart.h"
-#include "mcf52259_i2c.h"
-#include "mcf52259_qspi.h"
-#include "mcf52259_dtim.h"
-#include "mcf52259_intc.h"
-#include "mcf52259_fec.h"
-#include "mcf52259_gpio.h"
-#include "mcf52259_pad.h"
-#include "mcf52259_rcm.h"
-#include "mcf52259_ccm.h"
-#include "mcf52259_pmm.h"
-#include "mcf52259_clock.h"
-#include "mcf52259_eport.h"
-#include "mcf52259_bwt.h"
-#include "mcf52259_pit.h"
-#include "mcf52259_flexcan.h"
-#include "mcf52259_canmb.h"
-#include "mcf52259_rtc.h"
-#include "mcf52259_adc.h"
-#include "mcf52259_gpt.h"
-#include "mcf52259_pwm.h"
-#include "mcf52259_usb_otg.h"
-#include "mcf52259_cfm.h"
-#include "mcf52259_rnga.h"
+#include "mcf5225x_clock.h"
+#include "mcf5225x_fbcs.h"
+#include "mcf5225x_gpio.h"
+#include "mcf5225x_i2c.h"
+#include "mcf5225x_intc.h"
+#include "mcf5225x_pit.h"
+#include "mcf5225x_rcm.h"
+#include "mcf5225x_scm.h"
+#include "mcf5225x_uart.h"
 
-#endif /* __MCF225X_H__ */
+#endif /* MCF5225X_H_ */

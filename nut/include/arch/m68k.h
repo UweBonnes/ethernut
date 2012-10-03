@@ -33,6 +33,8 @@
  * For additional information see http://www.ethernut.de/
  */
 
+#include <cfg/arch.h>
+
 #if defined (MCU_COLDFIRE)
 #include <arch/m68k/coldfire/mcf5.h>
 #else

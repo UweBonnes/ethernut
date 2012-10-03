@@ -581,17 +581,26 @@ lpc17xx_ld_choice =
     "lpc1778_flash",
 }
 
-m68k_ld_description = {
-		mcf5225x_512_rom                    = "MCF5225x, code running in FLASH",
-		mcf5225x_512_rom_512_extram         = "MCF5225x, code running in FLASH, data in external SDRAM",
-		mcf5225x_512_rom_512_extram_boot    = "MCF5225x, code running in FLASH, data in external SDRAM, started by bootloader at address 0x4000, vectors in external SDRAM"
+mcf51cn_ld_description = {
+        mcf51cn_512_rom                    = "MCF51cn, code running in FLASH",
 }
 
-m68k_ld_choice = {
-		" ",
-		"mcf5225x_512_rom",
-		"mcf5225x_512_rom_512_extram",
-		"mcf5225x_512_rom_512_extram_boot"
+mcf51cn_ld_choice = {
+        " ",
+        "mcf51cn_128_rom",
+}
+
+mcf5225x_ld_description = {
+        mcf5225x_512_rom                    = "MCF5225x, code running in FLASH",
+        mcf5225x_512_rom_512_extram         = "MCF5225x, code running in FLASH, data in external SDRAM",
+        mcf5225x_512_rom_512_extram_boot    = "MCF5225x, code running in FLASH, data in external SDRAM, started by bootloader at address 0x4000, vectors in external SDRAM"
+}
+
+mcf5225x_ld_choice = {
+        " ",
+        "mcf5225x_512_rom",
+        "mcf5225x_512_rom_512_extram",
+        "mcf5225x_512_rom_512_extram_boot"
 }
 
 --
@@ -665,7 +674,12 @@ function GetLDScripts()
         end
     end
 	if c_is_provided("TOOL_CC_M68K") then
-		return m68k_ld_choice
+        if c_is_provided("HW_MCU_MCF5225X") then
+            return mcf5225x_ld_choice
+        end
+        if c_is_provided("HW_MCU_MCF51CN") then
+            return mcf51cn_ld_choice
+        end
 	end
 end
 
@@ -715,7 +729,13 @@ function GetLDScriptDescription()
        end
     end
 	if c_is_provided("TOOL_CC_M68K") then
-		return FormatLDScriptDescription(m68k_ld_description)
+	   if c_is_provided("MCU_MCF5525X") then
+           return FormatLDScriptDescription(mcf5225x_ld_description)
+       end
+       if c_is_provided("MCU_MCF51CN") then
+           return FormatLDScriptDescription(mcf51cn_ld_description)
+       end
+           return ""
 	end
 end
 

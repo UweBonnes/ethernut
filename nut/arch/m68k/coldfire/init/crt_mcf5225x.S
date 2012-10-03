@@ -48,9 +48,9 @@ vector49:   .long   IH_DEFAULT
 vector4A:   .long   IH_DEFAULT
 vector4B:   .long   IH_DEFAULT
 vector4C:   .long   IH_DEFAULT
-vector4D:   .long   IH_DEFAULT
-vector4E:   .long   IH_DEFAULT
-vector4F:   .long   IH_DEFAULT
+vector4D:   .long   IH_UART0
+vector4E:   .long   IH_UART1
+vector4F:   .long   IH_UART2
 vector50:   .long   IH_DEFAULT
 vector51:   .long   IH_I2C0
 vector52:   .long   IH_DEFAULT

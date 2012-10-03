@@ -114,8 +114,8 @@ typedef struct _NUTTWIBUS NUTTWIBUS;
 #include "dev/twibus_at91.h"
 #endif
 
-#elif defined(__m68k__) && defined(MCU_COLDFIRE)
-#include <arch/m68k/coldfire/mcf5_twi.h>
+#elif defined(__m68k__)
+#include <arch/m68k/twi.h>
 #endif
 
 

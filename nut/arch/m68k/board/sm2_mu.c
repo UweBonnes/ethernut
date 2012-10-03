@@ -32,28 +32,21 @@
 
 #include <cfg/arch.h>
 #include <arch/m68k.h>
+#include <dev/gpio.h>
 
 void NutBoardInit(void)
 {
 #if PLATFORM_SUB == REV_C
 	/* Set GPIO function for enable Usart2 (RS-232). Set pin FORCEON. */
-	MCF_GPIO_PANPAR &= ~MCF_GPIO_PANPAR_PANPAR7;
-
-	/* Set FORCEON as an output */
-	MCF_GPIO_DDRAN |= MCF_GPIO_DDRAN_DDRAN7;
-
-	/* Set FORCEON = 1 */
-	MCF_GPIO_SETAN = MCF_GPIO_SETAN_SETAN7;
+    GpioPinConfigSet(PORTAN, 7, GPIO_CFG_OUTPUT);
+    GpioPinSetHigh(PORTAN, 7);
 
 #elif PLATFORM_SUB == REV_D
     /* Set GPIO function for enable Usart2 (RS-232). Set pins \EN and SD (shutdown)*/
-    MCF_GPIO_PANPAR &= ~(MCF_GPIO_PANPAR_PANPAR3 | MCF_GPIO_PANPAR_PANPAR4);
-
-    /* Set \EN and SD as an outputs */
-    MCF_GPIO_DDRAN |= MCF_GPIO_DDRAN_DDRAN3 | MCF_GPIO_DDRAN_DDRAN4;
-
-    /* Set \EN = 0 and SD = 0 */
-    MCF_GPIO_CLRAN = ~(MCF_GPIO_CLRAN_CLRAN3 | MCF_GPIO_CLRAN_CLRAN4);
+    GpioPinConfigSet(PORTAN, 3, GPIO_CFG_OUTPUT);
+    GpioPinConfigSet(PORTAN, 4, GPIO_CFG_OUTPUT);
+    GpioPinSetLow(PORTAN, 3);
+    GpioPinSetLow(PORTAN, 4);
 #else
 	#error "Please define User Platform Macro PLATFORM_SUB in Nut/OS Configurator."
 #endif
@@ -64,14 +57,12 @@ void BoardInitExtram(void)
     extern void *__extram_start;
     extern void *__extram_size;
 
-    MCF_GPIO_PTHPAR = 0x5555;   /* Enable Data Lines D0-D7 */
-    MCF_GPIO_PTEPAR = 0xFF;     /* Enable Address Lines A0-A7 */
-    MCF_GPIO_PTFPAR = 0xFF;     /* Enable Address Lines A8-A15 */
-    MCF_GPIO_PTGPAR = MCF_GPIO_PTGPAR_MB_A16_MB_A16 | MCF_GPIO_PTGPAR_MB_A17_MB_A17 | MCF_GPIO_PTGPAR_MB_A18_MB_A18
-            | MCF_GPIO_PTGPAR_MB_A19_MB_A19 | MCF_GPIO_PTGPAR_MB_CS0_MB_CS0 | MCF_GPIO_PTGPAR_MB_OE_MB_OE
-            | MCF_GPIO_PTGPAR_MB_RW_MB_RW;
+    GpioPortConfigSet(PORTTH, 0xFF, GPIO_CFG_PERIPHERAL0);  /* Enable Data Lines D0-D7 */
+    GpioPortConfigSet(PORTTE, 0xFF, GPIO_CFG_PERIPHERAL0);  /* Enable Address Lines A0-A7 */
+    GpioPortConfigSet(PORTTF, 0xFF, GPIO_CFG_PERIPHERAL0);  /* Enable Address Lines A8-A15 */
+    GpioPortConfigSet(PORTTG, 0xEF, GPIO_CFG_PERIPHERAL0);
 
-    MCF_FBCS0_CSAR = MCF_FBCS_CSAR_BA(((uint32_t) &__extram_start));
-    MCF_FBCS0_CSMR = ((((uint32_t) &__extram_size) - 1) & 0xFFFF0000) | MCF_FBCS_CSMR_V;
-    MCF_FBCS0_CSCR = MCF_FBCS_CSCR_AA | MCF_FBCS_CSCR_PS_8;
+    MCF_FBCS_CSAR(0) = MCF_FBCS_CSAR_BA(((uint32_t) &__extram_start));
+    MCF_FBCS_CSMR(0) = ((((uint32_t) &__extram_size) - 1) & 0xFFFF0000) | MCF_FBCS_CSMR_V;
+    MCF_FBCS_CSCR(0) = MCF_FBCS_CSCR_AA | MCF_FBCS_CSCR_PS_8;
 }

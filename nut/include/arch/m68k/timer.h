@@ -30,5 +30,20 @@
  * For additional information see http://www.ethernut.de/
  */
 
+#ifndef _SYS_TIMER_H
+#error "Do not include this file directly. Use sys/timer.h instead!"
+#endif
+
+#if defined(MCU_COLDFIRE)
+#if defined(MCU_MCF5225X)
 #define NutEnableTimerIrq()     NutIrqEnable(&sig_PIT0)
 #define NutDisableTimerIrq()    NutIrqDisable(&sig_PIT0)
+#elif defined(MCU_MCF51CN)
+#define NutEnableTimerIrq()     NutIrqEnable(&sig_MTIM1)
+#define NutDisableTimerIrq()    NutIrqDisable(&sig_MTIM1)
+#else
+#warning "Unknown Coldfire MCU Family defined"
+#endif
+#else
+#warning "Unknown M68K MCU Family defined"
+#endif

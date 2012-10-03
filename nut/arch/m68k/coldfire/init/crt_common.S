@@ -110,6 +110,8 @@ vector3F:    .long    IH_DEFAULT    /* Reserved             */
     .section .init0,"ax",%progbits
 _start:
 _reset:
+    /* disable interrupts */
+    /* move.w        #0x2700,%sr */
 
 //------------------------------------------------------------------------------
 // Section 2 - Set up stack pointer
@@ -126,6 +128,7 @@ _reset:
 
     /* Push a dummy return address. */
     move.l %fp,%sp@-
+    // TODO: zkusit: link %fp, #0
 
 //------------------------------------------------------------------------------
 // Section 4 - External Memories initialization (board dependant code)

@@ -35,7 +35,7 @@
 #endif
 
 #if defined(MCU_COLDFIRE)
-#include <arch/m68k/coldfire/mcf5_irqreg.h>
+#include <arch/m68k/coldfire/irqreg_mcf5.h>
 #else
 #warning "Unknown M68K MCU Family defined"
 #endif

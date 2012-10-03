@@ -99,8 +99,6 @@ SECTIONS
     .dataint : ALIGN(4)
     {
         PROVIDE (__dataint_start = .) ;
-        PROVIDE (__vectors_start = .) ;
-        KEEP(*(.vectors))
         *(.dataint)
         *(.dataint.*)
         . = ALIGN(4);

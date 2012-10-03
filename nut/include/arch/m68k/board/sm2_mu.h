@@ -30,26 +30,21 @@
  * For additional information see http://www.ethernut.de/
  */
 
-#ifndef _SM2_MU_H_
-#define _SM2_MU_H_
-
 #ifndef _DEV_BOARD_H_
 #error "Do not include this file directly. Use dev/board.h instead!"
 #endif
 
 /*
+ * UART devices
+ */
+#include <dev/usartmcf5.h>
+#define DEV_UART0       devUartMcf5_0
+#define DEV_UART1       devUartMcf5_1
+#define DEV_UART2       devUartMcf5_2
+
+/*
  * Debug device.
  */
-#include <dev/debug.h>
-
-//#define EARLY_STDIO_DEV devDebug2
-
 #ifndef DEV_DEBUG
 #define DEV_DEBUG		devDebug2
-#endif
-
-#ifndef DEV_DEBUG_NAME
-#define DEV_DEBUG_NAME	"uart2"
-#endif
-
 #endif

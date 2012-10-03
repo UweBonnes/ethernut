@@ -208,6 +208,8 @@ mcu_names = {
     "MCU_LPC1758",
     "MCU_LPC1768",
     "MCU_LPC1778",
+    "MCU_MCF52259", 
+    "MCU_MCF51CN128",
     "MCU_ZERO"
 }
 
@@ -677,6 +679,20 @@ function GetColdfirePioIds()
             "PORTUB",
             "PORTUC",
             "PORTDD",
+        }
+    end
+    if c_is_provided("HW_MCU_MCF51CN") then
+        return {
+            " ",
+            "PORTA",
+            "PORTB",
+            "PORTC",
+            "PORTD",
+            "PORTE",
+            "PORTF",
+            "PORTG",
+            "PORTH",
+            "PORTJ",
         }
     end
     return { " " }

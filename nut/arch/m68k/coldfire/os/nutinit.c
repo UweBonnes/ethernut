@@ -31,6 +31,7 @@
  */
 
 #include <cfg/arch.h>
+#include <arch/m68k.h>
 #include <dev/board.h>
 
 #ifdef EARLY_STDIO_DEV
@@ -61,15 +62,15 @@ extern void *__heap_start;
 extern void *__heap_size;
 extern void *__heap2_start;
 extern void *__heap2_size;
-extern void *__stack_init_start;
-extern void *__stack_init_size;
+//extern void *__stack_init_start;
+//extern void *__stack_init_size;
 
 #define HEAP_START          &__heap_start
 #define HEAP_SIZE           ((size_t)&__heap_size)
 #define HEAP2_START         &__heap2_start
 #define HEAP2_SIZE          ((size_t)&__heap2_size)
-#define STACK_INIT_START    &__stack_init_start
-#define STACK_INIT_SIZE     ((size_t)&__stack_init_size)
+//#define STACK_INIT_START    &__stack_init_start
+//#define STACK_INIT_SIZE     ((size_t)&__stack_init_size)
 
 #ifdef NUTMEM_STACKHEAP
 extern void *__stack_heap_start;
@@ -133,7 +134,9 @@ THREAD( NutIdle, arg)
      * SR[IPL] = 0; (See NutThreadCreate(): ef->sr = 0x2000;)
      * IMRL[0] = 0;
      */
-    MCF_INTC0_IMRL &= ~MCF_INTC_IMRL_MASKALL;
+#ifdef MCU_MCF5225X // JS TODO
+    MCF_INTC_IMRL(0) &= ~MCF_INTC_IMRL_MASKALL;
+#endif
 
 #ifdef NUT_INIT_IDLE
     /*
