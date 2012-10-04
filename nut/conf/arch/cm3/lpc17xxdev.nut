@@ -59,7 +59,7 @@ nutarch_cm3_lpc17xx_devices =
         brief = "LPC17xx General purpose DMA Controller API",
         description = "Routines for setup and programming LPC17x series GPDMA controller.\n",
         requires = { "HW_GPDMA_LPC17xx" },
-        sources = { "cm3/dev/nxp/lpc17xx_gpdma.c" }
+        sources = { "cm3/dev/nxp/lpc17xx_gpdma.c", "cm3/dev/nxp/ih_lpc17xx_dma.c" }
     },
     --
     -- LPC17xx General purpose DMA Controller
