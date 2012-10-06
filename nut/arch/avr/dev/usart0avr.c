@@ -461,14 +461,17 @@ NUTDEVICE devUsartAvr0 = {
 #define TRACE_INT_UART_TXEMPTY TRACE_INT_UART0_TXEMPTY
 #endif
 
+/* Define to allow IRQ handler to read all bytes from RX FIFO. */
 #ifdef UART0_READMULTIBYTE
 #define UART_READMULTIBYTE
 #endif
 
+/* Define to use native interrupt handler. */
 #ifdef USE_USART0
 #define USE_USART
 #endif
 
+/* Define to bypass software flow control. */
 #ifdef UART0_NO_SW_FLOWCONTROL
 #define UART_NO_SW_FLOWCONTROL
 #endif
