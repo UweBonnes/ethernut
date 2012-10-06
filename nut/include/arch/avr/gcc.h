@@ -66,8 +66,9 @@
 
 
 #define CONST   const
+#ifndef INLINE
 #define INLINE  inline
-
+#endif
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
