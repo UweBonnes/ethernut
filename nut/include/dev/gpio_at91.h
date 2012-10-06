@@ -160,24 +160,24 @@ extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
-#define GpioPinGet(bank, bit) ((inr((bank) + PIO_PDSR_OFF) &  (_BV(bit)))?1:0)
+#define GpioPinGet(bank, bit) (inr((bank) + PIO_PDSR_OFF) & _BV(bit) ? 1 : 0)
 
-#define GpioPinSetLow(bank, bit) outr((bank) + PIO_CODR_OFF, (_BV(bit)))
+#define GpioPinSetLow(bank, bit) outr((bank) + PIO_CODR_OFF, _BV(bit))
 
-#define GpioPinSetHigh(bank, bit) outr((bank) + PIO_SODR_OFF, (_BV(bit)))
+#define GpioPinSetHigh(bank, bit) outr((bank) + PIO_SODR_OFF, _BV(bit))
 
-#define GpioPinSet(bank, bit, value) (value)?GpioPinSetHigh((bank), (_BV(bit))) \
-        :GpioPinSetLow((bank), (_BV(bit)))
+#define GpioPinSet(bank, bit, value) \
+    (value) ? GpioPinSetHigh(bank, bit) : GpioPinSetLow(bank, bit)
 
-#define GpioPinDrive(bank, bit) outr((bank) + PIO_OER_OFF, (_BV(bit)))
+#define GpioPinDrive(bank, bit) outr((bank) + PIO_OER_OFF, _BV(bit))
 
-#define GpioPinRelease(bank, bit) outr((bank) + PIO_ODR_OFF, (_BV(bit)))
+#define GpioPinRelease(bank, bit) outr((bank) + PIO_ODR_OFF, _BV(bit))
 
-#define GpioPortGet(bank) (inr((bank) + PIO_PDSR_OFF))
+#define GpioPortGet(bank) inr((bank) + PIO_PDSR_OFF)
 
-#define GpioPortSetHigh(bank, mask) outr((bank) + PIO_SODR_OFF, (mask))
+#define GpioPortSetHigh(bank, mask) outr((bank) + PIO_SODR_OFF, mask)
 
-#define GpioPortSetLow(bank, mask) outr((bank) + PIO_CODR_OFF, (mask))
+#define GpioPortSetLow(bank, mask) outr((bank) + PIO_CODR_OFF, mask)
 
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);
