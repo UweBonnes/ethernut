@@ -31,55 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.5  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
+/*!
+ * \file arch/avr/dev/ahdlcavr.c
+ * \brief AVR AHDLC driver.
  *
- * Revision 1.4  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.3  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.10  2005/06/26 12:40:59  chaac
- * Added support for raw mode to AHDLC driver.
- *
- * Revision 1.9  2005/05/27 14:43:28  chaac
- * Fixed bugs on closing AHDLC sessions. Fixed AHDLC ioctl handling. Not all
- * messages were handled correctly  and fixed possible problem of reading memory
- * from address zero.
- *
- * Revision 1.8  2005/04/05 17:44:56  haraldkipp
- * Made stack space configurable.
- *
- * Revision 1.7  2005/02/10 07:06:17  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.6  2005/01/24 21:11:48  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.5  2005/01/21 16:49:45  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.4  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.3  2004/03/18 14:05:20  haraldkipp
- * Comments updated
- *
- * Revision 1.2  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1  2004/03/08 11:16:54  haraldkipp
- * Asynchronous HDLC driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/ahdlc.h>

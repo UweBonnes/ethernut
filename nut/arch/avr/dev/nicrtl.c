@@ -31,89 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.7  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
+/*!
+ * \file arch/avr/dev/nicrtl.c
+ * \brief AVR network driver for RTL8019AS.
  *
- * Revision 1.6  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.5  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.4  2006/06/27 01:42:56  hwmaier
- * Fixed bug related to edge triggered interrupt mode (RTL_IRQ_RISING_EDGE) in ISR.
- *
- * Revision 1.3  2006/03/02 23:57:12  hwmaier
- * Include cfg/dev.h added
- *
- * Revision 1.2  2006/01/11 08:33:30  hwmaier
- * Changes to make receiver thread's stack size configurable and honour
- * the NUT_THREAD_NICRXSTACK configuration setting
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.15  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.14  2005/02/10 07:06:18  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.13  2005/02/05 20:42:38  haraldkipp
- * Force compiler error for leftover debug prints.
- *
- * Revision 1.12  2005/01/24 21:11:50  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.11  2005/01/22 19:24:46  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.10  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.9  2004/12/17 15:31:28  haraldkipp
- * Support of rising edge interrupts for hardware w/o inverter gate.
- * Fixed compilation issue for hardware with RTL reset port.
- * Thanks to FOCUS Software Engineering Pty Ltd.
- *
- * Revision 1.8  2004/09/10 10:36:01  haraldkipp
- * ICCAVR compile problems fixed
- *
- * Revision 1.7  2004/08/25 10:41:00  haraldkipp
- * Hardware dependent definitions are configurable. For performance reasons the
- * base address is not kept in a variable any longer. It is now a preprocessor
- * macro and the parameters during device registration are ignored. The speed
- * improvements provided by Kolja Waschk for the LAN91C111 had been implemented
- * here too. The driver will not touch a port anymore unless a reset port bit
- * had been configured. For Ethernut 1.1 bit 4 PORTE must be specified in the
- * configuration. Finally, an EEPROM emulation had been added, which can use
- * address bus bits instead of wasting additional port pins. The required
- * hardware has been implemented on Rev.-G Ethernut 1.3 boards. This fixes the
- * Realtek full duplex problem.
- *
- * Revision 1.6  2004/05/17 19:14:53  haraldkipp
- * Added Bengt Florin's RTL8019 driver mods
- *
- * Revision 1.5  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.4  2003/08/05 20:05:59  haraldkipp
- * Bugfix. Empty MAC address is FF, not 00
- *
- * Revision 1.3  2003/07/17 09:39:56  haraldkipp
- * Optimized controller feeding.
- * Ignore LSB of packet status.
- *
- * Revision 1.2  2003/05/15 14:09:16  haraldkipp
- * Much better performance under heavy traffic.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:48  haraldkipp
- * Initial using 3.2.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

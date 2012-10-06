@@ -31,19 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.3  2007/08/29 07:43:53  haraldkipp
- * Documentation updated and corrected.
+/*!
+ * \file arch/avr/dev/ace.c
+ * \brief AVR TLC16C550 ACE devices.
  *
- * Revision 1.2  2007/05/24 07:27:38  haraldkipp
- * Added two more interfaces. Updated by Przemyslaw Rudy.
- *
- * Revision 1.1  2005/11/24 11:24:06  haraldkipp
- * Initial check-in.
- * Many thanks to William Basser for this code and also to Przemyslaw Rudy
- * for several enhancements.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <dev/tlc16c550.h>

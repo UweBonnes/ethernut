@@ -31,29 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/spiflash.c
+ * \brief AVR SPI flash support.
  *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2004/03/18 14:06:52  haraldkipp
- * Deprecated header file replaced
- *
- * Revision 1.1.1.1  2003/05/09 14:40:50  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.4  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.3  2002/09/15 16:39:44  harald
- * *** empty log message ***
- *
- * Revision 1.2  2002/08/08 17:20:47  harald
- * Imagecraft support by Klaus Ummenhofer
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

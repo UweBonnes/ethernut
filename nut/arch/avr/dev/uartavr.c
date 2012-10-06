@@ -31,59 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.5  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/uartavr.c
+ * \brief AVR fast UART driver.
  *
- * Revision 1.4  2006/10/08 16:48:08  haraldkipp
- * Documentation fixed
- *
- * Revision 1.3  2005/10/16 23:21:33  hwmaier
- * Fixed compilation issue regards U2X macro with Imagecraft
- *
- * Revision 1.2  2005/10/07 22:01:27  hwmaier
- * Obsolete dcb_baudSelect removed. Support for double speed (U2X) added (using same method as in usartavr.c).
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.9  2005/07/14 09:12:20  freckle
- * Rewrote CS in UartAvrInput
- *
- * Revision 1.8  2005/01/24 21:12:05  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.7  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.6  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.5  2004/05/24 20:15:50  drsung
- * Added function UartAvrSize to return number of chars in input buffer.
- *
- * Revision 1.4  2004/03/18 14:01:07  haraldkipp
- * Deprecated header file replaced
- *
- * Revision 1.3  2004/03/18 10:09:27  haraldkipp
- * Removed deprecated raw I/O
- *
- * Revision 1.2  2003/07/20 18:28:10  haraldkipp
- * Explain how to disable timeout.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:55  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.21  2003/05/06 18:35:06  harald
- * Avoid duplicate initialization
- *
- * Revision 1.20  2003/04/21 16:26:01  harald
- * Use predefined eof
- *
- * Revision 1.19  2003/03/31 14:53:08  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

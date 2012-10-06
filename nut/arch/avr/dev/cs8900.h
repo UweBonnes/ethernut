@@ -35,36 +35,14 @@
  * For additional information see http://www.calldirect.com.au/
  */
 
-/*
- * $Log$
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
+/*!
+ * \file arch/avr/dev/cs8900.c
+ * \brief Cirrus Logic CS8900a I/O registers.
  *
- * Revision 1.2  2004/05/25 11:39:48  olereinhardt
- * Define NUT_CS8900_OLD to get the old functionality back again
- *
- * Revision 1.1  2004/05/24 17:09:17  olereinhardt
- * Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
- * Base address can now be passed to the nic driver by NutRegisterDevice.
- * Removed some Assembler code in cs8900.c
- *
- * Added some databus waitstate settings for the upper half of the address space in os/arch/avr_nutinit.c. Now three waitstates are default for 0x8000-0xFFFF
- *
- * Added terminal device driver for hd44780 compatible LCD displays directly
- * connected to the memory bus (memory mapped). See hd44780.c for more information.
- * Therefore some minor changed in include/dev/term.h and dev/term.c are needet to
- * pass a base address to the lcd driver.
- *
- * Revision 1.1  2003/07/20 16:37:21  haraldkipp
- * CrystalTek 8900A driver added.
- *
- *
- * Revision 1.0  2002/10/1 MJC CDCS
- * created
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
-
-// Cirrus Logic CS8900a I/O Registers
 
 #ifdef  NUT_CS8900_OLD
 

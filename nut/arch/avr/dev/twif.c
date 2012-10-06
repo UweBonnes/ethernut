@@ -32,63 +32,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/twif.c
+ * \brief AVR TWI support.
  *
- * Revision 1.6  2007/07/26 13:03:05  freckle
- * Reduced critical section in TwSlaveListen
- *
- * Revision 1.5  2006/10/08 16:48:08  haraldkipp
- * Documentation fixed
- *
- * Revision 1.4  2006/06/28 14:31:24  haraldkipp
- * NutEventPostFromIrq() doesn't return a result anymore. We directly
- * inspect the queue's root.
- *
- * Revision 1.3  2005/10/24 10:56:30  haraldkipp
- * Added const modifier to transmit data pointer in TwMasterTransact().
- *
- * Revision 1.2  2005/10/07 22:03:29  hwmaier
- * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.9  2005/01/24 21:12:05  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.8  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.7  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.6  2004/11/08 18:12:59  haraldkipp
- * Soooo many fixes, but I'm tired...really.
- *
- * Revision 1.5  2004/09/08 10:19:14  haraldkipp
- * *** empty log message ***
- *
- * Revision 1.4  2003/11/03 17:03:53  haraldkipp
- * Many new comments added
- *
- * Revision 1.3  2003/07/20 18:28:10  haraldkipp
- * Explain how to disable timeout.
- *
- * Revision 1.2  2003/07/17 09:38:07  haraldkipp
- * Setting different speeds is now supported.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:53  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:08  harald
- * Prepare release 3.1
- *
- * Revision 1.1  2003/02/04 17:54:59  harald
- * *** empty log message ***
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

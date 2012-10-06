@@ -33,7 +33,7 @@
  */
 
 /*!
- * \file dev/hd44780_bus.c
+ * \file arch/avr/dev/hd44780_bus.c
  * \brief Terminal device definitions for memory mapped lcd.
  *
  *
@@ -44,45 +44,10 @@
  * signal. Therefore you'll read from an address with an offset of two
  *
  * Have a look to our m-can board if you have questions.
- */
-
-/*
- * $Log$
- * Revision 1.6  2008/08/27 06:35:15  thornen
- * Added support for MMnet03..04 and MMnet102..104
  *
- * Revision 1.5  2008/08/26 17:36:45  haraldkipp
- * Revoked changes 2008/08/26 by thornen.
- *
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2005/09/07 16:23:11  christianwelzel
- * Added support for MMnet02 display
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.8  2005/05/27 14:05:25  olereinhardt
- * Added support for new display sizes configurable by macros
- * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
- * LCD_1x20, LCD_1x16, LCD_1x8, KS0073_CONTROLLER (4x20))
- *
- * Revision 1.7  2004/10/14 08:55:38  olereinhardt
- * Added default LCD type to avoid compiling bug if no type is defined
- *
- * Revision 1.6  2004/09/17 14:31:06  olereinhardt
- * Compile only if __GNUC__ defined
- *
- * Revision 1.5  2004/08/26 14:00:04  olereinhardt
- * Fixed cursor positioning for different devices
- *
- * Revision 1.4  2004/05/27 15:03:14  olereinhardt
- * Changed copyright notice
- *
- * Revision 1.3  2004/05/25 17:33:01  drsung
- * Added 'log' keyword for CVS.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /* Not ported. */

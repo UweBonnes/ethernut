@@ -31,23 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/irsony.c
+ * \brief AVR support for Sony IR protocol.
  *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2005/01/28 12:13:14  freckle
- * changed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.2  2004/03/18 18:41:18  haraldkipp
- * Bugfix. Now works with ICCAVR
- *
- * Revision 1.1  2003/07/21 18:07:54  haraldkipp
- * Sony infrared remote control driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/medianut.h>

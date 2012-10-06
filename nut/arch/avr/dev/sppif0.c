@@ -31,14 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/sppif0.c
+ * \brief Legacy AVR polling mode SPI support.
  *
- * Revision 1.1  2007/04/12 09:07:54  haraldkipp
- * Configurable SPI added.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/arch/avr.h>

@@ -130,68 +130,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.4  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+/*!
+ * \file arch/avr/dev/cs8900.c
+ * \brief AVR network driver for CS8900A.
  *
- * Revision 1.3  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.9  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.8  2004/05/26 09:40:30  olereinhardt
- * Changed reading of packet length / receive status to be compatible with
- * newer AVRGCC versions. (Need to read high byte first!)
- *
- * Added software reset / wakeup routine to init code. (only avalilable in new code)
- *
- * Revision 1.7  2004/05/25 11:39:47  olereinhardt
- * Define NUT_CS8900_OLD to get the old functionality back again
- *
- * Revision 1.6  2004/05/24 17:09:17  olereinhardt
- * Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
- * Base address can now be passed to the nic driver by NutRegisterDevice.
- * Removed some Assembler code in cs8900.c
- *
- * Added some databus waitstate settings for the upper half of the address space in os/arch/avr_nutinit.c. Now three waitstates are default for 0x8000-0xFFFF
- *
- * Added terminal device driver for hd44780 compatible LCD displays directly
- * connected to the memory bus (memory mapped). See hd44780.c for more information.
- * Therefore some minor changed in include/dev/term.h and dev/term.c are needet to
- * pass a base address to the lcd driver.
- *
- * Revision 1.5  2004/03/18 14:06:52  haraldkipp
- * Deprecated header file replaced
- *
- * Revision 1.4  2003/10/13 10:13:49  haraldkipp
- * First release
- *
- * Revision 1.3  2003/08/05 20:11:30  haraldkipp
- * Removed from ICCAVR compilation
- *
- * Revision 1.2  2003/07/20 20:07:38  haraldkipp
- * Conflicting Ethernet driver routine names solved.
- *
- * Revision 1.1  2003/07/20 16:37:21  haraldkipp
- * CrystalTek 8900A driver added.
- *
- *
- * Revision 1.0  2002/03/28 MJC CDCS
- * Created
- *
- * Revision 1.1  2003/03/25 MJC CDCS
- * Modified behaviour when transmit buffer space unavailable
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /* Not ported. */

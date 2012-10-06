@@ -31,68 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/hd44780_bus.c
+ * \brief Terminal device definitions for port mapped LCD.
  *
- * Revision 1.6  2008/04/29 16:58:21  thiagocorrea
- * Simplified HD44780 code for AVR based on the ARM driver.
- *
- * Revision 1.5  2006/10/08 16:40:17  haraldkipp
- * Many thanks to Thiago Correa for adding LCD port configuration.
- *
- * Revision 1.4  2006/09/11 09:13:18  olereinhardt
- * Another timing patch from Uwe Bonnes
- *
- * Revision 1.3  2006/09/07 15:53:27  olereinhardt
- * Added LCD timing patch from Uwe Bonnes
- *
- * Revision 1.2  2006/04/07 12:23:18  haraldkipp
- * Target specific delay defaults moved from global header to AVR specific
- * file.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.6  2005/06/06 10:43:45  haraldkipp
- * Fixed to re-enable ICCAVR compilation.
- *
- * Revision 1.5  2005/05/27 14:02:11  olereinhardt
- * Added support for new display sizes configurable by macros
- * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
- * LCD_1x20, LCD_1x16, LCD_1x8, KS0078_CONTROLLER (4x20))
- * Also added support for different delay types.
- * For not to wait busy too long, I added support for busy bit
- * read back and use NutSleep instead NutDelay if NUT_CPU_FREQ
- * is defined.
- *
- * Revision 1.4  2004/05/24 17:11:05  olereinhardt
- * dded terminal device driver for hd44780 compatible LCD displays directly
- * connected to the memory bus (memory mapped). See hd44780.c for more
- * information.Therefore some minor changed in include/dev/term.h and
- * dev/term.c are needet to
- * pass a base address to the lcd driver.
- *
- * Revision 1.3  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.2  2003/07/17 09:41:35  haraldkipp
- * Setting the data direction during init only may fail on some hardware.
- * We are now doing this immediately before using the port.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:37  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.3  2003/05/06 18:30:10  harald
- * ICCAVR port
- *
- * Revision 1.2  2003/04/21 16:22:46  harald
- * Moved back to outp/inp for portability
- *
- * Revision 1.1  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <stdlib.h>

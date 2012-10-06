@@ -35,59 +35,13 @@
  * Dave Smart contributed the synchronous mode support.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 11:51:19  thiagocorrea
- * Preliminary Atmega2560 compile options, but not yet supported.
- * It builds, but doesn't seam to run properly at this time.
+/*!
+ * \file arch/avr/dev/usart0avr.c
+ * \brief AVR USART0 support.
  *
- * Revision 1.6  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.5  2008/04/29 02:28:34  thiagocorrea
- * Add configurable DTR pin to AVR USART driver.
- *
- * Revision 1.4  2007/08/29 07:43:53  haraldkipp
- * Documentation updated and corrected.
- *
- * Revision 1.3  2007/02/15 16:19:14  haraldkipp
- * Can use PORTG for half duplex control.
- *
- * Revision 1.2  2006/02/08 15:18:49  haraldkipp
- * ATmega2561 Support
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.9  2005/07/22 08:07:08  freckle
- * added experimental improvements to usart driver. see ChangeLog for details
- *
- * Revision 1.8  2005/02/16 19:50:28  haraldkipp
- * Enable tracer configuration.
- *
- * Revision 1.7  2005/02/10 07:06:18  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.6  2005/01/24 22:34:49  freckle
- * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
- *
- * Revision 1.5  2005/01/22 19:25:32  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.4  2004/10/22 18:04:35  freckle
- * added #ifdef check to support old-style CTS definition
- * (old style: setting CTS_SIGNAL, CTS_BIT, CTS_PORT, CTS_PIN and CTS_DDR)
- * instead of the new single CTS_IRQ definition
- *
- * Revision 1.3  2004/09/22 08:14:48  haraldkipp
- * Made configurable
- *
- * Revision 1.2  2004/05/24 20:17:15  drsung
- * Added function UsartSize to return number of chars in input buffer.
- *
- * Revision 1.1  2003/12/15 19:25:33  haraldkipp
- * New USART driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

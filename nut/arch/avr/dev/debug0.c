@@ -33,44 +33,10 @@
 
 /*!
  * \file arch/avr/dev/debug0.c
- * \brief AVR debug output device.
+ * \brief AVR debug output device using UART0.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.5  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.4  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.3  2005/10/17 08:46:53  hwmaier
- * Setting baudrate function changed: For CPUs w/ 12 and 16 MHz xtal double rate mode is now used (only if set by NUT_CPU_FREQ)
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.4  2005/02/06 16:36:59  haraldkipp
- * Fixes ICCAVR V7 baudrate miscalculation.
- *
- * Revision 1.3  2004/02/25 16:19:09  haraldkipp
- * Support baudrate settings
- *
- * Revision 1.2  2003/11/03 17:17:47  haraldkipp
- * Comments added
- *
- * Revision 1.1.1.1  2003/05/09 14:40:36  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:29:42  harald
- * ICCAVR port
- *
- * Revision 1.1  2003/04/07 12:15:37  harald
- * First release
- *
+ * $Id$
  * \endverbatim
  */
 

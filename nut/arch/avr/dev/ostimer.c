@@ -31,74 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.8  2008/08/22 09:25:34  haraldkipp
- * Clock value caching and new functions NutArchClockGet, NutClockGet and
- * NutClockSet added.
+/*!
+ * \file arch/avr/dev/ostimer.c
+ * \brief AVR system timer support.
  *
- * Revision 1.7  2008/08/11 11:51:19  thiagocorrea
- * Preliminary Atmega2560 compile options, but not yet supported.
- * It builds, but doesn't seam to run properly at this time.
- *
- * Revision 1.6  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.5  2008/07/08 08:25:04  haraldkipp
- * NutDelay is no more architecture specific.
- * Number of loops per millisecond is configurable or will be automatically
- * determined.
- * A new function NutMicroDelay provides shorter delays.
- *
- * Revision 1.4  2006/12/20 15:14:41  freckle
- * corrected millisecond to nut ticks . Same bug as fixed at 2006-09-05
- *
- * Revision 1.3  2006/10/05 17:13:12  haraldkipp
- * Fixes bug #1567730. The problem had been reported by several people.
- * Lars Andersson provided the most complete solution, IMHO.
- *
- * Revision 1.2  2006/02/08 15:18:49  haraldkipp
- * ATmega2561 Support
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2005/06/12 16:50:57  haraldkipp
- * Major redesign to provide better portability and reduce interrupt latency.
- *
- * Revision 1.1  2005/05/27 17:17:31  drsung
- * Moved the file
- *
- * Revision 1.7  2005/05/16 08:54:45  haraldkipp
- * Original routines did not work for Arthernet.
- *
- * Revision 1.6  2005/03/09 08:33:34  hwmaier
- * Finally implemented the correct timer routines and init for AT90CAN128. Timer2 is now used on AT90CAN128 rather Timer0 because Atmel (don't blame me) swapped the Timer designation.
- *
- * Revision 1.5  2005/02/21 12:38:00  phblum
- * Removed tabs and added semicolons after NUTTRACER macros
- *
- * Revision 1.4  2005/02/10 07:06:48  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.3  2005/01/24 22:34:50  freckle
- * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
- *
- * Revision 1.2  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.1  2004/03/16 16:48:46  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.3  2004/03/05 20:38:18  drsung
- * Bugfix from bugfix. sorry!
- *
- * Revision 1.2  2004/03/05 20:19:45  drsung
- * Bugfix in NutTimerInit. ICCAVR failed to compile, if NUT_CPU_FREQ is defined.
- *
- * Revision 1.1  2004/02/01 18:49:48  haraldkipp
- * Added CPU family support
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -147,7 +86,7 @@
 
 
 #ifdef NUT_CPU_FREQ             /* ----- NUT_CPU_FREQ */
-/* Setup for timer clocked from main clock with NUT_CPU_FREQ 
+/* Setup for timer clocked from main clock with NUT_CPU_FREQ
  * and 1000 Hz timer tick
  */
 #if defined(MCU_AT90CAN128)
@@ -163,7 +102,7 @@
 #define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
 #elif defined(MCU_ATMEGA103)    /* MCU_ATMEGA103 */
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(CTC0))
-#elif defined(MCU_ATMEGA128) 
+#elif defined(MCU_ATMEGA128)
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(WGM01))
 #else
 #warning Unknown CPU Type

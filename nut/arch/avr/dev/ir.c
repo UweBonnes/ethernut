@@ -31,20 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/ir.c
+ * \brief AVR infrared decoder API.
  *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.1  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1  2003/07/21 18:19:48  haraldkipp
- * First check in
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/event.h>
