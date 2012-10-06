@@ -137,7 +137,7 @@
 #define JTAG0_TDO_PIO_ID    PIO_ID
 #endif
 
-#if !defined(JTAG0_TDO_PIO_BIT
+#if !defined(JTAG0_TDO_PIO_BIT)
 #define JTAG0_TDO_PIO_BIT   19
 #endif
 
