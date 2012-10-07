@@ -66,7 +66,7 @@
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
-#define NUT_THREAD_NICRXSTACK   640
+#define NUT_THREAD_NICRXSTACK   256
 #endif
 
 /*
