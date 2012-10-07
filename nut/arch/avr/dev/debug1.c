@@ -44,9 +44,13 @@
 
 #include <cfg/os.h>
 #include <cfg/uart.h>
-#include <sys/timer.h>
 #include <sys/device.h>
 #include <sys/file.h>
+#include <sys/timer.h>
+
+#ifndef UART1_INIT_BAUDRATE
+#define UART1_INIT_BAUDRATE 115200
+#endif
 
 /*!
  * \addtogroup xgDevDebugAvr
@@ -57,18 +61,22 @@
 
 static NUTFILE dbgfile;
 
+static void DebugSetSpeed(uint32_t speed)
+{
+#if (NUT_CPU_FREQ == 8000000) || (NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000)
+        /* We use double rate mode, so we can use 115200 bps
+         * with 8.0, 12.0 and 16.0 crystals. */
+        sbi(UCSR1A, U2X1);
+        outb(UBRR1L, (uint8_t) ((((2UL * NutGetCpuClock()) / (speed * 8UL)) + 1UL) / 2UL) - 1UL);
+#else
+        outb(UBRR1L, (uint8_t) ((((2UL * NutGetCpuClock()) / (speed * 16UL)) + 1UL) / 2UL) - 1UL);
+#endif
+}
+
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-#if defined(__AVR_ENHANCED__) && ((NUT_CPU_FREQ == 8000000) || (NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000))
-        /* On enhanced MCUs we use double rate mode, so we can use 115200 bps
-        * with 8.0, 12.0 and 16.0 crystals.
-        */
-        sbi(UCSR1A, U2X1);
-        outb(UBRR1L, (uint8_t) ((((2UL * NutGetCpuClock()) / (*((uint32_t *)conf) * 8UL)) + 1UL) / 2UL) - 1UL);
-#else
-        outb(UBRR1L, (uint8_t) ((((2UL * NutGetCpuClock()) / (*((uint32_t *)conf) * 16UL)) + 1UL) / 2UL) - 1UL);
-#endif
+        DebugSetSpeed(*((uint32_t *) conf));
         return 0;
     }
     return -1;
@@ -78,6 +86,7 @@ static int DebugInit(NUTDEVICE * dev)
 {
     /* Note: Default baudrate has been set in nutinit.c */
     UCSR1B = BV(RXEN) | BV(TXEN);
+    DebugSetSpeed(UART1_INIT_BAUDRATE);
     return 0;
 }
 
