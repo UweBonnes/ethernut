@@ -43,4 +43,4 @@ CFLAGS_OPT   = -O0 -gdwarf-2 -fno-delete-null-pointer-checks
 CXXFLAGS_OPT = -O0 -gdwarf-2 -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti
 
 # Debug code needs much more stack space.
-DEFS  = -DNUT_THREAD_STACK_MULT=3 $(HWDEF)
+DEFS  = -DNUT_THREAD_STACK_ADD=256 $(HWDEF)
