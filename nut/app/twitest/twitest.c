@@ -37,7 +37,9 @@
 #include <io.h>
 
 #include <dev/board.h>
+#if defined(DEF_TWIBUS)
 #include <dev/twif.h>
+#endif
 #include <sys/timer.h>
 #include <sys/thread.h>
 #include <sys/event.h>
@@ -46,7 +48,9 @@
 
 static const char *banner = "\nNut/OS TW Sample " __DATE__ " " __TIME__;
 
+#if defined(DEF_TWIBUS)
 static char inbuf[128];
+#endif
 
 #if defined(LED1_PORT) && defined( LED1_PIN)
 #define LED1_INIT GpioPinConfigSet( LED1_PORT, LED1_PIN, GPIO_CFG_OUTPUT)
@@ -103,8 +107,9 @@ void Hardware_Init(void)
 
 int ScanBus(uint32_t tmo)
 {
-    uint8_t a;
     int res = 1;
+#if defined(DEF_TWIBUS)
+    uint8_t a;
 
     /* Don't do a general call (a == 0) */
     for(a=1; a <80; a++)
@@ -116,6 +121,7 @@ int ScanBus(uint32_t tmo)
             res = 0;
         }
     }
+#endif
     return res;
 }
 
@@ -128,7 +134,9 @@ int main(void)
 {
     int res;
     uint32_t baud = 115200;
+#if defined(DEF_TWIBUS)
     uint32_t tmo;
+#endif
 
     res = NutRegisterDevice(&DEV_CONSOLE, 0, 0);
     if (res )
