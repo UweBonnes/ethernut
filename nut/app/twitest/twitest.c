@@ -44,7 +44,7 @@
 #include <dev/gpio.h>
 
 
-static char *banner = "\nNut/OS TW Sample " __DATE__ " " __TIME__ "\n";
+static const char *banner = "\nNut/OS TW Sample " __DATE__ " " __TIME__;
 
 static char inbuf[128];
 
@@ -138,14 +138,14 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "r", stdin);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
-    fprintf(stdout, banner);
+    puts(banner);
 
     LED1_INIT;
     LED2_START_THREAD;
     Hardware_Init();
 
 #if !defined(DEF_TWIBUS)
-    fprintf(stdoutm "Please indicate the TWI Bus to scan!\n");
+    puts("Please indicate the TWI Bus to scan!");
     goto error;
 #else
     res = NutRegisterTwiBus( &DEF_TWIBUS, 0);
@@ -171,7 +171,7 @@ int main(void)
         printf("TWI speed is %ld. ", baud );
         /* Waiting for bus free often takes 1 ms */
         tmo = 20000/baud + 2;
-        fprintf(stdout, "Using %ld ms as Timeout\n", tmo);
+        printf("Using %ld ms as Timeout\n", tmo);
     }
 
     ScanBus(tmo);
@@ -179,7 +179,6 @@ int main(void)
     for (;;) {
         LED1_TOGGLE;
         puts("Press \"Enter\" to scan I2C bus for devices ");
-        fflush(stdout);
         fgets(inbuf, sizeof(inbuf), stdin);
         ScanBus(tmo);
     }
