@@ -77,7 +77,6 @@ include ../Makedefs
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutos -lnutarch -lnutdev -lnutarch -lnutcrt $(ADDLIBS)
-TARG =  $(PROJ).rom
 
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
 
