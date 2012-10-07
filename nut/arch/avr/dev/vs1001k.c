@@ -695,6 +695,11 @@ int VsPlayerFlush(void)
 /*!
  * \brief Initialize the VS1001 hardware interface.
  *
+ * \note The interrupt handler for this device uses a significant amount
+ *       of stack space, which may require to increase thread stacks of
+ *       all running threads. Furthermore, it requires quite some time
+ *       to execute and may degrade overall system performance.
+ *
  * \return 0 on success, -1 otherwise.
  */
 int VsPlayerInit(void)

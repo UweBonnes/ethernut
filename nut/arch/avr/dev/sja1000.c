@@ -760,6 +760,11 @@ IFCAN ifc_sja1000 = {
  *
  * Applications must pass this structure to NutRegisterDevice()
  * to bind this CAN device driver to the Nut/OS kernel.
+ *
+ * \note The interrupt handler of this driver uses a significant amount
+ *       of stack space, which may require to increase thread stacks of
+ *       all threads by at least 32 bytes. Furthermore, it requires quite
+ *       some time to execute and may degrade overall system performance.
  */
 
 NUTDEVICE devSJA1000 = {
