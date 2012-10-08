@@ -330,8 +330,9 @@ int HttpSsiProcessFile(HTTPD_SESSION *hs, int fd)
             if (bp != buf) {
                 /* If our search was not started at the beginning of
                    the buffer, then read the last 4 bytes again. */
-                _seek(fd, -4, SEEK_CUR);
-                buflen -= 4;
+                off = buflen >= 4 ? 4 : buflen;
+                _seek(fd, -off, SEEK_CUR);
+                buflen -= off;
             }
             s_write(bp, 1, buflen, hs->s_stream);
             buflen = 0;
