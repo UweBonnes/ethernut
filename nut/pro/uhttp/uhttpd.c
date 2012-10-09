@@ -95,7 +95,7 @@ const char ct_Content_Encoding[] = "Content-Encoding";
 /*! Constant string "Location". */
 const char ct_Location[] = "Location";
 
-char *http_root;
+char *http_root_path;
 
 static int HttpAuthValidateAll(HTTPD_SESSION *req);
 HTTP_AUTH_VALIDATOR httpd_auth_validator = HttpAuthValidateAll;
@@ -438,16 +438,16 @@ int HttpParseHeader(HTTPD_SESSION *hs)
 
 int HttpRegisterRootPath(char *path)
 {
-    if (http_root) {
-        free(http_root);
+    if (http_root_path) {
+        free(http_root_path);
     }
     if (path) {
-        http_root = strdup(path);
-        if (http_root == NULL) {
+        http_root_path = strdup(path);
+        if (http_root_path == NULL) {
             return -1;
         }
     } else {
-        http_root = NULL;
+        http_root_path = NULL;
     }
     return 0;
 }

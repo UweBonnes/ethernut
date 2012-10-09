@@ -57,8 +57,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-extern char *http_root;
-#define HTTP_ROOT   (http_root ? http_root : HTTP_DEFAULT_ROOT)
+extern char *http_root_path;
+#define HTTP_ROOT   (http_root_path ? http_root_path : HTTP_DEFAULT_ROOT)
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
