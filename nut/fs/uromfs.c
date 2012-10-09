@@ -195,6 +195,9 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, const char *name, int mode,
         return NUTFILE_EOF;
     }
 
+    if (*name == '/') {
+        name++;
+    }
     for (rome = romEntryList; rome; rome = rome->rome_next) {
         if (strcmp_P(name, rome->rome_name) == 0)
             break;
