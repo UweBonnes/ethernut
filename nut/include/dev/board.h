@@ -161,7 +161,7 @@
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
 #elif defined(GBAXPORT2)
-#include <arch/cm3/board/gba_xport2.h>
+#include <arch/arm/board/gba_xport2.h>
 #elif defined(KSK_LPC1788_SK)
 #include <arch/cm3/board/ksk_lpc1788_sk.h>
 #elif defined(LISA)
