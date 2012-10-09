@@ -41,7 +41,8 @@
  * \endverbatim
  */
 
-#include <arch/arm/irqreg.h>
+#include <arch/arm.h>
+#include <dev/irqreg.h>
 
 /*!
  * \brief Late Gameboy Advance hardware initialization.
