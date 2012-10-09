@@ -52,6 +52,23 @@
 #include <sys/timer.h>
 #include <dev/board.h>
 #include <dev/gpio.h>
+
+#if !defined(__GNUC__)
+
+int main(void)
+{
+    uint32_t baud = 115200;
+
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+    puts("This program requires a compiler that supports 64-bit integers.");
+    for (;;);
+    return 0;
+}
+
+#else
+
 #include <dev/owibus.h>
 
 #define USE_UART
@@ -186,3 +203,5 @@ int main(void)
     }
     return 0;
 }
+
+#endif
