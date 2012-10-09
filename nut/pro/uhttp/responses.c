@@ -44,6 +44,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <memdebug.h>
 
 typedef struct _HTTP_RESPONSE_STATUS HTTP_RESPONSE_STATUS;
 

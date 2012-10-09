@@ -47,6 +47,7 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
+#include <memdebug.h>
 
 #ifndef HTTP_MAX_REQUEST_SIZE
 #define HTTP_MAX_REQUEST_SIZE   64

@@ -52,6 +52,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <memdebug.h>
 
 #define SSI_TYPE_FILE    0x01
 #define SSI_TYPE_VIRTUAL 0x02
