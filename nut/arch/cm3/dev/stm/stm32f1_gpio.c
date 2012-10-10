@@ -163,13 +163,19 @@ uint32_t GpioPinConfigGet(int bank, int bit)
 int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 {
     uint32_t cxmx = 0;      /* Configuration mask */
-    uint32_t clock = 0;     /* GPIO CLOCK and AFIO cache */
     uint32_t crl, crh, cln;
     uint8_t  msl, msh;
     int i;
     GPIO_TypeDef *GPIOx = ((GPIO_TypeDef *)bank);
 
-    clock = GPIO_RCCx[(bank-GPIOA_BASE)/0x400];
+    /* Important: Enable clock of port first
+     * before trying to configure it!
+     * Enable GPIO clock source */
+    CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR,
+             (((bank-GPIOA_BASE)/0x400) + _BI32(RCC_APB2ENR_IOPAEN))) = 1;
+    if (flags & GPIO_CFG_PERIPHAL )
+        CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR,
+                 _BI32(RCC_APB2ENR_AFIOEN)) = 1;
 
     /* Set the inital value, if given
      *
@@ -227,13 +233,11 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
         /* Configure Alternate Function */
         if( flags & GPIO_CFG_DISABLED ) {
             cxmx |= 0x8;
-            clock |= RCC_APB2Periph_AFIO;
         }
 
         /* Configure Alternate Function */
         if( flags & GPIO_CFG_PERIPHAL ) {
             cxmx |= 0x8;
-            clock |= RCC_APB2Periph_AFIO;
         }
     }
     else {
@@ -251,16 +255,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
         /* Configure pin as analog input */
         if( flags & GPIO_CFG_DISABLED )
             cxmx = 0x0;
-
-        /* Configure Alternate Function */
-        if( flags & GPIO_CFG_PERIPHAL )
-            clock |= RCC_APB2Periph_AFIO;
     }
-
-    /* Important: Enable clock of port first
-     * before trying to configure it!
-     * Enable GPIO clock source */
-    RCC->APB2ENR |= clock;
 
     msl = (uint8_t)(mask&0xff);
     msh = (uint8_t)(mask>>8);
