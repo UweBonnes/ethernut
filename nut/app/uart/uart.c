@@ -55,7 +55,7 @@
 #include <dev/board.h>
 #include <sys/timer.h>
 
-static char *banner = "\nNut/OS UART Sample\n";
+static char *banner = "\nNut/OS UART Sample " __DATE__ " " __TIME__"\n";
 static prog_char presskey_P[] = "Press any key...";
 static prog_char pgm_ptr[] = "\nHello stranger!\n";
 
