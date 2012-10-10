@@ -124,11 +124,11 @@ uint32_t GpioPinConfigGet(int bank, int bit)
             break;
         case 2:
             /* Output Push-Pull Alternative Function */
-            rc |= (GPIO_CFG_PERIPHAL | GPIO_CFG_DISABLED);
+            rc |= (GPIO_CFG_PERIPHAL);
             break;
         case 3:
             /* Output Open-Drain Alternative Function */
-            rc |= (GPIO_CFG_PERIPHAL | GPIO_CFG_DISABLED | GPIO_CFG_MULTIDRIVE);
+            rc |= (GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE);
             break;
         }
         switch ( speed) {
