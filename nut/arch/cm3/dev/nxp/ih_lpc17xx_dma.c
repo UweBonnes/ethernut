@@ -52,7 +52,7 @@ static int DmaIrqCtl(int cmd, void *param);
 /*!
  * \brief IRQ Handler for DMA.
  */
-IRQ_HANDLER sig_PIO = {
+IRQ_HANDLER sig_DMA = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
@@ -67,10 +67,10 @@ IRQ_HANDLER sig_PIO = {
 void DmaIrqEntry(void *arg)
 {
 #ifdef NUT_PERFMON
-    sig_PIO.ir_count++;
+    sig_DMA.ir_count++;
 #endif
-    if (sig_PIO.ir_handler) {
-        (sig_PIO.ir_handler) (sig_PIO.ir_arg);
+    if (sig_DMA.ir_handler) {
+        (sig_DMA.ir_handler) (sig_DMA.ir_arg);
     }
 }
 
@@ -139,8 +139,8 @@ static int DmaIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (uint32_t)sig_PIO.ir_count;
-        sig_PIO.ir_count = 0;
+        *ival = (uint32_t)sig_DMA.ir_count;
+        sig_DMA.ir_count = 0;
         break;
 #endif
     default:

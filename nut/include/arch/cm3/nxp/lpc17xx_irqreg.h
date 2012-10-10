@@ -52,6 +52,7 @@ extern IRQ_HANDLER sig_WDT;         // Watchdog Timer
 extern IRQ_HANDLER sig_MCI;         // Multimedia Card Interface / SDIO Interface
 extern IRQ_HANDLER sig_EMAC;        // Ethernet MAC
 extern IRQ_HANDLER sig_PIO;         // GPIO
+extern IRQ_HANDLER sig_DMA;         // General Purpose DMA controller
 
 
 #endif
