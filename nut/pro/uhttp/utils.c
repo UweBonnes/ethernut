@@ -37,11 +37,11 @@
  */
 
 #include <pro/uhttp/utils.h>
+#include <memdebug.h>
 
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <memdebug.h>
 
 void HttpUrlUnescape(char *str)
 {
