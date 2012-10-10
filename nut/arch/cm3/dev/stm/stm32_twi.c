@@ -292,7 +292,6 @@ void TwErrorIrq( void *arg)
     /*
      *** ERROR HANDLING ***
      */
-    icb->tw_mm_err = 0;
     if( twsr1 & I2C_SR1_AF) {
         /* Acknowledge failed */
         I2Cx->SR1 &= (uint16_t)~I2C_SR1_AF;
