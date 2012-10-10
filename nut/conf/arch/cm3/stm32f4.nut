@@ -158,6 +158,14 @@ nutarch_cm3_stm32f4 =
                 file = "include/cfg/clock.h"
             },
             {
+                macro = "HSE_BYPASS",
+                brief = "HSE from external source",
+                description = "Use the clock signal applied to OSC_IN.",
+                requires = { "HW_PLL_STM32F1" },
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
                 macro = "PLLCLK_SOURCE",
                 brief = "PLL Clock Source",
                 description = "Select where the PLL should get its clock from.\n\n"..

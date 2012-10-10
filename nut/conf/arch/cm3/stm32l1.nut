@@ -34,7 +34,7 @@
 -- STMicroelectronics STM32L Family Devices
 --
 --
-stm32_memory_l1 = { "32", "64", "128" }
+stm32_memory_l1_md = { "32", "64", "128" }
 stm32l1_device_class = { "STML1XX_MD" }
 
 -- *****************************************************************************
@@ -159,6 +159,14 @@ nutarch_cm3_stm32l1 =
                 requires = { "HW_PLL_STM32L1" },
                 type = "enumerated",
                 choices = { "PLLCLK_HSI", "PLLCLK_HSE" },
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "HSE_BYPASS",
+                brief = "HSE from external source",
+                description = "Use the clock signal applied to OSC_IN.",
+                requires = { "HW_PLL_STM32L1" },
+                flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
             {
