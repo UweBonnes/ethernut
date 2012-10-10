@@ -390,11 +390,11 @@ int TwWaitBusFree( NUTTWIBUS *bus)
 /*!
  * \brief Set START condition and wait for its appearance on the bus.
  */
-int NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
+void NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
 {
     int ret = 0;
     uint32_t tout = tmo;
-//    NUTTWIICB *icb = bus->bus_icb;
+    NUTTWIICB *icb = bus->bus_icb;
     I2C_TypeDef* I2Cx = (I2C_TypeDef*)bus->bus_base;
 
     /* Enable Interrupts */
@@ -418,8 +418,9 @@ int NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
         // TODO: Go back into Slave Mode
         I2Cx->CR1 |= I2C_CR1_ACK;
     }
-
-    return ret;
+    else
+        icb->tw_mm_err |= ret;
+    return;
 }
 
 /*!
@@ -497,7 +498,7 @@ int NutTwiMasterTranceive( NUTTWIBUS  *bus,
         icb->tw_mm_dir = MODE_READ;
 
     /* Issue start and wait till transmission completed */
-    icb->tw_mm_err = NutTwiStartRolling( bus, tmo);
+    NutTwiStartRolling( bus, tmo);
 
     /* Check for errors that may have been detected
      * by the interrupt routine.
@@ -590,7 +591,7 @@ int NutTwiMasterRegRead( NUTTWIBUS  *bus,
     icb->tw_mm_err = 0;
 
     /* Issue start and wait till transmission completed */
-    icb->tw_mm_err = NutTwiStartRolling( bus, tmo);
+    NutTwiStartRolling( bus, tmo);
 
     /* Check for errors that may have been detected
      * by the interrupt routine.
@@ -685,7 +686,7 @@ int NutTwiMasterRegWrite( NUTTWIBUS  *bus,
     icb->tw_mm_err = 0;
 
     /* Issue start and wait till transmission completed */
-    icb->tw_mm_err = NutTwiStartRolling( bus, tmo);
+    NutTwiStartRolling( bus, tmo);
 
     /* Check for errors that may have been detected
      * by the interrupt routine.
