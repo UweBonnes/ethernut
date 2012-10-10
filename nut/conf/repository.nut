@@ -288,6 +288,36 @@ hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
 pca9555_port_choice = { "IOXP_PORT0", "IOXP_PORT1" }
 pca9555_pin_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 
+--
+-- Check for custom configuration.
+--
+-- Executes custom/custom.nut, if it exists. This allows to extend the
+-- configuration without modifying any existing file.
+--
+-- For example, an application may provide its own file system driver.
+-- But mkdir, rmdir and similar function will become available only,
+-- if certain requirements are provided. This can be done by creating
+-- the file custom.nut with the following contents:
+--
+-- nutcustom =
+-- {
+--   {
+--     name = "nutcustom_cfs",
+--     brief = "CFS",
+--     description = "Custom file system driver.",
+--     provides = {
+--       "NUT_FS",
+--       "NUT_FS_READ",
+--       "NUT_FS_WRITE",
+--       "NUT_FS_DIR"
+--     }
+--   }
+-- }
+--
+-- Developer's note: The custom directory is reserved for this kind of
+-- extensions and must not exist in the official repository. However,
+-- it may be included in specialized Nut/OS distributions.
+--
 function CheckCustomConfig()
     local fp
 
