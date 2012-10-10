@@ -185,6 +185,13 @@ int CtlHseClock( uint8_t ena)
 #else
         CM3BBREG(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP)) = 0;
 #endif
+
+#if !defined(RTCPRE) || (RTCPRE <0) || (RTCPRE >3)
+#define RTCPRE 3
+#endif
+        RCC->CR &= ~RCC_CR_RTCPRE;
+        RCC->CR |=  RTCPRE<< _BI32(RCC_CR_RTCPRE_0);
+
         /* Enable HSE */
         rc = rcc_set_and_wait_rdy(
             CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEON)), 1, HSE_STARTUP_TIMEOUT);
@@ -390,6 +397,60 @@ int SetSysClock(void)
     return rc;
 }
 #endif /* (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE) */
+
+/**
+  * @brief  Sets RTC clock to selected source.
+  *
+  * @param  source Clock source LSI/LSE/HSE
+  * @retval -1 on error, 0 on success
+  */
+int SetRTCClock(int source)
+{
+    int rc = -1;
+    /* Enable PWR Controller and access to the RTC backup domain*/
+    CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_PWREN))=1;
+    CM3BBREG(PWR_BASE, PWR_TypeDef, CR, _BI32(PWR_CR_DBP)) = 1;
+    /* Reset RTC to allow selection */
+    CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST)) = 1;
+    CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST)) = 0;
+    switch (source)
+    {
+    case RTCCLK_LSI:
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSION)),
+            1, HSE_STARTUP_TIMEOUT*1000);
+        if (rc == -1)
+            return rc;
+        RCC->CSR &= ~RCC_CSR_RTCSEL;
+        RCC->CSR |= RCC_CSR_RTCSEL_LSI;
+        break;
+    case RTCCLK_LSE:
+        /* LSE Bypass can only be written with LSE off*/
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEON)),
+            0, HSE_STARTUP_TIMEOUT*1000);
+        if (rc == -1)
+            return rc;
+#if defined(LSE_BYPASS)
+        CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP)) = 1;
+#else
+        CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP)) = 0;
+#endif
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEON)),
+            1, HSE_STARTUP_TIMEOUT*1000);
+        if (rc == -1)
+            return rc;
+        RCC->CSR &= ~RCC_CSR_RTCSEL;
+        RCC->CSR |= RCC_CSR_RTCSEL_LSE;
+        break;
+    case RTCCLK_HSE:
+        RCC->CSR &= ~RCC_CSR_RTCSEL;
+        RCC->CSR |= RCC_CSR_RTCSEL_HSE;
+        break;
+    }
+    return rc;
+}
 
 /**
   * @brief  requests System clock frequency
