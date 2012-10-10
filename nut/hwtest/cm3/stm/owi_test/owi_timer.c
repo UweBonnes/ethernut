@@ -6,7 +6,7 @@
 #include <dev/gpio.h>
 #include <dev/board.h>
 #include <dev/hwtimer_stm32.h>
-#include "owi.h"
+#include <dev/owi.h>
 
 HANDLE owi_irq_done;
 
@@ -18,13 +18,16 @@ int OWInit(void)
     GpioPinConfigSet( OWI_PORT, OWI_PIN, GPIO_CFG_OUTPUT| GPIO_CFG_MULTIDRIVE);
     TIM_Init(OWI_TIMER);
     TIM_Clear(OWI_TIMER);
-    TIM_IntEnable(OWI_TIMER);
+    TIM_NVIC_EnableIRQ(OWI_TIMER);
+    TIM_IRQEnable(OWI_TIMER);
     /* let us work in steps of 0.5 us */
     TIM_Prescaler(OWI_TIMER) = ((TIM_ClockVal(OWI_TIMER))/2000000L)-1;
-    printf(" Clock %08lx, PSC soll %08lx ist %04x\n", val,
-            (val/2000000)-1, TIM_Prescaler(OWI_TIMER));
+/*
+    printf("Clock %08lx, PSC soll %08lx ist %04x\n", val,
+    (val/2000000)-1, TIM_Prescaler(OWI_TIMER));
+*/
     TIM_OnePulse( OWI_TIMER);
-    return 1;
+    return 0;
 }
 
 static void irq_ow_reset(void *arg)
@@ -66,7 +69,7 @@ int OWTouchReset(void)
     TIM_C2IRQEnable( OWI_TIMER);
     TIM_C3IRQEnable( OWI_TIMER);
     TIM_C4IRQEnable( OWI_TIMER);
-    TIM_IntRegister(OWI_TIMER, irq_ow_reset);
+    TIM_Cortex_RegisterInt(OWI_TIMER, irq_ow_reset);
     TIM_Counter(OWI_TIMER) =  0;
     /* Reload the values (Counter and Prescaler*/
     TIM_Update( OWI_TIMER);
@@ -127,7 +130,7 @@ static int OWRWBit(int bit)
     TIM_C2IRQEnable( OWI_TIMER);
     TIM_C3IRQEnable( OWI_TIMER);
     TIM_C4IRQEnable( OWI_TIMER);
-    TIM_IntRegister(OWI_TIMER, irq_ow_bit);
+    TIM_Cortex_RegisterInt(OWI_TIMER, irq_ow_bit);
     TIM_Counter(OWI_TIMER) =  0;
     TIM_Update( OWI_TIMER); /* Reload the values*/
     TIM_StartTimer( OWI_TIMER );
@@ -164,7 +167,7 @@ uint8_t OWReadByte(void)
 }
 
 /* from u2c_owi.c*/
-uint8_t OWRomSearch(uint8_t diff, uint64_t *hid)
+int OWRomSearch(uint8_t diff, uint64_t *hid)
 {
     uint8_t i,j, next_diff;
     uint8_t b;
