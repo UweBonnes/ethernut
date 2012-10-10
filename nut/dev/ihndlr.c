@@ -112,6 +112,27 @@ int NutRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *), void *arg
 }
 
 /*!
+ * \brief Check if the corresponding interrupt is enabled or disabled.
+ *
+ * \param irq Interrupt to query.
+ *
+ * \return 0 if disabled, 1 if enabled.
+ */
+int NutIrqStatus(IRQ_HANDLER * irq)
+{
+    int rc = 0;
+    int status = 0;
+
+    if (irq->ir_ctl) {
+        rc = (irq->ir_ctl) (NUT_IRQCTL_ENABLE, &status);
+    }
+    if (rc != 0) {
+        status = 0;
+    }
+    return status;
+}
+
+/*!
  * \brief Enable a specified interrupt.
  *
  * \param irq Interrupt to enable.
