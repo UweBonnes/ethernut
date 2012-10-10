@@ -76,6 +76,23 @@ int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 
 int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
+    /* Set the inital value, if given
+     *
+     * Otherwise we may introduce unwanted transistions on the port
+     */
+    if (flags & GPIO_CFG_INIT_HIGH)
+    {
+        if (flags & GPIO_CFG_INIT_LOW)
+            return -1;
+        else
+            AVR_PORTX(bank) |= BV(bit);
+    }
+    if (flags & GPIO_CFG_INIT_LOW)
+            AVR_PORTX(bank) &= ~BV(bit);
+
+    /* we can't check for these flags, so clear them now*/
+    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
     if (flags & GPIO_CFG_PULLUP)
         flags &= ~GPIO_CFG_OUTPUT;
     if (flags & GPIO_CFG_OUTPUT) {

@@ -134,6 +134,15 @@
 #define GPIO_CFG_SPEED_FAST  0x00000080
 #define GPIO_CFG_SPEED_HIGH  0x000000C0
 
+/*!
+ * \brief GPIO Output Register inital value  Low
+ */
+#define GPIO_CFG_INIT_LOW    0x40000000
+/*!
+ * \brief GPIO Output Register inital value  High
+ */
+#define GPIO_CFG_INIT_HIGH   0x80000000
+
 typedef struct {
     void (*iov_handler) (void *);
     void *iov_arg;

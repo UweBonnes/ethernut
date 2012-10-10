@@ -171,6 +171,23 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 
     clock = GPIO_RCCx[(bank-GPIOA_BASE)/0x400];
 
+    /* Set the inital value, if given
+     *
+     * Otherwise we may introduce unwanted transistions on the port
+     */
+    if (flags & GPIO_CFG_INIT_HIGH)
+    {
+        if (flags & GPIO_CFG_INIT_LOW)
+            return -1;
+        else
+            GPIOx->BSRR = mask;
+    }
+    if (flags & GPIO_CFG_INIT_LOW)
+            GPIOx->BRR = mask;
+
+    /* we can't check for these flags, so clear them */
+    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
     /* Pull-up/down can only be configured for input mode*/
     if (flags & (GPIO_CFG_OUTPUT|GPIO_CFG_DISABLED))
         if(flags & (GPIO_CFG_PULLUP |GPIO_CFG_PULLDOWN))

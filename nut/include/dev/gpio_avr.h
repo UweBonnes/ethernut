@@ -96,8 +96,19 @@
 
 /*!
  * \brief GPIO input glitch filter enabled.
+ *
+ * Not implemented in AVR
  */
 #define GPIO_CFG_DEBOUNCE   0x00000010
+
+/*!
+ * \brief GPIO Output Register inital value  Low
+ */
+#define GPIO_CFG_INIT_LOW    0x40000000
+/*!
+ * \brief GPIO Output Register inital value  High
+ */
+#define GPIO_CFG_INIT_HIGH   0x80000000
 
 typedef struct {
     void (*iov_handler) (void *);

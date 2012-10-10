@@ -155,6 +155,24 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
          ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
 
     CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)>>10) = 1;
+
+    /* Set the inital value, if given
+     *
+     * Otherwise we may introduce unwanted transistions on the port
+     */
+    if (flags & GPIO_CFG_INIT_HIGH)
+    {
+        if (flags & GPIO_CFG_INIT_LOW)
+            return -1;
+        else
+            gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, ODR, bit)] = 1;
+    }
+    if (flags & GPIO_CFG_INIT_LOW)
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, ODR, bit)] = 0;
+
+    /* we can't check for these flags, so clear them */
+    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
     /* keep speed at slowest for now */
     if (flags & GPIO_CFG_PERIPHAL)
     {
