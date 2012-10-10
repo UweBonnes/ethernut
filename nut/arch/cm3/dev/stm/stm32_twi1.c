@@ -166,9 +166,9 @@ int Stm32I2cBus1Init(void)
 #ifdef I2CBUS1_MODE_SMBUS
     pins |= _BV(SMBA_PIN);
 #endif
-    GpioPortConfigSet( I2C_PORT, pins, GPIO_CFG_OUTPUT
-                                     | GPIO_CFG_PERIPHAL
-                                     | GPIO_CFG_MULTIDRIVE);
+    GpioPortConfigSet( I2C_PORT, pins,
+                       GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL
+                       | GPIO_CFG_MULTIDRIVE |GPIO_CFG_INIT_HIGH);
     NVIC_SetPriorityGrouping(4);
     NVIC_SetPriority( I2C1_EV_IRQn, 0);
     NVIC_SetPriority( I2C1_ER_IRQn, 1);
@@ -177,8 +177,9 @@ int Stm32I2cBus1Init(void)
      GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, SMBA_PIN, GPIO_AF_I2C1);
 #endif
 #if defined (MCU_STM32F1)
-    /* Configure alternate configuration. */\
-    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP)) = I2C_DOREMAP;
+    /* Configure alternate configuration. */
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP))
+        = I2C_DOREMAP;
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SDA_PIN, GPIO_AF_I2C1);
     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SCL_PIN, GPIO_AF_I2C1);

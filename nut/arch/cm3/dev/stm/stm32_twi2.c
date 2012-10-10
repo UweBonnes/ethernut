@@ -181,17 +181,23 @@ int Stm32I2cBus2Init(void)
      * On non-F1 parts, pins may be mapped to different ports!
      */
     GpioPinConfigSet( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN,
-              GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE);
+                      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL |
+                      GPIO_CFG_MULTIDRIVE | GPIO_CFG_INIT_HIGH);
     GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN,
-              GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE);
+                      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL |
+                      GPIO_CFG_MULTIDRIVE | GPIO_CFG_INIT_HIGH);
 #ifdef I2CBUS2_MODE_SMBUS
     GpioPinConfigSet( I2CBUS2_SMBA_PORT, I2CBUS2_SMBA_PIN,
-              GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE);
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SMBA_PORT, I2CBUS2_SMBA_PIN, GPIO_AF_I2C2);
+                      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL |
+                      GPIO_CFG_MULTIDRIVE | GPIO_CFG_INIT_HIGH);
+    GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SMBA_PORT,
+                     I2CBUS2_SMBA_PIN, GPIO_AF_I2C2);
 #endif
 #if defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN, GPIO_AF_I2C2);
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN, GPIO_AF_I2C2);
+    GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SDA_PORT,
+                     I2CBUS2_SDA_PIN, GPIO_AF_I2C2);
+    GPIO_PinAFConfig((GPIO_TypeDef*) I2CBUS2_SCL_PORT,
+                     I2CBUS2_SCL_PIN, GPIO_AF_I2C2);
 #endif
     NVIC_SetPriorityGrouping(4);
     NVIC_SetPriority( I2C2_EV_IRQn, 0);
