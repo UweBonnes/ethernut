@@ -458,12 +458,6 @@ int NutTwiMasterTranceive( NUTTWIBUS  *bus,
 
 //    TPRINTF( "TMT ");
 
-    /* Quit if nothing to do */
-    if( (txlen==0) && (rxsiz==0) ) {
-        TPRINTF("! txs=0 & xrs=0... OUT\n");
-        return rc;
-    }
-
     /* This routine is marked reentrant, so lock the interface. */
     if( NutEventWait( &bus->bus_mutex, tmo ) ) {
         icb->tw_mm_error = TWERR_IF_LOCKED;
@@ -491,10 +485,10 @@ int NutTwiMasterTranceive( NUTTWIBUS  *bus,
     icb->tw_mm_rxlen = rxsiz;
     icb->tw_mm_err = 0;
 
-    if (icb->tw_mm_txlen)
-        icb->tw_mm_dir = MODE_WRITE;
-    else
+    if (icb->tw_mm_rxlen)
         icb->tw_mm_dir = MODE_READ;
+    else
+        icb->tw_mm_dir = MODE_WRITE;
 
     /* Issue start and wait till transmission completed */
     NutTwiStartRolling( bus, tmo);
