@@ -154,8 +154,15 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_HIGH) |
          ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
 
-    CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)>>10) = 1;
-
+#if defined(MCU_STM32L1)
+    CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR, (bank-GPIOA_BASE)>>10) = 1;
+#elif defined(MCU_STM32F3)
+    CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,
+             ((bank-GPIOA_BASE)>>10) +17) = 1;
+#else
+    CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR,
+             (bank-GPIOA_BASE)>>10) = 1;
+#endif
     /* Set the inital value, if given
      *
      * Otherwise we may introduce unwanted transistions on the port
