@@ -71,8 +71,15 @@ int main(void)
 
 #include <dev/owibus.h>
 
+#if defined(OWI_UART)
+#if !defined(USE_BB)
 #define USE_UART
-/* #define USE_BB */
+#endif
+#else
+#if defined(OWI_PORT) && defined(OWI_PIN)
+#define USE_BB
+#endif
+#endif
 
 static char *banner = "\nNut/OS OWI Bus "__DATE__ " " __TIME__"\n";
 /*
@@ -112,7 +119,7 @@ int main(void)
             "Bus on your board\n");
     while(1) NutSleep(10);
  #else
-    fprintf(stdout, "Using Bitbang PORT %x PIN %x\n", OWI_PORT, OWI_PIN);
+    fprintf(stdout, "Using Bitbang PORT %lx PIN %x\n", OWI_PORT, OWI_PIN);
     fprintf(stdout,
             "Make sure no other (floating) pin results in the OWI "
             "line pulled low\n");
