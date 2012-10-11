@@ -3,6 +3,8 @@
 
 /*
  * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2012 by Rob van Lieshout (info@pragmalab.nl)
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

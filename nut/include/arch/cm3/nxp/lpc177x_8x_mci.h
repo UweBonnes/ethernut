@@ -3,6 +3,7 @@
 
 /*
  * Copyright (C) 2012 by Rob van Lieshout (info@pragmalab.nl)
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -388,7 +389,7 @@ void     Lpc177x_8x_MciSendCmd(uint32_t CmdIndex, uint32_t Argument, uint32_t Ex
 int32_t  Lpc177x_8x_MciGetCmdResp(uint32_t CmdIndex, uint32_t NeedRespFlag, uint32_t *CmdRespStatus);
 int32_t  Lpc177x_8x_MciCmdResp(uint32_t CmdIndex, uint32_t Argument, uint32_t ExpectResp, uint32_t *CmdResp, uint32_t AllowTimeout);
 
-void     Lpc177x_8x_MciSet_MCIClock(uint32_t clockrate);
+void     Lpc177x_8x_MciSetClock(uint32_t clockrate);
 int32_t  Lpc177x_8x_MciSetBusWidth(uint32_t width);
 int32_t  Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal);
 int32_t  Lpc177x_8x_MciCardInit(void);

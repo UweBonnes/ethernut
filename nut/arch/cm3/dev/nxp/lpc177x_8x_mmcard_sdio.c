@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 by Rob van Lieshout (info@pragmalab.nl)
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  * Copyright (C) 2008 by egnite GmbH.
  *
  * All rights reserved.
@@ -56,6 +57,10 @@
 #include "arch/cm3/nxp/lpc177x_8x_mmcard_sdio.h"
 #include "arch/cm3/nxp/lpc177x_8x_mci.h"
 
+#ifdef NUTDEBUG
+#include <stdio.h>
+#endif
+
 /*!
  * \addtogroup Card
  */
@@ -67,8 +72,8 @@ typedef struct _MCIFC
     uint32_t ifc_opcond;        /*! \brief Operating conditions. */
     uint32_t ifc_reladdr;       /*! \brief Relative card address. */
     uint8_t *ifc_buff;          /*! \brief Pointer to sector buffer. */
-    uint32_t ifc_resp[4];       /*! \brief MMC response. */
-    uint32_t ifc_cid[4];        /*! \brief Card identification. */
+    uint32_t ifc_csd[4];        /*! \brief Card Specific Data CSD. */
+    //uint32_t ifc_cid[4];        /*! \brief Card identification. */
     uint8_t  ifc_admode;        /*! \brief adressing mode */
 } MCIFC;
 
@@ -107,6 +112,12 @@ typedef struct _MMCFCB
     u_char fcb_blkbuf[MMC_BLOCK_SIZE];
 } MMCFCB;
 
+/* Flags to check whether a partition table is present or not */
+
+#define MBR_P_TABLE_PRESENT     0
+#define MBR_P_TABLE_NOT_PRESENT 1
+
+
 /*
  * Several routines call NutSleep, which results in a context switch.
  * This mutual exclusion semaphore takes care, that multiple threads
@@ -118,6 +129,7 @@ static MCIFC mci0_ifc;
 /* local routines */
 static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t*, int, int);
 static uint32_t Lpc177x_8x_MmcardReadData(uint8_t*, int, int);
+static int      Lpc177x_8x_MmcardUnmount(NUTFILE * nfp);
 
 /*-------------------------------------------------------------------------*/
 /*                         start of code                                   */
@@ -163,6 +175,9 @@ static uint32_t Lpc177x_8x_MmcardReadData(uint8_t* buffer, int blk, int num)
 
         if (errorState)
         {
+#ifdef NUTDEBUG
+            printf(__func__ "() failed\n");
+#endif
             retVal = MCI_FUNC_FAILED;
         }
     }
@@ -211,6 +226,9 @@ static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t* buffer, int blk, int num)
 
         if (errorState)
         {
+#ifdef NUTDEBUG
+            printf(__func__ "() failed\n");
+#endif
             retVal = MCI_FUNC_FAILED;
         }
     }
@@ -232,15 +250,15 @@ static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t* buffer, int blk, int num)
 static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
 {
     int32_t retVal;
-    uint8_t error = 0;
+//    uint8_t error = 0;
     st_Mci_CardId cidval;
     en_Mci_CardType cardType;
     uint32_t rcAddress;
-    uint32_t csdVal[4];
-//    uint32_t errorState;
 
     MCIFC *ifc = (MCIFC *) dev->dev_icb;
 
+    /* set default for addressing mode */
+    ifc->ifc_admode = MMC_BLOCK_MODE;
 
     /*********************************/
     /*          Init                 */
@@ -248,6 +266,9 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     retVal = Lpc177x_8x_MciInit(BRD_MCI_POWERED_ACTIVE_LEVEL);
     if (retVal != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf(__func__ "() MciInit failed\n");
+#endif
         return((int)retVal);
     }
 
@@ -256,32 +277,20 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     /*********************************/
     cardType = Lpc177x_8x_MciGetCardType();
 
+    if (cardType == MCI_CARD_UNKNOWN)
+    {
 #ifdef NUTDEBUG
-    switch (cardType)
-    {
-        case MCI_SDHC_SDXC_CARD:
-            printf("\nCurrently the SDXC/SDHC CARD ver2.0 is being used");
-            break;
-        case MCI_SDSC_V2_CARD:
-            printf("\nCurrently the SD CARD ver2.0 is being used");
-            break;
-        case MCI_SDSC_V1_CARD:
-            printf("\nCurrently the SD CARD ver1.0 is being used");
-            break;
-
-        case MCI_MMC_CARD:
-            printf("\nCurrently the MMC CARD is being used");
-            break;
-
-        case MCI_CARD_UNKNOWN:
-            printf("\nNo CARD is being plugged, Please check!!!");
-            error = 1;
-            break;
-    }
+        printf(__func__ "() Get Card Type\n");
 #endif
-    if (error)
-    {
         return(MCI_FUNC_FAILED);
+    }
+    else
+    {
+        // the cardtype will tell us if BLOCK or BYTE addressing whould be used
+        if (cardType == MCI_SDHC_SDXC_CARD)
+        {
+            ifc->ifc_admode = MMC_BYTE_MODE;
+        }
     }
 
     /*********************************/
@@ -290,25 +299,21 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     retVal = Lpc177x_8x_MciGetCID(&cidval);
     if (retVal != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf(__func__ "() Get CID failed\n");
+#endif
         return((int)retVal);
     }
-#ifdef NUTDEBUG
-    else
-    {
-        printf("\nManufacture ID: 0x%08X", cidval.MID);
-        printf("\nOEM/Application ID: 0x%08X", cidval.OID);
-        printf("\nProduct Name: %d", cidval.PNM_H);
-        printf("\nProduct Revision: 0x%08X", cidval.PRV);
-        printf("\nProduct Serial Number: 0x%08X", cidval.PSN);
-        printf("\nManufacturing Date: 0x%08X",cidval.MDT);
-    }
-#endif
+
     /*********************************/
     /*          Card Address         */
     /*********************************/
     retVal = Lpc177x_8x_MciSetCardAddress();
     if (retVal != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf(__func__ "() Set card address failed\n");
+#endif
         return((int)retVal);
     }
     else
@@ -321,21 +326,15 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     /*********************************/
     /*              CDS             */
     /*********************************/
-    retVal = Lpc177x_8x_MciGetCSD(csdVal);
+    retVal = Lpc177x_8x_MciGetCSD(ifc->ifc_csd);
     if (retVal != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf(__func__ "() GetCSD failed\n");
+#endif
         return((int)retVal);
     }
-#ifdef NUTDEBUG
-    else
-    {
-        printf("\nGet Card Specific Data (CSD) Ok:");
-        printf("\n\t[0] = 0x%08X", csdVal[0]);
-        printf("\n\t[1] = 0x%08X", csdVal[1]);
-        printf("\n\t[2] = 0x%08X", csdVal[2]);
-        printf("\n\t[3] = 0x%08X", csdVal[3]);
-    }
-#endif
+
     /*********************************/
     /*          Card Select          */
     /*********************************/
@@ -343,6 +342,9 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
 
     if (retVal != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf(__func__ "() Card select CMD failed\n");
+#endif
         return((int)retVal);
     }
 
@@ -351,7 +353,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     /*********************************/
     if (cardType == MCI_SDSC_V1_CARD || cardType == MCI_SDSC_V2_CARD || cardType == MCI_SDHC_SDXC_CARD)
     {
-        Lpc177x_8x_MciSet_MCIClock( MCI_NORMAL_RATE );
+        Lpc177x_8x_MciSetClock( MCI_NORMAL_RATE );
 
         if (Lpc177x_8x_MciSetBusWidth( SD_4_BIT ) != MCI_FUNC_OK)
         {
@@ -390,7 +392,8 @@ static int Lpc177x_8x_MmcardBlockRead(NUTFILE * nfp, void *buffer, int num)
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
     uint32_t blk = fcb->fcb_blknum;
-//    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
+    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
+    MCIFC *ifc = (MCIFC *) dev->dev_icb;
 
     if (buffer == 0)
     {
@@ -407,7 +410,18 @@ static int Lpc177x_8x_MmcardBlockRead(NUTFILE * nfp, void *buffer, int num)
      *  parameter. This way we acces the real sector on the card.
      *
      */
-    blk += fcb->fcb_part.part_sect_offs;
+    if ((ifc->ifc_config & MBR_P_TABLE_NOT_PRESENT) == 0)
+    {
+        // only add offset if a partition table was present, else, don't add anything
+        blk += fcb->fcb_part.part_sect_offs;
+    }
+
+
+    if (ifc->ifc_admode == MMC_BLOCK_MODE)
+    {
+        // apply addressing mode here
+        blk *= BLOCK_LENGTH;
+    }
 
     if (Lpc177x_8x_MmcardReadData(fcb->fcb_blkbuf, blk, 1) == MCI_FUNC_OK)
     {
@@ -415,6 +429,9 @@ static int Lpc177x_8x_MmcardBlockRead(NUTFILE * nfp, void *buffer, int num)
         return(num);
     }
 
+#ifdef NUTDEBUG
+    printf(__func__ "() failed\n");
+#endif
     return(-1);
 }
 
@@ -437,7 +454,8 @@ static int Lpc177x_8x_MmcardBlockWrite(NUTFILE * nfp, const void *buffer, int nu
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
     uint32_t blk = fcb->fcb_blknum;
-//    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
+    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
+    MCIFC *ifc = (MCIFC *) dev->dev_icb;
 
 
     if (buffer == 0)
@@ -445,13 +463,38 @@ static int Lpc177x_8x_MmcardBlockWrite(NUTFILE * nfp, const void *buffer, int nu
         buffer = fcb->fcb_blkbuf;
     }
 
-    blk += fcb->fcb_part.part_sect_offs;
+    /*
+     *  when using the filesystem, the sectornumbering is different then when
+     *  directly accesing the card. For example, the MBR can be found at the
+     *  sector 0 of the card, but the filesystem's first sector is the sector
+     *  where the start is of the FAT VolumeID (also called the BOOT SECTOR).
+     *  This position (or offset) is indicated by reading the partion-table,
+     *  more specific: by reading the LBA begin info.
+     *  This offset we need to add here to the sector# we get in as
+     *  parameter. This way we acces the real sector on the card.
+     *
+     */
+
+    if ((ifc->ifc_config & MBR_P_TABLE_NOT_PRESENT) == 0)
+    {
+        // only add offset if a partition table was present, else, don't add anything
+        blk += fcb->fcb_part.part_sect_offs;
+    }
+
+    if (ifc->ifc_admode == MMC_BLOCK_MODE)
+    {
+        // apply addressing mode here
+        blk *= BLOCK_LENGTH;
+    }
 
     if (Lpc177x_8x_MmcardWriteData(fcb->fcb_blkbuf, blk, 1) == MCI_FUNC_OK)
     {
         return(num);
     }
 
+#ifdef NUTDEBUG
+    printf(__func__ "() failed\n");
+#endif
     return(-1);
 }
 
@@ -488,7 +531,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     NUTFILE *nfp;
     MMCFCB *fcb;
     DOSPART *part;
-//    MCIFC *ifc = (MCIFC *) dev->dev_icb;
+    MCIFC *ifc = (MCIFC *) dev->dev_icb;
     FSCP_VOL_MOUNT mparm;
 
 
@@ -496,8 +539,13 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if (Lpc177x_8x_MmcardInit(dev))
     {
         errno = ENODEV;
+#ifdef NUTDEBUG
+        printf(__func__ "() Card init failed\n");
+#endif
         return(NUTFILE_EOF);
     }
+
+    ifc->ifc_config = 0;      // make sure a default is set before adding new info later on
 
     /* Parse the name for a partition number and a file system driver. */
     if (*name)
@@ -538,7 +586,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if (fsdev == 0)
     {
 #ifdef NUTDEBUG
-        printf("[No FSDriver]");
+        printf(__func__ "() FS driver not found\n");
 #endif
         errno = ENODEV;
         return(NUTFILE_EOF);
@@ -547,6 +595,9 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if ((fcb = NutHeapAllocClear(sizeof(MMCFCB))) == 0)
     {
         errno = ENOMEM;
+#ifdef NUTDEBUG
+        printf(__func__ "() Out of memory\n");
+#endif
         return(NUTFILE_EOF);
     }
 
@@ -560,6 +611,9 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if (Lpc177x_8x_MmcardReadData(fcb->fcb_blkbuf, 0, 1) != MCI_FUNC_OK)
     {
         NutHeapFree(fcb);
+#ifdef NUTDEBUG
+        printf(__func__ "() Reading MBR failed\n");
+#endif
         return(NUTFILE_EOF);
     }
 
@@ -568,10 +622,10 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if ((fcb->fcb_blkbuf[510]!=0x55) || (fcb->fcb_blkbuf[511]!=0xAA))
     {
 #ifdef NUTDEBUG
-        printf("\nMBR ");
+        printf(__func__ "() Invalid MBR\n");
 #endif
-//        HexDump(LogGetStream(), fcb->fcb_blkbuf, 512);
-//        NutHeapFree(fcb);
+        NutHeapFree(fcb);
+
         return(NUTFILE_EOF);
     }
 
@@ -599,28 +653,28 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
 
     if (fcb->fcb_part.part_type == PTYPE_EMPTY)
     {
+#ifdef NUTDEBUG
+        printf(__func__ "() Invalid partition type\n");
+#endif
         NutHeapFree(fcb);
         return(NUTFILE_EOF);
     }
 
-    // show MBR
-//    HexDump(LogGetStream(), fcb->fcb_blkbuf, 512);
-
-    // show active entry in partion table
-//    HexDump(LogGetStream(), &fcb->fcb_blkbuf[DOSPART_SECTORPOS], 16);
-
-
 #ifdef NUTDEBUG
-    printf("\nnumber of sectors %lu", fcb->fcb_part.part_sects);
-    printf("\nstarting LBA %lu", fcb->fcb_part.part_sect_offs);
+    printf("Number of sectors %lu\n", fcb->fcb_part.part_sects);
+    printf("Starting LBA %lu\n", fcb->fcb_part.part_sect_offs);
 #endif
 
     if ((nfp = NutHeapAllocClear(sizeof(NUTFILE))) == 0)
     {
         NutHeapFree(fcb);
         errno = ENOMEM;
+#ifdef NUTDEBUG
+        printf(__func__ "() Out of memory\n");
+#endif
         return(NUTFILE_EOF);
     }
+
     nfp->nf_next = 0;
     nfp->nf_dev = dev;
     nfp->nf_fcb = fcb;
@@ -632,12 +686,27 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     mparm.fscp_bmnt = nfp;
     mparm.fscp_part_type = fcb->fcb_part.part_type;
 
-
     if (fsdev->dev_ioctl(fsdev, FS_VOL_MOUNT, &mparm))
     {
+#ifdef NUTDEBUG
+        printf(__func__ "() Mounting failed, try without partition table\n");
+#endif
+        // try again, this time leaving out the partition table offset
+        ifc->ifc_config |= MBR_P_TABLE_NOT_PRESENT;
 
-//        Lpc177x_8x_MmcardUnmount(nfp);       // freezes the system!
-        return(NUTFILE_EOF);
+        if (fsdev->dev_ioctl(fsdev, FS_VOL_MOUNT, &mparm))
+        {
+            // failed again...
+            // destroy allocated nfp block (and UNMOUNT the FS (again))
+            Lpc177x_8x_MmcardUnmount(nfp);
+
+#ifdef NUTDEBUG
+            printf(__func__ "() No FAT filesystem found, mounting failed\n");
+#endif
+            NutHeapFree(fcb);
+            return(NUTFILE_EOF);
+        }
+
     }
 
     return(nfp);
@@ -661,14 +730,17 @@ static int Lpc177x_8x_MmcardUnmount(NUTFILE * nfp)
 
         if (fcb)
         {
-  //          NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
-
             rc = fcb->fcb_fsdev->dev_ioctl(fcb->fcb_fsdev, FS_VOL_UNMOUNT, NULL);
-
             NutHeapFree(fcb);
         }
         NutHeapFree(nfp);
     }
+
+#ifdef NUTDEBUG
+    if (rc != 0) {
+        printf(__func__ "() failed\n");
+    }
+#endif
     return(rc);
 }
 
