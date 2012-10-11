@@ -276,6 +276,26 @@ nutpro =
         sources = { "ftpd.c" }
     },
     {
+        name = "nutpro_pop3",
+        brief = "POP3 Client API",
+        description = "Provides email retrieval via POP3.",
+        requires = { "NET_TCP", "CRT_STREAM_READ" },
+        sources =
+        {
+            "pop3c.c"
+        },
+        options =
+        {
+            {
+                macro = "POP3_BUFSIZ",
+                brief = "Size of the POP3 line buffer",
+                type = "integer",
+                default = "256",
+                file = "include/cfg/pop3.h"
+            }
+        }
+    },
+    {
         name = "nutpro_smtp",
         brief = "SMTP Client API",
         description = "Provides email transfer via SMTP.",
