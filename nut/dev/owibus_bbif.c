@@ -51,6 +51,12 @@
 #include <dev/owibus.h>
 #include <dev/owibus_bbif.h>
 
+#if defined(GPIO_CFG_INIT_HIGH)
+#define OWI_GPIO_CFG_INIT_HIGH GPIO_CFG_INIT_HIGH
+#else
+#define OWI_GPIO_CFG_INIT_HIGH 0
+#endif
+
 /*!
  * \addtogroup xgOwibusBb
  */
@@ -210,7 +216,8 @@ int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, i
 
     if (GpioPinConfigSet(
             txrx_port, txrx_pin,
-            GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT | GPIO_CFG_MULTIDRIVE |GPIO_CFG_INIT_HIGH)) {
+            GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT |
+            GPIO_CFG_MULTIDRIVE |OWI_GPIO_CFG_INIT_HIGH)) {
         res = OWI_INVALID_HW;
         goto free_all;
     }
