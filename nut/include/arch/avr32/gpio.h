@@ -51,7 +51,7 @@ typedef struct
 
 extern int gpio_enable_module(const gpio_map_t gpiomap, unsigned int size);
 
-void inline gpio_enable_module_pin(unsigned int pin, unsigned int function)
+static inline void gpio_enable_module_pin(unsigned int pin, unsigned int function)
 {
     unsigned int peripheral = 0;
     switch ( function )
