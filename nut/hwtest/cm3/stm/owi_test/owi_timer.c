@@ -8,6 +8,7 @@
 #include <dev/hwtimer_stm32.h>
 #include <dev/owi.h>
 
+#if defined(OWI_TIMER) && defined(OWI_PORT) && !defined(OWI_PIN)
 HANDLE owi_irq_done;
 
 volatile int owi_sample;
@@ -228,3 +229,4 @@ int w1_command( uint8_t command, uint64_t *hid )
     OWWriteByte( command );
     return 0;
 }
+#endif

@@ -158,7 +158,7 @@ int main(void)
 #if defined(LED1_PORT) && defined(LED1_PIN)
     GpioPinConfigSet( LED1_PORT, LED1_PIN, GPIO_CFG_OUTPUT);
 #endif
-#if !defined(OWI_TIMER)
+#if !defined(OWI_TIMER) || !defined(OWI_PORT) || !defined(OWI_PIN)
     puts("Please define the OWI_TIMER to use\n");
     while(1)
     {
