@@ -176,7 +176,7 @@ static uint32_t Lpc177x_8x_MmcardReadData(uint8_t* buffer, int blk, int num)
         if (errorState)
         {
 #ifdef NUTDEBUG
-            printf(__func__ "() failed\n");
+            printf("%s() failed\n", __FUNCTION__ );
 #endif
             retVal = MCI_FUNC_FAILED;
         }
@@ -227,7 +227,7 @@ static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t* buffer, int blk, int num)
         if (errorState)
         {
 #ifdef NUTDEBUG
-            printf(__func__ "() failed\n");
+            printf("%s() failed\n", __FUNCTION__ );
 #endif
             retVal = MCI_FUNC_FAILED;
         }
@@ -267,7 +267,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     if (retVal != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() MciInit failed\n");
+        printf("%s() MciInit failed\n", __FUNCTION__ );
 #endif
         return((int)retVal);
     }
@@ -280,7 +280,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     if (cardType == MCI_CARD_UNKNOWN)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() Get Card Type\n");
+        printf("%s() Get Card Type\n", __FUNCTION__ );
 #endif
         return(MCI_FUNC_FAILED);
     }
@@ -300,7 +300,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     if (retVal != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() Get CID failed\n");
+        printf("%s() Get CID failed\n", __FUNCTION__ );
 #endif
         return((int)retVal);
     }
@@ -312,7 +312,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     if (retVal != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() Set card address failed\n");
+        printf("%s() Set card address failed\n", __FUNCTION__ );
 #endif
         return((int)retVal);
     }
@@ -330,7 +330,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     if (retVal != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() GetCSD failed\n");
+        printf("%s() GetCSD failed\n", __FUNCTION__ );
 #endif
         return((int)retVal);
     }
@@ -343,7 +343,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
     if (retVal != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() Card select CMD failed\n");
+        printf("%s() Card select CMD failed\n", __FUNCTION__ );
 #endif
         return((int)retVal);
     }
@@ -430,7 +430,7 @@ static int Lpc177x_8x_MmcardBlockRead(NUTFILE * nfp, void *buffer, int num)
     }
 
 #ifdef NUTDEBUG
-    printf(__func__ "() failed\n");
+    printf("%s() failed\n", __FUNCTION__ );
 #endif
     return(-1);
 }
@@ -493,7 +493,7 @@ static int Lpc177x_8x_MmcardBlockWrite(NUTFILE * nfp, const void *buffer, int nu
     }
 
 #ifdef NUTDEBUG
-    printf(__func__ "() failed\n");
+    printf("%s() failed\n", __FUNCTION__ );
 #endif
     return(-1);
 }
@@ -540,7 +540,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     {
         errno = ENODEV;
 #ifdef NUTDEBUG
-        printf(__func__ "() Card init failed\n");
+        printf("%s() Card init failed\n", __FUNCTION__ );
 #endif
         return(NUTFILE_EOF);
     }
@@ -586,7 +586,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if (fsdev == 0)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() FS driver not found\n");
+        printf("%s() FS driver not found\n", __FUNCTION__ );
 #endif
         errno = ENODEV;
         return(NUTFILE_EOF);
@@ -596,7 +596,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     {
         errno = ENOMEM;
 #ifdef NUTDEBUG
-        printf(__func__ "() Out of memory\n");
+        printf("%s() Out of memory\n", __FUNCTION__ );
 #endif
         return(NUTFILE_EOF);
     }
@@ -612,7 +612,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     {
         NutHeapFree(fcb);
 #ifdef NUTDEBUG
-        printf(__func__ "() Reading MBR failed\n");
+        printf("%s() Reading MBR failed\n", __FUNCTION__);
 #endif
         return(NUTFILE_EOF);
     }
@@ -622,7 +622,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if ((fcb->fcb_blkbuf[510]!=0x55) || (fcb->fcb_blkbuf[511]!=0xAA))
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() Invalid MBR\n");
+        printf("%s() Invalid MBR\n", __FUNCTION__ );
 #endif
         NutHeapFree(fcb);
 
@@ -654,7 +654,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if (fcb->fcb_part.part_type == PTYPE_EMPTY)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() Invalid partition type\n");
+        printf("%s() Invalid partition type\n", __FUNCTION__ );
 #endif
         NutHeapFree(fcb);
         return(NUTFILE_EOF);
@@ -670,7 +670,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
         NutHeapFree(fcb);
         errno = ENOMEM;
 #ifdef NUTDEBUG
-        printf(__func__ "() Out of memory\n");
+        printf("%s() Out of memory\n", __FUNCTION__ );
 #endif
         return(NUTFILE_EOF);
     }
@@ -689,7 +689,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
     if (fsdev->dev_ioctl(fsdev, FS_VOL_MOUNT, &mparm))
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() Mounting failed, try without partition table\n");
+        printf("%s() Mounting failed, try without partition table\n", __FUNCTION__ );
 #endif
         // try again, this time leaving out the partition table offset
         ifc->ifc_config |= MBR_P_TABLE_NOT_PRESENT;
@@ -701,7 +701,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
             Lpc177x_8x_MmcardUnmount(nfp);
 
 #ifdef NUTDEBUG
-            printf(__func__ "() No FAT filesystem found, mounting failed\n");
+            printf("%s() No FAT filesystem found, mounting failed\n", __FUNCTION__ );
 #endif
             NutHeapFree(fcb);
             return(NUTFILE_EOF);
@@ -738,7 +738,7 @@ static int Lpc177x_8x_MmcardUnmount(NUTFILE * nfp)
 
 #ifdef NUTDEBUG
     if (rc != 0) {
-        printf(__func__ "() failed\n");
+        printf("%s() failed\n", __FUNCTION__ );
     }
 #endif
     return(rc);

@@ -64,7 +64,6 @@
  * this code.
  **********************************************************************/
 
-
 #include <cfg/arch.h>
 #include <sys/timer.h>
 #include <dev/gpio.h>
@@ -398,7 +397,7 @@ int32_t Lpc177x_8x_MciCheckStatus(void)
         if (Lpc177x_8x_MciGetCardStatus(&respValue) != MCI_FUNC_OK)
         {
 #ifdef NUTDEBUG
-            printf(__func__ "() GetCardStatus failed\n");
+            printf("%s() GetCardStatus failed\n", __FUNCTION__ );
 #endif
             break;
         }
@@ -415,7 +414,7 @@ int32_t Lpc177x_8x_MciCheckStatus(void)
             {
                 retval = MCI_FUNC_NOT_READY;
 #ifdef NUTDEBUG
-                printf(__func__ "() Card not ready\n");
+                printf("%s() Card not ready\n", __FUNCTION__ );
 #endif
             }
             else if (CARDSTATEOF(respValue) != MCI_CARDSTATE_TRAN)
@@ -423,7 +422,7 @@ int32_t Lpc177x_8x_MciCheckStatus(void)
                 /* Should be in STANDBY state now and ready */
                 retval = MCI_FUNC_ERR_STATE;
 #ifdef NUTDEBUG
-                printf(__func__ "() Invalid state\n");
+                printf("%s() Invalid state\n", __FUNCTION__ );
 #endif
             }
             else
@@ -1115,19 +1114,19 @@ int32_t Lpc177x_8x_MciCmdResp(uint32_t CmdIndex, uint32_t Argument,
 #ifdef NUTDEBUG
     if(respStatus & (MCI_CMD_TIMEOUT))
     {
-        printf(__func__ "() failed with MCI_CMD_TIMEOUT\n");
+        printf("%s() failed with MCI_CMD_TIMEOUT\n", __FUNCTION__ );
     }
     if(respStatus & (MCI_CMD_CRC_FAIL))
     {
-        printf(__func__ "() failed with MCI_CMD_CRC_FAIL\n");
+        printf("%s() failed with MCI_CMD_CRC_FAIL\n", __FUNCTION__ );
     }
     if(respStatus & (INVALID_RESPONSE))
     {
-        printf(__func__ "() failed with INVALID_RESPONSE\n");
+        printf("%s() failed with INVALID_RESPONSE\n", __FUNCTION__ );
     }
     if(respStatus & (MCI_FUNC_BAD_PARAMETERS))
     {
-        printf(__func__ "() failed with MCI_FUNC_BAD_PARAMETERS\n");
+        printf("%s() failed with MCI_FUNC_BAD_PARAMETERS\n", __FUNCTION__ );
     }
 #endif
 
@@ -1200,11 +1199,11 @@ int32_t Lpc177x_8x_MciCmd_SendOpCond( void )
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_TIMEOUT)
     {
-        printf(__func__ "() failed with MCI_FUNC_TIMEOUT\n");
+        printf("%s() failed with MCI_FUNC_TIMEOUT\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_BUS_NOT_IDLE)
     {
-        printf(__func__ "() failed with MCI_FUNC_BUS_NOT_IDLE\n");
+        printf("%s() failed with MCI_FUNC_BUS_NOT_IDLE\n", __FUNCTION__ );
     }
 #endif
 
@@ -1267,15 +1266,15 @@ int32_t Lpc177x_8x_MciCmd_SendIfCond(void)
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_TIMEOUT)
     {
-        printf(__func__ "() failed with MCI_FUNC_TIMEOUT\n");
+        printf("%s() failed with MCI_FUNC_TIMEOUT\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_BAD_PARAMETERS)
     {
-        printf(__func__ "() failed with MCI_FUNC_BAD_PARAMETERS\n");
+        printf("%s() failed with MCI_FUNC_BAD_PARAMETERS\n", __FUNCTION__ );
     }
 #endif
 
@@ -1340,11 +1339,11 @@ int32_t Lpc177x_8x_MciCmd_SendACMD( void )
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
 #endif
 
@@ -1415,11 +1414,11 @@ int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
 #ifdef NUTDEBUG
     if(retval == MCI_CMD_TIMEOUT)
     {
-        printf(__func__ "() failed with MCI_CMD_TIMEOUT\n");
+        printf("%s() failed with MCI_CMD_TIMEOUT\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_BUS_NOT_IDLE)
     {
-        printf(__func__ "() failed with MCI_FUNC_BUS_NOT_IDLE\n");
+        printf("%s() failed with MCI_FUNC_BUS_NOT_IDLE\n", __FUNCTION__ );
     }
 #endif
 
@@ -1514,7 +1513,7 @@ int32_t Lpc177x_8x_MciCardInit( void )
     }
 
 #ifdef NUTDEBUG
-    printf(__func__ "()failed\n");
+    printf("%s()failed\n", __FUNCTION__ );
 #endif
 
     /* tried both MMC and SD card, give up */
@@ -1596,7 +1595,7 @@ int32_t Lpc177x_8x_MciGetCID(st_Mci_CardId* cidValue)
     }
 
 #ifdef NUTDEBUG
-    printf(__func__ "() failed\n");
+    printf("%s() failed\n", __FUNCTION__ );
 #endif
 
     return(MCI_FUNC_TIMEOUT);
@@ -1671,15 +1670,15 @@ int32_t Lpc177x_8x_MciSetCardAddress( void )
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_TIMEOUT)
     {
-        printf(__func__ "() failed with MCI_FUNC_TIMEOUT\n");
+        printf("%s() failed with MCI_FUNC_TIMEOUT\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_ERR_STATE)
     {
-        printf(__func__ "() failed with MCI_FUNC_ERR_STATE\n");
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
     }
 #endif
 
@@ -1759,7 +1758,7 @@ int32_t Lpc177x_8x_MciGetCSD(uint32_t* csdVal)
     }
 
 #ifdef NUTDEBUG
-    printf(__func__ "() failed\n");
+    printf("%s() failed\n", __FUNCTION__ );
 #endif
 
     return(MCI_FUNC_FAILED);
@@ -1833,15 +1832,15 @@ int32_t Lpc177x_8x_MciCmd_SelectCard( void )
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_ERR_STATE)
     {
-        printf(__func__ "() failed with MCI_FUNC_ERR_STATE\n");
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
     }
 #endif
 
@@ -1924,11 +1923,11 @@ int32_t Lpc177x_8x_MciGetCardStatus(int32_t* cardStatus)
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
 #endif
 
@@ -1988,15 +1987,15 @@ int32_t Lpc177x_8x_MciSetBlockLen(uint32_t blockLength)
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_ERR_STATE)
     {
-        printf(__func__ "() failed with MCI_FUNC_ERR_STATE\n");
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
     }
 #endif
 
@@ -2062,15 +2061,15 @@ int32_t Lpc177x_8x_MciAcmd_SendBusWidth( uint32_t buswidth )
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_ERR_STATE)
     {
-        printf(__func__ "() failed with MCI_FUNC_ERR_STATE\n");
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
     }
 #endif
 
@@ -2147,11 +2146,11 @@ int32_t Lpc177x_8x_MciCmd_StopTransmission( void )
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
 #endif
 
@@ -2226,15 +2225,15 @@ int32_t Lpc177x_8x_MciCmd_WriteBlock(uint32_t blockNum, uint32_t numOfBlock)
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_ERR_STATE)
     {
-        printf(__func__ "() failed with MCI_FUNC_ERR_STATE\n");
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
     }
 #endif
 
@@ -2310,15 +2309,15 @@ int32_t Lpc177x_8x_MciCmd_ReadBlock(uint32_t blockNum, uint32_t numOfBlock)
 #ifdef NUTDEBUG
     if(retval == MCI_FUNC_FAILED)
     {
-        printf(__func__ "() failed with MCI_FUNC_FAILED\n");
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_NOT_READY)
     {
-        printf(__func__ "() failed with MCI_FUNC_NOT_READY\n");
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_ERR_STATE)
     {
-        printf(__func__ "() failed with MCI_FUNC_ERR_STATE\n");
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
     }
 #endif
 
@@ -2369,7 +2368,7 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
     if (Lpc177x_8x_MciCheckStatus() != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() failed I [blocknum %lu]\n", blockNum);
+        printf("%s() failed I [blocknum %lu]\n", __FUNCTION__ , blockNum);
 #endif
         Lpc177x_8x_MciCmd_StopTransmission();
 
@@ -2391,7 +2390,7 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
     if (Lpc177x_8x_MciCmd_WriteBlock(blockNum, numOfBlock) != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() failed II [blocknum %lu]\n", blockNum);
+        printf("%s() failed II [blocknum %lu]\n", __FUNCTION__ , blockNum);
 #endif
         return( MCI_FUNC_FAILED );
     }
@@ -2451,7 +2450,7 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
     if (Lpc177x_8x_MciCheckStatus() != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() failed I [blocknum %lu]\n", blockNum);
+        printf("%s() failed I [blocknum %lu]\n", __FUNCTION__ , blockNum);
 #endif
         Lpc177x_8x_MciCmd_StopTransmission();
         return(MCI_FUNC_FAILED);
@@ -2473,7 +2472,7 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
     if (Lpc177x_8x_MciCmd_ReadBlock(blockNum, numOfBlock) != MCI_FUNC_OK)
     {
 #ifdef NUTDEBUG
-        printf(__func__ "() failed II [blocknum %lu]\n", blockNum);
+        printf("%s() failed II [blocknum %lu]\n", __FUNCTION__ , blockNum);
 #endif
         return(MCI_FUNC_FAILED);
     }
