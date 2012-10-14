@@ -155,9 +155,11 @@
 #define MCLKDIV_SLOW        (60 - 1)    /* 59 = 400,000Hz -> @48Mhz/(2*60) */
 #define MCLKDIV_NORMAL      (1 - 1)     /* 0 = 24Mhz -> @48Mhz/(2*1) */
 #else
-#define MCLKDIV_SLOW        (75 - 1)    /* 75-1  75 = 400,000Hz -> @60Mhz/(2*75) */
-#define MCLKDIV_NORMAL      (60 - 1)    /* 60-1  60 = 500.000hz -> @60Mhz/(2*60) */
-//#define MCLKDIV_NORMAL    (75 - 1)    /* 75-1 /* 75 = 400,000Hz -> @60Mhz/(2*75) */
+//    #define MCLKDIV_SLOW    75-1    // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(75-1+1)) = 120/150 = 800KHz
+    #define MCLKDIV_SLOW    150-1    // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(150-1+1)) = 120/300 = 400KHz
+//    #define MCLKDIV_NORMAL  3-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(3-1+1)) = 120/6 = 20MHz
+    #define MCLKDIV_NORMAL  6-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(6-1+1)) = 120/12 = 10MHz
+//    #define MCLKDIV_NORMAL  60-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(6-1+1)) = 120/120 = 1MHz
 #endif
 
 #define DATA_TIMER_VALUE    0x10000
