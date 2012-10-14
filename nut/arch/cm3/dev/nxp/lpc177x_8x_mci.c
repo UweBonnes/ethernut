@@ -1443,7 +1443,6 @@ int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCardInit( void )
 {
-    uint32_t i;
     int32_t retval = MCI_FUNC_FAILED;
 
     MCI_CardType = MCI_CARD_UNKNOWN;
@@ -1497,8 +1496,6 @@ int32_t Lpc177x_8x_MciCardInit( void )
         /* Set Open Drain output control for MMC */
         Lpc177x_8x_MciSetOutputMode(MCI_OUTPUT_MODE_OPENDRAIN);
         NutMicroDelay(300);
-
-        for (i = 0; i < 0x3000; i++);
 
         /*
          *  Try CMD1 first for MMC, if it's timeout, try CMD55 and CMD41 for SD,
