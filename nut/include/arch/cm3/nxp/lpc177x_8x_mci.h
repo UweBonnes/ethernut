@@ -150,7 +150,7 @@
 #define SD_CARD             2
 
 
-/* MCI clk freq = Pclk/(2* (Clkdiv +1) */
+/* MCI clk freq = PCLK/(2* (Clkdiv +1) -> LPC manual sais: MCI clk freq = MCLK(2*(ClkDiv+1) !*/
 #if MCI_DMA_ENABLED
 #define MCLKDIV_SLOW        (60 - 1)    /* 59 = 400,000Hz -> @48Mhz/(2*60) */
 #define MCLKDIV_NORMAL      (1 - 1)     /* 0 = 24Mhz -> @48Mhz/(2*1) */
