@@ -538,7 +538,8 @@ static void Lpc17xxEmacInterrupt(void *arg)
     /* EMAC Ethernet Controller Interrupt function. */
 
     /* Get EMAC interrupt status */
-    while ((isr = (LPC_EMAC->IntStatus & LPC_EMAC->IntEnable)) != 0) {
+    isr = (LPC_EMAC->IntStatus & LPC_EMAC->IntEnable);
+    if (isr != 0) {
         /* Clear interrupt status */
         LPC_EMAC->IntClear = isr;
 
@@ -547,10 +548,9 @@ static void Lpc17xxEmacInterrupt(void *arg)
             LPC_EMAC->Command |= EMAC_CR_RX_RES;
             /* Anyway post the RX queue so the receiver thread can read the just received frames */
             NutEventPostFromIrq(&ni->ni_rx_rdy);
-        }
-
+        } else
         if (isr & (EMAC_INT_RX_DONE | EMAC_INT_RX_ERR)) {
-            LPC_EMAC->IntEnable &= ~(EMAC_INT_RX_ERR /*TODO OR:| EMAC_INT_RX_FIN */| EMAC_INT_RX_DONE);
+            LPC_EMAC->IntEnable &= ~(EMAC_INT_RX_ERR | EMAC_INT_RX_DONE);
             NutEventPostFromIrq(&ni->ni_rx_rdy);
         }
         
@@ -559,10 +559,8 @@ static void Lpc17xxEmacInterrupt(void *arg)
             LPC_EMAC->Command |= EMAC_CR_TX_RES;
             /* Anyway post the TX queue so the transmitter can rwrite new frames */
             NutEventPostFromIrq(&ni->ni_tx_rdy);                   
-        }
-
-
-        if (isr & (EMAC_INT_TX_DONE | EMAC_INT_TX_ERR)) /*TODO OR: EMAC_INT_TX_FIN */ {
+        } else 
+        if (isr & (EMAC_INT_TX_DONE | EMAC_INT_TX_ERR)) {
             NutEventPostFromIrq(&ni->ni_tx_rdy);
         }
     }
@@ -589,9 +587,6 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 
         if(rxlen > 0) {
             /* substract 4 bytes CTC. */
-            /* TODO: the sample code substract only 3 bytes, as the size is -1 encoded,
-                     but rxlen was just inceased by one before!!!
-             */
             rxlen -= 4;
 
             status = Lpc17xxEmacGetRxFrameStatus();
@@ -601,7 +596,7 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
                  * Receiving long packets is unexpected. Let's declare the
                  * chip insane. Short packets will be handled by the caller.
                  */
-                if ((rxlen > ETHERMTU) || (rxlen < 0) || ((status() & EMAC_RINFO_LAST_FLAG) == 0)) {
+                if ((rxlen > ETHERMTU) || (rxlen < 0) || ((status & EMAC_RINFO_LAST_FLAG) == 0)) {
                     /* TODO: We assume that the "last" flag is always set */
                     /* TODO: There is space for buffer space optimization by
                              allowing smaller receive framgments. In this case
@@ -798,10 +793,8 @@ THREAD(Lpc17xxEmacRxThread, arg)
     NutThreadSetPriority(9);
 
     /* Enable receive and transmit interrupts. */
-    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | /*TODO OR: EMAC_INT_RX_FIN |*/
-                           EMAC_INT_RX_DONE | EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR |
-                           /*TODO OR: EMAC_INT_TX_FIN | */ EMAC_INT_TX_DONE;
-
+    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_DONE | 
+                           EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR | EMAC_INT_TX_DONE;
 
     NutIrqEnable(&sig_EMAC);
 
