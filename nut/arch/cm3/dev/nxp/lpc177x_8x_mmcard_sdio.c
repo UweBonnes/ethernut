@@ -250,7 +250,6 @@ static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t* buffer, int blk, int num)
 static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
 {
     int32_t retVal;
-//    uint8_t error = 0;
     st_Mci_CardId cidval;
     en_Mci_CardType cardType;
     uint32_t rcAddress;
@@ -259,6 +258,19 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
 
     /* set default for addressing mode */
     ifc->ifc_admode = MMC_BLOCK_MODE;
+
+    /* reset card data */
+    memset(ifc->ifc_csd, 0, sizeof(ifc->ifc_csd));
+
+#ifdef NUTDEBUG
+    printf("\nclear CSD");
+
+    printf("\n\t[0] = %lu", ifc->ifc_csd[0]);
+    printf("\n\t[1] = %lu", ifc->ifc_csd[1]);
+    printf("\n\t[2] = %lu", ifc->ifc_csd[2]);
+    printf("\n\t[3] = %lu", ifc->ifc_csd[3]);
+#endif
+
 
     /*********************************/
     /*          Init                 */

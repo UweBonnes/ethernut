@@ -1612,7 +1612,7 @@ int32_t Lpc177x_8x_MciSetCardAddress( void )
 {
     uint32_t retryCount;
     uint32_t respStatus;
-    uint32_t respValue;
+    uint32_t respValue[4];
     uint32_t CmdArgument;
 
     int32_t retval = MCI_FUNC_FAILED;
@@ -1638,23 +1638,23 @@ int32_t Lpc177x_8x_MciSetCardAddress( void )
     while (retryCount > 0)
     {
         /* Send CMD3 command repeatedly until the response is back correctly */
-        respStatus = Lpc177x_8x_MciCmdResp(CMD3_SET_RELATIVE_ADDR, CmdArgument, EXPECT_SHORT_RESP, &respValue, ALLOW_CMD_TIMER);
+        respStatus = Lpc177x_8x_MciCmdResp(CMD3_SET_RELATIVE_ADDR, CmdArgument, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
         if (respStatus & MCI_CMD_TIMEOUT)
         {
             retval = MCI_FUNC_TIMEOUT;
         }
-        else if (!(XSHIFT_(respValue, MCI_CARDSTATUS_READYFORDATA_P0S) & 0x01))
+        else if (!(XSHIFT_(respValue[0], MCI_CARDSTATUS_READYFORDATA_P0S) & 0x01))
         {
             retval = MCI_FUNC_NOT_READY;
         }
-        else if ((CARDSTATEOF(respValue) != MCI_CARDSTATE_IDENDTIFIED))
+        else if ((CARDSTATEOF(respValue[0]) != MCI_CARDSTATE_IDENDTIFIED))
         {
             retval = MCI_FUNC_ERR_STATE;
         }
         else
         {
-            CardRCA = respValue & 0xFFFF0000;   /* Save the RCA value from SD card */
+            CardRCA = respValue[0] & 0xFFFF0000;   /* Save the RCA value from SD card */
 
             return(MCI_FUNC_OK);   /* response is back and correct. */
         }
