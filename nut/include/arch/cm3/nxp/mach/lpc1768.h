@@ -113,7 +113,7 @@
 #include <arch/cm3/nxp/mach/lpc_adc.h>
 #include <arch/cm3/nxp/mach/lpc_can.h>
 #include <arch/cm3/nxp/mach/lpc_dac.h>
-/* TODO #include <arch/cm3/nxp/mach/lpc_emac.h> */
+#include <arch/cm3/nxp/mach/lpc_emac.h>
 /* TODO #include <arch/cm3/nxp/mach/lpc_gpdma.h> */
 #include <arch/cm3/nxp/mach/lpc_gpio.h>
 #include <arch/cm3/nxp/mach/lpc_i2c.h>
