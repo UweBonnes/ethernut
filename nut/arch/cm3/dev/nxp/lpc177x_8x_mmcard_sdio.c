@@ -125,6 +125,7 @@ typedef struct _MMCFCB
  */
 static HANDLE mutex;
 static MCIFC mci0_ifc;
+static st_Mci_CardId cidval;
 
 /* local routines */
 static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t*, int, int);
@@ -250,7 +251,6 @@ static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t* buffer, int blk, int num)
 static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
 {
     int32_t retVal;
-    st_Mci_CardId cidval;
     en_Mci_CardType cardType;
     uint32_t rcAddress;
 
@@ -261,16 +261,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
 
     /* reset card data */
     memset(ifc->ifc_csd, 0, sizeof(ifc->ifc_csd));
-
-#ifdef NUTDEBUG
-    printf("\nclear CSD");
-
-    printf("\n\t[0] = %lu", ifc->ifc_csd[0]);
-    printf("\n\t[1] = %lu", ifc->ifc_csd[1]);
-    printf("\n\t[2] = %lu", ifc->ifc_csd[2]);
-    printf("\n\t[3] = %lu", ifc->ifc_csd[3]);
-#endif
-
+    memset(&cidval, 0, sizeof(st_Mci_CardId));
 
     /*********************************/
     /*          Init                 */
@@ -336,7 +327,7 @@ static int Lpc177x_8x_MmcardInit(NUTDEVICE * dev)
 
 
     /*********************************/
-    /*              CDS             */
+    /*              CSD              */
     /*********************************/
     retVal = Lpc177x_8x_MciGetCSD(ifc->ifc_csd);
     if (retVal != MCI_FUNC_OK)
@@ -824,10 +815,14 @@ static int Lpc177x_8x_MmcardIOCtl(NUTDEVICE * dev, int req, void *conf)
             rc = Lpc177x_8x_MciGetCardStatus((int32_t*) conf);
             break;
         case MMCARD_GETCID:
-            rc = Lpc177x_8x_MciGetCID((st_Mci_CardId *) conf);
+            // not possible to issue a single CID command here so return the
+            // captured value from init
+            memcpy((st_Mci_CardId*)conf, &cidval, sizeof(st_Mci_CardId));
             break;
         case MMCARD_GETCSD:
-            rc = Lpc177x_8x_MciGetCSD((uint32_t *) conf);
+            // not possible to issue a single CSD command here so return the
+            // captured value from init
+            memcpy((st_Mci_CardId*)conf, &mci0_ifc.ifc_csd, sizeof(mci0_ifc.ifc_csd));
             break;
         default:
             rc = -1;
