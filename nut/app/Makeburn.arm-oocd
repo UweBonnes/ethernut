@@ -115,7 +115,8 @@ BURNCMDS += -c "flash write_image erase $(ITARG) 0x10000000 bin"
 BURNCMDS += -c "verify_image $(ITARG) 0x10000000 bin"
 BURNCMDS += -c "reset run"
 else
-# Write to internal SRAM. No longer working?
+# Write to internal SRAM.
+BURNCMDS += -c "arm core_state arm"
 BURNCMDS += -c "load_image $(ITARG) 0"
 BURNCMDS += -c "verify_image $(ITARG) 0"
 BURNCMDS += -c "resume 0"
@@ -146,17 +147,13 @@ ifeq ($(PLATFORM), FLECX1)
 BURNBOARD = flecx
 # It is not fully clear how to program the LPC1768 flash.
 # The following sequence was found by trial and error.
-BURNCMDS += -c reset
+BURNCMDS += -c "reset init"
 BURNCMDS += -c halt
-# BURNCMDS += -c "mww 0x400FC040 1"
+BURNCMDS += -c wait_halt
 BURNCMDS += -c "flash write_image erase $(ITARG) 0 bin"
-BURNCMDS += -c reset
+# BURNCMDS += -c "verify_image $(ITARG) 0 bin"
 BURNCMDS += -c halt
-BURNCMDS += -c "flash write_image erase $(ITARG) 0 bin"
-# BURNCMDS += -c soft_reset_halt
-# BURNCMDS += -c halt
-# BURNCMDS += -c "reg pc 0xd1"
-# BURNCMDS += -c step
+BURNCMDS += -c wait_halt
 BURNCMDS += -c "reset run"
 endif
 
