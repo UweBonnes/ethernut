@@ -677,9 +677,15 @@
 #ifdef NUT_DEV_DEBUG_READ
 /* Debug device is read/write, use it. */
 #define DEV_CONSOLE      DEV_DEBUG
+#ifndef DEV_CONSOLE_NAME
+#define DEV_CONSOLE_NAME DEV_DEBUG_NAME
+#endif
 #else
 /* Debug device is write-only, use default UART. */
 #define DEV_CONSOLE      DEV_UART
+#ifndef DEV_CONSOLE_NAME
+#define DEV_CONSOLE_NAME DEV_UART_NAME
+#endif
 #endif
 #endif
 
