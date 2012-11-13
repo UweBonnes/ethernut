@@ -345,7 +345,11 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
     /* We are running with CRC disabled. However, the reset command must
     ** be send with a valid CRC. Fortunately this command is sent with a
     ** fixed parameter value of zero, which results in a fixed CRC value. */
-    txb[5] = MMCMD_RESET_CRC;
+    if (cmd == 8) {
+        txb[5] = MMCMD_IF_COND_CRC;
+    } else {
+        txb[5] = MMCMD_RESET_CRC;
+    }
 
     do {
         bus = CardAllocate(node);
@@ -393,27 +397,64 @@ static int CardInit(NUTSPINODE * node)
 {
     NUTSPIBUS *bus;
     int i;
-    int j;
     uint8_t rsp;
+    uint8_t rsp7[5];
+    MEMCARDSUPP *mcs;
+    uint32_t op_cond;
+    uint_fast8_t mmc = 0;
 
     /*
      * Switch to idle state and wait until initialization is running
      * or idle state is reached.
      */
+    mcs = (MEMCARDSUPP *) node->node_dcb;
     bus = (NUTSPIBUS *) node->node_bus;
     (*bus->bus_set_rate)(node, 400000);
-    for (i = 0; i < MMC_MAX_RESET_RETRIES; i++) {
-        rsp = CardTxCommand(node, MMCMD_GO_IDLE_STATE, 0, 1);
-        for (j = 0; j < MMC_MAX_INIT_POLLS; j++) {
+    /* Send 80 dummy clocks. Some cards need this. */
+    (*bus->bus_transfer) (node, NULL, NULL, 10);
+    /* Reset card and switch to SPI mode. */
+    rsp = CardTxCommand(node, MMCMD_GO_IDLE_STATE, 0, 1);
+    /* Send 0x100 for voltage range 2.7 - 3.6V and add pattern 0xAA. */
+    rsp = CardTxCommand(node, MMCMD_SEND_IF_COND, 0x1AA, 1);
+    /* Default to SD version 1 or MMC. */
+    mcs->mcs_sf &= ~NUTMC_SF_HC;
+    op_cond = 0;
+    if ((rsp & MMR1_ILLEGAL_COMMAND) == 0) {
+        /* Card is SD version 2 or later, possibly SDHC. */
+        op_cond = 1UL << 30;
+    }
+
+    for (i = 0; i < MMC_MAX_INIT_POLLS; i++) {
+        /* Send operating conditions. */
+        if (mmc) {
             rsp = CardTxCommand(node, MMCMD_SEND_OP_COND, 0, 1);
             if (rsp == MMR1_IDLE_STATE) {
                 (*bus->bus_set_rate)(node, 20000000);
                 return 0;
             }
-            if (j > MMC_MAX_INIT_POLLS / 4) {
-                NutSleep(1);
+        } else {
+            CardTxCommand(node, MMCMD_SEND_APP_CMD, 0, 1);
+            rsp = CardTxCommand(node, MMCMD_SEND_APP_OP_COND, op_cond, 0);
+            (*bus->bus_release) (node);
+            if (rsp & MMR1_ILLEGAL_COMMAND) {
+                /* Not an SD memory card, try MMC. */
+                mmc = 1;
+            }
+            else if (rsp == MMR1_IDLE_STATE) {
+                CardTxCommand(node, MMCMD_READ_OCR, 0, 0);
+                (*bus->bus_transfer) (node, dummy_tx_buf, rsp7, 4);
+                (*bus->bus_release) (node);
+                if (rsp7[0] & 0x80) {
+                    if (rsp7[0] & 0x40) {
+                        /* Card is SDHC. */
+                        mcs->mcs_sf |= NUTMC_SF_HC;
+                    }
+                    (*bus->bus_set_rate)(node, 20000000);
+                    return 0;
+                }
             }
         }
+        NutSleep(10);
     }
     return -1;
 }
@@ -923,7 +964,10 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
             MMCFCB *fcb = (MMCFCB *) par->par_nfp->nf_fcb;
 
             /* Caclaulate the byte offset. */
-            fcb->fcb_address = (par->par_blknum + fcb->fcb_part.part_sect_offs) << 9;
+            fcb->fcb_address = par->par_blknum + fcb->fcb_part.part_sect_offs;
+            if ((msc->mcs_sf & NUTMC_SF_HC) == 0) {
+                fcb->fcb_address <<= 9;
+            }
         }
         break;
     case MMCARD_GETSTATUS:

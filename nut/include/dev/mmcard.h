@@ -69,6 +69,8 @@
 
 #define NUTMC_SF_CD     0x01
 #define NUTMC_SF_WP     0x02
+#define NUTMC_SF_HC     0x04
+#define NUTMC_SF_ILL    0x80
 
 #define NUTMC_IND_OFF   0
 #define NUTMC_IND_READ  1
