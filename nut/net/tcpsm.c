@@ -462,7 +462,6 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
         if (((TCPHDR *) (nb->nb_tp.vp))->th_flags & (TH_SYN | TH_FIN)) {
             h_seq++;
         }
-        //@@@printf ("[%04X]*: processack, check seq#: %lu\n", (u_short) sock, h_seq);
         if (SeqIsAfter(h_seq, h_ack)) {
             break;
         }
@@ -844,7 +843,6 @@ int NutTcpStateCloseEvent(TCPSOCKET * sock)
         /*
          * Send a FIN and wait for ACK or FIN.
          */
-        //@@@printf ("[%04X]ESTABLISHED: going to FIN_WAIT_1\n", (u_short) sock);
         NutTcpStateChange(sock, TCPS_FIN_WAIT_1);
         break;
 
@@ -852,7 +850,6 @@ int NutTcpStateCloseEvent(TCPSOCKET * sock)
         /*
          * RFC 793 is wrong.
          */
-        //@@@printf("[%04X]CLOSE_WAIT: going to LAST_ACK\n", (u_short) sock);
         NutTcpStateChange(sock, TCPS_LAST_ACK);
         break;
 
@@ -1237,11 +1234,8 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
         NutEventPost(&sock->so_rx_tq);
     } else {
         NutNetBufFree(nb);
-        //sock->so_tx_flags |= SO_ACK | SO_FORCE;
-        //NutTcpOutput(sock, 0, 0);
     }
     if (flags & TH_FIN) {
-        //@@@printf ("[%04X]ESTABLISHED: going to CLOSE_WAIT\n", (u_short) sock);
         sock->so_rx_nxt++;
         NutTcpStateChange(sock, TCPS_CLOSE_WAIT);
     }
@@ -1264,7 +1258,6 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
  */
 static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NETBUF * nb)
 {
-    //@@@printf ("[%04X]FIN_WAIT_1: incomming segment, IP %04X\n", (u_short) sock, ntohs(((IPHDR*)nb->nb_nw.vp)->ip_id));
     if (flags & TH_RST) {
         NutNetBufFree(nb);
         NutTcpDestroySocket(sock);
@@ -1287,18 +1280,12 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
         return;
     }
 
-    //@@@if (flags & TH_FIN) printf ("[%04X]FIN_WAIT_1: received FIN\n", (u_short) sock);
-    //@@@printf ("[%04X]FIN_WAIT_1: received ACK: %lu, unack: %lu, next: %lu\n", (u_short) sock, ntohl(th->th_ack), sock->so_tx_una, sock->so_tx_nxt);
-
-    //@@@printf ("[%04X]FIN_WAIT_1:  pre processack, nbq: %04X\n", (u_short) sock, (u_short) sock->so_tx_nbq);
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
-    //@@@printf ("[%04X]FIN_WAIT_1: post processack, nbq: %04X\n", (u_short) sock, (u_short) sock->so_tx_nbq);
 
     /*
      * All segments had been acknowledged, including our FIN.
      */
     if (sock->so_tx_nxt == sock->so_tx_una) {
-        //@@@printf ("[%04X]FIN_WAIT_1: going to FIN_WAIT_2\n", (u_short) sock);
         NutTcpStateChange(sock, TCPS_FIN_WAIT_2);
     }
 
@@ -1320,7 +1307,6 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
          * Our FIN has been acked.
          */
         sock->so_time_wait = 0;
-        //@@@printf ("[%04X]FIN_WAIT_1: going to CLOSING\n", (u_short) sock);
         if (sock->so_state == TCPS_FIN_WAIT_2)
             NutTcpStateChange(sock, TCPS_TIME_WAIT);
         else
@@ -1343,7 +1329,6 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
  */
 static void NutTcpStateFinWait2(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NETBUF * nb)
 {
-    //@@@printf ("[%04X]FIN_WAIT_2: incomming segment, IP %04X\n", (u_short) sock, ntohs(((IPHDR*)nb->nb_nw.vp)->ip_id));
     if (flags & TH_RST) {
         NutNetBufFree(nb);
         NutTcpDestroySocket(sock);
@@ -1366,14 +1351,12 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
         return;
     }
 
-    //@@@printf ("[%04X]FIN_WAIT_2: received ACK: %lu, unack: %lu, next: %lu\n", (u_short) sock, ntohl(th->th_ack), sock->so_tx_una, sock->so_tx_nxt);
     /*
      * Process acknowledge and application data and release the
      * network buffer.
      */
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
 
-    //@@@if (sock->so_tx_nbq) printf ("[%04X]FIN_WAIT_2: xmit buffer not empty!", (u_short) sock);
     /* Do we really need this? */
     if (nb->nb_ap.sz) {
         NutTcpProcessAppData(sock, nb);
@@ -1386,7 +1369,6 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
     if (flags & TH_FIN) {
         sock->so_rx_nxt++;
         sock->so_time_wait = 0;
-        //@@@printf ("[%04X]FIN_WAIT_2: going to TIME_WAIT\n", (u_short) sock);
         NutTcpStateChange(sock, TCPS_TIME_WAIT);
     }
 }
@@ -1403,7 +1385,6 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
  */
 static void NutTcpStateCloseWait(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NETBUF * nb)
 {
-    //@@@printf ("[%04X]CLOSE_WAIT: incomming segment, IP %04X\n", (u_short) sock, ((IPHDR*)nb->nb_nw.vp)->ip_id);
     if (flags & TH_RST) {
         NutNetBufFree(nb);
         NutTcpAbortSocket(sock, ECONNRESET);
@@ -1445,7 +1426,6 @@ static void NutTcpStateCloseWait(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, N
  */
 static void NutTcpStateClosing(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NETBUF * nb)
 {
-    //@@@printf ("[%04X]CLOSING: Incomming segment\n", (u_short) sock);
     if (flags & TH_RST) {
         NutNetBufFree(nb);
         NutTcpDestroySocket(sock);
@@ -1476,9 +1456,7 @@ static void NutTcpStateClosing(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
     if (sock->so_tx_nxt == sock->so_tx_una) {
         sock->so_time_wait = 0;
         NutTcpStateChange(sock, TCPS_TIME_WAIT);
-        //@@@printf ("[%04X]CLOSING: Going to TIME_WAIT\n", (u_short) sock);
     }
-    //@@@else printf ("[%04X]CLOSING: NOT changing state\n", (u_short) sock);
 
     NutNetBufFree(nb);
 }
@@ -1499,7 +1477,6 @@ static void NutTcpStateClosing(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
  */
 static void NutTcpStateLastAck(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NETBUF * nb)
 {
-    //@@@printf ("[%04X]LAST_ACK: incomming segment, IP %04X\n", (u_short) sock, ((IPHDR*)nb->nb_nw.vp)->ip_id);
     if (flags & TH_RST) {
         NutNetBufFree(nb);
         NutTcpDestroySocket(sock);
@@ -1527,7 +1504,6 @@ static void NutTcpStateLastAck(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
 
     if (sock->so_tx_nxt == sock->so_tx_una)
         NutTcpDestroySocket(sock);
-    //@@@else printf ("[%04X]LAST_ACK: no destroy sock\n", (u_short) sock);
 }
 
 /*!
