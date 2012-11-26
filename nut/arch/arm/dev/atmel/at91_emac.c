@@ -32,66 +32,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.16  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
- *
- * Revision 1.15  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.14  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
- *
- * Revision 1.13  2008/08/11 06:59:04  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.12  2008/08/06 12:43:41  haraldkipp
- * First EMAC reset failed on power-up. Initialize EMAC clock and MII mode
- * earlier.
- * Added support for Ethernut 5 (AT91SAM9XE reference design).
- *
- * Revision 1.11  2007/09/06 20:07:24  olereinhardt
- * Changed phy detection and added support for micel phy (SAM7-EX256 Board)
- *
- * Revision 1.10  2007/08/29 07:43:52  haraldkipp
- * Documentation updated and corrected.
- *
- * Revision 1.9  2007/05/02 11:20:26  haraldkipp
- * Pull-up enable/disable simplified.
- * Added multicast table entry.
- *
- * Revision 1.8  2007/04/20 13:06:08  haraldkipp
- * Previous change failed on SAM7X-EK. We are now using PHY address 0 by
- * default and disable all pull-ups during PHY reset.
- *
- * Revision 1.7  2007/04/12 09:13:10  haraldkipp
- * Bugfix: PHY initialization may fail with pull-ups enabled.
- *
- * Revision 1.6  2007/02/15 16:00:45  haraldkipp
- * Configurable buffer usage and link timeout.
- *
- * Revision 1.5  2006/10/17 11:06:12  haraldkipp
- * Number of loops waiting for links increased to 10000 and NIC resets
- * reduced. This will help to link to auto MDIX via direct cable.
- *
- * Revision 1.4  2006/10/08 16:41:34  haraldkipp
- * PHY address and power down bit are now configurable.
- *
- * Revision 1.3  2006/10/05 17:10:37  haraldkipp
- * Link detection was unreliable. This also caused bug #1567785.
- * Now NutRegisterDevice will return an error, if there is no
- * link available. Applications may then call NutRegisterDevice again.
- *
- * Revision 1.2  2006/09/29 12:29:16  haraldkipp
- * Several fixes to make it running reliably on the AT91SAM9260.
- *
- * Revision 1.1  2006/08/31 18:58:47  haraldkipp
- * More general AT91 MAC driver replaces the SAM7X specific version.
- * This had been tested on the SAM9260, but loses Ethernet packets
- * for a yet unknown reason.
- *
+ * $Id$
  */
 
 #include <cfg/os.h>
