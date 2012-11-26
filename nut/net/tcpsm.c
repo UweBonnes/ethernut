@@ -350,7 +350,8 @@ static void NutTcpProcessSyn(TCPSOCKET * sock, IPHDR * ih, TCPHDR * th)
      * maximum segment size to the maximum transfer
      * unit of our interface.
      */
-    if ((dev = NutIpRouteQuery(ih->ip_src, NULL)) != NULL) {
+    dev = NutIpRouteQuery(ih->ip_src, NULL);
+    if (dev) {
         nif = dev->dev_icb;
         mss = nif->if_mtu - sizeof(IPHDR) - sizeof(TCPHDR);
         if (sock->so_mss == 0 || sock->so_mss > mss) {
@@ -1412,13 +1413,9 @@ static void NutTcpStateCloseWait(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, N
     /*
      * Silently discard segments without ACK.
      */
-    if ((flags & TH_ACK) == 0) {
-        NutNetBufFree(nb);
-        return;
+    if (flags & TH_ACK) {
+        NutTcpProcessAck(sock, th, nb->nb_ap.sz);
     }
-
-    NutTcpProcessAck(sock, th, nb->nb_ap.sz);
-
     NutNetBufFree(nb);
 }
 
@@ -1735,8 +1732,8 @@ void NutTcpStateMachine(NETBUF * nb)
         NutTcpReject(nb);
         return;
     }
-
-    if ((nbp = tcp_in_nbq) == NULL) {
+    nbp = tcp_in_nbq;
+    if (nbp == NULL) {
         tcp_in_nbq = nb;
         NutEventPost(&tcp_in_rdy);
     } else {
@@ -1762,9 +1759,11 @@ void NutTcpStateMachine(NETBUF * nb)
  */
 int NutTcpInitStateMachine(void)
 {
-    if (tcpThread == NULL && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL,
-        (NUT_THREAD_TCPSMSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) == 0) {
-        return -1;
+    if (tcpThread == NULL) {
+        tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, NUT_THREAD_TCPSMSTACK * NUT_THREAD_STACK_MULT + NUT_THREAD_STACK_ADD);
+        if (tcpThread == NULL) {
+            return -1;
+        }
     }
     return 0;
 }
