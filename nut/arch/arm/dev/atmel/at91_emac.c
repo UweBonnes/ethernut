@@ -796,10 +796,16 @@ THREAD(EmacRxThread, arg)
     for (;;) {
         /*
          * Wait for the arrival of new packets or poll the receiver every
-         * 200 milliseconds. This short timeout helps a bit to deal with
+         * 500 milliseconds. This short timeout helps a bit to deal with
          * the SAM9260 Ethernet problem.
+         *
+         * Sometimes an interrupt status change doesn't trigger an interrupt.
+         * We need to read the status register, so that the flags get cleared
+         * and the next change triggers an interrupt again.
          */
-        NutEventWait(&ni->ni_rx_rdy, 200);
+        if (NutEventWait(&ni->ni_rx_rdy, 500)) {
+            inr(EMAC_ISR);
+        }
 
         /*
          * Fetch all packets from the NIC's internal buffer and pass
@@ -860,13 +866,22 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 
         /* Check for packet queue space. */
         if ((txBufTab[txBufIdx].stat & TXS_USED) == 0) {
-            if (NutEventWait(&ni->ni_tx_rdy, 500) && (txBufTab[txBufIdx].stat & TXS_USED) == 0) {
-                /* No queue space. Release the lock and give up. */
-                txBufTab[txBufIdx].stat |= TXS_USED;
-                txBufIdx++;
-                txBufIdx &= 1;
-                NutEventPost(&ni->ni_mutex);
-                break;
+            if (NutEventWait(&ni->ni_tx_rdy, 500)) {
+                /*
+                 * We may have a timeout here because the last status change
+                 * didn't trigger an interrupt. Reading the status register
+                 * will clear the current status and the next change triggers
+                 * an interrupt again, hopefully.
+                 */
+                inr(EMAC_ISR);
+                if ((txBufTab[txBufIdx].stat & TXS_USED) == 0) {
+                    /* No queue space. Release the lock and give up. */
+                    txBufTab[txBufIdx].stat |= TXS_USED;
+                    txBufIdx++;
+                    txBufIdx &= 1;
+                    NutEventPost(&ni->ni_mutex);
+                    break;
+                }
             }
         } else {
             if (inr(EMAC_TSR) & EMAC_UND) {
