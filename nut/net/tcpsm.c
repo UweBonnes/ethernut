@@ -938,6 +938,12 @@ int NutTcpStateRetranTimeout(TCPSOCKET * sock)
         } else {
             /* Restart the retransmission timer. */
             sock->so_retran_time = (uint16_t) NutGetMillis() | 1;
+            /* Double retransmission timeout up to maximum. */
+            if (sock->so_rtto < TCP_RTTO_MAX / 2) {
+                sock->so_rtto <<= 1;
+            } else {
+                sock->so_rtto = TCP_RTTO_MAX;
+            }
             return 0;
         }
     }
