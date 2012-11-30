@@ -518,25 +518,10 @@ SectionGroup "Application Samples"
 
     SetOutPath "$INSTDIR\nut\app"
     File ..\..\..\app\Makefile
-    File ..\..\..\app\*.all
-    File ..\..\..\app\*.gcc
-    File ..\..\..\app\*.arm-gcc
-    File ..\..\..\app\*.arm-gccdbg
-    File ..\..\..\app\*.arm-eCross-gcc
-    File ..\..\..\app\*.arm-eCross-gccdbg
-;    File ..\..\..\app\*.arm-icc
-    File ..\..\..\app\*.avr-gcc
-    File ..\..\..\app\*.avr-gccdbg
-    File ..\..\..\app\*.avr32-gcc
-    File ..\..\..\app\*.avr32-gccdbg
-    File ..\..\..\app\*.avr-icc
-    File ..\..\..\app\*.avr-icc7
-    File ..\..\..\app\*.avrext-icc
-    File ..\..\..\app\*.avrext-icc7
-    File ..\..\..\app\*.h8-gcc
-    File ..\..\..\app\*.npl-xc95
-    File ..\..\..\app\*.unix-gcc
     File ..\..\..\app\Makeburn.*
+    File ..\..\..\app\Makedefs.*
+    File ..\..\..\app\Makerules.*
+    File ..\..\..\app\Makevars.*
 
     SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\7segtst"
     File ..\..\..\hwtest\arm\atmel\7segtst\Makefile
@@ -654,6 +639,10 @@ SectionGroup "Application Samples"
     File ..\..\..\hwtest\arm\atmel\led_key\Makefile
     File ..\..\..\hwtest\arm\atmel\led_key\*.c
 
+    SetOutPath "$INSTDIR\nut\app\jtagtest"
+    File ..\..\..\app\jtagtest\Makefile
+    File ..\..\..\app\jtagtest\*.c
+
     SetOutPath "$INSTDIR\nut\app\logtime"
     File ..\..\..\app\logtime\Makefile
     File ..\..\..\app\logtime\*.c
@@ -664,6 +653,10 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\app\lua"
     File ..\..\..\app\lua\Makefile
     File ..\..\..\app\lua\*.c
+
+    SetOutPath "$INSTDIR\nut\app\owibus"
+    File ..\..\..\app\owibus\Makefile
+    File ..\..\..\app\owibus\*.c
 
     SetOutPath "$INSTDIR\nut\hwtest\audio\nutpiper"
     File ..\..\..\hwtest\audio\nutpiper\Makefile
@@ -737,6 +730,10 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\timers\*.prj
     File ..\..\..\appicc\timers\*.SRC
 
+    SetOutPath "$INSTDIR\nut\app\twitest"
+    File ..\..\..\app\twitest\Makefile
+    File ..\..\..\app\twitest\*.c
+
     SetOutPath "$INSTDIR\nut\app\uart"
     File ..\..\..\app\uart\Makefile
     File ..\..\..\app\uart\*.c
@@ -744,6 +741,13 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\appicc\uart"
     File ..\..\..\appicc\uart\*.prj
     File ..\..\..\appicc\uart\*.SRC
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ajax"
+    File ..\..\..\app\uhttpd_ajax\Makefile
+    File ..\..\..\app\uhttpd_ajax\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ajax\htdocs"
+    File ..\..\..\app\uhttpd_ajax\htdocs\*.html
+    File ..\..\..\app\uhttpd_ajax\htdocs\*.js
 
     SetOutPath "$INSTDIR\nut\app\uhttpd_auth"
     File ..\..\..\app\uhttpd_auth\Makefile
