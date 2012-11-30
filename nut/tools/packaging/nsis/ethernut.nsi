@@ -123,6 +123,7 @@ Section
   File ..\..\..\bin\atmega2561\README
 
   SetOutPath "$INSTDIR\nut\doc"
+  File ..\..\..\doc\nutos-sw-manual.odt
   File ..\..\..\doc\copying-gpl.txt
   File ..\..\..\doc\copying-liquorice.txt
   File ..\..\..\tools\packaging\nsis\license.txt
@@ -231,6 +232,8 @@ SectionGroup "Nut/Net"
     File ..\..\..\pro\Makefile
     File ..\..\..\pro\*.c
     File ..\..\..\pro\*.h
+    SetOutPath "$INSTDIR\nut\pro\uhttp"
+    File /r ..\..\..\pro\uhttp\*.c
 
   SectionEnd
 SectionGroupEnd
@@ -309,6 +312,7 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\at91sam9260-ek.conf
     File ..\..\..\conf\at91sam9g45-ek.conf
     File ..\..\..\conf\charon2.conf
+    File ..\..\..\conf\dk-lm3s9b96.conf
     File ..\..\..\conf\eir10c.conf
     File ..\..\..\conf\enet-sam7x.conf
     File ..\..\..\conf\enet-sam7x_bootrom.conf
@@ -332,8 +336,11 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\evk1104-intram.conf
     File ..\..\..\conf\evk1105-extram.conf
     File ..\..\..\conf\evk1105-intram.conf
+    File ..\..\..\conf\f4_discovery.conf
     File ..\..\..\conf\flecx10a.conf
     File ..\..\..\conf\gbaxport2.conf
+    File ..\..\..\conf\ksk-lpc17xx-sk.conf
+    File ..\..\..\conf\mbed_npx_lpc1768.conf
     File ..\..\..\conf\mmnet01.conf
     File ..\..\..\conf\mmnet02.conf
     File ..\..\..\conf\mmnet02_03_04.conf
@@ -346,7 +353,17 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\mmnet104.conf
     File ..\..\..\conf\morphoq11a.conf
     File ..\..\..\conf\olimex-sam7-ex256.conf
+    File ..\..\..\conf\sam7eth.conf
+    File ..\..\..\conf\stm32-comStick.conf
+    File ..\..\..\conf\stm3210c-eval.conf
+    File ..\..\..\conf\stm3210e-eval.conf
+    File ..\..\..\conf\stm32_can.conf
+    File ..\..\..\conf\stm32_vl_discovery.conf
     File ..\..\..\conf\stk501.conf
+    File ..\..\..\conf\usps_f107c.conf
+    File ..\..\..\conf\usps_f205c.conf
+    File ..\..\..\conf\usps_f405g.conf
+    File ..\..\..\conf\usps_l151b.conf
     File ..\..\..\conf\xnut-100.conf
     File ..\..\..\conf\xnut-105c.conf
     File ..\..\..\conf\xnut-105d.conf
@@ -482,7 +499,7 @@ SectionGroup "Development Tools"
     SetOutPath "$INSTDIR\nut\tools\nutdisc\src\bitmaps"
     File ..\..\..\tools\nutdisc\src\bitmaps\*.ico
     File ..\..\..\tools\nutdisc\src\bitmaps\*.xpm
-    SetOutPath "$INSTDIR\nut\tools\qnutdisc"
+    SetOutPath "$INSTDIR\nut\tools\qnutdisc\src"
     File ..\..\..\tools\qnutdisc\src\*.cpp
     File ..\..\..\tools\qnutdisc\src\*.h
     File ..\..\..\tools\qnutdisc\src\*.pri
@@ -727,6 +744,44 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\appicc\uart"
     File ..\..\..\appicc\uart\*.prj
     File ..\..\..\appicc\uart\*.SRC
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth"
+    File ..\..\..\app\uhttpd_auth\Makefile
+    File ..\..\..\app\uhttpd_auth\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth\htdocs"
+    File ..\..\..\app\uhttpd_auth\htdocs\*.html
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth\htdocs\admin"
+    File ..\..\..\app\uhttpd_auth\htdocs\admin\*.html
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth\htdocs\user"
+    File ..\..\..\app\uhttpd_auth\htdocs\user\*.html
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_form"
+    File ..\..\..\app\uhttpd_form\Makefile
+    File ..\..\..\app\uhttpd_form\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_form\htdocs"
+    File ..\..\..\app\uhttpd_form\htdocs\*.html
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ssi"
+    File ..\..\..\app\uhttpd_ssi\Makefile
+    File ..\..\..\app\uhttpd_ssi\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ssi\htdocs"
+    File ..\..\..\app\uhttpd_ssi\htdocs\*.shtml
+    File ..\..\..\app\uhttpd_ssi\htdocs\*.inc
+    File ..\..\..\app\uhttpd_ssi\htdocs\*.png
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_tiny"
+    File ..\..\..\app\uhttpd_tiny\Makefile
+    File ..\..\..\app\uhttpd_tiny\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_tiny\htdocs"
+    File ..\..\..\app\uhttpd_tiny\htdocs\*.html
+    File ..\..\..\app\uhttpd_tiny\htdocs\*.png
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_upload"
+    File ..\..\..\app\uhttpd_upload\Makefile
+    File ..\..\..\app\uhttpd_upload\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_upload\htdocs"
+    File ..\..\..\app\uhttpd_upload\htdocs\*.html
+    File ..\..\..\app\uhttpd_upload\htdocs\*.png
 
     SetOutPath "$INSTDIR\nut\app\xsvfexec"
     File ..\..\..\app\xsvfexec\*.c
