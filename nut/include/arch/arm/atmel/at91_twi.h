@@ -73,6 +73,7 @@
 #define TWI_MMR_OFF             0x00000004      /*!< \brief Master mode register offset. */
 #define TWI_MMR     (TWI_BASE + TWI_MMR_OFF)    /*!< \brief Master mode register address. */
 #define TWI_IADRSZ              0x00000300      /*!< \brief Internal device address size mask. */
+#define TWI_IADRSZ_LSB                   8      /*!< \brief Internal device address size LSB. */
 #define TWI_IADRSZ_NONE         0x00000000      /*!< \brief No internal device address. */
 #define TWI_IADRSZ_1BYTE        0x00000100      /*!< \brief One byte internal device address. */
 #define TWI_IADRSZ_2BYTE        0x00000200      /*!< \brief Two byte internal device address. */
