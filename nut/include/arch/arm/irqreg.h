@@ -258,6 +258,7 @@ extern IRQ_HANDLER sig_SSC;
 extern IRQ_HANDLER sig_SPI0;
 extern IRQ_HANDLER sig_SPI1;
 extern IRQ_HANDLER sig_TWI;
+extern IRQ_HANDLER sig_ISI;
 
 /*
  * Registered system interrupt handler information structure.
