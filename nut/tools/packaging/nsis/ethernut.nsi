@@ -523,31 +523,12 @@ SectionGroup "Application Samples"
     File ..\..\..\app\Makerules.*
     File ..\..\..\app\Makevars.*
 
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\7segtst"
-    File ..\..\..\hwtest\arm\atmel\7segtst\Makefile
-    File ..\..\..\hwtest\arm\atmel\7segtst\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon"
-    File ..\..\..\hwtest\avr\basemon\Makefile
-    File ..\..\..\hwtest\avr\basemon\*.c
-    File ..\..\..\hwtest\avr\basemon\*.h
-    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon\html"
-    File ..\..\..\hwtest\avr\basemon\html\*.html
-    File ..\..\..\hwtest\avr\basemon\html\*.gif
-
     SetOutPath "$INSTDIR\nut\app\caltime"
     File ..\..\..\app\caltime\Makefile
     File ..\..\..\app\caltime\*.c
     SetOutPath "$INSTDIR\nut\appicc\caltime"
     File ..\..\..\appicc\caltime\*.prj
     File ..\..\..\appicc\caltime\*.SRC
-    
-    SetOutPath "$INSTDIR\nut\hwtest\avr\canbus"
-    File ..\..\..\hwtest\avr\canbus\Makefile
-    File ..\..\..\hwtest\avr\canbus\*.c
-    SetOutPath "$INSTDIR\nut\appicc\canbus"
-    File ..\..\..\appicc\canbus\*.prj
-    File ..\..\..\appicc\canbus\*.SRC
     
     SetOutPath "$INSTDIR\nut\app\cppdemo"
     File ..\..\..\app\cppdemo\Makefile
@@ -557,10 +538,6 @@ SectionGroup "Application Samples"
     File ..\..\..\app\editconf\Makefile
     File ..\..\..\app\editconf\*.c
     File ..\..\..\app\editconf\*.h
-
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\eeprom"
-    File ..\..\..\hwtest\arm\atmel\eeprom\Makefile
-    File ..\..\..\hwtest\arm\atmel\eeprom\*.c
 
     SetOutPath "$INSTDIR\nut\app\events"
     File ..\..\..\app\events\Makefile
@@ -624,21 +601,6 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\inetq\*.prj
     File ..\..\..\appicc\inetq\*.SRC
 
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\ioexpander"
-    File ..\..\..\hwtest\arm\atmel\ioexpander\Makefile
-    File ..\..\..\hwtest\arm\atmel\ioexpander\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\avr\isp2"
-    File ..\..\..\hwtest\avr\isp2\Makefile
-    File ..\..\..\hwtest\avr\isp2\*.c
-    File ..\..\..\hwtest\avr\isp2\*.S
-    File ..\..\..\hwtest\avr\isp2\*.isp
-    SetOutPath "$INSTDIR\nut\app\isp2\isp"
-
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\led_key"
-    File ..\..\..\hwtest\arm\atmel\led_key\Makefile
-    File ..\..\..\hwtest\arm\atmel\led_key\*.c
-
     SetOutPath "$INSTDIR\nut\app\jtagtest"
     File ..\..\..\app\jtagtest\Makefile
     File ..\..\..\app\jtagtest\*.c
@@ -657,17 +619,6 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\app\owibus"
     File ..\..\..\app\owibus\Makefile
     File ..\..\..\app\owibus\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\audio\nutpiper"
-    File ..\..\..\hwtest\audio\nutpiper\Makefile
-    File ..\..\..\hwtest\audio\nutpiper\*.c
-    File ..\..\..\hwtest\audio\nutpiper\*.h
-
-    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3"
-    File ..\..\..\hwtest\audio\playmp3\Makefile
-    File ..\..\..\hwtest\audio\playmp3\*.c
-    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3\sounds"
-    File ..\..\..\hwtest\audio\playmp3\sounds\*.mp3
 
     SetOutPath "$INSTDIR\nut\app\pingnet"
     File ..\..\..\app\pingnet\Makefile
@@ -790,6 +741,83 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\app\xsvfexec"
     File ..\..\..\app\xsvfexec\*.c
     File ..\..\..\app\xsvfexec\*.h
+	
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\7segtst"
+    File ..\..\..\hwtest\arm\atmel\7segtst\Makefile
+    File ..\..\..\hwtest\arm\atmel\7segtst\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\eeprom"
+    File ..\..\..\hwtest\arm\atmel\eeprom\Makefile
+    File ..\..\..\hwtest\arm\atmel\eeprom\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\ioexpander"
+    File ..\..\..\hwtest\arm\atmel\ioexpander\Makefile
+    File ..\..\..\hwtest\arm\atmel\ioexpander\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\led_key"
+    File ..\..\..\hwtest\arm\atmel\led_key\Makefile
+    File ..\..\..\hwtest\arm\atmel\led_key\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\audio\nutpiper"
+    File ..\..\..\hwtest\audio\nutpiper\Makefile
+    File ..\..\..\hwtest\audio\nutpiper\*.c
+    File ..\..\..\hwtest\audio\nutpiper\*.h
+
+    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3"
+    File ..\..\..\hwtest\audio\playmp3\Makefile
+    File ..\..\..\hwtest\audio\playmp3\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3\sounds"
+    File ..\..\..\hwtest\audio\playmp3\sounds\*.mp3
+
+    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon"
+    File ..\..\..\hwtest\avr\basemon\Makefile
+    File ..\..\..\hwtest\avr\basemon\*.c
+    File ..\..\..\hwtest\avr\basemon\*.h
+    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon\html"
+    File ..\..\..\hwtest\avr\basemon\html\*.html
+    File ..\..\..\hwtest\avr\basemon\html\*.gif
+
+    SetOutPath "$INSTDIR\nut\hwtest\avr\canbus"
+    File ..\..\..\hwtest\avr\canbus\Makefile
+    File ..\..\..\hwtest\avr\canbus\*.c
+    SetOutPath "$INSTDIR\nut\appicc\canbus"
+    File ..\..\..\appicc\canbus\*.prj
+    File ..\..\..\appicc\canbus\*.SRC
+    
+    SetOutPath "$INSTDIR\nut\hwtest\avr\isp2"
+    File ..\..\..\hwtest\avr\isp2\Makefile
+    File ..\..\..\hwtest\avr\isp2\*.c
+    File ..\..\..\hwtest\avr\isp2\*.S
+    File ..\..\..\hwtest\avr\isp2\*.isp
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\eeprom"
+    File ..\..\..\hwtest\cm3\stm\eeprom\Makefile
+    File ..\..\..\hwtest\cm3\stm\eeprom\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\f4discovery"
+    File ..\..\..\hwtest\cm3\stm\f4discovery\Makefile
+    File ..\..\..\hwtest\cm3\stm\f4discovery\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\led_key"
+    File ..\..\..\hwtest\cm3\stm\led_key\Makefile
+    File ..\..\..\hwtest\cm3\stm\led_key\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\owi_test"
+    File ..\..\..\hwtest\cm3\stm\owi_test\Makefile
+    File ..\..\..\hwtest\cm3\stm\owi_test\*.c
+    File ..\..\..\hwtest\cm3\stm\owi_test\*.h
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\trampoline"
+    File ..\..\..\hwtest\cm3\stm\trampoline\Makefile
+    File ..\..\..\hwtest\cm3\stm\trampoline\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\tw_test"
+    File ..\..\..\hwtest\cm3\stm\tw_test\Makefile
+    File ..\..\..\hwtest\cm3\stm\tw_test\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\usb_test"
+    File ..\..\..\hwtest\cm3\stm\usb_test\Makefile
+    File ..\..\..\hwtest\cm3\stm\usb_test\*.c
   SectionEnd
 
   Section "Prebuild Samples" SecSampleBins
