@@ -3220,6 +3220,14 @@ nutdev =
         sources = { "pcf8563.c" },
     },
     {
+        name = "nutdev_i2c_pcf85xx",
+        brief = "PCF85XX Driver",
+        description = "Early NXP RTC bus controller based driver, tested on Ethernut 5.",
+        requires = { "I2CBUS_CONTROLLER" },
+        provides = { "DEV_RTC" },
+        sources = { "i2c_pcf85xx.c" },
+    },
+    {
         name = "nutdev_x12rtc",
         brief = "X12xx Driver",
         description = "Intersil X12xx RTC and EEPROM driver. Tested on AT91 only.",
@@ -3250,6 +3258,14 @@ nutdev =
         description = "Generic SPI bus routines, which may be used "..
                       "by bus controller implementations.",
         sources = { "spibus.c" }
+    },
+
+    {
+        name = "nutdev_i2cbus",
+        brief = "I2C Bus",
+        requires = { "I2CBUS_CONTROLLER" },
+        description = "Hardware independent I2C bus API.",
+        sources = { "i2cbus.c" }
     },
 
     --

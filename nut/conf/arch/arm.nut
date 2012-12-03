@@ -1386,6 +1386,14 @@ nutarch_arm =
         },
     },
     {
+        name = "nutarch_arm_i2cbus_at91",
+        brief = "AT91 I2C Bus Controller",
+        description = "Early version of the AT91 hardware based I2C bus controller.",
+        requires = { "HW_TWI_AT91" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources = { "arm/dev/atmel/i2cbus_at91.c" },
+    },
+    {
         name = "nutarch_arm_adc_at91",
         brief = "AT91 ADC",
         description = "ADC interface for AT91 (currently SAM7 only).",
