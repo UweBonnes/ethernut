@@ -40,6 +40,7 @@
 #include <arch/arm.h>
 #include <cfg/arch/gpio.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <sys/atom.h>
@@ -898,6 +899,188 @@ int EmacInit(NUTDEVICE * dev)
     return 0;
 }
 
+/*!
+ * \brief Update the multicast hash.
+ *
+ * This function must be called after the multicast list changed.
+ *
+ * \param mclst Pointer to the first entry of the linked list of
+ *              multicast entries.
+ */
+static void EmacHashUpdate(MCASTENTRY *mclst)
+{
+    int i;
+    int j;
+    int b;
+    int idx;
+    uint32_t hash[2] = { 0, 0 };
+
+    /* Determine the hash bit for each entry. */
+    while (mclst) {
+        /* For each bit of the index. */
+        for (idx = 0, i = 0; i < 6; i++) {
+            /* Xor every 6th bit in the address. */
+            for (b = 0, j = i; j < 48; j += 6) {
+                b ^= (mclst->mca_ha[j >> 3] & (1 << (j & 0x07))) != 0;
+            }
+            idx |= b << i;
+        }
+        /* Set the bit given by the 6 bit index. */
+        hash[idx > 31] |= 1 << (idx & 31);
+        mclst = mclst->mca_next;
+    }
+    /* Set result in the hash register. */
+    outr(EMAC_HRB, hash[0]);
+    outr(EMAC_HRT, hash[1]);
+    /* Enable or disable multicast hash. */
+    if (hash[0] || hash[1]) {
+        outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_MTI);
+    } else {
+        outr(EMAC_NCFGR, inr(EMAC_NCFGR) & ~EMAC_MTI);
+    }
+}
+
+/*!
+ * \brief Get multicast entry of a given IP address.
+ *
+ * \todo This function should be shared by all Ethernet drivers.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the entry to retrieve.
+ *
+ * \return Pointer to the entry or NULL if none exists.
+ */
+static MCASTENTRY *McastIpEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca = ifn->if_mcast;
+
+    while (mca) {
+        if (ip == mca->mca_ip) {
+            break;
+        }
+        mca = mca->mca_next;
+    }
+    return mca;
+}
+
+/*!
+ * \brief Add a given IP address to the multicast list.
+ *
+ * \todo This function should be shared by all Ethernet drivers.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the new entry.
+ *
+ * \return Pointer to the requested entry, either a new one or
+ *         an already existing entry. In case of a failure, NULL
+ *         is returned.
+ */
+static MCASTENTRY *McastAddEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca;
+
+    mca = McastIpEntry(ifn, ip);
+    if (mca == NULL) {
+        mca = malloc(sizeof(MCASTENTRY));
+        if (mca) {
+            mca->mca_ip = ip;
+            /* Set the IANA OUI. */
+            mca->mca_ha[0] = 0x01;
+            mca->mca_ha[1] = 0x00;
+            mca->mca_ha[2] = 0x5e;
+            /* Map the lower 23 bits of the IP address to the MAC address.
+               Note that Nut/Net IP addresses are in network byte order. */
+            mca->mca_ha[3] = (ip >> 8) & 0x7f;
+            mca->mca_ha[4] = (ip >> 16) & 0xff;
+            mca->mca_ha[5] = (ip >> 24) & 0xff;
+            /* Add the new entry to the front of the list. */
+            mca->mca_next = ifn->if_mcast;
+            ifn->if_mcast = mca;
+            /* Update the EMAC's multicast hash. */
+            EmacHashUpdate(mca);
+        }
+    }
+    return mca;
+}
+
+/*!
+ * \brief Remove multicast entry of a given IP address.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the entry to remove.
+ */
+static void McastDelEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca = ifn->if_mcast;
+    MCASTENTRY **lnk = &ifn->if_mcast;
+
+    while (mca) {
+        if (mca->mca_ip == ip) {
+            *lnk = mca->mca_next;
+            free(mca);
+            break;
+        }
+        lnk = &mca->mca_next;
+        mca = *lnk;
+    }
+}
+
+/*!
+ * \brief Perform Ethernet control functions.
+ *
+ * \param dev  Identifies the device that receives the device-control
+ *             function.
+ * \param req  Requested control function. May be set to one of the
+ *             following constants:
+ *             - SIOCSIFADDR sets interface MAC address passed in buffer.
+ *             - SIOCGIFADDR copies current interface MAC address to buffer.
+ *             - SIOCADDMULTI adds multicast entry for IP in buffer.
+ *             - SIOCDELMULTI removes multicast entry of IP in buffer.
+ * \param conf Points to a buffer that contains any data required for
+ *             the given control function or receives data from that
+ *             function.
+ * \return 0 on success, -1 otherwise.
+ *
+ * \warning Timeout values are given in milliseconds and are limited to
+ *          the granularity of the system timer.
+ *
+ * \note For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
+ *
+ */
+static int EmacIoCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = 0;
+    IFNET *ifn = (IFNET *) dev->dev_icb;
+    uint32_t ip;
+
+    switch (req) {
+    case SIOCSIFADDR:
+        /* Set interface hardware address. */
+        memcpy(ifn->if_mac, conf, sizeof(ifn->if_mac));
+        break;
+    case SIOCGIFADDR:
+        /* Get interface hardware address. */
+        memcpy(conf, ifn->if_mac, sizeof(ifn->if_mac));
+        break;
+    case SIOCADDMULTI:
+        /* Add multicast address. */
+        memcpy(&ip, conf, sizeof(ip));
+        if (McastAddEntry(ifn, ip) == NULL) {
+            rc = -1;
+        }
+        break;
+    case SIOCDELMULTI:
+        /* Delete multicast address. */
+        memcpy(&ip, conf, sizeof(ip));
+        McastDelEntry(ifn, ip);
+        break;
+    default:
+        rc = -1;
+        break;
+    }
+    return rc;
+}
+
 static EMACINFO dcb_eth0;
 
 /*!
@@ -943,7 +1126,7 @@ NUTDEVICE devAt91Emac = {
     &ifn_eth0,                  /*!< \brief Interface control block. */
     &dcb_eth0,                  /*!< \brief Driver control block. */
     EmacInit,                   /*!< \brief Driver initialization routine. */
-    0,                          /*!< \brief Driver specific control function. */
+    EmacIoCtl,                  /*!< \brief Driver specific control function. */
     0,                          /*!< \brief Read from device. */
     0,                          /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__
