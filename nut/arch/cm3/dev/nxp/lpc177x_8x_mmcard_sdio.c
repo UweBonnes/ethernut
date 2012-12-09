@@ -58,7 +58,7 @@
 #include "arch/cm3/nxp/lpc177x_8x_mci.h"
 
 #ifdef NUTDEBUG
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 /*!
@@ -132,10 +132,115 @@ static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t*, int, int);
 static uint32_t Lpc177x_8x_MmcardReadData(uint8_t*, int, int);
 static int      Lpc177x_8x_MmcardUnmount(NUTFILE * nfp);
 
+#ifdef NUTDEBUG
+static void Lpc177x_8x_MmcardShowStatusBits(uint32_t);
+#endif
+
 /*-------------------------------------------------------------------------*/
 /*                         start of code                                   */
 /*-------------------------------------------------------------------------*/
 
+
+#ifdef NUTDEBUG
+/************************************************************************//**
+ * \brief       Show status bits for MCI_status word
+ *
+ * \param       None
+ *
+ * \return      None
+ ****************************************************************************/
+static void Lpc177x_8x_MmcardShowStatusBits(uint32_t MCIStatus)
+{
+    if (MCIStatus & MCI_CMD_CRC_FAIL)
+    {
+        printf("MCI_CMD_CRC_FAIL\n");
+    }
+    if (MCIStatus & MCI_DATA_CRC_FAIL)
+    {
+        printf("MCI_DATA_CRC_FAIL\n");
+    }
+    if (MCIStatus & MCI_CMD_TIMEOUT)
+    {
+        printf("MCI_CMD_TIMEOUT\n");
+    }
+    if (MCIStatus & MCI_DATA_TIMEOUT)
+    {
+        printf("MCI_DATA_TIMEOUT\n");
+    }
+    if (MCIStatus & MCI_TX_UNDERRUN)
+    {
+        printf("MCI_TX_UNDERRUN\n");
+    }
+    if (MCIStatus & MCI_RX_OVERRUN)
+    {
+        printf("MCI_RX_OVERRUN\n");
+    }
+    if (MCIStatus & MCI_CMD_RESP_END)
+    {
+        printf("MCI_CMD_RESP_END\n");
+    }
+    if (MCIStatus & MCI_CMD_SENT)
+    {
+        printf("MCI_CMD_SENT\n");
+    }
+    if (MCIStatus & MCI_DATA_END)
+    {
+        printf("MCI_DATA_END\n");
+    }
+    if (MCIStatus & MCI_START_BIT_ERR)
+    {
+        printf("MCI_START_BIT_ERR\n");
+    }
+    if (MCIStatus & MCI_DATA_BLK_END)
+    {
+        printf("MCI_DATA_BLK_END\n");
+    }
+    if (MCIStatus & MCI_CMD_ACTIVE)
+    {
+        printf("MCI_CMD_ACTIVE\n");
+    }
+    if (MCIStatus & MCI_TX_ACTIVE)
+    {
+        printf("MCI_TX_ACTIVE\n");
+    }
+    if (MCIStatus & MCI_RX_ACTIVE)
+    {
+        printf("MCI_RX_ACTIVE\n");
+    }
+    if (MCIStatus & MCI_TX_HALF_EMPTY)
+    {
+        printf("MCI_TX_HALF_EMPTY\n");
+    }
+    if (MCIStatus & MCI_RX_HALF_FULL)
+    {
+        printf("MCI_RX_HALF_FULL\n");
+    }
+    if (MCIStatus & MCI_TX_FIFO_FULL)
+    {
+        printf("MCI_TX_FIFO_FULL\n");
+    }
+    if (MCIStatus & MCI_RX_FIFO_FULL)
+    {
+        printf("MCI_RX_FIFO_FULL\n");
+    }
+    if (MCIStatus & MCI_TX_FIFO_EMPTY)
+    {
+        printf("MCI_TX_FIFO_EMPTY\n");
+    }
+    if (MCIStatus & MCI_RX_FIFO_EMPTY)
+    {
+        printf("MCI_RX_FIFO_EMPTY\n");
+    }
+    if (MCIStatus & MCI_TX_DATA_AVAIL)
+    {
+        printf("MCI_TX_DATA_AVAIL\n");
+    }
+    if (MCIStatus & MCI_RX_DATA_AVAIL)
+    {
+        printf("MCI_RX_DATA_AVAIL\n");
+    }
+}
+#endif
 
 /*!
  * \brief read n-blocks of data, starting at blocknum. Wait for ending!
@@ -177,7 +282,8 @@ static uint32_t Lpc177x_8x_MmcardReadData(uint8_t* buffer, int blk, int num)
         if (errorState)
         {
 #ifdef NUTDEBUG
-            printf("%s() failed\n", __FUNCTION__ );
+            printf("%s() failed\n", __FUNCTION__);
+            Lpc177x_8x_MmcardShowStatusBits(errorState);
 #endif
             retVal = MCI_FUNC_FAILED;
         }
@@ -229,6 +335,7 @@ static uint32_t Lpc177x_8x_MmcardWriteData(uint8_t* buffer, int blk, int num)
         {
 #ifdef NUTDEBUG
             printf("%s() failed\n", __FUNCTION__ );
+            Lpc177x_8x_MmcardShowStatusBits(errorState);
 #endif
             retVal = MCI_FUNC_FAILED;
         }
@@ -740,7 +847,8 @@ static int Lpc177x_8x_MmcardUnmount(NUTFILE * nfp)
     }
 
 #ifdef NUTDEBUG
-    if (rc != 0) {
+    if (rc != 0)
+    {
         printf("%s() failed\n", __FUNCTION__ );
     }
 #endif

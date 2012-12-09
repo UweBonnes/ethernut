@@ -142,6 +142,8 @@
 #define MCI_CID_UNUSED_ID_WPOS                    0             /* in word 3 */
 #define MCI_CID_UNUSED_ID_WBMASK                  0x01
 
+#define SD_INTERRUPT_PRIORITY                     3             /* make sure this is higher then DMA or GPIO */
+
 volatile uint32_t Mci_Data_Xfer_End = 0;
 
 volatile uint32_t Mci_Data_Xfer_ERR = 0;
@@ -857,6 +859,12 @@ int32_t Lpc177x_8x_MciInit(uint8_t powerActiveLevel )
 
     NutRegisterIrqHandler(&sig_MCI, Lpc177x_8x_MciIRQHandler, 0);
     NutIrqEnable (&sig_MCI);
+
+    Lpc177x_8x_MciIrqSetPriority(SD_INTERRUPT_PRIORITY);
+
+#ifdef NUTDEBUG
+    printf("SD int priority: %d\n", Lpc177x_8x_MciIrqGetPriority());
+#endif
 
     /*  During the initialization phase, to simplify the process, the CMD related
      *  interrupts are disabled. The DATA related interrupts are enabled when
@@ -2500,3 +2508,35 @@ void Lpc177x_8x_MciPowerOff(void)
 
     return;
 }
+
+/************************************************************************//**
+ * \brief       Get the priority level of the SD interrupt
+ *              please note that only 1 level is present for _ALL_ different
+ *              types of SD-interrupts
+ *
+ * \param       None
+ *
+ * \return      the interrupt level [0..31]
+ ****************************************************************************/
+int Lpc177x_8x_MciIrqGetPriority()
+{
+    return      NutIrqGetPriority(&sig_MCI);
+}
+
+
+/************************************************************************//**
+ * \brief       Set the priority level of the SD interrupt
+ *              please note that only 1 level is present for _ALL_ different
+ *              types of SD-interrupts
+ *
+ * \param       the interrupt level [0..31]
+ *
+ * \return      None
+ ****************************************************************************/
+void Lpc177x_8x_MciIrqSetPriority(int priority)
+{
+    if ((priority >= 0) && (priority < 32)) {
+        NutIrqSetPriority(&sig_MCI, priority);
+    }
+}
+

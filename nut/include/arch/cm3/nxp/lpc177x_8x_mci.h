@@ -416,6 +416,9 @@ int32_t  Lpc177x_8x_MciCmd_ReadBlock(uint32_t blockNum, uint32_t numOfBlock);
 int32_t  Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t numOfBlock);
 int32_t  Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t numOfBlock);
 
+int      Lpc177x_8x_MciIrqGetPriority(void);
+void     Lpc177x_8x_MciIrqSetPriority(int);
+
 #if MCI_DMA_ENABLED
 void     Lpc177x_8x_MciDMA_IRQHandler (void);
 #endif
