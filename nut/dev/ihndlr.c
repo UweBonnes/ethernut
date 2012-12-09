@@ -197,6 +197,33 @@ int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
 }
 
 /*!
+ * \brief Query the priority level of an interrupt.
+ *
+ * The function returns the priority
+ *
+ * \note Not all targets support dynamic interrupt prioritization.
+ *       Check the hardware data sheet for valid levels.
+ *
+ * \param irq   Interrupt to query.
+ *
+ * \return Priority level or -1 in case of an error.
+ */
+int NutIrqGetPriority(IRQ_HANDLER * irq)
+{
+    int rc = -1;
+
+    if (irq->ir_ctl) {
+        int level;
+
+        rc = (irq->ir_ctl) (NUT_IRQCTL_GETPRIO, &level);
+        if (rc == 0) {
+            rc = level;
+        }
+    }
+    return rc;
+}
+
+/*!
  * \brief Modify the interrupt mode.
  *
  * The function returns the old mode, which makes it easy to
