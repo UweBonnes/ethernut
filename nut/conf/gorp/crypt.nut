@@ -44,5 +44,75 @@ nutgorp_crypt =
         brief = "XTEA Crypto",
         description = "Functions to encrypt and decrypt with publich domain XTEA algorythm.",
         sources = { "crypt/xtea.c" }
+    },
+    {
+        name = "nutgorp_list_aes",
+        brief = "AES 128 / 192 / 256",
+        description = "Byte oriented AES128 / AES192 / AES256 implementation.",
+        sources = { "crypt/aes.c" },
+	options = 
+	{
+            {
+                macro = "AES_USE_TABLES",
+                brief = "Use precalculated tables",
+                description = "When selected, the ARS algorithm will use pre-calculated\n"..
+                              "tables instead of online-calculations. Select this if\n"..
+                              "code size is less important than speed.",
+                flavor = "boolean",
+                provides = { "AES_USE_TABLES" },
+                file = "include/cfg/aes.h"
+            },
+            {
+                macro = "AES_USE_VERSION_1",
+                brief = "Use version 1 of the algorithm",
+                description = "Version 1 of the AES implementation might be faster on some\n"..
+                              "CPUs. Make you own speed tests.",
+                flavor = "boolean",
+                file = "include/cfg/aes.h"
+            },
+            {
+                macro = "AES_ENC_PREKEYED",
+                brief = "Pre-Keyed encryption",
+                description = "Enable AES encryption with a precomputed key schedule",
+                flavor = "boolean",
+                file = "include/cfg/aes.h"
+            },
+            {
+                macro = "AES_DEC_PREKEYED",
+                brief = "Pre-Keyed decryption",
+                description = "Enable AES decryption with a precomputed key schedule (standard encryption)",
+                flavor = "boolean",
+                file = "include/cfg/aes.h"
+            },
+            {
+                macro = "AES_ENC_128_OTFK",
+                brief = "128 Bit 'on the fly keying' encryption",
+                description = "Enable AES encryption with 'on the fly' 128 bit keying",
+                flavor = "boolean",
+                file = "include/cfg/aes.h"
+            },
+            {
+                macro = "AES_DEC_128_OTFK",
+                brief = "128 Bit 'on the fly keying' decryption",
+                description = "AES decryption with 'on the fly' 128 bit keying",
+                flavor = "boolean",
+                file = "include/cfg/aes.h"
+            },
+            {
+                macro = "AES_ENC_256_OTFK",
+                brief = "256 Bit 'on the fly keying' encryption",
+                description = "Enable AES encryption with 'on the fly' 256 bit keying",
+                flavor = "boolean",
+                file = "include/cfg/aes.h"
+            },
+            {
+                macro = "AES_DEC_256_OTFK",
+                brief = "256 Bit 'on the fly keying' decryption",
+                description = "AES decryption with 'on the fly' 256 bit keying",
+                flavor = "boolean",
+                file = "include/cfg/aes.h"
+            }
+	}
     }
+
 }
