@@ -510,7 +510,7 @@ void inv_mix_sub_columns( uint8_t dt[N_BLOCK], uint8_t st[N_BLOCK] )
  * \para ctx     AES encryption context.
  */
 
-return_type aes_set_key( const unsigned char key[], int keylen, aes_context ctx[1] )
+return_type aes_set_key( const uint8_t key[], int keylen, aes_context ctx[1] )
 {
     uint8_t cc, rc, hi;
 
@@ -579,7 +579,7 @@ return_type aes_set_key( const unsigned char key[], int keylen, aes_context ctx[
  * \para ctx     AES encryption context.
  */
 
-return_type aes_encrypt( const unsigned char in[N_BLOCK], unsigned char  out[N_BLOCK], const aes_context ctx[1] )
+return_type aes_encrypt( const uint8_t in[N_BLOCK], uint8_t  out[N_BLOCK], const aes_context ctx[1] )
 {
     if( ctx->rnd )
     {
@@ -615,8 +615,8 @@ return_type aes_encrypt( const unsigned char in[N_BLOCK], unsigned char  out[N_B
  * \param ctx     AES encryption context.
  */
 
-return_type aes_cbc_encrypt( const unsigned char *in, unsigned char *out,
-                         int n_block, unsigned char iv[N_BLOCK], const aes_context ctx[1] )
+return_type aes_cbc_encrypt( const uint8_t *in, uint8_t *out,
+                         int n_block, uint8_t iv[N_BLOCK], const aes_context ctx[1] )
 {
 
     while(n_block--)
@@ -643,7 +643,7 @@ return_type aes_cbc_encrypt( const unsigned char *in, unsigned char *out,
  * \para ctx     AES encryption context.
  */
 
-return_type aes_decrypt( const unsigned char in[N_BLOCK], unsigned char out[N_BLOCK], const aes_context ctx[1] )
+return_type aes_decrypt( const uint8_t in[N_BLOCK], uint8_t out[N_BLOCK], const aes_context ctx[1] )
 {
     if( ctx->rnd )
     {
@@ -679,8 +679,8 @@ return_type aes_decrypt( const unsigned char in[N_BLOCK], unsigned char out[N_BL
  * \param ctx     AES encryption context.
  */
 
-return_type aes_cbc_decrypt( const unsigned char *in, unsigned char *out,
-                         int n_block, unsigned char iv[N_BLOCK], const aes_context ctx[1] )
+return_type aes_cbc_decrypt( const uint8_t *in, uint8_t *out,
+                         int n_block, uint8_t iv[N_BLOCK], const aes_context ctx[1] )
 {
     while(n_block--)
     {   uint8_t tmp[N_BLOCK];
@@ -730,8 +730,8 @@ static void update_encrypt_key_128( uint8_t k[N_BLOCK], uint8_t *rc )
  * \param o_key   Output key (16 bytes)
  */
 
-void aes_encrypt_128( const unsigned char in[N_BLOCK], unsigned char out[N_BLOCK],
-                     const unsigned char key[N_BLOCK], unsigned char o_key[N_BLOCK] )
+void aes_encrypt_128( const uint8_t in[N_BLOCK], uint8_t out[N_BLOCK],
+                     const uint8_t key[N_BLOCK], uint8_t o_key[N_BLOCK] )
 {
     uint8_t s1[N_BLOCK], r, rc = 1;
 
@@ -793,8 +793,8 @@ static void update_decrypt_key_128( uint8_t k[N_BLOCK], uint8_t *rc )
  * \param o_key   Output key (16 bytes)
  */
 
-void aes_decrypt_128( const unsigned char in[N_BLOCK], unsigned char out[N_BLOCK],
-                      const unsigned char key[N_BLOCK], unsigned char o_key[N_BLOCK] )
+void aes_decrypt_128( const uint8_t in[N_BLOCK], uint8_t out[N_BLOCK],
+                      const uint8_t key[N_BLOCK], uint8_t o_key[N_BLOCK] )
 {
     uint8_t s1[N_BLOCK], r, rc = 0x6c;
     if(o_key != key)
@@ -869,8 +869,8 @@ static void update_encrypt_key_256( uint8_t k[2 * N_BLOCK], uint8_t *rc )
  * \param o_key   Output key (32 bytes)
  */
 
-void aes_encrypt_256( const unsigned char in[N_BLOCK], unsigned char out[N_BLOCK],
-                      const unsigned char key[2 * N_BLOCK], unsigned char o_key[2 * N_BLOCK] )
+void aes_encrypt_256( const uint8_t in[N_BLOCK], uint8_t out[N_BLOCK],
+                      const uint8_t key[2 * N_BLOCK], uint8_t o_key[2 * N_BLOCK] )
 {
     uint8_t s1[N_BLOCK], r, rc = 1;
     if(o_key != key)
@@ -958,8 +958,8 @@ static void update_decrypt_key_256( uint8_t k[2 * N_BLOCK], uint8_t *rc )
  * \param o_key   Output key (32 bytes)
  */
 
-void aes_decrypt_256( const unsigned char in[N_BLOCK], unsigned char out[N_BLOCK],
-                      const unsigned char key[2 * N_BLOCK], unsigned char o_key[2 * N_BLOCK] )
+void aes_decrypt_256( const uint8_t in[N_BLOCK], uint8_t out[N_BLOCK],
+                      const uint8_t key[2 * N_BLOCK], uint8_t o_key[2 * N_BLOCK] )
 {
     uint8_t s1[N_BLOCK], r, rc = 0x80;
 
