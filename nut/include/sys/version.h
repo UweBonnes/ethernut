@@ -52,7 +52,7 @@
 #include <stdint.h>
 
 #define NUT_VERSION_MAJOR   5
-#define NUT_VERSION_MINOR   1
+#define NUT_VERSION_MINOR   2
 #define NUT_VERSION_RELEASE 0
 #define NUT_VERSION_BUILD   0
 
