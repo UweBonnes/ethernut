@@ -52,8 +52,8 @@
 #include <stdint.h>
 
 #define NUT_VERSION_MAJOR   5
-#define NUT_VERSION_MINOR   0
-#define NUT_VERSION_RELEASE 5
+#define NUT_VERSION_MINOR   1
+#define NUT_VERSION_RELEASE 0
 #define NUT_VERSION_BUILD   0
 
 #define OS_VERSION_NUMBER   (((uint32_t)NUT_VERSION_MAJOR << 24) | \
