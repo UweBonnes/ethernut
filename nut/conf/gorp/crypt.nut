@@ -49,8 +49,9 @@ nutgorp_crypt =
         name = "nutgorp_list_aes",
         brief = "AES 128 / 192 / 256",
         description = "Byte oriented AES128 / AES192 / AES256 implementation.",
+        requires = { "TOOL_GCC" },
         sources = { "crypt/aes.c" },
-	options = 
+	options =
 	{
             {
                 macro = "AES_USE_TABLES",
