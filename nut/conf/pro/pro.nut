@@ -515,6 +515,35 @@ nutpro =
         }
     },
     {
+        name = "nutpro_httpu",
+        brief = "HTTPU API",
+        description = "HTTPU is an extension of HTTP, using UDP instead of TCP as the "..
+                      "data transport. It's used by the UPnP implementation.",
+        requires = { "NET_UDP" },
+        provides = { "PRO_HTTPU" },
+        sources = { "httpu.c" },
+        options =
+        {
+            {
+                macro = "HTTPU_MAX_DATAGRAM_SIZE",
+                brief = "Max. Datagram Size",
+                description = "For each session a total number of 4 datagram buffers are "..
+                              "allocated from the heap.",
+                type = "integer",
+                default = "508",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTPU_MAX_HEADER_LINES",
+                brief = "Max. Header Lines",
+                description = "Maximum number of received header lines.",
+                type = "integer",
+                default = "16",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
         name = "nutpro_snmp",
         brief = "SNMP",
         description = "Simple network management protocol.",
