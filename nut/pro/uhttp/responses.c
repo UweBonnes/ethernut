@@ -164,44 +164,78 @@ const char *HttpResponseText(int code)
     return rp;
 }
 
-void HttpSendHeaderTop(HTTPD_SESSION *hs, int status)
+void HttpSendStreamHeaderTop(HTTP_STREAM *stream, int status)
 {
 #if HTTP_VERSION >= 0x10
     static const char fmt_P[] = "HTTP/%d.%d %d %s\r\nServer: uHTTP 0.0\r\n";
 
-    s_printf(hs->s_stream, fmt_P, HTTP_MAJOR_VERSION, HTTP_MINOR_VERSION, status, HttpResponseText(status));
+    s_printf(stream, fmt_P, HTTP_MAJOR_VERSION, HTTP_MINOR_VERSION, status, HttpResponseText(status));
 
 #if !defined(HTTPD_EXCLUDE_DATE)
     {
         time_t now = time(NULL);
-        s_vputs(hs->s_stream, ct_Date, ": ", Rfc1123TimeString(gmtime(&now)), " GMT\r\n", NULL);
+        s_vputs(stream, ct_Date, ": ", Rfc1123TimeString(gmtime(&now)), " GMT\r\n", NULL);
     }
 #endif
 #endif
 }
 
+void HttpSendHeaderTop(HTTPD_SESSION *hs, int status)
+{
+    HttpSendStreamHeaderTop(hs->s_stream, status);
+}
+
 #if !defined(HTTPD_EXCLUDE_DATE)
-void HttpSendHeaderDate(HTTPD_SESSION *hs, time_t mtime)
+
+void HttpSendStreamHeaderDate(HTTP_STREAM *stream, time_t mtime)
 {
 #if HTTP_VERSION >= 0x10
     if (mtime) {
-        s_vputs(hs->s_stream, ct_Last_Modified, ": ", Rfc1123TimeString(gmtime(&mtime)), " GMT\r\n", NULL);
+        s_vputs(stream, ct_Last_Modified, ": ", Rfc1123TimeString(gmtime(&mtime)), " GMT\r\n", NULL);
     }
 #endif
 }
+
+void HttpSendHeaderDate(HTTPD_SESSION *hs, time_t mtime)
+{
+#if HTTP_VERSION >= 0x10
+    HttpSendStreamHeaderDate(hs->s_stream, mtime);
 #endif
+}
+
+#endif
+
+void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, char *type, char *subtype, int conn, long bytes)
+{
+#if HTTP_VERSION >= 0x10
+    if (type && subtype) {
+        s_vputs(stream, ct_Content_Type, ": ", type, "/", subtype, "\r\n", NULL);
+    }
+    if (bytes >= 0) {
+        s_printf(stream, "%s: %ld\r\n", ct_Content_Length, bytes);
+    }
+#if HTTP_VERSION >= 0x11
+#if HTTP_KEEP_ALIVE_REQ
+    if (conn != HTTP_CONN_KEEP_ALIVE)
+#endif
+    {
+        s_puts("Connection: close\r\n", stream);
+    }
+#elif HTTP_KEEP_ALIVE_REQ
+    if (conn == HTTP_CONN_KEEP_ALIVE) {
+        s_puts("Connection: keep-alive\r\n", stream);
+    }
+#endif
+    s_puts("\r\n", stream);
+#endif
+}
 
 void HttpSendHeaderBottom(HTTPD_SESSION *hs, char *type, char *subtype, long bytes)
 {
 #if HTTP_VERSION >= 0x10
-    if (type && subtype) {
-        s_vputs(hs->s_stream, ct_Content_Type, ": ", type, "/", subtype, "\r\n", NULL);
-    }
-    if (bytes >= 0) {
-        s_printf(hs->s_stream, "%s: %ld\r\n", ct_Content_Length, bytes);
-    }
+
 #if HTTP_KEEP_ALIVE_REQ
-    else {
+    if (bytes < 0) {
         hs->s_req.req_connection = HTTP_CONN_CLOSE;
     }
 #endif
@@ -211,45 +245,42 @@ void HttpSendHeaderBottom(HTTPD_SESSION *hs, char *type, char *subtype, long byt
         s_puts("Content-Encoding: gzip\r\n", hs->s_stream);
     }
 #endif
+    HttpSendStreamHeaderBottom(hs->s_stream, type, subtype, hs->s_req.req_connection, bytes);
+#endif
+}
 
-#if HTTP_VERSION >= 0x11
-#if HTTP_KEEP_ALIVE_REQ
-    if (hs->s_req.req_connection != HTTP_CONN_KEEP_ALIVE)
-#endif
-    {
-        s_puts("Connection: close\r\n", hs->s_stream);
+void HttpSendStreamError(HTTP_STREAM *stream, int status, const char *realm)
+{
+    static const char body[] = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>\r\n";
+    const char *text = HttpResponseText(status);
+
+    HttpSendStreamHeaderTop(stream, status);
+#if HTTP_VERSION >= 0x10
+    if (realm) {
+        static const char auth_fmt_P[] = "WWW-Authenticate: Basic realm=\"%s\"\r\n";
+        s_printf(stream, auth_fmt_P, realm);
     }
-#else
-#if HTTP_KEEP_ALIVE_REQ
-    if (hs->s_req.req_connection == HTTP_CONN_KEEP_ALIVE) {
-        s_puts("Connection: keep-alive\r\n", hs->s_stream);
-    }
+    HttpSendStreamHeaderBottom(stream, "text", "html", HTTP_CONN_CLOSE, sizeof(body) - 1 + 2 * (1 + strlen(text) - 2));
 #endif
-#endif
-    s_puts("\r\n", hs->s_stream);
-#endif
+    s_printf(stream, body, status, text, status, text);
+    s_flush(stream);
 }
 
 void HttpSendError(HTTPD_SESSION *hs, int status)
 {
-    static const char body[] = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>\r\n";
-    const char *text = HttpResponseText(status);
+    char *realm = NULL;
 
 #if HTTP_KEEP_ALIVE_REQ && (HTTP_VERSION >= 0x10)
     if (status >= 400) {
         //hs->s_req.req_connection = HTTP_CONN_CLOSE;
     }
 #endif
-    HttpSendHeaderTop(hs, status);
 #if HTTP_VERSION >= 0x10
     if (status == 401) {
-        static const char auth_fmt_P[] = "WWW-Authenticate: Basic realm=\"%s\"\r\n";
-        s_printf(hs->s_stream, auth_fmt_P, hs->s_req.req_realm);
+        realm = hs->s_req.req_realm;
     }
-    HttpSendHeaderBottom(hs, "text", "html", sizeof(body) - 1 + 2 * (1 + strlen(text) - 2));
 #endif
-    s_printf(hs->s_stream, body, status, text, status, text);
-    s_flush(hs->s_stream);
+    HttpSendStreamError(hs->s_stream, status, realm);
 }
 
 /*!
