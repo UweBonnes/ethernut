@@ -253,11 +253,27 @@ nutpro =
         name = "nutpro_resolv",
         brief = "DNS Client API",
         requires = { "NET_UDP" },
+        provides = { "PRO_DNS" },
         sources =
         {
             "confdns.c",
             "resolv.c"
         }
+    },
+    {
+        name = "nutpro_uri",
+        brief = "URI Functions",
+        description = "Convenience functions to split URI into its components.",
+        provides = { "PRO_URI" },
+        sources = { "uri.c" }
+    },
+    {
+        name = "nutpro_tcphost",
+        brief = "TCP Host API",
+        description = "TCP convenience functions.",
+        requires = { "NET_TCP", "PRO_DNS" },
+        provides = { "PRO_TCPHOST" },
+        sources = { "tcphost.c" }
     },
     {
         name = "nutpro_ftpd",
