@@ -250,6 +250,19 @@ nutpro =
 
     },
     {
+        name = "nutpro_ssdp",
+        brief = "SSDP",
+        description = "Service discovery protocol.",
+        requires = { "PRO_HTTPU" },
+        provides = { "PRO_SSDP" },
+        sources =
+        {
+            "ssdp.c",
+            "ssdpc.c",
+            "ssdpd.c"
+        }
+    },
+    {
         name = "nutpro_resolv",
         brief = "DNS Client API",
         requires = { "NET_UDP" },
