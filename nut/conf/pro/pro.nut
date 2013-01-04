@@ -344,6 +344,7 @@ nutpro =
         brief = "uHTTP API",
         description = "Micro HTTP library.",
         requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
+        provides = { "PRO_UHTTP" },
         sources =
         {
             "uhttp/uhttpd.c",
@@ -555,6 +556,34 @@ nutpro =
                 description = "Maximum number of received header lines.",
                 type = "integer",
                 default = "16",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
+        name = "nutpro_soap",
+        brief = "SOAP Remote Call API",
+        requires = { "PRO_UHTTP" },
+        provides = { "PRO_SOAP" },
+        sources = {
+            "soapc.c",
+            "soapd.c",
+            "soap.c"
+        },
+        options =
+        {
+            {
+                macro = "SOAP_MAX_TAG_SIZE",
+                brief = "Max. Tag Size",
+                type = "integer",
+                default = "128",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "SOAP_MAX_TAG_ATTRIBUTES",
+                brief = "Max. Number of Attributes",
+                type = "integer",
+                default = "8",
                 file = "include/cfg/http.h"
             }
         }
