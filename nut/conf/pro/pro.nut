@@ -263,6 +263,19 @@ nutpro =
         }
     },
     {
+        name = "nutpro_upnp",
+        brief = "UPnP",
+        description = "Universal Plug and Play.",
+        requires = { "PRO_SSDP" },
+        provides = { "PRO_UPNP" },
+        sources =
+        {
+            "upnp.c",
+            "upnp_ctrl.c",
+            "upnp_dev.c"
+        }
+    },
+    {
         name = "nutpro_resolv",
         brief = "DNS Client API",
         requires = { "NET_UDP" },
