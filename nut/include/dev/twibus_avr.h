@@ -57,11 +57,11 @@ struct _NUTTWIICB {
 
     /*! \brief Bus current error condition.
      */
-    volatile uint_fast8_t tw_mm_err;
+    volatile int_fast8_t tw_mm_err;
 
     /*! \brief Bus last error condition.
      */
-    volatile uint_fast8_t tw_mm_error;
+    volatile int_fast8_t tw_mm_error;
 
     /*! \brief Bus transmission data buffer pointer.
      */
@@ -145,10 +145,10 @@ struct _NUTTWIICB {
     HANDLE tw_sm_txmtx;
 };
 
-extern NUTTWIBUS TwBbifBus;
+extern NUTTWIBUS AVRTwiBus;
 
 #ifndef DEF_TWIBUS
-#define DEF_TWIBUS TwBbifBus
+#define DEF_TWIBUS AVRTwiBus
 #endif
 
 #endif /* _DEV_TWIBUS_AVR_H_ */

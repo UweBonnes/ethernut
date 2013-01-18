@@ -76,6 +76,8 @@
   Public definitions
  *============================================================================*/
 
+#define GPDMA_NUM_CHANNELS               8  /* Number of DMA channels */
+
 /*----------------------------------------------------------------------------*
   DMA Connection number definitions
  *----------------------------------------------------------------------------*/
@@ -331,12 +333,12 @@
  *----------------------------------------------------------------------------*/
 
 typedef enum {
-    GPDMA_STAT_INT,         /* GPDMA Interrupt Status */
-    GPDMA_STAT_INTTC,       /* GPDMA Interrupt Terminal Count Request Status */
-    GPDMA_STAT_INTERR,      /* GPDMA Interrupt Error Status */
-    GPDMA_STAT_RAWINTTC,    /* GPDMA Raw Interrupt Terminal Count Status */
-    GPDMA_STAT_RAWINTERR,   /* GPDMA Raw Error Interrupt Status */
-    GPDMA_STAT_ENABLED_CH   /* GPDMA Enabled Channel Status */
+    GPDMA_STAT_INT             = 0x01, /* GPDMA Interrupt Status */
+    GPDMA_STAT_INTTC           = 0x02, /* GPDMA Interrupt Terminal Count Request Status */
+    GPDMA_STAT_INTERR          = 0x04, /* GPDMA Interrupt Error Status */
+    GPDMA_STAT_RAWINTTC        = 0x08, /* GPDMA Raw Interrupt Terminal Count Status */
+    GPDMA_STAT_RAWINTERR       = 0x10, /* GPDMA Raw Error Interrupt Status */
+    GPDMA_STAT_ENABLED_CH      = 0x20  /* GPDMA Enabled Channel Status */
 } gpdma_status_t;
 
 
@@ -349,6 +351,15 @@ typedef enum{
     GPDMA_STATCLR_INTERR    /* GPDMA Interrupt Error Clear */
 } gpdma_state_clear_t;
 
+
+/*----------------------------------------------------------------------------*
+  GPDMA Channel info struct
+ *----------------------------------------------------------------------------*/
+
+typedef struct {
+    void (*handler) (int ch, uint32_t status, void *);
+    void  *arg;
+} gpdma_vector_t;
 
 /*----------------------------------------------------------------------------*
   GPDMA Channel configuration structure type definition
@@ -423,6 +434,7 @@ typedef struct {
     uint32_t dma_lli;       /* Linker list item structure data address
                                if there's no linker list, set as '0'
                              */
+
 } gpdma_channel_cfg_t;
 
 
@@ -438,9 +450,8 @@ typedef struct {
 } gpdma_lli_t;
 
 
-
-void Lpc17xxGPDMA_Init(void);
-int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config);
+int  Lpc17xxGPDMA_Init(void);
+int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config, void (*handler) (int ch, uint32_t status, void *), void* arg);
 int  Lpc17xxGPDMA_IntGetStatus(gpdma_status_t type, uint8_t ch);
 void Lpc17xxGPDMA_ClearIntPending(gpdma_state_clear_t type, uint8_t ch);
 void Lpc17xxGPDMA_ChannelCmd(uint8_t ch, int enabled);

@@ -46,5 +46,5 @@ TRGT    = avr-
 MCFLAGS = -mmcu=$(MCU)
 
 CFLAGS_MCU = $(MCFLAGS)
-CFLAGS_OPT = -Os -fno-delete-null-pointer-checks
+CFLAGS_OPT = -Os -ffunction-sections -fno-delete-null-pointer-checks
 CXXFLAGS_MCU = $(CFLAGS_MCU)

@@ -66,33 +66,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
+/*!
+ * \file arch/avr/dev/eth0cs.c
+ * \brief AVR network device for CS8900.
  *
- * Revision 1.3  2007/05/02 11:22:51  haraldkipp
- * Added multicast table entry.
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2003/08/05 20:05:11  haraldkipp
- * DNS removed from interface
- *
- * Revision 1.2  2003/07/20 20:07:38  haraldkipp
- * Conflicting Ethernet driver routine names solved.
- *
- * Revision 1.1  2003/07/20 16:37:21  haraldkipp
- * CrystalTek 8900A driver added.
- *
- * Revision 0.1  2002/05/02 CDCS MJC
- * Created
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/if_ether.h>

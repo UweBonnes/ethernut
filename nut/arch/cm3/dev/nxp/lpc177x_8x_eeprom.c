@@ -143,6 +143,10 @@ int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
     for(i = 0; i < size; i++){
         /* Check if we read beyond the eeprom size */
         if (page_nr >= EEPROM_PAGE_NUM) {
+            /* Clean up interrupt status before exit to prevent an issue when using the IAP 
+               (internal flash) right after accessing the EEPROM 
+             */
+            LPC_EEPROM->INT_CLR_STATUS = (_BV(EEPROM_ENDOF_RW) | _BV(EEPROM_ENDOF_PROG));
             return -1;
         }
 
@@ -153,13 +157,19 @@ int Lpc177x_8x_EepromRead(uint16_t addr, void* buff, size_t size)
 
         while (!(LPC_EEPROM->INT_STATUS & _BV(EEPROM_ENDOF_RW)));
 
-        if(page_offs >= EEPROM_PAGE_SIZE) {
+        if ((page_offs >= EEPROM_PAGE_SIZE) && (i < size - 1)) {
             page_offs = 0;
             page_nr++;
             LPC_EEPROM->ADDR = EEPROM_PAGE_ADRESS(page_nr) | EEPROM_PAGE_OFFSET(page_offs);
             LPC_EEPROM->CMD = EEPROM_CMD_8_BIT_READ | EEPROM_CMD_RDPREFETCH;
         }
     }
+
+    /* Clean up interrupt status before exit to prevent an issue when using the IAP 
+       (internal flash) right after accessing the EEPROM 
+     */
+    LPC_EEPROM->INT_CLR_STATUS = (_BV(EEPROM_ENDOF_RW) | _BV(EEPROM_ENDOF_PROG));
+
     return 0;
 }
 
@@ -223,5 +233,11 @@ int Lpc177x_8x_EepromWrite(uint16_t addr, const void* buff, size_t size)
             }
         }
     }
+
+    /* Clean up interrupt status before exit to prevent an issue when using the IAP 
+       (internal flash) right after accessing the EEPROM 
+     */
+    LPC_EEPROM->INT_CLR_STATUS = (_BV(EEPROM_ENDOF_RW) | _BV(EEPROM_ENDOF_PROG));
+    
     return 0;
 }

@@ -54,6 +54,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
+#include <memdebug.h>
 
 #include <pro/uhttp/streamio.h>
 

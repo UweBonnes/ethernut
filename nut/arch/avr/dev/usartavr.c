@@ -35,58 +35,13 @@
  * Dave Smart contributed the synchronous mode support.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/usartavr.c
+ * \brief AVR USART support.
  *
- * Revision 1.6  2008/04/29 02:28:34  thiagocorrea
- * Add configurable DTR pin to AVR USART driver.
- *
- * Revision 1.5  2007/11/13 20:16:33  thiagocorrea
- * Fix a small documentation typo
- *
- * Revision 1.4  2007/03/08 16:59:01  freckle
- * moved Exit Tracer event to end of IRQ
- *
- * Revision 1.3  2006/08/05 11:53:02  haraldkipp
- * Half duplex flow control used the wrong buffer. Many thanks to
- * Andrej Taran for fixing this bug.
- *
- * Revision 1.2  2005/10/07 22:05:00  hwmaier
- * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.10  2005/07/22 08:07:07  freckle
- * added experimental improvements to usart driver. see ChangeLog for details
- *
- * Revision 1.9  2005/02/21 12:38:00  phblum
- * Removed tabs and added semicolons after NUTTRACER macros
- *
- * Revision 1.8  2005/01/24 22:34:46  freckle
- * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
- *
- * Revision 1.6  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.5  2004/11/12 08:25:51  drsung
- * Bugfix in AvrUsartTxEmpty. Thanks to Grzegorz Plonski and Matthias Ringwald.
- *
- * Revision 1.4  2004/05/26 09:04:17  drsung
- * Bugfix in AvrUsartTxStart. Now the correct port and pin are used for half duplex mode...again...
- * Thanks to Przemyslaw Rudy.
- *
- * Revision 1.3  2004/05/16 14:09:06  drsung
- * Applied bugfixes for half duplex mode an XON/XOFF handling. Thanks to Damian Slee.
- *
- * Revision 1.2  2004/04/07 12:58:52  haraldkipp
- * Bugfix for half duplex mode
- *
- * Revision 1.1  2003/12/15 19:25:33  haraldkipp
- * New USART driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/atom.h>

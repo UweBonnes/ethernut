@@ -67,7 +67,10 @@
  * \brief Synchronous/asynchronous serial device definitions.
  */
 
+#if defined(__AVR_AT90USB1287__)
+#else
 extern NUTDEVICE devUsartAvr0;
+#endif
 
 #ifdef __AVR_ENHANCED__
 extern NUTDEVICE devUsartAvr1;

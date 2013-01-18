@@ -36,44 +36,7 @@
  * \brief EEPROM ready interrupt.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.4  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.3  2006/01/25 09:38:50  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.2  2005/10/24 09:34:30  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2005/02/10 07:06:18  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.2  2004/01/30 17:02:20  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:43  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:07  harald
- * Prepare release 3.1
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -146,15 +109,23 @@ static int AvrEepromRdyIrqCtl(int cmd, void *param)
     return rc;
 }
 
-#if defined(SIG_EEPROM_READY) || defined(iv_EE_READY)
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(EE_READY_vect) && defined(EE_RDY_vect)
+#define EE_READY_vect EE_RDY_vect
+#endif
 
-/*! \fn SIG_EEPROM_READY(void)
+#if defined(EE_READY_vect) || defined(iv_EE_READY)
+
+/*! \fn EE_READY_vect(void)
  * \brief EEPROM ready interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_EEPROM_READY:iv_EE_READY
+#pragma interrupt_handler EE_READY_vect:iv_EE_READY
 #endif
-NUTSIGNAL(SIG_EEPROM_READY, sig_EEPROM_READY)
+NUTSIGNAL(EE_READY_vect, sig_EEPROM_READY)
 #else
 
 /*! \fn SIG_EEPROM(void)

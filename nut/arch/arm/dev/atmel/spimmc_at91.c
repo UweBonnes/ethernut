@@ -192,6 +192,21 @@
 
 
 /*!
+ * \brief Private data of AT91 SPI card interface.
+ * \note that the addressing mode indicates SD-HC or SD-normal cards
+ *       SD-HC uses byte addressing, SD-normal uses block addressing
+ */
+typedef struct _MMCDCB
+{
+    int     dcb_avail;      /*!< Card is available. */
+    int     dcb_changed;    /*!< Card has changed. */
+    int     dcb_addr_mode;  /*!< Card addressing mode (byte/block. */
+} MMCDCB;
+
+static MMCDCB mmc0_dcb;
+
+
+/*!
  * \brief Initialize the card in slot 0.
  *
  * Called by the MMC driver during card reset. The card change
@@ -201,7 +216,12 @@
  */
 static int At91SpiMmCard0Init(void)
 {
-    return 0;
+    mmc0_dcb.dcb_changed = 0;
+    if (mmc0_dcb.dcb_avail)
+    {
+        return (0);
+    }
+    return -1;
 }
 
 /*!
@@ -269,6 +289,25 @@ static uint8_t At91SpiMmCard0Io(uint8_t val)
  */
 int At91SpiMmCard0Avail(void)
 {
+/*
+    int bPresent;
+
+    // Mmmm, low-level block device is calling the application????
+    bPresent=GpioPinGet(MMC_CD_PORT, MMC_CD_PIN);
+
+    if (mmc0_dcb.dcb_avail != bPresent)
+    {
+        mmc0_dcb.dcb_avail= bPresent;
+        mmc0_dcb.dcb_changed=1;             // not used for anything, just in this context....
+
+        return (2);
+    }
+
+    return bPresent;
+*/
+    mmc0_dcb.dcb_avail   = 1;
+    mmc0_dcb.dcb_changed = 0;
+
     return 1;
 }
 
@@ -283,6 +322,27 @@ int At91SpiMmCard0WrProt(void)
 {
     return 0;
 }
+
+/*!
+ * \brief set addressing mode
+ *
+ */
+int At91SpiMmCard0SetAdrMode(int mode)
+{
+    mmc0_dcb.dcb_addr_mode = mode;
+
+    return(0);
+}
+
+/*!
+ * \brief get addressing mode
+ *
+ */
+int At91SpiMmCard0GetAdrMode(void)
+{
+    return(mmc0_dcb.dcb_addr_mode);
+}
+
 
 /*!
  * \brief Initialize MMC hardware interface.
@@ -326,7 +386,9 @@ static MMCIFC mmc0_ifc = {
     At91SpiMmCard0Io,               /*!< mmcifc_io */
     At91SpiMmCard0Select,           /*!< mmcifc_cs */
     At91SpiMmCard0Avail,            /*!< mmcifc_cd */
-    At91SpiMmCard0WrProt            /*!< mmcifc_wp */
+    At91SpiMmCard0WrProt,           /*!< mmcifc_wp */
+    At91SpiMmCard0SetAdrMode,       /*!< mmcifc_sm */
+    At91SpiMmCard0GetAdrMode        /*!< mmcifc_gm */
 };
 
 /*!
@@ -349,7 +411,7 @@ NUTDEVICE devAt91SpiMmc0 = {
     0,                          /*!< Base address, dev_base. Unused. */
     0,                          /*!< First interrupt number, dev_irq. Unused. */
     &mmc0_ifc,                  /*!< Interface control block, dev_icb. */
-    0,                          /*!< Driver control block used by the low level part, dev_dcb. */
+    &mmc0_dcb,                  /*!< Driver control block used by the low level part, dev_dcb. */
     At91SpiMmcIfcInit,          /*!< Driver initialization routine, dev_init. */
     MmCardIOCtl,                /*!< Driver specific control function, dev_ioctl. */
     MmCardBlockRead,            /*!< Read data from a file, dev_read. */

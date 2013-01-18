@@ -199,8 +199,8 @@ extern const char ct_Date[];
 #endif
 /*@}*/
 
-extern char *http_root;
-#define HTTP_ROOT   (http_root ? http_root : HTTP_DEFAULT_ROOT)
+extern char *http_root_path;
+#define HTTP_ROOT   (http_root_path ? http_root_path : HTTP_DEFAULT_ROOT)
 
 /*! \brief HTTP authentication function type. */
 typedef int (*HTTP_AUTH_VALIDATOR) (HTTPD_SESSION*);
@@ -246,6 +246,9 @@ extern int HttpParseMultipartHeader(HTTPD_SESSION *hs, const char *bnd, long *av
  * \param hs Pointer to the session info structure.
  */
 extern void HttpSendHeaderTop(HTTPD_SESSION *hs, int status);
+
+extern void HttpSendStreamHeaderTop(HTTP_STREAM *stream, int status);
+
 #if !defined(HTTPD_EXCLUDE_DATE)
 
 /*!
@@ -254,6 +257,9 @@ extern void HttpSendHeaderTop(HTTPD_SESSION *hs, int status);
  * \param hs Pointer to the session info structure.
  */
 extern void HttpSendHeaderDate(HTTPD_SESSION *hs, time_t mtime);
+
+extern void HttpSendStreamHeaderDate(HTTP_STREAM *stream, time_t mtime);
+
 #endif
 
 /*!
@@ -263,12 +269,16 @@ extern void HttpSendHeaderDate(HTTPD_SESSION *hs, time_t mtime);
  */
 extern void HttpSendHeaderBottom(HTTPD_SESSION *hs, char *type, char *subtype, long bytes);
 
+extern void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, char *type, char *subtype, int conn, long bytes);
+
 /*!
  * \brief Send HTTP error response.
  *
  * \param hs Pointer to the session info structure.
  */
 extern void HttpSendError(HTTPD_SESSION *hs, int status);
+
+extern void HttpSendStreamError(HTTP_STREAM *stream, int status, const char *realm);
 
 /*!
  * \brief Send HTTP redirection response.

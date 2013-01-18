@@ -106,8 +106,8 @@ int main(void)
 
     /* Assign stdin and stdout to the default UART device. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
-    freopen(DEV_CONSOLE_NAME, "r", stdin);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "r", stdin);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("\n\nNetwork Configuration Editor - Compiled " __DATE__ " - " __TIME__);
     ShowHardwareConfiguration();

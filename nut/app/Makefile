@@ -93,6 +93,8 @@ all:
 	$(MAKE) -C httpd_upnp
 	$(MAKE) -C icmp-udp
 	$(MAKE) -C inetq
+	$(MAKE) -C inetq
+	$(MAKE) -C jtagtest
 	$(MAKE) -C logtime
 	$(MAKE) -C lua
 	$(MAKE) -C pingnet
@@ -104,6 +106,7 @@ all:
 	$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
+	$(MAKE) -C twitest
 	$(MAKE) -C uart
 	$(MAKE) -C owibus
 
@@ -117,6 +120,7 @@ install:
 	$(MAKE) -C httpd_simple install
 	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
+	$(MAKE) -C jtagtest
 	$(MAKE) -C logtime install
 	$(MAKE) -C lua install
 	$(MAKE) -C pingnet install
@@ -141,6 +145,7 @@ clean:
 	$(MAKE) -C httpd_simple clean
 	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean
+	$(MAKE) -C jtagtest
 	$(MAKE) -C logtime clean
 	$(MAKE) -C lua clean
 	$(MAKE) -C pingnet clean
@@ -152,6 +157,7 @@ clean:
 	$(MAKE) -C tcps clean
 	$(MAKE) -C threads clean
 	$(MAKE) -C timers clean
+	$(MAKE) -C twitest clean
 	$(MAKE) -C uart clean
 	$(MAKE) -C owibus clean
 

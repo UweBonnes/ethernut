@@ -86,7 +86,7 @@ $(IMPSCRIPT):
 	echo setPreference -pref StartupCLock:AUTO_CORRECTION >> $(IMPSCRIPT)
 	echo setPreference -pref AutoSignature:FALSE >> $(IMPSCRIPT)
 	echo setPreference -pref svfUseTime:FALSE >> $(IMPSCRIPT)
-	echo setMode -bsfile >> $(IMPSCRIPT)
+	echo setMode -bs >> $(IMPSCRIPT)
 	echo setCable -port xsvf -file $(PROJ).xsvf >> $(IMPSCRIPT)
 	echo addDevice -position 1 -file $(PROJ).jed >> $(IMPSCRIPT)
 	echo program -e -v -p 1 >> $(IMPSCRIPT)
@@ -100,7 +100,7 @@ $(XSTSCRIPT):
 	echo -p $(NPL_FAM) >> $(XSTSCRIPT)
 	echo -top $(PROJ) >> $(XSTSCRIPT)
 	echo -opt_level 2 >> $(XSTSCRIPT)
-	echo -opt_mode SPEED >> $(XSTSCRIPT)
+	echo -opt_mode AREA >> $(XSTSCRIPT)
 
 
 .PHONY: npl_clean
@@ -132,6 +132,7 @@ npl_clean:
 	-$(RM) xlnx_auto_0.ise
 	-$(RM) -r xst
 	-$(RM) -r xlnx_auto_0_xdb
+	-$(RM) -r _xmsgs
 	-$(RM) $(PROJ).prj
 	-$(RM) $(IMPSCRIPT)
 	-$(RM) $(XSTSCRIPT)

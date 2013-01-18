@@ -49,10 +49,6 @@
  * Console devices
  */
 #if 0
-#ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME DEV_DEBUG_NAME
-#endif
-
 #ifndef DEV_CONSOLE
 #ifdef NUT_DEV_DEBUG_READ
 #define DEV_CONSOLE DEV_DEBUG

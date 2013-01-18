@@ -112,6 +112,27 @@ int NutRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *), void *arg
 }
 
 /*!
+ * \brief Check if the corresponding interrupt is enabled or disabled.
+ *
+ * \param irq Interrupt to query.
+ *
+ * \return 0 if disabled, 1 if enabled.
+ */
+int NutIrqStatus(IRQ_HANDLER * irq)
+{
+    int rc = 0;
+    int status = 0;
+
+    if (irq->ir_ctl) {
+        rc = (irq->ir_ctl) (NUT_IRQCTL_ENABLE, &status);
+    }
+    if (rc != 0) {
+        status = 0;
+    }
+    return status;
+}
+
+/*!
  * \brief Enable a specified interrupt.
  *
  * \param irq Interrupt to enable.
@@ -170,6 +191,33 @@ int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
         rc = (irq->ir_ctl) (NUT_IRQCTL_GETPRIO, &prev);
         if (rc == 0 && (rc = (irq->ir_ctl) (NUT_IRQCTL_SETPRIO, &level)) == 0) {
             rc = prev;
+        }
+    }
+    return rc;
+}
+
+/*!
+ * \brief Query the priority level of an interrupt.
+ *
+ * The function returns the priority
+ *
+ * \note Not all targets support dynamic interrupt prioritization.
+ *       Check the hardware data sheet for valid levels.
+ *
+ * \param irq   Interrupt to query.
+ *
+ * \return Priority level or -1 in case of an error.
+ */
+int NutIrqGetPriority(IRQ_HANDLER * irq)
+{
+    int rc = -1;
+
+    if (irq->ir_ctl) {
+        int level;
+
+        rc = (irq->ir_ctl) (NUT_IRQCTL_GETPRIO, &level);
+        if (rc == 0) {
+            rc = level;
         }
     }
     return rc;

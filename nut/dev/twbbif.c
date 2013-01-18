@@ -597,14 +597,12 @@ int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint1
         return -1;
     }
 
-    if (txlen) {
-        TwStart();
-        /* Send SLA+W and check for ACK. */
-        if ((rc = TwPut(sla << 1)) == 0) {
-            for (cp = (uint8_t *)txdata; txlen--; cp++) {
-                if ((rc = TwPut(*cp)) != 0) {
-                    break;
-                }
+    TwStart();
+    /* Send SLA+W and check for ACK. */
+    if ((rc = TwPut(sla << 1)) == 0) {
+        for (cp = (uint8_t *)txdata; txlen--; cp++) {
+            if ((rc = TwPut(*cp)) != 0) {
+                break;
             }
         }
     }
@@ -742,7 +740,7 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
  *
  * \return always 10000 which is just a dummy value
  */
-int NutTwiGetSpeed( NUTTWIBUS *bus)
+uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
 {
     return 10000;
 }
@@ -770,7 +768,7 @@ int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf )
         break;
 
     case TWI_GETSPEED:
-        rc = NutTwiGetSpeed(bus);
+        *((uint32_t *)conf) = NutTwiGetSpeed(bus);
         break;
 
     case TWI_GETSTATUS:

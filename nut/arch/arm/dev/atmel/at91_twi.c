@@ -552,9 +552,9 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
  *
  * \return 0..400000 for speed, -1 in case of error.
  */
-int NutTwiGetSpeed( NUTTWIBUS *bus)
+uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
 {
-    int rc = -1;
+    uint32_t rc;
     uint32_t ckdiv = 1;
     uint32_t cldiv;
 
@@ -564,6 +564,8 @@ int NutTwiGetSpeed( NUTTWIBUS *bus)
 
         rc = NutGetCpuClock() / ((cldiv * 2 << ckdiv) - 3);
     }
+    else
+        rc = -1;
     return rc;
 }
 /*!
@@ -593,7 +595,7 @@ int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf )
         break;
 
     case TWI_GETSPEED:
-        rc = NutTwiGetSpeed(bus);
+        *((uint32_t *)conf) = NutTwiGetSpeed(bus);
         break;
 
     case TWI_GETSTATUS:

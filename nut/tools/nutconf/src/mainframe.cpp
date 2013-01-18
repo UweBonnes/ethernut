@@ -354,7 +354,7 @@ void CMainFrame::OnSashDrag(wxSashEvent & event)
 
     wxLayoutAlgorithm layout;
     if (!layout.LayoutFrame(this)) {
-        wxNode *node = (wxNode *) GetChildren().GetFirst();
+        wxWindowList::compatibility_iterator node =  GetChildren().GetFirst();
         while (node) {
             wxWindow *win = (wxWindow *) node->GetData();
             if (win->IsKindOf(CLASSINFO(wxSashLayoutWindow))) {

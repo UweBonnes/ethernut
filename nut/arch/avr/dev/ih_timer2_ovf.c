@@ -36,41 +36,7 @@
  * \brief Timer/Counter 2 overflow interrupt.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.4  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.3  2008/08/11 06:59:16  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.3  2006/01/25 09:38:50  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.2  2005/10/24 09:34:30  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2004/01/30 17:02:19  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:42  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -160,12 +126,12 @@ static int AvrTimer2OvfIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OVERFLOW2(void)
+/*! \fn TIMER2_OVF_vect(void)
  * \brief Timer 2 overflow interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OVERFLOW2:iv_TIMER2_OVF
+#pragma interrupt_handler TIMER2_OVF_vect:iv_TIMER2_OVF
 #endif
-NUTSIGNAL(SIG_OVERFLOW2, sig_OVERFLOW2)
+NUTSIGNAL(TIMER2_OVF_vect, sig_OVERFLOW2)
 
 /*@}*/

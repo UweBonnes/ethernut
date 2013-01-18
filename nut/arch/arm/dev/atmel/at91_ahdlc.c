@@ -1075,32 +1075,6 @@ int AhdlcAt91Write(NUTFILE * fp, const void *buffer, int len)
 }
 
 /*!
- * \brief Write to the asynchronous HDLC device.
- *
- * Similar to AhdlcWrite() except that the data is located in program
- * memory.
- *
- * This function is called by the low level output routines of the
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P
- * entry.
- *
- * The function may block the calling thread.
- *
- * \param fp     Pointer to a NUTFILE structure, obtained by a previous
- *               call to AhdlcOpen().
- * \param buffer Pointer to the data in program space to be written.
- * \param len    Number of bytes to write.
- *
- * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1
- *         indicates an error.
- */
-int AhdlcAt91Write_P(NUTFILE * fp, PGM_P buffer, int len)
-{
-    return AhdlcAt91Put(fp->nf_dev, (const char *) buffer, len, 1);
-}
-
-/*!
  * \brief Open the asynchronous HDLC device.
  *
  * This function is called by the low level open routine of the C runtime

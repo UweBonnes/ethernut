@@ -220,6 +220,14 @@ nutarch_cm3_stm32f2 =
                 file = "include/cfg/clock.h"
             },
             {
+                macro = "HSE_BYPASS",
+                brief = "HSE from external source",
+                description = "Use the clock signal applied to OSC_IN.",
+                requires = { "HW_PLL_STM32F2" },
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
                 macro = "SYSCLK_FREQ",
                 brief = "CM3 System Clock",
                 description = "System clock (SYSCLK) target frequency after PLL setup.\n\n"..

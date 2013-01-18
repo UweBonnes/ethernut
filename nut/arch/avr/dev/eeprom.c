@@ -36,25 +36,7 @@
  * \brief AVR On-Chip EEPROM support.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.5  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.4  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.3  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.2  2006/01/23 19:50:02  haraldkipp
- * Wrong parameters in ImageCraft call corrected.
- *
- * Revision 1.1  2006/01/23 17:27:08  haraldkipp
- * AVR specific routines for EEPROM access.
- *
- *
+ * $Id$
  * \endverbatim
  */
 

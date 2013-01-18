@@ -110,6 +110,7 @@
  *
  */
 
+#include <cfg/ip.h>
 #include <net/if_arp.h>
 
 /*!
@@ -219,6 +220,7 @@ struct __attribute__ ((packed)) ip_opt {
  */
 #include <dev/netbuf.h>
 extern int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb);
+extern int NutIpForward(NETBUF *nb);
 
 /*
  * Kernel declarations.

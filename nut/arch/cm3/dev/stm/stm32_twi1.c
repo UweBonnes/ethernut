@@ -154,7 +154,7 @@ int Stm32I2cBus1Recover( void)
  */
 int Stm32I2cBus1Init(void)
 {
-    uint16_t pins;
+    uint16_t pins = _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN);
 
     /* Enable I2C Bus 1 peripheral clock. */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
@@ -163,27 +163,29 @@ int Stm32I2cBus1Init(void)
     RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, DISABLE);
 
     /* Setup Related GPIOs. */
-    pins = _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN);
 #ifdef I2CBUS1_MODE_SMBUS
     pins |= _BV(SMBA_PIN);
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, SMBA_PIN, GPIO_AF_I2C1);
+#endif
+    GpioPortConfigSet( I2C_PORT, pins,
+                       GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL
+                       | GPIO_CFG_MULTIDRIVE |GPIO_CFG_INIT_HIGH);
+    NVIC_SetPriorityGrouping(4);
+    NVIC_SetPriority( I2C1_EV_IRQn, 0);
+    NVIC_SetPriority( I2C1_ER_IRQn, 1);
+
+#ifdef I2CBUS1_MODE_SMBUS
+     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, SMBA_PIN, GPIO_AF_I2C1);
 #endif
 #if defined (MCU_STM32F1)
     /* Configure alternate configuration. */
-    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP)) = I2C_DOREMAP;
+    CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP))
+        = I2C_DOREMAP;
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SDA_PIN, GPIO_AF_I2C1);
     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SCL_PIN, GPIO_AF_I2C1);
 #else
 #warning "Unhandled STM32 family"
 #endif
-    GpioPortConfigSet( I2C_PORT, pins, GPIO_CFG_OUTPUT
-                                     | GPIO_CFG_PERIPHAL
-                                     | GPIO_CFG_MULTIDRIVE);
-    NVIC_SetPriorityGrouping(4);
-    NVIC_SetPriority( I2C1_EV_IRQn, 0);
-    NVIC_SetPriority( I2C1_ER_IRQn, 1);
-
 #if defined(I2CBUS1_USE_DMA)
 #if defined (MCU_STM32F1)
     DMA_Init();

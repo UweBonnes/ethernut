@@ -39,7 +39,7 @@
  * \brief   Read out current Code Read Protection value at flash location 0x2FC
  */
 
-uint32_t Lpc176xGetCrpValue(void);
+uint32_t Lpc177x_8xGetCrpValue(void);
 
 /**
  * Initialize the system

@@ -153,6 +153,7 @@
 #include <arch/arm/atmel/at91_pit.h>
 #include <arch/arm/atmel/at91_adc.h>
 #include <arch/arm/atmel/at91_eefc.h>
+#include <arch/arm/atmel/at91_isi.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam9x */
 /*@{*/

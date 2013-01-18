@@ -36,40 +36,7 @@
  * \brief AVR external interrupt 3.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.4  2006/01/25 09:38:50  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.3  2005/10/24 18:02:34  haraldkipp
- * Fixes for ATmega103.
- *
- * Revision 1.2  2005/10/24 09:34:30  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2004/01/30 17:02:19  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:41  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -207,12 +174,12 @@ static int AvrInterrupt3Ctl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_INTERRUPT3(void)
+/*! \fn INT3_vect(void)
  * \brief External interrupt 3 entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT3:iv_INT3
+#pragma interrupt_handler INT3_vect:iv_INT3
 #endif
-NUTSIGNAL(SIG_INTERRUPT3, sig_INTERRUPT3)
+NUTSIGNAL(INT3_vect, sig_INTERRUPT3)
 
 /*@}*/

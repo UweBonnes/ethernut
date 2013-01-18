@@ -66,8 +66,9 @@
 
 
 #define CONST   const
+#ifndef INLINE
 #define INLINE  inline
-
+#endif
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -130,6 +131,47 @@
 #endif
 #if !defined(UCPOL)
 #define UCPOL     UCPOL0
+#endif
+#elif defined(__AVR_AT90USB1287__)
+#if !defined(TXC)
+#define TXC     TXC1
+#endif
+#if !defined(TXB8)
+#define TXB8     TXB81
+#endif
+#if !defined(UMSEL)
+#define UMSEL     UMSEL10
+#endif
+#if !defined(U2X)
+#define U2X     U2X1
+#endif
+#if !defined(UCSZ0)
+#define UCSZ0     UCSZ10
+#endif
+#if !defined(UCSZ1)
+#define UCSZ1     UCSZ11
+#endif
+#if !defined(UCSZ2)
+#define UCSZ2     UCSZ12
+#endif
+#if !defined(UPM0)
+#define UPM0     UPM10
+#endif
+#if !defined(UPM1)
+#define UPM1     UPM11
+#endif
+
+#if !defined(USBS)
+#define USBS     USBS1
+#endif
+#if !defined(UPE)
+#define UPE     UPE1
+#endif
+#if !defined(MPCM)
+#define MPCM     MPCM1
+#endif
+#if !defined(UCPOL)
+#define UCPOL     UCPOL1
 #endif
 #endif
 

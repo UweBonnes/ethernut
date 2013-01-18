@@ -36,37 +36,7 @@
  * \brief SPI serial transfer complete interrupt.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.3  2006/01/25 09:38:50  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.2  2005/10/24 09:34:30  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2004/01/30 17:02:19  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:43  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -159,13 +129,13 @@ static int AvrSpiIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_SPI(void)
+/*! \fn SPI_STC_vect(void)
  * \brief SPI interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_SPI:iv_SPI_STC
+#pragma interrupt_handler SPI_STC_vect:iv_SPI_STC
 #endif
-NUTSIGNAL(SIG_SPI, sig_SPI)
+NUTSIGNAL(SPI_STC_vect, sig_SPI)
 
 
 /*@}*/

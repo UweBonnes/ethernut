@@ -51,6 +51,12 @@
 #include <dev/owibus.h>
 #include <dev/owibus_bbif.h>
 
+#if defined(GPIO_CFG_INIT_HIGH)
+#define OWI_GPIO_CFG_INIT_HIGH GPIO_CFG_INIT_HIGH
+#else
+#define OWI_GPIO_CFG_INIT_HIGH 0
+#endif
+
 /*!
  * \addtogroup xgOwibusBb
  */
@@ -84,21 +90,32 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
      */
     NutSleep(0);
     GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
+    GpioPinDrive(owcb->txrx_port, owcb->txrx_pin);
     NutMicroDelay(delay1);
     if (value == 0)
+    {
+        GpioPinDrive(owcb->txrx_port, owcb->txrx_pin);
         GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
+    }
     else
+    {
+        GpioPinRelease(owcb->txrx_port, owcb->txrx_pin);
         GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
+    }
     NutMicroDelay(delay2);
     res = GpioPinGet(owcb->txrx_port, owcb->txrx_pin);
+#if 0
     if (value)
         /* If the TXRX line is allready pull up, we only need to wait,
          * but no time sensitive action must be performed. We block for
          * up to 410 us now. So be nice again!
          */
         NutSleep(0);
+#endif
     NutMicroDelay(delay3);
+    GpioPinRelease(owcb->txrx_port, owcb->txrx_pin);
     GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
+    NutSleep(1);
     return res;
 }
 
@@ -197,7 +214,10 @@ int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, i
         return OWI_OUT_OF_MEM;
     }
 
-    if (GpioPinConfigSet(txrx_port, txrx_pin, GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT | GPIO_CFG_MULTIDRIVE)) {
+    if (GpioPinConfigSet(
+            txrx_port, txrx_pin,
+            GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT |
+            GPIO_CFG_MULTIDRIVE |OWI_GPIO_CFG_INIT_HIGH)) {
         res = OWI_INVALID_HW;
         goto free_all;
     }

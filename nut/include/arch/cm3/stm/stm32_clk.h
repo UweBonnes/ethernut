@@ -40,6 +40,7 @@
  * $Id: stm32_gpio.c 3182 2010-10-17 21:46:04Z Astralix $
  * \endverbatim
  */
+#include <stdint.h>
 
 /* STM32F Clock source selectors */
 #define SYSCLK_HSI  0
@@ -47,6 +48,13 @@
 #define SYSCLK_HSE  2
 #define PLLCLK_HSI  3
 #define PLLCLK_HSE  4
+
+/* RTC clock sources */
+#define RTCCLK_NONE   0
+#define RTCCLK_LSE    1
+#define RTCCLK_LSI    2
+#define RTCCLK_HSE    3
+#define RTCCLK_LSEBYP 4
 
 /* The systems core clock frequency in Hz. */
 extern uint32_t SystemCoreClock;
@@ -62,4 +70,7 @@ extern int SetPllClockSource( int src);
 extern int SetSysClock(void);
 extern uint32_t SysCtlClockGet(void);
 
+#if defined(MCU_STM32L1)
+extern int SetRTCClock(int source);
+#endif
 #endif /* _STM32_CLK_H_ */

@@ -36,38 +36,7 @@
  * \brief CAN serial transfer interrupt.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.4  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/02/28 02:17:41  hwmaier
- * Implemented AvrCanTxIrqCtl function.
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.4  2006/01/25 09:38:51  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.3  2005/10/24 09:35:48  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.2  2005/10/04 05:23:37  hwmaier
- * Updated interrupt hooks to reflect new CAN interrupt names of avr-lib 1.2.3
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.1  2005/02/10 07:06:18  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -78,7 +47,7 @@
  */
 /*@{*/
 
-#if defined(SIG_CAN_INTERRUPT1) || defined(iv_CAN_TRANSFER)
+#if defined(CANIT_vect) || defined(iv_CAN_TRANSFER)
 
 static int AvrCanTxIrqCtl(int cmd, void *param);
 
@@ -137,12 +106,12 @@ static int AvrCanTxIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_CAN_INTERRUPT1(void)
+/*! \fn CANIT_vect(void)
  * \brief CAN serial transfer interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_CAN_INTERRUPT1:iv_CAN_TRANSFER
+#pragma interrupt_handler CANIT_vect:iv_CAN_TRANSFER
 #endif
-NUTSIGNAL(SIG_CAN_INTERRUPT1, sig_CAN_TRANSFER)
+NUTSIGNAL(CANIT_vect, sig_CAN_TRANSFER)
 #endif
 /*@}*/

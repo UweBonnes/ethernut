@@ -292,7 +292,6 @@ void TwErrorIrq( void *arg)
     /*
      *** ERROR HANDLING ***
      */
-    icb->tw_mm_err = 0;
     if( twsr1 & I2C_SR1_AF) {
         /* Acknowledge failed */
         I2Cx->SR1 &= (uint16_t)~I2C_SR1_AF;
@@ -390,11 +389,11 @@ int TwWaitBusFree( NUTTWIBUS *bus)
 /*!
  * \brief Set START condition and wait for its appearance on the bus.
  */
-int NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
+void NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
 {
     int ret = 0;
     uint32_t tout = tmo;
-//    NUTTWIICB *icb = bus->bus_icb;
+    NUTTWIICB *icb = bus->bus_icb;
     I2C_TypeDef* I2Cx = (I2C_TypeDef*)bus->bus_base;
 
     /* Enable Interrupts */
@@ -418,8 +417,9 @@ int NutTwiStartRolling( NUTTWIBUS *bus, uint32_t tmo)
         // TODO: Go back into Slave Mode
         I2Cx->CR1 |= I2C_CR1_ACK;
     }
-
-    return ret;
+    else
+        icb->tw_mm_err |= ret;
+    return;
 }
 
 /*!
@@ -458,12 +458,6 @@ int NutTwiMasterTranceive( NUTTWIBUS  *bus,
 
 //    TPRINTF( "TMT ");
 
-    /* Quit if nothing to do */
-    if( (txlen==0) && (rxsiz==0) ) {
-        TPRINTF("! txs=0 & xrs=0... OUT\n");
-        return rc;
-    }
-
     /* This routine is marked reentrant, so lock the interface. */
     if( NutEventWait( &bus->bus_mutex, tmo ) ) {
         icb->tw_mm_error = TWERR_IF_LOCKED;
@@ -491,13 +485,13 @@ int NutTwiMasterTranceive( NUTTWIBUS  *bus,
     icb->tw_mm_rxlen = rxsiz;
     icb->tw_mm_err = 0;
 
-    if (icb->tw_mm_txlen)
-        icb->tw_mm_dir = MODE_WRITE;
-    else
+    if (icb->tw_mm_rxlen)
         icb->tw_mm_dir = MODE_READ;
+    else
+        icb->tw_mm_dir = MODE_WRITE;
 
     /* Issue start and wait till transmission completed */
-    icb->tw_mm_err = NutTwiStartRolling( bus, tmo);
+    NutTwiStartRolling( bus, tmo);
 
     /* Check for errors that may have been detected
      * by the interrupt routine.
@@ -590,7 +584,7 @@ int NutTwiMasterRegRead( NUTTWIBUS  *bus,
     icb->tw_mm_err = 0;
 
     /* Issue start and wait till transmission completed */
-    icb->tw_mm_err = NutTwiStartRolling( bus, tmo);
+    NutTwiStartRolling( bus, tmo);
 
     /* Check for errors that may have been detected
      * by the interrupt routine.
@@ -685,7 +679,7 @@ int NutTwiMasterRegWrite( NUTTWIBUS  *bus,
     icb->tw_mm_err = 0;
 
     /* Issue start and wait till transmission completed */
-    icb->tw_mm_err = NutTwiStartRolling( bus, tmo);
+    NutTwiStartRolling( bus, tmo);
 
     /* Check for errors that may have been detected
      * by the interrupt routine.
@@ -881,9 +875,9 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
  * \brief Request Current Speed of I2C Interface.
  *
  */
-int NutTwiGetSpeed( NUTTWIBUS *bus)
+uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
 {
-    int rc = 0;
+    uint32_t speed = 0;
     uint32_t ccr = 0;
     uint32_t apbclk = NutClockGet(NUT_HWCLK_PCLK1);
     I2C_TypeDef* I2Cx = (I2C_TypeDef*)bus->bus_base;
@@ -892,13 +886,13 @@ int NutTwiGetSpeed( NUTTWIBUS *bus)
 
     if(ccr & I2C_CCR_FS) {
         /* High speed */
-        rc=(int)(apbclk/(25UL*(ccr&I2C_CCR_CCR)));
+        speed=(int)(apbclk/(25UL*(ccr&I2C_CCR_CCR)));
     }
     else {
         /* Low speed */
-        rc=(int)(apbclk/(2UL*(ccr&I2C_CCR_CCR)));
+        speed=(int)(apbclk/(2UL*(ccr&I2C_CCR_CCR)));
     }
-    return rc;
+    return speed;
 }
 
 /*!

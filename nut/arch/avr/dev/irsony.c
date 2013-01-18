@@ -31,23 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/irsony.c
+ * \brief AVR support for Sony IR protocol.
  *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2005/01/28 12:13:14  freckle
- * changed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.2  2004/03/18 18:41:18  haraldkipp
- * Bugfix. Now works with ICCAVR
- *
- * Revision 1.1  2003/07/21 18:07:54  haraldkipp
- * Sony infrared remote control driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/medianut.h>
@@ -55,8 +45,8 @@
 #include <sys/event.h>
 
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT4:iv_INT4
-#pragma interrupt_handler SIG_OVERFLOW2:iv_TIMER2_OVF
+#pragma interrupt_handler INT4_vect:iv_INT4
+#pragma interrupt_handler TIMER2_OVF_vect:iv_TIMER2_OVF
 #endif
 
 /*!
@@ -90,10 +80,10 @@ static uint16_t irticks;
  */
 static uint8_t irbitnum;
 
-/*! \fn SIG_OVERFLOW2(void)
+/*! \fn TIMER2_OVF_vect(void)
  * \brief Timer 2 overflow handler.
  */
-SIGNAL(SIG_OVERFLOW2)
+SIGNAL(TIMER2_OVF_vect)
 {
     /* Set the timer value. */
     outb(TCNT2, IRTIMER_START);
@@ -108,10 +98,10 @@ SIGNAL(SIG_OVERFLOW2)
     }
 }
 
-/*! \fn SIG_INTERRUPT4(void)
+/*! \fn INT4_vect(void)
  * \brief Infrared decoder signal edge handler.
  */
-SIGNAL(SIG_INTERRUPT4)
+SIGNAL(INT4_vect)
 {
     static uint16_t minset;      /* Min. length of bit value 1, calculated from start bit. */
     static uint16_t ccode;       /* Current code. */

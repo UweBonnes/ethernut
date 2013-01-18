@@ -35,94 +35,13 @@
  * Jesper Hansen <jesperh@telia.com>. Many thanks for all his help.
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/08/11 06:59:18  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/vs1001k.c
+ * \brief Legacy support for VS1001K.
  *
- * Revision 1.3  2006/05/15 11:46:00  haraldkipp
- * Bug corrected, which stopped player on flush. Now flushing plays
- * the remaining bytes in the buffer.
- * VS1001 ports are now fully configurable.
- * Several changes had been added to adapt the code to newer
- * Nut/OS style, like replacing outp with outb and using API
- * routines for interrupt control.
- *
- * Revision 1.2  2006/01/23 19:52:10  haraldkipp
- * Added required typecasts before left shift.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.2  2003/07/21 18:06:34  haraldkipp
- * Buffer function removed. The driver is now using the banked memory routines.
- * New functions allows the application to enable/disable decoder interrupts.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:58  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.12  2003/05/06 18:35:21  harald
- * ICCAVR port
- *
- * Revision 1.11  2003/04/21 16:43:54  harald
- * Added more comments.
- * Avoid initializing static globals to zero.
- * New function VsSdiWrite/_P checks DREQ
- * Removed decoder interrupt en/disable from low level routines.
- * Keep decoder in reset state until ports have been initialized.
- * Do not send initial zero bytes as the datasheet recommends.
- * A single nop is sufficient delay during reset active.
- * Clear interrupt flag after reset to avoid useless interrupt.
- * Available buffer size corrected.
- * New function to read header information.
- * New function invokes decoder memory test.
- * Beep makes use of VsSdiWrite.
- *
- * Revision 1.10  2003/04/18 14:46:08  harald
- * Copyright update by the maintainer, after none of the original code had
- * been left. We have a clean BSD licence now.
- * This release had been prepared by Pavel Chromy.
- * BSYNC vs. transfer in progress issue in VsSdiPutByte().
- * Fixed possible transfer in progress issue in VsPlayerFeed().
- * HW reset may be forced by VS_SM_RESET mode bit
- *
- * Revision 1.9  2003/04/07 20:29:20  harald
- * Redesigned by Pavel Chromy
- *
- * Revision 1.9  2003/04/04 15:01:00  mac
- * VS_STATUS_EMTY is reported correctly.
- *
- * Revision 1.9  2003/02/14 13:39:00  mac
- * Several serious bugs fixed,
- * interrupt routine completely remade.
- * Unreliable spurious interrupts detection removed.
- * Mpeg frame detection removed.
- * Watermark check removed (this was rather limiting)
- * Can be optionaly compiled not to use SPI
- *
- * Revision 1.8  2003/02/04 17:50:55  harald
- * Version 3 released
- *
- * Revision 1.7  2003/01/14 16:15:19  harald
- * Sending twice the number of zeros to end MP3 stream.
- * Check for spurious interrupts to detect hanging chip.
- * Simpler portable inline assembler for short delays.
- *
- * Revision 1.6  2002/11/02 15:15:13  harald
- * Library dependencies removed
- *
- * Revision 1.5  2002/09/15 16:44:14  harald
- * *** empty log message ***
- *
- * Revision 1.4  2002/08/16 17:49:02  harald
- * First public release
- *
- * Revision 1.3  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*
@@ -775,6 +694,11 @@ int VsPlayerFlush(void)
 
 /*!
  * \brief Initialize the VS1001 hardware interface.
+ *
+ * \note The interrupt handler for this device uses a significant amount
+ *       of stack space, which may require to increase thread stacks of
+ *       all running threads. Furthermore, it requires quite some time
+ *       to execute and may degrade overall system performance.
  *
  * \return 0 on success, -1 otherwise.
  */

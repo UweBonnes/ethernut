@@ -44,7 +44,9 @@
 
 #include <cfg/arch/gpio.h>
 #include <dev/irqreg.h>
-#if defined(MCU_STM32)
+#if defined(__AVR__) && defined(__AVR_LIBC_VERSION__)
+#include <dev/gpio_avr.h>
+#elif defined(MCU_STM32)
 #include <dev/gpio_stm32.h>
 #elif defined(MCU_LPC176x) || defined(MCU_LPC177x_8x)
 #include <dev/gpio_lpc17xx.h>

@@ -61,6 +61,16 @@
  *
  */
 
+/*
+ * This file will be replaced by toolchain.h. For now this is tested on
+ * AVR targets only.
+ */
+#if defined(__AVR__)
+
+#include <toolchain.h>
+
+#else
+
 #ifdef  __cplusplus
 # define __BEGIN_DECLS  extern "C" {
 # define __END_DECLS    }
@@ -93,6 +103,8 @@
 // Fallback
 #define NUT_DEPRECATED
 #endif
+#endif
+
 #endif
 
 #endif // _COMPILER_H_

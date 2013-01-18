@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * (C) 2011 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de
+ * (C) 2011, 2012 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * All rights reserved.
  *
@@ -147,6 +147,23 @@ void SystemCoreClockUpdate(void)
         SystemCoreClock >>= ((rcc & (RCC_CFGR_HPRE_0 | RCC_CFGR_HPRE_1 |RCC_CFGR_HPRE_2)) +1);
 }
 
+/*!
+ * \brief Re/Set RCC register bit and wait for same state of connected RDY bit or timeout
+ *
+ * \param  bbreg Bitband address of the bit to set
+ * \param  tout timeout in delay units.
+ * \return 0 on success, -1 on HSE start failed.
+ */
+int rcc_set_and_wait_rdy(__IO uint32_t *bbreg, int value, uint32_t tout)
+{
+    int state = (value)?1:0;
+    *bbreg = state;
+    do {
+        tout--;
+    } while ((bbreg[1] != state) && (tout > 0));
+    return ( bbreg[1] == state)?0:-1;
+}
+
 /* Functional same as F1 */
 /*!
  * \brief Control HSE clock.
@@ -156,31 +173,29 @@ void SystemCoreClockUpdate(void)
  */
 int CtlHseClock( uint8_t ena)
 {
-    int rc = 0;
+    int rc;
 
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t HSEStatus = 0;
+    /* switch HSE off to allow to set HSE_BYPASS */
+    rc = rcc_set_and_wait_rdy(
+        CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEON)), 0, HSE_STARTUP_TIMEOUT);
 
     if( ena) {
+#if defined(HSE_BYPASS)
+        CM3BBREG(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP)) = 1;
+#else
+        CM3BBREG(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP)) = 0;
+#endif
+
+#if !defined(RTCPRE) || (RTCPRE <0) || (RTCPRE >3)
+#define RTCPRE 3
+#endif
+        RCC->CR &= ~RCC_CR_RTCPRE;
+        RCC->CR |=  RTCPRE<< _BI32(RCC_CR_RTCPRE_0);
+
         /* Enable HSE */
-        RCC->CR |= RCC_CR_HSEON;
-
-        /* Wait till HSE is ready or time out is reached */
-        do {
-            tout--;
-            HSEStatus = RCC->CR & RCC_CR_HSERDY;
-        } while((HSEStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_HSERDY) == RESET) {
-            /* HSE failed to start */
-            rc = -1;
-        }
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEON)), 1, HSE_STARTUP_TIMEOUT);
     }
-    else {
-        /* Disable HSE clock */
-        RCC->CR &= ~RCC_CR_HSEON;
-    }
-
     return rc;
 }
 
@@ -195,27 +210,15 @@ int CtlHsiClock( uint8_t ena)
 {
     int rc = 0;
 
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t HSIStatus = 0;
-
     if( ena) {
         /* Enable HSI */
-        RCC->CR |= RCC_CR_HSION;
-
-        /* Wait till HSI is ready or time out is reached */
-        do {
-            tout--;
-            HSIStatus = RCC->CR & RCC_CR_HSIRDY;
-        } while((HSIStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_HSIRDY) == RESET) {
-            /* HSI failed to start */
-            rc = -1;
-        }
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSION)), 1, HSE_STARTUP_TIMEOUT);
     }
     else {
         /* Disable HSE clock */
-        RCC->CR &= ~RCC_CR_HSION;
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSION)), 0, HSE_STARTUP_TIMEOUT);
     }
 
     return rc;
@@ -232,27 +235,15 @@ int CtlPllClock( uint8_t ena)
 {
     int rc = 0;
 
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t PLLStatus = 0;
-
     if( ena) {
         /* Enable PLL */
-        RCC->CR |= RCC_CR_PLLON;
-
-        /* Wait till PLL is ready or time out is reached */
-        do {
-            tout--;
-            PLLStatus = RCC->CR & RCC_CR_PLLRDY;
-        } while((PLLStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_PLLRDY) == RESET) {
-            /* PLL failed to start */
-            rc = -1;
-        }
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_PLLON)), 1, HSE_STARTUP_TIMEOUT);
     }
     else {
         /* Disable HSE clock */
-        RCC->CR &= ~RCC_CR_PLLON;
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_PLLON)), 0, HSE_STARTUP_TIMEOUT);
     }
 
     return rc;
@@ -406,6 +397,60 @@ int SetSysClock(void)
     return rc;
 }
 #endif /* (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE) */
+
+/**
+  * @brief  Sets RTC clock to selected source.
+  *
+  * @param  source Clock source LSI/LSE/HSE
+  * @retval -1 on error, 0 on success
+  */
+int SetRTCClock(int source)
+{
+    int rc = -1;
+    /* Enable PWR Controller and access to the RTC backup domain*/
+    CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_PWREN))=1;
+    CM3BBREG(PWR_BASE, PWR_TypeDef, CR, _BI32(PWR_CR_DBP)) = 1;
+    /* Reset RTC to allow selection */
+    CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST)) = 1;
+    CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST)) = 0;
+    switch (source)
+    {
+    case RTCCLK_LSI:
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSION)),
+            1, HSE_STARTUP_TIMEOUT*1000);
+        if (rc == -1)
+            return rc;
+        RCC->CSR &= ~RCC_CSR_RTCSEL;
+        RCC->CSR |= RCC_CSR_RTCSEL_LSI;
+        break;
+    case RTCCLK_LSE:
+        /* LSE Bypass can only be written with LSE off*/
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEON)),
+            0, HSE_STARTUP_TIMEOUT*1000);
+        if (rc == -1)
+            return rc;
+#if defined(LSE_BYPASS)
+        CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP)) = 1;
+#else
+        CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP)) = 0;
+#endif
+        rc = rcc_set_and_wait_rdy(
+            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEON)),
+            1, HSE_STARTUP_TIMEOUT*1000);
+        if (rc == -1)
+            return rc;
+        RCC->CSR &= ~RCC_CSR_RTCSEL;
+        RCC->CSR |= RCC_CSR_RTCSEL_LSE;
+        break;
+    case RTCCLK_HSE:
+        RCC->CSR &= ~RCC_CSR_RTCSEL;
+        RCC->CSR |= RCC_CSR_RTCSEL_HSE;
+        break;
+    }
+    return rc;
+}
 
 /**
   * @brief  requests System clock frequency

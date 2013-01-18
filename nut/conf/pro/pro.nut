@@ -250,14 +250,56 @@ nutpro =
 
     },
     {
+        name = "nutpro_ssdp",
+        brief = "SSDP",
+        description = "Service discovery protocol.",
+        requires = { "PRO_HTTPU" },
+        provides = { "PRO_SSDP" },
+        sources =
+        {
+            "ssdp.c",
+            "ssdpc.c",
+            "ssdpd.c"
+        }
+    },
+    {
+        name = "nutpro_upnp",
+        brief = "UPnP",
+        description = "Universal Plug and Play.",
+        requires = { "PRO_SSDP" },
+        provides = { "PRO_UPNP" },
+        sources =
+        {
+            "upnp.c",
+            "upnp_ctrl.c",
+            "upnp_dev.c"
+        }
+    },
+    {
         name = "nutpro_resolv",
         brief = "DNS Client API",
         requires = { "NET_UDP" },
+        provides = { "PRO_DNS" },
         sources =
         {
             "confdns.c",
             "resolv.c"
         }
+    },
+    {
+        name = "nutpro_uri",
+        brief = "URI Functions",
+        description = "Convenience functions to split URI into its components.",
+        provides = { "PRO_URI" },
+        sources = { "uri.c" }
+    },
+    {
+        name = "nutpro_tcphost",
+        brief = "TCP Host API",
+        description = "TCP convenience functions.",
+        requires = { "NET_TCP", "PRO_DNS" },
+        provides = { "PRO_TCPHOST" },
+        sources = { "tcphost.c" }
     },
     {
         name = "nutpro_ftpd",
@@ -274,6 +316,26 @@ nutpro =
             "NUT_FS_WRITE"
         },
         sources = { "ftpd.c" }
+    },
+    {
+        name = "nutpro_pop3",
+        brief = "POP3 Client API",
+        description = "Provides email retrieval via POP3.",
+        requires = { "NET_TCP", "CRT_STREAM_READ" },
+        sources =
+        {
+            "pop3c.c"
+        },
+        options =
+        {
+            {
+                macro = "POP3_BUFSIZ",
+                brief = "Size of the POP3 line buffer",
+                type = "integer",
+                default = "256",
+                file = "include/cfg/pop3.h"
+            }
+        }
     },
     {
         name = "nutpro_smtp",
@@ -308,6 +370,7 @@ nutpro =
         brief = "uHTTP API",
         description = "Micro HTTP library.",
         requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
+        provides = { "PRO_UHTTP" },
         sources =
         {
             "uhttp/uhttpd.c",
@@ -490,6 +553,63 @@ nutpro =
                               "in the response header. This may not always make sense "..
                               "and some memory can be saved by enabling this option.",
                 flavor = "boolean",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
+        name = "nutpro_httpu",
+        brief = "HTTPU API",
+        description = "HTTPU is an extension of HTTP, using UDP instead of TCP as the "..
+                      "data transport. It's used by the UPnP implementation.",
+        requires = { "NET_UDP" },
+        provides = { "PRO_HTTPU" },
+        sources = { "httpu.c" },
+        options =
+        {
+            {
+                macro = "HTTPU_MAX_DATAGRAM_SIZE",
+                brief = "Max. Datagram Size",
+                description = "For each session a total number of 4 datagram buffers are "..
+                              "allocated from the heap.",
+                type = "integer",
+                default = "508",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTPU_MAX_HEADER_LINES",
+                brief = "Max. Header Lines",
+                description = "Maximum number of received header lines.",
+                type = "integer",
+                default = "16",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
+        name = "nutpro_soap",
+        brief = "SOAP Remote Call API",
+        requires = { "PRO_UHTTP" },
+        provides = { "PRO_SOAP" },
+        sources = {
+            "soapc.c",
+            "soapd.c",
+            "soap.c"
+        },
+        options =
+        {
+            {
+                macro = "SOAP_MAX_TAG_SIZE",
+                brief = "Max. Tag Size",
+                type = "integer",
+                default = "128",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "SOAP_MAX_TAG_ATTRIBUTES",
+                brief = "Max. Number of Attributes",
+                type = "integer",
+                default = "8",
                 file = "include/cfg/http.h"
             }
         }

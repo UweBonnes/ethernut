@@ -67,6 +67,7 @@
 
 #include <cfg/arch.h>
 #include <arch/cm3.h>
+#include <dev/irqreg.h>
 
 #if defined(MCU_LPC176x)
 #include <arch/cm3/nxp/lpc176x.h>
@@ -82,6 +83,7 @@
 
 #include <arch/cm3/nxp/lpc17xx_gpdma.h>
 
+static int initialised = 0;
 
 /*!
  * \brief Lookup Table of Connection Type matched with
@@ -127,7 +129,7 @@ volatile const void *GPDMA_LUTPerAddr[] = {
  * \brief Lookup Table of GPDMA Channel Number matched with
  *        GPDMA channel pointer
  */
-const LPC_GPDMACH_TypeDef *pGPDMACh[8] = {
+const LPC_GPDMACH_TypeDef *pGPDMACh[GPDMA_NUM_CHANNELS] = {
         LPC_GPDMACH0,                   // GPDMA Channel 0
         LPC_GPDMACH1,                   // GPDMA Channel 1
         LPC_GPDMACH2,                   // GPDMA Channel 2
@@ -216,31 +218,95 @@ const uint8_t GPDMA_LUTPerWid[] = {
 };
 
 
+/* Channel info struct */
+static gpdma_vector_t GPDMA_Vector[GPDMA_NUM_CHANNELS];
+
+
+/*!
+ * \brief Generic interrupt handler
+ *
+ * Generic interrupt handler will call any application specific handler
+ * if one is registered. Application handlers are registered using Lpc17xxGPDMA_Setup
+ *
+ */
+
+void Lpc17xxGPDMA_DMA_IRQHandler(void *arg)
+{
+    int ch;
+    uint32_t int_stat = LPC_GPDMA->IntStat;
+    uint32_t int_tc_stat = LPC_GPDMA->IntTCStat;
+    uint32_t int_err_stat = LPC_GPDMA->IntErrStat;
+    uint32_t status;
+
+    ch = 0;
+    while (int_stat) {
+        status = 0;
+        if (int_stat & 0x01) {
+            if (int_tc_stat & 0x01) {
+                status |= GPDMA_STAT_INTTC;
+                LPC_GPDMA->IntTCClear = 1 << ch;
+            }
+            if (int_err_stat & 0x01) {
+                status |= GPDMA_STAT_INTERR;
+                LPC_GPDMA->IntErrClr = 1 << ch;
+            }
+
+            if (GPDMA_Vector[ch].handler != NULL) {
+                GPDMA_Vector[ch].handler(ch, status, GPDMA_Vector[ch].arg);
+            }
+
+            int_stat >>= 1;
+            int_tc_stat >>= 1;
+            int_err_stat >>= 1;
+            ch++;
+        }
+    }
+}
+
+
 /*!
  * \brief Initialize GPDMA controller
  *
  * \param none
  *
- * \return none
+ * \return 0 on success, -1 in case of an error (DMA IRQ could not be registered)
  */
-void Lpc17xxGPDMA_Init(void)
+int Lpc17xxGPDMA_Init(void)
 {
-    /* Enable GPDMA clock */
-    SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCGPDMA);
+    int ch;
 
-    /* Reset all channel configuration register */
-    LPC_GPDMACH0->CConfig = 0;
-    LPC_GPDMACH1->CConfig = 0;
-    LPC_GPDMACH2->CConfig = 0;
-    LPC_GPDMACH3->CConfig = 0;
-    LPC_GPDMACH4->CConfig = 0;
-    LPC_GPDMACH5->CConfig = 0;
-    LPC_GPDMACH6->CConfig = 0;
-    LPC_GPDMACH7->CConfig = 0;
+    if (!initialised) {
+        /* Enable GPDMA clock */
+        SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCGPDMA);
 
-    /* Clear all DMA interrupt and error flag */
-    LPC_GPDMA->IntTCClear = 0xFF;
-    LPC_GPDMA->IntErrClr  = 0xFF;
+        /* Reset all channel configuration register */
+        LPC_GPDMACH0->CConfig = 0;
+        LPC_GPDMACH1->CConfig = 0;
+        LPC_GPDMACH2->CConfig = 0;
+        LPC_GPDMACH3->CConfig = 0;
+        LPC_GPDMACH4->CConfig = 0;
+        LPC_GPDMACH5->CConfig = 0;
+        LPC_GPDMACH6->CConfig = 0;
+        LPC_GPDMACH7->CConfig = 0;
+
+        /* Clear all DMA interrupt and error flag */
+        LPC_GPDMA->IntTCClear = 0xFF;
+        LPC_GPDMA->IntErrClr  = 0xFF;
+
+        for (ch = 0; ch < GPDMA_NUM_CHANNELS; ch++) {
+            GPDMA_Vector[ch].handler = NULL;
+            GPDMA_Vector[ch].arg = NULL;
+        }
+
+        /* Register the generic DMA IRQ handler */
+        if (NutRegisterIrqHandler(&sig_DMA, Lpc17xxGPDMA_DMA_IRQHandler, NULL) != 0) {
+            return -1;
+        }
+
+        NutIrqEnable(&sig_DMA);
+        initialised = 1;
+    }
+    return 0;
 }
 
 
@@ -257,10 +323,14 @@ void Lpc17xxGPDMA_Init(void)
  * \return 0 on success, -1 in case of an error
  */
 
-int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
+int Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config, void (*handler) (int ch, uint32_t status, void *), void* arg)
 {
     LPC_GPDMACH_TypeDef *pDMAch;
     uint32_t tmp1, tmp2;
+
+    if ((ch_config == NULL) || (ch_config->ch >= GPDMA_NUM_CHANNELS)) {
+        return -1;
+    }
 
     if (LPC_GPDMA->EnbldChns & (GPDMA_DMACEnbldChns_Ch(ch_config->ch))) {
         /* Channel was enabled before. Need to release the channel first. Return an error. */
@@ -382,6 +452,10 @@ int  Lpc17xxGPDMA_Setup(gpdma_channel_cfg_t *ch_config)
                       GPDMA_DMACCxConfig_TransferType((uint32_t)ch_config->transfer_type) |
                       GPDMA_DMACCxConfig_SrcPeripheral(tmp1) |
                       GPDMA_DMACCxConfig_DestPeripheral(tmp2);
+
+    /* Configure the channel info struct */
+    GPDMA_Vector[ch_config->ch].handler = handler;
+    GPDMA_Vector[ch_config->ch].arg = arg;
 
     return 0;
 }

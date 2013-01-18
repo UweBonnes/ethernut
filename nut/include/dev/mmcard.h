@@ -69,6 +69,8 @@
 
 #define NUTMC_SF_CD     0x01
 #define NUTMC_SF_WP     0x02
+#define NUTMC_SF_HC     0x04
+#define NUTMC_SF_ILL    0x80
 
 #define NUTMC_IND_OFF   0
 #define NUTMC_IND_READ  1
@@ -98,17 +100,31 @@ typedef struct _MMCIFC {
     /*! Initialize the card. */
     int (*mmcifc_in) (void);
     /*! Read received byte and transmit a new one. */
-     uint8_t(*mmcifc_io) (uint8_t);
+    uint8_t(*mmcifc_io) (uint8_t);
     /*! Select or deselect the card. */
     int (*mmcifc_cs) (int);
     /*! Query card detect. */
     int (*mmcifc_cd) (void);
     /*! Query write protect. */
     int (*mmcifc_wp) (void);
+    /*! Set addressing mode. */
+    int (*mmcifc_sm) (int);
+    /*! Get addressing mode. */
+    int (*mmcifc_gm) (void);
 } MMCIFC;
 
 #define MMCMD_HOST                      0x40
 #define MMCMD_RESET_CRC                 0x95
+#define MMCMD_IF_COND_CRC               0x87
+
+
+/*!
+ * \brief Addressing mode selection flags 
+ * SD-HC uses byte addressing, SD-normal uses block addressing 
+ */
+
+#define MMC_BLOCK_MODE                  0   // access card in block mode,
+#define MMC_BYTE_MODE                   1   // acces card using byte-addresses iso sector addresses
 
 /*! \brief Reset card to idle state.
  *
@@ -132,6 +148,10 @@ typedef struct _MMCIFC {
 
 /*! \brief Assign relative card address. */
 #define MMCMD_SELECT_CARD               7
+
+/*! \brief negociate operating voltage (mandatory for 2.0). */
+// TODO: Double command? Same as extcsd?
+#define MMCMD_SEND_IF_COND              8
 
 /*! \brief Query card's extended CSD. */
 #define MMCMD_SEND_EXTCSD               8

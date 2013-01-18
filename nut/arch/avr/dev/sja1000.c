@@ -33,7 +33,7 @@
  */
 
 /*!
- * \file dev/sja1000.c
+ * \file arch/avr/dev/sja1000.c
  * \brief Driver for SJA1000 CAN-Bus controller
  *
  *
@@ -41,53 +41,10 @@
  * address and interrupt is set by NutRegisterDevice.
  *
  * Have a look to our m-can board if you have questions.
- */
-
-
-/*
- * $Log$
- * Revision 1.7  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
  *
- * Revision 1.6  2007/10/04 19:32:52  olereinhardt
- * SJA_BASE (base address for sja1000 driver) can now be set in configurator
- *
- * Revision 1.5  2007/09/08 03:00:17  hwmaier
- * Optional time-out for receiving added
- *
- * Revision 1.4  2007/09/06 19:02:48  olereinhardt
- * Corrected handling of 11bit standard IDs
- *
- * Revision 1.3  2006/10/08 16:48:08  haraldkipp
- * Documentation fixed
- *
- * Revision 1.2  2005/10/24 18:02:34  haraldkipp
- * Fixes for ATmega103.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.8  2005/05/27 14:09:56  olereinhardt
- * Fixed a bug in irq initialisation
- *
- * Revision 1.7  2005/01/24 21:12:04  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.6  2005/01/21 16:49:45  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.5  2004/11/12 16:27:42  olereinhardt
- * Added critical section around NutEventPostAsync
- *
- * Revision 1.4  2004/09/17 14:31:37  olereinhardt
- * Compile only if __GNUC__ defined
- *
- * Revision 1.3  2004/06/08 14:50:25  olereinhardt
- * Removed receive thread and moved input data handling into irq handler. Much faster now on reception.
- *
- * Revision 1.1  2004/06/07 15:11:49  olereinhardt
- * Initial checkin
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*!
@@ -803,6 +760,11 @@ IFCAN ifc_sja1000 = {
  *
  * Applications must pass this structure to NutRegisterDevice()
  * to bind this CAN device driver to the Nut/OS kernel.
+ *
+ * \note The interrupt handler of this driver uses a significant amount
+ *       of stack space, which may require to increase thread stacks of
+ *       all threads by at least 32 bytes. Furthermore, it requires quite
+ *       some time to execute and may degrade overall system performance.
  */
 
 NUTDEVICE devSJA1000 = {

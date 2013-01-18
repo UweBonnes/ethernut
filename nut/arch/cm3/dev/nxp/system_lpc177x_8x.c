@@ -65,10 +65,10 @@ uint32_t Lpc177x_8xGetCrpValue(void)
  */
 void SystemInit (void)
 {
-	/* We have to set the PBOOST bit as long as we are running with more than 100Mhz
-	 * See Errata: Rev. 3 — 1 September 2012, Chapter 3.5
-	 */
-	LPC_SC->PBOOST = 0x03;
+    /* We have to set the PBOOST bit as long as we are running with more than 100Mhz
+     * See Errata: Rev. 3 — 1 September 2012, Chapter 3.5
+     */
+    LPC_SC->PBOOST = 0x03;
 }
 
 /**

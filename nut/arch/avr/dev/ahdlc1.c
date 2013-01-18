@@ -31,14 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
+/*!
+ * \file arch/avr/dev/ahdlc1.c
+ * \brief AVR AHDLC driver for UART1.
  *
- * Revision 1.1  2004/03/08 11:16:54  haraldkipp
- * Asynchronous HDLC driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/if_ppp.h>

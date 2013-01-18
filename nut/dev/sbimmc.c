@@ -263,6 +263,7 @@
 typedef struct _MMCDCB {
     int dcb_avail;              /*!< Card is available. */
     int dcb_changed;            /*!< Card has changed. */
+    int dcb_addr_mode;          /*!< Card addressing mode (byte/block) */
 } MMCDCB;
 
 static MMCDCB mmc0_dcb;
@@ -412,6 +413,26 @@ int SbiMmCard0WrProt(void)
     return 0;
 }
 
+/*!
+ * \brief set addressing mode
+ *
+ */
+int SbiMmCard0SetAdrMode(int mode)
+{
+    mmc0_dcb.dcb_addr_mode = mode;
+
+    return(0);
+}
+
+/*!
+ * \brief get addressing mode
+ *
+ */
+int SbiMmCard0GetAdrMode(void)
+{
+    return(mmc0_dcb.dcb_addr_mode);
+}
+
 #ifdef MMC0_CD_BIT
 /*!
  * \brief Card slot 0 insertion interrupt routine.
@@ -495,7 +516,9 @@ static MMCIFC mmc0_ifc = {
     SbiMmCard0Io,               /*!< mmcifc_io */
     SbiMmCard0Select,           /*!< mmcifc_cs */
     SbiMmCard0Avail,            /*!< mmcifc_cd */
-    SbiMmCard0WrProt            /*!< mmcifc_wp */
+    SbiMmCard0WrProt,           /*!< mmcifc_wp */
+    SbiMmCard0SetAdrMode,       /*!< mmcifc_sm */
+    SbiMmCard0GetAdrMode        /*!< mmcifc_gm */
 };
 
 /*!

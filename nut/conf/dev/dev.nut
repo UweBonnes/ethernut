@@ -773,6 +773,14 @@ nutdev =
                 description = "Specify the number of seconds. "..
                               "Default is 45",
                 file = "include/cfg/chat.h"
+            },
+            {
+                macro = "NUTDEBUG_CHAT",
+                brief = "Debug Output",
+                flavor = "boolean",
+                description = "Enables debug output.\n\n"..
+                              "Applications must call NutTraceChat() to activate it.",
+                file = "include/cfg/chat.h"
             }
         }
     },
@@ -785,6 +793,7 @@ nutdev =
     {
         name = "nutdev_circbuf",
         brief = "Circular Buffers",
+        requires = { "TOOL_GCC" },
         provides = { "DEV_CIRCBUF" },
         sources = { "circbuff.c" }
     },
@@ -3211,6 +3220,14 @@ nutdev =
         sources = { "pcf8563.c" },
     },
     {
+        name = "nutdev_i2c_pcf85xx",
+        brief = "PCF85XX Driver",
+        description = "Early NXP RTC bus controller based driver, tested on Ethernut 5.",
+        requires = { "I2CBUS_CONTROLLER" },
+        provides = { "DEV_RTC" },
+        sources = { "i2c_pcf85xx.c" },
+    },
+    {
         name = "nutdev_x12rtc",
         brief = "X12xx Driver",
         description = "Intersil X12xx RTC and EEPROM driver. Tested on AT91 only.",
@@ -3241,6 +3258,14 @@ nutdev =
         description = "Generic SPI bus routines, which may be used "..
                       "by bus controller implementations.",
         sources = { "spibus.c" }
+    },
+
+    {
+        name = "nutdev_i2cbus",
+        brief = "I2C Bus",
+        requires = { "I2CBUS_CONTROLLER" },
+        description = "Hardware independent I2C bus API.",
+        sources = { "i2cbus.c" }
     },
 
     --
@@ -4909,7 +4934,7 @@ nutdev =
         name = "nutdev_owibus",
         brief = "One-Wire Bus implementations",
         description = "",
-        requires = { "HW_GPIO" },
+        requires = { "HW_GPIO", "TOOL_GCC" },
         provides = { "DEV_OWI" },
         sources = { "owibus.c", "owibus_bbif.c", "owibus_uartif.c" },
     },

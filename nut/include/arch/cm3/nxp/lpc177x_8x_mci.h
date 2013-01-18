@@ -3,6 +3,7 @@
 
 /*
  * Copyright (C) 2012 by Rob van Lieshout (info@pragmalab.nl)
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -149,14 +150,16 @@
 #define SD_CARD             2
 
 
-/* MCI clk freq = Pclk/(2* (Clkdiv +1) */
+/* MCI clk freq = PCLK/(2* (Clkdiv +1) -> LPC manual sais: MCI clk freq = MCLK(2*(ClkDiv+1) !*/
 #if MCI_DMA_ENABLED
 #define MCLKDIV_SLOW        (60 - 1)    /* 59 = 400,000Hz -> @48Mhz/(2*60) */
 #define MCLKDIV_NORMAL      (1 - 1)     /* 0 = 24Mhz -> @48Mhz/(2*1) */
 #else
-#define MCLKDIV_SLOW        (75 - 1)    /* 75-1  75 = 400,000Hz -> @60Mhz/(2*75) */
-#define MCLKDIV_NORMAL      (60 - 1)    /* 60-1  60 = 500.000hz -> @60Mhz/(2*60) */
-//#define MCLKDIV_NORMAL    (75 - 1)    /* 75-1 /* 75 = 400,000Hz -> @60Mhz/(2*75) */
+//    #define MCLKDIV_SLOW    75-1    // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(75-1+1)) = 120/150 = 800KHz
+    #define MCLKDIV_SLOW    150-1    // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(150-1+1)) = 120/300 = 400KHz
+//    #define MCLKDIV_NORMAL  3-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(3-1+1)) = 120/6 = 20MHz
+    #define MCLKDIV_NORMAL  6-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(6-1+1)) = 120/12 = 10MHz
+//    #define MCLKDIV_NORMAL  60-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(6-1+1)) = 120/120 = 1MHz
 #endif
 
 #define DATA_TIMER_VALUE    0x10000
@@ -388,7 +391,7 @@ void     Lpc177x_8x_MciSendCmd(uint32_t CmdIndex, uint32_t Argument, uint32_t Ex
 int32_t  Lpc177x_8x_MciGetCmdResp(uint32_t CmdIndex, uint32_t NeedRespFlag, uint32_t *CmdRespStatus);
 int32_t  Lpc177x_8x_MciCmdResp(uint32_t CmdIndex, uint32_t Argument, uint32_t ExpectResp, uint32_t *CmdResp, uint32_t AllowTimeout);
 
-void     Lpc177x_8x_MciSet_MCIClock(uint32_t clockrate);
+void     Lpc177x_8x_MciSetClock(uint32_t clockrate);
 int32_t  Lpc177x_8x_MciSetBusWidth(uint32_t width);
 int32_t  Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal);
 int32_t  Lpc177x_8x_MciCardInit(void);
@@ -412,6 +415,9 @@ int32_t  Lpc177x_8x_MciCmd_ReadBlock(uint32_t blockNum, uint32_t numOfBlock);
 
 int32_t  Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t numOfBlock);
 int32_t  Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t numOfBlock);
+
+int      Lpc177x_8x_MciIrqGetPriority(void);
+void     Lpc177x_8x_MciIrqSetPriority(int);
 
 #if MCI_DMA_ENABLED
 void     Lpc177x_8x_MciDMA_IRQHandler (void);

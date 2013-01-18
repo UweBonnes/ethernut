@@ -62,6 +62,11 @@
 #endif
 #endif
 
+#ifndef DEV_CONSOLE_NAME
+/* Removed in dev/board.h, but added here again for backward compatibility. */
+#define DEV_CONSOLE_NAME "uart0"
+#endif
+
 /*
  * Ethernet devices
  */
@@ -116,4 +121,50 @@
 
 #ifndef DEV_MMCARD0
 #define DEV_MMCARD0 devNplMmc0
+#endif
+
+/*
+ * We do not have any config settings right now. So I add my
+ * Ethernut 3 settings here, which I used for testing the code.
+ *
+ * - P16 TMS output.
+ * - P18 TCK output.
+ * - P19 TDO input.
+ * - P20 RST output.
+ * - P23 TDI output.
+ */
+#if !defined(JTAG0_TDO_PIO_ID) && defined(PIO_ID)
+#define JTAG0_TDO_PIO_ID    PIO_ID
+#endif
+
+#if !defined(JTAG0_TDO_PIO_BIT)
+#define JTAG0_TDO_PIO_BIT   19
+#endif
+
+#if !defined(JTAG0_TDI_PIO_ID) && defined(PIO_ID)
+#define JTAG0_TDI_PIO_ID    PIO_ID
+#endif
+
+#if !defined(JTAG0_TDI_PIO_BIT)
+#define JTAG0_TDI_PIO_BIT   23
+#endif
+
+#if !defined(JTAG0_TMS_PIO_ID) && defined(PIO_ID)
+#define JTAG0_TMS_PIO_ID    PIO_ID
+#endif
+
+#if !defined(JTAG0_TMS_PIO_BIT)
+#define JTAG0_TMS_PIO_BIT   16
+#endif
+
+#if !defined(JTAG0_TCK_PIO_ID) && defined(PIO_ID)
+#define JTAG0_TCK_PIO_ID    PIO_ID
+#endif
+
+#if !defined(JTAG0_TCK_PIO_BIT)
+#define JTAG0_TCK_PIO_BIT   18
+#endif
+
+#if !defined(JTAG0_CLOCK_RATE)
+#define JTAG0_CLOCK_RATE    100000
 #endif

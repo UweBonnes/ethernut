@@ -31,39 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.3  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
+/*!
+ * \file arch/avr/dev/eth0rtl.c
+ * \brief AVR network device for RTL8019AS.
  *
- * Revision 1.2  2007/05/02 11:22:51  haraldkipp
- * Added multicast table entry.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2003/11/03 17:06:52  haraldkipp
- * Allow linking with lanc111
- *
- * Revision 1.2  2003/08/05 20:05:11  haraldkipp
- * DNS removed from interface
- *
- * Revision 1.1.1.1  2003/05/09 14:40:37  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.11  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
- * Revision 1.10  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.9  2002/10/29 12:46:00  harald
- * PPP support added
- *
- * Revision 1.8  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/if_ether.h>

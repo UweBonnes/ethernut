@@ -121,6 +121,7 @@ int Phat16GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link)
     /* Get the 16 bit link value. */
     *link = vol->vol_buf[sbn].sect_data[pos];
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
+    PhatSectorBufferRelease(dev, sbn);
 
     return 0;
 }
@@ -150,6 +151,7 @@ int Phat16SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
         vol->vol_buf[sbn].sect_data[pos] = (uint8_t) link;
         vol->vol_buf[sbn].sect_data[pos + 1] = (uint8_t) (link >> 8);
         vol->vol_buf[sbn].sect_dirty = 1;
+        PhatSectorBufferRelease(dev, sbn);
     }
     return 0;
 }

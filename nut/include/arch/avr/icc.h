@@ -144,6 +144,11 @@
 #define realloc     realloc_M
 #define free        free_M
 
+/* device specific functions map to special name forms so the linker
+ * can give more meaningful error messages
+ */
+#pragma device_specific_function putchar getchar
+
 /*!
  * \brief Redirected stdio routines.
  *

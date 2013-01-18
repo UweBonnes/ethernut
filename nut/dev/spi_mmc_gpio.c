@@ -111,7 +111,7 @@ static void SpiMmcGpioIrq(void *arg)
 
 #if defined(MMC_WP_PORT) && defined(MMC_WP_PIN)
         if (GpioPinGet(MMC_WP_PORT, MMC_WP_PIN) == 0) {
-            mcs->mcs_sf |= NUTMC_SF_WP
+            mcs->mcs_sf |= NUTMC_SF_WP;
         }
 #endif
     } else {
@@ -251,7 +251,8 @@ NUTSPINODE nodeSpiMmcGpio = {
     SPI_MMC_CLK,    /*!< \brief Initial clock rate, node_rate. */
     SPI_MODE_0,     /*!< \brief Initial mode, node_mode. */
     8,              /*!< \brief Initial data bits, node_bits. */
-    SPI_MMC_CS      /*!< \brief Chip select, node_cs. */
+    SPI_MMC_CS,     /*!< \brief Chip select, node_cs. */
+    &mcsSpiMmcGpio  /*!< Driver control block used by the low level part, node_dcb. */
 };
 
 /*!

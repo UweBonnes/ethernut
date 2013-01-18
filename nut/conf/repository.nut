@@ -169,6 +169,7 @@ mcu_names = {
     "MCU_ATMEGA103",
     "MCU_ATMEGA128",
     "MCU_AT90CAN128",
+    "MCU_AT90USB1287",
     "MCU_ATMEGA2560",
     "MCU_ATMEGA2561",
     "MCU_AT91SAM9260",
@@ -290,26 +291,58 @@ hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
 pca9555_port_choice = { "IOXP_PORT0", "IOXP_PORT1" }
 pca9555_pin_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 
+--
+-- Check for custom configuration.
+--
+-- Executes custom/custom.nut, if it exists. This allows to extend the
+-- configuration without modifying any existing file.
+--
+-- For example, an application may provide its own file system driver.
+-- But mkdir, rmdir and similar function will become available only,
+-- if certain requirements are provided. This can be done by creating
+-- the file custom.nut with the following contents:
+--
+-- nutcustom =
+-- {
+--   {
+--     name = "nutcustom_cfs",
+--     brief = "CFS",
+--     description = "Custom file system driver.",
+--     provides = {
+--       "NUT_FS",
+--       "NUT_FS_READ",
+--       "NUT_FS_WRITE",
+--       "NUT_FS_DIR"
+--     }
+--   }
+-- }
+--
+-- Developer's note: The custom directory is reserved for this kind of
+-- extensions and must not exist in the official repository. However,
+-- it may be included in specialized Nut/OS distributions.
+--
+function CheckCustomConfig()
+    local fp
+
+    fp = io.open(c_repo_path() .. "/custom/custom.nut", "r")
+    if fp == nil then
+        return {}
+    end
+    fp:close()
+    return
+        {
+            name = "nutcustom",
+            brief = "Custom Configuration",
+            description = "Allows to add custom specific configuration items.\n",
+            subdir = "custom",
+            script = "custom/custom.nut"
+        }
+end
 
 repository =
 {
     {
         name = "nutinfo",
--- First version of a dynamic item:
--- The string contains a Lua script, which is compiled and executed by the Configurator.
--- This version is deprecated.
---        brief = "--\n".. -- Strings starting with this sequence are executed.
---                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
-
--- Second version of a dynamic item:
--- A function result is combined with a static string. Note, that the function
--- is executed when this script file is loaded and must have been defined
--- previously.
---        brief = "Nut/OS " .. GetNutOsVersion(),
-
--- Third version of a dynamic item:
--- The value is specified as a function returning a string. In this case any function
--- used in our function body may be defined later.
         brief = "Hardware Platform",
         description = "Board specific settings.",
         options =
@@ -499,7 +532,8 @@ repository =
         requires = { "HW_TARGET" },
         subdir = "contrib",
         script = "contrib/contrib.nut"
-    }
+    },
+    CheckCustomConfig()
 }
 
 --
@@ -520,6 +554,22 @@ end
 
 --
 -- Read OS Version from C source file.
+--
+-- First version of a dynamic item:
+-- The string contains a Lua script, which is compiled and executed by the Configurator.
+-- This version is deprecated.
+--        brief = "--\n".. -- Strings starting with this sequence are executed.
+--                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
+
+-- Second version of a dynamic item:
+-- A function result is combined with a static string. Note, that the function
+-- is executed when this script file is loaded and must have been defined
+-- previously.
+--        brief = "Nut/OS " .. GetNutOsVersion(),
+
+-- Third version of a dynamic item:
+-- The value is specified as a function returning a string. In this case any function
+-- used in our function body may be defined later.
 --
 function GetNutOsVersion()
     local buf, p1, p2, vers, subvers

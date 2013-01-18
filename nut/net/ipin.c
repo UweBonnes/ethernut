@@ -44,8 +44,6 @@
  * \endverbatim
  */
 
-#include <cfg/ip.h>
-
 #include <net/route.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -187,6 +185,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
          * Not for us, discard silently.
          */
         else {
+            NutIpForward(nb);
             NutNetBufFree(nb);
             return;
         }

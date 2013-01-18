@@ -293,38 +293,55 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
                 *par =  PHY_STATUS_HAS_LINK |
                         ((bmsr & PHY_BMSR_ANEG) ? PHY_STATUS_AUTONEG_OK : 0);
 
-                length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
-                for(count=0; count<length; count++) {
-                    if(phy_status_descr[count].phy_oui == phydcb->oui) {
-                        break;
-                    }
-                }
-
-                if(count<length) {
+/*              KS8721 needs different interpretation of bits */
+                if (phydcb->oui == KS8721)
+                {
                     uint16_t tempreg;
-
-                    /* entry in table found */
-                    PHPRINTF("  Reading status of known phy\n");
-
-                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].reg);
-                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].mask) {
-                        *par |= PHY_STATUS_10M;
-                    }
-                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].reg);
-                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].mask) {
-                        *par |= PHY_STATUS_100M;
-                    }
-                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].reg);
-                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].mask) {
-                        *par |= PHY_STATUS_1000M;
-                    }
-                    tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].reg);
-                    if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].mask) {
-                        *par |= PHY_STATUS_FULLDUPLEX;
+                    tempreg = phyr(0x1f);
+                    tempreg >>= 2;
+                    tempreg &= 0x7;
+                    switch (tempreg) {
+                    case 1: *par |= PHY_STATUS_10M; break;
+                    case 2: *par |= PHY_STATUS_100M; break;
+                    case 5: *par |= PHY_STATUS_10M | PHY_STATUS_FULLDUPLEX; break;
+                    case 6: *par |= PHY_STATUS_100M | PHY_STATUS_FULLDUPLEX; break;
                     }
                 }
-                else {
-                    *par |= PHY_STATUS_CON_UNKNOWN;
+                else
+                {
+                    length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
+                    for(count=0; count<length; count++) {
+                        if(phy_status_descr[count].phy_oui == phydcb->oui) {
+                            break;
+                        }
+                    }
+
+                    if(count<length) {
+                        uint16_t tempreg;
+
+                        /* entry in table found */
+                        PHPRINTF("  Reading status of known phy\n");
+
+                        tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].reg);
+                        if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].mask) {
+                            *par |= PHY_STATUS_10M;
+                        }
+                        tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].reg);
+                        if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].mask) {
+                            *par |= PHY_STATUS_100M;
+                        }
+                        tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].reg);
+                        if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].mask) {
+                            *par |= PHY_STATUS_1000M;
+                        }
+                        tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].reg);
+                        if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].mask) {
+                            *par |= PHY_STATUS_FULLDUPLEX;
+                        }
+                    }
+                    else {
+                        *par |= PHY_STATUS_CON_UNKNOWN;
+                    }
                 }
             }
             else {
@@ -393,6 +410,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdior)(uint8_t))
 {
     uint16_t temp1 = 0, temp2 = 0;
+    uint_fast16_t count, length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
 
     PHPRINTF("NRP(%u, %p, %p)\n", mda, mdiow, mdior);
 
@@ -421,7 +439,17 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
     temp1 = phyr(PHY_ID1);
     temp2 = phyr(PHY_ID2);
 
-    phydcb->oui = ((uint32_t)temp1<<16)|(uint32_t)temp2;
+    phydcb->oui = (((uint32_t)temp1<<16)|(uint32_t)temp2);
+
+    /* Mask out revision bits */
+    phydcb->oui &=  ~OUIMSK_REV;
+    for(count=0; count<length; count++) {
+        if(phy_status_descr[count].phy_oui == phydcb->oui) {
+            break;
+        }
+    }
+    if(count>=length)
+        PHPRINTF("Unknown tranceiver ");
 
     PHPRINTF("PHY OUI=0x%08lx\n", phydcb->oui);
 

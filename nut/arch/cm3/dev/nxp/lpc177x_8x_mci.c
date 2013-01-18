@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 by Rob van Lieshout (info@pragmalab.nl)
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,15 +64,17 @@
  * this code.
  **********************************************************************/
 
-
 #include <cfg/arch.h>
 #include <sys/timer.h>
 #include <dev/gpio.h>
 #include <dev/irqreg.h>
 
 #include <arch/cm3/nxp/lpc177x_8x_clk.h>
-
 #include <arch/cm3/nxp/lpc177x_8x_mci.h>
+
+#ifdef NUTDEBUG
+#include <stdio.h>
+#endif
 
 #define _SHIFT(x)               (1 << x)
 #define _XSHIFT(x, y)           (x << y)
@@ -139,6 +142,8 @@
 #define MCI_CID_UNUSED_ID_WPOS                    0             /* in word 3 */
 #define MCI_CID_UNUSED_ID_WBMASK                  0x01
 
+#define SD_INTERRUPT_PRIORITY                     3             /* make sure this is higher then DMA or GPIO */
+
 volatile uint32_t Mci_Data_Xfer_End = 0;
 
 volatile uint32_t Mci_Data_Xfer_ERR = 0;
@@ -148,8 +153,6 @@ volatile uint8_t fifo_plane = 0;
 volatile uint32_t CardRCA;
 
 volatile uint8_t CCS;
-
-volatile uint8_t MCI_AddressingMode;                /* Block or Byte addressing */
 
 volatile en_Mci_CardType MCI_CardType;
 
@@ -385,10 +388,19 @@ int32_t Lpc177x_8x_MciCheckStatus(void)
 {
     int32_t respValue, retval = MCI_FUNC_FAILED;
 
+    /*
+     *  this code will keep reading the status of the card, untill the
+     *  card is READYFORDATA or the card is in TRAN state.
+     *  Only if the card command itself fails (so no repsonse could be
+     *  retrieved), this code will stop.
+     */
     while (1)
     {
         if (Lpc177x_8x_MciGetCardStatus(&respValue) != MCI_FUNC_OK)
         {
+#ifdef NUTDEBUG
+            printf("%s() GetCardStatus failed\n", __FUNCTION__ );
+#endif
             break;
         }
         else
@@ -403,11 +415,17 @@ int32_t Lpc177x_8x_MciCheckStatus(void)
             if (!(respValue & _SHIFT(MCI_CARDSTATUS_READYFORDATA_P0S)))
             {
                 retval = MCI_FUNC_NOT_READY;
+#ifdef NUTDEBUG
+                printf("%s() Card not ready\n", __FUNCTION__ );
+#endif
             }
             else if (CARDSTATEOF(respValue) != MCI_CARDSTATE_TRAN)
             {
                 /* Should be in STANDBY state now and ready */
                 retval = MCI_FUNC_ERR_STATE;
+#ifdef NUTDEBUG
+                printf("%s() Invalid state\n", __FUNCTION__ );
+#endif
             }
             else
             {
@@ -658,9 +676,9 @@ void Lpc177x_8x_MciFIFOInterruptService( void )
  *
  * \return      None
  **********************************************************************/
-void Lpc177x_8x_MciSet_MCIClock( uint32_t ClockRate )
+void Lpc177x_8x_MciSetClock( uint32_t ClockRate )
 {
-    uint32_t i, ClkValue = 0;
+    uint32_t ClkValue = 0;
 
 #ifdef USE_CLOCK_SETTINGS
     uint32_t PeriClock;
@@ -690,8 +708,7 @@ void Lpc177x_8x_MciSet_MCIClock( uint32_t ClockRate )
 
     LPC_MCI->CLOCK |= (1 << 8)  | ClkValue;
 
-
-    for (i = 0; i < 0x10; i++);   /* delay 3MCLK + 2PCLK before next write */
+    NutMicroDelay(1);               //  delay 3MCLK + 2PCLK before next write
 
     return;
 }
@@ -706,9 +723,7 @@ void Lpc177x_8x_MciSet_MCIClock( uint32_t ClockRate )
  *************************************************************************/
 int32_t Lpc177x_8x_MciSetBusWidth( uint32_t width )
 {
-    uint32_t i;
-
-    for (i = 0; i < 0x10; i++);   /* delay 3MCLK + 2PCLK  */
+    NutMicroDelay(1);   /* delay 3MCLK + 2PCLK  */
 
     if (width == SD_1_BIT)
     {
@@ -739,60 +754,43 @@ int32_t Lpc177x_8x_MciSetBusWidth( uint32_t width )
  ***************************************************************************/
 int32_t Lpc177x_8x_MciInit(uint8_t powerActiveLevel )
 {
-//    uint32_t i;
-
     MCI_CardType = MCI_CARD_UNKNOWN;
 
-    // Following block of code added to ensure card VCC drops to zero
-    // before card is initialized
 
-    // Force all MCI control pins to basic I/O mode
-    GpioPinConfigSet(NUTGPIO_PORT1, 2, GPIO_CFG_OUTPUT);
-    GpioPinConfigSet(NUTGPIO_PORT1, 3, GPIO_CFG_OUTPUT);
-    GpioPinConfigSet(NUTGPIO_PORT1, 5, GPIO_CFG_OUTPUT);
-    GpioPinConfigSet(NUTGPIO_PORT1, 6, GPIO_CFG_OUTPUT);
-    GpioPinConfigSet(NUTGPIO_PORT1, 7, GPIO_CFG_OUTPUT);
-    GpioPinConfigSet(NUTGPIO_PORT1, 11, GPIO_CFG_OUTPUT);
-    GpioPinConfigSet(NUTGPIO_PORT1, 12, GPIO_CFG_OUTPUT);
-
-/*
-    LPC_IOCON->P1_2  &= ~0x1F; // SD_CLK @ P1.2
-    LPC_IOCON->P1_3  &= ~0x1F; // SD_CMD @ P1.3
-    LPC_IOCON->P1_5  &= ~0x1F; // SD_PWR @ P1.5
-    LPC_IOCON->P1_6  &= ~0x1F; // SD_DAT_0 @ P1.6
-    LPC_IOCON->P1_7  &= ~0x1F; // SD_DAT_1 @ P1.7
-    LPC_IOCON->P1_11 &= ~0x1F; // SD_DAT_2 @ P1.11
-    LPC_IOCON->P1_12 &= ~0x1F; // SD_DAT_3 @ P1.12
-
-    // Set all MCI pins to outputs
-    LPC_GPIO1->DIR |= 0x18EC;
-*/
-    // Force all pins low (except power control pin)
-    GpioPinSetLow(NUTGPIO_PORT1, 2);
-    GpioPinSetLow(NUTGPIO_PORT1, 3);
-    GpioPinSetHigh(NUTGPIO_PORT1, 5);
-    GpioPinSetLow(NUTGPIO_PORT1, 6);
-    GpioPinSetLow(NUTGPIO_PORT1, 7);
-    GpioPinSetLow(NUTGPIO_PORT1, 11);
-    GpioPinSetLow(NUTGPIO_PORT1, 12);
+#if 0
+    /******* GPIO Pin initialisation has to be done in the users program prior to device initialisation ********/
 
     /*
-    LPC_GPIO1->CLR = 0x1000;
-    LPC_GPIO1->CLR = 0x0800;
-    LPC_GPIO1->CLR = 0x0080;
-    LPC_GPIO1->CLR = 0x0040;
+     *  Following block of code added to ensure card VCC drops to zero before card is initialized
+     *
+     *  PragmaLab 15-08-2012: -> with next lines of code enabled, it is not possible to execute the Init more then
+     *  one time in a row. We need 2 times (RegisterDevive and _open both call this Init routine)
+     *
+     */
 
-    LPC_GPIO1->SET = 0x0020;
+    // Force all MCI control pins to basic I/O mode
+    GpioPinConfigSet(NUTGPIO_PORT0, 19, GPIO_CFG_OUTPUT);      // SD_CLK
+    GpioPinConfigSet(NUTGPIO_PORT0, 20, GPIO_CFG_OUTPUT);      // SD_CMD
+    GpioPinConfigSet(NUTGPIO_PORT1, 5, GPIO_CFG_OUTPUT);       // SD_PWR
+    GpioPinConfigSet(NUTGPIO_PORT0, 22, GPIO_CFG_OUTPUT);      // SD_DAT_0
+    GpioPinConfigSet(NUTGPIO_PORT1, 7, GPIO_CFG_OUTPUT);       // SD_DAT_1
+    GpioPinConfigSet(NUTGPIO_PORT1, 11, GPIO_CFG_OUTPUT);      // SD_DAT_2
+    GpioPinConfigSet(NUTGPIO_PORT1, 12, GPIO_CFG_OUTPUT);      // SD_DAT_3
 
-    LPC_GPIO1->CLR = 0x0008;
-    LPC_GPIO1->CLR = 0x0004;
-    */
+    // Force all pins low (except power control pin)
+    GpioPinSetLow(NUTGPIO_PORT0, 19);       // CLK
+    GpioPinSetLow(NUTGPIO_PORT0, 20);       // CMD
+    GpioPinSetHigh(NUTGPIO_PORT1, 5);       // PWR
+    GpioPinSetLow(NUTGPIO_PORT0, 22);       // DAT0
+    GpioPinSetLow(NUTGPIO_PORT1, 7);        // DAT1
+    GpioPinSetLow(NUTGPIO_PORT1, 11);       // DAT2
+    GpioPinSetLow(NUTGPIO_PORT1, 12);       // DAT3
 
-    // Crude delay of 50ms at 120MHz
-    NutDelay(50);
+    // Crude delay of 50ms
+    NutSleep(50);
+#endif
 
-    // Enable clock to the MCI block
-    SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCSDC);
+    LPC_SC->PCONP |= ( 1 << 28 );           // Enable clock to the MCI block
 
     if (LPC_MCI->CLOCK & (1 << 8))
     {
@@ -805,37 +803,30 @@ int32_t Lpc177x_8x_MciInit(uint8_t powerActiveLevel )
     }
 
     NutDelay(1);
-    //for (i = 0; i < 0x1000; i++);
 
-    /* Disable all interrupts for now */
+    // Disable all interrupts for now
     LPC_MCI->MASK0 = 0;
 
+    /*
+     *  now re-configure all pins to serve as SDIO
+     *
+     *  PragmaLab 18-09-2012: make sure you configure the SDIO pins only once at startup, no need
+     *  to re-configure them here
+     *
 
-    //SD_CLK
-    GpioPinConfigSet(NUTGPIO_PORT1, 2, GPIO_CFG_PERIPHERAL2);
-
-    //SD_CMD
-    GpioPinConfigSet(NUTGPIO_PORT1, 3, GPIO_CFG_PERIPHERAL2);
-
-    //SD_PWR
-    GpioPinConfigSet(NUTGPIO_PORT1, 5, GPIO_CFG_PERIPHERAL2);
-
-    //SD_DAT_0
-    GpioPinConfigSet(NUTGPIO_PORT1, 6, GPIO_CFG_PERIPHERAL2);
-
-    //SD_DAT_1
-    GpioPinConfigSet(NUTGPIO_PORT1, 7, GPIO_CFG_PERIPHERAL2);
-
-    //SD_DAT_2
-    GpioPinConfigSet(NUTGPIO_PORT1, 11, GPIO_CFG_PERIPHERAL2);
-
-    //SD_DAT_3
-    GpioPinConfigSet(NUTGPIO_PORT1, 12, GPIO_CFG_PERIPHERAL2);
+    GpioPinConfigSet(NUTGPIO_PORT0, 19, GPIO_CFG_PERIPHERAL2);      // SD_CLK
+    GpioPinConfigSet(NUTGPIO_PORT0, 20, GPIO_CFG_PERIPHERAL2);      // SD_CMD
+    GpioPinConfigSet(NUTGPIO_PORT1, 5, GPIO_CFG_PERIPHERAL2);       // SD_PWR
+    GpioPinConfigSet(NUTGPIO_PORT0, 22, GPIO_CFG_PERIPHERAL2);      // SD_DAT_0
+    GpioPinConfigSet(NUTGPIO_PORT1, 7, GPIO_CFG_PERIPHERAL2);       // SD_DAT_1
+    GpioPinConfigSet(NUTGPIO_PORT1, 11, GPIO_CFG_PERIPHERAL2);      // SD_DAT_2
+    GpioPinConfigSet(NUTGPIO_PORT1, 12, GPIO_CFG_PERIPHERAL2);      // SD_DAT_3
+     */
 
     // SD_PWR is active high (follows the output of the SD Card interface block).
     if (powerActiveLevel == LOW_LVL)
     {
-        LPC_SC->SCS &= ~ 0x08;  // because on EA board SD_PWR is active low
+        LPC_SC->SCS &= ~ 0x08;
     }
     else
     {
@@ -848,31 +839,32 @@ int32_t Lpc177x_8x_MciInit(uint8_t powerActiveLevel )
     // set up clocking default mode, clear any registers as needed
     LPC_MCI->COMMAND = 0;
     LPC_MCI->DATACTRL = 0;
-    LPC_MCI->CLEAR = 0x7FF;     /* clear all pending interrupts */
+    LPC_MCI->CLEAR = 0x7FF;             // clear all pending interrupts
 
-    LPC_MCI->POWER = 0x02;      /* power up */
-    while (!(LPC_MCI->POWER & 0x02));
+    LPC_MCI->POWER = 0x02;              // power up
+    while (!(LPC_MCI->POWER & 0x02));   // wait till power is there....
 
-    NutDelay(1);
-    // delay
-//    for (i = 0; i < 0x100; i++) _NOP();
+    NutMicroDelay(10);
 
     /*
      *  During identification phase, the clock should be less than
      *  400Khz. Once we pass this phase, the normal clock can be set up
      *  to 25Mhz on SD card and 20Mhz on MMC card.
      */
-    Lpc177x_8x_MciSet_MCIClock(MCI_SLOW_RATE );
+    Lpc177x_8x_MciSetClock(MCI_SLOW_RATE );
 
     LPC_MCI->POWER |= 0x01;     /* bit 1 is set already, from power up to power on */
 
-    // delay
-    NutDelay(2);
-//    for (i = 0; i < 0x2000; i++);
+    NutMicroDelay(200);
 
     NutRegisterIrqHandler(&sig_MCI, Lpc177x_8x_MciIRQHandler, 0);
     NutIrqEnable (&sig_MCI);
-    //NVIC_EnableIRQ(MCI_IRQn);
+
+    Lpc177x_8x_MciIrqSetPriority(SD_INTERRUPT_PRIORITY);
+
+#ifdef NUTDEBUG
+    printf("SD int priority: %d\n", Lpc177x_8x_MciIrqGetPriority());
+#endif
 
     /*  During the initialization phase, to simplify the process, the CMD related
      *  interrupts are disabled. The DATA related interrupts are enabled when
@@ -926,7 +918,7 @@ void Lpc177x_8x_MciSetOutputMode(uint32_t mode)
  ***************************************************************************/
 void Lpc177x_8x_MciSendCmd(uint32_t CmdIndex, uint32_t Argument, uint32_t ExpectResp, uint32_t AllowTimeout)
 {
-    uint32_t i, CmdData = 0;
+    uint32_t CmdData = 0;
     uint32_t CmdStatus;
 
     /*
@@ -939,20 +931,20 @@ void Lpc177x_8x_MciSendCmd(uint32_t CmdIndex, uint32_t Argument, uint32_t Expect
         LPC_MCI->CLEAR = CmdStatus | MCI_CMD_ACTIVE;
     }
 
-    for (i = 0; i < 0x100; i++);
+    NutMicroDelay(10);
 
     // set the command details, the CmdIndex should 0 through 0x3F only
-    CmdData |= (CmdIndex & 0x3F);   /* bit 0 through 5 only */
+    CmdData |= (CmdIndex & 0x3F);                 /* bit 0 through 5 only */
 
-    if (ExpectResp == EXPECT_NO_RESP)         /* no response */
+    if (ExpectResp == EXPECT_NO_RESP)             /* no response */
     {
-        CmdData &= ~((1 << 6) | (1 << 7));      /* Clear long response bit as well */
+        CmdData &= ~((1 << 6) | (1 << 7));        /* Clear long response bit as well */
     }
-    else if (ExpectResp == EXPECT_SHORT_RESP) /* expect short response */
+    else if (ExpectResp == EXPECT_SHORT_RESP)     /* expect short response */
     {
         CmdData |= (1 << 6);
     }
-    else if (ExpectResp == EXPECT_LONG_RESP)  /* expect long response */
+    else if (ExpectResp == EXPECT_LONG_RESP)      /* expect long response */
     {
         CmdData |= (1 << 6) | (1 << 7);
     }
@@ -966,10 +958,10 @@ void Lpc177x_8x_MciSendCmd(uint32_t CmdIndex, uint32_t Argument, uint32_t Expect
         CmdData |= MCI_DISABLE_CMD_TIMER;
     }
 
-    // send the command
-    CmdData |= (1 << 10);       /* This bit needs to be set last. */
+    /* send the command */
+    CmdData |= (1 << 10);                         /* This bit needs to be set last. */
 
-    LPC_MCI->ARGUMENT = Argument;   /* Set the argument first, finally command */
+    LPC_MCI->ARGUMENT = Argument;                 /* Set the argument first, finally command */
 
     LPC_MCI->COMMAND = CmdData;
 
@@ -1012,6 +1004,8 @@ int32_t Lpc177x_8x_MciGetCmdResp(uint32_t ExpectCmdData, uint32_t ExpectResp, ui
         if (CmdRespStatus & (MCI_CMD_TIMEOUT))
         {
             LPC_MCI->CLEAR = CmdRespStatus | MCI_CMD_TIMEOUT;
+
+            CmdRespStatus = LPC_MCI->STATUS;
 
             LPC_MCI->COMMAND = 0;
             LPC_MCI->ARGUMENT = 0xFFFFFFFF;
@@ -1125,6 +1119,25 @@ int32_t Lpc177x_8x_MciCmdResp(uint32_t CmdIndex, uint32_t Argument,
         respStatus = MCI_FUNC_BAD_PARAMETERS;
     }
 
+#ifdef NUTDEBUG
+    if(respStatus & (MCI_CMD_TIMEOUT))
+    {
+        printf("%s() failed with MCI_CMD_TIMEOUT\n", __FUNCTION__ );
+    }
+    if(respStatus & (MCI_CMD_CRC_FAIL))
+    {
+        printf("%s() failed with MCI_CMD_CRC_FAIL\n", __FUNCTION__ );
+    }
+    if(respStatus & (INVALID_RESPONSE))
+    {
+        printf("%s() failed with INVALID_RESPONSE\n", __FUNCTION__ );
+    }
+    if(respStatus & (MCI_FUNC_BAD_PARAMETERS))
+    {
+        printf("%s() failed with MCI_FUNC_BAD_PARAMETERS\n", __FUNCTION__ );
+    }
+#endif
+
     return(respStatus);
 }
 
@@ -1159,7 +1172,7 @@ int32_t Lpc177x_8x_MciCardReset(void)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCmd_SendOpCond( void )
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
 
@@ -1186,10 +1199,21 @@ int32_t Lpc177x_8x_MciCmd_SendOpCond( void )
             break;
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_TIMEOUT)
+    {
+        printf("%s() failed with MCI_FUNC_TIMEOUT\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_BUS_NOT_IDLE)
+    {
+        printf("%s() failed with MCI_FUNC_BUS_NOT_IDLE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1204,7 +1228,7 @@ int32_t Lpc177x_8x_MciCmd_SendOpCond( void )
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCmd_SendIfCond(void)
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t CmdArgument;
     uint32_t respStatus;
     uint32_t respValue[4];
@@ -1216,7 +1240,7 @@ int32_t Lpc177x_8x_MciCmd_SendIfCond(void)
 
     CmdArgument = (voltageSupplied << MCI_CMD8_VOLTAGESUPPLIED_POS) | checkPattern;
 
-    retryCount = 20;
+    retryCount = 0x20;
 
     while (retryCount > 0)
     {
@@ -1242,10 +1266,25 @@ int32_t Lpc177x_8x_MciCmd_SendIfCond(void)
             break;
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_TIMEOUT)
+    {
+        printf("%s() failed with MCI_FUNC_TIMEOUT\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_BAD_PARAMETERS)
+    {
+        printf("%s() failed with MCI_FUNC_BAD_PARAMETERS\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1262,7 +1301,7 @@ int32_t Lpc177x_8x_MciCmd_SendIfCond(void)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCmd_SendACMD( void )
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t CmdArgument;
     uint32_t respStatus;
     uint32_t respValue[4];
@@ -1280,7 +1319,7 @@ int32_t Lpc177x_8x_MciCmd_SendACMD( void )
         CmdArgument = 0x00000000;
     }
 
-    retryCount = 20;
+    retryCount = 0x20;
 
     while (retryCount > 0)
     {
@@ -1300,10 +1339,21 @@ int32_t Lpc177x_8x_MciCmd_SendACMD( void )
             retval = MCI_FUNC_NOT_READY;
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1324,7 +1374,7 @@ int32_t Lpc177x_8x_MciCmd_SendACMD( void )
  ****************************************************************************/
 int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus, argument;
     uint32_t respValue[4];
 
@@ -1341,9 +1391,8 @@ int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
     while (retryCount > 0)
     {
         /* Clear Open Drain output control for SD */
-        Lpc177x_8x_MciSetOutputMode(MCI_OUTPUT_MODE_PUSHPULL);
-
-        for (i = 0; i < 0x3000; i++);
+        //Lpc177x_8x_MciSetOutputMode(MCI_OUTPUT_MODE_PUSHPULL);
+        //NutMicroDelay (300)
 
         if ((retval = Lpc177x_8x_MciCmd_SendACMD()) == MCI_FUNC_OK)
         {
@@ -1359,16 +1408,27 @@ int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
             }
             else
             {
-                CCS = (respValue[0]&(1<<30)) ? 1:0;
+                CCS = (respValue[0] & (1<<30)) ? 1:0;
                 retval = MCI_FUNC_OK;
                 break;
             }
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_CMD_TIMEOUT)
+    {
+        printf("%s() failed with MCI_CMD_TIMEOUT\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_BUS_NOT_IDLE)
+    {
+        printf("%s() failed with MCI_FUNC_BUS_NOT_IDLE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1391,12 +1451,9 @@ int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCardInit( void )
 {
-    uint32_t i;
     int32_t retval = MCI_FUNC_FAILED;
 
-
     MCI_CardType = MCI_CARD_UNKNOWN;
-    MCI_AddressingMode = MMC_BLOCK_MODE;
 
     // expect no response, so no returnvalue to check...
     Lpc177x_8x_MciCardReset();
@@ -1404,7 +1461,7 @@ int32_t Lpc177x_8x_MciCardInit( void )
     /* Clear Open Drain output control for SD */
     Lpc177x_8x_MciSetOutputMode(MCI_OUTPUT_MODE_PUSHPULL);
 
-    for (i = 0; i < 0x3000; i++);
+    NutMicroDelay(300);
 
     retval = Lpc177x_8x_MciCmd_SendIfCond();
 
@@ -1416,7 +1473,7 @@ int32_t Lpc177x_8x_MciCardInit( void )
 
     if (retval == MCI_FUNC_OK) /* Ver2.00 or later*/
     {
-        //Check in case of High Capacity Supporting Host
+        // Check in case of High Capacity Supporting Host
         if ((retval = Lpc177x_8x_MciAcmd_SendOpCond(1)) == MCI_FUNC_OK)
         {
             MCI_CardType = MCI_SDSC_V2_CARD;//SDSC
@@ -1424,20 +1481,19 @@ int32_t Lpc177x_8x_MciCardInit( void )
             if (CCS)
             {
                 MCI_CardType = MCI_SDHC_SDXC_CARD;//SDHC or SDXC
-                MCI_AddressingMode = MMC_BYTE_MODE;
             }
 
-            return(MCI_FUNC_OK); /* Found the card, it's a hD */
+            return(MCI_FUNC_OK); /* Found the card, it's a HD */
         }
     }
 
-    if (retval != MCI_FUNC_OK) /* voltage mismatch (ver2.00)or ver1.X SD Card or not SD Card*/
+    if (retval != MCI_FUNC_OK) /* voltage mismatch (ver2.00) or ver1.X SD Card or not SD Card*/
     {
 
-        //Check in case of Standard Capacity Supporting Host
+        // Check in case of Standard Capacity Supporting Host
         if ((retval = Lpc177x_8x_MciAcmd_SendOpCond(0)) == MCI_FUNC_OK)
         {
-            MCI_CardType = MCI_SDSC_V1_CARD;//Support Standard Capacity only
+            MCI_CardType = MCI_SDSC_V1_CARD;// Support Standard Capacity only
 
             return(MCI_FUNC_OK); /* Found the card, it's a SD */
         }
@@ -1447,11 +1503,12 @@ int32_t Lpc177x_8x_MciCardInit( void )
     {
         /* Set Open Drain output control for MMC */
         Lpc177x_8x_MciSetOutputMode(MCI_OUTPUT_MODE_OPENDRAIN);
+        NutMicroDelay(300);
 
-        for (i = 0; i < 0x3000; i++);
-
-        /* Try CMD1 first for MMC, if it's timeout, try CMD55 and CMD41 for SD,
-        if both failed, initialization faIlure, bailout. */
+        /*
+         *  Try CMD1 first for MMC, if it's timeout, try CMD55 and CMD41 for SD,
+         *  if both failed, initialization faIlure, bailout.
+         */
         if (Lpc177x_8x_MciCmd_SendOpCond() == MCI_FUNC_OK)
         {
             MCI_CardType = MCI_MMC_CARD;
@@ -1459,6 +1516,10 @@ int32_t Lpc177x_8x_MciCardInit( void )
             return(MCI_FUNC_OK); /* Found the card, it's a MMC */
         }
     }
+
+#ifdef NUTDEBUG
+    printf("%s()failed\n", __FUNCTION__ );
+#endif
 
     /* tried both MMC and SD card, give up */
     return(MCI_FUNC_FAILED);
@@ -1489,12 +1550,12 @@ en_Mci_CardType Lpc177x_8x_MciGetCardType(void)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciGetCID(st_Mci_CardId* cidValue)
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
 
     /* This command is normally after CMD1(MMC) or ACMD41(SD). */
-    retryCount = 0x200; // 0x20;            /* reset retry counter */
+    retryCount = 0x20;      /* reset retry counter */
 
     while (retryCount > 0)
     {
@@ -1533,10 +1594,14 @@ int32_t Lpc177x_8x_MciGetCID(st_Mci_CardId* cidValue)
             return(MCI_FUNC_OK);    /* response is back and correct. */
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    printf("%s() failed\n", __FUNCTION__ );
+#endif
 
     return(MCI_FUNC_TIMEOUT);
 }
@@ -1553,9 +1618,9 @@ int32_t Lpc177x_8x_MciGetCID(st_Mci_CardId* cidValue)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciSetCardAddress( void )
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
-    uint32_t respValue;
+    uint32_t respValue[4];
     uint32_t CmdArgument;
 
     int32_t retval = MCI_FUNC_FAILED;
@@ -1581,31 +1646,46 @@ int32_t Lpc177x_8x_MciSetCardAddress( void )
     while (retryCount > 0)
     {
         /* Send CMD3 command repeatedly until the response is back correctly */
-        respStatus = Lpc177x_8x_MciCmdResp(CMD3_SET_RELATIVE_ADDR, CmdArgument, EXPECT_SHORT_RESP, &respValue, ALLOW_CMD_TIMER);
+        respStatus = Lpc177x_8x_MciCmdResp(CMD3_SET_RELATIVE_ADDR, CmdArgument, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
         if (respStatus & MCI_CMD_TIMEOUT)
         {
             retval = MCI_FUNC_TIMEOUT;
         }
-        else if (!(XSHIFT_(respValue, MCI_CARDSTATUS_READYFORDATA_P0S) & 0x01))
+        else if (!(XSHIFT_(respValue[0], MCI_CARDSTATUS_READYFORDATA_P0S) & 0x01))
         {
             retval = MCI_FUNC_NOT_READY;
         }
-        else if ((CARDSTATEOF(respValue) != MCI_CARDSTATE_IDENDTIFIED))
+        else if ((CARDSTATEOF(respValue[0]) != MCI_CARDSTATE_IDENDTIFIED))
         {
             retval = MCI_FUNC_ERR_STATE;
         }
         else
         {
-            CardRCA = respValue & 0xFFFF0000;   /* Save the RCA value from SD card */
+            CardRCA = respValue[0] & 0xFFFF0000;   /* Save the RCA value from SD card */
 
             return(MCI_FUNC_OK);   /* response is back and correct. */
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_TIMEOUT)
+    {
+        printf("%s() failed with MCI_FUNC_TIMEOUT\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_ERR_STATE)
+    {
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1639,7 +1719,7 @@ uint32_t Lpc177x_8x_MciGetCardAddress(void)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciGetCSD(uint32_t* csdVal)
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
     uint32_t CmdArgument;
@@ -1677,10 +1757,14 @@ int32_t Lpc177x_8x_MciGetCSD(uint32_t* csdVal)
             return(MCI_FUNC_OK);
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    printf("%s() failed\n", __FUNCTION__ );
+#endif
 
     return(MCI_FUNC_FAILED);
 }
@@ -1700,7 +1784,7 @@ int32_t Lpc177x_8x_MciGetCSD(uint32_t* csdVal)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCmd_SelectCard( void )
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
     uint32_t CmdArgument;
@@ -1745,10 +1829,25 @@ int32_t Lpc177x_8x_MciCmd_SelectCard( void )
             return(MCI_FUNC_OK);
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_ERR_STATE)
+    {
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1765,7 +1864,6 @@ int32_t Lpc177x_8x_MciCmd_SelectCard( void )
  ****************************************************************************/
 int32_t Lpc177x_8x_MciGetCardStatus(int32_t* cardStatus)
 {
-    uint32_t i;
     uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
@@ -1785,26 +1883,32 @@ int32_t Lpc177x_8x_MciGetCardStatus(int32_t* cardStatus)
     }
 
     /*
-     *  Note that, since it's called after the block write and read, this timeout
+     *  Note that, since it's called before the block write and read, this timeout
      *  is important based on the clock you set for the data communication.
      */
-    retryCount = 0x100;
+    retryCount = 0x300;
 
     while (retryCount > 0)
     {
-        /* Send SELECT_CARD command before read and write */
+        /* Clear previous status */
         LPC_MCI->CLEAR |= (MCI_CMD_TIMEOUT | MCI_CMD_CRC_FAIL | MCI_CMD_RESP_END);
 
+        /* Send SELECT_CARD command before read and write */
         respStatus = Lpc177x_8x_MciCmdResp(CMD13_SEND_STATUS, CmdArgument, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
         if (respStatus)
         {
             retval = MCI_FUNC_FAILED;
         }
+/*
+        // Don't check the response here already, that is not the responsibility of this routine.
+        // The caller routine (in this case: GetStatus() is responsible for checking the value
+
         else if (!(respValue[0] & _SHIFT(MCI_CARDSTATUS_READYFORDATA_P0S)))
         {
             retval = MCI_FUNC_NOT_READY;
         }
+*/
         else
         {
             /* The ready bit should be set, it should be in either TRAN or RCV state now */
@@ -1818,8 +1922,19 @@ int32_t Lpc177x_8x_MciGetCardStatus(int32_t* cardStatus)
 
         retryCount--;
 
-        for (i = 0; i < 0x10; i++);
+        NutMicroDelay(200);
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1838,7 +1953,7 @@ int32_t Lpc177x_8x_MciGetCardStatus(int32_t* cardStatus)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciSetBlockLen(uint32_t blockLength)
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
 
@@ -1869,10 +1984,25 @@ int32_t Lpc177x_8x_MciSetBlockLen(uint32_t blockLength)
             return(MCI_FUNC_OK);
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_ERR_STATE)
+    {
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1896,7 +2026,7 @@ int32_t Lpc177x_8x_MciSetBlockLen(uint32_t blockLength)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciAcmd_SendBusWidth( uint32_t buswidth )
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
 
@@ -1928,10 +2058,25 @@ int32_t Lpc177x_8x_MciAcmd_SendBusWidth( uint32_t buswidth )
             }
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_ERR_STATE)
+    {
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -1971,7 +2116,7 @@ uint32_t Lpc177x_8x_MciGetXferErrState(void)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCmd_StopTransmission( void )
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
 
@@ -1998,10 +2143,21 @@ int32_t Lpc177x_8x_MciCmd_StopTransmission( void )
             return(MCI_FUNC_OK);
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -2023,7 +2179,7 @@ int32_t Lpc177x_8x_MciCmd_StopTransmission( void )
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCmd_WriteBlock(uint32_t blockNum, uint32_t numOfBlock)
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
 
@@ -2046,14 +2202,7 @@ int32_t Lpc177x_8x_MciCmd_WriteBlock(uint32_t blockNum, uint32_t numOfBlock)
     {
         LPC_MCI->CLEAR = 0x7FF;
 
-        if (MCI_AddressingMode == MMC_BLOCK_MODE)
-        {
-            respStatus = Lpc177x_8x_MciCmdResp(commandID, blockNum * BLOCK_LENGTH, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
-        }
-        else
-        {
-            respStatus = Lpc177x_8x_MciCmdResp(commandID, blockNum, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
-        }
+        respStatus = Lpc177x_8x_MciCmdResp(commandID, blockNum, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
         if (respStatus)
         {
@@ -2073,10 +2222,25 @@ int32_t Lpc177x_8x_MciCmd_WriteBlock(uint32_t blockNum, uint32_t numOfBlock)
             return(MCI_FUNC_OK);
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_ERR_STATE)
+    {
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);              /* Fatal error */
 }
@@ -2100,7 +2264,7 @@ int32_t Lpc177x_8x_MciCmd_WriteBlock(uint32_t blockNum, uint32_t numOfBlock)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciCmd_ReadBlock(uint32_t blockNum, uint32_t numOfBlock)
 {
-    uint32_t i, retryCount;
+    uint32_t retryCount;
     uint32_t respStatus;
     uint32_t respValue[4];
     uint32_t commandID;
@@ -2122,17 +2286,7 @@ int32_t Lpc177x_8x_MciCmd_ReadBlock(uint32_t blockNum, uint32_t numOfBlock)
     {
         LPC_MCI->CLEAR = 0x7FF;
 
-        /*
-         *  the blocknummer translates to an address, depending on the addressing mode
-         */
-        if (MCI_AddressingMode == MMC_BLOCK_MODE)
-        {
-            respStatus = Lpc177x_8x_MciCmdResp(commandID, blockNum * BLOCK_LENGTH, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
-        }
-        else
-        {
-            respStatus = Lpc177x_8x_MciCmdResp(commandID, blockNum, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
-        }
+        respStatus = Lpc177x_8x_MciCmdResp(commandID, blockNum, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
         if (respStatus)
         {
@@ -2152,10 +2306,25 @@ int32_t Lpc177x_8x_MciCmd_ReadBlock(uint32_t blockNum, uint32_t numOfBlock)
             return(MCI_FUNC_OK);
         }
 
-        for (i = 0; i < 0x20; i++);
+        NutMicroDelay(2);
 
         retryCount--;
     }
+
+#ifdef NUTDEBUG
+    if(retval == MCI_FUNC_FAILED)
+    {
+        printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_ERR_STATE)
+    {
+        printf("%s() failed with MCI_FUNC_ERR_STATE\n", __FUNCTION__ );
+    }
+#endif
 
     return(retval);
 }
@@ -2187,7 +2356,6 @@ int32_t Lpc177x_8x_MciCmd_ReadBlock(uint32_t blockNum, uint32_t numOfBlock)
  ****************************************************************************/
 int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t numOfBlock)
 {
-    uint32_t i;
     uint32_t DataCtrl = 0;
 
     dataSrcBlock = memblock;
@@ -2196,7 +2364,7 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
 
     LPC_MCI->DATACTRL = 0;
 
-    for (i = 0; i < 0x10; i++);
+    NutMicroDelay(1);
 
     /*
      *  Below status check is redundant, but ensure card is in TRANS state
@@ -2204,6 +2372,9 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
      */
     if (Lpc177x_8x_MciCheckStatus() != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf("%s() failed I [blocknum %lu]\n", __FUNCTION__ , blockNum);
+#endif
         Lpc177x_8x_MciCmd_StopTransmission();
 
         return(MCI_FUNC_FAILED);
@@ -2221,9 +2392,11 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
 
     Lpc177x_8x_MciTXEnable();
 
-    // initiate command
     if (Lpc177x_8x_MciCmd_WriteBlock(blockNum, numOfBlock) != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf("%s() failed II [blocknum %lu]\n", __FUNCTION__ , blockNum);
+#endif
         return( MCI_FUNC_FAILED );
     }
 
@@ -2232,8 +2405,7 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
 
     LPC_MCI->DATACTRL = DataCtrl;       // Go!
 
-
-    for (i = 0; i < 0x10; i++);
+    NutMicroDelay(10);
 
     return(MCI_FUNC_OK);
 }
@@ -2266,7 +2438,6 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
  ****************************************************************************/
 int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t numOfBlock)
 {
-    uint32_t i;
     uint32_t DataCtrl = 0;
 
     dataDestBlock = destBlock;
@@ -2275,7 +2446,7 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
 
     LPC_MCI->DATACTRL = 0;
 
-    for (i = 0; i < 0x10; i++);
+    NutMicroDelay(1);
 
     /*
      *  Below status check is redundant, but ensure card is in TRANS state
@@ -2283,6 +2454,9 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
      */
     if (Lpc177x_8x_MciCheckStatus() != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf("%s() failed I [blocknum %lu]\n", __FUNCTION__ , blockNum);
+#endif
         Lpc177x_8x_MciCmd_StopTransmission();
         return(MCI_FUNC_FAILED);
     }
@@ -2302,6 +2476,9 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
 
     if (Lpc177x_8x_MciCmd_ReadBlock(blockNum, numOfBlock) != MCI_FUNC_OK)
     {
+#ifdef NUTDEBUG
+        printf("%s() failed II [blocknum %lu]\n", __FUNCTION__ , blockNum);
+#endif
         return(MCI_FUNC_FAILED);
     }
 
@@ -2310,7 +2487,7 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
 
     LPC_MCI->DATACTRL = DataCtrl;       // Go!
 
-    for (i = 0; i < 0x10; i++);
+    NutMicroDelay(10);
 
     return(MCI_FUNC_OK);
 }
@@ -2325,11 +2502,41 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
  ****************************************************************************/
 void Lpc177x_8x_MciPowerOff(void)
 {
-    uint32_t i;
-
     LPC_MCI->POWER = 0;
 
-    for (i = 0; i < 0x100; i++);
+    NutMicroDelay(10);
 
     return;
 }
+
+/************************************************************************//**
+ * \brief       Get the priority level of the SD interrupt
+ *              please note that only 1 level is present for _ALL_ different
+ *              types of SD-interrupts
+ *
+ * \param       None
+ *
+ * \return      the interrupt level [0..31]
+ ****************************************************************************/
+int Lpc177x_8x_MciIrqGetPriority()
+{
+    return      NutIrqGetPriority(&sig_MCI);
+}
+
+
+/************************************************************************//**
+ * \brief       Set the priority level of the SD interrupt
+ *              please note that only 1 level is present for _ALL_ different
+ *              types of SD-interrupts
+ *
+ * \param       the interrupt level [0..31]
+ *
+ * \return      None
+ ****************************************************************************/
+void Lpc177x_8x_MciIrqSetPriority(int priority)
+{
+    if ((priority >= 0) && (priority < 32)) {
+        NutIrqSetPriority(&sig_MCI, priority);
+    }
+}
+

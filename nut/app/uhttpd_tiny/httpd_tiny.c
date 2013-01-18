@@ -1,5 +1,3 @@
-#if defined(HTTPD_TINY_SAMPLE)
-
 /*
  * Copyright (C) 2012 by egnite GmbH
  *
@@ -39,38 +37,98 @@
  */
 
 #ifdef NUT_OS
+/* Include Nut/OS specific headers. */
 #include <sys/version.h>
 #include <dev/board.h>
+#include <sys/confnet.h>
 #include <dev/urom.h>
+#include <arpa/inet.h>
 #include <pro/dhcp.h>
 #endif
 
 #include <pro/uhttp/mediatypes.h>
-
 #include <stdio.h>
 
-int main(void)
+/*!
+ * \example uhttpd_tiny/httpd_tiny.c
+ *
+ * Minimalist HTTP server sample.
+ *
+ * This is a simple HTTP server based on the MicroHTTP library. It
+ * should compile and run without modification on any operating system
+ * that is supported by the MicroHTTP library.
+ *
+ * It does not include any redirection. Thus, it is required to specify
+ * the full URL in the browser request, e.g. 127.0.0.1/index.html.
+ *
+ * Only a single server thread is running. Concurrent requests may
+ * fail.
+ *
+ * When used on Nut/OS, make sure, that the macro NUT_OS has been
+ * defined on the compile command, which can done by adding
+ * HWDEF += -DNUT_OS
+ * either in the Makefile or in app/UserConf.mk. It is further required,
+ * that a valid network configuration exists in non-volatile memory. You
+ * can run the sample application editconf to check this.
+ */
+
+/*
+ * Target specific initialization.
+ */
+static int TargetInit(void)
 {
+    /* On Nut/OS we need to register some drivers, assign stdout to the
+     * default console and configure the network interface. */
 #ifdef NUT_OS
+    /* Register the default console device. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
-    NutRegisterDevice(&DEV_ETHER, 0, 0);
-    NutDhcpIfConfig(DEV_ETHER_NAME, NULL, 60000);
-    NutRegisterDevice(&devUrom, 0, 0);
+    /* Assign the console device to stdout. */
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+
+    /* Register the UROM file system. */
+    printf("\nRegister file system...");
+    if (NutRegisterDevice(&devUrom, 0, 0)) {
+        return -1;
+    }
+
+    /* Register the default network device. */
+    printf("OK\nRegister %s...", DEV_ETHER_NAME);
+    if (NutRegisterDevice(&DEV_ETHER, 0, 0)) {
+        return -1;
+    }
+
+    /* Configure the network interface. */
+    printf("OK\nConfigure %s...", DEV_ETHER_NAME);
+    if (NutDhcpIfConfig(DEV_ETHER_NAME, NULL, 60000)) {
+        return -1;
+    }
+    puts(inet_ntoa(confnet.cdn_ip_addr));
 #endif
-
-    puts("Tiny uHTTP sample\nBuild " __DATE__ " " __TIME__);
-
-    StreamInit();
-    MediaTypeInitDefaults();
-    StreamClientAccept(HttpdClientHandler, NULL);
-
-    puts("Exit");
-#ifdef NUT_OS
-    for (;;) ;
-#endif
-
     return 0;
 }
 
-#endif
+int main(void)
+{
+    /* Target-specific initialization. */
+    if (TargetInit()) {
+        puts("failed");
+        for (;;);
+    }
+
+    /* Write a banner to our console. */
+    puts("\nTiny uHTTP sample running");
+
+    /* Initialize the TCP socket interface. */
+    StreamInit();
+
+    /* Register media type defaults. These are configurable in
+     * include/cfg/http.h or the Nut/OS Configurator. */
+    MediaTypeInitDefaults();
+
+    /* Wait for a client (browser) and handle its request. This function
+       will only return on unrecoverable errors. */
+    StreamClientAccept(HttpdClientHandler, NULL);
+
+    /* Typically this point will be never reached. */
+    return 0;
+}

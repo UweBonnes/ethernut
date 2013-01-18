@@ -31,32 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
+/*!
+ * \file arch/avr/dev/uart1.c
+ * \brief AVR fast UART1 driver.
  *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2004/05/24 20:15:49  drsung
- * Added function UartAvrSize to return number of chars in input buffer.
- *
- * Revision 1.2  2004/03/18 14:01:53  haraldkipp
- * Deprecated header file removed
- *
- * Revision 1.1.1.1  2003/05/09 14:40:53  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.4  2003/02/04 17:50:55  harald
- * Version 3 released
- *
- * Revision 1.3  2003/01/14 13:43:32  harald
- * Definintions were moved
- *
- * Revision 1.2  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <dev/uartavr.h>

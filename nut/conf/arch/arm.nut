@@ -871,18 +871,13 @@ nutarch_arm =
     {
         name = "nutarch_arm_usartcb_at91npl",
         brief = "USART NPL Support",
-        requires = { "DEV_UART_HWCTRL", "DEV_NPL", "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT" },
+        description = "Currently available for AT91R40008 CPUs only.",
+        requires = { "HW_MCU_AT91R40008", "DEV_UART_HWCTRL", "DEV_NPL", "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT" },
         provides = { "DEV_UART_CBRXTX" },
         sources = {
             "arm/dev/atmel/usart_cb_at91npl.c",
             "arm/dev/atmel/usart0cb_at91npl.c"
         }
-    },
-    {
-        name = "nutarch_arm_usart0cb_at91npl",
-        brief = "USART0 NPL",
-        requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        sources = { "arm/dev/atmel/usart0cb_at91npl.c" }
     },
     {
         name = "nutarch_arm_ahdlc",
@@ -1389,6 +1384,14 @@ nutarch_arm =
                 file = "include/cfg/twi.h"
             },
         },
+    },
+    {
+        name = "nutarch_arm_i2cbus_at91",
+        brief = "AT91 I2C Bus Controller",
+        description = "Early version of the AT91 hardware based I2C bus controller.",
+        requires = { "HW_TWI_AT91" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources = { "arm/dev/atmel/i2cbus_at91.c" },
     },
     {
         name = "nutarch_arm_adc_at91",

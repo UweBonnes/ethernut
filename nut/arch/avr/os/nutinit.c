@@ -43,6 +43,7 @@
 #include <cfg/arch.h>
 
 #include <dev/board.h>
+#include <dev/gpio.h>
 
 /*!
  * \addtogroup xgNutArchAvrInit
@@ -69,6 +70,7 @@
 #ifndef NUT_THREAD_MAINSTACK
 #define NUT_THREAD_MAINSTACK    1024
 #endif
+#define MAINTHREAD_STACK_SIZE   (((NUT_THREAD_MAINSTACK) * (NUT_THREAD_STACK_MULT)) + (NUT_THREAD_STACK_ADD))
 
 #ifndef NUT_THREAD_IDLESTACK
 #if defined(__GNUC__)
@@ -77,6 +79,18 @@
 #else
 /* icc-avr v7.19 used 132 bytes. */
 #define NUT_THREAD_IDLESTACK    256
+#endif
+#endif
+#define IDLETHREAD_STACK_SIZE   (((NUT_THREAD_IDLESTACK) * (NUT_THREAD_STACK_MULT)) + (NUT_THREAD_STACK_ADD))
+
+/* Running with avr-gccdbg and only internal stack may result in hard to
+ * find errors where the stack got overwritten
+ *
+ * Do some sanity check!
+ */
+#ifndef NUTXMEM_SIZE
+#if MAINTHREAD_STACK_SIZE + IDLETHREAD_STACK_SIZE + 1024 > NUTMEM_SIZE
+#warning "Potential stack overflow, reduce stack sizes of main or idle thread."
 #endif
 #endif
 
@@ -146,7 +160,7 @@ extern void main(void *);
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(MCU_AT90USB1287)
 /*
  * Note: Register structure of ATCAN128 differs from ATMEGA128 in regards
  * to wait states.
@@ -207,32 +221,23 @@ THREAD(NutIdle, arg)
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
     uint8_t sleep_mode;
 #endif
-#if defined (IDLE_HEARTBEAT_PIN) && defined (IDLE_HEARTBEAT_PORT)
-#if (IDLE_HEARTBEAT_PORT == AVRPORTA)
-#define IDLE_HEARTBEAT_DDR DDRA
-#define IDLE_HEARTBEAT_AVRPORT PORTA
-#elif (IDLE_HEARTBEAT_PORT == AVRPORTB)
-#define IDLE_HEARTBEAT_DDR DDRB
-#define IDLE_HEARTBEAT_AVRPPORT PORTB
-#elif (IDLE_HEARTBEAT_PORT == AVRPORTC)
-#define IDLE_HEARTBEAT_DDR DDRC
-#define IDLE_HEARTBEAT_AVRPPORT PORTC
-#elif (IDLE_HEARTBEAT_PORT == AVRPORTD)
-#define IDLE_HEARTBEAT_DDR DDRD
-#define IDLE_HEARTBEAT_AVRPPORT PORTD
-#elif (IDLE_HEARTBEAT_PORT == AVRPORTE)
-#define IDLE_HEARTBEAT_DDR DDRE
-#define IDLE_HEARTBEAT_AVRPPORT PORTE
-#elif (IDLE_HEARTBEAT_PORT == AVRPORTF)
-#define IDLE_HEARTBEAT_DDR DDRF
-#define IDLE_HEARTBEAT_AVRPPORT PORTF
-#elif (IDLE_HEARTBEAT_PORT == AVRPORTG)
-#define IDLE_HEARTBEAT_DDR DDRG
-#define IDLE_HEARTBEAT_AVRPPORT PORTG
-#endif
-#endif
-#ifdef IDLE_HEARTBEAT_DDR
-    IDLE_HEARTBEAT_DDR |= _BV(IDLE_HEARTBEAT_PIN);
+#if defined (HEARTBEAT_IDLE_PIN) && defined (HEARTBEAT_IDLE_PORT)
+ #if defined(HEARTBEAT_IDLE_INVERT)
+  #define HEARTBEAT_IDLE_LED_OFF  \
+    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
+  #define HEARTBEAT_IDLE_LED_ON   \
+    GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
+ #else
+  #define HEARTBEAT_IDLE_LED_ON   \
+    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
+  #define HEARTBEAT_IDLE_LED_OFF  \
+    GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
+ #endif
+    GpioPinDrive(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
+    HEARTBEAT_IDLE_LED_ON;
+#else
+ #define HEARTBEAT_IDLE_LED_ON
+ #define HEARTBEAT_IDLE_LED_OFF
 #endif
 
 #ifdef NUT_INIT_IDLE
@@ -247,8 +252,7 @@ THREAD(NutIdle, arg)
 #endif
 
     /* Create the main application thread. */
-    NutThreadCreate("main", main, 0,
-        (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    NutThreadCreate("main", main, 0, MAINTHREAD_STACK_SIZE);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
@@ -273,17 +277,13 @@ THREAD(NutIdle, arg)
             uint8_t bitkeeper = bit_is_set(XMCRB, XMBK);
             cbi(XMCRB, XMBK); // disable buskeeper
 #endif
-#ifdef IDLE_HEARTBEAT_AVRPORT
-            IDLE_HEARTBEAT_AVRPORT &= ~ _BV(IDLE_HEARTBEAT_PIN);
-#endif
+            HEARTBEAT_IDLE_LED_OFF;
             /* Note:  avr-libc has a sleep_mode() function, but it's broken for
             AT90CAN128 with avr-libc version earlier than 1.2 */
             AVR_SLEEP_CTRL_REG |= _BV(SE);
             __asm__ __volatile__ ("sleep" "\n\t" :: );
             AVR_SLEEP_CTRL_REG &= ~_BV(SE);
-#ifdef IDLE_HEARTBEAT_AVRPORT
-            IDLE_HEARTBEAT_AVRPORT |= _BV(IDLE_HEARTBEAT_PIN);
-#endif
+            HEARTBEAT_IDLE_LED_ON;
 #ifdef IDLE_THREAD_ADC_OFF
             if (bitkeeper) {
                 sbi(XMCRB, XMBK); // re-enable buskeeper
@@ -396,8 +396,7 @@ void NutInit(void)
 
     /* Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0,
-        (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    NutThreadCreate("idle", NutIdle, 0, IDLETHREAD_STACK_SIZE);
 }
 
 /*@}*/

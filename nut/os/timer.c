@@ -238,6 +238,10 @@ static struct timeval   timeStart;
 
 #include <string.h>
 
+#if defined(__AVR_LIBC_VERSION__)
+#include <util/delay_basic.h>
+#endif
+
 /*!
  * \addtogroup xgTimer
  */
@@ -262,6 +266,8 @@ volatile uint32_t nut_ticks;
 
 static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 
+#if defined(__CORTEX__) || defined(__AVR_LIBC_VERSION__)
+#else
 /*!
  *  \brief Loops per microsecond.
  */
@@ -269,6 +275,7 @@ static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 uint32_t nut_delay_loops = NUT_DELAYLOOPS;
 #else
 uint32_t nut_delay_loops;
+#endif
 #endif
 
 /*!
@@ -318,7 +325,7 @@ void NutTimerInit(void)
 
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
-#if !defined(NUT_DELAYLOOPS)
+#if !defined(NUT_DELAYLOOPS) && !defined(__AVR_LIBC_VERSION__) && !defined(__CORTEX__)
     {
         /* Wait for the next tick. */
         uint32_t cnt = NutGetTickCount();
@@ -328,18 +335,8 @@ void NutTimerInit(void)
         while (cnt == NutGetTickCount()) {
             nut_delay_loops++;
         }
-#if defined(__AVR__)
-        /*
-         * The loop above needs more cycles than the actual delay loop.
-         * Apply the correction found by trial and error. Works acceptable
-         * with GCC for Ethernut 1 and 3.
-         */
-        nut_delay_loops *= 103UL;
-        nut_delay_loops /= 26UL;
-#else
         nut_delay_loops *= 137UL;
         nut_delay_loops /= 25UL;
-#endif
     }
 #endif
 #endif
@@ -393,6 +390,40 @@ void NutMicroDelay(uint32_t us)
             summed_ticks += (SysTick->LOAD +1);
         start_ticks = current_ticks;
     }
+#elif defined(__AVR_LIBC_VERSION__)
+/* Try to keep the overhead low, especially try to avoid
+ * a run-time 32 bit division
+ * Try to avoid large intermediate results
+ * nut_delay_loops consumes 4 clock ticks per loop
+ *
+ * Fixme: Estimate loop setup and control loop overhead
+ */
+#if defined(NUT_CPU_FREQ)
+#if  (NUT_CPU_FREQ/4000000) && ((NUT_CPU_FREQ%4000000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/4000000);
+#elif (NUT_CPU_FREQ/2000000) && ((NUT_CPU_FREQ%2000000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/2000000);
+    __tmp >>= 1;
+#elif (NUT_CPU_FREQ/1000000) && ((NUT_CPU_FREQ%1000000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/1000000);
+    __tmp >>= 2;
+#elif (NUT_CPU_FREQ/500000) && ((NUT_CPU_FREQ%500000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/500000);
+    __tmp >>= 3;
+#else
+    /* Range 858 ms @ 20 MHz*/
+    uint32_t __tmp = (us * (NUT_CPU_FREQ/4000))/1000;
+#endif
+#else
+    /* Range 54 ms @ 20 MHz) */
+    uint32_t __tmp = (us *(NutGetCpuClock()>>8))/(400000000/256);
+#endif
+    while (__tmp > 0xffff)
+    {
+        _delay_loop_2(0xffff);
+        __tmp -= 0xffff;
+    }
+    _delay_loop_2((uint16_t) __tmp);
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 

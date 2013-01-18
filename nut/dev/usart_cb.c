@@ -158,7 +158,8 @@ int UsartCbRead(NUTFILE *nfp, void *buffer, int size)
     /* Call without data pointer discards the receive buffer. */
     if (buffer == NULL) {
         dcb->usart_rx_stop(dcb);
-        rc = CircBuffReset((CIRCBUFF *) rxcb, rxcb->rxb_siz);
+        rxcb->rxb_rdi = rxcb->rxb_wri;
+        rxcb->rxb_cnt = 0;
         dcb->usart_rx_start(dcb);
         return 0;
     }

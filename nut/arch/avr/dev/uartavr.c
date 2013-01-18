@@ -31,59 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.5  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/uartavr.c
+ * \brief AVR fast UART driver.
  *
- * Revision 1.4  2006/10/08 16:48:08  haraldkipp
- * Documentation fixed
- *
- * Revision 1.3  2005/10/16 23:21:33  hwmaier
- * Fixed compilation issue regards U2X macro with Imagecraft
- *
- * Revision 1.2  2005/10/07 22:01:27  hwmaier
- * Obsolete dcb_baudSelect removed. Support for double speed (U2X) added (using same method as in usartavr.c).
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.9  2005/07/14 09:12:20  freckle
- * Rewrote CS in UartAvrInput
- *
- * Revision 1.8  2005/01/24 21:12:05  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.7  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.6  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.5  2004/05/24 20:15:50  drsung
- * Added function UartAvrSize to return number of chars in input buffer.
- *
- * Revision 1.4  2004/03/18 14:01:07  haraldkipp
- * Deprecated header file replaced
- *
- * Revision 1.3  2004/03/18 10:09:27  haraldkipp
- * Removed deprecated raw I/O
- *
- * Revision 1.2  2003/07/20 18:28:10  haraldkipp
- * Explain how to disable timeout.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:55  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.21  2003/05/06 18:35:06  harald
- * Avoid duplicate initialization
- *
- * Revision 1.20  2003/04/21 16:26:01  harald
- * Use predefined eof
- *
- * Revision 1.19  2003/03/31 14:53:08  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>
@@ -404,7 +358,7 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     uint32_t *lvp = (uint32_t *) conf;
     uint32_t lv = *lvp;
     uint8_t bv = (uint8_t) lv;
-    uint16_t sv;
+    uint16_t sv = 0;
     uint8_t devnum;
 
     if (dev == 0)
@@ -423,12 +377,14 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             } else {
                 lv <<= 3;
             }
+#if !defined(MCU_AT90USB1287)
         } else {
             if (bit_is_set(UCSR0A, U2X0)) {
                 lv <<= 2;
             } else {
                 lv <<= 3;
             }
+#endif
         }
 #else
         lv <<= 3;
@@ -438,9 +394,11 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         if (devnum) {
             UBRR1L = (uint8_t) sv;
             UBRR1H = (uint8_t) (sv >> 8);
+#if !defined(MCU_AT90USB1287)
         } else {
             UBRR0L = (uint8_t) sv;
             UBRR0H = (uint8_t) (sv >> 8);
+#endif
         }
 #else
         UBRR = (uint8_t) sv;
@@ -457,6 +415,7 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
                 lv = 16UL;
             sv = (uint16_t) (UBRR1H) << 8 | UBRR1L;
         }
+#if !defined(MCU_AT90USB1287)
         else
         {
             if (bit_is_set(UCSR0A, U2X0))
@@ -465,6 +424,7 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
                 lv = 16UL;
             sv = (uint16_t) (UBRR0H) << 8 | UBRR0L;
         }
+#endif
 #else
         sv = UBRR;
         lv = 16UL;
@@ -480,9 +440,11 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             if (devnum) {
                 UCSR1C = (UCSR1C & 0xF9) | bv;
                 UCSR1B &= 0xFB;
+#if !defined(MCU_AT90USB1287)
             } else {
                 UCSR0C = (UCSR0C & 0xF9) | bv;
                 UCSR0B &= 0xFB;
+#endif
             }
         } else
             rc = -1;
@@ -497,8 +459,10 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef UCSR1C
         if (devnum)
             *lvp = ((UCSR1C & 0x06) >> 1) + 5;
+#if !defined(MCU_AT90USB1287)
         else
             *lvp = ((UCSR0C & 0x06) >> 1) + 5;
+#endif
 #else
         *lvp = 8;
 #endif
@@ -513,8 +477,10 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             bv <<= 4;
             if (devnum)
                 UCSR1C = (UCSR1C & 0xCF) | bv;
+#if !defined(MCU_AT90USB1287)
             else
                 UCSR0C = (UCSR0C & 0xCF) | bv;
+#endif
         } else
             rc = -1;
 #endif
@@ -527,8 +493,10 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef UCSR1C
         if (devnum)
             bv = (UCSR1C & 0x30) >> 4;
+#if !defined(MCU_AT90USB1287)
         else
             bv = (UCSR0C & 0x30) >> 4;
+#endif
         if (bv == 3)
             bv = 1;
 #else
@@ -543,8 +511,10 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             bv = (bv - 1) << 3;
             if (devnum)
                 UCSR1C = (UCSR1C & 0xF7) | bv;
+#if !defined(MCU_AT90USB1287)
             else
                 UCSR0C = (UCSR0C & 0xF7) | bv;
+#endif
         } else
             rc = -1;
 #else
@@ -558,8 +528,10 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef UCSR1C
         if (devnum)
             *lvp = ((UCSR1C & 0x08) >> 3) + 1;
+#if !defined(MCU_AT90USB1287)
         else
             *lvp = ((UCSR0C & 0x08) >> 3) + 1;
+#endif
 #else
         *lvp = 1;
 #endif

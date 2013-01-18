@@ -47,7 +47,6 @@
 #include <sys/timer.h>
 #include <sys/thread.h>
 #include <sys/event.h>
-#include <arch/arm/cm3.h>
 #include <dev/gpio.h>
 #include <dev/hwtimer_stm32.h>
 #include <dev/owi.h>
@@ -57,6 +56,7 @@ static char inbuf[128];
 uint64_t hid  = 0;
 uint8_t res = 1;
 volatile int xcelsius;
+HANDLE owi_event;
 
 THREAD(OneWire, arg)
 {
@@ -91,6 +91,8 @@ THREAD(OneWire, arg)
             raw |= OWReadByte() <<8;
         }
         xcelsius = raw * 625;
+        NutEventPost(&owi_event);
+
     }
 }
 
@@ -113,7 +115,8 @@ THREAD(LedBlink, arg)
  */
 int main(void)
 {
-    uint32_t baud = 9600;
+    uint32_t baud = 115200;
+    uint32_t run= 0;
 
     /*
      * Each device must be registered. We do this by referencing the
@@ -150,13 +153,22 @@ int main(void)
      * Stream devices can use low level read and write functions.
      * Writing program space data is supported too.
      */
-    printf("\nNut/OS OWI Sample2 " __DATE__ " " __TIME__
-            "\nPress any key...");
+    printf("\n\nNut/OS OWI Sample2 " __DATE__ " " __TIME__ "\n");
 
 #if defined(LED1_PORT) && defined(LED1_PIN)
     GpioPinConfigSet( LED1_PORT, LED1_PIN, GPIO_CFG_OUTPUT);
 #endif
-    OWInit();
+#if !defined(OWI_TIMER) || !defined(OWI_PORT) || !defined(OWI_PIN)
+    puts("Please define the OWI_TIMER to use\n");
+    while(1)
+    {
+        NutSleep(100);
+    }
+#else
+    res = OWInit();
+    if(res)
+        puts("OWInit failed\n");
+
     res = OWRomSearch(SEARCH_FIRST, &hid);
     if(res)
         printf("OWRomSearch failed\n");
@@ -180,6 +192,9 @@ int main(void)
      * endless loop here.
      */
     for (;;) {
+        if (NutEventWait(&owi_event, 1000) == -1)
+            puts("OWI thread fails to deliver data\n");
+
 #if defined(LED1_PORT) && defined(LED1_PIN)
         GpioPinSet(LED1_PORT, LED1_PIN,
                    !(GpioPinGet(LED1_PORT, LED1_PIN)));
@@ -189,12 +204,11 @@ int main(void)
          * up to and including the first newline character or until a
          * specified maximum number of characters, whichever comes first.
          */
-        printf("\nType enter to get temperature value: ");
-        fgets(inbuf, sizeof(inbuf), stdinq);
 
-        printf("Temp %d.%04d\n",
+        printf("Run %6d: Temp %d.%04d\r", run++,
                 xcelsius/10000, xcelsius%10000);
 
     }
+#endif
     return 0;
 }

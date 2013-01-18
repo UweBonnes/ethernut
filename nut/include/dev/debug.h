@@ -109,7 +109,10 @@
  */
 #if defined(__AVR__)
 
+#if defined(__AVR_AT90USB1287__)
+#else
 extern NUTDEVICE devDebug0;
+#endif
 #ifdef __AVR_ENHANCED__
 extern NUTDEVICE devDebug1;
 #endif

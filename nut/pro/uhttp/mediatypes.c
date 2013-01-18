@@ -55,6 +55,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 ISC_LIST(MEDIA_TYPE_ENTRY) mediaTypeList = ISC_LIST_INITIAL_TYPE(MEDIA_TYPE_ENTRY);
 

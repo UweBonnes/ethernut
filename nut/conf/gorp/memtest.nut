@@ -43,6 +43,7 @@ nutgorp_memtest =
         name = "nutgorp_memtest",
         brief = "8, 16 and 32 Bit bus width memory test library",
         description = "8, 16 and 32 Bit bus width memory test library with address bus, data bus and device tests.\n\n",
+        requires = { "TOOL_GCC" },
         sources =
         {
             "memtest/memtest_8bit.c",

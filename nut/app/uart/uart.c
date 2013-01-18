@@ -55,7 +55,7 @@
 #include <dev/board.h>
 #include <sys/timer.h>
 
-static char *banner = "\nNut/OS UART Sample\n";
+static char *banner = "\nNut/OS UART Sample " __DATE__ " " __TIME__"\n";
 static prog_char presskey_P[] = "Press any key...";
 static prog_char pgm_ptr[] = "\nHello stranger!\n";
 
@@ -93,7 +93,7 @@ int main(void)
      * function returns a pointer to a FILE structure, which we use
      * for subsequent reading and writing.
      */
-    uart = fopen(DEV_CONSOLE_NAME, "r+");
+    uart = fopen(DEV_CONSOLE.dev_name, "r+");
 
     /*
      * Before doing the first read or write, we set the baudrate.

@@ -31,35 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/irqstack.c
+ * \brief AVR support for dedicated interrupt stack.
  *
- * Revision 1.1  2005/09/17 09:20:11  drsung
- * Moved from /dev
- *
- * Revision 1.7  2004/09/22 08:15:57  haraldkipp
- * Speparate IRQ stack configurable
- *
- * Revision 1.6  2004/04/25 17:05:56  drsung
- * Separate IRQ stack now compatible with nested interrupts.
- *
- * Revision 1.5  2004/02/03 11:28:40  drsung
- * Modified to support different target platforms.
- *
- * Revision 1.4  2004/02/02 15:35:31  drsung
- * Bloody 'no new line at end of file' error fixed... Grrrr..
- *
- * Revision 1.3  2004/02/01 10:47:51  drsung
- * #ifdef .. #endif inserted, to make iccavr compile.
- *
- * Revision 1.2  2004/01/31 13:59:14  drsung
- * Stupid attributes removed.
- *
- * Revision 1.1  2004/01/30 17:02:20  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>

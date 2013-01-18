@@ -76,7 +76,7 @@ int main(void)
      * Initialize the console.
      */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     printf("\n\nSimple HTTP Daemon running on Nut/OS %s\n",

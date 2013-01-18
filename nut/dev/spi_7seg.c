@@ -41,7 +41,6 @@
  * $Id: spi_7seg.c,$
  * \endverbatim
  */
-#define SPI2SEG_DEBUG
 
 #include <cfg/os.h>
 #include <cfg/arch.h>

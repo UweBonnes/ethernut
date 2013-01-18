@@ -7,8 +7,8 @@ SetCompressor /SOLID lzma
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 
 !define PRODUCT  "Nut/OS"
-!define NUTVERSION  "5.0"
-!define NUTRELEASE  "5"
+!define NUTVERSION  "5.2"
+!define NUTRELEASE  "0"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
@@ -123,6 +123,7 @@ Section
   File ..\..\..\bin\atmega2561\README
 
   SetOutPath "$INSTDIR\nut\doc"
+  File ..\..\..\doc\nutos-sw-manual.odt
   File ..\..\..\doc\copying-gpl.txt
   File ..\..\..\doc\copying-liquorice.txt
   File ..\..\..\tools\packaging\nsis\license.txt
@@ -231,6 +232,8 @@ SectionGroup "Nut/Net"
     File ..\..\..\pro\Makefile
     File ..\..\..\pro\*.c
     File ..\..\..\pro\*.h
+    SetOutPath "$INSTDIR\nut\pro\uhttp"
+    File /r ..\..\..\pro\uhttp\*.c
 
   SectionEnd
 SectionGroupEnd
@@ -309,6 +312,7 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\at91sam9260-ek.conf
     File ..\..\..\conf\at91sam9g45-ek.conf
     File ..\..\..\conf\charon2.conf
+    File ..\..\..\conf\dk-lm3s9b96.conf
     File ..\..\..\conf\eir10c.conf
     File ..\..\..\conf\enet-sam7x.conf
     File ..\..\..\conf\enet-sam7x_bootrom.conf
@@ -332,8 +336,11 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\evk1104-intram.conf
     File ..\..\..\conf\evk1105-extram.conf
     File ..\..\..\conf\evk1105-intram.conf
+    File ..\..\..\conf\f4_discovery.conf
     File ..\..\..\conf\flecx10a.conf
     File ..\..\..\conf\gbaxport2.conf
+    File ..\..\..\conf\ksk-lpc17xx-sk.conf
+    File ..\..\..\conf\mbed_npx_lpc1768.conf
     File ..\..\..\conf\mmnet01.conf
     File ..\..\..\conf\mmnet02.conf
     File ..\..\..\conf\mmnet02_03_04.conf
@@ -346,7 +353,17 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\mmnet104.conf
     File ..\..\..\conf\morphoq11a.conf
     File ..\..\..\conf\olimex-sam7-ex256.conf
+    File ..\..\..\conf\sam7eth.conf
+    File ..\..\..\conf\stm32-comStick.conf
+    File ..\..\..\conf\stm3210c-eval.conf
+    File ..\..\..\conf\stm3210e-eval.conf
+    File ..\..\..\conf\stm32_can.conf
+    File ..\..\..\conf\stm32_vl_discovery.conf
     File ..\..\..\conf\stk501.conf
+    File ..\..\..\conf\usps_f107c.conf
+    File ..\..\..\conf\usps_f205c.conf
+    File ..\..\..\conf\usps_f405g.conf
+    File ..\..\..\conf\usps_l151b.conf
     File ..\..\..\conf\xnut-100.conf
     File ..\..\..\conf\xnut-105c.conf
     File ..\..\..\conf\xnut-105d.conf
@@ -482,7 +499,7 @@ SectionGroup "Development Tools"
     SetOutPath "$INSTDIR\nut\tools\nutdisc\src\bitmaps"
     File ..\..\..\tools\nutdisc\src\bitmaps\*.ico
     File ..\..\..\tools\nutdisc\src\bitmaps\*.xpm
-    SetOutPath "$INSTDIR\nut\tools\qnutdisc"
+    SetOutPath "$INSTDIR\nut\tools\qnutdisc\src"
     File ..\..\..\tools\qnutdisc\src\*.cpp
     File ..\..\..\tools\qnutdisc\src\*.h
     File ..\..\..\tools\qnutdisc\src\*.pri
@@ -501,37 +518,10 @@ SectionGroup "Application Samples"
 
     SetOutPath "$INSTDIR\nut\app"
     File ..\..\..\app\Makefile
-    File ..\..\..\app\*.all
-    File ..\..\..\app\*.gcc
-    File ..\..\..\app\*.arm-gcc
-    File ..\..\..\app\*.arm-gccdbg
-    File ..\..\..\app\*.arm-eCross-gcc
-    File ..\..\..\app\*.arm-eCross-gccdbg
-;    File ..\..\..\app\*.arm-icc
-    File ..\..\..\app\*.avr-gcc
-    File ..\..\..\app\*.avr-gccdbg
-    File ..\..\..\app\*.avr32-gcc
-    File ..\..\..\app\*.avr32-gccdbg
-    File ..\..\..\app\*.avr-icc
-    File ..\..\..\app\*.avr-icc7
-    File ..\..\..\app\*.avrext-icc
-    File ..\..\..\app\*.avrext-icc7
-    File ..\..\..\app\*.h8-gcc
-    File ..\..\..\app\*.npl-xc95
-    File ..\..\..\app\*.unix-gcc
     File ..\..\..\app\Makeburn.*
-
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\7segtst"
-    File ..\..\..\hwtest\arm\atmel\7segtst\Makefile
-    File ..\..\..\hwtest\arm\atmel\7segtst\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon"
-    File ..\..\..\hwtest\avr\basemon\Makefile
-    File ..\..\..\hwtest\avr\basemon\*.c
-    File ..\..\..\hwtest\avr\basemon\*.h
-    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon\html"
-    File ..\..\..\hwtest\avr\basemon\html\*.html
-    File ..\..\..\hwtest\avr\basemon\html\*.gif
+    File ..\..\..\app\Makedefs.*
+    File ..\..\..\app\Makerules.*
+    File ..\..\..\app\Makevars.*
 
     SetOutPath "$INSTDIR\nut\app\caltime"
     File ..\..\..\app\caltime\Makefile
@@ -539,13 +529,6 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\appicc\caltime"
     File ..\..\..\appicc\caltime\*.prj
     File ..\..\..\appicc\caltime\*.SRC
-    
-    SetOutPath "$INSTDIR\nut\hwtest\avr\canbus"
-    File ..\..\..\hwtest\avr\canbus\Makefile
-    File ..\..\..\hwtest\avr\canbus\*.c
-    SetOutPath "$INSTDIR\nut\appicc\canbus"
-    File ..\..\..\appicc\canbus\*.prj
-    File ..\..\..\appicc\canbus\*.SRC
     
     SetOutPath "$INSTDIR\nut\app\cppdemo"
     File ..\..\..\app\cppdemo\Makefile
@@ -555,10 +538,6 @@ SectionGroup "Application Samples"
     File ..\..\..\app\editconf\Makefile
     File ..\..\..\app\editconf\*.c
     File ..\..\..\app\editconf\*.h
-
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\eeprom"
-    File ..\..\..\hwtest\arm\atmel\eeprom\Makefile
-    File ..\..\..\hwtest\arm\atmel\eeprom\*.c
 
     SetOutPath "$INSTDIR\nut\app\events"
     File ..\..\..\app\events\Makefile
@@ -622,20 +601,9 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\inetq\*.prj
     File ..\..\..\appicc\inetq\*.SRC
 
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\ioexpander"
-    File ..\..\..\hwtest\arm\atmel\ioexpander\Makefile
-    File ..\..\..\hwtest\arm\atmel\ioexpander\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\avr\isp2"
-    File ..\..\..\hwtest\avr\isp2\Makefile
-    File ..\..\..\hwtest\avr\isp2\*.c
-    File ..\..\..\hwtest\avr\isp2\*.S
-    File ..\..\..\hwtest\avr\isp2\*.isp
-    SetOutPath "$INSTDIR\nut\app\isp2\isp"
-
-    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\led_key"
-    File ..\..\..\hwtest\arm\atmel\led_key\Makefile
-    File ..\..\..\hwtest\arm\atmel\led_key\*.c
+    SetOutPath "$INSTDIR\nut\app\jtagtest"
+    File ..\..\..\app\jtagtest\Makefile
+    File ..\..\..\app\jtagtest\*.c
 
     SetOutPath "$INSTDIR\nut\app\logtime"
     File ..\..\..\app\logtime\Makefile
@@ -648,16 +616,9 @@ SectionGroup "Application Samples"
     File ..\..\..\app\lua\Makefile
     File ..\..\..\app\lua\*.c
 
-    SetOutPath "$INSTDIR\nut\hwtest\audio\nutpiper"
-    File ..\..\..\hwtest\audio\nutpiper\Makefile
-    File ..\..\..\hwtest\audio\nutpiper\*.c
-    File ..\..\..\hwtest\audio\nutpiper\*.h
-
-    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3"
-    File ..\..\..\hwtest\audio\playmp3\Makefile
-    File ..\..\..\hwtest\audio\playmp3\*.c
-    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3\sounds"
-    File ..\..\..\hwtest\audio\playmp3\sounds\*.mp3
+    SetOutPath "$INSTDIR\nut\app\owibus"
+    File ..\..\..\app\owibus\Makefile
+    File ..\..\..\app\owibus\*.c
 
     SetOutPath "$INSTDIR\nut\app\pingnet"
     File ..\..\..\app\pingnet\Makefile
@@ -720,6 +681,10 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\timers\*.prj
     File ..\..\..\appicc\timers\*.SRC
 
+    SetOutPath "$INSTDIR\nut\app\twitest"
+    File ..\..\..\app\twitest\Makefile
+    File ..\..\..\app\twitest\*.c
+
     SetOutPath "$INSTDIR\nut\app\uart"
     File ..\..\..\app\uart\Makefile
     File ..\..\..\app\uart\*.c
@@ -728,9 +693,131 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\uart\*.prj
     File ..\..\..\appicc\uart\*.SRC
 
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ajax"
+    File ..\..\..\app\uhttpd_ajax\Makefile
+    File ..\..\..\app\uhttpd_ajax\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ajax\htdocs"
+    File ..\..\..\app\uhttpd_ajax\htdocs\*.html
+    File ..\..\..\app\uhttpd_ajax\htdocs\*.js
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth"
+    File ..\..\..\app\uhttpd_auth\Makefile
+    File ..\..\..\app\uhttpd_auth\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth\htdocs"
+    File ..\..\..\app\uhttpd_auth\htdocs\*.html
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth\htdocs\admin"
+    File ..\..\..\app\uhttpd_auth\htdocs\admin\*.html
+    SetOutPath "$INSTDIR\nut\app\uhttpd_auth\htdocs\user"
+    File ..\..\..\app\uhttpd_auth\htdocs\user\*.html
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_form"
+    File ..\..\..\app\uhttpd_form\Makefile
+    File ..\..\..\app\uhttpd_form\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_form\htdocs"
+    File ..\..\..\app\uhttpd_form\htdocs\*.html
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ssi"
+    File ..\..\..\app\uhttpd_ssi\Makefile
+    File ..\..\..\app\uhttpd_ssi\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_ssi\htdocs"
+    File ..\..\..\app\uhttpd_ssi\htdocs\*.shtml
+    File ..\..\..\app\uhttpd_ssi\htdocs\*.inc
+    File ..\..\..\app\uhttpd_ssi\htdocs\*.png
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_tiny"
+    File ..\..\..\app\uhttpd_tiny\Makefile
+    File ..\..\..\app\uhttpd_tiny\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_tiny\htdocs"
+    File ..\..\..\app\uhttpd_tiny\htdocs\*.html
+    File ..\..\..\app\uhttpd_tiny\htdocs\*.png
+
+    SetOutPath "$INSTDIR\nut\app\uhttpd_upload"
+    File ..\..\..\app\uhttpd_upload\Makefile
+    File ..\..\..\app\uhttpd_upload\*.c
+    SetOutPath "$INSTDIR\nut\app\uhttpd_upload\htdocs"
+    File ..\..\..\app\uhttpd_upload\htdocs\*.html
+    File ..\..\..\app\uhttpd_upload\htdocs\*.png
+
     SetOutPath "$INSTDIR\nut\app\xsvfexec"
     File ..\..\..\app\xsvfexec\*.c
     File ..\..\..\app\xsvfexec\*.h
+	
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\7segtst"
+    File ..\..\..\hwtest\arm\atmel\7segtst\Makefile
+    File ..\..\..\hwtest\arm\atmel\7segtst\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\eeprom"
+    File ..\..\..\hwtest\arm\atmel\eeprom\Makefile
+    File ..\..\..\hwtest\arm\atmel\eeprom\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\ioexpander"
+    File ..\..\..\hwtest\arm\atmel\ioexpander\Makefile
+    File ..\..\..\hwtest\arm\atmel\ioexpander\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\led_key"
+    File ..\..\..\hwtest\arm\atmel\led_key\Makefile
+    File ..\..\..\hwtest\arm\atmel\led_key\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\audio\nutpiper"
+    File ..\..\..\hwtest\audio\nutpiper\Makefile
+    File ..\..\..\hwtest\audio\nutpiper\*.c
+    File ..\..\..\hwtest\audio\nutpiper\*.h
+
+    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3"
+    File ..\..\..\hwtest\audio\playmp3\Makefile
+    File ..\..\..\hwtest\audio\playmp3\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3\sounds"
+    File ..\..\..\hwtest\audio\playmp3\sounds\*.mp3
+
+    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon"
+    File ..\..\..\hwtest\avr\basemon\Makefile
+    File ..\..\..\hwtest\avr\basemon\*.c
+    File ..\..\..\hwtest\avr\basemon\*.h
+    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon\html"
+    File ..\..\..\hwtest\avr\basemon\html\*.html
+    File ..\..\..\hwtest\avr\basemon\html\*.gif
+
+    SetOutPath "$INSTDIR\nut\hwtest\avr\canbus"
+    File ..\..\..\hwtest\avr\canbus\Makefile
+    File ..\..\..\hwtest\avr\canbus\*.c
+    SetOutPath "$INSTDIR\nut\appicc\canbus"
+    File ..\..\..\appicc\canbus\*.prj
+    File ..\..\..\appicc\canbus\*.SRC
+    
+    SetOutPath "$INSTDIR\nut\hwtest\avr\isp2"
+    File ..\..\..\hwtest\avr\isp2\Makefile
+    File ..\..\..\hwtest\avr\isp2\*.c
+    File ..\..\..\hwtest\avr\isp2\*.S
+    File ..\..\..\hwtest\avr\isp2\*.isp
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\eeprom"
+    File ..\..\..\hwtest\cm3\stm\eeprom\Makefile
+    File ..\..\..\hwtest\cm3\stm\eeprom\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\f4discovery"
+    File ..\..\..\hwtest\cm3\stm\f4discovery\Makefile
+    File ..\..\..\hwtest\cm3\stm\f4discovery\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\led_key"
+    File ..\..\..\hwtest\cm3\stm\led_key\Makefile
+    File ..\..\..\hwtest\cm3\stm\led_key\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\owi_test"
+    File ..\..\..\hwtest\cm3\stm\owi_test\Makefile
+    File ..\..\..\hwtest\cm3\stm\owi_test\*.c
+    File ..\..\..\hwtest\cm3\stm\owi_test\*.h
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\trampoline"
+    File ..\..\..\hwtest\cm3\stm\trampoline\Makefile
+    File ..\..\..\hwtest\cm3\stm\trampoline\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\tw_test"
+    File ..\..\..\hwtest\cm3\stm\tw_test\Makefile
+    File ..\..\..\hwtest\cm3\stm\tw_test\*.c
+
+    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\usb_test"
+    File ..\..\..\hwtest\cm3\stm\usb_test\Makefile
+    File ..\..\..\hwtest\cm3\stm\usb_test\*.c
   SectionEnd
 
   Section "Prebuild Samples" SecSampleBins

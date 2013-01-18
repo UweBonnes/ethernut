@@ -34,23 +34,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
+/*!
+ * \file arch/avr/dev/rtlregs.h
+ * \brief Realtek 8019AS registers.
  *
- * Revision 1.1.1.1  2003/05/09 14:40:49  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.7  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.6  2002/10/29 15:27:36  harald
- * *** empty log message ***
- *
- * Revision 1.5  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*!

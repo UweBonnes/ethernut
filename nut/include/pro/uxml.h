@@ -2,7 +2,9 @@
 #define _PRO_UXML_H_
 
 /*
- * Copyright (C) 2008 by egnite GmbH. All rights reserved.
+ * Copyright (C) 2008-2013 by egnite GmbH.
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -62,6 +64,9 @@ typedef struct _UXML_NODE {
     struct _UXML_NODE *xmln_child;      /*!< \brief Pointer to the first child node. */
     struct _UXML_NODE *xmln_parent;     /*!< \brief Pointer to the parent node. */
     char *xmln_name;            /*!< \brief Name of the tag. */
+#ifndef UXML_IGNORE_CONTENT
+    char *xmln_content;         /*!< \brief Content of the tag. */
+#endif
     UXML_ATTRIB *xmln_attribs;  /*!< \brief Pointer to the linked list of attributes. */
 } UXML_NODE;
 

@@ -147,8 +147,39 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(IS_GPIO_ALL_PERIPH(bank));
     __IO uint32_t* gpio_bb = CM3BB_BASE(bank);
+    uint32_t speed_flags_lo =
+        (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_MED) |
+         ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
+    uint32_t speed_flags_hi =
+        (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_HIGH) |
+         ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
 
-    CM3BBREG(RCC_BASE, RCC_TypeDef, GPIO_RCC_ENR, (bank-GPIOA_BASE)>>10) = 1;
+#if defined(MCU_STM32L1)
+    CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR, (bank-GPIOA_BASE)>>10) = 1;
+#elif defined(MCU_STM32F3)
+    CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,
+             ((bank-GPIOA_BASE)>>10) +17) = 1;
+#else
+    CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR,
+             (bank-GPIOA_BASE)>>10) = 1;
+#endif
+    /* Set the inital value, if given
+     *
+     * Otherwise we may introduce unwanted transistions on the port
+     */
+    if (flags & GPIO_CFG_INIT_HIGH)
+    {
+        if (flags & GPIO_CFG_INIT_LOW)
+            return -1;
+        else
+            gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, ODR, bit)] = 1;
+    }
+    if (flags & GPIO_CFG_INIT_LOW)
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, ODR, bit)] = 0;
+
+    /* we can't check for these flags, so clear them */
+    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
     /* keep speed at slowest for now */
     if (flags & GPIO_CFG_PERIPHAL)
     {
@@ -157,15 +188,11 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OTYPER, bit)            ] = (flags & GPIO_CFG_MULTIDRIVE )?1:0;
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP )?1:0;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OSPEEDR, ((bit << 1)    ))] = speed_flags_lo;
+        gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OSPEEDR, ((bit << 1) +1 ))] = speed_flags_hi;
     }
     else if (flags & GPIO_CFG_OUTPUT)
     {
-        uint32_t speed_flags_lo =
-         (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_MED) |
-              ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
-        uint32_t speed_flags_hi =
-             (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_HIGH) |
-              ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OSPEEDR, ((bit << 1)    ))] = speed_flags_lo;
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, OSPEEDR, ((bit << 1) +1 ))] = speed_flags_hi;
 #if defined(SYSCFG_CMPCR_CMP_PD)

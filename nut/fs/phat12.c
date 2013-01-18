@@ -118,12 +118,14 @@ int Phat12GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link)
     /* Read the link value. Be aware, that entries may cross sector boundaries. */
     *link = vol->vol_buf[sbn].sect_data[pos++];
     if (pos >= vol->vol_sectsz) {
+        PhatSectorBufferRelease(dev, sbn);
         if ((sbn = PhatSectorLoad(dev, sect + 1)) < 0) {
             return -1;
         }
         pos = 0;
     }
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos]) << 8;
+    PhatSectorBufferRelease(dev, sbn);
 
     /* Adjust the 12 bit position within the 16 bit result. */
     if (clust & 1) {
@@ -166,6 +168,7 @@ int Phat12SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
         if (pos + 1 < vol->vol_sectsz) {
             tval += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
         } else {
+            PhatSectorBufferRelease(dev, sbn);
             if ((sbn = PhatSectorLoad(dev, sect + 1)) < 0) {
                 return -1;
             }
@@ -187,12 +190,14 @@ int Phat12SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
         } else {
             vol->vol_buf[sbn].sect_data[0] = (uint8_t) (tval >> 8);
             vol->vol_buf[sbn].sect_dirty = 1;
+            PhatSectorBufferRelease(dev, sbn);
             if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
                 return -1;
             }
         }
         vol->vol_buf[sbn].sect_data[pos] = (uint8_t) tval;
         vol->vol_buf[sbn].sect_dirty = 1;
+        PhatSectorBufferRelease(dev, sbn);
     }
 
     return 0;

@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2008 by egnite GmbH. All rights reserved.
+ * Copyright (C) 2008-2013 by egnite GmbH.
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -75,13 +77,56 @@
 #define MAX_UXMLTKN_SIZE     64
 #endif
 
+#ifndef MAX_UXMLCONTENT_SIZE
+/*!
+ * \brief Maximum content size.
+ *
+ * Larger content will be silently discarded.
+ */
+#define MAX_UXMLCONTENT_SIZE    512
+#endif
+
+#ifndef UXML_IGNORE_CONTENT
+static int UxmlReadContent(FILE * stream, char *data, size_t size)
+{
+    int rc = -1;
+    int ch;
+    int len = 0;
+
+    while (1) {
+        ch = fgetc(stream);
+        if (ch == EOF || ch == 0) {
+            break;
+        }
+        if (ch == '<') {
+            rc = 0;
+            break;
+        }
+        if (data && len < size) {
+            if (len || !isspace(ch)) {
+                data[len++] = ch;
+            }
+        }
+    }
+    if (data) {
+        data[len] = 0;
+    }
+    return rc;
+}
+#endif
+
 static int UxmlReadTag(FILE * stream, char *data, size_t size)
 {
     int rc = -1;
     int ch;
     int qc = 0;
+#ifdef UXML_IGNORE_CONTENT
     int state = 1;
     char *dp = NULL;
+#else
+    int state = 4;
+    char *dp = data;
+#endif
 
     while (state) {
         ch = fgetc(stream);
@@ -191,33 +236,63 @@ static int UxmlReadTag(FILE * stream, char *data, size_t size)
  */
 UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
 {
+    char *content;
     char *tag;
     char *tkn;
     char *tp;
+#ifndef UXML_IGNORE_CONTENT
+    char *cp = NULL;
+#endif
     UXML_NODE *root = NULL;
     UXML_NODE *node = NULL;
     UXML_NODE *nn;
 
-    /* Allocate the tag buffer. */
-    if ((tag = malloc(MAX_UXMLTAG_SIZE)) == NULL) {
-        return NULL;
-    }
-    /* Allocate the token buffer. */
-    if ((tkn = malloc(MAX_UXMLTKN_SIZE)) == NULL) {
+    /* Allocate the tag buffers. */
+    tag = malloc(MAX_UXMLTAG_SIZE);
+    tkn = malloc(MAX_UXMLTKN_SIZE);
+#ifdef UXML_IGNORE_CONTENT
+    if (tag == NULL || tkn == NULL) {
         free(tag);
+        free(tkn);
         return NULL;
     }
+#else
+    content = malloc(MAX_UXMLCONTENT_SIZE);
+    if (tag == NULL || tkn == NULL || content == NULL) {
+        free(tag);
+        free(tkn);
+        free(content);
+        return NULL;
+    }
+#endif
     for (;;) {
         if (NutHeapAvailable() < 8192) {
             break;
         }
+#ifndef UXML_IGNORE_CONTENT
+        /* Read all content up to the next tag. */
+        if (UxmlReadContent(stream, cp, MAX_UXMLCONTENT_SIZE)) {
+            /* No more tags or error. */
+            break;
+        }
+        if (cp) {
+            if (*cp) {
+                node->xmln_content = strdup(cp);
+            }
+            cp = NULL;
+        }
+#endif
         /* Read the next tag. */
         if (UxmlReadTag(stream, tag, MAX_UXMLTAG_SIZE)) {
             /* No more tags or error. */
             break;
         }
+        /* Skip declaration. */
+        if (*tag == '?') {
+            continue;
+        }
         /* Parse the tag. */
-        if ((tp = UxmlParseTag(tag + 1, tkn, MAX_UXMLTKN_SIZE)) != NULL) {
+        if ((tp = UxmlParseTag(tag, tkn, MAX_UXMLTKN_SIZE)) != NULL) {
             if (isalpha((unsigned char)*tkn) && UxmlFilterMatch(tkn, f_tags)) {
                 /* Save pointer to tp because needed to determine self closing tag */
                 char *old_tp = tp;
@@ -265,6 +340,8 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
                 /* Check if tag is self closing */
                 if (node && strlen(old_tp) > 1 && old_tp[strlen(old_tp) - 2]=='/') {
                     node = node->xmln_parent;
+                } else {
+                    cp = content;
                 }
             } else if (*tkn == '/') {
                 /*

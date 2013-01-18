@@ -39,7 +39,7 @@
 include $(top_srcdir)/app/Makevars.gcc
 
 # set linker options
-LDFLAGS   = $(MCFLAGS) -Wl,--defsym=main=0,-Map=$(PROJ).map,--cref -L$(LIBDIR)
+LDFLAGS   = $(MCFLAGS) -Wl,--gc-sections -Wl,--defsym=main=0,-Map=$(PROJ).map,--cref -L$(LIBDIR)
 ifdef DATA_SEG
 LDFLAGS += -Wl,--section-start=.data=$(subst 0x,0x80,$(DATA_SEG))
 endif

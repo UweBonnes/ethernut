@@ -31,84 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.9  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
+/*!
+ * \file arch/avr/dev/lanc111.c
+ * \brief AVR network driver for SMSC LAN91C111.
  *
- * Revision 1.8  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
- *
- * Revision 1.7  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.6  2007/05/02 11:22:51  haraldkipp
- * Added multicast table entry.
- *
- * Revision 1.5  2006/10/08 16:48:08  haraldkipp
- * Documentation fixed
- *
- * Revision 1.4  2006/06/28 14:30:19  haraldkipp
- * Post to the event queue on overflow interrupts.
- * Transmit event queue removed, because no one is listening.
- *
- * Revision 1.3  2005/10/24 18:02:34  haraldkipp
- * Fixes for ATmega103.
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.13  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.12  2005/02/02 19:55:34  haraldkipp
- * If no Ethernet link was available on the LAN91C111, each outgoing packet
- * took 15 seconds and, even worse, the ouput routine doesn't return an error.
- * Now the first attempt to send a packet without Ethernet link will wait for
- * 5 seconds and subsequent attempts take 0.5 seconds only, always returning
- * an error.
- *
- * Revision 1.11  2005/01/24 21:11:49  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.10  2005/01/22 19:24:11  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.9  2005/01/21 16:49:45  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.8  2004/09/22 08:14:48  haraldkipp
- * Made configurable
- *
- * Revision 1.7  2004/03/08 11:14:17  haraldkipp
- * Added quick hack for fixed mode.
- *
- * Revision 1.6  2004/02/25 16:22:33  haraldkipp
- * Do not initialize MAC with all zeros
- *
- * Revision 1.5  2004/01/14 19:31:43  drsung
- * Speed improvement to NicWrite applied. Thanks to Kolja Waschk
- *
- * Revision 1.4  2003/11/06 09:26:50  haraldkipp
- * Removed silly line with hardcoded MAC, left over from testing
- *
- * Revision 1.3  2003/11/04 17:54:47  haraldkipp
- * PHY configuration timing changed again for reliable linking
- *
- * Revision 1.2  2003/11/03 17:12:53  haraldkipp
- * Allow linking with RTL8019 driver.
- * Links more reliable to 10 MBit networks now.
- * Reset MMU on allocation failures.
- * Some optimizations.
- *
- * Revision 1.1  2003/10/13 10:13:49  haraldkipp
- * First release
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

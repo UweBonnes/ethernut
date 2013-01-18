@@ -244,6 +244,17 @@ nutnet =
             "ipout.c",
             "ipdemux.c",
             "route.c"
+        },
+        options =
+        {
+            {
+                macro = "NUT_IP_FORWARDING",
+                brief = "IP Forwarding",
+                description = "If enabled, incoming IP datagrams to other destinations are forwarded "..
+                              "to the most specific route.\n",
+                flavor = "boolean",
+                file = "include/cfg/ip.h"
+            }
         }
     },
     {

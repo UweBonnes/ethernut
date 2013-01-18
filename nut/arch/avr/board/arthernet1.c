@@ -41,6 +41,7 @@
  * \endverbatim
  */
 
+#include <stdint.h>
 #include <cfg/memory.h>
 #include <cfg/arch/avr.h>
 

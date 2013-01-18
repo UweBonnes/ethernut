@@ -20,7 +20,35 @@ Now, here is all the legal stuff:
 
 Nut/OS and Nut/Net are
 
-Copyright (C) 2000-2003 by egnite Software GmbH. All rights reserved.
+Copyright (C) 2002-2003 by Call Direct Cellular Solutions Pty. Ltd.
+Copyright (C) 1988-1992 by Carnegie Mellon University
+Copyright (C) 2001-2003 by Cyber Integration, LLC
+Copyright (C) 2000 David J. Hudson
+Copyright (c) 1993 by Digital Equipment Corporation
+Copyright (C) 2008 by Duane Ellis
+Copyright (C) 2001-2007 by egnite Software GmbH
+Copyright (C) 2008-2009 by egnite GmbH
+Copyright (C) 2008-2011 by Thermotemp GmbH, EmbeddedIT, Ole Reinhardt
+Copyright (C) 2001-2008 by EmbeddedIT, Ole Reinhardt
+Copyright (C) 2000-2004 by ETH Zurich
+Copyright (c) 2002-2005 by Michael Fischer
+Copyright (C) 2004 by Jan Dubiec
+Copyright (C) 2004 by Jean Pierre Gauthier
+Copyright (C) 1994-2008 Lua.org, PUC-Rio
+Copyright (C) 1985 by Microsoft Corporation
+Copyright (C) 2001-2004 by Ole Reinhardt, Kernelconcepts
+Copyright (C) 2003 by Pavel Chromy
+Copyright (C) 2005-2009 proconX Pty. Ltd.
+Copyright (C) 2007 by Przemyslaw Rudy
+Copyright (C) 1982-1993 The Regents of the University of California
+Copyright (C) 2009 by Rittal GmbH & Co. KG, Ulrich Prinz
+Copyright (C) 1988 Stephen Deering.
+Copyright (C) 2008 by Szemzo Andr s
+Copyright (C) 2001-2003 by Telogis.com
+Copyright (C) 1997 Todd C. Miller
+Copyright (C) UNIX System Laboratories, Inc.
+
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -31,17 +59,15 @@ are met:
 2. Redistributions in binary form must reproduce the above copyright
    notice, this list of conditions and the following disclaimer in the
    documentation and/or other materials provided with the distribution.
-3. All advertising materials mentioning features or use of this
-   software must display the following acknowledgement:
+3. Neither the name of the copyright holders nor the names of
+   contributors may be used to endorse or promote products derived
+   from this software without specific prior written permission.
 
-   This product includes software developed by egnite Software GmbH
-   and its contributors.
-
-THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
-SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -217,7 +243,7 @@ patent must be licensed for everyone's free use or not licensed at all.
 
   The precise terms and conditions for copying, distribution and
 modification follow.
-
+
 		    GNU GENERAL PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
@@ -272,7 +298,7 @@ above, provided that you also meet all of these conditions:
     License.  (Exception: if the Program itself is interactive but
     does not normally print such an announcement, your work based on
     the Program is not required to print an announcement.)
-
+
 These requirements apply to the modified work as a whole.  If
 identifiable sections of that work are not derived from the Program,
 and can be reasonably considered independent and separate works in
@@ -330,7 +356,7 @@ access to copy from a designated place, then offering equivalent
 access to copy the source code from the same place counts as
 distribution of the source code, even though third parties are not
 compelled to copy the source along with the object code.
-
+
   4. You may not copy, modify, sublicense, or distribute the Program
 except as expressly provided under this License.  Any attempt
 otherwise to copy, modify, sublicense or distribute the Program is
@@ -387,7 +413,7 @@ impose that choice.
 
 This section is intended to make thoroughly clear what is believed to
 be a consequence of the rest of this License.
-
+
   8. If the distribution and/or use of the Program is restricted in
 certain countries either by patents or by copyrighted interfaces, the
 original copyright holder who places the Program under this License
@@ -440,7 +466,7 @@ PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
 
 		     END OF TERMS AND CONDITIONS
-
+
 	    How to Apply These Terms to Your New Programs
 
   If you develop a new program, and you want it to be of the greatest

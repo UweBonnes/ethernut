@@ -31,14 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:18  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/wdt_avr.c
+ * \brief AVR watchdog support.
  *
- * Revision 1.1  2006/05/25 09:13:23  haraldkipp
- * Platform independent watchdog API added.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #if defined(__GNUC__)

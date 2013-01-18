@@ -216,7 +216,8 @@ NUTSPINODE nodeSpiMmc0Npl = {
     NPL_MMC_CLOCK,  /*!< \brief Initial clock rate, node_rate. */
     SPI_MODE_0,     /*!< \brief Initial mode, node_mode. */
     8,              /*!< \brief Initial data bits, node_bits. */
-    0               /*!< \brief Chip select, node_cs. */
+    0,              /*!< \brief Chip select, node_cs. */
+    &mcsSpiMmc0Npl  /*!< Driver control block used by the low level part, node_dcb. */
 };
 
 /*!

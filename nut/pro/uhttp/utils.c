@@ -37,6 +37,7 @@
  */
 
 #include <pro/uhttp/utils.h>
+#include <memdebug.h>
 
 #include <stdlib.h>
 #include <stdarg.h>

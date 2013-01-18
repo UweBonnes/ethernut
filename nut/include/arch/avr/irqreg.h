@@ -84,7 +84,7 @@ extern IRQ_HANDLER sig_ADC;
 extern IRQ_HANDLER sig_EEPROM_READY;
 extern IRQ_HANDLER sig_COMPARATOR;
 
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(MCU_AT90USB1287)
 #define sig_USART0_RECV sig_UART0_RECV
 #define sig_USART0_DATA sig_UART0_DATA
 #define sig_USART0_TRANS sig_UART0_TRANS

@@ -39,5 +39,5 @@
 include $(top_srcdir)/app/Makevars.gcc
 
 # set linker options
-LDFLAGS = $(MCFLAGS) -nostartfiles -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
+LDFLAGS = $(MCFLAGS) -nostartfiles -L$(LDPATH) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
 

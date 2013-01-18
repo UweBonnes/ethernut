@@ -142,6 +142,51 @@ extern void *__heap_start;
 
 /* Nut/OS is still using the original ATmega103 register names for
    backward compatibility. */
+#if  defined(__AVR_AT90USB1287__)
+/* AT90USB1287 without USART0 */
+#ifndef UDR
+#define UDR     UDR1
+#endif
+#ifndef UBRR
+#define UBRR    UBRR1L
+#endif
+#ifndef USR
+#define USR     UCSR1A
+#endif
+#ifndef UCR
+#define UCR     UCSR1B
+#endif
+#ifndef EICR
+#define EICR    EICRB
+#endif
+#ifndef RXC
+#define RXC     RXC1
+#endif
+#ifndef UDRE
+#define UDRE    UDRE1
+#endif
+#ifndef FE
+#define FE      FE1
+#endif
+#ifndef DOR
+#define DOR     DOR1
+#endif
+#ifndef RXCIE
+#define RXCIE   RXCIE1
+#endif
+#ifndef TXCIE
+#define TXCIE   TXCIE1
+#endif
+#ifndef UDRIE
+#define UDRIE   UDRIE1
+#endif
+#ifndef RXEN
+#define RXEN    RXEN1
+#endif
+#ifndef TXEN
+#define TXEN    TXEN1
+#endif
+#else
 #ifndef UDR
 #define UDR     UDR0
 #endif
@@ -184,10 +229,11 @@ extern void *__heap_start;
 #ifndef TXEN
 #define TXEN    TXEN0
 #endif
+#endif
 
 /* Some ATC90CAN128 SFR names are different to ATMEGA128. Define some
    compatibilty macros. */
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) ||  defined(__AVR_AT90USB1287__)
 #ifndef ADCW
 #define ADCW    ADC
 #endif
@@ -215,7 +261,7 @@ extern void *__heap_start;
 #ifndef TIFR
 #define TIFR   TIFR0
 #endif
-#endif /* __AVR_AT90CAN128__ || __AVR_ATmega2560__ || __AVR_ATmega2561__*/
+#endif /* __AVR_AT90CAN128__ || __AVR_ATmega2560__ || __AVR_ATmega2561__ || __AVR_AT90USB1287__)*/
 
 
 #endif /* __AVR_ENHANCED__ */

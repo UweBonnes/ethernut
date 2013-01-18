@@ -157,8 +157,10 @@ int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t 
  *                override the MAC address stored in the non-volatile
  *                configuration memory. If this memory is uninitialized
  *                or not available, the MAC address must be specified.
- *                For PPP interfaces this parameter is ignored and should
- *                be set to zero.
+ *                For PPP client interfaces this parameter is NULL,
+ *                while PPP server interfaces expect a pointer to a
+ *                \ref PPPSERVER_CFG structure containing the server
+ *                configuration.
  * \param ip_addr Specified IP address in network byte order. This must
  *                be a unique address within the Internet. If you do not
  *                directly communicate with other Internet hosts, you can
@@ -191,7 +193,16 @@ int NutNetIfConfig(const char *name, void *params, uint32_t ip_addr, uint32_t ip
  * the so called ARP method.
  *
  * \param name    Name of the device to configure.
- * \param params  Pointer to interface specific parameters.
+ * \param params  Pointer to interface specific parameters. For Ethernet
+ *                interfaces this parameter may be a pointer to a buffer
+ *                containing the 6 byte long MAC address. This will
+ *                override the MAC address stored in the non-volatile
+ *                configuration memory. If this memory is uninitialized
+ *                or not available, the MAC address must be specified.
+ *                For PPP client interfaces this parameter is NULL,
+ *                while PPP server interfaces expect a pointer to a
+ *                \ref PPPSERVER_CFG structure containing the server
+ *                configuration.
  * \param ip_addr Specified IP address in network byte order. This must
  *                be a unique address within the Internet. If you do not
  *                directly communicate with other Internet hosts, you can
@@ -247,6 +258,7 @@ int NutNetIfConfig2(const char *name, void *params, uint32_t ip_addr, uint32_t i
      */
     else if (nif->if_type == IFT_PPP) {
         PPPDCB *dcb = dev->dev_dcb;
+        PPPSERVER_CFG *ppsc = params;
 
         /*
          * Set the interface's IP address, make sure that the state
@@ -255,6 +267,9 @@ int NutNetIfConfig2(const char *name, void *params, uint32_t ip_addr, uint32_t i
          */
         dcb->dcb_local_ip = ip_addr;
         dcb->dcb_ip_mask = ip_mask ? ip_mask : 0xffffffff;
+        if (ppsc) {
+            dcb->dcb_remote_ip = ppsc->ppsc_remote_ip;
+        }
         NutEventBroadcast(&dcb->dcb_state_chg);
         _ioctl(dcb->dcb_fd, HDLC_SETIFNET, &dev);
 

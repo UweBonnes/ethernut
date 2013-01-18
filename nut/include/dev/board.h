@@ -142,6 +142,8 @@
 #include <arch/avr/board/ethernut1.h>
 #elif defined(ETHERNUT2)
 #include <arch/avr/board/ethernut2.h>
+#elif defined(AT90USBKEY)
+#include <arch/avr/board/at90usbkey.h>
 #elif defined(ETHERNUT3)
 #include <arch/arm/board/ethernut3.h>
 #elif defined(ETHERNUT5)
@@ -159,7 +161,7 @@
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
 #elif defined(GBAXPORT2)
-#include <arch/cm3/board/gba_xport2.h>
+#include <arch/arm/board/gba_xport2.h>
 #elif defined(KSK_LPC1788_SK)
 #include <arch/cm3/board/ksk_lpc1788_sk.h>
 #elif defined(LISA)

@@ -31,55 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.5  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
+/*!
+ * \file arch/avr/dev/ahdlcavr.c
+ * \brief AVR AHDLC driver.
  *
- * Revision 1.4  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.3  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.10  2005/06/26 12:40:59  chaac
- * Added support for raw mode to AHDLC driver.
- *
- * Revision 1.9  2005/05/27 14:43:28  chaac
- * Fixed bugs on closing AHDLC sessions. Fixed AHDLC ioctl handling. Not all
- * messages were handled correctly  and fixed possible problem of reading memory
- * from address zero.
- *
- * Revision 1.8  2005/04/05 17:44:56  haraldkipp
- * Made stack space configurable.
- *
- * Revision 1.7  2005/02/10 07:06:17  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.6  2005/01/24 21:11:48  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.5  2005/01/21 16:49:45  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.4  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.3  2004/03/18 14:05:20  haraldkipp
- * Comments updated
- *
- * Revision 1.2  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1  2004/03/08 11:16:54  haraldkipp
- * Asynchronous HDLC driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/ahdlc.h>
@@ -313,6 +271,7 @@ static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
 #define NUT_THREAD_AHDLCRXSTACK     512
 #endif
 
+#if !defined(MCU_AT90USB1287)
 /*
  * Handle AVR UART0 transmit complete interrupts.
  */
@@ -344,6 +303,7 @@ static void Cts0Interrupt(void *arg)
     sbi(UCR, UDRIE);
 }
 #endif
+#endif /*!USB1287*/
 
 #ifdef __AVR_ENHANCED__
 /*
@@ -380,6 +340,7 @@ static void Cts1Interrupt(void *arg)
 
 #endif                          /* __AVR_ENHANCED__ */
 
+#if !defined(MCU_AT90USB1287)
 /*
  * Handle AVR UART0 receive complete interrupts.
  */
@@ -393,6 +354,7 @@ static void Rx0Complete(void *arg)
     /* Late increment fixes ICCAVR bug on volatile variables. */
     dcb->dcb_rx_idx++;
 }
+#endif /*!USB1287*/
 
 #ifdef __AVR_ENHANCED__
 /*
@@ -944,12 +906,17 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     AHDLCDCB *dcb;
     void **ppv = (void **) conf;
     uint32_t *lvp = (uint32_t *) conf;
-    uint8_t bv;
-    uint16_t sv;
+    uint8_t bv = 0;
+    uint16_t sv = 0;
     uint8_t devnum;
 
+#if !defined(MCU_AT90USB1287)
     if (dev == 0)
         dev = &devUart0;
+#else
+    if (dev == 0)
+        return -1;
+#endif
 
     devnum = dev->dev_base;
     dcb = dev->dev_dcb;
@@ -962,9 +929,11 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         if (devnum) {
             outb(UBRR1L, (uint8_t) sv);
             outb(UBRR1H, (uint8_t) (sv >> 8));
+#if !defined(MCU_AT90USB1287)
         } else {
             outb(UBRR0L, (uint8_t) sv);
             outb(UBRR0H, (uint8_t) (sv >> 8));
+#endif
         }
 #else
         outb(UBRR, (uint8_t) sv);
@@ -976,8 +945,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             sv = (uint16_t) inb(UBRR1H) << 8 | inb(UBRR1L);
+#if !defined(MCU_AT90USB1287)
         else
             sv = (uint16_t) inb(UBRR0H) << 8 | inb(UBRR0L);
+#endif
 #else
         sv = inb(UBRR);
 #endif
@@ -993,9 +964,11 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             if (devnum) {
                 outb(UCSR1C, (inb(UCSR1C) & 0xF9) | bv);
                 outb(UCSR1B, inb(UCSR1B) & 0xFB);
+#if !defined(MCU_AT90USB1287)
             } else {
                 outb(UCSR0C, (inb(UCSR0C) & 0xF9) | bv);
                 outb(UCSR0B, inb(UCSR0B) & 0xFB);
+#endif
             }
         } else
             rc = -1;
@@ -1010,8 +983,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             *lvp = ((inb(UCSR1C) & 0x06) >> 1) + 5;
+#if !defined(MCU_AT90USB1287)
         else
             *lvp = ((inb(UCSR0C) & 0x06) >> 1) + 5;
+#endif
 #else
         *lvp = 8;
 #endif
@@ -1027,8 +1002,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             bv <<= 4;
             if (devnum)
                 outb(UCSR1C, (inb(UCSR1C) & 0xCF) | bv);
+#if !defined(MCU_AT90USB1287)
             else
                 outb(UCSR0C, (inb(UCSR0C) & 0xCF) | bv);
+#endif
         } else
             rc = -1;
 #endif
@@ -1041,8 +1018,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             bv = (inb(UCSR1C) & 0x30) >> 4;
+#if !defined(MCU_AT90USB1287)
         else
             bv = (inb(UCSR0C) & 0x30) >> 4;
+#endif
         if (bv == 3)
             bv = 1;
 #else
@@ -1059,8 +1038,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             bv = (bv - 1) << 3;
             if (devnum)
                 outb(UCSR1C, (inb(UCSR1C) & 0xF7) | bv);
+#if !defined(MCU_AT90USB1287)
             else
                 outb(UCSR0C, (inb(UCSR0C) & 0xF7) | bv);
+#endif
         } else
             rc = -1;
 #else
@@ -1074,8 +1055,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             *lvp = ((inb(UCSR1C) & 0x08) >> 3) + 1;
+#if !defined(MCU_AT90USB1287)
         else
             *lvp = ((inb(UCSR0C) & 0x08) >> 3) + 1;
+#endif
 #else
         *lvp = 1;
 #endif
@@ -1253,6 +1236,9 @@ int AhdlcAvrInit(NUTDEVICE * dev)
 
     } else {
 
+#if defined(MCU_AT90USB1287)
+        rc = -1;
+#else
 #ifdef UART0_CTS_BIT
         sbi(UART0_CTS_PORT, UART0_CTS_BIT);
         cbi(UART0_CTS_DDR, UART0_CTS_BIT);
@@ -1282,6 +1268,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
 #ifdef UART0_CTS_BIT
         else if (NutRegisterIrqHandler(&UART0_CTS_SIGNAL, Cts0Interrupt, dev))
             rc = -1;
+#endif
 #endif
     }
 

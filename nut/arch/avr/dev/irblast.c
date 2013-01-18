@@ -29,35 +29,11 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.4  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+/*!
+ * \file arch/avr/dev/irblast.c
+ * \brief AVR IR transmitter support.
  *
- * Revision 1.3  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2007/08/17 11:16:29  haraldkipp
- * Flush timeout fixed. Thanks to Przemek.
- *
- * Revision 1.1  2007/05/24 07:42:42  haraldkipp
- * New driver from Przemyslaw Rudy sends modulated infrared remote control
- * codes using a simple IR LED. Cool.
- *
- */
-
-#include <compiler.h>
-#include <string.h>
-#include <dev/irqreg.h>
-#include <sys/atom.h>
-#include <sys/event.h>
-#include <sys/thread.h>
-#include <sys/device.h>
-#include <arch/timer.h>
-#include <dev/irblast.h>
-
-/* This driver sends infrared codes. The hardware pwm feature is used thus output
+ * This driver sends infrared codes. The hardware pwm feature is used thus output
  * is generated on dedicated pin PB7.
  * Frequency and codes are given in timer OCR value form. For user convenience
  * two helpers are provided, carrier frequency can be given in kHz form (30-50)
@@ -86,7 +62,21 @@
  *    fflush(irblast_hdl);
  * }
  *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
+
+#include <compiler.h>
+#include <string.h>
+#include <dev/irqreg.h>
+#include <sys/atom.h>
+#include <sys/event.h>
+#include <sys/thread.h>
+#include <sys/device.h>
+#include <arch/timer.h>
+#include <dev/irblast.h>
+
 
 typedef struct _IRBLASTDCB IRBLASTDCB;
 struct _IRBLASTDCB {

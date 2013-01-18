@@ -178,12 +178,14 @@ typedef struct {
 extern void CallHandler(IRQ_HANDLER * irh);
 
 #ifdef __NUT_EMULATION__
-extern int  NutRegisterIrqHandler(uint8_t irq_nr, void (*handler) (void *), void *arg);
+extern int NutRegisterIrqHandler(uint8_t irq_nr, void (*handler) (void *), void *arg);
 #else
 extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);
+extern int NutIrqStatus(IRQ_HANDLER * irq);
 extern int NutIrqEnable(IRQ_HANDLER * irq);
 extern int NutIrqDisable(IRQ_HANDLER * irq);
 extern int NutIrqSetPriority(IRQ_HANDLER * irq, int level);
+extern int NutIrqGetPriority(IRQ_HANDLER * irq);
 extern int NutIrqSetMode(IRQ_HANDLER * irq, int mode);
 #endif
 

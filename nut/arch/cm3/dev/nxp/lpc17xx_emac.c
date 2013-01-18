@@ -82,6 +82,8 @@
 #define EMPRINTF(args,...)
 #endif
 
+#define NUT_THREAD_NICLINKSTACK 512
+
 #ifndef NUT_THREAD_NICRXSTACK
 /* arm-elf-gcc used 168 bytes with optimized, 412 bytes with debug code. */
 #define NUT_THREAD_NICRXSTACK   512
@@ -99,8 +101,6 @@
 #ifndef NIC_PHY_ADDR
 #define NIC_PHY_ADDR            0
 #endif
-
-//#define ERROR_HANDLING_ENABLED
 
 
 /* MII Mgmt Configuration register - Clock divider setting */
@@ -242,17 +242,64 @@ static void Lpc17xxEmacSetMACAddr(const uint8_t * mac)
     LPC_EMAC->SA2 = ((uint32_t)mac[1] << 8) | (uint32_t)mac[0];
 }
 
+/*! \fn Lpc17xxEmacWaitLinkThread(void *arg)
+ * \brief Wait for link establishment and configure the NIC
+ *        accordingly.
+ */
+
+THREAD(Lpc17xxEmacWaitLinkThread, arg)
+{
+    uint32_t phyval;
+    int      link_wait;
+
+    for (;;) {
+        /* Restart autonegotiation */
+        phyval = 1;
+        NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
+
+        /* Wait for auto negotiation completed and link established. */
+        for (link_wait = EMAC_LINK_LOOPS;; link_wait--) {
+            phyval = 0;
+            NutPhyCtl(PHY_GET_STATUS, &phyval);
+
+            if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
+                /* Check link state and configure EMAC accordingly */
+                if (phyval & PHY_STATUS_100M) {
+                    Lpc17xxEmacSetSpeed(1);
+                    EMPRINTF("EMAC: Got link: 100 MBit ");
+                } else {
+                    Lpc17xxEmacSetSpeed(0);
+                    EMPRINTF("Link: Got link: 10 MBit ");
+                }
+
+                if (phyval & PHY_STATUS_FULLDUPLEX) {
+                    Lpc17xxEmacSetDuplex(1);
+                    EMPRINTF("Full Duplex\n");
+                } else {
+                    Lpc17xxEmacSetDuplex(0);
+                    EMPRINTF("Half Duplex\n");
+                }
+                NutThreadExit();
+                break;
+            }
+            if (link_wait == 0) {
+                EMPRINTF("NO LINK!\n");
+            }
+            NutSleep(10);
+        }
+    }
+}
+
 /*!
  * \brief Reset the Ethernet controller.
  *
- * \return 0 on success, -1 otherwise.
+ * \return 0 on success, -1 on error
  */
 
-static int Lpc17xxEmacReset(uint32_t tmo)
+static int Lpc17xxEmacReset(void)
 {
     int      rc = 0;
     uint32_t phyval;
-    int      link_wait;
     int      idx;
     int32_t  tmp;
 
@@ -265,7 +312,7 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     LPC_EMAC->Command = EMAC_CR_REG_RES | EMAC_CR_TX_RES | EMAC_CR_RX_RES | EMAC_CR_PASS_RUNT_FRM;
 
     /* A short delay after reset. */
-    NutDelay(10);
+    NutSleep(10);
 
     /* Initialize MAC control registers. */
     LPC_EMAC->MAC1 = EMAC_MAC1_PASS_ALL;
@@ -302,7 +349,7 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     LPC_EMAC->Command = EMAC_CR_RMII | EMAC_CR_PASS_RUNT_FRM;
 #endif
 
-    NutDelay(10);
+    NutSleep(10);
 
     LPC_EMAC->SUPP = 0;
 
@@ -325,37 +372,10 @@ static int Lpc17xxEmacReset(uint32_t tmo)
     phyval = 1;
     NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
 
-    /* Wait for auto negotiation completed and link established. */
-    for (link_wait = tmo;; link_wait--) {
-        phyval = 0;
-        NutPhyCtl(PHY_GET_STATUS, &phyval);
-
-        if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
-            /* Check link state and configure EMAC accordingly */
-            if (phyval & PHY_STATUS_100M) {
-                Lpc17xxEmacSetSpeed(1);
-                EMPRINTF("EMAC: Got link: 100 MBit ");
-            } else {
-                Lpc17xxEmacSetSpeed(0);
-                EMPRINTF("Link: Got link: 10 MBit ");
-            }
-
-            if (phyval & PHY_STATUS_FULLDUPLEX) {
-                Lpc17xxEmacSetDuplex(1);
-                EMPRINTF("Full Duplex\n");
-            } else {
-                Lpc17xxEmacSetDuplex(0);
-                EMPRINTF("Half Duplex\n");
-            }
-
-            break;
-        }
-        if (link_wait == 0) {
-            EMPRINTF("NO LINK!\n");
-            /* Return error on link timeout. */
-            return -1;
-        }
-        NutSleep(10);
+    if (NutThreadCreate("emaclink", Lpc17xxEmacWaitLinkThread, NULL,
+        (NUT_THREAD_NICLINKSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
+        EMPRINTF("Lpc17xxEmacReset() Could not create link establishment thread\n");
+        rc = -1;
     }
 
     EMPRINTF("Lpc17xxEmacReset() DONE\n");
@@ -518,62 +538,29 @@ static void Lpc17xxEmacInterrupt(void *arg)
     /* EMAC Ethernet Controller Interrupt function. */
 
     /* Get EMAC interrupt status */
-    while ((isr = (LPC_EMAC->IntStatus & LPC_EMAC->IntEnable)) != 0) {
+    isr = (LPC_EMAC->IntStatus & LPC_EMAC->IntEnable);
+    if (isr != 0) {
         /* Clear interrupt status */
         LPC_EMAC->IntClear = isr;
 
-#ifdef ERROR_HANDLING_ENABLED
-        if (isr & (EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR)) {
-            uint32_t frame_status = Lpc17xxEmacGetRxFrameStatus();
-            uint32_t error = 0;
-
-            error |= (frame_status & EMAC_RINFO_CRC_ERR)   ? EMAC_CRC_ERR:0;
-            error |= (frame_status & EMAC_RINFO_SYM_ERR)   ? EMAC_SYMBOL_ERR:0;
-            error |= (frame_status & EMAC_RINFO_LEN_ERR)   ? EMAC_LENGTH_ERR:0;
-            error |= (frame_status & EMAC_RINFO_ALIGN_ERR) ? EMAC_ALIGN_ERR:0;
-            error |= (frame_status & EMAC_RINFO_OVERRUN)   ? EMAC_OVERRUN_ERR:0;
-            error |= (frame_status & EMAC_RINFO_NO_DESCR)  ? EMAC_RX_NO_DESC_ERR:0;
-            error |= (frame_status & EMAC_RINFO_FAIL_FILT) ? EMAC_FILTER_FAILED_ERR:0;
-
-            if(error == 0) {
-                /* Note:
-                 * The EMAC doesn't distinguish the frame type and frame length,
-                 * so, e.g. when the IP(0x8000) or ARP(0x0806) packets are received,
-                 * it compares the frame type with the max length and gives the
-                 * "Range" error. In fact, this bit is not an error indication,
-                 * but simply a statement by the chip regarding the status of
-                 * the received frame
-                 */
-                isr &= ~EMAC_INT_RX_ERR;
-            } else {
-                /* We could call any kind of error handling here */
-                /* TODO: Shall we mark the controller insane and post to the rx-event queue? */
-                ni->ni_insane = 1;
-                NutEventPostFromIrq(&ni->ni_rx_rdy);
-            }
-        }
-
-        if (isr & (EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR)) {
-            uint32_t frame_status = Lpc17xxEmacGetTxFrameStatus();
-            uint32_t error = 0;
-
-            error |= (frame_status & EMAC_TINFO_EXCESS_DEF) ? EMAC_EXCESSIVE_DEFER_ERR:0;
-            error |= (frame_status & EMAC_TINFO_EXCESS_COL) ? EMAC_EXCESSIVE_COLLISION_ERR:0;
-            error |= (frame_status & EMAC_TINFO_LATE_COL)   ? EMAC_LATE_COLLISION_ERR:0;
-            error |= (frame_status & EMAC_TINFO_UNDERRUN)   ? EMAC_UNDERRUN_ERR:0;
-            error |= (frame_status & EMAC_TINFO_NO_DESCR)   ? EMAC_TX_NO_DESC_ERR:0;
-
-            /* We could call any kind of error handling here */
-            /* TODO: Shall we mark the controller insane and post to the tx-event queue? */
-        }
-#endif
-
-        if (isr & EMAC_INT_RX_DONE) {
-            LPC_EMAC->IntEnable &= ~(EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN | EMAC_INT_RX_DONE);
+        if (isr & EMAC_INT_RX_OVERRUN) {
+            /* An RX overrun error is fatal. We have to soft-reset the RX Datapath */
+            LPC_EMAC->Command |= EMAC_CR_RX_RES;
+            /* Anyway post the RX queue so the receiver thread can read the just received frames */
+            NutEventPostFromIrq(&ni->ni_rx_rdy);
+        } else
+        if (isr & (EMAC_INT_RX_DONE | EMAC_INT_RX_ERR)) {
+            LPC_EMAC->IntEnable &= ~(EMAC_INT_RX_ERR | EMAC_INT_RX_DONE);
             NutEventPostFromIrq(&ni->ni_rx_rdy);
         }
-
-        if (isr & EMAC_INT_TX_FIN) {
+        
+        if (isr & EMAC_INT_TX_UNDERRUN)  {
+            /* An TX underrun error is fatal. We have to soft-reset the TX Datapath */
+            LPC_EMAC->Command |= EMAC_CR_TX_RES;
+            /* Anyway post the TX queue so the transmitter can rwrite new frames */
+            NutEventPostFromIrq(&ni->ni_tx_rdy);                   
+        } else 
+        if (isr & (EMAC_INT_TX_DONE | EMAC_INT_TX_ERR)) {
             NutEventPostFromIrq(&ni->ni_tx_rdy);
         }
     }
@@ -589,6 +576,7 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
     int      rc = -1;
     uint32_t idx;
     int32_t  rxlen = 0;
+    uint32_t status;
 
     *nbp = NULL;
 
@@ -599,18 +587,16 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 
         if(rxlen > 0) {
             /* substract 4 bytes CTC. */
-            /* TODO: the sample code substract only 3 bytes, as the size is -1 encoded,
-                     but rxlen was just inceased by one before!!!
-             */
             rxlen -= 4;
 
+            status = Lpc17xxEmacGetRxFrameStatus();
             /* Check if the frame was correctly received */
-            if((Lpc17xxEmacGetRxFrameStatus() & EMAC_RINFO_ERR_MASK) == 0) {
+            if((status & EMAC_RINFO_ERR_MASK) == 0) {           
                 /*
                  * Receiving long packets is unexpected. Let's declare the
                  * chip insane. Short packets will be handled by the caller.
                  */
-                if ((rxlen > ETHERMTU) || (rxlen < 0) || ((Lpc17xxEmacGetRxFrameStatus() & EMAC_RINFO_LAST_FLAG) == 0)) {
+                if ((rxlen > ETHERMTU) || (rxlen < 0) || ((status & EMAC_RINFO_LAST_FLAG) == 0)) {
                     /* TODO: We assume that the "last" flag is always set */
                     /* TODO: There is space for buffer space optimization by
                              allowing smaller receive framgments. In this case
@@ -620,25 +606,28 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
                      */
                     ni->ni_insane = 1;
                 } else {
-                    *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t)rxlen);
+                    *nbp = NutNetBufAlloc(0, NBAF_DATALINK + (2 & (NUTMEM_ALIGNMENT - 1)), (uint16_t)rxlen);
                     if (*nbp != NULL) {
                         memcpy((uint8_t *) (* nbp)->nb_dl.vp, (void*)RX_DESC_PACKET(LPC_EMAC->RxConsumeIndex), rxlen);
                     }
 
-                    /* Release frame from EMAC buffer, update the Rx consume index */
-
-                    /* Get current Rx consume index */
-                    idx = LPC_EMAC->RxConsumeIndex;
-
-                    /* Release frame from EMAC buffer */
-                    if (++idx == EMAC_NUM_RX_FRAG) {
-                        idx = 0;
-                    }
-
-                    LPC_EMAC->RxConsumeIndex = idx;
                     rc = 0;
                 }
+            } else {
+                /* Silently discard the frame from EMAC buffer, update the Rx consume index */
             }
+
+            /* Release frame from EMAC buffer, update the Rx consume index */
+            
+            /* Get current Rx consume index */
+            idx = LPC_EMAC->RxConsumeIndex;
+
+            /* Release frame from EMAC buffer */
+            if (++idx == EMAC_NUM_RX_FRAG) {
+                idx = 0;
+            }
+
+            LPC_EMAC->RxConsumeIndex = idx;                 
         }
     }
     return rc;
@@ -804,10 +793,8 @@ THREAD(Lpc17xxEmacRxThread, arg)
     NutThreadSetPriority(9);
 
     /* Enable receive and transmit interrupts. */
-    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_FIN |
-                           EMAC_INT_RX_DONE | EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR |
-                           EMAC_INT_TX_FIN | EMAC_INT_TX_DONE;
-
+    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_DONE | 
+                           EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR | EMAC_INT_TX_DONE;
 
     NutIrqEnable(&sig_EMAC);
 
@@ -834,7 +821,7 @@ THREAD(Lpc17xxEmacRxThread, arg)
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
-            if (Lpc17xxEmacReset(EMAC_LINK_LOOPS)) {
+            if (Lpc17xxEmacReset()) {
                 NutSleep(500);
             } else {
                 Lpc17xxEmacStart(dev);
@@ -947,10 +934,8 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
 #endif
 
     /* Reset the controller. */
-    if (Lpc17xxEmacReset(EMAC_LINK_LOOPS)) {
-        if (Lpc17xxEmacReset(EMAC_LINK_LOOPS)) {
-            return -1;
-        }
+    if (Lpc17xxEmacReset() == -1) {
+        return -1;
     }
 
     /* Clear EMACINFO structure. */

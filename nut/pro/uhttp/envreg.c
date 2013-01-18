@@ -40,6 +40,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 extern ISC_LIST(HTTP_ENVVAR_ENTRY) envVarList;
 

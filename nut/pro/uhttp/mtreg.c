@@ -43,6 +43,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 extern ISC_LIST(MEDIA_TYPE_ENTRY) mediaTypeList;
 

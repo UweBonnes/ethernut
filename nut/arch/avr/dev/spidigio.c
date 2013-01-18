@@ -31,43 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/spidigio.c
+ * \brief AVR external shift register I/O support.
  *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.5  2005/02/02 19:59:12  haraldkipp
- * Typo corrected. Compiler failed, if ports were not configured. Due
- * to the completely broken port configuration this error wasn't
- * detected.
- *
- * Revision 1.4  2005/01/22 19:25:14  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.3  2004/09/22 08:14:48  haraldkipp
- * Made configurable
- *
- * Revision 1.2  2004/09/08 10:53:25  haraldkipp
- * os/timer.c
- *
- * Revision 1.1.1.1  2003/05/09 14:40:50  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.4  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.3  2003/01/14 13:34:53  harald
- * *** empty log message ***
- *
- * Revision 1.2  2002/08/11 12:25:38  harald
- * ICC mods
- *
- * Revision 1.1  2002/08/02 14:25:09  harald
- * First check in
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*

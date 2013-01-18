@@ -89,7 +89,19 @@ static int Usart0Enable(USARTCB_DCB *dcb)
         return -1;
     }
     /* Enable receive and transmit. */
-    mem_wr32(PIO_PDR, _BV(P15_RXD0) | _BV(P14_TXD0));
+#if defined (P15_RXD0) && defined (P14_TXD0)
+    outr(PIO_PDR, _BV(P15_RXD0) | _BV(P14_TXD0));
+#elif defined (PA0_RXD0_A) && defined (PA1_TXD0_A)
+    outr(PIOA_PDR, _BV(PA0_RXD0_A) | _BV(PA1_TXD0_A));
+#elif defined (PA5_RXD0_A) && defined (PA6_TXD0_A)
+    outr(PIOA_PDR, _BV(PA5_RXD0_A) | _BV(PA6_TXD0_A));
+#elif defined (PB5_RXD0_A) && defined (PB4_TXD0_A)
+    outr(PIOB_PDR, _BV(PB5_RXD0_A) | _BV(PB4_TXD0_A));
+#elif defined (PB18_RXD0_A) && defined (PB19_TXD0_A)
+    outr(PIOB_PDR, _BV(PB18_RXD0_A) | _BV(PB19_TXD0_A));
+#else
+#warning Undefined pin
+#endif
     mem_wr32(dcb->usart_hwif + US_CR_OFF, US_RXEN | US_TXEN);
     NutIrqEnable(&sig_UART0);
 
@@ -112,7 +124,19 @@ static int Usart0Disable(USARTCB_DCB *dcb)
     dcb->usart_rx_stop(dcb);
     dcb->usart_tx_stop(dcb);
     NutIrqDisable(&sig_UART0);
+#if defined (P15_RXD0) && defined (P14_TXD0)
     mem_wr32(PIO_PER, _BV(P15_RXD0) | _BV(P14_TXD0));
+#elif defined (PA0_RXD0_A) && defined (PA1_TXD0_A)
+    mem_wr32(PIOA_PER, _BV(PA0_RXD0_A) | _BV(PA1_TXD0_A));
+#elif defined (PA5_RXD0_A) && defined (PA6_TXD0_A)
+    mem_wr32(PIOA_PER, _BV(PA5_RXD0_A) | _BV(PA6_TXD0_A));
+#elif defined (PB5_RXD0_A) && defined (PB4_TXD0_A)
+    mem_wr32(PIOB_PDR, _BV(PB5_RXD0_A) | _BV(PB4_TXD0_A));
+#elif defined (PB18_RXD0_A) && defined (PB19_TXD0_A)
+    mem_wr32(PIOB_PDR, _BV(PB18_RXD0_A) | _BV(PB19_TXD0_A));
+#else
+#warning Undefined pin
+#endif
 
     return 0;
 }
