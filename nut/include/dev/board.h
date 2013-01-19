@@ -188,6 +188,8 @@
 #include <arch/arm/board/olimex_lpce2294.h>
 #elif defined(XNUT_100) || defined(XNUT_105)
 #include <arch/avr/board/xnut.h>
+#elif defined(SM2_MU)
+#include <arch/m68k/board/sm2_mu.h>
 #elif defined(ZERO_EK)
 #include <arch/arm/board/zero_ek.h>
 #endif

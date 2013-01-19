@@ -50,9 +50,10 @@
 #include <dev/gpio_stm32.h>
 #elif defined(MCU_LPC176x) || defined(MCU_LPC177x_8x)
 #include <dev/gpio_lpc17xx.h>
+#elif defined(__m68k__)
+#include <arch/m68k/gpio.h>
 #else
 #include <dev/gpio_def.h>
 #endif
 
 #endif /* _DEV_GPIO_H_ */
-

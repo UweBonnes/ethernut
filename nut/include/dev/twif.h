@@ -78,6 +78,7 @@
 #define TWERR_OVRE       -6  /*!< \brief Overrun Error. */
 #define TWERR_ARBLOST    -7  /*!< \brief Arbitration lost. */
 #define TWERR_SPCTOUT    -8  /*!< \brief Start/Stop Condition timeout */
+#define TWERR_BUSY       -9  /*!< \brief Bus is busy timeout */
 
 #define TWSLA_MIN        17  /*!< \brief Lowest slave address.
                               * Addresses below are reserved
@@ -113,6 +114,8 @@ typedef struct _NUTTWIBUS NUTTWIBUS;
 #include "dev/twibus_at91.h"
 #endif
 
+#elif defined(__m68k__)
+#include <arch/m68k/twi.h>
 #endif
 
 

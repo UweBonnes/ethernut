@@ -57,6 +57,8 @@ uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode)
     return Avr32WatchDogStart(ms);
 #elif defined(MCU_LPC17xx)
     return Lpc17xxWatchDogStart(ms, xmode);
+#elif defined(MCU_MCF5225X)
+	return Mcf5225xWatchDogStart(ms);
 #else
     return 0;
 #endif
@@ -75,6 +77,8 @@ void NutWatchDogRestart(void)
     Avr32WatchDogRestart();
 #elif defined(MCU_LPC17xx)
     Lpc17xxWatchDogRestart();
+#elif defined(MCU_MCF5225X)
+	Mcf5225xWatchDogRestart();
 #endif
 }
 
@@ -91,8 +95,9 @@ void NutWatchDogDisable(void)
     Avr32WatchDogDisable();
 #elif defined(MCU_LPC17xx)
     Lpc17xxWatchDogDisable();
+#elif defined(MCU_MCF5225X)
+	Mcf5225xWatchDogDisable();
 #endif
-
 }
 
 /*
@@ -108,6 +113,8 @@ void NutWatchDogEnable(void)
     Avr32WatchDogEnable();
 #elif defined(MCU_LPC17xx)
     Lpc17xxWatchDogEnable();
+#elif defined(MCU_MCF5225X)
+	Mcf5225xWatchDogEnable();
 #endif
 }
 

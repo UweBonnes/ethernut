@@ -604,7 +604,7 @@
  */
 #define UART_RXENABLED      0x00010000UL
 
-/*! \brief Receiver enabled.
+/*! \brief Receiver disabled.
  */
 #define UART_RXDISABLED     0x00020000UL
 
@@ -612,7 +612,7 @@
  */
 #define UART_TXENABLED      0x00040000UL
 
-/*! \brief Transmitter enabled.
+/*! \brief Transmitter disabled.
  */
 #define UART_TXDISABLED     0x00080000UL
 
