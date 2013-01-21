@@ -78,7 +78,7 @@
  * The compiler will not generate prolog and epilog code for functions
  * with this attribute.
  */
-#define NUT_NAKED_FUNC  __attribute__((naked))
+#define NUT_NAKED_FUNC __attribute__((__naked__))
 #endif
 
 #ifndef NUT_PURE_FUNC
@@ -89,7 +89,7 @@
  * parameters and global variables. Thus, it may be called less often
  * because the compiler may re-use the result from a previous call.
  */
-#define NUT_PURE_FUNC  __attribute__((pure))
+#define NUT_PURE_FUNC __attribute__((__pure__))
 #endif
 
 #ifndef NUT_CONST_FUNC
@@ -99,11 +99,11 @@
  * A constant function returns a value, which depends only on their
  * parameters. Furthermore, it will not have any other effect.
  */
-#define NUT_CONST_FUNC  __attribute__((const))
+#define NUT_CONST_FUNC __attribute__((__const__))
 #endif
 
 #ifndef NUT_NORETURN_FUNC
-#define NUT_NORETURN_FUNC __attribute__ ((noreturn))
+#define NUT_NORETURN_FUNC __attribute__((__noreturn__))
 #endif
 
 #ifndef NUT_USED_FUNC
@@ -113,7 +113,7 @@
  * When this attribute is attached to a function, then the compiler
  * generates the function code, even if it appears to be unreferenced.
  */
-#define NUT_USED_FUNC  __attribute__((used))
+#define NUT_USED_FUNC __attribute__((__used__))
 #endif
 
 #ifndef NUT_ALLOC_FUNC
@@ -122,7 +122,7 @@
  *
  * Used for functions returning a pointer, which doesn't alias anything.
  */
-#define NUT_ALLOC_FUNC  __attribute__((malloc))
+#define NUT_ALLOC_FUNC __attribute__((__malloc__))
 #endif
 
 #ifndef RAMFUNC
@@ -131,7 +131,7 @@
  *
  * This section will be copied to RAM during runtime initialization.
  */
-#define RAMFUNC __attribute__ ((long_call, section (".ramfunc")))
+#define RAMFUNC __attribute__((__long_call__, __section__(".ramfunc")))
 #endif
 
 #ifndef NUT_PACKED_TYPE
@@ -141,7 +141,7 @@
  * Specifies, that the minimum required memory be used to represent the
  * type.
  */
-#define NUT_PACKED_TYPE __attribute__ ((packed))
+#define NUT_PACKED_TYPE __attribute__((__packed__))
 #endif
 
 #ifndef NUT_ALIGNED_TYPE
@@ -153,7 +153,7 @@
  * \note The actual alignment is not guaranteed, but limited by the
  * capabilities of the linker.
  */
-#define NUT_ALIGNED_TYPE(bytes) __attribute__((aligned(bytes)))
+#define NUT_ALIGNED_TYPE(bytes) __attribute__((__aligned(bytes__)))
 #endif
 
 #ifndef NUT_LINKER_SECT
@@ -162,7 +162,7 @@
  *
  * By default, the compiler will put code in the .text segment,
  */
-#define NUT_LINKER_SECT(name) __attribute__ ((__section__(name)))
+#define NUT_LINKER_SECT(name) __attribute__((__section__(name)))
 #endif
 
 #ifndef NUT_WEAK_SYMBOL
@@ -173,14 +173,14 @@
  * non-weak functions or variables specified elsewhere, including
  * application code.
  */
-#define NUT_WEAK_SYMBOL __attribute__ ((weak))
+#define NUT_WEAK_SYMBOL __attribute__((__weak__))
 #endif
 
 #ifndef NUT_DEPRECATED
 /*!
  * \brief Deprecated attribute.
  */
-#define NUT_DEPRECATED __attribute__ ((deprecated))
+#define NUT_DEPRECATED __attribute__((__deprecated__))
 #endif
 
 #define COMPRESS_DISABLE
