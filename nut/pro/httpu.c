@@ -90,7 +90,7 @@ int HttpuReceive(HTTPU_SESSION * s, uint32_t tmo)
     /* Set buffer pointer and receive datagram. */
     lp = s->s_rcvbuf.msg_buff;
     s->s_rcvbuf.msg_len =
-        NutUdpReceiveFrom(s->s_sock, &s->s_reqip, &s->s_reqport, lp,
+        NutUdpReceiveFrom(s->s_sock, &s->s_reqip, (uint16_t *) &s->s_reqport, lp,
                           sizeof(s->s_rcvbuf.msg_buff) - 1, tmo);
     if (s->s_rcvbuf.msg_len >= 0) {
         int idx;
