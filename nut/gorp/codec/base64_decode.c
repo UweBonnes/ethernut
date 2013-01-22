@@ -76,7 +76,7 @@
  * we need just the first 128 bytes. Furthermore there is no char
  * below 32, so we can save 32 additional bytes of flash.
  */
-static const char base64dtab[96] = {
+static const char base64dtab[96] PROGMEM = {
 /*
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
