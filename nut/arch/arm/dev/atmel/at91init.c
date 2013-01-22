@@ -50,7 +50,7 @@
 /*!
  * \brief External interrupt 1 entry.
  */
-static void SpuriousEntry(void) __attribute__ ((naked));
+static void SpuriousEntry(void) NUT_NAKED_FUNC;
 void SpuriousEntry(void)
 {
     IRQ_ENTRY();

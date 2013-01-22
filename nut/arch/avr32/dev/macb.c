@@ -219,11 +219,11 @@ typedef struct _TxTdDescriptor {
 //! @}
 
 static volatile TxTdDescriptor txBufTab[EMAC_TX_BUFFERS];
-static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] __attribute__ ((aligned(4)));
+static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] NUT_ALIGNED_TYPE(4);
 static unsigned int txBufIdx;
 
 static volatile RxTdDescriptor rxBufTab[EMAC_RX_BUFFERS];
-static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(4)));
+static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] NUT_ALIGNED_TYPE(4);
 static unsigned int rxBufIdx;
 
 #define RXBUF_OWNERSHIP     0x00000001

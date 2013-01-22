@@ -55,17 +55,17 @@ uint_fast8_t __ppp_trf;               /*!< \brief PPP trace flags. */
 
 static uint8_t ppp_header_sz;    /* Size of the PPP header. */
 
-static prog_char dbg_confreq[] = "[CONFREQ]";
-static prog_char dbg_confack[] = "[CONFACK]";
-static prog_char dbg_confnak[] = "[CONFNAK]";
-static prog_char dbg_confrej[] = "[CONFREJ]";
-static prog_char dbg_termreq[] = "[TERMREQ]";
-static prog_char dbg_termack[] = "[TERMACK]";
-static prog_char dbg_coderej[] = "[CODEREJ]";
-static prog_char dbg_protrej[] = "[PROTREJ]";
-static prog_char dbg_echoreq[] = "[ECHOREQ]";
-static prog_char dbg_echorsp[] = "[ECHORSP]";
-static prog_char dbg_discreq[] = "[DISCREQ]";
+static const char dbg_confreq[] PROGMEM = "[CONFREQ]";
+static const char dbg_confack[] PROGMEM = "[CONFACK]";
+static const char dbg_confnak[] PROGMEM = "[CONFNAK]";
+static const char dbg_confrej[] PROGMEM = "[CONFREJ]";
+static const char dbg_termreq[] PROGMEM = "[TERMREQ]";
+static const char dbg_termack[] PROGMEM = "[TERMACK]";
+static const char dbg_coderej[] PROGMEM = "[CODEREJ]";
+static const char dbg_protrej[] PROGMEM = "[PROTREJ]";
+static const char dbg_echoreq[] PROGMEM = "[ECHOREQ]";
+static const char dbg_echorsp[] PROGMEM = "[ECHORSP]";
+static const char dbg_discreq[] PROGMEM = "[DISCREQ]";
 
 
 void NutDumpLcpOption(FILE * stream, NETBUF * nb)

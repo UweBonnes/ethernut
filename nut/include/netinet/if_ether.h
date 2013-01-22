@@ -81,7 +81,7 @@ typedef struct ether_header ETHERHDR;
  * \struct ether_header if_ether.h netinet/if_ether.h
  * \brief Ethernet protocol header.
  */
-struct __attribute__((packed)) ether_header {
+struct NUT_PACKED_TYPE ether_header {
     /*! \brief Destination MAC address. */
     uint8_t  ether_dhost[ETHER_ADDR_LEN];
     /*! \brief Source MAC address. */
@@ -159,7 +159,7 @@ extern char *ether_ntoa(const uint8_t *mac);
  * \typedef ETHERARP
  * \brief Ethernet ARP protocol type.
  */
-typedef struct __attribute__((packed)) ether_arp {
+typedef struct NUT_PACKED_TYPE ether_arp {
     ARPHDR   ea_hdr;        /*!< \brief Fixed-size header. */
     uint8_t  arp_sha[6];    /*!< \brief Source hardware address. */
     uint32_t arp_spa;       /*!< \brief Source protocol address. */

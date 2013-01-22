@@ -41,7 +41,7 @@
  * \endverbatim
  */
 
-#include <arch/arm.h>
+#include <toolchain.h>
 
 #define PHY_STRAP_AD0       _BV(PA14_ERX0_A)
 #define PHY_STRAP_AD1       _BV(PA15_ERX1_A)

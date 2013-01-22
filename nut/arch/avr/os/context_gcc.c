@@ -132,7 +132,7 @@ typedef struct {
 /*
  * This code is executed when entering a thread.
  */
-static void NutThreadEntry(void) __attribute__ ((naked));
+static void NutThreadEntry(void) NUT_NAKED_FUNC;
 static void NutThreadEntry(void)
 {
     __asm__ __volatile__("pop r25" "\n\t"       /* first parameter hi-byte */
@@ -147,7 +147,7 @@ static void NutThreadEntry(void)
         );
 }
 
-void NutThreadSwitch(void) __attribute__ ((noinline)) __attribute__ ((naked));
+void NutThreadSwitch(void) NUT_PREVENT_INLINE NUT_NAKED_FUNC;
 void NutThreadSwitch(void)
 {
     /*

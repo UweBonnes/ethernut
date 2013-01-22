@@ -78,7 +78,6 @@ static int AvrUart0RxIrqCtl(int cmd, void *param)
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
     int_fast8_t enabled = bit_is_set(UCR, RXCIE);
-    uint8_t bval;
 
     /* Disable interrupt. */
     cbi(UCR, RXCIE);
@@ -88,8 +87,8 @@ static int AvrUart0RxIrqCtl(int cmd, void *param)
         enabled = 0;
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
-        bval = inb(UDR);
-        bval = inb(UDR);
+        inb(UDR);
+        inb(UDR);
         break;
     case NUT_IRQCTL_STATUS:
         if (bit_is_set(USR, RXC)) {

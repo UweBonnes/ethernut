@@ -71,7 +71,7 @@ IRQ_HANDLER sig_SWIRQ = {
 /*!
  * \brief Software interrupt entry.
  */
-static void SoftwareIrqEntry(void) __attribute__ ((naked));
+static void SoftwareIrqEntry(void) NUT_NAKED_FUNC;
 void SoftwareIrqEntry(void)
 {
     IRQ_ENTRY();

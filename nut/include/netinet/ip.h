@@ -143,7 +143,7 @@ typedef struct ip_opt IPHDR_OPT;
 /*!
  * \brief Structure of an internet header.
  */
-struct __attribute__ ((packed)) ip {
+struct NUT_PACKED_TYPE ip {
 #ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned ip_hl:4,           /*!< \brief Header length. */
@@ -167,7 +167,7 @@ struct __attribute__ ((packed)) ip {
     uint32_t ip_dst;              /*!< \brief Destination IP address. */
 };
 
-struct __attribute__ ((packed)) ip_opt {
+struct NUT_PACKED_TYPE ip_opt {
 #ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned ip_hl:4,           /*!< \brief Header length. */

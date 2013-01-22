@@ -80,7 +80,7 @@
 /*!
  * \brief Volume boot record.
  */
-typedef struct __attribute__ ((packed)) _PHATVBR {
+typedef struct NUT_PACKED_TYPE _PHATVBR {
     /*! \brief Jump instruction, contains E9xxxx or EBxx90. */
     uint8_t boot_jump[3];
     /*! \brief OEM name and version. */

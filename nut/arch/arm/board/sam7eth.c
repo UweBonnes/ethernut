@@ -41,7 +41,7 @@
  * \endverbatim
  */
 
-#include <arch/arm.h>
+#include <toolchain.h>
 #include <inttypes.h>
 
 #define PHY_STRAP_AD0       _BV(PB7_ERXER_A)

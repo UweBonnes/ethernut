@@ -69,7 +69,7 @@ IRQ_HANDLER sig_SSC = {
 /*!
  * \brief Timer/Counter 0 interrupt entry.
  */
-static void SyncSerialIrqEntry(void) __attribute__ ((naked));
+static void SyncSerialIrqEntry(void) NUT_NAKED_FUNC;
 void SyncSerialIrqEntry(void)
 {
     IRQ_ENTRY();

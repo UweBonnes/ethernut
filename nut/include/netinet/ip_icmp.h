@@ -163,7 +163,7 @@ extern "C" {
  * \typedef ICMPHDR
  * \brief ICMP protocol header type.
  */
-typedef struct __attribute__ ((packed)) icmp {
+typedef struct NUT_PACKED_TYPE icmp {
     uint8_t  icmp_type;      /*!< \brief Type of message. */
     uint8_t  icmp_code;      /*!< \brief Type sub code. */
     uint16_t icmp_cksum;     /*!< \brief Ones complement header checksum. */

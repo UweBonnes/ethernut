@@ -67,7 +67,7 @@ IRQ_HANDLER sig_ADC = {
 /*!
  * \brief ADC interrupt entry.
  */
-static void AdcIrqEntry(void) __attribute__ ((naked));
+static void AdcIrqEntry(void) NUT_NAKED_FUNC;
 void AdcIrqEntry(void)
 {
     IRQ_ENTRY();

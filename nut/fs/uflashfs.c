@@ -158,7 +158,7 @@ static BLOCK_USAGE min_used[UFLASH_USAGE_CACHE];
  *
  * Each used block starts with a BLOCKHEAD structure.
  */
-typedef struct __attribute__ ((packed)) _BLOCKHEAD {
+typedef struct NUT_PACKED_TYPE _BLOCKHEAD {
     blknum_t bh_logblk;         /*!< \brief Logical block number. */
     blknum_t bh_version;        /*!< \brief Logical block version. */
     blknum_t bh_entblk;         /*!< \brief Logical entry block number. */
@@ -170,7 +170,7 @@ typedef struct __attribute__ ((packed)) _BLOCKHEAD {
  *
  * Each block ends with a BLOCKFOOT structure.
  */
-typedef struct __attribute__ ((packed)) _BLOCKFOOT {
+typedef struct NUT_PACKED_TYPE _BLOCKFOOT {
 #ifdef UFLASH_USE_TIMESTAMP
     time_t bf_time;             /*!< \brief Last update time. */
 #endif
@@ -185,7 +185,7 @@ typedef struct __attribute__ ((packed)) _BLOCKFOOT {
  * After the name comes the data, immediatly followed by an optional
  * timestamp.
  */
-typedef struct __attribute__ ((packed)) _ENTRYHEAD {
+typedef struct NUT_PACKED_TYPE _ENTRYHEAD {
     /* Entry attributes. */
     uint8_t eh_attr;
     /* Name length. */

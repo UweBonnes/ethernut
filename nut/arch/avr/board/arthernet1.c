@@ -45,10 +45,10 @@
 #include <cfg/memory.h>
 #include <cfg/arch/avr.h>
 
-#include <arch/avr.h>
+#include <toolchain.h>
 
 #if defined(__GNUC__)
-static void ArthernetInit(void) __attribute__ ((naked, section (".init1"), used));
+static void ArthernetInit(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init1") NUT_USED_FUNC;
 #endif
 
 /*

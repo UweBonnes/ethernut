@@ -82,11 +82,9 @@
 #define PSTR(p)    (p)
 #define PRG_RDB(p) (*((const char *)(p)))
 
-#define prog_char  const char
 #define PGM_P      prog_char *
 
 #define SIGNAL(x)  __attribute__((interrupt_handler)) void x(void)
-#define RAMFUNC __attribute__ ((long_call, section (".ramfunc")))
 
 #if !defined(__arm__) && !defined(__cplusplus)
 #define main       NutAppMain
@@ -132,107 +130,6 @@ extern void *__stack;
 #define cbi(_reg, _bit)         outr(_reg, inr(_reg) & ~_BV(_bit))
 #define bit_is_set(_reg, _bit)  ((inr(_reg) & _BV(_bit)) != 0)
 #define bit_is_clear(_reg, _bit) ((inr(_reg) & _BV(_bit)) == 0)
-
-#if !defined (__ASSEMBLER__)
-#define mem_barrier() __asm__ __volatile__("":::"memory")
-
-static INLINE void mem_wr(unsigned int reg, unsigned int val)
-{
-    *(volatile unsigned int *) reg = val;
-}
-
-static INLINE void mem_wr8(unsigned int reg, uint8_t val)
-{
-    *(volatile uint8_t *) reg = val;
-}
-
-static INLINE void mem_wr16(unsigned int reg, uint16_t val)
-{
-    *(volatile uint16_t *) reg = val;
-}
-
-static INLINE void mem_wr32(unsigned int reg, uint32_t val)
-{
-    *(volatile uint32_t *) reg = val;
-}
-
-static INLINE unsigned int mem_rd(unsigned int reg)
-{
-    return *(const volatile unsigned int *) reg;
-}
-
-static INLINE uint8_t mem_rd8(unsigned int reg)
-{
-    return *(const volatile uint8_t *) reg;
-}
-
-static INLINE uint16_t mem_rd16(unsigned int reg)
-{
-    return *(const volatile uint16_t *) reg;
-}
-
-static INLINE uint32_t mem_rd32(unsigned int reg)
-{
-    return *(const volatile uint32_t *) reg;
-}
-
-static INLINE void mem_wr_mb(unsigned int reg, unsigned int val)
-{
-    mem_barrier();
-    mem_wr(reg, val);
-}
-
-static INLINE void mem_wr8_mb(unsigned int reg, uint8_t val)
-{
-    mem_barrier();
-    mem_wr8(reg, val);
-}
-
-static INLINE void mem_wr16_mb(unsigned int reg, uint16_t val)
-{
-    mem_barrier();
-    mem_wr16(reg, val);
-}
-
-static INLINE void mem_wr32_mb(unsigned int reg, uint32_t val)
-{
-    mem_barrier();
-    mem_wr32(reg, val);
-}
-
-static INLINE unsigned int mem_rd_mb(unsigned int reg)
-{
-    unsigned int rc = mem_rd(reg);
-    mem_barrier();
-
-    return rc;
-}
-
-static INLINE uint8_t mem_rd8_mb(unsigned int reg)
-{
-    uint8_t rc = mem_rd8(reg);
-    mem_barrier();
-
-    return rc;
-}
-
-static INLINE uint16_t mem_rd16_mb(unsigned int reg)
-{
-    uint16_t rc = mem_rd16(reg);
-    mem_barrier();
-
-    return rc;
-}
-
-static INLINE uint32_t mem_rd32_mb(unsigned int reg)
-{
-    uint32_t rc = mem_rd32(reg);
-    mem_barrier();
-
-    return rc;
-}
-
-#endif /* __ASSEMBLER__ */
 
 /*!
  * \brief Get the Bit position index of the highest bit from a bit value

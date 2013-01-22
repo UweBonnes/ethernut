@@ -90,7 +90,7 @@ nutfs =
         name = "nutfs_fat",
         brief = "FAT32",
         description = "Read only.",
-        requires = { "NUT_EVENT", "HW_MCU_AVR" },
+        requires = { "NUT_EVENT", "HW_MCU_AVR", "GCC_LE_4_5" },
         provides = { "NUT_FS", "NUT_FS_READ" },
         sources = { "fat.c" }
     },

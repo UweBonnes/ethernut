@@ -138,7 +138,7 @@ typedef struct _CONFOS CONFOS;
  * Applications may directly access the global variable \ref confos to
  * read or modify the current configuration.
  */
-struct __attribute__ ((packed)) _CONFOS {
+struct NUT_PACKED_TYPE _CONFOS {
     /*! \brief Size of this structure.
      *
      * Used by Nut/Net to verify, that the structure contents is valid

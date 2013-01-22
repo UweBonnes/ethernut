@@ -40,6 +40,8 @@
 #error Do not include this file directly, include <toolchain.h> instead.
 #endif
 
+#include <stdint.h>
+
 /*!
  * \name Convenience Macros
  */
@@ -81,6 +83,14 @@
  * \name Traditional Register Access Macros
  */
 /*@{*/
+
+#ifndef _SFR_MEM8
+#define _SFR_MEM8(addr)     (addr)
+#endif
+
+#ifndef _SFR_MEM16
+#define _SFR_MEM16(addr)    (addr)
+#endif
 
 #ifndef outb
 /*!
@@ -509,7 +519,7 @@ static NUT_INLINE_FUNC uint32_t mem_rd32_mb(unsigned int reg)
  * This macro affects variables on Harvard architectures only. On other
  * architectures it simply declares a constant character variable.
  */
-#define prog_char  const char
+//#define prog_char  const char
 #endif
 
 #ifndef PGM_P
@@ -532,6 +542,26 @@ static NUT_INLINE_FUNC uint32_t mem_rd32_mb(unsigned int reg)
  */
 #define __attribute__(x)
 
+#endif
+
+#endif
+
+#ifndef __HARVARD_ARCH__
+
+#ifndef strlen_P
+#define strlen_P(x) strlen(x)
+#endif
+
+#ifndef strcpy_P
+#define strcpy_P(x, y) strcpy(x,y)
+#endif
+
+#ifndef strcmp_P
+#define strcmp_P(x, y) strcmp(x, y)
+#endif
+
+#ifndef memcpy_P
+#define memcpy_P(x, y, z) memcpy(x, y, z)
 #endif
 
 #endif

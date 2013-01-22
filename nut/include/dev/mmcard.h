@@ -119,8 +119,8 @@ typedef struct _MMCIFC {
 
 
 /*!
- * \brief Addressing mode selection flags 
- * SD-HC uses byte addressing, SD-normal uses block addressing 
+ * \brief Addressing mode selection flags
+ * SD-HC uses byte addressing, SD-normal uses block addressing
  */
 
 #define MMC_BLOCK_MODE                  0   // access card in block mode,
@@ -345,7 +345,7 @@ typedef struct _MMCIFC {
 /*!
  * \brief Multimedia card identification register.
  */
-typedef struct __attribute__ ((packed)) _MMC_CID {
+typedef struct NUT_PACKED_TYPE _MMC_CID {
     /*! \brief Manufacturer identifier. */
     uint8_t mmcid_mid;
     /*! \brief OEM/Application identifier. */
@@ -365,7 +365,7 @@ typedef struct __attribute__ ((packed)) _MMC_CID {
 /*!
  * \brief Multimedia card identification register.
  */
-typedef struct __attribute__ ((packed)) _MMC_CSD {
+typedef struct NUT_PACKED_TYPE _MMC_CSD {
     /*! \brief Card specification. */
     uint8_t mmcsd_spec;
     /*! \brief Data read access time. */

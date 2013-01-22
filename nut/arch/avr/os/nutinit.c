@@ -143,8 +143,8 @@ uint8_t idle_sleep_mode = SLEEP_MODE_NONE;
  *
  * Thanks to Joerg Wunsch, who helped to solve this.
  */
-void NutInit(void) __attribute__ ((naked)) __attribute__ ((section(".init8")));
-extern void NutAppMain(void *arg) __attribute__ ((noreturn));
+void NutInit(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init8");
+extern void NutAppMain(void *arg) NUT_NORETURN_FUNC;
 #else
 extern void main(void *);
 #endif
@@ -157,7 +157,7 @@ extern void main(void *);
 /*
  * At the very beginning enable extended memory interface.
  */
-static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
+static void NutInitXRAM(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init1") NUT_USED_FUNC;
 void NutInitXRAM(void)
 {
 #if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(MCU_AT90USB1287)
@@ -301,7 +301,7 @@ THREAD(NutIdle, arg)
 }
 
 #if defined(__GNUC__)
-static void NutInitSP(void) __attribute__ ((naked, section (".init5"), used));
+static void NutInitSP(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init5") NUT_USED_FUNC;
 void NutInitSP(void)
 {
 #if defined (NUTMEM_STACKHEAP)
@@ -316,7 +316,7 @@ void NutInitSP(void)
 #endif
 
 #if defined(__GNUC__)
-static void NutInitHeap(void) __attribute__ ((naked, section (".init5"), used));
+static void NutInitHeap(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init5") NUT_USED_FUNC;
 #endif
 void NutInitHeap()
 {
@@ -357,7 +357,7 @@ void NutInitHeap()
  * called immediately before jumping to main(). NutInit is defined
  * as:
  * \code
- * void NutInit(void) __attribute__ ((naked)) __attribute__ ((section (".init8")));
+ * void NutInit(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init8");
  * \endcode
  *
  * \todo Make heap threshold configurable, currently hardcoded at 384.

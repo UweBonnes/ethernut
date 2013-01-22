@@ -550,7 +550,7 @@ typedef struct bootp BOOTP;
 /*!
  * \brief BOOTP message structure.
  */
-struct __attribute__ ((packed)) bootp {
+struct NUT_PACKED_TYPE bootp {
     uint8_t bp_op;              /*!< \brief Packet opcode type: 1=request, 2=reply */
     uint8_t bp_htype;           /*!< \brief Hardware address type: 1=Ethernet */
     uint8_t bp_hlen;            /*!< \brief Hardware address length: 6 for Ethernet */

@@ -257,7 +257,7 @@ typedef struct
  * \param mask the interrupts to enable.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void scif_enable_interrupts(unsigned long mask)
 {
@@ -269,7 +269,7 @@ static inline void scif_enable_interrupts(unsigned long mask)
  * \param mask the interrupts to disable.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void scif_disable_interrupts(unsigned long mask)
 {
@@ -281,7 +281,7 @@ static inline void scif_disable_interrupts(unsigned long mask)
  * \return The enabled interrupts.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long scif_get_enabled_interrupts(void)
 {
@@ -293,7 +293,7 @@ static inline unsigned long scif_get_enabled_interrupts(void)
  * \return The interrupts which have been triggered.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long scif_get_interrupts_status(void)
 {
@@ -305,7 +305,7 @@ static inline unsigned long scif_get_interrupts_status(void)
  * \param mask The interrupts to clear.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void scif_clear_interrupts_status(unsigned long mask)
 {
@@ -324,7 +324,7 @@ static inline void scif_clear_interrupts_status(unsigned long mask)
  * \return The content of the PCLKSR register
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long scif_get_pclk_status(void)
 {
@@ -477,7 +477,7 @@ extern long int scif_start_osc32(const scif_osc32_opt_t *opt, bool wait_for_read
  *   \retval false oscillator not enabled or not ready.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline bool scif_is_osc32_ready(void)
 {
@@ -488,7 +488,7 @@ static inline bool scif_is_osc32_ready(void)
  *
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void scif_osc32_1kout_ena(void)
 {
@@ -499,7 +499,7 @@ static inline void scif_osc32_1kout_ena(void)
  *
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void scif_osc32_1kout_dis(void)
 {
@@ -510,7 +510,7 @@ static inline void scif_osc32_1kout_dis(void)
  *
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void scif_osc32_32kout_ena(void)
 {
@@ -521,7 +521,7 @@ static inline void scif_osc32_32kout_ena(void)
  *
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void scif_osc32_32kout_dis(void)
 {

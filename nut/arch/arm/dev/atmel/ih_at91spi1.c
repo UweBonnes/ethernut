@@ -65,7 +65,7 @@ IRQ_HANDLER sig_SPI1 = {
 /*!
  * \brief Serial peripheral interface 1 interrupt entry.
  */
-static void SerialPeripheral1IrqEntry(void) __attribute__ ((naked));
+static void SerialPeripheral1IrqEntry(void) NUT_NAKED_FUNC;
 void SerialPeripheral1IrqEntry(void)
 {
     IRQ_ENTRY();

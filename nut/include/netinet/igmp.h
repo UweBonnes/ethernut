@@ -93,14 +93,14 @@
  * \typedef IGMP
  * \brief IGMP packet type.
  */
-typedef struct __attribute__ ((packed)) igmp IGMP;
-typedef struct __attribute__ ((packed)) igmp_report IGMP_REPORT;
+typedef struct NUT_PACKED_TYPE igmp IGMP;
+typedef struct NUT_PACKED_TYPE igmp_report IGMP_REPORT;
 
 /*!
  * \struct igmp igmp.h netinet/igmp.h
  * \brief IGMP packet structure.
  */
-struct __attribute__ ((packed)) igmp
+struct NUT_PACKED_TYPE igmp
 {
     uint8_t igmp_type;           /*!< \brief Version and type of IGMP message. */
     uint8_t igmp_code;           /*!< \brief Subtype for routing messages. */
@@ -111,7 +111,7 @@ struct __attribute__ ((packed)) igmp
 /*!
  * \brief IGMPv3 query format
  */
-struct __attribute__ ((packed)) igmpv3 {
+struct NUT_PACKED_TYPE igmpv3 {
     uint8_t igmp_type;           /*!< \brief Version and type of IGMP message. */
     uint8_t igmp_code;           /*!< \brief Subtype for routing messages. */
     uint16_t igmp_cksum;         /*!< \brief IP-style checksum. */
@@ -125,7 +125,7 @@ struct __attribute__ ((packed)) igmpv3 {
 /*!
  * \brief IGMPv3 group record.
  */
-struct __attribute__ ((packed)) igmp_grouprec {
+struct NUT_PACKED_TYPE igmp_grouprec {
     uint8_t ig_type;             /*!< \brief Record type. */
     uint8_t ig_datalen;          /*!< \brief Amount of aux data. */
     uint16_t ig_numsrc;          /*!< \brief Number of sources. */
@@ -136,7 +136,7 @@ struct __attribute__ ((packed)) igmp_grouprec {
 /*!
  * \brief IGMPv3 report.
  */
-struct __attribute__ ((packed)) igmp_report {
+struct NUT_PACKED_TYPE igmp_report {
     uint8_t ir_type;             /*!< \brief Record type. */
     uint8_t ir_rsv1;             /*!< \brief Reserved. */
     uint16_t ir_cksum;           /*!< \brief Checksum. */

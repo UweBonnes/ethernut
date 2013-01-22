@@ -71,7 +71,7 @@ IRQ_HANDLER sig_INTERRUPT1 = {
 /*!
  * \brief External interrupt 1 entry.
  */
-static void Interrupt1Entry(void) __attribute__ ((naked));
+static void Interrupt1Entry(void) NUT_NAKED_FUNC;
 void Interrupt1Entry(void)
 {
     IRQ_ENTRY();

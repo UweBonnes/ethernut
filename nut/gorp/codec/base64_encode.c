@@ -60,7 +60,7 @@
  */
 /*@{*/
 
-static prog_char base64etab[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static const char base64etab[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /*!
  * \brief Do base-64 encoding on a string.
@@ -113,10 +113,10 @@ char *NutEncodeBase64(const char* str)
         bits += (int32_t)str[idx];
         char_count ++;
         if (char_count == 3) {
-            encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 18) & 0x3f]);
-            encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 12) & 0x3f]);
-            encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 6) & 0x3f]);
-            encoded[enc_pos++] = PRG_RDB(&base64etab[bits & 0x3f]);
+            encoded[enc_pos++] = base64etab[(bits >> 18) & 0x3f];
+            encoded[enc_pos++] = base64etab[(bits >> 12) & 0x3f];
+            encoded[enc_pos++] = base64etab[(bits >> 6) & 0x3f];
+            encoded[enc_pos++] = base64etab[bits & 0x3f];
             cols += 4;
             if (cols == 72) {
                 encoded[enc_pos++] = '\r';

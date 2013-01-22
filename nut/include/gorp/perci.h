@@ -88,7 +88,7 @@ typedef uint_fast32_t perci_fast_reclen_t;
 
 #define PERCI_DATASIZE  (PERCI_RECSIZE - sizeof(perci_reclen_t))
 
-typedef struct __attribute__ ((packed)) _PERCI_RECORD {
+typedef struct NUT_PACKED_TYPE _PERCI_RECORD {
     perci_reclen_t pcd_len;
     uint8_t pcd_data[PERCI_RECSIZE];
 } PERCI_RECORD;

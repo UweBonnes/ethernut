@@ -108,7 +108,7 @@ extern "C" {
  * \typedef ARPHDR
  * \brief ARP packet header type.
  */
-typedef struct __attribute__ ((packed)) arphdr {
+typedef struct NUT_PACKED_TYPE arphdr {
     uint16_t ar_hrd;    /*!< \brief Format of hardware address.
                         *   Nut/Net supports ARPHRD_ETHER only.
                         */

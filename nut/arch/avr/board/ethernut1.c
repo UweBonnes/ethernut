@@ -44,7 +44,7 @@
 #include <cfg/memory.h>
 #include <cfg/arch/avr.h>
 
-#include <arch/avr.h>
+#include <toolchain.h>
 
 #if defined(RTL_EESK_BIT) && defined(__GNUC__) && defined(NUTXMEM_SIZE)
 
@@ -139,7 +139,7 @@
  * The following part is used by the GCC environment only. For ICCAVR it has
  * been included in the C startup file.
  */
-static void FakeNicEeprom(void) __attribute__ ((naked, section(".init1"), used));
+static void FakeNicEeprom(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init1") NUT_USED_FUNC;
 void FakeNicEeprom(void)
 {
     /*

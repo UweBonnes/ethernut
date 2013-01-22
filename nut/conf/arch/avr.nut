@@ -967,13 +967,13 @@ nutarch_avr =
         name = "nutarch_avr_ide",
         brief = "ATA/IDE driver",
         description = "Mass storage driver.",
-        requires = { "HW_MCU_AVR" },
+        requires = { "HW_MCU_AVR", "GCC_LE_4_5" },
         sources = { "avr/dev/ide.c" }
     },
     {
         name = "nutarch_avr_cs8900",
         brief = "CS8900 Driver",
-        requires = { "HW_MCU_AVR", "NUT_TIMER" },
+        requires = { "HW_MCU_AVR", "NUT_TIMER", "GCC_LE_4_5" },
         sources = { "avr/dev/cs8900.c", "avr/dev/eth0cs.c" }
     },
     {

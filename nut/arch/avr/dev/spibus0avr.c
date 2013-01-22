@@ -451,10 +451,8 @@ int AvrSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
 #endif
 
         /* Clean-up the status. */
-        {
-            uint8_t ix = inb(SPSR);
-            ix = inb(SPDR);
-        }
+        inb(SPSR);
+        inb(SPDR);
 
         /* Finally activate the node's chip select. */
         rc = AvrSpi0ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) != 0);

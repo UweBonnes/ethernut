@@ -77,7 +77,7 @@
 
 #define DISF_INITAL_ANN     0x0001
 
-typedef struct __attribute__ ((packed)) _DISCOVERY_TELE {
+typedef struct NUT_PACKED_TYPE _DISCOVERY_TELE {
     uint32_t dist_xid;            /*!< \brief Exchange identifier. */
     uint8_t dist_type;           /*!< \brief Message type, 0=request, 1=announce, 2=apply. */
     uint8_t dist_ver;            /*!< \brief Telegram version. */

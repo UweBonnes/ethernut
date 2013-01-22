@@ -85,7 +85,7 @@
 
 /*@{*/
 
-static prog_char termid[] = "Term 1.0";
+static const char termid[] = "Term 1.0";
 
 static void TermRefreshLineEnd(const TERMDCB * dcb, uint8_t row, uint8_t col)
 {
@@ -269,11 +269,11 @@ static void TermInsertSpace(TERMDCB * dcb)
  */
 static void TermIdentify(TERMDCB * dcb)
 {
-    PGM_P pcp = termid;
+    const char *pcp = termid;
 
     TermClear(dcb);
-    while (PRG_RDB(pcp)) {
-        (*dcb->dss_write) (PRG_RDB(pcp));
+    while (*pcp) {
+        (*dcb->dss_write) (*pcp);
         pcp++;
     }
 }

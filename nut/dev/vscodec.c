@@ -420,9 +420,9 @@ static uint16_t VsRegRead(ureg_t reg)
  */
 static int VsBeep(uint8_t fsin, uint8_t ms)
 {
-    static prog_char on[] = { 0x53, 0xEF, 0x6E };
-    static prog_char off[] = { 0x45, 0x78, 0x69, 0x74 };
-    static prog_char end[] = { 0x00, 0x00, 0x00, 0x00 };
+    static const char on[] PROGMEM = { 0x53, 0xEF, 0x6E };
+    static const char off[] PROGMEM = { 0x45, 0x78, 0x69, 0x74 };
+    static const char end[] PROGMEM = { 0x00, 0x00, 0x00, 0x00 };
 
     VsRegWrite(VS_MODE_REG, VS_SM_TESTS | VS_SM_SDINEW);
 

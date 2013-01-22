@@ -223,7 +223,7 @@
 
 /*! brief MMA7455L 10-bit values and offset register struct
  */
-typedef struct __attribute__ ((packed))
+typedef struct NUT_PACKED_TYPE
 {
     int16_t x;
     int16_t y;
@@ -232,7 +232,7 @@ typedef struct __attribute__ ((packed))
 
 /*! brief MMA7455L 10-bit values and offset register struct
  */
-typedef struct __attribute__ ((packed))
+typedef struct NUT_PACKED_TYPE
 {
     int8_t x;
     int8_t y;
@@ -241,7 +241,7 @@ typedef struct __attribute__ ((packed))
 
 /*! brief MMA7455L initialization struct
  */
-typedef struct __attribute__ ((packed))
+typedef struct NUT_PACKED_TYPE
 {
     uint8_t rMODE;
     uint8_t rINTRST;
@@ -256,7 +256,7 @@ typedef struct __attribute__ ((packed))
 
 /*! brief MMA7455L combined status register
  */
-typedef struct __attribute__ ((packed))
+typedef struct NUT_PACKED_TYPE
 {
     uint8_t state;
     uint8_t detsrc;

@@ -62,7 +62,7 @@
 #define PCA_PINV    4   /**< PCA Polarity inversion register offset */
 #define PCA_CONF    6   /**< PCA Configuration register offset */
 
-typedef struct __attribute__ ((packed))
+typedef struct NUT_PACKED_TYPE
 {
     uint8_t out[2];
     uint8_t pol[2];

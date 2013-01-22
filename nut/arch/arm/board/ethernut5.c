@@ -41,7 +41,7 @@
  * \endverbatim
  */
 
-#include <arch/arm.h>
+#include <toolchain.h>
 
 #ifndef PMM_RST_BASE
 /* Power management reset port. */
@@ -117,9 +117,9 @@
 #define ARM_SET_CP15_TTBR(val) __asm__ __volatile__("mcr p15, 0, %0, c2, c0, 0" :: "r"(val) : "cc")
 #define ARM_SET_CP15_DACR(val) __asm__ __volatile__("mcr p15, 0, %0, c3, c0, 0" :: "r"(val) : "cc")
 
-void __set_stacks(void) __attribute__ ((naked));
+void __set_stacks(void) NUT_NAKED_FUNC;
 
-void __init2(void) __attribute__ ((naked)) __attribute__ ((section(".init2.user")));
+void __init2(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init2.user");
 void __init2(void)
 {
     /*
@@ -143,9 +143,9 @@ void __init2(void)
 }
 
 
-void __clear_bss(void) __attribute__ ((naked));
+void __clear_bss(void) NUT_NAKED_FUNC;
 
-void __init3(void) __attribute__ ((naked)) __attribute__ ((section(".init3.user")));
+void __init3(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init3.user");
 void __init3(void)
 {
     /* Enable instruction cache. */
@@ -155,9 +155,9 @@ void __init3(void)
     __clear_bss();
 }
 
-void __call_rtos(void) __attribute__ ((naked));
+void __call_rtos(void) NUT_NAKED_FUNC;
 
-void __init4(void) __attribute__ ((naked)) __attribute__ ((section(".init4.user")));
+void __init4(void) NUT_NAKED_FUNC NUT_LINKER_SECT(".init4.user");
 void __init4(void)
 {
     static unsigned int *ttb = (unsigned int *) 0x20000000;

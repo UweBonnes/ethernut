@@ -65,7 +65,7 @@ IRQ_HANDLER sig_EMAC = {
 /*!
  * \brief UART 0 interrupt entry.
  */
-static void EmacIrqEntry(void) __attribute__ ((naked));
+static void EmacIrqEntry(void) NUT_NAKED_FUNC;
 void EmacIrqEntry(void)
 {
     IRQ_ENTRY();

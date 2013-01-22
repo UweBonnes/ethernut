@@ -111,11 +111,9 @@
 #define PSTR(p)    (p)
 #define PRG_RDB(p) (*((const char *)(p)))
 
-#define prog_char  const char
-#define PGM_P      prog_char *
+#define PGM_P const char *
 
 #define SIGNAL(x)  __attribute__((__interrupt__)) void x(void)
-#define RAMFUNC __attribute__ ((long_call, section (".ramfunc")))
 
 /* -------------------------------------------------------------------------
 * redefine main

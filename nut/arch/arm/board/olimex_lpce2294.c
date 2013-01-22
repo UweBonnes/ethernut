@@ -41,6 +41,7 @@
  * \endverbatim
  */
 
+#include <toolchain.h>
 #include <arch/arm/lpc2xxx.h>
 #include <arch/arm/irqreg.h>
 

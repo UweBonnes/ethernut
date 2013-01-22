@@ -108,7 +108,7 @@ static void VICInit (void)
 /*  Out   : none                                                           */
 /*  Return: none                                                           */
 /***************************************************************************/
-static void ABORTHandler(void) __attribute__ ((interrupt ("IRQ")));
+static void ABORTHandler(void) NUT_IRQ_HANDLER_FUNC;
 static void ABORTHandler (void)
 {
   /*
@@ -135,7 +135,7 @@ static void ABORTHandler (void)
 /*  Out   : none                                                           */
 /*  Return: none                                                           */
 /***************************************************************************/
-static void IRQHandler(void) __attribute__ ((interrupt ("IRQ")));
+static void IRQHandler(void) NUT_IRQ_HANDLER_FUNC;
 static void IRQHandler (void)
 {
   FNCPTR  fncptr;
@@ -163,7 +163,7 @@ static void IRQHandler (void)
 /*  Out   : none                                                           */
 /*  Return: none                                                           */
 /***************************************************************************/
-static void FIQHandler(void) __attribute__ ((interrupt ("FIQ")));
+static void FIQHandler(void) NUT_FIQ_HANDLER_FUNC;
 static void FIQHandler (void)
 {
   FNCPTR  fncptr;

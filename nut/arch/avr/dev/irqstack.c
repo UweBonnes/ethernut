@@ -51,10 +51,10 @@ static struct
     uint8_t _SPL;
     uint8_t _SPH;
     uint8_t _stack[IRQSTACK_SIZE];
-} _irq_stack; //__attribute__((section(".data.irqstack")));
+} _irq_stack;
 
 
-void _irq_interrupt (IRQ_HANDLER * irh) __attribute__ ((naked));
+void _irq_interrupt (IRQ_HANDLER * irh) NUT_NAKED_FUNC;
 void _irq_interrupt (IRQ_HANDLER * irh)
 {
     asm volatile ("sts %1, r24" "\n\t"

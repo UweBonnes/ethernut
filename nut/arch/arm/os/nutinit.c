@@ -97,7 +97,7 @@ extern void *__heap_start;
 #endif
 
 #if !defined(__arm__) && !defined(__cplusplus)
-extern void NutAppMain(void *arg) __attribute__ ((noreturn));
+extern void NutAppMain(void *arg) NUT_NORETURN_FUNC;
 #else
 extern void main(void *);
 #endif

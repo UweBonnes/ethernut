@@ -71,7 +71,16 @@
 #define NUT_FORCE_INLINE __attribute__((__always_inline__))
 #endif
 
-#if !defined(NUT_NAKED_FUNC) && (defined(__AVR__) || defined(__arm__))
+#ifndef NUT_FORCE_NO_INLINE
+/*!
+ * \brief Forced inline function attribute.
+ *
+ * Always inlines a function, even if optimization has been disabled.
+ */
+#define NUT_PREVENT_INLINE __attribute__((__noinline__))
+#endif
+
+#if !defined(NUT_NAKED_FUNC)
 /*!
  * \brief Naked function attribute.
  *
@@ -125,6 +134,36 @@
 #define NUT_ALLOC_FUNC __attribute__((__malloc__))
 #endif
 
+#ifndef NUT_IRQ_HANDLER
+#if defined(__arm__)
+#define NUT_IRQ_HANDLER __attribute__((__interrupt__("IRQ")))
+#endif
+#endif
+
+#ifndef NUT_FIQ_HANDLER
+#if defined(__arm__)
+#define NUT_FIQ_HANDLER __attribute__((__interrupt__("FIQ")))
+#endif
+#endif
+
+#ifndef NUT_SWI_HANDLER
+#if defined(__arm__)
+#define NUT_SWI_HANDLER __attribute__((__interrupt__("SWI")))
+#endif
+#endif
+
+#ifndef NUT_ABORT_HANDLER
+#if defined(__arm__)
+#define NUT_ABORT_HANDLER __attribute__((__interrupt__("ABORT")))
+#endif
+#endif
+
+#ifndef NUT_UNDEF_HANDLER
+#if defined(__arm__)
+#define NUT_UNDEF_HANDLER __attribute__((__interrupt__("UNDEF")))
+#endif
+#endif
+
 #ifndef RAMFUNC
 /*!
  * \brief Function running in RAM.
@@ -153,7 +192,7 @@
  * \note The actual alignment is not guaranteed, but limited by the
  * capabilities of the linker.
  */
-#define NUT_ALIGNED_TYPE(bytes) __attribute__((__aligned(bytes__)))
+#define NUT_ALIGNED_TYPE(bytes) __attribute__((__aligned__(bytes)))
 #endif
 
 #ifndef NUT_LINKER_SECT
@@ -229,6 +268,11 @@
 /* Only avr-libc is currently supported for GCC. */
 #include <toolchain/avrlibc.h>
 
+#elif defined(__AVR32__)
+
+#include <arch/avr32.h>
+#include <toolchain/generic.h>
+
 #elif defined(__arm__)
 
 /* Note, that newlib is the default. */
@@ -238,6 +282,10 @@
 #include <toolchain/newlib.h>
 #endif
 
+#endif
+
+#ifndef PROGMEM
+#define PROGMEM
 #endif
 
 /*!

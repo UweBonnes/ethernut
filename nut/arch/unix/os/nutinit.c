@@ -59,7 +59,7 @@
 #include <dev/irqreg.h>
 #include <dev/unix_devs.h>
 
-extern void NutAppMain(void *arg) __attribute__ ((noreturn));
+extern void NutAppMain(void *arg) NUT_NORETURN_FUNC;
 
 #ifndef NUT_THREAD_MAINSTACK
 #define NUT_THREAD_MAINSTACK    1024

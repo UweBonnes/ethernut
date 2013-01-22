@@ -85,7 +85,7 @@
 /*!
  * \brief Multimedia card identification register.
  */
-typedef struct __attribute__ ((packed)) _MMC_CSD {
+typedef struct NUT_PACKED_TYPE _MMC_CSD {
     /*! \brief Card specification. */
     u_char mmcsd_spec;
     /*! \brief Data read access time. */

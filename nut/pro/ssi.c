@@ -124,9 +124,9 @@
 
 static char * (*ssivar_handler)(char *, REQUEST *);
 
-static prog_char rsp_not_found_P[] = "404 Not found: %s\r\n";
-static prog_char rsp_intern_err_P[] = "500 Internal error\r\n";
-static prog_char rsp_bad_req_P[] = "400 Bad request\r\n";
+static const char rsp_not_found_P[] PROGMEM = "404 Not found: %s\r\n";
+static const char rsp_intern_err_P[] PROGMEM = "500 Internal error\r\n";
+static const char rsp_bad_req_P[] PROGMEM = "400 Bad request\r\n";
 
 extern char *cgiBinPath;
 

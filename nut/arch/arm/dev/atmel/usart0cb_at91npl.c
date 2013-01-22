@@ -56,7 +56,7 @@
  */
 #ifdef USART0_NATIVE_IRQ
 
-static void Usart0IrqEntry(void) __attribute__ ((naked));
+static void Usart0IrqEntry(void) NUT_NAKED_FUNC;
 void Usart0IrqEntry(void)
 {
     IRQ_ENTRY();

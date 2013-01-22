@@ -141,7 +141,7 @@
  *
  * Multibyte values are little endian.
  */
-typedef struct __attribute__ ((packed)) _DOSPART {
+typedef struct NUT_PACKED_TYPE _DOSPART {
     /*! \brief Boot descriptor. */
     uint8_t part_state;
     /*! \brief Partition start. */

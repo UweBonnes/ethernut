@@ -198,7 +198,7 @@
 /*
  * FCS lookup table located in program memory space.
  */
-static prog_char fcstab[512] = {
+static const __flash char fcstab[512] = {
     0x00, 0x00, 0x11, 0x89, 0x23, 0x12, 0x32, 0x9b, 0x46, 0x24, 0x57, 0xad, 0x65, 0x36, 0x74, 0xbf,
     0x8c, 0x48, 0x9d, 0xc1, 0xaf, 0x5a, 0xbe, 0xd3, 0xca, 0x6c, 0xdb, 0xe5, 0xe9, 0x7e, 0xf8, 0xf7,
     0x10, 0x81, 0x01, 0x08, 0x33, 0x93, 0x22, 0x1a, 0x56, 0xa5, 0x47, 0x2c, 0x75, 0xb7, 0x64, 0x3e,
@@ -242,7 +242,7 @@ static prog_char fcstab[512] = {
 #define IN_ACC_MAP(c, m) in_acc_map(c, &(m))
 /* Trust me, this is a whole lot smaller when compiled than it looks in C.
  * It is written explicitly so that gcc can make good AVR asm out of it. */
-static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask) __attribute__((always_inline));  /* gcc specific attribute */
+static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask) NUT_FORCE_INLINE;  /* gcc specific attribute */
 static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
 {
     const uint8_t shift_mask = 0x07;

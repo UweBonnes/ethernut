@@ -71,7 +71,7 @@ IRQ_HANDLER sig_SYS = {
 /*!
  * \brief System interrupt entry.
  */
-static void SystemIrqEntry(void) __attribute__ ((naked));
+static void SystemIrqEntry(void) NUT_NAKED_FUNC;
 void SystemIrqEntry(void)
 {
     IRQ_ENTRY();

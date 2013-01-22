@@ -58,7 +58,7 @@ IRQ_HANDLER sig_PIOC = {
 /*!
  * \brief Port I/O interrupt entry.
  */
-static void PortIoIrqEntry(void) __attribute__ ((naked));
+static void PortIoIrqEntry(void) NUT_NAKED_FUNC;
 void PortIoIrqEntry(void)
 {
     IRQ_ENTRY();

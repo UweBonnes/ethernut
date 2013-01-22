@@ -293,7 +293,7 @@ static uint32_t http_optflags;
  */
 void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
 {
-    static prog_char fmt_P[] = "HTTP/%d.%d %d %s\r\nServer: Ethernut %s\r\n";
+    static const char fmt_P[] PROGMEM = "HTTP/%d.%d %d %s\r\nServer: Ethernut %s\r\n";
 
     fprintf_P(stream, fmt_P, HTTP_MAJOR_VERSION, HTTP_MINOR_VERSION, status, title, NutVersionString());
 #if !defined(HTTPD_EXCLUDE_DATE)
@@ -343,11 +343,11 @@ void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
 
 static void NutHttpSendHeaderBottomEx(FILE * stream, REQUEST * req, char *mime_type, long bytes, unsigned short first2bytes)
 {
-    static prog_char typ_fmt_P[] = "Content-Type: %s\r\n";
-    static prog_char len_fmt_P[] = "Content-Length: %ld\r\n";
-    static prog_char enc_fmt_P[] = "Content-Encoding: gzip\r\n";
-    static prog_char con_str_P[] = "Connection: ";
-    static prog_char ccl_str_P[] = "close\r\n\r\n";
+    static const char typ_fmt_P[] PROGMEM = "Content-Type: %s\r\n";
+    static const char len_fmt_P[] PROGMEM = "Content-Length: %ld\r\n";
+    static const char enc_fmt_P[] PROGMEM = "Content-Encoding: gzip\r\n";
+    static const char con_str_P[] PROGMEM = "Connection: ";
+    static const char ccl_str_P[] PROGMEM = "close\r\n\r\n";
 
 #define GZIP_ID  0x8b1f
 
@@ -360,7 +360,7 @@ static void NutHttpSendHeaderBottomEx(FILE * stream, REQUEST * req, char *mime_t
     fputs_P(con_str_P, stream);
 #if HTTP_KEEP_ALIVE_REQ
     if ( req && req->req_connection == HTTP_CONN_KEEP_ALIVE) {
-        static prog_char cka_str_P[] = "Keep-Alive\r\n\r\n";
+        static const char cka_str_P[] PROGMEM = "Keep-Alive\r\n\r\n";
         fputs_P(cka_str_P, stream);
     }
     else {
@@ -402,8 +402,8 @@ void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long
  */
 void NutHttpSendError(FILE * stream, REQUEST * req, int status)
 {
-    static prog_char err_fmt_P[] = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>\r\n";
-    static prog_char auth_fmt_P[] = "WWW-Authenticate: Basic realm=\"%s\"\r\n";
+    static const char err_fmt_P[] PROGMEM = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>\r\n";
+    static const char auth_fmt_P[] PROGMEM = "WWW-Authenticate: Basic realm=\"%s\"\r\n";
     char *title;
 
     switch (status) {

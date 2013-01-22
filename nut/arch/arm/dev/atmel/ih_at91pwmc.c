@@ -77,7 +77,7 @@ IRQ_HANDLER sig_PWMC = {
  * \brief pulse width modulator interrupt entry.
  */
 static unsigned int dummy;
-static void PulseWidthModulatorIrqEntry(void) __attribute__ ((naked));
+static void PulseWidthModulatorIrqEntry(void) NUT_NAKED_FUNC;
 void PulseWidthModulatorIrqEntry(void)
 {
     IRQ_ENTRY();

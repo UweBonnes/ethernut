@@ -42,4 +42,75 @@
 #include <arch/arm.h>
 #endif
 
+#if defined(MCU_AT91SAM7SE)
+
+/*!
+ * \brief Function running in internal RAM.
+ *
+ * When running in flash or external RAM, certain time critical functions
+ * may be executed in internal RAM for optimal performance. Another use is
+ * self re-programming, where the programming function itself cannot run in
+ * flash.
+ *
+ * This section will be copied to internal RAM during runtime initialization.
+ */
+#ifndef SECTION_FUNC_IRAM
+#define SECTION_FUNC_IRAM   __attribute__ ((long_call, section(".text_iram")))
+#endif
+
+/*!
+ * \brief Initialized variables in internal RAM.
+ *
+ * If variables are by default in external RAM, this attribute can be used
+ * to place certain variables in internal RAM. Actually this is rarely used.
+ *
+ * The initial values in this section will be copied to internal RAM during
+ * runtime initialization.
+ */
+#ifndef SECTION_DATA_IRAM
+#define SECTION_DATA_IRAM   __attribute__ ((section(".data_iram")))
+#endif
+
+/*!
+ * \brief Variables in internal RAM.
+ *
+ * If variables are by default in external RAM, this attribute can be used
+ * to place certain variables in internal RAM. Often used for buffers, when
+ * peripheral DMA does not properly work in external SDRAM.
+ *
+ * This section will be cleared to zero during runtime initialization.
+ */
+#ifndef SECTION_BSS_IRAM
+#define SECTION_BSS_IRAM    __attribute__ ((section(".bss_iram")))
+#endif
+
+/*!
+ * \brief Function running in external RAM.
+ *
+ * Typically used for self re-programming functions, if the default code
+ * is located in flash.
+ *
+ * This section will be copied to external RAM during runtime initialization.
+ */
+#ifndef SECTION_FUNC_XRAM
+#define SECTION_FUNC_XRAM   __attribute__ ((long_call, section(".text_xram")))
+#endif
+
+/*!
+ * \brief Variables in external RAM.
+ *
+ * If variables are by default in internal RAM, this attribute can be used
+ * to place certain variables in external RAM. Rarely used for large buffers,
+ * which will not fit in internal RAM.
+ *
+ * This section will be cleared to zero during runtime initialization.
+ */
+#ifndef SECTION_BSS_XRAM
+#define SECTION_BSS_XRAM    __attribute__ ((section(".bss_xram")))
+#endif
+
+#endif
+
+#include <toolchain/generic.h>
+
 #endif

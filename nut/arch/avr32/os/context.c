@@ -90,7 +90,7 @@ typedef struct {
 /*!
  * \brief Enter a new thread.
  */
-static void NutThreadEntry(void) __attribute__ ((naked));
+static void NutThreadEntry(void) NUT_NAKED_FUNC;
 void NutThreadEntry(void)
 {
     /* Load argument in r12 and jump to thread entry. */
@@ -112,7 +112,7 @@ void NutThreadEntry(void)
  */
 
 
-void NutThreadSwitch(void) __attribute__ ((naked));
+void NutThreadSwitch(void) NUT_NAKED_FUNC;
 void NutThreadSwitch(void)
 {
     /* Save CPU context. */

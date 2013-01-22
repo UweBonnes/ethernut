@@ -1250,7 +1250,7 @@ struct _VS_PARAMX_INFO {
  * Header info filled by VsGetHeaderInfo.
  */
 #ifdef __GNUC__
-typedef struct __attribute__((packed)) {
+typedef struct NUT_PACKED_TYPE {
     uint16_t vshi_no_crc:1;
     uint16_t vshi_layer:2;
     uint16_t vshi_id:2;

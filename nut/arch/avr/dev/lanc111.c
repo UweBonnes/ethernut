@@ -651,7 +651,6 @@ static void NicPhyWrite(uint8_t reg, uint16_t val)
  */
 static int NicPhyConfig(void)
 {
-    uint16_t phy_sor;
     uint16_t phy_sr;
     uint16_t phy_to;
     uint16_t mode;
@@ -673,7 +672,7 @@ static int NicPhyConfig(void)
     //printf("OK\n");
 
     /* Store PHY status output. */
-    phy_sor = NicPhyRead(NIC_PHYSOR);
+    NicPhyRead(NIC_PHYSOR);
 
     /* Enable PHY interrupts. */
     NicPhyWrite(NIC_PHYMSK, PHYMSK_MLOSSSYN | PHYMSK_MCWRD | PHYMSK_MSSD |

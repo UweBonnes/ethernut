@@ -144,7 +144,11 @@ static void ADCInterrupt(void *arg)
 {
     uint16_t ADC_value;
 
+#ifdef ADC
+    ADC_value = inw(ADC);
+#else
     ADC_value = inw(ADCW);
+#endif
 
     if (ADCBufWrite(ADC_buffer, &ADC_value) != 0) {
         // Send error message

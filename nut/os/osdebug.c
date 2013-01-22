@@ -100,10 +100,10 @@ static char *states[] = { "TRM", "RUN", "RDY", "SLP" };
 
 #ifdef ARCH_32BIT
 /*                              12345678 12345678 1234 123 12345678 12345678 12345678 1234556789 123456789*/
-static prog_char qheader[] = "\nHandle   Name     Prio Sta Queue    Timer    StackPtr   FreeMem  MinStack\n";
+static const char qheader[] PROGMEM = "\nHandle   Name     Prio Sta Queue    Timer    StackPtr   FreeMem  MinStack\n";
 #else
 /*                              1234 12345678 1234 123 1234 1234 1234 1234567 12345678*/
-static prog_char qheader[] = "\nHndl Name     Prio Sta QUE  Timr StkP FreeMem MinStack\n";
+static const char qheader[] PROGMEM = "\nHndl Name     Prio Sta QUE  Timr StkP FreeMem MinStack\n";
 #endif
 
 /*!
@@ -118,9 +118,9 @@ static prog_char qheader[] = "\nHndl Name     Prio Sta QUE  Timr StkP FreeMem Mi
 void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
 {
 #ifdef ARCH_32BIT
-    static prog_char fmt[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s\n";
+    static const char fmt[] PROGMEM = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s\n";
 #else
-    static prog_char fmt[] = "%04lX %-8s %4u %s %04lX %04lX %04lX %5lu %s\n";
+    static const char fmt[] PROGMEM = "%04lX %-8s %4u %s %04lX %04lX %04lX %5lu %s\n";
 #endif
 
     if (tdp == SIGNALED)
@@ -158,11 +158,11 @@ void NutDumpThreadList(FILE * stream)
 {
 
 #ifdef ARCH_32BIT
-    static prog_char fmt1[] = "%08X %-8s %4u %s %08X %08X %08X %9u %9u %s";
-    static prog_char fmt2[] = " %08X";
+    static const char fmt1[] PROGMEM = "%08X %-8s %4u %s %08X %08X %08X %9u %9u %s";
+    static const char fmt2[] PROGMEM = " %08X";
 #else
-    static prog_char fmt1[] = "%04X %-8s %4u %s %04X %04X %04X %7u %8u %s";
-    static prog_char fmt2[] = " %04X";
+    static const char fmt1[] PROGMEM = "%04X %-8s %4u %s %04X %04X %04X %7u %8u %s";
+    static const char fmt2[] PROGMEM = " %04X";
 #endif
     NUTTHREADINFO *tqp;
     NUTTHREADINFO *tdp;
@@ -208,18 +208,18 @@ void NutDumpThreadList(FILE * stream)
 void NutDumpTimerList(FILE * stream)
 {
 
-    static prog_char wname[] = "NutThreadWake";
-    static prog_char tname[] = "NutEventTimeout";
+    static const char wname[] PROGMEM = "NutThreadWake";
+    static const char tname[] PROGMEM = "NutEventTimeout";
 #ifdef ARCH_32BIT
-    static prog_char theader[] = "Address  Ticks  Left Callback\n";
-    static prog_char fmt1[] = "%08X%6lu%6lu ";
-    static prog_char fmt2[] = "%09lX";
-    static prog_char fmt3[] = "(%08X)\n";
+    static const char theader[] PROGMEM = "Address  Ticks  Left Callback\n";
+    static const char fmt1[] PROGMEM = "%08X%6lu%6lu ";
+    static const char fmt2[] PROGMEM = "%09lX";
+    static const char fmt3[] PROGMEM = "(%08X)\n";
 #else
-    static prog_char theader[] = "Addr Ticks  Left Callback\n";
-    static prog_char fmt1[] = "%04X%6lu%6lu ";
-    static prog_char fmt2[] = "%05lX";
-    static prog_char fmt3[] = "(%04X)\n";
+    static const char theader[] PROGMEM = "Addr Ticks  Left Callback\n";
+    static const char fmt1[] PROGMEM = "%04X%6lu%6lu ";
+    static const char fmt2[] PROGMEM = "%05lX";
+    static const char fmt3[] PROGMEM = "(%04X)\n";
 #endif
 
     NUTTIMERINFO *tnp;
@@ -266,13 +266,13 @@ void NutDumpHeap(FILE * stream)
 {
 
 #ifdef ARCH_32BIT
-    static prog_char fmt1[] = "%08x %9d\n";
-    static prog_char fmt2[] = "%u counted, but %u reported\n";
-    static prog_char fmt3[] = "%u bytes free\n";
+    static const char fmt1[] PROGMEM = "%08x %9d\n";
+    static const char fmt2[] PROGMEM = "%u counted, but %u reported\n";
+    static const char fmt3[] PROGMEM = "%u bytes free\n";
 #else
-    static prog_char fmt1[] = "%04x %5d\n";
-    static prog_char fmt2[] = "%u counted, but %u reported\n";
-    static prog_char fmt3[] = "%u bytes free\n";
+    static const char fmt1[] PROGMEM = "%04x %5d\n";
+    static const char fmt2[] PROGMEM = "%u counted, but %u reported\n";
+    static const char fmt3[] PROGMEM = "%u bytes free\n";
 #endif
     HEAPNODE *node;
     size_t sum = 0;

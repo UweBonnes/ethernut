@@ -74,7 +74,7 @@
                   "pop r24" "\n\t");            /* load byte from stack to r24 */
 
 #define NUTSIGNAL(signame,handler)      \
-void signame (void) __attribute__ ((naked));    \
+void signame (void) NUT_NAKED_FUNC;    \
 void signame (void) \
 {               \
    _irq_prolog \

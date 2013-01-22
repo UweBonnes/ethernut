@@ -73,7 +73,7 @@ IRQ_HANDLER sig_TC0 = {
  * \brief Timer/Counter 0 interrupt entry.
  */
 static unsigned int dummy;
-static void TimerCounter0IrqEntry(void) __attribute__ ((naked));
+static void TimerCounter0IrqEntry(void) NUT_NAKED_FUNC;
 void TimerCounter0IrqEntry(void)
 {
     IRQ_ENTRY();

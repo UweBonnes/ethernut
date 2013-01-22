@@ -69,7 +69,7 @@ IRQ_HANDLER sig_UART0 = {
 /*!
  * \brief UART 0 interrupt entry.
  */
-static void Uart0IrqEntry(void) __attribute__ ((naked));
+static void Uart0IrqEntry(void) NUT_NAKED_FUNC;
 void Uart0IrqEntry(void)
 {
     IRQ_ENTRY();

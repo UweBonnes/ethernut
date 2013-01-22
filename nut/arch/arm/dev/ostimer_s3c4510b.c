@@ -113,7 +113,7 @@ static void (*os_handler) (void *);
  * \brief Timer 0 interrupt entry.
  */
 #if defined(MCU_AT91R40008)
-void Timer0Entry(void) __attribute__ ((naked));
+void Timer0Entry(void) NUT_NAKED_FUNC;
 void Timer0Entry(void)
 {
     IRQ_ENTRY();

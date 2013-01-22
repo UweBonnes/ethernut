@@ -80,7 +80,6 @@ static int AvrTwiIrqCtl(int cmd, void *param)
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
     int_fast8_t enabled = bit_is_set(TWCR, TWIE);
-    uint8_t bval;
 
     /* Disable interrupt. */
     cbi(TWCR, TWIE);
@@ -91,7 +90,7 @@ static int AvrTwiIrqCtl(int cmd, void *param)
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
         if (bit_is_set(SPSR, SPIF)) {
-            bval = inb(SPDR);
+            inb(SPDR);
         }
         break;
     case NUT_IRQCTL_STATUS:

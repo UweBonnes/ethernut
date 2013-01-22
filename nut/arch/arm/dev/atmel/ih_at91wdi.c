@@ -71,7 +71,7 @@ IRQ_HANDLER sig_WDI = {
 /*!
  * \brief Watchdog interrupt entry.
  */
-void WatchdogIrqEntry(void) __attribute__ ((naked));
+void WatchdogIrqEntry(void) NUT_NAKED_FUNC;
 void WatchdogIrqEntry(void)
 {
     IRQ_ENTRY();

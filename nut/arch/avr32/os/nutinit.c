@@ -89,7 +89,7 @@ extern void *__heap_start;
 
 
 #if !defined(__cplusplus)
-extern void NutAppMain(void *arg) __attribute__ ((noreturn));
+extern void NutAppMain(void *arg) NUT_NORETURN_FUNC;
 #else
 extern void main(void *);
 #endif

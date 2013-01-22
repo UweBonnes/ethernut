@@ -141,7 +141,7 @@ extern "C" {
  * \typedef TCPHDR
  * \brief TCP protocol header type.
  */
-typedef struct __attribute__ ((packed)) tcphdr {
+typedef struct NUT_PACKED_TYPE tcphdr {
     uint16_t th_sport;       /*!< \brief Source port. */
     uint16_t th_dport;       /*!< \brief Destination port. */
     uint32_t  th_seq;         /*!< \brief Sequence number of first octet in this segment. */

@@ -105,7 +105,7 @@ typedef struct _CONFNET CONFNET;
  * Applications may directly access the global variable \ref confnet to
  * read or modify the current network configuration.
  */
-struct __attribute__ ((packed)) _CONFNET {
+struct NUT_PACKED_TYPE _CONFNET {
     /*! \brief Size of this structure.
      *
      * Used by Nut/Net to verify, that the structure contents is valid

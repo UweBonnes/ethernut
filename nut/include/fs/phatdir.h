@@ -86,7 +86,7 @@
  * Once created, this structure will never change if it points
  * to another directory. Except if the entry is removed.
  */
-typedef struct __attribute__ ((packed)) _PHATDIRENT {
+typedef struct NUT_PACKED_TYPE _PHATDIRENT {
     /*! \brief File name, padded with blanks. */
     uint8_t dent_name[11];
     /*! \brief File attributes.
@@ -134,7 +134,7 @@ typedef struct __attribute__ ((packed)) _PHATDIRENT {
  *
  * Used for long filenames.
  */
-typedef struct __attribute__ ((packed)) _PHATXDIRENT {
+typedef struct NUT_PACKED_TYPE _PHATXDIRENT {
     /*! \brief Sequence number. */
     uint8_t xdent_seq;
     /*! \brief Unicode characters 1-5. */

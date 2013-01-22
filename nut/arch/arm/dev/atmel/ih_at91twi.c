@@ -69,7 +69,7 @@ IRQ_HANDLER sig_TWI = {
 /*!
  * \brief Two Wire Interface interrupt entry.
  */
-static void TwoWireIrqEntry(void) __attribute__ ((naked));
+static void TwoWireIrqEntry(void) NUT_NAKED_FUNC;
 void TwoWireIrqEntry(void)
 {
     IRQ_ENTRY();

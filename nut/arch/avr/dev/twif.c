@@ -698,14 +698,12 @@ int NutTwiSlaveRespond(NUTTWIBUS *bus, void *txdata, uint16_t txlen, uint32_t tm
      * Nothing to transmit.
      */
     else {
-        uint8_t twcr;
-        uint8_t twsr;
         rc = 0;
         /* Release the bus, not accepting SLA+R. */
 
         NutEnterCritical();
-        twcr = inb(TWCR);
-        twsr = inb(TWSR);
+        inb(TWCR);
+        inb(TWSR);
         /* Transmit start condition, if a master transfer is waiting. */
         if (icb->tw_mm_txlen || icb->tw_mm_rxlen) {
             outb(TWCR, TWGO | _BV(TWSTA));

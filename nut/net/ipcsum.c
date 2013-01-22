@@ -172,7 +172,7 @@ uint16_t NutIpChkSum(uint16_t ics, const void *buf, int len)
  * Details of the pseudo header used as part of the
  * calculation of UDP and TCP header checksums.
  */
-struct __attribute__ ((packed)) pseudo_hdr {
+struct NUT_PACKED_TYPE pseudo_hdr {
     uint32_t ph_src_addr;
     uint32_t ph_dest_addr;
     uint8_t ph_zero;

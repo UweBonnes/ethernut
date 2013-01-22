@@ -614,8 +614,6 @@ static void SJAInterrupt(void *arg)
 int SJAInit(NUTDEVICE * dev)
 {
     IFCAN *ifc;
-    CANINFO *ci;
-    volatile uint8_t temp;
 
     sja_base = dev->dev_base;
 
@@ -624,7 +622,6 @@ int SJAInit(NUTDEVICE * dev)
     ifc = dev->dev_icb;
 
     memset(dev->dev_dcb, 0, sizeof(CANINFO));
-    ci = (CANINFO *) dev->dev_dcb;
 
     CANBufferInit(&CAN_RX_BUF, CAN_BufSize);
     CANBufferInit(&CAN_TX_BUF, CAN_BufSize);
@@ -719,7 +716,7 @@ int SJAInit(NUTDEVICE * dev)
         cbi(EICR, ((SJA_SIGNAL_BIT - 4) << 1));
         cbi(EICR, ((SJA_SIGNAL_BIT - 4) << 1) + 1);
     }
-    temp = SJA1000_INT;         // Read interrupt register to clear pendin bits
+    SJA1000_INT;         // Read interrupt register to clear pendin bits
     sbi(EIMSK, SJA_SIGNAL_BIT);
     sbi(PORTE, SJA_SIGNAL_BIT);
     NutThreadCreate("sjacantx", CAN_Tx, dev, 256);

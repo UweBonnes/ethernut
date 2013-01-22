@@ -149,7 +149,7 @@
 #define PAPCS_OPEN           4  /*!< \brief We've received an Ack */
 #define PAPCS_BADAUTH        5  /*!< \brief We've received a Nak */
 
-typedef struct __attribute__ ((packed)) {
+typedef struct NUT_PACKED_TYPE {
     uint8_t xcpo_type;
     uint8_t xcpo_len;
     union {

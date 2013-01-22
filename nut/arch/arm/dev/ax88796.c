@@ -914,7 +914,7 @@ static void NicInterrupt(void *arg)
     }
 }
 
-void NicInterruptEntry(void) __attribute__ ((naked));
+void NicInterruptEntry(void) NUT_NAKED_FUNC;
 void NicInterruptEntry(void)
 {
     IRQ_ENTRY();

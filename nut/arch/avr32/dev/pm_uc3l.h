@@ -250,7 +250,7 @@ extern long pm_disable_module(unsigned long module);
  *         \c AVR32_PM_WCAUSE_x_MASK bit-masks to isolate specific causes.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long pm_get_wake_cause(void)
 {
@@ -264,7 +264,7 @@ static inline unsigned long pm_get_wake_cause(void)
  *  "toolchain folder"/avr32/inc(lude)/avr32/)
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void pm_asyn_wake_up_enable(unsigned long awen_mask)
 {
@@ -278,7 +278,7 @@ static inline void pm_asyn_wake_up_enable(unsigned long awen_mask)
  *  "toolchain folder"/avr32/inc(lude)/avr32/)
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void pm_asyn_wake_up_disable(unsigned long awen_mask)
 {
@@ -299,7 +299,7 @@ static inline void pm_asyn_wake_up_disable(unsigned long awen_mask)
  *         \c AVR32_PM_RCAUSE_x_MASK bit-masks to isolate specific causes.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long pm_get_reset_cause(void)
 {
@@ -320,7 +320,7 @@ static inline unsigned long pm_get_reset_cause(void)
  *
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void pm_enable_interrupts(unsigned long mask)
 {
@@ -333,7 +333,7 @@ static inline void pm_enable_interrupts(unsigned long mask)
  *
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void pm_disable_interrupts(unsigned long mask)
 {
@@ -345,7 +345,7 @@ static inline void pm_disable_interrupts(unsigned long mask)
  * \return mask of the enabled interrupts.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long pm_get_enabled_interrupts(void)
 {
@@ -357,7 +357,7 @@ static inline unsigned long pm_get_enabled_interrupts(void)
  * \return mask of the interrupts that have been triggered.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long pm_get_interrupts_status(void)
 {
@@ -369,7 +369,7 @@ static inline unsigned long pm_get_interrupts_status(void)
  * \param mask The interrupts to clear.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline void pm_clear_interrupt_status(unsigned long mask)
 {
@@ -389,7 +389,7 @@ static inline void pm_clear_interrupt_status(unsigned long mask)
  * \return The content of the PM Status register.
  */
 #ifdef __GNUC__
-__attribute__((__always_inline__))
+NUT_FORCE_INLINE
 #endif
 static inline unsigned long pm_get_status(void)
 {

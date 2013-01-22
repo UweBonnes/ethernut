@@ -200,6 +200,10 @@ extern const char ct_Date[];
 /*@}*/
 
 extern char *http_root_path;
+/*! \brief Default file system. */
+#ifndef HTTP_DEFAULT_ROOT
+#define HTTP_DEFAULT_ROOT   "UROM:"
+#endif
 #define HTTP_ROOT   (http_root_path ? http_root_path : HTTP_DEFAULT_ROOT)
 
 /*! \brief HTTP authentication function type. */

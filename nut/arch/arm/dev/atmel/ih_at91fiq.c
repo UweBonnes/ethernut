@@ -78,7 +78,7 @@ IRQ_HANDLER sig_FIQ = {
  *
  * \todo Use different entry/exit sequence for the fast interrupt.
  */
-static void FastIrqEntry(void) __attribute__ ((naked));
+static void FastIrqEntry(void) NUT_NAKED_FUNC;
 void FastIrqEntry(void)
 {
     FIQ_ENTRY();

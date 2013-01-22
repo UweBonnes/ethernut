@@ -499,6 +499,7 @@ int UsartWrite(NUTFILE * fp, const void *buffer, int len)
     return UsartPut(fp->nf_dev, buffer, len, 0);
 }
 
+#ifdef __HARVARD_ARCH__
 /*!
  * \brief Write a device or file.
  * \internal
@@ -526,6 +527,7 @@ int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
     NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
     return UsartPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
+#endif
 
 /*!
  * \brief Close a USART device.
