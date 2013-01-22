@@ -56,8 +56,8 @@
 #include <sys/timer.h>
 
 static char *banner = "\nNut/OS UART Sample " __DATE__ " " __TIME__"\n";
-static prog_char presskey_P[] = "Press any key...";
-static prog_char pgm_ptr[] = "\nHello stranger!\n";
+static const char presskey_P[] PROGMEM = "Press any key...";
+static const char pgm_ptr[] PROGMEM = "\nHello stranger!\n";
 
 static char inbuf[128];
 
