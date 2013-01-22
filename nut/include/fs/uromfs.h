@@ -87,8 +87,6 @@
 #ifdef __HARVARD_ARCH__
 #if (__GNUC__ == 4 && __GNUC_MINOR__ > 6) || __GNUC__ > 4
 typedef const char __flash prog_char;
-#else
-typedef const char prog_char __attribute__((__progmem__));
 #endif
 #else
 typedef const char prog_char;
