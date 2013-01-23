@@ -282,6 +282,11 @@
 #include <toolchain/newlib.h>
 #endif
 
+#elif defined(__m68k__)
+
+#include <arch/m68k.h>
+#include <toolchain/generic.h>
+
 #endif
 
 #ifndef PROGMEM

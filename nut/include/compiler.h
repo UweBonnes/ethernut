@@ -65,7 +65,7 @@
  * This file will be replaced by toolchain.h. For now this is tested on
  * AVR targets only.
  */
-#if defined(__AVR__) || defined(__arm__) || defined(__AVR32__)
+#if defined(__AVR__) || defined(__arm__) || defined(__AVR32__) || defined(__m68k__)
 
 #include <toolchain.h>
 
