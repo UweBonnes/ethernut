@@ -41,7 +41,7 @@
 
 #if defined(__ARM_ARCH_4T__)
 #include <arch/arm/armv4t.h>
-#elif defined(__ARM_ARCH_7M__)
+#elif defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
 #include <arch/arm/armv7_m.h>
 #else
 #error ARM architecture unknown or not specified
