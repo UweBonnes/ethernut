@@ -51,7 +51,6 @@
 #define PSTR(p)    (p)
 #define PRG_RDB(p) (*((const char *)(p)))
 
-#define prog_char  const char
 #define PGM_P      prog_char *
 
 #define SIGNAL(x)  __attribute__((interrupt_handler)) void x(void)
