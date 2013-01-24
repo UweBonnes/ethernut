@@ -51,6 +51,15 @@ nutcontrib =
             flavor = "boolean"
         },
         {
+            brief = "GNU GENERAL PUBLIC LICENSE Version 3",
+            description = "Enable this option only, if you agree to the\n\n"..
+                          "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007\n\n"..
+                          "For details see http://www.gnu.org/licenses/gpl-3.0-standalone.html",
+            provides = { "LICENSE_GPL3" },
+            macro = "LICENSE_GPL3",
+            flavor = "boolean"
+        },
+        {
             brief = "STMicroelectronics Guidance Only",
             description = "This is not an OSI approved license. Specifically "..
                           "commercial use and redistribution is unclear. Carefully "..
@@ -75,5 +84,11 @@ nutcontrib =
         brief = "RealNetworks Decoder",
         requires = { "HW_TARGET" },
         script = "contrib/hxmp3.nut"
+    },
+    {
+        name = "nutcontrib_armcrypto",
+        brief = "ARM Crypto Library",
+        requires = { "HW_TARGET" },
+        script = "contrib/armcrypto.nut"
     }
 }
