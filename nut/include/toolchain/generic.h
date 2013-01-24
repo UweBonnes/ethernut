@@ -556,6 +556,10 @@ static NUT_INLINE_FUNC uint32_t mem_rd32_mb(unsigned int reg)
 #define strcpy_P(x, y) strcpy(x,y)
 #endif
 
+#ifndef strcat_P
+#define strcat_P(x, y) strcat(x, y)
+#endif
+
 #ifndef strcmp_P
 #define strcmp_P(x, y) strcmp(x, y)
 #endif
