@@ -946,7 +946,7 @@ int CanInput(NUTCANBUS *bus, CANFRAME * frame)
         CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_FMPIE1))]= 1;
 
     frame->rtr = (dataPtr->RIR & CAN_RI0R_RTR)?1:0;
-    frame->id = dataPtr->RIR >>3;
+    frame->id = dataPtr->RIR >>((dataPtr->RIR & CAN_RI0R_IDE)?3:21);
     if(frame->rtr)
         frame->id &= 0x3ff;
     frame->ext = (dataPtr->RIR & CAN_RI0R_IDE)?1:0;
