@@ -1033,7 +1033,7 @@ nutarch_cm3_stm32_devices =
     },
 
     --
-    -- STM32F USART5 Interface
+    -- STM32F UART5 Interface
     --
     {
         name = "nutarch_cm3_stm32f_uart5",
@@ -1058,17 +1058,17 @@ nutarch_cm3_stm32_devices =
                 macro = "UART5_HARDWARE_HDX",
                 brief = "Half Duplex Mode",
                 description = "When selected, the driver will be configured for half-duplex mode.\n",
-                provides = { "USART5_HARDWARE_HDX" },
+                provides = { "UART5_HARDWARE_HDX" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART5_1WIRE",
+                macro = "UART5_1WIRE",
                 brief = "1Wire Mode",
                 description = "In this mode the UARTs RX pin is not connected but the TX pin is used "..
                               "in bidirectional mode.",
                 flavor = "booldata",
-                requires = { "USART5_HARDWARE_HDX" },
+                requires = { "UART5_HARDWARE_HDX" },
                 file = "include/cfg/uart.h"
             },
             {
@@ -1110,38 +1110,38 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART5_485DE_INV",
+                macro = "UART5_485DE_INV",
                 brief = "RS485 DE Invert",
                 description = "Sets the DE signal as active low.\n",
-                requires = { "USART5_RS485_CTRL" },
+                requires = { "UART5_RS485_CTRL" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART5_485DE_PORT",
+                macro = "UART5_485DE_PORT",
                 brief = "RS485 DE Control Port",
                 description = "Select the port of the DE signal.\n",
-                requires = { "USART5_RS485_CTRL" },
+                requires = { "UART5_RS485_CTRL" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART5_485DE_PIN",
+                macro = "UART5_485DE_PIN",
                 brief = "RS485 DE Control Pin",
                 description = "Select the pin for the DE signal.\n",
-                requires = { "USART5_RS485_CTRL" },
+                requires = { "UART5_RS485_CTRL" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART5_485RE_INV",
+                macro = "UART5_485RE_INV",
                 brief = "RS485 RE Invert",
                 description = "Sets the RE signal as active high.\n",
-                requires = { "USART5_RS485_CTRL" },
+                requires = { "UART5_RS485_CTRL" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"
             },
@@ -1149,17 +1149,17 @@ nutarch_cm3_stm32_devices =
                 macro = "USART35_485RE_PORT",
                 brief = "RS485 /RE Control Port",
                 description = "Select the port of the /RE signal.\n",
-                requires = { "USART5_RS485_CTRL" },
+                requires = { "UART5_RS485_CTRL" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART5_485RE_PIN",
+                macro = "UART5_485RE_PIN",
                 brief = "RS485 /RE Control Pin",
                 description = "Select the pin for the /RE signal.\n",
-                requires = { "USART5_RS485_CTRL" },
+                requires = { "UART5_RS485_CTRL" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,

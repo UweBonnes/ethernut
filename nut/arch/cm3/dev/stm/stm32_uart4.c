@@ -176,7 +176,7 @@ NUTDEVICE devUartStm32_4 = {
 #ifdef UART4_485DE_INV
 #define USART_4485DE_INV
 #endif
-#if defined(USART4_485DE_PORT) && defined(UART4_485DE_PIN)
+#if defined(UART4_485DE_PORT) && defined(UART4_485DE_PIN)
 #define DE_GPIO_BASE  GPIO_ID2GPIO(UART4_485DE_PORT)
 #define DE_GPIO_PORT  UART4_485DE_PORT
 #define DE_GPIO_PIN   UART4_485DE_PIN
@@ -186,14 +186,14 @@ NUTDEVICE devUartStm32_4 = {
 #define NRE_GPIO_PORT  UART4_485RE_PORT
 #define NRE_GPIO_PIN   UART4_485RE_PIN
 #endif
-#endif /* USART4_RS485_CTRL */
+#endif /* UART4_RS485_CTRL */
 
 /*!
  * \brief UART4 base configuration.
  */
 #define STM_USART_CLK     RCC_APB1Periph_UART4
 
-#ifdef USART4_INIT_BAUDRATE
+#ifdef UART4_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE UART4_INIT_BAUDRATE
 #endif
 
