@@ -1714,12 +1714,11 @@ nutarch_cm3_stm32_devices =
                 brief = "Use Alternate Pins",
                 description = "This CAN bus can be internally connected to several sets of pins.\n\n"..
                               "Choice 0: CAN_RX PA11 CAN_TX PA12\n"..
-                              "Choice 1: Not available\n"..
-                              "Choice 2: CAN_RX PB8  CAN_TX PB9 (Not available on 36-pin package)\n"..
-                              "Choice 3: CAN_RX PD0  CAN_TX PD1\n",
+                              "Choice 1: CAN_RX PB8  CAN_TX PB9\n"..
+                              "Choice 2: CAN_RX PD0  CAN_TX PD1\n",
                 default = "0",
                 type = "enumerated",
-                choices = { "0", "2", "3" },
+                choices = { "0", "1", "2" },
                 file = "include/cfg/can_dev.h"
             }
         }
