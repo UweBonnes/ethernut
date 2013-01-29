@@ -108,7 +108,7 @@ const DMATAB *DmaTab2 = &DmaTab[STM_HAS_DMA1];
 void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flags)
 {
     DMA_Channel_TypeDef* channel = DmaTab[ch].dma_ch;
-    uint32_t cc = flags & ~(DMA_CCR1_MEM2MEM|DMA_CCR2_DIR|DMA_CCR1_EN);
+    uint32_t cc = flags & ~(DMA_CCR1_MEM2MEM|DMA_CCR1_DIR|DMA_CCR1_EN);
     uint32_t cp;
     uint32_t cm;
 
@@ -123,7 +123,7 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     }
     else if ((uint32_t)dst & PERIPH_BASE) {
         /* Memory to Peripheral */
-        cc |= DMA_CCR2_DIR;
+        cc |= DMA_CCR1_DIR;
         cp=(uint32_t)dst;
         cm=(uint32_t)src;
     }
