@@ -68,7 +68,7 @@
 #define CAN_SPEED_500K     6   ///< 500 kbit/s, max. cable length 100 m
 #define CAN_SPEED_800K     7   ///< 800 kbit/s, max. cable length 50 m
 #define CAN_SPEED_1M       8   ///< 1 Mbit/s, max. cable length 25 m
-#define CAN_SPEED_CUSTOM 255
+#define CAN_SPEED_CUSTOM  -1
 
 /*!
  * \brief CAN error codes
@@ -167,7 +167,7 @@ typedef struct _CANFRAME CANFRAME;
 
 struct _CANFILTER{           //
     uint32_t id;             ///< Identifier
-    uint32_t mask;           ///< Mask, use 0xffffffff for ecavt match
+    uint32_t mask;           ///< Mask, use 0xffffffff for exactt match
     uint8_t id_ext;          ///< Boolean, extended frame
     uint8_t id_rtr;          ///< Boolean, remote transmition bit
     uint8_t mask_ext;        ///< Boolean, match id_ext
@@ -186,9 +186,9 @@ typedef struct _CANFILTER CANFILTER;
  * \brief _NUTCANBUS
  */
 
-extern int NutRegisterCanBus( NUTCANBUS *bus, int8_t ln2_size );
+extern int NutRegisterCanBus( NUTCANBUS *bus, int entries );
 extern int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter );
-extern int CanSetBaud( NUTCANBUS *bus, uint8_t baud, uint32_t alt_btr);
+extern int CanSetBaud( NUTCANBUS *bus, int baud, uint32_t alt_btr);
 extern void CANSetRxTimeout(NUTCANBUS *bus, uint32_t timeout);
 extern void CanEnableRx( NUTCANBUS *bus);
 extern int CanRxAvail( NUTCANBUS *bus);

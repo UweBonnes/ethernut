@@ -593,7 +593,7 @@ int CanGetFeatures( NUTCANBUS *bus, uint32_t flags)
  *
  * \return 0 if baudrate can be delivered or -1 else
  */
-int CanSetBaud( NUTCANBUS *bus, uint8_t baud, uint32_t alt_btr)
+int CanSetBaud( NUTCANBUS *bus, int baud, uint32_t alt_btr)
 {
     /* CAN is connected to APB1 bus. Max frequency varies with family:
        F1: 36 MHz
@@ -644,8 +644,11 @@ int CanSetBaud( NUTCANBUS *bus, uint8_t baud, uint32_t alt_btr)
        case CAN_SPEED_1M:
        btr = STM_CAN_BTR_1M;
        break;
-        case CAN_SPEED_CUSTOM:
-           btr = alt_btr;
+       case CAN_SPEED_CUSTOM:
+       btr = alt_btr;
+       break;
+       default:
+       return CAN_INVALID_SPEED;
     }
     if (btr == 0)
     return CAN_ERROR;
@@ -709,24 +712,21 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
 /*!
  * \brief Initialize CAN interface.
  *
- * \param baud    Baudrate to set. CAN_SPEED_CUSTOM will use alt_btr
- * \param alt_btr Custom setting for the Baud Rate Registers, Device dependant.
+ * \param bus
+ * \param entries Number of buffer Mailboxes, CAN_DEF_RX_ENTRIES if <1.
  *
  * Here we set up the Hardware, baudrate and special setting
  *
  */
-    int NutRegisterCanBus( NUTCANBUS *bus, int8_t ln2_size )
+    int NutRegisterCanBus( NUTCANBUS *bus, int entries )
 {
     int rc = CAN_ERROR;
 
     CANBUSINFO *ci = NULL;
     CANBUFFER *rxbuf;
-    int entries;
 
-    if (ln2_size < 0)
-        entries = _BI32(CAN_DEF_RX_ENTRIES);
-    else
-        entries = 1<<ln2_size;
+    if (entries < 1)
+        entries = CAN_DEF_RX_ENTRIES;
 
     void *dataptr  =  NutHeapAlloc(entries * sizeof(CAN_FIFOMailBox_TypeDef));
     if (dataptr == 0)
