@@ -62,6 +62,24 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#if defined(__AVR_ARCH__) && !defined(_OPTIMIZE__)
+int main(void)
+{
+    unsigned long baud = 115200;
+
+    /* Initialize the console. */
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    _ioctl(_fileno(stdin), UART_SETSPEED, &baud);
+
+    /* Display banner. */
+    puts("\nPlease compile the LUA example with optimization enabled\n");
+    while(1)
+        NutSleep(100);
+}
+
+#else
+
 #ifndef NUTLUA_PARSER_EXCLUDED
 
 #ifdef __AVR__
@@ -356,3 +374,4 @@ int main(void)
     }
     return 0;
 }
+#endif
