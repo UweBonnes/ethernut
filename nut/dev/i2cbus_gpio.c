@@ -333,7 +333,7 @@ static int TwiBusInit(NUTI2C_BUS *bus)
 
     if(icb->sda_port == -1 || icb->sda_pin == -1 ||
        icb->scl_port == -1 || icb->scl_pin == -1)
-        return 0;
+        return -1;
 
     /* Try to configure the bus and register the IRQ Handler */
     if (TwiBusConf(bus)) {
