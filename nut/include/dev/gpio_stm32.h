@@ -43,6 +43,9 @@
 #include <dev/irqreg.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
+typedef uint32_t nutgpio_port_t;
+typedef uint_fast16_t nutgpio_pin_t;
+
 #define NUTGPIO_PORT    GPIOA_BASE
 #define NUTGPIO_PORTA   GPIOA_BASE
 #define NUTGPIO_PORTB   GPIOB_BASE

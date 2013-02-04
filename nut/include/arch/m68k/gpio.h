@@ -34,6 +34,9 @@
 #error "Do not include this file directly. Use dev/gpio.h instead!"
 #endif
 
+typedef uint_fast8_t nutgpio_port_t;
+typedef uint_fast8_t nutgpio_pin_t;
+
 #if defined(MCU_COLDFIRE)
 #include <arch/m68k/coldfire/gpio_mcf5.h>
 #else

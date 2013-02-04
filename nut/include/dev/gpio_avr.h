@@ -56,6 +56,8 @@
 
 #include <arch/avr.h>
 
+typedef uint8_t nutgpio_port_t;
+typedef uint8_t nutgpio_pin_t;
 /*!
  * \brief GPIO input.
  *

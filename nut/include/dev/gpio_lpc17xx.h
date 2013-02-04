@@ -38,6 +38,9 @@
  * \endverbatim
  */
 
+typedef uint32_t nutgpio_port_t;
+typedef uint32_t nutgpio_pin_t;
+
 #include <cfg/arch.h>
 #include <cfg/arch/gpio.h>
 #include <dev/irqreg.h>
