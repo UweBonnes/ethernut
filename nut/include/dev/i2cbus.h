@@ -45,6 +45,7 @@
  */
 
 #include <stdint.h>
+#include <sys/types.h>
 
 /*!
  * \addtogroup xgI2cBus
