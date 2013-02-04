@@ -2009,6 +2009,51 @@ nutdev =
             },
         },
     },
+    {
+        name = "nutdev_i2cbbif",
+        brief = "Bit Banging I2C bus driver",
+        description = "Tested on STM32 only.",
+        requires = { "HW_GPIO" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources = { "i2cbus_gpio.c" },
+        options =
+        {
+            {
+                macro = "GPIO0_SDA_PORT",
+                brief = "GPIO SDA Port",
+                type = "enumerated",
+                description = "Port of the GPIO0 SDA line.",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "GPIO0_SDA_PIN",
+                brief = "GPIO SDA Pin",
+                description = "Pin of the GPIO0 SDA line.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "GPIO0_SCL_PORT",
+                brief = "GPIO SCL Port",
+                type = "enumerated",
+                description = "Port of the GPIO0 SCL line.",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "GPIO0_SCL_PIN",
+                brief = "GPIO SCL Pin",
+                description = "Pin of the GPIO0 SCL line.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/twi.h"
+            },
+       },
+    },
 
     --
     -- Character Device Drivers.
