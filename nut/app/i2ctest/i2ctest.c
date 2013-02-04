@@ -154,7 +154,7 @@ int main(void)
     }
     else
     {
-        puts("NutI2cBusRatesuccess\n");
+        puts("NutI2cBusRate success\n");
     }
 
     NutI2cBusTimeout(&DEF_I2CBUS, 10);
