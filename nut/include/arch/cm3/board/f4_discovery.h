@@ -114,3 +114,28 @@
 
 #define AUDIO_RST_PORT NUTGPIO_PORTD
 #define AUDIO_RST_PIN  4
+
+#ifndef DEV_CONSOLE
+#define DEV_CONSOLE devUsartStm32_2
+#endif
+
+#ifndef DEV_CONSOLE_NAME
+#define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
+#endif
+
+#ifndef I2CBUS1_SDA_PIN
+#define I2CBUS1_SDA_PIN 9
+#endif
+
+#ifndef I2CBUS1_SCL_PIN
+#define I2CBUS1_SCL_PIN 6
+#endif
+
+#ifndef DEF_TWIBUS
+#define  DEF_TWIBUS Stm32TwiBus_1
+#endif
+
+#ifndef DEF_I2CBUS
+#define DEF_I2CBUS i2cBus0Gpio
+#include <dev/i2cbus_gpio.h>
+#endif

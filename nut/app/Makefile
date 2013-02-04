@@ -92,6 +92,7 @@ all:
 	$(MAKE) -C httpd_simple
 	$(MAKE) -C httpd_upnp
 	$(MAKE) -C icmp-udp
+	$(MAKE) -C i2ctest
 	$(MAKE) -C inetq
 	$(MAKE) -C inetq
 	$(MAKE) -C jtagtest
@@ -119,6 +120,7 @@ install:
 	$(MAKE) -C httpd install
 	$(MAKE) -C httpd_simple install
 	$(MAKE) -C icmp-udp install
+	$(MAKE) -C i2ctest install
 	$(MAKE) -C inetq install
 	$(MAKE) -C jtagtest
 	$(MAKE) -C logtime install
@@ -143,6 +145,7 @@ clean:
 	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C httpd_simple clean
+	$(MAKE) -C i2ctest clean
 	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean
 	$(MAKE) -C jtagtest
