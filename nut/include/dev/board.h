@@ -176,6 +176,8 @@
 #include <arch/cm3/board/stm3210c_eval.h>
 #elif defined(STM3210E_EVAL)
 #include <arch/cm3/board/stm3210e_eval.h>
+#elif defined(STM3220G_EVAL)
+#include <arch/cm3/board/stm3220g_eval.h>
 #elif defined(STEVAL_PCC010V2)
 #include <arch/cm3/board/steval_pcc010v2.h>
 #elif defined(STM32_CAN)

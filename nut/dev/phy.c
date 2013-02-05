@@ -158,6 +158,11 @@ phy_status_descr_t phy_status_descr[] = {
 
     /* STM */
     { ST802RT1,  { {0,0}       , {17, 0x0200}, {0, 0}, {17, 0x0100}, {0, 0} } },
+
+    /* NatSemi/TI DP83848 */
+    // Table approach does not work as 10BASET and 100BASET
+    // status share the same bit. Special treatment in NutPhyCtl required.
+    { DP83848,   { {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0} } },
 };
 
 /*!
@@ -306,6 +311,20 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
                     case 5: *par |= PHY_STATUS_10M | PHY_STATUS_FULLDUPLEX; break;
                     case 6: *par |= PHY_STATUS_100M | PHY_STATUS_FULLDUPLEX; break;
                     }
+                }
+                /* Same for the DP83848, table approach does not work as
+                   10BASET and 100BASET status share the same bit */
+                else if (phydcb->oui == DP83848)
+                {
+                   uint16_t tempreg;
+                   tempreg = phyr(0x10);
+                   tempreg &= 0x7;
+                   switch (tempreg) {
+                   case 1: *par |= PHY_STATUS_100M; break;
+                   case 3: *par |= PHY_STATUS_10M; break;
+                   case 5: *par |= PHY_STATUS_100M | PHY_STATUS_FULLDUPLEX; break;
+                   case 7: *par |= PHY_STATUS_10M | PHY_STATUS_FULLDUPLEX; break;
+                   }
                 }
                 else
                 {
