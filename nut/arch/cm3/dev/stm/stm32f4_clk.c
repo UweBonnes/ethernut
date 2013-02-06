@@ -345,29 +345,10 @@ int SetSysClock(void)
     int rc = 0;
     uint32_t rcc_reg;
 
-/*#if (PLLCLK_IN > 3999999) &&  (PLLCLK_IN <= 26000000L)  && ((PLLCLK_IN % 2000000L) == 0)*/
 #if defined(MCU_STM32F2)
  #if (PLLCLK_IN > 3999999) &&  (PLLCLK_IN < 26000001) && ((PLLCLK_IN % 2000000L) == 0)
   #define  PLLM (PLLCLK_IN/2000000)
   #define  PLLN ((240/2) << _BI32(RCC_PLLCFGR_PLLN_0))
-  #define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
-  #define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
-  #define  NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_3WS
- #elif(PLLCLK_IN == 25000000L)
-  #if 1
-   /*
-   Use the PLL_M/PLL_N values from ST's system_stm32f2xx.c file.
-   Using the 25/15 *144 formula does not work for the ST3220G_EVAL
-   development board. Reason: When using this formula sending of larger
-   Ethernet frames (> 200 bytes) at 100Mbit/s does not work.
-   */
-   #define  PLLM (PLLCLK_IN/1000000)
-   #define  PLLN ((240) << _BI32(RCC_PLLCFGR_PLLN_0))
-  #else
-    /* 25/15 *144 = 240 VCO Input 1.66 MHz*/
-   #define  PLLM (PLLCLK_IN/15000000)
-   #define  PLLN ((144) << _BI32(RCC_PLLCFGR_PLLN_0))
-  #endif
   #define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
   #define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
   #define  NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_3WS
