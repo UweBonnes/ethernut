@@ -657,7 +657,11 @@ int PhatFileWrite(NUTFILE * nfp, const void *buffer, int len)
                 step = len - rc;
             }
             sect = PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos;
+            /* Calculate number of sectors. */
             cnt = step / vol->vol_sectsz;
+            /* Update step size to sector size multiple. */
+            step = cnt * vol->vol_sectsz;
+            
             if (PhatSectorWrite(nfp->nf_dev, sect, &buf[rc], cnt)) {
                 rc = -1;
                 break;
