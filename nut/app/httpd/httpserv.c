@@ -67,6 +67,7 @@
 #include <pro/ssi.h>
 #include <pro/asp.h>
 
+#include <stdlib.h>
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
