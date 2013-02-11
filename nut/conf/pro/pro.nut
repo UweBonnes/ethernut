@@ -391,6 +391,19 @@ nutpro =
         options =
         {
             {
+                macro = "HTTP_PLATFORM_STREAMS",
+                brief = "Platform Streams",
+                description = "By default, TCP sockets are mapped to stdio streams. "..
+                              "This allows to use stdio calls like fprintf for "..
+                              "HTTP communication. When this option is enabled, then "..
+                              "the platform-specific socket API is used instead, which "..
+                              "provides better performance. Disadvantages are, that "..
+                              "more memory is required and that applications must use "..
+                              "less portable stdio replacements like s_printf.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
                 macro = "HTTP_MEDIATYPE_BMP",
                 brief = "Default BMP Handler",
                 description = "If enabled, files with extension .bmp will be handled by default.",

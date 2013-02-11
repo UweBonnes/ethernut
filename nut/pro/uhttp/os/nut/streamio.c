@@ -43,6 +43,7 @@
 #include <sys/version.h>
 #include <sys/timer.h>
 #include <sys/thread.h>
+#include <sys/socket.h>
 
 #include <arpa/inet.h>
 #include <netinet/if_ether.h>
@@ -87,10 +88,17 @@ int StreamClientAccept(HTTP_CLIENT_HANDLER handler, const char *params)
 
                 NutTcpSetSockOpt(sock, SO_RCVTIMEO, &tmo, sizeof(tmo));
 
+#ifdef HTTP_PLATFORM_STREAMS
                 sp = calloc(1, sizeof(HTTP_STREAM));
                 sp->strm_sock = sock;
                 (*handler)(sp);
                 free(sp);
+#else
+                /* Associate a binary stdio stream with the socket. */
+                sp = _fdopen((int) ((uintptr_t) sock), "r+b");
+                (*handler)(sp);
+                fclose(sp);
+#endif
                 rc = 0;
             }
         }
@@ -109,6 +117,7 @@ int StreamReadUntilChars(HTTP_STREAM *sp, const char *delim, const char *ignore,
 
     /* Do not read more characters than requested. */
     while (rc < siz) {
+#ifdef HTTP_PLATFORM_STREAMS
         /* Check the current stream buffer. */
         if (sp->strm_ipos == sp->strm_ilen) {
             /* No more buffered data, re-fill the buffer. */
@@ -126,6 +135,9 @@ int StreamReadUntilChars(HTTP_STREAM *sp, const char *delim, const char *ignore,
         }
         ch = sp->strm_ibuf[sp->strm_ipos];
         sp->strm_ipos++;
+#else
+        ch = fgetc(sp);
+#endif
         if (rc == 0 && ch == ' ') {
             /* Skip leading spaces. */
             skip++;
@@ -150,14 +162,16 @@ int StreamReadUntilChars(HTTP_STREAM *sp, const char *delim, const char *ignore,
 int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz)
 {
     int rc = 0;
-    int n;
-    int i;
+    int n = 0;
     int delen = strlen(delim);
 
     HTTP_ASSERT(sp != NULL);
 
     /* Do not read more characters than requested. */
     while (rc < siz) {
+#ifdef HTTP_PLATFORM_STREAMS
+        int i;
+
         /* Check if the delimiter fits in the current stream buffer. */
         if (sp->strm_ipos >= sp->strm_ilen - delen) {
             int got;
@@ -193,9 +207,29 @@ int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz
         } else {
             break;
         }
+#else
+        int ch;
+
+        ch = fgetc(sp);
+        if (ch == EOF) {
+            rc = -1;
+            break;
+        }
+        *buf++ = (char) ch;
+        rc++;
+        if (ch == delim[n]) {
+            if (++n >= delen) {
+                break;
+            }
+        } else {
+            n = 0;
+        }
+#endif
     }
     return rc;
 }
+
+#ifdef HTTP_PLATFORM_STREAMS
 
 int s_write(const void *buf, size_t size, size_t count, HTTP_STREAM *sp)
 {
@@ -211,30 +245,6 @@ int s_puts(const char *str, HTTP_STREAM *sp)
     HTTP_ASSERT(str != NULL);
 
     return NutTcpDeviceWrite(sp->strm_sock, str, strlen(str));
-}
-
-int s_vputs(HTTP_STREAM *sp, ...)
-{
-    int rc = -1;
-    int len;
-    char *cp;
-    char *buf;
-    va_list ap;
-
-    HTTP_ASSERT(sp != NULL);
-
-    va_start(ap, sp);
-    for (len = 0; (cp = va_arg(ap, char *)) != NULL; len += strlen(cp));
-    va_end(ap);
-    buf = malloc(len + 1);
-    if (buf) {
-        va_start(ap, sp);
-        for (*buf = '\0'; (cp = va_arg(ap, char *)) != NULL; strcat(buf, cp));
-        va_end(ap);
-        rc = NutTcpDeviceWrite(sp->strm_sock, buf, strlen(buf));
-        free(buf);
-    }
-    return rc;
 }
 
 int s_printf(HTTP_STREAM *sp, const char *fmt, ...)
@@ -260,6 +270,38 @@ int s_printf(HTTP_STREAM *sp, const char *fmt, ...)
 int s_flush(HTTP_STREAM *sp)
 {
     return NutTcpDeviceWrite(sp->strm_sock, NULL, 0);
+}
+
+#endif
+
+int s_vputs(HTTP_STREAM *sp, ...)
+{
+    int rc = -1;
+    int len;
+    char *cp;
+    char *buf;
+    va_list ap;
+
+    HTTP_ASSERT(sp != NULL);
+
+    va_start(ap, sp);
+    for (len = 0; (cp = va_arg(ap, char *)) != NULL; len += strlen(cp));
+    va_end(ap);
+    buf = malloc(len + 1);
+    if (buf) {
+        va_start(ap, sp);
+        for (*buf = '\0'; (cp = va_arg(ap, char *)) != NULL; strcat(buf, cp));
+        va_end(ap);
+#ifdef HTTP_PLATFORM_STREAMS
+        rc = NutTcpDeviceWrite(sp->strm_sock, buf, strlen(buf));
+#else
+        if (fwrite(buf, 1, strlen(buf), sp) == strlen(buf)) {
+            rc = 0;
+        }
+#endif
+        free(buf);
+    }
+    return rc;
 }
 
 const char *StreamInfo(HTTP_STREAM *sp, int item)

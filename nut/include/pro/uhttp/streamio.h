@@ -39,13 +39,14 @@
  * $Id$
  */
 
+#include <cfg/http.h>
 #include <pro/uhttp/compiler.h>
 
 #if defined _WIN32
 #include <pro/uhttp/os/win/streamio.h>
 #elif defined __linux__
 #include <unistd.h>
-#else
+#elif defined(HTTP_PLATFORM_STREAMS)
 #include <pro/uhttp/os/nut/streamio.h>
 #endif
 
@@ -56,7 +57,12 @@
 /*@{*/
 
 /* \brief Platform dependent stream information structure type. */
+#ifdef HTTP_PLATFORM_STREAMS
 typedef struct _HTTP_STREAM HTTP_STREAM;
+#else
+#include <stdio.h>
+typedef FILE HTTP_STREAM;
+#endif
 
 /* \brief Client handler type. */
 typedef void (*HTTP_CLIENT_HANDLER) (HTTP_STREAM *);
@@ -112,18 +118,27 @@ extern int StreamReadUntilChars(HTTP_STREAM *sp, const char *delim, const char *
  * \param sp Pointer to the stream's information structure.
  * \param delim  The function will return as soon as this string
  *               appears.
- * \param ignore String of all characters that will be skipped.
  * \param buf    Pointer to the buffer that will receive the data read
  *               from the stream. Characters to ignore are not stored.
  *               The searched string will be replaced by a string
  *               terminator (ASCII 0).
  * \param siz    Size of the buffer, given in bytes.
  *
- * \return The number of bytes consumed from the stream, including any
- *         skipped characters and the delimiter. A return value of -1
- *         indicates an error.
+ * \return The number of bytes consumed from the stream. A return value
+ *         of -1 indicates an error.
  */
 extern int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz);
+
+/*!
+ * \brief Write a variable number of strings to a stream.
+ *
+ * \param sp Pointer to the stream's information structure.
+ *
+ * \return A non-negative value if successful or EOF to indicate an error.
+ */
+extern int s_vputs(HTTP_STREAM *sp, ...);
+
+#ifdef HTTP_PLATFORM_STREAMS
 
 /*!
  * \brief Write data items to a stream.
@@ -153,15 +168,6 @@ extern int s_write(const void *buf, size_t size, size_t count, HTTP_STREAM *sp);
 extern int s_puts(const char *str, HTTP_STREAM *sp);
 
 /*!
- * \brief Write a variable number of strings to a stream.
- *
- * \param sp Pointer to the stream's information structure.
- *
- * \return A non-negative value if successful or EOF to indicate an error.
- */
-extern int s_vputs(HTTP_STREAM *sp, ...);
-
-/*!
  * \brief Print formatted data to a stream.
  *
  * This function is similar to the standard function fprintf().
@@ -188,6 +194,13 @@ extern int s_printf(HTTP_STREAM *sp, const char *fmt, ...);
  *         occured.
  */
 extern int s_flush(HTTP_STREAM *sp);
+
+#else
+#define s_write     fwrite
+#define s_puts      fputs
+#define s_printf    fprintf
+#define s_flush     fflush
+#endif
 
 /*! \name Default environment variables */
 /*@{*/
