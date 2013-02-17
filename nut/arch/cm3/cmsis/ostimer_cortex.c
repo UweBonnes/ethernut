@@ -142,7 +142,7 @@ uint32_t NutArchClockGet(int idx)
  *
  * \return System tick frequency in Hertz.
  */
-u_long NutGetTickClock(void)
+uint32_t NutGetTickClock(void)
 {
 
     return NUT_TICK_FREQ;
@@ -151,7 +151,7 @@ u_long NutGetTickClock(void)
 /*!
  * \brief Calculate system ticks for a given number of milliseconds.
  */
-u_long NutTimerMillisToTicks(u_long ms)
+uint32_t NutTimerMillisToTicks(uint32_t ms)
 {
     return (ms * NutGetTickClock()) / 1000;
 }
