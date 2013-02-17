@@ -37,7 +37,7 @@
  * $Id: $
  * \endverbatim
  */
-
+#include <stdio.h>
 #include <arch/cm3.h>
 #include <cfg/os.h>
 #include <cfg/dev.h>
@@ -102,6 +102,15 @@
 #define NIC_PHY_ADDR            0
 #endif
 
+#ifndef TRUE
+#define TRUE    1
+#endif
+
+#ifndef FALSE
+#define FALSE   0
+#endif
+
+#define min(a,b) ((a>b)?b:a)
 
 /* MII Mgmt Configuration register - Clock divider setting */
 const uint8_t emac_clkdiv[] = { 4, 6, 8, 10, 14, 20, 28, 36, 40, 44, 48, 52, 56, 60, 64 };
@@ -134,7 +143,6 @@ struct _EMACINFO {
  * \brief Network interface controller information type.
  */
 typedef struct _EMACINFO EMACINFO;
-
 
 /*!
  * \addtogroup xgNutArchCm3Lpc17xxEmac
@@ -199,7 +207,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
  *
  * \return  none;
  */
-static void Lpc17xxEmacSetDuplex(uint8_t full)
+static void Lpc17xxEmacSetDuplex(int full)
 {
     if(full) {
         LPC_EMAC->MAC2    |= EMAC_MAC2_FULL_DUP;
@@ -217,7 +225,7 @@ static void Lpc17xxEmacSetDuplex(uint8_t full)
  *
  * \return  none;
  */
-static void Lpc17xxEmacSetSpeed(uint8_t enable_100mBit)
+static void Lpc17xxEmacSetSpeed(int enable_100mBit)
 {
     if(enable_100mBit) {
         LPC_EMAC->SUPP = EMAC_SUPP_SPEED;
@@ -265,18 +273,18 @@ THREAD(Lpc17xxEmacWaitLinkThread, arg)
             if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
                 /* Check link state and configure EMAC accordingly */
                 if (phyval & PHY_STATUS_100M) {
-                    Lpc17xxEmacSetSpeed(1);
+                    Lpc17xxEmacSetSpeed(TRUE);
                     EMPRINTF("EMAC: Got link: 100 MBit ");
                 } else {
-                    Lpc17xxEmacSetSpeed(0);
+                    Lpc17xxEmacSetSpeed(FALSE);
                     EMPRINTF("Link: Got link: 10 MBit ");
                 }
 
                 if (phyval & PHY_STATUS_FULLDUPLEX) {
-                    Lpc17xxEmacSetDuplex(1);
+                    Lpc17xxEmacSetDuplex(TRUE);
                     EMPRINTF("Full Duplex\n");
                 } else {
-                    Lpc17xxEmacSetDuplex(0);
+                    Lpc17xxEmacSetDuplex(FALSE);
                     EMPRINTF("Half Duplex\n");
                 }
                 NutThreadExit();
@@ -296,12 +304,13 @@ THREAD(Lpc17xxEmacWaitLinkThread, arg)
  * \return 0 on success, -1 on error
  */
 
-static int Lpc17xxEmacReset(void)
+static int Lpc17xxEmacReset(NUTDEVICE *dev)
 {
     int      rc = 0;
     uint32_t phyval;
     int      idx;
     int32_t  tmp;
+    IFNET   *ifn = (IFNET *) dev->dev_icb;
 
     EMPRINTF("Lpc17xxEmacReset(%lu)\n", tmo);
 
@@ -317,7 +326,8 @@ static int Lpc17xxEmacReset(void)
     /* Initialize MAC control registers. */
     LPC_EMAC->MAC1 = EMAC_MAC1_PASS_ALL;
     LPC_EMAC->MAC2 = EMAC_MAC2_CRC_EN | EMAC_MAC2_PAD_EN;
-    LPC_EMAC->MAXF = EMAC_ETH_MAX_FLEN;
+    /* Set maximum frame size. */
+    LPC_EMAC->MAXF = ifn->if_mtu + ETHER_HDR_LEN + ETHER_HDR_LEN;
 
     /* Find the clock that close to desired target clock */
     tmp = NutArchClockGet(NUT_HWCLK_CPU) / EMAC_MCFG_MII_MAXCLK;
@@ -332,9 +342,6 @@ static int Lpc17xxEmacReset(void)
     }
 
     idx++;
-
-    /* Set maximum frame size. TODO: Better use ifn->if_mtu */
-    LPC_EMAC->MAXF = ETHERMTU;
 
     /* Write to MAC configuration register and reset */
     LPC_EMAC->MCFG = EMAC_MCFG_CLK_SEL(idx) | EMAC_MCFG_RES_MII;
@@ -402,14 +409,14 @@ static void Lpc17xxEmacRxDescriptorInit(void)
 
     for (i = 0; i < EMAC_NUM_RX_FRAG; i++) {
         RX_DESC_PACKET(i)  = RX_BUF(i);
-        RX_DESC_CTRL(i)    = EMAC_RCTRL_INT | (EMAC_ETH_MAX_FLEN-1);
+        RX_DESC_CTRL(i)    = EMAC_RCTRL_INT | (EMAC_ETH_RX_FRAG_SIZE-1);
         RX_STAT_INFO(i)    = 0;
         RX_STAT_HASHCRC(i) = 0;
     }
 
     /* Set EMAC Receive Descriptor Registers. */
-    LPC_EMAC->RxDescriptor    = RX_DESC_BASE;
-    LPC_EMAC->RxStatus        = RX_STAT_BASE;
+    LPC_EMAC->RxDescriptor = RX_DESC_BASE;
+    LPC_EMAC->RxStatus     = RX_STAT_BASE;
     LPC_EMAC->RxDescriptorNumber = EMAC_NUM_RX_FRAG-1;
 
     /* Rx Descriptors Point to 0 */
@@ -441,15 +448,15 @@ static void Lpc17xxEmacTxDescriptorInit (void)
     }
 
     /* Set EMAC Transmit Descriptor Registers. */
-    LPC_EMAC->TxDescriptor    = TX_DESC_BASE;
-    LPC_EMAC->TxStatus        = TX_STAT_BASE;
+    LPC_EMAC->TxDescriptor = TX_DESC_BASE;
+    LPC_EMAC->TxStatus     = TX_STAT_BASE;
     LPC_EMAC->TxDescriptorNumber = EMAC_NUM_TX_FRAG-1;
 
     /* Tx Descriptors Point to 0 */
     LPC_EMAC->TxProduceIndex  = 0;
 }
 
-
+#if 0
 /*!
  * \brief Query buffer status
  *
@@ -458,75 +465,60 @@ static void Lpc17xxEmacTxDescriptorInit (void)
  * \return      buffer status (EMAC_BUFF_EMPTY, EMAC_BUFF_PARTIAL_FULL, EMAC_BUFF_FULL)
  */
 
-EMAC_BUFF_STATUS inline Lpc17xxEmacGetBufferStatus(EMAC_BUFF_IDX idx)
+EMAC_BUFF_STATUS inline Lpc17xxEmacGetBufferStatus(EMAC_BUFF_IDX idx, size_t *space_left)
 {
     uint32_t consume_idx, produce_idx;
     uint32_t max_frag_num;
+    uint32_t frag_size;
+    size_t   space;
+    EMAC_BUFF_STATUS rc;
 
     /* Get the consume index, produce index and the buffer size */
     if (idx == EMAC_TX_BUFF) {
         consume_idx  = LPC_EMAC->TxConsumeIndex;
         produce_idx  = LPC_EMAC->TxProduceIndex;
         max_frag_num = LPC_EMAC->TxDescriptorNumber + 1;
+        frag_size    = EMAC_ETH_TX_FRAG_SIZE;
     } else {
         consume_idx  = LPC_EMAC->RxConsumeIndex;
         produce_idx  = LPC_EMAC->RxProduceIndex;
         max_frag_num = LPC_EMAC->RxDescriptorNumber + 1;
+        frag_size    = EMAC_ETH_RX_FRAG_SIZE;
     }
 
     /* empty */
     if (consume_idx == produce_idx) {
-        return EMAC_BUFF_EMPTY;
-    }
-
+        space = max_frag_num * frag_size;
+        rc = EMAC_BUFF_EMPTY;
+    } else
     /* full */
     if ((consume_idx == 0) && (produce_idx == max_frag_num - 1)) {
-        return EMAC_BUFF_FULL;
-    }
-
+        space = 0;
+        rc = EMAC_BUFF_FULL;
+    } else
     /* Wrap-around */
     if (consume_idx == produce_idx + 1) {
-        return EMAC_BUFF_FULL;
+        space = 0;
+        rc = EMAC_BUFF_FULL;
+    } else {
+        /* Calc free space */
+        if (consume_idx > produce_idx) {
+            //space = max_frag_num - (max_frag_num - consume_idx + produce_idx);
+            space = consume_idx - produce_idx;
+        } else {
+            space = max_frag_num - (produce_idx - consume_idx);
+        }
+        space *= frag_size;
+        rc = EMAC_BUFF_PARTIAL_FULL;
     }
 
-    return EMAC_BUFF_PARTIAL_FULL;
+    if (space_left != NULL) {
+        *space_left = space;
+    }
+
+    return rc;
 }
-
-
-/*!
- * \brief       Get current status value of receive data (due to RxConsumeIndex)
- *
- * \param       none
- *
- * \return      Current value of receive data (due to RxConsumeIndex)
- */
-
-static inline uint32_t Lpc17xxEmacGetRxFrameStatus(void)
-{
-    uint32_t idx;
-
-    idx = LPC_EMAC->RxConsumeIndex;
-    return (RX_STAT_INFO(idx));
-}
-
-
-/*!
- * \brief       Get current status value of receive data (due to TxProduceIndex)
- *
- * \param       none
- *
- * \return      Current value of transmit data (due to TxProduceIndex)
- */
-
-static inline uint32_t Lpc17xxEmacGetTxFrameStatus(void)
-{
-    uint32_t idx;
-
-    idx = LPC_EMAC->TxProduceIndex;
-    return (TX_STAT_INFO(idx));
-}
-
-
+#endif
 /*
  * NIC interrupt entry.
  */
@@ -553,13 +545,13 @@ static void Lpc17xxEmacInterrupt(void *arg)
             LPC_EMAC->IntEnable &= ~(EMAC_INT_RX_ERR | EMAC_INT_RX_DONE);
             NutEventPostFromIrq(&ni->ni_rx_rdy);
         }
-        
+
         if (isr & EMAC_INT_TX_UNDERRUN)  {
             /* An TX underrun error is fatal. We have to soft-reset the TX Datapath */
             LPC_EMAC->Command |= EMAC_CR_TX_RES;
             /* Anyway post the TX queue so the transmitter can rwrite new frames */
-            NutEventPostFromIrq(&ni->ni_tx_rdy);                   
-        } else 
+            NutEventPostFromIrq(&ni->ni_tx_rdy);
+        } else
         if (isr & (EMAC_INT_TX_DONE | EMAC_INT_TX_ERR)) {
             NutEventPostFromIrq(&ni->ni_tx_rdy);
         }
@@ -571,64 +563,104 @@ static void Lpc17xxEmacInterrupt(void *arg)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
+static int Lpc17xxEmacGetPacket(NUTDEVICE *dev, NETBUF ** nbp)
 {
     int      rc = -1;
     uint32_t idx;
-    int32_t  rxlen = 0;
-    uint32_t status;
+
+    uint32_t produce_idx;
+    uint32_t new_consume_idx;
+    int32_t  rxlen;
+    register uint32_t status;
+    EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     *nbp = NULL;
 
-    /* Check if there was any data received */
-    if(Lpc17xxEmacGetBufferStatus(EMAC_RX_BUFF) != EMAC_BUFF_EMPTY) {
-        /* Get size of the received frame */
-        rxlen = ((RX_STAT_INFO(LPC_EMAC->RxConsumeIndex)) & EMAC_RINFO_SIZE) + 1;
+    produce_idx  = LPC_EMAC->RxProduceIndex;
 
-        if(rxlen > 0) {
-            /* substract 4 bytes CTC. */
-            rxlen -= 4;
+    idx = LPC_EMAC->RxConsumeIndex;
+    rxlen = 0;
 
-            status = Lpc17xxEmacGetRxFrameStatus();
-            /* Check if the frame was correctly received */
-            if((status & EMAC_RINFO_ERR_MASK) == 0) {           
-                /*
-                 * Receiving long packets is unexpected. Let's declare the
-                 * chip insane. Short packets will be handled by the caller.
-                 */
-                if ((rxlen > ETHERMTU) || (rxlen < 0) || ((status & EMAC_RINFO_LAST_FLAG) == 0)) {
-                    /* TODO: We assume that the "last" flag is always set */
-                    /* TODO: There is space for buffer space optimization by
-                             allowing smaller receive framgments. In this case
-                             We need to implement the receive algorithm like in
-                             the AT91 driver, where we first try to figure out
-                             how much space all frame fragments will take together.
-                     */
-                    ni->ni_insane = 1;
-                } else {
-                    *nbp = NutNetBufAlloc(0, NBAF_DATALINK + (2 & (NUTMEM_ALIGNMENT - 1)), (uint16_t)rxlen);
-                    if (*nbp != NULL) {
-                        memcpy((uint8_t *) (* nbp)->nb_dl.vp, (void*)RX_DESC_PACKET(LPC_EMAC->RxConsumeIndex), rxlen);
-                    }
+    if (idx != produce_idx) {
+        int32_t size = 0;
+        status = RX_STAT_INFO(idx);
 
-                    rc = 0;
-                }
-            } else {
-                /* Silently discard the frame from EMAC buffer, update the Rx consume index */
-            }
+        while (status && idx != produce_idx) {
+            size += (status & EMAC_RINFO_SIZE) + 1;
 
-            /* Release frame from EMAC buffer, update the Rx consume index */
-            
-            /* Get current Rx consume index */
-            idx = LPC_EMAC->RxConsumeIndex;
-
-            /* Release frame from EMAC buffer */
             if (++idx == EMAC_NUM_RX_FRAG) {
                 idx = 0;
             }
 
-            LPC_EMAC->RxConsumeIndex = idx;                 
+            new_consume_idx = idx;
+
+            if (status & EMAC_RINFO_LAST_FLAG) {
+                rxlen = size;
+                break;
+            }
+
+            status = RX_STAT_INFO(idx);
         }
+    }
+
+
+    /* Check if there was any data received */
+
+    if(rxlen > 0) {
+        idx = LPC_EMAC->RxConsumeIndex;
+
+        /* substract 4 bytes CTC. */
+        rxlen -= 4;
+
+        /* "status" represents the status flag of the last frame fragment */
+
+        /* Check if the frame was correctly received */
+        if((status & EMAC_RINFO_ERR_MASK) == 0) {
+            /*
+             * Receiving long packets is unexpected. Let's declare the
+             * chip insane. Short packets will be handled by the caller.
+             */
+
+            if (rxlen < 0) {
+                ni->ni_insane = 1;
+            } else {
+                *nbp = NutNetBufAlloc(0, NBAF_DATALINK + (2 & (NUTMEM_ALIGNMENT - 1)), (uint16_t)rxlen);
+
+                if (*nbp != NULL) {
+                    uint8_t *bp = (uint8_t *) (* nbp)->nb_dl.vp;
+                    unsigned int len;
+
+                    idx = LPC_EMAC->RxConsumeIndex;
+                    while (rxlen) {
+                        if (rxlen > EMAC_ETH_RX_FRAG_SIZE) {
+                            len = EMAC_ETH_RX_FRAG_SIZE;
+                        } else {
+                            len = rxlen;
+                        }
+
+                        /* Copy received data from current frame fragment */
+                        memcpy(bp, (void*)RX_DESC_PACKET(idx), len);
+                        /* Clear status info and crc hash from current frame fragment */
+                        RX_STAT_INFO(idx)    = 0;
+                        RX_STAT_HASHCRC(idx) = 0;
+
+                        if (++idx == EMAC_NUM_RX_FRAG) {
+                            idx = 0;
+                        }
+
+                        rxlen -= len;
+                        bp += len;
+                    }
+                }
+
+                rc = 0;
+            }
+        } else {
+            /* Silently discard the frame from EMAC buffer, update the Rx consume index */
+        }
+
+        /* Release frame from EMAC buffer, update the Rx consume index */
+        LPC_EMAC->RxConsumeIndex = new_consume_idx;
     }
     return rc;
 }
@@ -645,12 +677,14 @@ static int Lpc17xxEmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
  *         will automatically release the network buffer
  *         structure.
  */
-static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
+static inline int Lpc17xxEmacPutPacket(NUTDEVICE *dev, NETBUF * nb)
 {
     int       rc = -1;
     uint16_t  sz;
     uint8_t  *buf;
-    uint32_t idx;
+    uint32_t  idx;
+    IFNET    *ifn = (IFNET *) dev->dev_icb;
+    EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     /*
      * Calculate the number of bytes to be send. Do not send packets
@@ -658,56 +692,75 @@ static inline int Lpc17xxEmacPutPacket(EMACINFO * ni, NETBUF * nb)
      * consist of 1500 data bytes plus the 14 byte Ethernet header
      * plus 4 bytes CRC. We check the data bytes only.
      */
-    if ((sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz) > ETHERMTU) {
+    if ((sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz) > ifn->if_mtu) {
         return -1;
     }
 
     sz += nb->nb_dl.sz;
-    if (sz & 1) {
-        sz++;
-    }
 
     /* Disable EMAC interrupts. */
     NutIrqDisable(&sig_EMAC);
 
     /* TODO: Check for link. */
     if (ni->ni_insane == 0) {
+        int32_t  txlen = sz;
+        int32_t  offs  = 0;
 
-        /* Allocate a descriptor for sending frame and get the coressponding
+        /* Allocate a descriptors for sending frame and get the coressponding
            buffer address NIC interrupts must be disabled.
          */
 
         idx = LPC_EMAC->TxProduceIndex;
 
-        buf = (uint8_t*)TX_DESC_PACKET(idx);
+        while (txlen > 0) {
+            /* Get the current transmit fragment data pointer */
+            buf = (uint8_t*)TX_DESC_PACKET(idx);
 
-        /* We always send full packets. So mark this frame as the last one */
-        TX_DESC_CTRL(idx) = ((sz-1) & EMAC_TCTRL_SIZE) | (EMAC_TCTRL_INT | EMAC_TCTRL_LAST);
+            if (txlen > EMAC_ETH_TX_FRAG_SIZE) {
+                /* This is not the last fragment, it is completely filled */
+                TX_DESC_CTRL(idx) = ((EMAC_ETH_TX_FRAG_SIZE - 1) & EMAC_TCTRL_SIZE) | EMAC_TCTRL_INT;
+            } else {
+                /* Round up the len to the next even number and mark this as the last fragment */
+                TX_DESC_CTRL(idx) = ((txlen - 1) & EMAC_TCTRL_SIZE) | (EMAC_TCTRL_INT | EMAC_TCTRL_LAST);
+            }
 
-        /* Copy packet data */
-        memcpy(buf, nb->nb_dl.vp, nb->nb_dl.sz);
-        buf += nb->nb_dl.sz;
-        memcpy(buf, nb->nb_nw.vp, nb->nb_nw.sz);
-        buf += nb->nb_nw.sz;
-        memcpy(buf, nb->nb_tp.vp, nb->nb_tp.sz);
-        buf += nb->nb_tp.sz;
-        memcpy(buf, nb->nb_ap.vp, nb->nb_ap.sz);
+            if (txlen == sz) {
+                /* This is the first fragment, copy the header bytes and then the application data */
+                memcpy(buf, nb->nb_dl.vp, nb->nb_dl.sz);
+                buf += nb->nb_dl.sz;
+                txlen -= nb->nb_dl.sz;
+                memcpy(buf, nb->nb_nw.vp, nb->nb_nw.sz);
+                buf += nb->nb_nw.sz;
+                txlen -= nb->nb_nw.sz;
+                memcpy(buf, nb->nb_tp.vp, nb->nb_tp.sz);
+                buf += nb->nb_tp.sz;
+                txlen -= nb->nb_tp.sz;
+
+                offs = min (EMAC_ETH_TX_FRAG_SIZE - nb->nb_dl.sz - nb->nb_nw.sz - nb->nb_tp.sz, nb->nb_ap.sz);
+
+                memcpy(buf, nb->nb_ap.vp, offs);
+                buf   += offs;
+                txlen -= offs;
+            } else {
+                register int len = min(EMAC_ETH_TX_FRAG_SIZE, nb->nb_ap.sz - offs);
+
+                /* Continue copying the application data */
+                memcpy(buf, (uint8_t *)nb->nb_ap.vp + offs, len);
+                offs  += len;
+                txlen -= len;
+            }
+            /* Increment produce index counter, taking wrap around into account */
+            if (++idx == LPC_EMAC->TxDescriptorNumber + 1) {
+                idx = 0;
+            }
+        }
 
         /* Update tx produce index
            Increase the TxProduceIndex (after writting to the Transmit buffer
-           to enable the Transmit buffer) and wrap-around the index if it
-           reaches the maximum transmit number
-        */
+           to enable the Transmit buffer)
+         */
 
-        /* Get current tx produce index */
-        idx = LPC_EMAC->TxProduceIndex;
-
-        /* Start frame transmission */
-        if (++idx == LPC_EMAC->TxDescriptorNumber + 1) {
-            idx = 0;
-        }
         LPC_EMAC->TxProduceIndex = idx;
-
 
         rc = 0;
 #ifdef NUT_PERFMON
@@ -793,7 +846,7 @@ THREAD(Lpc17xxEmacRxThread, arg)
     NutThreadSetPriority(9);
 
     /* Enable receive and transmit interrupts. */
-    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_DONE | 
+    LPC_EMAC->IntEnable |= EMAC_INT_RX_OVERRUN | EMAC_INT_RX_ERR | EMAC_INT_RX_DONE |
                            EMAC_INT_TX_UNDERRUN | EMAC_INT_TX_ERR | EMAC_INT_TX_DONE;
 
     NutIrqEnable(&sig_EMAC);
@@ -804,12 +857,11 @@ THREAD(Lpc17xxEmacRxThread, arg)
          * 2 seconds. The timeout can be modified if there are interrupt problems.
          */
         NutEventWait(&ni->ni_rx_rdy, 2000);
-
         /*
          * Fetch all packets from the NIC's internal buffer and pass
          * them to the registered handler.
          */
-        while (Lpc17xxEmacGetPacket(ni, &nb) == 0) {
+        while (Lpc17xxEmacGetPacket(dev, &nb) == 0) {
             /* Discard short packets. */
             if (nb->nb_dl.sz < 60) {
                 NutNetBufFree(nb);
@@ -821,7 +873,7 @@ THREAD(Lpc17xxEmacRxThread, arg)
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
-            if (Lpc17xxEmacReset()) {
+            if (Lpc17xxEmacReset(dev)) {
                 NutSleep(500);
             } else {
                 Lpc17xxEmacStart(dev);
@@ -845,8 +897,13 @@ THREAD(Lpc17xxEmacRxThread, arg)
 int Lpc17xxEmacOutput(NUTDEVICE * dev, NETBUF * nb)
 {
     static uint32_t mx_wait = 5000;
+    uint32_t consume_idx;
+    uint32_t produce_idx;
+    uint32_t num_fragments;
     int rc = -1;
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
+    size_t space;
+    size_t pkg_size;
 
     /*
      * After initialization we are waiting for a long time to give
@@ -862,14 +919,42 @@ int Lpc17xxEmacOutput(NUTDEVICE * dev, NETBUF * nb)
         }
 
         /* Check for packet queue space. */
-        if (Lpc17xxEmacGetBufferStatus(EMAC_TX_BUFF) == EMAC_BUFF_FULL) {
+
+        consume_idx   = LPC_EMAC->TxConsumeIndex;
+        produce_idx   = LPC_EMAC->TxProduceIndex;
+        num_fragments = LPC_EMAC->TxDescriptorNumber + 1;
+
+        /* empty */
+        if (consume_idx == produce_idx) {
+            space = num_fragments * EMAC_ETH_TX_FRAG_SIZE;
+        } else
+        /* full */
+        if ((consume_idx == 0) && (produce_idx == num_fragments - 1)) {
+            space = 0;
+        } else
+        /* Wrap-around */
+        if (consume_idx == produce_idx + 1) {
+            space = 0;
+        } else {
+            /* Calc free space */
+            if (consume_idx > produce_idx) {
+                space = consume_idx - produce_idx;
+            } else {
+                space = num_fragments - (produce_idx - consume_idx);
+            }
+            space *= EMAC_ETH_TX_FRAG_SIZE;
+        }
+
+        pkg_size = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz + nb->nb_dl.sz;
+
+        if (space < pkg_size) {
             if (NutEventWait(&ni->ni_tx_rdy, 500)) {
                 /* No queue space. Release the lock and give up. */
                 NutEventPost(&ni->ni_mutex);
                 break;
             }
         } else
-        if (Lpc17xxEmacPutPacket(ni, nb) == 0) {
+        if (Lpc17xxEmacPutPacket(dev, nb) == 0) {
             /* Ethernet works. Set a long waiting time in case we
                temporarly lose the link next time. */
             rc = 0;
@@ -934,7 +1019,7 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
 #endif
 
     /* Reset the controller. */
-    if (Lpc17xxEmacReset() == -1) {
+    if (Lpc17xxEmacReset(dev) == -1) {
         return -1;
     }
 

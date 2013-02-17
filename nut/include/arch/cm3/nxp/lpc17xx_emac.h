@@ -438,9 +438,11 @@
  *----------------------------------------------------------------------------*/
 
 /* EMAC Memory Buffer configuration for 16K Ethernet RAM */
-#define EMAC_NUM_RX_FRAG          6          /* Num.of RX Fragments 6*1536= 9.0kB   */
-#define EMAC_NUM_TX_FRAG          4          /* Num.of TX Fragments 4*1536= 6.0kB   */
-#define EMAC_ETH_MAX_FLEN         1536       /* Max. Ethernet Frame Size            */
+#define EMAC_NUM_RX_FRAG          64         /* Num.of RX Fragments (64 * 128 Byte) = 8.0kB */
+#define EMAC_NUM_TX_FRAG          48         /* Num.of TX Fragments (4 * 1536 Byte) = 6.0kB */
+#define EMAC_ETH_RX_FRAG_SIZE     128        /* Max. Ethernet RX fragment Size      */
+#define EMAC_ETH_TX_FRAG_SIZE     128        /* Max. Ethernet RX fragment Size      */
+#define EMAC_ETH_MAX_FRAME_LEN    1536       /* Max. Ethernet Frame Size            */
 #define EMAC_TX_FRAME_TOUT        0x00100000 /* Frame Transmit timeout count        */
 
 /* EMAC variables located in 16K Ethernet SRAM */
@@ -449,7 +451,7 @@
 #define TX_DESC_BASE              (RX_STAT_BASE + EMAC_NUM_RX_FRAG * 8)
 #define TX_STAT_BASE              (TX_DESC_BASE + EMAC_NUM_TX_FRAG * 8)
 #define RX_BUF_BASE               (TX_STAT_BASE + EMAC_NUM_TX_FRAG * 4)
-#define TX_BUF_BASE               (RX_BUF_BASE  + EMAC_NUM_RX_FRAG * EMAC_ETH_MAX_FLEN)
+#define TX_BUF_BASE               (RX_BUF_BASE  + EMAC_NUM_RX_FRAG * EMAC_ETH_RX_FRAG_SIZE)
 
 /* RX Descriptor structure type definition */
 #define RX_DESC_PACKET(i)         (*(uint32_t *)(RX_DESC_BASE     + 8 * i))
@@ -471,8 +473,8 @@
   TX Data Buffer structure definition definitions
  *----------------------------------------------------------------------------*/
 
-#define RX_BUF(i)                 (RX_BUF_BASE + EMAC_ETH_MAX_FLEN * i)
-#define TX_BUF(i)                 (TX_BUF_BASE + EMAC_ETH_MAX_FLEN * i)
+#define RX_BUF(i)                 (RX_BUF_BASE + EMAC_ETH_RX_FRAG_SIZE * i)
+#define TX_BUF(i)                 (TX_BUF_BASE + EMAC_ETH_TX_FRAG_SIZE * i)
 
 /* RX Descriptor Control Word */
 #define EMAC_RCTRL_SIZE(n)        (n&0x7FF)   /* Buffer size field                  */
