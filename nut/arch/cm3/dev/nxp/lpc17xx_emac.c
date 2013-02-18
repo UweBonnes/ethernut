@@ -43,6 +43,7 @@
 #include <cfg/dev.h>
 #include <cfg/arch/gpio.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <sys/atom.h>
@@ -456,69 +457,6 @@ static void Lpc17xxEmacTxDescriptorInit (void)
     LPC_EMAC->TxProduceIndex  = 0;
 }
 
-#if 0
-/*!
- * \brief Query buffer status
- *
- * \param idx   buffer index (EMAC_RX_BUFF, EMAC_TX_BUFF)
- *
- * \return      buffer status (EMAC_BUFF_EMPTY, EMAC_BUFF_PARTIAL_FULL, EMAC_BUFF_FULL)
- */
-
-EMAC_BUFF_STATUS inline Lpc17xxEmacGetBufferStatus(EMAC_BUFF_IDX idx, size_t *space_left)
-{
-    uint32_t consume_idx, produce_idx;
-    uint32_t max_frag_num;
-    uint32_t frag_size;
-    size_t   space;
-    EMAC_BUFF_STATUS rc;
-
-    /* Get the consume index, produce index and the buffer size */
-    if (idx == EMAC_TX_BUFF) {
-        consume_idx  = LPC_EMAC->TxConsumeIndex;
-        produce_idx  = LPC_EMAC->TxProduceIndex;
-        max_frag_num = LPC_EMAC->TxDescriptorNumber + 1;
-        frag_size    = EMAC_ETH_TX_FRAG_SIZE;
-    } else {
-        consume_idx  = LPC_EMAC->RxConsumeIndex;
-        produce_idx  = LPC_EMAC->RxProduceIndex;
-        max_frag_num = LPC_EMAC->RxDescriptorNumber + 1;
-        frag_size    = EMAC_ETH_RX_FRAG_SIZE;
-    }
-
-    /* empty */
-    if (consume_idx == produce_idx) {
-        space = max_frag_num * frag_size;
-        rc = EMAC_BUFF_EMPTY;
-    } else
-    /* full */
-    if ((consume_idx == 0) && (produce_idx == max_frag_num - 1)) {
-        space = 0;
-        rc = EMAC_BUFF_FULL;
-    } else
-    /* Wrap-around */
-    if (consume_idx == produce_idx + 1) {
-        space = 0;
-        rc = EMAC_BUFF_FULL;
-    } else {
-        /* Calc free space */
-        if (consume_idx > produce_idx) {
-            //space = max_frag_num - (max_frag_num - consume_idx + produce_idx);
-            space = consume_idx - produce_idx;
-        } else {
-            space = max_frag_num - (produce_idx - consume_idx);
-        }
-        space *= frag_size;
-        rc = EMAC_BUFF_PARTIAL_FULL;
-    }
-
-    if (space_left != NULL) {
-        *space_left = space;
-    }
-
-    return rc;
-}
-#endif
 /*
  * NIC interrupt entry.
  */
@@ -793,7 +731,7 @@ static int Lpc17xxEmacStart(NUTDEVICE *dev)
     Lpc17xxEmacTxDescriptorInit();
 
     /* Set Receive Filter register: enable broadcast and multicast */
-    LPC_EMAC->RxFilterCtrl = EMAC_RFC_MCAST_EN | EMAC_RFC_BCAST_EN | EMAC_RFC_PERFECT_EN;
+    LPC_EMAC->RxFilterCtrl = EMAC_RFC_BCAST_EN | EMAC_RFC_PERFECT_EN;
 
     /* Reset all interrupts, Interrupts will be enabled in the RX-Thread */
     LPC_EMAC->IntClear  = 0xFFFF;
@@ -976,6 +914,233 @@ int Lpc17xxEmacOutput(NUTDEVICE * dev, NETBUF * nb)
     return rc;
 }
 
+
+/*!
+ * \brief Calculate CRC of a number of bytes (e.g. of an ethernet frame)
+ *
+ * \param   data    Pointer to the first byte of the data buffer
+ * \param   len     length of the data
+ *
+ * \return  Calculated CRC (32 bit)
+ */
+
+static int32_t Lpc17xxEmacCalcCrc(uint8_t *data, int32_t len)
+{
+    int i, j;
+    char byte;
+    int crc;
+    int q0, q1, q2, q3;
+
+    crc = 0xFFFFFFFF;
+
+    for (i = 0; i < len; i++) {
+        byte = *(data++);
+        for (j = 0; j < 2; j++) {
+            if (((crc >> 28) ^ (byte >> 3)) & 0x00000001) {
+                q3 = 0x04C11DB7;
+            } else {
+                q3 = 0x00000000;
+            }
+
+            if (((crc >> 29) ^ (byte >> 2)) & 0x00000001) {
+                q2 = 0x09823B6E;
+            } else {
+                q2 = 0x00000000;
+            }
+
+            if (((crc >> 30) ^ (byte >> 1)) & 0x00000001) {
+                q1 = 0x130476DC;
+            } else {
+                q1 = 0x00000000;
+            }
+
+            if (((crc >> 31) ^ (byte >> 0)) & 0x00000001) {
+                q0 = 0x2608EDB8;
+            } else {
+                q0 = 0x00000000;
+            }
+
+            crc = (crc << 4) ^ q3 ^ q2 ^ q1 ^ q0;
+
+            byte >>= 4;
+        }
+    }
+
+    return crc;
+}
+
+/*!
+ * \brief Update the multicast hash.
+ *
+ * This function must be called after the multicast list changed.
+ *
+ * \param mclst Pointer to the first entry of the linked list of
+ *              multicast entries.
+ */
+static void Lpc17xxEmacHashUpdate(MCASTENTRY *mclst)
+{
+    uint32_t idx;
+    uint32_t hash[2] = { 0, 0 };
+
+    /* Determine the hash bit for each entry. */
+    while (mclst) {
+        /* Calc CRC of the hash entry. Bits 23-28 are used as hash index */
+        idx = (Lpc17xxEmacCalcCrc(mclst->mca_ha, 6) >> 23) & 0x3F;
+
+        /* Set the bit given by the 6 bit index. */
+        hash[idx > 31] |= 1 << (idx & 31);
+        mclst = mclst->mca_next;
+    }
+    /* Set result in the hash register. */
+    LPC_EMAC->HashFilterL = hash[0];
+    LPC_EMAC->HashFilterH = hash[1];
+
+    /* Enable or disable multicast hash. */
+    if (hash[0] || hash[1]) {
+        LPC_EMAC->RxFilterCtrl |= EMAC_RFC_MCAST_HASH_EN;
+    } else {
+        LPC_EMAC->RxFilterCtrl &= ~EMAC_RFC_MCAST_HASH_EN;
+    }
+}
+
+/*!
+ * \brief Get multicast entry of a given IP address.
+ *
+ * \todo This function should be shared by all Ethernet drivers.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the entry to retrieve.
+ *
+ * \return Pointer to the entry or NULL if none exists.
+ */
+static MCASTENTRY *McastIpEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca = ifn->if_mcast;
+
+    while (mca) {
+        if (ip == mca->mca_ip) {
+            break;
+        }
+        mca = mca->mca_next;
+    }
+    return mca;
+}
+
+/*!
+ * \brief Add a given IP address to the multicast list.
+ *
+ * \todo This function should be shared by all Ethernet drivers.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the new entry.
+ *
+ * \return Pointer to the requested entry, either a new one or
+ *         an already existing entry. In case of a failure, NULL
+ *         is returned.
+ */
+static MCASTENTRY *McastAddEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca;
+
+    mca = McastIpEntry(ifn, ip);
+    if (mca == NULL) {
+        mca = malloc(sizeof(MCASTENTRY));
+        if (mca) {
+            mca->mca_ip = ip;
+            /* Set the IANA OUI. */
+            mca->mca_ha[0] = 0x01;
+            mca->mca_ha[1] = 0x00;
+            mca->mca_ha[2] = 0x5e;
+            /* Map the lower 23 bits of the IP address to the MAC address.
+               Note that Nut/Net IP addresses are in network byte order. */
+            mca->mca_ha[3] = (ip >> 8) & 0x7f;
+            mca->mca_ha[4] = (ip >> 16) & 0xff;
+            mca->mca_ha[5] = (ip >> 24) & 0xff;
+            /* Add the new entry to the front of the list. */
+            mca->mca_next = ifn->if_mcast;
+            ifn->if_mcast = mca;
+            /* Update the EMAC's multicast hash. */
+            Lpc17xxEmacHashUpdate(mca);
+        }
+    }
+    return mca;
+}
+
+/*!
+ * \brief Remove multicast entry of a given IP address.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the entry to remove.
+ */
+static void McastDelEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca = ifn->if_mcast;
+    MCASTENTRY **lnk = &ifn->if_mcast;
+
+    while (mca) {
+        if (mca->mca_ip == ip) {
+            *lnk = mca->mca_next;
+            free(mca);
+            break;
+        }
+        lnk = &mca->mca_next;
+        mca = *lnk;
+    }
+    /* Update the EMAC's multicast hash. */
+    Lpc17xxEmacHashUpdate(mca);
+}
+
+/*!
+ * \brief Perform Ethernet control functions.
+ *
+ * \param dev  Identifies the device that receives the device-control
+ *             function.
+ * \param req  Requested control function. May be set to one of the
+ *             following constants:
+ *             - SIOCSIFADDR sets interface MAC address passed in buffer.
+ *             - SIOCGIFADDR copies current interface MAC address to buffer.
+ *             - SIOCADDMULTI adds multicast entry for IP in buffer.
+ *             - SIOCDELMULTI removes multicast entry of IP in buffer.
+ * \param conf Points to a buffer that contains any data required for
+ *             the given control function or receives data from that
+ *             function.
+ * \return 0 on success, -1 otherwise.
+ *
+ */
+static int Lpc17xxEmacIoCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = 0;
+    IFNET *ifn = (IFNET *) dev->dev_icb;
+    uint32_t ip;
+
+    switch (req) {
+    case SIOCSIFADDR:
+        /* Set interface hardware address. */
+        memcpy(ifn->if_mac, conf, sizeof(ifn->if_mac));
+        break;
+    case SIOCGIFADDR:
+        /* Get interface hardware address. */
+        memcpy(conf, ifn->if_mac, sizeof(ifn->if_mac));
+        break;
+    case SIOCADDMULTI:
+        /* Add multicast address. */
+        memcpy(&ip, conf, sizeof(ip));
+        if (McastAddEntry(ifn, ip) == NULL) {
+            rc = -1;
+        }
+        break;
+    case SIOCDELMULTI:
+        /* Delete multicast address. */
+        memcpy(&ip, conf, sizeof(ip));
+        McastDelEntry(ifn, ip);
+        break;
+    default:
+        rc = -1;
+        break;
+    }
+    return rc;
+}
+
 /*!
  * \brief Initialize Ethernet hardware.
  *
@@ -1089,7 +1254,7 @@ NUTDEVICE devLpc17xxEmac = {
     &ifn_eth0,                  /*!< \brief Interface control block. */
     &dcb_eth0,                  /*!< \brief Driver control block. */
     Lpc17xxEmacInit,            /*!< \brief Driver initialization routine. */
-    0,                          /*!< \brief Driver specific control function. */
+    Lpc17xxEmacIoCtl,           /*!< \brief Driver specific control function. */
     0,                          /*!< \brief Read from device. */
     0,                          /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__
