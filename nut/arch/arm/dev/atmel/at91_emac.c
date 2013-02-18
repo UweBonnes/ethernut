@@ -1023,6 +1023,8 @@ static void McastDelEntry(IFNET *ifn, uint32_t ip)
         lnk = &mca->mca_next;
         mca = *lnk;
     }
+    /* Update the EMAC's multicast hash. */
+    EmacHashUpdate(mca);
 }
 
 /*!
