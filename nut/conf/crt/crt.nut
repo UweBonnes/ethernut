@@ -274,6 +274,13 @@ nutcrt =
         }
     },
 
+    {
+        name = "nutcrt_vis",
+        brief = "Visual String Codec",
+        sources =
+        { "vis.c", "unvis.c" }
+    },
+
     --
     -- Date and time
     --
