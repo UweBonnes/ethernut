@@ -83,6 +83,7 @@
 
 all:
 	$(MAKE) -C caltime
+	$(MAKE) -C cantest
 # Broken: C++ no longer available?	
 #	$(MAKE) -C cppdemo
 	$(MAKE) -C editconf
@@ -139,6 +140,7 @@ install:
 
 clean:
 	$(MAKE) -C caltime clean
+	$(MAKE) -C cantest clean
 #	$(MAKE) -C cppdemo clean
 	$(MAKE) -C editconf clean
 	$(MAKE) -C events clean
@@ -166,6 +168,7 @@ clean:
 
 at90can:
 	$(MAKE) -C caltime
+	$(MAKE) -C cantest
 	$(MAKE) -C canbus
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
