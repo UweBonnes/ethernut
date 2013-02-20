@@ -155,6 +155,7 @@ nutcrt =
             "freopen.c",
             "fseek.c",
             "ftell.c",
+            "funopen.c",
             "seek.c",
             "tell.c"
         },

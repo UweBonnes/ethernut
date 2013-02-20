@@ -152,6 +152,7 @@ extern char *fgets(char *buffer, int count, FILE * stream);
 extern int _fileno(FILE * stream);
 extern void _flushall(void);
 extern FILE *fopen(const char *name, const char *mode);
+extern FILE *funopen(void *cookie, int (*readfn) (void *, char *, int), int (*writefn) (void *, const char *, int), long (*seekfn)(void *, long, int), int (*closefn)(void *));
 extern int fprintf(FILE * stream, const char *fmt, ...);
 extern int fpurge(FILE * stream);
 extern int fputc(int c, FILE * stream);
