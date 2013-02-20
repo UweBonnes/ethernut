@@ -139,6 +139,7 @@ extern FILE *__iob[];           /*!< \internal Stream slots. */
 #endif
 
 
+extern int asprintf(char **strp, const char *fmt, ...);
 extern void clearerr(FILE * stream);
 extern int fclose(FILE * stream);
 extern void fcloseall(void);
@@ -173,6 +174,7 @@ extern int scanf(const char *fmt, ...);
 extern int sprintf(char *buffer, const char *fmt, ...);
 extern int sscanf(const char *string, const char *fmt, ...);
 extern int ungetc(int c, FILE * stream);
+extern int vasprintf(char **strp, const char *fmt, va_list ap);
 extern int vfprintf(FILE * stream, const char *fmt, va_list ap);
 extern int vfscanf(FILE * stream, const char *fmt, va_list ap);
 extern int vsprintf(char *buffer, const char *fmt, va_list ap);

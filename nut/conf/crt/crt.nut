@@ -252,8 +252,10 @@ nutcrt =
         brief = "Formatted String I/O",
         sources =
         {
+            "asprintf.c",
             "sprintf.c",
             "sscanf.c",
+            "vasprintf.c",
             "vsprintf.c",
             "vsscanf.c"
         }
