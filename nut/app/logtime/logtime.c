@@ -63,7 +63,7 @@ static char *version = "1.0.1";
  * User configuration.
  */
 
-/*! \brief Default MAC. 
+/*! \brief Default MAC.
  *  Used if EEPROM is empty. */
 #define MYMAC   0x00, 0x06, 0x98, 0x00, 0x00, 0x00
 
@@ -76,7 +76,7 @@ static char *version = "1.0.1";
 #define MYMASK  "255.255.255.0"
 
 /*! \brief Default gateway address.
- *  Used if EEPROM configuration and DHCP is unavailable. 
+ *  Used if EEPROM configuration and DHCP is unavailable.
  *  Only required if syslog or time server are located in
  *  a different network. */
 #define MYGATE  "192.168.192.1"
@@ -88,13 +88,13 @@ static char *version = "1.0.1";
 #define MYTIMED "130.149.17.21"
 
 /*! \brief Device name used for UART output. */
-#define MYUART  "uart0"
+#define MYUART  DEV_CONSOLE.dev_name
 
 /*! \brief UART baudrate. */
 #define MYBAUD  115200
 
 /*! \brief Output device. */
-#define MYDEV   DEV_UART
+#define MYDEV   DEV_CONSOLE
 
 /*! \brief Local timezone, -1 for Central Europe. */
 #define MYTZ    -1

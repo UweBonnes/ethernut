@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -93,14 +93,14 @@
  * \typedef IGMP
  * \brief IGMP packet type.
  */
-typedef struct __attribute__ ((packed)) igmp IGMP;
-typedef struct __attribute__ ((packed)) igmp_report IGMP_REPORT;
+typedef struct NUT_PACKED_TYPE igmp IGMP;
+typedef struct NUT_PACKED_TYPE igmp_report IGMP_REPORT;
 
 /*!
  * \struct igmp igmp.h netinet/igmp.h
  * \brief IGMP packet structure.
  */
-struct __attribute__ ((packed)) igmp
+struct NUT_PACKED_TYPE igmp
 {
     uint8_t igmp_type;           /*!< \brief Version and type of IGMP message. */
     uint8_t igmp_code;           /*!< \brief Subtype for routing messages. */
@@ -111,7 +111,7 @@ struct __attribute__ ((packed)) igmp
 /*!
  * \brief IGMPv3 query format
  */
-struct __attribute__ ((packed)) igmpv3 {
+struct NUT_PACKED_TYPE igmpv3 {
     uint8_t igmp_type;           /*!< \brief Version and type of IGMP message. */
     uint8_t igmp_code;           /*!< \brief Subtype for routing messages. */
     uint16_t igmp_cksum;         /*!< \brief IP-style checksum. */
@@ -125,7 +125,7 @@ struct __attribute__ ((packed)) igmpv3 {
 /*!
  * \brief IGMPv3 group record.
  */
-struct __attribute__ ((packed)) igmp_grouprec {
+struct NUT_PACKED_TYPE igmp_grouprec {
     uint8_t ig_type;             /*!< \brief Record type. */
     uint8_t ig_datalen;          /*!< \brief Amount of aux data. */
     uint16_t ig_numsrc;          /*!< \brief Number of sources. */
@@ -136,7 +136,7 @@ struct __attribute__ ((packed)) igmp_grouprec {
 /*!
  * \brief IGMPv3 report.
  */
-struct __attribute__ ((packed)) igmp_report {
+struct NUT_PACKED_TYPE igmp_report {
     uint8_t ir_type;             /*!< \brief Record type. */
     uint8_t ir_rsv1;             /*!< \brief Reserved. */
     uint16_t ir_cksum;           /*!< \brief Checksum. */
@@ -170,48 +170,44 @@ struct __attribute__ ((packed)) igmp_report {
  * \name IGMPv3 Report Types
  */
 /*@{*/
-#define	IGMP_REPORT_MODE_IN	1       /*!< \brief Mode-is-include. */
-#define	IGMP_REPORT_MODE_EX	2       /*!< \brief Mode-is-exclude. */
-#define	IGMP_REPORT_TO_IN	3       /*!< \brief Change-to-include. */
-#define	IGMP_REPORT_TO_EX	4       /*!< \brief Change-to-exclude. */
-#define	IGMP_REPORT_ALLOW_NEW	5       /*!< \brief Allow-new-sources. */
-#define	IGMP_REPORT_BLOCK_OLD	6       /*!< \brief Block-old-sources. */
+#define IGMP_REPORT_MODE_IN 1       /*!< \brief Mode-is-include. */
+#define IGMP_REPORT_MODE_EX 2       /*!< \brief Mode-is-exclude. */
+#define IGMP_REPORT_TO_IN   3       /*!< \brief Change-to-include. */
+#define IGMP_REPORT_TO_EX   4       /*!< \brief Change-to-exclude. */
+#define IGMP_REPORT_ALLOW_NEW   5       /*!< \brief Allow-new-sources. */
+#define IGMP_REPORT_BLOCK_OLD   6       /*!< \brief Block-old-sources. */
 /*@}*/
 
 /*!
  * \name IGMPv3 Report Type Flags
  */
 /*@{*/
-#define	IGMP_MASK_CUR_STATE	0x01    /*!< \brief Report current-state. */
-#define	IGMP_MASK_ALLOW_NEW	0x02    /*!< \brief Report source as allow-new. */
-#define	IGMP_MASK_BLOCK_OLD	0x04    /*!< \brief Report source as block-old. */
-#define	IGMP_MASK_TO_IN		0x08    /*!< \brief Report source as to_in. */
-#define	IGMP_MASK_TO_EX		0x10    /*!< \brief Report source as to_ex. */
-#define	IGMP_MASK_STATE_T1	0x20    /*!< \brief State at T1. */
-#define	IGMP_MASK_STATE_T2	0x40    /*!< \brief State at T2. */
-#define	IGMP_MASK_IF_STATE	0x80    /*!< \brief Report current-state per interface. */
+#define IGMP_MASK_CUR_STATE 0x01    /*!< \brief Report current-state. */
+#define IGMP_MASK_ALLOW_NEW 0x02    /*!< \brief Report source as allow-new. */
+#define IGMP_MASK_BLOCK_OLD 0x04    /*!< \brief Report source as block-old. */
+#define IGMP_MASK_TO_IN     0x08    /*!< \brief Report source as to_in. */
+#define IGMP_MASK_TO_EX     0x10    /*!< \brief Report source as to_ex. */
+#define IGMP_MASK_STATE_T1  0x20    /*!< \brief State at T1. */
+#define IGMP_MASK_STATE_T2  0x40    /*!< \brief State at T2. */
+#define IGMP_MASK_IF_STATE  0x80    /*!< \brief Report current-state per interface. */
 
-#define	IGMP_MASK_STATE_TX	(IGMP_MASK_STATE_T1 | IGMP_MASK_STATE_T2)
-#define	IGMP_MASK_PENDING	(IGMP_MASK_CUR_STATE | IGMP_MASK_ALLOW_NEW | IGMP_MASK_BLOCK_OLD)
+#define IGMP_MASK_STATE_TX  (IGMP_MASK_STATE_T1 | IGMP_MASK_STATE_T2)
+#define IGMP_MASK_PENDING   (IGMP_MASK_CUR_STATE | IGMP_MASK_ALLOW_NEW | IGMP_MASK_BLOCK_OLD)
 /*@}*/
 
 /*!
  * \brief List identifiers
  */
-#define	IGMP_EXCLUDE_LIST	1       /* Exclude list used to tag report. */
-#define	IGMP_INCLUDE_LIST	2       /* Include list used to tag report. */
-#define	IGMP_RECORDED_LIST	3       /* Recorded list used to tag report. */
+#define IGMP_EXCLUDE_LIST   1       /* Exclude list used to tag report. */
+#define IGMP_INCLUDE_LIST   2       /* Include list used to tag report. */
+#define IGMP_RECORDED_LIST  3       /* Recorded list used to tag report. */
 
 
-__BEGIN_DECLS
-/* Function prototypes */
 extern void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb);
 extern int NutIgmpOutput(uint8_t type, uint32_t dest, NETBUF * nb);
 
 extern void NutIgmpJoinGroup(NUTDEVICE *dev, uint32_t ip_addr);
 extern void NutIgmpLeaveGroup(NUTDEVICE *dev, uint32_t ip_addr);
 
-__END_DECLS
-/* End of prototypes */
 /*@}*/
 #endif

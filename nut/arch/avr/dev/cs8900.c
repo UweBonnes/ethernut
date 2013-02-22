@@ -49,11 +49,11 @@
  *    This product includes software developed by egnite Software GmbH
  *    and its contributors.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -81,7 +81,7 @@
  * "copying-liquorice.txt" for details.
  * -
  * Portions Copyright (c) 1983, 1993 by
- *	The Regents of the University of California.  All rights reserved.
+ *  The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,8 +93,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *  This product includes software developed by the University of
+ *  California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -119,7 +119,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -130,68 +130,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.4  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+/*!
+ * \file arch/avr/dev/cs8900.c
+ * \brief AVR network driver for CS8900A.
  *
- * Revision 1.3  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.9  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.8  2004/05/26 09:40:30  olereinhardt
- * Changed reading of packet length / receive status to be compatible with
- * newer AVRGCC versions. (Need to read high byte first!)
- *
- * Added software reset / wakeup routine to init code. (only avalilable in new code)
- *
- * Revision 1.7  2004/05/25 11:39:47  olereinhardt
- * Define NUT_CS8900_OLD to get the old functionality back again
- *
- * Revision 1.6  2004/05/24 17:09:17  olereinhardt
- * Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
- * Base address can now be passed to the nic driver by NutRegisterDevice.
- * Removed some Assembler code in cs8900.c
- *
- * Added some databus waitstate settings for the upper half of the address space in os/arch/avr_nutinit.c. Now three waitstates are default for 0x8000-0xFFFF
- *
- * Added terminal device driver for hd44780 compatible LCD displays directly
- * connected to the memory bus (memory mapped). See hd44780.c for more information.
- * Therefore some minor changed in include/dev/term.h and dev/term.c are needet to
- * pass a base address to the lcd driver.
- *
- * Revision 1.5  2004/03/18 14:06:52  haraldkipp
- * Deprecated header file replaced
- *
- * Revision 1.4  2003/10/13 10:13:49  haraldkipp
- * First release
- *
- * Revision 1.3  2003/08/05 20:11:30  haraldkipp
- * Removed from ICCAVR compilation
- *
- * Revision 1.2  2003/07/20 20:07:38  haraldkipp
- * Conflicting Ethernet driver routine names solved.
- *
- * Revision 1.1  2003/07/20 16:37:21  haraldkipp
- * CrystalTek 8900A driver added.
- *
- *
- * Revision 1.0  2002/03/28 MJC CDCS
- * Created
- *
- * Revision 1.1  2003/03/25 MJC CDCS
- * Modified behaviour when transmit buffer space unavailable
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /* Not ported. */
@@ -361,7 +306,7 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
     // Wait for buffer space, but only for a while (200ms)
     // If the cable is disconnected this will never become true
     // If we don't get the go ahead within 200ms return 0 (Sucess)
-    // And let the upper layers deal with re-transmission 
+    // And let the upper layers deal with re-transmission
     // If we return failure TCP sockets will close straight away which probably
     // isn't the correct behaviour
     i = 0;
@@ -411,9 +356,9 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
  *              The structure must have been allocated by a previous
  *              call NutNetBufAlloc(). This buffer will be automatically
  *              released in case of an error.
- * 
+ *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 
@@ -444,7 +389,7 @@ int CSNicOutput(NUTDEVICE * dev, NETBUF * nb)
 /*! \fn CSNICrx(void *arg)
  * \brief NIC receiver thread.
  *
- * 
+ *
  * It runs with high priority.
  */
 
@@ -600,7 +545,7 @@ int CSNicInit(NUTDEVICE * dev)
 
     //
     //  Copy our MAC address to the NIC
-    // 
+    //
     for (i = 0; i < 6; i += 2) {
         j = ifn->if_mac[i] << 8;
         j |= ifn->if_mac[i + 1];
@@ -625,7 +570,7 @@ int CSNicInit(NUTDEVICE * dev)
     //i = CSReadPP16(CS_RX_CTL);
     //NutPrintFormat_P(dev_debug,PSTR("CS_RX_CTL = %x\r\n"), i);
 
-    // 
+    //
     // Start receiver thread
     //
     NutThreadCreate("csnicrx", CSNICrx, dev, 500);

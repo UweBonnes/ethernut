@@ -14,7 +14,7 @@ extern const luaR_table lua_rotable[];
 
 /* Find a global "read only table" in the constant lua_rotable array */
 luaR_result luaR_findglobal(const char *name, lu_byte *ptype) {
-  unsigned i;    
+  unsigned i;
   *ptype = LUA_TNIL;
   if (strlen(name) > LUA_MAX_ROTABLE_NAME)
     return 0;
@@ -31,7 +31,7 @@ static luaR_result luaR_findkey(const void *where, const char *key, int type, in
   const char *pname;
   const luaL_reg *pf = (luaL_reg*)where;
   const luaR_value_entry *pv = (luaR_value_entry*)where;
-  int isfunction = type == LUAR_FINDFUNCTION;  
+  int isfunction = type == LUAR_FINDFUNCTION;
   *found = 0;
   if(!where)
     return 0;
@@ -55,13 +55,13 @@ int luaR_findfunction(lua_State *L, const luaL_reg *ptable) {
     lua_pushlightfunction(L, (void*)(size_t)res);
   else
     lua_pushnil(L);
-  return 1; 
+  return 1;
 }
 
 luaR_result luaR_findentry(void *data, const char *key, lu_byte *ptype) {
   int found;
   unsigned idx = (unsigned)data - 1;
-  luaR_result res;   
+  luaR_result res;
   *ptype = LUA_TNIL;
   /* First look at the functions */
   res = luaR_findkey(lua_rotable[idx].pfuncs, key, LUAR_FINDFUNCTION, &found);

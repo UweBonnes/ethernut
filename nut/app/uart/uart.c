@@ -55,9 +55,9 @@
 #include <dev/board.h>
 #include <sys/timer.h>
 
-static char *banner = "\nNut/OS UART Sample\n";
-static prog_char presskey_P[] = "Press any key...";
-static prog_char pgm_ptr[] = "\nHello stranger!\n";
+static char *banner = "\nNut/OS UART Sample " __DATE__ " " __TIME__"\n";
+static const char presskey_P[] PROGMEM = "Press any key...";
+static const char pgm_ptr[] PROGMEM = "\nHello stranger!\n";
 
 static char inbuf[128];
 
@@ -86,14 +86,14 @@ int main(void)
      * has no configurable base address or interrupt and we set both
      * parameters to zero.
      */
-    NutRegisterDevice(&DEV_UART, 0, 0);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
     /*
      * Now, as the device is registered, we can open it. The fopen()
      * function returns a pointer to a FILE structure, which we use
      * for subsequent reading and writing.
      */
-    uart = fopen(DEV_UART_NAME, "r+");
+    uart = fopen(DEV_CONSOLE.dev_name, "r+");
 
     /*
      * Before doing the first read or write, we set the baudrate.

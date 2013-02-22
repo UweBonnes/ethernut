@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -91,7 +91,7 @@
  *
  * During write operations a buffer with this size is allocated
  * from heap and may cause memory problems with large sectors.
- * Thus, this value may be less than the size of the configuration 
+ * Thus, this value may be less than the size of the configuration
  * sector, in which case the rest of the sector is unused.
  */
 #ifndef FLASH_CONF_SIZE
@@ -204,7 +204,7 @@ unsigned long long AT49bvReadProtectionRegister(int factory)
         id |= chip[0x87];
         id <<= 16;
         id |= chip[0x88];
-    }        
+    }
     FLASH_UNLOCK(chip);
     FLASH_COMMAND(chip, FLASH_CMD_EXIT_ID);
 
@@ -266,7 +266,7 @@ int At49bvSectorRead(unsigned int off, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At49bvSectorWrite(unsigned int off, CONST void *data, unsigned int len)
+int At49bvSectorWrite(unsigned int off, const void *data, unsigned int len)
 {
     int rc = 0;
     flashptr_t sp = (flashptr_t) data;
@@ -313,7 +313,7 @@ int At49bvParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At49bvParamWrite(unsigned int pos, CONST void *data, unsigned int len)
+int At49bvParamWrite(unsigned int pos, const void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

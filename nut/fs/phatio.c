@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -69,6 +69,7 @@
 #include <fs/phatio.h>
 
 #include <sys/event.h>
+#include <sys/timer.h>
 
 #if 0
 /* Use for local debugging. */
@@ -80,6 +81,66 @@
  * \addtogroup xgPhatIo
  */
 /*@{*/
+
+/*!
+ * \brief Directly write consecutive sectors.
+ */
+int PhatSectorWrite(NUTDEVICE * dev, uint32_t sect, const void *data, int num)
+{
+    int rc = 0;
+    BLKPAR_SEEK pars;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+    NUTFILE *blkmnt = dev->dev_icb;
+    NUTDEVICE *blkdev = blkmnt->nf_dev;
+    int written;
+    uint8_t *dp;
+    int sbn;
+    int sbc;
+
+    while (num && rc == 0) {
+        /* Gain mutex access. */
+        NutEventWait(&vol->vol_iomutex, 0);
+
+        /* Check if any of the sectors is locked. */
+#if PHAT_SECTOR_BUFFERS
+        sbc = PHAT_SECTOR_BUFFERS;
+#else
+        sbc = 1;
+#endif
+        for (sbn = 0; sbn < sbc; sbn++) {
+            if (vol->vol_buf[sbn].sect_num >= sect && vol->vol_buf[sbn].sect_num < sect + num) {
+                if (vol->vol_buf[sbn].sect_lock) {
+                    break;
+                } else {
+                    vol->vol_buf[sbn].sect_dirty = 0;
+                }
+            }
+        }
+        if (sbn == sbc) {
+            /* Note, that not all drivers may support multi-sector write. */
+            dp = (uint8_t *) data;
+            while (num) {
+                pars.par_nfp = blkmnt;
+                pars.par_blknum = sect;
+                rc = (*blkdev->dev_ioctl) (blkdev, NUTBLKDEV_SEEK, &pars);
+                if (rc) {
+                    errno = EIO;
+                    break;
+                }
+                written = (*blkdev->dev_write) (blkmnt, dp, num);
+                if (written <= 0) {
+                    rc = -1;
+                    errno = EIO;
+                    break;
+                }
+                num -= written;
+                sect += written;
+            }
+        }
+        NutEventPost(&vol->vol_iomutex);
+    }
+    return rc;
+}
 
 /*!
  * \brief Flush sector buffers.
@@ -169,35 +230,65 @@ int PhatSectorRead(NUTFILE * blkmnt, uint32_t sect, uint8_t * buf)
 int PhatSectorLoad(NUTDEVICE * dev, uint32_t sect)
 {
     int sbn;
+#if PHAT_SECTOR_BUFFERS
+    int i;
+#endif
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
-    /* Gain mutex access. */
-    NutEventWait(&vol->vol_iomutex, 0);
+    /* Search for a buffer. */
+    for (;;) {
+        /* Gain mutex access. */
+        NutEventWait(&vol->vol_iomutex, 0);
 
 #if PHAT_SECTOR_BUFFERS
-    for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
+        /* Check if the requested sector is already buffered. */
+        for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
+            if (vol->vol_buf[sbn].sect_num == sect) {
+                /* Found, increase the lock and return. */
+                vol->vol_buf[sbn].sect_lock++;
+                vol->vol_usenext = sbn;
+                NutEventPost(&vol->vol_iomutex);
+                return sbn;
+            }
+        }
+
+        /* Sector not loaded. Use round robin to select a new buffer. */
+        for (i = vol->vol_usenext + 1;; i++) {
+            if (i >= PHAT_SECTOR_BUFFERS) {
+                i = 0;
+            }
+            if (i == vol->vol_usenext) {
+                break;
+            }
+            if (vol->vol_buf[i].sect_num == (uint32_t) -1) {
+                /* Unused buffer found, stop searching. */
+                sbn = i;
+                break;
+            }
+            if (vol->vol_buf[i].sect_lock == 0) {
+                /* Unlocked buffer found, continue searching and hope to
+                   find an unused one. */
+                sbn = i;
+            }
+        }
+#else
+        /* Check if the requested sector is already buffered. */
+        sbn = 0;
         if (vol->vol_buf[sbn].sect_num == sect) {
-            vol->vol_usenext = sbn;
-            /* Release mutex access. */
-            NutEventPostAsync(&vol->vol_iomutex);
+            /* Found, increase the lock and return. */
+            vol->vol_buf[sbn].sect_lock++;
+            NutEventPost(&vol->vol_iomutex);
             return sbn;
         }
-    }
-
-    /* Sector not loaded. Use round robin to select a buffer. */
-    vol->vol_usenext++;
-    if (vol->vol_usenext >= PHAT_SECTOR_BUFFERS) {
-        vol->vol_usenext = 0;
-    }
-    sbn = vol->vol_usenext;
-#else
-    sbn = 0;
-    if (vol->vol_buf[sbn].sect_num == sect) {
-        /* Release mutex access. */
-        NutEventPostAsync(&vol->vol_iomutex);
-        return sbn;
-    }
 #endif
+        /* If the selected buffer is unlocked, use it. */
+        if (vol->vol_buf[sbn].sect_lock == 0) {
+            break;
+        }
+        /* All buffers are locked. Allow other threads to try their luck. */
+        NutEventPost(&vol->vol_iomutex);
+        NutSleep(1);
+    }
 
     if (PhatSectorFlush(dev, sbn)) {
         sbn = -1;
@@ -207,12 +298,26 @@ int PhatSectorLoad(NUTDEVICE * dev, uint32_t sect)
     }
     else {
         vol->vol_buf[sbn].sect_num = sect;
+        vol->vol_buf[sbn].sect_lock++;
+#if PHAT_SECTOR_BUFFERS
+// TODO: Is this fix correct for non buffered systems?
+        vol->vol_usenext = sbn;
+#endif
     }
 
     /* Release mutex access. */
-    NutEventPostAsync(&vol->vol_iomutex);
+    NutEventPost(&vol->vol_iomutex);
 
     return sbn;
+}
+
+void PhatSectorBufferRelease(NUTDEVICE * dev, int bufnum)
+{
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    if (vol->vol_buf[bufnum].sect_lock) {
+        vol->vol_buf[bufnum].sect_lock--;
+    }
 }
 
 /*@}*/

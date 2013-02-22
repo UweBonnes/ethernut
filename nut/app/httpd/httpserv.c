@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009, 2013 by egnite GmbH
  * Copyright (C) 2001-2004 by egnite Software GmbH
  *
  * All rights reserved.
@@ -40,178 +40,89 @@
 /*!
  * \example httpd/httpserv.c
  *
- * Simple multithreaded HTTP daemon.
- */
-
-/* 
- * Unique MAC address of the Ethernut Board. 
+ * This multithreaded webserver demo uses the old Nut/Net HTTP Library.
+ * Note, that there is a more recent microHTTP API (uhttp) available.
  *
- * Ignored if EEPROM contains a valid configuration.
+ * You will find the main() function at the bottom.
  */
-#define MY_MAC  "\x00\x06\x98\x30\x00\x35"
 
-/* 
- * Unique IP address of the Ethernut Board. 
- *
- * Ignored if DHCP is used. 
- */
-#define MY_IPADDR "192.168.192.35"
-
-/* 
- * IP network mask of the Ethernut Board.
- *
- * Ignored if DHCP is used. 
- */
-#define MY_IPMASK "255.255.255.0"
-
-/* 
- * Gateway IP address for the Ethernut Board.
- *
- * Ignored if DHCP is used. 
- */
-#define MY_IPGATE "192.168.192.1"
-
-/* ICCAVR Demo is limited. Try to use the bare minimum. */
-#if !defined(__IMAGECRAFT__)
-
-/* Wether we should use DHCP. */
-#define USE_DHCP
-/* Wether we should run a discovery responder. */
-#define USE_DISCOVERY
-/* Wether to use PHAT file system. */
-//#define USE_PHAT
-
-#if defined(__ARM__)
-/* Wether we should use ASP. */
-#define USE_ASP
-/* Wether we should use SSI. */
-#define USE_SSI
-#endif
-
-#endif /* __IMAGECRAFT__ */
-
-
-#ifdef USE_PHAT
-
-#if defined(ETHERNUT3)
-
-/* Ethernut 3 file system. */
-#define MY_FSDEV       devPhat0
-#define MY_FSDEV_NAME  "PHAT0" 
-
-/* Ethernut 3 block device interface. */
-#define MY_BLKDEV      devNplMmc0
-#define MY_BLKDEV_NAME "MMC0"
-
-#elif defined(AT91SAM7X_EK)
-
-/* SAM7X-EK file system. */
-#define MY_FSDEV       devPhat0
-#define MY_FSDEV_NAME  "PHAT0" 
-
-/* SAM7X-EK block device interface. */
-#define MY_BLKDEV      devAt91SpiMmc0
-#define MY_BLKDEV_NAME "MMC0"
-
-#elif defined(AT91SAM9260_EK)
-
-/* SAM9260-EK file system. */
-#define MY_FSDEV       devPhat0
-#define MY_FSDEV_NAME  "PHAT0" 
-
-/* SAM9260-EK block device interface. */
-#define MY_BLKDEV      devAt91Mci0
-#define MY_BLKDEV_NAME "MCI0"
-
-#endif
-#endif /* USE_PHAT */
-
-#ifndef MY_FSDEV
-#define MY_FSDEV        devUrom
-#endif
-
-#ifdef MY_FSDEV_NAME
-#define MY_HTTPROOT     MY_FSDEV_NAME ":/" 
-#endif
-
-
+/* Configuration headers. */
 #include <cfg/os.h>
-
-#include <string.h>
-#include <io.h>
-#include <fcntl.h>
-#include <time.h>
+#include <cfg/http.h>
 
 #include <dev/board.h>
 #include <dev/urom.h>
-#include <dev/nplmmc.h>
-#include <dev/sbimmc.h>
-#include <fs/phatfs.h>
 
 #include <sys/version.h>
+#include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
-#include <sys/heap.h>
 #include <sys/confnet.h>
 #include <sys/socket.h>
 
 #include <arpa/inet.h>
-#include <net/route.h>
 
 #include <pro/httpd.h>
 #include <pro/dhcp.h>
 #include <pro/ssi.h>
 #include <pro/asp.h>
-#include <pro/discover.h>
 
-#ifdef NUTDEBUG
-#include <sys/osdebug.h>
-#include <net/netdebug.h>
-#endif
+#include <stdlib.h>
+#include <string.h>
+#include <io.h>
+#include <fcntl.h>
 
 /* Server thread stack size. */
 #ifndef HTTPD_SERVICE_STACK
-#if defined(__AVR__)
-#define HTTPD_SERVICE_STACK ((580 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)
-#elif defined(__arm__)
-#define HTTPD_SERVICE_STACK ((1024 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)
-#else
-#define HTTPD_SERVICE_STACK  ((2048 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)
+#ifndef NUT_THREAD_MAINSTACK
+#define NUT_THREAD_MAINSTACK 1024
 #endif
+#define HTTPD_SERVICE_STACK NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT + NUT_THREAD_STACK_ADD
+#endif
+
+/* ICCAVR Demo is limited. Try to use the bare minimum. */
+#if defined(__IMAGECRAFT__)
+#define EXCLUDE_ASP
+#define EXCLUDE_SSI
 #endif
 
 static char *html_mt = "text/html";
 
-#ifdef DEV_ETHER
-
-#if defined(USE_ASP)
-/**************************************************************/
-/*  ASPCallback                                               */
-/*                                                            */
-/* This routine must have been registered by                  */
-/* NutRegisterAspCallback() and is automatically called by    */
-/* NutHttpProcessFileRequest() when the server process a page */
-/* with an asp function.                                      */
-/*                                                            */
-/* Return 0 on success, -1 otherwise.                         */
-/**************************************************************/
-
-
-static int ASPCallback (char *pASPFunction, FILE *stream)
+/*
+ * Halt on fatal errors.
+ */
+static void Fatal(char *msg) NUT_NORETURN_FUNC;
+void Fatal(char *msg)
 {
-    if (strcmp(pASPFunction, "usr_date") == 0) {
-        fprintf(stream, "Dummy example: 01.01.2005");
-        return(0);
-    }
-
-    if (strcmp(pASPFunction, "usr_time") == 0) {
-        fprintf(stream, "Dummy example: 12:15:02");
-        return(0);
-    }
-
-    return (-1);
+    puts(msg);
+    for (;;);
 }
-#endif
+
+/*
+ * Saves some duplicate code.
+ */
+static void StartPage(FILE *stream, REQUEST * req, const char *title)
+{
+    /* These useful API calls create a HTTP response for us. */
+    NutHttpSendHeaderTop(stream, req, 200, "Ok");
+    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
+
+    fprintf(stream, "<HTML><HEAD><TITLE>%s</TITLE></HEAD><BODY><H1>%s</H1>\r\n", title, title);
+}
+
+static void StartTable(FILE *stream, ...)
+{
+    va_list ap;
+    char *cp;
+
+    fputs("<TABLE BORDER><TR>", stream);
+    va_start(ap, stream);
+    while ((cp = va_arg(ap, char *)) != NULL) {
+        fprintf(stream, "<TH>%s</TH>", cp);
+    }
+    va_end(ap);
+    fputs("</TR>\r\n", stream);
+}
 
 /*
  * CGI Sample: Show request parameters.
@@ -222,65 +133,32 @@ static int ASPCallback (char *pASPFunction, FILE *stream)
  * automatically called by NutHttpProcessRequest() when the client
  * request the URL 'cgi-bin/test.cgi'.
  */
-static int ShowQuery(FILE * stream, REQUEST * req)
+static int ShowQuery(FILE *stream, REQUEST * req)
 {
-    char *cp;
-    /*
-     * This may look a little bit weird if you are not used to C programming
-     * for flash microcontrollers. The special type 'prog_char' forces the
-     * string literals to be placed in flash ROM. This saves us a lot of
-     * precious RAM.
-     */
-    static prog_char head[] = "<HTML><HEAD><TITLE>Parameters</TITLE></HEAD><BODY><H1>Parameters</H1>";
-    static prog_char foot[] = "</BODY></HTML>";
-    static prog_char req_fmt[] = "Method: %s<BR>\r\nVersion: HTTP/%d.%d<BR>\r\nContent length: %ld<BR>\r\n";
-    static prog_char url_fmt[] = "URL: %s<BR>\r\n";
-    static prog_char query_fmt[] = "Argument: %s<BR>\r\n";
-    static prog_char type_fmt[] = "Content type: %s<BR>\r\n";
-    static prog_char cookie_fmt[] = "Cookie: %s<BR>\r\n";
-    static prog_char auth_fmt[] = "Auth info: %s<BR>\r\n";
-    static prog_char agent_fmt[] = "User agent: %s<BR>\r\n";
-
-    /* These useful API calls create a HTTP response for us. */
-    NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
+    static const char *method_name[4] = { "?", "GET", "POST", "HEAD" };
 
     /* Send HTML header. */
-    fputs_P(head, stream);
+    StartPage(stream, req, "Parameters");
 
-    /*
-     * Send request parameters.
-     */
-    switch (req->req_method) {
-    case METHOD_GET:
-        cp = "GET";
-        break;
-    case METHOD_POST:
-        cp = "POST";
-        break;
-    case METHOD_HEAD:
-        cp = "HEAD";
-        break;
-    default:
-        cp = "UNKNOWN";
-        break;
-    }
-    fprintf_P(stream, req_fmt, cp, req->req_version / 10, req->req_version % 10, req->req_length);
+    /* Send request parameters. */
+    fprintf(stream, "Method: %s<BR>\r\n", method_name[req->req_method & 3]);
+    fprintf(stream, "Version: HTTP/%d.%d<BR>\r\n", req->req_version / 10, req->req_version % 10);
+    fprintf(stream, "Content length: %ld<BR>\r\n", req->req_length);
     if (req->req_url)
-        fprintf_P(stream, url_fmt, req->req_url);
+        fprintf(stream, "URL: %s<BR>\r\n", req->req_url);
     if (req->req_query)
-        fprintf_P(stream, query_fmt, req->req_query);
+        fprintf(stream, "Argument: %s<BR>\r\n", req->req_query);
     if (req->req_type)
-        fprintf_P(stream, type_fmt, req->req_type);
+        fprintf(stream, "Content type: %s<BR>\r\n", req->req_type);
     if (req->req_cookie)
-        fprintf_P(stream, cookie_fmt, req->req_cookie);
+        fprintf(stream, "Cookie: %s<BR>\r\n", req->req_cookie);
     if (req->req_auth)
-        fprintf_P(stream, auth_fmt, req->req_auth);
+        fprintf(stream, "Auth info: %s<BR>\r\n", req->req_auth);
     if (req->req_agent)
-        fprintf_P(stream, agent_fmt, req->req_agent);
+        fprintf(stream, "User agent: %s<BR>\r\n", req->req_agent);
 
     /* Send HTML footer and flush output buffer. */
-    fputs_P(foot, stream);
+    fputs("</BODY></HTML>", stream);
     fflush(stream);
 
     return 0;
@@ -295,32 +173,64 @@ static int ShowQuery(FILE * stream, REQUEST * req)
  */
 static int ShowThreads(FILE * stream, REQUEST * req)
 {
-    static prog_char head[] = "<HTML><HEAD><TITLE>Threads</TITLE></HEAD><BODY><H1>Threads</H1>\r\n"
-        "<TABLE BORDER><TR><TH>Handle</TH><TH>Name</TH><TH>Priority</TH><TH>Status</TH><TH>Event<BR>Queue</TH><TH>Timer</TH><TH>Stack-<BR>pointer</TH><TH>Free<BR>Stack</TH></TR>\r\n";
-#if defined(__AVR__)
-    static prog_char tfmt[] =
-        "<TR><TD>%04X</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%04X</TD><TD>%04X</TD><TD>%04X</TD><TD>%lu</TD><TD>%s</TD></TR>\r\n";
-#else
-    static prog_char tfmt[] =
-        "<TR><TD>%08X</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%08X</TD><TD>%08X</TD><TD>%08X</TD><TD>%lu</TD><TD>%s</TD></TR>\r\n";
-#endif
-    static prog_char foot[] = "</TABLE></BODY></HTML>";
-    static char *thread_states[] = { "TRM", "<FONT COLOR=#CC0000>RUN</FONT>", "<FONT COLOR=#339966>RDY</FONT>", "SLP" };
-    NUTTHREADINFO *tdp = nutThreadList;
+    static char *thread_states[4] = {
+        "TRM",
+        "<FONT COLOR=#CC0000>RUN</FONT>",
+        "<FONT COLOR=#339966>RDY</FONT>",
+        "SLP"
+    };
+    NUTTHREADINFO *tdp;
+    NUTTHREADINFO *tlist;
+    int i;
+    int n;
 
-    /* Send HTTP response. */
-    NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
+    /* Take a snapshot of our thread list. */
+    for (tdp = nutThreadList, n = 0; tdp; tdp = tdp->td_next, n++);
+    tlist = calloc(n, sizeof(NUTTHREADINFO));
+    if (tlist == NULL) {
+        return -1;
+    }
+    for (tdp = nutThreadList, i = 0; tdp && i < n; tdp = tdp->td_next, i++) {
+        memcpy(&tlist[i], tdp, sizeof(NUTTHREADINFO));
+    }
 
     /* Send HTML header. */
-    fputs_P(head, stream);
-    for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
-        fprintf_P(stream, tfmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
-                  thread_states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer,
-                  (uintptr_t) tdp->td_sp, (unsigned long)((uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory),
-                  *((uint32_t *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
+    StartPage(stream, req, "Threads");
+    StartTable(stream,
+        "Name",
+        "Priority",
+        "Status",
+        "Event<BR>Queue",
+        "Timer",
+        "Stack-<BR>pointer",
+        "Free<BR>Stack",
+        NULL);
+
+    /* Send table with list of threads. */
+    for (i = 0; i < n; i++) {
+        fprintf(stream,
+            "<TR><TD>%s</TD>" /* Name */
+            "<TD>%u</TD>" /* Priority */
+            "<TD>%s</TD>" /* Status */
+            "<TD>%08X</TD>" /* Event queue */
+            "<TD>%08X</TD>" /* Timer */
+            "<TD>%08X</TD>" /* Stack pointer */
+            "<TD>%lu %s</TD></TR>\r\n", /* Stack available */
+            tlist[i].td_name,
+            tlist[i].td_priority,
+            thread_states[tlist[i].td_state],
+            (uintptr_t) tlist[i].td_queue,
+            (uintptr_t) tlist[i].td_timer,
+            (uintptr_t) tlist[i].td_sp,
+            (unsigned long) ((uintptr_t) tlist[i].td_sp - (uintptr_t) tlist[i].td_memory),
+            *((uint32_t *) tlist[i].td_memory) != DEADBEEF ? "Corrupted" : "");
     }
-    fputs_P(foot, stream);
+
+    /* Release the thread list copy. */
+    free(tlist);
+
+    /* Send HTML footer and flush output buffer. */
+    fputs("</TABLE></BODY></HTML>", stream);
     fflush(stream);
 
     return 0;
@@ -335,34 +245,51 @@ static int ShowThreads(FILE * stream, REQUEST * req)
  */
 static int ShowTimers(FILE * stream, REQUEST * req)
 {
-    static prog_char head[] = "<HTML><HEAD><TITLE>Timers</TITLE></HEAD><BODY><H1>Timers</H1>\r\n";
-    static prog_char thead[] =
-        "<TABLE BORDER><TR><TH>Handle</TH><TH>Countdown</TH><TH>Tick Reload</TH><TH>Callback<BR>Address</TH><TH>Callback<BR>Argument</TH></TR>\r\n";
-#if defined(__AVR__)
-    static prog_char tfmt[] = "<TR><TD>%04X</TD><TD>%lu</TD><TD>%lu</TD><TD>%04X</TD><TD>%04X</TD></TR>\r\n";
-#else
-    static prog_char tfmt[] = "<TR><TD>%08X</TD><TD>%lu</TD><TD>%lu</TD><TD>%08X</TD><TD>%08X</TD></TR>\r\n";
-#endif
-    static prog_char foot[] = "</TABLE></BODY></HTML>";
     NUTTIMERINFO *tnp;
+    NUTTIMERINFO *tlist;
     uint32_t ticks_left;
+    int i;
+    int n;
 
-    NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
-
-    /* Send HTML header. */
-    fputs_P(head, stream);
-    if ((tnp = nutTimerList) != 0) {
-        fputs_P(thead, stream);
-        ticks_left = 0;
-        while (tnp) {
-            ticks_left += tnp->tn_ticks_left;
-            fprintf_P(stream, tfmt, (uintptr_t) tnp, ticks_left, tnp->tn_ticks, (uintptr_t) tnp->tn_callback, (uintptr_t) tnp->tn_arg);
-            tnp = tnp->tn_next;
-        }
+    /* Take a snapshot of our timer list. */
+    for (tnp = nutTimerList, n = 0; tnp; tnp = tnp->tn_next, n++);
+    tlist = calloc(n, sizeof(NUTTIMERINFO));
+    if (tlist == NULL) {
+        return -1;
+    }
+    for (tnp = nutTimerList, i = 0; tnp && i < n; tnp = tnp->tn_next, i++) {
+        memcpy(&tlist[i], tnp, sizeof(NUTTIMERINFO));
     }
 
-    fputs_P(foot, stream);
+    /* Send HTML header. */
+    StartPage(stream, req, "Timers");
+    StartTable(stream,
+        "Count-<BR />down",
+        "Tick<BR />Reload",
+        "Callback<BR />Address",
+        "Callback<BR />Argument",
+        NULL);
+
+    /* Send table with list of timers. */
+    ticks_left = 0;
+    for (i = 0; i < n; i++) {
+        ticks_left += tnp->tn_ticks_left;
+        fprintf(stream,
+            "<TR><TD>%lu</TD>"
+            "<TD>%lu</TD>"
+            "<TD>%08X</TD>"
+            "<TD>%08X</TD></TR>\r\n",
+            ticks_left,
+            tlist[i].tn_ticks,
+            (uintptr_t) tlist[i].tn_callback,
+            (uintptr_t) tlist[i].tn_arg);
+    }
+
+    /* Release the thread list copy. */
+    free(tlist);
+
+    /* Send HTML footer and flush output buffer. */
+    fputs("</TABLE></BODY></HTML>", stream);
     fflush(stream);
 
     return 0;
@@ -377,88 +304,51 @@ static int ShowTimers(FILE * stream, REQUEST * req)
  */
 static int ShowSockets(FILE * stream, REQUEST * req)
 {
-    /* String literals are kept in flash ROM. */
-    static prog_char head[] = "<HTML><HEAD><TITLE>Sockets</TITLE></HEAD>"
-        "<BODY><H1>Sockets</H1>\r\n"
-        "<TABLE BORDER><TR><TH>Handle</TH><TH>Type</TH><TH>Local</TH><TH>Remote</TH><TH>Status</TH></TR>\r\n";
-#if defined(__AVR__)
-    static prog_char tfmt1[] = "<TR><TD>%04X</TD><TD>TCP</TD><TD>%s:%u</TD>";
-#else
-    static prog_char tfmt1[] = "<TR><TD>%08X</TD><TD>TCP</TD><TD>%s:%u</TD>";
-#endif
-    static prog_char tfmt2[] = "<TD>%s:%u</TD><TD>";
-    static prog_char foot[] = "</TABLE></BODY></HTML>";
-    static prog_char st_listen[] = "LISTEN";
-    static prog_char st_synsent[] = "SYNSENT";
-    static prog_char st_synrcvd[] = "SYNRCVD";
-    static prog_char st_estab[] = "<FONT COLOR=#CC0000>ESTABL</FONT>";
-    static prog_char st_finwait1[] = "FINWAIT1";
-    static prog_char st_finwait2[] = "FINWAIT2";
-    static prog_char st_closewait[] = "CLOSEWAIT";
-    static prog_char st_closing[] = "CLOSING";
-    static prog_char st_lastack[] = "LASTACK";
-    static prog_char st_timewait[] = "TIMEWAIT";
-    static prog_char st_closed[] = "CLOSED";
-    static prog_char st_unknown[] = "UNKNOWN";
-    prog_char *st_P;
+    static const char *sock_states[12] = {
+        "CLOSED",
+        "LISTEN",
+        "SYNSENT",
+        "SYNRCVD",
+        "<FONT COLOR=#CC0000>ESTABL</FONT>",
+        "CLOSEWAIT",
+        "FINWAIT1",
+        "CLOSING",
+        "LASTACK",
+        "FINWAIT2",
+        "TIMEWAIT",
+        "?"
+    };
     extern TCPSOCKET *tcpSocketList;
     TCPSOCKET *ts;
+    TCPSOCKET *tlist;
+    int i;
+    int n;
 
-    NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
+    /* Take a snapshot of our socket list. */
+    for (ts = tcpSocketList, n = 0; ts; ts = ts->so_next, n++);
+    tlist = calloc(n, sizeof(TCPSOCKET));
+    if (tlist == NULL) {
+        return -1;
+    }
+    for (ts = tcpSocketList, i = 0; ts && i < n; ts = ts->so_next, i++) {
+        memcpy(&tlist[i], ts, sizeof(TCPSOCKET));
+    }
 
     /* Send HTML header. */
-    fputs_P(head, stream);
-    for (ts = tcpSocketList; ts; ts = ts->so_next) {
-        switch (ts->so_state) {
-        case TCPS_LISTEN:
-            st_P = (prog_char *) st_listen;
-            break;
-        case TCPS_SYN_SENT:
-            st_P = (prog_char *) st_synsent;
-            break;
-        case TCPS_SYN_RECEIVED:
-            st_P = (prog_char *) st_synrcvd;
-            break;
-        case TCPS_ESTABLISHED:
-            st_P = (prog_char *) st_estab;
-            break;
-        case TCPS_FIN_WAIT_1:
-            st_P = (prog_char *) st_finwait1;
-            break;
-        case TCPS_FIN_WAIT_2:
-            st_P = (prog_char *) st_finwait2;
-            break;
-        case TCPS_CLOSE_WAIT:
-            st_P = (prog_char *) st_closewait;
-            break;
-        case TCPS_CLOSING:
-            st_P = (prog_char *) st_closing;
-            break;
-        case TCPS_LAST_ACK:
-            st_P = (prog_char *) st_lastack;
-            break;
-        case TCPS_TIME_WAIT:
-            st_P = (prog_char *) st_timewait;
-            break;
-        case TCPS_CLOSED:
-            st_P = (prog_char *) st_closed;
-            break;
-        default:
-            st_P = (prog_char *) st_unknown;
-            break;
-        }
-        /*
-         * Fixed a bug reported by Zhao Weigang.
-         */
-        fprintf_P(stream, tfmt1, (uintptr_t) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
-        fprintf_P(stream, tfmt2, inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
-        fputs_P(st_P, stream);
+    StartPage(stream, req, "TCP Sockets");
+    StartTable(stream, "Local", "Remote", "Status", NULL);
+
+    for (i = 0; i < n; i++) {
+        fprintf(stream, "<TR><TD>%s:%u</TD>", inet_ntoa(tlist[i].so_local_addr), ntohs(tlist[i].so_local_port));
+        fprintf(stream, "<TD>%s:%u</TD><TD>", inet_ntoa(tlist[i].so_remote_addr), ntohs(tlist[i].so_remote_port));
+        fputs(sock_states[tlist[i].so_state < 11 ? tlist[i].so_state : 11], stream);
         fputs("</TD></TR>\r\n", stream);
         fflush(stream);
     }
 
-    fputs_P(foot, stream);
+    free(tlist);
+
+    fputs("</TABLE></BODY></HTML>", stream);
     fflush(stream);
 
     return 0;
@@ -475,44 +365,89 @@ static int ShowSockets(FILE * stream, REQUEST * req)
  */
 int ShowForm(FILE * stream, REQUEST * req)
 {
-    static prog_char html_head[] = "<HTML><BODY><BR><H1>Form Result</H1><BR><BR>";
-    static prog_char html_body[] = "<BR><BR><p><a href=\"../index.html\">return to main</a></BODY></HTML></p>";
-
-    NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
-
     /* Send HTML header. */
-    fputs_P(html_head, stream);
+    StartPage(stream, req, "Form Result");
 
     if (req->req_query) {
-        char *name;
-        char *value;
         int i;
         int count;
 
-        count = NutHttpGetParameterCount(req);
         /* Extract count parameters. */
+        count = NutHttpGetParameterCount(req);
+        /* Send the parameters back to the client. */
         for (i = 0; i < count; i++) {
-            name = NutHttpGetParameterName(req, i);
-            value = NutHttpGetParameterValue(req, i);
-
-            /* Send the parameters back to the client. */
-
-#ifdef __IMAGECRAFT__
-            fprintf(stream, "%s: %s<BR>\r\n", name, value);
-#else
-            fprintf_P(stream, PSTR("%s: %s<BR>\r\n"), name, value);
-#endif
+            fprintf(stream, "%s: %s<BR>\r\n",
+                NutHttpGetParameterName(req, i),
+                NutHttpGetParameterValue(req, i));
         }
     }
 
-    fputs_P(html_body, stream);
+    fputs("</BODY></HTML>", stream);
     fflush(stream);
 
     return 0;
 }
 
-#if defined(USE_SSI)
+#if !defined(EXCLUDE_ASP) && !defined(EXCLUDE_SSI)
+
+static void PrintTime(FILE *stream)
+{
+#if defined(HTTPD_EXCLUDE_DATE)
+    fputs(__TIME__, stream);
+#else
+    time_t now = time(NULL);
+    struct _tm *lot = localtime(&now);
+
+    fprintf(stream, "%02d:%02d:%02d", lot->tm_hour, lot->tm_min, lot->tm_sec);
+#endif
+}
+
+static void PrintDate(FILE *stream)
+{
+#if defined(HTTPD_EXCLUDE_DATE)
+    fputs(__DATE__, stream);
+#else
+    time_t now = time(NULL);
+    struct _tm *lot = localtime(&now);
+
+    fprintf(stream, "%02d.%02d.%04d", lot->tm_mday, lot->tm_mon + 1, lot->tm_year + 1900);
+#endif
+}
+
+#endif
+
+#ifndef EXCLUDE_ASP
+
+/*
+ *  ASPCallback
+ *
+ * This routine must have been registered by
+ * NutRegisterAspCallback() and is automatically called by
+ * NutHttpProcessFileRequest() when the server process a page
+ * with an asp function.
+ *
+ * Return 0 on success, -1 otherwise.
+ */
+static int ASPCallback(char *pASPFunction, FILE * stream)
+{
+    int rc = 0;
+
+    if (strcmp(pASPFunction, "usr_date") == 0) {
+        PrintDate(stream);
+    }
+    else if (strcmp(pASPFunction, "usr_time") == 0) {
+        PrintTime(stream);
+    }
+    else {
+        rc = -1;
+    }
+    return rc;
+}
+
+#endif
+
+#ifndef EXCLUDE_SSI
+
 /*
  * CGI Sample: Dynamic output cgi included by ssi.shtml file
  *
@@ -524,6 +459,7 @@ int ShowForm(FILE * stream, REQUEST * req)
  */
 int SSIDemoCGI(FILE * stream, REQUEST * req)
 {
+    fputs("CGI ssi-demo called with", stream);
     if (req->req_query) {
         char *name;
         char *value;
@@ -531,54 +467,41 @@ int SSIDemoCGI(FILE * stream, REQUEST * req)
         int count;
 
         count = NutHttpGetParameterCount(req);
-        
+
         /* Extract count parameters. */
-#ifdef __IMAGECRAFT__        
-        fprintf(stream, "CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>");
-#else
-        fprintf_P(stream, PSTR("CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>"));
-#endif
+        fputs(" these parameters:\r\n<p>", stream);
         for (i = 0; i < count; i++) {
             name = NutHttpGetParameterName(req, i);
             value = NutHttpGetParameterValue(req, i);
 
             /* Send the parameters back to the client. */
-
-#ifdef __IMAGECRAFT__
             fprintf(stream, "%s: %s<BR>\r\n", name, value);
-#else
-            fprintf_P(stream, PSTR("%s: %s<BR>\r\n"), name, value);
-#endif
         }
     } else {
-        time_t now;
-        tm     loc_time;
-        
         /* Called without any parameter, show the current time */
-        now = time(NULL);
-        localtime_r(&now, &loc_time);
-#ifdef __IMAGECRAFT__        
-        fprintf(stream, "CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n",
-                  loc_time.tm_mday, loc_time.tm_mon+1, loc_time.tm_year+1900, loc_time.tm_hour, loc_time.tm_min, loc_time.tm_sec);
-#else 
-        fprintf_P(stream, PSTR("CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n"),
-                  loc_time.tm_mday, loc_time.tm_mon+1, loc_time.tm_year+1900, loc_time.tm_hour, loc_time.tm_min, loc_time.tm_sec);
-#endif
-    }
+        fputs("out any parameter.<br><br>Current time is: ", stream);
+        PrintDate(stream);
+        fputs(" -- ", stream);
+        PrintTime(stream);
+        fputs("<br>\r\n", stream);
 
+    }
     fflush(stream);
 
     return 0;
 }
+
 #endif
+
 
 /*! \fn Service(void *arg)
  * \brief HTTP service thread.
  *
- * The endless loop in this thread waits for a client connect,
- * processes the HTTP request and disconnects. Nut/Net doesn't
- * support a server backlog. If one client has established a
- * connection, further connect attempts will be rejected.
+ * The endless loop in this thread waits for a client connect, processes
+ * the HTTP request and disconnects. If one client has established a
+ * connection, further connect attempts will be delayed in the TCP
+ * stack (backlog).
+ *
  * Typically browsers open more than one connection in order
  * to load images concurrently. So we run this routine by
  * several threads.
@@ -609,21 +532,13 @@ THREAD(Service, arg)
          * from a client.
          */
         NutTcpAccept(sock, 80);
-#if defined(__AVR__)
         printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
-#else
-        printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
-#endif
 
         /*
-         * Wait until at least 8 kByte of free RAM is available. This will
+         * Wait until at least 4 kByte of free RAM is available. This will
          * keep the client connected in low memory situations.
          */
-#if defined(__AVR__)
-        while (NutHeapAvailable() < 8192) {
-#else
         while (NutHeapAvailable() < 4096) {
-#endif
             printf("[%u] Low mem\n", id);
             NutSleep(1000);
         }
@@ -632,7 +547,7 @@ THREAD(Service, arg)
          * Associate a stream with the socket so we can use standard I/O calls.
          */
         if ((stream = _fdopen((int) ((uintptr_t) sock), "r+b")) == 0) {
-            printf("[%u] Creating stream device failed\n", id);
+            printf("[%u] Creating stream failed\n", id);
         } else {
             /*
              * This API call saves us a lot of work. It will parse the
@@ -655,7 +570,6 @@ THREAD(Service, arg)
         printf("[%u] Disconnected\n", id);
     }
 }
-#endif /* DEV_ETHER */
 
 /*!
  * \brief Main application routine.
@@ -668,177 +582,69 @@ int main(void)
     uint8_t i;
 
     /*
-     * Initialize the uart device.
+     * Initialize stdio console.
      */
-    NutRegisterDevice(&DEV_DEBUG, 0, 0);
-    freopen(DEV_DEBUG_NAME, "w", stdout);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
-    NutSleep(200);
     printf("\n\nNut/OS %s HTTP Daemon...", NutVersionString());
 
-#ifdef DEV_ETHER
-
-#ifdef NUTDEBUG
-    NutTraceTcp(stdout, 0);
-    NutTraceOs(stdout, 0);
-    NutTraceHeap(stdout, 0);
-    NutTracePPP(stdout, 0);
-#endif
-
     /*
-     * Register Ethernet controller.
+     * Initialize Ethernet controller.
      */
     if (NutRegisterDevice(&DEV_ETHER, 0, 0)) {
-        puts("Registering device failed");
+        Fatal("Registering device failed");
     }
-
     printf("Configure %s...", DEV_ETHER_NAME);
-    if (NutNetLoadConfig(DEV_ETHER_NAME)) {
-        uint8_t mac[] = MY_MAC;
-
-        printf("initial boot...");
-#ifdef USE_DHCP
-        if (NutDhcpIfConfig(DEV_ETHER_NAME, mac, 60000)) 
-#endif
-        {
-            uint32_t ip_addr = inet_addr(MY_IPADDR);
-            uint32_t ip_mask = inet_addr(MY_IPMASK);
-            uint32_t ip_gate = inet_addr(MY_IPGATE);
-
-            printf("No DHCP...");
-            if (NutNetIfConfig(DEV_ETHER_NAME, mac, ip_addr, ip_mask) == 0) {
-                /* Without DHCP we had to set the default gateway manually.*/
-                if(ip_gate) {
-                    printf("hard coded gate...");
-                    NutIpRouteAdd(0, 0, ip_gate, &DEV_ETHER);
-                }
-                puts("OK");
-            }
-            else {
-                puts("failed");
-            }
-        }
-    }
-    else {
-#ifdef USE_DHCP
-        if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
-            puts("failed");
-        }
-        else {
-            puts("OK");
-        }
-#else
-        if (NutNetIfConfig(DEV_ETHER_NAME, 0, 0, confnet.cdn_ip_mask)) {
-            puts("failed");
-        }
-        else {
-            puts("OK");
-        }
-#endif
+    if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
+        Fatal("failed, run editconf first!");
     }
     printf("%s ready\n", inet_ntoa(confnet.cdn_ip_addr));
 
-#ifdef USE_DISCOVERY
-    NutRegisterDiscovery((uint32_t)-1, 0, DISF_INITAL_ANN);
-#endif
+    /*
+     * Register file system.
+     */
+    NutRegisterDevice(&devUrom, 0, 0);
 
     /*
-     * Register our device for the file system.
+     * Register our CGI functions.
      */
-    NutRegisterDevice(&MY_FSDEV, 0, 0);
-
-#ifdef MY_BLKDEV
-    /* Register block device. */
-    printf("Registering block device '" MY_BLKDEV_NAME "'...");
-    if (NutRegisterDevice(&MY_BLKDEV, 0, 0)) {
-        puts("failed");
-        for (;;);
-    }
-    puts("OK");
-
-    /* Mount partition. */
-    printf("Mounting block device '" MY_BLKDEV_NAME ":1/" MY_FSDEV_NAME "'...");
-    if (_open(MY_BLKDEV_NAME ":1/" MY_FSDEV_NAME, _O_RDWR | _O_BINARY) == -1) {
-        puts("failed");
-        for (;;);
-    }
-    puts("OK");
-#endif
-
-#ifdef MY_HTTPROOT
-    /* Register root path. */
-    printf("Registering HTTP root '" MY_HTTPROOT "'...");
-    if (NutRegisterHttpRoot(MY_HTTPROOT)) {
-        puts("failed");
-        for (;;);
-    }
-    puts("OK");
-#endif
-
     NutRegisterCgiBinPath("cgi-bin/;user/cgi-bin/;admin/cgi-bin/");
-
-
-    /*
-     * Register our CGI sample. This will be called
-     * by http://host/cgi-bin/test.cgi?anyparams
-     */
     NutRegisterCgi("test.cgi", ShowQuery);
-
-#if defined(USE_SSI)
-    /* 
-     * Register a cgi included by the ssi demo. This will show how dynamic 
-     * content is included in a ssi page and how the request parameters for 
-     * a site are passed down to the included cgi.
-     */    
-    NutRegisterCgi("ssi-demo.cgi", SSIDemoCGI);
-#endif
-
-    /*
-     * Register some CGI samples, which display interesting
-     * system informations.
-     */
     NutRegisterCgi("threads.cgi", ShowThreads);
     NutRegisterCgi("timers.cgi", ShowTimers);
     NutRegisterCgi("sockets.cgi", ShowSockets);
-
-    /*
-     * Finally a CGI example to process a form.
-     */
     NutRegisterCgi("form.cgi", ShowForm);
-
-    /*
-     * Protect the cgi-bin directory with
-     * user and password.
-     */
     NutRegisterAuth("admin", "root:root");
     NutRegisterAuth("user", "user:user");
 
     /*
      * Register SSI and ASP handler
      */
-#if defined(USE_SSI)
+#ifndef EXCLUDE_SSI
+    /*
+     * Register a cgi included by the ssi demo. This will show how dynamic
+     * content is included in a ssi page and how the request parameters for
+     * a site are passed down to the included cgi.
+     */
+    NutRegisterCgi("ssi-demo.cgi", SSIDemoCGI);
     NutRegisterSsi();
 #endif
-#if defined(USE_ASP)
+#ifndef EXCLUDE_ASP
     NutRegisterAsp();
     NutRegisterAspCallback(ASPCallback);
 #endif
 
     /*
-     * Start four server threads.
+     * Start HTTP server threads, passing a thread number.
      */
     for (i = 1; i <= 4; i++) {
-        char thname[] = "httpd0";
-
-        thname[5] = '0' + i;
-        NutThreadCreate(thname, Service, (void *) (uintptr_t) i, HTTPD_SERVICE_STACK); 
+        NutThreadCreate("httpd", Service, (void *) (uintptr_t) i, HTTPD_SERVICE_STACK);
     }
-#endif /* DEV_ETHER */
 
     /*
      * We could do something useful here, like serving a watchdog.
      */
-    NutThreadSetPriority(254);
     for (;;) {
         NutSleep(60000);
     }

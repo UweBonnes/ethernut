@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -180,6 +180,8 @@ nutarch =
                     "HW_MCU_AVR",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_GPIO"
                 },
                 flavor = "boolean",
@@ -201,6 +203,8 @@ nutarch =
                     "HW_MCU_ATMEGA128",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_GPIO"
                 },
                 flavor = "boolean",
@@ -230,10 +234,39 @@ nutarch =
                     "HW_MCU_AVR_ENHANCED",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_CAN_AVR",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=at90can128", "HWDEF+=-D__HARVARD_ARCH__" },
+                options =
+                {
+                }
+            },
+            {
+                macro = "MCU_AT90USB1287",
+                brief = "Atmel AT90USB1287",
+                description = "8-bit RISC microcontroller with 128K bytes flash, 8K bytes RAM, "..
+                              "4K bytes EEPROM, 64K bytes data memory space, 1 USARTs, 4 timers, "..
+                              "8-channel ADC, SPI, TWI and USB controller.\n"..
+                              "\n"..
+                              "Please configure appropriate stack settings in category "..
+                              "Memory Management. ",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_AVR" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR",
+                    "HW_MCU_AVR_ENHANCED",
+                    "HW_TIMER_AVR",
+                    "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART1",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=at90usb1287", "HWDEF+=-D__HARVARD_ARCH__" },
                 options =
                 {
                 }
@@ -252,6 +285,8 @@ nutarch =
                     "HW_MCU_ATMEGA2560",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
 --                    "HW_AVR_HAVE_UART2",
 --                    "HW_AVR_HAVE_UART3",
                     "HW_GPIO"
@@ -259,7 +294,13 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU = $(MCU_ATMEGA2560)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2560", "HWDEF += -D__AVR_3_BYTE_PC__" }
+                makedefs =
+                {
+                    "MCU = $(MCU_ATMEGA2560)",
+                    "HWDEF += -D__HARVARD_ARCH__",
+                    "HWDEF += -DATMega2560",
+                    "HWDEF += -D__AVR_3_BYTE_PC__"
+                }
             },
             {
                 macro = "MCU_ATMEGA2561",
@@ -275,12 +316,20 @@ nutarch =
                     "HW_MCU_ATMEGA2561",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
+                    "HW_AVR_HAVE_UART0",
+                    "HW_AVR_HAVE_UART1",
                     "HW_GPIO"
                 },
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561", "HWDEF += -D__AVR_3_BYTE_PC__" }
+                makedefs =
+                {
+                    "MCU = $(MCU_ATMEGA2561)",
+                    "HWDEF += -D__HARVARD_ARCH__",
+                    "HWDEF += -DATMega2561",
+                    "HWDEF += -D__AVR_3_BYTE_PC__"
+                }
             },
             {
                 macro = "MCU_AT91SAM9260",
@@ -386,7 +435,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO",
-                    "HW_PDC_AT91"
+                    "HW_PDC_AT91",
+                    "HW_PIT_AT91"
                 },
                 makedefs = { "MCU=arm9" }
             },
@@ -698,6 +748,7 @@ nutarch =
                     "HW_UART1_MODEM",
                     "HW_SPI_AT91",
                     "HW_TWI_AT91",
+                    "HW_SSC_AT91",
                     "HW_RSTC_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
@@ -732,6 +783,7 @@ nutarch =
                     "HW_UART1_MODEM",
                     "HW_SPI_AT91",
                     "HW_TWI_AT91",
+                    "HW_SSC_AT91",
                     "HW_RSTC_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
@@ -766,6 +818,7 @@ nutarch =
                     "HW_UART1_MODEM",
                     "HW_SPI_AT91",
                     "HW_TWI_AT91",
+                    "HW_SSC_AT91",
                     "HW_RSTC_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
@@ -817,6 +870,283 @@ nutarch =
                 makedefs = { "MCU=arm7tdmi" }
             },
             --
+            -- STM STM32F10X SERIES CONTROLLER
+            --
+            {
+                macro = "MCU_STM32F100",
+                brief = "STM STM32F100",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F100",
+                    "MCU_STM32F100"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F101",
+                brief = "STM STM32F101",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F101",
+                    "MCU_STM32F101",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F102",
+                brief = "STM STM32F102",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F102",
+                    "MCU_STM32F102",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F103",
+                brief = "STM STM32F103",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F103",
+                    "MCU_STM32F103",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_STM32F105",
+                brief = "STM STM32F105",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F105",
+                    "MCU_STM32F105",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
+                macro = "MCU_STM32F107",
+                brief = "STM STM32F107",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F10X",
+                    "HW_MCU_STM32F107",
+                    "MCU_STM32F107",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
+                macro = "MCU_STM32L151",
+                brief = "STM STM32L151",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32L1XX",
+                    "HW_MCU_STM32L151",
+                    "MCU_STM32L151",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
+                macro = "MCU_STM32F405",
+                brief = "STM STM32F405",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F405",
+                    "MCU_STM32F405",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m4" }
+            },
+            {
+                macro = "MCU_STM32F205",
+                brief = "STM STM32F205",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F2XX",
+                    "HW_MCU_STM32F205",
+                    "MCU_STM32F205",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3" }
+            },
+            {
+                macro = "MCU_STM32F207",
+                brief = "STM STM32F207",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F2XX",
+                    "HW_MCU_STM32F207",
+                    "MCU_STM32F207",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3" }
+            },
+            --
+            -- TI LM3S SERIES CONTROLLER
+            --
+            {
+                macro = "MCU_LM3S9B96",
+                brief = "Luminary LM3S9B96",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->LM3 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LM3",
+                    "HW_MCU_LM3S9B96",
+                    "MCU_LM3S9B96",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            --
+            -- NXP LPC17xx CONTROLLER
+            --
+            {
+                macro = "MCU_LPC175x",
+                brief = "NXP LCP175x series",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->LPC175x Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LPC17xx",
+                    "HW_MCU_LPC175x",
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_LPC176x",
+                brief = "NXP LCP176x series",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->LPC176x Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LPC17xx",
+                    "HW_MCU_LPC176x",
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
+            {
+                macro = "MCU_LPC177x_8x",
+                brief = "NXP LCP177x_8x series",
+                description = "CortexM3 32-bit RISC microcontroller.\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->LPC177x_8x Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_LPC17xx",
+                    "HW_MCU_LPC177x_8x",
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" },
+            },
             --
             -- UNIX EMULATION FOR NUT/OS
             --
@@ -861,7 +1191,7 @@ nutarch =
                     "HW_UART_S3C45"
                 }
             },
-            
+
             --
             -- AVR32
             --
@@ -888,6 +1218,7 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
+                    "HW_RTC_AVR32",
                     "HW_GPIO",
                     "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
@@ -918,6 +1249,7 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
+                    "HW_RTC_AVR32",
                     "HW_GPIO",
                     "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
@@ -945,6 +1277,7 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
+                    "HW_RTC_AVR32",
                     "HW_GPIO",
                     "HW_EBI_AVR32"
                 },
@@ -956,7 +1289,7 @@ nutarch =
                 description = "32-bit AVR UC3 RISC microcontroller with 256k Flash, 32k SRAM,\n"..
                               "Full-Speed + Mini-Host USB device and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {
@@ -969,6 +1302,7 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
+                    "HW_RTC_AVR32",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=uc3b0256" }
@@ -979,7 +1313,7 @@ nutarch =
                 description = "32-bit AVR UC3 RISC microcontroller with 64k Flash, 16k SRAM,\n"..
                               "Full-Speed + Mini-Host USB device and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {
@@ -993,9 +1327,93 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
+                    "HW_RTC_AVR32",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=uc3b164" }
+            },
+            {
+                macro = "MCU_AVR32UC3L064",
+                brief = "Atmel AT32UC3L064",
+                description = "32-bit AVR UC3 RISC microcontroller with 64k Flash, 16k SRAM,\n"..
+                              "Full-Speed + Mini-Host USB device and many other peripherals.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_AVR32" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR32",
+                    "HW_MCU_AVR32UC3",
+                    "HW_TIMER_AVR32",
+                    "HW_UART_AVR32",
+                    "HW_UART2_AVR32",
+                    "HW_SPI_AVR32_0",
+                   -- "HW_EFC_AVR32",
+                    "HW_WDOG_AVR32",
+                   -- "HW_PLL_AVR32",
+                    "HW_DFLL_AVR32",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=uc3l064" }
+            },
+            {
+                macro = "MCU_MCF51CN128",
+                brief = "Freescale MCF51CN128",
+                description = "32-bit RISC microcontroller, V1 Coldfire Core, 128K flash, 24K SRAM"..
+                              "10/100 Ethernet MAC, MII, 3xSCI(UART), 2xIIC, 2xSPI, ADC, RTC, 2xModulo Timer, 2xTimer/PWM."..
+                              "Mini FlexBUS, Keyboard Interrupts, 1xExternal Interrupt, Rapid GPIO",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_M68K" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_M68K",
+                    "HW_MCU_COLDFIRE",
+                    "HW_MCU_MCF51CN",
+                    "HW_MCU_MCF51CN128",
+                },
+                makedefs = { "MCU=51cn" }
+            },
+            {
+                macro = "MCU_MCF52259",
+                brief = "Freescale MCF52259",
+                description = "32-bit RISC microcontroller, V2 Coldfire Core, 10/100 Ethernet MAC"..
+                              "512K flash, 64K SRAM, 3xUART, 2xI2C, ADC, QSPI, DMA, FlexCAN,"..
+                              "Mini FlexBUS, USB, RTC, Random Number Generator, Cryptographic Accelerator.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_M68K" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_M68K",
+                    "HW_MCU_COLDFIRE",
+                    "HW_MCU_MCF5225X",
+                    "HW_MCU_MCF52259",
+                },
+                makedefs = { "MCU=52259" }
+            },
+
+            --
+            -- Imaginary Zero CPU
+            --
+            {
+                macro = "MCU_ZERO",
+                brief = "Zero Dummy CPU",
+                description = "Imaginary ARM9 CPU, useful as a porting template.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_TIMER_ZERO",
+                    "HW_UART_ZERO"
+                },
+                makedefs = { "MCU=arm9" }
             }
         }
     },
@@ -1008,6 +1426,12 @@ nutarch =
         brief = "ARM",
         requires = { "HW_MCU_ARM" },
         script = "arch/arm.nut"
+    },
+    {
+        name = "nutarch_cm3",
+        brief = "CM3",
+        requires = { "HW_MCU_CM3" },
+        script = "arch/cm3.nut"
     },
     {
         name = "nutarch_avr",
@@ -1039,6 +1463,5 @@ nutarch =
         requires = { "HW_EMU_LINUX" },
         script = "arch/unix.nut"
     },
-
 
 }

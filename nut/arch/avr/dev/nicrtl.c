@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,89 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.7  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
+/*!
+ * \file arch/avr/dev/nicrtl.c
+ * \brief AVR network driver for RTL8019AS.
  *
- * Revision 1.6  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.5  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.4  2006/06/27 01:42:56  hwmaier
- * Fixed bug related to edge triggered interrupt mode (RTL_IRQ_RISING_EDGE) in ISR.
- *
- * Revision 1.3  2006/03/02 23:57:12  hwmaier
- * Include cfg/dev.h added
- *
- * Revision 1.2  2006/01/11 08:33:30  hwmaier
- * Changes to make receiver thread's stack size configurable and honour
- * the NUT_THREAD_NICRXSTACK configuration setting
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.15  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.14  2005/02/10 07:06:18  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.13  2005/02/05 20:42:38  haraldkipp
- * Force compiler error for leftover debug prints.
- *
- * Revision 1.12  2005/01/24 21:11:50  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.11  2005/01/22 19:24:46  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.10  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.9  2004/12/17 15:31:28  haraldkipp
- * Support of rising edge interrupts for hardware w/o inverter gate.
- * Fixed compilation issue for hardware with RTL reset port.
- * Thanks to FOCUS Software Engineering Pty Ltd.
- *
- * Revision 1.8  2004/09/10 10:36:01  haraldkipp
- * ICCAVR compile problems fixed
- *
- * Revision 1.7  2004/08/25 10:41:00  haraldkipp
- * Hardware dependent definitions are configurable. For performance reasons the
- * base address is not kept in a variable any longer. It is now a preprocessor
- * macro and the parameters during device registration are ignored. The speed
- * improvements provided by Kolja Waschk for the LAN91C111 had been implemented
- * here too. The driver will not touch a port anymore unless a reset port bit
- * had been configured. For Ethernut 1.1 bit 4 PORTE must be specified in the
- * configuration. Finally, an EEPROM emulation had been added, which can use
- * address bus bits instead of wasting additional port pins. The required
- * hardware has been implemented on Rev.-G Ethernut 1.3 boards. This fixes the
- * Realtek full duplex problem.
- *
- * Revision 1.6  2004/05/17 19:14:53  haraldkipp
- * Added Bengt Florin's RTL8019 driver mods
- *
- * Revision 1.5  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.4  2003/08/05 20:05:59  haraldkipp
- * Bugfix. Empty MAC address is FF, not 00
- *
- * Revision 1.3  2003/07/17 09:39:56  haraldkipp
- * Optimized controller feeding.
- * Ignore LSB of packet status.
- *
- * Revision 1.2  2003/05/15 14:09:16  haraldkipp
- * Much better performance under heavy traffic.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:48  haraldkipp
- * Initial using 3.2.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -142,81 +66,12 @@
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
-#define NUT_THREAD_NICRXSTACK   640
+#define NUT_THREAD_NICRXSTACK   256
 #endif
 
 /*
  * Determine ports, which had not been explicitely configured.
  */
-#if (RTL_EESK_AVRPORT == AVRPORTB)
-#define RTL_EESK_PIN    PINB
-#define RTL_EESK_DDR    DDRB
-
-#elif (RTL_EESK_AVRPORT == AVRPORTC)
-#define RTL_EE_MEMBUS
-#define RTL_EESK_PIN    PINC
-#define RTL_EESK_DDR    DDRC
-
-#elif (RTL_EESK_AVRPORT == AVRPORTD)
-#define RTL_EESK_PIN    PIND
-#define RTL_EESK_DDR    DDRD
-
-#elif (RTL_EESK_AVRPORT == AVRPORTE)
-#define RTL_EESK_PIN    PINE
-#define RTL_EESK_DDR    DDRE
-
-#elif (RTL_EESK_AVRPORT == AVRPORTF)
-#define RTL_EESK_PIN    PINF
-#define RTL_EESK_DDR    DDRF
-
-#endif /* RTL_EESK_AVRPORT */
-
-#if (RTL_EEDO_AVRPORT == AVRPORTB)
-#define RTL_EEDO_PORT   PORTB
-#define RTL_EEDO_DDR    DDRB
-
-#elif (RTL_EEDO_AVRPORT == AVRPORTC)
-#define RTL_EE_MEMBUS
-#define RTL_EEDO_PORT   PORTC
-#define RTL_EEDO_DDR    DDRC
-
-#elif (RTL_EEDO_AVRPORT == AVRPORTD)
-#define RTL_EEDO_PORT   PORTD
-#define RTL_EEDO_DDR    DDRD
-
-#elif (RTL_EEDO_AVRPORT == AVRPORTE)
-#define RTL_EEDO_PORT   PORTE
-#define RTL_EEDO_DDR    DDRE
-
-#elif (RTL_EEDO_AVRPORT == AVRPORTF)
-#define RTL_EEDO_PORT   PORTF
-#define RTL_EEDO_DDR    DDRF
-
-#endif /* RTL_EEDO_AVRPORT */
-
-#if (RTL_EEMU_AVRPORT == AVRPORTB)
-#define RTL_EEMU_PORT   PORTB
-#define RTL_EEMU_DDR    DDRB
-
-#elif (RTL_EEMU_AVRPORT == AVRPORTC)
-#define RTL_EE_MEMBUS
-#define RTL_EEMU_PORT   PORTC
-#define RTL_EEMU_DDR    DDRC
-
-#elif (RTL_EEMU_AVRPORT == AVRPORTD)
-#define RTL_EEMU_PORT   PORTD
-#define RTL_EEMU_DDR    DDRD
-
-#elif (RTL_EEMU_AVRPORT == AVRPORTE)
-#define RTL_EEMU_PORT   PORTE
-#define RTL_EEMU_DDR    DDRE
-
-#elif (RTL_EEMU_AVRPORT == AVRPORTF)
-#define RTL_EEMU_PORT   PORTF
-#define RTL_EEMU_DDR    DDRF
-
-#endif /* RTL_EEMU_AVRPORT */
-
 #if (RTL_RESET_AVRPORT == AVRPORTB)
 #define RTL_RESET_PORT   PORTB
 #define RTL_RESET_DDR    DDRB
@@ -438,261 +293,17 @@ static int NicReset(void)
     return -1;
 }
 
-static int DetectNicEeprom(void)
-{
-#ifdef RTL_EESK_BIT
-    register unsigned int cnt = 0;
-
-    NutEnterCritical();
-
-    /*
-     * Prepare the EEPROM emulation port bits. Configure the EEDO
-     * and the EEMU lines as outputs and set both lines to high.
-     */
-    sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-    sbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
-#ifdef RTL_EEMU_BIT
-    sbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
-    sbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
-#endif
-    NutDelay(20);
-
-    /*
-     * Force the chip to re-read the EEPROM contents.
-     */
-    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
-    NICOUTB(NIC_PG3_EECR, NIC_EECR_EEM0);
-
-    /*
-     * No external memory access beyond this point.
-     */
-#ifdef RTL_EE_MEMBUS
-    /*
-     * No external memory access beyond this point.
-     */
-#ifdef __AVR_ENHANCED__
-    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
-    outb(XMCRB, inb(XMCRB) | _BV(XMM0) | _BV(XMM1));
-#else
-    /* On the ATmega 103 we have to disable the external memory interface. */
-    cbi(MCUCR, SRE);
-#endif
-#endif
-
-    /*
-     * Check, if the chip toggles our EESK input. If not, we do not
-     * have EEPROM emulation hardware.
-     */
-    if (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT)) {
-        while (++cnt && bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
-    } else {
-        while (++cnt && bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-    }
-
-#ifdef RTL_EE_MEMBUS
-    /*
-     * Enable memory interface.
-     */
-#ifdef __AVR_ENHANCED__
-    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
-    outb(XMCRB, inb(XMCRB) & ~(_BV(XMM0) | _BV(XMM1)));
-#else
-    /* On the ATmega 103 we have to disable the external memory interface. */
-    sbi(MCUCR, SRE);
-#endif
-#endif
-
-    /* Reset port outputs to default. */
-    cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-    cbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
-#ifdef RTL_EEMU_BIT
-    cbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
-    cbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
-#endif
-
-    /* Restore previous interrupt enable state. */
-    NutExitCritical();
-
-    /* Wait until controller ready. */
-    while (NICINB(NIC_CR) != (NIC_CR_STP | NIC_CR_RD2));
-
-    return cnt ? 0 : -1;
-#else
-    return -1;
-#endif
-}
-
-#ifdef RTL_EESK_BIT
-/*
- * Emulated EEPROM contents.
- *
- * In jumper mode our influence is quite limited, only CONFIG3 and CONFIG4
- * can be modified.
- */
-static prog_char nic_eeprom[18] = {
-    0xFF,                       /* CONFIG2: jPL1 jPL0   0      jBS4   jBS3   jBS2  jBS1  jBS0  */
-    0xFF,                       /* CONFIG1: 1    jIRQS2 jIRQS1 jIRQS0 jIOS3  jIOS2 jIOS1 jIOS0 */
-
-    0xFF,                       /* CONFIG4: -    -      -      -      -      -     -     IOMS  */
-    0x30,                       /* CONFIG3  PNP  FUDUP  LEDS1  LEDS0  -      0     PWRDN ACTB  */
-
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, /* MAC */
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF      /* ID */
-};
-#endif
-
-/*!
- * \brief EEPROM emulator.
- *
- * Forces the chip to re-read the EEPROM contents and emulates a serial
- * EEPROM.
- *
- * If the hardware does not support this feature, then this call will
- * never return. Thus, make sure to have the driver properly configured.
- */
-static void EmulateNicEeprom(void)
-{
-#ifdef RTL_EESK_BIT
-    register uint8_t clk;
-    register uint8_t cnt;
-    register uint8_t val;
-
-    /*
-     * Disable all interrupts. This routine requires critical timing
-     * and optionally may disable the memory interface.
-     */
-    NutEnterCritical();
-
-    /*
-     * Prepare the EEPROM emulation port bits. Configure the EEDO and
-     * the EEMU lines as outputs and set EEDO to low and EEMU to high.
-     */
-    cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-    sbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
-#ifdef RTL_EEMU_BIT
-    sbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
-    sbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
-#endif
-    NutDelay(20);
-
-    /*
-     * Start EEPROM configuration. Stop/abort any activity and select
-     * configuration page 3. Setting bit EEM0 will force the controller
-     * to read the EEPROM contents.
-     */
-
-    /* Select page 3, stop and abort/complete. */
-    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
-    NICOUTB(NIC_PG3_EECR, NIC_EECR_EEM0);
-
-    /*
-     * We can avoid wasting port pins for EEPROM emulation by using the
-     * upper bits of the address bus.
-     */
-#ifdef RTL_EE_MEMBUS
-    /*
-     * No external memory access beyond this point.
-     */
-#ifdef __AVR_ENHANCED__
-    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
-    outb(XMCRB, inb(XMCRB) | _BV(XMM0) | _BV(XMM1));
-#else
-    /* On the ATmega 103 we have to disable the external memory interface. */
-    cbi(MCUCR, SRE);
-#endif
-#endif
-
-    /*
-     * Loop for all EEPROM words.
-     */
-    for (cnt = 0; cnt < sizeof(nic_eeprom);) {
-
-        /*
-         *
-         * 1 start bit, always high
-         * 2 op-code bits
-         * 7 address bits
-         * 1 dir change bit, always low
-         */
-        for (clk = 0; clk < 11; clk++) {
-            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
-        }
-
-        /*
-         * Shift out the high byte, MSB first. Our data changes at the EESK
-         * rising edge. Data is sampled by the Realtek at the falling edge.
-         */
-        val = PRG_RDB(nic_eeprom + cnt);
-        cnt++;
-        for (clk = 0x80; clk; clk >>= 1) {
-            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            if (val & clk)
-                sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
-            cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-        }
-
-        /*
-         * Shift out the low byte.
-         */
-        val = PRG_RDB(nic_eeprom + cnt);
-        cnt++;
-        for (clk = 0x80; clk; clk >>= 1) {
-            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            if (val & clk)
-                sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
-            cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-        }
-
-
-        /* 5 remaining clock cycles. */
-        for (clk = 0; clk < 5; clk++) {
-            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
-        }
-    }
-
-#ifdef RTL_EE_MEMBUS
-    /*
-     * Enable memory interface.
-     */
-#ifdef __AVR_ENHANCED__
-    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
-    outb(XMCRB, inb(XMCRB) & ~(_BV(XMM0) | _BV(XMM1)));
-#else
-    /* On the ATmega 103 we have to disable the external memory interface. */
-    sbi(MCUCR, SRE);
-#endif
-#endif
-
-    /* Reset port outputs to default. */
-    cbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
-#ifdef RTL_EEMU_BIT
-    cbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
-    cbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
-#endif
-
-    /* Restore previous interrupt enable state. */
-    NutExitCritical();
-#endif
-}
-
 /*
  * Fires up the network interface. NIC interrupts
  * should have been disabled when calling this
  * function.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(const uint8_t * mac)
 {
     uint8_t i;
 
     if (NicReset()) {
         return -1;
-    }
-    if (DetectNicEeprom() == 0) {
-        EmulateNicEeprom();
     }
 
     /*
@@ -1223,7 +834,7 @@ static void NicInterrupt(void *arg)
 #ifdef RTL_IRQ_RISING_EDGE
     do
     {
-#endif 
+#endif
     isr = NICINB(NIC_PG0_ISR);
     NICOUTB(NIC_PG0_ISR, isr);
 
@@ -1393,7 +1004,7 @@ int NicInit(NUTDEVICE * dev)
     /*
      * Start the receiver thread.
      */
-    NutThreadCreate("rxi5", NicRx, dev, 
+    NutThreadCreate("rxi5", NicRx, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     NutSleep(WAIT500);
 

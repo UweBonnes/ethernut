@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -105,7 +105,7 @@ typedef struct _CONFNET CONFNET;
  * Applications may directly access the global variable \ref confnet to
  * read or modify the current network configuration.
  */
-struct __attribute__ ((packed)) _CONFNET {
+struct NUT_PACKED_TYPE _CONFNET {
     /*! \brief Size of this structure.
      *
      * Used by Nut/Net to verify, that the structure contents is valid
@@ -125,7 +125,7 @@ struct __attribute__ ((packed)) _CONFNET {
      */
     uint8_t cdn_mac[6];
 
-    /*! \brief Last used IP address. 
+    /*! \brief Last used IP address.
      *
      * Each time Nut/Net receives an IP address during boot, it
      * will store the address in here.
@@ -143,14 +143,14 @@ struct __attribute__ ((packed)) _CONFNET {
      */
     uint32_t cdn_ip_mask;
 
-    /*! \brief Default route. 
+    /*! \brief Default route.
      *
      * Nut/Net will redirect IP packets to this node, if the
      * target IP is not located in the local network.
      */
     uint32_t cdn_gateway;
 
-    /*! \brief Configured IP address. 
+    /*! \brief Configured IP address.
      *
      * If this address is set to 0.0.0.0, Nut/Net will try
      * to obtain one from the DHCP server.

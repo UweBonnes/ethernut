@@ -1,5 +1,5 @@
 #ifndef _ARCH_ARM_AT91_EFC_H_
-#define	_ARCH_ARM_AT91_EFC_H_
+#define _ARCH_ARM_AT91_EFC_H_
 
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -47,19 +47,14 @@
 
 #include <sys/types.h>
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern int At91EfcSectorErase(unsigned int off);
 extern int At91EfcSectorRead(unsigned int off, void *data, unsigned int len);
-extern int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len);
+extern int At91EfcSectorWrite(unsigned int off, const void *data, unsigned int len);
 
 extern int At91EfcRegionLock(unsigned int off);
 extern int At91EfcRegionUnlock(unsigned int off);
 
 extern int At91EfcParamRead(unsigned int pos, void *data, unsigned int len);
-extern int At91EfcParamWrite(unsigned int pos, CONST void *data, unsigned int len);
+extern int At91EfcParamWrite(unsigned int pos, const void *data, unsigned int len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

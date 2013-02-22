@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -103,7 +103,7 @@ int PcfRtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
+int PcfRtcWrite(int nv, const uint8_t *buff, size_t cnt)
 {
     return TwMasterTransact(I2C_SLA_RTC, buff, cnt, 0, 0, NUT_WAIT_INFINITE);
 }
@@ -111,12 +111,12 @@ int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
 /*!
  * \brief Get date and time from an PCF8563 hardware clock.
  *
- * \param tm Points to a structure that receives the date and time 
+ * \param tm Points to a structure that receives the date and time
  *           information.
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcGetClock(struct _tm *tm)
+int PcfRtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     int rc;
     uint8_t data[7];
@@ -146,7 +146,7 @@ int PcfRtcGetClock(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetClock(CONST struct _tm *tm)
+int PcfRtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint8_t data[8];
 
@@ -176,14 +176,14 @@ int PcfRtcSetClock(CONST struct _tm *tm)
  * Not implemented.
  *
  * \param idx   Zero based index. Two alarms are supported.
- * \param tm    Points to a structure that receives the date and time 
+ * \param tm    Points to a structure that receives the date and time
  *              information.
  * \param aflgs Points to an unsigned long that receives the enable flags.
  *
  * \return 0 on success or -1 in case of an error.
  *
  */
-int PcfRtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
+int PcfRtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs)
 {
     return -1;
 }
@@ -206,7 +206,7 @@ int PcfRtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
+int PcfRtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs)
 {
     return -1;
 }
@@ -221,7 +221,7 @@ int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcGetStatus(uint32_t *sflgs)
+int PcfRtcGetStatus(NUTRTC *rtc, uint32_t *sflgs)
 {
     int rc;
     uint8_t data;
@@ -242,7 +242,7 @@ int PcfRtcGetStatus(uint32_t *sflgs)
  *
  * \return Always 0.
  */
-int PcfRtcClearStatus(uint32_t sflgs)
+int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs)
 {
     rtc_status &= ~sflgs;
 
@@ -255,23 +255,25 @@ int PcfRtcClearStatus(uint32_t sflgs)
  * \return 0 on success or -1 in case of an error.
  *
  */
-int PcfRtcInit(void)
+int PcfRtcInit(NUTRTC *rtc)
 {
     int rc;
     uint32_t tmp;
 
     if ((rc = TwInit(0)) == 0) {
-        rc = PcfRtcGetStatus(&tmp);
+        rc = PcfRtcGetStatus(rtc, &tmp);
     }
     return rc;
 }
 
 NUTRTC rtcPcf8563 = {
-    PcfRtcInit,         /*!< Hardware initializatiuon, rtc_init */
-    PcfRtcGetClock,     /*!< Read date and time, rtc_gettime */
-    PcfRtcSetClock,     /*!< Set date and time, rtc_settime */
-    PcfRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
-    PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
-    PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
-    PcfRtcClearStatus   /*!< Clear status flags, rtc_clrstatus */
+  /*.dcb           = */ NULL,               /*!< Driver control block */
+  /*.rtc_init      = */ PcfRtcInit,         /*!< Hardware initializatiuon, rtc_init */
+  /*.rtc_gettime   = */ PcfRtcGetClock,     /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ PcfRtcSetClock,     /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ PcfRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ PcfRtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };

@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -66,7 +66,7 @@
  *
  * For additional information see http://www.calldirect.com.au/
  * -
- * Portions are 
+ * Portions are
  * Copyright (c) 1989 by Carnegie Mellon University.
  * All rights reserved.
  *
@@ -127,17 +127,17 @@
 #define PPPS_ACKSENT         8  /*!< \brief We've sent a Config Ack */
 #define PPPS_OPENED          9  /*!< \brief Connection available */
 
-#define XCP_CONFREQ          1	/*!< \brief LCP/IPCP Configure-Request Code */
-#define XCP_CONFACK          2	/*!< \brief LCP/IPCP Configure-Ack Code */
-#define XCP_CONFNAK          3	/*!< \brief LCP/IPCP Configure-Nack Code */
-#define XCP_CONFREJ          4	/*!< \brief LCP/IPCP Configure-Reject Code */
-#define XCP_TERMREQ          5	/*!< \brief LCP/IPCP Terminate-Request Code */
-#define XCP_TERMACK          6	/*!< \brief LCP/IPCP Terminate-Ack Code */
-#define XCP_CODEREJ          7	/*!< \brief LCP/IPCP Code-Reject Code */
-#define LCP_PROTREJ          8	/*!< \brief LCP Protocol-Reject Code */
-#define LCP_ERQ              9	/*!< \brief LCP Echo-Request Code */
-#define LCP_ERP             10	/*!< \brief LCP Echo-Response Code */
-#define LCP_DRQ             11	/*!< \brief LCP Discard-Request Code */
+#define XCP_CONFREQ          1  /*!< \brief LCP/IPCP Configure-Request Code */
+#define XCP_CONFACK          2  /*!< \brief LCP/IPCP Configure-Ack Code */
+#define XCP_CONFNAK          3  /*!< \brief LCP/IPCP Configure-Nack Code */
+#define XCP_CONFREJ          4  /*!< \brief LCP/IPCP Configure-Reject Code */
+#define XCP_TERMREQ          5  /*!< \brief LCP/IPCP Terminate-Request Code */
+#define XCP_TERMACK          6  /*!< \brief LCP/IPCP Terminate-Ack Code */
+#define XCP_CODEREJ          7  /*!< \brief LCP/IPCP Code-Reject Code */
+#define LCP_PROTREJ          8  /*!< \brief LCP Protocol-Reject Code */
+#define LCP_ERQ              9  /*!< \brief LCP Echo-Request Code */
+#define LCP_ERP             10  /*!< \brief LCP Echo-Response Code */
+#define LCP_DRQ             11  /*!< \brief LCP Discard-Request Code */
 
 /*
  * PAP client states.
@@ -149,7 +149,7 @@
 #define PAPCS_OPEN           4  /*!< \brief We've received an Ack */
 #define PAPCS_BADAUTH        5  /*!< \brief We've received a Nak */
 
-typedef struct __attribute__ ((packed)) {
+typedef struct NUT_PACKED_TYPE {
     uint8_t xcpo_type;
     uint8_t xcpo_len;
     union {
@@ -159,8 +159,6 @@ typedef struct __attribute__ ((packed)) {
     } xcpo_;
 } XCPOPT;
 
-
-__BEGIN_DECLS
 
 extern void LcpOpen(NUTDEVICE * dev);
 extern void LcpClose(NUTDEVICE *dev);
@@ -179,8 +177,6 @@ extern void PppOpen(NUTDEVICE *dev);
 extern void PppClose(NUTDEVICE *dev);
 
 extern int NutPppInitStateMachine(NUTDEVICE * dev);
-
-__END_DECLS
 
 #endif
 

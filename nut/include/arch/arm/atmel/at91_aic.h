@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -61,17 +61,17 @@
  */
 #define AIC_SMR(i)  (AIC_BASE + i * 4)
 
-/*! \brief Priority mask. 
+/*! \brief Priority mask.
  *
  * Priority levels can be between 0 (lowest) and 7 (highest).
  */
 #define AIC_PRIOR                       0x00000007
 
-/*! \brief Interrupt source type mask. 
+/*! \brief Interrupt source type mask.
  *
  * Internal interrupts can level sensitive or edge triggered.
  *
- * External interrupts can triggered on positive or negative levels or 
+ * External interrupts can triggered on positive or negative levels or
  * on rising or falling edges.
  */
 #define AIC_SRCTYPE                     0x00000060
@@ -86,7 +86,7 @@
 
 /*! \name Interrupt Source Vector Registers */
 /*@{*/
-/*! \brief Source vector register array. 
+/*! \brief Source vector register array.
  *
  * Stores the addresses of the corresponding interrupt handlers.
  */

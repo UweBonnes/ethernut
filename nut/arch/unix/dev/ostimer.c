@@ -31,7 +31,7 @@
  *
  */
 
-/* 
+/*
  * unix_timer.c - unix emulation of a real-time clock that is used as a timer
  *
  * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
@@ -60,7 +60,7 @@ static pthread_t timer_thread;
 
 /*!
  * \brief Timer emulation
- * 
+ *
  * send interrupt signal to NUT thread on every 10ms tick
  */
 
@@ -78,7 +78,7 @@ void *NutTimerEmulation(void *arg)
 
         NutUnixRaiseInterrupt(trigger_irq);
     }
-	return NULL;
+    return NULL;
 }
 
 /*!

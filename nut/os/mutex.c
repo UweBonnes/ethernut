@@ -76,7 +76,7 @@ extern "C" {
  *
  * The type for the mutex is recursive
  */
- 
+
 void NutMutexInit(MUTEX * mutex) {
     NUTASSERT(mutex != NULL);
     mutex->thread = 0;
@@ -92,7 +92,7 @@ void NutMutexInit(MUTEX * mutex) {
  *
  * \note: Should not be called from interrupt context
  */
- 
+
 void NutMutexLock(MUTEX * mutex) {
     NUTASSERT(mutex != NULL);
     if (mutex->thread != runningThread) {
@@ -110,7 +110,7 @@ void NutMutexLock(MUTEX * mutex) {
  * by another thread
  * \note: Should not be called from interrupt context
  */
- 
+
 int NutMutexTrylock(MUTEX * mutex) {
     NUTASSERT(mutex != NULL);
     if ((mutex->count != 0) && (mutex->thread != runningThread))
@@ -126,7 +126,7 @@ int NutMutexTrylock(MUTEX * mutex) {
  * hold a lock on mutex.
  * \note: Should not be called from interrupt context
  */
- 
+
 int NutMutexUnlock(MUTEX * mutex) {
     NUTASSERT(mutex != NULL);
     if (mutex->thread != runningThread)

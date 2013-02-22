@@ -41,23 +41,23 @@
  *
  * \param Points to a string of the form 'name=value'.
  *
- * \return 0 upon successful completion. Otherwise, -1 is returned and 
+ * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
-#if defined(__arm__) || defined(__AVR32__)
+#if defined(__arm__) || defined(__AVR32__) || defined(__m68k__)
 int putenv(char *string)
 #else
-int putenv(CONST char *string)
+int putenv(const char *string)
 #endif
 {
-    int	rc = -1;
+    int rc = -1;
     char *value;
     char *name;
 
     NUTASSERT(string != NULL);
     if ((name = strdup(string)) != NULL) {
         if ((value = strchr(name, '=')) != NULL) {
-	    *value++ = 0;
+        *value++ = 0;
         }
         rc = setenv(name, value, 1);
         free(name);

@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -141,7 +141,7 @@ extern "C" {
  * \typedef TCPHDR
  * \brief TCP protocol header type.
  */
-typedef struct __attribute__ ((packed)) tcphdr {
+typedef struct NUT_PACKED_TYPE tcphdr {
     uint16_t th_sport;       /*!< \brief Source port. */
     uint16_t th_dport;       /*!< \brief Destination port. */
     uint32_t  th_seq;         /*!< \brief Sequence number of first octet in this segment. */
@@ -156,7 +156,7 @@ typedef struct __attribute__ ((packed)) tcphdr {
 #endif
 #else /* #ifndef __BIG_ENDIAN__ */
     uint8_t  th_off:4,       /*!< \brief Data offset. */
-	    th_x2:4;        /*!< \brief Unused. */
+        th_x2:4;        /*!< \brief Unused. */
 #endif
     uint8_t  th_flags;       /*!< \brief Control flags. */
     uint16_t th_win;         /*!< \brief Number of acceptable octects. */
@@ -195,12 +195,12 @@ typedef struct _TCPPSEUDOHDR {
                                          IP datagram for Ethernet is 1500. Reduce this
                                          number by 40, 20 bytes TCP header and 20 bytes
                                          IP header.
-                                         \showinitializer 
+                                         \showinitializer
                                      */
 #define TCP_WINSIZE         3216    /*!< \brief Default window size.
                                          It's recommended to set this 6 times the maximum
                                          segment size.
-                                         \showinitializer 
+                                         \showinitializer
                                      */
 
 #define TCP_MAXWIN          65535   /*!< \brief Largest value for (unscaled) window. \showinitializer */

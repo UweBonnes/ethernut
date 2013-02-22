@@ -116,7 +116,7 @@ JTAG_TAP *TapOpen(JTAG_CABLE *cable)
 /*!
  * \brief Release the TAP controller.
  *
- * \param tap Pointer to the TAP controller structure, obtained by 
+ * \param tap Pointer to the TAP controller structure, obtained by
  *            a previous call to JtagCable0Open().
  */
 void TapClose(JTAG_TAP *tap)
@@ -128,7 +128,7 @@ void TapClose(JTAG_TAP *tap)
 /*!
  * \brief Toggles the target reset line.
  *
- * \param tap Pointer to the TAP controller structure, obtained by 
+ * \param tap Pointer to the TAP controller structure, obtained by
  *            a previous call to JtagCable0Open().
  * \param us  Time to keep the reset activated, given in microseconds.
  */
@@ -145,7 +145,7 @@ void TapTargetReset(JTAG_TAP *tap, uint32_t us)
 /*!
  * \brief Move the TAP controller to the specified state.
  *
- * \param tap   Pointer to the TAP controller structure, obtained by 
+ * \param tap   Pointer to the TAP controller structure, obtained by
  *              a previous call to JtagCable0Open().
  * \param state Requested state.
  */
@@ -169,7 +169,7 @@ void TapStateWalk(JTAG_TAP *tap, int state)
  * Actually we can determine the size automatically. For now the user
  * must set it by calling this function.
  *
- * \param tap  Pointer to the TAP controller structure, obtained by 
+ * \param tap  Pointer to the TAP controller structure, obtained by
  *             a previous call to JtagCable0Open().
  * \param len  Number of bits in the instruction register.
  */
@@ -181,18 +181,18 @@ void TapSetIrSize(JTAG_TAP *tap, uint_fast8_t len)
 /*!
  * \brief Read and write data register.
  *
- * \param tap  Pointer to the TAP controller structure, obtained by 
+ * \param tap  Pointer to the TAP controller structure, obtained by
  *             a previous call to JtagCable0Open().
  * \param rbuf Points to the buffer that receives the read data.
  *             May be NULL if the caller is not interested.
  * \param wbuf Points to the buffer that contains the write data.
  *             If NULL, all outgoing bits are zero.
  * \param len  Number of bits to read and/or write.
- * \param last Indicates the last data transfer. If set, the TAP 
+ * \param last Indicates the last data transfer. If set, the TAP
  *             controller will move to the Exit1-DR state on the
  *             last clock cycle.
  */
-void TapData(JTAG_TAP *tap, uint8_t *rbuf, CONST uint8_t *wbuf, uint32_t len, uint_fast8_t last)
+void TapData(JTAG_TAP *tap, uint8_t *rbuf, const uint8_t *wbuf, uint32_t len, uint_fast8_t last)
 {
     TapStateWalk(tap, JTAG_SHIFT_DR);
     tap->tap_cable->cable_transfer_data(tap->tap_cib, rbuf, wbuf, len, last);
@@ -204,9 +204,9 @@ void TapData(JTAG_TAP *tap, uint8_t *rbuf, CONST uint8_t *wbuf, uint32_t len, ui
 /*!
  * \brief Store instruction code in instruction register.
  *
- * \param tap  Pointer to the TAP controller structure, obtained by 
+ * \param tap  Pointer to the TAP controller structure, obtained by
  *             a previous call to JtagCable0Open().
- * \param last Indicates the last data transfer. If set, the TAP 
+ * \param last Indicates the last data transfer. If set, the TAP
  *             controller will move to the Exit1-IR state on the
  *             last clock cycle.
  */

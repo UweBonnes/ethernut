@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -210,6 +210,7 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <netinet/if_ether.h>
 #include <netdb.h>
 #include <net/route.h>
 #include <sys/socket.h>
@@ -385,7 +386,8 @@ static uint_fast8_t __tcp_trf = 1;
 #endif
 #else
 /* arm-elf-gcc used 276 bytes with size optimized, 680 bytes with debug code. */
-#define NUT_THREAD_DHCPSTACK    384
+/* arm-none-eabi creates stack overflow with 384 bytes on EIR 1.0 board. */
+#define NUT_THREAD_DHCPSTACK    512
 #endif
 #endif
 
@@ -548,7 +550,7 @@ typedef struct bootp BOOTP;
 /*!
  * \brief BOOTP message structure.
  */
-struct __attribute__ ((packed)) bootp {
+struct NUT_PACKED_TYPE bootp {
     uint8_t bp_op;              /*!< \brief Packet opcode type: 1=request, 2=reply */
     uint8_t bp_htype;           /*!< \brief Hardware address type: 1=Ethernet */
     uint8_t bp_hlen;            /*!< \brief Hardware address length: 6 for Ethernet */
@@ -1972,7 +1974,7 @@ THREAD(NutDhcpClient, arg)
  *                This value must be larger than 3 times of \ref MIN_DHCP_WAIT
  *                to enable collection of offers from multiple servers.
  */
-static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
+static int DhcpKick(const char *name, uint8_t state, uint32_t timeout)
 {
     NUTDEVICE *dev;
     IFNET *nif;
@@ -2043,57 +2045,55 @@ static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
  *         NutDhcpError() can be called to get a more specific error
  *         code.
  */
-int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
+int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout)
 {
-    uint8_t mac0[6];
-    uint8_t macF[6];
     NUTDEVICE *dev;
-    IFNET *nif;
+    IFNET *nif = NULL;
 
     /*
-     * Lookup the Ethernet device.
+     * Verify the given Ethernet device.
      */
-    if ((dev = NutDeviceLookup(name)) == 0 ||   /* No device */
-        dev->dev_type != IFTYP_NET ||   /* Wrong type */
-        (nif = dev->dev_icb) == 0 ||    /* No netif */
-        nif->if_type != IFT_ETHER) {    /* Wrong if type */
+    dev = NutDeviceLookup(name);
+    if (dev && dev->dev_type == IFTYP_NET) {
+        nif = (IFNET *) dev->dev_icb;
+    }
+    if (nif == NULL || nif->if_type != IFT_ETHER) {
+        /* Not a network device or wrong interface type. */
         dhcpError = DHCPERR_BADDEV;
         return -1;
     }
 
     /*
-     * We determine whether the interface is enabled by checking
-     * the MAC address. This is so bloody brain dead.
+     * Determine the MAC address.
      */
-    memset(mac0, 0x00, sizeof(mac0));   /* Uses more code but less RAM... */
-    memset(macF, 0xFF, sizeof(macF));   /* ...than init in declaration.   */
-    if (memcmp(nif->if_mac, mac0, 6) == 0 || memcmp(nif->if_mac, macF, 6) == 0) {
-        /*
-         * If the caller specified a MAC address, we use it and
-         * overwrite the configuration.
-         */
-        if (mac) {
-            memcpy(confnet.cdn_mac, mac, sizeof(confnet.cdn_mac));
-        }
-
-        /*
-         * If no MAC address has been specified, read the configuration
-         * from EEPROM. If this fails, we do not continue any further,
-         * but let the caller know that something is wrong. He may call
-         * us again with a valid MAC address.
-         */
-        else if (NutNetLoadConfig(name)) {
-            dhcpError = DHCPERR_NOMAC;
-            return -1;
-        }
-
-        /*
-         * Copy the MAC address to the interface structure. This will
-         * magically brain dead enable the interface.
-         */
-        memcpy(nif->if_mac, confnet.cdn_mac, 6);
-        NutSleep(500);
+    if (mac && !ETHER_IS_BROADCAST(mac)) {
+         /* If the caller specified a valid MAC address, we use it
+            to override the configuration. */
+        memcpy(confnet.cdn_mac, mac, sizeof(confnet.cdn_mac));
     }
+    else if (ETHER_IS_ZERO(nif->if_mac)) {
+        /* The interface has not defined a MAC. Try to get one from
+           non-volatile memory. */
+        NutNetLoadConfig(name);
+    }
+
+    /*
+     * Check if we have a valid MAC address. In order to maintain
+     * backward compatibility, we accept anything which is neither
+     * zero nor the broadcast address. Later versions may become more
+     * restrictive and demand a valid unicast address.
+     */
+    if (ETHER_IS_ZERO(confnet.cdn_mac) || ETHER_IS_BROADCAST(confnet.cdn_mac)) {
+        dhcpError = DHCPERR_NOMAC;
+        return -1;
+    }
+
+    /*
+     * Copy the MAC address to the interface structure. This will
+     * magically enable the brain dead interface.
+     */
+    memcpy(nif->if_mac, confnet.cdn_mac, 6);
+    NutSleep(500);
 
     /*
      * Zero out the ip address and mask. This allows to switch between
@@ -2106,16 +2106,15 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
     /*
      * If the EEPROM contains a fixed network configuration, we skip DHCP.
      */
-    if ((confnet.cdn_cip_addr & confnet.cdn_ip_mask) != 0) {
+    if (confnet.cdn_cip_addr & confnet.cdn_ip_mask) {
         /* Give up a previously allocated lease. See patch #2903940. */
         (void)NutDhcpRelease(name, (3*MIN_DHCP_WAIT));
         confnet.cdn_ip_addr = confnet.cdn_cip_addr;
-        NutNetIfConfig2(name,
+        return NutNetIfConfig2(name,
                         confnet.cdn_mac,
                         confnet.cdn_ip_addr,
                         confnet.cdn_ip_mask,
                         confnet.cdn_gateway);
-        return 0;
     }
 
     /*
@@ -2185,7 +2184,7 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutDhcpRelease(CONST char *name, uint32_t timeout)
+int NutDhcpRelease(const char *name, uint32_t timeout)
 {
     /* Check the state. */
     if (dhcpState != DHCPST_BOUND) {
@@ -2207,7 +2206,7 @@ int NutDhcpRelease(CONST char *name, uint32_t timeout)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutDhcpInform(CONST char *name, uint32_t timeout)
+int NutDhcpInform(const char *name, uint32_t timeout)
 {
     /* Check the state. */
     if (dhcpState != DHCPST_IDLE) {
@@ -2236,7 +2235,7 @@ int NutDhcpInform(CONST char *name, uint32_t timeout)
  *         - \ref DHCPST_RELEASING
  *         - \ref DHCPST_IDLE
  */
-int NutDhcpStatus(CONST char *name)
+int NutDhcpStatus(const char *name)
 {
     return dhcpState;
 }
@@ -2259,7 +2258,7 @@ int NutDhcpStatus(CONST char *name)
  *
  * \return DHCP error code or 0 if no error occured.
  */
-int NutDhcpError(CONST char *name)
+int NutDhcpError(const char *name)
 {
     int rc = dhcpError;
     dhcpError = 0;

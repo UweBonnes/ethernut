@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -432,7 +432,7 @@ int AvrTargetChipErase(void)
  * \param data Points to the data.
  *
  */
-void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data)
+void AvrTargetPageLoad(uint32_t page, const uint8_t * data)
 {
     ureg_t bc;
 
@@ -449,7 +449,7 @@ void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data)
 /*!
  * \brief Write page buffer contents to program memory.
  *
- * Calls AvrTargetPollReady(), which may initiate a context switch 
+ * Calls AvrTargetPollReady(), which may initiate a context switch
  * while waiting for the page write to finish.
  *
  * \param page Program memory page number.
@@ -472,7 +472,7 @@ int AvrTargetPageWrite(uint32_t page)
  * \return 0 if the buffer contents equals the memory page contents or
  *         -1 if it doesn't.
  */
-int AvrTargetPageVerify(uint32_t page, CONST uint8_t * data)
+int AvrTargetPageVerify(uint32_t page, const uint8_t * data)
 {
     uint32_t waddr = page << 6;
     ureg_t bc;

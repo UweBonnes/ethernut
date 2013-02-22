@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,14 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
+/*!
+ * \file arch/avr/dev/ahdlc0.c
+ * \brief AVR AHDLC driver for UART0.
  *
- * Revision 1.1  2004/03/08 11:16:54  haraldkipp
- * Asynchronous HDLC driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/if_ppp.h>
@@ -56,7 +55,7 @@ static AHDLCDCB dcb_ahdlc;
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this device driver to the Nut/OS kernel.
  */
 NUTDEVICE devAhdlc0 = {

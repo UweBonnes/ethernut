@@ -47,7 +47,7 @@
 
 #include <avr32/io.h>
 
-#ifdef AVR32_EIC_EXTINT_7_PIN
+#if defined(AVR32_EIC_IRQ_7) && defined(INTERRUPT7_ALT_PIN) && defined(INTERRUPT7_ALT_PINSET)
 
 #ifndef NUT_IRQPRI_IRQ7
 #define NUT_IRQPRI_IRQ7  AVR32_INTC_INT3
@@ -112,7 +112,7 @@ static int Interrupt7Ctl(int cmd, void *param)
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Setup Peripheral mux for interrupt line */
-        gpio_enable_module_pin(AVR32_EIC_EXTINT_7_PIN, AVR32_EIC_EXTINT_7_FUNCTION);
+        gpio_enable_module_pin(INTERRUPT7_ALT_PIN, INTERRUPT7_ALT_PINSET);
         /* Set the vector. */
         register_interrupt(Interrupt7Entry, AVR32_EIC_IRQ_7, NUT_IRQPRI_IRQ7);
         /* Initialize to edge triggered with defined priority. */
@@ -188,4 +188,4 @@ static int Interrupt7Ctl(int cmd, void *param)
     return rc;
 }
 
-#endif // AVR32_EIC_EXTINT_7_PIN
+#endif // AVR32_EIC_IRQ_7

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -32,66 +32,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.16  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
- *
- * Revision 1.15  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.14  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
- *
- * Revision 1.13  2008/08/11 06:59:04  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.12  2008/08/06 12:43:41  haraldkipp
- * First EMAC reset failed on power-up. Initialize EMAC clock and MII mode
- * earlier.
- * Added support for Ethernut 5 (AT91SAM9XE reference design).
- *
- * Revision 1.11  2007/09/06 20:07:24  olereinhardt
- * Changed phy detection and added support for micel phy (SAM7-EX256 Board)
- *
- * Revision 1.10  2007/08/29 07:43:52  haraldkipp
- * Documentation updated and corrected.
- *
- * Revision 1.9  2007/05/02 11:20:26  haraldkipp
- * Pull-up enable/disable simplified.
- * Added multicast table entry.
- *
- * Revision 1.8  2007/04/20 13:06:08  haraldkipp
- * Previous change failed on SAM7X-EK. We are now using PHY address 0 by
- * default and disable all pull-ups during PHY reset.
- *
- * Revision 1.7  2007/04/12 09:13:10  haraldkipp
- * Bugfix: PHY initialization may fail with pull-ups enabled.
- *
- * Revision 1.6  2007/02/15 16:00:45  haraldkipp
- * Configurable buffer usage and link timeout.
- *
- * Revision 1.5  2006/10/17 11:06:12  haraldkipp
- * Number of loops waiting for links increased to 10000 and NIC resets
- * reduced. This will help to link to auto MDIX via direct cable.
- *
- * Revision 1.4  2006/10/08 16:41:34  haraldkipp
- * PHY address and power down bit are now configurable.
- *
- * Revision 1.3  2006/10/05 17:10:37  haraldkipp
- * Link detection was unreliable. This also caused bug #1567785.
- * Now NutRegisterDevice will return an error, if there is no
- * link available. Applications may then call NutRegisterDevice again.
- *
- * Revision 1.2  2006/09/29 12:29:16  haraldkipp
- * Several fixes to make it running reliably on the AT91SAM9260.
- *
- * Revision 1.1  2006/08/31 18:58:47  haraldkipp
- * More general AT91 MAC driver replaces the SAM7X specific version.
- * This had been tested on the SAM9260, but loses Ethernet packets
- * for a yet unknown reason.
- *
+ * $Id$
  */
 
 #include <cfg/os.h>
@@ -99,6 +40,7 @@
 #include <arch/arm.h>
 #include <cfg/arch/gpio.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <sys/atom.h>
@@ -114,9 +56,17 @@
 
 #include <dev/irqreg.h>
 #include <dev/at91_emac.h>
+#include <dev/phy.h>
 
+#include <stdio.h>
+
+/* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
+#include <arpa/inet.h>
+#define EMPRINTF(args,...) printf(args,##__VA_ARGS__);fflush(stdout)
+#else
+#define EMPRINTF(args,...)
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -135,46 +85,8 @@
 #endif
 
 #ifndef EMAC_LINK_LOOPS
-#define EMAC_LINK_LOOPS         1000000
+#define EMAC_LINK_LOOPS         1000
 #endif
-
-/*!
- * \addtogroup xgDm9161aRegs
- */
-/*@{*/
-#define NIC_PHY_BMCR            0x00    /*!< \brief Basic mode control register. */
-#define NIC_PHY_BMCR_COLTEST    0x0080  /*!< \brief Collision test. */
-#define NIC_PHY_BMCR_FDUPLEX    0x0100  /*!< \brief Full duplex mode. */
-#define NIC_PHY_BMCR_ANEGSTART  0x0200  /*!< \brief Restart auto negotiation. */
-#define NIC_PHY_BMCR_ISOLATE    0x0400  /*!< \brief Isolate from MII. */
-#define NIC_PHY_BMCR_PWRDN      0x0800  /*!< \brief Power-down. */
-#define NIC_PHY_BMCR_ANEGENA    0x1000  /*!< \brief Enable auto negotiation. */
-#define NIC_PHY_BMCR_100MBPS    0x2000  /*!< \brief Select 100 Mbps. */
-#define NIC_PHY_BMCR_LOOPBACK   0x4000  /*!< \brief Enable loopback mode. */
-#define NIC_PHY_BMCR_RESET      0x8000  /*!< \brief Software reset. */
-
-#define NIC_PHY_BMSR            0x01    /*!< \brief Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /*!< \brief Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /*!< \brief Link status. */
-
-#define NIC_PHY_ID1             0x02    /*!< \brief PHY identifier register 1. */
-#define NIC_PHY_ID2             0x03    /*!< \brief PHY identifier register 2. */
-#define NIC_PHY_ANAR            0x04    /*!< \brief Auto negotiation advertisement register. */
-#define NIC_PHY_ANLPAR          0x05    /*!< \brief Auto negotiation link partner availability register. */
-#define NIC_PHY_ANEG_NP         0x8000  /*!< \brief Next page available. */
-#define NIC_PHY_ANEG_ACK        0x4000  /*!< \brief Ability data reception acknowledged. */
-#define NIC_PHY_ANEG_RF         0x2000  /*!< \brief Remote fault. */
-#define NIC_PHY_ANEG_FCS        0x0400  /*!< \brief Flow control supported. */
-#define NIC_PHY_ANEG_T4         0x0200  /*!< \brief 100BASE-T4 supported. */
-#define NIC_PHY_ANEG_TX_FDX     0x0100  /*!< \brief 100BASE-T full duplex supported. */
-#define NIC_PHY_ANEG_TX_HDX     0x0080  /*!< \brief 100BASE-T half duplex supported. */
-#define NIC_PHY_ANEG_10_FDX     0x0040  /*!< \brief 10BASE-T full duplex supported. */
-#define NIC_PHY_ANEG_10_HDX     0x0020  /*!< \brief 10BASE-T half duplex supported. */
-#define NIC_PHY_ANEG_BINSEL     0x001F  /*!< \brief Binary encoded protocol selector. */
-
-#define NIC_PHY_ANER            0x06    /*!< \brief Auto negotiation expansion register. */
-
-/*@}*/
 
 
 /*!
@@ -183,7 +95,7 @@
  * Any other than 0 seems to create problems with Atmel's evaluation kits.
  */
 #ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR	        0
+#define NIC_PHY_ADDR            0
 #endif
 
 /*!
@@ -198,8 +110,8 @@
 /*!
  * \brief Check all known PHY IDs.
  *
- * If defined, perform the old PHY checks. This ensures compatibility 
- * at the cost of bloat. Should be removed later on when all boards 
+ * If defined, perform the old PHY checks. This ensures compatibility
+ * at the cost of bloat. Should be removed later on when all boards
  * have their PHY ids in their configuration.
  */
 #define CHECK_ALL_KNOWN_PHY_IDS
@@ -363,11 +275,11 @@ typedef struct _BufDescriptor {
 } BufDescriptor;
 
 static volatile BufDescriptor txBufTab[EMAC_TX_BUFFERS];
-static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] __attribute__ ((aligned(8)));
+static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] NUT_ALIGNED_TYPE(8);
 static unsigned int txBufIdx;
 
 static volatile BufDescriptor rxBufTab[EMAC_RX_BUFFERS];
-static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(8)));
+static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] NUT_ALIGNED_TYPE(8);
 static unsigned int rxBufIdx;
 
 #define RXBUF_OWNERSHIP     0x00000001
@@ -419,10 +331,11 @@ static unsigned int rxBufIdx;
  *
  * \return Contents of the specified register.
  */
+
 static uint16_t phy_inw(uint8_t reg)
 {
     /* PHY read command. */
-    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_READ | EMAC_CODE | 
+    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_READ | EMAC_CODE |
         (NIC_PHY_ADDR << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB));
 
     /* Wait until PHY logic completed. */
@@ -432,7 +345,6 @@ static uint16_t phy_inw(uint8_t reg)
     return (uint16_t) (inr(EMAC_MAN) >> EMAC_DATA_LSB);
 }
 
-#if !defined(PHY_MODE_RMII) || (NIC_PHY_UID == MII_LAN8710_ID)
 /*!
  * \brief Write value to PHY register.
  *
@@ -442,80 +354,11 @@ static uint16_t phy_inw(uint8_t reg)
 static void phy_outw(uint8_t reg, uint16_t val)
 {
     /* PHY write command. */
-    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_WRITE | EMAC_CODE | 
+    outr(EMAC_MAN, EMAC_SOF | EMAC_RW_WRITE | EMAC_CODE |
         (NIC_PHY_ADDR << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB) | val);
 
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
-}
-#endif
-
-/*!
- * \brief Probe PHY.
- * \param timeout for link status from PHY in loops.
- * \return 0 on success, -1 otherwise.
- */
-static int probePhy(uint32_t tmo)
-{
-    uint32_t physID;
-    uint16_t phyval;
-
-    /* Read Phy ID. Ignore revision number. */
-    physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);   
-#if NIC_PHY_UID != 0xffffffff
-    if ( physID != (NIC_PHY_UID & 0xFFFFFFF0) ) {
-        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-        return -1;
-    }
-#elif defined(CHECK_ALL_KNOWN_PHY_IDS)
-    if ( physID != MII_DM9161_ID && physID != MII_AM79C875_ID && physID != MII_MICREL_ID && physID != MII_LAN8700_ID && physID != MII_LAN8710_ID) {
-        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-        return -1;
-    }
-#endif
-
-    /* Handle auto negotiation if configured. */
-    phyval = phy_inw(NIC_PHY_BMCR);
-    if (phyval & NIC_PHY_BMCR_ANEGENA) {
-        /* Wait for auto negotiation completed. */
-        phy_inw(NIC_PHY_BMSR);  /* Discard previously latched status. */
-        while (--tmo) {
-            if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
-                break;
-            }
-        }
-        /* Return error on link timeout. */
-        if (tmo == 0) {
-            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-            return -1;
-        }
-
-        /*
-        * Read link partner abilities and configure EMAC.
-        */
-        phyval = phy_inw(NIC_PHY_ANLPAR);
-        if (phyval & NIC_PHY_ANEG_TX_FDX) {
-            /* 100Mb full duplex. */
-            outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_SPD | EMAC_FD);
-        }
-        else if (phyval & NIC_PHY_ANEG_TX_HDX) {
-            /* 100Mb half duplex. */
-            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_FD) | EMAC_SPD);
-        }
-        else if (phyval & NIC_PHY_ANEG_10_FDX) {
-            /* 10Mb full duplex. */
-            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_SPD) | EMAC_FD);
-        }
-        else {
-            /* 10Mb half duplex. */
-            outr(EMAC_NCFGR, inr(EMAC_NCFGR) & ~(EMAC_SPD | EMAC_FD));
-        }
-    }
-
-    /* Disable management port. */
-    outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-
-    return 0;
 }
 
 /*!
@@ -523,8 +366,16 @@ static int probePhy(uint32_t tmo)
  *
  * \return 0 on success, -1 otherwise.
  */
+
 static int EmacReset(uint32_t tmo)
 {
+    int rc = 0;
+    uint32_t reg_ncfgr;
+    uint32_t phyval;
+    int      link_wait;
+
+    EMPRINTF("EmacReset(%lu)\n", tmo);
+
     /* Enable power sources if not yet enabled */
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
@@ -549,20 +400,75 @@ static int EmacReset(uint32_t tmo)
     /* Wait for PHY ready. */
     NutDelay(255);
 
+    /* Register PHY */
+    rc = NutRegisterPhy( 1, phy_outw, phy_inw);
+
 #if NIC_PHY_UID == MII_LAN8710_ID
-    /* Set LAN8710 mode. */
-    phy_outw(18, phy_inw(18) | 0x00E0);
-    phy_outw(NIC_PHY_BMCR, NIC_PHY_BMCR_RESET);
-    NutSleep(100);
+    /* Set LAN8710 to AUTO-MDIX and MII mode.
+     * This overides configuration set by config pins of the chip.
+     */
+
+    phyval = 18 << 16;  // Store phy register address in upper 16 bits
+    NutPhyCtl (PHY_GET_REGVAL, &phyval);
+    phyval |= 0x00E0;
+
+    phyval |= 18 << 16;  // Store phy register address in upper 16 bits again
+    NutPhyCtl (PHY_SET_REGVAL, &phyval);
+
+    /* Soft Reset LAN7810 */
+    phyval = 1;
+    NutPhyCtl(PHY_CTL_RESET, &phyval);
 #endif
 
 #ifndef PHY_MODE_RMII
     /* Clear MII isolate. */
-    phy_inw(NIC_PHY_BMCR);
-    phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
+    phyval = 0;
+    NutPhyCtl(PHY_CTL_ISOLATE, &phyval);
 #endif
 
-    return probePhy(tmo);
+    /* Restart autonegotiation */
+    phyval = 1;
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
+
+    /* Wait for auto negotiation completed and link established. */
+    for (link_wait = tmo;; link_wait--) {
+        phyval = 0;
+        NutPhyCtl(PHY_GET_STATUS, &phyval);
+
+        if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
+            /* Check link state and configure EMAC accordingly */
+            reg_ncfgr = inr(EMAC_NCFGR);
+            if (phyval & PHY_STATUS_FULLDUPLEX) {
+                reg_ncfgr |= EMAC_FD;
+            } else {
+                reg_ncfgr &= ~EMAC_FD;
+            }
+
+            if (phyval & PHY_STATUS_100M) {
+                reg_ncfgr |= EMAC_SPD;
+            } else {
+                reg_ncfgr &= ~EMAC_SPD;
+            }
+            outr(EMAC_NCFGR, reg_ncfgr);
+
+            break;
+        }
+        if (link_wait == 0) {
+            EMPRINTF("NO LINK!\n");
+
+            /* Return error on link timeout. */
+            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+            return -1;
+        }
+        NutSleep(10);
+    }
+
+    /* Disable management port. */
+    outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+
+    EMPRINTF("EmacReset() DONE\n");
+
+    return rc;
 }
 
 /*
@@ -640,13 +546,13 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 
     if (fbc) {
         /*
-         * Receiving long packets is unexpected. Let's declare the 
+         * Receiving long packets is unexpected. Let's declare the
          * chip insane. Short packets will be handled by the caller.
          */
         if (fbc > 1536) {
             ni->ni_insane = 1;
         } else {
-            *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t)fbc);
+            *nbp = NutNetBufAlloc(0, NBAF_DATALINK + 2, (uint16_t)fbc);
             if (*nbp != NULL) {
                 uint8_t *bp = (uint8_t *) (* nbp)->nb_dl.vp;
                 unsigned int len;
@@ -684,7 +590,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
@@ -694,7 +600,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
     uint8_t *buf;
 
     /*
-     * Calculate the number of bytes to be send. Do not send packets 
+     * Calculate the number of bytes to be send. Do not send packets
      * larger than the Ethernet maximum transfer unit. The MTU
      * consist of 1500 data bytes plus the 14 byte Ethernet header
      * plus 4 bytes CRC. We check the data bytes only.
@@ -746,9 +652,11 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
  *
  * \param mac Six byte unique MAC address.
  */
-static int EmacStart(CONST uint8_t * mac)
+static int EmacStart(const uint8_t * mac)
 {
     unsigned int i;
+
+    EMPRINTF("EmacStart(%02x:%02x:%02x:%02x:%02x:%02x)\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5] );
 
     /* Set local MAC address. */
     outr(EMAC_SA1L, (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
@@ -777,6 +685,8 @@ static int EmacStart(CONST uint8_t * mac)
     /* Enable receiver, transmitter and statistics. */
     outr(EMAC_NCR, inr(EMAC_NCR) | EMAC_TE | EMAC_RE | EMAC_WESTAT);
 
+    EMPRINTF("EmacStart() DONE\n");
+
     return 0;
 }
 
@@ -786,14 +696,12 @@ static int EmacStart(CONST uint8_t * mac)
  */
 THREAD(EmacRxThread, arg)
 {
-    NUTDEVICE *dev;
-    IFNET *ifn;
-    EMACINFO *ni;
+    NUTDEVICE *dev = arg;
+    IFNET *ifn = (IFNET *) dev->dev_icb;
+    EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
     NETBUF *nb;
 
-    dev = arg;
-    ifn = (IFNET *) dev->dev_icb;
-    ni = (EMACINFO *) dev->dev_dcb;
+    EMPRINTF("EmacRxThread() INIT\n");
 
     /*
      * This is a temporary hack. Due to a change in initialization,
@@ -810,6 +718,8 @@ THREAD(EmacRxThread, arg)
      * This happens, for example, if no Ethernet cable is plugged
      * in.
      */
+    EMPRINTF(" Call EmacStart()\n");
+
     while (EmacStart(ifn->if_mac)) {
         EmacReset(EMAC_LINK_LOOPS);
         NutSleep(1000);
@@ -827,14 +737,20 @@ THREAD(EmacRxThread, arg)
 
     for (;;) {
         /*
-         * Wait for the arrival of new packets or poll the receiver every 
-         * 200 milliseconds. This short timeout helps a bit to deal with
+         * Wait for the arrival of new packets or poll the receiver every
+         * 500 milliseconds. This short timeout helps a bit to deal with
          * the SAM9260 Ethernet problem.
+         *
+         * Sometimes an interrupt status change doesn't trigger an interrupt.
+         * We need to read the status register, so that the flags get cleared
+         * and the next change triggers an interrupt again.
          */
-        NutEventWait(&ni->ni_rx_rdy, 200);
+        if (NutEventWait(&ni->ni_rx_rdy, 500)) {
+            inr(EMAC_ISR);
+        }
 
         /*
-         * Fetch all packets from the NIC's internal buffer and pass 
+         * Fetch all packets from the NIC's internal buffer and pass
          * them to the registered handler.
          */
         while (EmacGetPacket(ni, &nb) == 0) {
@@ -892,22 +808,31 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 
         /* Check for packet queue space. */
         if ((txBufTab[txBufIdx].stat & TXS_USED) == 0) {
-            if (NutEventWait(&ni->ni_tx_rdy, 500) && (txBufTab[txBufIdx].stat & TXS_USED) == 0) {
-                /* No queue space. Release the lock and give up. */
-                txBufTab[txBufIdx].stat |= TXS_USED;
-                txBufIdx++;
-                txBufIdx &= 1;
-                NutEventPost(&ni->ni_mutex);
-                break;
+            if (NutEventWait(&ni->ni_tx_rdy, 500)) {
+                /*
+                 * We may have a timeout here because the last status change
+                 * didn't trigger an interrupt. Reading the status register
+                 * will clear the current status and the next change triggers
+                 * an interrupt again, hopefully.
+                 */
+                inr(EMAC_ISR);
+                if ((txBufTab[txBufIdx].stat & TXS_USED) == 0) {
+                    /* No queue space. Release the lock and give up. */
+                    txBufTab[txBufIdx].stat |= TXS_USED;
+                    txBufIdx++;
+                    txBufIdx &= 1;
+                    NutEventPost(&ni->ni_mutex);
+                    break;
+                }
             }
         } else {
             if (inr(EMAC_TSR) & EMAC_UND) {
                 txBufIdx = 0;
-	            outr(EMAC_TSR, EMAC_UND);
-	        }
+                outr(EMAC_TSR, EMAC_UND);
+            }
             if (inr(EMAC_TSR) & EMAC_COMP) {
-	            outr(EMAC_TSR, EMAC_COMP);
-	        }
+                outr(EMAC_TSR, EMAC_COMP);
+            }
 
             if ((rc = EmacPutPacket(txBufIdx, ni, nb)) == 0) {
                 txBufIdx++;
@@ -934,8 +859,8 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.
@@ -944,6 +869,7 @@ int EmacInit(NUTDEVICE * dev)
 {
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
+    EMPRINTF("EmacInit()\n");
     /* Reset the controller. */
     if (EmacReset(EMAC_LINK_LOOPS)) {
         if (EmacReset(EMAC_LINK_LOOPS)) {
@@ -956,15 +882,205 @@ int EmacInit(NUTDEVICE * dev)
 
     /* Register interrupt handler. */
     if (NutRegisterIrqHandler(&sig_EMAC, EmacInterrupt, dev)) {
+        EMPRINTF(" IRQR CRASHED\n");
         return -1;
     }
 
+    EMPRINTF(" IRQR OK\n");
+
     /* Start the receiver thread. */
-    if (NutThreadCreate("emacrx", EmacRxThread, dev, 
+    if (NutThreadCreate("emacrx", EmacRxThread, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
+        EMPRINTF(" THREAD CRASHED\n");
         return -1;
     }
+
+    EMPRINTF("EmacInit() DONE\n");
     return 0;
+}
+
+/*!
+ * \brief Update the multicast hash.
+ *
+ * This function must be called after the multicast list changed.
+ *
+ * \param mclst Pointer to the first entry of the linked list of
+ *              multicast entries.
+ */
+static void EmacHashUpdate(MCASTENTRY *mclst)
+{
+    int i;
+    int j;
+    int b;
+    int idx;
+    uint32_t hash[2] = { 0, 0 };
+
+    /* Determine the hash bit for each entry. */
+    while (mclst) {
+        /* For each bit of the index. */
+        for (idx = 0, i = 0; i < 6; i++) {
+            /* Xor every 6th bit in the address. */
+            for (b = 0, j = i; j < 48; j += 6) {
+                b ^= (mclst->mca_ha[j >> 3] & (1 << (j & 0x07))) != 0;
+            }
+            idx |= b << i;
+        }
+        /* Set the bit given by the 6 bit index. */
+        hash[idx > 31] |= 1 << (idx & 31);
+        mclst = mclst->mca_next;
+    }
+    /* Set result in the hash register. */
+    outr(EMAC_HRB, hash[0]);
+    outr(EMAC_HRT, hash[1]);
+    /* Enable or disable multicast hash. */
+    if (hash[0] || hash[1]) {
+        outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_MTI);
+    } else {
+        outr(EMAC_NCFGR, inr(EMAC_NCFGR) & ~EMAC_MTI);
+    }
+}
+
+/*!
+ * \brief Get multicast entry of a given IP address.
+ *
+ * \todo This function should be shared by all Ethernet drivers.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the entry to retrieve.
+ *
+ * \return Pointer to the entry or NULL if none exists.
+ */
+static MCASTENTRY *McastIpEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca = ifn->if_mcast;
+
+    while (mca) {
+        if (ip == mca->mca_ip) {
+            break;
+        }
+        mca = mca->mca_next;
+    }
+    return mca;
+}
+
+/*!
+ * \brief Add a given IP address to the multicast list.
+ *
+ * \todo This function should be shared by all Ethernet drivers.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the new entry.
+ *
+ * \return Pointer to the requested entry, either a new one or
+ *         an already existing entry. In case of a failure, NULL
+ *         is returned.
+ */
+static MCASTENTRY *McastAddEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca;
+
+    mca = McastIpEntry(ifn, ip);
+    if (mca == NULL) {
+        mca = malloc(sizeof(MCASTENTRY));
+        if (mca) {
+            mca->mca_ip = ip;
+            /* Set the IANA OUI. */
+            mca->mca_ha[0] = 0x01;
+            mca->mca_ha[1] = 0x00;
+            mca->mca_ha[2] = 0x5e;
+            /* Map the lower 23 bits of the IP address to the MAC address.
+               Note that Nut/Net IP addresses are in network byte order. */
+            mca->mca_ha[3] = (ip >> 8) & 0x7f;
+            mca->mca_ha[4] = (ip >> 16) & 0xff;
+            mca->mca_ha[5] = (ip >> 24) & 0xff;
+            /* Add the new entry to the front of the list. */
+            mca->mca_next = ifn->if_mcast;
+            ifn->if_mcast = mca;
+            /* Update the EMAC's multicast hash. */
+            EmacHashUpdate(mca);
+        }
+    }
+    return mca;
+}
+
+/*!
+ * \brief Remove multicast entry of a given IP address.
+ *
+ * \param ifn Pointer to the network interface structure.
+ * \param ip  IP address of the entry to remove.
+ */
+static void McastDelEntry(IFNET *ifn, uint32_t ip)
+{
+    MCASTENTRY *mca = ifn->if_mcast;
+    MCASTENTRY **lnk = &ifn->if_mcast;
+
+    while (mca) {
+        if (mca->mca_ip == ip) {
+            *lnk = mca->mca_next;
+            free(mca);
+            break;
+        }
+        lnk = &mca->mca_next;
+        mca = *lnk;
+    }
+    /* Update the EMAC's multicast hash. */
+    EmacHashUpdate(mca);
+}
+
+/*!
+ * \brief Perform Ethernet control functions.
+ *
+ * \param dev  Identifies the device that receives the device-control
+ *             function.
+ * \param req  Requested control function. May be set to one of the
+ *             following constants:
+ *             - SIOCSIFADDR sets interface MAC address passed in buffer.
+ *             - SIOCGIFADDR copies current interface MAC address to buffer.
+ *             - SIOCADDMULTI adds multicast entry for IP in buffer.
+ *             - SIOCDELMULTI removes multicast entry of IP in buffer.
+ * \param conf Points to a buffer that contains any data required for
+ *             the given control function or receives data from that
+ *             function.
+ * \return 0 on success, -1 otherwise.
+ *
+ * \warning Timeout values are given in milliseconds and are limited to
+ *          the granularity of the system timer.
+ *
+ * \note For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
+ *
+ */
+static int EmacIoCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = 0;
+    IFNET *ifn = (IFNET *) dev->dev_icb;
+    uint32_t ip;
+
+    switch (req) {
+    case SIOCSIFADDR:
+        /* Set interface hardware address. */
+        memcpy(ifn->if_mac, conf, sizeof(ifn->if_mac));
+        break;
+    case SIOCGIFADDR:
+        /* Get interface hardware address. */
+        memcpy(conf, ifn->if_mac, sizeof(ifn->if_mac));
+        break;
+    case SIOCADDMULTI:
+        /* Add multicast address. */
+        memcpy(&ip, conf, sizeof(ip));
+        if (McastAddEntry(ifn, ip) == NULL) {
+            rc = -1;
+        }
+        break;
+    case SIOCDELMULTI:
+        /* Delete multicast address. */
+        memcpy(&ip, conf, sizeof(ip));
+        McastDelEntry(ifn, ip);
+        break;
+    default:
+        rc = -1;
+        break;
+    }
+    return rc;
 }
 
 static EMACINFO dcb_eth0;
@@ -987,17 +1103,21 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     EmacOutput,                 /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devAt91Emac = {
     0,                          /*!< \brief Pointer to next device. */
@@ -1008,7 +1128,7 @@ NUTDEVICE devAt91Emac = {
     &ifn_eth0,                  /*!< \brief Interface control block. */
     &dcb_eth0,                  /*!< \brief Driver control block. */
     EmacInit,                   /*!< \brief Driver initialization routine. */
-    0,                          /*!< \brief Driver specific control function. */
+    EmacIoCtl,                  /*!< \brief Driver specific control function. */
     0,                          /*!< \brief Read from device. */
     0,                          /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__

@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -165,56 +165,122 @@
 --
 --
 
-mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2560", "MCU_ATMEGA2561",
-              "MCU_AT91SAM9260", "MCU_AT91SAM9G45", "MCU_AT91SAM9XE512",
-              "MCU_AT91SAM7X128", "MCU_AT91SAM7X256", "MCU_AT91SAM7X512",
-              "MCU_AT91SAM7S16", "MCU_AT91SAM7S32", "MCU_AT91SAM7S64", "MCU_AT91SAM7S128", "MCU_AT91SAM7S256", "MCU_AT91SAM7S512",
-              "MCU_AT91SAM7SE32", "MCU_AT91SAM7SE256", "MCU_AT91SAM7SE512",
-              "MCU_AT91R40008", "MCU_GBA",
-              "MCU_LINUX_EMU", "MCU_H8_3068", "MCU_S3C4510B",
-              
-              "MCU_AVR32UC3A0512ES", "MCU_AVR32UC3A0512", "MCU_AVR32UC3A3256", "MCU_AVR32UC3B0256", "MCU_AVR32UC3B164" }
+mcu_names = {
+    "MCU_ATMEGA103",
+    "MCU_ATMEGA128",
+    "MCU_AT90CAN128",
+    "MCU_AT90USB1287",
+    "MCU_ATMEGA2560",
+    "MCU_ATMEGA2561",
+    "MCU_AT91SAM9260",
+    "MCU_AT91SAM9G45",
+    "MCU_AT91SAM9XE512",
+    "MCU_AT91SAM7X128",
+    "MCU_AT91SAM7X256",
+    "MCU_AT91SAM7X512",
+    "MCU_AT91SAM7S16",
+    "MCU_AT91SAM7S32",
+    "MCU_AT91SAM7S64",
+    "MCU_AT91SAM7S128",
+    "MCU_AT91SAM7S256",
+    "MCU_AT91SAM7S512",
+    "MCU_AT91SAM7SE32",
+    "MCU_AT91SAM7SE256",
+    "MCU_AT91SAM7SE512",
+    "MCU_AT91R40008",
+    "MCU_GBA",
+    "MCU_LINUX_EMU",
+    "MCU_H8_3068",
+    "MCU_S3C4510B",
+    "MCU_AVR32UC3A0512ES",
+    "MCU_AVR32UC3A0512",
+    "MCU_AVR32UC3A3256",
+    "MCU_AVR32UC3B0256",
+    "MCU_AVR32UC3B164",
+    "MCU_AVR32UC3L064",
+    "MCU_STM32F101",
+    "MCU_STM32F103",
+    "MCU_STM32F105",
+    "MCU_STM32F107",
+    "MCU_STM32F205",
+    "MCU_STM32F207",
+    "MCU_STM32F405",
+    "MCU_LM3S9B96",
+    "MCU_LPC1758",
+    "MCU_LPC1768",
+    "MCU_LPC1778",
+    "MCU_MCF52259", 
+    "MCU_MCF51CN128",
+    "MCU_ZERO"
+}
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
-avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG", "AVRPORTH", "AVRPORTI", "AVRPORTJ", "AVRPORTK", "AVRPORTL" }
+avr_port_choice =
+{
+    " ",
+    "AVRPORTA",
+    "AVRPORTB",
+    "AVRPORTC",
+    "AVRPORTD",
+    "AVRPORTE",
+    "AVRPORTF",
+    "AVRPORTG",
+    "AVRPORTH",
+    "AVRPORTI",
+    "AVRPORTJ",
+    "AVRPORTK",
+    "AVRPORTL"
+}
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
 iccavr_startup_choice = { "crtenutram", "crtenut", "crtnutram", "crtnut", "crtnutm256" }
 
-mcu_32bit_choice = { " ",
-                     "0", "1", "2", "3", "4", "5", "6", "7",
-                     "8", "9", "10", "11", "12", "13", "14", "15",
-                     "16", "17", "18", "19", "20", "21", "22", "23",
-                     "24", "25", "26", "27", "28", "29", "30", "31"
-                   }
+mcu_32bit_choice =
+{
+    " ",
+    "0", "1", "2", "3", "4", "5", "6", "7",
+    "8", "9", "10", "11", "12", "13", "14", "15",
+    "16", "17", "18", "19", "20", "21", "22", "23",
+    "24", "25", "26", "27", "28", "29", "30", "31"
+}
 
-gpio_port_choice = {
-                    " ",
-                    "NUTGPIO_PORTA",
-                    "NUTGPIO_PORTB",
-                    "NUTGPIO_PORTC",
-                    "NUTGPIO_PORTD",
-                    "NUTGPIO_PORTE",
-                    "NUTGPIO_PORTF",
-                    "NUTGPIO_PORTG",
-                    "NUTGPIO_PORTH",
-                    "NUTGPIO_PORTI",
-                    "NUTGPIO_PORTJ",
-                    "NUTGPIO_PORTK",
-                    "NUTGPIO_PORTL"
-                  }
+stm32_bit_choice =
+{
+    " ",
+    "0", "1", "2", "3", "4", "5", "6", "7",
+    "8", "9", "10", "11", "12", "13", "14", "15"
+}
+mcf5_bit_choice = { " ",
+                    "0", "1", "2", "3", "4", "5", "6", "7" }
+gpio_port_choice =
+{
+    " ",
+    "NUTGPIO_PORTA",
+    "NUTGPIO_PORTB",
+    "NUTGPIO_PORTC",
+    "NUTGPIO_PORTD",
+    "NUTGPIO_PORTE",
+    "NUTGPIO_PORTF",
+    "NUTGPIO_PORTG",
+    "NUTGPIO_PORTH",
+    "NUTGPIO_PORTI",
+    "NUTGPIO_PORTJ",
+    "NUTGPIO_PORTK",
+    "NUTGPIO_PORTL"
+}
 
-gpio_irq_choice = {
-                    " ",
-                    "NUTGPIO_EXTINT0",
-                    "NUTGPIO_EXTINT1",
-                    "NUTGPIO_EXTINT2",
-                    "NUTGPIO_EXTINT3",
-                    "NUTGPIO_EXTINT4",
-                    "NUTGPIO_EXTINT5",
-                    "NUTGPIO_EXTINT6",
-                    "NUTGPIO_EXTINT7"
-                  }
+gpio_irq_choice =
+{
+    " ",
+    "NUTGPIO_EXTINT0",
+    "NUTGPIO_EXTINT1",
+    "NUTGPIO_EXTINT2",
+    "NUTGPIO_EXTINT3",
+    "NUTGPIO_EXTINT4",
+    "NUTGPIO_EXTINT5",
+    "NUTGPIO_EXTINT6",
+    "NUTGPIO_EXTINT7"
+}
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
 
@@ -225,26 +291,58 @@ hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
 pca9555_port_choice = { "IOXP_PORT0", "IOXP_PORT1" }
 pca9555_pin_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 
+--
+-- Check for custom configuration.
+--
+-- Executes custom/custom.nut, if it exists. This allows to extend the
+-- configuration without modifying any existing file.
+--
+-- For example, an application may provide its own file system driver.
+-- But mkdir, rmdir and similar function will become available only,
+-- if certain requirements are provided. This can be done by creating
+-- the file custom.nut with the following contents:
+--
+-- nutcustom =
+-- {
+--   {
+--     name = "nutcustom_cfs",
+--     brief = "CFS",
+--     description = "Custom file system driver.",
+--     provides = {
+--       "NUT_FS",
+--       "NUT_FS_READ",
+--       "NUT_FS_WRITE",
+--       "NUT_FS_DIR"
+--     }
+--   }
+-- }
+--
+-- Developer's note: The custom directory is reserved for this kind of
+-- extensions and must not exist in the official repository. However,
+-- it may be included in specialized Nut/OS distributions.
+--
+function CheckCustomConfig()
+    local fp
+
+    fp = io.open(c_repo_path() .. "/custom/custom.nut", "r")
+    if fp == nil then
+        return {}
+    end
+    fp:close()
+    return
+        {
+            name = "nutcustom",
+            brief = "Custom Configuration",
+            description = "Allows to add custom specific configuration items.\n",
+            subdir = "custom",
+            script = "custom/custom.nut"
+        }
+end
 
 repository =
 {
     {
         name = "nutinfo",
--- First version of a dynamic item:
--- The string contains a Lua script, which is compiled and executed by the Configurator.
--- This version is deprecated.
---        brief = "--\n".. -- Strings starting with this sequence are executed.
---                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
-
--- Second version of a dynamic item:
--- A function result is combined with a static string. Note, that the function
--- is executed when this script file is loaded and must have been defined
--- previously.
---        brief = "Nut/OS " .. GetNutOsVersion(),
-
--- Third version of a dynamic item:
--- The value is specified as a function returning a string. In this case any function
--- used in our function body may be defined later.
         brief = "Hardware Platform",
         description = "Board specific settings.",
         options =
@@ -434,7 +532,8 @@ repository =
         requires = { "HW_TARGET" },
         subdir = "contrib",
         script = "contrib/contrib.nut"
-    }
+    },
+    CheckCustomConfig()
 }
 
 --
@@ -455,6 +554,22 @@ end
 
 --
 -- Read OS Version from C source file.
+--
+-- First version of a dynamic item:
+-- The string contains a Lua script, which is compiled and executed by the Configurator.
+-- This version is deprecated.
+--        brief = "--\n".. -- Strings starting with this sequence are executed.
+--                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
+
+-- Second version of a dynamic item:
+-- A function result is combined with a static string. Note, that the function
+-- is executed when this script file is loaded and must have been defined
+-- previously.
+--        brief = "Nut/OS " .. GetNutOsVersion(),
+
+-- Third version of a dynamic item:
+-- The value is specified as a function returning a string. In this case any function
+-- used in our function body may be defined later.
 --
 function GetNutOsVersion()
     local buf, p1, p2, vers, subvers
@@ -510,8 +625,11 @@ function GetGpioBanks()
         end
     end
     if c_is_provided("HW_MCU_AVR32") then
-		return GetAvr32PioIds()
-	end
+        return GetAvr32PioIds()
+    end
+    if c_is_provided("HW_MCU_STM32") then
+        return GetStm32PioIds()
+    end;
     return gpio_port_choice
 end
 
@@ -526,8 +644,14 @@ function GetGpioPortIds()
         return at91_pio_id_choice
     end
     if c_is_provided("HW_MCU_AVR32") then
-		return GetAvr32PioIds()
-	end
+        return GetAvr32PioIds()
+    end
+    if c_is_provided("HW_MCU_STM32") then
+        return GetStm32PioIds()
+    end;
+    if c_is_provided("HW_MCU_COLDFIRE") then
+        return GetColdfirePioIds()
+    end;
     return { " " }
 end
 
@@ -549,6 +673,82 @@ function GetAvr32PioIds()
 end
 
 --
+-- Retrieve STM32 PIO struct pointers.
+-- These IDs represet an struct pointer value of the port.
+--
+function GetStm32Pio()
+    return { " ", "GPIOA", "GPIOB", "GPIOC", "GPIOD", "GPIOE", "GPIOF", "GPIOG" }
+end
+
+--
+-- Retrieve STM32 PIO IDs.
+-- These IDs represet an struct pointer value of the port.
+--
+function GetStm32PioIds()
+    return {
+        " ",
+        "NUTGPIO_PORTA",
+        "NUTGPIO_PORTB",
+        "NUTGPIO_PORTC",
+        "NUTGPIO_PORTD",
+        "NUTGPIO_PORTE",
+        "NUTGPIO_PORTF",
+        "NUTGPIO_PORTG",
+    }
+end
+
+--
+-- Retrieve STM32 PIO Base.
+-- These IDs represet an uint32_t value of the base address of the port.
+--
+function GetStm32PioBase()
+    return { " ", "GPIOA_BASE", "GPIOB_BASE", "GPIOC_BASE", "GPIOD_BASE", "GPIOE_BASE", "GPIOF_BASE", "GPIOG_BASE" }
+end
+
+--
+-- Retrieve COLDFIRE PIO IDs.
+-- These IDs represet an struct pointer value of the port.
+--
+function GetColdfirePioIds()
+    if c_is_provided("HW_MCU_MCF5225X") then
+        return {
+            " ",
+            "PORTTE",
+            "PORTTF",
+            "PORTTG",
+            "PORTTH",
+            "PORTTI",
+            "PORTTJ",
+            "PORTNQ",
+            "PORTAN",
+            "PORTAS",
+            "PORTQS",
+            "PORTTA",
+            "PORTTC",
+            "PORTUA",
+            "PORTUB",
+            "PORTUC",
+            "PORTDD",
+        }
+    end
+    if c_is_provided("HW_MCU_MCF51CN") then
+        return {
+            " ",
+            "PORTA",
+            "PORTB",
+            "PORTC",
+            "PORTD",
+            "PORTE",
+            "PORTF",
+            "PORTG",
+            "PORTH",
+            "PORTJ",
+        }
+    end
+    return { " " }
+end
+
+--
 -- Retrieve AVR Port IDs.
 --
 function GetAvrPorts()
@@ -565,20 +765,20 @@ end
 -- Retrieve IOExpander specific Ports bits.
 --
 function GetIoxpPorts()
-	if c_is_provided("DEV_IOEXP") then
-		return pca9555_port_choice
-	end
-	return { " " }
+    if c_is_provided("DEV_IOEXP") then
+        return pca9555_port_choice
+    end
+    return { " " }
 end
 
 --
 -- Retrieve IOExpander specific GPIO bits.
 --
 function GetIoxpBits()
-	if c_is_provided("DEV_IOEXP") then
-		return pca9555_pin_choice
-	end
-	return { " " }
+    if c_is_provided("DEV_IOEXP") then
+        return pca9555_pin_choice
+    end
+    return { " " }
 end
 
 --
@@ -587,6 +787,12 @@ end
 function GetGpioBits()
     if c_is_provided("HW_MCU_AVR") then
         return avr_bit_choice
+    end
+    if c_is_provided("HW_MCU_STM32") then
+        return stm32_bit_choice
+    end
+    if c_is_provided("HW_MCU_COLDFIRE") then
+        return mcf5_bit_choice
     end
     return mcu_32bit_choice
 end
@@ -608,6 +814,12 @@ function GetGpioHeaderPath()
     if c_is_provided("HW_MCU_AVR32") then
         return basepath .. "avr32pio.h"
     end
+    if c_is_provided("HW_MCU_STM32") then
+        return basepath .. "stm32pio.h"
+    end
+    if c_is_provided("HW_MCU_COLDFIRE") then
+        return basepath .. "mcf5pio.h"
+    end
     return basepath .. "pio.h"
 end
 
@@ -616,5 +828,5 @@ end
 -- Retrieve platform specific GPIO Special Functions
 --
 function GetAlternativePinsets()
-	return { "ALTERNATE_PIN_SET1", "ALTERNATE_PIN_SET2", "ALTERNATE_PIN_SET3" }
+    return { "ALTERNATE_PIN_SET1", "ALTERNATE_PIN_SET2", "ALTERNATE_PIN_SET3" }
 end

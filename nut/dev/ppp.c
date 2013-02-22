@@ -46,11 +46,11 @@
  *    This product includes software developed by egnite Software GmbH
  *    and its contributors.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -151,7 +151,7 @@ static int NutPppRead(NUTFILE * fp, void *buffer, int size)
 /*
  * Pass writes to the physical driver for now.
  */
-static int NutPppWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int NutPppWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return _write(((PPPDCB *) (fp->nf_dev->dev_dcb))->dcb_fd, buffer, len);
 }
@@ -216,14 +216,14 @@ static int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*
  * \brief Enable the link layer to come up.
  *
- * The underlying hardware driver should have established a physical 
+ * The underlying hardware driver should have established a physical
  * connection before calling this function.
  *
- * \param name Physical device name optionally followed by username 
+ * \param name Physical device name optionally followed by username
  *             and password, each separated by a slash.
  *
  */
-static NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *NutPppOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp;
     uint8_t i;
@@ -308,7 +308,7 @@ static int NutPppClose(NUTFILE * fp)
 /*!
  * \brief Initialize the PPP device.
  *
- * This routine is called during device registration and initializes the 
+ * This routine is called during device registration and initializes the
  * PPP state machine.
  *
  * \param dev  Identifies the device to initialize.
@@ -337,7 +337,11 @@ IFNET ifn_ppp = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutPppInput,                /*!< \brief Routine to pass received data to, if_recv(). */
     0,                          /*!< \brief Dynamically attached driver output routine, if_send(). */
-    NutPppOutput                /*!< \brief Media output routine, if_output(). */
+    NutPppOutput,               /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!

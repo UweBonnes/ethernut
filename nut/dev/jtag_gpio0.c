@@ -50,114 +50,80 @@
 #include <sys/timer.h>
 #include <stdlib.h>
 
+#include <dev/board.h>
 #include <dev/jtag_gpio.h>
+#include <dev/gpio.h>
 
-#if defined(ETHERNUT3)
-/*
- * We do not have any config settings right now. So I add my
- * Ethernut 3 settings here, which I used for testing the code.
- *
- * - P16 TMS output.
- * - P18 TCK output.
- * - P19 TDO input.
- * - P20 RST output.
- * - P23 TDI output.
- */
-#define JTAG0_TDO_PIO_BIT   19
-#define JTAG0_TDI_PIO_BIT   23
-#define JTAG0_TMS_PIO_BIT   16
-#define JTAG0_TCK_PIO_BIT   18
-#define JTAG0_CLOCK_RATE    100000
-#endif
-
-#if !defined(JTAG0_TDO_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TDO_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TDO_PIO_BIT) && defined(JTAG0_TDO_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TDO_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE int JTAG0_TDO_IS_ON(void) { return GPIO_GET(JTAG0_TDO_PIO_BIT); }
-static INLINE void JTAG0_TDO_SI(void) { GPIO_INPUT(JTAG0_TDO_PIO_BIT); GPIO_ENABLE(JTAG0_TDO_PIO_BIT); }
+#if defined(JTAG0_TDO_PIO_ID) && defined(JTAG0_TDO_PIO_BIT)
+static INLINE int JTAG0_TDO_IS_ON(void) { return GpioPinGet(JTAG0_TDO_PIO_ID, JTAG0_TDO_PIO_BIT); }
+static INLINE void JTAG0_TDO_SI(void) \
+{ GpioPinConfigSet(JTAG0_TDO_PIO_ID, JTAG0_TDO_PIO_BIT, GPIO_CFG_INPUT); }
 #else
 #define JTAG0_TDO_IS_ON()   (1)
 #define JTAG0_TDO_SI()
 #endif
 
-#if !defined(JTAG0_TDI_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TDI_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TDI_PIO_BIT) && defined(JTAG0_TDI_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TDI_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_TDI_LO(void) { GPIO_SET_LO(JTAG0_TDI_PIO_BIT); }
-static INLINE void JTAG0_TDI_HI(void) { GPIO_SET_HI(JTAG0_TDI_PIO_BIT); }
-static INLINE void JTAG0_TDI_SO(void) { GPIO_OUTPUT(JTAG0_TDI_PIO_BIT); GPIO_ENABLE(JTAG0_TDI_PIO_BIT); }
+#if defined(JTAG0_TDI_PIO_ID) && defined(JTAG0_TDI_PIO_BIT)
+static INLINE void JTAG0_TDI_LO(void) {  GpioPinSetLow(JTAG0_TDI_PIO_ID, JTAG0_TDI_PIO_BIT); }
+static INLINE void JTAG0_TDI_HI(void) { GpioPinSetHigh(JTAG0_TDI_PIO_ID, JTAG0_TDI_PIO_BIT); }
+static INLINE void JTAG0_TDI_SO(void) \
+{ GpioPinConfigSet(JTAG0_TDI_PIO_ID, JTAG0_TDI_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define JTAG0_TDI_LO()
 #define JTAG0_TDI_HI()
 #define JTAG0_TDI_SO()
 #endif
 
-#if !defined(JTAG0_TMS_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TMS_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TMS_PIO_BIT) && defined(JTAG0_TMS_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TMS_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_TMS_LO(void) { GPIO_SET_LO(JTAG0_TMS_PIO_BIT); }
-static INLINE void JTAG0_TMS_HI(void) { GPIO_SET_HI(JTAG0_TMS_PIO_BIT); }
-static INLINE void JTAG0_TMS_SO(void) { GPIO_OUTPUT(JTAG0_TMS_PIO_BIT); GPIO_ENABLE(JTAG0_TMS_PIO_BIT); }
+#if defined(JTAG0_TMS_PIO_ID) && defined(JTAG0_TMS_PIO_BIT)
+static INLINE void JTAG0_TMS_LO(void) {  GpioPinSetLow(JTAG0_TMS_PIO_ID, JTAG0_TMS_PIO_BIT); }
+static INLINE void JTAG0_TMS_HI(void) { GpioPinSetHigh(JTAG0_TMS_PIO_ID, JTAG0_TMS_PIO_BIT); }
+static INLINE void JTAG0_TMS_SO(void) \
+{ GpioPinConfigSet(JTAG0_TMS_PIO_ID, JTAG0_TMS_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define JTAG0_TMS_LO()
 #define JTAG0_TMS_HI()
 #define JTAG0_TMS_SO()
 #endif
 
-#if !defined(JTAG0_TCK_PIO_ID) && defined(PIO_ID)
-#define JTAG0_TCK_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_TCK_PIO_BIT) && defined(JTAG0_TCK_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_TCK_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_TCK_LO(void) { GPIO_SET_LO(JTAG0_TCK_PIO_BIT); }
-static INLINE void JTAG0_TCK_HI(void) { GPIO_SET_HI(JTAG0_TCK_PIO_BIT); }
-static INLINE void JTAG0_TCK_SO(void) { GPIO_OUTPUT(JTAG0_TCK_PIO_BIT); GPIO_ENABLE(JTAG0_TCK_PIO_BIT); }
+#if defined(JTAG0_TCK_PIO_ID) && defined(JTAG0_TCK_PIO_BIT)
+static INLINE void JTAG0_TCK_LO(void) {  GpioPinSetLow(JTAG0_TCK_PIO_ID, JTAG0_TCK_PIO_BIT); }
+static INLINE void JTAG0_TCK_HI(void) { GpioPinSetHigh(JTAG0_TCK_PIO_ID, JTAG0_TCK_PIO_BIT); }
+static INLINE void JTAG0_TCK_SO(void) \
+{ GpioPinConfigSet(JTAG0_TCK_PIO_ID, JTAG0_TCK_PIO_BIT, GPIO_CFG_OUTPUT); }
 #else
 #define JTAG0_TCK_LO()
 #define JTAG0_TCK_HI()
 #define JTAG0_TCK_SO()
 #endif
 
-#if !defined(JTAG0_NSRST_PIO_ID) && defined(PIO_ID)
-#define JTAG0_NSRST_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_NSRST_PIO_BIT) && defined(JTAG0_NSRST_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_NSRST_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_NSRST_LO(void) { GPIO_SET_LO(JTAG0_NSRST_PIO_BIT); }
-static INLINE void JTAG0_NSRST_HI(void) { GPIO_SET_HI(JTAG0_NSRST_PIO_BIT); }
-static INLINE void JTAG0_NSRST_SO(void) { GPIO_OPENDRAIN(JTAG0_NSRST_PIO_BIT); GPIO_OUTPUT(JTAG0_NSRST_PIO_BIT); GPIO_ENABLE(JTAG0_NSRST_PIO_BIT); }
+#if defined(JTAG0_NSRST_PIO_ID) && defined(JTAG0_NSRST_PIO_BIT)
+static INLINE void JTAG0_NSRST_LO(void)                   \
+{  GpioPinSetLow(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT);\
+    GpioPinDrive(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT);}
+static INLINE void JTAG0_NSRST_HI(void)                      \
+{   GpioPinRelease(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT); \
+    GpioPinSetHigh(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT); }
+static INLINE void JTAG0_NSRST_SO(void)                                       \
+{ GpioPinConfigSet(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT, GPIO_CFG_INPUT);  \
+    GpioPinSetHigh  (JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT);                \
+    GpioPinConfigSet(JTAG0_NSRST_PIO_ID, JTAG0_NSRST_PIO_BIT, GPIO_CFG_OUTPUT| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP);}
 #else
 #define JTAG0_NSRST_LO()
 #define JTAG0_NSRST_HI()
 #define JTAG0_NSRST_SO()
 #endif
 
-#if !defined(JTAG0_NTRST_PIO_ID) && defined(PIO_ID)
-#define JTAG0_NTRST_PIO_ID    PIO_ID
-#endif
-#if defined(JTAG0_NTRST_PIO_BIT) && defined(JTAG0_NTRST_PIO_ID)
-#undef GPIO_ID
-#define GPIO_ID JTAG0_NTRST_PIO_ID
-#include <cfg/arch/porttran.h>
-static INLINE void JTAG0_NTRST_LO(void) { GPIO_SET_LO(JTAG0_NTRST_PIO_BIT); }
-static INLINE void JTAG0_NTRST_HI(void) { GPIO_SET_HI(JTAG0_NTRST_PIO_BIT); }
-static INLINE void JTAG0_NTRST_SO(void) { GPIO_OPENDRAIN(JTAG0_NTRST_PIO_BIT); GPIO_OUTPUT(JTAG0_NTRST_PIO_BIT); GPIO_ENABLE(JTAG0_NTRST_PIO_BIT); }
+#if defined(JTAG0_NTRST_PIO_ID) && defined(JTAG0_NTRST_PIO_BIT)
+static INLINE void JTAG0_NTRST_LO(void)                   \
+{  GpioPinSetLow(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT);\
+    GpioPinDrive(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT);}
+static INLINE void JTAG0_NTRST_HI(void)                      \
+{   GpioPinRelease(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT); \
+    GpioPinSetHigh(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT); }
+static INLINE void JTAG0_NTRST_SO(void)                                       \
+{   GpioPinConfigSet(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT, GPIO_CFG_INPUT);\
+    GpioPinSetHigh  (JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT);                \
+    GpioPinConfigSet(JTAG0_NTRST_PIO_ID, JTAG0_NTRST_PIO_BIT, GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP);}
 #else
 #define JTAG0_NTRST_LO()
 #define JTAG0_NTRST_HI()
@@ -188,13 +154,6 @@ static void *JtagCable0Open(void)
 
     cib = calloc(1, sizeof(CABLE_INFO));
     if (cib) {
-#if defined(MCU_AT91) && defined(JTAG0_TDO_PIO_ID)
-#if defined(PS_PCER)
-        outr(PS_PCER, _BV(JTAG0_TDO_PIO_ID));
-#elif defined(PMC_PCER)
-        outr(PMC_PCER, _BV(JTAG0_TDO_PIO_ID));
-#endif
-#endif
         JTAG0_TDO_SI();
         JTAG0_TDI_SO();
         JTAG0_TMS_SO();
@@ -208,7 +167,7 @@ static void *JtagCable0Open(void)
 /*!
  * \brief Flush all buffered state changes.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
  */
 static void JtagCable0TmsFlush(void *cbl)
@@ -218,6 +177,9 @@ static void JtagCable0TmsFlush(void *cbl)
     int i;
     int j;
     int n;
+
+    if ((cib->cib_bidx == 0) && (cib->cib_bbit == 0))
+        return;
 
     n = cib->cib_bidx + (cib->cib_bbit == 0);
     for (i = 0; i < n; i++) {
@@ -257,10 +219,10 @@ static void JtagCable0TmsFlush(void *cbl)
 /*!
  * \brief Release the cable driver.
  *
- * Any pending state change sequence will be processed before 
+ * Any pending state change sequence will be processed before
  * releasing the cable.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
  */
 static void JtagCable0Close(void *cbl)
@@ -272,10 +234,10 @@ static void JtagCable0Close(void *cbl)
 /*!
  * \brief Activate or deactivate the target reset line.
  *
- * Any pending state change sequence will be processed before 
+ * Any pending state change sequence will be processed before
  * activating the reset line.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
  * \param on  If not zero, the reset line will be activated (pulled
  *            low). Otherwise the target reset will be deactivated.
@@ -296,9 +258,9 @@ static void JtagCable0TargetReset(void *cbl, uint_fast8_t on)
  * State changes may not be done immediately, but stored in a buffer.
  * Call JtagCable0TmsFlush() to execute the buffered state changes.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
- * \param tms TMS sequence, bit 0 is transfered first. 
+ * \param tms TMS sequence, bit 0 is transfered first.
  * \param len Number of state changes. Maximum is 8.
  */
 static void JtagCable0TmsPut(void *cbl, uint_fast8_t tms, uint_fast8_t len)
@@ -340,18 +302,18 @@ static void JtagCable0TmsPut(void *cbl, uint_fast8_t tms, uint_fast8_t len)
  * Before starting the transfer, any pending state change sequence will
  * be flushed.
  *
- * \param cbl Pointer to the cable information structure, obtained by 
+ * \param cbl Pointer to the cable information structure, obtained by
  *            a previous call to JtagCable0Open().
- * \param rbuf Points to the buffer that receives the read data. May be 
+ * \param rbuf Points to the buffer that receives the read data. May be
  *             NULL if the caller is not interested.
- * \param wbuf Points to the buffer that contains the write data. If 
+ * \param wbuf Points to the buffer that contains the write data. If
  *             NULL, all outgoing bits are zero.
  * \param len  Number of bits to read and/or write.
  * \param last Indicates the last data transfer. If set, then TMS
- *             will be set high on the last bit and the TAP controller 
+ *             will be set high on the last bit and the TAP controller
  *             will leave the stable state.
  */
-static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, CONST uint8_t *wbuf, uint32_t len, uint_fast8_t last)
+static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, const uint8_t *wbuf, uint32_t len, uint_fast8_t last)
 {
     JtagCable0TmsFlush(cbl);
 
@@ -362,7 +324,7 @@ static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, CONST uint8_t *wbuf
         if (wbuf) {
             val = *wbuf++;
         }
-    
+
         while (len && mask) {
             JTAG0_TCK_LO();
             if (val & mask) {
@@ -395,7 +357,7 @@ static void JtagCable0TransferData(void *cbl, uint8_t *rbuf, CONST uint8_t *wbuf
 /*!
  * \brief GPIO cable driver structure.
  *
- * Pass a pointer to this structure when calling TapOpen() to associate 
+ * Pass a pointer to this structure when calling TapOpen() to associate
  * the tap controller with this cable.
  */
 JTAG_CABLE jtag_gpio0 = {

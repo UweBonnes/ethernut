@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -123,7 +123,7 @@ struct _sntpframe {
 };
 
 
-#define NTP_PORT	123
+#define NTP_PORT    123
 #define SNTP_PORT NTP_PORT
 
 struct SNTP_resync_args {
@@ -197,7 +197,7 @@ int NutSNTPGetTime(uint32_t * server_adr, time_t * t)
     len = NutUdpReceiveFrom(sock, &rec_addr, &port, data, sizeof(*data), 5000); /* Receive packet with timeout of 5s */
     if (len <= 0) {
         goto error;             /* error or timeout occured */
-    } 
+    }
 
     if (port != SNTP_PORT || (data->mode & 0xc0) == 0xc0)       /* if source port is not SNTP_PORT or server is not in sync return */
     {
@@ -225,7 +225,7 @@ int NutSNTPStartThread(uint32_t server_addr, uint32_t interval)
         return -1;
     arg->server_addr = server_addr;
     arg->interval = interval;
-    if (NutThreadCreate("sntpc", SNTP_resync, arg, 
+    if (NutThreadCreate("sntpc", SNTP_resync, arg,
         (NUT_THREAD_SNTPSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD))
         return 0;
     else {

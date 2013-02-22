@@ -49,7 +49,7 @@
  * \brief This function is called on fatal errors.
  *
  * The function will enter a critical section and print a description
- * of the problem to stdout. It is assumed, that stdout is available 
+ * of the problem to stdout. It is assumed, that stdout is available
  * and has been assigned to a debug output device, such as devDebug or
  * similar. Then the function will enter an endless loop, which
  * freezes the system.
@@ -63,7 +63,7 @@
  * \param line Line number within the source file.
  * \param expected Assertion which should have been true, but is not.
  */
-void NUTFATAL(CONST char *func, CONST char *file, int line, CONST char *expected)
+void NUTFATAL(const char *func, const char *file, int line, const char *expected)
 {
     NUTPANIC("%s:%d: Fatal: Expected %s in %s\n", file, line, expected, func);
 }

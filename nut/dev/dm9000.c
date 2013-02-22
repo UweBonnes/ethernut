@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2009 by egnite GmbH
+ * Copyright (C) 2008-2012 by egnite GmbH
  * Copyright (C) 2003-2005 by egnite Software GmbH
  *
  * All rights reserved.
@@ -39,8 +39,10 @@
 
 #include <cfg/os.h>
 #include <arch/arm.h>
+#include <dev/board.h>
 
 #include <string.h>
+#include <stdlib.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>
@@ -54,6 +56,7 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
+#include <dev/phy.h>
 #include <dev/dm9000e.h>
 
 #ifdef NUTDEBUG
@@ -61,53 +64,7 @@
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
-/* arm-elf-gcc size optimized code used 160 bytes. */
-#define NUT_THREAD_NICRXSTACK   256
-#endif
-
-/*
- * Determine ports, which had not been explicitely configured.
- */
-#if defined(ETHERNUT3)
-
-#ifndef NIC_BASE_ADDR
-#define NIC_BASE_ADDR   0x20000000
-#endif
-
-#ifndef NIC_SIGNAL_IRQ
-#define NIC_SIGNAL_IRQ  INT1
-#endif
-
-#ifndef NIC_SIGNAL_PDR
-#define NIC_SIGNAL_PDR  PIO_PDR
-#endif
-
-#ifndef NIC_SIGNAL_BIT
-#define NIC_SIGNAL_BIT  10
-#endif
-
-#elif defined(ELEKTOR_IR1)
-
-#ifndef NIC_BASE_ADDR
-#define NIC_BASE_ADDR   0x30000000
-#endif
-
-#ifndef NIC_SIGNAL_IRQ
-#define NIC_SIGNAL_IRQ  INT0
-#endif
-
-#ifndef NIC_SIGNAL_PDR
-#define NIC_SIGNAL_PDR  PIOB_PDR
-#endif
-
-#ifndef NIC_SIGNAL_XSR
-#define NIC_SIGNAL_XSR  PIOB_ASR
-#endif
-
-#ifndef NIC_SIGNAL_BIT
-#define NIC_SIGNAL_BIT  PB20_IRQ0_A
-#endif
-
+#define NUT_THREAD_NICRXSTACK   384
 #endif
 
 #if !defined(NIC_DATA_ADDR) && defined(NIC_BASE_ADDR)
@@ -141,9 +98,9 @@
 #define NIC_RESET_PORT   PORTF
 #define NIC_RESET_DDR    DDRF
 
-#endif                          /* NIC_RESET_AVRPORT */
+#endif /* NIC_RESET_AVRPORT */
 
-#endif                          /* NIC_RESET_BIT */
+#endif /* NIC_RESET_BIT */
 
 /*
  * Determine interrupt settings.
@@ -176,7 +133,7 @@
 #endif
 
 /*!
- * \addtogroup xgDm9000eRegs
+ * \addtogroup xgDm9000Regs
  */
 /*@{*/
 
@@ -205,7 +162,7 @@
 #define NIC_RCR     0x05        /* RX control register (0x00). */
 #define NIC_RCR_DIS_LONG 0x20   /* Discard long packets. */
 #define NIC_RCR_DIS_CRC 0x10    /* Discard CRC error packets. */
-#define NIC_RCR_ALL		0x08    /* Pass all multicast */
+#define NIC_RCR_ALL     0x08    /* Pass all multicast */
 #define NIC_RCR_PRMSC   0x02    /* Enable promiscuous mode. */
 #define NIC_RCR_RXEN    0x01    /* Enable receiver. */
 
@@ -289,40 +246,10 @@
 #define NIC_IMR_PTM     0x02    /* Enable transmitter interrupts. */
 #define NIC_IMR_PRM     0x01    /* Enable receiver interrupts. */
 
-#define NIC_PHY_BMCR    0x00    /* Basic mode control register. */
-
-#define NIC_PHY_BMSR    0x01    /* Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /* Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /* Link status. */
-
-#define NIC_PHY_ID1     0x02    /* PHY identifier register 1. */
-
-#define NIC_PHY_ID2     0x03    /* PHY identifier register 2. */
-
-#define NIC_PHY_ANAR    0x04    /* Auto negotiation advertisement register. */
-
-#define NIC_PHY_ANLPAR  0x05    /* Auto negotiation link partner availability register. */
-
-#define NIC_PHY_ANER    0x06    /* Auto negotiation expansion register. */
-
-#define NIC_PHY_DSCR    0x10    /* Davicom specified configuration register. */
-
-#define NIC_PHY_DSCSR   0x11    /* Davicom specified configuration and status register. */
-
-#define NIC_PHY_10BTCSR 0x12    /* 10BASE-T configuration and status register. */
-
 /*!
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {
-#ifdef NUT_PERFMON
-    uint32_t ni_rx_packets;       /*!< Number of packets received. */
-    uint32_t ni_tx_packets;       /*!< Number of packets sent. */
-    uint32_t ni_overruns;         /*!< Number of packet overruns. */
-    uint32_t ni_rx_frame_errors;  /*!< Number of frame errors. */
-    uint32_t ni_rx_crc_errors;    /*!< Number of CRC errors. */
-    uint32_t ni_rx_missed_errors; /*!< Number of missed packets. */
-#endif
     HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
     HANDLE volatile ni_tx_rdy;  /*!< Transmitter event queue. */
     HANDLE ni_mutex;            /*!< Access mutex semaphore. */
@@ -330,6 +257,7 @@ struct _NICINFO {
     volatile int ni_tx_quelen;  /*!< Number of bytes in transmission queue not sent. */
     volatile int ni_insane;     /*!< Set by error detection. */
     int ni_iomode;              /*!< 8 or 16 bit access. 32 bit is not supported. */
+    uint8_t ni_mar[8];          /*!< Multicast Address Register. */
 };
 
 /*!
@@ -340,10 +268,36 @@ typedef struct _NICINFO NICINFO;
 /*@}*/
 
 /*!
- * \addtogroup xgNicDm9000e
+ * \addtogroup xgNicDm9000
  */
 /*@{*/
 
+/*
+ * ether_crc32_le based on FreeBSD code from if_ethersubr.c
+ */
+static const uint32_t crctab[] = {
+    0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac,
+    0x76dc4190, 0x6b6b51f4, 0x4db26158, 0x5005713c,
+    0xedb88320, 0xf00f9344, 0xd6d6a3e8, 0xcb61b38c,
+    0x9b64c2b0, 0x86d3d2d4, 0xa00ae278, 0xbdbdf21c
+};
+
+static uint32_t ether_crc32_le(const uint8_t * buf, uint8_t len)
+{
+    uint32_t crc;
+    uint8_t i;
+
+    /* Set initial value. */
+    crc = 0xffffffff;
+
+    for (i = 0; i < len; i++) {
+        crc ^= buf[i];
+        crc = (crc >> 4) ^ crctab[crc & 0xf];
+        crc = (crc >> 4) ^ crctab[crc & 0xf];
+    }
+
+    return crc;
+}
 
 static INLINE void nic_outb(uint8_t reg, uint8_t val)
 {
@@ -367,10 +321,11 @@ static INLINE uint8_t nic_inb(uint16_t reg)
  * \brief Read contents of PHY register.
  *
  * \param reg PHY register number.
+ * \param val Pointer to value to read to.
  *
- * \return Contents of the specified register.
+ * \return 0 for success, -1 on fail (not implemented)
  */
-static uint16_t phy_inw(uint8_t reg)
+static uint16_t phy_inw( uint8_t reg)
 {
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
@@ -390,7 +345,9 @@ static uint16_t phy_inw(uint8_t reg)
  * \note NIC interrupts must have been disabled before calling this routine.
  *
  * \param reg PHY register number.
- * \param val Value to write.
+ * \param val Pointer to value to write.
+ *
+ * \return 0 for success, -1 on fail (not implemented)
  */
 static void phy_outw(uint8_t reg, uint16_t val)
 {
@@ -398,7 +355,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
     nic_outb(NIC_EPAR, 0x40 | reg);
 
     /* Store value in PHY data register. */
-    nic_outb(NIC_EPDRL, (uint8_t) val);
+    nic_outb(NIC_EPDRL, (uint8_t) (val));
     nic_outb(NIC_EPDRH, (uint8_t) (val >> 8));
 
     /* PHY write command. */
@@ -407,11 +364,18 @@ static void phy_outw(uint8_t reg, uint16_t val)
     nic_outb(NIC_EPCR, 0x00);
 }
 
+/*!
+ * \brief Initialize PHY.
+ *
+ * \note NutRegisterPhy() has to be called before and NIC has to be
+ *       configured to be able to access the PHY through the MDIO
+ *       bus interface.
+ */
 static int NicPhyInit(void)
 {
+    uint32_t phy = 1;
     /* Restart auto negotiation. */
-    phy_outw(NIC_PHY_ANAR, 0x01E1);
-    phy_outw(NIC_PHY_BMCR, 0x1200);
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
 
     nic_outb(NIC_GPCR, 1);
     nic_outb(NIC_GPR, 0);
@@ -569,14 +533,17 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
     /* Disable NIC interrupts. */
     NutIrqDisable(&NIC_SIGNAL);
 
-    /* 
-     * Read the status word w/o auto increment. If zero, no packet is 
-     * available. Otherwise it should be set to one. Any other value 
+    /*
+     * Read the status word w/o auto increment. If zero, no packet is
+     * available. Otherwise it should be set to one. Any other value
      * indicates a weird chip crying for reset.
      */
     nic_inb(NIC_MRCMDX);
-    /* Add some delay befor reading the status of the received packet. */
-    _NOP(); _NOP(); _NOP(); _NOP();
+    /* Add some delay before reading the status of the received packet. */
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
     fsw = inb(NIC_DATA_ADDR);
     if (fsw > 1) {
         ni->ni_insane = 1;
@@ -585,16 +552,22 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
         outb(NIC_BASE_ADDR, NIC_MRCMD);
         if (ni->ni_iomode == NIC_ISR_M16) {
             fsw = inw(NIC_DATA_ADDR);
-            _NOP(); _NOP(); _NOP(); _NOP();
+            _NOP();
+            _NOP();
+            _NOP();
+            _NOP();
             fbc = inw(NIC_DATA_ADDR);
         } else {
             fsw = inb(NIC_DATA_ADDR) + ((uint16_t) inb(NIC_DATA_ADDR) << 8);
-            _NOP(); _NOP(); _NOP(); _NOP();
+            _NOP();
+            _NOP();
+            _NOP();
+            _NOP();
             fbc = inb(NIC_DATA_ADDR) + ((uint16_t) inb(NIC_DATA_ADDR) << 8);
         }
 
         /*
-         * Receiving long packets is unexpected, because we disabled 
+         * Receiving long packets is unexpected, because we disabled
          * this during initialization. Let's declare the chip insane.
          * Short packets will be handled by the caller.
          */
@@ -602,7 +575,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
             ni->ni_insane = 1;
         } else {
             /*
-             * The high byte of the status word contains a copy of the 
+             * The high byte of the status word contains a copy of the
              * receiver status register.
              */
             fsw >>= 8;
@@ -621,11 +594,11 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
                 ni->ni_rx_packets++;
             }
 #endif
-            /* 
+            /*
              * If we got an error packet or failed to allocated the
              * buffer, then silently discard the packet.
              */
-            if (fsw || (*nbp = NutNetBufAlloc(0, NBAF_DATALINK, fbc - 4)) == NULL) {
+            if (fsw || (*nbp = NutNetBufAlloc(0, NBAF_DATALINK + (2 & (NUTMEM_ALIGNMENT - 1)), fbc - 4)) == NULL) {
                 if (ni->ni_iomode == NIC_ISR_M16) {
                     fbc = (fbc + 1) / 2;
                     while (fbc--) {
@@ -667,7 +640,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
 }
 
 /*!
- * \brief Load a packet into the nic's transmit ring buffer.
+ * \brief Load a packet into the NIC's transmit ring buffer.
  *
  * \param nb Network buffer structure containing the packet to be sent.
  *           The structure must have been allocated by a previous
@@ -675,28 +648,13 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
-static int NicPutPacket(NICINFO * ni, NETBUF * nb)
+static int NicPutPacket(NICINFO * ni, NETBUF * nb, uint_fast16_t sz)
 {
     int rc = -1;
 #ifdef NIC_BASE_ADDR
-    uint16_t sz;
-
-    /*
-     * Calculate the number of bytes to be send. Do not send packets 
-     * larger than the Ethernet maximum transfer unit. The MTU
-     * consist of 1500 data bytes plus the 14 byte Ethernet header
-     * plus 4 bytes CRC. We check the data bytes only.
-     */
-    if ((sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz) > ETHERMTU) {
-        return -1;
-    }
-    sz += nb->nb_dl.sz;
-    if (sz & 1) {
-        sz++;
-    }
 
     /* Disable interrupts. */
     NutIrqDisable(&NIC_SIGNAL);
@@ -731,9 +689,6 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
         }
         ni->ni_tx_queued++;
         rc = 0;
-#ifdef NUT_PERFMON
-        ni->ni_tx_packets++;
-#endif
     }
 
     /* Enable interrupts. */
@@ -749,16 +704,35 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
 }
 
 /*!
+ * \brief Update the multicast register.
+ *
+ * \param Network interface controller information.
+ */
+static void NicUpdateMCHardware(NICINFO * ni)
+{
+    int i;
+
+    /* Enable broadcast receive. */
+    ni->ni_mar[7] |= 0x80;
+
+    /* Set multicast address register */
+    for (i = 0; i < 7; i++) {
+        nic_outb(NIC_MAR + i, ni->ni_mar[i]);
+    }
+}
+
+/*!
  * \brief Fire up the network interface.
  *
  * NIC interrupts must be disabled when calling this function.
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(const uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;
+    uint32_t phy;
 
     /* Power up the PHY. */
     nic_outb(NIC_GPR, 0);
@@ -770,8 +744,8 @@ static int NicStart(CONST uint8_t * mac)
     nic_outb(NIC_NCR, NIC_NCR_RST | NIC_NCR_LBMAC);
     NutDelay(5);
 
-    /* 
-     * PHY power down followed by PHY power up. This should activate 
+    /*
+     * PHY power down followed by PHY power up. This should activate
      * the auto sense link.
      */
     nic_outb(NIC_GPR, 1);
@@ -782,21 +756,28 @@ static int NicStart(CONST uint8_t * mac)
         nic_outb(NIC_PAR + i, mac[i]);
     }
 
-    /* Enable broadcast receive. */
-    for (i = 0; i < 7; i++) {
-        nic_outb(NIC_MAR + i, 0);
-    }
-    nic_outb(NIC_MAR + 7, 0x80);
+    /* Set multicast address register */
+    NicUpdateMCHardware(ni);
 
     /* Clear interrupts. */
     nic_outb(NIC_ISR, NIC_ISR_ROOS | NIC_ISR_ROS | NIC_ISR_PTS | NIC_ISR_PRS);
 
+    /* Enable late collision retries on the DM9000A. */
+    if (nic_inb(NIC_CHIPR) == 0x19) {
+        nic_outb(0x2D, 0x40);
+    }
+
     /* Enable receiver. */
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN | NIC_RCR_ALL);
 
-    /* Wait for link. */
-    for (link_wait = 20;; link_wait--) {
-        if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+    /* Restart autonegotiation */
+    phy = 1;
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
+
+    /* Wait for auto negotiation completed and link established. */
+    for (link_wait = 25;; link_wait--) {
+        NutPhyCtl(PHY_GET_STATUS, &phy);
+        if((phy & PHY_STATUS_HAS_LINK) && (phy & PHY_STATUS_AUTONEG_OK)) {
             break;
         }
         if (link_wait == 0) {
@@ -831,7 +812,7 @@ THREAD(NicRxLanc, arg)
      * we may not have got a MAC address yet. Wait until a valid one
      * has been set.
      */
-    while (!ETHER_IS_UNICAST(ifn->if_mac)) {
+    while (ETHER_IS_ZERO(ifn->if_mac) || ETHER_IS_BROADCAST(ifn->if_mac)) {
         NutSleep(10);
     }
 
@@ -841,7 +822,7 @@ THREAD(NicRxLanc, arg)
      * This happens, for example, if no Ethernet cable is plugged
      * in.
      */
-    while (NicStart(ifn->if_mac)) {
+    while (NicStart(ifn->if_mac, ni)) {
         NutSleep(1000);
     }
 
@@ -870,20 +851,27 @@ THREAD(NicRxLanc, arg)
 
     for (;;) {
         /*
-         * Wait for the arrival of new packets or poll the receiver 
+         * Wait for the arrival of new packets or poll the receiver
          * every two seconds.
          */
         NutEventWait(&ni->ni_rx_rdy, 2000);
 
         /*
-         * Fetch all packets from the NIC's internal buffer and pass 
+         * Fetch all packets from the NIC's internal buffer and pass
          * them to the registered handler.
          */
         while (NicGetPacket(ni, &nb) == 0) {
-
+            /* Update monitoring counters. */
+            NUT_PERFMON_ADD(ifn->if_in_octets, nb->nb_dl.sz);
+            if (nic_inb(NIC_RSR) & NIC_RSR_MF) {
+                NUT_PERFMON_INC(ifn->if_in_n_ucast_pkts);
+            } else {
+                NUT_PERFMON_INC(ifn->if_in_ucast_pkts);
+            }
             /* Discard short packets. */
             if (nb->nb_dl.sz < 60) {
                 NutNetBufFree(nb);
+                NUT_PERFMON_INC(ifn->if_in_errors);
             } else {
                 (*ifn->if_recv) (dev, nb);
             }
@@ -891,7 +879,7 @@ THREAD(NicRxLanc, arg)
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
-            if (NicStart(ifn->if_mac) == 0) {
+            if (NicStart(ifn->if_mac, ni) == 0) {
                 ni->ni_insane = 0;
                 ni->ni_tx_queued = 0;
                 ni->ni_tx_quelen = 0;
@@ -915,19 +903,30 @@ THREAD(NicRxLanc, arg)
  */
 int DmOutput(NUTDEVICE * dev, NETBUF * nb)
 {
+    /* After initialization we are waiting for a long time to give the
+       PHY a chance to establish an Ethernet link. */
     static uint32_t mx_wait = 5000;
     int rc = -1;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
+    uint_fast16_t sz;
+    IFNET *nif = (IFNET *) dev->dev_icb;
 
-    /*
-     * After initialization we are waiting for a long time to give
-     * the PHY a chance to establish an Ethernet link.
-     */
+    /* Calculate the number of bytes to be send. Do not send packets
+       larger than the Ethernet maximum transfer unit. The MTU consist
+       of 1500 data bytes plus the 14 byte Ethernet header plus 4 bytes
+       CRC. We check the data bytes only. */
+    sz = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz;
+    if (sz > nif->if_mtu) {
+        return -1;
+    }
+    /* Add the Ethernet header and make the length even. */
+    sz += nb->nb_dl.sz + 1;
+    sz &= ~1;
+
     while (rc) {
-        if (ni->ni_insane) {
-            break;
-        }
-        if (NutEventWait(&ni->ni_mutex, mx_wait)) {
+        if (ni->ni_insane || NutEventWait(&ni->ni_mutex, mx_wait)) {
+            /* Discard the packet, if the controller is out of order. */
+            NUT_PERFMON_INC(nif->if_out_discards);
             break;
         }
 
@@ -936,13 +935,17 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
             if (NutEventWait(&ni->ni_tx_rdy, 500)) {
                 /* No queue space. Release the lock and give up. */
                 NutEventPost(&ni->ni_mutex);
+                NUT_PERFMON_INC(nif->if_out_discards);
                 break;
             }
-        } else if (NicPutPacket(ni, nb) == 0) {
+        } else if (NicPutPacket(ni, nb, sz) == 0) {
             /* Ethernet works. Set a long waiting time in case we
                temporarly lose the link next time. */
             rc = 0;
             mx_wait = 5000;
+            NUT_PERFMON_ADD(nif->if_out_octets, sz);
+        } else {
+            NUT_PERFMON_INC(nif->if_out_errors);
         }
         NutEventPost(&ni->ni_mutex);
     }
@@ -959,12 +962,12 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets the LAN91C111 Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets the LAN91C111 Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application
@@ -978,23 +981,6 @@ int DmInit(NUTDEVICE * dev)
     uint32_t id;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
-#if defined(ELEKTOR_IR1)
-    outr(PIOA_BSR, _BV(PA20_NCS2_B));
-    outr(PIOA_PDR, _BV(PA20_NCS2_B));
-    outr(PIOC_BSR, _BV(PC16_NWAIT_B) | _BV(PC21_NWR0_B) | _BV(PC22_NRD_B));
-    outr(PIOC_PDR, _BV(PC16_NWAIT_B) | _BV(PC21_NWR0_B) | _BV(PC22_NRD_B));
-
-    outr(SMC_CSR(2)
-        , (1 << SMC_NWS_LSB)
-        | SMC_WSEN
-        | (2 << SMC_TDF_LSB)
-        | SMC_BAT
-        | SMC_DBW_16
-        | (1 << SMC_RWSETUP_LSB)
-        | (1 << SMC_RWHOLD_LSB)
-        );
-#endif
-
     /* Probe chip by verifying the identifier registers. */
     id = (uint32_t) nic_inb(NIC_VID);
     id |= (uint32_t) nic_inb(NIC_VID + 1) << 8;
@@ -1003,6 +989,9 @@ int DmInit(NUTDEVICE * dev)
     if (id != 0x90000A46) {
         return -1;
     }
+
+    /* Register PHY */
+    NutRegisterPhy( 1, phy_outw, phy_inw);
 
     /* Reset chip. */
     if (NicReset()) {
@@ -1024,11 +1013,133 @@ int DmInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("rxi1", NicRxLanc, dev, 
+    if (NutThreadCreate("rxi1", NicRxLanc, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
     return 0;
+}
+
+static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = 0;
+    int i;
+    IFNET *nif = (IFNET *) dev->dev_icb;
+    NICINFO *ni = (NICINFO *) dev->dev_dcb;
+    uint32_t index;
+    uint32_t ip_addr;
+    MCASTENTRY *mcast;
+    MCASTENTRY *mcast_prev;
+    MCASTENTRY *mcast_next;
+
+    uint8_t mac[6];
+
+    switch (req) {
+    case SIOCSIFADDR:
+        /* Set interface hardware address. */
+        memcpy(nif->if_mac, conf, sizeof(nif->if_mac));
+        break;
+
+    case SIOCADDMULTI:
+        /* Add multicast address. */
+        ip_addr = *((uint32_t *) conf);
+        /* Test if the address is still in the list */
+        mcast = nif->if_mcast;
+        while (mcast) {
+            if (ip_addr == mcast->mca_ip) {
+                /* The address is still in the list, do nothing */
+                return -1;
+            }
+            mcast = mcast->mca_next;
+        }
+        /* Create MAC address */
+        mac[0] = 0x01;
+        mac[1] = 0x00;
+        mac[2] = 0x5E;
+        mac[3] = ((uint8_t *) conf)[1] & 0x7f;
+        mac[4] = ((uint8_t *) conf)[2];
+        mac[5] = ((uint8_t *) conf)[3];
+        mcast = malloc(sizeof(MCASTENTRY));
+        if (mcast) {
+            /* Calculate MAR index, range 0...63 */
+            index = ether_crc32_le(&mac[0], 6);
+            index &= 0x3F;
+            /* Set multicast bit */
+            ni->ni_mar[index / 8] |= (1 << (index % 8));
+            /* Add new mcast to the mcast list */
+            memcpy(mcast->mca_ha, mac, 6);
+            mcast->mca_ip = *((uint32_t *) conf);
+            mcast->mca_next = nif->if_mcast;
+            nif->if_mcast = mcast;
+            /* Update the MC hardware */
+            NicUpdateMCHardware(ni);
+        } else {
+            rc = -1;
+        }
+        break;
+
+    case SIOCDELMULTI:
+        /* Delete multicast address. */
+        ip_addr = *((uint32_t *) conf);
+
+        /* Test if the address is still in the list */
+        mcast = nif->if_mcast;
+        mcast_prev = mcast;
+        while (mcast) {
+            if (ip_addr == mcast->mca_ip) {
+                /* The address is in the list, leave the loop */
+                break;
+            }
+            mcast_prev = mcast;
+            mcast = mcast->mca_next;
+        }
+        if (NULL == mcast) {
+            /* The address is not in the list */
+            return -1;
+        }
+
+        /*
+         * Remove the address from the list
+         */
+        mcast_next = mcast->mca_next;
+
+        /* Check if the first element must be removed */
+        if (nif->if_mcast == mcast) {
+            /* The element is the first one. The first element is now
+               the "next" element */
+            nif->if_mcast = mcast_next;
+            free(mcast);
+        } else {
+            /* The element is in the middle of the list. The next
+               element of the previous is the "next" element */
+            mcast_prev->mca_next = mcast_next;
+            free(mcast);
+        }
+
+        /* Clear the multicast filter. */
+        for (i = 0; i < 7; i++) {
+            ni->ni_mar[i] = 0;
+        }
+        /* Rebuild the multicast filter. */
+        mcast = nif->if_mcast;
+        while (mcast) {
+            /* Calculate MAR index, range 0...63 */
+            index = ether_crc32_le(&mcast->mca_ha[0], 6);
+            index &= 0x3F;
+            /* Set multicast bit */
+            ni->ni_mar[index / 8] |= (1 << (index % 8));
+            mcast = mcast->mca_next;
+        }
+        /* Update the MC hardware */
+        NicUpdateMCHardware(ni);
+        break;
+
+    default:
+        rc = -1;
+        break;
+    }
+
+    return rc;
 }
 
 static NICINFO dcb_eth0;
@@ -1041,13 +1152,13 @@ static NICINFO dcb_eth0;
 static IFNET ifn_eth0 = {
     IFT_ETHER,                  /*!< \brief Interface type, if_type. */
     0,                          /*!< \brief Interface flags, if_flags. */
-    {0, 0, 0, 0, 0, 0},         /*!< \brief Hardware net address, if_mac. */
+    { 0, 0, 0, 0, 0, 0 },       /*!< \brief Hardware net address, if_mac. */
     0,                          /*!< \brief IP address, if_local_ip. */
     0,                          /*!< \brief Remote IP address for point to point, if_remote_ip. */
     0,                          /*!< \brief IP network mask, if_mask. */
     ETHERMTU,                   /*!< \brief Maximum size of a transmission unit, if_mtu. */
     0,                          /*!< \brief Packet identifier, if_pkt_id. */
-    0,                          /*!< \brief Linked list of arp entries, arpTable. */
+    0,                          /*!< \brief Linked list of ARP entries, arpTable. */
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     DmOutput,                   /*!< \brief Driver output routine, if_send(). */
@@ -1057,11 +1168,11 @@ static IFNET ifn_eth0 = {
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devDm9000 = {
     0,                          /*!< \brief Pointer to next device. */
@@ -1072,7 +1183,7 @@ NUTDEVICE devDm9000 = {
     &ifn_eth0,                  /*!< \brief Interface control block. */
     &dcb_eth0,                  /*!< \brief Driver control block. */
     DmInit,                     /*!< \brief Driver initialization routine. */
-    0,                          /*!< \brief Driver specific control function. */
+    DmIOCtl,                    /*!< \brief Driver specific control function. */
     0,                          /*!< \brief Read from device. */
     0,                          /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__

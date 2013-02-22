@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -90,8 +90,8 @@ nutcrt =
         brief = "Low level file I/O",
         requires = { "DEV_FILE" },
         provides = { "CRT_FILE" },
-        sources = 
-        { 
+        sources =
+        {
             "close.c",
             "clrerr.c",
             "ioctl.c",
@@ -103,8 +103,8 @@ nutcrt =
         brief = "Low level file read",
         requires = { "DEV_READ", "CRT_FILE" },
         provides = { "CRT_READ" },
-        sources = 
-        { 
+        sources =
+        {
             "getf.c",
             "read.c",
         }
@@ -114,8 +114,8 @@ nutcrt =
         brief = "Low Level Write",
         requires = { "DEV_WRITE", "CRT_FILE" },
         provides = { "CRT_WRITE" },
-        sources = 
-        { 
+        sources =
+        {
             "putf.c",
             "write.c"
         }
@@ -125,8 +125,8 @@ nutcrt =
         brief = "Low Level Write (PGM-Space)",
         requires = { "HW_MCU_AVR", "DEV_WRITE", "CRT_FILE" },
         provides = { "CRT_WRITE_P" },
-        sources = 
-        { 
+        sources =
+        {
             "write_p.c"
         }
     },
@@ -138,8 +138,8 @@ nutcrt =
         name = "nutcrt_stream",
         brief = "File Streams",
         provides = { "CRT_STREAM" },
-        sources = 
-        { 
+        sources =
+        {
             "fclose.c",
             "fcloseall.c",
             "fdopen.c",
@@ -155,15 +155,16 @@ nutcrt =
             "freopen.c",
             "fseek.c",
             "ftell.c",
+            "funopen.c",
             "seek.c",
             "tell.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "STDIO_FLOATING_POINT",
                 brief = "Floating point",
-                description = "Enables floating point support for standard input/output.", 
+                description = "Enables floating point support for standard input/output.",
                 flavor = "boolean",
                 provides = { "FLOATING_POINT_IO" },
                 file = "include/cfg/crt.h"
@@ -184,8 +185,8 @@ nutcrt =
         name = "nutcrt_istream",
         brief = "File Stream Input",
         provides = { "CRT_STREAM_READ" },
-        sources = 
-        { 
+        sources =
+        {
             "fgetc.c",
             "fgets.c",
             "fread.c",
@@ -204,8 +205,8 @@ nutcrt =
         brief = "File Stream Input (PGM-Space)",
         requires = { "HW_MCU_AVR" },
         provides = { "CRT_STREAM_READ_P" },
-        sources = 
-        { 
+        sources =
+        {
             "fscanf_p.c",
             "scanf_p.c",
             "vfscanf_p.c"
@@ -215,8 +216,8 @@ nutcrt =
         name = "nutcrt_ostream",
         brief = "File Stream Output",
         provides = { "CRT_STREAM_WRITE" },
-        sources = 
-        { 
+        sources =
+        {
             "fprintf.c",
             "fputc.c",
             "fputs.c",
@@ -233,8 +234,8 @@ nutcrt =
         brief = "File Stream Output (PGM-Space)",
         requires = { "HW_MCU_AVR" },
         provides = { "CRT_STREAM_WRITE_P" },
-        sources = 
-        { 
+        sources =
+        {
             "fprintf_p.c",
             "fputs_p.c",
             "fwrite_p.c",
@@ -250,10 +251,12 @@ nutcrt =
     {
         name = "nutcrt_fstrio",
         brief = "Formatted String I/O",
-        sources = 
-        { 
+        sources =
+        {
+            "asprintf.c",
             "sprintf.c",
             "sscanf.c",
+            "vasprintf.c",
             "vsprintf.c",
             "vsscanf.c"
         }
@@ -262,13 +265,20 @@ nutcrt =
         name = "nutcrt_fstrio_p",
         brief = "Formatted String I/O (PGM-Space)",
         requires = { "HW_MCU_AVR" },
-        sources = 
-        { 
+        sources =
+        {
             "sprintf_p.c",
             "sscanf_p.c",
             "vsprintf_p.c",
             "vsscanf_p.c"
         }
+    },
+
+    {
+        name = "nutcrt_vis",
+        brief = "Visual String Codec",
+        sources =
+        { "vis.c", "unvis.c" }
     },
 
     --
@@ -278,8 +288,8 @@ nutcrt =
         name = "nutcrt_time",
         brief = "Time and date",
         provides = { "CRT_DATETIME" },
-        sources = 
-        { 
+        sources =
+        {
             "gmtime.c",
             "localtim.c",
             "mktime.c",
@@ -308,16 +318,16 @@ nutcrt =
                       "memory management conflicts.",
         requires = { "NUT_HEAPMEM" },
         provides = { "CRT_HEAPMEM" },
-        sources = 
-        { 
-            "calloc.c", 
-            "calloc_dbg.c", 
-            "malloc.c", 
-            "malloc_dbg.c", 
-            "realloc.c", 
-            "realloc_dbg.c", 
+        sources =
+        {
+            "calloc.c",
+            "calloc_dbg.c",
+            "malloc.c",
+            "malloc_dbg.c",
+            "realloc.c",
+            "realloc_dbg.c",
             "strdup.c",
-            "strdup_dbg.c" 
+            "strdup_dbg.c"
         }
     },
     {
@@ -364,16 +374,16 @@ nutcrt =
                 type = "integer",
                 file = "include/cfg/eeprom.h"
             },
-	    {
-		macro = "CRT_UNSETENV_POSIX",
-		brief = "Posix compatible unsetenv",
-		description = "Enable posix compatible definition of unsetenv. Newlib since version "..
-		              "1.17.0 declares unsetenv returning int. Older versions are declared "..
-		              "as void function. This will help to avoid compilation errors because "..
-		              "of incompatible declarations.",
-		flavor = "boolean",
-		file = "include/cfg/crt.h"
-	    }
+            {
+                macro = "CRT_UNSETENV_POSIX",
+                brief = "Posix compatible unsetenv",
+                description = "Enable posix compatible definition of unsetenv. Newlib since version "..
+                              "1.17.0 declares unsetenv returning int. Older versions are declared "..
+                              "as void function. This will help to avoid compilation errors because "..
+                              "of incompatible declarations.",
+                flavor = "boolean",
+                file = "include/cfg/crt.h"
+            }
         }
     },
 

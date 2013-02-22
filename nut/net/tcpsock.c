@@ -1,5 +1,9 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH
+ * Copyright (c) 1993 by Digital Equipment Corporation
+ * Copyright (c) 1983, 1993 by The Regents of the University of California
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +18,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,176 +32,15 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
- * -
- * Portions Copyright (c) 1983, 1993 by
- *  The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * -
- * Portions Copyright (c) 1993 by Digital Equipment Corporation.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies, and that
- * the name of Digital Equipment Corporation not be used in advertising or
- * publicity pertaining to distribution of the document or software without
- * specific, written prior permission.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
- * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
- * CORPORATION BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
- * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
- * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
- * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
- * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.25  2009/02/22 12:31:52  olereinhardt
- * Include "include/errno.h" instead of "include/net/errno.h"
+/*!
+ * \file net/tcpsock.c
+ * \brief TCP socket interface.
  *
- * Revision 1.24  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.23  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.22  2008/08/20 06:57:00  haraldkipp
- * Implemented IP demultiplexer.
- *
- * Revision 1.21  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.20  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.19  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.18  2006/03/21 21:22:20  drsung
- * Enhancement made to TCP state machine. Now TCP options
- * are read from peer and at least the maximum segment size is stored.
- *
- * Revision 1.17  2005/10/24 11:00:16  haraldkipp
- * Integer division hack for ARM without CRT removed again.
- *
- * Revision 1.16  2005/08/02 17:47:03  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.15  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.14  2005/04/08 14:40:36  freckle
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__) for htons
- *
- * Revision 1.13  2005/04/05 17:58:02  haraldkipp
- * Avoid integer division on ARM platform as long as we run without crtlib.
- *
- * Revision 1.12  2005/02/04 17:16:45  haraldkipp
- * Stop searching when listening socket found
- *
- * Revision 1.11  2005/01/03 08:44:15  haraldkipp
- * Simplyfied NutTcpSend().
- *
- * Revision 1.10  2004/10/14 16:43:07  drsung
- * Fixed compiler warning "comparison between signed and unsigned"
- *
- * Revision 1.9  2004/07/30 19:54:46  drsung
- * Some code of TCP stack redesigned. Round trip time calculation is now
- * supported. Fixed several bugs in TCP state machine. Now TCP connections
- * should be more reliable under heavy traffic or poor physical connections.
- *
- * Revision 1.8  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.7  2004/01/28 12:11:57  drsung
- * Bugfix for ICCAVR ... again
- *
- * Revision 1.6  2004/01/28 07:11:38  drsung
- * Bugfix for ICCAVR
- *
- * Revision 1.5  2004/01/14 19:34:08  drsung
- * New TCP output buffer handling
- *
- * Revision 1.4  2003/11/04 17:58:18  haraldkipp
- * Removed volatile attibute from socket list
- *
- * Revision 1.3  2003/08/14 15:08:36  haraldkipp
- * Bugfix, TCP may reuse socket ports because of wrong byte order during compare.
- *
- * Revision 1.2  2003/07/13 19:23:59  haraldkipp
- * TCP transfer speed increased by changing the character receive buffer
- * in TCPSOCKET to a NETBUF queue.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:44  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.18  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.17  2002/09/15 17:07:05  harald
- * Allow application to read buffered data during close wait
- *
- * Revision 1.16  2002/09/03 17:43:15  harald
- * Configurable receive buffer size
- *
- * Revision 1.15  2002/08/16 17:54:57  harald
- * Count out of sequence drops
- *
- * Revision 1.14  2002/08/11 12:26:21  harald
- * ICC mods
- *
- * Revision 1.13  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -237,7 +80,7 @@
 
 TCPSOCKET *tcpSocketList = 0;   /*!< Global linked list of all TCP sockets. */
 
-static volatile uint16_t last_local_port = 4096; /* Unassigned local port. */
+static uint16_t last_local_port; /* Unassigned local port. */
 
 static uint_fast8_t registered;
 
@@ -264,17 +107,17 @@ void NutTcpDiscardBuffers(TCPSOCKET * sock)
  *
  * Remove socket from the socket list and release occupied memory.
  *
- * Applications must not call this function. It is automatically called 
+ * Applications must not call this function. It is automatically called
  * by a timer after the socket has been closed by NutTcpCloseSocket().
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  */
 void NutTcpDestroySocket(TCPSOCKET * sock)
 {
     TCPSOCKET *sp;
     TCPSOCKET *volatile *spp;
-    
+
     //@@@printf ("[%04X] Calling destroy.\n", (u_short) sock);
 
     /*
@@ -309,7 +152,7 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
 /*!
  * \brief Find a matching socket.
  *
- * Loop through all sockets and find a matching connection (prefered) 
+ * Loop through all sockets and find a matching connection (preferred)
  * or a listening socket.
  *
  * Applications typically do not call this function.
@@ -361,10 +204,10 @@ TCPSOCKET *NutTcpFindSocket(uint16_t lport, uint16_t rport, uint32_t raddr)
 /*!
  * \brief Create a TCP socket.
  *
- * Allocates a TCPSOCKET structure from heap memory, initializes 
+ * Allocates a TCPSOCKET structure from heap memory, initializes
  * it and returns a pointer to that structure.
  *
- * The very first call will also start the TCP state machine, 
+ * The very first call will also start the TCP state machine,
  * which is running in a separate thread.
  *
  * \return Socket descriptor of the newly created TCP socket or
@@ -422,7 +265,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
  * - #SO_RCVTIMEO Socket receive timeout (#uint32_t).
  * - #SO_SNDBUF   Socket output buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutTcpCreateSocket().
  * \param optname Option to set.
  * \param optval  Pointer to the value.
@@ -430,7 +273,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
  * \return 0 on success, -1 otherwise. The specific error code
  *         can be retrieved by calling NutTcpError().
  */
-int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optlen)
+int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, const void *optval, int optlen)
 {
     int rc = -1;
 
@@ -441,8 +284,8 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
     case TCP_MAXSEG:
         if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
-        else if (sock->so_state != TCPS_CLOSED) 
-        	sock->so_last_error = EISCONN;
+        else if (sock->so_state != TCPS_CLOSED)
+            sock->so_last_error = EISCONN;
         else {
             sock->so_mss = *((uint16_t *) optval);
             rc = 0;
@@ -504,7 +347,7 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
  * - #SO_RCVTIMEO Socket receive timeout (#uint32_t).
  * - #SO_SNDBUF   Socket output buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutTcpCreateSocket().
  * \param optname Option to get.
  * \param optval  Points to a buffer receiving the value.
@@ -577,12 +420,12 @@ int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval, int optlen)
  *
  * This function tries to establish a connection to the specified
  * remote port of the specified remote server. The calling thread
- * will be suspended until a connection is successfully established 
+ * will be suspended until a connection is successfully established
  * or an error occurs.
  *
  * This function is typically used by TCP client applications.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param addr IP address of the host to connect (network byte order).
  * \param port Port number to connect (host byte order).
@@ -594,6 +437,7 @@ int NutTcpConnect(TCPSOCKET * sock, uint32_t addr, uint16_t port)
 {
     TCPSOCKET *sp;
     NUTDEVICE *dev;
+    uint16_t   ticks;
 
     if (sock == 0)
         return -1;
@@ -613,8 +457,20 @@ int NutTcpConnect(TCPSOCKET * sock, uint32_t addr, uint16_t port)
      * Find an unused local port.
      */
     do {
-        if (++last_local_port == 0)
-            last_local_port = 4096;
+        /* Each time a new socket is created the local port number in incremented
+           by a more or less randomized value between 1 and 15 (the lowest 4 bit of
+           NutGetMillis() | 1). The highest two bits are always set to 1.
+           This way a port range of 49152 to 65535 is used according to the IANA
+           suggestions for ephemeral port usage.
+         */
+        ticks = (uint16_t) NutGetMillis();
+        if (last_local_port) {
+            last_local_port += (uint16_t) ((ticks & 0x000F) | 1);
+        } else {
+            last_local_port = ticks;
+        }
+
+        last_local_port |= 0xC000;
 
         sp = tcpSocketList;
         while (sp) {
@@ -659,7 +515,7 @@ int NutTcpConnect(TCPSOCKET * sock, uint32_t addr, uint16_t port)
  *
  * This function is typically used by TCP server applications.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param port Port number to listen to (host byte order).
  *
@@ -676,20 +532,20 @@ int NutTcpAccept(TCPSOCKET * sock, uint16_t port)
 /*!
  * \brief Send data on a connected TCP socket.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket(). In
  *             addition a connection must have been established
  *             by calling NutTcpConnect or NutTcpAccept.
  * \param data Pointer to a buffer containing the data to send.
  * \param len  Number of bytes to be sent.
  *
- * \return If successful, the number of bytes added to the socket transmit 
- *         buffer. This is limited to the maximum segment size of the 
- *         connection and thus may be less than the specified number of 
+ * \return If successful, the number of bytes added to the socket transmit
+ *         buffer. This is limited to the maximum segment size of the
+ *         connection and thus may be less than the specified number of
  *         bytes to send. The return value -1 indicates a fatal error.
  *         On time out, a value of 0 is returned.
  */
-int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
+int NutTcpSend(TCPSOCKET * sock, const void *data, int len)
 {
     uint16_t unacked;
 
@@ -697,7 +553,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
      * Check parameters.
      */
     NutThreadYield();
-    
+
     if (sock == 0)
         return -1;
     if (data == 0 || len == 0)
@@ -720,7 +576,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
 
         /*
          * Limit the size of unacknowledged data to four full segments.
-         * Also wait for peer's window open wide enough to take all our 
+         * Also wait for peer's window open wide enough to take all our
          * data. This also avoids silly window syndrome on our side.
          */
         unacked = sock->so_tx_nxt - sock->so_tx_una;
@@ -732,8 +588,8 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
         }
     }
     /*
-     * The segment will be automatically retransmitted if not 
-     * acknowledged in time. If this returns an error, it's a 
+     * The segment will be automatically retransmitted if not
+     * acknowledged in time. If this returns an error, it's a
      * fatal one.
      */
     sock->so_tx_flags |= SO_ACK;
@@ -745,7 +601,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
 /*!
  * \brief Receive data on a connected TCP socket.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket(). In
  *             addition a connection must have been established
  *             by calling NutTcpConnect or NutTcpAccept.
@@ -755,7 +611,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
  * \return If successful, the number of received data bytes
  *         is returned. This may be less than the specified
  *         size of the buffer. The return value 0 indicates
- *         a timeout, while -1 is returned in case of an error 
+ *         a timeout, while -1 is returned in case of an error
  *         or broken connection. Call NutTcpError() to determine
  *         the specific error code.
  */
@@ -844,10 +700,10 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
  * \brief Close TCP socket.
  *
  * Note, that the socket may not be immediately destroyed
- * after calling this function. However, the application 
+ * after calling this function. However, the application
  * must not use the socket after this call.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
  * \return 0 on success, -1 otherwise.
@@ -898,7 +754,7 @@ int NutTcpCloseSocket(TCPSOCKET * sock)
  * - EHOSTUNREACH: No route to host
  * - ENOTEMPTY: Directory not empty
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
  * \note Applications must not call this function to retrieve the
@@ -915,17 +771,17 @@ int NutTcpError(TCPSOCKET * sock)
     return sock->so_last_error;
 }
 
-/*! 
+/*!
  * \brief Read from virtual socket device.
  *
  * TCP sockets can be used like other Nut/OS devices. This routine
  * is part of the virtual socket device driver.
  *
- * This function is called by the low level input routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read 
+ * This function is called by the low level input routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
  * entry.
  *
- * \param sock   Socket descriptor. This pointer must have been 
+ * \param sock   Socket descriptor. This pointer must have been
  *               retrieved by calling NutTcpCreateSocket().
  * \param buffer Pointer to the buffer that receives the data.
  * \param size   Maximum number of bytes to read.
@@ -939,7 +795,7 @@ int NutTcpDeviceRead(TCPSOCKET * sock, void *buffer, int size)
     return NutTcpReceive(sock, buffer, size);
 }
 
-static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
+static int SendBuffer(TCPSOCKET * sock, const void *buffer, int size)
 {
     int rc;
     int bite;
@@ -952,29 +808,29 @@ static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
     return rc;
 }
 
-/*! 
+/*!
  * \brief Write to a socket.
  *
  * TCP sockets can be used like other Nut/OS devices. This routine
  * is part of the virtual socket device driver.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write entry.
  *
  * In contrast to NutTcpSend() this routine provides some buffering.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param buf  Pointer to the data to be written.
- * \param size Number of bytes to write. If zero, then the output buffer 
+ * \param size Number of bytes to write. If zero, then the output buffer
  *             will be flushed.
  *
- * \return The number of bytes written. A return value of -1 indicates 
+ * \return The number of bytes written. A return value of -1 indicates
  *         an error.
  *
  */
-int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
+int NutTcpDeviceWrite(TCPSOCKET * sock, const void *buf, int size)
 {
     int rc;
     uint16_t sz;
@@ -1008,7 +864,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     /* If we don't have a buffer so far... */
     if (sock->so_devocnt == 0) {
         /* If new data block is bigger or equal than buffer size
-         * send first part of data to nic and store remaining
+         * send first part of data to NIC and store remaining
          * bytes in buffer
          */
         if ((uint16_t) size >= sock->so_devobsz) {
@@ -1051,12 +907,12 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     }
 
     /* If remaining data is bigger or equal than buffer size
-     * send first part of data to nic and later store remaining
+     * send first part of data to NIC and later store remaining
      * bytes in buffer
      */
     sz = size - sz;
     if (sz >= sock->so_devobsz) {
-        rc = size % sock->so_devobsz;
+        rc = sz % sock->so_devobsz;
         if (SendBuffer(sock, buffer, sz - rc) < 0) {
             free(sock->so_devobuf);
             sock->so_devocnt = 0;
@@ -1066,7 +922,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     } else
         rc = sz;
 
-    /* If there are some remainings bytes, store them in buffer
+    /* If there are some remaining bytes, store them in buffer
      */
     if (rc)
         memcpy(sock->so_devobuf, buffer, rc);
@@ -1077,28 +933,28 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     return size;
 }
 
-/*! 
+/*!
  * \brief Write to device.
  *
- * This function is implemented for CPUs with Harvard Architecture 
+ * This function is implemented for CPUs with Harvard Architecture
  * only.
  *
  * TCP sockets can be used like other Nut/OS devices. This routine
- * is part of the virtual socket device driver and similar to 
- * NutTcpDeviceWrite() except that the data is located in program 
+ * is part of the virtual socket device driver and similar to
+ * NutTcpDeviceWrite() except that the data is located in program
  * memory.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write_P entry.
  *
- * \param sock   Socket descriptor. This pointer must have been 
+ * \param sock   Socket descriptor. This pointer must have been
  *               retrieved by calling NutTcpCreateSocket().
  * \param buffer Pointer to the data in program space to be written.
  * \param size   Number of bytes to write.
  *
  * \warning Inefficient implementation. No buffering has been
- *          implemented. Thus, each call will result in a separate 
+ *          implemented. Thus, each call will result in a separate
  *          TCP segment.
  */
 #ifdef __HARVARD_ARCH__
@@ -1121,13 +977,13 @@ int NutTcpDeviceWrite_P(TCPSOCKET * sock, PGM_P buffer, int size)
 }
 #endif
 
-/*! 
+/*!
  * \brief Driver control function.
  *
- * Used by the virtual device driver to modify or query device specific 
+ * Used by the virtual device driver to modify or query device specific
  * settings.
  *
- * \param sock  Socket descriptor. This pointer must have been 
+ * \param sock  Socket descriptor. This pointer must have been
  *              retrieved by calling NutTcpCreateSocket().
  * \param cmd   Requested control function. May be set to one of the
  *              following constants:
@@ -1144,7 +1000,7 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
 {
     uint32_t *lvp = (uint32_t *) param;
     int rc = 0;
-    
+
     switch (cmd) {
     case IOCTL_GETFILESIZE:
     case IOCTL_GETINBUFCOUNT:
@@ -1156,8 +1012,8 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
     default:
         rc = -1;
     }
-    
-    return rc;    
+
+    return rc;
 }
 
 /*@}*/

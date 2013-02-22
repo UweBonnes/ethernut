@@ -24,23 +24,23 @@
 
 
 /* prefix for open functions in C libraries */
-#define LUA_POF		"luaopen_"
+#define LUA_POF     "luaopen_"
 
 /* separator for open functions in C libraries */
-#define LUA_OFSEP	"_"
+#define LUA_OFSEP   "_"
 
 
-#define LIBPREFIX	"LOADLIB: "
+#define LIBPREFIX   "LOADLIB: "
 
-#define POF		LUA_POF
-#define LIB_FAIL	"open"
+#define POF     LUA_POF
+#define LIB_FAIL    "open"
 
 
 /* error codes for ll_loadfunc */
-#define ERRLIB		1
-#define ERRFUNC		2
+#define ERRLIB      1
+#define ERRFUNC     2
 
-#define setprogdir(L)		((void)0)
+#define setprogdir(L)       ((void)0)
 
 
 static void ll_unloadlib (void *lib);
@@ -154,7 +154,7 @@ static lua_CFunction ll_sym (lua_State *L, void *lib, const char *sym) {
 
 /* Mac appends a `_' before C function names */
 #undef POF
-#define POF	"_" LUA_POF
+#define POF "_" LUA_POF
 
 
 static void pusherror (lua_State *L) {
@@ -231,10 +231,10 @@ static lua_CFunction ll_sym (lua_State *L, void *lib, const char *sym) {
 */
 
 #undef LIB_FAIL
-#define LIB_FAIL	"absent"
+#define LIB_FAIL    "absent"
 
 
-#define DLMSG	"dynamic libraries not enabled; check your Lua installation"
+#define DLMSG   "dynamic libraries not enabled; check your Lua installation"
 
 
 static void ll_unloadlib (void *lib) {
@@ -446,7 +446,7 @@ static int loader_preload (lua_State *L) {
 
 
 static const int sentinel_ = 0;
-#define sentinel	((void *)&sentinel_)
+#define sentinel    ((void *)&sentinel_)
 
 
 static int ll_require (lua_State *L) {
@@ -467,7 +467,7 @@ static int ll_require (lua_State *L) {
     lua_pushrotable(L, (void*)(size_t)res);
     return 1;
   }
-  
+
   /* else must load it; iterate over available loaders */
   lua_getfield(L, LUA_ENVIRONINDEX, "loaders");
   if (!lua_istable(L, -1))
@@ -511,7 +511,7 @@ static int ll_require (lua_State *L) {
 ** 'module' function
 ** =======================================================
 */
-  
+
 
 static void setfenv (lua_State *L) {
   lua_Debug ar;
@@ -596,7 +596,7 @@ static int ll_seeall (lua_State *L) {
 
 
 /* auxiliary mark (for internal use) */
-#define AUXMARK		"\1"
+#define AUXMARK     "\1"
 
 static void setpath (lua_State *L, const char *fieldname, const char *envname,
                                    const char *def) {
@@ -641,7 +641,7 @@ LUALIB_API int luaopen_package (lua_State *L) {
   lua_setfield(L, -2, "__gc");
   /* create `package' table */
   luaL_register_light(L, LUA_LOADLIBNAME, pk_funcs);
-#if defined(LUA_COMPAT_LOADLIB) 
+#if defined(LUA_COMPAT_LOADLIB)
   lua_getfield(L, -1, "loadlib");
   lua_setfield(L, LUA_GLOBALSINDEX, "loadlib");
 #endif

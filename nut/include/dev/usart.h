@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -127,6 +127,15 @@
 #define USART_TXLOWMARK   40
 #endif
 
+#ifndef ENABLE
+#define ENABLE 1
+#endif
+
+#ifndef DISABLE
+#define DISABLE 0
+#endif
+
+
 /*!
  * \typedef RINGBUF
  * \brief Character device ring buffer type.
@@ -192,23 +201,20 @@ struct _RINGBUF {
      */
     HANDLE rbf_que;
 
-#ifdef UART_BLOCKING_READ    
     /*! \brief Number of bytes for block-read
      *
      * If this is zero, incoming bytes are stored in ringbuffer
      * If this not zero, incoming bytes are stored in rbf_blockptr
      * Changed by the receiver interrupt.
      */
-	size_t volatile rbf_blockcnt;
-	
+    size_t volatile rbf_blockcnt;
+
     /*! \brief Address for block-read
      *
      * If bf_blockbytes is not zero, incoming bytes are stored here
      * Changed by the receiver interrupt.
      */
-	uint8_t* volatile rbf_blockptr;
-#endif
-
+    uint8_t* volatile rbf_blockptr;
 };
 
 /*@}*/
@@ -240,13 +246,21 @@ struct _RINGBUF {
 /*! \brief Software handshake.
  *
  * It is recommended to set a proper read timeout with software handshake.
- * In this case a timeout may occur, if the communication peer lost our 
- * last XON character. The application may then use ioctl() to disable the 
+ * In this case a timeout may occur, if the communication peer lost our
+ * last XON character. The application may then use ioctl() to disable the
  * receiver and do the read again. This will send out another XON.
  */
 #define USART_MF_XONXOFF        0x0020
 
+/*! \brief Echo configuration
+ *
+ * For RS232 mode it defines if any received character is
+ * echoed back to the sender. For 485 mode it defines
+ * if on switch to transmitting mode the receiver is left
+ * enabled.
+ */
 #define USART_MF_LOCALECHO      0x0040  /*!< Should be used in stream, not device. */
+
 #define USART_MF_COOKEDMODE     0x0080  /*!< Should be used in stream, not device. */
 
 #define USART_MF_NOBUFFER       0x0100  /*!< No buffering. */
@@ -254,8 +268,12 @@ struct _RINGBUF {
 #define USART_MF_BUFFERMASK     0x0300  /*!< Masks buffering mode flags. */
 
 #define USART_MF_HALFDUPLEX     0x0400  /*!< Half duplex control. */
-#define USART_MF_BLOCKREAD		0x0800  /*!< Block read enabled */
- 
+
+#define USART_MF_BLOCKREAD      0x0800  /*!< Block read mode enabled */
+#define USART_MF_BLOCKWRITE     0x1000  /*!< Block write mode enabled */
+
+#define USART_MF_FLOWMASK       (USART_MF_XONXOFF| USART_MF_HALFDUPLEX|USART_MF_LOCALECHO|USART_MF_BLOCKREAD|USART_MF_BLOCKWRITE)
+
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */
 #define USART_SF_DTROFF         0x0004  /*!< Set if DTR line is off. */
@@ -264,7 +282,6 @@ struct _RINGBUF {
 
 #define USART_SF_TXDISABLED     0x0040  /*!< Transmitter disabled. */
 #define USART_SF_RXDISABLED     0x0080  /*!< Receiver disabled. */
-
 
 /*!
  * \struct _USARTDCB usart.h dev/usart.h
@@ -401,22 +418,15 @@ typedef struct _USARTDCB USARTDCB;
 /*@}*/
 
 
-__BEGIN_DECLS
-
-/*! \name Function Prototypes */
-/*@{*/
 extern int UsartInit(NUTDEVICE * dev);
 extern int UsartIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int UsartRead(NUTFILE * fp, void *buffer, int size);
-extern int UsartWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int UsartWrite(NUTFILE * fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int UsartClose(NUTFILE * fp);
 extern long UsartSize (NUTFILE *fp);
-/*@}*/
-
-__END_DECLS
 
 #endif

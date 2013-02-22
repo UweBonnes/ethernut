@@ -49,6 +49,7 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/nutdebug.h>
+#include <dev/board.h>
 
 #include <errno.h>
 #include <stdlib.h>
@@ -133,7 +134,7 @@ static GSPIREG *GpioSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 }
 
 /* Idle clock is low and data is captured on the rising edge. */
-static void SpiMode0Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -171,7 +172,7 @@ static void SpiMode0Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is low and data is captured on the falling edge. */
-static void SpiMode1Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -209,7 +210,7 @@ static void SpiMode1Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is high and data is captured on the falling edge. */
-static void SpiMode2Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -247,7 +248,7 @@ static void SpiMode2Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is high and data is captured on the rising edge. */
-static void SpiMode3Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -284,7 +285,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
 #endif /* SBBI0_SCK_BIT */
 }
 
-/*! 
+/*!
  * \brief Transfer data on the SPI bus.
  *
  * A device must have been selected by calling GpioSpi0Select().
@@ -298,7 +299,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, CONST uint8_t *txbuf, uint8_t *rxbuf
  *
  * \return Always 0.
  */
-int GpioSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int GpioSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     GSPIREG *gspi;
 
@@ -307,7 +308,7 @@ int GpioSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int x
     NUTASSERT(node->node_stat != NULL);
     gspi = (GSPIREG *)node->node_stat;
 
-    /* We use dedicated static routines for each mode in the hope that 
+    /* We use dedicated static routines for each mode in the hope that
     ** this improves the compiler's optimization for the inner loop. */
     switch (node->node_mode & SPI_MODE_3) {
     case SPI_MODE_0:
@@ -326,10 +327,10 @@ int GpioSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int x
     return 0;
 }
 
-/*! 
- * \brief Initialize an SPI bus node. 
+/*!
+ * \brief Initialize an SPI bus node.
  *
- * This routine is called for each SPI node, which is registered via 
+ * This routine is called for each SPI node, which is registered via
  * NutRegisterSpiDevice().
  *
  * \param node Specifies the SPI bus node.
@@ -358,7 +359,7 @@ int GpioSpiBus0NodeInit(NUTSPINODE * node)
  * \param tmo Timeout in milliseconds. To disable timeout, set this
  *            parameter to NUT_WAIT_INFINITE.
  *
- * \return 0 on success. In case of an error, -1 is returned and the bus 
+ * \return 0 on success. In case of an error, -1 is returned and the bus
  *         is not locked.
  */
 int GpioSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
@@ -437,6 +438,6 @@ NUTSPIBUS spiBus0Gpio = {
     GpioSpiBus0Transfer,        /*!< Transfer data to and from a specified device (bus_transfer). */
     NutSpiBusWait,              /*!< Wait for bus transfer ready (bus_wait). */
     NutSpiBusSetMode,           /*!< Set SPI mode of a specified device (bus_set_mode). */
-    NutSpiBusSetRate,           /*!< Set clock rate of a specified device (bus_set_rate). */
+    GpioSpiBusSetRate,          /*!< Set clock rate of a specified device (bus_set_rate). */
     NutSpiBusSetBits            /*!< Set number of data bits of a specified device (bus_set_bits). */
 };

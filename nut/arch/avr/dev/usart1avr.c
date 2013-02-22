@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -35,62 +35,13 @@
  * Dave Smart contributed the synchronous mode support.
  */
 
-/*
- * $Log$
- * Revision 1.9  2008/08/11 11:51:19  thiagocorrea
- * Preliminary Atmega2560 compile options, but not yet supported.
- * It builds, but doesn't seam to run properly at this time.
+/*!
+ * \file arch/avr/dev/usart1avr.c
+ * \brief AVR USART1 support.
  *
- * Revision 1.8  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.7  2008/04/29 02:28:34  thiagocorrea
- * Add configurable DTR pin to AVR USART driver.
- *
- * Revision 1.6  2007/08/29 07:43:53  haraldkipp
- * Documentation updated and corrected.
- *
- * Revision 1.5  2007/02/15 16:19:14  haraldkipp
- * Can use PORTG for half duplex control.
- *
- * Revision 1.4  2006/05/30 18:34:46  beutel
- * added #include <cfg/os.h> in compliance with usart0avr.c
- *
- * Revision 1.3  2006/02/08 15:20:06  haraldkipp
- * ATmega2561 Support
- *
- * Revision 1.2  2005/10/07 22:05:00  hwmaier
- * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.8  2005/07/22 08:07:08  freckle
- * added experimental improvements to usart driver. see ChangeLog for details
- *
- * Revision 1.7  2005/01/24 22:34:49  freckle
- * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
- *
- * Revision 1.6  2005/01/22 19:25:48  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.5  2004/10/22 18:04:35  freckle
- * added #ifdef check to support old-style CTS definition
- * (old style: setting CTS_SIGNAL, CTS_BIT, CTS_PORT, CTS_PIN and CTS_DDR)
- * instead of the new single CTS_IRQ definition
- *
- * Revision 1.4  2004/10/03 18:43:44  haraldkipp
- * Some drivers may require the base address set to 1
- *
- * Revision 1.3  2004/09/22 08:14:48  haraldkipp
- * Made configurable
- *
- * Revision 1.2  2004/05/24 20:17:15  drsung
- * Added function UsartSize to return number of chars in input buffer.
- *
- * Revision 1.1  2003/12/15 19:25:33  haraldkipp
- * New USART driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -397,7 +348,7 @@ NUTDEVICE devUsartAvr1 = {
 
 #ifdef __IMAGECRAFT__
 #define TXB8    TXB81
-#if defined(ATMega2560) || defined(ATMega2561)
+#if defined(ATMega2560) || defined(ATMega2561) || defined(MCU_AT90USB1287)
 #define UMSEL   UMSEL01
 #else
 #define UMSEL   UMSEL1
@@ -418,9 +369,22 @@ NUTDEVICE devUsartAvr1 = {
 #define sig_UART_DATA   sig_UART1_DATA
 #define sig_UART_TRANS  sig_UART1_TRANS
 
-#define SIG_UART_RECV   SIG_UART1_RECV
-#define SIG_UART_DATA   SIG_UART1_DATA
-#define SIG_UART_TRANS  SIG_UART1_TRANS
+/* avr-libc names the vector as in the datasheets. As Atmel naming is
+ * inconsistant, so is the avr-libc naming.
+ * Equalize!
+ */
+#if !defined(USART1_RX_vect) && defined(UART1_RX_vect)
+#define USART1_RX_vect UART1_RX_vect
+#endif
+#define SIG_AVRUART_RECV   USART1_RX_vect
+#if !defined(USART1_UDRE_vect) && defined(UART1_UDRE_vect)
+#define USART1_UDRE_vect UART1_UDRE_vect
+#endif
+#define SIG_AVRUART_DATA   USART1_UDRE_vect
+#if !defined(USART1_TX_vect) && defined(UART1_TX_vect)
+#define USART1_TX_vect UART1_TX_vect
+#endif
+#define SIG_AVRUART_TRANS  USART1_TX_vect
 
 #define dcb_usart   dcb_usart1
 
@@ -430,14 +394,17 @@ NUTDEVICE devUsartAvr1 = {
 #define TRACE_INT_UART_TXEMPTY TRACE_INT_UART1_TXEMPTY
 #endif
 
+/* Define to allow IRQ handler to read all bytes from RX FIFO. */
 #ifdef UART1_READMULTIBYTE
 #define UART_READMULTIBYTE
 #endif
 
+/* Define to use native interrupt handler. */
 #ifdef USE_USART1
 #define USE_USART
 #endif
 
+/* Define to bypass software flow control. */
 #ifdef UART1_NO_SW_FLOWCONTROL
 #define UART_NO_SW_FLOWCONTROL
 #endif

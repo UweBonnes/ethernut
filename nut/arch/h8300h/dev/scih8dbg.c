@@ -18,12 +18,12 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JAN DUBIEC
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
@@ -106,7 +106,7 @@ static int DebugInit(NUTDEVICE * dev)
 /*!
  * \brief Send a single character to debug device.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  */
 static void DebugPut(volatile struct st_sci *sci, char ch)
@@ -196,7 +196,7 @@ static int DebugRead(NUTFILE * fp, void *buffer, int len)
 /*!
  * \brief Send characters to debug device.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -226,7 +226,7 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return &dbgfile;
 }
 
-/*! 
+/*!
  * \brief Close debug device.
  *
  * \return Always 0.

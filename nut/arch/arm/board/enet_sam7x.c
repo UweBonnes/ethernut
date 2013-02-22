@@ -41,7 +41,7 @@
  * \endverbatim
  */
 
-#include <arch/arm.h>
+#include <toolchain.h>
 #include <inttypes.h>
 
 #define PHY_STRAP_AD0       _BV(PB5_ERX0_A)
@@ -60,7 +60,7 @@
 /*!
  * \brief Delay loop.
  *
- * \param Number of loops to execute. 
+ * \param Number of loops to execute.
  */
 
 static void eNet_sam7X_Delay(int n)
@@ -79,7 +79,7 @@ static void eNet_sam7X_ClockInit(void)
 {
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
-    outr(PMC_PCER, _BV(EMAC_ID));   
+    outr(PMC_PCER, _BV(EMAC_ID));
 }
 
 /*!
@@ -87,23 +87,23 @@ static void eNet_sam7X_ClockInit(void)
  */
 static void eNet_sam7X_Reset(void)
 {
-    uint32_t rstcr_tmp = inr(RSTC_MR) & 0x00FFFFFF;
+    uint32_t rstcr_tmp = inr(RSTC_MR) & ~RSTC_KEY_MSK;
 
     /* Set reset pulse length to 250us, disable user reset. */
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
     /* Invoke external reset. */
     outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
-    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles) 
+    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles)
     ** for NRST becoming low. */
     eNet_sam7X_Delay(250);
     /* Wait until reset pin is released. */
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
     /* Due to the RC filter, the pin is rising very slowly. */
     eNet_sam7X_Delay(25000);
-    outr(RSTC_MR, RSTC_KEY | rstcr_tmp); 
+    outr(RSTC_MR, RSTC_KEY | rstcr_tmp);
 }
-   
+
 
 /*!
  * \brief Initialize the PHY hardware.
@@ -114,9 +114,9 @@ static void eNet_sam7X_Reset(void)
  * issue an external reset.
  */
 static void eNet_sam7X_PhyInit(void)
-{  
+{
     /* Allow the PHY to power up (25ms) */
-    eNet_sam7X_Delay(250000);    
+    eNet_sam7X_Delay(250000);
     /* Disable pull-ups. */
     outr(PIOB_PUDR, PHY_STRAP);
     outr(PIOB_ODR,  PHY_STRAP);

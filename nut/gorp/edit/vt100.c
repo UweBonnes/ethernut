@@ -57,7 +57,7 @@
  * This routine has been tested with the TeraTerm terminal emulator
  * after loading the keymap contained in ibmkeyb.cnf. It allows to
  * use the arrow keys for moving the cursor and walking through
- * the history. This should work with most other VT100 emulations as 
+ * the history. This should work with most other VT100 emulations as
  * well.
  *
  * The following command sequences are remapped:
@@ -67,13 +67,13 @@
  * - ESC [ C remapped to \ref EDIT_KEY_RIGHT.
  * - ESC [ D remapped to \ref EDIT_KEY_LEFT.
  *
- * Internally calls \ref EdLineKeyMap to handle carriage return and 
+ * Internally calls \ref EdLineKeyMap to handle carriage return and
  * linefeed.
  *
  * \param key Input character to remap.
  * \param seq Pointer to an integer, which is used by the key mapping
  *            routine to store the current state. Note, that its value
- *            must be preserved by the caller between calls to 
+ *            must be preserved by the caller between calls to
  *            \ref EdLineRead.
  *
  * \return The mapped character. If \ref EDIT_KEY_IGNORE is returned

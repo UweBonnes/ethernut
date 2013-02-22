@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2009 by Thermotemp GmbH. All rights reserved.
  *
- * This code is based on a public domain implementation of md5.c by 
+ * This code is based on a public domain implementation of md5.c by
  * Colin Plumb, June 1993
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,8 +21,8 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -41,7 +41,7 @@
  *
  * $Log$
  * Revision 1.3  2009/03/08 20:19:10  haraldkipp
- * Replaced const by CONST to make it compile with ICCAVR.
+ * Replaced const by const to make it compile with ICCAVR.
  *
  * Revision 1.2  2009/03/06 23:51:38  olereinhardt
  * Fixed minor compile bugs
@@ -89,14 +89,14 @@ static void byteReverse(uint8_t *buf, size_t longs)
 
 /* This is the central step in the MD5 algorithm. */
 #define MD5STEP(f, w, x, y, z, data, s) \
-	( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
+    ( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
 
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-static void NutMD5Transform(uint32_t buf[4], uint32_t CONST in[16])
+static void NutMD5Transform(uint32_t buf[4], uint32_t const in[16])
 {
     register uint32_t a, b, c, d;
 
@@ -183,7 +183,7 @@ static void NutMD5Transform(uint32_t buf[4], uint32_t CONST in[16])
  * \brief Start MD5 accumulation.
  *
  * Start MD5 accumulation, set bit count to 0 and buffer to mysterious
- * initialization constants. Call this function to initialize every new 
+ * initialization constants. Call this function to initialize every new
  * MD5 calculation.
  *
  * \param context Points to the md5 context buffer.
@@ -210,7 +210,7 @@ void NutMD5Init(MD5CONTEXT *context)
  * \param len     Length of the data buffer
  */
 
-void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len)
+void NutMD5Update(MD5CONTEXT *context, uint8_t const *buf, uint32_t len)
 {
     uint32_t t;
 
@@ -220,7 +220,7 @@ void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len)
     if ((context->bits[0] = t + ((uint32_t) len << 3)) < t) {
         context->bits[1]++;         /* Carry from low to high */
     }
-    
+
     context->bits[1] += len >> 29;
 
     t = (t >> 3) & 0x3f;        /* Bytes already in shsInfo->data */
@@ -264,7 +264,7 @@ void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len)
 /*!
  * \brief Final wrapup, calculate MD5 digest
  *
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  * Fill in the digest into digest buffer
  *
@@ -304,8 +304,8 @@ void NutMD5Final(MD5CONTEXT *context, uint8_t digest[16])
     byteReverse(context->in, 14);
 
     /* Append length in bits and transform */
-    ((uint32_t *) context->in)[14] = context->bits[0];
-    ((uint32_t *) context->in)[15] = context->bits[1];
+    memcpy(context->in + 56, &context->bits[0], sizeof(context->bits[0]));
+    memcpy(context->in + 60, &context->bits[1], sizeof(context->bits[1]));
 
     NutMD5Transform(context->buf, (uint32_t *) context->in);
     byteReverse((unsigned char *) context->buf, 4);

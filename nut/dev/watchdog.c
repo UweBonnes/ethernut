@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -54,7 +54,11 @@ uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     return At91WatchDogStart(ms, xmode);
 #elif defined(__AVR32__)
-	return Avr32WatchDogStart(ms);
+    return Avr32WatchDogStart(ms);
+#elif defined(MCU_LPC17xx)
+    return Lpc17xxWatchDogStart(ms, xmode);
+#elif defined(MCU_MCF5225X)
+	return Mcf5225xWatchDogStart(ms);
 #else
     return 0;
 #endif
@@ -70,7 +74,11 @@ void NutWatchDogRestart(void)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     At91WatchDogRestart();
 #elif defined(__AVR32__)
-	return Avr32WatchDogRestart();
+    Avr32WatchDogRestart();
+#elif defined(MCU_LPC17xx)
+    Lpc17xxWatchDogRestart();
+#elif defined(MCU_MCF5225X)
+	Mcf5225xWatchDogRestart();
 #endif
 }
 
@@ -84,7 +92,11 @@ void NutWatchDogDisable(void)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     At91WatchDogDisable();
 #elif defined(__AVR32__)
-	return Avr32WatchDogDisable();
+    Avr32WatchDogDisable();
+#elif defined(MCU_LPC17xx)
+    Lpc17xxWatchDogDisable();
+#elif defined(MCU_MCF5225X)
+	Mcf5225xWatchDogDisable();
 #endif
 }
 
@@ -98,7 +110,11 @@ void NutWatchDogEnable(void)
 #elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     At91WatchDogEnable();
 #elif defined(__AVR32__)
-	return Avr32WatchDogEnable();
+    Avr32WatchDogEnable();
+#elif defined(MCU_LPC17xx)
+    Lpc17xxWatchDogEnable();
+#elif defined(MCU_MCF5225X)
+	Mcf5225xWatchDogEnable();
 #endif
 }
 

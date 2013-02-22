@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,34 +31,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.11  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.10  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.9  2008/08/11 06:59:41  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.8  2007/08/17 11:34:00  haraldkipp
- * Default timeout needs to be multiplied by 1000.
- *
- * Revision 1.7  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.5  2004/03/08 11:12:59  haraldkipp
- * Debug output added.
- *
- * Revision 1.4  2004/01/15 08:02:35  drsung
- * Copyright added
- *
+ * $Id$
  */
 
 #include <cfg/os.h>
@@ -74,7 +47,9 @@
 
 uint8_t *chat_report;
 
-#ifdef NUTDEBUG
+#ifdef NUTDEBUG_CHAT
+
+#include <stdio.h>
 
 static FILE *__chat_trs;        /*!< \brief Chat trace output stream. */
 static uint8_t __chat_trf;       /*!< \brief Chat trace flags. */
@@ -82,7 +57,7 @@ static uint8_t __chat_trf;       /*!< \brief Chat trace flags. */
 /*!
  * \brief Control chat tracing.
  *
- * \param stream Pointer to a previously opened stream or null to 
+ * \param stream Pointer to a previously opened stream or null to
  *               disable trace output.
  * \param flags  Flags to enable specific traces.
  */
@@ -91,19 +66,50 @@ void NutTraceChat(FILE * stream, uint8_t flags)
     if (stream)
         __chat_trs = stream;
     if (__chat_trs) {
-        static prog_char dbgfmt[] = "Chat trace flags=0x%02X\n";
         __chat_trf = flags;
-        fprintf_P(__chat_trs, dbgfmt, flags);
+        fprintf(__chat_trs, "Chat trace flags=0x%02x\n", flags);
     } else
         __chat_trf = 0;
 }
+
+static INLINE void NutTracePrintf(const char *fmt, ...)
+{
+    if (__chat_trf) {
+        va_list ap;
+
+        va_start(ap, fmt);
+        vfprintf(__chat_trs, fmt, ap);
+        va_end(ap);
+    }
+}
+
+static INLINE void NutTracePutChar(int ch)
+{
+    if (__chat_trf) {
+        if (ch > 31 && ch < 127) {
+            fputc(ch, __chat_trs);
+        } else {
+            fprintf(__chat_trs, "\\x%02x", ch);
+        }
+    }
+}
+
+#else
+
+#ifdef __GNUC__
+#define NutTracePrintf(fmt,...)
+#else
+static INLINE void NutTracePrintf(const char *fmt, ...) {}
+#endif
+
+#define NutTracePutChar(ch)
 
 #endif
 
 /*
  * Special version of strchr, handling escaped characters.
  */
-static char *strechr(CONST char *str, int c)
+static char *strechr(const char *str, int c)
 {
     while (*str) {
         if (*str == '\\') {
@@ -120,13 +126,13 @@ static char *strechr(CONST char *str, int c)
 /*!
  * \brief Wait for a specific string to appear.
  *
- * \param ci  Pointer to a NUTCHAT structure, which must have been 
+ * \param ci  Pointer to a NUTCHAT structure, which must have been
  *            created by NutChatCreate().
  * \param str Expected string. May be empty if nothing is expected.
  *
  * \return 0 on success, 3 in case of a timeout error while waiting
- *         for an expected string, or the index of an abort string 
- *         plus 4, if one has been received. 
+ *         for an expected string, or the index of an abort string
+ *         plus 4, if one has been received.
  */
 int NutChatExpectString(NUTCHAT * ci, char *str)
 {
@@ -135,36 +141,18 @@ int NutChatExpectString(NUTCHAT * ci, char *str)
     uint8_t i;
     char *cp = str;
 
-#ifdef NUTDEBUG
-    if (__chat_trf) {
-        static prog_char dbgfmt[] = "Expect '%s', got '";
-        fprintf_P(__chat_trs, dbgfmt, str);
-    }
-#endif
-
+    NutTracePrintf("Expect '%s', got '", str);
     while (*cp) {
 
         /*
          * Read the next character. Return on timeout.
          */
         if (_read(ci->chat_fd, &ch, 1) != 1) {
-#ifdef NUTDEBUG
-            if (__chat_trf) {
-                static prog_char dbgmsg[] = "' TIMEOUT\n";
-                fputs_P(dbgmsg, __chat_trs);
-            }
-#endif
+            NutTracePrintf("' TIMEOUT\n");
             return 3;
         }
-#ifdef NUTDEBUG
-        if (__chat_trf) {
-            if (ch > 31 && ch < 127) {
-                fputc(ch, __chat_trs);
-            } else {
-                fprintf(__chat_trs, "\\x%02X", ch);
-            }
-        }
-#endif
+        NutTracePutChar(ch);
+
         /*
          * If the character doesn't match the next expected one,
          * then restart from the beginning of the expected string.
@@ -188,12 +176,7 @@ int NutChatExpectString(NUTCHAT * ci, char *str)
             m = ci->chat_abomat[i];
             if (ch == ci->chat_abort[i][m]) {
                 if (ci->chat_abort[i][++m] == 0) {
-#ifdef NUTDEBUG
-                    if (__chat_trf) {
-                        static prog_char dbgmsg[] = "' ABORT\n";
-                        fputs_P(dbgmsg, __chat_trs);
-                    }
-#endif
+                    NutTracePrintf("' ABORT\n");
                     return i + 4;
                 }
             } else
@@ -230,26 +213,12 @@ int NutChatExpectString(NUTCHAT * ci, char *str)
                 break;
             }
             chat_report[m++] = ch;
-
-#ifdef NUTDEBUG
-            if (__chat_trf) {
-                if (ch > 31 && ch < 127) {
-                    fputc(ch, __chat_trs);
-                } else {
-                    fprintf(__chat_trs, "\\x%02X", ch);
-                }
-            }
-#endif
+            NutTracePutChar(ch);
         }
         ci->chat_report_state = 0;      /* Only find first occurence */
         chat_report[m] = 0;
     }
-#ifdef NUTDEBUG
-    if (__chat_trf) {
-        static prog_char dbgmsg[] = "'\n";
-        fputs_P(dbgmsg, __chat_trs);
-    }
-#endif
+    NutTracePrintf("'\n");
 
     return 0;
 }
@@ -264,12 +233,7 @@ static int NutChatSendString(int fd, char *str)
     uint8_t skip;
     char ch;
 
-#ifdef NUTDEBUG
-    if (__chat_trf) {
-        static prog_char dbgfmt[] = "Send '%s'\n";
-        fprintf_P(__chat_trs, dbgfmt, str);
-    }
-#endif
+    NutTracePrintf("Send '%s'\n", str);
 
     /* Flush input buffer. */
     _read(fd, 0, 0);
@@ -346,13 +310,13 @@ static int NutChatSendString(int fd, char *str)
 }
 
 /*
- * \param ci Pointer to a NUTCHAT structure, which must have been 
+ * \param ci Pointer to a NUTCHAT structure, which must have been
  *           created by NutChatCreate().
  *
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 int NutChatExpect(NUTCHAT * ci, char *str)
 {
@@ -401,14 +365,14 @@ int NutChatExpect(NUTCHAT * ci, char *str)
 /*!
  * \brief Process a chat send argument.
  *
- * \param ci  Pointer to a NUTCHAT structure, which must have been 
+ * \param ci  Pointer to a NUTCHAT structure, which must have been
  *            created by NutChatCreate().
  * \param str String containing the chat send argument.
  *
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 int NutChatSend(NUTCHAT * ci, char *str)
 {
@@ -527,7 +491,7 @@ NUTCHAT *NutChatCreate(int fd)
 /*!
  * \brief Destroy a previously created NUTCHAT structure.
  *
- * \param ci Pointer to a NUTCHAT structure, which must have been 
+ * \param ci Pointer to a NUTCHAT structure, which must have been
  *           created by NutChatCreate().
  */
 void NutChatDestroy(NUTCHAT * ci)
@@ -547,7 +511,7 @@ void NutChatDestroy(NUTCHAT * ci)
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 static int NutChatProc(int fd, char *script)
 {
@@ -576,7 +540,7 @@ static int NutChatProc(int fd, char *script)
     _ioctl(fd, UART_SETWRITETIMEOUT, &to);
 
     /*
-     * This loop splits up the chat string into arguments and 
+     * This loop splits up the chat string into arguments and
      * alternating calls NutChatSend and NutChatExpect.
      */
     while (*script && rc == 0) {
@@ -657,9 +621,9 @@ static int NutChatProc(int fd, char *script)
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
-int NutChat(int fd, CONST char *script)
+int NutChat(int fd, const char *script)
 {
     int rc = -1;
     char *buf;
@@ -683,7 +647,7 @@ int NutChat(int fd, CONST char *script)
  * \return 0 on success, 1 in case of invalid parameters, 2 in case
  *         of an I/O error, 3 in case of a timeout error while waiting
  *         for an expected string, or the index of an abort string plus
- *         4, if one has been received. 
+ *         4, if one has been received.
  */
 #ifdef __HARVARD_ARCH__
 int NutChat_P(int fd, PGM_P script)

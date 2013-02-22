@@ -42,6 +42,7 @@
 #
 #
 
+ACLOCAL_AMFLAGS = -I m4
 MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = nutdoc_en.txt nut_en.cfg.in nut_en.css nut_entabs.css nutfoot.html nuthead.html
@@ -59,9 +60,10 @@ ref-build.stamp: nut_en.cfg nutdoc_en.txt nut_en.css nutfoot.html nuthead.html
 
 dist-hook:
 	mkdir -p $(distdir)/../en
-	cp -r ../en/* $(distdir)/../en/
+#	cp -r ../en/* $(distdir)/../en/
 endif
 
 distclean-local: clean
 	rm -f doxy.log ref-build.stamp
-	rm -rf ../en/html/ ../en/rtf/
+	rm -rf ../en/html/ ../en/rtf/ ../en/latex/
+

@@ -49,11 +49,11 @@
  *    This product includes software developed by egnite Software GmbH
  *    and its contributors.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -66,33 +66,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
+/*!
+ * \file arch/avr/dev/eth0cs.c
+ * \brief AVR network device for CS8900.
  *
- * Revision 1.3  2007/05/02 11:22:51  haraldkipp
- * Added multicast table entry.
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2003/08/05 20:05:11  haraldkipp
- * DNS removed from interface
- *
- * Revision 1.2  2003/07/20 20:07:38  haraldkipp
- * Conflicting Ethernet driver routine names solved.
- *
- * Revision 1.1  2003/07/20 16:37:21  haraldkipp
- * CrystalTek 8900A driver added.
- *
- * Revision 0.1  2002/05/02 CDCS MJC
- * Created
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/if_ether.h>
@@ -124,18 +104,22 @@ IFNET ifn_eth0cs = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     CSNicOutput,                /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*
  * \brief Device information structure.
  *
- * Applications must pass this structure to NutRegisterDevice() 
+ * Applications must pass this structure to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
  * Having done that, the application may call NutNetIfConfig()
  * with the name \em eth0 of this driver to initialize the network
  * interface.
- * 
+ *
  */
 NUTDEVICE devEth0cs = {
     0,                          /*!< Pointer to next device. */

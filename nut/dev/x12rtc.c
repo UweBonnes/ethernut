@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -210,7 +210,7 @@ int X12RtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
+int X12RtcWrite(int nv, const uint8_t *buff, size_t cnt)
 {
     int rc;
 
@@ -242,7 +242,7 @@ int X12RtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcGetClock(struct _tm *tm)
+int X12RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     int rc;
     uint8_t data[8];
@@ -279,7 +279,7 @@ int X12RtcGetClock(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcSetClock(CONST struct _tm *tm)
+int X12RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint8_t data[10];
 
@@ -323,7 +323,7 @@ int X12RtcSetClock(CONST struct _tm *tm)
  * \return 0 on success or -1 in case of an error.
  *
  */
-int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
+int X12RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs)
 {
     int rc;
     uint8_t data[8];
@@ -377,7 +377,7 @@ int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
+int X12RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs)
 {
     uint8_t data[10];
 
@@ -418,7 +418,7 @@ int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcGetStatus(uint32_t *sflgs)
+int X12RtcGetStatus(NUTRTC *rtc, uint32_t *sflgs)
 {
     int rc;
     uint8_t data;
@@ -439,7 +439,7 @@ int X12RtcGetStatus(uint32_t *sflgs)
  *
  * \return Always 0.
  */
-int X12RtcClearStatus(uint32_t sflgs)
+int X12RtcClearStatus(NUTRTC *rtc, uint32_t sflgs)
 {
     rtc_status &= ~sflgs;
 
@@ -447,13 +447,15 @@ int X12RtcClearStatus(uint32_t sflgs)
 }
 
 NUTRTC rtcX12x6 = {
-    X12Init,            /*!< Hardware initializatiuon, rtc_init */
-    X12RtcGetClock,     /*!< Read date and time, rtc_gettime */
-    X12RtcSetClock,     /*!< Set date and time, rtc_settime */
-    X12RtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
-    X12RtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
-    X12RtcGetStatus,    /*!< Read status flags, rtc_getstatus */
-    X12RtcClearStatus   /*!< Clear status flags, rtc_clrstatus */
+  /*.dcb           = */ NULL,               /*!< Driver control block */
+  /*.rtc_init      = */ X12Init,            /*!< Hardware initialization, rtc_init */
+  /*.rtc_gettime   = */ X12RtcGetClock,     /*!< Read date and time, rtc_gettime */
+  /*.rtc_settime   = */ X12RtcSetClock,     /*!< Set date and time, rtc_settime */
+  /*.rtc_getalarm  = */ X12RtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ X12RtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getstatus = */ X12RtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+  /*.rtc_clrstatus = */ X12RtcClearStatus,  /*!< Clear status flags, rtc_clrstatus */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };
 
 
@@ -491,12 +493,12 @@ int X12EepromRead(unsigned int addr, void *buff, size_t len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len)
+int X12EepromWrite(unsigned int addr, const void *buff, size_t len)
 {
     int rc = 0;
     uint8_t *wbuf;
     size_t wlen;
-    CONST uint8_t *wp = buff;
+    const uint8_t *wp = buff;
 
     /*
      * Loop for each page to be written to.
@@ -549,7 +551,7 @@ int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len)
  * \return 0 on success or -1 in case of an error.
  *
  */
-int X12Init(void)
+int X12Init(NUTRTC *rtc)
 {
     int rc;
     uint32_t tmp;
@@ -558,7 +560,7 @@ int X12Init(void)
     /* Initialize I2C bus. */
     if ((rc = TwInit(0)) == 0) {
         /* Query RTC status. */
-        if ((rc = X12RtcGetStatus(&tmp)) == 0) {
+        if ((rc = X12RtcGetStatus(rtc, &tmp)) == 0) {
             /*
              * If I2C initialization and RTC status query succeeded, try
              * to determine the chip we got. On Ethernut 3.0 Rev-D the

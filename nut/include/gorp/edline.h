@@ -1,5 +1,5 @@
 #ifndef _GORP_EDLINE_EDLINE_H_
-#define	_GORP_EDLINE_EDLINE_H_
+#define _GORP_EDLINE_EDLINE_H_
 
 /*
  * Copyright 2009 by egnite GmbH
@@ -182,8 +182,6 @@ typedef struct _EDLINE {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* */
 extern EDLINE *EdLineOpen(uint16_t mode);
 extern void EdLineClose(EDLINE *el);
 extern int EdLineRead(EDLINE *el, char *buf, int siz);
@@ -203,6 +201,4 @@ extern int EdLineKeyMapVt100(int key, int *seq);
 extern void EdLineRegisterInput(EDLINE *el, EDLINEGET get, void *iparm);
 extern void EdLineRegisterOutput(EDLINE *el, EDLINEPUT put, void *oparm);
 
-__END_DECLS
-/* */
 #endif

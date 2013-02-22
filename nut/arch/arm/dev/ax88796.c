@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -116,17 +116,21 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     AsixOutput,                 /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devAx88796 = {
     0,                          /* Pointer to next device. */
@@ -155,7 +159,7 @@ struct nic_pkt_header {
 };
 
 /*
- * This delay has been added by Bengt Florin and is used to minimize 
+ * This delay has been added by Bengt Florin and is used to minimize
  * the effect of the IORDY line during reads. Bengt contributed a
  * more versatile loop, which unfortunately wasn't portable to the
  * ImageCraft compiler.
@@ -355,7 +359,7 @@ static int NicReset(void)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(const uint8_t * mac)
 {
     uint8_t i;
 
@@ -408,7 +412,7 @@ static int NicStart(CONST uint8_t * mac)
     Asix_Write(PG1_CPR, RXSTART_INIT + 1);
 
     /* Start the NIC, Abort DMA, page 0. */
-    Asix_Write(CR, (CR_RD2 | CR_START));        // stop the NIC, abort DMA, page 0   
+    Asix_Write(CR, (CR_RD2 | CR_START));        // stop the NIC, abort DMA, page 0
     Delay16Cycles();
 
     /* Select media interfac. */
@@ -496,7 +500,7 @@ static NETBUF *NicGetPacket(void)
     NutEnterCritical();
 
     /*
-     * Get the current page pointer. It points to the page where the NIC 
+     * Get the current page pointer. It points to the page where the NIC
      * will start saving the next incoming packet.
      */
     curr = Asix_Read(PG0_CPR);
@@ -548,7 +552,7 @@ static NETBUF *NicGetPacket(void)
 
 //      nextpg = hdr.ph_nextpg;
 //  bnry = hdr.ph_nextpg - 1;
-//      if(bnry < RXSTART_INIT) bnry = RXSTOP_INIT - 1; 
+//      if(bnry < RXSTART_INIT) bnry = RXSTOP_INIT - 1;
 
 //  printf("hdr.ph_size = %02u\n\r",hdr.ph_size);
 //  printf("hdr.ph_nextpg = %02x\n\r",hdr.ph_nextpg);
@@ -621,7 +625,7 @@ static NETBUF *NicGetPacket(void)
 /*
  * \brief Handle NIC overflows.
  *
- * When a receiver buffer overflow occurs, the NIC will defer any subsequent 
+ * When a receiver buffer overflow occurs, the NIC will defer any subsequent
  * action until properly restarted.
  *
  * This routine is called within interrupt context, which introduces a big
@@ -643,15 +647,15 @@ static uint8_t NicOverflow(volatile uint8_t * base)
     unsigned int curr;
 
     /*
-     * Wait for any transmission in progress. Save the command register, 
-     * so we can later determine, if NIC transmitter has been interrupted. 
+     * Wait for any transmission in progress. Save the command register,
+     * so we can later determine, if NIC transmitter has been interrupted.
      * or reception in progress.
      */
     while (Asix_Read(CR) & CR_TXP);
     cr = Asix_Read(CR);
 
     /*
-     * Get the current page pointer. It points to the page where the NIC 
+     * Get the current page pointer. It points to the page where the NIC
      * will start saving the next incoming packet.
      */
     Asix_Write(CR, CR_STOP | CR_RD2 | CR_PS0);
@@ -671,9 +675,9 @@ static uint8_t NicOverflow(volatile uint8_t * base)
     Asix_Write(PG0_TCR, TCR_LB0);
     Asix_Write(CR, CR_START | CR_RD2);
 
-    /* 
-     * Discard all packets from the receiver buffer. Set boundary 
-     * register to the last page we read. 
+    /*
+     * Discard all packets from the receiver buffer. Set boundary
+     * register to the last page we read.
      */
     if (--curr < TXSTART_INIT) {
         curr = RXSTOP_INIT - 1;
@@ -723,7 +727,7 @@ static int NicPutPacket(NETBUF * nb)
 
     /*
      * Calculate the number of min bytes. Pad will be
-     * added when packet lenght less than 60. Enable in TCR reg. PD = 0. 
+     * added when packet lenght less than 60. Enable in TCR reg. PD = 0.
      */
     send_sz = sz;
     if (sz <= 60)
@@ -880,8 +884,8 @@ static void NicInterrupt(void *arg)
     } else {
 
         /*
-         * If this is a transmit interrupt, then a packet has been sent. 
-         * So we can clear the transmitter busy flag and wake up the 
+         * If this is a transmit interrupt, then a packet has been sent.
+         * So we can clear the transmitter busy flag and wake up the
          * transmitter thread.
          */
         if (isr & (ISR_PTX | ISR_TXE)) {
@@ -889,7 +893,7 @@ static void NicInterrupt(void *arg)
         }
 
         /*
-         * If this is a receive interrupt, then wake up the receiver 
+         * If this is a receive interrupt, then wake up the receiver
          * thread.
          */
         if (isr & ISR_PRX) {
@@ -910,7 +914,7 @@ static void NicInterrupt(void *arg)
     }
 }
 
-void NicInterruptEntry(void) __attribute__ ((naked));
+void NicInterruptEntry(void) NUT_NAKED_FUNC;
 void NicInterruptEntry(void)
 {
     IRQ_ENTRY();
@@ -947,11 +951,11 @@ int AsixOutput(NUTDEVICE * dev, NETBUF * nb)
  * \brief Initialize Ethernet hardware.
  *
  * Resets the Asix Asix_L Ethernet controller, initializes all required
- * hardware registers and starts a background thread for incoming 
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application

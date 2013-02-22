@@ -171,8 +171,8 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-    NutRegisterDevice(&DEV_DEBUG, 0, 0);
-    freopen(DEV_DEBUG_NAME, "w", stdout);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     NutSleep(200);
     printf("\n\nNut/OS %s HTTP Daemon...\n", NutVersionString());
@@ -189,7 +189,7 @@ int main(void)
         printf("Add \"All Host\" multicast address...");
         if (NutNetIfAddMcastAddr(DEV_ETHER_NAME, INADDR_ALLHOSTS_GROUP) != 0) {
             /*
-             * It could be possible that your ethernet 
+             * It could be possible that your ethernet
              * driver does not support multicast.
              */
             puts("failed");

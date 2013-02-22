@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -35,58 +35,13 @@
  * Dave Smart contributed the synchronous mode support.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/usartavr.c
+ * \brief AVR USART support.
  *
- * Revision 1.6  2008/04/29 02:28:34  thiagocorrea
- * Add configurable DTR pin to AVR USART driver.
- *
- * Revision 1.5  2007/11/13 20:16:33  thiagocorrea
- * Fix a small documentation typo
- *
- * Revision 1.4  2007/03/08 16:59:01  freckle
- * moved Exit Tracer event to end of IRQ
- *
- * Revision 1.3  2006/08/05 11:53:02  haraldkipp
- * Half duplex flow control used the wrong buffer. Many thanks to
- * Andrej Taran for fixing this bug.
- *
- * Revision 1.2  2005/10/07 22:05:00  hwmaier
- * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.10  2005/07/22 08:07:07  freckle
- * added experimental improvements to usart driver. see ChangeLog for details
- *
- * Revision 1.9  2005/02/21 12:38:00  phblum
- * Removed tabs and added semicolons after NUTTRACER macros
- *
- * Revision 1.8  2005/01/24 22:34:46  freckle
- * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
- *
- * Revision 1.6  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.5  2004/11/12 08:25:51  drsung
- * Bugfix in AvrUsartTxEmpty. Thanks to Grzegorz Plonski and Matthias Ringwald.
- *
- * Revision 1.4  2004/05/26 09:04:17  drsung
- * Bugfix in AvrUsartTxStart. Now the correct port and pin are used for half duplex mode...again...
- * Thanks to Przemyslaw Rudy.
- *
- * Revision 1.3  2004/05/16 14:09:06  drsung
- * Applied bugfixes for half duplex mode an XON/XOFF handling. Thanks to Damian Slee.
- *
- * Revision 1.2  2004/04/07 12:58:52  haraldkipp
- * Bugfix for half duplex mode
- *
- * Revision 1.1  2003/12/15 19:25:33  haraldkipp
- * New USART driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/atom.h>
@@ -137,14 +92,14 @@ static ureg_t flow_control;
 static ureg_t tx_aframe;
 
 #ifdef UART_HDX_BIT
-	/* define in cfg/modem.h */
-	#ifdef UART_HDX_FLIP_BIT	/* same as RTS toggle by Windows NT driver */
-		#define UART_HDX_TX		cbi
-		#define UART_HDX_RX		sbi
-	#else						/* previous usage by Ethernut */
-		#define UART_HDX_TX		sbi
-		#define UART_HDX_RX		cbi
-	#endif
+    /* define in cfg/modem.h */
+    #ifdef UART_HDX_FLIP_BIT    /* same as RTS toggle by Windows NT driver */
+        #define UART_HDX_TX     cbi
+        #define UART_HDX_RX     sbi
+    #else                       /* previous usage by Ethernut */
+        #define UART_HDX_TX     sbi
+        #define UART_HDX_RX     cbi
+    #endif
 #endif
 
 
@@ -232,7 +187,7 @@ static void AvrUsartTxComplete(void *arg)
  */
 #ifdef USE_USART
 
-SIGNAL( SIG_UART_DATA ) {
+SIGNAL( SIG_AVRUART_DATA ) {
     register RINGBUF *rbf = &dcb_usart.dcb_tx_rbf;
 
 #else
@@ -279,7 +234,7 @@ static void AvrUsartTxEmpty(void *arg) {
         TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
 #endif
         return;
-	}
+    }
 #endif /* UART_NO_SW_FLOWCONTROL */
 
     if (rbf->rbf_cnt) {
@@ -350,7 +305,7 @@ static void AvrUsartTxEmpty(void *arg) {
  */
 
 #ifdef USE_USART
-SIGNAL( SIG_UART_RECV ){
+SIGNAL( SIG_AVRUART_RECV ){
     register RINGBUF *rbf = &dcb_usart.dcb_rx_rbf;
 
 #else
@@ -485,7 +440,7 @@ static void AvrUsartRxComplete(void *arg) {
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif
-    
+
 }
 
 
@@ -861,14 +816,14 @@ static uint32_t AvrUsartGetStatus(void)
 #endif
 
 #ifdef UART_DTR_BIT
-	/*
-	* Determine DTS status.
-	*/
-	if ( bit_is_set( UART_DTR_PORT, UART_DTR_BIT ) ) {
-		rc |= UART_DTRENABLED;
-	} else {
-		rc |= UART_DTRDISABLED;
-	}
+    /*
+    * Determine DTS status.
+    */
+    if ( bit_is_set( UART_DTR_PORT, UART_DTR_BIT ) ) {
+        rc |= UART_DTRENABLED;
+    } else {
+        rc |= UART_DTRDISABLED;
+    }
 #endif
 
     /*
@@ -963,14 +918,14 @@ static int AvrUsartSetStatus(uint32_t flags)
 #endif
 
 #ifdef UART_DTR_BIT
-	if ( flags & UART_DTRDISABLED ) {
-		sbi(UART_DTR_DDR, UART_DTR_BIT);
-		sbi(UART_DTR_PORT, UART_DTR_BIT);
-	}
-	if ( flags & UART_DTRENABLED ) {
-		sbi(UART_DTR_DDR, UART_DTR_BIT);
-		cbi(UART_DTR_PORT, UART_DTR_BIT);
-	}
+    if ( flags & UART_DTRDISABLED ) {
+        sbi(UART_DTR_DDR, UART_DTR_BIT);
+        sbi(UART_DTR_PORT, UART_DTR_BIT);
+    }
+    if ( flags & UART_DTRENABLED ) {
+        sbi(UART_DTR_DDR, UART_DTR_BIT);
+        cbi(UART_DTR_PORT, UART_DTR_BIT);
+    }
 #endif
 
     /*
@@ -1265,7 +1220,7 @@ static void AvrUsartTxStart(void)
 #ifdef UART_HDX_BIT
     if (hdx_control) {
         /* Enable half duplex transmitter. */
-	UART_HDX_TX(UART_HDX_PORT, UART_HDX_BIT);
+    UART_HDX_TX(UART_HDX_PORT, UART_HDX_BIT);
     }
 #endif
     /* Enable transmit interrupts. */
@@ -1327,11 +1282,11 @@ static int AvrUsartInit(void)
 #endif
 
 #ifdef UART_RTS_BIT
-	sbi(UART_RTS_DDR, UART_RTS_BIT);
+    sbi(UART_RTS_DDR, UART_RTS_BIT);
 #endif
 
 #ifdef UART_DTR_BIT
-	sbi(UART_DTR_DDR, UART_DTR_BIT);
+    sbi(UART_DTR_DDR, UART_DTR_BIT);
 #endif
 
     return 0;
@@ -1384,7 +1339,7 @@ static int AvrUsartDeinit(void)
 #endif
 
 #ifdef UART_DTR_BIT
-	cbi(UART_DTR_DDR, UART_DTR_BIT);
+    cbi(UART_DTR_DDR, UART_DTR_BIT);
 #endif
 
     return 0;

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -81,8 +81,8 @@
 
 /*!
  * \brief Compare two strings up to a given number of characters.
- * 
- * The strings are compared lexicographically. The comparison is done 
+ *
+ * The strings are compared lexicographically. The comparison is done
  * using unsigned characters,
  *
  * \param s1 Pointer to the first string.
@@ -90,11 +90,11 @@
  * \param n  Number of bytes to compare.
  *
  * \return An integer greater than, equal to, or less than 0, according
- *         to whether the first string is greater than, equal to, or less 
- *         than the second string after translation of each corresponding 
+ *         to whether the first string is greater than, equal to, or less
+ *         than the second string after translation of each corresponding
  *         character to lower-case.
  */
-int strncmp(CONST char *s1, CONST char *s2, size_t n)
+int strncmp(const char *s1, const char *s2, size_t n)
 {
 
     if (n == 0)

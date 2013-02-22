@@ -165,8 +165,8 @@ static int str_dump (lua_State *L) {
 */
 
 
-#define CAP_UNFINISHED	(-1)
-#define CAP_POSITION	(-2)
+#define CAP_UNFINISHED  (-1)
+#define CAP_POSITION    (-2)
 
 typedef struct MatchState {
   const char *src_init;  /* init of source string */
@@ -180,8 +180,8 @@ typedef struct MatchState {
 } MatchState;
 
 
-#define L_ESC		'%'
-#define SPECIALS	"^$*+?.([%-"
+#define L_ESC       '%'
+#define SPECIALS    "^$*+?.([%-"
 
 
 static int check_capture (MatchState *ms, int l) {
@@ -639,7 +639,7 @@ static void add_value (MatchState *ms, luaL_Buffer *b, const char *s,
     lua_pushlstring(L, s, e - s);  /* keep original text */
   }
   else if (!lua_isstring(L, -1))
-    luaL_error(L, "invalid replacement value (a %s)", luaL_typename(L, -1)); 
+    luaL_error(L, "invalid replacement value (a %s)", luaL_typename(L, -1));
   luaL_addvalue(b);  /* add result to accumulator */
 }
 
@@ -687,14 +687,14 @@ static int str_gsub (lua_State *L) {
 
 
 /* maximum size of each formatted item (> len(format('%99.99f', -1e308))) */
-#define MAX_ITEM	512
+#define MAX_ITEM    512
 /* valid flags in a format specification */
-#define FLAGS	"-+ #0"
+#define FLAGS   "-+ #0"
 /*
 ** maximum size of each format specification (such as '%-099.99d')
 ** (+10 accounts for %99.99x plus margin of error)
 */
-#define MAX_FORMAT	(sizeof(FLAGS) + sizeof(LUA_INTFRMLEN) + 10)
+#define MAX_FORMAT  (sizeof(FLAGS) + sizeof(LUA_INTFRMLEN) + 10)
 
 
 static void addquoted (lua_State *L, luaL_Buffer *b, int arg) {
@@ -827,7 +827,7 @@ static int str_format (lua_State *L) {
 
 /* Compile the correct version of "gfind" */
 #if NUTLUA_OPTIMIZE_MEMORY > 0 && defined(LUA_COMPAT_GFIND)
-#define LUA_GFIND_DECL	{"gfind", gmatch}
+#define LUA_GFIND_DECL  {"gfind", gmatch}
 #else
 #define LUA_GFIND_DECL  {"gfind", gfind_nodef}
 #endif

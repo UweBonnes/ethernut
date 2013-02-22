@@ -62,7 +62,7 @@
 #define PCA_PINV    4   /**< PCA Polarity inversion register offset */
 #define PCA_CONF    6   /**< PCA Configuration register offset */
 
-typedef struct __attribute__ ((packed))
+typedef struct NUT_PACKED_TYPE
 {
     uint8_t out[2];
     uint8_t pol[2];
@@ -85,17 +85,17 @@ int IOExpInit( void )
     pca_ctrl->con[1] = 0xff;
     pca_ctrl->pol[0] = 0x00;
     pca_ctrl->pol[1] = 0x00;
-    
+
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT, 1, &pca_ctrl->out[0], 2, 50) == -1)
         return -1;
 
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_CONF , 1, &pca_ctrl->con[0], 2, 50) == -1)
         return -1;
-    
+
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_PINV , 1, &pca_ctrl->pol[0], 2, 50) == -1)
         return -1;
 
-	return 0;
+    return 0;
 }
 
 /*****************************************************************/
@@ -103,7 +103,7 @@ int IOExpPinConfigSet( int bank, int bit, uint32_t flags)
 /*****************************************************************/
 {
     bank &= 0xf;
-    
+
     if( flags == 0) /* Input */
         pca_ctrl->con[bank] |= (1<<bit);
     if( flags & GPIO_CFG_OUTPUT)
@@ -112,17 +112,17 @@ int IOExpPinConfigSet( int bank, int bit, uint32_t flags)
         pca_ctrl->pol[bank] |= (1<<bit);
     if( flags & GPIO_CFG_NORM)
         pca_ctrl->pol[bank] &= ~(1<<bit);
-    
+
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50) == -1)
         return -1;
 
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_CONF+bank, 1, &pca_ctrl->con[bank], 1, 50) == -1)
         return -1;
-    
+
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_PINV+bank, 1, &pca_ctrl->pol[bank], 1, 50) == -1)
         return -1;
 
-    return 0;      
+    return 0;
 }
 
 /*****************************************************************/
@@ -130,13 +130,13 @@ int IOExpRawWrite ( int bank, int value )
 /*****************************************************************/
 {
     bank &= 0x0f;
-	if ( bank > 1 )	return -1;
+    if ( bank > 1 ) return -1;
 
-	pca_ctrl->out[bank] = value;
+    pca_ctrl->out[bank] = value;
 
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
-		return -1;
-	return 0;
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
+        return -1;
+    return 0;
 }
 
 /*****************************************************************/
@@ -144,11 +144,11 @@ int IOExpRawRead ( int bank, int *value )
 /*****************************************************************/
 {
     bank &= 0x0f;
-	if( bank > 1 ) return -1;
+    if( bank > 1 ) return -1;
 
-	if( TwMasterRegRead( I2C_SLA_IOEXP, PCA_PINP+bank, 1, value, 1, 50) == -1)
-		return-1;
-	return 0;
+    if( TwMasterRegRead( I2C_SLA_IOEXP, PCA_PINP+bank, 1, value, 1, 50) == -1)
+        return-1;
+    return 0;
 }
 
 
@@ -156,17 +156,17 @@ int IOExpRawRead ( int bank, int *value )
 int IOExpGetBit ( int bank, int bit, int *value )
 /*****************************************************************/
 {
-	int val;
+    int val;
 
     bank &= 0x0f;
-	if( bank > 1 ) return -1;
+    if( bank > 1 ) return -1;
 
-	if( TwMasterRegRead( I2C_SLA_IOEXP, PCA_PINP+bank, 1, &val, 1, 50)==-1)
-		return -1;
-	else
-		*value = (( val & ( 1 << bit )) == 0 ) ? 0 : 1;
+    if( TwMasterRegRead( I2C_SLA_IOEXP, PCA_PINP+bank, 1, &val, 1, 50)==-1)
+        return -1;
+    else
+        *value = (( val & ( 1 << bit )) == 0 ) ? 0 : 1;
 
-	return 0;
+    return 0;
 }
 
 /*****************************************************************/
@@ -174,13 +174,13 @@ int IOExpSetBitHigh( int bank, int bit )
 /*****************************************************************/
 {
     bank &= 0x0f;
-	if( bank > 1 ) return -1;
+    if( bank > 1 ) return -1;
 
-	pca_ctrl->out[bank] |= ( 1 << bit );
+    pca_ctrl->out[bank] |= ( 1 << bit );
 
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
-		return -1;
-	return 0;
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
+        return -1;
+    return 0;
 }
 
 /*****************************************************************/
@@ -188,13 +188,13 @@ int IOExpSetBitLow( int bank, int bit )
 /*****************************************************************/
 {
     bank &= 0x0f;
-	if( bank > 1 ) return -1;
+    if( bank > 1 ) return -1;
 
-	pca_ctrl->out[bank] &= ~( 1 << bit );
+    pca_ctrl->out[bank] &= ~( 1 << bit );
 
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
-		return -1;
-	return 0;
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
+        return -1;
+    return 0;
 }
 
 /*****************************************************************/

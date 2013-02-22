@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -101,9 +101,7 @@
 #include <memdebug.h>
 
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined(NUTDEBUG)
 #include <stdio.h>
 #include <fs/phatdbg.h>
 #endif
@@ -128,15 +126,8 @@ static uint32_t PhatCountFreeClusters(NUTDEVICE * dev)
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     if (vol->vol_type == 32) {
-        while (i < vol->vol_last_clust) {
-            if (Phat32GetClusterLink(dev, i, &link)) {
-                break;
-            }
-            if (link == 0) {
-                rc++;
-            }
-            i++;
-        }
+        /* Use fast verion for FAT32. */
+        rc = Phat32FreeClusters(dev);
     } else if (vol->vol_type == 16) {
         while (i < vol->vol_last_clust) {
             if (Phat16GetClusterLink(dev, i, &link)) {
@@ -192,7 +183,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
     NUTDEVICE *blkdev = blkmnt->nf_dev;
 
     /*
-     * Allocate the volume information structure 
+     * Allocate the volume information structure
      */
     if ((dev->dev_dcb = malloc(sizeof(PHATVOL))) == 0) {
         return -1;
@@ -240,7 +231,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
     sbn = 0;
 
     /*
-     * We use PhatSectorRead() instead of PhatSectorLoad() for our 
+     * We use PhatSectorRead() instead of PhatSectorLoad() for our
      * very first read to properly initialize the caching status.
      */
     if (PhatSectorRead(blkmnt, 0, vol->vol_buf[sbn].sect_data)) {
@@ -332,9 +323,9 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
     /* First cluster number is 2. */
     vol->vol_last_clust += 2;
 
-    /* 
-     * Having calculated the total number of clusters allows us to 
-     * distinguish between PHAT12 and PHAT16. 
+    /*
+     * Having calculated the total number of clusters allows us to
+     * distinguish between PHAT12 and PHAT16.
      */
     if (vol->vol_type == 0) {
         if (vol->vol_last_clust > 4086) {

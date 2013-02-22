@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -197,19 +197,19 @@
 
 /*! \name Historical SPI0 Peripheral Multiplexing Names */
 /*@{*/
-#define SPI0_NPCS0_PA12A	12	/*!< \brief Port bit number on PIO-A Perpheral A. */
-#define SPI0_NPCS1_PA13A	13	/*!< \brief Port bit number on PIO-A Perpheral A. */
-#define SPI0_NPCS1_PA07B	7	/*!< \brief Port bit number on PIO-A Perpheral B. */
-#define SPI0_NPCS1_PB13B	13	/*!< \brief Port bit number on PIO-B Perpheral B. */
-#define SPI0_NPCS2_PA14A	14	/*!< \brief Port bit number on PIO-A Perpheral A. */
-#define SPI0_NPCS2_PA08B	8	/*!< \brief Port bit number on PIO-A Perpheral B. */
-#define SPI0_NPCS2_PB14B	14	/*!< \brief Port bit number on PIO-B Perpheral B. */
-#define SPI0_NPCS3_PA15A	15	/*!< \brief Port bit number on PIO-A Perpheral A. */
-#define SPI0_NPCS3_PA09B	9	/*!< \brief Port bit number on PIO-A Perpheral B. */
-#define SPI0_NPCS3_PB17B	17	/*!< \brief Port bit number on PIO-B Perpheral B. */
-#define SPI0_MISO_PA16A		16	/*!< \brief Port bit number on PIO-A Perpheral A. */
-#define SPI0_MOSI_PA17A		17	/*!< \brief Port bit number on PIO-A Perpheral A. */
-#define SPI0_SPCK_PA18A		18	/*!< \brief Port bit number on PIO-A Perpheral A. */
+#define SPI0_NPCS0_PA12A    12  /*!< \brief Port bit number on PIO-A Perpheral A. */
+#define SPI0_NPCS1_PA13A    13  /*!< \brief Port bit number on PIO-A Perpheral A. */
+#define SPI0_NPCS1_PA07B    7   /*!< \brief Port bit number on PIO-A Perpheral B. */
+#define SPI0_NPCS1_PB13B    13  /*!< \brief Port bit number on PIO-B Perpheral B. */
+#define SPI0_NPCS2_PA14A    14  /*!< \brief Port bit number on PIO-A Perpheral A. */
+#define SPI0_NPCS2_PA08B    8   /*!< \brief Port bit number on PIO-A Perpheral B. */
+#define SPI0_NPCS2_PB14B    14  /*!< \brief Port bit number on PIO-B Perpheral B. */
+#define SPI0_NPCS3_PA15A    15  /*!< \brief Port bit number on PIO-A Perpheral A. */
+#define SPI0_NPCS3_PA09B    9   /*!< \brief Port bit number on PIO-A Perpheral B. */
+#define SPI0_NPCS3_PB17B    17  /*!< \brief Port bit number on PIO-B Perpheral B. */
+#define SPI0_MISO_PA16A     16  /*!< \brief Port bit number on PIO-A Perpheral A. */
+#define SPI0_MOSI_PA17A     17  /*!< \brief Port bit number on PIO-A Perpheral A. */
+#define SPI0_SPCK_PA18A     18  /*!< \brief Port bit number on PIO-A Perpheral A. */
 /*@}*/
 
 /*! \name USART Peripheral Multiplexing */

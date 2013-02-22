@@ -142,8 +142,8 @@ static int At45dibTransmitCmd(NUTSPINODE * node, uint8_t op, uint32_t parm, uint
  *
  * \return 0 on success, -1 on errors.
  */
-static int At45dibTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, 
-                           CONST void *txbuf, void *rxbuf, int xlen)
+static int At45dibTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen,
+                           const void *txbuf, void *rxbuf, int xlen)
 {
     int rc;
     NUTSPIBUS *bus;
@@ -194,7 +194,7 @@ static int At45dibCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fas
  *
  * \return 0 on success, -1 on errors.
  */
-static int At45dibCompare(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, CONST void *buf, int xlen)
+static int At45dibCompare(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, const void *buf, int xlen)
 {
     int rc;
     NUTSPIBUS *bus;
@@ -479,7 +479,7 @@ static int_fast8_t At45dibAllocate(NUTSERIALFLASH * sfi, sf_unit_t pgn)
 
     at = (AT45DIB *) sfi->sf_info;
     for (;;) {
-        /* 
+        /*
         ** Check, if the page is already loaded.
         */
         for (b = 0; b < 2; b++) {
@@ -650,7 +650,7 @@ static int SpiAt45dibCheck(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
  *
  * \param sfi  Specifies the serial flash interface.
  * \param pgn  Page to read from.
- * \param off  Read offset into the page. If negative, the offset counts 
+ * \param off  Read offset into the page. If negative, the offset counts
  *             from the end of the page.
  * \param data Pointer to the buffer that receives the data.
  * \param len  Number of data bytes to read.
@@ -704,14 +704,14 @@ static int SpiAt45dibRead(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, void *da
  *
  * \param sfi  Specifies the serial flash interface.
  * \param pgn  Page to compare.
- * \param off  Offset into the page. If negative, the offset counts from 
+ * \param off  Offset into the page. If negative, the offset counts from
  *             the end of the page.
  * \param data Pointer to the data to compare.
  * \param len  Number of data bytes to compare.
  *
  * \return 0 on success or -1 if the contents differs or in case of an error.
  */
-static int SpiAt45dibCompare(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, CONST void *data, int len)
+static int SpiAt45dibCompare(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, const void *data, int len)
 {
     int rc = 0;
 
@@ -806,7 +806,7 @@ static int SpiAt45dibUsed(NUTSERIALFLASH * sfi, sf_unit_t pgn, int skip)
  * \brief Write data to a given page.
  *
  * Loads the page into an internal RAM buffer and replaces the contents
- * with the given data. The buffer will be marked dirty, but not written 
+ * with the given data. The buffer will be marked dirty, but not written
  * back. See SpiAt45dibCommit().
  *
  * \param sfi  Specifies the serial flash interface.
@@ -818,7 +818,7 @@ static int SpiAt45dibUsed(NUTSERIALFLASH * sfi, sf_unit_t pgn, int skip)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int SpiAt45dibWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, CONST void *data, int len)
+static int SpiAt45dibWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, const void *data, int len)
 {
     int rc = 0;
 
@@ -905,7 +905,7 @@ static int SpiAt45dibCopy(NUTSERIALFLASH * sfi, sf_unit_t spg, sf_unit_t dpg)
 /*!
  * \brief Commit page.
  *
- * If the contents of the given page is in one of the internal RAM 
+ * If the contents of the given page is in one of the internal RAM
  * buffers and if the contents had been changed since the last page
  * load, then the buffer is written back to the flash.
  *
@@ -1013,11 +1013,20 @@ static NUTSPINODE spiNode0 = {
     0                           /*!< \brief Chip select, node_cs. */
 };
 
-#ifndef MOUNT_OFFSET_AT45D0
-#define MOUNT_OFFSET_AT45D0         0
+#ifndef MOUNT_OFFSET_AT45DIB0
+#ifdef MOUNT_OFFSET_AT45D0
+#define MOUNT_OFFSET_AT45DIB0       MOUNT_OFFSET_AT45D0
+#else
+#define MOUNT_OFFSET_AT45DIB0       0
 #endif
-#ifndef MOUNT_TOP_RESERVE_AT45D0
-#define MOUNT_TOP_RESERVE_AT45D0    1
+#endif
+
+#ifndef MOUNT_TOP_RESERVE_AT45DIB0
+#ifdef MOUNT_TOP_RESERVE_AT45D0
+#define MOUNT_TOP_RESERVE_AT45DIB0  MOUNT_TOP_RESERVE_AT45D0
+#else
+#define MOUNT_TOP_RESERVE_AT45DIB0  1
+#endif
 #endif
 
 /*!
@@ -1028,8 +1037,8 @@ NUTSERIALFLASH flashAt45dib0 = {
     NULL,                       /*!< \brief Pointer to a local information structure, sf_info. */
     0,                          /*!< \brief Size of an erase/write unit, sf_unit_size. */
     0,                          /*!< \brief Total number of units, sf_units. */
-    MOUNT_OFFSET_AT45D0,        /*!< \brief Reserved units at the bottom, sf_rsvbot. */
-    MOUNT_TOP_RESERVE_AT45D0,   /*!< \brief Reserved units at the top, sf_rsvtop. */
+    MOUNT_OFFSET_AT45DIB0,      /*!< \brief Reserved units at the bottom, sf_rsvbot. */
+    MOUNT_TOP_RESERVE_AT45DIB0, /*!< \brief Reserved units at the top, sf_rsvtop. */
     SpiAt45dibInit,             /*!< \brief Flash device initialization function, sf_init. */
     SpiAt45dibExit,             /*!< \brief Flash device release function, sf_exit. */
     SpiAt45dibCheck,            /*!< \brief Unit validation function, sf_check. */
@@ -1079,11 +1088,20 @@ static NUTSPINODE spiNode1 = {
     1                           /*!< \brief Chip select, node_cs. */
 };
 
-#ifndef MOUNT_OFFSET_AT45D1
-#define MOUNT_OFFSET_AT45D1         0
+#ifndef MOUNT_OFFSET_AT45DIB1
+#ifdef MOUNT_OFFSET_AT45D1
+#define MOUNT_OFFSET_AT45DIB1       MOUNT_OFFSET_AT45D1
+#else
+#define MOUNT_OFFSET_AT45DIB1       0
 #endif
-#ifndef MOUNT_TOP_RESERVE_AT45D1
-#define MOUNT_TOP_RESERVE_AT45D1    1
+#endif
+
+#ifndef MOUNT_TOP_RESERVE_AT45DIB1
+#ifdef MOUNT_TOP_RESERVE_AT45D1
+#define MOUNT_TOP_RESERVE_AT45DIB1  MOUNT_TOP_RESERVE_AT45D1
+#else
+#define MOUNT_TOP_RESERVE_AT45DIB1  1
+#endif
 #endif
 
 /*!
@@ -1094,8 +1112,8 @@ NUTSERIALFLASH flashAt45dib1 = {
     NULL,                       /*!< \brief Pointer to a local information structure, sf_info. */
     0,                          /*!< \brief Size of an erase/write unit, sf_unit_size. */
     0,                          /*!< \brief Total number of units, sf_units. */
-    MOUNT_OFFSET_AT45D1,        /*!< \brief Reserved units at the bottom, sf_rsvbot. */
-    MOUNT_TOP_RESERVE_AT45D1,   /*!< \brief Reserved units at the top, sf_rsvtop. */
+    MOUNT_OFFSET_AT45DIB1,      /*!< \brief Reserved units at the bottom, sf_rsvbot. */
+    MOUNT_TOP_RESERVE_AT45DIB1, /*!< \brief Reserved units at the top, sf_rsvtop. */
     SpiAt45dibInit,             /*!< \brief Flash device initialization function, sf_init. */
     SpiAt45dibExit,             /*!< \brief Flash device release function, sf_exit. */
     SpiAt45dibCheck,            /*!< \brief Unit validation function, sf_check. */

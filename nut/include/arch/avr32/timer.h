@@ -44,28 +44,28 @@
 #include <cfg/clock.h>
 #include <dev/irqreg.h>
 
-#define NutEnableTimerIrq() 
+#define NutEnableTimerIrq()
 #define NutDisableTimerIrq() NutIrqDisable(&sig_sysCompare)
 
 /*!
-	PBA Clock
+    PBA Clock
 */
 #define NUT_HWCLK_PERIPHERAL_A 1
 
 /*!
-	PBB Clock
+    PBB Clock
 */
 #define NUT_HWCLK_PERIPHERAL_B 2
 
 /*!
-	HSB (High Speed Bus) Clock
+    HSB (High Speed Bus) Clock
 */
 #define NUT_HWCLK_PERIPHERAL_HSB 3
 
 /*!
-	RC Oscillator. Also known as Slow Clock.
-	This is used for the Watchdog timer and can be used as 
-	the main clock.
+    RC Oscillator. Also known as Slow Clock.
+    This is used for the Watchdog timer and can be used as
+    the main clock.
 */
 #define NUT_HWCLK_SLOW_CLOCK 4
 

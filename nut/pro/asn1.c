@@ -40,8 +40,8 @@
 #include <pro/asn1.h>
 
 /*
- * Abstract Syntax Notation One, ASN.1 as defined in ISO/IS 8824 and 
- * ISO/IS 8825. This implements a subset of the above international 
+ * Abstract Syntax Notation One, ASN.1 as defined in ISO/IS 8824 and
+ * ISO/IS 8825. This implements a subset of the above international
  * standards that is sufficient for SNMP.
  */
 
@@ -49,13 +49,13 @@
  * \brief Interpret the length of the current object.
  *
  * @param data   Pointer to start of length field.
- * @param length Pointer to the variable that receives the value of this 
+ * @param length Pointer to the variable that receives the value of this
  *               length field.
  *
- * \return A pointer to the first byte after this length field (aka: the 
+ * \return A pointer to the first byte after this length field (aka: the
  *         start of the data field). Returns NULL on any error.
  */
-static CONST uint8_t *AsnLenParse(CONST uint8_t * data, uint32_t * length)
+static const uint8_t *AsnLenParse(const uint8_t * data, uint32_t * length)
 {
     uint8_t lengthbyte = *data++;
 
@@ -81,8 +81,8 @@ static CONST uint8_t *AsnLenParse(CONST uint8_t * data, uint32_t * length)
  * \brief Build an ASN header for a specified length.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
  *                   as the number of available bytes following the
  *                   encoded length of this object.
  * \param length     Length of object.
@@ -124,20 +124,20 @@ static uint8_t *AsnLenBuild(uint8_t * data, size_t * datalength, size_t length)
  * \brief Interpret the ID and length of the next object.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of valid bytes following the 
- *                   start of the object. On exit, it is returned as 
+ * \param datalength Contains the number of valid bytes following the
+ *                   start of the object. On exit, it is returned as
  *                   the number of valid bytes following the ID and
  *                   length.
- * \param type       Pointer to the variable that receives the ASN type 
+ * \param type       Pointer to the variable that receives the ASN type
  *                   of the object.
- * \return A pointer to the first byte following ID and length (aka the 
+ * \return A pointer to the first byte following ID and length (aka the
  *         start of the data field). Returns NULL on any error.
  */
-CONST uint8_t *AsnHeaderParse(CONST uint8_t * data, size_t * datalength, uint8_t * type)
+const uint8_t *AsnHeaderParse(const uint8_t * data, size_t * datalength, uint8_t * type)
 {
     size_t header_len;
     uint32_t asn_length;
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
 
     if (*datalength <= 0) {
         return NULL;
@@ -176,8 +176,8 @@ CONST uint8_t *AsnHeaderParse(CONST uint8_t * data, size_t * datalength, uint8_t
  *  The maximum length is 0xFFFF;
  *
  * \param data       Pointer to start of object.
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
  *                   as the number of available bytes following the
  *                   encoded ID and length of this object.
  * \param type       ASN type of the object.
@@ -203,16 +203,16 @@ uint8_t *AsnHeaderBuild(uint8_t * data, size_t * datalength, uint8_t type, size_
  * Similare to AsnHeaderParse, but tests for expected type.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of valid bytes following the 
- *                   start of the object. On exit, it is returned as 
+ * \param datalength Contains the number of valid bytes following the
+ *                   start of the object. On exit, it is returned as
  *                   the number of valid bytes following the ID and
  *                   length.
  * \param type       The expected ASN type of the object.
  *
- * \return A pointer to the first byte following ID and length (aka the 
+ * \return A pointer to the first byte following ID and length (aka the
  *         start of the data field). Returns NULL on any error.
  */
-CONST uint8_t *AsnSequenceParse(CONST uint8_t * data, size_t * datalength, uint8_t type)
+const uint8_t *AsnSequenceParse(const uint8_t * data, size_t * datalength, uint8_t type)
 {
     uint8_t t;
 
@@ -231,8 +231,8 @@ CONST uint8_t *AsnSequenceParse(CONST uint8_t * data, size_t * datalength, uint8
  *  The maximum length is 0xFFFF;
  *
  * \param data       Pointer to start of object.
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
  *                   as the number of available bytes following the
  *                   encoded ID and length of this object.
  * \param type       ASN type of the object.
@@ -261,22 +261,22 @@ uint8_t *AsnSequenceBuild(uint8_t * data, size_t * datalength, uint8_t type, siz
  * \brief Pull a long out of an ASN integer type.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of valid bytes following the 
- *                   start of the object. On exit, it is returned as 
- *                   the number of valid bytes following the end of 
+ * \param datalength Contains the number of valid bytes following the
+ *                   start of the object. On exit, it is returned as
+ *                   the number of valid bytes following the end of
  *                   this object.
- * \param type       Pointer to the variable that receives the ASN type 
+ * \param type       Pointer to the variable that receives the ASN type
  *                   of the object.
  * \param intp       Pointer to the variable that receives the value
  *                   of the object.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnIntegerParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, long *intp)
+const uint8_t *AsnIntegerParse(const uint8_t * data, size_t * datalength, uint8_t * type, long *intp)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     /* Get the type. */
@@ -309,15 +309,15 @@ CONST uint8_t *AsnIntegerParse(CONST uint8_t * data, size_t * datalength, uint8_
  * \brief Build an ASN object containing an integer.
  *
  * \param data       Pointer to start of output buffer
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
- *                   as the number of available bytes following the end 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
+ *                   as the number of available bytes following the end
  *                   of this object.
  * \param type       ASN type of the object.
  * \param intp       Value of the object.
- * 
+ *
  * \return A pointer to the first byte past the end of this object
- *         (i.e. the start of the next object). Returns NULL on any 
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
 uint8_t *AsnIntegerBuild(uint8_t * data, size_t * datalength, uint8_t type, long *intp)
@@ -327,8 +327,8 @@ uint8_t *AsnIntegerBuild(uint8_t * data, size_t * datalength, uint8_t type, long
     size_t size = sizeof(long);
 
     /*
-     * Truncate unnecessary bytes off of the most significant end of 
-     * this 2's complement integer. Skip any leading sequence of 
+     * Truncate unnecessary bytes off of the most significant end of
+     * this 2's complement integer. Skip any leading sequence of
      * 9 consecutive 1's or 0's.
      */
     mask = 0x1FFUL << ((8 * (sizeof(long) - 1)) - 1);
@@ -359,22 +359,22 @@ uint8_t *AsnIntegerBuild(uint8_t * data, size_t * datalength, uint8_t type, long
  * \brief Pull an unsigned long out of an ASN integer type.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of valid bytes following the 
- *                   start of the object. On exit, it is returned as 
- *                   the number of valid bytes following the end of 
+ * \param datalength Contains the number of valid bytes following the
+ *                   start of the object. On exit, it is returned as
+ *                   the number of valid bytes following the end of
  *                   this object.
- * \param type       Pointer to the variable that receives the ASN type 
+ * \param type       Pointer to the variable that receives the ASN type
  *                   of the object.
  * \param intp       Pointer to the variable that receives the value
  *                   of the object.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnUnsignedParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, uint32_t * intp)
+const uint8_t *AsnUnsignedParse(const uint8_t * data, size_t * datalength, uint8_t * type, uint32_t * intp)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     /* Get the type. */
@@ -411,15 +411,15 @@ CONST uint8_t *AsnUnsignedParse(CONST uint8_t * data, size_t * datalength, uint8
  * \brief Build an ASN object containing an unsigned integer.
  *
  * \param data       Pointer to start of output buffer
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
- *                   as the number of available bytes following the end 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
+ *                   as the number of available bytes following the end
  *                   of this object.
  * \param type       ASN type of the object.
  * \param intp       Value of the object.
- * 
+ *
  * \return A pointer to the first byte past the end of this object
- *         (i.e. the start of the next object). Returns NULL on any 
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
 uint8_t *AsnUnsignedBuild(uint8_t * data, size_t * datalength, uint8_t type, uint32_t * intp)
@@ -472,25 +472,25 @@ uint8_t *AsnUnsignedBuild(uint8_t * data, size_t * datalength, uint8_t type, uin
  * \brief Pulls a string out of an ASN octet string type.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of valid bytes following the 
- *                   start of the object. On exit, it is returned as 
- *                   the number of valid bytes following the end of 
+ * \param datalength Contains the number of valid bytes following the
+ *                   start of the object. On exit, it is returned as
+ *                   the number of valid bytes following the end of
  *                   this object.
- * \param type       Pointer to the variable that receives the ASN type 
+ * \param type       Pointer to the variable that receives the ASN type
  *                   of the object.
  * \param string     Pointer to the variable that receives the value
  *                   of the object.
  * \param strlength  Contains the size of the string buffer on entry.
- *                   On exit, it is returned as the number of bytes 
+ *                   On exit, it is returned as the number of bytes
  *                   stored in the string buffer.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnOctetStringParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
+const uint8_t *AsnOctetStringParse(const uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     /* Get the type. */
@@ -517,20 +517,20 @@ CONST uint8_t *AsnOctetStringParse(CONST uint8_t * data, size_t * datalength, ui
  * \brief Build an ASN object containing an octet string.
  *
  * \param data       Pointer to start of output buffer
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
- *                   as the number of available bytes following the end 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
+ *                   as the number of available bytes following the end
  *                   of this object.
  * \param type       ASN type of the object.
  * \param string     Pointer to the value. If NULL, the octet string will
  *                   be filled with zeros.
  * \param strlength  Number of bytes in the string value.
- * 
+ *
  * \return A pointer to the first byte past the end of this object
- *         (i.e. the start of the next object). Returns NULL on any 
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnOctetStringBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST uint8_t * string, size_t strlength)
+uint8_t *AsnOctetStringBuild(uint8_t * data, size_t * datalength, uint8_t type, const uint8_t * string, size_t strlength)
 {
     if ((data = AsnHeaderBuild(data, datalength, type, strlength)) == NULL) {
         return NULL;
@@ -555,25 +555,25 @@ uint8_t *AsnOctetStringBuild(uint8_t * data, size_t * datalength, uint8_t type, 
  * \brief Pulls an object identifier out of an ASN object ID type.
  *
  * \param data        Pointer to start of the object.
- * \param datalength  Contains the number of valid bytes following the 
- *                    start of the object. On exit, it is returned as 
- *                    the number of valid bytes following the end of 
+ * \param datalength  Contains the number of valid bytes following the
+ *                    start of the object. On exit, it is returned as
+ *                    the number of valid bytes following the end of
  *                    this object.
- * \param type        Pointer to the variable that receives the ASN type 
+ * \param type        Pointer to the variable that receives the ASN type
  *                    of the object.
  * \param objid       Pointer to the variable that receives the object
  *                    identifier.
- * \param objidlength Points to a variable that contains the size of the 
- *                    output buffer on entry. On exit, it is returned as 
+ * \param objidlength Points to a variable that contains the size of the
+ *                    output buffer on entry. On exit, it is returned as
  *                    the number of sub IDs stored in the output buffer.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnOidParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, OID * objid, size_t * objidlength)
+const uint8_t *AsnOidParse(const uint8_t * data, size_t * datalength, uint8_t * type, OID * objid, size_t * objidlength)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     OID *oidp = objid + 1;
     uint32_t subidentifier;
     long length;
@@ -612,7 +612,7 @@ CONST uint8_t *AsnOidParse(CONST uint8_t * data, size_t * datalength, uint8_t * 
     }
 
     /*
-     * The first two subidentifiers are encoded into the first component 
+     * The first two subidentifiers are encoded into the first component
      * with the value (X * 40) + Y, where
      *
      *  X is the value of the first subidentifier.
@@ -635,25 +635,25 @@ CONST uint8_t *AsnOidParse(CONST uint8_t * data, size_t * datalength, uint8_t * 
  * \brief Build an ASN object identifier.
  *
  * \param data        Pointer to start of the object.
- * \param datalength  Contains the number of available bytes following 
- *                    the start of the object. On exit, it is returned 
- *                    as the number of available bytes following the end 
+ * \param datalength  Contains the number of available bytes following
+ *                    the start of the object. On exit, it is returned
+ *                    as the number of available bytes following the end
  *                    of this object.
  * \param type        ASN type of the object.
  * \param objid       Pointer to the object identifier.
  * \param objidlength Number of sub IDs in the object identifier.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnOidBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST OID * objid, size_t objidlength)
+uint8_t *AsnOidBuild(uint8_t * data, size_t * datalength, uint8_t type, const OID * objid, size_t objidlength)
 {
     uint8_t *buf;
     uint32_t objid_val;
     uint32_t first_objid_val;
     size_t asnlength;
-    CONST OID *op = objid;
+    const OID *op = objid;
     size_t i;
 
     if (objidlength == 0) {
@@ -713,7 +713,7 @@ uint8_t *AsnOidBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST OI
     }
 
     /*
-     * Store the encoded OID value 
+     * Store the encoded OID value
      */
     for (i = 0; i < objidlength; i++) {
         if (i) {
@@ -761,20 +761,20 @@ uint8_t *AsnOidBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST OI
  * \brief Parse an ASN null type.
  *
  * \param data        Pointer to start of the object.
- * \param datalength  Contains the number of valid bytes following the 
- *                    start of the object. On exit, it is returned as 
- *                    the number of valid bytes following the end of 
+ * \param datalength  Contains the number of valid bytes following the
+ *                    start of the object. On exit, it is returned as
+ *                    the number of valid bytes following the end of
  *                    this object.
- * \param type        Pointer to the variable that receives the ASN type 
+ * \param type        Pointer to the variable that receives the ASN type
  *                    of the object.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnNullParse(CONST uint8_t * data, size_t * datalength, uint8_t * type)
+const uint8_t *AsnNullParse(const uint8_t * data, size_t * datalength, uint8_t * type)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     *type = *bufp++;
@@ -793,14 +793,14 @@ CONST uint8_t *AsnNullParse(CONST uint8_t * data, size_t * datalength, uint8_t *
  * \brief Build an ASN null object.
  *
  * \param data        Pointer to start of the object.
- * \param datalength  Contains the number of available bytes following 
- *                    the start of the object. On exit, it is returned 
- *                    as the number of available bytes following the end 
+ * \param datalength  Contains the number of available bytes following
+ *                    the start of the object. On exit, it is returned
+ *                    as the number of available bytes following the end
  *                    of this object.
  * \param type        ASN type of the object.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
 uint8_t *AsnNullBuild(uint8_t * data, size_t * datalength, uint8_t type)
@@ -812,25 +812,25 @@ uint8_t *AsnNullBuild(uint8_t * data, size_t * datalength, uint8_t type)
  * \brief Pull a bitstring out of an ASN bitstring type.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of valid bytes following the 
- *                   start of the object. On exit, it is returned as 
- *                   the number of valid bytes following the end of 
+ * \param datalength Contains the number of valid bytes following the
+ *                   start of the object. On exit, it is returned as
+ *                   the number of valid bytes following the end of
  *                   this object.
- * \param type       Pointer to the variable that receives the ASN type 
+ * \param type       Pointer to the variable that receives the ASN type
  *                   of the object.
  * \param string     Pointer to the variable that receives the value
  *                   of the object.
  * \param strlength  Contains the size of the string buffer on entry.
- *                   On exit, it is returned as the number of bytes 
+ *                   On exit, it is returned as the number of bytes
  *                   stored in the string buffer.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnBitStringParse(CONST uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
+const uint8_t *AsnBitStringParse(const uint8_t * data, size_t * datalength, uint8_t * type, uint8_t * string, size_t * strlength)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
 
     *type = *bufp++;
@@ -857,20 +857,20 @@ CONST uint8_t *AsnBitStringParse(CONST uint8_t * data, size_t * datalength, uint
  * \brief Build an ASN bit string.
  *
  * \param data       Pointer to start of output buffer
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
- *                   as the number of available bytes following the end 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
+ *                   as the number of available bytes following the end
  *                   of this object.
  * \param type       ASN type of the object.
  * \param string     Pointer to the value. If NULL, the octet string will
  *                   be filled with zeros.
  * \param strlength  Number of bytes in the string value.
- * 
+ *
  * \return A pointer to the first byte past the end of this object
- *         (i.e. the start of the next object). Returns NULL on any 
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnBitStringBuild(uint8_t * data, size_t * datalength, uint8_t type, CONST uint8_t * string, size_t strlength)
+uint8_t *AsnBitStringBuild(uint8_t * data, size_t * datalength, uint8_t type, const uint8_t * string, size_t strlength)
 {
     if ((data = AsnHeaderBuild(data, datalength, type, strlength)) == NULL) {
         return NULL;
@@ -890,22 +890,22 @@ uint8_t *AsnBitStringBuild(uint8_t * data, size_t * datalength, uint8_t type, CO
  * \brief Pull a 64 bit unsigned long out of an ASN integer type.
  *
  * \param data       Pointer to start of the object.
- * \param datalength Contains the number of valid bytes following the 
- *                   start of the object. On exit, it is returned as 
- *                   the number of valid bytes following the end of 
+ * \param datalength Contains the number of valid bytes following the
+ *                   start of the object. On exit, it is returned as
+ *                   the number of valid bytes following the end of
  *                   this object.
- * \param type       Pointer to the variable that receives the ASN type 
+ * \param type       Pointer to the variable that receives the ASN type
  *                   of the object.
  * \param intp       Pointer to the variable that receives the value
  *                   of the object.
  *
- * \return Pointer to the first byte past the end of this object 
- *         (i.e. the start of the next object). Returns NULL on any 
+ * \return Pointer to the first byte past the end of this object
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-CONST uint8_t *AsnUnsigned64Parse(CONST uint8_t * data, size_t * datalength, uint8_t * type, UNSIGNED64 * cp)
+const uint8_t *AsnUnsigned64Parse(const uint8_t * data, size_t * datalength, uint8_t * type, UNSIGNED64 * cp)
 {
-    CONST uint8_t *bufp = data;
+    const uint8_t *bufp = data;
     uint32_t asn_length;
     uint32_t low = 0;
     uint32_t high = 0;
@@ -939,18 +939,18 @@ CONST uint8_t *AsnUnsigned64Parse(CONST uint8_t * data, size_t * datalength, uin
  * \brief Build an ASN object containing a 64 bit unsigned integer.
  *
  * \param data       Pointer to start of output buffer
- * \param datalength Contains the number of available bytes following 
- *                   the start of the object. On exit, it is returned 
- *                   as the number of available bytes following the end 
+ * \param datalength Contains the number of available bytes following
+ *                   the start of the object. On exit, it is returned
+ *                   as the number of available bytes following the end
  *                   of this object.
  * \param type       ASN type of the object.
  * \param intp       Value of the object.
- * 
+ *
  * \return A pointer to the first byte past the end of this object
- *         (i.e. the start of the next object). Returns NULL on any 
+ *         (i.e. the start of the next object). Returns NULL on any
  *         error.
  */
-uint8_t *AsnUnsigned64Build(uint8_t * data, size_t * datalength, uint8_t type, CONST UNSIGNED64 * cp)
+uint8_t *AsnUnsigned64Build(uint8_t * data, size_t * datalength, uint8_t type, const UNSIGNED64 * cp)
 {
     uint32_t low;
     uint32_t high;
@@ -972,7 +972,7 @@ uint8_t *AsnUnsigned64Build(uint8_t * data, size_t * datalength, uint8_t type, C
         intsize++;
     }
     /*
-     * Truncate "unnecessary" bytes off of the most significant end of 
+     * Truncate "unnecessary" bytes off of the most significant end of
      * this 2's complement integer.
      * There should be no sequence of 9 consecutive 1's or 0's at the most
      * significant end of the integer.

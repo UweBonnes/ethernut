@@ -21,11 +21,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -38,41 +38,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.8  2009/02/04 23:40:52  hwmaier
- * Added support for a receive buffer size configuration entry ATCAN_RX_BUF_SIZE.
+/*!
+ * \file arch/avr/dev/atcan.c
+ * \brief AVR on-chip CAN support.
  *
- * Revision 1.7  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.6  2007/11/16 03:17:26  hwmaier
- * Updated bit timing values for a sample point of 87.5% and a SJW of 2. Required for maximum bus length as per CiA DS-102.
- *
- * Revision 1.5  2007/09/08 03:00:52  hwmaier
- * Optional time-out for receiving added, more robust handling of error interrupts.
- *
- * Revision 1.3  2007/05/24 00:55:43  henrik
- * no message
- *
- * Revision 1.2  2007/03/11 08:59:47  henrik
- * no message
- *
- * Revision 1.1  2006/11/17 01:44:00  henrik
- * no message
- *
- * Revision 1.4  2006/03/01 02:15:29  hwmaier
- * Error check for NutHeapAlloc added
- *
- * Revision 1.3  2005/12/04 10:53:59  hwmaier
- * no message
- *
- * Revision 1.2  2005/10/07 22:02:33  hwmaier
- * no message
- *
- * Revision 1.1  2005/10/04 06:00:59  hwmaier
- * Added AT90CAN128 CAN driver
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*!
@@ -111,7 +83,7 @@
  * which is recommended by CiA for CANOpen. DeviceNet specifies a
  * sampling point > 80%. SQW is 2.
  *****************************************************************************/
-
+#if defined(NUT_CPU_FREQ)
 //
 // 8.00 MHz
 //
@@ -221,6 +193,7 @@
 #else
 #  error Frequency not supported or not set to a Fixed MCU clock!
 #endif
+#endif
 
 
 /*****************************************************************************
@@ -303,7 +276,7 @@ int8_t AtCanGetFreeMob(void)
  * Configure a single message object for receiption.
  *
  * All 15 MOBS can be set up for reception,  not only RX_MOB MOBs
- * 
+ *
  * @param mob        Message object index (0-14)
  * @param id         Acceptance code
  * @param idIsExt    Flag if acceptance code is extended (0 = standard, 1 = extended)
@@ -657,6 +630,9 @@ void AtCanSetAccMask(NUTDEVICE * dev, uint8_t * am)
  */
 uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
 {
+#if !defined(NUT_CPU_FREQ)
+    return -1;
+#else
     switch (baudrate)
     {
 #if NUT_CPU_FREQ != 8000000
@@ -716,6 +692,7 @@ uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
     }
     ((IFCAN *) (dev->dev_icb))->can_baudrate = baudrate;
     return 0;
+#endif
 }
 
 
@@ -732,6 +709,9 @@ uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
 int AtCanInit(NUTDEVICE * dev)
 {
     int8_t mob, i;
+#if !defined( NUT_CPU_FREQ)
+    return -1;
+#endif
 
     memset(dev->dev_dcb, 0, sizeof(CANINFO));
 

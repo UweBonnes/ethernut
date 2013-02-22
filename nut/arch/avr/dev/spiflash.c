@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,29 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/spiflash.c
+ * \brief AVR SPI flash support.
  *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2004/03/18 14:06:52  haraldkipp
- * Deprecated header file replaced
- *
- * Revision 1.1.1.1  2003/05/09 14:40:50  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.4  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.3  2002/09/15 16:39:44  harald
- * *** empty log message ***
- *
- * Revision 1.2  2002/08/08 17:20:47  harald
- * Imagecraft support by Klaus Ummenhofer
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>
@@ -108,7 +92,7 @@ int SpiFlashEnable(void)
      */
 
     /*
-     * SCK and MOSI outputs need configuration, 
+     * SCK and MOSI outputs need configuration,
      * even if SPI mode is enabled.
      */
     cbi(PORTB, 1);
@@ -130,7 +114,7 @@ int SpiFlashEnable(void)
         sbi(DDRB, 4);
 
         /*
-         * Set slave select pin  to output. Otherwise a low signal 
+         * Set slave select pin  to output. Otherwise a low signal
          * on this pin might force us to SPI slave mode.
          */
         sbi(DDRB, 0);
@@ -201,9 +185,9 @@ int SpiFlashWriteByte(uint8_t high, uint16_t addr, uint8_t data)
         SpiByte(data);
 
         /*
-         * During programming a value of 0x7F appears at the memory location. 
+         * During programming a value of 0x7F appears at the memory location.
          * If we are programming this value, we delay execution by 10 ms.
-         * Otherwise we poll the memory location until we read back the 
+         * Otherwise we poll the memory location until we read back the
          * programmed value.
          */
         if (data == 0x7f)

@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -148,6 +148,37 @@ nutos =
                       "main routine in a separate thread.",
         sources = { "nutinit.c" },
         targets = { "nutinit.o" },
+        options =
+        {
+            {
+                macro = "HEARTBEAT_IDLE_PORT",
+                brief = "Idle Heartbeat Port",
+                description = "If a valid Port/Pin combination is given, set that Pin high when  "..
+                              "ethernut is running and low when idle",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "HEARTBEAT_IDLE_PIN",
+                brief = "Idle Heartbeat PIN",
+                description = "If a valid Port/Pin combination is given, set that Pin high when  "..
+                              "ethernut is running and low when idle",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "HEARTBEAT_IDLE_INVERT",
+                brief = "Idle Heartbeat Polarity",
+                description = "Define if the LED at the HEARTBEAT Port/Pin combination is light with a Low Level",
+                flavor = "booldata",
+                type = "enumerated",
+                file = "include/cfg/os.h"
+            }
+        }
     },
 
     --
@@ -191,14 +222,18 @@ nutos =
                               "variables and static data. Any remaining space will "..
                               "be added to the Nut/OS heap during system initialization.\n"..
                               "When running on an AVR MCU, set this to size of the "..
-                              "on-chip SRAM, e.g. 4096 for the ATmega128 and 8192 for the ATmega2561.",
+                              "on-chip SRAM, e.g. 4096 for the ATmega128 and 8192 for the ATmega2561.\n\n"..
+                              "For CortexM3 architecture the size is given by the linker script. "..
+                              "so only enter a value in here if you really know what you do!",
                 default = "4096",
                 file = "include/cfg/memory.h"
             },
             {
                 macro = "NUTMEM_START",
                 brief = "Memory Start",
-                description = "First address of fast data memory.",
+                description = "First address of fast data memory.\n\n"..
+                              "For CortexM3 architecture the address is given by the linker script. "..
+                              "so only enter a value in here if you really know what you do!",
                 file = "include/cfg/memory.h"
             },
             {
@@ -404,7 +439,7 @@ nutos =
                               "determine a rough approximation.",
                 flavor = "booldata",
                 file = "include/cfg/os.h"
-            }
+            },
         }
     },
 
@@ -553,16 +588,32 @@ nutos =
                 file = "include/cfg/os.h"
             },
             {
-            	macro = "NUTDEBUG_CHECK_STACK",
-            	brief = "Thread Stack Checking",
-            	description = "Used for thread stack checking.\n"..
-            				  "Enabling this will fill any threads stack area "..
-            				  "with a pattern at the point of creating the thread.\n"..
-            				  "By using NutThreadStackAvailable() one can now check "..
-            				  "for the maximum ammount of stack ever used by this "..
-            				  "thread.\n\n"..
-            				  "This functionality can be enabled without OS Debug to "..
-            				  "find out maximum stack usage in your final appliation.",
+                macro = "NUTDEBUG_CHECK_STACK",
+                brief = "Thread Stack Checking",
+                description = "Used for thread stack checking.\n"..
+                              "Enabling this will fill any threads stack area "..
+                              "with a pattern at the point of creating the thread.\n"..
+                              "By using NutThreadStackAvailable() one can now check "..
+                              "for the maximum ammount of stack ever used by this "..
+                              "thread.\n\n"..
+                              "This functionality can be enabled without OS Debug to "..
+                              "find out maximum stack usage in your final appliation.",
+                flavor = "boolean",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUTDEBUG_RAM",
+                brief = "Placement of code",
+                description = "Code is placed in ram",
+                 flavor = "boolean",
+                 file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUTDEBUG_LAZY",
+                brief = "Initialize Stack when debugging",
+                description = "When loading new compiled code, stack will be initialized with value read "..
+                              "at 0x00000000 at reset. Either explicit load the value on each load "..
+                              "or use this hack ...\n",
                 flavor = "boolean",
                 file = "include/cfg/os.h"
             }

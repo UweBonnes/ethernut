@@ -73,7 +73,7 @@
 
 #ifndef _UNISTD_NUT_H_
 
-#include <compiler.h>  // required e.g. for CONST
+#include <compiler.h>  // required e.g. for const
 
 #ifndef _UNISTD_VIRTUAL_H_
 #define _UNISTD_VIRTUAL_H_
@@ -111,17 +111,12 @@
 
 #endif /* unix emulation */
 
-__BEGIN_DECLS
-/* */
-extern int access(CONST char *path, int what);
+extern int access(const char *path, int what);
 extern long lseek(int fh, long pos, int whence);
-extern int rmdir(CONST char *path);
-extern int unlink(CONST char *path);
+extern int rmdir(const char *path);
+extern int unlink(const char *path);
 
 extern unsigned int sleep(unsigned int);
-__END_DECLS
-/* */
-
 
 #endif /* _UNISTD_VIRTUAL_H_ */
 

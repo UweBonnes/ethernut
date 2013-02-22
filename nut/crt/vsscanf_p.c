@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -68,13 +68,13 @@ static int _sgetb(int fd, void *buffer, size_t count)
     char **spp = (char **) ((uintptr_t) fd);
     char  *dst = (char*) buffer;
     size_t result = 0;
-    
+
     while( count > 0 && **spp != 0) {
         *dst++ = *(*spp)++;  // increment not spp but *spp
         count--;
         result++;
     }
-    
+
     return result;
 }
 
@@ -85,18 +85,18 @@ static int _sgetb(int fd, void *buffer, size_t count)
  * program space.
  *
  * \param string Pointer to a string that contains the data.
- * \param fmt    Format string in program space containing conversion 
+ * \param fmt    Format string in program space containing conversion
  *               specifications.
- * \param ap	 List of pointer arguments.
+ * \param ap     List of pointer arguments.
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  *
  */
-int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap)
+int vsscanf_P(const char *string, PGM_P fmt, va_list ap)
 {
-    CONST char *ptr = string;
+    const char *ptr = string;
     int rc;
     char *rp;
     size_t rl;

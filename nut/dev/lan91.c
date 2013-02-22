@@ -297,10 +297,10 @@ static int NicPhyConfig(void)
     uint16_t phy_to;
     uint16_t mode;
 
-    /* 
+    /*
      * Reset the PHY and wait until this self clearing bit
      * becomes zero. We sleep 63 ms before each poll and
-     * give up after 3 retries. 
+     * give up after 3 retries.
      */
     NicPhyWrite(LAN91_PHYCR, LAN91_PHYCR_RST);
     for (phy_to = 0;; phy_to++) {
@@ -436,7 +436,7 @@ static int NicReset(void)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(const uint8_t * mac)
 {
     uint_fast8_t i;
 
@@ -491,8 +491,8 @@ static void NicInterrupt(void *arg)
     isr &= imr;
 
     /*
-     * If this is a transmit interrupt, then a packet has been sent. 
-     * So we can clear the transmitter busy flag and wake up the 
+     * If this is a transmit interrupt, then a packet has been sent.
+     * So we can clear the transmitter busy flag and wake up the
      * transmitter thread.
      */
     if (isr & LAN91_INT_TX_EMPTY) {
@@ -512,7 +512,7 @@ static void NicInterrupt(void *arg)
 
 
     /*
-     * If this is a receive interrupt, then wake up the receiver 
+     * If this is a receive interrupt, then wake up the receiver
      * thread.
      */
     if (isr & LAN91_INT_RX_OVRN) {
@@ -591,7 +591,7 @@ static NETBUF *NicGetPacket(void)
     uint16_t fsw;
     uint16_t fbc;
 
-    /* Check the fifo empty bit. If it is set, then there is 
+    /* Check the fifo empty bit. If it is set, then there is
        nothing in the receiver fifo. */
     nic_bs(2);
     if (nic_inw(LAN91_FIFO) & 0x8000) {
@@ -619,8 +619,8 @@ static NETBUF *NicGetPacket(void)
     }
 
     else {
-        /* 
-         * Allocate a NETBUF. 
+        /*
+         * Allocate a NETBUF.
          * Hack alert: Rev A chips never set the odd frame indicator.
          */
         fbc -= 3;
@@ -648,7 +648,7 @@ static NETBUF *NicGetPacket(void)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int NicPutPacket(NETBUF * nb)
@@ -658,7 +658,7 @@ static int NicPutPacket(NETBUF * nb)
     uint8_t imsk;
 
     /*
-     * Calculate the number of bytes to be send. Do not send packets 
+     * Calculate the number of bytes to be send. Do not send packets
      * larger than the Ethernet maximum transfer unit. The MTU
      * consist of 1500 data bytes plus the 14 byte Ethernet header
      * plus 4 bytes CRC. We check the data bytes only.
@@ -860,12 +860,12 @@ static int Lan91Output(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets the LAN91 Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets the LAN91 Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application
@@ -954,16 +954,19 @@ static IFNET ifn_eth0 = {
     Lan91Output,        /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput,     /*!< \brief Media output routine, if_output(). */
     NULL                /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devLan91 = {
     0,          /* Pointer to next device. */

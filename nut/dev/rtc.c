@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -70,7 +70,7 @@ int NutRegisterRtc(NUTRTC * rtc)
 {
     reg_rtc = rtc;
     if (rtc && reg_rtc->rtc_init) {
-        if ((*reg_rtc->rtc_init) ()) {
+        if ((*reg_rtc->rtc_init) (reg_rtc)) {
             reg_rtc = NULL;
             return -1;
         }
@@ -83,7 +83,7 @@ int NutRegisterRtc(NUTRTC * rtc)
  *
  * Portable applications should use standard C functions.
  *
- * \param tm Points to a structure that receives the date and time 
+ * \param tm Points to a structure that receives the date and time
  *           information.
  *
  * \return 0 on success or -1 in case of an error.
@@ -91,7 +91,7 @@ int NutRegisterRtc(NUTRTC * rtc)
 int NutRtcGetTime(struct _tm *tm)
 {
     if (reg_rtc && reg_rtc->rtc_gettime && tm) {
-        return (*reg_rtc->rtc_gettime) (tm);
+        return (*reg_rtc->rtc_gettime) (reg_rtc, tm);
     }
     return -1;
 }
@@ -106,10 +106,10 @@ int NutRtcGetTime(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutRtcSetTime(CONST struct _tm *tm)
+int NutRtcSetTime(const struct _tm *tm)
 {
     if (reg_rtc && reg_rtc->rtc_settime && tm) {
-        return (*reg_rtc->rtc_settime) (tm);
+        return (*reg_rtc->rtc_settime) (reg_rtc, tm);
     }
     return -1;
 }
@@ -118,7 +118,7 @@ int NutRtcSetTime(CONST struct _tm *tm)
  * \brief Get alarm date and time from the registered RTC.
  *
  * \param idx    Zero based index. Two alarms are supported.
- * \param tm     Points to a structure that receives the date and time 
+ * \param tm     Points to a structure that receives the date and time
  *               information.
  * \param aflags Points to an unsigned long that receives the enable flags.
  *
@@ -128,7 +128,7 @@ int NutRtcSetTime(CONST struct _tm *tm)
 int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags)
 {
     if (reg_rtc && reg_rtc->rtc_getalarm) {
-        return (*reg_rtc->rtc_getalarm) (idx, tm, aflags);
+        return (*reg_rtc->rtc_getalarm) (reg_rtc, idx, tm, aflags);
     }
     return -1;
 }
@@ -149,10 +149,10 @@ int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags)
+int NutRtcSetAlarm(int idx, const struct _tm *tm, int aflags)
 {
     if (reg_rtc && reg_rtc->rtc_setalarm) {
-        return (*reg_rtc->rtc_setalarm) (idx, tm, aflags);
+        return (*reg_rtc->rtc_setalarm) (reg_rtc, idx, tm, aflags);
     }
     return -1;
 }
@@ -170,7 +170,7 @@ int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags)
 int NutRtcGetStatus(uint32_t * sflags)
 {
     if (reg_rtc && reg_rtc->rtc_getstatus) {
-        return (*reg_rtc->rtc_getstatus) (sflags);
+        return (*reg_rtc->rtc_getstatus) (reg_rtc, sflags);
     }
     return -1;
 }
@@ -185,7 +185,7 @@ int NutRtcGetStatus(uint32_t * sflags)
 int NutRtcClearStatus(uint32_t sflags)
 {
     if (reg_rtc && reg_rtc->rtc_clrstatus) {
-        return (*reg_rtc->rtc_clrstatus) (sflags);
+        return (*reg_rtc->rtc_clrstatus) (reg_rtc, sflags);
     }
     return -1;
 }

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -100,11 +100,11 @@
 
 /*
 static int UromRead(NUTFILE * fp, void *buffer, int size);
-static int UromWrite(NUTFILE * fp, CONST void *buffer, int len);
+static int UromWrite(NUTFILE * fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 static int UromWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
-static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
+static NUTFILE *UromOpen(NUTDEVICE * dev, const char *name, int mode,
                          int acc);
 static int UromClose(NUTFILE * fp);
 static long UromSize(NUTFILE * fp);
@@ -162,7 +162,7 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
  *
  * \return Always returns -1.
  */
-static int UromWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int UromWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return -1;
 }
@@ -183,7 +183,7 @@ static int UromWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 /*!
  * \brief Open a file.
  */
-static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
+static NUTFILE *UromOpen(NUTDEVICE * dev, const char *name, int mode,
                          int acc)
 {
     NUTFILE *fp = malloc(sizeof(NUTFILE));
@@ -195,6 +195,9 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
         return NUTFILE_EOF;
     }
 
+    if (*name == '/') {
+        name++;
+    }
     for (rome = romEntryList; rome; rome = rome->rome_next) {
         if (strcmp_P(name, rome->rome_name) == 0)
             break;

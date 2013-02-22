@@ -45,7 +45,7 @@
  *
  */
 
-// TODO - 
+// TODO -
 /*
  - add proper close function
  - add proper ioctrl
@@ -85,9 +85,9 @@
 // rxDMA buffer
 static unsigned char DMA_RxBuf0[NUT_AHDLC_RECV_DMA_SIZE];
 
-#define UART_RECEIVER_TIMEOUT		32      /* in bit-times */
+#define UART_RECEIVER_TIMEOUT       32      /* in bit-times */
 
-#define SIG_UART		sig_UART1
+#define SIG_UART        sig_UART1
 #define US_ID           US1_ID
 #define US_GPIO_PINS    0x00000360
 
@@ -103,7 +103,7 @@ static AHDLCDCB dcb_ahdlc;
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this device driver to the Nut/OS kernel.
  */
 NUTDEVICE devAhdlc1 = {
@@ -127,7 +127,7 @@ NUTDEVICE devAhdlc1 = {
 /*
  * FCS lookup table located in program memory space.
  */
-static prog_char fcstab[512] = {
+static char fcstab[512] = {
     0x00, 0x00, 0x11, 0x89, 0x23, 0x12, 0x32, 0x9b, 0x46, 0x24, 0x57, 0xad, 0x65, 0x36, 0x74, 0xbf,
     0x8c, 0x48, 0x9d, 0xc1, 0xaf, 0x5a, 0xbe, 0xd3, 0xca, 0x6c, 0xdb, 0xe5, 0xe9, 0x7e, 0xf8, 0xf7,
     0x10, 0x81, 0x01, 0x08, 0x33, 0x93, 0x22, 0x1a, 0x56, 0xa5, 0x47, 0x2c, 0x75, 0xb7, 0x64, 0x3e,
@@ -271,7 +271,7 @@ static int SendRawByte(AHDLCDCB * dcb, uint8_t ch, uint8_t flush)
  *
  * \return 0 on success, -1 in case of any errors.
  */
-static int SendHdlcData(AHDLCDCB * dcb, CONST uint8_t * data, uint16_t len, uint16_t * txfcs)
+static int SendHdlcData(AHDLCDCB * dcb, const uint8_t * data, uint16_t len, uint16_t * txfcs)
 {
     uint16_t tbx;
     uint16_t fcs;
@@ -440,7 +440,7 @@ THREAD(AhdlcRx, arg)
             while (dcb->dcb_rd_idx == dcb->dcb_rx_idx) {
                 if (dev->dev_icb == 0)
                     break;
-                // TODO: Check for idle timeout. 
+                // TODO: Check for idle timeout.
                 if (NutEventWait(&dcb->dcb_rx_rdy, dcb->dcb_rtimeout)) {
                     continue;
                 }
@@ -934,7 +934,7 @@ int AhdlcAt91Init(NUTDEVICE * dev)
      * If we have been successful so far, start the HDLC receiver thread,
      * set the initial baudrate and enable the UART.
      */
-    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, 
+    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev,
         (NUT_THREAD_AHDLCRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) {
 //        AhdlcAvrIOCtl(dev, UART_SETSPEED, &baudrate);
         return 0;
@@ -1018,11 +1018,11 @@ int AhdlcAt91Read(NUTFILE * fp, void *buffer, int size)
  * \return The number of bytes written. In case of a write timeout, this
  *         may be less than the specified length.
  */
-int AhdlcAt91Put(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+int AhdlcAt91Put(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc = 0;
     AHDLCDCB *dcb = dev->dev_dcb;
-    CONST uint8_t *cp = buffer;
+    const uint8_t *cp = buffer;
 
     /*
      * Put characters in transmit buffer.
@@ -1069,35 +1069,9 @@ int AhdlcAt91Put(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
-int AhdlcAt91Write(NUTFILE * fp, CONST void *buffer, int len)
+int AhdlcAt91Write(NUTFILE * fp, const void *buffer, int len)
 {
     return AhdlcAt91Put(fp->nf_dev, buffer, len, 0);
-}
-
-/*!
- * \brief Write to the asynchronous HDLC device.
- *
- * Similar to AhdlcWrite() except that the data is located in program
- * memory.
- *
- * This function is called by the low level output routines of the
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P
- * entry.
- *
- * The function may block the calling thread.
- *
- * \param fp     Pointer to a NUTFILE structure, obtained by a previous
- *               call to AhdlcOpen().
- * \param buffer Pointer to the data in program space to be written.
- * \param len    Number of bytes to write.
- *
- * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1
- *         indicates an error.
- */
-int AhdlcAt91Write_P(NUTFILE * fp, PGM_P buffer, int len)
-{
-    return AhdlcAt91Put(fp->nf_dev, (CONST char *) buffer, len, 1);
 }
 
 /*!
@@ -1116,7 +1090,7 @@ int AhdlcAt91Write_P(NUTFILE * fp, PGM_P buffer, int len)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-NUTFILE *AhdlcAt91Open(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *AhdlcAt91Open(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp;
 

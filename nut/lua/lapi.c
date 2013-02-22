@@ -38,9 +38,9 @@ const char lua_ident[] =
 
 
 
-#define api_checknelems(L, n)	api_check(L, (n) <= (L->top - L->base))
+#define api_checknelems(L, n)   api_check(L, (n) <= (L->top - L->base))
 
-#define api_checkvalidindex(L, i)	api_check(L, (i) != luaO_nilobject)
+#define api_checkvalidindex(L, i)   api_check(L, (i) != luaO_nilobject)
 
 #define api_incr_top(L)   {api_check(L, L->top < L->ci->top); L->top++;}
 
@@ -215,7 +215,7 @@ LUA_API void lua_replace (lua_State *L, int idx) {
     if (!func)
       luaG_runerror(L, "attempt to set environment on lightfunction");
     else {
-      api_check(L, ttistable(L->top - 1)); 
+      api_check(L, ttistable(L->top - 1));
       func->c.env = hvalue(L->top - 1);
       luaC_barrier(L, func, L->top - 1);
     }
@@ -412,7 +412,7 @@ LUA_API const void *lua_topointer (lua_State *L, int idx) {
     case LUA_TUSERDATA:
     case LUA_TLIGHTUSERDATA:
       return lua_touserdata(L, idx);
-    case LUA_TROTABLE: 
+    case LUA_TROTABLE:
     case LUA_TLIGHTFUNCTION:
       return pvalue(o);
     default: return NULL;
@@ -793,7 +793,7 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 
 #define checkresults(L,na,nr) \
      api_check(L, (nr) == LUA_MULTRET || (L->ci->top - L->top >= (nr) - (na)))
-	
+
 
 LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
   StkId func;

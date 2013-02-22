@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -73,14 +73,65 @@
 /*@{*/
 
 /*!
+  * \brief Counts the number of free clusters in a fat32 volume, fast version.
+  *
+  * \param dev Specifies the file system device.
+  *
+  * \return The number of free clusters.
+  */
+uint32_t Phat32FreeClusters(NUTDEVICE * dev)
+{
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+    uint32_t rc = 0;
+    uint32_t clust;
+    uint32_t clustlast;
+    uint32_t pos = -4;
+    uint32_t sect;
+    int sbn;
+    uint8_t * sdata;
+
+    /* Do not seek beyond the end of the chain. */
+    clustlast = vol->vol_last_clust;
+    if (clustlast >= (PHATEOC & PHAT32CMASK)) {
+        clustlast = (PHATEOC & PHAT32CMASK) -1;
+    }
+
+    sect = vol->vol_tab_sect[0];
+    sbn = PhatSectorLoad(dev, sect);
+    if (sbn >= 0) {
+        sdata = vol->vol_buf[sbn].sect_data;
+        for (clust = 0; clust < clustlast; clust++) {
+            pos += 4;
+            /* Load the sector that contains the table entry. */
+            if (pos >= vol->vol_sectsz) {
+                PhatSectorBufferRelease(dev, sbn);
+                pos = 0;
+                sect++;
+                sbn = PhatSectorLoad(dev, sect);
+                if (sbn < 0) {
+                    break;
+                }
+                sdata = vol->vol_buf[sbn].sect_data;
+            }
+            /* Check if the 32 bit link value is zero */
+            if ((sdata[pos] | sdata[pos + 1] | sdata[pos + 2] | sdata[pos + 3]) == 0) {
+                rc++;
+            }
+        }
+        PhatSectorBufferRelease(dev, sbn);
+    }
+    return rc;
+}
+
+/*!
  * \brief Calculate table location of a specified cluster.
  *
  * \param vol    Mounted volume.
  * \param clust  Cluster number of the entry to locate.
  * \param tabnum Number of the table.
- * \param sect   Pointer to the variable that receives the sector of the 
+ * \param sect   Pointer to the variable that receives the sector of the
  *               table entry.
- * \param pos    Pointer to the variable that receives position within 
+ * \param pos    Pointer to the variable that receives position within
  *               the sector.
  */
 static void PhatTableLoc(PHATVOL * vol, uint32_t clust, int tabnum, uint32_t * sect, uint32_t * pos)
@@ -122,6 +173,7 @@ int Phat32GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link)
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 2]) << 16;
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 3]) << 24;
+    PhatSectorBufferRelease(dev, sbn);
 
     return 0;
 }
@@ -155,6 +207,7 @@ int Phat32SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
         vol->vol_buf[sbn].sect_data[pos + 2] = (uint8_t) (link >> 16);
         vol->vol_buf[sbn].sect_data[pos + 3] = (uint8_t) (link >> 24);
         vol->vol_buf[sbn].sect_dirty = 1;
+        PhatSectorBufferRelease(dev, sbn);
     }
     return 0;
 }

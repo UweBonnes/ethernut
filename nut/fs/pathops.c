@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -83,6 +83,7 @@
 #include <errno.h>
 #include <sys/device.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <fs/fs.h>
 #include <sys/stat.h>
@@ -92,12 +93,12 @@
  */
 /*@{*/
 
-static int PathOperation(CONST char *path, int opcode)
+static int PathOperation(const char *path, int opcode)
 {
     NUTDEVICE *dev;
     char dev_name[9];
     uint8_t nidx;
-    CONST char *nptr = path;
+    const char *nptr = path;
 
     /*
      * Extract device name.
@@ -133,7 +134,7 @@ static int PathOperation(CONST char *path, int opcode)
  *
  * \note Access permissions are not supported by all file systems.
  */
-int access(CONST char *path, int what)
+int access(const char *path, int what)
 {
     struct stat s;
 
@@ -167,12 +168,12 @@ long lseek(int fh, long pos, int whence)
  * \brief Remove a directory.
  *
  * \param path Pathname of the directory. Must be the full pathname
- *             including the device, because Nut/OS doesn't support 
+ *             including the device, because Nut/OS doesn't support
  *             relative paths.
  *
  * \return 0 if the remove succeeds, otherwise -1 is returned.
  */
-int rmdir(CONST char *path)
+int rmdir(const char *path)
 {
     return PathOperation(path, FS_DIR_REMOVE);
 }
@@ -182,7 +183,7 @@ int rmdir(CONST char *path)
  *
  * \return 0 if the remove succeeds, otherwise -1 is returned.
  */
-int unlink(CONST char *path)
+int unlink(const char *path)
 {
     return PathOperation(path, FS_FILE_DELETE);
 }
@@ -193,12 +194,12 @@ int unlink(CONST char *path)
  *
  * \return 0 if the query succeeds, otherwise -1 is returned.
  */
-int stat(CONST char *path, struct stat *s)
+int stat(const char *path, struct stat *s)
 {
     NUTDEVICE *dev;
     char dev_name[9];
     uint8_t nidx;
-    CONST char *nptr = path;
+    const char *nptr = path;
     FSCP_STATUS parms;
 
     /* Extract the device name. */
@@ -234,7 +235,7 @@ int fstat(int fh, struct stat *s)
  *
  * \return 0 on success, otherwise -1 is returned.
  */
-int mkdir(CONST char *path, int mode)
+int mkdir(const char *path, int mode)
 {
     return PathOperation(path, FS_DIR_CREATE);
 }
@@ -242,7 +243,7 @@ int mkdir(CONST char *path, int mode)
 /*!
   * \brief Rename a file.
   *
-  * New and old filename must contain the name of a registered device, 
+  * New and old filename must contain the name of a registered device,
   * followed by a colon and a filename. Moving a file from one device
   * to another is not supported.
   *
@@ -251,14 +252,14 @@ int mkdir(CONST char *path, int mode)
   *
   * \return 0 for success or -1 to indicate an error.
   */
-int rename(CONST char *old_name, CONST char *new_name)
+int rename(const char *old_name, const char *new_name)
 {
     int rc = -1;
     NUTDEVICE *dev;
     char old_devname[9];
     char new_devname[9];
     uint8_t nidx;
-    CONST char *nptr;
+    const char *nptr;
     FSCP_RENAME parms;   /* Structure used for renaming files. */
 
     /* Extract old file's device name. */

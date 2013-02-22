@@ -49,11 +49,11 @@
  * \brief Port translations.
  *
  * This header file determines the target specific GPIO register names
- * by a simple configured port identifier. In addition it provides 
+ * by a simple configured port identifier. In addition it provides
  * several macros to configure, set, clear or query GPIO bits.
  *
- * Unlike most other header files, this one may be included several 
- * times within a single source file, typically once for each configured 
+ * Unlike most other header files, this one may be included several
+ * times within a single source file, typically once for each configured
  * identifier.
  *
  * \code
@@ -84,8 +84,8 @@
  * }
  * \endcode
  *
- * In contrast to the routines in dev/gpio.h, these macros do not 
- * require any function call and will therefore produce faster and 
+ * In contrast to the routines in dev/gpio.h, these macros do not
+ * require any function call and will therefore produce faster and
  * smaller code. The following macros are currently available:
  *
  * - GPIO_SET_LO Sets output low.
@@ -107,7 +107,7 @@
  *       should check the target's datasheet.
  *
  * \note We use capital letters for the inline attribute to refer to a
- *       preprocessor macro. If the compiler doesn't support inlined 
+ *       preprocessor macro. If the compiler doesn't support inlined
  *       function, then the macro will be empty. In this case a function
  *       call may be used, depending on the compiler's optimization
  *       strategy. Even if the compiler supports the inline keyword,
@@ -367,8 +367,8 @@
 #include <avr32/io.h>
 
 #define  GPIO_PE_REG    &AVR32_GPIO.port[GPIO_ID].gpers
-#define  GPIO_PD_REG	&AVR32_GPIO.port[GPIO_ID].pderc
-#define  GPIO_PS_REG	&AVR32_GPIO.port[GPIO_ID].pder
+#define  GPIO_PD_REG    &AVR32_GPIO.port[GPIO_ID].pderc
+#define  GPIO_PS_REG    &AVR32_GPIO.port[GPIO_ID].pder
 #define  GPIO_OE_REG    &AVR32_GPIO.port[GPIO_ID].oders
 #define  GPIO_OD_REG    &AVR32_GPIO.port[GPIO_ID].oderc
 #define  GPIO_OS_REG    &AVR32_GPIO.port[GPIO_ID].oder

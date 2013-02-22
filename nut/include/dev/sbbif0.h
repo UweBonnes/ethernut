@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -1006,9 +1006,6 @@
     SBBI0_MISO_ENA(); \
 }
 
-__BEGIN_DECLS
-/* Function prototypes */
-
 extern int Sbbi0SetMode(ureg_t ix, ureg_t mode);
 extern void Sbbi0SetSpeed(ureg_t ix, uint32_t rate);
 extern void Sbbi0Enable(ureg_t ix);
@@ -1019,9 +1016,6 @@ extern void Sbbi0DeselectDevice(ureg_t ix);
 extern void Sbbi0NegSelectDevice(ureg_t ix);
 extern void Sbbi0NegDeselectDevice(ureg_t ix);
 extern uint8_t Sbbi0Byte(uint8_t data);
-extern void Sbbi0Transact(CONST void *wdata, void *rdata, size_t len);
-
-__END_DECLS
-/* End of prototypes */
+extern void Sbbi0Transact(const void *wdata, void *rdata, size_t len);
 
 #endif

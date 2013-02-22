@@ -1,5 +1,5 @@
 #ifndef _DEV_RTC_H_
-#define	_DEV_RTC_H_
+#define _DEV_RTC_H_
 
 /*
  * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -58,6 +58,8 @@
 #define RTC_ALARM_MDAY      0x00000008
 #define RTC_ALARM_MONTH     0x00000010
 #define RTC_ALARM_WDAY      0x00000080
+#define RTC_ALARM_YEAR      0x00000100
+#define RTC_ALARM_YDAY      0x00000200
 
 /*!
  * \brief Convert binary coded decimal to binary value.
@@ -78,28 +80,26 @@ typedef struct _NUTRTC NUTRTC;
  * \brief RTC device structure.
  */
 struct _NUTRTC {
-    int (*rtc_init) (void);
-    int (*rtc_gettime) (struct _tm *);
-    int (*rtc_settime) (CONST struct _tm *);
-    int (*rtc_getalarm) (int idx, struct _tm *, int *);
-    int (*rtc_setalarm) (int idx, CONST struct _tm *, int);
-    int (*rtc_getstatus) (uint32_t *);
-    int (*rtc_clrstatus) (uint32_t);
+    void *dcb;
+    int (*rtc_init) (NUTRTC *rtc);
+    int (*rtc_gettime) (NUTRTC *rtc, struct _tm *);
+    int (*rtc_settime) (NUTRTC *rtc, const struct _tm *);
+    int (*rtc_getalarm) (NUTRTC *rtc, int idx, struct _tm *, int *);
+    int (*rtc_setalarm) (NUTRTC *rtc, int idx, const struct _tm *, int);
+    int (*rtc_getstatus) (NUTRTC *rtc, uint32_t *);
+    int (*rtc_clrstatus) (NUTRTC *rtc, uint32_t);
+    HANDLE alarm;
 };
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int NutRegisterRtc(NUTRTC *rtc);
 
 extern int NutRtcGetTime(struct _tm *tm);
-extern int NutRtcSetTime(CONST struct _tm *tm);
+extern int NutRtcSetTime(const struct _tm *tm);
 
 extern int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags);
-extern int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags);
+extern int NutRtcSetAlarm(int idx, const struct _tm *tm, int aflags);
 
 extern int NutRtcGetStatus(uint32_t *sflags);
 extern int NutRtcClearStatus(uint32_t sflags);
 
-__END_DECLS
-/* End of prototypes */
 #endif

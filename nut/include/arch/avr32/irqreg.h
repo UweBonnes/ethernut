@@ -39,6 +39,7 @@
  *
  */
 
+#include <cfg/arch/avr32pio.h>
 
 extern IRQ_HANDLER sig_RTC;
 extern IRQ_HANDLER sig_UART0;
@@ -57,4 +58,7 @@ extern IRQ_HANDLER sig_INTERRUPT4;
 extern IRQ_HANDLER sig_INTERRUPT5;
 extern IRQ_HANDLER sig_INTERRUPT6;
 extern IRQ_HANDLER sig_INTERRUPT7;
+
+#ifdef INTERRUPT_NMI_ENABLE
 extern IRQ_HANDLER sig_INTERRUPTNMI;
+#endif

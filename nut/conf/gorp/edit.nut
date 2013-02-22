@@ -43,7 +43,8 @@ nutgorp_edit =
         name = "nutgorp_edit_edline",
         brief = "Line Editor",
         description = "Line editor with VT100 support and history function.\n\n",
-        sources = { 
+        sources =
+        {
             "edit/edline.c",
             "edit/history.c",
             "edit/vt100.c"

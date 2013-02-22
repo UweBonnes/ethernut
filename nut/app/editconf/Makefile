@@ -38,7 +38,7 @@ PROJ = editconf
 
 include ../Makedefs
 
-SRCS =  $(PROJ).c
+SRCS =  $(PROJ).c meminfo.c
 OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutos -lnutnet -lnutcrt -lnutarch -lnutdev
 TARG =  $(PROJ).hex
@@ -61,3 +61,4 @@ clean:
 	-rm -f $(SRCS:.c=.s)
 	-rm -f $(SRCS:.c=.bak)
 	-rm -f $(SRCS:.c=.i)
+	-rm -f $(SRCS:.c=.d)

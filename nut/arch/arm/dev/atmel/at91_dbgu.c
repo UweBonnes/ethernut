@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2001-2006 by egnite Software GmbH
- * Copyright (C) 2010 by egnite GmbH
+ * Copyright (C) 2010-2011 by egnite GmbH
  *
  * All rights reserved.
  *
@@ -60,6 +60,36 @@
 #endif
 #endif
 
+#ifdef NUT_DEV_DEBUG_READ
+
+#define NUT_DEV_DEBUG_ENA   (US_RXEN | US_TXEN)
+#if defined (PA9_DRXD_A) && defined (PA10_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  (_BV(PA9_DRXD_A) | _BV(PA10_DTXD_A))
+#elif defined (PA27_DRXD_A) && defined (PA28_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  (_BV(PA27_DRXD_A) | _BV(PA28_DTXD_A))
+#elif defined (PB14_DRXD_A) && defined (PB15_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  (_BV(PB14_DRXD_A) | _BV(PB15_DTXD_A))
+#define NUT_DEV_DEBUG_PDR   PIOB_PDR
+#endif
+
+#else
+
+#define NUT_DEV_DEBUG_ENA   US_TXEN
+#if defined (PA10_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  _BV(PA10_DTXD_A)
+#elif defined (PA28_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  _BV(PA28_DTXD_A)
+#elif defined (PB15_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  _BV(PB15_DTXD_A)
+#define NUT_DEV_DEBUG_PDR   PIOB_PDR
+#endif
+
+#endif
+
+#ifndef NUT_DEV_DEBUG_PDR
+#define NUT_DEV_DEBUG_PDR   PIOA_PDR
+#endif
+
 /*!
  * \brief Initialize debug device 2.
  *
@@ -67,26 +97,26 @@
  */
 static int DebugInit(NUTDEVICE * dev)
 {
+#if NUT_DEV_DEBUG_PINS
     /* Disable GPIO on UART tx/rx pins. */
-#if defined (PA9_DRXD_A) && defined (PA10_DTXD_A)
-    outr(PIOA_PDR, _BV(PA9_DRXD_A) | _BV(PA10_DTXD_A));
-#elif defined (PA27_DRXD_A) && defined (PA28_DTXD_A)
-    outr(PIOA_PDR, _BV(PA27_DRXD_A) | _BV(PA28_DTXD_A));
-#elif defined (PB14_DRXD_A) && defined (PB15_DTXD_A)
-    outr(PIOB_PDR, _BV(PB14_DRXD_A) | _BV(PB15_DTXD_A));
+    outr(NUT_DEV_DEBUG_PDR, NUT_DEV_DEBUG_PINS);
 #endif
+
     /* Reset UART. */
     outr(DBGU_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(DBGU_IDR, 0xFFFFFFFF);
+
 #if NUT_DEV_DEBUG_SPEED
     /* Set UART baud rate generator register. */
     outr(DBGU_BRGR, At91BaudRateDiv(NUT_DEV_DEBUG_SPEED));
 #endif
+
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(DBGU_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
-    /* Enable UART receiver and transmitter. */
-    outr(DBGU_CR, US_RXEN | US_TXEN);
+
+    /* Enable UART transmitter and optionally the receiver. */
+    outr(DBGU_CR, NUT_DEV_DEBUG_ENA);
 
     return 0;
 }
@@ -107,11 +137,19 @@ NUTDEVICE devDebug = {
     &dbgfile,                   /*!< Driver control block, dev_dcb. */
     DebugInit,                  /*!< Driver initialization routine, dev_init. */
     At91DevDebugIOCtl,          /*!< Driver specific control function, dev_ioctl. */
-    0,                          /*!< dev_read. */
+#ifdef NUT_DEV_DEBUG_READ
+    At91DevDebugRead,           /*!< dev_read. */
+#else
+    0,
+#endif
     At91DevDebugWrite,          /*!< dev_write. */
     At91DevDebugOpen,           /*!< dev_opem. */
     At91DevDebugClose,          /*!< dev_close. */
+#ifdef NUT_DEV_DEBUG_READ
+    At91DevDebugSize
+#else
     0                           /*!< dev_size. */
+#endif
 };
 
 #endif /* DBGU_BASE */

@@ -46,13 +46,7 @@
 
 #include <compiler.h>
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern void Avr32Reset(void);
 extern int Avr32ResetCause(void);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif /* _ARCH_AVR32_RESET_H_ */

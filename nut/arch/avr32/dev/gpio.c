@@ -1,3 +1,4 @@
+#if 0
 /*!
  * Copyright (C) 2001-2010 by egnite Software GmbH
  *
@@ -31,9 +32,9 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
- 
+
 /* This source file is part of the ATMEL AVR-UC3-SoftwareFramework-1.7.0 Release */
 
 /*This file has been prepared for Doxygen automatic documentation generation.*/
@@ -154,19 +155,19 @@ int gpio_enable_module_pin(unsigned int pin, unsigned int function)
     gpio_port->pmr1c = 1 << (pin & 0x1F);
     gpio_port->pmr2s = 1 << (pin & 0x1F);
     break;
-    
+
   case 5: // F function.
     gpio_port->pmr0s = 1 << (pin & 0x1F);
     gpio_port->pmr1c = 1 << (pin & 0x1F);
     gpio_port->pmr2s = 1 << (pin & 0x1F);
     break;
-    
+
   case 6: // G function.
     gpio_port->pmr0c = 1 << (pin & 0x1F);
     gpio_port->pmr1s = 1 << (pin & 0x1F);
     gpio_port->pmr2s = 1 << (pin & 0x1F);
     break;
-    
+
   case 7: // H function.
     gpio_port->pmr0s = 1 << (pin & 0x1F);
     gpio_port->pmr1s = 1 << (pin & 0x1F);
@@ -400,7 +401,7 @@ void gpio_disable_pin_glitch_filter(unsigned int pin)
 static int gpio_configure_edge_detector(unsigned int pin, unsigned int mode)
 {
   volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
-  
+
   // Configure the edge detector.
   switch (mode)
   {
@@ -492,3 +493,4 @@ int gpio_configure_pin_periph_event_mode(unsigned int pin, unsigned int mode, un
 #endif
 
 //! @}
+#endif

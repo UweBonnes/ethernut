@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -105,7 +105,7 @@
  *
  * During write operations a buffer with this size is allocated
  * from heap and may cause memory problems with large sectors.
- * Thus, this value may be less than the size of the configuration 
+ * Thus, this value may be less than the size of the configuration
  * sector, in which case the rest of the sector is unused.
  *
  * Currently only 1 sector can be used for system configurations.
@@ -212,7 +212,7 @@ int At91EfcSectorRead(unsigned int off, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len)
+int At91EfcSectorWrite(unsigned int off, const void *data, unsigned int len)
 {
     flashptr_t dp = (flashptr_t) (uptr_t) (EFC_CHIP_BASE + off);
     int rc;
@@ -312,7 +312,7 @@ int At91EfcParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * Applications should call NutNvMemSave().
  *
- * The region that contains the configuration sector will be automatically 
+ * The region that contains the configuration sector will be automatically
  * locked.
  *
  * \param pos   Start location within configuration sector.
@@ -321,7 +321,7 @@ int At91EfcParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At91EfcParamWrite(unsigned int pos, CONST void *data, unsigned int len)
+int At91EfcParamWrite(unsigned int pos, const void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

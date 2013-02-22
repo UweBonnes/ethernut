@@ -1,5 +1,9 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH
+ * Copyright (c) 1993 by Digital Equipment Corporation
+ * Copyright (c) 1983, 1993 by The Regents of the University of California
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +18,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,52 +32,6 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (c) 1983, 1993 by
- *  The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * -
- * Portions Copyright (c) 1993 by Digital Equipment Corporation.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies, and that
- * the name of Digital Equipment Corporation not be used in advertising or
- * publicity pertaining to distribution of the document or software without
- * specific, written prior permission.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
- * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
- * CORPORATION BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
- * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
- * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
- * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
- * SOFTWARE.
  */
 
 /*!
@@ -81,72 +39,7 @@
  * \brief ARP cache.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.16  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.15  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.14  2006/10/05 17:24:41  haraldkipp
- * On ARP transmit errors the incomplete cache entry is not removed.
- * Subsequent queries will never send out new ARP requests. Many thanks
- * to Michael Jones for providing a first solution. I added a check,
- * which avoids to remove an already completed entry. Fixes bug #1567783.
- *
- * Revision 1.13  2005/08/02 17:46:49  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.12  2005/06/05 16:49:09  haraldkipp
- * Do not do ARP retries by default.
- *
- * Revision 1.11  2005/05/16 08:41:25  haraldkipp
- * Bugfix: Empty queue before removing entry.
- *
- * Revision 1.10  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.9  2005/03/13 13:40:32  haraldkipp
- * If NutArpOutput() failed, then NutArpCacheQuery() released the already
- * released NETBUF. This bug had been fixed. If NutArpAllocNetBuf() fails,
- * the ARP entry will now be removed immediately. Additional check for
- * valid entry pointer added. These modifications had been suggested by
- * Dusan Ferbas. Finally memcpy() has been replaced by a simple loop in order
- * to provide a work around for GCC Bug #18251.
- *
- * Revision 1.8  2005/02/07 18:57:49  haraldkipp
- * ICCAVR compile errors fixed
- *
- * Revision 1.7  2005/02/07 09:26:56  haraldkipp
- * Argh! Committed wrong source.
- *
- * Revision 1.5  2005/02/04 14:55:08  haraldkipp
- * Almost a complete redesign. Replaced the ARP timer thread by calling an
- * ARP aging routine before each incoming ARP and outgoing IP packet.
- * This also fixes the bug, which generated two ARP requests per query.
- * Thanks to Dusam Ferbas and Rostislav Hlebak for their help.
- *
- * Revision 1.4  2004/07/27 19:38:30  drsung
- * Under certain circumstances the same ARPENTRY was
- * allocated twice.
- *
- * Revision 1.3  2004/03/18 10:18:01  haraldkipp
- * Comments updated
- *
- * Revision 1.2  2004/02/08 17:14:05  drsung
- * arp entries with set ATF_PERM flag are not removed any longer.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:26  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.16  2003/02/04 18:14:56  harald
- * Version 3 released
- *
- * Revision 1.15  2002/06/26 17:29:35  harald
- * First pre-release with 2.4 stack
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -445,7 +338,7 @@ void NutArpCacheUpdate(NUTDEVICE * dev, uint32_t ip, uint8_t * ha)
  *
  * \return 0 if address resolved, -1 otherwise.
  */
-int NutArpCacheQuery(NUTDEVICE * dev, CONST uint32_t ip, uint8_t * mac)
+int NutArpCacheQuery(NUTDEVICE * dev, const uint32_t ip, uint8_t * mac)
 {
     int rc = -1;
     ARPENTRY *entry;

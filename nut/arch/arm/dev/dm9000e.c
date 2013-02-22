@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -96,6 +96,7 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
+#include <dev/phy.h>
 #include <dev/dm9000e.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
@@ -228,14 +229,14 @@
  */
 /*@{*/
 
-#define NIC_NCR     0x00        /* Network control register (0x00). */
+#define NIC_NCR         0x00    /* Network control register (0x00). */
 #define NIC_NCR_LBM     0x06    /* Loopback mode. */
 #define NIC_NCR_LBNORM  0x00    /* Normal mode. */
 #define NIC_NCR_LBMAC   0x02    /* MAC loopback. */
 #define NIC_NCR_LBPHY   0x04    /* PHY loopback. */
 #define NIC_NCR_RST     0x01    /* Software reset, auto clear. */
 
-#define NIC_NSR     0x01        /* Network status register (0x00). */
+#define NIC_NSR         0x01    /* Network status register (0x00). */
 #define NIC_NSR_SPEED   0x80
 #define NIC_NSR_LINKST  0x40
 #define NIC_NSR_WAKEST  0x20
@@ -243,21 +244,21 @@
 #define NIC_NSR_TX1END  0x04
 #define NIC_NSR_RXOV    0x02
 
-#define NIC_TCR     0x02        /* TX control register (0x00). */
-#define NIC_TCR_TXREQ    0x01   /* TX request */
+#define NIC_TCR         0x02    /* TX control register (0x00). */
+#define NIC_TCR_TXREQ   0x01    /* TX request */
 
-#define NIC_TSR1    0x03        /* TX status register I (0x00). */
+#define NIC_TSR1        0x03    /* TX status register I (0x00). */
 
-#define NIC_TSR2    0x04        /* TX status register II (0x00). */
+#define NIC_TSR2        0x04    /* TX status register II (0x00). */
 
-#define NIC_RCR     0x05        /* RX control register (0x00). */
+#define NIC_RCR         0x05    /* RX control register (0x00). */
 #define NIC_RCR_DIS_LONG 0x20   /* Discard long packets. */
 #define NIC_RCR_DIS_CRC 0x10    /* Discard CRC error packets. */
-#define NIC_RCR_ALL		0x08    /* Pass all multicast */
+#define NIC_RCR_ALL     0x08    /* Pass all multicast */
 #define NIC_RCR_PRMSC   0x02    /* Enable promiscuous mode. */
 #define NIC_RCR_RXEN    0x01    /* Enable receiver. */
 
-#define NIC_RSR     0x06        /* RX status register (0x00). */
+#define NIC_RSR         0x06    /* RX status register (0x00). */
 #define NIC_RSR_ERRORS  0xBF    /* Error bit mask. */
 #define NIC_RSR_RF      0x80    /* Runt frame. */
 #define NIC_RSR_MF      0x40    /* Multicast frame. */
@@ -336,28 +337,6 @@
 #define NIC_IMR_ROM     0x04    /* Enable receiver overflow interrupts. */
 #define NIC_IMR_PTM     0x02    /* Enable transmitter interrupts. */
 #define NIC_IMR_PRM     0x01    /* Enable receiver interrupts. */
-
-#define NIC_PHY_BMCR    0x00    /* Basic mode control register. */
-
-#define NIC_PHY_BMSR    0x01    /* Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /* Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /* Link status. */
-
-#define NIC_PHY_ID1     0x02    /* PHY identifier register 1. */
-
-#define NIC_PHY_ID2     0x03    /* PHY identifier register 2. */
-
-#define NIC_PHY_ANAR    0x04    /* Auto negotiation advertisement register. */
-
-#define NIC_PHY_ANLPAR  0x05    /* Auto negotiation link partner availability register. */
-
-#define NIC_PHY_ANER    0x06    /* Auto negotiation expansion register. */
-
-#define NIC_PHY_DSCR    0x10    /* Davicom specified configuration register. */
-
-#define NIC_PHY_DSCSR   0x11    /* Davicom specified configuration and status register. */
-
-#define NIC_PHY_10BTCSR 0x12    /* 10BASE-T configuration and status register. */
 
 /*!
  * \brief Network interface controller information structure.
@@ -439,7 +418,7 @@ static INLINE uint8_t nic_inb(uint16_t reg)
  *
  * \return Contents of the specified register.
  */
-static uint16_t phy_inw(uint8_t reg)
+static uint16_t phy_inw( uint8_t reg)
 {
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
@@ -467,7 +446,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
     nic_outb(NIC_EPAR, 0x40 | reg);
 
     /* Store value in PHY data register. */
-    nic_outb(NIC_EPDRL, (uint8_t) val);
+    nic_outb(NIC_EPDRL, (uint8_t) (val));
     nic_outb(NIC_EPDRH, (uint8_t) (val >> 8));
 
     /* PHY write command. */
@@ -478,9 +457,9 @@ static void phy_outw(uint8_t reg, uint16_t val)
 
 static int NicPhyInit(void)
 {
+    uint32_t phy = 1;
     /* Restart auto negotiation. */
-    phy_outw(NIC_PHY_ANAR, 0x01E1);
-    phy_outw(NIC_PHY_BMCR, 0x1200);
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
 
     nic_outb(NIC_GPCR, 1);
     nic_outb(NIC_GPR, 0);
@@ -832,7 +811,7 @@ static void NicUpdateMCHardware(NICINFO *ni)
 
     /* Enable broadcast receive. */
     ni->ni_mar[7] |= 0x80;
-    
+
     /* Set multicast address register */
     for (i = 0; i < 7; i++) {
         nic_outb(NIC_MAR + i, ni->ni_mar[i]);
@@ -846,10 +825,11 @@ static void NicUpdateMCHardware(NICINFO *ni)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac, NICINFO * ni)
+static int NicStart(const uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;
+    uint32_t phy;
 
     /* Power up the PHY. */
     nic_outb(NIC_GPR, 0);
@@ -874,7 +854,7 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
     }
 
     /* Set multicast address register */
-    NicUpdateMCHardware(ni);    
+    NicUpdateMCHardware(ni);
 
     /* Clear interrupts. */
     nic_outb(NIC_ISR, NIC_ISR_ROOS | NIC_ISR_ROS | NIC_ISR_PTS | NIC_ISR_PRS);
@@ -887,9 +867,14 @@ static int NicStart(CONST uint8_t * mac, NICINFO * ni)
     /* Enable receiver. */
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN | NIC_RCR_ALL);
 
-    /* Wait for link. */
-    for (link_wait = 20;; link_wait--) {
-        if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+    /* Restart autonegotiation */
+    phy = 1;
+    NutPhyCtl(PHY_CTL_AUTONEG_RE, &phy);
+
+    /* Wait for auto negotiation completed and link established. */
+    for (link_wait = 25;; link_wait--) {
+        NutPhyCtl(PHY_GET_STATUS, &phy);
+        if((phy & PHY_STATUS_HAS_LINK) && (phy & PHY_STATUS_AUTONEG_OK)) {
             break;
         }
         if (link_wait == 0) {
@@ -1070,7 +1055,7 @@ int DmInit(NUTDEVICE * dev)
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
 #if defined(ELEKTOR_IR1)
-    
+
     /* @@MF: "Power on reset" the Ethernet controller */
     outr(PIOC_SODR, _BV(PC17_NANDOE_B));
     outr(PIOC_PER,  _BV(PC17_NANDOE_B));
@@ -1112,6 +1097,9 @@ int DmInit(NUTDEVICE * dev)
         return -1;
     }
 
+    /* Register PHY */
+    NutRegisterPhy( 1, phy_outw, phy_inw);
+
     /* Reset chip. */
     if (NicReset()) {
         return -1;
@@ -1150,20 +1138,20 @@ static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
     MCASTENTRY *mcast;
     MCASTENTRY *mcast_prev;
     MCASTENTRY *mcast_next;
-    
+
     uint8_t mac[6];
 
     switch (req) {
-        /* Set interface address */ 
+        /* Set interface address */
         case SIOCSIFADDR:
             /* Set interface hardware address. */
             memcpy(nif->if_mac, conf, sizeof(nif->if_mac));
             break;
-    
+
         /* Add multicast address */
         case SIOCADDMULTI:
             ip_addr = *((uint32_t*)conf);
-            
+
             /* Test if the address is still in the list */
             mcast = nif->if_mcast;
             while(mcast)
@@ -1175,39 +1163,39 @@ static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
                 }
                 mcast = mcast->mca_next;
             }
-           
-            /* Create MAC address */ 
+
+            /* Create MAC address */
             mac[0] = 0x01;
             mac[1] = 0x00;
             mac[2] = 0x5E;
             mac[3] = ((uint8_t*)conf)[1] & 0x7f;
             mac[4] = ((uint8_t*)conf)[2];
             mac[5] = ((uint8_t*)conf)[3];
-            
+
             mcast = malloc(sizeof(MCASTENTRY));
             if (mcast != NULL) {
                 /* Calculate MAR index, range 0...63 */
                 index  = ether_crc32_le(&mac[0], 6);
                 index &= 0x3F;
-            
-                /* Set multicast bit */            
+
+                /* Set multicast bit */
                 ni->ni_mar[index / 8] |= (1 << (index % 8));
-                
+
                 /* Add new mcast to the mcast list */
                 memcpy(mcast->mca_ha, mac, 6);
                 mcast->mca_ip = *((uint32_t*)conf);
                 mcast->mca_next = nif->if_mcast;
                 nif->if_mcast = mcast;
-                
+
                 /* Update the MC hardware */
                 NicUpdateMCHardware(ni);
             }
             else {
                 rc = -1;
-            }    
+            }
             break;
-        
-        /* Delete multicast address */    
+
+        /* Delete multicast address */
         case SIOCDELMULTI:
             ip_addr = *((uint32_t*)conf);
 
@@ -1230,64 +1218,64 @@ static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
                 /* The address is not in the list */
                 return -1;
             }
-            
-            /* 
-             * Remove the address from the list 
+
+            /*
+             * Remove the address from the list
              */
-            mcast_next = mcast->mca_next;  
-             
-            /* Check if the first element must be removed */ 
+            mcast_next = mcast->mca_next;
+
+            /* Check if the first element must be removed */
             if (nif->if_mcast == mcast)
             {
-                /* 
-                 * The element is the first one 
+                /*
+                 * The element is the first one
                  */
-                
+
                 /* The first element is now the "next" element */
                 nif->if_mcast = mcast_next;
-                free(mcast); 
+                free(mcast);
             } else {
                 /*
-                 * The element is in the middle of the list 
+                 * The element is in the middle of the list
                  */
-                 
+
                 /* The next element of the previous is the "next" element */
                 mcast_prev->mca_next = mcast_next;
-                free(mcast); 
+                free(mcast);
             }
-            
+
             /*
              * Clear the multicast filter, and rebuild it
              */
-            
-            /* Clear */ 
+
+            /* Clear */
             for (i = 0; i < 7; i++) {
                 ni->ni_mar[i] = 0;
             }
-             
-            /* Rebuild  */  
+
+            /* Rebuild  */
             mcast = nif->if_mcast;
             while(mcast)
             {
                 /* Calculate MAR index, range 0...63 */
                 index  = ether_crc32_le(&mcast->mca_ha[0], 6);
                 index &= 0x3F;
-            
-                /* Set multicast bit */            
+
+                /* Set multicast bit */
                 ni->ni_mar[index / 8] |= (1 << (index % 8));
-            
+
                 mcast = mcast->mca_next;
             }
-            
+
             /* Update the MC hardware */
             NicUpdateMCHardware(ni);
-            break;  
-              
+            break;
+
         default:
             rc = -1;
             break;
-    }    
-    
+    }
+
     return rc;
 }
 
@@ -1313,7 +1301,10 @@ static IFNET ifn_eth0 = {
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     DmOutput,                   /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
-    0                           /*!< \brief Interface specific control function. */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -80,7 +80,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -141,10 +141,11 @@
  */
 /*@{*/
 
-static int NutNetBufAllocData(NBDATA * nbd, int size)
+static int NutNetBufAllocData(NBDATA * nbd, int size, int offs)
 {
-    nbd->vp = NutHeapAlloc(size);
+    nbd->vp = NutHeapAlloc(size + offs);
     if (nbd->vp) {
+        nbd->vp = (void *) ((uint8_t *) nbd->vp + offs);
         nbd->sz = size;
         return 0;
     }
@@ -154,13 +155,13 @@ static int NutNetBufAllocData(NBDATA * nbd, int size)
 /*!
  * \brief Allocate or re-allocate a network buffer part.
  *
- * \param nb   Points to an existing network buffer structure or NULL, 
+ * \param nb   Points to an existing network buffer structure or NULL,
  *             if a new structure should be created. An existing buffer
  *             must not be used any further if this function returns
  *             a null pointer.
  * \param type Part of the buffer to be allocated. This can be any of
  *             the following:
- *             - NBAF_DATALINK
+ *             - NBAF_DATALINK + 0 <= OFFSET <= 0xf
  *             - NBAF_NETWORK
  *             - NBAF_TRANSPORT
  *             - NBAF_APPLICATION
@@ -173,11 +174,15 @@ static int NutNetBufAllocData(NBDATA * nbd, int size)
 NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 {
     NBDATA * nbd;
+    int offs = type & ~NBAF_ALL;
+
+    if ((type & NBAF_ALL) == NBAF_DATALINK)
+        type = NBAF_DATALINK;
 
     NUTASSERT(size > 0);
-    NUTASSERT(type == NBAF_DATALINK || 
-        type == NBAF_NETWORK || 
-        type == NBAF_TRANSPORT || 
+    NUTASSERT(type  == NBAF_DATALINK ||
+        type == NBAF_NETWORK ||
+        type == NBAF_TRANSPORT ||
         type == NBAF_APPLICATION);
 
     /* Allocate a new buffer, if the caller don't provide one. */
@@ -205,10 +210,10 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
         if (nb->nb_flags & type) {
             if (nbd->sz < size) {
                 /* Existing buffer is too small. */
-                NutHeapFree(nbd->vp);
+                NutHeapFree((void *)NUTMEM_BOTTOM_ALIGN((uintptr_t) nbd->vp));
                 nbd->sz = 0;
             } else {
-                /* 
+                /*
                  * Reduce the size. This is actually a bad idea, because
                  * we may waste too much memory. One option would be to
                  * use the new NutHeapRealloc, but not sure if it will
@@ -222,10 +227,10 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
             /* Buffer was not allocated from heap. */
             nbd->sz = 0;
         }
-        /* If the size is zero at this point, 
+        /* If the size is zero at this point,
            we need to allocate a new buffer. */
         if (nbd->sz == 0) {
-            if (NutNetBufAllocData(nbd, size)) {
+            if (NutNetBufAllocData(nbd, size, offs)) {
                 /* Out of memory, release the complete net buffer. */
                 NutNetBufFree(nb);
                 nb = NULL;
@@ -241,9 +246,9 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 /*!
  * \brief Create a referencing copy of an existing network buffer structure.
  *
- * \param nb   Points to an existing network buffer structure, previously 
+ * \param nb   Points to an existing network buffer structure, previously
  *             allocated by NutNetBufAlloc().
- * \param type Part of the buffer to be additionally allocated. This can 
+ * \param type Part of the buffer to be additionally allocated. This can
  *             be any combination of the following flags:
  *             - NBAF_DATALINK
  *             - NBAF_NETWORK
@@ -255,7 +260,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
 {
     NETBUF *cb;
-    
+
     NUTASSERT(nb != NULL);
 
     if ((nb->nb_flags & NBAF_REFCNT) == NBAF_REFCNT) {
@@ -271,7 +276,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_dl.sz;
         if (s) {
             if (inserts & NBAF_DATALINK) {
-                e = NutNetBufAllocData(&cb->nb_dl, s);
+                e = NutNetBufAllocData(&cb->nb_dl, s, (intptr_t)nb->nb_dl.vp & (NUTMEM_ALIGNMENT - 1));
                 if (e == 0) {
                     memcpy(cb->nb_dl.vp, nb->nb_dl.vp, s);
                     cb->nb_flags |= NBAF_DATALINK;
@@ -285,7 +290,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_nw.sz;
         if (s && e == 0) {
             if (inserts & NBAF_NETWORK) {
-                e = NutNetBufAllocData(&cb->nb_nw, s);
+                e = NutNetBufAllocData(&cb->nb_nw, s, 0);
                 if (e == 0) {
                     memcpy(cb->nb_nw.vp, nb->nb_nw.vp, s);
                     cb->nb_flags |= NBAF_NETWORK;
@@ -299,7 +304,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_tp.sz;
         if (s && e == 0) {
             if (inserts & NBAF_TRANSPORT) {
-                e = NutNetBufAllocData(&cb->nb_tp, s);
+                e = NutNetBufAllocData(&cb->nb_tp, s, 0);
                 if (e == 0) {
                     memcpy(cb->nb_tp.vp, nb->nb_tp.vp, s);
                     cb->nb_flags |= NBAF_TRANSPORT;
@@ -313,7 +318,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_ap.sz;
         if (s && e == 0) {
             if (inserts & NBAF_APPLICATION) {
-                e = NutNetBufAllocData(&cb->nb_ap, s);
+                e = NutNetBufAllocData(&cb->nb_ap, s, 0);
                 if (e == 0) {
                     memcpy(cb->nb_ap.vp, nb->nb_ap.vp, s);
                     cb->nb_flags |= NBAF_APPLICATION;
@@ -327,7 +332,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         if (e) {
             NutNetBufFree(cb);
             cb = NULL;
-        } 
+        }
         else if (referenced) {
             cb->nb_ref = nb;
             nb->nb_flags++;
@@ -369,7 +374,7 @@ void NutNetBufFree(NETBUF * nb)
         nb->nb_flags--;
     } else {
         if (nb->nb_flags & NBAF_DATALINK) {
-            NutHeapFree(nb->nb_dl.vp);
+            NutHeapFree((void *) NUTMEM_BOTTOM_ALIGN((uintptr_t) nb->nb_dl.vp));
         }
         if (nb->nb_flags & NBAF_NETWORK) {
             NutHeapFree(nb->nb_nw.vp);
@@ -402,7 +407,7 @@ int NutNetBufCollect(NETBUF * nbq, int total)
     NBDATA nbd;
     uint8_t *ap;
 
-    if (NutNetBufAllocData(&nbd, total) == 0) {
+    if (NutNetBufAllocData(&nbd, total, 0) == 0) {
         ap = (uint8_t *) nbd.vp;
         memcpy(nbd.vp, nbq->nb_ap.vp, nbq->nb_ap.sz);
         nbd.sz = nbq->nb_ap.sz;

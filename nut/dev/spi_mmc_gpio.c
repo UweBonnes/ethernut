@@ -107,11 +107,11 @@ static void SpiMmcGpioIrq(void *arg)
         /* Set the change flag. */
         mcs->mcs_cf = 1;
         /* Set the card detect flag. */
-        mcs->mcs_sf = NUTMC_SF_CD; 
+        mcs->mcs_sf = NUTMC_SF_CD;
 
 #if defined(MMC_WP_PORT) && defined(MMC_WP_PIN)
         if (GpioPinGet(MMC_WP_PORT, MMC_WP_PIN) == 0) {
-            mcs->mcs_sf |= NUTMC_SF_WP
+            mcs->mcs_sf |= NUTMC_SF_WP;
         }
 #endif
     } else {
@@ -167,17 +167,17 @@ static int SpiMmcGpioReset(NUTDEVICE * dev)
     NUTSPIBUS  * bus;
 
     int rc;
-    
+
     node = (NUTSPINODE *) dev->dev_icb;
     bus = (NUTSPIBUS *) node->node_bus;
-    
+
     /*
-     * 80 bits of ones with deactivated chip select will put the card 
+     * 80 bits of ones with deactivated chip select will put the card
      * in SPI mode.
      */
     node->node_mode |= SPI_MODE_CSHIGH;
     rc = (bus->bus_alloc) (node, 1000);
-    if (rc == 0) {       
+    if (rc == 0) {
         uint8_t txb[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         (bus->bus_transfer) (node, &txb, NULL, 10);
     }
@@ -193,7 +193,7 @@ static int SpiMmcGpioReset(NUTDEVICE * dev)
 /*!
  * \brief Initialize MMC driver for socket 0.
  *
- * This function is automatically executed during during device 
+ * This function is automatically executed during during device
  * registration via NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.
@@ -207,14 +207,14 @@ static int SpiMmcGpioInit(NUTDEVICE * dev)
 #if defined(MMC_WP_PORT) && defined(MMC_WP_PIN)
     /* Configure write protect detection pin as input with pullups enabled */
     GpioPinConfigSet(MMC_WP_PORT, MMC_WP_PIN, GPIO_CFG_PULLUP);
-#endif    
-    
+#endif
+
 #if defined(MMC_CD_PORT) && defined(MMC_CD_PIN)
     /* Configure card detect pin as input with pullups enabled */
     GpioPinConfigSet(MMC_CD_PORT, MMC_CD_PIN, GPIO_CFG_PULLUP);
 
     /* Register card detection interrupt. */
-   
+
     rc = GpioRegisterIrqHandler(&MMC_CD_SIGNAL, MMC_CD_PIN, SpiMmcGpioIrq, dev->dev_dcb);
     if (rc == 0) {
         GpioIrqEnable(&MMC_CD_SIGNAL, MMC_CD_PIN);
@@ -230,14 +230,14 @@ static int SpiMmcGpioInit(NUTDEVICE * dev)
     /* Set the change flag. */
     ((MEMCARDSUPP *)dev->dev_dcb)->mcs_cf = 1;
     /* Set the card detect flag. */
-    ((MEMCARDSUPP *)dev->dev_dcb)->mcs_sf = NUTMC_SF_CD; 
+    ((MEMCARDSUPP *)dev->dev_dcb)->mcs_sf = NUTMC_SF_CD;
 
 #if defined(MMC_WP_PORT) && defined(MMC_WP_PIN)
     if (GpioPinGet(MMC_WP_PORT, MMC_WP_PIN) == 0) {
         ((MEMCARDSUPP *)dev->dev_dcb)->mcs_sf |= NUTMC_SF_WP
     }
 #endif
-    
+
 #endif
     return rc;
 }
@@ -251,19 +251,20 @@ NUTSPINODE nodeSpiMmcGpio = {
     SPI_MMC_CLK,    /*!< \brief Initial clock rate, node_rate. */
     SPI_MODE_0,     /*!< \brief Initial mode, node_mode. */
     8,              /*!< \brief Initial data bits, node_bits. */
-    SPI_MMC_CS      /*!< \brief Chip select, node_cs. */
+    SPI_MMC_CS,     /*!< \brief Chip select, node_cs. */
+    &mcsSpiMmcGpio  /*!< Driver control block used by the low level part, node_dcb. */
 };
 
 /*!
  * \brief Multimedia card device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
- * to bind this driver to the Nut/OS kernel. An application may then 
+ * A pointer to this structure must be passed to NutRegisterDevice()
+ * to bind this driver to the Nut/OS kernel. An application may then
  * call
  * /verbatim
  * _open("MMC0:", _O_RDWR | _O_BINARY);
  * /endverbatim
- * to mount the first active primary partition with any previously 
+ * to mount the first active primary partition with any previously
  * registered file system driver (typically devPhat0).
  */
 NUTDEVICE devSpiMmcGpio = {

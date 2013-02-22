@@ -53,7 +53,7 @@
  * procedure is repeated every hour.
  *
  * By default the application will use 2 serial ports. The first one is
- * used for debugging output on stdout and the second UART will be 
+ * used for debugging output on stdout and the second UART will be
  * connected to a modem.
  *
  * Note, that PPP is not available for all target boards. If this is the
@@ -143,9 +143,9 @@ static void DebugPortOpen(void)
     uint32_t baud = 115200;
 
     /* Register debug UART. */
-    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
     /* Open debug device for standard output. */
-    freopen(DEV_DEBUG_NAME, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     /* Set baud rate. */
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 }

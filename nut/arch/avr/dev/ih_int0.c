@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -36,40 +36,7 @@
  * \brief AVR external interrupt 0.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.4  2006/01/25 09:38:50  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.3  2005/10/24 18:02:34  haraldkipp
- * Fixes for ATmega103.
- *
- * Revision 1.2  2005/10/24 09:34:29  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2004/01/30 17:02:19  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:40  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/02/04 17:53:58  harald
- * *** empty log message ***
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -208,13 +175,13 @@ static int AvrInterrupt0Ctl(int cmd, void *param)
     return rc;
 }
 
-/*! 
- * \fn SIG_INTERRUPT0(void)
+/*!
+ * \fn INT0_vect(void)
  * \brief External interrupt 0 entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INTERRUPT0:iv_INT0
+#pragma interrupt_handler INT0_vect:iv_INT0
 #endif
-NUTSIGNAL(SIG_INTERRUPT0, sig_INTERRUPT0)
+NUTSIGNAL(INT0_vect, sig_INTERRUPT0)
 
 /*@}*/

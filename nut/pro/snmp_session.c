@@ -84,7 +84,7 @@ SNMP_SESSION *SnmpSessionOpen(uint32_t ip, uint16_t port, uint8_t * id, size_t i
 /*!
  * \brief Close SNMP session.
  *
- * \param session Points to the session info, obtained by calling 
+ * \param session Points to the session info, obtained by calling
  *                SnmpSessionOpen().
  */
 void SnmpSessionClose(SNMP_SESSION * session)
@@ -98,13 +98,13 @@ void SnmpSessionClose(SNMP_SESSION * session)
 /*!
  * \brief Build SNMP packet.
  *
- * \param session Points to the session info, obtained by calling 
+ * \param session Points to the session info, obtained by calling
  *                SnmpSessionOpen().
- * \param pdu     Points to the PDU info, obtained by calling 
+ * \param pdu     Points to the PDU info, obtained by calling
  *                SnmpPduCreate().
  * \param packet  Pointer to a packet buffer.
- * \param psize Points to a variable that contains the number of 
- *                available bytes in the packet buffer. On exit, it is 
+ * \param psize Points to a variable that contains the number of
+ *                available bytes in the packet buffer. On exit, it is
  *                returned as the number of valid bytes in the packet buffer.
  *
  * \return 0 on success, -1 otherwise.
@@ -246,9 +246,9 @@ static int SnmpMsgBuild(SNMP_SESSION * session, SNMP_PDU * pdu, uint8_t * packet
 /*!
  * \brief Send PDU.
  *
- * \param session Points to the session info, obtained by calling 
+ * \param session Points to the session info, obtained by calling
  *                SnmpSessionOpen().
- * \param pdu     Points to the PDU info, obtained by calling 
+ * \param pdu     Points to the PDU info, obtained by calling
  *                SnmpPduCreate().
  *
  * \return 0 on success, -1 otherwise.

@@ -50,43 +50,45 @@
  */
 
 /*! \brief Length of an Ethernet address. */
-#define	ETHER_ADDR_LEN      6
+#define ETHER_ADDR_LEN      6
 
 /*! \brief Length of the Ethernet type field. */
-#define	ETHER_TYPE_LEN      2
+#define ETHER_TYPE_LEN      2
 
 /*! \brief Length of the Ethernet CRC. */
-#define	ETHER_CRC_LEN       4
+#define ETHER_CRC_LEN       4
 
 /*! \brief Length of an Ethernet header. */
-#define	ETHER_HDR_LEN       (ETHER_ADDR_LEN + ETHER_ADDR_LEN + ETHER_TYPE_LEN)
+#define ETHER_HDR_LEN       (ETHER_ADDR_LEN + ETHER_ADDR_LEN + ETHER_TYPE_LEN)
 
 #ifndef ETHER_MIN_LEN
 /*! \brief Minimum frame length, including CRC. */
-#define	ETHER_MIN_LEN       64
+#define ETHER_MIN_LEN       64
 #endif
 
 #ifndef ETHER_MAX_LEN
 /*! \brief Maximum frame length, including CRC. */
-#define	ETHER_MAX_LEN       1518
+#define ETHER_MAX_LEN       1518
 #endif
+
+/*!
+ * \typedef ETHERHDR
+ * \brief Ethernet protocol header type.
+ */
+typedef struct ether_header ETHERHDR;
 
 /*!
  * \struct ether_header if_ether.h netinet/if_ether.h
  * \brief Ethernet protocol header.
  */
-/*!
- * \typedef ETHERHDR
- * \brief Ethernet protocol header type.
- */
-typedef struct __attribute__((packed)) ether_header {
+struct NUT_PACKED_TYPE ether_header {
     /*! \brief Destination MAC address. */
     uint8_t  ether_dhost[ETHER_ADDR_LEN];
     /*! \brief Source MAC address. */
     uint8_t  ether_shost[ETHER_ADDR_LEN];
     /*! \brief Protocol type. */
     uint16_t ether_type;
-} ETHERHDR;
+};
 
 /*! \brief Ethernet maximum transfer unit.
  *
@@ -94,7 +96,7 @@ typedef struct __attribute__((packed)) ether_header {
  */
 #define ETHERMTU    (ETHER_MAX_LEN - ETHER_HDR_LEN - ETHER_CRC_LEN)
 
-/*! \brief Ethernet minimum transfer unit. 
+/*! \brief Ethernet minimum transfer unit.
  *
  * Must be checked by the hardware driver.
  */
@@ -103,25 +105,25 @@ typedef struct __attribute__((packed)) ether_header {
 #define ETHERTYPE_IP    0x0800  /*!< \brief IP protocol */
 #define ETHERTYPE_ARP   0x0806  /*!< \brief Address resolution protocol */
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is zero.
  *
  * \param ea Pointer to a character array containing the address.
  *
  * Return 1 if the address is zero. Otherwise 0 is returned.
  */
-#define	ETHER_IS_ZERO(ea) (((ea)[0] | (ea)[1] | (ea)[2] | (ea)[3] | (ea)[4] | (ea)[5]) == 0)
+#define ETHER_IS_ZERO(ea) (((ea)[0] | (ea)[1] | (ea)[2] | (ea)[3] | (ea)[4] | (ea)[5]) == 0)
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is a broadcast address.
  *
  * \param ea Pointer to a character array containing the address.
  *
  * Return 1 if the address is a broadcast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_BROADCAST(ea) (((ea)[0] & (ea)[1] & (ea)[2] & (ea)[3] & (ea)[4] & (ea)[5]) == 0xFF)
+#define ETHER_IS_BROADCAST(ea) (((ea)[0] & (ea)[1] & (ea)[2] & (ea)[3] & (ea)[4] & (ea)[5]) == 0xFF)
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is a multicast address.
  *
  * The broadcast address is defined as a special multicast address.
@@ -130,9 +132,9 @@ typedef struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is a multicast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_MULTICAST(ea) ((ea)[0] & 1) 
+#define ETHER_IS_MULTICAST(ea) ((ea)[0] & 1)
 
-/*! 
+/*!
  * \brief Determine if a given Ethernet address is a unicast address.
  *
  * By definition, an address with all zeros is not a valid unicast address.
@@ -141,14 +143,11 @@ typedef struct __attribute__((packed)) ether_header {
  *
  * Return 1 if the address is a unicast address. Otherwise 0 is returned.
  */
-#define	ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea)) 
+#define ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea))
 
-__BEGIN_DECLS
 /* ASCII conversion function prototypes. */
-extern uint8_t *ether_aton(CONST char *str);
-extern char *ether_ntoa(CONST uint8_t *mac);
-
-__END_DECLS
+extern uint8_t *ether_aton(const char *str);
+extern char *ether_ntoa(const uint8_t *mac);
 
 /*!
  * \struct ether_arp if_ether.h netinet/if_ether.h
@@ -160,7 +159,7 @@ __END_DECLS
  * \typedef ETHERARP
  * \brief Ethernet ARP protocol type.
  */
-typedef struct __attribute__((packed)) ether_arp {
+typedef struct NUT_PACKED_TYPE ether_arp {
     ARPHDR   ea_hdr;        /*!< \brief Fixed-size header. */
     uint8_t  arp_sha[6];    /*!< \brief Source hardware address. */
     uint32_t arp_spa;       /*!< \brief Source protocol address. */
@@ -168,15 +167,11 @@ typedef struct __attribute__((packed)) ether_arp {
     uint32_t arp_tpa;       /*!< \brief Target protocol address. */
 } ETHERARP;
 
-__BEGIN_DECLS
 /* ARP function prototypes. */
 extern void NutArpInput(NUTDEVICE *dev, NETBUF *nb);
 extern NETBUF *NutArpAllocNetBuf(uint16_t type, uint32_t ip, uint8_t *mac);
 extern int NutArpOutput(NUTDEVICE *dev, NETBUF *nb);
 extern void NutArpCacheUpdate(NUTDEVICE *dev, uint32_t ip, uint8_t *ha);
 extern int NutArpCacheQuery(NUTDEVICE *dev, uint32_t ip, uint8_t *mac);
-
-__END_DECLS
-/* */
 
 #endif

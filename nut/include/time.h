@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -77,16 +77,15 @@
  * @{
  */
 
-__BEGIN_DECLS
 /*!
  * \brief Type definition for struct _tm
  */
 typedef struct _tm tm;
 
-/*! 
- * \brief structure to store a date/time value. 
+/*!
+ * \brief structure to store a date/time value.
  *
- * The structure tm stores a complete date and time combination. The granularity 
+ * The structure tm stores a complete date and time combination. The granularity
  * is one second.
  *
  * \note The range of \b tm_mon is from 0 (January) to 11 (December).\n
@@ -104,7 +103,7 @@ struct _tm {
     int tm_isdst;               /*!< \brief daylight savings time flag */
 };
 
-/*! 
+/*!
  * \typedef long time_t
  * \brief Serial date/time. Holds number of seconds after January 1st, 1970.
  */
@@ -117,16 +116,16 @@ typedef long time_t;
 
 
 time_t time(time_t * timer);
-int gmtime_r(CONST time_t * timer, tm * theTime);
-tm *gmtime(CONST time_t * timer);
-int localtime_r(CONST time_t * timer, tm * theTime);
-tm *localtime(CONST time_t * timer);
+int gmtime_r(const time_t * timer, tm * theTime);
+tm *gmtime(const time_t * timer);
+int localtime_r(const time_t * timer, tm * theTime);
+tm *localtime(const time_t * timer);
 
 int stime(time_t * timer);
 time_t mktime(tm * timeptr);
 time_t _mkgmtime(tm * timeptr);
 
-/*! 
+/*!
  * \brief Used to control daylight conversions.
  *
  * Assign a nonzero value to enable daylight conversions. If enabled
@@ -139,14 +138,14 @@ extern int _daylight;
 /*!
  * \brief Defines your local timezone.
  *
- * Difference in seconds between universal coordinated time and local time. 
- * This value is subtracted from the universal coordinated time to 
- * calculate your local time. Default value is 5 * 60 * 60 = 18000, 
+ * Difference in seconds between universal coordinated time and local time.
+ * This value is subtracted from the universal coordinated time to
+ * calculate your local time. Default value is 5 * 60 * 60 = 18000,
  * which defines the time zone EST (GMT-5).
  *
- * \note Before using the time functions, set \b _timezone to your 
+ * \note Before using the time functions, set \b _timezone to your
  * local value.
- * 
+ *
  */
 extern long _timezone;
 
@@ -160,6 +159,5 @@ extern long _timezone;
  */
 extern long _dstbias;
 
-__END_DECLS
 /*@}*/
 #endif

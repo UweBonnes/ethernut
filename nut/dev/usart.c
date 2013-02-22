@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -30,39 +30,13 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
- * $Log$
- * Revision 1.10  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
+/*!
+ * \file dev/usart.c
+ * \brief Hardware independent part of the U(S)ART driver.
  *
- * Revision 1.9  2008/08/11 06:59:42  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.8  2007/03/17 14:33:21  haraldkipp
- * Workaround for AVRGCC 4.1.1 bug, which failed to compile UsartIOCtl().
- *
- * Revision 1.7  2006/10/05 17:20:54  haraldkipp
- * Added a comment to warn the user about ioctl() functions, that may not be
- * supported.
- *
- * Revision 1.6  2006/08/23 09:20:47  freckle
- * fix bug #1541139
- *
- * Revision 1.5  2004/10/14 16:43:06  drsung
- * Fixed compiler warning "comparison between signed and unsigned"
- *
- * Revision 1.4  2004/05/24 20:17:15  drsung
- * Added function UsartSize to return number of chars in input buffer.
- *
- * Revision 1.3  2004/05/20 09:05:07  drsung
- * Memory was allocated twice for NUTFILE in UsartOpen.
- *
- * Revision 1.2  2004/03/18 13:59:14  haraldkipp
- * Comment updated
- *
- * Revision 1.1  2003/12/15 19:25:33  haraldkipp
- * New USART driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <compiler.h>
@@ -74,6 +48,7 @@
 #include <sys/heap.h>
 #include <sys/event.h>
 #include <sys/timer.h>
+#include <sys/nutdebug.h>
 
 #include <dev/irqreg.h>
 #include <dev/usart.h>
@@ -97,8 +72,9 @@
 
 /*!
  * \brief Initialize the USART device.
+ * \internal
  *
- * This function is called by NutRegisterDevice(), using the 
+ * This function is called by NutRegisterDevice(), using the
  * _NUTDEVICE::dev_init entry. It will call the low level
  * driver's _USARTDCB::dcb_init routine to initialize the hardware.
  *
@@ -114,7 +90,8 @@ int UsartInit(NUTDEVICE * dev)
     USARTDCB *dcb = dev->dev_dcb;
 
     /* Initialize the low level hardware driver. */
-    if ((rc = (*dcb->dcb_init) ()) == 0) {
+    rc = (*dcb->dcb_init) ();
+    if (rc == 0) {
         /* Ignore errors on initial configuration. */
         (*dcb->dcb_set_speed) (USART_INITSPEED);
     }
@@ -122,7 +99,7 @@ int UsartInit(NUTDEVICE * dev)
 }
 
 /*!
- * \brief Reset an USART ring buffer.
+ * \brief Reset a USART ring buffer.
  *
  * \param rbf Pointer to the ring buffer structure.
  * \param size Buffer size.
@@ -143,11 +120,14 @@ static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm
 
     /* Resize the buffer, if required. */
     if (xsz != size) {
-        if (xsz && xbp) {
+        if (xsz) {
             free(xbp);
         }
-        if (size && (xbp = malloc(size)) == 0) {
-            return -1;
+        if (size) {
+            xbp = malloc(size);
+            if (xbp == NULL) {
+                return -1;
+            }
         }
     }
 
@@ -171,6 +151,7 @@ static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm
 
 /*!
  * \brief Read from device.
+ * \internal
  *
  * This function is called by the low level input routines of the
  * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
@@ -202,9 +183,21 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
     size_t taken = 0;
     uint8_t ch;
     uint8_t *cp = buffer;
-    NUTDEVICE *dev = fp->nf_dev;
-    USARTDCB *dcb = dev->dev_dcb;
-    RINGBUF *rbf = &dcb->dcb_rx_rbf;
+    NUTDEVICE *dev;
+    USARTDCB *dcb;
+    RINGBUF *rbf;
+
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
+    dev = fp->nf_dev;
+    dcb = dev->dev_dcb;
+    rbf = &dcb->dcb_rx_rbf;
+
+    if (dcb->dcb_modeflags & USART_MF_BLOCKREAD) {
+        rbf->rbf_blockptr = buffer;
+        rbf->rbf_blockcnt = size;
+        (*dcb->dcb_rx_start) ();
+        return size;
+    }
 
     /*
      * No buffer allocated, this device is read only.
@@ -216,7 +209,7 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
     /*
      * Call without data pointer discards receive buffer.
      */
-    if (buffer == 0) {
+    if (buffer == NULL) {
         UsartResetBuffer(rbf, rbf->rbf_siz, rbf->rbf_lwm, rbf->rbf_hwm);
         (*dcb->dcb_rx_start) ();
         return 0;
@@ -279,8 +272,10 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
      * Get raw characters from receive buffer.
      */
     else {
-        if ((rc = size) > avail)
+        rc = size;
+        if (rc > avail) {
             rc = avail;
+        }
         for (taken = 0; taken < rc; taken++) {
             *cp++ = *rbf->rbf_tail++;
             if (rbf->rbf_tail == rbf->rbf_last) {
@@ -303,17 +298,16 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
 /*!
  * \brief Flush output buffer.
  *
- * The current thread will be blocked until all characters upto a specified
- * value have been written or until a timeout occured.
+ * The current thread will be blocked until all characters up to a
+ * specified count have been written or until a timeout occurred.
  *
- * \param  rbf   Pointer to a ring buffer structure.
+ * \param  dcb   Pointer to the device's control block structure.
  * \param  added Number of bytes to add to the ring buffer counter. The
  *               characters must have been added without updating the
  *               counter. Because access to the counter has to be atomic,
  *               this parameter simplifies the calling routine a bit.
- * \param  left  The number of bytes left in the buffer before this
- *               function returns.
- * \param  tmo   Timeout in milliseconds.
+ * \param  left  The maximum number of bytes left in the buffer before
+ *               this function returns.
  *
  * \return Number of bytes left in the output buffer, which is greater
  *         than the specified value in case of a timeout.
@@ -349,18 +343,18 @@ static size_t UsartFlushOutput(USARTDCB *dcb, size_t added, size_t left)
  * \brief Write to device.
  *
  * \param dev    Pointer to a previously registered NUTDEVICE structure.
- * \param buffer Pointer the data to write.
+ * \param buffer Pointer to the data to write.
  * \param len    Number of data bytes to write.
- * \param pflg   If this flag is set, then the buffer is located in program
- *               space.
+ * \param pflg   If this flag is set, then the buffer is located in
+ *               program space. Used by Harvard architectures only.
  *
  * \return The number of bytes written. In case of a write timeout, this
  *         may be less than the specified length.
  */
-static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+static int UsartPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t lbmode;
     ureg_t cooked;
     uint8_t ch;
@@ -368,6 +362,19 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     size_t added;
     USARTDCB *dcb = dev->dev_dcb;
     RINGBUF *rbf = &dcb->dcb_tx_rbf;
+
+    if (dcb->dcb_modeflags & USART_MF_BLOCKWRITE) {
+
+        rbf->rbf_blockptr = (void*)buffer;
+        rbf->rbf_blockcnt = len;
+        (*dcb->dcb_tx_start) ();
+
+        rc = NutEventWaitNext( &rbf->rbf_que, dcb->dcb_wtimeout);
+        if (rc == 0) {
+            rc = len;
+        }
+        return rc;
+    }
 
     /*
      * No output ring buffer allocated, this device is read only.
@@ -380,19 +387,20 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
      * Call without data pointer flushes the buffer. In this case a return
      * value not equal zero indicates write timeout.
      */
-    if (buffer == 0) {
+    if (buffer == NULL) {
         return UsartFlushOutput(dcb, 0, 0);
     }
 
-    if (dcb->dcb_modeflags & USART_MF_LINEBUFFER)
+    if (dcb->dcb_modeflags & USART_MF_LINEBUFFER) {
         lbmode = 1;
-    else
+    } else {
         lbmode = 0;
-
-    if (dcb->dcb_modeflags & USART_MF_COOKEDMODE)
+    }
+    if (dcb->dcb_modeflags & USART_MF_COOKEDMODE) {
         cooked = 1;
-    else
+    } else {
         cooked = 0;
+    }
 
     /*
      * Get the number of buffered bytes. The transmit interrupt will modify
@@ -434,11 +442,13 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
         if (cooked == 1 && ch == '\n') {
             cooked = 2;
             ch = '\r';
-            if (lbmode == 1)
+            if (lbmode == 1) {
                 lbmode = 2;
+            }
         } else {
-            if (cooked == 2)
+            if (cooked == 2) {
                 cooked = 1;
+            }
             cp++;
             rc++;
         }
@@ -461,6 +471,7 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 
 /*!
  * \brief Write a device or file.
+ * \internal
  *
  * This function is called by the low level output routines of the
  * \ref xrCrtLowio "C runtime library", using the
@@ -475,23 +486,30 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1
+ *         of bytes specified if a timeout occurred. A return value of -1
  *         indicates an error.
+ *
+ * \note Using a NULL pointer to flush the output buffer is a Nut/OS
+ *       specific extension and will most probably not work on other
+ *       systems.
  */
-int UsartWrite(NUTFILE * fp, CONST void *buffer, int len)
+int UsartWrite(NUTFILE * fp, const void *buffer, int len)
 {
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
     return UsartPut(fp->nf_dev, buffer, len, 0);
 }
 
+#ifdef __HARVARD_ARCH__
 /*!
  * \brief Write a device or file.
+ * \internal
  *
  * Similar to UsartWrite() except that the data is located in program
  * memory.
  *
  * This function is called by the low level output routines of the
  * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P
- * entry.
+ * entry. Used by Harvard architectures only.
  *
  * The function may block the calling thread.
  *
@@ -501,19 +519,22 @@ int UsartWrite(NUTFILE * fp, CONST void *buffer, int len)
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1
+ *         of bytes specified if a timeout occurred. A return value of -1
  *         indicates an error.
  */
 int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return UsartPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
+    return UsartPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
+#endif
 
 /*!
- * \brief Close an USART device.
+ * \brief Close a USART device.
+ * \internal
  *
- * This function is called by the low level close routine of the C runtime
- * library, using the _NUTDEVICE::dev_close entry.
+ * This function is called by the low level _close() routine of the C
+ * runtime library, using the _NUTDEVICE::dev_close entry.
  *
  * \param fp Pointer to a _NUTFILE structure, obtained by a previous call
  *           to UsartOpen().
@@ -524,12 +545,19 @@ int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  */
 int UsartClose(NUTFILE * fp)
 {
-    NUTDEVICE *dev = fp->nf_dev;
-    USARTDCB *dcb = dev->dev_dcb;
+    int rc = 0;
+    NUTDEVICE *dev;
+    USARTDCB *dcb;
 
-    if (fp == 0 || fp == NUTFILE_EOF)
-        return -1;
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
+    dev = fp->nf_dev;
+    dcb = (USARTDCB *) dev->dev_dcb;
 
+    /* Flush the complete output buffer. If this fails, let the caller
+       know, that not all bytes had been transmitted. */
+    if (UsartFlushOutput(dcb, 0, 0)) {
+        rc = -1;
+    }
     (*dcb->dcb_set_status) (UART_RTSDISABLED);
     free(fp);
     UsartResetBuffer(&dcb->dcb_tx_rbf, 0, 0, 0);
@@ -537,34 +565,36 @@ int UsartClose(NUTFILE * fp)
     /* Wake-up all threads waiting for incoming data. */
     NutEventBroadcast(&dcb->dcb_rx_rbf.rbf_que);
 
-    return 0;
+    return rc;
 }
 
 /*!
- * \brief Open an USART device.
+ * \brief Open a USART device.
+ * \internal
  *
- * This function is called by the low level open routine of the C runtime
- * library, using the _NUTDEVICE::dev_open entry.
+ * This function is called by the low level _open() routine of the C
+ * runtime library, using the _NUTDEVICE::dev_open entry.
  *
- * \param dev Pointer to the NUTDEVICE structure.
+ * \param dev  Pointer to the NUTDEVICE structure.
  * \param name Ignored, should point to an empty string.
  * \param mode Operation mode. Any of the following values may be or-ed:
  * - \ref _O_BINARY
  * - \ref _O_RDONLY
  * - \ref _O_WRONLY
- * \param acc Ignored, should be zero.
+ * \param acc  Ignored, should be zero.
  *
- * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
+ * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF
+ *         otherwise.
  *
  * \todo We may support shared open and use dev_irq as an open counter.
  */
-NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     USARTDCB *dcb = dev->dev_dcb;
     NUTFILE *fp;
 
     /*
-     * Create the tranmit buffer unless this is used for read only.
+     * Create the transmit buffer unless this is used for read only.
      */
     if ((mode & 0x0003) != _O_RDONLY) {
         if (UsartResetBuffer(&dcb->dcb_tx_rbf, USART_TXBUFSIZ, USART_TXLOWMARK, USART_TXHIWMARK)) {
@@ -585,7 +615,8 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     /*
      * Allocate memory for the file structure.
      */
-    if ((fp = malloc(sizeof(NUTFILE))) == 0) {
+    fp = malloc(sizeof(*fp));
+    if (fp == NULL) {
         free(dcb->dcb_tx_rbf.rbf_start);
         free(dcb->dcb_rx_rbf.rbf_start);
         return NUTFILE_EOF;
@@ -603,9 +634,9 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
      * a file creation routine to get a linked list of all opened
      * files in the system.
      */
-    fp->nf_next = 0;
+    fp->nf_next = NULL;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     if ((mode & 0x0003) != _O_WRONLY) {
         (*dcb->dcb_rx_start) ();
@@ -616,8 +647,9 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 
 /*!
  * \brief Perform USART control functions.
+ * \internal
  *
- * This function is called by the ioctl() function of the C runtime
+ * This function is called by the _ioctl() function of the C runtime
  * library.
  *
  * \param dev  Identifies the device that receives the device-control
@@ -668,8 +700,6 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  *
  * \note Not all control functions may be supported on all platforms.
  *       In any case applications should check the returned result.
- *
- * \todo Hardware handshake is not available with AT91 targets.
  *
  * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer. To disable timeout,
@@ -760,50 +790,102 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_SETLOCALECHO:
-        if (bv)
-            dcb->dcb_modeflags |= USART_MF_LOCALECHO;
-        else
-            dcb->dcb_modeflags &= ~USART_MF_LOCALECHO;
+        lv = dcb->dcb_modeflags;
+        if (bv) {
+            lv |= USART_MF_LOCALECHO;
+        } else {
+            lv &= ~USART_MF_LOCALECHO;
+        }
+        rc = (dcb->dcb_set_flow_control) (lv);
+        if (rc == 0) {
+            dcb->dcb_modeflags = lv;
+        }
         break;
     case UART_GETLOCALECHO:
-        if (dcb->dcb_modeflags & USART_MF_LOCALECHO)
+        if (dcb->dcb_modeflags & USART_MF_LOCALECHO) {
             *lvp = 1;
-        else
+        } else {
             *lvp = 0;
+        }
         break;
 
     case UART_SETFLOWCONTROL:
-        rc = (*dcb->dcb_set_flow_control) (lv);
+        lv = dcb->dcb_modeflags;
+        rc = (dcb->dcb_set_flow_control) (lv);
+        if (rc == 0) {
+            dcb->dcb_modeflags = lv;
+        }
         break;
     case UART_GETFLOWCONTROL:
         *lvp = (*dcb->dcb_get_flow_control) ();
         break;
 
-    case UART_SETCOOKEDMODE:
-        if (bv)
-            dcb->dcb_modeflags |= USART_MF_COOKEDMODE;
-        else
-            dcb->dcb_modeflags &= ~USART_MF_COOKEDMODE;
+    case UART_SETBLOCKREAD:
+        lv = dcb->dcb_modeflags;
+        if (bv) {
+            lv |= USART_MF_BLOCKREAD;
+        } else {
+            lv &= ~USART_MF_BLOCKREAD;
+        }
+        rc = (dcb->dcb_set_flow_control) (lv);
+        if (rc == 0) {
+            dcb->dcb_modeflags = lv;
+        }
         break;
-    case UART_GETCOOKEDMODE:
-        if (dcb->dcb_modeflags & USART_MF_COOKEDMODE)
-            *lvp = 1;
-        else
-            *lvp = 0;
+    case UART_GETBLOCKREAD:
+        *lvp = (*dcb->dcb_get_flow_control) ();
         break;
 
-	case UART_SETHDPXMODE:
-		if (bv)
-			dcb->dcb_modeflags |= USART_MF_HALFDUPLEX;
-		else
-			dcb->dcb_modeflags &= ~USART_MF_HALFDUPLEX;
-		break;
-	case UART_GETHDPXMODE:
-		if (dcb->dcb_modeflags & USART_MF_HALFDUPLEX)
-			*lvp = 1;
-		else
-			*lvp = 0;
-		break;
+    case UART_SETBLOCKWRITE:
+        lv = dcb->dcb_modeflags;
+        if (bv) {
+            lv |= USART_MF_BLOCKWRITE;
+        } else {
+            lv &= ~USART_MF_BLOCKWRITE;
+        }
+        rc = (dcb->dcb_set_flow_control) (lv);
+        if (rc == 0) {
+            dcb->dcb_modeflags = lv;
+        }
+        break;
+    case UART_GETBLOCKWRITE:
+        *lvp = (*dcb->dcb_get_flow_control) ();
+        break;
+
+    case UART_SETCOOKEDMODE:
+        if (bv) {
+            dcb->dcb_modeflags |= USART_MF_COOKEDMODE;
+        } else {
+            dcb->dcb_modeflags &= ~USART_MF_COOKEDMODE;
+        }
+        break;
+    case UART_GETCOOKEDMODE:
+        if (dcb->dcb_modeflags & USART_MF_COOKEDMODE) {
+            *lvp = 1;
+        } else {
+            *lvp = 0;
+        }
+        break;
+
+    case UART_SETHDPXMODE:
+        lv = dcb->dcb_modeflags;
+        if (bv) {
+            lv |= USART_MF_HALFDUPLEX;
+        } else {
+            lv &= ~USART_MF_HALFDUPLEX;
+        }
+        rc = (dcb->dcb_set_flow_control) (lv);
+        if (rc == 0) {
+            dcb->dcb_modeflags = lv;
+        }
+        break;
+    case UART_GETHDPXMODE:
+        if (dcb->dcb_modeflags & USART_MF_HALFDUPLEX) {
+            *lvp = 1;
+        } else {
+            *lvp = 0;
+        }
+        break;
 
     case UART_SETCLOCKMODE:
         rc = (*dcb->dcb_set_clock_mode) (lv);
@@ -876,21 +958,33 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 
 /*!
  * \brief Retrieves the number of characters in input buffer.
+ * \internal
  *
- * This function is called by the low level size routine of the C runtime
- * library, using the _NUTDEVICE::dev_size entry.
+ * This function allows to query the number of bytes in the input buffer
+ * by using standard C function for querying the size of an open file.
  *
- * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
- *               previous call to UsartOpen().
+ * This function is called by the low level _filelength() routine of
+ * the C runtime library, using the _NUTDEVICE::dev_size entry.
+ *
+ * \note This is a Nut/OS specific extension and will most probably not
+ *       work on other systems.
+ *
+ * \param fp Pointer to a \ref _NUTFILE structure, obtained by a
+ *           previous call to UsartOpen().
  *
  * \return The number of bytes currently stored in input buffer.
  */
 long UsartSize (NUTFILE *fp)
 {
     long avail;
-    NUTDEVICE *dev = fp->nf_dev;
-    USARTDCB *dcb = dev->dev_dcb;
-    RINGBUF *rbf = &dcb->dcb_rx_rbf;
+    NUTDEVICE *dev;
+    USARTDCB *dcb;
+    RINGBUF *rbf;
+
+    NUTASSERT(fp != NULL && fp != NUTFILE_EOF);
+    dev = fp->nf_dev;
+    dcb = dev->dev_dcb;
+    rbf = &dcb->dcb_rx_rbf;
 
     /* Atomic access to the ring buffer counter. */
     NutEnterCritical();

@@ -1,5 +1,5 @@
 #ifndef _ARCH_ARM_AT91_SMC_H_
-#define	_ARCH_ARM_AT91_SMC_H_
+#define _ARCH_ARM_AT91_SMC_H_
 
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -136,9 +136,9 @@
 #define SMC_TDF_MODE                        0x00100000  /*!< \brief TDF optimization. */
 #define SMC_PMEN                            0x01000000  /*!< \brief Page mode enable. */
 #define SMC_PS                              0x30000000  /*!< \brief Page size mask. */
-#define SMC_PS_4                            0x30000000  /*!< \brief 4-byte page. */
-#define SMC_PS_8                            0x30000000  /*!< \brief 8-byte page. */
-#define SMC_PS_16                           0x30000000  /*!< \brief 16-byte page. */
+#define SMC_PS_4                            0x00000000  /*!< \brief 4-byte page. */
+#define SMC_PS_8                            0x10000000  /*!< \brief 8-byte page. */
+#define SMC_PS_16                           0x20000000  /*!< \brief 16-byte page. */
 #define SMC_PS_32                           0x30000000  /*!< \brief 32-byte page. */
 /*@}*/
 

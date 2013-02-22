@@ -269,9 +269,9 @@ NUTDEVICE devUsartAt911 = {
 #define UART_RXTX_PINS_ENABLE() outr(PIO_PDR, UART_RXTX_PINS)
 
 /*
-** Add more targets here. 
+** Add more targets here.
 **
-** For unsupported targets you may also do basic initializations in 
+** For unsupported targets you may also do basic initializations in
 ** your application code.
 */
 

@@ -52,6 +52,10 @@
  */
 /*@{*/
 
+#if defined (NUTDEBUG)
+#include <stdio.h>
+#endif
+
 #if defined(MMC_CLK_PIO_BIT) && defined(MMC_CLK_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID MMC_CLK_PIO_ID
@@ -119,6 +123,7 @@ static INLINE void MMC_CS_SO(void) { GPIO_OUTPUT(MMC_CS_PIO_BIT); }
 typedef struct _MMCDCB {
     int dcb_avail;              /*!< Card is available. */
     int dcb_changed;            /*!< Card has changed. */
+    int dcb_addr_mode;          /*!< Card addressing mode (byte/block. */
 } MMCDCB;
 
 static MMCDCB mmc_dcb;
@@ -244,6 +249,26 @@ static int SbiMmCardWrProt(void)
 }
 
 /*!
+ * \brief set addressing mode
+ *
+ */
+int SbiMmCardSetAdrMode(int mode)
+{
+    mmc_dcb.dcb_addr_mode = mode;
+
+    return(0);
+}
+
+/*!
+ * \brief get addressing mode
+ *
+ */
+int SbiMmCardGetAdrMode(void)
+{
+    return(mmc_dcb.dcb_addr_mode);
+}
+
+/*!
  * \brief Initialize MMC hardware interface.
  *
  * This function is automatically executed during during device
@@ -303,7 +328,9 @@ static MMCIFC mmc_ifc = {
     SbiMmCardIo,               /*!< mmcifc_io */
     SbiMmCardSelect,           /*!< mmcifc_cs */
     SbiMmCardAvail,            /*!< mmcifc_cd */
-    SbiMmCardWrProt            /*!< mmcifc_wp */
+    SbiMmCardWrProt,           /*!< mmcifc_wp */
+    SbiMmCardSetAdrMode,       /*!< mmcifc_sm */
+    SbiMmCardGetAdrMode        /*!< mmcifc_gm */
 };
 
 /*!

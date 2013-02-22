@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -36,41 +36,7 @@
  * \brief Timer/Counter 1 compare match B interrupt.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.4  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.3  2008/08/11 06:59:16  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.3  2006/01/25 09:38:50  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.2  2005/10/24 09:34:30  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2004/01/30 17:02:19  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:42  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -160,13 +126,13 @@ static int AvrTimer1CompBIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OUTPUT_COMPARE1B(void)
+/*! \fn TIMER1_COMPB_vect(void)
  * \brief Timer 1B output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OUTPUT_COMPARE1B:iv_TIMER1_COMPB
+#pragma interrupt_handler TIMER1_COMPB_vect:iv_TIMER1_COMPB
 #endif
-NUTSIGNAL(SIG_OUTPUT_COMPARE1B, sig_OUTPUT_COMPARE1B)
+NUTSIGNAL(TIMER1_COMPB_vect, sig_OUTPUT_COMPARE1B)
 
 
 /*@}*/

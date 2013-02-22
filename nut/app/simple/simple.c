@@ -50,7 +50,7 @@
 #include <compiler.h>
 
 /*!
- * \brief Main application routine. 
+ * \brief Main application routine.
  *
  */
 int main(void)

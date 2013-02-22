@@ -571,7 +571,7 @@ char            temp[ 20 ];
             }
         }
 #ifdef NUTDEBUG
-	/* This will not work on ICCAVR */
+    /* This will not work on ICCAVR */
         strncpy_P( temp, str, 19 );
         NutPrintFormat( 0, "\r\nMEMCORRUPT-%s-%d-%d\r\n",
                                             temp, p_node->hn_size, slime );
@@ -599,7 +599,7 @@ char            temp[ 20 ];
             }
         }
 #ifdef NUTDEBUG
-	/* This will not work on ICCAVR */
+    /* This will not work on ICCAVR */
         strncpy_P( temp, str, 19 );
         NutPrintFormat( log_dev, "\r\nMemCorrupt-%s-%d-%d\r\n",
                                             temp, p_node->hn_size, slime );

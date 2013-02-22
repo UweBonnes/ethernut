@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,43 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/spidigio.c
+ * \brief AVR external shift register I/O support.
  *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.5  2005/02/02 19:59:12  haraldkipp
- * Typo corrected. Compiler failed, if ports were not configured. Due
- * to the completely broken port configuration this error wasn't
- * detected.
- *
- * Revision 1.4  2005/01/22 19:25:14  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.3  2004/09/22 08:14:48  haraldkipp
- * Made configurable
- *
- * Revision 1.2  2004/09/08 10:53:25  haraldkipp
- * os/timer.c
- *
- * Revision 1.1.1.1  2003/05/09 14:40:50  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.4  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.3  2003/01/14 13:34:53  harald
- * *** empty log message ***
- *
- * Revision 1.2  2002/08/11 12:25:38  harald
- * ICC mods
- *
- * Revision 1.1  2002/08/02 14:25:09  harald
- * First check in
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*
@@ -201,8 +171,8 @@ static ureg_t us_loops = 1;
 /*!
  * \brief Loop for a small number of microseconds.
  *
- * This call will not release the CPU and will not switch to another 
- * thread. It simply executes a number of NOP (no operation) assembly 
+ * This call will not release the CPU and will not switch to another
+ * thread. It simply executes a number of NOP (no operation) assembly
  * statements.
  *
  * The routine is quite limited. Depending on the value of the
@@ -232,10 +202,10 @@ static INLINE void delay_us(ureg_t us)
  *
  * Shifting is done on the falling edge of the clock line.
  *
- * The required puls width is 150 ns for the UCN5841 output and only 
- * 25 ns for the SN74HC165 input shift register hardware. However, 
- * longer cables and additional noise filters may increase the required 
- * minimum pulse length. On the reference hardware the rising edge of 
+ * The required puls width is 150 ns for the UCN5841 output and only
+ * 25 ns for the SN74HC165 input shift register hardware. However,
+ * longer cables and additional noise filters may increase the required
+ * minimum pulse length. On the reference hardware the rising edge of
  * the RC filters used is about 3 microseconds.
  */
 static INLINE void ShiftDigital(void)
@@ -254,18 +224,18 @@ static INLINE void ShiftDigital(void)
 /*!
  * \brief Query digital inputs.
  *
- * SpiDigitalInit() must have been called by the application before 
+ * SpiDigitalInit() must have been called by the application before
  * calling this function.
  *
  * This routine does not check the validity of the parameter.
  *
- * \param num Number of bits to query, typically 8, 16, 24 or the maximum 
+ * \param num Number of bits to query, typically 8, 16, 24 or the maximum
  *            value of 32. This number should exactly match the number of
  *            input pins. If it is lower, only the most significant bits
  *            are returned. However, this may be used by an application
  *            to scan these bits more often with reduced overhead.
  *
- * \return Binary value of the requested inputs. Only the specified number 
+ * \return Binary value of the requested inputs. Only the specified number
  *         of bits are used. Bit 0 is the one, which has been shifted out
  *         last.
  */
@@ -291,16 +261,16 @@ uint32_t SpiDigitalGet(ureg_t num)
         bits <<= 1;
 
         /*
-         * The shift register's serial output pin is connected to 
-         * the port input pin. If this input is high, set the least 
-         * significant bit of the resulting value. Otherwise leave 
+         * The shift register's serial output pin is connected to
+         * the port input pin. If this input is high, set the least
+         * significant bit of the resulting value. Otherwise leave
          * it zero.
          */
         if (bit_is_set(SPIDIGIO_SIN_PIN, SPIDIGIO_SIN_BIT)) {
             bits |= 1;
         }
 
-        /* 
+        /*
          * This will toggle the clock line, presenting the next bit
          * at the shift register's serial output pin.
          */
@@ -312,13 +282,13 @@ uint32_t SpiDigitalGet(ureg_t num)
 /*!
  * \brief Set digital outputs.
  *
- * SpiDigitalInit() must have been called by the application before 
+ * SpiDigitalInit() must have been called by the application before
  * calling this function.
  *
  * This routine does not check the validity of any parameter.
  *
  * \param num  Number of bits to set, typically 8, 16, 24 or 32, which is
- *             the maximum. The number must not be lower than the number 
+ *             the maximum. The number must not be lower than the number
  *             of shift register output bits.
  * \param bits The bit value to set. Only the number of bits specified are
  *             used, of which the most significant bit is shifted in first.
@@ -330,10 +300,10 @@ void SpiDigitalSet(ureg_t num, uint32_t bits)
     /* Nothing to do, if the number of bits is zero. */
     if (num) {
         /*
-         * Create the bit mask of the most significant bit. Note the UL 
-         * specifier. Most compilers will use integers by default, when 
+         * Create the bit mask of the most significant bit. Note the UL
+         * specifier. Most compilers will use integers by default, when
          * calculating of the right side. They do not consider the left
-         * side. In our case this would create unexpected results, if 
+         * side. In our case this would create unexpected results, if
          * integers are 16 bit only.
          */
         mask = 1UL << (num - 1);
@@ -350,7 +320,7 @@ void SpiDigitalSet(ureg_t num, uint32_t bits)
             if (bits & mask) {
                 /* Set bit instruction. */
                 sbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
-            } 
+            }
             else {
                 /* Clear bit instruction. */
                 cbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
@@ -377,22 +347,22 @@ void SpiDigitalSet(ureg_t num, uint32_t bits)
 }
 
 /*!
- * \brief Return the number of shifts required to get an expected bit 
+ * \brief Return the number of shifts required to get an expected bit
  * value at the input.
  *
- * When calling this function, it is assumed, that the shift register is 
+ * When calling this function, it is assumed, that the shift register is
  * already filled with the complement of the input bit.
  *
- * If the search mode is zero, then the function will return the number 
- * of shifts until the bit value at the input appears at the output. 
+ * If the search mode is zero, then the function will return the number
+ * of shifts until the bit value at the input appears at the output.
  * This can be used to detect the total size of the shift register.
  *
- * If the search mode is set to one, then the input strobe will be 
- * toggled before shifting and the function returns the number of shifts 
- * until the first unmodified bit appears.  This can be used to detect 
- * the number of inputs. This method requires, that the parallel shift 
+ * If the search mode is set to one, then the input strobe will be
+ * toggled before shifting and the function returns the number of shifts
+ * until the first unmodified bit appears.  This can be used to detect
+ * the number of inputs. This method requires, that the parallel shift
  * register inputs do not change during shifting. If they do change, then
- * the resulting number will be lower than expected. The routine may be 
+ * the resulting number will be lower than expected. The routine may be
  * called several times to compensate this problem.
  *
  * \param num   Total number of shifts, should be 8, 16, 24 or 32.
@@ -427,7 +397,7 @@ static ureg_t CountDigitalShifts(ureg_t num, ureg_t bit, ureg_t smode)
     delay_us(4);
 
     /*
-     * Do the requested number of shifts and watch the requested bit 
+     * Do the requested number of shifts and watch the requested bit
      * position.
      */
     for (i = 0; i < num; i++) {
@@ -463,9 +433,9 @@ static ureg_t CountDigitalShifts(ureg_t num, ureg_t bit, ureg_t smode)
  * application should check the result for plausibility. It is save to
  * call the routine more than once.
  *
- * \param inputs  Pointer to an 8-bit value, where the number of 
+ * \param inputs  Pointer to an 8-bit value, where the number of
  *                detected inputs will be stored.
- * \param outputs Pointer to an 8-bit value, where the number of 
+ * \param outputs Pointer to an 8-bit value, where the number of
  *                detected outputs will be stored.
  */
 void SpiDigitalInit(ureg_t * inputs, ureg_t * outputs)
@@ -493,37 +463,37 @@ void SpiDigitalInit(ureg_t * inputs, ureg_t * outputs)
     cbi(SPIDIGIO_SIN_DDR, SPIDIGIO_SIN_BIT);
 
     /*
-     * Clock. Input data is shifted on the falling, output data on the 
+     * Clock. Input data is shifted on the falling, output data on the
      * rising edge.
      */
     sbi(SPIDIGIO_SCLK_PORT, SPIDIGIO_SCLK_BIT);
     sbi(SPIDIGIO_SCLK_DDR, SPIDIGIO_SCLK_BIT);
 
     /*
-     * UCN5841 output strobe. Shift register data appears on the output 
+     * UCN5841 output strobe. Shift register data appears on the output
      * pins as long as this line is held high.
      */
     sbi(SPIDIGIO_LDO_PORT, SPIDIGIO_LDO_BIT);
     sbi(SPIDIGIO_LDO_DDR, SPIDIGIO_LDO_BIT);
 
     /*
-     * SN74HC165 input strobe. Data at input pins is latched in the shift 
+     * SN74HC165 input strobe. Data at input pins is latched in the shift
      * register on the falling edge.
      */
     cbi(SPIDIGIO_LDI_PORT, SPIDIGIO_LDI_BIT);
     sbi(SPIDIGIO_LDI_DDR, SPIDIGIO_LDI_BIT);
 
     /*
-     * Fill the shift register with zeros. Then shift in ones until the 
-     * first appears on the output. This gives us the total size plus one 
+     * Fill the shift register with zeros. Then shift in ones until the
+     * first appears on the output. This gives us the total size plus one
      * of the shift register.
      */
     CountDigitalShifts(32, 0, 0);
     total = CountDigitalShifts(32, 1, 0) - 1;
 
     /*
-     * Determine the number of inputs. We do this five times for zeros 
-     * and ones and take the maximum count. This way we compensate 
+     * Determine the number of inputs. We do this five times for zeros
+     * and ones and take the maximum count. This way we compensate
      * changing inputs while counting.
      */
     *inputs = 0;

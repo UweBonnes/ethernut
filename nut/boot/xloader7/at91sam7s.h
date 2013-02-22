@@ -1913,34 +1913,34 @@ typedef struct _AT91S_UDP {
 #define AT91C_IFLASH_SIZE     ((unsigned int) 0x00010000) // Internal FLASH size in byte (64 Kbytes)
 #define AT91C_IFLASH_PAGE_SIZE     ((unsigned int) 128) // Internal FLASH Page Size: 128 bytes
 #define AT91C_IFLASH_LOCK_REGION_SIZE     ((unsigned int) 4096) // Internal FLASH Lock Region Size: 4 Kbytes
-#define AT91C_IFLASH_NB_OF_PAGES     ((unsigned int) 512) // Internal FLASH Number of Pages: 512 
-#define AT91C_IFLASH_NB_OF_LOCK_BITS     ((unsigned int) 8) // Internal FLASH Number of Lock Bits: 8 
+#define AT91C_IFLASH_NB_OF_PAGES     ((unsigned int) 512) // Internal FLASH Number of Pages: 512
+#define AT91C_IFLASH_NB_OF_LOCK_BITS     ((unsigned int) 8) // Internal FLASH Number of Lock Bits: 8
 #endif
 
 #if defined(at91sam7s128)
 // ISRAM
-#define AT91C_ISRAM	 (0x00200000) // Internal SRAM base address
-#define AT91C_ISRAM_SIZE	 (0x00008000) // Internal SRAM size in byte (32 Kbytes)
+#define AT91C_ISRAM  (0x00200000) // Internal SRAM base address
+#define AT91C_ISRAM_SIZE     (0x00008000) // Internal SRAM size in byte (32 Kbytes)
 // IFLASH
-#define AT91C_IFLASH	 (0x00100000) // Internal FLASH base address
-#define AT91C_IFLASH_SIZE	 (0x00020000) // Internal FLASH size in byte (128 Kbytes)
-#define AT91C_IFLASH_PAGE_SIZE	 (256) // Internal FLASH Page Size: 256 bytes
-#define AT91C_IFLASH_LOCK_REGION_SIZE	 (16384) // Internal FLASH Lock Region Size: 16 Kbytes
-#define AT91C_IFLASH_NB_OF_PAGES	 (512) // Internal FLASH Number of Pages: 512 bytes
-#define AT91C_IFLASH_NB_OF_LOCK_BITS	 (8) // Internal FLASH Number of Lock Bits: 8 bytes
+#define AT91C_IFLASH     (0x00100000) // Internal FLASH base address
+#define AT91C_IFLASH_SIZE    (0x00020000) // Internal FLASH size in byte (128 Kbytes)
+#define AT91C_IFLASH_PAGE_SIZE   (256) // Internal FLASH Page Size: 256 bytes
+#define AT91C_IFLASH_LOCK_REGION_SIZE    (16384) // Internal FLASH Lock Region Size: 16 Kbytes
+#define AT91C_IFLASH_NB_OF_PAGES     (512) // Internal FLASH Number of Pages: 512 bytes
+#define AT91C_IFLASH_NB_OF_LOCK_BITS     (8) // Internal FLASH Number of Lock Bits: 8 bytes
 #endif
 
 #if defined(at91sam7s256)
 // ISRAM
-#define AT91C_ISRAM	 (0x00200000) // Internal SRAM base address
-#define AT91C_ISRAM_SIZE	 (0x00010000) // Internal SRAM size in byte (64 Kbytes)
+#define AT91C_ISRAM  (0x00200000) // Internal SRAM base address
+#define AT91C_ISRAM_SIZE     (0x00010000) // Internal SRAM size in byte (64 Kbytes)
 // IFLASH
-#define AT91C_IFLASH	 (0x00100000) // Internal FLASH base address
-#define AT91C_IFLASH_SIZE	 (0x00040000) // Internal FLASH size in byte (256 Kbytes)
-#define AT91C_IFLASH_PAGE_SIZE	 (256) // Internal FLASH Page Size: 256 bytes
-#define AT91C_IFLASH_LOCK_REGION_SIZE	 (16384) // Internal FLASH Lock Region Size: 16 Kbytes
-#define AT91C_IFLASH_NB_OF_PAGES	 (1024) // Internal FLASH Number of Pages: 1024 bytes
-#define AT91C_IFLASH_NB_OF_LOCK_BITS	 (16) // Internal FLASH Number of Lock Bits: 16 bytes
+#define AT91C_IFLASH     (0x00100000) // Internal FLASH base address
+#define AT91C_IFLASH_SIZE    (0x00040000) // Internal FLASH size in byte (256 Kbytes)
+#define AT91C_IFLASH_PAGE_SIZE   (256) // Internal FLASH Page Size: 256 bytes
+#define AT91C_IFLASH_LOCK_REGION_SIZE    (16384) // Internal FLASH Lock Region Size: 16 Kbytes
+#define AT91C_IFLASH_NB_OF_PAGES     (1024) // Internal FLASH Number of Pages: 1024 bytes
+#define AT91C_IFLASH_NB_OF_LOCK_BITS     (16) // Internal FLASH Number of Lock Bits: 16 bytes
 #endif
 
 

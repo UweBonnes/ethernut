@@ -20,11 +20,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -92,25 +92,25 @@
 /*@{*/
 
 #ifndef EOF
-/*! 
+/*!
  * \brief End of file.
  *
- * Returned by an input or output operation when the end of a file is 
+ * Returned by an input or output operation when the end of a file is
  * encountered. Some routines return this value to indicate an error.
  */
-#define EOF	(-1)
+#define EOF (-1)
 #endif
 
 #ifndef _IOFBF
-#define _IOFBF	    0x00        /*!< \brief Fully buffered. */
-#define _IOLBF	    0x01        /*!< \brief Line buffered. */
-#define _IONBF	    0x02        /*!< \brief Unbuffered. */
+#define _IOFBF      0x00        /*!< \brief Fully buffered. */
+#define _IOLBF      0x01        /*!< \brief Line buffered. */
+#define _IONBF      0x02        /*!< \brief Unbuffered. */
 #endif
 
 /*!
  * \brief Stream structure type.
- * 
- * A pointer to this type is used for all standard I/O functions to 
+ *
+ * A pointer to this type is used for all standard I/O functions to
  * specify a stream.
  *
  * \note Applications should make any assumptions about the contents
@@ -139,10 +139,11 @@ extern FILE *__iob[];           /*!< \internal Stream slots. */
 #endif
 
 
+extern int asprintf(char **strp, const char *fmt, ...);
 extern void clearerr(FILE * stream);
 extern int fclose(FILE * stream);
 extern void fcloseall(void);
-extern FILE *_fdopen(int fd, CONST char *mode);
+extern FILE *_fdopen(int fd, const char *mode);
 extern int feof(FILE * stream);
 extern int ferror(FILE * stream);
 extern int fflush(FILE * stream);
@@ -150,34 +151,36 @@ extern int fgetc(FILE * stream);
 extern char *fgets(char *buffer, int count, FILE * stream);
 extern int _fileno(FILE * stream);
 extern void _flushall(void);
-extern FILE *fopen(CONST char *name, CONST char *mode);
-extern int fprintf(FILE * stream, CONST char *fmt, ...);
+extern FILE *fopen(const char *name, const char *mode);
+extern FILE *funopen(void *cookie, int (*readfn) (void *, char *, int), int (*writefn) (void *, const char *, int), long (*seekfn)(void *, long, int), int (*closefn)(void *));
+extern int fprintf(FILE * stream, const char *fmt, ...);
 extern int fpurge(FILE * stream);
 extern int fputc(int c, FILE * stream);
-extern int fputs(CONST char *string, FILE * stream);
+extern int fputs(const char *string, FILE * stream);
 extern size_t fread(void *buffer, size_t size, size_t count, FILE * stream);
-extern FILE *freopen(CONST char *name, CONST char *mode, FILE * stream);
-extern int fscanf(FILE * stream, CONST char *fmt, ...);
+extern FILE *freopen(const char *name, const char *mode, FILE * stream);
+extern int fscanf(FILE * stream, const char *fmt, ...);
 extern int fseek(FILE * stream, long offset, int origin);
 extern long ftell(FILE * stream);
-extern size_t fwrite(CONST void *data, size_t size, size_t count, FILE * stream);
+extern size_t fwrite(const void *data, size_t size, size_t count, FILE * stream);
 extern int getc(FILE * stream);
 extern int getchar(void);
 extern int kbhit(void);
 extern char *gets(char *buffer);
-extern int printf(CONST char *fmt, ...);
+extern int printf(const char *fmt, ...);
 extern int putc(int c, FILE * stream);
 extern int putchar(int c);
-extern int puts(CONST char *string);
-extern int scanf(CONST char *fmt, ...);
-extern int sprintf(char *buffer, CONST char *fmt, ...);
-extern int sscanf(CONST char *string, CONST char *fmt, ...);
+extern int puts(const char *string);
+extern int scanf(const char *fmt, ...);
+extern int sprintf(char *buffer, const char *fmt, ...);
+extern int sscanf(const char *string, const char *fmt, ...);
 extern int ungetc(int c, FILE * stream);
-extern int vfprintf(FILE * stream, CONST char *fmt, va_list ap);
-extern int vfscanf(FILE * stream, CONST char *fmt, va_list ap);
-extern int vsprintf(char *buffer, CONST char *fmt, va_list ap);
-extern int vsscanf(CONST char *string, CONST char *fmt, va_list ap);
-extern int rename(CONST char *old_name, CONST char *new_name);
+extern int vasprintf(char **strp, const char *fmt, va_list ap);
+extern int vfprintf(FILE * stream, const char *fmt, va_list ap);
+extern int vfscanf(FILE * stream, const char *fmt, va_list ap);
+extern int vsprintf(char *buffer, const char *fmt, va_list ap);
+extern int vsscanf(const char *string, const char *fmt, va_list ap);
+extern int rename(const char *old_name, const char *new_name);
 
 #ifdef __HARVARD_ARCH__
 /* Strings in program space need special handling for Harvard architectures. */
@@ -189,11 +192,11 @@ extern int printf_P(PGM_P fmt, ...) __attribute__((format(printf, 1, 2)));
 extern int puts_P(PGM_P string);
 extern int scanf_P(PGM_P fmt, ...) __attribute__((format(scanf, 1, 2)));
 extern int sprintf_P(char *buffer, PGM_P fmt, ...) __attribute__((format(printf, 2, 3)));
-extern int sscanf_P(CONST char *string, CONST char *fmt, ...) __attribute__((format(scanf, 2, 3)));
+extern int sscanf_P(const char *string, const char *fmt, ...) __attribute__((format(scanf, 2, 3)));
 extern int vfprintf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vfscanf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vsprintf_P(char *buffer, PGM_P fmt, va_list ap);
-extern int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap);
+extern int vsscanf_P(const char *string, PGM_P fmt, va_list ap);
 
 #else /* __HARVARD_ARCH__ */
 

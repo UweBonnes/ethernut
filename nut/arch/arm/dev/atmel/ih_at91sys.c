@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -71,7 +71,7 @@ IRQ_HANDLER sig_SYS = {
 /*!
  * \brief System interrupt entry.
  */
-static void SystemIrqEntry(void) __attribute__ ((naked));
+static void SystemIrqEntry(void) NUT_NAKED_FUNC;
 void SystemIrqEntry(void)
 {
     IRQ_ENTRY();
@@ -218,15 +218,15 @@ int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq)
  *
  * This call will also disable any previously registered handler.
  *
- * If enabled with NutSysIrqEnable(), the registered handler will be 
- * called on every system interrupt. The handler must check, if the 
+ * If enabled with NutSysIrqEnable(), the registered handler will be
+ * called on every system interrupt. The handler must check, if the
  * interrupt was triggered by the corresponding device.
- * 
- * This function is typically called by device drivers, but applications 
+ *
+ * This function is typically called by device drivers, but applications
  * may also implement their local interrupt handlers.
  *
  * \param irq     Interrupt to be associated with this handler.
- * \param handler This routine will be called by Nut/OS, when the 
+ * \param handler This routine will be called by Nut/OS, when the
  *                specified interrupt occurs.
  * \param arg     Argument to be passed to the interrupt handler.
  *

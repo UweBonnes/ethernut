@@ -43,29 +43,29 @@
  * \brief Parse an SNMP variable.
  *
  * \param data  Pointer to start of the name/value pair.
- * \param dlen  Contains the number of valid bytes following the 
- *              start of the variable. On exit, it is returned as 
- *              the number of valid bytes following the end of 
+ * \param dlen  Contains the number of valid bytes following the
+ *              start of the variable. On exit, it is returned as
+ *              the number of valid bytes following the end of
  *              this variable.
  * \param name  Pointer to a buffer that receives the name (OID).
- * \param nlen  On entry, this contains the maximum number of 
- *              sub IDs accepted for the name. On exit, it is 
+ * \param nlen  On entry, this contains the maximum number of
+ *              sub IDs accepted for the name. On exit, it is
  *              returned as the actual number sub IDs found in
  *              the name.
- * \param type  Pointer to the variable that receives the ASN 
+ * \param type  Pointer to the variable that receives the ASN
  *              type of the value.
  * \param value Pointer to variable that receives a pointer to
  *              the ASN1 encoded value of variable.
  * \param vlen  Pointer to the variable that receives the length
  *              of the value.
  *
- * \return Pointer to the first byte past the end of this name/value pair. 
+ * \return Pointer to the first byte past the end of this name/value pair.
  *         Returns NULL on any error.
  */
-CONST uint8_t *SnmpVarParse(CONST uint8_t * data, size_t * dlen, OID * name, size_t * nlen, uint8_t * type,
+const uint8_t *SnmpVarParse(const uint8_t * data, size_t * dlen, OID * name, size_t * nlen, uint8_t * type,
                            uint8_t ** value, size_t * vlen)
 {
-    CONST uint8_t *dp;
+    const uint8_t *dp;
     uint8_t vtype = ASN_SEQUENCE | ASN_CONSTRUCTOR;
     size_t len = *dlen;
 
@@ -98,9 +98,9 @@ CONST uint8_t *SnmpVarParse(CONST uint8_t * data, size_t * dlen, OID * name, siz
  * \brief Build an SNMP variable.
  *
  * \param data  Pointer to start of the output buffer.
- * \param dlen  Contains the number of valid bytes following the 
- *              start of the variable. On exit, it is returned as 
- *              the number of valid bytes following the end of 
+ * \param dlen  Contains the number of valid bytes following the
+ *              start of the variable. On exit, it is returned as
+ *              the number of valid bytes following the end of
  *              this variable.
  * \param name  Name (OID).
  * \param nlen  Number of sub IDs of the name.
@@ -108,17 +108,17 @@ CONST uint8_t *SnmpVarParse(CONST uint8_t * data, size_t * dlen, OID * name, siz
  * \param value Pointer to the value.
  * \param vlen  Length of the value.
  *
- * \return Pointer to the first byte past the end of this name/value pair. 
+ * \return Pointer to the first byte past the end of this name/value pair.
  *         Returns NULL on any error.
  */
-uint8_t *SnmpVarBuild(uint8_t * data, size_t * dlen, CONST OID * name, size_t nlen, uint8_t type, CONST uint8_t * value, size_t vlen)
+uint8_t *SnmpVarBuild(uint8_t * data, size_t * dlen, const OID * name, size_t nlen, uint8_t type, const uint8_t * value, size_t vlen)
 {
     size_t headerLen = 4;
     uint8_t *dp;
 
-    /* 
-     * The final length is not known now, thus the header will have to 
-     * be build later. 
+    /*
+     * The final length is not known now, thus the header will have to
+     * be build later.
      */
     if (*dlen < headerLen) {
         SnmpStatsInc(SNMP_STAT_OUTTOOBIGS);

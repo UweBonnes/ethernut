@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -110,7 +110,7 @@
 /*!
  * \brief Maximum number of characters allowed for hostname.
  *
- * Intentionally not MAXHOSTNAMELEN to avoid conflicts with existing 
+ * Intentionally not MAXHOSTNAMELEN to avoid conflicts with existing
  * C libraries.
  */
 #ifndef MAX_HOSTNAME_LEN
@@ -138,7 +138,7 @@ typedef struct _CONFOS CONFOS;
  * Applications may directly access the global variable \ref confos to
  * read or modify the current configuration.
  */
-struct __attribute__ ((packed)) _CONFOS {
+struct NUT_PACKED_TYPE _CONFOS {
     /*! \brief Size of this structure.
      *
      * Used by Nut/Net to verify, that the structure contents is valid
@@ -152,21 +152,15 @@ struct __attribute__ ((packed)) _CONFOS {
      */
     uint8_t magic[sizeof(CONFOS_EE_MAGIC) - 1];
 
-    /*! \brief Host name of the system. 
+    /*! \brief Host name of the system.
      */
     char hostname[MAX_HOSTNAME_LEN + 1];
 };
 
 extern CONFOS confos;
 
-__BEGIN_DECLS
-/* Function prototypes */
-
 extern int NutLoadConfig(void);
 extern int NutSaveConfig(void);
-
-__END_DECLS
-/* End of prototypes */
 
 /*@}*/
 

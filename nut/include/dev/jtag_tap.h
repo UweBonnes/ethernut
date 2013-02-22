@@ -78,7 +78,7 @@ extern void TapClose(JTAG_TAP *tap);
 extern void TapSetIrSize(JTAG_TAP *tap, uint_fast8_t len);
 
 extern void TapStateWalk(JTAG_TAP *tap, int state);
-extern void TapData(JTAG_TAP *tap, uint8_t *rbuf, CONST uint8_t *wbuf, uint32_t len, uint_fast8_t last);
+extern void TapData(JTAG_TAP *tap, uint8_t *rbuf, const uint8_t *wbuf, uint32_t len, uint_fast8_t last);
 extern void TapInstruction(JTAG_TAP *tap, uint32_t code, uint_fast8_t last);
 
 #endif

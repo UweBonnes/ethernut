@@ -1,5 +1,5 @@
 #ifndef _DEV_RESET_H_
-#define	_DEV_RESET_H_
+#define _DEV_RESET_H_
 
 /*
  * Copyright (C) 2008 by egnite GmbH.
@@ -62,16 +62,14 @@
 #include <arch/arm/atmel/at91_reset.h>
 #elif defined(__AVR32__)
 #include <arch/avr32/reset.h>
+#elif defined(__CORTEX__)
+#include <arch/cm3/cortexM3.h>
+#elif defined(__m68k__)
+#include <arch/m68k/reset.h>
 #endif
-
-__BEGIN_DECLS
-/* Prototypes */
 
 extern void NutReset(void);
 extern int NutResetCause(void);
-
-__END_DECLS
-/* End of prototypes */
 
 /*@}*/
 

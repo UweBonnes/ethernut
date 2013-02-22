@@ -57,7 +57,8 @@
 #define FLASH_BASE      0x100000UL
 #define RAM_BASE        0x200000UL
 
-#define TC_BASE         0xFFFA0000      /*!< \brief Timer/counter base address. */
+#define TC_BLK0_BASE    0xFFFA0000      /*!< \brief Timer/counter block 0 base address. */
+#define TC_BASE         TC_BLK0_BASE    /*!< \brief Timer/counter generic base address. */
 #define UDP_BASE        0xFFFA4000      /*!< \brief USB device port base address. */
 #define MCI_BASE        0xFFFA8000      /*!< \brief MMC/SDCard interface base address. */
 #define TWI_BASE        0xFFFAC000      /*!< \brief Two-wire interface base address. */
@@ -72,7 +73,8 @@
 #define USART3_BASE     0xFFFD0000      /*!< \brief USART 3 base address. */
 #define USART4_BASE     0xFFFD4000      /*!< \brief USART 4 base address. */
 #define TWI1_BASE       0xFFFD8000      /*!< \brief TWI 1 base address. */
-#define TC345_BASE      0xFFFDC000      /*!< \brief Timer/counter 3, 4 and 5 base address. */
+#define TC_BLK1_BASE    0xFFFDC000      /*!< \brief Timer/counter block 1 base address. */
+#define TC345_BASE      TC_BLK1_BASE    /*!< \brief Deprecated timer/counter 3, 4 and 5 base address. */
 #define ADC_BASE        0xFFFE0000      /*!< \brief ADC base address. */
 #define ECC_BASE        0xFFFFE800      /*!< \brief ECC base address. */
 #define SDRAMC_BASE     0xFFFFEA00      /*!< \brief SDRAMC base address. */
@@ -120,6 +122,7 @@
 #define MCI_HAS_PDC
 #define PMC_HAS_PLLB
 #define PMC_HAS_MDIV
+#define ADC_HAS_PDC
 
 #define PIO_HAS_MULTIDRIVER
 #define PIO_HAS_PULLUP
@@ -127,6 +130,7 @@
 #define PIO_HAS_OUTPUTWRITEENABLE
 
 #include <arch/arm/atmel/at91_tc.h>
+#undef TC_CLKS_MCK1024
 #include <arch/arm/atmel/at91_us.h>
 #include <arch/arm/atmel/at91_dbgu.h>
 #include <arch/arm/atmel/at91_emac.h>
@@ -146,8 +150,10 @@
 #include <arch/arm/atmel/at91_matrix.h>
 #include <arch/arm/atmel/at91_ccfg.h>
 #include <arch/arm/atmel/at91_sdramc.h>
+#include <arch/arm/atmel/at91_pit.h>
 #include <arch/arm/atmel/at91_adc.h>
 #include <arch/arm/atmel/at91_eefc.h>
+#include <arch/arm/atmel/at91_isi.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam9x */
 /*@{*/
@@ -155,7 +161,7 @@
 /*! \name Peripheral Identifiers and Interrupts */
 /*@{*/
 #define FIQ_ID      0           /*!< \brief Fast interrupt. */
-#define SYSC_ID     2           /*!< \brief System controller. */
+#define SYSC_ID     1           /*!< \brief System controller. */
 #define PIOA_ID     2           /*!< \brief Parallel I/O controller A. */
 #define PIOB_ID     3           /*!< \brief Parallel I/O controller B. */
 #define PIOC_ID     4           /*!< \brief Parallel I/O controller C. */

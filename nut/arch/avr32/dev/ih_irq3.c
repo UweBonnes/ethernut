@@ -47,6 +47,8 @@
 
 #include <avr32/io.h>
 
+#if defined(AVR32_EIC_IRQ_3) && defined(INTERRUPT3_ALT_PIN) && defined(INTERRUPT3_ALT_PINSET)
+
 #ifndef NUT_IRQPRI_IRQ3
 #define NUT_IRQPRI_IRQ3  AVR32_INTC_INT3
 #endif
@@ -110,7 +112,7 @@ static int Interrupt3Ctl(int cmd, void *param)
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Setup Peripheral mux for interrupt line */
-        gpio_enable_module_pin(AVR32_EIC_EXTINT_3_PIN, AVR32_EIC_EXTINT_3_FUNCTION);
+        gpio_enable_module_pin(INTERRUPT3_ALT_PIN, INTERRUPT3_ALT_PINSET);
         /* Set the vector. */
         register_interrupt(Interrupt3Entry, AVR32_EIC_IRQ_3, NUT_IRQPRI_IRQ3);
         /* Initialize to edge triggered with defined priority. */
@@ -185,3 +187,5 @@ static int Interrupt3Ctl(int cmd, void *param)
     }
     return rc;
 }
+
+#endif // AVR32_EIC_IRQ_3

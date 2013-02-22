@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions of the following functions are derived from material which is 
+ * Portions of the following functions are derived from material which is
  * Copyright (c) 1985 by Microsoft Corporation.  All rights are reserved.
  */
 /*
@@ -88,16 +88,16 @@ int _days[] = {
 
 /*!
  * \brief Convert a time value to a structure.
- * 
+ *
  * Thread safe version of \b gmtime. See ::gmtime for more information.
  *
- * \param timer Pointer to stored time. The time is represented as seconds elapsed 
- * since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC). 
- * \param ptm Pointer to structure ::tm where the converted time is stored. 
+ * \param timer Pointer to stored time. The time is represented as seconds elapsed
+ * since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC).
+ * \param ptm Pointer to structure ::tm where the converted time is stored.
  * \return Returns nonzero value if any error occured.
  *
  */
-int gmtime_r(CONST time_t * timer, tm * ptm)
+int gmtime_r(const time_t * timer, tm * ptm)
 {
     time_t ctimer = *timer;     /* var to calculate with */
     uint8_t isleapyear = 0;     /* current year is leap year */
@@ -177,22 +177,22 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
 
 /*!
  * \brief Convert a time value to a structure.
- * 
- * The \b gmtime function breaks down the \e timer value and stores it in a statically 
- * allocated structure of type ::tm, defined in time.h. The value of \e timer is usually 
+ *
+ * The \b gmtime function breaks down the \e timer value and stores it in a statically
+ * allocated structure of type ::tm, defined in time.h. The value of \e timer is usually
  * obtained from a call to the ::time function.
  *
- * \param timer Pointer to stored time. The time is represented as seconds elapsed 
- * since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC). 
- * \return Returns a pointer to a structure of type ::tm. The fields of the returned 
- * structure hold the evaluated value of the timer argument in UTC rather than in local time. 
+ * \param timer Pointer to stored time. The time is represented as seconds elapsed
+ * since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC).
+ * \return Returns a pointer to a structure of type ::tm. The fields of the returned
+ * structure hold the evaluated value of the timer argument in UTC rather than in local time.
  *
  * \note This function is not thread safe, because it uses a static variable
- * to store the calculated values. To be safe, you must surround the call to \b gmtime 
+ * to store the calculated values. To be safe, you must surround the call to \b gmtime
  * and the usage of the returned pointer with ::NutEnterCritical() and ::NutExitCritical()!
  *
  */
-tm *gmtime(CONST time_t * timer)
+tm *gmtime(const time_t * timer)
 {
     if (gmtime_r(timer, &_tb))
         return NULL;

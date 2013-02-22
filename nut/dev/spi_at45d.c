@@ -59,6 +59,7 @@
 #define AT45_WRITE_POLLS        1000
 #endif
 
+#if 0
 /*! \brief Parameter table of known DataFlash types. */
 AT45D_INFO at45d_info[] = {
     {8, 512, 256, 0x0D},    /* AT45DB011B - 128kB */
@@ -81,6 +82,7 @@ AT45D_INFO at45d_info[] = {
 
 /*! \brief Number of known Dataflash types. */
 uint_fast8_t at45d_known_types = sizeof(at45d_info) / sizeof(AT45D_INFO);
+#endif
 
 /*!
  * \brief Send DataFlash command.
@@ -93,7 +95,7 @@ uint_fast8_t at45d_known_types = sizeof(at45d_info) / sizeof(AT45D_INFO);
  * \param rxbuf Pointer to the receive data buffer, may be set to NULL.
  * \param xlen  Number of byte to receive and/or transmit.
  */
-static int At45dCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, int oplen, CONST void *txbuf, void *rxbuf, int xlen)
+static int At45dCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, int oplen, const void *txbuf, void *rxbuf, int xlen)
 {
     int rc = -1;
     NUTSPIBUS *bus;
@@ -192,7 +194,7 @@ static int At45dWaitReady(NUTSPINODE * node, uint32_t tmo, int poll)
  * \param rxbuf Pointer to the receive data buffer, may be set to NULL.
  * \param xlen  Number of byte to receive and/or transmit.
  */
-int SpiAt45dCommand(NUTDEVICE * dev, uint8_t op, uint32_t parm, int oplen, CONST void *txbuf, void *rxbuf, int xlen)
+int SpiAt45dCommand(NUTDEVICE * dev, uint8_t op, uint32_t parm, int oplen, const void *txbuf, void *rxbuf, int xlen)
 {
     NUTASSERT(dev != NULL);
     return At45dCommand(dev->dev_icb, op, parm, oplen, txbuf, rxbuf, xlen);
@@ -240,7 +242,7 @@ int SpiAt45dPageErase(NUTDEVICE * dev, uint32_t pgn)
     NUTASSERT(dev != NULL);
     NUTASSERT(dev->dev_dcb != NULL);
     blkio = dev->dev_dcb;
-    
+
     info = (AT45D_INFO *) blkio->blkio_info;
     NUTASSERT(blkio->blkio_info != NULL);
 
@@ -262,7 +264,7 @@ int SpiAt45dChipErase(NUTDEVICE * dev)
 /*!
  * \brief Initialize the DataFlash device.
  *
- * This routine determines the DataFlash type. It is internally called 
+ * This routine determines the DataFlash type. It is internally called
  * by Nut/OS during device registration.
  *
  * The driver framework may call this function more than once.
@@ -284,16 +286,20 @@ int SpiAt45dInit(NUTDEVICE * dev)
     blkio = dev->dev_dcb;
     node = dev->dev_icb;
 
-    /* Read the status byte and locate the related table entry. */
-    sr = At45dStatus(node);
-    sr &= AT45D_STATUS_DENSITY | AT45D_STATUS_PAGE_SIZE;
-    for (i = at45d_known_types; --i >= 0;) {
-        if (sr == at45d_info[i].at45d_srval) {
-            /* Known DataFlash type. */
-            blkio->blkio_info = &at45d_info[i];
-            blkio->blkio_blk_cnt = at45d_info[i].at45d_pages;
-            blkio->blkio_blk_siz = at45d_info[i].at45d_psize;
-            return 0;
+    if (At45dWaitReady(node, 10, 1) == 0) {
+        /* Read the status byte and locate the related table entry. */
+        sr = At45dStatus(node);
+        if (sr != 0xff) {
+            sr &= AT45D_STATUS_DENSITY | AT45D_STATUS_PAGE_SIZE;
+            for (i = at45d_known_types; --i >= 0;) {
+                if (sr == at45d_info[i].at45d_srval) {
+                    /* Known DataFlash type. */
+                    blkio->blkio_info = &at45d_info[i];
+                    blkio->blkio_blk_cnt = at45d_info[i].at45d_pages;
+                    blkio->blkio_blk_siz = at45d_info[i].at45d_psize;
+                    return 0;
+                }
+            }
         }
     }
     /* Unknown DataFlash type. */
@@ -308,7 +314,7 @@ int SpiAt45dInit(NUTDEVICE * dev)
  * \param data Points to a buffer that receives the data.
  * \param len  Number of bytes to read.
  *
- * \return The number of bytes actually read. A return value of -1 indicates 
+ * \return The number of bytes actually read. A return value of -1 indicates
  *         an error.
  */
 int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
@@ -319,7 +325,7 @@ int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
     NUTASSERT(dev != NULL);
     NUTASSERT(dev->dev_dcb != NULL);
     blkio = dev->dev_dcb;
-    
+
     info = (AT45D_INFO *) blkio->blkio_info;
     NUTASSERT(blkio->blkio_info != NULL);
 
@@ -338,7 +344,7 @@ int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
  * \brief Write data to DataFlash memory.
  *
  * Each page will be automatically erased before writing the data. If the
- * last page is not completely filled with new data, the contents of 
+ * last page is not completely filled with new data, the contents of
  * remaining bytes at the end of the page is undetermined.
  *
  * \param dev  Specifies the registered DataFlash device.
@@ -348,10 +354,10 @@ int SpiAt45dPageRead(NUTDEVICE * dev, uint32_t pgn, void *data, int len)
  *             than the page size, in which case the remaining bytes of
  *             the page will be set to 0xff.
  *
- * \return The number of bytes actually written. A return value of -1 indicates 
+ * \return The number of bytes actually written. A return value of -1 indicates
  *         an error.
  */
-int SpiAt45dPageWrite(NUTDEVICE * dev, uint32_t pgn, CONST void *data, int len)
+int SpiAt45dPageWrite(NUTDEVICE * dev, uint32_t pgn, const void *data, int len)
 {
     int rc = -1;
     uint8_t *dp = (uint8_t *) data;

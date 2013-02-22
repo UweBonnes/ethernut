@@ -68,7 +68,7 @@
  *
  * During write operations a buffer with this size is allocated
  * from heap and may cause memory problems with large sectors.
- * Thus, this value may be less than the size of the configuration 
+ * Thus, this value may be less than the size of the configuration
  * sector, in which case the rest of the sector is unused.
  *
  * Currently only 1 sector can be used for system configurations.
@@ -166,7 +166,7 @@ int Avr32FlashcSectorRead(unsigned int off, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int Avr32FlashcSectorWrite(unsigned int off, CONST void *data, unsigned int len)
+int Avr32FlashcSectorWrite(unsigned int off, const void *data, unsigned int len)
 {
     flashptr_t dp = (flashptr_t) (uptr_t) (AVR32_FLASH_ADDRESS + off);
     int rc;
@@ -247,7 +247,7 @@ int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * Applications should call NutNvMemSave().
  *
- * The region that contains the configuration sector will be automatically 
+ * The region that contains the configuration sector will be automatically
  * locked.
  *
  * \param pos   Start location within configuration sector.
@@ -256,7 +256,7 @@ int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int Avr32FlashcParamWrite(unsigned int pos, CONST void *data, unsigned int len)
+int Avr32FlashcParamWrite(unsigned int pos, const void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

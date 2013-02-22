@@ -92,13 +92,13 @@ typedef struct {
 void DumpDnsHeader(FILE * stream, DNSHEADER * doh)
 {
     fprintf(stream, "HEADER: id=%u flg=%04X #q=%u #an=%u #au=%u #ad=%u\r\n",
-            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers, 
+            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers,
             doh->doh_authrr, doh->doh_addrr);
 }
 
 void DumpDnsQuestion(FILE * stream, DNSQUESTION * doq)
 {
-    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n", 
+    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n",
         doq->doq_name, doq->doq_type, doq->doq_class);
 }
 
@@ -122,7 +122,7 @@ static uint16_t AddShort(uint8_t * cp, uint16_t val)
     return 2;
 }
 
-static uint16_t AddName(uint8_t * cp, CONST uint8_t * name)
+static uint16_t AddName(uint8_t * cp, const uint8_t * name)
 {
     uint8_t *lcp;
     uint16_t rc = strlen((char *) name) + 2;
@@ -249,7 +249,7 @@ static uint16_t DecodeDnsHeader(DNSHEADER * doh, uint8_t * buf)
     return rc;
 }
 
-static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, CONST uint8_t * name, uint16_t type)
+static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, const uint8_t * name, uint16_t type)
 {
     if (doq == NULL)
         doq = calloc(1, sizeof(DNSQUESTION));
@@ -335,7 +335,7 @@ static uint16_t DecodeDnsResource(DNSRESOURCE * dor, uint8_t * buf)
  * \param domain Name of the domain of the local host.
  * \param dnsip IP address of the DNS server.
  */
-void NutDnsConfig(CONST uint8_t * hostname, CONST uint8_t * domain, uint32_t dnsip)
+void NutDnsConfig(const uint8_t * hostname, const uint8_t * domain, uint32_t dnsip)
 {
     NutDnsConfig2(hostname, domain, dnsip, 0);
 }
@@ -368,9 +368,9 @@ void NutDnsGetConfig2(char **hostname, char **domain, uint32_t * pdnsip, uint32_
  * \return IP address, which is zero, if the name could not
  *         be resolved.
  */
-uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type);
+uint32_t NutDnsGetResource(const uint8_t * hostname, const uint16_t type);
 
-uint32_t NutDnsGetHostByName(CONST uint8_t * hostname)
+uint32_t NutDnsGetHostByName(const uint8_t * hostname)
 {
     return NutDnsGetResource(hostname, 1);
 }
@@ -388,19 +388,19 @@ uint32_t NutDnsGetHostByName(CONST uint8_t * hostname)
  * \return Number of IP address, which is zero, if the name could not
  *         be resolved.
  */
-uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t * ip_all);
+uint8_t NutDnsGetResourceAll(const uint8_t * hostname, const uint16_t type, uint32_t * ip_all);
 
-uint8_t NutDnsGetHostsByName(CONST uint8_t * hostname, uint32_t * ip_all)
+uint8_t NutDnsGetHostsByName(const uint8_t * hostname, uint32_t * ip_all)
 {
     return NutDnsGetResourceAll(hostname, 1, ip_all);
 }
 
-uint32_t NutDnsGetMxByDomain(CONST uint8_t * hostname)
+uint32_t NutDnsGetMxByDomain(const uint8_t * hostname)
 {
     return NutDnsGetResource(hostname, 0x0F);
 }
 
-uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
+uint32_t NutDnsGetResource(const uint8_t * hostname, const uint16_t type)
 {
     uint32_t ip = 0;
     uint8_t *pkt;
@@ -521,7 +521,7 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
     return ip;
 }
 
-uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t * ip_all)
+uint8_t NutDnsGetResourceAll(const uint8_t * hostname, const uint16_t type, uint32_t * ip_all)
 {
     uint8_t n_ip;
     uint8_t *pkt;

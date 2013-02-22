@@ -51,26 +51,54 @@
 #
 #
 
+ACLOCAL_AMFLAGS = -I m4
 MAINTAINERCLEANFILES = depcomp compile missing install-sh
 
 EXTRA_DIST = nut/nutsetup reconf \
 nut/Makevars.all nut/Makerules.all \
-nut/Makevars.gcc \
+nut/Makevars.arm-ecross-gcc \
+nut/Makedefs.arm-ecross-gcc nut/Makerules.arm-ecross-gcc \
+nut/Makedefs.arm-ecross-gccdbg nut/Makerules.arm-ecross-gccdbg \
 nut/Makevars.arm-gcc \
 nut/Makedefs.arm-gcc nut/Makerules.arm-gcc \
 nut/Makedefs.arm-gccdbg nut/Makerules.arm-gccdbg \
+nut/Makedefs.arm-thumb-gcc nut/Makerules.arm-thumb-gcc \
 nut/Makevars.avr-gcc \
 nut/Makedefs.avr-gcc nut/Makerules.avr-gcc \
 nut/Makedefs.avr-gccdbg nut/Makerules.avr-gccdbg \
+nut/Makedefs.avr-icc7 nut/Makerules.avr-icc7 \
+nut/Makedefs.avrext-icc7 nut/Makerules.avrext-icc7 \
 nut/Makevars.avr32-gcc \
 nut/Makedefs.avr32-gcc nut/Makerules.avr32-gcc \
 nut/Makedefs.avr32-gccdbg nut/Makerules.avr32-gccdbg \
-nut/Makedefs.gcc nut/Makerules.gcc \
+nut/Makerules.gcc \
+nut/Makevars.gcc \
 nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
 nut/Makedefs.unix-gcc nut/Makerules.unix-gcc \
 ChangeLog20090309 nut/tools/packaging/distcheck.lua
 
-SUBDIRS = nut/doc nut/tools/crurom nut/tools/nutconf nut/tools/nutdisc nut/tools/linux
+SUBDIRS = nut/doc nut/tools/linux
+
+if ENABLE_CRUROM
+SUBDIRS += nut/tools/crurom 
+endif
+
+if ENABLE_NUTCONF
+SUBDIRS += nut/tools/nutconf
+endif
+
+if ENABLE_QNUTCONF
+SUBDIRS += nut/tools/qnutconf 
+endif
+
+if ENABLE_NUTDISC
+SUBDIRS += nut/tools/nutdisc
+endif
+
+if ENABLE_QNUTDISC
+SUBDIRS += nut/tools/qnutdisc
+endif
+
 
 dist-hook:
 	mkdir -p $(distdir)/nut/app
@@ -85,6 +113,8 @@ dist-hook:
 	cp -R $(srcdir)/nut/c/* $(distdir)/nut/c
 	mkdir -p $(distdir)/nut/conf
 	cp -R $(srcdir)/nut/conf/* $(distdir)/nut/conf
+	mkdir -p $(distdir)/nut/contrib
+	cp -R $(srcdir)/nut/contrib/* $(distdir)/nut/contrib
 	mkdir -p $(distdir)/nut/cpp
 	cp -R $(srcdir)/nut/cpp/* $(distdir)/nut/cpp
 	mkdir -p $(distdir)/nut/crt
@@ -95,6 +125,8 @@ dist-hook:
 	cp -R $(srcdir)/nut/fs/* $(distdir)/nut/fs
 	mkdir -p $(distdir)/nut/gorp
 	cp -R $(srcdir)/nut/gorp/* $(distdir)/nut/gorp
+	mkdir -p $(distdir)/nut/hwtest
+	cp -R $(srcdir)/nut/hwtest/* $(distdir)/nut/hwtest
 	mkdir -p $(distdir)/nut/include
 	cp -R $(srcdir)/nut/include/* $(distdir)/nut/include
 	mkdir -p $(distdir)/nut/lib

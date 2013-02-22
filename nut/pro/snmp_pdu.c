@@ -50,7 +50,7 @@
  * \param name Object identifier.
  * \param nlen Number of sub IDs of the object identifier.
  */
-SNMP_PDU *SnmpPduCreate(int cmd, CONST OID * name, size_t nlen)
+SNMP_PDU *SnmpPduCreate(int cmd, const OID * name, size_t nlen)
 {
     SNMP_PDU *pdu = calloc(1, sizeof(SNMP_PDU));
 

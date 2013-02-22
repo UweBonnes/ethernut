@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -98,7 +98,7 @@ nutpro =
                       "application.",
         requires = { "NET_UDP" },
         sources = { "discover.c" },
-        options = 
+        options =
         {
             {
                 macro = "DISCOVERY_VERSION",
@@ -136,23 +136,23 @@ nutpro =
         name = "nutpro_dhcpc",
         brief = "DHCP/BOOTP Client",
         requires = { "NET_UDP", "NUT_EVENT" },
-        sources = 
-        { 
+        sources =
+        {
             "dhcpc.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "DHCP_SERVERPORT",
                 brief = "Server Port",
-                description = "UDP port of the DHCP server. Default is 67.", 
+                description = "UDP port of the DHCP server. Default is 67.",
                 flavor = "booldata",
                 file = "include/cfg/dhcp.h"
             },
             {
                 macro = "DHCP_CLIENTPORT",
                 brief = "Client Port",
-                description = "UDP port of the DHCP client. Default is 68.", 
+                description = "UDP port of the DHCP client. Default is 68.",
                 flavor = "booldata",
                 file = "include/cfg/dhcp.h"
             },
@@ -250,41 +250,103 @@ nutpro =
 
     },
     {
+        name = "nutpro_ssdp",
+        brief = "SSDP",
+        description = "Service discovery protocol.",
+        requires = { "PRO_HTTPU" },
+        provides = { "PRO_SSDP" },
+        sources =
+        {
+            "ssdp.c",
+            "ssdpc.c",
+            "ssdpd.c"
+        }
+    },
+    {
+        name = "nutpro_upnp",
+        brief = "UPnP",
+        description = "Universal Plug and Play.",
+        requires = { "PRO_SSDP" },
+        provides = { "PRO_UPNP" },
+        sources =
+        {
+            "upnp.c",
+            "upnp_ctrl.c",
+            "upnp_dev.c"
+        }
+    },
+    {
         name = "nutpro_resolv",
         brief = "DNS Client API",
         requires = { "NET_UDP" },
-        sources = 
-        { 
+        provides = { "PRO_DNS" },
+        sources =
+        {
             "confdns.c",
             "resolv.c"
         }
     },
     {
+        name = "nutpro_uri",
+        brief = "URI Functions",
+        description = "Convenience functions to split URI into its components.",
+        provides = { "PRO_URI" },
+        sources = { "uri.c" }
+    },
+    {
+        name = "nutpro_tcphost",
+        brief = "TCP Host API",
+        description = "TCP convenience functions.",
+        requires = { "NET_TCP", "PRO_DNS" },
+        provides = { "PRO_TCPHOST" },
+        sources = { "tcphost.c" }
+    },
+    {
         name = "nutpro_ftpd",
         brief = "FTP Server API",
         description = "File transfer protocol server.",
-        requires = 
+        requires =
         {
             "NET_TCP",
             "NET_UDP",
-            "CRT_STREAM_READ", 
-            "CRT_STREAM_WRITE", 
-            "NUT_FS_DIR", 
-            "NUT_FS_READ", 
-            "NUT_FS_WRITE" 
+            "CRT_STREAM_READ",
+            "CRT_STREAM_WRITE",
+            "NUT_FS_DIR",
+            "NUT_FS_READ",
+            "NUT_FS_WRITE"
         },
         sources = { "ftpd.c" }
+    },
+    {
+        name = "nutpro_pop3",
+        brief = "POP3 Client API",
+        description = "Provides email retrieval via POP3.",
+        requires = { "NET_TCP", "CRT_STREAM_READ" },
+        sources =
+        {
+            "pop3c.c"
+        },
+        options =
+        {
+            {
+                macro = "POP3_BUFSIZ",
+                brief = "Size of the POP3 line buffer",
+                type = "integer",
+                default = "256",
+                file = "include/cfg/pop3.h"
+            }
+        }
     },
     {
         name = "nutpro_smtp",
         brief = "SMTP Client API",
         description = "Provides email transfer via SMTP.",
         requires = { "NET_TCP", "CRT_STREAM_READ" },
-        sources = 
-        { 
+        sources =
+        {
             "smtpc.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "MAX_MAIL_RCPTS",
@@ -304,13 +366,130 @@ nutpro =
         }
     },
     {
+        name = "nutpro_uhttp",
+        brief = "uHTTP API",
+        description = "Micro HTTP library.",
+        requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
+        provides = { "PRO_UHTTP" },
+        sources =
+        {
+            "uhttp/uhttpd.c",
+            "uhttp/envinit.c",
+            "uhttp/envreg.c",
+            "uhttp/envvars.c",
+            "uhttp/mediatypes.c",
+            "uhttp/mtinit.c",
+            "uhttp/mtreg.c",
+            "uhttp/responses.c",
+            "uhttp/utils.c",
+            "uhttp/modules/mod_auth_basic.c",
+            "uhttp/modules/mod_cgi_func.c",
+            "uhttp/modules/mod_redir.c",
+            "uhttp/modules/mod_ssi.c",
+            "uhttp/os/nut/streamio.c",
+        },
+        options =
+        {
+            {
+                macro = "HTTP_PLATFORM_STREAMS",
+                brief = "Platform Streams",
+                description = "By default, TCP sockets are mapped to stdio streams. "..
+                              "This allows to use stdio calls like fprintf for "..
+                              "HTTP communication. When this option is enabled, then "..
+                              "the platform-specific socket API is used instead, which "..
+                              "provides better performance. Disadvantages are, that "..
+                              "more memory is required and that applications must use "..
+                              "less portable stdio replacements like s_printf.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_BMP",
+                brief = "Default BMP Handler",
+                description = "If enabled, files with extension .bmp will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_CSS",
+                brief = "Default CSS Handler",
+                description = "If enabled, files with extension .css will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_GIF",
+                brief = "Default GIF Handler",
+                description = "If enabled, files with extension .gif will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_HTM",
+                brief = "Default HTM Handler",
+                description = "If enabled, files with extension .htm will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_JAR",
+                brief = "Default JAR Handler",
+                description = "If enabled, files with extension .jar will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_JS",
+                brief = "Default JS Handler",
+                description = "If enabled, files with extension .js will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_JPG",
+                brief = "Default JPG Handler",
+                description = "If enabled, files with extension .jpg will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_PDF",
+                brief = "Default PDF Handler",
+                description = "If enabled, files with extension .pdf will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_SHTML",
+                brief = "Default SHTML Handler",
+                description = "If enabled, files with extension .shtml will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_SVG",
+                brief = "Default SVG Handler",
+                description = "If enabled, files with extension .svg will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_XML",
+                brief = "Default XML Handler",
+                description = "If enabled, files with extension .xml will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
         name = "nutpro_httpd",
         brief = "HTTP Server API",
         description = "Webserver helper routines. Provides simple authorization "..
                       "and registration of C functions as CGI routines",
         requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
-        sources = 
-        { 
+        sources =
+        {
             "auth.c",
             "cgi.c",
             "dencode.c",
@@ -322,7 +501,7 @@ nutpro =
             "ssi.c",
             "rfctime.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "HTTP_MAJOR_VERSION",
@@ -392,11 +571,68 @@ nutpro =
         }
     },
     {
+        name = "nutpro_httpu",
+        brief = "HTTPU API",
+        description = "HTTPU is an extension of HTTP, using UDP instead of TCP as the "..
+                      "data transport. It's used by the UPnP implementation.",
+        requires = { "NET_UDP" },
+        provides = { "PRO_HTTPU" },
+        sources = { "httpu.c" },
+        options =
+        {
+            {
+                macro = "HTTPU_MAX_DATAGRAM_SIZE",
+                brief = "Max. Datagram Size",
+                description = "For each session a total number of 4 datagram buffers are "..
+                              "allocated from the heap.",
+                type = "integer",
+                default = "508",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTPU_MAX_HEADER_LINES",
+                brief = "Max. Header Lines",
+                description = "Maximum number of received header lines.",
+                type = "integer",
+                default = "16",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
+        name = "nutpro_soap",
+        brief = "SOAP Remote Call API",
+        requires = { "PRO_UHTTP" },
+        provides = { "PRO_SOAP" },
+        sources = {
+            "soapc.c",
+            "soapd.c",
+            "soap.c"
+        },
+        options =
+        {
+            {
+                macro = "SOAP_MAX_TAG_SIZE",
+                brief = "Max. Tag Size",
+                type = "integer",
+                default = "128",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "SOAP_MAX_TAG_ATTRIBUTES",
+                brief = "Max. Number of Attributes",
+                type = "integer",
+                default = "8",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
         name = "nutpro_snmp",
         brief = "SNMP",
         description = "Simple network management protocol.",
         sources =
-        { 
+        {
             "snmp.c",
             "snmp_api.c",
             "snmp_auth.c",
@@ -412,7 +648,7 @@ nutpro =
         description = "SNMP agent module.",
         requires = { "NET_UDP" },
         sources =
-        { 
+        {
             "snmp_agent.c",
             "snmp_session.c"
         }
@@ -424,7 +660,7 @@ nutpro =
         requires = { "NET_UDP" },
         provides = { "PRO_SNTP" },
         sources =  { "sntp.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUT_THREAD_SNTPSTACK",
@@ -439,11 +675,11 @@ nutpro =
         name = "nutpro_smtpc",
         brief = "SMTP Client API",
         description = "Simple mail transfer protocol. Not implemented.",
-        requires = 
+        requires =
         {
             "NOT_AVAILABLE",
             "NET_TCP",
-            "CRT_STREAM_READ", 
+            "CRT_STREAM_READ",
             "CRT_STREAM_WRITE"
         }
     },
@@ -453,7 +689,7 @@ nutpro =
         description = "Logs system and debug information to a remote server.",
         requires = { "PRO_SNTP", "NET_UDP" },
         sources =  { "syslog.c", "syslog_P.c" },
-        options = 
+        options =
         {
             {
                 macro = "SYSLOG_PERROR_ONLY",
@@ -527,5 +763,5 @@ nutpro =
         brief = "XML Stream Parser",
         description = "Quite limited parser. See API documentation.",
         sources =  { "uxmlparse.c", "uxmlstream.c", "uxmltree.c" }
-    }    
+    }
 }

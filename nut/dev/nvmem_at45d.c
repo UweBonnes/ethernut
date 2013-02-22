@@ -66,7 +66,7 @@ static NUTDEVICE *devSysConf;
  * properly initialized. This is normally done by calling NutRegister...
  * in the application. However, the system configuration must be know
  * before entering any application code.
- * 
+ *
  */
 static int SpiAt45dConfigDevice(void)
 {
@@ -129,11 +129,11 @@ static uint32_t SpiAt45dConfigPage(void)
  * Otherwise one full page is used.
  *
  * \return The number of bytes available for configuration data. In case of
- *         an error, -1 is returned.
+ *         an error, 0 is returned.
  */
 size_t SpiAt45dConfigSize(void)
 {
-    int rc = 0;
+    size_t rc = 0;
 
     if (SpiAt45dConfigDevice() == 0) {
 #ifdef NUT_CONFIG_AT45D_SIZE
@@ -184,7 +184,7 @@ int SpiAt45dConfigRead(size_t pos, void *data, size_t len)
  * \return 0 on success or -1 in case of an error.
  */
 
-int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
+int SpiAt45dConfigWrite(size_t pos, const void *data, size_t len)
 {
     int rc = -1;
     uint8_t *pbuff;
@@ -226,7 +226,7 @@ int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
                 rc = -1;
                 break;
             }
-        
+
             data_buff += wsize;
             remaining -= wsize;
             offset = 0;
@@ -236,6 +236,6 @@ int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
         }
         free(pbuff);
     }
-        
+
     return rc;
 }

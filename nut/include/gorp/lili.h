@@ -74,7 +74,7 @@ typedef void (*LiLiItemDestroyFunc) (LILI_ITEMREF);
 typedef int (*LiLiItemCompareFunc) (LILI_ITEMREF, LILI_ITEMREF);
 
 /*! \brief Node object type. */
-typedef	struct _LILI_NODE LILI_NODE;
+typedef struct _LILI_NODE LILI_NODE;
 
 /*! \brief Node object structure. */
 struct _LILI_NODE {
@@ -84,7 +84,7 @@ struct _LILI_NODE {
 };
 
 /*! \brief List object type. */
-typedef	struct _LILI LILI;
+typedef struct _LILI LILI;
 
 /*! \brief List object structure. */
 struct _LILI {
@@ -148,9 +148,6 @@ struct _LILI {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern LILI *LiLiCreate(uint8_t flags, LiLiItemCreateFunc cre, LiLiItemDestroyFunc des, LiLiItemCompareFunc cmp);
 extern void LiLiClean(LILI *list);
 extern void LiLiDestroy(LILI *list);
@@ -169,6 +166,4 @@ extern LILI_ITEMREF LiLiCreateStringItemCopy(LILI_ITEMREF ref);
 extern void LiLiDestroyStringItemCopy(LILI_ITEMREF ref);
 extern int LiLiCompareStringItems(LILI_ITEMREF ref1, LILI_ITEMREF ref2);
 
-__END_DECLS
-/* End of prototypes */
 #endif

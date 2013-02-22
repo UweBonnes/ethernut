@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,68 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/hd44780_bus.c
+ * \brief Terminal device definitions for port mapped LCD.
  *
- * Revision 1.6  2008/04/29 16:58:21  thiagocorrea
- * Simplified HD44780 code for AVR based on the ARM driver.
- *
- * Revision 1.5  2006/10/08 16:40:17  haraldkipp
- * Many thanks to Thiago Correa for adding LCD port configuration.
- *
- * Revision 1.4  2006/09/11 09:13:18  olereinhardt
- * Another timing patch from Uwe Bonnes
- *
- * Revision 1.3  2006/09/07 15:53:27  olereinhardt
- * Added LCD timing patch from Uwe Bonnes
- *
- * Revision 1.2  2006/04/07 12:23:18  haraldkipp
- * Target specific delay defaults moved from global header to AVR specific
- * file.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.6  2005/06/06 10:43:45  haraldkipp
- * Fixed to re-enable ICCAVR compilation.
- *
- * Revision 1.5  2005/05/27 14:02:11  olereinhardt
- * Added support for new display sizes configurable by macros
- * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
- * LCD_1x20, LCD_1x16, LCD_1x8, KS0078_CONTROLLER (4x20))
- * Also added support for different delay types.
- * For not to wait busy too long, I added support for busy bit
- * read back and use NutSleep instead NutDelay if NUT_CPU_FREQ
- * is defined.
- *
- * Revision 1.4  2004/05/24 17:11:05  olereinhardt
- * dded terminal device driver for hd44780 compatible LCD displays directly
- * connected to the memory bus (memory mapped). See hd44780.c for more
- * information.Therefore some minor changed in include/dev/term.h and
- * dev/term.c are needet to
- * pass a base address to the lcd driver.
- *
- * Revision 1.3  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.2  2003/07/17 09:41:35  haraldkipp
- * Setting the data direction during init only may fail on some hardware.
- * We are now doing this immediately before using the port.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:37  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.3  2003/05/06 18:30:10  harald
- * ICCAVR port
- *
- * Revision 1.2  2003/04/21 16:22:46  harald
- * Moved back to outp/inp for portability
- *
- * Revision 1.1  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <stdlib.h>
@@ -291,9 +236,9 @@
 /*!
  * \brief Wait until controller will be ready again
  *
- * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise 
- * We will either busy loop with NutDelay or sleep with NutSleep. The second 
- * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher 
+ * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise
+ * We will either busy loop with NutDelay or sleep with NutSleep. The second
+ * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher
  * timer resolution.
  *
  * \param xt Delay time in milliseconds
@@ -309,17 +254,17 @@ static INLINE uint8_t LcdReadNibble(void)
 
     uint8_t ret;
     sbi(LCD_RW_PORT, LCD_RW_BIT);
-    outp(inp(LCD_DATA_DDR) & ~LCD_DATA_BITS, LCD_DATA_DDR);   // enable data input
+    outb(LCD_DATA_DDR, inb(LCD_DATA_DDR) & ~LCD_DATA_BITS);   // enable data input
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY;
-    ret = inp(LCD_DATA_PIN) & LCD_DATA_BITS;
+    ret = inb(LCD_DATA_PIN) & LCD_DATA_BITS;
     cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY;
     return ret;
 }
 
 static INLINE uint8_t LcdReadByte(void)
-{    
+{
     uint8_t data;
 #if LCD_DATA_BITS == 0x0F
     data = LcdReadNibble();
@@ -349,13 +294,13 @@ static uint8_t LcdReadCmd(void)
 #endif
 
 
-static void LcdDelay(uint8_t xt) 
+static void LcdDelay(uint8_t xt)
 {
     if (during_init) {
         NutDelay(xt);
     } else {
 #if defined(LCD_RW_BIT)
-    while (LcdReadCmd() & (1 << LCD_BUSY)) 
+    while (LcdReadCmd() & (1 << LCD_BUSY))
         LCD_DELAY;
     LCD_DELAY;
     LCD_DELAY;
@@ -368,7 +313,7 @@ static void LcdDelay(uint8_t xt)
     LCD_DELAY;
     LCD_DELAY;
     LCD_DELAY;
-#elif defined(NUT_CPU_FREQ)    
+#elif defined(NUT_CPU_FREQ)
     NutSleep(xt);
 #else
     NutDelay(xt);
@@ -381,25 +326,25 @@ static INLINE void LcdSendNibble(uint8_t nib)
 #ifdef LCD_RW_BIT
     cbi(LCD_RW_PORT, LCD_RW_BIT);
 #endif
-    outp(inp(LCD_DATA_DDR) | LCD_DATA_BITS, LCD_DATA_DDR);
-    outp((inp(LCD_DATA_PORT) & ~LCD_DATA_BITS) | (nib & LCD_DATA_BITS), LCD_DATA_PORT);
+    outb(LCD_DATA_DDR, inb(LCD_DATA_DDR) | LCD_DATA_BITS);
+    outb(LCD_DATA_PORT, (inb(LCD_DATA_PORT) & ~LCD_DATA_BITS) | (nib & LCD_DATA_BITS));
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
-    LCD_DELAY; 
-    cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT); 
-    LCD_DELAY; 
+    LCD_DELAY;
+    cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
+    LCD_DELAY;
 }
 
 /*!
  * \brief Send byte to LCD controller.
  *
- * The byte is sent to a 4-bit interface in two nibbles. If one has configured 
+ * The byte is sent to a 4-bit interface in two nibbles. If one has configured
  * LCD_DATA_BITS to 0xFF this will send a whole byte at once
  *
  * \param ch Byte to send.
  * \param xt Delay time in milliseconds.
  */
 static INLINE void LcdSendByte(uint8_t ch, uint8_t xt)
-{    
+{
 #if LCD_DATA_BITS == 0x0F
     LcdSendNibble(ch >> 4);
     if(xt)
@@ -489,7 +434,7 @@ static int LcdInit(NUTDEVICE *dev)
     cbi(LCD_RW_PORT, LCD_RW_BIT);
 #endif
 
-	
+
     /*
      * Send a dummy data byte.
      */
@@ -538,7 +483,7 @@ static int LcdInit(NUTDEVICE *dev)
     // move cursor to home
     LcdWriteCmd(1 << LCD_HOME, LCD_LONG_DELAY);
     // set data address to 0
-    LcdWriteCmd(1 << LCD_DDRAM | 0x00, LCD_LONG_DELAY);    
+    LcdWriteCmd(1 << LCD_DDRAM | 0x00, LCD_LONG_DELAY);
     during_init = 0;
 
     return 0;

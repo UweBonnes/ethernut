@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -120,20 +120,20 @@
  * Opens a directory and associates a directory stream with it.
  *
  * \param name Pathname of the directory. Must be the full pathname
- *             including the device, because Nut/OS doesn't support 
+ *             including the device, because Nut/OS doesn't support
  *             relative paths.
  *
- * \return A pointer used to identify the directory stream in subsequent 
- *         operations. NULL is returned if the directory cannot be accessed, 
+ * \return A pointer used to identify the directory stream in subsequent
+ *         operations. NULL is returned if the directory cannot be accessed,
  *         or if it cannot allocate enough memory.
  */
-DIR *opendir(CONST char *name)
+DIR *opendir(const char *name)
 {
     DIR *dir = 0;
     NUTDEVICE *dev;
     char dev_name[9];
     uint8_t nidx;
-    CONST char *nptr = name;
+    const char *nptr = name;
 
     /* Extract the device name. */
     for (nidx = 0; *nptr && *nptr != ':' && nidx < 8; nidx++) {
@@ -184,7 +184,7 @@ DIR *opendir(CONST char *name)
  *
  * \param dir Pointer to the directory stream.
  *
- * \return 0 on success. On failure, -1 is returned and the global 
+ * \return 0 on success. On failure, -1 is returned and the global
  *         variable errno is set to indicate the error.
  */
 int closedir(DIR * dir)
@@ -207,7 +207,7 @@ int closedir(DIR * dir)
  *
  * \param dir Pointer to the directory stream.
  *
- * \return A pointer to the next directory entry. It returns NULL upon 
+ * \return A pointer to the next directory entry. It returns NULL upon
  *         reaching the end of the directory.
  */
 struct dirent *readdir(DIR * dir)

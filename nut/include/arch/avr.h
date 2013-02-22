@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -122,12 +122,6 @@
 #ifndef outb
 #define outb(sfr, val) (_SFR_BYTE(sfr) = (val))
 #endif
-#ifndef outp
-#define outp(val, sfr) outb(sfr, val)
-#endif
-#ifndef inp
-#define inp(sfr) inb(sfr)
-#endif
 #ifndef BV
 #define BV(bit) _BV(bit)
 #endif
@@ -141,13 +135,58 @@
 #define PRG_RDB(addr)       pgm_read_byte(addr)
 #endif
 
-#define __bss_end	__heap_start
+#define __bss_end   __heap_start
 extern void *__heap_start;
 
 #ifdef __AVR_ENHANCED__
 
 /* Nut/OS is still using the original ATmega103 register names for
    backward compatibility. */
+#if  defined(__AVR_AT90USB1287__)
+/* AT90USB1287 without USART0 */
+#ifndef UDR
+#define UDR     UDR1
+#endif
+#ifndef UBRR
+#define UBRR    UBRR1L
+#endif
+#ifndef USR
+#define USR     UCSR1A
+#endif
+#ifndef UCR
+#define UCR     UCSR1B
+#endif
+#ifndef EICR
+#define EICR    EICRB
+#endif
+#ifndef RXC
+#define RXC     RXC1
+#endif
+#ifndef UDRE
+#define UDRE    UDRE1
+#endif
+#ifndef FE
+#define FE      FE1
+#endif
+#ifndef DOR
+#define DOR     DOR1
+#endif
+#ifndef RXCIE
+#define RXCIE   RXCIE1
+#endif
+#ifndef TXCIE
+#define TXCIE   TXCIE1
+#endif
+#ifndef UDRIE
+#define UDRIE   UDRIE1
+#endif
+#ifndef RXEN
+#define RXEN    RXEN1
+#endif
+#ifndef TXEN
+#define TXEN    TXEN1
+#endif
+#else
 #ifndef UDR
 #define UDR     UDR0
 #endif
@@ -190,10 +229,11 @@ extern void *__heap_start;
 #ifndef TXEN
 #define TXEN    TXEN0
 #endif
+#endif
 
 /* Some ATC90CAN128 SFR names are different to ATMEGA128. Define some
    compatibilty macros. */
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) ||  defined(__AVR_AT90USB1287__)
 #ifndef ADCW
 #define ADCW    ADC
 #endif
@@ -221,7 +261,7 @@ extern void *__heap_start;
 #ifndef TIFR
 #define TIFR   TIFR0
 #endif
-#endif /* __AVR_AT90CAN128__ || __AVR_ATmega2560__ || __AVR_ATmega2561__*/
+#endif /* __AVR_AT90CAN128__ || __AVR_ATmega2560__ || __AVR_ATmega2561__ || __AVR_AT90USB1287__)*/
 
 
 #endif /* __AVR_ENHANCED__ */

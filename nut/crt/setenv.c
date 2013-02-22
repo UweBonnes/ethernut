@@ -86,14 +86,14 @@ static int save_env(void)
 /*!
  * \brief Remove an environment variable.
  *
- * \param name  Points to a string, which is the name of the variable. 
+ * \param name  Points to a string, which is the name of the variable.
  * \param value Points to a string, which is the value of the variable.
  * \param force If not zero, existing values will be updated.
  *
- * \return 0 upon successful completion. Otherwise, -1 is returned and 
+ * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
-int setenv(CONST char *name, CONST char *value, int force)
+int setenv(const char *name, const char *value, int force)
 {
     NUTENVIRONMENT *envp;
     NUTENVIRONMENT *nxtp;
@@ -109,28 +109,28 @@ int setenv(CONST char *name, CONST char *value, int force)
             return -1;
         }
 
-	for (nxtp = nut_environ; nxtp; nxtp = nxtp->env_next) {
-	    if (strcmp(envp->env_name, nxtp->env_name) < 0) {
-		if (nxtp->env_prev) {
-		    nxtp->env_prev->env_next = envp;
-		} else {
-		    nut_environ = envp;
-		}
-		envp->env_next = nxtp;
-		envp->env_prev = nxtp->env_prev;
-		nxtp->env_prev = envp;
-		break;
-	    }
+    for (nxtp = nut_environ; nxtp; nxtp = nxtp->env_next) {
+        if (strcmp(envp->env_name, nxtp->env_name) < 0) {
+        if (nxtp->env_prev) {
+            nxtp->env_prev->env_next = envp;
+        } else {
+            nut_environ = envp;
+        }
+        envp->env_next = nxtp;
+        envp->env_prev = nxtp->env_prev;
+        nxtp->env_prev = envp;
+        break;
+        }
             prvp = nxtp;
-	}
-	if (nxtp == NULL) {
-	    if (prvp) {
-		prvp->env_next = envp;
-		envp->env_prev = prvp;
-	    } else {
-		nut_environ = envp;
-	    }
-	}
+    }
+    if (nxtp == NULL) {
+        if (prvp) {
+        prvp->env_next = envp;
+        envp->env_prev = prvp;
+        } else {
+        nut_environ = envp;
+        }
+    }
         force = 1;
     }
     if (force) {
@@ -157,14 +157,14 @@ int setenv(CONST char *name, CONST char *value, int force)
 /*!
  * \brief Remove an environment variable.
  *
- * \param name Points to a string, which is the name of the variable to 
+ * \param name Points to a string, which is the name of the variable to
  *             be removed.
  *
- * \return 0 upon successful completion. Otherwise, -1 is returned and 
+ * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
 #ifdef CRT_UNSETENV_POSIX
-int unsetenv(CONST char *name)
+int unsetenv(const char *name)
 {
     NUTENVIRONMENT *envp;
 
@@ -176,10 +176,10 @@ int unsetenv(CONST char *name)
         envp->env_prev->env_next = envp->env_next;
     }
     if (envp->env_next) {
-	envp->env_next->env_prev = envp->env_prev;
+    envp->env_next->env_prev = envp->env_prev;
     }
     if (nut_environ == envp) {
-	nut_environ = envp->env_next;
+    nut_environ = envp->env_next;
     }
     free(envp->env_name);
     free(envp->env_value);
@@ -190,9 +190,9 @@ int unsetenv(CONST char *name)
 }
 
 
-#else 
+#else
 
-void unsetenv(CONST char *name)
+void unsetenv(const char *name)
 {
     NUTENVIRONMENT *envp;
 
@@ -204,10 +204,10 @@ void unsetenv(CONST char *name)
         envp->env_prev->env_next = envp->env_next;
     }
     if (envp->env_next) {
-	envp->env_next->env_prev = envp->env_prev;
+    envp->env_next->env_prev = envp->env_prev;
     }
     if (nut_environ == envp) {
-	nut_environ = envp->env_next;
+    nut_environ = envp->env_next;
     }
     free(envp->env_name);
     free(envp->env_value);

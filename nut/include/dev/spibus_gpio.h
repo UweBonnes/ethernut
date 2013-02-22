@@ -53,9 +53,7 @@ struct _GSPIREG {
 
 extern NUTSPIBUS spiBus0Gpio;
 
-__BEGIN_DECLS
-/* Prototypes */
+extern uint_fast32_t GpioSpiBusSetRate(NUTSPINODE * node, uint_fast32_t rate);
 extern int GpioSpiSetup(NUTSPINODE * node);
-/* Prototypes */
-__END_DECLS
+
 #endif

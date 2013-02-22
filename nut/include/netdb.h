@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -135,8 +135,6 @@
 
 #include <compiler.h> // For NUT_DEPRECATED
 
-__BEGIN_DECLS
-
 /*
  * Error return codes.
  */
@@ -148,8 +146,6 @@ __BEGIN_DECLS
 #define NO_DATA         4       /* Valid name, no data record of requested type */
 #define NO_ADDRESS      NO_DATA /* no address, look for MX record */
 
-__END_DECLS
-
 #endif /* unix emulation */
 
 typedef struct {
@@ -159,15 +155,11 @@ typedef struct {
     uint32_t doc_ip2;
 } DNSCONFIG;
 
-__BEGIN_DECLS
-
-extern void NutDnsConfig2(CONST uint8_t * hostname, CONST uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
+extern void NutDnsConfig2(const uint8_t * hostname, const uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
 extern void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip);
-extern void NutDnsConfig(CONST uint8_t *hostname, CONST uint8_t *domain, uint32_t dnsip) NUT_DEPRECATED;
-extern uint32_t NutDnsGetHostByName(CONST uint8_t *hostname);
-extern uint8_t NutDnsGetHostsByName(CONST uint8_t * hostname, uint32_t * ip_all);
-extern uint32_t NutDnsGetMxByDomain(CONST uint8_t * hostname);
-
-__END_DECLS
+extern void NutDnsConfig(const uint8_t *hostname, const uint8_t *domain, uint32_t dnsip) NUT_DEPRECATED;
+extern uint32_t NutDnsGetHostByName(const uint8_t *hostname);
+extern uint8_t NutDnsGetHostsByName(const uint8_t * hostname, uint32_t * ip_all);
+extern uint32_t NutDnsGetMxByDomain(const uint8_t * hostname);
 
 #endif

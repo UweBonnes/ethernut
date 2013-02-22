@@ -72,7 +72,7 @@ DNSCONFIG confdns;
  * \param pdnsip IP address of the primary DNS server.
  * \param sdnsip IP address of the secondary DNS server.
  */
-void NutDnsConfig2(CONST uint8_t * hostname, CONST uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip)
+void NutDnsConfig2(const uint8_t * hostname, const uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip)
 {
     if (confdns.doc_hostname) {
         free(confdns.doc_hostname);

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,32 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
+/*!
+ * \file arch/avr/dev/uart1.c
+ * \brief AVR fast UART1 driver.
  *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2004/05/24 20:15:49  drsung
- * Added function UartAvrSize to return number of chars in input buffer.
- *
- * Revision 1.2  2004/03/18 14:01:53  haraldkipp
- * Deprecated header file removed
- *
- * Revision 1.1.1.1  2003/05/09 14:40:53  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.4  2003/02/04 17:50:55  harald
- * Version 3 released
- *
- * Revision 1.3  2003/01/14 13:43:32  harald
- * Definintions were moved
- *
- * Revision 1.2  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <dev/uartavr.h>
@@ -71,11 +52,11 @@ extern int UartAvrGetRaw(uint8_t * cp);
 extern int UartAvrPutRaw(uint8_t ch);
 
 extern int UartAvrRead(NUTFILE * fp, void *buffer, int size);
-extern int UartAvrWrite(NUTFILE * fp, CONST void *buffer, int len);
+extern int UartAvrWrite(NUTFILE * fp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int UartAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *UartAvrOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern long UartAvrSize(NUTFILE * fp);
 extern int UartAvrClose(NUTFILE * fp);
 
@@ -101,12 +82,12 @@ NUTDEVICE devUart1 = {
     &dcb_uart1,                 /*!< Driver control block. */
     UartAvrInit,                /*!< Driver initialization routine. */
     UartAvrIOCtl,               /*!< Driver specific control function. */
-    UartAvrRead,                /*!< Read from device. */                    
-    UartAvrWrite,               /*!< Write to device. */                     
-    UartAvrWrite_P,             /*!< Write to device from program space. */  
-    UartAvrOpen,                /*!< Open a device or file. */               
-    UartAvrClose,               /*!< Close a device or file. */              
-    UartAvrSize                 /*!< Request file size. */                   
+    UartAvrRead,                /*!< Read from device. */
+    UartAvrWrite,               /*!< Write to device. */
+    UartAvrWrite_P,             /*!< Write to device from program space. */
+    UartAvrOpen,                /*!< Open a device or file. */
+    UartAvrClose,               /*!< Close a device or file. */
+    UartAvrSize                 /*!< Request file size. */
 };
 
 /*@}*/

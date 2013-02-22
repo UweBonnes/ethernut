@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -66,8 +66,9 @@
 
 
 #define CONST   const
+#ifndef INLINE
 #define INLINE  inline
-
+#endif
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -131,6 +132,47 @@
 #if !defined(UCPOL)
 #define UCPOL     UCPOL0
 #endif
+#elif defined(__AVR_AT90USB1287__)
+#if !defined(TXC)
+#define TXC     TXC1
+#endif
+#if !defined(TXB8)
+#define TXB8     TXB81
+#endif
+#if !defined(UMSEL)
+#define UMSEL     UMSEL10
+#endif
+#if !defined(U2X)
+#define U2X     U2X1
+#endif
+#if !defined(UCSZ0)
+#define UCSZ0     UCSZ10
+#endif
+#if !defined(UCSZ1)
+#define UCSZ1     UCSZ11
+#endif
+#if !defined(UCSZ2)
+#define UCSZ2     UCSZ12
+#endif
+#if !defined(UPM0)
+#define UPM0     UPM10
+#endif
+#if !defined(UPM1)
+#define UPM1     UPM11
+#endif
+
+#if !defined(USBS)
+#define USBS     USBS1
+#endif
+#if !defined(UPE)
+#define UPE     UPE1
+#endif
+#if !defined(MPCM)
+#define MPCM     MPCM1
+#endif
+#if !defined(UCPOL)
+#define UCPOL     UCPOL1
+#endif
 #endif
 
 #ifndef __SFR_OFFSET
@@ -145,31 +187,31 @@
 #endif
 
 #ifndef atof
-#define atof(s)	    strtod(s, 0)
+#define atof(s)     strtod(s, 0)
 #endif
 
 #define EEPROMReadBytes(addr, ptr, size)    eeprom_read_block((char *)(addr), ptr, size)
 /*!
  * \brief Read multibyte types from the EEPROM.
  */
-#define EEPROM_READ(addr, dst)		    eeprom_read_block((char *)(addr), &dst, sizeof(dst))
-#define EEPROMread(addr)	 	    eeprom_read_byte((char *)(addr))
+#define EEPROM_READ(addr, dst)          eeprom_read_block((char *)(addr), &dst, sizeof(dst))
+#define EEPROMread(addr)            eeprom_read_byte((char *)(addr))
 
 /*!
  * \brief Write multibyte types to the EEPROM.
  */
-#define EEPROM_WRITE(addr, src)							\
-{										\
-    unsigned short __i;								\
-    for(__i = 0; __i < sizeof(src); __i++)					\
-	eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(&(src))) + __i)); \
+#define EEPROM_WRITE(addr, src)                         \
+{                                       \
+    unsigned short __i;                             \
+    for(__i = 0; __i < sizeof(src); __i++)                  \
+    eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(&(src))) + __i)); \
 }
 
-#define EEPROMWriteBytes(addr, ptr, size)					\
-{										\
-    unsigned short __i;								\
-    for(__i = 0; __i < size; __i++)						\
-	eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(ptr)) + __i));	\
+#define EEPROMWriteBytes(addr, ptr, size)                   \
+{                                       \
+    unsigned short __i;                             \
+    for(__i = 0; __i < size; __i++)                     \
+    eeprom_write_byte(((char *)(addr)) + __i, *(((char *)(ptr)) + __i));    \
 }
 
 #define main    NutAppMain
@@ -187,7 +229,7 @@
 
 #if defined(__AVR_LIBC_VERSION__)
 extern void *calloc(size_t num, size_t size);
-extern char *strdup(CONST char *str);
+extern char *strdup(const char *str);
 #endif
 
 #endif /* _ARCH_AVR_GCC_H_ */

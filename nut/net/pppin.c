@@ -1,5 +1,8 @@
 /*!
- * Copyright (C) 2002 by Call Direct Cellular Solutions Pty. Ltd. All rights reserved.
+ * Copyright (C) 2002 by Call Direct Cellular Solutions Pty. Ltd.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY CALL DIRECT CELLULAR SOLUTIONS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL CALL DIRECT
- * CELLULAR SOLUTIONS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,77 +31,16 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.calldirect.com.au/
- * -
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holders nor the names of
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
  * For additional information see http://www.ethernut.de/
- *
- * -
  */
 
-/*
- * $Log$
- * Revision 1.9  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/pppin.c
+ * \brief PPP input functions.
  *
- * Revision 1.8  2006/10/05 17:25:41  haraldkipp
- * Avoid possible alignment errors. Fixes bug #1567748.
- *
- * Revision 1.7  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.5  2004/03/18 15:36:09  haraldkipp
- * ICCAVR failed to compile
- *
- * Revision 1.4  2004/03/08 11:27:44  haraldkipp
- * Accept incoming header compression.
- *
- * Revision 1.3  2003/08/14 15:15:28  haraldkipp
- * Unsuccessful try to fix ICCAVR bug
- *
- * Revision 1.2  2003/07/13 19:05:22  haraldkipp
- * Debug output corrected.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:36  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:17:11  harald
- * Separate PPP debug module added.
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -126,15 +68,15 @@
 /*!
  * \brief Handle incoming PPP frames.
  *
- * Splits the PPP frame into the data link and the network part. 
- * Then the frame is routed to the proper handler, based on the 
+ * Splits the PPP frame into the data link and the network part.
+ * Then the frame is routed to the proper handler, based on the
  * type field in the header.
  *
- * \note This routine is called by the device driver on incoming 
+ * \note This routine is called by the device driver on incoming
  *       PPP frames. Applications typically do not call this function.
  *
  * \param dev Identifies the device that received the frame.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the PPP frame.
  */
 void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
@@ -204,7 +146,7 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
      * Until we get past the authentication phase, toss all packets
      * except LCP, LQR and authentication packets.
      */
-    if (dcb->dcb_auth_state != PAPCS_OPEN &&
+    if (dcb->dcb_auth == PPP_PAP && dcb->dcb_auth_state != PAPCS_OPEN &&
         !(protocol == PPP_LCP || protocol == PPP_LQR || protocol == PPP_PAP || protocol == PPP_CHAP)) {
         NutNetBufFree(nb);
         return;

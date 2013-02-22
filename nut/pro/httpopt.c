@@ -127,7 +127,7 @@ char *NutHttpURLEncode(char *str)
     /* Calculate how many characters we need to encode */
     for (ptr1 = str; *ptr1; ptr1++) {
         if (!isalnum((unsigned char)*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' ||
-		*ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
+        *ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
             numEncs++;
     }
     /* Now we can calculate the encoded string length */
@@ -137,8 +137,8 @@ char *NutHttpURLEncode(char *str)
          * and ptr2 refers to the new string. */
         ptr2 = encstring;
         for (ptr1 = str; *ptr1; ptr1++) {
-		    if (isalnum((unsigned char)*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' ||
-		    *ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
+            if (isalnum((unsigned char)*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' ||
+            *ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
                 *ptr2++ = *ptr1;
             else {
                 *ptr2++ = '%';

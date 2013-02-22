@@ -3,30 +3,30 @@
 *
 *  Copyright (c) 2004 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
@@ -84,7 +84,11 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     WlanOutput,                 /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*==========================================================*/
@@ -94,11 +98,11 @@ static IFNET ifn_eth0 = {
 /*
  * Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
 */
 NUTDEVICE devWlan = {
     0,                          /* Pointer to next device. */
@@ -147,7 +151,7 @@ int WlanInit(NUTDEVICE * dev)
     int nError = ERROR;
 
     /*
-     * Check if this is the first call. 
+     * Check if this is the first call.
      * Only one init allowed.
      */
     if (dev->dev_dcb == NULL) {

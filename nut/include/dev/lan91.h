@@ -57,13 +57,13 @@
 #define LAN91_BASE_ADDR 0xC000
 #endif
 
-/*! 
- * \brief Bank select register. 
+/*!
+ * \brief Bank select register.
  */
 #define LAN91_BSR         (LAN91_BASE_ADDR + 0x0E)
 
-/*! 
- * \brief Bank 0 - Transmit control register. 
+/*!
+ * \brief Bank 0 - Transmit control register.
  */
 #define LAN91_TCR         (LAN91_BASE_ADDR + 0x00)
 
@@ -79,13 +79,13 @@
 #define LAN91_TCR_TXENA       0x0001  /*!< \ref LAN91_TCR bit mask, enables transmitter. */
 
 
-/*! 
- * \brief Bank 0 - EPH status register. 
+/*!
+ * \brief Bank 0 - EPH status register.
  */
 #define LAN91_EPHSR       (LAN91_BASE_ADDR + 0x02)
 
-/*! 
- * \brief Bank 0 - Receive control register. 
+/*!
+ * \brief Bank 0 - Receive control register.
  */
 #define LAN91_RCR         (LAN91_BASE_ADDR + 0x04)
 
@@ -98,17 +98,17 @@
 #define LAN91_RCR_PRMS        0x0002  /*!< \ref LAN91_RCR bit mask, enables promiscuous mode. */
 #define LAN91_RCR_RX_ABORT    0x0001  /*!< \ref LAN91_RCR bit mask, set when receive was aborted. */
 
-/*! 
+/*!
  * \brief Bank 0 - Counter register.
  */
 #define LAN91_ECR         (LAN91_BASE_ADDR + 0x06)
 
-/*! 
+/*!
  * \brief Bank 0 - Memory information register.
  */
 #define LAN91_MIR         (LAN91_BASE_ADDR + 0x08)
 
-/*! 
+/*!
  * \brief Bank 0 - Receive / PHY control register.
  */
 #define LAN91_RPCR        (LAN91_BASE_ADDR + 0x0A)
@@ -119,29 +119,29 @@
 #define LAN91_RPCR_LEDA_PAT   0x0000  /*!< \ref LAN91_RPCR bit mask for LEDA mode. */
 #define LAN91_RPCR_LEDB_PAT   0x0010  /*!< \ref LAN91_RPCR bit mask for LEDB mode. */
 
-/*! 
+/*!
  * \brief Bank 1 - Configuration register.
  */
 #define LAN91_CR          (LAN91_BASE_ADDR + 0x00)
 
 #define LAN91_CR_EPH_EN       0x8000  /*!< \ref LAN91_CR bit mask, . */
 
-/*! 
+/*!
  * \brief Bank 1 - Base address register.
  */
 #define LAN91_BAR         (LAN91_BASE_ADDR + 0x02)
 
-/*! 
+/*!
  * \brief Bank 1 - Individual address register.
  */
 #define LAN91_IAR         (LAN91_BASE_ADDR + 0x04)
 
-/*! 
+/*!
  * \brief Bank 1 - General purpose register.
  */
 #define LAN91_GPR         (LAN91_BASE_ADDR + 0x0A)
 
-/*! 
+/*!
  * \brief Bank 1 - Control register.
  */
 #define LAN91_CTR         (LAN91_BASE_ADDR + 0x0C)
@@ -361,8 +361,6 @@
 /*@}*/
 
 
-__BEGIN_DECLS
-
 /*
  * Available drivers.
  */
@@ -371,8 +369,5 @@ extern NUTDEVICE devLan91;
 #ifndef DEV_ETHER
 #define DEV_ETHER   devLan91
 #endif
-
-
-__END_DECLS
 
 #endif

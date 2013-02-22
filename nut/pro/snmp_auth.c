@@ -51,7 +51,7 @@
  * \param slen    Length of the community string.
  * \param version Message version
  */
-CONST uint8_t *SnmpAuthParse(CONST uint8_t * data, size_t * length, uint8_t * sidp, size_t * slen, long *version)
+const uint8_t *SnmpAuthParse(const uint8_t * data, size_t * length, uint8_t * sidp, size_t * slen, long *version)
 {
     uint8_t type = ASN_SEQUENCE | ASN_CONSTRUCTOR;
 

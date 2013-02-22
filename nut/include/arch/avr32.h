@@ -34,7 +34,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
 
 /*This file is prepared for Doxygen automatic documentation generation.*/
@@ -111,11 +111,9 @@
 #define PSTR(p)    (p)
 #define PRG_RDB(p) (*((const char *)(p)))
 
-#define prog_char  const char
-#define PGM_P      prog_char *
+#define PGM_P const char *
 
 #define SIGNAL(x)  __attribute__((__interrupt__)) void x(void)
-#define RAMFUNC __attribute__ ((long_call, section (".ramfunc")))
 
 /* -------------------------------------------------------------------------
 * redefine main
@@ -183,7 +181,7 @@ extern void *__bss_end;
 #define Tst_bits( value, mask)  (Rd_bits(value, mask) != 0)
 
 
-/*! 
+/*!
  * \brief Gets the value of the \a sysreg system register.
  *
  * \param sysreg  Address of the system register of which to get the value.
@@ -196,7 +194,7 @@ extern void *__bss_end;
 # define Get_system_register(sysreg)         __get_system_register(sysreg)
 #endif
 
-/*! 
+/*!
  * \brief Sets the value of the \a sysreg system register to \a value.
  *
  * \param sysreg  Address of the system register of which to set the value.

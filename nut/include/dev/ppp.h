@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -121,6 +121,20 @@ extern "C" {
 #define LCP_DEFOPT_ASYNCMAP 0x000A0000UL
 
 /*!
+ * \brief PPP server configuration type.
+ */
+typedef struct _PPPSERVER_CFG PPPSERVER_CFG;
+
+/*!
+ * \brief PPP server configuration structure.
+ */
+struct _PPPSERVER_CFG {
+    uint32_t ppsc_remote_ip;
+    uint32_t ppsc_dns1;
+    uint32_t ppsc_dns2;
+};
+
+/*!
  * \brief PPP interface type.
  */
 typedef struct _PPPDCB PPPDCB;
@@ -136,12 +150,12 @@ struct _PPPDCB {
      * The state machine posts an event to this queue when the
      * network interface becomes ready.
      */
-    HANDLE dcb_state_chg;	
+    HANDLE dcb_state_chg;
 
     /*! \brief Current state of the link layer.
      */
     uint8_t dcb_lcp_state;
-    
+
     /*! \brief ID of our last request.
      */
     uint8_t dcb_reqid;
@@ -171,7 +185,7 @@ struct _PPPDCB {
      * TODO: Pass to ahdlc driver. dcb_useACFC dcb_usePFC
      */
     uint8_t dcb_compr;
-    
+
     /*! \brief Authentication type.
      */
     uint16_t dcb_auth;
@@ -226,7 +240,7 @@ struct _PPPDCB {
      */
     uint8_t dcb_retries;
 
-    /*! \brief LCP NAK counter, avoids endless loops. 
+    /*! \brief LCP NAK counter, avoids endless loops.
      */
     uint8_t dcb_lcp_naks;
 
@@ -237,8 +251,8 @@ struct _PPPDCB {
     /*! \brief Current state of the network layer.
      */
     uint8_t dcb_ipcp_state;
-    
-    /*! \brief LCP NAK counter, avoids endless loops. 
+
+    /*! \brief LCP NAK counter, avoids endless loops.
      */
     uint8_t dcb_ipcp_naks;
 

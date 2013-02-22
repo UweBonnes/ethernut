@@ -35,8 +35,8 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 static int DebugInit(NUTDEVICE * dev)
 {
     outl(0x03,  DEBUG_UARTLCON_BASE);
-	outl(0x09,  DEBUG_UARTCONT_BASE);
-	outl(0x500, DEBUG_UARTBRD_BASE);
+    outl(0x09,  DEBUG_UARTCONT_BASE);
+    outl(0x500, DEBUG_UARTBRD_BASE);
 
     return 0;
 }
@@ -52,8 +52,8 @@ static void DebugPut(char ch)
     if (ch == '\n')
         DebugPut('\r');
 
-	while (!(inl(DEBUG_CHK_STAT_BASE) & 0x40));
-	outl(ch, DEBUG_TX_BUFF_BASE);
+    while (!(inl(DEBUG_CHK_STAT_BASE) & 0x40));
+    outl(ch, DEBUG_TX_BUFF_BASE);
 }
 
 /*!
@@ -64,10 +64,10 @@ static void DebugPut(char ch)
  */
 static int DebugGetNB(void)
 {
-	if (inl(DEBUG_CHK_STAT_BASE) & 0x20)
-		return (int)inl(DEBUG_RX_BUFF_BASE);
+    if (inl(DEBUG_CHK_STAT_BASE) & 0x20)
+        return (int)inl(DEBUG_RX_BUFF_BASE);
 
-	return -1;
+    return -1;
 }
 
 /*!

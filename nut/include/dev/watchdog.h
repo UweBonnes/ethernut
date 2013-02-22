@@ -1,5 +1,5 @@
 #ifndef _DEV_WATCHDOG_H_
-#define	_DEV_WATCHDOG_H_
+#define _DEV_WATCHDOG_H_
 
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -49,6 +49,7 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <sys/types.h>
 #include <stdint.h>
 
@@ -58,17 +59,14 @@
 /*@{*/
 
 
-__BEGIN_DECLS
-/* Prototypes */
-
 /*!
  * \brief Start the watch dog timer.
  *
  * This function can be used by applications to prevent hang-ups.
  *
  * \param ms    Watch dog time out in milliseconds.
- * \param xmode Hardware specific mode. If 0, the default mode is used. 
- *              In this mode, the watch dog will reset the CPU if not 
+ * \param xmode Hardware specific mode. If 0, the default mode is used.
+ *              In this mode, the watch dog will reset the CPU if not
  *              restarted within the specified time out period.
  *
  * \return The actual time out value, which may differ from the
@@ -92,7 +90,7 @@ __BEGIN_DECLS
  *
  * \todo AVR implementation.
  *
- * \note The AT91 implementation does not calculate the actual time out 
+ * \note The AT91 implementation does not calculate the actual time out
  *       value, but simply returns the specified number of milliseconds.
  */
 extern uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode);
@@ -160,12 +158,19 @@ extern uint32_t Avr32WatchDogStart(uint32_t ms);
 extern void Avr32WatchDogRestart(void);
 extern void Avr32WatchDogDisable(void);
 extern void Avr32WatchDogEnable(void);
+#elif defined(MCU_LPC17xx)
+extern uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode);
+extern void Lpc17xxWatchDogRestart(void);
+extern void Lpc17xxWatchDogDisable(void);
+extern void Lpc17xxWatchDogEnable(void);
+#elif defined(MCU_MCF5225X)
+extern uint32_t Mcf5225xWatchDogStart(uint32_t ms);
+extern void Mcf5225xWatchDogRestart(void);
+extern void Mcf5225xWatchDogDisable(void);
+extern void Mcf5225xWatchDogEnable(void);
 #endif
-
-__END_DECLS
-/* End of prototypes */
 
 /*@}*/
 
 #endif
- 
+

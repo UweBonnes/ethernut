@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2003 by egnite Software GmbH
+ * Copyright (c) 1989 by Carnegie Mellon University
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,58 +31,17 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions are 
- * Copyright (c) 1989 by Carnegie Mellon University.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms are permitted
- * provided that the above copyright notice and this paragraph are
- * duplicated in all such forms and that any documentation,
- * advertising materials, and other materials related to such
- * distribution and use acknowledge that the software was developed
- * by Carnegie Mellon University.  The name of the
- * University may not be used to endorse or promote products derived
- * from this software without specific prior written permission.
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/ipcout.c
+ * \brief PPP IPC output functions.
  *
- * Revision 1.6  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.5  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.4  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.3  2003/08/14 15:17:50  haraldkipp
- * Caller controls ID increment
- *
- * Revision 1.2  2003/07/24 16:13:38  haraldkipp
- * Never request a rejected DNS
- *
- * Revision 1.1.1.1  2003/05/09 14:41:31  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/03/31 14:53:27  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
+
 #include <string.h>
 
 #include <dev/ppp.h>

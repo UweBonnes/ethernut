@@ -18,8 +18,8 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -57,7 +57,7 @@
  */
 typedef struct __attribute__ ((packed)) _CONFBOOT {
     unsigned char cb_size;      /* Size of this structure. */
-    unsigned char cb_flags;     /* Currently unused */ 
+    unsigned char cb_flags;     /* Currently unused */
     unsigned long cb_tftp_ip;   /* IP address of the TFTP server */
     char          cb_image[58]; /* Name of the image file to load */
     u_char        digest[16];   /* MD5 digest */
@@ -105,25 +105,25 @@ FILE *init_uart(void)
     FILE *uart0;
 
     /* Init the debug UART */
-    
+
     NutRegisterDevice(&DEV_UART, 0, 0);
-    
+
     uart0 = fopen(DEV_UART_NAME, "r+");
-    
+
     _ioctl(_fileno(uart0), UART_SETSPEED, &baud);
     _ioctl(_fileno(uart0), UART_SETCOOKEDMODE, &cookedmode);
-        
+
     freopen(DEV_UART_NAME, "w", stdout);
     freopen(DEV_UART_NAME, "r", stdin);
     freopen(DEV_UART_NAME, "w", stderr);
-    
+
     return uart0;
 }
 
 static char inbuf[128];
 
 int main(void)
-{	
+{
     char *cp;
     int i;
 
@@ -140,22 +140,22 @@ int main(void)
         cp = strchr(inbuf, '\n');
         if (cp) {
             *cp = 0;
-	}
+    }
 
-	/* Check if the string is "boot" or "load" */
-	if (strcmp(inbuf, "reset") == 0) {
+    /* Check if the string is "boot" or "load" */
+    if (strcmp(inbuf, "reset") == 0) {
             printf("Reset...\r\n");
             boot();
-	} else
-	if (strcmp(inbuf, "boot") == 0) {
-	    printf("Reboot from tftp server\r\n");
+    } else
+    if (strcmp(inbuf, "boot") == 0) {
+        printf("Reboot from tftp server\r\n");
             read_boot_config();
             memset(confboot.digest, 0, sizeof(confboot.digest));
             write_boot_config();
             boot();
-	} else { 
-	    printf("You entered: %s\r\n", inbuf);
-	}
+    } else {
+        printf("You entered: %s\r\n", inbuf);
+    }
     }
     return 0;
 }

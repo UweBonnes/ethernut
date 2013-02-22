@@ -84,7 +84,7 @@ typedef struct {
 
 /*@}*/
 
-extern SNMP_PDU *SnmpPduCreate(int cmd, CONST OID *ep, size_t ep_len);
+extern SNMP_PDU *SnmpPduCreate(int cmd, const OID *ep, size_t ep_len);
 extern void SnmpPduDestroy(SNMP_PDU *pdu);
 
 extern int SnmpPduAddVariable(SNMP_PDU *pdu, OID *name, size_t nlen, uint8_t type, uint8_t *value, size_t vlen);

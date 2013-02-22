@@ -85,24 +85,24 @@ THREAD(Thread2, arg)
 }
 
 /*
- * Main application thread. 
+ * Main application thread.
  */
 int main(void)
 {
     uint32_t baud = 115200;
 
     /*
-     * Register the UART device, open it, assign stdout to it and set 
+     * Register the UART device, open it, assign stdout to it and set
      * the baudrate.
      */
-    NutRegisterDevice(&DEV_UART, 0, 0);
-    freopen(DEV_UART_NAME, "w", stdout);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     puts("\nThread Test");
 
     /*
-     * Start two additional threads. All threads are started with 
+     * Start two additional threads. All threads are started with
      * priority 64.
      */
     NutThreadCreate("t1", Thread1, 0, 512);

@@ -68,7 +68,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -105,8 +105,8 @@
  * \brief Ethernet ARP protocol type.
  */
 typedef struct ether_arp {
-    u_short arp_hrd;    /*!< \brief Format of hardware address. 
-                        *   Nut/Net supports ARPHRD_ETHER only. 
+    u_short arp_hrd;    /*!< \brief Format of hardware address.
+                        *   Nut/Net supports ARPHRD_ETHER only.
                         */
     u_short arp_pro;    /*!< \brief Format of protocol address.
                         *   Only ETHERTYPE_IP is supported by Nut/Net.

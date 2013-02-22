@@ -55,7 +55,7 @@ typedef struct {
     void (*cable_reset_target) (void *, uint_fast8_t);
     void (*cable_tms_put) (void *, uint_fast8_t, uint_fast8_t);
     void (*cable_tms_flush) (void *);
-    void (*cable_transfer_data) (void *, uint8_t *, CONST uint8_t *, uint32_t, uint_fast8_t);
+    void (*cable_transfer_data) (void *, uint8_t *, const uint8_t *, uint32_t, uint_fast8_t);
 } JTAG_CABLE;
 
 #endif

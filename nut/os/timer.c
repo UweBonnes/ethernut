@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -232,7 +232,15 @@
 static struct timeval   timeStart;
 #endif
 
+#ifndef NUT_TICK_FREQ
+#define NUT_TICK_FREQ   1000UL
+#endif
+
 #include <string.h>
+
+#if defined(__AVR_LIBC_VERSION__)
+#include <util/delay_basic.h>
+#endif
 
 /*!
  * \addtogroup xgTimer
@@ -258,6 +266,8 @@ volatile uint32_t nut_ticks;
 
 static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 
+#if defined(__CORTEX__) || defined(__AVR_LIBC_VERSION__)
+#else
 /*!
  *  \brief Loops per microsecond.
  */
@@ -265,6 +275,7 @@ static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 uint32_t nut_delay_loops = NUT_DELAYLOOPS;
 #else
 uint32_t nut_delay_loops;
+#endif
 #endif
 
 /*!
@@ -276,10 +287,11 @@ uint32_t nut_delay_loops;
  * \brief System timer interrupt handler.
  */
 #ifndef __NUT_EMULATION__
-#ifdef USE_TIMER
+
+#if defined(USE_TIMER)
 SIGNAL( SIG_TIMER )
 #else
-static void NutTimerIntr(void *arg)
+void NutTimerIntr(void *arg)
 #endif
 {
     nut_ticks++;
@@ -310,12 +322,10 @@ void NutTimerInit(void)
 #else
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
+
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
-#if !defined(NUT_DELAYLOOPS)
-#ifndef NUT_TICK_FREQ
-#define NUT_TICK_FREQ   1000UL
-#endif
+#if !defined(NUT_DELAYLOOPS) && !defined(__AVR_LIBC_VERSION__) && !defined(__CORTEX__)
     {
         /* Wait for the next tick. */
         uint32_t cnt = NutGetTickCount();
@@ -325,18 +335,8 @@ void NutTimerInit(void)
         while (cnt == NutGetTickCount()) {
             nut_delay_loops++;
         }
-        /*
-         * The loop above needs more cycles than the actual delay loop.
-         * Apply the correction found by trial and error. Works acceptable
-         * with GCC for Ethernut 1 and 3.
-         */
-#if defined(__AVR__)
-        nut_delay_loops *= 103UL;
-        nut_delay_loops /= 26UL;
-#else
         nut_delay_loops *= 137UL;
         nut_delay_loops /= 25UL;
-#endif
     }
 #endif
 #endif
@@ -345,15 +345,28 @@ void NutTimerInit(void)
 /*!
  * \brief Loop for a specified number of microseconds.
  *
+ * This routine can be used for short delays below the system tick
+ * time, mainly when driving external hardware, where the resolution
+ * of NutSleep() wouldn't fit, a thread switch would be undesirable
+ * or in early system initialization stage, where the system timer
+ * is not available. In all other cases NutSleep() should be used.
+ *
  * This call will not release the CPU and will not switch to another
  * thread. However, interrupts are not disabled and introduce some
  * jitter. Furthermore, unless NUT_DELAYLOOPS is not defined, the
  * deviation may be greater than 10%.
  *
- * If you need exact timing, use timer/counter hardware instead.
+ * For delays below 100 microseconds, the deviation may increase above
+ * 200%. In any case the delay should always be at least as large as
+ * specified. If in doubt, use a simple port bit toggle routine to
+ * check the result with an oscilloscope or frequency counter and adjust
+ * NUT_DELAYLOOPS accordingly.
  *
- * \param us Delay time in microseconds. Values above 255 milliseconds
- *           may not work.
+ * In any case, if you need exact timing, use timer/counter hardware
+ * instead.
+ *
+ * \param us Delay time in microseconds. Do not use values larger than 10ms
+ *           to prevent integer overflows on fast CPUs
  *
  * \todo Overflow handling.
  */
@@ -361,6 +374,56 @@ void NutMicroDelay(uint32_t us)
 {
 #ifdef __NUT_EMULATION__
     usleep(us);
+#elif defined(__CORTEX__)
+    int32_t start_ticks;
+    int32_t current_ticks, summed_ticks=0;
+    int32_t end_ticks;
+
+    start_ticks = SysTick->VAL;
+    end_ticks = (us * (SysTick->LOAD +1))/NUT_TICK_FREQ;
+/* Systick counts backwards! */
+    while (summed_ticks < end_ticks)
+    {
+        current_ticks = SysTick->VAL;
+        summed_ticks += start_ticks - current_ticks ;
+        if (current_ticks > start_ticks)
+            summed_ticks += (SysTick->LOAD +1);
+        start_ticks = current_ticks;
+    }
+#elif defined(__AVR_LIBC_VERSION__)
+/* Try to keep the overhead low, especially try to avoid
+ * a run-time 32 bit division
+ * Try to avoid large intermediate results
+ * nut_delay_loops consumes 4 clock ticks per loop
+ *
+ * Fixme: Estimate loop setup and control loop overhead
+ */
+#if defined(NUT_CPU_FREQ)
+#if  (NUT_CPU_FREQ/4000000) && ((NUT_CPU_FREQ%4000000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/4000000);
+#elif (NUT_CPU_FREQ/2000000) && ((NUT_CPU_FREQ%2000000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/2000000);
+    __tmp >>= 1;
+#elif (NUT_CPU_FREQ/1000000) && ((NUT_CPU_FREQ%1000000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/1000000);
+    __tmp >>= 2;
+#elif (NUT_CPU_FREQ/500000) && ((NUT_CPU_FREQ%500000) == 0)
+    uint32_t __tmp = us * (NUT_CPU_FREQ/500000);
+    __tmp >>= 3;
+#else
+    /* Range 858 ms @ 20 MHz*/
+    uint32_t __tmp = (us * (NUT_CPU_FREQ/4000))/1000;
+#endif
+#else
+    /* Range 54 ms @ 20 MHz) */
+    uint32_t __tmp = (us *(NutGetCpuClock()>>8))/(400000000/256);
+#endif
+    while (__tmp > 0xffff)
+    {
+        _delay_loop_2(0xffff);
+        __tmp -= 0xffff;
+    }
+    _delay_loop_2((uint16_t) __tmp);
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 
@@ -369,6 +432,7 @@ void NutMicroDelay(uint32_t us)
     }
 #endif
 }
+
 
 /*!
  * \brief Loop for a specified number of milliseconds.
@@ -383,7 +447,9 @@ void NutMicroDelay(uint32_t us)
  */
 void NutDelay(uint8_t ms)
 {
-    NutMicroDelay((uint32_t)ms * 1000);
+    while (ms--){
+        NutMicroDelay(1000);
+    }
 }
 
 /*!
@@ -693,9 +759,17 @@ uint32_t NutGetTickCount(void)
     rc = (timeNow.tv_sec - timeStart.tv_sec) * 1000;
     rc += (timeNow.tv_usec - timeStart.tv_usec) / 1000;
 #else
+#ifndef __CORTEX__
     NutEnterCritical();
     rc = nut_ticks;
     NutExitCritical();
+#else
+    /* LST verification shows single atomic access to get this value.
+     * So no additional atomic forcing operations needed here with Cortex.
+     */
+    // TODO: Check with other ARM architectures.
+    rc = nut_ticks;
+#endif
 #endif
 
     return rc;

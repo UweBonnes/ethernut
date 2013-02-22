@@ -121,54 +121,54 @@
  * \name AT45 DataFlash Commands
  */
 /*@{*/
-/*! \brief Continuos read (low frequency). 
+/*! \brief Continuos read (low frequency).
  *
- * Reads a continous stream in low speed mode. Automatically switches 
- * to the the page and wraps to the first page after the last has been 
+ * Reads a continous stream in low speed mode. Automatically switches
+ * to the the page and wraps to the first page after the last has been
  * read. Note, that the data buffers are not used for this operation.
  */
 #define DFCMD_CONT_READ_LF      0x03
 /*! \brief Continuos read (high frequency).
  *
- * Reads a continous stream in high speed mode. Automatically switches 
- * to the the page and wraps to the first page after the last has been 
+ * Reads a continous stream in high speed mode. Automatically switches
+ * to the the page and wraps to the first page after the last has been
  * read. Note, that the data buffers are not used for this operation.
  */
 #define DFCMD_CONT_READ_HF      0x0B
-/*! \brief Block erase. 
+/*! \brief Block erase.
  */
 #define DFCMD_BLOCK_ERASE       0x50
-/*! \brief Sector erase. 
+/*! \brief Sector erase.
  */
 #define DFCMD_SECTOR_ERASE      0x7C
-/*! \brief Page erase. 
+/*! \brief Page erase.
  */
 #define DFCMD_PAGE_ERASE        0x81
-/*! \brief Main memory page program through buffer 1. 
+/*! \brief Main memory page program through buffer 1.
  */
 #define DFCMD_BUF1_PROG         0x82
-/*! \brief Buffer 1 flash with page erase. 
+/*! \brief Buffer 1 flash with page erase.
  */
 #define DFCMD_BUF1_FLASH        0x83
-/*! \brief Buffer 1 write. 
+/*! \brief Buffer 1 write.
  */
 #define DFCMD_BUF1_WRITE        0x84
 /*! \brief Main memory page program through buffer 2.
  */
 #define DFCMD_BUF2_PROG         0x85
-/*! \brief Buffer 2 flash with page erase. 
+/*! \brief Buffer 2 flash with page erase.
  */
 #define DFCMD_BUF2_FLASH        0x86
-/*! \brief Buffer 2 write. 
+/*! \brief Buffer 2 write.
  */
 #define DFCMD_BUF2_WRITE        0x87
-/*! \brief Buffer 1 flash without page erase. 
+/*! \brief Buffer 1 flash without page erase.
  */
 #define DFCMD_BUF1_FLASH_NE     0x88
-/*! \brief Buffer 2 flash without page erase. 
+/*! \brief Buffer 2 flash without page erase.
  */
 #define DFCMD_BUF2_FLASH_NE     0x89
-/*! \brief Chip erase. 
+/*! \brief Chip erase.
  */
 #define DFCMD_CHIP_ERASE        0xC7
 /*! \brief Buffer 1 read (low frequency).
@@ -189,7 +189,7 @@
 /*! \brief Buffer 2 read.
  */
 #define DFCMD_BUF2_READ         0xD6
-/*! \brief Read status register. 
+/*! \brief Read status register.
  */
 #define DFCMD_READ_STATUS       0xD7
 /*! \brief Continuos read (legacy).
@@ -301,7 +301,7 @@ static int dd_param = -1;
  * \param rdata   Receive data buffer.
  * \param datalen Data length.
  */
-int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen)
+int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, const void *tdata, void *rdata, int datalen)
 {
     uint8_t *cb = dcbtab[dd].dcb_cmdbuf;
 
@@ -441,7 +441,7 @@ int At45dbPageRead(int dd, uint32_t pgn, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, unsigned int len)
+int At45dbPageWrite(int dd, uint32_t pgn, const void *data, unsigned int len)
 {
     int rc = -1;
     void *rp;
@@ -540,7 +540,7 @@ int At45dbParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbParamWrite(unsigned int pos, CONST void *data, unsigned int len)
+int At45dbParamWrite(unsigned int pos, const void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

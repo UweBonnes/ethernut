@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2008 by egnite GmbH. 
+-- Copyright (C) 2008 by egnite GmbH.
 --
 -- All rights reserved.
 --
@@ -39,19 +39,56 @@
 
 nutcontrib =
 {
-    options = 
+    options =
     {
         {
             brief = "RealNetworks RPSL/RCSL",
+            description = "Enable this option only, if you agree to the\n\n"..
+                          "RealNetworks Public Source License Version 1.0\n\n"..
+                          "For details see http://opensource.org/licenses/real.php",
             provides = { "LICENSE_RPSL_RCSL" },
             macro = "LICENSE_RPSL_RCSL",
             flavor = "boolean"
-        }
+        },
+        {
+            brief = "GNU GENERAL PUBLIC LICENSE Version 3",
+            description = "Enable this option only, if you agree to the\n\n"..
+                          "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007\n\n"..
+                          "For details see http://www.gnu.org/licenses/gpl-3.0-standalone.html",
+            provides = { "LICENSE_GPL3" },
+            macro = "LICENSE_GPL3",
+            flavor = "boolean"
+        },
+        {
+            brief = "STMicroelectronics Guidance Only",
+            description = "This is not an OSI approved license. Specifically "..
+                          "commercial use and redistribution is unclear. Carefully "..
+                          "check the copyright claimer in the individual source files.\n\n"..
+                          "Enable this option only, if you agree to this.",
+            provides = { "LICENSE_ST_GUIDANCE_ONLY" },
+            macro = "LICENSE_ST_GUIDANCE_ONLY",
+            flavor = "boolean"
+        },
+        {
+            brief = "MCD-ST Liberty SW License Agreement V2",
+            description = "Enable this option only, if you agree to the\n\n"..
+                          "MCD-ST Liberty SW License Agreement V2\n\n"..
+                          "For details see http://www.st.com/software_license_agreement_liberty_v2",
+            provides = { "LICENSE_MCD_ST_LIBERTY" },
+            macro = "LICENSE_MCD_ST_LIBERTY",
+            flavor = "boolean"
+        },
     },
     {
         name = "nutcontrib_hxmp3",
         brief = "RealNetworks Decoder",
         requires = { "HW_TARGET" },
         script = "contrib/hxmp3.nut"
+    },
+    {
+        name = "nutcontrib_armcrypto",
+        brief = "ARM Crypto Library",
+        requires = { "HW_TARGET" },
+        script = "contrib/armcrypto.nut"
     }
 }

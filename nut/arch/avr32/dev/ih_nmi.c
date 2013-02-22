@@ -47,6 +47,10 @@
 
 #include <avr32/io.h>
 
+#include <cfg/arch/avr32pio.h>
+
+#ifdef INTERRUPT_NMI_ENABLE
+
 static int InterruptNMICtl(int cmd, void *param);
 
 IRQ_HANDLER sig_INTERRUPTNMI = {
@@ -185,3 +189,5 @@ static int InterruptNMICtl(int cmd, void *param)
     }
     return rc;
 }
+
+#endif // INTERRUPT_NMI_ENABLE

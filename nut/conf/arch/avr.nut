@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -54,9 +54,9 @@
 -- It builds, but doesn't seam to run properly at this time.
 --
 -- Revision 1.23  2008/07/19 02:54:52  thiagocorrea
--- 	* conf/arch/avr.nut: Fix LCD size configuration for AVR.
--- 	  Previously, LCD Bus config settings would be used instead
--- 	  of the actual LCD Driver config settings.
+--     * conf/arch/avr.nut: Fix LCD size configuration for AVR.
+--       Previously, LCD Bus config settings would be used instead
+--       of the actual LCD Driver config settings.
 --
 -- Revision 1.22  2008/06/16 13:02:50  haraldkipp
 -- Temporarily removed wlandrv.c from build due to GCC 4.3 warnings.
@@ -144,14 +144,16 @@ nutarch_avr =
                       "crtenutram.s, same as above but including EEPROM emulation.\n\n"..
                       "crtnutm256.s, for the ATmega2560 and ATmega2561.\n\n"..
                       "Ethernut 1.3 Rev-G boards require EEPROM emulation.",
-        sources = {
+        sources =
+        {
             "avr/init/crtnut.s",
             "avr/init/crtnutram.s",
             "avr/init/crtenut.s",
             "avr/init/crtenutram.s",
             "avr/init/crtnutm256.s"
         },
-        targets = {
+        targets =
+        {
             "avr/init/crtnut.o",
             "avr/init/crtnutram.o",
             "avr/init/crtenut.o",
@@ -167,9 +169,9 @@ nutarch_avr =
     {
         name = "nutarch_avr_bs",
         brief = "Board Support",
-        sources = 
-            function() 
-                return { "avr/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" }; 
+        sources =
+            function()
+                return { "avr/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
             end,
         requires = { "HW_BOARD_SUPPORT" },
     },
@@ -249,12 +251,6 @@ nutarch_avr =
             "avr/dev/ih_timer3_compc.c",
             "avr/dev/ih_timer3_ovf.c",
             "avr/dev/ih_twi.c",
-            "avr/dev/ih_usart0_rx.c",
-            "avr/dev/ih_usart0_tx.c",
-            "avr/dev/ih_usart0_udre.c",
-            "avr/dev/ih_usart1_rx.c",
-            "avr/dev/ih_usart1_tx.c",
-            "avr/dev/ih_usart1_udre.c",
             "avr/dev/irqstack.c"
         },
         options =
@@ -273,17 +269,57 @@ nutarch_avr =
             },
         }
     },
+    {
+        name = "nutarch_avr_irq_uart0",
+        brief = "UART0 Interrupts",
+        description = "UART0 interrupts.",
+        requires = { "HW_MCU_AVR", "HW_AVR_HAVE_UART0" },
+        provides = { "DEV_IRQ_UART0" },
+        sources = {
+            "avr/dev/ih_usart0_rx.c",
+            "avr/dev/ih_usart0_tx.c",
+           "avr/dev/ih_usart0_udre.c"
+        },
+     },
+     {
+        name = "nutarch_avr_irq_uart1",
+        brief = "UART1 Interrupts",
+        description = "UART1 interrupts.",
+        requires = { "HW_MCU_AVR", "HW_AVR_HAVE_UART1" },
+        provides = { "DEV_IRQ_UART1" },
+        sources = {
+            "avr/dev/ih_usart1_rx.c",
+            "avr/dev/ih_usart1_tx.c",
+            "avr/dev/ih_usart1_udre.c"
+        },
+    },
 
     --
     -- Device Drivers
     --
     {
+        name = "nutarch_avr_ahdlc_uart0",
+        brief = "AHDLC Device0",
+        description = "HDLC device0, required for HDLC/PPP.",
+        requires = { "DEV_IRQ_UART0" },
+        provides = { "PROTO_HDLC_DEV" },
+        sources = { "avr/dev/ahdlc0.c"},
+    },
+    {
+        name = "nutarch_avr_ahdlc_uart1",
+        brief = "AHDLC Device1",
+        description = "HDLC device1, required for HDLC/PPP.",
+        requires = { "DEV_IRQ_UART1" },
+        provides = { "PROTO_HDLC_DEV" },
+        sources = { "avr/dev/ahdlc1.c"},
+    },
+    {
         name = "nutarch_avr_ahdlc",
         brief = "AHDLC Protocol",
         description = "HDLC driver, required for PPP.",
-        requires = { "HW_UART_AVR", "NUT_EVENT" },
+        requires = { "HW_UART_AVR", "NUT_EVENT", "PROTO_HDLC_DEV" },
         provides = { "PROTO_HDLC" },
-        sources = { "avr/dev/ahdlc0.c", "avr/dev/ahdlc1.c", "avr/dev/ahdlcavr.c" },
+        sources = { "avr/dev/ahdlcavr.c" },
         options =
         {
             {
@@ -297,18 +333,30 @@ nutarch_avr =
         }
     },
     {
-        name = "nutarch_avr_debug",
+        name = "nutarch_avr_debug0",
         brief = "UART Debug Output",
         description = "This simple UART output driver uses polling instead of "..
                       "interrupts and can be used within interrupt routines. It "..
                       "is mainly used for debugging and tracing.\n\n"..
-                      "Call NutRegisterDevice(&devDebug0, 0, 0) for U(S)ART0 and "..
-                      "NutRegisterDevice(&devDebug1, 0, 0) for U(S)ART1. "..
+                      "Call NutRegisterDevice(&devDebug0, 0, 0) for U(S)ART0"..
                       "Then you can use any of the stdio functions to open "..
-                      "device uart0 or uart1 resp.",
-        requires = { "HW_UART_AVR" },
+                      "device uart0.",
+        requires = { "HW_AVR_HAVE_UART0", "HW_UART_AVR" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        sources = { "avr/dev/debug0.c", "avr/dev/debug1.c" }
+        sources = { "avr/dev/debug0.c" }
+    },
+    {
+        name = "nutarch_avr_debug1",
+        brief = "UART Debug Output",
+        description = "This simple UART output driver uses polling instead of "..
+                      "interrupts and can be used within interrupt routines. It "..
+                      "is mainly used for debugging and tracing.\n\n"..
+                      "Call NutRegisterDevice(&devDebug1, 0, 0) for U(S)ART1. "..
+                      "Then you can use any of the stdio functions to open "..
+                      "device uart1 resp.",
+        requires = { "HW_AVR_HAVE_UART1", "HW_UART_AVR" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "avr/dev/debug1.c" }
     },
     {
         name = "nutarch_avr_usart0",
@@ -316,8 +364,12 @@ nutarch_avr =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = {
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
-                        "NUT_EVENT", "CRT_HEAPMEM"
+                 "HW_MCU_AVR",
+                 "HW_AVR_HAVE_UART0",
+                 "DEV_IRQ_AVR",
+                 "DEV_UART_GENERIC",
+                 "NUT_EVENT",
+                 "CRT_HEAPMEM"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart0avr.c" },
@@ -404,9 +456,13 @@ nutarch_avr =
         brief = "USART1 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = {
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
-                        "NUT_EVENT", "CRT_HEAPMEM"
+        requires =
+        {
+            "HW_MCU_AVR",
+            "HW_AVR_HAVE_UART1",
+            "DEV_UART_GENERIC",
+            "NUT_EVENT",
+            "CRT_HEAPMEM"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart1avr.c" },
@@ -493,9 +549,14 @@ nutarch_avr =
         brief = "USART2 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = {
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
-                        "NUT_EVENT", "CRT_HEAPMEM", "HW_AVR_HAVE_UART2"
+        requires =
+        {
+            "HW_MCU_AVR",
+            "DEV_IRQ_AVR",
+            "DEV_UART_GENERIC",
+            "NUT_EVENT",
+            "CRT_HEAPMEM",
+            "HW_AVR_HAVE_UART2"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart2avr.c", "avr/dev/ih_usart2_rx.c", "avr/dev/ih_usart2_tx.c", "avr/dev/ih_usart2_udre.c" },
@@ -578,9 +639,14 @@ nutarch_avr =
         brief = "USART3 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = {
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
-                        "NUT_EVENT", "CRT_HEAPMEM", "HW_AVR_HAVE_UART3"
+        requires =
+        {
+            "HW_MCU_AVR",
+            "DEV_IRQ_AVR",
+            "DEV_UART_GENERIC",
+            "NUT_EVENT",
+            "CRT_HEAPMEM",
+            "HW_AVR_HAVE_UART3"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart3avr.c" },
@@ -669,12 +735,28 @@ nutarch_avr =
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
     },
     {
+        name = "nutarch_avr_uart0",
+        brief = "UART0 Device0",
+        description = "UART0 Device for interrupt driven uart driver.",
+        requires = { "DEV_IRQ_UART0" },
+        provides = { "UART_AVR_DEV" },
+        sources = { "avr/dev/uart0.c"},
+    },
+    {
+        name = "nutarch_avr_uart1",
+        brief = "UART1 Device0",
+        description = "UART1 Device for interrupt driven uart driver.",
+        requires = { "DEV_IRQ_UART1" },
+        provides = { "UART_AVR_DEV" },
+        sources = { "avr/dev/uart1.c"},
+    },
+    {
         name = "nutarch_avr_uart",
         brief = "UART driver",
         description = "Interrupt driven, buffered UART driver.\n"..
                       "Deprecated, use the USART driver.",
-        sources = { "avr/dev/uart0.c", "avr/dev/uart1.c", "avr/dev/uartavr.c" },
-        requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM" },
+        sources = { "avr/dev/uartavr.c" },
+        requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "UART_AVR_DEV", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
     },
     {
@@ -885,13 +967,13 @@ nutarch_avr =
         name = "nutarch_avr_ide",
         brief = "ATA/IDE driver",
         description = "Mass storage driver.",
-        requires = { "HW_MCU_AVR" },
+        requires = { "HW_MCU_AVR", "GCC_LE_4_5" },
         sources = { "avr/dev/ide.c" }
     },
     {
         name = "nutarch_avr_cs8900",
         brief = "CS8900 Driver",
-        requires = { "HW_MCU_AVR", "NUT_TIMER" },
+        requires = { "HW_MCU_AVR", "NUT_TIMER", "GCC_LE_4_5" },
         sources = { "avr/dev/cs8900.c", "avr/dev/eth0cs.c" }
     },
     {
@@ -1239,8 +1321,8 @@ nutarch_avr =
         brief = "AVR SPI Bus Controller",
         description = "SPI bus controllers.\n\n",
         provides = { "SPIBUS_CONTROLLER" },
-        sources = 
-        { 
+        sources =
+        {
             "avr/dev/spibus_avr.c",
             "avr/dev/spibus0avr.c"
         },
@@ -1595,7 +1677,7 @@ nutarch_avr =
             },
         },
     },
-    
+
     {
         name = "nutarch_avr_spidigio",
         brief = "Shift Register I/O",

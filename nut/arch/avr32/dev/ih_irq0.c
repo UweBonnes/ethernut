@@ -46,6 +46,8 @@
 
 #include <avr32/io.h>
 
+#if defined(AVR32_EIC_IRQ_0) && defined(INTERRUPT0_ALT_PIN) && defined(INTERRUPT0_ALT_PINSET)
+
 #ifndef NUT_IRQPRI_IRQ0
 #define NUT_IRQPRI_IRQ0  AVR32_INTC_INT3
 #endif
@@ -108,10 +110,8 @@ static int Interrupt0Ctl(int cmd, void *param)
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
-#if defined(AVR32_EIC_EXTINT_0_PIN)
         /* Setup Peripheral mux for interrupt line */
-        gpio_enable_module_pin(AVR32_EIC_EXTINT_0_PIN, AVR32_EIC_EXTINT_0_FUNCTION);
-#endif
+        gpio_enable_module_pin(INTERRUPT0_ALT_PIN, INTERRUPT0_ALT_PINSET);
         /* Set the vector. */
         register_interrupt(Interrupt0Entry, AVR32_EIC_IRQ_0, NUT_IRQPRI_IRQ0);
         /* Initialize to edge triggered with defined priority. */
@@ -188,3 +188,5 @@ static int Interrupt0Ctl(int cmd, void *param)
     }
     return rc;
 }
+
+#endif // AVR32_EIC_IRQ_1

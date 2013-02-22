@@ -15,7 +15,7 @@ extern int OnChipFlashLoad(uint32_t addr, void *buff, size_t siz);
  *
  * \return 0 on success, -1 otherwise.
  */
-extern int OnChipFlashSave(uint32_t addr, CONST void *buff, size_t len);
+extern int OnChipFlashSave(uint32_t addr, const void *buff, size_t len);
 
 extern int FlashAreaIsLock(uint32_t addr);
 

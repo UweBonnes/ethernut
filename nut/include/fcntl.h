@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -34,7 +34,7 @@
  *
  * -
  * Copyright (c) 1982, 1986, 1989, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *  The Regents of the University of California.  All rights reserved.
  * (c) UNIX System Laboratories, Inc.
  * All or some portions of this file are derived from material licensed
  * to the University of California by American Telephone and Telegraph
@@ -73,15 +73,15 @@
 /*! \addtogroup xgCrtLowio
  */
 /*@{*/
-#define	_O_RDONLY	0x0000	/*!< Read only. */
-#define _O_WRONLY	0x0001	/*!< Write only. */
-#define _O_RDWR		0x0002	/*!< Read and write. */
+#define _O_RDONLY   0x0000  /*!< Read only. */
+#define _O_WRONLY   0x0001  /*!< Write only. */
+#define _O_RDWR     0x0002  /*!< Read and write. */
 #define _O_APPEND   0x0008  /*!< Start writing at the end. */
-#define	_O_CREAT	0x0100	/*!< Create file if it does not exist. */
-#define	_O_TRUNC	0x0200	/*!< Truncate file if it exists. */
-#define	_O_EXCL		0x0400	/*!< Open only if it does not exist. */
-#define	_O_TEXT		0x4000	/*!< EOL translation. */
-#define	_O_BINARY	0x8000	/*!< Raw mode. */
+#define _O_CREAT    0x0100  /*!< Create file if it does not exist. */
+#define _O_TRUNC    0x0200  /*!< Truncate file if it exists. */
+#define _O_EXCL     0x0400  /*!< Open only if it does not exist. */
+#define _O_TEXT     0x4000  /*!< EOL translation. */
+#define _O_BINARY   0x8000  /*!< Raw mode. */
 /*@}*/
 
 #endif

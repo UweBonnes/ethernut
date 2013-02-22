@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -134,64 +134,64 @@
 #include <arch/arm/lpc2xxx.h>
 #include <__armlib.h>
 #define cli()   __ARMLIB_disableIRQ()
-#define sei()   __ARMLIB_enableIRQ()   
+#define sei()   __ARMLIB_enableIRQ()
 
 /*=========================================================================*/
 /*  DEFINE: All Structures and Common Constants                            */
 /*=========================================================================*/
 
-/* 
+/*
  * Cirrus Logic CS8900a I/O Registers
  */
-#define	CS_DATA_P0    (cs_base + 0x0000UL)
-#define	CS_DATA_P1		(cs_base + 0x0002UL)
-#define	CS_TX_CMD_I		(cs_base + 0x0004UL)
-#define	CS_TX_LEN_I		(cs_base + 0x0006UL)
-#define	CS_INT_STAT   (cs_base + 0x0008UL)
-#define	CS_PP_PTR		  (cs_base + 0x000AUL)
-#define	CS_PP_DATA0		(cs_base + 0x000CUL)
-#define	CS_PP_DATA1		(cs_base + 0x000EUL)
+#define CS_DATA_P0    (cs_base + 0x0000UL)
+#define CS_DATA_P1      (cs_base + 0x0002UL)
+#define CS_TX_CMD_I     (cs_base + 0x0004UL)
+#define CS_TX_LEN_I     (cs_base + 0x0006UL)
+#define CS_INT_STAT   (cs_base + 0x0008UL)
+#define CS_PP_PTR         (cs_base + 0x000AUL)
+#define CS_PP_DATA0     (cs_base + 0x000CUL)
+#define CS_PP_DATA1     (cs_base + 0x000EUL)
 
 
 // Cirrus Logic CS8900a Packet Page registers
-#define	CS_PROD_ID		0x0000
-#define	CS_IO_BASE		0x0020
-#define	CS_INT_NUM		0x0022
-#define	CS_DMA_CHAN		0x0024
-#define	CS_DMA_SOF		0x0026
-#define	CS_DMA_FCNT		0x0028
-#define	CS_DMA_RXCNT	0x002A
-#define	CS_MEM_BASE		0x002C
-#define	CS_BOOT_BASE	0x0030
-#define	CS_BOOT_MASK	0x0034
-#define	CS_EE_CMD		  0x0040
-#define	CS_EE_DATA		0x0042
-#define	CS_RX_FRM_CNT	0x0050
+#define CS_PROD_ID      0x0000
+#define CS_IO_BASE      0x0020
+#define CS_INT_NUM      0x0022
+#define CS_DMA_CHAN     0x0024
+#define CS_DMA_SOF      0x0026
+#define CS_DMA_FCNT     0x0028
+#define CS_DMA_RXCNT    0x002A
+#define CS_MEM_BASE     0x002C
+#define CS_BOOT_BASE    0x0030
+#define CS_BOOT_MASK    0x0034
+#define CS_EE_CMD         0x0040
+#define CS_EE_DATA      0x0042
+#define CS_RX_FRM_CNT   0x0050
 
-#define	CS_ISQ			  0x0120
-#define	CS_RX_CFG		  0x0102
-#define	CS_RX_EVENT		0x0124
-#define	CS_RX_CTL		  0x0104
-#define	CS_TX_CFG		  0x0106
-#define	CS_TX_EVENT		0x0128
-#define	CS_TX_CMD_P		0x0108
-#define	CS_BUF_CFG		0x010A
-#define	CS_BUF_EVENT	0x012C
-#define	CS_RX_MISS		0x0130
-#define	CS_TX_COLL		0x0132
-#define	CS_LINE_CTRL	0x0112
-#define	CS_LINE_STAT	0x0134
-#define	CS_SELF_CTRL	0x0114
-#define	CS_SELF_STAT	0x0136
-#define	CS_BUS_CTRL		0x0116
-#define	CS_BUS_STAT		0x0138
-#define	CS_TEST_CTRL	0x0118
-#define	CS_AUI_TDR		0x013C
+#define CS_ISQ            0x0120
+#define CS_RX_CFG         0x0102
+#define CS_RX_EVENT     0x0124
+#define CS_RX_CTL         0x0104
+#define CS_TX_CFG         0x0106
+#define CS_TX_EVENT     0x0128
+#define CS_TX_CMD_P     0x0108
+#define CS_BUF_CFG      0x010A
+#define CS_BUF_EVENT    0x012C
+#define CS_RX_MISS      0x0130
+#define CS_TX_COLL      0x0132
+#define CS_LINE_CTRL    0x0112
+#define CS_LINE_STAT    0x0134
+#define CS_SELF_CTRL    0x0114
+#define CS_SELF_STAT    0x0136
+#define CS_BUS_CTRL     0x0116
+#define CS_BUS_STAT     0x0138
+#define CS_TEST_CTRL    0x0118
+#define CS_AUI_TDR      0x013C
 
-#define	CS_PP_TX_CMD	0x0144
-#define	CS_PP_TX_LEN	0x0146
+#define CS_PP_TX_CMD    0x0144
+#define CS_PP_TX_LEN    0x0146
 
-#define	CS_IEEE_ADDR	0x0158
+#define CS_IEEE_ADDR    0x0158
 
 /*!
  * \addtogroup xgNicCs8900
@@ -232,7 +232,7 @@ void CSWrite16(uint32_t addr, uint16_t data)
     cli();
     *p = data;
     p++;
-    *p = data >> 8;    
+    *p = data >> 8;
     sei();
 }
 
@@ -260,7 +260,7 @@ uint16_t CSRead16(uint32_t addr)
     p  = (uint8_t *) addr;
     d  = *p;
     p++;
-    d |= (*p << 8); 
+    d |= (*p << 8);
     sei();
 
     return d;
@@ -343,7 +343,7 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
     // Wait for buffer space, but only for a while (200ms)
     // If the cable is disconnected this will never become true
     // If we don't get the go ahead within 200ms return 0 (Sucess)
-    // And let the upper layers deal with re-transmission 
+    // And let the upper layers deal with re-transmission
     // If we return failure TCP sockets will close straight away which probably
     // isn't the correct behaviour
     i = 0;
@@ -405,11 +405,11 @@ void CSSoftwareReset(void)
     uint16_t          data;
 
     data = CS_SELF_CTRL;
-    p  = (uint8_t *) CS_PP_PTR;    
+    p  = (uint8_t *) CS_PP_PTR;
     *p = data;
     p++;
     *p = data >> 8;
-        
+
     data = 0x0040;
     p  = (uint8_t *) CS_DATA_P0;
     *p = data;
@@ -450,7 +450,7 @@ THREAD(CSNICrx, arg)
 
         l = *(uint8_t *) (CS_DATA_P0 + 1) << 8 | *(uint8_t *) (CS_DATA_P0);
         l = *(uint8_t *) (CS_DATA_P0 + 1) << 8 | *(uint8_t *) (CS_DATA_P0);
-        
+
         //NutPrintFormat_P(dev_debug,PSTR("RxLength = %x \r\n"), l);
         //NutPrintFlush(dev_debug);
 
@@ -524,12 +524,12 @@ int cs8900Output(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets the CS8900 Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets the CS8900 Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application
@@ -544,7 +544,7 @@ int cs8900Init(NUTDEVICE * dev)
     uint16_t  j;
     IFNET   *ifn;
     NICINFO *ni;
-    
+
 #if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("Enter NicInit  \r\n"));
@@ -553,13 +553,13 @@ int cs8900Init(NUTDEVICE * dev)
 #endif
 
     cs_base = dev->dev_base;
-    
+
 #if defined(OLIMEX_LPCE2294)
     if (cs_base == 0)
     {
       cs_base = 0x82000000UL;
     }
-#endif    
+#endif
 
 
     if (confnet.cd_size == 0)
@@ -575,7 +575,7 @@ int cs8900Init(NUTDEVICE * dev)
     ifn->if_mac[3] = 0x00;
     ifn->if_mac[4] = 0x00;
     ifn->if_mac[5] = 0x00;
-#endif    
+#endif
     memset(dev->dev_dcb, 0, sizeof(NICINFO));
     ni = (NICINFO *) dev->dev_dcb;
 
@@ -591,7 +591,7 @@ int cs8900Init(NUTDEVICE * dev)
 
     //
     //  Copy our MAC address to the NIC
-    // 
+    //
     for (i = 0; i < 6; i += 2) {
         j = ifn->if_mac[i] << 8;
         j |= ifn->if_mac[i + 1];
@@ -616,7 +616,7 @@ int cs8900Init(NUTDEVICE * dev)
     //i = CSReadPP16(CS_RX_CTL);
     //NutPrintFormat_P(dev_debug,PSTR("CS_RX_CTL = %x\r\n"), i);
 
-    // 
+    //
     // Start receiver thread
     //
     NutThreadCreate("csnicrx", CSNICrx, dev, 768);
@@ -644,17 +644,21 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     cs8900Output,               /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devCS8900A = {
     0,                          /* Pointer to next device. */

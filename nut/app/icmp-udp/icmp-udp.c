@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>. 
+ * Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>.
  *
  * All rights reserved.
  *
@@ -49,11 +49,11 @@
  * Configure MY_IP, MY_MASK, and MY_GATE approriate. Configure UDP_ECHO_IP
  * to the IP of a host running an udp echo server.
  *
- * The program will try to send some UDP packets to the given 
- * destination address on port 7 (UDP echo port) and will try to 
+ * The program will try to send some UDP packets to the given
+ * destination address on port 7 (UDP echo port) and will try to
  * read back the sended data.
  *
- * You can run the udp_echo java program in this directory with admin (root) 
+ * You can run the udp_echo java program in this directory with admin (root)
  * priviledges to have a simple udp echo server on your pc.
  *
  * Just start the program with 'java udp_echo.class'
@@ -100,9 +100,9 @@ static uint8_t my_mac[] = MY_MAC;
 /* Print error message */
 void print_udp_icmp_error(uint32_t remote_ip, uint16_t remote_port, int error)
 {
-    printf("ICMP destination unreachable received for remote ip: %s\r\nremote port: %d, errno: %d -- ", 
+    printf("ICMP destination unreachable received for remote ip: %s\r\nremote port: %d, errno: %d -- ",
            inet_ntoa(remote_ip), remote_port, error);
-    
+
     switch (error) {
         case ENETUNREACH:
             printf("Destination network unreachable\r\n");
@@ -113,7 +113,7 @@ void print_udp_icmp_error(uint32_t remote_ip, uint16_t remote_port, int error)
         case ENOPROTOOPT:
             printf("Destination protocol unreachable\r\n");
             break;
-        case ECONNREFUSED:	
+        case ECONNREFUSED:
             printf("Destination port unreachable / connection refused\r\n");
             break;
         case EMSGSIZE:
@@ -136,18 +136,18 @@ THREAD(UDPReceiver, arg)
     uint16_t remote_port;
     UDPSOCKET *socket = (UDPSOCKET*) arg;
     int      rc;
-    
+
     while (1) {
         rc = NutUdpReceiveFrom(socket, &remote_ip, &remote_port, rcv_buffer, UDP_BUFF_SIZE, 2000);
         if (rc == 0) {
             printf("<-- Timeout (2 sec.) on UDP receive\r\n");
-        } else 
+        } else
         if (rc < 0) {
-#ifdef NUT_UDP_ICMP_SUPPORT             
+#ifdef NUT_UDP_ICMP_SUPPORT
             int error;
             error = NutUdpError(socket, &remote_ip, &remote_port);
             print_udp_icmp_error(remote_ip, remote_port, error);
-#endif            
+#endif
         } else {
             printf("<-- Received packet: \"%s\"\r\n", rcv_buffer);
         }
@@ -157,7 +157,7 @@ THREAD(UDPReceiver, arg)
 #endif /* DEV_ETHER */
 
 /*
- * Main application routine. 
+ * Main application routine.
  *
  */
 int main(void)
@@ -174,8 +174,8 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-    NutRegisterDevice(&DEV_DEBUG, 0, 0);
-    freopen(DEV_DEBUG_NAME, "w", stdout);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("Demo for ICMP support in UDP sockets...\r\n");
 
@@ -184,7 +184,7 @@ int main(void)
 #warning ICMP support for UDP sockets not enabled in the configurator, please enable NUT_UDP_ICMP_SUPPORT
     puts("ICMP support for UDP sockets not enabled in the configurator\r\n");
     puts("Please enable NUT_UDP_ICMP_SUPPORT\r\n");
-#endif    
+#endif
     /*
      * Register the network device.
      */
@@ -212,7 +212,7 @@ int main(void)
             while (1);
         }
     }
-    
+
     if (NutThreadCreate("RCV", UDPReceiver, (void*)socket, 1024) == 0) {
             puts("Could not start receiver thread\r\n");
             puts("Demo halted...\r\n");
@@ -220,12 +220,12 @@ int main(void)
     } else {
         puts("Receiver thread started\r\n");
     }
-    
+
     puts("Starting echo test (1 packet / second)\r\n");
-    
+
     ip_udp_echo = inet_addr(UDP_ECHO_IP);
     packet_nr = 0;
-    
+
     while (1) {
         packet_nr ++;
         sprintf(send_buffer, "Packet: %d", packet_nr);
@@ -235,12 +235,12 @@ int main(void)
 #ifdef NUT_UDP_ICMP_SUPPORT
             int      error;
             uint32_t remote_ip;
-            uint16_t remote_port;             
+            uint16_t remote_port;
             error = NutUdpError(socket, &remote_ip, &remote_port);
             print_udp_icmp_error(remote_ip, remote_port, error);
 #endif
         }
-        
+
         NutSleep(1000);
     }
 #endif /* DEV_ETHER */

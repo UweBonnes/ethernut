@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -96,8 +96,8 @@
 #define UART_MF_DSRSENSE    0x00000100UL    /*!< DTE input. */
 #define UART_MF_DCDSENSE    0x00000200UL    /*!< DTE input. */
 
-#define UART_MF_SENSEMASK   0x0345	    /*!< Handshake sense mask. */
-#define UART_MF_CONTROLMASK 0x00BC	    /*!< Handshake control mask. */
+#define UART_MF_SENSEMASK   0x0345      /*!< Handshake sense mask. */
+#define UART_MF_CONTROLMASK 0x00BC      /*!< Handshake control mask. */
 
 #define UART_MF_XONXOFF     0x00000400UL    /*!< Software handshake. */
 
@@ -110,26 +110,26 @@
 
 #define UART_MF_RAWMODE     0x00400000UL    /*!< Send data as raw, disables data encapsulation for device. */
 
-#define UART_SF_RTSOFF	    0x00000001UL    /*!< Set RTS line is off. */
-#define UART_SF_CTSOFF	    0x00000002UL    /*!< Set CTS line is off. */
-#define UART_SF_DTROFF	    0x00000004UL    /*!< Set DTR line is off. */
-#define UART_SF_DSROFF	    0x00000008UL    /*!< Set DSR line is off. */
-#define UART_SF_DCDOFF	    0x00000010UL    /*!< Set DCD line is off. */
+#define UART_SF_RTSOFF      0x00000001UL    /*!< Set RTS line is off. */
+#define UART_SF_CTSOFF      0x00000002UL    /*!< Set CTS line is off. */
+#define UART_SF_DTROFF      0x00000004UL    /*!< Set DTR line is off. */
+#define UART_SF_DSROFF      0x00000008UL    /*!< Set DSR line is off. */
+#define UART_SF_DCDOFF      0x00000010UL    /*!< Set DCD line is off. */
 
-#define HDLC_SF_FLUSH	    0x00001000UL    /*!< Waiting for next HDLC flag. */
-#define HDLC_SF_ESCAPED	    0x00002000UL    /*!< Next character escaped. */
+#define HDLC_SF_FLUSH       0x00001000UL    /*!< Waiting for next HDLC flag. */
+#define HDLC_SF_ESCAPED     0x00002000UL    /*!< Next character escaped. */
 
 #define UART_SF_TXDISABLED  0x00000040UL    /*!< Transmitter disabled. */
 #define UART_SF_RXDISABLED  0x00000080UL    /*!< Receiver disabled. */
 
 
 #define UART_HS_DCERTSCTS   0x00000003UL    /*!< RTS/CTS DCE handshake. */
-#define UART_HS_DCEFULL	    0x0000001FUL    /*!< Full DCE handshake. */
+#define UART_HS_DCEFULL     0x0000001FUL    /*!< Full DCE handshake. */
 
 #define UART_HS_DTERTSCTS   0x00000060UL    /*!< RTS/CTS DTE handshake. */
-#define UART_HS_DTEFULL	    0x000003E0UL    /*!< Full DTE handshake. */
+#define UART_HS_DTEFULL     0x000003E0UL    /*!< Full DTE handshake. */
 
-#define UART_HS_XONXOFF	    0x00000400UL    /*!< Software handshake. */
+#define UART_HS_XONXOFF     0x00000400UL    /*!< Software handshake. */
 
 
 /*!

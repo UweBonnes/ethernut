@@ -385,8 +385,8 @@ int EtherInit(void)
     nic_outb(NIC_NCR, NIC_NCR_RST | NIC_NCR_LBMAC);
     MicroDelay(5000);
 
-    /* 
-     * PHY power down followed by PHY power up. This should activate 
+    /*
+     * PHY power down followed by PHY power up. This should activate
      * the auto sense link.
      */
     nic_outb(NIC_GPR, 1);
@@ -498,7 +498,7 @@ int EtherOutput(const unsigned char *dmac, unsigned int type, unsigned int len)
  * \param type Unused?
  * \param tms  Return with timeout after the specified number of polling loops.
  *
- * \return The number of bytes received, 0 on timeout or -1 in case of 
+ * \return The number of bytes received, 0 on timeout or -1 in case of
  *         a failure.
  */
 int EtherInput(unsigned short type, unsigned int tms)
@@ -544,7 +544,7 @@ int EtherInput(unsigned short type, unsigned int tms)
         fbc = inw(NIC_DATA_ADDR);
 
         /*
-        * Receiving long packets is unexpected, because we disabled 
+        * Receiving long packets is unexpected, because we disabled
         * this during initialization. Let's declare the chip insane.
         * Short packets will be handled by the caller.
         */
@@ -557,7 +557,7 @@ int EtherInput(unsigned short type, unsigned int tms)
         }
 
         /*
-        * The high byte of the status word contains a copy of the 
+        * The high byte of the status word contains a copy of the
         * receiver status register.
         */
         fsw >>= 8;

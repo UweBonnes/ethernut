@@ -1,5 +1,9 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2003 by egnite Software GmbH
+ * Copyright (c) 1993 by Digital Equipment Corporation
+ * Copyright (c) 1983, 1993 by The Regents of the University of California
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +18,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,138 +32,20 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
- * -
- * Portions Copyright (c) 1983, 1993 by
- *  The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * -
- * Portions Copyright (c) 1993 by Digital Equipment Corporation.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies, and that
- * the name of Digital Equipment Corporation not be used in advertising or
- * publicity pertaining to distribution of the document or software without
- * specific, written prior permission.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
- * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
- * CORPORATION BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
- * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
- * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
- * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
- * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.13  2009/02/22 12:37:26  olereinhardt
- * Added NutUdpError and NutUdpSetSocketError to set and retrieve socket
- * errors. As udp sockets aren't connection oriented those errors will be
- * anounced asynchronously on the next NutUdpSend or NutUdpReceive
+/*!
+ * \file net/udpsock.c
+ * \brief UDP socket interface.
  *
- * Include "include/errno.h" instead of "include/net/errno.h"
- *
- * Revision 1.12  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.11  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.10  2008/08/20 06:57:00  haraldkipp
- * Implemented IP demultiplexer.
- *
- * Revision 1.9  2008/08/11 07:00:33  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.8  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.7  2005/08/02 17:47:03  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.6  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.5  2003/11/26 12:55:12  drsung
- * Portability issues ... again
- *
- * Revision 1.4  2003/11/24 21:01:04  drsung
- * Packet queue added for UDP sockets.
- *
- * Revision 1.3  2003/08/14 15:07:18  haraldkipp
- * Optimization
- *
- * Revision 1.2  2003/07/20 16:01:01  haraldkipp
- * Bugfix: Send crashed on routing problems.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:46  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.13  2003/05/06 18:21:52  harald
- * Memory hole fixed
- *
- * Revision 1.12  2003/04/21 17:04:57  harald
- * Bugfix: Return port number in host byte order
- *
- * Revision 1.11  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.10  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/heap.h>
 #include <sys/event.h>
+#include <sys/timer.h>
 #include <sys/types.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
@@ -178,7 +64,7 @@
 
 
 UDPSOCKET *udpSocketList;       /*!< Global linked list of all UDP sockets. */
-static uint16_t last_local_port = 4096;  /* Unassigned local port. */
+static uint16_t last_local_port;  /* Unassigned local port. */
 static uint_fast8_t registered;
 
 /*!
@@ -195,6 +81,7 @@ static uint_fast8_t registered;
 UDPSOCKET *NutUdpCreateSocket(uint16_t port)
 {
     UDPSOCKET *sock;
+    uint16_t   ticks;
 
     if (!registered) {
         if (NutRegisterIpHandler(IPPROTO_UDP, NutUdpInput)) {
@@ -204,8 +91,21 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
     }
     if (port == 0) {
         do {
-            if (++last_local_port == 0)
-                last_local_port = 4096;
+            /* Each time a new socket is created the local port number in incremented
+               by a more or less randomized value between 1 and 15 (the lowest 4 bit of
+               NutGetMillis() | 1). The highest two bits are always set to 1.
+               This way a port range of 49152 to 65535 is used according to the IANA
+               suggestions for ephemeral port usage.
+             */
+            ticks = (uint16_t) NutGetMillis();
+            if (last_local_port) {
+                last_local_port += (uint16_t) ((ticks & 0x000F) | 1);
+            } else {
+                last_local_port = ticks;
+            }
+
+            last_local_port |= 0xC000;
+
             port = htons(last_local_port);
             sock = udpSocketList;
             while (sock) {
@@ -227,7 +127,7 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
 /*!
  * \brief Send a UDP datagram.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutUdpCreateSocket().
  * \param addr IP address of the remote host in network byte order.
  * \param port Remote port number in host byte order.
@@ -243,11 +143,11 @@ int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int
     int rc;
     NETBUF *nb;
 
-#ifdef NUT_UDP_ICMP_SUPPORT    
+#ifdef NUT_UDP_ICMP_SUPPORT
     if (sock->so_last_error)
         return -1;
 #endif
-    
+
     if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, len)) == 0) {
         sock->so_last_error = ENOMEM;
         return -1;
@@ -264,7 +164,7 @@ int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int
 /*!
  * \brief Receive a UDP datagram.
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutUdpCreateSocket().
  * \param addr    IP address of the remote host in network byte order.
  * \param port    Remote port number in host byte order.
@@ -285,21 +185,21 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *
     UDPHDR *uh;
     NETBUF *nb;
 
-#ifdef NUT_UDP_ICMP_SUPPORT    
+#ifdef NUT_UDP_ICMP_SUPPORT
     /* The ICMP handler might have set an error condition. */
     if (sock->so_last_error)
         return -1;
 #endif
-    
+
     if (sock->so_rx_nb == 0)
         NutEventWait(&sock->so_rx_rdy, timeout);
 
-#ifdef NUT_UDP_ICMP_SUPPORT    
+#ifdef NUT_UDP_ICMP_SUPPORT
     /* An ICMP message might have posted the rx event. So check again */
     if (sock->so_last_error)
         return -1;
 #endif
-    
+
     if ((nb = sock->so_rx_nb) == 0)
         return 0;
 
@@ -327,10 +227,10 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *
  * \brief Close UDP socket.
  *
  * The memory occupied by the socket is immediately released
- * after calling this function. The application  must not use 
+ * after calling this function. The application  must not use
  * the socket after this call.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutUdpCreateSocket().
  *
  * \return 0 on success, -1 otherwise.
@@ -349,7 +249,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
     while (sp) {
         if (sp == sock) {
             *spp = sock->so_next;
-            /* packets may have arrived that the application 
+            /* packets may have arrived that the application
                did not read before closing the socket. */
             while ((nb = sock->so_rx_nb) != 0) {
                 sock->so_rx_nb = nb->nb_next;
@@ -366,7 +266,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
 }
 
 /*!
- * \brief Return specific code of the last error and the IP address / port of 
+ * \brief Return specific code of the last error and the IP address / port of
  *        the host to which the communication failed
  *
  * Possible error codes are:
@@ -379,7 +279,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
  * - EHOSTDOWN: Host is down
  * - EHOSTUNREACH: No route to host
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutUdpCreateSocket().
  * \param addr IP address of the remote host in network byte order.
  * \param port Remote port number in host byte order.
@@ -391,13 +291,13 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
 int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port)
 {
     int rc;
-    
+
     if (sock == 0) {
         addr = 0;
         port = 0;
         return ENOTSOCK;
     }
-    
+
     if (sock->so_last_error) {
         rc = sock->so_last_error;
         *port = ntohs(sock->so_remote_port);
@@ -407,7 +307,7 @@ int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port)
         sock->so_remote_port = 0;
         sock->so_remote_addr = 0;
         return rc;
-    }     
+    }
     return 0;
 }
 
@@ -443,14 +343,14 @@ UDPSOCKET *NutUdpFindSocket(uint16_t port)
  *
  * - #SO_RCVBUF   Socket input buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutUdpCreateSocket().
  * \param optname Option to set.
  * \param optval  Pointer to the value.
  * \param optlen  Length of the value.
- * \return 0 on success, -1 otherwise. 
+ * \return 0 on success, -1 otherwise.
  */
-int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optlen)
+int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, const void *optval, int optlen)
 {
     int rc = -1;
 
@@ -479,13 +379,13 @@ int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optl
  *
  * - #SO_RCVBUF   Socket input buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutUdpCreateSocket().
  * \param optname Option to get.
  * \param optval  Points to a buffer receiving the value.
  * \param optlen  Length of the value buffer.
  *
- * \return 0 on success, -1 otherwise. 
+ * \return 0 on success, -1 otherwise.
  */
 int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
 {
@@ -512,26 +412,26 @@ int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
 /*!
  * \brief Set a UDP socket error.
  *
- * This function should only be used together (and from) the icmp input routine 
- *    
+ * This function should only be used together (and from) the ICMP input routine
+ *
  * The following values can be set:
  *
  * - #EHOSTUNREACH   Host is unreachable
  *
- * \param sock    Socket descriptor. This pointer must have been 
- *                retrieved by calling NutUdpCreateSocket().
- * \param remote_addr remote ip address in network byte order
- * \param remote_port remote port in network byte order
- * \param error   Error number.
+ * \param sock        Socket descriptor. This pointer must have been
+ *                    retrieved by calling NutUdpCreateSocket().
+ * \param remote_addr Remote IP address in network byte order
+ * \param remote_port Remote port in network byte order
+ * \param error       Error number.
  *
- * \return 0 on success, -1 otherwise. 
+ * \return 0 on success, -1 otherwise.
  */
 
 int NutUdpSetSocketError(UDPSOCKET * sock, uint32_t remote_addr, uint16_t remote_port, uint16_t error)
 {
     if (sock == 0)
         return -1;
-    
+
     sock->so_remote_addr = remote_addr;
     sock->so_remote_port = remote_port;
     sock->so_last_error  = error;

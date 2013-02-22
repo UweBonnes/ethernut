@@ -41,7 +41,7 @@
 /*@{*/
 
 /*
- * generic statistics counter functions 
+ * generic statistics counter functions
  */
 static uint32_t statistics[SNMP_STAT_MAX];
 
@@ -53,7 +53,7 @@ static uint32_t statistics[SNMP_STAT_MAX];
  * \param name2 Second object identifier.
  * \param len   Number of sub identifiers to compare.
  */
-int SnmpOidLenCmp(CONST OID * name1, CONST OID * name2, size_t len)
+int SnmpOidLenCmp(const OID * name1, const OID * name2, size_t len)
 {
     /* Find first non-matching element. */
     while (len--) {
@@ -81,7 +81,7 @@ int SnmpOidLenCmp(CONST OID * name1, CONST OID * name2, size_t len)
  * \return 0 if both are equal, 1 if first element is larger or -1
  *         if first element is lower than the second one.
  */
-int SnmpOidCmp(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2)
+int SnmpOidCmp(const OID * name1, size_t len1, const OID * name2, size_t len2)
 {
     /* Compare elements up to the length of shortest name. */
     int rc = SnmpOidLenCmp(name1, name2, (len1 < len2) ? len1 : len2);
@@ -104,11 +104,11 @@ int SnmpOidCmp(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2)
  * \param name2 Tree identifier.
  * \param len2  Length of tree identifier.
  *
- * \return 0 if the object identifier is part of the subtree, -1 if it 
+ * \return 0 if the object identifier is part of the subtree, -1 if it
  *         is located before the tree element or 1 if it is located
  *         after the tree element.
  */
-int SnmpOidTreeCmp(CONST OID * objid, size_t objlen, CONST OID * treeid, size_t treelen)
+int SnmpOidTreeCmp(const OID * objid, size_t objlen, const OID * treeid, size_t treelen)
 {
     /* Compare elements up to the length of shortest name. */
     int rc = SnmpOidLenCmp(objid, treeid, (objlen < treelen) ? objlen : treelen);
@@ -131,7 +131,7 @@ int SnmpOidTreeCmp(CONST OID * objid, size_t objlen, CONST OID * treeid, size_t 
  * \return 0 if both are equal, 1 if first element is larger or -1
  *         if first element is lower than the second one.
  */
-int SnmpOidCmpIdx(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2, OID index)
+int SnmpOidCmpIdx(const OID * name1, size_t len1, const OID * name2, size_t len2, OID index)
 {
     size_t len = (len1 < len2) ? len1 : len2;
     /* Compare elements up to the length of shortest name. */
@@ -156,9 +156,9 @@ int SnmpOidCmpIdx(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2
 }
 
 /*
- * This should be faster than doing a SnmpOidCmp for different 
+ * This should be faster than doing a SnmpOidCmp for different
  * length OIDs, since the length is checked first and if != returns
- * immediately.  
+ * immediately.
  *
  * Might be very slighly faster if lengths are ==.
  *
@@ -169,7 +169,7 @@ int SnmpOidCmpIdx(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2
  *
  * \return 0 if they are equal, -1 if they are not.
  */
-int SnmpOidEquals(CONST OID * name1, size_t len1, CONST OID * name2, size_t len2)
+int SnmpOidEquals(const OID * name1, size_t len1, const OID * name2, size_t len2)
 {
     if (len1 != len2 || memcmp(name1, name2, len1)) {
         return -1;

@@ -41,7 +41,7 @@
  * \endverbatim
  */
 
-#include <arch/arm.h>
+#include <toolchain.h>
 
 #define PHY_STRAP_AD0       _BV(PB7_ERXER_A)
 #define PHY_STRAP_AD1       _BV(PB17_ERXCK_A)
@@ -61,7 +61,7 @@
 /*!
  * \brief Delay loop.
  *
- * \param Number of loops to execute. 
+ * \param Number of loops to execute.
  */
 static void MorphoqDelay(int n)
 {
@@ -87,17 +87,23 @@ static void MorphoqClockInit(void)
  */
 static void MorphoqReset(void)
 {
+    unsigned int mr;
+
+    /* Save initial configuration. */
+    mr = inr(RSTC_MR) & ~RSTC_KEY_MSK;
     /* Set reset pulse length to 250us, disable user reset. */
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
     /* Invoke external reset. */
     outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
-    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles) 
+    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles)
     ** for NRST becoming low. */
     MorphoqDelay(250);
     /* Wait until reset pin is released. */
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
     /* Due to the RC filter, the pin is rising very slowly. */
     MorphoqDelay(25000);
+    /* Restore initial configuration. */
+    outr(RSTC_MR, RSTC_KEY | mr);
 }
 
 /*!

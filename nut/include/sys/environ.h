@@ -55,28 +55,28 @@ typedef struct _NUTENVIRONMENT {
 
 extern NUTENVIRONMENT *nut_environ;
 
-extern NUTENVIRONMENT *findenv(CONST char *name);
+extern NUTENVIRONMENT *findenv(const char *name);
 
-extern char *nextenv(CONST char *name);
+extern char *nextenv(const char *name);
 
-extern char *getenv(CONST char *name);
+extern char *getenv(const char *name);
 #if defined (__AVR__)
-extern int setenv(CONST char *name, CONST char *value, int force);
-extern void unsetenv(CONST char *name);
-extern int putenv(CONST char *string);
+extern int setenv(const char *name, const char *value, int force);
+extern void unsetenv(const char *name);
+extern int putenv(const char *string);
 #endif
 
 #if defined (__CROSSWORKS_ARM)
 
 #include <cfg/crt.h>
 
-extern int setenv(CONST char *name, CONST char *value, int force);
+extern int setenv(const char *name, const char *value, int force);
 extern int putenv(char *string);
 
 #ifdef CRT_UNSETENV_POSIX
-extern int unsetenv(CONST char *name);
+extern int unsetenv(const char *name);
 #else
-extern void unsetenv(CONST char *name);
+extern void unsetenv(const char *name);
 #endif
 
 #endif /* (__CROSSWORKS_ARM) */

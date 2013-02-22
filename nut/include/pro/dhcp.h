@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -129,7 +129,7 @@
 /*!
  * \name DHCP Client States.
  *
- * Applications can request the current state of the DHCP client by 
+ * Applications can request the current state of the DHCP client by
  * calling NutDhcpStatus().
  */
 /*@{*/
@@ -147,11 +147,11 @@
 #define DHCPST_IDLE         0
 
 /*! \brief DHCP state: Starting.
- * 
+ *
  * Indicates that the DHCP client started to request a configuration from
  * the DHCP server. If any previously allocated IP address is available
- * in the non-volatile configuration memory, then the client will continue 
- * with \ref DHCPST_REBOOTING. Otherwise it will move to 
+ * in the non-volatile configuration memory, then the client will continue
+ * with \ref DHCPST_REBOOTING. Otherwise it will move to
  * \ref DHCPST_SELECTING.
  */
 #define DHCPST_INIT         1
@@ -167,7 +167,7 @@
 /*! \brief DHCP state: Requesting.
  *
  * Indicates that the client received and selected an offer from a
- * DHCP server. It is now sending a request for an offered 
+ * DHCP server. It is now sending a request for an offered
  * configuration and waiting for an acknowledge, which will change
  * the client's state to \ref DHCPST_BOUND.
  */
@@ -224,7 +224,7 @@
 #define DHCPST_INFORMING    8
 
 /*! \brief DHCP state: Releasing.
- * 
+ *
  * The client enters this state when the application calls
  * NutDhcpRelease().
  */
@@ -236,7 +236,7 @@
 /*!
  * \name DHCP Error Codes
  *
- * Applications can request the lastest error code of the DHCP client by 
+ * Applications can request the lastest error code of the DHCP client by
  * calling NutDhcpError().
  */
 /*@{*/
@@ -261,7 +261,7 @@
 /*!
  * \brief DHCP state error.
  *
- * Either NutDhcpInform() has been called while not in state 
+ * Either NutDhcpInform() has been called while not in state
  * \ref DHCPST_IDLE or NutDhcpRelease() has been called while not in
  * state \ref DHCPST_BOUND.
  */
@@ -303,16 +303,12 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes. */
-extern int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout);
-extern int NutDhcpRelease(CONST char *name, uint32_t timeout);
-extern int NutDhcpInform(CONST char *name, uint32_t timeout);
-extern int NutDhcpStatus(CONST char *name);
-extern int NutDhcpError(CONST char *name);
+extern int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout);
+extern int NutDhcpRelease(const char *name, uint32_t timeout);
+extern int NutDhcpInform(const char *name, uint32_t timeout);
+extern int NutDhcpStatus(const char *name);
+extern int NutDhcpError(const char *name);
 
 extern int NutDhcpIsConfigured(void) NUT_DEPRECATED;
 
-__END_DECLS
-/* */
 #endif

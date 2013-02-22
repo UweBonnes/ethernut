@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH
+ * Copyright (c) 1989 by Carnegie Mellon University
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,61 +31,15 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions are 
- * Copyright (c) 1989 by Carnegie Mellon University.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms are permitted
- * provided that the above copyright notice and this paragraph are
- * duplicated in all such forms and that any documentation,
- * advertising materials, and other materials related to such
- * distribution and use acknowledge that the software was developed
- * by Carnegie Mellon University.  The name of the
- * University may not be used to endorse or promote products derived
- * from this software without specific prior written permission.
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.8  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/ipcin.c
+ * \brief PPP IPC input functions.
  *
- * Revision 1.7  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.6  2004/03/08 11:24:48  haraldkipp
- * PppUp() replaced by direct post.
- *
- * Revision 1.5  2004/01/30 11:36:52  haraldkipp
- * Memory hole fixed
- *
- * Revision 1.4  2003/12/18 20:44:11  drsung
- * Bug fix in IpcpRxConfReq. Thanks to Michel Hendriks.
- *
- * Revision 1.3  2003/08/14 15:17:50  haraldkipp
- * Caller controls ID increment
- *
- * Revision 1.2  2003/07/24 16:12:53  haraldkipp
- * First bugfix: PPP always used the secondary DNS.
- * Second bugfix: When the PPP server rejects the
- * secondary DNS, IPCP negotiation was trapped in a
- * loop.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:30  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:04:57  harald
- * PPP IP config to DCB
- *
- * Revision 1.1  2003/03/31 14:53:27  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/event.h>
@@ -93,15 +50,28 @@
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
 #include <netinet/in.h>
+
 /*!
  * \addtogroup xgIPCP
  */
 /*@{*/
 
+static uint16_t IpcpValidateIpReq(uint32_t *expected_ip, uint32_t *requested_ip)
+{
+    if (*expected_ip == 0 && *requested_ip) {
+        *expected_ip = *requested_ip;
+    }
+    else if (*expected_ip != *requested_ip) {
+        *requested_ip = *expected_ip;
+        return 6;
+    }
+    return 0;
+}
+
 /*
  * Received Configure-Request.
  */
-void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     int rc = XCP_CONFACK;
@@ -111,11 +81,12 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     uint16_t xcps;
     uint16_t len = 0;
     uint_fast8_t i;
+    uint32_t ip;
 
     switch (dcb->dcb_ipcp_state) {
     case PPPS_CLOSED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutNetBufFree(nb);
         NutIpcpOutput(dev, XCP_TERMACK, id, 0);
@@ -130,7 +101,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         return;
 
     case PPPS_OPENED:
-        /* 
+        /*
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
@@ -138,7 +109,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         break;
 
     case PPPS_STOPPED:
-        /* 
+        /*
          * Negotiation started by our peer.
          */
         IpcpTxConfReq(dev, ++dcb->dcb_reqid);
@@ -159,11 +130,15 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
             len = xcpl;
         else {
             switch (xcpo->xcpo_type) {
-            case IPCP_COMPRESSTYPE:
-                break;
-            case IPCP_ADDR:
             case IPCP_MS_DNS1:
+                if (xcpo->xcpo_.ul == 0 && dcb->dcb_ip_dns1 == 0) {
+                    break;
+                }
             case IPCP_MS_DNS2:
+                if (xcpo->xcpo_.ul == 0 && dcb->dcb_ip_dns2 == 0) {
+                    break;
+                }
+            case IPCP_ADDR:
                 if (xcpo->xcpo_len == 6)
                     len = 0;
                 break;
@@ -175,7 +150,6 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                 xcpr->xcpo_type = xcpo->xcpo_type;
                 xcpr->xcpo_len = len;
                 for (i = 0; i < len - 2; i++)
-                    /* bug fix by Michel Hendriks. Thanks! */
                     xcpr->xcpo_.uc[i] = xcpo->xcpo_.uc[i];
             }
             xcpr = (XCPOPT *) ((char *) xcpr + len);
@@ -200,24 +174,16 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         xcps = 0;
         len = 0;
         while (xcpl >= 2) {
+            ip = xcpo->xcpo_.ul;
             switch (xcpo->xcpo_type) {
             case IPCP_ADDR:
-                if (xcpo->xcpo_.ul)
-                    dcb->dcb_remote_ip = xcpo->xcpo_.ul;
-                else if (dcb->dcb_remote_ip == 0)
-                    len = xcpo->xcpo_len;
-                break;
-            case IPCP_COMPRESSTYPE:
-                len = 6;
-                xcpr->xcpo_.ul = 0;
+                len = IpcpValidateIpReq(&dcb->dcb_remote_ip, &ip);
                 break;
             case IPCP_MS_DNS1:
-                if (xcpo->xcpo_.ul)
-                    dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
+                len = IpcpValidateIpReq(&dcb->dcb_ip_dns1, &ip);
                 break;
             case IPCP_MS_DNS2:
-                if (xcpo->xcpo_.ul)
-                    dcb->dcb_ip_dns2 = xcpo->xcpo_.ul;
+                len = IpcpValidateIpReq(&dcb->dcb_ip_dns2, &ip);
                 break;
             }
 
@@ -226,6 +192,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                     xcpr->xcpo_type = xcpo->xcpo_type;
                     xcpr->xcpo_len = len;
                 }
+                xcpr->xcpo_.ul = ip;
                 xcpr = (XCPOPT *) ((char *) xcpr + len);
                 xcps += len;
                 len = 0;
@@ -255,7 +222,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Configure-Ack received.
  */
-void IpcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -272,7 +239,7 @@ void IpcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     case PPPS_CLOSED:
     case PPPS_STOPPED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutNetBufFree(nb);
         NutIpcpOutput(dev, XCP_TERMACK, id, 0);
@@ -353,7 +320,7 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t r
     case PPPS_CLOSED:
     case PPPS_STOPPED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutNetBufFree(nb);
         NutIpcpOutput(dev, XCP_TERMACK, id, 0);
@@ -426,7 +393,7 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t r
 /*
  * \brief Terminate request received.
  */
-void IpcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -448,7 +415,7 @@ void IpcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Terminate-Ack received.
  */
-void IpcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static void IpcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -519,7 +486,7 @@ static void IpcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*!
  * \brief Handle incoming IPCP packets.
  *
- * Packets not destined to us or packets with unsupported 
+ * Packets not destined to us or packets with unsupported
  * address type or item length are silently discarded.
  *
  * \note This routine is called by the Ethernet layer on
@@ -527,7 +494,7 @@ static void IpcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
  *       not call this function.
  *
  * \param dev Identifies the device that received the packet.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the ARP packet.
  */
 void NutIpcpInput(NUTDEVICE * dev, NETBUF * nb)

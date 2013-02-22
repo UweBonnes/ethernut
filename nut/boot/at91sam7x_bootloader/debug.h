@@ -18,8 +18,8 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
- * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -47,12 +47,12 @@
 #endif
 
 #define DEBUG(_LEVEL, _FORMAT, ...)                                            \
-	do {                                                                       \
-		if((_LEVEL) <= (DEBUG_LEVEL)) {                                        \
-			fprintf(stderr, _FORMAT, ## __VA_ARGS__);                          \
+    do {                                                                       \
+        if((_LEVEL) <= (DEBUG_LEVEL)) {                                        \
+            fprintf(stderr, _FORMAT, ## __VA_ARGS__);                          \
             fflush(stderr);                                                    \
-		}                                                                      \
-	} while(0)
+        }                                                                      \
+    } while(0)
 
 #define ERROR(_FORMAT, ...) DEBUG(LEVEL_ERROR, _FORMAT, ## __VA_ARGS__)
 #define WARN(_FORMAT, ...)  DEBUG(LEVEL_WARN,  _FORMAT, ## __VA_ARGS__)

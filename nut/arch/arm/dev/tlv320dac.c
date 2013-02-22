@@ -38,34 +38,19 @@
  * \brief DAC routines.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.3  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.2  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.1  2008/10/05 16:51:46  haraldkipp
- * Added suport for the TLV320 audio DAC.
- *
- *
+ * $Id$
  * \endverbatim
  */
 
-#include <cfg/os.h>
-#include <cfg/clock.h>
 #include <dev/board.h>
 #include <dev/irqreg.h>
-#include <dev/twif.h>
+
+#include <sys/event.h>
+#include <sys/timer.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <memdebug.h>
-
-#include <sys/event.h>
-#include <sys/timer.h>
 
 #include <dev/tlv320dac.h>
 
@@ -89,6 +74,44 @@
 #else
 #define SAMPLE_BUFFERS  3
 #endif
+#endif
+
+/*
+ * Select TWI pins for bit-banging
+ */
+#if defined(AT91SAM9260_EK)
+
+#ifndef TWI_SCL_BASE
+#define TWI_SCL_BASE    PIOB_BASE
+#endif
+#ifndef TWI_SDA_BASE
+#define TWI_SDA_BASE    PIOB_BASE
+#endif
+#ifndef TWI_SCL_BIT
+#define TWI_SCL_BIT     13
+#endif
+#ifndef TWI_SDA_BIT
+#define TWI_SDA_BIT     12
+#endif
+#ifndef TWI_DELAY
+#define TWI_DELAY       16
+#endif
+
+#elif defined(AT91SAM7X_EK)
+
+#ifndef TWI_SCL_BASE
+#define TWI_SCL_BASE    PIOA_BASE
+#endif
+#ifndef TWI_SDA_BASE
+#define TWI_SDA_BASE    PIOA_BASE
+#endif
+#ifndef TWI_SCL_BIT
+#define TWI_SCL_BIT     11
+#endif
+#ifndef TWI_SDA_BIT
+#define TWI_SDA_BIT     10
+#endif
+
 #endif
 
 /*
@@ -119,8 +142,6 @@
 #define DACI2S_BSR  PIOB_BSR
 #endif                          /* DACI2S_PIO_ID */
 
-volatile uint32_t irq_counter;
-
 /*!
  * \brief I2S event queue.
  */
@@ -145,8 +166,6 @@ typedef struct _PCM_BUFFER {
     int wbf_len;                /*!< Number of valid bytes buffered. */
 } PCM_BUFFER;
 
-/* Enable PDC hardware. */
-unsigned int use_pdc = 1;
 /* PCM buffer queue. */
 static PCM_BUFFER pcm_bufq[SAMPLE_BUFFERS];
 /* PCM buffer read index. */
@@ -155,6 +174,222 @@ static volatile unsigned int brd_idx;
 static volatile int brd_pos;
 /* PCM buffer write index. */
 static unsigned int bwr_idx;
+
+
+#if defined(TWI_SCL_BASE) && defined(TWI_SDA_BASE)
+
+#define TWI_ENABLE() { \
+    outr(TWI_SCL_BASE + PIO_SODR_OFF, _BV(TWI_SCL_BIT)); \
+    outr(TWI_SCL_BASE + PIO_PER_OFF, _BV(TWI_SCL_BIT)); \
+    outr(TWI_SCL_BASE + PIO_OER_OFF, _BV(TWI_SCL_BIT)); \
+    outr(TWI_SDA_BASE + PIO_SODR_OFF, _BV(TWI_SDA_BIT)); \
+    outr(TWI_SDA_BASE + PIO_PER_OFF, _BV(TWI_SDA_BIT)); \
+}
+#define SDA_LOW() { \
+    outr(TWI_SDA_BASE + PIO_CODR_OFF, _BV(TWI_SDA_BIT)); \
+    outr(TWI_SDA_BASE + PIO_OER_OFF, _BV(TWI_SDA_BIT)); \
+}
+#define SDA_HIGH() { \
+    outr(TWI_SDA_BASE + PIO_SODR_OFF, _BV(TWI_SDA_BIT)); \
+    outr(TWI_SDA_BASE + PIO_ODR_OFF, _BV(TWI_SDA_BIT)); \
+}
+#define SCL_LOW()   outr(TWI_SCL_BASE + PIO_CODR_OFF, _BV(TWI_SCL_BIT))
+#define SCL_HIGH()  outr(TWI_SCL_BASE + PIO_SODR_OFF, _BV(TWI_SCL_BIT))
+#define SDA_STAT()  (inr(TWI_SCL_BASE + PIO_PDSR_OFF) & _BV(TWI_SDA_BIT))
+
+#else
+
+#define TWI_ENABLE()
+#define SDA_LOW()
+#define SDA_HIGH()
+#define SCL_LOW()
+#define SCL_HIGH()
+#define SDA_STAT()  (1)
+
+#endif
+
+#ifndef TWI_DELAY
+#define TWI_DELAY   8
+#endif
+
+/*
+ * Short delay.
+ *
+ * Our bit banging code relies on pull-up resistors. The I/O ports mimic
+ * open collector outputs by switching to input mode for high level and
+ * switching to output mode for low level. This is much slower than
+ * switching an output between low to high. Thus we need some delay.
+ */
+static void TwBitDelay(int nops)
+{
+    while (nops--) {
+        _NOP();
+    }
+}
+
+/*
+ * Falling edge on the data line while the clock line is high indicates
+ * a start condition.
+ *
+ * Entry: SCL any, SDA any
+ * Exit: SCL low, SDA low
+ */
+static void TwBitStart(void)
+{
+    SDA_HIGH();
+    TwBitDelay(TWI_DELAY);
+    SCL_HIGH();
+    TwBitDelay(TWI_DELAY);
+    SDA_LOW();
+    TwBitDelay(TWI_DELAY);
+    SCL_LOW();
+    TwBitDelay(TWI_DELAY);
+}
+
+/*
+ * Rising edge on the data line while the clock line is high indicates
+ * a stop condition.
+ *
+ * Entry: SCL low, SDA any
+ * Exit: SCL high, SDA high
+ */
+static void TwBitStop(void)
+{
+    SDA_LOW();
+    TwBitDelay(TWI_DELAY);
+    SCL_HIGH();
+    TwBitDelay(2 * TWI_DELAY);
+    SDA_HIGH();
+    TwBitDelay(8 * TWI_DELAY);
+}
+
+/*
+ * Toggles out a single byte in master mode.
+ *
+ * Entry: SCL low, SDA any
+ * Exit: SCL low, SDA high
+ */
+static int TwBitPut(uint8_t octet)
+{
+    int i;
+
+    for (i = 0x80; i; i >>= 1) {
+        /* Set the data bit. */
+        if (octet & i) {
+            SDA_HIGH();
+        } else {
+            SDA_LOW();
+        }
+        /* Wait for data to stabelize. */
+        TwBitDelay(TWI_DELAY);
+        /* Toggle the clock. */
+        SCL_HIGH();
+        TwBitDelay(2 * TWI_DELAY);
+        SCL_LOW();
+        TwBitDelay(TWI_DELAY);
+    }
+
+    /* Set data line high to receive the ACK bit. */
+    SDA_HIGH();
+
+    /* ACK should appear shortly after the clock's rising edge. */
+    SCL_HIGH();
+    TwBitDelay(2 * TWI_DELAY);
+    if (SDA_STAT()) {
+        i = -1;
+    } else {
+        i = 0;
+    }
+    SCL_LOW();
+
+    return i;
+}
+
+/*
+ * Toggles in a single byte in master mode.
+ *
+ * Entry: SCL low, SDA any
+ * Exit: SCL low, SDA high
+ */
+static uint8_t TwBitGet(void)
+{
+    uint8_t rc = 0;
+    int i;
+
+    /* SDA is input. */
+    SDA_HIGH();
+    TwBitDelay(TWI_DELAY);
+    for (i = 0x80; i; i >>= 1) {
+        TwBitDelay(TWI_DELAY);
+        /* Data should appear shortly after the clock's rising edge. */
+        SCL_HIGH();
+        TwBitDelay(2 * TWI_DELAY);
+        /* SDA read. */
+        if (SDA_STAT()) {
+            rc |= i;
+        }
+        SCL_LOW();
+    }
+    return rc;
+}
+
+/*
+ * Toggles out an acknowledge bit in master mode.
+ *
+ * Entry: SCL low, SDA any
+ * Exit: SCL low, SDA high
+ */
+static void TwBitAck(void)
+{
+    SDA_LOW();
+    TwBitDelay(TWI_DELAY);
+    SCL_HIGH();
+    TwBitDelay(2 * TWI_DELAY);
+    SCL_LOW();
+    TwBitDelay(TWI_DELAY);
+    SDA_HIGH();
+}
+
+static int TwBitInit(uint8_t sla)
+{
+    TWI_ENABLE();
+
+    return 0;
+}
+
+static int TwBitMasterTransact(uint8_t sla, const void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
+{
+    int rc = 0;
+    uint8_t *cp;
+
+    if (txlen) {
+        TwBitStart();
+        /* Send SLA+W and check for ACK. */
+        if ((rc = TwBitPut(sla << 1)) == 0) {
+            for (cp = (uint8_t *)txdata; txlen--; cp++) {
+                if ((rc = TwBitPut(*cp)) != 0) {
+                    break;
+                }
+            }
+        }
+    }
+    if (rc == 0 && rxsiz) {
+        TwBitStart();
+        /* Send SLA+R and check for ACK. */
+        if ((rc = TwBitPut((sla << 1) | 1)) == 0) {
+            for (cp = rxdata;; cp++) {
+                *cp = TwBitGet();
+                if (++rc >= rxsiz) {
+                    break;
+                }
+                TwBitAck();
+            }
+        }
+    }
+    TwBitStop();
+
+    return rc;
+}
 
 /*!
  * \brief Set PDC pointer and counter registers.
@@ -181,25 +416,8 @@ static void I2sPdcFill(void)
  */
 static void I2sInterrupt(void *arg)
 {
-    irq_counter++;
-    if (use_pdc) {
-        I2sPdcFill();
-        NutEventPostFromIrq(&i2s_que);
-    } else {
-        if (brd_pos >= pcm_bufq[brd_idx].wbf_len) {
-            brd_pos = 0;
-            NutEventPostFromIrq(&i2s_que);
-            if (brd_idx == bwr_idx) {
-                outr(SSC_THR, 0);
-                return;
-            }
-            if (++brd_idx >= SAMPLE_BUFFERS) {
-                brd_idx = 0;
-            }
-        }
-        outr(SSC_THR, pcm_bufq[brd_idx].wbf_dat[brd_pos]);
-        brd_pos++;
-    }
+    I2sPdcFill();
+    NutEventPostFromIrq(&i2s_que);
 }
 
 /*!
@@ -230,7 +448,7 @@ void Tlv320DacWriteReg(unsigned int reg, unsigned int val)
 
     txdata[0] = (u_char)(reg << 1) | (u_char)(val >> 8);
     txdata[1] = (u_char)val;
-    TwMasterTransact(TWI_SLA_DAC, txdata, 2, NULL, 0, 0);
+    TwBitMasterTransact(TWI_SLA_DAC, txdata, 2, NULL, 0, 0);
 }
 
 /*!
@@ -262,10 +480,8 @@ static int Tlv320I2sEnable(unsigned int rate)
         ((PCM_BITS - 1) << SSC_DATLEN_LSB) |   /* Transmit 16 bits. */
         SSC_MSBF);              /* Most significant bit first. */
 
-    if (use_pdc) {
-        /* Enable transmitter in PDC mode. */
-        outr(SSC_PTCR, PDC_TXTEN);
-    }
+    /* Enable transmitter in PDC mode. */
+    outr(SSC_PTCR, PDC_TXTEN);
     outr(SSC_CR, SSC_TXEN);
 
     return 0;
@@ -330,22 +546,22 @@ int Tlv320DacSetRate(unsigned int rate)
         Tlv320DacWriteReg(DAC_SRATE, (3 << DAC_SRATE_SR_LSB) | DAC_SRATE_USB);
 #endif
         break;
-    case 8021:      
+    case 8021:
         Tlv320DacWriteReg(DAC_SRATE, (11 << DAC_SRATE_SR_LSB) | DAC_SRATE_BOSR | DAC_SRATE_USB);
         break;
-    case 44100:     
+    case 44100:
         Tlv320DacWriteReg(DAC_SRATE, (8 << DAC_SRATE_SR_LSB) | DAC_SRATE_BOSR | DAC_SRATE_USB);
         break;
-    case 48000:     
+    case 48000:
         Tlv320DacWriteReg(DAC_SRATE, (0 << DAC_SRATE_SR_LSB) | DAC_SRATE_USB);
         break;
-    case 88200:     
+    case 88200:
         Tlv320DacWriteReg(DAC_SRATE, (15 << DAC_SRATE_SR_LSB) | DAC_SRATE_BOSR | DAC_SRATE_USB);
         break;
-    case 96000:     
+    case 96000:
         Tlv320DacWriteReg(DAC_SRATE, (7 << DAC_SRATE_SR_LSB) | DAC_SRATE_USB);
         break;
-    default:        
+    default:
         return -1;
     }
     return 0;
@@ -361,7 +577,7 @@ int Tlv320DacSetRate(unsigned int rate)
 int Tlv320DacInit(unsigned int rate)
 {
     /* Initialize TWI. */
-    TwInit(0);
+    TwBitInit(0);
 
     Tlv320DacWriteReg(DAC_RESET, 0);
     /* Power down line in. */
@@ -392,18 +608,11 @@ int Tlv320DacInit(unsigned int rate)
 static int Tlv320DacStart(void)
 {
     NutIrqDisable(&sig_SSC);
-    if (use_pdc) {
-        outr(SSC_IDR, SSC_TXEMPTY);
-        /* Enable transmitter in PDC mode. */
-        outr(SSC_PTCR, PDC_TXTEN);
-        I2sPdcFill();
-        outr(SSC_IER, SSC_ENDTX);
-    } else {
-        outr(SSC_IDR, SSC_ENDTX);
-        /* Disable transmitter in PDC mode. */
-        outr(SSC_PTCR, PDC_TXTDIS);
-        outr(SSC_IER, SSC_TXEMPTY);
-    }
+    outr(SSC_IDR, SSC_TXEMPTY);
+    /* Enable transmitter in PDC mode. */
+    outr(SSC_PTCR, PDC_TXTEN);
+    I2sPdcFill();
+    outr(SSC_IER, SSC_ENDTX);
     /* Enable transmitter. */
     outr(SSC_CR, SSC_TXEN);
     NutIrqEnable(&sig_SSC);
@@ -421,9 +630,8 @@ int Tlv320DacFlush(void)
     int rc = 0;
 
     while (bwr_idx != brd_idx) {
-        Tlv320DacStart();
-        if ((rc = NutEventWait(&i2s_que, 500)) != 0) {
-            break;
+        if ((rc = NutEventWait(&i2s_que, 100)) != 0) {
+            Tlv320DacStart();
         }
     }
     return rc;
@@ -511,13 +719,5 @@ int Tlv320DacSetVolume(int left, int right)
     Tlv320DacWriteReg(DAC_LHP_VOL, (unsigned int)(left + 121));
     Tlv320DacWriteReg(DAC_RHP_VOL, (unsigned int)(right + 121));
 
-    return 0;
-}
-
-int Tlv320SwitchMode(void)
-{
-    NutIrqDisable(&sig_SSC);
-    use_pdc = !use_pdc;
-    Tlv320DacStart();
     return 0;
 }

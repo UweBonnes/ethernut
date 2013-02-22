@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -88,7 +88,7 @@ void CallHandler(IRQ_HANDLER * irh)
  * handlers.
  *
  * \param irq     Interrupt to be associated with this handler.
- * \param handler This routine will be called by Nut/OS, when the 
+ * \param handler This routine will be called by Nut/OS, when the
  *                specified interrupt occurs.
  * \param arg     Argument to be passed to the interrupt handler.
  *
@@ -109,6 +109,27 @@ int NutRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *), void *arg
     irq->ir_handler = handler;
 
     return rc;
+}
+
+/*!
+ * \brief Check if the corresponding interrupt is enabled or disabled.
+ *
+ * \param irq Interrupt to query.
+ *
+ * \return 0 if disabled, 1 if enabled.
+ */
+int NutIrqStatus(IRQ_HANDLER * irq)
+{
+    int rc = 0;
+    int status = 0;
+
+    if (irq->ir_ctl) {
+        rc = (irq->ir_ctl) (NUT_IRQCTL_ENABLE, &status);
+    }
+    if (rc != 0) {
+        status = 0;
+    }
+    return status;
 }
 
 /*!
@@ -148,8 +169,8 @@ int NutIrqDisable(IRQ_HANDLER * irq)
 /*!
  * \brief Modify the priority level of an interrupt.
  *
- * The function returns the old priority, which makes it easy to 
- * temporarily switch to another priority and later set back the 
+ * The function returns the old priority, which makes it easy to
+ * temporarily switch to another priority and later set back the
  * old one.
  *
  * \note Not all targets support dynamic interrupt prioritization.
@@ -176,13 +197,40 @@ int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
 }
 
 /*!
+ * \brief Query the priority level of an interrupt.
+ *
+ * The function returns the priority
+ *
+ * \note Not all targets support dynamic interrupt prioritization.
+ *       Check the hardware data sheet for valid levels.
+ *
+ * \param irq   Interrupt to query.
+ *
+ * \return Priority level or -1 in case of an error.
+ */
+int NutIrqGetPriority(IRQ_HANDLER * irq)
+{
+    int rc = -1;
+
+    if (irq->ir_ctl) {
+        int level;
+
+        rc = (irq->ir_ctl) (NUT_IRQCTL_GETPRIO, &level);
+        if (rc == 0) {
+            rc = level;
+        }
+    }
+    return rc;
+}
+
+/*!
  * \brief Modify the interrupt mode.
  *
- * The function returns the old mode, which makes it easy to 
- * temporarily switch to another mode and later set back the 
+ * The function returns the old mode, which makes it easy to
+ * temporarily switch to another mode and later set back the
  * old one.
  *
- * \note Not all targets support all modes. Check the hardware 
+ * \note Not all targets support all modes. Check the hardware
  *       data sheet for valid levels.
  *
  * \param irq  Interrupt to modify.

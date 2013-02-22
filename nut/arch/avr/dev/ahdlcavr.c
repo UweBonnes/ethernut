@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,55 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.5  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
+/*!
+ * \file arch/avr/dev/ahdlcavr.c
+ * \brief AVR AHDLC driver.
  *
- * Revision 1.4  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.3  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.10  2005/06/26 12:40:59  chaac
- * Added support for raw mode to AHDLC driver.
- *
- * Revision 1.9  2005/05/27 14:43:28  chaac
- * Fixed bugs on closing AHDLC sessions. Fixed AHDLC ioctl handling. Not all
- * messages were handled correctly	and fixed possible problem of reading memory
- * from address zero.
- *
- * Revision 1.8  2005/04/05 17:44:56  haraldkipp
- * Made stack space configurable.
- *
- * Revision 1.7  2005/02/10 07:06:17  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.6  2005/01/24 21:11:48  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.5  2005/01/21 16:49:45  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.4  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.3  2004/03/18 14:05:20  haraldkipp
- * Comments updated
- *
- * Revision 1.2  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1  2004/03/08 11:16:54  haraldkipp
- * Asynchronous HDLC driver added
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/ahdlc.h>
@@ -240,7 +198,7 @@
 /*
  * FCS lookup table located in program memory space.
  */
-static prog_char fcstab[512] = {
+static const char fcstab[512] PROGMEM = {
     0x00, 0x00, 0x11, 0x89, 0x23, 0x12, 0x32, 0x9b, 0x46, 0x24, 0x57, 0xad, 0x65, 0x36, 0x74, 0xbf,
     0x8c, 0x48, 0x9d, 0xc1, 0xaf, 0x5a, 0xbe, 0xd3, 0xca, 0x6c, 0xdb, 0xe5, 0xe9, 0x7e, 0xf8, 0xf7,
     0x10, 0x81, 0x01, 0x08, 0x33, 0x93, 0x22, 0x1a, 0x56, 0xa5, 0x47, 0x2c, 0x75, 0xb7, 0x64, 0x3e,
@@ -284,7 +242,7 @@ static prog_char fcstab[512] = {
 #define IN_ACC_MAP(c, m) in_acc_map(c, &(m))
 /* Trust me, this is a whole lot smaller when compiled than it looks in C.
  * It is written explicitly so that gcc can make good AVR asm out of it. */
-static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask) __attribute__((always_inline));  /* gcc specific attribute */
+static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask) NUT_FORCE_INLINE;  /* gcc specific attribute */
 static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
 {
     const uint8_t shift_mask = 0x07;
@@ -301,7 +259,7 @@ static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
     shift = shift_mask & ch;
 
     index = ch >> (uint8_t)3;
-	
+
     /* NOTE:  This assumes that the esc bit field is little endian,
      * which it should have been switched to before being set. */
 
@@ -313,6 +271,7 @@ static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
 #define NUT_THREAD_AHDLCRXSTACK     512
 #endif
 
+#if !defined(MCU_AT90USB1287)
 /*
  * Handle AVR UART0 transmit complete interrupts.
  */
@@ -344,6 +303,7 @@ static void Cts0Interrupt(void *arg)
     sbi(UCR, UDRIE);
 }
 #endif
+#endif /*!USB1287*/
 
 #ifdef __AVR_ENHANCED__
 /*
@@ -380,6 +340,7 @@ static void Cts1Interrupt(void *arg)
 
 #endif                          /* __AVR_ENHANCED__ */
 
+#if !defined(MCU_AT90USB1287)
 /*
  * Handle AVR UART0 receive complete interrupts.
  */
@@ -393,6 +354,7 @@ static void Rx0Complete(void *arg)
     /* Late increment fixes ICCAVR bug on volatile variables. */
     dcb->dcb_rx_idx++;
 }
+#endif /*!USB1287*/
 
 #ifdef __AVR_ENHANCED__
 /*
@@ -464,7 +426,7 @@ static int SendRawByte(AHDLCDCB * dcb, uint8_t ch, uint8_t flush)
  *
  * \return 0 on success, -1 in case of any errors.
  */
-static int SendHdlcData(AHDLCDCB * dcb, CONST uint8_t * data, uint16_t len, uint16_t * txfcs)
+static int SendHdlcData(AHDLCDCB * dcb, const uint8_t * data, uint16_t len, uint16_t * txfcs)
 {
     uint16_t tbx;
     register uint16_t fcs;
@@ -604,8 +566,9 @@ THREAD(AhdlcRx, arg)
              * Allocate the receive buffer, if this fails, we are in a
              * low memory situation. Take a nap and see, if the
              * situation improved.
+             * Note that we also put the FCS into the receive buffer.
              */
-            if ((rxbuf = NutHeapAlloc(dcb->dcb_rx_mru)) != 0) {
+            if ((rxbuf = NutHeapAlloc(dcb->dcb_rx_mru + 2)) != 0) {
                 break;
             }
             NutSleep(1000);
@@ -672,7 +635,7 @@ THREAD(AhdlcRx, arg)
                      * we should never get a frame which is too long. If it
                      * happens, toss it away and grab the next incoming one.
                      */
-                    if (rxcnt++ < dcb->dcb_rx_mru) {
+                    if (rxcnt++ < dcb->dcb_rx_mru + 2) {
                         /* Update calculated checksum and store character in buffer. */
                         tbx = (uint16_t) ((uint8_t) rxfcs ^ ch) << 1;
                         rxfcs >>= 8;
@@ -683,7 +646,7 @@ THREAD(AhdlcRx, arg)
                     continue;
                 }
 
-                if (rxcnt > 6 && rxfcs == AHDLC_GOODFCS) {
+                if (rxcnt >= 2 && rxfcs == AHDLC_GOODFCS) {
                     /*
                      * If the frame checksum is valid, create a NETBUF
                      * and pass it to the network specific receive handler.
@@ -943,12 +906,17 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     AHDLCDCB *dcb;
     void **ppv = (void **) conf;
     uint32_t *lvp = (uint32_t *) conf;
-    uint8_t bv;
-    uint16_t sv;
+    uint8_t bv = 0;
+    uint16_t sv = 0;
     uint8_t devnum;
 
+#if !defined(MCU_AT90USB1287)
     if (dev == 0)
         dev = &devUart0;
+#else
+    if (dev == 0)
+        return -1;
+#endif
 
     devnum = dev->dev_base;
     dcb = dev->dev_dcb;
@@ -961,9 +929,11 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         if (devnum) {
             outb(UBRR1L, (uint8_t) sv);
             outb(UBRR1H, (uint8_t) (sv >> 8));
+#if !defined(MCU_AT90USB1287)
         } else {
             outb(UBRR0L, (uint8_t) sv);
             outb(UBRR0H, (uint8_t) (sv >> 8));
+#endif
         }
 #else
         outb(UBRR, (uint8_t) sv);
@@ -975,8 +945,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             sv = (uint16_t) inb(UBRR1H) << 8 | inb(UBRR1L);
+#if !defined(MCU_AT90USB1287)
         else
             sv = (uint16_t) inb(UBRR0H) << 8 | inb(UBRR0L);
+#endif
 #else
         sv = inb(UBRR);
 #endif
@@ -992,9 +964,11 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             if (devnum) {
                 outb(UCSR1C, (inb(UCSR1C) & 0xF9) | bv);
                 outb(UCSR1B, inb(UCSR1B) & 0xFB);
+#if !defined(MCU_AT90USB1287)
             } else {
                 outb(UCSR0C, (inb(UCSR0C) & 0xF9) | bv);
                 outb(UCSR0B, inb(UCSR0B) & 0xFB);
+#endif
             }
         } else
             rc = -1;
@@ -1009,8 +983,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             *lvp = ((inb(UCSR1C) & 0x06) >> 1) + 5;
+#if !defined(MCU_AT90USB1287)
         else
             *lvp = ((inb(UCSR0C) & 0x06) >> 1) + 5;
+#endif
 #else
         *lvp = 8;
 #endif
@@ -1026,8 +1002,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             bv <<= 4;
             if (devnum)
                 outb(UCSR1C, (inb(UCSR1C) & 0xCF) | bv);
+#if !defined(MCU_AT90USB1287)
             else
                 outb(UCSR0C, (inb(UCSR0C) & 0xCF) | bv);
+#endif
         } else
             rc = -1;
 #endif
@@ -1040,8 +1018,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             bv = (inb(UCSR1C) & 0x30) >> 4;
+#if !defined(MCU_AT90USB1287)
         else
             bv = (inb(UCSR0C) & 0x30) >> 4;
+#endif
         if (bv == 3)
             bv = 1;
 #else
@@ -1058,8 +1038,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             bv = (bv - 1) << 3;
             if (devnum)
                 outb(UCSR1C, (inb(UCSR1C) & 0xF7) | bv);
+#if !defined(MCU_AT90USB1287)
             else
                 outb(UCSR0C, (inb(UCSR0C) & 0xF7) | bv);
+#endif
         } else
             rc = -1;
 #else
@@ -1073,8 +1055,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #ifdef __AVR_ENHANCED__
         if (devnum)
             *lvp = ((inb(UCSR1C) & 0x08) >> 3) + 1;
+#if !defined(MCU_AT90USB1287)
         else
             *lvp = ((inb(UCSR0C) & 0x08) >> 3) + 1;
+#endif
 #else
         *lvp = 1;
 #endif
@@ -1144,6 +1128,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         if (ppv && (*ppv != 0)) {
             dev->dev_icb = *ppv;
             dev->dev_type = IFTYP_NET;
+            dcb->dcb_rx_mru = dcb->dcb_tx_mru = ((IFNET *)(((NUTDEVICE *)ppv)->dev_icb))->if_mtu;
             NutEventPost(&dcb->dcb_mf_evt);
         } else {
             dev->dev_type = IFTYP_CHAR;
@@ -1207,8 +1192,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
     dcb->dcb_base = dev->dev_base;
     dcb->dcb_rx_buf = NutHeapAlloc(256);
     dcb->dcb_tx_buf = NutHeapAlloc(256);
-    dcb->dcb_rx_mru = 1500;
-    dcb->dcb_tx_mru = 1500;
+    dcb->dcb_rx_mru = dcb->dcb_tx_mru = ((IFNET *)dev->dev_icb)->if_mtu;
     dcb->dcb_tx_accm = 0xFFFFFFFF;
 
     /*
@@ -1252,6 +1236,9 @@ int AhdlcAvrInit(NUTDEVICE * dev)
 
     } else {
 
+#if defined(MCU_AT90USB1287)
+        rc = -1;
+#else
 #ifdef UART0_CTS_BIT
         sbi(UART0_CTS_PORT, UART0_CTS_BIT);
         cbi(UART0_CTS_DDR, UART0_CTS_BIT);
@@ -1282,6 +1269,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
         else if (NutRegisterIrqHandler(&UART0_CTS_SIGNAL, Cts0Interrupt, dev))
             rc = -1;
 #endif
+#endif
     }
 
 
@@ -1289,7 +1277,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
      * If we have been successful so far, start the HDLC receiver thread,
      * set the initial baudrate and enable the UART.
      */
-    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, 
+    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev,
         (NUT_THREAD_AHDLCRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) {
         AhdlcAvrIOCtl(dev, UART_SETSPEED, &baudrate);
 
@@ -1371,11 +1359,11 @@ int AhdlcAvrRead(NUTFILE * fp, void *buffer, int size)
  * \return The number of bytes written. In case of a write timeout, this
  *         may be less than the specified length.
  */
-int AhdlcAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+int AhdlcAvrPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc = 0;
     AHDLCDCB *dcb = dev->dev_dcb;
-    CONST uint8_t *cp = buffer;
+    const uint8_t *cp = buffer;
 
     /*
      * Put characters in transmit buffer.
@@ -1425,7 +1413,7 @@ int AhdlcAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
-int AhdlcAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
+int AhdlcAvrWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return AhdlcAvrPut(fp->nf_dev, buffer, len, 0);
 }
@@ -1453,7 +1441,7 @@ int AhdlcAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 int AhdlcAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return AhdlcAvrPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return AhdlcAvrPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 /*!
@@ -1472,7 +1460,7 @@ int AhdlcAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp;
 

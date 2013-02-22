@@ -41,27 +41,30 @@
  * \endverbatim
  */
 
-#include <arch/arm.h>
+#include <toolchain.h>
 
-#define PHY_STRAP_AD0       _BV(PB7_ERXER_A)
-#define PHY_STRAP_AD1       _BV(PB17_ERXCK_A)
-#define PHY_STRAP_AD2       _BV(PB14_ERX3_A)
+#define PHY_STRAP_AD0       _BV(PB5_ERX0_A)
+#define PHY_STRAP_AD1       _BV(PB6_ERX1_A)
+#define PHY_STRAP_AD2       _BV(PB13_ERX2_A)
+#define PHY_STRAP_AD3       _BV(PB14_ERX3_A)
+#define PHY_STRAP_AD4       _BV(PB4_ECRS_A)
+#define PHY_STRAP_ISOLATE   _BV(PB0_ETXCK_EREFCK_A)
+#define PHY_STRAP_10BTSER   _BV(PB17_ERXCK_A)
+#define PHY_STRAP_RPTR      _BV(PB7_ERXER_A)
+#define PHY_STRAP_RMII      _BV(PB16_ECOL_A)
+#define PHY_STRAP_TESTMODE  _BV(PB15_ERXDV_ECRSDV_A)
 
-#define PHY_STRAP_MODE0     _BV(PB5_ERX0_A)
-#define PHY_STRAP_MODE1     _BV(PB6_ERX1_A)
-#define PHY_STRAP_MODE2     _BV(PB16_ECOL_A)
+#define PHY_PWRDWN          _BV(PB18_EF100_A)
 
-#define PHY_STRAP_RMIISEL   _BV(PB13_ERX2_A)
 
 #define PHY_STRAP   ( \
-    PHY_STRAP_AD0 | PHY_STRAP_AD1 | PHY_STRAP_AD2 | \
-    PHY_STRAP_MODE0 | PHY_STRAP_MODE1 | PHY_STRAP_MODE2 | \
-    PHY_STRAP_RMIISEL )
+    PHY_STRAP_AD0 | PHY_STRAP_AD1 | PHY_STRAP_AD2 | PHY_STRAP_AD3 | \
+    PHY_STRAP_AD4 | PHY_STRAP_RMII | PHY_STRAP_TESTMODE )
 
 /*!
  * \brief Delay loop.
  *
- * \param Number of loops to execute. 
+ * \param Number of loops to execute.
  */
 static void Sam7xekDelay(int n)
 {
@@ -77,7 +80,6 @@ static void Sam7xekDelay(int n)
  */
 static void Sam7xekClockInit(void)
 {
-    outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
 }
@@ -87,17 +89,23 @@ static void Sam7xekClockInit(void)
  */
 static void Sam7xekReset(void)
 {
+    unsigned int mr;
+
+    /* Save initial configuration. */
+    mr = inr(RSTC_MR) & ~RSTC_KEY_MSK;
     /* Set reset pulse length to 250us, disable user reset. */
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
     /* Invoke external reset. */
     outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
-    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles) 
+    /* If we have 10k/100n RC, we need to wait 25us (1200 cycles)
     ** for NRST becoming low. */
     Sam7xekDelay(250);
     /* Wait until reset pin is released. */
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
     /* Due to the RC filter, the pin is rising very slowly. */
     Sam7xekDelay(25000);
+    /* Restore initial configuration. */
+    outr(RSTC_MR, RSTC_KEY | mr);
 }
 
 /*!
@@ -110,12 +118,14 @@ static void Sam7xekReset(void)
  */
 static void Sam7xekPhyInit(void)
 {
+    /* Power up the PHY. */
+    outr(PIOB_PER, PHY_PWRDWN);
+    outr(PIOB_OER, PHY_PWRDWN);
+    outr(PIOB_CODR, PHY_PWRDWN);
     /* The PHY needs 25ms for powering up. */
     Sam7xekDelay(250000);
-    /* Disable pull-ups. */
+    /* Disable strap pin pull-ups. */
     outr(PIOB_PUDR, PHY_STRAP);
-    outr(PIOB_ODR, PHY_STRAP);
-    outr(PIOB_PER, PHY_STRAP);
     /* Toggle reset line. */
     Sam7xekReset();
     /* Re-enable the pull-ups. */

@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -139,25 +139,28 @@
 #define NUT_IRQMODE_RISINGEDGE  6
 #define NUT_IRQMODE_EDGE        7
 #define NUT_IRQMODE_LEVEL       8
+#define NUT_IRQMODE_BOTHEDGE    9
 
 /*
  * Registered interrupt handler information structure.
  */
 typedef struct {
 #ifdef NUT_PERFMON
-    uint32_t ir_count;
+    uint32_t ir_count;                      /* Counter for statistics and performance analysis */
 #endif
-    void *ir_arg;
-    void (*ir_handler) (void *);
-    int (*ir_ctl) (int cmd, void *param);
+    void *ir_arg;                           /* Argument passed to interrupt handler function */
+    void (*ir_handler) (void *);            /* Interrupt handler function */
+    int (*ir_ctl) (int cmd, void *param);   /* Interrupt control function */
 } IRQ_HANDLER;
 
 #ifdef __NUT_EMULATION__
 #include <arch/unix/irqreg.h>
 #elif defined(__AVR__)
 #include <arch/avr/irqreg.h>
-#elif defined(__arm__)
+#elif defined(__arm__) && !defined(__CORTEX__)
 #include <arch/arm/irqreg.h>
+#elif defined(__arm__) && defined(__CORTEX__)
+#include <arch/cm3/irqreg.h>
 #elif defined(__AVR32__)
 #include <arch/avr32/irqreg.h>
 #elif defined(__H8300H__) || defined(__H8300S__)
@@ -170,20 +173,20 @@ typedef struct {
 
 /*@}*/
 
-__BEGIN_DECLS
 /* NutRegisterInterrupt is obsolete, use NutRegisterIrqHandler instead */
 //extern int NutRegisterInterrupt(int irq, void (*handler)(void *), void *arg) __attribute__ ((obsolete)) ;
 extern void CallHandler(IRQ_HANDLER * irh);
 
 #ifdef __NUT_EMULATION__
-extern int  NutRegisterIrqHandler(uint8_t irq_nr, void (*handler) (void *), void *arg);
+extern int NutRegisterIrqHandler(uint8_t irq_nr, void (*handler) (void *), void *arg);
 #else
 extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);
+extern int NutIrqStatus(IRQ_HANDLER * irq);
 extern int NutIrqEnable(IRQ_HANDLER * irq);
 extern int NutIrqDisable(IRQ_HANDLER * irq);
 extern int NutIrqSetPriority(IRQ_HANDLER * irq, int level);
+extern int NutIrqGetPriority(IRQ_HANDLER * irq);
 extern int NutIrqSetMode(IRQ_HANDLER * irq, int mode);
 #endif
 
-__END_DECLS
 #endif

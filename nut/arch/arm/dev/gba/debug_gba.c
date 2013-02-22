@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -277,15 +277,15 @@ static void DebugPut(char ch)
 /*!
  * \brief Send characters to debug device 0.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
  */
-int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
+int DebugWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int c = len;
-    CONST char *cp = buffer;
+    const char *cp = buffer;
 
     while(c--) {
         DebugPut(*cp++);
@@ -298,7 +298,7 @@ int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     dbgfile.nf_next = 0;
     dbgfile.nf_dev = dev;
@@ -307,7 +307,7 @@ NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return &dbgfile;
 }
 
-/*! 
+/*!
  * \brief Close debug device 0.
  *
  * \return Always 0.

@@ -35,8 +35,8 @@
 /*!
  * \brief Basic SPI bus block device driver for multimedia cards.
  *
- * The driver provides generic memory card access, but doesn't include 
- * low level hardware support like card detection. This must be provided 
+ * The driver provides generic memory card access, but doesn't include
+ * low level hardware support like card detection. This must be provided
  * by a hardware specific support module.
  *
  * \verbatim
@@ -49,9 +49,7 @@
 #include <cfg/mmci.h>
 #include <sys/nutdebug.h>
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined (NUTDEBUG)
 #include <stdio.h>
 #endif
 
@@ -79,7 +77,7 @@
 /*!
  * \brief Block size.
  *
- * Block size in bytes. Do not change unless you are sure that both, 
+ * Block size in bytes. Do not change unless you are sure that both,
  * the file system and the hardware support it.
  */
 #define MMC_BLOCK_SIZE          512
@@ -89,8 +87,8 @@
 /*!
  * \brief Card init timeout.
  *
- * Max. number of loops waiting for card's idle mode after initialization. 
- * An additional delay of 1 ms is added to each loop after one quarter of 
+ * Max. number of loops waiting for card's idle mode after initialization.
+ * An additional delay of 1 ms is added to each loop after one quarter of
  * this value elapsed.
  */
 #define MMC_MAX_INIT_POLLS      512
@@ -127,8 +125,8 @@
 /*!
  * \brief Command acknowledge timeout.
  *
- * Max. number of loops waiting for card's acknowledge of a command. 
- * An additional delay of 1 ms is added to each loop after three quarter 
+ * Max. number of loops waiting for card's acknowledge of a command.
+ * An additional delay of 1 ms is added to each loop after three quarter
  * of this value elapsed.
  */
 #define MMC_MAX_CMDACK_POLLS    1024
@@ -139,7 +137,7 @@
  * \brief Card busy timeout.
  *
  * Max. number of loops waiting for card's ready state.
- * An additional delay of 1 ms is added to each loop after one quarter 
+ * An additional delay of 1 ms is added to each loop after one quarter
  * of this value elapsed.
  */
 #define MMC_MAX_READY_POLLS     800
@@ -147,22 +145,30 @@
 
 
 /* HACK!!!
-   Some SPI hardware just shift around data read from MISO pin to the MOSI pin if the SPI data register 
-   is not set manually. At least on the AT91 platform it is impossible to use DMA transfers just for reading  
-   and to hold the MOSI line at high level if no tx data is send out at the same time. So we declare a buffer   
-   filled with 0xFF here, to make sure the MOSI pin is held at high level (0xFF) all the time during a 
+   Some SPI hardware just shift around data read from MISO pin to the MOSI pin if the SPI data register
+   is not set manually. At least on the AT91 platform it is impossible to use DMA transfers just for reading
+   and to hold the MOSI line at high level if no tx data is send out at the same time. So we declare a buffer
+   filled with 0xFF here, to make sure the MOSI pin is held at high level (0xFF) all the time during a
    read only transfer. This buffer is used in CardRXData and several other places too. The buffer is read only.
 
    This is a very very nasty hack and waists 512 Bytes of ram, but I don't see a better solution right now!
 */
 
+#ifndef ELEKTOR_IR1
+/* The EIR uses SPI over SSC with PDC, which requires buffer copying
+   into internal SRAM anyway. Another possibility to rid of this buffer
+   would be to switch the output line to GPIO and set it high during
+   read transfers. This needs to be tested. */
 static uint8_t dummy_tx_buf[MMC_BLOCK_SIZE];
+#else
+#define dummy_tx_buf    NULL
+#endif
 
 /*!
  * \brief Local multimedia card status information.
  */
 typedef struct _MMCFCB {
-    /*! \brief Attached file system device. 
+    /*! \brief Attached file system device.
      */
     NUTDEVICE *fcb_fsdev;
 
@@ -181,7 +187,7 @@ typedef struct _MMCFCB {
 
     /*! \brief Internal block buffer.
      *
-     * A file system driver may use this one or optionally provide it's 
+     * A file system driver may use this one or optionally provide it's
      * own buffers.
      *
      * Minimal systems may share their external bus interface with
@@ -222,33 +228,49 @@ static void DumpData(uint8_t *buf, size_t len)
 }
 #endif
 
-/*!
- * \brief Wait while a multimedia card is busy.
- *
- * \param node Specifies the SPI node.
- *
- * \return 0 if the card is ready, -1 if not.
- */
-static int CardWaitRdy(NUTSPINODE * node)
+static uint8_t CardWaitRdy(NUTSPINODE * node)
 {
     int poll = MMC_MAX_READY_POLLS;
     uint8_t b;
-    NUTSPIBUS *bus = (NUTSPIBUS *) node->node_bus;
+    NUTSPIBUS *bus;
+
+    NUTASSERT(node->node_bus != NULL);
+    bus = (NUTSPIBUS *) node->node_bus;
 
     do {
         (*bus->bus_transfer) (node, dummy_tx_buf, &b, 1);
-        if (b == 0xFF) {
-            return 0;
+        if (b && b != 0xFF) {
+            return b;
         }
-#ifdef NUTDEBUG
-        putchar('b');
-#endif
         if (poll < MMC_MAX_READY_POLLS / 4) {
             NutSleep(1);
         }
     } while (poll--);
+    return 0;
+}
 
-    return -1;
+static NUTSPIBUS *CardAllocate(NUTSPINODE * node)
+{
+    int poll = MMC_MAX_READY_POLLS;
+    uint8_t b;
+    NUTSPIBUS *bus;
+
+    NUTASSERT(node->node_bus != NULL);
+    bus = (NUTSPIBUS *) node->node_bus;
+
+    if ((*bus->bus_alloc) (node, 1000) == 0) {
+        do {
+            (*bus->bus_transfer) (node, dummy_tx_buf, &b, 1);
+            if (b == 0xFF) {
+                return bus;
+            }
+            if (poll < MMC_MAX_READY_POLLS / 4) {
+                NutSleep(1);
+            }
+        } while (poll--);
+        (*bus->bus_release) (node);
+    }
+    return NULL;
 }
 
 /*!
@@ -274,7 +296,7 @@ static uint8_t CardRxTkn(NUTSPINODE * node)
         putchar('w');
 #endif
         if (poll < 3 * MMC_MAX_CMDACK_POLLS / 4) {
-            NutSleep(1);
+            NutSleep(10);
         }
     } while (poll--);
 #ifdef NUTDEBUG
@@ -287,19 +309,19 @@ static uint8_t CardRxTkn(NUTSPINODE * node)
 /*!
  * \brief Send command to a multimedia card.
  *
- * Allocates the bus, transmits the command with the command parameter 
+ * Allocates the bus, transmits the command with the command parameter
  * set to zero and receives a one or two byte response. Before returning
- * to the caller, the bus is typically released. However, if len is 
+ * to the caller, the bus is typically released. However, if len is
  * neither 1 nor 2, the bus will not be released.
  *
- * In SPI mode, the card sends a 1 byte response after every command 
+ * In SPI mode, the card sends a 1 byte response after every command
  * except after SEND_STATUS and READ_OCR commands, where 2 or 5 bytes
  * are returned resp.
  *
  * \param node Specifies the SPI node.
  * \param cmd  Command code. See MMCMD_ macros.
- * \param len  Length of the expected response, either 1, 2 or 0. If 0, 
- *             then the first byte of the response will be returned and 
+ * \param len  Length of the expected response, either 1, 2 or 0. If 0,
+ *             then the first byte of the response will be returned and
  *             the bus will be kept allocated.
  *
  * \return The 1 or 2 byte response. On time out 0xFFFF is returned and
@@ -308,49 +330,56 @@ static uint8_t CardRxTkn(NUTSPINODE * node)
 static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, int len)
 {
     uint16_t rc = 0xFFFF;
-    int retries = 4;
-    uint8_t txb[7];
+    int retries = 10;
+    uint8_t txb[6];
     uint8_t rxb;
     NUTSPIBUS *bus;
 
-    bus = (NUTSPIBUS *) node->node_bus;
-
     /* Send command and parameter. */
-    txb[0] = 0xFF;
-    txb[1] = MMCMD_HOST | cmd;
-    txb[2] = (uint8_t) (param >> 24);
-    txb[3] = (uint8_t) (param >> 16);
-    txb[4] = (uint8_t) (param >> 8);
-    txb[5] = (uint8_t) param;
+    txb[0] = MMCMD_HOST | cmd;
+    txb[1] = (uint8_t) (param >> 24);
+    txb[2] = (uint8_t) (param >> 16);
+    txb[3] = (uint8_t) (param >> 8);
+    txb[4] = (uint8_t) param;
+
     /* We are running with CRC disabled. However, the reset command must
     ** be send with a valid CRC. Fortunately this command is sent with a
     ** fixed parameter value of zero, which results in a fixed CRC value. */
-    txb[6] = MMCMD_RESET_CRC;
+    if (cmd == 8) {
+        txb[5] = MMCMD_IF_COND_CRC;
+    } else {
+        txb[5] = MMCMD_RESET_CRC;
+    }
 
-    while (rc == 0xFFFF && retries--) {
-        if ((*bus->bus_alloc) (node, 1000)) {
-            break;
-        }
-        if (CardWaitRdy(node) == 0) {
+    do {
+        bus = CardAllocate(node);
+        if (bus) {
 #ifdef NUTDEBUG
             printf("\n[CMD%u,%lu]", cmd, param);
 #endif
+            /* Transmit command to the card. */
             (*bus->bus_transfer) (node, txb, NULL, sizeof(txb));
+            /* Receive the response. */
             rxb = CardRxTkn(node);
-            if (rxb != 0xFF) {
+            /* Check for timeout. */
+            if ((rxb & 0x80) == 0) {
                 rc = rxb;
                 if (len == 0) {
+                    /* Keep the bus allocated. */
                     break;
                 }
                 if (len == 2) {
+                    /* R2 response. */
                     (*bus->bus_transfer) (node, dummy_tx_buf, &rxb, 1);
                     rc <<= 8;
                     rc |= rxb;
                 }
+                /* We are done. */
+                retries = 0;
             }
+            (*bus->bus_release) (node);
         }
-        (*bus->bus_release) (node);
-    }
+    } while (retries--);
     return rc;
 }
 
@@ -366,25 +395,66 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
  */
 static int CardInit(NUTSPINODE * node)
 {
+    NUTSPIBUS *bus;
     int i;
-    int j;
     uint8_t rsp;
+    uint8_t rsp7[5];
+    MEMCARDSUPP *mcs;
+    uint32_t op_cond;
+    uint_fast8_t mmc = 0;
 
     /*
      * Switch to idle state and wait until initialization is running
      * or idle state is reached.
      */
-    for (i = 0; i < MMC_MAX_RESET_RETRIES; i++) {
-        rsp = CardTxCommand(node, MMCMD_GO_IDLE_STATE, 0, 1);
-        for (j = 0; j < MMC_MAX_INIT_POLLS; j++) {
+    mcs = (MEMCARDSUPP *) node->node_dcb;
+    bus = (NUTSPIBUS *) node->node_bus;
+    (*bus->bus_set_rate)(node, 400000);
+    /* Send 80 dummy clocks. Some cards need this. */
+    (*bus->bus_transfer) (node, NULL, NULL, 10);
+    /* Reset card and switch to SPI mode. */
+    rsp = CardTxCommand(node, MMCMD_GO_IDLE_STATE, 0, 1);
+    /* Send 0x100 for voltage range 2.7 - 3.6V and add pattern 0xAA. */
+    rsp = CardTxCommand(node, MMCMD_SEND_IF_COND, 0x1AA, 1);
+    /* Default to SD version 1 or MMC. */
+    mcs->mcs_sf &= ~NUTMC_SF_HC;
+    op_cond = 0;
+    if ((rsp & MMR1_ILLEGAL_COMMAND) == 0) {
+        /* Card is SD version 2 or later, possibly SDHC. */
+        op_cond = 1UL << 30;
+    }
+
+    for (i = 0; i < MMC_MAX_INIT_POLLS; i++) {
+        /* Send operating conditions. */
+        if (mmc) {
             rsp = CardTxCommand(node, MMCMD_SEND_OP_COND, 0, 1);
             if (rsp == MMR1_IDLE_STATE) {
+                (*bus->bus_set_rate)(node, 20000000);
                 return 0;
             }
-            if (j > MMC_MAX_INIT_POLLS / 4) {
-                NutSleep(1);
+        } else {
+            CardTxCommand(node, MMCMD_SEND_APP_CMD, 0, 1);
+            rsp = CardTxCommand(node, MMCMD_SEND_APP_OP_COND, op_cond, 0);
+            (*bus->bus_release) (node);
+            if (rsp & MMR1_ILLEGAL_COMMAND) {
+                /* Not an SD memory card, try MMC. */
+                mmc = 1;
+            }
+            else if (rsp == MMR1_IDLE_STATE) {
+                CardTxCommand(node, MMCMD_READ_OCR, 0, 0);
+                (*bus->bus_transfer) (node, dummy_tx_buf, rsp7, 4);
+                (*bus->bus_release) (node);
+                if (rsp7[0] & 0x80) {
+                    if (rsp7[0] & 0x40) {
+                        /* Card is SDHC. */
+                        mcs->mcs_sf |= NUTMC_SF_HC;
+                    }
+                    (*bus->bus_set_rate)(node, 20000000);
+                    return 0;
+                }
             }
         }
+        NutSleep(10);
     }
     return -1;
 }
@@ -392,7 +462,7 @@ static int CardInit(NUTSPINODE * node)
 /*!
  * \brief Read data transaction.
  *
- * This routine is used to read data blocks as well as reading the CSD 
+ * This routine is used to read data blocks as well as reading the CSD
  * and CID registers.
  *
  * \param node  Specifies the SPI node.
@@ -419,63 +489,19 @@ static int CardRxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, uint8_t *b
 
     while (rc && retries--) {
         rsp = (uint8_t)CardTxCommand(node, cmd, param, 0);
-        if (rsp != 0xFF) {
-            if (rsp == 0 && CardRxTkn(node) == 0xFE) {
-                /* Data transfer. */
-                (*bus->bus_transfer) (node, dummy_tx_buf, buf, len);
-                /* Ignore the CRC. */
-                (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 2);
-                rc = 0;
-            }
-            (*bus->bus_release) (node);
-        }
-    }
-    return rc;
-}
-
-/*!
- * \brief Read data transaction.
- *
- * This routine is used to write data blocks as well as writing to the 
- * CSD register.
- *
- * \param node  Specifies the SPI node.
- * \param cmd   Command code. See MMCMD_ macros.
- * \param param Command parameter.
- * \param buf   Pointer to the data buffer.
- * \param len   Number of data bytes to write.
- *
- * \return 0 on success or -1 in case of an error.
- */
-static int CardTxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, CONST uint8_t *buf, int len)
-{
-    int rc = -1;
-    uint8_t rsp;
-    NUTSPIBUS *bus;
-    int retries = MMC_MAX_WRITE_RETRIES;
-
-    /* Sanity checks. */
-    NUTASSERT(node != NULL);
-    NUTASSERT(node->node_bus != NULL);
-
-    bus = (NUTSPIBUS *) node->node_bus;
-    while (rc && retries--) {
-        rsp = (uint8_t)CardTxCommand(node, cmd, param, 0);
-        if (rsp != 0xFF) {
+        if ((rsp & 0x80) == 0) {
             if (rsp == 0) {
-                uint8_t tkn[2] = { 0xFF, 0xFE };
-
-                /* Send start token. */
-                (*bus->bus_transfer) (node, &tkn, NULL, sizeof(tkn));
-                /* Data transfer. */
-                (*bus->bus_transfer) (node, buf, NULL, len);
-                /* Send dummy CRC. */
-                (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 2);
-                /* Get response. */
-                if (CardRxTkn(node) == 0xE5) {
+                rsp = CardWaitRdy(node);
+                if (rsp == 0xFE) {
+                    /* Data transfer. */
+                    (*bus->bus_transfer) (node, dummy_tx_buf, buf, len);
+                    /* Ignore the CRC. */
+                    (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 2);
                     rc = 0;
                 }
             }
+            /* Send 8 additional clocks and release the bus. */
+            (*bus->bus_transfer) (node, NULL, NULL, 1);
             (*bus->bus_release) (node);
         }
     }
@@ -488,13 +514,13 @@ static int CardTxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, CONST uint
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous
  *               call to SpiMmcMount().
  * \param buffer Pointer to the data buffer to fill.
- * \param num    Maximum number of blocks to read. However, reading 
+ * \param num    Maximum number of blocks to read. However, reading
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks actually read. A return value of -1 
+ * \return The number of blocks actually read. A return value of -1
  *         indicates an error.
  */
 int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num)
@@ -541,20 +567,22 @@ int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num)
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to SpiMmcMount().
  * \param buffer Pointer to the data to be written. However, writing
  *               multiple blocks is not yet supported by this driver.
  * \param num    Number of blocks to write.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
-int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
+int SpiMmcBlockWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     MMCFCB *fcb;
     NUTDEVICE *dev;
     MEMCARDSUPP *msc;
+    NUTSPINODE *node;
+    NUTSPIBUS *bus;
 
     /* Sanity checks. */
     NUTASSERT(nfp != NULL);
@@ -564,6 +592,10 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
     dev = (NUTDEVICE *) nfp->nf_dev;
     NUTASSERT(dev->dev_dcb != NULL);
     msc = (MEMCARDSUPP *) dev->dev_dcb;
+    NUTASSERT(dev->dev_icb != NULL);
+    node = (NUTSPINODE *) dev->dev_icb;
+    NUTASSERT(node->node_bus != NULL);
+    bus = (NUTSPIBUS *) node->node_bus;
 
     /* Make sure there was no card change. */
     if (msc->mcs_cf == 0) {
@@ -574,10 +606,75 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
             buffer = fcb->fcb_blkbuf;
         }
         /* Transfer the data to the card. */
-        if (CardTxData(dev->dev_icb, MMCMD_WRITE_BLOCK, fcb->fcb_address, buffer, MMC_BLOCK_SIZE) == 0) {
-            /* Deactivate the indicator. */
-            msc->mcs_act(NUTMC_IND_OFF);
-            return 1;
+        if (num == 1) {
+            uint8_t tkn = (uint8_t)CardTxCommand(node, MMCMD_WRITE_BLOCK, fcb->fcb_address, 0);
+            if (tkn != 0xFF) {
+                if (tkn == 0) {
+                    /* Send start token. */
+                    tkn = 0xFE;
+                    (*bus->bus_transfer) (node, &tkn, NULL, 1);
+                    /* Data transfer. */
+                    (*bus->bus_transfer) (node, buffer, NULL, MMC_BLOCK_SIZE);
+                    /* Send dummy CRC. */
+                    (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 2);
+                    /* Get data response. */
+                    tkn = CardRxTkn(node);
+                    if (tkn == 0xE5) {
+                        /* Send 8 additional clocks and release the bus. */
+                        (*bus->bus_transfer) (node, NULL, NULL, 1);
+                        (*bus->bus_release) (node);
+                        /* Deactivate the indicator. */
+                        msc->mcs_act(NUTMC_IND_OFF);
+                        return 1;
+                    }
+                }
+                (*bus->bus_release) (node);
+            }
+        } else {
+            int i;
+            uint8_t tkn;
+            uint8_t *bp = (uint8_t *) buffer;
+            tkn = (uint8_t)CardTxCommand(node, MMCMD_WRITE_MULTIPLE_BLOCK, fcb->fcb_address, 0);
+            if (tkn != 0xFF) {
+                if (tkn == 0) {
+                    for (i = 0; i < num; i++) {
+                        /* Send start token. */
+                        tkn = 0xFC;
+                        (*bus->bus_transfer) (node, &tkn, NULL, 1);
+                        /* Data transfer. */
+                        (*bus->bus_transfer) (node, bp, NULL, MMC_BLOCK_SIZE);
+                        bp += MMC_BLOCK_SIZE;
+                        /* Send dummy CRC. */
+                        (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 2);
+                        /* Get data response. */
+                        tkn = CardRxTkn(node);
+                        if (tkn != 0xE5) {
+                            (*bus->bus_release) (node);
+                            msc->mcs_act(NUTMC_IND_ERROR);
+                            return -1;
+                        }
+                        for (;;) {
+                            uint8_t b;
+
+                            (*bus->bus_transfer) (node, dummy_tx_buf, &b, 1);
+                            if (b == 0xFF) {
+                                break;
+                            }
+                        }
+                    }
+                    {
+                        uint8_t b = 0xfd;
+                        (*bus->bus_transfer) (node, &b, NULL, 1);
+                    }
+                    /* Send 8 additional clocks and release the bus. */
+                    (*bus->bus_transfer) (node, NULL, NULL, 1);
+                    (*bus->bus_release) (node);
+                    /* Deactivate the indicator. */
+                    msc->mcs_act(NUTMC_IND_OFF);
+                    return num;
+                }
+                (*bus->bus_release) (node);
+            }
         }
     }
     /* Activate the error indicator. */
@@ -586,12 +683,12 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data blocks from program space to a mounted partition.
  *
  * This function is not yet implemented and will always return -1.
  *
- * Similar to SpiMmcBlockWrite() except that the data is located in 
+ * Similar to SpiMmcBlockWrite() except that the data is located in
  * program memory.
  *
  * Applications should not call this function directly, but use the
@@ -602,7 +699,7 @@ int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
  * \param num    Maximum number of blocks to write. However, writing
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
 int SpiMmcBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
@@ -624,13 +721,13 @@ int SpiMmcUnmount(NUTFILE * nfp);
  *
  * \param dev  Pointer to the MMC device.
  * \param name Partition number followed by a slash followed by a name
- *             of the file system device. Both items are optional. If no 
+ *             of the file system device. Both items are optional. If no
  *             file system driver name is given, the first file system
- *             driver found in the list of registered devices will be 
+ *             driver found in the list of registered devices will be
  *             used. If no partition number is specified or if partition
- *             zero is given, the first active primary partition will be 
+ *             zero is given, the first active primary partition will be
  *             used.
- * \param mode Opening mode. Currently ignored, but 
+ * \param mode Opening mode. Currently ignored, but
  *             \code _O_RDWR | _O_BINARY \endcode should be used for
  *             compatibility with future enhancements.
  * \param acc  File attributes, ignored.
@@ -638,7 +735,7 @@ int SpiMmcUnmount(NUTFILE * nfp);
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *SpiMmcMount(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     int partno = 0;
     int i;
@@ -714,19 +811,19 @@ NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     DumpData(fcb->fcb_blkbuf, MMC_BLOCK_SIZE);
 #endif
     /* Check for the cookie at the end of this sector. */
-	if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
+    if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
         free(fcb);
         return NUTFILE_EOF;
-	}
+    }
     /* Check for the partition table. */
-	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' && 
+    if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 1] == 'A' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 2] == 'T') {
         /* No partition table. Assume FAT12 and 32MB size. */
         fcb->fcb_part.part_type = PTYPE_FAT12;
         fcb->fcb_part.part_sect_offs = 0;
         fcb->fcb_part.part_sects = 65536; /* How to find out? */
-	}
+    }
     else {
         /* Read partition table. */
         part = (DOSPART *) & fcb->fcb_blkbuf[DOSPART_SECTORPOS];
@@ -786,7 +883,7 @@ NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  * Applications should not directly call this function, but use the high
  * level stdio routines for closing a previously opened volume.
  *
- * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp Pointer to a \ref NUTFILE structure, obtained by a previous
  *            call to SpiMmcMount().
  * \return 0 on success, -1 otherwise.
  */
@@ -867,7 +964,10 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
             MMCFCB *fcb = (MMCFCB *) par->par_nfp->nf_fcb;
 
             /* Caclaulate the byte offset. */
-            fcb->fcb_address = (par->par_blknum + fcb->fcb_part.part_sect_offs) << 9;
+            fcb->fcb_address = par->par_blknum + fcb->fcb_part.part_sect_offs;
+            if ((msc->mcs_sf & NUTMC_SF_HC) == 0) {
+                fcb->fcb_address <<= 9;
+            }
         }
         break;
     case MMCARD_GETSTATUS:
@@ -917,8 +1017,8 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Initialize MMC driver.
  *
- * Applications should not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.
@@ -927,7 +1027,9 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 int SpiMmcInit(NUTDEVICE * dev)
 {
+#ifndef ELEKTOR_IR1
     memset(dummy_tx_buf, 0xFF, MMC_BLOCK_SIZE);
+#endif
     return 0;
 }
 

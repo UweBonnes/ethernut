@@ -1,44 +1,44 @@
-/* ***** BEGIN LICENSE BLOCK ***** 
- * Version: RCSL 1.0/RPSL 1.0 
- *  
- * Portions Copyright (c) 1995-2002 RealNetworks, Inc. All Rights Reserved. 
- *      
- * The contents of this file, and the files included with this file, are 
- * subject to the current version of the RealNetworks Public Source License 
- * Version 1.0 (the "RPSL") available at 
- * http://www.helixcommunity.org/content/rpsl unless you have licensed 
- * the file under the RealNetworks Community Source License Version 1.0 
- * (the "RCSL") available at http://www.helixcommunity.org/content/rcsl, 
- * in which case the RCSL will apply. You may also obtain the license terms 
- * directly from RealNetworks.  You may not use this file except in 
- * compliance with the RPSL or, if you have a valid RCSL with RealNetworks 
- * applicable to this file, the RCSL.  Please see the applicable RPSL or 
- * RCSL for the rights, obligations and limitations governing use of the 
- * contents of the file.  
- *  
- * This file is part of the Helix DNA Technology. RealNetworks is the 
- * developer of the Original Code and owns the copyrights in the portions 
- * it created. 
- *  
- * This file, and the files included with this file, is distributed and made 
- * available on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER 
- * EXPRESS OR IMPLIED, AND REALNETWORKS HEREBY DISCLAIMS ALL SUCH WARRANTIES, 
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS 
- * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. 
- * 
- * Technology Compatibility Kit Test Suite(s) Location: 
- *    http://www.helixcommunity.org/content/tck 
- * 
- * Contributor(s): 
- *  
- * ***** END LICENSE BLOCK ***** */ 
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: RCSL 1.0/RPSL 1.0
+ *
+ * Portions Copyright (c) 1995-2002 RealNetworks, Inc. All Rights Reserved.
+ *
+ * The contents of this file, and the files included with this file, are
+ * subject to the current version of the RealNetworks Public Source License
+ * Version 1.0 (the "RPSL") available at
+ * http://www.helixcommunity.org/content/rpsl unless you have licensed
+ * the file under the RealNetworks Community Source License Version 1.0
+ * (the "RCSL") available at http://www.helixcommunity.org/content/rcsl,
+ * in which case the RCSL will apply. You may also obtain the license terms
+ * directly from RealNetworks.  You may not use this file except in
+ * compliance with the RPSL or, if you have a valid RCSL with RealNetworks
+ * applicable to this file, the RCSL.  Please see the applicable RPSL or
+ * RCSL for the rights, obligations and limitations governing use of the
+ * contents of the file.
+ *
+ * This file is part of the Helix DNA Technology. RealNetworks is the
+ * developer of the Original Code and owns the copyrights in the portions
+ * it created.
+ *
+ * This file, and the files included with this file, is distributed and made
+ * available on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND REALNETWORKS HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ *
+ * Technology Compatibility Kit Test Suite(s) Location:
+ *    http://www.helixcommunity.org/content/tck
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 /**************************************************************************************
  * Fixed-point MP3 decoder
  * Jon Recker (jrecker@real.com), Ken Cooke (kenc@real.com)
  * June 2003
  *
- * imdct.c - antialias, inverse transform (short/long/mixed), windowing, 
+ * imdct.c - antialias, inverse transform (short/long/mixed), windowing,
  *             overlap-add, frequency inversion
  **************************************************************************************/
 
@@ -58,15 +58,15 @@
  *
  * Return:      none
  *
- * Notes:       weighted average of opposite bands (pairwise) from the 8 samples 
+ * Notes:       weighted average of opposite bands (pairwise) from the 8 samples
  *                before and after each block boundary
- *              nBlocks = (nonZeroBound + 7) / 18, since nZB is the first ZERO sample 
+ *              nBlocks = (nonZeroBound + 7) / 18, since nZB is the first ZERO sample
  *                above which all other samples are also zero
  *              max gain per sample = 1.372
  *                MAX(i) (abs(csa[i][0]) + abs(csa[i][1]))
  *              bits gained = 0
  *              assume at least 1 guard bit in x[] to avoid overflow
- *                (should be guaranteed from dequant, and max gain from stproc * max 
+ *                (should be guaranteed from dequant, and max gain from stproc * max
  *                 gain from AntiAlias < 2.0)
  **************************************************************************************/
 static void AntiAlias(int *x, int nBfly)
@@ -124,7 +124,7 @@ static void AntiAlias(int *x, int nBfly)
  *              window type (0, 1, 2, 3)
  *
  * Return:      none
- * 
+ *
  * Notes:       produces 9 output samples from 18 input samples via symmetry
  *              all blocks gain at least 1 guard bit via window (long blocks get extra
  *                sign bit, short blocks can have one addition but max gain < 1.0)
@@ -169,7 +169,7 @@ static void WinPrevious(int *xPrev, int *xPrevWin, int btPrev)
 /**************************************************************************************
  * Function:    FreqInvertRescale
  *
- * Description: do frequency inversion (odd samples of odd blocks) and rescale 
+ * Description: do frequency inversion (odd samples of odd blocks) and rescale
  *                if necessary (extra guard bits added before IMDCT)
  *
  * Inputs:      output vector y (18 new samples, spaced NBANDS apart)
@@ -237,10 +237,10 @@ static int FreqInvertRescale(int *y, int *xPrev, int blockIdx, int es)
 /* format = Q31
  * #define M_PI 3.14159265358979323846
  * double u = 2.0 * M_PI / 9.0;
- * float c0 = sqrt(3.0) / 2.0; 
- * float c1 = cos(u);          
- * float c2 = cos(2*u);        
- * float c3 = sin(u);          
+ * float c0 = sqrt(3.0) / 2.0;
+ * float c1 = cos(u);
+ * float c2 = cos(2*u);
+ * float c3 = sin(u);
  * float c4 = sin(2*u);
  */
 static const int c9_0 = 0x6ed9eba1;
@@ -250,10 +250,10 @@ static const int c9_3 = 0x5246dd49;
 static const int c9_4 = 0x7e0e2e32;
 
 /* format = Q31
- * cos(((0:8) + 0.5) * (pi/18)) 
+ * cos(((0:8) + 0.5) * (pi/18))
  */
 static const int c18[9] = {
-	0x7f834ed0, 0x7ba3751d, 0x7401e4c1, 0x68d9f964, 0x5a82799a, 0x496af3e2, 0x36185aee, 0x2120fb83, 0x0b27eb5c, 
+	0x7f834ed0, 0x7ba3751d, 0x7401e4c1, 0x68d9f964, 0x5a82799a, 0x496af3e2, 0x36185aee, 0x2120fb83, 0x0b27eb5c,
 };
 
 /* require at least 3 guard bits in x[] to ensure no overflow */
@@ -350,19 +350,19 @@ static const int fastWin36[18] = {
  *
  * Notes:       this is Ken's hyper-fast algorithm, including symmetric sin window
  *                optimization, if applicable
- *              total number of multiplies, general case: 
+ *              total number of multiplies, general case:
  *                2*10 (idct9) + 9 (last stage imdct) + 36 (for windowing) = 65
  *              total number of multiplies, btCurr == 0 && btPrev == 0:
  *                2*10 (idct9) + 9 (last stage imdct) + 18 (for windowing) = 47
  *
  *              blockType == 0 is by far the most common case, so it should be
  *                possible to use the fast path most of the time
- *              this is the fastest known algorithm for performing 
+ *              this is the fastest known algorithm for performing
  *                long IMDCT + windowing + overlap-add in MP3
  *
  * Return:      mOut (OR of abs(y) for all y calculated here)
  *
- * TODO:        optimize for ARM (reorder window coefs, ARM-style pointers in C, 
+ * TODO:        optimize for ARM (reorder window coefs, ARM-style pointers in C,
  *                inline asm may or may not be helpful)
  **************************************************************************************/
 static int IMDCT36(int *xCurr, int *xPrev, int *y, int btCurr, int btPrev, int blockIdx, int gb)
@@ -432,7 +432,7 @@ static int IMDCT36(int *xCurr, int *xPrev, int *y, int btCurr, int btPrev, int b
 			mOut |= FASTABS(yHi);
 		}
 	} else {
-		/* slower method - either prev or curr is using window type != 0 so do full 36-point window 
+		/* slower method - either prev or curr is using window type != 0 so do full 36-point window
 		 * output xPrevWin has at least 3 guard bits (xPrev has 2, gain 1 in WinPrevious)
 		 */
 		WinPrevious(xPrev, xPrevWin, btPrev);
@@ -465,7 +465,7 @@ static int IMDCT36(int *xCurr, int *xPrev, int *y, int btCurr, int btPrev, int b
 static const int c3_0 = 0x6ed9eba1;	/* format = Q31, cos(pi/6) */
 static const int c6[3] = { 0x7ba3751d, 0x5a82799a, 0x2120fb83 };	/* format = Q31, cos(((0:2) + 0.5) * (pi/6)) */
 
-/* 12-point inverse DCT, used in IMDCT12x3() 
+/* 12-point inverse DCT, used in IMDCT12x3()
  * 4 input guard bits will ensure no overflow
  */
 static __inline void imdct12 (int *x, int *out)
@@ -518,7 +518,7 @@ static __inline void imdct12 (int *x, int *out)
  * Description: three 12-point modified DCT's for short blocks, with windowing,
  *                short block concatenation, and overlap-add
  *
- * Inputs:      3 interleaved vectors of 6 samples each 
+ * Inputs:      3 interleaved vectors of 6 samples each
  *                (block0[0], block1[0], block2[0], block0[1], block1[1]....)
  *              overlap part of last IMDCT (9 samples - see output comments)
  *              window type (0,1,2,3) of previous block
@@ -558,7 +558,7 @@ static int IMDCT12x3(int *xCurr, int *xPrev, int *y, int btPrev, int blockIdx, i
 	/* window previous from last time */
 	WinPrevious(xPrev, xPrevWin, btPrev);
 
-	/* could unroll this for speed, minimum loads (short blocks usually rare, so doesn't make much overall difference) 
+	/* could unroll this for speed, minimum loads (short blocks usually rare, so doesn't make much overall difference)
 	 * xPrevWin[i] << 2 still has 1 gb always, max gain of windowed xBuf stuff also < 1.0 and gain the sign bit
 	 * so y calculations won't overflow
 	 */
@@ -631,7 +631,7 @@ static int HybridTransform(int *xCurr, int *xPrev, int y[BLOCK_SIZE][NBANDS], Si
 	for(i = 0; i < bc->nBlocksLong; i++) {
 		/* currWinIdx picks the right window for long blocks (if mixed, long blocks use window type 0) */
 		currWinIdx = sis->blockType;
-		if (sis->mixedBlock && i < bc->currWinSwitch) 
+		if (sis->mixedBlock && i < bc->currWinSwitch)
 			currWinIdx = 0;
 
 		prevWinIdx = bc->prevType;
@@ -689,7 +689,7 @@ static int HybridTransform(int *xCurr, int *xPrev, int y[BLOCK_SIZE][NBANDS], Si
 	
 	/* clear rest of blocks */
 	for (   ; i < 32; i++) {
-		for (j = 0; j < 18; j++) 
+		for (j = 0; j < 18; j++)
 			y[j][i] = 0;
 	}
 
@@ -724,7 +724,7 @@ int IMDCT(MP3DecInfo *mp3DecInfo, int gr, int ch)
 	BlockCount bc;
 
 	/* validate pointers */
-	if (!mp3DecInfo || !mp3DecInfo->FrameHeaderPS || !mp3DecInfo->SideInfoPS || 
+	if (!mp3DecInfo || !mp3DecInfo->FrameHeaderPS || !mp3DecInfo->SideInfoPS ||
 		!mp3DecInfo->HuffmanInfoPS || !mp3DecInfo->IMDCTInfoPS)
 		return -1;
 
@@ -735,8 +735,8 @@ int IMDCT(MP3DecInfo *mp3DecInfo, int gr, int ch)
 	mi = (IMDCTInfo *)(mp3DecInfo->IMDCTInfoPS);
 
 	/* anti-aliasing done on whole long blocks only
-	 * for mixed blocks, nBfly always 1, except 3 for 8 kHz MPEG 2.5 (see sfBandTab) 
-     *   nLongBlocks = number of blocks with (possibly) non-zero power 
+	 * for mixed blocks, nBfly always 1, except 3 for 8 kHz MPEG 2.5 (see sfBandTab)
+     *   nLongBlocks = number of blocks with (possibly) non-zero power
 	 *   nBfly = number of butterflies to do (nLongBlocks - 1, unless no long blocks)
 	 */
 	blockCutoff = fh->sfBand->l[(fh->ver == MPEG1 ? 8 : 6)] / 18;	/* same as 3* num short sfb's in spec */
@@ -753,7 +753,7 @@ int IMDCT(MP3DecInfo *mp3DecInfo, int gr, int ch)
 		bc.nBlocksLong = 0;
 		nBfly = 0;
 	}
- 
+
 	AntiAlias(hi->huffDecBuf[ch], nBfly);
 	hi->nonZeroBound[ch] = MAX(hi->nonZeroBound[ch], (nBfly * 18) + 8);
 

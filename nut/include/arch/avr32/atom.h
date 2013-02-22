@@ -38,13 +38,13 @@
  */
 
 /*
-	WHEN CHANGING PLEASE NOTICE:
-	Errata 41.5.5.5 reads:
-	"Need two NOPs instruction after instructions masking interrupts
-	The instructions following in the pipeline the instruction masking the interrupt through SR
-	may behave abnormally.
-	Fix/Workaround
-	Place two NOPs instructions after each SSRF or MTSR instruction setting IxM or GM in SR."
+    WHEN CHANGING PLEASE NOTICE:
+    Errata 41.5.5.5 reads:
+    "Need two NOPs instruction after instructions masking interrupts
+    The instructions following in the pipeline the instruction masking the interrupt through SR
+    may behave abnormally.
+    Fix/Workaround
+    Place two NOPs instructions after each SSRF or MTSR instruction setting IxM or GM in SR."
 */
 
 #ifndef _SYS_ATOM_H_
@@ -65,33 +65,33 @@
 #error Not Working
 #define NutEnterCritical()               \
 {                                        \
-	register int temp_;                  \
-	__asm__ volatile (                       \
-	"mfsr    r10, %[SR]"                "\n\t" \
-	"pushm   r10"     "\n\t"        \
-	"ssrf    %[SR_GM_OFFSET]"     "\n\t"        \
-	: [temp] "=r" (temp_) \
-	: [SR] "i" (AVR32_SR), \
-	  [SR_GM_OFFSET] "i" (AVR32_SR_GM_OFFSET) \
-	: "memory", "cc", "r10"); \
+    register int temp_;                  \
+    __asm__ volatile (                       \
+    "mfsr    r10, %[SR]"                "\n\t" \
+    "pushm   r10"     "\n\t"        \
+    "ssrf    %[SR_GM_OFFSET]"     "\n\t"        \
+    : [temp] "=r" (temp_) \
+    : [SR] "i" (AVR32_SR), \
+      [SR_GM_OFFSET] "i" (AVR32_SR_GM_OFFSET) \
+    : "memory", "cc", "r10"); \
 }
 
 #define NutExitCritical() \
 { \
-	register int temp_; \
-	__asm__ volatile (             \
-	"popm    r10"                                     "\n\t" \
-	"andl    r10, LO(%[SR_GM_MASK])"               "\n\t" \
-	"andh    r10, HI(%[SR_GM_MASK])"               "\n\t" \
-	"cp.w    r10, 0"                               "\n\t" \
-	"breq   LABEL_INT_SKIP_ENABLE_INTERRUPTS_%[LINE]" "\n\t" \
-	"csrf   %[SR_GM_OFFSET]"                          "\n\t" \
-	"LABEL_INT_SKIP_SAVE_CONTEXT_%[LINE]:"            "\n\t" \
-	: [temp] "=r" (temp_)                                    \
-	: [SR_GM_OFFSET] "i" (AVR32_SR_GM_OFFSET),               \
-	  [SR_GM_MASK]   "i" (AVR32_SR_GM_MASK),                 \
-	  [LINE] "i" (__LINE__)                                  \
-	: "memory", "cc", "r10");                                \
+    register int temp_; \
+    __asm__ volatile (             \
+    "popm    r10"                                     "\n\t" \
+    "andl    r10, LO(%[SR_GM_MASK])"               "\n\t" \
+    "andh    r10, HI(%[SR_GM_MASK])"               "\n\t" \
+    "cp.w    r10, 0"                               "\n\t" \
+    "breq   LABEL_INT_SKIP_ENABLE_INTERRUPTS_%[LINE]" "\n\t" \
+    "csrf   %[SR_GM_OFFSET]"                          "\n\t" \
+    "LABEL_INT_SKIP_SAVE_CONTEXT_%[LINE]:"            "\n\t" \
+    : [temp] "=r" (temp_)                                    \
+    : [SR_GM_OFFSET] "i" (AVR32_SR_GM_OFFSET),               \
+      [SR_GM_MASK]   "i" (AVR32_SR_GM_MASK),                 \
+      [LINE] "i" (__LINE__)                                  \
+    : "memory", "cc", "r10");                                \
 }
 
 #else /* NUT_CRITICAL_NESTING_STACK */
@@ -110,20 +110,20 @@ extern unsigned int critical_nesting_level;
 
 #define NutEnterCritical() \
 {                                 \
-	__asm__ __volatile__ (        \
-	"ssrf\t%0"      "\n\t"        \
-	"nop"		    "\n\t"        \
-	"nop"	        "\n\t"        \
-	:: "i" (AVR32_SR_GM_OFFSET)   \
-	: "memory");				  \
+    __asm__ __volatile__ (        \
+    "ssrf\t%0"      "\n\t"        \
+    "nop"           "\n\t"        \
+    "nop"           "\n\t"        \
+    :: "i" (AVR32_SR_GM_OFFSET)   \
+    : "memory");                  \
 }
 
 #define NutExitCritical()         \
 {                                 \
-	__asm__ __volatile__ (        \
-	"csrf\t%0"      "\n\t"        \
+    __asm__ __volatile__ (        \
+    "csrf\t%0"      "\n\t"        \
     :: "i" (AVR32_SR_GM_OFFSET)   \
-	: "memory");				  \
+    : "memory");                  \
 }
 
 #endif /* NUT_CRITICAL_NESTING */

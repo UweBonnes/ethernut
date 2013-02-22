@@ -53,7 +53,7 @@
 /*!
  * \brief Find the node's location by a given item.
  *
- * Like LiLiFindItem(), but returns the first node of which the item is 
+ * Like LiLiFindItem(), but returns the first node of which the item is
  * larger than the given item. This function is useful for sorted lists
  * only.
  *
@@ -117,7 +117,7 @@ LILI_NODE *LiLiFindItem(LILI *list, LILI_ITEMREF ref)
  * items to a list.
  *
  * If the attribute LILI_F_SORT has been set when creating the list,
- * then a node will be inserted before the first node, of which the 
+ * then a node will be inserted before the first node, of which the
  * item is larger or equal than the given one.
  *
  * If the attribute LILI_F_UNIQUE has been set and if a node with
@@ -148,7 +148,7 @@ int LiLiPushItem(LILI *list, LILI_ITEMREF ref)
             /* A sorted list, compare the new with the last item. */
             rc = list->lst_icompare(LiLiNodeItem(node), ref);
             if (rc <= 0) {
-                /* The new item is greater or equal, so we should append 
+                /* The new item is greater or equal, so we should append
                 ** it. But only, if either the items are not equal or if
                 ** this is not a list of unique items only. */
                 if (rc || !LiLiHasUniqueItems(list)) {
@@ -181,8 +181,8 @@ int LiLiPushItem(LILI *list, LILI_ITEMREF ref)
  *
  * \param list Pointer to a list object, obtained from a previous call
  *             to LiLiCreate().
- * \param refp Pointer that receives the item's reference of the removed 
- *             node. If a copy of the item object has been created during 
+ * \param refp Pointer that receives the item's reference of the removed
+ *             node. If a copy of the item object has been created during
  *             list insertion, then the caller is responsible for destroying
  *             it.
  *
@@ -198,7 +198,7 @@ int LiLiPopItem(LILI *list, LILI_ITEMREF *refp)
     /* Get the first node, check if the list is empty. */
     node = LiLiFirstNode(list);
     if (node) {
-        /* List is not empty. However, if this is a FIFO queue, remove 
+        /* List is not empty. However, if this is a FIFO queue, remove
         ** the last node instead. */
         if (LiLiIsFifo(list)) {
             node = LiLiLastNode(list);

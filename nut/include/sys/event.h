@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -135,7 +135,7 @@
  * handlers to wakeup waiting user threads.
  *
  * Internally a counter is used to keep track of the posted events.
- * This counter will be examined when the currently running thread is 
+ * This counter will be examined when the currently running thread is
  * ready to release the CPU.
  *
  * \note When calling this function, interrupt routines will change
@@ -157,9 +157,6 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes. */
-
 extern void NutEventTimeout(HANDLE timer, void *arg);
 
 extern int NutEventWait(volatile HANDLE *qhp, uint32_t ms);
@@ -168,8 +165,5 @@ extern int NutEventPostAsync(volatile HANDLE *qhp);
 extern int NutEventPost(volatile HANDLE *qhp);
 extern int NutEventBroadcastAsync(volatile HANDLE *qhp);
 extern int NutEventBroadcast(volatile HANDLE *qhp);
-
-__END_DECLS
-/* */
 
 #endif

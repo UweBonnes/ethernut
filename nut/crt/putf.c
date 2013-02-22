@@ -20,11 +20,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -114,8 +114,8 @@
 #ifdef STDIO_FLOATING_POINT
 
 #include <math.h>
-#define	BUF	16
-#define	DEFPREC	6
+#define BUF 16
+#define DEFPREC 6
 
 #if defined(__arm__)
 /*
@@ -131,22 +131,27 @@ char *(*sbrk_force)(size_t) = _sbrk;
 
 #else
 
-#define	BUF	16
+#define BUF 16
 
 #endif                          /* STDIO_FLOATING_POINT */
 
-#define	PADSIZE	16
-static char blanks[PADSIZE] = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+#define PADSIZE 16
+#if !defined(__AVR__)
+#define NUTCONST const
+#else
+#define NUTCONST
+#endif
+static NUTCONST char blanks[PADSIZE] = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' '
 };
-static char zeroes[PADSIZE] = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+static NUTCONST char zeroes[PADSIZE] = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
     '0', '0'
 };
 
 /*
  *
  */
-static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch, int count)
+static void _putpad(int _putb(int fd, const void *, size_t), int fd, NUTCONST char *padch, int count)
 {
     while (count > PADSIZE) {
         _putb(fd, padch, PADSIZE);
@@ -159,10 +164,10 @@ static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch
 /*
  * Flags used during conversion.
  */
-#define	ALT		0x01    /* alternate form */
-#define	LADJUST		0x04    /* left adjustment */
-#define	LONGINT		0x08    /* long integer */
-#define	ZEROPAD		0x10    /* zero (as opposed to blank) pad */
+#define ALT     0x01    /* alternate form */
+#define LADJUST     0x04    /* left adjustment */
+#define LONGINT     0x08    /* long integer */
+#define ZEROPAD     0x10    /* zero (as opposed to blank) pad */
 
 /*!
  * \brief Write formatted data using a given output function.
@@ -175,7 +180,7 @@ static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch
  *
  *
  */
-int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list ap)
+int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list ap)
 {
     uint8_t ch;                 /* character from fmt */
     int n;                      /* handy integer (short term usage) */
@@ -542,7 +547,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
 
         _putpad(_putb, fd, zeroes, dprec - size);
 
-        if (size)		/* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
+        if (size)       /* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
             _putb(fd, cp, size);
 
 #ifdef __HARVARD_ARCH__

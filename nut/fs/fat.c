@@ -3,46 +3,46 @@
 *
 *  Copyright (c) 2002-2003 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
 *  History:
 *
-*  14.12.02  mifi   First Version 
+*  14.12.02  mifi   First Version
 *  23.12.02  mifi   Add FileOpen, FileClose, FileError, FileSize,
 *                   FileSeek and FileRead. But the FileSeek function.
 *                   does not work in the moment, later...
 *  28.12.02  mifi   Now support FAT16 AND FAT32.
-*  01.01.03  mifi   Support long directory entries, but without to 
+*  01.01.03  mifi   Support long directory entries, but without to
 *                   check the checksum of the short entry.
 *                   Change FAT32FileSize return value from int to long.
 *                   The max size of a long filename segment is
 *                   (FAT_LONG_NAME_LEN-1). But the complete filename can
-*                   be longer. 
+*                   be longer.
 *
 *                   segment1/segment2/segment3/index.html
 *
@@ -53,10 +53,10 @@
 *  25.01.03  mifi   Implement a new FindFile function.
 *                   I have some trouble with short file names under
 *                   Win98. Win98 store a short name like "enlogo.gif"
-*                   as a long name, nasty OS. 
+*                   as a long name, nasty OS.
 *                   Remove FAT32_MAX_FILES and the array aFileHandle,
-*                   a file handle will now be allocated by NutHeapAlloc, 
-*                   therefore we have no restrictions about the count of 
+*                   a file handle will now be allocated by NutHeapAlloc,
+*                   therefore we have no restrictions about the count of
 *                   the open file handle. (Only by available memory)
 *  27.01.03  mifi   Rename all FAT32xxx function to FATxxx.
 *
@@ -159,14 +159,14 @@
 // DIRECTORY_ATTRIBUTE_VOLUME_ID   |
 // DIRECTORY_ATTRIBUTE_DIRECTORY   |
 // DIRECTORY_ATTRIBUTE_ARCHIVE
-// 
+//
 #define DIRECTORY_ATTRIBUTE_LONG_NAME_MASK  0x3F
 
 #define FAT_NAME_LEN                    8
 #define FAT_EXT_LEN                     3
 
 //
-// FAT_SHORT_NAME_LEN name len = 
+// FAT_SHORT_NAME_LEN name len =
 // name + ext + 1 for the point
 //
 #define FAT_SHORT_NAME_LEN              (FAT_NAME_LEN+FAT_EXT_LEN+1)
@@ -175,7 +175,7 @@
 
 //
 // Some stuff for HD and CD, DRIVE_INFO Flags
-// 
+//
 //
 #define FLAG_FAT_IS_CDROM               0x0001
 #define FLAG_FAT_IS_ZIP                 0x0002
@@ -263,13 +263,13 @@ typedef struct _bpbfat32 {
     DWORD FATSz32;              // xxx
     WORD ExtFlags;              // 0
     WORD FSVer;                 // must 0
-    DWORD RootClus;             // 
+    DWORD RootClus;             //
     WORD FSInfo;                // typically 1
     WORD BkBootSec;             // typically 6
     BYTE Reserved[12];          // set all to zero
     BYTE DrvNum;                // must 0x80
     BYTE Reserved1;             // set all to zero
-    BYTE BootSig;               // must 0x29 
+    BYTE BootSig;               // must 0x29
     DWORD VollID;               // xxx
     BYTE VolLab[11];            // "abcdefghijk"
     BYTE FilSysType[8];         // "FAT32   "
@@ -485,7 +485,7 @@ static DWORD GetNextCluster(DRIVE_INFO * pDrive, DWORD dwCluster)
         if (pDrive->bIsFAT32 == TRUE) {
             //
             //  (IDE_SECTOR_SIZE / sizeof(long)) == 128
-            // 
+            //
             dwSector = (dwCluster / 128) + pDrive->dwFAT1StartSector;
             dwIndex = dwCluster % 128;
 
@@ -500,7 +500,7 @@ static DWORD GetNextCluster(DRIVE_INFO * pDrive, DWORD dwCluster)
         } else {                /* FAT16 */
             //
             //  (IDE_SECTOR_SIZE / sizeof(word)) == 256
-            // 
+            //
             dwSector = (dwCluster / 256) + pDrive->dwFAT1StartSector;
             dwIndex = dwCluster % 256;
 
@@ -685,7 +685,7 @@ static DWORD FindFileATAPI(DRIVE_INFO * pDrive,
                     (strncmp((char*)&pDirEntry->bName[0], pLongName, bLongNameLen) == 0)) {
                     //
                     // We have found the file :-)
-                    // 
+                    //
                     dwSector = pDirEntry->dwFirstSector;
                     *pFileSize = pDirEntry->dwEntrySize;
                     // Sorry for the return here :-(
@@ -748,7 +748,7 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
     if (bOrder == 0xE5) {
         //
         // I do not know what should I do if the bOrder is 0xe5.
-        // This is a sign for a "empty" entry. 
+        // This is a sign for a "empty" entry.
         //
         bError = TRUE;
     }
@@ -824,7 +824,7 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
                     if ((pDirEntryLong->Attribute == DIRECTORY_ATTRIBUTE_LONG_NAME) && (pDirEntryLong->Order == bOrder)) {
                         //
                         // Next bOrder is bOrder--
-                        //  
+                        //
                         if (bOrder & 0x40) {
                             bOrder &= ~0x40;
 
@@ -969,7 +969,7 @@ static int MountIDE(int nDrive)
     } else {
         //
         // Try to find a PartitionTable.
-        // 
+        //
         nError = IDEReadSectors(nDrive, pSectorBuffer, 0, 1);
         if (nError == IDE_OK) {
             pPartitionTable = (FAT32_PARTITION_TABLE *) pSectorBuffer;
@@ -978,7 +978,7 @@ static int MountIDE(int nDrive)
                 if (pPartitionTable->Partition[0].NumSectors) {
                     //
                     // We found a PartitionTable, read BootRecord.
-                    // 
+                    //
                     dwSector = pPartitionTable->Partition[0].StartSectors;
                 }
             }
@@ -1213,7 +1213,7 @@ static int FATInit(NUTDEVICE * pDevice)
 /*                                                          */
 /*              A return value of -1 indicates an error.    */
 /************************************************************/
-static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName, int nMode, int nAccess)
+static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, const char *pName, int nMode, int nAccess)
 {
     int i, x;
     int nError;
@@ -1253,7 +1253,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName, int nMode, i
 
     //
     // hNUTFile is the.... correct, NUT handle.
-    //   
+    //
     hNUTFile = (NUTFILE *) NUTDEV_ERROR;
 
     if (pDevice != NULL) {
@@ -1273,7 +1273,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName, int nMode, i
 
         //
         // Create a new file handle.
-        //    
+        //
         hFile = (FHANDLE *) NutHeapAlloc(sizeof(FHANDLE));
 
         if ((pDrive->dwFAT1StartSector) && (hFile != NULL) && (*pName != '.')) {
@@ -1287,7 +1287,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName, int nMode, i
 
             //
             // If the first char a "/", jump over, e.g. "/index.html"
-            // 
+            //
             //
             if (*pName == '/') {
                 pName++;
@@ -1482,7 +1482,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName, int nMode, i
                 hNUTFile->nf_fcb = hFile;
             } else {
                 //
-                // Error, no mem for the NUT-Handle, therefore we 
+                // Error, no mem for the NUT-Handle, therefore we
                 // can delete our FAT-Handle too.
                 //
                 NutHeapFree(hFile);
@@ -1738,7 +1738,7 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
     return (nBytesRead);
 }
 
-static int FATFileWrite(NUTFILE * hNUTFile, CONST void *pData, int nSize)
+static int FATFileWrite(NUTFILE * hNUTFile, const void *pData, int nSize)
 {
     int nError;
 

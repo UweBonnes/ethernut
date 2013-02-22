@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -76,21 +76,21 @@
  * \param name The name of a registered device, optionally followed by a
  *             colon and a filename.
  * \param mode Specifies the access mode.
- *	       \li \c "r" Read only.
- *	       \li \c "w" Write only.
- *	       \li \c "a" Write only at the end of file.
- *	       \li \c "r+" Read and write existing file.
- *	       \li \c "w+" Read and write, destroys existing file contents.
- *	       \li \c "a+" Read and write, preserves existing file contents.
- *             \li \c "b" May be appended to any of the above strings to 
+ *         \li \c "r" Read only.
+ *         \li \c "w" Write only.
+ *         \li \c "a" Write only at the end of file.
+ *         \li \c "r+" Read and write existing file.
+ *         \li \c "w+" Read and write, destroys existing file contents.
+ *         \li \c "a+" Read and write, preserves existing file contents.
+ *             \li \c "b" May be appended to any of the above strings to
  *                        specify binary access.
  *
  * \param stream Pointer to a previously opened stream.
  *
- * \return A pointer to the open stream or a null pointer to indicate 
+ * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
  */
-FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
+FILE *freopen(const char *name, const char *mode, FILE * stream)
 {
     int mflags = _O_TEXT;
     uint_fast8_t i;
@@ -109,7 +109,7 @@ FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
 
     //if (stream)
     //    _close(stream->iob_fd);
-    //else 
+    //else
     if ((__iob[i] = malloc(sizeof(FILE))) == 0)
         return 0;
 

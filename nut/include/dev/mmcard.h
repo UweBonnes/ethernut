@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -69,6 +69,8 @@
 
 #define NUTMC_SF_CD     0x01
 #define NUTMC_SF_WP     0x02
+#define NUTMC_SF_HC     0x04
+#define NUTMC_SF_ILL    0x80
 
 #define NUTMC_IND_OFF   0
 #define NUTMC_IND_READ  1
@@ -98,19 +100,33 @@ typedef struct _MMCIFC {
     /*! Initialize the card. */
     int (*mmcifc_in) (void);
     /*! Read received byte and transmit a new one. */
-     uint8_t(*mmcifc_io) (uint8_t);
+    uint8_t(*mmcifc_io) (uint8_t);
     /*! Select or deselect the card. */
     int (*mmcifc_cs) (int);
     /*! Query card detect. */
     int (*mmcifc_cd) (void);
     /*! Query write protect. */
     int (*mmcifc_wp) (void);
+    /*! Set addressing mode. */
+    int (*mmcifc_sm) (int);
+    /*! Get addressing mode. */
+    int (*mmcifc_gm) (void);
 } MMCIFC;
 
 #define MMCMD_HOST                      0x40
 #define MMCMD_RESET_CRC                 0x95
+#define MMCMD_IF_COND_CRC               0x87
 
-/*! \brief Reset card to idle state. 
+
+/*!
+ * \brief Addressing mode selection flags
+ * SD-HC uses byte addressing, SD-normal uses block addressing
+ */
+
+#define MMC_BLOCK_MODE                  0   // access card in block mode,
+#define MMC_BYTE_MODE                   1   // acces card using byte-addresses iso sector addresses
+
+/*! \brief Reset card to idle state.
  *
  * In idle state the card will not accept any other commands than
  * MMCMD_SEND_OP_COND or MMCMD_READ_OCR.
@@ -132,6 +148,10 @@ typedef struct _MMCIFC {
 
 /*! \brief Assign relative card address. */
 #define MMCMD_SELECT_CARD               7
+
+/*! \brief negociate operating voltage (mandatory for 2.0). */
+// TODO: Double command? Same as extcsd?
+#define MMCMD_SEND_IF_COND              8
 
 /*! \brief Query card's extended CSD. */
 #define MMCMD_SEND_EXTCSD               8
@@ -196,7 +216,7 @@ typedef struct _MMCIFC {
 /*! \brief Query card's operating condition register. */
 #define MMCMD_READ_OCR                  58
 
-/*! \brief Enable or disable CRC mode. 
+/*! \brief Enable or disable CRC mode.
  *
  * In SPI mode CRC is disabled by default.
  */
@@ -325,7 +345,7 @@ typedef struct _MMCIFC {
 /*!
  * \brief Multimedia card identification register.
  */
-typedef struct __attribute__ ((packed)) _MMC_CID {
+typedef struct NUT_PACKED_TYPE _MMC_CID {
     /*! \brief Manufacturer identifier. */
     uint8_t mmcid_mid;
     /*! \brief OEM/Application identifier. */
@@ -345,7 +365,7 @@ typedef struct __attribute__ ((packed)) _MMC_CID {
 /*!
  * \brief Multimedia card identification register.
  */
-typedef struct __attribute__ ((packed)) _MMC_CSD {
+typedef struct NUT_PACKED_TYPE _MMC_CSD {
     /*! \brief Card specification. */
     uint8_t mmcsd_spec;
     /*! \brief Data read access time. */
@@ -356,7 +376,7 @@ typedef struct __attribute__ ((packed)) _MMC_CSD {
     uint8_t mmcsd_speed;
     /*! \brief Card command classes and max. read block length. */
     uint8_t mmcsd_ccc_bl[2];
-    /*! \brief Read-only fields. 
+    /*! \brief Read-only fields.
      *
      * - [0] 0..1 Device size bits 10..11.
      * - [0] 2..3 Reserved.
@@ -394,28 +414,24 @@ typedef struct __attribute__ ((packed)) _MMC_CSD {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int MmCardDevInit(NUTDEVICE * dev);
 extern int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int MmCardBlockRead(NUTFILE * nfp, void *buffer, int len);
-extern int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int len);
+extern int MmCardBlockWrite(NUTFILE * nfp, const void *buffer, int len);
 #ifdef __HARVARD_ARCH__
 extern int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *MmCardMount(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int MmCardUnmount(NUTFILE * nfp);
 
 extern int SpiMmcInit(NUTDEVICE * dev);
 extern int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num);
-extern int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num);
+extern int SpiMmcBlockWrite(NUTFILE * nfp, const void *buffer, int num);
 #ifdef __HARVARD_ARCH__
 extern int SpiMmcBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif
-extern NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *SpiMmcMount(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int SpiMmcUnmount(NUTFILE * nfp);
 
-__END_DECLS
-/* End of prototypes */
 #endif

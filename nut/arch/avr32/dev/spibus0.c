@@ -270,7 +270,7 @@ int Avr32Spi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 * \param tmo  Timeout in milliseconds. To disable timeout, set this
 *             parameter to NUT_WAIT_INFINITE.
 *
-* \return 0 on success. In case of an error, -1 is returned and the bus 
+* \return 0 on success. In case of an error, -1 is returned and the bus
 *         is not locked.
 */
 int Avr32SpiBus0Select(NUTSPINODE * node, uint32_t tmo)
@@ -372,7 +372,7 @@ void Avr32SpiBus0Interrupt(void *arg)
     }
 }
 
-/*! 
+/*!
 * \brief Transfer data on the SPI bus using single buffered interrupt mode.
 *
 * A device must have been selected by calling Avr32SpiSelect().
@@ -386,9 +386,9 @@ void Avr32SpiBus0Interrupt(void *arg)
 *
 * \return Always 0.
 */
-int Avr32SpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int Avr32SpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
-    uint8_t b = 0xff;
+    uint16_t b = 0xff;
     uintptr_t base;
 
     /* Sanity check. */
@@ -398,17 +398,42 @@ int Avr32SpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int 
     base = node->node_bus->bus_base;
 
     if (xlen) {
-        spi0_txp = (uint8_t *) txbuf;
-        spi0_rxp = (uint8_t *) rxbuf;
-        spi0_xc = (size_t) xlen;
-        if (spi0_txp) {
-            b = *spi0_txp++;
+        if ( txbuf ) {
+            if ( node->node_bits == 16 ) {
+                b = *(uint16_t *) txbuf;
+            }
+            else if ( node->node_bits == 8 ) {
+                b = *(uint8_t *)txbuf;
+            }
         }
         /* Enable and kick interrupts. */
         outr(base + AVR32_SPI_IER, AVR32_SPI_IER_RDRF_MASK);
-        outr(base + AVR32_SPI_TDR, (b << AVR32_SPI_TDR_TD_OFFSET));
+        if (node->node_bits == 8) {
+            outr(base + AVR32_SPI_TDR, (b << AVR32_SPI_TDR_TD_OFFSET));
+        }
+        else if (node->node_bits == 16) {
+            outr(base + AVR32_SPI_TDR, b);
+        }
         /* Wait until transfer has finished. */
         NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
+
+        /* Wait for data is send */
+        while ((inr(base + AVR32_SPI_SR) & AVR32_SPI_TXEMPTY_MASK) == 0);
+        /* Read incoming data. */
+        if (node->node_bits == 8) {
+            b = (uint8_t) inr(base + AVR32_SPI_RDR) >> AVR32_SPI_RDR_RD_OFFSET;
+        }
+        else if (node->node_bits == 16) {
+            b = (uint16_t) inr(base + AVR32_SPI_RDR);
+        }
+        if (rxbuf) {
+            if (node->node_bits == 8) {
+                *(uint8_t *)rxbuf++ = b;
+            }
+            else if ( node->node_bits == 16) {
+                *(uint16_t *)rxbuf++ = b;
+            }
+        }
         outr(base + AVR32_SPI_IDR, (unsigned int) -1);
     }
     return 0;

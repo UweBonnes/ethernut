@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -35,94 +35,13 @@
  * Jesper Hansen <jesperh@telia.com>. Many thanks for all his help.
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/08/11 06:59:18  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file arch/avr/dev/vs1001k.c
+ * \brief Legacy support for VS1001K.
  *
- * Revision 1.3  2006/05/15 11:46:00  haraldkipp
- * Bug corrected, which stopped player on flush. Now flushing plays
- * the remaining bytes in the buffer.
- * VS1001 ports are now fully configurable.
- * Several changes had been added to adapt the code to newer
- * Nut/OS style, like replacing outp with outb and using API
- * routines for interrupt control.
- *
- * Revision 1.2  2006/01/23 19:52:10  haraldkipp
- * Added required typecasts before left shift.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.2  2003/07/21 18:06:34  haraldkipp
- * Buffer function removed. The driver is now using the banked memory routines.
- * New functions allows the application to enable/disable decoder interrupts.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:58  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.12  2003/05/06 18:35:21  harald
- * ICCAVR port
- *
- * Revision 1.11  2003/04/21 16:43:54  harald
- * Added more comments.
- * Avoid initializing static globals to zero.
- * New function VsSdiWrite/_P checks DREQ
- * Removed decoder interrupt en/disable from low level routines.
- * Keep decoder in reset state until ports have been initialized.
- * Do not send initial zero bytes as the datasheet recommends.
- * A single nop is sufficient delay during reset active.
- * Clear interrupt flag after reset to avoid useless interrupt.
- * Available buffer size corrected.
- * New function to read header information.
- * New function invokes decoder memory test.
- * Beep makes use of VsSdiWrite.
- *
- * Revision 1.10  2003/04/18 14:46:08  harald
- * Copyright update by the maintainer, after none of the original code had
- * been left. We have a clean BSD licence now.
- * This release had been prepared by Pavel Chromy.
- * BSYNC vs. transfer in progress issue in VsSdiPutByte().
- * Fixed possible transfer in progress issue in VsPlayerFeed().
- * HW reset may be forced by VS_SM_RESET mode bit
- *
- * Revision 1.9  2003/04/07 20:29:20  harald
- * Redesigned by Pavel Chromy
- *
- * Revision 1.9  2003/04/04 15:01:00  mac
- * VS_STATUS_EMTY is reported correctly.
- *
- * Revision 1.9  2003/02/14 13:39:00  mac
- * Several serious bugs fixed,
- * interrupt routine completely remade.
- * Unreliable spurious interrupts detection removed.
- * Mpeg frame detection removed.
- * Watermark check removed (this was rather limiting)
- * Can be optionaly compiled not to use SPI
- *
- * Revision 1.8  2003/02/04 17:50:55  harald
- * Version 3 released
- *
- * Revision 1.7  2003/01/14 16:15:19  harald
- * Sending twice the number of zeros to end MP3 stream.
- * Check for spurious interrupts to detect hanging chip.
- * Simpler portable inline assembler for short delays.
- *
- * Revision 1.6  2002/11/02 15:15:13  harald
- * Library dependencies removed
- *
- * Revision 1.5  2002/09/15 16:44:14  harald
- * *** empty log message ***
- *
- * Revision 1.4  2002/08/16 17:49:02  harald
- * First public release
- *
- * Revision 1.3  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*
@@ -149,10 +68,10 @@
 /*@{*/
 
 #ifndef VS_SCK_BIT
-/*! 
- * \brief VS1001 serial control interface clock input bit. 
+/*!
+ * \brief VS1001 serial control interface clock input bit.
  *
- * The first rising clock edge after XCS has gone low marks the first 
+ * The first rising clock edge after XCS has gone low marks the first
  * bit to be written to the decoder.
  */
 #define VS_SCK_BIT      0
@@ -176,9 +95,9 @@
 
 #ifndef VS_SS_BIT
 /*!
- * \brief VS1001 serial data interface clock input bit. 
+ * \brief VS1001 serial data interface clock input bit.
  */
-#define VS_SS_BIT       1       
+#define VS_SS_BIT       1
 #endif
 
 #if !defined(VS_SS_AVRPORT) || (VS_SS_AVRPORT == AVRPORTB)
@@ -203,7 +122,7 @@
  *
  * The decoder samples this input on the rising edge of SCK if XCS is low.
  */
-#define VS_SI_BIT       2       
+#define VS_SI_BIT       2
 #endif
 
 #if !defined(VS_SI_AVRPORT) || (VS_SI_AVRPORT == AVRPORTB)
@@ -224,10 +143,10 @@
 
 #ifndef VS_SO_BIT
 /*!
- * \brief VS1001 serial control interface data output. 
+ * \brief VS1001 serial control interface data output.
  *
- * If data is transfered from the decoder, bits are shifted out on the 
- * falling SCK edge. If data is transfered to the decoder, SO is at a 
+ * If data is transfered from the decoder, bits are shifted out on the
+ * falling SCK edge. If data is transfered to the decoder, SO is at a
  * high impedance state.
  */
 #define VS_SO_BIT       3
@@ -251,10 +170,10 @@
 
 #ifndef VS_XCS_BIT
 /*!
- * \brief VS1001 active low chip select input. 
+ * \brief VS1001 active low chip select input.
  *
- * A high level forces the serial interface into standby mode, ending 
- * the current operation. A high level also forces serial output (SO) 
+ * A high level forces the serial interface into standby mode, ending
+ * the current operation. A high level also forces serial output (SO)
  * to high impedance state.
  */
 #define VS_XCS_BIT      4
@@ -278,9 +197,9 @@
 
 #ifndef VS_BSYNC_BIT
 /*!
- * \brief VS1001 serial data interface bit sync. 
+ * \brief VS1001 serial data interface bit sync.
  *
- * The first DCLK sampling edge, during which BSYNC is high, marks the 
+ * The first DCLK sampling edge, during which BSYNC is high, marks the
  * first bit of a data byte.
  */
 #define VS_BSYNC_BIT    5
@@ -304,9 +223,9 @@
 
 #ifndef VS_RESET_BIT
 /*!
- * \brief VS1001 hardware reset input. 
+ * \brief VS1001 hardware reset input.
  */
-#define VS_RESET_BIT    7       
+#define VS_RESET_BIT    7
 #endif
 
 #if !defined(VS_RESET_AVRPORT) || (VS_RESET_AVRPORT == AVRPORTB)
@@ -327,7 +246,7 @@
 
 #ifndef VS_SIGNAL_IRQ
 /*!
- * \brief VS1001 data request interrupt. 
+ * \brief VS1001 data request interrupt.
  */
 #define VS_SIGNAL       sig_INTERRUPT6
 #define VS_DREQ_BIT     6
@@ -431,10 +350,10 @@ static INLINE void VsSdiPutByte(uint8_t b)
 /*!
  * \brief Write a specified number of bytes to the VS1001 data interface.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST uint8_t * data, uint16_t len)
+static int VsSdiWrite(const uint8_t * data, uint16_t len)
 {
     uint16_t try = 5000;
 
@@ -447,10 +366,10 @@ static int VsSdiWrite(CONST uint8_t * data, uint16_t len)
 }
 
 /*!
- * \brief Write a specified number of bytes from program space to the 
+ * \brief Write a specified number of bytes from program space to the
  *        VS1001 data interface.
  *
- * This function is similar to VsSdiWrite() except that the data is 
+ * This function is similar to VsSdiWrite() except that the data is
  * located in program space.
  */
 static int VsSdiWrite_P(PGM_P data, uint16_t len)
@@ -552,7 +471,7 @@ static void VsRegWrite(uint8_t reg, uint16_t data)
  * \brief Read from a register.
  *
  * Decoder interrupts must have been disabled before calling this function.
- * 
+ *
  * \return Register contents.
  */
 static uint16_t VsRegRead(uint8_t reg)
@@ -587,7 +506,7 @@ static uint16_t VsRegRead(uint8_t reg)
 /*!
  * \brief Enable or disable player interrupts.
  *
- * This routine is typically used by applications when dealing with 
+ * This routine is typically used by applications when dealing with
  * unprotected buffers.
  *
  * \param enable Disables interrupts when zero. Otherwise interrupts
@@ -615,7 +534,7 @@ uint8_t VsPlayerInterrupts(uint8_t enable)
 /*
  * \brief Feed the decoder with data.
  *
- * This function serves two purposes: 
+ * This function serves two purposes:
  * - It is called by VsPlayerKick() to initially fill the decoder buffer.
  * - It is used as an interrupt handler for the decoder.
  */
@@ -636,7 +555,7 @@ static void VsPlayerFeed(void *arg)
     ief = VsPlayerInterrupts(0);
     sei();
 
-    /* 
+    /*
      * Feed the decoder until its buffer is full or we ran out of data.
      */
     if (vs_status == VS_STATUS_RUNNING) {
@@ -678,8 +597,8 @@ static void VsPlayerFeed(void *arg)
         NutSegBufReadLast(consumed);
     }
 
-    /* 
-     * Flush the internal VS buffer. 
+    /*
+     * Flush the internal VS buffer.
      */
     if(vs_status != VS_STATUS_RUNNING && vs_flush) {
         do {
@@ -725,7 +644,7 @@ int VsPlayerKick(void)
 /*!
  * \brief Stops the playback.
  *
- * This routine will stops the MP3 playback, VsPlayerKick() may be used 
+ * This routine will stops the MP3 playback, VsPlayerKick() may be used
  * to resume the playback.
  *
  * \return 0 on success, -1 otherwise.
@@ -776,6 +695,11 @@ int VsPlayerFlush(void)
 /*!
  * \brief Initialize the VS1001 hardware interface.
  *
+ * \note The interrupt handler for this device uses a significant amount
+ *       of stack space, which may require to increase thread stacks of
+ *       all running threads. Furthermore, it requires quite some time
+ *       to execute and may degrade overall system performance.
+ *
  * \return 0 on success, -1 otherwise.
  */
 int VsPlayerInit(void)
@@ -812,9 +736,9 @@ int VsPlayerInit(void)
     {
         uint8_t dummy;           /* Required by some compilers. */
 
-        /* 
-         * Init SPI mode to no interrupts, enabled, MSB first, master mode, 
-         * rising clock and fosc/4 clock speed. Send an initial zero byte to 
+        /*
+         * Init SPI mode to no interrupts, enabled, MSB first, master mode,
+         * rising clock and fosc/4 clock speed. Send an initial zero byte to
          * make sure SPIF is set. Note, that the decoder reset line is still
          * active.
          */
@@ -916,7 +840,7 @@ int VsPlayerReset(uint16_t mode)
 int VsPlayerSetMode(uint16_t mode)
 {
     uint8_t ief;
-    
+
     ief = VsPlayerInterrupts(0);
     VsRegWrite(VS_MODE_REG, mode);
     VsPlayerInterrupts(ief);
@@ -994,7 +918,7 @@ uint16_t VsMemoryTest(void)
 {
     uint16_t rc;
     uint8_t ief;
-    static prog_char mtcmd[] = { 0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00 };
+    static const char mtcmd[] PROGMEM = { 0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00 };
 
     ief = VsPlayerInterrupts(0);
     VsSdiWrite_P(mtcmd, sizeof(mtcmd));
@@ -1035,9 +959,9 @@ int VsSetVolume(uint8_t left, uint8_t right)
 int VsBeep(uint8_t fsin, uint8_t ms)
 {
     uint8_t ief;
-    static prog_char on[] = { 0x53, 0xEF, 0x6E };
-    static prog_char off[] = { 0x45, 0x78, 0x69, 0x74 };
-    static prog_char end[] = { 0x00, 0x00, 0x00, 0x00 };
+    static const char on[] PROGMEM = { 0x53, 0xEF, 0x6E };
+    static const char off[] PROGMEM = { 0x45, 0x78, 0x69, 0x74 };
+    static const char end[] PROGMEM = { 0x00, 0x00, 0x00, 0x00 };
 
     /* Disable decoder interrupts. */
     ief = VsPlayerInterrupts(0);

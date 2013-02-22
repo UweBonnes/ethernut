@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -88,6 +88,10 @@
 #include <cfg/os.h>
 #include <cfg/twi.h>
 #include <cfg/arch/gpio.h>
+
+#include <sys/heap.h>
+#include <sys/event.h>
+#include <string.h>
 
 #include <dev/twif.h>
 
@@ -409,12 +413,11 @@
 #endif                          /* __AVR__ */
 
 
-static uint8_t tw_mm_error;      /* Last master mode error. */
 static int twibb_initialized;
 
 /*
- * Short delay. 
- * 
+ * Short delay.
+ *
  * Our bit banging code relies on pull-up resistors. The I/O ports mimic
  * open collector outputs by switching to input mode for high level and
  * switching to output mode for low level. This is much slower than
@@ -577,23 +580,29 @@ static void TwAck(void)
  *
  * \note Timeout is not used in the bit banging version.
  */
-int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
+int NutTwiMasterTranceive(NUTTWIBUS *bus, uint8_t sla, const void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
+
 {
     int rc = 0;
     uint8_t *cp;
+    NUTTWIICB *icb = bus->bus_icb;
 
     if (!twibb_initialized) {
         TwInit(0);
     }
 
-    if (txlen) {
-        TwStart();
-        /* Send SLA+W and check for ACK. */
-        if ((rc = TwPut(sla << 1)) == 0) {
-            for (cp = (uint8_t *)txdata; txlen--; cp++) {
-                if ((rc = TwPut(*cp)) != 0) {
-                    break;
-                }
+    /* This routine is marked reentrant, so lock the interface. */
+    if (NutEventWait(&bus->bus_mutex, tmo)) {
+        icb->tw_mm_error = TWERR_IF_LOCKED;
+        return -1;
+    }
+
+    TwStart();
+    /* Send SLA+W and check for ACK. */
+    if ((rc = TwPut(sla << 1)) == 0) {
+        for (cp = (uint8_t *)txdata; txlen--; cp++) {
+            if ((rc = TwPut(*cp)) != 0) {
+                break;
             }
         }
     }
@@ -613,8 +622,12 @@ int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxda
     TwStop();
 
     if (rc == -1) {
-        tw_mm_error = TWERR_SLA_NACK;
+        icb->tw_mm_error = TWERR_SLA_NACK;
     }
+
+    /* Release the interface. */
+    NutEventPost(&bus->bus_mutex);
+
     return rc;
 }
 
@@ -622,15 +635,13 @@ int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxda
  * \brief Get last master mode error.
  *
  * You may call this function to determine the specific cause
- * of an error after TwMasterTransact() failed.
+ * of an error after twi transaction failed.
  *
- * \return Error code or 0 if no error occurred.
  */
-int TwMasterError(void)
+int NutTwiMasterError(NUTTWIBUS *bus)
 {
-    int rc = (int) tw_mm_error;
-    tw_mm_error = 0;
-
+    int rc = bus->bus_icb->tw_mm_error;
+    bus->bus_icb->tw_mm_error = 0;
     return rc;
 }
 
@@ -641,7 +652,7 @@ int TwMasterError(void)
  * must immediately process the request and return a response by calling
  * TwSlaveRespond().
  *
- * \note Slave mode is not implemented in the bit banging version.
+ * \note Slave mode is not implemented in the bitbanging driver.
  *       Thus the function always returns -1.
  *
  * \param sla    Points to a byte variable, which receives the slave
@@ -651,13 +662,13 @@ int TwMasterError(void)
  * \param rxdata Points to a data buffer where the received data bytes
  *               are stored.
  * \param rxsiz  Specifies the maximum number of data bytes to receive.
- * \param tmo	 Timeout in milliseconds. To disable timeout,
+ * \param tmo    Timeout in milliseconds. To disable timeout,
  *               set this parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
  *
  */
-int TwSlaveListen(uint8_t * sla, void *rxdata, uint16_t rxsiz, uint32_t tmo)
+int NutTwiSlaveListen(NUTTWIBUS *bus, uint8_t *sla, void *rxdata, uint16_t rxsiz, uint32_t tmo)
 {
     return -1;
 }
@@ -669,18 +680,18 @@ int TwSlaveListen(uint8_t * sla, void *rxdata, uint16_t rxsiz, uint32_t tmo)
  * returned successfully, even if no data needs to be returned. Not doing
  * so will completely block the bus.
  *
- * \note Slave mode is not implemented in the bit banging version.
+ * \note Slave mode is not implemented in the bitbanging driver.
  *       Thus the function always returns -1.
  *
  * \param txdata Points to the data to transmit. Ignored, if the
- *      		 number of bytes to transmit is zero.
+ *               number of bytes to transmit is zero.
  * \param txlen  Number of data bytes to transmit.
- * \param tmo	 Timeout in milliseconds. To disable timeout,
+ * \param tmo    Timeout in milliseconds. To disable timeout,
  *               set this parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes transmitted, -1 in case of an error or timeout.
  */
-int TwSlaveRespond(void *txdata, uint16_t txlen, uint32_t tmo)
+extern int NutTwiSlaveRespond(NUTTWIBUS *bus, void *txdata, uint16_t txlen, uint32_t tmo)
 {
     return -1;
 }
@@ -693,12 +704,45 @@ int TwSlaveRespond(void *txdata, uint16_t txlen, uint32_t tmo)
  *
  * \return Error code or 0 if no error occurred.
  *
- * \note Slave mode is not implemented in the bit banging version.
+ * \note Slave mode is not implemented in the bitbanging driver.
  *       Thus the function always returns TWERR_BUS.
  */
-int TwSlaveError(void)
+extern int NutTwiSlaveError(NUTTWIBUS *bus)
 {
     return TWERR_BUS;
+}
+
+
+/*!
+ * \brief Set Speed of I2C Interface.
+ *
+ * Setup Interface Speed
+ */
+int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
+{
+    int rc = -1;
+
+    if (speed > 400000) {
+        /* Speed out of range */
+        return rc;
+    }
+
+    if (bus==NULL) {
+        /* No bus selected */
+        return rc;
+    }
+
+    return 0;
+}
+
+/*!
+ * \brief Request Current Speed of I2C Interface.
+ *
+ * \return always 10000 which is just a dummy value
+ */
+uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
+{
+    return 10000;
 }
 
 /*!
@@ -708,14 +752,38 @@ int TwSlaveError(void)
  *
  * \param req  Requested control function.
  * \param conf Points to a buffer that contains any data required for
- *	       the given control function or receives data from that
- *	       function.
+ *         the given control function or receives data from that
+ *         function.
  *
  * \return Always 0.
  */
-int TwIOCtl(int req, void *conf)
+int NutTwiIOCtl( NUTTWIBUS *bus, int req, void *conf )
 {
-    return 0;
+    int rc = 0;
+
+    switch (req) {
+
+    case TWI_SETSPEED:
+        rc = NutTwiSetSpeed(bus, *((uint32_t *)conf));
+        break;
+
+    case TWI_GETSPEED:
+        *((uint32_t *)conf) = NutTwiGetSpeed(bus);
+        break;
+
+    case TWI_GETSTATUS:
+        rc = 0;
+        break;
+
+    case TWI_SETSTATUS:
+        rc = 0;
+        break;
+
+    default:
+        rc = -1;
+        break;
+    }
+    return rc;
 }
 
 /*!
@@ -730,10 +798,8 @@ int TwIOCtl(int req, void *conf)
  *
  * \return Always 0.
  *
- * \note Slave mode is not implemented in the bit banging version.
- *       Thus the given slave address is ignored.
  */
-int TwInit(uint8_t sla)
+int TwBbifInit(void)
 {
     SDA_HIGH();
     SCL_HIGH();
@@ -742,3 +808,68 @@ int TwInit(uint8_t sla)
 
     return 0;
 }
+
+/*!
+ * \brief Initialize TWI interface bus.
+ *
+ * The specified slave address is not used here as we don't support twi-slave
+ * on the bitbanging interface
+ *
+ * \param sla Slave address, must be specified as a 7-bit address,
+ *            always lower than 128.
+ */
+int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla )
+{
+    int rc = 0;
+    NUTTWIICB *icb = NULL;
+
+    /* Check if bus was already registered */
+    if( bus->bus_icb) {
+        return 0;
+    }
+
+    /* Allocate ICB for this bus */
+    icb = NutHeapAlloc(sizeof(NUTTWIICB));
+    if( icb == NULL) {
+        return rc;
+    }
+    memset( icb, 0, sizeof(NUTTWIICB));
+
+    /* Link bus and ICB */
+    bus->bus_icb = icb;
+
+    /* Initialize interface hardware */
+    if (bus->bus_initbus) {
+        rc = bus->bus_initbus();
+    }
+
+    /* Initialize mutex semaphores. */
+    NutEventPost(&bus->bus_mutex);
+
+    return rc;
+}
+
+int NutDestroyTwiBus( NUTTWIBUS *bus)
+{
+    if (bus->bus_icb) {
+        NutHeapFree( bus->bus_icb);
+    }
+
+    return 0;
+}
+
+
+/*!
+ * \brief TWI/I2C bus structure.
+ */
+NUTTWIBUS TwBbifBus = {
+  /*.bus_base =   */  0,           /* Bus base address. */
+  /*.bus_sig_ev = */  NULL,        /* Bus data and event interrupt handler. */
+  /*.bus_sig_er = */  NULL,        /* Bus error interrupt handler. */
+  /*.bus_mutex =  */  NULL,        /* Bus lock queue. */
+  /*.bus_icb   =  */  NULL,        /* Bus Runtime Data Pointer */
+  /*.bus_dma_tx = */  0,           /* DMA channel for TX direction. */
+  /*.bus_dma_rx = */  0,           /* DMA channel for RX direction. */
+  /*.bus_initbus =*/  TwBbifInit,  /* Initialize bus controller. */
+  /*.bus_recover =*/  NULL,        /* Recover bus controller */
+};

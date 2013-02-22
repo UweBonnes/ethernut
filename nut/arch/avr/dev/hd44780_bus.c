@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,7 +33,7 @@
  */
 
 /*!
- * \file dev/hd44780_bus.c
+ * \file arch/avr/dev/hd44780_bus.c
  * \brief Terminal device definitions for memory mapped lcd.
  *
  *
@@ -44,45 +44,10 @@
  * signal. Therefore you'll read from an address with an offset of two
  *
  * Have a look to our m-can board if you have questions.
- */
-
-/*
- * $Log$
- * Revision 1.6  2008/08/27 06:35:15  thornen
- * Added support for MMnet03..04 and MMnet102..104
  *
- * Revision 1.5  2008/08/26 17:36:45  haraldkipp
- * Revoked changes 2008/08/26 by thornen.
- *
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2005/09/07 16:23:11  christianwelzel
- * Added support for MMnet02 display
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.8  2005/05/27 14:05:25  olereinhardt
- * Added support for new display sizes configurable by macros
- * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
- * LCD_1x20, LCD_1x16, LCD_1x8, KS0073_CONTROLLER (4x20))
- *
- * Revision 1.7  2004/10/14 08:55:38  olereinhardt
- * Added default LCD type to avoid compiling bug if no type is defined
- *
- * Revision 1.6  2004/09/17 14:31:06  olereinhardt
- * Compile only if __GNUC__ defined
- *
- * Revision 1.5  2004/08/26 14:00:04  olereinhardt
- * Fixed cursor positioning for different devices
- *
- * Revision 1.4  2004/05/27 15:03:14  olereinhardt
- * Changed copyright notice
- *
- * Revision 1.3  2004/05/25 17:33:01  drsung
- * Added 'log' keyword for CVS.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /* Not ported. */
@@ -121,7 +86,7 @@ static uint16_t lcd_base = 0x0000;
 #endif
 #endif
 
-#define LCD_DELAY		asm volatile ("nop"); asm volatile ("nop")
+#define LCD_DELAY       asm volatile ("nop"); asm volatile ("nop")
 
 
 /*!
@@ -137,7 +102,7 @@ static uint16_t lcd_base = 0x0000;
 static inline void LcdBusyWait(void)
 {
 #if !defined(MMNET02)  && !defined(MMNET03)  && !defined(MMNET04) && \
-	!defined(MMNET102) && !defined(MMNET103) && !defined(MMNET104)
+    !defined(MMNET102) && !defined(MMNET103) && !defined(MMNET104)
     // wait until LCD busy bit goes to zero
     // do a read from control register
     while (*(volatile uint8_t *) (LCD_CTRL_ADDR + LCD_READ_OFFSET) & 1 << LCD_BUSY)
@@ -193,40 +158,40 @@ static void LcdSetCursor(uint8_t pos)
     if (y > 3) y = 3;
 #endif
 
-#if defined(LCD_2x40) 
+#if defined(LCD_2x40)
     uint8_t  offset  [2] = {0x00, 0x40};
     y = pos / 40;
     x = pos % 40;
     if (y > 1) y = 1;
-#endif    
-    
+#endif
+
 #if defined(LCD_4x20) || defined(LCD_2x20)
     uint8_t  offset  [4] = {0x00, 0x40, 0x14, 0x54};
     y = pos / 20;
     x = pos % 20;
     if (y>3) y=3;
-#endif    
-    
+#endif
+
 #if defined(LCD_4x16) || defined(LCD_2x16)
     uint8_t  offset  [4] = {0x00, 0x40, 0x10, 0x50};
     y = pos / 16;
     x = pos % 16;
     if (y>3) y=3;
-#endif    
+#endif
 
 #if defined(LCD_2x8)
     uint8_t  offset  [2] = {0x00, 0x40};
     y = pos / 8;
     x = pos % 8;
     if (y>1) y=1;
-#endif    
+#endif
 
 #if defined(LCD_1x8) || defined(LCD_1x16) || defined(LCD_1x20)
     uint8_t  offset  [1] = { 0x00 };
     y = 0;
     x = pos;
-#endif 
-    
+#endif
+
     pos = x + offset[y];
     LcdWriteCmd(1 << LCD_DDRAM | pos, 0);
 }
@@ -329,38 +294,38 @@ TERMDCB dcb_term = {
     4,                  /*!< \brief Number of rows. */
     16,                 /*!< \brief Number of columns per row. */
     16,                 /*!< \brief Number of visible columns. */
-#endif    
-#ifdef LCD_2x40    
+#endif
+#ifdef LCD_2x40
     2,                  /*!< \brief Number of rows. */
     40,                 /*!< \brief Number of columns per row. */
     40,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_2x20    
+#ifdef LCD_2x20
     2,                  /*!< \brief Number of rows. */
     20,                 /*!< \brief Number of columns per row. */
     20,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_2x16    
+#ifdef LCD_2x16
     2,                  /*!< \brief Number of rows. */
     16,                 /*!< \brief Number of columns per row. */
     16,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_2x8    
+#ifdef LCD_2x8
     2,                  /*!< \brief Number of rows. */
     8,                 /*!< \brief Number of columns per row. */
     8,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_1x20    
+#ifdef LCD_1x20
     1,                  /*!< \brief Number of rows. */
     20,                 /*!< \brief Number of columns per row. */
     20,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_1x16    
+#ifdef LCD_1x16
     1,                  /*!< \brief Number of rows. */
     16,                 /*!< \brief Number of columns per row. */
     16,                 /*!< \brief Number of visible columns. */
 #endif
-#ifdef LCD_1x8    
+#ifdef LCD_1x8
     1,                  /*!< \brief Number of rows. */
     8,                 /*!< \brief Number of columns per row. */
     8,                 /*!< \brief Number of visible columns. */

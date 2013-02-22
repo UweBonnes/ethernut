@@ -87,7 +87,7 @@ int Avr32Spi0Init(void)
  * \param mask Chip selects to use. Set bit 0 for NPCS0, bit 1
  *             for NPCS1 and so on.
  *
- * \return 0 on success or -1 if any of the specified chip selects is 
+ * \return 0 on success or -1 if any of the specified chip selects is
  *         not available.
  */
 int At91Spi0InitChipSelects(unsigned int mask)
@@ -170,7 +170,7 @@ int At91Spi1Init(void)
  * \param mask Chip selects to use. Set bit 0 for NPCS0, bit 1
  *             for NPCS1 and so on.
  *
- * \return 0 on success or -1 if any of the specified chip selects is 
+ * \return 0 on success or -1 if any of the specified chip selects is
  *         not available.
  */
 int At91Spi1InitChipSelects(unsigned int mask)
@@ -223,7 +223,7 @@ int At91Spi1Enable(void)
 /*!
  * \brief Initialize serial peripheral interface on the AT91 MCU.
  *
- * \param base    Interface base address, either SPI_BASE, SPI0_BASE 
+ * \param base    Interface base address, either SPI_BASE, SPI0_BASE
  *                or SPI1_BASE.
  *
  * \return 0 on success or -1 if SPI is not available.
@@ -232,8 +232,8 @@ int At91SpiInit(unsigned int base)
 {
     int rc = -1;
 
-    /* 
-     * Enable PIO lines and clock. 
+    /*
+     * Enable PIO lines and clock.
      */
     if (base == SPI0_BASE) {
         rc = At91Spi0Init();
@@ -263,7 +263,7 @@ int At91SpiDisable(unsigned int base)
 /*!
  * \brief Reset serial peripheral interface on the AT91 MCU.
  *
- * \param base    Interface base address, either SPI_BASE, SPI0_BASE 
+ * \param base    Interface base address, either SPI_BASE, SPI0_BASE
  *                or SPI1_BASE.
  *
  * \return 0 on success or -1 if SPI is not available.
@@ -290,12 +290,12 @@ int At91SpiReset(unsigned int base)
 /*!
  * \brief Initialize specified SPI chip selects on the AT91 MCU.
  *
- * \param base Interface base address, either SPI_BASE, SPI0_BASE 
+ * \param base Interface base address, either SPI_BASE, SPI0_BASE
  *             or SPI1_BASE.
  * \param mask Chip selects to use. Set bit 0 for NPCS0, bit 1
  *             for NPCS1 and so on.
  *
- * \return 0 on success or -1 if any of the specified chip selects is 
+ * \return 0 on success or -1 if any of the specified chip selects is
  *         not available.
  */
 int At91SpiInitChipSelects(unsigned int base, unsigned int mask)
@@ -588,7 +588,7 @@ int At91SpiSetCsDelay(unsigned int base, unsigned int dly)
  * \param rxnbuf Second receive buffer.
  * \param xnlen  Length of second transfer.
  */
-int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen, CONST void *txnbuf, void *rxnbuf,
+int At91SpiTransfer2(unsigned int base, unsigned int cs, const void *txbuf, void *rxbuf, int xlen, const void *txnbuf, void *rxnbuf,
                      int xnlen)
 {
     int rc = -1;

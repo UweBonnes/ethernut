@@ -31,9 +31,9 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions Copyright Atmel Corporation, see the following note. 
+ * Portions Copyright Atmel Corporation, see the following note.
  */
- 
+
 /* This header file is part of the ATMEL AVR-UC3-SoftwareFramework-1.7.0 Release */
 
 /*This file has been prepared for Doxygen automatic documentation generation.*/
@@ -102,56 +102,12 @@
  */
 #define SLEEP(mode)   {__asm__ __volatile__ ("sleep "STRINGZ(mode));}
 
-
-//! Input and output parameters when initializing PM clocks using pm_configure_clocks().
-typedef struct
-{
-  //! CPU frequency (input/output argument).
-  unsigned long cpu_f;
-
-  //! PBA frequency (input/output argument).
-  unsigned long pba_f;
-
-  //! Oscillator 0's external crystal(or external clock) frequency (board dependant) (input argument).
-  unsigned long osc0_f;
-
-  //! Oscillator 0's external crystal(or external clock) startup time: AVR32_PM_OSCCTRL0_STARTUP_x_RCOSC (input argument).
-  unsigned long osc0_startup;
-} pm_freq_param_t;
-
-#define PM_FREQ_STATUS_FAIL   (-1)
-#define PM_FREQ_STATUS_OK     (0)
-
-
-/*! \brief Gets the MCU reset cause.
- *
- * \param pm Base address of the Power Manager instance (i.e. &AVR32_PM).
- *
- * \return The MCU reset cause which can be masked with the
- *         \c AVR32_PM_RCAUSE_x_MASK bit-masks to isolate specific causes.
- */
-#if (defined __GNUC__)
-__attribute__((__always_inline__))
-#endif
-extern __inline__ unsigned int pm_get_reset_cause(volatile avr32_pm_t *pm)
-{
-  return pm->rcause;
-}
-
-
-/*!
- * \brief This function will enable the external clock mode of the oscillator 0.
- * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
- */
-extern void pm_enable_osc0_ext_clock(volatile avr32_pm_t *pm);
-
-
 /*!
  * \brief This function will enable the crystal mode of the oscillator 0.
  * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
  * \param fosc0 Oscillator 0 crystal frequency (Hz)
  */
-extern void pm_enable_osc0_crystal(volatile avr32_pm_t *pm, unsigned int fosc0);
+extern void pm_enable_osc0_crystal(unsigned int fosc0);
 
 
 /*!
@@ -159,7 +115,7 @@ extern void pm_enable_osc0_crystal(volatile avr32_pm_t *pm, unsigned int fosc0);
  * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
  * \param startup Clock 0 startup time. AVR32_PM_OSCCTRL0_STARTUP_x_RCOSC.
  */
-extern void pm_enable_clk0(volatile avr32_pm_t *pm, unsigned int startup);
+extern void pm_enable_clk0(unsigned int startup);
 
 
 /*!
@@ -286,33 +242,6 @@ extern void pm_wait_for_clk32_ready(volatile avr32_pm_t *pm);
 extern void pm_cksel(volatile avr32_pm_t *pm, unsigned int pbadiv, unsigned int pbasel, unsigned int pbbdiv, unsigned int pbbsel, unsigned int hsbdiv, unsigned int hsbsel);
 
 
-/*!
- * \brief This function will setup a generic clock.
- * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
- * \param gc generic clock number (0 for gc0...)
- * \param osc_or_pll Use OSC (=0) or PLL (=1)
- * \param pll_osc Select Osc0/PLL0 or Osc1/PLL1
- * \param diven Generic clock divisor enable
- * \param div Generic clock divisor
- */
-extern void pm_gc_setup(volatile avr32_pm_t *pm, unsigned int gc, unsigned int osc_or_pll, unsigned int pll_osc, unsigned int diven, unsigned int div);
-
-
-/*!
- * \brief This function will enable a generic clock.
- * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
- * \param gc generic clock number (0 for gc0...)
- */
-extern void pm_gc_enable(volatile avr32_pm_t *pm, unsigned int gc);
-
-
-/*!
- * \brief This function will disable a generic clock.
- * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
- * \param gc generic clock number (0 for gc0...)
- */
-extern void pm_gc_disable(volatile avr32_pm_t *pm, unsigned int gc);
-
 
 /*!
  * \brief This function will setup a PLL.
@@ -381,7 +310,7 @@ extern void pm_wait_for_pll1_locked(volatile avr32_pm_t *pm);
  * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
  * \param clock Clock to be switched on. AVR32_PM_MCSEL_SLOW for RCOsc, AVR32_PM_MCSEL_OSC0 for Osc0, AVR32_PM_MCSEL_PLL0 for PLL0.
  */
-extern void pm_switch_to_clock(volatile avr32_pm_t *pm, unsigned long clock);
+extern void pm_switch_to_clock(unsigned long clock);
 
 
 /*!
@@ -390,7 +319,7 @@ extern void pm_switch_to_clock(volatile avr32_pm_t *pm, unsigned long clock);
  * \param fosc0 Oscillator 0 crystal frequency (Hz)
  * \param startup Crystal 0 startup time. AVR32_PM_OSCCTRL0_STARTUP_x_RCOSC.
  */
-extern void pm_switch_to_osc0(volatile avr32_pm_t *pm, unsigned int fosc0, unsigned int startup);
+extern void pm_switch_to_osc0(unsigned int fosc0, unsigned int startup);
 
 
 /*! \brief Enables the Brown-Out Detector interrupt.
@@ -489,35 +418,6 @@ extern long pm_enable_module(volatile avr32_pm_t *pm, unsigned long module);
  */
 extern long pm_disable_module(volatile avr32_pm_t *pm, unsigned long module);
 
-
-
-/*! \brief Automatically configure the CPU, PBA, PBB, and HSB clocks
- *         according to the user wishes.
- *
- * This function needs some parameters stored in a pm_freq_param_t structure:
- *  - cpu_f and pba_f are the wanted frequencies,
- *  - osc0_f is the oscillator 0 on-board frequency (e.g. FOSC0),
- *  - osc0_startup is the oscillator 0 startup time (e.g. OSC0_STARTUP).
- *
- * The function will then configure the clocks using the following rules:
- *  - It first try to find a valid PLL frequency (the highest possible value to avoid jitter) in order
- *    to satisfy the CPU frequency,
- *  - It optimizes the configuration depending the various divide stages,
- *  - Then, the PBA frequency is configured from the CPU freq.
- *  - Note that HSB and PBB are configured with the same frequency as CPU.
- *  - Note also that the number of wait states of the flash read accesses is automatically set-up depending
- *    the CPU frequency. As a consequence, the application needs the FLASHC driver to compile.
- *
- * The CPU, HSB and PBA frequencies programmed after configuration are stored back into cpu_f and pba_f.
- *
- * \param param    pointer on the configuration structure.
- *
- * \retval PM_FREQ_STATUS_OK    Mode successfully initialized.
- * \retval PM_FREQ_STATUS_FAIL  The configuration can not be done.
- */
-extern int pm_configure_clocks(pm_freq_param_t *param);
-
-
 /*! \brief Automatically configure the USB clock.
  *
  * USB clock is configured to 48MHz, using the PLL1 from the Oscillator0, assuming
@@ -525,5 +425,6 @@ extern int pm_configure_clocks(pm_freq_param_t *param);
  */
 extern void pm_configure_usb_clock(void);
 
+extern void Avr32InitClockTree(void);
 
 #endif  // _PM_H_

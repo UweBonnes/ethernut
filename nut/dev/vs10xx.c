@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -622,25 +622,25 @@
 
 #if defined(VS10XX_BSYNC_BIT)
 
-#if (VS10XX_BSYNC_AVRPORT == AVRPORTA)
+#if (VS10XX_BSYNC_PORT == AVRPORTA)
 #define VS10XX_BSYNC_SOD_REG  PORTA
 #define VS10XX_BSYNC_OE_REG   DDRA
-#elif (VS10XX_BSYNC_AVRPORT == AVRPORTB)
+#elif (VS10XX_BSYNC_PORT == AVRPORTB)
 #define VS10XX_BSYNC_SOD_REG  PORTB
 #define VS10XX_BSYNC_OE_REG   DDRB
-#elif (VS10XX_BSYNC_AVRPORT == AVRPORTD)
+#elif (VS10XX_BSYNC_PORT == AVRPORTD)
 #define VS10XX_BSYNC_SOD_REG  PORTD
 #define VS10XX_BSYNC_OE_REG   DDRD
-#elif (VS10XX_BSYNC_AVRPORT == AVRPORTE)
+#elif (VS10XX_BSYNC_PORT == AVRPORTE)
 #define VS10XX_BSYNC_SOD_REG  PORTE
 #define VS10XX_BSYNC_OE_REG   DDRE
-#elif (VS10XX_BSYNC_AVRPORT == AVRPORTF)
+#elif (VS10XX_BSYNC_PORT == AVRPORTF)
 #define VS10XX_BSYNC_SOD_REG  PORTF
 #define VS10XX_BSYNC_OE_REG   DDRF
-#elif (VS10XX_BSYNC_AVRPORT == AVRPORTG)
+#elif (VS10XX_BSYNC_PORT == AVRPORTG)
 #define VS10XX_BSYNC_SOD_REG  PORTG
 #define VS10XX_BSYNC_OE_REG   DDRG
-#elif (VS10XX_BSYNC_AVRPORT == AVRPORTH)
+#elif (VS10XX_BSYNC_PORT == AVRPORTH)
 #define VS10XX_BSYNC_SOD_REG  PORTH
 #define VS10XX_BSYNC_OE_REG   DDRH
 #endif
@@ -780,7 +780,7 @@ static INLINE void VsSdiPutByte(ureg_t b)
 /*!
  * \brief Enable or disable player interrupts.
  *
- * This routine is typically used by applications when dealing with 
+ * This routine is typically used by applications when dealing with
  * unprotected buffers.
  *
  * \param enable Disables interrupts when zero. Otherwise interrupts
@@ -809,10 +809,10 @@ ureg_t VsPlayerInterrupts(ureg_t enable)
 /*!
  * \brief Throttle decoder activity.
  *
- * When sharing SPI with other devices, this function should be called 
+ * When sharing SPI with other devices, this function should be called
  * to disable (and re-enable) the SPI interface of the VS10XX.
  *
- * Decoder interrupts must have been disabled before calling this 
+ * Decoder interrupts must have been disabled before calling this
  * function.
  *
  * \code
@@ -859,8 +859,8 @@ static void VsSciSelect(ureg_t on)
         SdiDeselect();
 
 #if defined(VS10XX_SDI_SPI0_DEVICE) && !defined(VS10XX_SCI_SPI0_DEVICE)
-        /* Hint given by Jesper Hansen: If data channel uses HW SPI and 
-           command channel uses SW SPI, then disable HW SPI while sending 
+        /* Hint given by Jesper Hansen: If data channel uses HW SPI and
+           command channel uses SW SPI, then disable HW SPI while sending
            using the command channel. */
         cbi(SPCR, SPE);
 #endif
@@ -887,7 +887,7 @@ static void VsSciSelect(ureg_t on)
 /*!
  * \brief Wait for decoder ready.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
 static int VsWaitReady(void)
@@ -905,10 +905,10 @@ static int VsWaitReady(void)
 /*
  * \brief Write a specified number of bytes to the VS10XX data interface.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST uint8_t * data, size_t len)
+static int VsSdiWrite(const uint8_t * data, size_t len)
 {
     while (len--) {
         if (!VS10XX_DREQ_TST() && VsWaitReady()) {
@@ -921,10 +921,10 @@ static int VsSdiWrite(CONST uint8_t * data, size_t len)
 }
 
 /*
- * \brief Write a specified number of bytes from program space to the 
+ * \brief Write a specified number of bytes from program space to the
  *        VS10XX data interface.
  *
- * This function is similar to VsSdiWrite() except that the data is 
+ * This function is similar to VsSdiWrite() except that the data is
  * located in program space.
  */
 static int VsSdiWrite_P(PGM_P data, size_t len)
@@ -968,7 +968,7 @@ static void VsRegWrite(ureg_t reg, uint16_t data)
  * \brief Read from a register.
  *
  * Decoder interrupts must have been disabled before calling this function.
- * 
+ *
  * \return Register contents.
  */
 static uint16_t VsRegRead(ureg_t reg)
@@ -993,7 +993,7 @@ static uint16_t VsRegRead(ureg_t reg)
 /*
  * \brief Feed the decoder with data.
  *
- * This function serves two purposes: 
+ * This function serves two purposes:
  * - It is called by VsPlayerKick() to initially fill the decoder buffer.
  * - It is used as an interrupt handler for the decoder.
  */
@@ -1006,7 +1006,7 @@ static void VsPlayerFeed(void *arg)
         return;
     }
 
-    /* 
+    /*
      * Feed the decoder until its buffer is full or we ran out of data.
      */
     if (vs_status == VS_STATUS_RUNNING) {
@@ -1049,8 +1049,8 @@ static void VsPlayerFeed(void *arg)
         NutSegBufReadLast(consumed);
     }
 
-    /* 
-     * Flush the internal VS buffer. 
+    /*
+     * Flush the internal VS buffer.
      */
     if(vs_status != VS_STATUS_RUNNING && vs_flush) {
         do {
@@ -1096,7 +1096,7 @@ int VsPlayerKick(void)
 /*!
  * \brief Stops the playback.
  *
- * This routine will stops the MP3 playback, VsPlayerKick() may be used 
+ * This routine will stops the MP3 playback, VsPlayerKick() may be used
  * to resume the playback.
  *
  * \return 0 on success, -1 otherwise.
@@ -1258,7 +1258,7 @@ int VsPlayerReset(uint16_t mode)
 
     /* Set codec mode. */
 #if defined(VS10XX_BSYNC_BIT)
-    xVsRegWrite(VS_MODE_REG, mode);
+    VsRegWrite(VS_MODE_REG, mode);
 #else
     VsRegWrite(VS_MODE_REG, VS_SM_SDINEW | mode);
 #endif
@@ -1390,7 +1390,7 @@ uint16_t VsMemoryTest(void)
 {
     uint16_t rc;
     ureg_t ief;
-    static prog_char mtcmd[] = { 0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00 };
+    static const char mtcmd[] PROGMEM = { 0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00 };
 
     ief = VsPlayerInterrupts(0);
 #if defined(VS10XX_BSYNC_BIT)
@@ -1443,9 +1443,9 @@ int VsSetVolume(ureg_t left, ureg_t right)
 int VsBeep(uint8_t fsin, uint8_t ms)
 {
     ureg_t ief;
-    static prog_char on[] = { 0x53, 0xEF, 0x6E };
-    static prog_char off[] = { 0x45, 0x78, 0x69, 0x74 };
-    static prog_char end[] = { 0x00, 0x00, 0x00, 0x00 };
+    static const char on[] PROGMEM = { 0x53, 0xEF, 0x6E };
+    static const char off[] PROGMEM = { 0x45, 0x78, 0x69, 0x74 };
+    static const char end[] PROGMEM = { 0x00, 0x00, 0x00, 0x00 };
 
     /* Disable decoder interrupts. */
     ief = VsPlayerInterrupts(0);

@@ -70,7 +70,7 @@
  * If a timOff parameter of not 0 is given, the LED will be switched off
  * for the given time in ms an then return to on state.
  */
-#define	LED_OFF		0
+#define LED_OFF     0
 
 /*!
  * \brief Switch LED on.
@@ -79,7 +79,7 @@
  * If a timOff parameter of not 0 is given, the LED will be switched on
  * for the given time in ms an then return off state.
  */
-#define	LED_ON		1
+#define LED_ON      1
 
 /*!
  * \brief Flip the LED state (toggle).
@@ -103,15 +103,9 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes. */
-
 extern void NutSetLed( HANDLE ledh, uint_fast8_t fxin, uint32_t timOn, uint32_t timOff);
 extern void SetLedEvent( uint8_t led, uint32_t interval, uint32_t duration );
 
 extern int NutRegisterLed( HANDLE * ledh, int port, int pin);
-
-__END_DECLS
-/* */
 
 #endif

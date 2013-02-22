@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -109,7 +109,10 @@
  */
 #if defined(__AVR__)
 
+#if defined(__AVR_AT90USB1287__)
+#else
 extern NUTDEVICE devDebug0;
+#endif
 #ifdef __AVR_ENHANCED__
 extern NUTDEVICE devDebug1;
 #endif
@@ -121,7 +124,7 @@ extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 extern NUTDEVICE devDebug2;
 
-#elif defined(__arm__)
+#elif defined(__arm__) && !defined(__CORTEX__)
 #ifdef MCU_AT91R40008
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
@@ -132,9 +135,22 @@ extern NUTDEVICE devDebug0;
 #elif defined(MCU_LPC2XXX)
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
+#elif defined(MCU_ZERO)
+extern NUTDEVICE devDebug0;
 #endif
-#elif defined(__m68k__)
-
+#elif defined(__arm__) && defined(__CORTEX__)
+#if defined(MCU_STM32F10X)
+extern NUTDEVICE *devDebug0;
+#elif defined(MCU_LPC17xx)
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
+extern NUTDEVICE devDebug2;
+extern NUTDEVICE devDebug3;
+#endif
+#elif defined(MCU_MCF5225X)
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
+extern NUTDEVICE devDebug2;
 #elif defined(__AVR32__)
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -263,6 +263,7 @@
 typedef struct _MMCDCB {
     int dcb_avail;              /*!< Card is available. */
     int dcb_changed;            /*!< Card has changed. */
+    int dcb_addr_mode;          /*!< Card addressing mode (byte/block) */
 } MMCDCB;
 
 static MMCDCB mmc0_dcb;
@@ -412,6 +413,26 @@ int SbiMmCard0WrProt(void)
     return 0;
 }
 
+/*!
+ * \brief set addressing mode
+ *
+ */
+int SbiMmCard0SetAdrMode(int mode)
+{
+    mmc0_dcb.dcb_addr_mode = mode;
+
+    return(0);
+}
+
+/*!
+ * \brief get addressing mode
+ *
+ */
+int SbiMmCard0GetAdrMode(void)
+{
+    return(mmc0_dcb.dcb_addr_mode);
+}
+
 #ifdef MMC0_CD_BIT
 /*!
  * \brief Card slot 0 insertion interrupt routine.
@@ -495,7 +516,9 @@ static MMCIFC mmc0_ifc = {
     SbiMmCard0Io,               /*!< mmcifc_io */
     SbiMmCard0Select,           /*!< mmcifc_cs */
     SbiMmCard0Avail,            /*!< mmcifc_cd */
-    SbiMmCard0WrProt            /*!< mmcifc_wp */
+    SbiMmCard0WrProt,           /*!< mmcifc_wp */
+    SbiMmCard0SetAdrMode,       /*!< mmcifc_sm */
+    SbiMmCard0GetAdrMode        /*!< mmcifc_gm */
 };
 
 /*!

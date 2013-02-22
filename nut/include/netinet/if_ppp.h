@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -64,7 +64,7 @@
  * For additional information see http://www.calldirect.com.au/
  * -
  *
- * Portions are 
+ * Portions are
  * Copyright (c) 1989 by Carnegie Mellon University.
  * All rights reserved.
  *
@@ -168,21 +168,21 @@
  * \brief PPP header type.
  */
 typedef struct ppp_header {
-    uint8_t address;		/*!< \brief HDLC Address. */
-    uint8_t control;		/*!< \brief HDLC Control. */
-    uint16_t prot_type;		/*!< \brief Protocol type. */
+    uint8_t address;        /*!< \brief HDLC Address. */
+    uint8_t control;        /*!< \brief HDLC Control. */
+    uint16_t prot_type;     /*!< \brief Protocol type. */
 } PPPHDR;
 
 typedef struct xcphdr {
-    /*!< \brief Code. 
+    /*!< \brief Code.
      */
     uint8_t  xch_code;
 
-    /*!< \brief Identifier 
+    /*!< \brief Identifier
      */
     uint8_t  xch_id;
 
-    /*!< \brief Length 
+    /*!< \brief Length
      */
     uint16_t xch_len;
 } XCPHDR;

@@ -57,6 +57,8 @@
 #define AUDIO0_VS1033C
 #elif defined(AUDIO_VS1053B)
 #define AUDIO0_VS1053B
+#elif defined(AUDIO_VS1063A)
+#define AUDIO0_VS1063A
 #elif defined(AUDIO_VSAUTO)
 #define AUDIO0_VSAUTO
 #endif
@@ -76,6 +78,8 @@
 #include <dev/vs1033.h>
 #elif defined(AUDIO0_VS1053B)
 #include <dev/vs1053.h>
+#elif defined(AUDIO0_VS1063A)
+#include <dev/vs1063.h>
 #elif !defined(AUDIO0_VSAUTO)
 #define AUDIO0_VSAUTO
 #endif
@@ -208,11 +212,84 @@
 /*! \brief Set internal clock. */
 #define AUDIO_SET_ICLOCK    0x3032
 
+/*! \brief Upload into WRAM. */
+#define AUDIO_WRITE_CMEM    0x3038
+
+/*! \brief Set parametric x. */
+#define AUDIO_SET_PARAMX    0x3040
+
+/*! \brief Get parametric x. */
+#define AUDIO_GET_PARAMX    0x3041
+#define VSP4_CHIP_ID_OFF                    0x00
+#define VSP4_VERSION_OFF                    0x02
+#define VSP4_CONFIG1_OFF                    0x03
+#define VSP4_PLAY_SPEED_OFF                 0x04
+#define VSP4_BIT_RATE_PER_100_OFF           0x05
+#define VSP4_END_FILL_BYTE_OFF              0x06
+#define VSP4_RATE_TUNE_OFF                  0x07
+#define VSP4_PLAY_MODE_OFF                  0x09
+#define VSP4_SAMPLE_COUNTER_OFF             0x0a
+#define VSP4_VU_METER_OFF                   0x0c
+#define VSP4_AD_MIXER_GAIN_OFF              0x0d
+#define VSP4_AD_MIXER_CONFIG_OFF            0x0e
+#define VSP4_PCM_MIXER_RATE_OFF             0x0f
+#define VSP4_PCM_MIXER_FREE_OFF             0x10
+#define VSP4_PCM_MIXER_VOL_OFF              0x11
+#define VSP4_EQ5_PARAMS_OFF(i)              (0x12 + (i))
+#define VSP4_EQ5_UPDATED_OFF                0x1c
+#define VSP4_SPEED_SHIFTER_OFF              0x1d
+#define VSP4_EAR_SPEAKER_LEVEL_OFF          0x1e
+#define VSP4_SDI_FREE_OFF                   0x1f
+#define VSP4_AUDIO_FILL_OFF                 0x20
+#define VSP4_LATEST_SOF_OFF                 0x25
+#define VSP4_POSITION_MSEC_OFF              0x27
+#define VSP4_RESYNC_OFF                     0x29
+#define VSP4_ENC_TX_UART_DIV_OFF            0x2a
+#define VSP4_ENC_TX_UART_BYTE_SPEED_OFF     0x2b
+#define VSP4_ENC_TX_PAUSE_GPIO_OFF          0x2c
+#define VSP4_ENC_SEC_ADAPT_MULTIPLIER_OFF   0x2d
+#define VSP4_ENC_CHANNEL_MAX_OFF            0x3c
+#define VSP4_ENC_SERIAL_NUMBER_OFF          0x3e
+#define VSP4_WMA_CUR_PACKET_SIZE_OFF        0x2a
+#define VSP4_WMA_PACKET_SIZE_OFF            0x2c
+#define VSP4_AAC_SCE_FOUND_MASK_OFF         0x2a
+#define VSP4_AAC_CPE_FOUND_MASK_OFF         0x2b
+#define VSP4_AAC_LFE_FOUND_MASK_OFF         0x2c
+#define VSP4_AAC_PLAY_SELECT_OFF            0x2d
+#define VSP4_AAC_DYN_COMPRESS_OFF           0x2e
+#define VSP4_AAC_DYN_BOOST_OFF              0x2f
+#define VSP4_AAC_SBR_AND_PS_STATUS_OFF      0x30
+#define VSP4_AAC_SBR_PS_FLAGS_OFF           0x31
+#define VSP4_VORBIS_GAIN_OFF                0x2a
+
+#define VS_PLAYMODE_MONO_OUTPUT_ON  ox0001
+#define VS_PLAYMODE_PAUSE_ON        0x0002
+#define VS_PLAYMODE_VUMETER_ON      0x0004
+#define VS_PLAYMODE_ADMIXER_ON      0x0008
+#define VS_PLAYMODE_PCMMIXER_ON     0x0010
+#define VS_PLAYMODE_EQ5_ON          0x0020
+#define VS_PLAYMODE_SPEEDSHIFTER_ON 0x0040
+
 typedef struct _VS_PLUGIN_INFO VS_PLUGIN_INFO;
 
 struct _VS_PLUGIN_INFO {
     size_t vsplg_size;
-    CONST uint16_t *vsplg_data;
+    const uint16_t *vsplg_data;
+};
+
+typedef struct _VS_WRAM_DATA VS_WRAM_DATA;
+
+struct _VS_WRAM_DATA {
+    uint16_t vswd_addr;
+    uint16_t vswd_size;
+    uint16_t *vswd_data;
+};
+
+typedef struct _VS_PARAMX_INFO VS_PARAMX_INFO;
+
+struct _VS_PARAMX_INFO {
+    uint16_t vspx_offs;
+    uint16_t vspx_data;
 };
 
 /*
@@ -231,12 +308,12 @@ struct _VS_PLUGIN_INFO {
 /*! \brief Left channel inverted. */
 #define VS_SM_DIFF          0x0001
 
-/*! \brief Allow MPEG Layers I & II. 
+/*! \brief Allow MPEG Layers I & II.
  *
- * Determines whether it is allowed to decode MPEG 1 and 2 Layers I and II 
- * in addition to Layer III. If you enable Layer I and Layer II decoding, 
- * you are liable for any patent issues that may arise. Joint licensing of 
- * MPEG 1.0 / 2.0 Layer III does not cover all patents pertaining to 
+ * Determines whether it is allowed to decode MPEG 1 and 2 Layers I and II
+ * in addition to Layer III. If you enable Layer I and Layer II decoding,
+ * you are liable for any patent issues that may arise. Joint licensing of
+ * MPEG 1.0 / 2.0 Layer III does not cover all patents pertaining to
  * Layers I and II.
  */
 #if VS_HAS_SM_LAYER12
@@ -245,13 +322,13 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief VS1001K fast forward.
  *
- * By setting this bit, the player starts to accept data at a high speed, and 
- * just decodes the audio headers silently without playing any audio data. 
+ * By setting this bit, the player starts to accept data at a high speed, and
+ * just decodes the audio headers silently without playing any audio data.
  * This can be used to fast-forward data with safe landing.
- * Register \ref VS_DECODE_TIME_REG is updated during a fast-forward just as 
+ * Register \ref VS_DECODE_TIME_REG is updated during a fast-forward just as
  * normal.
  *
- * Note, that this bit is available on the VS1001K only and is used as MPEG 
+ * Note, that this bit is available on the VS1001K only and is used as MPEG
  * Layer I & II enable on other members of the VS10xx family.
  */
 #if VS_HAS_SM_FFWD
@@ -267,22 +344,22 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief VS1001 MPEG Layers I & II enable.
  *
- * This bit is marked unused in later VS1001 datasheet versions and may 
+ * This bit is marked unused in later VS1001 datasheet versions and may
  * not work due to firmware problems.
  *
- * Note, that this bit was available on the VS1001K only and is used as 
+ * Note, that this bit was available on the VS1001K only and is used as
  * a cancel flag on other members of the VS10xx family.
  *
- * If you enable Layer I and Layer II decoding, you are liable for any 
+ * If you enable Layer I and Layer II decoding, you are liable for any
  * patent issues that may arise.
  */
 #if VS_HAS_SM_MP12
 #define VS_SM_MP12          0x0008
 #endif
 
-/*! \brief Jump out of wave decoding. 
+/*! \brief Jump out of wave decoding.
  *
- * Set this bit to stop WAV, WMA and MIDI file playing before the end of 
+ * Set this bit to stop WAV, WMA and MIDI file playing before the end of
  * the file has been reached. Continue sending zeros for WAV and more data
  * for MIDI and WMA until this bit is cleared again.
  *
@@ -292,10 +369,10 @@ struct _VS_PLUGIN_INFO {
 #define VS_SM_OUTOFWAV      0x0008
 #endif
 
-/*! \brief Stop decoding in the middle. 
+/*! \brief Stop decoding in the middle.
  *
- * Set this bit to stop decoding a in the middle, and continue sending 
- * data honouring DREQ. When this flag is detected by a codec, it will 
+ * Set this bit to stop decoding a in the middle, and continue sending
+ * data honouring DREQ. When this flag is detected by a codec, it will
  * stop decoding and discard stream buffer content. The flag is cleared
  * automatically and SCI HDAT1 will also be cleared.
  *
@@ -308,12 +385,12 @@ struct _VS_PLUGIN_INFO {
 /*! \brief Power down.
  *
  * During powerdown, no audio is played and no SDI operations are performed.
- * It is recommended to set \ref VS_VOL_REG to 0xFFFF before setting this 
+ * It is recommended to set \ref VS_VOL_REG to 0xFFFF before setting this
  * bit.
  *
  * For best power down efficiency, activate hardware reset.
  *
- * Not available on the VS1011. Although defined, this is not implemented 
+ * Not available on the VS1011. Although defined, this is not implemented
  * in the VS1001K firmware.
  */
 #if VS_HAS_SM_PDOWN
@@ -330,14 +407,14 @@ struct _VS_PLUGIN_INFO {
 #define VS_SM_SPATIAL_EXTREME   (VS_SM_EARSPEAKER_LO | VS_SM_EARSPEAKER_LO)
 #endif
 
-/*! \brief VS1001K DAC mode. 
+/*! \brief VS1001K DAC mode.
  *
  * 16-bit DAC mode if set, MP3 mode otherwise.
  *
- * This bit is marked unused in later VS1001 datasheet versions and may 
+ * This bit is marked unused in later VS1001 datasheet versions and may
  * not work due to firmware problems.
  *
- * Note, that this bit was available on the VS1001 only and is used as 
+ * Note, that this bit was available on the VS1001 only and is used as
  * a test mode flag on other members of the VS10xx family.
  */
 #if VS_HAS_SM_DAC
@@ -352,14 +429,14 @@ struct _VS_PLUGIN_INFO {
 #define VS_SM_TESTS         0x0020
 #endif
 
-/*! \brief VS1001K DAC mono mode. 
+/*! \brief VS1001K DAC mono mode.
  *
  * DAC mono mode if set, stereo mode otherwise.
  *
- * This bit is marked unused in later VS1001 datasheet versions and may 
+ * This bit is marked unused in later VS1001 datasheet versions and may
  * not work due to firmware problems.
  *
- * Note, that this bit was available on the VS1001 only and is used as 
+ * Note, that this bit was available on the VS1001 only and is used as
  * a streaming mode flag on other members of the VS10xx family.
  */
 #if VS_HAS_SM_DACMONO
@@ -368,11 +445,11 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief Stream mode.
  *
- * When stream mode is activated, data should be sent with as even 
- * intervals as possible (and preferable with data blocks of less 
- * than 512 bytes). The decoder makes every attempt to keep its input 
- * buffer half full by changing its playback speed upto 5%. For best 
- * quality sound, the average speed error should be within 0.5%, the 
+ * When stream mode is activated, data should be sent with as even
+ * intervals as possible (and preferable with data blocks of less
+ * than 512 bytes). The decoder makes every attempt to keep its input
+ * buffer half full by changing its playback speed upto 5%. For best
+ * quality sound, the average speed error should be within 0.5%, the
  * bitrate should not exceed 160 kbit/s and VBR should not be used.
  *
  * Not available on the VS1001K.
@@ -393,9 +470,9 @@ struct _VS_PLUGIN_INFO {
 #define VS_SM_EARSPEAKER_HI 0x0080
 #endif
 
-/*! \brief Active edge of the data clock. 
+/*! \brief Active edge of the data clock.
  *
- * If clear data is read at the rising edge, and if set data is read 
+ * If clear data is read at the rising edge, and if set data is read
  * at the falling edge.
  */
 #define VS_SM_DACT          0x0100
@@ -407,17 +484,17 @@ struct _VS_PLUGIN_INFO {
  */
 #define VS_SM_BITORD        0x0200
 
-/*! \brief SDI most significant bit last. 
+/*! \brief SDI most significant bit last.
  *
  * Same as \ref VS_SM_BITORD.
  */
 #define VS_SM_SDIORD        0x0200
 
-/*! \brief VS1001K master mode. 
+/*! \brief VS1001K master mode.
  *
  * Untested and not recommended.
  *
- * Note, that this bit is available on the VS1001 only and is used as 
+ * Note, that this bit is available on the VS1001 only and is used as
  * a chip select mode flag on other members of the VS10xx family.
  */
 #if VS_HAS_SM_IBMODE
@@ -429,11 +506,11 @@ struct _VS_PLUGIN_INFO {
 #define VS_SM_SDISHARE      0x0400
 #endif
 
-/*! \brief VS1001K master mode clock speed. 
+/*! \brief VS1001K master mode clock speed.
  *
  * Untested and not recommended.
  *
- * Note, that this bit is available on the VS1001 only and is used as 
+ * Note, that this bit is available on the VS1001 only and is used as
  * an SDI mode flag on other members of the VS10xx family.
  */
 #if VS_HAS_SM_IBCLK
@@ -456,12 +533,13 @@ struct _VS_PLUGIN_INFO {
  */
 #if VS_HAS_SM_ADPCM
 #define VS_SM_ADPCM         0x1000
+#define VS_SM_ENCODE        0x1000
 #endif
 
 /*! \brief ADPCM high pass filter.
  *
- * If set at the same time as \ref VS_SM_ADPCM and \ref VS_SM_RESET, 
- * ADPCM mode will start with a high-pass filter. This may help 
+ * If set at the same time as \ref VS_SM_ADPCM and \ref VS_SM_RESET,
+ * ADPCM mode will start with a high-pass filter. This may help
  * intelligibility of speech when there is lots of background noise.
  *
  * Available on VS1033.
@@ -472,18 +550,19 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief ADPCM recording selector.
  *
- * Used to select the input for ADPCM recording. If cleared, microphone 
+ * Used to select the input for ADPCM recording. If cleared, microphone
  * input is used. If set to 1, LINEIN is used instead.
  *
  * Available on VS1033 and VS1053.
  */
 #if VS_HAS_SM_LINE_IN
 #define VS_SM_LINE_IN       0x4000
+#define VS_SM_LINE1         0x4000
 #endif
 
 /*! \brief Input clock range.
  *
- * Activates a clock divider at the XTAL input. Should be set as soon 
+ * Activates a clock divider at the XTAL input. Should be set as soon
  * as possible after a chip reset.
  *
  * Available on VS1033 and VS1053.
@@ -498,16 +577,16 @@ struct _VS_PLUGIN_INFO {
  */
 /*@{*/
 /* ------------------------------------------------------------- */
-/*! \brief Register index. 
+/*! \brief Register index.
  */
 #define VS_STATUS_REG       1
 
-/*! \brief Internal analog volume control mask. 
+/*! \brief Internal analog volume control mask.
  *
  * These bits is meant to be used by the internal firmware only.
  *
- * - 0 for 0 dB 
- * - 1 for -6 dB 
+ * - 0 for 0 dB
+ * - 1 for -6 dB
  * - 3 for -12 dB
  */
 #if VS_HAS_SS_AVOL
@@ -518,7 +597,7 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief Reference voltage selection.
  *
- * If AVDD is at least higher than 3.3V, then this bit can be set to 
+ * If AVDD is at least higher than 3.3V, then this bit can be set to
  * select 1.65V reference voltage to increase the analog output swing.
  *
  * See \ref VS_SS_AD_CLOCK for more information about using this bit
@@ -532,33 +611,33 @@ struct _VS_PLUGIN_INFO {
  *
  * This bit can be set to divide the AD modulator frequency by 2.
  *
- * Due to a firmware bug in VS1053b, volume calculation routine clears 
- * \ref VS_SS_AD_CLOCK and \ref VS_SS_VREF_1_65 bits. Write to 
+ * Due to a firmware bug in VS1053b, volume calculation routine clears
+ * \ref VS_SS_AD_CLOCK and \ref VS_SS_VREF_1_65 bits. Write to
  * \ref VS_STATUS_REG or \ref VS_VOL_REG as well as sample rate change
- * with bass enhancer or treble control actived, causes the volume 
- * calculation routine to be called. 
+ * with bass enhancer or treble control actived, causes the volume
+ * calculation routine to be called.
  *
- * As a workaround you can write to \ref VS_STATUS_REG through 
+ * As a workaround you can write to \ref VS_STATUS_REG through
  * \ref VS_WRAMADDR_REG and \ref VS_WRAM_REG after each volume change.
- * Write 0xC001 to \ref VS_WRAMADDR_REG, then write the value to 
- * \ref VS_WRAM_REG. However, the difference in performance between the 
+ * Write 0xC001 to \ref VS_WRAMADDR_REG, then write the value to
+ * \ref VS_WRAM_REG. However, the difference in performance between the
  * modes is not significant, so it is easier to just use the default mode.
  */
 #if VS_HAS_SS_AD_CLOCK
 #define VS_SS_AD_CLOCK      0x0002
 #endif
 
-/*! \brief Internal analog power down. 
+/*! \brief Internal analog power down.
  *
  * This bit is meant to be used by the internal firmware only.
  */
 #define VS_SS_APDOWM1       0x0004
 
-/*! \brief Analog driver power down. 
+/*! \brief Analog driver power down.
  *
- * This bit is typically controlled by the internal firmware. However, 
- * if the application wants to power down the VS1001 and VS1011 with a 
- * minimum power-off transient, this bit should be set to 1 a few 
+ * This bit is typically controlled by the internal firmware. However,
+ * if the application wants to power down the VS1001 and VS1011 with a
+ * minimum power-off transient, this bit should be set to 1 a few
  * milliseconds before activating reset.
  *
  * With newer chips set the volume register to 0xFFFF a few
@@ -587,13 +666,14 @@ struct _VS_PLUGIN_INFO {
 #define VS1003_SS_VER       3
 #define VS1053_SS_VER       4
 #define VS1033_SS_VER       5
+#define VS1063_SS_VER       6
 #define VS1103_SS_VER       7
 
 /*! \brief GBUF overload detection.
  *
- * Some chips contain a GBUF protection circuit, which disconnects the 
- * GBUF driver when too much current is drawn, indicating a short-circuit 
- * to ground. This bit is high while the overload is detected. 
+ * Some chips contain a GBUF protection circuit, which disconnects the
+ * GBUF driver when too much current is drawn, indicating a short-circuit
+ * to ground. This bit is high while the overload is detected.
  */
 #if VS_HAS_SS_VCM_DISABLE
 #define VS_SS_VCM_DISABLE   0x0400
@@ -609,9 +689,9 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief Increase DAC swing.
  *
- * Allows to go above the 0 dB volume setting in 0.5 db steps. Although 
- * the range of the register bits offer up to 7 steps (+3.5 db), higher 
- * settings than 2 cause the DAC modulator to be overdriven and should 
+ * Allows to go above the 0 dB volume setting in 0.5 db steps. Although
+ * the range of the register bits offer up to 7 steps (+3.5 db), higher
+ * settings than 2 cause the DAC modulator to be overdriven and should
  * not be used.
  *
  * Useful with I2S to control the amount of headroom.
@@ -640,7 +720,7 @@ struct _VS_PLUGIN_INFO {
 /* ------------------------------------------------------------- */
 /*@{*/
 /*! \brief Register index.
- * 
+ *
  * Used only on older chip revisions?
  */
 #if VS_HAS_INT_FCTLH_REG
@@ -656,7 +736,7 @@ struct _VS_PLUGIN_INFO {
 /*@{*/
 /*! \brief Register index.
  *
- * On some earlier chips, audio interrupts may be missed when writing 
+ * On some earlier chips, audio interrupts may be missed when writing
  * to this register.
  *
  * For the VS1001K see \ref VS_SM_BASS.
@@ -668,7 +748,7 @@ struct _VS_PLUGIN_INFO {
  *
  * Specified in 10 Hz steps.
  *
- * The bass enhancer is a powerful bass boosting DSP algorithm, which 
+ * The bass enhancer is a powerful bass boosting DSP algorithm, which
  * tries to take the most out of the user's earphones without causing
  * clipping.
  *
@@ -677,15 +757,15 @@ struct _VS_PLUGIN_INFO {
 /*! \brief Lower limit frequency LSB. */
 #define VS_SB_FREQLIMIT_LSB 0
 
-/*! \brief Bass enhancement mask. 
- * 
+/*! \brief Bass enhancement mask.
+ *
  * Bass enhancement in 1 dB steps, or disabled when zero.
  */
 #define VS_SB_AMPLITUDE     0x00F0
 /*! \brief Bass enhancement LSB. */
 #define VS_SB_AMPLITUDE_LSB 4
 
-/*! \brief Treble control lower limit frequency mask. 
+/*! \brief Treble control lower limit frequency mask.
  *
  * Specified in 1 kHz steps.
  */
@@ -693,7 +773,7 @@ struct _VS_PLUGIN_INFO {
 /*! \brief Lower limit frequency LSB. */
 #define VS_ST_FREQLIMIT_LSB 8
 
-/*! \brief Treble control mask. 
+/*! \brief Treble control mask.
  *
  * Treble control in 1.5 dB steps, or disabled when zero.
  */
@@ -713,10 +793,10 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief Clock frequency mask.
  *
- * Should be set to crystal clock divided by 2000, if the clock is not 
+ * Should be set to crystal clock divided by 2000, if the clock is not
  * 24.576 MHz.
  *
- * Must be set before beginning decoding MP3 data. Otherwise the sample 
+ * Must be set before beginning decoding MP3 data. Otherwise the sample
  * rate will not be set correctly.
  *
  * Used for the VS1001, VS1011 and VS1002.
@@ -738,7 +818,7 @@ struct _VS_PLUGIN_INFO {
 #define VS_SC_X3FREQ        0x07FF
 #endif
 
-/*! \brief Allowed multiplier addition. 
+/*! \brief Allowed multiplier addition.
  *
  * Used for WMA decoding with the VS1003, VS1033 and VS1053.
  *
@@ -758,9 +838,9 @@ struct _VS_PLUGIN_INFO {
 #endif
 #endif
 
-/*! \brief Clock multiplier. 
+/*! \brief Clock multiplier.
  *
- * Available on the VS1003, VS1033 and VS1053. However, multiplier 1.5 
+ * Available on the VS1003, VS1033 and VS1053. However, multiplier 1.5
  * is not available on the VS1053.
  */
 #if VS_HAS_SC_MULT
@@ -785,7 +865,7 @@ struct _VS_PLUGIN_INFO {
 #endif
 #endif
 
-/*! \brief Clock doubler enable. 
+/*! \brief Clock doubler enable.
  *
  * Used for the VS1001, VS1011 and VS1002.
  */
@@ -800,12 +880,12 @@ struct _VS_PLUGIN_INFO {
  */
 /* ------------------------------------------------------------- */
 /*@{*/
-/*! \brief Register index. 
+/*! \brief Register index.
  *
- * This register contains the decode time in full seconds or zero after 
+ * This register contains the decode time in full seconds or zero after
  * resetting the decoder.
  *
- * The user may change the value of this register. However, in that case 
+ * The user may change the value of this register. However, in that case
  * the new value should be written twice.
  */
 #define VS_DECODE_TIME_REG  4
@@ -835,7 +915,7 @@ struct _VS_PLUGIN_INFO {
 
 /*! \brief Current sampling rate mask.
  *
- * Value is sample rate divided by 2. Writing to this register will 
+ * Value is sample rate divided by 2. Writing to this register will
  * change the sample rate on the run.
  *
  * To reduce the digital power consumption when idle, you can set
@@ -907,7 +987,7 @@ struct _VS_PLUGIN_INFO {
  */
 /* ------------------------------------------------------------- */
 /*@{*/
-/*! \brief Register index. 
+/*! \brief Register index.
  *
  * For WAV, AAC, WMA and MIDI data, the register contains the (average)
  * data rate measured in bytes per second.
@@ -971,7 +1051,7 @@ struct _VS_PLUGIN_INFO {
  */
 /* ------------------------------------------------------------- */
 /*@{*/
-/*! \brief Register index. 
+/*! \brief Register index.
  *
  * Not available in the VS1103.
  */
@@ -1021,7 +1101,7 @@ struct _VS_PLUGIN_INFO {
  */
 /* ------------------------------------------------------------- */
 /*@{*/
-/*! \brief Register index. 
+/*! \brief Register index.
  *
  * After hardware reset, volume is at maximum value. Software reset does
  * not change volume settings.
@@ -1029,14 +1109,14 @@ struct _VS_PLUGIN_INFO {
  * Setting this register to \ref VS_VOL_OFF will put the chip in analog
  * power down mode.
  *
- * On some earlier chips, audio interrupts may be missed when writing 
+ * On some earlier chips, audio interrupts may be missed when writing
  * to this register. This will not happen on the VS1053, where volume
  * changes are delayed until the next batch of samples are sent to the
  * audio FIFO.
  */
 #define VS_VOL_REG         11
 
-/*! \brief Right channel volume mask. 
+/*! \brief Right channel volume mask.
  *
  * Attenuation is given in 0.5 dB steps or 255 for mute.
  */
@@ -1112,27 +1192,42 @@ struct _VS_PLUGIN_INFO {
 #if VS_HAS_AICTRL_REG
 #define VS_AICTRL_REG      13
 #endif
-/*! \brief Application register 1 index. 
+/*! \brief Application register 1 index.
  *
- * Register 0 on the VS1001. Also used for IMA ADPCM record control in 
+ * Register 0 on the VS1001. Also used for IMA ADPCM record control in
  * the VS1103.
  */
 #if VS_HAS_AICTRL1_REG
 #define VS_AICTRL1_REG     13
 #endif
-/*! \brief Application register 2 index. 
+/*! \brief Application register 2 index.
  *
  * Register 1 on the VS1001.
  */
 #if VS_HAS_AICTRL2_REG
 #define VS_AICTRL2_REG     14
 #endif
-/*! \brief Application register 3 index. 
+/*! \brief Application register 3 index.
  *
  * Do not use with VS1001.
  */
 #if VS_HAS_AICTRL3_REG
 #define VS_AICTRL3_REG     15
+#define VS_AICTRL3_STEREO      0
+#define VS_AICTRL3_DUALCHANNEL 1
+#define VS_AICTRL3_LEFT        2
+#define VS_AICTRL3_RIGHT       3
+#define VS_AICTRL3_MONOMIX     4
+#define VS_ENCMODE_ADPCM      0x0000
+#define VS_ENCMODE_LPCM       0x0010
+#define VS_ENCMODE_G711_ULAW  0x0020
+#define VS_ENCMODE_G711_ALAW  0x0030
+#define VS_ENCMODE_G722       0x0040
+#define VS_ENCMODE_OGGVORBIS  0x0050
+#define VS_ENCMODE_MP3        0x0060
+#define VS_AICTRL3_CODECMODE  0x8000
+#define VS_AICTRL3_ENABLEAEC  0x4000
+#define VS_AICTRL3_ENABLEUART 0x2000
 #endif
 /*@}*/
 
@@ -1155,7 +1250,7 @@ struct _VS_PLUGIN_INFO {
  * Header info filled by VsGetHeaderInfo.
  */
 #ifdef __GNUC__
-typedef struct __attribute__((packed)) {
+typedef struct NUT_PACKED_TYPE {
     uint16_t vshi_no_crc:1;
     uint16_t vshi_layer:2;
     uint16_t vshi_id:2;
@@ -1205,8 +1300,9 @@ typedef struct _VSDCB {
     uint32_t dcb_cod_mode;  /*!< \brief Encoder mode. */
     int (*dcb_isready)(void);
     int (*dcb_sendcmd)(void *, size_t);
-    int (*dcb_senddata)(CONST uint8_t *, size_t);
+    int (*dcb_senddata)(const uint8_t *, size_t);
     int (*dcb_control)(int req, void *conf);
+    int (*dcb_recvdata)(void *, size_t);
 } VSDCB;
 
 #ifndef VSCODEC_DATA_CHUNK_SIZE
@@ -1221,8 +1317,6 @@ extern NUTDEVICE devSpiVsCodec0;
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Function prototypes */
 extern int VsCodecWaitReady(NUTDEVICE *dev, uint32_t tmo);
 extern uint16_t VsCodecReg(NUTDEVICE *dev, uint_fast8_t op, uint_fast8_t reg, uint_fast16_t val);
 extern uint16_t VsCodecMode(NUTDEVICE *dev, uint_fast16_t flags, uint_fast16_t mask);
@@ -1232,8 +1326,8 @@ extern uint16_t VsCodecBeep(NUTDEVICE *dev, uint16_t fsin);
 extern int VsDecoderBufferInit(NUTDEVICE *dev, uint32_t size);
 extern int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int VsCodecRead(NUTFILE * nfp, void *data, int len);
-extern int VsCodecWrite(NUTFILE * nfp, CONST void *data, int len);
-NUTFILE *VsCodecOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern int VsCodecWrite(NUTFILE * nfp, const void *data, int len);
+NUTFILE *VsCodecOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int VsCodecClose(NUTFILE * nfp);
 
 #ifdef __HARVARD_ARCH__
@@ -1241,8 +1335,5 @@ extern int VsCodecWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif
 
 extern void FeederThread(void *arg) __attribute__ ((noreturn));
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

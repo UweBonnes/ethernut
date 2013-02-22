@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -36,57 +36,13 @@
  * \brief Timer/Counter 3 compare match A interrupt.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.5  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.4  2008/08/11 11:51:18  thiagocorrea
- * Preliminary Atmega2560 compile options, but not yet supported.
- * It builds, but doesn't seam to run properly at this time.
- *
- * Revision 1.3  2008/08/11 06:59:16  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.4  2006/01/25 09:38:50  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.3  2005/12/06 23:20:17  hwmaier
- * Changes to make register and flag names compatible with AT90CAN128 MCU
- *
- * Revision 1.2  2005/10/24 09:34:30  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2005/02/10 07:06:18  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.2  2004/01/30 17:02:20  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:44  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:07  harald
- * Prepare release 3.1
- *
+ * $Id$
  * \endverbatim
  */
 
 #include <dev/irqreg.h>
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561) || defined(MCU_AT90USB1287)
 #define INT_MASK_REG    TIMSK3
 #define INT_STATUS_REG  TIFR3
 #define INT_ENABLE_BIT  OCIE3A
@@ -105,7 +61,7 @@
  */
 /*@{*/
 
-#if defined(SIG_OUTPUT_COMPARE3A) || defined(iv_TIMER3_COMPA)
+#if defined(TIMER3_COMPA_vect) || defined(iv_TIMER3_COMPA)
 
 static int AvrTimer3CompAIrqCtl(int cmd, void *param);
 
@@ -186,12 +142,12 @@ static int AvrTimer3CompAIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_OUTPUT_COMPARE3A(void)
+/*! \fn TIMER3_COMPA_vect(void)
  * \brief Timer 3A output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_OUTPUT_COMPARE3A:iv_TIMER3_COMPA
+#pragma interrupt_handler TIMER3_COMPA_vect:iv_TIMER3_COMPA
 #endif
-NUTSIGNAL(SIG_OUTPUT_COMPARE3A, sig_OUTPUT_COMPARE3A)
+NUTSIGNAL(TIMER3_COMPA_vect, sig_OUTPUT_COMPARE3A)
 #endif
 /*@}*/

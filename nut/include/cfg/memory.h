@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -52,12 +52,12 @@
 /*!
  * \brief Number of bytes available in fast data memory.
  *
- * On most platforms this value specifies the total number of bytes 
- * available in RAM. 
+ * On most platforms this value specifies the total number of bytes
+ * available in RAM.
  *
- * On Harvard architectures this value specifies the size of the data 
- * memory. It will be occupied by global variables and static data. 
- * Any remaining space will be added to the Nut/OS heap during system 
+ * On Harvard architectures this value specifies the size of the data
+ * memory. It will be occupied by global variables and static data.
+ * Any remaining space will be added to the Nut/OS heap during system
  * initialization.
  *
  */
@@ -75,8 +75,8 @@
 /*!
  * \brief Number of bytes reserved for special purposes.
  *
- * Right now this is used with the AVR platform only. The specified 
- * number of bytes may be used by a device driver when the external 
+ * Right now this is used with the AVR platform only. The specified
+ * number of bytes may be used by a device driver when the external
  * memory interface is disabled.
  */
 #define NUTMEM_RESERVED 64
@@ -138,7 +138,7 @@
  */
 #ifndef ARTHERCPLDSTART
 #define ARTHERCPLDSTART  0x1100
-#endif 
+#endif
 
 #ifndef ARTHERCPLDSPI
 #define ARTHERCPLDSPI    0x1200

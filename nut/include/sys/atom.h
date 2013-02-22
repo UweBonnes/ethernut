@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -114,16 +114,16 @@
  *
  * NutEnterCritical()
  * Starts a critical section.
- * The global interrupt flag must be disabled to protect the folowing code from 
- * interruption. The state of the global interrupt flag must be saved, to 
+ * The global interrupt flag must be disabled to protect the folowing code from
+ * interruption. The state of the global interrupt flag must be saved, to
  * later restore.
  *
  * NutExitCritical()
- * Finalize a critical section. Must be used only at the end of a critical section 
+ * Finalize a critical section. Must be used only at the end of a critical section
  * to restore the global interrupt flag to the state saved by NutEnterCritical()
  *
  * NutJumpOutCritical()
- * Macro for early leaving the critical section. Must be used in the middle on a 
+ * Macro for early leaving the critical section. Must be used in the middle on a
  * critical section if you want to terminate the critical section.
  *
  */
@@ -132,8 +132,10 @@
 #include <arch/unix/atom.h>
 #elif defined(__AVR__)
 #include <arch/avr/atom.h>
-#elif defined(__arm__)
+#elif defined(__arm__) && !defined(__CORTEX__)
 #include <arch/arm/atom.h>
+#elif defined(__arm__) && defined(__CORTEX__)
+#include <arch/cm3/atom.h>
 #elif defined(__AVR32__)
 #include <arch/avr32/atom.h>
 #elif defined(__H8300H__) || defined(__H8300S__)

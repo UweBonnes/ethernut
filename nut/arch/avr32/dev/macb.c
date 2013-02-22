@@ -144,7 +144,7 @@
 
 #define NIC_PHY_ADVERTISE_FULL (NIC_PHY_ADVERTISE_100FULL | NIC_PHY_ADVERTISE_10FULL | NIC_PHY_ADVERTISE_CSMA)
 #define NIC_PHY_ADVERTISE_ALL (NIC_PHY_ADVERTISE_10HALF | NIC_PHY_ADVERTISE_10FULL | \
-	NIC_PHY_ADVERTISE_100HALF | NIC_PHY_ADVERTISE_100FULL)
+    NIC_PHY_ADVERTISE_100HALF | NIC_PHY_ADVERTISE_100FULL)
 
 /*@}*/
 
@@ -155,7 +155,7 @@
 * Any other than 0 seems to create problems with Atmel's evaluation kits.
 */
 #ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR	        0
+#define NIC_PHY_ADDR            0
 #endif
 
 #ifndef NIC_PHY_UID
@@ -219,11 +219,11 @@ typedef struct _TxTdDescriptor {
 //! @}
 
 static volatile TxTdDescriptor txBufTab[EMAC_TX_BUFFERS];
-static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] __attribute__ ((aligned(4)));
+static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] NUT_ALIGNED_TYPE(4);
 static unsigned int txBufIdx;
 
 static volatile RxTdDescriptor rxBufTab[EMAC_RX_BUFFERS];
-static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(4)));
+static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] NUT_ALIGNED_TYPE(4);
 static unsigned int rxBufIdx;
 
 #define RXBUF_OWNERSHIP     0x00000001
@@ -517,7 +517,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
          */
 //              if (fbc > 1536) {
 //                      ni->ni_insane = 1;
-//              } else 
+//              } else
         {
             *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t) fbc);
             if (*nbp != NULL) {
@@ -622,7 +622,7 @@ static int EmacPutPacket(int bufnum, NUTDEVICE * dev, NETBUF * nb)
 *
 * \param mac Six byte unique MAC address.
 */
-static int EmacStart(volatile avr32_macb_t * macb, CONST uint8_t * mac)
+static int EmacStart(volatile avr32_macb_t * macb, const uint8_t * mac)
 {
     unsigned int i;
 
@@ -884,7 +884,11 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     EmacOutput,                 /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!

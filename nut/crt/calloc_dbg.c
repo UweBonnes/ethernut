@@ -2,7 +2,7 @@
  * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2004 by egnite Software GmbH
  * Copyright (c) 1990 The Regents of the University of California.
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,11 +57,11 @@
  * \param num  Number of elements.
  * \param size Size of a single element.
  *
- * \return A pointer to the allocated space or a null pointer if 
+ * \return A pointer to the allocated space or a null pointer if
  *         not enough memory space is available.
  */
 
-void *dbg_calloc(size_t num, size_t size, CONST char *file, int line)
+void *dbg_calloc(size_t num, size_t size, const char *file, int line)
 {
     register void *p;
 

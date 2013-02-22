@@ -19,7 +19,7 @@
 ****************************************************************************
 *  History:
 *
-*  26.12.02  mifi   First Version 
+*  26.12.02  mifi   First Version
 *                   Change FAT32FileSize return value from int to long
 ****************************************************************************/
 #ifndef _FS_FATFS_H_

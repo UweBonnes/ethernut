@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH
+ * Copyright (c) 1989 by Carnegie Mellon University
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,55 +31,15 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions are 
- * Copyright (c) 1989 by Carnegie Mellon University.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms are permitted
- * provided that the above copyright notice and this paragraph are
- * duplicated in all such forms and that any documentation,
- * advertising materials, and other materials related to such
- * distribution and use acknowledge that the software was developed
- * by Carnegie Mellon University.  The name of the
- * University may not be used to endorse or promote products derived
- * from this software without specific prior written permission.
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/lcpout.c
+ * \brief PPP LCP output functions.
  *
- * Revision 1.6  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.5  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.4  2004/03/08 11:26:57  haraldkipp
- * Bugfix, establishing PPP sessions failed.
- *
- * Revision 1.3  2004/01/30 11:37:58  haraldkipp
- * Handle magic number rejects
- *
- * Revision 1.2  2003/08/14 15:18:41  haraldkipp
- * Negotiate local magic
- *
- * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:15:30  harald
- * Use async map define
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>
@@ -138,7 +101,11 @@ static INLINE void LcpResetOptions(NUTDEVICE * dev)
     PPPDCB *dcb = dev->dev_dcb;
 
     dcb->dcb_compr = 0;
-    dcb->dcb_auth = PPP_PAP;
+    if ((dcb->dcb_user && *dcb->dcb_user) || (dcb->dcb_pass && *dcb->dcb_pass)) {
+        dcb->dcb_auth = PPP_PAP;
+    } else {
+        dcb->dcb_auth = 0;
+    }
     dcb->dcb_neg_magic = new_magic;
     dcb->dcb_loc_magic = 0;
     dcb->dcb_rem_magic = 0;
@@ -182,7 +149,7 @@ void LcpTxConfReq(NUTDEVICE * dev, uint8_t id, uint8_t rejected)
          * rejects. The MAGICNUMBER had been added later
          * to support echo requests, but some servers reject
          * this option. Now we still do not provide full
-         * reject processing but blindly assume, that the 
+         * reject processing but blindly assume, that the
          * MAGICNUMBER is the rejected option.
          */
         if (!rejected) {

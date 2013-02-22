@@ -131,8 +131,6 @@ struct _MIMETYPES {
     void (*mtyp_handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
 };
 
-__BEGIN_DECLS
-
 extern void NutHttpProcessRequest(FILE * stream);
 extern void NutHttpProcessQueryString(REQUEST * req);
 extern void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title);
@@ -142,8 +140,6 @@ extern void NutHttpSendError(FILE * stream, REQUEST * req, int status);
 extern char *NutGetMimeType(char *name);
 extern void *NutGetMimeHandler(char *name);
 extern uint8_t NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req));
-
-__END_DECLS
 
 /*
  * Authorization
@@ -160,13 +156,9 @@ struct _AUTHINFO {
     char *auth_login;       /*!< \brief Login user and password, separated by a colon. */
 };
 
-__BEGIN_DECLS
-
 extern int NutHttpAuthValidate(REQUEST * req);
-extern int NutRegisterAuth(CONST char *dirname, CONST char *login);
+extern int NutRegisterAuth(const char *dirname, const char *login);
 extern void NutClearAuth(void);
-
-__END_DECLS
 
 /*
  * CGI
@@ -185,8 +177,6 @@ struct _CGIFUNCTION {
 
 /*@}*/
 
-__BEGIN_DECLS
-
 /* Function prototypes. */
 extern void NutHttpSetOptionFlags(uint32_t flags);
 extern uint32_t NutHttpGetOptionFlags(void);
@@ -203,7 +193,4 @@ extern int NutHttpGetParameterCount(REQUEST * req);
 extern char *NutHttpGetParameterName(REQUEST * req, int index);
 extern char *NutHttpGetParameterValue(REQUEST * req, int index);
 
-
-__END_DECLS
-/* */
 #endif

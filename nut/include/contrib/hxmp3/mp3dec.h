@@ -1,37 +1,37 @@
-/* ***** BEGIN LICENSE BLOCK ***** 
- * Version: RCSL 1.0/RPSL 1.0 
- *  
- * Portions Copyright (c) 1995-2002 RealNetworks, Inc. All Rights Reserved. 
- *      
- * The contents of this file, and the files included with this file, are 
- * subject to the current version of the RealNetworks Public Source License 
- * Version 1.0 (the "RPSL") available at 
- * http://www.helixcommunity.org/content/rpsl unless you have licensed 
- * the file under the RealNetworks Community Source License Version 1.0 
- * (the "RCSL") available at http://www.helixcommunity.org/content/rcsl, 
- * in which case the RCSL will apply. You may also obtain the license terms 
- * directly from RealNetworks.  You may not use this file except in 
- * compliance with the RPSL or, if you have a valid RCSL with RealNetworks 
- * applicable to this file, the RCSL.  Please see the applicable RPSL or 
- * RCSL for the rights, obligations and limitations governing use of the 
- * contents of the file.  
- *  
- * This file is part of the Helix DNA Technology. RealNetworks is the 
- * developer of the Original Code and owns the copyrights in the portions 
- * it created. 
- *  
- * This file, and the files included with this file, is distributed and made 
- * available on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER 
- * EXPRESS OR IMPLIED, AND REALNETWORKS HEREBY DISCLAIMS ALL SUCH WARRANTIES, 
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS 
- * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. 
- * 
- * Technology Compatibility Kit Test Suite(s) Location: 
- *    http://www.helixcommunity.org/content/tck 
- * 
- * Contributor(s): 
- *  
- * ***** END LICENSE BLOCK ***** */ 
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: RCSL 1.0/RPSL 1.0
+ *
+ * Portions Copyright (c) 1995-2002 RealNetworks, Inc. All Rights Reserved.
+ *
+ * The contents of this file, and the files included with this file, are
+ * subject to the current version of the RealNetworks Public Source License
+ * Version 1.0 (the "RPSL") available at
+ * http://www.helixcommunity.org/content/rpsl unless you have licensed
+ * the file under the RealNetworks Community Source License Version 1.0
+ * (the "RCSL") available at http://www.helixcommunity.org/content/rcsl,
+ * in which case the RCSL will apply. You may also obtain the license terms
+ * directly from RealNetworks.  You may not use this file except in
+ * compliance with the RPSL or, if you have a valid RCSL with RealNetworks
+ * applicable to this file, the RCSL.  Please see the applicable RPSL or
+ * RCSL for the rights, obligations and limitations governing use of the
+ * contents of the file.
+ *
+ * This file is part of the Helix DNA Technology. RealNetworks is the
+ * developer of the Original Code and owns the copyrights in the portions
+ * it created.
+ *
+ * This file, and the files included with this file, is distributed and made
+ * available on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND REALNETWORKS HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ *
+ * Technology Compatibility Kit Test Suite(s) Location:
+ *    http://www.helixcommunity.org/content/tck
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 /**************************************************************************************
  * Fixed-point MP3 decoder
@@ -52,7 +52,7 @@
 #
 #elif defined(ARM_ADS)
 #
-#elif defined(_SYMBIAN) && defined(__WINS__)	/* Symbian emulator for Ix86 */
+#elif defined(_SYMBIAN) && defined(__WINS__)    /* Symbian emulator for Ix86 */
 #
 #elif defined(__GNUC__) && defined(__arm__)
 #
@@ -74,49 +74,49 @@ extern "C" {
  *   511 + 1428 = 1939, round up to 1940 (4-byte align)
  */
 #ifndef MAINBUF_SIZE
-#define MAINBUF_SIZE	1940
+#define MAINBUF_SIZE    1940
 #endif
 
-#define MAX_NGRAN		2		/* max granules */
+#define MAX_NGRAN       2       /* max granules */
 
 #ifndef MAX_NCHAN
-#define MAX_NCHAN		2		/* max channels */
+#define MAX_NCHAN       2       /* max channels */
 #endif
 
-#define MAX_NSAMP		576		/* max samples per channel, per granule */
+#define MAX_NSAMP       576     /* max samples per channel, per granule */
 
 /* map to 0,1,2 to make table indexing easier */
 typedef enum {
-	MPEG1 =  0,
-	MPEG2 =  1,
-	MPEG25 = 2
+    MPEG1 =  0,
+    MPEG2 =  1,
+    MPEG25 = 2
 } MPEGVersion;
 
 typedef void *HMP3Decoder;
 
 enum {
-	ERR_MP3_NONE =                  0,
-	ERR_MP3_INDATA_UNDERFLOW =     -1,
-	ERR_MP3_MAINDATA_UNDERFLOW =   -2,
-	ERR_MP3_FREE_BITRATE_SYNC =    -3,
-	ERR_MP3_OUT_OF_MEMORY =	       -4,
-	ERR_MP3_NULL_POINTER =         -5,
-	ERR_MP3_INVALID_FRAMEHEADER =  -6,
-	ERR_MP3_INVALID_SIDEINFO =     -7,
-	ERR_MP3_INVALID_SCALEFACT =    -8,
-	ERR_MP3_INVALID_HUFFCODES =    -9,
+    ERR_MP3_NONE =                  0,
+    ERR_MP3_INDATA_UNDERFLOW =     -1,
+    ERR_MP3_MAINDATA_UNDERFLOW =   -2,
+    ERR_MP3_FREE_BITRATE_SYNC =    -3,
+    ERR_MP3_OUT_OF_MEMORY =        -4,
+    ERR_MP3_NULL_POINTER =         -5,
+    ERR_MP3_INVALID_FRAMEHEADER =  -6,
+    ERR_MP3_INVALID_SIDEINFO =     -7,
+    ERR_MP3_INVALID_SCALEFACT =    -8,
+    ERR_MP3_INVALID_HUFFCODES =    -9,
 
-	ERR_UNKNOWN =                  -9999
+    ERR_UNKNOWN =                  -9999
 };
 
 typedef struct _MP3FrameInfo {
-	int bitrate;
-	int nChans;
-	int samprate;
-	int bitsPerSample;
-	int outputSamps;
-	int layer;
-	int version;
+    int bitrate;
+    int nChans;
+    int samprate;
+    int bitsPerSample;
+    int outputSamps;
+    int layer;
+    int version;
 } MP3FrameInfo;
 
 /* public API */
@@ -132,4 +132,4 @@ int MP3FindSyncWord(unsigned char *buf, int nBytes);
 }
 #endif
 
-#endif	/* _MP3DEC_H */
+#endif  /* _MP3DEC_H */

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2005-2008 by egnite Software GmbH. 
- * Copyright (C) 2008 by egnite GmbH. 
+ * Copyright (C) 2005-2008 by egnite Software GmbH.
+ * Copyright (C) 2008 by egnite GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -133,6 +133,9 @@
 
 #endif /* NUTMEM_SDRAM_BASE */
 
+#ifndef _BV
+#define _BV(n) (1 << (n))
+#endif
 
 /*
  * Section 0: Vector table and reset entry.
@@ -208,7 +211,7 @@ _start:
         /* Configure the watchdog. */
         ldr     r1, =WDT_BASE
         ldr     r0, =NUT_WDT_START
-        str     r0, [r1, #WDT_MR_OFF]        
+        str     r0, [r1, #WDT_MR_OFF]
 #endif
 #else
         /* Disable the watchdog. */
@@ -218,7 +221,7 @@ _start:
 #endif
 
         /*
-         * Enable the main oscillator. Set startup time of 6 * 8 slow 
+         * Enable the main oscillator. Set startup time of 6 * 8 slow
          * clock cycles and wait until oscillator is stabilized.
          */
         ldr     r1, =PMC_BASE
@@ -235,7 +238,7 @@ wait_moscs:
          */
         ldr     r0, [r1, #PMC_MCKR_OFF]
         and   r0, r0, #~PMC_CSS
-        /* Slow Clock. The next statement really isn't needed. 
+        /* Slow Clock. The next statement really isn't needed.
         ** It is included for code clarity */
         orr     r0, r0, #PMC_CSS_SLOW_CLK
         str     r0, [r1, #PMC_MCKR_OFF]
@@ -293,7 +296,7 @@ wait_pllsel:
                 | _BV(PA29_RAS_B))
         str     r0, [r1, #PIO_BSR_OFF]
         str     r0, [r1, #PIO_PDR_OFF]
-        
+
         /* Enable address bus (A0, A2-A11, A13-A17) at PIO B. */
         ldr     r1, =PIOB_BASE
         ldr     r0, =(_BV(PB0_A0_B) \
@@ -343,7 +346,7 @@ wait_pllsel:
 
         /* Load SDRAM controller base address. */
         ldr     r1, =SDRAMC_BASE
-        
+
         /* Set SDRAM characteristics in configuration register. */
         /* Hard coded values for MT48LC32M16A2 with 48MHz CPU. */
         ldr     r0, =(SDRAMC_CFG_NC | SDRAMC_CFG_NR \
@@ -358,13 +361,13 @@ wait_pllsel:
 
         /* 200us delay minimum. */
         mov     r3, #0x2000
-1:        
+1:
         subs    r3, r3, #1
         bne     1b
 
         /* Load SDRAM base address. */
         mov     r2, #NUTMEM_SDRAM_BASE
-        
+
         /* Issue 16 bit SDRAM command: NOP. */
         ldr     r0, =(SDRAMC_DBW | SDRAMC_MODE_NOP)
         str     r0, [r1, #SDRAMC_MR_OFF]
@@ -418,7 +421,7 @@ wait_pllsel:
         ldr     r0, =(RSTC_KEY | RSTC_URSTEN)
         ldr     r1, =RSTC_MR
         str     r0, [r1, #0]
-        
+
         b       __set_stacks
 
         .ltorg
@@ -427,7 +430,7 @@ wait_pllsel:
 /*
  * Section 2: Set stack pointers.
  */
-        .section .init2,"ax",%progbits        
+        .section .init2,"ax",%progbits
         .global __set_stacks
 __set_stacks:
 
@@ -450,7 +453,7 @@ __set_stacks:
         msr     CPSR_c, #ARM_MODE_SVC | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         b       __enter_mode
-        
+
         .ltorg
 
 /*
@@ -481,6 +484,18 @@ _40:
         strne   r3, [r1], #+4
         bne     _40
 
+#if defined(MCU_AT91SAM7SE)
+        /*
+         * Clear .bss_iram section
+         */
+        ldr     r1, =__bss_iram_start
+        ldr     r2, =__bss_iram_end
+        ldr     r3, =0
+1:      cmp     r1, r2
+        strne   r3, [r1], #+4
+        bne     1b
+#endif
+
         /*
          * Relocate .data section (Copy from ROM to RAM).
          */
@@ -493,6 +508,19 @@ _41:
         ldrlo   r0, [r1], #4
         strlo   r0, [r2], #4
         blo     _41
+
+#if defined(MCU_AT91SAM7SE)
+        /*
+         * Relocate .data_iram section (Copy from ROM to internal RAM).
+         */
+        ldr     r1, =__etext
+        ldr     r2, =__data_iram_start
+        ldr     r3, =__data_iram_end
+1:      cmp     r2, r3
+        ldrlo   r0, [r1], #4
+        strlo   r0, [r2], #4
+        blo     1b
+#endif
 
         /*
          * Initialize user stack pointer.

@@ -1,5 +1,5 @@
 #ifndef _DEV_AVRTARGET_H_
-#define	_DEV_AVRTARGET_H_
+#define _DEV_AVRTARGET_H_
 
 /*
  * Copyright (C) 2007 by egnite Software GmbH. All rights reserved.
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -106,8 +106,6 @@
 #define AVRCMD_READ_CALIBRATION_BYTE    0x38000000UL
 #define AVRCMD_POLL_READY               0xF0000000UL
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int AvrTargetInit(void);
 extern void AvrTargetSelect(ureg_t act);
 extern void AvrTargetReset(ureg_t on);
@@ -118,10 +116,8 @@ extern uint32_t AvrTargetFusesWriteSafe(uint32_t fuses);
 extern int AvrTargetProgEnable(void);
 extern int AvrTargetPollReady(unsigned int tmo);
 extern int AvrTargetChipErase(void);
-extern void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data);
+extern void AvrTargetPageLoad(uint32_t page, const uint8_t * data);
 extern int AvrTargetPageWrite(uint32_t page);
-extern int AvrTargetPageVerify(uint32_t page, CONST uint8_t * data);
+extern int AvrTargetPageVerify(uint32_t page, const uint8_t * data);
 
-__END_DECLS
-/* End of prototypes */
 #endif

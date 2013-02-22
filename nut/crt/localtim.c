@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * Portions of the following functions are derived from material which is 
+ * Portions of the following functions are derived from material which is
  * Copyright (c) 1985 by Microsoft Corporation.  All rights are reserved.
  */
 /*
@@ -54,7 +54,7 @@
  *
  *
  */
- 
+
 #include <stdint.h>
 
 #include <time.h>
@@ -76,12 +76,12 @@
  *
  * Thread safe version of \b localtime. See ::localtime for more information.
  *
- * \param timer Pointer to stored time. 
- * \param ptm Pointer to structure ::tm where the converted time is stored. 
+ * \param timer Pointer to stored time.
+ * \param ptm Pointer to structure ::tm where the converted time is stored.
  * \return Always return 0.
  *
  */
-int localtime_r(CONST time_t * timer, tm * ptm)
+int localtime_r(const time_t * timer, tm * ptm)
 {
     long ltime;
 
@@ -183,30 +183,30 @@ int localtime_r(CONST time_t * timer, tm * ptm)
 /*!
  * \brief Convert a time value and correct for the local time zone.
  *
- * The localtime function converts a time stored as a time_t value and stores the 
- * result in a structure of type ::tm. The long value \e timer represents the seconds 
- * elapsed since midnight (00:00:00), January 1, 1970, UTC. This value is usually 
+ * The localtime function converts a time stored as a time_t value and stores the
+ * result in a structure of type ::tm. The long value \e timer represents the seconds
+ * elapsed since midnight (00:00:00), January 1, 1970, UTC. This value is usually
  * obtained from the ::time function.
  *
- * ::gmtime, ::mktime, and \b localtime all use a single statically allocated ::tm structure 
- * for the conversion. Each call to one of these routines destroys the result of the 
+ * ::gmtime, ::mktime, and \b localtime all use a single statically allocated ::tm structure
+ * for the conversion. Each call to one of these routines destroys the result of the
  * previous call.
  *
- * \b localtime corrects for the local time zone if the user first sets the global 
- * variable #_timezone. 
- * 
- * \param timer Pointer to stored time. 
- * \return Return a pointer to the structure result. If the value in \e timer 
+ * \b localtime corrects for the local time zone if the user first sets the global
+ * variable #_timezone.
+ *
+ * \param timer Pointer to stored time.
+ * \return Return a pointer to the structure result. If the value in \e timer
  * represents a date before midnight, January 1, 1970, return \b NULL.
  *
  */
 /*
   Note: This function is *not* thread safe, because it uses a static variable
-  to store the calculated values. To be safe, you must surround the call to localtime 
+  to store the calculated values. To be safe, you must surround the call to localtime
   _and_ the usage of the returned pointer with NutEnterCritical() and NutExitCritical()!
   Provided for compatibility to std c lib.
 */
-tm *localtime(CONST time_t * timer)
+tm *localtime(const time_t * timer)
 {
     if (localtime_r(timer, &_tb))
         return NULL;

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -75,9 +75,9 @@
  * \param vol    Mounted volume.
  * \param clust  Cluster number of the entry to locate.
  * \param tabnum Number of the table.
- * \param sect   Pointer to the variable that receives the sector of the 
+ * \param sect   Pointer to the variable that receives the sector of the
  *               table entry.
- * \param pos    Pointer to the variable that receives position within 
+ * \param pos    Pointer to the variable that receives position within
  *               the sector.
  */
 static void PhatTableLoc(PHATVOL * vol, uint32_t clust, int tabnum, uint32_t * sect, uint32_t * pos)
@@ -118,12 +118,14 @@ int Phat12GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link)
     /* Read the link value. Be aware, that entries may cross sector boundaries. */
     *link = vol->vol_buf[sbn].sect_data[pos++];
     if (pos >= vol->vol_sectsz) {
+        PhatSectorBufferRelease(dev, sbn);
         if ((sbn = PhatSectorLoad(dev, sect + 1)) < 0) {
             return -1;
         }
         pos = 0;
     }
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos]) << 8;
+    PhatSectorBufferRelease(dev, sbn);
 
     /* Adjust the 12 bit position within the 16 bit result. */
     if (clust & 1) {
@@ -166,6 +168,7 @@ int Phat12SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
         if (pos + 1 < vol->vol_sectsz) {
             tval += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
         } else {
+            PhatSectorBufferRelease(dev, sbn);
             if ((sbn = PhatSectorLoad(dev, sect + 1)) < 0) {
                 return -1;
             }
@@ -187,12 +190,14 @@ int Phat12SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
         } else {
             vol->vol_buf[sbn].sect_data[0] = (uint8_t) (tval >> 8);
             vol->vol_buf[sbn].sect_dirty = 1;
+            PhatSectorBufferRelease(dev, sbn);
             if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
                 return -1;
             }
         }
         vol->vol_buf[sbn].sect_data[pos] = (uint8_t) tval;
         vol->vol_buf[sbn].sect_dirty = 1;
+        PhatSectorBufferRelease(dev, sbn);
     }
 
     return 0;

@@ -1,5 +1,9 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH
+ * Copyright (c) 1993 by Digital Equipment Corporation
+ * Copyright (c) 1983, 1993 by The Regents of the University of California
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +18,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,122 +32,15 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
- * -
- * Portions Copyright (c) 1983, 1993 by
- *  The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * -
- * Portions Copyright (c) 1993 by Digital Equipment Corporation.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies, and that
- * the name of Digital Equipment Corporation not be used in advertising or
- * publicity pertaining to distribution of the document or software without
- * specific, written prior permission.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
- * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
- * CORPORATION BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
- * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
- * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
- * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
- * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.11  2009/02/22 12:30:36  olereinhardt
- * Include "include/errno.h" instead of "include/net/errno.h"
+/*!
+ * \file net/tcpout.c
+ * \brief TCP output functions.
  *
- * Revision 1.10  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.9  2008/04/06 13:29:01  haraldkipp
- * In unreliable or high traffic networks connections may suddenly freeze.
- * The problem is, that during overflows (happening every 65s) the
- * retransmission timer may be loaded with 0, which in turn disables all
- * outstanding retransmission. Applied fix contributed by Henrik Maier.
- *
- * Revision 1.8  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.7  2006/03/02 19:57:34  haraldkipp
- * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
- *
- * Revision 1.6  2006/01/23 17:33:47  haraldkipp
- * Avoid memory alignment errors.
- *
- * Revision 1.5  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.4  2005/04/05 17:41:48  haraldkipp
- * Header is dangerous when you forget to remove all debug outputs.
- *
- * Revision 1.3  2004/07/30 19:54:46  drsung
- * Some code of TCP stack redesigned. Round trip time calculation is now
- * supported. Fixed several bugs in TCP state machine. Now TCP connections
- * should be more reliable under heavy traffic or poor physical connections.
- *
- * Revision 1.2  2004/04/15 11:05:35  haraldkipp
- * Set retransmission timer on first transmit queue entry
- *
- * Revision 1.1.1.1  2003/05/09 14:41:40  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.15  2003/03/31 12:29:17  harald
- * Check NEBUF allocation
- *
- * Revision 1.14  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.13  2002/09/15 16:50:44  harald
- * *** empty log message ***
- *
- * Revision 1.12  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -177,36 +74,36 @@
  * Check the TCP socket status and send any segment waiting
  * for transmission.
  *
- * The function will not return until the data has been stored in the 
- * network device hardware for transmission. If the device is not ready 
- * for transmitting a new packet, the calling thread will be suspended 
- * until the device becomes ready again. 
+ * The function will not return until the data has been stored in the
+ * network device hardware for transmission. If the device is not ready
+ * for transmitting a new packet, the calling thread will be suspended
+ * until the device becomes ready again.
  *
- * If the target host is connected through an Ethernet network and if 
- * the hardware address of that host is currently unknown, an ARP 
- * request is sent out and the function will block until a response 
+ * If the target host is connected through an Ethernet network and if
+ * the hardware address of that host is currently unknown, an ARP
+ * request is sent out and the function will block until a response
  * is received or an ARP timeout occurs.
  *
- * Segments containing data or SYN and FIN flags are added to a special 
- * queue for unacknowledged segments and will be retransmitted by the 
- * TCP timer thread, if not acknowledged by the remote within a specific 
+ * Segments containing data or SYN and FIN flags are added to a special
+ * queue for unacknowledged segments and will be retransmitted by the
+ * TCP timer thread, if not acknowledged by the remote within a specific
  * time. The state machine will remove these segments from the queue
  * as soon as they are acknowledged.
  *
  * \note This function is mainly used by the TCP state machine.
- *       Applications typically do not call this function but 
+ *       Applications typically do not call this function but
  *       use NutTcpSend(), which is part of the TCP socket interface.
  *
- * \param sock  Socket descriptor. This pointer must have been retrieved 
+ * \param sock  Socket descriptor. This pointer must have been retrieved
  *              by calling NutTcpCreateSocket().
  * \param data  Pointer to TCP segment contents.
  * \param size  TCP segment length.
  *
- * \return 0 on success, -1 otherwise. Returning 0 does not imply that 
- *         the data has been successfully delivered, because flow control 
+ * \return 0 on success, -1 otherwise. Returning 0 does not imply that
+ *         the data has been successfully delivered, because flow control
  *         and retransmission is still handled in the background.
  */
-int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
+int NutTcpOutput(TCPSOCKET * sock, const uint8_t * data, uint16_t size)
 {
     NETBUF *nb;
     NETBUF *nb_clone = 0;
@@ -254,7 +151,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
     }
 
     /*
-     * Any SYN is sent first. Add options too. We rely on the caller 
+     * Any SYN is sent first. Add options too. We rely on the caller
      * not to send a SYN segment with data, because this may break
      * some old stacks.
      */
@@ -322,10 +219,10 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
         NutDumpTcpHeader(__tcp_trs, "OUT", sock, nb);
 #endif
 
-	/*
-	 * To avoid a race condition in tcp state machine, the segment is first
+    /*
+     * To avoid a race condition in tcp state machine, the segment is first
      * appended to the transmission que, and then sent to the network.
-	 */
+     */
 
     /*
      * Append the segment to our transmission queue.
@@ -364,10 +261,10 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
         nb_clone = nb;
 
     /*
-     * IP output might fail because of routing, ARP or network device 
+     * IP output might fail because of routing, ARP or network device
      * problems or because the system ran out of memory.
      */
-    if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, nb_clone)) 
+    if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, nb_clone))
         return -1;
 
     NutNetBufFree (nb_clone);
@@ -381,13 +278,13 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
  * Send RST in response to an incoming segment, which should
  * be rejected.
  *
- * The function avoids to send out a RST segment in response to 
+ * The function avoids to send out a RST segment in response to
  * an incoming RST segment.
  *
  * \note This function is mainly used by the TCP state machine.
  *       Applications typically do not call this function.
  *
- * \param nb Network buffer structure of the incoming segment. 
+ * \param nb Network buffer structure of the incoming segment.
  *           Will be released within this function.
  *
  * \return 0 on success, -1 otherwise.
@@ -448,7 +345,7 @@ int NutTcpReject(NETBUF * nb)
      */
     th->th_sum = 0;
     csum =
-        NutIpPseudoChkSumPartial(ih->ip_dst, ih->ip_src, IPPROTO_TCP, 
+        NutIpPseudoChkSumPartial(ih->ip_dst, ih->ip_src, IPPROTO_TCP,
                                  htons(nb->nb_tp.sz));
     th->th_sum = NutIpChkSum(csum, th, nb->nb_tp.sz);
 

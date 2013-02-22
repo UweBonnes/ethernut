@@ -60,7 +60,7 @@ typedef struct _SNMPVAR {
     /*! \brief Access control. */
     uint16_t var_acl;
     /*! \brief Variable access funtion. */
-    uint8_t *(*var_get)(CONST struct _SNMPVAR*, OID*, size_t*, int, size_t*, WMETHOD **);
+    uint8_t *(*var_get)(const struct _SNMPVAR*, OID*, size_t*, int, size_t*, WMETHOD **);
     /*! \brief Number of sub-IDs in the name. */
     size_t var_namelen;
     /*! \brief Name (object identifier) of the variable. */

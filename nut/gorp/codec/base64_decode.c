@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 by Thermotemp GmbH. All rights reserved. 
+ * Copyright (C) 2009 by Thermotemp GmbH. All rights reserved.
  *
  * These routines where mainly taken from pro/dencode.c
  * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -53,7 +53,7 @@
  * \endverbatim
  */
 
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <stdint.h>
 
 /*!
@@ -76,7 +76,7 @@
  * we need just the first 128 bytes. Furthermore there is no char
  * below 32, so we can save 32 additional bytes of flash.
  */
-static prog_char base64dtab[96] = {
+static const char base64dtab[96] PROGMEM = {
 /*
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -99,7 +99,7 @@ static prog_char base64dtab[96] = {
 };
 
 /*!
- * \brief Do base-64 decoding on a string. 
+ * \brief Do base-64 decoding on a string.
  *
  * Ignore any non-base64 bytes.
  * Return the actual number of bytes generated. The decoded size will
@@ -111,7 +111,7 @@ static prog_char base64dtab[96] = {
  */
 
 /*
- * Do base-64 decoding on a string. 
+ * Do base-64 decoding on a string.
  */
 char *NutDecodeBase64(char * str)
 {
@@ -123,8 +123,8 @@ char *NutDecodeBase64(char * str)
     char step = 0;
 
     for (tp = sp = str; *sp; ++sp) {
-    	if (*sp < 32)
-    	    continue;
+        if (*sp < 32)
+            continue;
         if ((code = PRG_RDB(&base64dtab[(int) *sp - 32])) == (char)-1)
             continue;
         switch (step++) {

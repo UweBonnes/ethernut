@@ -48,6 +48,8 @@ CC     = $(TRGT)gcc
 CXX    = $(TRGT)g++
 AS     = $(TRGT)gcc -x assembler-with-cpp
 AR     = $(TRGT)ar
+CP     = cp
+RM     = rm -f
 RANLIN = $(TRGT)ranlib
 
 # Preprocessor options.
@@ -71,4 +73,6 @@ CXXFLAGS     = $(CXXFLAGS_MCU) $(CXXFLAGS_OPT) $(CXXFLAGS_WRN) $(CXXFLAGS_ASM) $
 ASFLAGS  = $(CFLAGS) $(UASFLAG)
 
 # Librarian options.
-ARFLAGS = rsv
+#ARFLAGS = rsv
+# More silent version
+ARFLAGS = rsc

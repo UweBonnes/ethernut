@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -80,19 +80,19 @@
 /*!
  * \brief Volume boot record.
  */
-typedef struct __attribute__ ((packed)) _PHATVBR {
+typedef struct NUT_PACKED_TYPE _PHATVBR {
     /*! \brief Jump instruction, contains E9xxxx or EBxx90. */
     uint8_t boot_jump[3];
     /*! \brief OEM name and version. */
     uint8_t boot_oem[8];
-    /*! \brief Bytes per sector. 
+    /*! \brief Bytes per sector.
      *
      * The BIOS parameter block starts here.
      */
     uint16_t bios_sectsz;
     /*! \brief Sectors per cluster. */
     uint8_t bios_clustsz;
-    /*! \brief Number of reserved sectors. 
+    /*! \brief Number of reserved sectors.
      *
      * This includes the boot sector, which is typically the only
      * reserved sector with PHAT12/16.
@@ -115,12 +115,12 @@ typedef struct __attribute__ ((packed)) _PHATVBR {
     uint16_t bios_sects_p_trk;
     /*! \brief Number of heads. */
     uint16_t bios_heads;
-    /*! \brief Number of hidden sectors. 
+    /*! \brief Number of hidden sectors.
      *
      * With PHAT12 this field is two bytes only. We ignore it anyway.
      */
     uint32_t bios_sects_hidd;
-    /*! \brief Total number of sectors for huge drives. 
+    /*! \brief Total number of sectors for huge drives.
      *
      * Valid only if the value in bios_volsz is zero.
      */
@@ -131,7 +131,7 @@ typedef struct __attribute__ ((packed)) _PHATVBR {
      * This and the following 6 fields are available with PHAT32 only.
      */
     uint32_t bios_tabsz_big;
-    /*! \brief Extended flags. 
+    /*! \brief Extended flags.
      *
      * If bit 7 is set, then bits 0-3 specify the active allocation table.
      * This feature is not yet supported. PHAT32 always updates the first
@@ -146,7 +146,7 @@ typedef struct __attribute__ ((packed)) _PHATVBR {
     uint16_t bios_fsinfo;
     /*! \brief Boot backup sector. */
     uint16_t bios_boot_bak;
-    /*! \brief Reserved for future expansion. 
+    /*! \brief Reserved for future expansion.
      *
      * End of the BIOS parameter block.
      */
@@ -183,6 +183,8 @@ typedef struct _PHATSECTBUF {
     uint32_t sect_num;
     /*! \brief If not zero, buffer needs to be written. */
     int sect_dirty;
+    /*! \brief If not zero, buffer is locked. */
+    int sect_lock;
 } PHATSECTBUF;
 
 /*!
@@ -217,7 +219,7 @@ typedef struct _PHATVOL {
 
     /*! \brief Number of sectors per allocation table. */
     uint32_t vol_tabsz;
-    /*! \brief First sector of each allocation table. 
+    /*! \brief First sector of each allocation table.
      *
      * We maintain upto two allocation tables.
      */
@@ -236,7 +238,7 @@ typedef struct _PHATVOL {
      * number of data clusters plus 2.
      */
     uint32_t vol_last_clust;
-    /*! \brief First data sector. 
+    /*! \brief First data sector.
      *
      * The first sector following the root directory.
      */
@@ -245,12 +247,8 @@ typedef struct _PHATVOL {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type);
 extern int PhatVolUnmount(NUTDEVICE * dev);
 extern uint32_t PhatClusterSector(NUTFILE * nfp, uint32_t clust);
 
-__END_DECLS
-/* End of prototypes */
 #endif

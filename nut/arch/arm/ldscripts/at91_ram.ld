@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -40,11 +40,11 @@
  * Initial check in.
  *
  */
- 
- 
+
+
  /* Modified by Martin Thomas <mthomas@rhrk.uni-kl.de> for C++-support
    ***** NOT TESTED *****
- 
+
     - based on information from the devkitarm linker-script for GBA
 	- based on infomration from STR7-examples from Anglia Designs
 	- call the ctors in startup-code before b main / bx main with the following code:
@@ -63,8 +63,8 @@ ctor_loop:
 ctor_end:
 
 */
- 
- 
+
+
 
 ENTRY(_start)
 STARTUP(crtat91_ram.o)
@@ -95,15 +95,15 @@ SECTIONS
     *(.init5);
     . = ALIGN(4);
 	
-/* 
+/*
     *(.text);
     . = ALIGN(4);
     *(.rodata*);
-    . = ALIGN(4); 
+    . = ALIGN(4);
     *(.glue_7t);
     . = ALIGN(4);
     *(.glue_7);
-    . = ALIGN(4); 
+    . = ALIGN(4);
 */
 
 	*(.text .text.*)
@@ -111,7 +111,7 @@ SECTIONS
 	*(.glue_7t .glue_7)
 	KEEP(*(.fini))
 	*(.gcc_except_table)
-	. = ALIGN(4); 
+	. = ALIGN(4);
 
     etext = .;
   } > ram
@@ -142,14 +142,14 @@ SECTIONS
 
   .dtors :
   {
-	PROVIDE(__dtors_start__ = .); 
+	PROVIDE(__dtors_start__ = .);
 	KEEP(*(SORT(.dtors.*)))
 	KEEP(*(.dtors))
 	PROVIDE(__dtors_end__ = .);
 	. = ALIGN(4);
   } > ram
 
-  
+
   .data :
   {
     PROVIDE (__data_start = .);

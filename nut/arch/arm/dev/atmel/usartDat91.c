@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -106,14 +106,14 @@ static USARTDCB dcb_dbgu = {
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_tx_rbf */
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_rx_rbf */
     0,                          /* dbc_last_eol */
-    At91UsartInit,    	        /* dcb_init */
+    At91UsartInit,              /* dcb_init */
     At91UsartDeinit,            /* dcb_deinit */
     At91UsartTxStart,           /* dcb_tx_start */
     At91UsartRxStart,           /* dcb_rx_start */
     At91UsartSetFlowControl,    /* dcb_set_flow_control */
     At91UsartGetFlowControl,    /* dcb_get_flow_control */
     At91UsartSetSpeed,          /* dcb_set_speed */
-    At91UsartGetSpeed,	        /* dcb_get_speed */
+    At91UsartGetSpeed,          /* dcb_get_speed */
     At91UsartSetDataBits,       /* dcb_set_data_bits */
     At91UsartGetDataBits,       /* dcb_get_data_bits */
     At91UsartSetParity,         /* dcb_set_parity */

@@ -2,7 +2,7 @@
 #define _PRO_SSI_H_
 
 /*
- * Copyright (C) 2001-2004 by Ole Reinhardt <ole.reinhardt@embedded-it.de>. 
+ * Copyright (C) 2001-2004 by Ole Reinhardt <ole.reinhardt@embedded-it.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -18,11 +18,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,15 +33,15 @@
  *
  * For additional information see http://www.ethernut.de/
  */
- 
+
 /*
  * $Log$
  * Revision 1.1  2005/08/05 11:22:14  olereinhardt
  * Added Server side include support. Initial checkin
  *
- */  
- 
- 
+ */
+
+
 /*!
  * \file pro/ssi.h
  * \brief SSI extension for HTTP daemons.
@@ -53,14 +53,9 @@
 
 /*@{*/
 
-__BEGIN_DECLS
-
 extern void NutRegisterSsi(void);
 
-__END_DECLS
-
-
 /*@}*/
- 
- 
+
+
 #endif

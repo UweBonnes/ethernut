@@ -84,7 +84,7 @@
 
 #ifndef HXCODEC0_MAX_OUTPUT_BUFSIZ
 /*! \brief Output buffer size limit. */
-#define HXCODEC0_MAX_OUTPUT_BUFSIZ  16384
+#define HXCODEC0_MAX_OUTPUT_BUFSIZ  393216
 #endif
 
 #ifndef DAC_OUTPUT_RATE
@@ -182,11 +182,12 @@ static int DecodeFrame(uint8_t *buf, int len)
 {
     int rc = len;
     int skip;
+    static void *hres;
 
     while (len > 2 * MAINBUF_SIZE) {
         if ((skip = MP3FindSyncWord(buf, len)) < 0) {
-		    return -1;
-	    }
+            return len;
+        }
         if (skip) {
             len -= skip;
             buf += skip;
@@ -214,7 +215,6 @@ static int DecodeFrame(uint8_t *buf, int len)
 #ifdef HXCODEC0_RESAMPLER
                 /* If needed, initialize resampler. */
                 if (samprate != DAC_OUTPUT_RATE) {
-                    void *hres;
 
                     if ((hres = RAInitResamplerHermite(samprate, DAC_OUTPUT_RATE, mpi.mpi_frameinfo.nChans)) == NULL) {
                         return -1;
@@ -227,8 +227,28 @@ static int DecodeFrame(uint8_t *buf, int len)
 #endif
                 first_frame = 0;
             }
-            if (Tlv320DacWrite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps)) {
-                return -1;
+#ifdef HXCODEC0_RESAMPLER
+            if (hres) {
+                int os;
+
+                if (mpi.mpi_frameinfo.nChans == 1) {
+                    os = RAResampleMonoHermite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps, rs_pcmbuf, hres);
+                }
+                else {
+                    os = RAResampleStereoHermite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps, rs_pcmbuf, hres);
+                }
+                if (os <= 0) {
+                    break;
+                }
+                if (Tlv320DacWrite(rs_pcmbuf, os)) {
+                    break;
+                }
+            } else
+#endif
+            {
+                if (Tlv320DacWrite(pi_pcmbuf, mpi.mpi_frameinfo.outputSamps)) {
+                    return -1;
+                }
             }
             break;
         }
@@ -276,8 +296,8 @@ THREAD(FeederThread, arg)
     /* We are a high priority thread. */
     NutThreadSetPriority(7);
     for (;;) {
-        /* 
-        ** Idle mode processing. 
+        /*
+        ** Idle mode processing.
         */
         if (dcb->dcb_pbstat == CODEC_STATUS_IDLE) {
             /* Wait for a request or a buffer update. */
@@ -292,8 +312,8 @@ THREAD(FeederThread, arg)
             }
         }
 
-        /* 
-        ** Play mode processing. 
+        /*
+        ** Play mode processing.
         */
         if (dcb->dcb_pbstat == CODEC_STATUS_PLAYING) {
             /* Process cancel requests. */
@@ -442,8 +462,8 @@ static int HelixIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Flush VLSI audio decoder buffer.
  *
- * Waits until all currently buffered data had been processed by the 
- * decoder. This makes sure that the end of the stream will not be 
+ * Waits until all currently buffered data had been processed by the
+ * decoder. This makes sure that the end of the stream will not be
  * cut off.
  *
  * \param dev Specifies the audio codec device.
@@ -472,22 +492,23 @@ static int HelixPlayerFlush(NUTDEVICE *dev, uint32_t tmo)
             break;
         }
     }
+    Tlv320DacFlush();
     return rc;
 }
 
 /*!
  * \brief Send data to the decoder.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
  */
-static int HelixWrite(NUTFILE * nfp, CONST void *data, int len)
+static int HelixWrite(NUTFILE * nfp, const void *data, int len)
 {
     int rc = 0;
     uint8_t *bp;
-    CONST uint8_t *dp;
+    const uint8_t *dp;
     size_t rbytes;
     HXDCB *dcb = nfp->nf_dev->dev_dcb;
 
@@ -521,24 +542,24 @@ static int HelixWrite(NUTFILE * nfp, CONST void *data, int len)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write to device.
  *
  * Similar to HelixWrite() except that the data is expected in program memory.
  *
  * This function is implemented for CPUs with Harvard Architecture only.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write_P entry.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data in program space. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error. Currently this function is not implemented and always
  *         returns -1.
  *
@@ -554,7 +575,7 @@ static int HelixWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *HelixOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *HelixOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nfp;
 
@@ -576,14 +597,15 @@ static NUTFILE *HelixOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return nfp;
 }
 
-/*! 
+/*!
  * \brief Close codec device.
  */
 static int HelixClose(NUTFILE * nfp)
 {
     HXDCB *dcb = nfp->nf_dev->dev_dcb;
-    int rc = HelixPlayerFlush(nfp->nf_dev, dcb->dcb_wtmo);
+    int rc;
 
+    rc = HelixPlayerFlush(nfp->nf_dev, dcb->dcb_wtmo);
     if (nfp) {
         if (mpi.mpi_mp3dec) {
             MP3FreeDecoder(mpi.mpi_mp3dec);
@@ -623,7 +645,7 @@ static int HelixInit(NUTDEVICE * dev)
     }
 
     /* Start the feeder thread. */
-    if (NutThreadCreate(dev->dev_name, FeederThread, dev, 
+    if (NutThreadCreate(dev->dev_name, FeederThread, dev,
         (NUT_THREAD_HXCODEC0STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == 0) {
         return -1;
     }
@@ -633,7 +655,7 @@ static int HelixInit(NUTDEVICE * dev)
 /*!
  * \brief Device information structure.
  *
- * An application must pass a pointer to this structure to 
+ * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using this driver.
  *
  * The device is named \b audio0.

@@ -1,5 +1,5 @@
 #ifndef _DEV_X12RTC_H_
-#define	_DEV_X12RTC_H_
+#define _DEV_X12RTC_H_
 
 /*
  * Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -164,22 +164,18 @@
 
 extern NUTRTC rtcX12x6;
 
-__BEGIN_DECLS
-/* Prototypes */
-extern int X12Init(void) NUT_DEPRECATED;
+extern int X12Init(NUTRTC *rtc) NUT_DEPRECATED;
 
-extern int X12RtcGetClock(struct _tm *tm) NUT_DEPRECATED;
-extern int X12RtcSetClock(CONST struct _tm *tm) NUT_DEPRECATED;
-extern int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs) NUT_DEPRECATED;
-extern int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs) NUT_DEPRECATED;
-extern int X12RtcGetStatus(uint32_t *sflgs) NUT_DEPRECATED;
-extern int X12RtcClearStatus(uint32_t sflgs) NUT_DEPRECATED;
+extern int X12RtcGetClock(NUTRTC *rtc, struct _tm *tm) NUT_DEPRECATED;
+extern int X12RtcSetClock(NUTRTC *rtc, const struct _tm *tm) NUT_DEPRECATED;
+extern int X12RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflgs) NUT_DEPRECATED;
+extern int X12RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflgs) NUT_DEPRECATED;
+extern int X12RtcGetStatus(NUTRTC *rtc, uint32_t *sflgs) NUT_DEPRECATED;
+extern int X12RtcClearStatus(NUTRTC *rtc, uint32_t sflgs) NUT_DEPRECATED;
 extern int X12RtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
-extern int X12RtcWrite(int nv, CONST uint8_t *buff, size_t len);
+extern int X12RtcWrite(int nv, const uint8_t *buff, size_t len);
 
 extern int X12EepromRead(unsigned int addr, void *buff, size_t len);
-extern int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len);
+extern int X12EepromWrite(unsigned int addr, const void *buff, size_t len);
 
-__END_DECLS
-/* End of prototypes */
 #endif

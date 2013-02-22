@@ -40,7 +40,7 @@
  *
  */
 #ifndef _DEV_PCA9555_H_
-#define	_DEV_PCA9555_H_
+#define _DEV_PCA9555_H_
 
 #include <cfg/pca9555.h>
 #include <dev/twif.h>
@@ -60,8 +60,6 @@
 #define GPIO_CFG_INVERT 0x00010000
 #define GPIO_CFG_NORM   0x00020000
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int IOExpInit( void );
 extern int IOExpPinConfigSet( int bank, int bit, uint32_t flags);
 extern int IOExpRawWrite ( int bank, int value );
@@ -71,6 +69,4 @@ extern int IOExpSetBitHigh( int bank, int bit );
 extern int IOExpGetBit ( int bank, int bit, int *value );
 extern int IOExpSetBit( int bank, int bit, int value );
 
-__END_DECLS
-/* End of prototypes */
 #endif

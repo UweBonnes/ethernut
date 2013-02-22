@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -40,6 +40,82 @@
 #include <string.h>
 
 #include <dev/gpio.h>
+
+#if defined(__AVR_LIBC_VERSION__)
+
+uint32_t GpioPinConfigGet(int bank, int bit)
+{
+    uint32_t rc = 0;
+
+    if (AVR_DDRX(bank) & _BV(bit)) {
+        rc |= GPIO_CFG_OUTPUT;
+    }
+    else if (AVR_PORTX(bank) & _BV(bit)) {
+        rc |= GPIO_CFG_PULLUP;
+    }
+    return rc;
+}
+
+int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
+{
+    if (flags & GPIO_CFG_PULLUP) {
+        AVR_PORTX(bank) |= mask;
+    }
+    else {
+        AVR_PORTX(bank) &= ~mask;
+        outb(PORTA, inb(PORTA) & ~mask);
+    }
+    if (flags & GPIO_CFG_OUTPUT) {
+        AVR_DDRX(bank) |= mask;
+    }
+    else {
+        AVR_DDRX(bank) &= ~mask;
+    }
+    return 0;
+}
+
+int GpioPinConfigSet(int bank, int bit, uint32_t flags)
+{
+    /* Set the inital value, if given
+     *
+     * Otherwise we may introduce unwanted transistions on the port
+     */
+    if (flags & GPIO_CFG_INIT_HIGH)
+    {
+        if (flags & GPIO_CFG_INIT_LOW)
+            return -1;
+        else
+            AVR_PORTX(bank) |= BV(bit);
+    }
+    if (flags & GPIO_CFG_INIT_LOW)
+            AVR_PORTX(bank) &= ~BV(bit);
+
+    /* we can't check for these flags, so clear them now*/
+    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
+    if (flags & GPIO_CFG_PULLUP)
+        flags &= ~GPIO_CFG_OUTPUT;
+    if (flags & GPIO_CFG_OUTPUT) {
+        AVR_DDRX(bank) |= _BV(bit);
+    }
+    else {
+        if (flags & GPIO_CFG_PULLUP) {
+            AVR_PORTX(bank) |= BV(bit);
+        }
+        else {
+            AVR_PORTX(bank) &= ~BV(bit);
+        }
+        AVR_DDRX(bank) &= ~_BV(bit);
+    }
+
+    /* Check the result. */
+    if (GpioPinConfigGet(bank, bit) != flags) {
+        return -1;
+    }
+    return 0;
+}
+
+#else
 
 int GpioPinGet(int bank, int bit)
 {
@@ -808,6 +884,8 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     }
     return 0;
 }
+
+#endif
 
 int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg)
 {

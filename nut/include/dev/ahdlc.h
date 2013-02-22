@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -80,7 +80,7 @@
  * The start of this structure is equal to the UARTDCB structure.
  */
 struct _AHDLCDCB {
-    
+
     /*! \brief Mode flags.
      */
     uint32_t dcb_modeflags;
@@ -99,7 +99,7 @@ struct _AHDLCDCB {
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
-     * Threads are added to this queue when the output buffer 
+     * Threads are added to this queue when the output buffer
      * is full or when flushing the output buffer.
      */
     HANDLE dcb_tx_rdy;
@@ -112,19 +112,19 @@ struct _AHDLCDCB {
     HANDLE dcb_rx_rdy;
 
     /*! \brief Hardware base address.
-     * 
+     *
      * This is a copy of the base address in the NUTDEVICE structure
      * and required by the interrupt routine.
      */
     uint8_t dcb_base;
 
-    /*! \brief Input buffer. 
+    /*! \brief Input buffer.
      *
      * This buffer is filled by the the receiver interrupt, so the
      * contents of the buffer is volatile.
      */
     volatile uint8_t *dcb_rx_buf;
-    
+
     /*! \brief Input buffer index for next incoming byte.
      *
      * This volatile index is incremented by the receiver interrupt.
@@ -135,17 +135,17 @@ struct _AHDLCDCB {
      */
     uint8_t dcb_rd_idx;
 
-    /*! \brief Output buffer. 
+    /*! \brief Output buffer.
      */
     uint8_t *dcb_tx_buf;
 
-    /*! \brief Output buffer index for next outgoing byte. 
+    /*! \brief Output buffer index for next outgoing byte.
      *
      * This volatile index is incremented by the transmit interrupt.
      */
     volatile uint8_t dcb_tx_idx;
 
-    /*! \brief Output buffer index for next byte to write. 
+    /*! \brief Output buffer index for next byte to write.
      */
     uint8_t dcb_wr_idx;
 
@@ -158,7 +158,7 @@ struct _AHDLCDCB {
 
     /*! \brief 32-bit receive ACCM.
      */
-    uint32_t dcb_rx_accm;         
+    uint32_t dcb_rx_accm;
 
     /*! \brief 256-bit transmit ACCM.
      */

@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -90,7 +90,7 @@
  *
  * Revision 1.2  2003/10/13 10:17:11  haraldkipp
  * Seconds counter added
- * 
+ *
  * Revision 1.1.1.1  2003/05/09 14:41:22  haraldkipp
  * Initial using 3.2.1
  *
@@ -125,25 +125,25 @@ typedef struct _NUTTIMERINFO NUTTIMERINFO;
  * \brief Timer information structure.
  */
 struct _NUTTIMERINFO {
-    /*! \brief Link to next timer. 
+    /*! \brief Link to next timer.
      */
-    NUTTIMERINFO *tn_next;          
-    /*! \brief Link to previous timer. 
+    NUTTIMERINFO *tn_next;
+    /*! \brief Link to previous timer.
      */
-    NUTTIMERINFO *tn_prev;          
-    /*! \brief Number of system ticks. 
+    NUTTIMERINFO *tn_prev;
+    /*! \brief Number of system ticks.
      *  Set to zero on one-shot timers.
      */
-    uint32_t tn_ticks;        
-    /*! \brief Decremented by one on each system tick intervall. 
+    uint32_t tn_ticks;
+    /*! \brief Decremented by one on each system tick intervall.
      */
-    uint32_t tn_ticks_left;   
-    /*! \brief Callback function. 
+    uint32_t tn_ticks_left;
+    /*! \brief Callback function.
      */
-    void (*tn_callback)(HANDLE, void *);    
-    /*! \brief Argument pointer passed to callback function. 
+    void (*tn_callback)(HANDLE, void *);
+    /*! \brief Argument pointer passed to callback function.
      */
-    volatile void *tn_arg;          
+    volatile void *tn_arg;
 };
 
 extern NUTTIMERINFO* nutTimerList;
@@ -160,15 +160,17 @@ extern NUTTIMERINFO* nutTimerList;
 #define NUT_HWCLK_PERIPHERAL    NUT_HWCLK_CPU
 #endif
 #ifndef NUT_HWCLK_MAX
+#if defined(MCU_STM32F10X)
+#define NUT_HWCLK_MAX           NUT_HWCLK_PCLK2
+#else
 #define NUT_HWCLK_MAX           NUT_HWCLK_PERIPHERAL
 #endif
-
-__BEGIN_DECLS
-/* Prototypes */
+#endif
 
 /*
  * Functions used by the kernel.
  */
+extern void NutTimerIntr(void *arg);
 extern void NutTimerInit(void);
 extern NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags);
 extern void NutTimerInsert(NUTTIMERINFO * tn);
@@ -202,13 +204,10 @@ extern uint32_t NutClockGet(int idx);
 
 extern int NutClockSet(int idx, uint32_t freq);
 
-/* On some platforms the clock query functions may be defined by 
+/* On some platforms the clock query functions may be defined by
 ** a preprocessor macro to avoid function call overhead. */
 #if !defined(NutGetCpuClock)
 extern uint32_t NutGetCpuClock(void);
 #endif
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

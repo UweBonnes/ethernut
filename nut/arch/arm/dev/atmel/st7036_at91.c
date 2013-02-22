@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -224,13 +224,13 @@ static void LcdWriteInstruction(uint8_t cmd, uint8_t xt)
 static void LcdWriteData(uint8_t data)
 {
     /* RS high selects data register. */
-	LCD_EN_CLR();
+    LCD_EN_CLR();
     LcdDelay(LCD_SHORT_DELAY);
     LCD_RS_SET();
     LcdDelay(LCD_SHORT_DELAY);
     LcdWriteByte(data);
     LcdDelay(LCD_SHORT_DELAY);
-	LCD_EN_SET();
+    LCD_EN_SET();
     LcdDelay(LCD_SHORT_DELAY);
 }
 
@@ -304,30 +304,30 @@ static int LcdInit(NUTDEVICE * dev)
     /* Initial delay. Actually only required after power on. */
     NutSleep(50);
 
-	LCD_RS_CLR();
-	LCD_EN_CLR();
+    LCD_RS_CLR();
+    LCD_EN_CLR();
 
-	LcdWriteCmd(0x38);    /* Function set. */
-	NutSleep(2);
-	LcdWriteCmd(0x39);    /* Function set. */
-	NutSleep(2);
-	LcdWriteCmd(0x14);    /* Bias 1/5, 2 lines. */
-	NutSleep(1);
-	LcdWriteCmd(0x55);    /* Power/ICON/Contrast control. */
-	NutSleep(1);
-	LcdWriteCmd(0x6D);    /* Follower control. */
-	NutSleep(1);
-	LcdWriteCmd(0x78);    /* Booster on, Contrast set. */
-	NutSleep(1);
-	LcdWriteCmd(0x0F);    /* Display on. */
-	NutSleep(1);
-	LcdWriteCmd(0x01);    /* Clear display. */
-	NutSleep(1);
-	LcdWriteCmd(0x06);    /* Entry mode set. */
-	NutSleep(1);
+    LcdWriteCmd(0x38);    /* Function set. */
+    NutSleep(2);
+    LcdWriteCmd(0x39);    /* Function set. */
+    NutSleep(2);
+    LcdWriteCmd(0x14);    /* Bias 1/5, 2 lines. */
+    NutSleep(1);
+    LcdWriteCmd(0x55);    /* Power/ICON/Contrast control. */
+    NutSleep(1);
+    LcdWriteCmd(0x6D);    /* Follower control. */
+    NutSleep(1);
+    LcdWriteCmd(0x78);    /* Booster on, Contrast set. */
+    NutSleep(1);
+    LcdWriteCmd(0x0F);    /* Display on. */
+    NutSleep(1);
+    LcdWriteCmd(0x01);    /* Clear display. */
+    NutSleep(1);
+    LcdWriteCmd(0x06);    /* Entry mode set. */
+    NutSleep(1);
 
-	LCD_EN_SET();
-	LCD_RS_SET();
+    LCD_EN_SET();
+    LCD_RS_SET();
 
     /* Clear display. */
     LcdClear();

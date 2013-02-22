@@ -1,13 +1,4 @@
 const char dirent_rcsid[] = "@(#) $Id$";
-/*
- * $Log$
- * Revision 1.1  2003/07/20 19:18:16  haraldkipp
- * First check in
- *
- * Revision 1.3  2002/08/08 16:23:33  harald
- * *** empty log message ***
- *
- */
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -21,7 +12,7 @@ const char dirent_rcsid[] = "@(#) $Id$";
 
 static void free_dircontents(DIRCONT *dp)
 {
-    DIRCONT	*odp;
+    DIRCONT *odp;
 
     while((odp = dp) != NULL) {
         if(dp->_d_entry != NULL)

@@ -20,11 +20,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -86,22 +86,22 @@
  */
 /*@{*/
 
-#define	CF_LONG		0x01    /* 1: long or double */
-#define	CF_SUPPRESS	0x02    /* suppress assignment */
-#define	CF_SIGNOK	0x04    /* +/- is (still) legal */
-#define	CF_NDIGITS	0x08    /* no digits detected */
-#define	CF_PFXOK	0x10    /* 0x prefix is (still) legal */
-#define	CF_NZDIGITS	0x20    /* no zero digits detected */
-#define	CF_DPTOK	0x10    /* (float) decimal point is still legal */
-#define	CF_EXPOK	0x20    /* (float) exponent (e+3, etc) still legal */
+#define CF_LONG     0x01    /* 1: long or double */
+#define CF_SUPPRESS 0x02    /* suppress assignment */
+#define CF_SIGNOK   0x04    /* +/- is (still) legal */
+#define CF_NDIGITS  0x08    /* no digits detected */
+#define CF_PFXOK    0x10    /* 0x prefix is (still) legal */
+#define CF_NZDIGITS 0x20    /* no zero digits detected */
+#define CF_DPTOK    0x10    /* (float) decimal point is still legal */
+#define CF_EXPOK    0x20    /* (float) exponent (e+3, etc) still legal */
 
 /*
  * Conversion types.
  */
-#define	CT_CHAR		0       /* %c conversion */
-#define	CT_STRING	2       /* %s conversion */
-#define	CT_INT		3       /* integer, i.e., strtoq or strtouq */
-#define	CT_FLOAT	4       /* floating, i.e., strtod */
+#define CT_CHAR     0       /* %c conversion */
+#define CT_STRING   2       /* %s conversion */
+#define CT_INT      3       /* integer, i.e., strtoq or strtouq */
+#define CT_FLOAT    4       /* floating, i.e., strtod */
 
 /*!
  * \brief Read formatted data using a given input function.
@@ -113,10 +113,10 @@
  * \param ap    List of pointer arguments.
  *
  * \return The number of fields successfully converted and assigned.
- *         The return value is EOF, if an error occurs or if the end 
+ *         The return value is EOF, if an error occurs or if the end
  *         of the stream is reached before the first conversion.
  */
-int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
+int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
 {
 
     uint8_t cf;                 /* Character from format. */
@@ -132,7 +132,7 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
     char *cp;                   /* Temporary pointer. */
     uint8_t ch_ready = 0;       /* Character available from previous peek
                                    This is necessary as a hack to get around a missing ungetc */
-    
+
     for (;;) {
         cf = *fmt++;
         if (cf == 0)

@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+--
+-- Revision 1.16  2010/10/27 12:22:44  ulrichprinz
+-- 2010-10-27  Ulrich Prinz <uprinz2@netscape.net>
+-- Added configuration support for unified PHY support package.
+--
 -- Revision 1.15  2009/02/22 12:22:44  olereinhardt
 -- 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 -- Added NUT_UDP_ICMP_SUPPORT (ICMP support on UDP sockets)
@@ -94,15 +99,15 @@ nutnet =
         brief = "TCP",
         requires = { "NET_IP", "NET_ICMP", "NUT_EVENT" },
         provides = { "NET_TCP", "DEV_READ", "DEV_WRITE" },
-        sources = 
-        { 
+        sources =
+        {
             "tcpin.c",
             "tcpout.c",
             "tcpsm.c",
             "tcpsock.c",
             "tcputil.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "NUT_THREAD_TCPSMSTACK",
@@ -206,13 +211,13 @@ nutnet =
         brief = "UDP",
         requires = { "NET_IP", "NUT_EVENT" },
         provides = { "NET_UDP" },
-        sources = 
-        { 
+        sources =
+        {
             "udpin.c",
             "udpout.c",
             "udpsock.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "NUT_UDP_ICMP_SUPPORT",
@@ -225,44 +230,40 @@ nutnet =
                 file = "include/cfg/udp.h"
             }
         }
-        
+
     },
     {
         name = "nutnet_ip",
         brief = "IP",
         requires = { "NET_LINK" },
         provides = { "NET_IP" },
-        sources = 
-        { 
+        sources =
+        {
             "ipcsum.c",
             "ipin.c",
             "ipout.c",
             "ipdemux.c",
             "route.c"
         },
-        options = 
+        options =
         {
             {
-                macro = "NUTIPCONF_ICMP_ARPMETHOD",
-                brief = "Enable ARP Method",
-                description = "Allow IP configuration using ARP method.\n\n"..
-                              "When enabling this function, be aware that DHCP servers "..
-                              "may probe an IP/MAC relationship by sending an ICMP request. "..
-                              "This triggers the Nut/Net ARP method and terminates the DHCP "..
-                              "client, leaving the system with default configurations of "..
-                              "the network mask (255.255.255.0) and default gateway (none).",
-                flavor = "booldata",
+                macro = "NUT_IP_FORWARDING",
+                brief = "IP Forwarding",
+                description = "If enabled, incoming IP datagrams to other destinations are forwarded "..
+                              "to the most specific route.\n",
+                flavor = "boolean",
                 file = "include/cfg/ip.h"
-            },
-        }        
+            }
+        }
     },
     {
         name = "nutnet_icmp",
         brief = "ICMP",
         requires = { "NET_LINK" },
         provides = { "NET_ICMP" },
-        sources = 
-        { 
+        sources =
+        {
             "icmpin.c",
             "icmpout.c"
         }
@@ -272,8 +273,8 @@ nutnet =
         brief = "IGMP",
         requires = { "NET_LINK" },
         provides = { "NET_IGMP" },
-        sources = 
-        { 
+        sources =
+        {
             "igmp.c",
             "igmpin.c",
             "igmpout.c"
@@ -290,15 +291,15 @@ nutnet =
         brief = "ARP",
         description = "Address Resolution Protocol, translates a "..
                       "32-bit IP address into a 48-bit Ethernet address.",
-        requires = { "NUT_EVENT", "NET_PHY" },
+        requires = { "NUT_EVENT", "NET_MAC" },
         provides = { "NET_ARP" },
-        sources = 
-        { 
+        sources =
+        {
             "arpcache.c",
             "arpin.c",
             "arpout.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "MAX_ARPAGE",
@@ -325,15 +326,15 @@ nutnet =
                 file = "include/cfg/arp.h"
             },
         }
-        
+
     },
     {
         name = "nutnet_ethernet",
         brief = "Ethernet",
         requires = { "NET_ARP" },
         provides = { "NET_LINK" },
-        sources = 
-        { 
+        sources =
+        {
             "ethin.c",
             "ethout.c",
             "ethdemux.c",
@@ -343,20 +344,21 @@ nutnet =
     {
         name = "nutnet_ppp",
         brief = "PPP",
-        requires = { 
-            "NET_PPPAUTH", "NUT_EVENT", "PROTO_HDLC", "DEV_FILE", "DEV_READ", "DEV_WRITE" 
+        requires = {
+            "NET_PPPAUTH", "NUT_EVENT", "PROTO_HDLC", "DEV_FILE", "DEV_READ", "DEV_WRITE"
         },
         provides = { "NET_PPP", "NET_LINK" },
-        sources = { 
+        sources =
+        {
             "pppin.c",
             "pppout.c",
             "pppsm.c",
             "ipcpin.c",
             "ipcpout.c",
-            "lcpin.c", 
+            "lcpin.c",
             "lcpout.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "NUT_THREAD_PPPSMSTACK",

@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -34,23 +34,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
+/*!
+ * \file arch/avr/dev/rtlregs.h
+ * \brief Realtek 8019AS registers.
  *
- * Revision 1.1.1.1  2003/05/09 14:40:49  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.7  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.6  2002/10/29 15:27:36  harald
- * *** empty log message ***
- *
- * Revision 1.5  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*!
@@ -81,12 +71,12 @@
 #define NIC_PG0_TBCR1 0x06    /*!< \brief Transmit byte count register 1 */
 #define NIC_PG0_ISR 0x07      /*!< \brief Interrupt status register */
 #define NIC_PG0_CRDA0 0x08    /*!< \brief Current remote DMA address 0 */
-#define NIC_PG0_RSAR0 0x08    /*!< \brief Remote start address register 0 
+#define NIC_PG0_RSAR0 0x08    /*!< \brief Remote start address register 0
                                    Low byte address to read from the buffer. */
 #define NIC_PG0_CRDA1 0x09    /*!< \brief Current remote DMA address 1 */
-#define NIC_PG0_RSAR1 0x09    /*!< \brief Remote start address register 1 
+#define NIC_PG0_RSAR1 0x09    /*!< \brief Remote start address register 1
                                    High byte address to read from the buffer. */
-#define NIC_PG0_RBCR0 0x0a    /*!< \brief Remote byte count register 0 
+#define NIC_PG0_RBCR0 0x0a    /*!< \brief Remote byte count register 0
                                    Low byte of the number of bytes to read
                                    from the buffer. */
 #define NIC_PG0_RBCR1 0x0b    /*!< \brief Remote byte count register 1
@@ -246,8 +236,8 @@
 #define NIC_EECR_EEM1  0x80    /*!< \brief EEPROM Operating Mode */
 #define NIC_EECR_EEM0  0x40    /*!< \brief  EEPROM Operating Mode
                                     - 0 0 Normal operation
-                                    - 0 1 Auto-load 
-                                    - 1 0 9346 programming 
+                                    - 0 1 Auto-load
+                                    - 1 0 9346 programming
                                     - 1 1 Config register write enab */
 #define NIC_EECR_EECS  0x08    /*!< \brief EEPROM Chip Select */
 #define NIC_EECR_EESK  0x04    /*!< \brief EEPROM Clock */
@@ -259,9 +249,9 @@
  */
 #define NIC_CONFIG2_PL1   0x80 /*!< \brief Network media type */
 #define NIC_CONFIG2_PL0   0x40 /*!< \brief Network media type
-                                    - 0 0 TP/CX auto-detect 
-                                    - 0 1 10baseT 
-                                    - 1 0 10base5 
+                                    - 0 0 TP/CX auto-detect
+                                    - 0 1 10baseT
+                                    - 1 0 10base5
                                     - 1 1 10base2 */
 #define NIC_CONFIG2_BSELB 0x20 /*!< \brief BROM disable */
 #define NIC_CONFIG2_BS4   0x10 /*!< \brief BROM size/base */
@@ -275,11 +265,11 @@
  */
 #define NIC_CONFIG3_PNP     0x80 /*!< \brief PnP Mode */
 #define NIC_CONFIG3_FUDUP   0x40 /*!< \brief Full duplex */
-#define NIC_CONFIG3_LEDS1   0x20 /*!< \brief LED1/2 pin configuration 
-                                        - 0 LED1 == LED_RX, LED2 == LED_TX 
+#define NIC_CONFIG3_LEDS1   0x20 /*!< \brief LED1/2 pin configuration
+                                        - 0 LED1 == LED_RX, LED2 == LED_TX
                                         - 1 LED1 == LED_CRS, LED2 == MCSB */
 #define NIC_CONFIG3_LEDS0   0x10 /*!< \brief LED0 pin configration
-                                        - 0 LED0 pin == LED_COL 
+                                        - 0 LED0 pin == LED_COL
                                         - 1 LED0 pin == LED_LINK */
 #define NIC_CONFIG3_SLEEP   0x04 /*!< \brief Sleep mode */
 #define NIC_CONFIG3_PWRDN   0x02 /*!< \brief Power Down */

@@ -88,7 +88,7 @@ typedef uint_fast32_t perci_fast_reclen_t;
 
 #define PERCI_DATASIZE  (PERCI_RECSIZE - sizeof(perci_reclen_t))
 
-typedef struct __attribute__ ((packed)) _PERCI_RECORD {
+typedef struct NUT_PACKED_TYPE _PERCI_RECORD {
     perci_reclen_t pcd_len;
     uint8_t pcd_data[PERCI_RECSIZE];
 } PERCI_RECORD;
@@ -108,18 +108,15 @@ typedef struct _PERCI_READER {
     perci_fast_reclen_t pcr_recpos;
 } PERCI_READER;
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern int PerCiInit(char *path, int recs);
 
 extern PERCI_WRITER *PerCiOpen(char *path);
 extern void PerCiClose(PERCI_WRITER *writer);
 extern void PerCiFlush(PERCI_WRITER * writer);
 
-extern int PerCiWrite(PERCI_WRITER *writer, CONST char *data, int len);
-extern int PerCiWriteFormat(PERCI_WRITER * writer, CONST char *fmt, ...);
-extern int PerCiWriteVarList(PERCI_WRITER * writer, CONST char *fmt, va_list ap);
+extern int PerCiWrite(PERCI_WRITER *writer, const char *data, int len);
+extern int PerCiWriteFormat(PERCI_WRITER * writer, const char *fmt, ...);
+extern int PerCiWriteVarList(PERCI_WRITER * writer, const char *fmt, va_list ap);
 
 extern PERCI_READER *PerCiAttachReader(PERCI_WRITER *writer);
 extern void PerCiDetachReader(PERCI_READER *reader);
@@ -129,6 +126,4 @@ extern int PerCiReadLine(PERCI_READER * reader, char *line, int len);
 
 extern void PerCiDump(FILE *stream, char *path);
 
-__END_DECLS
-/* End of prototypes */
 #endif

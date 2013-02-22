@@ -32,7 +32,7 @@
  */
 
 
-/* 
+/*
  * unix_eeprom.c - avr eeprom functions for unix emulation
  *
  * 2004.08.05 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>

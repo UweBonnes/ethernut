@@ -174,7 +174,7 @@ static int VsCodec0IsReady(void)
  *
  * This routine will not check the DREQ line.
  *
- * \param cmd  Points to the buffer. On entry it contains the data to 
+ * \param cmd  Points to the buffer. On entry it contains the data to
  *             send. On exit it will contain the data received from
  *             the chip.
  * \param len  Number of bytes to send and receive.
@@ -205,6 +205,51 @@ static int VsCodec0SendCmd(void *cmd, size_t len)
 }
 
 /*
+ * \brief Write to command channel of codec 0.
+ *
+ * This routine will not check the DREQ line.
+ *
+ * \param cmd  Points to the buffer. On entry it contains the data to
+ *             send. On exit it will contain the data received from
+ *             the chip.
+ * \param len  Number of bytes to send and receive.
+ */
+static int VsCodec0RecvData(void *buf, size_t len)
+{
+    int rc;
+    uint8_t *bp = (uint8_t *) buf;
+    const uint8_t cmd[4] = { VS_OPCODE_READ, VS_HDAT0_REG, 0xFF, 0xFF };
+    uint8_t rsp[4];
+
+    VsCodecWaitReady(&devSpiVsCodec0, VSCODEC_CMD_TIMEOUT);
+    //(*nodeSpiVsCodec0.node_bus->bus_set_rate) (&nodeSpiVsCodec0, 20000000);
+    /* Allocate the SPI bus. */
+    rc = (*nodeSpiVsCodec0.node_bus->bus_alloc) (&nodeSpiVsCodec0, VSCODEC0_SPIBUS_WAIT);
+    if (rc == 0) {
+        len >>= 1;
+        while (len--) {
+            /* Activate chip selects. */
+#if defined(VSCODEC0_VSCS_PORT) && defined(VSCODEC0_VSCS_BIT)
+            GpioPinSetLow(VSCODEC0_VSCS_PORT, VSCODEC0_VSCS_BIT);
+#endif
+            GpioPinSetLow(VSCODEC0_XCS_PORT, VSCODEC0_XCS_BIT); /* XCS=PA31 */
+            /* Send command bytes and receive response. */
+            rc = (*nodeSpiVsCodec0.node_bus->bus_transfer) (&nodeSpiVsCodec0, cmd, rsp, 4);
+            /* Deactivate chip selects. */
+            GpioPinSetHigh(VSCODEC0_XCS_PORT, VSCODEC0_XCS_BIT);
+#if defined(VSCODEC0_VSCS_PORT) && defined(VSCODEC0_VSCS_BIT)
+            GpioPinSetHigh(VSCODEC0_VSCS_PORT, VSCODEC0_VSCS_BIT);
+#endif
+            *bp++ = rsp[2];
+            *bp++ = rsp[3];
+        }
+        /* Release the SPI bus. */
+        (*nodeSpiVsCodec0.node_bus->bus_release) (&nodeSpiVsCodec0);
+    }
+    return rc;
+}
+
+/*
  * \brief Write data to the decoder.
  *
  * Data is sent in fixed chunks. The first one is sent without
@@ -219,10 +264,10 @@ static int VsCodec0SendCmd(void *cmd, size_t len)
  * \return The number of bytes actually sent. This may be less than the
  *         specified data length. Zero is returned in case of an error.
  */
-static int VsCodec0SendData(CONST uint8_t *buf, size_t len)
+static int VsCodec0SendData(const uint8_t *buf, size_t len)
 {
     int rc = 0;
-    CONST uint8_t *bp;
+    const uint8_t *bp;
     size_t chunk;
 
     /* Allocate the SPI bus. */
@@ -235,7 +280,7 @@ static int VsCodec0SendData(CONST uint8_t *buf, size_t len)
         /* Activate optional XDCS line. */
         GpioPinSetLow(VSCODEC0_XDCS_PORT, VSCODEC0_XDCS_BIT);
 #endif
-        /* Set our internal buffer pointer, either to the start of the 
+        /* Set our internal buffer pointer, either to the start of the
         ** encoded data or to a chunk of zeros. */
         bp = buf ? buf : zero_chunk;
         /* Loop until all data had been sent or DREQ goes low. */
@@ -454,6 +499,12 @@ static int VsCodec0Detect(void)
         dcbVsCodec0.dcb_codec_rev = 'B';
         rc = 0;
     }
+#elif defined(AUDIO0_VS1063A)
+    if ((status & VS_SS_VER) == (VS1063_SS_VER << VS_SS_VER_LSB)) {
+        dcbVsCodec0.dcb_codec_ver = 1063;
+        dcbVsCodec0.dcb_codec_rev = 'A';
+        rc = 0;
+    }
 #else
     /*
     ** If not configured, try to figure it out.
@@ -502,7 +553,7 @@ static int VsCodec0Detect(void)
  * to recover from power-on reset.
  *
  * \param dev Specifies the audio codec device.
- * \param on  If zero, the hardware reset will be released. Otherwise 
+ * \param on  If zero, the hardware reset will be released. Otherwise
  *            the reset is activated.
  */
 static int VsCodec0ResetHardware(int on)
@@ -529,7 +580,7 @@ static int VsCodec0ResetHardware(int on)
         /* Release the reset line. */
         GpioPinSetHigh(VSCODEC0_XRESET_PORT, VSCODEC0_XRESET_BIT);
 #if VSCODEC0_FREQ >= 24000000UL
-        /* With input clocks equal or above 24MHz we must set CLOCKF early 
+        /* With input clocks equal or above 24MHz we must set CLOCKF early
         ** and must not wait for rising DREQ. */
         csrc = VsCodec0SetClock(VSCODEC0_FREQ, 0) == 0;
 #endif /* VSCODEC0_FREQ */
@@ -582,6 +633,7 @@ static int VsCodec0Init(NUTDEVICE * dev)
     dcbVsCodec0.dcb_isready = VsCodec0IsReady;
     dcbVsCodec0.dcb_sendcmd = VsCodec0SendCmd;
     dcbVsCodec0.dcb_senddata = VsCodec0SendData;
+    dcbVsCodec0.dcb_recvdata = VsCodec0RecvData;
     dcbVsCodec0.dcb_control = VsCodec0Control;
 
     /* Set capabilities. */
@@ -639,7 +691,7 @@ static int VsCodec0Init(NUTDEVICE * dev)
     }
 
     /* Start the feeder thread. */
-    if (NutThreadCreate(dev->dev_name, FeederThread, dev, 
+    if (NutThreadCreate(dev->dev_name, FeederThread, dev,
         (NUT_THREAD_VSCODEC0STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == 0) {
         return -1;
     }
@@ -649,7 +701,7 @@ static int VsCodec0Init(NUTDEVICE * dev)
 /*!
  * \brief VS10XX device information structure.
  *
- * An application must pass a pointer to this structure to 
+ * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using this driver.
  *
  * The device is named \b audio0.

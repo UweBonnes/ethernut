@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -95,11 +95,10 @@
  * \endverbatim
  */
 
+#include <cfg/os.h>
 #include <cfg/mmci.h>
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined(NUTDEBUG)
 #include <stdio.h>
 #endif
 
@@ -126,7 +125,7 @@
 /*!
  * \brief Block size.
  *
- * Block size in bytes. Do not change unless you are sure that both, 
+ * Block size in bytes. Do not change unless you are sure that both,
  * the file system and the hardware support it.
  */
 #define MMC_BLOCK_SIZE          512
@@ -136,12 +135,20 @@
 /*!
  * \brief Card init timeout.
  *
- * Max. number of loops waiting for card's idle mode after initialization. 
- * An additional delay of 1 ms is added to each loop after one quarter of 
+ * Max. number of loops waiting for card's idle mode after initialization.
+ * An additional delay of 1 ms is added to each loop after one quarter of
  * this value elapsed.
  */
 #define MMC_MAX_INIT_POLLS      512
 #endif
+
+#ifndef MMC_MAX_INIT_POLLS_SDHC
+/*!
+ * \brief Card init timeout for SDHC cards.
+ */
+#define MMC_MAX_INIT_POLLS_SDHC    4096
+#endif
+
 
 #ifndef MMC_MAX_RESET_POLLS
 /*!
@@ -156,8 +163,8 @@
 /*!
  * \brief Card write timeout.
  *
- * Max. number of loops waiting for card's idle mode after resetting it. 
- * An additional delay of 1 ms is added to each loop after 31/32 of this 
+ * Max. number of loops waiting for card's idle mode after resetting it.
+ * An additional delay of 1 ms is added to each loop after 31/32 of this
  * value elapsed.
  */
 #define MMC_MAX_WRITE_POLLS     1024
@@ -194,8 +201,8 @@
 /*!
  * \brief Command acknowledge timeout.
  *
- * Max. number of loops waiting for card's acknowledge of a command. 
- * An additional delay of 1 ms is added to each loop after three quarter 
+ * Max. number of loops waiting for card's acknowledge of a command.
+ * An additional delay of 1 ms is added to each loop after three quarter
  * of this value elapsed.
  */
 #define MMC_MAX_CMDACK_POLLS    1024
@@ -214,7 +221,7 @@
  * \brief Local multimedia card mount information.
  */
 typedef struct _MMCFCB {
-    /*! \brief Attached file system device. 
+    /*! \brief Attached file system device.
      */
     NUTDEVICE *fcb_fsdev;
 
@@ -233,7 +240,7 @@ typedef struct _MMCFCB {
 
     /*! \brief Internal block buffer.
      *
-     * A file system driver may use this one or optionally provide it's 
+     * A file system driver may use this one or optionally provide it's
      * own buffers.
      *
      * Minimal systems may share their external bus interface with
@@ -287,11 +294,18 @@ static void MmCardTxCmd(MMCIFC * ifc, uint8_t cmd, uint32_t param)
     (*ifc->mmcifc_io) ((uint8_t) (param >> 8));
     (*ifc->mmcifc_io) ((uint8_t) param);
     /*
-     * We are running with CRC disabled. However, the reset command must
-     * be send with a valid CRC. Fortunately this command is sent with a
+     * We are running with CRC disabled. However, the reset and excsd commands 
+     * must be send with a valid CRC. Fortunately these commands are sent with a
      * fixed parameter value of zero, which results in a fixed CRC value
      */
-    (*ifc->mmcifc_io) (MMCMD_RESET_CRC);
+
+    if (cmd == MMCMD_SEND_IF_COND) {
+        (*ifc->mmcifc_io) (MMCMD_IF_COND_CRC);
+    } else {
+        (*ifc->mmcifc_io) (MMCMD_RESET_CRC);
+    }
+
+
 }
 
 /*!
@@ -384,8 +398,12 @@ static int MmCardReset(MMCIFC * ifc)
     }
 
     /*
-     * 80 bits of ones with deactivated chip select will put the card 
+     * 80 bits of ones with deactivated chip select will put the card
      * in SPI mode.
+     *
+     * /note that spec 2.0 tells us that we need to send the CMD0 with CS inactive
+     * to get the card in SPI-mode. This 'old' methode however still seems to work 
+     * with 2.0 cards
      */
     (*ifc->mmcifc_cs) (0);
     for (i = 0; i < 10; i++) {
@@ -421,6 +439,14 @@ static int MmCardInit(MMCIFC * ifc)
 {
     int i;
     uint8_t rsp;
+    uint8_t ocr[4];
+
+    /*
+     *  assume BLOCK_MODE addressing for most cards.
+     *  if the cards turns out to be a SD_HC card, the mode will
+     *  be set to BYTE_MODE later on
+     */
+    (*ifc->mmcifc_sm) (MMC_BLOCK_MODE);    
 
     /*
      * Try to switch to SPI mode. Looks like a retry helps to fix
@@ -436,33 +462,106 @@ static int MmCardInit(MMCIFC * ifc)
     }
 
     /*
-     * Wait for a really long time until card is initialized
-     * and enters idle state.
+     *  Let's check if we deal with a card that 
+     *  support the 2.0 specs by sending the EXTCSD command. 
+     *  If the card response is "illegal Command", we know 
+     *  that the 2.0 specs are not supported. 
+     *  Note that SD-HC cards always support the 2.0 specs
      */
-    for (i = 0; i < MMC_MAX_INIT_POLLS; i++) {
-        /*
-         * In SPI mode SEND_OP_COND is a dummy, used to poll the card
-         * for initialization finished. Thus, there are no parameters
-         * and no operation condition data is sent back.
-         */
-        MmCardTxCmd(ifc, MMCMD_SEND_OP_COND, 0);
-        rsp = MmCardRxR1(ifc);
-        (*ifc->mmcifc_cs) (0);
-        if (rsp == MMR1_IDLE_STATE) {
-#ifdef NUTDEBUG
-            printf("[CardIdle]");
-#endif
-            /* Initialize MMC access mutex semaphore. */
-            NutEventPost(&mutex);
-            return 0;
-        }
-        if (i > MMC_MAX_INIT_POLLS / 4) {
-            NutSleep(1);
-        }
+    MmCardTxCmd(ifc, MMCMD_SEND_IF_COND, 0x1AA);
+    rsp = MmCardRxR1(ifc);
+
+    /* Receive the data. */
+    for (i = 0; i < 4; i++) {
+        ocr[i] = (*ifc->mmcifc_io) (0xFF);
     }
+
+    if ((ocr[2] == 0x01) && (ocr[3] == 0xAA)) {
+        // The card can work at vdd range of 2.7-3.6V 
 #ifdef NUTDEBUG
-    printf("[CardInit failed]");
+        printf("[SD -> support for 2.0 specs]");
 #endif
+
+        /*
+         * Wait for a really long time until card is initialized
+         * and enters idle state.
+         */
+        for (i = 0; i < MMC_MAX_INIT_POLLS_SDHC; i++) {
+            MmCardTxCmd(ifc, MMCMD_SEND_APP_CMD, 0);
+            if (MmCardRxR1(ifc) <= MMR1_NOT_IDLE) {
+                /* some cards really need a lot of time for their initialisation... */
+                NutSleep(10);
+
+                /* ACMD41 with HCS bit */
+                MmCardTxCmd(ifc, MMCMD_SEND_APP_OP_COND, 1UL << 30);
+
+                /* check response */
+                if (MmCardRxR1(ifc)==MMR1_IDLE_STATE) {
+#ifdef NUTDEBUG
+                    printf("[CardIdle]");
+#endif
+                    // Check the CSS bit that tells us if we are dealing with HC-cards
+                    MmCardTxCmd(ifc, MMCMD_READ_OCR, 0);
+                    rsp = MmCardRxR1(ifc);
+
+                    /* Receive the data. */
+                    for (i = 0; i < 4; i++) {
+                        ocr[i] = (*ifc->mmcifc_io) (0xFF);
+                    }
+
+                    if (ocr[0] & 0x40) {
+                        /* set byte addressing mode for SD-HC cards */
+                        (*ifc->mmcifc_sm) (MMC_BYTE_MODE);
+#ifdef NUTDEBUG
+                        printf("[Found SD-HC]");
+#endif
+                    }
+
+                    /* Initialize MMC access mutex semaphore. */
+                    NutEventPost(&mutex);
+                    return 0;      /* initialisation finished */
+                }
+            }
+        }
+        /* Card stays in IDLE state for some reason... */
+#ifdef NUTDEBUG
+        printf("[CardInit failed [%d]]", rsp);
+#endif
+
+        return(-1);
+    }
+    else {
+        /*
+         * Wait for a really long time until card is initialized
+         * and enters idle state.
+         */
+        for (i = 0; i < MMC_MAX_INIT_POLLS; i++) {
+            /*
+             * In SPI mode SEND_OP_COND is a dummy, used to poll the card
+             * for initialization finished. Thus, there are no parameters
+             * and no operation condition data is sent back.
+             */
+            MmCardTxCmd(ifc, MMCMD_SEND_OP_COND, 0);
+            rsp = MmCardRxR1(ifc);
+
+            (*ifc->mmcifc_cs) (0);
+
+            if (rsp == MMR1_IDLE_STATE) {
+#ifdef NUTDEBUG
+                printf("[CardIdle]");
+#endif
+                /* Initialize MMC access mutex semaphore. */
+                NutEventPost(&mutex);
+                return 0;
+            }
+            if (i > MMC_MAX_INIT_POLLS / 4) {
+                NutSleep(1);
+            }
+        }
+#ifdef NUTDEBUG
+        printf("[CardInit failed [%d]]", rsp);
+#endif
+    }
     return -1;
 }
 
@@ -486,8 +585,20 @@ static int MmCardReadOrVerify(MMCIFC * ifc, uint32_t blk, uint8_t * buf, int vfl
     /* Gain mutex access. */
     NutEventWait(&mutex, 0);
 
+    /*
+     *  SD_HC cards use BYTE_ADDRESSING, which means that the partion info 
+     *  that indicates the starting address of the BOOT_RECORD is in bytes (and
+     *  not in sectors like with non SD_HC cards).
+     *  Please note that the sector size is not officially known at this stage since
+     *  this code does NOT read the CDS register. However, for SD-HC cards fortunately
+     *  it is defined that the sectorsize is always 512.
+     */
+    if ((*ifc->mmcifc_gm) () == MMC_BLOCK_MODE) {
+        blk <<= 9;
+    }
+
     while (retries--) {
-        MmCardTxCmd(ifc, MMCMD_READ_SINGLE_BLOCK, blk << 9);
+        MmCardTxCmd(ifc, MMCMD_READ_SINGLE_BLOCK, blk);
         if ((rsp = MmCardRxR1(ifc)) == 0x00) {
             if ((rsp = MmCardRxR1(ifc)) == 0xFE) {
                 rc = 0;
@@ -528,7 +639,7 @@ static int MmCardReadOrVerify(MMCIFC * ifc, uint32_t blk, uint8_t * buf, int vfl
  *
  * \return 0 on success, -1 otherwise.
  */
-static int MmCardWrite(MMCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
+static int MmCardWrite(MMCIFC * ifc, uint32_t blk, const uint8_t * buf)
 {
     int rc = -1;
     int retries = MMC_MAX_WRITE_RETRIES;
@@ -539,8 +650,20 @@ static int MmCardWrite(MMCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
     /* Gain mutex access. */
     NutEventWait(&mutex, 0);
 
+    /*
+     *  SD_HC cards use BYTE_ADDRESSING, which means that the partion info 
+     *  that indicates the starting address of the BOOT_RECORD is in bytes (and
+     *  not in sectors like with non SD_HC cards).
+     *  Please note that the sector size is not officially known at this stage since
+     *  this code does NOT read the CDS register. However, for SD-HC cards fortunately
+     *  it is defined that the sectorsize is always 512.
+     */
+    if ((*ifc->mmcifc_gm) () == MMC_BLOCK_MODE) {
+        blk <<= 9;
+    }
+
     while (retries--) {
-        MmCardTxCmd(ifc, MMCMD_WRITE_BLOCK, blk << 9);
+        MmCardTxCmd(ifc, MMCMD_WRITE_BLOCK, blk);
         if ((rsp = MmCardRxR1(ifc)) == 0x00) {
             (*ifc->mmcifc_io) (0xFF);
             (*ifc->mmcifc_io) (0xFE);
@@ -584,13 +707,13 @@ static int MmCardWrite(MMCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous
  *               call to MmCardMount().
  * \param buffer Pointer to the data buffer to fill.
- * \param num    Maximum number of blocks to read. However, reading 
+ * \param num    Maximum number of blocks to read. However, reading
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks actually read. A return value of -1 
+ * \return The number of blocks actually read. A return value of -1
  *         indicates an error.
  */
 int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
@@ -606,6 +729,17 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
     if (buffer == 0) {
         buffer = fcb->fcb_blkbuf;
     }
+    /*
+     *  when using the filesystem, the sectornumbering is different then when 
+     *  directly accesing the card. For example, the MBR can be found at the 
+     *  sector 0 of the card, but the filesystem's first sector is the sector 
+     *  where the start is of the FAT VolumeID (also called the BOOT SECTOR). 
+     *  This position (or offset) is indicated by reading the partion-table, 
+     *  more specific: by reading the LBA begin info.
+     *  This offset we need to add here to the sector# we get in as 
+     *  parameter. This way we acces the real sector on the card.
+     *
+     */
     blk += fcb->fcb_part.part_sect_offs;
 
 #ifdef MMC_VERIFY_AFTER
@@ -637,16 +771,16 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to MmCardMount().
  * \param buffer Pointer to the data to be written.
  * \param num    Maximum number of blocks to write. However, writing
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
-int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
+int MmCardBlockWrite(NUTFILE * nfp, const void *buffer, int num)
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
     uint32_t blk = fcb->fcb_blknum;
@@ -685,12 +819,12 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data blocks from program space to a mounted partition.
  *
  * This function is not yet implemented and will always return -1.
  *
- * Similar to MmCardBlockWrite() except that the data is located in 
+ * Similar to MmCardBlockWrite() except that the data is located in
  * program memory.
  *
  * Applications should not call this function directly, but use the
@@ -701,7 +835,7 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
  * \param num    Maximum number of blocks to write. However, writing
  *               multiple blocks is not yet supported by this driver.
  *
- * \return The number of blocks written. A return value of -1 indicates an 
+ * \return The number of blocks written. A return value of -1 indicates an
  *         error.
  */
 int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
@@ -721,13 +855,13 @@ int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
  *
  * \param dev  Pointer to the MMC device.
  * \param name Partition number followed by a slash followed by a name
- *             of the file system device. Both items are optional. If no 
+ *             of the file system device. Both items are optional. If no
  *             file system driver name is given, the first file system
- *             driver found in the list of registered devices will be 
+ *             driver found in the list of registered devices will be
  *             used. If no partition number is specified or if partition
- *             zero is given, the first active primary partition will be 
+ *             zero is given, the first active primary partition will be
  *             used.
- * \param mode Opening mode. Currently ignored, but 
+ * \param mode Opening mode. Currently ignored, but
  *             \code _O_RDWR | _O_BINARY \endcode should be used for
  *             compatibility with future enhancements.
  * \param acc  File attributes, ignored.
@@ -735,7 +869,7 @@ int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int num)
  * \return Pointer to a newly created file pointer to the mounted
  *         partition or NUTFILE_EOF in case of any error.
  */
-NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *MmCardMount(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     int partno = 0;
     int i;
@@ -752,7 +886,7 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         return NUTFILE_EOF;
     }
 
-    /* Set the card in SPI mode. */
+    /* Set the card in SPI mode and check for SD-HC cards. */
     if (MmCardInit(ifc)) {
         errno = ENODEV;
         return NUTFILE_EOF;
@@ -780,7 +914,8 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
             if (fsdev->dev_type == IFTYP_FS) {
                 break;
             }
-        } else if (strcmp(fsdev->dev_name, name) == 0) {
+        } else 
+        if (strcmp(fsdev->dev_name, name) == 0) {
             break;
         }
     }
@@ -805,19 +940,22 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         return NUTFILE_EOF;
     }
     /* Check for the cookie at the end of this sector. */
-	if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
+    if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
+#ifdef NUTDEBUG
+        printf("[MBR corrupted]");
+#endif
         free(fcb);
         return NUTFILE_EOF;
-	}
+    }
     /* Check for the partition table. */
-	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' && 
+    if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 1] == 'A' &&
        fcb->fcb_blkbuf[DOSPART_TYPEPOS + 2] == 'T') {
         /* No partition table. Assume FAT12 and 32MB size. */
         fcb->fcb_part.part_type = PTYPE_FAT12;
         fcb->fcb_part.part_sect_offs = 0;
         fcb->fcb_part.part_sects = 65536; /* How to find out? */
-	}
+    }
     else {
         /* Read partition table. */
         part = (DOSPART *) & fcb->fcb_blkbuf[DOSPART_SECTORPOS];
@@ -992,6 +1130,11 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
             BLKPAR_INFO *par = (BLKPAR_INFO *) conf;
             MMCFCB *fcb = (MMCFCB *) par->par_nfp->nf_fcb;
 
+            /*
+             *  note that we don't read the card's CSD-register for this info,
+             *  in stead, we use the info that we found in the partition table of
+             *  the formatted card.
+             */
             par->par_nblks = fcb->fcb_part.part_sects;
             par->par_blksz = MMC_BLOCK_SIZE;
             par->par_blkbp = fcb->fcb_blkbuf;
@@ -1047,8 +1190,8 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Initialize high level MMC driver.
  *
- * Applications should not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * \param dev  Identifies the device to initialize.

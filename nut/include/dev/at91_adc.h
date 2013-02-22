@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,7 +31,7 @@
  * For additional information see http://www.ethernut.de/
  *
  */
- 
+
 /*
  * $Log$
  * Revision 1.4  2009/01/17 11:26:47  haraldkipp
@@ -52,7 +52,7 @@
  * \brief Header for AT91 Adc driver
  */
 
-/*@{*/ 
+/*@{*/
 
 #ifndef _AT91_ADC_H_
 #define _AT91_ADC_H_
@@ -64,8 +64,8 @@
  * ADC_OFF:
  *    Switch off adc and enable slep mode
  * FREE_RUNNING_x:
- *    This is a pseudo free running mode as we don't want to use a 
- *    dedicated timer (0..3) for this purpose we retrigger sampling in 
+ *    This is a pseudo free running mode as we don't want to use a
+ *    dedicated timer (0..3) for this purpose we retrigger sampling in
  *    the interrupt handler. Starting when ADC_start_conversion() is called.
  * SINGLE_CONVERSION:
  *    Single-conversion mode. One sample taken every time
@@ -108,8 +108,8 @@ void ADCInit(void);
 
 
 // ADCStartConversion
-//                                                    
-// Begins ADC conversion. The conversion will process all 
+//
+// Begins ADC conversion. The conversion will process all
 // enabled channels one after the other.
 //
 // NOTE: Converted values from the ADC are stored
@@ -124,7 +124,7 @@ void ADCStartConversion(void);
 
 
 // ADCSetPrescale
-//                                                    
+//
 // Allows setting of ADC clock prescalar (ADC rate).
 // The  ADC rate is given by the system clock rate
 // divided by the prescalar value. Possible prescalar
@@ -151,25 +151,25 @@ void ADCEnableChannel(TADCChannel channel);
 
 // ADCSetMode
 //
-// Possible values: 
+// Possible values:
 //    - ADC_OFF
 //    - SINGLE_CONVERSION
 //    - FREE_RUNNING_T0
 //    - FREE_RUNNING_T1
 //    - FREE_RUNNING_T2
-//      These depend on a timer t0 / t1 / t2 
+//      These depend on a timer t0 / t1 / t2
 //    - FREE_RUNNING_EXT
 //      External trigger
 //
 // pre: none
-// post: Set adc conversion to the selected value. 
+// post: Set adc conversion to the selected value.
 
-void ADCSetMode(TADCMode mode); 
+void ADCSetMode(TADCMode mode);
 
 // AFCBufRead
 //
 // Reads the next sampled value of the given channel from the buffer.
-// 
+//
 // pre: Sample completed
 // post: Value will be removed from buffer
 

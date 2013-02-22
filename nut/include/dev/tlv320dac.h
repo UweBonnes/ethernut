@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -171,7 +171,7 @@
 #define DAC_SRATE_CLKIN         0x0040  /*!< \brief Clock input divider. */
 #define DAC_SRATE_SR            0x003C  /*!< \brief Sampling rate mask. */
 #define DAC_SRATE_SR_LSB            2   /*!< \brief Sampling rate LSB. */
-#define DAC_SRATE_BOSR          0x0002  /*!< \brief Base oversampling rate. 
+#define DAC_SRATE_BOSR          0x0002  /*!< \brief Base oversampling rate.
                                          *
                                          * USB mode   : 0=250 fs, 1=272 fs
                                          * Normal mode: 0=256 fs, 1=384 fs
@@ -196,9 +196,6 @@
 #define DAC_MAX_VOLUME  6
 #define DAC_MIN_VOLUME  -73
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern int Tlv320DacInit(unsigned int rate);
 extern int Tlv320DacWrite(void *buf, int len);
 extern int Tlv320DacFlush(void);
@@ -209,8 +206,5 @@ extern void Tlv320DacWriteReg(unsigned int reg, unsigned int val);
 extern int Tlv320DacSetVolume(int left, int right);
 extern int Tlv320DacSetRate(unsigned int rate);
 extern int Tlv320SwitchMode(void);
-
-__END_DECLS
-/* End of prototypes */
 
 #endif

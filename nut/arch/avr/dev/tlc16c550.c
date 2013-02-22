@@ -30,23 +30,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.4  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+/*!
+ * \file arch/avr/dev/tlc16c550.c
+ * \brief AVR driver for external TLC16C550.
  *
- * Revision 1.3  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2007/05/24 07:29:10  haraldkipp
- * Update provided by Przemyslaw Rudy.
- *
- * Revision 1.1  2005/11/24 11:24:06  haraldkipp
- * Initial check-in.
- * Many thanks to William Basser for this code and also to Przemyslaw Rudy
- * for several enhancements.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 // system include files
@@ -66,9 +56,9 @@
  * we do the whole buffering and including stdio here would be more weird.
  */
 #ifndef _IOFBF
-#define _IOFBF	    0x00
-#define _IOLBF	    0x01
-#define _IONBF	    0x02
+#define _IOFBF      0x00
+#define _IOLBF      0x01
+#define _IONBF      0x02
 #endif
 
 /*!
@@ -79,79 +69,79 @@
 
 // define the register offset
 // define the UART Register offsets
-#define	ACE_RBR_OFS	0
-#define	ACE_THR_OFS	0
-#define	ACE_DLL_OFS	0
-#define	ACE_DLM_OFS	1
-#define	ACE_IER_OFS	1
-#define	ACE_FCR_OFS	2
-#define	ACE_IIR_OFS	2
-#define	ACE_LCR_OFS	3
-#define	ACE_MCR_OFS	4
-#define	ACE_LSR_OFS	5
-#define	ACE_MSR_OFS	6
-#define	ACE_SRC_OFS	7
+#define ACE_RBR_OFS 0
+#define ACE_THR_OFS 0
+#define ACE_DLL_OFS 0
+#define ACE_DLM_OFS 1
+#define ACE_IER_OFS 1
+#define ACE_FCR_OFS 2
+#define ACE_IIR_OFS 2
+#define ACE_LCR_OFS 3
+#define ACE_MCR_OFS 4
+#define ACE_LSR_OFS 5
+#define ACE_MSR_OFS 6
+#define ACE_SRC_OFS 7
 
 // define the interrupt enable masks
-#define	IER_RDA_MSK	0x01    // receiver data avaialbe
-#define	IER_THE_MSK	0x02    // transmit holding empty
-#define	IER_LST_MSK	0x04    // line status
-#define	IER_MST_MSK	0x08    // modem status
+#define IER_RDA_MSK 0x01    // receiver data avaialbe
+#define IER_THE_MSK 0x02    // transmit holding empty
+#define IER_LST_MSK 0x04    // line status
+#define IER_MST_MSK 0x08    // modem status
 
 // define the fifo control mask
 #define FCR_ENABLE     0x01     //fifo enable
-#define FCR_PURGE_I	0x02    //purge all data from input fifo
-#define FCR_PURGE_O	0x04    //purge all data from output fifo
+#define FCR_PURGE_I 0x02    //purge all data from input fifo
+#define FCR_PURGE_O 0x04    //purge all data from output fifo
 #define FCR_LEVEL_1    0x00     //receive trigger level 1
 #define FCR_LEVEL_4    0x40     //receive trigger level 4
 #define FCR_LEVEL_8    0x80     //receive trigger level 8
 #define FCR_LEVEL_14   0xc0     //receive trigger level 14
 
 // define the interrupt id masks
-#define	IIR_MST_MSK	0x00    // modem status interrupt
-#define	IIR_TXE_MSK	0x02    // transmit buffer empty
-#define	IIR_RDA_MSK	0x04    // receive data available
-#define	IIR_TDA_MSK	0x0c    // timeout receive data available
-#define	IIR_LST_MSK	0x06    // line status interrupt
-#define	IIR_NON_MSK	0x01    // no interrupt
+#define IIR_MST_MSK 0x00    // modem status interrupt
+#define IIR_TXE_MSK 0x02    // transmit buffer empty
+#define IIR_RDA_MSK 0x04    // receive data available
+#define IIR_TDA_MSK 0x0c    // timeout receive data available
+#define IIR_LST_MSK 0x06    // line status interrupt
+#define IIR_NON_MSK 0x01    // no interrupt
 #define IIR_FIFO_MSK   0xc0     // mask to eliminate the fifo status
 
 // define the line control masks
-#define	LCR_WS0_MSK	0x01
-#define	LCR_WS1_MSK	0x02
-#define	LCR_STB_MSK	0x04
-#define	LCR_PEN_MSK	0x08
-#define	LCR_PRE_MSK	0x10
-#define	LCR_PRS_MSK	0x20
-#define	LCR_BRK_MSK	0x40
-#define	LCR_ENB_MSK	0x80
+#define LCR_WS0_MSK 0x01
+#define LCR_WS1_MSK 0x02
+#define LCR_STB_MSK 0x04
+#define LCR_PEN_MSK 0x08
+#define LCR_PRE_MSK 0x10
+#define LCR_PRS_MSK 0x20
+#define LCR_BRK_MSK 0x40
+#define LCR_ENB_MSK 0x80
 
 // define the modem control masks
-#define	MCR_DTR_MSK	0x01
-#define	MCR_RTS_MSK	0x02
-#define	MCR_GP1_MSK	0x04
-#define	MCR_GP2_MSK	0x08
-#define	MCR_LOP_MSK	0x10
+#define MCR_DTR_MSK 0x01
+#define MCR_RTS_MSK 0x02
+#define MCR_GP1_MSK 0x04
+#define MCR_GP2_MSK 0x08
+#define MCR_LOP_MSK 0x10
 
 // define the line status masks
-#define	LSR_RDR_MSK	0x01
-#define	LSR_OVR_MSK	0x02
-#define	LSR_PER_MSK	0x04
-#define	LSR_FER_MSK	0x08
-#define	LSR_BDT_MSK	0x10
-#define	LSR_THE_MSK	0x20
-#define	LSR_TXE_MSK	0x40
-#define	LSR_EIF_MSK	0x80
+#define LSR_RDR_MSK 0x01
+#define LSR_OVR_MSK 0x02
+#define LSR_PER_MSK 0x04
+#define LSR_FER_MSK 0x08
+#define LSR_BDT_MSK 0x10
+#define LSR_THE_MSK 0x20
+#define LSR_TXE_MSK 0x40
+#define LSR_EIF_MSK 0x80
 
 // define the modem status masks
-#define	MSR_DCTS_MSK	0x01
-#define	MSR_DDSR_MSK	0x02
-#define	MSR_DRI_MSK	0x04
-#define	MSR_DDCD_MSK	0x08
-#define	MSR_CTS_MSK	0x10
-#define	MSR_DSR_MSK	0x20
-#define	MSR_RI_MSK		0x40
-#define	MSR_DCD_MSK	0x80
+#define MSR_DCTS_MSK    0x01
+#define MSR_DDSR_MSK    0x02
+#define MSR_DRI_MSK 0x04
+#define MSR_DDCD_MSK    0x08
+#define MSR_CTS_MSK 0x10
+#define MSR_DSR_MSK 0x20
+#define MSR_RI_MSK      0x40
+#define MSR_DCD_MSK 0x80
 
 // define the irq structure
 typedef struct tagIRQDEFS {
@@ -161,7 +151,7 @@ typedef struct tagIRQDEFS {
 } IRQDEFS;
 
 // define the interrupt handlers
-static CONST PROGMEM IRQDEFS atIrqDefs[] = {
+static const PROGMEM IRQDEFS atIrqDefs[] = {
     {&sig_INTERRUPT0, &EICRA, 0x00},
     {&sig_INTERRUPT1, &EICRA, 0x00},
     {&sig_INTERRUPT2, &EICRA, 0x00},
@@ -294,8 +284,8 @@ static unsigned int ByteOcrTime(NUTDEVICE * dev)
  * \brief Wait for input.
  *
  * This function checks the input buffer for any data. If
- * the buffer is empty, the calling \ref xrThread "thread" 
- * will be blocked until at least one new character is 
+ * the buffer is empty, the calling \ref xrThread "thread"
+ * will be blocked until at least one new character is
  * received or a timeout occurs.
  *
  * \param dev Indicates the ACE device.
@@ -475,7 +465,7 @@ static void AceDisable(uint16_t base)
  *             function.
  * \return 0 on success, -1 otherwise.
  *
- * \warning Timeout values are given in milliseconds and are limited to 
+ * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer. To disable timeout,
  *          set the parameter to NUT_WAIT_INFINITE.
  *
@@ -837,8 +827,8 @@ int AceInit(NUTDEVICE * dev)
     return 0;
 }
 
-/*! 
- * \brief Read from device. 
+/*!
+ * \brief Read from device.
  */
 int AceRead(NUTFILE * fp, void *buffer, int size)
 {
@@ -898,15 +888,15 @@ int AceRead(NUTFILE * fp, void *buffer, int size)
     return rc;
 }
 
-/*! 
- * \brief Write to device. 
+/*!
+ * \brief Write to device.
  */
-int AcePut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+int AcePut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
     IFSTREAM *ifs;
     ACEDCB *dcb;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t lbmode;
     uint8_t elmode;
     uint8_t ch;
@@ -964,21 +954,21 @@ int AcePut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     return rc;
 }
 
-int AceWrite(NUTFILE * fp, CONST void *buffer, int len)
+int AceWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return AcePut(fp->nf_dev, buffer, len, 0);
 }
 
 int AceWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return AcePut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return AcePut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 
-/*! 
+/*!
  * \brief Open a device or file.
  */
-NUTFILE *AceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *AceOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = NutHeapAlloc(sizeof(NUTFILE));
     ACEDCB *dcb;
@@ -999,8 +989,8 @@ NUTFILE *AceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
- * \brief Close a device or file. 
+/*!
+ * \brief Close a device or file.
  */
 int AceClose(NUTFILE * fp)
 {
@@ -1009,7 +999,7 @@ int AceClose(NUTFILE * fp)
     return 0;
 }
 
-/*! 
+/*!
  * \brief Request file size.
  */
 long AceSize(NUTFILE * fp)

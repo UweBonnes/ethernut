@@ -55,23 +55,23 @@
 /*!
  * \brief Return the last component from a given pathname.
  *
- * Trailing slashes are removed. 
+ * Trailing slashes are removed.
  *
- * \note This function returns a pointer to internal static storage space 
+ * \note This function returns a pointer to internal static storage space
  *       that will be overwritten by subsequent calls.
  *
  * \param path Pointer to the pathname.
  *
- * \return Pointer to the last component. If the specified pathname contains 
- *         slashes only, a single slash is returned. If the pathname is empty 
+ * \return Pointer to the last component. If the specified pathname contains
+ *         slashes only, a single slash is returned. If the pathname is empty
  *         or a NULL pointer, then a single dot is returned. In case of any
- *         error, a NULL pointer is returned and the global variable errno is 
+ *         error, a NULL pointer is returned and the global variable errno is
  *         set to indicate the error.
  */
-char *basename(CONST char *path)
+char *basename(const char *path)
 {
     static char *bname = NULL;
-    CONST char *endp, *startp;
+    const char *endp, *startp;
 
     if (bname == NULL) {
         bname = (char *) malloc(MAXPATHLEN);

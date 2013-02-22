@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -36,25 +36,7 @@
  * \brief AVR On-Chip EEPROM support.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.5  2009/01/17 11:26:37  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.4  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.3  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.2  2006/01/23 19:50:02  haraldkipp
- * Wrong parameters in ImageCraft call corrected.
- *
- * Revision 1.1  2006/01/23 17:27:08  haraldkipp
- * AVR specific routines for EEPROM access.
- *
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -93,7 +75,7 @@ int OnChipNvMemLoad(unsigned int addr, void *buff, size_t siz)
  *
  * \return Allways 0.
  */
-int OnChipNvMemSave(unsigned int addr, CONST void *buff, size_t len)
+int OnChipNvMemSave(unsigned int addr, const void *buff, size_t len)
 {
     uint8_t *cp;
     size_t i;

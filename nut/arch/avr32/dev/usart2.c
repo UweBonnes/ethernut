@@ -151,7 +151,7 @@ NUTDEVICE devUsartAvr322 = {
 #define SIG_UART        sig_UART2
 #define dcb_usart       dcb_usart2
 
-#define USARTn_BASE         AVR32_USART2
+#define USARTn_BASE         AVR32_USART2_ADDRESS
 
 #if UART2_ALT_PINSET == ALTERNATE_PIN_SET2
 # if defined(AVR32_USART2_TXD_0_0_PIN)

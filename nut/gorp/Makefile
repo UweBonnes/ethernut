@@ -1,5 +1,7 @@
 #
-# Copyright (C) 2009 by Thermotemp GmbH. All rights reserved.
+# Copyright (C) 2009 by Thermotemp GmbH
+#
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -10,17 +12,15 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this
-#    software must display the following acknowledgement:
+# 3. Neither the name of the copyright holders nor the names of
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
 #
-#    This product includes software developed by Thermotemp GmbH
-#    and its contributors.
-#
-# THIS SOFTWARE IS PROVIDED BY THERMOTEMP SOFTWARE GMBH AND CONTRIBUTORS
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THERMOTEMP
-# SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 # BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 # OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,11 +31,6 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Log: Makefile,v $
-# Revision 1.1  2009/03/07 00:01:14  olereinhardt
-# Initial checkin
-#
-#
 
 PROJ = libnutgorp
 
@@ -43,14 +38,14 @@ top_srcdir = ..
 top_blddir = ..
 
 LIBDIR = $(top_blddir)/lib
-include $(top_srcdir)/UserConf.mk
+include $(top_srcdir)/NutConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCS =  codec/base64_decode.c codec/base64_encode.c \
         edit/edline.c edit/history.c edit/vt100.c \
         hashes/md5.c \
         list/lili.c list/lpushpop.c list/lstrcmp.c list/lstrcopy.c list/lutil.c \
-        crypt/xtea.c
+        crypt/xtea.c memtest/memtest_8bit.c memtest/memtest_16bit.c memtest/memtest_32bit.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -70,11 +65,12 @@ ifeq ($(ARCH), unix)
 endif
 
 clean:
-	-rm -f $(OBJS)
-	-rm -f $(TARG)
-	-rm -f $(SRCS:.c=.lst)
-	-rm -f $(SRCS:.c=.lis)
-	-rm -f $(SRCS:.c=.s)
-	-rm -f $(SRCS:.c=.bak)
-	-rm -f $(SRCS:.c=.c~)
-	-rm -f $(SRCS:.c=.i)
+	@echo "  [CLEANING] $(TARG)..."
+	@-rm -f $(OBJS)
+	@-rm -f $(TARG)
+	@-rm -f $(SRCS:.c=.lst)
+	@-rm -f $(SRCS:.c=.lis)
+	@-rm -f $(SRCS:.c=.s)
+	@-rm -f $(SRCS:.c=.bak)
+	@-rm -f $(SRCS:.c=.c~)
+	@-rm -f $(SRCS:.c=.i)

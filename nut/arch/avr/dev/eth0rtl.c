@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,39 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.3  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
+/*!
+ * \file arch/avr/dev/eth0rtl.c
+ * \brief AVR network device for RTL8019AS.
  *
- * Revision 1.2  2007/05/02 11:22:51  haraldkipp
- * Added multicast table entry.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2003/11/03 17:06:52  haraldkipp
- * Allow linking with lanc111
- *
- * Revision 1.2  2003/08/05 20:05:11  haraldkipp
- * DNS removed from interface
- *
- * Revision 1.1.1.1  2003/05/09 14:40:37  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.11  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
- * Revision 1.10  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.9  2002/10/29 12:46:00  harald
- * PPP support added
- *
- * Revision 1.8  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/if_ether.h>
@@ -96,34 +70,38 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     NicOutput,                  /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devEth0 = {
     0,                          /* Pointer to next device. */
     {'e', 't', 'h', '0', 0, 0, 0, 0, 0},        /* Unique device name. */
-    IFTYP_NET,	    /* Type of device. */
-    0,		    /* Base address. */
-    0,		    /* First interrupt number. */
-    &ifn_eth0,	    /* Interface control block. */
-    &dcb_eth0,	    /* Driver control block. */
-    NicInit,	    /* Driver initialization routine. */
-    0,		    /* Driver specific control function. */
-    0,		    /* Read from device. */
-    0,		    /* Write to device. */ 
-    0,		    /* Write from program space data to device. */
-    0,		    /* Open a device or file. */
-    0,		    /* Close a device or file. */
-    0		    /* Request file size. */
+    IFTYP_NET,      /* Type of device. */
+    0,          /* Base address. */
+    0,          /* First interrupt number. */
+    &ifn_eth0,      /* Interface control block. */
+    &dcb_eth0,      /* Driver control block. */
+    NicInit,        /* Driver initialization routine. */
+    0,          /* Driver specific control function. */
+    0,          /* Read from device. */
+    0,          /* Write to device. */
+    0,          /* Write from program space data to device. */
+    0,          /* Open a device or file. */
+    0,          /* Close a device or file. */
+    0           /* Request file size. */
 };
 
 /*@}*/

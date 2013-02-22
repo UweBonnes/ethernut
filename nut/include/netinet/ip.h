@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -110,6 +110,7 @@
  *
  */
 
+#include <cfg/ip.h>
 #include <net/if_arp.h>
 
 /*!
@@ -125,7 +126,7 @@
 /*@{*/
 
 /* Check if IP is a multicast address */
-#define IP_IS_MULTICAST(_a)   ((ntohl(_a) & 0xF0000000U) == 0xE0000000U)     
+#define IP_IS_MULTICAST(_a)   ((ntohl(_a) & 0xF0000000U) == 0xE0000000U)
 
 #define IPVERSION   4           /*!< \brief IP protocol version. */
 
@@ -142,7 +143,7 @@ typedef struct ip_opt IPHDR_OPT;
 /*!
  * \brief Structure of an internet header.
  */
-struct __attribute__ ((packed)) ip {
+struct NUT_PACKED_TYPE ip {
 #ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned ip_hl:4,           /*!< \brief Header length. */
@@ -166,7 +167,7 @@ struct __attribute__ ((packed)) ip {
     uint32_t ip_dst;              /*!< \brief Destination IP address. */
 };
 
-struct __attribute__ ((packed)) ip_opt {
+struct NUT_PACKED_TYPE ip_opt {
 #ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned ip_hl:4,           /*!< \brief Header length. */
@@ -214,12 +215,12 @@ struct __attribute__ ((packed)) ip_opt {
 
 /*@}*/
 
-__BEGIN_DECLS
 /*
  * API declarations.
  */
 #include <dev/netbuf.h>
 extern int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb);
+extern int NutIpForward(NETBUF *nb);
 
 /*
  * Kernel declarations.
@@ -236,6 +237,4 @@ extern void NutIpSetInputFilter(NutIpFilterFunc callbackFunc);
 extern int NutRegisterIpHandler(uint8_t prot, int (*hdlr)(NUTDEVICE *, NETBUF *));
 extern int (*ip_demux) (NUTDEVICE *, NETBUF *);
 
-__END_DECLS
-/* */
 #endif

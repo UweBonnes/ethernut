@@ -51,7 +51,7 @@
  * Added $Log keyword for CVS and avoid multiple inclusion of header file.
  *
  */
- 
+
 #ifndef _SYS_SEMAPHORE_H
 #define _SYS_SEMAPHORE_H
 
@@ -63,8 +63,6 @@
  * \addtogroup xgSemaphore
  */
 /*@{*/
-
-__BEGIN_DECLS
 
 /*!
  * \brief Sempahore type.
@@ -86,8 +84,6 @@ extern void NutSemWait(SEM * sem);
 extern int NutSemTryWait(SEM * sem);
 extern void NutSemPost(SEM * sem);
 extern int NutSemDestroy(SEM * sem);
-
-__END_DECLS
 
 /*@}*/
 

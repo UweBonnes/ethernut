@@ -43,7 +43,8 @@ nutgorp_list =
         name = "nutgorp_list_lili",
         brief = "Linked List",
         description = "Double linked list functions, configurable as FIFO or LIFO queues and sorted lists.\n\n",
-        sources = { 
+        sources =
+        {
             "list/lili.c",
             "list/lpushpop.c",
             "list/lstrcmp.c",

@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,33 +33,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/pppdebug.c
+ * \brief PPP debug helper functions.
  *
- * Revision 1.6  2006/10/05 17:25:41  haraldkipp
- * Avoid possible alignment errors. Fixes bug #1567748.
- *
- * Revision 1.5  2006/03/29 01:23:52  olereinhardt
- *  Signednes of strings
- *
- * Revision 1.4  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.3  2004/03/08 11:27:24  haraldkipp
- * Accept incoming header compression.
- *
- * Revision 1.2  2003/08/14 15:16:22  haraldkipp
- * Echo, discard and protocol reject added
- *
- * Revision 1.1.1.1  2003/05/09 14:41:36  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/05/06 17:30:28  harald
- * Put in seperate module
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <net/netdebug.h>
@@ -73,17 +55,17 @@ uint_fast8_t __ppp_trf;               /*!< \brief PPP trace flags. */
 
 static uint8_t ppp_header_sz;    /* Size of the PPP header. */
 
-static prog_char dbg_confreq[] = "[CONFREQ]";
-static prog_char dbg_confack[] = "[CONFACK]";
-static prog_char dbg_confnak[] = "[CONFNAK]";
-static prog_char dbg_confrej[] = "[CONFREJ]";
-static prog_char dbg_termreq[] = "[TERMREQ]";
-static prog_char dbg_termack[] = "[TERMACK]";
-static prog_char dbg_coderej[] = "[CODEREJ]";
-static prog_char dbg_protrej[] = "[PROTREJ]";
-static prog_char dbg_echoreq[] = "[ECHOREQ]";
-static prog_char dbg_echorsp[] = "[ECHORSP]";
-static prog_char dbg_discreq[] = "[DISCREQ]";
+static const char dbg_confreq[] PROGMEM = "[CONFREQ]";
+static const char dbg_confack[] PROGMEM = "[CONFACK]";
+static const char dbg_confnak[] PROGMEM = "[CONFNAK]";
+static const char dbg_confrej[] PROGMEM = "[CONFREJ]";
+static const char dbg_termreq[] PROGMEM = "[TERMREQ]";
+static const char dbg_termack[] PROGMEM = "[TERMACK]";
+static const char dbg_coderej[] PROGMEM = "[CODEREJ]";
+static const char dbg_protrej[] PROGMEM = "[PROTREJ]";
+static const char dbg_echoreq[] PROGMEM = "[ECHOREQ]";
+static const char dbg_echorsp[] PROGMEM = "[ECHORSP]";
+static const char dbg_discreq[] PROGMEM = "[DISCREQ]";
 
 
 void NutDumpLcpOption(FILE * stream, NETBUF * nb)
@@ -422,7 +404,7 @@ void NutDumpPpp(FILE * stream, NETBUF * nb)
 /*!
  * \brief Control PPP tracing.
  *
- * \param stream Pointer to a previously opened stream or null to 
+ * \param stream Pointer to a previously opened stream or null to
  *               disable trace output.
  * \param flags  Flags to enable specific traces.
  */

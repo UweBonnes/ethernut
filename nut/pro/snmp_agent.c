@@ -58,7 +58,7 @@
  */
 static uint8_t *packet_end;
 
-static void SetVariable(CONST uint8_t * var_val, uint8_t var_val_type, uint8_t * statP, size_t statLen)
+static void SetVariable(const uint8_t * var_val, uint8_t var_val_type, uint8_t * statP, size_t statLen)
 {
     size_t buffersize = 1000;
 
@@ -84,20 +84,20 @@ static void SetVariable(CONST uint8_t * var_val, uint8_t var_val_type, uint8_t *
  * \brief Parse a list of variables.
  *
  * \param data       Pointer to the start of the list.
- * \param length     Contains the number of valid bytes following the 
+ * \param length     Contains the number of valid bytes following the
  *                   start of the list.
  * \param out_data   Pointer to the output buffer.
  * \param out_length Number of bytes available in the output buffer.
  * \param index      Error index.
  * \param msgtype    Type of the incoming packet.
- * \param action     Action to perform, either SNMP_ACT_RESERVE1, 
- *                   SNMP_ACT_RESERVE2, SNMP_ACT_COMMIT, SNMP_ACT_ACTION 
+ * \param action     Action to perform, either SNMP_ACT_RESERVE1,
+ *                   SNMP_ACT_RESERVE2, SNMP_ACT_COMMIT, SNMP_ACT_ACTION
  *                   or SNMP_ACT_FREE.
  *
  * \return 0 on success. Otherwise an error code is returned.
  *
  */
-static int SnmpVarListParse(SNMP_SESSION * sess, CONST uint8_t * data, size_t length, uint8_t * out_data, size_t out_length,
+static int SnmpVarListParse(SNMP_SESSION * sess, const uint8_t * data, size_t length, uint8_t * out_data, size_t out_length,
                             long *index, int msgtype, int action)
 {
     OID var_name[MAX_OID_LEN];
@@ -228,13 +228,13 @@ static int SnmpVarListParse(SNMP_SESSION * sess, CONST uint8_t * data, size_t le
 /*!
  * \brief Clone input packet.
  *
- * Creates a packet identical to the input packet, except for the error 
+ * Creates a packet identical to the input packet, except for the error
  * status and the error index which are set according to the specified
  * parameters.
  *
  * \return 0 upon success and -1 upon failure.
  */
-static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST uint8_t * snmp_in, uint8_t * snmp_out, size_t snmp_length, long errstat,
+static int SnmpCreateIdentical(SNMP_SESSION * sess, const uint8_t * snmp_in, uint8_t * snmp_out, size_t snmp_length, long errstat,
                                long errindex)
 {
     uint8_t *data;
@@ -243,10 +243,10 @@ static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST uint8_t * snmp_in, uin
     size_t length;
     size_t headerLength;
     uint8_t *headerPtr;
-    CONST uint8_t *reqidPtr;
+    const uint8_t *reqidPtr;
     uint8_t *errstatPtr;
     uint8_t *errindexPtr;
-    CONST uint8_t *varListPtr;
+    const uint8_t *varListPtr;
 
     /* Copy packet contents. */
     memcpy(snmp_out, snmp_in, snmp_length);
@@ -299,12 +299,12 @@ static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST uint8_t * snmp_in, uin
  * \param out_len  Pointer to the variable that receives the number of
  *                 bytes in the outgoing packet.
  * \param out_len  Pointer to a variable which contains the size of the
- *                 output buffer on entry. On exit, it is returned 
+ *                 output buffer on entry. On exit, it is returned
  *                 as the number of valid bytes in the output buffer.
  *
  * \return 0 upon success and -1 upon failure.
  */
-int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t in_len, uint8_t * out_data, size_t * out_len)
+int SnmpAgentProcessRequest(SNMP_SESSION * sess, const uint8_t * in_data, size_t in_len, uint8_t * out_data, size_t * out_len)
 {
     long zero = 0;
     uint8_t msgtype;
@@ -316,7 +316,7 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t
     uint8_t *out_auth;
     uint8_t *out_header;
     uint8_t *out_reqid;
-    CONST uint8_t *data;
+    const uint8_t *data;
     size_t len;
 
     SnmpStatsInc(SNMP_STAT_INPKTS);
@@ -372,8 +372,8 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t
     }
 
     /*
-     * Now start cobbling together what is known about the output packet. 
-     * The final lengths are not known now, so they will have to be 
+     * Now start cobbling together what is known about the output packet.
+     * The final lengths are not known now, so they will have to be
      * recomputed later.
      */
     out_auth = out_data;
@@ -398,7 +398,7 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t
     }
 
     /*
-     * Walk through the list of variables and retrieve each one, 
+     * Walk through the list of variables and retrieve each one,
      * placing its value in the output packet.
      *
      * TODO: Handle bulk requests.
@@ -406,13 +406,13 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t
     errstat = SnmpVarListParse(sess, data, len, out_data, *out_len, &errindex, msgtype, SNMP_ACT_RESERVE1);
 
     /*
-     * Sets require 3 to 4 passes through the var_op_list. The first two 
-     * passes verify that all types, lengths, and values are valid and 
-     * may reserve resources and the third does the set and a fourth 
+     * Sets require 3 to 4 passes through the var_op_list. The first two
+     * passes verify that all types, lengths, and values are valid and
+     * may reserve resources and the third does the set and a fourth
      * executes any actions. Then the identical GET RESPONSE packet is
      * returned.
      *
-     * If either of the first two passes returns an error, another pass 
+     * If either of the first two passes returns an error, another pass
      * is made so that any reserved resources can be freed.
      */
     if (msgtype == SNMP_MSG_SET) {
@@ -441,7 +441,7 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t
         return 0;
     }
 
-    /* 
+    /*
      * Re-encode the headers with the real lengths.
      */
     *out_len = packet_end - out_header;

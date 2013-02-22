@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -73,6 +73,7 @@
 #define TWI_MMR_OFF             0x00000004      /*!< \brief Master mode register offset. */
 #define TWI_MMR     (TWI_BASE + TWI_MMR_OFF)    /*!< \brief Master mode register address. */
 #define TWI_IADRSZ              0x00000300      /*!< \brief Internal device address size mask. */
+#define TWI_IADRSZ_LSB                   8      /*!< \brief Internal device address size LSB. */
 #define TWI_IADRSZ_NONE         0x00000000      /*!< \brief No internal device address. */
 #define TWI_IADRSZ_1BYTE        0x00000100      /*!< \brief One byte internal device address. */
 #define TWI_IADRSZ_2BYTE        0x00000200      /*!< \brief Two byte internal device address. */

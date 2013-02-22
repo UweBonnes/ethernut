@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -121,9 +121,7 @@
 #include <fcntl.h>
 #include <memdebug.h>
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined(NUTDEBUG)
 #include <stdio.h>
 #include <fs/phatdbg.h>
 #endif
@@ -356,7 +354,7 @@ int PhatFileClose(NUTFILE * nfp)
 /*!
  * \brief Open a file.
  *
- * This function is called by the low level open routine of the C runtime 
+ * This function is called by the low level open routine of the C runtime
  * library, using the _NUTDEVICE::dev_open entry.
  *
  * \param dev  Specifies the file system device.
@@ -369,14 +367,14 @@ int PhatFileClose(NUTFILE * nfp)
  *
  * \bug Append mode not working as expected.
  */
-NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+NUTFILE *PhatFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *nfp = NUTFILE_EOF;
     NUTFILE *ndp = NUTFILE_EOF;
     PHATFILE *ffcb;
     PHATFILE *dfcb;
     PHATFIND *srch;
-    CONST char *fname;
+    const char *fname;
 
     /* Open the parent directory and return the basename. */
     if ((ndp = PhatDirOpenParent(dev, path, &fname)) == NUTFILE_EOF) {
@@ -426,9 +424,9 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
      * where the first cluster is initialized with zeros.
      */
     if (PhatDirEntryFind(ndp, fname, PHAT_FATTR_FILEMASK, srch)) {
-        /* 
-         * File doesn't exist. Does the opening mode allow to create 
-         * a new file? 
+        /*
+         * File doesn't exist. Does the opening mode allow to create
+         * a new file?
          */
         if ((mode & _O_CREAT) == 0) {
             free(srch);
@@ -526,16 +524,16 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
 /*!
  * \brief Write data to a file.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data to be written. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
-int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+int PhatFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     int step;
@@ -649,22 +647,48 @@ int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
             fcb->f_sect_pos = 0;
         }
 
-        /* Load the sector we want to write to. */
-        if ((sbn = PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) < 0) {
-            rc = -1;
-            break;
+        /* Write full sectors. */
+        if (fcb->f_sect_pos == 0 && len - rc >= vol->vol_sectsz) {
+            uint32_t sect;
+            int cnt;
+
+            step = (int) (vol->vol_clustsz - fcb->f_clust_pos) * vol->vol_sectsz;
+            if (step > len - rc) {
+                step = len - rc;
+            }
+            sect = PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos;
+            /* Calculate number of sectors. */
+            cnt = step / vol->vol_sectsz;
+            /* Update step size to sector size multiple. */
+            step = cnt * vol->vol_sectsz;
+            
+            if (PhatSectorWrite(nfp->nf_dev, sect, &buf[rc], cnt)) {
+                rc = -1;
+                break;
+            }
+            /* Advance file pointers. */
+            fcb->f_clust_pos += cnt - 1;
+            fcb->f_pos += step;
+            fcb->f_sect_pos = vol->vol_sectsz;
+        } else {
+            /* Load the sector we want to write to. */
+            if ((sbn = PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) < 0) {
+                rc = -1;
+                break;
+            }
+            /* The number of bytes we write to this sector. */
+            step = (int) (vol->vol_sectsz - fcb->f_sect_pos);
+            if (step > len - rc) {
+                step = len - rc;
+            }
+            /* Copy data to this sector. */
+            memcpy(&vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], &buf[rc], step);
+            vol->vol_buf[sbn].sect_dirty = 1;
+            PhatSectorBufferRelease(dev, sbn);
+            /* Advance file pointers. */
+            fcb->f_pos += step;
+            fcb->f_sect_pos += step;
         }
-        /* The number of bytes we write to this sector. */
-        step = (int) (vol->vol_sectsz - fcb->f_sect_pos);
-        if (step > len - rc) {
-            step = len - rc;
-        }
-        /* Copy data to this sector. */
-        memcpy(&vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], &buf[rc], step);
-        vol->vol_buf[sbn].sect_dirty = 1;
-        /* Advance file pointers. */
-        fcb->f_pos += step;
-        fcb->f_sect_pos += step;
     }
 
     if (rc > 0) {
@@ -686,21 +710,21 @@ int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write data from program space to a file.
  *
  * This function is not yet implemented and will always return -1.
  *
- * Similar to PhatFileWrite() except that the data is located in 
+ * Similar to PhatFileWrite() except that the data is located in
  * program memory.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data in program space. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error.
  */
 int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
@@ -712,12 +736,12 @@ int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
 /*!
  * \brief Read data from a file.
  *
- * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data buffer to fill.
  * \param size   Maximum number of bytes to read.
  *
- * \return The number of bytes actually read. A return value of -1 indicates 
+ * \return The number of bytes actually read. A return value of -1 indicates
  *         an error.
  */
 int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
@@ -801,6 +825,7 @@ int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
             step = size - rc;
         }
         memcpy(&buf[rc], &vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], step);
+        PhatSectorBufferRelease(dev, sbn);
         fcb->f_pos += step;
         fcb->f_sect_pos += step;
     }
@@ -810,10 +835,10 @@ int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
 /*!
  * \brief Retrieve the size of a previously opened file.
  *
- * This function is called by the low level size routine of the C runtime 
+ * This function is called by the low level size routine of the C runtime
  * library, using the _NUTDEVICE::dev_size entry.
  *
- * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a
  *            previous call to PhatFileOpen().
  *
  * \return Size of the file.
@@ -945,7 +970,7 @@ static int PhatInit(NUTDEVICE * dev)
 /*!
  * \brief Reentrant variant of PhatFileOpen().
  */
-static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
 {
     NUTFILE *rc;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -988,7 +1013,7 @@ static int PhatApiFileClose(NUTFILE * nfp)
 /*!
  * \brief Reentrant variant of PhatFileWrite().
  */
-static int PhatApiFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+static int PhatApiFileWrite(NUTFILE * nfp, const void *buffer, int len)
 {
     int rc;
     NUTDEVICE *dev = nfp->nf_dev;
@@ -1068,7 +1093,7 @@ static int PhatApiIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief PHAT file system driver information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this file system driver to the Nut/OS kernel.
  * An application may then call
  * /verbatim

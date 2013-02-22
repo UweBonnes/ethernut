@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH
+ * Copyright (c) 1989 by Carnegie Mellon University
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,55 +31,15 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions are 
- * Copyright (c) 1989 by Carnegie Mellon University.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms are permitted
- * provided that the above copyright notice and this paragraph are
- * duplicated in all such forms and that any documentation,
- * advertising materials, and other materials related to such
- * distribution and use acknowledge that the software was developed
- * by Carnegie Mellon University.  The name of the
- * University may not be used to endorse or promote products derived
- * from this software without specific prior written permission.
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/lcpin.c
+ * \brief PPP LCP input functions.
  *
- * Revision 1.6  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.5  2004/03/08 11:26:13  haraldkipp
- * Accept incoming header compression.
- *
- * Revision 1.4  2004/01/30 11:37:58  haraldkipp
- * Handle magic number rejects
- *
- * Revision 1.3  2004/01/14 19:05:53  drsung
- * Bug fix in LcpRxConfReq. Thanks to Michel Hendriks.
- *
- * Revision 1.2  2003/08/14 15:19:15  haraldkipp
- * Echo support added.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:14:45  harald
- * Cleanup
- *
- * Revision 1.1  2003/03/31 14:53:27  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <net/if_var.h>
@@ -115,7 +78,7 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     switch (dcb->dcb_lcp_state) {
     case PPPS_CLOSED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutNetBufFree(nb);
         NutLcpOutput(dev, XCP_TERMACK, id, 0);
@@ -130,7 +93,7 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         return;
 
     case PPPS_OPENED:
-        /* 
+        /*
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
@@ -138,7 +101,7 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         break;
 
     case PPPS_STOPPED:
-        /* 
+        /*
          * Negotiation started by our peer.
          */
         LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
@@ -173,10 +136,8 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                     len = 0;
                 break;
             case LCP_PCOMPRESSION:
-                len = 0;
                 break;
             case LCP_ACCOMPRESSION:
-                len = 0;
                 break;
             }
         }
@@ -343,7 +304,7 @@ static INLINE void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     case PPPS_CLOSED:
     case PPPS_STOPPED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutLcpOutput(dev, XCP_TERMACK, id, 0);
         break;
@@ -372,7 +333,7 @@ static INLINE void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         break;
 
     case PPPS_OPENED:
-        /* 
+        /*
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
@@ -418,7 +379,7 @@ static INLINE void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uin
     case PPPS_CLOSED:
     case PPPS_STOPPED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutLcpOutput(dev, XCP_TERMACK, id, 0);
         break;
@@ -436,7 +397,7 @@ static INLINE void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uin
         break;
 
     case PPPS_OPENED:
-        /* 
+        /*
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
@@ -562,7 +523,7 @@ static INLINE void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*!
  * \brief Handle incoming LCP packets.
  *
- * Packets not destined to us or packets with unsupported 
+ * Packets not destined to us or packets with unsupported
  * address type or item length are silently discarded.
  *
  * \note This routine is called by the Ethernet layer on
@@ -570,7 +531,7 @@ static INLINE void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
  *       not call this function.
  *
  * \param dev Identifies the device that received the packet.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the ARP packet.
  */
 void NutLcpInput(NUTDEVICE * dev, NETBUF * nb)

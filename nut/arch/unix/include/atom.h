@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -49,7 +49,6 @@
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
 
-__BEGIN_DECLS
 #include <pthread.h>
 #include <signal.h>
 #include <sys/thread.h>
@@ -65,56 +64,54 @@ extern uint8_t __os_trf;
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
 
-#define NutEnterCritical()					     \
-		pthread_sigmask(SIG_BLOCK, &irq_signal, 0);  \
-		if (runningThread){						 \
-			/* if (runningThread->td_cs_level==0)												    \
-				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name); */	\
-			runningThread->td_cs_level++;        \
-		} else {								 \
-			/* if (main_cs_level==0)												\
-				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT") */;	\
-			main_cs_level++;					 \
-		}										 \
+#define NutEnterCritical()                       \
+        pthread_sigmask(SIG_BLOCK, &irq_signal, 0);  \
+        if (runningThread){                      \
+            /* if (runningThread->td_cs_level==0)                                                   \
+                printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name); */   \
+            runningThread->td_cs_level++;        \
+        } else {                                 \
+            /* if (main_cs_level==0)                                                \
+                printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT") */;   \
+            main_cs_level++;                     \
+        }                                        \
 
-#define NutExitCritical()									\
-		if (runningThread){									\
-			if (--runningThread->td_cs_level == 0) {		\
-				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	*/ \
-				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);   \
-			}												\
-		} else {											\
-			if (--main_cs_level == 0) {						\
-				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	*/ \
-				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);	\
-			}												\
-		}
+#define NutExitCritical()                                   \
+        if (runningThread){                                 \
+            if (--runningThread->td_cs_level == 0) {        \
+                /* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);  */ \
+                pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);   \
+            }                                               \
+        } else {                                            \
+            if (--main_cs_level == 0) {                     \
+                /* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");  */ \
+                pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);   \
+            }                                               \
+        }
 
 #if 0
 
-#define NutEnterCritical()					     \
-		if (runningThread){						 \
-			if (runningThread->td_cs_level==0)												\
-				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
-			runningThread->td_cs_level++;        \
-		} else {								 \
-			if (main_cs_level==0)												\
-				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
-			main_cs_level++;					 \
-		}										 \
+#define NutEnterCritical()                       \
+        if (runningThread){                      \
+            if (runningThread->td_cs_level==0)                                              \
+                printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);  \
+            runningThread->td_cs_level++;        \
+        } else {                                 \
+            if (main_cs_level==0)                                               \
+                printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");  \
+            main_cs_level++;                     \
+        }                                        \
 
-#define NutExitCritical()									\
-		if (runningThread){									\
-			if (--runningThread->td_cs_level == 0) {		\
-				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
-			}												\
-		} else {											\
-			if (--main_cs_level == 0) {						\
-				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
-			}												\
-		}
+#define NutExitCritical()                                   \
+        if (runningThread){                                 \
+            if (--runningThread->td_cs_level == 0) {        \
+                printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name); \
+            }                                               \
+        } else {                                            \
+            if (--main_cs_level == 0) {                     \
+                printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT"); \
+            }                                               \
+        }
 #endif
 
 #define NutJumpOutCritical() NutExitCritical()
-
-__END_DECLS

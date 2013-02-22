@@ -252,8 +252,8 @@ uint16_t VsCodecBeep(NUTDEVICE *dev, uint16_t fsin)
 {
     uint16_t rc = 0;
     static uint8_t on[] = { 0x53, 0xEF, 0x6E, 0x3F, 0x00, 0x00, 0x00, 0x00 };
-    static CONST uint8_t off[] = { 0x45, 0x78, 0x69, 0x74, 0x00, 0x00, 0x00, 0x00 };
-    static CONST uint16_t ftab[] = { 44100, 48000, 32000, 22050, 24000, 16000, 11025, 12000 };
+    static const uint8_t off[] = { 0x45, 0x78, 0x69, 0x74, 0x00, 0x00, 0x00, 0x00 };
+    static const uint16_t ftab[] = { 44100, 48000, 32000, 22050, 24000, 16000, 11025, 12000 };
     static uint16_t mode;
     VSDCB *dcb = (VSDCB *)dev->dev_dcb;
 
@@ -434,8 +434,8 @@ THREAD(FeederThread, arg)
             }
         }
 
-        /* 
-        ** Record mode processing. 
+        /*
+        ** Record mode processing.
         */
         else if (dcb->dcb_pbstat == CODEC_STATUS_RECORDING) {
             for (;;) {
@@ -461,11 +461,7 @@ THREAD(FeederThread, arg)
                     } else {
                         filled = avail;
                     }
-                    while (filled--) {
-                        uint16_t data = VsCodecReg(dev, VS_OPCODE_READ, VS_HDAT0_REG, 0);
-                        *bp++ = (uint8_t) data >> 8;
-                        *bp++ = (uint8_t) data >> 8;
-                    }
+                    (*dcb->dcb_recvdata)(bp, filled << 1);
                     NutSegBufWriteLast(avail << 1);
                     NutEventPost(&dcb->dcb_bufque);
                 } else {
@@ -493,9 +489,9 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
 #if VS_HAS_BASS_REG
     VsCodecReg(dev, VS_OPCODE_WRITE, VS_BASS_REG, 0);
 #endif
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
     while (i + 3 <= plg->vsplg_size) {
         reg = (uint_fast8_t)plg->vsplg_data[i++];
         cnt = plg->vsplg_data[i++];
@@ -506,13 +502,13 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
                 VsCodecReg(dev, VS_OPCODE_WRITE, reg, plg->vsplg_data[i]);
             }
             i++;
-        } 
+        }
         else if (i + cnt <= plg->vsplg_size) {
             while (cnt--) {
                 VsCodecReg(dev, VS_OPCODE_WRITE, reg, plg->vsplg_data[i]);
                 i++;
             }
-        } 
+        }
         else {
             break;
         }
@@ -522,34 +518,92 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
     }
 
 #ifdef VS_SM_ADPCM
-	// set bits 12 and 13 of register SCI_MODE
-	// 12 is the ADPCM bit, 13 is the MIC/LINE bit.
+    // set bits 12 and 13 of register SCI_MODE
+    // 12 is the ADPCM bit, 13 is the MIC/LINE bit.
     VsCodecMode(dev, VS_SM_LINE_IN | VS_SM_ADPCM, VS_SM_LINE_IN | VS_SM_ADPCM);
 #endif
 
 #if VS_HAS_AICTRL0_REG
-	// write 0 to SCI_AICTRL0 (maximum signal level, set by encoder to read later on)
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL0_REG, 0);
+    // write 0 to SCI_AICTRL0 (maximum signal level, set by encoder to read later on)
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL0_REG, 0);
 #endif
 
     // recording gain 0: automatic gain control on
-	//CodecReg(&codec_node, VS_OPCODE_WRITE, VS_AICTRL1_REG, 0);
+    //CodecReg(&codec_node, VS_OPCODE_WRITE, VS_AICTRL1_REG, 0);
 
 #if VS_HAS_AICTRL1_REG
-	// recording gain 1
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL1_REG, 1024);
+    // recording gain 1
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL1_REG, 1024);
 #endif
 
 #if VS_HAS_AICTRL2_REG
-	// maximum autogain amplification, 4096 (=4x) is recommended
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
+    // maximum autogain amplification, 4096 (=4x) is recommended
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
 #endif
 
-#if VS_HAS_AICTRL3_REG	
-	// setting SCI_AICTRL3 should be fine, too...
-	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
+#if VS_HAS_AICTRL3_REG
+    // setting SCI_AICTRL3 should be fine, too...
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
 #endif
 
+    return 0;
+}
+
+static int VsCodecWriteWRam(NUTDEVICE *dev, VS_WRAM_DATA *vswd)
+{
+    size_t i;
+
+    if (vswd == NULL) {
+        /*
+         * Initialize data transfer.
+         */
+#ifdef VS_SM_ADPCM
+        VsCodecMode(dev, 0, VS_SM_ADPCM);
+#endif
+        /* Set clock to 4.5x = 55.3 MHz. */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_CLOCKF_REG, 0xC000);
+        NutSleep(100);
+#if VS_HAS_BASS_REG
+        /* Clear SCI bass register. */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_BASS_REG, 0);
+#endif
+        /* Disable all interrupts except SCI. */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
+    }
+    else if (vswd->vswd_data) {
+        /*
+         * Transfer data, if available.
+         */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, vswd->vswd_addr);
+        for (i = 0; i < vswd->vswd_size; i++) {
+            VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, vswd->vswd_data[i]);
+        }
+    } else {
+        /*
+         * All data transfered.
+         */
+#ifdef VS_SM_ADPCM
+        VsCodecMode(dev, VS_SM_LINE_IN | VS_SM_ADPCM, VS_SM_LINE_IN | VS_SM_ADPCM);
+#endif
+
+#if VS_HAS_AICTRL0_REG
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL0_REG, 0);
+#endif
+
+#if VS_HAS_AICTRL1_REG
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL1_REG, 1024);
+#endif
+
+#if VS_HAS_AICTRL2_REG
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
+#endif
+
+#if VS_HAS_AICTRL3_REG
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
+#endif
+    }
     return 0;
 }
 
@@ -686,6 +740,9 @@ int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf)
     case AUDIO_PLUGIN_UPLOAD:
         rc = VsCodecLoadPlugIn(dev, (VS_PLUGIN_INFO *) conf);
         break;
+    case AUDIO_WRITE_CMEM:
+        VsCodecWriteWRam(dev, (VS_WRAM_DATA *) conf);
+        break;
 
     default:
         rc = (*dcb->dcb_control)(req, conf);
@@ -733,11 +790,11 @@ static int VsDecoderBufferFlush(NUTDEVICE *dev, uint32_t tmo)
 /*!
  * \brief Read from the encoder.
  *
- * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous
  *             call to VsCodecOpen().
  * \param data Pointer to the data buffer. If NULL, the buffered data
  *             will be flushed.
- * \param len  Number of bytes to read. If 0, all buffered data will be 
+ * \param len  Number of bytes to read. If 0, all buffered data will be
  *             flushed.
  *
  * \return Number of characters sent. If a read timeout had been set,
@@ -806,11 +863,11 @@ int VsCodecRead(NUTFILE * nfp, void *data, int len)
  * \return Number of characters sent. If a write timeout had been set,
  *         then this may be less than the specified length.
  */
-int VsCodecWrite(NUTFILE * nfp, CONST void *data, int len)
+int VsCodecWrite(NUTFILE * nfp, const void *data, int len)
 {
     int rc = 0;
     uint8_t *bp;
-    CONST uint8_t *dp;
+    const uint8_t *dp;
     size_t rbytes;
     VSDCB *dcb = nfp->nf_dev->dev_dcb;
 
@@ -874,7 +931,7 @@ int VsCodecWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
 /*
  * Open codec stream.
  */
-NUTFILE *VsCodecOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *VsCodecOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nfp;
     VSDCB *dcb;

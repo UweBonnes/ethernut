@@ -113,7 +113,7 @@ struct _NUTSPIBUS {
 
     /*! \brief Transfer data.
      */
-    int (*bus_transfer) (NUTSPINODE *, CONST void *, void *, int);
+    int (*bus_transfer) (NUTSPINODE *, const void *, void *, int);
 
     /*! \brief Wait for transfer ready.
      */
@@ -171,15 +171,18 @@ struct _NUTSPINODE {
      * Dynamically set when registering the SPI device.
      */
     uint_fast8_t node_cs;
+
+    /*! \brief Pointer to the node driver's device control block.
+     *
+     * Statically configured in most cases.
+     */
+    void *node_dcb;
 };
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int NutRegisterSpiDevice(NUTDEVICE * dev, NUTSPIBUS * bus, int cs);
 extern uint_fast16_t NutSpiBusSetMode(NUTSPINODE * node, uint_fast16_t mode);
 extern uint_fast32_t NutSpiBusSetRate(NUTSPINODE * node, uint_fast32_t rate);
 extern uint_fast8_t NutSpiBusSetBits(NUTSPINODE * node, uint_fast8_t bits);
 extern int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo);
-/* Prototypes */
-__END_DECLS
+
 #endif

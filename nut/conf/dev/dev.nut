@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -29,7 +29,6 @@
 --
 -- For additional information see http://www.ethernut.de/
 --
-
 -- Operating system functions
 --
 -- $Log$
@@ -238,6 +237,40 @@ nutdev =
         brief = "Interrupt Handler",
         description = "Interrupt registration and distribution.",
         sources = { "ihndlr.c" },
+    },
+    {
+        name = "nutdev_uart_poll",
+        brief = "UART Polling Driver",
+        description = "Simple UART driver without interrupt handler.",
+        requires = { "DEV_UART" },
+        options =
+        {
+            {
+                macro = "NUT_DEV_DEBUG_READ",
+                brief = "Enable Debug Input",
+                description = "By default the serial debug port can be used for output only. "..
+                              "This option enables usage of this port for input too.\n\n"..
+                              "Note, that the debug driver is not interrupt driven, it "..
+                              "uses polling. Therefore, standard output functions "..
+                              "may be even called in interrupt context. This is not "..
+                              "true for input, where the driver calls NutSleep while "..
+                              "waiting for incoming data.\n\n"..
+                              "Further note, that incoming characters are not handled in "..
+                              "the background and may get lost, if the application is not "..
+                              "actively listening for input data.",
+                requires = { "DEV_UART" },
+                flavor = "boolean",
+                file = "include/cfg/uart.h"
+            }
+        }
+    },
+    {
+        name = "nutdev_usartcb",
+        brief = "USART Driver Framework (Experimental)",
+        description = "Experimental USART driver framework.",
+        requires = { "CRT_HEAPMEM", "DEV_UART_CBRXTX", "DEV_CIRCBUF" },
+        provides = { "DEV_UART_GENERIC", "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "usart_cb.c" },
     },
     {
         name = "nutdev_usart",
@@ -740,6 +773,14 @@ nutdev =
                 description = "Specify the number of seconds. "..
                               "Default is 45",
                 file = "include/cfg/chat.h"
+            },
+            {
+                macro = "NUTDEBUG_CHAT",
+                brief = "Debug Output",
+                flavor = "boolean",
+                description = "Enables debug output.\n\n"..
+                              "Applications must call NutTraceChat() to activate it.",
+                file = "include/cfg/chat.h"
             }
         }
     },
@@ -748,6 +789,13 @@ nutdev =
         brief = "Terminal Emulation",
         requires = { "CRT_HEAPMEM" },
         sources = { "term.c" }
+    },
+    {
+        name = "nutdev_circbuf",
+        brief = "Circular Buffers",
+        requires = { "TOOL_GCC" },
+        provides = { "DEV_CIRCBUF" },
+        sources = { "circbuff.c" }
     },
     {
         name = "nutdev_netbuf",
@@ -781,7 +829,18 @@ nutdev =
                               "For the AVR family the on-chip EEPROM is used by default.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45D" },
                 flavor = "booldata",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 default = "0",
                 file = "include/cfg/eeprom.h"
             },
@@ -791,7 +850,18 @@ nutdev =
                 description = "Deprecated, uses old SPI routines.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45DB" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -801,7 +871,18 @@ nutdev =
                               "be stored in this chip.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -812,7 +893,84 @@ nutdev =
                 requires = { "HW_EFC_AT91" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_STM32FLASH",
+                brief = "STM32 On-Chip Flash",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                requires = { "HW_FLASH_STM32" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                flavor = "boolean",
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_LPC177x_8x_EEPROM",
+                brief = "LPC177x_8x On-Chip EEPROM",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip eeprom memory.",
+                requires = { "HW_EEPROM_LPC177x_8x" },
+                provides = { "DEV_NVMEM" },
+                flavor = "boolean",
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_LPC17xx_IAP",
+                brief = "LPC17xx On-Chip Flash",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                requires = { "HW_FLASH_LPC17xx" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                flavor = "boolean",
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -821,7 +979,18 @@ nutdev =
                 description = "If enabled, the EEPROM on the Intersil X1226/X1286 chip is used for non-volatile memory.",
                 provides = { "DEV_NVMEM" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -830,7 +999,18 @@ nutdev =
                 description = "If enabled, a standard EEPROM chip is used for non-volatile memory.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_I2C" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -886,7 +1066,7 @@ nutdev =
                 description = "Address of the sector used for configuration data.\n\n"..
                               "Specify the relative memory address, e.g. 0x0000 for the first sector.",
                 requires = { "DEV_NVMEM_NORFLASH" },
-                default = "0x6000",
+                flavor = "booldata",
                 file = "include/cfg/memory.h"
             },
             {
@@ -1829,6 +2009,51 @@ nutdev =
             },
         },
     },
+    {
+        name = "nutdev_i2cbbif",
+        brief = "Bit Banging I2C bus driver",
+        description = "Tested on STM32 only.",
+        requires = { "HW_GPIO" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources = { "i2cbus_gpio.c" },
+        options =
+        {
+            {
+                macro = "GPIO0_SDA_PORT",
+                brief = "GPIO SDA Port",
+                type = "enumerated",
+                description = "Port of the GPIO0 SDA line.",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "GPIO0_SDA_PIN",
+                brief = "GPIO SDA Pin",
+                description = "Pin of the GPIO0 SDA line.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "GPIO0_SCL_PORT",
+                brief = "GPIO SCL Port",
+                type = "enumerated",
+                description = "Port of the GPIO0 SCL line.",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "GPIO0_SCL_PIN",
+                brief = "GPIO SCL Pin",
+                description = "Pin of the GPIO0 SCL line.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/twi.h"
+            },
+       },
+    },
 
     --
     -- Character Device Drivers.
@@ -1841,22 +2066,23 @@ nutdev =
                       "to the nullDev which discards any output.",
         sources = { "null.c" }
     },
-    {
-        name = "nutdev_sc16is752",
-        brief = "SC16IS752 Dual USART",
-        description = "TWI driver for SC16IS752 dual USART chip. "..
-                      "Currently SAM7X256 is tested only. "..
-                      "ICCAVR disabled due to compiler errors.",
-        sources = {
-            "usart0sc16is752.c",
-            "usart1sc16is752.c",
-            "usart2sc16is752.c",
-            "usart3sc16is752.c",
-            "usartsc16is752.c"
-        },
-        requires = { "DEV_TWI", "TOOL_GCC" },
-        provides = { "DEV_UART_SPECIFIC" },
-    },
+--    {
+--        name = "nutdev_sc16is752",
+--        brief = "SC16IS752 Dual USART",
+--        description = "TWI driver for SC16IS752 dual USART chip. "..
+--                      "Currently SAM7X256 is tested only. "..
+--                      "ICCAVR disabled due to compiler errors.",
+--        sources =
+--        {
+--            "usart0sc16is752.c",
+--            "usart1sc16is752.c",
+--            "usart2sc16is752.c",
+--            "usart3sc16is752.c",
+--            "usartsc16is752.c"
+--        },
+--        requires = { "DEV_TWI", "TOOL_GCC" },
+--        provides = { "DEV_UART_SPECIFIC" },
+--    },
     {
         name = "nutdev_hxcodec",
         brief = "Helix Audio Device",
@@ -1912,14 +2138,16 @@ nutdev =
                 brief = "Auto Detect",
                 description = "Generates significantly more code. Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1928,14 +2156,16 @@ nutdev =
                 brief = "VS1001K",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1944,14 +2174,16 @@ nutdev =
                 brief = "VS1011E",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1960,14 +2192,16 @@ nutdev =
                 brief = "VS1002D",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1976,14 +2210,16 @@ nutdev =
                 brief = "VS1003B",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1992,14 +2228,16 @@ nutdev =
                 brief = "VS1033C",
                 description = "Untested.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2008,14 +2246,34 @@ nutdev =
                 brief = "VS1053B",
                 description = "Tested with SAM7SE.",
                 flavor = "boolean",
-                exclusivity = {
+                exclusivity =
+                {
                     "AUDIO0_VSAUTO",
                     "AUDIO0_VS1001K",
                     "AUDIO0_VS1011E",
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1063A",
+                brief = "VS1063A",
+                description = "Tested with SAM7SE.",
+                flavor = "boolean",
+                exclusivity =
+                {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2224,8 +2482,8 @@ nutdev =
         name = "nutdev_lan91",
         brief = "SMSC LAN91x Driver",
         description = "LAN driver for SMSC LAN91. Currently supports LAN91C111 only.",
-        requires = { "NUT_EVENT", "NUT_TIMER", "HW_GPIO" },
-        provides = { "NET_PHY" },
+        requires = { "NUT_EVENT", "NUT_TIMER", "HW_GPIOxx" },
+        provides = { "NET_MAC" },
         sources = { "lan91.c" },
         options =
         {
@@ -2274,7 +2532,7 @@ nutdev =
         brief = "Davicom DM9000 Driver",
         description = "LAN driver for Davicom DM9000A and DM9000E.",
         requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "dm9000.c" },
         options =
         {
@@ -2305,35 +2563,91 @@ nutdev =
                       "All targets without supported Ethernet hardware will use this driver "..
                       "by default. The main purpose of this driver is to build network applications "..
                       "without compiler and linker errors, even if no Ethernet hardware is available.",
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "null_ether.c" },
     },
     {
-        name = "nutdev_ether_phy",
+        name = "nutnet_ether_phy",
         brief = "Ethernet PHYceiver",
+        requires = { "NET_MAC" },
         provides = { "NET_PHY" },
+        sources = { "phy.c" },
         options =
         {
+            {
+                macro = "NIC_PHY_TYPE",
+                brief = "PHY Chip",
+                description = "Select the Physical Layer Tranceiver (PHYter) for your board.\n\n"..
+                              "Commonly used chips and their IDs:\n"..
+                              "AUTO: Autodetect chip\n"..
+                              "AMD:\n"..
+                              "AM79C875: 0x00225540\n"..
+                              "DACOM\n"..
+                              "DM9161: 0x0181B880 (ATMEL EK)\n"..
+                              "DM9161A: 0x0181B8A0 (ATMEL EK)\n"..
+                              "DM9161B: 0x0181B8B0\n"..
+                              "DM9000: 0x0181B8C0 (EIR)\n"..
+                              "DM9000A: 0x0181B8A0\n"..
+                              "DM9000B: 0x0181B8B0\n"..
+                              "National Semiconductors\n"..
+                              "DP83838: 0x20005C90 (EVK1100, EVK1105)\n"..
+                              "DP83848: 0x20005CA0\n"..
+                              "Micrel\n"..
+                              "KS8721: 0x00221610 (Olimex SAM7-EX256)\n"..
+                              "KS8851: 0x00008870\n"..
+                              "STMicroelectronics\n"..
+                              "STE100P: 0x1C040010 (Hitex STM32-comStick)\n"..
+                              "SMSC\n"..
+                              "LAN8700: 0x0007C0C0\n"..
+                              "LAN8710: 0x0007C0F0\n"..
+                              "LAN8720: 0x0007C0F0\n"..
+                              "ANY: 0xFFFFFFFF (Disable PHY ID check - not recommended)",
+                type = "enumerated",
+                choices =
+                {
+                    "AUTO",
+                    "AM79C875",
+                    "DM9161",
+                    "DM9161A",
+                    "DM9161B",
+                    "DM9000",
+                    "DM9000A",
+                    "DM9000B",
+                    "DP83838",
+                    "DP83848",
+                    "KS8721",
+                    "KS8851",
+                    "STE100P",
+                    "LAN8700",
+                    "LAN8710",
+                    "LAN8720",
+                    "ANY"
+                },
+                file = "include/cfg/phycfg.h"
+            },
             {
                 macro = "NIC_PHY_ADDR",
                 brief = "PHY Address",
                 description = "Default is 1 for EVK1100 and EVK1105.\n\n",
                 flavor = "integer",
-                file = "include/cfg/dev.h"
+                file = "include/cfg/phycfg.h"
             },
             {
                 macro = "NIC_PHY_UID",
                 brief = "PHY ID",
-                description = "ID for the PHY connected to the Ethernet MAC.\n\n"..
-                              "AM79C875: 0x00225540\n"..
-                              "DM9161: 0x0181B8A0 (ATMEL EK)\n"..
-                              "DP83848: 0x20005C90 (EVK1100, EVK1105)\n"..
-                              "MICREL: 0x00221610 (Olimex SAM7-EX256)\n"..
-                              "LAN8700: 0x0007C0C0\n"..
-                              "ANY: 0xFFFFFFFF (Disable PHY ID check - not recommended)",
+                description = "Override ID for the PHY connected to the Ethernet MAC.\n"..
+                              "Pick the right ID out of the list of PHY chips or datasheet.\n"..
+                              "Normally this should be left blank.",
                 flavor = "integer",
-                file = "include/cfg/dev.h"
-            }
+                file = "include/cfg/phycfg.h"
+            },
+            {
+                macro = "PHY_MODE_RMII",
+                brief = "PHY_MODE_RMII",
+                description = "Use RMII mode for the phy, default is MII mode",
+                flavor = "boolean",
+                file = "include/cfg/phycfg.h"
+            },
         }
     },
 
@@ -2540,14 +2854,21 @@ nutdev =
         name = "nutdev_spi_at45dib",
         brief = "AT45D Serial Flash Driver",
         description = "Although the implemented routines are quite similar to other device drivers, "..
-                      "this is not a standard block I/O driver.\n\n"..
-                      "The implemented functions offer access to AT45D DataFlash devices "..
-                      "without the need to allocate page buffers from heap memory. Instead, "..
-                      "the chip's internal RAM buffers are used.\n\n"..
-                      "This module also uses the options from the block I/O driver.",
+                      "this is not a standard block I/O driver.\n\n",
+--                      "The implemented functions offer access to AT45D DataFlash devices "..
+--                      "without the need to allocate page buffers from heap memory. Instead, "..
+--                      "the chip's internal RAM buffers are used.\n\n"..
+--                      "This module also uses the options from the block I/O driver.",
         requires = { "SPIBUS_CONTROLLER" },
         provides = { "SERIALFLASH_INTERFACE" },
-        sources = { "spi_at45dib.c" },
+        sources =
+        {
+            "spi_at45dib.c",
+            "spi_flash_at45d.c",
+            "spi_blkio_at45d.c",
+            "spi_node_at45d.c",
+            "spi_at45d_info.c"
+        },
         options =
         {
             {
@@ -2555,6 +2876,166 @@ nutdev =
                 brief = "Use Page CRC",
                 description = "If enabled, each page is protected by a 16 bit CRC ",
                 flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D0",
+                brief = "FFS Reserved Bottom Pages (First Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D0",
+                brief = "FFS Reserved Top Pages (First Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D0",
+                brief = "Block I/O Reserved Bottom Pages (First Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D0",
+                brief = "Block I/O Reserved Top Pages (First Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D1",
+                brief = "FFS Reserved Bottom Pages (Second Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D1",
+                brief = "FFS Reserved Top Pages (Second Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D1",
+                brief = "Block I/O Reserved Bottom Pages (Second Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D1",
+                brief = "Block I/O Reserved Top Pages (Second Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D2",
+                brief = "FFS Reserved Bottom Pages (Third Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D2",
+                brief = "FFS Reserved Top Pages (Third Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D2",
+                brief = "Block I/O Reserved Bottom Pages (Third Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D2",
+                brief = "Block I/O Reserved Top Pages (Third Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D3",
+                brief = "FFS Reserved Bottom Pages (Forth Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D3 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D3",
+                brief = "FFS Reserved Top Pages (Forth Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D3 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D3",
+                brief = "Block I/O Reserved Bottom Pages (Forth Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D3 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D3",
+                brief = "Block I/O Reserved Top Pages (Forth Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D3 is used.",
+                flavor = "booldata",
                 file = "include/cfg/memory.h"
             }
         }
@@ -2685,7 +3166,7 @@ nutdev =
                 brief = "Card detect GPIO pin number",
                 description = "Number of GPIO pin where the card detect signal is connected.\n\n"..
                               "If disabled it is assumed that the card is always present\n",
-		provides = { "MMC_CD_PIN" },
+                provides = { "MMC_CD_PIN" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
@@ -2705,7 +3186,7 @@ nutdev =
                 brief = "Card write protect GPIO pin number",
                 description = "Number of GPIO pin where the card write protect signal is connected.\n\n"..
                               "If disabled it is assumed that the card is always writable\n",
-		provides = { "MMC_WP_PIN" },
+                provides = { "MMC_WP_PIN" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
@@ -2784,6 +3265,14 @@ nutdev =
         sources = { "pcf8563.c" },
     },
     {
+        name = "nutdev_i2c_pcf85xx",
+        brief = "PCF85XX Driver",
+        description = "Early NXP RTC bus controller based driver, tested on Ethernut 5.",
+        requires = { "I2CBUS_CONTROLLER" },
+        provides = { "DEV_RTC" },
+        sources = { "i2c_pcf85xx.c" },
+    },
+    {
         name = "nutdev_x12rtc",
         brief = "X12xx Driver",
         description = "Intersil X12xx RTC and EEPROM driver. Tested on AT91 only.",
@@ -2816,6 +3305,14 @@ nutdev =
         sources = { "spibus.c" }
     },
 
+    {
+        name = "nutdev_i2cbus",
+        brief = "I2C Bus",
+        requires = { "I2CBUS_CONTROLLER" },
+        description = "Hardware independent I2C bus API.",
+        sources = { "i2cbus.c" }
+    },
+
     --
     -- Special Chip Drivers.
     --
@@ -2826,13 +3323,204 @@ nutdev =
         description = "Serial eeprom driver for AT24C chips.\n\n",
         requires = { "DEV_TWI" },
         sources = { "at24c.c", "eeprom.c" },
+        options =
+        {
+            {
+                macro = "AT24C_SLAVE_ADDR",
+                brief = "Address of Slave",
+                description = "EEPROMs Slave address on the bus.\n"..
+                              "No convetions here, so the address should be given without R/W bit.\n"..
+                              "For a AT24C64 it usually will be 0x50.",
+                flavour = "integer",
+                default = "0x50",
+                file = "include/cfg/eeprom.h",
+            },
+            {
+                macro = "AT24C_CHIP_SIZE",
+                brief = "Memory Size",
+                description = "Size of your EEPROM.\n"..
+                              "As manufacturers like to give sizes in bits, as it sound like more "..
+                              "this value is usually the chips name divided by 8\n"..
+                              "For a AT24C64 it will be 8192 bytes",
+                flavour = "integer",
+                default = "8192",
+                file = "include/cfg/eeprom.h",
+            },
+            {
+                macro = "AT24C_ADR_SIZE",
+                brief = "Address Size",
+                description = "Number of bytes send as internal address.\n",
+                flavour = "integer",
+                default = "2",
+                file = "include/cfg/eeprom.h",
+            },
+            {
+                macro = "AT24C_ROW_SIZE",
+                brief = "Row Size",
+                description = "Row size of the EEPROM.\n"..
+                              "This is equal to the ammount of bytes that can be written in one "..
+                              "programming cycle. Addtitionally this is the base for correct "..
+                              "alignment of programming addresses.\n\n"..
+                              "On most EEPROMs this value is 32 bytes.",
+                flavour = "integer",
+                default = "32",
+                file = "include/cfg/eeprom.h",
+            },
+            {
+                macro = "AT24C_BLOCK_ADDR",
+                brief = "Block Addressing Mode",
+                description = "This is a special addressing mode found on small end cheap chips "..
+                              "of manufacturers that cannot understand I2C specification at all.\n\n"..
+                              "Normally the Slave-Address is used to select the right slave on the bus. "..
+                              "Some chips allow to appear on different addresses by pulling some of their pins high or low.\n"..
+                              "Now, these EEPROMs needing this item checked, have their address pins internally not "..
+                              "connected but use the lower three address bits for the high byte of the internal address...\n"..
+                              "For these chips, the address length must be 1 even they are larger than 256 bytes.",
+                flavor = "booldata",
+                file = "include/cfg/eeprom.h",
+            }
+        }
+    },
+    {
+        name = "nutdev_sht21",
+        brief = "SHT21 Driver",
+        description = "Sensirion SHT21 temperature and humidity sensor driver.\n"..
+                      "Should work with new SHT25 device too, but not tested.",
+        provides = { "DEV_SHT21" },
+        requires = { "DEV_TWI" },
+        sources = { "sht21.c" },
+        options =
+        {
+            {
+                macro = "I2C_SLA_SHT21",
+                brief = "Slave Address",
+                description = "SHT21 slave address. This is fixed and cannot be altered.",
+                type = "enumerated",
+                flavor = "integer",
+                default = "0x40",
+                   file = "include/cfg/sht21.h"
+            },
+            {
+                macro = "SHT_ACK_POLLING",
+                brief = "SHT21 ACK-Polling",
+                description = "The SHT2x supports operation modes: ACK polling or ACK-Stretching.\n"..
+                              "ACK Polling: The driver will poll the SHT2x every about 10ms for a result.\n"..
+                              "ACK Stretching: The SHT2x will held SCL low until measurement finished. "..
+                              "This will block the complete bus for other devices too but requires less code.",
+                flavor = "booldata",
+                file = "include/cfg/sht21.h"
+            },
+            {
+                macro = "SHT21_PRECISION",
+                brief = "SHT21 precision",
+                description = "The SHT21 supports several different precisons for measurement:\n"..
+                              "Possible values are:\n"..
+                              "0x00: rH=12bit, T=14bit\n"..
+                              "0x01: rH= 8bit, T=12bit\n"..
+                              "0x80: rH=10bit, T=13bit\n"..
+                              "0x81: rH=11bit, T=11bit\n",
+                type = "enumerated",
+                flavor = "integer",
+                choices = { "0x00", "0x01", "0x80", "0x81" },
+                default = "0x00",
+                file = "include/cfg/sht21.h"
+            }
+
+        }
+    },
+    {
+        name = "nutdev_mma745x",
+        brief = "MMA745x Driver",
+        description = "Freescale MMA745x velocity sensor driver.\n",
+        provides = { "DEV_MMA745X" },
+        requires = { "DEV_TWI" },
+        sources = { "mma745x.c" },
+        options =
+        {
+            {
+                macro = "MMA745X_MODE",
+                brief = "Operating Mode",
+                description = "The MMA745x supports measurement modes:\n"..
+                              "The driver initializes to the given mode. The user can switch the mode at any time.\n"..
+                              "Possible values are:\n"..
+                              "0x00: Standby\n"..
+                              "0x01: Measurement\n"..
+                              "0x02: Level detection\n"..
+                              "0x02: Pulse detection\n"..
+                              "Note that for Measurement Mode INT1/DRDY can only serve as DRDY signal or interrupt.\n"..
+                              "Level and pulse interrupts are not available.\n",
+                type = "enumerated",
+                flavor = "integer",
+                choices = { "0x00", "0x01", "0x02", "0x03" },
+                default = "0x00",
+                file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_RANGE",
+                brief = "Range",
+                description = "The MMA745x supports several different measurement ranges:\n"..
+                              "Possible values are:\n"..
+                              "0x00: +/- 8g\n"..
+                              "0x08: +/- 4g\n"..
+                              "0x04: +/- 2g\n",
+                type = "enumerated",
+                flavor = "integer",
+                choices = { "0x00", "0x08", "0x04" },
+                default = "0x00",
+                file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_8BIT",
+                brief = "8 Bit Width",
+                description = "The MMA745x supports 10bit and 8 bit data format. Select this to use 8 bit information.\n",
+                type = "enumerated",
+                flavor = "boolean",
+                file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ1_PORT",
+                brief = "INT1/DRDY Port",
+                description = "Port for interrupt 1 / data ready signal.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ1_PIN",
+                brief = "INT1/DRDY Pin",
+                description = "Pin for interrupt 1 / data ready signal.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ2_PORT",
+                brief = "INT2 Port",
+                description = "Port for interrupt 2 signal.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ2_PIN",
+                brief = "INT2 Pin",
+                description = "Pin for interrupt 2 signal.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = "include/cfg/mma745x.h"
+            },
+        }
     },
     {
         name = "nutdev_pca9555",
         brief = "PCA9555 Driver",
         description = "Philips PCA9555 I/O expander. Uses TwMasterRegRead(), which is "..
                       "currently available on AT91 hardware TWI only.",
-		provides = { "DEV_IOEXP" },
+        provides = { "DEV_IOEXP" },
         requires = { "HW_TWI_AT91", "HW_MCU_AT91" },
         sources = { "pca9555.c" },
         options =
@@ -2844,7 +3532,7 @@ nutdev =
                 type = "enumerated",
                 flavor = "integer",
                 default = "0x23",
-               	file = "include/cfg/pca9555.h"
+                file = "include/cfg/pca9555.h"
             },
             {
                 macro = "IOEXP_IRQ_PORT",
@@ -2853,7 +3541,7 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
-               	file = "include/cfg/pca9555.h"
+                file = "include/cfg/pca9555.h"
             },
             {
                 macro = "IOEXP_IRQ_PIN",
@@ -2862,29 +3550,29 @@ nutdev =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-               	file = "include/cfg/pca9555.h"
+                file = "include/cfg/pca9555.h"
             },
         },
     },
-	{
-		name = "led",
-		brief = "LED Driver",
-		description = "Provides controlling of LEDs connected to GPIO.\n"..
-		              "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
-		              "can be used to address LEDs connected to this chip instead of CPU's GPIOs",
-		provides = { "DEV_LED" },
-		sources = { "led.c" },
-		options =
+    {
+        name = "led",
+        brief = "LED Driver",
+        description = "Provides controlling of LEDs connected to GPIO.\n"..
+                      "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
+                      "can be used to address LEDs connected to this chip instead of CPU's GPIOs",
+        provides = { "DEV_LED" },
+        sources = { "led.c" },
+        options =
         {
             {
                 macro = "LED_SUPPORT_IOEXP",
                 brief = "LEDs on external GPIOs",
                 description = "Enable control of LEDs connected to an external GPIO expanders "..
- 				               	"like PCA9555.",
+                                    "like PCA9555.",
                 type = "enumerated",
                 flavor = "boolean",
                 requires = { "DEV_IOEXP" },
-               	file = "include/cfg/pca9555.h",
+                file = "include/cfg/pca9555.h",
             },
             {
                 macro = "LED_ON_HIGH",
@@ -2892,31 +3580,31 @@ nutdev =
                 description = "Enable this option if the LEDs are on on a logic 1 level of the port pin.",
                 flavor = "boolean",
                 requires = { "DEV_LED" },
-               	file = "include/cfg/led.h",
+                file = "include/cfg/led.h",
             },
-		},
+        },
     },
-	{
-		name = "keys",
-		brief = "Key Driver",
-		description = "Provides controlling of keys / pushbuttons and switches connected to GPIO.\n"..
-		              "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
-		              "can be used to address keys connected to this chip instead of CPU's GPIOs",
-		provides = { "DEV_KEY" },
-		sources = { "keys.c" },
-		options =
+    {
+        name = "keys",
+        brief = "Key Driver",
+        description = "Provides controlling of keys / pushbuttons and switches connected to GPIO.\n"..
+                      "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
+                      "can be used to address keys connected to this chip instead of CPU's GPIOs",
+        provides = { "DEV_KEY" },
+        sources = { "keys.c" },
+        options =
         {
             {
                 macro = "KEY_SUPPORT_IOEXP",
                 brief = "Keys on external GPIOs",
                 description = "Enable control of Keys connected to an external GPIO expanders "..
- 				               	"like PCA9555.",
+                                    "like PCA9555.",
                 type = "enumerated",
                 flavor = "boolean",
                 requires = { "DEV_IOEXP" },
-               	file = "include/cfg/pca9555.h",
+                file = "include/cfg/pca9555.h",
             },
-		},
+        },
     },
     {
         name = "nutdev_vs10xx",
@@ -2926,7 +3614,7 @@ nutdev =
                       "the previous VS1001K driver. For now add this to your "..
                       "application's Makefile. ",
         sources = { "vs10xx.c" },
-        requires = { "DEV_SPI", "HW_GPIO" },
+        requires = { "DEV_SPI", "HW_GPIOxx" },
         options =
         {
             {
@@ -2946,7 +3634,8 @@ nutdev =
                               "Currently supported on the AVR platform only.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2962,7 +3651,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2978,7 +3668,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2994,7 +3685,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -3010,7 +3702,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -3046,7 +3739,8 @@ nutdev =
                               "Currently supported on the AVR platform only.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3060,7 +3754,8 @@ nutdev =
                 brief = "Data Software SPI0",
                 description = "Use software SPI 0 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3074,7 +3769,8 @@ nutdev =
                 brief = "Data Software SPI1",
                 description = "Use software SPI 1 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3088,7 +3784,8 @@ nutdev =
                 brief = "Data Software SPI2",
                 description = "Use software SPI 2 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3102,7 +3799,8 @@ nutdev =
                 brief = "Data Software SPI3",
                 description = "Use software SPI 3 for data channel.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -3400,7 +4098,8 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3415,7 +4114,8 @@ nutdev =
                 description = "Use software SPI 0 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3430,7 +4130,8 @@ nutdev =
                 description = "Use software SPI 1 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3445,7 +4146,8 @@ nutdev =
                 description = "Use software SPI 2 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -3460,7 +4162,8 @@ nutdev =
                 description = "Use software SPI 3 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = {
+                exclusivity =
+                {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -4258,13 +4961,28 @@ nutdev =
     -- WAN Drivers.
     --
     {
+        name = "nutdev_ppp_hdlc",
+        brief = "PPP HDLC Driver",
+        requires = { "DEV_UART_GENERIC", "NUT_TIMER" },
+        provides = { "PROTO_HDLC" },
+        sources = { "ppp_hdlc.c" }
+    },
+    {
         name = "nutdev_ppp",
         brief = "PPP Driver",
         requires = { "PROTO_HDLC", "NUT_TIMER", "PROTO_HDLC" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "ppp.c" }
     },
 
+    {
+        name = "nutdev_owibus",
+        brief = "One-Wire Bus implementations",
+        description = "",
+        requires = { "HW_GPIO", "TOOL_GCC" },
+        provides = { "DEV_OWI" },
+        sources = { "owibus.c", "owibus_bbif.c", "owibus_uartif.c" },
+    },
     --
     -- Disabled components.
     --
@@ -4274,7 +4992,7 @@ nutdev =
         sources = { "spiflash.c" },
         requires = { "NOT_AVAILABLE" }
     },
-	{
+    {
         name = "nutdev_3_7SEG",
         brief = "3x7 segment driver",
         description = "3x7 segment driver with SPI",
@@ -4288,25 +5006,23 @@ nutdev =
                               "If the exact value can't be set, the driver will choose the "..
                               "next lower one. Bit banging interfaces always run at maximum speed.",
                 default = "4000000",
-               	file = "include/cfg/spi_7seg.h"
+                file = "include/cfg/spi_7seg.h"
             },
-	        {
-	            macro = "SEG7_DIGITS",
-	            brief = "Number of Digits",
-	            description = "Select Number of Digits connected to the AS110x chain.",
-	            type = "integer",
-	            default = "4",
-	           	file = "include/cfg/spi_7seg.h"
-	        },
-	        {
-	            macro = "SEG7_REVERSE",
-	            brief = "Reverse Digits",
-	            description = "Select if Digits are connected reverse ( for upside down mounting).",
-            	flavor = "boolean",
-	           	file = "include/cfg/spi_7seg.h"
-	        },
-
-
+            {
+                macro = "SEG7_DIGITS",
+                brief = "Number of Digits",
+                description = "Select Number of Digits connected to the AS110x chain.",
+                type = "integer",
+                default = "4",
+                   file = "include/cfg/spi_7seg.h"
+            },
+            {
+                macro = "SEG7_REVERSE",
+                brief = "Reverse Digits",
+                description = "Select if Digits are connected reverse ( for upside down mounting).",
+                flavor = "boolean",
+                   file = "include/cfg/spi_7seg.h"
+            },
         },
     },
 }

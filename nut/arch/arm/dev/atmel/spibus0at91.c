@@ -60,9 +60,21 @@
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS0_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS0_LO(void) { GPIO_SET_LO(SPI0_CS0_PIO_BIT); }
-static INLINE void SPI0_CS0_HI(void) { GPIO_SET_HI(SPI0_CS0_PIO_BIT); }
-static INLINE void SPI0_CS0_SO(void) { GPIO_OUTPUT(SPI0_CS0_PIO_BIT); }
+static INLINE void SPI0_CS0_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS0_PIO_BIT);
+}
+
+static INLINE void SPI0_CS0_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS0_PIO_BIT);
+}
+
+static INLINE void SPI0_CS0_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS0_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS0_PIO_BIT);
+}
 #else
 #define SPI0_CS0_LO()
 #define SPI0_CS0_HI()
@@ -75,9 +87,21 @@ static INLINE void SPI0_CS0_SO(void) { GPIO_OUTPUT(SPI0_CS0_PIO_BIT); }
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS1_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS1_LO(void) { GPIO_SET_LO(SPI0_CS1_PIO_BIT); }
-static INLINE void SPI0_CS1_HI(void) { GPIO_SET_HI(SPI0_CS1_PIO_BIT); }
-static INLINE void SPI0_CS1_SO(void) { GPIO_OUTPUT(SPI0_CS1_PIO_BIT); }
+static INLINE void SPI0_CS1_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS1_PIO_BIT);
+}
+
+static INLINE void SPI0_CS1_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS1_PIO_BIT);
+}
+
+static INLINE void SPI0_CS1_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS1_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS1_PIO_BIT);
+}
 #else
 #define SPI0_CS1_LO()
 #define SPI0_CS1_HI()
@@ -90,9 +114,21 @@ static INLINE void SPI0_CS1_SO(void) { GPIO_OUTPUT(SPI0_CS1_PIO_BIT); }
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS2_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS2_LO(void) { GPIO_SET_LO(SPI0_CS2_PIO_BIT); }
-static INLINE void SPI0_CS2_HI(void) { GPIO_SET_HI(SPI0_CS2_PIO_BIT); }
-static INLINE void SPI0_CS2_SO(void) { GPIO_OUTPUT(SPI0_CS2_PIO_BIT); }
+static INLINE void SPI0_CS2_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS2_PIO_BIT);
+}
+
+static INLINE void SPI0_CS2_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS2_PIO_BIT);
+}
+
+static INLINE void SPI0_CS2_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS2_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS2_PIO_BIT);
+}
 #else
 #define SPI0_CS2_LO()
 #define SPI0_CS2_HI()
@@ -105,9 +141,21 @@ static INLINE void SPI0_CS2_SO(void) { GPIO_OUTPUT(SPI0_CS2_PIO_BIT); }
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS3_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS3_LO(void) { GPIO_SET_LO(SPI0_CS3_PIO_BIT); }
-static INLINE void SPI0_CS3_HI(void) { GPIO_SET_HI(SPI0_CS3_PIO_BIT); }
-static INLINE void SPI0_CS3_SO(void) { GPIO_OUTPUT(SPI0_CS3_PIO_BIT); }
+static INLINE void SPI0_CS3_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS3_PIO_BIT);
+}
+
+static INLINE void SPI0_CS3_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS3_PIO_BIT);
+}
+
+static INLINE void SPI0_CS3_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS3_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS3_PIO_BIT);
+}
 #else
 #define SPI0_CS3_LO()
 #define SPI0_CS3_HI()
@@ -179,7 +227,7 @@ int At91Spi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
  * \param tmo  Timeout in milliseconds. To disable timeout, set this
  *             parameter to NUT_WAIT_INFINITE.
  *
- * \return 0 on success. In case of an error, -1 is returned and the bus 
+ * \return 0 on success. In case of an error, -1 is returned and the bus
  *         is not locked.
  */
 int At91SpiBus0Select(NUTSPINODE * node, uint32_t tmo)
@@ -245,6 +293,12 @@ int At91SpiBus0Deselect(NUTSPINODE * node)
     /* Deactivate the node's chip select. */
     At91Spi0ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
 
+#ifdef SPIBUS0_PIN_SHARING
+    /* Disable SPI peripherals if pins are shared. */
+    outr(SPI0_PIO_BASE + PIO_ODR_OFF, SPI0_PINS);
+    outr(SPI0_PIO_BASE + PIO_PER_OFF, SPI0_PINS);
+#endif
+
     /* Release the bus. */
     NutEventPost(&node->node_bus->bus_mutex);
 
@@ -279,7 +333,7 @@ void At91SpiBus0Interrupt(void *arg)
     }
 }
 
-/*! 
+/*!
  * \brief Transfer data on the SPI bus using single buffered interrupt mode.
  *
  * A device must have been selected by calling At91SpiSelect().
@@ -293,7 +347,7 @@ void At91SpiBus0Interrupt(void *arg)
  *
  * \return Always 0.
  */
-int At91SpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int At91SpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t b = 0xff;
     uintptr_t base;

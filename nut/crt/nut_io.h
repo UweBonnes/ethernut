@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -65,43 +65,43 @@
  */
 /*@{*/
 
-#define _IOUNG	    0x08    /*!< \internal Unget buffer filled. */
-#define _IOERR	    0x10    /*!< \internal Error occured. */
+#define _IOUNG      0x08    /*!< \internal Unget buffer filled. */
+#define _IOERR      0x10    /*!< \internal Error occured. */
 #define _IOEOF      0x20    /*!< \internal End of file reached. */
-#define _IOPGM	    0x40    /*!< \internal Input from program memory. */
+#define _IOPGM      0x40    /*!< \internal Input from program memory. */
 
 #ifndef BUFSIZ
-#define	BUFSIZ	    128	    /*!< \brief Default maximum size of stream buffers.
-				 Currently not used. 
-				 \showinitializer */
+#define BUFSIZ      128     /*!< \brief Default maximum size of stream buffers.
+                 Currently not used.
+                 \showinitializer */
 #endif
 
 #ifndef FOPEN_MAX
-#define	FOPEN_MAX	8   /*!< \brief Default maximum number of open streams.
-				 \showinitializer */
+#define FOPEN_MAX   8   /*!< \brief Default maximum number of open streams.
+                 \showinitializer */
 #endif
 
 #ifndef FILENAME_MAX
-#define	FILENAME_MAX	255 /*!< \brief Default maximum size of filenames. 
-				 \showinitializer */
+#define FILENAME_MAX    255 /*!< \brief Default maximum size of filenames.
+                 \showinitializer */
 #endif
 
 /*! \internal
  * \brief Stores the current status of a stream.
  */
 struct __iobuf {
-    int     iob_fd;		/*!< \internal Associated file, device or socket descriptor. */
-    uint16_t iob_mode;		/*!< \internal Access mode, see fcntl.h. */
-    uint8_t iob_flags;		/*!< \internal Status flags. */
-    int     iob_unget;		/*!< \internal Unget buffer. */
+    int     iob_fd;     /*!< \internal Associated file, device or socket descriptor. */
+    uint16_t iob_mode;      /*!< \internal Access mode, see fcntl.h. */
+    uint8_t iob_flags;      /*!< \internal Status flags. */
+    int     iob_unget;      /*!< \internal Unget buffer. */
 };
 
 /*@}*/
 
 
-extern int _fmode(CONST char *mode);
+extern int _fmode(const char *mode);
 
-extern int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list ap);
-extern int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap);
+extern int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list ap);
+extern int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap);
 
 #endif

@@ -80,7 +80,7 @@ static char *weekday_name[7] = {
 /*
  * Print content of tm structure.
  */
-static void PrintDateTime(CONST struct _tm *stm)
+static void PrintDateTime(const struct _tm *stm)
 {
     printf("%s, %04d/%02d/%02d, %02d:%02d:%02d%s"
            , weekday_name[stm->tm_wday]
@@ -376,9 +376,9 @@ int main(void)
     int cmd;
 
     /* Use UART device for stdin and stdout. */
-    NutRegisterDevice(&DEV_UART, 0, 0);
-    freopen(DEV_UART_NAME, "w", stdout);
-    freopen(DEV_UART_NAME, "r", stdin);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "r", stdin);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     printf("\n\nCalendar Time %s running on Nut/OS %s\n"
            , version, NutVersionString());
@@ -470,7 +470,7 @@ int main(void)
             break;
         case 'Y':
         case 'y':
-            /* Nut/OS uses a global variable to enable/disable DST. 
+            /* Nut/OS uses a global variable to enable/disable DST.
                Toggle the current status and display the result. */
             _daylight = _daylight == 0;
             printf("DST calculation %sabled\n", _daylight ? "en" : "dis");

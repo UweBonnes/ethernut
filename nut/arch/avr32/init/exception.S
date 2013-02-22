@@ -89,7 +89,7 @@
 
 
 #include <avr32/io.h>
-
+#include <cfg/arch/avr32pio.h>
 
 //! @{
 //! \verbatim
@@ -132,7 +132,9 @@ _handle_Bus_Error_Instruction_Fetch:
         .org  0x010
         // NMI.
 _handle_NMI:
+#ifdef INTERRUPT_NMI_ENABLE
         lda.w   pc, InterruptNMIEntry
+#endif
         rete
 
         .org  0x014

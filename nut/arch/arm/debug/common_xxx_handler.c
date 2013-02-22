@@ -3,7 +3,7 @@
  *
  * All rights reserved.
  *
- * The original code had been released as part of the LoastARM Project 
+ * The original code had been released as part of the LoastARM Project
  * under GPL Version 2 and is published here under the following license
  * with kind permission from the author:
  *
@@ -73,7 +73,7 @@ ARM_COMMON_Handler_crash( struct pt_regs *p, const char *name )
     /* We cannot depend on any hardware */
     /* the system has PANICed */
     /* We have to do this in software */
-    
+
     /* ASSUME 50mhz CPU, a 200mhz cpu is 4x faster */
     /* ASSUME goal is 20 ticks per second */
     /* ASSUME each loop = 20 instructions */

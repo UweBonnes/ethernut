@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -108,9 +108,9 @@ extern "C" {
  * \typedef ARPHDR
  * \brief ARP packet header type.
  */
-typedef struct __attribute__ ((packed)) arphdr {
-    uint16_t ar_hrd;    /*!< \brief Format of hardware address. 
-                        *   Nut/Net supports ARPHRD_ETHER only. 
+typedef struct NUT_PACKED_TYPE arphdr {
+    uint16_t ar_hrd;    /*!< \brief Format of hardware address.
+                        *   Nut/Net supports ARPHRD_ETHER only.
                         */
     uint16_t ar_pro;    /*!< \brief Format of protocol address.
                         *   Only ETHERTYPE_IP is supported by Nut/Net.

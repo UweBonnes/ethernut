@@ -339,7 +339,7 @@ static int VsWaitReady(void)
  * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST uint8_t * data, size_t len)
+static int VsSdiWrite(const uint8_t * data, size_t len)
 {
     while (len--) {
         if (!VS10XX_DREQ_TST() && VsWaitReady()) {
@@ -420,9 +420,9 @@ static uint16_t VsRegRead(ureg_t reg)
  */
 static int VsBeep(uint8_t fsin, uint8_t ms)
 {
-    static prog_char on[] = { 0x53, 0xEF, 0x6E };
-    static prog_char off[] = { 0x45, 0x78, 0x69, 0x74 };
-    static prog_char end[] = { 0x00, 0x00, 0x00, 0x00 };
+    static const char on[] PROGMEM = { 0x53, 0xEF, 0x6E };
+    static const char off[] PROGMEM = { 0x45, 0x78, 0x69, 0x74 };
+    static const char end[] PROGMEM = { 0x00, 0x00, 0x00, 0x00 };
 
     VsRegWrite(VS_MODE_REG, VS_SM_TESTS | VS_SM_SDINEW);
 
@@ -599,7 +599,7 @@ static int VsPlayerFlush(void)
  *
  * \return Number of characters sent.
  */
-static int VsWrite(NUTFILE * fp, CONST void *data, int len)
+static int VsWrite(NUTFILE * fp, const void *data, int len)
 {
     char *buf;
     size_t rbytes;
@@ -655,7 +655,7 @@ static int VsWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *VsOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *VsOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nfp;
 

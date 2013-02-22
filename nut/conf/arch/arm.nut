@@ -14,11 +14,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -490,6 +490,13 @@ nutarch_arm =
         requires = { "HW_WDOG_AT91" },
         sources = { "arm/dev/atmel/wdt_at91.c" },
     },
+    {
+        name = "nutarch_ostimer_zero",
+        brief = "System Timer (Zero)",
+        requires = { "HW_TIMER_ZERO" },
+        provides = { "NUT_OSTIMER_DEV" },
+        sources = { "arm/dev/zero/os_timer.c" },
+    },
 
     --
     -- Interrupt handling.
@@ -670,6 +677,7 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
+            "arm/dev/atmel/ih_at91sys.c",
             "arm/dev/atmel/ih_at91emac.c",
             "arm/dev/atmel/ih_at91fiq.c",
             "arm/dev/atmel/ih_at91irq0.c",
@@ -742,10 +750,13 @@ nutarch_arm =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = {"DEV_UART_SPECIFIC",
-                    "DEV_UART0_GPIO_RTS",
-                    "DEV_UART0_GPIO_CTS",
-                    "DEV_UART0_GPIO_HDX" },
+        provides =
+        {
+            "DEV_UART_SPECIFIC",
+            "DEV_UART0_GPIO_RTS",
+            "DEV_UART0_GPIO_CTS",
+            "DEV_UART0_GPIO_HDX"
+        },
         sources = { "arm/dev/atmel/usart0at91.c" },
 --        options =
 --        {
@@ -785,10 +796,13 @@ nutarch_arm =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = {"DEV_UART_SPECIFIC",
-                    "DEV_UART1_GPIO_RTS",
-                    "DEV_UART1_GPIO_CTS",
-                    "DEV_UART1_GPIO_HDX" },
+        provides =
+        {
+            "DEV_UART_SPECIFIC",
+            "DEV_UART1_GPIO_RTS",
+            "DEV_UART1_GPIO_CTS",
+            "DEV_UART1_GPIO_HDX"
+        },
         sources = { "arm/dev/atmel/usart1at91.c" },
 --        options =
 --        {
@@ -828,10 +842,13 @@ nutarch_arm =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_DBGU_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = {"DEV_UART_SPECIFIC",
-                    "DEV_UARTD_GPIO_RTS",
-                    "DEV_UARTD_GPIO_CTS",
-                    "DEV_UARTD_GPIO_HDX" },
+        provides =
+        {
+            "DEV_UART_SPECIFIC",
+            "DEV_UARTD_GPIO_RTS",
+            "DEV_UARTD_GPIO_CTS",
+            "DEV_UARTD_GPIO_HDX"
+        },
         sources = { "arm/dev/atmel/usartDat91.c" },
 --        options =
 --        {
@@ -843,6 +860,24 @@ nutarch_arm =
 --                file = "include/cfg/uart.h"
 --            },
 --        },
+    },
+    {
+        name = "nutarch_arm_usartcb_at91ctl",
+        brief = "USART Hardware Control",
+        requires = { "HW_UART_AT91" },
+        provides = { "DEV_UART_HWCTRL" },
+        sources = { "arm/dev/atmel/usart_at91ctl.c" }
+    },
+    {
+        name = "nutarch_arm_usartcb_at91npl",
+        brief = "USART NPL Support",
+        description = "Currently available for AT91R40008 CPUs only.",
+        requires = { "HW_MCU_AT91R40008", "DEV_UART_HWCTRL", "DEV_NPL", "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT" },
+        provides = { "DEV_UART_CBRXTX" },
+        sources = {
+            "arm/dev/atmel/usart_cb_at91npl.c",
+            "arm/dev/atmel/usart0cb_at91npl.c"
+        }
     },
     {
         name = "nutarch_arm_ahdlc",
@@ -872,57 +907,57 @@ nutarch_arm =
         }
     },
     {
-    	name = "nutarch_at91_chlcd",
-    	brief = "Character LCD Driver (AT91)",
-    	description = "Parallel or serial connected displays like\n"..
-    	              "HD44780, KS0066, KS0073 and others.\n",
+        name = "nutarch_at91_chlcd",
+        brief = "Character LCD Driver (AT91)",
+        description = "Parallel or serial connected displays like\n"..
+                      "HD44780, KS0066, KS0073 and others.\n",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_FILE", "DEV_WRITE" },
         sources = { "arm/dev/atmel/charlcd_at91.c" },
-    	options =
-    	{
-    		--
-    		--  Define selection of supported driver chips
-    		--
-    		{
-	    		macro = "LCD_HD44780",
-		        brief = "HD44780 Driver",
-		        description = "Tested on the EIR 1.0 with 2x16 and 4x20 character LCD.",
-		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
+        options =
+        {
+            --
+            --  Define selection of supported driver chips
+            --
+            {
+                macro = "LCD_HD44780",
+                brief = "HD44780 Driver",
+                description = "Tested on the EIR 1.0 with 2x16 and 4x20 character LCD.",
+                exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
                 flavor = "booldata",
                 provides = { "LCD_GPIO" },
                 file = "include/cfg/lcd.h",
-		    },
-    		{
-	    		macro = "LCD_KS0066",
-		        brief = "KS0066 Driver",
-		        description = "Currently not tested.",
-		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
+            },
+            {
+                macro = "LCD_KS0066",
+                brief = "KS0066 Driver",
+                description = "Currently not tested.",
+                exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
                 flavor = "booldata",
                 provides = { "LCD_GPIO" },
                 file = "include/cfg/lcd.h",
-		    },
-    		{
-	    		macro = "LCD_KS0073",
-		        brief = "KS0073 Driver",
-		        description = "Currently not tested.",
-		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
+            },
+            {
+                macro = "LCD_KS0073",
+                brief = "KS0073 Driver",
+                description = "Currently not tested.",
+                exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
                 flavor = "booldata",
                 provides = { "LCD_GPIO" },
                 file = "include/cfg/lcd.h",
-		    },
-    		{
-	    		macro = "LCD_ST7036",
-		        brief = "ST7036 Driver",
-		        description = "Serial connected display via SPI.\nCurrently not tested.",
-		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
+            },
+            {
+                macro = "LCD_ST7036",
+                brief = "ST7036 Driver",
+                description = "Serial connected display via SPI.\nCurrently not tested.",
+                exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7036" },
                 flavor = "booldata",
                 provides = { "LCD_SPI" },
                 file = "include/cfg/lcd.h",
-		    },
-    		--
-    		--  Support for timing related parameters
-    		--
+            },
+            --
+            --  Support for timing related parameters
+            --
             {
                 macro = "LCD_ROWS",
                 brief = "Rows",
@@ -972,18 +1007,18 @@ nutarch_arm =
                 flavor = "boolean",
                 file = "include/cfg/lcd.h"
             },
-    		--
-    		--  Selection of parallel interface parameters
-    		--
+            --
+            --  Selection of parallel interface parameters
+            --
             {
                 macro = "LCD_IF_8BIT",
                 brief = "8-Bit Mode",
                 description = "Select parallel bus width is 8 bit.\n"..
-                			  "Splitting single bus lines accross ports is not "..
-                			  "supported for data bit lines.\n"..
-                			  "In 8 bit mode all data lines have to be aligned "..
-                			  "in one row.\n"..
-                			  "This option is actually not supported in this driver.",
+                              "Splitting single bus lines accross ports is not "..
+                              "supported for data bit lines.\n"..
+                              "In 8 bit mode all data lines have to be aligned "..
+                              "in one row.\n"..
+                              "This option is actually not supported in this driver.",
                 requires = { "LCD_GPIO" },
                 flavor = "booldata",
                 exclusivity = { "LCD_IF_8BIT", "LCD_IF_4BIT" },
@@ -994,17 +1029,17 @@ nutarch_arm =
                 macro = "LCD_IF_4BIT",
                 brief = "Use 4-Bit Mode",
                 description = "Select parallel bus width is 4 bit."..
-                			  "Splitting single bus lines accross ports is not"..
-                			  "supported for data bit lines.",
+                              "Splitting single bus lines accross ports is not"..
+                              "supported for data bit lines.",
                 requires = { "LCD_GPIO" },
                 flavor = "booldata",
                 exclusivity = { "LCD_IF_8BIT", "LCD_IF_4BIT" },
                 provides = { "LCD_IF_4BIT" },
                 file = "include/cfg/lcd.h"
             },
-    		--
-    		--  Selection of parallel interface parameters
-    		--
+            --
+            --  Selection of parallel interface parameters
+            --
             {
                 macro = "LCD_DATA_PIO_ID",
                 brief = "Port of LCD data pins",
@@ -1100,7 +1135,7 @@ nutarch_arm =
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
-            
+
             --
             --  Selection of display control lines
             --
@@ -1145,9 +1180,9 @@ nutarch_arm =
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
-    		--
-    		--  Selection of optional display control lines
-    		--
+            --
+            --  Selection of optional display control lines
+            --
             {
                 macro = "LCD_RW_PIO_ID",
                 brief = "LCD Read/Write Select Port",
@@ -1213,8 +1248,8 @@ nutarch_arm =
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
-	    },
-	},
+        },
+    },
     {
         name = "nutarch_gba_debug",
         brief = "LCD Debug Output (GBA)",
@@ -1227,7 +1262,7 @@ nutarch_arm =
         brief = "AX88796 Driver (AT91)",
         description = "LAN driver for Asix 88796. AT91 only.",
         requires = { "HW_MCU_AT91R40008", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "arm/dev/ax88796.c" },
     },
     {
@@ -1235,7 +1270,7 @@ nutarch_arm =
         brief = "DM9000E Driver (AT91)",
         description = "LAN driver for Davicom DM9000E. AT91 only.",
         requires = { "HW_EBI_AT91", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "arm/dev/dm9000e.c" },
         options =
         {
@@ -1263,7 +1298,7 @@ nutarch_arm =
         brief = "AT91 EMAC Driver",
         description = "LAN driver for AT91SAM7X and AT91SAM9260 and AT91SAM9G45.",
         requires = { "HW_EMAC_AT91", "NUT_EVENT", "NUT_TIMER" },
-        provides = { "NET_PHY" },
+        provides = { "NET_MAC" },
         sources = { "arm/dev/atmel/at91_emac.c" },
         options =
         {
@@ -1337,6 +1372,26 @@ nutarch_arm =
         requires = { "HW_TWI_AT91" },
         provides = { "DEV_TWI" },
         sources = { "arm/dev/atmel/at91_twi.c" },
+        options =
+        {
+            {
+                macro = "I2C_DEFAULT_SPEED",
+                brief = "Default Speed",
+                description = "Default speed for this bus. Different speeds can be set by software.\n",
+                default = "100",
+                type = "enumerated",
+                choices = { "", "75", "100", "400" },
+                file = "include/cfg/twi.h"
+            },
+        },
+    },
+    {
+        name = "nutarch_arm_i2cbus_at91",
+        brief = "AT91 I2C Bus Controller",
+        description = "Early version of the AT91 hardware based I2C bus controller.",
+        requires = { "HW_TWI_AT91" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources = { "arm/dev/atmel/i2cbus_at91.c" },
     },
     {
         name = "nutarch_arm_adc_at91",
@@ -1361,6 +1416,24 @@ nutarch_arm =
         requires = { "HW_MCI_AT91" },
         provides = { "DEV_BLOCK" },
         sources = { "arm/dev/atmel/at91_mci.c" },
+        options =
+        {
+            {
+                macro = "MCI0_PIN_SHARING",
+                brief = "Share Pins",
+                description = "If enabled, the controller will release the peripheral pins when the MCI "..
+                      "is not used and the pins may be used for other purposes.",
+                flavor = "boolean",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "MCI_SLOTA",
+                brief = "Use Slot A",
+                description = "If enabled, MCI slot A will be used. Otherwise the driver will use slot B.",
+                flavor = "boolean",
+                file = "include/cfg/mmci.h"
+            },
+    },
     },
 
     --
@@ -1386,11 +1459,12 @@ nutarch_arm =
         brief = "AT91 GPIO",
         description = "Generic port I/O API.",
         requires = { "HW_MCU_AT91" },
-        sources = {
-          "arm/dev/atmel/gpio_at91.c" ,
-          "arm/dev/atmel/gpioa_at91.c",
-          "arm/dev/atmel/gpiob_at91.c",
-          "arm/dev/atmel/gpioc_at91.c"
+        sources =
+        {
+            "arm/dev/atmel/gpio_at91.c" ,
+            "arm/dev/atmel/gpioa_at91.c",
+            "arm/dev/atmel/gpiob_at91.c",
+            "arm/dev/atmel/gpioc_at91.c"
         },
     },
     {
@@ -1423,7 +1497,7 @@ nutarch_arm =
                 brief = "PDC Mode (First Controller)",
                 description = "If enabled, the controller will use PDC mode.\n\n"..
                               "Under development. Works fine on SAM7X",
-		provides = { "SPIBUS0_DOUBLE_BUFFER" },
+        provides = { "SPIBUS0_DOUBLE_BUFFER" },
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
@@ -1431,12 +1505,20 @@ nutarch_arm =
                 macro = "SPIBUS0_DOUBLE_BUFFER_HEURISTIC",
                 brief = "Heuristicaly use polling mode for short transfers instead of PDC",
                 description = "If enabled, the controller will use the polling mode instead of PDC mode for short "..
-                              "transfers (currently less that 4 byte), as setup of PDC might result in larger overhead. ".. 
+                              "transfers (currently less that 4 byte), as setup of PDC might result in larger overhead. "..
                               "Depends on the selected SPI clock\n\n",
-		requires = { "SPIBUS0_DOUBLE_BUFFER" },
+        requires = { "SPIBUS0_DOUBLE_BUFFER" },
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
-            },	
+            },
+            {
+                macro = "SPIBUS0_PIN_SHARING",
+                brief = "Share Pins (First Controller)",
+                description = "If enabled, the controller will release the peripheral pins when releasing "..
+                      "the bus. This way the pins may be used for other purposes when SPI is inactive.",
+                flavor = "boolean",
+                file = "include/cfg/arch/armpio.h"
+            },
             {
                 macro = "SPI0_CS0_PIO_ID",
                 brief = "CS0 Port ID (First Controller)",
@@ -1518,7 +1600,7 @@ nutarch_arm =
                 brief = "PDC Mode (Second Controller)",
                 description = "If enabled, the controller will use PDC mode.\n\n"..
                               "Under development. Works fine on SAM7X",
-		provides = { "SPIBUS1_DOUBLE_BUFFER" },
+        provides = { "SPIBUS1_DOUBLE_BUFFER" },
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
@@ -1526,12 +1608,12 @@ nutarch_arm =
                 macro = "SPIBUS1_DOUBLE_BUFFER_HEURISTIC",
                 brief = "Heuristicaly use polling mode for short transfers instead of PDC",
                 description = "If enabled, the controller will use the polling mode instead of PDC mode for short "..
-                              "transfers (currently less that 4 byte), as setup of PDC might result in larger overhead. ".. 
+                              "transfers (currently less that 4 byte), as setup of PDC might result in larger overhead. "..
                               "Depends on the selected SPI clock\n\n",
-		requires = { "SPIBUS1_DOUBLE_BUFFER" },
+        requires = { "SPIBUS1_DOUBLE_BUFFER" },
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
-            },	
+            },
             {
                 macro = "SPI1_CS0_PIO_ID",
                 brief = "CS0 Port ID (Second Controller)",
@@ -1603,6 +1685,20 @@ nutarch_arm =
         },
     },
     {
+        name = "nutarch_arm_spibus_at91ssc",
+        brief = "AT91SSC SPI Bus Controller",
+        description = "This early release had been tested on the AT91SAM7SE only. "..
+                      "The driver uses the SSC hardware to implement an SPI bus driver. "..
+                      "Only polling mode and SPI mode 3 are available.",
+        requires = { "HW_SSC_AT91" },
+        provides = { "SPIBUS_CONTROLLER" },
+        sources =
+        {
+            "arm/dev/atmel/spibus_at91ssc.c",
+            "arm/dev/atmel/spibus0at91ssc.c"
+        }
+    },
+    {
         name = "nutarch__arm_at91spi",
         brief = "AT91 SPI Support",
         description = "Preliminary SPI routines.",
@@ -1622,6 +1718,14 @@ nutarch_arm =
         requires = { "HW_EXT_CALYPSO" },
         provides = { "HW_AUDIO_DAC" },
         sources = { "arm/dev/tlv320dac.c" },
+    },
+    {
+        name = "nutarch_zero_debug",
+        brief = "UART Debug Output (Zero)",
+        description = "Polling UART driver sample for imaginary Zero CPU.",
+        requires = { "HW_UART_ZERO" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "arm/dev/zero/dev_debug.c" }
     },
 }
 

@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -36,40 +36,7 @@
  * \brief Two wire serial transfer complete interrupt.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.3  2008/08/11 06:59:16  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2006/10/08 16:48:07  haraldkipp
- * Documentation fixed
- *
- * Revision 1.1  2006/02/08 15:14:21  haraldkipp
- * Using the vector number as a file name wasn't a good idea.
- * Moved from ivect*.c
- *
- * Revision 1.3  2006/01/25 09:38:51  haraldkipp
- * Applied Thiago A. Correa's patch to fix ICC warnings.
- *
- * Revision 1.2  2005/10/24 09:35:48  haraldkipp
- * New interrupt control function added to allow future platform
- * independant drivers.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2005/02/10 07:06:18  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.2  2004/01/30 17:02:20  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:45  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:07  harald
- * Prepare release 3.1
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -80,7 +47,7 @@
  */
 /*@{*/
 
-#if defined(SIG_2WIRE_SERIAL) || defined(iv_TWI)
+#if defined(TWI_vect) || defined(iv_TWI)
 
 static int AvrTwiIrqCtl(int cmd, void *param);
 
@@ -113,7 +80,6 @@ static int AvrTwiIrqCtl(int cmd, void *param)
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
     int_fast8_t enabled = bit_is_set(TWCR, TWIE);
-    uint8_t bval;
 
     /* Disable interrupt. */
     cbi(TWCR, TWIE);
@@ -124,7 +90,7 @@ static int AvrTwiIrqCtl(int cmd, void *param)
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
         if (bit_is_set(SPSR, SPIF)) {
-            bval = inb(SPDR);
+            inb(SPDR);
         }
         break;
     case NUT_IRQCTL_STATUS:
@@ -164,12 +130,12 @@ static int AvrTwiIrqCtl(int cmd, void *param)
     return rc;
 }
 
-/*! \fn SIG_2WIRE_SERIAL(void)
+/*! \fn TWI_vect(void)
  * \brief Two-wire serial interface interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_2WIRE_SERIAL:iv_TWI
+#pragma interrupt_handler TWI_vect:iv_TWI
 #endif
-NUTSIGNAL(SIG_2WIRE_SERIAL, sig_2WIRE_SERIAL)
+NUTSIGNAL(TWI_vect, sig_2WIRE_SERIAL)
 #endif
 /*@}*/

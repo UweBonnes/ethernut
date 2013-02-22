@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2001-2010 by egnite Software GmbH
  *
  * All rights reserved.
@@ -32,10 +32,11 @@
  * For additional information see http://www.ethernut.de/
  */
 
-
-/*
- * $Log: context.c,v $
+/*!
+ * \file arch/avr32/os/context.c
+ * \brief Context switching ported to AVR32.
  *
+ * \verbatim File version $Id$ \endverbatim
  */
 
 #include <cfg/os.h>
@@ -49,7 +50,9 @@
 #include <avr32/io.h>
 
 /*!
- * \addtogroup xgNutAvr32OsContext
+ * \addtogroup xgNutAvr32OsContext Context Switching for AVR32 CPUs
+ * \ingroup xgNutArchAvr32
+ * \brief Thread context switching for avr-gcc.
  */
 /*@{*/
 
@@ -87,7 +90,7 @@ typedef struct {
 /*!
  * \brief Enter a new thread.
  */
-static void NutThreadEntry(void) __attribute__ ((naked));
+static void NutThreadEntry(void) NUT_NAKED_FUNC;
 void NutThreadEntry(void)
 {
     /* Load argument in r12 and jump to thread entry. */
@@ -95,7 +98,6 @@ void NutThreadEntry(void)
                       "mov    pc,lr\n\t"        /* then pc recieve lr */
                       :::"r12", "lr", "pc");
 }
-
 
 /*!
  * \brief Switch to another thread.
@@ -108,7 +110,9 @@ void NutThreadEntry(void)
  * \note CPU interrupts must be disabled before calling this function.
  *
  */
-void NutThreadSwitch(void) __attribute__ ((naked));
+
+
+void NutThreadSwitch(void) NUT_NAKED_FUNC;
 void NutThreadSwitch(void)
 {
     /* Save CPU context. */
@@ -137,7 +141,6 @@ void NutThreadSwitch(void)
     critical_nesting_level = 0;
 #endif
 }
-
 /*!
  * \brief Create a new thread.
  *
@@ -158,6 +161,7 @@ void NutThreadSwitch(void)
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
  *         error.
  */
+
 HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     uint8_t *threadMem;
@@ -200,7 +204,7 @@ HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackS
     ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));
 
-    /* 
+    /*
      * Set predefined values at the stack bottom. May be used to detect
      * stack overflows.
      */
@@ -231,7 +235,7 @@ HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackS
     sf->csf_cpsr = (AVR32_SR_M_SUP << AVR32_SR_M_OFFSET);       /* [M2:M0]=001 - Supervisor Mode I1M=0 I0M=0, GM=0 */
 
     /*
-     * Initialize the thread info structure and insert it into the 
+     * Initialize the thread info structure and insert it into the
      * thread list and the run queue.
      */
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
@@ -249,7 +253,7 @@ HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackS
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
 
     /*
-     * If no thread is running, then this is the first thread ever 
+     * If no thread is running, then this is the first thread ever
      * created. In Nut/OS, the idle thread is created first.
      */
     if (runningThread == 0) {
@@ -267,7 +271,7 @@ HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackS
     }
 
     /*
-     * If current context is not in front of the run queue (highest 
+     * If current context is not in front of the run queue (highest
      * priority), then switch to the thread in front.
      */
     if (runningThread != runQueue) {

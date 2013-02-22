@@ -49,24 +49,24 @@
 /*!
  * \brief Register and initialize an SPI device attached to a specified bus.
  *
- * Calls the bus controller initialization and, if successful, initializes 
+ * Calls the bus controller initialization and, if successful, initializes
  * the SPI device and adds it to the system device list.
  *
- * Applications should call this function during initialization for each 
+ * Applications should call this function during initialization for each
  * SPI device they intend to use.
  *
- * \param dev Pointer to the \ref NUTDEVICE structure, which is provided 
+ * \param dev Pointer to the \ref NUTDEVICE structure, which is provided
  *            by the device driver.
- * \param bus Pointer to the \ref NUTSPIBUS structure, which is provided 
+ * \param bus Pointer to the \ref NUTSPIBUS structure, which is provided
  *            by the bus controller driver.
- * \param cs  Zero based chip select number for this device. Must be set 
- *            to 0, if only one device is attached to the bus and no chip 
+ * \param cs  Zero based chip select number for this device. Must be set
+ *            to 0, if only one device is attached to the bus and no chip
  *            select line is provided.
  *
- * \return 0 if the device has been registered for the first time and 
- *         the initialization was successful. The function returns -1, 
- *         if any device with the same name had been registered previously, 
- *         if the \ref NUTDEVICE structure or the chip select is invalid or 
+ * \return 0 if the device has been registered for the first time and
+ *         the initialization was successful. The function returns -1,
+ *         if any device with the same name had been registered previously,
+ *         if the \ref NUTDEVICE structure or the chip select is invalid or
  *         if the device or bus controller initialization failed.
  */
 int NutRegisterSpiDevice(NUTDEVICE * dev, NUTSPIBUS * bus, int cs)
@@ -96,7 +96,7 @@ int NutRegisterSpiDevice(NUTDEVICE * dev, NUTSPIBUS * bus, int cs)
     return rc;
 }
 
-/*! 
+/*!
  * \brief Wait until all SPI bus transfers are done.
  *
  * This dummy function is used by SPI device drivers, which do not
@@ -113,11 +113,11 @@ int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo)
     return 0;
 }
 
-/*! 
+/*!
  * \brief Set SPI mode of a specified bus device.
  *
- * The new mode will be used during the next transfer. If its value is 
- * SPI_CURRENT_MODE, then the mode is not updated. This can be used 
+ * The new mode will be used during the next transfer. If its value is
+ * SPI_CURRENT_MODE, then the mode is not updated. This can be used
  * to query the current mode.
  *
  * Otherwise this parameter may be the or'ed combination of the
@@ -125,7 +125,7 @@ int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo)
  *
  * - SPI_MODE_CPHA: Data updated on leading edge.
  * - SPI_MODE_CPOL: Idle clock is high.
- * - SPI_MODE_FAULT: Enables mode fault detection. 
+ * - SPI_MODE_FAULT: Enables mode fault detection.
  * - SPI_MODE_LOOPBACK: Loopback mode.
  * - SPI_MODE_SLAVE: Slave mode.
  * - SPI_MODE_CSKEEP: Chip select remains active after transfer.
@@ -134,7 +134,7 @@ int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo)
  *
  * Be aware, that SPI drivers may have implemented a subset only.
  *
- * Instead of SPI_MODE_CPHA and SPI_MODE_CPOL one of the following 
+ * Instead of SPI_MODE_CPHA and SPI_MODE_CPOL one of the following
  * mode numbers may be used:
  *
  * - SPI_MODE_0: Idle clock is low and data is captured on the rising edge.

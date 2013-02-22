@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -36,7 +36,7 @@
  * Low level MMC hardware routines for the programmable logic provided
  * on the Ethernut 3 reference design.
  *
- * These routines support SPI mode only and are required by the basic MMC 
+ * These routines support SPI mode only and are required by the basic MMC
  * driver.
  *
  * \verbatim
@@ -103,6 +103,7 @@
 typedef struct _MMCDCB {
     int dcb_avail;              /*!< Card is available. */
     int dcb_changed;            /*!< Card has changed. */
+    int dcb_addr_mode;          /*!< Card addressing mode (byte / block) */
 } MMCDCB;
 
 static MMCDCB mmc0_dcb;
@@ -214,6 +215,27 @@ int NplMmCard0WrProt(void)
 }
 
 /*!
+ * \brief set addressing mode
+ *
+ */
+int NplMmCard0SetAdrMode(int mode)
+{
+    mmc0_dcb.dcb_addr_mode = mode;
+
+    return(0);
+}
+
+/*!
+ * \brief get addressing mode
+ *
+ */
+int NplMmCard0GetAdrMode(void)
+{
+    return (mmc0_dcb.dcb_addr_mode);
+}
+
+
+/*!
  * \brief Card insertion interrupt routine.
  *
  * \todo A different routine is required to support multiple cards.
@@ -245,11 +267,11 @@ static void NplMmCard0RemIrq(void *arg)
 /*!
  * \brief Initialize MMC hardware interface.
  *
- * This function is automatically executed during during device 
+ * This function is automatically executed during during device
  * registration via NutRegisterDevice().
  *
  * \todo This routine needs some update to support multiple cards.
- * 
+ *
  * \todo PLL clock changes should be based on NPL version.
  *
  * \param dev Identifies the device to initialize.
@@ -271,10 +293,10 @@ static int NplMmcIfcInit(NUTDEVICE * dev)
         val = Cy2239xPllGetFreq((int)val, 7);
         /* Calculate the required divider value. */
         val = (val + NPL_MMC_CLOCK - 10) / NPL_MMC_CLOCK;
-        /* 
+        /*
          * Not sure about the Cy-routines. The DIVSEL bit specifies which
          * divider is used, which is indirectly connected to S2, which is
-         * high by default. For now set both dividers. 
+         * high by default. For now set both dividers.
          */
         if (Cy2239xSetDivider(NUT_PLL_NPLCLK1, 1, (int)val)) {
             return -1;
@@ -303,19 +325,21 @@ static MMCIFC mmc0_ifc = {
     NplMmCard0Io,               /*!< mmcifc_io */
     NplMmCard0Select,           /*!< mmcifc_cs */
     NplMmCard0Avail,            /*!< mmcifc_cd */
-    NplMmCard0WrProt            /*!< mmcifc_wp */
+    NplMmCard0WrProt,           /*!< mmcifc_wp */
+    NplMmCard0SetAdrMode,       /*!< mmcifc_sm */
+    NplMmCard0GetAdrMode        /*!< mmcifc_gm */
 };
 
 /*!
  * \brief Multimedia card device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
- * to bind this driver to the Nut/OS kernel. An application may then 
+ * A pointer to this structure must be passed to NutRegisterDevice()
+ * to bind this driver to the Nut/OS kernel. An application may then
  * call
  * /verbatim
  * _open("MMC0:", _O_RDWR | _O_BINARY);
  * /endverbatim
- * to mount the first active primary partition with any previously 
+ * to mount the first active primary partition with any previously
  * registered file system driver (typically devPhat0).
  */
 NUTDEVICE devNplMmc0 = {

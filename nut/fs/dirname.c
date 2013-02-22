@@ -59,18 +59,18 @@
  *
  * \param path Pointer to the pathname.
  *
- * \return A pointer to the parent directory of the pathname. Any 
+ * \return A pointer to the parent directory of the pathname. Any
  *         trailing slash is not counted as part of the directory
- *         name. If the specified pathname is a null pointer, an 
+ *         name. If the specified pathname is a null pointer, an
  *         empty string, or contains no slash character, then a
  *         single dot is returned. On failures, a NULL pointer
- *         is returned and the global variable errno is set to 
+ *         is returned and the global variable errno is set to
  *         indicate the error.
  */
-char *dirname(CONST char *path)
+char *dirname(const char *path)
 {
     static char *bname;
-    CONST char *endp;
+    const char *endp;
 
     if (bname == NULL) {
         bname = (char *) malloc(MAXPATHLEN);

@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,47 +33,12 @@
  */
 
 /*!
- * \file dev/adc.c
+ * \file arch/avr/dev/adc.c
  * \brief AVR adc driver
- */
-
-
-/*
- * $Log$
- * Revision 1.8  2008/08/11 06:59:14  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
  *
- * Revision 1.7  2006/01/25 12:51:40  freckle
- * added explicit off mode
- *
- * Revision 1.6  2006/01/11 16:34:44  freckle
- * ADCInit can be called multiple times (makes life easier)
- *
- * Revision 1.5  2005/10/24 17:59:55  haraldkipp
- * Fixes for ATmega103
- *
- * Revision 1.4  2005/08/25 16:23:42  olereinhardt
- * Removed compute intensive % and replaced by an &
- *
- * Revision 1.3  2005/08/19 21:52:43  freckle
- * use 8-bit buffer pointers, removed critical section from ADCRead
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
- * Moved from dev.
- *
- * Revision 1.3  2005/06/13 12:00:09  olereinhardt
- * Removed unnecessary NutExitCritical
- *
- * Revision 1.2  2005/03/04 11:42:05  olereinhardt
- * Added function void ADCStartLowNoiseConversion(void)
- * This function enters sleep mode!!! Be shure to read the AVR datasheet before using this function
- *
- * Revision 1.1  2004/08/02 10:05:25  olereinhardt
- * First checkin. ADC driver for ATMega128 / GCC
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 
@@ -179,7 +144,11 @@ static void ADCInterrupt(void *arg)
 {
     uint16_t ADC_value;
 
+#ifdef ADC
+    ADC_value = inw(ADC);
+#else
     ADC_value = inw(ADCW);
+#endif
 
     if (ADCBufWrite(ADC_buffer, &ADC_value) != 0) {
         // Send error message
@@ -245,9 +214,9 @@ void ADCSetMode(adc_mode_t mode)
         cbi(ADCSR, ADFR);
         break;
     case ADC_OFF:
-    		break;
+            break;
     }
-  	current_mode = mode;
+    current_mode = mode;
 }
 
 uint8_t ADCSetPrescale(uint8_t prescalar)
@@ -340,7 +309,7 @@ void ADCStartLowNoiseConversion()
     }
 #else
     sbi(ADCSR, ADSC);
-#endif    
+#endif
 }
 
 void ADCStopConversion()
@@ -349,7 +318,7 @@ void ADCStopConversion()
         // Send warning message
         return;
     }
-// Terminate and restart the ADC 
+// Terminate and restart the ADC
 // When restarted, start_conversion needs to be
 // called again
     cbi(ADCSR, ADEN);

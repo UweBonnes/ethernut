@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -78,12 +78,12 @@ static uint32_t epo_offs;
 /*!
  * \brief Get the system time.
  *
- * The \b time function returns the number of seconds elapsed since midnight (00:00:00), January 1, 1970, 
- * coordinated universal time (UTC), according to the system clock. The return value is stored in the location 
+ * The \b time function returns the number of seconds elapsed since midnight (00:00:00), January 1, 1970,
+ * coordinated universal time (UTC), according to the system clock. The return value is stored in the location
  * given by \e timer. This parameter may be \b NULL, in which case the return value is not stored.
  *
- * \param timer Pointer to the storage location for time. 
- * \return Return the time in elapsed seconds. There is no error return. 
+ * \param timer Pointer to the storage location for time.
+ * \return Return the time in elapsed seconds. There is no error return.
  *
  */
 time_t time(time_t * timer)

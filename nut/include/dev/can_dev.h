@@ -18,11 +18,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -36,34 +36,16 @@
  */
 
 /*!
+ * \verbatim
+ * $Id$
+ * \endverbatim
+ */
+
+/*!
  * \file dev/can_dev.h
  * \brief Headers for can driver interface
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 06:59:59  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.6  2007/09/08 03:01:11  hwmaier
- * Changes to support RX time-out, CAN_SetRxTimeout() added.
- *
- * Revision 1.5  2005/10/07 21:44:22  hwmaier
- * CAN_SetSpeed function added. Baudrates moved here.
- *
- * Revision 1.4  2004/08/25 15:48:21  olereinhardt
- * Added function to set an acceptance filter
- *
- * Revision 1.3  2004/08/02 09:59:53  olereinhardt
- * changed typing of CAN_TryRxFrame
- *
- * Revision 1.2  2004/06/23 10:15:35  olereinhardt
- * Added function for buffer monitoring (avail / free)
- *
- * Revision 1.1  2004/06/07 15:13:48  olereinhardt
- * Initial checkin
- *
- */
 
 #include <sys/types.h>
 #include <sys/device.h>
@@ -118,11 +100,11 @@ typedef struct _CANFRAME CANFRAME;
 struct _CANINFO {
     HANDLE volatile can_rx_rdy;     /*!< Receiver event queue. */
     HANDLE volatile can_tx_rdy;     /*!< Transmitter event queue. */
-    uint32_t can_rx_frames;           /*!< Number of packets received. */
-    uint32_t can_tx_frames;           /*!< Number of packets sent. */
-    uint32_t can_interrupts;          /*!< Number of interrupts. */
-    uint32_t can_overruns;            /*!< Number of packet overruns. */
-    uint32_t can_errors;              /*!< Number of frame errors. */
+    uint32_t can_rx_frames;         /*!< Number of packets received. */
+    uint32_t can_tx_frames;         /*!< Number of packets sent. */
+    uint32_t can_interrupts;        /*!< Number of interrupts. */
+    uint32_t can_overruns;          /*!< Number of packet overruns. */
+    uint32_t can_errors;            /*!< Number of frame errors. */
 };
 
 /*!
@@ -158,16 +140,16 @@ struct ifcan {
 typedef struct ifcan IFCAN;
 
 uint8_t CAN_SetSpeed(NUTDEVICE *dev, uint32_t baudrate);
-void   CAN_SetFilter(NUTDEVICE *dev, uint8_t *ac, uint8_t *am);
+void    CAN_SetFilter(NUTDEVICE *dev, uint8_t *ac, uint8_t *am);
 
-void   CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame);
+void    CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame);
 uint8_t CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame);
 uint8_t CAN_TxFree(NUTDEVICE *dev);
 
 uint8_t CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame);
 uint8_t CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame);
 uint8_t CAN_RxAvail(NUTDEVICE *dev);
-void   CAN_SetRxTimeout(NUTDEVICE *dev, uint32_t timeout);
+void    CAN_SetRxTimeout(NUTDEVICE *dev, uint32_t timeout);
 
 /*@}*/
 

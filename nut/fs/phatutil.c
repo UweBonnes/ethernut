@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -124,7 +124,7 @@ void GetDosTimeStamp(uint16_t * dostim, uint16_t * dosdat)
  * \return 0 on success, 1 if the name contains wildcards or
  *         -1 if the name is malformed.
  */
-int MakePhatName(CONST char *src, uint8_t * dst)
+int MakePhatName(const char *src, uint8_t * dst)
 {
     int rc = 0;
     int i;
@@ -209,7 +209,7 @@ int MakePhatName(CONST char *src, uint8_t * dst)
  * \return 0 on success, 1 if the name contains wildcards or
  *         -1 if the name is malformed.
  */
-void MakeVisibleName(CONST uint8_t * src, char *dst)
+void MakeVisibleName(const uint8_t * src, char *dst)
 {
     int i;
 
@@ -246,7 +246,7 @@ void MakeVisibleName(CONST uint8_t * src, char *dst)
  *         or NULL in case of an error. The allocated buffer must be
  *         released by the caller.
  */
-char *GetParentPath(CONST char *path, CONST char **comp)
+char *GetParentPath(const char *path, const char **comp)
 {
     char *parent;
     int len;

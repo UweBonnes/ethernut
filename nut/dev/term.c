@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -85,9 +85,9 @@
 
 /*@{*/
 
-static prog_char termid[] = "Term 1.0";
+static const char termid[] = "Term 1.0";
 
-static void TermRefreshLineEnd(CONST TERMDCB * dcb, uint8_t row, uint8_t col)
+static void TermRefreshLineEnd(const TERMDCB * dcb, uint8_t row, uint8_t col)
 {
     uint8_t i = col;
     uint8_t *cp = dcb->dcb_smem + row * dcb->dcb_vcols + col;
@@ -269,11 +269,11 @@ static void TermInsertSpace(TERMDCB * dcb)
  */
 static void TermIdentify(TERMDCB * dcb)
 {
-    PGM_P pcp = termid;
+    const char *pcp = termid;
 
     TermClear(dcb);
-    while (PRG_RDB(pcp)) {
-        (*dcb->dss_write) (PRG_RDB(pcp));
+    while (*pcp) {
+        (*dcb->dss_write) (*pcp);
         pcp++;
     }
 }
@@ -378,7 +378,7 @@ int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
         else
             *(uint32_t *)conf = 0;
         break;
-        
+
     case TIOCGWINSZ:
         win_size = (WINSIZE *)conf;
         win_size->ws_col    = dcb->dcb_nrows;
@@ -442,10 +442,10 @@ int TermInit(NUTDEVICE * dev)
  * \return The number of bytes written.
  *
  */
-static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+static int TermPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc;
-    CONST uint8_t *cp;
+    const uint8_t *cp;
     uint8_t ch;
     TERMDCB *dcb = dev->dev_dcb;
 
@@ -608,12 +608,12 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
                 case 'o':
                     TermEraseLineStart(dcb);
                     break;
-                    
+
                 case 'i':
                     dcb->dcb_modeflags |= LCD_MF_INVERTED;
                     (*dcb->dss_cursor_mode) (3);
                     break;
-                    
+
                 case 'n':
                     dcb->dcb_modeflags &= ~LCD_MF_INVERTED;
                     (*dcb->dss_cursor_mode) (2);
@@ -724,7 +724,7 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *      mode has been enabled. Applications should use _ioctl()
  *      functions to switch modes.
  */
-int TermWrite(NUTFILE * fp, CONST void *buffer, int len)
+int TermWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return TermPut(fp->nf_dev, buffer, len, 0);
 }
@@ -746,7 +746,7 @@ int TermWrite(NUTFILE * fp, CONST void *buffer, int len)
 #ifdef __HARVARD_ARCH__
 int TermWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return TermPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return TermPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 #endif
 
@@ -767,7 +767,7 @@ int TermWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  *
  * \return Pointer to a NUTFILE structure or –1 to indicate an error.
  */
-NUTFILE *TermOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *TermOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     TERMDCB *dcb = dev->dev_dcb;
     NUTFILE *fp = malloc(sizeof(NUTFILE));

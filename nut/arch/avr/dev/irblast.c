@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -29,22 +29,42 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.4  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+/*!
+ * \file arch/avr/dev/irblast.c
+ * \brief AVR IR transmitter support.
  *
- * Revision 1.3  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+ * This driver sends infrared codes. The hardware pwm feature is used thus output
+ * is generated on dedicated pin PB7.
+ * Frequency and codes are given in timer OCR value form. For user convenience
+ * two helpers are provided, carrier frequency can be given in kHz form (30-50)
+ * and code itself is given in carrier frequency periods (1-1000).
+ * In short 38 stands for 38kHz, period 100 stands for 100 * (1/38000) = 2.6ms,
+ * period 200 stands for 200 * (1/38000) = 5.2ms etc.
  *
- * Revision 1.2  2007/08/17 11:16:29  haraldkipp
- * Flush timeout fixed. Thanks to Przemek.
+ * Example:
+ * 1. Driver Init:
+ * FILE * irblast_hdl  = 0;
+ * NutRegisterDevice(&devIrblast0, 0, 0);
+ * irblast_hdl = fopen("irblast0", "w");
  *
- * Revision 1.1  2007/05/24 07:42:42  haraldkipp
- * New driver from Przemyslaw Rudy sends modulated infrared remote control
- * codes using a simple IR LED. Cool.
+ * 2. Code Trnasmit:
+ * #define CODE_LENGTH 4
+ * const uint16_t freqCode[CODE_LENGTH] PROGMEM = {100, 200, 200, 200};
+ * uint16_t ocrCode[CODE_LENGTH];
+ * uint32_t speed;
  *
+ * speed = (uint32_t)IrblastFreq2Ocr(38);
+ * _ioctl(_fileno(irblast_hdl), IRBLAST_SETFREQ, &speed);
+ * memcpy_P(ocrCode, freqCode, CODE_LENGTH<<1);
+ * if(PwmPeriod2Ocr((u_char)38, CODE_LENGTH, ocrCode) == CODE_LENGTH)
+ * {
+ *    fwrite((uint16_t *)ocrCode, sizeof(uint16_t), CODE_LENGTH, irblast_hdl);
+ *    fflush(irblast_hdl);
+ * }
+ *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <compiler.h>
@@ -57,36 +77,6 @@
 #include <arch/timer.h>
 #include <dev/irblast.h>
 
-/* This driver sends infrared codes. The hardware pwm feature is used thus output
- * is generated on dedicated pin PB7.
- * Frequency and codes are given in timer OCR value form. For user convenience
- * two helpers are provided, carrier frequency can be given in kHz form (30-50)
- * and code itself is given in carrier frequency periods (1-1000).
- * In short 38 stands for 38kHz, period 100 stands for 100 * (1/38000) = 2.6ms,
- * period 200 stands for 200 * (1/38000) = 5.2ms etc.
- *
- * Example:
- * 1. Driver Init:
- * FILE * irblast_hdl  = 0; 
- * NutRegisterDevice(&devIrblast0, 0, 0);
- * irblast_hdl = fopen("irblast0", "w");
- *
- * 2. Code Trnasmit:
- * #define CODE_LENGTH 4
- * const uint16_t freqCode[CODE_LENGTH] PROGMEM = {100, 200, 200, 200};
- * uint16_t ocrCode[CODE_LENGTH];
- * uint32_t speed;
- * 
- * speed = (uint32_t)IrblastFreq2Ocr(38);
- * _ioctl(_fileno(irblast_hdl), IRBLAST_SETFREQ, &speed);
- * memcpy_P(ocrCode, freqCode, CODE_LENGTH<<1);
- * if(PwmPeriod2Ocr((u_char)38, CODE_LENGTH, ocrCode) == CODE_LENGTH)
- * {
- *    fwrite((uint16_t *)ocrCode, sizeof(uint16_t), CODE_LENGTH, irblast_hdl);
- *    fflush(irblast_hdl);
- * }
- *
- */
 
 typedef struct _IRBLASTDCB IRBLASTDCB;
 struct _IRBLASTDCB {
@@ -102,7 +92,7 @@ struct _IRBLASTDCB {
     /* Set if transmitter running */
     volatile uint8_t if_tx_act;
     /* Output buffer */
-    uint16_t if_tx_buf[256];     // 256*2 = 512 bytes...   
+    uint16_t if_tx_buf[256];     // 256*2 = 512 bytes...
 };
 
 static IRBLASTDCB dcb_pwm0;
@@ -295,11 +285,11 @@ static int IrblastFlush(NUTDEVICE * dev)
  *
  * \return number of bytes sent.
  */
-static int IrblastPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
+static int IrblastPut(NUTDEVICE * dev, const void *buffer, int len, int pflg)
 {
     int rc = 0;
     IRBLASTDCB *dcb = dev->dev_dcb;
-    CONST uint16_t *cp;
+    const uint16_t *cp;
     uint16_t ch;
 
     /* Call without data pointer starts transmission */
@@ -339,7 +329,7 @@ static int IrblastPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *
  * \return number of bytes sent.
  */
-static int IrblastWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int IrblastWrite(NUTFILE * fp, const void *buffer, int len)
 {
     return IrblastPut(fp->nf_dev, buffer, len, 0);
 }
@@ -355,7 +345,7 @@ static int IrblastWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 static int IrblastWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return IrblastPut(fp->nf_dev, (CONST char *) buffer, len, 1);
+    return IrblastPut(fp->nf_dev, (const char *) buffer, len, 1);
 }
 
 /*!
@@ -407,7 +397,7 @@ static int IrblastIOCtl(NUTDEVICE * dev, int req, void *conf)
  *
  * \return 0-success, -1-error.
  */
-static NUTFILE *IrblastOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *IrblastOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     file.nf_next = 0;
     file.nf_dev = dev;
@@ -430,7 +420,7 @@ static int IrblastClose(NUTFILE * fp)
 /*!
  * \brief Timer1 Initialization.
  *
- * Timer 1 counts ir periods. 
+ * Timer 1 counts ir periods.
  */
 static void IrblastTmr1Init(void)
 {
@@ -450,7 +440,7 @@ static void IrblastTmr1Init(void)
 /*!
  * \brief Timer2 Initialization.
  *
- * Timer 1 serves ir carrier frequency. 
+ * Timer 1 serves ir carrier frequency.
  */
 static void IrblastTmr2Init(void)
 {

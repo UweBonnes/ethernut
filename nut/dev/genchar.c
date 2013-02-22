@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -138,7 +138,7 @@ static void GenCharInterrupt(void *arg)
  * \brief Handle device I/O controls.
  *
  * This function is called by the ioctl() function of the C runtime
- * library. Applications use the ioctl() to control device specific 
+ * library. Applications use the ioctl() to control device specific
  * functions.
  *
  * \param dev Pointer to the device information structure.
@@ -184,7 +184,7 @@ static int GenCharIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Initialize the device.
  *
- * This function is called by NutRegisterDevice(), using the 
+ * This function is called by NutRegisterDevice(), using the
  * _NUTDEVICE::dev_init entry.
  *
  * \param dev Pointer to the device information structure.
@@ -206,17 +206,17 @@ static int GenCharInit(NUTDEVICE * dev)
     return 0;
 }
 
-/*! 
- * \brief Read data from the device. 
+/*!
+ * \brief Read data from the device.
  *
- * This function is called by the low level input routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read 
+ * This function is called by the low level input routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
  * entry.
  *
  * The function may block the calling thread until at least one
  * character has been received or a timeout occurs.
  *
- * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
  *               previous call to GenCharOpen().
  * \param buffer Pointer to the buffer that receives the data. If zero,
  *               then all characters in the input buffer will be
@@ -268,9 +268,9 @@ static int GenCharRead(NUTFILE * fp, void *buffer, int size)
 
     if (rc) {
         memcpy(buffer, dcb->dcb_rbuff, rc);
-        /* 
-         * This sample driver simply moves remaining bytes to the front 
-         * of the buffer. A more sophisticated driver may use a circular 
+        /*
+         * This sample driver simply moves remaining bytes to the front
+         * of the buffer. A more sophisticated driver may use a circular
          * buffer.
          */
         NutIrqDisable(&GENDEV_SIGNAL);
@@ -286,35 +286,35 @@ static int GenCharRead(NUTFILE * fp, void *buffer, int size)
 /*!
  * \brief Write data to the device.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write entry.
  *
  * The function may block the calling thread.
  *
- * \param fp     Pointer to a _NUTFILE structure, obtained by a previous 
+ * \param fp     Pointer to a _NUTFILE structure, obtained by a previous
  *               call to GenCharOpen().
  * \param buffer Pointer to the data to be written. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. With some devices this may be 
- *         less than the number of bytes specified if a timeout occured. 
+ * \return The number of bytes written. With some devices this may be
+ *         less than the number of bytes specified if a timeout occured.
  *         A return value of -1 indicates an error.
  */
-static int GenCharWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int GenCharWrite(NUTFILE * fp, const void *buffer, int len)
 {
     int rc = 0;
     int cnt;
     int pend;
-    CONST char *cp = buffer;
+    const char *cp = buffer;
     NUTDEVICE *dev = fp->nf_dev;
     DEVDCB *dcb = dev->dev_dcb;
 
     while (rc < len) {
 
         /*
-         * This sample driver waits on each output until all characters 
+         * This sample driver waits on each output until all characters
          * had been tranmitted. A more sophisticated driver may add
          * new characters as soon as there is room left in the tranmit
          * buffer.
@@ -324,7 +324,7 @@ static int GenCharWrite(NUTFILE * fp, CONST void *buffer, int len)
             NutIrqDisable(&GENDEV_SIGNAL);
             pend = dcb->dcb_tlen - dcb->dcb_tcnt;
             NutIrqEnable(&GENDEV_SIGNAL);
-            
+
             if (pend == 0) {
                 break; /* All characters tranmitted. */
             }
@@ -359,22 +359,22 @@ static int GenCharWrite(NUTFILE * fp, CONST void *buffer, int len)
 /*!
  * \brief Write program data to the device.
  *
- * Similar to GenCharWrite() except that the data is located in program 
+ * Similar to GenCharWrite() except that the data is located in program
  * memory.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P
  * entry, which is available on Harvard architectures only.
  *
  * The function may block the calling thread.
  *
- * \param fp     Pointer to a NUTFILE structure, obtained by a previous 
+ * \param fp     Pointer to a NUTFILE structure, obtained by a previous
  *               call to UsartOpen().
  * \param buffer Pointer to the data in program space to be written.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. With some devices this may be 
- *         less than the number of bytes specified if a timeout occured. 
+ * \return The number of bytes written. With some devices this may be
+ *         less than the number of bytes specified if a timeout occured.
  *         A return value of -1 indicates an error.
  */
 int GenCharWrite_P(NUTFILE * fp, PGM_P buffer, int len)
@@ -387,7 +387,7 @@ int GenCharWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 /*!
  * \brief Open the device.
  *
- * This function is called by the low level open routine of the C runtime 
+ * This function is called by the low level open routine of the C runtime
  * library, using the _NUTDEVICE::dev_open entry.
  *
  * \param dev  Pointer to the NUTDEVICE structure.
@@ -401,7 +401,7 @@ int GenCharWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF if
  *         the open failed.
  */
-static NUTFILE *GenCharOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *GenCharOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
@@ -416,10 +416,10 @@ static NUTFILE *GenCharOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc
     return fp;
 }
 
-/*! 
+/*!
  * \brief Close the device.
  *
- * This function is called by the low level close routine of the C runtime 
+ * This function is called by the low level close routine of the C runtime
  * library, using the _NUTDEVICE::dev_close entry.
  *
  * \param fp Pointer to a _NUTFILE structure, obtained by a previous call
@@ -441,10 +441,10 @@ static int GenCharClose(NUTFILE * fp)
 /*!
  * \brief Retrieves the number of characters in input buffer.
  *
- * This function is called by the low level size routine of the C runtime 
+ * This function is called by the low level size routine of the C runtime
  * library, using the _NUTDEVICE::dev_size entry.
  *
- * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
  *               previous call to UsartOpen().
  *
  * \return The number of bytes currently stored in input buffer.
@@ -469,7 +469,7 @@ long GenCharSize (NUTFILE *fp)
 NUTDEVICE devGenChar = {
     /*! \brief dev_next points to next device.
      *
-     * This is used by Nut/OS to create a linked list of all registered 
+     * This is used by Nut/OS to create a linked list of all registered
      * devices. Must be a NULL pointer initially.
      */
     0,
@@ -478,7 +478,7 @@ NUTDEVICE devGenChar = {
      *
      * Applications use this name to open a device.
      *
-     * Each registered device must have a unique name. However, if more 
+     * Each registered device must have a unique name. However, if more
      * than one driver is available for the same, all drivers may use
      * the same name. This way Nut/OS can make sure, that only one
      * driver is loaded for that device.
@@ -504,7 +504,7 @@ NUTDEVICE devGenChar = {
 
     /*! \brief dev_base specifies the hardware base address.
      *
-     * NutRegisterDevice() will set this value, if the calling application 
+     * NutRegisterDevice() will set this value, if the calling application
      * passed an address not equal zero. It's up to the device driver
      * to use this value. Though, for performance reasons most drivers
      * ignore this address and use hardcoded values, typically configured
@@ -516,10 +516,10 @@ NUTDEVICE devGenChar = {
 
     /*! \brief dev_irq specifies first interrupt number.
      *
-     * NutRegisterDevice() will set this value, if the calling application 
-     * passed an interrupt number not equal zero. It's up to the device 
-     * driver to use this value. Though, most drivers ignore it and use 
-     * hardcoded interrupts, typically configured by the Configurator 
+     * NutRegisterDevice() will set this value, if the calling application
+     * passed an interrupt number not equal zero. It's up to the device
+     * driver to use this value. Though, most drivers ignore it and use
+     * hardcoded interrupts, typically configured by the Configurator
      * during system build.
      *
      * Drivers may freely use this entry for other purposes.
@@ -528,11 +528,11 @@ NUTDEVICE devGenChar = {
 
     /*! \brief dev_icb points to the interface control block.
      *
-     * Drivers may set this pointer to an internal structure during 
+     * Drivers may set this pointer to an internal structure during
      * initialization.
      *
-     * Character device drivers typically do not use this entry. Network 
-     * or file system drivers may use it to link drivers of different 
+     * Character device drivers typically do not use this entry. Network
+     * or file system drivers may use it to link drivers of different
      * levels or to store hardware independent values.
      *
      * Drivers may freely use this entry for other purposes.
@@ -541,7 +541,7 @@ NUTDEVICE devGenChar = {
 
     /*! \brief dev_dcb points to the driver control block.
      *
-     * Drivers will set this pointer to an internal structure during 
+     * Drivers will set this pointer to an internal structure during
      * initialization in order to store local data like pointers
      * to buffers or status and mode informations. The structure
      * may be either statically or dynamically allocated.
@@ -552,7 +552,7 @@ NUTDEVICE devGenChar = {
 
     /*! \brief dev_init initializes the driver and the device hardware.
      *
-     * Points to the driver's initialization routine and is called by 
+     * Points to the driver's initialization routine and is called by
      * NutRegisterDevice(). Drivers, which do not require any initialization
      * may set this entry to NULL.
      */
@@ -599,7 +599,7 @@ NUTDEVICE devGenChar = {
 
     /*! \brief dev_size queries device size information.
      *
-     * This had been initially used by early file system drivers to query 
+     * This had been initially used by early file system drivers to query
      * the size of a previously opened file.
      *
      * Some character device drivers return the number of bytes currently

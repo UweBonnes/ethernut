@@ -293,7 +293,7 @@ static uint32_t http_optflags;
  */
 void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
 {
-    static prog_char fmt_P[] = "HTTP/%d.%d %d %s\r\nServer: Ethernut %s\r\n";
+    static const char fmt_P[] PROGMEM = "HTTP/%d.%d %d %s\r\nServer: Ethernut %s\r\n";
 
     fprintf_P(stream, fmt_P, HTTP_MAJOR_VERSION, HTTP_MINOR_VERSION, status, title, NutVersionString());
 #if !defined(HTTPD_EXCLUDE_DATE)
@@ -322,7 +322,7 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
  */
 void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
 {
-	NutHttpSendHeaderBottom( stream, 0, mime_type, bytes);
+    NutHttpSendHeaderBottom( stream, 0, mime_type, bytes);
 }
 
 /*!
@@ -340,15 +340,15 @@ void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
  *                    header. Ignored, if negative.
  * \param first2bytes The first two bytes of the file.
  */
- 
+
 static void NutHttpSendHeaderBottomEx(FILE * stream, REQUEST * req, char *mime_type, long bytes, unsigned short first2bytes)
 {
-    static prog_char typ_fmt_P[] = "Content-Type: %s\r\n";
-    static prog_char len_fmt_P[] = "Content-Length: %ld\r\n";
-    static prog_char enc_fmt_P[] = "Content-Encoding: gzip\r\n";
-    static prog_char con_str_P[] = "Connection: ";
-    static prog_char ccl_str_P[] = "close\r\n\r\n";
-    
+    static const char typ_fmt_P[] PROGMEM = "Content-Type: %s\r\n";
+    static const char len_fmt_P[] PROGMEM = "Content-Length: %ld\r\n";
+    static const char enc_fmt_P[] PROGMEM = "Content-Encoding: gzip\r\n";
+    static const char con_str_P[] PROGMEM = "Connection: ";
+    static const char ccl_str_P[] PROGMEM = "close\r\n\r\n";
+
 #define GZIP_ID  0x8b1f
 
     if (mime_type)
@@ -360,7 +360,7 @@ static void NutHttpSendHeaderBottomEx(FILE * stream, REQUEST * req, char *mime_t
     fputs_P(con_str_P, stream);
 #if HTTP_KEEP_ALIVE_REQ
     if ( req && req->req_connection == HTTP_CONN_KEEP_ALIVE) {
-        static prog_char cka_str_P[] = "Keep-Alive\r\n\r\n";
+        static const char cka_str_P[] PROGMEM = "Keep-Alive\r\n\r\n";
         fputs_P(cka_str_P, stream);
     }
     else {
@@ -402,8 +402,8 @@ void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long
  */
 void NutHttpSendError(FILE * stream, REQUEST * req, int status)
 {
-    static prog_char err_fmt_P[] = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>\r\n";
-    static prog_char auth_fmt_P[] = "WWW-Authenticate: Basic realm=\"%s\"\r\n";
+    static const char err_fmt_P[] PROGMEM = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>\r\n";
+    static const char auth_fmt_P[] PROGMEM = "WWW-Authenticate: Basic realm=\"%s\"\r\n";
     char *title;
 
     switch (status) {
@@ -514,7 +514,7 @@ void *NutGetMimeHandler(char *name)
  * the decoded string
  *
  * \warning To save RAM, the str parameter will be
- * 	    overwritten with the encoded string.
+ *      overwritten with the encoded string.
  */
 void NutHttpURLDecode(char *str)
 {
@@ -685,7 +685,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     }
 
     file_len = _filelength(fd);
-    
+
     /* Use mime handler, if one has been registered. */
     if (handler) {
         NutHttpSendHeaderBottom(stream, req, mime_type, -1);
@@ -693,18 +693,18 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     }
     /* Use default transfer, if no registered mime handler is available. */
     else {
-    
-#if (HTTPD_SUPPORT_GZIP >= 1)    
+
+#if (HTTPD_SUPPORT_GZIP >= 1)
         /* Check for Accept-Encoding: gzip support */
         if (req->req_encoding != NULL) {
             if (strstr(req->req_encoding, "gzip") != NULL) {
                 /* Read first two bytes, needed for gzip header check */
                 _read(fd, &first2bytes, 2);
                 _seek(fd, -2, SEEK_CUR);
-            }            
+            }
         }
-#endif        
-    
+#endif
+
         NutHttpSendHeaderBottomEx(stream, req, mime_type, file_len, first2bytes);
         if (req->req_method != METHOD_HEAD) {
             size_t size = HTTP_FILE_CHUNK_SIZE;
@@ -827,7 +827,7 @@ uint32_t NutHttpGetOptionFlags(void)
  *
  * \return -1 if out of memory, otherwise 0.
  */
-static int HeaderFieldValue(char **hfvp, CONST char *str)
+static int HeaderFieldValue(char **hfvp, const char *str)
 {
     /* Do not override existing values. */
     if (*hfvp == NULL) {
@@ -883,7 +883,7 @@ static int NextHeaderName(FILE * stream, uint_fast8_t *idx)
         if (ch == EOF || ch == '\n') {
             break;
         }
-        
+
         /* Check if the length is correct */
         if (ch == ':') {
             if (i == req_lookup[*idx].rlu_len) {
@@ -895,7 +895,7 @@ static int NextHeaderName(FILE * stream, uint_fast8_t *idx)
                 break;
             }
         }
-        
+
         /* Check if all characters read so far fits with any header
             we are interested in. */
         for (; *idx < NUM_REQUEST_LOOKUP; (*idx)++) {

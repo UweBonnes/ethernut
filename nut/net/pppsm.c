@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -32,45 +34,13 @@
  * -
  */
 
-/*
- * $Log$
- * Revision 1.9  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
+/*!
+ * \file net/pppsm.c
+ * \brief PPP state machine.
  *
- * Revision 1.8  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.7  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2005/04/05 17:44:57  haraldkipp
- * Made stack space configurable.
- *
- * Revision 1.5  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.4  2004/03/08 11:28:37  haraldkipp
- * HDLC functions moved to async HDLC driver.
- *
- * Revision 1.3  2004/01/30 11:37:58  haraldkipp
- * Handle magic number rejects
- *
- * Revision 1.2  2003/08/14 15:14:19  haraldkipp
- * Do not increment ID when resending.
- * Added authentication retries.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:37  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:18:37  harald
- * PPP hack for simple UART support, functions reordered.
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -202,7 +172,7 @@ THREAD(NutPppSm, arg)
  */
 int NutPppInitStateMachine(NUTDEVICE * dev)
 {
-    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev, 
+    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev,
         (NUT_THREAD_PPPSMSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) == 0) {
         return -1;
     }
@@ -240,7 +210,7 @@ void LcpOpen(NUTDEVICE * dev)
 
     case PPPS_CLOSED:
         /*
-         * The LCP layer is down and the lower layer is up. Start 
+         * The LCP layer is down and the lower layer is up. Start
          * link negotiation by sending out a request.
          */
         LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
@@ -276,7 +246,7 @@ void LcpClose(NUTDEVICE * dev)
     switch (dcb->dcb_lcp_state) {
     case PPPS_STARTING:
         /*
-         * The LCP layer has been enabled, but the lower layer is still 
+         * The LCP layer has been enabled, but the lower layer is still
          * down. Disable the link layer.
          */
         dcb->dcb_lcp_state = PPPS_INITIAL;
@@ -444,7 +414,7 @@ void IpcpClose(NUTDEVICE * dev)
     switch (dcb->dcb_ipcp_state) {
     case PPPS_STARTING:
         /*
-         * The IPCP layer has been enabled, but the lower layer is still 
+         * The IPCP layer has been enabled, but the lower layer is still
          * down. Disable the network layer.
          */
         dcb->dcb_ipcp_state = PPPS_INITIAL;

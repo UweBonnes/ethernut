@@ -126,10 +126,10 @@ int At91SpiSetup(NUTSPINODE * node)
     return 0;
 }
 
-/*! 
- * \brief Initialize an SPI bus node. 
+/*!
+ * \brief Initialize an SPI bus node.
  *
- * This routine is called for each SPI node, which is registered via 
+ * This routine is called for each SPI node, which is registered via
  * NutRegisterSpiDevice().
  *
  * \param node Specifies the SPI bus node.
@@ -139,12 +139,16 @@ int At91SpiSetup(NUTSPINODE * node)
 int At91SpiBusNodeInit(NUTSPINODE * node)
 {
     int rc;
+#if !defined(SPIBUS0_POLLING_MODE) || (!defined(SPIBUS1_POLLING_MODE) && defined(SPI1_BASE)) || defined(SPI1_BASE)
     NUTSPIBUS *bus;
+#endif
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
+#if !defined(SPIBUS0_POLLING_MODE) || (!defined(SPIBUS1_POLLING_MODE) && defined(SPI1_BASE)) || defined(SPI1_BASE)
     bus = node->node_bus;
+#endif
 
     /* Try to deactivate the node's chip select. */
 #if defined(SPI1_BASE)
@@ -181,8 +185,8 @@ int At91SpiBusNodeInit(NUTSPINODE * node)
             node->node_stat = (void *)spireg;
             At91SpiSetup(node);
 
-            /* 
-             * Register and enable SPI interrupt handler. 
+            /*
+             * Register and enable SPI interrupt handler.
              */
 #if !defined(SPIBUS1_POLLING_MODE) && defined(SPI1_BASE)
             if (bus->bus_base == SPI1_BASE) {
@@ -216,7 +220,7 @@ int At91SpiBusNodeInit(NUTSPINODE * node)
 }
 
 #if defined(SPIBUS0_POLLING_MODE) || defined(SPIBUS1_POLLING_MODE) || defined(SPIBUS0_DOUBLE_BUFFER_HEURISTIC) || defined(SPIBUS1_DOUBLE_BUFFER_HEURISTIC)
-/*! 
+/*!
  * \brief Transfer data on the SPI bus in polling mode.
  *
  * A device must have been selected by calling At91SpiSelect().
@@ -230,7 +234,7 @@ int At91SpiBusNodeInit(NUTSPINODE * node)
  *
  * \return Always 0.
  */
-int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int At91SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t b = 0xff;
     uint8_t *txp = (uint8_t *) txbuf;
@@ -262,14 +266,14 @@ int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, in
 #endif
 
 #if defined(SPIBUS0_DOUBLE_BUFFER) || defined(SPIBUS1_DOUBLE_BUFFER)
-/*! 
+/*!
  * \brief Transfer data on the SPI bus using double buffered PDC.
  *
  * A device must have been selected by calling At91SpiSelect().
  *
  * \todo Not yet done. Given up after SAM7SE SDRAM problems.
  *       Currently working fine on SAM7X platform
- * \todo Is this working asynchronously? Old comments mentioned that 
+ * \todo Is this working asynchronously? Old comments mentioned that
  *       the transfer might be still active when function returns.
  *
  * \param node Specifies the SPI bus node.
@@ -281,7 +285,7 @@ int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, in
  *
  * \return Always 0.
  */
-int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int At91SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uintptr_t base;
     uint32_t cr;
@@ -330,7 +334,7 @@ int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, 
         outr(base + SPI_IDR_OFF, (unsigned int) - 1);
         outr(base + SPI_IER_OFF, ir);
         outr(base + PERIPH_PTCR_OFF, cr);
-        
+
         NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
         outr(base + PERIPH_PTCR_OFF, PDC_TXTDIS | PDC_RXTDIS);
     }
@@ -339,7 +343,7 @@ int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, 
 #endif
 
 #if defined(SPIBUS0_DOUBLE_BUFFER) || defined(SPIBUS1_DOUBLE_BUFFER)
-/*! 
+/*!
  * \brief Wait until all SPI bus transfers are done.
  *
  * \param node Specifies the SPI bus node.

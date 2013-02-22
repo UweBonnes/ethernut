@@ -48,6 +48,7 @@
 #include <time.h>
 
 #include <cfg/smtp.h>
+#include <sys/socket.h>
 
 /*!
  * \addtogroup xgSMTPC
@@ -85,14 +86,18 @@
 typedef struct _MAILENVELOPE {
     /*! \brief Creation date and time. */
     time_t mail_date;
-    /*! \brief Initial sender. */
+    /*! \brief Initial sender, return path. */
     char *mail_from;
+    /*! \brief Initial sender, shown in mail client ("Name <mail@domain.com>"). */
+    char *mail_from_header;
     /*! \brief Email's subject. */
     char *mail_subj;
     /*! \brief Email's text body. */
     char *mail_body;
-    /*! \brief List of recipients. */
+    /*! \brief List of recipients, real mail address. */
     char *mail_rcpt[MAX_MAIL_RCPTS];
+    /*! \brief List of recipients, shown in mail client ("Name <mail@domain.com>"). */
+    char *mail_rcpt_header[MAX_MAIL_RCPTS];
     /*! \brief Recipients' status. */
     uint8_t mail_rcpt_stat[MAX_MAIL_RCPTS];
 } MAILENVELOPE;
@@ -128,21 +133,16 @@ typedef struct _SMTPCLIENTSESSION {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
-
 extern SMTPCLIENTSESSION * NutSmtpConnect(uint32_t ip, uint16_t port);
 extern void NutSmtpDisconnect(SMTPCLIENTSESSION *si);
 extern int NutSmtpLogin(SMTPCLIENTSESSION *si, char *host, char *user, char *pass);
 
-extern CONST char *NutSmtpSendMail(SMTPCLIENTSESSION *si, MAILENVELOPE *me);
+extern const char *NutSmtpSendMail(SMTPCLIENTSESSION *si, MAILENVELOPE *me);
 extern int NutSmtpSendMailRequest(SMTPCLIENTSESSION *si, MAILENVELOPE *me);
 extern int NutSmtpSendMailHeader(SMTPCLIENTSESSION *si, MAILENVELOPE *me);
-extern int NutSmtpSendEncodedLines(SMTPCLIENTSESSION *si, CONST char *text);
+extern int NutSmtpSendEncodedLines(SMTPCLIENTSESSION *si, const char *text);
 
-extern CONST char *NutSmtpSendCommand(SMTPCLIENTSESSION *si, CONST char *fmt, ...);
-extern CONST char *NutSmtpReceiveResponse(SMTPCLIENTSESSION *si);
+extern const char *NutSmtpSendCommand(SMTPCLIENTSESSION *si, const char *fmt, ...);
+extern const char *NutSmtpReceiveResponse(SMTPCLIENTSESSION *si);
 
-__END_DECLS
-/* End of prototypes */
 #endif

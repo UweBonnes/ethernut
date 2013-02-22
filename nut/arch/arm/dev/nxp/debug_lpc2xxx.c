@@ -101,8 +101,8 @@ int DebugInit(NUTDEVICE * dev)
 void DebugPut0(char ch)
 {
   if(ch == '\n') {
-	  while ((U0LSR & U0LSR_THRE) == 0);
-	  U0THR = '\r';
+      while ((U0LSR & U0LSR_THRE) == 0);
+      U0THR = '\r';
   }
   while ((U0LSR & U0LSR_THRE) == 0);
   U0THR = ch;
@@ -117,8 +117,8 @@ void DebugPut0(char ch)
 void DebugPut1(char ch)
 {
   if(ch == '\n') {
-	  while ((U1LSR & U1LSR_THRE) == 0);
-	  U1THR = '\r';
+      while ((U1LSR & U1LSR_THRE) == 0);
+      U1THR = '\r';
   }
   while ((U1LSR & U1LSR_THRE) == 0);
   U1THR = ch;
@@ -132,10 +132,10 @@ void DebugPut1(char ch)
  *
  * \return Number of characters sent.
  */
-int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
+int DebugWrite(NUTFILE * fp, const void *buffer, int len)
 {
   int         c   = len;
-  CONST char *cp  = buffer;
+  const char *cp  = buffer;
   NUTDEVICE  *dev = fp->nf_dev;
 
   if        (dev->dev_name[4] == '0') {
@@ -154,7 +154,7 @@ int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
  *
  * \return Pointer to a static NUTFILE structure.
  */
-NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
   dbgfile.nf_next = 0;
   dbgfile.nf_dev = dev;

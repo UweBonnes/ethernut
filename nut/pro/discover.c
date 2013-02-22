@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -88,6 +88,8 @@
 /* icc-avr v7.19 uses 244 bytes. */
 #define NUT_THREAD_DISTSTACK  384
 #endif
+#elif defined(__AVR32__)
+#define NUT_THREAD_DISTSTACK 512
 #else
 /* arm-elf-gcc used 232 bytes with size optimized, 476 bytes with debug code. */
 #define NUT_THREAD_DISTSTACK  320
@@ -141,8 +143,8 @@ int NutDiscoveryAnnTele(DISCOVERY_TELE * dist)
 /*!
  * \brief Apply new configuration.
  *
- * \param dist Pointer to the discovery datagram. It is assumed, that 
- *             the validity of the datagram contents had been checked 
+ * \param dist Pointer to the discovery datagram. It is assumed, that
+ *             the validity of the datagram contents had been checked
  *             by the caller.
  */
 int NutDiscoveryAppConf(DISCOVERY_TELE * dist)
@@ -183,22 +185,22 @@ static int NutDiscoveryHandler(uint32_t ip, uint16_t port, DISCOVERY_TELE * dist
 
     /* Check minimum datagram length. */
     if (len >= minlen) {
-        /* 
-         * Request telegram. 
+        /*
+         * Request telegram.
          */
         if (dist->dist_type == DIST_REQUEST) {
             /* Respond to requests. */
             rc = NutDiscoveryAnnTele(dist);
         }
 
-        /* 
-         * Apply telegram. 
+        /*
+         * Apply telegram.
          */
         else if (dist->dist_type == DIST_APPLY
                    /* Check exchange ID. */
                    && dist->dist_xid == xid
                    /* Required protocol version. */
-                   && dist->dist_ver == DISCOVERY_VERSION) {    
+                   && dist->dist_ver == DISCOVERY_VERSION) {
             xid += NutGetTickCount();
             /* Store configuration. */
             rc = NutDiscoveryAppConf(dist);
@@ -289,13 +291,13 @@ NutDiscoveryCallback NutRegisterDiscoveryCallback(NutDiscoveryCallback func)
 /*!
  * \brief Register discovery telegram responder.
  *
- * The first call will activate the responder thread. Any subsequent 
+ * The first call will activate the responder thread. Any subsequent
  * calls will return a failure.
  *
  * \note Enabling a discovery responder is a potential security hole.
  *
- * \param ipmask Update datagrams from remote hosts, which do not fit to 
- *               this mask are ignored. Set to INADDR_BROADCAST to allow 
+ * \param ipmask Update datagrams from remote hosts, which do not fit to
+ *               this mask are ignored. Set to INADDR_BROADCAST to allow
  *               any. If zero, no updates are allowed.
  * \param port   The responder will listen to this UDP port. If zero,
  *               the default port \ref DISCOVERY_PORT is used.
@@ -311,7 +313,7 @@ int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, unsigned int flags)
         disopt.disopt_ipmask = ipmask;
         disopt.disopt_port = port ? port : DISCOVERY_PORT;
         disopt.disopt_flags = flags;
-        tid = NutThreadCreate("udisc", DiscoveryResponder, NULL, 
+        tid = NutThreadCreate("udisc", DiscoveryResponder, NULL,
             (NUT_THREAD_DISTSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
         if (tid) {
             return 0;

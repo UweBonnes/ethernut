@@ -47,7 +47,7 @@
 
 #include <avr32/io.h>
 
-#ifdef AVR32_EIC_EXTINT_6_PIN
+#if defined(AVR32_EIC_IRQ_6) && defined(INTERRUPT6_ALT_PIN) && defined(INTERRUPT6_ALT_PINSET)
 
 #ifndef NUT_IRQPRI_IRQ6
 #define NUT_IRQPRI_IRQ6  AVR32_INTC_INT3
@@ -112,7 +112,7 @@ static int Interrupt6Ctl(int cmd, void *param)
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Setup Peripheral mux for interrupt line */
-        gpio_enable_module_pin(AVR32_EIC_EXTINT_6_PIN, AVR32_EIC_EXTINT_6_FUNCTION);
+        gpio_enable_module_pin(INTERRUPT6_ALT_PIN, INTERRUPT6_ALT_PINSET);
         /* Set the vector. */
         register_interrupt(Interrupt6Entry, AVR32_EIC_IRQ_6, NUT_IRQPRI_IRQ6);
         /* Initialize to edge triggered with defined priority. */
@@ -188,4 +188,4 @@ static int Interrupt6Ctl(int cmd, void *param)
     return rc;
 }
 
-#endif // AVR32_EIC_EXTINT_6_PIN
+#endif // AVR32_EIC_IRQ_6

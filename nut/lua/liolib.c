@@ -23,8 +23,8 @@
 #include <arpa/inet.h>
 #endif
 
-#define IO_INPUT	1
-#define IO_OUTPUT	2
+#define IO_INPUT    1
+#define IO_OUTPUT   2
 #define IO_STDERR     0
 
 #if NUTLUA_OPTIMIZE_MEMORY != 2
@@ -62,7 +62,7 @@ static void fileerror (lua_State *L, int arg, const char *filename) {
 }
 
 
-#define tofilep(L)	((FILE **)luaL_checkudata(L, 1, LUA_FILEHANDLE))
+#define tofilep(L)  ((FILE **)luaL_checkudata(L, 1, LUA_FILEHANDLE))
 
 
 static int io_type (lua_State *L) {
@@ -159,12 +159,12 @@ static int aux_close (lua_State *L) {
   {
     lua_pushnil(L);
     lua_pushliteral(L, "cannot close standard file");
-    return 2;  
+    return 2;
   }
   int ok = (fclose(*p) == 0);
   *p = NULL;
   return pushresult(L, ok, NULL);
-#endif 
+#endif
 }
 
 

@@ -57,7 +57,7 @@
  *
  * \return Pointer to a static NUTFILE structure.
  */
-static NUTFILE *NullOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+static NUTFILE *NullOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *nf;
 
@@ -76,7 +76,7 @@ static NUTFILE *NullOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  *
  * \return Number of characters sent.
  */
-static int NullWrite(NUTFILE * nf, CONST void *buffer, int len)
+static int NullWrite(NUTFILE * nf, const void *buffer, int len)
 {
     return len;
 }
@@ -89,7 +89,7 @@ static int NullWriteP(NUTFILE * nf, PGM_P buffer, int len)
 
 
 
- 
+
 /*!
  * \brief Read bytes from file
  *
@@ -102,19 +102,19 @@ static int NullRead(NUTFILE * nf, void *buffer, int len)
         return 0;
     }
 
-	// otherwise also just return 0 bytes without blocking
+    // otherwise also just return 0 bytes without blocking
     return 0;
 }
 
-/*! 
+/*!
  * \brief Close ...
  *
  * \return Always 0.
  */
 static int NullClose(NUTFILE * nf)
 {
-	if (nf)
-		free (nf);
+    if (nf)
+        free (nf);
     return 0;
 }
 
@@ -153,7 +153,7 @@ NUTDEVICE devNull = {
 
     0,                          /*!< Driver control block. */
     0,                          /*!< Driver initialization routine. */
-    
+
     NullIOCTL,                  /*!< Driver specific control function. */
     NullRead,
     NullWrite,

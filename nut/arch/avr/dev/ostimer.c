@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,74 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.8  2008/08/22 09:25:34  haraldkipp
- * Clock value caching and new functions NutArchClockGet, NutClockGet and
- * NutClockSet added.
+/*!
+ * \file arch/avr/dev/ostimer.c
+ * \brief AVR system timer support.
  *
- * Revision 1.7  2008/08/11 11:51:19  thiagocorrea
- * Preliminary Atmega2560 compile options, but not yet supported.
- * It builds, but doesn't seam to run properly at this time.
- *
- * Revision 1.6  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.5  2008/07/08 08:25:04  haraldkipp
- * NutDelay is no more architecture specific.
- * Number of loops per millisecond is configurable or will be automatically
- * determined.
- * A new function NutMicroDelay provides shorter delays.
- *
- * Revision 1.4  2006/12/20 15:14:41  freckle
- * corrected millisecond to nut ticks . Same bug as fixed at 2006-09-05
- *
- * Revision 1.3  2006/10/05 17:13:12  haraldkipp
- * Fixes bug #1567730. The problem had been reported by several people.
- * Lars Andersson provided the most complete solution, IMHO.
- *
- * Revision 1.2  2006/02/08 15:18:49  haraldkipp
- * ATmega2561 Support
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2005/06/12 16:50:57  haraldkipp
- * Major redesign to provide better portability and reduce interrupt latency.
- *
- * Revision 1.1  2005/05/27 17:17:31  drsung
- * Moved the file
- *
- * Revision 1.7  2005/05/16 08:54:45  haraldkipp
- * Original routines did not work for Arthernet.
- *
- * Revision 1.6  2005/03/09 08:33:34  hwmaier
- * Finally implemented the correct timer routines and init for AT90CAN128. Timer2 is now used on AT90CAN128 rather Timer0 because Atmel (don't blame me) swapped the Timer designation.
- *
- * Revision 1.5  2005/02/21 12:38:00  phblum
- * Removed tabs and added semicolons after NUTTRACER macros
- *
- * Revision 1.4  2005/02/10 07:06:48  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.3  2005/01/24 22:34:50  freckle
- * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
- *
- * Revision 1.2  2004/12/16 08:40:35  haraldkipp
- * Late increment fixes ICCAVR bug.
- *
- * Revision 1.1  2004/03/16 16:48:46  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.3  2004/03/05 20:38:18  drsung
- * Bugfix from bugfix. sorry!
- *
- * Revision 1.2  2004/03/05 20:19:45  drsung
- * Bugfix in NutTimerInit. ICCAVR failed to compile, if NUT_CPU_FREQ is defined.
- *
- * Revision 1.1  2004/02/01 18:49:48  haraldkipp
- * Added CPU family support
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -111,8 +50,8 @@
  *
  * The actual frequency depends on the timer crystal.
  *
- * \note Since version 3.9.8, the default frequency had been changed 
- *       from 16 Hz to 1024 Hz, when the timer is running with an 
+ * \note Since version 3.9.8, the default frequency had been changed
+ *       from 16 Hz to 1024 Hz, when the timer is running with an
  *       external 32 kHz clock crystal.
  */
 #ifndef NUT_TICK_NFREQ
@@ -147,6 +86,9 @@
 
 
 #ifdef NUT_CPU_FREQ             /* ----- NUT_CPU_FREQ */
+/* Setup for timer clocked from main clock with NUT_CPU_FREQ
+ * and 1000 Hz timer tick
+ */
 #if defined(MCU_AT90CAN128)
 #define TCCR_FLAGS  (_BV(CS20) | _BV(CS22) | _BV(WGM21))
 #elif defined(MCU_ATMEGA2560)
@@ -155,13 +97,42 @@
 #elif defined(MCU_ATMEGA2561)
 #define TCCR_FLAGS  (_BV(WGM21))
 #define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
+#elif defined(MCU_AT90USB1287)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
 #elif defined(MCU_ATMEGA103)    /* MCU_ATMEGA103 */
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(CTC0))
-#else                           /* MCU_ATMEGA128 */
+#elif defined(MCU_ATMEGA128)
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(WGM01))
+#else
+#warning Unknown CPU Type
 #endif
 #else                           /* ----- !NUT_CPU_FREQ */
-#if defined(MCU_ATMEGA103)      /* MCU_ATMEGA103 */
+/* Setup for timer clocked from TOSC with 32768 Hz and 1024 Hz timer tick*/
+#if defined(MCU_AT90CAN128)
+#define TCCR_FLAGS  (_BV(CS20)  |_BV(WGM21))
+#define TCCR_AFLAGS _BV(CS01)
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#elif defined(MCU_ATMEGA2560)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20))
+#define TCCR2B_AFLAGS  (_BV(CS21))
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#elif defined(MCU_ATMEGA2561)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20))
+#define TCCR2B_AFLAGS  (_BV(CS21))
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#define TCCR2B_AFLAGS  (_BV(CS21))
+#define ASSR_BIT    AS2
+#define ASSR_BUSY   (_BV(TCN2UB) | _BV(OCR2UB) | _BV(TCR2UB))
+#elif defined(MCU_AT90USB1287)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
+#elif defined(MCU_ATMEGA103)      /* MCU_ATMEGA103 */
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CTC0))
 #define TCCR_AFLAGS _BV(CS01)
 #define ASSR_BIT    AS0
@@ -172,11 +143,11 @@
 #define ASSR_BIT    AS0
 #define ASSR_BUSY   (_BV(TCN0UB) | _BV(OCR0UB) | _BV(TCR0UB))
 #else                           /* Other MCU */
-#error Define NUT_CPU_FREQ to compile for this CPU.
+#error  Unknown CPU Type
 #endif
 #endif                          /* ----- NUT_CPU_FREQ */
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561) || defined(MCU_AT90USB1287)
 #define TCCRx       TCCR2A
 #define TCNTx       TCNT2
 #define OCRx        OCR2A
@@ -264,6 +235,8 @@ static uint32_t CountCpuLoops(void)
  * This function determines the CPU clock by running
  * a counter loop between two timer interrupts.
  *
+ * The setup requires a 32768 Hz crystal on the TOSC pins!
+ *
  * \return CPU clock in Hertz.
  *
  */
@@ -283,6 +256,9 @@ static uint32_t NutComputeCpuClock(void)
 
     /* Set prescaler to 8. Overflow will occur every 62.5 ms. */
     outb(TCCRx, TCCR_AFLAGS);
+#ifdef TCCR2B_AFLAGS
+    outb(TCCR2B, TCCR2B_AFLAGS);
+#endif
 
     /* Wait for asynchronous busy clear. */
     while ((inb(ASSR) & ASSR_BUSY) != 0);
@@ -301,7 +277,7 @@ static uint32_t NutComputeCpuClock(void)
 /*!
  * \brief Initialize system timer hardware.
  *
- * This function is automatically called by Nut/OS during system 
+ * This function is automatically called by Nut/OS during system
  * initialization.
  *
  * \param handler System timer interrupt handler.

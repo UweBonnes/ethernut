@@ -62,6 +62,24 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#if defined(__AVR_ARCH__) && !defined(_OPTIMIZE__)
+int main(void)
+{
+    unsigned long baud = 115200;
+
+    /* Initialize the console. */
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    _ioctl(_fileno(stdin), UART_SETSPEED, &baud);
+
+    /* Display banner. */
+    puts("\nPlease compile the LUA example with optimization enabled\n");
+    while(1)
+        NutSleep(100);
+}
+
+#else
+
 #ifndef NUTLUA_PARSER_EXCLUDED
 
 #ifdef __AVR__
@@ -121,7 +139,7 @@ static int docall(lua_State * L)
     int status;
     int base;    /* function index */
 
-    /* Retrieve the function index and push the traceback 
+    /* Retrieve the function index and push the traceback
     ** function below the chunk and its arguments. */
     base = lua_gettop(L);
     lua_pushcfunction(L, traceback);
@@ -244,8 +262,8 @@ static int pmain(lua_State * L)
     luaL_openlibs(L);
     lua_gc(L, LUA_GCRESTART, 0);
 
-    /* This loop loads Lua chunks and processes them until we get an 
-    ** input error. We may later use Ctrl-C or break to exit the 
+    /* This loop loads Lua chunks and processes them until we get an
+    ** input error. We may later use Ctrl-C or break to exit the
     ** interpreter. Right now this is not supported by our line editor. */
     while ((status = loadchunk(L)) != -1) {
         /* If everything is OK, execute the chunk. */
@@ -260,7 +278,7 @@ static int pmain(lua_State * L)
             lua_getglobal(L, "print");
             lua_insert(L, 1);
             if (lua_pcall(L, lua_gettop(L) - 1, 0, 0) != 0) {
-                fprintf(stderr, lua_pushfstring(L, "error calling " 
+                fprintf(stderr, lua_pushfstring(L, "error calling "
                     LUA_QL("print") " (%s)", lua_tostring(L, -1)));
                 fputc('\n', stderr);
                 fflush(stderr);
@@ -284,14 +302,14 @@ THREAD(LuaThread, arg)
     lua_State *L;
 
     for (;;) {
-        /* Display second banner line here, so we know 
+        /* Display second banner line here, so we know
         ** that everything is up and running. */
         printf("Running on Nut/OS %s - %ld bytes free\n", NutVersionString(), (long)NutHeapAvailable());
 
         /* Open the line editor. */
         lua_line_edit = EdLineOpen(EDIT_MODE_ECHO | EDIT_MODE_HISTORY);
         if (lua_line_edit) {
-            /* Register VT100 key mapping. This makes the arrow keys 
+            /* Register VT100 key mapping. This makes the arrow keys
             ** work when using a VT100 terminal emulator for input. */
             EdLineRegisterKeymap(lua_line_edit, EdLineKeyMapVt100);
 
@@ -320,10 +338,10 @@ int main(void)
     unsigned long baud = 115200;
 
     /* Initialize the console. */
-    NutRegisterDevice(&DEV_UART, 0, 0);
-    freopen(DEV_UART_NAME, "w", stdout);
-    freopen(DEV_UART_NAME, "w", stderr);
-    freopen(DEV_UART_NAME, "r", stdin);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    freopen(DEV_CONSOLE.dev_name, "w", stderr);
+    freopen(DEV_CONSOLE.dev_name, "r", stdin);
     _ioctl(_fileno(stdin), UART_SETSPEED, &baud);
 
     /* Display banner. */
@@ -345,7 +363,7 @@ int main(void)
     printf("Network interface %s\n", inet_ntoa(confnet.cdn_ip_addr));
 #endif /* NUTLUA_IOLIB_TCP */
 
-    /* Lua is stack hungry and requires to adjust the stack size of our 
+    /* Lua is stack hungry and requires to adjust the stack size of our
     ** main thread. To get it run on a standard system we create a new
     ** thread with sufficient stack space. */
     NutThreadCreate("lua", LuaThread, NULL, THREAD_LUASTACK * NUT_THREAD_STACK_MULT + NUT_THREAD_STACK_ADD);
@@ -356,3 +374,4 @@ int main(void)
     }
     return 0;
 }
+#endif

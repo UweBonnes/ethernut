@@ -15,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -136,7 +136,7 @@
 #define ADC_EOC6                0x00000040      /*!< \brief End of conversion channel 6 */
 #define ADC_EOC7                0x00000080      /*!< \brief End of conversion channel 7 */
 
-#define ADC_OVRE(x)((unsigned long)BV(x+8))     /*!< \brief Macto to acces overrun error flag by channel number */ 
+#define ADC_OVRE(x)((unsigned long)BV(x+8))     /*!< \brief Macto to acces overrun error flag by channel number */
 #define ADC_OVRE0               0x00000100      /*!< \brief Overrun error flag channel 0 */
 #define ADC_OVRE1               0x00000200      /*!< \brief Overrun error flag channel 1 */
 #define ADC_OVRE2               0x00000400      /*!< \brief Overrun error flag channel 2 */
@@ -186,6 +186,59 @@
 #define ADC_CDR_MASK           0x000003FF       /*!< \brief Channel data mask (10bit) */
 /*@}*/
 
+#if defined(ADC_HAS_PDC)
+
+/*! \name ADC Receive Pointer Register */
+/*@{*/
+#define ADC_RPR    (ADC_BASE + PERIPH_RPR_OFF)  /*!< \brief PDC receive pointer register address. */
+/*@}*/
+
+/*! \name ADC Receive Counter Register */
+/*@{*/
+#define ADC_RCR    (ADC_BASE + PERIPH_RCR_OFF)  /*!< \brief PDC receive counter register address. */
+/*@}*/
+
+/*! \name ADC Transmit Pointer Register */
+/*@{*/
+#define ADC_TPR    (ADC_BASE + PERIPH_TPR_OFF)  /*!< \brief PDC transmit pointer register address. */
+/*@}*/
+
+/*! \name ADC Transmit Counter Register */
+/*@{*/
+#define ADC_TCR    (ADC_BASE + PERIPH_TCR_OFF)  /*!< \brief PDC transmit counter register address. */
+/*@}*/
+
+/*! \name ADC Receive Next Pointer Register */
+/*@{*/
+#define ADC_RNPR   (ADC_BASE + PERIPH_RNPR_OFF) /*!< \brief PDC receive next pointer register address. */
+/*@}*/
+
+/*! \name ADC Receive Next Counter Register */
+/*@{*/
+#define ADC_RNCR   (ADC_BASE + PERIPH_RNCR_OFF) /*!< \brief PDC receive next counter register address. */
+/*@}*/
+
+/*! \name ADC Transmit Next Pointer Register */
+/*@{*/
+#define ADC_TNPR   (ADC_BASE + PERIPH_TNPR_OFF) /*!< \brief PDC transmit next pointer register address. */
+/*@}*/
+
+/*! \name ADC Transmit Next Counter Register */
+/*@{*/
+#define ADC_TNCR   (ADC_BASE + PERIPH_TNCR_OFF) /*!< \brief PDC transmit next counter register address. */
+/*@}*/
+
+/*! \name ADC Transfer Control Register */
+/*@{*/
+#define ADC_PTCR   (ADC_BASE + PERIPH_PTCR_OFF) /*!< \brief PDC transfer control register address. */
+/*@}*/
+
+/*! \name ADC Transfer Status Register */
+/*@{*/
+#define ADC_PTSR   (ADC_BASE + PERIPH_PTSR_OFF) /*!< \brief PDC transfer status register address. */
+/*@}*/
+
+#endif
 
 
 #endif

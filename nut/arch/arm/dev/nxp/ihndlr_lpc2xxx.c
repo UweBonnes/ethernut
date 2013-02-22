@@ -3,30 +3,30 @@
 *
 *  Copyright (c) 2005 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
@@ -34,8 +34,8 @@
 *  History:
 *
 *  24.09.05  mifi   First Version
-*                   The CrossWorks for ARM toolchain will be used. Some of 
-*                   this functions looks similar like my ARM uC/OS port for 
+*                   The CrossWorks for ARM toolchain will be used. Some of
+*                   this functions looks similar like my ARM uC/OS port for
 *                   CrossWorks because I have done it before (AN-1711B).
 *                   For some bit definition and information, take a look
 *                   in the LPC2119/2129/2194/2292/2294 user manual 2004 May 03.
@@ -51,7 +51,7 @@
 /*
  * Take a look in the LPC2294 user manual (2004 May 03) page 52
  */
-#define UNDEFINED_INSTRUCTION_VECTOR_ADDR   (*(uint32_t *)0x00000004L)   
+#define UNDEFINED_INSTRUCTION_VECTOR_ADDR   (*(uint32_t *)0x00000004L)
 #define SOFTWARE_INTERRUPT_VECTOR_ADDR      (*(uint32_t *)0x00000008L)
 #define PREFETCH_ABORT_VECTOR_ADDR          (*(uint32_t *)0x0000000CL)
 #define DATA_ABORT_VECTOR_ADDR              (*(uint32_t *)0x00000010L)
@@ -87,12 +87,12 @@ static void VICInit (void)
     */
    VICIntEnClr = 0xFFFFFFFF;
 
-   /* 
+   /*
     * VIC register can be accessed in
     * User or privileged mode.
     */
    VICProtection = 0;
-   
+
    /*
     * All interrupts assigned to IRQ category
     */
@@ -108,21 +108,21 @@ static void VICInit (void)
 /*  Out   : none                                                           */
 /*  Return: none                                                           */
 /***************************************************************************/
-static void ABORTHandler(void) __attribute__ ((interrupt ("IRQ")));
+static void ABORTHandler(void) NUT_IRQ_HANDLER_FUNC;
 static void ABORTHandler (void)
-{ 
+{
   /*
    * The next lines are only used for debugging purpose
    */
-  volatile uint32_t AbortCounter = 0;    
-  
-  AbortCounter++;  
+  volatile uint32_t AbortCounter = 0;
+
+  AbortCounter++;
 } /* ABORTHandler */
 
 /***************************************************************************/
 /*  IRQHandler                                                             */
 /*                                                                         */
-/*  This is the IRQ handler. If an IRQ occurred, the address of the        */ 
+/*  This is the IRQ handler. If an IRQ occurred, the address of the        */
 /*  ISR can be read from the VICVectAddr.                                  */
 /*                                                                         */
 /*  1. Read the address of the IRQHandler to execute from VICVectAddr      */
@@ -135,7 +135,7 @@ static void ABORTHandler (void)
 /*  Out   : none                                                           */
 /*  Return: none                                                           */
 /***************************************************************************/
-static void IRQHandler(void) __attribute__ ((interrupt ("IRQ")));
+static void IRQHandler(void) NUT_IRQ_HANDLER_FUNC;
 static void IRQHandler (void)
 {
   FNCPTR  fncptr;
@@ -150,7 +150,7 @@ static void IRQHandler (void)
 /***************************************************************************/
 /*  FIQHandler                                                             */
 /*                                                                         */
-/*  This is the FIQ handler. If an FIQ occurred, the address of the        */ 
+/*  This is the FIQ handler. If an FIQ occurred, the address of the        */
 /*  ISR can be read from the VICVectAddr                                   */
 /*                                                                         */
 /*  1. Read the address of the IRQHandler to execute from VICVectAddr      */
@@ -163,7 +163,7 @@ static void IRQHandler (void)
 /*  Out   : none                                                           */
 /*  Return: none                                                           */
 /***************************************************************************/
-static void FIQHandler(void) __attribute__ ((interrupt ("FIQ")));
+static void FIQHandler(void) NUT_FIQ_HANDLER_FUNC;
 static void FIQHandler (void)
 {
   FNCPTR  fncptr;
@@ -194,14 +194,14 @@ void InitIrqHandler (void)
    * User RAM Mode. Interrupt vecors are re-mapped to Static RAM.
    */
   MEMMAP = 2;
-  
+
   /*
    * I got the information how to setup the interrupt
    * handler from the uC/OS port for the ARM. Take a look
    * in the application note AN-1014 from micrium.
    * (www.micrium.com)
    */
-  
+
   /*
    * Set IRQHandler
    */
@@ -226,11 +226,11 @@ void InitIrqHandler (void)
    * In case we must find an ABORT error,
    * enable the next lines and set a breakpoint
    * in ABORTHandler.
-   */  
+   */
 #if 1
   DATA_ABORT_VECTOR_ADDR = 0xE59FF018;
   DATA_ABORT_ISR_ADDR    = (uint32_t)ABORTHandler;
-#endif  
+#endif
 
   /*
    * Init the Vectored Interrupt Controller (VIC)

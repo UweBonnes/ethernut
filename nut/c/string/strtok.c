@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -82,22 +82,22 @@
  * The tokens are separated in the string by at least one of the
  * characters in the given separator string.
  *
- * The first time this function is called, the string should be 
+ * The first time this function is called, the string should be
  * specified. Subsequent calls, wishing to obtain further tokens
  * from the same string, should pass a null pointer instead.
  *
- * The separator string must be supplied each time, and may change 
+ * The separator string must be supplied each time, and may change
  * between calls.
  *
  * \param s     Pointer to the string to separate.
  * \param delim Pointer to the separator string.
  *
  * \return A pointer to the beginning of each subsequent token
- *         in the string, after replacing the separator character 
- *         itself with a zero character. When no more tokens remain, 
+ *         in the string, after replacing the separator character
+ *         itself with a zero character. When no more tokens remain,
  *         a null pointer is returned.
  */
-char *strtok(char *s, CONST char *delim)
+char *strtok(char *s, const char *delim)
 {
     static char *last;
 
@@ -106,8 +106,8 @@ char *strtok(char *s, CONST char *delim)
 
 /*!
  * \brief Isolate sequential tokens in a NUL terminated string.
- * 
- * Similar to strtok(), but takes an explicit context argument 
+ *
+ * Similar to strtok(), but takes an explicit context argument
  * and thus is reentrant.
  *
  * \param s     Pointer to the string to separate.
@@ -115,11 +115,11 @@ char *strtok(char *s, CONST char *delim)
  * \param last  Used to store the current search context.
  *
  * \return A pointer to the beginning of each subsequent token
- *         in the string, after replacing the separator character 
- *         itself with a zero character. When no more tokens remain, 
+ *         in the string, after replacing the separator character
+ *         itself with a zero character. When no more tokens remain,
  *         a null pointer is returned.
  */
-char *strtok_r(char *s, CONST char *delim, char **last)
+char *strtok_r(char *s, const char *delim, char **last)
 {
     char *spanp;
     int c, sc;

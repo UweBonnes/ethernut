@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -80,22 +80,22 @@
 /*! Port output register of \ref RTL_SIGNAL_BIT. */
 #define RTL_SIGNAL_PORT    PORTE
 
-/*! Port input register of \ref RTL_SIGNAL_BIT. */	
-#define RTL_SIGNAL_PIN     PINE	
+/*! Port input register of \ref RTL_SIGNAL_BIT. */
+#define RTL_SIGNAL_PIN     PINE
 
 /*! Data direction register of \ref RTL_SIGNAL_BIT. */
-#define RTL_SIGNAL_DDR     DDRE	
+#define RTL_SIGNAL_DDR     DDRE
 
 /*! \brief Interrupt signal handler of \ref RTL_SIGNAL_BIT. */
 #define RTL_SIGNAL  sig_INTERRUPT5
 
-/*! 
+/*!
  * \brief Interrupt signal bit for Ethernut 1.x Ethernet controller.
  */
 #define RTL_SIGNAL_BIT     5
 
 
-/*! 
+/*!
  * \brief Ethernut 2.x Ethernet controller base address.
  */
 #define NIC_BASE            0xC000
@@ -103,16 +103,16 @@
 /*! Port output register of \ref LAN_SIGNAL_BIT. */
 #define LAN_SIGNAL_PORT     PORTE
 
-/*! Port input register of \ref LAN_SIGNAL_BIT. */	
-#define LAN_SIGNAL_PIN      PINE	
+/*! Port input register of \ref LAN_SIGNAL_BIT. */
+#define LAN_SIGNAL_PIN      PINE
 
 /*! Data direction register of \ref LAN_SIGNAL_BIT. */
-#define LAN_SIGNAL_DDR      DDRE	
+#define LAN_SIGNAL_DDR      DDRE
 
 /*! \brief Interrupt signal handler of \ref LAN_SIGNAL_BIT. */
 #define LAN_SIGNAL          sig_INTERRUPT5
 
-/*! 
+/*!
  * \brief Interrupt signal bit for Ethernut 2.x Ethernet controller.
  */
 #define LAN_SIGNAL_BIT      5

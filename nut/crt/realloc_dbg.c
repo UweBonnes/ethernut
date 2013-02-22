@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2001-2003 by egnite Software GmbH
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@
 *         function is successful or NULL if the requested
 *         amount of memory is not available.
 */
-void *dbg_realloc(void* ptr, size_t len, CONST char *file, int line)
+void *dbg_realloc(void* ptr, size_t len, const char *file, int line)
 {
     void *p;
 

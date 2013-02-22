@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -94,7 +94,7 @@
 /*!
  * \brief Specify enhanced AVR target.
  *
- * For backward compatibility this macro is automatically defined if 
+ * For backward compatibility this macro is automatically defined if
  * _MCU_enhanced is defined.
  *
  */
@@ -127,7 +127,7 @@
 /*!
  * \brief Redefined standard library routines.
  *
- * ImageCraft has a multipass linker, which is fine for complicated 
+ * ImageCraft has a multipass linker, which is fine for complicated
  * dependencies in most cases. However, there is the potential risk,
  * that standard library calls with the same name are linked from
  * the wrong library. To avoid this, an additional postfix is added
@@ -143,6 +143,11 @@
 #define calloc      calloc_M
 #define realloc     realloc_M
 #define free        free_M
+
+/* device specific functions map to special name forms so the linker
+ * can give more meaningful error messages
+ */
+#pragma device_specific_function putchar getchar
 
 /*!
  * \brief Redirected stdio routines.
@@ -277,10 +282,8 @@
 /* FIXME */
 #define SIGNAL(x)   void x(void)
 
-#define outp(val, reg)  (reg = val)
 #define outb(reg, val)  (reg = val)
 
-#define inp(reg)        (reg)
 #define inb(reg)        (reg)
 
 #include <eeprom.h>
@@ -325,39 +328,39 @@
 #endif
 
 /* Master */
-#define TW_START		    0x08
-#define TW_REP_START		0x10
+#define TW_START            0x08
+#define TW_REP_START        0x10
 /* Master Transmitter */
-#define TW_MT_SLA_ACK		0x18
-#define TW_MT_SLA_NACK		0x20
-#define TW_MT_DATA_ACK		0x28
-#define TW_MT_DATA_NACK		0x30
+#define TW_MT_SLA_ACK       0x18
+#define TW_MT_SLA_NACK      0x20
+#define TW_MT_DATA_ACK      0x28
+#define TW_MT_DATA_NACK     0x30
 #define TW_MT_ARB_LOST      0x38
 /* Master Receiver */
 #define TW_MR_ARB_LOST      0x38
-#define TW_MR_SLA_ACK		0x40
-#define TW_MR_SLA_NACK		0x48
-#define TW_MR_DATA_ACK		0x50
-#define TW_MR_DATA_NACK		0x58
+#define TW_MR_SLA_ACK       0x40
+#define TW_MR_SLA_NACK      0x48
+#define TW_MR_DATA_ACK      0x50
+#define TW_MR_DATA_NACK     0x58
 /* Slave Transmitter */
-#define TW_ST_SLA_ACK		0xA8
-#define TW_ST_ARB_LOST_SLA_ACK	0xB0
-#define TW_ST_DATA_ACK		0xB8
-#define TW_ST_DATA_NACK		0xC0
-#define TW_ST_LAST_DATA		0xC8
+#define TW_ST_SLA_ACK       0xA8
+#define TW_ST_ARB_LOST_SLA_ACK  0xB0
+#define TW_ST_DATA_ACK      0xB8
+#define TW_ST_DATA_NACK     0xC0
+#define TW_ST_LAST_DATA     0xC8
 /* Slave Receiver */
-#define TW_SR_SLA_ACK		0x60
-#define TW_SR_ARB_LOST_SLA_ACK	0x68
-#define TW_SR_GCALL_ACK		0x70
+#define TW_SR_SLA_ACK       0x60
+#define TW_SR_ARB_LOST_SLA_ACK  0x68
+#define TW_SR_GCALL_ACK     0x70
 #define TW_SR_ARB_LOST_GCALL_ACK 0x78
-#define TW_SR_DATA_ACK		0x80
-#define TW_SR_DATA_NACK		0x88
-#define TW_SR_GCALL_DATA_ACK	0x90
-#define TW_SR_GCALL_DATA_NACK	0x98
-#define TW_SR_STOP		0xA0
+#define TW_SR_DATA_ACK      0x80
+#define TW_SR_DATA_NACK     0x88
+#define TW_SR_GCALL_DATA_ACK    0x90
+#define TW_SR_GCALL_DATA_NACK   0x98
+#define TW_SR_STOP      0xA0
 /* Misc */
-#define TW_NO_INFO		0xF8
-#define TW_BUS_ERROR		0x00
+#define TW_NO_INFO      0xF8
+#define TW_BUS_ERROR        0x00
 
 
 #else                           /* ATmega103 */
@@ -384,7 +387,7 @@
 #define eeprom_read_byte(addr)              EEPROMread((int)addr)
 
 extern void *calloc(size_t num, size_t size);
-extern char *strdup(CONST char *str);
+extern char *strdup(const char *str);
 
 #include <string.h>
 

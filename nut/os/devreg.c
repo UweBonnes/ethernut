@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -87,7 +87,7 @@ NUTDEVICE *nutDeviceList = 0;
  *
  * \return Pointer to the ::NUTDEVICE structure.
  */
-NUTDEVICE *NutDeviceLookup(CONST char *name)
+NUTDEVICE *NutDeviceLookup(const char *name)
 {
     NUTDEVICE *dev;
 
@@ -100,6 +100,41 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
 }
 
 /*!
+ * \brief Find device entry by type.
+ *
+ * \param dev  Pointer to the device returned by the last call. Set to
+ *             NULL to start searching at the first entry.
+ * \param type Device type. May be any of the following:
+ *              - \ref IFTYP_RAM
+ *              - \ref IFTYP_ROM
+ *              - \ref IFTYP_STREAM
+ *              - \ref IFTYP_NET
+ *              - \ref IFTYP_TCPSOCK
+ *              - \ref IFTYP_CHAR
+ *              - \ref IFTYP_CAN
+ *              - \ref IFTYP_BLKIO
+ *              - \ref IFTYP_FS
+ *
+ * \return Pointer to the \ref NUTDEVICE structure or NULL if no
+ *         more devices were found.
+ */
+NUTDEVICE *NutDeviceLookupType(NUTDEVICE *dev, uint_fast8_t type)
+{
+    if (dev == NULL) {
+        dev = nutDeviceList;
+    } else {
+        dev = dev->dev_next;
+    }
+    while (dev) {
+        if (dev->dev_type == type) {
+            break;
+        }
+        dev = dev->dev_next;
+    }
+    return dev;
+}
+
+/*!
  * \brief Register and initialize a device.
  *
  * Initializes the device and adds it to the system device list.
@@ -108,8 +143,8 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
  *
  * \param dev  Pointer to the ::NUTDEVICE structure, which is
  *             provided by the device driver. This structure
- *             contains a hardware device name, which must be 
- *             unique among all registered devices. Drivers may 
+ *             contains a hardware device name, which must be
+ *             unique among all registered devices. Drivers may
  *             operate in a different mode using the same hardware,
  *             like interrupt driven or polling UART drivers.
  *             Only one of those drivers can be registered, because
@@ -122,7 +157,7 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
  * \return 0 if the device has been registered for the first time
  *         and initialization was successful.
  *         The function returns -1 if any device with the same name
- *         had been registered previously, if the ::NUTDEVICE 
+ *         had been registered previously, if the ::NUTDEVICE
  *         structure is invalid or if the device initialization
  *         failed.
  */

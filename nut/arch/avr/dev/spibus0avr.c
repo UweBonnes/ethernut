@@ -231,12 +231,12 @@ static void AvrSpi0Interrupt(void *arg)
 }
 #endif /* SPIBUS0_POLLING_MODE */
 
-/*! 
+/*!
  * \brief Transfer data on the SPI bus.
  *
  * A device must have been selected by calling AvrSpi0Select().
  *
- * Depending on the configuration, this routine implemets polling or 
+ * Depending on the configuration, this routine implemets polling or
  * interrupt mode. For the latter either single or double buffering
  * may have been selected.
  *
@@ -252,7 +252,7 @@ static void AvrSpi0Interrupt(void *arg)
  *
  * \return Always 0.
  */
-int AvrSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
+int AvrSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     uint8_t b = 0xff;
 
@@ -330,7 +330,7 @@ int AvrSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xl
 }
 
 #ifdef SPIBUS0_DOUBLE_BUFFER
-/*! 
+/*!
  * \brief Wait until all SPI bus transfers are done.
  *
  * \param node Specifies the SPI bus node.
@@ -353,10 +353,10 @@ int AvrSpiBus0Wait(NUTSPINODE * node, uint32_t tmo)
 }
 #endif                          /* SPIBUS0_DOUBLE_BUFFER */
 
-/*! 
- * \brief Initialize an SPI bus node. 
+/*!
+ * \brief Initialize an SPI bus node.
  *
- * This routine is called for each SPI node, which is registered via 
+ * This routine is called for each SPI node, which is registered via
  * NutRegisterSpiDevice().
  *
  * \param node Specifies the SPI bus node.
@@ -399,7 +399,7 @@ int AvrSpiBus0NodeInit(NUTSPINODE * node)
  * \param tmo Timeout in milliseconds. To disable timeout, set this
  *            parameter to NUT_WAIT_INFINITE.
  *
- * \return 0 on success. In case of an error, -1 is returned and the bus 
+ * \return 0 on success. In case of an error, -1 is returned and the bus
  *         is not locked.
  */
 int AvrSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
@@ -422,7 +422,7 @@ int AvrSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
             AvrSpiSetup(node);
         }
 
-        /* Even when set to master mode, the SCK pin is not automatically 
+        /* Even when set to master mode, the SCK pin is not automatically
            ** switched to output. Do it manually, maintaining the polarity. */
         if (spireg->avrspi_spcr & _BV(CPOL)) {
             cbi(PORTB, 1);
@@ -435,7 +435,7 @@ int AvrSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
         cbi(PORTB, 2);
         sbi(DDRB, 2);
 
-        /* When SS is configured as input, we may be forced into slave 
+        /* When SS is configured as input, we may be forced into slave
            ** mode if this pin goes low. Enable the pull-up. */
         if (bit_is_clear(DDRB, 0)) {
             sbi(PORTB, 0);
@@ -451,10 +451,8 @@ int AvrSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
 #endif
 
         /* Clean-up the status. */
-        {
-            uint8_t ix = inb(SPSR);
-            ix = inb(SPDR);
-        }
+        inb(SPSR);
+        inb(SPDR);
 
         /* Finally activate the node's chip select. */
         rc = AvrSpi0ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) != 0);

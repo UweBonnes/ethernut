@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -219,7 +219,7 @@ void NutEventTimeout(HANDLE timer, void *arg)
         while (tqp) {
             if (tqp->td_timer == timer) {
                 /* Found the thread. Remove it from the event queue. */
-                   
+
                 NutEnterCritical();
                 *tqpp = tqp->td_qnxt;
                 if (tqp->td_qpec) {
@@ -252,10 +252,10 @@ void NutEventTimeout(HANDLE timer, void *arg)
 /*!
  * \brief Wait for an event in a specified queue.
  *
- * Give up the CPU until another thread or an interrupt routine posts an 
+ * Give up the CPU until another thread or an interrupt routine posts an
  * event to this queue or until a time-out occurs, whichever comes first.
  *
- * If previously an event had been posted to this queue without any 
+ * If previously an event had been posted to this queue without any
  * thread waiting, then the thread will not wait for a new event,
  * but may still pass CPU control, if another thread with equal or
  * higher priority is ready to run.
@@ -280,16 +280,16 @@ int NutEventWait(volatile HANDLE * qhp, uint32_t ms)
     NutExitCritical();
 
     /*
-     * Check for posts on a previously empty queue. 
+     * Check for posts on a previously empty queue.
      */
     if (tdp == SIGNALED) {
         /* Clear the singaled state. */
         NutEnterCritical();
         *qhp = 0;
         NutExitCritical();
-        
+
         /*
-         * Even if already signaled, switch to any other thread, which 
+         * Even if already signaled, switch to any other thread, which
          * is ready to run and has the same or higher priority.
          */
         NutThreadYield();
@@ -297,7 +297,7 @@ int NutEventWait(volatile HANDLE * qhp, uint32_t ms)
     }
 
     /*
-     * Remove the current thread from the list of running threads 
+     * Remove the current thread from the list of running threads
      * and add it to the specified queue.
      */
     NutThreadRemoveQueue(runningThread, &runQueue);
@@ -331,12 +331,12 @@ int NutEventWait(volatile HANDLE * qhp, uint32_t ms)
 /*!
  * \brief Wait for a new event in a specified queue.
  *
- * Give up the CPU until another thread or an interrupt routine posts 
- * an event to this queue or until a time-out occurs, whichever comes 
+ * Give up the CPU until another thread or an interrupt routine posts
+ * an event to this queue or until a time-out occurs, whichever comes
  * first.
  *
- * This call is similar to NutEventWait(), but will ignore the SIGNALED 
- * state of the queue. This way, previously posted events to an empty 
+ * This call is similar to NutEventWait(), but will ignore the SIGNALED
+ * state of the queue. This way, previously posted events to an empty
  * queue are not considered.
  *
  * \param qhp Identifies the queue to wait on.
@@ -352,7 +352,7 @@ int NutEventWaitNext(volatile HANDLE * qhp, uint32_t ms)
     NUTASSERT(qhp != NULL);
 
     /*
-     * Check for posts on a previously empty queue. 
+     * Check for posts on a previously empty queue.
      */
     NutEnterCritical();
     if (*qhp == SIGNALED)
@@ -365,13 +365,13 @@ int NutEventWaitNext(volatile HANDLE * qhp, uint32_t ms)
 /*!
  * \brief Asynchronously post an event to a specified queue.
  *
- * Wake up the thread with the highest priority waiting on the 
- * specified queue. But even if the priority of the woken thread is 
- * higher than the current thread's priority, the current one 
+ * Wake up the thread with the highest priority waiting on the
+ * specified queue. But even if the priority of the woken thread is
+ * higher than the current thread's priority, the current one
  * continues running.
  *
  * If no thread is waiting, then the queue will be set to the SIGNALED
- * state. 
+ * state.
  *
  * \note Interrupts must not call this function but use NutEventPostFromIrq()
  *       to post events to specific queues.
@@ -393,7 +393,7 @@ int NutEventPostAsync(volatile HANDLE * qhp)
 
     /* Ignore signaled queues. */
     if (td != SIGNALED) {
-        
+
         /* A thread is waiting. */
         if (td) {
             /* Remove the thread from the wait queue. */
@@ -421,7 +421,7 @@ int NutEventPostAsync(volatile HANDLE * qhp)
 
             return 1;
         }
-        
+
         /* No thread is waiting. Mark the queue signaled. */
         else {
             NutEnterCritical();
@@ -435,13 +435,13 @@ int NutEventPostAsync(volatile HANDLE * qhp)
 /*!
  * \brief Post an event to a specified queue.
  *
- * Wake up the thread with the highest priority waiting on this queue. 
- * If the priority of the waiting thread is higher or equal than the 
- * current thread's priority, then the current thread is stopped and 
+ * Wake up the thread with the highest priority waiting on this queue.
+ * If the priority of the waiting thread is higher or equal than the
+ * current thread's priority, then the current thread is stopped and
  * CPU control is passed to the waiting thread.
  *
  * If no thread is waiting, the queue will be set to the signaled
- * state. 
+ * state.
  *
  * \note Interrupts must not call this function but use NutEventPostFromIrq()
  *       to post events to specific queues.
@@ -473,9 +473,9 @@ int NutEventPost(volatile HANDLE * qhp)
  * priority of any woken thread is higher than the current thread's
  * priority, the current one continues running.
  *
- * In opposite to NutEventPostAsync(), the queue will be cleared in 
+ * In opposite to NutEventPostAsync(), the queue will be cleared in
  * any case, even if it is in signaled state. Applications may use this
- * call to make sure, that a queue is cleared before initiating some 
+ * call to make sure, that a queue is cleared before initiating some
  * event triggering action.
  *
  * \param qhp Identifies the queue an event is broadcasted to.
@@ -515,9 +515,9 @@ int NutEventBroadcastAsync(volatile HANDLE * qhp)
 /*!
  * \brief Broadcast an event to a specified queue.
  *
- * Wake up all threads waiting on this queue. If the priority of any 
- * waiting thread is higher or equal than the current thread's 
- * priority, then the current thread is stopped and CPU control is 
+ * Wake up all threads waiting on this queue. If the priority of any
+ * waiting thread is higher or equal than the current thread's
+ * priority, then the current thread is stopped and CPU control is
  * passed to the woken up thread with the highest priority.
  *
  * In opposite to NutEventPost(), the queue will be cleared in any

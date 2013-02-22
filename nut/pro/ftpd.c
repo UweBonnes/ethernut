@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -157,33 +157,33 @@ static char *ftp_pass;
  * On Harvard architectures constant strings are stored in ROM,
  * because RAM is usually a scarce resource on these platforms.
  */
-static prog_char cmd_cwd_P[] = "CWD";
-static prog_char cmd_dele_P[] = "DELE";
-static prog_char cmd_list_P[] = "LIST";
-static prog_char cmd_mkd_P[] = "MKD";
-static prog_char cmd_xmkd_P[] = "XMKD";
-static prog_char cmd_nlst_P[] = "NLST";
-static prog_char cmd_noop_P[] = "NOOP";
-static prog_char cmd_pass_P[] = "PASS";
-static prog_char cmd_pasv_P[] = "PASV";
-static prog_char cmd_port_P[] = "PORT";
-static prog_char cmd_pwd_P[] = "PWD";
-static prog_char cmd_xpwd_P[] = "XPWD";
-static prog_char cmd_quit_P[] = "QUIT";
-static prog_char cmd_retr_P[] = "RETR";
-static prog_char cmd_rmd_P[] = "RMD";
-static prog_char cmd_xrmd_P[] = "XRMD";
-static prog_char cmd_stor_P[] = "STOR";
-static prog_char cmd_syst_P[] = "SYST";
-static prog_char cmd_type_P[] = "TYPE";
-static prog_char cmd_user_P[] = "USER";
-static prog_char cmd_rename1_P[] = "RNFR";
-static prog_char cmd_rename2_P[] = "RNTO";
+static const char cmd_cwd_P[] PROGMEM = "CWD";
+static const char cmd_dele_P[] PROGMEM = "DELE";
+static const char cmd_list_P[] PROGMEM = "LIST";
+static const char cmd_mkd_P[] PROGMEM = "MKD";
+static const char cmd_xmkd_P[] PROGMEM = "XMKD";
+static const char cmd_nlst_P[] PROGMEM = "NLST";
+static const char cmd_noop_P[] PROGMEM = "NOOP";
+static const char cmd_pass_P[] PROGMEM = "PASS";
+static const char cmd_pasv_P[] PROGMEM = "PASV";
+static const char cmd_port_P[] PROGMEM = "PORT";
+static const char cmd_pwd_P[] PROGMEM = "PWD";
+static const char cmd_xpwd_P[] PROGMEM = "XPWD";
+static const char cmd_quit_P[] PROGMEM = "QUIT";
+static const char cmd_retr_P[] PROGMEM = "RETR";
+static const char cmd_rmd_P[] PROGMEM = "RMD";
+static const char cmd_xrmd_P[] PROGMEM = "XRMD";
+static const char cmd_stor_P[] PROGMEM = "STOR";
+static const char cmd_syst_P[] PROGMEM = "SYST";
+static const char cmd_type_P[] PROGMEM = "TYPE";
+static const char cmd_user_P[] PROGMEM = "USER";
+static const char cmd_rename1_P[] PROGMEM = "RNFR";
+static const char cmd_rename2_P[] PROGMEM = "RNTO";
 
 
 static char *mon_name = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
-static prog_char rep_banner[] = "220 Nut/OS FTP %s ready at %.3s%3d %02d:%02d:%02d\r\n";
+static const char rep_banner[] PROGMEM = "220 Nut/OS FTP %s ready at %.3s%3d %02d:%02d:%02d\r\n";
 
 /*!
  * \brief Break a string into a command and an argument string.
@@ -248,7 +248,7 @@ static void SplitCmdArg(char * line, char ** cmd, char ** args)
  *
  * \return The number of converted byte values. Should be 6.
  */
-static int ParseIpPort(CONST char * arg, uint32_t * ip, uint16_t * port)
+static int ParseIpPort(const char * arg, uint32_t * ip, uint16_t * port)
 {
     int rc;
 
@@ -286,7 +286,7 @@ static int ParseIpPort(CONST char * arg, uint32_t * ip, uint16_t * port)
  */
 int NutFtpRespondOk(FTPSESSION * session, int code)
 {
-    static prog_char fmt_P[] = "%d OK\r\n";
+    static const char fmt_P[] PROGMEM = "%d OK\r\n";
 
 #ifdef FTPD_DEBUG
     printf("\n<'%d OK' ", code);
@@ -308,7 +308,7 @@ int NutFtpRespondOk(FTPSESSION * session, int code)
  */
 int NutFtpRespondBad(FTPSESSION * session, int code)
 {
-    static prog_char fmt_P[] = "%d Failed\r\n";
+    static const char fmt_P[] PROGMEM = "%d Failed\r\n";
 
 #ifdef FTPD_DEBUG
     printf("\n<'%d Failed' ", code);
@@ -330,9 +330,9 @@ int NutFtpRespondBad(FTPSESSION * session, int code)
  */
 int NutFtpSendMode(FTPSESSION * session, int binary)
 {
-    static prog_char intro_P[] = "150 Opening ";
-    static prog_char amode_P[] = "ASCII.\r\n";
-    static prog_char bmode_P[] = "BINARY.\r\n";
+    static const char intro_P[] PROGMEM = "150 Opening ";
+    static const char amode_P[] PROGMEM = "ASCII.\r\n";
+    static const char bmode_P[] PROGMEM = "BINARY.\r\n";
 
 #ifdef FTPD_DEBUG
     printf("\n<'150 Opening %s' ", binary ? "BINARY" : "ASCII");
@@ -465,8 +465,8 @@ char *CreateFullPathName(char *root, char *work, char *path)
 TCPSOCKET *NutFtpDataConnect(FTPSESSION * session)
 {
 #ifdef FTPD_DEBUG
-    static prog_char errorcode_P[] = "errorcode of active socket: %i\n";
-    static prog_char socfailed_P[] = "Create socket failed";
+    static const char errorcode_P[] PROGMEM = "errorcode of active socket: %i\n";
+    static const char socfailed_P[] PROGMEM = "Create socket failed";
 #endif
     TCPSOCKET *sock;
     int rc;
@@ -513,7 +513,7 @@ TCPSOCKET *NutFtpDataConnect(FTPSESSION * session)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutRegisterFtpRoot(CONST char *path)
+int NutRegisterFtpRoot(const char *path)
 {
     /* Reset path to default. */
     if (path == NULL || *path == 0) {
@@ -573,7 +573,7 @@ int NutRegisterFtpRoot(CONST char *path)
  * \return 0 on success. -1 is returned on failures, in which case
  *         no protection may be assumed.
  */
-int NutRegisterFtpUser(CONST char *user, CONST char *pass)
+int NutRegisterFtpUser(const char *user, const char *pass)
 {
     if (ftp_user) {
         free(ftp_user);
@@ -741,7 +741,7 @@ int NutFtpProcessDelete(FTPSESSION * session, char *path)
 int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
 {
 #ifdef FTPD_DEBUG
-    static prog_char dataconnectfailed_P[] = "NutFtpDataConnect failed";
+    static const char dataconnectfailed_P[] PROGMEM = "NutFtpDataConnect failed";
 #endif
     TCPSOCKET *sock;
     int ec = 550;
@@ -859,9 +859,9 @@ int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
  */
 int NutFtpTransferDirectoryOptions(FTPSESSION * session, char *path, int options)
 {
-    static prog_char fileattributes_P[] = "rw-rw-rw-  1 0 0 %6lu ";
-    static prog_char dateattribute_P[] = "%.3s %u ";
-    static prog_char timeattribute_P[] = "%02u:%02u ";
+    static const char fileattributes_P[] PROGMEM = "rw-rw-rw-  1 0 0 %6lu ";
+    static const char dateattribute_P[] PROGMEM = "%.3s %u ";
+    static const char timeattribute_P[] PROGMEM = "%02u:%02u ";
     TCPSOCKET *sock;
     FILE *fp;
 
@@ -1043,7 +1043,7 @@ int NutFtpProcessPass(FTPSESSION * session, char *pass)
  */
 int NutFtpProcessPassiv(FTPSESSION * session)
 {
-    static prog_char passiveprint_P[] = "227 Passive (%u,%u,%u,%u,%u,%u).\r\n";
+    static const char passiveprint_P[] PROGMEM = "227 Passive (%u,%u,%u,%u,%u,%u).\r\n";
     uint32_t ip = session->ftp_sock->so_local_addr;
     uint16_t port = 20;
 
@@ -1095,7 +1095,7 @@ int NutFtpProcessPort(FTPSESSION * session, char *args)
  */
 int NutFtpProcessPwd(FTPSESSION * session)
 {
-    static prog_char pwdanswer_P[] = "257 \"%s\"\r\n";
+    static const char pwdanswer_P[] PROGMEM = "257 \"%s\"\r\n";
 #ifdef FTPD_DEBUG
     printf("\n<'257 \"%s\"' ", session->ftp_cwd);
 #endif
@@ -1134,7 +1134,7 @@ int NutFtpProcessRmd(FTPSESSION * session, char *path)
  */
 int NutFtpProcessSystem(FTPSESSION * session)
 {
-    static prog_char unixtype_P[] = "215 UNIX Type: L8\r\n";
+    static const char unixtype_P[] PROGMEM = "215 UNIX Type: L8\r\n";
 #ifdef FTPD_DEBUG
     printf("\n<'215 UNIX Type: L8' ");
 #endif

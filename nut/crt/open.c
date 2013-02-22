@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -79,24 +79,24 @@
  * \param name The name of a registered device, optionally followed by a
  *             colon and a filename.
  * \param mode Operation mode. May be any of the following:
- * - _O_APPEND Always write at the end. 
+ * - _O_APPEND Always write at the end.
  * - _O_BINARY Raw mode.
- * - _O_CREAT Create file if it does not exist. 
- * - _O_EXCL Open only if it does not exist. 
- * - _O_RDONLY Read only. 
- * - _O_RDWR Read and write. 
- * - _O_TEXT End of line translation. 
- * - _O_TRUNC Truncate file if it exists. 
+ * - _O_CREAT Create file if it does not exist.
+ * - _O_EXCL Open only if it does not exist.
+ * - _O_RDONLY Read only.
+ * - _O_RDWR Read and write.
+ * - _O_TEXT End of line translation.
+ * - _O_TRUNC Truncate file if it exists.
  * - _O_WRONLY Write only.
  *
  * \return File descriptor for the opened file or -1 to indicate an error.
  */
-int _open(CONST char *name, int mode)
+int _open(const char *name, int mode)
 {
     NUTDEVICE *dev;
     char dev_name[9];
     uint_fast8_t nidx;
-    CONST char *nptr = name;
+    const char *nptr = name;
 
     NUTASSERT(name != NULL);
 

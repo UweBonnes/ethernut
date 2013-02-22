@@ -73,7 +73,7 @@ static long long wdt_get_us_timeout_period(void)
 /*!
  * \brief Start the AVR32 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 uint32_t Avr32WatchDogStart(uint32_t ms)
@@ -85,9 +85,9 @@ uint32_t Avr32WatchDogStart(uint32_t ms)
     Avr32WatchDogDisable();
 
 #define MIN_US_TIMEOUT_PERIOD  \
-	(((1ULL <<  1 ) * 1000000 + slowclock / 2) / slowclock)
+    (((1ULL <<  1 ) * 1000000 + slowclock / 2) / slowclock)
 #define MAX_US_TIMEOUT_PERIOD  \
-	(((1ULL << (1 << AVR32_WDT_CTRL_PSEL_SIZE)) * 1000000 + slowclock / 2) / slowclock)
+    (((1ULL << (1 << AVR32_WDT_CTRL_PSEL_SIZE)) * 1000000 + slowclock / 2) / slowclock)
 
     // Set the CTRL.EN bit and translate the us timeout to fit in CTRL.PSEL using
     // the formula wdt = 2pow(PSEL+1) / fRCosc in useconds.
@@ -110,7 +110,7 @@ uint32_t Avr32WatchDogStart(uint32_t ms)
 /*!
  * \brief Re-start the AVR32 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void Avr32WatchDogRestart(void)
@@ -122,7 +122,7 @@ void Avr32WatchDogRestart(void)
 /*!
  * \brief Disable the AVR32 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void Avr32WatchDogDisable(void)
@@ -136,7 +136,7 @@ void Avr32WatchDogDisable(void)
 /*!
  * \brief Enable the AT91 hardware watch dog timer.
  *
- * For portability, applications should use the platform independent 
+ * For portability, applications should use the platform independent
  * \ref xgWatchDog "Watchdog Driver API".
  */
 void Avr32WatchDogEnable(void)

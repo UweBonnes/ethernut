@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -111,7 +111,7 @@ typedef struct _NUTBLOCKIO NUTBLOCKIO;
 /*!
  * \brief Generic block I/O device interface structure.
  *
- * This is a virtual structure, used by the generic block I/O device driver. 
+ * This is a virtual structure, used by the generic block I/O device driver.
  *
  * \note Any real implementation must start with the same layout. If this
  *       structure is changed, we must update all implementations.
@@ -141,25 +141,25 @@ struct _NUTBLOCKIO {
      * \brief Number of blocks reserved on top of file system mount.
      */
     uint32_t blkio_vol_top;
-    
-    /*! 
+
+    /*!
      * \brief Read from block I/O device, starting at the specified block.
      */
     int (*blkio_read) (NUTDEVICE *, uint32_t, void *, int);
 
-    /*! 
+    /*!
      * \brief Write to block I/O device, starting at the specified block.
      */
-    int (*blkio_write) (NUTDEVICE *, uint32_t, CONST void *, int);
+    int (*blkio_write) (NUTDEVICE *, uint32_t, const void *, int);
 
 #ifdef __HARVARD_ARCH__
-    /*! 
+    /*!
      * \brief Write program memory to block I/O device, starting at the specified block.
      */
     int (*blkio_write_P) (NUTDEVICE *, uint32_t, PGM_P, int);
 #endif
 
-    /*! 
+    /*!
      * \brief Control functions.
      */
     int (*blkio_ioctl)(NUTDEVICE *, int, void *);
@@ -167,19 +167,15 @@ struct _NUTBLOCKIO {
 
 /*@}*/
 
-__BEGIN_DECLS
-/* Prototypes */
 extern int NutBlockDeviceInit(NUTDEVICE * dev);
-extern NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int NutBlockDeviceClose(NUTFILE * nfp);
 extern int NutBlockDeviceIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int NutBlockDeviceRead(NUTFILE * nfp, void *buffer, int num);
-extern int NutBlockDeviceWrite(NUTFILE *nfp, CONST void *buffer, int num);
+extern int NutBlockDeviceWrite(NUTFILE *nfp, const void *buffer, int num);
 extern long NutBlockDeviceSize(NUTFILE *nfp);
 #ifdef __HARVARD_ARCH__
 extern int NutBlockDeviceWrite_P(NUTFILE * nfp, PGM_P buffer, int num);
 #endif
-/* Prototypes */
-__END_DECLS
 
 #endif

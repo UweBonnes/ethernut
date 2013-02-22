@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,84 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.9  2009/02/06 15:37:39  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
+/*!
+ * \file arch/avr/dev/lanc111.c
+ * \brief AVR network driver for SMSC LAN91C111.
  *
- * Revision 1.8  2008/08/28 11:12:15  haraldkipp
- * Added interface flags, which will be required to implement Ethernet ioctl
- * functions.
- *
- * Revision 1.7  2008/08/11 06:59:17  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.6  2007/05/02 11:22:51  haraldkipp
- * Added multicast table entry.
- *
- * Revision 1.5  2006/10/08 16:48:08  haraldkipp
- * Documentation fixed
- *
- * Revision 1.4  2006/06/28 14:30:19  haraldkipp
- * Post to the event queue on overflow interrupts.
- * Transmit event queue removed, because no one is listening.
- *
- * Revision 1.3  2005/10/24 18:02:34  haraldkipp
- * Fixes for ATmega103.
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:40  haraldkipp
- * Moved from dev.
- *
- * Revision 1.13  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.12  2005/02/02 19:55:34  haraldkipp
- * If no Ethernet link was available on the LAN91C111, each outgoing packet
- * took 15 seconds and, even worse, the ouput routine doesn't return an error.
- * Now the first attempt to send a packet without Ethernet link will wait for
- * 5 seconds and subsequent attempts take 0.5 seconds only, always returning
- * an error.
- *
- * Revision 1.11  2005/01/24 21:11:49  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
- *
- * Revision 1.10  2005/01/22 19:24:11  haraldkipp
- * Changed AVR port configuration names from PORTx to AVRPORTx.
- *
- * Revision 1.9  2005/01/21 16:49:45  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.8  2004/09/22 08:14:48  haraldkipp
- * Made configurable
- *
- * Revision 1.7  2004/03/08 11:14:17  haraldkipp
- * Added quick hack for fixed mode.
- *
- * Revision 1.6  2004/02/25 16:22:33  haraldkipp
- * Do not initialize MAC with all zeros
- *
- * Revision 1.5  2004/01/14 19:31:43  drsung
- * Speed improvement to NicWrite applied. Thanks to Kolja Waschk
- *
- * Revision 1.4  2003/11/06 09:26:50  haraldkipp
- * Removed silly line with hardcoded MAC, left over from testing
- *
- * Revision 1.3  2003/11/04 17:54:47  haraldkipp
- * PHY configuration timing changed again for reliable linking
- *
- * Revision 1.2  2003/11/03 17:12:53  haraldkipp
- * Allow linking with RTL8019 driver.
- * Links more reliable to 10 MBit networks now.
- * Reset MMU on allocation failures.
- * Some optimizations.
- *
- * Revision 1.1  2003/10/13 10:13:49  haraldkipp
- * First release
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -130,6 +59,9 @@
 
 #include <dev/irqreg.h>
 #include <dev/lanc111.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -221,13 +153,13 @@
  */
 /*@{*/
 
-/*! 
- * \brief Bank select register. 
+/*!
+ * \brief Bank select register.
  */
 #define NIC_BSR         (LANC111_BASE_ADDR + 0x0E)
 
-/*! 
- * \brief Bank 0 - Transmit control register. 
+/*!
+ * \brief Bank 0 - Transmit control register.
  */
 #define NIC_TCR         (LANC111_BASE_ADDR + 0x00)
 
@@ -243,13 +175,13 @@
 #define TCR_TXENA       0x0001  /*!< \ref NIC_TCR bit mask, enables transmitter. */
 
 
-/*! 
- * \brief Bank 0 - EPH status register. 
+/*!
+ * \brief Bank 0 - EPH status register.
  */
 #define NIC_EPHSR       (LANC111_BASE_ADDR + 0x02)
 
-/*! 
- * \brief Bank 0 - Receive control register. 
+/*!
+ * \brief Bank 0 - Receive control register.
  */
 #define NIC_RCR         (LANC111_BASE_ADDR + 0x04)
 
@@ -262,17 +194,17 @@
 #define RCR_PRMS        0x0002  /*!< \ref NIC_RCR bit mask, enables promiscuous mode. */
 #define RCR_RX_ABORT    0x0001  /*!< \ref NIC_RCR bit mask, set when receive was aborted. */
 
-/*! 
+/*!
  * \brief Bank 0 - Counter register.
  */
 #define NIC_ECR         (LANC111_BASE_ADDR + 0x06)
 
-/*! 
+/*!
  * \brief Bank 0 - Memory information register.
  */
 #define NIC_MIR         (LANC111_BASE_ADDR + 0x08)
 
-/*! 
+/*!
  * \brief Bank 0 - Receive / PHY control register.
  */
 #define NIC_RPCR        (LANC111_BASE_ADDR + 0x0A)
@@ -283,29 +215,29 @@
 #define RPCR_LEDA_PAT   0x0000  /*!< \ref NIC_RPCR bit mask for LEDA mode. */
 #define RPCR_LEDB_PAT   0x0010  /*!< \ref NIC_RPCR bit mask for LEDB mode. */
 
-/*! 
+/*!
  * \brief Bank 1 - Configuration register.
  */
 #define NIC_CR          (LANC111_BASE_ADDR + 0x00)
 
 #define CR_EPH_EN       0x8000  /*!< \ref NIC_CR bit mask, . */
 
-/*! 
+/*!
  * \brief Bank 1 - Base address register.
  */
 #define NIC_BAR         (LANC111_BASE_ADDR + 0x02)
 
-/*! 
+/*!
  * \brief Bank 1 - Individual address register.
  */
 #define NIC_IAR         (LANC111_BASE_ADDR + 0x04)
 
-/*! 
+/*!
  * \brief Bank 1 - General purpose register.
  */
 #define NIC_GPR         (LANC111_BASE_ADDR + 0x0A)
 
-/*! 
+/*!
  * \brief Bank 1 - Control register.
  */
 #define NIC_CTR         (LANC111_BASE_ADDR + 0x0C)
@@ -719,15 +651,14 @@ static void NicPhyWrite(uint8_t reg, uint16_t val)
  */
 static int NicPhyConfig(void)
 {
-    uint16_t phy_sor;
     uint16_t phy_sr;
     uint16_t phy_to;
     uint16_t mode;
 
-    /* 
+    /*
      * Reset the PHY and wait until this self clearing bit
      * becomes zero. We sleep 63 ms before each poll and
-     * give up after 3 retries. 
+     * give up after 3 retries.
      */
     //printf("Reset PHY..");
     NicPhyWrite(NIC_PHYCR, PHYCR_RST);
@@ -741,7 +672,7 @@ static int NicPhyConfig(void)
     //printf("OK\n");
 
     /* Store PHY status output. */
-    phy_sor = NicPhyRead(NIC_PHYSOR);
+    NicPhyRead(NIC_PHYSOR);
 
     /* Enable PHY interrupts. */
     NicPhyWrite(NIC_PHYMSK, PHYMSK_MLOSSSYN | PHYMSK_MCWRD | PHYMSK_MSSD |
@@ -889,7 +820,7 @@ static void NicUpdateMCHardware(NICINFO * ni)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac, NICINFO * ni)
+static int NicStart(const uint8_t * mac, NICINFO * ni)
 {
     uint8_t i;
 
@@ -948,8 +879,8 @@ static void NicInterrupt(void *arg)
     isr &= imr;
 
     /*
-     * If this is a transmit interrupt, then a packet has been sent. 
-     * So we can clear the transmitter busy flag and wake up the 
+     * If this is a transmit interrupt, then a packet has been sent.
+     * So we can clear the transmitter busy flag and wake up the
      * transmitter thread.
      */
     if (isr & INT_TX_EMPTY) {
@@ -969,7 +900,7 @@ static void NicInterrupt(void *arg)
 
 
     /*
-     * If this is a receive interrupt, then wake up the receiver 
+     * If this is a receive interrupt, then wake up the receiver
      * thread.
      */
     if (isr & INT_RX_OVRN) {
@@ -1050,7 +981,7 @@ static NETBUF *NicGetPacket(void)
     uint16_t fsw;
     uint16_t fbc;
 
-    /* Check the fifo empty bit. If it is set, then there is 
+    /* Check the fifo empty bit. If it is set, then there is
        nothing in the receiver fifo. */
     nic_bs(2);
     if (nic_inw(NIC_FIFO) & 0x8000) {
@@ -1079,8 +1010,8 @@ static NETBUF *NicGetPacket(void)
     }
 
     else {
-        /* 
-         * Allocate a NETBUF. 
+        /*
+         * Allocate a NETBUF.
          * Hack alert: Rev A chips never set the odd frame indicator.
          */
         fbc -= 3;
@@ -1108,7 +1039,7 @@ static NETBUF *NicGetPacket(void)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int NicPutPacket(NETBUF * nb)
@@ -1119,7 +1050,7 @@ static int NicPutPacket(NETBUF * nb)
 
     //printf("[P]");
     /*
-     * Calculate the number of bytes to be send. Do not send packets 
+     * Calculate the number of bytes to be send. Do not send packets
      * larger than the Ethernet maximum transfer unit. The MTU
      * consist of 1500 data bytes plus the 14 byte Ethernet header
      * plus 4 bytes CRC. We check the data bytes only.
@@ -1315,12 +1246,12 @@ int LancOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets the LAN91C111 Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets the LAN91C111 Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application
@@ -1379,7 +1310,7 @@ static int LancIOCtl(NUTDEVICE * dev, int req, void *conf)
 
         mcast = malloc(sizeof(MCASTENTRY));
         if (mcast != NULL) {
-            /* 
+            /*
              * HACK ALERT (MF):
              * I do not know the correct algorithm. The algorithm
              * which works for the dm9000 does not work here.
@@ -1437,17 +1368,20 @@ static IFNET ifn_eth0 = {
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     LancOutput,                 /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
-    0                           /*!< \brief Interface specific control function. */
+    NULL                        /*!< \brief Interface specific control function, if_ioctl(). */
+#ifdef NUT_PERFMON
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif
 };
 
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devSmsc111 = {
     0,                          /* Pointer to next device. */
