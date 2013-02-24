@@ -172,8 +172,8 @@ nutcrt =
             {
                 macro = "FOPEN_MAX",
                 brief = "Max. Open Streams",
-                description = "Maximum number of concurrently opened streams.\n\n"..
-                              "Default is 8",
+                description = "Maximum number of concurrently opened filedescriptors / streams.\n\n"..
+                              "Default is 16",
                 type = "integer",
                 flavor = "booldata",
                 file = "include/cfg/crt.h"

@@ -121,6 +121,7 @@ FILE *funopen(void *cookie,
     NUTFILE *nfp;
     USERDEVIF *ifc;
     NUTDEVICE *dev;
+    int fd;
     int i;
 
     for (i = 3; __iob[i]; i++) {
@@ -129,6 +130,14 @@ FILE *funopen(void *cookie,
             return NULL;
         }
     }
+
+    for (fd = 0; __fds[fd]; fd++) {
+        if (fd >= FOPEN_MAX - 1) {
+            errno = EMFILE;
+            return NULL;
+        }
+    }
+
     __iob[i] = (FILE *) calloc(1, sizeof(FILE));
     nfp = (NUTFILE *) malloc(sizeof(NUTFILE));
     dev = (NUTDEVICE *) calloc(1, sizeof(NUTDEVICE));
@@ -149,12 +158,13 @@ FILE *funopen(void *cookie,
         nfp->nf_fcb = cookie;
 
         __iob[i]->iob_fd = (int) nfp;
-
+        __fds[fd] = nfp;
         return __iob[i];
     }
     free(__iob[i]);
     __iob[i] = NULL;
 
+    errno = ENOMEM;
     return NULL;
 }
 

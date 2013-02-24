@@ -86,10 +86,19 @@
  */
 int _write_P(int fd, PGM_P data, unsigned int count)
 {
-    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
+    NUTFILE *fp;
     NUTDEVICE *dev;
 
-    NUTASSERT(fp != NULL);
+    if ((unsigend_int)fd >= FOPEN_MAX)) {
+        errno = EBADF;
+        return -1;
+    }
+
+    if ((fp = fds[fd]) == NULL) {
+        errno = EBADF;
+        return -1;
+    }
+
     dev = fp->nf_dev;
     if (dev == 0) {
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;

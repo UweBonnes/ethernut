@@ -72,6 +72,8 @@
  */
 /*@{*/
 
+NUTFILE *__fds[FOPEN_MAX] = { NULL, };
+
 
 /*!
  * \brief Open a file.
@@ -93,10 +95,12 @@
  */
 int _open(const char *name, int mode)
 {
+    NUTFILE *file;
     NUTDEVICE *dev;
     char dev_name[9];
     uint_fast8_t nidx;
     const char *nptr = name;
+    int fd;
 
     NUTASSERT(name != NULL);
 
@@ -113,6 +117,7 @@ int _open(const char *name, int mode)
      * try to open a file on a root device.
      */
     if ((dev = NutDeviceLookup(dev_name)) == 0) {
+        
         errno = ENOENT;
         return -1;
     }
@@ -121,13 +126,31 @@ int _open(const char *name, int mode)
      * We should check, if the mode flags are device conformant.
      */
 
+    /* Search the next free filedescriptor */
+    for (fd = 0; __fds[fd]; fd++) {
+        if (fd >= FOPEN_MAX - 1) {
+            errno = EMFILE;
+            return -1;
+        }
+    }
+    /* Reserve the entry */
+    __fds[fd] = NUTFILE_EOF;
+
     /*
      * If a device name was specified, open this device. Otherwise open
      * a file on the device.
      */
     if (*nptr++ != ':')
         nptr = 0;
-    return (int) ((uintptr_t) ((*dev->dev_open) (dev, nptr, mode, 0)));
+
+    file = (*dev->dev_open) (dev, nptr, mode, 0);
+    if (file == NUTFILE_EOF) {
+        __fds[fd] = NULL;
+        return -1;
+    }
+    /* assign the file struct to the file descriptor */
+    __fds[fd] = file;
+    return fd;
 }
 
 /*@}*/

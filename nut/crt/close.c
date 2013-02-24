@@ -53,6 +53,8 @@
 
 #include "nut_io.h"
 
+#include <errno.h>
+
 #include <sys/device.h>
 #include <sys/nutdebug.h>
 
@@ -74,17 +76,32 @@
  */
 int _close(int fd)
 {
-    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
+    NUTFILE *fp;
     NUTDEVICE *dev;
+    int rc;
 
-    NUTASSERT(fp != NULL);
+    if ((unsigned int)fd >= FOPEN_MAX) {
+        errno = EBADF;
+        return -1;
+    }
+
+    if ((fp = __fds[fd]) == NULL) {
+        errno = EBADF;
+        return -1;
+    }
+
     dev = fp->nf_dev;
 
     if (dev == 0) {
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
         return (*vdv->vdv_write) (vdv, 0, 0);
     }
-    return (*dev->dev_close) (fp);
+    rc = (*dev->dev_close) (fp);
+
+    /* Mark the filefescriptor free */
+    __fds[fd] = NULL;
+
+    return rc;
 }
 
 /*@}*/

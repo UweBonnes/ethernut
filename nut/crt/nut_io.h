@@ -55,6 +55,7 @@
 
 #include <cfg/crt.h>
 #include <sys/types.h>
+#include <sys/file.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -77,7 +78,7 @@
 #endif
 
 #ifndef FOPEN_MAX
-#define FOPEN_MAX   8   /*!< \brief Default maximum number of open streams.
+#define FOPEN_MAX   16   /*!< \brief Default maximum number of open streams.
                  \showinitializer */
 #endif
 
@@ -97,6 +98,9 @@ struct __iobuf {
 };
 
 /*@}*/
+
+/* Filedescriptor list */
+extern NUTFILE *__fds[FOPEN_MAX];
 
 
 extern int _fmode(const char *mode);

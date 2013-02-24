@@ -56,6 +56,7 @@
 
 #include "nut_io.h"
 
+#include <errno.h>
 #include <sys/nutdebug.h>
 #include <sys/device.h>
 
@@ -79,10 +80,19 @@
  */
 int _ioctl(int fd, int cmd, void *data)
 {
-    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
+    NUTFILE *fp;
     NUTDEVICE *dev;
 
-    NUTASSERT(fp != NULL);
+    if ((unsigned int)fd >= FOPEN_MAX) {
+        errno = EBADF;
+        return -1;
+    }
+
+    if ((fp = __fds[fd]) == NULL) {
+        errno = EBADF;
+        return -1;
+    }
+
     dev = fp->nf_dev;
     if (dev == 0) {
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
