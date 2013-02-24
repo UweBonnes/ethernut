@@ -62,6 +62,9 @@ static NUTFILE *NullOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     NUTFILE *nf;
 
     nf = malloc(sizeof(NUTFILE));
+    if (!nf) {
+        return NUTFILE_EOF;
+    }
 
     // enter data
     nf->nf_next = 0;
