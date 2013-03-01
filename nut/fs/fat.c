@@ -1477,7 +1477,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, const char *pName, int nMode, i
             //
             hNUTFile = NutHeapAlloc(sizeof(NUTFILE));
             if (hNUTFile != NULL) {
-                hNUTFile->nf_next = 0;
+                hNUTFile->wq_list = NULL;
                 hNUTFile->nf_dev = pDevice;
                 hNUTFile->nf_fcb = hFile;
             } else {

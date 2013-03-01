@@ -252,9 +252,9 @@ static NUTFILE *NutPppOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0) {
         return NUTFILE_EOF;
     }
-    fp->nf_next = 0;
+    fp->wq_list = NULL;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     /*
      * Extract user name and password and store it in our device control

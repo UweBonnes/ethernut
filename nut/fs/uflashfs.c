@@ -1391,7 +1391,7 @@ static NUTFILE *UFlashFileOpen(NUTDEVICE * dev, const char *path, int mode, int 
             NutEventPost(&vol->vol_mutex);
             return NUTFILE_EOF;
         }
-        nfp->nf_next = NULL;
+        nfp->wq_list = NULL;
         nfp->nf_dev = dev;
         nfp->nf_fcb = ent;
 

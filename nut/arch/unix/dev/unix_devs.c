@@ -598,9 +598,9 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     nf = malloc(sizeof(NUTFILE));
 
     // enter data
-    nf->nf_next = 0;
+    nf->wq_list = NULL;
     nf->nf_dev = dev;
-    nf->nf_fcb = 0;
+    nf->nf_fcb = NULL;
 
     return nf;
 }

@@ -409,9 +409,9 @@ static NUTFILE *GenCharOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         return NUTFILE_EOF; /* No memory. */
     }
 
-    fp->nf_next = 0;
+    fp->wq_list = NULL
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     return fp;
 }

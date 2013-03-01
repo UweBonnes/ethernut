@@ -60,6 +60,21 @@ struct _NUTDEVICE;
 /*@{*/
 
 /*!
+ * \brief File waitqueue list structure type.
+ */
+typedef struct _WQLIST WQLIST;
+
+/*!
+ * \struct _WQLIST file.h sys/file.h
+ * \brief File waitqueu list structure.
+ */
+
+struct _WQLIST {
+	_WQLIST *wl_next;
+	HANDLE   wq;
+}
+
+/*!
  * \brief File structure type.
  */
 typedef struct _NUTFILE NUTFILE;
@@ -72,7 +87,7 @@ struct _NUTFILE {
     /*!
      * \brief Link to the next file structure.
      */
-    NUTFILE *nf_next;
+    NUTFILE *wq_list;
 
     /*!
      * \brief Device containing this file.

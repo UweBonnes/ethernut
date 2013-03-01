@@ -846,7 +846,7 @@ NUTFILE *PhatDirOpen(NUTDEVICE * dev, const char *dpath)
         return NUTFILE_EOF;
     }
     memset(ndp->nf_fcb, 0, sizeof(PHATFILE));
-    ndp->nf_next = NULL;
+    ndp->wq_list = NULL;
     ndp->nf_dev = dev;
 
     dfcb = ndp->nf_fcb;

@@ -785,7 +785,7 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
         return(NUTFILE_EOF);
     }
 
-    nfp->nf_next = 0;
+    nfp->wq_list = NULL;
     nfp->nf_dev = dev;
     nfp->nf_fcb = fcb;
 

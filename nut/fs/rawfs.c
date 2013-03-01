@@ -224,7 +224,7 @@ NUTFILE *RawFsFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
         /* Allocate a file information structure. */
         nfp = malloc(sizeof(NUTFILE));
         if (nfp) {
-            nfp->nf_next = 0;
+            nfp->wq_list = NULL;
             nfp->nf_dev = dev;
             nfp->nf_fcb = fcb;
             /* Successfully opened. */

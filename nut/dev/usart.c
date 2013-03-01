@@ -634,7 +634,7 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
      * a file creation routine to get a linked list of all opened
      * files in the system.
      */
-    fp->nf_next = NULL;
+    fp->wq_list = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 

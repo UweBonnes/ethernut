@@ -1097,9 +1097,9 @@ NUTFILE *AhdlcAt91Open(NUTDEVICE * dev, const char *name, int mode, int acc)
     if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0)
         return NUTFILE_EOF;
 
-    fp->nf_next = 0;
+    fp->wq_list = NULL;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     outr(US1_RTOR, UART_RECEIVER_TIMEOUT);
     outr(USART1_BASE + PERIPH_PTCR_OFF, PDC_RXTEN);     /* enable rx DMA */

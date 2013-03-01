@@ -588,7 +588,7 @@ static NUTFILE *HelixOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     NutSleep(2);
 
     nfp = malloc(sizeof(NUTFILE));
-    nfp->nf_next = NULL;
+    nfp->wq_list = NULL;
     nfp->nf_dev = dev;
     nfp->nf_fcb = NULL;
 

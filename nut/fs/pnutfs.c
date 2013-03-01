@@ -1054,7 +1054,7 @@ static NUTFILE *PnutFileOpen(NUTDEVICE * dev, const char *path, int mode, int ac
                 free(file);
                 nfp = NUTFILE_EOF;
             } else {
-                nfp->nf_next = 0;
+                nfp->wq_list = NULL;
                 nfp->nf_dev = dev;
                 nfp->nf_fcb = file;
                 /* Keep track of the number of open calls. */

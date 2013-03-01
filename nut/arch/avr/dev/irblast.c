@@ -399,9 +399,9 @@ static int IrblastIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static NUTFILE *IrblastOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
-    file.nf_next = 0;
+    file.wq_list = NULL;
     file.nf_dev = dev;
-    file.nf_fcb = 0;
+    file.nf_fcb = NULL;
     return &file;
 }
 

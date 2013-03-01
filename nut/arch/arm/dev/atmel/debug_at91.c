@@ -196,9 +196,9 @@ NUTFILE *At91DevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
-    fp->nf_next = 0;
+    fp->wq_list = NULL;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     return fp;
 }
