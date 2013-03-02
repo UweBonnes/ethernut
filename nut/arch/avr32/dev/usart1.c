@@ -141,7 +141,8 @@ NUTDEVICE devUsartAvr321 = {
     UsartWrite,                 /* Write to device, dev_write. */
     UsartOpen,                  /* Open a device or file, dev_open. */
     UsartClose,                 /* Close a device or file, dev_close. */
-    UsartSize                   /* Request file size, dev_size. */
+    UsartSize,                  /* Request file size, dev_size. */
+    NULL,                       /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -300,6 +300,7 @@ NUTDEVICE devDebug1 = {
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
         NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };
 
 NUTDEVICE devDebug2 = {
@@ -317,6 +318,7 @@ NUTDEVICE devDebug2 = {
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
         NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };
 
 NUTDEVICE devDebug3 = {
@@ -334,4 +336,5 @@ NUTDEVICE devDebug3 = {
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
         NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };

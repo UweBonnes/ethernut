@@ -373,7 +373,7 @@ NUTDEVICE devStm32Otg = {
     0,                                  /*!< Pointer to next device, dev_next. */
     {'u', 's', 'b', '_', 'o', 't', 'g', 0, 0},  /*!< Unique device name, dev_name. */
     IFTYP_CHAR,                         /*!< Type of device, dev_type. */
-    0,                              /*!< Base address, dev_base. */
+    0,                                  /*!< Base address, dev_base. */
     0,                                  /*!< First interrupt number, dev_irq. */
     0,                                  /*!< Interface control block, dev_icb. */
     &dcb_otg0,                          /*!< Driver control block, dev_dcb. */
@@ -383,6 +383,7 @@ NUTDEVICE devStm32Otg = {
     Stm32OtgWrite,                      /*!< dev_write. */
     UsartOpen,                          /*!< dev_opem. */
     UsartClose,                         /*!< dev_close. */
-    UsartSize                           /*!< dev_size. */
+    UsartSize,                          /*!< dev_size. */
+    NULL,                               /*!< dev_select, optional, not yet implemented */
 };
 

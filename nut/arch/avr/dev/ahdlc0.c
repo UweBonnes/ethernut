@@ -73,7 +73,8 @@ NUTDEVICE devAhdlc0 = {
     AhdlcAvrWrite_P,            /* Write data from program space to device, dev_write_P. */
     AhdlcAvrOpen,               /* Open a device or file, dev_open. */
     AhdlcAvrClose,              /* Close a device or file, dev_close. */
-    0                           /* Request file size. */
+    0,                          /* Request file size. */
+    0,                          /* Select function, optional, not yet implemented */
 };
 
 

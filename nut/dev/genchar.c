@@ -605,7 +605,12 @@ NUTDEVICE devGenChar = {
      * Some character device drivers return the number of bytes currently
      * available in the input buffer.
      */
-    GenCharSize
+    GenCharSize,
+
+    /*! \brief dev_select queries the blocking state for read or write 
+      *        operations and possible errors on the device .
+      */
+    NULL,
 };
 
 

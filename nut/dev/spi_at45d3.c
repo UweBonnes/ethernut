@@ -115,5 +115,6 @@ NUTDEVICE devSpiAt45d3 = {
 #endif
     NutBlockDeviceOpen,         /* Open a device or file, dev_open. */
     NutBlockDeviceClose,        /* Close a device or file, dev_close. */
-    NutBlockDeviceSize          /* Request file size, dev_size. */
+    NutBlockDeviceSize,         /* Request file size, dev_size. */
+    NULL,                       /* Select function, optional, not yet implemented */
 };

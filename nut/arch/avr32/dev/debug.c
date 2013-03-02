@@ -271,7 +271,8 @@ NUTDEVICE devDebug0 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 #endif                          /* AVR32_USART0_TXD_PIN */
 
@@ -306,7 +307,8 @@ NUTDEVICE devDebug1 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 #endif                          /* AVR32_USART1_TXD_PIN */
 
@@ -341,7 +343,8 @@ NUTDEVICE devDebug2 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 #endif                          /* AVR32_USART2_TXD_PIN */
 
@@ -376,7 +379,8 @@ NUTDEVICE devDebug3 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 
 #endif                          /* AVR32_USART3_TXD_PIN */

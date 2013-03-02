@@ -1782,5 +1782,6 @@ NUTDEVICE devFATC = {
 #endif
     FATFileOpen,                /* Driver specific open function.    */
     FATFileClose,               /* Driver specific close function.   */
-    FATFileSize
+    FATFileSize,                /* Driver specific size function.    */
+    NULL,                       /* Driver specific select function.  */
 };

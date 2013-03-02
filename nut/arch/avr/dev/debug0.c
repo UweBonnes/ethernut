@@ -276,10 +276,11 @@ NUTDEVICE devDebug0 = {
     DebugOpen,
     DebugClose,
 #ifdef NUT_DEV_DEBUG_READ
-    DebugSize
+    DebugSize,
 #else
-    NULL
+    NULL,
 #endif
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

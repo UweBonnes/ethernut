@@ -629,6 +629,7 @@ NUTDEVICE devSpi7SEG = {
 #endif
     Spi7SegOpen,                    /*!< \brief Mount volume, dev_open. */
     Spi7SegClose,                   /*!< \brief Unmount volume, dev_close. */
-    0                               /*!< \brief Request file size, dev_size. */
+    NULL,                           /*!< \brief Request file size, dev_size. */
+    NULL,                           /*!< \brief Select function, optional, not yet implemented */
 };
 

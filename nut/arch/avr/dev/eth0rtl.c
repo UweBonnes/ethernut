@@ -87,21 +87,22 @@ static IFNET ifn_eth0 = {
  *
  */
 NUTDEVICE devEth0 = {
-    0,                          /* Pointer to next device. */
+    0,          /* Pointer to next device. */
     {'e', 't', 'h', '0', 0, 0, 0, 0, 0},        /* Unique device name. */
-    IFTYP_NET,      /* Type of device. */
+    IFTYP_NET,  /* Type of device. */
     0,          /* Base address. */
     0,          /* First interrupt number. */
-    &ifn_eth0,      /* Interface control block. */
-    &dcb_eth0,      /* Driver control block. */
-    NicInit,        /* Driver initialization routine. */
+    &ifn_eth0,  /* Interface control block. */
+    &dcb_eth0,  /* Driver control block. */
+    NicInit,    /* Driver initialization routine. */
     0,          /* Driver specific control function. */
     0,          /* Read from device. */
     0,          /* Write to device. */
     0,          /* Write from program space data to device. */
     0,          /* Open a device or file. */
     0,          /* Close a device or file. */
-    0           /* Request file size. */
+    0,          /* Request file size. */
+    0,          /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

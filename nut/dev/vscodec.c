@@ -931,7 +931,8 @@ NUTDEVICE devVsCodec = {
 #endif
     VsOpen,         /* Open a device or file, dev_open. */
     VsClose,        /* Close a device or file, dev_close. */
-    NULL            /* Request file size, dev_size. */
+    NULL,           /* Request file size, dev_size. */
+    NULL,           /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

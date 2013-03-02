@@ -369,7 +369,8 @@ NUTDEVICE devPpp = {
 #endif
     NutPppOpen,                 /* Open a device or file, dev_open. */
     NutPppClose,                /* Close a device or file, dev_close. */
-    0                           /* Request file size. */
+    NULL,                       /* Request file size. */
+    NULL,                       /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

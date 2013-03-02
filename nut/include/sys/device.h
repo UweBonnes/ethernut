@@ -259,6 +259,11 @@ struct _NUTDEVICE {
      */
     long (*dev_size) (NUTFILE *);
 
+    /*!
+     * \brief Request file size.
+     */
+    long (*dev_select) (NUTFILE *);
+
 };
 
 /*!

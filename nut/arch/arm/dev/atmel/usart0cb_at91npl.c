@@ -274,4 +274,5 @@ NUTDEVICE devUsart0CbNpl = {
     UsartCbOpen,    /* Open a device or file, dev_open. */
     UsartCbClose,   /* Close a device or file, dev_close. */
     UsartCbSize     /* Request file size, dev_size. */
+    NULL,           /* Select function, optional, not yet implemented */
 };

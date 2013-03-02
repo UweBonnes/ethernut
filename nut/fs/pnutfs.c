@@ -1392,7 +1392,8 @@ NUTDEVICE devPnut = {
 #endif
     PnutFileOpen,               /*!< Open a file, dev_open. */
     PnutFileClose,              /*!< Close a file, dev_close. */
-    PnutFileSize                /*!< Return file size, dev_size. */
+    PnutFileSize,               /*!< Return file size, dev_size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -353,7 +353,8 @@ NUTDEVICE devLcdBus = {
     TermWrite_P,
     TermOpen,
     TermClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 

@@ -2054,7 +2054,8 @@ NUTDEVICE devUFlash0 = {
 #endif
     UFlashFileOpen,             /*!< \brief Open a file, dev_open. */
     UFlashFileClose,            /*!< \brief Close a file, dev_close. */
-    UFlashFileSize              /*!< \brief Return file size, dev_size. */
+    UFlashFileSize,             /*!< \brief Return file size, dev_size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -2078,7 +2079,8 @@ NUTDEVICE devUFlash1 = {
 #endif
     UFlashFileOpen,             /*!< \brief Open a file, dev_open. */
     UFlashFileClose,            /*!< \brief Close a file, dev_close. */
-    UFlashFileSize              /*!< \brief Return file size, dev_size. */
+    UFlashFileSize,             /*!< \brief Return file size, dev_size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

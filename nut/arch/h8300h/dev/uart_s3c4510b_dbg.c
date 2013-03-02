@@ -155,6 +155,7 @@ NUTDEVICE devDebug0 = {
     /* Write from program space data to device. not havard structure */
     DebugOpen,
     DebugClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 

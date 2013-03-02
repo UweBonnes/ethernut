@@ -497,5 +497,6 @@ NUTDEVICE devIrblast0 = {
     IrblastWrite_P,
     IrblastOpen,
     IrblastClose,
-    0
+    0,
+    0,                          /* Select function, optional, not yet implemented */
 };

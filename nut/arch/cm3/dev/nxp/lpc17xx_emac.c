@@ -1262,7 +1262,8 @@ NUTDEVICE devLpc17xxEmac = {
 #endif
     0,                          /*!< \brief Open a device or file. */
     0,                          /*!< \brief Close a device or file. */
-    0                           /*!< \brief Request file size. */
+    0,                          /*!< \brief Request file size. */
+    0,                          /*!< \brief Select function, optional, not yet implemented */
 };
 
 /*@}*/

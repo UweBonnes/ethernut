@@ -305,7 +305,8 @@ NUTDEVICE devDebug0 = {
         Write,          /*!< _NUTDEVICE::dev_write. */
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
-        NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };
 #endif
 
@@ -324,7 +325,8 @@ NUTDEVICE devDebug1 = {
         Write,          /*!< _NUTDEVICE::dev_write. */
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
-        NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };
 #endif
 
@@ -344,5 +346,6 @@ NUTDEVICE devDebug2 = {
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
         NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };
 #endif

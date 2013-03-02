@@ -146,10 +146,11 @@ NUTDEVICE devDebug = {
     At91DevDebugOpen,           /*!< dev_opem. */
     At91DevDebugClose,          /*!< dev_close. */
 #ifdef NUT_DEV_DEBUG_READ
-    At91DevDebugSize
+    At91DevDebugSize,
 #else
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
 #endif
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 
 #endif /* DBGU_BASE */

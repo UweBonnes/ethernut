@@ -674,7 +674,8 @@ NUTDEVICE devCS8900A = {
     0,                          /* Write to device. */
     0,                          /* Open a device or file. */
     0,                          /* Close a device or file. */
-    0                           /* Request file size. */
+    0,                          /* Request file size. */
+    0,                          /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

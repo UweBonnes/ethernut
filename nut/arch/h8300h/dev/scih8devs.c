@@ -79,20 +79,23 @@ __END_DECLS
 /*!
  * \brief SCI0 Device information structure.
  */
-    NUTDEVICE devSci0 = {
+NUTDEVICE devSci0 = {
     0,                          /*!< Pointer to next device. */
-    {
-    's', 'c', 'i', '0', 0, 0, 0, 0, 0}, /*!< Unique device name. */
-        IFTYP_STREAM,           /*!< Type of device. */
-        0,                      /*!< Base address. */
-        0,                      /*!< First interrupt number. */
-        &ifs_sci0,              /*!< Interface control block. */
-        &dcb_sci0,              /*!< Driver control block. */
-        SciH8Init,              /*!< Driver initialization routine. */
-        SciH8IOCtl,             /*!< Driver specific control function. */
-        SciH8Read, SciH8Write,
-        /* SciH8Write_P */
-SciH8Open, SciH8Close, 0};
+    {'s', 'c', 'i', '0', 0, 0, 0, 0, 0}, /*!< Unique device name. */
+    IFTYP_STREAM,               /*!< Type of device. */
+    0,                          /*!< Base address. */
+    0,                          /*!< First interrupt number. */
+    &ifs_sci0,                  /*!< Interface control block. */
+    &dcb_sci0,                  /*!< Driver control block. */
+    SciH8Init,                  /*!< Driver initialization routine. */
+    SciH8IOCtl,                 /*!< Driver specific control function. */
+    SciH8Read, SciH8Write,
+    /* SciH8Write_P */
+    SciH8Open, 
+    SciH8Close, 
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
+};
 
 /*!
  * \brief SCI1 Device information structure.
@@ -112,7 +115,8 @@ NUTDEVICE devSci1 = {
     /* SciH8Write_P */
     SciH8Open,
     SciH8Close,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -133,7 +137,8 @@ NUTDEVICE devSci2 = {
     /* SciH8Write_P */
     SciH8Open,
     SciH8Close,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -985,7 +985,8 @@ NUTDEVICE devLan91 = {
 #endif
     0,          /* Open a device or file. */
     0,          /* Close a device or file. */
-    0           /* Request file size. */
+    0,          /* Request file size. */
+    0,          /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -255,7 +255,8 @@ NUTDEVICE devDebug0 = {
     /* Write from program space data to device. */
     DebugOpen,
     DebugClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 NUTDEVICE devDebug1 = {
@@ -274,7 +275,8 @@ NUTDEVICE devDebug1 = {
     /* Write from program space data to device. */
     DebugOpen,
     DebugClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 NUTDEVICE devDebug2 = {
@@ -293,7 +295,8 @@ NUTDEVICE devDebug2 = {
     /* Write from program space data to device. */
     DebugOpen,
     DebugClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

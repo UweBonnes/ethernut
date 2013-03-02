@@ -74,7 +74,8 @@ NUTDEVICE devAce0 = {
     AceWrite_P,                 /*!< Write to device from program space. */
     AceOpen,                    /*!< Open a device or file. */
     AceClose,                   /*!< Close a device or file. */
-    AceSize                     /*!< Request file size. */
+    AceSize,                    /*!< Request file size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 static ACEDCB dcb_ace1;
@@ -100,7 +101,8 @@ NUTDEVICE devAce1 = {
     AceWrite_P,                 /*!< Write to device from program space. */
     AceOpen,                    /*!< Open a device or file. */
     AceClose,                   /*!< Close a device or file. */
-    AceSize                     /*!< Request file size. */
+    AceSize,                    /*!< Request file size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 static ACEDCB dcb_ace2;
@@ -126,7 +128,8 @@ NUTDEVICE devAce2 = {
     AceWrite_P,                 /*!< Write to device from program space. */
     AceOpen,                    /*!< Open a device or file. */
     AceClose,                   /*!< Close a device or file. */
-    AceSize                     /*!< Request file size. */
+    AceSize,                    /*!< Request file size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 static ACEDCB dcb_ace3;
@@ -152,7 +155,7 @@ NUTDEVICE devAce3 = {
     AceWrite_P,                 /*!< Write to device from program space. */
     AceOpen,                    /*!< Open a device or file. */
     AceClose,                   /*!< Close a device or file. */
-    AceSize                     /*!< Request file size. */
+    AceSize,                    /*!< Request file size. */
 };
 
 /*@}*/

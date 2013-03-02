@@ -165,7 +165,8 @@ NUTDEVICE devNull = {
 #endif
     NullOpen,
     NullClose,
-    0
+    0,
+    0,
 };
 
 

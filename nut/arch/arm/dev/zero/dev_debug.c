@@ -451,7 +451,8 @@ NUTDEVICE devDebug0 = {
     ZeroDebugWrite,     /*!< _NUTDEVICE::dev_write. */
     ZeroDebugOpen,      /*!< _NUTDEVICE::dev_open. */
     ZeroDebugClose,     /*!< _NUTDEVICE::dev_close. */
-    ZeroDebugSize       /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+    ZeroDebugSize,      /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+    NULL,               /*!< _NUTDEVICE::dev_select, optional, not yet implemented */
 };
 
 /*@}*/

@@ -131,5 +131,6 @@ NUTDEVICE devSpiAt45d0 = {
 #endif
     NutBlockDeviceOpen,         /*!< \brief Mount volume, dev_open. */
     NutBlockDeviceClose,        /*!< \brief Unmount volume, dev_close. */
-    NutBlockDeviceSize          /*!< \brief Request file size, dev_size. */
+    NutBlockDeviceSize,         /*!< \brief Request file size, dev_size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };

@@ -334,7 +334,8 @@ NUTDEVICE devDebug0 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

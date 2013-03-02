@@ -120,7 +120,8 @@ NUTDEVICE devAhdlc1 = {
     AhdlcAt91Write,             /* Write to device, dev_write. */
     AhdlcAt91Open,              /* Open a device or file, dev_open. */
     AhdlcAt91Close,             /* Close a device or file, dev_close. */
-    0                           /* Request file size, dev_size. */
+    0,                          /* Request file size, dev_size. */
+    0,                          /* Select function, optional, not yet implemented */
 };
 
 

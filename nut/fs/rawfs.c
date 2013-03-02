@@ -799,7 +799,8 @@ NUTDEVICE devRawFs0 = {
 #endif
     RawFsApiFileOpen,       /*!< Open a file, dev_open. */
     RawFsApiFileClose,      /*!< Close a file, dev_close. */
-    RawFsFileSize           /*!< Return file size, dev_size. */
+    RawFsFileSize,          /*!< Return file size, dev_size. */
+    NULL,                   /*!< Select function, optional, not yet implemented */                 
 };
 
 /*@}*/

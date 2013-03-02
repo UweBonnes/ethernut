@@ -670,16 +670,17 @@ NUTDEVICE devHelixCodec = {
     0,              /* First interrupt number, dev_irq (not used). */
     0,              /* Interface control block, dev_icb (not used). */
     &dcb,           /* Driver control block, dev_dcb. */
-    HelixInit,         /* Driver initialization routine, dev_init. */
-    HelixIOCtl,        /* Driver specific control function, dev_ioctl. */
+    HelixInit,      /* Driver initialization routine, dev_init. */
+    HelixIOCtl,     /* Driver specific control function, dev_ioctl. */
     NULL,           /* Read from device, dev_read. */
-    HelixWrite,        /* Write to device, dev_write. */
+    HelixWrite,     /* Write to device, dev_write. */
 #ifdef __HARVARD_ARCH__
-    HelixWrite_P,      /* Write data from program space to device, dev_write_P. */
+    HelixWrite_P,   /* Write data from program space to device, dev_write_P. */
 #endif
-    HelixOpen,         /* Open a device or file, dev_open. */
-    HelixClose,        /* Close a device or file, dev_close. */
-    NULL            /* Request file size, dev_size. */
+    HelixOpen,      /* Open a device or file, dev_open. */
+    HelixClose,     /* Close a device or file, dev_close. */
+    NULL,           /* Request file size, dev_size. */
+    NULL,           /* Select function, optional, not yet implemented */
 };
 
 /*@}*/
