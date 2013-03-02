@@ -76,10 +76,10 @@ typedef struct _WQLIST WQLIST;
  */
 
 struct _WQLIST {
-    _WQLIST     *wl_next;
+    WQLIST      *wl_next;
     HANDLE       wq;
     uint_fast8_t flags;
-}
+};
 
 /*!
  * \brief File structure type.
