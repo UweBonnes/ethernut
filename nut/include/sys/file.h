@@ -59,6 +59,12 @@ struct _NUTDEVICE;
  */
 /*@{*/
 
+
+#define WQ_FLAG_READ    0x01
+#define WQ_FLAG_WRITE   0x02
+#define WQ_FLAG_EXCEPT  0x04
+
+
 /*!
  * \brief File waitqueue list structure type.
  */
@@ -70,8 +76,9 @@ typedef struct _WQLIST WQLIST;
  */
 
 struct _WQLIST {
-	_WQLIST *wl_next;
-	HANDLE   wq;
+    _WQLIST     *wl_next;
+    HANDLE       wq;
+    uint_fast8_t flags;
 }
 
 /*!
