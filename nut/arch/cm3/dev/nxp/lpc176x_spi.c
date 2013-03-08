@@ -68,6 +68,7 @@ static int  Lpc17xxSpiBusSelect   (NUTSPINODE * node, uint32_t tmo);
 static int  Lpc17xxSpiBusDeselect (NUTSPINODE * node);
 static int  Lpc17xxSpiBusTransfer (NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
 
+// TODO: Add a mutex for the bus access
 
 NUTSPIBUS spiBus0Lpc17xx = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
