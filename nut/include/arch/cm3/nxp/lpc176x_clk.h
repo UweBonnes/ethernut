@@ -93,7 +93,7 @@
 #define  CLKPWR_PCLKSEL_CCLK_DIV_4  0    /* CCLK / 4 */
 #define  CLKPWR_PCLKSEL_CCLK_DIV_1  1    /* CCLK     */
 #define  CLKPWR_PCLKSEL_CCLK_DIV_2  2    /* CCLK / 2 */
-
+#define  CLKPWR_PCLKSEL_CCLK_DIV_8  3    /* CCLK / 8 */
 
 /*----------------------------------------------------------------------------*
   Peripheral power control bit positions

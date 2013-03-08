@@ -66,12 +66,12 @@
 
 #include <cfg/arch.h>
 #include <arch/cm3.h>
-
 #include <arch/cm3/timer.h>
 #include <arch/cm3/nxp/lpc176x_clk.h>
 #include <cfg/clock.h>
 
 #include <arch/cm3/nxp/lpc176x.h>
+#include <sys/nutdebug.h>
 
 
 /*
@@ -637,15 +637,15 @@ uint32_t Lpc17xx_ClockGet(int idx)
     }
 }
 
-int Lpc17xx_PclkDivGet(int id) {
-
+int Lpc17xx_PclkDivGet(int id)
+{
     NUTASSERT((id & 0x01 != 0) || (id >= 64));
 
     if (id > 31) {
         id -= 32;
     }
 
-    switch (LPC_SC->PCLKSEL0 >> id) & 0x03) {
+    switch ((LPC_SC->PCLKSEL0 >> id) & 0x03) {
         case CLKPWR_PCLKSEL_CCLK_DIV_4:
             return 4;
 
@@ -662,6 +662,8 @@ int Lpc17xx_PclkDivGet(int id) {
                 return 6;
             }
     }
+    /* Just to make the compiler happy */
+    return 1;
 }
 
 void Lpc17xx_PclkDivSet(int id, int div) {
