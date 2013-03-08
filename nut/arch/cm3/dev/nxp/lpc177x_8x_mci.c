@@ -72,6 +72,8 @@
 #include <arch/cm3/nxp/lpc177x_8x_clk.h>
 #include <arch/cm3/nxp/lpc177x_8x_mci.h>
 
+//#define NUTDEBUG
+
 #ifdef NUTDEBUG
 #include <stdio.h>
 #endif
@@ -1005,7 +1007,6 @@ int32_t Lpc177x_8x_MciGetCmdResp(uint32_t ExpectCmdData, uint32_t ExpectResp, ui
         {
             LPC_MCI->CLEAR = CmdRespStatus | MCI_CMD_TIMEOUT;
 
-            CmdRespStatus = LPC_MCI->STATUS;
 
             LPC_MCI->COMMAND = 0;
             LPC_MCI->ARGUMENT = 0xFFFFFFFF;
@@ -1128,11 +1129,11 @@ int32_t Lpc177x_8x_MciCmdResp(uint32_t CmdIndex, uint32_t Argument,
     {
         printf("%s() failed with MCI_CMD_CRC_FAIL\n", __FUNCTION__ );
     }
-    if(respStatus & (INVALID_RESPONSE))
+    if(respStatus == INVALID_RESPONSE)
     {
         printf("%s() failed with INVALID_RESPONSE\n", __FUNCTION__ );
     }
-    if(respStatus & (MCI_FUNC_BAD_PARAMETERS))
+    if(respStatus == MCI_FUNC_BAD_PARAMETERS)
     {
         printf("%s() failed with MCI_FUNC_BAD_PARAMETERS\n", __FUNCTION__ );
     }
@@ -1246,7 +1247,7 @@ int32_t Lpc177x_8x_MciCmd_SendIfCond(void)
     {
         respStatus = Lpc177x_8x_MciCmdResp(CMD8_SEND_IF_COND, CmdArgument, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
-        if (respStatus & MCI_CMD_TIMEOUT)
+        if (respStatus & (MCI_CMD_TIMEOUT))
         {
             // consider as no response
             retval = MCI_FUNC_TIMEOUT;
@@ -1325,7 +1326,11 @@ int32_t Lpc177x_8x_MciCmd_SendACMD( void )
     {
         respStatus = Lpc177x_8x_MciCmdResp(CMD55_APP_CMD, CmdArgument, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
-        if (respStatus != 0)
+        if (respStatus & (MCI_CMD_TIMEOUT))     // filter out TIMEOUT error to be able to quickly respond missing cards
+        {
+            retval = MCI_FUNC_TIMEOUT;
+        }
+        else if (respStatus != 0)               // not one of MCI_ errors coming from the status register
         {
             retval = MCI_FUNC_FAILED;
         }
@@ -1345,13 +1350,17 @@ int32_t Lpc177x_8x_MciCmd_SendACMD( void )
     }
 
 #ifdef NUTDEBUG
-    if(retval == MCI_FUNC_NOT_READY)
+    if(retval == MCI_FUNC_TIMEOUT)
     {
-        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
+        printf("%s() failed with MCI_FUNC_TIMEOUT\n", __FUNCTION__ );
     }
     if(retval == MCI_FUNC_FAILED)
     {
         printf("%s() failed with MCI_FUNC_FAILED\n", __FUNCTION__ );
+    }
+    if(retval == MCI_FUNC_NOT_READY)
+    {
+        printf("%s() failed with MCI_FUNC_NOT_READY\n", __FUNCTION__ );
     }
 #endif
 
@@ -1390,15 +1399,11 @@ int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
 
     while (retryCount > 0)
     {
-        /* Clear Open Drain output control for SD */
-        //Lpc177x_8x_MciSetOutputMode(MCI_OUTPUT_MODE_PUSHPULL);
-        //NutMicroDelay (300)
-
         if ((retval = Lpc177x_8x_MciCmd_SendACMD()) == MCI_FUNC_OK)
         {
             respStatus = Lpc177x_8x_MciCmdResp(ACMD41_SEND_APP_OP_COND, argument, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
-            if (respStatus & MCI_CMD_TIMEOUT)
+            if (respStatus & (MCI_CMD_TIMEOUT))
             {
                 retval = MCI_FUNC_TIMEOUT;
             }
@@ -1410,6 +1415,18 @@ int32_t Lpc177x_8x_MciAcmd_SendOpCond(uint8_t hcsVal)
             {
                 CCS = (respValue[0] & (1<<30)) ? 1:0;
                 retval = MCI_FUNC_OK;
+                break;
+            }
+        }
+        else
+        {
+            /*
+             *  check for TIMEOUT errors here and treat them in a special way. In case no card is present, we
+             *  want to quit the interrogration asap.
+             */
+            if (retval & (MCI_CMD_TIMEOUT))
+            {
+                retval = MCI_FUNC_TIMEOUT;
                 break;
             }
         }
@@ -1467,9 +1484,13 @@ int32_t Lpc177x_8x_MciCardInit( void )
 
     if (retval == MCI_FUNC_BAD_PARAMETERS)
     {
-        //Unknow card is unusable
+        // Unknow card is unusable
         return(retval);
     }
+
+    /*
+     *  please note that MCI_FUNC_TIMEOUT error is allowed here
+     */
 
     if (retval == MCI_FUNC_OK) /* Ver2.00 or later*/
     {
@@ -1648,7 +1669,7 @@ int32_t Lpc177x_8x_MciSetCardAddress( void )
         /* Send CMD3 command repeatedly until the response is back correctly */
         respStatus = Lpc177x_8x_MciCmdResp(CMD3_SET_RELATIVE_ADDR, CmdArgument, EXPECT_SHORT_RESP, (uint32_t *)&respValue[0], ALLOW_CMD_TIMER);
 
-        if (respStatus & MCI_CMD_TIMEOUT)
+        if (respStatus & (MCI_CMD_TIMEOUT))
         {
             retval = MCI_FUNC_TIMEOUT;
         }

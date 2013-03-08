@@ -134,12 +134,14 @@
 #define SysCtlPeripheralClkEnable(bit)  CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit)) = 1
 #define SysCtlPeripheralClkDisable(bit) CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit)) = 0
 #define SysCtlPeripheralClkGet(bit)     CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
-uint32_t SysCtlClockGet(void);
-int SetSysClock(void);
+
+extern uint32_t SysCtlClockGet(void);
+extern int SetSysClock(void);
 
 
-uint32_t Lpc17xx_ClockGet(int idx);
-
+extern uint32_t Lpc17xx_ClockGet(int idx);
+extern int Lpc176x_PclkDivGet(int id);
+extern void Lpc176x_PclkDivSet(int id, int div) ;
 
 /* Transform ns into clock cycles (runtime, only 32bit multiplications):
  * Valid input range: Clock < 995 MHz, ns = 0..1000000 (1ms)

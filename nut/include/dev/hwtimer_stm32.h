@@ -101,7 +101,7 @@
     :((timer) == (NUTTIMER4))?NutClockGet(NUT_HWCLK_PCLK1)        \
     :((timer) == (NUTTIMER5))?NutClockGet(NUT_HWCLK_PCLK1)        \
     :((timer) == (NUTTIMER6))?NutClockGet(NUT_HWCLK_PCLK1)        \
-    :((timer) == (NUTTIMER7))?:0
+    :((timer) == (NUTTIMER7))?NutClockGet(NUT_HWCLK_PCLK1):0
 #elif defined(MCU_STM32L1)
 #define  TIM_Init(timer) \
     ((timer) == (NUTTIMER2))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM2)) = 1)) \
@@ -136,7 +136,7 @@
     :((timer) == (NUTTIMER3))?NutClockGet(NUT_HWCLK_PCLK1)        \
     :((timer) == (NUTTIMER4))?NutClockGet(NUT_HWCLK_PCLK1)        \
     :((timer) == (NUTTIMER6))?NutClockGet(NUT_HWCLK_PCLK1)        \
-    :((timer) == (NUTTIMER7))?:0
+    :((timer) == (NUTTIMER7))?NutClockGet(NUT_HWCLK_PCLK1):0
 #elif defined(MCU_STM32F2) || defined(MCU_STM32F4)
 #define  TIM_Init(timer) \
     ((timer) == (NUTTIMER2))?((CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1Periph_TIM2)) = 1)) \
@@ -176,7 +176,7 @@
     :((timer) == (NUTTIMER4))?NutClockGet(NUT_HWCLK_PCLK1)        \
     :((timer) == (NUTTIMER5))?NutClockGet(NUT_HWCLK_PCLK1)        \
     :((timer) == (NUTTIMER6))?NutClockGet(NUT_HWCLK_PCLK1)        \
-    :((timer) == (NUTTIMER7))?:0
+    :((timer) == (NUTTIMER7))?NutClockGet(NUT_HWCLK_PCLK1):0
 #else
 #warning "Unknown STM32 family"
 #endif

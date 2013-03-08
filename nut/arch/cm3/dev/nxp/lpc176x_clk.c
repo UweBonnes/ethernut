@@ -636,3 +636,56 @@ uint32_t Lpc17xx_ClockGet(int idx)
             break;
     }
 }
+
+int Lpc17xx_PclkDivGet(int id) {
+
+    NUTASSERT((id & 0x01 != 0) || (id >= 64));
+
+    if (id > 31) {
+        id -= 32;
+    }
+
+    switch (LPC_SC->PCLKSEL0 >> id) & 0x03) {
+        case CLKPWR_PCLKSEL_CCLK_DIV_4:
+            return 4;
+
+        case CLKPWR_PCLKSEL_CCLK_DIV_1:
+            return 1;
+
+        case CLKPWR_PCLKSEL_CCLK_DIV_2:
+            return 2;
+
+        case CLKPWR_PCLKSEL_CCLK_DIV_8:
+            if ((id != CLKPWR_PCLKSEL_CAN1) && (id != CLKPWR_PCLKSEL_CAN2)) {
+                return 8;
+            } else {
+                return 6;
+            }
+    }
+}
+
+void Lpc17xx_PclkDivSet(int id, int div) {
+    NUTASSERT((id & 0x01 != 0) || (id >= 64));
+    NUTASSERT((div != 1) && (div != 2) && (div != 4) && (div != 6) && (div != 8));
+
+    if (id > 31) {
+        id -= 32;
+    }
+
+    LPC_SC->PCLKSEL0 &= ~(0x03 << id);
+    switch (div) {
+        case 1:
+            LPC_SC->PCLKSEL0 |= (CLKPWR_PCLKSEL_CCLK_DIV_1 << id);
+            break;
+        case 2:
+            LPC_SC->PCLKSEL0 |= (CLKPWR_PCLKSEL_CCLK_DIV_2 << id);
+            break;
+        case 4:
+            LPC_SC->PCLKSEL0 |= (CLKPWR_PCLKSEL_CCLK_DIV_4 << id);
+            break;
+        case 6:
+        case 8:
+            LPC_SC->PCLKSEL0 |= (CLKPWR_PCLKSEL_CCLK_DIV_8 << id);
+            break;
+    }
+}
