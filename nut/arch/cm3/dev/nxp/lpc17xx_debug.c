@@ -384,7 +384,6 @@ NUTFILE *Lpc17xxDevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int ac
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
-    fp->wq_list = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 
@@ -609,9 +608,6 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
 
     /* Clear FIFOs */
     USARTn->FCR |= UART_FCR_FIFO_EN | UART_FCR_RX_RS | UART_FCR_TX_RS;
-
-    /* Disable FIFOs */
-    USARTn->FCR  = 0;
 
     /* Dummy reading */
     while (USARTn->LSR & UART_LSR_RDR) {
