@@ -153,6 +153,23 @@ static int Lpc17xxDevDebugSetSpeed(uint32_t baudrate)
     /* get UART block clock */
     uart_clock = NutArchClockGet(NUT_HWCLK_PCLK);
 
+#if defined(MCU_LPC176x)
+
+    if ((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
+        uart_clock /= Lpc176x_PclkDivGet(CLKPWR_PCLKSEL_UART0);
+    } else
+    if ((LPC_UART1_TypeDef*)USARTn == LPC_UART1) {
+        uart_clock /= Lpc176x_PclkDivGet(CLKPWR_PCLKSEL_UART1);
+    } else
+    if ((LPC_UART_TypeDef*)USARTn == LPC_UART2) {
+        uart_clock /= Lpc176x_PclkDivGet(CLKPWR_PCLKSEL_UART2);
+    } else
+    if ((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
+        uart_clock /= Lpc176x_PclkDivGet(CLKPWR_PCLKSEL_UART3);
+    }
+
+#endif
+
     uart_clock = uart_clock >> 4; /* div by 16 */
 
     /* Baudrate calculation is done according the following formula:
@@ -673,7 +690,7 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
 
     Lpc17xxDevDebugSetSpeed(DEBUG_INIT_BAUTRATE);
     Lpc17xxDevDebugSetDataBits(8);
-    Lpc17xxDevDebugSetStopBits(2);
+    Lpc17xxDevDebugSetStopBits(1);
     Lpc17xxDevDebugSetParity(0);
 
     return 0;
