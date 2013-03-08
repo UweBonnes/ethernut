@@ -75,7 +75,10 @@ nutarch_cm3_lpc176x =
                     "HW_CRC32_LPC177x",
                     "DEV_IRQ_LPC17xx",
                     "HW_WDT_LPC17xx",
+--                    "HW_GPDMA_LPC17xx",
                     "HW_EMAC_LPC17xx",
+                    "HW_I2C_LPC17xx",
+                    "HW_SPI_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -101,7 +104,9 @@ nutarch_cm3_lpc176x =
                 {
                     "HW_MCU_LPC1758",
                     "HW_UART0_LPC17xx",
-                    "HW_UART1_LPC17xx"
+                    "HW_UART1_LPC17xx",
+                    "HW_UART2_LPC17xx",
+                    "HW_UART3_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             },
@@ -115,7 +120,9 @@ nutarch_cm3_lpc176x =
                 {
                     "HW_MCU_LPC1768",
                     "HW_UART0_LPC17xx",
-                    "HW_UART1_LPC17xx"
+                    "HW_UART1_LPC17xx",
+                    "HW_UART2_LPC17xx",
+                    "HW_UART3_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -155,6 +162,35 @@ nutarch_cm3_lpc176x =
             "cm3/dev/nxp/lpc176x_gpio.c",
             "cm3/dev/nxp/lpc17xx_gpioirq.c",
             "cm3/dev/nxp/ih_lpc17xx_pio.c"
+        }
+    },
+
+    --
+    -- LPC176x DEBUG UART Interface
+    --
+    {
+        name = "nutarch_cm3_lpc176x_debug",
+        brief = "LPC176x Debug UART Driver",
+        description = "Polling UART driver, which can be used from interrupt context\n",
+        requires = { "HW_UART0_LPC17xx", "HW_UART1_LPC17xx", "HW_UART2_LPC17xx", "HW_UART3_LPC17xx" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources =
+        {
+            "cm3/dev/nxp/lpc176x_debug0.c",
+            "cm3/dev/nxp/lpc176x_debug1.c",
+            "cm3/dev/nxp/lpc176x_debug2.c",
+            "cm3/dev/nxp/lpc176x_debug3.c"
+        },
+        options =
+        {
+            {
+                macro = "DEBUG_INIT_BAUDRATE",
+                brief = "Initial Baudrate",
+                description = "Initial baudrate the debug UART is set to.",
+                type = "integer",
+                default = 115200,
+                file = "include/cfg/uart.h"
+            }
         }
     },
 
@@ -240,9 +276,9 @@ nutarch_cm3_lpc176x =
             "DEV_UART1_GPIO_RTS",
             "DEV_UART1_GPIO_CTS"
         },
---        sources =  { "cm3/dev/nxp/lpc176x_usart1.c",
---                     "cm3/dev/nxp/ih_lpc17xx_usart1.c"
---                   },
+        sources =  { "cm3/dev/nxp/lpc176x_usart1.c",
+                     "cm3/dev/nxp/ih_lpc17xx_usart1.c"
+                   },
         options =
         {
             {
@@ -296,9 +332,9 @@ nutarch_cm3_lpc176x =
             "DEV_UART_LPC17xx",
             "DEV_UART_SPECIFIC"
         },
---        sources =  { "cm3/dev/nxp/lpc176x_usart2.c",
---                     "cm3/dev/nxp/ih_lpc17xx_usart2.c"
---                   },
+        sources =  { "cm3/dev/nxp/lpc176x_usart2.c",
+                     "cm3/dev/nxp/ih_lpc17xx_usart2.c"
+                   },
         options =
         {
             {
@@ -352,9 +388,9 @@ nutarch_cm3_lpc176x =
             "DEV_UART_LPC17xx",
             "DEV_UART_SPECIFIC"
         },
---        sources =  {  "cm3/dev/nxp/lpc176x_usart3.c",
---                    "cm3/dev/nxp/ih_lpc17xx_usart3.c"
---                  },
+        sources =  {  "cm3/dev/nxp/lpc176x_usart3.c",
+                      "cm3/dev/nxp/ih_lpc17xx_usart3.c"
+                   },
         options =
         {
             {
@@ -392,6 +428,18 @@ nutarch_cm3_lpc176x =
                 file = "include/cfg/uart.h"
             }
         }
+    },
+    --
+    -- LPC176x SPI
+    --
+    {
+        name = "nutarch_cm3_lpc176x_spi",
+        brief = "SPI Bus (LPC176x)",
+        description = "LPC176x SPI driver, currently implemented as polling driver \n"..
+                      "without interrupt or dma usage\n",
+        requires = { "HW_SPI_LPC17xx" },
+        provides = { "SPIBUS_CONTROLLER" },
+        sources = { "cm3/dev/nxp/lpc176x_spi.c" },
     },
 }
 
