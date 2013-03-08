@@ -610,9 +610,6 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
     /* Clear FIFOs */
     USARTn->FCR |= UART_FCR_FIFO_EN | UART_FCR_RX_RS | UART_FCR_TX_RS;
 
-    /* Disable FIFOs */
-    USARTn->FCR  = 0;
-
     /* Dummy reading */
     while (USARTn->LSR & UART_LSR_RDR) {
         (volatile uint32_t)USARTn->RBR;
