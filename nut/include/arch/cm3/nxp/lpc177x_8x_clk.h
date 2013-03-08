@@ -143,9 +143,9 @@
                                           CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON0, (bit)) = 0; else \
                                           CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON1, (bit - 32)) = 0;
 
-uint32_t Lpc17xx_ClockGet(int idx);
-uint32_t SysCtlClockGet(void);
-int SetSysClock(void);
+extern uint32_t Lpc17xx_ClockGet(int idx);
+extern uint32_t SysCtlClockGet(void);
+extern int SetSysClock(void);
 
 /* Transform ns into clock cycles (runtime, only 32bit multiplications):
  * Valid input range: Clock < 995 MHz, ns = 0..1000000 (1ms)
