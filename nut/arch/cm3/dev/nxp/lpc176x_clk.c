@@ -637,7 +637,7 @@ uint32_t Lpc17xx_ClockGet(int idx)
     }
 }
 
-int Lpc17xx_PclkDivGet(int id)
+int Lpc176x_PclkDivGet(int id)
 {
     NUTASSERT((id & 0x01 != 0) || (id >= 64));
 
@@ -666,7 +666,7 @@ int Lpc17xx_PclkDivGet(int id)
     return 1;
 }
 
-void Lpc17xx_PclkDivSet(int id, int div) {
+void Lpc176x_PclkDivSet(int id, int div) {
     NUTASSERT((id & 0x01 != 0) || (id >= 64));
     NUTASSERT((div != 1) && (div != 2) && (div != 4) && (div != 6) && (div != 8));
 
