@@ -83,9 +83,9 @@ static int Lpc17xxUsartInit(void);
 static int Lpc17xxUsartDeinit(void);
 
 /*
- * USART0 device control block structure.
+ * USART1 device control block structure.
  */
-static USARTDCB dcb_usart0 = {
+static USARTDCB dcb_usart1 = {
     0,                          /* dcb_modeflags */
     0,                          /* dcb_statusflags */
     0,                          /* dcb_rtimeout */
@@ -114,29 +114,29 @@ static USARTDCB dcb_usart0 = {
 };
 
 /*!
- * \name LPC17xx USART0 Device
+ * \name LPC17xx USART1 Device
  */
 /*@{*/
 
 /*!
- * \brief USART0 device information structure.
+ * \brief USART1 device information structure.
  *
  * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using the serial communication
- * driver of the LPC17xx's on-chip USART0.
+ * driver of the LPC17xx's on-chip USART1.
  *
- * The device is named usart0.
+ * The device is named usart1.
  *
  * \showinitializer
  */
-NUTDEVICE devUsartLpc176x_0 = {
+NUTDEVICE devUsartLpc176x_1 = {
     0,                          /* Pointer to next device, dev_next. */
-    {'u', 's', 'a', 'r', 't', '0', 0, 0, 0},    /* Unique device name, dev_name. */
+    {'u', 's', 'a', 'r', 't', '1', 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
-    LPC_UART0_BASE,             /* Base address, dev_base. */
-    UART0_IRQn,                 /* First interrupt number, dev_irq. */
+    LPC_UART1_BASE,             /* Base address, dev_base. */
+    UART1_IRQn,                 /* First interrupt number, dev_irq. */
     NULL,                       /* Interface control block, dev_icb. */
-    &dcb_usart0,                /* Driver control block, dev_dcb. */
+    &dcb_usart1,                /* Driver control block, dev_dcb. */
     UsartInit,                  /* Driver initialization routine, dev_init. */
     UsartIOCtl,                 /* Driver specific control function, dev_ioctl. */
     UsartRead,                  /* Read from device, dev_read. */
@@ -149,7 +149,7 @@ NUTDEVICE devUsartLpc176x_0 = {
 /*@}*/
 
 /*!
- * \brief USART0 GPIO configuartion and assignment.
+ * \brief USART1 GPIO configuartion and assignment.
  */
 
 #define TX_GPIO_PORT    NUTGPIO_PORT0
@@ -161,33 +161,28 @@ NUTDEVICE devUsartLpc176x_0 = {
 
 
 /*!
- * \brief USART0 base configuration.
+ * \brief USART1 base configuration.
  */
 
-#ifdef USART0_INIT_BAUDRATE
-#define USART_INIT_BAUTRATE USART0_INIT_BAUDRATE
+#ifdef USART1_INIT_BAUDRATE
+#define USART_INIT_BAUTRATE USART1_INIT_BAUDRATE
 #endif
 
 
-/* USART0 does not support hardware handshake */
+/* USART1 does not support hardware handshake */
 #define USART_HWFLOWCTRL USART_HardwareFlowControl_None
 #undef  US_MODE_HWHANDSHAKE
 
-#ifdef USART0_XONXOFF_CONTROL
+#ifdef USART1_XONXOFF_CONTROL
 #define USART_XONXOFF_CONTROL
 #else
 #undef  USART_XONXOFF_CONTROL
 #endif
 
-#ifdef USART0_MODE_IRDA
-#define USART_MODE_IRDA
-#else
-#undef  USART_MODE_IRDA
-#endif
 
 /* TODO: DMA Support */
 /*
-#ifdef USART0_SUPPORT_DMA
+#ifdef USART1_SUPPORT_DMA
 #define UART_DMA_TXCHANNEL  DMA1_C4
 #define UART_DMA_RXCHANNEL  DMA1_C5
 #define UART_DMA_TXIRQ      sig_DMA1_CH4
@@ -198,12 +193,12 @@ NUTDEVICE devUsartLpc176x_0 = {
 #endif
 */
 
-#define USARTn      LPC_UART0
-#define USARTnBase  LPC_UART0_BASE
-#define USARTirqn   UART0_IRQn
+#define USARTn      LPC_UART1
+#define USARTnBase  LPC_UART1_BASE
+#define USARTirqn   UART1_IRQn
 
-#define SigUSART    sig_USART0
-#define DcbUSART    dcb_usart0
+#define SigUSART    sig_USART1
+#define DcbUSART    dcb_usart1
 
 /*@}*/
 #include "lpc17xx_usart.c"
