@@ -104,9 +104,10 @@ NUTDEVICE devDebug3 = {
     Lpc17xxDevDebugOpen,        /*!< dev_open. */
     Lpc17xxDevDebugClose,       /*!< dev_close. */
 #ifdef NUT_DEV_DEBUG_READ
-    Lpc17xxDevDebugSize         /*!< dev_size. */
+    Lpc17xxDevDebugSize,        /*!< dev_size. */
 #else
-    NULL                        /*!< dev_size. */
+    NULL,                       /*!< dev_size. */
+    NULL,                       /*!< dev_select, optional, not yet implemented */
 #endif
 };
 
