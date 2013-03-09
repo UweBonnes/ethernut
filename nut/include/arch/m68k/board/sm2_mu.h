@@ -46,5 +46,5 @@
  * Debug device.
  */
 #ifndef DEV_DEBUG
-#define DEV_DEBUG		devDebug2
+#define DEV_DEBUG       devDebug2
 #endif

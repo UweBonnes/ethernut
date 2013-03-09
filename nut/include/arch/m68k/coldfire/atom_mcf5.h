@@ -35,20 +35,20 @@
 #endif
 
 #define NutEnterCritical() \
-	asm("move.l %d0, -8(%sp)\n" \
-		"move.w  %sr, %d0\n" \
-		"sub.l #4, %sp\n"\
-		"move.l %d0,(%sp)\n" \
-		"ori.l #0x700, %d0\n"\
-		"move.w %d0, %sr\n" \
-		"move.l -4(%sp), %d0");
+    asm("move.l %d0, -8(%sp)\n" \
+        "move.w  %sr, %d0\n" \
+        "sub.l #4, %sp\n"\
+        "move.l %d0,(%sp)\n" \
+        "ori.l #0x700, %d0\n"\
+        "move.w %d0, %sr\n" \
+        "move.l -4(%sp), %d0");
 
 #define NutExitCritical() \
    asm("move.l %d0, -4(%sp)\n" \
-	   "move.l (%sp), %d0\n" \
-	   "move.w	%d0,%sr\n" \
-	   "move.l -4(%sp), %d0\n" \
-	   "adda.l #4, %sp");
+       "move.l (%sp), %d0\n" \
+       "move.w  %d0,%sr\n" \
+       "move.l -4(%sp), %d0\n" \
+       "adda.l #4, %sp");
 
 #define NutJumpOutCritical NutExitCritical 
 
