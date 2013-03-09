@@ -215,6 +215,11 @@ struct _RINGBUF {
      * Changed by the receiver interrupt.
      */
     uint8_t* volatile rbf_blockptr;
+
+    /*!
+     * \brief Drivers / Ringbuffers wait queue list. Needed for select
+     */
+    WQLIST *wq_list;
 };
 
 /*@}*/
@@ -347,7 +352,7 @@ struct _USARTDCB {
     /*!
      * \brief Get handshake mode.
      */
-     uint32_t(*dcb_get_flow_control) (void);
+    uint32_t(*dcb_get_flow_control) (void);
 
     /*!
      * \brief Set hardware speed.
@@ -357,7 +362,7 @@ struct _USARTDCB {
     /*!
      * \brief Get hardware speed.
      */
-     uint32_t(*dcb_get_speed) (void);
+    uint32_t(*dcb_get_speed) (void);
 
     /*!
      * \brief Set hardware data bits.
@@ -367,7 +372,7 @@ struct _USARTDCB {
     /*!
      * \brief Get hardware data bits.
      */
-     uint8_t(*dcb_get_data_bits) (void);
+    uint8_t(*dcb_get_data_bits) (void);
 
     /*!
      * \brief Set hardware parity mode.
@@ -377,7 +382,7 @@ struct _USARTDCB {
     /*!
      * \brief Get hardware parity mode.
      */
-     uint8_t(*dcb_get_parity) (void);
+    uint8_t(*dcb_get_parity) (void);
 
     /*!
      * \brief Set hardware stop bits.
@@ -387,7 +392,7 @@ struct _USARTDCB {
     /*!
      * \brief Get hardware stop bits.
      */
-     uint8_t(*dcb_get_stop_bits) (void);
+    uint8_t(*dcb_get_stop_bits) (void);
 
     /*!
      * \brief Set hardware status.
@@ -397,7 +402,7 @@ struct _USARTDCB {
     /*!
      * \brief Get hardware status.
      */
-     uint32_t(*dcb_get_status) (void);
+    uint32_t(*dcb_get_status) (void);
 
     /*!
      * \brief Set clock mode.
@@ -407,7 +412,7 @@ struct _USARTDCB {
     /*!
      * \brief Get clock mode.
      */
-     uint8_t(*dcb_get_clock_mode) (void);
+    uint8_t(*dcb_get_clock_mode) (void);
 };
 
 /*!

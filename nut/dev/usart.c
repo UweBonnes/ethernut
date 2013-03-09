@@ -49,6 +49,7 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/nutdebug.h>
+#include <sys/select.h>
 
 #include <dev/irqreg.h>
 #include <dev/usart.h>
@@ -564,6 +565,8 @@ int UsartClose(NUTFILE * fp)
     UsartResetBuffer(&dcb->dcb_rx_rbf, 0, 0, 0);
     /* Wake-up all threads waiting for incoming data. */
     NutEventBroadcast(&dcb->dcb_rx_rbf.rbf_que);
+	NutSelectWakeup(dcb->dcb_rx_rbf.wq_list, WQ_FLAG_READ | WQ_FLAG_EXCEPT);
+	NutSelectWakeup(dcb->dcb_tx_rbf.wq_list, WQ_FLAG_WRITE | WQ_FLAG_EXCEPT);
 
     return rc;
 }
@@ -634,7 +637,7 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
      * a file creation routine to get a linked list of all opened
      * files in the system.
      */
-    fp->wq_list = NULL;
+
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 
@@ -994,5 +997,39 @@ long UsartSize (NUTFILE *fp)
     return avail;
 }
 
+int UsartSelect (NUTFILE *fp, int flags, HANDLE *wq, select_cmd_t cmd)
+{
+    NUTDEVICE *dev;
+    USARTDCB  *dcb;
+    RINGBUF   *rx_rbf;
+    RINGBUF   *tx_rbf;
+
+	int rflags = 0;
+
+	dev = fp->nf_dev;
+	dcb = dev->dev_dcb;
+	rx_rbf = &dcb->dcb_rx_rbf;
+	tx_rbf = &dcb->dcb_tx_rbf;
+
+	/* Manage the wait queue lists for the select call */
+	NutSelectManageWq(&rx_rbf->wq_list, wq, flags & (WQ_FLAG_READ | WQ_FLAG_EXCEPT), cmd);
+	NutSelectManageWq(&tx_rbf->wq_list, wq, flags & (WQ_FLAG_WRITE | WQ_FLAG_EXCEPT), cmd);
+
+	/* receive / transmit interrupt can change the buffer counts, so these
+	   checks will be done atomic.
+	 */
+	NutEnterCritical();
+	if (rx_rbf->rbf_cnt > 0) {
+		rflags |= WQ_FLAG_READ;
+	}
+	if (tx_rbf->rbf_cnt < tx_rbf->rbf_siz) {
+		rflags |= WQ_FLAG_WRITE;
+	}
+	NutExitCritical();
+
+	rflags &= flags;
+
+	return rflags;
+}
 
 /*@}*/
