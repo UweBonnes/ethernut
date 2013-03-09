@@ -1098,7 +1098,6 @@ NUTFILE *AhdlcAt91Open(NUTDEVICE * dev, const char *name, int mode, int acc)
     if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0)
         return NUTFILE_EOF;
 
-    fp->wq_list = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 

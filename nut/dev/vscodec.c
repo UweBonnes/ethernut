@@ -663,7 +663,6 @@ static NUTFILE *VsOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     NutSleep(2);
 
     nfp = malloc(sizeof(NUTFILE));
-    nfp->wq_list = NULL;
     nfp->nf_dev = dev;
     nfp->nf_fcb = NULL;
 

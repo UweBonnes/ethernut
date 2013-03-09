@@ -300,7 +300,6 @@ int DebugWrite(NUTFILE * fp, const void *buffer, int len)
  */
 NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
-    dbgfile.wq_list = NULL;
     dbgfile.nf_dev = dev;
     dbgfile.nf_fcb = NULL;
 

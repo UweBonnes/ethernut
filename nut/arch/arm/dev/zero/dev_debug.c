@@ -322,7 +322,6 @@ static NUTFILE *ZeroDebugOpen(NUTDEVICE * dev, const char *name, int mode, int a
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
-    fp->wq_list = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 

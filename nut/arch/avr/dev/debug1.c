@@ -124,7 +124,6 @@ static int DebugWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 
 static NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
-    dbgfile.wq_list = NULL;
     dbgfile.nf_dev = dev;
     dbgfile.nf_fcb = NULL;
 

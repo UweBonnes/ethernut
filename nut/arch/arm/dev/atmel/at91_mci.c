@@ -816,7 +816,7 @@ static NUTFILE *At91MciMount(NUTDEVICE * dev, const char *name, int mode, int ac
         errno = ENOMEM;
         return NUTFILE_EOF;
     }
-    nfp->wq_list = NULL;
+
     nfp->nf_dev = dev;
     nfp->nf_fcb = fcb;
 

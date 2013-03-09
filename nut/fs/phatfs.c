@@ -413,7 +413,6 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
     }
 
     memset(ffcb, 0, sizeof(PHATFILE));
-    nfp->wq_list = NULL;
     nfp->nf_dev = dev;
     nfp->nf_fcb = ffcb;
 

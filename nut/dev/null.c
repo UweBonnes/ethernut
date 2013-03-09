@@ -67,7 +67,6 @@ static NUTFILE *NullOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     }
 
     // enter data
-    nf->wq_list = 0;
     nf->nf_dev = dev;
 
     return nf;

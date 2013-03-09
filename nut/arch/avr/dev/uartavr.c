@@ -818,7 +818,6 @@ NUTFILE *UartAvrOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     else
         dcb->dcb_modeflags |= UART_MF_COOKEDMODE;
 
-    fp->wq_list = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 

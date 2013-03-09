@@ -779,7 +779,7 @@ NUTFILE *TermOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
         dcb->dcb_modeflags &= ~LCD_MF_COOKEDMODE;
     else
         dcb->dcb_modeflags |= LCD_MF_COOKEDMODE;
-    fp->wq_list = NULL;
+
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 

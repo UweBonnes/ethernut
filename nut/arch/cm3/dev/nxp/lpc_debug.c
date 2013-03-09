@@ -58,7 +58,6 @@ NUTFILE *LpcDevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
-    fp->wq_list = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 

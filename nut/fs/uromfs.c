@@ -211,7 +211,6 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, const char *name, int mode,
         errno = ENOENT;
 
     if (romf) {
-        fp->wq_list = NULL;
         fp->nf_dev = dev;
         fp->nf_fcb = romf;
     } else {
