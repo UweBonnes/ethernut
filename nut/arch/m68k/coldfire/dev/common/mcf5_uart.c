@@ -278,6 +278,7 @@ static void Mcf5UsartTxReady(void *arg)
          */
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
     }
 
@@ -286,6 +287,7 @@ static void Mcf5UsartTxReady(void *arg)
          * Nothing left to transmit, wakeup waiting thread
          */
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
 
         /*
          * Disable TX interrupt in full-duplex mode.
@@ -418,8 +420,10 @@ static void Mcf5UsartRxComplete(void *arg) {
     /*
      *  Wakeup waiting threads
      */
-    if (postEvent)
+    if (postEvent) {
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
+    }
 }
 
 /*!

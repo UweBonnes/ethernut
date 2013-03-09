@@ -126,7 +126,7 @@ NUTDEVICE devUartStm32_5 = {
     UsartOpen,                  /* Open a device or file, dev_open. */
     UsartClose,                 /* Close a device or file, dev_close. */
     UsartSize,                  /* Request file size, dev_size. */
-    NULL,                       /* Select function, optional, not yet implemented */
+    UsartSelect,                /* Select function, dev_select. */
 };
 
 /*@}*/

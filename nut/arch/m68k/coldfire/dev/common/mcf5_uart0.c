@@ -123,7 +123,7 @@ NUTDEVICE devUartMcf5_0 = {
     UsartOpen,                  /* Open a device or file, dev_open. */
     UsartClose,                 /* Close a device or file, dev_close. */
     UsartSize,                  /* Request file size, dev_size. */
-    NULL,                       /* select call, dev_select */
+    UsartSelect,                /* select call, dev_select */
 };
 
 /*@}*/

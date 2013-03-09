@@ -280,6 +280,7 @@ static void AvrUsartTxEmpty(void *arg) {
         rbf->rbf_tail = cp;
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
     }
 
@@ -290,6 +291,7 @@ static void AvrUsartTxEmpty(void *arg) {
         cbi(UCSRnB, UDRIE);
         rbf->rbf_cnt = 0;
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
     }
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
@@ -383,6 +385,7 @@ static void AvrUsartRxComplete(void *arg) {
             postEvent = 1;
 #else
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
 #endif
         }
 
@@ -433,8 +436,10 @@ static void AvrUsartRxComplete(void *arg) {
     } while ( inb(UCSRnA) & _BV(RXC) ); // byte in buffer?
 
     // Eventually post event to wake thread
-    if (postEvent)
+    if (postEvent) {
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
+    }
 #endif
 
 #ifdef NUTTRACER
