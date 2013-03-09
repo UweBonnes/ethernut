@@ -78,6 +78,15 @@
  */
 
 /*!
+ * \brief structure to store a timestamp with microseconds resolution
+ */
+
+struct timeval {
+    long    tv_sec;         /* seconds */
+    long    tv_usec;        /* microseconds */
+};
+
+/*!
  * \brief Type definition for struct _tm
  */
 typedef struct _tm tm;
