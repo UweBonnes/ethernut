@@ -225,29 +225,29 @@ void pm_switch_to_clock(unsigned long clock)
     AVR32_PM.mcctrl = u_avr32_pm_mcctrl.mcctrl;
 }
 
-void pm_cksel(volatile avr32_pm_t *pm, 	 
-	unsigned int pbadiv, 	 
-	unsigned int pbasel, 	 
-	unsigned int pbbdiv, 	 
-	unsigned int pbbsel, 	 
-	unsigned int hsbdiv, 	 
-	unsigned int hsbsel) 	 
-{ 	 
-	u_avr32_pm_cksel_t u_avr32_pm_cksel = {0}; 	 
+void pm_cksel(volatile avr32_pm_t *pm,   
+    unsigned int pbadiv,     
+    unsigned int pbasel,     
+    unsigned int pbbdiv,     
+    unsigned int pbbsel,     
+    unsigned int hsbdiv,     
+    unsigned int hsbsel)     
+{    
+    u_avr32_pm_cksel_t u_avr32_pm_cksel = {0};   
 
-	u_avr32_pm_cksel.CKSEL.cpusel = hsbsel; 	 
-	u_avr32_pm_cksel.CKSEL.cpudiv = hsbdiv; 	 
-	u_avr32_pm_cksel.CKSEL.hsbsel = hsbsel; 	 
-	u_avr32_pm_cksel.CKSEL.hsbdiv = hsbdiv; 	 
-	u_avr32_pm_cksel.CKSEL.pbasel = pbasel; 	 
-	u_avr32_pm_cksel.CKSEL.pbadiv = pbadiv; 	 
-	u_avr32_pm_cksel.CKSEL.pbbsel = pbbsel; 	 
-	u_avr32_pm_cksel.CKSEL.pbbdiv = pbbdiv; 	 
+    u_avr32_pm_cksel.CKSEL.cpusel = hsbsel;      
+    u_avr32_pm_cksel.CKSEL.cpudiv = hsbdiv;      
+    u_avr32_pm_cksel.CKSEL.hsbsel = hsbsel;      
+    u_avr32_pm_cksel.CKSEL.hsbdiv = hsbdiv;      
+    u_avr32_pm_cksel.CKSEL.pbasel = pbasel;      
+    u_avr32_pm_cksel.CKSEL.pbadiv = pbadiv;      
+    u_avr32_pm_cksel.CKSEL.pbbsel = pbbsel;      
+    u_avr32_pm_cksel.CKSEL.pbbdiv = pbbdiv;      
 
-	pm->cksel = u_avr32_pm_cksel.cksel; 	 
+    pm->cksel = u_avr32_pm_cksel.cksel;      
 
-	// Wait for ckrdy bit and then clear it 	 
-	while (!(pm->poscsr & AVR32_PM_POSCSR_CKRDY_MASK)); 	 
+    // Wait for ckrdy bit and then clear it      
+    while (!(pm->poscsr & AVR32_PM_POSCSR_CKRDY_MASK));      
 }
 
 void pm_pll_setup(volatile avr32_pm_t *pm,
@@ -284,9 +284,9 @@ void pm_pll_enable(volatile avr32_pm_t *pm,
     pm->pll[pll] |= AVR32_PM_PLLEN_MASK;
 }
 
-void pm_wait_for_pll0_locked(volatile avr32_pm_t *pm) 	 
-{ 	 
-	while (!(pm->poscsr & AVR32_PM_POSCSR_LOCK0_MASK)); 	 
+void pm_wait_for_pll0_locked(volatile avr32_pm_t *pm)    
+{    
+    while (!(pm->poscsr & AVR32_PM_POSCSR_LOCK0_MASK));      
 }
 
 typedef union {

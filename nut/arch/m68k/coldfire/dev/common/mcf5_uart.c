@@ -955,9 +955,9 @@ static int Mcf5UsartSetFlowControl(uint32_t flags)
     }
 #endif
 
-	/*
-	 * Set duplex mode.
-	 */
+    /*
+     * Set duplex mode.
+     */
     if (flags & USART_MF_HALFDUPLEX) {
         hdx_control = 1;
         /* Switch RS485 bus driver to half duplex */

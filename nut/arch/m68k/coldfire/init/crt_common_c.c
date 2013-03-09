@@ -36,15 +36,15 @@
 //------------------------------------------------------------------------------
 void InitRegions(void)
 {
-	struct __region
-	{
-		unsigned *p_region_start;	// start address of region
-		unsigned region_size;
-		unsigned *p_region_data;	// initial contents of this region (p_region_data == p_region_start means "clear the region only")
-	};
+    struct __region
+    {
+        unsigned *p_region_start;   // start address of region
+        unsigned region_size;
+        unsigned *p_region_data;    // initial contents of this region (p_region_data == p_region_start means "clear the region only")
+    };
 
-	extern const struct __region __regions_start[];
-	extern const struct __region __regions_end[];
+    extern const struct __region __regions_start[];
+    extern const struct __region __regions_end[];
 
     const struct __region   *p_reg;
     const struct __region   *p_reg_end;
@@ -68,14 +68,14 @@ void InitRegions(void)
         }
         else
         {
-        	// no init data --> bss section --> clear only
-			for (; count >= 4; count -= sizeof(unsigned))
-				*p_dst++ = 0;
+            // no init data --> bss section --> clear only
+            for (; count >= 4; count -= sizeof(unsigned))
+                *p_dst++ = 0;
 
-			char *pdst_char = (char *)p_dst;
+            char *pdst_char = (char *)p_dst;
 
-			for (; count; count--)
-				*pdst_char++ = 0;
+            for (; count; count--)
+                *pdst_char++ = 0;
         }
     }
 }

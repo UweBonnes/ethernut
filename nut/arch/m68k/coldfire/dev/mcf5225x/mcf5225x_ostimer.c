@@ -51,11 +51,11 @@
  * lower values will reduce the available resolution, while
  * larger values may not provide any benefit.
  */
-#define NUT_TICK_FREQ   	1000UL
+#define NUT_TICK_FREQ       1000UL
 #endif
 
-#define EXT_CLOCK_HZ    	48000000UL
-#define CHANEL				0	/* PIT0 */
+#define EXT_CLOCK_HZ        48000000UL
+#define CHANEL              0   /* PIT0 */
 
 /*!
  * \brief Initialize system timer.
@@ -76,47 +76,47 @@
  */
 void NutRegisterTimer(void (*handler) (void *))
 {
-	/*
+    /*
      * Note, that this timer will no longer be available for
      * applications.
      */
      
-	uint8_t prescaler = 0;
-	uint32_t modulus;
+    uint8_t prescaler = 0;
+    uint32_t modulus;
 
-	/*
-	 * It is recommended to use NutClockGet() to determine the input
+    /*
+     * It is recommended to use NutClockGet() to determine the input
      * clock frequency.
      * 
-	 * Count PIT Count Register value.
-	 * Timeout Frequency = fsys/2 / (2^PCSRn[PRE] * (PMRn[PM] + 1)) in Hertz
-	 * PMRn[PM] = (fsys/2 / (2^PCSRn[PRE] * NUT_TICK_FREQ)) - 1
-	 */
-	modulus = NutClockGet() / 2;
-	modulus /= 1 << prescaler;
-	modulus /= NUT_TICK_FREQ;
-	modulus--;
+     * Count PIT Count Register value.
+     * Timeout Frequency = fsys/2 / (2^PCSRn[PRE] * (PMRn[PM] + 1)) in Hertz
+     * PMRn[PM] = (fsys/2 / (2^PCSRn[PRE] * NUT_TICK_FREQ)) - 1
+     */
+    modulus = NutClockGet() / 2;
+    modulus /= 1 << prescaler;
+    modulus /= NUT_TICK_FREQ;
+    modulus--;
 
-	/* The prescaler bits select the internal bus clock divisor to generate the PIT clock. */
-	MCF_PIT_PCSR(CHANEL) = 0x00 | MCF_PIT_PCSR_PRE(prescaler);
+    /* The prescaler bits select the internal bus clock divisor to generate the PIT clock. */
+    MCF_PIT_PCSR(CHANEL) = 0x00 | MCF_PIT_PCSR_PRE(prescaler);
 
-	/* Set PIT Count Register value. */
-	MCF_PIT_PMR(CHANEL) = modulus;
+    /* Set PIT Count Register value. */
+    MCF_PIT_PMR(CHANEL) = modulus;
 
-	/* Enable reload for periodic mode */
-	MCF_PIT_PCSR(CHANEL) |= MCF_PIT_PCSR_RLD;
+    /* Enable reload for periodic mode */
+    MCF_PIT_PCSR(CHANEL) |= MCF_PIT_PCSR_RLD;
 
-	/* Init Interrupt */
-	NutRegisterIrqHandler(&sig_PIT0, handler, NULL);
+    /* Init Interrupt */
+    NutRegisterIrqHandler(&sig_PIT0, handler, NULL);
 
-	/*
-	 * Enable PIT interrup and clear interrupt flag
-	 * NOTE: Interrupt is still disabled by interrupt controller.
-	 */
-	MCF_PIT_PCSR(CHANEL) |= MCF_PIT_PCSR_PIE | MCF_PIT_PCSR_PIF;
+    /*
+     * Enable PIT interrup and clear interrupt flag
+     * NOTE: Interrupt is still disabled by interrupt controller.
+     */
+    MCF_PIT_PCSR(CHANEL) |= MCF_PIT_PCSR_PIE | MCF_PIT_PCSR_PIF;
 
-	/* Enable timer */
-	MCF_PIT_PCSR(CHANEL) |= MCF_PIT_PCSR_EN | MCF_PIT_PCSR_DBG;
+    /* Enable timer */
+    MCF_PIT_PCSR(CHANEL) |= MCF_PIT_PCSR_EN | MCF_PIT_PCSR_DBG;
 }
 
 #ifndef NUT_CPU_FREQ
@@ -141,28 +141,28 @@ void NutRegisterTimer(void (*handler) (void *))
  */
 uint32_t NutArchClockGet(int idx)
  {
-	int fout, fref, mfd, rfd, divider, lpdr;
+    int fout, fref, mfd, rfd, divider, lpdr;
 
-	/* The PLL pre divider - 48MHz / (CCHR + 1) = 8MHz */
-	divider = MCF_CLOCK_CCHR + 1;
-	fref = EXT_CLOCK_HZ / divider;
+    /* The PLL pre divider - 48MHz / (CCHR + 1) = 8MHz */
+    divider = MCF_CLOCK_CCHR + 1;
+    fref = EXT_CLOCK_HZ / divider;
 
-	/* The LPDR divides down the system clock by a factor of 2^LPDR. */
-	lpdr = 1 << MCF_CLOCK_LPDR;
+    /* The LPDR divides down the system clock by a factor of 2^LPDR. */
+    lpdr = 1 << MCF_CLOCK_LPDR;
 
 
-	mfd = (MCF_CLOCK_SYNCR & 0x7000) >> 12;
-	mfd = 2 * (mfd + 2); // MIN_MFD
-	rfd = (MCF_CLOCK_SYNCR & 0x0700) >> 8;
-	rfd = 1 << rfd;
+    mfd = (MCF_CLOCK_SYNCR & 0x7000) >> 12;
+    mfd = 2 * (mfd + 2); // MIN_MFD
+    rfd = (MCF_CLOCK_SYNCR & 0x0700) >> 8;
+    rfd = 1 << rfd;
 
-	/* Return current PLL output */
-	if ((MCF_CLOCK_SYNCR & MCF_CLOCK_SYNCR_CLKSRC) && (MCF_CLOCK_SYNCR & MCF_CLOCK_SYNCR_PLLEN)) {
-		fout = (fref * (mfd / rfd)) / lpdr;
-	} else {
-		fout = fref / lpdr;
-	}
-	return fout;
+    /* Return current PLL output */
+    if ((MCF_CLOCK_SYNCR & MCF_CLOCK_SYNCR_CLKSRC) && (MCF_CLOCK_SYNCR & MCF_CLOCK_SYNCR_PLLEN)) {
+        fout = (fref * (mfd / rfd)) / lpdr;
+    } else {
+        fout = fref / lpdr;
+    }
+    return fout;
 }
 #endif
 

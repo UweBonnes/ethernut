@@ -51,9 +51,9 @@
  */
 typedef struct {
     uint32_t d[6];  // d3-d7 (NOTE: d0-d2, a0-a1 are working registers for C language)
-    uint32_t a[4];	 // a2-a5
-    uint16_t pad; 	 // alignment to 32 bit
-    uint16_t sr;	 // status register
+    uint32_t a[4];   // a2-a5
+    uint16_t pad;    // alignment to 32 bit
+    uint16_t sr;     // status register
 } SWITCHFRAME;
 
 /*!
@@ -62,12 +62,12 @@ typedef struct {
  * This is the stack layout being build to enter a new thread.
  */
 typedef struct {
-    uint32_t fp_entry;	// value fp register
-    uint32_t pc_entry;	// function NutThreadEntry
-    uint16_t pad; 	    // alignment to 32 bit
-    uint16_t sr;	    // status register
-    uint32_t d0;		// arg function
-    uint32_t pc_fn;		// thread's entry funciton
+    uint32_t fp_entry;  // value fp register
+    uint32_t pc_entry;  // function NutThreadEntry
+    uint16_t pad;       // alignment to 32 bit
+    uint16_t sr;        // status register
+    uint32_t d0;        // arg function
+    uint32_t pc_fn;     // thread's entry funciton
 } ENTERFRAME;
 
 /*!
@@ -88,15 +88,15 @@ void NutThreadEntry(void)
     /* The thread's entry point ef->pc_fn to jsr */
     __asm__ volatile("move.l    12(%sp), %a0");
     /* Move sp and fp to save place in stack. */
-    __asm__ volatile("add.l		#12, %sp");
-    __asm__ volatile("move.l	%sp, %fp");
+    __asm__ volatile("add.l     #12, %sp");
+    __asm__ volatile("move.l    %sp, %fp");
     /* The thread's arg copy ef->d0 to use in sub rutine */
-    __asm__ volatile("move.l	-4(%sp), (%sp)");
+    __asm__ volatile("move.l    -4(%sp), (%sp)");
     /* NutExitCritical - load sr */
-    __asm__ volatile("move.l	-8(%sp), %d0");
-    __asm__ volatile("move.w	%d0, %sr");
+    __asm__ volatile("move.l    -8(%sp), %d0");
+    __asm__ volatile("move.w    %d0, %sr");
     /* Jump to thread's entry point ef->pc_fn */
-    __asm__ volatile("jsr	 	(%a0)");
+    __asm__ volatile("jsr       (%a0)");
     /* If returned from subrutine terminate thread */
     NutThreadExitAndYield();
 }
@@ -118,10 +118,10 @@ void NutThreadSwitch(void)
     SWITCHFRAME sf;
 
     /* Save CPU context. */
-    __asm__ volatile("movem.l	%%d2-%%d7/%%a2-%%a5, %[sf_d0]":[sf_d0] "=m" (sf.d[0]));
-    __asm__ volatile("move.w	%sr,%d0");
-    __asm__ volatile("move.w	%%d0,%[sf_sr]" :[sf_sr] "=m" (sf.sr));
-    __asm__ volatile("move.l	%%sp,%[td_sp]" :[td_sp] "=m" (runningThread->td_sp));
+    __asm__ volatile("movem.l   %%d2-%%d7/%%a2-%%a5, %[sf_d0]":[sf_d0] "=m" (sf.d[0]));
+    __asm__ volatile("move.w    %sr,%d0");
+    __asm__ volatile("move.w    %%d0,%[sf_sr]" :[sf_sr] "=m" (sf.sr));
+    __asm__ volatile("move.l    %%sp,%[td_sp]" :[td_sp] "=m" (runningThread->td_sp));
 
     /*
      * This defines a global label, which may be called
@@ -138,14 +138,14 @@ void NutThreadSwitch(void)
     /* load stack pointer from NUTTHREADINFO */
 
     // NOTE: "sf" variable shows garbage in Eclipse Variables View (frame pointer is not configured yet)
-    __asm__ volatile("move.l	%[td_sp],%%sp" ::[td_sp] "m" (runningThread->td_sp));
-    __asm__ volatile("move.l	%sp,%a0");
-    __asm__ volatile("adda.l	%[size],%%a0" ::[size] "i" (LOCAL_VARIABLES_SIZE));
-    __asm__ volatile("move.l	%a0,%fp");
+    __asm__ volatile("move.l    %[td_sp],%%sp" ::[td_sp] "m" (runningThread->td_sp));
+    __asm__ volatile("move.l    %sp,%a0");
+    __asm__ volatile("adda.l    %[size],%%a0" ::[size] "i" (LOCAL_VARIABLES_SIZE));
+    __asm__ volatile("move.l    %a0,%fp");
     // now you can use the "sf" variable (local variables)
-    __asm__ volatile("move.w	%[sf_sr],%%d0" ::[sf_sr] "m" (sf.sr));
-    __asm__ volatile("move.w	%d0,%sr");
-    __asm__ volatile("movem.l	%[sf_d0], %%d2-%%d7/%%a2-%%a5"::[sf_d0] "m" (sf.d[0]));
+    __asm__ volatile("move.w    %[sf_sr],%%d0" ::[sf_sr] "m" (sf.sr));
+    __asm__ volatile("move.w    %d0,%sr");
+    __asm__ volatile("movem.l   %[sf_d0], %%d2-%%d7/%%a2-%%a5"::[sf_d0] "m" (sf.d[0]));
 }
 
 /*!
