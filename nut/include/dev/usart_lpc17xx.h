@@ -50,13 +50,9 @@
  * \file dev/usart_lpc17xx.h
  * \brief Synchronous/asynchronous serial device definitions.
  */
-#if defined(MCU_LPC176x)
-extern NUTDEVICE devUsartLpc176x_0;
-#else
 extern NUTDEVICE devUsartLpc17xx_0;
 extern NUTDEVICE devUsartLpc17xx_1;
 extern NUTDEVICE devUsartLpc17xx_2;
 extern NUTDEVICE devUsartLpc17xx_3;
-#endif
 
 #endif
