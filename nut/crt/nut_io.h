@@ -56,7 +56,7 @@
 #include <cfg/crt.h>
 #include <sys/types.h>
 #include <sys/file.h>
-
+#include <io.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -74,11 +74,6 @@
 #ifndef BUFSIZ
 #define BUFSIZ      128     /*!< \brief Default maximum size of stream buffers.
                  Currently not used.
-                 \showinitializer */
-#endif
-
-#ifndef FOPEN_MAX
-#define FOPEN_MAX   16   /*!< \brief Default maximum number of open streams.
                  \showinitializer */
 #endif
 
