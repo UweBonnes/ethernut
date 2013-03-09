@@ -96,6 +96,7 @@ nutcrt =
             "clrerr.c",
             "ioctl.c",
             "open.c",
+            "select.c",
         }
     },
     {
@@ -173,7 +174,7 @@ nutcrt =
                 macro = "FOPEN_MAX",
                 brief = "Max. Open Streams",
                 description = "Maximum number of concurrently opened filedescriptors / streams.\n\n"..
-                              "Default is 16",
+                              "Default is 8",
                 type = "integer",
                 flavor = "booldata",
                 file = "include/cfg/crt.h"
