@@ -100,6 +100,7 @@
  */
 
 #include <sys/file.h>
+#include <sys/select.h>
 
 #include <stdint.h>
 
@@ -262,8 +263,7 @@ struct _NUTDEVICE {
     /*!
      * \brief Request file size.
      */
-    long (*dev_select) (NUTFILE *);
-
+    int (*dev_select) (NUTFILE *, int flags, HANDLE *wq, select_cmd_t cmd);
 };
 
 /*!
