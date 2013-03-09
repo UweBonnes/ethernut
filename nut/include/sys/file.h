@@ -59,28 +59,6 @@ struct _NUTDEVICE;
  */
 /*@{*/
 
-
-#define WQ_FLAG_READ    0x01
-#define WQ_FLAG_WRITE   0x02
-#define WQ_FLAG_EXCEPT  0x04
-
-
-/*!
- * \brief File waitqueue list structure type.
- */
-typedef struct _WQLIST WQLIST;
-
-/*!
- * \struct _WQLIST file.h sys/file.h
- * \brief File waitqueu list structure.
- */
-
-struct _WQLIST {
-    WQLIST      *wl_next;
-    HANDLE       wq;
-    uint_fast8_t flags;
-};
-
 /*!
  * \brief File structure type.
  */
@@ -91,10 +69,6 @@ typedef struct _NUTFILE NUTFILE;
  * \brief File structure.
  */
 struct _NUTFILE {
-    /*!
-     * \brief Link to the next file structure.
-     */
-    NUTFILE *wq_list;
 
     /*!
      * \brief Device containing this file.
