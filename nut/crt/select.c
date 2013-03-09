@@ -78,6 +78,7 @@ void NutSelectWakeup(WQLIST *wq_list, uint_fast8_t flags)
 		if (flags & wq_list->flags) {
 			NutEventPostAsync(wq_list->wq);
 		}
+		wq_list = wq_list->next;
 	}
 }
 
@@ -101,6 +102,7 @@ void NutSelectWakeupFromIrq(WQLIST *wq_list, uint_fast8_t flags)
 		if (flags & wq_list->flags) {
 			NutEventPostFromIrq(wq_list->wq);
 		}
+		wq_list = wq_list->next;
 	}
 }
 
