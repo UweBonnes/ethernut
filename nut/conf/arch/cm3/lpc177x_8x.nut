@@ -80,6 +80,7 @@ nutarch_cm3_lpc177x_8x=
                     "HW_GPDMA_LPC17xx",
                     "HW_MCI_LPC177x_8x",
                     "HW_EMAC_LPC17xx",
+                    "HW_I2C_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -105,7 +106,9 @@ nutarch_cm3_lpc177x_8x=
                 {
                     "HW_MCU_LPC1778",
                     "HW_UART0_LPC17xx",
-                    "HW_UART1_LPC17xx"
+                    "HW_UART1_LPC17xx",
+                    "HW_UART2_LPC17xx",
+                    "HW_UART3_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             },
@@ -119,7 +122,9 @@ nutarch_cm3_lpc177x_8x=
                 {
                     "HW_MCU_LPC1788",
                     "HW_UART0_LPC17xx",
-                    "HW_UART1_LPC17xx"
+                    "HW_UART1_LPC17xx",
+                    "HW_UART2_LPC17xx",
+                    "HW_UART3_LPC17xx",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -187,7 +192,8 @@ nutarch_cm3_lpc177x_8x=
     {
         name = "nutarch_cm3_lpc177x_8x_debug",
         brief = "LPC177x_8x Debug UART Driver",
-        requires = { "HW_UART0_LPC17xx" },
+        description = "Polling UART driver, which can be used from interrupt context\n",
+        requires = { "HW_UART0_LPC17xx", "HW_UART1_LPC17xx", "HW_UART2_LPC17xx", "HW_UART3_LPC17xx" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
         sources =
         {
@@ -330,7 +336,7 @@ nutarch_cm3_lpc177x_8x=
         brief = "LPC177x_8x USART2 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART1_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_UART2_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -383,7 +389,7 @@ nutarch_cm3_lpc177x_8x=
         brief = "LPC177x_8x USART3 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART1_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_UART3_LPC17xx", "DEV_IRQ_LPC17xx", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -455,5 +461,30 @@ nutarch_cm3_lpc177x_8x=
                 file = "include/cfg/mmci.h"
             },
         },
+    },
+
+    --
+    -- LPC17xx I2C Controller 0, 1, 2
+    --
+    {
+        name = "nutarch_cm3_lpc17xx_i2c0",
+        brief = "LPC17xx I2C bus 0 API",
+        description = "Routines for setup and programming LPC17xx series I2C controller 0.\n",
+        requires = { "HW_I2C_LPC17xx", },
+--        sources = { "cm3/dev/nxp/lpc17xx_i2cbus0.c", "cm3/dev/nxp/ih_lpc17xx_i2c0.c" }
+    },
+    {
+        name = "nutarch_cm3_lpc17xx_i2c1",
+        brief = "LPC17xx I2C bus 1 API",
+        description = "Routines for setup and programming LPC17xx series I2C controller 1.\n",
+        requires = { "HW_I2C_LPC17xx", },
+--        sources = { "cm3/dev/nxp/lpc17xx_i2cbus1.c", "cm3/dev/nxp/ih_lpc17xx_i2c1.c" }
+    },
+    {
+        name = "nutarch_cm3_lpc17xx_i2c2",
+        brief = "LPC17xx I2C bus 2 API",
+        description = "Routines for setup and programming LPC17xx series I2C controller 2.\n",
+        requires = { "HW_I2C_LPC17xx", },
+--        sources = { "cm3/dev/nxp/lpc17xx_i2cbus2.c", "cm3/dev/nxp/ih_lpc17xx_i2c2.c" }
     },
 }
