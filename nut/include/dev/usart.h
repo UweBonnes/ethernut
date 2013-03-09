@@ -433,5 +433,6 @@ extern int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 extern NUTFILE *UsartOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
 extern int UsartClose(NUTFILE * fp);
 extern long UsartSize (NUTFILE *fp);
+extern int UsartSelect (NUTFILE *fp, int flags, HANDLE *wq, select_cmd_t cmd);
 
 #endif
