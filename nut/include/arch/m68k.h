@@ -60,7 +60,7 @@
 #define strncpy_P(x,y,z)        strncpy(x,y,z)
 #define strcmp_P(x, y)          strcmp(x, y)
 #define strcasecmp_P(x,y)       strcasecmp(x,y)
-#define strstr_P(x,y)         	strstr(x,y)
+#define strstr_P(x,y)           strstr(x,y)
 #define memcpy_P(x,y,z)         memcpy(x,y,z)
 
 #define outb(_reg, _val)  (*((volatile uint8_t *)(_reg)) = (_val))

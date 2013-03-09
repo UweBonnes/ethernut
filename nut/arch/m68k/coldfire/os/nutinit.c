@@ -76,8 +76,8 @@ extern void *__heap2_size;
 extern void *__stack_heap_start;
 extern void *__stack_heap_size;
 
-#define STACK_HEAP_START	&__stack_heap_start
-#define STACK_HEAP_SIZE		((size_t)&__stack_heap_size)
+#define STACK_HEAP_START    &__stack_heap_start
+#define STACK_HEAP_SIZE     ((size_t)&__stack_heap_size)
 #endif
 
 #define NUT_THREAD_CONFIGSTACK  NUT_THREAD_IDLESTACK
