@@ -54,7 +54,7 @@
 /*!
  * \brief Close all open streams.
  *
- * All streams, including the standard streams stdin, stdout and stderr are closed.
+ * The standard streams stdin, stdout and stderr are not closed.
  *
  * The calling thread may be suspended until all buffered output data
  * has been written.
@@ -64,7 +64,7 @@ void fcloseall(void)
 {
     uint_fast8_t i;
 
-    for (i = 0; i < FOPEN_MAX; i++)
+    for (i = 3; i < FOPEN_MAX; i++)
         if (__iob[i])
             fclose(__iob[i]);
 }
