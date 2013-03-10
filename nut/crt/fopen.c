@@ -60,10 +60,7 @@
  */
 /*@{*/
 
-FILE *__iob[FOPEN_MAX] = { NULL, /*(FILE *) 1, (FILE *) 2, (FILE *) 3*/ };
-FILE *stdin = NULL;
-FILE *stdout = NULL;
-FILE *stderr = NULL;
+FILE *__iob[FOPEN_MAX] = { (FILE *) 1, (FILE *) 2, (FILE *) 3 };
 
 /*!
  * \brief Open a stream.
