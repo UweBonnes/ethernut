@@ -120,9 +120,9 @@ typedef struct __iobuf FILE;
 
 extern FILE *__iob[];           /*!< \internal Stream slots. */
 
-#define stdin (__iob[0])        /*!< \brief Standard input stream. */
-#define stdout (__iob[1])       /*!< \brief Standard output stream. */
-#define stderr (__iob[2])       /*!< \brief Standard error output stream. */
+extern FILE *stdin;             /*!< \brief Standard input stream. */
+extern FILE *stdout;            /*!< \brief Standard output stream. */
+extern FILE *stderr;            /*!< \brief Standard error output stream. */
 
 /*@}*/
 
