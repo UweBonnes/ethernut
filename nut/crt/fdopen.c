@@ -53,6 +53,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <memdebug.h>
+#include <sys/device.h>
 
 
 /*!
@@ -93,7 +94,7 @@ FILE *_fdopen(int fd, const char *mode)
     /************************* HACK ALERT!!! *************************/
     /* TCP Sockets are hacked into this pseudo
      * file scheme. If a stream shall be connected to this socket,
-     * _fdopen() is called with a casted pointer to the socket struct    
+     * _fdopen() is called with a casted pointer to the socket struct
      * instead of passing a real file descriptor. Therefore we have
      * to handle such pointers in a special way...
      *
@@ -130,11 +131,6 @@ FILE *_fdopen(int fd, const char *mode)
             fd = i;
         }
         /************************ HACK ALERT END *************************/
-    }
-
-    if ((fp = __fds[fd]) == NULL) {
-        errno = EBADF;
-        return -1;
     }
 
     /*
