@@ -565,8 +565,8 @@ int UsartClose(NUTFILE * fp)
     UsartResetBuffer(&dcb->dcb_rx_rbf, 0, 0, 0);
     /* Wake-up all threads waiting for incoming data. */
     NutEventBroadcast(&dcb->dcb_rx_rbf.rbf_que);
-	NutSelectWakeup(dcb->dcb_rx_rbf.wq_list, WQ_FLAG_READ | WQ_FLAG_EXCEPT);
-	NutSelectWakeup(dcb->dcb_tx_rbf.wq_list, WQ_FLAG_WRITE | WQ_FLAG_EXCEPT);
+    NutSelectWakeup(dcb->dcb_rx_rbf.wq_list, WQ_FLAG_READ | WQ_FLAG_EXCEPT);
+    NutSelectWakeup(dcb->dcb_tx_rbf.wq_list, WQ_FLAG_WRITE | WQ_FLAG_EXCEPT);
 
     return rc;
 }
@@ -1004,32 +1004,32 @@ int UsartSelect (NUTFILE *fp, int flags, HANDLE *wq, select_cmd_t cmd)
     RINGBUF   *rx_rbf;
     RINGBUF   *tx_rbf;
 
-	int rflags = 0;
+    int rflags = 0;
 
-	dev = fp->nf_dev;
-	dcb = dev->dev_dcb;
-	rx_rbf = &dcb->dcb_rx_rbf;
-	tx_rbf = &dcb->dcb_tx_rbf;
+    dev = fp->nf_dev;
+    dcb = dev->dev_dcb;
+    rx_rbf = &dcb->dcb_rx_rbf;
+    tx_rbf = &dcb->dcb_tx_rbf;
 
-	/* Manage the wait queue lists for the select call */
-	NutSelectManageWq(&rx_rbf->wq_list, wq, flags & (WQ_FLAG_READ | WQ_FLAG_EXCEPT), cmd);
-	NutSelectManageWq(&tx_rbf->wq_list, wq, flags & (WQ_FLAG_WRITE | WQ_FLAG_EXCEPT), cmd);
+    /* Manage the wait queue lists for the select call */
+    NutSelectManageWq(&rx_rbf->wq_list, wq, flags & (WQ_FLAG_READ | WQ_FLAG_EXCEPT), cmd);
+    NutSelectManageWq(&tx_rbf->wq_list, wq, flags & (WQ_FLAG_WRITE | WQ_FLAG_EXCEPT), cmd);
 
-	/* receive / transmit interrupt can change the buffer counts, so these
-	   checks will be done atomic.
-	 */
-	NutEnterCritical();
-	if (rx_rbf->rbf_cnt > 0) {
-		rflags |= WQ_FLAG_READ;
-	}
-	if (tx_rbf->rbf_cnt < tx_rbf->rbf_siz) {
-		rflags |= WQ_FLAG_WRITE;
-	}
-	NutExitCritical();
+    /* receive / transmit interrupt can change the buffer counts, so these
+       checks will be done atomic.
+     */
+    NutEnterCritical();
+    if (rx_rbf->rbf_cnt > 0) {
+        rflags |= WQ_FLAG_READ;
+    }
+    if (tx_rbf->rbf_cnt < tx_rbf->rbf_siz) {
+        rflags |= WQ_FLAG_WRITE;
+    }
+    NutExitCritical();
 
-	rflags &= flags;
+    rflags &= flags;
 
-	return rflags;
+    return rflags;
 }
 
 /*@}*/
