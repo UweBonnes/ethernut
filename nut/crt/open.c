@@ -130,7 +130,7 @@ int _open(const char *name, int mode)
     for (fd = 0; __fds[fd];) {
         if (++fd >= FOPEN_MAX) {
             errno = EMFILE;
-            return NULL;
+            return -1;
         }
     }
 
