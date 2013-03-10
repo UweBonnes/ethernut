@@ -245,6 +245,9 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     ** running. We need a very basic driver here, which won't
     ** use interrupts or call malloc, NutEventXxx, NutSleep etc. */
     {
+        extern NUTFILE *__fds[FOPEN_MAX];
+        extern FILE *__iob[FOPEN_MAX];
+ 
         extern NUTDEVICE EARLY_STDIO_DEV;
         static struct __iobuf early_stdout;
         /* Initialize the output device. */
@@ -252,9 +255,13 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
         /* Assign a static iobuf. */
         stdout = &early_stdout;
         /* Open the device. */
-        stdout->iob_fd = (int)EARLY_STDIO_DEV.dev_open(&EARLY_STDIO_DEV, "", 0, 0);
+        __fds[1] = (int) EARLY_STDIO_DEV.dev_open(&EARLY_STDIO_DEV, "", 0, 0);
+        __iob[1] = stdout;
+
+        stdout->iob_fd = 1;
         /* Set the mode. No idea if this is required. */
         stdout->iob_mode = _O_WRONLY | _O_CREAT | _O_TRUNC;
+
         /* A first trial. */
         puts("\nStarting Nut/OS");
     }
