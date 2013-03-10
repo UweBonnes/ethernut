@@ -74,12 +74,12 @@
  */
 void NutSelectWakeup(WQLIST *wq_list, uint_fast8_t flags)
 {
-	while (wq_list) {
-		if (flags & wq_list->flags) {
-			NutEventPostAsync(wq_list->wq);
-		}
-		wq_list = wq_list->next;
-	}
+    while (wq_list) {
+        if (flags & wq_list->flags) {
+            NutEventPostAsync(wq_list->wq);
+        }
+        wq_list = wq_list->next;
+    }
 }
 
 /*!
@@ -98,12 +98,12 @@ void NutSelectWakeup(WQLIST *wq_list, uint_fast8_t flags)
  */
 void NutSelectWakeupFromIrq(WQLIST *wq_list, uint_fast8_t flags)
 {
-	while (wq_list) {
-		if (flags & wq_list->flags) {
-			NutEventPostFromIrq(wq_list->wq);
-		}
-		wq_list = wq_list->next;
-	}
+    while (wq_list) {
+        if (flags & wq_list->flags) {
+            NutEventPostFromIrq(wq_list->wq);
+        }
+        wq_list = wq_list->next;
+    }
 }
 
 /*!
@@ -129,58 +129,58 @@ void NutSelectWakeupFromIrq(WQLIST *wq_list, uint_fast8_t flags)
 
 void NutSelectManageWq(WQLIST **wq_list, HANDLE *wq, int flags, select_cmd_t cmd)
 {
-	WQLIST *wl_entry;
-	WQLIST **wl_tmp;
-	if ((cmd != SELECT_CMD_NOP) && (wq_list != NULL) && (wq != NULL) && (flags != 0)) {
-		switch (cmd) {
-			case SELECT_CMD_INIT:
-				/* Add our waitqueue to the device waitqueue list */
+    WQLIST *wl_entry;
+    WQLIST **wl_tmp;
+    if ((cmd != SELECT_CMD_NOP) && (wq_list != NULL) && (wq != NULL) && (flags != 0)) {
+        switch (cmd) {
+            case SELECT_CMD_INIT:
+                /* Add our waitqueue to the device waitqueue list */
 
-				/* Allocate a new waitqueue list entry and put us on the wait
-				   list of the current NUTFILE
-				 */
-				wl_entry = malloc(sizeof(WQLIST));
-				wl_entry->wq = wq;
-				wl_entry->flags = flags;
+                /* Allocate a new waitqueue list entry and put us on the wait
+                   list of the current NUTFILE
+                 */
+                wl_entry = malloc(sizeof(WQLIST));
+                wl_entry->wq = wq;
+                wl_entry->flags = flags;
 
-				/* Modifications of the wait list should be done atomic */
-				NutEnterCritical();
-				wl_entry->next = *wq_list;
-				*wq_list = wl_entry;
-				NutExitCritical();
+                /* Modifications of the wait list should be done atomic */
+                NutEnterCritical();
+                wl_entry->next = *wq_list;
+                *wq_list = wl_entry;
+                NutExitCritical();
 
-				break;
-			case SELECT_CMD_CLEANUP:
-				/* Cleanup the waitqueu list of the device, remove our entry which is matched by it's address */
-				wl_entry = NULL;
+                break;
+            case SELECT_CMD_CLEANUP:
+                /* Cleanup the waitqueu list of the device, remove our entry which is matched by it's address */
+                wl_entry = NULL;
 
-				/* Wait queue list processing should be done atomic */
-				NutEnterCritical();
-				wl_tmp = wq_list;
-				/* Iterate through the waitqueue list */
-				while (*wl_tmp) {
-					/* Check if we found 'our' entry */
-					if ((*wl_tmp)->wq == wq) {
-						/* Remove the list entry and stop searching */
-						wl_entry = *wl_tmp;
-						*wl_tmp = (*wl_tmp)->next;
-						break;
-					} else {
-						/* Move forward to the next entry */
-						*wl_tmp = (*wl_tmp)->next;
-					}
-				}
-				NutExitCritical();
-				/* Free the allocated memeory of the list entry */
-				if (wl_entry) {
-					free(wl_entry);
-				}
+                /* Wait queue list processing should be done atomic */
+                NutEnterCritical();
+                wl_tmp = wq_list;
+                /* Iterate through the waitqueue list */
+                while (*wl_tmp) {
+                    /* Check if we found 'our' entry */
+                    if ((*wl_tmp)->wq == wq) {
+                        /* Remove the list entry and stop searching */
+                        wl_entry = *wl_tmp;
+                        *wl_tmp = (*wl_tmp)->next;
+                        break;
+                    } else {
+                        /* Move forward to the next entry */
+                        *wl_tmp = (*wl_tmp)->next;
+                    }
+                }
+                NutExitCritical();
+                /* Free the allocated memeory of the list entry */
+                if (wl_entry) {
+                    free(wl_entry);
+                }
 
-				break;
-			default:
-				break;
-		}
-	}
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 /*!
@@ -213,20 +213,20 @@ void NutSelectManageWq(WQLIST **wq_list, HANDLE *wq, int flags, select_cmd_t cmd
 
 static int select_scan(int n, uint8_t *flags, uint8_t *rflags, HANDLE *wq, select_cmd_t cmd)
 {
-	NUTFILE     *fp;
+    NUTFILE     *fp;
     NUTDEVICE   *dev;
     int          fd;
     uint_fast8_t result;
     int          count;
 
     count = 0;
-	/* Loop through all file descriptors */
+    /* Loop through all file descriptors */
     for (fd = 0; fd < n; fd ++) {
-		/* If the fd has set one of the flags... */
+        /* If the fd has set one of the flags... */
         if (flags[fd]) {
             fp = __fds[fd];
             dev = fp->nf_dev;
-			/* Call the select function of the driver, to check the blocking modes and error state */
+            /* Call the select function of the driver, to check the blocking modes and error state */
             if ((dev != NULL) && (dev->dev_select != NULL) && (result = dev->dev_select(fp, flags[fd], wq, cmd))) {
                 /* Update the number of changed fds */
                 count ++;
@@ -285,29 +285,29 @@ static inline int do_select(int n, uint8_t *flags, uint8_t *rflags, uint32_t to)
     int      count;
     HANDLE   wq = NULL;
 
-	/* Check if any events are just set and add our event queue to the waitqueu list of this device */
+    /* Check if any events are just set and add our event queue to the waitqueu list of this device */
     count = select_scan(n, flags, rflags, &wq, SELECT_CMD_INIT);
     if (count == 0) {
         /* We just got no result, so let's wait here. Otherwise skip waiting and continue with cleanup... */
 
-		/* Call select_scan one more time, as events could have happend in the meanwhile. This should prevent
-		   reace conditions as either the scan will return the event or the event queue gets signalled in the
-		   meantime.
+        /* Call select_scan one more time, as events could have happend in the meanwhile. This should prevent
+           reace conditions as either the scan will return the event or the event queue gets signalled in the
+           meantime.
 
            TODO: Do we need this second scan?
-		 */
-		count = select_scan(n, flags, rflags, NULL, SELECT_CMD_NOP);
+         */
+        count = select_scan(n, flags, rflags, NULL, SELECT_CMD_NOP);
 
-		if (count == 0) {
-			/* No events happend so far, so let's go to sleep or directly wake up again if we got signalled
-			   in the meantime
-			 */
-			NutEventWait(&wq, to);
-		}
-	}
+        if (count == 0) {
+            /* No events happend so far, so let's go to sleep or directly wake up again if we got signalled
+               in the meantime
+             */
+            NutEventWait(&wq, to);
+        }
+    }
 
-	/* Finally gather all set events and clean up by removing our even queue from the waitqueue lists */
-	count = select_scan(n, flags, rflags, &wq, SELECT_CMD_CLEANUP);
+    /* Finally gather all set events and clean up by removing our even queue from the waitqueue lists */
+    count = select_scan(n, flags, rflags, &wq, SELECT_CMD_CLEANUP);
 
     return count;
 }
@@ -351,8 +351,8 @@ int select(int n, fd_set *rfds, fd_set *wfds, fd_set *exfds, struct timeval *tim
     uint_fast8_t flags;
     uint8_t *fdflags;
     uint8_t *rfdflags;
-	uint_fast8_t bits;
-	int      fd;
+    uint_fast8_t bits;
+    int      fd;
 
     if ((n < 0) || (n > FD_SETSIZE)) {
         errno = EINVAL;
@@ -376,13 +376,13 @@ int select(int n, fd_set *rfds, fd_set *wfds, fd_set *exfds, struct timeval *tim
     /* Check the file descriptor sets for validity */
     max = -1;
     for (i = 0; i < FD_SETSIZE / 8; i++) {
-		bits = 0;
-		if (rfds != NULL)
-			bits |= rfds->fd_bits[i];
-		if (wfds != NULL)
-			bits |= wfds->fd_bits[i];
-		if (exfds != NULL)
-			bits |= exfds->fd_bits[i];
+        bits = 0;
+        if (rfds != NULL)
+            bits |= rfds->fd_bits[i];
+        if (wfds != NULL)
+            bits |= wfds->fd_bits[i];
+        if (exfds != NULL)
+            bits |= exfds->fd_bits[i];
 
         fd = i << 3; /* fd = i*8 */
         for (; bits; bits >>= 1, fd++) {
@@ -415,11 +415,11 @@ start_select:
         /* Gather the flags by checking each descriptor set if the current fd is part of it */
         flags = 0;
         if ((rfds != NULL) && FD_ISSET(fd, rfds))
-			flags |= WQ_FLAG_READ;
+            flags |= WQ_FLAG_READ;
         if  ((wfds != NULL) && FD_ISSET(fd, wfds))
-			flags |= WQ_FLAG_WRITE;
-		if  ((exfds != NULL) && FD_ISSET(fd, exfds))
-			flags |= WQ_FLAG_EXCEPT;
+            flags |= WQ_FLAG_WRITE;
+        if  ((exfds != NULL) && FD_ISSET(fd, exfds))
+            flags |= WQ_FLAG_EXCEPT;
 
         /* and safe the flags into the flag list */
         fdflags[fd] = flags;
@@ -430,24 +430,24 @@ start_select:
 
     /* Clean up the sets */
     if (rfds != NULL)
-		FD_ZERO(rfds);
+        FD_ZERO(rfds);
     if (wfds != NULL)
-		FD_ZERO(wfds);
+        FD_ZERO(wfds);
     if (exfds != NULL)
-		FD_ZERO(exfds);
+        FD_ZERO(exfds);
 
     /* And safe the results */
     for (fd = 0; fd < n; fd++) {
         flags = rfdflags[fd];
         if ((rfds != NULL) && (flags & WQ_FLAG_READ))
-			FD_SET(fd, rfds);
+            FD_SET(fd, rfds);
         if ((wfds != NULL) && (flags & WQ_FLAG_WRITE))
-			FD_SET(fd, wfds);
+            FD_SET(fd, wfds);
         if ((exfds != NULL) && (flags & WQ_FLAG_EXCEPT))
-			FD_SET(fd, exfds);
+            FD_SET(fd, exfds);
     }
 
-	/* Free allocated memory */
+    /* Free allocated memory */
     free(fdflags);
     free(rfdflags);
 
