@@ -204,6 +204,7 @@ extern int NutDestroyTwiBus( NUTTWIBUS *bus);
 /*
  * Nut/OS Adaption to old TWI implementation
  */
+#if defined(DEF_TWIBUS)
 #define TwInit(slv) NutRegisterTwiBus(&DEF_TWIBUS, slv)
 #define TwIOCtl(req, conf) NutTwiIOCtl(&DEF_TWIBUS, req, conf)
 
@@ -216,5 +217,32 @@ extern int NutDestroyTwiBus( NUTTWIBUS *bus);
 #define TwSlaveListen(sla, rxdata, rxsiz, tmo) NutTwiSlaveListen(&DEF_TWIBUS, rxdata, rxsiz, tmo)
 #define TwSlaveRespond(txdata, txlen, tmo) NutTwiSlaveRespond(&DEF_TWIBUS, txlen, tmo)
 #define TwSlaveError(void) NutTwiSlaveError(&DEF_TWIBUS)
+#else
+#define TwInit(slv) -1
+#define TwIOCtl(req, conf)
+
+#define TwMasterTransact( sla, txd, txl, rxd, rxs, tmo) -1
+static inline int TwMasterRegRead(uint8_t sla, uint32_t iadr, uint8_t ial, const void* rxd, uint16_t rxs, uint32_t tmo)
+{
+    (void)sla;
+    (void)iadr;
+    (void)ial;
+    (void)rxd;
+    (void)rxs;
+    (void)tmo;
+    return -1;
+}
+
+
+#define TwMasterRegWrite( sla, iadr, ial, txd, txs, tmo) -1
+#define TwMasterError(void)
+#define TwMasterIndexes( idx)
+
+#define TwSlaveListen(sla, rxdata, rxsiz, tmo)
+#define TwSlaveRespond(txdata, txlen, tmo)
+#define TwSlaveError(void)
+
+
+#endif
 
 #endif
