@@ -124,15 +124,18 @@ FILE *funopen(void *cookie,
     int fd;
     int i;
 
-    for (i = 3; __iob[i]; i++) {
-        if (i >= FOPEN_MAX - 1) {
+    /*
+     * Find an empty slot.
+     */
+    for (i = 0; __iob[i];) {
+        if (++i >= FOPEN_MAX) {
             errno = ENFILE;
             return NULL;
         }
     }
 
-    for (fd = 0; __fds[fd]; fd++) {
-        if (fd >= FOPEN_MAX - 1) {
+    for (fd = 0; __fds[fd];) {
+        if (++fd >= FOPEN_MAX) {
             errno = EMFILE;
             return NULL;
         }

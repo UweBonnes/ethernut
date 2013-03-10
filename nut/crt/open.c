@@ -117,7 +117,7 @@ int _open(const char *name, int mode)
      * try to open a file on a root device.
      */
     if ((dev = NutDeviceLookup(dev_name)) == 0) {
-        
+
         errno = ENOENT;
         return -1;
     }
@@ -127,12 +127,13 @@ int _open(const char *name, int mode)
      */
 
     /* Search the next free filedescriptor */
-    for (fd = 0; __fds[fd]; fd++) {
-        if (fd >= FOPEN_MAX - 1) {
+    for (fd = 0; __fds[fd];) {
+        if (++fd >= FOPEN_MAX) {
             errno = EMFILE;
-            return -1;
+            return NULL;
         }
     }
+
     /* Reserve the entry */
     __fds[fd] = NUTFILE_EOF;
 

@@ -60,7 +60,7 @@
  */
 /*@{*/
 
-FILE *__iob[FOPEN_MAX] = { (FILE *) 1, (FILE *) 2, (FILE *) 3 };
+FILE *__iob[FOPEN_MAX] = { NULL, /*(FILE *) 1, (FILE *) 2, (FILE *) 3*/ };
 
 /*!
  * \brief Open a stream.
@@ -68,14 +68,14 @@ FILE *__iob[FOPEN_MAX] = { (FILE *) 1, (FILE *) 2, (FILE *) 3 };
  * \param name The name of a registered device, optionally followed by a
  *             colon and a filename.
  * \param mode Specifies the access mode.
- *         \li \c "r" Read only.
- *         \li \c "w" Write only.
- *         \li \c "a" Write only at the end of file.
+ *         \li \c "r"  Read only.
+ *         \li \c "w"  Write only.
+ *         \li \c "a"  Write only at the end of file.
  *         \li \c "r+" Read and write existing file.
  *         \li \c "w+" Read and write, destroys existing file contents.
  *         \li \c "a+" Read and write, preserves existing file contents.
- *             \li \c "b" May be appended to any of the above strings to
- *                        specify binary access.
+ *         \li \c "b"  May be appended to any of the above strings to
+ *                     specify binary access.
  *
  * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
@@ -91,11 +91,15 @@ FILE *fopen(const char *name, const char *mode)
     if ((mflags = _fmode(mode)) == EOF)
         return 0;
 
-    for (i = 3; __iob[i]; i++)
-        if (i >= FOPEN_MAX - 1) {
+    /*
+     * Find an empty slot.
+     */
+    for (i = 0; __iob[i];) {
+        if (++i >= FOPEN_MAX) {
             errno = ENFILE;
-            return 0;
+            return NULL;
         }
+    }
 
     if ((__iob[i] = malloc(sizeof(FILE))) == 0)
         return 0;
