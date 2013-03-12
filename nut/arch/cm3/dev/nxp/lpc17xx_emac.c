@@ -162,7 +162,7 @@ static uint16_t phy_inw(uint8_t reg)
 {
     unsigned int tout;
 
-    LPC_EMAC->MADR = NIC_PHY_ADDR | reg;
+    LPC_EMAC->MADR = (NIC_PHY_ADDR << 8) | reg;
     LPC_EMAC->MCMD = EMAC_MCMD_READ;
 
     /* Wait until operation completed */
@@ -188,7 +188,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
 {
     unsigned int tout;
 
-    LPC_EMAC->MADR = NIC_PHY_ADDR | reg;
+    LPC_EMAC->MADR = (NIC_PHY_ADDR << 8) | reg;
     LPC_EMAC->MWTD = val;
 
     /* Wait utill operation completed */
