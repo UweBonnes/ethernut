@@ -94,4 +94,11 @@
 #define DEV_MMCARD0_NAME    "MMC0"
 #endif
 
+/* Ethernet interface */
+
+#include <dev/lpc17xx_emac.h>
+#ifndef DEV_ETHER_NAME
+#define DEV_ETHER_NAME  "eth0"
+#endif
+
 #endif /* _BOARD_KSK_LPC1788_SK_H_ */

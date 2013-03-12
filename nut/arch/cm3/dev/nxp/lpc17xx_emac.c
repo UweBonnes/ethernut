@@ -313,7 +313,7 @@ static int Lpc17xxEmacReset(NUTDEVICE *dev)
     int32_t  tmp;
     IFNET   *ifn = (IFNET *) dev->dev_icb;
 
-    EMPRINTF("Lpc17xxEmacReset(%lu)\n", tmo);
+    EMPRINTF("Lpc17xxEmacReset\n");
 
     /* Reset all EMAC internal modules */
     LPC_EMAC->MAC1 = EMAC_MAC1_RES_TX | EMAC_MAC1_RES_MCS_TX | EMAC_MAC1_RES_RX |
