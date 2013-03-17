@@ -94,6 +94,7 @@ int _close(int fd)
 
     if (dev == 0) {
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
+        __fds[fd] = NULL;
         return (*vdv->vdv_write) (vdv, 0, 0);
     }
     rc = (*dev->dev_close) (fp);
