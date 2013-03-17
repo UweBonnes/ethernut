@@ -275,8 +275,8 @@ typedef struct _NUTVIRTUALDEVICE NUTVIRTUALDEVICE;
  * \brief Virtual device structure.
  */
 struct _NUTVIRTUALDEVICE {
-    NUTVIRTUALDEVICE *vdv_next;
     NUTVIRTUALDEVICE *vdv_zero;
+    NUTVIRTUALDEVICE *vdv_next;
     uint8_t vdv_type;
     int (*vdv_read) (void *, void *, int);
     int (*vdv_write) (void *, const void *, int);

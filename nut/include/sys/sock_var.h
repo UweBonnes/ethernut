@@ -202,10 +202,16 @@ typedef struct tcp_socket TCPSOCKET;
  *
  * Applications should not rely on the content of this structure.
  * It may change without notice.
+ *
+ * However: This structure is casted to NUTVIRTUALDEVICE by some of the crt 
+ * functions like (fread/frwrite/fdopen/fopen/fclose/ etc.) So it always 
+ * have to be made sure that so_device is the first entry, and so_next the 
+ * second. These functions will check so_device and handle the struct as 
+ * "virtual device" if so_device == NULL.
  */
-struct tcp_socket {
-    TCPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
+struct tcp_socket {	 
     void *so_device;        /*!< \brief Always zero. */
+    TCPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
     uint8_t so_devtype;     /*!< \brief Device type, always IFTYP_TCPSOCK. */
     int (*so_devread) (TCPSOCKET *, void *, int); /*!< \brief Read from device. */
     int (*so_devwrite) (TCPSOCKET *, const void *, int); /*!< \brief Write to device. */
