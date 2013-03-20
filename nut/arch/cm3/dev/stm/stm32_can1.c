@@ -88,7 +88,7 @@
   #define CAN1RX_GPIO_PIN    11
   #define CAN1TX_GPIO_PIN    12
  #endif
-#else /*L1/F2/F4*/
+#else /*L1/F2/F30/F4*/
  #if !defined(CAN1_TX_PIN)
   #if (CANBUS1_REMAP_CAN == 0)
    #define CAN1TX_GPIO_PORT  NUTGPIO_PORTA
@@ -141,6 +141,10 @@
  #endif
 #endif
 
+#if defined(STM32F30X)
+#define F3_GPIO_AF_CAN1(x) (x == NUTGPIO_PORTD)?7:9
+#endif
+
 /*!
  * \brief Processor specific Hardware Initiliaization
  *
@@ -174,6 +178,9 @@ int Stm32CanHw1Init(void)
 #if defined (MCU_STM32F1)
     AFIO->MAPR &= ~AFIO_MAPR_CAN_REMAP;
     AFIO->MAPR |=  CANBUS_REMAP;
+#elif defined (MCU_STM32F30)
+    GPIO_PinAFConfig((GPIO_TypeDef*) CAN1RX_GPIO_PORT, CAN1RX_GPIO_PIN, F3_GPIO_AF_CAN1(CAN1RX_GPIO_PORT));
+    GPIO_PinAFConfig((GPIO_TypeDef*) CAN1TX_GPIO_PORT, CAN1TX_GPIO_PIN, F3_GPIO_AF_CAN1(CAN1RX_GPIO_PORT));
 #else
     GPIO_PinAFConfig((GPIO_TypeDef*) CAN1RX_GPIO_PORT, CAN1RX_GPIO_PIN, GPIO_AF_CAN1);
     GPIO_PinAFConfig((GPIO_TypeDef*) CAN1TX_GPIO_PORT, CAN1TX_GPIO_PIN, GPIO_AF_CAN1);

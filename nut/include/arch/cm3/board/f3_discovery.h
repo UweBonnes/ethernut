@@ -40,19 +40,19 @@
  * $Id$
  * \endverbatim
  */
-/* LD3 North RED*/
+/* LD4 NW BLUE*/
 #ifndef HEARTBEAT_IDLE_PORT
 #define HEARTBEAT_IDLE_PORT NUTGPIO_PORTE
 #endif
 #ifndef HEARTBEAT_IDLE_PIN
-#define HEARTBEAT_IDLE_PIN 9
+#define HEARTBEAT_IDLE_PIN 12
 #endif
-/* LD4 NW BLUE*/
+/* LD3 North RED*/
 #ifndef LED1_PORT
 #define LED1_PORT NUTGPIO_PORTE
 #endif
 #ifndef LED1_PIN
-#define LED1_PIN 12
+#define LED1_PIN 9
 #endif
 /* LD6 WEST BLUE*/
 #ifndef LED1_PORT
@@ -62,7 +62,6 @@
 #define LED2_PIN 15
 #endif
 
-#include <dev/null.h>
 #ifndef DEV_UART
 #define DEV_UART devUsartStm32_1
 #endif
@@ -70,4 +69,10 @@
 #define DEV_UART_NAME  devUsartStm32_1.dev_name
 #endif
 
-#undef DEF_TWIBUS
+#ifndef DEV_CANBUS
+#define DEV_CANBUS Stm32CanBus1
+#endif
+
+#ifndef DEV_CANBUS_SLAVE
+#define  DEV_CANBUS_SLAVE Stm32CanBus1C
+#endif
