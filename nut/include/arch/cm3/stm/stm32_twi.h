@@ -118,12 +118,4 @@ extern NUTTWIBUS Stm32TwiBus_2;
 #define I2C2_DMA_CHANNEL_TX           DMA1_C4
 #define I2C2_DMA_CHANNEL_RX           DMA1_C5
 
-#ifndef DEF_TWIBUS
-#ifdef I2CBUS1_AS_DEFAULT
-#define DEF_TWIBUS Stm32TwiBus_1
-#else
-#define DEF_TWIBUS Stm32TwiBus_2
-#endif
-#endif
-
 #endif /* _STM32_TWI_H_ */
