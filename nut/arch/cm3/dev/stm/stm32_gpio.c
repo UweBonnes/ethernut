@@ -150,6 +150,9 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(IS_GPIO_ALL_PERIPH(bank));
+#if defined(MCU_STM32F30)
+    GPIO_TypeDef *gpio = (GPIO_TypeDef *) bank;
+#else
     __IO uint32_t* gpio_bb = CM3BB_BASE(bank);
     uint32_t speed_flags_lo =
         (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_MED) |
@@ -157,6 +160,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     uint32_t speed_flags_hi =
         (((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_HIGH) |
          ((flags & GPIO_CFG_SPEED_FAST) == GPIO_CFG_SPEED_FAST))?1:0;
+#endif
 
 #if defined(MCU_STM32L1)
     CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR, (bank-GPIOA_BASE)>>10) = 1;
@@ -171,6 +175,54 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
      *
      * Otherwise we may introduce unwanted transistions on the port
      */
+#if defined(MCU_STM32F30)
+    if (flags & GPIO_CFG_INIT_HIGH)
+    {
+        if (flags & GPIO_CFG_INIT_LOW)
+            return -1;
+        else
+            GpioPinSetHigh(bank, bit);
+    }
+    if (flags & GPIO_CFG_INIT_LOW)
+        GpioPinSetLow(bank, bit);
+
+    /* we can't check for these flags, so clear them */
+    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
+    /* Reset all two bit entries */
+    gpio->MODER   &= ~(0x3 <<(bit << 1));
+    gpio->OSPEEDR &= ~(0x3 <<(bit << 1));
+    gpio->PUPDR   &= ~(0x3 <<(bit << 1));
+    /* For non-output, multidrive is don't care*/
+    if (flags & GPIO_CFG_MULTIDRIVE )
+        gpio->OTYPER |= 1<<bit;
+    else
+        gpio->OTYPER &= ~(1<<bit);
+    /* For non-output, ospeedr is don't care*/
+    switch(flags & GPIO_CFG_SPEED_FAST)
+    {
+    case GPIO_CFG_SPEED_FAST:
+        gpio->OSPEEDR |=  (3 <<(bit << 1));
+        break;
+    case GPIO_CFG_SPEED_MED:
+        gpio->OSPEEDR |=  (0x1 <<(bit << 1));
+        break;
+    }
+    /* Pull Up/Pull Down applies to all configurations*/
+        if (flags & GPIO_CFG_PULLUP )
+            gpio->PUPDR |=  (1<<((bit << 1)));
+        if (flags & GPIO_CFG_PULLDOWN )
+            gpio->PUPDR |=  (2<<((bit << 1)));
+
+    if (flags & GPIO_CFG_PERIPHAL)
+    {
+        gpio->MODER |=  2<<((bit << 1));
+    }
+    else if (flags & GPIO_CFG_OUTPUT)
+    {
+        gpio->MODER |=  1<<((bit << 1));
+    }
+#else
     if (flags & GPIO_CFG_INIT_HIGH)
     {
         if (flags & GPIO_CFG_INIT_LOW)
@@ -223,7 +275,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1) + 1))] = 0;
         gpio_bb[CM3BB_OFFSET(GPIO_TypeDef, PUPDR, ((bit << 1)    ))] = (flags & GPIO_CFG_PULLUP )?1:0;
     }
-
+#endif
 
     /* Check the result. */
     if( GpioPinConfigGet( bank, bit ) != flags ) {
