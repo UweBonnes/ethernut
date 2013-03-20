@@ -53,6 +53,9 @@
 #ifndef __STM32F30x_H
 #define __STM32F30x_H
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifdef __cplusplus
  extern "C" {
 #endif /* __cplusplus */
@@ -239,15 +242,16 @@ typedef enum IRQn
   USB_HP_IRQn                 = 74,     /*!< USB High Priority global Interrupt remap                          */
   USB_LP_IRQn                 = 75,     /*!< USB Low Priority global Interrupt  remap                          */
   USBWakeUp_RMP_IRQn          = 76,     /*!< USB Wakeup Interrupt remap                                        */
-  FPU_IRQn                    = 81      /*!< Floating point Interrupt                                          */
+  FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"            /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f30x.h"    /* STM32F30x System Header */
+#include <arch/cm3/core_cm4.h>             /* Cortex-M4 processor and core peripherals */
+#include <arch/cm3/stm/vendor/system_stm32f30x.h> /* STM32F30x System Header */
 #include <stdint.h>
 
 /** @addtogroup Exported_types

@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2012-2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright 2013 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,27 +30,44 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
+ */
+
+/*
+ * \file arch/cm3/board/f3_discovery.h
+ * \brief STM32F3_Discovery board specific settings.
  *
- */
-
-/*!
- * \file arch/cm3/stm/atm32xxxx.h
- * \brief Wrapper for the device dependant stm32XZxx.h files.
- * $Id: stm32_flash.h 3220 2010-11-12 13:04:17Z astralix $
  * \verbatim
+ * $Id$
+ * \endverbatim
  */
-
-#include <cfg/arch.h>
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f10x_usart.h>
-#elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/stm32l1xx_usart.h>
-#elif defined(MCU_STM32F2)
-#include <arch/cm3/stm/stm32f2xx_usart.h>
-#elif defined(MCU_STM32F30)
-#include <arch/cm3/stm/vendor/stm32f30x_usart.h>
-#elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/stm32f4xx_usart.h>
-#else
-#warning "Unknown STM32 family"
+/* LD3 North RED*/
+#ifndef HEARTBEAT_IDLE_PORT
+#define HEARTBEAT_IDLE_PORT NUTGPIO_PORTE
 #endif
+#ifndef HEARTBEAT_IDLE_PIN
+#define HEARTBEAT_IDLE_PIN 9
+#endif
+/* LD4 NW BLUE*/
+#ifndef LED1_PORT
+#define LED1_PORT NUTGPIO_PORTE
+#endif
+#ifndef LED1_PIN
+#define LED1_PIN 12
+#endif
+/* LD6 WEST BLUE*/
+#ifndef LED1_PORT
+#define LED1_PORT NUTGPIO_PORTE
+#endif
+#ifndef LED2_PIN
+#define LED2_PIN 15
+#endif
+
+#include <dev/null.h>
+#ifndef DEV_UART
+#define DEV_UART devNull
+#endif
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME  devNull.dev_name
+#endif
+
+#undef DEF_TWIBUS

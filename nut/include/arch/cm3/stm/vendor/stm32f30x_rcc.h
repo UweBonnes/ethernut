@@ -35,7 +35,7 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f30x.h"
+#include <arch/cm3/stm/vendor/stm32f30x.h>
 
 /** @addtogroup STM32F30x_StdPeriph_Driver
   * @{

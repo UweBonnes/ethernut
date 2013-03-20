@@ -69,7 +69,8 @@
 #define NutDisableTimerIrq()    SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk
 
 #if defined(MCU_STM32)
-#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2)|| defined(MCU_STM32F4)
+#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2)|| \
+    defined(MCU_STM32F30) ||defined(MCU_STM32F4)
 
 /*!
  * Frequency of CPU Core

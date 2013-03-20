@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2011/2012 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2011-2013 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -57,6 +57,10 @@
 #include <arch/cm3/stm/stm32f2xx_gpio.h>
 #include <arch/cm3/stm/stm32f2xx_rcc.h>
 #define GPIO_RCC_ENR AHB1ENR
+#elif defined (MCU_STM32F30)
+#include <arch/cm3/stm/vendor/stm32f30x_gpio.h>
+#include <arch/cm3/stm/vendor/stm32f30x_rcc.h>
+#define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F4)
 #include <arch/cm3/stm/stm32f4xx_gpio.h>
 #include <arch/cm3/stm/stm32f4xx_rcc.h>
@@ -156,9 +160,9 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 
 #if defined(MCU_STM32L1)
     CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR, (bank-GPIOA_BASE)>>10) = 1;
-#elif defined(MCU_STM32F3)
+#elif defined(MCU_STM32F30)
     CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,
-             ((bank-GPIOA_BASE)>>10) +17) = 1;
+             (((bank-GPIOA_BASE)>>10) +17)) = 1;
 #else
     CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR,
              (bank-GPIOA_BASE)>>10) = 1;

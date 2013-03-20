@@ -160,6 +160,8 @@
 #include <arch/cm3/board/f1_discovery.h>
 #elif defined(F4_DISCOVERY)
 #include <arch/cm3/board/f4_discovery.h>
+#elif defined(F3_DISCOVERY)
+#include <arch/cm3/board/f3_discovery.h>
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
 #elif defined(GBAXPORT2)

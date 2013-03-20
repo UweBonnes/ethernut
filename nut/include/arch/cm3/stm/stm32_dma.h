@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2012 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2013 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,7 +41,7 @@
 
 #include <cfg/arch.h>
 
-#if defined(MCU_STM32F1)||defined(MCU_STM32L1)
+#if defined(MCU_STM32F1)||defined(MCU_STM32L1) ||  defined(MCU_STM32F30)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #elif  defined(MCU_STM32F2)||defined(MCU_STM32F4)
 #include <arch/cm3/stm/stm32f2_dma.h>
