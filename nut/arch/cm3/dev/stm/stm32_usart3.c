@@ -139,11 +139,16 @@ NUTDEVICE devUsartStm32_3 = {
  *           CK  PB12   PC12  PD10
  *           CTS PB13   PB13  PD11
  *           RTS PB14   PB14  PD12
- * L1/F2/F4: TX  PA10   PC10  PD8
+ * L1/F2/F4: TX  PB10   PC10  PD8
  *           RX  PB11   PC11  PD9
  *           CK  PB12   PC12  PD10
  *           CTS PB13   PD11
  *           RTS PB14   PD12
+ * F30:      TX  PB10   PC10  PD8
+ *           RX  PB11   PC11  PD9  PE15
+ *           CK  PB12   PC12  PD10
+ *           CTS PB13   PD11  PA13
+ *           RTS PB14   PD12  PF6
   *
  */
 
@@ -186,8 +191,12 @@ NUTDEVICE devUsartStm32_3 = {
    #define CTS_GPIO_PIN    13
   #endif
  #endif /* USART3_NOREMAP_USART */
-#else /* L1/F2/F4*/
- #define STM_USART_REMAP  GPIO_AF_USART3
+#else /* L1/F2/F3/F4*/
+ #if defined(MCU_STM32F30)
+  #define STM_USART_REMAP  GPIO_AF_7
+ #else
+  #define STM_USART_REMAP  GPIO_AF_USART3
+ #endif
  #if !defined(USART3_TX_PIN)
   #if defined(USART3_PARTREMAP_USART)
    #define TX_GPIO_PORT    NUTGPIO_PORTC
@@ -231,6 +240,9 @@ NUTDEVICE devUsartStm32_3 = {
  #elif USART3_RX_PIN == 9
   #define RX_GPIO_PORT    NUTGPIO_PORTD
   #define RX_GPIO_PIN     9
+ #elif defined(MCU_STM32F30) && USART3_RX_PIN == 15
+  #define RX_GPIO_PORT    NUTGPIO_PORTE
+  #define RX_GPIO_PIN     15
  #else
   #warning "Illegal USART3 RX pin assignement"
  #endif
@@ -272,6 +284,9 @@ NUTDEVICE devUsartStm32_3 = {
   #elif USART3_CTS_PIN == 11
    #define CTS_GPIO_PORT    NUTGPIO_PORTD
    #define CTS_GPIO_PIN     11
+  #elif defined(MCU_STM32F30) && USART3_CTS_PIN == 013
+   #define CTS_GPIO_PORT    NUTGPIO_PORTA
+   #define CTS_GPIO_PIN     13
   #else
    #warning "Illegal USART3 CTS pin assignement"
   #endif
@@ -289,6 +304,9 @@ NUTDEVICE devUsartStm32_3 = {
   #elif USART3_RTS_PIN == 12
    #define RTS_GPIO_PORT    NUTGPIO_PORTD
    #define RTS_GPIO_PIN     12
+  #elif defined(MCU_STM32F30) && USART3_CTS_PIN == 6
+   #define CTS_GPIO_PORT    NUTGPIO_PORTF
+   #define CTS_GPIO_PIN     6
   #else
    #warning "Illegal USART3 RTS pin assignement"
   #endif

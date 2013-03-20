@@ -133,12 +133,12 @@ NUTDEVICE devUsartStm32_2 = {
  * \brief USART2 GPIO configuartion and assignment.
  */
 /* F1  NOREMAP REMAP
- * L1/F2/F4
+ * L1/F2/F4          F30   F30
  * CTS PA0     PD3
  * RTS PA1     PD4
- * TX  PA2     PD5
- * RX  PA3     PD6
- * CK  PA4     PD7
+ * TX  PA2     PD5   PA14  PB3
+ * RX  PA3     PD6   PA15  PB4
+ * CK  PA4     PD7         PB5
  */
 
 
@@ -169,8 +169,12 @@ NUTDEVICE devUsartStm32_2 = {
    #define CTS_GPIO_PIN  0
   #endif /* USART2_HARDWARE_HANDSHAKE */
  #endif /* USART2_REMAP_USART */
-#else /*L1/F2/F4*/
- #define STM_USART_REMAP  GPIO_AF_USART2
+#else /*L1/F2/F3/F4*/
+ #if defined(MCU_STM32F30)
+  #define STM_USART_REMAP  GPIO_AF_7
+ #else
+  #define STM_USART_REMAP  GPIO_AF_USART2
+ #endif
  #if !defined(USART2_TX_PIN)
   #if defined(USART2_REMAP_USART)
    #define TX_GPIO_PORT  NUTGPIO_PORTD
@@ -185,6 +189,12 @@ NUTDEVICE devUsartStm32_2 = {
  #elif USART2_TX_PIN == 2
   #define TX_GPIO_PORT  NUTGPIO_PORTA
   #define TX_GPIO_PIN   2
+ #elif defined(MCU_STM32F30) && USART2_TX_PIN == 14
+  #define TX_GPIO_PORT  NUTGPIO_PORTA
+  #define TX_GPIO_PIN   14
+ #elif defined(MCU_STM32F30) && USART2_TX_PIN == 3
+  #define TX_GPIO_PORT  NUTGPIO_PORTB
+  #define TX_GPIO_PIN   3
  #else
   #warning "Illegal USART2 TX pin assignement"
  #endif
@@ -202,6 +212,12 @@ NUTDEVICE devUsartStm32_2 = {
  #elif USART2_RX_PIN == 3
   #define RX_GPIO_PORT  NUTGPIO_PORTA
   #define RX_GPIO_PIN   3
+ #elif defined(MCU_STM32F30) && USART2_TX_PIN == 15
+  #define TX_GPIO_PORT  NUTGPIO_PORT1
+  #define TX_GPIO_PIN   15
+ #elif defined(MCU_STM32F30) && USART2_TX_PIN == 4
+  #define TX_GPIO_PORT  NUTGPIO_PORTB
+  #define TX_GPIO_PIN   4
  #else
   #warning "Illegal USART2 RX pin assignement"
  #endif

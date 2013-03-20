@@ -64,10 +64,10 @@
 
 #include <dev/null.h>
 #ifndef DEV_UART
-#define DEV_UART devNull
+#define DEV_UART devUsartStm32_1
 #endif
 #ifndef DEV_UART_NAME
-#define DEV_UART_NAME  devNull.dev_name
+#define DEV_UART_NAME  devUsartStm32_1.dev_name
 #endif
 
 #undef DEF_TWIBUS

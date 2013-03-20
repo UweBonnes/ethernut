@@ -77,11 +77,11 @@ nutarch_cm3_stm32f30 =
 --                    "HW_SPI1_STM32",
 --                    "HW_SPI2_STM32",
 --                    "HW_SPI3_STM32",
---                    "HW_UART1_STM32",
---                    "HW_UART2_STM32",
---                    "HW_UART3_STM32",
---                    "HW_UART4_STM32",
---                    "HW_UART5_STM32",
+                      "HW_UART1_STM32",
+                      "HW_UART2_STM32",
+                      "HW_UART3_STM32",
+                      "HW_UART4_STM32",
+                      "HW_UART5_STM32",
                 },
                 file = "include/cfg/arch.h"
             }

@@ -134,7 +134,7 @@ NUTDEVICE devUartStm32_4 = {
  * \brief UART4 GPIO configuartion and assignment.
  */
 /*
- * F1  no alternate pins
+ * F1/F3  no alternate pins
  * L1/F2/F4
  * TX  PA0     PC10
  * RX  PA1     PC11
@@ -145,6 +145,12 @@ NUTDEVICE devUartStm32_4 = {
  #define TX_GPIO_PIN      0
  #define RX_GPIO_PORT    NUTGPIO_PORTA
  #define RX_GPIO_PIN      1
+#elif defined(MCU_STM32F30)
+ #define STM_USART_REMAP  GPIO_AF_5
+ #define TX_GPIO_PORT    NUTGPIO_PORTC
+ #define TX_GPIO_PIN     10
+ #define RX_GPIO_PORT    NUTGPIO_PORTC
+ #define RX_GPIO_PIN      11
 #else /* L1/F2/F4*/
  #define STM_USART_REMAP  GPIO_AF_UART4
  #if !defined(UART4_TX_PIN) || UART4_TX_PIN == 0
