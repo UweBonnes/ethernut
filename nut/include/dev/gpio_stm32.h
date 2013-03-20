@@ -187,7 +187,7 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioPinRelease(bank, bit)     CM3REG(bank, GPIO_TypeDef, MODER) &= ~(1<<(bit<<1))
 #else
 #define GpioPinGet(bank, bit)           CM3BBREG(bank, GPIO_TypeDef, IDR, bit)
-#define GpioPinSet(bank, bit, value)    CM3BBREG(bank, GPIO_TypeDef, ODR, bit) = value
+#define GpioPinSet(bank, bit, value)    CM3BBREG(bank, GPIO_TypeDef, ODR, bit) = (value)?1:0
 #if defined(MCU_STM32F1)
 #define GpioPinSetHigh(bank, bit)   CM3BBREG(bank, GPIO_TypeDef, BSRR, bit) = 1
 #define GpioPinSetLow(bank, bit)    CM3BBREG(bank, GPIO_TypeDef, BRR , bit) = 1
