@@ -156,6 +156,8 @@
 #include <arch/avr32/board/evk1104.h>
 #elif defined(EVK1105)
 #include <arch/avr32/board/evk1105.h>
+#elif defined(F1_DISCOVERY)
+#include <arch/cm3/board/f1_discovery.h>
 #elif defined(F4_DISCOVERY)
 #include <arch/cm3/board/f4_discovery.h>
 #elif defined(FLECX1)
