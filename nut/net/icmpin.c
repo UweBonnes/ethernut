@@ -129,7 +129,7 @@ static int NutIcmpUnreach(NETBUF * nb, int icmp_code)
         }
         break;
 
-#ifdef NUT_UDP_ICMP_SUPPORT
+#ifndef NUT_UDP_ICMP_EXCLUDE
         case IPPROTO_UDP:
         {
             UDPHDR *uh;

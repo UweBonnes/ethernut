@@ -220,12 +220,14 @@ nutnet =
         options =
         {
             {
-                macro = "NUT_UDP_ICMP_SUPPORT",
-                brief = "ICMP support for UDP sockets",
+                macro = "NUT_UDP_ICMP_EXCLUDE",
+                brief = "Disable ICMP support for UDP sockets for backwards compatibility",
                 requires = { "NET_ICMP" },
-                description = "Allows ICMP error reporting on UDP sockets. e.g. ICMP destination "..
-                              "unreachable, ICMP host unreachable etc. will trigger errors on "..
-                              "UDP send / receive functions.",
+                description = "ICMP support for UDP sockets allows error reporting on UDP sockets. "..
+                              "e.g. ICMP destination unreachable, ICMP host unreachable etc. "..
+                              "This will trigger errors on UDP send / receive functions. Unfortunately"..
+                              "changes to the old API were necessary and therefor you can disable ICMP"..
+                              "support for UDP sockets here.",
                 flavor = "boolean",
                 file = "include/cfg/udp.h"
             }

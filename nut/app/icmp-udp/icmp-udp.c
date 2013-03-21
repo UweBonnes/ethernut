@@ -40,7 +40,7 @@
  * \example icmp-udp/icmp-udp.c
  *
  * This sample demonstrates the icmp error handling for udp sockets.
- * NUT_UDP_ICMP_SUPPORT has to be enabled in the configurator to use
+ * NUT_UDP_ICMP_EXCLUDE should not be set in the configurator to use
  * icmp support on UDP sockets.
  *
  * Connect the RS232 port of the Ethernut with a free COM
@@ -143,7 +143,7 @@ THREAD(UDPReceiver, arg)
             printf("<-- Timeout (2 sec.) on UDP receive\r\n");
         } else
         if (rc < 0) {
-#ifdef NUT_UDP_ICMP_SUPPORT
+#ifndef NUT_UDP_ICMP_EXCLUDE
             int error;
             error = NutUdpError(socket, &remote_ip, &remote_port);
             print_udp_icmp_error(remote_ip, remote_port, error);
@@ -180,10 +180,10 @@ int main(void)
     puts("Demo for ICMP support in UDP sockets...\r\n");
 
 #ifdef DEV_ETHER
-#ifndef NUT_UDP_ICMP_SUPPORT
-#warning ICMP support for UDP sockets not enabled in the configurator, please enable NUT_UDP_ICMP_SUPPORT
+#ifdef NUT_UDP_ICMP_EXCLUDE
+#warning ICMP support for UDP sockets not enabled in the configurator, please disable NUT_UDP_ICMP_EXCLUDE
     puts("ICMP support for UDP sockets not enabled in the configurator\r\n");
-    puts("Please enable NUT_UDP_ICMP_SUPPORT\r\n");
+    puts("Please disable NUT_UDP_ICMP_EXCLUDE\r\n");
 #endif
     /*
      * Register the network device.
@@ -232,7 +232,7 @@ int main(void)
         rc = NutUdpSendTo(socket, ip_udp_echo, UDP_ECHO_PORT, send_buffer, length);
         printf("--> Sended packet: \"%s\", to %s, rc: %d\r\n", send_buffer, inet_ntoa(ip_udp_echo), rc);
         if (rc < 0) {
-#ifdef NUT_UDP_ICMP_SUPPORT
+#ifndef NUT_UDP_ICMP_EXCLUDE
             int      error;
             uint32_t remote_ip;
             uint16_t remote_port;

@@ -143,7 +143,7 @@ int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int
     int rc;
     NETBUF *nb;
 
-#ifdef NUT_UDP_ICMP_SUPPORT
+#ifndef NUT_UDP_ICMP_EXCLUDE
     if (sock->so_last_error)
         return -1;
 #endif
@@ -185,7 +185,7 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *
     UDPHDR *uh;
     NETBUF *nb;
 
-#ifdef NUT_UDP_ICMP_SUPPORT
+#ifndef NUT_UDP_ICMP_EXCLUDE
     /* The ICMP handler might have set an error condition. */
     if (sock->so_last_error)
         return -1;
@@ -194,7 +194,7 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *
     if (sock->so_rx_nb == 0)
         NutEventWait(&sock->so_rx_rdy, timeout);
 
-#ifdef NUT_UDP_ICMP_SUPPORT
+#ifndef NUT_UDP_ICMP_EXCLUDE
     /* An ICMP message might have posted the rx event. So check again */
     if (sock->so_last_error)
         return -1;
