@@ -1787,8 +1787,24 @@ nutarch_avr =
         }
     },
     {
+        name = "nutarch_avr_i2cbus",
+        brief = "I2C Bus Controller",
+        description = "Hardware dependent part of the I2C bus driver.\n\n"..
+                      "The new NutI2cBusXXX API introduced in Nut/OS version 5 "..
+                      "can be used with this controller driver.",
+        requires = { "HW_MCU_AVR_ENHANCED" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources = { "avr/dev/i2cbus_avr.c" }
+    },
+    {
         name = "nutarch_avr_twif",
         brief = "TWI Driver",
+        description = "This legacy TWI driver allows to use several I2C busses, "..
+                      "as long as they are based on the same hardware. It is not "..
+                      "possible, though, to mix bit-banging drivers and drivers "..
+                      "based on the AVR TWI hardware.\n\n"..
+                      "The driver is kept for backward compatibility. New applications "..
+                      "should consider to use the I2C bus controller driver.",
         requires = { "HW_MCU_AVR", "NUT_EVENT" },
         provides = { "DEV_TWI" },
         sources = { "avr/dev/twif.c" }
