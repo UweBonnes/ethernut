@@ -122,8 +122,8 @@ NUTDEVICE devDebug1 = {
     At91DevDebugWrite,          /*!< dev_write. */
     At91DevDebugOpen,           /*!< dev_opem. */
     At91DevDebugClose,          /*!< dev_close. */
-    0                           /*!< dev_size. */
-    0,                          /*!< dev_select, optional, not yet implemented */
+    0,                          /*!< dev_size. */
+    0                           /*!< dev_select, optional, not yet implemented */
 };
 
 #endif /* USART1_BASE */

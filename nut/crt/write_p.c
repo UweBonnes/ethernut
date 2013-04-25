@@ -57,6 +57,7 @@
 
 #include "nut_io.h"
 
+#include <errno.h>
 #include <sys/device.h>
 #include <sys/nutdebug.h>
 
@@ -89,12 +90,12 @@ int _write_P(int fd, PGM_P data, unsigned int count)
     NUTFILE *fp;
     NUTDEVICE *dev;
 
-    if ((unsigend_int)fd >= FOPEN_MAX)) {
+    if ((unsigned int)fd >= FOPEN_MAX) {
         errno = EBADF;
         return -1;
     }
 
-    if ((fp = fds[fd]) == NULL) {
+    if ((fp = __fds[fd]) == NULL) {
         errno = EBADF;
         return -1;
     }
