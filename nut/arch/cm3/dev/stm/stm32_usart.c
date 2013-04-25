@@ -52,6 +52,45 @@
 #include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
+#if defined(MCU_STM32F30)
+#define USARTN_RDR (USARTn->RDR)
+#define USARTN_TDR (USARTn->TDR)
+#define USARTN_ISR (USARTn->ISR)
+#define CLEAR_ERRS() USARTn->ICR = USART_ICR_PECF|USART_ICR_FECF|USART_ICR_NCF|USART_ICR_ORECF|\
+        USART_ICR_IDLECF|USART_ICR_TCCF|USART_ICR_LBDCF|USART_ICR_CTSCF|USART_ICR_RTOCF|\
+        USART_ICR_EOBCF|USART_ICR_CMCF|USART_ICR_WUCF
+#define TXE_SET CM3BBREG(USARTnBase, USART_TypeDef, ISR, _BI32(USART_ISR_TXE))
+#define CLEAR_TC() do{CM3BBREG(USARTnBase, USART_TypeDef, ICR, _BI32(USART_ICR_TCCF))=1;} while(0)
+#else
+#define USARTN_RDR (USARTn->DR)
+#define USARTN_TDR (USARTn->DR)
+#define USARTN_ISR (USARTn->SR)
+#define CLEAR_ERRS() (USARTn->SR)
+#define TXE_SET CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TXE))
+#define CLEAR_TC() do{CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TC))=0;} while(0)
+#endif
+#if !defined(USART_ISR_ORE)
+#define USART_ISR_ORE USART_SR_ORE
+#endif
+#if !defined(USART_ISR_NE)
+#define USART_ISR_NE USART_SR_NE
+#endif
+#if !defined(USART_ISR_FE)
+#define USART_ISR_FE USART_SR_FE
+#endif
+#if !defined(USART_ISR_PE)
+#define USART_ISR_PE USART_SR_PE
+#endif
+#if !defined(USART_ISR_TC)
+#define USART_ISR_TC USART_SR_TC
+#endif
+#if !defined(USART_ISR_RXNE)
+#define USART_ISR_RXNE USART_SR_RXNE
+#endif
+#if !defined(USART_ISR_TXE)
+#define USART_ISR_TXE USART_SR_TXE
+#endif
+
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
 #include <arch/cm3/stm/stm32_dma.h>
 #endif
@@ -246,10 +285,10 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
      */
     if (flow_control & (XON_PENDING | XOFF_PENDING)) {
         if (flow_control & XON_PENDING) {
-            USARTn->DR=ASCII_XOFF;
+            USARTN_TDR_=ASCII_XOFF;
             flow_control |= XOFF_SENT;
         } else {
-            USARTn->DR=ASCII_XON;
+            USARTN_TDR=ASCII_XON;
             flow_control &= ~XOFF_SENT;
         }
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
@@ -262,7 +301,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
          * and return without sending anything.
          */
         CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TXEIE)) = 0;
-        USARTn->SR;
+        CLEAR_ERRS();
         return;
     }
 #endif
@@ -278,7 +317,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
         // TODO: CTS handling in here
 
         /* Start transmission of the next character. */
-        USARTn->DR=*cp;
+        USARTN_TDR=*cp;
 
         /* Decrement the number of available bytes in the buffer. */
         rbf->rbf_cnt--;
@@ -351,10 +390,10 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
      * We read the received character as early as possible to avoid overflows
      * caused by interrupt latency.
      */
-    ch = USARTn->DR;
+    ch = USARTN_RDR;
 
     /* Collect receiver errors. */
-    rx_errors |= USARTn->SR & (USART_SR_ORE | USART_SR_NE | USART_SR_FE | USART_SR_PE);
+    rx_errors |= USARTN_ISR & (USART_ISR_ORE | USART_ISR_NE | USART_ISR_FE | USART_ISR_PE);
 
 #if defined(UART_XONXOFF_CONTROL)
     /*
@@ -402,7 +441,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
         if(cnt >= rbf->rbf_hwm) {
             if((flow_control & XOFF_SENT) == 0) {
                 if (CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_CR1_TE))) {
-                    USARTn->DR= ASCII_XOFF;
+                    USARTN_TDR= ASCII_XOFF;
                     flow_control |= XOFF_SENT;
                     flow_control &= ~XOFF_PENDING;
                 } else {
@@ -486,7 +525,7 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         Rs485NRE_L();   /* Enable Receiver */
 
         /* Clear pending TX-Complete Status */
-        CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TC)) = 0;
+        CLEAR_TC();
 
         if( hdpx_control) {
             /* In case of half-duplex, enable receiver again */
@@ -506,21 +545,21 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
 static void Stm32UsartInterrupt(void *arg)
 {
     USARTDCB *dcb = (USARTDCB *) arg;
-    uint16_t csr = USARTn->SR;
+    uint16_t csr = USARTN_ISR;
 
     /* Test for byte received */
-    if (csr & USART_SR_RXNE) {
+    if (csr & USART_ISR_RXNE) {
         Stm32UsartRxReady(&dcb->dcb_rx_rbf);
     }
     /* Test for next byte can be transmitted
      * At end of DMA_TX Transfer, both TC and TXE are set.
      * Do not reinitialize transfer in that case!
      */
-    if ((csr & USART_SR_TXE) && !CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT))) {
+    if ((csr & USART_ISR_TXE) && !CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT))) {
         Stm32UsartTxReady(&dcb->dcb_tx_rbf);
     }
     /* Last byte has been sent completely. */
-    if (csr & USART_SR_TC) {
+    if (csr & USART_ISR_TC) {
         Stm32UsartTxComplete(&dcb->dcb_tx_rbf);
     }
 }
@@ -567,7 +606,7 @@ static void Stm32UsartDisable(void)
     /* Disable Usart Interrupts*/
     NutUartIrqDisable();
     /* Wait until all bits had been shifted out. */
-    while (CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TXE)) == 0);
+    while(!TXE_SET);
     /* Disable USART. */
     USARTn->CR1 &= ~(USART_CR1_TE|USART_CR1_RE);
 }
@@ -865,19 +904,19 @@ static uint32_t Stm32UsartGetStatus(void)
 {
     uint32_t rc = 0;
 #if defined(US_MODE_HWHANDSHAKE)
-    uint16_t csr = USARTn->SR;
+    uint16_t csr = USARTN_ISR;
 #endif
 
     /*
      * Set receiver error flags.
      */
-    if ((rx_errors & USART_SR_FE) != 0) {
+    if ((rx_errors & USART_ISR_FE) != 0) {
         rc |= UART_FRAMINGERROR;
     }
-    if ((rx_errors & USART_SR_ORE) != 0) {
+    if ((rx_errors & USART_ISR_ORE) != 0) {
         rc |= UART_OVERRUNERROR;
     }
-    if ((rx_errors & USART_SR_PE) != 0) {
+    if ((rx_errors & USART_ISR_PE) != 0) {
         rc |= UART_PARITYERROR;
     }
 
@@ -989,8 +1028,8 @@ static int Stm32UsartSetStatus(uint32_t flags)
      * Clear USART receive errors.
      */
     if (flags & UART_ERRORS) {
-        USARTn->SR;
-        USARTn->DR;
+        CLEAR_ERRS();
+        USARTN_RDR;
     }
 
     /*
@@ -1180,7 +1219,7 @@ static void Stm32UsartTxStart(void)
     }
 
     /* Clear Transmit Complete flag */
-    CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TC)) = 0;
+    CLEAR_TC();
     /* Enable transmit interrupts. */
     CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_TXEIE)) = 1;
 }
@@ -1201,8 +1240,8 @@ static void Stm32UsartRxStart(void)
      */
     if (flow_control && (flow_control & XOFF_SENT) != 0) {
         NutUartIrqDisable();
-        if (CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TXE))) {
-            USARTn->DR=ASCII_XON;
+        if (TXE_SET) {
+            USARTN_TDR=ASCII_XON;
             flow_control &= ~XON_PENDING;
         } else {
             flow_control |= XON_PENDING;

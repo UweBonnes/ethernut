@@ -126,7 +126,7 @@ uint8_t CRC_GetIDRegister(void)
   */
 void CRC_Init(void)
 {
-#if defined(MCU_STM32F1) || defined(MCU_STM32L1)
+#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F30)
     RCC->AHBENR |= RCC_AHBPeriph_CRC;
 #elif defined(MCU_STM32F2) || defined(MCU_STM32F4)
     RCC->AHB1ENR|=RCC_AHB1ENR_CRCEN;

@@ -134,6 +134,9 @@ static void TwStop(GPIO_TWICB* icb)
  *
  * Entry: SCL low, SDA any
  * Exit: SCL low, SDA high
+ *
+ * Change SDA only when SCL is low!
+ * Sample SDA short before setting SCL low!
  */
 static int TwPut(GPIO_TWICB* icb, uint8_t octet)
 {
@@ -148,22 +151,25 @@ static int TwPut(GPIO_TWICB* icb, uint8_t octet)
             GpioPinSetLow (icb->sda_port, icb->sda_pin);
             GpioPinDrive  (icb->sda_port, icb->sda_pin);
         }
-        /* Wait for data to stabelize. */
-        NutMicroDelay (1 * icb->delay_unit);
+        /* Wait for data to stabilize. */
+        NutMicroDelay (2 * icb->delay_unit);
         /* Toggle the clock. */
         GpioPinRelease(icb->scl_port, icb->scl_pin);
         GpioPinSetHigh(icb->scl_port, icb->scl_pin);
         NutMicroDelay (2 * icb->delay_unit);
+        while(GpioPinGet(icb->scl_port, icb->scl_pin) == 0)
+        {
+            /* Clock stretching*/
+            NutMicroDelay (2 * icb->delay_unit);
+        }
         GpioPinSetLow (icb->scl_port, icb->scl_pin);
         GpioPinDrive  (icb->scl_port, icb->scl_pin);
-        NutMicroDelay (1 * icb->delay_unit);
     }
 
-    /* Set data line high to receive the ACK bit. */
+    /* Release data line to receive the ACK bit. */
     GpioPinRelease(icb->sda_port, icb->sda_pin);
     GpioPinSetHigh(icb->sda_port, icb->sda_pin);
-
-    /* ACK should appear shortly after the clock's rising edge. */
+    NutMicroDelay (2 * icb->delay_unit);
     GpioPinRelease(icb->scl_port, icb->scl_pin);
     GpioPinSetHigh(icb->scl_port, icb->scl_pin);
     NutMicroDelay (2 * icb->delay_unit);
@@ -174,6 +180,7 @@ static int TwPut(GPIO_TWICB* icb, uint8_t octet)
     }
     GpioPinSetLow (icb->scl_port, icb->scl_pin);
     GpioPinDrive  (icb->scl_port, icb->scl_pin);
+    NutMicroDelay (2 * icb->delay_unit);
 
     return i;
 }
@@ -182,9 +189,12 @@ static int TwPut(GPIO_TWICB* icb, uint8_t octet)
  * Toggles in a single byte in master mode.
  *
  * Entry: SCL low, SDA any
- * Exit: SCL low, SDA high
+ * Exit: SCL low, SDA low with ack set, high else
+ *
+ * Change SDA only when SCL is low!
+ * Sample SDA short before setting SCL low!
  */
-static uint8_t TwGet(GPIO_TWICB* icb)
+static uint8_t TwGet(GPIO_TWICB* icb, uint8_t ack)
 {
     uint8_t rc = 0;
     int i;
@@ -194,18 +204,34 @@ static uint8_t TwGet(GPIO_TWICB* icb)
     GpioPinSetHigh(icb->sda_port, icb->sda_pin);
     NutMicroDelay (1 * icb->delay_unit);
     for (i = 0x80; i; i >>= 1) {
-        NutMicroDelay (1 * icb->delay_unit);
-        /* Data should appear shortly after the clock's rising edge. */
+        NutMicroDelay (2 * icb->delay_unit);
         GpioPinRelease(icb->scl_port, icb->scl_pin);
         GpioPinSetHigh(icb->scl_port, icb->scl_pin);
         NutMicroDelay (2 * icb->delay_unit);
-        /* SDA read. */
+        while(GpioPinGet(icb->scl_port, icb->scl_pin) == 0)
+        {
+            /* Clock stretching*/
+            NutMicroDelay (2 * icb->delay_unit);
+        }
         if (GpioPinGet(icb->sda_port, icb->sda_pin)) {
             rc |= i;
         }
         GpioPinSetLow (icb->scl_port, icb->scl_pin);
         GpioPinDrive  (icb->scl_port, icb->scl_pin);
     }
+    if (ack)
+    {
+        /* Master sets acknowledge */
+        GpioPinSetLow (icb->sda_port, icb->sda_pin);
+        GpioPinDrive  (icb->sda_port, icb->sda_pin);
+    }
+    NutMicroDelay (2 * icb->delay_unit);
+    GpioPinRelease(icb->scl_port, icb->scl_pin);
+    GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+    NutMicroDelay (2 * icb->delay_unit);
+    GpioPinSetLow (icb->scl_port, icb->scl_pin);
+    GpioPinDrive  (icb->scl_port, icb->scl_pin);
+    NutMicroDelay (2 * icb->delay_unit);
     return rc;
 }
 
@@ -242,37 +268,47 @@ static int TwiBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
 {
     NUTI2C_BUS *bus;
     GPIO_TWICB *icb;
-    int i, rc = -1;
+    int i, rc = 0;
 
     bus = slave->slave_bus;
     icb = (GPIO_TWICB *) bus->bus_icb;
 
     msg->msg_widx = 0;
     msg->msg_ridx = 0;
-    /*
-     * Process I2C read operation.
-     */
-    TwStart(icb);
-    rc = TwPut(icb, slave->slave_address);
-    if (rc)
-        return rc;
-    if (msg->msg_wlen) {
-        for (i = 0; i < msg->msg_wlen; i++) {
-            rc = TwPut(icb, msg->msg_wdat[i]);
-            if (rc)
-                return rc;
-            msg->msg_widx++;
+    if (msg->msg_wlen)
+    {
+        /*
+         * Process I2C write operation.
+         */
+        TwStart(icb);
+        rc = TwPut(icb, (slave->slave_address << 1));
+        if (rc == 0)
+        {
+            for (i = 0; i < msg->msg_wlen; i++)
+            {
+                rc = TwPut(icb, msg->msg_wdat[i]);
+                if (rc)
+                    break;
+                msg->msg_widx++;
+            }
         }
     }
-    if (msg->msg_rsiz) {
-        for (i = 0; i < msg->msg_rsiz; i++) {
-            msg->msg_rdat[i] = TwGet(icb);
-            /* Check for NACK?*/
-            msg->msg_ridx++;
+    if ((rc == 0) && msg->msg_rsiz)
+    {
+        TwStart(icb);
+        rc = TwPut(icb, (slave->slave_address << 1)|1);
+        if (rc == 0)
+        {
+            for (i = 0; i < msg->msg_rsiz; i++)
+            {
+                msg->msg_rdat[i] = TwGet(icb, i < (msg->msg_rsiz-1));
+                msg->msg_ridx++;
+            }
         }
     }
     TwStop(icb);
-
+    if (rc)
+        msg->msg_ridx = rc;
     return msg->msg_ridx;
 }
 

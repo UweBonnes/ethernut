@@ -51,7 +51,11 @@
 
 #define THIS_EXTI   2
 #define THIS_SIG    sig_INTERRUPT2
+#if defined(MCU_STM32F30)
+#define THIS_IRQn   EXTI2_TS_IRQn
+#else
 #define THIS_IRQn   EXTI2_IRQn
+#endif
 #define THIS_IRQPRI NUT_IRQPRI_IRQ2
 #define THIS_ENTRY  Interrupt2Entry
 

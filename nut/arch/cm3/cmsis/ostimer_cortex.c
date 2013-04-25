@@ -103,7 +103,8 @@ uint32_t NutArchClockGet(int idx)
 {
     uint32_t clock = 0;
 #if defined(MCU_STM32)
-#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F4)
+#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2)\
+    || defined(MCU_STM32F30)|| defined(MCU_STM32F4)
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     RCC_GetClocksFreq(&RCC_ClocksStatus);

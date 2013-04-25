@@ -156,12 +156,18 @@
 #include <arch/avr32/board/evk1104.h>
 #elif defined(EVK1105)
 #include <arch/avr32/board/evk1105.h>
+#elif defined(F1_DISCOVERY)
+#include <arch/cm3/board/f1_discovery.h>
 #elif defined(F4_DISCOVERY)
 #include <arch/cm3/board/f4_discovery.h>
+#elif defined(F3_DISCOVERY)
+#include <arch/cm3/board/f3_discovery.h>
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
 #elif defined(GBAXPORT2)
 #include <arch/arm/board/gba_xport2.h>
+#elif defined(MBED_NXP_LPC1768)
+#include <arch/cm3/board/mbed.h>
 #elif defined(KSK_LPC1788_SK)
 #include <arch/cm3/board/ksk_lpc1788_sk.h>
 #elif defined(LISA)
@@ -307,17 +313,6 @@
  */
 #include <dev/usart_lpc17xx.h>
 
-#if defined(MCU_LPC176x)
-
-#ifndef DEV_UART0
-#define DEV_UART0       devUsartLpc176x_0
-#endif
-#ifndef DEV_UART0_NAME
-#define DEV_UART0_NAME  "usart0"
-#endif
-
-#else
-
 #ifndef DEV_UART0
 #define DEV_UART0       devUsartLpc17xx_0
 #endif
@@ -346,7 +341,6 @@
 #define DEV_UART3_NAME  DEV_UART3.dev_name
 #endif
 
-#endif
 
 #elif defined(__AVR32__)
 /*

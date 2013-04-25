@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2012 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012/2013 by Uwe Bonnes
+ *                          (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -506,7 +507,7 @@ int CanGetFeatures( NUTCANBUS *bus, uint32_t flags)
 #define CAN_BS1(x) (((x-1) & 0xf) << 16)
 #define CAN_BS2(x) (((x-1) & 0x7) << 20)
 #define CAN_SJW(x) (((x-1) & 0x3) << 24)
-#if defined(MCU_STM32F1)
+#if defined(MCU_STM32F1) || defined(STM32F30X)
 #define STM_CAN_ABP1_CHECK 36000000
 #define STM_CAN_BTR_1M   (CAN_APB1_DIV(2)  |CAN_BS1(15)|CAN_BS2(2)|CAN_SJW(2))
 #define STM_CAN_BTR_800k (CAN_APB1_DIV(3)  |CAN_BS1(12)|CAN_BS2(2)|CAN_SJW(2))
@@ -599,6 +600,7 @@ int CanSetBaud( NUTCANBUS *bus, int baud, uint32_t alt_btr)
        F1: 36 MHz
        L1: 32 MHz
        F2: 30 MHz
+       F3: 30 MHz
        F4: 42 MHz
        Assume this frequency for defining the BTR register for now.
        If we need to cope with other APB1 Clocks, this gets much more

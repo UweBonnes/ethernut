@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -45,6 +45,8 @@
 #include <arch/cm3/stm/stm32l1xx_usart.h>
 #elif defined(MCU_STM32F2)
 #include <arch/cm3/stm/stm32f2xx_usart.h>
+#elif defined(MCU_STM32F30)
+#include <arch/cm3/stm/vendor/stm32f30x_usart.h>
 #elif defined(MCU_STM32F4)
 #include <arch/cm3/stm/stm32f4xx_usart.h>
 #else

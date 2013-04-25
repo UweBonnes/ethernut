@@ -446,7 +446,16 @@
 #define EMAC_TX_FRAME_TOUT        0x00100000 /* Frame Transmit timeout count        */
 
 /* EMAC variables located in 16K Ethernet SRAM */
+
+#if defined(MCU_LPC176x)
+#define RX_DESC_BASE              0x20080000
+#elif defined(MCU_LPC177x_8x)
 #define RX_DESC_BASE              0x20004000
+#else
+#warning "Unknown LPC familiy"
+#endif
+
+
 #define RX_STAT_BASE              (RX_DESC_BASE + EMAC_NUM_RX_FRAG * 8)
 #define TX_DESC_BASE              (RX_STAT_BASE + EMAC_NUM_RX_FRAG * 8)
 #define TX_STAT_BASE              (TX_DESC_BASE + EMAC_NUM_TX_FRAG * 8)

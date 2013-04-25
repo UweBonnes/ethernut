@@ -36,6 +36,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F2 GPIO",
         description = "Generic port I/O API.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_GPIO_STM32V2" },
+        provides = { "HW_GPIO_V2" },
         sources = { "cm3/dev/stm/stm32_gpio.c"}
     },
     --

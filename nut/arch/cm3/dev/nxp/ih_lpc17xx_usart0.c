@@ -47,11 +47,7 @@
 #define NUT_IRQPRI_UART0  4
 #endif
 
-#if defined(MCU_LPC176x)
-extern NUTDEVICE devUsartLpc176x_0;
-#else
 extern NUTDEVICE devUsartLpc17xx_0;
-#endif
 
 static int Uart0IrqCtl(int cmd, void *param);
 
@@ -62,11 +58,7 @@ IRQ_HANDLER sig_USART0 = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
-#if defined(MCU_LPC176x)
-    &devUsartLpc176x_0,
-#else
     &devUsartLpc17xx_0, /* Passed argument, ir_arg. */
-#endif
     NULL,               /* Handler subroutine, ir_handler. */
     Uart0IrqCtl         /* Interrupt control, ir_ctl. */
 };

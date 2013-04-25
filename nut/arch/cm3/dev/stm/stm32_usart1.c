@@ -135,10 +135,10 @@ NUTDEVICE devUsartStm32_1 = {
  * \brief USART1 GPIO configuartion and assignment.
  */
 /*
- * F1  NOREMAP REMAP
+ * F1  NOREMAP REMAP  F30  F30  F30
  * CK  PA8     PA8
- * TX  PA9     PB6
- * RX  PA10    PB7
+ * TX  PA9     PB6    PC4  PB6  PE0
+ * RX  PA10    PB7    PC5  PB7  PE1
  * CTS PA11    PA11
  * RTS PA12    PA12
  */
@@ -157,17 +157,24 @@ NUTDEVICE devUsartStm32_1 = {
   #define RX_GPIO_PORT    NUTGPIO_PORTA
   #define RX_GPIO_PIN     10
  #endif
-#else /* L1/F2/F4*/
- #define STM_USART_REMAP  GPIO_AF_USART1
+#else /* L1/F2/F3/F4*/
+ #if defined(MCU_STM32F30)
+  #define STM_USART_REMAP  GPIO_AF_7
+ #else
+  #define STM_USART_REMAP  GPIO_AF_USART1
+ #endif
  #if !defined(USART1_TX_PIN)
   #define TX_GPIO_PORT    NUTGPIO_PORTA
   #define TX_GPIO_PIN      9
  #elif USART1_TX_PIN == 6
   #define TX_GPIO_PORT    NUTGPIO_PORTB
   #define TX_GPIO_PIN     6
- #elif USART1_TX_PIN == 9
-  #define TX_GPIO_PORT    NUTGPIO_PORTA
-  #define TX_GPIO_PIN      9
+ #elif defined(MCU_STM32F30) && USART1_TX_PIN == 4
+  #define TX_GPIO_PORT    NUTGPIO_PORTC
+  #define TX_GPIO_PIN      4
+ #elif defined(MCU_STM32F30) && USART1_TX_PIN == 0
+  #define TX_GPIO_PORT    NUTGPIO_PORTE
+  #define TX_GPIO_PIN      0
  #else
   #warning "Illegal USART1 TX pin assignement"
  #endif
@@ -177,9 +184,12 @@ NUTDEVICE devUsartStm32_1 = {
  #elif USART1_RX_PIN == 7
   #define RX_GPIO_PORT    NUTGPIO_PORTB
   #define RX_GPIO_PIN     7
- #elif USART1_RX_PIN == 10
-  #define RX_GPIO_PORT    NUTGPIO_PORTA
-  #define RX_GPIO_PIN      10
+ #elif defined(MCU_STM32F30) && USART1_RX_PIN == 5
+  #define RX_GPIO_PORT    NUTGPIO_PORTC
+  #define RX_GPIO_PIN      5
+ #elif defined(MCU_STM32F30) && USART1_RX_PIN == 1
+  #define RX_GPIO_PORT    NUTGPIO_PORTE
+  #define RX_GPIO_PIN      1
  #else
   #warning "Illegal USART1 RX pin assignement"
  #endif
