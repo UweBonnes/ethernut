@@ -186,10 +186,6 @@ typedef struct _CANFILTER CANFILTER;
  * \brief _NUTCANBUS
  */
 
-#if defined(MCU_CM3)
-#include <arch/cm3/stm/stm32_can.h>
-#endif
-
 extern int NutRegisterCanBus( NUTCANBUS *bus, int entries );
 extern int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter );
 extern int CanSetBaud( NUTCANBUS *bus, int baud, uint32_t alt_btr);
