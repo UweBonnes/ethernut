@@ -257,8 +257,12 @@ void NutDumpIpcpOption(FILE * stream, NETBUF * nb)
     if ((len = nb->nb_ap.sz) != 0)
         xcpo = nb->nb_ap.vp;
     else {
-        len = nb->nb_dl.sz - ppp_header_sz - sizeof(XCPHDR);
-        xcpo = (XCPOPT *) (((char *) nb->nb_dl.vp) + ppp_header_sz + sizeof(XCPHDR));
+        if ((nb->nb_dl.sz)>(ppp_header_sz + sizeof(XCPHDR)))
+        {
+            len = nb->nb_dl.sz - ppp_header_sz - sizeof(XCPHDR);
+            xcpo = (XCPOPT *) (((char *) nb->nb_dl.vp) + ppp_header_sz + sizeof(XCPHDR));
+        }
+        else len=0;
     }
     fprintf(stream, "[OPT(%u)]", len);
     while (len) {
