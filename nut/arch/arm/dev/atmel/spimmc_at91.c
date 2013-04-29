@@ -370,6 +370,19 @@ static int At91SpiMmcIfcInit(NUTDEVICE * dev)
 
     /* SPI enable and reset. */
     outr(MMC_SPI_CR, SPI_SPIEN | SPI_SWRST);
+    /* Apply a reset twice! See errata at page 652 in the datasheet:
+       41.4.8.7
+       
+       SPI: Software Reset must be Written Twice
+       If a software reset (SWRST in the SPI Control Register) is performed,
+       the SPI may not work properly (the clock is enabled before the chip select.)
+
+       Problem Fix/Workaround
+       The SPI Control Register field, SWRST (Software Reset) needs to be
+       written twice to be correctly set.
+    */
+      
+    outr(MMC_SPI_CR, SPI_SPIEN | SPI_SWRST);
     outr(MMC_SPI_CR, SPI_SPIEN);
 
     /* Set SPI to master mode, fixed peripheral at CS1, fault detection disabled. */
