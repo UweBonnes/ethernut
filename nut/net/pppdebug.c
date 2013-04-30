@@ -251,7 +251,7 @@ void NutDumpPap(FILE * stream, NETBUF * nb)
 
 void NutDumpIpcpOption(FILE * stream, NETBUF * nb)
 {
-    XCPOPT *xcpo;
+    XCPOPT *xcpo = NULL;
     uint16_t len;
 
     if ((len = nb->nb_ap.sz) != 0)
