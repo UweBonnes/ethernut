@@ -101,6 +101,7 @@ void Hardware_Init(void)
 #endif
 }
 
+#if defined(DEV_I2CBUS_H)
 int ScanBus(NUTI2C_BUS *bus)
 {
     int res = 1;
@@ -117,6 +118,7 @@ int ScanBus(NUTI2C_BUS *bus)
 #endif
     return res;
 }
+#endif
 
 /*
  * I2C sample: Scan the I2C Bus and look for connected devices
@@ -142,7 +144,7 @@ int main(void)
     LED2_START_THREAD;
     Hardware_Init();
 
-#if !defined(DEF_I2CBUS)
+#if !defined(DEF_I2CBUS) || !defined(DEV_I2CBUS_H)
     puts("Please indicate the I2C Bus to scan!");
     goto error;
 #else

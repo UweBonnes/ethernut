@@ -1701,7 +1701,7 @@ nutarch_cm3_stm32_devices =
                       "On some devices this bus shares pins and interrupts with USB bus!\n"..
                       "You cannot use them together!",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_CAN1_STM32" },
-        provides = { "DEV_CAN" },
+        provides = { "DEV_CANBUS" },
         sources =
         {
             "cm3/dev/stm/stm32_can1.c",
@@ -1729,7 +1729,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F CAN 2",
         description = "CAN Bus 2 support for STM32F.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_CAN2_STM32" },
-        provides = { "DEV_CAN" },
+        provides = { "DEV_CANBUS" },
         sources =
         {
             "cm3/dev/stm/stm32_can2.c",

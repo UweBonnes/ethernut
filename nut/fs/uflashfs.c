@@ -961,6 +961,7 @@ static int EntryTruncate(UFLASHVOLUME * vol, blknum_t lbe)
     FlashReadEntry(vol->vol_ifc, b_old, &eh, &name);
     FlashWriteBlockHead(vol->vol_ifc, b, &bh);
     FlashWriteEntry(vol->vol_ifc, b, &eh, name);
+    free(name);
     FlashUnitCommit(vol->vol_ifc, b, 0);
 
     /* Update block footer in the last unit. */

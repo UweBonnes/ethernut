@@ -62,7 +62,7 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
-#if defined(__AVR_ARCH__) && !defined(_OPTIMIZE__)
+#if defined(__AVR_ARCH__) && !defined(__OPTIMIZE__)
 int main(void)
 {
     unsigned long baud = 115200;
