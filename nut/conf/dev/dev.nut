@@ -812,6 +812,24 @@ nutdev =
         sources = { "can_dev.c" },
     },
     {
+        name = "nutdev_canbus",
+        brief = "CANBUS Driver Framework",
+        description = "Generic CANBUS driver framework.",
+        requires = { "DEV_CANBUS" },
+        options =
+        {
+            {
+                macro = "DEV_CANBUS",
+                brief = "CANBUS Driver",
+                description = "Enable use of the CANBUS drivers",
+                requires = { "DEV_CANBUS" },
+                type = "integer",
+                default = 1,
+                file = "include/cfg/can_dev.h"
+            },
+        }
+    },
+    {
         name = "nutdev_nvmem",
         brief = "Non Volatile Memory",
         description = "The Nut/OS API provides routines for platform independent access "..

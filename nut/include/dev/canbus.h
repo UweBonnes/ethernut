@@ -46,6 +46,7 @@
  */
 
 #include <cfg/arch.h>
+#include <cfg/can_dev.h>
 #include <sys/types.h>
 #include <sys/device.h>
 
@@ -137,8 +138,12 @@ typedef struct _CANBUFFER CANBUFFER;
 
 
 /* Include architecture specific CAN implementation */
+#if defined(DEV_CANBUS)
 #if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32_can.h>
+#else
+#warning DEV_CANBUS defined, but no device specific implementation givem
+#endif
 #endif
 
 /*!
