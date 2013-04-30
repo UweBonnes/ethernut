@@ -35,7 +35,7 @@
 --
 --
 stm32_memory_f4 = { "512", "1024" }
-stm32f4_device_class = { "STM32F4XX" }
+stm32f4_device_class = { "STM32F40X" , "STM32F42X" }
 
 -- *****************************************************************************
 -- STM32F4 Family
@@ -96,17 +96,26 @@ nutarch_cm3_stm32f4 =
     {
         name = "nutarch_cm3_stm32F4_class",
         brief = "STM32F4 Device Classes",
-        requires = { "HW_MCU_STM32" },
+        requires = { "HW_MCU_STM32F4XX" },
         options =
         {
             {
                 macro = "STM32F4XX",
                 brief = "STM32F4 Series",
                 description = "STM32F4 devices.",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                makedefs = { "HWDEF+=-DSTM32F4XX" },
-                provides = { "STM32F4XX" },
+                type = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32" },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F40XX",
+                brief = "STM32F40X Series",
+                description = "STM32F40X devices.",
+                exclusivity = stm32f4_device_class,
+                requires = { "HW_MCU_STM32F40X" },
+                default = 1,
+                requires = { "HW_MCU_STM32" },
                 file = "include/cfg/arch.h"
             },
         }

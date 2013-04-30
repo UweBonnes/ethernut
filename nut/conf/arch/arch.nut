@@ -1025,8 +1025,30 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X",
                     "HW_MCU_STM32F405",
                     "MCU_STM32F405",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m4" }
+            },
+            {
+                macro = "MCU_STM32F407",
+                brief = "STM STM32F407",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X",
+                    "HW_MCU_STM32F407",
+                    "MCU_STM32F407",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=cortex-m4" }
