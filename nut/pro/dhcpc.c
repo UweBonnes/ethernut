@@ -1687,6 +1687,7 @@ THREAD(NutDhcpClient, arg)
          */
         else if (dhcpState == DHCPST_BOUND) {
             retries = 0;
+            dhcpApiTimeout = NUT_WAIT_INFINITE;
             NutEventBroadcast(&dhcpDone);
             if (dhcpConfig->dyn_renewalTime <= NutGetSeconds() - leaseTime) {
                 dhcpState = DHCPST_RENEWING;
@@ -1706,7 +1707,7 @@ THREAD(NutDhcpClient, arg)
         else if (dhcpState == DHCPST_RENEWING) {
             retries++;
             if (tmo / 1000 > dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseTime)) {
-                tmo = dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseTime) * 1000;
+                tmo = (dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseTime)) * 1000;
             }
             if (dhcpConfig->dyn_rebindTime <= NutGetSeconds() - leaseTime) {
                 retries = 0;
@@ -1743,12 +1744,12 @@ THREAD(NutDhcpClient, arg)
          */
         else if (dhcpState == DHCPST_REBINDING) {
             retries++;
-            if (tmo > dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseTime)) {
-                tmo = dhcpConfig->dyn_rebindTime - NutGetSeconds() - leaseTime;
+            if (tmo / 1000 > dhcpConfig->dyn_leaseTime - (NutGetSeconds() - leaseTime)) {
+                tmo = (dhcpConfig->dyn_leaseTime - (NutGetSeconds() - leaseTime)) * 1000;
             }
-            if (dhcpConfig->dyn_rebindTime <= NutGetSeconds() - leaseTime) {
+            if (dhcpConfig->dyn_leaseTime <= NutGetSeconds() - leaseTime) {
                 retries = 0;
-                dhcpState = DHCPST_REBINDING;
+                dhcpState = DHCPST_IDLE;
             }
             /* Broadcast a request for our previous configuration. We
                must not include a server identifier. */
@@ -1837,6 +1838,7 @@ THREAD(NutDhcpClient, arg)
             ReleaseDynCfg(dhcpConfig);
             dhcpConfig = 0;
             retries = 0;
+            dhcpApiTimeout = NUT_WAIT_INFINITE;
             NutEventBroadcast(&dhcpDone);
             NutEventWait(&dhcpWake, NUT_WAIT_INFINITE);
         }
