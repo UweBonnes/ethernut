@@ -549,9 +549,7 @@ static uint32_t dhcpApiStart;
  */
 static void copy_str(uint8_t ** dst, void *src, int len)
 {
-    if (*dst) {
-        free(*dst);
-    }
+    free(*dst);
     *dst = malloc(len + 1);
     if (*dst) {
         if (len) {
@@ -571,12 +569,8 @@ static void copy_str(uint8_t ** dst, void *src, int len)
 static void ReleaseDynCfg(DYNCFG * dyncfg)
 {
     if (dyncfg) {
-        if (dyncfg->dyn_hostname) {
-            free(dyncfg->dyn_hostname);
-        }
-        if (dyncfg->dyn_domain) {
-            free(dyncfg->dyn_domain);
-        }
+        free(dyncfg->dyn_hostname);
+        free(dyncfg->dyn_domain);
         free(dyncfg);
     }
 }
@@ -1390,10 +1384,8 @@ THREAD(NutDhcpClient, arg)
                 NutUdpDestroySocket(sock);
                 sock = NULL;
             }
-            if (bp) {
-                free(bp);
-                bp = 0;
-            }
+            free(bp);
+            bp = NULL;
         }
 
         /*
