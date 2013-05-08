@@ -1759,7 +1759,13 @@ static int DhcpKick(const char *name, uint8_t state, uint32_t timeout)
         dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev,
             (NUT_THREAD_DHCPSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     }
-    NutEventPost(&dhcpWake);
+    /* Wake up the DHCP thread. Note, that we use an asynchronous post
+       without context switch. This is required because the DHCP thread
+       broadcasts an event to dhcpDone, which will not signal an empty
+       queue. If that broadcast happens before we enter the following
+       wait, then we will be trapped. Thanks to Henrik Maier for this
+       important fix. */
+    NutEventPostAsync(&dhcpWake);
     NutEventWait(&dhcpDone, NUT_WAIT_INFINITE);
 
     return 0;
