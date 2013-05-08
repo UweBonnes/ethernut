@@ -648,16 +648,6 @@ static uint32_t dhcpApiTimeout;
 static uint32_t dhcpApiStart;
 
 /*!
- * \brief DHCP device.
- *
- * The ARM port doesn't provide parameter passing to thread routines.
- * Thus we use a global variable to store the NUTDEVICE pointer.
- */
-#ifdef __arm__
-static NUTDEVICE *dhcpDev;
-#endif
-
-/*!
  * \brief Dynamic string copy.
  *
  * \param dst Points to a string pointer. If the pointer is not NULL, it
@@ -1370,15 +1360,7 @@ THREAD(NutDhcpClient, arg)
     uint32_t last_ip = confnet.cdn_ip_addr;
     uint32_t server_ip;
 
-    /*
-     * Hack alert: Our ARM port doesn't allow parameter
-     * passing to threads.
-     */
-#ifdef __arm__
-    nif = dhcpDev->dev_icb;
-#else
     nif = ((NUTDEVICE *) arg)->dev_icb;
-#endif
 
     /*
      * Generate a random transaction identifier based on our MAC
@@ -1885,9 +1867,6 @@ static int DhcpKick(const char *name, uint8_t state, uint32_t timeout)
 
     dhcpState = state;
     if (dhcpThread == 0) {
-#ifdef __arm__
-        dhcpDev = dev;
-#endif
         dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev,
             (NUT_THREAD_DHCPSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     }
