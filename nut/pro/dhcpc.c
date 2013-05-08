@@ -1241,8 +1241,8 @@ THREAD(NutDhcpClient, arg)
     uint32_t xid;
     IFNET *nif;
     uint16_t secs = 0;
-    uint32_t aqsTime = NutGetSeconds();
-    uint32_t leaseTime = 0;
+    uint32_t aquisStart = NutGetSeconds();
+    uint32_t leaseStart = 0;
     uint32_t napTime;
     ureg_t retries;
     uint32_t tmo = MIN_DHCP_WAIT;
@@ -1283,13 +1283,13 @@ THREAD(NutDhcpClient, arg)
                 fprintf(__tcp_trs, "REBOOTING %s]", inet_ntoa(last_ip));
                 break;
             case DHCPST_BOUND:
-                fprintf(__tcp_trs, "BOUND %lu]", NutGetSeconds() - leaseTime);
+                fprintf(__tcp_trs, "BOUND %lu]", NutGetSeconds() - leaseStart);
                 break;
             case DHCPST_RENEWING:
-                fprintf(__tcp_trs, "RENEWING %lu]", NutGetSeconds() - leaseTime);
+                fprintf(__tcp_trs, "RENEWING %lu]", NutGetSeconds() - leaseStart);
                 break;
             case DHCPST_REBINDING:
-                fprintf(__tcp_trs, "REBINDING %lu]", NutGetSeconds() - leaseTime);
+                fprintf(__tcp_trs, "REBINDING %lu]", NutGetSeconds() - leaseStart);
                 break;
             case DHCPST_INFORMING:
                 fprintf(__tcp_trs, "INFORMING]");
@@ -1361,15 +1361,15 @@ THREAD(NutDhcpClient, arg)
         if (dhcpState == DHCPST_SELECTING || dhcpState == DHCPST_RENEWING || dhcpState == DHCPST_REBINDING) {
             /* For retries make sure that secs doesn't overflow. */
             if (retries) {
-                if (NutGetSeconds() - aqsTime > 0xffffUL) {
+                if (NutGetSeconds() - aquisStart > 0xffffUL) {
                     secs = 0xffff;
                 } else {
-                    secs = (uint16_t) (NutGetSeconds() - aqsTime);
+                    secs = (uint16_t) (NutGetSeconds() - aquisStart);
                 }
             }
             /* For first transmissions make sure that secs is zero. */
             else {
-                aqsTime = NutGetSeconds();
+                aquisStart = NutGetSeconds();
                 secs = 0;
             }
         }
@@ -1509,7 +1509,7 @@ THREAD(NutDhcpClient, arg)
                     ReleaseDynCfg(dhcpConfig);
                     dhcpConfig = reply;
                     reply = 0;
-                    leaseTime = aqsTime;
+                    leaseStart = aquisStart;
                     dhcpState = DHCPST_BOUND;
                 }
                 /* The server declines a previously offered configuration.
@@ -1541,7 +1541,7 @@ THREAD(NutDhcpClient, arg)
                     ReleaseDynCfg(dhcpConfig);
                     dhcpConfig = reply;
                     reply = 0;
-                    leaseTime = aqsTime;
+                    leaseStart = aquisStart;
                     dhcpState = DHCPST_BOUND;
                 } else if (reply->dyn_msgtyp == DHCP_NAK) {
                     /* Either our previous address had been allocated by
@@ -1560,11 +1560,11 @@ THREAD(NutDhcpClient, arg)
             retries = 0;
             dhcpApiTimeout = NUT_WAIT_INFINITE;
             NutEventBroadcast(&dhcpDone);
-            if (dhcpConfig->dyn_renewalTime <= NutGetSeconds() - leaseTime) {
+            if (dhcpConfig->dyn_renewalTime <= NutGetSeconds() - leaseStart) {
                 dhcpState = DHCPST_RENEWING;
             } else {
                 /* Calculate the remaining lease time and take a nap. */
-                napTime = dhcpConfig->dyn_renewalTime - (NutGetSeconds() - leaseTime);
+                napTime = dhcpConfig->dyn_renewalTime - (NutGetSeconds() - leaseStart);
                 if (napTime > MAX_DHCP_NAPTIME) {
                     napTime = MAX_DHCP_NAPTIME;
                 }
@@ -1577,10 +1577,10 @@ THREAD(NutDhcpClient, arg)
          */
         else if (dhcpState == DHCPST_RENEWING) {
             retries++;
-            if (tmo / 1000 > dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseTime)) {
-                tmo = (dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseTime)) * 1000;
+            if (tmo / 1000 > dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseStart)) {
+                tmo = (dhcpConfig->dyn_rebindTime - (NutGetSeconds() - leaseStart)) * 1000;
             }
-            if (dhcpConfig->dyn_rebindTime <= NutGetSeconds() - leaseTime) {
+            if (dhcpConfig->dyn_rebindTime <= NutGetSeconds() - leaseStart) {
                 retries = 0;
                 dhcpState = DHCPST_REBINDING;
             }
@@ -1600,7 +1600,7 @@ THREAD(NutDhcpClient, arg)
                     ReleaseDynCfg(dhcpConfig);
                     dhcpConfig = reply;
                     reply = 0;
-                    leaseTime = aqsTime;
+                    leaseStart = aquisStart;
                     dhcpState = DHCPST_BOUND;
                 } else if (reply->dyn_msgtyp == DHCP_NAK) {
                     /* Unexpected NAK. */
@@ -1615,10 +1615,10 @@ THREAD(NutDhcpClient, arg)
          */
         else if (dhcpState == DHCPST_REBINDING) {
             retries++;
-            if (tmo / 1000 > dhcpConfig->dyn_leaseTime - (NutGetSeconds() - leaseTime)) {
-                tmo = (dhcpConfig->dyn_leaseTime - (NutGetSeconds() - leaseTime)) * 1000;
+            if (tmo / 1000 > dhcpConfig->dyn_leaseTime - (NutGetSeconds() - leaseStart)) {
+                tmo = (dhcpConfig->dyn_leaseTime - (NutGetSeconds() - leaseStart)) * 1000;
             }
-            if (dhcpConfig->dyn_leaseTime <= NutGetSeconds() - leaseTime) {
+            if (dhcpConfig->dyn_leaseTime <= NutGetSeconds() - leaseStart) {
                 retries = 0;
                 dhcpState = DHCPST_IDLE;
             }
@@ -1636,7 +1636,7 @@ THREAD(NutDhcpClient, arg)
                     ReleaseDynCfg(dhcpConfig);
                     dhcpConfig = reply;
                     reply = 0;
-                    leaseTime = aqsTime;
+                    leaseStart = aquisStart;
                     dhcpState = DHCPST_BOUND;
                 } else if (reply->dyn_msgtyp == DHCP_NAK) {
                     /*
