@@ -1030,7 +1030,7 @@ nutarch =
                     "MCU_STM32F405",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m4" }
+                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
             },
             {
                 macro = "MCU_STM32F407",
@@ -1051,7 +1051,7 @@ nutarch =
                     "MCU_STM32F407",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m4" }
+                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
             },
             {
                 macro = "MCU_STM32F205",
@@ -1111,7 +1111,7 @@ nutarch =
                     "MCU_STM32F302",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3" }
+                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
             },
             {
                 macro = "MCU_STM32F303",
@@ -1131,7 +1131,7 @@ nutarch =
                     "MCU_STM32F303",
                     "HW_GPIO"
                 },
-                makedefs = { "MCU=cortex-m3" }
+                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
             },
             --
             -- TI LM3S SERIES CONTROLLER
