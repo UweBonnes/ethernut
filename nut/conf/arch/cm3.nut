@@ -110,7 +110,7 @@ nutarch_cm3 =
     {
         name = "nutarch_cm3_ostimer",
         brief = "System Timer (CortexM3)",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_CM3" },
+        requires = { "HW_MCU_CM3" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "cm3/cmsis/ostimer_cortex.c" },
     },
