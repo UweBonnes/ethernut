@@ -54,6 +54,10 @@
 #ifndef __STM32L1XX_H
 #define __STM32L1XX_H
 
+/* Add NutOS includes */
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -226,7 +230,7 @@ typedef enum IRQn
   USB_FS_WKUP_IRQn            = 42,     /*!< USB FS WakeUp from suspend through EXTI Line Interrupt  */
   TIM6_IRQn                   = 43,     /*!< TIM6 global Interrupt                                   */
 #ifdef STM32L1XX_MD
-  TIM7_IRQn                   = 44      /*!< TIM7 global Interrupt                                   */
+  TIM7_IRQn                   = 44,     /*!< TIM7 global Interrupt                                   */
 #endif /* STM32L1XX_MD */
 
 #ifdef STM32L1XX_MDP
@@ -239,7 +243,7 @@ typedef enum IRQn
   DMA2_Channel4_IRQn          = 53,     /*!< DMA2 Channel 4 global Interrupt                         */
   DMA2_Channel5_IRQn          = 54,     /*!< DMA2 Channel 5 global Interrupt                         */
   AES_IRQn                    = 55,     /*!< AES global Interrupt                                    */
-  COMP_ACQ_IRQn               = 56      /*!< Comparator Channel Acquisition global Interrupt         */
+  COMP_ACQ_IRQn               = 56,     /*!< Comparator Channel Acquisition global Interrupt         */
 #endif /* STM32L1XX_MDP */
 
 #ifdef STM32L1XX_HD
@@ -255,16 +259,17 @@ typedef enum IRQn
   DMA2_Channel4_IRQn          = 53,     /*!< DMA2 Channel 4 global Interrupt                         */
   DMA2_Channel5_IRQn          = 54,     /*!< DMA2 Channel 5 global Interrupt                         */
   AES_IRQn                    = 55,     /*!< AES global Interrupt                                    */
-  COMP_ACQ_IRQn               = 56      /*!< Comparator Channel Acquisition global Interrupt         */
+  COMP_ACQ_IRQn               = 56,     /*!< Comparator Channel Acquisition global Interrupt         */
 #endif /* STM32L1XX_HD */
+  IRQn_MAX                  /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm3.h"
-#include "system_stm32l1xx.h"
+#include <arch/cm3/core_cm3.h>
+#include <arch/cm3/stm/vendor/system_stm32l1xx.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types

@@ -42,7 +42,7 @@
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f10x.h>
 #elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/stm32l1xx.h>
+#include <arch/cm3/stm/vendor/stm32l1xx.h>
 #elif defined(MCU_STM32F2)
 #include <arch/cm3/stm/vendor/stm32f2xx.h>
 #elif defined(MCU_STM32F30)

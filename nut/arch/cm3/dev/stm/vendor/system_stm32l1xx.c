@@ -104,7 +104,7 @@
   * @{
   */
 
-#include "stm32l1xx.h"
+#include <arch/cm3/stm/vendor/stm32l1xx.h>
 
 /**
   * @}
@@ -158,7 +158,9 @@ __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9}
   * @{
   */
 
+#if 0
 static void SetSysClock(void);
+#endif
 #ifdef DATA_IN_ExtSRAM
   static void SystemInit_ExtMemCtl(void);
 #endif /* DATA_IN_ExtSRAM */
@@ -202,6 +204,7 @@ void SystemInit (void)
   SystemInit_ExtMemCtl();
 #endif /* DATA_IN_ExtSRAM */
 
+#if 0
   /* Configure the System clock frequency, AHB/APBx prescalers and Flash settings */
   SetSysClock();
 
@@ -210,8 +213,10 @@ void SystemInit (void)
 #else
   SCB->VTOR = FLASH_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH. */
 #endif
+#endif
 }
 
+#if 0
 /**
   * @brief  Update SystemCoreClock according to Clock Register Values
   *         The SystemCoreClock variable contains the core clock (HCLK), it can
@@ -392,6 +397,7 @@ static void SetSysClock(void)
        configuration. User can add here some code to deal with this error */
   }
 }
+#endif
 
 #ifdef DATA_IN_ExtSRAM
 /**

@@ -46,8 +46,8 @@
 #include <arch/cm3/stm/stm32f10x.h>
 #include <arch/cm3/stm/stm32f10x_rcc.h>
 #elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/stm32l1xx.h>
-#include <arch/cm3/stm/stm32l1xx_rcc.h>
+#include <arch/cm3/stm/vendor/stm32l1xx.h>
+#include <arch/cm3/stm/vendor/stm32l1xx_rcc.h>
 #elif defined(STM32F30X)
 #include <arch/cm3/stm/vendor/stm32f30x.h>
 #include <arch/cm3/stm/vendor/stm32f30x_rcc.h>
