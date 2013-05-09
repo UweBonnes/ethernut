@@ -48,7 +48,7 @@
 #elif defined(MCU_STM32F30)
 #include <arch/cm3/stm/vendor/system_stm32f30x.h>
 #elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/system_stm32f4xx.h>
+#include <arch/cm3/stm/vendor/system_stm32f4xx.h>
 #else
 #warning "Unknown STM32 family"
 #endif

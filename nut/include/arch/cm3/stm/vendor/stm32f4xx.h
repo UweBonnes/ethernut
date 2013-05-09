@@ -50,6 +50,9 @@
   * @{
   */
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifndef __STM32F4xx_H
 #define __STM32F4xx_H
 
@@ -240,7 +243,8 @@ typedef enum IRQn
   HASH_RNG_IRQn               = 80,     /*!< Hash and Rng global interrupt                                     */
 
 #ifdef STM32F40XX
-  FPU_IRQn                    = 81      /*!< FPU global interrupt                                              */
+  FPU_IRQn                    = 81,     /*!< FPU global interrupt                                              */
+  IRQn_MAX                  /*!< Total number of interrupts                                        */
 #endif /* STM32F40XX */
 
 #ifdef STM32F427X
@@ -249,7 +253,8 @@ typedef enum IRQn
   UART8_IRQn                  = 83,     /*!< UART8 global interrupt                                            */
   SPI4_IRQn                   = 84,     /*!< SPI4 global Interrupt                                             */
   SPI5_IRQn                   = 85,     /*!< SPI5 global Interrupt                                             */
-  SPI6_IRQn                   = 86      /*!< SPI6 global Interrupt                                             */
+  SPI6_IRQn                   = 86,     /*!< SPI6 global Interrupt                                             */
+  IRQn_MAX                  /*!< Total number of interrupts                                        */
 #endif /* STM32F427X */
 
 } IRQn_Type;
@@ -258,8 +263,8 @@ typedef enum IRQn
   * @}
   */
 
-#include "core_cm4.h"             /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f4xx.h"
+#include <arch/cm3/core_cm4.h>    /* Cortex-M4 processor and core peripherals */
+#include <arch/cm3/stm/vendor/system_stm32f4xx.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types

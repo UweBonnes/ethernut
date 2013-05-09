@@ -62,8 +62,8 @@
 #include <arch/cm3/stm/vendor/stm32f30x_rcc.h>
 #define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F4)
-#include <arch/cm3/stm/stm32f4xx_gpio.h>
-#include <arch/cm3/stm/stm32f4xx_rcc.h>
+#include <arch/cm3/stm/vendor/stm32f4xx_gpio.h>
+#include <arch/cm3/stm/vendor/stm32f4xx_rcc.h>
 #define GPIO_RCC_ENR AHB1ENR
 #else
 #warning "Unknown STM32 family"

@@ -56,7 +56,15 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_rcc.h"
+#include <arch/cm3.h>
+#include <arch/cm3/stm/vendor/stm32f4xx_rcc.h>
+
+#include <sys/nutdebug.h>
+
+#include <stdlib.h>
+#include <errno.h>
+
+#define assert_param NUTASSERT
 
 /** @addtogroup STM32F4xx_StdPeriph_Driver
   * @{

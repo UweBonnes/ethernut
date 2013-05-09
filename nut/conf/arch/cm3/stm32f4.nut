@@ -150,7 +150,7 @@ nutarch_cm3_stm32f4 =
         brief = "STM32F4 PLL Setup",
         sources =
         {
-            "cm3/dev/stm/system_stm32f4xx.c",
+            "cm3/dev/stm/vendor/system_stm32f4xx.c",
             "cm3/dev/stm/stm32f4_clk.c"
         },
         requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
@@ -288,6 +288,6 @@ nutarch_cm3_stm32f4 =
         brief = "STM32F4 RCC",
         description = "STM32F4 Clock Controller.",
         requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
-        sources = { "cm3/dev/stm/stm32f4xx_rcc.c" }
+        sources = { "cm3/dev/stm/vendor/stm32f4xx_rcc.c" }
     },
 }
