@@ -118,7 +118,7 @@
   * @{
   */
 
-#include "stm32f2xx.h"
+#include <arch/cm3/stm/vendor/stm32f2xx.h>
 
 /**
   * @}
@@ -185,7 +185,9 @@
   * @{
   */
 
+#if 0
 static void SetSysClock(void);
+#endif
 #ifdef DATA_IN_ExtSRAM
   static void SystemInit_ExtMemCtl(void);
 #endif /* DATA_IN_ExtSRAM */
@@ -230,6 +232,7 @@ void SystemInit(void)
   SystemInit_ExtMemCtl();
 #endif /* DATA_IN_ExtSRAM */
 
+#if 0
   /* Configure the System clock source, PLL Multiplier and Divider factors,
      AHB/APBx prescalers and Flash settings ----------------------------------*/
   SetSysClock();
@@ -239,6 +242,7 @@ void SystemInit(void)
   SCB->VTOR = SRAM_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal SRAM */
 #else
   SCB->VTOR = FLASH_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
+#endif
 #endif
 }
 
@@ -326,6 +330,7 @@ void SystemCoreClockUpdate(void)
   SystemCoreClock >>= tmp;
 }
 
+#if 0
 /**
   * @brief  Configures the System clock source, PLL Multiplier and Divider factors,
   *         AHB/APBx prescalers and Flash settings
@@ -401,6 +406,7 @@ static void SetSysClock(void)
   }
 
 }
+#endif
 
 /**
   * @brief  Setup the external memory controller. Called in startup_stm32f2xx.s

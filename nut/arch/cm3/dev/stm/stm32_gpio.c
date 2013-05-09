@@ -54,8 +54,8 @@
 #include <arch/cm3/stm/stm32l1xx_rcc.h>
 #define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F2)
-#include <arch/cm3/stm/stm32f2xx_gpio.h>
-#include <arch/cm3/stm/stm32f2xx_rcc.h>
+#include <arch/cm3/stm/vendor/stm32f2xx_gpio.h>
+#include <arch/cm3/stm/vendor/stm32f2xx_rcc.h>
 #define GPIO_RCC_ENR AHB1ENR
 #elif defined (MCU_STM32F30)
 #include <arch/cm3/stm/vendor/stm32f30x_gpio.h>

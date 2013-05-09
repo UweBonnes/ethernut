@@ -53,9 +53,9 @@
 #include <dev/irqreg.h>
 
 #if defined(MCU_STM32F2)
-#include <arch/cm3/stm/stm32f2xx.h>
-#include <arch/cm3/stm/stm32f2xx_gpio.h>
-#include <arch/cm3/stm/stm32f2xx_rcc.h>
+#include <arch/cm3/stm/vendor/stm32f2xx.h>
+#include <arch/cm3/stm/vendor/stm32f2xx_gpio.h>
+#include <arch/cm3/stm/vendor/stm32f2xx_rcc.h>
 #elif defined(MCU_STM32F4)
 #include <arch/cm3/stm/vendor/stm32f4xx.h>
 #include <arch/cm3/stm/vendor/stm32f4xx_gpio.h>

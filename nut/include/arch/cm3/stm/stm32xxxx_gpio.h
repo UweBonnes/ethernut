@@ -43,7 +43,7 @@
 #elif defined(MCU_STM32L1)
 #include <arch/cm3/stm/stm32l1xx_gpio.h>
 #elif defined(MCU_STM32F2)
-#include <arch/cm3/stm/stm32f2xx_gpio.h>
+#include <arch/cm3/stm/vendor/stm32f2xx_gpio.h>
 #elif defined(MCU_STM32F30)
 #include <arch/cm3/stm/vendor/stm32f30x_gpio.h>
 #elif defined(MCU_STM32F4)
