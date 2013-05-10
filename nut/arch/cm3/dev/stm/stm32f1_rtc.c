@@ -46,16 +46,16 @@
 #include <dev/rtc.h>
 
 #include <cfg/arch/gpio.h>
+#include <arch/cm3/stm/stm32f10x.h>
 #include <arch/cm3/stm/stm32f10x_rtc.h>
 #include <arch/cm3/stm/stm32f10x_rcc.h>
-#include <arch/cm3/stm/stm32f10x_pwr.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 
-static void Stm32RtcRtoffPoll()
+static void Stm32RtcRtoffPoll(void)
 {
     while((RTC->CRL & RTC_FLAG_RTOFF)==0);
     return;
@@ -69,7 +69,7 @@ static void Stm32RtcRtoffPoll()
  *
  * \return 0 on success or -1 in case of an error.
  */
-int Stm32RtcGetClock(struct _tm *tm)
+int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     int rc=-1;
     time_t time;
@@ -89,12 +89,12 @@ int Stm32RtcGetClock(struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int Stm32RtcSetClock(const struct _tm *tm)
+int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
    time_t time;
    Stm32RtcRtoffPoll();
    RTC->CRL|= RTC_FLAG_CNF;
-   time=mktime(tm);
+   time=mktime((struct _tm *)tm);
    RTC->CNTL =time& 0xffffUL;
    RTC->CNTH =(time >> 16) &0xffffUL;
    RTC->CRL&= ~(RTC_FLAG_CNF);
@@ -109,7 +109,7 @@ int Stm32RtcSetClock(const struct _tm *tm)
  * \return 0 on success or -1 in case of an error.
  *
  */
-int Stm32RtcInit(void)
+int Stm32RtcInit(NUTRTC *rtc)
 {
     int rc=-1;
     uint32_t temp;
@@ -123,6 +123,7 @@ int Stm32RtcInit(void)
 
    temp=RCC->BDCR;
    temp&= ~((1<<9)|(1<<8));
+   /*Fixme: Don't assume fixed HSE frequency here*/
    temp |= RCC_RTCCLKSource_HSE_Div128;//HSE/128
    temp |= 1<<15;
    RCC->BDCR=temp;

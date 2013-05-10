@@ -6,7 +6,16 @@ nutarch_cm3_stm32_devices =
     --
     -- ***********************************
 
+    -- STM32F10x RTC
     --
+    {
+        name = "nutarch_cm3_stm32f10x_rtc",
+        brief = "STM32F1 RTC Driver",
+        description = "STM32F1 RTC driver.",
+        requires = { "HW_RTC_STM32F1" },
+        provides = { "DEV_RTC" },
+        sources = { "cm3/dev/stm/stm32f1_rtc.c" },
+    },
     {
         name = "nutarch_cm3_stm32_devices_debug",
         brief = "UART Debug Output (STM32)",
