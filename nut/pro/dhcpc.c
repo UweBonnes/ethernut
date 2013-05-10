@@ -1343,7 +1343,7 @@ THREAD(NutDhcpClient, arg)
         /*
          * Keep track of the API timeout.
          */
-        if (dhcpState != DHCPST_IDLE && dhcpApiTimeout != NUT_WAIT_INFINITE) {
+        if (dhcpState != DHCPST_IDLE && dhcpState != DHCPST_BOUND && dhcpApiTimeout != NUT_WAIT_INFINITE) {
             uint32_t tt = NutGetMillis() - dhcpApiStart;
 
             if (dhcpApiTimeout <= tt) {
