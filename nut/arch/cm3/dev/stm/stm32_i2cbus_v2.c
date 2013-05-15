@@ -97,6 +97,7 @@ typedef struct _STM32_I2CCB {
     NUTI2C_MSG *icb_msg;
     /*! \brief Thread waiting for completion. */
     HANDLE icb_queue;
+    uint32_t errors;
 } STM32_I2CCB;
 
 /*
@@ -175,6 +176,13 @@ static void I2cEventBusIrqHandler(void *arg)
         i2c->ICR |=  I2C_ICR_STOPCF;
         NutEventPostFromIrq(&icb->icb_queue);
     }
+    if (i2c->ISR & I2C_ISR_NACKF)
+    {
+        /* Save error, but only exit through STOPF */
+        icb->errors |= I2C_ISR_NACKF;
+        i2c->CR1 &= ~I2C_CR1_NACKIE;
+        i2c->ICR |=  I2C_ICR_NACKCF;
+    }
 }
 
 /*
@@ -186,6 +194,7 @@ static void I2cErrorBusIrqHandler(void *arg)
     I2C_TypeDef *i2c;
     uint32_t isr;
 
+    /* Fixme: More error handling! */
     i2c = (I2C_TypeDef *) icb->icb_base;
     isr = i2c->ISR;
     if (isr & I2C_ISR_ALERT)
@@ -221,6 +230,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     NUTASSERT(bus->bus_icb != NULL);
     icb = (STM32_I2CCB *) bus->bus_icb;
     icb->icb_msg = msg;
+    icb->errors = 0;
     i2c = (I2C_TypeDef *) icb->icb_base;
     cr2 = i2c->CR2;
     cr2 &= 0xf8000000; /* Clean out */
@@ -230,7 +240,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     /* are there bytes to write? */
     if (msg->msg_wlen)
     {
-        i2c->CR1 |= I2C_CR1_TXIE | I2C_CR1_TCIE | I2C_CR1_STOPIE ;
+        i2c->CR1 |= I2C_CR1_TXIE | I2C_CR1_TCIE | I2C_CR1_STOPIE | I2C_CR1_NACKIE;
         if (msg->msg_wlen > 0xff)
             cr2 |= I2C_CR2_NBYTES | I2C_CR2_RELOAD;
         else
@@ -238,7 +248,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     }
     else if (msg->msg_rsiz)
     {
-        i2c->CR1 |= I2C_CR1_RXIE|I2C_CR1_STOPIE ;
+        i2c->CR1 |= I2C_CR1_RXIE | I2C_CR1_STOPIE  | I2C_CR1_NACKIE;
         if (msg->msg_rsiz > 0xff)
             cr2 |= I2C_CR2_RD_WRN | I2C_CR2_NBYTES | I2C_CR2_RELOAD;
         else
@@ -246,8 +256,8 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     }
     i2c->CR2 = cr2 | I2C_CR2_START;
     rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
-    if(rc)
-        return -1;
+    if ((icb->errors) || (rc))
+        msg->msg_ridx = -1;
     return msg->msg_ridx;
 }
 
