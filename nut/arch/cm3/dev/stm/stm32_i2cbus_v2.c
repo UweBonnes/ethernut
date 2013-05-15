@@ -452,9 +452,7 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
 {
     STM32_I2CCB *icb;
     I2C_TypeDef *i2c;
-    uint32_t isr;
-    int i;
-    int limit;
+    uint32_t isr, tmo;
 
     if ((bus->bus_flags & I2C_BF_INITIALIZED) == 0) {
         int res;
@@ -467,12 +465,20 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
     i2c->ISR = 0;
     i2c->CR2 = I2C_CR2_AUTOEND | 0*I2C_CR2_NBYTES| I2C_CR2_STOP |
         I2C_CR2_START| 0*I2C_CR2_ADD10 | 0* I2C_CR2_RD_WRN |sla<<1;
-    limit = (20000/(bus->bus_rate)) + 1;
-    for (i = 0; !(i2c->ISR & I2C_ISR_STOPF) && (i< limit); i++)
-        NutSleep(1);
+    tmo = NutGetMillis() + (20000/(bus->bus_rate)) + 2;
+    while(!(i2c->ISR  & I2C_ISR_STOPF))
+    {
+        /* Break loop if bus is stuck*/
+        if (NutGetMillis()  > tmo)
+        {
+            i2c->ICR |= (I2C_ICR_ARLOCF | I2C_ICR_STOPCF | I2C_ICR_NACKCF );
+            return -1;
+        }
+    }
+
     isr = i2c->ISR;
-    i2c->ICR |= (I2C_ICR_ARLOCF | I2C_ICR_STOPCF | I2C_ICR_NACKCF );
-    if ((isr & I2C_ICR_NACKCF ) || i > limit)
+
+    if (isr & I2C_ICR_NACKCF )
     {
         return -1;
     }
