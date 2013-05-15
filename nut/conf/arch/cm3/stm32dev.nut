@@ -1750,7 +1750,6 @@ nutarch_cm3_stm32_devices =
                 macro = "I2C1_SMBA_PIN",
                 brief = "I2C1 SCL Pins",
                 description = "Choose I2C1 SMBA -1 (default) to not use SMBA or Pin PB5",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "-1",
                 type = "enumerated",
                 choices = { "-1", "5" },
@@ -1802,6 +1801,16 @@ nutarch_cm3_stm32_devices =
                 default = "-1",
                 type = "enumerated",
                 choices = { "-1", "12" , "2" , "6" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C2_SMBA_F1PIN",
+                brief = "I2C2 SMBA Pins on F1",
+                description = "F1: Choose I2C2 SMBA Pin -1 (default) to not use SMBA or PB12",
+                requires = { "HW_GPIO_STM32V1" },
+                default = "-1",
+                type = "enumerated",
+                choices = { "-1", "11" },
                 file = "include/cfg/twi.h"
             }
          }
