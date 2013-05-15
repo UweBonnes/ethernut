@@ -86,3 +86,10 @@
 #include <dev/i2cbus_gpio.h>
 #endif
 #endif
+
+/* define RTC */
+
+#ifndef RTC_CHIP
+#include <dev/stm32_rtc.h>
+#define RTC_CHIP rtcStm32
+#endif

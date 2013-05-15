@@ -83,6 +83,7 @@ nutarch_cm3_stm32f30 =
                       "HW_UART4_STM32",
                       "HW_UART5_STM32",
                       "HW_CAN1_STM32",
+                      "HW_RTC_STM32_V2",
                 },
                 file = "include/cfg/arch.h"
             }

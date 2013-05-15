@@ -16,6 +16,16 @@ nutarch_cm3_stm32_devices =
         provides = { "DEV_RTC" },
         sources = { "cm3/dev/stm/stm32f1_rtc.c" },
     },
+    -- STM32 RTC V2
+    --
+    {
+        name = "nutarch_cm3_stm32v2_rtc",
+        brief = "STM32 RTC Driver V2",
+        description = "STM32 RTC driver V2.",
+        requires = { "HW_RTC_STM32_V2" },
+        provides = { "DEV_RTC" },
+        sources = { "cm3/dev/stm/stm32_rtc_v2.c" },
+    },
     {
         name = "nutarch_cm3_stm32_devices_debug",
         brief = "UART Debug Output (STM32)",

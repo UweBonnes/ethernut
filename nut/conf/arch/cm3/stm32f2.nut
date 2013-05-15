@@ -87,6 +87,7 @@ nutarch_cm3_stm32f2 =
                     "HW_UART6_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
+                    "HW_RTC_STM32_V2",
                 },
                 file = "include/cfg/arch.h"
             }
