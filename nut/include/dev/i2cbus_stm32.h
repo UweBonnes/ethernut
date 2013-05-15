@@ -46,7 +46,7 @@
 
 #include <dev/i2cbus.h>
 
-extern NUTI2C_BUS i2cBus1Stm32V2;
-extern NUTI2C_BUS i2cBus2Stm32V2;
+extern NUTI2C_BUS i2cBus1Stm32;
+extern NUTI2C_BUS i2cBus2Stm32;
 
 #endif

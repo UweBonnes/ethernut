@@ -536,7 +536,7 @@ static STM32_I2CCB i2c2cb = {
     NULL                    /* icb_queue      */
 };
 
-NUTI2C_BUS i2cBus1Stm32V2 = {
+NUTI2C_BUS i2cBus1Stm32 = {
     &i2c1cb,    /* bus_icb */
     I2cBusInit, /* bus_init */
     I2cBusConf, /* bus_configure */
@@ -548,7 +548,7 @@ NUTI2C_BUS i2cBus1Stm32V2 = {
     NULL        /* bus_mutex */
 };
 
-NUTI2C_BUS i2cBus2Stm32V2 = {
+NUTI2C_BUS i2cBus2Stm32 = {
     &i2c2cb,    /* bus_icb */
     I2cBusInit, /* bus_init */
     I2cBusConf, /* bus_configure */

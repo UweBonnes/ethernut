@@ -79,7 +79,7 @@
 
 #ifndef DEF_I2CBUS
 #if 1
-#define DEF_I2CBUS i2cBus1Stm32V2
+#define DEF_I2CBUS i2cBus1Stm32
 #include <dev/i2cbus_stm32.h>
 #else
 #define DEF_I2CBUS i2cBus0Gpio
