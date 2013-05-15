@@ -53,7 +53,7 @@
  * \brief I2C bus driver for STM32F1/2/4 and L1 hardware.
  *
  * This is an interrupt driver, which supports master mode only.
- * No error handling
+ * Most error handling
  */
 
 #include <dev/irqreg.h>
@@ -62,7 +62,6 @@
 #include <sys/event.h>
 
 #include <stdlib.h>
-#include <string.h> /*MEMSET*/
 
 #include <cfg/arch.h>
 #include <arch/cm3.h>
@@ -98,6 +97,7 @@ typedef struct _STM32_I2CCB {
     HANDLE icb_queue;
     /*! \brief Current Slave/ */
     NUTI2C_SLAVE *slave;
+    uint32_t errors;
 } STM32_I2CCB;
 
 /*
@@ -110,10 +110,12 @@ static void I2cEventBusIrqHandler(void *arg)
     I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->icb_base;
 
     if(I2Cx->SR1 & I2C_SR1_SB)
-    {
-        if(msg->msg_rsiz >=  msg->msg_wlen)
+    { /* Receiver EV5 */
+        if(msg->msg_widx >=  msg->msg_wlen)
+        {
             /* All bytes written, (re)start reading */
             I2Cx->DR = icb->slave->slave_address<<1|1;
+        }
         else
             I2Cx->DR = icb->slave->slave_address<<1;
     }
@@ -128,8 +130,22 @@ static void I2cEventBusIrqHandler(void *arg)
                 msg->msg_widx++;
             }
         }
-        else if (msg->msg_rsiz >1)
-            I2Cx->CR1 |= I2C_CR1_ACK;
+        else
+        {
+            /* Inhibit IRQ storm as TXE not cleared as we
+             * have nothing written to DR Register
+             */
+            I2Cx->CR2 |= I2C_CR2_ITBUFEN;
+
+            if (msg->msg_rsiz >1)
+                /* Receiver EV6*/
+                I2Cx->CR1 |= I2C_CR1_ACK;
+            else
+            { /* EV6_1*/
+                I2Cx->CR1 &= ~I2C_CR1_ACK;
+                I2Cx->CR1 |= I2C_CR1_STOP;
+            }
+        }
     }
     if (I2Cx->SR1 & I2C_SR1_TXE)
     {
@@ -138,22 +154,37 @@ static void I2cEventBusIrqHandler(void *arg)
             I2Cx->DR = msg->msg_wdat[msg->msg_widx];
             msg->msg_widx++;
         }
-        else if (msg->msg_rsiz)
-            I2Cx->CR1 |= I2C_CR1_START;
         else
-            I2Cx->CR1 |= I2C_CR1_STOP;
+        {
+            I2Cx->CR2 &= ~I2C_CR2_ITBUFEN;
+            if (msg->msg_rsiz)
+                I2Cx->CR1 |= I2C_CR1_START;
+            else
+                I2Cx->CR1 |= I2C_CR1_STOP;
+        }
     }
     if (I2Cx->SR1 & I2C_SR1_RXNE)
-    {
+    { /* Receiver EV7*/
         msg->msg_rdat[msg->msg_ridx]= I2Cx->DR;
         msg->msg_ridx++;
-        if(msg->msg_rsiz <  msg->msg_ridx +1)
+        if(msg->msg_ridx + 2 > msg->msg_rsiz)
         {
             I2Cx->CR1 &= ~I2C_CR1_ACK;
             I2Cx->CR1 |= I2C_CR1_STOP;
         }
-        if (msg->msg_rsiz <  msg->msg_ridx)
+        if (msg->msg_ridx + 1 > msg->msg_rsiz)
+        {
             NutEventPostFromIrq(&icb->icb_queue);
+        }
+    }
+    if (I2Cx->SR1 & I2C_SR1_BTF)
+    {
+        /* Terminate write transaction without read*/
+        if ((I2Cx->SR2 & I2C_SR2_TRA) && !(msg->msg_rsiz))
+        {
+            I2Cx->CR2 &= ~(I2C_CR2_ITEVTEN|I2C_CR2_ITBUFEN);
+            NutEventPostFromIrq(&icb->icb_queue);
+        }
     }
 }
 
@@ -162,6 +193,14 @@ static void I2cEventBusIrqHandler(void *arg)
  */
 static void I2cErrorBusIrqHandler(void *arg)
 {
+    STM32_I2CCB *icb = (STM32_I2CCB *) arg;
+    I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->icb_base;
+
+    icb->errors = I2Cx->SR1;
+    I2Cx->SR1 &= ~(I2C_SR1_SMBALERT|I2C_SR1_TIMEOUT|I2C_SR1_PECERR|I2C_SR1_OVR|
+                   I2C_SR1_AF|I2C_SR1_ARLO|I2C_SR1_BERR);
+    NutEventPostFromIrq(&icb->icb_queue);
+
 }
 
 /*!
@@ -186,12 +225,19 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     msg->msg_widx = 0;
     msg->msg_ridx = 0;
     icb->slave = slave;
+    icb->errors = 0;
     /* Enable Interrupts */
-    I2Cx->CR2 |= I2C_CR2_ITEVTEN;
+    I2Cx->CR2 |= I2C_CR2_ITEVTEN|I2C_CR2_ITBUFEN |I2C_CR2_ITERREN;
     I2Cx->CR1 |= I2C_CR1_START;
     rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
+    I2Cx->CR2 &= ~I2C_CR2_ITEVTEN|I2C_CR2_ITBUFEN |I2C_CR2_ITERREN;
+    if(icb->errors)
+    {
+        I2Cx->CR1 |= I2C_CR1_STOP;
+        msg->msg_ridx = -1;
+    }
     if(rc)
-        return -1;
+        msg->msg_ridx = -1;
     return msg->msg_ridx;
 }
 
@@ -291,7 +337,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
 #else
         if ((icb->sda_pin != 11) || (icb->scl_pin != 10))
             return -1;
-        if ((icb->smba_pin != -1) || (icb->smba_pin != 12))
+        if ((icb->smba_pin != -1) && (icb->smba_pin != 12))
             return -1;
         sda_port= NUTGPIO_PORTB;
         scl_port= NUTGPIO_PORTB;
@@ -496,7 +542,7 @@ static int I2cBusInit(NUTI2C_BUS *bus)
     if (NutRegisterIrqHandler(icb->icb_sig_er, I2cErrorBusIrqHandler, icb))
         return -1;
     NutIrqEnable(icb->icb_sig_ev);
-    NutIrqDisable(icb->icb_sig_er);
+    NutIrqEnable(icb->icb_sig_er);
     return 0;
 }
 
@@ -594,7 +640,6 @@ static STM32_I2CCB i2c1cb = {
     9,                     /* SDA Remap   PB9*/
     8,                     /* SCL Remap   PB8*/
 #endif
-    5,                     /* SMBA        PB5*/
 #else
 #if defined (I2C1_SDA_PIN)
     I2C1_SDA_PIN,          /* SDA Pin number  */
@@ -606,11 +651,11 @@ static STM32_I2CCB i2c1cb = {
 #else
     -1,                    /* SDA Pin number  */
 #endif
+#endif
 #if defined (I2C1_SMBA_PIN)
     I2C1_SMBA_PIN,          /* SDA Pin number */
 #else
     -1,                     /* SDA Pin number */
-#endif
 #endif
     &sig_TWI1_EV,           /* Event signal   */
     &sig_TWI1_ER,           /* Error signal   */
@@ -620,20 +665,25 @@ static STM32_I2CCB i2c1cb = {
 
 static STM32_I2CCB i2c2cb = {
     I2C2_BASE,             /* Register Base   */
+#if defined(MCU_STM32F1)
+    11,                    /* SDA Pin number  */
+    10,                    /* SCL Pin number  */
+#else
 #if defined (I2C2_SDA_PIN)
     I2C2_SDA_PIN,          /* SDA Pin number  */
 #else
     -1,                    /* SDA Pin number  */
 #endif
 #if defined (I2C2_SCL_PIN)
-    I2C2_SCL_PIN,          /* SDA Pin number  */
+    I2C2_SCL_PIN,          /* SCL Pin number  */
 #else
-    -1,                    /* SDA Pin number  */
+    -1,                    /* SCL Pin number  */
+#endif
 #endif
 #if defined (I2C2_SMBA_PIN)
-    I2C2_SMBA_PIN,          /* SDA Pin number */
+    I2C2_SMBA_PIN,          /* SMBA Pin number */
 #else
-    -1,                     /* SDA Pin number */
+    -1,                     /* SMBA Pin number */
 #endif
     &sig_TWI2_EV,           /* Event signal   */
     &sig_TWI2_ER,           /* Error signal   */
