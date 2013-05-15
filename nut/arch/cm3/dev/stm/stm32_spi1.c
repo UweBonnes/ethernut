@@ -67,7 +67,8 @@
  *        SCK:  PA5/PB3/PE13
  *        MISO: PA6/PA11/PB4/PE14
  *        MOSI: PA7/PA12/PB5/PE15
- * F2/F4: NSS:  PA4/PA15
+ * F2/F30x/F4:
+ *        NSS:  PA4/PA15
  *        SCK:  PA5/PB3
  *        MISO: PA6/PB4
  *        MOSI: PA7/PB5

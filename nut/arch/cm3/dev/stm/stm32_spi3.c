@@ -60,7 +60,7 @@
 #include <errno.h>
 
 /* Handle the PIN remap possibilities
- * F1_CL/F2/F4
+ * F1_CL/F2/F3/F4
  *        NSS:  PA15/PA4
  *        SCK:  PB3/PC10
  *        MISO: PB4/PC11
@@ -104,7 +104,7 @@
   #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #endif
-#elif defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F4)
+#elif defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F30X)|| defined(MCU_STM32F4 )
  #if !defined(SPIBUS3_SCK_PIN)
   #define SPIBUS_SCK_PIN 3
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB

@@ -204,6 +204,12 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     NUTASSERT(node->node_bus->bus_base != 0);
     spireg = node->node_stat;
 
+#if defined(SPI_CR2_DS)
+    spireg->CR1 &= ~( SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR);
+    spireg->CR2 &= ~SPI_CR2_DS;
+    if((node->node_bits > 6) && (node->node_bits <= 16))
+        spireg->CR2 |= (node->node_bits -1) <<8;
+#else
     spireg->CR1 &= ~(SPI_CR1_DFF | SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR);
     switch(node->node_bits){
         case 8:
@@ -215,6 +221,7 @@ static int Stm32SpiSetup(NUTSPINODE * node)
         default:
             break;
     };
+#endif
     if (node->node_mode & SPI_MODE_CPOL) {
         spireg->CR1 |= SPI_CR1_CPOL;
     }

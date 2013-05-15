@@ -72,6 +72,10 @@
  *        SCK:  PB13/PB10/PI1
  *        MISO: PB14/PC2/PI2
  *        MOSI: PB15/PC3/PI3
+ * F30x:  NSS:  PB12/PD12
+ *        SCK:  PB13/PF9/PF10
+ *        MISO: PB14
+ *        MOSI: PB15
  *
  * For Chip select, we use NSS pin as default or any other pin as pure GPIO
 */
