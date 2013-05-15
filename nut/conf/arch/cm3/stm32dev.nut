@@ -1722,10 +1722,10 @@ nutarch_cm3_stm32_devices =
                 macro = "I2C1_SDA_PIN",
                 brief = "I2C1 SDA Pins",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C1 SDA Pin PB7 (Default) or PB11 or PA14",
+                description = "Choose I2C1 SDA Pin PB7 (Default) or PB9 or PA14",
                 default = "7",
                 type = "enumerated",
-                choices = { "7", "11", "14" },
+                choices = { "7", "9", "14" },
                 file = "include/cfg/twi.h"
             },
             {
