@@ -223,7 +223,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     icb->icb_msg = msg;
     i2c = (I2C_TypeDef *) icb->icb_base;
     cr2 = i2c->CR2;
-    cr2 &= 0xf80000; /* Clean out */
+    cr2 &= 0xf8000000; /* Clean out */
     cr2 |= slave->slave_address << 1;
     msg->msg_widx = 0;
     msg->msg_ridx = 0;
