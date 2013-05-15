@@ -410,7 +410,15 @@ int main(void)
 
         NutRtcGetStatus(&rtc_stat);
         if (rtc_stat & RTC_STATUS_PF) {
+#if defined(USE_BUILD_TIME)
+            puts("power failure, Setting Time from Build date");
+            /* Initially use the compile date and time. */
+            time_t now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
+            stime(&now);
+            puts("Built " __DATE__ " " __TIME__);
+#else
             puts("power failure");
+#endif
         } else {
             puts("OK");
         }
