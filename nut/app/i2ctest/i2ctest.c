@@ -185,15 +185,15 @@ int dump_cs43l22(NUTI2C_BUS *bus)
     res = NutI2cMasterTransceive(&i2cCs43l22, data, 1, data, CS43L22_DATA_LEN);
     for (i=0; i<CS43L22_DATA_LEN; i++)
     {
-        if ((i & 7) == 0)
+        if ((i & 0xf) == 0)
             printf(" Addr %02x:", i);
         printf(" %02x", data[i]);
-        if ((i & 7) == 7)
-            puts("\n");
+        if ((i & 0xf) == 0xf)
+            puts("");
     }
-       if ((i & 7) != 0)
-            puts("\n");
-       return 0;
+    if ((i & 0xf) != 0)
+        puts("");
+    return 0;
 }
 
 #define LMS303_AUTO_INC        0x80
