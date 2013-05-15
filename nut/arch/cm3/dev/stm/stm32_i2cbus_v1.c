@@ -96,6 +96,8 @@ typedef struct _STM32_I2CCB {
     NUTI2C_MSG *icb_msg;
     /*! \brief Thread waiting for completion. */
     HANDLE icb_queue;
+    /*! \brief Current Slave/ */
+    NUTI2C_SLAVE *slave;
 } STM32_I2CCB;
 
 /*
@@ -104,7 +106,55 @@ typedef struct _STM32_I2CCB {
 static void I2cEventBusIrqHandler(void *arg)
 {
     STM32_I2CCB *icb = (STM32_I2CCB *) arg;
-     NutEventPostFromIrq(&icb->icb_queue);
+    NUTI2C_MSG *msg = icb->icb_msg;
+    I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->icb_base;
+
+    if(I2Cx->SR1 & I2C_SR1_SB)
+    {
+        if(msg->msg_rsiz >=  msg->msg_wlen)
+            /* All bytes written, (re)start reading */
+            I2Cx->DR = icb->slave->slave_address<<1|1;
+        else
+            I2Cx->DR = icb->slave->slave_address<<1;
+    }
+    if(I2Cx->SR1 & I2C_SR1_ADDR)
+    {
+        if (I2Cx->SR2 & I2C_SR2_TRA)
+        {
+            /* Transmitting*/
+            if (msg->msg_widx < msg->msg_wlen)
+            {
+                I2Cx->DR = msg->msg_wdat[msg->msg_widx];
+                msg->msg_widx++;
+            }
+        }
+        else if (msg->msg_rsiz >1)
+            I2Cx->CR1 |= I2C_CR1_ACK;
+    }
+    if (I2Cx->SR1 & I2C_SR1_TXE)
+    {
+        if (msg->msg_widx < msg->msg_wlen)
+        {
+            I2Cx->DR = msg->msg_wdat[msg->msg_widx];
+            msg->msg_widx++;
+        }
+        else if (msg->msg_rsiz)
+            I2Cx->CR1 |= I2C_CR1_START;
+        else
+            I2Cx->CR1 |= I2C_CR1_STOP;
+    }
+    if (I2Cx->SR1 & I2C_SR1_RXNE)
+    {
+        msg->msg_rdat[msg->msg_ridx]= I2Cx->DR;
+        msg->msg_ridx++;
+        if(msg->msg_rsiz <  msg->msg_ridx +1)
+        {
+            I2Cx->CR1 &= ~I2C_CR1_ACK;
+            I2Cx->CR1 |= I2C_CR1_STOP;
+        }
+        if (msg->msg_rsiz <  msg->msg_ridx)
+            NutEventPostFromIrq(&icb->icb_queue);
+    }
 }
 
 /*
@@ -125,6 +175,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     NUTI2C_BUS *bus;
     STM32_I2CCB *icb;
     I2C_TypeDef *I2Cx;
+    int rc;
 
     bus = slave->slave_bus;
     NUTASSERT(bus != NULL);
@@ -134,48 +185,14 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     I2Cx = (I2C_TypeDef *) icb->icb_base;
     msg->msg_widx = 0;
     msg->msg_ridx = 0;
+    icb->slave = slave;
+    /* Enable Interrupts */
+    I2Cx->CR2 |= I2C_CR2_ITEVTEN;
     I2Cx->CR1 |= I2C_CR1_START;
-    while (!(I2Cx->SR1 & I2C_SR1_SB));
-    if (msg->msg_wlen)
-    {
-        I2Cx->DR = slave->slave_address << 1;
-        while(!(I2Cx->SR1 & I2C_SR1_ADDR));
-        (void)I2Cx->SR2;
-        while (msg->msg_widx < msg->msg_wlen)
-        {
-            I2Cx->DR = msg->msg_wdat[msg->msg_widx];
-            msg->msg_widx++;
-            while (!(I2Cx->SR1 & I2C_SR1_TXE));
-        }
-        if(msg->msg_rsiz)
-        {
-            I2Cx->CR1 |= I2C_CR1_START;
-            while (!(I2Cx->SR1 & I2C_SR1_SB));
-        }
-        else
-            while (!(I2Cx->SR1 & I2C_SR1_BTF));
-    }
-    if (msg->msg_rsiz)
-    {
-        I2Cx->DR = slave->slave_address<<1|1;
-        while (!(I2Cx->SR1 & I2C_SR1_ADDR));
-        (void)I2Cx->SR2;
-        if (msg->msg_rsiz > 1)
-            I2Cx->CR1 |= I2C_CR1_ACK;
-        while (msg->msg_ridx < msg->msg_rsiz)
-        {
-            while (!(I2Cx->SR1 & I2C_SR1_RXNE));
-            msg->msg_rdat[msg->msg_ridx]= I2Cx->DR;
-            msg->msg_ridx++;
-            if(msg->msg_rsiz <  msg->msg_ridx +1)
-                I2Cx->CR1 &= ~I2C_CR1_ACK;
-        }
-    }
-    /* Send stop when byte transmittes*/
-    I2Cx->CR1 |= I2C_CR1_STOP;
-    while (!(I2Cx->SR2 & I2C_SR2_BUSY));
-
-    return 0;
+    rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
+    if(rc)
+        return -1;
+    return msg->msg_ridx;
 }
 
 static int checkpin_and_config(STM32_I2CCB *icb)
@@ -268,7 +285,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
         else if (icb->smba_pin == 6)
             scl_port= NUTGPIO_PORTH;
 
-        /* Fixme: Handle SMNa Pin*/
+        /* Fixme: Handle SMBA Pin*/
         GPIO_PinAFConfig((GPIO_TypeDef*) sda_port, icb->sda_pin, GPIO_AF_I2C1);
         GPIO_PinAFConfig((GPIO_TypeDef*) scl_port, icb->scl_pin, GPIO_AF_I2C1);
 #else
