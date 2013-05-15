@@ -364,7 +364,7 @@ int dump_sht21(NUTI2C_BUS *bus)
         res = NutI2cMasterTransceive(&i2cSht21, 0, 0, raw0, 3);
     } while(res < 0);
     if(res != 3)
-        return -1;
+        printf("Short Read: Read %d bytes vs 3 bytes requested\n", res);
 
     data[0] = 0xf3; /*Start Temp measurement, no hold*/
     res = NutI2cMasterTransceive(&i2cSht21, data, 1, 0, 0);
@@ -374,7 +374,7 @@ int dump_sht21(NUTI2C_BUS *bus)
         res = NutI2cMasterTransceive(&i2cSht21, 0, 0, raw1, 3);
     } while(res < 0);
     if(res != 3)
-        return -1;
+        printf("Short Read: Read %d bytes vs 3 bytes requested\n", res);
     rh_raw = raw0[0]<<8|raw0[1];
     temp_raw = raw1[0]<<8|raw1[1];
 
