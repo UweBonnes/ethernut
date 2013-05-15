@@ -641,6 +641,7 @@ static STM32_I2CCB i2c2cb = {
     NULL                    /* icb_queue      */
 };
 
+#if defined(I2C3_BASE)
 static STM32_I2CCB i2c3cb = {
     I2C3_BASE,             /* Register Base   */
 #if defined (I2C3_SDA_PIN)
@@ -663,6 +664,8 @@ static STM32_I2CCB i2c3cb = {
     NULL,                   /* icb_msg        */
     NULL                    /* icb_queue      */
 };
+#endif
+
 
 NUTI2C_BUS i2cBus1Stm32 = {
     &i2c1cb,    /* bus_icb */
@@ -688,6 +691,7 @@ NUTI2C_BUS i2cBus2Stm32 = {
     NULL        /* bus_mutex */
 };
 
+#if defined(I2C3_BASE)
 NUTI2C_BUS i2cBus3Stm32 = {
     &i2c3cb,    /* bus_icb */
     I2cBusInit, /* bus_init */
@@ -699,3 +703,4 @@ NUTI2C_BUS i2cBus3Stm32 = {
     0,          /* bus_flags */
     NULL        /* bus_mutex */
 };
+#endif
