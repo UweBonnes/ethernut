@@ -42,6 +42,7 @@
 
 #include <cfg/ahdlc.h>
 #include <cfg/arch/avr.h>
+#include <toolchain.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>

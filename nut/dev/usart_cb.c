@@ -306,6 +306,13 @@ int UsartCbWrite(NUTFILE *nfp, const void *buffer, int len)
     return rc;
 }
 
+#ifdef __HARVARD_ARCH__
+int UsartCbWrite_P(NUTFILE *nfp, PGM_P buffer, int len)
+{
+    return -1;
+}
+#endif
+
 int UsartCbIoCtrl(NUTDEVICE *dev, int req, void *conf)
 {
     int rc = 0;

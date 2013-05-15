@@ -410,6 +410,9 @@ extern int UsartCbRead(NUTFILE *fp, void *buffer, int size);
  *         A return value of -1 indicates an error.
  */
 extern int UsartCbWrite(NUTFILE *fp, const void *buffer, int len);
+#ifdef __HARVARD_ARCH__
+extern int UsartCbWrite_P(NUTFILE *nfp, PGM_P buffer, int len);
+#endif
 
 /*!
  * \brief Retrieves the number of characters in input buffer.
