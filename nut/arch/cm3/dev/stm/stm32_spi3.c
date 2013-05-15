@@ -32,7 +32,6 @@
  *
  */
 
-#ifdef STM32_SPI3
 /*
  * \verbatim
  * $Id$
@@ -169,4 +168,3 @@ NUTSPIBUS spiBus2Stm32 = {
 };
 
 #include "stm32_spi.c"
-#endif /* STM32_SPI3 */

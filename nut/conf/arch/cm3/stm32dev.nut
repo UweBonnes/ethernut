@@ -2064,7 +2064,6 @@ nutarch_cm3_stm32_devices =
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI1_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi1.c", "cm3/dev/stm/ih_stm32_spi1.c" },
-        makedefs = { "HWDEF+=-DSTM32_SPI1" },
         options =
         {
             {
@@ -2163,7 +2162,6 @@ nutarch_cm3_stm32_devices =
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI2_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi2.c", "cm3/dev/stm/ih_stm32_spi2.c" },
-        makedefs = { "HWDEF+=-DSTM32_SPI2" },
         options =
         {
             {
@@ -2251,7 +2249,6 @@ nutarch_cm3_stm32_devices =
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI3_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi3.c", "cm3/dev/stm/ih_stm32_spi3.c" },
-        makedefs = { "HWDEF+=-DSTM32_SPI3" },
         options =
         {
             {

@@ -32,7 +32,6 @@
  * For additional information see http://www.ethernut.de/
  *
  */
-#ifdef STM32_SPI2
 /*
  * \verbatim
  * $Id$
@@ -181,4 +180,3 @@ NUTSPIBUS spiBus1Stm32 = {
 };
 
 #include "stm32_spi.c"
-#endif /* STM32_SPI2 */
