@@ -124,48 +124,58 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
 {
     NUTI2C_BUS *bus;
     STM32_I2CCB *icb;
-    I2C_TypeDef *i2c;
-    uint32_t cr2;
-//    int rc = 0;
+    I2C_TypeDef *I2Cx;
 
     bus = slave->slave_bus;
     NUTASSERT(bus != NULL);
     NUTASSERT(bus->bus_icb != NULL);
     icb = (STM32_I2CCB *) bus->bus_icb;
     icb->icb_msg = msg;
-    i2c = (I2C_TypeDef *) icb->icb_base;
-    cr2 = i2c->CR2;
-    cr2 &= 0xf80000; /* Clean out */
-    cr2 |= slave->slave_address << 1;
+    I2Cx = (I2C_TypeDef *) icb->icb_base;
     msg->msg_widx = 0;
     msg->msg_ridx = 0;
-#if 0
-    /* are there bytes to write? */
+    I2Cx->CR1 |= I2C_CR1_START;
+    while (!(I2Cx->SR1 & I2C_SR1_SB));
     if (msg->msg_wlen)
     {
-        i2c->CR1 |= I2C_CR1_TXIE | I2C_CR1_TCIE | I2C_CR1_STOPIE ;
-        if (msg->msg_wlen > 0xff)
-            cr2 |= I2C_CR2_NBYTES | I2C_CR2_RELOAD;
+        I2Cx->DR = slave->slave_address << 1;
+        while(!(I2Cx->SR1 & I2C_SR1_ADDR));
+        (void)I2Cx->SR2;
+        while (msg->msg_widx < msg->msg_wlen)
+        {
+            I2Cx->DR = msg->msg_wdat[msg->msg_widx];
+            msg->msg_widx++;
+            while (!(I2Cx->SR1 & I2C_SR1_TXE));
+        }
+        if(msg->msg_rsiz)
+        {
+            I2Cx->CR1 |= I2C_CR1_START;
+            while (!(I2Cx->SR1 & I2C_SR1_SB));
+        }
         else
-            cr2 |= msg->msg_wlen << 16;
+            while (!(I2Cx->SR1 & I2C_SR1_BTF));
     }
-    else if (msg->msg_rsiz)
+    if (msg->msg_rsiz)
     {
-        i2c->CR1 |= I2C_CR1_RXIE|I2C_CR1_STOPIE ;
-        if (msg->msg_rsiz > 0xff)
-            cr2 |= I2C_CR2_RD_WRN | I2C_CR2_NBYTES | I2C_CR2_RELOAD;
-        else
-            cr2 |= I2C_CR2_RD_WRN | msg->msg_rsiz << 16;
+        I2Cx->DR = slave->slave_address<<1|1;
+        while (!(I2Cx->SR1 & I2C_SR1_ADDR));
+        (void)I2Cx->SR2;
+        if (msg->msg_rsiz > 1)
+            I2Cx->CR1 |= I2C_CR1_ACK;
+        while (msg->msg_ridx < msg->msg_rsiz)
+        {
+            while (!(I2Cx->SR1 & I2C_SR1_RXNE));
+            msg->msg_rdat[msg->msg_ridx]= I2Cx->DR;
+            msg->msg_ridx++;
+            if(msg->msg_rsiz <  msg->msg_ridx +1)
+                I2Cx->CR1 &= ~I2C_CR1_ACK;
+        }
     }
-    i2c->CR2 = cr2 | I2C_CR2_START;
-    rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
-    if(rc)
-        return -1;
-    return msg->msg_ridx;
-#else
-    memset(msg->msg_rdat, 0xff, msg->msg_rsiz);
-    return -1;
-#endif
+    /* Send stop when byte transmittes*/
+    I2Cx->CR1 |= I2C_CR1_STOP;
+    while (!(I2Cx->SR2 & I2C_SR2_BUSY));
+
+    return 0;
 }
 
 static int checkpin_and_config(STM32_I2CCB *icb)
