@@ -261,7 +261,7 @@ NUTDEVICE devUsartStm32_6 = {
 #define USARTn      USART6
 #define USARTnBase  USART6_BASE
 #define USARTirqn   USART6_IRQn
-#define USARTclk    NUT_HWCLK_PCLK1
+#define USARTclk    NUT_HWCLK_PCLK2
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define SigUSART    sig_USART6

@@ -385,7 +385,7 @@ NUTDEVICE devUsartStm32_3 = {
 #define USARTn      USART3
 #define USARTnBase  USART3_BASE
 #define USARTirqn   USART3_IRQn
-#define USARTclk    NUT_HWCLK_PCLK2
+#define USARTclk    NUT_HWCLK_PCLK1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define SigUSART sig_USART3

@@ -241,7 +241,7 @@ NUTDEVICE devUartStm32_4 = {
 #define USARTn      UART4
 #define USARTnBase  UART4_BASE
 #define USARTirqn   UART4_IRQn
-#define USARTclk    NUT_HWCLK_PCLK2
+#define USARTclk    NUT_HWCLK_PCLK1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define SigUSART sig_UART4

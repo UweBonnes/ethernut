@@ -213,7 +213,7 @@ NUTDEVICE devUartStm32_5 = {
 #define USARTn      UART5
 #define USARTnBase  UART5_BASE
 #define USARTirqn   UART5_IRQn
-#define USARTclk    NUT_HWCLK_PCLK2
+#define USARTclk    NUT_HWCLK_PCLK1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define SigUSART sig_UART5

@@ -47,7 +47,6 @@
 
 #include <dev/irqreg.h>
 #include <dev/usart.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
@@ -616,13 +615,11 @@ static void Stm32UsartDisable(void)
 static uint32_t Stm32UsartGetSpeed(void)
 {
     uint32_t clk, frac_div = USARTn->BRR;
-    RCC_ClocksTypeDef RCC_ClocksStatus;
 
-    RCC_GetClocksFreq(&RCC_ClocksStatus);
 #if USARTclk == NUT_HWCLK_PCLK1
-    clk = RCC_ClocksStatus.PCLK2_Frequency;
+    clk = NutClockGet(NUT_HWCLK_PCLK1);
 #else
-    clk = RCC_ClocksStatus.PCLK1_Frequency;
+    clk = NutClockGet(NUT_HWCLK_PCLK2);
 #endif
     if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
@@ -650,15 +647,13 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     uint32_t apbclock = 0x00;
     uint32_t integerdivider = 0x00;
     uint32_t fractionaldivider = 0x00;
-    RCC_ClocksTypeDef RCC_ClocksStatus;
 
     Stm32UsartDisable();
 
-    RCC_GetClocksFreq(&RCC_ClocksStatus);
 #if USARTclk == NUT_HWCLK_PCLK1
-    apbclock = RCC_ClocksStatus.PCLK2_Frequency;
+    apbclock = NutClockGet(NUT_HWCLK_PCLK1);
 #else
-    apbclock = RCC_ClocksStatus.PCLK1_Frequency;
+    apbclock = NutClockGet(NUT_HWCLK_PCLK2);
 #endif
 
     /* Determine the integer part */
@@ -1267,17 +1262,18 @@ static int Stm32UsartInit(void)
         return -1;
     }
 
-    /* Enable UART clock */
+    /* Enable UART clock and reset device
+     * We rely on the same value for RCC_APBxENR_USARTxEN and RCC_APBxRSTR_USARTxRST*/
 #if USARTclk == NUT_HWCLK_PCLK1
-        RCC_APB2PeriphClockCmd(STM_USART_CLK, ENABLE);
-        /* Reset USART IP */
-        RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
-        RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
+    RCC->APB1ENR |= STM_USART_CLK;
+
+    RCC->APB1RSTR |= STM_USART_CLK;
+    RCC->APB1RSTR &= ~STM_USART_CLK;
 #else
-        RCC_APB1PeriphClockCmd(STM_USART_CLK, ENABLE);
-        /* Reset USART IP */
-        RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
-        RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
+    RCC->APB2ENR |= STM_USART_CLK;
+
+    RCC->APB2RSTR |= STM_USART_CLK;
+    RCC->APB2RSTR &= ~STM_USART_CLK;
 #endif
 
     /* Configure USART Tx as alternate function push-pull */
@@ -1382,11 +1378,11 @@ static int Stm32UsartDeinit(void)
 
     /* Reset UART. */
 #if USARTclk == NUT_HWCLK_PCLK1
-    RCC_APB2PeriphResetCmd(STM_USART_CLK, ENABLE);
-    RCC_APB2PeriphResetCmd(STM_USART_CLK, DISABLE);
+    RCC->APB2RSTR |= STM_USART_CLK;
+    RCC->APB2RSTR &= ~STM_USART_CLK;
 #else
-    RCC_APB1PeriphResetCmd(STM_USART_CLK, ENABLE);
-    RCC_APB1PeriphResetCmd(STM_USART_CLK, DISABLE);
+    RCC->APB1RSTR |= STM_USART_CLK;
+    RCC->APB1RSTR &= ~STM_USART_CLK;
 #endif
 
     return 0;
