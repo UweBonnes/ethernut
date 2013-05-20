@@ -98,7 +98,7 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
         if (RTC->TR & RTC_TR_PM)
             tm->tm_hour += 12;
         tm->tm_min  = ((RTC->TR >>  8) & 0xf) + (((RTC->TR >> 12) & 0x7) * 10);
-        tm->tm_sec  = ((RTC->TR >>  0) & 0xf) + (((RTC->TR >>  4) & 0x3) * 10);
+        tm->tm_sec  = ((RTC->TR >>  0) & 0xf) + (((RTC->TR >>  4) & 0x7) * 10);
         tm->tm_wday = ((RTC->DR >> 13) & 0x7);
         tm->tm_yday = 0/*FIXME*/;
         return 0;
