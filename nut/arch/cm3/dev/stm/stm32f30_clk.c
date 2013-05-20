@@ -40,7 +40,6 @@
 
 #if defined(MCU_STM32F30X)
 #include <arch/cm3/stm/vendor/stm32f30x.h>
-#include <arch/cm3/stm/vendor/stm32f30x_rcc.h>
 #else
 #warning "Unknown STM32 family"
 #endif

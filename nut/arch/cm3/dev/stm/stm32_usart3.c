@@ -57,7 +57,6 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -336,7 +335,7 @@ NUTDEVICE devUsartStm32_3 = {
 /*!
  * \brief USART3 base configuration.
  */
-#define STM_USART_CLK   RCC_APB1Periph_USART3
+#define STM_USART_CLK   RCC_APB1ENR_USART3EN
 
 #ifdef USART3_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE USART3_INIT_BAUDRATE

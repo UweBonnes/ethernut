@@ -44,13 +44,10 @@
 
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f10x.h>
-#include <arch/cm3/stm/stm32f10x_rcc.h>
 #elif defined(MCU_STM32L1)
 #include <arch/cm3/stm/vendor/stm32l1xx.h>
-#include <arch/cm3/stm/vendor/stm32l1xx_rcc.h>
 #elif defined(STM32F30X)
 #include <arch/cm3/stm/vendor/stm32f30x.h>
-#include <arch/cm3/stm/vendor/stm32f30x_rcc.h>
 #define DMA_CCR1_MEM2MEM DMA_CCR_MEM2MEM
 #define DMA_CCR1_DIR     DMA_CCR_DIR
 #define DMA_CCR1_EN      DMA_CCR_EN

@@ -57,7 +57,6 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -172,7 +171,7 @@ NUTDEVICE devUartStm32_5 = {
 /*!
  * \brief UART5 base configuration.
  */
-#define STM_USART_CLK     RCC_APB1Periph_UART5
+#define STM_USART_CLK     RCC_APB1ENR_UART5EN
 
 #ifdef UART5_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE UART5_INIT_BAUDRATE

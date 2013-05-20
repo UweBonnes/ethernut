@@ -48,7 +48,6 @@
 #include <cfg/arch/gpio.h>
 #include <arch/cm3/stm/stm32f10x.h>
 #include <arch/cm3/stm/stm32f10x_rtc.h>
-#include <arch/cm3/stm/stm32f10x_rcc.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -115,17 +114,17 @@ int Stm32RtcInit(NUTRTC *rtc)
     uint32_t temp;
 
 
-   RCC->APB1ENR |= RCC_APB1Periph_BKP|RCC_APB1Periph_PWR;
+   RCC->APB1ENR |= RCC_APB1ENR_BKPEN|RCC_APB1ENR_PWREN;
    PWR->CR |= PWR_CR_DBP;
    RCC->BDCR|= (1<<16);//Backup domain reset;
    RCC->BDCR&= ~(1<<16);//Backup domain reset;
    PWR->CR|= PWR_CR_DBP;
 
    temp=RCC->BDCR;
-   temp&= ~((1<<9)|(1<<8));
+   temp&= ~(RCC_BDCR_RTCSEL);
    /*Fixme: Don't assume fixed HSE frequency here*/
-   temp |= RCC_RTCCLKSource_HSE_Div128;//HSE/128
-   temp |= 1<<15;
+   temp |= RCC_BDCR_RTCSEL;//HSE/128
+   temp |= RCC_BDCR_RTCEN;
    RCC->BDCR=temp;
    RTC->CRL&= ~(RTC_FLAG_RSF);
    while(!(RTC->CRL & RTC_FLAG_RSF));

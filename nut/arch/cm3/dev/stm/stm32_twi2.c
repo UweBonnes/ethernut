@@ -62,7 +62,6 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #if defined(I2CBUS2_USE_DMA)
 #if defined(MCU_STM32F1)
     #include <arch/cm3/stm/stm32f1_dma.h>
@@ -172,10 +171,10 @@ int Stm32I2cBus2Recover( void)
 int Stm32I2cBus2Init(void)
 {
     /* Enable I2C Bus 2 peripheral clock. */
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
+    RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
     /* Reset I2C Bus 2 IP */
-    RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C2, ENABLE);
-    RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C2, DISABLE);
+    RCC->APB1RSTR |=  RCC_APB1RSTR_I2C2RST;
+    RCC->APB1RSTR &= ~RCC_APB1RSTR_I2C2RST;
 
     /* Setup Related GPIOs.
      * On non-F1 parts, pins may be mapped to different ports!

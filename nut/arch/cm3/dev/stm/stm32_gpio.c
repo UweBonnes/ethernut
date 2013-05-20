@@ -49,7 +49,6 @@
 
 #include <arch/cm3.h>
 #include <dev/gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #if defined (MCU_STM32L1)
 #define GPIO_RCC_ENR AHBENR

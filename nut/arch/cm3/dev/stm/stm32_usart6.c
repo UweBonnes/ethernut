@@ -58,7 +58,6 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -212,7 +211,7 @@ NUTDEVICE devUsartStm32_6 = {
 /*!
  * \brief USART6 base configuration.
  */
-#define STM_USART_CLK   RCC_APB2Periph_USART6
+#define STM_USART_CLK   RCC_APB2ENR_USART6EN
 
 #ifdef USART6_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE USART6_INIT_BAUDRATE

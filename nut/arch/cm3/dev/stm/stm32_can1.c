@@ -57,7 +57,6 @@
 #include <arch/cm3.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 
 #ifndef CANBUS1_REMAP_CAN
 #define CANBUS1_REMAP_CAN 0

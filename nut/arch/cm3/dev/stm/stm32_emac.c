@@ -56,7 +56,6 @@
 #include <dev/stm32_emac.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
@@ -355,24 +354,23 @@ static int EmacReset(void)
 
 #ifdef STM32F10X_CL
     /* force reset mac */
-    RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, ENABLE);
+    RCC->AHBRSTR |= RCC_AHBRSTR_ETHMACRST;
 
     /* enable clocks for mac */
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ETH_MAC | RCC_AHBPeriph_ETH_MAC_Tx |
-                          RCC_AHBPeriph_ETH_MAC_Rx, ENABLE);
+    RCC->AHBENR |= RCC_AHBENR_ETHMACEN | RCC_AHBENR_ETHMACTXEN |
+        RCC_AHBENR_ETHMACRXEN;
 
     /* release reset mac */
-    RCC_AHBPeriphResetCmd(RCC_AHBPeriph_ETH_MAC, DISABLE);
+    RCC->AHBRSTR &= ~RCC_AHBRSTR_ETHMACRST;
 #else
-    /* force reset mac */
-    RCC_AHB1PeriphResetCmd(RCC_AHB1RSTR_ETHMACRST, ENABLE);
+    RCC->AHB1RSTR |= RCC_AHB1RSTR_ETHMACRST;
 
     /* enable clocks for mac */
-    RCC_AHB1PeriphClockCmd(RCC_AHB1ENR_ETHMACEN| RCC_AHB1ENR_ETHMACTXEN |
-                           RCC_AHB1ENR_ETHMACRXEN , ENABLE);
+    RCC->AHB1ENR |= RCC_AHB1ENR_ETHMACEN | RCC_AHB1ENR_ETHMACTXEN |
+        RCC_AHB1ENR_ETHMACRXEN;
 
     /* release reset mac */
-    RCC_AHB1PeriphResetCmd(RCC_AHB1RSTR_ETHMACRST, DISABLE);
+    RCC->AHB1RSTR &= ~RCC_AHB1RSTR_ETHMACRST;
 #endif
     /* Register PHY to be able to reset it */
     rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
@@ -921,13 +919,13 @@ int EmacInit(NUTDEVICE * dev)
 
 #ifdef STM32F10X_CL
     /* disable clocks for mac */
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ETH_MAC | RCC_AHBPeriph_ETH_MAC_Tx |
-                          RCC_AHBPeriph_ETH_MAC_Rx, DISABLE);
+    RCC->AHBENR &= ~(RCC_AHBENR_ETHMACEN | RCC_AHBENR_ETHMACTXEN |
+                     RCC_AHBENR_ETHMACRXEN);
 
 #else
     /* disable clocks for mac */
-    RCC_AHB1PeriphClockCmd(RCC_AHB1ENR_ETHMACEN| RCC_AHB1ENR_ETHMACTXEN |
-                           RCC_AHB1ENR_ETHMACRXEN , DISABLE);
+    RCC->AHB1ENR &= ~(RCC_AHB1ENR_ETHMACEN | RCC_AHB1ENR_ETHMACTXEN |
+                     RCC_AHB1ENR_ETHMACRXEN);
 
     /* Switch on SYSCFG Clock*/
     CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN)) = 1;

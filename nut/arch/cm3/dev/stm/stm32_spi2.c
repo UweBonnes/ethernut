@@ -45,7 +45,6 @@
 #include <dev/spibus.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f1_dma.h>
@@ -151,7 +150,7 @@
 #endif
 #define SPI_DEV 2
 #define SPI_GPIO_AF GPIO_AF_SPI2
-#define SPI_ENABLE_CLK (RCC->APB1ENR |= RCC_APB1Periph_SPI2)
+#define SPI_ENABLE_CLK (RCC->APB1ENR |= RCC_APB1ENR_SPI2EN)
 
 
 /*Dma Channels

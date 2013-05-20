@@ -46,20 +46,8 @@
 
 #include <arch/cm3.h>
 #include <dev/gpio.h>
-#include <arch/cm3/stm/stm32f10x_rcc.h>
 
 #define NUTGPIOPORT_MAX NUTGPIO_PORTG+1
-
-
-static const uint32_t GPIO_RCCx[] = {
-    RCC_APB2Periph_GPIOA,
-    RCC_APB2Periph_GPIOB,
-    RCC_APB2Periph_GPIOC,
-    RCC_APB2Periph_GPIOD,
-    RCC_APB2Periph_GPIOE,
-    RCC_APB2Periph_GPIOF,
-    RCC_APB2Periph_GPIOG,
-};
 
 /*!
  * \brief Get pin configuration.

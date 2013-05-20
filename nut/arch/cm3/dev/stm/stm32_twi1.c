@@ -61,7 +61,6 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #if defined(I2CBUS1_USE_DMA)
 #if defined(MCU_STM32F1)
     #include <arch/cm3/stm/stm32f1_dma.h>
@@ -157,10 +156,10 @@ int Stm32I2cBus1Init(void)
     uint16_t pins = _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN);
 
     /* Enable I2C Bus 1 peripheral clock. */
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
+    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
     /* Reset I2C Bus 1 IP */
-    RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, ENABLE);
-    RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, DISABLE);
+    RCC->APB1RSTR |=  RCC_APB1RSTR_I2C1RST;
+    RCC->APB1RSTR &= ~RCC_APB1RSTR_I2C1RST;
 
     /* Setup Related GPIOs. */
 #ifdef I2CBUS1_MODE_SMBUS

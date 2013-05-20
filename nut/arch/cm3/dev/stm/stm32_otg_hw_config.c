@@ -21,7 +21,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <arch/cm3.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <dev/usb_stm32/usb_lib.h>
 #include <dev/usb_stm32/usb_prop.h>
 #include <dev/usb_stm32/usb_desc.h>
@@ -44,11 +43,11 @@ extern LINE_CODING linecoding;
 void Set_USBClock(void)
 {
 #if defined(MCU_STM32F1)
-  /* Select USBCLK source */
-  RCC->CFGR|=RCC_OTGFSCLKSource_PLLVCO_Div3<<22;
+  /* Select USBCLK source from 72 MHz */
+  RCC->CFGR &= ~RCC_CFGR_OTGFSPRE;
 
   /* Enable the USB clock */
-  RCC->AHBENR|=RCC_AHBPeriph_OTG_FS;
+  RCC->AHBENR|=RCC_AHBENR_OTGFSEN;
 #elif  defined(MCU_STM32F2) || defined(MCU_STM32F4)
   RCC->AHB2ENR|=RCC_AHB2ENR_OTGFSEN;
 #else

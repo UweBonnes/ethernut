@@ -51,7 +51,6 @@
 
 #include <sys/event.h>
 #include <arch/cm3.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <dev/usb_stm32/stm32_otg.h>
 #include <dev/usb_stm32/hw_config.h>
