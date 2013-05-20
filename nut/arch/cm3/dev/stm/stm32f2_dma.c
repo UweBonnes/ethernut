@@ -51,14 +51,14 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
+#include <dev/gpio.h>
 
+#include <arch/cm3/stm/stm32_gpio.h>
 #if defined(MCU_STM32F2)
 #include <arch/cm3/stm/vendor/stm32f2xx.h>
-#include <arch/cm3/stm/vendor/stm32f2xx_gpio.h>
 #include <arch/cm3/stm/vendor/stm32f2xx_rcc.h>
 #elif defined(MCU_STM32F4)
 #include <arch/cm3/stm/vendor/stm32f4xx.h>
-#include <arch/cm3/stm/vendor/stm32f4xx_gpio.h>
 #include <arch/cm3/stm/vendor/stm32f4xx_rcc.h>
 #else
 #warning "STM32 family has no F2/F4 compatible DMA"

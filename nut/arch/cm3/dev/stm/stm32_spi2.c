@@ -46,7 +46,7 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #endif

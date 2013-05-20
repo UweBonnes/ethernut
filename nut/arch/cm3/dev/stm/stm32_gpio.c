@@ -49,21 +49,15 @@
 
 #include <arch/cm3.h>
 #include <dev/gpio.h>
+#include <arch/cm3/stm/stm32xxxx_rcc.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #if defined (MCU_STM32L1)
-#include <arch/cm3/stm/vendor/stm32l1xx_gpio.h>
-#include <arch/cm3/stm/vendor/stm32l1xx_rcc.h>
 #define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F2)
-#include <arch/cm3/stm/vendor/stm32f2xx_gpio.h>
-#include <arch/cm3/stm/vendor/stm32f2xx_rcc.h>
 #define GPIO_RCC_ENR AHB1ENR
 #elif defined (MCU_STM32F30)
-#include <arch/cm3/stm/vendor/stm32f30x_gpio.h>
-#include <arch/cm3/stm/vendor/stm32f30x_rcc.h>
 #define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F4)
-#include <arch/cm3/stm/vendor/stm32f4xx_gpio.h>
-#include <arch/cm3/stm/vendor/stm32f4xx_rcc.h>
 #define GPIO_RCC_ENR AHB1ENR
 #else
 #warning "Unknown STM32 family"
@@ -433,7 +427,7 @@ int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit)
   *            @arg GPIO_AF_EVENTOUT: Connect EVENTOUT pins to AF15
   * @retval None
   */
-void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_PinSource, uint8_t GPIO_AF)
+void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF)
 {
   uint32_t temp = 0x00;
   uint32_t temp_2 = 0x00;

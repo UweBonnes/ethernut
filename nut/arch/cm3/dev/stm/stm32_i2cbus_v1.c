@@ -66,7 +66,7 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/gpio.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_irqreg.h>
 #include <dev/i2cbus.h>
 #include <cfg/twi.h>
@@ -310,8 +310,10 @@ static int checkpin_and_config(STM32_I2CCB *icb)
             sda_port= NUTGPIO_PORTB;
         else if (icb->sda_pin == 0)
             sda_port= NUTGPIO_PORTF;
+#if defined(GPIOH_BASE)
         else if (icb->sda_pin == 5)
             sda_port= NUTGPIO_PORTH;
+#endif
         else
             return -1;
 
@@ -319,8 +321,10 @@ static int checkpin_and_config(STM32_I2CCB *icb)
             scl_port= NUTGPIO_PORTB;
         else if (icb->scl_pin == 1)
             scl_port= NUTGPIO_PORTF;
+#if defined(GPIOH_BASE)
         else if (icb->scl_pin == 4)
             scl_port= NUTGPIO_PORTH;
+#endif
         else
             return -1;
 
@@ -328,9 +332,21 @@ static int checkpin_and_config(STM32_I2CCB *icb)
             scl_port= NUTGPIO_PORTB;
         else if (icb->smba_pin == 2)
             scl_port= NUTGPIO_PORTF;
+#if defined(GPIOH_BASE)
+        else if (icb->scl_pin == 4)
+            scl_port= NUTGPIO_PORTH;
+#endif
+        else
+            return -1;
+
+        if (icb->smba_pin == 12)
+            scl_port= NUTGPIO_PORTB;
+        else if (icb->smba_pin == 2)
+            scl_port= NUTGPIO_PORTF;
+#if defined(GPIOH_BASE)
         else if (icb->smba_pin == 6)
             scl_port= NUTGPIO_PORTH;
-
+#endif
         /* Fixme: Handle SMBA Pin*/
         GPIO_PinAFConfig((GPIO_TypeDef*) sda_port, icb->sda_pin, GPIO_AF_I2C1);
         GPIO_PinAFConfig((GPIO_TypeDef*) scl_port, icb->scl_pin, GPIO_AF_I2C1);

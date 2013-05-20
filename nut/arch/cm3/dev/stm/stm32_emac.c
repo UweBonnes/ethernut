@@ -57,7 +57,7 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG

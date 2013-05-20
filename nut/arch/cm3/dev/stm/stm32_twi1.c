@@ -60,7 +60,7 @@
 #include <dev/twif.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
 #if defined(I2CBUS1_USE_DMA)
 #if defined(MCU_STM32F1)

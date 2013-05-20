@@ -43,7 +43,6 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
 
 #ifndef NUT_IRQPRI_IRQ3
 #define NUT_IRQPRI_IRQ3  4
