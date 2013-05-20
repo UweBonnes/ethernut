@@ -416,14 +416,16 @@ void NutMicroDelay(uint32_t us)
 #endif
 #else
     /* Range 54 ms @ 20 MHz) */
-    uint32_t __tmp = (us *(NutGetCpuClock()>>8))/(400000000/256);
+    uint32_t __tmp = (us *(NutGetCpuClock()>>8))/(4000000 >>8);
 #endif
     while (__tmp > 0xffff)
     {
-        _delay_loop_2(0xffff);
-        __tmp -= 0xffff;
+        /* _delay_loop_2(0) does 0x10000 loops*/
+        _delay_loop_2(0);
+        __tmp -= 0x10000;
     }
-    _delay_loop_2((uint16_t) __tmp);
+    if (__tmp)
+        _delay_loop_2((uint16_t) __tmp);
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 
