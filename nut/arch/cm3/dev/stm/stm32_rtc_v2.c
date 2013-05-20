@@ -89,7 +89,7 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     if (tm)
     {
-        tm->tm_mday = ((RTC->DR >>  0) & 0xf) + (((RTC->DR >>  2) & 0x3) * 10);
+        tm->tm_mday = ((RTC->DR >>  0) & 0xf) + (((RTC->DR >>  4) & 0x3) * 10);
         tm->tm_mon  = ((RTC->DR >>  8) & 0xf) + (((RTC->DR >> 12) & 0x1) * 10);
         tm->tm_mon  -= 1;
         tm->tm_year = ((RTC->DR >> 16) & 0xf) + (((RTC->DR >> 20) & 0xf) * 10)
@@ -154,7 +154,7 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 
 
 /*!
- * \brief Initialize the RTC in stm32f10x controller
+ * \brief Initialize the RTC in stm32f30x controller
  *
  * \return 0 on success or -1 in case of an error.
  *
