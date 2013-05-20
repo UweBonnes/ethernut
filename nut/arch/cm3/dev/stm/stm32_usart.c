@@ -48,7 +48,6 @@
 #include <dev/irqreg.h>
 #include <dev/usart.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_usart.h>
 #include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
@@ -420,7 +419,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
      */
     cnt = rbf->rbf_cnt;
     if (cnt >= rbf->rbf_siz) {
-        rx_errors |= USART_FLAG_ORE;
+        rx_errors |= USART_ISR_ORE;
         return;
     }
 
