@@ -47,7 +47,6 @@
 
 #include <cfg/arch/gpio.h>
 #include <arch/cm3/stm/stm32f10x.h>
-#include <arch/cm3/stm/stm32f10x_rtc.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -56,7 +55,7 @@
 
 static void Stm32RtcRtoffPoll(void)
 {
-    while((RTC->CRL & RTC_FLAG_RTOFF)==0);
+    while((RTC->CRL & RTC_CRL_RTOFF)==0);
     return;
 };
 
@@ -72,8 +71,8 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     int rc=-1;
     time_t time;
-    RTC->CRL&= ~(RTC_FLAG_RSF);
-    while(!(RTC->CRL & RTC_FLAG_RSF));
+    RTC->CRL&= ~(RTC_CRL_RSF);
+    while(!(RTC->CRL & RTC_CRL_RSF));
     time=((RTC->CNTL|(RTC->CNTH<<16)));
     localtime_r(&time,tm);
     rc=0;
@@ -92,11 +91,11 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
    time_t time;
    Stm32RtcRtoffPoll();
-   RTC->CRL|= RTC_FLAG_CNF;
+   RTC->CRL|= RTC_CRL_CNF;
    time=mktime((struct _tm *)tm);
    RTC->CNTL =time& 0xffffUL;
    RTC->CNTH =(time >> 16) &0xffffUL;
-   RTC->CRL&= ~(RTC_FLAG_CNF);
+   RTC->CRL&= ~(RTC_CRL_CNF);
    Stm32RtcRtoffPoll();
    return 0;
 }
@@ -126,17 +125,17 @@ int Stm32RtcInit(NUTRTC *rtc)
    temp |= RCC_BDCR_RTCSEL;//HSE/128
    temp |= RCC_BDCR_RTCEN;
    RCC->BDCR=temp;
-   RTC->CRL&= ~(RTC_FLAG_RSF);
-   while(!(RTC->CRL & RTC_FLAG_RSF));
+   RTC->CRL&= ~(RTC_CRL_RSF);
+   while(!(RTC->CRL & RTC_CRL_RSF));
 
    Stm32RtcRtoffPoll();
-   RTC->CRL|= RTC_FLAG_CNF;
+   RTC->CRL|= RTC_CRL_CNF;
    RTC->PRLH = 0;
    RTC->PRLL = (8000000ul/128)-1;//Для делителя на 128 от кварца 8МГц
    //Устанавливаем вменяемое время
    RTC->CNTL= 1;
    RTC->CNTH= 0;//1 january 1970
-   RTC->CRL&= ~(RTC_FLAG_CNF);
+   RTC->CRL&= ~(RTC_CRL_CNF);
    Stm32RtcRtoffPoll();
    rc=0;
    return rc;
