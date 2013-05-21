@@ -2357,18 +2357,6 @@ nutarch_cm3_stm32_devices =
     },
 
     --
-    -- STM32F Timer Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32f_tim",
-        brief = "STM32F TIM",
-        description = "Timer API.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_GPIO_STM32V1" },
-        provides = { "HW_TIM_STM32" },
-        sources = { "cm3/dev/stm/stm32f10x_tim.c" }
-    },
-
-    --
     -- STM32F LCD Interface Drivers
     --
     {
