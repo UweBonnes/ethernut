@@ -6,7 +6,26 @@ nutarch_cm3_stm32_devices =
     --
     -- ***********************************
 
+    -- STM32F10x RTC
     --
+    {
+        name = "nutarch_cm3_stm32f10x_rtc",
+        brief = "STM32F1 RTC Driver",
+        description = "STM32F1 RTC driver.",
+        requires = { "HW_RTC_STM32F1" },
+        provides = { "DEV_RTC" },
+        sources = { "cm3/dev/stm/stm32f1_rtc.c" },
+    },
+    -- STM32 RTC V2
+    --
+    {
+        name = "nutarch_cm3_stm32v2_rtc",
+        brief = "STM32 RTC Driver V2",
+        description = "STM32 RTC driver V2.",
+        requires = { "HW_RTC_STM32_V2" },
+        provides = { "DEV_RTC" },
+        sources = { "cm3/dev/stm/stm32_rtc_v2.c" },
+    },
     {
         name = "nutarch_cm3_stm32_devices_debug",
         brief = "UART Debug Output (STM32)",
@@ -1692,6 +1711,270 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32F I2C V1 Bus 1 Configuration
+    --
+    {
+        name = "nutarch_cm3_stm32_i2c1_v1",
+        brief = "STM32 I2C Bus 1 on F1/2/4 and L1",
+        description = "STM32F hardware I2C V1 support.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_I2C1_STM32" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_i2cbus_v1.c",
+            "cm3/dev/stm/ih_stm32_twi1.c",
+        },
+        options =
+        {
+            {
+                macro = "I2C1_REMAP",
+                brief = "Use Alternate Pins for I2C1",
+                description = "Leaving this option unchecked, the driver will initialize the standard Pins.\n\n"..
+                              "Pin Mapping is:\n  SDA PB7\n SCL PB6 \n SMBA PB5"..
+                              "Pin Mapping remapped is:\n SDA PB9\n SCL PB8\n SMBA PB5",
+                requires = { "HW_GPIO_STM32V1" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "I2C1_SDA_PIN",
+                brief = "I2C1 SDA Pins",
+                description = "Choose I2C1 SDA Pin PB7 (Default) or PB9",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "7",
+                type = "enumerated",
+                choices = { "7", "9" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C1_SCL_PIN",
+                brief = "I2C1 SCL Pins",
+                description = "Choose I2C1 SCL Pin PB6 (Default) or PB8",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "6",
+                type = "enumerated",
+                choices = { "6", "8" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C1_SMBA_PIN",
+                brief = "I2C1 SCL Pins",
+                description = "Choose I2C1 SMBA -1 (default) to not use SMBA or Pin PB5",
+                default = "-1",
+                type = "enumerated",
+                choices = { "-1", "5" },
+                file = "include/cfg/twi.h"
+            }
+         }
+    },
+    --
+    -- STM32F I2C Bus 2 Configuration
+    --
+    {
+        name = "nutarch_cm3_stm32_i2c2_v1",
+        brief = "STM32 I2C Bus 1 on F3",
+        description = "STM32F hardware I2C V1 support.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_I2C2_STM32" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_i2cbus_v1.c",
+            "cm3/dev/stm/ih_stm32_twi2.c",
+        },
+        options =
+        {
+            {
+                macro = "I2C2_SDA_PIN",
+                brief = "I2C2 SDA Pins",
+                description = "Choose I2C2 SDA Pin PB11(Default) or PF0 or PH5",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "11",
+                type = "enumerated",
+                choices = { "15", "0" , "5" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C2_SCL_PIN",
+                brief = "I2C2 SCL Pins",
+                description = "Choose I2C2 SCL Pin PB10 (Default) or PF1 or PH4",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "10",
+                type = "enumerated",
+                choices = { "11", "1", "4" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C2_SMBA_PIN",
+                brief = "I2C2 SCL Pins",
+                description = "Choose I2C2 SMBA Pin -1 (default) to not use SMBA or PB12 or PF2 or PH6",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "-1",
+                type = "enumerated",
+                choices = { "-1", "12" , "2" , "6" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C2_SMBA_F1PIN",
+                brief = "I2C2 SMBA Pins on F1",
+                description = "F1: Choose I2C2 SMBA Pin -1 (default) to not use SMBA or PB12",
+                requires = { "HW_GPIO_STM32V1" },
+                default = "-1",
+                type = "enumerated",
+                choices = { "-1", "11" },
+                file = "include/cfg/twi.h"
+            }
+         }
+    },
+    --
+    -- STM32F I2C Bus 3 Configuration
+    --
+    {
+        name = "nutarch_cm3_stm32_i2c3_v1",
+        brief = "STM32 I2C Bus 3",
+        description = "STM32F hardware I2C V1 support.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_I2C3_STM32" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_i2cbus_v1.c",
+            "cm3/dev/stm/ih_stm32_twi3.c",
+        },
+        options =
+        {
+            {
+                macro = "I2C3_SDA_PIN",
+                brief = "I2C3 SDA Pins",
+                description = "Choose I2C3 SDA Pin PC9(Default) or PH8",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "9",
+                type = "enumerated",
+                choices = { "9", "8" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C3_SCL_PIN",
+                brief = "I2C3 SCL Pins",
+                description = "Choose I2C3 SCL Pin PA8 (Default) or PH7",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "8",
+                type = "enumerated",
+                choices = { "8", "7" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C3_SMBA_PIN",
+                brief = "I2C3 SCL Pins",
+                description = "Choose I2C3 SMBA Pin -1 (default) to not use SMBA or PA9 or PH9(809)",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "-1",
+                type = "enumerated",
+                choices = { "-1", "9" , "809" },
+                file = "include/cfg/twi.h"
+            }
+         }
+    },
+    --
+    --
+    -- STM32F I2C V2 Bus 1 Configuration
+    --
+    {
+        name = "nutarch_cm3_stm32_i2c1_v2",
+        brief = "STM32 I2C Bus 1 on F3",
+        description = "STM32F hardware I2C V2 support.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_I2C1_STM32V2" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_i2cbus_v2.c",
+            "cm3/dev/stm/ih_stm32_twi1.c",
+--            "cm3/dev/stm/ih_stm32_i2c1_ev.c",
+--            "cm3/dev/stm/ih_stm32_i2c1_er.c",
+        },
+        options =
+        {
+            {
+                macro = "I2C1_SDA_PIN",
+                brief = "I2C1 SDA Pins",
+                requires = { "HW_GPIO_STM32V2" },
+                description = "Choose I2C1 SDA Pin PB7 (Default) or PB9 or PA14",
+                default = "7",
+                type = "enumerated",
+                choices = { "7", "9", "14" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C1_SCL_PIN",
+                brief = "I2C1 SCL Pins",
+                requires = { "HW_GPIO_STM32V2" },
+                description = "Choose I2C1 SCL Pin PB6 (Default) or PB8",
+                default = "6",
+                type = "enumerated",
+                choices = { "6", "8" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C1_SMBA_PIN",
+                brief = "I2C1 SCL Pins",
+                requires = { "HW_GPIO_STM32V2" },
+                description = "Choose I2C1 SMBA -1 (default) to not use SMBA or Pin PB5",
+                default = "-1",
+                type = "enumerated",
+                choices = { "-1", "5" },
+                file = "include/cfg/twi.h"
+            }
+         }
+    },
+     --
+    -- STM32F I2C V2 Bus 2 Configuration
+    --
+    {
+        name = "nutarch_cm3_stm32_i2c2_v2",
+        brief = "STM32 I2C Bus 1 on F3",
+        description = "STM32F hardware I2C V2 support.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_I2C2_STM32V2" },
+        provides = { "I2CBUS_CONTROLLER" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_i2cbus_v2.c",
+            "cm3/dev/stm/ih_stm32_twi2.c",
+--            "cm3/dev/stm/ih_stm32_i2c2_ev.c",
+--            "cm3/dev/stm/ih_stm32_i2c2_er.c",
+        },
+        options =
+        {
+            {
+                macro = "I2C2_SDA_PIN",
+                brief = "I2C2 SDA Pins",
+                requires = { "HW_GPIO_STM32V2" },
+                description = "Choose I2C2 SDA Pin PA10(Default) or PF0",
+                default = "10",
+                type = "enumerated",
+                choices = { "10", "0" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C2_SCL_PIN",
+                brief = "I2C2 SCL Pins",
+                requires = { "HW_GPIO_STM32V2" },
+                description = "Choose I2C2 SCL Pin PA9 (Default) or PF1 or PF6",
+                default = "11",
+                type = "enumerated",
+                choices = { "11", "1", "6" },
+                file = "include/cfg/twi.h"
+            },
+            {
+                macro = "I2C2_SMBA_PIN",
+                brief = "I2C2 SCL Pins",
+                requires = { "HW_GPIO_STM32V2" },
+                description = "Choose I2C2 SMBA Pin -1 (default) to not use SMBA or PA8 or PB12",
+                default = "-1",
+                type = "enumerated",
+                choices = { "-1", "8" , "12"},
+                file = "include/cfg/twi.h"
+            }
+         }
+    },
+    --
     -- STM32F CAN Configuration
     --
     {
@@ -1800,7 +2083,6 @@ nutarch_cm3_stm32_devices =
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI1_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi1.c", "cm3/dev/stm/ih_stm32_spi1.c" },
-        makedefs = { "HWDEF+=-DSTM32_SPI1" },
         options =
         {
             {
@@ -1899,7 +2181,6 @@ nutarch_cm3_stm32_devices =
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI2_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi2.c", "cm3/dev/stm/ih_stm32_spi2.c" },
-        makedefs = { "HWDEF+=-DSTM32_SPI2" },
         options =
         {
             {
@@ -1987,7 +2268,6 @@ nutarch_cm3_stm32_devices =
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI3_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi3.c", "cm3/dev/stm/ih_stm32_spi3.c" },
-        makedefs = { "HWDEF+=-DSTM32_SPI3" },
         options =
         {
             {
@@ -2074,18 +2354,6 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
         },
-    },
-
-    --
-    -- STM32F Timer Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32f_tim",
-        brief = "STM32F TIM",
-        description = "Timer API.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_GPIO_STM32V1" },
-        provides = { "HW_TIM_STM32" },
-        sources = { "cm3/dev/stm/stm32f10x_tim.c" }
     },
 
     --

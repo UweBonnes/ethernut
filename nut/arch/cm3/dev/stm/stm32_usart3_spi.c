@@ -150,9 +150,9 @@ int Stm32Usart3BusSelect(NUTSPINODE * node, uint32_t tmo)
     } else {
         USART_TypeDef *spireg = node->node_stat;
 
-        RCC->APB1ENR |= RCC_APB1Periph_USART3;
-    RCC->APB2ENR |= RCC_APB2Periph_GPIOD | //USART RX,TX,CK
-            RCC_APB2Periph_AFIO;
+        RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
+    RCC->APB2ENR |= RCC_APB2ENR_GPIODEN | //USART RX,TX,CK
+            RCC_APB2ENR_AFIOEN;
 
     //У нас USART3 висит на PD8,9,10
     AFIO->MAPR |= GPIO_FullRemap_USART3;

@@ -2,11 +2,11 @@
   ******************************************************************************
   * @file    stm32l1xx.h
   * @author  MCD Application Team
-  * @version V1.1.1
-  * @date    09-March-2012
+  * @version V1.2.0
+  * @date    22-February-2013
   * @brief   CMSIS Cortex-M3 Device Peripheral Access Layer Header File.
   *          This file contains all the peripheral register's definitions, bits
-  *          definitions and memory mapping for STM32L1xx High-, Medium-density
+  *          definitions and memory mapping for STM32L1xx High-density, Medium-density
   *          and Medium-density Plus devices.
   *
   *          The file is the unique include file that the application programmer
@@ -26,7 +26,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -51,12 +51,12 @@
   * @{
   */
 
+#ifndef __STM32L1XX_H
+#define __STM32L1XX_H
+
 /* Add NutOS includes */
 #include <cfg/arch.h>
 #include <cfg/clock.h>
-
-#ifndef __STM32L1XX_H
-#define __STM32L1XX_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -71,19 +71,19 @@
   */
 
 #if !defined (STM32L1XX_MD) && !defined (STM32L1XX_MDP) && !defined (STM32L1XX_HD)
-  /* #define STM32L1XX_MD  */   /*!< STM32L1XX_MD: STM32L Ultra Low Power Medium-density devices */
-  /* #define STM32L1XX_MDP */   /*!< STM32L1XX_MDP: STM32L Ultra Low Power Medium-density Plus devices */
-  #define STM32L1XX_HD    /*!< STM32L1XX_HD: STM32L Ultra Low Power High-density devices */
+
+/* #define STM32L1XX_MD  */   /*!< - Ultra Low Power Medium-density devices: STM32L151x6xx, STM32L151x8xx,
+                                     STM32L151xBxx, STM32L152x6xx, STM32L152x8xx and STM32L152xBxx.
+                                   - Ultra Low Power Medium-density Value Line devices: STM32L100x6xx,
+                                     STM32L100x8xx and STM32L100xBxx.  */
+
+/* #define STM32L1XX_MDP */   /*!< - Ultra Low Power Medium-density Plus devices: STM32L151xCxx, STM32L152xCxx and STM32L162xCxx
+                                   - Ultra Low Power Medium-density Plus Value Line devices: STM32L100xCxx  */
+
+#define STM32L1XX_HD     /*!< Ultra Low Power High-density devices: STM32L151xDxx, STM32L152xDxx and STM32L162xDxx */
 #endif
 /*  Tip: To avoid modifying this file each time you need to switch between these
         devices, you can define the device in your toolchain compiler preprocessor.
-
- - Ultra Low Power Medium-density devices are STM32L151xx and STM32L152xx
-   microcontrollers where the Flash memory density ranges between 64 and 128 Kbytes.
- - Ultra Low Power Medium-density Plus devices are STM32L151xx, STM32L152xx and
-   STM32L162xx microcontrollers where the Flash memory density is 256 Kbytes.
- - Ultra Low Power High-density devices are STM32L151xx, STM32L152xx and STM32L162xx
-   microcontrollers where the Flash memory density is 384 Kbytes.
   */
 
 #if !defined (STM32L1XX_MD) && !defined (STM32L1XX_MDP) && !defined (STM32L1XX_HD)
@@ -143,11 +143,11 @@
 #endif
 
 /**
- * @brief STM32L1xx Standard Peripheral Library version number V1.1.1
+ * @brief STM32L1xx Standard Peripheral Library version number V1.2.0
    */
 #define __STM32L1XX_STDPERIPH_VERSION_MAIN   (0x01) /*!< [31:24] main version */
-#define __STM32L1XX_STDPERIPH_VERSION_SUB1   (0x01) /*!< [23:16] sub1 version */
-#define __STM32L1XX_STDPERIPH_VERSION_SUB2   (0x01) /*!< [15:8]  sub2 version */
+#define __STM32L1XX_STDPERIPH_VERSION_SUB1   (0x02) /*!< [23:16] sub1 version */
+#define __STM32L1XX_STDPERIPH_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
 #define __STM32L1XX_STDPERIPH_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
 #define __STM32L1XX_STDPERIPH_VERSION       ( (__STM32L1XX_STDPERIPH_VERSION_MAIN << 24)\
                                              |(__STM32L1XX_STDPERIPH_VERSION_SUB1 << 16)\
@@ -166,10 +166,10 @@
  * @brief STM32L1xx Interrupt Number Definition, according to the selected device
  *        in @ref Library_configuration_section
  */
-#define __CM3_REV                 0x200 /*!< Cortex-M3 Revision r2p0                  */
-#define __MPU_PRESENT             1 /*!< STM32L provides MPU                          */
-#define __NVIC_PRIO_BITS          4 /*!< STM32 uses 4 Bits for the Priority Levels    */
-#define __Vendor_SysTickConfig    0 /*!< Set to 1 if different SysTick Config is used */
+#define __CM3_REV                 0x200 /*!< Cortex-M3 Revision r2p0                      */
+#define __MPU_PRESENT             1     /*!< STM32L1 provides MPU                         */
+#define __NVIC_PRIO_BITS          4     /*!< STM32L1 uses 4 Bits for the Priority Levels  */
+#define __Vendor_SysTickConfig    0     /*!< Set to 1 if different SysTick Config is used */
 
 /*!< Interrupt Number Definition */
 typedef enum IRQn
@@ -231,7 +231,7 @@ typedef enum IRQn
   TIM6_IRQn                   = 43,     /*!< TIM6 global Interrupt                                   */
 #ifdef STM32L1XX_MD
   TIM7_IRQn                   = 44,     /*!< TIM7 global Interrupt                                   */
-#endif
+#endif /* STM32L1XX_MD */
 
 #ifdef STM32L1XX_MDP
   TIM7_IRQn                   = 44,     /*!< TIM7 global Interrupt                                   */
@@ -244,7 +244,7 @@ typedef enum IRQn
   DMA2_Channel5_IRQn          = 54,     /*!< DMA2 Channel 5 global Interrupt                         */
   AES_IRQn                    = 55,     /*!< AES global Interrupt                                    */
   COMP_ACQ_IRQn               = 56,     /*!< Comparator Channel Acquisition global Interrupt         */
-#endif
+#endif /* STM32L1XX_MDP */
 
 #ifdef STM32L1XX_HD
   TIM7_IRQn                   = 44,     /*!< TIM7 global Interrupt                                   */
@@ -260,8 +260,8 @@ typedef enum IRQn
   DMA2_Channel5_IRQn          = 54,     /*!< DMA2 Channel 5 global Interrupt                         */
   AES_IRQn                    = 55,     /*!< AES global Interrupt                                    */
   COMP_ACQ_IRQn               = 56,     /*!< Comparator Channel Acquisition global Interrupt         */
-#endif
-  IRQn_MAX                  /*!< Total number of interrupts                              */
+#endif /* STM32L1XX_HD */
+  IRQn_MAX                  /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
@@ -269,7 +269,7 @@ typedef enum IRQn
   */
 
 #include <arch/cm3/core_cm3.h>
-#include <arch/cm3/stm/system_stm32f10x.h>
+#include <arch/cm3/stm/vendor/system_stm32l1xx.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types
@@ -290,11 +290,11 @@ typedef enum {ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 /* ARM Compiler
    ------------
    RAM functions are defined using the toolchain options.
-   Functions that are executed in RAM should reside in a separate source
-   module. Using the 'Options for File' dialog you can simply change the
-   'Code / Const' area of a module to a memory space in physical RAM.
-   Available memory areas are declared in the 'Target' tab of the
-   'Options for Target' dialog.
+   Functions that are executed in RAM should reside in a separate source module.
+   Using the 'Options for File' dialog you can simply change the 'Code / Const'
+   area of a module to a memory space in physical RAM.
+   Available memory areas are declared in the 'Target' tab of the 'Options for Target'
+   dialog.
 */
  #define __RAM_FUNC FLASH_Status
 
@@ -2135,7 +2135,7 @@ typedef struct
 #define  DMA_CCR7_PINC                       ((uint16_t)0x0040)            /*!< Peripheral increment mode */
 #define  DMA_CCR7_MINC                       ((uint16_t)0x0080)            /*!< Memory increment mode */
 
-#define  DMA_CCR7_PSIZE            ,         ((uint16_t)0x0300)            /*!< PSIZE[1:0] bits (Peripheral size) */
+#define  DMA_CCR7_PSIZE                      ((uint16_t)0x0300)            /*!< PSIZE[1:0] bits (Peripheral size) */
 #define  DMA_CCR7_PSIZE_0                    ((uint16_t)0x0100)            /*!< Bit 0 */
 #define  DMA_CCR7_PSIZE_1                    ((uint16_t)0x0200)            /*!< Bit 1 */
 
@@ -2428,24 +2428,28 @@ typedef struct
 #define  FLASH_SR_SIZERR                     ((uint32_t)0x00000400)        /*!< Size error */
 #define  FLASH_SR_OPTVERR                    ((uint32_t)0x00000800)        /*!< Option validity error */
 #define  FLASH_SR_OPTVERRUSR                 ((uint32_t)0x00001000)        /*!< Option User validity error */
+#define  FLASH_SR_RDERR                      ((uint32_t)0x00002000)        /*!< Read protected error */
 
 /******************  Bit definition for FLASH_OBR register  *******************/
-#define  FLASH_OBR_RDPRT                     ((uint16_t)0x000000AA)        /*!< Read Protection */
-#define  FLASH_OBR_BOR_LEV                   ((uint16_t)0x000F0000)        /*!< BOR_LEV[3:0] Brown Out Reset Threshold Level*/
-#define  FLASH_OBR_USER                      ((uint32_t)0x00700000)        /*!< User Option Bytes */
+#define  FLASH_OBR_RDPRT                     ((uint32_t)0x000000AA)        /*!< Read Protection */
+#define  FLASH_OBR_SPRMOD                    ((uint32_t)0x00000100)        /*!< Selection of protection mode of WPRi bits
+                                                                                (available only in STM32L1xx Medium-density Plus devices) */
+#define  FLASH_OBR_BOR_LEV                   ((uint32_t)0x000F0000)        /*!< BOR_LEV[3:0] Brown Out Reset Threshold Level*/
 #define  FLASH_OBR_IWDG_SW                   ((uint32_t)0x00100000)        /*!< IWDG_SW */
 #define  FLASH_OBR_nRST_STOP                 ((uint32_t)0x00200000)        /*!< nRST_STOP */
 #define  FLASH_OBR_nRST_STDBY                ((uint32_t)0x00400000)        /*!< nRST_STDBY */
-#define  FLASH_OBR_nRST_BFB2                 ((uint32_t)0x00800000)        /*!< BFB2 */
+#define  FLASH_OBR_BFB2                      ((uint32_t)0x00800000)        /*!< BFB2(available only in STM32L1xx High-density devices) */
 
 /******************  Bit definition for FLASH_WRPR register  ******************/
-#define  FLASH_WRPR_WRP                      ((uint32_t)0xFFFFFFFF)        /*!< Write Protect */
+#define  FLASH_WRPR_WRP                      ((uint32_t)0xFFFFFFFF)        /*!< Write Protection bits */
 
 /******************  Bit definition for FLASH_WRPR1 register  *****************/
-#define  FLASH_WRPR1_WRP                     ((uint32_t)0xFFFFFFFF)        /*!< Write Protect */
+#define  FLASH_WRPR1_WRP                     ((uint32_t)0xFFFFFFFF)        /*!< Write Protection bits (available only in STM32L1xx
+                                                                                Medium-density Plus and High-density devices) */
 
 /******************  Bit definition for FLASH_WRPR2 register  *****************/
-#define  FLASH_WRPR2_WRP                     ((uint32_t)0xFFFFFFFF)        /*!< Write Protect */
+#define  FLASH_WRPR2_WRP                     ((uint32_t)0xFFFFFFFF)        /*!< Write Protection bits (available only in STM32L1xx
+                                                                                High-density devices) */
 /******************************************************************************/
 /*                                                                            */
 /*                       Flexible Static Memory Controller                    */

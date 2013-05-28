@@ -51,8 +51,7 @@
 
 #include <sys/event.h>
 #include <arch/cm3.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #include <dev/usb_stm32/stm32_otg.h>
 #include <dev/usb_stm32/hw_config.h>
 #include <dev/usb_stm32/usb_istr.h>
@@ -346,10 +345,10 @@ static int Stm32OtgUsartInit( void )
     GpioPinConfigSet(NUTGPIO_PORTA, 11, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
     GpioPinConfigSet(NUTGPIO_PORTA, 12, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
 
-    GPIO_PinAFConfig(GPIOA,9,GPIO_AF_OTG1_FS) ;
-    GPIO_PinAFConfig(GPIOA,11,GPIO_AF_OTG1_FS) ;
-    GPIO_PinAFConfig(GPIOA,12,GPIO_AF_OTG1_FS) ;
-    GPIO_PinAFConfig(GPIOA,10,GPIO_AF_OTG1_FS) ;
+    GPIO_PinAFConfig(GPIOA,9,GPIO_AF_OTG_FS) ;
+    GPIO_PinAFConfig(GPIOA,11,GPIO_AF_OTG_FS) ;
+    GPIO_PinAFConfig(GPIOA,12,GPIO_AF_OTG_FS) ;
+    GPIO_PinAFConfig(GPIOA,10,GPIO_AF_OTG_FS) ;
 #endif
 
     Set_USBClock();

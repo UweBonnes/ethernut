@@ -359,6 +359,18 @@ nutarch_avr =
         sources = { "avr/dev/debug1.c" }
     },
     {
+        name = "nutarch_avr_usartcb",
+        brief = "USART Driver CB",
+        description = "Experimental driver.",
+        requires = { "HW_MCU_ATMEGA128", "NUT_EVENT" },
+        provides = { "DEV_UART_CBRXTX", "DEV_UART_HWCTRL" },
+        sources = {
+            "avr/dev/usart_cb_avr.c",
+            "avr/dev/usart0cb_avr.c",
+            "avr/dev/usart1cb_avr.c"
+        }
+    },
+    {
         name = "nutarch_avr_usart0",
         brief = "USART0 Driver",
         description = "Hardware specific USART driver. Implements hardware "..

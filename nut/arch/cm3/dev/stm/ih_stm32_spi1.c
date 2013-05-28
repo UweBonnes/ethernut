@@ -39,8 +39,6 @@
  *
  */
 
-#ifdef STM32_SPI1
-
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
@@ -154,5 +152,3 @@ static int SerialPeripheral1IrqCtl(int cmd, void *param)
     }
     return rc;
 }
-
-#endif /* STM32_SPI1 */

@@ -57,8 +57,7 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -213,7 +212,7 @@ NUTDEVICE devUsartStm32_6 = {
 /*!
  * \brief USART6 base configuration.
  */
-#define STM_USART_CLK   RCC_APB2Periph_USART6
+#define STM_USART_CLK   RCC_APB2ENR_USART6EN
 
 #ifdef USART6_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE USART6_INIT_BAUDRATE
@@ -263,7 +262,7 @@ NUTDEVICE devUsartStm32_6 = {
 #define USARTn      USART6
 #define USARTnBase  USART6_BASE
 #define USARTirqn   USART6_IRQn
-#define USARTclk    NUT_HWCLK_PCLK1
+#define USARTclk    NUT_HWCLK_PCLK2
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define SigUSART    sig_USART6

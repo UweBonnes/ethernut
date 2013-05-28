@@ -56,8 +56,7 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -198,7 +197,7 @@ NUTDEVICE devUartStm32_4 = {
 /*!
  * \brief UART4 base configuration.
  */
-#define STM_USART_CLK     RCC_APB1Periph_UART4
+#define STM_USART_CLK     RCC_APB1ENR_UART4EN
 
 #ifdef UART4_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE UART4_INIT_BAUDRATE
@@ -243,7 +242,7 @@ NUTDEVICE devUartStm32_4 = {
 #define USARTn      UART4
 #define USARTnBase  UART4_BASE
 #define USARTirqn   UART4_IRQn
-#define USARTclk    NUT_HWCLK_PCLK2
+#define USARTclk    NUT_HWCLK_PCLK1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define SigUSART sig_UART4

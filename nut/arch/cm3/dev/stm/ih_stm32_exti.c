@@ -43,7 +43,6 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
 
 /*!
  * \brief External interrupt 0 control.

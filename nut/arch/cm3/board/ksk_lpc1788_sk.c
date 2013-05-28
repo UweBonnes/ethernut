@@ -157,7 +157,7 @@ void NutBoardInit(void)
     /* Initialize the external memory controller */
     Lpc177x_8x_EmcInit();
 
-    Lpc177x_8x_EmcSDRAMInit(sdram_k4s561632j, 0x0004680 /* 13 rows, 9 cols, 16Mx32, 64MB */);
+    Lpc177x_8x_EmcSDRAMInit(sdram_k4s561632j, 0x00004680 /* 13 rows, 9 cols, 16Mx32, 64MB */);
 }
 
 

@@ -393,10 +393,10 @@ void Lpc177x_8x_EmcSDRAMInit(SDRAM sdram, uint32_t dynamic_config)
 
     if (sdram.bus_width == 32) {
         (void) *((volatile uint32_t *)(sdram.base_addr | ((sdram.cas_latency << 4) | 0x02 /* burst length 4 */) <<
-                                   (((dynamic_config & 0x1000) ? 0 : 1 /* number of bs */) + 2 /* bus width */ + sdram.cols )));
+                                   (((dynamic_config & 0x1000) ? 0 : 2 /* number of bs */) + 2 /* bus width */ + sdram.cols )));
     } else {
         (void) *((volatile uint32_t *)(sdram.base_addr | ((sdram.cas_latency << 4) | 0x03 /* burst length 8 */) <<
-                                   (((dynamic_config & 0x1000) ? 0 : 1 /* number of bs */) + 1 /* bus width */ + sdram.cols )));
+                                   (((dynamic_config & 0x1000) ? 0 : 2 /* number of bs */) + 1 /* bus width */ + sdram.cols )));
     }
 
     wait_clocks(256); /* wait > 128 clk */

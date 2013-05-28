@@ -32,9 +32,9 @@
  */
 
 /*!
- *\verbatim
+ * \verbatim
  * $Id$
- *\endverbatim
+ * \endverbatim
  */
 
 #include <arch/cm3.h>
@@ -55,7 +55,7 @@ static int TwoWireIrqCtl(IRQn_Type IRQn, void(*ifunc)(void*), int cmd, void *par
 static int TwoWireIrqCtl_Ev(int cmd, void *param);
 static int TwoWireIrqCtl_Er(int cmd, void *param);
 
-IRQ_HANDLER sig_TWI2_EV = {
+IRQ_HANDLER sig_TWI3_EV = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
@@ -64,7 +64,7 @@ IRQ_HANDLER sig_TWI2_EV = {
     TwoWireIrqCtl_Ev    /* Interrupt control, ir_ctl. */
 };
 
-IRQ_HANDLER sig_TWI2_ER = {
+IRQ_HANDLER sig_TWI3_ER = {
 #ifdef NUT_PERFMON
     0,                  /* Interrupt counter, ir_count. */
 #endif
@@ -79,10 +79,10 @@ IRQ_HANDLER sig_TWI2_ER = {
 static void TwoWireIrqEntry_Ev(void *arg)
 {
 #ifdef NUT_PERFMON
-    sig_TWI2_EV.ir_count++;
+    sig_TWI3_EV.ir_count++;
 #endif
-    if (sig_TWI2_EV.ir_handler) {
-        (sig_TWI2_EV.ir_handler) (sig_TWI2_EV.ir_arg);
+    if (sig_TWI3_EV.ir_handler) {
+        (sig_TWI3_EV.ir_handler) (sig_TWI3_EV.ir_arg);
     }
 }
 
@@ -92,21 +92,21 @@ static void TwoWireIrqEntry_Ev(void *arg)
 static void TwoWireIrqEntry_Er(void *arg)
 {
 #ifdef NUT_PERFMON
-    sig_TWI2_ER.ir_count++;
+    sig_TWI3_ER.ir_count++;
 #endif
-    if (sig_TWI2_ER.ir_handler) {
-        (sig_TWI2_ER.ir_handler) (sig_TWI2_ER.ir_arg);
+    if (sig_TWI3_ER.ir_handler) {
+        (sig_TWI3_ER.ir_handler) (sig_TWI3_ER.ir_arg);
     }
 }
 
 static int TwoWireIrqCtl_Ev(int cmd, void *param)
 {
-    return TwoWireIrqCtl(I2C2_EV_IRQn, TwoWireIrqEntry_Ev, cmd, param);
+    return TwoWireIrqCtl(I2C3_EV_IRQn, TwoWireIrqEntry_Ev, cmd, param);
 }
 
 static int TwoWireIrqCtl_Er(int cmd, void *param)
 {
-    return TwoWireIrqCtl(I2C2_ER_IRQn, TwoWireIrqEntry_Er, cmd, param);
+    return TwoWireIrqCtl(I2C3_ER_IRQn, TwoWireIrqEntry_Er, cmd, param);
 }
 
 /*!

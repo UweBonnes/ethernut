@@ -266,7 +266,9 @@ volatile uint32_t nut_ticks;
 
 static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 
-#if defined(__CORTEX__) || defined(__AVR_LIBC_VERSION__)
+#if defined(__CORTEX__)
+#elif defined(__AVR_LIBC_VERSION__)
+uint16_t _delay_loop_2_mult;
 #else
 /*!
  *  \brief Loops per microsecond.
@@ -325,7 +327,9 @@ void NutTimerInit(void)
 
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
-#if !defined(NUT_DELAYLOOPS) && !defined(__AVR_LIBC_VERSION__) && !defined(__CORTEX__)
+#if defined(__AVR_LIBC_VERSION__)
+    _delay_loop_2_mult = NutGetCpuClock()/(4000000 >> 8);
+#elif !defined(NUT_DELAYLOOPS) && !defined(__CORTEX__)
     {
         /* Wait for the next tick. */
         uint32_t cnt = NutGetTickCount();
@@ -391,39 +395,46 @@ void NutMicroDelay(uint32_t us)
         start_ticks = current_ticks;
     }
 #elif defined(__AVR_LIBC_VERSION__)
-/* Try to keep the overhead low, especially try to avoid
- * a run-time 32 bit division
- * Try to avoid large intermediate results
- * nut_delay_loops consumes 4 clock ticks per loop
+/* Use avr-libc provided _delay_loop_2 that takes 4 clocks per unit
  *
- * Fixme: Estimate loop setup and control loop overhead
+ * Try to keep the overhead low, so use a precalculated, scaled value
+ * Use 16-bit math is possible
+ *
+ * Loop overhead is constant in clock cycles, so values determined
+ * on AT90CAN128 at 16 MHz with gcc-4.3.3. and -Os vs -O0 should fit
+ * for other frequencies too.
+ *
+ * Scale factor keeps error < 0.8 % for f > 1e6
  */
-#if defined(NUT_CPU_FREQ)
-#if  (NUT_CPU_FREQ/4000000) && ((NUT_CPU_FREQ%4000000) == 0)
-    uint32_t __tmp = us * (NUT_CPU_FREQ/4000000);
-#elif (NUT_CPU_FREQ/2000000) && ((NUT_CPU_FREQ%2000000) == 0)
-    uint32_t __tmp = us * (NUT_CPU_FREQ/2000000);
-    __tmp >>= 1;
-#elif (NUT_CPU_FREQ/1000000) && ((NUT_CPU_FREQ%1000000) == 0)
-    uint32_t __tmp = us * (NUT_CPU_FREQ/1000000);
-    __tmp >>= 2;
-#elif (NUT_CPU_FREQ/500000) && ((NUT_CPU_FREQ%500000) == 0)
-    uint32_t __tmp = us * (NUT_CPU_FREQ/500000);
-    __tmp >>= 3;
+#define MAX_AVR_FREQ 20000000
+#if defined(__OPTIMIZE__)
+#define LOOP_OFFSET_16 15
+#define LOOP_OFFSET_32 48
 #else
-    /* Range 858 ms @ 20 MHz*/
-    uint32_t __tmp = (us * (NUT_CPU_FREQ/4000))/1000;
+#define LOOP_OFFSET_16 31
+#define LOOP_OFFSET_32 56
 #endif
-#else
-    /* Range 54 ms @ 20 MHz) */
-    uint32_t __tmp = (us *(NutGetCpuClock()>>8))/(400000000/256);
-#endif
-    while (__tmp > 0xffff)
-    {
-        _delay_loop_2(0xffff);
-        __tmp -= 0xffff;
+    if (us < (0xffff/(MAX_AVR_FREQ/(4000000 >> 8)))) {
+        uint16_t dly16 = ((uint16_t)us * _delay_loop_2_mult) >> 8;
+        if (dly16 <= LOOP_OFFSET_16)
+            return;
+        dly16 -= LOOP_OFFSET_16;
+        _delay_loop_2(dly16);
     }
-    _delay_loop_2((uint16_t) __tmp);
+    else {
+        uint32_t dly32 = (us * _delay_loop_2_mult)>>8;
+        if (dly32 <= LOOP_OFFSET_32)
+            return;
+        dly32 -= LOOP_OFFSET_32;
+        while (dly32 > 0xffff)
+        {
+            /* _delay_loop_2(0) does 0x10000 loops*/
+            _delay_loop_2(0);
+            dly32 -= 0x10000;
+        }
+        if(dly32)
+            _delay_loop_2(dly32);
+    }
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
 

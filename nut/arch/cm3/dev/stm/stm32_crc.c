@@ -45,7 +45,6 @@
 
 #include <arch/cm3.h>
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 
 
 /**
@@ -127,9 +126,9 @@ uint8_t CRC_GetIDRegister(void)
 void CRC_Init(void)
 {
 #if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F30)
-    RCC->AHBENR |= RCC_AHBPeriph_CRC;
+    RCC->AHBENR |= RCC_AHBENR_CRCEN;
 #elif defined(MCU_STM32F2) || defined(MCU_STM32F4)
-    RCC->AHB1ENR|=RCC_AHB1ENR_CRCEN;
+    RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
 #else
 #warning "Unknown STM32 family"
 #endif

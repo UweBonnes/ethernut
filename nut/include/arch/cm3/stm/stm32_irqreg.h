@@ -51,8 +51,10 @@ extern IRQ_HANDLER sig_SPI1;        // SPI 1 Controller
 extern IRQ_HANDLER sig_SPI2;        // SPI 2 Controller
 extern IRQ_HANDLER sig_TWI1_EV;     // I2C 1 Data/Event
 extern IRQ_HANDLER sig_TWI2_EV;     // I2C 2 Data/Event
+extern IRQ_HANDLER sig_TWI3_EV;     // I2C 2 Data/Event
 extern IRQ_HANDLER sig_TWI1_ER;     // I2C 1 Error
 extern IRQ_HANDLER sig_TWI2_ER;     // I2C 2 Error
+extern IRQ_HANDLER sig_TWI3_ER;     // I2C 2 Error
 extern IRQ_HANDLER sig_CAN1_TX;     // CAN 1 TX
 extern IRQ_HANDLER sig_CAN1_RX0;    // CAN 1 RX0
 extern IRQ_HANDLER sig_CAN1_RX1;    // CAN 1 RX1

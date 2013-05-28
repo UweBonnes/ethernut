@@ -32,7 +32,6 @@
  *
  */
 
-#ifdef STM32_SPI3
 /*
  * \verbatim
  * $Id$
@@ -46,8 +45,7 @@
 #include <dev/spibus.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #endif
@@ -60,7 +58,7 @@
 #include <errno.h>
 
 /* Handle the PIN remap possibilities
- * F1_CL/F2/F4
+ * F1_CL/F2/F3/F4
  *        NSS:  PA15/PA4
  *        SCK:  PB3/PC10
  *        MISO: PB4/PC11
@@ -104,7 +102,7 @@
   #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #endif
-#elif defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F4)
+#elif defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F30X)|| defined(MCU_STM32F4 )
  #if !defined(SPIBUS3_SCK_PIN)
   #define SPIBUS_SCK_PIN 3
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
@@ -141,7 +139,7 @@
 
 #define SPI_DEV 3
 #define SPI_GPIO_AF GPIO_AF_SPI3
-#define SPI_ENABLE_CLK (RCC->APB1ENR |= RCC_APB1Periph_SPI3)
+#define SPI_ENABLE_CLK (RCC->APB1ENR |= RCC_APB1ENR_SPI3EN)
 
 /*Dma Channels
   * DMA1.2 - spi1_rx        DMA1.3 - spi1_tx
@@ -169,4 +167,3 @@ NUTSPIBUS spiBus2Stm32 = {
 };
 
 #include "stm32_spi.c"
-#endif /* STM32_SPI3 */

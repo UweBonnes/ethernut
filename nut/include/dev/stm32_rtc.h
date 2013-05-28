@@ -1,5 +1,10 @@
+#ifndef _DEV_STM32_RTC_H_
+#define _DEV_STM32_RTC_H_
+
 /*
- * Copyright (C) 2012-2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,26 +33,16 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
-/*!
- * \file arch/cm3/stm/atm32xxxx.h
- * \brief Wrapper for the device dependant stm32XZxx.h files.
- * $Id: stm32_flash.h 3220 2010-11-12 13:04:17Z astralix $
+/*
  * \verbatim
+ * $Id:$
+ * \endverbatim
  */
 
-#include <cfg/arch.h>
-#if defined(MCU_STM32F1)
-#elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/stm32l1xx_gpio.h>
-#elif defined(MCU_STM32F2)
-#include <arch/cm3/stm/stm32f2xx_gpio.h>
-#elif defined(MCU_STM32F30)
-#include <arch/cm3/stm/vendor/stm32f30x_gpio.h>
-#elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/stm32f4xx_gpio.h>
-#else
-#warning "Unknown STM32 family"
+#include <dev/rtc.h>
+
+extern NUTRTC rtcStm32;
+
 #endif

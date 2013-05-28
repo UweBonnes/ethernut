@@ -32,7 +32,6 @@
  * For additional information see http://www.ethernut.de/
  *
  */
-#ifdef STM32_SPI2
 /*
  * \verbatim
  * $Id$
@@ -46,8 +45,7 @@
 #include <dev/spibus.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
-#include <arch/cm3/stm/stm32xxxx_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #endif
@@ -72,6 +70,10 @@
  *        SCK:  PB13/PB10/PI1
  *        MISO: PB14/PC2/PI2
  *        MOSI: PB15/PC3/PI3
+ * F30x:  NSS:  PB12/PD12
+ *        SCK:  PB13/PF9/PF10
+ *        MISO: PB14
+ *        MOSI: PB15
  *
  * For Chip select, we use NSS pin as default or any other pin as pure GPIO
 */
@@ -148,7 +150,7 @@
 #endif
 #define SPI_DEV 2
 #define SPI_GPIO_AF GPIO_AF_SPI2
-#define SPI_ENABLE_CLK (RCC->APB1ENR |= RCC_APB1Periph_SPI2)
+#define SPI_ENABLE_CLK (RCC->APB1ENR |= RCC_APB1ENR_SPI2EN)
 
 
 /*Dma Channels
@@ -177,4 +179,3 @@ NUTSPIBUS spiBus1Stm32 = {
 };
 
 #include "stm32_spi.c"
-#endif /* STM32_SPI2 */

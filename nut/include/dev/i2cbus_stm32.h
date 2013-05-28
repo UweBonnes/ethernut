@@ -1,5 +1,10 @@
+#ifndef ARCH_ARM_DEV_ATMEL_I2CBUS_STM32V2_H
+#define ARCH_ARM_DEV_ATMEL_I2CBUS_STM32_V2_H
+
 /*
- * Copyright (C) 2012-2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,27 +33,20 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*!
- * \file arch/cm3/stm/atm32xxxx.h
- * \brief Wrapper for the device dependant stm32XZxx.h files.
- * $Id: stm32_flash.h 3220 2010-11-12 13:04:17Z astralix $
+ * \file include/arch/arm/atmel/i2cbus_at91.h
+ * \brief AT91 I2C bus declarations.
+ *
  * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
-#include <cfg/arch.h>
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f10x_usart.h>
-#elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/stm32l1xx_usart.h>
-#elif defined(MCU_STM32F2)
-#include <arch/cm3/stm/stm32f2xx_usart.h>
-#elif defined(MCU_STM32F30)
-#include <arch/cm3/stm/vendor/stm32f30x_usart.h>
-#elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/stm32f4xx_usart.h>
-#else
-#warning "Unknown STM32 family"
+#include <dev/i2cbus.h>
+
+extern NUTI2C_BUS i2cBus1Stm32;
+extern NUTI2C_BUS i2cBus2Stm32;
+
 #endif

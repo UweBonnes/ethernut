@@ -148,7 +148,7 @@ static int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
     int res;
     int i;
 
-    memset(data, 0, (len >> 3) + 1);
+    memset(data, 0, ((len +7) >> 3));
     for (i = 0; i < len; i++) {
         res = Uart_OwiRWBit(bus, 1);
         if (res < 0) {

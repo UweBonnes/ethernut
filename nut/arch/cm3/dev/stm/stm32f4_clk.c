@@ -39,11 +39,9 @@
 #include <cfg/clock.h>
 
 #if defined(MCU_STM32F2)
-#include <arch/cm3/stm/stm32f2xx.h>
-#include <arch/cm3/stm/stm32f2xx_rcc.h>
+#include <arch/cm3/stm/vendor/stm32f2xx.h>
 #elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/stm32f4xx.h>
-#include <arch/cm3/stm/stm32f4xx_rcc.h>
+#include <arch/cm3/stm/vendor/stm32f4xx.h>
 #else
 #warning "Unknown STM32 family"
 #endif

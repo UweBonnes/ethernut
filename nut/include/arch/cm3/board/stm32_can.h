@@ -83,14 +83,14 @@
 #define DEV_UART devUsartStm32_2
 #endif
 #ifndef DEV_UART_NAME
-#define DEV_UART_NAME  devUsartStm32_2.dev_name
+#define DEV_UART_NAME  "uart2"
 #endif
 
 #ifndef DEV_DEBUG
 #define DEV_DEBUG devUsartStm32_2
 #endif
 #ifndef DEV_DEBUG_NAME
-#define DEV_DEBUG_NAME  devUsartStm32_2.dev_name
+#define DEV_DEBUG_NAME  "uart2"
 #endif
 
 #ifndef DEV_TWIBUS
@@ -144,4 +144,14 @@
 #if !defined(DEF_JTAG_CABLE)
 #define DEF_JTAG_CABLE jtag_gpio0
 #include <dev/jtag_gpio.h>
+#endif
+
+#ifndef DEF_I2CBUS
+#if 1
+#define DEF_I2CBUS i2cBus2Stm32
+#include <dev/i2cbus_stm32.h>
+#else
+#define DEF_I2CBUS i2cBus0Gpio
+#include <dev/i2cbus_gpio.h>
+#endif
 #endif

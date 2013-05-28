@@ -137,6 +137,7 @@ struct _PPPHDLC_DCB {
 };
 
 static PPPHDLC_DCB dcb_ppp0;
+static PPPHDLC_DCB dcb_ppp1;
 
 /*!
  * \brief Send byte to physical device.
@@ -557,4 +558,24 @@ NUTDEVICE devPppHdlc0 = {
     PppHdlcClose,   /* Close a device or file, dev_close. */
     NULL,           /* Request file size, dev_size. */
     NULL,           /* Select function, optional, not yet implemented */
+};
+
+NUTDEVICE devPppHdlc1 = {
+    NULL,           /* Pointer to next device, dev_next. */
+    { 'l', 'u', 'a', 'r', 't', '1', 0, 0, 0 }, /* Hardware device name, dev_name. */
+    IFTYP_CHAR,     /* Type of device, dev_type. */
+    0,              /* Base address, dev_base (not used). */
+    0,              /* First interrupt number, dev_irq (not used). */
+    NULL,           /* Interface control block, dev_icb. */
+    &dcb_ppp1,      /* Driver control block, dev_dcb. */
+    PppHdlcInit,    /* Driver initialization routine, dev_init. */
+    PppHdlcIoCtl,   /* Driver specific control function, dev_ioctl. */
+    PppHdlcRead,    /* Read from device, dev_read. */
+    PppHdlcWrite,   /* Write to device, dev_write. */
+#ifdef __HARVARD_ARCH__
+    NULL,           /* Write data from program space to device, dev_write_P. */
+#endif
+    PppHdlcOpen,    /* Open a device or file, dev_open. */
+    PppHdlcClose,   /* Close a device or file, dev_close. */
+    NULL            /* Request file size, dev_size. */
 };

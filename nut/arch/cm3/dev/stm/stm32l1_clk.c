@@ -45,7 +45,7 @@
 #include <arch/cm3/stm/stm32_clk.h>
 #include <cfg/clock.h>
 
-#include <arch/cm3/stm/stm32l1xx.h>
+#include <arch/cm3/stm/vendor/stm32l1xx.h>
 
 
 /* Prepare some defaults if configuration is incomplete */

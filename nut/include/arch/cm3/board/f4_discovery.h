@@ -136,14 +136,19 @@
 #endif
 
 #ifndef DEF_I2CBUS
+#if 1
+#define DEF_I2CBUS i2cBus1Stm32
+#include <dev/i2cbus_stm32.h>
+#else
 #define DEF_I2CBUS i2cBus0Gpio
 #include <dev/i2cbus_gpio.h>
 #endif
-
-#ifndef DEV_CANBUS
-#define DEV_CANBUS Stm32CanBus1
 #endif
 
-#ifndef DEV_CANBUS_SLAVE
-#define  DEV_CANBUS_SLAVE Stm32CanBus1C
+#ifndef DEF_CANBUS
+#define DEF_CANBUS Stm32CanBus1
+#endif
+
+#ifndef DEF_CANBUS_SLAVE
+#define  DEF_CANBUS_SLAVE Stm32CanBus1C
 #endif

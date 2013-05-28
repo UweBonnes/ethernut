@@ -129,7 +129,7 @@ static USARTDCB dcb_usart3 = {
  *
  * \showinitializer
  */
-NUTDEVICE devUsartLpc17xx_1 = {
+NUTDEVICE devUsartLpc17xx_3 = {
     0,                          /* Pointer to next device, dev_next. */
     {'u', 's', 'a', 'r', 't', '3', 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
@@ -154,10 +154,10 @@ NUTDEVICE devUsartLpc17xx_1 = {
  */
 
 #define TX_GPIO_PORT    NUTGPIO_PORT0
-#define TX_GPIO_PIN     26
+#define TX_GPIO_PIN     25
 #define TX_GPIO_PIN_CFG GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL3
 #define RX_GPIO_PORT    NUTGPIO_PORT0
-#define RX_GPIO_PIN     27
+#define RX_GPIO_PIN     26
 #define RX_GPIO_PIN_CFG GPIO_CFG_INPUT | GPIO_CFG_PERIPHERAL3
 
 /*!
