@@ -45,11 +45,29 @@
 /*
  * Sertial devices
  */
+#ifndef DEV_DEBUG
 #define DEV_DEBUG       devUsartStm32_3
+#endif
+#ifndef DEV_DEBUG_NAME
 #define DEV_DEBUG_NAME  devUsartStm32_3.dev_name
+#endif
 
+#ifndef DEV_UART
 #define DEV_UART        devUsartStm32_3
+#endif
+#ifndef DEV_UART_NAME
 #define DEV_UART_NAME   devUsartStm32_3.dev_name
+#endif
+
+
+/*
+ * CAN devices
+ */
+#define CAN1_RX_PIN          0
+#define CAN1_TX_PIN          1
+#define CAN2_RX_PIN          5
+#define CAN2_TX_PIN          13
+
 
 /*
  * Ethernet devices, incl. board specific settings for alternate function pins
@@ -57,26 +75,45 @@
 #include <dev/stm32_emac.h>
 
 //#define EMAC_USE_RMII_MODE /* requires 50 MHz oscillator mounted on STM3230G_EVAL board */
-//#define EMAC_PHY_CLOCK_MCO /* does not work yet */
 
+#ifndef EMAC_PHY_CLOCK_MCO
+#define EMAC_PHY_CLOCK_MCO
+#endif
+
+#ifndef EMAC_CRS_PORT
 #define EMAC_CRS_PORT        NUTGPIO_PORTH
 #define EMAC_CRS_PIN         2
+#endif
 
+#ifndef EMAC_COL_PORT
 #define EMAC_COL_PORT        NUTGPIO_PORTH
+#endif
 
+#ifndef EMAC_RXD2_PORT
 #define EMAC_RXD2_PORT       NUTGPIO_PORTH
 #define EMAC_RXD2_PIN        6
+#endif
 
+#ifndef EMAC_RXD3_PORT
 #define EMAC_RXD3_PORT       NUTGPIO_PORTH
 #define EMAC_RXD3_PIN        7
+#endif
 
+#ifndef EMAC_RX_ER_PORT
 #define EMAC_RX_ER_PORT      NUTGPIO_PORTI
+#endif
 
+#ifndef EMAC_TXEN_PORT
 #define EMAC_TXEN_PORT       NUTGPIO_PORTG
+#endif
 
+#ifndef EMAC_TXD0_PORT
 #define EMAC_TXD0_PORT       NUTGPIO_PORTG
 #define EMAC_TXD0_PIN        13
+#endif
 
+#ifndef EMAC_TXD1_PORT
 #define EMAC_TXD1_PORT       NUTGPIO_PORTG
 #define EMAC_TXD1_PIN        14
+#endif
 

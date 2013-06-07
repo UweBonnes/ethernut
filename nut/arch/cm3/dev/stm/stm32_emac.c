@@ -57,6 +57,7 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
@@ -974,7 +975,7 @@ int EmacInit(NUTDEVICE * dev)
     GpioPinConfigSet(NUTGPIO_PORTA, 8, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // MCO1
     GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTA, 8, GPIO_AF_MCO); // MCO1
     /* Output HSE clock (25MHz) on MCO pin (PA8) to clock the PHY */
-    RCC_MCO1Config(RCC_MCO1Source_HSE, RCC_MCO1Div_1);
+    RCC->CFGR = (RCC->CFGR & ~(RCC_CFGR_MCO1 | RCC_CFGR_MCO1PRE)) | RCC_CFGR_MCO1_1;
    #endif /* PHY_CLOCK_MCO */
 
   #if !defined(EMAC_USE_RMII_MODE)
