@@ -138,9 +138,10 @@ enum STM32_OWITIMER_COMMANDS {
 enum STM32_OWITIMER_PHASES {
     OWI_PHASE_SETUP = 0,        /*!< \brief Pull bus low. */
     OWI_PHASE_SYNC_PULSE = 1,   /*!< \brief Release bus high for presence pulse, read and write '1'. */
-    OWI_PHASE_RW = 2,           /*!< \brief Pull read bus state for presence and read. */
-    OWI_PHASE_RELEASE = 3,      /*!< \brief Unconditionally release bus. */
-    OWI_PHASE_NONE = 4,         /*!< \brief List end marker. */
+    OWI_PHASE_SYNC_PULSE_LOW = 2,/*!< \brief Release bus high to write '0'. */
+    OWI_PHASE_RW = 3,           /*!< \brief Pull read bus state for presence and read. */
+    OWI_PHASE_RELEASE = 4,      /*!< \brief Unconditionally release bus. */
+    OWI_PHASE_NONE = 5,         /*!< \brief List end marker. */
 };
 
 /*!
