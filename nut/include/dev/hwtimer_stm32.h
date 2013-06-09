@@ -331,7 +331,7 @@
 #define TIM_Clear(timer)                   {uint32_t len =  sizeof(TIM_TypeDef); while(len) {((uint32_t*)timer)[len] = 0; len -=4;} }
 #define TIM_IRQEnable( timer )             CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 1
 #define TIM_IRQEnable( timer )             CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 1
-#define TIM_DISEnable( timer )             CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 0
+#define TIM_IRQDisable( timer )            CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 0
 #define TIM_C1IRQEnable( timer )           CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC1IE)) = 1
 #define TIM_C1IRQDisable( timer )          CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC1IE)) = 0
 #define TIM_C2IRQEnable( timer )           CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC2IE)) = 1
