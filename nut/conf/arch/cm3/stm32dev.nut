@@ -89,6 +89,49 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32 TIM Interrupt handler
+    --
+    {
+        name = "nutarch_cm3_stm32_devices_tim2",
+        brief = "STM32 Timer 3 Interrupt",
+        description = "STM32 Timer 3 Interrupt.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM2" },
+        sources = { "cm3/dev/stm/ih_stm32_tim2.c"
+                    }
+    },
+    {
+        name = "nutarch_cm3_stm32_devices_tim3",
+        brief = "STM32 Timer 3 Interrupt",
+        description = "STM32 Timer 3 Interrupt.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM3" },
+        sources = { "cm3/dev/stm/ih_stm32_tim3.c"
+                    }
+    },
+    {
+        name = "nutarch_cm3_stm32_devices_tim4",
+        brief = "STM32 Timer 3 Interrupt",
+        description = "STM32 Timer 3 Interrupt.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM4" },
+        sources = { "cm3/dev/stm/ih_stm32_tim4.c"
+                    }
+    },
+    {
+        name = "nutarch_cm3_stm32_devices_tim5",
+        brief = "STM32 Timer 3 Interrupt",
+        description = "STM32 Timer 3 Interrupt.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM5" },
+        sources = { "cm3/dev/stm/ih_stm32_tim5.c"
+                    }
+    },
+    {
+        name = "nutarch_cm3_stm32_devices_tim7",
+        brief = "STM32 Timer 3 Interrupt",
+        description = "STM32 Timer 3 Interrupt.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM7" },
+        sources = { "cm3/dev/stm/ih_stm32_tim7.c"
+                    }
+    },
+    --
     -- STM32 OTG Interface
     --
     {

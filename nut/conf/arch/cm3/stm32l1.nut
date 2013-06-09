@@ -78,6 +78,14 @@ nutarch_cm3_stm32l1 =
                     "HW_UART1_STM32",
                     "HW_UART2_STM32",
                     "HW_UART3_STM32",
+                    "HW_STM32_TIM2",
+                    "HW_STM32_TIM3",
+                    "HW_STM32_TIM4",
+                    "HW_STM32_TIM6",
+                    "HW_STM32_TIM7",
+                    "HW_STM32_TIM9",
+                    "HW_STM32_TIM10",
+                    "HW_STM32_TIM11",
                 },
                 file = "include/cfg/arch.h"
             }

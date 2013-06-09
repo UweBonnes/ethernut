@@ -89,6 +89,15 @@ nutarch_cm3_stm32f1 =
                         "HW_UART1_STM32",
                         "HW_UART2_STM32",
                         "HW_EXTI1510_STM32",
+                        "HW_STM32_TIM1",
+                        "HW_STM32_TIM2",
+                        "HW_STM32_TIM3",
+                        "HW_STM32_TIM4",
+                        "HW_STM32_TIM5",
+                        "HW_STM32_TIM6",
+                        "HW_STM32_TIM7",
+                        "HW_STM32_TIM13",
+                        "HW_STM32_TIM14",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -196,6 +205,7 @@ nutarch_cm3_stm32f1 =
                         "HW_TIM6_STM32",
                         "HW_TIM7_STM32",
                         "HW_DMA2_STM32F1",
+                        "HW_STM32_TIM8",
                     },
                 file = "include/cfg/arch.h"
             },
@@ -225,6 +235,7 @@ nutarch_cm3_stm32f1 =
                         "HW_TIM6_STM32",
                         "HW_TIM7_STM32",
                         "HW_DMA2_STM32F1",
+                        "HW_STM32_TIM8",
                     },
                 file = "include/cfg/arch.h"
             },

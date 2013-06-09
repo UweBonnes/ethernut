@@ -84,6 +84,17 @@ nutarch_cm3_stm32f30 =
                       "HW_UART5_STM32",
                       "HW_CAN1_STM32",
                       "HW_RTC_STM32_V2",
+                    "HW_STM32_TIM1",
+                    "HW_STM32_TIM2",
+                    "HW_STM32_TIM3",
+                    "HW_STM32_TIM4",
+                    "HW_STM32_TIM5",
+                    "HW_STM32_TIM6",
+                    "HW_STM32_TIM7",
+                    "HW_STM32_TIM8",
+                    "HW_STM32_TIM15",
+                    "HW_STM32_TIM16",
+                    "HW_STM32_TIM17",
                 },
                 file = "include/cfg/arch.h"
             }

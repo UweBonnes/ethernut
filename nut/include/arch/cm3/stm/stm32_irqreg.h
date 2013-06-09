@@ -83,5 +83,21 @@ extern IRQ_HANDLER sig_DMA2_CH3;    // DMA Controller 2 Channel 3
 extern IRQ_HANDLER sig_DMA2_CH4;    // DMA Controller 2 Channel 4
 extern IRQ_HANDLER sig_DMA2_CH5;    // DMA Controller 2 Channel 5
 extern IRQ_HANDLER sig_EMAC;        // Ethernet global interrupt
-
+extern IRQ_HANDLER sig_TIM1;
+extern IRQ_HANDLER sig_TIM2;
+extern IRQ_HANDLER sig_TIM3;
+extern IRQ_HANDLER sig_TIM4;
+extern IRQ_HANDLER sig_TIM5;
+extern IRQ_HANDLER sig_TIM6;
+extern IRQ_HANDLER sig_TIM7;
+extern IRQ_HANDLER sig_TIM8;
+extern IRQ_HANDLER sig_TIM9;
+extern IRQ_HANDLER sig_TIM10;
+extern IRQ_HANDLER sig_TIM11;
+extern IRQ_HANDLER sig_TIM12;
+extern IRQ_HANDLER sig_TIM13;
+extern IRQ_HANDLER sig_TIM14;
+extern IRQ_HANDLER sig_TIM15;
+extern IRQ_HANDLER sig_TIM16;
+extern IRQ_HANDLER sig_TIM17;
 #endif
