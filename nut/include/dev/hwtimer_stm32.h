@@ -44,23 +44,57 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
 
+#if defined(TIM1_BASE)
 #define NUTTIMER1   TIM1_BASE
+#endif
+#if defined(TIM2_BASE)
 #define NUTTIMER2   TIM2_BASE
+#endif
+#if defined(TIM3_BASE)
 #define NUTTIMER3   TIM3_BASE
+#endif
+#if defined(TIM4_BASE)
 #define NUTTIMER4   TIM4_BASE
+#endif
+#if defined(TIM5_BASE)
 #define NUTTIMER5   TIM5_BASE
+#endif
+#if defined(TIM6_BASE)
 #define NUTTIMER6   TIM6_BASE
+#endif
+#if defined(TIM7_BASE)
 #define NUTTIMER7   TIM7_BASE
+#endif
+#if defined(TIM8_BASE)
 #define NUTTIMER8   TIM8_BASE
+#endif
+#if defined(TIM9_BASE)
 #define NUTTIMER9   TIM9_BASE
+#endif
+#if defined(TIM10_BASE)
 #define NUTTIMER10  TIM10_BASE
+#endif
+#if defined(TIM11_BASE)
 #define NUTTIMER11  TIM11_BASE
+#endif
+#if defined(TIM12_BASE)
 #define NUTTIMER12  TIM12_BASE
+#endif
+#if defined(TIM13_BASE)
 #define NUTTIMER13  TIM13_BASE
+#endif
+#if defined(TIM14_BASE)
 #define NUTTIMER14  TIM14_BASE
+#endif
+#if defined(TIM15_BASE)
 #define NUTTIMER15  TIM15_BASE
+#endif
+#if defined(TIM16_BASE)
 #define NUTTIMER16  TIM16_BASE
+#endif
+#if defined(TIM17_BASE)
 #define NUTTIMER17  TIM17_BASE
+#endif
 
 #if defined(MCU_STM32F1)
 #if defined(STM32F10X_LD)
