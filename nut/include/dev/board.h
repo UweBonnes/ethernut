@@ -158,6 +158,8 @@
 #include <arch/avr32/board/evk1105.h>
 #elif defined(F1_DISCOVERY)
 #include <arch/cm3/board/f1_discovery.h>
+#elif defined(STM32F4_BB)
+#include <arch/cm3/board/stm32f4_bb.h>
 #elif defined(F4_DISCOVERY)
 #include <arch/cm3/board/f4_discovery.h>
 #elif defined(F3_DISCOVERY)
