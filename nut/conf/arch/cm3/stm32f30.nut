@@ -88,7 +88,6 @@ nutarch_cm3_stm32f30 =
                     "HW_STM32_TIM2",
                     "HW_STM32_TIM3",
                     "HW_STM32_TIM4",
-                    "HW_STM32_TIM5",
                     "HW_STM32_TIM6",
                     "HW_STM32_TIM7",
                     "HW_STM32_TIM8",
