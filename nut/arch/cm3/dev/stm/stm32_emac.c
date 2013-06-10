@@ -35,6 +35,7 @@
 #include <cfg/arch.h>
 #include <cfg/os.h>
 #include <cfg/clock.h>
+#include <cfg/phycfg.h>
 #include <dev/board.h>
 
 #include <string.h>
@@ -83,7 +84,7 @@
  * For the benefit of EMC the GPIO is run at the lowest speed
  * required to operate. For RMII this is 50 MHz for MII 25 MHz.
  */
-#ifdef EMAC_USE_RMII_MODE
+#ifdef PHY_MODE_RMII
 #define EMAC_GPIO_SPEED         GPIO_CFG_SPEED_FAST
 #else
 #define EMAC_GPIO_SPEED         GPIO_CFG_SPEED_MED
@@ -897,7 +898,7 @@ int EmacInit(NUTDEVICE * dev)
 {
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
     EMPRINTF("Using Mode %s, Remap %s, NIC_PHY_ADDR %d, \n",
-#ifdef EMAC_USE_RMII_MODE
+#ifdef PHY_MODE_RMII
              "RMII",
 #else
              "MII",
@@ -978,7 +979,7 @@ int EmacInit(NUTDEVICE * dev)
     RCC->CFGR = (RCC->CFGR & ~(RCC_CFGR_MCO1 | RCC_CFGR_MCO1PRE)) | RCC_CFGR_MCO1_1;
    #endif /* PHY_CLOCK_MCO */
 
-  #if !defined(EMAC_USE_RMII_MODE)
+  #if !defined(PHY_MODE_RMII)
     GpioPinConfigSet(NUTGPIO_PORTB, 8, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // ETH_MII_TXD3
     GPIO_PinAFConfig((GPIO_TypeDef*) NUTGPIO_PORTB,  8,  GPIO_AF_ETH); // ETH_MII_TXD3
 
@@ -998,13 +999,13 @@ int EmacInit(NUTDEVICE * dev)
     GPIO_PinAFConfig((GPIO_TypeDef*) EMAC_RXD2_PORT, EMAC_RXD2_PIN, GPIO_AF_ETH); // ETH_MII_RXD2
     GPIO_PinAFConfig((GPIO_TypeDef*) EMAC_RXD3_PORT, EMAC_RXD3_PIN, GPIO_AF_ETH); // ETH_MII_RXD3
     GPIO_PinAFConfig((GPIO_TypeDef*) EMAC_RX_ER_PORT, 10, GPIO_AF_ETH); // ETH_MII_RX_ER
-  #endif /* !EMAC_USE_RMII_MODE */
+  #endif /* !PHY_MODE_RMII */
 #endif
 
     /*
      * MII or RMII mode selection
      */
-#ifdef EMAC_USE_RMII_MODE
+#ifdef PHY_MODE_RMII
     /* switch to RMII mode */
  #ifdef STM32F10X_CL
     CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL)) = 1;
