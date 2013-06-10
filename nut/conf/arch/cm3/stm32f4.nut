@@ -35,7 +35,7 @@
 --
 --
 stm32_memory_f4 = { "512", "1024" }
-stm32f4_device_class = { "STM32F40X" , "STM32F42X" }
+stm32f4_device_class = { "STM32F405" , "STM32F407", "STM32F415", STM32F417" }
 
 -- *****************************************************************************
 -- STM32F4 Family
@@ -129,10 +129,31 @@ nutarch_cm3_stm32f4 =
                 macro = "STM32F40XX",
                 brief = "STM32F40X Series",
                 description = "STM32F40X devices.",
-                exclusivity = stm32f4_device_class,
                 requires = { "HW_MCU_STM32F40X" },
                 default = 1,
                 requires = { "HW_MCU_STM32" },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM34F405",
+                brief = "STM32F405",
+                description = "STM32F4 w/o Ethernet and Crypto.",
+                flavor = "booldata",
+                exclusivity = stm32F4_device_class,
+                provides = { "STM32F405" },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F407",
+                brief = "STM32F407",
+                description = "STM32F4 w/o Crypto.",
+                flavor = "booldata",
+                exclusivity = stm32F4_device_class,
+                provides =
+                {
+                    "STM32F407",
+                    "HW_EMAC_STM32",
+                },
                 file = "include/cfg/arch.h"
             },
         }
