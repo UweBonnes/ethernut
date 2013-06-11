@@ -45,8 +45,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-extern const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE];
-
 /*!
  * \brief OWI runtime controlblock container.
  *
@@ -56,8 +54,13 @@ struct _NUTOWIINFO_STM32TIM {
     HANDLE volatile owi_irq_done;     /*!< Primitive done event.*/
     IRQ_HANDLER *owi_ev;
     uint32_t timer;
+#if defined(MCU_STM32F1)
+    __IO uint16_t *compare;
+    __IO uint16_t *capture;
+#else
     __IO uint32_t *compare;
     __IO uint32_t *capture;
+#endif
 #if defined(MCU_STM32F30)
     __IO uint32_t *ccmr;
 #else

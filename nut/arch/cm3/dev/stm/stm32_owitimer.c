@@ -203,11 +203,12 @@ int NutRegisterOwiBus_STM32TIM(
     NUTOWIINFO_STM32TIM *owcb;
     uint8_t gpio_af;
     TIM_TypeDef *owi_timer = (TIM_TypeDef*)timer;
+    int timer_index = TIM_GetIndex(timer);
 
-    if (!timer || !(channel) || (channel >4))
+    if (!timer || !(channel) || (channel >4) || (timer_info[timer_index].sig == 0))
         return OWI_INVALID_HW;
     switch (timer) {
-/* Availability and function for the timers from AN4013 Rev2 */
+/* List only timers with given, non-chained interrupt */
 #if defined(NUTTIMER1)
     case NUTTIMER1:
         gpio_af = GPIO_AF_TIM1;
@@ -229,20 +230,6 @@ int NutRegisterOwiBus_STM32TIM(
         gpio_af = GPIO_AF_TIM5;
         break;
 #endif
-#if defined(NUTTIMER9)
-    case NUTTIMER9:
-        if (channel > 2)
-            return OWI_INVALID_HW;
-        gpio_af = GPIO_AF_TIM9;
-        break;
-#endif
-#if defined(NUTTIMER12)
-    case NUTTIMER12:
-        if (channel > 2)
-            return OWI_INVALID_HW;
-        gpio_af = GPIO_AF_TIM12;
-        break;
-#endif
     default:
         return OWI_INVALID_HW;
     }
@@ -251,49 +238,62 @@ int NutRegisterOwiBus_STM32TIM(
         return OWI_OUT_OF_MEM;
     }
     GpioPinConfigSet(txrx_port, txrx_pin,
+                     GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE|
+                     GPIO_CFG_PULLUP|GPIO_CFG_INIT_HIGH );
+    GpioPinSetLow(txrx_port, txrx_pin);
+    GpioPinSetHigh(txrx_port, txrx_pin);
+    GpioPinConfigSet(txrx_port, txrx_pin,
                      GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE|
                      GPIO_CFG_PULLUP|GPIO_CFG_INIT_HIGH );
+#if defined (MCU_STM32F1)
+    (void)gpio_af;
+#warning Pin Setting for F1 not yet implemented
+#else
+    GPIO_PinAFConfig((GPIO_TypeDef*) txrx_port, txrx_pin, gpio_af);
+#endif
     TIM_Init(timer);
     TIM_Clear(timer);
-    owcb->owi_ev = &sig_TIM3;
+    owcb->owi_ev = timer_info[timer_index].sig;
     owcb->timer = timer;
-    owcb->ccmr_shift = (channel-1)*4;
     switch (channel) {
     case 1:
+        owi_timer->CCMR1 = TIM_CCMR1_CC2S_1 ;
         owcb->compare    = &(owi_timer->CCR1);
         owcb->capture    = &(owi_timer->CCR2);
         owcb->ccmr       = &(owi_timer->CCMR1);
+        owcb->ccmr_shift = 4;
         /* CC1 as output, T1 mapped to CC2 to capture rising edge*/
-        *owcb->ccmr      = TIM_CCMR1_CC2S_1 ;
         owi_timer->CCER = TIM_CCER_CC2E | TIM_CCER_CC1E |TIM_CCER_CC1P;
         break;
     case 2:
+        owi_timer->CCMR1 = TIM_CCMR1_CC1S_1;
         owcb->compare    = &(owi_timer->CCR2);
         owcb->capture    = &(owi_timer->CCR1);
         owcb->ccmr       = &(owi_timer->CCMR1);
+        owcb->ccmr_shift = 12;
         /* CC2 as output, T2 mapped to CC1 to capture rising edge*/
-        *owcb->ccmr      = TIM_CCMR1_CC1S_1;
         owi_timer->CCER = TIM_CCER_CC1E | TIM_CCER_CC2E |TIM_CCER_CC2P;
         break;
     case 3:
+        /* CC3 as output, T3 mapped to CC4 to capture rising edge*/
+        owi_timer->CCMR2 = TIM_CCMR2_CC4S_1;
         owcb->compare    = &(owi_timer->CCR3);
         owcb->capture    = &(owi_timer->CCR4);
         owcb->ccmr       = &(owi_timer->CCMR2);
-        /* CC3 as output, T3 mapped to CC4 to capture rising edge*/
-        *owcb->ccmr      = TIM_CCMR2_CC4S_1;
+        owcb->ccmr_shift = 4;
         owi_timer->CCER = TIM_CCER_CC4E | TIM_CCER_CC3E |TIM_CCER_CC3P;
        break;
     case 4:
+        owi_timer->CCMR2 = TIM_CCMR2_CC3S_1;
         owcb->compare    = &(owi_timer->CCR4);
         owcb->capture    = &(owi_timer->CCR3);
         owcb->ccmr       = &(owi_timer->CCMR2);
+        owcb->ccmr_shift = 12;
         /* CC4 as output, T4 mapped to CC3 to capture rising edge*/
-        *owcb->ccmr      = TIM_CCMR2_CC3S_1;
         owi_timer->CCER = TIM_CCER_CC3E | TIM_CCER_CC4E |TIM_CCER_CC4P;
         break;
     }
     /* ccmr and ccer need to be set before connecting the output*/
-    GPIO_PinAFConfig((GPIO_TypeDef*) txrx_port, txrx_pin, gpio_af);
     NutRegisterIrqHandler( owcb->owi_ev, &STM32TIM_OwiInterrupt, owcb);
     TIM_Prescaler(timer) = ((TIM_ClockVal(timer))/2000000L)-1;
     TIM_OnePulse( timer);
