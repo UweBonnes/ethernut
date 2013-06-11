@@ -2756,6 +2756,17 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32 OWI using hardware timer
+    --
+    {
+        name = "nutarch_cm3_stm32_owi",
+        brief = "STM32 OWI with hardware",
+        requires = { "HW_MCU_STM32" },
+        provides = { "OWIBUS" },
+        sources = { "cm3/dev/stm/stm32_owitimer.c" }
+    },
+
+    --
     -- STM32F1/L1 DMA Interface
     --
     {
