@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>. 
+-- Copyright (C) 2013 by Ole Reinhardt <ole.reinhardt@embedded-it.de>.
 --
 -- All rights reserved.
 --
@@ -32,59 +32,19 @@
 -- For additional information see http://www.ethernut.de/
 --
 
--- Gorp ("Studentenfutter") library
+-- Gorp hash modules.
 --
 -- $Id$
 --
 
-nutgorp =
+nutgorp_hashtables =
 {
     {
-        name = "nutgorp_buffer",
-        brief = "Buffer",
-        description = "Buffer functions.",
-        script = "gorp/buffer.nut"
-    },
-    {
-        name = "nutgorp_edit",
-        brief = "Edit",
-        description = "Editor functions.",
-        script = "gorp/edit.nut"
-    },
-    {
-        name = "nutgorp_codec",
-        brief = "Encode and Decode",
-        description = "Encoding and decoding functions.",
-        script = "gorp/codec.nut"
-    },
-    {
-        name = "nutgorp_hashes",
-        brief = "Hashes",
-        description = "Hash functions.",
-        script = "gorp/hashes.nut"
-    },
-    {
-        name = "nutgorp_hashtables",
-        brief = "Hash table",
-        description = "Hash table implementations.",
-        script = "gorp/hashtables.nut"
-    },
-    {
-        name = "nutgorp_list",
-        brief = "Lists",
-        description = "Functions for lists and queues.",
-        script = "gorp/list.nut"
-    },
-    {
-        name = "nutgorp_crypt",
-        brief = "Cryptography",
-        description = "Functions to encrypt and decrypt data.",
-        script = "gorp/crypt.nut"
-    },
-    {
-        name = "nutgorp_memtest",
-        brief = "Memory tests",
-        description = "Functions to test RAM memorys, databus and address bus wiring.",
-        script = "gorp/memtest.nut"
+        name = "nutgorp_hashtable_shash",
+        brief = "String ==> void* hash table",
+        description = "Minimal but efficient hash table for strings ==> void*\n"..
+                      "based on ELF hashing algorithm\n\n",
+        sources = { "hashtable/shash.c" }
     }
 }
+
