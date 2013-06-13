@@ -101,7 +101,7 @@ extern void  SHashStore(SHASH hash, const char *key, int key_len, void *val, int
 extern void *SHashGet(SHASH hash, const char *key);
 
 /* Routine to iterate over the hash and call a callback for each entry */
-extern typedef void (*SHASH_CB)(SHASH hash, const char *key, void *val, void *arg);
+typedef void (*SHASH_CB)(SHASH hash, const char *key, void *val, void *arg);
 extern void SHashForEach(SHASH hash, SHASH_CB cb, void *arg);
 
 #endif
