@@ -99,10 +99,10 @@
 #define MC_FMCN_LSB                     16      /*!< \brief Flash microsecond cycle number LSB. */
 #define MC_FMCN_MASK            0x00FF0000      /*!< \brief Flash microsecond cycle number mask. */
 
-#define MC_FCR_EFC0_OFF         0x00000064      /*!< \brief MC flash mode register bank 0 offset. */
-#define MC_FCR_EFC0 (MC_BASE + MC_FCR_EFC0_OFF) /*!< \brief MC flash mode register bank 0 address. */
-#define MC_FCR_EFC1_OFF         0x00000074      /*!< \brief MC flash mode register bank 1 offset. */
-#define MC_FCR_EFC1 (MC_BASE + MC_FCR_EFC1_OFF) /*!< \brief MC flash mode register bank 1 address. */
+#define MC_FCR_EFC0_OFF         0x00000064      /*!< \brief MC flash command register bank 0 offset. */
+#define MC_FCR_EFC0 (MC_BASE + MC_FCR_EFC0_OFF) /*!< \brief MC flash command register bank 0 address. */
+#define MC_FCR_EFC1_OFF         0x00000074      /*!< \brief MC flash command register bank 1 offset. */
+#define MC_FCR_EFC1 (MC_BASE + MC_FCR_EFC1_OFF) /*!< \brief MC flash command register bank 1 address. */
 
 #define MC_FCR_OFF         MC_FCR_EFC0_OFF      /*!< \brief MC flash command register offset. */
 #define MC_FCR                 MC_FCR_EFC0      /*!< \brief MC flash command register address. */

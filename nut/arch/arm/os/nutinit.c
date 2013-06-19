@@ -162,7 +162,10 @@ void NutInit(void)
     {
         uint32_t freq = NutGetCpuClock();
         /* Set Flash Waite state. */
-        outr(MC_FMR, ((((freq + freq / 2) / 1000000UL) & 0xFF) << 16) | MC_FWS_2R3W);
+        outr(MC_FMR_EFC0, ((((freq + freq / 2) / 1000000UL) & 0xFF) << 16) | MC_FWS_2R3W);
+#if defined(MCU_AT91SAM7X512) || defined(MCU_AT91SAM9XE512) || defined(MCU_AT91SAM7SE512)
+        outr(MC_FMR_EFC1, ((((freq + freq / 2) / 1000000UL) & 0xFF) << 16) | MC_FWS_2R3W);
+#endif
     }
 #endif
 #ifdef EARLY_STDIO_DEV
