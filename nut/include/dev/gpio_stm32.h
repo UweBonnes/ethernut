@@ -191,11 +191,13 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #if defined(MCU_STM32F1)
 #define GpioPinSetHigh(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, BSRR, (bit)) = 1)
 #define GpioPinSetLow(bank, bit)     (CM3BBREG((bank), GPIO_TypeDef, BRR , (bit)) = 1)
-/* We unconditionally switch back to 10 Mhz output speed after we released the pin at least once*/
-#define GpioPinDrive(bank, bit)      (CM3BBREG((bank), GPIO_TypeDef, CRL, (bit)<<4) = 1)
+/* We unconditionally switch back to 2 Mhz output speed after we released the pin at least once*/
+#define GpioPinDrive(bank, bit)     do {                                \
+    __IO uint32_t *cr_bb = &CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<2)); \
+    cr_bb[1] = 1; cr_bb[2] = 0; } while (0)
 #define GpioPinRelease(bank, bit)   do {                                \
-        CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<4) = 0;              \
-        CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<4)+1) = 0; } while (0)
+    __IO uint32_t *cr_bb = &CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<2)); \
+    cr_bb[1] = 0; cr_bb[2] = 1; } while (0)
 #else
 #define GpioPinSetHigh(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, BSRRL, (bit)) = 1)
 #define GpioPinSetLow(bank, bit)     (CM3BBREG((bank), GPIO_TypeDef, BSRRH, (bit)) = 1)
