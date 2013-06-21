@@ -33,8 +33,12 @@
  */
 
 /*!
- * \file dev/owibus_timerif.c
- * \brief Implementation of One-Wire primitives with Bitbanging.
+ * \file dev/owibus_bbif.c
+ * \brief Implementation of One-Wire primitives with Bitbanging, configured
+ *        at run time.
+ *
+ * On AVR8, run-time configurable port access is slow and so timing may not
+ * be met.
  *
  * \verbatim
  * $Id$
