@@ -179,35 +179,35 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
 #if defined(MCU_STM32F30)
 /* GPIO on AHB2 is outside of bitband region */
-#define GpioPinGet(bank, bit)        (CM3REG(bank, GPIO_TypeDef, IDR ) & (1<<bit))?1:0
-#define GpioPinSet(bank, bit, value)  CM3REG(bank, GPIO_TypeDef, BSRR) = 1<<((value)?bit: (bit+16))
-#define GpioPinSetHigh(bank, bit)     CM3REG(bank, GPIO_TypeDef, BSRR) = (1<<bit)
-#define GpioPinSetLow(bank, bit)      CM3REG(bank, GPIO_TypeDef, BSRR) = (1<<(bit+16))
-#define GpioPinDrive(bank, bit)       CM3REG(bank, GPIO_TypeDef, MODER) |=  (1<<(bit<<1))
-#define GpioPinRelease(bank, bit)     CM3REG(bank, GPIO_TypeDef, MODER) &= ~(1<<(bit<<1))
+#define GpioPinGet(bank, bit)        (CM3REG((bank), GPIO_TypeDef, IDR ) & (1<<(bit)))?1:0
+#define GpioPinSet(bank, bit, value) (CM3REG((bank), GPIO_TypeDef, BSRR) = 1<<((value)?(bit): ((bit)+16)))
+#define GpioPinSetHigh(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BSRR) = (1<<(bit)))
+#define GpioPinSetLow(bank, bit)     (CM3REG((bank), GPIO_TypeDef, BSRR) = (1<<((bit)+16)))
+#define GpioPinDrive(bank, bit)      (CM3REG((bank), GPIO_TypeDef, MODER) |=  (1<<((bit)<<1)))
+#define GpioPinRelease(bank, bit)    (CM3REG((bank), GPIO_TypeDef, MODER) &= ~(1<<((bit)<<1)))
 #else
-#define GpioPinGet(bank, bit)           CM3BBREG(bank, GPIO_TypeDef, IDR, bit)
-#define GpioPinSet(bank, bit, value)    CM3BBREG(bank, GPIO_TypeDef, ODR, bit) = (value)?1:0
+#define GpioPinGet(bank, bit)        (CM3BBREG((bank), GPIO_TypeDef, IDR, (bit)))
+#define GpioPinSet(bank, bit, value) (CM3BBREG((bank), GPIO_TypeDef, ODR, (bit)) = (value)?1:0)
 #if defined(MCU_STM32F1)
-#define GpioPinSetHigh(bank, bit)   CM3BBREG(bank, GPIO_TypeDef, BSRR, bit) = 1
-#define GpioPinSetLow(bank, bit)    CM3BBREG(bank, GPIO_TypeDef, BRR , bit) = 1
+#define GpioPinSetHigh(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, BSRR, (bit)) = 1)
+#define GpioPinSetLow(bank, bit)     (CM3BBREG((bank), GPIO_TypeDef, BRR , (bit)) = 1)
 /* We unconditionally switch back to 10 Mhz output speed after we released the pin at least once*/
-#define GpioPinDrive(bank, bit)     CM3BBREG(bank, GPIO_TypeDef, CRL, bit<<4) = 1
+#define GpioPinDrive(bank, bit)      (CM3BBREG((bank), GPIO_TypeDef, CRL, (bit)<<4) = 1)
 #define GpioPinRelease(bank, bit)   do {                                \
-        CM3BBREG(bank, GPIO_TypeDef, CRL, ((bit)<<4)) = 0;              \
-        CM3BBREG(bank, GPIO_TypeDef, CRL, (((bit)<<4)+1)) = 0; } while (0)
+        CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<4) = 0;              \
+        CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<4)+1) = 0; } while (0)
 #else
-#define GpioPinSetHigh(bank, bit)   CM3BBREG(bank, GPIO_TypeDef, BSRRL, bit) = 1
-#define GpioPinSetLow(bank, bit)    CM3BBREG(bank, GPIO_TypeDef, BSRRH, bit) = 1
-#define GpioPinDrive(bank, bit)     CM3BBREG(bank, GPIO_TypeDef, MODER, bit<<1) = 1
-#define GpioPinRelease(bank, bit)   CM3BBREG(bank, GPIO_TypeDef, MODER, bit<<1) = 0
+#define GpioPinSetHigh(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, BSRRL, (bit)) = 1)
+#define GpioPinSetLow(bank, bit)     (CM3BBREG((bank), GPIO_TypeDef, BSRRH, (bit)) = 1)
+#define GpioPinDrive(bank, bit)      (CM3BBREG((bank), GPIO_TypeDef, MODER, (bit)<<1) = 1)
+#define GpioPinRelease(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, MODER, (bit)<<1) = 0)
 #endif
 #endif
 
-#define GpioPortGet(bank)       CM3REG(bank, GPIO_TypeDef, IDR )
-#define GpioPortSet(bank, value)    CM3REG(bank, GPIO_TypeDef, ODR ) = value
-#define GpioPortSetHigh(bank, mask) CM3REG(bank, GPIO_TypeDef, BSRR) = mask
-#define GpioPortSetLow(bank, mask)  CM3REG(bank, GPIO_TypeDef, BRR ) = mask
+#define GpioPortGet(bank)             CM3REG((bank), GPIO_TypeDef, IDR )
+#define GpioPortSet(bank, value)     (CM3REG((bank), GPIO_TypeDef, ODR ) = value)
+#define GpioPortSetHigh(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BSRR) = mask)
+#define GpioPortSetLow(bank, mask)   (CM3REG((bank), GPIO_TypeDef, BRR ) = mask)
 
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, uint8_t bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, uint8_t bit);
