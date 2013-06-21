@@ -120,6 +120,8 @@ extern int TIM_GetIndex(uint32_t timer);
 #define TIM_Compare3( timer)               CM3REG(timer, TIM_TypeDef, CCR3)
 #define TIM_Compare4( timer)               CM3REG(timer, TIM_TypeDef, CCR4)
 #define TIM_Counter( timer)                CM3REG(timer, TIM_TypeDef, CNT )
+#define TIM_Status( timer)                 CM3REG(timer, TIM_TypeDef, SR )
+#define TIM_CCEnable( timer)               CM3REG(timer, TIM_TypeDef, CCER )
 #define TIM_IRQEnable( timer )             CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 1
 #define TIM_IRQEnable( timer )             CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 1
 #define TIM_IRQDisable( timer )            CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 0
