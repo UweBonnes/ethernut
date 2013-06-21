@@ -55,8 +55,8 @@
 #define LED1_PIN 9
 #endif
 /* LD6 WEST BLUE*/
-#ifndef LED1_PORT
-#define LED1_PORT NUTGPIO_PORTE
+#ifndef LED2_PORT
+#define LED2_PORT NUTGPIO_PORTE
 #endif
 #ifndef LED2_PIN
 #define LED2_PIN 15
