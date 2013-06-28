@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH
+ * Copyright (C) 2013 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -211,6 +214,14 @@ uint8_t NutThreadSetSleepMode(uint8_t mode)
 }
 #endif
 
+static NutIdleCallback IdleCall;
+NutIdleCallback NutRegisterIdleCallback(NutIdleCallback func)
+{
+    NutIdleCallback last = IdleCall;
+    IdleCall = func;
+    return last;
+}
+
 /*!
  * \brief AVR Idle thread.
  *
@@ -220,24 +231,6 @@ THREAD(NutIdle, arg)
 {
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
     uint8_t sleep_mode;
-#endif
-#if defined (HEARTBEAT_IDLE_PIN) && defined (HEARTBEAT_IDLE_PORT)
- #if defined(HEARTBEAT_IDLE_INVERT)
-  #define HEARTBEAT_IDLE_LED_OFF  \
-    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
-  #define HEARTBEAT_IDLE_LED_ON   \
-    GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
- #else
-  #define HEARTBEAT_IDLE_LED_ON   \
-    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
-  #define HEARTBEAT_IDLE_LED_OFF  \
-    GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
- #endif
-    GpioPinDrive(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
-    HEARTBEAT_IDLE_LED_ON;
-#else
- #define HEARTBEAT_IDLE_LED_ON
- #define HEARTBEAT_IDLE_LED_OFF
 #endif
 
 #ifdef NUT_INIT_IDLE
@@ -263,7 +256,9 @@ THREAD(NutIdle, arg)
     for (;;) {
         NutThreadYield();
         NutThreadDestroy();
-
+        if (IdleCall) {
+            IdleCall();
+        }
 
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
         if (idle_sleep_mode != SLEEP_MODE_NONE) {
@@ -277,13 +272,11 @@ THREAD(NutIdle, arg)
             uint8_t bitkeeper = bit_is_set(XMCRB, XMBK);
             cbi(XMCRB, XMBK); // disable buskeeper
 #endif
-            HEARTBEAT_IDLE_LED_OFF;
             /* Note:  avr-libc has a sleep_mode() function, but it's broken for
             AT90CAN128 with avr-libc version earlier than 1.2 */
             AVR_SLEEP_CTRL_REG |= _BV(SE);
             __asm__ __volatile__ ("sleep" "\n\t" :: );
             AVR_SLEEP_CTRL_REG &= ~_BV(SE);
-            HEARTBEAT_IDLE_LED_ON;
 #ifdef IDLE_THREAD_ADC_OFF
             if (bitkeeper) {
                 sbi(XMCRB, XMBK); // re-enable buskeeper
