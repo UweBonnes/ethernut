@@ -761,5 +761,8 @@ extern void NutBoardInit(void);
 extern void NutIdleInit(void);
 extern void NutMainInit(void);
 
+typedef void (*NutIdleCallback)(void);
+extern NutIdleCallback NutRegisterIdleCallback(NutIdleCallback func);
+
 #endif
 
