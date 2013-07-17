@@ -287,6 +287,8 @@ gpio_irq_choice =
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
 
+avr32_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
+
 pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
 
 hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
@@ -671,6 +673,7 @@ end
 --
 -- Retrieve AVR32 PIO IDs.
 --
+
 function GetAvr32PioIds()
     return { " ", "PIOA_ID", "PIOB_ID", "PIOC_ID", "PIOD_ID" }
 end
