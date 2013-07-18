@@ -72,7 +72,7 @@ nutarch_cm3_stm32f1 =
                         "HW_PLL_STM32",
                         "HW_RCC_STM32",
                         "HW_RTC_STM32F1",
-                         "HW_FLASH_STM32F1",
+                        "HW_FLASH_STM32",
                         "HW_GPIO_STM32V1",
                         "HW_CRC32_STM32",
                         "DEV_IRQ_STM32",

@@ -855,7 +855,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -876,7 +876,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -897,7 +897,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -919,7 +919,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -941,7 +941,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -963,7 +963,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -985,7 +985,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -1005,7 +1005,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -1025,7 +1025,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "HW_FLASH_STM32",
+                    "NUT_CONFIG_STM32FLASH",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
