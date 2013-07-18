@@ -936,12 +936,23 @@ int EmacInit(NUTDEVICE * dev)
     /*
      * Alternate function remapping and GPIO set-up
      */
-#ifdef STM32F10X_CL
+#ifdef STM32F10X_CL /* STM32F1 */
  #ifdef EMAC_REMAP_ENABLE
     CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 1;
  #else
     CM3BBREG(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP)) = 0;
  #endif
+    /* Configure (R)MII lines as alternate function */
+    GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MDC (50MHz)
+    GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MDIO (50MHz)
+    GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TX_EN (50MHz)
+    GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TXD0 (50MHz)
+    GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TXD1 (50MHz)
+    #if !defined(PHY_MODE_RMII)
+        /* Configure additional MII lines as alternate function */
+        GpioPinConfigSet(NUTGPIO_PORTC,  2, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MII_TXD2 (50MHz)
+        GpioPinConfigSet(NUTGPIO_PORTB,  8, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MII_TXD3 (50MHz)
+    #endif
 #else /* STM32F2/F4 parts */
  #ifdef EMAC_REMAP_ENABLE
   #error General remapping not available for this part. Use alternate function remapping instead!
