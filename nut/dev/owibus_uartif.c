@@ -194,6 +194,7 @@ int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int pullup_port, uin
     }
     owcb->uart_fd = uart_fd;
     bus->owibus_info = (uintptr_t) owcb;
+    bus->OwiSetup = NULL;
     bus->OwiTouchReset = Uart_OwiTouchReset;
     bus->OwiReadBlock = Uart_OwiReadBlock;
     bus->OwiWriteBlock = Uart_OwiWriteBlock;

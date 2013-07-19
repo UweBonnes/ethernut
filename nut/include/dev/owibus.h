@@ -167,11 +167,13 @@ typedef struct _NUTOWIBUS NUTOWIBUS;
 struct _NUTOWIBUS {
     uintptr_t owibus_info;
     uint32_t mode;
+    int(*OwiSetup) (NUTOWIBUS *);
     int(*OwiTouchReset) (NUTOWIBUS *);
     int(*OwiReadBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
     int(*OwiWriteBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
 };
 
+int OwiInit(NUTOWIBUS *bus);
 int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid);
 int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid);
 int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);

@@ -239,6 +239,7 @@ int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, i
     owcb->pp_port = pullup_pin;
     owcb->pp_pin = pullup_pin;
     bus->owibus_info = (uintptr_t) owcb;
+    bus->OwiSetup = NULL;
     bus->OwiTouchReset = BB_OwiTouchReset;
     bus->OwiReadBlock = BB_OwiReadBlock;
     bus->OwiWriteBlock = BB_OwiWriteBlock;

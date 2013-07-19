@@ -251,4 +251,19 @@ int OWIGetMode(NUTOWIBUS *bus)
     return bus->mode;
 }
 
+/*!
+ * \brief Initialize the Owi Bus
+ *
+ * \param bus Specifies the One-Wire bus.
+ *
+ * \return OWI_SUCCESS on success, a negative value otherwise.
+ */
+int OwiInit(NUTOWIBUS *bus)
+{
+    if (bus->OwiSetup)
+        return bus->OwiSetup(bus);
+    else
+        return OWI_SUCCESS;
+}
+
 /*@}*/
