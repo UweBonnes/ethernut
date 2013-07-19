@@ -69,5 +69,10 @@
  */
 extern NUTDEVICE devPppHdlc0;
 
+/*!
+ * \brief PPP HDLC device attached to "uart1".
+ */
+extern NUTDEVICE devPppHdlc1;
+
 /*@}*/
 #endif
