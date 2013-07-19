@@ -128,82 +128,137 @@
  */
 #if defined(ARTHERNET1)
 #include <arch/avr/board/arthernet1.h>
+#define BOARDNAME "ARTHERNET1"
 #elif defined(AT91SAM7X_EK)
 #include <arch/arm/board/at91sam7x_ek.h>
+#define BOARDNAME "AT91SAM7X_EK"
 #elif defined(AT91SAM9260_EK)
 #include <arch/arm/board/at91sam9260_ek.h>
+#define BOARDNAME "AT91SAM9260_EK"
 #elif defined(CHARON2)
 #include <arch/avr/board/charon2.h>
+#define BOARDNAME "CHARON2"
 #elif defined(ELEKTOR_IR1)
 #include <arch/arm/board/elektor_ir1.h>
+#define BOARDNAME "ELEKTOR_IR1"
 #elif defined(ENET_SAM7X)
 #include <arch/arm/board/enet_sam7x.h>
+#define BOARDNAME "ENET_SAM7X"
 #elif defined(ETHERNUT1)
 #include <arch/avr/board/ethernut1.h>
+#define BOARDNAME "ETHERNUT1"
 #elif defined(ETHERNUT2)
 #include <arch/avr/board/ethernut2.h>
+#define BOARDNAME "ETHERNUT2"
 #elif defined(AT90USBKEY)
 #include <arch/avr/board/at90usbkey.h>
+#define BOARDNAME "AT90USBKEY"
 #elif defined(ETHERNUT3)
 #include <arch/arm/board/ethernut3.h>
+#if defined(NUT_CONFIG_X12RTC)
+#define BOARDNAME "Ethernut 3.0"
+#else
+#define BOARDNAME "Ethernut 3.1"
+#endif
 #elif defined(ETHERNUT5)
 #include <arch/arm/board/ethernut5.h>
+#define BOARDNAME "ETHERNUT5"
 #elif defined(EVK1100)
 #include <arch/avr32/board/evk1100.h>
+#define BOARDNAME "EVK1100"
 #elif defined(EVK1101)
 #include <arch/avr32/board/evk1101.h>
+#define BOARDNAME "EVK1101"
 #elif defined(EVK1104)
 #include <arch/avr32/board/evk1104.h>
+#define BOARDNAME "EVK1104"
 #elif defined(EVK1105)
 #include <arch/avr32/board/evk1105.h>
+#define BOARDNAME "EVK1105"
 #elif defined(L1_DISCOVERY)
 #include <arch/cm3/board/l1_discovery.h>
+#define BOARDNAME "L1_DISCOVERY"
 #elif defined(F1_DISCOVERY)
 #include <arch/cm3/board/f1_discovery.h>
+#define BOARDNAME "F1_DISCOVERY"
 #elif defined(STM32F4_BB)
 #include <arch/cm3/board/stm32f4_bb.h>
+#define BOARDNAME "STM32F4_BB"
 #elif defined(F4_DISCOVERY)
 #include <arch/cm3/board/f4_discovery.h>
+#define BOARDNAME "F4_DISCOVERY"
 #elif defined(F3_DISCOVERY)
 #include <arch/cm3/board/f3_discovery.h>
+#define BOARDNAME "F3_DISCOVERY"
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
+#define BOARDNAME "FLECX1"
 #elif defined(GBAXPORT2)
 #include <arch/arm/board/gba_xport2.h>
+#define BOARDNAME "GBAXPORT2"
 #elif defined(MBED_NXP_LPC1768)
 #include <arch/cm3/board/mbed.h>
+#define BOARDNAME "MBED_NXP_LPC1768"
 #elif defined(KSK_LPC1788_SK)
 #include <arch/cm3/board/ksk_lpc1788_sk.h>
+#define BOARDNAME "KSK_LPC1788_SK"
 #elif defined(LISA)
 #include <arch/cm3/board/lisa.h>
+#define BOARDNAME "LISA"
 #elif defined(MMNET01) || defined(MMNET02) || defined(MMNET101) || defined(MMNET102)
 #include <arch/avr/board/mmnet.h>
+#define BOARDNAME "MMNET0x"
 #elif defined(MORPHOQ1)
 #include <arch/arm/board/morphoq1.h>
+#define BOARDNAME "MORPHOQ1"
 #elif defined(SAM7ETH)
 #include <arch/arm/board/sam7eth.h>
+#define BOARDNAME "SAM7ETH"
 #elif defined(STM3210C_EVAL)
 #include <arch/cm3/board/stm3210c_eval.h>
+#define BOARDNAME "STM3210C_EVAL"
 #elif defined(STM3210E_EVAL)
 #include <arch/cm3/board/stm3210e_eval.h>
+#define BOARDNAME "STM3210E_EVA"
 #elif defined(STM3220G_EVAL)
 #include <arch/cm3/board/stm3220g_eval.h>
+#define BOARDNAME "STM3220G_EVAL"
 #elif defined(STEVAL_PCC010V2)
 #include <arch/cm3/board/steval_pcc010v2.h>
+#define BOARDNAME "STEVAL_PCC010V2"
 #elif defined(STM32_CAN)
 #include <arch/cm3/board/stm32_can.h>
+#define BOARDNAME "STM32_CAN"
 #elif defined(STM32_COMSTICK)
 #include <arch/cm3/board/stm32_comstick.h>
+#define BOARDNAME "STM32_COMSTICK"
 #elif defined(USPS)
 #include <arch/cm3/board/usps.h>
+#define BOARDNAME "USPS"
 #elif defined(OLIMEX_LPCE2294)
 #include <arch/arm/board/olimex_lpce2294.h>
+#define BOARDNAME "OLIMEX_LPCE229"
 #elif defined(XNUT_100) || defined(XNUT_105)
 #include <arch/avr/board/xnut.h>
+#define BOARDNAME "XNUT_10x"
 #elif defined(SM2_MU)
 #include <arch/m68k/board/sm2_mu.h>
+#define BOARDNAME "SM2_MU"
 #elif defined(ZERO_EK)
 #include <arch/arm/board/zero_ek.h>
+#define BOARDNAME "ZERO_EK"
+#elif defined(__arm__)
+#if defined(__CORTEX__)
+#else
+#define BOARDNAME "Cortex Arm"
+#endif
+#define BOARDNAME "Generic ARM"
+#elif defined(__AVR32__)
+#define BOARDNAME "Generic AVR32"
+#elif defined(__AVR__)
+#define BOARDNAME "Generic AVR"
+#else
+#define BOARDNAME "Unknown"
 #endif
 
 

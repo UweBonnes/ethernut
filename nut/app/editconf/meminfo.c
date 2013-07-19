@@ -62,72 +62,7 @@
  */
 void ShowHardwareConfiguration(void)
 {
-    printf("Board   : ");
-#if defined(ARTHERNET1)
-    puts("Arthernet 1");
-#elif defined(AT91SAM7X_EK)
-    puts("AT91SAM7X(C)-EK");
-#elif defined(AT91SAM9260_EK)
-    puts("AT91SAM9260-EK");
-#elif defined(CHARON2)
-    puts("Charon II");
-#elif defined(ELEKTOR_IR1)
-    puts("Elektor Internet Radio");
-#elif defined(ENET_SAM7X)
-    puts("eNet-sam7X");
-#elif defined(ETHERNUT1)
-    puts("Ethernut 1");
-#elif defined(ETHERNUT2)
-    puts("Ethernut 2");
-#elif defined(ETHERNUT3)
-#if defined(NUT_CONFIG_X12RTC)
-    puts("Ethernut 3.0");
-#else
-    puts("Ethernut 3.1");
-#endif
-#elif defined(ETHERNUT5)
-    puts("Ethernut 5");
-#elif defined(EVK1100)
-    puts("EVK1100");
-#elif defined(EVK1104)
-    puts("EVK1104");
-#elif defined(EVK1105)
-    puts("EVK1105");
-#elif defined(GBAXPORT2)
-    puts("GBA-XPORT2");
-#elif defined(MMNET01)
-    puts("MMNet01");
-#elif defined(MMNET02)
-    puts("MMNet02");
-#elif defined(MMNET03)
-    puts("MMNet03");
-#elif defined(MMNET04)
-    puts("MMNet04");
-#elif defined(MMNET101)
-    puts("MMNet101");
-#elif defined(MMNET102)
-    puts("MMNet102");
-#elif defined(MMNET103)
-    puts("MMNet103");
-#elif defined(MMNET104)
-    puts("MMNet104");
-#elif defined(MORPHOQ1)
-    puts("Morphoq 1");
-#elif defined(OLIMEX_LPCE2294)
-    puts("Olimex LPCE2294");
-#elif defined(XNUT_100)
-    puts("XNUT-100");
-#elif defined(XNUT_105)
-    puts("XNUT-105");
-#elif defined(__arm__)
-    puts("Generic ARM");
-#elif defined(__AVR32__)
-    puts("Generic AVR32");
-#elif defined(__AVR__)
-    puts("Generic AVR");
-#else
-    puts("Unknown");
-#endif
+    printf("Board   : %s\n", BOARDNAME);
 
     printf("Memory  : ");
 #if defined(NUT_CONFIG_X12RTC)
