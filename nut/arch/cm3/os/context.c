@@ -128,7 +128,7 @@ void NutThreadSwitch(void)
         "@ Load context\n\t"            /* */
         "ldr     sp, %0\n\t"            /* Restore stack pointer. */
         "ldmfd   sp!, {r4}\n\t"         /* Get saved status... */
-        "msr     psr, r4\n\t"           /* ...and save in psr. */
+        "msr     xpsr_nzcvq, r4\n\t"   /* ...and save execution and application status in psr. */
         "cpsie   i\n\t"                 /* ...enable interrupts */
         "ldmfd   sp!, {r4-r11, lr}\n\t" /* Restore registers. */
         "bx      lr\n\t"                /* */
@@ -263,7 +263,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
             "@ Load context\n\t"            /* */
             "ldr     sp, %0\n\t"            /* Restore stack pointer. */
             "ldmfd   sp!, {r4}\n\t"         /* Get saved status... */
-            "msr     psr, r4\n\t"           /* ...and save in spsr. */
+            "msr     xpsr_nzcvq, r4\n\t"   /* ...and save execution and application status in psr. */
             "cpsie   i\n\t"                 /* ...enable interrupts */
             "ldmfd   sp!, {r4-r11, lr}\n\t" /* Restore registers. */
             "bx     lr"                     /* */
