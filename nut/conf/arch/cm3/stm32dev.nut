@@ -105,17 +105,80 @@ nutarch_cm3_stm32_devices =
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_STM32_TIM5_32BIT" },
         provides = { "HW_STM32_TIM5" , "HW_STM32_TIMER_32BIT" },
     },
+     {
+        name = "nutarch_cm3_stm32_qenc32_0",
+        brief = "STM32 32Bit Quadrature Encoder0",
+        description = "STM32 32Bit Quadrature Encoder 0.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_STM32_TIMER_32BIT" },
+        sources = { "cm3/dev/stm/stm32_qenc32_0.c" },
+        options =
+        {
+            {
+                macro = "STM32_QENC32_0_TIMER_ID",
+                brief = "STM32 32Bit Quadrature Encoder Timer ID",
+                description = "Select Timer for 32 bit Quadrature Enoder",
+                choices = { "2", "5" },
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC32_0_I_PORT",
+                brief = "STM32 qenc32 I input port",
+                description = "STM32 32Bit Quadrature Encoder I input port. Can by TI1 or TI2",
+                requires = { "HW_STM32_TIMER_32BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC32_0_I_PIN",
+                brief = "STM32 qenc32 I input pin",
+                description = "STM32 32Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
+                requires = { "HW_STM32_TIMER_32BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC32_0_Q_PORT",
+                brief = "STM32 qenc32 Q input port",
+                description = "STM32 32Bit Quadrature Encoder I input port. Can by TI1 or TI2",
+                requires = { "HW_STM32_TIMER_32BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC32_0_Q_PIN",
+                brief = "STM32 qenc32 Q input pin",
+                description = "STM32 32Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
+                requires = { "HW_STM32_TIMER_32BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC32_0_INVERT",
+                brief = "STM32 qenc32 reverse count direction",
+                description = "STM32 32Bit Quadrature Encoder reverse count direction. Effective exchanges I and Q.",
+                flavor = "booldata",
+                file = "include/cfg/qenc.h",
+            },
+        },
+    },
     --
-    -- STM32 TIM Interrupt handler
+    -- STM32 TIM Commodity functionsInterrupt handler
     --
     {
         name = "nutarch_cm3_stm32_timer",
         brief = "STM32 Timer",
         description = "STM32 Timer infrastructure.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32" },
-        sources = { "cm3/dev/stm/stm32_timer.c" }
+        sources = { "cm3/dev/stm/stm32_timer.c" },
     },
-    {
+    --
+    -- STM32 TIM Interrupt handler
+    --
+     {
         name = "nutarch_cm3_stm32_devices_tim2",
         brief = "STM32 Timer 3 Interrupt",
         description = "STM32 Timer 3 Interrupt.",
