@@ -2838,6 +2838,51 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32 PWM using hardware timer
+    --
+    {
+        name = "nutarch_cm3_stm32_pwm0",
+        brief = "STM32 PWM Output 0",
+        description = "STM32 PWM_Output 0.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY"},
+        sources = { "cm3/dev/stm/stm32_pwm_0.c" },
+        options =
+        {
+            {
+                macro = "STM32_PWM0_TIMER_ID",
+                brief = "STM32 32Bit PWM0 Timer ID",
+                description = "Select Timer for PWM0 output. Check for availability on selected device.",
+                type = "enumerated",
+                choices = { "1", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" },
+                file = "include/cfg/pwm.h",
+            },
+            {
+                macro = "STM32_PWM0_TIMER_CHANNEL",
+                brief = "STM32 32Bit PWM0 Timer Channel",
+                description = "Select Timer Channel for PWM0 output. Check for availability on selected device.",
+                type = "enumerated",
+                choices = { "1", "2", "3", "4" },
+                file = "include/cfg/pwm.h",
+            },
+            {
+                macro = "STM32_PWM0_PIN",
+                brief = "PIN for STM32 PWM0 output",
+                description = "Port bit used for PWM0. Only some pins are valid!",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/pwm.h",
+            },
+            {
+                macro = "STM32_PWM0_PORT",
+                brief = "PORT for STM32 PWM0 output",
+                description = "Port used for PWM0. Only some ports are valid!",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                file = "include/cfg/pwm.h",
+            },
+        }
+    },
+    --
     -- STM32 OWI using hardware timer
     --
     {
