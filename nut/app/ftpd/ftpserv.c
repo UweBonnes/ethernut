@@ -51,6 +51,7 @@
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/socket.h>
+#include <sys/timer.h>
 
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
@@ -487,7 +488,7 @@ int main(void)
     printf("Register file system...");
     if (NutRegisterDevice(&FSDEV, 0, 0)) {
         puts("failed");
-        for (;;);
+        for (;;)NutSleep(100);
     }
     puts("OK");
 #endif
@@ -497,7 +498,7 @@ int main(void)
     printf("Register block device...");
     if (NutRegisterDevice(&BLKDEV, 0, 0)) {
         puts("failed");
-        for (;;);
+        for (;;)NutSleep(100);
     }
     puts("OK");
 
@@ -505,7 +506,7 @@ int main(void)
     printf("Mounting partition...");
     if ((volid = _open(BLKDEV_NAME ":1/" FSDEV_NAME, _O_RDWR | _O_BINARY)) == -1) {
         puts("failed");
-        for (;;);
+        for (;;)NutSleep(100);
     }
     puts("OK");
 #else
@@ -517,7 +518,7 @@ int main(void)
     printf("Register FTP root...");
     if (NutRegisterFtpRoot(FSDEV_NAME ":")) {
         puts("failed");
-        for (;;);
+        for (;;)NutSleep(100);
     }
     puts("OK");
 #endif
