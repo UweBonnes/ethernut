@@ -1,3 +1,5 @@
+#ifndef _DEV_ARCH_CM3_STM_HWTIMER_STM32_H_
+#define _DEV_ARCH_CM3_STM_HWTIMER_STM32_H_
 /*
  * Copyright (C) 2012 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
@@ -160,3 +162,5 @@ extern int TIM_GetIndex(uint32_t timer);
 #define TIM_C2InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC2IF  )) != 0)
 #define TIM_C3InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC3IF  )) != 0)
 #define TIM_C4InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC4IF  )) != 0)
+
+#endif
