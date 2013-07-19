@@ -143,6 +143,14 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 extern void main(void *);
 #endif
 
+static NutIdleCallback IdleCall;
+NutIdleCallback NutRegisterIdleCallback(NutIdleCallback func)
+{
+    NutIdleCallback last = IdleCall;
+    IdleCall = func;
+    return last;
+}
+
 /*!
  * \brief Idle thread.
  *
@@ -200,6 +208,9 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
         NutThreadYield();
         /* Remove terminated threads. */
         NutThreadDestroy();
+        if (IdleCall) {
+            IdleCall();
+        }
 
 #if defined(HW_MCU_LPC17xx)
         /* We could do some power management. */
