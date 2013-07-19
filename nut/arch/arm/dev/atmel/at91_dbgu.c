@@ -70,6 +70,9 @@
 #elif defined (PB14_DRXD_A) && defined (PB15_DTXD_A)
 #define NUT_DEV_DEBUG_PINS  (_BV(PB14_DRXD_A) | _BV(PB15_DTXD_A))
 #define NUT_DEV_DEBUG_PDR   PIOB_PDR
+#elif defined (PB12_DRXD_A) && defined (PB13_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  (_BV(PB12_DRXD_A) | _BV(PB13_DTXD_A))
+#define NUT_DEV_DEBUG_PDR   PIOB_PDR
 #endif
 
 #else
@@ -81,6 +84,9 @@
 #define NUT_DEV_DEBUG_PINS  _BV(PA28_DTXD_A)
 #elif defined (PB15_DTXD_A)
 #define NUT_DEV_DEBUG_PINS  _BV(PB15_DTXD_A)
+#define NUT_DEV_DEBUG_PDR   PIOB_PDR
+#elif defined (PB12_DTXD_A)
+#define NUT_DEV_DEBUG_PINS  _BV(PB12_DTXD_A)
 #define NUT_DEV_DEBUG_PDR   PIOB_PDR
 #endif
 
