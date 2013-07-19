@@ -89,6 +89,23 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32 32 bit Timers
+    --
+    {
+        name = "nutarch_cm3_stm32_timer2_32bit",
+        brief = "STM32 Timer2 32Bit",
+        description = "STM32 Timer infrastructure.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_STM32_TIM2_32BIT" },
+        provides = { "HW_STM32_TIM2" , "HW_STM32_TIMER_32BIT" },
+    },
+    {
+        name = "nutarch_cm3_stm32_timer5_32bit",
+        brief = "STM32 Timer5 32Bit",
+        description = "STM32 Timer infrastructure.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_STM32_TIM5_32BIT" },
+        provides = { "HW_STM32_TIM5" , "HW_STM32_TIMER_32BIT" },
+    },
+    --
     -- STM32 TIM Interrupt handler
     --
     {
