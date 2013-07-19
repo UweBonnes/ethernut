@@ -64,6 +64,7 @@
  * #else
  * #define STM32_OWITIMER_AF  STM32TIMER_AF(STM32TIM_OWI_PORT, STM32TIM_OWI0_PIN)
  * #endif
+ * #define STM32_OWITIMER_WIDTH STM32TIMER_WIDTH
  *
  * Provided entities
  * - STM32TIMER_BASE  The base address of the timer
@@ -81,6 +82,7 @@
  *(else)
  * - STM32TIMER_AF    The alternate function index to connect timer to pin.
  *                    FIXME: Handle some F3 corner cases
+ * - STM32TIMER_WIDTH The width of the timer in bits.
  */
 
 #include <cfg/arch.h>
@@ -100,6 +102,7 @@
 #undef STM32TIMER_AF
 #undef STM32TIMER_REMAP_MASK
 #undef STM32TIMER_REMAP_SHIFT
+#undef STM32TIMER_WIDTH
 
 /* What did the F3 designers smoke when they distributed the AF so random? */
 /* We leave the F1 remapping to the user */
@@ -145,6 +148,9 @@
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM2_REMAP
 #define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM2_REMAP_0))
 #endif
+#if defined(MCU_STM32F2) ||defined(MCU_STM32F3)||defined(MCU_STM32F4)
+#define STM32TIMER_WIDTH 32
+#endif
 
 #elif defined (TIM3_BASE) && (STM32TIMER_ID == 3)
 #define STM32TIMER_BASE TIM3_BASE
@@ -188,6 +194,9 @@
 #define STM32TIMER_NCH 4
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 2
+#endif
+#if defined(MCU_STM32F2) || defined(MCU_STM32F4)
+#define STM32TIMER_WIDTH 32
 #endif
 
 #elif defined (TIM6_BASE) && (STM32TIMER_ID == 6)
@@ -338,4 +347,9 @@
 #endif
 #else
 #warning No match
+#endif
+
+/* Only few timers are 32 bit. Use this "catch all else" to reduce duplication*/
+#if !defined(STM32TIMER_WIDTH)
+#define STM32TIMER_WIDTH 16
 #endif
