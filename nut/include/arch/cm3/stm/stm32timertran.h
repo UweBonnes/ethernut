@@ -127,6 +127,7 @@
 #define STM32TIMER_AF(port, pin) 1
 #elif defined(MCU_STM32F30)
 #define STM32TIMER_AF(port, pin) \
+    (port == GPIOD_BASE) ? 2 :                                          \
     (((port == GPIOA_BASE) && (pin ==  9))||((port == GPIOA_BASE) && (pin == 10)))? 10 : 1
 #elif defined(MCU_STM32F1)
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM2_REMAP
