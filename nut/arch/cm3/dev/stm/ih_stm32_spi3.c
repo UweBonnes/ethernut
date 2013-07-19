@@ -64,7 +64,7 @@ IRQ_HANDLER sig_SPI3 = {
 /*!
  * \brief Serial peripheral interface 1 interrupt entry.
  */
-static void SerialPeripheral3IrqEntry(void *arg) __attribute__ ((naked));
+static void SerialPeripheral3IrqEntry(void *arg);
 void SerialPeripheral3IrqEntry(void *arg)
 {
 #ifdef NUT_PERFMON

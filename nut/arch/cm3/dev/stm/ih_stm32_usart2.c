@@ -66,7 +66,6 @@ IRQ_HANDLER sig_USART2 = {
 /*!
  * \brief UART 2 interrupt entry.
  */
-//static void Uart2IrqEntry(void) __attribute__ ((naked));
 void Uart2IrqEntry(void *arg)
 {
 #ifdef NUT_PERFMON

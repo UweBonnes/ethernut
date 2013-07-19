@@ -62,7 +62,7 @@ IRQ_HANDLER sig_EMAC = {
 /*!
  * \brief Emac interrupt entry.
  */
-static void EmacIrqEntry(void *arg) /*__attribute__ ((naked))*/;
+static void EmacIrqEntry(void *arg);
 
 void EmacIrqEntry(void *arg)
 {

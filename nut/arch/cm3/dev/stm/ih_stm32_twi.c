@@ -95,10 +95,10 @@ IRQ_HANDLER sig_TWI1_ER = {
 /*!
  * \brief Two Wire Interface interrupt entry.
  */
-static void TwoWireIrqEntry0ev(void) __attribute__ ((naked));
-static void TwoWireIrqEntry0er(void) __attribute__ ((naked));
-static void TwoWireIrqEntry1ev(void) __attribute__ ((naked));
-static void TwoWireIrqEntry1er(void) __attribute__ ((naked));
+static void TwoWireIrqEntry0ev(void);
+static void TwoWireIrqEntry0er(void);
+static void TwoWireIrqEntry1ev(void);
+static void TwoWireIrqEntry1er(void);
 void TwoWireIrqEntry0ev(void)
 {
 
