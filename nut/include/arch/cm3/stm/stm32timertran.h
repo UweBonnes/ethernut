@@ -104,7 +104,7 @@
 /* What did the F3 designers smoke when they distributed the AF so random? */
 /* We leave the F1 remapping to the user */
 
-#if defined(TIM1_BASE) && (STM32TIMER_ID == 0)
+#if defined(TIM1_BASE) && (STM32TIMER_ID == 1)
 #define STM32TIMER_BASE TIM1_BASE
 #define STM32TIMER_SIG sig_TIM1
 #define STM32TIMER_CLK (CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR,  _BI32(RCC_APB2ENR_TIM1EN)))
@@ -122,7 +122,7 @@
 #define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?                               2 : \
     (((port == GPIOB_BASE) && (pin == 15))||((port == GPIOC_BASE) && (pin == 13)))?  4 : \
     (( port == GPIOA_BASE) && (pin == 15))?                                          9 : \
-    (((port == GPIOA_BASE) && (pin == 11))||((port == GPIOb_BASE) && (pin ==  8)))? 12 : 6
+    (((port == GPIOA_BASE) && (pin == 11))||((port == GPIOB_BASE) && (pin ==  8)))? 12 : 6
 #elif defined(MCU_STM32F1)
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM1_REMAP
 #define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM1_REMAP_0))
