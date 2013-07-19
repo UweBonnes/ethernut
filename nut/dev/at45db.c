@@ -34,7 +34,7 @@
 
 /*!
  * \file dev/at45db.c
- * \brief Routines for Atmel AT45 serial dataflash memory chips.
+ * \brief Routines for Adesto/AtmelAT45 serial dataflash memory chips.
  *
  * \verbatim
  *

@@ -35,7 +35,8 @@
 
 /*!
  * \file dev/nvmem_at45d.c
- * \brief Non-volatile memory support using Atmel AT45 serial DataFlash memory chips.
+ * \brief Non-volatile memory support using Adesto/Atmel AT45 serial
+ *  DataFlash memory chips.
  *
  * \verbatim
  * $Id$

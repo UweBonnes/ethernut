@@ -34,7 +34,7 @@
 
 /*!
  * \file dev/spi_at45d_info.c
- * \brief Atmel AT45D SPI Flash types.
+ * \brief Adesto/Atmel AT45D SPI Flash types.
  *
  * \verbatim
  * $Id$

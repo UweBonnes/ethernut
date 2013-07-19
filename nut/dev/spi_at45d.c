@@ -35,7 +35,7 @@
 
 /*!
  * \file dev/spi_at45d.c
- * \brief Routines for Atmel AT45 serial DataFlash memory chips.
+ * \brief Routines for Adesto/Atmel AT45 serial DataFlash memory chips.
  *
  * \verbatim
  * $Id$

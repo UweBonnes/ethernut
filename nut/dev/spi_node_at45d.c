@@ -34,7 +34,7 @@
 
 /*!
  * \file dev/spi_node_at45d.c
- * \brief Low level routines for Atmel AT45D SPI Flash.
+ * \brief Low level routines for Adesto/Atmel AT45D SPI Flash.
  *
  * \verbatim
  * $Id$

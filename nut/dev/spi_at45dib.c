@@ -34,7 +34,8 @@
 
 /*!
  * \file dev/spi_at45dib.c
- * \brief Low memory routines for Atmel AT45 serial DataFlash memory chips.
+ * \brief Low memory routines for Adesto/Atmel AT45 serial DataFlash
+ *  memory chips.
  *
  * \verbatim
  * $Id$

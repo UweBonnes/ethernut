@@ -34,7 +34,7 @@
 
 /*!
  * \file dev/spi_blkio_at45d.c
- * \brief Low level block I/O routines for Atmel AT45D SPI Flash.
+ * \brief Low level block I/O routines for Adesto/Atmel AT45D SPI Flash.
  *
  * \verbatim
  * $Id$
