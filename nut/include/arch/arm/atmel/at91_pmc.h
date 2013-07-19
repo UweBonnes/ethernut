@@ -89,6 +89,7 @@
 #define PMC_SCSR    (PMC_BASE + PMC_SCSR_OFF)   /*!< \brief System clock status register address. */
 
 #define PMC_PCK                     0x00000001  /*!< \brief Processor clock. */
+#define PMC_DDRCK                   0x00000004  /*!< \brief USB host port clock. */
 #define PMC_UHP                     0x00000040  /*!< \brief USB host port clock. */
 #define PMC_UDP                     0x00000080  /*!< \brief USB device port clock. */
 #define PMC_PCK0                    0x00000100  /*!< \brief Programmable clock 0 output. */

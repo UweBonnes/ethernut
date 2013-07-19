@@ -78,6 +78,7 @@ void PrintBlockingDebug(char *Str);
 #define DDRSDRC0_BASE   0xFFFFE600      /*!< \brief DDRSDRC0 base address. */
 #define SMC_BASE        0xFFFFE800      /*!< \brief SMC base address. */
 #define MATRIX_BASE     0xFFFFEA00      /*!< \brief MATRIX base address. */
+#define CCFG_BASE       0xFFFFEB10
 #define DMAC_BASE       0xFFFFEC00      /*!< \brief DMA controller base address. */
 #define DBGU_BASE       0xFFFFEE00      /*!< \brief DBGU base address. */
 #define AIC_BASE        0xFFFFF000      /*!< \brief AIC base address. */
@@ -153,7 +154,7 @@ void PrintBlockingDebug(char *Str);
 #include <arch/arm/atmel/at91_mci.h>
 #include <arch/arm/atmel/at91_matrix.h>
 #include <arch/arm/atmel/at91_ccfg.h>
-#include <arch/arm/atmel/at91_sdramc.h>
+#include <arch/arm/atmel/at91_ddrsdrc.h>
 #include <arch/arm/atmel/at91_adc.h>
 #include <arch/arm/atmel/at91_pit.h>
 #include <arch/arm/atmel/at91_lcdc.h>
@@ -169,34 +170,34 @@ void PrintBlockingDebug(char *Str);
 #define PIOA_ID     2           /*!< \brief Parallel I/O controller A. */
 #define PIOB_ID     3           /*!< \brief Parallel I/O controller B. */
 #define PIOC_ID     4           /*!< \brief Parallel I/O controller C. */
-#define PIODE_ID    5           /*!< \brief Parallel I/O controller C. */
-#define RNG_ID      6           /*!< \brief Analog to digital converter. */
+#define PIODE_ID    5           /*!< \brief Parallel I/O controller D and E. */
+#define TRNG_ID     6           /*!< \brief True random number generator. */
 #define US0_ID      7           /*!< \brief USART 0. */
 #define US1_ID      8           /*!< \brief USART 1. */
 #define US2_ID      9           /*!< \brief USART 2. */
 #define US3_ID      10          /*!< \brief USART 3. */
-#define MCI0_ID     11          /*!< \brief MMC interface. */
-#define TWI0_ID     12          /*!< \brief Two wire interface. */
-#define TWI1_ID     13          /*!< \brief Two wire interface. */
+#define MCI0_ID     11          /*!< \brief MMC interface 0. */
+#define TWI0_ID     12          /*!< \brief Two wire interface 0. */
+#define TWI1_ID     13          /*!< \brief Two wire interface 1. */
 #define SPI0_ID     14          /*!< \brief Serial peripheral 0. */
 #define SPI1_ID     15          /*!< \brief Serial peripheral 1. */
-#define SSC0_ID     16          /*!< \brief Serial peripheral interface. */
-#define SSC1_ID     17          /*!< \brief Serial peripheral interface. */
+#define SSC0_ID     16          /*!< \brief Serial peripheral interface 0. */
+#define SSC1_ID     17          /*!< \brief Serial peripheral interface 1. */
 #define TC0_ID      18          /*!< \brief Timer/counter 0. */
 #define TC1_ID      18          /*!< \brief Timer/counter 1. */
 #define TC2_ID      18          /*!< \brief Timer/counter 2. */
 #define TC3_ID      18          /*!< \brief Timer/counter 3. */
 #define TC4_ID      18          /*!< \brief Timer/counter 4. */
 #define TC5_ID      18          /*!< \brief Timer/counter 5. */
-#define PWMC_ID     19          /*!< \brief Pulse Width Modulation Controller. */
-#define TSADCC_ID   20          /*!< \brief Touch Screen ADC Controller. */
-#define DMA_ID      21          /*!< \brief DMA Controller. */
-#define UHP_ID      22          /*!< \brief USB host port. */
+#define PWMC_ID     19          /*!< \brief Pulse width modulation controller. */
+#define TSADCC_ID   20          /*!< \brief Touch screen ADC controller. */
+#define DMA_ID      21          /*!< \brief DMA controller. */
+#define UHPHS_ID    22          /*!< \brief USB host port. */
 #define LCDC_ID     23          /*!< \brief LCD controller. */
-#define AC97_ID     24          /*!< \brief AC97 controller. */
+#define AC97C_ID    24          /*!< \brief AC97 controller. */
 #define EMAC_ID     25          /*!< \brief Ethernet MAC. */
 #define ISI_ID      26          /*!< \brief Image sensor interface. */
-#define UDP_ID      27          /*!< \brief USB device port. */
+#define UDPHS_ID    27          /*!< \brief USB device port. */
 #define MCI1_ID     29          /*!< \brief MMC interface. */
 #define IRQ0_ID     31          /*!< \brief External interrupt 0. */
 
