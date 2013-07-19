@@ -1,74 +1,5 @@
 /*
- * $Log: nutdoc_en.txt,v $
- * Revision 1.13  2008/04/21 22:26:51  olereinhardt
- * Added description of condition variables
- *
- * Revision 1.12  2007/08/29 07:43:53  haraldkipp
- * Documentation updated and corrected.
- *
- * Revision 1.11  2006/05/25 09:09:57  haraldkipp
- * API documentation updated and corrected.
- *
- * Revision 1.10  2006/01/08 11:55:52  haraldkipp
- * Prepare preview snapshot.
- *
- * Revision 1.9  2006/01/06 09:20:20  haraldkipp
- * Version information changed.
- *
- * Revision 1.8  2006/01/05 16:45:11  haraldkipp
- * File system docs added. NPL docs added.
- *
- * Revision 1.7  2005/10/24 10:24:22  haraldkipp
- * Documented AT91 support.
- *
- * Revision 1.6  2005/08/02 17:46:47  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.5  2005/02/06 16:37:54  haraldkipp
- * FTP sample added
- *
- * Revision 1.4  2004/09/12 09:10:04  haraldkipp
- * Version 3.9, old stuff removed
- *
- * Revision 1.3  2004/08/11 22:21:53  freckle
- * Some docu added for mutex, semaphore and the unix emulation
- *
- * Revision 1.2  2003/12/19 22:34:35  drsung
- * Added xgCrtTime for time functions
- *
- * Revision 1.1  2003/12/15 19:41:08  haraldkipp
- * First check in
- *
- * Revision 1.10  2003/05/06 19:01:49  harald
- * Prepare final release
- *
- * Revision 1.9  2003/03/31 14:53:21  harald
- * Prepare release 3.1
- *
- * Revision 1.8  2003/01/14 17:12:13  harald
- * Release 2.6.0
- *
- * Revision 1.7  2002/11/05 17:50:48  harald
- * *** empty log message ***
- *
- * Revision 1.6  2002/10/31 16:06:36  harald
- * Prerelease 2.5.9
- *
- * Revision 1.5  2002/09/15 17:11:42  harald
- * Release 2.5.2
- *
- * Revision 1.4  2002/09/03 17:48:10  harald
- * Release 2.5.1
- *
- * Revision 1.3  2002/08/16 17:50:12  harald
- * Release 2.5
- *
- * Revision 1.2  2002/08/11 12:28:42  harald
- * Using hex file extension now
- *
- * Revision 1.1  2002/08/02 14:02:37  harald
- * First check in
- *
+ * $Id$
  */
 /*!
  * \mainpage Nut/OS
@@ -942,6 +873,12 @@
  */
 
 /*!
+ * \defgroup xgSMTPC SMTP Client
+ * \ingroup xgUserPro
+ * \brief SMTP Client
+ */
+
+/*!
  * \defgroup xgSNMP SNMP
  * \ingroup xgUserPro
  * \brief Simple network management protocol
@@ -1335,6 +1272,13 @@
  */
 
 /*!
+ * \defgroup xgSHash SHash
+ * \ingroup xgGorp
+ * \brief SHash.
+ *
+ */
+
+/*!
  * \defgroup xgGorpList Lists and Queues
  * \ingroup xgGorp
  * \brief Base64 Encoder and Decoder.
@@ -1345,6 +1289,14 @@
  * \ingroup xgGorpList
  * \brief Linked List.
  */
+
+/*!
+ * \defgroup xgPerci Perci
+ * \ingroup xgGorp
+ * \brief Perci.
+ *
+ */
+
 
 /* =================================== Device Driver API ================================= */
 /*!
@@ -1506,11 +1458,88 @@
  * \ingroup xgDevDisplay
  */
 
-
 /*!
  * \defgroup xgIrqReg Interrupt Management
  * \ingroup xgDriver
  * \brief Interrupt registration and handling.
+ */
+
+/*!
+ * \defgroup xgI2cBus I2C Bus
+ * \ingroup xgDriver
+ * \brief I2C Bus.
+ */
+
+/*!
+ * \defgroup xgSerialflash Serialflash
+ * \ingroup xgDriver
+ * \brief Serialflash.
+ */
+
+/*!
+ * \defgroup xgAt54dib At54dib
+ * \ingroup xgDriver
+ * \brief At54dib.
+ */
+
+/*!
+ * \defgroup xgSPIBusMmcSupport SPIBusMmcSupport
+ * \ingroup xgDriver
+ * \brief SPIBusMmcSupport.
+ */
+
+/*!
+ * \defgroup xgUFlash UFlash
+ * \ingroup xgDriver
+ * \brief UFlash.
+ */
+
+/*!
+ * \defgroup xgDm9000Regs Dm9000Regs
+ * \ingroup xgDriver
+ * \brief Dm9000Regs.
+ */
+
+/*!
+ * \defgroup xgNicDm9000 NicDm9000
+ * \ingroup xgDriver
+ * \brief NicDm9000.
+ */
+
+/*!
+ * \defgroup xgI2cPcf85xx I2cPcf85xx
+ * \ingroup xgDriver
+ * \brief I2cPcf85xx.
+ */
+
+/*!
+ * \defgroup xgI2cBusGPIO I2cBusGPIO
+ * \ingroup xgDriver
+ * \brief I2cBusGPIO.
+ */
+
+/*!
+ * \defgroup xgSpiInfoAt45d SpiInfoAt45d
+ * \ingroup xgDriver
+ * \brief SpiInfoAt45d.
+ */
+
+/*!
+ * \defgroup xgSpiBlockIoAt45d SpiBlockIoAt45d
+ * \ingroup xgDriver
+ * \brief SpiBlockIoAt45d.
+ */
+
+/*!
+ * \defgroup xgSpiFlashAt45d SpiFlashAt45d
+ * \ingroup xgDriver
+ * \brief SpiFlashAt45d.
+ */
+
+/*!
+ * \defgroup xgSpiNodeAt45d SpiNodeAt45d
+ * \ingroup xgDriver
+ * \brief SpiNodeAt45d.
  */
 
 /*!
@@ -1839,6 +1868,12 @@
  */
 
 /*!
+ * \defgroup xgUsartCbAvr AVR USART Driver Frame
+ * \ingroup xgNutArchAvrDevSerial
+ * \brief AVR USART Driver Frame.
+ */
+
+/*!
  * \defgroup xgAhdlcAvr AHDLC
  * \ingroup xgNutArchAvrDevSerial
  * \brief AHDLC Driver.
@@ -2016,6 +2051,60 @@
  * \brief AVR32 hardware configuration.
  */
 
+/*!
+ * \defgroup xgDevDebugAvr32 DevDebugAvr32
+ * \ingroup xgNutArchAvr32
+ * \brief DevDebugAvr32.
+ */
+
+/*!
+ * \defgroup xgAvr32Efc Avr32Efc
+ * \ingroup xgNutArchAvr32
+ * \brief Avr32Efc.
+ */
+
+/*!
+ * \defgroup xgNutArchAvr32OsTimer OsTimer
+ * \ingroup xgNutArchAvr32
+ * \brief NutArchAvr32OsTimer.
+ */
+
+/*!
+ * \defgroup xgNutArchAvr32Pwm Pwm
+ * \ingroup xgNutArchAvr32
+ * \brief NutArchAvr32Pwm.
+ */
+
+/*!
+ * \defgroup xgNutArchAvr32Rstc Rstc
+ * \ingroup xgNutArchAvr32
+ * \brief NutArchAvr32Rstc.
+ */
+
+/*!
+ * \defgroup xgNutArchAvr32Usart Usart
+ * \ingroup xgNutArchAvr32
+ * \brief NutArchAvr32Usart.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAvr32Us Us
+ * \ingroup xgNutArchAvr32
+ * \brief NutArchArmAvr32Us.
+ */
+
+/*!
+ * \defgroup xgNutArchAvr32DevWatchDog DevWatchDog
+ * \ingroup xgNutArchAvr32
+ * \brief NutArchAvr32DevWatchDog.
+ */
+
+/*!
+ * \defgroup xgNutArchAvr32Init Init
+ * \ingroup xgNutArchAvr32
+ * \brief NutArchAvr32Init.
+ */
+
 
 /* =================================== ARM Architectures ================================= */
 /*!
@@ -2041,6 +2130,12 @@
  * \defgroup xgNutArchArmInit Initialization
  * \ingroup xgNutArchArm
  * \brief Starting Nut/OS
+ */
+
+/*!
+ * \defgroup xgNutArchArmV4t ARM V4 Architecture
+ * \ingroup xgNutArchArm
+ * \brief ARM V4 Architecture
  */
 
 /*!
@@ -2082,15 +2177,45 @@
  */
 
 /*!
+ * \defgroup charlcd Character LCD
+ * \ingroup xgNutArchArmAt91
+ * \brief charlcd.
+ */
+
+/*!
  * \defgroup xgNutArchArmAt91Dbgu Debug Unit
  * \ingroup xgNutArchArmAt91
  * \brief Debug unit registers.
  */
 
 /*!
+ * \defgroup xgNutArchArmAt91DdrSdrc DDR/SDR SDRAM Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief DDR SDR SDRAM Controller.
+ */
+
+/*!
+ * \defgroup xgI2cBusAt91 AT91 I2C Bus
+ * \ingroup xgNutArchArmAt91
+ * \brief AT91 I2C Bus Controller.
+ */
+
+/*!
  * \defgroup xgNutArchArmAt91Ebi Bus Interface
  * \ingroup xgNutArchArmAt91
  * \brief External bus interface registers.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Ecc Error Correction
+ * \ingroup xgNutArchArmAt91
+ * \brief Error Correction Controller.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Eefc Enhanced Embedded Flash Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief Enhanced Embedded Flash Controller.
  */
 
 /*!
@@ -2103,6 +2228,18 @@
  * \defgroup xgNutArchArmAt91Emac EMAC Module
  * \ingroup xgNutArchArmAt91
  * \brief Ethernet MAC module registers.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Isi Image Sensor
+ * \ingroup xgNutArchArmAt91
+ * \brief Image Sensor Interface.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Lcd LCD
+ * \ingroup xgNutArchArmAt91
+ * \brief LCD Interface.
  */
 
 /*!
@@ -2162,6 +2299,18 @@
  */
 
 /*!
+ * \defgroup xgNutArchArmAt91Rtc Real Time Clock
+ * \ingroup xgNutArchArmAt91
+ * \brief Real Time Clock.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Rtt Real Time Timer
+ * \ingroup xgNutArchArmAt91
+ * \brief Real Time Timer.
+ */
+
+/*!
  * \defgroup xgNutArchArmAt91x40 AT91x40
  * \ingroup xgNutArchArmAt91
  * \brief Register definitions.
@@ -2192,6 +2341,12 @@
  */
 
 /*!
+ * \defgroup xgNutArchArmAt91Sam9g45 AT91SAM9G45
+ * \ingroup xgNutArchArmAt91
+ * \brief AT91SAM9G45.
+ */
+
+/*!
  * \defgroup xgNutArchArmAt91Sam9260 AT91SAM9260
  * \ingroup xgNutArchArmAt91
  * \brief Register definitions.
@@ -2210,6 +2365,12 @@
  */
 
 /*!
+ * \defgroup xgNutArchArmAt91Shdwc Shutdown
+ * \ingroup xgNutArchArmAt91
+ * \brief Shutdown Controller.
+ */
+
+/*!
  * \defgroup xgNutArchArmAt91Smc Static Memory Controller
  * \ingroup xgNutArchArmAt91
  * \brief Static memory controller registers.
@@ -2219,6 +2380,18 @@
  * \defgroup xgNutArchArmAt91Spi Serial Peripheral Interface
  * \ingroup xgNutArchArmAt91
  * \brief Serial peripheral interface registers.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Tsadcc Touch Screen
+ * \ingroup xgNutArchArmAt91
+ * \brief Touch screen ADC controller registers.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Vreg Voltage Regulator
+ * \ingroup xgNutArchArmAt91
+ * \brief Voltage regulator registers.
  */
 
 /*!
@@ -2399,6 +2572,331 @@
  * \ingroup xgNutArchArmDevDebug
  * \brief Debug output driver for GBA LCD Screen.
  */
+
+/*!
+ * \defgroup xgNutArchArmZero Zero
+ * \ingroup xgNutArchArm
+ * \brief Zero CPU Support.
+
+/*!
+ * \defgroup xgDevDebugZero Zero Debug
+ * \ingroup xgNutArchArmDevDebug
+ * \brief Zero Debug.
+ */
+
+/*!
+ * \defgroup xgNutArchArmZeroOsTimer Zero OS Timer
+ * \ingroup xgNutArchArmDevDebug
+ * \brief Zero OS timer.
+ */
+
+/* ================================= Cortex-M3 Architecture ============================== */
+/*!
+ * \defgroup xgNutArchCm3 CM3
+ * \ingroup xgNutArch
+ * \brief 32 Bit RISC processor.
+ */
+
+/*!
+ * \defgroup xgNutArchArmv7_m ARM V7M Architecture
+ * \ingroup xgNutArchCm3
+ * \brief ARM V7 Architecture
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc NXP LPC
+ * \ingroup xgNutArchCm3
+ * \brief NXP LPC
+ */
+
+/*!
+ * \defgroup CMSIS CMSIS
+ * \ingroup xgNutArchCm3
+ * \brief CMSIS
+ */
+
+/*!
+ * \defgroup CMSIS_MISRA_Exceptions MISRA-C:2004 Compliance Exceptions
+ * \ingroup xgNutArchCm3
+ * \brief MISRA-C:2004 Compliance Exceptions
+ */
+
+/*!
+ * \defgroup CMSIS_core_register Defines and Type Definitions
+ * \ingroup CMSIS
+ * \brief Defines and Type Definitions
+ */
+
+/*!
+ * \defgroup CMSIS_Core_FunctionInterface Functions and Instructions Reference
+ * \ingroup CMSIS
+ * \brief Functions and Instructions Reference
+ */
+
+/*!
+ * \defgroup CMSIS_glob_defs CMSIS Global Defines
+ * \ingroup CMSIS
+ * \brief CMSIS Global Defines
+ */
+
+/*!
+ * \defgroup CMSIS_SIMD_intrinsics CMSIS SIMD Intrinsics
+ * \ingroup CMSIS
+ * \brief CMSIS SIMD Intrinsics
+ */
+
+/*!
+ * \defgroup CMSIS_Core_InstructionInterface CMSIS Core Instruction Interface
+ * \ingroup CMSIS
+ * \brief CMSIS Core Instruction Interface
+ */
+
+/*!
+ * \defgroup xgNutArchArmOsTimerCm3 OsTimerCm3
+ * \ingroup xgNutArchCm3
+ * \brief OsTimerCm3
+ */
+
+/*!
+ * \defgroup xgNutArchCm3OsContext Cm3OsContext
+ * \ingroup xgNutArchCm3
+ * \brief Cm3OsContext
+ */
+
+/*!
+ * \defgroup xgNutArchCm3LpcI2c I2C
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LPC I2C
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc17xxDevWatchDog Cm3Lpc17xxDevWatchDog
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Cm3Lpc17xxDevWatchDog
+ */
+
+/*!
+ * \defgroup LPC17xx_System_Defines LPC17xx_System_Defines
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LPC17xx_System_Defines
+ */
+
+/*!
+ * \defgroup LPC177x_8x_System_Defines LPC177x_8x_System_Defines
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LPC177x_8x_System_Defines
+ */
+
+/*!
+ * \defgroup xgDevDebugLpc DevDebugLpc
+ * \ingroup xgNutArchCm3Lpc
+ * \brief DevDebugLpc
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc177x_8xDebug Lpc177x_8xDebug
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc177x_8xDebug
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc176xGpio Lpc176xGpio
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc176xGpio
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc176xUsart Lpc176xUsart
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc176xUsart
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc177x_8xGpio Lpc177x_8xGpio
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc177x_8xGpio
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc177x_8xUsart Lpc177x_8xUsart
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc177x_8xUsart
+ */
+
+/*!
+ * \defgroup xgNutArchArmLpc17xxDebug Lpc17xxDebug
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc17xxDebug
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc17xxEmac Lpc17xxEmac
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc17xxEmac
+ */
+
+/*!
+ * \defgroup MCI_Public_Functions MCI Public Functions
+ * \ingroup xgNutArchCm3Lpc
+ * \brief MCI Public Functions
+ */
+
+/*!
+ * \defgroup Card Card
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Card
+ */
+
+/*!
+ * \defgroup xgLpc17xxIap Lpc17xxIap
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc17xxIap
+ */
+
+/*!
+ * \defgroup xgNutArchArmLpc17xxUsart Lpc17xxUsart
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc17xxUsart
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Lpc17xxDevWatchDog Lpc17xxDevWatchDog
+ * \ingroup xgNutArchCm3Lpc
+ * \brief Lpc17xxDevWatchDog
+ */
+
+/*!
+ * \defgroup xgNutArchArmv7mLpcAdc LpcAdc
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcAdc
+ */
+
+/*!
+ * \defgroup xgNutArchArmv7mLpcUart LpcUart
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcUart
+ */
+
+/*!
+ * \defgroup xgNutArchArmLpcDac LpcDac
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcDac
+ */
+
+/*!
+ * \defgroup xgNutArchArmLpcEmac LpcEmac
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcEmac
+ */
+
+/*!
+ * \defgroup xgNutArchArmv7mLpcGpio LpcGpio
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcGpio
+ */
+
+/*!
+ * \defgroup xgNutArchArmLpcPinCon LpcPinCon
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcPinCon
+ */
+
+/*!
+ * \defgroup xgNutArchArmv7mLpcSc LpcSc
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcSc
+ */
+
+/*!
+ * \defgroup xgNutArchArmv7mLpcSpi LpcSpi
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcSpi
+ */
+
+/*!
+ * \defgroup xgNutArchArmv7mLpcSsp LpcSsp
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcSsp
+ */
+
+/*!
+ * \defgroup xgNutArchArmLpcTim LpcTim
+ * \ingroup xgNutArchCm3Lpc
+ * \brief LpcTim
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Stm32 STM32
+ * \ingroup xgNutArchCm3
+ * \brief STM32 Support.
+ */
+
+/*!
+ * \defgroup StdPeriph_Driver StdPeriph_Driver
+ * \ingroup xgNutArchCm3Stm32
+ * \brief StdPeriph_Driver
+ */
+
+/*!
+ * \defgroup STM32F10x_StdPeriph_Driver STM32F10x_StdPeriph_Driver
+ * \ingroup xgNutArchCm3Stm32
+ * \brief STM32F10x_StdPeriph_Driver
+ */
+
+/*!
+ * \defgroup STM32F2xx_StdPeriph_Driver STM32F2xx_StdPeriph_Driver
+ * \ingroup xgNutArchCm3Stm32
+ * \brief STM32F2xx_StdPeriph_Driver
+ */
+
+/*!
+ * \defgroup STM32F30x_StdPeriph_Driver STM32F30x_StdPeriph_Driver
+ * \ingroup xgNutArchCm3Stm32
+ * \brief STM32F30x_StdPeriph_Driver
+ */
+
+/*!
+ * \defgroup STM32F4xx_StdPeriph_Driver STM32F4xx_StdPeriph_Driver
+ * \ingroup xgNutArchCm3Stm32
+ * \brief STM32F4xx_StdPeriph_Driver
+ */
+
+/*!
+ * \defgroup STM32L1xx_StdPeriph_Driver STM32L1xx_StdPeriph_Driver
+ * \ingroup xgNutArchCm3Stm32
+ * \brief STM32L1xx_StdPeriph_Driver
+ */
+
+/*!
+ * \defgroup xgStm32Adc Stm32Adc
+ * \ingroup xgNutArchCm3Stm32
+ * \brief Stm32Adc
+ */
+
+/*!
+ * \defgroup xgI2cBusSTM32 I2cBusSTM32
+ * \ingroup xgNutArchCm3Stm32
+ * \brief I2cBusSTM32
+ */
+
+/*!
+ * \defgroup xgNutArchCm3Stm32 Cm3Stm32
+ * \ingroup xgNutArchCm3Stm32
+ * \brief Cm3Stm32
+ */
+
+/*!
+ * \defgroup xgNutArchArmStm32Us Stm32Us
+ * \ingroup xgNutArchCm3Stm32
+ * \brief Stm32Us
+ */
+
+/*!
+ * \defgroup GPIO_Group3 GPIO Group3
+ * \ingroup xgNutArchCm3Stm32
+ * \brief GPIO Group3
+ */
+
 
 /* ================================= Emulator Architecture =============================== */
 /*!
