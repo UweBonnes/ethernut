@@ -34,8 +34,10 @@
 -- STMicroelectronics STM32L Family Devices
 --
 --
-stm32_memory_l1_md = { "32", "64", "128" }
-stm32l1_device_class = { "STML1XX_MD" }
+
+stm32_memory_l1xx = { "32" , "64" , "128" , "256" , "384" }
+
+stm32l1_device_class = { "STML1XX_MD" ,"STML1XX_MDP", "STML1XX_HD" }
 
 -- *****************************************************************************
 -- STM32L1 Family
@@ -64,6 +66,8 @@ nutarch_cm3_stm32l1 =
                 {
                     "HW_PLL_STM32L1",
                     "HW_RCC_STM32",
+                    "HW_FLASH_STM32L1",
+                    "HW_EEPROM_STM32L1",
                     "HW_GPIO_STM32V2",
                     "HW_CRC32_STM32",
                     "DEV_IRQ_STM32",
@@ -110,6 +114,26 @@ nutarch_cm3_stm32l1 =
                 provides = { "STM32L1XX_MD" },
                 file = "include/cfg/arch.h"
             },
+            {
+                macro = "STM32L1XX_MDP",
+                brief = "STM32L1 MDP Series",
+                description = "STM32L1 Medium Density devices.",
+                flavor = "booldata",
+                exclusivity = stm32l1_device_class,
+                makedefs = { "HWDEF+=-DSTM32L1XX_MDP" },
+                provides = { "STM32L1XX_MDP" },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32L1XX_HD",
+                brief = "STM32L1 HD Series",
+                description = "STM32L1 Medium Density devices.",
+                flavor = "booldata",
+                exclusivity = stm32l1_device_class,
+                makedefs = { "HWDEF+=-DSTM32L1XX_HD" },
+                provides = { "STM32L1XX_HD" },
+                file = "include/cfg/arch.h"
+            },
         }
     },
     {
@@ -126,10 +150,12 @@ nutarch_cm3_stm32l1 =
                               "6 =   32 kbytes Flash\n"..
                               "8 =   64 kbytes Flash\n"..
                               "B =  128 kbytes Flash\n",
+                              "C =  256 kbytes Flash\n",
+                              "D =  384 kbytes Flash\n",
 
                 requires = { "HW_MCU_STM32L1XX" },
                 type = "enumerated",
---                choices = stm32_memory_l1xx,
+                choices = stm32_memory_l1xx,
                 file = "include/cfg/arch.h"
             },
         }
