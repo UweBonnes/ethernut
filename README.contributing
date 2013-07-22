@@ -9,7 +9,7 @@ done in two ways:
 
 1. Manual
 When you "svn add" the file, don't forget to set the eol-style properity:
- svn propset erol-style native <file>
+ svn propset svn:eol-style native <file>
 
 2. Automatic
 You can to set up SVN to automatic set the properities. Have a look at
