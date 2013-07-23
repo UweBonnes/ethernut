@@ -386,7 +386,6 @@ int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 
     if (flags & (GPIO_CFG_DISABLED | PERIPHERALS_MASK)) {
         gpio_port->gperc = mask;
-        gpio_port->oderc = mask;
     } else {
         gpio_port->gpers = mask;
     }
