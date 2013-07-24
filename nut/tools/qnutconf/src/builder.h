@@ -50,16 +50,19 @@ public:
     ~Builder();
 
     bool build( const QString& target, bool verbose );
+	bool build( const QStringList& targets, bool verbose );
     void stop();
 
     static Builder* instance();
 
 private:
+	void startBuild( bool verbose );
     void runMake( const QString& target );
     bool verbose_log;
 
 private slots:
     void processNextTarget(int exitCode);
+	void error(QProcess::ProcessError error);
     void readyReadStandardOutput();
     void readyReadStandardError();
 

@@ -42,6 +42,7 @@ Builder::Builder()
 
 	process = new QProcess( this );
 	connect( process, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(processNextTarget(int)) );
+	connect( process, SIGNAL(error(QProcess::ProcessError)), SLOT(error(QProcess::ProcessError)) );
 	connect( process, SIGNAL(readyReadStandardOutput()), SLOT(readyReadStandardOutput()) );
 	connect( process, SIGNAL(readyReadStandardError()), SLOT(readyReadStandardError()) );
 }
@@ -60,6 +61,19 @@ Builder* Builder::instance()
 bool Builder::build( const QString& target, bool verbose )
 {
 	queue.append( target );
+	startBuild( verbose );
+	return true;
+}
+
+bool Builder::build( const QStringList& targets, bool verbose )
+{
+	queue.append( targets );
+	startBuild( verbose );
+	return true;
+}
+
+void Builder::startBuild( bool verbose )
+{
 	if ( process->state() == QProcess::NotRunning )
 	{
 		verbose_log = verbose;
@@ -76,8 +90,6 @@ bool Builder::build( const QString& target, bool verbose )
 		process->setWorkingDirectory( Settings::instance()->buildPath() );
 		processNextTarget( 0 );
 	}
-
-	return true;
 }
 
 void Builder::processNextTarget( int exitCode )
@@ -89,8 +101,9 @@ void Builder::processNextTarget( int exitCode )
 		return;
 	}
 
-	runMake( queue.first() );
+	QString target = queue.first();
 	queue.pop_front();
+	runMake( target );
 }
 
 void Builder::runMake( const QString& target )
@@ -128,5 +141,20 @@ void Builder::stop()
 		process->close();
 	}
 	emit message( tr("Build canceled by the user") );
+	emit done(-1);
+}
+
+void Builder::error( QProcess::ProcessError error )
+{
+	queue.clear();
+	switch( error )
+	{
+	case QProcess::FailedToStart:
+		emit message( tr("Program 'make' failed to start. Maybe it's not in your PATH or Tool path in Settings") );
+		break;
+	default:
+		emit message( tr("Unknown error trying to run 'make'") );
+	}
+
 	emit done(-1);
 }

@@ -289,13 +289,8 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	// Generate the build tree
 	model->generateBuildTree();
 
-	/* Clean up any previous build */
-	Builder::instance()->build( "clean", Settings::instance()->verboseBuild() );
-	/* Make all */
-	Builder::instance()->build( "all", Settings::instance()->verboseBuild() );
-	/* Make install */
-	Builder::instance()->build( "install", Settings::instance()->verboseBuild() );
-
+	// Clean up, build and install
+	Builder::instance()->build( QStringList() << "clean" << "all" << "install", Settings::instance()->verboseBuild() );
 }
 
 void MainWindow::on_actionBuildStop_triggered()
