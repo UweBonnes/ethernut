@@ -68,24 +68,11 @@ bool Builder::build( const QString& target, bool verbose )
 		} else {
 			process->setProcessChannelMode( QProcess::SeparateChannels );
 		}
-#if 0
-		QStringList env = QProcess::systemEnvironment();
-		env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=" + Settings::instance()->toolPath() + ";\\1" );
-		env << "MAKE=make -j" + QString::number(QThread::idealThreadCount() + 1);
-		process->setEnvironment( env );
-#else
-
 
 		QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-#ifdef _WIN32
-		env.insert("PATH", Settings::instance()->toolPath() + ";" + env.value("Path"));
+		env.insert( "PATH", QDir::toNativeSeparators(Settings::instance()->toolPath()) + QDir::separator() + env.value("PATH") );
+		env.insert( "MAKE", "make -j" + QString::number(QThread::idealThreadCount() + 1) );
 		process->setProcessEnvironment(env);
-#else
-		env.insert("PATH", Settings::instance()->toolPath() + ":" + env.value("PATH"));
-		process->setProcessEnvironment(env);
-#endif
-
-#endif
 		process->setWorkingDirectory( Settings::instance()->buildPath() );
 		processNextTarget( 0 );
 	}
@@ -141,4 +128,5 @@ void Builder::stop()
 		process->close();
 	}
 	emit message( tr("Build canceled by the user") );
+	emit done(-1);
 }
