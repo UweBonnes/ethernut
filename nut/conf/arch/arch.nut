@@ -1505,12 +1505,14 @@ nutarch =
         name = "nutarch_arm",
         brief = "ARM",
         requires = { "HW_MCU_ARM" },
+        provides = { "ARM_SEMIHOSTING" };
         script = "arch/arm.nut"
     },
     {
         name = "nutarch_cm3",
         brief = "CM3",
         requires = { "HW_MCU_CM3" },
+        provides = { "ARM_SEMIHOSTING" };
         script = "arch/cm3.nut"
     },
     {

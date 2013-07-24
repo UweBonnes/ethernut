@@ -2084,6 +2084,17 @@ nutdev =
                       "to the nullDev which discards any output.",
         sources = { "null.c" }
     },
+    --
+    -- Character Device Drivers.
+    --
+    {
+        name = "nutdev_semihosting",
+        brief = "Virtual Serial Device using ARM semihosting",
+        description = "IO on virtual serial device using ARM semihosting. "..
+                      "Program will only run with debugger attached.",
+        requires = { "ARM_SEMIHOSTING" };
+        sources = { "semihosting.c" }
+    },
 --    {
 --        name = "nutdev_sc16is752",
 --        brief = "SC16IS752 Dual USART",
