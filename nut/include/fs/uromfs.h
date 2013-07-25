@@ -85,9 +85,10 @@
  * The crurom utility creates prog_char arrays. Thus, we need this type.
  */
 #ifdef __HARVARD_ARCH__
-#if (__GNUC__ == 4 && __GNUC_MINOR__ > 6) || __GNUC__ > 4
+#ifdef __FLASH
 typedef const char __flash prog_char;
 #else
+#include <avr/pgmspace.h> /* From AVR-LibC */
 typedef const char PROGMEM prog_char;
 #endif
 #else
