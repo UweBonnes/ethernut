@@ -26,6 +26,43 @@ nutarch_cm3_stm32_devices =
         provides = { "DEV_RTC" },
         sources = { "cm3/dev/stm/stm32_rtc_v2.c" },
     },
+
+
+
+    --
+    -- STM32 DEBUG Macro (Low-Level Debug UART definition)
+    --
+    {
+        name = "nutarch_cm3_stm32_debugmacro",
+        brief = "STM32 Low-Level Debug UART macros for use in exception handlers",
+        description = "Polling UART function (macro) to use in exception handlers\n",
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "DEV_UART_STM32" },
+        provides = { "DEBUG_MACRO"},
+		sources = { "cm3/cmsis/cortex_debug.c" },
+        options =
+        {
+            {
+                macro = "DEBUG_MACRO",
+                brief = "Enabled",
+                description = "Check to enable debug output of exception handlers",
+                flavor = "boolean",
+                file = "include/cfg/cortex_debug.h"
+            },
+            {
+                macro = "DEBUG_UART_NR",
+                brief = "Debug UART",
+                description = "Select the UART to use for low level debugging",
+                type = "enumerated",
+                choices = { "USART1", "USART2", "USART3", "USART4", "USART5" },
+				default = "USART1",
+                file = "include/cfg/cortex_debug.h"
+            }
+        }
+    },
+
+    --
+    -- STM32 DEBUG UART configuration
+    --
     {
         name = "nutarch_cm3_stm32_devices_debug",
         brief = "UART Debug Output (STM32)",
@@ -35,7 +72,7 @@ nutarch_cm3_stm32_devices =
         {
             {
                 macro = "DEBUG_USE_UART",
-                brief = "Select Debug Channel",
+                brief = "Select debug UART channel",
                 description = "Select the UART to use as debug output\n"..
                               "This is only to adapt the application examples and to tell them\n"..
                               "which USART to use as stdout.",

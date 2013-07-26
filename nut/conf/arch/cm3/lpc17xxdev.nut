@@ -7,6 +7,37 @@ nutarch_cm3_lpc17xx_devices =
     -- ***********************************
 
     --
+    -- LPC176x DEBUG Macro (Low-Level Debug UART definition)
+    --
+    {
+        name = "nutarch_cm3_lpc17xx_debugmacro",
+        brief = "LPC17xx Low-Level Debug UART macros for use in exception handlers",
+        description = "Polling UART function (macro) to use in exception hanlders\n",
+        requires = { "HW_UART0_LPC17xx", "HW_UART1_LPC17xx", "HW_UART2_LPC17xx", "HW_UART3_LPC17xx" },
+        provides = { "DEBUG_MACRO"},
+		sources = { "cm3/cmsis/cortex_debug.c" },
+        options =
+        {
+            {
+                macro = "DEBUG_MACRO",
+                brief = "Enabled",
+                description = "Check to enable debug output of exception handlers",
+                flavor = "boolean",
+                file = "include/cfg/cortex_debug.h"
+            },
+            {
+                macro = "DEBUG_UART_NR",
+                brief = "Debug UART",
+                description = "Select the UART to use for low level debugging",
+                type = "enumerated",
+                choices = { "LPC_UART0", "LPC_UART1", "LPC_UART2", "LPC_UART3" },
+				default = "LPC_UART0",
+                file = "include/cfg/cortex_debug.h"
+            }
+        }
+    },
+
+    --
     -- LPC17xx RTC
     --
     {

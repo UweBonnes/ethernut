@@ -43,8 +43,10 @@
 #include <cfg/clock.h>
 #include <cfg/arch.h>
 #include <cfg/memory.h>
+#include <cfg/cortex_debug.h>
 
 #include <arch/cm3.h>
+#include <arch/cm3/cortex_debug.h>
 #include <dev/rtc.h>
 #include <sys/heap.h>
 #include <sys/nutdebug.h>
@@ -155,8 +157,26 @@ extern void * _stack_end;       /* Main stack end address */
 /* Default interrupt handler */
 static void IntDefaultHandler(void *arg)
 {
-    for (;;);
+#ifdef DEBUG_MACRO
+    /*
+     * Get the appropriate stack pointer, depending on our mode,
+     * and use it as the parameter to the C handler. This function
+     * will never return
+     */
+
+    __asm("TST    LR, #4  \n"
+          "ITE    EQ      \n"
+          "MRSEQ  R0, MSP \n"
+          "MRSNE  R0, PSP \n"
+          "MOV    R1, #0  \n"  // Pass 'DEFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDum
+          "B      CortexRegDump \n"
+          );
+#else
+    __asm("BKPT #0\n") ; // Break into the debugger
+    while(1);
+#endif
 }
+
 
 /* Below the default exception handler follow */
 
@@ -165,7 +185,24 @@ static void IntDefaultHandler(void *arg)
  */
 static void IntNmiHandler(void *arg)
 {
-    for (;;);
+#ifdef DEBUG_MACRO
+    /*
+     * Get the appropriate stack pointer, depending on our mode,
+     * and use it as the parameter to the C handler. This function
+     * will never return
+     */
+
+    __asm("TST    LR, #4  \n"
+          "ITE    EQ      \n"
+          "MRSEQ  R0, MSP \n"
+          "MRSNE  R0, PSP \n"
+          "MOV    R1, #1  \n"  // Pass 'NMI_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
+          "B      CortexRegDump \n"
+          );
+#else
+    __asm("BKPT #0\n") ; // Break into the debugger
+    while(1);
+#endif
 }
 
 /*!
@@ -173,7 +210,24 @@ static void IntNmiHandler(void *arg)
  */
 static void IntHardfaultHandler(void *arg)
 {
-    for (;;);
+#ifdef DEBUG_MACRO
+    /*
+     * Get the appropriate stack pointer, depending on our mode,
+     * and use it as the parameter to the C handler. This function
+     * will never return
+     */
+
+    __asm("TST    LR, #4  \n"
+          "ITE    EQ      \n"
+          "MRSEQ  R0, MSP \n"
+          "MRSNE  R0, PSP \n"
+          "MOV    R1, #2  \n"  // Pass 'HARDFAULLT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
+          "B      CortexRegDump \n"
+          );
+#else
+    __asm("BKPT #0\n") ; // Break into the debugger
+    while(1);
+#endif
 }
 
 /*!
@@ -181,15 +235,50 @@ static void IntHardfaultHandler(void *arg)
  */
 static void IntMemfaultHandler(void *arg)
 {
-    for (;;);
+#ifdef DEBUG_MACRO
+    /*
+     * Get the appropriate stack pointer, depending on our mode,
+     * and use it as the parameter to the C handler. This function
+     * will never return
+     */
+
+    __asm("TST    LR, #4  \n"
+          "ITE    EQ      \n"
+          "MRSEQ  R0, MSP \n"
+          "MRSNE  R0, PSP \n"
+          "MOV    R1, #3  \n"  // Pass 'MEMFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
+          "B      CortexRegDump \n"
+          );
+#else
+    __asm("BKPT #0\n") ; // Break into the debugger
+    while(1);
+#endif
 }
 
 /*!
  * \brief Bus fault handler
  */
-static void IntBusfaultHandler(void *arg)
+
+void IntBusfaultHandler(void *arg)
 {
-    for (;;);
+#ifdef DEBUG_MACRO
+    /*
+     * Get the appropriate stack pointer, depending on our mode,
+     * and use it as the parameter to the C handler. This function
+     * will never return
+     */
+
+    __asm("TST    LR, #4  \n"
+          "ITE    EQ      \n"
+          "MRSEQ  R0, MSP \n"
+          "MRSNE  R0, PSP \n"
+          "MOV    R1, #4  \n"  // Pass 'BUSFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
+          "B      CortexRegDump \n"
+          );
+#else
+    __asm("BKPT #0\n") ; // Break into the debugger
+    while(1);
+#endif
 }
 
 /*!
@@ -197,7 +286,24 @@ static void IntBusfaultHandler(void *arg)
  */
 static void IntUsagefaultHandler(void *arg)
 {
-    for (;;);
+#ifdef DEBUG_MACRO
+    /*
+     * Get the appropriate stack pointer, depending on our mode,
+     * and use it as the parameter to the C handler. This function
+     * will never return
+     */
+
+    __asm("TST    LR, #4  \n"
+          "ITE    EQ      \n"
+          "MRSEQ  R0, MSP \n"
+          "MRSNE  R0, PSP \n"
+          "MOV    R1, #5  \n"  // Pass 'USAGEFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
+          "B      CortexRegDump \n"
+          );
+#else
+    __asm("BKPT #0\n") ; // Break into the debugger
+    while(1);
+#endif
 }
 
 
@@ -309,7 +415,7 @@ static void Cortex_IntInit(void)
                   SCB_SHCSR_BUSFAULTENA_Msk |
                   SCB_SHCSR_MEMFAULTENA_Msk;
 
-    for (int_id = 0; int_id < NUM_INTERRUPTS - 16; int_id ++) {
+    for (int_id = 16; int_id < NUM_INTERRUPTS - 16; int_id ++) {
         /* Make sure the interrupt is disabled */
         NVIC_DisableIRQ(int_id);
         g_pfnRAMVectors[int_id] = &IntDefaultHandler;
