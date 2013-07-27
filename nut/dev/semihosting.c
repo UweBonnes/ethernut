@@ -75,13 +75,20 @@ static struct semihosting_handles sh;
  */
 /*@{*/
 
+#define AngelSWI_ARM                    0x123456
 #ifdef __thumb__
 #define AngelSWI                        0xAB
 #else
 #define AngelSWI                        AngelSWI_ARM
 #endif
-#define AngelSWI                        0xAB
+/* For thumb only architectures use the BKPT instruction instead of SWI.  */
+#ifdef THUMB_V7M_V6M
 #define AngelSWIInsn                    "bkpt"
+#define AngelSWIAsm                     bkpt
+#else
+#define AngelSWIInsn                    "swi"
+#define AngelSWIAsm                     swi
+#endif
 
 /* The reason codes:  */
 #define AngelSWI_Reason_Open            0x01
