@@ -160,7 +160,8 @@ nutarch_cm3 =
         brief = "STM32 Family",
         requires = { "HW_MCU_STM32" },
         description = "ST Microelectronics STM32 Series",
-        script = "arch/cm3/stm32fam.nut"
+        script = "arch/cm3/stm32fam.nut",
+        makedefs = { "ARCH_STM32=y" }
     },
     {
         name = "nutarch_cm3_sam3",

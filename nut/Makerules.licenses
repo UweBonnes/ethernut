@@ -1,6 +1,5 @@
 #
-# Copyright (C) 2001-2006 by egnite Software GmbH
-# Copyright (C) 2009 by egnite GmbH
+# Copyright (C) 2013 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
 #
 # All rights reserved.
 #
@@ -37,21 +36,35 @@
 # $Id$
 #
 
-include $(top_srcdir)/Makerules.licenses
+ifeq ($(PROJ),libnutarch)
 
-help-libs:
-	$(info 'make all'       Creates all libraries. This is the default.)
-	$(info 'make clean'     Deletes all files that had been created by 'make all')
-	$(info 'make distclean' Deletes everything that can be reconstructed and all temporary files)
-	$(info 'make install'   Creates all libries and installs them for actual use.)
-	$(info 'make uninstall' Removes all installed libraries.)
+ifeq ($(ARCH_STM32),y)
 
-help: help-libs
+ifneq ($(LICENSE_ST_GUIDANCE),y)
+MSG_LICENSE += "\n"
+MSG_LICENSE += "******************************************************************************\n"
+MSG_LICENSE += "*          WARNING: STM32 License ST Guidance Only not accepted.             *\n"
+MSG_LICENSE += "*             Not all files will be compiled, build may fail!                *\n"
+MSG_LICENSE += "******************************************************************************\n"
+MSG_LICENSE += "\n"
+LOG_CMD = echo -e $(MSG_LICENSE) >&2
+endif
 
-cleanedit: tempclean
+ifneq ($(LICENSE_MCD_ST_LIBERTY),y)
+MSG_LICENSE += "\n"
+MSG_LICENSE += "******************************************************************************\n"
+MSG_LICENSE += "*      WARNING: STM32 MCD-ST Liberty SW License Agreement V2 not accepted    *\n"
+MSG_LICENSE += "*              Not all files will be compiled, build may fail!               *\n"
+MSG_LICENSE += "******************************************************************************\n"
+MSG_LICENSE += "\n"
+LOG_CMD = echo -e $(MSG_LICENSE) >&2
+endif
 
-tempclean:
-	-rm -f $(SRCS:.c=.bak)
-	-rm -f $(SRCS:.c=.c~)
+endif
 
-.PHONY: cleanedit tempclean help help-libs help-apps
+endif
+
+check-licenses:
+	@$(LOG_CMD)
+
+.PHONY: check-licenses

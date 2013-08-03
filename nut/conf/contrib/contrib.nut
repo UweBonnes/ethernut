@@ -48,7 +48,8 @@ nutcontrib =
                           "For details see http://opensource.org/licenses/real.php",
             provides = { "LICENSE_RPSL_RCSL" },
             macro = "LICENSE_RPSL_RCSL",
-            flavor = "boolean"
+            flavor = "boolean",
+            makedefs = { "LICENSE_RPSL_RCSL=y" }
         },
         {
             brief = "GNU GENERAL PUBLIC LICENSE Version 3",
@@ -57,7 +58,8 @@ nutcontrib =
                           "For details see http://www.gnu.org/licenses/gpl-3.0-standalone.html",
             provides = { "LICENSE_GPL3" },
             macro = "LICENSE_GPL3",
-            flavor = "boolean"
+            flavor = "boolean",
+            makedefs = { "LICENSE_GPLv3=y" }
         },
         {
             brief = "STMicroelectronics Guidance Only",
@@ -67,7 +69,8 @@ nutcontrib =
                           "Enable this option only, if you agree to this.",
             provides = { "LICENSE_ST_GUIDANCE_ONLY" },
             macro = "LICENSE_ST_GUIDANCE_ONLY",
-            flavor = "boolean"
+            flavor = "boolean",
+            makedefs = { "LICENSE_ST_GUIDANCE=y" }
         },
         {
             brief = "MCD-ST Liberty SW License Agreement V2",
@@ -76,7 +79,8 @@ nutcontrib =
                           "For details see http://www.st.com/software_license_agreement_liberty_v2",
             provides = { "LICENSE_MCD_ST_LIBERTY" },
             macro = "LICENSE_MCD_ST_LIBERTY",
-            flavor = "boolean"
+            flavor = "boolean",
+            makedefs = { "LICENSE_MCD_ST_LIBERTY=y" }
         },
     },
     {
