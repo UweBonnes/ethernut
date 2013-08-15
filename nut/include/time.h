@@ -77,14 +77,6 @@
  * @{
  */
 
-/*!
- * \brief structure to store a timestamp with microseconds resolution
- */
-
-struct timeval {
-    long    tv_sec;         /* seconds */
-    long    tv_usec;        /* microseconds */
-};
 
 /*!
  * \brief Type definition for struct _tm
@@ -133,6 +125,13 @@ tm *localtime(const time_t * timer);
 int stime(time_t * timer);
 time_t mktime(tm * timeptr);
 time_t _mkgmtime(tm * timeptr);
+
+/*!
+ * \brief Offset of the system time compared to epoc
+ *
+ * Used to calculate current time from the system run-time.
+ */
+extern struct timeval epo_offs;
 
 /*!
  * \brief Used to control daylight conversions.
