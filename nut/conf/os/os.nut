@@ -286,7 +286,7 @@ nutos =
                               "\n"..
                               "Using this option is a must for silicon revisions C of the AT90CAN128 MCU \n"..
                               "as the device misfunctions when code stack is in XRAM.  Refer to \n"..
-                              "AT90CAN128 Datasheet Rev. 4250F\96CAN\9604/05 - Errata Rev C \n"..
+                              "AT90CAN128 Datasheet Rev. 4250F-CAN-04/05 - Errata Rev C \n"..
                               "\n"..
                               "Use this option is conjunction with DATA_SEG for AT90CAN128 MCUs!",
                 requires = { "HW_MCU_AVR" },
@@ -300,7 +300,7 @@ nutos =
                               "Leave this option empty to use the architecture's default setting.\n\n"..
                               "Using this option is a must for silicon revisions C of the AT90CAN128 MCU \n"..
                               "as the device misfunctions when code stack is in XRAM.  Refer to \n"..
-                              "AT90CAN128 Datasheet Rev. 4250F\96CAN\9604/05 - Errata Rev C \n"..
+                              "AT90CAN128 Datasheet Rev. 4250F-CAN-04/05 - Errata Rev C \n"..
                               "\n"..
                               "Use this option is conjunction with NUTMEM_STACKHEAP for AT90CAN128 MCUs!",
                 requires = { "HW_MCU_AVR" },
