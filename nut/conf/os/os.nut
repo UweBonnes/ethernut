@@ -442,7 +442,7 @@ nutos =
             },
             {
                 macro = "NUT_USE_OLD_TIME_API",
-                brief = "Use old stile time calculation",
+                brief = "Use old style time calculation",
                 description = "The old way of calculating the current time was based on the system "..
                               "tick counter. Unfortunately this introduced bugs when this counter value "..
                               "overflowed. On most systems (with 1Khz system tick timer) this happened "..
