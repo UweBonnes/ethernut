@@ -108,6 +108,7 @@
 #include <sys/types.h>
 #include <arch/timer.h>
 
+#include <time.h>
 #include <stdint.h>
 
 /*!
@@ -147,6 +148,12 @@ struct _NUTTIMERINFO {
 };
 
 extern NUTTIMERINFO* nutTimerList;
+
+/*! \brief The system_time struct holds the seconds and microseconds since
+ *         system startup
+ */
+extern volatile struct timeval system_time;
+
 
 #define TM_ONESHOT  0x01
 

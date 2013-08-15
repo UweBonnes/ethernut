@@ -286,7 +286,7 @@ nutos =
                               "\n"..
                               "Using this option is a must for silicon revisions C of the AT90CAN128 MCU \n"..
                               "as the device misfunctions when code stack is in XRAM.  Refer to \n"..
-                              "AT90CAN128 Datasheet Rev. 4250F–CAN–04/05 - Errata Rev C \n"..
+                              "AT90CAN128 Datasheet Rev. 4250F\96CAN\9604/05 - Errata Rev C \n"..
                               "\n"..
                               "Use this option is conjunction with DATA_SEG for AT90CAN128 MCUs!",
                 requires = { "HW_MCU_AVR" },
@@ -300,7 +300,7 @@ nutos =
                               "Leave this option empty to use the architecture's default setting.\n\n"..
                               "Using this option is a must for silicon revisions C of the AT90CAN128 MCU \n"..
                               "as the device misfunctions when code stack is in XRAM.  Refer to \n"..
-                              "AT90CAN128 Datasheet Rev. 4250F–CAN–04/05 - Errata Rev C \n"..
+                              "AT90CAN128 Datasheet Rev. 4250F\96CAN\9604/05 - Errata Rev C \n"..
                               "\n"..
                               "Use this option is conjunction with NUTMEM_STACKHEAP for AT90CAN128 MCUs!",
                 requires = { "HW_MCU_AVR" },
@@ -438,6 +438,37 @@ nutos =
                               "compiler options. If not specified, the system will try to "..
                               "determine a rough approximation.",
                 flavor = "booldata",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUT_USE_OLD_TIME_API",
+                brief = "Use old stile time calculation",
+                description = "The old way of calculating the current time was based on the system "..
+                              "tick counter. Unfortunately this introduced bugs when this counter value "..
+                              "overflowed. On most systems (with 1Khz system tick timer) this happened "..
+                              "after 49,7 days. If the system used an RTC, this bug did not show up in "..
+                              "most cases, as the time was then queried from the RTC.\n\n"..
+                              "Another problem was, that the time could not be corrected with an accuracy "..
+                              "of more than 1 second, as the offset to epoc was calculated as a value of "..
+                              "second resolution.\n\n"..
+                              "The new time API re-invented the way the time is handled and calculated. "..
+                              "Internally the time is now stored as a timeval struct, which allowes a "..
+                              "a resolution up to 1 Âµs. The time is now always updated by the system "..
+                              "tick timer interrupt and is always hold as software clock. It is _not_ "..
+                              "automatically synced with the RTC any more.\n Syncing with a RTC has to "..
+                              "be done manually by the user! "..
+                              "This way we gain a much higher accuracy, as long, as the software clock is "..
+                              "accurate. In other words, the system time accurracy depends on the system crystal "..
+                              "accuracy and time will not be updated, if the CPU is put to deep sleep mode. "..
+                              "Further more we assume a system tick timer running at a multiple of a full Âµs."..
+                              "Uneven system tick timer frequencies would result in an increasing error of "..
+                              "the software clock.\n\n"..
+                              "Enable this option, if you would like to stay with the old API. This might "..
+                              "be usefull if you design a low-power system, where the CPU is sleeping most "..
+                              "of the time and shall not be woken up regularly, of if you use an add crystal "..
+                              "frequency and can not provide a system tick timer running at an even multiple "..
+                              "of 1Âµs",
+                flavor = "boolean",
                 file = "include/cfg/os.h"
             },
         }

@@ -57,9 +57,11 @@
  *
  */
 
+#include <cfg/os.h>
 #include <stdint.h>
 
 #include <time.h>
+#include <sys/time.h>
 #include <sys/timer.h>
 #include <sys/atom.h>
 #include <stdlib.h>
@@ -67,7 +69,7 @@
 
 #include <dev/rtc.h>
 
-static uint32_t epo_offs;
+struct timeval epo_offs = {0, 0};
 
 /*!
  * \addtogroup xgCrtTime
@@ -88,20 +90,18 @@ static uint32_t epo_offs;
  */
 time_t time(time_t * timer)
 {
-    struct _tm *tm;
     /* Initially use internal seconds counter. */
-    time_t r = epo_offs + NutGetSeconds();
+    time_t r = epo_offs.tv_sec + NutGetSeconds();
 
+#ifdef NUT_USE_OLD_TIME_API
+    struct _tm *tm;
     /* Try to get time from hardware clock. */
-    if ((tm = malloc(sizeof(struct _tm))) != NULL) {
-        tm->tm_isdst = -1;
-        if (NutRtcGetTime(tm) == 0) {
-            /* Success. */
-            r = _mkgmtime(tm);
-        }
-        free(tm);
+    tm.tm_isdst = -1;
+    if (NutRtcGetTime(&tm) == 0) {
+        /* Success. */
+        r = _mkgmtime(&tm);
     }
-
+#endif
     /* Return result. */
     if (timer) {
         *timer = r;
@@ -118,10 +118,12 @@ time_t time(time_t * timer)
  */
 int stime(time_t * timer)
 {
+#ifdef NUT_USE_OLD_TIME_API
     /* Try to set hardware clock. */
     NutRtcSetTime(gmtime(timer));
+#endif
     /* Set internal seconds counter. */
-    epo_offs = (uint32_t)(*timer) - NutGetSeconds();
+    epo_offs.tv_sec = (uint32_t)(*timer) - NutGetSeconds();
 
     return 0;
 }

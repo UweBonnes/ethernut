@@ -294,6 +294,7 @@ nutcrt =
             "localtim.c",
             "mktime.c",
             "time.c",
+            "timeofday.c",
             "tzset.c"
         }
     },

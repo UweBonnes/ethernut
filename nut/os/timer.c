@@ -217,7 +217,9 @@
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
+#include <sys/time.h>
 #include <sys/nutdebug.h>
+#include <time.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -228,7 +230,6 @@
 #endif
 
 #ifdef __NUT_EMULATION__
-#include <sys/time.h>
 static struct timeval   timeStart;
 #endif
 
@@ -258,9 +259,22 @@ NUTTIMERINFO *nutTimerList;
 static uint32_t nut_ticks_resume;
 
 /*!
-*  \brief System tick counter
+ *  \brief System tick counter
  */
-volatile uint32_t nut_ticks;
+volatile uint32_t nut_ticks = 0;
+
+#ifndef NUT_USE_OLD_TIME_API
+
+/*!
+ * \brief System time
+ */
+volatile struct timeval system_time = {0, 0};
+
+/*!
+ * \brief microseconds per system tick
+ */
+uint32_t systick_us = 0;
+#endif
 
 // volatile uint32_t nut_tick_dist[32];
 
@@ -297,6 +311,15 @@ void NutTimerIntr(void *arg)
 #endif
 {
     nut_ticks++;
+
+#ifndef NUT_USE_OLD_TIME_API
+    system_time.tv_usec += systick_us;
+    if (system_time.tv_usec > 1000000) {
+        system_time.tv_sec ++;
+        system_time.tv_usec -= 1000000;
+    }
+#endif
+
     // nut_tick_dist[TCNT0]++;
 #ifdef NUTDEBUG_CHECK_STACKMIN
     if((nut_ticks % 1000) == 0) {
@@ -323,6 +346,11 @@ void NutTimerInit(void)
     gettimeofday( &timeStart, NULL );
 #else
     NutRegisterTimer(NutTimerIntr);
+
+#ifndef NUT_USE_OLD_TIME_API
+    systick_us = 1000000 / NutGetTickClock();
+#endif
+
     NutEnableTimerIrq();
 
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
@@ -802,7 +830,11 @@ uint32_t NutGetTickCount(void)
  */
 uint32_t NutGetSeconds(void)
 {
+#ifdef NUT_USE_OLD_TIME_API
     return NutGetTickCount() / NutGetTickClock();
+#else
+    return system_time.tv_sec;
+#endif
 }
 
 /*!
@@ -823,11 +855,15 @@ uint32_t NutGetSeconds(void)
  */
 uint32_t NutGetMillis(void)
 {
+#ifdef NUT_USE_OLD_TIME_API
     // carefully stay within 32 bit values
     uint32_t ticks   = NutGetTickCount();
     uint32_t seconds = ticks / NutGetTickClock();
     ticks         -= seconds * NutGetTickClock();
     return seconds * 1000 + (ticks * 1000 ) / NutGetTickClock();
+#else
+    return system_time.tv_sec * 1000 + system_time.tv_usec / 1000;
+#endif
 }
 
 /*!
