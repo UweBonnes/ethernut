@@ -52,7 +52,7 @@
  */
 /*@{*/
 
-#ifndef NUT_USE_OLD_TIME_API
+
 /*!
  * \brief Get current time and timezone
  *
@@ -71,7 +71,12 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
 {
     if (tv != NULL) {
         /* Take system time, add the offset to epoc and place the result in tv */
+#ifndef NUT_USE_OLD_TIME_API
         timeradd(&system_time, &epo_offs, tv);
+#else
+		tv->tv_sec  = time(NULL);
+		tv->tv_usec = NutGetMillis() * 1000;
+#endif
     }
 
     if (tz != NULL) {
@@ -89,6 +94,8 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
  * \note  This function does not automatically update the RTC, you have to
  *        call NutRtcSetTime manually.
  *
+ *        This function is not supported in the old clock API and will always return -1
+ *
  * \param tv    Pointer to timeval struct which holds the current time
  * \param tz    Pointer to timezone struct. Should be NULL, as using this values is
  *              deprecated
@@ -98,6 +105,7 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
  */
 int settimeofday (struct timeval *tv, struct timezone *tz)
 {
+#ifndef NUT_USE_OLD_TIME_API
     if (tv != NULL) {
         /* Substract tv from system time. The result is the offset to epoc. Place into epo_offs */
         timersub(tv, &system_time, &epo_offs);
@@ -109,6 +117,10 @@ int settimeofday (struct timeval *tv, struct timezone *tz)
         _daylight = tz->tz_dsttime;
     }
     return 0;
-}
+#else
+	/* This function is not supported in the old clock API */
+	return -1;
 #endif
+}
+
 /*@}*/
