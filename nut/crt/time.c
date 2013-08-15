@@ -94,7 +94,7 @@ time_t time(time_t * timer)
     time_t r = epo_offs.tv_sec + NutGetSeconds();
 
 #ifdef NUT_USE_OLD_TIME_API
-    struct _tm *tm;
+    struct _tm tm;
     /* Try to get time from hardware clock. */
     tm.tm_isdst = -1;
     if (NutRtcGetTime(&tm) == 0) {
