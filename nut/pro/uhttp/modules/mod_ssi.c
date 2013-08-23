@@ -312,12 +312,11 @@ int HttpSsiProcessFile(HTTPD_SESSION *hs, int fd)
             }
             else {
                 /* SSI command end not found. */
-                off = (int) (csp - buf);
-                if (off) {
+                if (csp != buf) {
                     /* If the command start was not at the beginning of
                        the buffer, then move the file pointer back to
                        the start of the command. */
-                    _seek(fd, -off, SEEK_CUR);
+                    _seek(fd, -strlen(csp), SEEK_CUR);
                 } else {
                     /* SSI command doesn't fit in our buffer, send it
                        unprocessed. */
