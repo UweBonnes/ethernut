@@ -162,7 +162,7 @@
 //    #define MCLKDIV_NORMAL  60-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(6-1+1)) = 120/120 = 1MHz
 #endif
 
-#define DATA_TIMER_VALUE    0x2s0000
+#define DATA_TIMER_VALUE    0x20000
 
 #define EXPECT_NO_RESP      0
 #define EXPECT_SHORT_RESP   1
