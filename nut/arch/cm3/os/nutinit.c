@@ -85,10 +85,14 @@ struct __iobuf {
 };
 #endif
 
+#ifdef __CROSSWORKS_ARM 
+#define ATTRIBUTE_NUTINIT_SECTION 
+#else
 #if defined(MCU_LPC17xx)
 #define ATTRIBUTE_NUTINIT_SECTION __attribute__((section(".nutinit")))
 #else
 #define ATTRIBUTE_NUTINIT_SECTION __attribute__((section(".nutinit")))
+#endif
 #endif
 
 /*!
@@ -112,11 +116,11 @@ struct __iobuf {
  * between __heap_start__ and __External_RAM_segment_end__
  * can be used for NutOS.
  */
-extern void *__heap_start__;
-extern void *__RAM_END_segment_end__;
+extern void *__RAM_segment_used_end__;
+extern void *__RAM_segment_end__;
 
-#define HEAP_START  &__heap_start__
-#define HEAP_SIZE  ((uintptr_t)(&__RAM_END_segment_end__ - 1) - (uintptr_t)(HEAP_START) - 256)
+#define HEAP_START  &__RAM_segment_used_end__
+#define HEAP_SIZE  ((uintptr_t)(&__RAM_segment_end__ - 1) - (uintptr_t)(HEAP_START) - 256)
 
 #else   /* GCC */
 

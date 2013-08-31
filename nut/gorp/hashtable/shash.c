@@ -78,7 +78,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <gorp/shash.h>
 
 /*!
