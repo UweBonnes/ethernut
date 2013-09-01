@@ -223,6 +223,9 @@
 #elif defined(STM3220G_EVAL)
 #include <arch/cm3/board/stm3220g_eval.h>
 #define BOARDNAME "STM3220G_EVAL"
+#elif defined(STM3240G_EVAL)
+#include <arch/cm3/board/stm3240g_eval.h>
+#define BOARDNAME "STM3240G_EVAL"
 #elif defined(STEVAL_PCC010V2)
 #include <arch/cm3/board/steval_pcc010v2.h>
 #define BOARDNAME "STEVAL_PCC010V2"
