@@ -59,7 +59,7 @@ int NutEnumModel::rowCount( const QModelIndex& parent /*= QModelIndex()*/ ) cons
 int NutEnumModel::columnCount ( const QModelIndex& parent /*= QModelIndex()*/ ) const
 {
 	Q_UNUSED( parent );
-	return 6;
+	return 5;
 }
 
 QVariant NutEnumModel::data( const QModelIndex &index, int role /*= Qt::DisplayRole*/ ) const
@@ -92,7 +92,8 @@ QVariant NutEnumModel::data( const QModelIndex &index, int role /*= Qt::DisplayR
 
 QVariant NutEnumModel::headerData( int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/ ) const
 {
-	Q_UNUSED( role );
+	if ( role != Qt::DisplayRole )
+		return QVariant();
 
 	if ( orientation == Qt::Horizontal )
 	{
@@ -141,6 +142,7 @@ void NutEnumModel::processPendingDatagrams()
 	datagram.resize( socket.pendingDatagramSize() );
 	socket.readDatagram( datagram.data(), datagram.size() );
 	QDataStream stream ( datagram );
+	stream.setByteOrder( QDataStream::BigEndian );
 	quint32 dist_xid;
 	unsigned char dist_type;
 	unsigned char dist_ver;            /*!< \brief Telegram version. */
