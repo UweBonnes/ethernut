@@ -241,7 +241,7 @@ static int GenShortName(NUTFILE * ndp, const char *lfn, char *sfn)
                 if ((got = PhatFileRead(ndp, entry, sizeof(PHATDIRENT))) != sizeof(PHATDIRENT)) {
                     if (got) {
                         /* Read error, stop searching. */
-                        i = 9;
+                        i = 99;
                     }
                     else {
                         /* End of directory reached, entry is unique. */
