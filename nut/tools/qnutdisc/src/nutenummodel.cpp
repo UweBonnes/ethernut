@@ -46,7 +46,7 @@
 NutEnumModel::NutEnumModel( QObject* parent ) : QAbstractTableModel( parent )
 {
 	connect( &socket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()) );
-	socket.bind( DISCOVERY_PORT );
+	socket.bind( DISCOVERY_PORT, QUdpSocket::ShareAddress );
 	broadcast();
 }
 
