@@ -309,17 +309,6 @@ int SetSysClockSource( int src)
             while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
         }
     }
-    else if (src == SYSCLK_HSE) {
-        rc = CtlHseClock(ENABLE);
-        if (rc == 0) {
-            /* Select HSI as system clock source */
-            RCC->CFGR &= ~RCC_CFGR_SW;
-            RCC->CFGR |= RCC_CFGR_SW_HSE;
-
-            /* Wait till HSI is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE);
-        }
-    }
     else if (src == SYSCLK_PLL) {
         rc = CtlPllClock(ENABLE);
         if (rc == 0) {
