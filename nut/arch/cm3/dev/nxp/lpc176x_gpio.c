@@ -369,7 +369,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         sel |= PINCON_PINSEL_AF1 << pin_offset;
     } else
     if ((flags & GPIO_CFG_PERIPHERAL_MASK) == GPIO_CFG_PERIPHERAL2) {
-        sel |= PINCON_PINSEL_AF3 << pin_offset;
+        sel |= PINCON_PINSEL_AF2 << pin_offset;
     } else
     if ((flags & GPIO_CFG_PERIPHERAL_MASK) == GPIO_CFG_PERIPHERAL3) {
         sel |= PINCON_PINSEL_AF3 << pin_offset;
