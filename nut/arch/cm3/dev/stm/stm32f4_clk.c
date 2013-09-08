@@ -401,6 +401,8 @@ int SetSysClock(void)
     rcc_reg = FLASH->ACR;
     rcc_reg &= ~FLASH_ACR_LATENCY;
     rcc_reg |= NUT_FLASH_LATENCY | FLASH_ACR_PRFTEN ;
+    /* Enable Instruction and Data cache */
+    rcc_reg |= FLASH_ACR_ICEN | FLASH_ACR_DCEN;
     FLASH->ACR = rcc_reg;
 
     rcc_reg = RCC->CFGR;
