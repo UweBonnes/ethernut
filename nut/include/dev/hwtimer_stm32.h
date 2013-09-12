@@ -47,16 +47,6 @@
 #include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <dev/irqreg.h>
 
-typedef struct {
-    uint32_t base;
-    IRQ_HANDLER *sig;
-    __IO uint32_t *rcc_clk_en;
-    __IO uint32_t *reset;
-    uint32_t clockindex;
-}stm32timer_info;
-
-extern const stm32timer_info timer_info[];
-
 #if defined(TIM1_BASE)
 #define NUTTIMER1   TIM1_BASE
 #endif
@@ -108,12 +98,6 @@ extern const stm32timer_info timer_info[];
 #if defined(TIM17_BASE)
 #define NUTTIMER17  TIM17_BASE
 #endif
-
-extern int TIM_GetIndex(uint32_t timer);
-#define TIM_Init(timer) *timer_info[TIM_GetIndex(timer)].rcc_clk_en  = 1
-#define TIM_Clear(timer) do{*timer_info[TIM_GetIndex(timer)].reset  = 1; *timer_info[TIM_GetIndex(timer)].reset =0;} while (0)
-
-#define TIM_ClockVal(timer) NutClockGet(timer_info[TIM_GetIndex(timer)].clockindex)
 
 #define TIM_Control1( timer )              CM3REG(timer, TIM_TypeDef, CR1 )
 #define TIM_Control2( timer )              CM3REG(timer, TIM_TypeDef, CR2 )

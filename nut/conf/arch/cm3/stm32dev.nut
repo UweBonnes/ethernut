@@ -203,16 +203,6 @@ nutarch_cm3_stm32_devices =
         },
     },
     --
-    -- STM32 TIM Commodity functionsInterrupt handler
-    --
-    {
-        name = "nutarch_cm3_stm32_timer",
-        brief = "STM32 Timer",
-        description = "STM32 Timer infrastructure.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32" },
-        sources = { "cm3/dev/stm/stm32_timer.c" },
-    },
-    --
     -- STM32 TIM Interrupt handler
     --
      {
@@ -2922,13 +2912,6 @@ nutarch_cm3_stm32_devices =
     --
     -- STM32 OWI using hardware timer
     --
-    {
-        name = "nutarch_cm3_stm32_owi_rt",
-        brief = "STM32 OWI with hardware timer, run time configured",
-        requires = { "HW_MCU_STM32" },
-        provides = { "OWIBUS" },
-        sources = { "cm3/dev/stm/stm32_owitimer.c" }
-    },
     {
         name = "nutarch_cm3_stm32_owi",
         brief = "STM32 OWI with hardware timer, library compile time configured",
