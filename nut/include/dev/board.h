@@ -252,10 +252,10 @@
 #define BOARDNAME "ZERO_EK"
 #elif defined(__arm__)
 #if defined(__CORTEX__)
-#else
 #define BOARDNAME "Cortex Arm"
-#endif
+#else
 #define BOARDNAME "Generic ARM"
+#endif
 #elif defined(__AVR32__)
 #define BOARDNAME "Generic AVR32"
 #elif defined(__AVR__)
