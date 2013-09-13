@@ -82,108 +82,108 @@
 #
 
 all:
-	$(MAKE) -C caltime
-	$(MAKE) -C cantest
+	-$(MAKE) -C caltime
+	-$(MAKE) -C cantest
 # Broken: C++ no longer available?	
-#	$(MAKE) -C cppdemo
-	$(MAKE) -C editconf
-	$(MAKE) -C events
-	$(MAKE) -C ftpd
-	$(MAKE) -C httpd
-	$(MAKE) -C httpd_simple
-	$(MAKE) -C httpd_upnp
-	$(MAKE) -C icmp-udp
-	$(MAKE) -C i2ctest
-	$(MAKE) -C inetq
-	$(MAKE) -C inetq
-	$(MAKE) -C jtagtest
-	$(MAKE) -C logtime
-	$(MAKE) -C lua
-	$(MAKE) -C pingnet
-	$(MAKE) -C portdio
-	$(MAKE) -C pppc
-	$(MAKE) -C rs232d
-	$(MAKE) -C simple
-	$(MAKE) -C snmpd
-	$(MAKE) -C tcps
-	$(MAKE) -C threads
-	$(MAKE) -C timers
-	$(MAKE) -C twitest
-	$(MAKE) -C uart
-	$(MAKE) -C owibus
+#	-$(MAKE) -C cppdemo
+	-$(MAKE) -C editconf
+	-$(MAKE) -C events
+	-$(MAKE) -C ftpd
+	-$(MAKE) -C httpd
+	-$(MAKE) -C httpd_simple
+	-$(MAKE) -C httpd_upnp
+	-$(MAKE) -C icmp-udp
+	-$(MAKE) -C i2ctest
+	-$(MAKE) -C inetq
+	-$(MAKE) -C inetq
+	-$(MAKE) -C jtagtest
+	-$(MAKE) -C logtime
+	-$(MAKE) -C lua
+	-$(MAKE) -C pingnet
+	-$(MAKE) -C portdio
+	-$(MAKE) -C pppc
+	-$(MAKE) -C rs232d
+	-$(MAKE) -C simple
+	-$(MAKE) -C snmpd
+	-$(MAKE) -C tcps
+	-$(MAKE) -C threads
+	-$(MAKE) -C timers
+	-$(MAKE) -C twitest
+	-$(MAKE) -C uart
+	-$(MAKE) -C owibus
 
 install:
-	$(MAKE) -C caltime install
-#	$(MAKE) -C cppdemo install
-	$(MAKE) -C editconf install
-	$(MAKE) -C events install
-	$(MAKE) -C ftpd install
-	$(MAKE) -C httpd install
-	$(MAKE) -C httpd_simple install
-	$(MAKE) -C icmp-udp install
-	$(MAKE) -C i2ctest install
-	$(MAKE) -C inetq install
-	$(MAKE) -C jtagtest
-	$(MAKE) -C logtime install
-	$(MAKE) -C lua install
-	$(MAKE) -C pingnet install
-	$(MAKE) -C portdio install
-	$(MAKE) -C pppc install
-	$(MAKE) -C rs232d install
-	$(MAKE) -C simple install
-	$(MAKE) -C snmpd install
-	$(MAKE) -C tcps install
-	$(MAKE) -C threads install
-	$(MAKE) -C timers install
-	$(MAKE) -C uart install
-	$(MAKE) -C owibus install
+	-$(MAKE) -C caltime install
+#	-$(MAKE) -C cppdemo install
+	-$(MAKE) -C editconf install
+	-$(MAKE) -C events install
+	-$(MAKE) -C ftpd install
+	-$(MAKE) -C httpd install
+	-$(MAKE) -C httpd_simple install
+	-$(MAKE) -C icmp-udp install
+	-$(MAKE) -C i2ctest install
+	-$(MAKE) -C inetq install
+	-$(MAKE) -C jtagtest
+	-$(MAKE) -C logtime install
+	-$(MAKE) -C lua install
+	-$(MAKE) -C pingnet install
+	-$(MAKE) -C portdio install
+	-$(MAKE) -C pppc install
+	-$(MAKE) -C rs232d install
+	-$(MAKE) -C simple install
+	-$(MAKE) -C snmpd install
+	-$(MAKE) -C tcps install
+	-$(MAKE) -C threads install
+	-$(MAKE) -C timers install
+	-$(MAKE) -C uart install
+	-$(MAKE) -C owibus install
 
 clean:
-	$(MAKE) -C caltime clean
-	$(MAKE) -C cantest clean
-#	$(MAKE) -C cppdemo clean
-	$(MAKE) -C editconf clean
-	$(MAKE) -C events clean
-	$(MAKE) -C ftpd clean
-	$(MAKE) -C httpd clean
-	$(MAKE) -C httpd_simple clean
-	$(MAKE) -C i2ctest clean
-	$(MAKE) -C icmp-udp clean
-	$(MAKE) -C inetq clean
-	$(MAKE) -C jtagtest
-	$(MAKE) -C logtime clean
-	$(MAKE) -C lua clean
-	$(MAKE) -C pingnet clean
-	$(MAKE) -C portdio clean
-	$(MAKE) -C pppc clean
-	$(MAKE) -C rs232d clean
-	$(MAKE) -C simple clean
-	$(MAKE) -C snmpd clean
-	$(MAKE) -C tcps clean
-	$(MAKE) -C threads clean
-	$(MAKE) -C timers clean
-	$(MAKE) -C twitest clean
-	$(MAKE) -C uart clean
-	$(MAKE) -C owibus clean
+	-$(MAKE) -C caltime clean
+	-$(MAKE) -C cantest clean
+#	-$(MAKE) -C cppdemo clean
+	-$(MAKE) -C editconf clean
+	-$(MAKE) -C events clean
+	-$(MAKE) -C ftpd clean
+	-$(MAKE) -C httpd clean
+	-$(MAKE) -C httpd_simple clean
+	-$(MAKE) -C i2ctest clean
+	-$(MAKE) -C icmp-udp clean
+	-$(MAKE) -C inetq clean
+	-$(MAKE) -C jtagtest
+	-$(MAKE) -C logtime clean
+	-$(MAKE) -C lua clean
+	-$(MAKE) -C pingnet clean
+	-$(MAKE) -C portdio clean
+	-$(MAKE) -C pppc clean
+	-$(MAKE) -C rs232d clean
+	-$(MAKE) -C simple clean
+	-$(MAKE) -C snmpd clean
+	-$(MAKE) -C tcps clean
+	-$(MAKE) -C threads clean
+	-$(MAKE) -C timers clean
+	-$(MAKE) -C twitest clean
+	-$(MAKE) -C uart clean
+	-$(MAKE) -C owibus clean
 
 at90can:
-	$(MAKE) -C caltime
-	$(MAKE) -C cantest
-	$(MAKE) -C canbus
-	$(MAKE) -C events
-	$(MAKE) -C ftpd
-	$(MAKE) -C httpd
-	$(MAKE) -C httpd_simple
-	$(MAKE) -C inetq
-	$(MAKE) -C logtime
-	$(MAKE) -C pingnet
-	$(MAKE) -C portdio
-	$(MAKE) -C pppc
-	$(MAKE) -C rs232d
-	$(MAKE) -C simple
-	$(MAKE) -C snmpd
-	$(MAKE) -C tcps
-	$(MAKE) -C threads
-	$(MAKE) -C timers
-	$(MAKE) -C uart
-	$(MAKE) -C owibus
+	-$(MAKE) -C caltime
+	-$(MAKE) -C cantest
+	-$(MAKE) -C canbus
+	-$(MAKE) -C events
+	-$(MAKE) -C ftpd
+	-$(MAKE) -C httpd
+	-$(MAKE) -C httpd_simple
+	-$(MAKE) -C inetq
+	-$(MAKE) -C logtime
+	-$(MAKE) -C pingnet
+	-$(MAKE) -C portdio
+	-$(MAKE) -C pppc
+	-$(MAKE) -C rs232d
+	-$(MAKE) -C simple
+	-$(MAKE) -C snmpd
+	-$(MAKE) -C tcps
+	-$(MAKE) -C threads
+	-$(MAKE) -C timers
+	-$(MAKE) -C uart
+	-$(MAKE) -C owibus
