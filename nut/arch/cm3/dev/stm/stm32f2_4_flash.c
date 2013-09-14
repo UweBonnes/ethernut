@@ -273,6 +273,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     uint32_t length = len;
     uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
     uint32_t flash_end_addr = FLASH_BASE + (flash_size << 10);
+    uint32_t last_sector_nr = -1;
 
     /* we need to run with at least 1 MHz for flashing*/
     NUTASSERT((SysTick->LOAD +1)/NUT_TICK_FREQ > 1000);
@@ -307,7 +308,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     while( (length) && (rs==FLASH_COMPLETE))
     {
         uint32_t sector_nr = FlashAddr2Sector(wptr);
-        uint32_t sector_length = sector2size[sector_nr];
+        uint32_t sector_length = sector2size[sector_nr] << 12;
         uint32_t current_length = length;
 
         if (((uint32_t)wptr & (sector_length -1)) + length > sector_length)
@@ -315,13 +316,14 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
                 ((uint32_t)wptr & (sector_length -1));
         length -= current_length;
         /* Check if sector needs erase */
-        if ((mode == FLASH_ERASE_ALWAYS) ||
+        if (((mode == FLASH_ERASE_ALWAYS) && (sector_nr != last_sector_nr)) ||
             ((mode == FLASH_ERASE_FIRST_TOUCH) &&
              (sectorlist & (1 << sector_nr)) == 0))
         {
             rs = FlashEraseSector(sector_nr);
             if (rs != FLASH_COMPLETE)
                 goto done;
+            last_sector_nr = sector_nr;
         }
         /* Program the sector */
         rs = FlashWaitReady();
@@ -343,7 +345,8 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
                 current_length--;
             }
             /* Write Bulk of data in requested width*/
-            FLASH->CR =  FLASH_CR_PG | FLASH_PSIZE ;
+            rs = FlashWaitReady();
+            FLASH->CR =  FLASH_CR_PG | FLASH_PSIZE_32 ;
             while((current_length > FLASH_LEN_MASK) && (rs == FLASH_COMPLETE))
             {
                 rs = FlashWaitReady();
@@ -352,6 +355,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
                 wptr += (FLASH_LEN_MASK +1);
                 rptr += (FLASH_LEN_MASK +1);
             }
+            rs = FlashWaitReady();
             FLASH->CR =  FLASH_CR_PG | FLASH_PSIZE_8;
             while ((current_length > 0) && (rs == FLASH_COMPLETE))
             {
