@@ -268,7 +268,9 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     memset(sf, 0x00, sizeof(SWITCHFRAME)); 
     sf->csf_lr = (uintptr_t) NutThreadEntry;
     sf->csf_cpsr = 0;
+#if defined (MCU_USE_CORTEX_FPU)
     sf->csf_fpscr = 0;
+#endif    
     
 
     /*
