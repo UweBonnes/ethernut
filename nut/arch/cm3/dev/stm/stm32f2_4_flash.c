@@ -490,7 +490,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
     /* Check boundaries */
     if (pos + len + sizeof(ERASED_PATTERN_32) > FLASH_CONF_SIZE)
     {
-        return FLASH_BOUNDARY;
+        return FLASH_CONF_OVERFLOW;
     }
 
     /* Find configuration page in CONF_SECTOR*/
@@ -553,7 +553,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     /* Check top boundaries */
     if (pos + len + sizeof(ERASED_PATTERN_32) > FLASH_CONF_SIZE)
     {
-        return FLASH_BOUNDARY;
+        return FLASH_CONF_OVERFLOW;
     }
 
     /* Find configuration page in CONF_SECTOR*/

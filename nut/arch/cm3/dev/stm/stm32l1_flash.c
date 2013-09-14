@@ -83,15 +83,17 @@ uint32_t IapFlashEnd(void)
 {
     uint16_t size;
     size = *(__I uint16_t *) FLASH_SIZE_REG;
+    uint32_t retval = FLASH_BASE - 1;
 #if defined (STM32L1XX_MDP) || defined (STM32L1XX_HD)
     if (((*(__I uint32_t *)0xe0042000) & 0xfff) == 0x436) {
         if (size == 0)
-            return FLASH_BASE + 384 * 1024;
+            retval += 384 * 1024;
         else
-            return FLASH_BASE + 256 * 1024;
+            retval += 256 * 1024;
     }
 #endif
-    return FLASH_BASE + size * 1024;
+    retval +=  size * 1024;
+    return retval;
 }
 
 /*!
@@ -221,7 +223,8 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
         return FLASH_COMPLETE;
 
     /* Check top boundary */
-    if ((((uint32_t)dst+len) > IapFlashEnd()) || ((uint32_t)dst < FLASH_BASE))
+    if ((((uint32_t)dst - 1 + len) > IapFlashEnd()) ||
+        ((uint32_t)dst < FLASH_BASE))
     {
         return FLASH_BOUNDARY;
     }
@@ -287,8 +290,8 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
 
         if ((offset_in_page == 0) && (current_length == FLASH_PAGE_SIZE)) {
             /* Handle full page writes */
-            uint32_t *cwptr = (uint32_t*) wptr;
-            uint32_t *crptr = (uint32_t*) rptr;
+            volatile uint32_t *cwptr = (uint32_t*) wptr;
+            volatile uint32_t *crptr = (uint32_t*) rptr;
 
             /* Check if content really changed */
             rs = memcmp(page_buffer, (void*)((uint32_t)wptr & FLASH_PAGE_MASK), FLASH_PAGE_SIZE);
@@ -314,38 +317,51 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
             int do_page_erase;
 
             do_page_erase = ((mode == FLASH_ERASE_ALWAYS) ||
-                             ((mode != FLASH_ERASE_FIRST_TOUCH) &&
+                             ((mode != FLASH_ERASE_NEVER) &&
                               ((pagelist[current_page / 32]  & (1<<(current_page % 32))) == 0)));
             if (do_page_erase)
                 memset(page_buffer, (uint8_t) ERASED_PATTERN_32, FLASH_PAGE_SIZE);
-            else if ((offset_in_page & 3 ) || (current_length & 3)) {
-                /* Copy old content for alignment reason */
-                memcpy(page_buffer , (void*)((uint32_t)wptr & FLASH_PAGE_MASK), FLASH_PAGE_SIZE);
-            }
-            else
-            {
-                uint32_t *cwptr = (uint32_t*)wptr;
-                uint32_t *crptr = (uint32_t*)rptr;
-                for (i = offset_in_page >> 2; i < current_length >> 2; i++)
-                    cwptr[i] = crptr[i];
-                rs = FlashWaitReady();
-                if(rs != FLASH_COMPLETE)
-                    goto done;
-                wptr += current_length;
-                rptr += current_length;
-                length -= current_length;
-                continue;
+            else {
+                rs = memcmp(rptr, wptr, current_length);
+                if (rs == 0)
+                    goto chunk_done;
+
+                if ((offset_in_page & 3 ) || (current_length & 3)) {
+                    memcpy(page_buffer,
+                           (void*)((uint32_t)wptr & FLASH_PAGE_MASK),
+                           FLASH_PAGE_SIZE);
+                }
+                else
+                {
+                    volatile uint32_t *cwptr = (uint32_t*)wptr;
+                    volatile uint32_t *crptr = (uint32_t*)rptr;
+                    int n_words = current_length >> 2;
+
+                    for (i = 0; i < n_words; i++) {
+                        /* We can only write dwords with all bit flashed
+                         * or the flash erased!*/
+                        if ((crptr[i] != ~ERASED_PATTERN_32) ||
+                            (cwptr[i] != ERASED_PATTERN_32))
+                            break;
+                    }
+                    if ( i < n_words) {
+                        /* Copy old content for pattern  reason */
+                        memcpy(page_buffer,
+                               (void*)((uint32_t)wptr & FLASH_PAGE_MASK),
+                               FLASH_PAGE_SIZE);
+                    }
+                    else {
+                        for (i = 0; i < n_words; i++)
+                            if (cwptr[i] != crptr[i])
+                                cwptr[i] = crptr[i];
+                        rs = FlashWaitReady();
+                    if(rs != FLASH_COMPLETE)
+                        goto done;
+                    goto chunk_done;
+                    }
+                }
             }
             memcpy(page_buffer + offset_in_page, rptr, current_length);
-
-            wptr += current_length;
-            rptr += current_length;
-            length -= current_length;
-
-            /* Check if content really changed */
-            rs = memcmp(page_buffer, (void*)((uint32_t)wptr & FLASH_PAGE_MASK), FLASH_PAGE_SIZE);
-            if (rs == 0)
-                continue;
 
             rs = FlashErasePage(wptr);
             if (rs != FLASH_COMPLETE)
@@ -358,15 +374,21 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
             else
             {
                 int i;
-                uint32_t *cwptr = (uint32_t*) ((uint32_t)wptr & FLASH_PAGE_MASK);
-                uint32_t *crptr = (uint32_t*) page_buffer;
+                volatile uint32_t *cwptr =
+                    (uint32_t*) ((uint32_t)wptr & FLASH_PAGE_MASK);
+                volatile uint32_t *crptr = (uint32_t*) page_buffer;
 
                 for (i=0; i < (FLASH_PAGE_SIZE >> 2); i++)
-                    cwptr[i] = crptr[i];
+                    if (cwptr[i] != crptr[i])
+                        cwptr[i] = crptr[i];
                 rs = FlashWaitReady();
                 if(rs != FLASH_COMPLETE)
                     goto done;
             }
+        chunk_done:
+            wptr += current_length;
+            rptr += current_length;
+            length -= current_length;
         }
     }
     /* Check the written data */

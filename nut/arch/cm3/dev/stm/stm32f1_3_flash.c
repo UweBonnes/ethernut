@@ -256,7 +256,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         return FLASH_COMPLETE;
 
     /* Check boundaries */
-    if ((((uint32_t)dst+len) > FlashEnd()) || ((uint32_t)dst < FLASH_BASE)) {
+    if ((((uint32_t)dst + len - 1) > FlashEnd()) || ((uint32_t)dst < FLASH_BASE)) {
         return FLASH_BOUNDARY;
     }
 
@@ -297,18 +297,26 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         uint32_t current_length = length;
         uint32_t offset_in_page = (uint32_t)wptr % FLASH_PAGE_SIZE;
         int prepend = 0, append = 0;
-        uint16_t prepend_data, append_data;
+        uint16_t prepend_data = 0, append_data = 0;
 
         if (length > FLASH_PAGE_SIZE)
             current_length = FLASH_PAGE_SIZE;
         length -= current_length;
         prepend = (offset_in_page & 1);
-        if (prepend)
+        if (prepend) {
+            uint8_t saved_data = *(uint8_t*)wptr;
+            if (saved_data != (ERASED_PATTERN_16 & 0xff))
+                return FLASH_ERR_ALIGNMENT;
             prepend_data = (*(uint8_t*)( rptr)<< 8) | (*(uint8_t *)wptr);
+        }
         else {
             append  = (current_length &1);
-            if(append)
-                append_data  = *(uint8_t*)( rptr + current_length -1) | ((*(uint8_t*)( wptr + current_length )) << 8);
+            if(append) {
+                uint8_t saved_data = *(uint8_t*)( wptr + current_length );
+                if (saved_data != (ERASED_PATTERN_16 & 0xff))
+                    return FLASH_ERR_ALIGNMENT;
+                append_data  = *(uint8_t*)( rptr + current_length -1) | (saved_data << 8);
+            }
         }
         /* Check if page needs erase*/
         if ((mode == FLASH_ERASE_ALWAYS) ||
@@ -538,12 +546,11 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
  * This function enables to read system specific parameters
  * from processors FLASH. The sectors used for storage are
  * configureable via nutconf.
- * As the upper sectors of the F2/4 are 128 kByte big, we
- * use a rolling scheme to write  a FLASH_CONF_SIZE
- * configuration page. The upper 32-bit word in a configuration
- * page is used to indicated the present used configuration page.
- * The first page with this value erases is considered the page
- * in use.
+ *
+ * If multiple FLASH_CONF_SIZE fit into the FLASH_PAGE_SIZE,
+ * implement a rolling scheme. The first FLASH_CONF_SIZE unit
+ * in FLASH_PAGE_SIZE with with the uppermost word erased is
+ * considered valid.
  *
  * \param pos Offset of parameter(s) in configured page(s).
  * \param data Pointer where to copy data from flash to.
@@ -553,9 +560,11 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
  */
 FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
 {
-    uint32_t flash_conf_sector = FlashEnd() - FLASH_PAGE_SIZE - 1;
+    uint32_t flash_conf_sector = FlashEnd() & ~(FLASH_PAGE_SIZE - 1);
 
-#if defined(FLASH_CONF_SIZE) && FLASH_CONF_SIZE != FLASH_PAGE_SIZE
+    if (FLASH_CONF_SIZE > FLASH_PAGE_SIZE)
+        return FLASH_ERR_CONF_LAYOUT;
+#if defined(FLASH_CONF_SIZE) && (FLASH_CONF_SIZE << 1) <= FLASH_PAGE_SIZE
 
     uint8_t  conf_page = 0;
     uint16_t marker = *(uint16_t*) (flash_conf_sector + ((conf_page + 1)  * FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
@@ -566,7 +575,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
     /* Check boundaries */
     if (pos + len + sizeof(ERASED_PATTERN_16) > FLASH_CONF_SIZE)
     {
-        return FLASH_BOUNDARY;
+        return FLASH_CONF_OVERFLOW;
     }
 
     /* Find configuration page in CONF_SECTOR*/
@@ -586,7 +595,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
     /* Check boundaries */
     if (pos + len > FLASH_PAGE_SIZE)
     {
-        return FLASH_BOUNDARY;
+        return FLASH_CONF_OVERFLOW;
     }
 
     memcpy( data, (uint8_t *)((uint8_t*)flash_conf_sector + pos), len);
@@ -603,12 +612,10 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
  * in processors FLASH. The sectors used for storage are
  * configurable via nutconf.
  *
- * FIXME: At the F2/F4 last sector is quite much bigger than
- * a FLASH_CONF_SIZE we can handle, implement some rolling scheme
- * E.g. the last word == 0xffffffff in the first FLASH_CONF_SIZE
- * unit starting at FLASH_CONF_SECTOR marks a valid CONF_PAGE. When
- * writing a new sector, we set the MARK of the last CONF_SECTOR to
- * 0. If CONF_SECTOR wraps the sectorsize, we start all over.
+ * If multiple FLASH_CONF_SIZE fit into FLASH_PAGE_SIZE,
+ * implement a rolling scheme. The first FLASH_CONF_SIZE unit
+ * in FLASH_PAGE_SIZE with with the uppermost word erased is
+ * considered valid.
  *
  * \param pos Offset of parameter(s) in configured page(s).
  * \param data Pointer to source data.
@@ -621,10 +628,12 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
 {
     FLASH_Status rs = 0;
     uint8_t *buffer;
-    void* flash_conf_sector = (void*)(FlashEnd() - FLASH_PAGE_SIZE - 1);
+    void* flash_conf_sector = (void*)(FlashEnd() & ~(FLASH_PAGE_SIZE - 1));
     int i;
-    uint8_t  *mem;
-#if defined(FLASH_CONF_SIZE) && FLASH_CONF_SIZE != FLASH_PAGE_SIZE
+    uint8_t  *mem, *src;
+    if(FLASH_CONF_SIZE > FLASH_PAGE_SIZE)
+        return FLASH_ERR_CONF_LAYOUT;
+#if defined(FLASH_CONF_SIZE) && (FLASH_CONF_SIZE << 1) <= FLASH_PAGE_SIZE
     uint8_t  conf_page = 0;
     uint16_t marker = *(uint16_t*) (flash_conf_sector + ((conf_page +1) * FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
     FLASH_ERASE_MODE mode;
@@ -656,8 +665,9 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
      * It seems no C standard function provides this functionality!
      */
     mem = (uint8_t*) (flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos);
+    src = (uint8_t*) data;
     for (i = 0; i < len; i++) {
-        if (mem[i] != 0xff)
+        if ((mem[i] != 0xff) && (mem[i] != src[i]))
             break;
     }
     if (i >= len) {
@@ -686,13 +696,13 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     conf_page++;
     mode = FLASH_ERASE_NEVER;
     if (conf_page < FLASH_PAGE_SIZE/FLASH_CONF_SIZE) {
-        uint16_t indicator = ~ERASED_PATTERN_16;
+        uint16_t indicator = (uint16_t)~ERASED_PATTERN_16;
         rs = FlashWrite( flash_conf_sector + conf_page * FLASH_CONF_SIZE - sizeof(indicator),
                          &indicator, sizeof(indicator), FLASH_ERASE_NEVER);
     }
     else {
          /* All pages used, mark the sector as not yet erases to force erase*/
-        sectorlist &= ~(1<<FlashAddr2Sector(flash_conf_sector, NULL));
+        FlashUntouch();
         conf_page = 0;
         mode = FLASH_ERASE_ALWAYS;
     }
@@ -707,8 +717,9 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
      * It seems no C standard function provides this functionality!
      */
     mem = (uint8_t*) (flash_conf_sector + pos);
+    src = (uint8_t*) data;
     for (i = 0; i < len; i++) {
-        if (mem[i] != 0xff)
+        if ((mem[i] != 0xff) && (mem[i] != src[i]))
             break;
     }
     if (i >= len) {
