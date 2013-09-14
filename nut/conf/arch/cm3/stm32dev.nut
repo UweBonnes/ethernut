@@ -104,7 +104,7 @@ nutarch_cm3_stm32_devices =
                 type = "integer",
                 choices = { "8", "16", "32", "64" },
                 default = "32",
-                file = "include/cfg/flash.h",
+                file = "include/cfg/memory.h",
              }
          }
     },

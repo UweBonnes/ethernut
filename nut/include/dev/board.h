@@ -235,6 +235,9 @@
 #elif defined(STM32_COMSTICK)
 #include <arch/cm3/board/stm32_comstick.h>
 #define BOARDNAME "STM32_COMSTICK"
+#elif defined(STM32F4DIS_BB)
+#define BOARDNAME "STM32F4DIS_BB"
+#include <arch/cm3/board/stm32f4dis_bb.h>
 #elif defined(USPS)
 #include <arch/cm3/board/usps.h>
 #define BOARDNAME "USPS"

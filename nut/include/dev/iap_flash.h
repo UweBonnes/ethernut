@@ -2,6 +2,13 @@
 #define _INCLUDE__IAP_FLASH_H
 #include <cfg/memory.h>
 
+typedef enum
+{
+    FLASH_ERASE_ALWAYS      = 0,   /*!< Always erase whole memory block before writing */
+    FLASH_ERASE_FIRST_TOUCH = 1,   /*!< Only erase whole memory block with first write to that block*/
+    FLASH_ERASE_NEVER       = 2,   /*!< Write without erasing */
+} FLASH_ERASE_MODE;
+
 /*!
  * brief FLASH status returns of any operation.
  */
@@ -21,10 +28,10 @@ typedef enum
 } FLASH_Status;
 
 #if defined(IAP_FLASH)
-extern FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len);
+extern FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len, FLASH_ERASE_MODE mode);
 extern FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena);
 #else
-FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len)
+FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len, FLASH_ERASE_MODE mode)
 {
     return FLASH_NOT_IMPLEMENTED;
 }

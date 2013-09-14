@@ -5027,7 +5027,7 @@ nutdev =
                 type = "integer",
                 default = "1",
                 requires = { "HW_FLASH" },
-                file= "include/cfg/flash.h"
+                file= "include/cfg/memory.h"
                 }
          },
     },
