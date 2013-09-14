@@ -53,6 +53,9 @@
 #include <sys/timer.h>
 
 static char *banner = "\nNut/OS Flash Sample " __DATE__ " " __TIME__"\n";
+static char *pattern =  "0123456789abcdef0123456789ABCDEF";
+static char *pattern1 = "FEDCBA9876543210fedcba987654321";
+static char *pattern2 = "0123456789abcdef0123456789ABCD";
 
 /*
  * UART sample.
@@ -65,6 +68,8 @@ int main(void)
     uint32_t baud = 115200, read_timeout = 10;
     FILE *uart;
     char buffer[7];
+    uint32_t iap_flash_end = IapFlashEnd();
+    void *dword_aligned_end;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
@@ -75,28 +80,115 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     printf(banner);
     NutSleep(10);
-    NutNvMemSave(0x0, "Save0", 6);
-    NutNvMemSave(0x0, "Save1", 6);
-    NutNvMemSave(0x0, "Save2", 6);
+    res = NutNvMemSave(0x0, "Save0", 6);
+    if(res)
+        printf("NutNvMemSave failed: %d\n", res);
     NutNvMemLoad(0x0, buffer, 6);
-    if (*(uint32_t*)0x080c0000 != 0xffffffff)
+    if (memcmp(buffer, "Save0", 5))
+        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save0");
+
+    res = NutNvMemSave(0x0, "Save1", 6);
+    if(res)
+        printf("NutNvMemSave failed: %d\n", res);
+    NutNvMemLoad(0x0, buffer, 6);
+    if (memcmp(buffer, "Save1", 5))
+        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save1");
+
+    res = NutNvMemSave(0x0, "Save2", 6);
+    if(res)
+        printf("NutNvMemSave failed: %d\n", res);
+    NutNvMemLoad(0x0, buffer, 6);
+    if (memcmp(buffer, "Save2", 5))
+        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save2");
+
+    res = NutNvMemSave(0x0, "u", 1);
+    if(res)
+        printf("NutNvMemSave failed: %d\n", res);
+    NutNvMemLoad(0x0, buffer, 6);
+    if (memcmp(buffer, "uave2", 5))
+        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uave2");
+
+    printf("Application Flash ends at 0x%08lx\n", iap_flash_end);
+    if (*(uint32_t*)(iap_flash_end -0xff) != 0xffffffff)
         printf("Not");
     printf("Empty\n");
     NutSleep(10);
-    res = IapFlashWrite((void*)0x080c0000, banner + 1, strlen(banner),
-                        FLASH_ERASE_ALWAYS);
-    printf("After write Res %d:", res);
-    NutSleep(10);
-    printf((char*)0x080c0000);
+    res = IapFlashWrite((void*)(iap_flash_end -0xff), pattern,
+                        strlen(pattern) + 1, FLASH_ERASE_ALWAYS);
+    printf("%55s %3d:", "After write Res", res);
+    printf((char*)(iap_flash_end -0xff));
+    printf("\n");
     NutSleep(10);
     buffer[0] = 0;
-    res = IapFlashWrite((void*)0x080c0008, buffer, 1,
+    buffer[1] = 0;
+    buffer[2] = 0;
+    buffer[3] = 0;
+    dword_aligned_end = (void*)((iap_flash_end - 0xff + strlen(pattern))
+                                & 0xfffffff0);
+
+    res = IapFlashWrite(dword_aligned_end - 1, buffer, 1,
                         FLASH_ERASE_NEVER);
-    printf("After overwrite Res %d:", res);
-    printf((char*)0x080c0000);
+    printf("%55s %3d:", "After unaligned overwrite byte Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    NutSleep(10);
+    printf("\n");
+
+    res = IapFlashWrite(dword_aligned_end - 3, buffer, 2,
+                        FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "After unaligned overwrite word Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
+    res = IapFlashWrite(dword_aligned_end - 4, buffer, 2,
+                        FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "After aligned overwrite word Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    printf("\n");
+    NutSleep(10);
+
+    res = IapFlashWrite(dword_aligned_end - 5, buffer, 4,
+                        FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "After unaligned overwrite dword on odd address Res",
+           res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    printf("\n");
+    NutSleep(10);
+
+    res = IapFlashWrite(dword_aligned_end - 6, buffer, 4,
+                        FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "After unaligned overwrite dword on word address Res",
+           res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    printf("\n");
+    NutSleep(10);
+
+    res = IapFlashWrite(dword_aligned_end - 8, buffer, 4,
+                        FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "After aligned overwrite dword Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    printf("\n");
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end -0x13f), pattern1,
+                        strlen(pattern1) + 1, FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "After write with 0x0 on odd address Res", res);
+    printf((char*)(iap_flash_end -0x13f));
+    printf("\n");
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end -0x17f), pattern2,
+                        strlen(pattern2) + 1, FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "After write with 0x0 on odd halfword Res", res);
+    printf((char*)(iap_flash_end -0x17f));
+    printf("\n");
+    NutSleep(10);
     for (;;) {
         NutSleep(100);
     }
