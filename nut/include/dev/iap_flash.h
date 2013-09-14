@@ -24,12 +24,14 @@ typedef enum
     FLASH_COMPARE       = -6,   /*!< FLASH compare mismatch */
     FLASH_OUT_OF_MEMORY = -7,   /*!< Intermediate buffer allocation failed*/
     FLASH_ERR_CONF_LAYOUT = -8,   /*!< CONF_PAGE has unexpected layout*/
-    FLASH_NOT_IMPLEMENTED = -9,   /*!< Intermediate buffer allocation failed*/
+    FLASH_ERR_ALIGNMENT   = -9,   /*!< Unaligned Flash access*/
+    FLASH_NOT_IMPLEMENTED = -10,   /*!< Not implemented*/
 } FLASH_Status;
 
 #if defined(IAP_FLASH)
 extern FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len, FLASH_ERASE_MODE mode);
 extern FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena);
+extern uint32_t IapFlashEnd(void);
 #else
 FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len, FLASH_ERASE_MODE mode)
 {
@@ -38,6 +40,10 @@ FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len, FLASH_ERASE_MODE 
 FLASH_Status  IapFlashWriteProtect(void *dst, size_t len, int ena)
 {
     return FLASH_NOT_IMPLEMENTED;
+}
+uint32_t IapFlashEnd(void)
+{
+    return 0;
 }
 #endif
 #endif
