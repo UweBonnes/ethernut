@@ -85,6 +85,33 @@ nutarch_cm3_stm32_devices =
         }
     },
     --
+    -- STM32 Flash Interface F2 and F4
+    --
+    {
+        name = "nutarch_cm3_stm32f2_4_flash",
+        brief = "Flash and parameter access",
+        description = "Generic flash and parameter storage interface.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_FLASH_STM32F2_4" },
+        provides = { "HW_FLASH", "HW_FLASH_STM32" };
+        sources = { "cm3/dev/stm/stm32f2_4_flash.c"},
+        options =
+        {
+            {
+                macro = "FLASH_PE_PARALLELISM",
+                brief = "Program/erase parallelism",
+                description = "Depending on CPU voltage and eventual external programming voltage,\n"..
+                "flash erase and programming can happen 8/16/32/64 Bit wide. Default is 32.",
+                type = "integer",
+                choices = { "8", "16", "32", "64" },
+                default = "32",
+                file = "include/cfg/flash.h",
+             }
+         }
+    },
+    --
+    -- STM32F EXTI Interrupt handler
+    --
+     --
     -- STM32 GPIO Interface Version 2 on L1/F2/F4
     --
     {

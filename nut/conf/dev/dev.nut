@@ -855,7 +855,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -876,7 +876,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -897,7 +897,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -919,17 +919,17 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
                 file = "include/cfg/eeprom.h"
             },
             {
-                macro = "NUT_CONFIG_STM32FLASH",
+                macro = "NUT_CONFIG_STM32_IAP",
                 brief = "STM32 On-Chip Flash",
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in on-chip flash memory.",
+                              "be stored in last sector of on-chip flash memory.",
                 requires = { "HW_FLASH_STM32" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
@@ -941,7 +941,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -963,7 +963,8 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -985,7 +986,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -1005,7 +1006,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -1025,7 +1026,7 @@ nutdev =
                     "NUT_CONFIG_AT45DB",
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_STM32FLASH",
+                    "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -5011,6 +5012,24 @@ nutdev =
         requires = { "HW_GPIO", "TOOL_GCC" },
         provides = { "DEV_OWI" },
         sources = { "owibus.c", "owibus_bbif.c", "owibus_uartif.c" },
+    },
+    {
+        name = "nutdev_flash",
+        brief = "Flash self programming",
+        description = "Portable interface for flash self programming supplied" ..
+        "by platform",
+        options =
+        {
+            {
+                macro = "IAP_FLASH",
+                brief = "Platform flash self programming",
+                description = "Portable IAP flash programming interface.",
+                type = "integer",
+                default = "1",
+                requires = { "HW_FLASH" },
+                file= "include/cfg/flash.h"
+                }
+         },
     },
     --
     -- Disabled components.
