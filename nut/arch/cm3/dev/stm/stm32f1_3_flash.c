@@ -103,6 +103,13 @@ static uint32_t pagelist[4] = {0,0,0,0};
 #define FLASH_SR_WRPRTERR FLASH_SR_WRPERR
 #endif
 
+void FlashUntouch(void)
+{
+    int i;
+    for (i = 0; i< sizeof(pagelist); i++)
+        pagelist[1] = 0;
+}
+
 static uint32_t FlashEnd(void)
 {
     uint16_t size;

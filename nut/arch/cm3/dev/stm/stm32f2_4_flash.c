@@ -111,6 +111,11 @@
  */
 static uint32_t sectorlist = 0;
 
+void FlashUntouch(void)
+{
+    sectorlist = 0;
+}
+
 /*!
   * \brief  Unlocks the FLASH Program Erase Controller.
   * \retval 0 on success, FLASH_LOCKED else.
