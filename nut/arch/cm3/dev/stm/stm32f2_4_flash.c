@@ -111,6 +111,11 @@
  */
 static uint32_t sectorlist = 0;
 
+uint8_t sector2start[] = {0, 0x04, 0x08, 0x0c, 0x10, 0x20, 0x40,
+                          0x60, 0x80, 0xa0, 0xc0, 0xe0};
+
+uint8_t sector2size[] = {0x04, 0x04, 0x04, 0x04, 0x10, 0x20, 0x20, 0x20,
+                         0x20, 0x20, 0x20, 0x20};
 void FlashUntouch(void)
 {
     sectorlist = 0;
@@ -131,32 +136,19 @@ static FLASH_Status FLASH_Unlock( void )
 /*!
  *\brief Calculate sector number and sector length form address
  * \param Addr Address
- * \param length Pointer to write length of sector, if given
  *
  * \return Sector Number
  */
-static uint32_t FlashAddr2Sector(void* Addr, uint32_t *length)
+static uint32_t FlashAddr2Sector(void* Addr)
 {
-    uint32_t len;
     uint32_t sector;
     uint32_t addr = (uint32_t) Addr;
     if (addr < (FLASH_BASE + 0x10000))
-    {
-        len = 0x4000;
         sector = (addr - FLASH_BASE)/0x4000;
-    }
     else if (addr < (FLASH_BASE + 0x20000))
-    {
-        len = 0x10000;
         sector = 4;
-    }
     else
-    {
-        len = 0x20000;
         sector = ((addr - FLASH_BASE)/0x20000) + 4;
-    }
-    if (length)
-        *length = len;
     return sector;
 }
 
@@ -213,6 +205,17 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
 {
     FLASH_Status rs = FLASH_COMPLETE;
 
+    int i;
+    uint32_t *addr = (uint32_t *) (FLASH_BASE + (sector2start[sector] << 12));
+    int size = sector2size[sector] << 12;
+
+    /* Check if sector is already erased */
+    for(i = 0; i < (size >> 2); i++)
+        if (addr[i] != ERASED_PATTERN_32)
+            break;
+    if (i >= size)
+        goto erase_done;
+
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
     if(rs == FLASH_COMPLETE) {
@@ -224,9 +227,14 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
         rs = FlashWaitReady();
         FLASH->CR = 0;
     }
+erase_done:
+    if(rs != FLASH_COMPLETE)
+        sectorlist &= ~(1 << sector);
+    else
+        sectorlist |= (1 << sector);
 
     /* Return the Erase Status */
-    return (int)rs;
+    return rs;
 }
 
 /*!
@@ -267,7 +275,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     uint32_t flash_end_addr = FLASH_BASE + (flash_size << 10);
 
     /* we need to run with at least 1 MHz for flashing*/
-    NUTASSERT((SysTick->LOAD +1)/NUT_TICK_FREQ > 0);
+    NUTASSERT((SysTick->LOAD +1)/NUT_TICK_FREQ > 1000);
 
     if (len == 0)
         return FLASH_COMPLETE;
@@ -278,16 +286,9 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         return FLASH_BOUNDARY;
     }
 
-    /* Unlock related banks */
-    if ((rs = FLASH_Unlock()) != FLASH_COMPLETE)
-    {
-        /* Unlocking failed for any reason */
-        return FLASH_LOCKED;
-    }
-
     /* Check for write protected sectors */
-    sector_start = FlashAddr2Sector(dst, NULL);
-    sector_end = FlashAddr2Sector(dst+len, NULL);
+    sector_start = FlashAddr2Sector(dst);
+    sector_end = FlashAddr2Sector(dst+len);
     for (i = sector_start; i < sector_end; i++)
         if ((optcr & (1 << (i +_BI32(FLASH_OPTCR_nWRP_0)))) == 0)
             return FLASH_ERROR_WRP;
@@ -295,13 +296,20 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         /* Only a check for write protection was requested */
         return  FLASH_COMPLETE;
 
+    /* Unlock related banks */
+    rs = FLASH_Unlock();
+    if (rs != FLASH_COMPLETE)
+    {
+        /* Unlocking failed for any reason */
+        return FLASH_LOCKED;
+    }
 
     while( (length) && (rs==FLASH_COMPLETE))
     {
-        uint32_t sector_length;
-        uint32_t sector_nr;
+        uint32_t sector_nr = FlashAddr2Sector(wptr);
+        uint32_t sector_length = sector2size[sector_nr];
         uint32_t current_length = length;
-        sector_nr = FlashAddr2Sector(wptr, &sector_length);
+
         if (((uint32_t)wptr & (sector_length -1)) + length > sector_length)
             current_length = sector_length -
                 ((uint32_t)wptr & (sector_length -1));
@@ -311,21 +319,14 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
             ((mode == FLASH_ERASE_FIRST_TOUCH) &&
              (sectorlist & (1 << sector_nr)) == 0))
         {
-            volatile uint32_t *ptr = wptr;
-            /* FLASH_PSIZE only affects erase/programming */
-            for (i = 0; i< (sector_length/4); i++)
-                if ( *ptr++ != ERASED_PATTERN_32)
-                    break;
-            if ((i < (sector_length/4)) &&
-                ((rs = FlashEraseSector(sector_nr)) != FLASH_COMPLETE))
-                /* Unlocking failed for any reason */
-                return rs;
-            sectorlist |= (1 << sector_nr);
+            rs = FlashEraseSector(sector_nr);
+            if (rs != FLASH_COMPLETE)
+                goto done;
         }
         /* Program the sector */
         rs = FlashWaitReady();
         if (rs != FLASH_COMPLETE)
-            return rs;
+            goto done;
         else
         {
             /* Size written must correspond the size announced!  */
@@ -362,12 +363,9 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
             rs = FlashWaitReady();
             FLASH->CR = 0;
             if(rs != FLASH_COMPLETE)
-                return rs;
+                goto done;
         }
     }
-
-    /* Lock the FLASH again */
-    FLASH->CR = FLASH_CR_LOCK;
 
     /* Check the written data */
     wptr = dst;
@@ -376,13 +374,13 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     /* Align flash access to 4 Byte Boundary*/
     while (length && ((uint32_t)wptr & FLASH_LEN_MASK)) {
         if(*(volatile uint8_t*)wptr++ != *(uint8_t*)rptr++)
-            return  FLASH_COMPARE;
+            goto cmp_err;
         length--;
     }
     /* Now compare 32-bit  at a time*/
     while (length > 3) {
         if(*(volatile uint32_t*)wptr != *(uint32_t*)rptr)
-            return FLASH_COMPARE;
+            goto cmp_err;
         length -= 4;
         wptr += +4;
         rptr += +4;
@@ -390,9 +388,16 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
 
     while (length) {
         if((*(volatile uint8_t*)wptr++) != *(uint8_t*)rptr++)
-            return FLASH_COMPARE;
+            goto cmp_err;
         length--;
     }
+    goto done;
+cmp_err:
+    rs = FLASH_COMPARE;
+
+done:
+    /* Lock the FLASH again */
+    FLASH->CR = FLASH_CR_LOCK;
 
     return rs;
 }
@@ -609,7 +614,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     }
     else {
          /* All pages used, mark the sector as not yet erases to force erase*/
-        sectorlist &= ~(1<<FlashAddr2Sector(flash_conf_sector, NULL));
+        sectorlist &= ~(1<<FlashAddr2Sector(flash_conf_sector));
         conf_page = 0;
         mode = FLASH_ERASE_ALWAYS;
     }
@@ -658,8 +663,8 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     optcr = FLASH->OPTCR;
     if (optcr & FLASH_OPTCR_OPTLOCK)
         return FLASH_ERROR_PG;
-    sector_start = FlashAddr2Sector(dst, NULL);
-    sector_end = FlashAddr2Sector(dst + len -1, NULL);
+    sector_start = FlashAddr2Sector(dst);
+    sector_end = FlashAddr2Sector(dst + len -1);
     for (i = sector_start; i <= sector_end; i++)
         if (ena)
             optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));

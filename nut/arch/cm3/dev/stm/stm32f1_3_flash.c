@@ -190,6 +190,15 @@ static FLASH_Status FlashErasePage(uint32_t mem)
 {
     FLASH_Status rs = FLASH_COMPLETE;
 
+    uint32_t current_page = ((uint32_t)mem - FLASH_BASE)/FLASH_PAGE_SIZE;
+    uint32_t *addr = (uint32_t *)(current_page * FLASH_PAGE_SIZE);
+    int i;
+
+    for(i = 0; i < FLASH_PAGE_SIZE >> 2; i++)
+        if (addr[i] != ((ERASED_PATTERN_16 << 16) | ERASED_PATTERN_16))
+            break;
+    if (i >= (FLASH_PAGE_SIZE >> 2))
+        goto erase_done;
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
     if(rs == FLASH_COMPLETE) {
@@ -200,23 +209,24 @@ static FLASH_Status FlashErasePage(uint32_t mem)
             FLASH->CR2 = FLASH_CR_PER | FLASH_CR_STRT;
             rs = FlashWaitReady();
             FLASH->CR2 = 0;
-            if( rs != FLASH_COMPLETE)
-                return rs;
+            goto erase_done;
         }
-#else
+#endif
 
         /* if the previous operation is completed, proceed to erase the page */
         FLASH->CR = FLASH_CR_PER;
         FLASH->AR = mem;
         FLASH->CR = FLASH_CR_PER | FLASH_CR_STRT;
-
-#endif /* STM32F10X_XL */
-        /* Wait for last operation to be completed */
         rs = FlashWaitReady();
         FLASH->CR = 0;
     }
+erase_done:
+    if (rs != FLASH_COMPLETE)
+        pagelist[current_page/32] &= ~(1 <<(current_page%32));
+    else
+        pagelist[current_page/32] |= (1 <<(current_page%32));
     /* Return the Erase Status */
-    return (int)rs;
+    return rs;
 }
 
 /*!
@@ -250,6 +260,22 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         return FLASH_BOUNDARY;
     }
 
+    /* Check for write protected sectors */
+    page_start = ((uint32_t)dst        - FLASH_BASE)/FLASH_PAGE_SIZE;
+    page_end = (((uint32_t)dst + len -1) - FLASH_BASE)/FLASH_PAGE_SIZE;
+    /* Write protection happens in 4 kiByte unites. The uppermost bit in
+       FLASH->WRPR handles all remaining units*/
+#if  FLASH_PAGE_SIZE  == 1024
+    for (i = page_start>>2; i <= page_end>>2; i++)
+#else
+    for (i = page_start>>1; i <= page_end>>1; i++)
+#endif
+        if (((i < 31) && ((wrpr & (1<<i)) == 0)) || ((i >= 31) && (wrpr & 0x80000000) == 0))
+                return FLASH_ERROR_WRP;
+    if (src == NULL)
+        /* Only a check for write protection was requested */
+        return  FLASH_COMPLETE;
+
     /* Unlock related banks*/
     if (((uint32_t)dst - FLASH_BASE)/FLASH_PAGE_SIZE <256) {
         FLASH->KEYR = FLASH_KEY1;
@@ -265,28 +291,11 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
 #endif
     if (rs != FLASH_COMPLETE)
         return FLASH_LOCKED;
-    /* Check for write protected sectors */
-    page_start = ((uint32_t)dst        - FLASH_BASE)/FLASH_PAGE_SIZE;
-    page_end = (((uint32_t)dst + len -1) - FLASH_BASE)/FLASH_PAGE_SIZE;
-    /* Write protection happens in 4 kiByte unites. The uppermost bit in
-       FLASH->WRPR handles all remaining units*/
-#if  FLASH_PAGE_SIZE  == 1024
-    for (i = page_start>>2; i <= page_end>>2; i++)
-#else
-    for (i = page_start>>1; i <= page_end>>1; i++)
-#endif
-        if (((i < 31)  && ((wrpr & (1<<i)) == 0)) || ((wrpr & 0x80000000) == 0))
-                return FLASH_ERROR_WRP;
-    if (src == NULL)
-        /* Only a check for write protection was requested */
-        return  FLASH_COMPLETE;
-
     while (length && (rs == FLASH_COMPLETE))
     {
         uint32_t current_page = ((uint32_t)wptr - FLASH_BASE)/FLASH_PAGE_SIZE;
         uint32_t current_length = length;
         uint32_t offset_in_page = (uint32_t)wptr % FLASH_PAGE_SIZE;
-        uint16_t *ckptr = (uint16_t*)(current_page * FLASH_PAGE_SIZE + FLASH_BASE);
         int prepend = 0, append = 0;
         uint16_t prepend_data, append_data;
 
@@ -303,21 +312,17 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         if ((mode == FLASH_ERASE_ALWAYS) ||
             ((mode == FLASH_ERASE_FIRST_TOUCH) &&
              (((pagelist[current_page/32] & (1 <<(current_page%32))) == 0)))) {
-            for (i = (offset_in_page>>1); i< (FLASH_PAGE_SIZE>>1); i++)
-                if ( ckptr[i] != ERASED_PATTERN_16)
-                    break;
             if (i < (FLASH_PAGE_SIZE>>1)) {
                 rs = FlashErasePage((uint32_t)wptr);
                 if (rs != FLASH_COMPLETE)
                     /* Erase failed for any reason */
-                    return rs;
+                    goto done;
             }
-            pagelist[current_page/32] |= (1 <<(current_page%32));
         }
         /* Program the sector */
         rs = FlashWaitReady();
         if (rs != FLASH_COMPLETE)
-            return rs;
+            goto done;
         if (((uint32_t)wptr -FLASH_BASE)/FLASH_PAGE_SIZE <256)
             FLASH->CR = FLASH_CR_PG;
 #if defined(STM32F10X_XL)
@@ -349,14 +354,9 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         rs = FlashWaitReady();
         FLASH->CR = 0;
         if(rs != FLASH_COMPLETE)
-            return rs;
+            goto done;
     }
     rs = FlashWaitReady();
-    /* Lock the FLASH again */
-    FLASH->CR = FLASH_CR_LOCK;
-#if defined(STM32F10X_XL)
-    FLASH->CR2 = FLASH_CR_LOCK;
-#endif
     /* Check the written data */
     wptr = dst;
     rptr = src;
@@ -364,36 +364,33 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     /* Align flash access to 4 Byte Boundary*/
     while (length && ((uint32_t)wptr & 3)) {
         if(*(volatile uint8_t*)wptr++ != *(uint8_t*)rptr++)
-            return  FLASH_COMPARE;
+            goto cmp_err;
         length--;
     }
     /* Now compare word at a time*/
     while (length > 3) {
         if(*(volatile uint32_t*)wptr != *(uint32_t*)rptr)
-            return  FLASH_COMPARE;
+            goto cmp_err;
         length -= 4;
         wptr += +4;
         rptr += +4;
     }
-
+    /* Compare the rest */
     while (length) {
         if((*(volatile uint8_t*)wptr++) != *(uint8_t*)rptr++)
-            return FLASH_COMPARE;
+            goto cmp_err;
         length--;
     }
+    goto done;
+cmp_err:
+    rs = FLASH_COMPARE;
 
-    return rs;
-    while (length > 1 && (rs==FLASH_COMPLETE))
-    {
-        if( *(uint16_t*) wptr  != *(uint16_t*) rptr)
-        {
-            rs = FLASH_COMPARE;
-        }
-        wptr += 2;
-        rptr += 2;
-        length -= 2;
-    }
-
+done:
+    /* Lock the FLASH again */
+    FLASH->CR = FLASH_CR_LOCK;
+#if defined(STM32F10X_XL)
+    FLASH->CR2 = FLASH_CR_LOCK;
+#endif
     return rs;
 }
 
