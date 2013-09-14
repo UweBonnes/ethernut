@@ -145,12 +145,12 @@ nutarch_cm3 =
     {
         name = "nutarch_cm34_fpu",
         brief = "FPU support (CortexM3/M4)",
+        requires = { "HW_MCU_FPU" },
         options =
         {
             {
                 macro = "MCU_USE_CORTEX_FPU",
                 brief = "Enable FPU support",
-                requires = { "HW_MCU_FPU" },
                 provides = { "MCU_USE_CORTEX_FPU" },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
