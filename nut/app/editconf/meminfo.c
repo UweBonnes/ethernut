@@ -164,6 +164,11 @@ void ShowHardwareConfiguration(void)
     puts("Address : 0x50");
 #endif
 
+#elif defined(NUT_CONFIG_STM32L1_EEPROM)
+    puts("Internal EEPROM");
+#elif defined(NUT_CONFIG_STM32_IAP)
+    puts("STM32F1/2/3/4 NOR Flash");
+    printf("Size    : %d\n", FLASH_CONF_SIZE);
 #else
     puts("Unknown");
 #endif
