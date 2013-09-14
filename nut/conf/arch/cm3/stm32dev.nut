@@ -106,6 +106,17 @@ nutarch_cm3_stm32_devices =
         provides = { "HW_FLASH", "HW_FLASH_STM32" };
         sources = { "cm3/dev/stm/stm32l1_flash.c"}
     },
+    --
+    -- STM32 EEPROM Interface L1
+    --
+    {
+        name = "nutarch_cm3_stm32l1_eeprom",
+        brief = "EEPROM access",
+        description = "Generic EEPROM interface.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_EEPROM_STM32L1" },
+        provides = { "DEV_NVMEM" };
+        sources = { "cm3/dev/stm/stm32l1_eeprom.c"}
+    },
      --
     -- STM32 Flash Interface F2 and F4
     --

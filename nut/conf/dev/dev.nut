@@ -856,6 +856,7 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -877,7 +878,8 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_STM32L1_EEPROM",
+                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
                 file = "include/cfg/eeprom.h"
@@ -898,6 +900,7 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -920,6 +923,7 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -942,6 +946,31 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_STM32L1_EEPROM",
+                brief = "STM32L1 On-Chip EEPROM",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip eeprom memory.",
+                requires = { "HW_EEPROM_STM32L1" },
+                provides = { "DEV_NVMEM" },
+                flavor = "boolean",
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -965,6 +994,7 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -987,6 +1017,7 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -1007,6 +1038,7 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
@@ -1027,6 +1059,7 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32L1_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
                 },
