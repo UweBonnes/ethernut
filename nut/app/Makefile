@@ -88,6 +88,7 @@ all:
 #	-$(MAKE) -C cppdemo
 	-$(MAKE) -C editconf
 	-$(MAKE) -C events
+	-$(MAKE) -C flashtest
 	-$(MAKE) -C ftpd
 	-$(MAKE) -C httpd
 	-$(MAKE) -C httpd_simple
@@ -117,6 +118,7 @@ install:
 #	-$(MAKE) -C cppdemo install
 	-$(MAKE) -C editconf install
 	-$(MAKE) -C events install
+	-$(MAKE) -C flashtest install
 	-$(MAKE) -C ftpd install
 	-$(MAKE) -C httpd install
 	-$(MAKE) -C httpd_simple install
@@ -144,6 +146,7 @@ clean:
 #	-$(MAKE) -C cppdemo clean
 	-$(MAKE) -C editconf clean
 	-$(MAKE) -C events clean
+	-$(MAKE) -C flashtest clean
 	-$(MAKE) -C ftpd clean
 	-$(MAKE) -C httpd clean
 	-$(MAKE) -C httpd_simple clean
