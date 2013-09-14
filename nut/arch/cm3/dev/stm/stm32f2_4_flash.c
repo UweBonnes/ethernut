@@ -48,7 +48,7 @@
 #else
 #warning "STM32 family has no F2/F4 compatible FLASH"
 #endif
-#define FLASH_SECTOR_SIZE      (1<<17)
+#define FLASH_SECTOR_SIZE      (1 << 17)
 #define FLASH_PSIZE_8    0
 #define FLASH_PSIZE_16   FLASH_CR_PSIZE_0
 #define FLASH_PSIZE_32   FLASH_CR_PSIZE_1
@@ -258,7 +258,8 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     void *wptr = dst;
     void *rptr = src;
     uint32_t length = len;
-    uint32_t flash_end_addr = FLASH_BASE + (((*(uint16_t*)FLASH_SIZE_REG)<<10));
+    uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
+    uint32_t flash_end_addr = FLASH_BASE + (flash_size << 10);
 
     /* we need to run with at least 1 MHz for flashing*/
     NUTASSERT((SysTick->LOAD +1)/NUT_TICK_FREQ > 0);
@@ -283,7 +284,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     sector_start = FlashAddr2Sector(dst, NULL);
     sector_end = FlashAddr2Sector(dst+len, NULL);
     for (i = sector_start; i < sector_end; i++)
-        if ((optcr & (1<<(i +_BI32(FLASH_OPTCR_nWRP_0)))) == 0)
+        if ((optcr & (1 << (i +_BI32(FLASH_OPTCR_nWRP_0)))) == 0)
             return FLASH_ERROR_WRP;
     if (src == NULL)
         /* Only a check for write protection was requested */
@@ -303,7 +304,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         /* Check if sector needs erase */
         if ((mode == FLASH_ERASE_ALWAYS) ||
             ((mode == FLASH_ERASE_FIRST_TOUCH) &&
-             (sectorlist & (1<<sector_nr)) == 0))
+             (sectorlist & (1 << sector_nr)) == 0))
         {
             volatile uint32_t *ptr = wptr;
             /* FLASH_PSIZE only affects erase/programming */
@@ -314,7 +315,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
                 ((rs = FlashEraseSector(sector_nr)) != FLASH_COMPLETE))
                 /* Unlocking failed for any reason */
                 return rs;
-            sectorlist |= (1<<sector_nr);
+            sectorlist |= (1 << sector_nr);
         }
         /* Program the sector */
         rs = FlashWaitReady();
@@ -415,7 +416,7 @@ uint32_t IapFlashEnd(void)
  * This function writes data from source address to FLASH.
  * It handles erasing and assembling of data automatically.
  * On F2/F4 We need to handle sectors with up to 128 kByte,
- * so we can't keep a copy. If a configuartion sector is used,
+ * so we can't keep a copy. If a configuration sector is used,
  * this sector is not allowed for writing.
  *
  * \param dst Pointer to address anywhere in FLASH.
@@ -429,11 +430,10 @@ uint32_t IapFlashEnd(void)
 FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
                             FLASH_ERASE_MODE mode)
 {
-    uint32_t flash_end_addr = FLASH_BASE +
+    uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
+    uint32_t flash_end_addr = FLASH_BASE + (flash_size << 10);
 #if defined(NUT_CONFIG_STM32_IAP)
-        (((*(uint16_t*)FLASH_SIZE_REG)<<10)) - FLASH_SECTOR_SIZE;
-#else
-        (((*(uint16_t*)FLASH_SIZE_REG)<<10));
+    flash_end_addr -= FLASH_SECTOR_SIZE;
 #endif
     if ((uint32_t)dst + len > flash_end_addr)
         return FLASH_BOUNDARY;
@@ -463,8 +463,9 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
 FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
 {
     uint8_t  conf_page = 0;
-    uint32_t flash_conf_sector = FLASH_BASE + ((*(uint16_t*)FLASH_SIZE_REG<<10)
-                                               - FLASH_SECTOR_SIZE);
+    uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
+    uint32_t flash_conf_sector =
+        FLASH_BASE + (flash_size << 10) - FLASH_SECTOR_SIZE;
     uint32_t marker = *(uint32_t*)
         (flash_conf_sector +((conf_page + 1) * FLASH_CONF_SIZE)
          - sizeof(ERASED_PATTERN_32));
@@ -523,8 +524,9 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     FLASH_Status rs = 0;
     uint8_t *buffer;
     uint8_t  conf_page = 0, *mem;
+    uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
     void* flash_conf_sector = (void*)FLASH_BASE +
-        ((*(uint16_t*)FLASH_SIZE_REG<<10) - FLASH_SECTOR_SIZE);
+        (flash_size << 10) - FLASH_SECTOR_SIZE;
     uint32_t marker = *(uint32_t*)
         (flash_conf_sector + ((conf_page +1) * FLASH_CONF_SIZE)
          - sizeof(ERASED_PATTERN_32));
@@ -628,23 +630,19 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     int i;
     uint32_t optcr;
     FLASH_Status rs = FLASH_COMPLETE;
+    uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
+    uint32_t flash_end_addr = FLASH_BASE + (flash_size << 10);
 #if defined(NUT_CONFIG_STM32_IAP)
-    uint32_t flash_end_addr = FLASH_BASE + (((*(uint16_t*)FLASH_SIZE_REG)<<10))
-        - FLASH_SECTOR_SIZE;
-#else
-    uint32_t flash_end_addr = FLASH_BASE + (((*(uint16_t*)FLASH_SIZE_REG)<<10));
+    flash_end_addr -= FLASH_SECTOR_SIZE;
 #endif
-    if ((uint32_t)dst + len > flash_end_addr)
-        return FLASH_BOUNDARY;
-
-    if (len == 0)
-        return FLASH_COMPLETE;
-
-    /* Check top boundary */
+    /* Check boundaries */
     if ((((uint32_t)dst+len) > flash_end_addr) || ((uint32_t)dst < FLASH_BASE))
     {
         return FLASH_BOUNDARY;
     }
+
+    if (len == 0)
+        return FLASH_COMPLETE;
 
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
@@ -656,12 +654,12 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     if (optcr & FLASH_OPTCR_OPTLOCK)
         return FLASH_ERROR_PG;
     sector_start = FlashAddr2Sector(dst, NULL);
-    sector_end = FlashAddr2Sector(dst+len, NULL);
+    sector_end = FlashAddr2Sector(dst + len -1, NULL);
     for (i = sector_start; i <= sector_end; i++)
         if (ena)
-            optcr &= ~(1<<(i + _BI32(FLASH_OPTCR_nWRP_0)));
+            optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
         else
-            optcr |=  (1<<(i + _BI32(FLASH_OPTCR_nWRP_0)));
+            optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
     FLASH->OPTCR = optcr;
     FLASH->OPTCR = optcr |FLASH_OPTCR_OPTSTRT;
     /* Wait for last operation to be completed */

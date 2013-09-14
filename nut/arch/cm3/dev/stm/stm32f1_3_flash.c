@@ -260,7 +260,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         return FLASH_LOCKED;
     /* Check for write protected sectors */
     page_start = ((uint32_t)dst        - FLASH_BASE)/FLASH_PAGE_SIZE;
-    page_end = (((uint32_t)dst+len -1) - FLASH_BASE)/FLASH_PAGE_SIZE;
+    page_end = (((uint32_t)dst + len -1) - FLASH_BASE)/FLASH_PAGE_SIZE;
     /* Write protection happens in 4 kiByte unites. The uppermost bit in
        FLASH->WRPR handles all remaining units*/
 #if  FLASH_PAGE_SIZE  == 1024
@@ -408,7 +408,9 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
                             FLASH_ERASE_MODE mode)
 {
     uint32_t iap_flash_end = FlashEnd();
-#if defined(NUT_CONFIG_STM32_IAP)
+#if defined(NUT_CONFIG_STM32_IAP) && FLASH_CONF_SIZE > FLASH_PAGE_SIZE
+    iap_flash_end -= FLASH_CONF_SIZE ;
+#elif defined(NUT_CONFIG_STM32_IAP)
     iap_flash_end -= FLASH_PAGE_SIZE ;
 #endif
     if (len == 0)
@@ -433,8 +435,10 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
  */
 uint32_t IapFlashEnd(void)
 {
-#if defined(NUT_CONFIG_STM32_IAP)
-    return FlashEnd() - FLASH_PAGE_SIZE ;
+#if defined(NUT_CONFIG_STM32_IAP) && FLASH_CONF_SIZE > FLASH_PAGE_SIZE
+    return FlashEnd() - FLASH_CONF_SIZE;
+#elif defined(NUT_CONFIG_STM32_IAP)
+    return FlashEnd() - FLASH_PAGE_SIZE;
 #else
     return FlashEnd();
 #endif
@@ -461,7 +465,7 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     if (len == 0)
         return FLASH_COMPLETE;
 
-    /* Check top boundary */
+    /* Check boundaries */
     if ((((uint32_t)dst+len) > iap_flash_end ) || ((uint32_t)dst < FLASH_BASE))
     {
         return FLASH_BOUNDARY;
@@ -493,7 +497,7 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     for (i = page_start>>1; i <= page_end>>1; i++)
 #endif
     {
-        if (i < 32) {
+        if (i < 31) {
             if (ena)
                 wrpr &= ~(1<<(i));
             else
