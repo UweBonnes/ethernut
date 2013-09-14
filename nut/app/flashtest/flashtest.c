@@ -52,11 +52,12 @@
 #include <dev/nvmem.h>
 #include <sys/timer.h>
 
-static char *banner = "\nNut/OS Flash Sample " __DATE__ " " __TIME__"\n";
+static char *banner = "\nNut/OS Flash Sample on " BOARDNAME " " __DATE__ " " __TIME__"\n";
 static char *pattern =  "0123456789abcdef0123456789ABCDEF";
 static char *pattern1 = "FEDCBA9876543210fedcba987654321";
 static char *pattern2 = "0123456789abcdef0123456789ABCD";
-static char  pattern3 = 0x55;
+static char *pattern3 = "abcdef0123456789abcdef0123456";
+static char  pattern4 = 0x55;
 
 /*
  * UART sample.
@@ -114,110 +115,166 @@ int main(void)
     if (*(uint32_t*)(iap_flash_end -0xff) != 0xffffffff)
         printf("Not");
     printf("Empty\n");
+    memset(buffer, 0, sizeof(buffer));
+
+    printf("Write to erased flash\n");
+    res = IapFlashWrite((void*)(iap_flash_end ), &pattern4,
+                        1, FLASH_ERASE_FIRST_TOUCH);
+    printf("%40s %3d: ", "0x55 at (address & 3 == 3). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 3);
+    printf("0x%08lx\n", rd);
     NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end - 5), &pattern4,
+                        1, FLASH_ERASE_FIRST_TOUCH);
+    printf("%40s %3d: ", "0x55 at (address & 3 == 2). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 7);
+    printf("0x%08lx\n", rd);
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end - 10), &pattern4,
+                        1, FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x55 at (address & 3 == 1). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 11);
+    printf("0x%08lx\n", rd);
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end - 15), &pattern4,
+                        1, FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x55 at (address & 3 == 0). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 15);
+    printf("0x%08lx\n", rd);
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end -0x3f), pattern1,
+                        strlen(pattern1) + 1, FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "Up to (address & 3 == 3). Res", res);
+    printf((char*)(iap_flash_end -0x3f));
+    printf("\n");
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end -0x7f), pattern2,
+                        strlen(pattern2) + 1, FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "Up to (address & 3 == 2). Res", res);
+    printf((char*)(iap_flash_end -0x7f));
+    printf("\n");
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end -0xcf), pattern3,
+                        strlen(pattern2) + 1, FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "Up to (address & 3 == 1). Res", res);
+    printf((char*)(iap_flash_end -0xcf));
+    printf("\n");
+    NutSleep(10);
+
     res = IapFlashWrite((void*)(iap_flash_end -0xff), pattern,
-                        strlen(pattern) + 1, FLASH_ERASE_ALWAYS);
-    printf("%55s %3d:", "After write Res", res);
+                        strlen(pattern) + 1, FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "Up to (address & 3 == 0). Res", res);
     printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
-    buffer[0] = 0;
-    buffer[1] = 0;
-    buffer[2] = 0;
-    buffer[3] = 0;
+
     dword_aligned_end = (void*)((iap_flash_end - 0xff + strlen(pattern))
                                 & 0xfffffff0);
 
+    printf("Write to programmed flash\n");
     res = IapFlashWrite(dword_aligned_end - 1, buffer, 1,
                         FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After unaligned overwrite byte Res", res);
+    printf("%40s %3d: ", "0x00 at (address & 3 == 3). Res", res);
     if ((res == 0) || (res == FLASH_COMPARE))
         printf((char*)(iap_flash_end -0xff));
     NutSleep(10);
     printf("\n");
 
-    res = IapFlashWrite(dword_aligned_end - 3, buffer, 2,
+    res = IapFlashWrite(dword_aligned_end - 2, buffer, 1,
                         FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After unaligned overwrite word Res", res);
+    printf("%40s %3d: ", "0x00 at (address & 3 == 2). Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    NutSleep(10);
+    printf("\n");
+
+    res = IapFlashWrite(dword_aligned_end - 3, buffer, 1,
+                        FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x00 at (address & 3 == 1). Res", res);
     if ((res == 0) || (res == FLASH_COMPARE))
         printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite(dword_aligned_end - 4, buffer, 2,
+    res = IapFlashWrite(dword_aligned_end - 4, buffer, 1,
                         FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After aligned overwrite word Res", res);
+    printf("%40s %3d: ", "0x00 at (address & 3 == 0). Res", res);
     if ((res == 0) || (res == FLASH_COMPARE))
         printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite(dword_aligned_end - 5, buffer, 4,
+    res = IapFlashWrite(dword_aligned_end - 6, buffer, 2,
                         FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After unaligned overwrite dword on odd address Res",
+    printf("%40s %3d: ", "0x0000 at (address & 3 == 2). Res",
            res);
     if ((res == 0) || (res == FLASH_COMPARE))
         printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite(dword_aligned_end - 6, buffer, 4,
+    res = IapFlashWrite(dword_aligned_end - 8, buffer, 2,
                         FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After unaligned overwrite dword on word address Res",
+    printf("%40s %3d: ", "0x0000 at (address & 3 == 0). Res",
            res);
     if ((res == 0) || (res == FLASH_COMPARE))
         printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite(dword_aligned_end - 8, buffer, 4,
+    res = IapFlashWrite(dword_aligned_end - 11, buffer, 2,
                         FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After aligned overwrite dword Res", res);
+    printf("%40s %3d: ", "0x0000 at (address & 3 == 1). Res",
+           res);
     if ((res == 0) || (res == FLASH_COMPARE))
         printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite((void*)(iap_flash_end -0x13f), pattern1,
-                        strlen(pattern1) + 1, FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After write with 0x0 on odd address Res", res);
-    printf((char*)(iap_flash_end -0x13f));
+    res = IapFlashWrite(dword_aligned_end - 13, buffer, 2,
+                        FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x0000 at (address & 3 == 3). Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite((void*)(iap_flash_end -0x17f), pattern2,
-                        strlen(pattern2) + 1, FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "After write with 0x0 on odd halfword Res", res);
-    printf((char*)(iap_flash_end -0x17f));
+    res = IapFlashWrite(dword_aligned_end - 17, buffer, 4,
+                        FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x00000000 at (address & 3 == 3). Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
     printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite((void*)(iap_flash_end - 0x183), &pattern3,
-                        1, FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 0). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 0x183);
-    printf("0x%08lx\n", rd);
-NutSleep(10);
-
-    res = IapFlashWrite((void*)(iap_flash_end - 0x187 + 1), &pattern3,
-                        1, FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 1). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 0x187);
-    printf("0x%08lx\n", rd);
+    res = IapFlashWrite(dword_aligned_end - 22, buffer, 4,
+                        FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x00000000 at (address & 3 == 2). Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite((void*)(iap_flash_end - 0x18c + 2), &pattern3,
-                        1, FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 2). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 0x18c);
-    printf("0x%08lx\n", rd);
+    res = IapFlashWrite(dword_aligned_end - 27, buffer, 4,
+                        FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x00000000 at (address & 3 == 1). Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    printf("\n");
     NutSleep(10);
 
-    res = IapFlashWrite((void*)(iap_flash_end - 0x190 + 3), &pattern3,
-                        1, FLASH_ERASE_NEVER);
-    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 3). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 0x190);
-    printf("0x%08lx\n", rd);
+    res = IapFlashWrite(dword_aligned_end - 32, buffer, 4,
+                        FLASH_ERASE_NEVER);
+    printf("%40s %3d: ", "0x00000000 at (address & 3 == 0). Res", res);
+    if ((res == 0) || (res == FLASH_COMPARE))
+        printf((char*)(iap_flash_end -0xff));
+    printf("\n");
     NutSleep(10);
 
     for (;;) {
