@@ -56,6 +56,7 @@ static char *banner = "\nNut/OS Flash Sample " __DATE__ " " __TIME__"\n";
 static char *pattern =  "0123456789abcdef0123456789ABCDEF";
 static char *pattern1 = "FEDCBA9876543210fedcba987654321";
 static char *pattern2 = "0123456789abcdef0123456789ABCD";
+static char  pattern3 = 0x55;
 
 /*
  * UART sample.
@@ -70,6 +71,7 @@ int main(void)
     char buffer[7];
     uint32_t iap_flash_end = IapFlashEnd();
     void *dword_aligned_end;
+    uint32_t rd;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
@@ -189,6 +191,35 @@ int main(void)
     printf((char*)(iap_flash_end -0x17f));
     printf("\n");
     NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end - 0x183), &pattern3,
+                        1, FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 0). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 0x183);
+    printf("0x%08lx\n", rd);
+NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end - 0x187 + 1), &pattern3,
+                        1, FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 1). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 0x187);
+    printf("0x%08lx\n", rd);
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end - 0x18c + 2), &pattern3,
+                        1, FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 2). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 0x18c);
+    printf("0x%08lx\n", rd);
+    NutSleep(10);
+
+    res = IapFlashWrite((void*)(iap_flash_end - 0x190 + 3), &pattern3,
+                        1, FLASH_ERASE_NEVER);
+    printf("%55s %3d:", "Write 0x55 to erased flash at (address & 3 == 3). Res", res);
+    rd = *(uint32_t*)(iap_flash_end - 0x190);
+    printf("0x%08lx\n", rd);
+    NutSleep(10);
+
     for (;;) {
         NutSleep(100);
     }

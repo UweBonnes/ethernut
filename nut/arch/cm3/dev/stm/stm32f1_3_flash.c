@@ -303,11 +303,13 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
             current_length = FLASH_PAGE_SIZE;
         length -= current_length;
         prepend = (offset_in_page & 1);
-        append  = (current_length &1);
         if (prepend)
-            prepend_data = (*(uint8_t*)( wptr)<< 8) | (*(uint8_t *)rptr);
-        if(append)
-            append_data  = (*(uint8_t*)( rptr + current_length -1) << 8) |(*(uint8_t*)( wptr + current_length )) ;
+            prepend_data = (*(uint8_t*)( rptr)<< 8) | (*(uint8_t *)wptr);
+        else {
+            append  = (current_length &1);
+            if(append)
+                append_data  = *(uint8_t*)( rptr + current_length -1) | ((*(uint8_t*)( wptr + current_length )) << 8);
+        }
         /* Check if page needs erase*/
         if ((mode == FLASH_ERASE_ALWAYS) ||
             ((mode == FLASH_ERASE_FIRST_TOUCH) &&
