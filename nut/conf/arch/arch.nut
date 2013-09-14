@@ -1046,9 +1046,10 @@ nutarch =
                     "HW_MCU_STM32F40X",
                     "HW_MCU_STM32F405",
                     "MCU_STM32F405",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_MCU_FPU"
                 },
-                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
+                makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F407",
@@ -1067,9 +1068,10 @@ nutarch =
                     "HW_MCU_STM32F40X",
                     "HW_MCU_STM32F407",
                     "MCU_STM32F407",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_MCU_FPU"
                 },
-                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
+                makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F205",
@@ -1127,9 +1129,10 @@ nutarch =
                     "HW_MCU_STM32F30X",
                     "HW_MCU_STM32F302",
                     "MCU_STM32F302",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_MCU_FPU"
                 },
-                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
+                makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F303",
@@ -1147,9 +1150,10 @@ nutarch =
                     "HW_MCU_STM32F30X",
                     "HW_MCU_STM32F303",
                     "MCU_STM32F303",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_MCU_FPU"
                 },
-                makedefs = { "MCU=cortex-m4" , "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
+                makedefs = { "MCU=cortex-m4" }
             },
             --
             -- TI LM3S SERIES CONTROLLER

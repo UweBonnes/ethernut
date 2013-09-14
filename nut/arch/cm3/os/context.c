@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2013 by Michael Fischer
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,6 +40,7 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/arch.h>
 
 #include <string.h>
 
@@ -63,6 +65,26 @@
  * points to this structure.
  */
 typedef struct {
+#if defined (MCU_USE_CORTEX_FPU)
+    uint32_t csf_fpscr;
+    uint32_t csf_s16;
+    uint32_t csf_s17;
+    uint32_t csf_s18;
+    uint32_t csf_s19;
+    uint32_t csf_s20;
+    uint32_t csf_s21;
+    uint32_t csf_s22;
+    uint32_t csf_s23;
+    uint32_t csf_s24;
+    uint32_t csf_s25;
+    uint32_t csf_s26;
+    uint32_t csf_s27;
+    uint32_t csf_s28;
+    uint32_t csf_s29;
+    uint32_t csf_s30;
+    uint32_t csf_s31;
+#endif
+
     uint32_t csf_cpsr;
     uint32_t csf_r4;
     uint32_t csf_r5;
@@ -110,11 +132,18 @@ void NutThreadSwitch(void) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
     /* Save CPU context. */
-    asm volatile (                      /* */
+    __asm__ volatile (                  /* */
         "@ Save context\n\t"            /* */
         "stmfd   sp!, {r4-r11, lr}\n\t" /* Save registers. */
         "mrs     r4,  psr\n\t"          /* Save status. */
         "stmfd   sp!, {r4}\n\t"         /* */
+
+#if defined (MCU_USE_CORTEX_FPU)        
+        "vpush   {s16-s31}\n\t"         /* Save registers. */
+        "vmrs    r4, fpscr\n\t"         /* Save FPU status. */
+        "stmfd   sp!, {r4}\n\t"         /* */
+#endif
+        
         "str     sp, %0"                /* Save stack pointer. */
         ::"m" (runningThread->td_sp)    /* */
     );
@@ -127,6 +156,13 @@ void NutThreadSwitch(void)
      __asm__ __volatile__(              /* */
         "@ Load context\n\t"            /* */
         "ldr     sp, %0\n\t"            /* Restore stack pointer. */
+
+#if defined (MCU_USE_CORTEX_FPU)        
+        "ldmfd   sp!, {r4}\n\t"         /* Get saved FPU status... */            
+        "vmsr    fpscr, r4\n\t"         /* ...and save back. */
+        "vpop    {s16-s31}\n\t"         /* Restore FPU registers. */
+#endif
+        
         "ldmfd   sp!, {r4}\n\t"         /* Get saved status... */
         "msr     xpsr_nzcvq, r4\n\t"   /* ...and save execution and application status in psr. */
         "cpsie   i\n\t"                 /* ...enable interrupts */
@@ -229,8 +265,11 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     /*
      * Setup the switch frame.
      */
+    memset(sf, 0x00, sizeof(SWITCHFRAME)); 
     sf->csf_lr = (uintptr_t) NutThreadEntry;
     sf->csf_cpsr = 0;
+    sf->csf_fpscr = 0;
+    
 
     /*
      * Initialize the thread info structure and insert it into the
@@ -262,6 +301,13 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         __asm__ __volatile__(               /* */
             "@ Load context\n\t"            /* */
             "ldr     sp, %0\n\t"            /* Restore stack pointer. */
+
+#if defined (MCU_USE_CORTEX_FPU)            
+            "ldmfd sp!, {r4}\n\t"         /* Get saved FPU status... */            
+            "vmsr  fpscr, r4\n\t"         /* ...and save back. */
+            "vpop  {s16-s31}\n\t"         /* Restore FPU registers. */
+#endif
+            
             "ldmfd   sp!, {r4}\n\t"         /* Get saved status... */
             "msr     xpsr_nzcvq, r4\n\t"   /* ...and save execution and application status in psr. */
             "cpsie   i\n\t"                 /* ...enable interrupts */

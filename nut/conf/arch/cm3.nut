@@ -140,6 +140,26 @@ nutarch_cm3 =
     },
 
     --
+    -- CortexM3/M4 FPU
+    --    
+    {
+        name = "nutarch_cm34_fpu",
+        brief = "FPU support (CortexM3/M4)",
+        options =
+        {
+            {
+                macro = "MCU_USE_CORTEX_FPU",
+                brief = "Enable FPU support",
+                requires = { "HW_MCU_FPU" },
+                provides = { "MCU_USE_CORTEX_FPU" },
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+                makedefs = { "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
+            }
+        }
+    },
+    
+    --
     -- Board Initialization
     --
     {
