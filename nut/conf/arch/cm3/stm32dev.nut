@@ -95,6 +95,17 @@ nutarch_cm3_stm32_devices =
         provides = { "HW_FLASH", "HW_FLASH_STM32" };
         sources = { "cm3/dev/stm/stm32f1_3_flash.c"}
     },
+    --
+    -- STM32 Flash Interface L1
+    --
+    {
+        name = "nutarch_cm3_stm32l1_flash",
+        brief = "Flash access",
+        description = "Generic flash interface.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_FLASH_STM32L1" },
+        provides = { "HW_FLASH", "HW_FLASH_STM32" };
+        sources = { "cm3/dev/stm/stm32l1_flash.c"}
+    },
      --
     -- STM32 Flash Interface F2 and F4
     --
