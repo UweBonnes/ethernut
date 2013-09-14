@@ -64,6 +64,7 @@ nutarch_cm3_stm32f30 =
                 {
                     "HW_PLL_STM32F30",
                     "HW_RCC_STM32",
+                    "HW_FLASH_STM32F1_3",
                     "HW_GPIO_STM32V2",
                     "HW_CRC32_STM32",
                     "DEV_IRQ_STM32",

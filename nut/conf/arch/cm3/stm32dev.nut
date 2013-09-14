@@ -85,6 +85,17 @@ nutarch_cm3_stm32_devices =
         }
     },
     --
+    -- STM32 Flash Interface F1 and F3
+    --
+    {
+        name = "nutarch_cm3_stm32f1_3_flash",
+        brief = "Flash and parameter access",
+        description = "Generic flash and parameter storage interface.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_FLASH_STM32F1_3" },
+        provides = { "HW_FLASH", "HW_FLASH_STM32" };
+        sources = { "cm3/dev/stm/stm32f1_3_flash.c"}
+    },
+     --
     -- STM32 Flash Interface F2 and F4
     --
     {

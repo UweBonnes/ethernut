@@ -74,6 +74,14 @@ static uint32_t pagelist[4] = {0,0,0,0};
 
 #define ERASED_PATTERN_16 0xffff
 
+#ifndef FLASH_CONF_SIZE
+#define FLASH_CONF_SIZE         FLASH_PAGE_SIZE
+#elif  ((FLASH_CONF_SIZE != 256) && (FLASH_CONF_SIZE != 512) && \
+        (FLASH_CONF_SIZE != 1024) && (FLASH_CONF_SIZE != 2048) && \
+        (FLASH_CONF_SIZE != 4096) && (FLASH_CONF_SIZE != 8192))
+#error FLASH_CONF_SIZE has to be either FLASH_PAGE_SIZE (default), 256, 512, 1024, 2048, 4096 or 8192
+#endif
+
 #if !defined(RDP_KEY)
 #define RDP_KEY 0x00aa;
 #endif
@@ -311,7 +319,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
 #endif
         if (prepend) {
             if(prepend_data != ERASED_PATTERN_16)
-                *(volatile uint16_t*)((uint32_t)wptr & 1) = prepend_data;
+                *(volatile uint16_t*)((uint32_t)wptr & ~1) = prepend_data;
             current_length -= 1;
             wptr += 1;
             rptr += 1;
@@ -467,39 +475,51 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     /* set OPTWRE by wrinting key*/
     FLASH->OPTKEYR = FLASH_KEY1;
     FLASH->OPTKEYR = FLASH_KEY2;
-    FLASH->CR |= FLASH_CR_OPTER;
-    FLASH->CR |= FLASH_CR_STRT;
+    FLASH->CR = FLASH_CR_OPTER;
+    FLASH->CR = FLASH_CR_OPTER | FLASH_CR_STRT;
     rs = FlashWaitReady();
     if(rs != FLASH_COMPLETE)
         return rs;
-    FLASH->CR &= ~FLASH_CR_OPTER;
-    FLASH->CR |= FLASH_CR_OPTPG;
+    FLASH->CR = FLASH_CR_OPTPG;
     OB->RDP = RDP_KEY;
 
     page_start = ((uint32_t)dst          - FLASH_BASE)/FLASH_PAGE_SIZE;
     page_end = (((uint32_t)dst + len -1) - FLASH_BASE)/FLASH_PAGE_SIZE;
 
     rs = FlashWaitReady();
-    for (i = page_start; i <= page_end; i++)
+#if  FLASH_PAGE_SIZE  == 1024
+    for (i = page_start>>2; i <= page_end>>2; i++)
+#else
+    for (i = page_start>>1; i <= page_end>>1; i++)
+#endif
     {
-        if (ena)
-            wrpr &= ~(1<<(i));
-        else
-            wrpr |=  (1<<(i));
+        if (i < 32) {
+            if (ena)
+                wrpr &= ~(1<<(i));
+            else
+                wrpr |=  (1<<(i));
+        }
+        /* If one high page is write protected, protect all high pages*/
+        else if (ena) wrpr &= ~0x80000000;
     }
+#if defined (STM32F10X_LD) || defined (STM32F10X_LD_VL)
+    for(i = 0; i < 1 && rs == FLASH_COMPLETE; i++)
+#else
     for(i = 0; i < 4 && rs == FLASH_COMPLETE; i++)
+#endif
     {
-        uint32_t val =  (wrpr>>(8*i) && 0xff);
+        uint8_t val =  (wrpr>>(8*i) && 0xff);
+        uint16_t pval =  ~val<<8 |val;
 
         if (val == 0xff)
             continue;
         rs = FlashWaitReady();
         if(rs != FLASH_COMPLETE)
             break;
-        *WRP++ = val;
+        *WRP++ = pval;
     }
     rs = FlashWaitReady();
-    FLASH->CR &= ~FLASH_CR_OPTPG;
+    FLASH->CR = 0;
     return rs;
 }
 /*!
@@ -540,7 +560,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
     }
 
     /* Find configuration page in CONF_SECTOR*/
-    while ((marker !=  ERASED_PATTERN_16) && (conf_page < ((SECTOR_SIZE/FLASH_CONF_SIZE) - 1 ))) {
+    while ((marker !=  ERASED_PATTERN_16) && (conf_page < ((FLASH_PAGE_SIZE/FLASH_CONF_SIZE) - 1 ))) {
         conf_page++;
         marker = *(uint32_t*)(flash_conf_sector + ((conf_page + 1)* FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
     }
@@ -609,7 +629,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     }
 
     /* Find configuration page in CONF_SECTOR*/
-    while ((marker !=  ERASED_PATTERN_16) && conf_page < ((SECTOR_SIZE/FLASH_CONF_SIZE) -1)) {
+    while ((marker !=  ERASED_PATTERN_16) && conf_page < ((FLASH_PAGE_SIZE/FLASH_CONF_SIZE) -1)) {
         conf_page++;
         marker = *(uint16_t*)(flash_conf_sector + ((conf_page + 1)* FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
     }
@@ -655,7 +675,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     memcpy (buffer + pos, data, len);
     conf_page++;
     mode = FLASH_ERASE_NEVER;
-    if (conf_page < SECTOR_SIZE/FLASH_CONF_SIZE) {
+    if (conf_page < FLASH_PAGE_SIZE/FLASH_CONF_SIZE) {
         uint16_t indicator = ~ERASED_PATTERN_16;
         rs = FlashWrite( flash_conf_sector + conf_page * FLASH_CONF_SIZE - sizeof(indicator),
                          &indicator, sizeof(indicator), FLASH_ERASE_NEVER);
