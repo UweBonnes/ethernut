@@ -140,11 +140,11 @@ nutarch_cm3 =
     },
 
     --
-    -- CortexM3/M4 FPU
+    -- CortexM4 FPU
     --    
     {
-        name = "nutarch_cm34_fpu",
-        brief = "FPU support (CortexM3/M4)",
+        name = "nutarch_cm4_fpu",
+        brief = "FPU support (CortexM4)",
         requires = { "HW_MCU_FPU" },
         options =
         {
