@@ -114,7 +114,7 @@
 #ifdef STDIO_FLOATING_POINT
 
 #include <math.h>
-#define BUF 16
+#define BUF 32
 #define DEFPREC 6
 
 #if defined(__arm__)
@@ -131,21 +131,27 @@ char *(*sbrk_force)(size_t) = _sbrk;
 
 #else
 
-#define BUF 16
+#define BUF 32
 
 #endif                          /* STDIO_FLOATING_POINT */
 
-#define PADSIZE 16
+#define PADSIZE 32
 #if !defined(__AVR__)
 #define NUTCONST const
 #else
 #define NUTCONST
 #endif
-static NUTCONST char blanks[PADSIZE] = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' '
+static NUTCONST char blanks[PADSIZE] = {
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '
 };
-static NUTCONST char zeroes[PADSIZE] = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-    '0', '0'
+static NUTCONST char zeroes[PADSIZE] = {
+    '0', '0', '0', '0', '0', '0', '0', '0',
+    '0', '0', '0', '0', '0', '0', '0', '0',
+    '0', '0', '0', '0', '0', '0', '0', '0',
+    '0', '0', '0', '0', '0', '0', '0', '0'
 };
 
 /*
@@ -168,6 +174,40 @@ static void _putpad(int _putb(int fd, const void *, size_t), int fd, NUTCONST ch
 #define LADJUST     0x04    /* left adjustment */
 #define LONGINT     0x08    /* long integer */
 #define ZEROPAD     0x10    /* zero (as opposed to blank) pad */
+#define LONGLONG    0x20    /* long long integer*/
+#define UNSIGNED    0x40    /* unsigned integer*/
+
+uint64_t va_args_i64(int flags, va_list *ap)
+{
+    uint64_t result;
+    if (flags & LONGLONG) {
+/* Depending on aligment of ap with regard to 8 byte boundary
+   things may go astray on Arm Launchpad up to 2013Q3.
+   Try the #if 0 clause in that case.
+*/
+#if 0
+        uint32_t *words = (uint32_t *)&result;
+        if (*(uint32_t*)&ap & 4) {
+            words[0]= va_arg(&ap, uint32_t);
+            words[0]= va_arg(&ap, uint32_t);
+            words[1]= va_arg(&ap, uint32_t);
+        }
+        else {
+            words[0]= va_arg(&ap, uint32_t);
+            words[1]= va_arg(&ap, uint32_t);
+        }
+#else
+        result = va_arg(*ap, uint64_t);
+#endif
+    }
+    else if (flags & LONGINT)
+        result = (uint64_t)va_arg(*ap, uint32_t);
+    else if (flags & UNSIGNED)
+        result = (uint64_t)va_arg(*ap, unsigned int);
+    else
+        result = (uint64_t)va_arg(*ap, int);
+    return result;
+}
 
 /*!
  * \brief Write formatted data using a given output function.
@@ -192,7 +232,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
     int dprec;                  /* a copy of prec if [diouxX], 0 otherwise */
     int realsz;                 /* field size expanded by dprec, sign, etc */
     uint8_t sign;               /* sign prefix (' ', '+', '-', or \0) */
-    uint32_t ulval;               /* integer arguments %[diouxX] */
+    uint64_t ulval;             /* long integer arguments %[diouxX] */
     int size;                   /* size of converted field or string */
     char *xdigs;                /* digits for [xX] conversion */
     char buf[BUF];              /* space for %c, %[diouxX], %[eEfgG] */
@@ -256,8 +296,14 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
                 flags |= ALT;
             else if (ch == '0')
                 flags |= ZEROPAD;
-            else if (ch == 'l')
-                flags |= LONGINT;
+            else if (ch == 'l') {
+                if(*fmt == 'l') {
+                    flags |= LONGLONG;
+                    ch = *fmt++;
+                }
+                else
+                    flags |= LONGINT;
+            }
             else if (ch == 'z') {
                 if (sizeof(size_t) > sizeof(int)) {
                     flags |= LONGINT;
@@ -341,17 +387,13 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
 
         case 'u':
             sign = 0;
+            flags |= UNSIGNED;
         case 'd':
         case 'i':
             /* Thanks to Ralph Mason for fixing the u_int bug. */
-            if (flags & LONGINT)
-                ulval = va_arg(ap, uint32_t);
-            else if (ch == 'u')
-                ulval = va_arg(ap, unsigned int);
-            else
-                ulval = va_arg(ap, int);
-            if (ch != 'u' && (long) ulval < 0) {
-                ulval = (uint32_t) (-((long) ulval));
+            ulval = va_args_i64(flags, &ap);
+            if (ch != 'u' && (long long) ulval < 0) {
+                ulval = (uint64_t) (-((long long) ulval));
                 sign = '-';
             }
             if ((dprec = prec) >= 0)
@@ -370,7 +412,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
             break;
 
         case 'o':
-            ulval = (flags & LONGINT) ? va_arg(ap, uint32_t) : va_arg(ap, unsigned int);
+            ulval = va_args_i64(flags, &ap);
             sign = 0;
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
@@ -394,8 +436,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
                 flags |= ALT;
                 ch = 'x';
             } else
-                ulval = (flags & LONGINT) ? va_arg(ap, uint32_t) : (uint32_t)
-                    va_arg(ap, unsigned int);
+                ulval = va_args_i64(flags, &ap);
 
             sign = 0;
             if ((dprec = prec) >= 0)
