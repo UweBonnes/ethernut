@@ -209,6 +209,11 @@ uint64_t va_args_i64(int flags, va_list *ap)
     return result;
 }
 
+/* Same boundary issues apply for Launchpad ARM toolchain*/
+double va_args_double(va_list *ap) {
+    return va_arg(*ap, double);
+}
+
 /*!
  * \brief Write formatted data using a given output function.
  *
@@ -472,7 +477,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         case 'f':
             if (prec == -1)
                 prec = DEFPREC;
-            _double = va_arg(ap, double);
+            _double = va_args_double(&ap);
             /* ICCAVR bug, we use a hack */
             /* cp = FormatFP_1(iccfmt, _double, 0, 1, prec); */
             cp = ftoa(_double, &fps);
@@ -492,7 +497,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
 
                 if (prec == -1)
                     prec = DEFPREC;
-                _double = va_arg(ap, double);
+                _double = va_args_double(&ap);
                 cp = _dtoa_r(_REENT, _double, 3, prec, &decpt, &neg, &rve);
                 if (neg)
                     sign = '-';
@@ -542,7 +547,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         case 'f':
             if (prec == -1)
                 prec = DEFPREC;
-            _double = va_arg(ap, double);
+            _double = va_args_double(&ap);
             if (ch == 'f')
                 dtostrf(_double, 1, prec, buf);
             else
@@ -557,7 +562,10 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         case 'e':
         case 'E':
         case 'f':
-            (void) va_arg(ap, long);
+            (void) va_args_double(&ap);
+            strcpy(buf, "NA");
+            cp = buf;
+            size = strlen(buf);
 #endif                          /* STDIO_FLOATING_POINT */
 
         default:
