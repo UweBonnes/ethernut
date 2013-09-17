@@ -38,26 +38,24 @@
  */
 
 #include <cfg/os.h>
-#include <arch/arm.h>
-#include <dev/board.h>
+#include <cfg/dev.h>
+#include <cfg/arch/gpio.h>
 
-#include <string.h>
+#include <toolchain.h>
+
 #include <stdlib.h>
+#include <string.h>
 
-#include <sys/atom.h>
-#include <sys/heap.h>
-#include <sys/thread.h>
 #include <sys/event.h>
 #include <sys/timer.h>
-#include <sys/confnet.h>
+#include <sys/thread.h>
 
 #include <netinet/if_ether.h>
 #include <net/ether.h>
-#include <net/if_var.h>
 
 #include <dev/irqreg.h>
 #include <dev/phy.h>
-#include <dev/dm9000e.h>
+#include <dev/dm9000.h>
 
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -67,18 +65,9 @@
 #define NUT_THREAD_NICRXSTACK   384
 #endif
 
-#if !defined(NIC_DATA_ADDR) && defined(NIC_BASE_ADDR)
-#define NIC_DATA_ADDR   (NIC_BASE_ADDR + 4)
+#if !defined(DM9000_DATA_ADDR) && defined(DM9000_BASE_ADDR)
+#define DM9000_DATA_ADDR   (DM9000_BASE_ADDR + 4)
 #endif
-
-#define INT0    0
-#define INT1    1
-#define INT2    2
-#define INT3    3
-#define INT4    4
-#define INT5    5
-#define INT6    6
-#define INT7    7
 
 #ifdef NIC_RESET_BIT
 
@@ -104,32 +93,45 @@
 
 /*
  * Determine interrupt settings.
- * DOES NOT WORK
  */
-#if (NIC_SIGNAL_IRQ == INT0)
-#define NIC_SIGNAL          sig_INTERRUPT0
+#ifdef DM9000_SIGNAL_IRQ
 
-#elif (NIC_SIGNAL_IRQ == INT2)
-#define NIC_SIGNAL          sig_INTERRUPT2
+#ifndef INT0
+#define INT0    0
+#define INT1    1
+#define INT2    2
+#define INT3    3
+#define INT4    4
+#define INT5    5
+#define INT6    6
+#define INT7    7
+#endif
 
-#elif (NIC_SIGNAL_IRQ == INT3)
-#define NIC_SIGNAL          sig_INTERRUPT3
+#if (DM9000_SIGNAL_IRQ == INT0)
+#define DM9000_SIGNAL          sig_INTERRUPT0
 
-#elif (NIC_SIGNAL_IRQ == INT4)
-#define NIC_SIGNAL          sig_INTERRUPT4
+#elif (DM9000_SIGNAL_IRQ == INT1)
+#define DM9000_SIGNAL          sig_INTERRUPT1
 
-#elif (NIC_SIGNAL_IRQ == INT5)
-#define NIC_SIGNAL          sig_INTERRUPT5
+#elif (DM9000_SIGNAL_IRQ == INT2)
+#define DM9000_SIGNAL          sig_INTERRUPT2
 
-#elif (NIC_SIGNAL_IRQ == INT6)
-#define NIC_SIGNAL          sig_INTERRUPT6
+#elif (DM9000_SIGNAL_IRQ == INT3)
+#define DM9000_SIGNAL          sig_INTERRUPT3
 
-#elif (NIC_SIGNAL_IRQ == INT7)
-#define NIC_SIGNAL          sig_INTERRUPT7
+#elif (DM9000_SIGNAL_IRQ == INT4)
+#define DM9000_SIGNAL          sig_INTERRUPT4
 
-#else
-#define NIC_SIGNAL          sig_INTERRUPT1
+#elif (DM9000_SIGNAL_IRQ == INT5)
+#define DM9000_SIGNAL          sig_INTERRUPT5
 
+#elif (DM9000_SIGNAL_IRQ == INT6)
+#define DM9000_SIGNAL          sig_INTERRUPT6
+
+#elif (DM9000_SIGNAL_IRQ == INT7)
+#define DM9000_SIGNAL          sig_INTERRUPT7
+
+#endif
 #endif
 
 /*!
@@ -301,17 +303,17 @@ static uint32_t ether_crc32_le(const uint8_t * buf, uint8_t len)
 
 static INLINE void nic_outb(uint8_t reg, uint8_t val)
 {
-#ifdef NIC_BASE_ADDR
-    outb(NIC_BASE_ADDR, reg);
-    outb(NIC_DATA_ADDR, val);
+#ifdef DM9000_BASE_ADDR
+    outb(DM9000_BASE_ADDR, reg);
+    outb(DM9000_DATA_ADDR, val);
 #endif
 }
 
 static INLINE uint8_t nic_inb(uint16_t reg)
 {
-#ifdef NIC_BASE_ADDR
-    outb(NIC_BASE_ADDR, reg);
-    return inb(NIC_DATA_ADDR);
+#ifdef DM9000_BASE_ADDR
+    outb(DM9000_BASE_ADDR, reg);
+    return inb(DM9000_DATA_ADDR);
 #else
     return 0;
 #endif
@@ -408,6 +410,7 @@ static int NicReset(void)
     return NicPhyInit();
 }
 
+#ifdef DM9000_SIGNAL
 /*
  * NIC interrupt entry.
  */
@@ -454,8 +457,9 @@ static void NicInterrupt(void *arg)
         NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
 }
+#endif
 
-#ifdef NIC_BASE_ADDR
+#ifdef DM9000_BASE_ADDR
 /*!
  * \brief Write data block to the NIC.
  *
@@ -464,7 +468,7 @@ static void NicInterrupt(void *arg)
 static void NicWrite8(uint8_t * buf, uint16_t len)
 {
     while (len--) {
-        outb(NIC_DATA_ADDR, *buf);
+        outb(DM9000_DATA_ADDR, *buf);
         buf++;
     }
 }
@@ -480,7 +484,7 @@ static void NicWrite16(uint8_t * buf, uint16_t len)
 
     len = (len + 1) / 2;
     while (len--) {
-        outw(NIC_DATA_ADDR, *wp);
+        outw(DM9000_DATA_ADDR, *wp);
         wp++;
     }
 }
@@ -493,7 +497,7 @@ static void NicWrite16(uint8_t * buf, uint16_t len)
 static void NicRead8(uint8_t * buf, uint16_t len)
 {
     while (len--) {
-        *buf++ = inb(NIC_DATA_ADDR);
+        *buf++ = inb(DM9000_DATA_ADDR);
     }
 }
 
@@ -508,10 +512,10 @@ static void NicRead16(uint8_t * buf, uint16_t len)
 
     len = (len + 1) / 2;
     while (len--) {
-        *wp++ = inw(NIC_DATA_ADDR);
+        *wp++ = inw(DM9000_DATA_ADDR);
     }
 }
-#endif /* NIC_BASE_ADDR */
+#endif /* DM9000_BASE_ADDR */
 
 /*!
  * \brief Fetch the next packet out of the receive ring buffer.
@@ -524,14 +528,16 @@ static void NicRead16(uint8_t * buf, uint16_t len)
 static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
 {
     int rc = -1;
-#ifdef NIC_BASE_ADDR
+#ifdef DM9000_BASE_ADDR
     uint16_t fsw;
     uint16_t fbc;
 
     *nbp = NULL;
 
+#ifdef DM9000_SIGNAL
     /* Disable NIC interrupts. */
-    NutIrqDisable(&NIC_SIGNAL);
+    NutIrqDisable(&DM9000_SIGNAL);
+#endif
 
     /*
      * Read the status word w/o auto increment. If zero, no packet is
@@ -544,26 +550,26 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
     _NOP();
     _NOP();
     _NOP();
-    fsw = inb(NIC_DATA_ADDR);
+    fsw = inb(DM9000_DATA_ADDR);
     if (fsw > 1) {
         ni->ni_insane = 1;
     } else if (fsw) {
         /* Now read status word and byte count with auto increment. */
-        outb(NIC_BASE_ADDR, NIC_MRCMD);
+        outb(DM9000_BASE_ADDR, NIC_MRCMD);
         if (ni->ni_iomode == NIC_ISR_M16) {
-            fsw = inw(NIC_DATA_ADDR);
+            fsw = inw(DM9000_DATA_ADDR);
             _NOP();
             _NOP();
             _NOP();
             _NOP();
-            fbc = inw(NIC_DATA_ADDR);
+            fbc = inw(DM9000_DATA_ADDR);
         } else {
-            fsw = inb(NIC_DATA_ADDR) + ((uint16_t) inb(NIC_DATA_ADDR) << 8);
+            fsw = inb(DM9000_DATA_ADDR) + ((uint16_t) inb(DM9000_DATA_ADDR) << 8);
             _NOP();
             _NOP();
             _NOP();
             _NOP();
-            fbc = inb(NIC_DATA_ADDR) + ((uint16_t) inb(NIC_DATA_ADDR) << 8);
+            fbc = inb(DM9000_DATA_ADDR) + ((uint16_t) inb(DM9000_DATA_ADDR) << 8);
         }
 
         /*
@@ -602,11 +608,11 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
                 if (ni->ni_iomode == NIC_ISR_M16) {
                     fbc = (fbc + 1) / 2;
                     while (fbc--) {
-                        fsw = inw(NIC_DATA_ADDR);
+                        fsw = inw(DM9000_DATA_ADDR);
                     }
                 } else {
                     while (fbc--) {
-                        fsw = inb(NIC_DATA_ADDR);
+                        fsw = inb(DM9000_DATA_ADDR);
                     }
                 }
             } else {
@@ -614,16 +620,16 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
                     /* Read packet data from 16 bit bus. */
                     NicRead16((*nbp)->nb_dl.vp, (*nbp)->nb_dl.sz);
                     /* Read packet CRC. */
-                    fsw = inw(NIC_DATA_ADDR);
-                    fsw = inw(NIC_DATA_ADDR);
+                    fsw = inw(DM9000_DATA_ADDR);
+                    fsw = inw(DM9000_DATA_ADDR);
                 } else {
                     /* Read packet data from 8 bit bus. */
                     NicRead8((*nbp)->nb_dl.vp, (*nbp)->nb_dl.sz);
                     /* Read packet CRC. */
-                    fsw = inb(NIC_DATA_ADDR);
-                    fsw = inb(NIC_DATA_ADDR);
-                    fsw = inb(NIC_DATA_ADDR);
-                    fsw = inb(NIC_DATA_ADDR);
+                    fsw = inb(DM9000_DATA_ADDR);
+                    fsw = inb(DM9000_DATA_ADDR);
+                    fsw = inb(DM9000_DATA_ADDR);
+                    fsw = inb(DM9000_DATA_ADDR);
                 }
                 /* Return success. */
                 rc = 0;
@@ -632,9 +638,11 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
     }
 
     /* Enable NIC interrupts if the chip is sane. */
+#ifdef DM9000_SIGNAL
     if (ni->ni_insane == 0) {
-        NutIrqEnable(&NIC_SIGNAL);
+        NutIrqEnable(&DM9000_SIGNAL);
     }
+#endif
 #endif
     return rc;
 }
@@ -654,15 +662,17 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
 static int NicPutPacket(NICINFO * ni, NETBUF * nb, uint_fast16_t sz)
 {
     int rc = -1;
-#ifdef NIC_BASE_ADDR
+#ifdef DM9000_BASE_ADDR
 
+#ifdef DM9000_SIGNAL
     /* Disable interrupts. */
-    NutIrqDisable(&NIC_SIGNAL);
+    NutIrqDisable(&DM9000_SIGNAL);
+#endif
 
     /* TODO: Check for link. */
     if (ni->ni_insane == 0) {
         /* Enable data write. */
-        outb(NIC_BASE_ADDR, NIC_MWCMD);
+        outb(DM9000_BASE_ADDR, NIC_MWCMD);
 
         /* Transfer the Ethernet frame. */
         if (ni->ni_iomode == NIC_ISR_M16) {
@@ -691,8 +701,10 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb, uint_fast16_t sz)
         rc = 0;
     }
 
+#ifdef DM9000_SIGNAL
     /* Enable interrupts. */
-    NutIrqEnable(&NIC_SIGNAL);
+    NutIrqEnable(&DM9000_SIGNAL);
+#endif
 
     /* If the controller buffer is filled with two packets, then
        wait for the first being sent out. */
@@ -843,10 +855,12 @@ THREAD(NicRxLanc, arg)
 #ifdef NIC_SIGNAL_BIT
     outr(NIC_SIGNAL_PDR, _BV(NIC_SIGNAL_BIT));
 #endif
-    NutIrqEnable(&NIC_SIGNAL);
+#ifdef DM9000_SIGNAL
+    NutIrqEnable(&DM9000_SIGNAL);
+#endif
 #if defined(ELEKTOR_IR1)
     /* Ugly code alarm: Should be configurable. */
-    NutIrqSetMode(&NIC_SIGNAL, NUT_IRQMODE_HIGHLEVEL);
+    NutIrqSetMode(&DM9000_SIGNAL, NUT_IRQMODE_HIGHLEVEL);
 #endif
 
     for (;;) {
@@ -883,7 +897,9 @@ THREAD(NicRxLanc, arg)
                 ni->ni_insane = 0;
                 ni->ni_tx_queued = 0;
                 ni->ni_tx_quelen = 0;
-                NutIrqEnable(&NIC_SIGNAL);
+#ifdef DM9000_SIGNAL
+                NutIrqEnable(&DM9000_SIGNAL);
+#endif
             } else {
                 NutSleep(1000);
             }
@@ -1007,10 +1023,12 @@ int DmInit(NUTDEVICE * dev)
         return -1;
     }
 
+#ifdef DM9000_SIGNAL
     /* Register interrupt handler. */
-    if (NutRegisterIrqHandler(&NIC_SIGNAL, NicInterrupt, dev)) {
+    if (NutRegisterIrqHandler(&DM9000_SIGNAL, NicInterrupt, dev)) {
         return -1;
     }
+#endif
 
     /* Start the receiver thread. */
     if (NutThreadCreate("rxi1", NicRxLanc, dev,

@@ -2594,7 +2594,7 @@ nutdev =
         name = "nutdev_dm9000",
         brief = "Davicom DM9000 Driver",
         description = "LAN driver for Davicom DM9000A and DM9000E.",
-        requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
+        requires = { "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_MAC" },
         sources = { "dm9000.c" },
         options =
@@ -2614,7 +2614,7 @@ nutdev =
                 description = "Ethernet controller interrupt.",
                 type = "enumerated",
                 choices = avr_irq_choice,
-                file = "include/cfg/arch/armpio.h"
+                file = function() return GetGpioHeaderPath() end
             }
         }
     },
