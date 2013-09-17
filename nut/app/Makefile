@@ -102,6 +102,7 @@ all:
 	-$(MAKE) -C lua
 	-$(MAKE) -C pingnet
 	-$(MAKE) -C portdio
+	-$(MAKE) -C printf
 	-$(MAKE) -C pppc
 	-$(MAKE) -C rs232d
 	-$(MAKE) -C simple
@@ -130,6 +131,7 @@ install:
 	-$(MAKE) -C lua install
 	-$(MAKE) -C pingnet install
 	-$(MAKE) -C portdio install
+	-$(MAKE) -C printf install
 	-$(MAKE) -C pppc install
 	-$(MAKE) -C rs232d install
 	-$(MAKE) -C simple install
@@ -158,6 +160,7 @@ clean:
 	-$(MAKE) -C lua clean
 	-$(MAKE) -C pingnet clean
 	-$(MAKE) -C portdio clean
+	-$(MAKE) -C printf clean
 	-$(MAKE) -C pppc clean
 	-$(MAKE) -C rs232d clean
 	-$(MAKE) -C simple clean
@@ -181,6 +184,7 @@ at90can:
 	-$(MAKE) -C logtime
 	-$(MAKE) -C pingnet
 	-$(MAKE) -C portdio
+	-$(MAKE) -C printf
 	-$(MAKE) -C pppc
 	-$(MAKE) -C rs232d
 	-$(MAKE) -C simple
