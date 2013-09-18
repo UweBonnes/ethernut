@@ -101,6 +101,7 @@ all:
 	-$(MAKE) -C logtime
 	-$(MAKE) -C lua
 	-$(MAKE) -C pingnet
+	-$(MAKE) -C pioled
 	-$(MAKE) -C portdio
 	-$(MAKE) -C printf
 	-$(MAKE) -C pppc
@@ -130,6 +131,7 @@ install:
 	-$(MAKE) -C logtime install
 	-$(MAKE) -C lua install
 	-$(MAKE) -C pingnet install
+	-$(MAKE) -C pioled install
 	-$(MAKE) -C portdio install
 	-$(MAKE) -C printf install
 	-$(MAKE) -C pppc install
@@ -159,6 +161,7 @@ clean:
 	-$(MAKE) -C logtime clean
 	-$(MAKE) -C lua clean
 	-$(MAKE) -C pingnet clean
+	-$(MAKE) -C pioled clean
 	-$(MAKE) -C portdio clean
 	-$(MAKE) -C printf clean
 	-$(MAKE) -C pppc clean
@@ -183,6 +186,7 @@ at90can:
 	-$(MAKE) -C inetq
 	-$(MAKE) -C logtime
 	-$(MAKE) -C pingnet
+	-$(MAKE) -C pioled
 	-$(MAKE) -C portdio
 	-$(MAKE) -C printf
 	-$(MAKE) -C pppc
