@@ -70,19 +70,40 @@
  */
 /*@{*/
 
+#if defined(GPIO0_SDA_PORT) && defined(GPIO0_SDA_PIN)
+#undef GPIO_ID
+#define GPIO_ID GPIO0_SDA_PORT
+#include <cfg/arch/piotran.h>
+static INLINE void I2C_SDA_INIT(void) { GPIO_INIT(GPIO0_SDA_PIN); GPIO_PULLUP_ON(GPIO0_SDA_PIN); }
+static INLINE void I2C_SDA_LO(void) { GPIO_SET_LO(GPIO0_SDA_PIN); GPIO_OUTPUT(GPIO0_SDA_PIN); }
+static INLINE void I2C_SDA_HI(void) { GPIO_INPUT(GPIO0_SDA_PIN); GPIO_SET_HI(GPIO0_SDA_PIN); }
+static INLINE int I2C_SDA_GET(void) { return GPIO_GET(GPIO0_SDA_PIN); }
+#else
+#define I2C_SDA_INIT()
+#define I2C_SDA_LO()
+#define I2C_SDA_HI()
+#define I2C_SDA_GET() 0
+#endif
+
+#if defined(GPIO0_SCL_PORT) && defined(GPIO0_SCL_PIN)
+#undef GPIO_ID
+#define GPIO_ID GPIO0_SCL_PORT
+#include <cfg/arch/piotran.h>
+static INLINE void I2C_SCL_INIT(void) { GPIO_INIT(GPIO0_SCL_PIN); GPIO_PULLUP_ON(GPIO0_SCL_PIN); }
+static INLINE void I2C_SCL_LO(void) { GPIO_SET_LO(GPIO0_SCL_PIN); GPIO_OUTPUT(GPIO0_SCL_PIN);}
+static INLINE void I2C_SCL_HI(void) { GPIO_INPUT(GPIO0_SCL_PIN); GPIO_SET_HI(GPIO0_SCL_PIN); }
+static INLINE int I2C_SCL_GET(void) { return GPIO_GET(GPIO0_SCL_PIN); }
+#else
+#define I2C_SCL_INIT()
+#define I2C_SCL_LO()
+#define I2C_SCL_HI()
+#define I2C_SCL_GET() 0
+#endif
+
 /*!
  * \brief Local data of the GPIO TWI bus driver.
  */
 typedef struct _GPIO_TWICB {
-    /*! \brief SDA_PORT. */
-    nutgpio_port_t sda_port;
-    /*! \brief SDA_PIN. */
-    nutgpio_pin_t sda_pin;
-    /*! \brief SCL_PORT. */
-    nutgpio_port_t scl_port;
-    /*! \brief SCL_PIN. */
-    nutgpio_pin_t scl_pin;
-    /*! \brief Delay Unit. */
     unsigned int delay_unit;
 } GPIO_TWICB;
 
@@ -95,17 +116,13 @@ typedef struct _GPIO_TWICB {
  */
 static void TwStart(GPIO_TWICB* icb)
 {
-    GpioPinRelease(icb->sda_port, icb->sda_pin);
-    GpioPinSetHigh(icb->sda_port, icb->sda_pin);
+    I2C_SDA_HI();
     NutMicroDelay (icb->delay_unit);
-    GpioPinRelease(icb->scl_port, icb->scl_pin);
-    GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+    I2C_SCL_HI();
     NutMicroDelay (icb->delay_unit);
-    GpioPinSetLow (icb->sda_port, icb->sda_pin);
-    GpioPinDrive  (icb->sda_port, icb->sda_pin);
+    I2C_SDA_LO();
     NutMicroDelay (icb->delay_unit);
-    GpioPinSetLow (icb->scl_port, icb->scl_pin);
-    GpioPinDrive  (icb->scl_port, icb->scl_pin);
+    I2C_SCL_LO();
     NutMicroDelay (icb->delay_unit);
 }
 
@@ -118,14 +135,11 @@ static void TwStart(GPIO_TWICB* icb)
  */
 static void TwStop(GPIO_TWICB* icb)
 {
-    GpioPinSetLow (icb->sda_port, icb->sda_pin);
-    GpioPinDrive  (icb->sda_port, icb->sda_pin);
+    I2C_SDA_LO();
     NutMicroDelay (icb->delay_unit);
-    GpioPinRelease(icb->scl_port, icb->scl_pin);
-    GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+    I2C_SCL_HI();
     NutMicroDelay (2 * icb->delay_unit);
-    GpioPinRelease(icb->sda_port, icb->sda_pin);
-    GpioPinSetHigh(icb->sda_port, icb->sda_pin);
+    I2C_SDA_HI();
     NutMicroDelay (8 * icb->delay_unit);
 }
 
@@ -145,41 +159,34 @@ static int TwPut(GPIO_TWICB* icb, uint8_t octet)
     for (i = 0x80; i; i >>= 1) {
         /* Set the data bit. */
         if (octet & i) {
-            GpioPinRelease(icb->sda_port, icb->sda_pin);
-            GpioPinSetHigh(icb->sda_port, icb->sda_pin);
+            I2C_SDA_HI();
         } else {
-            GpioPinSetLow (icb->sda_port, icb->sda_pin);
-            GpioPinDrive  (icb->sda_port, icb->sda_pin);
+            I2C_SDA_LO();
         }
         /* Wait for data to stabilize. */
         NutMicroDelay (2 * icb->delay_unit);
         /* Toggle the clock. */
-        GpioPinRelease(icb->scl_port, icb->scl_pin);
-        GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+        I2C_SCL_HI();
         NutMicroDelay (2 * icb->delay_unit);
-        while(GpioPinGet(icb->scl_port, icb->scl_pin) == 0)
+        while(I2C_SCL_GET() == 0)
         {
             /* Clock stretching*/
             NutMicroDelay (2 * icb->delay_unit);
         }
-        GpioPinSetLow (icb->scl_port, icb->scl_pin);
-        GpioPinDrive  (icb->scl_port, icb->scl_pin);
+        I2C_SCL_LO();
     }
 
     /* Release data line to receive the ACK bit. */
-    GpioPinRelease(icb->sda_port, icb->sda_pin);
-    GpioPinSetHigh(icb->sda_port, icb->sda_pin);
+    I2C_SDA_HI();
     NutMicroDelay (2 * icb->delay_unit);
-    GpioPinRelease(icb->scl_port, icb->scl_pin);
-    GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+    I2C_SCL_HI();
     NutMicroDelay (2 * icb->delay_unit);
-    if (GpioPinGet(icb->sda_port, icb->sda_pin)) {
+    if (I2C_SDA_GET()) {
         i = -1;
     } else {
         i = 0;
     }
-    GpioPinSetLow (icb->scl_port, icb->scl_pin);
-    GpioPinDrive  (icb->scl_port, icb->scl_pin);
+    I2C_SCL_LO();
     NutMicroDelay (2 * icb->delay_unit);
 
     return i;
@@ -200,37 +207,31 @@ static uint8_t TwGet(GPIO_TWICB* icb, uint8_t ack)
     int i;
 
     /* SDA is input. */
-    GpioPinRelease(icb->sda_port, icb->sda_pin);
-    GpioPinSetHigh(icb->sda_port, icb->sda_pin);
+    I2C_SDA_HI();
     NutMicroDelay (1 * icb->delay_unit);
     for (i = 0x80; i; i >>= 1) {
         NutMicroDelay (2 * icb->delay_unit);
-        GpioPinRelease(icb->scl_port, icb->scl_pin);
-        GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+        I2C_SCL_HI();
         NutMicroDelay (2 * icb->delay_unit);
-        while(GpioPinGet(icb->scl_port, icb->scl_pin) == 0)
+        while(I2C_SCL_GET() == 0)
         {
             /* Clock stretching*/
             NutMicroDelay (2 * icb->delay_unit);
         }
-        if (GpioPinGet(icb->sda_port, icb->sda_pin)) {
+        if (I2C_SDA_GET()) {
             rc |= i;
         }
-        GpioPinSetLow (icb->scl_port, icb->scl_pin);
-        GpioPinDrive  (icb->scl_port, icb->scl_pin);
+        I2C_SCL_LO();
     }
     if (ack)
     {
         /* Master sets acknowledge */
-        GpioPinSetLow (icb->sda_port, icb->sda_pin);
-        GpioPinDrive  (icb->sda_port, icb->sda_pin);
+        I2C_SDA_LO();
     }
     NutMicroDelay (2 * icb->delay_unit);
-    GpioPinRelease(icb->scl_port, icb->scl_pin);
-    GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+   I2C_SCL_HI();
     NutMicroDelay (2 * icb->delay_unit);
-    GpioPinSetLow (icb->scl_port, icb->scl_pin);
-    GpioPinDrive  (icb->scl_port, icb->scl_pin);
+    I2C_SCL_LO();
     NutMicroDelay (2 * icb->delay_unit);
     return rc;
 }
@@ -244,17 +245,13 @@ static uint8_t TwGet(GPIO_TWICB* icb, uint8_t ack)
  */
 static void TwAck(GPIO_TWICB* icb)
 {
-    GpioPinSetLow (icb->sda_port, icb->sda_pin);
-    GpioPinDrive  (icb->sda_port, icb->sda_pin);
+    I2C_SDA_LO();
     NutMicroDelay (icb->delay_unit);
-    GpioPinRelease(icb->scl_port, icb->scl_pin);
-    GpioPinSetHigh(icb->scl_port, icb->scl_pin);
+    I2C_SCL_HI();
     NutMicroDelay (2 * icb->delay_unit);
-    GpioPinSetLow (icb->scl_port, icb->scl_pin);
-    GpioPinDrive  (icb->scl_port, icb->scl_pin);
+    I2C_SCL_LO();
     NutMicroDelay (1 * icb->delay_unit);
-    GpioPinRelease(icb->sda_port, icb->sda_pin);
-    GpioPinSetHigh(icb->sda_port, icb->sda_pin);
+    I2C_SDA_HI();
 }
 #endif
 
@@ -363,26 +360,17 @@ static int TwiBusConf(NUTI2C_BUS *bus)
  */
 static int TwiBusInit(NUTI2C_BUS *bus)
 {
-    GPIO_TWICB *icb;
 
-    icb = (GPIO_TWICB *) bus->bus_icb;
-
-    if(icb->sda_port == -1 || icb->sda_pin == -1 ||
-       icb->scl_port == -1 || icb->scl_pin == -1)
-        return -1;
-
+#if !defined(GPIO0_SDA_PORT) || !defined(GPIO0_SDA_PIN) || \
+    !defined(GPIO0_SCL_PORT) || !defined(GPIO0_SCL_PIN)
+    return -1;
+#endif
     /* Try to configure the bus and register the IRQ Handler */
     if (TwiBusConf(bus)) {
         return -1;
     }
-    /* TODO: Check for errors*/
-    GpioPinRelease(icb->sda_port, icb->sda_pin);
-    GpioPinRelease(icb->scl_port, icb->scl_pin);
-    GpioPinConfigSet(icb->sda_port, icb->sda_pin,
-                     GPIO_CFG_OUTPUT | GPIO_CFG_MULTIDRIVE | GPIO_CFG_PULLUP);
-    GpioPinConfigSet(icb->scl_port, icb->scl_pin,
-                     GPIO_CFG_OUTPUT | GPIO_CFG_MULTIDRIVE | GPIO_CFG_PULLUP);
-
+    I2C_SDA_INIT();
+    I2C_SCL_INIT();
     return 0;
 }
 
@@ -415,18 +403,6 @@ static int TwiBusProbe(NUTI2C_BUS *bus, int sla)
 }
 
 static GPIO_TWICB twi0cb = {
-#if defined(GPIO0_SDA_PORT) && defined(GPIO0_SDA_PIN) \
-    && defined(GPIO0_SCL_PORT) && defined(GPIO0_SCL_PIN)
-    GPIO0_SDA_PORT,      /* SDA PORT as NutGpioPortX */
-    GPIO0_SDA_PIN,       /* SDA Pin number*/
-    GPIO0_SCL_PORT,      /* SCL PORT as NutGpioPortX */
-    GPIO0_SCL_PIN,       /* SCL Pin number*/
-#else
-    (nutgpio_port_t) -1, /* */
-    (nutgpio_pin_t)  -1, /* */
-    (nutgpio_port_t) -1, /* */
-    (nutgpio_pin_t)  -1, /* */
-#endif
     0                 /* Delay unit in us*/
 };
 
