@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -33,12 +33,9 @@
  */
 
 /*!
- * \file dev/owibus_bbif.c
+ * \file dev/owibus_gpio.c
  * \brief Implementation of One-Wire primitives with Bitbanging, configured
- *        at run time.
- *
- * On AVR8, run-time configurable port access is slow and so timing may not
- * be met.
+ *        at library compile time.
  *
  * \verbatim
  * $Id$
@@ -48,17 +45,26 @@
 #include <cfg/arch.h>
 #include <string.h>
 #include <stdint.h>
-#include <sys/timer.h>
-#include <dev/gpio.h>
 #include <stdlib.h>
+#include <sys/timer.h>
 
+#include <dev/gpio.h>
 #include <dev/owibus.h>
-#include <dev/owibus_bbif.h>
 
-#if defined(GPIO_CFG_INIT_HIGH)
-#define OWI_GPIO_CFG_INIT_HIGH GPIO_CFG_INIT_HIGH
+#if defined(OWI0_PORT) && defined(OWI0_PIN)
+#undef GPIO_ID
+#define GPIO_ID OWI0_PORT
+#include <cfg/arch/piotran.h>
+static INLINE void OWI0_INIT(void) { GPIO_INIT(OWI0_PIN); GPIO_PULLUP_ON(OWI0_PIN); }
+static INLINE void OWI0_LO(void) { GPIO_SET_LO(OWI0_PIN); GPIO_OUTPUT(OWI0_PIN); }
+static INLINE void OWI0_HI(void) { GPIO_INPUT(OWI0_PIN); GPIO_SET_HI(OWI0_PIN); }
+static INLINE int  OWI0_GET(void) { return GPIO_GET(OWI0_PIN); }
 #else
-#define OWI_GPIO_CFG_INIT_HIGH 0
+#warning X
+#define OWI0_INIT()
+#define OWI0_LO()
+#define OWI0_HI()
+#define OWI0_GET() 0
 #endif
 
 /*!
@@ -75,10 +81,9 @@
  *
  * \return The value read on success, a negative value otherwise.
  */
-static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
+static int Gpio0_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
 {
     int res;
-    NUTOWIINFO_BB *owcb = (NUTOWIINFO_BB *) (bus->owibus_info);
     int16_t delay1 =
         (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE] -
          owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SETUP]) >> 2;
@@ -93,21 +98,14 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
      * cooperative multitasking for up to 480 us
      */
     NutSleep(0);
-    GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
-    GpioPinDrive(owcb->txrx_port, owcb->txrx_pin);
+    OWI0_LO();
     NutMicroDelay(delay1);
     if (value == 0)
-    {
-        GpioPinDrive(owcb->txrx_port, owcb->txrx_pin);
-        GpioPinSetLow(owcb->txrx_port, owcb->txrx_pin);
-    }
+        OWI0_LO();
     else
-    {
-        GpioPinRelease(owcb->txrx_port, owcb->txrx_pin);
-        GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
-    }
+        OWI0_HI();
     NutMicroDelay(delay2);
-    res = GpioPinGet(owcb->txrx_port, owcb->txrx_pin);
+    res = OWI0_GET();
 #if 0
     if (value)
         /* If the TXRX line is allready pull up, we only need to wait,
@@ -117,8 +115,7 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
         NutSleep(0);
 #endif
     NutMicroDelay(delay3);
-    GpioPinRelease(owcb->txrx_port, owcb->txrx_pin);
-    GpioPinSetHigh(owcb->txrx_port, owcb->txrx_pin);
+    OWI0_HI();
     NutSleep(1);
     return res;
 }
@@ -130,9 +127,9 @@ static int BB_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t va
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-static int BB_OwiTouchReset(NUTOWIBUS *bus)
+static int Gpio0_OwiTouchReset(NUTOWIBUS *bus)
 {
-    return BB_OwiTransaction(bus, OWI_CMD_RESET, 1);
+    return Gpio0_OwiTransaction(bus, OWI_CMD_RESET, 1);
 }
 
 /*!
@@ -144,9 +141,9 @@ static int BB_OwiTouchReset(NUTOWIBUS *bus)
  * \return The bus state at the read slot on success, a negative value
  *         otherwise.
  */
-static int OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
+static int Gpio0_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
 {
-    return BB_OwiTransaction(bus, OWI_CMD_RWBIT, bit);
+    return Gpio0_OwiTransaction(bus, OWI_CMD_RWBIT, bit);
 }
 
 /*!
@@ -158,13 +155,13 @@ static int OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-static int BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+static int Gpio0_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int res;
     int i;
 
     for (i = 0; i < len; i++) {
-        res = OwiRWBit(bus, data[i >> 3] & (1 << (i & 0x7)));
+        res = Gpio0_OwiRWBit(bus, data[i >> 3] & (1 << (i & 0x7)));
         if (res < 0)
             return OWI_HW_ERROR;
     }
@@ -180,14 +177,14 @@ static int BB_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-static int BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+static int Gpio0_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int res;
     int i;
 
     memset(data, 0, (len >> 3) + 1);
     for (i = 0; i < len; i++) {
-        res = OwiRWBit(bus, 1);
+        res = Gpio0_OwiRWBit(bus, 1);
         if (res < 0)
             return OWI_HW_ERROR;
         data[i >> 3] |= (res << (i & 0x7));
@@ -196,59 +193,36 @@ static int BB_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 }
 
 /*!
- * \brief Register the One-Wire bus.
+ * \brief Read a block of data bits from the One-Wire bus.
  *
- * \param bus         The returned NUTOWIBUS.
- * \param txrx_port   The port to use for the One_Wire bus.
- * \param txrx_pin    The pin to use for the One_Wire bus.
- * \param pullup_port If given, port to control strong pull-up for
- *                    parasitic powered devices.
- * \param pullup_pin  The pin to control strong pull-up for parasitic
- *                    powered devices.
+ * \param bus  Specifies the One-Wire bus.
+ * \param data Data bits received.
+ * \param len  Number of bits to read.
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int NutRegisterOwiBus_BB(NUTOWIBUS *bus, int txrx_port, uint_fast8_t txrx_pin, int pullup_port, uint_fast8_t pullup_pin)
+static int Gpio0_Setup(NUTOWIBUS *bus)
 {
-    int res;
-    NUTOWIINFO_BB *owcb;
+    (void) bus;
 
-    owcb = calloc(1, sizeof(*owcb));
-    if (owcb == NULL) {
-        return OWI_OUT_OF_MEM;
-    }
-
-    if (GpioPinConfigSet(
-            txrx_port, txrx_pin,
-            GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT |
-            GPIO_CFG_MULTIDRIVE |OWI_GPIO_CFG_INIT_HIGH)) {
-        res = OWI_INVALID_HW;
-        goto free_all;
-    }
-    if (pullup_pin) {
-        if (GpioPinConfigSet(pullup_pin, pullup_pin, GPIO_CFG_PULLUP | GPIO_CFG_OUTPUT)) {
-            res = OWI_INVALID_HW;
-            goto free_all;
-        }
-        GpioPinSetHigh(pullup_pin, pullup_pin);
-        GpioPinConfigSet(pullup_pin, pullup_pin, GPIO_CFG_PULLUP);
-    }
-
-    owcb->txrx_port = txrx_port;
-    owcb->txrx_pin = txrx_pin;
-    owcb->pp_port = pullup_pin;
-    owcb->pp_pin = pullup_pin;
-    bus->owibus_info = (uintptr_t) owcb;
-    bus->OwiSetup = NULL;
-    bus->OwiTouchReset = BB_OwiTouchReset;
-    bus->OwiReadBlock = BB_OwiReadBlock;
-    bus->OwiWriteBlock = BB_OwiWriteBlock;
-    bus->mode = 0;
+#if !defined(OWI0_PORT) || !defined(OWI0_PIN)
+    return OWI_INVALID_HW;
+#else
+    OWI0_INIT();
     return OWI_SUCCESS;
-
-  free_all:
-    free(owcb);
-    return res;
+#endif
 }
 
+/*!
+ * \brief Library compile time configured OWI bus driver for GPIO.
+ *
+ */
+ NUTOWIBUS owiBus0Gpio = {
+    0,                   /*!< \brief OWIBUSBUS::owibus_info */
+    OWI_MODE_NORMAL,     /*!< \brief OWIBUSBUS::mode */
+    Gpio0_Setup,         /*!< \brief OWIBUSBUS::OwiSetup */
+    Gpio0_OwiTouchReset, /*!< \brief OWIBUSBUS::OwiTouchReset*/
+    Gpio0_OwiReadBlock,  /*!< \brief OWIBUSBUS::OwiReadBlock */
+    Gpio0_OwiWriteBlock  /*!< \brief OWIBUSBUS::OwiWriteBlock */
+ };
 /*@}*/
