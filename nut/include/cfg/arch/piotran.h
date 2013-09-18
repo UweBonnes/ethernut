@@ -99,7 +99,7 @@
  * with the exception of GPIO_INIT(). The following restricted macros are
  * available, allowing implementation for all NUTOS architectures:
  *
- * - GPIO_CLK Basic initialization to input, no pull-up, about 1 MHz speed
+ * - GPIO_INIT Basic initialization to input, no pull-up, about 1 MHz speed
  *            and push-pull when switched to output
  * - GPIO_SET_LO Sets output low.
  * - GPIO_SET_HI Sets output high.
