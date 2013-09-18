@@ -58,15 +58,28 @@
 static int Gpio_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
 {
     int res;
-    int16_t delay1 =
-        (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE] -
-         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SETUP]) >> 2;
-    int16_t delay2 =
-        (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RW] -
-         owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE]) >> 2;
+    int16_t delay1;
+    int16_t delay2;
     int16_t delay3 =
         (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RELEASE] -
          owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RW]) >> 2;
+
+    if (value) {
+        delay1 =
+            (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE] -
+             owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SETUP]) >> 2;
+        delay2 =
+            (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RW] -
+             owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE]) >> 2;
+    }
+    else {
+        delay1 =
+            (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE_LOW] -
+             owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SETUP]) >> 2;
+        delay2 =
+            (owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_RELEASE] -
+             owi_timervalues_250ns[bus->mode & OWI_OVERDRIVE][command][OWI_PHASE_SYNC_PULSE_LOW]) >> 2;
+    }
 
     /* Be nice! Allow other thing to happen now before we block
      * cooperative multitasking for up to 480 us
@@ -74,23 +87,14 @@ static int Gpio_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t 
     NutSleep(0);
     OWI_LO();
     NutMicroDelay(delay1);
-    if (value == 0)
-        OWI_LO();
-    else
-        OWI_HI();
-    NutMicroDelay(delay2);
-    res = OWI_GET();
-#if 0
-    if (value)
-        /* If the TXRX line is allready pull up, we only need to wait,
-         * but no time sensitive action must be performed. We block for
-         * up to 410 us now. So be nice again!
-         */
-        NutSleep(0);
-#endif
-    NutMicroDelay(delay3);
     OWI_HI();
-    NutSleep(1);
+    if (value) {
+        NutMicroDelay(delay2);
+        res = OWI_GET();
+        NutMicroDelay(delay3);
+    }
+    else
+        NutMicroDelay(delay2);
     return res;
 }
 
