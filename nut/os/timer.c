@@ -281,6 +281,7 @@ uint32_t systick_us = 0;
 static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 
 #if defined(__CORTEX__)
+uint32_t _us_to_systicks_512;
 #elif defined(__AVR_LIBC_VERSION__)
 uint16_t _delay_loop_2_mult;
 #else
@@ -337,8 +338,9 @@ void NutTimerIntr(void *arg)
  * \brief Initialize system timer.
  *
  * This function is automatically called by Nut/OS during system
- * initialization. It calls the hardware dependent layer to initialze
- * the timer hardware and register a timer interrupt handler.
+ * initialization. It calls the hardware dependent layer to initialize
+ * the timer hardware, registers a timer interrupt handler and eventual
+ * precalculates constants used in delay loops.
  */
 void NutTimerInit(void)
 {
@@ -346,7 +348,6 @@ void NutTimerInit(void)
     gettimeofday( &timeStart, NULL );
 #else
     NutRegisterTimer(NutTimerIntr);
-
 #ifndef NUT_USE_OLD_TIME_API
     systick_us = 1000000 / NutGetTickClock();
 #endif
@@ -355,9 +356,14 @@ void NutTimerInit(void)
 
 //Not Used     /* Remember the CPU clock for which the loop counter is valid. */
 //Not Used     nut_delay_loops_clk = NutGetCpuClock();
-#if defined(__AVR_LIBC_VERSION__)
+#if defined(__CORTEX__)
+    if (SysTick->LOAD < 0x00800000)
+        _us_to_systicks_512 = ((SysTick->LOAD +1) << 9)/NUT_TICK_FREQ;
+    else
+        _us_to_systicks_512 = ((SysTick->LOAD +1)/NUT_TICK_FREQ) << 9;
+#elif defined(__AVR_LIBC_VERSION__)
     _delay_loop_2_mult = NutGetCpuClock()/(4000000 >> 8);
-#elif !defined(NUT_DELAYLOOPS) && !defined(__CORTEX__)
+#elif !defined(NUT_DELAYLOOPS)
     {
         /* Wait for the next tick. */
         uint32_t cnt = NutGetTickCount();
@@ -379,13 +385,14 @@ void NutTimerInit(void)
  *
  * This routine can be used for short delays below the system tick
  * time, mainly when driving external hardware, where the resolution
- * of NutSleep() wouldn't fit, a thread switch would be undesirable
- * or in early system initialization stage, where the system timer
- * is not available. In all other cases NutSleep() should be used.
+ * of NutSleep() wouldn't fit or a thread switch would be undesirable.
+ * In all other cases NutSleep() should be used.
  *
  * This call will not release the CPU and will not switch to another
  * thread. However, interrupts are not disabled and introduce some
- * jitter. Furthermore, unless NUT_DELAYLOOPS is not defined, the
+ * jitter.
+ *
+ * On AVR neither _delay_loop_2() and NUT_DELAYLOOPS is defined, the
  * deviation may be greater than 10%.
  *
  * For delays below 100 microseconds, the deviation may increase above
@@ -412,7 +419,8 @@ void NutMicroDelay(uint32_t us)
     int32_t end_ticks;
 
     start_ticks = SysTick->VAL;
-    end_ticks = (us * (SysTick->LOAD +1))/NUT_TICK_FREQ;
+   /* Good for up to 42 ms with 200 MHz Systick Clock*/
+    end_ticks = (us * _us_to_systicks_512) >> 9;
 /* Systick counts backwards! */
     while (summed_ticks < end_ticks)
     {
