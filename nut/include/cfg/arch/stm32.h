@@ -1,8 +1,8 @@
-#ifndef _CFG_ARCH_GPIO_H_
-#define _CFG_ARCH_GPIO_H_
+#ifndef _CFG_ARCH_STM32_H_
+#define _CFG_ARCH_STM32_H_
 
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,42 +35,34 @@
  */
 
 /*
- * $Log$
- * Revision 1.1  2006/04/07 15:31:19  haraldkipp
- * First check in
+ * $Log: avr.h32,v $
  *
  */
 
 /*!
- * \file cfg/arch/gpio.h
- * \brief Port configuration.
+ * \addtogroup xgConfigStm32
  */
+/*@{*/
 
-#if defined(__AVR__)
-#include <cfg/arch/avr.h>
-#elif defined(__arm__) && !defined (__CORTEX__)
-#include <cfg/arch/armpio.h>
-#elif defined(__AVR32__)
-#include <cfg/arch/avr32.h>
-#elif defined (__CORTEX__)
-#include <cfg/arch.h>
-#if defined(MCU_STM32)
+/*!
+ * \file include/cfg/arch/stm32.h
+ * \brief STM32 hardware configuration.
+ */
 #include <dev/gpio.h>
+
+#define PIOA_ID     NUTGPIO_PORTA
+#define PIOB_ID     NUTGPIO_PORTB
+#define PIOC_ID     NUTGPIO_PORTC
+#define PIOD_ID     NUTGPIO_PORTD
+#define PIOE_ID     NUTGPIO_PORTE
+#define PIOF_ID     NUTGPIO_PORTF
+#define PIOG_ID     NUTGPIO_PORTG
+#define PIOH_ID     NUTGPIO_PORTH
+#define PIOI_ID     NUTGPIO_PORTI
+#define PIOJ_ID     NUTGPIO_PORTJ
+#define PIOK_ID     NUTGPIO_PORTK
+#define PIOL_ID     NUTGPIO_PORTL/*@}*/
+
 #include <cfg/arch/stm32pio.h>
-#endif
-#endif
-
-/*
-   Alternate pin sets for driver configuration of the
-   peripheral GPIO.
-*/
-#define ALTERNATE_PIN_SET1 1
-#define ALTERNATE_PIN_SET2 2
-#define ALTERNATE_PIN_SET3 3
-#define ALTERNATE_PIN_SET4 4
-#define ALTERNATE_PIN_SET5 5
-#define ALTERNATE_PIN_SET6 6
-#define ALTERNATE_PIN_SET7 7
 
 #endif
-
