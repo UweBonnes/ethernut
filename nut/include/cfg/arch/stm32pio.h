@@ -1,5 +1,5 @@
-#ifndef _CFG_ARCH_ARMPIO_H_
-#define _CFG_ARCH_ARMPIO_H_
+#ifndef _CFG_ARCH_STM32PIO_H_
+#define _CFG_ARCH_STM32PIO_H_
 
 /*
 * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
@@ -35,15 +35,15 @@
 */
 
 /*
-* $Log: avr32pio.h,v $
+* $Log: stm32pio.h,v $
 *
 */
 
 /*!
-* \file cfg/arch/avr32pio.h
-* \brief AVR32 port configuration.
+* \file cfg/arch/stm32pio.h
+* \brief STM32 port configuration.
 *
-* This file collects all port specifications for the AVR32 platform and
+* This file collects all port specifications for the STM32 platform and
 * provides an overview of hardware resources in use.
 *
 * Values are geared to the Ethernut reference design and can be changed
