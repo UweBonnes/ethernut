@@ -2062,12 +2062,11 @@ nutdev =
         },
     },
     {
-        name = "nutdev_i2cbbif",
-        brief = "Bit Banging I2C bus driver",
+        name = "nutdev_i2cbus0gpio",
+        brief = "Bit Banging I2C bus driver 0",
         description = "Tested on STM32 only.",
-        requires = { "HW_GPIO_V2" },
         provides = { "I2CBUS_CONTROLLER" },
-        sources = { "i2cbus_gpio.c" },
+        sources = { "i2cbus0gpio.c" },
         options =
         {
             {

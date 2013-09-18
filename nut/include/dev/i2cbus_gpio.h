@@ -48,4 +48,11 @@
 
 extern NUTI2C_BUS i2cBus0Gpio;
 
+/*!
+ * \brief Local data of the GPIO TWI bus driver.
+ */
+typedef struct _GPIO_TWICB {
+    unsigned int delay_unit;
+} GPIO_TWICB;
+
 #endif

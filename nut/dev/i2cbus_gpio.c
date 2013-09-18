@@ -34,7 +34,7 @@
 
 /*!
  * \file dev/i2cbus_gpio.c
- * \brief I2C bus driver for GPIO.
+ * \brief I2C bus for GPIO code include file.
  *
  * This driver is in an early stage and has been tested on STM32 only.
  *
@@ -55,57 +55,10 @@
  * This is an polling driver, which supports master mode only.
  */
 
-#include <dev/irqreg.h>
-#include <sys/nutdebug.h>
-#include <sys/timer.h>
-#include <sys/event.h>
-
-#include <stdlib.h>
-
-#include <dev/gpio.h>
-#include <dev/i2cbus_gpio.h>
-#include <cfg/twi.h>
 /*!
  * \addtogroup xgI2cBusGPIO
  */
 /*@{*/
-
-#if defined(GPIO0_SDA_PORT) && defined(GPIO0_SDA_PIN)
-#undef GPIO_ID
-#define GPIO_ID GPIO0_SDA_PORT
-#include <cfg/arch/piotran.h>
-static INLINE void I2C_SDA_INIT(void) { GPIO_INIT(GPIO0_SDA_PIN); GPIO_PULLUP_ON(GPIO0_SDA_PIN); }
-static INLINE void I2C_SDA_LO(void) { GPIO_SET_LO(GPIO0_SDA_PIN); GPIO_OUTPUT(GPIO0_SDA_PIN); }
-static INLINE void I2C_SDA_HI(void) { GPIO_INPUT(GPIO0_SDA_PIN); GPIO_SET_HI(GPIO0_SDA_PIN); }
-static INLINE int I2C_SDA_GET(void) { return GPIO_GET(GPIO0_SDA_PIN); }
-#else
-#define I2C_SDA_INIT()
-#define I2C_SDA_LO()
-#define I2C_SDA_HI()
-#define I2C_SDA_GET() 0
-#endif
-
-#if defined(GPIO0_SCL_PORT) && defined(GPIO0_SCL_PIN)
-#undef GPIO_ID
-#define GPIO_ID GPIO0_SCL_PORT
-#include <cfg/arch/piotran.h>
-static INLINE void I2C_SCL_INIT(void) { GPIO_INIT(GPIO0_SCL_PIN); GPIO_PULLUP_ON(GPIO0_SCL_PIN); }
-static INLINE void I2C_SCL_LO(void) { GPIO_SET_LO(GPIO0_SCL_PIN); GPIO_OUTPUT(GPIO0_SCL_PIN);}
-static INLINE void I2C_SCL_HI(void) { GPIO_INPUT(GPIO0_SCL_PIN); GPIO_SET_HI(GPIO0_SCL_PIN); }
-static INLINE int I2C_SCL_GET(void) { return GPIO_GET(GPIO0_SCL_PIN); }
-#else
-#define I2C_SCL_INIT()
-#define I2C_SCL_LO()
-#define I2C_SCL_HI()
-#define I2C_SCL_GET() 0
-#endif
-
-/*!
- * \brief Local data of the GPIO TWI bus driver.
- */
-typedef struct _GPIO_TWICB {
-    unsigned int delay_unit;
-} GPIO_TWICB;
 
 /*
  * Falling edge on the data line while the clock line is high indicates
@@ -401,20 +354,3 @@ static int TwiBusProbe(NUTI2C_BUS *bus, int sla)
 
     return rc;
 }
-
-static GPIO_TWICB twi0cb = {
-    0                 /* Delay unit in us*/
-};
-
-
-NUTI2C_BUS i2cBus0Gpio = {
-    &twi0cb,    /* bus_icb */
-    TwiBusInit, /* bus_init */
-    TwiBusConf, /* bus_configure */
-    TwiBusProbe,/* bus_probe */
-    TwiBusTran, /* bus_transceive */
-    100,        /* bus_timeout */
-    0,          /* bus_rate */
-    0,          /* bus_flags */
-    NULL        /* bus_mutex */
-};

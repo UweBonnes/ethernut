@@ -45,7 +45,8 @@
 #include <dev/gpio.h>
 #include <dev/i2cbus.h>
 
-static const char *banner = "\nNut/OS I2C Sample " __DATE__ " " __TIME__;
+static const char *banner = "\nNut/OS I2C Sample on " BOARDNAME
+    " " __DATE__ " " __TIME__;
 
 #if defined(DEF_I2CBUS)
 static char inbuf[128];
