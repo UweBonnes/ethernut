@@ -2105,6 +2105,36 @@ nutdev =
             },
        },
     },
+    {
+        name = "nutdev_owibus0gpio",
+        brief = "Bit Banging OWI bus driver 0",
+        requires = { "HW_GPIO"},
+        provides = { "OWIBUS_CONTROLLER" },
+        sources = { "owibus0gpio.c"},
+        options =
+        {
+           {
+                macro = "OWI0_PIN",
+                brief = "OWI0 PIN",
+                description = "Port bit used for OWI Bus 0.",
+                provides = { "OWI0_PIN" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "OWI0_PORT",
+                brief = "OWI0 Port",
+                description = "Port used for OWI Bus 0.",
+                requries = { "OWI0_PIN" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+        }
+    },
 
     --
     -- Character Device Drivers.
@@ -3373,6 +3403,14 @@ nutdev =
         requires = { "I2CBUS_CONTROLLER" },
         description = "Hardware independent I2C bus API.",
         sources = { "i2cbus.c" }
+    },
+
+    {
+        name = "nutdev_owibus",
+        brief = "OWI Bus",
+        requires = { "OWIBUS_CONTROLLER" },
+        description = "Hardware independent I2C bus API.",
+        sources = { "owibus.c" }
     },
 
     --
@@ -5035,15 +5073,6 @@ nutdev =
         requires = { "PROTO_HDLC", "NUT_TIMER", "PROTO_HDLC" },
         provides = { "NET_MAC" },
         sources = { "ppp.c" }
-    },
-
-    {
-        name = "nutdev_owibus",
-        brief = "One-Wire Bus implementations",
-        description = "",
-        requires = { "HW_GPIO", "TOOL_GCC" },
-        provides = { "DEV_OWI" },
-        sources = { "owibus.c", "owibus_bbif.c", "owibus_uartif.c" },
     },
     {
         name = "nutdev_flash",

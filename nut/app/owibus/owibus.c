@@ -53,7 +53,7 @@
 #include <dev/board.h>
 #include <dev/gpio.h>
 
-#if !defined(__GNUC__)
+#if !defined(__GNUC__) || !defined(DEF_OWIBUS)
 
 int main(void)
 {
@@ -62,7 +62,11 @@ int main(void)
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+#if !defined(__GNUC__)
     puts("This program requires a compiler that supports 64-bit integers.");
+#else
+    puts("This program requires a configured OWIBUS.");
+#endif
     for (;;);
     return 0;
 }
@@ -71,17 +75,8 @@ int main(void)
 
 #include <dev/owibus.h>
 
-#if defined(OWI_UART)
-#if !defined(USE_BB)
-#define USE_UART
-#endif
-#else
-#if defined(OWI_PORT) && defined(OWI_PIN)
-#define USE_BB
-#endif
-#endif
-
-static char *banner = "\nNut/OS OWI Bus "__DATE__ " " __TIME__"\n";
+static char *banner = "\nNut/OS OWI Bus on " BOARDNAME
+    " "__DATE__ " " __TIME__"\n";
 /*
  * UART sample.
  *
@@ -96,7 +91,6 @@ int main(void)
     int32_t xcelsius;
     int run =0;
     uint8_t raw[2];
-    NUTOWIBUS bus_container, *bus=&bus_container;
     uint8_t diff;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
@@ -108,63 +102,19 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     fprintf(stdout, banner);
 
-#if  !defined(USE_BB) && !defined(USE_UART)
-    fprintf(stdout,
-            "Please defined the access method to the OWI BUS(Uart/Bitbang)\n");
-    while(1) NutSleep(10);
+#undef DEF_OWIBUS
+#include <dev/owibus_gpio.h>
+#define DEF_OWIBUS owiBus0Gpio
 
-#elif defined(USE_BB)
- #if !defined(OWI_PORT) || !defined (OWI_PIN)
-    fprintf(stdout, "Please defined the Port/Pin to use for One-Wire "
-            "Bus on your board\n");
-    while(1) NutSleep(10);
- #else
-    fprintf(stdout, "Using Bitbang PORT %lx PIN %x\n", OWI_PORT, OWI_PIN);
-    fprintf(stdout,
-            "Make sure no other (floating) pin results in the OWI "
-            "line pulled low\n");
-    /* E.g. with UART RX line used as bitbang OWI driver, the USART TX
-     * line normally driving the OWI bus via the enable of a 3-state driver
-     * needs to be pulled up. E.g for AVR Uart0:
-     */
-    GpioPinConfigSet(OWI_PORT, OWI_PIN +1 , GPIO_CFG_PULLUP);
-    res= NutRegisterOwiBus_BB(bus, OWI_PORT, OWI_PIN, 0, 0);
- #endif
-#elif defined(USE_UART)
- #if !defined(OWI_UART)
-    fprintf(stdout, "Please defined UART to use for One-Wire Bus\n");
-    while(1) NutSleep(10);
- #else
-    res= NutRegisterOwiBus_Uart(bus, &OWI_UART, 0, 0);
-    fprintf(stdout, "Using UART");
-
-    /* Switch to Open Drain */
- #if defined(MCU_STM32) && defined(OWI_PORT) && defined(OWI_PIN)
-    /* Switch to Open Drain */
-  #if defined(MCU_STM32F1)
-    CM3BBREG(OWI_PORT, GPIO_TypeDef, CRL, 4*(OWI_PIN*4)) = 1;
-  #else
-    CM3BBREG(OWI_PORT, GPIO_TypeDef, OTYPER, OWI_PIN) = 1;
-  #endif
-/*   Switch to Half Duplex */
-    CM3BBREG((devUsartStm32_1.dev_base), USART_TypeDef, CR3,
-             _BI32(USART_CR3_HDSEL))=1;
-    fprintf(stdout, " with RX connected internal to TX and TX "
-            "configured as Open Drain\n");
- #else
-    fprintf(stdout, "Make sure TX drives the OWI device as Open Drain "
-            "and RX is connected to OWI\n");
- #endif
-    if (res)
+    res = OwiInit(&DEF_OWIBUS);
+    if(res)
     {
-        fprintf(stdout, "NutRegisterOwiBus_Timer failed %d\n", res);
+        printf("Owi Error %d\n", res);
         while(1)
-            NutSleep(100);
+            NutSleep(10);
     }
- #endif
-#endif
     diff = OWI_SEARCH_FIRST;
-    res = OwiRomSearch(bus, &diff, &hid);
+    res = OwiRomSearch(&DEF_OWIBUS, &diff, &hid);
     if(res)
     {
         printf("OwiRomSearch failed\n");
@@ -182,11 +132,11 @@ int main(void)
     }
     while(1)
     {
-        res = OwiCommand( bus, OWI_CONVERT_T, NULL);
+        res = OwiCommand(&DEF_OWIBUS, OWI_CONVERT_T, NULL);
         if (res)
             printf("OwiCommand convert_t error %d\n", res);
         NutSleep(750);
-        while (!(res = OwiReadBlock(bus, &diff, 1)) && !diff && i < 100)
+        while (!(res = OwiReadBlock(&DEF_OWIBUS, &diff, 1)) && !diff && i < 100)
         {
             NutSleep(10);
             i++;
@@ -198,10 +148,10 @@ int main(void)
                 i);
             i = 0;
         }
-        res = OwiCommand( bus, OWI_READ, NULL);
+        res = OwiCommand(&DEF_OWIBUS, OWI_READ, NULL);
         if (res)
             printf("OwiCommand read error %d\n", res);
-        res = OwiReadBlock(bus, raw, 16);
+        res = OwiReadBlock(&DEF_OWIBUS, raw, 16);
         if (res)
             printf("OwiReadBlock error %d\n", res);
         xcelsius = (raw[1]<<8 | raw[0]) * (int32_t)625;
