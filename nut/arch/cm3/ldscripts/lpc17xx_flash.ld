@@ -27,8 +27,15 @@ SECTIONS
         *(.glue_7)
         *(.gcc_except_table)
         . = ALIGN(4);
-        _etext = .;
     } > FLASH0
+
+    /* .ARM.exidx is sorted, so has to go in its own output section. */
+    .exidx : {
+        __exidx_start = .;
+        *(..exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } > FLASH0
+    _etext = .;
 
     .vtable (NOLOAD):
     {
