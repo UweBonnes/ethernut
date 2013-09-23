@@ -481,8 +481,6 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
             /* ICCAVR bug, we use a hack */
             /* cp = FormatFP_1(iccfmt, _double, 0, 1, prec); */
             cp = ftoa(_double, &fps);
-            size = strlen(cp);
-            break;
 #elif defined(__arm__) && !defined(__NUT_EMULATION__)
         case 'g':
         case 'G':
@@ -536,9 +534,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
                     *bp = 0;
                 }
                 cp = buf;
-                size = strlen(cp);
             }
-            break;
 #else
         case 'g':
         case 'G':
@@ -553,8 +549,6 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
             else
                 dtostre(_double, buf, prec, 1);
             cp = buf;
-            size = strlen(buf);
-            break;
 #endif
 #else
         case 'g':
@@ -565,9 +559,9 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
             (void) va_args_double(&ap);
             strcpy(buf, "NA");
             cp = buf;
-            size = strlen(buf);
 #endif                          /* STDIO_FLOATING_POINT */
-
+            size = strlen(buf);
+            break;
         default:
             if (ch == 0)
                 return rc;
