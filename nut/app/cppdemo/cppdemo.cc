@@ -96,8 +96,8 @@ Counter::Counter(uint8_t initValue)
 int main(void) {
     u_long baud = 115200;
 
-    NutRegisterDevice(&DEV_UART0, 0, 0);
-    FILE *stream = fopen(DEV_UART0_NAME, "r+");
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    FILE *stream = fopen(DEV_CONSOLE.dev_name, "r+");
     _ioctl(_fileno(stream), UART_SETSPEED, &baud);
 
     fprintf(stream, "\n\nC++ Demo on Nut/OS %s ready.\n", NutVersionString());
