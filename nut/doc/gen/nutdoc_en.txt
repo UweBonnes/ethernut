@@ -2,18 +2,17 @@
  * $Id$
  */
 /*!
- * \mainpage Nut/OS
+ * \mainpage Ethernut Project
  *
  * \section intro Introduction
  *
  * Ethernut is an Open Source Hardware and Software Project for building
  * Embedded Ethernet Devices.
  *
- * For the hardware part three reference designs are currently available:
- * - Ethernut 1 with ATmega103 or ATmega128 CPU and Realtek RTL8019AS
- *   Ethernet Controller.
- * - Ethernut 2 with ATmega128 CPU and SMSC LAN91C111 Ethernet Controller.
- * - Ethernut 3 with AT91R40008 CPU and Davicom DM9000E Ethernet Controller.
+ * For the hardware part, several reference designs are provided, including
+ * CAD files. Furthermore, many embedded boards from other sources are
+ * officially supported. Last not least, the Nut/OS Configurator allows
+ * you to adapt the system to your own custom hardware.
  *
  * The software part is based on an Open Source implementation of a Real
  * Time Operating System called Nut/OS and a TCP/IP protocol suite named
@@ -24,8 +23,24 @@
  * code by Doxygen, a great tool created by Dimitri van Heesch.
  *
  * As a first step, you may want to set up your Development Environment
- * by following the latest version of the Ethernut Software Manual at
+ * by following the latest version of the Nut/OS Software Manual at
  * http://www.ethernut.de/en/documents/
+ *
+ * \section motivation Motivation
+ *
+ * In the year 2001 the initial idea was to have tiny 8-bit CPUs connected to
+ * the Internet. Programming these devices should be similar to what was
+ * available on desktop computers. Today Nut/OS offers a large number of
+ * drivers for 8-bit and 32-bit CPUs, which makes hardware, file systems or
+ * network protocols accessible via standard C functions. If you are familiar
+ * with the C language, Posix-like software interfaces and embedded devices,
+ * you will soon be able to implement your Internet-enabled machine.
+ *
+ * \section support Support
+ *
+ * The Ethernut mailing list is the prefered way to get support for Ethernut
+ * hardware and software. In addition, some companies offer commercial
+ * support.
  */
 
 /*!
