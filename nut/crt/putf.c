@@ -177,41 +177,18 @@ static void _putpad(int _putb(int fd, const void *, size_t), int fd, NUTCONST ch
 #define LONGLONG    0x20    /* long long integer*/
 #define UNSIGNED    0x40    /* unsigned integer*/
 
-uint64_t va_args_i64(int flags, va_list *ap)
+uint64_t va_args_i64(int flags, va_list ap)
 {
     uint64_t result;
-    if (flags & LONGLONG) {
-/* Depending on aligment of ap with regard to 8 byte boundary
-   things may go astray on Arm Launchpad up to 2013Q3.
-   Try the #if 0 clause in that case.
-*/
-#if 0
-        uint32_t *words = (uint32_t *)&result;
-        if (*(uint32_t*)&ap & 4) {
-            words[0]= va_arg(&ap, uint32_t);
-            words[0]= va_arg(&ap, uint32_t);
-            words[1]= va_arg(&ap, uint32_t);
-        }
-        else {
-            words[0]= va_arg(&ap, uint32_t);
-            words[1]= va_arg(&ap, uint32_t);
-        }
-#else
-        result = va_arg(*ap, uint64_t);
-#endif
-    }
+    if (flags & LONGLONG)
+        result = va_arg(ap, uint64_t);
     else if (flags & LONGINT)
-        result = (uint64_t)va_arg(*ap, uint32_t);
+        result = (uint64_t)va_arg(ap, uint32_t);
     else if (flags & UNSIGNED)
-        result = (uint64_t)va_arg(*ap, unsigned int);
+        result = (uint64_t)va_arg(ap, unsigned int);
     else
-        result = (uint64_t)va_arg(*ap, int);
+        result = (uint64_t)va_arg(ap, int);
     return result;
-}
-
-/* Same boundary issues apply for Launchpad ARM toolchain*/
-double va_args_double(va_list *ap) {
-    return va_arg(*ap, double);
 }
 
 /*!
@@ -396,7 +373,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         case 'd':
         case 'i':
             /* Thanks to Ralph Mason for fixing the u_int bug. */
-            ulval = va_args_i64(flags, &ap);
+            ulval = va_args_i64(flags, ap);
             if (ch != 'u' && (long long) ulval < 0) {
                 ulval = (uint64_t) (-((long long) ulval));
                 sign = '-';
@@ -417,7 +394,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
             break;
 
         case 'o':
-            ulval = va_args_i64(flags, &ap);
+            ulval = va_args_i64(flags, ap);
             sign = 0;
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
@@ -441,7 +418,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
                 flags |= ALT;
                 ch = 'x';
             } else
-                ulval = va_args_i64(flags, &ap);
+                ulval = va_args_i64(flags, ap);
 
             sign = 0;
             if ((dprec = prec) >= 0)
@@ -477,7 +454,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         case 'f':
             if (prec == -1)
                 prec = DEFPREC;
-            _double = va_args_double(&ap);
+            _double = va_arg(ap, double);
             /* ICCAVR bug, we use a hack */
             /* cp = FormatFP_1(iccfmt, _double, 0, 1, prec); */
             cp = ftoa(_double, &fps);
@@ -495,7 +472,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
 
                 if (prec == -1)
                     prec = DEFPREC;
-                _double = va_args_double(&ap);
+                _double = va_arg(ap, double);
                 cp = _dtoa_r(_REENT, _double, 3, prec, &decpt, &neg, &rve);
                 if (neg)
                     sign = '-';
@@ -543,7 +520,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         case 'f':
             if (prec == -1)
                 prec = DEFPREC;
-            _double = va_args_double(&ap);
+            _double = va_arg(ap, double);
             if (ch == 'f')
                 dtostrf(_double, 1, prec, buf);
             else
@@ -556,7 +533,7 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         case 'e':
         case 'E':
         case 'f':
-            (void) va_args_double(&ap);
+            (void) va_arg(ap, double);
             strcpy(buf, "NA");
             cp = buf;
 #endif                          /* STDIO_FLOATING_POINT */
