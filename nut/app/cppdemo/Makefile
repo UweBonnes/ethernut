@@ -51,6 +51,7 @@ SRCS =  $(PROJ).cc
 OBJS =  $(SRCS:.cc=.o)
 LIBS =   -lnutcpp $(LIBDIR)/nutinit.o $(MODS) -lnutcpp -lnutos -lnutcrt -lnutarch -lnutdev
 TARG =  $(PROJ).hex
+NODEPS = 1
 
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
 
@@ -70,4 +71,4 @@ clean:
 	-rm -f $(SRCS:.cc=.s)
 	-rm -f $(SRCS:.cc=.bak)
 	-rm -f $(SRCS:.cc=.i)
-	-rm -f $(SRCS:.cx=.d)
+	-rm -f $(SRCS:.cc=.d)
