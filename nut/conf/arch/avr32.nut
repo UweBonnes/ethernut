@@ -1081,13 +1081,13 @@ nutarch_avr32 =
         requires = { "HW_EFC_AVR32" },
         sources = { "avr32/dev/flashc.c" },
     },
-	{
+    {
         name = "nutarch_avr32_hd44780",
         brief = "HD44780 Driver",
         requires = { "HW_MCU_AVR32" },
         provides = { "DEV_FILE", "DEV_WRITE", "LCD_GPIO" },
         sources = { "avr32/dev/hd44780.c" },
-		options =
+        options =
         {
             --
             --  Support for timing related parameters
@@ -1103,7 +1103,7 @@ nutarch_avr32 =
             {
                 macro = "LCD_COLS",
                 brief = "Columns",
-                description = "The number of available display colums, either 8, 16, 20 or 40.",
+                description = "The number of available display columns, either 8, 16, 20 or 40.",
                 default = "20",
                 flavor = "integer",
                 file = "include/cfg/lcd.h"
@@ -1169,10 +1169,10 @@ nutarch_avr32 =
             {
                 macro = "LCD_EN_PIO_ID",
                 brief = "Enable Port",
-                description = "Choose port used for the enable line",
+                description = "Choose port used for the enable line.",
                 type = "enumerated",
                 choices = avr32_pio_id_choice,
-               file = "include/cfg/arch/avr32pio.h"
+                file = "include/cfg/arch/avr32pio.h"
             },
             {
                 macro = "LCD_EN_BIT",
@@ -1188,9 +1188,9 @@ nutarch_avr32 =
             },
             {
                 macro = "LCD_RS_PIO_ID",
-				brief = "RS Port",
-                description = "Choose port for the Register Select line",
-				type = "enumerated",
+                brief = "RS Port",
+                description = "Choose port for the Register Select line.",
+                type = "enumerated",
                 choices = avr32_pio_id_choice,
                 flavor = "integer",
                 file = "include/cfg/arch/avr32pio.h"
@@ -1198,16 +1198,16 @@ nutarch_avr32 =
             {
                 macro = "LCD_RS_BIT",
                 brief = "RS Bit",
-                description = "Choose bit for the Register Select line",
-				default = "3",
+                description = "Choose bit for the Register Select line.",
+                default = "3",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/avr32pio.h"
             },
-			{
+            {
                 macro = "LCD_RW_PIO_ID",
                 brief = "RW Port",
-                description = "Choose port for the Read Write line",
+                description = "Choose port for the Read Write line.",
                 type = "enumerated",
                 choices = avr32_pio_id_choice,
                 flavor = "integer",
@@ -1216,14 +1216,13 @@ nutarch_avr32 =
             {
                 macro = "LCD_RW_BIT",
                 brief = "RW Bit",
-                description = "Choose bit for the Read Write line",
-				default = "9", 
+                description = "Choose bit for the Read Write line.",
+                default = "9",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/avr32pio.h"
-            },
-            
-        },
-    },
+            }
+        }
+    }
 }
 
