@@ -1084,7 +1084,7 @@ nutarch_avr32 =
     {
         name = "nutarch_avr32_hd44780",
         brief = "HD44780 Driver",
-        requires = { "HW_MCU_AVR32" },
+        requires = { "HW_MCU_AVR32", "BUGFIX" },
         provides = { "DEV_FILE", "DEV_WRITE", "LCD_GPIO" },
         sources = { "avr32/dev/hd44780.c" },
         options =
