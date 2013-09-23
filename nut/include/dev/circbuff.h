@@ -35,8 +35,10 @@
  * For additional information see http://www.ethernut.de/
  */
 
+#include <toolchain.h>
 #include <sys/event.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 /*!
  * \defgroup xgCircBuff Circular Buffer
@@ -100,7 +102,7 @@ struct _CIRCBUFF {
  *
  * \return The number of bytes available.
  */
-static inline size_t CircBuffWriteSize(CIRCBUFF *cb)
+static NUT_INLINE_FUNC size_t CircBuffWriteSize(CIRCBUFF *cb)
 {
     size_t rc;
 
@@ -120,7 +122,7 @@ static inline size_t CircBuffWriteSize(CIRCBUFF *cb)
  *
  * \return The number of bytes available.
  */
-static inline size_t CircBuffReadSize(CIRCBUFF *cb)
+static NUT_INLINE_FUNC size_t CircBuffReadSize(CIRCBUFF *cb)
 {
     size_t rc;
 
