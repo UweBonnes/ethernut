@@ -53,7 +53,7 @@ SECTIONS
 
     .stack (NOLOAD):
     {
-        . = ALIGN(4);
+        . = ALIGN(8);
         _stack_start = .;
         *(.stack .stack.*)
         _stack_end = .;        
@@ -61,7 +61,7 @@ SECTIONS
     
     .heap (NOLOAD):
     {
-        . = ALIGN(4);
+        . = ALIGN(8);
         _sheap = .;
         . = _ramend - .;
         _eheap = .;

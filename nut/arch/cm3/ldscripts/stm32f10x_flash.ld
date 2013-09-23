@@ -63,7 +63,7 @@ SECTIONS
 
     .stack (NOLOAD):
     {
-        . = ALIGN(4);
+        . = ALIGN(8);
         _stack_start = .;
         KEEP(*(.stack .stack.*));
         _stack_end = .;
@@ -71,7 +71,7 @@ SECTIONS
 
     .psp_stack (NOLOAD):
     {
-        . = ALIGN(4);
+        . = ALIGN(8);
         _pspstack_start = .;
         KEEP(*(.psp_stack .psp_stack.*));
         _pspstack_end = .;
