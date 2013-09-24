@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2013 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,10 +31,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.1  2006/08/31 19:08:53  haraldkipp
- * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
- *
+ * $Id$
  */
 
 ENTRY(_start)
@@ -43,7 +40,7 @@ SEARCH_DIR(.)
 
 MEMORY
 {
-  ram(rw) : org = 0x70000000, len = 128M
+  ram(rw) : org = 0x00300000, len = 64k
 }
 
 SECTIONS
