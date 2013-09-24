@@ -188,16 +188,32 @@
 
 /* ====================================== Nut/OS ==================================== */
 /*!
- * \defgroup xgNutOS Nut/OS API
+ * \defgroup xgNutOS RTOS API
  *
- * \brief Operating System API.
+ * \brief Low level operating system interface.
  *
- * This API supports the following features:
- *    - Cooperative multithreading
- *    - Synchronization mechanisms
- *    - Dynamic memory management
- *    - Asynchronous timers
- *    - I/O Drivers
+ * Although not strictly required, most Nut/OS applications will make use
+ * of this API to
+ *    - register device drivers
+ *    - use timers
+ *    - start concurrent threads
+ *    - synchronize threads
+ *
+ * In addition, it provides the base for Posix-like
+ *    - device access via open or ioctl
+ *    - input and output functions like printf and friends
+ *    - heap memory management like malloc and free
+ *
+ * Note, that such higher level functions are typically provided by the C
+ * runtime library that comes with your toolchain, e.g avr-libc or newlib.
+ * Nut/OS implements only those functions, which are required to make the
+ * full runtime library work on Nut/OS.
+ *
+ * Last not least many helper functions and macros allow to write portable code
+ * for
+ *    - system initialization and configuration
+ *    - interrupt handling
+ *    - GPIO access
  */
 
 /*!
