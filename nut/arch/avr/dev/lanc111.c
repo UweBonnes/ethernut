@@ -740,7 +740,7 @@ static int NicPhyConfig(void)
  *
  * \return 0 on success or -1 on timeout.
  */
-static INLINE int NicMmuWait(uint16_t tmo)
+static NUT_INLINE_FUNC int NicMmuWait(uint16_t tmo)
 {
     while (tmo--) {
         if ((nic_inlb(NIC_MMUCR) & MMUCR_BUSY) == 0)
