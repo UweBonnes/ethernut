@@ -187,7 +187,7 @@ static void _putpad(int _putb(int fd, const void *, size_t), int fd, const char 
 #ifdef STDIO_64_BIT
 #define ULTYPE uint64_t
 #define LLTYPE long long
-uint64_t va_args_i64(int flags, va_list ap)
+uint64_t va_args_ulval(int flags, va_list ap)
 {
     uint64_t result;
     if (flags & LONGLONG)
@@ -203,12 +203,10 @@ uint64_t va_args_i64(int flags, va_list ap)
 #else
 #define ULTYPE uint32_t
 #define LLTYPE long
-uint32_t va_args_i64(int flags, va_list ap)
+uint32_t va_args_ulval(int flags, va_list ap)
 {
     uint32_t result;
-    if (flags & LONGLONG)
-        result = (uint32_t)va_arg(ap, uint64_t);
-    else if (flags & LONGINT)
+    if (flags & LONGINT)
         result = va_arg(ap, uint32_t);
     else if (flags & UNSIGNED)
         result = (uint32_t)va_arg(ap, unsigned int);
@@ -407,7 +405,16 @@ int _putf(int _putb(int, const void *, size_t),
         case 'd':
         case 'i':
             /* Thanks to Ralph Mason for fixing the u_int bug. */
-            ulval = va_args_i64(flags, ap);
+#ifndef STDIO_64_BIT
+            if (flags & LONGLONG) {
+                (void)va_arg(ap, uint64_t);
+                strcpy_P(buf, PSTR("NA"));
+                cp = buf;
+                size = strlen_P(PSTR("NA"));
+                break;
+            }
+#endif
+            ulval = va_args_ulval(flags, ap);
             if (ch != 'u' && (long long) ulval < 0) {
                 ulval = ( ULTYPE ) (-(( LLTYPE) ulval));
                 sign = '-';
@@ -428,7 +435,16 @@ int _putf(int _putb(int, const void *, size_t),
             break;
 
         case 'o':
-            ulval = va_args_i64(flags, ap);
+#ifndef STDIO_64_BIT
+            if (flags & LONGLONG) {
+                (void)va_arg(ap, uint64_t);
+                strcpy_P(buf, PSTR("NA"));
+                cp = buf;
+                size = strlen_P(PSTR("NA"));
+                break;
+            }
+#endif
+            ulval = va_args_ulval(flags, ap);
             sign = 0;
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
@@ -447,12 +463,21 @@ int _putf(int _putb(int, const void *, size_t),
         case 'p':
         case 'X':
         case 'x':
+#ifndef STDIO_64_BIT
+            if (flags & LONGLONG) {
+                (void)va_arg(ap, uint64_t);
+                strcpy_P(buf, PSTR("NA"));
+                cp = buf;
+                size = strlen_P(PSTR("NA"));
+                break;
+            }
+#endif
             if (ch == 'p') {
                 ulval = (uintptr_t) va_arg(ap, void *);
                 flags |= ALT;
                 ch = 'x';
             } else
-                ulval = va_args_i64(flags, ap);
+                ulval = va_args_ulval(flags, ap);
 
             sign = 0;
             if ((dprec = prec) >= 0)
@@ -567,7 +592,7 @@ int _putf(int _putb(int, const void *, size_t),
         case 'E':
         case 'f':
             (void) va_arg(ap, double);
-            strcpy(buf, "NA");
+            strcpy_P(buf, PSTR("NA"));
             cp = buf;
 #endif                          /* STDIO_FLOATING_POINT */
             size = strlen(buf);
