@@ -44,6 +44,9 @@
 #include <sys/timer.h>
 #include <sys/thread.h>
 #include <sys/event.h>
+#include <sys/version.h>
+#include <sys/heap.h>
+
 
 #include <math.h>
 
@@ -78,6 +81,9 @@ int main(void)
  * - va_list not cleared of full 64-bit argument
  * - on arm va_arg(ap, double) gets wrong data due to alignment issues
  */
+        printf("\n\nNut/OS %s\n", NutVersionString());
+        printf("%d bytes free, debug dev: %s\n", NutHeapAvailable(),
+               DEV_CONSOLE.dev_name);
         printf("\nExpext pll 0x0123456789abcdef, pba 0xaa, pb5 0x55\n");
         printf("pll %20llx pba 0x%02x pb5 0x%02x\n", pll, pba, pb5);
         printf("pba 0x%02x pll%20llx pb5 0x%02x\n", pba, pll, pb5);
