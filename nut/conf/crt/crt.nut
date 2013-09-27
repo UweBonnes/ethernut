@@ -170,6 +170,14 @@ nutcrt =
                 file = "include/cfg/crt.h"
             },
             {
+                macro = "STDIO_64_BIT",
+                brief = "Handling of 64-bit values",
+                description = "Enables handling of 64-bit values for standard input/output.",
+                flavor = "boolean",
+                provides = { "FLOATING_64_BIT" },
+                file = "include/cfg/crt.h"
+            },
+            {
                 macro = "FOPEN_MAX",
                 brief = "Max. Open Streams",
                 description = "Maximum number of concurrently opened streams.\n\n"..

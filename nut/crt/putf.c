@@ -184,6 +184,9 @@ static void _putpad(int _putb(int fd, const void *, size_t), int fd, const char 
 #define LONGLONG    0x20    /* long long integer*/
 #define UNSIGNED    0x40    /* unsigned integer*/
 
+#ifdef STDIO_64_BIT
+#define ULTYPE uint64_t
+#define LLTYPE long long
 uint64_t va_args_i64(int flags, va_list ap)
 {
     uint64_t result;
@@ -197,6 +200,23 @@ uint64_t va_args_i64(int flags, va_list ap)
         result = (uint64_t)va_arg(ap, int);
     return result;
 }
+#else
+#define ULTYPE uint32_t
+#define LLTYPE long
+uint32_t va_args_i64(int flags, va_list ap)
+{
+    uint32_t result;
+    if (flags & LONGLONG)
+        result = (uint32_t)va_arg(ap, uint64_t);
+    else if (flags & LONGINT)
+        result = va_arg(ap, uint32_t);
+    else if (flags & UNSIGNED)
+        result = (uint32_t)va_arg(ap, unsigned int);
+    else
+        result = (uint32_t)va_arg(ap, int);
+    return result;
+}
+#endif
 
 /*!
  * \brief Write formatted data using a given output function.
@@ -225,7 +245,7 @@ int _putf(int _putb(int, const void *, size_t),
     int dprec;                  /* a copy of prec if [diouxX], 0 otherwise */
     int realsz;                 /* field size expanded by dprec, sign, etc */
     uint8_t sign;               /* sign prefix (' ', '+', '-', or \0) */
-    uint64_t ulval;             /* long integer arguments %[diouxX] */
+    ULTYPE ulval;             /* long integer arguments %[diouxX] */
     int size;                   /* size of converted field or string */
 #ifdef __HARVARD_ARCH__
     char *xdigs;                /* for %P malloc'd string*/
@@ -389,7 +409,7 @@ int _putf(int _putb(int, const void *, size_t),
             /* Thanks to Ralph Mason for fixing the u_int bug. */
             ulval = va_args_i64(flags, ap);
             if (ch != 'u' && (long long) ulval < 0) {
-                ulval = (uint64_t) (-((long long) ulval));
+                ulval = ( ULTYPE ) (-(( LLTYPE) ulval));
                 sign = '-';
             }
             if ((dprec = prec) >= 0)
