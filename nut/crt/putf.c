@@ -114,8 +114,6 @@
 #ifdef STDIO_FLOATING_POINT
 
 #include <math.h>
-#define BUF 32
-#define DEFPREC 6
 
 #if defined(__arm__)
 /*
@@ -128,23 +126,17 @@
 extern char *_sbrk(size_t nbytes);
 char *(*sbrk_force)(size_t) = _sbrk;
 #endif
-
-#else
-
-#define BUF 32
-
 #endif                          /* STDIO_FLOATING_POINT */
 
-#define PADSIZE 32
+#define BUF 24
+#define DEFPREC 6
+#define PADSIZE 16
+
 static const char blanks[PADSIZE] PROGMEM = {
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '
 };
 static const char zeroes[PADSIZE] PROGMEM = {
-    '0', '0', '0', '0', '0', '0', '0', '0',
-    '0', '0', '0', '0', '0', '0', '0', '0',
     '0', '0', '0', '0', '0', '0', '0', '0',
     '0', '0', '0', '0', '0', '0', '0', '0'
 };
