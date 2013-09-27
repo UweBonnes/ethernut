@@ -57,7 +57,7 @@
  */
 static int Gpio_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t value)
 {
-    int res;
+    int res = 0;
     int16_t delay1;
     int16_t delay2;
     int16_t delay3 =
