@@ -179,31 +179,31 @@ static void _putpad(int _putb(int fd, const void *, size_t), int fd, const char 
 #ifdef STDIO_64_BIT
 #define ULTYPE uint64_t
 #define LLTYPE long long
-uint64_t va_args_ulval(int flags, va_list ap)
+uint64_t va_args_ulval(int flags, va_list *ap)
 {
     uint64_t result;
     if (flags & LONGLONG)
-        result = va_arg(ap, uint64_t);
+        result = va_arg(*ap, uint64_t);
     else if (flags & LONGINT)
-        result = (uint64_t)va_arg(ap, uint32_t);
+        result = (uint64_t)va_arg(*ap, uint32_t);
     else if (flags & UNSIGNED)
-        result = (uint64_t)va_arg(ap, unsigned int);
+        result = (uint64_t)va_arg(*ap, unsigned int);
     else
-        result = (uint64_t)va_arg(ap, int);
+        result = (uint64_t)va_arg(*ap, int);
     return result;
 }
 #else
 #define ULTYPE uint32_t
 #define LLTYPE long
-uint32_t va_args_ulval(int flags, va_list ap)
+uint32_t va_args_ulval(int flags, va_list *ap)
 {
     uint32_t result;
     if (flags & LONGINT)
-        result = va_arg(ap, uint32_t);
+        result = va_arg(*ap, uint32_t);
     else if (flags & UNSIGNED)
-        result = (uint32_t)va_arg(ap, unsigned int);
+        result = (uint32_t)va_arg(*ap, unsigned int);
     else
-        result = (uint32_t)va_arg(ap, int);
+        result = (uint32_t)va_arg(*ap, int);
     return result;
 }
 #endif
@@ -402,11 +402,11 @@ int _putf(int _putb(int, const void *, size_t),
                 (void)va_arg(ap, uint64_t);
                 strcpy_P(buf, PSTR("NA"));
                 cp = buf;
-                size = strlen_P(PSTR("NA"));
+                size = strlen("NA");
                 break;
             }
 #endif
-            ulval = va_args_ulval(flags, ap);
+            ulval = va_args_ulval(flags, &ap);
             if (ch != 'u' && (long long) ulval < 0) {
                 ulval = ( ULTYPE ) (-(( LLTYPE) ulval));
                 sign = '-';
@@ -432,11 +432,11 @@ int _putf(int _putb(int, const void *, size_t),
                 (void)va_arg(ap, uint64_t);
                 strcpy_P(buf, PSTR("NA"));
                 cp = buf;
-                size = strlen_P(PSTR("NA"));
+                size = strlen("NA");
                 break;
             }
 #endif
-            ulval = va_args_ulval(flags, ap);
+            ulval = va_args_ulval(flags, &ap);
             sign = 0;
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
@@ -460,7 +460,7 @@ int _putf(int _putb(int, const void *, size_t),
                 (void)va_arg(ap, uint64_t);
                 strcpy_P(buf, PSTR("NA"));
                 cp = buf;
-                size = strlen_P(PSTR("NA"));
+                size = strlen("NA");
                 break;
             }
 #endif
@@ -469,7 +469,7 @@ int _putf(int _putb(int, const void *, size_t),
                 flags |= ALT;
                 ch = 'x';
             } else
-                ulval = va_args_ulval(flags, ap);
+                ulval = va_args_ulval(flags, &ap);
 
             sign = 0;
             if ((dprec = prec) >= 0)
