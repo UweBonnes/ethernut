@@ -273,6 +273,10 @@
 #include <arch/avr32.h>
 #include <toolchain/generic.h>
 
+#elif defined(__CORTEX__)
+#include <arch/cm3.h>
+#include <toolchain/generic.h>
+
 #elif defined(__arm__)
 
 /* Note, that newlib is the default. */

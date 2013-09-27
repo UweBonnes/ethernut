@@ -125,6 +125,12 @@
 #ifndef sbi
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
+#ifndef prog_char
+typedef char PROGMEM prog_char;
+#endif
+#ifndef PGM_P
+#define  PGM_P      prog_char *
+#endif
 #ifndef PRG_RDB
 #define PRG_RDB(addr)       pgm_read_byte(addr)
 #endif

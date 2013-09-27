@@ -81,20 +81,6 @@
  * \brief Micro-ROM file system definitions.
  */
 
-/*
- * The crurom utility creates prog_char arrays. Thus, we need this type.
- */
-#ifdef __HARVARD_ARCH__
-#ifdef __FLASH
-typedef const char __flash prog_char;
-#else
-#include <avr/pgmspace.h> /* From AVR-LibC */
-typedef const char PROGMEM prog_char;
-#endif
-#else
-typedef const char prog_char;
-#endif
-
 /*!
  * \brief Mikro-ROM directory entry type.
  */

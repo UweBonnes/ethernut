@@ -47,4 +47,16 @@
 #error ARM architecture unknown or not specified
 #endif
 
+#define PSTR(p)    (p)
+#define PRG_RDB(p) (*((const char *)(p)))
+
+#define prog_char  const char
+#define PGM_P      prog_char *
+
+#define strlen_P(x)             strlen((char *)(x))
+#define strcpy_P(x,y)           strcpy(x,(char *)(y))
+
+#define strcmp_P(x, y)          strcmp((char *)(x), (char *)(y))
+#define memcpy_P(x, y, z)       memcpy(x, y, z)
+
 #endif
