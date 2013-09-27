@@ -83,7 +83,11 @@ int vfprintf_P(FILE * stream, PGM_P fmt, va_list ap)
     if ((rp = NutHeapAlloc(rl)) == 0)
         return -1;
     memcpy_P(rp, fmt, rl);
-    rc = _putf(_write, stream->iob_fd, rp, ap);
+    rc = _putf(_write,
+#ifdef __HARVARD_ARCH__
+               _write_P,
+#endif
+               stream->iob_fd, rp, ap);
     NutHeapFree(rp);
 
     return rc;

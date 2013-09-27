@@ -44,6 +44,7 @@
  *
  */
 
+#include <cfg/crt.h>
 #include "nut_io.h"
 
 #include <sys/nutdebug.h>
@@ -68,7 +69,11 @@
 int vfprintf(FILE * stream, const char *fmt, va_list ap)
 {
     NUTASSERT(stream != NULL);
-    return _putf(_write, stream->iob_fd, fmt, ap);
+    return _putf(_write,
+#ifdef __HARVARD_ARCH__
+                 _write_P,
+#endif
+                 stream->iob_fd, fmt, ap);
 }
 
 /*@}*/

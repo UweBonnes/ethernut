@@ -68,6 +68,18 @@ static int _sputb(int fd, const void *buffer, size_t count)
     return count;
 }
 
+#ifdef __HARVARD_ARCH__
+int _sputb_P(int fd, PGM_P buffer_P, size_t count)
+{
+    char **spp = (char **) ((uintptr_t) fd);
+
+    memcpy_P(*spp, buffer_P, count);
+    *spp += count;
+
+    return count;
+}
+#endif
+
 /*!
  * \brief Write argument list to a string using a given format.
  *
@@ -92,7 +104,11 @@ int vsprintf_P(char *buffer, PGM_P fmt, va_list ap)
     if ((rp = NutHeapAlloc(rl)) == 0)
         return -1;
     memcpy_P(rp, fmt, rl);
-    rc = _putf(_sputb, (int) ((uintptr_t) &buffer), rp, ap);
+    rc = _putf(_sputb,
+#ifdef __HARVARD_ARCH__
+               _sputb_P,
+#endif
+               (int) ((uintptr_t) &buffer), rp, ap);
     NutHeapFree(rp);
     *buffer = 0;
 

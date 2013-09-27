@@ -84,7 +84,11 @@ int vsprintf(char *buffer, const char *fmt, va_list ap)
 {
     int rc;
 
-    rc = _putf(_sputb, (int) ((uintptr_t) &buffer), fmt, ap);
+    rc = _putf(_sputb,
+#ifdef __HARVARD_ARCH__
+               _sputb_P,
+#endif
+               (int) ((uintptr_t) &buffer), fmt, ap);
     *buffer = 0;
 
     return rc;

@@ -136,18 +136,13 @@ char *(*sbrk_force)(size_t) = _sbrk;
 #endif                          /* STDIO_FLOATING_POINT */
 
 #define PADSIZE 32
-#if !defined(__AVR__)
-#define NUTCONST const
-#else
-#define NUTCONST
-#endif
-static NUTCONST char blanks[PADSIZE] = {
+static const char blanks[PADSIZE] PROGMEM = {
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '
 };
-static NUTCONST char zeroes[PADSIZE] = {
+static const char zeroes[PADSIZE] PROGMEM = {
     '0', '0', '0', '0', '0', '0', '0', '0',
     '0', '0', '0', '0', '0', '0', '0', '0',
     '0', '0', '0', '0', '0', '0', '0', '0',
@@ -165,7 +160,11 @@ static const char HEXDIGIT[32] PROGMEM = {
 /*
  *
  */
-static void _putpad(int _putb(int fd, const void *, size_t), int fd, NUTCONST char *padch, int count)
+#ifdef __HARVARD_ARCH__
+static void _putpad(int _putb(int fd, PGM_P, size_t), int fd, PGM_P padch, int count)
+#else
+static void _putpad(int _putb(int fd, const void *, size_t), int fd, const char *padch, int count)
+#endif
 {
     while (count > PADSIZE) {
         _putb(fd, padch, PADSIZE);
@@ -210,7 +209,11 @@ uint64_t va_args_i64(int flags, va_list ap)
  *
  *
  */
-int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list ap)
+int _putf(int _putb(int, const void *, size_t),
+#ifdef __HARVARD_ARCH__
+          int _putb_P (int, PGM_P, size_t),
+#endif
+          int fd, const char *fmt, va_list ap)
 {
     uint8_t ch;                 /* character from fmt */
     int n;                      /* handy integer (short term usage) */
@@ -566,6 +569,27 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         if (sign)
             realsz++;
 
+#ifdef __HARVARD_ARCH__
+        if ((flags & (LADJUST | ZEROPAD)) == 0)
+            _putpad(_putb_P, fd, blanks, width - realsz);
+
+        if (sign)
+            _putb(fd, &sign, 1);
+
+        if ((flags & (LADJUST | ZEROPAD)) == ZEROPAD)
+            _putpad(_putb_P, fd, zeroes, width - realsz);
+
+        _putpad(_putb_P, fd, zeroes, dprec - size);
+
+        if (size)       /* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
+            _putb(fd, cp, size);
+
+        if (ch == 'P')
+            free(cp);
+
+        if (flags & LADJUST)
+            _putpad(_putb_P, fd, blanks, width - realsz);
+#else
         if ((flags & (LADJUST | ZEROPAD)) == 0)
             _putpad(_putb, fd, blanks, width - realsz);
 
@@ -580,13 +604,9 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
         if (size)       /* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
             _putb(fd, cp, size);
 
-#ifdef __HARVARD_ARCH__
-        if (ch == 'P')
-            free(cp);
-#endif
-
         if (flags & LADJUST)
             _putpad(_putb, fd, blanks, width - realsz);
+#endif
 
         if (width >= realsz)
             rc += width;

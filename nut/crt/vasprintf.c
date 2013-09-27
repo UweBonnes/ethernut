@@ -51,7 +51,12 @@ static int _nputb(int fd, const void *buffer, size_t count)
 {
     return count;
 }
-
+#ifdef __HARVARD_ARCH__
+static int _nputb_P(int fd, PGM_P buffer_P, size_t count)
+{
+    return count;
+}
+#endif
 /*!
  * \brief Write argument list to a string using a given format.
  *
@@ -76,7 +81,11 @@ int vasprintf(char **strp, const char *fmt, va_list ap)
     NUTASSERT(fmt != NULL);
 
     /* Determine the length of the output string. */
-    rc = _putf(_nputb, 0, fmt, ap);
+    rc = _putf(_nputb,
+#ifdef __HARVARD_ARCH__
+               _nputb_P,
+#endif
+               0, fmt, ap);
     if (rc >= 0) {
         *strp = (char *) malloc(rc + 1);
         if (*strp) {
