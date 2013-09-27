@@ -154,6 +154,14 @@ static NUTCONST char zeroes[PADSIZE] = {
     '0', '0', '0', '0', '0', '0', '0', '0'
 };
 
+static const char HEXDIGIT[32] PROGMEM = {
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+};
+
+
 /*
  *
  */
@@ -216,7 +224,10 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
     uint8_t sign;               /* sign prefix (' ', '+', '-', or \0) */
     uint64_t ulval;             /* long integer arguments %[diouxX] */
     int size;                   /* size of converted field or string */
-    char *xdigs;                /* digits for [xX] conversion */
+#ifdef __HARVARD_ARCH__
+    char *xdigs;                /* for %P malloc'd string*/
+#endif
+    PGM_P hexdigs;              /* digits for [xX] conversion */
     char buf[BUF];              /* space for %c, %[diouxX], %[eEfgG] */
 
 #ifdef STDIO_FLOATING_POINT
@@ -424,14 +435,13 @@ int _putf(int _putb(int, const void *, size_t), int fd, const char *fmt, va_list
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
 
-            if (ch == 'X')
-                xdigs = "0123456789ABCDEF";
-            else
-                xdigs = "0123456789abcdef";
+            hexdigs = HEXDIGIT;
+            if (ch == 'x')
+                hexdigs += 16;
 
             cp = buf + BUF;
             do {
-                *--cp = xdigs[ulval & 0x0f];
+                *--cp = PRG_RDB(hexdigs + (ulval & 0x0f));
                 ulval >>= 4;
             } while (ulval);
             if (flags & ALT) {
