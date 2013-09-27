@@ -589,9 +589,8 @@ static int Lpc17xxEmacGetPacket(NUTDEVICE *dev, NETBUF ** nbp)
                         rxlen -= len;
                         bp += len;
                     }
+					rc = 0;
                 }
-
-                rc = 0;
             }
         } else {
             /* Silently discard the frame from EMAC buffer, update the Rx consume index */
