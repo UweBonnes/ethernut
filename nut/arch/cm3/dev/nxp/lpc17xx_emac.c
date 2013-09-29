@@ -86,8 +86,7 @@
 #define NUT_THREAD_NICLINKSTACK 512
 
 #ifndef NUT_THREAD_NICRXSTACK
-/* arm-elf-gcc used 168 bytes with optimized, 412 bytes with debug code. */
-#define NUT_THREAD_NICRXSTACK   512
+#define NUT_THREAD_NICRXSTACK   768
 #endif
 
 #ifndef EMAC_LINK_LOOPS
