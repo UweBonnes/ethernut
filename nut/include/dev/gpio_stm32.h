@@ -211,6 +211,20 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioPortSetHigh(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BSRR) = mask)
 #define GpioPortSetLow(bank, mask)   (CM3REG((bank), GPIO_TypeDef, BRR ) = mask)
 
+#if defined(MCU_STM32L1)
+#define GpioClkEnable(bank) do {                                        \
+        CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,(bank-GPIOA_BASE)>>10) = 1; \
+    } while(0)
+
+#elif defined(MCU_STM32F30)
+#define GpioClkEnable(bank) do {                \
+        CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,                 \
+                 (((bank-GPIOA_BASE)>>10) +17)) = 1;} while(0)
+#else
+#define GpioClkEnable(bank) do {                                        \
+        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR,(bank-GPIOA_BASE)>>10) = 1; } \
+    while(0);
+#endif
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, uint8_t bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, uint8_t bit);
 extern int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit);
