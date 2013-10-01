@@ -224,6 +224,8 @@ static int DecodeFrame(uint8_t *buf, int len)
                         return -1;
                     }
                 }
+#else
+                (void)hres;
 #endif
                 first_frame = 0;
             }
