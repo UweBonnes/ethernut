@@ -100,7 +100,7 @@
  */
 
 #include <cfg/crt.h>
-
+#include <toolchain.h>
 #include <string.h>
 #include "nut_io.h"
 #include <stdlib.h>
