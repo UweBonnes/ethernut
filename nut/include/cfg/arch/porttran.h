@@ -113,6 +113,33 @@
  *       strategy. Even if the compiler supports the inline keyword,
  *       it may decide to generate a callable function.
  */
+#if defined(MCU_STM32)
+#define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
+#define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
+#define GPIO_IS_HI(b)  GpioPinGet(GPIO_ID, b)
+#define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
+#define GPIO_ENABLE(b) GpioClkEnable(GPIO_ID)
+#define GPIO_OUTPUT(b) GpioPinDrive(GPIO_ID, b)
+#define GPIO_INPUT(b)  GpioPinRelease(GPIO_ID, b)
+#if defined(MCU_STM32F1)
+#define  GPIO_PULLUP_ON(b) 
+#define  GPIO_PULLUP_OFF(b) 
+#else
+#define  GPIO_PULLUP_ON(b) do { \
+    uint32_t pudr = GPIO_ID->PUPDR;             \
+    pudr &=   ~(3<<(b<<1));                      \
+    pudr |=   1<<(b<<1);                        \
+    GPIO_ID->PUPDR = pudr; } while(0)
+#define  GPIO_PULLUP_OFF(b) do { \
+    uint32_t pudr = GPIO_ID->PUPDR;             \
+    pudr &=   3<<(b<<1);                        \
+    GPIO_ID->PUPDR = pudr; } while(0)
+#endif
+#define  GPIO_FILTER_ON(b)
+#define  GPIO_FILTER_OFF(b)
+#define GPIO_OPENDRAIN(b) GpioPinRelease(GPIO_ID, b)
+#define GPIO_PUSHPULL(b)  GpioPinDrive(GPIO_ID, b)
+#else
 
 /*
  * Remove any previously defined register names.
@@ -513,6 +540,8 @@
 #define GPIO_PUSHPULL(b)  cbi(GPIO_MDE_REG, b)
 #else
 #define GPIO_PUSHPULL(b)
+#endif
+
 #endif
 
 /*@}*/
