@@ -86,30 +86,32 @@ int main(void)
     res = NutNvMemSave(0x0, "Save0", 6);
     if(res)
         printf("NutNvMemSave failed: %d\n", res);
-    NutNvMemLoad(0x0, buffer, 6);
-    if (memcmp(buffer, "Save0", 5))
-        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save0");
+    else {
+        NutNvMemLoad(0x0, buffer, 6);
+        if (memcmp(buffer, "Save0", 5))
+            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save0");
 
-    res = NutNvMemSave(0x0, "Save1", 6);
-    if(res)
-        printf("NutNvMemSave failed: %d\n", res);
-    NutNvMemLoad(0x0, buffer, 6);
-    if (memcmp(buffer, "Save1", 5))
-        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save1");
+        res = NutNvMemSave(0x0, "Save1", 6);
+        if(res)
+            printf("NutNvMemSave failed: %d\n", res);
+        NutNvMemLoad(0x0, buffer, 6);
+        if (memcmp(buffer, "Save1", 5))
+            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save1");
 
-    res = NutNvMemSave(0x0, "Save2", 6);
-    if(res)
-        printf("NutNvMemSave failed: %d\n", res);
-    NutNvMemLoad(0x0, buffer, 6);
-    if (memcmp(buffer, "Save2", 5))
-        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save2");
+        res = NutNvMemSave(0x0, "Save2", 6);
+        if(res)
+            printf("NutNvMemSave failed: %d\n", res);
+        NutNvMemLoad(0x0, buffer, 6);
+        if (memcmp(buffer, "Save2", 5))
+            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save2");
 
-    res = NutNvMemSave(0x0, "u", 1);
-    if(res)
-        printf("NutNvMemSave failed: %d\n", res);
-    NutNvMemLoad(0x0, buffer, 6);
-    if (memcmp(buffer, "uave2", 5))
-        printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uave2");
+        res = NutNvMemSave(0x0, "u", 1);
+        if(res)
+            printf("NutNvMemSave failed: %d\n", res);
+        NutNvMemLoad(0x0, buffer, 6);
+        if (memcmp(buffer, "uave2", 5))
+            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uave2");
+    }
 
     printf("Application Flash ends at 0x%08lx\n", iap_flash_end);
     if (*(uint32_t*)(iap_flash_end -0xff) != 0xffffffff)
