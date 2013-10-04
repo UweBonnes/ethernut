@@ -431,7 +431,7 @@ FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
         return FLASH_COMPLETE;
 
     /* Check top boundary */
-    if ((((uint32_t)dst+len) > iap_flash_end ) || ((uint32_t)dst < FLASH_BASE))
+    if ((((uint32_t)dst + len - 1) > iap_flash_end ) || ((uint32_t)dst < FLASH_BASE))
     {
         return FLASH_BOUNDARY;
     }
