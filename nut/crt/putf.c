@@ -407,7 +407,7 @@ int _putf(int _putb(int, const void *, size_t),
             }
 #endif
             ulval = va_args_ulval(flags, &ap);
-            if (ch != 'u' && (long long) ulval < 0) {
+            if (ch != 'u' && ( LLTYPE ) ulval < 0) {
                 ulval = ( ULTYPE ) (-(( LLTYPE) ulval));
                 sign = '-';
             }
