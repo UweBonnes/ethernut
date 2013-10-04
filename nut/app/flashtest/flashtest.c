@@ -123,28 +123,28 @@ int main(void)
     res = IapFlashWrite((void*)(iap_flash_end ), &pattern4,
                         1, FLASH_ERASE_FIRST_TOUCH);
     printf("%40s %3d: ", "0x55 at (address & 3 == 3). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 3);
+    rd = *(uint32_t*)(iap_flash_end & ~3);
     printf("0x%08lx\n", rd);
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end - 5), &pattern4,
                         1, FLASH_ERASE_FIRST_TOUCH);
     printf("%40s %3d: ", "0x55 at (address & 3 == 2). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 7);
+    rd = *(uint32_t*)(iap_flash_end &  ~7);
     printf("0x%08lx\n", rd);
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end - 10), &pattern4,
                         1, FLASH_ERASE_NEVER);
     printf("%40s %3d: ", "0x55 at (address & 3 == 1). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 11);
+    rd = *(uint32_t*)((iap_flash_end - 8) & ~3);
     printf("0x%08lx\n", rd);
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end - 15), &pattern4,
                         1, FLASH_ERASE_NEVER);
     printf("%40s %3d: ", "0x55 at (address & 3 == 0). Res", res);
-    rd = *(uint32_t*)(iap_flash_end - 15);
+    rd = *(uint32_t*)(iap_flash_end &  ~15);
     printf("0x%08lx\n", rd);
     NutSleep(10);
 
