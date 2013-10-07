@@ -82,35 +82,65 @@
   DMA Connection number definitions
  *----------------------------------------------------------------------------*/
 
-#define GPDMA_CONN_MCI                   1  /* SD card */
-#define GPDMA_CONN_SSP0_Tx               2  /* SSP0 Tx */
-#define GPDMA_CONN_SSP0_Rx               3  /* SSP0 Rx */
-#define GPDMA_CONN_SSP1_Tx               4  /* SSP1 Tx */
-#define GPDMA_CONN_SSP1_Rx               5  /* SSP1 Rx */
-#define GPDMA_CONN_SSP2_Tx               6  /* SSP2 Tx */
-#define GPDMA_CONN_SSP2_Rx               7  /* SSP2 Rx */
-#define GPDMA_CONN_ADC                   8  /* ADC */
-#define GPDMA_CONN_DAC                   9  /* DAC */
-#define GPDMA_CONN_UART0_Tx             10  /* UART0 Tx */
-#define GPDMA_CONN_UART0_Rx             11  /* UART0 Rx */
-#define GPDMA_CONN_UART1_Tx             12  /* UART1 Tx */
-#define GPDMA_CONN_UART1_Rx             13  /* UART1 Rx */
-#define GPDMA_CONN_UART2_Tx             14  /* UART2 Tx */
-#define GPDMA_CONN_UART2_Rx             15  /* UART2 Rx */
-#define GPDMA_CONN_MAT0_0               16  /* MAT0.0 */
-#define GPDMA_CONN_MAT0_1               17  /* MAT0.1 */
-#define GPDMA_CONN_MAT1_0               18  /* MAT1.0 */
-#define GPDMA_CONN_MAT1_1               19  /* MAT1.1 */
-#define GPDMA_CONN_MAT2_0               20  /* MAT2.0 */
-#define GPDMA_CONN_MAT2_1               21  /* MAT2.1 */
-#define GPDMA_CONN_I2S_Channel_0        22  /* I2S channel 0 */
-#define GPDMA_CONN_I2S_Channel_1        23  /* I2S channel 1 */
-#define GPDMA_CONN_UART3_Tx             26  /* UART3 Tx */
-#define GPDMA_CONN_UART3_Rx             27  /* UART3 Rx */
-#define GPDMA_CONN_UART4_Tx             28  /* UART3 Tx */
-#define GPDMA_CONN_UART4_Rx             29  /* UART3 Rx */
-#define GPDMA_CONN_MAT3_0               30  /* MAT3.0 */
-#define GPDMA_CONN_MAT3_1               31  /* MAT3.1 */
+#if defined(MCU_LPC176x)
+#  define GPDMA_CONN_SSP0_Tx               0  /* SSP0 Tx */
+#  define GPDMA_CONN_SSP0_Rx               1  /* SSP0 Rx */
+#  define GPDMA_CONN_SSP1_Tx               2  /* SSP1 Tx */
+#  define GPDMA_CONN_SSP1_Rx               3  /* SSP1 Rx */
+#  define GPDMA_CONN_ADC                   4  /* ADC */
+#  define GPDMA_CONN_I2S_Channel_0         5  /* I2S channel 0 */
+#  define GPDMA_CONN_I2S_Channel_1         6  /* I2S channel 1 */
+#  define GPDMA_CONN_DAC                   7  /* DAC */
+#  define GPDMA_CONN_UART0_Tx              8  /* UART0 Tx */
+#  define GPDMA_CONN_UART0_Rx              9  /* UART0 Rx */
+#  define GPDMA_CONN_UART1_Tx             10  /* UART1 Tx */
+#  define GPDMA_CONN_UART1_Rx             11  /* UART1 Rx */
+#  define GPDMA_CONN_UART2_Tx             12  /* UART2 Tx */
+#  define GPDMA_CONN_UART2_Rx             13  /* UART2 Rx */
+#  define GPDMA_CONN_UART3_Tx             14  /* UART3 Tx */
+#  define GPDMA_CONN_UART3_Rx             15  /* UART3 Rx */
+#  define GPDMA_CONN_MAT0_0               16  /* MAT0.0 */
+#  define GPDMA_CONN_MAT0_1               17  /* MAT0.1 */
+#  define GPDMA_CONN_MAT1_0               18  /* MAT1.0 */
+#  define GPDMA_CONN_MAT1_1               19  /* MAT1.1 */
+#  define GPDMA_CONN_MAT2_0               20  /* MAT2.0 */
+#  define GPDMA_CONN_MAT2_1               21  /* MAT2.1 */
+#  define GPDMA_CONN_MAT3_0               22  /* MAT3.0 */
+#  define GPDMA_CONN_MAT3_1               23  /* MAT3.1 */
+#elif defined(MCU_LPC177x_8x)
+                                       /*  0  reserved */
+#  define GPDMA_CONN_MCI                   1  /* SD card */
+#  define GPDMA_CONN_SSP0_Tx               2  /* SSP0 Tx */
+#  define GPDMA_CONN_SSP0_Rx               3  /* SSP0 Rx */
+#  define GPDMA_CONN_SSP1_Tx               4  /* SSP1 Tx */
+#  define GPDMA_CONN_SSP1_Rx               5  /* SSP1 Rx */
+#  define GPDMA_CONN_SSP2_Tx               6  /* SSP2 Tx */
+#  define GPDMA_CONN_SSP2_Rx               7  /* SSP2 Rx */
+#  define GPDMA_CONN_ADC                   8  /* ADC */
+#  define GPDMA_CONN_DAC                   9  /* DAC */
+#  define GPDMA_CONN_UART0_Tx             10  /* UART0 Tx */
+#  define GPDMA_CONN_UART0_Rx             11  /* UART0 Rx */
+#  define GPDMA_CONN_UART1_Tx             12  /* UART1 Tx */
+#  define GPDMA_CONN_UART1_Rx             13  /* UART1 Rx */
+#  define GPDMA_CONN_UART2_Tx             14  /* UART2 Tx */
+#  define GPDMA_CONN_UART2_Rx             15  /* UART2 Rx */
+#  define GPDMA_CONN_MAT0_0               16  /* MAT0.0 */
+#  define GPDMA_CONN_MAT0_1               17  /* MAT0.1 */
+#  define GPDMA_CONN_MAT1_0               18  /* MAT1.0 */
+#  define GPDMA_CONN_MAT1_1               19  /* MAT1.1 */
+#  define GPDMA_CONN_MAT2_0               20  /* MAT2.0 */
+#  define GPDMA_CONN_MAT2_1               21  /* MAT2.1 */
+#  define GPDMA_CONN_I2S_Channel_0        22  /* I2S channel 0 */
+#  define GPDMA_CONN_I2S_Channel_1        23  /* I2S channel 1 */
+                                       /* 24  reserved */
+                                       /* 25  reserved */
+#  define GPDMA_CONN_UART3_Tx             26  /* UART3 Tx */
+#  define GPDMA_CONN_UART3_Rx             27  /* UART3 Rx */
+#  define GPDMA_CONN_UART4_Tx             28  /* UART3 Tx */
+#  define GPDMA_CONN_UART4_Rx             29  /* UART3 Rx */
+#  define GPDMA_CONN_MAT3_0               30  /* MAT3.0 */
+#  define GPDMA_CONN_MAT3_1               31  /* MAT3.1 */
+#endif
 
 
 /*----------------------------------------------------------------------------*

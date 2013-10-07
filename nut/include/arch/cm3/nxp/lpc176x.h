@@ -474,20 +474,20 @@ typedef struct
 /*------------- Inter IC Sound (I2S) -----------------------------------------*/
 typedef struct
 {
-  __IO uint32_t I2SDAO;
-  __IO uint32_t I2SDAI;
-  __O  uint32_t I2STXFIFO;
-  __I  uint32_t I2SRXFIFO;
-  __I  uint32_t I2SSTATE;
-  __IO uint32_t I2SDMA1;
-  __IO uint32_t I2SDMA2;
-  __IO uint32_t I2SIRQ;
-  __IO uint32_t I2STXRATE;
-  __IO uint32_t I2SRXRATE;
-  __IO uint32_t I2STXBITRATE;
-  __IO uint32_t I2SRXBITRATE;
-  __IO uint32_t I2STXMODE;
-  __IO uint32_t I2SRXMODE;
+  __IO uint32_t DAO;
+  __IO uint32_t DAI;
+  __O  uint32_t TXFIFO;
+  __I  uint32_t RXFIFO;
+  __I  uint32_t STATE;
+  __IO uint32_t DMA1;
+  __IO uint32_t DMA2;
+  __IO uint32_t IRQ;
+  __IO uint32_t TXRATE;
+  __IO uint32_t RXRATE;
+  __IO uint32_t TXBITRATE;
+  __IO uint32_t RXBITRATE;
+  __IO uint32_t TXMODE;
+  __IO uint32_t RXMODE;
 } LPC_I2S_TypeDef;
 
 /*------------- Repetitive Interrupt Timer (RIT) -----------------------------*/
@@ -574,7 +574,7 @@ typedef struct
 typedef struct
 {
   __IO uint32_t ADCR;
-  __IO uint32_t ADGDR;
+  __IO uint32_t GDR;
        uint32_t RESERVED0;
   __IO uint32_t ADINTEN;
   __I  uint32_t ADDR0;
@@ -592,9 +592,9 @@ typedef struct
 /*------------- Digital-to-Analog Converter (DAC) ----------------------------*/
 typedef struct
 {
-  __IO uint32_t DACR;
-  __IO uint32_t DACCTRL;
-  __IO uint16_t DACCNTVAL;
+  __IO uint32_t CR;
+  __IO uint32_t CTRL;
+  __IO uint16_t CNTVAL;
 } LPC_DAC_TypeDef;
 
 /*------------- Motor Control Pulse-Width Modulation (MCPWM) -----------------*/
@@ -719,29 +719,29 @@ typedef struct                          /* Controller Registers               */
 /*------------- General Purpose Direct Memory Access (GPDMA) -----------------*/
 typedef struct                          /* Common Registers                   */
 {
-  __I  uint32_t DMACIntStat;
-  __I  uint32_t DMACIntTCStat;
-  __O  uint32_t DMACIntTCClear;
-  __I  uint32_t DMACIntErrStat;
-  __O  uint32_t DMACIntErrClr;
-  __I  uint32_t DMACRawIntTCStat;
-  __I  uint32_t DMACRawIntErrStat;
-  __I  uint32_t DMACEnbldChns;
-  __IO uint32_t DMACSoftBReq;
-  __IO uint32_t DMACSoftSReq;
-  __IO uint32_t DMACSoftLBReq;
-  __IO uint32_t DMACSoftLSReq;
-  __IO uint32_t DMACConfig;
-  __IO uint32_t DMACSync;
+  __I  uint32_t IntStat;
+  __I  uint32_t IntTCStat;
+  __O  uint32_t IntTCClear;
+  __I  uint32_t IntErrStat;
+  __O  uint32_t IntErrClr;
+  __I  uint32_t RawIntTCStat;
+  __I  uint32_t RawIntErrStat;
+  __I  uint32_t EnbldChns;
+  __IO uint32_t SoftBReq;
+  __IO uint32_t SoftSReq;
+  __IO uint32_t SoftLBReq;
+  __IO uint32_t SoftLSReq;
+  __IO uint32_t Config;
+  __IO uint32_t Sync;
 } LPC_GPDMA_TypeDef;
 
 typedef struct                          /* Channel Registers                  */
 {
-  __IO uint32_t DMACCSrcAddr;
-  __IO uint32_t DMACCDestAddr;
-  __IO uint32_t DMACCLLI;
-  __IO uint32_t DMACCControl;
-  __IO uint32_t DMACCConfig;
+  __IO uint32_t CSrcAddr;
+  __IO uint32_t CDestAddr;
+  __IO uint32_t CLLI;
+  __IO uint32_t CControl;
+  __IO uint32_t CConfig;
 } LPC_GPDMACH_TypeDef;
 
 /*------------- Universal Serial Bus (USB) -----------------------------------*/

@@ -72,8 +72,6 @@
 #if defined(MCU_LPC176x)
 #include <arch/cm3/nxp/lpc176x.h>
 #include <arch/cm3/nxp/lpc176x_clk.h>
-#warning Check lookup tables and registers for this CPU
-         Compare the code carefully, as there are lots of constants used
 #elif defined(MCU_LPC177x_8x)
 #include <arch/cm3/nxp/lpc177x_8x.h>
 #include <arch/cm3/nxp/lpc177x_8x_clk.h>
@@ -91,38 +89,38 @@ static int initialised = 0;
  */
 
 volatile const void *GPDMA_LUTPerAddr[] = {
-        0,                              // Reserved
-        (&LPC_MCI->FIFO),               // SD Card
-        (&LPC_SSP0->DR),                // SSP0 Tx
-        (&LPC_SSP0->DR),                // SSP0 Rx
-        (&LPC_SSP1->DR),                // SSP1 Tx
-        (&LPC_SSP1->DR),                // SSP1 Rx
-        (&LPC_SSP2->DR),                // SSP2 Tx
-        (&LPC_SSP2->DR),                // SSP2 Rx
-        (&LPC_ADC->GDR),                // ADC
-        (&LPC_DAC->CR),                 // DAC
-        (&LPC_UART0->THR),              // UART0 Tx
-        (&LPC_UART0->RBR),              // UART0 Rx
-        (&LPC_UART1->THR),              // UART1 Tx
-        (&LPC_UART1->RBR),              // UART1 Rx
-        (&LPC_UART2->THR),              // UART2 Tx
-        (&LPC_UART2->RBR),              // UART2 Rx
-        (&LPC_TIM0->MR0),               // MAT0.0
-        (&LPC_TIM0->MR1),               // MAT0.1
-        (&LPC_TIM1->MR0),               // MAT1.0
-        (&LPC_TIM1->MR1),               // MAT1.1
-        (&LPC_TIM2->MR0),               // MAT2.0
-        (&LPC_TIM2->MR1),               // MAT2.1
-        (&LPC_I2S->TXFIFO),             // I2S Tx
-        (&LPC_I2S->RXFIFO),             // I2S Rx
-        0,                              // Reserved
-        0,                              // Reserved
-        (&LPC_UART3->THR),              // UART3 Tx
-        (&LPC_UART3->RBR),              // UART3 Rx
-        (&LPC_UART4->THR),              // UART4 Tx
-        (&LPC_UART4->RBR),              // UART4 Rx
-        (&LPC_TIM3->MR0),               // MAT3.0
-        (&LPC_TIM3->MR1),               // MAT3.1
+        [GPDMA_CONN_SSP0_Tx]       = (&LPC_SSP0->DR),      // SSP0 Tx
+        [GPDMA_CONN_SSP0_Rx]       = (&LPC_SSP0->DR),      // SSP0 Rx
+        [GPDMA_CONN_SSP1_Tx]       = (&LPC_SSP1->DR),      // SSP1 Tx
+        [GPDMA_CONN_SSP1_Rx]       = (&LPC_SSP1->DR),      // SSP1 Rx
+        [GPDMA_CONN_UART0_Tx]      = (&LPC_UART0->THR),    // UART0 Tx
+        [GPDMA_CONN_UART0_Rx]      = (&LPC_UART0->RBR),    // UART0 Rx
+        [GPDMA_CONN_UART1_Tx]      = (&LPC_UART1->THR),    // UART1 Tx
+        [GPDMA_CONN_UART1_Rx]      = (&LPC_UART1->RBR),    // UART1 Rx
+        [GPDMA_CONN_UART2_Tx]      = (&LPC_UART2->THR),    // UART2 Tx
+        [GPDMA_CONN_UART2_Rx]      = (&LPC_UART2->RBR),    // UART2 Rx
+        [GPDMA_CONN_UART3_Tx]      = (&LPC_UART3->THR),    // UART3 Tx
+        [GPDMA_CONN_UART3_Rx]      = (&LPC_UART3->RBR),    // UART3 Rx
+        [GPDMA_CONN_ADC]           = (&LPC_ADC->GDR),      // ADC
+        [GPDMA_CONN_DAC]           = (&LPC_DAC->CR),       // DAC
+        [GPDMA_CONN_I2S_Channel_0] = (&LPC_I2S->TXFIFO),   // I2S Channel 0
+        [GPDMA_CONN_I2S_Channel_1] = (&LPC_I2S->RXFIFO),   // I2S Channel 1
+        [GPDMA_CONN_MAT0_0]        = (&LPC_TIM0->MR0),     // MAT0.0
+        [GPDMA_CONN_MAT0_1]        = (&LPC_TIM0->MR1),     // MAT0.1
+        [GPDMA_CONN_MAT1_0]        = (&LPC_TIM1->MR0),     // MAT1.0
+        [GPDMA_CONN_MAT1_1]        = (&LPC_TIM1->MR1),     // MAT1.1
+        [GPDMA_CONN_MAT2_0]        = (&LPC_TIM2->MR0),     // MAT2.0
+        [GPDMA_CONN_MAT2_1]        = (&LPC_TIM2->MR1),     // MAT2.1
+        [GPDMA_CONN_MAT3_0]        = (&LPC_TIM3->MR0),     // MAT3.0
+        [GPDMA_CONN_MAT3_1]        = (&LPC_TIM3->MR1),     // MAT3.1
+
+#if defined(MCU_LPC177x_8x)
+        [GPDMA_CONN_MCI]           = (&LPC_MCI->FIFO),     // SD Card
+        [GPDMA_CONN_SSP2_Tx]       = (&LPC_SSP2->DR),      // SSP2 Tx
+        [GPDMA_CONN_SSP2_Rx]       = (&LPC_SSP2->DR),      // SSP2 Rx
+        [GPDMA_CONN_UART4_Tx]      = (&LPC_UART4->THR),    // UART4 Tx
+        [GPDMA_CONN_UART4_Rx]      = (&LPC_UART4->RBR),    // UART4 Rx
+#endif
 };
 
 /*!
@@ -144,38 +142,38 @@ const LPC_GPDMACH_TypeDef *pGPDMACh[GPDMA_NUM_CHANNELS] = {
  * \brief Optimized Peripheral Source and Destination burst size
  */
 const uint8_t GPDMA_LUTPerBurst[] = {
-        0,                              // Reserved
-        GPDMA_BSIZE_8,                  // SD Card
-        GPDMA_BSIZE_4,                  // SSP0 Tx
-        GPDMA_BSIZE_4,                  // SSP0 Rx
-        GPDMA_BSIZE_4,                  // SSP1 Tx
-        GPDMA_BSIZE_4,                  // SSP1 Rx
-        GPDMA_BSIZE_4,                  // SSP2 Tx
-        GPDMA_BSIZE_4,                  // SSP2 Rx
-        GPDMA_BSIZE_1,                  // ADC
-        GPDMA_BSIZE_1,                  // DAC
-        GPDMA_BSIZE_1,                  // UART0 Tx
-        GPDMA_BSIZE_1,                  // UART0 Rx
-        GPDMA_BSIZE_1,                  // UART1 Tx
-        GPDMA_BSIZE_1,                  // UART1 Rx
-        GPDMA_BSIZE_1,                  // UART2 Tx
-        GPDMA_BSIZE_1,                  // UART2 Rx
-        GPDMA_BSIZE_1,                  // MAT0.0
-        GPDMA_BSIZE_1,                  // MAT0.1
-        GPDMA_BSIZE_1,                  // MAT1.0
-        GPDMA_BSIZE_1,                  // MAT1.1
-        GPDMA_BSIZE_1,                  // MAT2.0
-        GPDMA_BSIZE_1,                  // MAT2.1
-        GPDMA_BSIZE_32,                 // I2S channel 0
-        GPDMA_BSIZE_32,                 // I2S channel 1
-        0,                              // Reserved
-        0,                              // Reserved
-        GPDMA_BSIZE_1,                  // UART3 Tx
-        GPDMA_BSIZE_1,                  // UART3 Rx
-        GPDMA_BSIZE_1,                  // UART4 Tx
-        GPDMA_BSIZE_1,                  // UART4 Rx
-        GPDMA_BSIZE_1,                  // MAT3.0
-        GPDMA_BSIZE_1,                  // MAT3.1
+        [GPDMA_CONN_SSP0_Tx]       = GPDMA_BSIZE_4,    // SSP0 Tx
+        [GPDMA_CONN_SSP0_Rx]       = GPDMA_BSIZE_4,    // SSP0 Rx
+        [GPDMA_CONN_SSP1_Tx]       = GPDMA_BSIZE_4,    // SSP1 Tx
+        [GPDMA_CONN_SSP1_Rx]       = GPDMA_BSIZE_4,    // SSP1 Rx
+        [GPDMA_CONN_UART0_Tx]      = GPDMA_BSIZE_1,    // UART0 Tx
+        [GPDMA_CONN_UART0_Rx]      = GPDMA_BSIZE_1,    // UART0 Rx
+        [GPDMA_CONN_UART1_Tx]      = GPDMA_BSIZE_1,    // UART1 Tx
+        [GPDMA_CONN_UART1_Rx]      = GPDMA_BSIZE_1,    // UART1 Rx
+        [GPDMA_CONN_UART2_Tx]      = GPDMA_BSIZE_1,    // UART2 Tx
+        [GPDMA_CONN_UART2_Rx]      = GPDMA_BSIZE_1,    // UART2 Rx
+        [GPDMA_CONN_UART3_Tx]      = GPDMA_BSIZE_1,    // UART3 Tx
+        [GPDMA_CONN_UART3_Rx]      = GPDMA_BSIZE_1,    // UART3 Rx
+        [GPDMA_CONN_ADC]           = GPDMA_BSIZE_1,    // ADC
+        [GPDMA_CONN_DAC]           = GPDMA_BSIZE_1,    // DAC
+        [GPDMA_CONN_I2S_Channel_0] = GPDMA_BSIZE_32,   // I2S channel 0
+        [GPDMA_CONN_I2S_Channel_1] = GPDMA_BSIZE_32,   // I2S channel 1
+        [GPDMA_CONN_MAT0_0]        = GPDMA_BSIZE_1,    // MAT0.0
+        [GPDMA_CONN_MAT0_1]        = GPDMA_BSIZE_1,    // MAT0.1
+        [GPDMA_CONN_MAT1_0]        = GPDMA_BSIZE_1,    // MAT1.0
+        [GPDMA_CONN_MAT1_1]        = GPDMA_BSIZE_1,    // MAT1.1
+        [GPDMA_CONN_MAT2_0]        = GPDMA_BSIZE_1,    // MAT2.0
+        [GPDMA_CONN_MAT2_1]        = GPDMA_BSIZE_1,    // MAT2.1
+        [GPDMA_CONN_MAT3_0]        = GPDMA_BSIZE_1,    // MAT3.0
+        [GPDMA_CONN_MAT3_1]        = GPDMA_BSIZE_1,    // MAT3.1
+
+#if defined(MCU_LPC177x_8x)
+        [GPDMA_CONN_MCI]           = GPDMA_BSIZE_8,    // SD Card
+        [GPDMA_CONN_SSP2_Tx]       = GPDMA_BSIZE_4,    // SSP2 Tx
+        [GPDMA_CONN_SSP2_Rx]       = GPDMA_BSIZE_4,    // SSP2 Rx
+        [GPDMA_CONN_UART4_Tx]      = GPDMA_BSIZE_1,    // UART4 Tx
+        [GPDMA_CONN_UART4_Rx]      = GPDMA_BSIZE_1,    // UART4 Rx
+#endif
 };
 
 
@@ -183,38 +181,38 @@ const uint8_t GPDMA_LUTPerBurst[] = {
  * \brief Optimized Peripheral Source and Destination transfer width
  */
 const uint8_t GPDMA_LUTPerWid[] = {
-        0,                              // Reserved
-        GPDMA_WIDTH_WORD,               // SD Card
-        GPDMA_WIDTH_BYTE,               // SSP0 Tx
-        GPDMA_WIDTH_BYTE,               // SSP0 Rx
-        GPDMA_WIDTH_BYTE,               // SSP1 Tx
-        GPDMA_WIDTH_BYTE,               // SSP1 Rx
-        GPDMA_WIDTH_BYTE,               // SSP2 Tx
-        GPDMA_WIDTH_BYTE,               // SSP2 Rx
-        GPDMA_WIDTH_WORD,               // ADC
-        GPDMA_WIDTH_BYTE,               // DAC
-        GPDMA_WIDTH_BYTE,               // UART0 Tx
-        GPDMA_WIDTH_BYTE,               // UART0 Rx
-        GPDMA_WIDTH_BYTE,               // UART1 Tx
-        GPDMA_WIDTH_BYTE,               // UART1 Rx
-        GPDMA_WIDTH_BYTE,               // UART2 Tx
-        GPDMA_WIDTH_BYTE,               // UART2 Rx
-        GPDMA_WIDTH_WORD,               // MAT0.0
-        GPDMA_WIDTH_WORD,               // MAT0.1
-        GPDMA_WIDTH_WORD,               // MAT1.0
-        GPDMA_WIDTH_WORD,               // MAT1.1
-        GPDMA_WIDTH_WORD,               // MAT2.0
-        GPDMA_WIDTH_WORD,               // MAT2.1
-        GPDMA_WIDTH_WORD,               // I2S channel 0
-        GPDMA_WIDTH_WORD,               // I2S channel 1
-        0,                              // Reserved
-        0,                              // Reserved
-        GPDMA_WIDTH_BYTE,               // UART3 Tx
-        GPDMA_WIDTH_BYTE,               // UART3 Rx
-        GPDMA_WIDTH_BYTE,               // UART4 Tx
-        GPDMA_WIDTH_BYTE,               // UART4 Rx
-        GPDMA_WIDTH_WORD,               // MAT3.0
-        GPDMA_WIDTH_WORD,               // MAT3.1
+        [GPDMA_CONN_SSP0_Tx]       = GPDMA_WIDTH_BYTE,   // SSP0 Tx
+        [GPDMA_CONN_SSP0_Rx]       = GPDMA_WIDTH_BYTE,   // SSP0 Rx
+        [GPDMA_CONN_SSP1_Tx]       = GPDMA_WIDTH_BYTE,   // SSP1 Tx
+        [GPDMA_CONN_SSP1_Rx]       = GPDMA_WIDTH_BYTE,   // SSP1 Rx
+        [GPDMA_CONN_UART0_Tx]      = GPDMA_WIDTH_BYTE,   // UART0 Tx
+        [GPDMA_CONN_UART0_Rx]      = GPDMA_WIDTH_BYTE,   // UART0 Rx
+        [GPDMA_CONN_UART1_Tx]      = GPDMA_WIDTH_BYTE,   // UART1 Tx
+        [GPDMA_CONN_UART1_Rx]      = GPDMA_WIDTH_BYTE,   // UART1 Rx
+        [GPDMA_CONN_UART2_Tx]      = GPDMA_WIDTH_BYTE,   // UART2 Tx
+        [GPDMA_CONN_UART2_Rx]      = GPDMA_WIDTH_BYTE,   // UART2 Rx
+        [GPDMA_CONN_UART3_Tx]      = GPDMA_WIDTH_BYTE,   // UART3 Tx
+        [GPDMA_CONN_UART3_Rx]      = GPDMA_WIDTH_BYTE,   // UART3 Rx
+        [GPDMA_CONN_ADC]           = GPDMA_WIDTH_WORD,   // ADC
+        [GPDMA_CONN_DAC]           = GPDMA_WIDTH_BYTE,   // DAC
+        [GPDMA_CONN_I2S_Channel_0] = GPDMA_WIDTH_WORD,   // I2S channel 0
+        [GPDMA_CONN_I2S_Channel_1] = GPDMA_WIDTH_WORD,   // I2S channel 1
+        [GPDMA_CONN_MAT0_0]        = GPDMA_WIDTH_WORD,   // MAT0.0
+        [GPDMA_CONN_MAT0_1]        = GPDMA_WIDTH_WORD,   // MAT0.1
+        [GPDMA_CONN_MAT1_0]        = GPDMA_WIDTH_WORD,   // MAT1.0
+        [GPDMA_CONN_MAT1_1]        = GPDMA_WIDTH_WORD,   // MAT1.1
+        [GPDMA_CONN_MAT2_0]        = GPDMA_WIDTH_WORD,   // MAT2.0
+        [GPDMA_CONN_MAT2_1]        = GPDMA_WIDTH_WORD,   // MAT2.1
+        [GPDMA_CONN_MAT3_0]        = GPDMA_WIDTH_WORD,   // MAT3.0
+        [GPDMA_CONN_MAT3_1]        = GPDMA_WIDTH_WORD,   // MAT3.1
+
+#if defined(MCU_LPC177x_8x)
+        [GPDMA_CONN_MCI]           = GPDMA_WIDTH_WORD,   // SD Card
+        [GPDMA_CONN_SSP2_Tx]       = GPDMA_WIDTH_BYTE,   // SSP2 Tx
+        [GPDMA_CONN_SSP2_Rx]       = GPDMA_WIDTH_BYTE,   // SSP2 Rx
+        [GPDMA_CONN_UART4_Tx]      = GPDMA_WIDTH_BYTE,   // UART4 Tx
+        [GPDMA_CONN_UART4_Rx]      = GPDMA_WIDTH_BYTE,   // UART4 Rx
+#endif
 };
 
 
