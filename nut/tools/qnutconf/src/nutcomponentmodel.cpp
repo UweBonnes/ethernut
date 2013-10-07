@@ -422,11 +422,13 @@ bool NutComponentModel::generateBuildTree()
 	if ( CreateMakeFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit(),
 		Settings::instance()->sourceDir().toLocal8Bit(), Settings::instance()->targetPlatform().toLocal8Bit(),
 #ifdef Q_OS_WIN32
-		Settings::instance()->includePath().join(";").toLocal8Bit(),
+		Settings::instance()->includePath()[0].toLocal8Bit(),
+		Settings::instance()->includePath()[1].toLocal8Bit(),
 #else
-		Settings::instance()->includePath().join(":").toLocal8Bit(),
+		Settings::instance()->includePath()[0].toLocal8Bit(),
+		Settings::instance()->includePath()[1].toLocal8Bit(),
 #endif
-		0, qPrintable(instDir)) )
+		qPrintable(instDir)) )
 	{
 		return false;
 	}

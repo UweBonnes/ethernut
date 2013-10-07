@@ -51,6 +51,19 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	ui.e_SourceDirectory->setText( Settings::instance()->sourceDir() );
 	ui.e_BuildDirectory->setText( Settings::instance()->buildPath() );
 	ui.e_InstallDirectory->setText( Settings::instance()->installPath() );
+	QStringList list = Settings::instance()->includePath();
+	QString includeFirst;
+	QString includeLast;
+	if (list.size() > 1)
+	{
+		includeLast = list[1];
+	}
+	if (list.size() > 0)
+	{
+		includeFirst = list[0];
+	}
+	ui.e_IncludeFirst->setText( includeFirst );
+	ui.e_IncludeLast->setText( includeLast );
 	populatePlatform();
 
 	// Tools tab
@@ -136,6 +149,8 @@ void SettingsDialog::accept()
 	Settings::instance()->setBuildPath( ui.e_BuildDirectory->text() );
 	Settings::instance()->setInstallPath( ui.e_InstallDirectory->text() );
 	Settings::instance()->setTargetPlatform( ui.cb_Platform->currentText() );
+	QStringList list = QStringList() << ui.e_IncludeFirst->text() << ui.e_IncludeLast->text();
+	Settings::instance()->setIncludePath( list );
 
 	// Tools tab
 	Settings::instance()->setToolPath( ui.e_ToolPath->text() );
