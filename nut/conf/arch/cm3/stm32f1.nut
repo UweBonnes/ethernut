@@ -460,18 +460,6 @@ nutarch_cm3_stm32f1 =
     -- ***********************************
 
     --
-    --
-    -- STM32F RCC Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f_rcc",
-        brief = "STM32F RCC",
-        description = "STM32F Clock Controller.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
-        sources = { "cm3/dev/stm/stm32f10x_rcc.c" }
-    },
-
-    --
     -- STM32F1 GPIO Interface
     --
     {

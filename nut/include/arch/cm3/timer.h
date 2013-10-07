@@ -73,34 +73,24 @@
     defined(MCU_STM32F30) ||defined(MCU_STM32F4)
 
 /*!
- * Frequency of CPU Core
+ * Frequency of CPU Core(HCLK/AHB CLK)
  */
-#define NUT_HWCLK_CPU   0
-
-/*!
- * Clock of Hardware Clock
- */
-#define NUT_HWCLOCK_HCLK 1
+#define NUT_HWCLK_CPU 0
 
 /*!
  * Clock for devices on APB1 bus
  */
-#define NUT_HWCLK_PCLK1 2
+#define NUT_HWCLK_PCLK1 1
 
 /*!
  * Clock for devices on APB2 bus
  */
-#define NUT_HWCLK_PCLK2 3
-
-/*!
- * Clock for analog to digital converters
- */
-#define NUT_HWCLK_ADC   4
+#define NUT_HWCLK_PCLK2 2
 
 /*!
  * Number of clocks for this device
  */
-#define NUT_HWCLK_MAX   4
+#define NUT_HWCLK_MAX   2
 
 #define NUT_HWCLK_PERIPHERAL NUT_HWCLK_PCLK1
 #else

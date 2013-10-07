@@ -275,15 +275,4 @@ nutarch_cm3_stm32f30 =
     --
     -- ***********************************
 
-    --
-    --
-    -- STM32F30 RCC Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f30_rcc",
-        brief = "STM32F30 RCC",
-        description = "STM32F3 Clock Controller.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
-        sources = { "cm3/dev/stm/vendor/stm32f30x_rcc.c" }
-    },
 }

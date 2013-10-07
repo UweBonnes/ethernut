@@ -35,6 +35,7 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 
+#include <arch/cm3/timer.h>
 #include <arch/cm3/stm/stm32_clk.h>
 #include <cfg/clock.h>
 
@@ -48,6 +49,8 @@
 #if !defined(SYSCLK_SOURCE)
 #define SYSCLK_SOURCE SYSCLK_HSI
 #endif
+
+static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
 
 /*----------------  Clock Setup Procedure ------------------------------
  *
@@ -443,4 +446,33 @@ uint32_t SysCtlClockGet(void)
 {
     SystemCoreClockUpdate();
     return SystemCoreClock;
+}
+
+/**
+  * @brief  requests frequency of the given clock
+  *
+  * @param  idx NUT_HWCLK Index
+  * @retval clock or 0 if idx points to an invalid clock
+  */
+uint32_t STM_ClockGet(int idx)
+{
+    SystemCoreClockUpdate();
+    switch(idx) {
+    case NUT_HWCLK_CPU:
+        return SystemCoreClock;
+        break;
+    case NUT_HWCLK_PCLK1: {
+        uint32_t tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
+        return SystemCoreClock/APBPrescTable[tmp];
+        break;
+    }
+    case NUT_HWCLK_PCLK2: {
+        uint32_t tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
+        return SystemCoreClock/APBPrescTable[tmp];
+        break;
+    }
+    default:
+        return 0;
+        break;
+    }
 }

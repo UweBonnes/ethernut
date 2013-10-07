@@ -316,15 +316,4 @@ nutarch_cm3_stm32f4 =
     --
     -- ***********************************
 
-    --
-    --
-    -- STM32F4 RCC Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f4_rcc",
-        brief = "STM32F4 RCC",
-        description = "STM32F4 Clock Controller.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
-        sources = { "cm3/dev/stm/vendor/stm32f4xx_rcc.c" }
-    },
 }

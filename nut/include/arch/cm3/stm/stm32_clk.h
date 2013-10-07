@@ -59,6 +59,9 @@
 /* The systems core clock frequency in Hz. */
 extern uint32_t SystemCoreClock;
 
+/* Retrieve CPU/AHB/APBx clock*/
+extern uint32_t STM_ClockGet(int idx);
+
 /* Control functions for the separate clocks */
 extern int CtlHseClock( uint8_t ena);
 extern int CtlHsiClock( uint8_t ena);

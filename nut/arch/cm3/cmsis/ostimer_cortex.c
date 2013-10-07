@@ -48,7 +48,6 @@
 #if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/system_stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <arch/cm3/stm/stm32_clk.h>
 #elif defined(MCU_LPC176x)
 #include <arch/cm3/nxp/lpc176x.h>
@@ -103,33 +102,7 @@ uint32_t NutArchClockGet(int idx)
 {
     uint32_t clock = 0;
 #if defined(MCU_STM32)
-#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2)\
-    || defined(MCU_STM32F30)|| defined(MCU_STM32F4)
-    RCC_ClocksTypeDef RCC_ClocksStatus;
-
-    RCC_GetClocksFreq(&RCC_ClocksStatus);
-
-    if ( idx == NUT_HWCLK_CPU ) {
-        clock = RCC_ClocksStatus.SYSCLK_Frequency;
-    }
-    else if ( idx == NUT_HWCLOCK_HCLK){
-        clock = RCC_ClocksStatus.HCLK_Frequency;
-    }
-    else if ( idx == NUT_HWCLK_PCLK1 ) {
-        clock = RCC_ClocksStatus.PCLK1_Frequency;
-    }
-    else if ( idx == NUT_HWCLK_PCLK2 ) {
-        clock = RCC_ClocksStatus.PCLK2_Frequency;
-    }
-#if defined(MCU_STM32F1)
-    else if ( idx == NUT_HWCLK_ADC) {
-        clock = RCC_ClocksStatus.ADCCLK_Frequency;
-    }
-#endif
-#else
-#warning "Unknown STM32 Family"
-#endif
-
+    clock = STM_ClockGet(idx);
 #elif defined(MCU_LPC17xx)
     clock = Lpc17xx_ClockGet(idx);
 #else

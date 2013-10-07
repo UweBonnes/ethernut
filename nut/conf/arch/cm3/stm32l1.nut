@@ -295,15 +295,4 @@ nutarch_cm3_stm32l1 =
     --
     -- ***********************************
 
-    --
-    --
-    -- STM32L RCC Interface
-    --
-    {
-        name = "nutarch_cm3_stm32l1_rcc",
-        brief = "STM32L RCC",
-        description = "STM32L Clock Controller.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
-        sources = { "cm3/dev/stm/vendor/stm32l1xx_rcc.c" }
-    },
 }

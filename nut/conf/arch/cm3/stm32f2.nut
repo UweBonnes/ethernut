@@ -296,14 +296,4 @@ nutarch_cm3_stm32f2 =
         }
     },
 
-    --
-    -- STM32F2 RCC Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f2_rcc",
-        brief = "STM32F2 RCC",
-        description = "STM32F2 Clock Controller.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_RCC_STM32" },
-        sources = { "cm3/dev/stm/vendor/stm32f2xx_rcc.c" }
-    },
 }

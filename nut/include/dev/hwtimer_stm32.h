@@ -44,7 +44,6 @@
 #include <string.h>
 #include <cfg/arch.h>
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32xxxx_rcc.h>
 #include <dev/irqreg.h>
 
 #if defined(TIM1_BASE)
