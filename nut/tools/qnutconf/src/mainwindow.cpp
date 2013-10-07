@@ -82,6 +82,7 @@ MainWindow::MainWindow()
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), detailsModel, SLOT(refresh(const QModelIndex&)) );
 	connect( ui.componentTree, SIGNAL(expanded(const QModelIndex&)), SLOT(resizeComponentTreeToContents()));
 
+    connect( ui.actionViewComponentTreeDisabledItems, SIGNAL(triggered()), this, SLOT(clearFoundItems()) );
 	connect( ui.actionViewComponentTreeDisabledItems, SIGNAL(triggered(bool)), proxyModel, SLOT(showDisabledItems(bool)) );
 
 	readSettings();
@@ -217,12 +218,18 @@ void MainWindow::on_actionExit_triggered()
 	QApplication::quit();
 }
 
+void MainWindow::clearFoundItems(void)
+{
+    m_foundItems.clear();
+}
+
 void MainWindow::on_actionFind_triggered()
 {
 	if (m_findDialog == 0) {
 		m_findDialog = new FindDialog(this);
 		connect(m_findDialog, SIGNAL(findNext(const QString &)), this, SLOT(on_findNext_triggered(const QString &)));
 	}
+    clearFoundItems();
 	m_findDialog->show();
 	m_findDialog->raise();
 	m_findDialog->activateWindow();
@@ -233,7 +240,7 @@ void MainWindow::on_findNext_triggered(const QString &text)
 	if (m_findText != text || m_foundItems.isEmpty()) {
 		QApplication::setOverrideCursor(Qt::WaitCursor);
 
-		m_foundItems = proxyModel->match(proxyModel->index(0, 0), NutComponentModel::FullSearch, QVariant::fromValue(text), -1, 
+		m_foundItems = proxyModel->match(proxyModel->index(0, 0), NutComponentModel::FullSearch, QVariant::fromValue(text), -1,
 			Qt::MatchFixedString | Qt::MatchContains | Qt::MatchRecursive | Qt::MatchWrap);
 
 		QApplication::restoreOverrideCursor();
@@ -272,7 +279,7 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 							"\n\nDo you want to build the Nut/OS libraries?\n"
 							).arg( Settings::instance()->buildPath(), Settings::instance()->targetPlatform(), Settings::instance()->installPath() );
 	if ( QMessageBox::question( this, tr("Build Nut/OS"), question, QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
-		return; 
+		return;
 
 	// Disable build options.
 	ui.actionBuild_Nut_OS->setEnabled( false );

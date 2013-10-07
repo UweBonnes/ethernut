@@ -66,6 +66,7 @@ public slots:
     void on_actionCreate_sample_triggered();
     void on_actionAbout_triggered();
 
+    void clearFoundItems(void);
     void on_findNext_triggered(const QString &text);
 
 private:
