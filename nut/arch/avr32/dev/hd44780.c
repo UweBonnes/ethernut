@@ -58,29 +58,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Backward compatibility with old macros */
 #ifndef LCD_ROWS
-#if defined(LCD_4x20) || defined(LCD_4x16) || defined(KS0073_CONTROLLER)
-#define LCD_ROWS    4
-#elif defined(LCD_1x20) || defined(LCD_1x16) || defined(LCD_1x8)
-#define LCD_ROWS    1
-#else
 #define LCD_ROWS    2
 #endif
-#endif                          /* LCD_ROWS */
 
-/* Backward compatibility with old macros */
 #ifndef LCD_COLS
-#if defined(LCD_2x40)
-#define LCD_COLS    40
-#elif defined(LCD_4x20) || defined(LCD_2x20) || defined(LCD_1x20) || defined(KS0073_CONTROLLER)
-#define LCD_COLS    20
-#elif defined(LCD_2x8) || defined(LCD_1x8)
-#define LCD_COLS    8
-#else
 #define LCD_COLS    16
 #endif
-#endif                          /* LCD_COLS */
+
+#ifndef LCD_E2E_DLY
+#define LCD_E2E_DLY 80
+#endif
+
+#ifndef LCD_LONG_DELAY
+#define LCD_LONG_DELAY  1000
+#endif
+
+#ifndef LCD_DATA_BIT0
+#define LCD_DATA_BIT0 1
+#define LCD_DATA_BIT1 1
+#define LCD_DATA_BIT2 1
+#define LCD_DATA_BIT3 1
+#endif
+
+#ifndef LCD_PW_EH
+#define LCD_PW_EH 500
+#define LcdNanoDelay(x) NutMicroDelay(x/10);
+#else
+#define LcdNanoDelay(x)
+#endif
+
+
+#if !defined(LCD_IF_8BIT) && !defined(LCD_IF_4BIT)
+#define LCD_IF_4BIT
+#endif
 
 #ifdef LCD_IF_4BIT
 #ifdef LCD_DATA_LSB
@@ -226,7 +237,7 @@ static void INLINE LcdClrBits(unsigned int mask)
     outr(PIO_OER, mask);
 }
   
- #ifdef LCD_RW_BIT
+#ifdef LCD_RW_BIT
 static unsigned int LcdReadNibble(void)
 {
     unsigned int rc;
@@ -480,8 +491,6 @@ static int LcdInit(NUTDEVICE * dev)
     /* Move cursor home. */
     LcdCursorHome();
 
-	LcdReadStatus();
-    
 	/* Set data address to zero. */
     LcdWriteCmd(_BV(LCD_DDRAM));
 

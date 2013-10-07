@@ -1084,13 +1084,13 @@ nutarch_avr32 =
     {
         name = "nutarch_avr32_hd44780",
         brief = "HD44780 Driver",
-        requires = { "HW_MCU_AVR32", "BUGFIX" },
+        requires = { "HW_MCU_AVR32" },
         provides = { "DEV_FILE", "DEV_WRITE", "LCD_GPIO" },
         sources = { "avr32/dev/hd44780.c" },
         options =
         {
             --
-            --  Support for timing related parameters
+            --  LCD size parameters
             --
             {
                 macro = "LCD_ROWS",
