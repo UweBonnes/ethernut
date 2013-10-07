@@ -46,7 +46,7 @@
 #include <dev/rtc.h>
 
 #include <cfg/arch/gpio.h>
-#include <arch/cm3/stm/stm32f10x.h>
+#include <arch/cm3/stm/vendor/stm32f10x.h>
 
 #include <stdlib.h>
 #include <string.h>

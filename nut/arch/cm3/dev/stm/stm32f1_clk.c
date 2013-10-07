@@ -46,7 +46,7 @@
 #include <cfg/clock.h>
 
 #if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f10x.h>
+#include <arch/cm3/stm/vendor/stm32f10x.h>
 #else
 #warning "Unknown STM32 family"
 #endif
