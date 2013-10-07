@@ -107,8 +107,8 @@ void SystemCoreClockUpdate(void)
     uint32_t hpre;
 
     /* Get SYSCLK source ---------------------------------------------------*/
-    cfgr = RCC->CFGR & RCC_CFGR_SWS;
-    switch(cfgr) {
+    cfgr = RCC->CFGR;
+    switch(cfgr & RCC_CFGR_SWS) {
     case RCC_CFGR_SWS_HSE:
         tmp = HSE_VALUE;
         break;
