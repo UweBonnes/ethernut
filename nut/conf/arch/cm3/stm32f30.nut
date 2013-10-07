@@ -149,7 +149,7 @@ nutarch_cm3_stm32f30 =
         brief = "STM32F30 PLL Setup",
         sources =
         {
-            "cm3/dev/stm/vendor/system_stm32f30x.c",
+            "cm3/dev/stm/system_stm32.c",
             "cm3/dev/stm/stm32f30_clk.c"
         },
         requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },

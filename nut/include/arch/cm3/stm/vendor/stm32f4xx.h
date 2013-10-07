@@ -264,7 +264,7 @@ typedef enum IRQn
   */
 
 #include <arch/cm3/core_cm4.h>    /* Cortex-M4 processor and core peripherals */
-#include <arch/cm3/stm/vendor/system_stm32f4xx.h>
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types

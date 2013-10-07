@@ -1,5 +1,10 @@
+#ifndef __SYSTEM_STM_H
+#define __SYSTEM_STM_H
+
 /*
- * Copyright (C) 2012-2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013 by Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,27 +33,7 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
-/*!
- * \file arch/cm3/stm/atm32xxxx.h
- * \brief Wrapper for the device dependant stm32XZxx.h files.
- * $Id: stm32_flash.h 3220 2010-11-12 13:04:17Z astralix $
- * \verbatim
- */
-
-#include <cfg/arch.h>
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/system_stm32f10x.h>
-#elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/vendor/system_stm32l1xx.h>
-#elif defined(MCU_STM32F2)
-#include <arch/cm3/stm/vendor/system_stm32f2xx.h>
-#elif defined(MCU_STM32F30)
-#include <arch/cm3/stm/vendor/system_stm32f30x.h>
-#elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/vendor/system_stm32f4xx.h>
-#else
-#warning "Unknown STM32 family"
+extern void SystemInit (void);
 #endif

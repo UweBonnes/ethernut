@@ -480,7 +480,7 @@ typedef enum IRQn
   */
 
 #include <arch/cm3/core_cm3.h>
-#include <arch/cm3/stm/system_stm32f10x.h>
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types

@@ -166,7 +166,7 @@ nutarch_cm3_stm32l1 =
     {
         name = "nutarch_cm3_stm32L1_pll",
         brief = "STM32L1 PLL Setup",
-        sources = { "cm3/dev/stm/vendor/system_stm32l1xx.c",
+        sources = { "cm3/dev/stm/system_stm32.c",
                     "cm3/dev/stm/stm32l1_clk.c"
                   },
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
