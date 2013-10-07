@@ -54,7 +54,8 @@
 #define SYSCLK_SOURCE SYSCLK_HSI
 #endif
 
-uint32_t SystemCoreClock;
+static uint32_t SystemCoreClock = 0;
+
 const uint32_t MSIFreqTable[8] = {65536, 131072, 262144,  524288, 1048000, 2097000, 4194000, 0};
 static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
 
@@ -97,7 +98,7 @@ static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
  * \brief  Update SystemCoreClock according to Clock Register Values
  *
  * This function reads out the CPUs clock and PLL registers and assembles
- * the actual clock speed values into the SystemCoreClock global variable.
+ * the actual clock speed values into the SystemCoreClock local variable.
  */
 void SystemCoreClockUpdate(void)
 {

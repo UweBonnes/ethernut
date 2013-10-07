@@ -50,6 +50,10 @@
 #define SYSCLK_SOURCE SYSCLK_HSI
 #endif
 
+static uint32_t SystemCoreClock = 0;
+
+static const uint8_t AHBPrescTable[16] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
 
 /*----------------  Clock Setup Procedure ------------------------------
@@ -88,6 +92,50 @@ static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
  * Call SetSysClock(); to do this automatically.
  *
  */
+
+/*!
+ * \brief  Update SystemCoreClock according to Clock Register Values
+ *
+ * This function reads out the CPUs clock and PLL registers and assembles
+ * the actual clock speed values into the SystemCoreClock local variable.
+ */
+void SystemCoreClockUpdate(void)
+{
+    RCC_TypeDef *rcc = (RCC_TypeDef*) RCC_BASE;
+    uint32_t cfgr;
+    uint32_t tmp = 0;
+    uint32_t hpre;
+
+    /* Get SYSCLK source ---------------------------------------------------*/
+    cfgr = RCC->CFGR & RCC_CFGR_SWS;
+    switch(cfgr) {
+    case RCC_CFGR_SWS_HSE:
+        tmp = HSE_VALUE;
+        break;
+    case RCC_CFGR_SWS_PLL: {
+        uint32_t cfgr2 = rcc->CFGR2;
+        uint32_t prediv;
+        uint32_t pllmull;
+
+        prediv = (cfgr2 & RCC_CFGR2_PREDIV1) >> _BI32(RCC_CFGR2_PREDIV1_0);
+        prediv += 1;
+        pllmull = (cfgr & RCC_CFGR_PLLMULL) >> _BI32(RCC_CFGR_PLLMULL_0);
+        pllmull += 2;
+        if (pllmull > 16)
+            pllmull = 16;
+        if ((cfgr & RCC_CFGR_PLLSRC ) == RCC_CFGR_PLLSRC )
+            tmp = HSE_VALUE;
+        else
+            tmp = HSI_VALUE / 2;
+        tmp = (tmp / prediv) * pllmull;
+        break;
+    }
+    default:
+        tmp = HSI_VALUE;
+    }
+    hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
+    SystemCoreClock = tmp >> AHBPrescTable[hpre];
+}
 
 /* Functional same as F1 */
 /*!

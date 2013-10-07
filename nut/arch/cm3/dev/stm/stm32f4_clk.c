@@ -47,11 +47,15 @@
 #warning "Unknown STM32 family"
 #endif
 
+static uint32_t SystemCoreClock = 0;
+
 /* Prepare some defaults if configuration is incomplete */
 #if !defined(SYSCLK_SOURCE)
 #define SYSCLK_SOURCE SYSCLK_HSI
 #endif
 
+static const uint8_t AHBPrescTable[16] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
 /*----------------  Clock Setup Procedure ------------------------------
  *
@@ -84,6 +88,46 @@ static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
  * Call SetSysClock(); to do this automatically.
  *
  */
+
+/*!
+ * \brief  Update SystemCoreClock according to Clock Register Values
+ *
+ * This function reads out the CPUs clock and PLL registers and assembles
+ * the actual clock speed values into the SystemCoreClock local variable.
+ */
+static void SystemCoreClockUpdate(void)
+{
+    RCC_TypeDef *rcc =  (RCC_TypeDef *)RCC_BASE;
+    uint32_t tmp = 0;
+    uint32_t cfgr;
+    uint32_t hpre;
+
+    /* Get SYSCLK source ---------------------------------------------------*/
+    cfgr = RCC->CFGR & RCC_CFGR_SWS;
+    switch (cfgr) {
+    case RCC_CFGR_SWS_HSE:
+        tmp = HSE_VALUE;
+        break;
+    case RCC_CFGR_SWS_PLL: {
+        uint32_t pllcfgr = rcc->PLLCFGR;
+        uint32_t n = (pllcfgr & RCC_PLLCFGR_PLLN) >> _BI32(RCC_PLLCFGR_PLLN_0);
+        uint32_t m = (pllcfgr & RCC_PLLCFGR_PLLM) >> _BI32(RCC_PLLCFGR_PLLM_0);
+        uint32_t p = (pllcfgr & RCC_PLLCFGR_PLLP) >> _BI32(RCC_PLLCFGR_PLLP_0);
+
+        /* Pll Divisor is (p + 1) * 2. Move * 2  into the base clock sonstant*/
+        if ((pllcfgr & RCC_PLLCFGR_PLLSRC_HSE) == RCC_PLLCFGR_PLLSRC_HSE)
+            tmp = HSE_VALUE / 2;
+        else
+            tmp = HSI_VALUE / 2;
+        tmp = ((tmp / m) * n)/(p + 1);
+        break;
+    }
+    default:
+        tmp = HSI_VALUE;
+    }
+    hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
+    SystemCoreClock = tmp >> AHBPrescTable[hpre];
+}
 
 /* Functional same as F1 */
 /*!

@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
@@ -47,7 +45,6 @@
 #include <sys/timer.h>
 #if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/system_stm32xxxx.h>
 #include <arch/cm3/stm/stm32_clk.h>
 #elif defined(MCU_LPC176x)
 #include <arch/cm3/nxp/lpc176x.h>

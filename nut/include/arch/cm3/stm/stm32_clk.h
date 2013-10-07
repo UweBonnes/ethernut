@@ -56,9 +56,6 @@
 #define RTCCLK_HSE    3
 #define RTCCLK_LSEBYP 4
 
-/* The systems core clock frequency in Hz. */
-extern uint32_t SystemCoreClock;
-
 /* Retrieve CPU/AHB/APBx clock*/
 extern uint32_t STM_ClockGet(int idx);
 
