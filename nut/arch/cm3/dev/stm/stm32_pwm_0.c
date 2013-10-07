@@ -119,12 +119,13 @@ int stm32_pwm0_init(uint32_t *freq, int bits)
     return -1;
 #else
 /* Try to find prescaler value that gives requested frequency with 25 % tolerance */
-    uint32_t tclk = NutClockGet(STM32_PWM_CLK);
-    uint32_t psc0 = ((tclk<<1)/ (*freq)) >> bits, psc1 = (tclk / (*freq)) >> bits;
+    uint32_t pclk = STM32_PWM_PCLK;
+    uint32_t psc0 = ((pclk <<1)/ (*freq)) >> bits;
+    uint32_t psc1 = (pclk / (*freq)) >> bits;
 
     if (psc0 & 1) psc1++; /* Round up*/
-    *freq = tclk/psc1 >> bits;
-    if (( 5 * (*freq << bits)  < 4 * tclk) || ( 5 * tclk  < 4 * (*freq << bits)))
+    *freq = pclk/psc1 >> bits;
+    if (( 5 * (*freq << bits)  < 4 * pclk) || ( 5 * pclk  < 4 * (*freq << bits)))
         return -1;
     STM32_PWM_CLK = 1;
     STM32_PWM_RST = 1;

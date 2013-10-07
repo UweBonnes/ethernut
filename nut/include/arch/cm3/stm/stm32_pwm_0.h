@@ -47,7 +47,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <dev/hwtimer_stm32.h>
 
-extern void     stm32_pwm0_init(uint32_t *freq, int bits);
+extern int      stm32_pwm0_init(uint32_t *freq, int bits);
 extern uint32_t stm32_pwm0_get(void);
 extern void     stm32_pwm0_set(int32_t value);
 #endif
