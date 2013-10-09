@@ -124,6 +124,7 @@ int stime(time_t * timer)
 #endif
     /* Set internal seconds counter. */
     epo_offs.tv_sec = (uint32_t)(*timer) - NutGetSeconds();
+    epo_offs.tv_usec = 0;
 
     return 0;
 }
