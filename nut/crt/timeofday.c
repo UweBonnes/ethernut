@@ -75,7 +75,7 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
         timeradd(&system_time, &epo_offs, tv);
 #else
 		tv->tv_sec  = time(NULL);
-		tv->tv_usec = NutGetMillis() * 1000;
+		tv->tv_usec = (NutGetMillis() % 1000) * 1000;
 #endif
     }
 
