@@ -185,7 +185,10 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
      *
      * Lower memory addresses.
      */
-    if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
+    alloc_size = stackSize + sizeof(NUTTHREADINFO);
+    alloc_size += 7;
+    alloc_size &= ~7;
+    if ((threadMem = NutHeapAlloc(alloc_size)) == 0) {
         return 0;
     }
     td = (NUTTHREADINFO *) (threadMem + stackSize);
