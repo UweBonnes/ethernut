@@ -114,7 +114,7 @@ SECTIONS
     *(.bss)
     *(.bss_xram)
     *(COMMON)
-    . = ALIGN(4);
+    . = ALIGN(8);
     PROVIDE (__bss_end = .);
     . += 0x400;
     PROVIDE (__exp_stack = .);

@@ -134,6 +134,7 @@ SECTIONS
     {
         __bss_start = ABSOLUTE (.);
         *(.scommon) *(.dynbss) *(.bss*) *(COMMON)
+        . = ALIGN(8);
         __bss_end = ABSOLUTE (.);
         PROVIDE (__heap_start = .);
     } > ram

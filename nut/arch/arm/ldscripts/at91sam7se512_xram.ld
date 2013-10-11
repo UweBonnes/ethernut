@@ -150,7 +150,7 @@ SECTIONS
     PROVIDE (__bss_start = .);
     *(.bss)
     *(COMMON)
-    . = ALIGN(4);
+    . = ALIGN(8);
     PROVIDE (__bss_end = .);
     /* Used by the Nut/OS initialization to setup heap memory. */
     PROVIDE (__heap_start = .);

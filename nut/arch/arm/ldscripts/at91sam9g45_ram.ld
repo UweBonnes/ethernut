@@ -94,7 +94,7 @@ SECTIONS
     PROVIDE (__bss_start = .);
     *(.bss)
     *(COMMON)
-    . = ALIGN(4);
+    . = ALIGN(8);
     PROVIDE (__bss_end = .);
     . += 0x1000;
     PROVIDE (__exp_stack = .);
