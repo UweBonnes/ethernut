@@ -149,24 +149,25 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
+    size_t alloc_size;
 
     NutEnterCritical();
 
-    /*
-     * Allign to the word boundary
-     */
-    if ((stackSize & 0x01) != 0)
-        stackSize++;
+    /* Align to the 4 byte boundary */
+    alloc_size = stackSize + sizeof(NUTTHREADINFO);
+    alloc_size += 3;
+    alloc_size &= ~3;
 
     /*
      * Allocate stack and thread info structure in one block.
      */
-    if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
+    if ((threadMem = NutHeapAlloc(alloc_size)) == 0) {
         NutJumpOutCritical();
         return 0;
     }
 
-    td = (NUTTHREADINFO *) (threadMem + stackSize);
+	/* Align to 4 byte boundary */
+    td = (NUTTHREADINFO *) ((threadMem + stackSize) & ~0x03);
     ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));
 

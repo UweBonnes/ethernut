@@ -174,6 +174,7 @@ HANDLE NutThreadCreate(char * name, void(*fn)(void *), void *arg, size_t stackSi
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
+    size_t alloc_size;
 
     /*
      * Allocate stack and thread info structure in one block.
@@ -203,12 +204,18 @@ HANDLE NutThreadCreate(char * name, void(*fn)(void *), void *arg, size_t stackSi
      *
      * Lower memory addresses.
      */
-    if ((threadMem = NutStackAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
-        if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
+
+    /* Align to the 4 byte boundary */
+    alloc_size = stackSize + sizeof(NUTTHREADINFO);
+    alloc_size += 3;
+    alloc_size &= ~3;
+
+    if ((threadMem = NutStackAlloc(alloc_size)) == 0) {
+        if ((threadMem = NutHeapAlloc(alloc_size)) == 0) {
             return 0;
         }
     }
-    td = (NUTTHREADINFO *) (threadMem + stackSize);
+    td = (NUTTHREADINFO *) ((threadMem + stackSize) & ~3);
     ef = (ENTERFRAME *) ((uintptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uintptr_t) ef - sizeof(SWITCHFRAME));
 
