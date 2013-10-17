@@ -389,44 +389,32 @@ int SetSysClock(void)
     int rc = 0;
     uint32_t rcc_reg;
 
-#if defined(MCU_STM32F2)
- #if (PLLCLK_IN > 3999999) &&  (PLLCLK_IN < 26000001) && ((PLLCLK_IN % 2000000L) == 0)
-  #define  PLLM (PLLCLK_IN/2000000)
-  #define  PLLN ((240/2) << _BI32(RCC_PLLCFGR_PLLN_0))
-  #define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
-  #define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
-  #define  NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_3WS
- #elif (PLLCLK_IN > 1999999) &&  (PLLCLK_IN < 26000001) && ((PLLCLK_IN % 1000000L) == 0)
-  #define  PLLM (PLLCLK_IN/1000000)
-  #define  PLLN ((240/1) << _BI32(RCC_PLLCFGR_PLLN_0))
-  #define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
-  #define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
-  #define  NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_3WS
- #else
-  #warning "PLL Source frequency isn't a multiple of 1 MHz or is smaller 2 MHz"
- #endif
-#elif defined(MCU_STM32F4)
- #if (PLLCLK_IN > 3999999) &&  (PLLCLK_IN < 26000001) && ((PLLCLK_IN % 2000000L) == 0)
- #define  PLLM (PLLCLK_IN/2000000)
- #define  PLLN ((336/2) << _BI32(RCC_PLLCFGR_PLLN_0))
- #define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
- #define  PLLQ (7 << _BI32(RCC_PLLCFGR_PLLQ_0))
- #define  NUT_FLASH_LATENCY FLASH_ACR_LATENCY_5WS
-    /* Select regulator voltage output Scale 1 mode*/
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    PWR->CR |= PWR_CR_VOS;
-#elif ((PLLCLK_IN > 1999999) &&  (PLLCLK_IN < 26000001) && ((PLLCLK_IN % 1000000L) == 0))
-  #define  PLLM (PLLCLK_IN/1000000)
-  #define  PLLN ((336/1) << _BI32(RCC_PLLCFGR_PLLN_0))
-  #define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
-  #define  PLLQ (7 << _BI32(RCC_PLLCFGR_PLLQ_0))
-  #define  NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_5WS
- #else
-  #warning "PLL Source frequency isn't a multiple of 1 MHz or is smaller 2 MHz"
- #endif
-#else
-#warning "Unknown STM32 family"
+#if !defined(STM32_VRANGE) || STM32_VRANGE == 0
+#define FLASH_BASE_FREQ 30000000
+#elif STM32_VRANGE == 1
+#define FLASH_BASE_FREQ 24000000
+#elif STM32_VRANGE == 2
+#define FLASH_BASE_FREQ 22000000
+#elif STM32_VRANGE == 3
+#define FLASH_BASE_FREQ 20000000
 #endif
+
+#if PLLCLK_IN > 26000000
+#warning PLL Input frequency too high
+#endif
+
+#if (PLLCLK_IN > 3999999) && ((PLLCLK_IN % 2000000L) == 0)
+ #define  PLLM (PLLCLK_IN/2000000)
+ #define  PLLN ((SYSCLK_FREQ/1000000) << _BI32(RCC_PLLCFGR_PLLN_0))
+#elif (PLLCLK_IN > 1999999) && ((PLLCLK_IN % 1000000L) == 0)
+ #define  PLLM (PLLCLK_IN/1000000)
+ #define  PLLN ((SYSCLK_FREQ/500000 ) << _BI32(RCC_PLLCFGR_PLLN_0))
+#else
+ #warning "PLL Source frequency isn't a multiple of 1 or 2 MHz"
+#endif
+#define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
+#define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
+#define  NUT_FLASH_LATENCY  (SYSCLK_FREQ/FLASH_BASE_FREQ)
 
     /* Select System frequency up to 168 MHz */
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
@@ -446,7 +434,12 @@ int SetSysClock(void)
 
     rcc_reg = FLASH->ACR;
     rcc_reg &= ~FLASH_ACR_LATENCY;
+#if STM32_VRANGE == 3
+    /* Prefetch must be off*/
+    rcc_reg |= NUT_FLASH_LATENCY;
+#else
     rcc_reg |= NUT_FLASH_LATENCY | FLASH_ACR_PRFTEN ;
+#endif
     /* Enable Instruction and Data cache */
     rcc_reg |= FLASH_ACR_ICEN | FLASH_ACR_DCEN;
     FLASH->ACR = rcc_reg;

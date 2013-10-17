@@ -138,6 +138,16 @@ nutarch_cm3_stm32_devices =
                 choices = { "8", "16", "32", "64" },
                 default = "32",
                 file = "include/cfg/memory.h",
+             },
+             {
+                macro = "STM32_VRANGE",
+                brief = "Supply Voltage Range",
+                description = "E.g. flash access depends on voltage range. Choices are 0 (2.7-3.6V),\n"..
+                " 1 (2.4-2.7V), 2 (2.1 - 2.4V) and 3 (1.8-21.1)",
+                type = "integer",
+                choices = { "0", "1", "2", "3" },
+                default = "0",
+                file = "include/cfg/memory.h",
              }
          }
     },
