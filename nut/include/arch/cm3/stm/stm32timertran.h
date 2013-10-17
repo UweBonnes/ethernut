@@ -113,12 +113,12 @@
 #define STM32TIMER_CLK (CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR,  _BI32(RCC_APB2ENR_TIM1EN)))
 #define STM32TIMER_RST (CM3BBREG(RCC_BASE, RCC_TypeDef, APB2RSTR,  _BI32(RCC_APB2RSTR_TIM1RST)))
 #define STM32TIMER_BDTR
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 #define STM32TIMER_NCH 6
 #else
 #define STM32TIMER_NCH 4
 #endif
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 /* RCC_CFGR3_TIM1SW may only be set with AHBdiv = ABP2DIV = 1, so timerclock is 2 * PCLK
    with RCC_CFGR3_TIM1SW or RCC_CFGR_PPRE2_2 set*/
 #define STM32TIMER_PCLK \
@@ -132,7 +132,7 @@
 #endif
 #if defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 1
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?                               2 : \
     (((port == GPIOB_BASE) && (pin == 15))||((port == GPIOC_BASE) && (pin == 13)))?  4 : \
     (( port == GPIOA_BASE) && (pin == 15))?                                          9 : \
@@ -153,7 +153,7 @@
 #define STM32TIMER_NCH 4
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 1
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) \
     (port == GPIOD_BASE) ? 2 :                                          \
     (((port == GPIOA_BASE) && (pin ==  9))||((port == GPIOA_BASE) && (pin == 10)))? 10 : 1
@@ -176,7 +176,7 @@
 #define STM32TIMER_NCH 4
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 2
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) \
     (((port == GPIOB_BASE) && (pin ==  3)||((port == GPIOB_BASE) && (pin ==  7)))? 10 : 2
 #elif defined(MCU_STM32F1)
@@ -195,7 +195,7 @@
 #define STM32TIMER_NCH 4
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 2
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) (port == GPIOA_BASE)? 10 : 2
 #elif defined(MCU_STM32F1)
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM4_REMAP
@@ -243,7 +243,7 @@
 #define STM32TIMER_SIG sig_TIM8
 #define STM32TIMER_CLK (CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR,  _BI32(RCC_APB2ENR_TIM8EN)))
 #define STM32TIMER_RST (CM3BBREG(RCC_BASE, RCC_TypeDef, APB2RSTR,  _BI32(RCC_APB2RSTR_TIM8RST)))
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 /* RCC_CFGR3_TIM8SW may only be set with AHBdiv = ABP2DIV = 1, so timerclock is 2 * PCLK
    with RCC_CFGR3_TIM8SW or RCC_CFGR_PPRE2_2 set*/
 #define STM32TIMER_PCLK \
@@ -256,14 +256,14 @@
      (2 * NutClockGet(NUT_HWCLK_PCLK2)) : (NutClockGet(NUT_HWCLK_PCLK2)))
 #endif
 #define STM32TIMER_BDTR
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 #define STM32TIMER_NCH 6
 #else
 #define STM32TIMER_NCH 4
 #endif
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 3
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 /* FIXME: This doesn't map TIM*_BKIN2 */
 #define STM32TIMER_AF(port, pin) ((port == GPIOC_BASE) || (port == GPIOD_BASE)?      4 : \
     (( port == GPIOA_BASE) && (pin ==  0))?                                          9 : \
@@ -364,7 +364,7 @@
     ((CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PPRE2_2)))?  \
      (2 * NutClockGet(NUT_HWCLK_PCLK2)) : (NutClockGet(NUT_HWCLK_PCLK2)))
 #define STM32TIMER_NCH 2
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 /* FIXME: This doesn't map TIM15 CH1N*/
 #define STM32TIMER_AF(port, pin) (port == GPIOA_BASE)?  9 : (port == GPIOB_BASE) ? 1 :3
 #endif
@@ -378,7 +378,7 @@
     ((CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PPRE2_2)))?  \
      (2 * NutClockGet(NUT_HWCLK_PCLK2)) : (NutClockGet(NUT_HWCLK_PCLK2)))
 #define STM32TIMER_NCH 1
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?  4 :  1
 #endif
 
@@ -391,7 +391,7 @@
     ((CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PPRE2_2)))?  \
      (2 * NutClockGet(NUT_HWCLK_PCLK2)) : (NutClockGet(NUT_HWCLK_PCLK2)))
 #define STM32TIMER_NCH 1
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?           4 : \
     (  port == GPIOA_BASE)                                       1 : \
     (( port == GPIOB_BASE) && ((pin ==  7))?                     1 : \

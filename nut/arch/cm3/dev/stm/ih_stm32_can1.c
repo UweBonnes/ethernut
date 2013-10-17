@@ -43,7 +43,7 @@
 #define NUT_IRQPRI_CAN1  4
 #endif
 
-#if defined(STM32F10X_LD)|| defined(STM32F10X_MD)|| defined(STM32F10X_HD)|| defined(STM32F10X_XL) || defined(STM32F30X)
+#if defined(STM32F10X_LD)|| defined(STM32F10X_MD)|| defined(STM32F10X_HD)|| defined(STM32F10X_XL) || defined(MCU_STM32F30X)
 #define CAN_TX_IRQn  USB_HP_CAN1_TX_IRQn
 #define CAN_RX0_IRQn USB_LP_CAN1_RX0_IRQn
 #define CAN_RX1_IRQn CAN1_RX1_IRQn

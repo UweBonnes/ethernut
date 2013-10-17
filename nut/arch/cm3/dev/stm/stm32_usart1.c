@@ -156,7 +156,7 @@ NUTDEVICE devUsartStm32_1 = {
   #define RX_GPIO_PIN     10
  #endif
 #else /* L1/F2/F3/F4*/
- #if defined(MCU_STM32F30)
+ #if defined(MCU_STM32F3)
   #define STM_USART_REMAP  GPIO_AF_7
  #else
   #define STM_USART_REMAP  GPIO_AF_USART1
@@ -167,10 +167,10 @@ NUTDEVICE devUsartStm32_1 = {
  #elif USART1_TX_PIN == 6
   #define TX_GPIO_PORT    NUTGPIO_PORTB
   #define TX_GPIO_PIN     6
- #elif defined(MCU_STM32F30) && USART1_TX_PIN == 4
+ #elif defined(MCU_STM32F3) && USART1_TX_PIN == 4
   #define TX_GPIO_PORT    NUTGPIO_PORTC
   #define TX_GPIO_PIN      4
- #elif defined(MCU_STM32F30) && USART1_TX_PIN == 0
+ #elif defined(MCU_STM32F3) && USART1_TX_PIN == 0
   #define TX_GPIO_PORT    NUTGPIO_PORTE
   #define TX_GPIO_PIN      0
  #else
@@ -182,10 +182,10 @@ NUTDEVICE devUsartStm32_1 = {
  #elif USART1_RX_PIN == 7
   #define RX_GPIO_PORT    NUTGPIO_PORTB
   #define RX_GPIO_PIN     7
- #elif defined(MCU_STM32F30) && USART1_RX_PIN == 5
+ #elif defined(MCU_STM32F3) && USART1_RX_PIN == 5
   #define RX_GPIO_PORT    NUTGPIO_PORTC
   #define RX_GPIO_PIN      5
- #elif defined(MCU_STM32F30) && USART1_RX_PIN == 1
+ #elif defined(MCU_STM32F3) && USART1_RX_PIN == 1
   #define RX_GPIO_PORT    NUTGPIO_PORTE
   #define RX_GPIO_PIN      1
  #else

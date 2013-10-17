@@ -41,7 +41,7 @@
 
 #include <cfg/arch.h>
 
-#if defined(MCU_STM32F1)||defined(MCU_STM32L1) ||  defined(MCU_STM32F30)
+#if defined(MCU_STM32F1)||defined(MCU_STM32L1) ||  defined(MCU_STM32F3)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #elif  defined(MCU_STM32F2)||defined(MCU_STM32F4)
 #include <arch/cm3/stm/stm32f2_dma.h>

@@ -58,7 +58,7 @@
  * \param ch    character to write
  */
 
-#if defined (STM32F30X)
+#if defined (MCU_STM32F3)
 #define DebugPut(ch) {while (!(DEBUG_UART_NR->ISR & USART_ISR_TXE)); DEBUG_UART_NR->TDR = ((ch) & 0x1FF);}
 #else
 #define DebugPut(ch) {while (!(DEBUG_UART_NR->SR & USART_SR_TXE)); DEBUG_UART_NR->DR = ((ch) & 0x1FF);}

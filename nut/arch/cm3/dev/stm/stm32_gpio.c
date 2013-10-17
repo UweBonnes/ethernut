@@ -54,7 +54,7 @@
 #define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F2)
 #define GPIO_RCC_ENR AHB1ENR
-#elif defined (MCU_STM32F30)
+#elif defined (MCU_STM32F3)
 #define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F4)
 #define GPIO_RCC_ENR AHB1ENR
@@ -143,7 +143,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
 int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(IS_GPIO_ALL_PERIPH(bank));
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
     GPIO_TypeDef *gpio = (GPIO_TypeDef *) bank;
 #else
     __IO uint32_t* gpio_bb = CM3BB_BASE(bank);
@@ -160,7 +160,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
      *
      * Otherwise we may introduce unwanted transistions on the port
      */
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
     if (flags & GPIO_CFG_INIT_HIGH)
     {
         if (flags & GPIO_CFG_INIT_LOW)

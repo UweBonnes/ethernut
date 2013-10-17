@@ -143,7 +143,7 @@ NUTDEVICE devUsartStm32_3 = {
  *           CK  PB12   PC12  PD10
  *           CTS PB13   PD11
  *           RTS PB14   PD12
- * F30:      TX  PB10   PC10  PD8
+ * F3:       TX  PB10   PC10  PD8
  *           RX  PB11   PC11  PD9  PE15
  *           CK  PB12   PC12  PD10
  *           CTS PB13   PD11  PA13
@@ -191,7 +191,7 @@ NUTDEVICE devUsartStm32_3 = {
   #endif
  #endif /* USART3_NOREMAP_USART */
 #else /* L1/F2/F3/F4*/
- #if defined(MCU_STM32F30)
+ #if defined(MCU_STM32F3)
   #define STM_USART_REMAP  GPIO_AF_7
  #else
   #define STM_USART_REMAP  GPIO_AF_USART3
@@ -239,7 +239,7 @@ NUTDEVICE devUsartStm32_3 = {
  #elif USART3_RX_PIN == 9
   #define RX_GPIO_PORT    NUTGPIO_PORTD
   #define RX_GPIO_PIN     9
- #elif defined(MCU_STM32F30) && USART3_RX_PIN == 15
+ #elif defined(MCU_STM32F3) && USART3_RX_PIN == 15
   #define RX_GPIO_PORT    NUTGPIO_PORTE
   #define RX_GPIO_PIN     15
  #else
@@ -283,7 +283,7 @@ NUTDEVICE devUsartStm32_3 = {
   #elif USART3_CTS_PIN == 11
    #define CTS_GPIO_PORT    NUTGPIO_PORTD
    #define CTS_GPIO_PIN     11
-  #elif defined(MCU_STM32F30) && USART3_CTS_PIN == 013
+  #elif defined(MCU_STM32F3) && USART3_CTS_PIN == 013
    #define CTS_GPIO_PORT    NUTGPIO_PORTA
    #define CTS_GPIO_PIN     13
   #else
@@ -303,7 +303,7 @@ NUTDEVICE devUsartStm32_3 = {
   #elif USART3_RTS_PIN == 12
    #define RTS_GPIO_PORT    NUTGPIO_PORTD
    #define RTS_GPIO_PIN     12
-  #elif defined(MCU_STM32F30) && USART3_CTS_PIN == 6
+  #elif defined(MCU_STM32F3) && USART3_CTS_PIN == 6
    #define CTS_GPIO_PORT    NUTGPIO_PORTF
    #define CTS_GPIO_PIN     6
   #else

@@ -53,7 +53,7 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3.h>
-#if defined(MCU_STM32F30) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32F3) ||defined(MCU_STM32F4)
 #include <arch/cm3/core_cm4.h>
 #else
 #include <arch/cm3/core_cm3.h>

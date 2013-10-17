@@ -177,7 +177,7 @@ extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
 /* GPIO on AHB2 is outside of bitband region */
 #define GpioPinGet(bank, bit)        (CM3REG((bank), GPIO_TypeDef, IDR ) & (1<<(bit)))?1:0
 #define GpioPinSet(bank, bit, value) (CM3REG((bank), GPIO_TypeDef, BSRR) = 1<<((value)?(bit): ((bit)+16)))
@@ -216,7 +216,7 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
         CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,(bank-GPIOA_BASE)>>10) = 1; \
     } while(0)
 
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 #define GpioClkEnable(bank) do {                \
         CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,                 \
                  (((bank-GPIOA_BASE)>>10) +17)) = 1;} while(0)

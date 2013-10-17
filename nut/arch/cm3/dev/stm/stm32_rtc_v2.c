@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 20130 by Uwe Bonnes(bon@elektron.ikp,physik.tu-darmmstadt.de).
+ * Copyright (C) 2013 by Uwe Bonnes(bon@elektron.ikp,physik.tu-darmmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -45,7 +45,6 @@
 #include <dev/rtc.h>
 
 #include <cfg/arch/gpio.h>
-#include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
 #include <stdlib.h>

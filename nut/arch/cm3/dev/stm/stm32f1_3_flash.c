@@ -46,8 +46,10 @@
 
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/vendor/stm32f10x.h>
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F30X)
 #include <arch/cm3/stm/vendor/stm32f30x.h>
+#elif defined(MCU_STM32F37X)
+#include <arch/cm3/stm/vendor/stm32f37x.h>
 #else
 #warning "STM32 family has no F1/F3 compatible FLASH"
 #endif
@@ -65,7 +67,7 @@ static uint32_t pagelist[8] = {0,0,0,0,0,0,0,0};
 #elif defined(STM32F10X_XL)
 #define FLASH_PAGE_SIZE 2048
 static uint32_t pagelist[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 #define FLASH_PAGE_SIZE 2048
 static uint32_t pagelist[4] = {0,0,0,0};
 #else
@@ -113,7 +115,7 @@ void FlashUntouch(void)
 static uint32_t FlashEnd(void)
 {
     uint16_t size;
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
     size = *(__I uint16_t *) 0x1FFFF7CC;
 #else
     size = *(__I uint16_t *) 0x1FFFF7E0;

@@ -137,7 +137,7 @@ NUTDEVICE devUartStm32_5 = {
 
 #if defined(MCU_STM32F1)
 #undef  STM_USART_REMAP_MASK
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
  #define STM_USART_REMAP  GPIO_AF_5
 #else
  #define STM_USART_REMAP  GPIO_AF_UART5

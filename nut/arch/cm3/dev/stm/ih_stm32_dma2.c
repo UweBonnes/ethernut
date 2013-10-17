@@ -57,7 +57,7 @@ static int Dma2c1IrqCtl(int cmd, void *param);
 static int Dma2c2IrqCtl(int cmd, void *param);
 static int Dma2c3IrqCtl(int cmd, void *param);
 static int Dma2c4IrqCtl(int cmd, void *param);
-#if defined(STM32F10X_CL)  || defined(MCU_STM32F2) || defined(MCU_STM32F30) || defined(MCU_STM32F4)
+#if defined(STM32F10X_CL)  || defined(MCU_STM32F2) || defined(MCU_STM32F3) || defined(MCU_STM32F4)
 static int Dma2c5IrqCtl(int cmd, void *param);
 #endif
 #if defined(MCU_STM32F2) || defined(MCU_STM32F4)
@@ -105,7 +105,7 @@ IRQ_HANDLER sig_DMA2_CH4 = {
     Dma2c4IrqCtl    /* Interrupt control, ir_ctl. */
 };
 
-#if defined(STM32F10X_CL) || defined(MCU_STM32F2) || defined(MCU_STM32F30) || defined(MCU_STM32F4)
+#if defined(STM32F10X_CL) || defined(MCU_STM32F2) || defined(MCU_STM32F3) || defined(MCU_STM32F4)
 IRQ_HANDLER sig_DMA2_CH5 = {
 #ifdef NUT_PERFMON
     0,              /* Interrupt counter, ir_count. */
@@ -188,7 +188,7 @@ void Dma2IrqEntry_Ch4(void *arg)
     }
 }
 
-#if defined(STM32F10X_CL) || defined(MCU_STM32F2) || defined(MCU_STM32F30) || defined(MCU_STM32F4)
+#if defined(STM32F10X_CL) || defined(MCU_STM32F2) || defined(MCU_STM32F3) || defined(MCU_STM32F4)
 void Dma2IrqEntry_Ch5(void *arg)
 {
 #ifdef NUT_PERFMON
@@ -270,7 +270,7 @@ static int Dma2c4IrqCtl(int cmd, void *param)
 #endif
 }
 
-#elif defined(STM32F10X_CL) || defined(MCU_STM32F2) || defined(MCU_STM32F30)|| defined(MCU_STM32F4)
+#elif defined(STM32F10X_CL) || defined(MCU_STM32F2) || defined(MCU_STM32F3)|| defined(MCU_STM32F4)
 
 static int Dma2c4IrqCtl(int cmd, void *param)
 {

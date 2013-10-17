@@ -155,7 +155,7 @@
  */
 #define GPIO_PULLUP_ON(b)
 #define GPIO_PULLUP_OFF(b)
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
 #define GPIO_PULLUP_ON(b)  (CM3REG(GPIO_ID, GPIO_TypeDef, PUPDR) |=  (_BV(b<<1)))
 #define GPIO_PULLUP_OFF(b) (CM3REG(GPIO_ID, GPIO_TypeDef, PUPDR) &= ~(_BV(b<<1)))
 #else

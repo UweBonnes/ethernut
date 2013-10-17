@@ -70,7 +70,7 @@
 
 #if defined(MCU_STM32)
 #if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2)|| \
-    defined(MCU_STM32F30) ||defined(MCU_STM32F4)
+    defined(MCU_STM32F3) ||defined(MCU_STM32F4)
 
 /*!
  * Frequency of CPU Core(HCLK/AHB CLK)

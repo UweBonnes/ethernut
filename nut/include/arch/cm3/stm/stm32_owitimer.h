@@ -61,7 +61,7 @@ struct _NUTOWIINFO_STM32TIM {
     __IO uint32_t *compare;
     __IO uint32_t *capture;
 #endif
-#if defined(MCU_STM32F30)
+#if defined(MCU_STM32F3)
     __IO uint32_t *ccmr;
 #else
     __IO uint16_t *ccmr;

@@ -41,6 +41,8 @@
 
 #if defined(MCU_STM32F30X)
 #include <arch/cm3/stm/vendor/stm32f30x.h>
+#elif defined(MCU_STM32F37X)
+#include <arch/cm3/stm/vendor/stm32f37x.h>
 #else
 #warning "Unknown STM32 family"
 #endif

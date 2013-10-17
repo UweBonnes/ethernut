@@ -75,12 +75,12 @@ nutarch_cm3_stm32_family =
         script = "arch/cm3/stm32f2.nut"
     },
     {
-        name = "nutarch_cm3_stm32f30",
-        brief = "STM32F30",
-        requires = { "HW_MCU_STM32", "HW_MCU_STM32F30X" },
-        provides = { "STM32F30X" },
-        description = "ST Microelectronics STM32 F30 Series",
-        script = "arch/cm3/stm32f30.nut"
+        name = "nutarch_cm3_stm32f3",
+        brief = "STM32F3",
+        requires = { "HW_MCU_STM32", "HW_MCU_STM32F3XX" },
+        provides = { "STM32F3XX" },
+        description = "ST Microelectronics STM32 F3 Series",
+        script = "arch/cm3/stm32f3.nut"
     },
     {
         name = "nutarch_cm3_stm32f4",

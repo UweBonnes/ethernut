@@ -35,42 +35,41 @@
 --
 --
 stm32_memory_f30 = { "128", "256" }
-stm32f30_device_class = { "STM32F30X" }
+stm32_memory_f37 = { "64", "128", "256" }
+stm32f3_devices = { "MCU_STM32F302" , "MCU_STM32F303", "MCU_STM32F313", "MCU_STM32F373", "MCU_STM32F383" }
 
 -- *****************************************************************************
 -- STM32F30 Family
 -- *****************************************************************************
 --
 
-nutarch_cm3_stm32f30 =
+nutarch_cm3_stm32f3 =
 {
 
     --
     -- MCU Family
     --
     {
-        name = "nutarch_cm3_stm32f30_family",
+        name = "nutarch_cm3_stm32f3_family",
         brief = "MCU F3 Family",
-        requires = { "HW_MCU_STM32F30X" },
+        requires = { "HW_MCU_STM32F3XX" },
         options =
         {
             {
-                macro = "MCU_STM32F30",
-                brief = "STM32F30",
+                macro = "MCU_STM32F3",
+                brief = "STM32F3 family",
                 type = "integer",
                 default = 1,
-                requires = { "HW_MCU_STM32F30X" },
                 provides =
                 {
-                    "HW_PLL_STM32F30",
-                    "HW_RCC_STM32",
+                    "HW_PLL_STM32F3",
                     "HW_FLASH_STM32F1_3",
                     "HW_GPIO_STM32V2",
                     "HW_CRC32_STM32",
                     "DEV_IRQ_STM32",
                     "HW_DMA1_STM32F1",
                     "HW_DMA2_STM32F1",
-                    "HW_EXTI04_STM32",
+                    "HW_EXTI04_STM32F3",
                     "HW_EXTI95_STM32",
                     "HW_EXTI1510_STM32",
                     "HW_I2C1_STM32V2",
@@ -81,20 +80,20 @@ nutarch_cm3_stm32f30 =
                       "HW_UART1_STM32",
                       "HW_UART2_STM32",
                       "HW_UART3_STM32",
-                      "HW_UART4_STM32",
-                      "HW_UART5_STM32",
                       "HW_CAN1_STM32",
                       "HW_RTC_STM32_V2",
-                    "HW_STM32_TIM1",
                     "HW_STM32_TIM2_32BIT",
                     "HW_STM32_TIM3",
                     "HW_STM32_TIM4",
                     "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
                     "HW_STM32_TIM15",
                     "HW_STM32_TIM16",
                     "HW_STM32_TIM17",
+                    "HW_STM32_ADC1",
+                    "HW_STM32_DAC1",
+                    "HW_STM32_COMP1_2",
+                    "HW_STM32_OP1_2",
+                    "HW_STM32_DAC1",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -104,27 +103,124 @@ nutarch_cm3_stm32f30 =
     -- STM32F30 MCU Classes
     --
     {
-        name = "nutarch_cm3_stm32F30_class",
+        name = "nutarch_cm3_stm32F3_devices",
         brief = "STM32F30 Device Classes",
-        requires = { "HW_MCU_STM32" },
+        requires = { "HW_MCU_STM32F3XX" },
         options =
         {
             {
-                macro = "STM32F30X",
+                macro = "MCU_STM32F302",
                 brief = "STM32F30 Series",
                 description = "STM32F30 devices.",
                 flavor = "booldata",
-                exclusivity = stm32F30_device_class,
-                makedefs = { "HWDEF+=-DSTM32F30X" },
-                provides = { "STM32F3XX" },
+                exclusivity = stm32f3_devices,
+                provides =
+                {
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_STM32_TIM1",
+                    "HW_STM32_USB",
+                    "HW_STM32_CAPSENSE",
+                    "HW_STM32_COMP3_4",
+                    "HW_STM32_ADC2",
+                },
+            },
+            {
+                macro = "MCU_STM32F303",
+                brief = "STM32F303 ",
+                description = "STM32F30 devices.",
+                flavor = "booldata",
+                exclusivity = stm32f3_devices,
+                provides =
+                {
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_STM32_TIM1",
+                    "HW_STM32_TIM7",
+                    "HW_STM32_TIM8",
+                    "HW_STM32_USB",
+                    "HW_STM32_CAPSENSE",
+                    "HW_STM32_ADC2",
+                    "HW_STM32_ADC3",
+                    "HW_STM32_ADC4",
+                    "HW_STM32_DAC2",
+                    "HW_STM32_COMP3_4",
+                    "HW_STM32_COMP5_7",
+                    "HW_STM32_OP3_4",
+                },
                 file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F313",
+                brief = "STM32F313 ",
+                description = "STM32F30 devices.",
+                flavor = "booldata",
+                exclusivity = stm32f3_devices,
+                provides =
+                {
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_STM32_TIM1",
+                    "HW_STM32_TIM7",
+                    "HW_STM32_TIM8",
+                    "HW_STM32_ADC2",
+                    "HW_STM32_ADC3",
+                    "HW_STM32_ADC4",
+                    "HW_STM32_DAC2",
+                    "HW_STM32_COMP3_4",
+                    "HW_STM32_COMP5_7",
+                    "HW_STM32_OP3_4",
+                },
+            },
+            {
+                macro = "MCU_STM32F373",
+                brief = "STM32F373 ",
+                description = "STM32F373 devices.",
+                flavor = "booldata",
+                exclusivity = stm32f3_devices,
+                provides =
+                {
+                    "HW_STM32_TIM5_32BIT",
+                    "HW_STM32_TIM7",
+                    "HW_STM32_TIM12",
+                    "HW_STM32_TIM13",
+                    "HW_STM32_TIM14",
+                    "HW_STM32_TIM18",
+                    "HW_STM32_TIM19",
+                    "HW_STM32_USB",
+                    "HW_STM32_CAPSENSE",
+                    "HW_STM32_SDADC1_3",
+                    "HW_STM32_DAC2",
+                    "HW_STM32_DAC3",
+                },
+            },
+            {
+                macro = "MCU_STM32F383",
+                brief = "STM32F383 ",
+                description = "STM32F383 devices.",
+                flavor = "booldata",
+                exclusivity = stm32f3_devices,
+                provides =
+                {
+                    "HW_STM32_TIM5_32BIT",
+                    "HW_STM32_TIM7",
+                    "HW_STM32_TIM12",
+                    "HW_STM32_TIM13",
+                    "HW_STM32_TIM14",
+                    "HW_STM32_TIM18",
+                    "HW_STM32_TIM19",
+                    "HW_STM32_CAPSENSE",
+                    "HW_STM32_SDADC1_3",
+                    "HW_STM32_DAC2",
+                    "HW_STM32_DAC3",
+                },
             },
         }
     },
     {
-        name = "nutarch_cm3_stm32F30_memory",
+        name = "nutarch_cm3_stm32F3_memory",
         brief = "STM32F30x Device Memory",
-        requires = { "HW_MCU_STM32" },
+        requires = { "HW_MCU_STM32F3XX" },
         options =
         {
             {
@@ -137,7 +233,22 @@ nutarch_cm3_stm32f30 =
                 requires = { "HW_MCU_STM32F30X" },
                 type = "enumerated",
                 choices = stm32_memory_f30,
-                file = "include/cfg/arch.h"
+                file = "include/cfg/arch.h",
+                makedefs = { "HWDEF+=-DSTM32F30X" },
+            },
+            {
+                macro = "MCU_STM32F37X",
+                brief = "STM32F37x memory",
+                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
+                              "STM32F37x>Y<zz where Y is one of the list below.\n\n"..
+                              "8 =    64 kbytes Flash\n"..
+                              "B =   128 kbytes Flash\n"..
+                              "C =   256 kbytes Flash\n",
+                requires = { "HW_MCU_STM32F37X" },
+                type = "enumerated",
+                choices = stm32_memory_f37,
+                file = "include/cfg/arch.h",
+                makedefs = { "HWDEF+=-DSTM32F37X" },
             },
         }
     },
@@ -152,7 +263,7 @@ nutarch_cm3_stm32f30 =
             "cm3/dev/stm/system_stm32.c",
             "cm3/dev/stm/stm32f30_clk.c"
         },
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
+        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC", "HW_PLL_STM32F3" },
         options =
         {
             {
@@ -162,7 +273,6 @@ nutarch_cm3_stm32f30 =
                               "SYSCLK_HSI is the internal 8MHz clock.\n"..
                               "SYSCLK_PLL is the internal PLL output. Select the source for the PLL in the next option.\n"..
                               "SYSCLK_HSE is the external oscillator or crystal input.\n",
-                requires = { "HW_PLL_STM32F30" },
                 type = "enumerated",
                 choices = { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE" },
                 file = "include/cfg/clock.h"
@@ -171,7 +281,6 @@ nutarch_cm3_stm32f30 =
                 macro = "HSE_BYPASS",
                 brief = "HSE from external source",
                 description = "Use the clock signal applied to OSC_IN.",
-                requires = { "HW_PLL_STM32F30" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
@@ -181,7 +290,6 @@ nutarch_cm3_stm32f30 =
                 description = "Select where the PLL should get its clock from.\n\n"..
                               "SYSCLK_HSI is the internal 8MHz clock. PLL is fed with SYSCLK_HSI/2.\n"..
                               "SYSCLK_HSE is the external oscillator or crystal input.\n",
-                requires = { "HW_PLL_STM32F30" },
                 type = "enumerated",
                 choices = { "PLLCLK_HSI", "PLLCLK_HSE" },
                 file = "include/cfg/clock.h"
@@ -190,7 +298,7 @@ nutarch_cm3_stm32f30 =
                 macro = "PLL_CLOCK_DIV",
                 brief = "PLL Clock Prescaler",
                 description = "Select this to force the HSE clock beeing divided by 2.",
-                requires = { "HW_PLL_STM32F30", "DISABLED" },
+                requires = { "DISABLED" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
@@ -201,7 +309,7 @@ nutarch_cm3_stm32f30 =
                               "Respect that the PLL output has to be at maximum 72MHz.\n"..
                               "If USB is used the ouput must provide a frequency of 72MHz or 48MHz.\n"..
                               "This clock is used for audio I2S interface directly.\n",
-                requires = { "HW_PLL_STM32F30", "DISABLED" },
+                requires = { "DISABLED" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
@@ -210,7 +318,6 @@ nutarch_cm3_stm32f30 =
                 brief = "External Oszillator Frequency",
                 description = "Value of the external oscillator in Herz.\n"..
                               "Typical Values is: 8 MHz\n.",
-                requires = { "HW_PLL_STM32F30" },
                 flavor = "booldata",
                 type = "long",
                 default = "8000000",
@@ -225,7 +332,6 @@ nutarch_cm3_stm32f30 =
                               "48MHz USB supported\n"..
                               "56MHz USB not supported\n"..
                               "72MHz USB supported\n\n",
-                requires = { "HW_PLL_STM32F3" },
                 type = "enumerated",
                 choices = stm32_syclk_frequencies,
                 file = "include/cfg/clock.h"
@@ -238,7 +344,7 @@ nutarch_cm3_stm32f30 =
                               "To override auto calculation enter a value n here where the division is 2^n\n"..
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "Respect that usage of ethernet or USB requires at least 25MHz on this bus.\n",
-                requires = { "HW_PLL_STM32F3", "DISABLED" },
+                requires = { "DISABLED" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
@@ -250,7 +356,7 @@ nutarch_cm3_stm32f30 =
                               "To override auto calculation enter a value n here where the division is 2^n\n"..
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "specific BoardInit() function.\n\n",
-                requires = { "HW_PLL_STM32F3", "DISABLED" },
+                requires = { "DISABLED" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
@@ -262,7 +368,7 @@ nutarch_cm3_stm32f30 =
                               "To override auto calculation enter a value n here where the division is 2^n\n"..
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "specific BoardInit() function.\n\n",
-                requires = { "HW_PLL_STM32F3", "DISABLED" },
+                requires = { "DISABLED" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },

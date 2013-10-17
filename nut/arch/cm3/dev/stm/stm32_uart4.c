@@ -144,7 +144,7 @@ NUTDEVICE devUartStm32_4 = {
  #define TX_GPIO_PIN      0
  #define RX_GPIO_PORT    NUTGPIO_PORTA
  #define RX_GPIO_PIN      1
-#elif defined(MCU_STM32F30)
+#elif defined(MCU_STM32F3)
  #define STM_USART_REMAP  GPIO_AF_5
  #define TX_GPIO_PORT    NUTGPIO_PORTC
  #define TX_GPIO_PIN     10
