@@ -41,11 +41,7 @@
 #include <sys/heap.h>
 #include <dev/iap_flash.h>
 
-#if defined(MCU_STM32F2)
-#include <arch/cm3/stm/vendor/stm32f2xx.h>
-#elif defined(STM32F4XX)
-#include <arch/cm3/stm/vendor/stm32f4xx.h>
-#else
+#if !defined(MCU_STM32F2) && !defined(MCU_STM32F4)
 #warning "STM32 family has no F2/F4 compatible FLASH"
 #endif
 #define FLASH_SECTOR_SIZE      (1 << 17)
@@ -146,7 +142,7 @@ static uint32_t FlashAddr2Sector(void* Addr)
         sector = (addr - FLASH_BASE)/0x4000;
     else if (addr < (FLASH_BASE + 0x20000))
         sector = 4;
-#if defined(STM32F42X)
+#if defined(MCU_STM32F42X)
     else if (FLASH->OPTCR & FLASH_OPTCR_DB1M) {
         if (addr < (FLASH_BASE + 0x80000))
             sector = ((addr - FLASH_BASE)/0x20000) + 4;
@@ -235,7 +231,7 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
     int size;
     uint32_t offset = 0;
 
-#if defined(STM32F42X)
+#if defined(MCU_STM32F42X)
     /* On STM32F42x/F43x with 1 MiByte, a dual bank option is available.
      * When mapped, sectors 7..11 and 19.. 23 are not used and sector 12
      * starts at offset 0x80000 instead of 0x100000. */

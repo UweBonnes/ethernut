@@ -49,7 +49,14 @@
 #include <arch/cm3/stm/vendor/stm32f30x.h>
 #elif defined(STM32F37X)
 #include <arch/cm3/stm/vendor/stm32f37x.h>
-#elif defined(MCU_STM32F4)
+#elif defined(MCU_STM32F401)
+#define STM32F401xx
+#include <arch/cm3/stm/vendor/stm32f4xx.h>
+#elif defined(MCU_STM32F40X)
+#define STM32F40_41xx
+#include <arch/cm3/stm/vendor/stm32f4xx.h>
+#elif defined(MCU_STM32F42X)
+#define STM32F427_437xx
 #include <arch/cm3/stm/vendor/stm32f4xx.h>
 #else
 #warning "Unknown STM32 family"
