@@ -50,6 +50,9 @@
 #ifndef __STM32F37x_H
 #define __STM32F37x_H
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifdef __cplusplus
  extern "C" {
 #endif /* __cplusplus */
@@ -229,15 +232,16 @@ typedef enum IRQn
   USB_LP_IRQn                 = 75,     /*!< USB Low Priority global Interrupt                                 */
   USBWakeUp_IRQn              = 76,     /*!< USB Wakeup Interrupt                                              */
   TIM19_IRQn                  = 78,     /*!< TIM19 global Interrupt                                            */
-  FPU_IRQn                    = 81      /*!< Floating point Interrupt                                          */
+  FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"            /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f37x.h"    /* STM32F37x System Header */
+#include <arch/cm3/core_cm4.h>            /* Cortex-M4 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types
