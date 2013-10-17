@@ -4056,7 +4056,7 @@ typedef struct
 #define FLASH_CR_SNB_1                       ((uint32_t)0x00000010)
 #define FLASH_CR_SNB_2                       ((uint32_t)0x00000020)
 #define FLASH_CR_SNB_3                       ((uint32_t)0x00000040)
-#define FLASH_CR_SNB_4                       ((uint32_t)0x00000040)
+#define FLASH_CR_SNB_4                       ((uint32_t)0x00000080)
 #define FLASH_CR_PSIZE                       ((uint32_t)0x00000300)
 #define FLASH_CR_PSIZE_0                     ((uint32_t)0x00000100)
 #define FLASH_CR_PSIZE_1                     ((uint32_t)0x00000200)

@@ -43,7 +43,7 @@
 
 #if defined(MCU_STM32F2)
 #include <arch/cm3/stm/vendor/stm32f2xx.h>
-#elif defined(MCU_STM32F4)
+#elif defined(STM32F4XX)
 #include <arch/cm3/stm/vendor/stm32f4xx.h>
 #else
 #warning "STM32 family has no F2/F4 compatible FLASH"
@@ -111,11 +111,10 @@
  */
 static uint32_t sectorlist = 0;
 
-uint8_t sector2start[] = {0, 0x04, 0x08, 0x0c, 0x10, 0x20, 0x40,
-                          0x60, 0x80, 0xa0, 0xc0, 0xe0};
+static const uint8_t sector2size[] = {
+    0x04, 0x04, 0x04, 0x04, 0x10, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+};
 
-uint8_t sector2size[] = {0x04, 0x04, 0x04, 0x04, 0x10, 0x20, 0x20, 0x20,
-                         0x20, 0x20, 0x20, 0x20};
 void FlashUntouch(void)
 {
     sectorlist = 0;
@@ -147,8 +146,31 @@ static uint32_t FlashAddr2Sector(void* Addr)
         sector = (addr - FLASH_BASE)/0x4000;
     else if (addr < (FLASH_BASE + 0x20000))
         sector = 4;
+#if defined(STM32F42X)
+    else if (FLASH->OPTCR & FLASH_OPTCR_DB1M) {
+        if (addr < (FLASH_BASE + 0x80000))
+            sector = ((addr - FLASH_BASE)/0x20000) + 4;
+        else if (addr < (FLASH_BASE + 0x90000))
+            sector = ((addr - FLASH_BASE - 0x80000)/0x4000) + 12;
+        else if (addr < (FLASH_BASE + 0xA0000))
+            sector = 16;
+        else
+            sector = ((addr - FLASH_BASE - 0x80000)/0x20000) + 16;
+    }
+    else { /* Dual bank mapping of 1 MiB device F42x/F43x */
+        if (addr < (FLASH_BASE + 0x100000))
+            sector = ((addr - FLASH_BASE)/0x20000) + 4;
+        else if (addr < (FLASH_BASE + 0x110000))
+            sector = ((addr - FLASH_BASE - 0x100000)/0x4000) + 12;
+        else if (addr < (FLASH_BASE + 0x120000))
+            sector = 16;
+        else
+            sector = ((addr - FLASH_BASE - 0x100000)/0x20000) + 16;
+    }
+#else /* STM32F2xx has only one bank*/
     else
         sector = ((addr - FLASH_BASE)/0x20000) + 4;
+#endif
     return sector;
 }
 
@@ -203,14 +225,35 @@ static FLASH_Status FlashWaitReady(void)
  */
 static FLASH_Status FlashEraseSector(uint32_t sector)
 {
+    const uint8_t sector2start[] =  {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38};
+    uint32_t flash_cr = FLASH_CR_SER;
     FLASH_Status rs = FLASH_COMPLETE;
 
     int i;
-    uint32_t *addr = (uint32_t *) (FLASH_BASE + (sector2start[sector] << 12));
-    int size = sector2size[sector] << 12;
+    uint32_t *addr;
+    int size;
+    uint32_t offset = 0;
 
+#if defined(STM32F42X)
+    /* On STM32F42x/F43x with 1 MiByte, a dual bank option is available.
+     * When mapped, sectors 7..11 and 19.. 23 are not used and sector 12
+     * starts at offset 0x80000 instead of 0x100000. */
+    if (sector > 11) {
+        if (FLASH->OPTCR & FLASH_OPTCR_DB1M)
+            offset = 0x80000;
+        else
+            offset = 0x100000;
+        flash_cr |= FLASH_CR_SNB_4;
+        sector = sector - 12;
+    }
+#endif
+    addr = (uint32_t *)(FLASH_BASE + offset + (sector2start[sector] << 14));
+
+    /* Size in 4-byte words */
+    size = sector2size[sector] << 10;
     /* Check if sector is already erased */
-    for(i = 0; i < (size >> 2); i++)
+    for(i = 0; i < size ; i++)
         if (addr[i] != ERASED_PATTERN_32)
             break;
     if (i >= size)
@@ -218,10 +261,12 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
 
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
+    flash_cr |= sector * FLASH_CR_SNB_0;
+
     if(rs == FLASH_COMPLETE) {
         /* if the previous operation is completed, proceed to erase the page */
-        FLASH->CR = FLASH_CR_SER | (sector * FLASH_CR_SNB_0);
-        FLASH->CR = FLASH_CR_SER | (sector * FLASH_CR_SNB_0) | FLASH_CR_STRT;
+        FLASH->CR = flash_cr;
+        FLASH->CR = flash_cr | FLASH_CR_STRT;
 
         /* Wait for last operation to be completed */
         rs = FlashWaitReady();
@@ -291,8 +336,23 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     sector_start = FlashAddr2Sector(dst);
     sector_end = FlashAddr2Sector(dst+len);
     for (i = sector_start; i < sector_end; i++)
-        if ((optcr & (1 << (i +_BI32(FLASH_OPTCR_nWRP_0)))) == 0)
-            return FLASH_ERROR_WRP;
+        if (i < 12) {
+            /* Skip not available sectors on 1 MiBB dual boot devices*/
+#if defined(STM32F2X)
+            if ((optcr & FLASH_OPTCR_DB1M) && (i > 6))
+                continue;
+#endif
+            if ((optcr & (1 << (i +_BI32(FLASH_OPTCR_nWRP_0)))) == 0)
+                return FLASH_ERROR_WRP;
+        }
+#if defined(STM32F2X)
+        else {
+            int j  = i - 12;
+            uint32_t optcr1 = FLASH->OPTCR1;
+            if ((optcr1 & (1 << (j +_BI32(FLASH_OPTCR1_nWRP_0)))) == 0)
+                return FLASH_ERROR_WRP;
+        }
+#endif
     if (src == NULL)
         /* Only a check for write protection was requested */
         return  FLASH_COMPLETE;
@@ -308,7 +368,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     while( (length) && (rs==FLASH_COMPLETE))
     {
         uint32_t sector_nr = FlashAddr2Sector(wptr);
-        uint32_t sector_length = sector2size[sector_nr] << 12;
+        uint32_t sector_length = sector2size[sector_nr % 12] << 12;
         uint32_t current_length = length;
 
         if (((uint32_t)wptr & (sector_length -1)) + length > sector_length)
@@ -519,7 +579,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
  * in processors FLASH. The sectors used for storage are
  * configurable via nutconf.
  *
- * FIXME: At the F2/F4 last sector is quite much bigger than
+ * FIXME: As the F2/F4 last sector is quite much bigger than
  * a FLASH_CONF_SIZE we can handle, implement some rolling scheme
  * E.g. the last word == 0xffffffff in the first FLASH_CONF_SIZE
  * unit starting at FLASH_CONF_SECTOR marks a valid CONF_PAGE. When
@@ -669,11 +729,33 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
         return FLASH_ERROR_PG;
     sector_start = FlashAddr2Sector(dst);
     sector_end = FlashAddr2Sector(dst + len -1);
-    for (i = sector_start; i <= sector_end; i++)
-        if (ena)
-            optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
-        else
-            optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
+    for (i = sector_start; i <= sector_end; i++) {
+        if (i < 12) {
+#if defined(STM32F2X)
+            /* Skip not available sectors on 1 MiBB dual boot devices*/
+            if ((FLASH->OPTCR & FLASH_OPTCR_DB1M) && i > 6)
+                continue;
+#endif
+            if (ena)
+                optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
+            else
+                optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
+        }
+#if defined(STM32F2X)
+        else {
+            int j = i - 12;
+            uint32_t optcr1 = FLASH->OPTCR1;
+            if ((FLASH->OPTCR & FLASH_OPTCR_DB1M) && j > 6)
+                continue;
+            if (ena)
+                optcr1 &= ~(1 << (j + _BI32(FLASH_OPTCR1_nWRP_0)));
+            else
+                optcr1 |=  (1 << (j + _BI32(FLASH_OPTCR1_nWRP_0)));
+            FLASH->OPTCR1 = optcr1;
+        }
+#else
+    }
+#endif
     FLASH->OPTCR = optcr;
     FLASH->OPTCR = optcr |FLASH_OPTCR_OPTSTRT;
     /* Wait for last operation to be completed */
