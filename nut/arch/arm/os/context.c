@@ -156,6 +156,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
+    size_t alloc_size;
 
     /*
      * Allocate stack and thread info structure in one block.
