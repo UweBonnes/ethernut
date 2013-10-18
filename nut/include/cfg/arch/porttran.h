@@ -114,11 +114,16 @@
  *       it may decide to generate a callable function.
  */
 #if defined(MCU_STM32)
+#if defined(MCU_STM32L1)
+#define GPIO_SPEED GPIO_CFG_SPEED_MED
+#else
+#define GPIO_SPEED GPIO_CFG_SPEED_SLOW
+#endif
 #define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
 #define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
 #define GPIO_IS_HI(b)  GpioPinGet(GPIO_ID, b)
 #define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
-#define GPIO_ENABLE(b) GpioClkEnable(GPIO_ID)
+#define GPIO_ENABLE(b) GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT|GPIO_SPEED)
 #define GPIO_OUTPUT(b) GpioPinDrive(GPIO_ID, b)
 #define GPIO_INPUT(b)  GpioPinRelease(GPIO_ID, b)
 #if defined(MCU_STM32F1)
@@ -176,7 +181,13 @@
  */
 #include <cfg/arch/avr.h>
 
-#if GPIO_ID == PIOB_ID
+#if !defined(GPIO_ID) ||  GPIO_ID == PIOA_ID
+#define GPIO_PDS_REG    PINA
+#define GPIO_SOD_REG    PORTA
+#define GPIO_OE_REG     DDRA
+#define GPIO_PUE_REG    PORTA
+
+#elif GPIO_ID == PIOB_ID
 #define GPIO_PDS_REG    PINB
 #define GPIO_SOD_REG    PORTB
 #define GPIO_OE_REG     DDRB
@@ -242,11 +253,6 @@
 #define GPIO_OE_REG     DDRL
 #define GPIO_PUE_REG    PORTL
 
-#else
-#define GPIO_PDS_REG    PINA
-#define GPIO_SOD_REG    PORTA
-#define GPIO_OE_REG     DDRA
-#define GPIO_PUE_REG    PORTA
 #endif
 
 #elif defined(MCU_AT91)
@@ -255,7 +261,40 @@
  */
 #include <arch/arm/at91.h>
 
-#if GPIO_ID == PIOA_ID
+#if !defined(GPIO_ID)
+#define  GPIO_PE_REG    PIO_PER
+#define  GPIO_PD_REG    PIO_PDR
+#define  GPIO_PS_REG    PIO_PSR
+#define  GPIO_OE_REG    PIO_OER
+#define  GPIO_OD_REG    PIO_ODR
+#define  GPIO_OS_REG    PIO_OSR
+#define  GPIO_SOD_REG   PIO_SODR
+#define  GPIO_COD_REG   PIO_CODR
+#define  GPIO_ODS_REG   PIO_ODSR
+#define  GPIO_PDS_REG   PIO_PDSR
+#if defined(PIO_PUER)
+#define  GPIO_PUE_REG   PIO_PUER
+#if defined(PIO_PUDR)
+#define  GPIO_PUD_REG   PIO_PUDR
+#define  GPIO_PUS_REG   PIO_PUSR
+#endif /* PIO_PUDR */
+#endif /* PIO_PUER */
+#if defined(PIO_MDER)
+#define  GPIO_MDE_REG   PIO_MDER
+#if defined(PIO_MDDR)
+#define  GPIO_MDD_REG   PIO_MDDR
+#define  GPIO_MDS_REG   PIO_MDSR
+#endif /* PIO_MDDR */
+#endif /* PIO_MDER */
+#if defined(PIO_IFER)
+#define  GPIO_IFE_REG   PIO_IFER
+#if defined(PIO_IFDR)
+#define  GPIO_IFD_REG   PIO_IFDR
+#define  GPIO_IFS_REG   PIO_IFSR
+#endif /* PIO_IFDR */
+#endif /* PIO_IFER */
+
+#elif GPIO_ID == PIOA_ID
 #define  GPIO_PE_REG    PIOA_PER
 #define  GPIO_PD_REG    PIOA_PDR
 #define  GPIO_PS_REG    PIOA_PSR
@@ -353,39 +392,6 @@
 #define  GPIO_IFS_REG   PIOC_IFSR
 #endif /* PIOC_IFDR */
 #endif /* PIOC_IFER */
-
-#else /* GPIO_ID */
-#define  GPIO_PE_REG    PIO_PER
-#define  GPIO_PD_REG    PIO_PDR
-#define  GPIO_PS_REG    PIO_PSR
-#define  GPIO_OE_REG    PIO_OER
-#define  GPIO_OD_REG    PIO_ODR
-#define  GPIO_OS_REG    PIO_OSR
-#define  GPIO_SOD_REG   PIO_SODR
-#define  GPIO_COD_REG   PIO_CODR
-#define  GPIO_ODS_REG   PIO_ODSR
-#define  GPIO_PDS_REG   PIO_PDSR
-#if defined(PIO_PUER)
-#define  GPIO_PUE_REG   PIO_PUER
-#if defined(PIO_PUDR)
-#define  GPIO_PUD_REG   PIO_PUDR
-#define  GPIO_PUS_REG   PIO_PUSR
-#endif /* PIO_PUDR */
-#endif /* PIO_PUER */
-#if defined(PIO_MDER)
-#define  GPIO_MDE_REG   PIO_MDER
-#if defined(PIO_MDDR)
-#define  GPIO_MDD_REG   PIO_MDDR
-#define  GPIO_MDS_REG   PIO_MDSR
-#endif /* PIO_MDDR */
-#endif /* PIO_MDER */
-#if defined(PIO_IFER)
-#define  GPIO_IFE_REG   PIO_IFER
-#if defined(PIO_IFDR)
-#define  GPIO_IFD_REG   PIO_IFDR
-#define  GPIO_IFS_REG   PIO_IFSR
-#endif /* PIO_IFDR */
-#endif /* PIO_IFER */
 
 #endif /* GPIO_ID */
 
