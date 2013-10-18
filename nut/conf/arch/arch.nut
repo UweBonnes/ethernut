@@ -1110,7 +1110,7 @@ nutarch =
                     "HW_MCU_STM32F4XX",
                     "HW_MCU_STM32F40X",
                     "HW_MCU_STM32F415",
-                    "MCU_STM32F405",
+                    "MCU_STM32F415",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1132,7 +1132,7 @@ nutarch =
                     "HW_MCU_STM32F4XX",
                     "HW_MCU_STM32F40X",
                     "HW_MCU_STM32F417",
-                    "MCU_STM32F407",
+                    "MCU_STM32F417",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },

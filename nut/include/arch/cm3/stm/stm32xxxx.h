@@ -53,7 +53,7 @@
 #define STM32F401xx
 #include <arch/cm3/stm/vendor/stm32f4xx.h>
 #elif defined(MCU_STM32F40X)
-#define STM32F40_41xx
+#define STM32F40_41xxx
 #include <arch/cm3/stm/vendor/stm32f4xx.h>
 #elif defined(MCU_STM32F42X)
 #define STM32F427_437xx
