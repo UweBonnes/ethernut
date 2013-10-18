@@ -140,16 +140,18 @@ void Sbbi0Enable(ureg_t ix)
     sel_mode = sbbi0_mode[ix];
     sel_delay = sbbi0_delay[ix];
 
-    SBBI0_MOSI_CLR();
     SBBI0_MOSI_ENA();
+    SBBI0_MOSI_CLR();
+    SBBI0_MOSI_OUTPUT();
     SBBI0_MISO_ENA();
+    SBBI0_SCK_ENA();
     if (sel_mode == 0 || sel_mode == 1) {
         SBBI0_SCK_CLR();
     }
     else {
         SBBI0_SCK_SET();
     }
-    SBBI0_SCK_ENA();
+    SBBI0_SCK_OUTPUT();
 }
 
 /*!
@@ -166,42 +168,46 @@ void Sbbi0ChipReset(ureg_t ix, ureg_t hi)
 {
 #if defined(SBBI0_RST0_BIT)
     if (ix == 0) {
+        SBBI0_RST0_ENA();
         if (hi) {
             SBBI0_RST0_SET();
         } else {
             SBBI0_RST0_CLR();
         }
-        SBBI0_RST0_ENA();
+        SBBI0_RST0_OUTPUT();
     }
 #endif
 #if defined(SBBI0_RST1_BIT)
     if (ix == 1) {
+        SBBI0_RST1_ENA();
         if (hi) {
             SBBI0_RST1_SET();
         } else {
             SBBI0_RST1_CLR();
         }
-        SBBI0_RST1_ENA();
+        SBBI0_RST1_OUTPUT();
     }
 #endif
 #if defined(SBBI0_RST2_BIT)
     if (ix == 2) {
+        SBBI0_RST2_ENA();
         if (hi) {
             SBBI0_RST2_SET();
         } else {
             SBBI0_RST2_CLR();
         }
-        SBBI0_RST2_ENA();
+        SBBI0_RST2_OUTPUT();
     }
 #endif
 #if defined(SBBI0_RST3_BIT)
     if (ix == 3) {
+        SBBI0_RST3_ENA();
         if (hi) {
             SBBI0_RST3_SET();
         } else {
             SBBI0_RST3_CLR();
         }
-        SBBI0_RST3_ENA();
+        SBBI0_RST3_OUTPUT();
     }
 #endif
 }
@@ -221,42 +227,46 @@ void Sbbi0ChipSelect(ureg_t ix, ureg_t hi)
 {
 #if defined(SBBI0_CS0_BIT)
     if (ix == 0) {
+        SBBI0_CS0_ENA();
         if (hi) {
             SBBI0_CS0_SET();
         } else {
             SBBI0_CS0_CLR();
         }
-        SBBI0_CS0_ENA();
+        SBBI0_CS0_OUTPUT();
     }
 #endif
 #if defined(SBBI0_CS1_BIT)
     if (ix == 1) {
+        SBBI0_CS1_ENA();
         if (hi) {
             SBBI0_CS1_SET();
         } else {
             SBBI0_CS1_CLR();
         }
-        SBBI0_CS1_ENA();
+        SBBI0_CS1_OUTPUT();
     }
 #endif
 #if defined(SBBI0_CS2_BIT)
     if (ix == 2) {
+        SBBI0_CS2_ENA();
         if (hi) {
             SBBI0_CS2_SET();
         } else {
             SBBI0_CS2_CLR();
         }
-        SBBI0_CS2_ENA();
+        SBBI0_CS2_OUTPUT();
     }
 #endif
 #if defined(SBBI0_CS3_BIT)
     if (ix == 3) {
+        SBBI0_CS3_ENA();
         if (hi) {
             SBBI0_CS3_SET();
         } else {
             SBBI0_CS3_CLR();
         }
-        SBBI0_CS3_ENA();
+        SBBI0_CS3_OUTPUT();
     }
 #endif
 }
