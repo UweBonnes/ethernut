@@ -136,7 +136,19 @@ int StreamReadUntilChars(HTTP_STREAM *sp, const char *delim, const char *ignore,
         ch = sp->strm_ibuf[sp->strm_ipos];
         sp->strm_ipos++;
 #else
-        ch = fgetc(sp);
+        {
+            int c = fgetc(sp);
+
+            if (c == EOF) {
+                if (ferror(sp)) {
+                    rc = -1;
+                    skip = 0;
+                }
+                break;
+            } else {
+                ch = (char) c;
+            }
+        }
 #endif
         if (rc == 0 && ch == ' ') {
             /* Skip leading spaces. */

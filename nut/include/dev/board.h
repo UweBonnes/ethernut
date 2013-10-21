@@ -199,6 +199,9 @@
 #elif defined(MBED_NXP_LPC1768)
 #include <arch/cm3/board/mbed.h>
 #define BOARDNAME "MBED_NXP_LPC1768"
+#elif defined(KOBOLD1)
+#include <arch/cm3/board/kobold1.h>
+#define BOARDNAME "KOBOLD1"
 #elif defined(KSK_LPC1788_SK)
 #include <arch/cm3/board/ksk_lpc1788_sk.h>
 #define BOARDNAME "KSK_LPC1788_SK"
