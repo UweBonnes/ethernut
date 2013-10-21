@@ -1,5 +1,3 @@
-#if defined(HTTPD_AUTH_SAMPLE)
-
 /*
  * Copyright (C) 2012 by egnite GmbH
  *
@@ -81,5 +79,3 @@ int main(void)
 
     return 0;
 }
-
-#endif
