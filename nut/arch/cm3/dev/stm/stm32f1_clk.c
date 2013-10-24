@@ -34,7 +34,7 @@
 
 /*
  * \verbatim
- * $Id: stm32_gpio.c 3182 2010-10-17 21:46:04Z Astralix $
+ * $Id$
  * \endverbatim
  */
 
