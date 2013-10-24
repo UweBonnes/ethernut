@@ -205,7 +205,7 @@ HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackS
     if ((threadMem = NutHeapAlloc(alloc_size)) == 0) {
         return 0;
     }
-    td = (NUTTHREADINFO *) ((threadMem + stackSize) & ~7);
+    td = (NUTTHREADINFO *) (((size_t)threadMem + stackSize) & ~7);
     ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));
 
