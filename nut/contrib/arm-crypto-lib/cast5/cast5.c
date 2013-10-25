@@ -29,8 +29,8 @@
  
  #include <stdint.h>
  #include <string.h>
- #include "cast5.h"
- #include "config.h"
+ #include <crypto/cast5.h>
+ #include"config.h"
  
  #undef DEBUG
  
@@ -38,7 +38,7 @@
   #include "cli.h"
  #endif
  
-#include "cast5-sbox.h"
+#include <crypto/cast5-sbox.h>
 
 
  

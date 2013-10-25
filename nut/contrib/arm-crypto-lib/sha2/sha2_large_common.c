@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "sha2_large_common.h"
+#include <crypto/sha2_large_common.h>
 
 
 static const

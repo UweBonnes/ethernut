@@ -30,14 +30,14 @@
 #define STRING(x) STRING2(x)
 #define STR_LINE STRING(__LINE__)
 
-#include "bigint.h"
+#include <crypto/bigint.h>
 #include <string.h>
 
 #define DEBUG 0
 
 #if DEBUG
-#include "cli.h"
-#include "bigint_io.h"
+#include <crypto/cli.h>
+#include <crypto/bigint_io.h>
 #endif
 
 #ifndef MAX

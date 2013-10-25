@@ -21,8 +21,8 @@
 #include <stdint.h>
 #include <string.h>
 #include "cli.h"
-#include "dsa.h"
-#include "bigint.h"
+#include <crypto/dsa.h>
+#include <crypto/bigint.h>
 
 
 #define DSA_KEY_BLOB_SIZE 1024

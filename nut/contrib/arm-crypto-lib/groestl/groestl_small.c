@@ -25,10 +25,10 @@
  *
  */
 
-#include "groestl_small.h"
-#include "aes_sbox.h"
-#include "gf256mul.h"
-#include "memxor.h"
+#include <crypto/groestl_small.h>
+#include <crypto/aes_sbox.h>
+#include <crypto/gf256mul.h>
+#include <crypto/memxor.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -38,7 +38,7 @@
 #define DEBUG 0
 
 #if DEBUG
- #include "cli.h"
+ #include <crypto/cli.h>
  void dump_m(const uint8_t* m){
 	 uint8_t i,j;
 	 for(i=0; i<8; ++i){

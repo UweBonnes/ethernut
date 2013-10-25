@@ -26,8 +26,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "ubi.h"
-#include "skein.h"
+#include <crypto/ubi.h>
+#include <crypto/skein.h>
 
 
 void skein1024_init(skein1024_ctx_t* ctx, uint16_t outsize_b){

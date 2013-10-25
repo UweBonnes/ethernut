@@ -31,8 +31,8 @@
 
 #include <stdint.h>
 #include <string.h> /* for memcpy, memmove, memset */
-#include "sha2_small_common.h"
-#include "sha256.h"
+#include <crypto/sha2_small_common.h>
+#include <crypto/sha256.h>
 
 #define LITTLE_ENDIAN
 

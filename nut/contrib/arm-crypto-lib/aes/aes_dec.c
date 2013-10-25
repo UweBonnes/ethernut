@@ -19,10 +19,10 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "gf256mul.h"
-#include "aes.h"
-#include "aes_invsbox.h"
-#include "aes_dec.h"
+#include <crypto/gf256mul.h>
+#include <crypto/aes.h>
+#include <crypto/aes_invsbox.h>
+#include <crypto/aes_dec.h>
 
 void aes_invshiftrow(void* data, uint8_t shift){
 	uint8_t tmp[4];

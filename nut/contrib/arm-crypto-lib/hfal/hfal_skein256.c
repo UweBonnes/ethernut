@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "skein.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/skein.h>
 
 
 static const char skein256_128_str[] = "Skein-256-128";

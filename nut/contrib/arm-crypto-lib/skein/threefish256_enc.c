@@ -28,7 +28,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "threefish.h"
+#include <crypto/threefish.h>
 
 #define X(a) (((uint64_t*)data)[(a)])
 static

@@ -19,7 +19,7 @@
 
 #include <string.h>
 #include <stdint.h>
-#include "rabbit.h"
+#include <crypto/rabbit.h>
 
 #ifndef ESTREAM
 #define ESTREAM 0

@@ -18,10 +18,10 @@
 */
 
 
-#include "echo.h"
-#include "gf256mul.h"
-#include "memxor.h"
-#include "aes_enc_round.h"
+#include <crypto/echo.h>
+#include <crypto/gf256mul.h>
+#include <crypto/memxor.h>
+#include <crypto/aes_enc_round.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -33,7 +33,7 @@
 
 #if DEBUG
 #define DEBUG_DEPTH 2
-#include "cli.h"
+#include <crypto/cli.h>
 #endif
 
 

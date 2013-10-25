@@ -26,7 +26,7 @@
  */
 
 #include <stdint.h>
-#include "shabal.h"
+#include <crypto/shabal.h>
 #include <string.h>
 
 const uint32_t shabal512_iv[] = {

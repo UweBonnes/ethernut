@@ -29,7 +29,7 @@
 #include <stdint.h>
 #include <stdlib.h> /* malloc() & free() */
 #include <string.h> /* memset() & memcpy() */
-#include "rc5.h" 
+#include <crypto/rc5.h>
  
 
 #define A (((uint32_t*)buffer)[0])

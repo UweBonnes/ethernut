@@ -1,9 +1,9 @@
 /* bcal_noekeon.c */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "noekeon.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/noekeon.h>
+#include <crypto/keysize_descriptor.h>
 
 const char noekeon_direct_str[]   = "Noekeon-Direct";
 const char noekeon_indirect_str[] = "Noekeon-Indirect";

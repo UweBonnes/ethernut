@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "sha256.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/sha256.h>
 
 static const char sha256_str[] = "SHA-256";
 

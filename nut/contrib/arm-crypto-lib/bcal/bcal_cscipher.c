@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "cscipher.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/cscipher.h>
+#include <crypto/keysize_descriptor.h>
 
 
 const char cscipher_str[]  = "CS-Cipher";

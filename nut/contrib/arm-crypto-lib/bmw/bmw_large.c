@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "bmw_large.h"
+#include <crypto/bmw_large.h>
 
 #define SHL64(a,n)  shiftl64(a,n)
 #define SHR64(a,n)  shiftr64(a,n)
@@ -40,7 +40,7 @@
 #define DEBUG   0
 
 #if DEBUG
- #include "cli.h"
+ #include <crypto/cli.h>
 
  void ctx_dump(const bmw_large_ctx_t* ctx){
  	uint8_t i;

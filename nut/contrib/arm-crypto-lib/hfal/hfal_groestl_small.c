@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "groestl_small.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/groestl_small.h>
 
 
 static const char groestl224_str[] = "Groestl-224";

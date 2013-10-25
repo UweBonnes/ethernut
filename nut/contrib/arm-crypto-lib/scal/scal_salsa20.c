@@ -19,10 +19,10 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include "streamcipher_descriptor.h"
-#include "keysize_descriptor.h"
+#include <crypto/streamcipher_descriptor.h>
+#include <crypto/keysize_descriptor.h>
 
-#include "salsa20.h"
+#include <crypto/salsa20.h>
 
 const char salsa20_str[]  = "Salsa20";
 

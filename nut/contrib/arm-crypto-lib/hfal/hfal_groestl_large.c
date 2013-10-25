@@ -27,9 +27,9 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "groestl_large.h"
-#include "groestl_small.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/groestl_large.h>
+#include <crypto/groestl_small.h>
 
 
 static const char groestl384_str[] = "Groestl-384";

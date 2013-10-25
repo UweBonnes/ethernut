@@ -19,9 +19,9 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "gf256mul.h"
-#include "memxor.h"
-#include "khazad.h"
+#include <crypto/gf256mul.h>
+#include <crypto/memxor.h>
+#include <crypto/khazad.h>
 
 /*
   | | | |     | | | |

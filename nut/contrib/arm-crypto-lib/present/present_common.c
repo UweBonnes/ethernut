@@ -27,7 +27,7 @@
  
 #include <string.h>
 #include <stdint.h> 
-#include "memxor.h"
+#include <crypto/memxor.h>
 
 uint8_t present_sbox(uint8_t b){
 	static const uint8_t sb[] = {

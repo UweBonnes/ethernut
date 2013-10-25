@@ -20,13 +20,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "memxor.h"
-#include "jh_simple.h"
+#include <crypto/memxor.h>
+#include <crypto/jh_simple.h>
 
 #define DEBUG 0
 
 #if DEBUG
-#include "cli.h"
+#include <crypto/cli.h>
 #endif
 
 void jh_encrypt(uint8_t *a);

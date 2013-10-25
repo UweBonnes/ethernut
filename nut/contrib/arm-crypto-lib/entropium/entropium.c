@@ -48,8 +48,8 @@
 
 #include <inttypes.h>
 #include <string.h>
-#include "sha256.h"
-#include "entropium.h"
+#include <crypto/sha256.h>
+#include <crypto/entropium.h>
 
 #include <stdio.h>
 

@@ -19,10 +19,10 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "bigint.h"
-#include "dsa.h"
-#include "hashfunction_descriptor.h"
-#include "hfal-basic.h"
+#include <crypto/bigint.h>
+#include <crypto/dsa.h>
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/hfal-basic.h>
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 

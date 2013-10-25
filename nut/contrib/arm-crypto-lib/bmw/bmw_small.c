@@ -27,8 +27,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "bmw_small.h"
-#include "memxor.h"
+#include <crypto/bmw_small.h>
+#include <crypto/memxor.h>
 
 #define SHL32(a,n) ((a)<<(n))
 #define SHR32(a,n) ((a)>>(n))
@@ -52,7 +52,7 @@
 #endif
 
 #if DEBUG
- #include "cli.h"
+ #include <crypto/cli.h>
 
  void ctx_dump(const bmw_small_ctx_t* ctx){
  	uint8_t i;

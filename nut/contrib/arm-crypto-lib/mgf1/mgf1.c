@@ -19,8 +19,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "mgf1.h"
-#include "hfal-basic.h"
+#include <crypto/mgf1.h>
+#include <crypto/hfal-basic.h>
 
 /*
  * MGF1 as defined in PKCS #1 v2.1 B.2.1

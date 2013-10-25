@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "present80.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/present80.h>
+#include <crypto/keysize_descriptor.h>
 
 const char present80_str[] = "Present80";
 

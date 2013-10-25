@@ -27,7 +27,7 @@
  
 #include <stdint.h>
 #include <string.h>
-#include "trivium.h"
+#include <crypto/trivium.h>
 
 #define G(i) ((((*ctx)[(i)/8])>>(((i)%8)))&1)
 #define S(i,v) ((*ctx)[(i)/8] = (((*ctx)[(i)/8]) & (uint8_t)~(1<<((i)%8))) | ((v)<<((i)%8)))

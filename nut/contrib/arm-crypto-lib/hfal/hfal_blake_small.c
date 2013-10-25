@@ -26,8 +26,8 @@
  */
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "blake_small.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/blake_small.h>
 
 
 static const char blake224_str[] = "Blake-224";

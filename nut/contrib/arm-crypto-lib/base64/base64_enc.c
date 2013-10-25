@@ -27,7 +27,7 @@
  */
 
 #include <stdint.h>
-#include "base64_enc.h"
+#include <crypto/base64_enc.h>
 
 const char base64_alphabet[64] = {
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 

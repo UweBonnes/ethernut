@@ -31,7 +31,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rc6.h"
+#include <crypto/rc6.h>
  
 #define P32 0xB7E15163		/* e -2 */
 #define Q32 0x9E3779B9		/* Golden Ratio -1 */

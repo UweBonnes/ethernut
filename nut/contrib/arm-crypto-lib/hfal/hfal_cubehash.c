@@ -26,8 +26,8 @@
  */
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "cubehash.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/cubehash.h>
 
 
 static const char cubehash224_str[] = "CubeHash-224";

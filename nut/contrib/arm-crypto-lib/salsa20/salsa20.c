@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "salsa20.h"
+#include <crypto/salsa20.h>
 
 
 #define ROTL32(a,n) (((a)<<(n))|((a)>>(32-(n))))

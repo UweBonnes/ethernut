@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "sha1.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/sha1.h>
 
 static const char sha1_str[] = "SHA-1";
 

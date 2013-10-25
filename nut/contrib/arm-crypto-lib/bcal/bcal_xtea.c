@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "xtea.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/xtea.h>
+#include <crypto/keysize_descriptor.h>
 
 const char xtea_str[] = "XTEA";
 

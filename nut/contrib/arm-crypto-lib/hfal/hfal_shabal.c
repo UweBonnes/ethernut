@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "shabal.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/shabal.h>
 
 
 static const char shabal192_str[] = "Shabal-192";

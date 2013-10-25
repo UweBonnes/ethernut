@@ -19,10 +19,10 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include "streamcipher_descriptor.h"
-#include "keysize_descriptor.h"
+#include <crypto/streamcipher_descriptor.h>
+#include <crypto/keysize_descriptor.h>
 
-#include "arcfour.h"
+#include <crypto/arcfour.h>
 
 const char arcfour_str[]   = "ARCFOUR";
 

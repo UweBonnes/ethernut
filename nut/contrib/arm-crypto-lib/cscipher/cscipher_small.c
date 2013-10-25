@@ -20,13 +20,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "memxor.h"
-#include "cscipher.h"
+#include <crypto/memxor.h>
+#include <crypto/cscipher.h>
 
 #define DEBUG 0
 
 #if DEBUG
-#include "cli.h"
+#include <crypto/cli.h>
 #endif
 
 #define ROTL(a) (((a)<<1)|((a)>>7))
@@ -52,7 +52,7 @@ uint8_t p(uint8_t a){
 
 #else
 
-#include "cscipher_sbox.h"
+#include <crypto/cscipher_sbox.h>
 #define P(a) (cscipher_sbox[(a)])
 #endif
 

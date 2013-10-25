@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include "keysize_descriptor.h"
+#include <crypto/keysize_descriptor.h>
 
 #define KS8 ((uint8_t*)ks_desc)
 uint8_t is_valid_keysize_P(const void* ks_desc, uint16_t keysize){

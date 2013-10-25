@@ -26,8 +26,8 @@
  */
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "echo.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/echo.h>
 
 
 static const char echo224_str[]    = "ECHO-224";

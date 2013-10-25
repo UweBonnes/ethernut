@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "keccak.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/keccak.h>
 
 
 static const char keccak224_str[] = "Keccak-224";

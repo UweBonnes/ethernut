@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "serpent-sboxes.h"
+#include <crypto/serpent-sboxes.h>
 
 
 /* S0:   3  8 15  1 10  6  5 11 14 13  4  2  7  0  9 12 */

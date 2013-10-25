@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "khazad.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/khazad.h>
+#include <crypto/keysize_descriptor.h>
 
 const char khazad_str[] = "Khazad";
 

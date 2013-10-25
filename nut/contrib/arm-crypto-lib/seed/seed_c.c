@@ -27,8 +27,8 @@
  */
 #include <stdint.h>
 #include <string.h>
-#include "seed.h"
-#include "seed_sbox.h"
+#include <crypto/seed.h>
+#include <crypto/seed_sbox.h>
 
 
 static

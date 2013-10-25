@@ -17,9 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "hashfunction_descriptor.h"
-#include "hfal-basic.h"
-#include "hfal-hmac.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/hfal-basic.h>
+#include <crypto/hfal-hmac.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -25,9 +25,9 @@
  * 
  */
 
- #include "md5.h"
- #include "md5_sbox.h"
- #include "cli.h" 
+ #include <crypto/md5.h>
+ #include <crypto/md5_sbox.h>
+ #include "cli.h"
  #include <stdint.h>
  #include <string.h>
  

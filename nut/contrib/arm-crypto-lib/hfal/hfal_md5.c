@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "md5.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/md5.h>
 
 static const char md5_str[] = "MD5";
 

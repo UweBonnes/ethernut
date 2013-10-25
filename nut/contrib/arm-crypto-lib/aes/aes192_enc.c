@@ -25,8 +25,8 @@
  * 
  */
 
-#include "aes.h"
-#include "aes_enc.h"
+#include <crypto/aes.h>
+#include <crypto/aes_enc.h>
 
 void aes192_enc(void* buffer, aes192_ctx_t* ctx){
 	aes_encrypt_core(buffer, (aes_genctx_t*)ctx, 12);

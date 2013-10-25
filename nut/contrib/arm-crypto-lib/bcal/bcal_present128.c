@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "present128.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/present128.h>
+#include <crypto/keysize_descriptor.h>
 
 const char present128_str[]   = "Present128";
 

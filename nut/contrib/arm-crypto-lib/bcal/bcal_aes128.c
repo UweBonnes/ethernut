@@ -26,12 +26,12 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "aes.h"
-#include "aes128_enc.h"
-#include "aes128_dec.h"
-#include "aes_keyschedule.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/aes.h>
+#include <crypto/aes128_enc.h>
+#include <crypto/aes128_dec.h>
+#include <crypto/aes_keyschedule.h>
+#include <crypto/keysize_descriptor.h>
 
 const char aes128_str[]  = "AES-128";
 

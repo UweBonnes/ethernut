@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "cast5.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/cast5.h>
+#include <crypto/keysize_descriptor.h>
 
 const char cast5_str[] = "CAST5";
 

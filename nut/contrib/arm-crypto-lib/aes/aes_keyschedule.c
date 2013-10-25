@@ -27,10 +27,10 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "memxor.h"
-#include "aes.h"
-#include "aes_keyschedule.h"
-#include "aes_sbox.h"
+#include <crypto/memxor.h>
+#include <crypto/aes.h>
+#include <crypto/aes_keyschedule.h>
+#include <crypto/aes_sbox.h>
 
 /*
 static

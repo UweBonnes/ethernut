@@ -20,9 +20,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bigint.h"
-#include "bigint_io.h"
-#include "rsa_basic.h"
+#include <crypto/bigint.h>
+#include <crypto/bigint_io.h>
+#include <crypto/rsa_basic.h>
 
 #define DEBUG 0
 

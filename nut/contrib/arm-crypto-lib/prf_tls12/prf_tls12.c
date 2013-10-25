@@ -70,10 +70,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hashfunction_descriptor.h"
-#include "hfal-basic.h"
-#include "hfal-hmac.h"
-#include "prf_tls12.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/hfal-basic.h>
+#include <crypto/hfal-hmac.h>
+#include <crypto/prf_tls12.h>
 
 uint8_t prf_tls12_init(prf_tls12_ctx_t* ctx, const hfdesc_t* hash,
 	const void* key, uint16_t keylength_b,

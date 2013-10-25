@@ -19,8 +19,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "memxor.h"
-#include "mickey128.h"
+#include <crypto/memxor.h>
+#include <crypto/mickey128.h>
 
 /*
 RTAPS = { 0,4,5,  8,10,11,14  ,16,20,  25,30,  32,35,36,38,

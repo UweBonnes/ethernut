@@ -20,8 +20,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "blockcipher_descriptor.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/keysize_descriptor.h>
 
 uint8_t bcal_cipher_init(const bcdesc_t* cipher_descriptor,
                          const void* key, uint16_t keysize_b, bcgen_ctx_t* ctx){

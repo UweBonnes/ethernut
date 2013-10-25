@@ -26,9 +26,9 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "threefish.h"
-#include "memxor.h"
-#include "ubi.h"
+#include <crypto/threefish.h>
+#include <crypto/memxor.h>
+#include <crypto/ubi.h>
 
 void ubi256_init(ubi256_ctx_t* ctx, const void* g, uint8_t type){
 	memset(ctx->tweak.v8, 0, 15);

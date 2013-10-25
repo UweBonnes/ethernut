@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "sha2_small_common.h"
+#include <crypto/sha2_small_common.h>
 
 #define LITTLE_ENDIAN
 

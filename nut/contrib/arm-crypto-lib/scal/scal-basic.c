@@ -20,9 +20,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "streamcipher_descriptor.h"
-#include "keysize_descriptor.h"
-#include "scal-basic.h"
+#include <crypto/streamcipher_descriptor.h>
+#include <crypto/keysize_descriptor.h>
+#include <crypto/scal-basic.h>
 
 uint8_t scal_cipher_init(const scdesc_t* cipher_descriptor,
                          const void* key, uint16_t keysize_b,

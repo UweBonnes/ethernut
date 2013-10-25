@@ -26,8 +26,8 @@
  */
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "jh_simple.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/jh_simple.h>
 
 
 static const char jh224_str[] = "JH-224";

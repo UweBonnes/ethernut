@@ -20,17 +20,17 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bigint.h"
-#include "rsa_basic.h"
+#include <crypto/bigint.h>
+#include <crypto/rsa_basic.h>
 
 #define DEBUG 0
 
 #if DEBUG
-#include "bigint_io.h"
-#include "cli.h"
+#include <crypto/bigint_io.h>
+#include <crypto/cli.h>
 #endif
 
-#include "random_dummy.h"
+#include <crypto/random_dummy.h>
 
 uint16_t rsa_pkcs1v15_compute_padlength_B(const bigint_t* modulus, uint16_t msg_length_B){
 	return bigint_get_first_set_bit(modulus) / 8 + 1 - msg_length_B - 3;

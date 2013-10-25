@@ -26,7 +26,7 @@
  */
 
 #include <stdint.h>
-#include "shabal.h"
+#include <crypto/shabal.h>
 #include <string.h>
 
 #define SHABAL_O1 13

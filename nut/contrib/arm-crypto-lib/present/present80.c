@@ -27,9 +27,9 @@
  
 #include <string.h>
 #include <stdint.h> 
-#include "memxor.h"
+#include <crypto/memxor.h>
 #include "present_common.h"
-#include "present80.h"
+#include <crypto/present80.h>
 
 static
 void key_update(uint8_t* buffer, uint8_t round){

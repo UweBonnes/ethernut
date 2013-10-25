@@ -20,8 +20,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "memxor.h"
-#include "keccak.h"
+#include <crypto/memxor.h>
+#include <crypto/keccak.h>
 
 #ifdef DEBUG
 #  undef DEBUG
@@ -30,7 +30,7 @@
 #define DEBUG 0
 
 #if DEBUG
-#include "cli.h"
+#include <crypto/cli.h>
 
 void keccak_dump_state(uint64_t a[5][5]){
 	uint8_t i,j;

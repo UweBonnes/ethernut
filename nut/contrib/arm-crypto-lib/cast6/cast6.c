@@ -9,8 +9,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "cast6.h"
-#include "cast6_sboxes.h"
+#include <crypto/cast6.h>
+#include <crypto/cast6_sboxes.h>
 
 #define CHANGE_ENDIAN32(x) (((x)<<24 | (x)>>24 | ((x)&0xff00)<<8 | ((x)&0xff0000)>>8)&0xffffffff)
 

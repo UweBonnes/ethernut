@@ -26,8 +26,8 @@
  */
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "bmw_large.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/bmw_large.h>
 
 
 static const char bmw384_str[]  = "BlueMidnightWish-384";

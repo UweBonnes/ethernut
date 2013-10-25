@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "grain.h"
+#include <crypto/grain.h>
 
 
 #define GRAIN_REVERSEKEY

@@ -19,8 +19,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "sha2_large_common.h"
-#include "sha512.h"
+#include <crypto/sha2_large_common.h>
+#include <crypto/sha512.h>
 
 
 void sha512_nextBlock (sha512_ctx_t* ctx, const void* block){

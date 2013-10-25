@@ -26,8 +26,8 @@
  */
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "blake_large.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/blake_large.h>
 
 
 static const char blake384_str[]  = "Blake-384";

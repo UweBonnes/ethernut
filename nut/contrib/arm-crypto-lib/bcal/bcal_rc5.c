@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "rc5.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/rc5.h>
+#include <crypto/keysize_descriptor.h>
 
 #define RC5_ROUNDS 12
 

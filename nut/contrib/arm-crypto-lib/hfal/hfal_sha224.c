@@ -27,8 +27,8 @@
 
 
 #include <stdlib.h>
-#include "hashfunction_descriptor.h"
-#include "sha224.h"
+#include <crypto/hashfunction_descriptor.h>
+#include <crypto/sha224.h>
 
 static const char sha224_str[] = "SHA-224";
 

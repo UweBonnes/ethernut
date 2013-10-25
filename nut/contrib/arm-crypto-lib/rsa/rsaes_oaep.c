@@ -21,15 +21,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "memxor.h"
-#include "mgf1.h"
-#include "bigint.h"
-#include "rsa_basic.h"
-#include "rsaes_oaep.h"
+#include <crypto/memxor.h>
+#include <crypto/mgf1.h>
+#include <crypto/bigint.h>
+#include <crypto/rsa_basic.h>
+#include <crypto/rsaes_oaep.h>
 
-#include "random_dummy.h"
+#include <crypto/random_dummy.h>
 
-#include "hfal/hfal_sha1.h"
+#include <crypto/hfal_sha1.h>
 
 #include "cli.h"
 #include "uart_lowlevel.h"

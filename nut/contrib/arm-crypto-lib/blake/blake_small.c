@@ -27,9 +27,9 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "memxor.h"
-#include "blake_small.h"
-#include "blake_common.h"
+#include <crypto/memxor.h>
+#include <crypto/blake_small.h>
+#include <crypto/blake_common.h>
 
 static const
 uint32_t blake_c[] = {

@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "rc6.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/rc6.h>
+#include <crypto/keysize_descriptor.h>
 
 const char rc6_str[] = "RC6";
 

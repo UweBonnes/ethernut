@@ -25,9 +25,9 @@
 
 #include <stdint.h>
 #include <string.h> /* memset() */
-#include "memxor.h"
-#include "serpent.h"
-#include "serpent-sboxes.h"
+#include <crypto/memxor.h>
+#include <crypto/serpent.h>
+#include <crypto/serpent-sboxes.h>
 
 /******************************************************************************/
 

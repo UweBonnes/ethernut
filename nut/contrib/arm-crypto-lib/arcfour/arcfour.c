@@ -27,7 +27,7 @@
  */
 
 #include <stdint.h>
-#include "arcfour.h"
+#include <crypto/arcfour.h>
 
 /*
  * length is length of key in bits!

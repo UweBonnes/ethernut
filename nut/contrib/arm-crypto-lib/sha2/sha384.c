@@ -20,8 +20,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "sha2_large_common.h"
-#include "sha384.h"
+#include <crypto/sha2_large_common.h>
+#include <crypto/sha384.h>
 
 
 void sha384_nextBlock (sha384_ctx_t* ctx, const void* block){

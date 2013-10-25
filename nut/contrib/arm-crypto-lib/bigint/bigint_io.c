@@ -19,7 +19,7 @@
 
 #include "cli.h"
 #include "hexdigit_tab.h"
-#include "bigint.h"
+#include <crypto/bigint.h>
 #include <stdlib.h>
 #include <string.h>
 

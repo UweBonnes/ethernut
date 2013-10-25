@@ -26,9 +26,9 @@
  */
 
 #include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "des.h"
-#include "keysize_descriptor.h"
+#include <crypto/blockcipher_descriptor.h>
+#include <crypto/des.h>
+#include <crypto/keysize_descriptor.h>
 
 const char tdes_str[]  = "TDES";
 

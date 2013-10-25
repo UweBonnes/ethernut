@@ -31,8 +31,8 @@
 #ifdef __AVR__
 	#include <avr/pgmspace.h>
 #endif
-#include "noekeon.h"
-// #include "cli.h"
+#include <crypto/noekeon.h>
+// #include <crypto/cli.h>
 
 #define ROUND_NR 16
 
