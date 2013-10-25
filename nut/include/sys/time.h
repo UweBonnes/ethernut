@@ -64,11 +64,8 @@ struct timeval {
     int32_t tv_usec;        /* microseconds */
 };
 
-
-#ifndef NUT_USE_OLD_TIME_API
 extern int gettimeofday (struct timeval *tv, struct timezone *tz);
 extern int settimeofday (struct timeval *tv, struct timezone *tz);
-#endif
 
 /* Convenience macros to manipulate or check timevals */
 
