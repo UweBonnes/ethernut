@@ -37,7 +37,7 @@
 DEFS = -DATMEGA -D_MCU_$(MCU) $(HWDEF)
 
 INCPRE=-I
-INCDIR = $(INCPRE)$(top_srcdir)/include/crt/iccavr $(INCPRE)$(top_srcdir)/include
+INCDIR = $(INCPRE)$(top_srcdir)/include/crt/iccavr $(INCPRE)$(top_srcdir)/include $(INCPRE)$(top_srcdir)/include/contrib
 
 CC  = iccavr
 AR  = ilibw

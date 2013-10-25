@@ -39,7 +39,7 @@ DEFS = -DATMEGA -DATMega2561 -D_EE_EXTIO -D_MCU_$(MCU) $(HWDEF)
 # LIBDIR = $(top_srcdir)/lib/icc/$(MCU)
 
 INCPRE=-I
-INCDIR = $(INCPRE)$(top_srcdir)/include/crt/iccavr $(INCPRE)$(top_srcdir)/include
+INCDIR = $(INCPRE)$(top_srcdir)/include/crt/iccavr $(INCPRE)$(top_srcdir)/include $(INCPRE)$(top_srcdir)/include/contrib
 
 CC  = iccavr
 AR  = ilibw

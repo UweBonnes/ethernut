@@ -55,7 +55,7 @@ RANLIN = $(TRGT)ranlib
 # Preprocessor options.
 DEFS     = $(HWDEF)
 INCPRE   = -I
-CPPFLAGS = $(INCFIRST) -I$(INCDIR) $(INCLAST) $(DEFS) $(UCPFLAGS)
+CPPFLAGS = $(INCFIRST) -I$(INCDIR) -I$(INCDIRCONTRIB) $(INCLAST) $(DEFS) $(UCPFLAGS)
 
 # C compiler options.
 CFLAGS_ASM = -Wa,-a=$(@:.o=.lst)

@@ -46,3 +46,6 @@ CP = cp
 
 # Root directory of Nut/OS header files.
 INCDIR = $(top_srcdir)/include
+
+# Root directory of Nut/OS Contrib header files.
+INCDIRCONTRIB = $(top_srcdir)/include/contrib
