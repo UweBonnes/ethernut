@@ -35,7 +35,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifndef WIN32
 #include <memdebug.h>
+#endif
 
 #include <pro/snmp_config.h>
 

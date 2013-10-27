@@ -43,7 +43,12 @@
  * \endverbatim
  */
 
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/socket.h>
+typedef UDPSOCKET * SOCKET;
+#endif
 
 #include <pro/snmp.h>
 #include <pro/snmp_pdu.h>
@@ -59,7 +64,7 @@ typedef struct {
     uint8_t sess_id[MAX_SID_LEN + 1];
     int sess_read_view;
     int sess_write_view;
-    UDPSOCKET *sess_sock;
+    SOCKET sess_sock;
     uint32_t sess_rem_addr;
     uint16_t sess_rem_port;
 } SNMP_SESSION;

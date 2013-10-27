@@ -35,9 +35,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifndef WIN32
 #include <memdebug.h>
-
 #include <arpa/inet.h>
+#endif
 
 #include <pro/snmp_config.h>
 #include <pro/snmp.h>
@@ -465,26 +466,40 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, const uint8_t * in_data, size_t
  *
  * \return Always -1.
  */
-int SnmpAgent(UDPSOCKET * sock)
+int SnmpAgent(SOCKET sock)
 {
     int rc = -1;
-    uint32_t raddr;
-    uint16_t rport;
     size_t out_len;
     uint8_t *in_data = malloc(SNMP_MAX_LEN);
     uint8_t *out_data = malloc(SNMP_MAX_LEN);
     SNMP_SESSION *sess = malloc(sizeof(SNMP_SESSION));
+#ifdef WIN32
+    struct sockaddr_in from;
+    int fromlen;
+#else
+    uint32_t raddr;
+    uint16_t rport;
+#endif
 
     if (in_data && out_data && sess) {
         for (;;) {
+#ifdef WIN32
+            fromlen = sizeof(struct sockaddr);
+            rc = recvfrom(sock, (char *) in_data, SNMP_MAX_LEN, 0, (struct sockaddr *)&from, &fromlen);
+#else
             rc = NutUdpReceiveFrom(sock, &raddr, &rport, in_data, SNMP_MAX_LEN, 0);
+#endif
             if (rc < 0) {
                 break;
             }
             out_len = SNMP_MAX_LEN;
             memset(sess, 0, sizeof(SNMP_SESSION));
             if (SnmpAgentProcessRequest(sess, in_data, (size_t) rc, out_data, &out_len) == 0) {
+#ifdef WIN32
+                if (sendto(sock, (char *) out_data, (int)out_len, 0, (struct sockaddr *)&from, sizeof(from)) >= 0) {
+#else
                 if (NutUdpSendTo(sock, raddr, rport, out_data, out_len) == 0) {
+#endif
                     SnmpStatsInc(SNMP_STAT_OUTPKTS);
                 }
             }

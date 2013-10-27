@@ -43,6 +43,7 @@
  * \endverbatim
  */
 
+#include <stdint.h>
 #include <pro/snmp_agent.h>
 
 extern const uint8_t *SnmpAuthParse(const uint8_t *, size_t *, uint8_t *, size_t *, long *);

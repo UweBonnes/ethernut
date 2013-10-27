@@ -43,9 +43,15 @@
  * \endverbatim
  */
 
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/socket.h>
+typedef UDPSOCKET * SOCKET;
+#endif
+
 #include <pro/snmp_session.h>
 
-extern int SnmpAgent(UDPSOCKET *);
+extern int SnmpAgent(SOCKET);
 
 #endif

@@ -31,6 +31,7 @@
  * For additional information see http://www.ethernut.de/
  */
 
+#include <stdlib.h>
 #include <pro/snmp.h>
 #include <pro/snmp_api.h>
 
