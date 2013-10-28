@@ -162,8 +162,16 @@ NUTDEVICE devUsartStm32_1 = {
   #define STM_USART_REMAP  GPIO_AF_USART1
  #endif
  #if !defined(USART1_TX_PIN)
+  #if defined(USART1_REMAP_USART)
+   #define TX_GPIO_PORT  NUTGPIO_PORTB
+   #define TX_GPIO_PIN   6
+  #else
+   #define TX_GPIO_PORT    NUTGPIO_PORTA
+   #define TX_GPIO_PIN      9
+  #endif
+ #elif USART1_TX_PIN == 9
   #define TX_GPIO_PORT    NUTGPIO_PORTA
-  #define TX_GPIO_PIN      9
+  #define TX_GPIO_PIN     9
  #elif USART1_TX_PIN == 6
   #define TX_GPIO_PORT    NUTGPIO_PORTB
   #define TX_GPIO_PIN     6
@@ -177,8 +185,16 @@ NUTDEVICE devUsartStm32_1 = {
   #warning "Illegal USART1 TX pin assignement"
  #endif
  #if !defined(USART1_RX_PIN)
+  #if defined(USART1_REMAP_USART)
+   #define TX_GPIO_PORT  NUTGPIO_PORTB
+   #define TX_GPIO_PIN   7
+  #else
+   #define RX_GPIO_PORT    NUTGPIO_PORTA
+   #define RX_GPIO_PIN      10
+ #endif
+ #elif USART1_RX_PIN == 10
   #define RX_GPIO_PORT    NUTGPIO_PORTA
-  #define RX_GPIO_PIN      10
+  #define RX_GPIO_PIN     10
  #elif USART1_RX_PIN == 7
   #define RX_GPIO_PORT    NUTGPIO_PORTB
   #define RX_GPIO_PIN     7
