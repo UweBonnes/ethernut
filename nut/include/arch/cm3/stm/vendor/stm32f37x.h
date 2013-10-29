@@ -4503,8 +4503,8 @@ typedef struct
 #define  SDADC_ISR_EOCALF                        ((uint32_t)0x00000001)        /*!< End of calibration flag */
 #define  SDADC_ISR_JEOCF                         ((uint32_t)0x00000002)        /*!< End of injected conversion flag */
 #define  SDADC_ISR_JOVRF                         ((uint32_t)0x00000004)        /*!< Injected conversion overrun flag */
-#define  SDADC_ISR_REOCF                         ((uint32_t)0x00000010)        /*!< End of regular conversion flag */
-#define  SDADC_ISR_ROVRF                         ((uint32_t)0x00000020)        /*!< Regular conversion overrun flag */
+#define  SDADC_ISR_REOCF                         ((uint32_t)0x00000008)        /*!< End of regular conversion flag */
+#define  SDADC_ISR_ROVRF                         ((uint32_t)0x00000010)        /*!< Regular conversion overrun flag */
 #define  SDADC_ISR_CALIBIP                       ((uint32_t)0x00001000)        /*!< Calibration in progress status */
 #define  SDADC_ISR_JCIP                          ((uint32_t)0x00002000)        /*!< Injected conversion in progress status */
 #define  SDADC_ISR_RCIP                          ((uint32_t)0x00004000)        /*!< Regular conversion in progress status */
