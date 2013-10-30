@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 by egnite Software GmbH. 
+ * Copyright (C) 2001-2007 by egnite Software GmbH.
  * Copyright (C) 2013 by Comm5 Tecnologia Ltda.
  * All rights reserved.
  *
@@ -40,7 +40,7 @@
 
 #include <arch/avr32.h>
 #include <avr32/io.h>
- 
+
 #include <cfg/arch.h>
 #include <cfg/lcd.h>
 
@@ -236,78 +236,6 @@ static void INLINE LcdClrBits(unsigned int mask)
     outr(PIO_CODR, mask);
     outr(PIO_OER, mask);
 }
-  
-#ifdef LCD_RW_BIT
-static unsigned int LcdReadNibble(void)
-{
-    unsigned int rc;
-	LCD_EN_SET();
-    NutMicroDelay(LCD_SHORT_DELAY);
-	rc = inr(PIO_PDSR) & LCD_DATA;
-	LCD_EN_CLR();
-    NutMicroDelay(LCD_SHORT_DELAY);
-
-#ifdef LCD_DATA_LSB
-    rc >>= LCD_DATA_LSB;
-#else
-    {
-        unsigned int val = 0;
-
-        if (rc & LCD_D0) {
-            val |= 0x01;
-        }
-        if (rc & LCD_D1) {
-            val |= 0x02;
-        }
-        if (rc & LCD_D2) {
-            val |= 0x04;
-        }
-        if (rc & LCD_D3) {
-            val |= 0x08;
-        }
-        rc = val;
-    }
-#endif
-    return rc;
-}
-/*!
- * \brief Read byte from LCD controller.
- */
-static unsigned int LcdReadByte(void)
-{
-    NutMicroDelay(LCD_SHORT_DELAY);
-    LCD_RW_SET();
-	outr(PIO_PDR, LCD_DATA);
-    outr(PIO_ODR, LCD_DATA);
-	outr(LCD_DATA_BASE,inr(LCD_DATA_BASE)&LCD_DATA); 	
-    NutMicroDelay(LCD_SHORT_DELAY);
-    return LcdReadNibble();
-}
-
-/*!
- * \brief Read status byte from LCD controller.
- */
-static unsigned int LcdReadStatus(void)
-{
-    /* RS low selects status register. */
-    LCD_RS_CLR();
-    return LcdReadByte();
-}
-
-#endif                          
-
-#if 0
-/* This function is a bit critical as some chipsets are known to
- * release the redy bit some time early. So after rady goes low,
- * another fixed delay has to be added before soing the next access.
- */
-static void LcdWaitReady(unsigned int delay)
-{
-    while (delay--) {
-        NutMicroDelay(1);
-    }
-}
-#endif
 
 /*!
  * \brief Send half byte to LCD controller.
@@ -453,7 +381,7 @@ static void LcdCursorMode(uint8_t on)
 }
 
 static int LcdInit(NUTDEVICE * dev)
-{ 
+{
 	LCD_RS_CLR();			
 	LCD_RW_CLR();			
 	LcdClrBits(LCD_DATA);	
@@ -473,7 +401,7 @@ static int LcdInit(NUTDEVICE * dev)
 	LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
     NutSleep(2);
     LcdWriteInstruction((_BV(LCD_FUNCTION)) |  (_BV(LCD_FUNCTION_8BIT)) |  (_BV(LCD_EXT)) , LCD_SHORT_DELAY);
-  
+
 	/* Switch display and cursor off. */
     LcdWriteNibble(_BV(LCD_ON_CTRL) >> 4);
     LcdWriteNibble(_BV(LCD_ON_CTRL));
