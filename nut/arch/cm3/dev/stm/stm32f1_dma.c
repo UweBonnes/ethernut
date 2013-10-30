@@ -48,14 +48,8 @@
 #include <arch/cm3/stm/vendor/stm32l1xx.h>
 #elif defined(MCU_STM32F30X)
 #include <arch/cm3/stm/vendor/stm32f30x.h>
-#define DMA_CCR1_MEM2MEM DMA_CCR_MEM2MEM
-#define DMA_CCR1_DIR     DMA_CCR_DIR
-#define DMA_CCR1_EN      DMA_CCR_EN
 #elif defined(MCU_STM32F37X)
 #include <arch/cm3/stm/vendor/stm32f37x.h>
-#define DMA_CCR1_MEM2MEM DMA_CCR_MEM2MEM
-#define DMA_CCR1_DIR     DMA_CCR_DIR
-#define DMA_CCR1_EN      DMA_CCR_EN
 #else
 #warning "STM32 family has no F1/L1 compatible DMA"
 #endif
@@ -116,7 +110,7 @@ const DMATAB *DmaTab2 = &DmaTab[STM_HAS_DMA1];
 void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flags)
 {
     DMA_Channel_TypeDef* channel = DmaTab[ch].dma_ch;
-    uint32_t cc = flags & ~(DMA_CCR1_MEM2MEM|DMA_CCR1_DIR|DMA_CCR1_EN);
+    uint32_t cc = flags & ~(DMA_CCR_MEM2MEM|DMA_CCR_DIR|DMA_CCR_EN);
     uint32_t cp;
     uint32_t cm;
 
@@ -131,13 +125,13 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     }
     else if ((uint32_t)dst & PERIPH_BASE) {
         /* Memory to Peripheral */
-        cc |= DMA_CCR1_DIR;
+        cc |= DMA_CCR_DIR;
         cp=(uint32_t)dst;
         cm=(uint32_t)src;
     }
     else {
         /* Memory to Memory Transfer */
-        cc |= DMA_CCR1_MEM2MEM | DMA_CCR1_DIR;
+        cc |= DMA_CCR_MEM2MEM | DMA_CCR_DIR;
         cp =(uint32_t)dst;
         cm =(uint32_t)dst;
     }
@@ -155,7 +149,7 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
 void DMA_Enable(uint8_t ch)
 {
     DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
-    channel->CCR |= DMA_CCR1_EN;
+    channel->CCR |= DMA_CCR_EN;
 }
 
 /*
@@ -164,7 +158,7 @@ void DMA_Enable(uint8_t ch)
 void DMA_Disable(uint8_t ch)
 {
     DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
-    channel->CCR &= ~DMA_CCR1_EN;
+    channel->CCR &= ~DMA_CCR_EN;
 }
 
 
