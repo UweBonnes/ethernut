@@ -47,7 +47,6 @@
 #include <winsock2.h>
 #else
 #include <sys/socket.h>
-typedef UDPSOCKET * SOCKET;
 #endif
 
 #include <pro/snmp_session.h>
