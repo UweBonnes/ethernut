@@ -8,12 +8,12 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT  "Nut/OS"
 !define NUTVERSION  "5.2"
-!define NUTRELEASE  "0"
-!define INSTBUILD   "0"
+!define NUTRELEASE  "1"
+!define INSTBUILD   "1"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
 Name "${PRODUCT}"
-OutFile "ethernut-${NUTVERSION}.${NUTRELEASE}.exe"
+OutFile "ethernut-${NUTVERSION}.${NUTRELEASE}-${INSTBUILD}.exe"
 XPStyle off
 BrandingText "${PRODUCT} ${NUTVERSION}.${NUTRELEASE}-${INSTBUILD}"
 
@@ -164,6 +164,7 @@ SectionGroup "Nut/OS"
     File ..\..\..\*.arm-eCross-gccdbg
 ;    File ..\..\..\*.arm-icc
     File ..\..\..\*.arm-thumb-gcc
+    File ..\..\..\*.arm-thumb-gccdbg
     File ..\..\..\*.avr-gcc
     File ..\..\..\*.avr-gccdbg
     File ..\..\..\*.avr32-gcc
@@ -172,7 +173,13 @@ SectionGroup "Nut/OS"
     File ..\..\..\*.avr-icc7
     File ..\..\..\*.avrext-icc
     File ..\..\..\*.avrext-icc7
-    File ..\..\..\*.h8-gcc
+    File ..\..\..\*.cm3-ecross-gcc
+    File ..\..\..\*.cm3-ecross-gccdbg
+    File ..\..\..\*.cm3-gcc
+    File ..\..\..\*.cm3-gccdbg
+    File ..\..\..\*.licenses
+    File ..\..\..\*.m68k-gcc
+    File ..\..\..\*.m68k-gccdbg
     File ..\..\..\*.unix-gcc
 
     SetOutPath "$INSTDIR\nut\lib"
@@ -300,74 +307,13 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\win32\msvcp100.dll
     File ..\..\..\tools\win32\QtCore4.dll
     File ..\..\..\tools\win32\QtGui4.dll
+    File ..\..\..\tools\win32\libusb0.dll
+    File ..\..\..\tools\win32\lua51.dll
+    File ..\..\..\tools\win32\msys-1.0.dll
+    File ..\..\..\tools\win32\WinIo.dll
     File ..\..\..\tools\win32\Microsoft.VC90.CRT.manifest
     SetOutPath "$INSTDIR\nut\conf"
-    File ..\..\..\conf\arthernet1.conf
-    File ..\..\..\conf\at91eb40a.conf
-    File ..\..\..\conf\at91eb40a_redboot.conf
-    File ..\..\..\conf\at91sam7s.conf
-    File ..\..\..\conf\at91sam7se-ek.conf
-    File ..\..\..\conf\at91sam7x-ek-radio.conf
-    File ..\..\..\conf\at91sam7x-ek.conf
-    File ..\..\..\conf\at91sam9260-ek.conf
-    File ..\..\..\conf\at91sam9g45-ek.conf
-    File ..\..\..\conf\charon2.conf
-    File ..\..\..\conf\dk-lm3s9b96.conf
-    File ..\..\..\conf\eir10c.conf
-    File ..\..\..\conf\enet-sam7x.conf
-    File ..\..\..\conf\enet-sam7x_bootrom.conf
-    File ..\..\..\conf\ethernut103.conf
-    File ..\..\..\conf\ethernut13f.conf
-    File ..\..\..\conf\ethernut13g.conf
-    File ..\..\..\conf\ethernut13h-256gcc.conf
-    File ..\..\..\conf\ethernut13h.conf
-    File ..\..\..\conf\ethernut20a.conf
-    File ..\..\..\conf\ethernut21b-256.conf
-    File ..\..\..\conf\ethernut21b-256gcc.conf
-    File ..\..\..\conf\ethernut21b.conf
-    File ..\..\..\conf\ethernut30d.conf
-    File ..\..\..\conf\ethernut30e.conf
-    File ..\..\..\conf\ethernut31d.conf
-    File ..\..\..\conf\ethernut50f.conf
-    File ..\..\..\conf\evk1100-extram.conf
-    File ..\..\..\conf\evk1100-intram.conf
-    File ..\..\..\conf\evk1101.conf
-    File ..\..\..\conf\evk1104-extram.conf
-    File ..\..\..\conf\evk1104-intram.conf
-    File ..\..\..\conf\evk1105-extram.conf
-    File ..\..\..\conf\evk1105-intram.conf
-    File ..\..\..\conf\f4_discovery.conf
-    File ..\..\..\conf\flecx10a.conf
-    File ..\..\..\conf\gbaxport2.conf
-    File ..\..\..\conf\ksk-lpc17xx-sk.conf
-    File ..\..\..\conf\mbed_npx_lpc1768.conf
-    File ..\..\..\conf\mmnet01.conf
-    File ..\..\..\conf\mmnet02.conf
-    File ..\..\..\conf\mmnet02_03_04.conf
-    File ..\..\..\conf\mmnet03.conf
-    File ..\..\..\conf\mmnet04.conf
-    File ..\..\..\conf\mmnet101.conf
-    File ..\..\..\conf\mmnet102.conf
-    File ..\..\..\conf\mmnet102_103_104.conf
-    File ..\..\..\conf\mmnet103.conf
-    File ..\..\..\conf\mmnet104.conf
-    File ..\..\..\conf\morphoq11a.conf
-    File ..\..\..\conf\olimex-sam7-ex256.conf
-    File ..\..\..\conf\sam7eth.conf
-    File ..\..\..\conf\stm32-comStick.conf
-    File ..\..\..\conf\stm3210c-eval.conf
-    File ..\..\..\conf\stm3210e-eval.conf
-    File ..\..\..\conf\stm32_can.conf
-    File ..\..\..\conf\stm32_vl_discovery.conf
-    File ..\..\..\conf\stk501.conf
-    File ..\..\..\conf\usps_f107c.conf
-    File ..\..\..\conf\usps_f205c.conf
-    File ..\..\..\conf\usps_f405g.conf
-    File ..\..\..\conf\usps_l151b.conf
-    File ..\..\..\conf\xnut-100.conf
-    File ..\..\..\conf\xnut-105c.conf
-    File ..\..\..\conf\xnut-105d.conf
-    File ..\..\..\conf\zero-ek.conf
+    File ..\..\..\conf\*.conf
     File /r ..\..\..\conf\*.nut
     SetOutPath "$INSTDIR"
     CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\Configurator.lnk" "$INSTDIR\qnutconf.exe"
@@ -508,6 +454,51 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\qnutdisc\src\*.ui
     SetOutPath "$INSTDIR\nut\tools\include\win32"
     File ..\..\..\tools\include\win32\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win"
+    File ..\..\..\tools\uhttp_win\README
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp"
+	File ..\..\..\tools\uhttp_win\uhttp\ReadMe.txt
+	File ..\..\..\tools\uhttp_win\uhttp\uhttp.vcxproj.filters
+	File ..\..\..\tools\uhttp_win\uhttp\uhttp.vcxproj.user
+	File ..\..\..\tools\uhttp_win\uhttp\uhttp.vcxproj
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp\include"
+	File ..\..\..\tools\uhttp_win\uhttp\include\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp\include\cfg"
+	File ..\..\..\tools\uhttp_win\uhttp\include\cfg\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp\include\isc"
+	File ..\..\..\tools\uhttp_win\uhttp\include\isc\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp\include\pro"
+	File ..\..\..\tools\uhttp_win\uhttp\include\pro\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp\include\pro\uhttp"
+	File ..\..\..\tools\uhttp_win\uhttp\include\pro\uhttp\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp\include\pro\uhttp\modules"
+	File ..\..\..\tools\uhttp_win\uhttp\include\pro\uhttp\modules\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp\include\pro\uhttp\os\win"
+	File ..\..\..\tools\uhttp_win\uhttp\include\pro\uhttp\os\win\*.h
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp_ajax"
+	File ..\..\..\tools\uhttp_win\uhttp_ajax\uhttp_ajax.vcxproj.filters
+	File ..\..\..\tools\uhttp_win\uhttp_ajax\uhttp_ajax.vcxproj.user
+	File ..\..\..\tools\uhttp_win\uhttp_ajax\uhttp_ajax.vcxproj
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp_auth"
+	File ..\..\..\tools\uhttp_win\uhttp_auth\uhttp_auth.vcxproj.filters
+	File ..\..\..\tools\uhttp_win\uhttp_auth\uhttp_auth.vcxproj.user
+	File ..\..\..\tools\uhttp_win\uhttp_auth\uhttp_auth.vcxproj
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp_form"
+	File ..\..\..\tools\uhttp_win\uhttp_form\uhttp_form.vcxproj.filters
+	File ..\..\..\tools\uhttp_win\uhttp_form\uhttp_form.vcxproj.user
+	File ..\..\..\tools\uhttp_win\uhttp_form\uhttp_form.vcxproj
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp_ssi"
+	File ..\..\..\tools\uhttp_win\uhttp_ssi\uhttp_ssi.vcxproj.filters
+	File ..\..\..\tools\uhttp_win\uhttp_ssi\uhttp_ssi.vcxproj.user
+	File ..\..\..\tools\uhttp_win\uhttp_ssi\uhttp_ssi.vcxproj
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp_tiny"
+	File ..\..\..\tools\uhttp_win\uhttp_tiny\uhttp_tiny.vcxproj.filters
+	File ..\..\..\tools\uhttp_win\uhttp_tiny\uhttp_tiny.vcxproj.user
+	File ..\..\..\tools\uhttp_win\uhttp_tiny\uhttp_tiny.vcxproj
+    SetOutPath "$INSTDIR\nut\tools\uhttp_win\uhttp_upload"
+	File ..\..\..\tools\uhttp_win\uhttp_upload\uhttp_upload.vcxproj.filters
+	File ..\..\..\tools\uhttp_win\uhttp_upload\uhttp_upload.vcxproj.user
+	File ..\..\..\tools\uhttp_win\uhttp_upload\uhttp_upload.vcxproj
   SectionEnd
 SectionGroupEnd
 
@@ -790,30 +781,9 @@ SectionGroup "Application Samples"
     File ..\..\..\hwtest\avr\isp2\*.S
     File ..\..\..\hwtest\avr\isp2\*.isp
 
-    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\eeprom"
-    File ..\..\..\hwtest\cm3\stm\eeprom\Makefile
-    File ..\..\..\hwtest\cm3\stm\eeprom\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\f4discovery"
-    File ..\..\..\hwtest\cm3\stm\f4discovery\Makefile
-    File ..\..\..\hwtest\cm3\stm\f4discovery\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\led_key"
-    File ..\..\..\hwtest\cm3\stm\led_key\Makefile
-    File ..\..\..\hwtest\cm3\stm\led_key\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\owi_test"
-    File ..\..\..\hwtest\cm3\stm\owi_test\Makefile
-    File ..\..\..\hwtest\cm3\stm\owi_test\*.c
-    File ..\..\..\hwtest\cm3\stm\owi_test\*.h
-
     SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\trampoline"
     File ..\..\..\hwtest\cm3\stm\trampoline\Makefile
     File ..\..\..\hwtest\cm3\stm\trampoline\*.c
-
-    SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\tw_test"
-    File ..\..\..\hwtest\cm3\stm\tw_test\Makefile
-    File ..\..\..\hwtest\cm3\stm\tw_test\*.c
 
     SetOutPath "$INSTDIR\nut\hwtest\cm3\stm\usb_test"
     File ..\..\..\hwtest\cm3\stm\usb_test\Makefile

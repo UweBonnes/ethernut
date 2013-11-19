@@ -20,7 +20,7 @@
 
 require("lfs")
 
-PKG_VERSION = "4.99.0"
+PKG_VERSION = "5.2.1"
 ARC_NAME = "ethernut-"..PKG_VERSION
 TOP_DIR = "."
 PS = "\\"
@@ -29,16 +29,27 @@ WORK_DIR = TOP_DIR..PS..ARC_NAME
 REDIR = " >>build.log 2>&1"
 ERROR_LOG = "errors-"..PKG_VERSION..".log"
 
-BASE_PATH = "C:\\apps\\bin;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;"
-TOOL_PATH = "C:\\ethernut\\nut-trunk\\nut\\tools\\win32;"
-GCCAVR_PATH = "C:\\WinAVR\\bin;C:\\WinAVR\\utils\\bin;"
-GCCAVR32_PATH = "%ProgramFiles(x86)%\\Atmel\\AVR Tools\\AVR32 Toolchain\\bin;"
-GCCARM_PATH = "%ProgramFiles(x86)%\\YAGARTO\\bin;"
-ICCAVR7_PATH = "C:\\iccv719avr\\bin;"
+BASE_PATH = "e:\\apps\\bin;%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;"
+TOOL_PATH = "e:\\ethernut\\nut-trunk\\nut\\tools\\win32;"
+-- GCCAVR_PATH = "C:\\Program Files (x86)\\MHV AVR Tools\\bin;"
+GCCAVR_PATH = "e:\\WinAVR\\bin;e:\\WinAVR\\utils\\bin;"
+-- GCCAVR_PATH = "E:\\AVRToolchain\\bin;"
+
+-- GCCAVR32_PATH = "%ProgramFiles(x86)%\\Atmel\\AVR Tools\\AVR32 Toolchain\\bin;"
+GCCAVR32_PATH = "E:\\AVRToolchain\\bin;"
+
+GCCARM_PATH = "%ProgramFiles(x86)%\\GNU Tools ARM Embedded\\4.7 2013q2\\bin;"
+-- GCCARM_PATH = "e:\\yagarto\\bin;"
+-- GCCARM_PATH = "%ProgramFiles(x86)%\\yagarto\\bin;"
+-- GCCARM_PATH = "E:\\ARMGCCToolchain\\bin;"
+
+ICCAVR7_PATH = "e:\\iccv719avr\\bin;"
 NSIS_PATH = "%ProgramFiles(x86)%\\NSIS;"
-DOXY_PATH = "%ProgramFiles(x86)%\\doxygen\\bin;"
+DOXY_PATH = "C:\\Program Files\\doxygen\\bin;%ProgramFiles(x86)%\\Graphviz2.27\\bin;%ProgramFiles(x86)%\\HTML Help Workshop;"
 
 avr_targets = {
+  { name = "arthernet1", mcu = "atmega128" },
+  { name = "charon2", mcu = "atmega128" },
   { name = "ethernut103", mcu = "atmega103" },
   { name = "ethernut13f", mcu = "atmega128" },
   { name = "ethernut13g", mcu = "atmega128" },
@@ -47,21 +58,19 @@ avr_targets = {
   { name = "ethernut20a", mcu = "atmega128" },
   { name = "ethernut21b", mcu = "atmega128" },
   { name = "ethernut21b-256gcc", mcu = "atmega2561" },
-  { name = "stk501", mcu = "atmega128" },
-  { name = "arthernet1", mcu = "atmega128" },
-  { name = "charon2", mcu = "atmega128" },
-  { name = "xnut-100", mcu = "atmega128" },
-  { name = "xnut-105c", mcu = "at90can128" },
-  { name = "xnut-105d", mcu = "at90can128" },
   { name = "mmnet01", mcu = "atmega128" },
   { name = "mmnet02_03_04", mcu = "atmega128" },
   { name = "mmnet101", mcu = "atmega128" },
   { name = "mmnet102_103_104", mcu = "atmega128" },
+  { name = "stk501", mcu = "atmega128" },
+  { name = "xnut-100", mcu = "atmega128" },
+  { name = "xnut-105c", mcu = "at90can128" },
+  { name = "xnut-105d", mcu = "at90can128" },
 }
 
 avr32_targets = {
-  { name = "evk1100-extram", mcu = "uc3a0512es" },
-  { name = "evk1100-intram", mcu = "uc3a0512es" },
+  { name = "evk1100-extram", mcu = "uc3a0512" },
+  { name = "evk1100-intram", mcu = "uc3a0512" },
   { name = "evk1101", mcu = "uc3b0256" },
   { name = "evk1104-extram", mcu = "uc3a3256" },
   { name = "evk1104-intram", mcu = "uc3a3256" },
@@ -75,15 +84,35 @@ arm_targets = {
   { name = "at91sam7se-ek", mcu = "arm7tdmi" },
   { name = "at91sam7x-ek", mcu = "arm7tdmi" },
   { name = "at91sam9260-ek", mcu = "arm9" },
+  { name = "at91sam9g45-ek", mcu = "arm9" },
+  { name = "eir10c", mcu = "arm7tdmi" },
+  { name = "enet-sam7x", mcu="arm7tdmi" },
   { name = "ethernut30d", mcu = "arm7tdmi" },
   { name = "ethernut30e", mcu = "arm7tdmi" },
   { name = "ethernut31d", mcu = "arm7tdmi" },
-  { name = "ethernut50e", mcu = "arm9" },
-  { name = "eir10c", mcu = "arm7tdmi" },
-  { name = "enet-sam7x", mcu="arm7tdmi" },
+  { name = "ethernut50f", mcu = "arm9" },
   { name = "gbaxport2", mcu = "arm7tdmi" },
   { name = "morphoq11a", mcu = "arm7tdmi" },
   { name = "olimex-sam7-ex256", mcu = "arm7tdmi" },
+}
+
+thumb_targets = {
+}
+
+cortex_targets = {
+  { name = "flecx10a", mcu = "cortex-m3" },
+  { name = "ksk-lpc17xx-sk", mcu = "cortex-m3" },
+  { name = "lisa", mcu = "cortex-m3" },
+  { name = "mbed_npx_lpc1768", mcu = "cortex-m3" },
+  { name = "stm32-comStick", mcu = "cortex-m3" },
+  { name = "stm32_can", mcu = "cortex-m3" },
+  { name = "stm32_vl_discovery", mcu = "cortex-m3" },
+  { name = "stm3210c-eval", mcu = "cortex-m3" },
+  { name = "stm3210e-eval", mcu = "cortex-m3" },
+  { name = "usps_f107c", mcu = "cortex-m3" },
+  { name = "usps_f205c", mcu = "cortex-m3" },
+  { name = "usps_f405g", mcu = "cortex-m4" },
+  { name = "usps_l151b", mcu = "cortex-m3" },
 }
 
 asm_sources = {
@@ -95,13 +124,16 @@ app_specials = {
   { p = ".asp$", m = ".asp", r = true },
   { p = ".class$", m = ".class", r = true },
   { p = ".gif$", m = ".gif", r = true },
+  { p = ".png$", m = ".png", r = true },
   { p = ".html$", m = ".html", r = true },
   { p = ".isp$", m = ".isp", r = true },
   { p = ".inc$", m = ".inc", r = true },
   { p = ".java$", m = ".java", r = true },
+  { p = ".js$", m = ".js", r = true },
   { p = ".mp3$", m = ".mp3", r = true },
   { p = ".shtml$", m = ".shtml", r = true },
   { p = ".swf$", m = ".swf", r = true },
+  { p = ".xml$", m = ".xml", r = true },
 }
 
 c_sources = {
@@ -118,6 +150,8 @@ cpp_sources = {
   { p = ".cc$", m = ".cc", r = true },
   { p = ".cpp$", m = ".cpp", r = true },
   { p = ".h$", m = ".h", r = true },
+  { p = ".hpp$", m = ".hpp", r = true },
+  { p = ".pri$", m = ".pri", r = true },
   { p = ".pro$", m = ".pro", r = true },
   { p = ".qrc$", m = ".qrc", r = true },
   { p = ".rc$", m = ".rc", r = true },
@@ -130,10 +164,12 @@ cpp_sources = {
 
 doxy_files = {
   { p = ".css$", m = ".css", r = true },
+  { p = ".cfg$", m = ".cfg", r = true },
   { p = ".gif$", m = ".gif", r = true },
   { p = ".html$", m = ".html", r = true },
   { p = ".in$", m = ".in", r = true },
   { p = ".txt$", m = ".txt", r = true },
+  { p = ".odt$", m = ".odt", r = true },
 }
 
 make_files = {
@@ -184,6 +220,23 @@ win32_files = {
 
 tool_files = {
   { p = "^Makefile", m = "Makefile", r = true },
+  { p = ".script$", m = ".script", r = true },
+  { p = ".vcxproj$", m = ".vcxproj", r = true },
+  { p = ".filters$", m = ".filters", r = true },
+  { p = ".user$", m = ".user", r = true },
+  { p = ".cfg$", m = ".cfg", r = true },
+  { p = ".ini$", m = ".ini", r = true },
+  { p = ".lua$", m = ".lua", r = true },
+}
+
+lua_files = {
+  { p = "^COPYRIGHT", m = "COPYRIGHT", r = true },
+  { p = "^HISTORY", m = "HISTORY", r = true },
+  { p = "^INSTALL", m = "INSTALL", r = true },
+  { p = ".pri$", m = ".pri", r = true },
+  { p = ".pc$", m = ".pc", r = true },
+  { p = ".bat$", m = ".bat", r = true },
+  { p = ".lua$", m = ".lua", r = true },
 }
 
 linker_scripts = {
@@ -216,7 +269,10 @@ end
 function copy_files(source, dest, filter)
    local attr = lfs.attributes(source);
 
-   if attr.mode == "directory" then
+   if attr == nil then
+     print("Missing "..source)
+     error(e)
+   elseif attr.mode == "directory" then
       lfs.mkdir(dest)
       for child in lfs.dir(source) do
         if child ~= "." and child ~= ".." then
@@ -229,7 +285,7 @@ function copy_files(source, dest, filter)
       f:close()
       f,e = io.open(dest, "wb")
       if e then
-         print(dest)
+         print("Failed to open "..dest)
          error(e)
       end
       f:write(data)
@@ -336,7 +392,7 @@ function build_libs(board, platform, path)
     log_build_error(target, cmd, result)
   else
     lfs.chdir(target)
-    cmd = "SET PATH="..path.."&make clean install"
+    cmd = "SET PATH="..path.."&make clean all install"
     result = os.execute(cmd..REDIR)
     if result ~= 0 then
       log_build_error(target, cmd, result)
@@ -395,6 +451,21 @@ function build_docs(path)
 
   print("Building dox")
 
+  f,e = io.open("chm_en.cfg", "w")
+  if e then
+     print("chm_en.cfg")
+     error(e)
+  end
+
+  for line in io.lines("chm_en.cfg.in") do 
+    line = string.gsub(line, "@PACKAGE_VERSION@", PKG_VERSION)
+    line = string.gsub(line, "@top_srcdir@", "/ethernut/nut-trunk")
+    line = string.gsub(line, "@top_builddir@", "/ethernut/ethernut-"..PKG_VERSION)
+    line = string.gsub(line, "@srcdir@", ".")
+    f:write(line.."\n")
+  end
+  f:close()
+
   f,e = io.open("nut_en.cfg", "w")
   if e then
      print("nut_en.cfg")
@@ -410,10 +481,20 @@ function build_docs(path)
   end
   f:close()
   
-  local cmd = "SET PATH="..path.."&doxygen nut_en.cfg"
+  local cmd = "SET PATH="..path.."&doxygen chm_en.cfg&doxygen nut_en.cfg"
   local result = os.execute(cmd..REDIR)
   if result ~= 0 then
     log_build_error("docs", cmd, result)
+  end
+end
+
+function build_winhelp(path)
+  print("Building Windows help file")
+
+  local cmd = "SET PATH="..path.."&hhc index.hhp"
+  local result = os.execute(cmd..REDIR)
+  if result ~= 0 then
+    log_build_error("winhelp", cmd, result)
   end
 end
 
@@ -437,13 +518,65 @@ copy_files(SRC_DIR, WORK_DIR, { asm_sources, c_sources, cpp_sources, make_files,
 copy_files(SRC_DIR..PS.."nut"..PS.."boot", WORK_DIR..PS.."nut"..PS.."boot", { boot_specials } )
 copy_files(SRC_DIR..PS.."nut"..PS.."conf", WORK_DIR..PS.."nut"..PS.."conf", { config_files } )
 copy_files(SRC_DIR..PS.."nut"..PS.."app", WORK_DIR..PS.."nut"..PS.."app", { app_specials } )
+copy_files(SRC_DIR..PS.."nut"..PS.."hwtest", WORK_DIR..PS.."nut"..PS.."hwtest", { app_specials } )
 copy_files(SRC_DIR..PS.."nut"..PS.."appicc", WORK_DIR..PS.."nut"..PS.."appicc", { icc_projects } )
 copy_files(SRC_DIR..PS.."nut"..PS.."doc", WORK_DIR..PS.."nut"..PS.."doc", { doxy_files } )
 copy_files(SRC_DIR..PS.."nut"..PS.."tools"..PS.."packaging"..PS.."nsis", WORK_DIR..PS.."nut"..PS.."tools"..PS.."packaging"..PS.."nsis", { nsis_files } )
 copy_files(SRC_DIR..PS.."nut"..PS.."tools", WORK_DIR..PS.."nut"..PS.."tools", { tool_files } )
+copy_files(SRC_DIR..PS.."nut"..PS.."tools"..PS.."qnutconf"..PS.."src"..PS.."lua", WORK_DIR..PS.."nut"..PS.."tools"..PS.."qnutconf"..PS.."src"..PS.."lua", { lua_files } )
 copy_files(SRC_DIR..PS.."nut"..PS.."tools"..PS.."win32", WORK_DIR..PS.."nut"..PS.."tools"..PS.."win32", { win32_files } )
 
 lfs.chdir(WORK_DIR)
+
+--
+-- Build ARM Thumb GCC libs and apps
+--
+path_env = TOOL_PATH..GCCARM_PATH..BASE_PATH
+-- if os.execute("SET PATH="..path_env.."&arm-elf-gcc -v"..REDIR) == 0 then
+if os.execute("SET PATH="..path_env.."&arm-none-eabi-gcc -v"..REDIR) == 0 then
+  for t_index, t_board in ipairs(thumb_targets) do 
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", '""')
+    if build_libs(t_board.name, "arm-thumb-gcc", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "arm-thumb-gcc", path_env)
+    end
+    if build_libs(t_board.name, "arm-thumb-gccdbg", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "arm-thumb-gccdbg", path_env)
+    end
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", nil)
+  end
+else  
+  build_result:write("GCC for ARM not available\n\n")
+  print("ARM Thumb GCC build skipped")
+end
+
+--
+-- Build ARM Cortex GCC libs and apps
+--
+path_env = TOOL_PATH..GCCARM_PATH..BASE_PATH
+-- if os.execute("SET PATH="..path_env.."&arm-elf-gcc -v"..REDIR) == 0 then
+if os.execute("SET PATH="..path_env.."&arm-none-eabi-gcc -v"..REDIR) == 0 then
+  for t_index, t_board in ipairs(cortex_targets) do 
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", '""')
+    if build_libs(t_board.name, "cm3-gcc", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "cm3-gcc", path_env)
+    end
+    if build_libs(t_board.name, "cm3-gccdbg", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "cm3-gccdbg", path_env)
+    end
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", nil)
+  end
+else  
+  build_result:write("GCC for ARM not available\n\n")
+  print("ARM CM3 GCC build skipped")
+end
 
 --
 -- Build AVR GCC libs and apps
@@ -451,19 +584,26 @@ lfs.chdir(WORK_DIR)
 path_env = TOOL_PATH..GCCAVR_PATH..BASE_PATH
 if os.execute("SET PATH="..path_env.."&avr-gcc -v"..REDIR) == 0 then
   for t_index, t_board in ipairs(avr_targets) do 
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", '""')
     if build_libs(t_board.name, "avr-gcc", path_env) == 0 then
       if build_apps(t_board.name, t_board.mcu, "avr-gcc", path_env) == 0 then
         if build_libs(t_board.name, "avr-gccdbg", path_env) == 0 then
-		  -- Exclude debug apps from targets with less than 256k flash
-		  if t_board.mcu == "atmega2561" then
+          -- Exclude debug apps from targets with less than 256k flash
+          if t_board.mcu == "atmega2561" then
             build_apps(t_board.name, t_board.mcu, "avr-gccdbg", path_env)
-	      end
+          end
         end
       end
     end
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", nil)
   end
 else
   build_result:write("GCC for AVR not available\n\n")
+  print("AVR GCC build skipped")
 end
 
 --
@@ -473,21 +613,28 @@ path_env = TOOL_PATH..GCCARM_PATH..BASE_PATH
 -- if os.execute("SET PATH="..path_env.."&arm-elf-gcc -v"..REDIR) == 0 then
 if os.execute("SET PATH="..path_env.."&arm-none-eabi-gcc -v"..REDIR) == 0 then
   for t_index, t_board in ipairs(arm_targets) do 
-    update_config("nut/conf/"..t_board.name..".conf", "CRT_UNSETENV_POSIX", '""')
-    update_config("nut/conf/"..t_board.name..".conf", "ARMEABI", '""')
-	
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", '""')
+    -- update_config("nut/conf/"..t_board.name..".conf", "CRT_UNSETENV_POSIX", '""')
+    -- update_config("nut/conf/"..t_board.name..".conf", "ARMEABI", '""')
+
     if build_libs(t_board.name, "arm-gcc", path_env) == 0 then
       build_apps(t_board.name, t_board.mcu, "arm-gcc", path_env)
     end
     if build_libs(t_board.name, "arm-gccdbg", path_env) == 0 then
-	  -- Exclude debug apps from AT91EB40A because of lack of sufficient RAM
-	  if t_board.name ~= "at91eb40a" then
+      -- Exclude debug apps from AT91EB40A because of lack of sufficient RAM
+      if t_board.name ~= "at91eb40a" then
         build_apps(t_board.name, t_board.mcu, "arm-gccdbg", path_env)
       end
     end
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", nil)
   end
 else  
   build_result:write("GCC for ARM not available\n\n")
+  print("ARM GCC build skipped")
 end
 
 --
@@ -496,12 +643,18 @@ end
 path_env = TOOL_PATH..GCCAVR32_PATH..BASE_PATH
 if os.execute("SET PATH="..path_env.."&avr32-gcc -v"..REDIR) == 0 then
   for t_index, t_board in ipairs(avr32_targets) do 
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", '""')
     if build_libs(t_board.name, "avr32-gcc", path_env) == 0 then
       build_apps(t_board.name, t_board.mcu, "avr32-gcc", path_env)
     end
     if build_libs(t_board.name, "avr32-gccdbg", path_env) == 0 then
       build_apps(t_board.name, t_board.mcu, "avr32-gccdbg", path_env)
     end
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", nil)
   end
 else
   build_result:write("SET PATH="..path_env.."&avr32-gcc -v\n")
@@ -510,30 +663,36 @@ end
 
 --
 -- Build ICCAVR7 libs and apps
--- Temporarily excluded until CONST had been fully replaced by const.
 --
--- path_env = TOOL_PATH..ICCAVR7_PATH..BASE_PATH
--- if os.execute("SET PATH="..path_env.."&iccavr -v"..REDIR) == 0 then
---   for t_index, t_board in ipairs(avr_targets) do 
---     update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", nil)
---     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", '""')
---     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", '"crtenutram"')
---     if t_board.mcu == "atmega128" then
---       if build_libs(t_board.name, "avr-icc7", path_env) == 0 then
---         build_apps(t_board.name, "enhanced", "avr-icc7", path_env)
---       end
---     elseif t_board.mcu == "atmega2561" then
---       if build_libs(t_board.name, "avrext-icc7", path_env) == 0 then
---         build_apps(t_board.name, "extended", "avrext-icc7", path_env)
---       end
---     end
---     update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", '""')
---     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", nil)
---     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", nil)
---   end
--- else
---   build_result:write("ICC7 for AVR not available\n\n")
--- end
+path_env = TOOL_PATH..ICCAVR7_PATH..BASE_PATH
+if os.execute("SET PATH="..path_env.."&iccavr -v"..REDIR) == 0 then
+  for t_index, t_board in ipairs(avr_targets) do 
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", '""')
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", '""')
+    update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", nil)
+    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", '""')
+    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", '"crtenutram"')
+    if t_board.mcu == "atmega128" then
+      if build_libs(t_board.name, "avr-icc7", path_env) == 0 then
+        build_apps(t_board.name, "enhanced", "avr-icc7", path_env)
+      end
+    elseif t_board.mcu == "atmega2561" then
+      if build_libs(t_board.name, "avrext-icc7", path_env) == 0 then
+        build_apps(t_board.name, "extended", "avrext-icc7", path_env)
+      end
+    end
+    update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", '""')
+    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", nil)
+    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_MCD_ST_LIBERTY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_ST_GUIDANCE_ONLY", nil)
+	update_config("nut/conf/"..t_board.name..".conf", "LICENSE_LUMINARY_ANTI_VIRAL", nil)
+  end
+else
+     build_result:write("ICC7 for AVR not available\n\n")
+     print("ICC AVR build skipped")
+end
 
 --
 -- Generate API documentation
@@ -542,6 +701,10 @@ path_env = DOXY_PATH..BASE_PATH
 lfs.chdir("nut\\doc\\gen")
 build_docs(path_env)
 lfs.chdir("..\\..\\..")
+
+lfs.chdir("nut\\doc\\en\\chm")
+build_winhelp(path_env)
+lfs.chdir("..\\..\\..\\..")
 
 --
 -- Generate Windows installer executable
