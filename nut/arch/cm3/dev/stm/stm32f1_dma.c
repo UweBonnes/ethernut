@@ -42,17 +42,7 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/vendor/stm32f10x.h>
-#elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/vendor/stm32l1xx.h>
-#elif defined(MCU_STM32F30X)
-#include <arch/cm3/stm/vendor/stm32f30x.h>
-#elif defined(MCU_STM32F37X)
-#include <arch/cm3/stm/vendor/stm32f37x.h>
-#else
-#warning "STM32 family has no F1/L1 compatible DMA"
-#endif
+#include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
 /*!
@@ -67,19 +57,19 @@ const DMATAB DmaTab[] = {
     { DMA1_BASE, 20, DMA1_Channel6 },
     { DMA1_BASE, 24, DMA1_Channel7 },
 #if defined(STM32F10X_HD) || defined(STM32F10X_XL)
-    { DMA1_BASE,  0, DMA2_Channel1 },
-    { DMA1_BASE,  4, DMA2_Channel2 },
-    { DMA1_BASE,  8, DMA2_Channel3 },
+    { DMA2_BASE,  0, DMA2_Channel1 },
+    { DMA2_BASE,  4, DMA2_Channel2 },
+    { DMA2_BASE,  8, DMA2_Channel3 },
       /* These chips have one IRQ for ch. 4 & 5 */
-    { DMA1_BASE, 12, DMA2_Channel4 },
-    { DMA1_BASE, 16, DMA2_Channel4 },
+    { DMA2_BASE, 12, DMA2_Channel4 },
+    { DMA2_BASE, 16, DMA2_Channel4 },
 #endif
-#if defined(STM32F10X_CL)
-    { DMA1_BASE,  0, DMA2_Channel1 },
-    { DMA1_BASE,  4, DMA2_Channel2 },
-    { DMA1_BASE,  8, DMA2_Channel3 },
-    { DMA1_BASE, 12, DMA2_Channel4 },
-    { DMA1_BASE, 16, DMA2_Channel5 },
+#if defined(HW_DMA2_STM32F1)
+    { DMA2_BASE,  0, DMA2_Channel1 },
+    { DMA2_BASE,  4, DMA2_Channel2 },
+    { DMA2_BASE,  8, DMA2_Channel3 },
+    { DMA2_BASE, 12, DMA2_Channel4 },
+    { DMA2_BASE, 16, DMA2_Channel5 },
 #endif
 };
 
