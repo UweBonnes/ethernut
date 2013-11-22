@@ -95,6 +95,13 @@ void SystemInit (void)
 #if defined(RCC_CFGR3_USART1SW1)
     rcc->CFGR3 = 0;
 #endif
+/* Seperate USB and CAN interrupts on F30 */
+#if defined(STM32F30X)
+    rcc->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+    SYSCFG_TypeDef *syscfg = (SYSCFG_TypeDef *) SYSCFG_BASE;
+    syscfg->CFGR1 |= SYSCFG_CFGR1_USB_IT_RMP;
+#endif
+
 }
 
 /**
