@@ -176,12 +176,26 @@
 #define STM32TIMER_NCH 4
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 2
-#elif defined(MCU_STM32F3)
+/* STM32F30: PA4/CH2/AF2, PA6/CH1/AF2,PA7/CH3/AF2,
+             PB0/CH3/AF2, PB1/CH4/AF2, PB5/CH2/AF2,
+             PB3/ETR/AF10
+             PC6/CH1/AF2, PC7/CH2/AF2, PC8/CH3/AF2, PC9/CH4/AF2,
+             PD2/CH1/AF2,
+             PE2/CH1/AF2, PE3/CH3/AF2, PE4/CH3/AF2, PE5/CH4/AF2
+   STM32F37: PA4/CH2/AF2, PA6/CH1/AF2,PA7/CH3/AF2,
+             PB0/CH2/AF10, PB3/ETR/AF10, PB6/CH2/AF10, PB6/CH2/AF10,
+             PB0/CH3/AF2, PB1/CH4/AF2, PB5/CH2/AF2,
+             PC6/CH1/AF2, PC7/CH2/AF2, PC8/CH3/AF2, PC9/CH4/AF2,
+             PD2/ETR/AF2
+*/
+#elif defined(STM32F30X)
 #define STM32TIMER_AF(port, pin) \
-    (((port == GPIOB_BASE) && (pin ==  3)||((port == GPIOB_BASE) && (pin ==  7)))? 10 : 2
-#elif defined(MCU_STM32F1)
-#define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM3_REMAP
-#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM3_REMAP_0))
+    ((port == GPIOB_BASE) && (pin ==  3))? 10 : 2
+#elif defined(STM32F37X)
+#define STM32TIMER_AF(port, pin) \
+    ((port == GPIOB_BASE) && ((pin ==  0) || (pin == 3) || (pin == 6) || (pin == 7)))? 10 : 2
+#else
+#warning Illegal pin mapping for TIM3
 #endif
 
 #elif defined (RCC_APB1ENR_TIM4EN) && defined(RCC_APB1RSTR_TIM4RST) && (STM32TIMER_ID == 4)
@@ -353,6 +367,10 @@
 #define STM32TIMER_NCH 1
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 9
+#elif defined(STM32F37X)
+#define STM32TIMER_AF(port, pin) (port == GPIOF_BASE)? 2: 9
+#else
+#warning Illegal AF for Tim14
 #endif
 
 #elif defined (RCC_APB2ENR_TIM15EN) && defined(RCC_APB2RSTR_TIM15RST) && (STM32TIMER_ID == 15 )
@@ -364,9 +382,17 @@
     ((CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PPRE2_2)))?  \
      (2 * NutClockGet(NUT_HWCLK_PCLK2)) : (NutClockGet(NUT_HWCLK_PCLK2)))
 #define STM32TIMER_NCH 2
-#if defined(MCU_STM32F3)
-/* FIXME: This doesn't map TIM15 CH1N*/
-#define STM32TIMER_AF(port, pin) (port == GPIOA_BASE)?  9 : (port == GPIOB_BASE) ? 1 :3
+#define STM32TIMER_BDTR
+/* F3: PA1/CH1N/AF9, PA2/CH1/AF9, PA3/CH2/AF9 PA9/BKIN/AF9
+   F30: PB14/CH1/AF1, PB15/CH2/AF1, PB15/CH1_N/AF2, PF9/CH1/AF3, PF10/CH2/AF3
+   F37: PB4/CH1_N/AF9, PB6/CH1/AF9, PB7/CH1/AF9, PB14/CH1/AF1, PB15/CH2/AF1
+   FIXME: This doesn't map TIM15 CH1N
+*/
+#if defined(STM32F30X)
+#define STM32TIMER_AF(port, pin) (port == GPIOF_BASE)?  3 : (port == GPIOB_BASE)? 1 : 9
+#endif
+#if defined(STM32F37X)
+#define STM32TIMER_AF(port, pin) ((port == GPIOB_BASE) && ((pin == 14) || (pin == 14)))? 1 : 9
 #endif
 
 #elif defined (RCC_APB2ENR_TIM16EN) && defined(RCC_APB2RSTR_TIM16RST) && (STM32TIMER_ID == 16 )
@@ -378,6 +404,7 @@
     ((CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PPRE2_2)))?  \
      (2 * NutClockGet(NUT_HWCLK_PCLK2)) : (NutClockGet(NUT_HWCLK_PCLK2)))
 #define STM32TIMER_NCH 1
+#define STM32TIMER_BDTR
 #if defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?  4 :  1
 #endif
@@ -391,12 +418,18 @@
     ((CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PPRE2_2)))?  \
      (2 * NutClockGet(NUT_HWCLK_PCLK2)) : (NutClockGet(NUT_HWCLK_PCLK2)))
 #define STM32TIMER_NCH 1
-#if defined(MCU_STM32F3)
+#define STM32TIMER_BDTR
+#if defined(STM32F30X)
 #define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?           4 : \
-    (  port == GPIOA_BASE)                                       1 : \
-    (( port == GPIOB_BASE) && ((pin ==  7))?                     1 : \
-    (( port == GPIOA_BASE) && ((pin ==  4) || (pin ==  5))?     10 : 1
+    (  port == GPIOA_BASE)?                                      1 : \
+    (( port == GPIOB_BASE) && ((pin ==  7) || (pin ==  9)))?     1 : \
+    (( port == GPIOA_BASE) && ((pin ==  4) || (pin ==  5)))?    10 : 1
+#elif defined(STM32F37X)
+#define STM32TIMER_AF(port, pin) (  port == GPIOA_BASE)    ?     1 : \
+    (( port == GPIOB_BASE) && ((pin ==  7) || (pin ==  9)))?     1 : \
+    (( port == GPIOB_BASE) && ((pin ==  4) || (pin ==  5)))?    10 : 1
 #endif
+
 #else
 #warning No match
 #endif
