@@ -36,7 +36,7 @@
 --
 stm32_memory_f30 = { "128", "256" }
 stm32_memory_f37 = { "64", "128", "256" }
-stm32f3_devices = { "MCU_STM32F302" , "MCU_STM32F303", "MCU_STM32F313", "MCU_STM32F373", "MCU_STM32F383" }
+stm32f3_device_class = { "STM32F302" , "STM32F303", "STM32F313", "STM32F373", "STM32F383" }
 
 -- *****************************************************************************
 -- STM32F30 Family
@@ -65,7 +65,7 @@ nutarch_cm3_stm32f3 =
                     "HW_PLL_STM32F3",
                     "HW_FLASH_STM32F1_3",
                     "HW_GPIO_STM32V2",
-                    "HW_CRC32_STM32",
+                    "HW_CRC32_STM32V2",
                     "DEV_IRQ_STM32",
                     "HW_DMA1_STM32F1",
                     "HW_DMA2_STM32F1",
@@ -77,146 +77,75 @@ nutarch_cm3_stm32f3 =
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
-                      "HW_UART1_STM32",
-                      "HW_UART2_STM32",
-                      "HW_UART3_STM32",
-                      "HW_CAN1_STM32",
-                      "HW_RTC_STM32_V2",
-                    "HW_STM32_TIM2_32BIT",
-                    "HW_STM32_TIM3",
-                    "HW_STM32_TIM4",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM15",
-                    "HW_STM32_TIM16",
-                    "HW_STM32_TIM17",
-                    "HW_STM32_ADC1",
-                    "HW_STM32_DAC1",
-                    "HW_STM32_COMP1_2",
-                    "HW_STM32_OP1_2",
-                    "HW_STM32_DAC1",
-                },
-                file = "include/cfg/arch.h"
-            }
-        }
-    },
-    --
-    -- STM32F30 MCU Classes
-    --
-    {
-        name = "nutarch_cm3_stm32F3_devices",
-        brief = "STM32F30 Device Classes",
-        requires = { "HW_MCU_STM32F3XX" },
-        options =
-        {
-            {
-                macro = "MCU_STM32F302",
-                brief = "STM32F30 Series",
-                description = "STM32F30 devices.",
-                flavor = "booldata",
-                exclusivity = stm32f3_devices,
-                provides =
-                {
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_STM32_TIM1",
-                    "HW_STM32_USB",
-                    "HW_STM32_CAPSENSE",
-                    "HW_STM32_COMP3_4",
-                    "HW_STM32_ADC2",
-                },
-            },
-            {
-                macro = "MCU_STM32F303",
-                brief = "STM32F303 ",
-                description = "STM32F30 devices.",
-                flavor = "booldata",
-                exclusivity = stm32f3_devices,
-                provides =
-                {
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_STM32_TIM1",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_USB",
-                    "HW_STM32_CAPSENSE",
-                    "HW_STM32_ADC2",
-                    "HW_STM32_ADC3",
-                    "HW_STM32_ADC4",
-                    "HW_STM32_DAC2",
-                    "HW_STM32_COMP3_4",
-                    "HW_STM32_COMP5_7",
-                    "HW_STM32_OP3_4",
+                    "HW_USART1_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_STM32",
+                    "HW_CAN1_STM32",
+                    "HW_RTC_STM32_V2",
+                    "HW_TIM2_32BIT_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_DAC1_STM32",
+                    "HW_GPIO",
+                    "HW_MCU_FPU",
                 },
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "MCU_STM32F313",
-                brief = "STM32F313 ",
-                description = "STM32F30 devices.",
-                flavor = "booldata",
-                exclusivity = stm32f3_devices,
+                macro = "STM32F30X",
+                brief = "STM32F40X",
+                brief = "Include needed for STM32F302/303/313",
+                type = "integer",
+                requires = { "STM32F30X" },
+                default = 1,
                 provides =
                 {
                     "HW_UART4_STM32",
                     "HW_UART5_STM32",
-                    "HW_STM32_TIM1",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_ADC2",
-                    "HW_STM32_ADC3",
-                    "HW_STM32_ADC4",
-                    "HW_STM32_DAC2",
-                    "HW_STM32_COMP3_4",
-                    "HW_STM32_COMP5_7",
-                    "HW_STM32_OP3_4",
-                },
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_TIM8_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_COMP1_2_3_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                    "HW_OP1_2_STM32",
+                 },
+                file = "include/cfg/arch.h"
             },
             {
-                macro = "MCU_STM32F373",
-                brief = "STM32F373 ",
-                description = "STM32F373 devices.",
-                flavor = "booldata",
-                exclusivity = stm32f3_devices,
+                macro = "STM32F37X",
+                brief = "STM32F37X",
+                brief = "Include needed for STM32F373/385",
+                type = "integer",
+                requires = { "STM32F37X" },
+                default = 1,
                 provides =
                 {
-                    "HW_STM32_TIM5_32BIT",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_STM32_TIM18",
-                    "HW_STM32_TIM19",
-                    "HW_STM32_USB",
-                    "HW_STM32_CAPSENSE",
-                    "HW_STM32_SDADC1_3",
-                    "HW_STM32_DAC2",
-                    "HW_STM32_DAC3",
-                },
-            },
-            {
-                macro = "MCU_STM32F383",
-                brief = "STM32F383 ",
-                description = "STM32F383 devices.",
-                flavor = "booldata",
-                exclusivity = stm32f3_devices,
-                provides =
-                {
-                    "HW_STM32_TIM5_32BIT",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_STM32_TIM18",
-                    "HW_STM32_TIM19",
-                    "HW_STM32_CAPSENSE",
-                    "HW_STM32_SDADC1_3",
-                    "HW_STM32_DAC2",
-                    "HW_STM32_DAC3",
-                },
+                    "HW_TIM5_32BIT_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM12_STM32",
+                    "HW_TIM13_STM32",
+                    "HW_TIM14_STM32",
+                    "HW_TIM15_STM32",
+                    "HW_TIM16_STM32",
+                    "HW_TIM17_STM32",
+                    "HW_TIM18_DAC2_STM32",
+                    "HW_TIM19_STM32",
+                    "HW_CEC_STM32V2",
+                    "HW_ADC1_STM32",
+                    "HW_SDADC1_STM32",
+                    "HW_SDADC2_STM32",
+                    "HW_SDADC3_STM32",
+                    "HW_COMP_STM32",
+                 },
+                file = "include/cfg/arch.h"
             },
         }
     },
+    --
+    -- STM32F30 Memory
+    --
     {
         name = "nutarch_cm3_stm32F3_memory",
         brief = "STM32F30x Device Memory",
@@ -234,7 +163,6 @@ nutarch_cm3_stm32f3 =
                 type = "enumerated",
                 choices = stm32_memory_f30,
                 file = "include/cfg/arch.h",
-                makedefs = { "HWDEF+=-DSTM32F30X" },
             },
             {
                 macro = "MCU_STM32F37X",
@@ -248,7 +176,6 @@ nutarch_cm3_stm32f3 =
                 type = "enumerated",
                 choices = stm32_memory_f37,
                 file = "include/cfg/arch.h",
-                makedefs = { "HWDEF+=-DSTM32F37X" },
             },
         }
     },

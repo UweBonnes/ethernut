@@ -1032,8 +1032,7 @@ nutarch =
             {
                 macro = "MCU_STM32F401",
                 brief = "STM STM32F401",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F401.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1043,8 +1042,9 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
-                    "HW_MCU_STM32F401",
-                    "MCU_STM32F401",
+                    "HW_MCU_STM32F40X",
+                    "STM32F401xx",
+                    "HW_SPI4_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1053,8 +1053,7 @@ nutarch =
             {
                 macro = "MCU_STM32F405",
                 brief = "STM STM32F405",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1064,10 +1063,12 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X_41X",
                     "HW_MCU_STM32F40X",
-                    "HW_MCU_STM32F405",
-                    "MCU_STM32F405",
+                    "STM32F40_41xxx",
+                    "HW_RNG_STM32",
                     "HW_GPIO",
+                    "HW_FSMC_STM32",
                     "HW_MCU_FPU"
                 },
                 makedefs = { "MCU=cortex-m4" }
@@ -1075,8 +1076,7 @@ nutarch =
             {
                 macro = "MCU_STM32F407",
                 brief = "STM STM32F407",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with Ethernet and FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1086,9 +1086,13 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X_41X",
                     "HW_MCU_STM32F40X",
-                    "HW_MCU_STM32F407",
-                    "MCU_STM32F407",
+                    "STM32F40_41xxx",
+                    "HW_RNG_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_FSMC_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1097,8 +1101,7 @@ nutarch =
             {
                 macro = "MCU_STM32F415",
                 brief = "STM STM32F415",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with Crypto and FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1108,9 +1111,12 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X_41X",
                     "HW_MCU_STM32F40X",
-                    "HW_MCU_STM32F415",
-                    "MCU_STM32F415",
+                    "STM32F40_41xxx",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_FSMC_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1119,8 +1125,7 @@ nutarch =
             {
                 macro = "MCU_STM32F417",
                 brief = "STM STM32F417",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with Crypto, Ethernet and FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1130,9 +1135,14 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X_41X",
                     "HW_MCU_STM32F40X",
-                    "HW_MCU_STM32F417",
-                    "MCU_STM32F417",
+                    "STM32F40_41xxx",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_FSMC_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1141,8 +1151,7 @@ nutarch =
             {
                 macro = "MCU_STM32F427",
                 brief = "STM STM32F427",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1152,9 +1161,15 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X_41X",
                     "HW_MCU_STM32F42X",
-                    "HW_MCU_STM32F427",
-                    "MCU_STM32F427",
+                    "STM32F427_427xx",
+                    "HW_SAI1_STM32",
+                    "HW_DMA2D_STM32",
+                    "HW_RNG_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_FMC_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1163,8 +1178,7 @@ nutarch =
             {
                 macro = "MCU_STM32F429",
                 brief = "STM STM32F429",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with LCD, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1174,9 +1188,17 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X_41X",
                     "HW_MCU_STM32F42X",
-                    "HW_MCU_STM32F429",
-                    "MCU_STM32F429",
+                    "STM32F429_439xx",
+                    "HW_SAI1_STM32",
+                    "HW_LTDC_STM32",
+                    "HW_DMA2D_STM32",
+                    "HW_RNG_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_FMC_STM32",
+                    "HW_LCD_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1185,8 +1207,7 @@ nutarch =
             {
                 macro = "MCU_STM32F437",
                 brief = "STM STM32F437",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with Crypto, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1196,9 +1217,18 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F40X_41X",
                     "HW_MCU_STM32F42X",
-                    "HW_MCU_STM32F437",
-                    "MCU_STM32F437",
+                    "STM32F427_427xx",
+                    "HW_SAI1_STM32",
+                    "HW_DMA2D_STM32",
+                    "HW_RNG_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_FMC_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1207,8 +1237,7 @@ nutarch =
             {
                 macro = "MCU_STM32F439",
                 brief = "STM STM32F439",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F4 with Crypto, LCD, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1219,8 +1248,19 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
                     "HW_MCU_STM32F42X",
-                    "HW_MCU_STM32F439",
-                    "MCU_STM32F439",
+                    "HW_MCU_STM32F40X_41X",
+                    "STM32F429_439xx",
+                    "HW_SAI1_STM32",
+                    "HW_LTDC_STM32",
+                    "HW_DMA2D_STM32",
+                    "HW_RNG_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_FMC_STM32",
+                    "HW_LCD_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU"
                 },
@@ -1229,8 +1269,7 @@ nutarch =
             {
                 macro = "MCU_STM32F205",
                 brief = "STM STM32F205",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F205 with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1240,8 +1279,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2XX",
-                    "HW_MCU_STM32F205",
-                    "MCU_STM32F205",
+                    "HW_RNG_STM32",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=cortex-m3" }
@@ -1249,8 +1287,7 @@ nutarch =
             {
                 macro = "MCU_STM32F207",
                 brief = "STM STM32F207",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F207 with Ethernet, Camera and FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
@@ -1260,8 +1297,49 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2XX",
-                    "HW_MCU_STM32F207",
-                    "MCU_STM32F207",
+                    "HW_RNG_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3" }
+            },
+            {
+                macro = "MCU_STM32F215",
+                brief = "STM STM32F215",
+                description = "STM32F215 with Crypto and FSMC.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F2XX",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3" }
+            },
+            {
+                macro = "MCU_STM32F217",
+                brief = "STM STM32F217",
+                description = "STM32F217 with Crypto, Ethernet, Camera and FSMC.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F2XX",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_DCMI_STM32",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=cortex-m3" }
@@ -1269,8 +1347,7 @@ nutarch =
             {
                 macro = "MCU_STM32F302",
                 brief = "STM STM32F302",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F302 with CAN, USB, 2 ADC, 1 DAC, 4 COMP, 2 OP and Capsense.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1280,17 +1357,16 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3XX",
                     "HW_MCU_STM32F30X",
-                    "MCU_STM32F302",
-                    "HW_GPIO",
-                    "HW_MCU_FPU"
+                    "STM32F30X",
+                    "HW_USB_STM32",
+                    "HW_CAPSENSE_STM32",
                 },
                 makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F303",
                 brief = "STM STM32F303",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F303 with CCM, CAN, USB, 4 ADC, 2 DAC, 7 COMP, 4 OP and Capsense.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1300,17 +1376,20 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3XX",
                     "HW_MCU_STM32F30X",
-                    "MCU_STM32F303",
-                    "HW_GPIO",
-                    "HW_MCU_FPU"
+                    "STM32F30X",
+                    "HW_USB_STM32",
+                    "HW_CAPSENSE_STM32",
+                    "HW_ADC3_STM32",
+                    "HW_ADC4_STM32",
+                    "HW_DAC2_STM32",
+                    "HW_OP3_4_STM32",
                 },
                 makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F313",
                 brief = "STM STM32F313",
-                description = "CortexM3 32-bit RISC microcontroller\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F313 with CCM, CAN, 4 ADC, 2 DAC, 7 COMP and 4 OP.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1320,17 +1399,18 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3XX",
                     "HW_MCU_STM32F30X",
-                    "MCU_STM32F313",
-                    "HW_GPIO",
-                    "HW_MCU_FPU"
+                    "STM32F30X",
+                    "HW_ADC3_STM32",
+                    "HW_ADC4_STM32",
+                    "HW_DAC2_STM32",
+                    "HW_OP3_4_STM32",
                 },
                 makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F373",
                 brief = "STM STM32F373",
-                description = "CortexM3 32-bit RISC microcontroller with 16-bit SDADC\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F373 with USB, CAN, 3 SDADC, 1 ADC, 3 DAC, 2 COMP and Capsense.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1340,17 +1420,16 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3XX",
                     "HW_MCU_STM32F37X",
-                    "MCU_STM32F373",
-                    "HW_GPIO",
-                    "HW_MCU_FPU"
+                    "STM32F37X",
+                    "HW_USB_STM32",
+                    "HW_CAPSENSE_STM32",
                 },
                 makedefs = { "MCU=cortex-m4" }
             },
             {
                 macro = "MCU_STM32F383",
                 brief = "STM STM32F383",
-                description = "CortexM3 32-bit RISC microcontroller with 16-bit SDADC\n\n"..
-                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                description = "STM32F383 with CAN, 3 SDADC, 1 ADC, 3 DAC, and 2 COMP.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1360,9 +1439,7 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3XX",
                     "HW_MCU_STM32F37X",
-                    "MCU_STM32F383",
-                    "HW_GPIO",
-                    "HW_MCU_FPU"
+                    "STM32F37X",
                 },
                 makedefs = { "MCU=cortex-m4" }
             },

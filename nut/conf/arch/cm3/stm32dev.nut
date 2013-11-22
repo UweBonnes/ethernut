@@ -152,8 +152,6 @@ nutarch_cm3_stm32_devices =
          }
     },
     --
-    -- STM32F EXTI Interrupt handler
-    --
      --
     -- STM32 GPIO Interface Version 2 on L1/F2/F4
     --
@@ -196,23 +194,26 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32 CEC V2 on STM32F373
+    --
+    {
+        name = "nutarch_cm3_stm32_cec_v2",
+        brief = "STM32 CEC V2",
+        description = "STM32 CEC V2 on STM32F37X.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_CEC_STM32V3" },
+        provides = { "HW_CEC_STM32" },
+    },
+     --
     -- STM32 32 bit Timers
     --
     {
         name = "nutarch_cm3_stm32_timer2_32bit",
         brief = "STM32 Timer2 32Bit",
         description = "STM32 Timer infrastructure.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_STM32_TIM2_32BIT" },
-        provides = { "HW_STM32_TIM2" , "HW_STM32_TIMER_32BIT" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_TIM2_32BIT_STM32" },
+        provides = { "HW_TIM2_STM32" , "HW_STM32_TIMER_32BIT" },
     },
     {
-        name = "nutarch_cm3_stm32_timer5_32bit",
-        brief = "STM32 Timer5 32Bit",
-        description = "STM32 Timer infrastructure.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_STM32_TIM5_32BIT" },
-        provides = { "HW_STM32_TIM5" , "HW_STM32_TIMER_32BIT" },
-    },
-     {
         name = "nutarch_cm3_stm32_qenc32_0",
         brief = "STM32 32Bit Quadrature Encoder0",
         description = "STM32 32Bit Quadrature Encoder 0.",
@@ -273,44 +274,6 @@ nutarch_cm3_stm32_devices =
         },
     },
     --
-    -- STM32 TIM Interrupt handler
-    --
-     {
-        name = "nutarch_cm3_stm32_devices_tim2",
-        brief = "STM32 Timer 2 Interrupt",
-        description = "STM32 Timer 2 Interrupt.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM2" },
-        sources = { "cm3/dev/stm/ih_stm32_tim2.c" }
-    },
-    {
-        name = "nutarch_cm3_stm32_devices_tim3",
-        brief = "STM32 Timer 3 Interrupt",
-        description = "STM32 Timer 3 Interrupt.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM3" },
-        sources = { "cm3/dev/stm/ih_stm32_tim3.c" }
-    },
-    {
-        name = "nutarch_cm3_stm32_devices_tim4",
-        brief = "STM32 Timer 4 Interrupt",
-        description = "STM32 Timer 4 Interrupt.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM4" },
-        sources = { "cm3/dev/stm/ih_stm32_tim4.c" }
-    },
-    {
-        name = "nutarch_cm3_stm32_devices_tim5",
-        brief = "STM32 Timer 5 Interrupt",
-        description = "STM32 Timer 5 Interrupt.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM5" },
-        sources = { "cm3/dev/stm/ih_stm32_tim5.c" }
-    },
-    {
-        name = "nutarch_cm3_stm32_devices_tim7",
-        brief = "STM32 Timer 7 Interrupt",
-        description = "STM32 Timer 7 Interrupt.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_STM32_TIM7" },
-        sources = { "cm3/dev/stm/ih_stm32_tim7.c" }
-    },
-    --
     -- STM32F USART1 Interface
     --
     {
@@ -318,7 +281,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART1 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART1_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_USART1_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -331,7 +294,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_usart1.c",
-            "cm3/dev/stm/ih_stm32_usart1.c",
         },
         options =
         {
@@ -531,7 +493,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART2 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART2_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_USART2_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -544,7 +506,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_usart2.c",
-            "cm3/dev/stm/ih_stm32_usart2.c",
         },
         options =
         {
@@ -770,7 +731,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART3 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                   "functions for the generic driver framework.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART3_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_USART3_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -783,7 +744,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_usart3.c",
-            "cm3/dev/stm/ih_stm32_usart3.c",
         },
         options =
         {
@@ -1043,7 +1003,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_uart4.c",
-            "cm3/dev/stm/ih_stm32_uart4.c",
         },
         options =
         {
@@ -1244,7 +1203,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_uart5.c",
-            "cm3/dev/stm/ih_stm32_uart5.c",
         },
         options =
         {
@@ -1407,7 +1365,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_usart6.c",
-            "cm3/dev/stm/ih_stm32_usart6.c",
         },
         options =
         {
@@ -1636,7 +1593,7 @@ nutarch_cm3_stm32_devices =
         description = "LAN driver for STM32Fxx7xx.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_EMAC_STM32", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_MAC" },
-        sources = { "cm3/dev/stm/stm32_emac.c", "cm3/dev/stm/ih_stm32_emac.c" },
+        sources = { "cm3/dev/stm/stm32_emac.c" },
         options =
         {
             {
@@ -1725,7 +1682,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_twi1.c",
-            "cm3/dev/stm/ih_stm32_twi1.c",
             "cm3/dev/stm/stm32_twi.c"
         },
         options =
@@ -1813,7 +1769,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_twi2.c",
-            "cm3/dev/stm/ih_stm32_twi2.c",
             "cm3/dev/stm/stm32_twi.c"
         },
         options =
@@ -1896,7 +1851,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_i2cbus_v1.c",
-            "cm3/dev/stm/ih_stm32_twi1.c",
         },
         options =
         {
@@ -1953,7 +1907,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_i2cbus_v1.c",
-            "cm3/dev/stm/ih_stm32_twi2.c",
         },
         options =
         {
@@ -2011,7 +1964,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_i2cbus_v1.c",
-            "cm3/dev/stm/ih_stm32_twi3.c",
         },
         options =
         {
@@ -2060,9 +2012,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_i2cbus_v2.c",
-            "cm3/dev/stm/ih_stm32_twi1.c",
---            "cm3/dev/stm/ih_stm32_i2c1_ev.c",
---            "cm3/dev/stm/ih_stm32_i2c1_er.c",
         },
         options =
         {
@@ -2110,9 +2059,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_i2cbus_v2.c",
-            "cm3/dev/stm/ih_stm32_twi2.c",
---            "cm3/dev/stm/ih_stm32_i2c2_ev.c",
---            "cm3/dev/stm/ih_stm32_i2c2_er.c",
         },
         options =
         {
@@ -2162,8 +2108,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_can1.c",
-            "cm3/dev/stm/ih_stm32_can1.c",
-            "cm3/dev/stm/stm32_can.c"
         },
         options =
         {
@@ -2190,8 +2134,6 @@ nutarch_cm3_stm32_devices =
         sources =
         {
             "cm3/dev/stm/stm32_can2.c",
-            "cm3/dev/stm/ih_stm32_can2.c",
-            "cm3/dev/stm/stm32_can.c"
         },
         options =
         {
@@ -2256,7 +2198,7 @@ nutarch_cm3_stm32_devices =
                       "This early release had been tested on the STM32F103 and STM32F107 only.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI1_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi1.c", "cm3/dev/stm/ih_stm32_spi1.c" },
+        sources =  { "cm3/dev/stm/stm32_spi1.c" },
         options =
         {
             {
@@ -2354,7 +2296,7 @@ nutarch_cm3_stm32_devices =
                       "This early release had been tested on the STM32F103 and STM32F107 only.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI2_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi2.c", "cm3/dev/stm/ih_stm32_spi2.c" },
+        sources =  { "cm3/dev/stm/stm32_spi2.c" },
         options =
         {
             {
@@ -2441,7 +2383,7 @@ nutarch_cm3_stm32_devices =
                       "This early release had been tested on the STM32F103 and STM32F107 only.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_SPI3_STM32" },
         provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi3.c", "cm3/dev/stm/ih_stm32_spi3.c" },
+        sources =  { "cm3/dev/stm/stm32_spi3.c" },
         options =
         {
             {
@@ -2996,7 +2938,7 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA Support for F1/L1",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA1_STM32F1" },
         provides = { "HW_DMA1_F1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32_dma1.c" }
+        sources = { "cm3/dev/stm/stm32f1_dma.c" }
     },
     {
         name = "nutarch_cm3_stm32f1_dma2",
@@ -3004,7 +2946,7 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA Support for F1/L1",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA2_STM32F1" },
         provides = { "HW_DMA2_F1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c", "cm3/dev/stm/ih_stm32_dma2.c" }
+        sources = { "cm3/dev/stm/stm32f1_dma.c" }
     },
 
     --
@@ -3016,7 +2958,7 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA1 Support for F2/F4",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA1_STM32F2" },
         provides = { "HW_DMA1_F2" },
-        sources = { "cm3/dev/stm/stm32f2_dma.c", "cm3/dev/stm/ih_stm32_dma1.c" }
+        sources = { "cm3/dev/stm/stm32f2_dma.c"}
     },
     {
         name = "nutarch_cm3_stm32f2_dma2",
@@ -3024,7 +2966,602 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA2 Support for F2/F4",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_DMA2_STM32F2" },
         provides = { "HW_DMA2_F2" },
-        sources = { "cm3/dev/stm/stm32f2_dma.c", "cm3/dev/stm/ih_stm32_dma2.c" }
+        sources = { "cm3/dev/stm/stm32f2_dma.c" }
     },
+    --
+    -- STM32 Signal handler
+    {
+        name = "nutarch_cm3_stm32_sig",
+        brief = "STM32 Signals ",
+        description = "Helper to create the sig_DEVXX entries",
+        sources = { "cm3/dev/stm/ih_stm32.c"},
+        options =
+        {
+            {
+                macro = "HW_RTC_STM32F1",
+                brief = "RTC V1 Availability",
+                description = "RTC V1 Availability",
+                requires = { "HW_RTC_STM32F1" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RTC_STM32_V2",
+                brief = "RTC V2 Availability",
+                description = "RTC V2 Availability",
+                requires = { "HW_RTC_STM32_V2" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DMA1_STM32F1",
+                brief = "DMA1 Availability",
+                description = "7 Channel DMA1 on F1/L1/F3",
+                requires = { "HW_DMA1_STM32F1" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DMA2_STM32F1",
+                brief = "DMA2 Availability",
+                description = "5 Channel DMA2 on F1/L1/F3",
+                requires = { "HW_DMA2_STM32F1" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART2_STM32",
+                brief = "USART2 Availability",
+                description = "USART2 Availability",
+                requires = { "HW_USART2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART3_STM32",
+                brief = "USART3 Availability",
+                description = "USART3 Availability",
+                requires = { "HW_USART3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART4_STM32",
+                brief = "UART4 Availability",
+                description = "USART4 Availability",
+                requires = { "HW_UART4_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART5_STM32",
+                brief = "UART5 Availability",
+                description = "USART5 Availability",
+                requires = { "HW_UART5_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART6_STM32",
+                brief = "USART6 Availability",
+                description = "USART6 Availability",
+                requires = { "HW_USART6_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART7_STM32",
+                brief = "UART7 Availability",
+                description = "UART7 Availability",
+                requires = { "HW_UART7_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART8_STM32",
+                brief = "UART8 Availability",
+                description = "UART8 Availability",
+                requires = { "HW_UART8_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_CAN1_STM32",
+                brief = "CAN1 Availability",
+                description = "CAN1 Availability",
+                requires = { "HW_CAN1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USB_STM32",
+                brief = "USB FS Availability",
+                description = "USB Availability",
+                requires = { "HW_USB_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_STM32",
+                brief = "TIM1 Availability",
+                description = "TIM1 Availability",
+                requires = { "HW_TIM1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM2_STM32",
+                brief = "TIM2 Availability",
+                description = "TIM2 Availability",
+                requires = { "HW_TIM2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM3_STM32",
+                brief = "TIM3 Availability",
+                description = "TIM3 Availability",
+                requires = { "HW_TIM3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM4_STM32",
+                brief = "TIM4 Availability",
+                description = "TIM4 Availability",
+                requires = { "HW_TIM4_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM5_STM32",
+                brief = "TIM5 Availability",
+                description = "TIM5 Availability",
+                requires = { "HW_TIM5_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM6_STM32",
+                brief = "TIM6 Availability",
+                description = "TIM6 Availability",
+                requires = { "HW_TIM6_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM7_STM32",
+                brief = "TIM7 Availability",
+                description = "TIM7 Availability",
+                requires = { "HW_TIM7_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM8_STM32",
+                brief = "TIM8 Availability",
+                description = "TIM8 Availability",
+                requires = { "HW_TIM8_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM9_STM32",
+                brief = "TIM9 Availability",
+                description = "TIM9 Availability",
+                requires = { "HW_TIM9_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM10_STM32",
+                brief = "TIM10 Availability",
+                description = "TIM10 Availability",
+                requires = { "HW_TIM10_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM11_STM32",
+                brief = "TIM11 Availability",
+                description = "TIM11 Availability",
+                requires = { "HW_TIM11_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM12_STM32",
+                brief = "TIM12 Availability",
+                description = "TIM12 Availability",
+                requires = { "HW_TIM12_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM13_STM32",
+                brief = "TIM13 Availability",
+                description = "TIM13 Availability",
+                requires = { "HW_TIM13_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM14_STM32",
+                brief = "TIM14 Availability",
+                description = "TIM14 Availability",
+                requires = { "HW_TIM14_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM15_STM32",
+                brief = "TIM15 Availability",
+                description = "TIM15 Availability",
+                requires = { "HW_TIM15_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM16_STM32",
+                brief = "TIM16 Availability",
+                description = "TIM16 Availability",
+                requires = { "HW_TIM16_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM17_STM32",
+                brief = "TIM17 Availability",
+                description = "TIM17 Availability",
+                requires = { "HW_TIM17_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM19_STM32",
+                brief = "TIM19 Availability",
+                description = "TIM19 Availability",
+                requires = { "HW_TIM19_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_I2C2_STM32",
+                brief = "I2C2 Availability",
+                description = "I2C2 Availability",
+                requires = { "HW_I2C2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+             {
+                macro = "HW_I2C3_STM32",
+                brief = "I2C3 Availability",
+                description = "I2C3 Availability",
+                requires = { "HW_I2C3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+             {
+                macro = "HW_SPI2_STM32",
+                brief = "SPI2 Availability",
+                description = "SPI2 Availability",
+                requires = { "HW_SPI2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SPI3_STM32",
+                brief = "SPI3 Availability",
+                description = "SPI2 Availability",
+                requires = { "HW_SPI3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SPI4_STM32",
+                brief = "SPI4 Availability",
+                description = "SPI4 Availability",
+                requires = { "HW_SPI4_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SPI5_STM32",
+                brief = "SPI5 Availability",
+                description = "SPI5 Availability",
+                requires = { "HW_SPI5_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SPI6_STM32",
+                brief = "SPI6 Availability",
+                description = "SPI6 Availability",
+                requires = { "HW_SPI6_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SDIO_STM32",
+                brief = "SDIO Availability",
+                description = "SDIO Availability",
+                requires = { "HW_SDIO_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SAI1_STM32",
+                brief = "SAI1 Availability",
+                description = "SAI1 Availability",
+                requires = { "HW_SAI1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC_STM32",
+                brief = "ADC Global interrupt on F2/4",
+                description = "ADC Global interrupt on F2/4",
+                requires = { "HW_ADC_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC1_STM32F1",
+                brief = "ADC1 Single Interrupt on F1",
+                description = "ADC1 Single Interrupt on F1",
+                requires = { "HW_ADC1_STM32F1" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC1_STM32",
+                brief = "ADC1 Single Interrupt",
+                description = "ADC1 Single Interrupt",
+                requires = { "HW_ADC1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC1_2_STM32F1",
+                brief = "ADC1_2 Interrupt on F1",
+                description = "ADC1_2 Interrupt on F1",
+                requires = { "HW_ADC1_2_STM32F1" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC1_2_STM32",
+                brief = "ADC1_2 Interrupt",
+                description = "",
+                requires = { "HW_ADC1_2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC3_STM32F1",
+                brief = "ADC3 Availability on F1",
+                description = "ADC3 Availability on F1",
+                requires = { "HW_ADC3_STM32F1" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC3_STM32",
+                brief = "ADC3 Availability",
+                description = "ADC3 Availability",
+                requires = { "HW_ADC3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_ADC4_STM32",
+                brief = "ADC4 Availability",
+                description = "ADC4 Availability",
+                requires = { "HW_ADC4_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SDADC1_STM32",
+                brief = "SDADC1 Availability",
+                description = "SDADC1 Availability",
+                requires = { "HW_SDADC1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SDADC2_STM32",
+                brief = "SDADC2 Availability",
+                description = "SDADC2 Availability",
+                requires = { "HW_SDADC2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SDADC3_STM32",
+                brief = "SDADC3 Availability",
+                description = "SDADC3 Availability",
+                requires = { "HW_SDADC3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_HASH_STM32",
+                brief = "HASH Availability",
+                description = "HASH Availability",
+                requires = { "HW_HASH_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_HASH_RNG_STM32",
+                brief = "HASH and RNG Availability",
+                description = "HASH and RNG Availability",
+                requires = { "HW_HASH_RNG_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DCMI_STM32",
+                brief = "CAMERA Availability",
+                description = "CAMERA interface Availability",
+                requires = { "HW_DCMI_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_LTDC_STM32",
+                brief = "LTDC Availability",
+                description = "LTDC Availability",
+                requires = { "HW_LTDC_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DMA2D_STM32",
+                brief = "DMA2D Availability",
+                description = "DMA2D Availability",
+                requires = { "HW_DMA2D_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_EMAC_STM32",
+                brief = "Ethernet Availability",
+                description = "Ethernet Availability",
+                requires = { "HW_EMAC_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_FSMC_STM32",
+                brief = "FSMC Availability",
+                description = "FSMC Availability",
+                requires = { "HW_FSMC_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_FMC_STM32",
+                brief = "FMC Availability",
+                description = "FMC Availability",
+                requires = { "HW_FMC_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_COMP1_2_3_STM32",
+                brief = "COMP1_2_3 Availability",
+                description = "COMP1_2_3 Availability",
+                requires = { "HW_COMP1_2_3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_COMP4_5_6_STM32",
+                brief = "COMP4_5_6 Availability",
+                description = "COMP4_5_6 Availability",
+                requires = { "HW_COMP4_5_6_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_COMP7_STM32",
+                brief = "COMP7 Availability",
+                description = "COMP7 Availability",
+                requires = { "HW_COMP7_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_COMP_STM32",
+                brief = "COMP Availability",
+                description = "COMP Availability",
+                requires = { "HW_COMP_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_COMP_ACQ_STM32",
+                brief = "COMP_ACQ Availability",
+                description = "COMP_ACQ Availability",
+                requires = { "HW_COMP_ACQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_CEC_STM32",
+                brief = "CEC Availability",
+                description = "Availability",
+                requires = { "HW_CEC_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+        }
+    }
 }
-

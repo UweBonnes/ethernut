@@ -1,5 +1,5 @@
 --
---  * Copyright (C) 2011 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+--  * Copyright (C) 2011-13 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -37,11 +37,6 @@
 stm32_memory_f401 = { "128", "256" }
 stm32_memory_f40x = { "512", "1024" }
 stm32_memory_f42x = { "1024", "2048" }
-stm32f4_device_class =
- {
- "STM32F401", "STM32F405" , "STM32F407", "STM32F415", "STM32F417",
- "STM32F427", "STM32F429", "STM32F437", "STM32F439"
-  }
 
 -- *****************************************************************************
 -- STM32F4 Family
@@ -63,9 +58,9 @@ nutarch_cm3_stm32f4 =
             {
                 macro = "MCU_STM32F4",
                 brief = "STM32F4",
+                brief = "Devices available in all F4xx devices",
                 type = "integer",
                 default = 1,
-                requires = { "HW_MCU_CM3" },
                 provides =
                 {
                     "HW_PLL_STM32F4",
@@ -79,323 +74,93 @@ nutarch_cm3_stm32f4 =
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
                     "HW_EXTI1510_STM32",
-                    "HW_OTG1_STM32",
+                    "HW_OTG_FS_STM32",
                     "HW_I2C1_STM32",
                     "HW_I2C2_STM32",
                     "HW_I2C3_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
-                    "HW_UART1_STM32",
-                    "HW_UART2_STM32",
-                    "HW_UART6_STM32",
+                    "HW_USART1_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART6_STM32",
                     "HW_RTC_STM32_V2",
-                    "HW_STM32_TIM1",
-                    "HW_STM32_TIM2_32BIT",
-                    "HW_STM32_TIM3",
-                    "HW_STM32_TIM4",
-                    "HW_STM32_TIM5_32BIT",
-                    "HW_STM32_TIM9",
-                    "HW_STM32_TIM10",
-                    "HW_STM32_TIM11",
-                    "HW_ADC1_STM32",
+                    "HW_TIM1_TIM9_TIM10_TIM11_STM32",
+                    "HW_TIM2_32BIT_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM5_32BIT_STM32",
+                    "HW_ADC_STM32",
+                    "HW_ADC1_STM32F2_4",
                     "HW_WWDG_STM32",
                     "HW_SDIO_STM32",
                  },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F40X_41X",
+                brief = "STM32F40x",
+                brief = "Devices available in all F40xand F41x additional to F4XX common devices",
+                type = "integer",
+                default = 1,
+                provides =
+                {
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_CAN1_STM32",
+                    "HW_CAN2_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM8_TIM12_TIM13_TIM14_STM32",
+                    "HW_ADC2_STM32F2_4",
+                    "HW_ADC3_STM32F2_4",
+                    "HW_DAC1_STM32",
+                    "HW_DAC2_STM32",
+                    "HW_OTG_HS_STM32",
+                },
+            },
+            {
+                macro = "STM32F401xx",
+                brief = "STM32F401",
+                brief = "Include needed for STM32F401",
+                type = "integer",
+                requires = { "STM32F401xx" },
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F40_41xxx",
+                brief = "STM32F40x/41x",
+                brief = "Include needed for STM32F405/407/415/417",
+                type = "integer",
+                requires = { "STM32F40_41xxx" },
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F427_437xx",
+                brief = "STM32F427/437",
+                brief = "Include needed for STM32F427/438",
+                type = "integer",
+                requires = { "STM32F427_437xx" },
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F429_439xx",
+                brief = "STM32F429/439",
+                brief = "Include needed for STM32F429/439",
+                type = "integer",
+                requires = { "STM32F429_439xx" },
+                default = 1,
                 file = "include/cfg/arch.h"
             }
         }
     },
     --
-    -- STM32F4 MCU Classes
+    -- STM32F4 MCU Memory
     --
-    {
-        name = "nutarch_cm3_stm32F4_class",
-        brief = "STM32F4 Device Classes",
-        requires = { "HW_MCU_STM32F4XX" },
-        options =
-        {
-            {
-                macro = "STM32F401",
-                brief = "STM32F401",
-                description = "Red. STM32F4 w/o Ethernet and Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F401",
-                    "HW_SPI4_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM34F405",
-                brief = "STM32F405",
-                description = "STM32F4 w/o Ethernet and Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F405",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F407",
-                brief = "STM32F407",
-                description = "STM32F4 w/o Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F405",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                    "HW_CAM_STM32",
-                    "HW_EMAC_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM34F415",
-                brief = "STM32F415",
-                description = "STM32F4 w Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F415",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                    "HW_HASH_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F417",
-                brief = "STM32F417",
-                description = "STM32F4 w Ethernet and Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F417",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                    "HW_CAM_STM32",
-                    "HW_EMAC_STM32",
-                    "HW_HASH_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F427",
-                brief = "STM32F427",
-                description = "Ext STM2F4 w Ethernet",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F427",
-                    "HW_SPI4_STM32",
-                    "HW_SPI5_STM32",
-                    "HW_SPI6_STM32",
-                    "HW_SAI1_STM32",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                    "HW_CAM_STM32",
-                    "HW_EMAC_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F429",
-                brief = "STM32F429",
-                description = "Ext STM2F4 w Ethernet and LCD",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F429",
-                    "HW_SPI4_STM32",
-                    "HW_SPI5_STM32",
-                    "HW_SPI6_STM32",
-                    "HW_SAI1_STM32",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                    "HW_CAM_STM32",
-                    "HW_EMAC_STM32",
-                    "HW_LCD_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F437",
-                brief = "STM32F437",
-                description = "Ext STM2F4 w Ethernet and Crypto",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F437",
-                    "HW_SPI4_STM32",
-                    "HW_SPI5_STM32",
-                    "HW_SPI6_STM32",
-                    "HW_SAI1_STM32",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                    "HW_CAM_STM32",
-                    "HW_EMAC_STM32",
-                    "HW_HASH_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F439",
-                brief = "STM32F439",
-                description = "Ext STM2F4 w Ethernet, LCD and Crypto",
-                flavor = "booldata",
-                exclusivity = stm32F4_device_class,
-                provides =
-                {
-                    "STM32F439",
-                    "HW_SPI4_STM32",
-                    "HW_SPI5_STM32",
-                    "HW_SPI6_STM32",
-                    "HW_SAI1_STM32",
-                    "HW_UART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
-                    "HW_ADC2_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_DAC1_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_RNG_STM32",
-                    "HW_OTG2_STM32",
-                    "HW_CAM_STM32",
-                    "HW_EMAC_STM32",
-                    "HW_LCD_STM32",
-                    "HW_HASH_STM32",
-                },
-                file = "include/cfg/arch.h"
-            },
-        }
-    },
     {
         name = "nutarch_cm3_stm32F4_memory",
         brief = "STM32F4 Device Memory",
@@ -471,7 +236,7 @@ nutarch_cm3_stm32f4 =
                 brief = "HSE from external source",
                 description = "Use the clock signal applied to OSC_IN.",
                 requires = { "HW_PLL_STM32F1" },
-                flavor = "booldata",
+                flavor = "boolean",
                 file = "include/cfg/clock.h"
             },
             {
@@ -490,7 +255,7 @@ nutarch_cm3_stm32f4 =
                 brief = "PLL Clock Prescaler",
                 description = "Select this to force the HSE clock beeing divided by 2.",
                 requires = { "HW_PLL_STM32F4", "DISABLED" },
-                flavor = "booldata",
+                flavor = "boolean",
                 file = "include/cfg/clock.h"
             },
             {
@@ -501,7 +266,7 @@ nutarch_cm3_stm32f4 =
                               "If USB is used the ouput must provide a frequency of 72MHz or 48MHz.\n"..
                               "This clock is used for audio I2S interface directly.\n",
                 requires = { "HW_PLL_STM32F4", "DISABLED" },
-                flavor = "booldata",
+                flavor = "boolean",
                 file = "include/cfg/clock.h"
             },
             {
@@ -513,7 +278,7 @@ nutarch_cm3_stm32f4 =
                               "STM32F Value Line devices asr limited to 24MHz and do not have a PLL."..
                               "Other devices: 8MHz.",
                 requires = { "HW_PLL_STM32F4" },
-                flavor = "booldata",
+                flavor = "boolean",
                 type = "long",
                 default = "8000000",
                 file = "include/cfg/clock.h"
@@ -541,7 +306,7 @@ nutarch_cm3_stm32f4 =
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "Respect that usage of ethernet or USB requires at least 25MHz on this bus.\n",
                 requires = { "HW_PLL_STM32F4", "DISABLED" },
-                flavor = "booldata",
+                flavor = "boolean",
                 file = "include/cfg/clock.h"
             },
             {
@@ -553,7 +318,7 @@ nutarch_cm3_stm32f4 =
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "specific BoardInit() function.\n\n",
                 requires = { "HW_PLL_STM32F4", "DISABLED" },
-                flavor = "booldata",
+                flavor = "boolean",
                 file = "include/cfg/clock.h"
             },
             {
@@ -565,7 +330,7 @@ nutarch_cm3_stm32f4 =
                               "where a value of 0 disables the prescaler and the auto-calculation.\n"..
                               "specific BoardInit() function.\n\n",
                 requires = { "HW_PLL_STM32F4", "DISABLED" },
-                flavor = "booldata",
+                flavor = "boolean",
                 file = "include/cfg/clock.h"
             },
         }

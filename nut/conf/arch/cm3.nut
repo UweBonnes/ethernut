@@ -127,6 +127,17 @@ nutarch_cm3 =
     },
 
     --
+    -- CortexM3 Common IRQ Control
+    --
+    {
+        name = "nutarch_cm3_irqctl",
+        brief = "Common IRQ control for CM3",
+        provides = { "DEV_IRQ_CM3" },
+        requires = { "HW_MCU_CM3", "TOOL_GCC" },
+        sources = { "cm3/os/cortex_irqctl.c" },
+    },
+
+    --
     -- CortexM3 Reset Controller
     --
     {

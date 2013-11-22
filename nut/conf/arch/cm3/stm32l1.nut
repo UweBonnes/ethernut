@@ -79,15 +79,14 @@ nutarch_cm3_stm32l1 =
                     "HW_I2C2_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
-                    "HW_UART1_STM32",
-                    "HW_UART2_STM32",
-                    "HW_UART3_STM32",
-                    "HW_STM32_TIM2",
-                    "HW_STM32_TIM3",
-                    "HW_STM32_TIM4",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM9",
+                    "HW_USART1_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_STM32",
+                    "HW_TIM2_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_STM32",
+                    "HW_TIM9_STM32",
                     "HW_STM32_TIM10",
                     "HW_STM32_TIM11",
                 },
@@ -111,7 +110,11 @@ nutarch_cm3_stm32l1 =
                 flavor = "booldata",
                 exclusivity = stm32l1_device_class,
                 makedefs = { "HWDEF+=-DSTM32L1XX_MD" },
-                provides = { "STM32L1XX_MD" },
+                provides =
+                {
+                         "STM32L1XX_MD",
+                         "HW_TIM7_STM32",
+                },
                 file = "include/cfg/arch.h"
             },
             {
@@ -121,7 +124,13 @@ nutarch_cm3_stm32l1 =
                 flavor = "booldata",
                 exclusivity = stm32l1_device_class,
                 makedefs = { "HWDEF+=-DSTM32L1XX_MDP" },
-                provides = { "STM32L1XX_MDP" },
+                provides =
+                {
+                         "STM32L1XX_MDP",
+                         "HW_SPI2_STM32",
+                         "HW_TIM5_STM32",
+                         "HW_TIM7_STM32",
+                },
                 file = "include/cfg/arch.h"
             },
             {
@@ -131,7 +140,15 @@ nutarch_cm3_stm32l1 =
                 flavor = "booldata",
                 exclusivity = stm32l1_device_class,
                 makedefs = { "HWDEF+=-DSTM32L1XX_HD" },
-                provides = { "STM32L1XX_HD" },
+                provides =
+                {
+                         "STM32L1XX_HD",
+                         "HW_UART4_STM32",
+                         "HW_UART5_STM32",
+                         "HW_SPI2_STM32",
+                         "HW_TIM5_STM32",
+                         "HW_TIM7_STM32",
+                },
                 file = "include/cfg/arch.h"
             },
         }

@@ -73,36 +73,31 @@ nutarch_cm3_stm32f2 =
                     "HW_EXTI1510_STM32",
                     "HW_DMA1_STM32F2",
                     "HW_DMA2_STM32F2",
-                    "HW_OTG1_STM32",
+                    "HW_OTG_FS_STM32",
+                    "HW_OTG_HS_STM32",
                     "HW_I2C1_STM32",
                     "HW_I2C2_STM32",
                     "HW_I2C3_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
-                    "HW_UART1_STM32",
-                    "HW_UART2_STM32",
-                    "HW_UART3_STM32",
+                    "HW_USART1_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_STM32",
                     "HW_UART4_STM32",
                     "HW_UART5_STM32",
-                    "HW_UART6_STM32",
+                    "HW_USART6_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_RTC_STM32_V2",
-                    "HW_STM32_TIM1",
-                    "HW_STM32_TIM2_32BIT",
-                    "HW_STM32_TIM3",
-                    "HW_STM32_TIM4",
-                    "HW_STM32_TIM5_32BIT",
-                    "HW_STM32_TIM6",
-                    "HW_STM32_TIM7",
-                    "HW_STM32_TIM8",
-                    "HW_STM32_TIM9",
-                    "HW_STM32_TIM10",
-                    "HW_STM32_TIM11",
-                    "HW_STM32_TIM12",
-                    "HW_STM32_TIM13",
-                    "HW_STM32_TIM14",
+                    "HW_TIM1_TIM9_TIM10_TIM11_STM32",
+                    "HW_TIM2_32BIT_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM5_32BITT_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM8_TIM12_TIM13_TIM14_STM32",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -123,7 +118,11 @@ nutarch_cm3_stm32f2 =
                 description = "STM32F2 w/o Ethernet and Crypto.",
                 flavor = "booldata",
                 exclusivity = stm32F2_device_class,
-                provides = { "STM32F205" },
+                provides =
+                {
+                    "STM32F205",
+                    "HW_RNG_STM32",
+                },
                 file = "include/cfg/arch.h"
             },
             {
@@ -135,7 +134,39 @@ nutarch_cm3_stm32f2 =
                 provides =
                 {
                     "STM32F207",
+                    "HW_RNG_STM32",
                     "HW_EMAC_STM32",
+                    "HW_DCMI_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F215",
+                brief = "STM32F215",
+                description = "STM32F2 w/o Ethernet, with Crypto.",
+                flavor = "booldata",
+                exclusivity = stm32F2_device_class,
+                provides =
+                {
+                    "STM32F215",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F217",
+                brief = "STM32F217",
+                description = "STM32F2 with Ethernet and Crypto.",
+                flavor = "booldata",
+                exclusivity = stm32F2_device_class,
+                provides =
+                {
+                    "STM32F217",
+                    "HW_EMAC_STM32",
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_DCMI_STM32",
                 },
                 file = "include/cfg/arch.h"
             },

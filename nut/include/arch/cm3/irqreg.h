@@ -4,6 +4,7 @@
 
 /*
  * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2013 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -60,6 +61,56 @@
 
 #else
 #warning "No CortexM3 MCU defined"
+#endif
+
+#ifdef NUT_PERFMON
+
+#define Create_Handler(IRQ_SIG, DEV, PRIORITY)                          \
+                                                                        \
+static int IRQ_SIG## IrqCtl(int cmd, void *param);                      \
+                                                                        \
+IRQ_HANDLER sig_ ##IRQ_SIG = {                                          \
+    0,                          /* Interrupt counter, ir_count. */      \
+    NULL,                       /* Passed argument, ir_arg. */          \
+    NULL,                       /* Handler subroutine, ir_handler. */   \
+    IRQ_SIG## IrqCtl                /* Interrupt control, ir_ctl. */    \
+};                                                                      \
+static void IRQ_SIG## IrqEntry(void *arg);                              \
+void IRQ_SIG## IrqEntry(void *arg)                                      \
+{                                                                       \
+    sig_ ##IRQ_SIG.ir_count++;                                          \
+    if (sig_ ##IRQ_SIG.ir_handler) {                                    \
+        (sig_ ##IRQ_SIG.ir_handler) (sig_ ##IRQ_SIG.ir_arg);            \
+    }                                                                   \
+}                                                                       \
+int IRQ_SIG## IrqCtl(int cmd, void* param)                              \
+{                                                                       \
+    return CM3_IrqCtl(cmd, param, DEV## _IRQn, & IRQ_SIG##IrqEntry, &sig_ ##IRQ_SIG, PRIORITY); \
+}
+
+#else /* NUT_PERFMON */
+
+#define Create_Handler(IRQ_SIG, DEV, PRIORITY)                          \
+                                                                        \
+static int IRQ_SIG##IrqCtl(int cmd, void *param);                       \
+                                                                        \
+IRQ_HANDLER sig_ ##IRQ_SIG = {                                          \
+    NULL,                       /* Passed argument, ir_arg. */          \
+    NULL,                       /* Handler subroutine, ir_handler. */   \
+    IRQ_SIG## IrqCtl                /* Interrupt control, ir_ctl. */    \
+};                                                                      \
+static void IRQ_SIG## IrqEntry(void *arg);                              \
+void IRQ_SIG## IrqEntry(void *arg)                                      \
+{                                                                       \
+    if (sig_ ##IRQ_SIG.ir_handler) {                                    \
+        (sig_ ##IRQ_SIG.ir_handler) (sig_ ##IRQ_SIG.ir_arg);            \
+    }                                                                   \
+}                                                                       \
+int IRQ_SIG## IrqCtl(int cmd, void* param)                              \
+{                                                                       \
+    return CM3_IrqCtl(cmd, param, DEV## _IRQn, & IRQ_SIG##IrqEntry, &sig_ ##IRQ_SIG, PRIORITY); \
+}
+
 #endif
 
 #endif

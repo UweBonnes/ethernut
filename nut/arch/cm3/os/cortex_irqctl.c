@@ -1,6 +1,7 @@
 /*
- * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2013 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,89 +30,63 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*
  * \verbatim
- * $Id$
+ * $Id: cortex_irqctl.c 3113 2010-09-17 14:00:26Z astralix $
+ *
+ * Common function to control the interrupt settings of IRQs
+ * of cortex CPUs. External interrupts with level control still
+ * need special handling.
  * \endverbatim
  */
 
-#include <cfg/arch.h>
-#include <arch/cm3.h>
-#include <dev/irqreg.h>
-#include <sys/device.h>
-
-#ifndef NUT_IRQPRI_UART2
-#define NUT_IRQPRI_UART2  4
-#endif
-
-extern NUTDEVICE devUsartStm32_2;
-
-static int Uart2IrqCtl(int cmd, void *param);
-
 /*!
- * \breif IRQ Handler for USART 2.
- */
-IRQ_HANDLER sig_USART2 = {
-#ifdef NUT_PERFMON
-    0,                  /* Interrupt counter, ir_count. */
-#endif
-    &devUsartStm32_2,   /* Passed argument, ir_arg. */
-    NULL,               /* Handler subroutine, ir_handler. */
-    Uart2IrqCtl         /* Interrupt control, ir_ctl. */
-};
-
-/*!
- * \brief UART 2 interrupt entry.
- */
-void Uart2IrqEntry(void *arg)
-{
-#ifdef NUT_PERFMON
-    sig_USART2.ir_count++;
-#endif
-    if (sig_USART2.ir_handler) {
-        (sig_USART2.ir_handler) (sig_USART2.ir_arg);
-    }
-}
-
-/*!
- * \brief UART 0 interrupt control.
+ * \brief CM3 common interrupt control.
  *
- * \param cmd   Control command.
- *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
- *              - NUT_IRQCTL_STATUS Query interrupt status.
- *              - NUT_IRQCTL_ENABLE Enable interrupt.
- *              - NUT_IRQCTL_DISABLE Disable interrupt.
- *              - NUT_IRQCTL_GETMODE Query interrupt mode.
- *              - NUT_IRQCTL_SETMODE Set interrupt mode (NUT_IRQMODE_LEVEL or NUT_IRQMODE_EDGE).
- *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
- *              - NUT_IRQCTL_SETPRIO Set interrupt priority.
- *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
- * \param param Pointer to optional parameter.
+ * \param interrupt    Interrupt number.
+ * \param sig          Interrupt control block
+ * \param cmd          Control command.
+ *                     - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *                     - NUT_IRQCTL_STATUS Query interrupt status.
+ *                     - NUT_IRQCTL_ENABLE Enable interrupt.
+ *                     - NUT_IRQCTL_DISABLE Disable interrupt.
+ *                     - NUT_IRQCTL_GETMODE Query interrupt mode.
+ *                     - NUT_IRQCTL_SETMODE Set interrupt mode (NUT_IRQMODE_LEVEL or NUT_IRQMODE_EDGE).
+ *                       Always treated as NUT_IRQMODE_LEVEL.
+ *                     - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *                     - NUT_IRQCTL_SETPRIO Set interrupt priority.
+ *                     - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param        Pointer to optional parameter.
+ * \param def_priority Priority to use on init
  *
  * \return 0 on success, -1 otherwise.
  */
-static int Uart2IrqCtl(int cmd, void *param)
+
+#include <dev/irqreg.h>
+
+int CM3_IrqCtl(int cmd, void *param, IRQn_Type interrupt,
+               void (*pfnHandler)(void*),
+               IRQ_HANDLER* sig, int def_priority)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *)param;
-    int_fast8_t enabled = NVIC_GetEnableIRQ(USART2_IRQn);
+    int_fast8_t enabled = NVIC_GetActive(interrupt);
 
     /* Disable interrupt. */
     if (enabled) {
-        NVIC_DisableIRQ(USART2_IRQn);
+        NVIC_DisableIRQ(interrupt);
     }
 
     switch(cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-        Cortex_RegisterInt(USART2_IRQn,Uart2IrqEntry);
+        Cortex_RegisterInt(interrupt, pfnHandler);
         /* Initialize with defined priority. */
-        NVIC_SetPriority(USART2_IRQn,NUT_IRQPRI_UART2);
+        NVIC_SetPriority(interrupt, def_priority);
         /* Clear interrupt */
-        NVIC_ClearPendingIRQ(USART2_IRQn);
+        NVIC_ClearPendingIRQ(interrupt);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
@@ -128,21 +103,20 @@ static int Uart2IrqCtl(int cmd, void *param)
         enabled = 0;
         break;
     case NUT_IRQCTL_GETMODE:
-            *ival = NUT_IRQMODE_EDGE;
+        *ival = NUT_IRQMODE_LEVEL;
         break;
     case NUT_IRQCTL_SETMODE:
-            rc = -1;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = NVIC_GetPriority(USART2_IRQn);
+        *ival = NVIC_GetPriority(interrupt);
         break;
     case NUT_IRQCTL_SETPRIO:
-    NVIC_SetPriority(USART2_IRQn,*ival);
+        NVIC_SetPriority(interrupt, *ival);
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (unsigned int)sig_USART2.ir_count;
-        sig_USART2.ir_count = 0;
+        *ival = (unsigned int)sig->ir_count;
+        sig->ir_count = 0;
         break;
 #endif
     default:
@@ -152,7 +126,7 @@ static int Uart2IrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        NVIC_EnableIRQ(USART2_IRQn);
+    NVIC_EnableIRQ(interrupt);
     }
     return rc;
 }

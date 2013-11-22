@@ -189,4 +189,10 @@ extern int NutIrqGetPriority(IRQ_HANDLER * irq);
 extern int NutIrqSetMode(IRQ_HANDLER * irq, int mode);
 #endif
 
+#if defined(__CORTEX__)
+int CM3_IrqCtl(int cmd, void *param, IRQn_Type interrupt,
+               void (*pfnHandler)(void*),
+               IRQ_HANDLER* sig, int def_priority);
+#endif
+
 #endif
