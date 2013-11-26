@@ -65,7 +65,7 @@
 
 #ifdef NUT_PERFMON
 
-#define Create_Handler(IRQ_SIG, DEV, PRIORITY)                          \
+#define CREATE_HANDLER(IRQ_SIG, DEV, PRIORITY)                          \
                                                                         \
 static int IRQ_SIG## IrqCtl(int cmd, void *param);                      \
                                                                         \
@@ -90,7 +90,7 @@ int IRQ_SIG## IrqCtl(int cmd, void* param)                              \
 
 #else /* NUT_PERFMON */
 
-#define Create_Handler(IRQ_SIG, DEV, PRIORITY)                          \
+#define CREATE_HANDLER(IRQ_SIG, DEV, PRIORITY)                          \
                                                                         \
 static int IRQ_SIG##IrqCtl(int cmd, void *param);                       \
                                                                         \
