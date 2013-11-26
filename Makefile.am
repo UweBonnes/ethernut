@@ -55,7 +55,7 @@ ACLOCAL_AMFLAGS = -I m4
 MAINTAINERCLEANFILES = depcomp compile missing install-sh
 
 EXTRA_DIST = nut/nutsetup reconf \
-nut/Makevars.all nut/Makerules.all \
+nut/Makevars.all nut/Makerules.all nut/Makerules.licenses \
 nut/Makevars.arm-ecross-gcc \
 nut/Makedefs.arm-ecross-gcc nut/Makerules.arm-ecross-gcc \
 nut/Makedefs.arm-ecross-gccdbg nut/Makerules.arm-ecross-gccdbg \
