@@ -217,8 +217,17 @@ SMTPCLIENTSESSION *NutSmtpConnect(uint32_t ip, uint16_t port)
             uint32_t tmo = SMTP_TIMEOUT;
             NutTcpSetSockOpt(si->smtp_sock, SO_RCVTIMEO, &tmo, sizeof(tmo));
             si->smtp_stream = _fdopen((int) ((intptr_t) si->smtp_sock), "r+b");
-            if (si->smtp_stream && *NutSmtpReceiveResponse(si) == '2') {
-                return si;
+            if (si->smtp_stream) {
+                for (;;) {
+                    const char *rsp = NutSmtpReceiveResponse(si);
+
+                    if (*rsp != '2') {
+                        break;
+                    }
+                    if (*(rsp + 3) != '-') {
+                        return si;
+                    }
+                }
             }
         }
         NutSmtpDisconnect(si);
