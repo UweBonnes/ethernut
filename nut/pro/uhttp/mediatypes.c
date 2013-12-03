@@ -110,7 +110,10 @@ int MediaTypeHandlerBinary(HTTPD_SESSION *hs, const MEDIA_TYPE_ENTRY *mt, const 
     } else {
 #if HTTP_VERSION >= 0x10
         int rc = fstat(fd, &s);
-        if (rc == 0) {
+        if (rc) {
+            /* File system doesn't support fstat. */
+            fsize = _filelength(fd);
+        } else {
             fsize = s.st_size;
         }
 #if !defined(HTTPD_EXCLUDE_DATE)
