@@ -84,7 +84,7 @@
  *         lead to intermixed data (if data doesn't fit into ringbuffer
  *         on the first try )
  */
-int _write_P(int fd, PGM_P data, unsigned int count)
+int _write_P(int fd, PGM_P data, size_t count)
 {
     NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
     NUTDEVICE *dev;

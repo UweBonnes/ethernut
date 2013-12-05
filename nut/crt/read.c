@@ -72,7 +72,7 @@
  * \return The number of bytes read, which may be less than the number
  *         of bytes specified. A return value of -1 indicates an error.
  */
-int _read(int fd, void *buffer, unsigned int count)
+int _read(int fd, void *buffer, size_t count)
 {
     NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
     NUTDEVICE *dev;
