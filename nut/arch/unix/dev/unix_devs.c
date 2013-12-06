@@ -598,9 +598,8 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     nf = malloc(sizeof(NUTFILE));
 
     // enter data
-    nf->nf_next = 0;
     nf->nf_dev = dev;
-    nf->nf_fcb = 0;
+    nf->nf_fcb = NULL;
 
     return nf;
 }
@@ -1093,7 +1092,8 @@ NUTDEVICE devDebug0 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -1114,7 +1114,8 @@ NUTDEVICE devDebug1 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 
@@ -1136,7 +1137,8 @@ NUTDEVICE devUart0 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -1157,7 +1159,8 @@ NUTDEVICE devUart1 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -1178,7 +1181,8 @@ NUTDEVICE devUart2 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -1199,7 +1203,8 @@ NUTDEVICE devUsartAvr0 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -1220,7 +1225,8 @@ NUTDEVICE devUsartAvr1 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*!
@@ -1241,7 +1247,8 @@ NUTDEVICE devUsartAvr2 = {
     UnixDevWrite,
     UnixDevOpen,
     UnixDevClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 

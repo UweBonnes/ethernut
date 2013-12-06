@@ -356,5 +356,6 @@ NUTDEVICE devUsart0CbAvr = {
     UsartCbWrite_P, /* Write to device, dev_write_P. */
     UsartCbOpen,    /* Open a device or file, dev_open. */
     UsartCbClose,   /* Close a device or file, dev_close. */
-    UsartCbSize     /* Request file size, dev_size. */
+    UsartCbSize,    /* Request file size, dev_size. */
+    NULL            /* Select function, optional, not yet implemented */
 };

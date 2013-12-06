@@ -861,7 +861,6 @@ NUTFILE *SpiMmcMount(NUTDEVICE * dev, const char *name, int mode, int acc)
         errno = ENOMEM;
         return NUTFILE_EOF;
     }
-    nfp->nf_next = 0;
     nfp->nf_dev = dev;
     nfp->nf_fcb = fcb;
 

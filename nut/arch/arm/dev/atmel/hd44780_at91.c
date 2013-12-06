@@ -494,7 +494,8 @@ NUTDEVICE devLcd = {
     TermWrite,
     TermOpen,
     TermClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -69,10 +69,6 @@ typedef struct _NUTFILE NUTFILE;
  * \brief File structure.
  */
 struct _NUTFILE {
-    /*!
-     * \brief Link to the next file structure.
-     */
-    NUTFILE *nf_next;
 
     /*!
      * \brief Device containing this file.

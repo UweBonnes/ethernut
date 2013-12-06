@@ -223,9 +223,8 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
-    fp->nf_next = 0;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     return fp;
 }
@@ -271,7 +270,8 @@ NUTDEVICE devDebug0 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 #endif                          /* AVR32_USART0_TXD_PIN */
 
@@ -306,7 +306,8 @@ NUTDEVICE devDebug1 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 #endif                          /* AVR32_USART1_TXD_PIN */
 
@@ -341,7 +342,8 @@ NUTDEVICE devDebug2 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 #endif                          /* AVR32_USART2_TXD_PIN */
 
@@ -376,7 +378,8 @@ NUTDEVICE devDebug3 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< dev_select, optional, not yet implemented */
 };
 
 #endif                          /* AVR32_USART3_TXD_PIN */

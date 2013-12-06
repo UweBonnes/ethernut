@@ -106,6 +106,7 @@ all:
 	-$(MAKE) -C printf
 	-$(MAKE) -C pppc
 	-$(MAKE) -C rs232d
+	-$(MAKE) -C rs232d_select
 	-$(MAKE) -C simple
 	-$(MAKE) -C snmpd
 	-$(MAKE) -C tcps
@@ -136,6 +137,7 @@ install:
 	-$(MAKE) -C printf install
 	-$(MAKE) -C pppc install
 	-$(MAKE) -C rs232d install
+	-$(MAKE) -C rs232d_select install
 	-$(MAKE) -C simple install
 	-$(MAKE) -C snmpd install
 	-$(MAKE) -C tcps install
@@ -166,6 +168,7 @@ clean:
 	-$(MAKE) -C printf clean
 	-$(MAKE) -C pppc clean
 	-$(MAKE) -C rs232d clean
+	-$(MAKE) -C rs232d_select install
 	-$(MAKE) -C simple clean
 	-$(MAKE) -C snmpd clean
 	-$(MAKE) -C tcps clean
@@ -191,6 +194,7 @@ at90can:
 	-$(MAKE) -C printf
 	-$(MAKE) -C pppc
 	-$(MAKE) -C rs232d
+	-$(MAKE) -C rs232d_select install
 	-$(MAKE) -C simple
 	-$(MAKE) -C snmpd
 	-$(MAKE) -C tcps

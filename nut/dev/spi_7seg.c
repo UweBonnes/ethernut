@@ -512,9 +512,8 @@ NUTFILE *Spi7SegOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
         return NUTFILE_EOF;
     }
 
-    fp->nf_fcb = 0;
     fp->nf_dev = dev;
-    fp->nf_next = 0;
+    fp->nf_fcb = NULL;
 
     return fp;
 
@@ -629,6 +628,7 @@ NUTDEVICE devSpi7SEG = {
 #endif
     Spi7SegOpen,                    /*!< \brief Mount volume, dev_open. */
     Spi7SegClose,                   /*!< \brief Unmount volume, dev_close. */
-    0                               /*!< \brief Request file size, dev_size. */
+    NULL,                           /*!< \brief Request file size, dev_size. */
+    NULL,                           /*!< \brief Select function, optional, not yet implemented */
 };
 

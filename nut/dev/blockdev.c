@@ -193,7 +193,6 @@ NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, const char *name, int mode, int acc
                 if (nfp) {
                     FSCP_VOL_MOUNT mparm;
 
-                    nfp->nf_next = NULL;
                     nfp->nf_dev = dev;
                     nfp->nf_fcb = fcb;
                     /* Mount the file system volume. */

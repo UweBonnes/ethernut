@@ -399,9 +399,8 @@ static int IrblastIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static NUTFILE *IrblastOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
-    file.nf_next = 0;
     file.nf_dev = dev;
-    file.nf_fcb = 0;
+    file.nf_fcb = NULL;
     return &file;
 }
 
@@ -497,5 +496,6 @@ NUTDEVICE devIrblast0 = {
     IrblastWrite_P,
     IrblastOpen,
     IrblastClose,
-    0
+    0,
+    0,                          /* Select function, optional, not yet implemented */
 };

@@ -413,7 +413,6 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
     }
 
     memset(ffcb, 0, sizeof(PHATFILE));
-    nfp->nf_next = 0;
     nfp->nf_dev = dev;
     nfp->nf_fcb = ffcb;
 
@@ -1120,7 +1119,8 @@ NUTDEVICE devPhat0 = {
 #endif
     PhatApiFileOpen,            /*!< Open a file, dev_open. */
     PhatApiFileClose,           /*!< Close a file, dev_close. */
-    PhatFileSize                /*!< Return file size, dev_size. */
+    PhatFileSize,               /*!< Return file size, dev_size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 NUTDEVICE devPhat1 = {
@@ -1141,7 +1141,8 @@ NUTDEVICE devPhat1 = {
 #endif
     PhatApiFileOpen,            /*!< Open a file, dev_open. */
     PhatApiFileClose,           /*!< Close a file, dev_close. */
-    PhatFileSize                /*!< Return file size, dev_size. */
+    PhatFileSize,               /*!< Return file size, dev_size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

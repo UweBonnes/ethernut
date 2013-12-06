@@ -236,6 +236,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
         sock->so_devwrite_P = NutTcpDeviceWrite_P;
 #endif
         sock->so_devioctl = NutTcpDeviceIOCtl;
+        sock->so_devselect = NutTcpDeviceSelect;
 
         sock->so_tx_isn = NutGetTickCount();  /* Generate the ISN from the nut_ticks counter */
         sock->so_tx_una = sock->so_tx_isn;
@@ -1014,6 +1015,56 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
     }
 
     return rc;
+}
+
+/*!
+ * \brief Callback function called by select routine to check, if read 
+ *        or write to this socket would block
+ * \internal
+ *
+ * This function is called by select_scan routine of the C runtime library
+ * as part of the select() implementation. If select if currently waiting
+ * on a waitqueue, this function will be called to check the current state
+ * as soon as the select waitqueues got signalled by the tcp statemachine
+ *
+ * \param sock  Socket descriptor. This pointer must have been
+ *              retrieved by calling NutTcpCreateSocket().
+ * \param flags Flags representing what we are waiting for (read / write / exception)
+ * \param wq    Waitqueue, which should be added to the drivers waitqueue list. The 
+ *              thread that called select is waiting on this waitqueue
+ * \param cmd   Internal command, that is passed to NutSelectManageWq
+ *
+ * \return Flags representing the current filedescriptor state
+ */
+int NutTcpDeviceSelect (TCPSOCKET * sock, int flags, HANDLE *wq, select_cmd_t cmd)
+{
+    int rflags = 0;
+
+    /* Manage the wait queue lists for the select call */
+    NutSelectManageWq(&sock->so_rx_wq_list, wq, flags & WQ_FLAG_READ, cmd);
+    NutSelectManageWq(&sock->so_tx_wq_list, wq, flags & WQ_FLAG_WRITE, cmd);
+
+    if (sock->so_state == TCPS_ESTABLISHED) {
+        /* Check if there is some data available for reading (compare to NutTcpReceive) */
+        if (sock->so_rx_cnt - sock->so_rd_cnt > 0) {
+            rflags |= WQ_FLAG_READ;
+        }
+
+        /* Check if there is some free space in the output buffer. */
+        if (sock->so_devocnt < sock->so_devobsz) {
+            rflags |= WQ_FLAG_WRITE;
+        }
+    }
+    if ((sock->so_state == TCPS_CLOSED) || (sock->so_state == TCPS_CLOSE_WAIT)) {
+        /* The socket has been closed. Signal for read and write. 
+           Send and receive routines will then return EOF.
+         */
+        rflags |= WQ_FLAG_READ | WQ_FLAG_WRITE;
+    }
+
+    rflags &= flags;
+
+    return rflags;
 }
 
 /*@}*/

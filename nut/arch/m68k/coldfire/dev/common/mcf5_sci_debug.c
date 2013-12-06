@@ -130,7 +130,6 @@ static NUTFILE *Open(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
-    fp->nf_next = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 
@@ -300,6 +299,7 @@ NUTDEVICE devDebug1 = {
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
         NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };
 
 NUTDEVICE devDebug2 = {
@@ -317,6 +317,7 @@ NUTDEVICE devDebug2 = {
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
         NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };
 
 NUTDEVICE devDebug3 = {
@@ -334,4 +335,5 @@ NUTDEVICE devDebug3 = {
         Open,           /*!< _NUTDEVICE::dev_open. */
         Close,          /*!< _NUTDEVICE::dev_close. */
         NULL            /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+        NULL,           /*!< _NUTDEVICE::dev_select, optional, may be NULL */
 };

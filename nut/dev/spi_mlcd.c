@@ -137,7 +137,8 @@ NUTDEVICE devSpiMegaLcd = {
 #endif
     TermOpen,
     TermClose,
-    0
+    NULL,
+    NULL,           /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -72,11 +72,19 @@
 
 int _seek(int fd, long offset, int origin)
 {
-    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
+    NUTFILE *fp;
     NUTDEVICE *dev;
     IOCTL_ARG3 conf;
 
-    NUTASSERT(fp != NULL);
+    if ((unsigned int)fd >= FOPEN_MAX) {
+        errno = EBADF;
+        return -1;
+    }
+
+    if ((fp = __fds[fd]) == NULL) {
+        errno = EBADF;
+        return -1;
+    }
 
     conf.arg1 = (void*) fp;
     conf.arg2 = (void*) &offset;

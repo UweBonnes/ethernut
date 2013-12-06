@@ -53,6 +53,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <memdebug.h>
+#include <sys/device.h>
 
 
 /*!
@@ -66,14 +67,14 @@
  * \param fd   Descriptor of a previously opened file, device or
  *             connected socket.
  * \param mode Specifies the access mode.
- *         \li \c "r" Read only.
- *         \li \c "w" Write only.
- *         \li \c "a" Write only at the end of file.
+ *         \li \c "r"  Read only.
+ *         \li \c "w"  Write only.
+ *         \li \c "a"  Write only at the end of file.
  *         \li \c "r+" Read and write existing file.
  *         \li \c "w+" Read and write, destroys existing file contents.
  *         \li \c "a+" Read and write, preserves existing file contents.
- *             \li \c "b" May be appended to any of the above strings to
- *                        specify binary access.
+ *         \li \c "b"  May be appended to any of the above strings to
+ *                     specify binary access.
  *
  * \return A pointer to the open stream or a null pointer to indicate
  *         an error.
@@ -89,14 +90,58 @@ FILE *_fdopen(int fd, const char *mode)
     if ((mflags = _fmode(mode)) == EOF)
         return 0;
 
+
+    /************************* HACK ALERT!!! *************************/
+    /* TCP Sockets are hacked into this pseudo
+     * file scheme. If a stream shall be connected to this socket,
+     * _fdopen() is called with a casted pointer to the socket struct
+     * instead of passing a real file descriptor. Therefore we have
+     * to handle such pointers in a special way...
+     *
+     * I really would like to see a new socket API, where we directly
+     * use file descriptors (integers in the range of 0 ... FOPEN_MAX-1
+     * instead of struct pointers
+     */
+     /************************* HACK ALERT!!! *************************/
+
+    if ((unsigned int)fd >= FOPEN_MAX) {
+        /* We expect "normal" filedescriptors to be positive integers in
+         * a range of 0 ... FOPEN_MAX-1. Any other value will be sanity
+         * checked and then manually added to the __fds[] array. The
+         * resulting integer file descriptor will then be used to
+         * connect the stream like is is done with normal file descriptors
+         * as well.
+         */
+
+        NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fd;
+
+        if ((vdv->vdv_zero == NULL) && (vdv->vdv_type == IFTYP_TCPSOCK)) {
+            /* Seems the user passed a TCPSOCK struct pointer... */
+            /* Search the next free filedescriptor */
+
+            for (i = 0; __fds[i];) {
+                if (++i >= FOPEN_MAX) {
+                    errno = EMFILE;
+                    return NULL;
+                }
+            }
+
+            /* Reserve the entry */
+            __fds[i] = (NUTFILE*) fd;
+            fd = i;
+        }
+        /************************ HACK ALERT END *************************/
+    }
+
     /*
      * Find an empty slot.
      */
-    for (i = 3; __iob[i]; i++)
-        if (i >= FOPEN_MAX - 1) {
+    for (i = 0; __iob[i];) {
+        if (++i >= FOPEN_MAX) {
             errno = ENFILE;
-            return 0;
+            return NULL;
         }
+    }
 
     if ((__iob[i] = malloc(sizeof(FILE))) != 0) {
         __iob[i]->iob_fd = fd;

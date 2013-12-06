@@ -167,7 +167,6 @@ static NUTFILE *SemihostingOpen(NUTDEVICE * dev, const char *name, int mode, int
     nf = malloc(sizeof(NUTFILE));
 
     if (nf) {
-        nf->nf_next = 0;
         nf->nf_dev = dev;
     }
     return nf;
@@ -259,10 +258,10 @@ NUTDEVICE devSemihosting = {
     IFTYP_CHAR,                                /*!< Type of device. */
     0,                                         /*!< Base address. */
     0,                                         /*!< First interrupt number. */
-    &sh,                              /*!< Interface control block. */
+    &sh,                                       /*!< Interface control block. */
     0,                                         /*!< Driver control block. */
-    SemihostingInit,                                /*!< Driver initialization routine. */
-    SemihostingIOCTL,                               /*!< Driver specific control function. */
+    SemihostingInit,                           /*!< Driver initialization routine. */
+    SemihostingIOCTL,                          /*!< Driver specific control function. */
     SemihostingRead,
     SemihostingWrite,
 #ifdef __HARVARD_ARCH__
@@ -270,7 +269,8 @@ NUTDEVICE devSemihosting = {
 #endif
     SemihostingOpen,
     SemihostingClose,
-    0
+    0,                                         /*!< Return file size, dev_size. */
+    0,                                         /*!< Select function, optional, not yet implemented */
 };
 
 

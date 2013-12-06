@@ -250,7 +250,8 @@ NUTDEVICE devNplSpiMmc0 = {
 #endif
     SpiMmcMount,        /*!< Mount a file system, dev_open. */
     SpiMmcUnmount,      /*!< Unmount a file system, dev_close. */
-    0                   /*!< Return file size, dev_size. */
+    NULL,               /*!< Return file size, dev_size. */
+    NULL,               /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

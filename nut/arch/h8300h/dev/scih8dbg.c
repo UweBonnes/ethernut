@@ -219,9 +219,8 @@ static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 {
-    dbgfile.nf_next = 0;
     dbgfile.nf_dev = dev;
-    dbgfile.nf_fcb = 0;
+    dbgfile.nf_fcb = NULL;
 
     return &dbgfile;
 }
@@ -255,7 +254,8 @@ NUTDEVICE devDebug0 = {
     /* Write from program space data to device. */
     DebugOpen,
     DebugClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 NUTDEVICE devDebug1 = {
@@ -274,7 +274,8 @@ NUTDEVICE devDebug1 = {
     /* Write from program space data to device. */
     DebugOpen,
     DebugClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 NUTDEVICE devDebug2 = {
@@ -293,7 +294,8 @@ NUTDEVICE devDebug2 = {
     /* Write from program space data to device. */
     DebugOpen,
     DebugClose,
-    0
+    0,
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

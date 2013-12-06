@@ -409,9 +409,8 @@ static NUTFILE *GenCharOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         return NUTFILE_EOF; /* No memory. */
     }
 
-    fp->nf_next = 0;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     return fp;
 }
@@ -605,7 +604,12 @@ NUTDEVICE devGenChar = {
      * Some character device drivers return the number of bytes currently
      * available in the input buffer.
      */
-    GenCharSize
+    GenCharSize,
+
+    /*! \brief dev_select queries the blocking state for read or write 
+      *        operations and possible errors on the device .
+      */
+    NULL,
 };
 
 

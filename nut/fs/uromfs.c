@@ -211,7 +211,6 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, const char *name, int mode,
         errno = ENOENT;
 
     if (romf) {
-        fp->nf_next = 0;
         fp->nf_dev = dev;
         fp->nf_fcb = romf;
     } else {
@@ -287,7 +286,8 @@ NUTDEVICE devUrom = {
 #endif
     UromOpen,                   /*!< Open a file. */
     UromClose,                  /*!< Close a file. */
-    UromSize                    /*!< Return file size. */
+    UromSize,                   /*!< Return file size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

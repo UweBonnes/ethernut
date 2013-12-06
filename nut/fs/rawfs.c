@@ -224,7 +224,6 @@ NUTFILE *RawFsFileOpen(NUTDEVICE * dev, const char *path, int mode, int acc)
         /* Allocate a file information structure. */
         nfp = malloc(sizeof(NUTFILE));
         if (nfp) {
-            nfp->nf_next = 0;
             nfp->nf_dev = dev;
             nfp->nf_fcb = fcb;
             /* Successfully opened. */
@@ -799,7 +798,8 @@ NUTDEVICE devRawFs0 = {
 #endif
     RawFsApiFileOpen,       /*!< Open a file, dev_open. */
     RawFsApiFileClose,      /*!< Close a file, dev_close. */
-    RawFsFileSize           /*!< Return file size, dev_size. */
+    RawFsFileSize,          /*!< Return file size, dev_size. */
+    NULL,                   /*!< Select function, optional, not yet implemented */                 
 };
 
 /*@}*/

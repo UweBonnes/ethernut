@@ -443,6 +443,7 @@ static void At91UsartTxReady(RINGBUF *rbf)
         /* Send an event if we reached the low watermark. */
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
     }
 
@@ -454,6 +455,7 @@ static void At91UsartTxReady(RINGBUF *rbf)
         outr(USARTn_BASE + US_IDR_OFF, US_TXRDY);
         /* Send an event to inform the upper level. */
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
     }
 }
 
@@ -511,6 +513,7 @@ static void At91UsartRxReady(RINGBUF *rbf)
     /* Wake up waiting threads if this is the first byte in the buffer. */
     if (cnt++ == 0){
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
     }
 
     /*

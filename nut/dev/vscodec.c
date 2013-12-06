@@ -663,7 +663,6 @@ static NUTFILE *VsOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     NutSleep(2);
 
     nfp = malloc(sizeof(NUTFILE));
-    nfp->nf_next = NULL;
     nfp->nf_dev = dev;
     nfp->nf_fcb = NULL;
 
@@ -931,7 +930,8 @@ NUTDEVICE devVsCodec = {
 #endif
     VsOpen,         /* Open a device or file, dev_open. */
     VsClose,        /* Close a device or file, dev_close. */
-    NULL            /* Request file size, dev_size. */
+    NULL,           /* Request file size, dev_size. */
+    NULL,           /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -556,7 +556,8 @@ NUTDEVICE devPppHdlc0 = {
 #endif
     PppHdlcOpen,    /* Open a device or file, dev_open. */
     PppHdlcClose,   /* Close a device or file, dev_close. */
-    NULL            /* Request file size, dev_size. */
+    NULL,           /* Request file size, dev_size. */
+    NULL,           /* Select function, optional, not yet implemented */
 };
 
 NUTDEVICE devPppHdlc1 = {
@@ -576,5 +577,6 @@ NUTDEVICE devPppHdlc1 = {
 #endif
     PppHdlcOpen,    /* Open a device or file, dev_open. */
     PppHdlcClose,   /* Close a device or file, dev_close. */
-    NULL            /* Request file size, dev_size. */
+    NULL,           /* Request file size, dev_size. */
+    NULL,           /* Select function, optional, not yet implemented */
 };

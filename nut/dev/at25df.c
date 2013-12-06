@@ -448,21 +448,21 @@ int SpiAt25IOCtl (NUTDEVICE * dev, int req, void *conf){
 NUTSPINODE at25df = {
     NULL,   /* SPI bus */
     NULL,   /* additional parameters (dcb) */
-    1000000,/* SPI data rate TODO: в каких величинах? */
-    0,  /* SPI mode */
-    8,  /* data bits */
-    0   /* chip select index */
+    1000000,/* SPI data rate TODO ? */
+    0,      /* SPI mode */
+    8,      /* data bits */
+    0       /* chip select index */
 };
 
 /*!
  * \brief AT45D DataFlash block I/O implementation structure.
  */
 static NUTBLOCKIO blkIoAt25df = {
-    NULL,                       /*!< \brief Device specific parameters, blkio_info. */
-    0,                          /*!< \brief Total number of pages, blkio_blk_cnt. */
-    0,                          /*!< \brief Number of bytes per page, blkio_blk_siz. */
-    MOUNT_OFFSET_AT45D0,        /*!< \brief Number of sectors reserved at bottom, blkio_vol_bot. */
-    MOUNT_TOP_RESERVE_AT45D0,   /*!< \brief Number of sectors reserved at top, blkio_vol_top. */
+    NULL,                      /*!< \brief Device specific parameters, blkio_info. */
+    0,                         /*!< \brief Total number of pages, blkio_blk_cnt. */
+    0,                         /*!< \brief Number of bytes per page, blkio_blk_siz. */
+    MOUNT_OFFSET_AT45D0,       /*!< \brief Number of sectors reserved at bottom, blkio_vol_bot. */
+    MOUNT_TOP_RESERVE_AT45D0,  /*!< \brief Number of sectors reserved at top, blkio_vol_top. */
     SpiAt25PageRead,           /*!< \brief Read from node, blkio_read. */
     SpiAt25PageWrite,          /*!< \brief Write to node, blkio_write. */
 #ifdef __HARVARD_ARCH__
@@ -472,14 +472,14 @@ static NUTBLOCKIO blkIoAt25df = {
 };
 
 NUTDEVICE devDataFlash0 = {
-    0,                  /* Pointer to next device, dev_next. */
+    0,                         /* Pointer to next device, dev_next. */
     {'a', 't', '2', '5', 'd', 'f', '0', 0, 0},    /* Unique device name, dev_name. */
-    IFTYP_BLKIO,         /* Type of device, dev_type. */
-    0,                  /* Codec number, dev_base. */
-    0,                  /* First interrupt number, dev_irq (not used). */
-    &at25df,            /* Interface control block, dev_icb (not used). */
-    &blkIoAt25df,       /* Driver control block, dev_dcb. */
-    At25dfInit,       /* Driver initialization routine, dev_init. */
+    IFTYP_BLKIO,               /* Type of device, dev_type. */
+    0,                         /* Codec number, dev_base. */
+    0,                         /* First interrupt number, dev_irq (not used). */
+    &at25df,                   /* Interface control block, dev_icb (not used). */
+    &blkIoAt25df,              /* Driver control block, dev_dcb. */
+    At25dfInit,                /* Driver initialization routine, dev_init. */
     NutBlockDeviceIOCtl,       /* Driver specific control function, dev_ioctl. */
     NutBlockDeviceRead,        /* Read from device, dev_read. */
     NutBlockDeviceWrite,       /* Write to device, dev_write. */
@@ -488,5 +488,6 @@ NUTDEVICE devDataFlash0 = {
 #endif
     NutBlockDeviceOpen,        /* Open a device or file, dev_open. */
     NutBlockDeviceClose,       /* Close a device or file, dev_close. */
-    NutBlockDeviceSize                /* Request file size, dev_size. */
+    NutBlockDeviceSize,        /* Request file size, dev_size. */
+    NULL,                      /* Select function, optional, not yet implemented */
 };

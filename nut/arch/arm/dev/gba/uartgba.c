@@ -148,6 +148,7 @@ static void GbaUartTxEmpty(RINGBUF * rbf)
         rbf->rbf_tail = cp;
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
     }
 
@@ -159,6 +160,7 @@ static void GbaUartTxEmpty(RINGBUF * rbf)
         outw(REG_SIOCNT, (inw(REG_SIOCNT) & ~SIO_SEND_ENA) | SIO_TX_FULL);
         rbf->rbf_cnt = 0;
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
     }
 }
 
@@ -215,6 +217,7 @@ static void GbaUartRxFull(RINGBUF * rbf)
     /* Wake up waiting threads if this is the first byte in the buffer. */
     if (cnt++ == 0) {
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
     }
 
     /*
@@ -824,7 +827,8 @@ NUTDEVICE devUartGba = {
     UsartWrite,                 /* Write to device, dev_write. */
     UsartOpen,                  /* Open a device or file, dev_open. */
     UsartClose,                 /* Close a device or file, dev_close. */
-    UsartSize                   /* Request file size, dev_size. */
+    UsartSize,                  /* Request file size, dev_size. */
+    UsartSelect,                /* Select function, dev_select */
 };
 #endif
 

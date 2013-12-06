@@ -300,9 +300,8 @@ int DebugWrite(NUTFILE * fp, const void *buffer, int len)
  */
 NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
-    dbgfile.nf_next = 0;
     dbgfile.nf_dev = dev;
-    dbgfile.nf_fcb = 0;
+    dbgfile.nf_fcb = NULL;
 
     return &dbgfile;
 }
@@ -334,7 +333,8 @@ NUTDEVICE devDebug0 = {
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
     DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
+    0,                          /*!< dev_size. */
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

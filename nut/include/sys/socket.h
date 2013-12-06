@@ -211,6 +211,7 @@ extern int NutTcpDeviceWrite(TCPSOCKET *sock, const void *buffer, int size);
 extern int NutTcpDeviceWrite_P(TCPSOCKET *sock, PGM_P buffer, int size);
 #endif
 extern int NutTcpDeviceIOCtl(TCPSOCKET *sock, int cmd, void *param);
+extern int NutTcpDeviceSelect (TCPSOCKET * sock, int flags, HANDLE *wq, select_cmd_t cmd);
 extern int NutTcpDeviceClose(TCPSOCKET *sock);
 
 extern UDPSOCKET *NutUdpCreateSocket(uint16_t port);

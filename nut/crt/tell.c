@@ -69,19 +69,28 @@
 
 long _tell(int fd)
 {
-    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
-    NUTDEVICE *dev = fp->nf_dev;
+    NUTFILE *fp;
+    NUTDEVICE *dev;
     IOCTL_ARG3 conf;
 
     long offset = 0;
     int  origin = SEEK_CUR;
 
-    NUTASSERT(fp != NULL);
+    if ((unsigned int)fd >= FOPEN_MAX) {
+        errno = EBADF;
+        return -1;
+    }
+
+    if ((fp = __fds[fd]) == NULL) {
+        errno = EBADF;
+        return -1;
+    }
 
     conf.arg1 = (void*) fp;
     conf.arg2 = (void*) &offset;
     conf.arg3 = (void*) origin;
 
+    dev = fp->nf_dev;
     if (dev != 0) {
         if ((*dev->dev_ioctl) (dev, FS_FILE_SEEK, &conf)) {
             return offset;

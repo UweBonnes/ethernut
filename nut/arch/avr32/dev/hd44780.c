@@ -225,14 +225,14 @@
 
 static void INLINE LcdSetBits(unsigned int mask)
 {
-	outr(PIO_PER, mask);
+    outr(PIO_PER, mask);
     outr(PIO_SODR , mask);
     outr(PIO_OER, mask);
 }
 
 static void INLINE LcdClrBits(unsigned int mask)
 {
-	outr(PIO_PER, mask);
+    outr(PIO_PER, mask);
     outr(PIO_CODR, mask);
     outr(PIO_OER, mask);
 }
@@ -296,7 +296,7 @@ static void LcdWriteByte(unsigned int data)
     LcdWriteNibble(data);
 #else
     /* else write one byte */
-	LcdWriteNibble(data);
+    LcdWriteNibble(data);
 #endif
 
     /* If configured, let the task sleep before next character */
@@ -333,7 +333,7 @@ static void LcdWriteInstruction(uint8_t cmd, uint8_t xt)
 static void LcdWriteData(uint8_t data)
 {
     /* RS high selects data register. */
-	LCD_RS_SET();
+    LCD_RS_SET();
     LcdWriteByte(data);
 }
 
@@ -382,47 +382,47 @@ static void LcdCursorMode(uint8_t on)
 
 static int LcdInit(NUTDEVICE * dev)
 {
-	LCD_RS_CLR();			
-	LCD_RW_CLR();			
-	LcdClrBits(LCD_DATA);	
-	NutMicroDelay(30);
-	LCD_EN_CLR();
-	NutMicroDelay(30);
-	NutSleep(18);
+    LCD_RS_CLR();           
+    LCD_RW_CLR();           
+    LcdClrBits(LCD_DATA);   
+    NutMicroDelay(30);
+    LCD_EN_CLR();
+    NutMicroDelay(30);
+    NutSleep(18);
 
     /* This initialization will make sure, that the LCD is switched
      * to 8-bit mode, no matter which mode we start from or we finally
      * need.
      */
-	LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
+    LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
     NutSleep(16);
-	LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
+    LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
     NutSleep(4);
-	LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
+    LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
     NutSleep(2);
     LcdWriteInstruction((_BV(LCD_FUNCTION)) |  (_BV(LCD_FUNCTION_8BIT)) |  (_BV(LCD_EXT)) , LCD_SHORT_DELAY);
 
-	/* Switch display and cursor off. */
+    /* Switch display and cursor off. */
     LcdWriteNibble(_BV(LCD_ON_CTRL) >> 4);
     LcdWriteNibble(_BV(LCD_ON_CTRL));
     NutSleep(2);
 
-	/* Clear display. */
+    /* Clear display. */
     LcdClear();
-	
+    
     /* Set entry mode. */
     LcdWriteCmd(_BV(LCD_ENTRY_MODE) | _BV(LCD_ENTRY_INC));
-	
+    
    /* Switch display on. */
     LcdWriteCmd(_BV(LCD_ON_CTRL) | _BV(LCD_ON_DISPLAY));
 
     /* Move cursor home. */
     LcdCursorHome();
 
-	/* Set data address to zero. */
+    /* Set data address to zero. */
     LcdWriteCmd(_BV(LCD_DDRAM));
 
-	return 0;
+    return 0;
 }
 
 /*!
@@ -465,7 +465,8 @@ NUTDEVICE devLcd = {
     TermWrite,
     TermOpen,
     TermClose,
-    0
+    0,
+    0,                          /*!< Select function, dev_select, optional. */
 };
 
 /*@}*/

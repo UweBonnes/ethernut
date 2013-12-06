@@ -100,6 +100,7 @@
  */
 
 #include <sys/file.h>
+#include <sys/select.h>
 
 #include <stdint.h>
 
@@ -259,6 +260,10 @@ struct _NUTDEVICE {
      */
     long (*dev_size) (NUTFILE *);
 
+    /*!
+     * \brief Request file size.
+     */
+    int (*dev_select) (NUTFILE *, int flags, HANDLE *wq, select_cmd_t cmd);
 };
 
 /*!
@@ -270,8 +275,8 @@ typedef struct _NUTVIRTUALDEVICE NUTVIRTUALDEVICE;
  * \brief Virtual device structure.
  */
 struct _NUTVIRTUALDEVICE {
-    NUTVIRTUALDEVICE *vdv_next;
     NUTVIRTUALDEVICE *vdv_zero;
+    NUTVIRTUALDEVICE *vdv_next;
     uint8_t vdv_type;
     int (*vdv_read) (void *, void *, int);
     int (*vdv_write) (void *, const void *, int);
@@ -279,6 +284,7 @@ struct _NUTVIRTUALDEVICE {
     int (*vdv_write_P) (void *, PGM_P, int);
 #endif
     int (*vdv_ioctl) (void *, int, void *);
+    int (*vdv_select) (void *, int, HANDLE *, select_cmd_t cmd);
 };
 
 /*!

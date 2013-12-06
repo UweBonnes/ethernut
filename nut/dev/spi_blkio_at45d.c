@@ -301,7 +301,8 @@ NUTDEVICE devSpiBlkAt45d0 = {
 #endif
     NutBlockDeviceOpen,         /*!< \brief Mount volume, dev_open. */
     NutBlockDeviceClose,        /*!< \brief Unmount volume, dev_close. */
-    NutBlockDeviceSize          /*!< \brief Request file size, dev_size. */
+    NutBlockDeviceSize,         /*!< \brief Request file size, dev_size. */
+    NULL,                       /*!< \brief Select function, optional, not yet implemented */
 };
 
 #ifndef BLKIO_MOUNT_OFFSET_AT45D1
@@ -357,7 +358,8 @@ NUTDEVICE devSpiBlkAt45d1 = {
 #endif
     NutBlockDeviceOpen,         /*!< \brief Mount volume, dev_open. */
     NutBlockDeviceClose,        /*!< \brief Unmount volume, dev_close. */
-    NutBlockDeviceSize          /*!< \brief Request file size, dev_size. */
+    NutBlockDeviceSize,         /*!< \brief Request file size, dev_size. */
+    NULL,                       /*!< \brief Select function, optional, not yet implemented */
 };
 
 #ifndef BLKIO_MOUNT_OFFSET_AT45D2
@@ -413,7 +415,8 @@ NUTDEVICE devSpiBlkAt45d2 = {
 #endif
     NutBlockDeviceOpen,         /*!< \brief Mount volume, dev_open. */
     NutBlockDeviceClose,        /*!< \brief Unmount volume, dev_close. */
-    NutBlockDeviceSize          /*!< \brief Request file size, dev_size. */
+    NutBlockDeviceSize,         /*!< \brief Request file size, dev_size. */
+    NULL,                       /*!< \brief Select function, optional, not yet implemented */
 };
 
 #ifndef BLKIO_MOUNT_OFFSET_AT45D3
@@ -469,7 +472,8 @@ NUTDEVICE devSpiBlkAt45d3 = {
 #endif
     NutBlockDeviceOpen,         /*!< \brief Mount volume, dev_open. */
     NutBlockDeviceClose,        /*!< \brief Unmount volume, dev_close. */
-    NutBlockDeviceSize          /*!< \brief Request file size, dev_size. */
+    NutBlockDeviceSize,         /*!< \brief Request file size, dev_size. */
+    NULL,                       /*!< \brief Select function, optional, not yet implemented */
 };
 
 /*@}*/

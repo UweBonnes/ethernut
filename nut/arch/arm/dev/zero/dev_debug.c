@@ -322,7 +322,6 @@ static NUTFILE *ZeroDebugOpen(NUTDEVICE * dev, const char *name, int mode, int a
 {
     NUTFILE *fp = (NUTFILE *) (dev->dev_dcb);
 
-    fp->nf_next = NULL;
     fp->nf_dev = dev;
     fp->nf_fcb = NULL;
 
@@ -451,7 +450,8 @@ NUTDEVICE devDebug0 = {
     ZeroDebugWrite,     /*!< _NUTDEVICE::dev_write. */
     ZeroDebugOpen,      /*!< _NUTDEVICE::dev_open. */
     ZeroDebugClose,     /*!< _NUTDEVICE::dev_close. */
-    ZeroDebugSize       /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+    ZeroDebugSize,      /*!< _NUTDEVICE::dev_size, optional, may be NULL. */
+    NULL,               /*!< _NUTDEVICE::dev_select, optional, not yet implemented */
 };
 
 /*@}*/

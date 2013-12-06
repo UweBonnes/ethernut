@@ -958,7 +958,6 @@ NUTFILE *VsCodecOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 
     nfp = malloc(sizeof(NUTFILE));
     if (nfp) {
-        nfp->nf_next = NULL;
         nfp->nf_dev = dev;
         nfp->nf_fcb = NULL;
     }

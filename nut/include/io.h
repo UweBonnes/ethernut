@@ -52,13 +52,20 @@
 #ifndef _NUT_IO_H_
 #define _NUT_IO_H_
 
-
+#include <cfg/crt.h>
 #include <sys/types.h>
 
 /*!
  * \addtogroup xgCrtLowio
  */
 /*@{*/
+
+
+#ifndef FOPEN_MAX
+#define FOPEN_MAX   8   /*!< \brief Default maximum number of open streams.
+                 \showinitializer */
+#endif
+
 
 /*
  * Some global definitions for ioctl commands.

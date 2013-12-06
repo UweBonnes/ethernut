@@ -99,9 +99,9 @@ static int Lpc17xxRtcGetClock(NUTRTC *rtc, struct _tm *tm)
 static int Lpc17xxRtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     if (tm) {
-		/* Disable timer / counter for writing, reset the 32Khz clock divider */		
-		LPC_RTC->CCR &= ~RTC_CCR_CLKEN;
-		LPC_RTC->CCR |=  RTC_CCR_CTCRST;
+        /* Disable timer / counter for writing, reset the 32Khz clock divider */        
+        LPC_RTC->CCR &= ~RTC_CCR_CLKEN;
+        LPC_RTC->CCR |=  RTC_CCR_CTCRST;
 
 
         LPC_RTC->DOM  =   tm->tm_mday & RTC_DOM_MASK;
@@ -113,9 +113,9 @@ static int Lpc17xxRtcSetClock(NUTRTC *rtc, const struct _tm *tm)
         LPC_RTC->MONTH = (tm->tm_mon  & RTC_MONTH_MASK) + 1;
         LPC_RTC->YEAR =  (tm->tm_year & RTC_YEAR_MASK) + 1900;
 
-		/* Enable timer / counter again, disable ctc reset */
-		LPC_RTC->CCR &= ~RTC_CCR_CTCRST;
-		LPC_RTC->CCR |=  RTC_CCR_CLKEN;
+        /* Enable timer / counter again, disable ctc reset */
+        LPC_RTC->CCR &= ~RTC_CCR_CTCRST;
+        LPC_RTC->CCR |=  RTC_CCR_CLKEN;
         return 0;
     } else {
         return -1;

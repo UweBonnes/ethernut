@@ -235,7 +235,7 @@ NUTDEVICE devUsartsc16is752c = {
     0,                          /* Pointer to next device, dev_next. */
     {'u', 'a', 'r', 't', '_', 'c', 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
-    (SCDEV<<8)|CH_,              /* Base address, used for dev & ch: (dev<<8)|ch */
+    (SCDEV<<8)|CH_,             /* Base address, used for dev & ch: (dev<<8)|ch */
     0,                          /* First interrupt number, dev_irq (not used). */
     0,                          /* Interface control block, dev_icb (not used). */
     &dcb_usartc,                /* Driver control block, dev_dcb. */
@@ -248,7 +248,8 @@ NUTDEVICE devUsartsc16is752c = {
 #endif
     UsartOpen,                  /* Open a device or file, dev_open. */
     UsartClose,                 /* Close a device or file, dev_close. */
-    UsartSize                   /* Request file size, dev_size. */
+    UsartSize,                  /* Request file size, dev_size. */
+    UsartSelect,                /* Select function, dev_select. */
 };
 
 

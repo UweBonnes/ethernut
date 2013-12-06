@@ -166,7 +166,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
         return 0;
     }
 
-	/* Align to 4 byte boundary */
+    /* Align to 4 byte boundary */
     td = (NUTTHREADINFO *) ((threadMem + stackSize) & ~0x03);
     ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));

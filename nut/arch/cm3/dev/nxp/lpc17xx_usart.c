@@ -146,6 +146,7 @@ static uint_fast8_t block_control;
 static void Lpc17xxUsartDmaTxIrq(void* arg)
 {
     NutEventPost(arg);
+    NutSelectWakeupFromIrq();
 }
 #endif
 
@@ -153,6 +154,7 @@ static void Lpc17xxUsartDmaTxIrq(void* arg)
 static void Lpc17xxUsartDmaRxIrq(void* arg)
 {
     NutEventPost(arg);
+    NutSelectWakeupFromIrq();
 }
 #endif
 #endif
@@ -227,6 +229,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf, uint32_t lsr)
         /* Send an event if we reached the low watermark. */
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
     }
 
@@ -234,6 +237,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf, uint32_t lsr)
         /* Nothing left to transmit: Disable transmit interrupts. */
         CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 0;
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
     }
 }
 
@@ -307,6 +311,7 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf, uint32_t lsr)
         /* Wake up waiting threads if this is the first byte in the buffer. */
         if (cnt++ == 0) {
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
         }
 
 #if defined(UART_XONXOFF_CONTROL)
@@ -487,6 +492,7 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
     uint32_t best_error = 100000;
 
     /* get UART block clock */
+
     uart_clock = NutArchClockGet(NUT_HWCLK_PCLK);
 
 #if defined(MCU_LPC176x)
@@ -1034,7 +1040,6 @@ static void Lpc17xxUsartTxStart(void)
     CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 1;
     USARTn->TER = UART_TER_TXEN;
 
-
     /*
      * Check if we have any bytes to transmit. Send out first byte if there is space in the FIFO
      */
@@ -1061,10 +1066,13 @@ static void Lpc17xxUsartTxStart(void)
 
         /* Send an event if we reached the low watermark. */
         if (DcbUSART.dcb_tx_rbf.rbf_cnt == DcbUSART.dcb_tx_rbf.rbf_lwm) {
+            NutExitCritical(); /* Exit critical section _before_ posting to the event queues */
             NutEventPostAsync(&DcbUSART.dcb_tx_rbf.rbf_que);
+            NutSelectWakeup(DcbUSART.dcb_tx_rbf.wq_list, WQ_FLAG_WRITE);
+        } else {
+            NutExitCritical();
         }
     }
-    NutExitCritical();
 }
 
 /*!

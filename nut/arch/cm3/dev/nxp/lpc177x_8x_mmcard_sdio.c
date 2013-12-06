@@ -785,7 +785,6 @@ static NUTFILE *Lpc177x_8x_MmcardMount(NUTDEVICE * dev, const char *name, int mo
         return(NUTFILE_EOF);
     }
 
-    nfp->nf_next = 0;
     nfp->nf_dev = dev;
     nfp->nf_fcb = fcb;
 
@@ -961,13 +960,14 @@ NUTDEVICE devLpcMci0 = {
     0,                          /*!< First interrupt number, dev_irq. Unused. */
     &mci0_ifc,                  /*!< Interface control block, dev_icb. */
     0,                          /*!< Driver control block used by the low level part, dev_dcb. */
-    Lpc177x_8x_MmcardInit,                 /*!< Driver initialization routine, dev_init. */
-    Lpc177x_8x_MmcardIOCtl,                /*!< Driver specific control function, dev_ioctl. */
-    Lpc177x_8x_MmcardBlockRead,            /*!< Read data from a file, dev_read. */
-    Lpc177x_8x_MmcardBlockWrite,           /*!< Write data to a file, dev_write. */
-    Lpc177x_8x_MmcardMount,                /*!< Mount a file system, dev_open. */
-    Lpc177x_8x_MmcardUnmount,              /*!< Unmount a file system, dev_close. */
-    0                           /*!< Return file size, dev_size. */
+    Lpc177x_8x_MmcardInit,      /*!< Driver initialization routine, dev_init. */
+    Lpc177x_8x_MmcardIOCtl,     /*!< Driver specific control function, dev_ioctl. */
+    Lpc177x_8x_MmcardBlockRead, /*!< Read data from a file, dev_read. */
+    Lpc177x_8x_MmcardBlockWrite,/*!< Write data to a file, dev_write. */
+    Lpc177x_8x_MmcardMount,     /*!< Mount a file system, dev_open. */
+    Lpc177x_8x_MmcardUnmount,   /*!< Unmount a file system, dev_close. */
+    0,                          /*!< Return file size, dev_size. */
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 

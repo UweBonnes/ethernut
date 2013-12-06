@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
+ * Copyright (C) 2011-2012 by egnite GmbH
  *
  * All rights reserved.
  *
@@ -32,103 +32,64 @@
  * For additional information see http://www.ethernut.de/
  */
 
-
-/*
- * \verbatim
- * $Id: $
- * \endverbatim
- */
-
-#include <cfg/arch.h>
 #include <cfg/uart.h>
 #include <dev/debug.h>
 #include <sys/timer.h>
-#include <sys/file.h>
-#include <sys/device.h>
 
-#include <arch/cm3/nxp/lpc176x.h>
-#include <arch/cm3/nxp/lpc176x_clk.h>
-#include <arch/cm3/nxp/lpc17xx_usart.h>
+#include <arch/cm3/nxp/mach/lpc1700.h>
+#include <arch/cm3/nxp/lpc_debug.h>
 
 /*!
- * \addtogroup xgNutArchCm3Lpc177x_8xDebug
+ * \addtogroup xgDevDebugLpc
  */
 /*@{*/
 
-static NUTFILE *Lpc17xxDevDebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc);
-static int Lpc17xxDevDebugClose(NUTFILE * fp);
-static int Lpc17xxDevDebugWrite(NUTFILE * fp, const void *buffer, int len);
-#ifdef NUT_DEV_DEBUG_READ
-static int Lpc17xxDevDebugRead(NUTFILE * fp, void *buffer, int size);
-static long Lpc17xxDevDebugSize(NUTFILE *fp);
-#endif
-static int Lpc17xxDevDebugIOCtl(NUTDEVICE * dev, int req, void *conf);
-static int Lpc17xxDevDebugInit(NUTDEVICE * dev);
+static int Debug0Init(NUTDEVICE * dev)
+{
+    /* Set UART PCLK divider to 2 and determine the clock rate. */
+    mem_wr32(SC_PCLKSEL0, (mem_rd32(SC_PCLKSEL0) & ~SC_PCLK_UART0) | (SC_PCLK_DIV4 << SC_PCLK_UART0_LSB));
 
-/*!
- * \name LPC17xx USART0 Device
- */
-/*@{*/
+    mem_wr32(UART0_LCR, mem_rd32(UART0_LCR) | UART_DLAB);
+    mem_wr32_mb(UART0_DLM, 0);
+    mem_wr32(UART0_DLL, 7);
+    mem_wr32_mb(UART0_LCR, (mem_rd32(UART0_LCR) & ~UART_DLAB) | UART_WLEN_8);
+
+    mem_wr32(UART0_FCR, UART_FIFO_TXRST | UART_FIFO_RXRST | UART_FIFO_EN);
+
+    mem_wr32(UART0_FDR, 237);
+    /* Enable peripheral pins. */
+    mem_wr32(PINSEL(0), mem_rd32(PINSEL(0)) | PS0_P0_2_TXD0 | PS0_P0_3_RXD0);
+
+    return 0;
+}
 
 static NUTFILE dbg0file;
 
-/*!
- * \brief Debug UART 0 device information structure.
- *
- * An application must pass a pointer to this structure to
- * NutRegisterDevice() before using the serial communication
- * driver of the LPC17xx's on-chip USART0.
- *
- * The device is named usart0.
- *
- * \showinitializer
- */
-
 NUTDEVICE devDebug0 = {
-    NULL,                       /*!< Pointer to next device, dev_next. */
+    NULL,               /*!< Pointer to next device, dev_next. */
     {'u', 'a', 'r', 't', '0', 0, 0, 0, 0}
-    ,                           /*!< Unique device name, dev_name. */
-    0,                          /*!< Type of device, dev_type. */
-    LPC_UART0_BASE,             /*!< Base address, dev_base. */
-    0,                          /*!< First interrupt number, dev_irq. */
-    NULL,                       /*!< Interface control block, dev_icb. */
-    &dbg0file,                  /*!< Driver control block, dev_dcb. */
-    Lpc17xxDevDebugInit,        /*!< Driver initialization routine, dev_init. */
-    Lpc17xxDevDebugIOCtl,       /*!< Driver specific control function, dev_ioctl. */
+    ,                   /*!< Unique device name, dev_name. */
+    0,                  /*!< Type of device, dev_type. */
+    LPC_UART0_BASE,     /*!< Base address, dev_base. */
+    0,                  /*!< First interrupt number, dev_irq. */
+    NULL,               /*!< Interface control block, dev_icb. */
+    &dbg0file,          /*!< Driver control block, dev_dcb. */
+    Debug0Init,         /*!< Driver initialization routine, dev_init. */
+    LpcDevDebugIOCtl,   /*!< Driver specific control function, dev_ioctl. */
 #ifdef NUT_DEV_DEBUG_READ
-    Lpc17xxDevDebugRead,        /*!< dev_read. */
+    LpcDevDebugRead,   /*!< dev_read. */
 #else
-    NULL,                       /*!< dev_read. */
+    NULL,               /*!< dev_read. */
 #endif
-    Lpc17xxDevDebugWrite,       /*!< dev_write. */
-    Lpc17xxDevDebugOpen,        /*!< dev_open. */
-    Lpc17xxDevDebugClose,       /*!< dev_close. */
+    LpcDevDebugWrite,   /*!< dev_write. */
+    LpcDevDebugOpen,    /*!< dev_open. */
+    LpcDevDebugClose,   /*!< dev_close. */
 #ifdef NUT_DEV_DEBUG_READ
-    Lpc17xxDevDebugSize         /*!< dev_size. */
+    LpcDevDebugSize,    /*!< dev_size. */
 #else
-    NULL                        /*!< dev_size. */
+    NULL,               /*!< dev_size. */
 #endif
+    NULL,               /*!< dev_select function, optional, not yet implemented */
 };
 
 /*@}*/
-
-/*!
- * \brief Debug UART0 GPIO configuartion and assignment.
- */
-
-#define TX_GPIO_PORT    NUTGPIO_PORT0
-#define TX_GPIO_PIN     2
-#define TX_GPIO_PIN_CFG GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL1
-#define RX_GPIO_PORT    NUTGPIO_PORT0
-#define RX_GPIO_PIN     3
-#define RX_GPIO_PIN_CFG GPIO_CFG_INPUT | GPIO_CFG_PERIPHERAL1
-
-/*!
- * \brief Debug UART0 base configuration.
- */
-
-#define USARTn      LPC_UART0
-#define USARTnBase  LPC_UART0_BASE
-
-/*@}*/
-#include "lpc17xx_debug.c"

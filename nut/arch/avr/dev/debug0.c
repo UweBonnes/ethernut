@@ -236,9 +236,8 @@ long DebugSize(NUTFILE *fp)
  */
 static NUTFILE *DebugOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
 {
-    dbgfile.nf_next = 0;
     dbgfile.nf_dev = dev;
-    dbgfile.nf_fcb = 0;
+    dbgfile.nf_fcb = NULL;
 
     return &dbgfile;
 }
@@ -276,10 +275,11 @@ NUTDEVICE devDebug0 = {
     DebugOpen,
     DebugClose,
 #ifdef NUT_DEV_DEBUG_READ
-    DebugSize
+    DebugSize,
 #else
-    NULL
+    NULL,
 #endif
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

@@ -223,6 +223,7 @@ static void Sc16is752UsartTxReady(uint8_t dev, uint8_t ch, RINGBUF *rbf)
         rbf->rbf_tail = cp;
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPost(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
     }
 
@@ -235,6 +236,7 @@ static void Sc16is752UsartTxReady(uint8_t dev, uint8_t ch, RINGBUF *rbf)
         Sc16is752RegWrite(dev, ch, IER, v);
         rbf->rbf_cnt = 0;
         NutEventPost(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
     }
 }
 
@@ -294,6 +296,7 @@ static void Sc16is752UsartRxReady(uint8_t dev, uint8_t ch, RINGBUF *rbf)
     /* Wake up waiting threads if this is the first byte in the buffer. */
     if (cnt++ == 0){
         NutEventPost(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
     }
 
 //     /*

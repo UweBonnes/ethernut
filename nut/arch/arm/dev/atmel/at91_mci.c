@@ -816,7 +816,7 @@ static NUTFILE *At91MciMount(NUTDEVICE * dev, const char *name, int mode, int ac
         errno = ENOMEM;
         return NUTFILE_EOF;
     }
-    nfp->nf_next = 0;
+
     nfp->nf_dev = dev;
     nfp->nf_fcb = fcb;
 
@@ -924,7 +924,8 @@ NUTDEVICE devAt91Mci0 = {
     At91MciBlockWrite,          /*!< Write data to a file, dev_write. */
     At91MciMount,               /*!< Mount a file system, dev_open. */
     At91MciUnmount,             /*!< Unmount a file system, dev_close. */
-    0                           /*!< Return file size, dev_size. */
+    0,                          /*!< Return file size, dev_size. */
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

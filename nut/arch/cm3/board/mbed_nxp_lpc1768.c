@@ -78,7 +78,7 @@ static void Delay(int n)
  */
 void NutBoardInit(void)
 {
-	/* Configure Ethernet PHY */
+    /* Configure Ethernet PHY */
     /* Reset the PHY and configure the bootstrap pins using the pullup / pulldown resistors */
 
     GpioPinConfigSet(NUTGPIO_PORT1, 28, GPIO_CFG_OUTPUT);       /* PHY Reset */

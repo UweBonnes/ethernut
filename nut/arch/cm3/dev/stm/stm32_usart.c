@@ -329,6 +329,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
         /* Send an event if we reached the low watermark. */
         if (!hdpx_control && (rbf->rbf_cnt == rbf->rbf_lwm)) {
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
     }
 
@@ -345,6 +346,7 @@ static void Stm32UsartTxReady(RINGBUF * rbf)
             /* if half-duplex post the waiting thread after all bits are out.
              * Otherwise he might read back his own echo */
             NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         }
 
     }
@@ -425,6 +427,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
     /* Wake up waiting threads if this is the first byte in the buffer. */
     if (cnt++ == 0){
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
     }
 
 #if defined(UART_XONXOFF_CONTROL)
@@ -506,6 +509,7 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         Rs485DE_L();    /* Disable Sender */
         Rs485NRE_L();   /* Enable Receiver */
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         return;
     }
 #endif
@@ -527,6 +531,7 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         }
         /* Send an event to inform the upper level. */
         NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
     }
 }
 

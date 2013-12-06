@@ -725,7 +725,8 @@ NUTDEVICE devSpiVsCodec0 = {
 #endif
     VsCodecOpen,        /* Open a device or file, dev_open. */
     VsCodecClose,       /* Close a device or file, dev_close. */
-    NULL                /* Request file size, dev_size. */
+    NULL,               /* Request file size, dev_size. */
+    NULL,               /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

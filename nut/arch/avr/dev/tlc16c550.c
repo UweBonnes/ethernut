@@ -982,9 +982,8 @@ NUTFILE *AceOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     else
         dcb->dcb_modeflags |= ACE_MF_COOKEDMODE;
 
-    fp->nf_next = 0;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     return fp;
 }

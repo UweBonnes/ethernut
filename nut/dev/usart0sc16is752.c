@@ -240,7 +240,8 @@ NUTDEVICE devUsartsc16is752a = {
 #endif
     UsartOpen,                  /* Open a device or file, dev_open. */
     UsartClose,                 /* Close a device or file, dev_close. */
-    UsartSize                   /* Request file size, dev_size. */
+    UsartSize,                  /* Request file size, dev_size. */
+    UsartSelect,                /* Select function, dev_select. */
 };
 
 

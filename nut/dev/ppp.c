@@ -252,9 +252,9 @@ static NUTFILE *NutPppOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0) {
         return NUTFILE_EOF;
     }
-    fp->nf_next = 0;
+
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     /*
      * Extract user name and password and store it in our device control
@@ -369,7 +369,8 @@ NUTDEVICE devPpp = {
 #endif
     NutPppOpen,                 /* Open a device or file, dev_open. */
     NutPppClose,                /* Close a device or file, dev_close. */
-    0                           /* Request file size. */
+    NULL,                       /* Request file size. */
+    NULL,                       /* Select function, optional, not yet implemented */
 };
 
 /*@}*/

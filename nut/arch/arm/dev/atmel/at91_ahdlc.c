@@ -120,7 +120,8 @@ NUTDEVICE devAhdlc1 = {
     AhdlcAt91Write,             /* Write to device, dev_write. */
     AhdlcAt91Open,              /* Open a device or file, dev_open. */
     AhdlcAt91Close,             /* Close a device or file, dev_close. */
-    0                           /* Request file size, dev_size. */
+    0,                          /* Request file size, dev_size. */
+    0,                          /* Select function, optional, not yet implemented */
 };
 
 
@@ -1097,9 +1098,8 @@ NUTFILE *AhdlcAt91Open(NUTDEVICE * dev, const char *name, int mode, int acc)
     if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0)
         return NUTFILE_EOF;
 
-    fp->nf_next = 0;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     outr(US1_RTOR, UART_RECEIVER_TIMEOUT);
     outr(USART1_BASE + PERIPH_PTCR_OFF, PDC_RXTEN);     /* enable rx DMA */

@@ -739,6 +739,9 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
             NutEventBroadcast(&sock->so_rx_tq);
             NutEventBroadcast(&sock->so_pc_tq);
             NutEventBroadcast(&sock->so_ac_tq);
+            /* Wake up all running selects (read and write queue) on this socket */
+            NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
+            NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);       
         }
     }
     return rc;
@@ -1250,6 +1253,8 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
         }
         /* Wake up a thread waiting for data. */
         NutEventPost(&sock->so_rx_tq);
+        /* Wake up all running selects (read queue) on this socket */
+        NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
     } else {
         NutNetBufFree(nb);
     }
@@ -1315,6 +1320,8 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
         NutTcpProcessAppData(sock, nb);
         /* Wake up a thread waiting for data. */
         NutEventPost(&sock->so_rx_tq);
+        /* Wake up all running selects (read queue) on this socket */
+        NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
     } else {
         NutNetBufFree(nb);
     }
@@ -1380,6 +1387,8 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
         NutTcpProcessAppData(sock, nb);
         /* Wake up a thread waiting for data. */
         NutEventPost(&sock->so_rx_tq);
+        /* Wake up all running selects (read queue) on this socket */
+        NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
     } else
         NutNetBufFree(nb);
 
@@ -1554,6 +1563,8 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
             sock->so_tx_win > tx_win ||           /* Windows changed. */
             sock->so_tx_una != tx_una) {          /* Unacknowledged data changed. */
             NutEventBroadcast(&sock->so_tx_tq);
+            /* Wake up all running selects (write queue) on this socket */
+            NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);
         }
         break;
     case TCPS_LISTEN:
@@ -1807,6 +1818,9 @@ int NutTcpAbortSocket(TCPSOCKET * sock, uint16_t last_error)
     NutEventBroadcast(&sock->so_tx_tq);
     NutEventBroadcast(&sock->so_pc_tq);
     NutEventBroadcast(&sock->so_ac_tq);
+    /* Wake up all running selects on this socket */
+    NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
+    NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);
     return 0;
 }
 

@@ -1468,9 +1468,8 @@ NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, const char *name, int mode, int acc)
     if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0)
         return NUTFILE_EOF;
 
-    fp->nf_next = 0;
     fp->nf_dev = dev;
-    fp->nf_fcb = 0;
+    fp->nf_fcb = NULL;
 
     /* Enable handshake outputs. */
 #ifdef __AVR_ENHANCED__

@@ -434,7 +434,8 @@ NUTDEVICE devAt91SpiMmc0 = {
 #endif
     MmCardMount,                /*!< Mount a file system, dev_open. */
     MmCardUnmount,              /*!< Unmount a file system, dev_close. */
-    0                           /*!< Return file size, dev_size. */
+    0,                          /*!< Return file size, dev_size. */
+    0,                          /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/

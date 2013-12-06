@@ -87,7 +87,8 @@ NUTDEVICE devUart0 = {
     UartAvrWrite_P,             /*!< Write to device from program space. */
     UartAvrOpen,                /*!< Open a device or file. */
     UartAvrClose,               /*!< Close a device or file. */
-    UartAvrSize                 /*!< Request file size. */
+    UartAvrSize,                /*!< Request file size. */
+    NULL,                       /*!< Select function, optional, not yet implemented */
 };
 
 /*@}*/
