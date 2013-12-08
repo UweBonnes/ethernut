@@ -182,7 +182,6 @@ nutarch_cm3_lpc177x_8x=
         {
             "cm3/dev/nxp/lpc177x_8x_gpio.c",
             "cm3/dev/nxp/lpc17xx_gpioirq.c",
-            "cm3/dev/nxp/ih_lpc17xx_pio.c"
         }
     },
 
@@ -235,7 +234,6 @@ nutarch_cm3_lpc177x_8x=
         sources =
         {
             "cm3/dev/nxp/lpc177x_8x_usart0.c",
-            "cm3/dev/nxp/ih_lpc17xx_usart0.c"
         },
         options =
         {
@@ -295,7 +293,6 @@ nutarch_cm3_lpc177x_8x=
         sources =
         {
             "cm3/dev/nxp/lpc177x_8x_usart1.c",
-            "cm3/dev/nxp/ih_lpc17xx_usart1.c"
         },
         options =
         {
@@ -348,7 +345,6 @@ nutarch_cm3_lpc177x_8x=
         sources =
         {
             "cm3/dev/nxp/lpc177x_8x_usart2.c",
-            "cm3/dev/nxp/ih_lpc17xx_usart2.c"
         },
         options =
         {
@@ -401,7 +397,6 @@ nutarch_cm3_lpc177x_8x=
         sources =
         {
             "cm3/dev/nxp/lpc177x_8x_usart3.c",
-            "cm3/dev/nxp/ih_lpc17xx_usart3.c"
         },
         options =
         {
@@ -448,7 +443,6 @@ nutarch_cm3_lpc177x_8x=
         {
             "cm3/dev/nxp/lpc177x_8x_mmcard_sdio.c",
             "cm3/dev/nxp/lpc177x_8x_mci.c",
-            "cm3/dev/nxp/ih_lpc177x_8x_mci.c"
         },
         options =
         {
@@ -471,20 +465,20 @@ nutarch_cm3_lpc177x_8x=
         brief = "LPC17xx I2C bus 0 API",
         description = "Routines for setup and programming LPC17xx series I2C controller 0.\n",
         requires = { "HW_I2C_LPC17xx", },
---        sources = { "cm3/dev/nxp/lpc17xx_i2cbus0.c", "cm3/dev/nxp/ih_lpc17xx_i2c0.c" }
+--        sources = { "cm3/dev/nxp/lpc17xx_i2cbus0.c"}
     },
     {
         name = "nutarch_cm3_lpc17xx_i2c1",
         brief = "LPC17xx I2C bus 1 API",
         description = "Routines for setup and programming LPC17xx series I2C controller 1.\n",
         requires = { "HW_I2C_LPC17xx", },
---        sources = { "cm3/dev/nxp/lpc17xx_i2cbus1.c", "cm3/dev/nxp/ih_lpc17xx_i2c1.c" }
+--        sources = { "cm3/dev/nxp/lpc17xx_i2cbus1.c"}
     },
     {
         name = "nutarch_cm3_lpc17xx_i2c2",
         brief = "LPC17xx I2C bus 2 API",
         description = "Routines for setup and programming LPC17xx series I2C controller 2.\n",
         requires = { "HW_I2C_LPC17xx", },
---        sources = { "cm3/dev/nxp/lpc17xx_i2cbus2.c", "cm3/dev/nxp/ih_lpc17xx_i2c2.c" }
+--        sources = { "cm3/dev/nxp/lpc17xx_i2cbus2.c"}
     },
 }

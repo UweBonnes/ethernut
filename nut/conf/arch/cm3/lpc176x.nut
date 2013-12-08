@@ -161,7 +161,6 @@ nutarch_cm3_lpc176x =
         {
             "cm3/dev/nxp/lpc176x_gpio.c",
             "cm3/dev/nxp/lpc17xx_gpioirq.c",
-            "cm3/dev/nxp/ih_lpc17xx_pio.c"
         }
     },
 
@@ -212,7 +211,6 @@ nutarch_cm3_lpc176x =
         sources =
         {
             "cm3/dev/nxp/lpc176x_usart0.c",
-            "cm3/dev/nxp/ih_lpc17xx_usart0.c"
         },
         options =
         {
@@ -277,7 +275,6 @@ nutarch_cm3_lpc176x =
             "DEV_UART1_GPIO_CTS"
         },
         sources =  { "cm3/dev/nxp/lpc176x_usart1.c",
-                     "cm3/dev/nxp/ih_lpc17xx_usart1.c"
                    },
         options =
         {
@@ -333,7 +330,6 @@ nutarch_cm3_lpc176x =
             "DEV_UART_SPECIFIC"
         },
         sources =  { "cm3/dev/nxp/lpc176x_usart2.c",
-                     "cm3/dev/nxp/ih_lpc17xx_usart2.c"
                    },
         options =
         {
@@ -389,7 +385,6 @@ nutarch_cm3_lpc176x =
             "DEV_UART_SPECIFIC"
         },
         sources =  {  "cm3/dev/nxp/lpc176x_usart3.c",
-                      "cm3/dev/nxp/ih_lpc17xx_usart3.c"
                    },
         options =
         {

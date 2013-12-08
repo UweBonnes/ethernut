@@ -46,7 +46,7 @@ nutarch_cm3_lpc17xx_devices =
         description = "LPC17xx RTC driver.",
         requires = { "HW_RTC_LPC17xx" },
         provides = { "DEV_RTC" },
-        sources = { "cm3/dev/nxp/lpc17xx_rtc.c", "cm3/dev/nxp/ih_lpc17xx_rtc.c" },
+        sources = { "cm3/dev/nxp/lpc17xx_rtc.c"},
     },
     --
     -- LPC17xx Watchdog Timer
@@ -55,7 +55,7 @@ nutarch_cm3_lpc17xx_devices =
         name = "nutarch_cm3_lpc17xx_wdt",
         brief = "LPC17xx Watchdog Timer",
         requires = { "HW_WDT_LPC17xx" },
-        sources = { "cm3/dev/nxp/lpc17xx_wdt.c", "cm3/dev/nxp/ih_lpc17xx_wdt.c"}
+        sources = { "cm3/dev/nxp/lpc17xx_wdt.c"}
     },
     --
     -- LPC17xx Flash Memory Controller
@@ -75,7 +75,7 @@ nutarch_cm3_lpc17xx_devices =
         brief = "LPC17xx General purpose DMA Controller API",
         description = "Routines for setup and programming LPC17x series GPDMA controller.\n",
         requires = { "HW_GPDMA_LPC17xx" },
-        sources = { "cm3/dev/nxp/lpc17xx_gpdma.c", "cm3/dev/nxp/ih_lpc17xx_dma.c" }
+        sources = { "cm3/dev/nxp/lpc17xx_gpdma.c"}
     },
     --
     -- LPC17xx EMAC
@@ -86,7 +86,7 @@ nutarch_cm3_lpc17xx_devices =
         description = "LAN driver for LPC176x, LPC177x_8x etc.",
         requires = { "HW_EMAC_LPC17xx", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_MAC" },
-        sources = { "cm3/dev/nxp/lpc17xx_emac.c", "cm3/dev/nxp/ih_lpc17xx_emac.c" },
+        sources = { "cm3/dev/nxp/lpc17xx_emac.c"},
         options =
         {
             {
@@ -131,6 +131,144 @@ nutarch_cm3_lpc17xx_devices =
                 flavor = "booldata",
                 type = "integer",
                 file = "include/cfg/dev.h"
+            },
+        }
+    },
+    --
+    -- LPC17xx Signal handler
+    --
+    {
+        name = "nutarch_cm3_lpc17xx_sig",
+        brief = "LPC17xx Signals ",
+        description = "Helper to create the sig_DEVXX entries",
+        sources = { "cm3/dev/nxp/ih_lpc17xx.c"},
+        options =
+        {
+            {
+                macro = "HW_WDT_LPC17xx",
+                brief = "WDT Availability",
+                description = "WDT Availability",
+                requires = { "HW_WDT_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART0_LPC17xx",
+                brief = "UART 0 Availability",
+                description = "UART 0 Availability",
+                requires = { "HW_UART0_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART1_LPC17xx",
+                brief = "UART 1 Availability",
+                description = "UART 1 Availability",
+                requires = { "HW_UART1_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART2_LPC17xx",
+                brief = "UART 2 Availability",
+                description = "UART 2 Availability",
+                requires = { "HW_UART2_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART3_LPC17xx",
+                brief = "UART 3 Availability",
+                description = "UART 3 Availability",
+                requires = { "HW_UART3_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_UART4_LPC17xx",
+                brief = "UART 4 Availability",
+                description = "UART 4 Availability",
+                requires = { "HW_UART4_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_I2C0_LPC17xx",
+                brief = "I2C 0 Availability",
+                description = "I2C 0 Availability",
+                requires = { "HW_I2C0_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_I2C1_LPC17xx",
+                brief = "I2C 1 Availability",
+                description = "I2C 1 Availability",
+                requires = { "HW_I2C1_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_I2C2_LPC17xx",
+                brief = "I2C 2 Availability",
+                description = "I2C 2 Availability",
+                requires = { "HW_I2C2_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RTC_LPC17xx",
+                brief = "RTC Availability",
+                description = "RTC Availability",
+                requires = { "HW_RTC_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_MCI_LPC177x_8x",
+                brief = "MCI Availability for LPC177x_8x",
+                description = "MCI Availability",
+                requires = { "HW_MCI_LPC177x_8x" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_EMAC_LPC17xx",
+                brief = "EMAC Availability",
+                description = "EMAC Availability",
+                requires = { "HW_EMAC_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_GPIO_LPC177x_8x",
+                brief = "GPIO Availability for LPC177x_8x",
+                description = "GPIO Availability for LPC177x_8x",
+                requires = { "HW_GPIO_LPC177x_8x" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_GPDMA_LPC17xx",
+                brief = "GPDMA Availability",
+                description = "GPDMA Availability",
+                requires = { "HW_GPDMA_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
             },
         }
     }

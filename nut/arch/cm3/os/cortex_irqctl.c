@@ -34,7 +34,7 @@
 
 /*
  * \verbatim
- * $Id: cortex_irqctl.c 3113 2010-09-17 14:00:26Z astralix $
+ * $Id$
  *
  * Common function to control the interrupt settings of IRQs
  * of cortex CPUs. External interrupts with level control still
@@ -126,7 +126,7 @@ int CM3_IrqCtl(int cmd, void *param, IRQn_Type interrupt,
 
     /* Enable interrupt. */
     if (enabled) {
-    NVIC_EnableIRQ(interrupt);
+        NVIC_EnableIRQ(interrupt);
     }
     return rc;
 }
