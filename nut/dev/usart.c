@@ -567,8 +567,8 @@ int UsartClose(NUTFILE * fp)
     UsartResetBuffer(&dcb->dcb_rx_rbf, 0, 0, 0);
     /* Wake-up all threads waiting for incoming data. */
     NutEventBroadcast(&dcb->dcb_rx_rbf.rbf_que);
-    NutSelectWakeup(dcb->dcb_rx_rbf.wq_list, WQ_FLAG_READ | WQ_FLAG_EXCEPT);
-    NutSelectWakeup(dcb->dcb_tx_rbf.wq_list, WQ_FLAG_WRITE | WQ_FLAG_EXCEPT);
+    NutSelectWakeup(dcb->dcb_rx_rbf.wq_list, WQ_FLAG_READ);
+    NutSelectWakeup(dcb->dcb_tx_rbf.wq_list, WQ_FLAG_WRITE);
 
     return rc;
 }
@@ -1034,8 +1034,8 @@ int UsartSelect (NUTFILE *fp, int flags, HANDLE *wq, select_cmd_t cmd)
     tx_rbf = &dcb->dcb_tx_rbf;
 
     /* Manage the wait queue lists for the select call */
-    NutSelectManageWq(&rx_rbf->wq_list, wq, flags & (WQ_FLAG_READ | WQ_FLAG_EXCEPT), cmd);
-    NutSelectManageWq(&tx_rbf->wq_list, wq, flags & (WQ_FLAG_WRITE | WQ_FLAG_EXCEPT), cmd);
+    NutSelectManageWq(&rx_rbf->wq_list, wq, flags & WQ_FLAG_READ, cmd);
+    NutSelectManageWq(&tx_rbf->wq_list, wq, flags & WQ_FLAG_WRITE, cmd);
 
     /* receive / transmit interrupt can change the buffer counts, so these
        checks will be done atomic.
