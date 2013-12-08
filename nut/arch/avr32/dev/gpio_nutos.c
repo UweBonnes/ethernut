@@ -151,6 +151,105 @@ static int enable_module_pin(int avr32_bank, int mask, unsigned int function)
 }
 
 /*!
+   \internal
+   Switch GPIO Peripheral Mux to specified \a function where function is one
+   of the AVR32 compiler header values.
+
+   This function is intended to be used by drivers
+*/
+void gpio_enable_module_pin(unsigned int pin, unsigned int function)
+{
+	unsigned int peripheral = 0;
+	switch ( function )
+	{
+	case 0:     peripheral = GPIO_CFG_PERIPHERAL0;      break;
+	case 1:     peripheral = GPIO_CFG_PERIPHERAL1;      break;
+	case 2:     peripheral = GPIO_CFG_PERIPHERAL2;      break;
+	default:
+		while(1); // Unrecognized peripheral choice
+		break;
+	}
+
+	enable_module_pin(pin >> 5, _BV(pin & 0x1F), peripheral);
+}
+
+
+int avr32_enable_module_pin(unsigned int pin, unsigned int function)
+{
+	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[pin >> 5];
+
+	// Enable the correct function.
+	switch (function)
+	{
+	case 0: // A function.
+		gpio_port->pmr0c = 1 << (pin & 0x1F);
+		gpio_port->pmr1c = 1 << (pin & 0x1F);
+#ifdef AVR32_GPIO_PMR2C
+		gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+		break;
+
+	case 1: // B function.
+		gpio_port->pmr0s = 1 << (pin & 0x1F);
+		gpio_port->pmr1c = 1 << (pin & 0x1F);
+#ifdef AVR32_GPIO_PMR2C
+		gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+		break;
+
+	case 2: // C function.
+		gpio_port->pmr0c = 1 << (pin & 0x1F);
+		gpio_port->pmr1s = 1 << (pin & 0x1F);
+#ifdef AVR32_GPIO_PMR2C
+		gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+		break;
+
+	case 3: // D function.
+		gpio_port->pmr0s = 1 << (pin & 0x1F);
+		gpio_port->pmr1s = 1 << (pin & 0x1F);
+#ifdef AVR32_GPIO_PMR2C
+		gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+		break;
+
+#ifdef AVR32_GPIO_PMR2C
+	case 4: // E function.
+		gpio_port->pmr0c = 1 << (pin & 0x1F);
+		gpio_port->pmr1c = 1 << (pin & 0x1F);
+		gpio_port->pmr2s = 1 << (pin & 0x1F);
+		break;
+
+	case 5: // F function.
+		gpio_port->pmr0s = 1 << (pin & 0x1F);
+		gpio_port->pmr1c = 1 << (pin & 0x1F);
+		gpio_port->pmr2s = 1 << (pin & 0x1F);
+		break;
+
+	case 6: // G function.
+		gpio_port->pmr0c = 1 << (pin & 0x1F);
+		gpio_port->pmr1s = 1 << (pin & 0x1F);
+		gpio_port->pmr2s = 1 << (pin & 0x1F);
+		break;
+
+	case 7: // H function.
+		gpio_port->pmr0s = 1 << (pin & 0x1F);
+		gpio_port->pmr1s = 1 << (pin & 0x1F);
+		gpio_port->pmr2s = 1 << (pin & 0x1F);
+		break;
+#endif
+
+	default:
+		return -1;
+	}
+	// Disable GPIO control.
+	gpio_port->gperc = 1 << (pin & 0x1F);
+
+	return 0;
+}
+
+
+/*!
  * \brief Get pin level.
  *
  * \param bank GPIO bank/port number.

@@ -49,22 +49,22 @@ typedef struct
   unsigned char function;         //!< Module function.
 } gpio_map_t[];
 
-extern int gpio_enable_module(const gpio_map_t gpiomap, unsigned int size);
+extern void gpio_enable_module_pin(unsigned int pin, unsigned int function);
 
-static inline void gpio_enable_module_pin(unsigned int pin, unsigned int function)
+/*!
+   \internal
+   Switch GPIO Peripheral Mux of a set of pins and functions where function is one
+   of the AVR32 compiler header values.
+
+   This function is intended to be used by drivers
+*/
+inline void gpio_enable_module(const gpio_map_t gpiomap, unsigned int size)
 {
-    unsigned int peripheral = 0;
-    switch ( function )
-    {
-    case 0:     peripheral = GPIO_CFG_PERIPHERAL0;      break;
-    case 1:     peripheral = GPIO_CFG_PERIPHERAL1;      break;
-    case 2:     peripheral = GPIO_CFG_PERIPHERAL2;      break;
-    default:
-        while(1); // Unrecognized peripheral choice
-        break;
-    }
-    GpioPinConfigSet( pin >> 5, pin & 0x1F, peripheral | GPIO_CFG_DISABLED );
-    //enable_module_pin(pin >> 5, _BV(pin & 0x1F), peripheral);
+	int i = 0;
+	for( ; i < size; ++i )
+	{
+		gpio_enable_module_pin( gpiomap[i].pin, gpiomap[i].function );
+	}
 }
 
 
