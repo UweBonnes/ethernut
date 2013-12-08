@@ -63,7 +63,7 @@ static inline void gpio_enable_module_pin(unsigned int pin, unsigned int functio
         while(1); // Unrecognized peripheral choice
         break;
     }
-    GpioPinConfigSet( pin >> 5, pin & 0x1F, peripheral );
+    GpioPinConfigSet( pin >> 5, pin & 0x1F, peripheral | GPIO_CFG_DISABLED );
     //enable_module_pin(pin >> 5, _BV(pin & 0x1F), peripheral);
 }
 
