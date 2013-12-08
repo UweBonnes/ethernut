@@ -37,6 +37,10 @@
  * \endverbatim
  */
 
+#include "cfg/crt.h" /* Must be included first! */
+
+#ifndef CRT_DISABLE_SELECT_POLL
+
 #include "nut_io.h"
 
 #include <stdlib.h>
@@ -456,4 +460,5 @@ start_select:
     return rc;
 }
 
+#endif
 /*@}*/

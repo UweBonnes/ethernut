@@ -44,6 +44,7 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/crt.h>
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1017,6 +1018,7 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
     return rc;
 }
 
+#ifndef CRT_DISABLE_SELECT_POLL
 /*!
  * \brief Callback function called by select routine to check, if read 
  *        or write to this socket would block
@@ -1066,5 +1068,5 @@ int NutTcpDeviceSelect (TCPSOCKET * sock, int flags, HANDLE *wq, select_cmd_t cm
 
     return rflags;
 }
-
+#endif
 /*@}*/

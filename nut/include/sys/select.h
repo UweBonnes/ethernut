@@ -40,6 +40,7 @@
  * \endverbatim
  */
 
+#include "cfg/crt.h"
 #include <compiler.h>
 #include <io.h>
 #include <time.h>
@@ -105,9 +106,20 @@ typedef struct fd_set {
 
 /*@}*/
 
+#ifndef CRT_DISABLE_SELECT_POLL
+
 extern void NutSelectWakeup(WQLIST *wq_list, uint_fast8_t flags);
 extern void NutSelectWakeupFromIrq(WQLIST *wq_list, uint_fast8_t flags);
 extern void NutSelectManageWq(WQLIST **wq_list, HANDLE *wq, int flags, select_cmd_t cmd);
 
 extern int select(int n, fd_set *rfds, fd_set *wfds, fd_set *exfds, struct timeval *timeout);
+
+#else
+
+#define NutSelectWakeup(wq_list, flags) {}
+#define NutSelectWakeupFromIrq(wq_list, flags) {}
+#define NutSelectManageWq(wq_list, wq, flags, cmd) {}
+
+#endif
+
 #endif

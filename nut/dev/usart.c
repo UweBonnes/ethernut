@@ -39,6 +39,8 @@
  * \endverbatim
  */
 
+#include <cfg/crt.h>
+
 #include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
@@ -997,6 +999,7 @@ long UsartSize (NUTFILE *fp)
     return avail;
 }
 
+#ifndef CRT_DISABLE_SELECT_POLL
 /*!
  * \brief Callback function called by select routine to check, if read 
  *        or write would block
@@ -1050,5 +1053,6 @@ int UsartSelect (NUTFILE *fp, int flags, HANDLE *wq, select_cmd_t cmd)
 
     return rflags;
 }
+#endif
 
 /*@}*/

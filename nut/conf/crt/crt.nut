@@ -97,7 +97,20 @@ nutcrt =
             "ioctl.c",
             "open.c",
             "select.c",
-        }
+        },
+        options = 
+        {
+            {
+                macro = "CRT_DISABLE_SELECT_POLL",
+                brief = "Disable select() and poll()",
+                description = "Disable build of select() and poll() to save some flash ressources and "..
+                              "to ensure real-time behaviour. The select wait queue handling in some "..
+                              "drivers may introduce non deterministic interrupt latencies, if the "..
+                              "driver is used together with the select functions.",
+                flavor = "boolean",
+                file = "include/cfg/crt.h"
+            }
+        },
     },
     {
         name = "nutcrt_read",
@@ -394,7 +407,7 @@ nutcrt =
                 flavor = "boolean",
                 file = "include/cfg/crt.h"
             }
-        }
+        },
     },
 
     --
