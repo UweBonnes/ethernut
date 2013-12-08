@@ -453,7 +453,7 @@ TERMDCB dcb_term = {
  */
 NUTDEVICE devLcd = {
     0,                          /*!< Pointer to next device. */
-    {'L', 'c', 'd', 0, 0, 0, 0, 0, 0},  /*!< Unique device name. */
+    {'l', 'c', 'd', 0, 0, 0, 0, 0, 0},  /*!< Unique device name. */
     IFTYP_STREAM,               /*!< Type of device. */
     0,                          /*!< Base address. */
     0,                          /*!< First interrupt number. */
