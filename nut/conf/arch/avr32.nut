@@ -853,7 +853,6 @@ nutarch_avr32 =
         sources =
         {
             "avr32/dev/gpio_nutos.c",
-            "avr32/dev/gpio.c",
         },
     },
     {
