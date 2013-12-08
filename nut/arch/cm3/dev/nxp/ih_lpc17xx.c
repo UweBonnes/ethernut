@@ -37,10 +37,10 @@
  * \endverbatim
  */
 
+#include <cfg/devices.h>
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
-#include <sys/device.h>
 
 #ifndef NUT_IRQPRI_DEF
 #define NUT_IRQPRI_DEF  4
@@ -53,7 +53,7 @@ CREATE_HANDLER(USART1,        UART1,      NUT_IRQPRI_DEF);    /* USART 1 */
 CREATE_HANDLER(USART2,        UART2,      NUT_IRQPRI_DEF);    /* USART 2 */
 CREATE_HANDLER(USART3,        UART3,      NUT_IRQPRI_DEF);    /* USART 3 */
 
-#if defined (HW_UART3_LPC17xx)
+#if defined (HW_UART4_LPC17xx)
 CREATE_HANDLER(USART4,        UART4,      NUT_IRQPRI_DEF);    /* USART 4 */
 #endif 
 
