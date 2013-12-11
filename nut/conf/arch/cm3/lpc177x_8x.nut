@@ -158,6 +158,22 @@ nutarch_cm3_lpc177x_8x_lpc407x_8x=
     },
 
     --
+    -- LPC407x_8x PLL Configuration
+    --
+    {
+        name = "nutarch_cm3_lpc407x_8x_pll",
+        brief = "LPC407x_8x PLL Setup",
+        description = "PLL configuration. Currently it is hard coded. May be user configurable later.\n",
+        requires = { "HW_MCU_LPC407x_8x", "TOOL_CC_CM3", "TOOL_GCC" },
+        sources =
+        {
+            "cm3/dev/nxp/system_lpc407x_8x.c",
+            "cm3/dev/nxp/lpc407x_8x_clk.c"
+        }
+    },
+
+
+    --
     -- LPC177x_8x Device Drivers
     --
 
@@ -168,8 +184,7 @@ nutarch_cm3_lpc177x_8x_lpc407x_8x=
         name = "nutarch_cm3_lpc177x_8x_gpio",
         brief = "LPC177x_8x GPIO",
         description = "Generic port I/O API.",
-        requires = { "HW_MCU_LPC177x_8x" },
-        provides = { "HW_GPIO_LPC177x_8x" },
+        requires = { "HW_GPIO_LPC177x_8x" },
         sources =
         {
             "cm3/dev/nxp/lpc177x_8x_gpio.c",
