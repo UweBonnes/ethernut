@@ -59,10 +59,16 @@ nut/Makevars.all nut/Makerules.all nut/Makerules.licenses \
 nut/Makevars.arm-ecross-gcc \
 nut/Makedefs.arm-ecross-gcc nut/Makerules.arm-ecross-gcc \
 nut/Makedefs.arm-ecross-gccdbg nut/Makerules.arm-ecross-gccdbg \
+nut/Makevars.cm3-ecross-gcc \
+nut/Makedefs.cm3-ecross-gcc nut/Makerules.cm3-ecross-gcc \
+nut/Makedefs.cm3-ecross-gccdbg nut/Makerules.cm3-ecross-gccdbg \
 nut/Makevars.arm-gcc \
 nut/Makedefs.arm-gcc nut/Makerules.arm-gcc \
 nut/Makedefs.arm-gccdbg nut/Makerules.arm-gccdbg \
 nut/Makedefs.arm-thumb-gcc nut/Makerules.arm-thumb-gcc \
+nut/Makevars.cm3-gcc \
+nut/Makedefs.cm3-gcc nut/Makerules.cm3-gcc \
+nut/Makedefs.cm3-gccdbg nut/Makerules.cm3-gccdbg \
 nut/Makevars.avr-gcc \
 nut/Makedefs.avr-gcc nut/Makerules.avr-gcc \
 nut/Makedefs.avr-gccdbg nut/Makerules.avr-gccdbg \
@@ -71,6 +77,9 @@ nut/Makedefs.avrext-icc7 nut/Makerules.avrext-icc7 \
 nut/Makevars.avr32-gcc \
 nut/Makedefs.avr32-gcc nut/Makerules.avr32-gcc \
 nut/Makedefs.avr32-gccdbg nut/Makerules.avr32-gccdbg \
+nut/Makevars.m68k-gcc \
+nut/Makedefs.m68k-gcc nut/Makerules.m68k-gcc \
+nut/Makedefs.m68k-gccdbg nut/Makerules.m68k-gccdbg \
 nut/Makerules.gcc \
 nut/Makevars.gcc \
 nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
