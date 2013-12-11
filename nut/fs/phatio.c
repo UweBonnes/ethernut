@@ -135,6 +135,7 @@ int PhatSectorWrite(NUTDEVICE * dev, uint32_t sect, const void *data, int num)
                 }
                 num -= written;
                 sect += written;
+                dp += (written * vol->vol_sectsz);
             }
         }
         NutEventPost(&vol->vol_iomutex);
