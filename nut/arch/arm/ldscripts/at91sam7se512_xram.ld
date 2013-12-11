@@ -119,6 +119,8 @@ SECTIONS
     . = ALIGN(4);
     *(.data)
     . = ALIGN(4);
+    *(.data.*);
+    . = ALIGN(4);
     /* Marks the end of non relocatable code and data. */
     PROVIDE (__data_end = .);
   } > REGION_DATA

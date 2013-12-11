@@ -85,6 +85,8 @@ SECTIONS
     PROVIDE (__data_start = .);
     *(.vectors);
     . = ALIGN(4);
+    *(.data.*);
+    . = ALIGN(4);
     *(.data)
     . = ALIGN(4);
     *(.ramfunc)

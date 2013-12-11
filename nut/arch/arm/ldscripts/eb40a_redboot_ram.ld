@@ -93,6 +93,8 @@ SECTIONS
     PROVIDE (__data_start = .);
     *(.data)
     . = ALIGN(4);
+    *(.data.*);
+    . = ALIGN(4);
     *(.ramfunc)
     edata = .;
     _edata = .;

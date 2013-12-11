@@ -91,6 +91,8 @@ SECTIONS
     PROVIDE (__data_start = .);
     *(.data)
     . = ALIGN(4);
+    *(.data.*);
+    . = ALIGN(4);
     *(.ramfunc)
     . = ALIGN(4);
     *(.text_xram)

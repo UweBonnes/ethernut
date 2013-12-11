@@ -94,6 +94,7 @@ SECTIONS
     . = ALIGN(4);
     PROVIDE (__data_start = .);
     . = ALIGN(4); *(.data);
+    . = ALIGN(4); *(.data.*);
     . = ALIGN(4); *(.ramfunc);
     . = ALIGN(4);
     PROVIDE (__data_end = .);

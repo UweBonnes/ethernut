@@ -49,6 +49,8 @@ SECTIONS
     	_data_start = .;
     	*(.data)
         . = ALIGN(0x100);
+        *(.data.*);
+        . = ALIGN(4);
     	_edata = .;
     } > ram
 

@@ -80,6 +80,8 @@ SECTIONS
   {
     *(.data)
     . = ALIGN(4);
+    *(.data.*);
+    . = ALIGN(4);
     PROVIDE (__data_end = .);
   } > REGION_DATA
 
