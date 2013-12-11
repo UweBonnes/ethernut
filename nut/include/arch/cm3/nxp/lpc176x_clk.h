@@ -111,8 +111,8 @@
 #define  CLKPWR_PCONP_PCSSP1        10  /* SSP 1           */
 
 #define  CLKPWR_PCONP_PCAD          12  /* ADC 0           */
-#define  CLKPWR_PCONP_PCAN1         13  /* CAN 1           */
-#define  CLKPWR_PCONP_PCAN2         14  /* CAN 2           */
+#define  CLKPWR_PCONP_PCCAN1        13  /* CAN 1           */
+#define  CLKPWR_PCONP_PCCAN2        14  /* CAN 2           */
 #define  CLKPWR_PCONP_PCGPIO        15  /* GPIO            */
 #define  CLKPWR_PCONP_PCRIT         16  /* RIT             */
 #define  CLKPWR_PCONP_PCMC          17  /* Motor PWM       */
