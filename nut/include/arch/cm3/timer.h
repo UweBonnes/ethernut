@@ -121,7 +121,7 @@
 /*!
  * Clock for WDT
  */
-#define NUT_HWCLK_WDT   4
+#define NUT_HWCLK_SPIFI 4
 
 /*!
  * Number of clocks for this device

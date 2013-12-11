@@ -53,6 +53,8 @@
 #include <arch/cm3/nxp/lpc176x.h>
 #elif defined(MCU_LPC177x_8x)
 #include <arch/cm3/nxp/lpc177x_8x.h>
+#elif defined(MCU_LPC407x_8x)
+#include <arch/cm3/nxp/lpc407x_8x.h>
 #else
 #warning "Unknown CM3 family"
 #endif

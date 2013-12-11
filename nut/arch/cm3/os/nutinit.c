@@ -53,7 +53,7 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3.h>
-#if defined(MCU_STM32F3) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32F3) || defined(MCU_STM32F4) || defined(MCU_LPC407x_8x)
 #include <arch/cm3/core_cm4.h>
 #else
 #include <arch/cm3/core_cm3.h>
@@ -68,6 +68,9 @@
 #elif defined(MCU_LPC177x_8x)
 #include <arch/cm3/nxp/lpc177x_8x.h>
 #include <arch/cm3/nxp/lpc177x_8x_clk.h>
+#elif defined(MCU_LPC407x_8x)
+#include <arch/cm3/nxp/lpc407x_8x.h>
+#include <arch/cm3/nxp/lpc407x_8x_clk.h>
 #else
 #warning "Unknown CM3 family"
 #endif

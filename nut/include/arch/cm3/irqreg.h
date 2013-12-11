@@ -52,7 +52,7 @@
 #elif defined(MCU_STM32)
 #include <arch/cm3/stm/stm32_irqreg.h>
 
-#elif defined(MCU_LPC176x) || defined(MCU_LPC177x_8x)
+#elif defined(MCU_LPC176x) || defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
 #include <arch/cm3/nxp/lpc17xx_irqreg.h>
 
 #else

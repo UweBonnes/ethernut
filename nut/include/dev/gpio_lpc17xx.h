@@ -48,6 +48,8 @@ typedef uint32_t nutgpio_pin_t;
 #include <arch/cm3/nxp/lpc176x.h>
 #elif defined(MCU_LPC177x_8x)
 #include <arch/cm3/nxp/lpc177x_8x.h>
+#elif defined(MCU_LPC407x_8x)
+#include <arch/cm3/nxp/lpc407x_8x.h>
 #else
 #warning "Unknown LPC family"
 #endif
@@ -127,13 +129,10 @@ typedef uint32_t nutgpio_pin_t;
  *
  */
 #if defined(MCU_LPC176x)
-/*Not supported with the LPC177x family */
+/*Not supported with the LPC176x family */
 #define GPIO_CFG_DEBOUNCE   0x00000000
-#elif defined(MCU_LPC177x_8x)
+#elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
 #define GPIO_CFG_DEBOUNCE   0x00000040
-#endif
-
-#if defined(MCU_LPC177x_8x)
 #define GPIO_CFG_HYSTERESIS 0x00000080
 #define GPIO_CFG_INVERT     0x00000100
 #define GPIO_CFG_SLEWCTRL   0x00000200
@@ -157,7 +156,7 @@ typedef uint32_t nutgpio_pin_t;
 #define GPIO_CFG_PERIPHERAL1  0x01000000
 #define GPIO_CFG_PERIPHERAL2  0x02000000
 #define GPIO_CFG_PERIPHERAL3  0x03000000
-#if defined(MCU_LPC177x_8x)
+#if defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
 #define GPIO_CFG_PERIPHERAL4  0x04000000
 #define GPIO_CFG_PERIPHERAL5  0x05000000
 #define GPIO_CFG_PERIPHERAL6  0x06000000

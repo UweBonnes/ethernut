@@ -1,8 +1,10 @@
-#ifndef _DEV_GPIO_H_
-#define _DEV_GPIO_H_
+#ifndef __SYSTEM_LPC407x_8x_H
+#define __SYSTEM_LPC407x_8x_H
 
-/*!
- * Copyright (C) 2007 by egnite Software GmbH. All rights reserved.
+/*
+ * Copyright (C) 2013 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,25 +35,20 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
- * \file dev/gpio.h
- * \brief General purpose I/O.
- *
- * \verbatim
- * $Id$
- * \endverbatim
+/**
+ * \brief   Read out current Code Read Protection value at flash location 0x2FC
  */
 
-#include <cfg/arch/gpio.h>
-#include <dev/irqreg.h>
-#if defined(MCU_STM32)
-#include <dev/gpio_stm32.h>
-#elif defined(MCU_LPC176x) || defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
-#include <dev/gpio_lpc17xx.h>
-#elif defined(__m68k__)
-#include <arch/m68k/gpio.h>
-#else
-#include <dev/gpio_def.h>
-#endif
+uint32_t Lpc407x_8xGetCrpValue(void);
 
-#endif /* _DEV_GPIO_H_ */
+/**
+ * Initialize the system
+ *
+ * @param  none
+ * @return none
+ *
+ * @brief  Setup the microcontroller system.
+ *         Initialize the System and update the SystemFrequency variable.
+ */
+extern void SystemInit (void);
+#endif

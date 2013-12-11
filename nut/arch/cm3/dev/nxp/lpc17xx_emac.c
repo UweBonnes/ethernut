@@ -39,6 +39,7 @@
  */
 #include <stdio.h>
 #include <arch/cm3.h>
+#include <cfg/arch.h>
 #include <cfg/os.h>
 #include <cfg/dev.h>
 #include <cfg/arch/gpio.h>
@@ -60,6 +61,10 @@
 #elif defined(MCU_LPC177x_8x)
 #include <arch/cm3/nxp/lpc177x_8x.h>
 #include <arch/cm3/nxp/lpc177x_8x_clk.h>
+#include <arch/cm3/nxp/lpc177x_8x_gpio.h>
+#elif defined(MCU_LPC407x_8x)
+#include <arch/cm3/nxp/lpc407x_8x.h>
+#include <arch/cm3/nxp/lpc407x_8x_clk.h>
 #include <arch/cm3/nxp/lpc177x_8x_gpio.h>
 #else
 #warning "Unknown LPC familiy"

@@ -449,7 +449,7 @@
 
 #if defined(MCU_LPC176x)
 #define RX_DESC_BASE              0x20080000
-#elif defined(MCU_LPC177x_8x)
+#elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
 #define RX_DESC_BASE              0x20004000
 #else
 #warning "Unknown LPC familiy"

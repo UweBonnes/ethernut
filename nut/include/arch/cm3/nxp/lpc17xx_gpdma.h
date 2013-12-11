@@ -107,7 +107,7 @@
 #  define GPDMA_CONN_MAT2_1               21  /* MAT2.1 */
 #  define GPDMA_CONN_MAT3_0               22  /* MAT3.0 */
 #  define GPDMA_CONN_MAT3_1               23  /* MAT3.1 */
-#elif defined(MCU_LPC177x_8x)
+#elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
                                        /*  0  reserved */
 #  define GPDMA_CONN_MCI                   1  /* SD card */
 #  define GPDMA_CONN_SSP0_Tx               2  /* SSP0 Tx */
