@@ -205,6 +205,9 @@
 #elif defined(KSK_LPC1788_SK)
 #include <arch/cm3/board/ksk_lpc1788_sk.h>
 #define BOARDNAME "KSK_LPC1788_SK"
+#elif defined(KSK_LPC4088)
+#include <arch/cm3/board/ksk_lpc4088.h>
+#define BOARDNAME "KSK_LPC4088"
 #elif defined(LISA)
 #include <arch/cm3/board/lisa.h>
 #define BOARDNAME "LISA"
