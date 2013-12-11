@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2012 Ole Reinhardt, Thermotemp (ole.reinhardt@embedded-it.de)
+-- Copyright (C) 2012 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -60,10 +60,10 @@ nutarch_cm3_lpc17xx_family =
         script = "arch/cm3/lpc176x.nut"
     },
     {
-        name = "nutarch_cm3_lpc177x_8x",
-        brief = "LPC177x / LPC178x",
-        requires = { "HW_MCU_LPC177x_8x" },
-        description = "NXP LPC175x and LPC176x series",
+        name = "nutarch_cm3_lpc177x_8x_lpc407x_8x",
+        brief = "LPC177x / LPC178x, LPC407x / LPC408x",
+        requires = { "HW_MCU_LPC177x_8x_LPC407x_8x" },
+        description = "NXP LPC177x/8x and LPC407x/8x series",
         script = "arch/cm3/lpc177x_8x.nut"
     },
     {

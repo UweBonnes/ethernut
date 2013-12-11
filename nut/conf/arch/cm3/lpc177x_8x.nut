@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2011 Ole Reinhardt, Thermotemp (ole.reinhardt@embedded-it.de)
+-- Copyright (C) 2011 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -37,7 +37,7 @@
 --
 --
 
-lpc177x_8x_device_class = { "LPC1778", "LPC1788" }
+lpc177x_8x_device_class = { "LPC1778", "LPC1788", "LPC4078", "LPC4088" }
 
 --
 -- ********************************************************************************
@@ -45,55 +45,15 @@ lpc177x_8x_device_class = { "LPC1778", "LPC1788" }
 -- ********************************************************************************
 --
 
-nutarch_cm3_lpc177x_8x=
+nutarch_cm3_lpc177x_8x_lpc407x_8x=
 {
-
-    --
-    -- MCU Family
-    --
-    {
-        name = "nutarch_cm3_lpc177x_8x_family",
-        brief = "MCU Family",
-        options =
-        {
-            {
-                macro = "MCU_LPC177x_8x",
-                brief = "LPC177x_8x",
-                description = "Cortex-M3 microcontrollers with advanced peripherals "..
-                              "such as Ethernet, USB, CAN or LCD controller. They "..
-                              "provide up to 512kB flash and 96kB RAM while operating "..
-                              "at up to 120MHz. Package: up to 208 pins\n\n",
-                type = "integer",
-                default = 1,
-                requires = { "HW_MCU_CM3" },
-                provides =
-                {
-                    "HW_PLL_LPC17xx",
-                    "HW_RTC_LPC17xx",
-                    "HW_EMC_LPC177x_8x",
-                    "HW_FLASH_LPC17xx",
-                    "HW_EEPROM_LPC177x_8x",
-                    "HW_GPIO_LPC177x_8x",
-                    "HW_CRC32_LPC17xx",
-                    "DEV_IRQ_LPC17xx",
-                    "HW_WDT_LPC17xx",
-                    "HW_GPDMA_LPC17xx",
-                    "HW_MCI_LPC177x_8x",
-                    "HW_EMAC_LPC17xx",
-                    "HW_I2C_LPC17xx",
-                },
-                file = "include/cfg/arch.h"
-            }
-        }
-    },
-
     --
     -- LPC177x_8x MCU Classes
     --
     {
         name = "nutarch_cm3_lpc177x_8x_class",
-        brief = "LPC177x_8x Device Classes",
-        requires = { "HW_MCU_LPC177x_8x" },
+        brief = "LPC177x_8x / LPC407x_8x Device Classes",
+        requires = { "HW_MCU_LPC177x_8x_LPC407x_8x" },
         options =
         {
             {
@@ -121,6 +81,38 @@ nutarch_cm3_lpc177x_8x=
                 provides =
                 {
                     "HW_MCU_LPC1788",
+                    "HW_UART0_LPC17xx",
+                    "HW_UART1_LPC17xx",
+                    "HW_UART2_LPC17xx",
+                    "HW_UART3_LPC17xx",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_LPC4078",
+                brief = "LPC4078",
+                description = "NXP LPC4078",
+                flavor = "booldata",
+                exclusivity = lpc177x_8x_device_class,
+                provides =
+                {
+                    "HW_MCU_LPC4088",
+                    "HW_UART0_LPC17xx",
+                    "HW_UART1_LPC17xx",
+                    "HW_UART2_LPC17xx",
+                    "HW_UART3_LPC17xx",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_LPC4088",
+                brief = "LPC4088",
+                description = "NXP LPC4088",
+                flavor = "booldata",
+                exclusivity = lpc177x_8x_device_class,
+                provides =
+                {
+                    "HW_MCU_LPC4088",
                     "HW_UART0_LPC17xx",
                     "HW_UART1_LPC17xx",
                     "HW_UART2_LPC17xx",
