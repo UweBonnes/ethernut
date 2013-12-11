@@ -33,7 +33,7 @@
  */
 
 #include <stdint.h>
-#include <arch/cm3/nxp/lpc407_8x.h>
+#include <arch/cm3/nxp/lpc407x_8x.h>
 
 /** @addtogroup LPC407x_8x_System_Defines
   * @{
