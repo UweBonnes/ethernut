@@ -757,12 +757,14 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
  * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
- * \return 0 if granted, error code otherwise.
+ * \return 0 if granted, -1 otherwise. The specific error code
+ *         can be retrieved by calling NutTcpError().
  */
 int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
 {
     if (sock->so_state != TCPS_CLOSED) {
-        return (sock->so_last_error = EISCONN);
+        sock->so_last_error = EISCONN;
+        return -1;
     }
     NutTcpStateChange(sock, TCPS_LISTEN);
 
@@ -780,7 +782,8 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
     }
     if (NutEventWait(&sock->so_pc_tq, sock->so_read_to)) {
         sock->so_state = TCPS_CLOSED;
-        return (sock->so_last_error = ETIMEDOUT);
+        sock->so_last_error = ETIMEDOUT
+        return -1;
     }
 #else
     /* For backward compatibility we simply block the application.
