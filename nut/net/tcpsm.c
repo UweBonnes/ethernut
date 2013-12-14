@@ -782,7 +782,7 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
     }
     if (NutEventWait(&sock->so_pc_tq, sock->so_read_to)) {
         sock->so_state = TCPS_CLOSED;
-        sock->so_last_error = ETIMEDOUT
+        sock->so_last_error = ETIMEDOUT;
         return -1;
     }
 #else
