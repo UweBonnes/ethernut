@@ -103,7 +103,6 @@ struct _HTTP_ENVVAR_ENTRY {
     /*! \brief Registered handler function. */
     HTTP_ENVVAR_HANDLER env_handler;
     int env_index;
-    int env_flags;
 };
 
 /*!
