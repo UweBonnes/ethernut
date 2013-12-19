@@ -113,6 +113,8 @@ int HttpCgiFunctionHandler(HTTPD_SESSION *hs, const MEDIA_TYPE_ENTRY *mt, const 
     HTTP_CGI_FUNCTION *cgi;
     const char *pp;
 
+    (void)mt;
+
     HTTP_ASSERT(filepath != NULL);
 
     if (strncasecmp(filepath, HTTP_ROOT, strlen(HTTP_ROOT)) == 0) {

@@ -142,12 +142,12 @@ const char *HttpResponseText(int code)
 #if HTTP_VERSION >= 0x10
     int i;
 
-    for (i = 0; i < HTTP_NUM_RESPONSES; i++) {
+    for (i = 0; i < (int)HTTP_NUM_RESPONSES; i++) {
         if (code >= response_list[i].rs_code) {
             break;
         }
     }
-    if (i < HTTP_NUM_RESPONSES && code == response_list[i].rs_code) {
+    if (i < (int)HTTP_NUM_RESPONSES && code == response_list[i].rs_code) {
         rp = response_list[i].rs_text;
     }
 #endif
@@ -208,6 +208,7 @@ void HttpSendHeaderDate(HTTPD_SESSION *hs, time_t mtime)
 void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, char *type, char *subtype, int conn, long bytes)
 {
 #if HTTP_VERSION >= 0x10
+    (void)conn;
     if (type && subtype) {
         s_vputs(stream, ct_Content_Type, ": ", type, "/", subtype, "\r\n", NULL);
     }

@@ -203,7 +203,7 @@ int HttpSsiParse(HTTPD_SESSION *hs, const char *buf, int len)
         buf++;
         len--;
     }
-    for (i = 0; i < HTTP_SSI_NUM_COMMANDS; i++) {
+    for (i = 0; i < (int)HTTP_SSI_NUM_COMMANDS; i++) {
         if (len > ssiCmdList[i].icmd_namelen &&
             strncasecmp(buf, ssiCmdList[i].icmd_name, ssiCmdList[i].icmd_namelen) == 0) {
             ssiCmd = &ssiCmdList[i];

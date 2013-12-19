@@ -106,11 +106,15 @@ HTTP_LOC_REDIRECTOR httpd_loc_redirector = HttpLocationRedirNone;
 
 static int HttpAuthValidateAll(HTTPD_SESSION *req)
 {
+    (void)req;
+
     return 0;
 }
 
 static int HttpLocationRedirNone(HTTPD_SESSION *hs)
 {
+    (void)hs;
+
     return -1;
 }
 
