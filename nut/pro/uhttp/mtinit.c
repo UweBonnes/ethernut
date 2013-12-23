@@ -94,6 +94,7 @@ int MediaTypeInitDefaults(void)
     int i;
 
     ISC_LIST_INIT(mediaTypeList);
+    (void)mtc_application; /* In case no user of mtc_application is defined */
     for (i = 0; i < (int)MT_DEFAULTS; i++) {
         ISC_LIST_APPEND(mediaTypeList, &mt_defaults[i], media_link);
     }
