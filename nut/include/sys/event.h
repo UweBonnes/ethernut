@@ -157,13 +157,19 @@
 
 /*@}*/
 
-extern void NutEventTimeout(HANDLE timer, void *arg);
+/*
+ * Use NUTEVENT instead of HANDLE.
+ * This makes it easier to port the network stack.
+ */
+#define NUTEVENT HANDLE
 
-extern int NutEventWait(volatile HANDLE *qhp, uint32_t ms);
-extern int NutEventWaitNext(volatile HANDLE *qhp, uint32_t ms);
-extern int NutEventPostAsync(volatile HANDLE *qhp);
-extern int NutEventPost(volatile HANDLE *qhp);
-extern int NutEventBroadcastAsync(volatile HANDLE *qhp);
-extern int NutEventBroadcast(volatile HANDLE *qhp);
+extern void NutEventTimeout(NUTEVENT timer, void *arg);
+
+extern int NutEventWait(volatile NUTEVENT *qhp, uint32_t ms);
+extern int NutEventWaitNext(volatile NUTEVENT *qhp, uint32_t ms);
+extern int NutEventPostAsync(volatile NUTEVENT *qhp);
+extern int NutEventPost(volatile NUTEVENT *qhp);
+extern int NutEventBroadcastAsync(volatile NUTEVENT *qhp);
+extern int NutEventBroadcast(volatile NUTEVENT *qhp);
 
 #endif

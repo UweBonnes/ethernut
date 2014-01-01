@@ -106,6 +106,7 @@
 #include <stdint.h>
 
 #include <sys/device.h>
+#include <sys/event.h>
 #include <dev/netbuf.h>
 #include <net/if_types.h>
 
@@ -144,7 +145,7 @@ struct _ARPENTRY {
     uint8_t ae_ha[6];            /*!< \brief Hardware address. */
     uint8_t ae_flags;            /*!< \brief Status flags, permanent and completed. */
     uint8_t ae_outdated;         /*!< \brief Minutes since last use. */
-    HANDLE ae_tq;               /*!< \brief Threads waiting for entry to be completed. */
+    NUTEVENT  ae_tq;            /*!< \brief Threads waiting for entry to be completed. */
 };
 
 /*@}*/

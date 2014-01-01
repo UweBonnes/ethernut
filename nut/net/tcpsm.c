@@ -92,7 +92,7 @@ extern TCPSOCKET *tcpSocketList;
  */
 /*@{*/
 
-HANDLE tcp_in_rdy;
+NUTEVENT  tcp_in_rdy;
 NETBUF *volatile tcp_in_nbq;
 static uint16_t tcp_in_cnt;
 static HANDLE tcpThread = 0;
