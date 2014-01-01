@@ -163,6 +163,13 @@
  */
 #define NUTEVENT HANDLE
 
+/*
+ * Dummy function for NutEventCreate, not needed
+ * in case of NutOS, but if the stack should be ported.
+ */
+#define NutEventCreate(_a) 
+
+
 extern void NutEventTimeout(NUTEVENT timer, void *arg);
 
 extern int NutEventWait(volatile NUTEVENT *qhp, uint32_t ms);

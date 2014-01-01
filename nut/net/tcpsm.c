@@ -1635,6 +1635,8 @@ THREAD(NutTcpSm, arg)
      */
     NutThreadSetPriority(32);
 
+    NutEventCreate(&tcp_in_rdy);
+
     for (;;) {
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {
             tac = 0;
