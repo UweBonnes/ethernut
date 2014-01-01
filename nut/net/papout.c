@@ -104,6 +104,8 @@ void PapTxAuthReq(NUTDEVICE *dev, uint8_t id)
     char *cp;
     int len;
 
+    (void)id;
+
     /*
      * Create the request.
      */

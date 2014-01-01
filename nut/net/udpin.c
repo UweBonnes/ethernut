@@ -69,6 +69,8 @@ int NutUdpInput(NUTDEVICE * dev, NETBUF * nb)
     UDPHDR *uh;
     UDPSOCKET *sock;
 
+    (void)dev;
+
     uh = (UDPHDR *) nb->nb_tp.vp;
     /* Make sure that the datagram contains a full header. */
     if (uh == NULL || nb->nb_tp.sz < sizeof(UDPHDR)) {

@@ -437,6 +437,8 @@ static INLINE void LcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+    (void)id;
+
     NutNetBufFree(nb);
 
     switch (dcb->dcb_lcp_state) {
@@ -495,6 +497,8 @@ void LcpRxProtRej(NUTDEVICE * dev)
 static INLINE void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
+
+    (void)id;
 
     NutNetBufFree(nb);
 

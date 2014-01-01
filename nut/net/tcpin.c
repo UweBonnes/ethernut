@@ -75,6 +75,8 @@ int NutTcpInput(NUTDEVICE * dev, NETBUF * nb)
 {
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
+    (void)dev;
+
     /* Process unicasts only. */
     if (th && (nb->nb_flags & NBAF_UNICAST) != 0) {
         uint_fast8_t hdrlen = th->th_off * 4;

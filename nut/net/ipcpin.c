@@ -419,6 +419,9 @@ static void IpcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+    (void)id;
+    (void)nb;
+
     switch (dcb->dcb_ipcp_state) {
     case PPPS_CLOSING:
         dcb->dcb_ipcp_state = PPPS_CLOSED;
@@ -475,6 +478,8 @@ void IpcpRxProtRej(NUTDEVICE * dev)
 static void IpcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
+
+    (void)id;
 
     NutNetBufFree(nb);
     if (dcb->dcb_ipcp_state == PPPS_ACKRCVD)

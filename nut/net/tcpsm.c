@@ -1627,6 +1627,8 @@ THREAD(NutTcpSm, arg)
     TCPSOCKET *sock;
     uint8_t tac = 0;
 
+    (void)arg;
+
     /*
      * It won't help giving us a higher priority than the application
      * code. We depend on the speed of the reading application.

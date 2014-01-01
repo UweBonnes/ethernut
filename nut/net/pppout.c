@@ -83,6 +83,8 @@ int NutPppOutput(NUTDEVICE * dev, uint16_t type, uint8_t * ha, NETBUF * nb)
     IFNET *nif = dev->dev_icb;
     PPPDCB *dcb = dev->dev_dcb;
 
+    (void)ha;
+
     /*
      * Allocate and set the HDLC header.
      */

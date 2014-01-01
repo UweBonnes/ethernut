@@ -295,6 +295,8 @@ int NutIpForward(NETBUF *nb)
         }
     }
     NutNetBufFree(r_nb);
+#else
+    (void)nb;
 #endif
     return 0;
 }
