@@ -282,6 +282,7 @@
 /* Note, that newlib is the default. */
 #if defined(__CROSSWORKS_ARM)
 #include <toolchain/crossworks.h>
+#include <toolchain/generic.h>
 #else
 #include <toolchain/newlib.h>
 #endif

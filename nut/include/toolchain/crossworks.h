@@ -37,8 +37,6 @@
 #ifndef __ASSEMBLER__
 
 #include <stddef.h>
-#include <arch/cm3.h>
-
 
 /*!
  * \brief Case insensitive string comparisons.
