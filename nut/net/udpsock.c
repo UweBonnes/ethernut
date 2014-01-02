@@ -119,9 +119,6 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
     if ((sock = calloc(1, sizeof(UDPSOCKET))) != 0) {
         sock->so_local_port = htons(port);
         sock->so_next = udpSocketList;
-
-        NutEventCreate(&sock->so_rx_rdy);
-        
         udpSocketList = sock;
     }
     return sock;

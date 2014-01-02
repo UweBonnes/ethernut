@@ -136,7 +136,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/device.h>
-#include <sys/event.h>
 #include <dev/netbuf.h>
 
 
@@ -169,7 +168,7 @@ struct udp_socket {
     UDPSOCKET *so_next;      /*!< \brief Link to next tcp socket structure. */
     uint16_t so_local_port;  /*!< \brief Local port number in net byte order. */
     NETBUF  *so_rx_nb;       /*!< \brief Received, but not read by application. */
-    NUTEVENT   so_rx_rdy;       /*!< \brief Receiver event queue. */
+    HANDLE  so_rx_rdy;       /*!< \brief Receiver event queue. */
     int     so_rx_cnt;       /*!< \brief Number of data bytes in the receive buffer. */
     int     so_rx_bsz;       /*!< \brief Receive buffer size. */
 
@@ -241,7 +240,7 @@ struct tcp_socket {
     uint16_t so_tx_win;      /*!< \brief Peer's receive window. */
     uint8_t  so_tx_dup;      /*!< \brief Duplicate ACK counter. */
     NETBUF  *so_tx_nbq;     /*!< \brief Network buffers waiting to be acknowledged. */
-    NUTEVENT  so_tx_tq;       /*!< \brief Threads waiting for transmit buffer space. */
+    HANDLE  so_tx_tq;       /*!< \brief Threads waiting for transmit buffer space. */
     WQLIST *so_tx_wq_list;  /*!< \brief TX buffer wait queue list. Needed for select */
 
     uint32_t  so_rx_isn;      /*!< \brief Initial sequence number of remote. */
@@ -252,7 +251,7 @@ struct tcp_socket {
     int     so_rd_cnt;      /*!< \brief Number of bytes read from buffer top. */
     int_fast8_t so_rx_apc;  /*!< \brief Number of packets received in advance. */
     NETBUF  *so_rx_buf;     /*!< \brief Data waiting to be read by application. */
-    NUTEVENT  so_rx_tq;       /*!< \brief Threads waiting for received data. */
+    HANDLE  so_rx_tq;       /*!< \brief Threads waiting for received data. */
     WQLIST  *so_rx_wq_list; /*!< \brief RX buffer wait queue list. Needed for select */
     NETBUF  *so_rx_nbq;     /*!< \brief Network buffers received in advance. */
 
@@ -264,8 +263,8 @@ struct tcp_socket {
     uint16_t so_time_wait;   /*!< \brief Time wait counter. */
     uint16_t so_retran_time; /*!< \brief Retransmit time counter. */
     uint16_t so_last_error;  /*!< \brief Last error code. */
-    NUTEVENT  so_pc_tq;       /*!< \brief Listening thread. */
-    NUTEVENT  so_ac_tq;       /*!< \brief Connecting thread. */
+    HANDLE  so_pc_tq;       /*!< \brief Listening thread. */
+    HANDLE  so_ac_tq;       /*!< \brief Connecting thread. */
 
     uint32_t  so_read_to;     /*!< \brief Read timeout. */
     uint32_t  so_write_to;    /*!< \brief Write timeout. */

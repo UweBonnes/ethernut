@@ -92,7 +92,7 @@ extern TCPSOCKET *tcpSocketList;
  */
 /*@{*/
 
-NUTEVENT  tcp_in_rdy;
+HANDLE tcp_in_rdy;
 NETBUF *volatile tcp_in_nbq;
 static uint16_t tcp_in_cnt;
 static HANDLE tcpThread = 0;
@@ -1634,8 +1634,6 @@ THREAD(NutTcpSm, arg)
      * code. We depend on the speed of the reading application.
      */
     NutThreadSetPriority(32);
-
-    NutEventCreate(&tcp_in_rdy);
 
     for (;;) {
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {

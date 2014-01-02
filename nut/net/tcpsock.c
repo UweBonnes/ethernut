@@ -251,11 +251,6 @@ TCPSOCKET *NutTcpCreateSocket(void)
 
         sock->so_devobsz = TCP_MSS; /* Default output buffer size is TCP_MSS bytes */
 
-        NutEventCreate(&sock->so_tx_tq);
-        NutEventCreate(&sock->so_rx_tq);
-        NutEventCreate(&sock->so_pc_tq);
-        NutEventCreate(&sock->so_ac_tq);
-
         tcpSocketList = sock;
     }
     return sock;

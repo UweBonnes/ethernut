@@ -93,7 +93,6 @@
  */
 
 #include <sys/device.h>
-#include <sys/event.h>
 #include <dev/netbuf.h>
 
 /*!
@@ -151,7 +150,7 @@ struct _PPPDCB {
      * The state machine posts an event to this queue when the
      * network interface becomes ready.
      */
-    NUTEVENT dcb_state_chg;
+    HANDLE dcb_state_chg;
 
     /*! \brief Current state of the link layer.
      */
