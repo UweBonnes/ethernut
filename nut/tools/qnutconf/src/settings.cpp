@@ -36,6 +36,7 @@
 #include <QDirIterator>
 #include <QSettings>
 #include <QCryptographicHash>
+#include <QFileDialog>
 
 #include <stdlib.h>
 
@@ -122,29 +123,45 @@ QString Settings::findRelativePath( const QString& filename )
 
 bool Settings::load( const QString& fileName /*= QString() */ )
 {
-	/* Get source path */
-	QString srcpath = findRelativePath("os/version.c");
-	if ( srcpath.contains("/nut/") )
-		srcpath.truncate( srcpath.lastIndexOf("nut") + 3 );
-	else
-		srcpath.truncate( srcpath.lastIndexOf("/os/version.c") );
-
-	repositoryFile = srcpath + "/conf/repository.nut";
-
 	QSettings settings;
-	m_multipleConfigs = settings.value("settings/multipleconfig").toBool();
-	m_configFileName = settings.value("settings/configFileName").toString();
-
 	if ( multipleConfigs() && !fileName.isEmpty() )
 	{
 		QByteArray hash = QCryptographicHash::hash( fileName.toLocal8Bit(), QCryptographicHash::Md5 );
 		settings.beginGroup( hash.toHex() );
 	}
 
+        if(!settings.contains("sourceDirectory")) {
+            /* Ask the user for the source path */
+            QString  srcpath;
+            srcpath = QFileDialog::getExistingDirectory
+                ( 0, tr("Ethernut source directory"),
+                  getenv("HOME"),
+                  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+            if ( srcpath.isEmpty() )  {// User canceled
+                /* Get source path */
+                //message( tr("Scanning disk for ethernut source") );
+                if ( srcpath.contains("/nut/") )
+                    srcpath.truncate( srcpath.lastIndexOf("nut") + 3 );
+                else
+                    srcpath.truncate( srcpath.lastIndexOf("/os/version.c") );
+           }
+            else
+                m_sourceDir = srcpath;
+            /* Set the value or otherwise the setting box doesn't pick up the new srcpath*/
+            settings.setValue("sourceDirectory", m_sourceDir);
+        }
+        else
+            m_sourceDir = settings.value("sourceDirectory", "").toString();
+
+
+	repositoryFile = m_sourceDir + "/conf/repository.nut";
+
+	m_multipleConfigs = settings.value("settings/multipleconfig").toBool();
+	m_configFileName = settings.value("settings/configFileName").toString();
+
 	m_buildPath = settings.value("buildPath", "nutbld").toString();
 	m_includePath = settings.value("includePath").toStringList();
 	m_installPath = settings.value("installPath").toString();
-	m_sourceDir = settings.value("sourceDirectory", srcpath).toString();
 	m_appDir = settings.value("applicationDirectory", "nutapp").toString();
 	m_targetPlatform = settings.value("targetPlatform").toString();
 
