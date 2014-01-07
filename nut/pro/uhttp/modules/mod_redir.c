@@ -70,9 +70,14 @@ int HttpRegisterRedir(const char *uri, const char *redir, int response)
     for (cur = ISC_LIST_HEAD(locationList); cur; cur = ISC_LIST_NEXT(cur, loc_link)) {
         i = strcasecmp(cur->loc_uri, uri);
         if (i == 0) {
-            i = strcasecmp(cur->loc_redir, redir);
+            /* If uri is equal, override current redirection */
+            free(cur->loc_redir);            /* Clear old redir */
+            cur->loc_redir = strdup(redir);  /* Use new redirect */
+            cur->loc_response = response;    /* Use new response */
+            rc = 0;
+            break;
         }
-        if (i <= 0) {
+        if (i < 0) {
             break;
         }
     }
