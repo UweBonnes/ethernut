@@ -2142,6 +2142,26 @@ nutdev =
         provides = { "OWIBUS_CONTROLLER" },
         sources = { "owibus_uart.c", "owibus_uartif.c"},
     },
+    {
+        name = "nutdev_owibus0uart",
+        brief = "Library compiled time configured OWI bus driver using uart",
+--        requires = { "HW_UART"}, -- definition not yet provided
+        provides = { "OWIBUS_CONTROLLER" },
+        sources = { "owibus_uart.c", "owibus0uart.c"},
+        options =
+        {
+            {
+                macro = "OWIBUS0_HALDUPLEX",
+                brief = "OWIBUS0_HALDUPLEX",
+                description = "Use RX connected internally to TX for OWI Bus 0."..
+                               "Hardware must supports this mode.",
+                requries = { "HW_UART_OWIMODE" },
+                flavor = "boolean",
+                file = "include/cfg/owi.h",
+
+            },
+        }
+    },
 
     --
     -- Character Device Drivers.

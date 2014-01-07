@@ -178,6 +178,8 @@ int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode);
 int OwiGetMode(NUTOWIBUS *bus);
 
+extern NUTOWIBUS owiBus0Uart;
+extern NUTOWIBUS owiBus0Gpio;
 /*@}*/
 
 #endif

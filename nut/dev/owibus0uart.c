@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012/2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -33,57 +33,54 @@
  */
 
 /*!
- * \file dev/owibus_uartif.c
- * \brief Implementation of the One-Wire via Uart, run-time configuered
+ * \file dev/owibus0gpio.c
+ * \brief OWI bus 0 for UART declaration file.
  *
  * \verbatim
  * $Id$
  * \endverbatim
  */
-
-#include <cfg/arch.h>
-#include <stdint.h>
+#include <cfg/owi.h>
 #include <dev/owibus.h>
-#include <dev/owibus_uart.h>
-#include <stdlib.h>
+#include <dev/usartstm32.h>
 
-/*!
- * \brief Register run time configurable One-Wire bus.
- *
- * \param bus         The returned NUTOWIBUS.
- * \param uart        The UART device to use.
- * \param mode        If != 0, requested to connect RX to TX internally,
- *                    multidrive and pull-up TX.
- *
- * \return OWI_SUCCESS on success, a negative value otherwise.
- */
-int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int mode)
+#if defined (OWIBUS0_HALDUPLEX)
+#define OWIBUS0_HALDUPLEX_MODE 1
+#else
+#define OWIBUS0_HALDUPLEX_MODE 0
+#endif
+
+#define OWIBUS0_UART devUsartStm32_2
+
+static NUTOWIINFO_UART owcb0 = {
+    0,
+    0,
+    0
+};
+
+static int Uart_OwiSetup(NUTOWIBUS *bus)
 {
-    NUTOWIINFO_UART *owcb;
     int res;
 
-    if (NutRegisterDevice(uart, 0, 0)) {
+    if (NutRegisterDevice( &OWIBUS0_UART, 0, 0)) {
         return OWI_INVALID_HW;
     }
-    /* Allocate NUTOWIINFO_UART buffer */
-    owcb = calloc(1, sizeof(*owcb));
-    if (owcb == NULL) {
-        return OWI_OUT_OF_MEM;
-    }
-    res = Uart_OwiInit(owcb, uart, mode);
-    if (res) {
-        free(owcb);
+    res = Uart_OwiInit(&owcb0, &OWIBUS0_UART, OWIBUS0_HALDUPLEX_MODE);
+    if (res)
         return res;
-    }
-
-    bus->owibus_info = (uintptr_t) owcb;
-    bus->OwiSetup = 0;
-    bus->OwiTouchReset = Uart_OwiTouchReset;
-    bus->OwiReadBlock = Uart_OwiReadBlock;
-    bus->OwiWriteBlock = Uart_OwiWriteBlock;
-    bus->mode = 0;
-
     return OWI_SUCCESS;
 }
 
-/*@}*/
+/*!
+ * \brief Library compile time configured OWI bus driver for UARTs
+ *
+ */
+ NUTOWIBUS owiBus0Uart = {
+    (uintptr_t )&owcb0,              /*!< \brief OWIBUSBUS::owibus_info */
+    OWI_MODE_NORMAL,    /*!< \brief OWIBUSBUS::mode */
+    Uart_OwiSetup,      /*!< \brief OWIBUSBUS::OwiSetup */
+    Uart_OwiTouchReset, /*!< \brief OWIBUSBUS::OwiTouchReset*/
+    Uart_OwiReadBlock,  /*!< \brief OWIBUSBUS::OwiReadBlock */
+    Uart_OwiWriteBlock  /*!< \brief OWIBUSBUS::OwiWriteBlock */
+ };
+

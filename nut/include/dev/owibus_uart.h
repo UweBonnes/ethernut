@@ -80,6 +80,7 @@ struct _NUTOWIINFO_UART {
 
 typedef struct _NUTOWIINFO_UART NUTOWIINFO_UART;
 
+int Uart_OwiInit(NUTOWIINFO_UART *owcb, NUTDEVICE *uart, int mode);
 int Uart_OwiTouchReset(NUTOWIBUS *bus);
 int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit);
 int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
