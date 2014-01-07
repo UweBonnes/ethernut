@@ -42,6 +42,7 @@
  */
 
 #include <stdint.h>
+#include <sys/timer.h>
 #include <dev/owibus.h>
 
 /*!
@@ -260,8 +261,11 @@ int OWIGetMode(NUTOWIBUS *bus)
  */
 int OwiInit(NUTOWIBUS *bus)
 {
-    if (bus->OwiSetup)
-        return bus->OwiSetup(bus);
+    if (bus->OwiSetup) {
+        int res = bus->OwiSetup(bus);
+        NutSleep(1);
+        return res;
+    }
     else
         return OWI_SUCCESS;
 }
