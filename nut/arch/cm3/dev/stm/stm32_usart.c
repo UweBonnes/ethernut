@@ -543,7 +543,7 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
 static void Stm32UsartInterrupt(void *arg)
 {
     USARTDCB *dcb = (USARTDCB *) arg;
-    uint16_t csr = USARTN_ISR;
+    uint32_t csr = USARTN_ISR;
 
     /* Test for byte received */
     if (csr & USART_ISR_RXNE) {
@@ -720,7 +720,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
  */
 static uint8_t Stm32UsartGetDataBits(void)
 {
-    uint16_t val = USARTn->CR1 & USART_CR1_M;
+    uint32_t val = USARTn->CR1 & USART_CR1_M;
 
     if (val) {
         val = 9;
@@ -741,7 +741,7 @@ static uint8_t Stm32UsartGetDataBits(void)
 static int Stm32UsartSetDataBits(uint8_t bits)
 {
     int rc = 0;
-    uint16_t val = USARTn->CR1;
+    uint32_t val = USARTn->CR1;
 
     switch( bits) {
         case 8:
@@ -775,7 +775,7 @@ static int Stm32UsartSetDataBits(uint8_t bits)
  */
 static uint8_t Stm32UsartGetParity(void)
 {
-    uint16_t val = USARTn->CR1 & (USART_CR1_PCE|USART_CR1_PS);
+    uint32_t val = USARTn->CR1 & (USART_CR1_PCE|USART_CR1_PS);
 
     if (val == (USART_CR1_PCE|USART_CR1_PS))
         val = 1;
@@ -800,7 +800,7 @@ static uint8_t Stm32UsartGetParity(void)
 static int Stm32UsartSetParity(uint8_t mode)
 {
     int rc = 0;
-    uint16_t val = USARTn->CR1 & ~(USART_CR1_PCE|USART_CR1_PS);
+    uint32_t val = USARTn->CR1 & ~(USART_CR1_PCE|USART_CR1_PS);
 
     switch (mode) {
         case 0:
@@ -837,7 +837,7 @@ static int Stm32UsartSetParity(uint8_t mode)
  */
 static uint8_t Stm32UsartGetStopBits(void)
 {
-    uint16_t val = USARTn->CR2 & USART_CR2_STOP;
+    uint32_t val = USARTn->CR2 & USART_CR2_STOP;
 
     if (val == 0) {
         val = 1;
@@ -862,7 +862,7 @@ static uint8_t Stm32UsartGetStopBits(void)
 int Stm32UsartSetStopBits(uint8_t bits)
 {
     int rc = 0;
-    uint16_t val = USARTn->CR2 & ~USART_CR2_STOP;
+    uint32_t val = USARTn->CR2 & ~USART_CR2_STOP;
 
     switch(bits) {
         case 1:
@@ -898,7 +898,7 @@ static uint32_t Stm32UsartGetStatus(void)
 {
     uint32_t rc = 0;
 #if defined(US_MODE_HWHANDSHAKE)
-    uint16_t csr = USARTN_ISR;
+    uint32_t csr = USARTN_ISR;
 #endif
 
     /*
@@ -1288,7 +1288,7 @@ static void Stm32UsartRxStart(void)
  */
 static int Stm32UsartInit(void)
 {
-    uint16_t cr3 = 0;
+    uint32_t cr3 = 0;
 
     /*
      * Register receive and transmit interrupts.
