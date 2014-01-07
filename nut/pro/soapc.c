@@ -178,6 +178,7 @@ static int ReadResultBody(FILE *stream, int avail, SOAP_PROCEDURE *proc)
 
         /* If we are inside an argument, then this is the value. */
         if (arg) {
+            free(arg->arg_val);
             arg->arg_val = strdup(tag->soap_buff);
         }
         /* Now read the tag. */
@@ -213,6 +214,8 @@ static int ReadResultBody(FILE *stream, int avail, SOAP_PROCEDURE *proc)
             }
         }
     }
+    free(tag);
+
     return 0;
 }
 
@@ -252,6 +255,7 @@ static int ReadResult(FILE *stream, SOAP_PROCEDURE *proc)
             }
             rc = ReadResultBody(stream, avail, proc);
         }
+        free(line);
     }
     return rc;
 }

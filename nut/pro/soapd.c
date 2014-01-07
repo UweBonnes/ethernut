@@ -140,6 +140,7 @@ SOAP_PROCEDURE *SoapParseCallRequest(HTTP_STREAM *stream, int avail, SOAP_PROCED
         tag->soap_buff[got] = '\0';
         /* If we are inside an argument, then this is the value. */
         if (arg) {
+            free(arg->arg_val);
             arg->arg_val = strdup(tag->soap_buff);
         }
         /* Now read the tag. */
