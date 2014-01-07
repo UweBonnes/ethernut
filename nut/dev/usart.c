@@ -892,6 +892,26 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
         }
         break;
 
+    case UART_SETOWIMODE:
+        lv = dcb->dcb_modeflags;
+        if (bv) {
+            lv |= USART_MF_OWIHALFDUPLEX;
+        } else {
+            lv &= ~USART_MF_OWIHALFDUPLEX;
+        }
+        rc = (dcb->dcb_set_flow_control) (lv);
+        if (rc == 0) {
+            dcb->dcb_modeflags = lv;
+        }
+        break;
+    case UART_GETOWIMODE:
+        if (dcb->dcb_modeflags & USART_MF_OWIHALFDUPLEX) {
+            *lvp = 1;
+        } else {
+            *lvp = 0;
+        }
+        break;
+
     case UART_SETCLOCKMODE:
         rc = (*dcb->dcb_set_clock_mode) (lv);
         break;

@@ -278,7 +278,9 @@ struct _RINGBUF {
 #define USART_MF_BLOCKREAD      0x0800  /*!< Block read mode enabled */
 #define USART_MF_BLOCKWRITE     0x1000  /*!< Block write mode enabled */
 
-#define USART_MF_FLOWMASK       (USART_MF_XONXOFF| USART_MF_HALFDUPLEX|USART_MF_LOCALECHO|USART_MF_BLOCKREAD|USART_MF_BLOCKWRITE)
+#define USART_MF_OWIHALFDUPLEX  0x2000  /*!< OWI half duplex control. */
+
+#define USART_MF_FLOWMASK       (USART_MF_XONXOFF| USART_MF_HALFDUPLEX|USART_MF_LOCALECHO|USART_MF_BLOCKREAD|USART_MF_BLOCKWRITE| USART_MF_OWIHALFDUPLEX)
 
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */

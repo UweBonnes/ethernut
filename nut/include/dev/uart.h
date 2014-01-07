@@ -531,6 +531,29 @@
  */
 #define UART_GETHDPXMODE        0x0131
 
+/*! \brief UART _ioctl() command code to set physical device to half duplex mode.
+ *
+ * If devive supports, Rx is connected internally to TX, TX is set to multidrive and
+ * TX is pulled up. Ioctl may succeed even when pull-up is not realized.
+ *
+ * The configuration parameter must be a pointer to a uint32_t variable,
+ * which contains the requested half duplex mode, either 0 (disabled) or
+ * 1 (enabled).
+ *
+ * See also \ref UART_GETHDPXMODE.
+ */
+#define UART_SETOWIMODE        0x0132
+
+/*! \brief UART _ioctl() command code to query the OWI halfduplex mode.
+ *
+ * The configuration parameter must be a pointer to a uint32_t variable,
+ * which receives the current half duplex mode, either 0 (disabled) or
+ * 1 (enabled).
+ *
+ * See also \ref UART_SETOWIMODE.
+ */
+#define UART_GETOWIMODE        0x0133
+
 /*!
  * \addtogroup xgUARTStatus
  * \brief UART device status flags,

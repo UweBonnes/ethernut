@@ -1115,6 +1115,10 @@ static uint32_t Stm32UsartGetFlowControl(void)
     else
         rc &= ~USART_MF_BLOCKWRITE;
 #endif
+    if (USARTn->CR3 & USART_CR3_HDSEL)
+        rc |= USART_MF_OWIHALFDUPLEX;
+    else
+        rc &= ~USART_MF_OWIHALFDUPLEX;
 
     return rc;
 }
@@ -1152,6 +1156,32 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
     }
     else if( hdpx_control == 1) {
         hdpx_control = 0;
+    }
+
+    /* Setup half-duplex mode */
+    if (flags & USART_MF_OWIHALFDUPLEX) {
+        Stm32UsartDisable();
+        USARTn->CR1 &= ~USART_CR1_UE;
+        USARTn->CR3 |= USART_CR3_HDSEL;
+        /* Set Alternate function, open drain, Pull up */
+#if defined(__STM32F10x_H)
+        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, CRL, GPIO_CRL_CNF0_0)[TX_GPIO_PIN * 4] = 1;
+#else
+        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, GPIO_PUPDR_PUPDR0_0)[TX_GPIO_PIN * 2] = 1;
+#endif
+        Stm32UsartEnable();
+    }
+    else {
+        Stm32UsartDisable();
+        USARTn->CR1 &= ~USART_CR1_UE;
+        USARTn->CR3 &= ~USART_CR3_HDSEL;
+        /* Set Alternate function, push-pull */
+#if defined(__STM32F10x_H)
+        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, CRL, GPIO_CRL_CNF0_0)[TX_GPIO_PIN * 4] = 0;
+#else
+        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, GPIO_PUPDR_PUPDR0_0)[TX_GPIO_PIN * 2] = 0;
+#endif
+        Stm32UsartEnable();
     }
 
 #if defined( USART_485_CTRL)

@@ -49,6 +49,7 @@ nutarch_cm3_stm32_family =
                 type = "integer",
                 default = 1,
                 requires = { "HW_MCU_STM32" },
+                provides = { "HW_UART_OWIMODE" },
                 file = "include/cfg/arch.h"
             }
         }
