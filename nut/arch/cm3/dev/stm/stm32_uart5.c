@@ -222,6 +222,12 @@ NUTDEVICE devUartStm32_5 = {
 #undef USART_RX_PIN_INV
 #endif
 
+#if defined(USART5_SWAP)
+#define USART_SWAP
+#else
+#undef USART_SWAP
+#endif
+
 #define USARTn      UART5
 #define USARTnBase  UART5_BASE
 #define USARTirqn   UART5_IRQn

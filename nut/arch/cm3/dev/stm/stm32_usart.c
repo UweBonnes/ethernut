@@ -1312,10 +1312,17 @@ static int Stm32UsartInit(void)
     RCC->APB2RSTR &= ~STM_USART_CLK;
 #endif
 
+#if defined(USART_SWAP)
+    /* Configure USART Tx as alternate function input*/
+    GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_PERIPHAL);
+    /* Configure USART Rx as alternate function push-pull*/
+    GpioPinConfigSet( RX_GPIO_PORT, RX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
+#else
     /* Configure USART Tx as alternate function push-pull */
     GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
-    /* Configure USART Rx as input floating */
+    /* Configure USART Rx as alternate function input*/
     GpioPinConfigSet( RX_GPIO_PORT, RX_GPIO_PIN, GPIO_CFG_PERIPHAL);
+#endif
 
 #if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
     /* Configure USART RTS as alternate function push-pull */
@@ -1365,6 +1372,9 @@ static int Stm32UsartInit(void)
 #endif
 #if defined(USART_RX_PIN_INV)
     cr2 |= USART_CR2_RXINV;
+#endif
+#if defined(USART_SWAP)
+    cr2 |= USART_CR2_SWAP;
 #endif
     USARTn->CR2 = cr2;
 

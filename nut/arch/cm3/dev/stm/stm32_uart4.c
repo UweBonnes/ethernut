@@ -250,6 +250,12 @@ NUTDEVICE devUartStm32_4 = {
 #undef USART_RX_PIN_INV
 #endif
 
+#if defined(USART4_SWAP)
+#define USART_SWAP
+#else
+#undef USART_SWAP
+#endif
+
 #define USARTn      UART4
 #define USARTnBase  UART4_BASE
 #define USARTirqn   UART4_IRQn

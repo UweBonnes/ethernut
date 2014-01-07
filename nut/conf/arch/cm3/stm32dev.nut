@@ -534,6 +534,14 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART1_SWAP",
+                brief = "Swap USART1 TX/RX pins",
+                description = "Swap USART1 TX/RX pins",
+                requires = { "HW_GPIO_STM32V2", "STM32F3XX" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART1_HARDWARE_HANDSHAKE",
                 brief = "Hardware Handshake",
                 description = "When selected, the driver will support RTS/CTS hardware handshake.\n"..
@@ -757,6 +765,14 @@ nutarch_cm3_stm32_devices =
                 macro = "USART2_RX_PIN_INV",
                 brief = "USART2 RX Pin inversion",
                 description = "USART2 RX Pin inversion",
+                requires = { "HW_GPIO_STM32V2", "STM32F3XX" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_SWAP",
+                brief = "Swap USART2 TX/RX pins",
+                description = "Swap USART2 TX/RX pins",
                 requires = { "HW_GPIO_STM32V2", "STM32F3XX" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"
@@ -1037,6 +1053,14 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART3_SWAP",
+                brief = "Swap USART3 TX/RX pins",
+                description = "Swap USART3 TX/RX pins",
+                requires = { "HW_GPIO_STM32V2", "STM32F3XX" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART3_CK_PIN",
                 brief = "USART3 CK Pin selection",
                 description = "Choose USART3 CK Pin from PB12(default), PC12 and PD10",
@@ -1291,6 +1315,14 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART4_SWAP",
+                brief = "Swap USART4 TX/RX pins",
+                description = "Swap USART4 TX/RX pins",
+                requires = { "HW_GPIO_STM32V2", "STM32F3XX" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "UART4_HARDWARE_HDX",
                 brief = "Half Duplex Mode",
                 description = "When selected, the driver will be configured for half-duplex mode.\n",
@@ -1473,6 +1505,14 @@ nutarch_cm3_stm32_devices =
                 macro = "USART5_RX_PIN_INV",
                 brief = "USART5 RX Pin inversion",
                 description = "USART5 RX Pin inversion",
+                requires = { "HW_GPIO_STM32V2", "STM32F3XX" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_SWAP",
+                brief = "Swap USART5 TX/RX pins",
+                description = "Swap USART5 TX/RX pins",
                 requires = { "HW_GPIO_STM32V2", "STM32F3XX" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"

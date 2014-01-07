@@ -340,6 +340,12 @@ NUTDEVICE devUsartStm32_2 = {
 #undef USART_RX_PIN_INV
 #endif
 
+#if defined(USART2_SWAP)
+#define USART_SWAP
+#else
+#undef USART_SWAP
+#endif
+
 #define USARTn      USART2
 #define USARTnBase  USART2_BASE
 #define USARTirqn   USART2_IRQn
