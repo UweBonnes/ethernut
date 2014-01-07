@@ -1355,13 +1355,10 @@ static int Stm32UsartInit(void)
      *   USART Communication Init
      */
 
-    /* USART configuration */
-    Stm32UsartSetSpeed(USART_INIT_BAUTRATE);
-    Stm32UsartSetDataBits(8);
-    Stm32UsartSetStopBits(2);
-    Stm32UsartSetParity(0);
-
-    /* Enable additional features */
+    /* Enable additional features.
+     * Most CR2/CR3 bit can only be set with CR1_UE == 0
+     * E.g. Stm32UsartSetSpeed() sets CR1_UE
+     */
 #ifdef USART_HWFLOWCTRL
     /* Enable hardware handshake options */
 #if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
@@ -1381,6 +1378,12 @@ static int Stm32UsartInit(void)
 #endif
 
     USARTn->CR3 = cr3;
+    /* USART configuration */
+    Stm32UsartSetSpeed(USART_INIT_BAUTRATE);
+    Stm32UsartSetDataBits(8);
+    Stm32UsartSetStopBits(2);
+    Stm32UsartSetParity(0);
+
     /* Disable transmitter interrupts as they will
      * be enabled by the TxStart routine */
     USARTn->CR1 &= ~(USART_CR1_TXEIE|USART_CR1_TCIE|USART_CR1_RXNEIE);
