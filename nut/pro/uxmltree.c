@@ -123,19 +123,16 @@ static void UxmlNodeDestroy(UXML_NODE * node)
     UXML_ATTRIB *attr;
 
     if (node) {
-        if (node->xmln_name) {
-            free(node->xmln_name);
-        }
+        free(node->xmln_name);
+#ifndef UXML_IGNORE_CONTENT
+        free(node->xmln_content);
+#endif
         ap = node->xmln_attribs;
         while (ap) {
             attr = ap;
             ap = ap->xmla_next;
-            if (attr->xmla_name) {
-                free(attr->xmla_name);
-            }
-            if (attr->xmla_value) {
-                free(attr->xmla_value);
-            }
+            free(attr->xmla_name);
+            free(attr->xmla_value);
             free(attr);
         }
         free(node);
