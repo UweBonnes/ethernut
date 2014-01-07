@@ -103,7 +103,6 @@ static HANDLE STM32TIM_OWI0_MUTEX;
 #endif
 
 /* Forward declaration */
-static void Stm32Tim_OwiInterrupt(void *arg);
 static int Stm32Tim_OwiSetup(NUTOWIBUS *bus);
 static int Stm32Tim_OwiTouchReset(NUTOWIBUS *bus);
 static int Stm32Tim_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
