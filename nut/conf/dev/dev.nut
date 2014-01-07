@@ -2120,7 +2120,7 @@ nutdev =
                 provides = { "OWI0_PIN" },
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
-                flavor = "booldata",
+                flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
             {
@@ -2130,7 +2130,7 @@ nutdev =
                 requries = { "OWI0_PIN" },
                 type = "enumerated",
                 choices = function() return GetGpioPortIds() end,
-                flavor = "booldata",
+                flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
         }
