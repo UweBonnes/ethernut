@@ -1,3 +1,59 @@
+--
+-- Retrieve Timer with at least two channels.
+--
+function GetStmTwoChannelTimers()
+-- List timers with at least two channels and a seperated interrupt
+-- List of timers with two channels min:
+-- {"", "1", "2", "3", "4", "5", "8", "9", "12", "16", "17", "19"}
+-- TIM1/TIM8/TIM9/TIM12/TIM16/TIM17 with seperated/coupled interrupts on most devices
+-- and so not usable yet
+    if c_is_provided("STM32F10X_LD") then
+        return { "", "2", "3"}
+    end
+    if c_is_provided("STM32F10X_LD_VL") then
+        return { "", "2", "3"}
+    end
+    if c_is_provided("STM32F10X_MD") then
+        return { "", "2", "3", "4"}
+    end
+    if c_is_provided("STM32F10X_MD_VL") then
+        return { "", "2", "3", "4"}
+    end
+    if c_is_provided("STM32F10X_HD") then
+        return { "", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32F10X_HD_VL") then
+        return { "", "2", "3", "4", "5", "12"}
+    end
+    if c_is_provided("STM32F10X_XL") then
+        return { "", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32F10X_CL") then
+        return { "", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32F2x") then
+        return { "", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32F30X") then
+        return { "", "2", "3", "4"}
+    end
+    if c_is_provided("STM32F37X") then
+        return { "", "2", "3", "4", "5", "9", "12", "16", "17", "19" }
+    end
+    if c_is_provided("STM32F4x") then
+        return { "", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32L1XX_MD") then
+        return { "", "2", "3", "4", "9"}
+    end
+    if c_is_provided("STM32L1XX_MDP") then
+        return { "", "2", "3", "4", "5", "9"}
+    end
+    if c_is_provided("STM32L1XX_HD") then
+        return { "", "2", "3", "4", "5", "9"}
+    end
+end
+
 nutarch_cm3_stm32_devices =
 {
     -- ***********************************
@@ -2878,7 +2934,8 @@ nutarch_cm3_stm32_devices =
     --
     {
         name = "nutarch_cm3_stm32_owi",
-        brief = "STM32 OWI with hardware timer, library compile time configured",
+        brief = "STM32 OWI with hardware timer",
+        description = "STM32 OWI with hardware timer, library compile time configured",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY" },
         provides = { "OWIBUS" },
         sources = { "cm3/dev/stm/owibus0stm32tim.c" },
@@ -2905,16 +2962,15 @@ nutarch_cm3_stm32_devices =
                 brief = "Timer for STM32 hardware timer OWI0 bus",
                 description = "Timer used for OWI Bus 0. Requires at least dual channel!",
                 type = "enumerated",
-                choices = { "2", "3", "4", "5" },
+                choices = function() return GetStmTwoChannelTimers() end,
                 file = "include/cfg/owi.h",
             },
             {
                 macro = "STM32TIM_OWI0_CHANNEL",
                 brief = "Channel for STM32 hardware timer OWI0 bus",
-                description = "Channel used for STM32 hardware timer OWI0 bus. Requires at least dual channel!",
+                description = "Channel used for STM32 hardware timer OWI0 bus. Check for Channel 3/4 availability!",
                 type = "enumerated",
                 choices = { "1", "2", "3", "4" },
-                default = "1",
                 file = "include/cfg/owi.h",
             },
             {
