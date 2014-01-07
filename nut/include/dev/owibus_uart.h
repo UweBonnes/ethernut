@@ -1,5 +1,7 @@
+#ifndef _OWI_UART_H_
+#define _OWI_UART_H_
 /*
- * Copyright (C) 2012/2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012/14 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -34,65 +36,55 @@
 
 /*!
  * \file dev/owibus_uartif.c
- * \brief Implementation of the One-Wire via Uart, run-time configuered
+ * \brief Header for the One-Wire API over UART Implementation.
  *
  * \verbatim
  * $Id$
  * \endverbatim
  */
 
-#include <cfg/arch.h>
-#include <stdint.h>
-#include <io.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/timer.h>
-#include <dev/uart.h>
-#include <dev/gpio.h>
-#include <dev/owibus.h>
-#include <dev/owibus_uart.h>
-#include <stdlib.h>
+#include <sys/device.h>
 
 /*!
- * \brief Register run time configurable One-Wire bus.
- *
- * \param bus         The returned NUTOWIBUS.
- * \param uart        The UART device to use.
- *                    powered devices.
- *
- * \return OWI_SUCCESS on success, a negative value otherwise.
+ * \addtogroup xgOwibusUart
  */
-int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart)
-{
+/*@{*/
+
+/*!
+ * \brief Data to send on the UART for the OWI primitives.
+ */
+#define OWI_UART_WRITE_RST  0xf0    /*!< \brief UART data for presence impulse. */
+#define OWI_UART_WRITE_ONE  0xff    /*!< \brief UART data for write '1' and read. */
+#define OWI_UART_WRITE_ZERO 0x00    /*!< \brief UART data for write '0'. */
+
+/*!
+ * \brief Data to expect from the UART for the OWI primitives.
+ */
+#define OWI_UART_READ_ONE   0x01    /*!< \brief UART data received for read '1'. */
+
+/*! * \brief Baud rates to use for OWI primitives.
+ */
+#define OWI_UART_BAUD_RESET 9600    /*!< \brief UART baudrate for presence impulse. */
+#define OWI_UART_BAUD_RWBIT 115200  /*!< \brief UART baudrate for RW bit. */
+
+/*!
+ * \brief OWI runtime control block container.
+ *
+ * This is installed in heap at initialization.
+ */
+struct _NUTOWIINFO_UART {
     int uart_fd;
-    uint32_t timeout = 5;
-    uint32_t stopbits = 2;
-    NUTOWIINFO_UART *owcb;
+    int pp_port;
+    int pp_pin;
+};
 
-    if (NutRegisterDevice(uart, 0, 0)) {
-        return OWI_INVALID_HW;
-    }
-    uart_fd = _open(uart->dev_name, _O_RDWR | _O_BINARY);
-    if (uart_fd == -1) {
-        return OWI_INVALID_HW;
-    }
-    _ioctl(uart_fd, UART_SETREADTIMEOUT, &timeout);
-    _ioctl(uart_fd, UART_SETSTOPBITS, &stopbits);
+typedef struct _NUTOWIINFO_UART NUTOWIINFO_UART;
 
-    owcb = calloc(1, sizeof(*owcb));
-    if (owcb == NULL) {
-        return OWI_OUT_OF_MEM;
-    }
-    owcb->uart_fd = uart_fd;
-    bus->owibus_info = (uintptr_t) owcb;
-    bus->OwiSetup = 0;
-    bus->OwiTouchReset = Uart_OwiTouchReset;
-    bus->OwiReadBlock = Uart_OwiReadBlock;
-    bus->OwiWriteBlock = Uart_OwiWriteBlock;
-    bus->mode = 0;
-
-    return OWI_SUCCESS;
-}
+int Uart_OwiTouchReset(NUTOWIBUS *bus);
+int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit);
+int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
+int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 
 /*@}*/
+
+#endif

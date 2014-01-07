@@ -2135,6 +2135,13 @@ nutdev =
             },
         }
     },
+    {
+        name = "nutdev_owibusuartif",
+        brief = "Run Time configurable OWI bus driver using uart",
+--        requires = { "HW_UART"}, -- definition not yet provided
+        provides = { "OWIBUS_CONTROLLER" },
+        sources = { "owibus_uart.c", "owibus_uartif.c"},
+    },
 
     --
     -- Character Device Drivers.

@@ -1,5 +1,5 @@
-#ifndef _OWI_UART_H_
-#define _OWI_UART_H_
+#ifndef _OWI_UARTIF_H_
+#define _OWI_UARTIF_H_
 /*
  * Copyright (C) 2012 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
@@ -35,53 +35,16 @@
  */
 
 /*!
- * \file dev/owibus_uartif.c
- * \brief Header for the One-Wire API over UART Implementation.
+ * \file dev/owibus_uartif.h
+ * \brief Header for the run-time configurable One-Wire API over UART Implementation.
  *
  * \verbatim
  * $Id$
  * \endverbatim
  */
+#include <dev/owibus.h>
 
-#include <sys/device.h>
-
-/*!
- * \addtogroup xgOwibusUart
- */
-/*@{*/
-
-/*!
- * \brief Data to send on the UART for the OWI primitives.
- */
-#define OWI_UART_WRITE_RST  0xf0    /*!< \brief UART data for presence impulse. */
-#define OWI_UART_WRITE_ONE  0xff    /*!< \brief UART data for write '1' and read. */
-#define OWI_UART_WRITE_ZERO 0x00    /*!< \brief UART data for write '0'. */
-
-/*!
- * \brief Data to expect from the UART for the OWI primitives.
- */
-#define OWI_UART_READ_ONE   0x01    /*!< \brief UART data received for read '1'. */
-
-/*!
- * \brief Baud rates to use for OWI primitives.
- */
-#define OWI_UART_BAUD_RESET 9600    /*!< \brief UART baudrate for presence impulse. */
-#define OWI_UART_BAUD_RWBIT 115200  /*!< \brief UART baudrate for RW bit. */
-
-/*!
- * \brief OWI runtime control block container.
- *
- * This is installed in heap at initialization.
- */
-struct _NUTOWIINFO_UART {
-    int uart_fd;
-    int pp_port;
-    int pp_pin;
-};
-
-typedef struct _NUTOWIINFO_UART NUTOWIINFO_UART;
-
-int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int PARASITIC_PWR_PORT, uint_fast8_t PARASITIC_PWR_PIN);
+int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart);
 
 /*@}*/
 

@@ -46,6 +46,7 @@
 
 #include <cfg/arch.h>
 #include <stdint.h>
+#include <sys/device.h>
 
 /*!
  * \addtogroup xgOwibus
@@ -153,11 +154,7 @@ enum STM32_OWITIMER_PHASES {
 typedef struct _NUTOWIBUS NUTOWIBUS;
 
 #include "owibus_bbif.h"
-#include "owibus_uartif.h"
-
-/* Include possible architecture specific OWI implementation here. */
-#if defined(MCU_STM32)
-#endif
+#include "owibus_uart.h"
 
 /*!
  * \brief The OWIBUS structure.
