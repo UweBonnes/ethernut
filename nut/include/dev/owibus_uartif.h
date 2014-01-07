@@ -44,7 +44,7 @@
  */
 #include <dev/owibus.h>
 
-int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart);
+int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int mode);
 
 /*@}*/
 

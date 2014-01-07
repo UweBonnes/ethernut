@@ -59,16 +59,19 @@
  *
  * \param bus         The returned NUTOWIBUS.
  * \param uart        The UART device to use.
- *                    powered devices.
+ * \param mode        If != 0, requested to connect RX to TX internally,
+ *                    multidrive and pull-up TX.
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart)
+int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart, int mode)
 {
     int uart_fd;
     uint32_t timeout = 5;
     uint32_t stopbits = 2;
     NUTOWIINFO_UART *owcb;
+    int res;
+    uint8_t data[1];
 
     if (NutRegisterDevice(uart, 0, 0)) {
         return OWI_INVALID_HW;
@@ -77,13 +80,21 @@ int NutRegisterOwiBus_Uart(NUTOWIBUS *bus, NUTDEVICE *uart)
     if (uart_fd == -1) {
         return OWI_INVALID_HW;
     }
+    res = _ioctl(uart_fd, UART_SETOWIMODE, &mode);
+    if (res) {
+        _close(uart_fd);
+        return OWI_INVALID_HW;
+    }
+
     _ioctl(uart_fd, UART_SETREADTIMEOUT, &timeout);
     _ioctl(uart_fd, UART_SETSTOPBITS, &stopbits);
-
     owcb = calloc(1, sizeof(*owcb));
     if (owcb == NULL) {
         return OWI_OUT_OF_MEM;
     }
+    /* Empty RX buffer, as pin setup might have caused several
+       transitions on RX */
+    while(_read(uart_fd, data, 1) == 1);
     owcb->uart_fd = uart_fd;
     bus->owibus_info = (uintptr_t) owcb;
     bus->OwiSetup = 0;
