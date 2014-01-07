@@ -37,6 +37,14 @@
 
 #include <string.h>
 
+/* Receiver thread stack size. */
+#ifndef SSDP_RECEIVER_STACK
+#ifndef NUT_THREAD_SSDPSTACK
+#define NUT_THREAD_SSDPSTACK    384
+#endif
+#define SSDP_RECEIVER_STACK (NUT_THREAD_SSDPSTACK * NUT_THREAD_STACK_MULT + NUT_THREAD_STACK_ADD)
+#endif
+
 const char ct_uuid_[] = "uuid:";
 const char ct_upnp_rootdevice[] = "upnp:rootdevice";
 const char ct_239_255_255_250[] = "239.255.255.250";
@@ -77,7 +85,7 @@ int SsdpRegisterListener(SSDP_LISTENER_FUNCTION callback)
 {
     notification_listener = callback;
     if (rx_thread == NULL) {
-        rx_thread = NutThreadCreate("ssdpd", SsdpReceiver, NULL, 4096);
+        rx_thread = NutThreadCreate("ssdpd", SsdpReceiver, NULL, SSDP_RECEIVER_STACK);
     }
     return rx_thread ? 0 : -1;
 }
@@ -86,7 +94,7 @@ int SsdpRegisterResponder(SSDP_RESPONDER_FUNCTION callback)
 {
     search_listener = callback;
     if (rx_thread == NULL) {
-        rx_thread = NutThreadCreate("ssdpd", SsdpReceiver, NULL, 4096);
+        rx_thread = NutThreadCreate("ssdpd", SsdpReceiver, NULL, SSDP_RECEIVER_STACK);
     }
     return rx_thread ? 0 : -1;
 }
