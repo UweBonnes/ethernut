@@ -92,6 +92,7 @@ int main(void)
     int run =0;
     uint8_t raw[2];
     uint8_t diff;
+    uint8_t family;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
@@ -102,9 +103,6 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     fprintf(stdout, banner);
 
-#undef DEF_OWIBUS
-#include <dev/owibus_gpio.h>
-#define DEF_OWIBUS owiBus0Gpio
 
     res = OwiInit(&DEF_OWIBUS);
     if(res)
@@ -124,7 +122,8 @@ int main(void)
     fprintf(stdout, "Hardware ID of first device %08lx%08lx\n",
             (uint32_t)(hid>>32),
             (uint32_t)(hid &0xffffffff));
-    if ((hid & 0xff) != W1_THERM_DS18B20)
+    family = hid & 0xff;
+    if ((family != W1_THERM_DS18B20) && (family != W1_THERM_DS18S20))
     {
         fprintf(stdout, "One-wire device found, but family not handled"
                 "in this example\n");
@@ -154,7 +153,10 @@ int main(void)
         res = OwiReadBlock(&DEF_OWIBUS, raw, 16);
         if (res)
             printf("OwiReadBlock error %d\n", res);
-        xcelsius = (raw[1]<<8 | raw[0]) * (int32_t)625;
+        if (family == W1_THERM_DS18B20 )
+            xcelsius = ((raw[1]<<8) | raw[0]) * (int32_t)625;
+        else
+            xcelsius = ((raw[1]<< 8) | raw[0]) * (int32_t)5000;
         fprintf(stdout, "Run %3d: Temp %ld.%04ld\r",
                 run++, xcelsius/10000, xcelsius%10000);
     }
