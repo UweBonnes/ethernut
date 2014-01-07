@@ -383,6 +383,17 @@ NUTDEVICE devUsartStm32_3 = {
 #undef UART_DMA_RXCHANNEL
 #endif
 
+#if defined(USART3_TX_PIN_INV)
+#define USART_TX_PIN_INV
+#else
+#undef USART_TX_PIN_INV
+#endif
+#if defined(USART3_RX_PIN_INV)
+#define USART_RX_PIN_INV
+#else
+#undef USART_RX_PIN_INV
+#endif
+
 #define USARTn      USART3
 #define USARTnBase  USART3_BASE
 #define USARTirqn   USART3_IRQn

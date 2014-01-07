@@ -1288,6 +1288,7 @@ static void Stm32UsartRxStart(void)
  */
 static int Stm32UsartInit(void)
 {
+    uint32_t cr2 = 0;
     uint32_t cr3 = 0;
 
     /*
@@ -1359,6 +1360,14 @@ static int Stm32UsartInit(void)
      * Most CR2/CR3 bit can only be set with CR1_UE == 0
      * E.g. Stm32UsartSetSpeed() sets CR1_UE
      */
+#if defined(USART_TX_PIN_INV)
+    cr2 |= USART_CR2_TXINV;
+#endif
+#if defined(USART_RX_PIN_INV)
+    cr2 |= USART_CR2_RXINV;
+#endif
+    USARTn->CR2 = cr2;
+
 #ifdef USART_HWFLOWCTRL
     /* Enable hardware handshake options */
 #if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
@@ -1376,8 +1385,8 @@ static int Stm32UsartInit(void)
 #ifdef USART_HARDWARE_HDX
     cr3 |= USART_CR3_HDSEL;
 #endif
-
     USARTn->CR3 = cr3;
+
     /* USART configuration */
     Stm32UsartSetSpeed(USART_INIT_BAUTRATE);
     Stm32UsartSetDataBits(8);

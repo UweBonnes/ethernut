@@ -211,6 +211,17 @@ NUTDEVICE devUartStm32_5 = {
 #undef UART_DMA_RXCHANNEL
 #endif
 
+#if defined(USART5_TX_PIN_INV)
+#define USART_TX_PIN_INV
+#else
+#undef USART_TX_PIN_INV
+#endif
+#if defined(USART5_RX_PIN_INV)
+#define USART_RX_PIN_INV
+#else
+#undef USART_RX_PIN_INV
+#endif
+
 #define USARTn      UART5
 #define USARTnBase  UART5_BASE
 #define USARTirqn   UART5_IRQn

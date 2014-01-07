@@ -239,6 +239,17 @@ NUTDEVICE devUartStm32_4 = {
 #undef UART_DMA_RXCHANNEL
 #endif
 
+#if defined(USART4_TX_PIN_INV)
+#define USART_TX_PIN_INV
+#else
+#undef USART_TX_PIN_INV
+#endif
+#if defined(USART4_RX_PIN_INV)
+#define USART_RX_PIN_INV
+#else
+#undef USART_RX_PIN_INV
+#endif
+
 #define USARTn      UART4
 #define USARTnBase  UART4_BASE
 #define USARTirqn   UART4_IRQn
