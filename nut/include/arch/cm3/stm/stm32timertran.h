@@ -279,7 +279,7 @@
 #define STM32TIMER_AF(port, pin) 3
 #elif defined(MCU_STM32F3)
 /* FIXME: This doesn't map TIM*_BKIN2 */
-#define STM32TIMER_AF(port, pin) ((port == GPIOC_BASE) || (port == GPIOD_BASE)?      4 : \
+#define STM32TIMER_AF(port, pin) ((port == GPIOC_BASE) || (port == GPIOD_BASE))?     4 : \
     (( port == GPIOA_BASE) && (pin ==  0))?                                          9 : \
     (( port == GPIOA_BASE) && (pin == 10))?                                         11 : \
     (( port == GPIOA_BASE) && (pin == 15))?                                          2 : \
