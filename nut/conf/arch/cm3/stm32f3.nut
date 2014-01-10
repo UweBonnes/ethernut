@@ -69,7 +69,7 @@ nutarch_cm3_stm32f3 =
                     "DEV_IRQ_STM32",
                     "HW_DMA1_STM32F1",
                     "HW_DMA2_STM32F1",
-                    "HW_EXTI04_STM32F3",
+                    "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
                     "HW_EXTI1510_STM32",
                     "HW_I2C1_STM32V2",
