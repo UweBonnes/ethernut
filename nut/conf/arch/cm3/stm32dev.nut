@@ -135,9 +135,90 @@ function GetRxUsart4()
 end
 
 --
+-- Retrieve 32 bit Timers.
+--
+function GetStmTimers32bit()
+    if c_is_provided("STM32F2XX") then
+        return { "2", "5"}
+    end
+    if c_is_provided("STM32F30X") then
+        return { "2"}
+    end
+    if c_is_provided("STM32F37X") then
+        return { "2", "5"}
+    end
+    if c_is_provided("STM32F4X") then
+        return { "2", "5"}
+    end
+end
+
+--
 -- Retrieve Timer with at least two channels.
 --
-function GetStmTwoChannelTimers()
+function GetStmTimers2Ch()
+-- List timers with at least two channels
+-- List of all known timers with two channels min:
+-- {"", "1", "2", "3", "4", "5", "8", "9", "12", "16", "17", "19"}
+    if c_is_provided("STM32F10X_LD") then
+        return { "", "1", "2", "3"}
+    end
+    if c_is_provided("STM32F10X_LD_VL") then
+        return { "", "1", "2", "3"}
+    end
+    if c_is_provided("STM32F10X_MD") then
+        return { "", "1", "2", "3", "4"}
+    end
+    if c_is_provided("STM32F10X_MD_VL") then
+        return { "", "1", "2", "3", "4"}
+    end
+    if c_is_provided("STM32F10X_HD") then
+        return { "", "1", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32F10X_HD_VL") then
+        return { "", "1", "2", "3", "4", "5", "12"}
+    end
+    if c_is_provided("STM32F10X_XL") then
+        return { "", "1", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32F10X_CL") then
+        return { "", "1", "2", "3", "4", "5"}
+    end
+    if c_is_provided("STM32F2XX") then
+        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
+    end
+    if c_is_provided("STM32F30X") then
+        return { "", "1", "2", "3", "4", "8", "16", "17"}
+    end
+    if c_is_provided("STM32F37X") then
+        return { "", "2", "3", "4", "5", "9", "12", "16", "17", "19" }
+    end
+    if c_is_provided("STM32F401xx") then
+        return { "", "1", "2", "3", "4", "5", "9"}
+    end
+    if c_is_provided("STM32F40_41xxx") then
+        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
+    end
+    if c_is_provided("STM32F427_437x") then
+        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
+    end
+    if c_is_provided("STM32F429_439x") then
+        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
+    end
+    if c_is_provided("STM32L1XX_MD") then
+        return { "", "2", "3", "4", "9"}
+    end
+    if c_is_provided("STM32L1XX_MDP") then
+        return { "", "2", "3", "4", "5", "9"}
+    end
+    if c_is_provided("STM32L1XX_HD") then
+        return { "", "2", "3", "4", "5", "9"}
+    end
+end
+
+--
+-- Retrieve Timer with at least two channels and available interrupt.
+--
+function GetStmTimers2ChIrq()
 -- List timers with at least two channels and a seperated interrupt
 -- List of timers with two channels min:
 -- {"", "1", "2", "3", "4", "5", "8", "9", "12", "16", "17", "19"}
@@ -167,7 +248,7 @@ function GetStmTwoChannelTimers()
     if c_is_provided("STM32F10X_CL") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F2x") then
+    if c_is_provided("STM32F2XX") then
         return { "", "2", "3", "4", "5"}
     end
     if c_is_provided("STM32F30X") then
@@ -176,7 +257,7 @@ function GetStmTwoChannelTimers()
     if c_is_provided("STM32F37X") then
         return { "", "2", "3", "4", "5", "9", "12", "16", "17", "19" }
     end
-    if c_is_provided("STM32F4x") then
+    if c_is_provided("STM32F4XX") then
         return { "", "2", "3", "4", "5"}
     end
     if c_is_provided("STM32L1XX_MD") then
@@ -416,7 +497,8 @@ nutarch_cm3_stm32_devices =
                 macro = "STM32_QENC32_0_TIMER_ID",
                 brief = "STM32 32Bit Quadrature Encoder Timer ID",
                 description = "Select Timer for 32 bit Quadrature Enoder",
-                choices = { "2", "5" },
+                type = "enumerated",
+                choices = function() return GetStmTimers32bit() end,
                 file = "include/cfg/qenc.h",
             },
             {
@@ -459,6 +541,66 @@ nutarch_cm3_stm32_devices =
                 macro = "STM32_QENC32_0_INVERT",
                 brief = "STM32 qenc32 reverse count direction",
                 description = "STM32 32Bit Quadrature Encoder reverse count direction. Effective exchanges I and Q.",
+                flavor = "booldata",
+                file = "include/cfg/qenc.h",
+            },
+        },
+    },
+     --
+    -- STM32 16bit Timers for Encode
+    --
+    {
+        name = "nutarch_cm3_stm32_qenc16_0",
+        brief = "STM32 32 Bit Quadrature Encoder0 using 16 bit timer",
+        description = "STM32 32Bit Quadrature Encoder 0.",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY"},
+        sources = { "cm3/dev/stm/stm32_qenc16_0.c" },
+        options =
+        {
+            {
+                macro = "STM32_QENC16_0_TIMER_ID",
+                brief = "STM32 32Bit Quadrature Encoder using 16 bit timer Timer ID",
+                description = "Select Timer for 16 bit Quadrature Enoder",
+                type = "enumerated",
+                choices = function() return GetStmTimers2Ch() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC16_0_I_PORT",
+                brief = "STM32 qenc16 I input port",
+                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input port. Can by TI1 or TI2",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC16_0_I_PIN",
+                brief = "STM32 qenc16 I input pin",
+                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input pin. Can by TI1 or TI2",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC16_0_Q_PORT",
+                brief = "STM32 qenc16 Q input port",
+                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input port. Can by TI1 or TI2",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC16_0_Q_PIN",
+                brief = "STM32 qenc16 Q input pin",
+                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input pin. Can by TI1 or TI2",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC16_0_INVERT",
+                brief = "STM32 qenc16 reverse count direction",
+                description = "STM32 32Bit Quadrature Encoder using 16 bit timer reverse count direction. Effective exchanges I and Q.",
                 flavor = "booldata",
                 file = "include/cfg/qenc.h",
             },
@@ -3217,7 +3359,7 @@ nutarch_cm3_stm32_devices =
                 brief = "Timer for STM32 hardware timer OWI0 bus",
                 description = "Timer used for OWI Bus 0. Requires at least dual channel!",
                 type = "enumerated",
-                choices = function() return GetStmTwoChannelTimers() end,
+                choices = function() return GetStmTimers2ChIrq() end,
                 file = "include/cfg/owi.h",
             },
             {
