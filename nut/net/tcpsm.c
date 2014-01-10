@@ -854,7 +854,10 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
      * Block application.
      */
     if (sock->so_state == TCPS_SYN_SENT) {
-        NutEventWait(&sock->so_ac_tq, 0);
+        if (NutEventWait(&sock->so_ac_tq, sock->so_write_to)) {
+            NutTcpAbortSocket(sock, ETIMEDOUT);
+            return -1;
+        }
     }
     if (sock->so_state != TCPS_ESTABLISHED && sock->so_state != TCPS_CLOSE_WAIT) {
         return -1;
@@ -1878,6 +1881,7 @@ int NutTcpInitStateMachine(void)
  */
 int NutTcpAbortSocket(TCPSOCKET * sock, uint16_t last_error)
 {
+    uint8_t current_state = sock->so_state;
     sock->so_last_error = last_error;
     sock->so_retran_time = 0;
     sock->so_time_wait = 0;
@@ -1896,9 +1900,14 @@ int NutTcpAbortSocket(TCPSOCKET * sock, uint16_t last_error)
     NutEventBroadcast(&sock->so_tx_tq);
     NutEventBroadcast(&sock->so_pc_tq);
     NutEventBroadcast(&sock->so_ac_tq);
-    /* Wake up all running selects on this socket */
-    NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
-    NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);
+    /* Check if we had a timeout on NutTcpConnect(). In this case there is no 
+       need for a notification of the select wait queues.
+     */
+    if (!((current_state == TCPS_SYN_SENT) && (last_error == ETIMEDOUT))) {
+        /* Wake up all running selects on this socket */
+        NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
+        NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);
+    }
     return 0;
 }
 

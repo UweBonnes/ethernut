@@ -403,6 +403,10 @@ int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval, int optlen)
  * will be suspended until a connection is successfully established
  * or an error occurs.
  *
+ * If a write timeout is set for this socket, the function will return 
+ * an error, if the connection could not be established before the 
+ * timeout. In this case the last error is set to ETIMEOUT. 
+ *
  * This function is typically used by TCP client applications.
  *
  * \param sock Socket descriptor. This pointer must have been
