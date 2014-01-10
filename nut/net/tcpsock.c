@@ -72,8 +72,6 @@
 #include <net/netdebug.h>
 #endif
 
-#define TICK_RATE   1
-
 /*!
  * \addtogroup xgTcpSocket
  */
@@ -102,11 +100,10 @@ void NutTcpDiscardBuffers(TCPSOCKET * sock)
     }
 }
 
-
 /*!
  * \brief Destroy a previously allocated socket.
  *
- * Remove socket from the socket list and release occupied memory.
+ * Release occupied socket memory.
  *
  * Applications must not call this function. It is automatically called
  * by a timer after the socket has been closed by NutTcpCloseSocket().
@@ -116,38 +113,19 @@ void NutTcpDiscardBuffers(TCPSOCKET * sock)
  */
 void NutTcpDestroySocket(TCPSOCKET * sock)
 {
-    TCPSOCKET *sp;
-    TCPSOCKET *volatile *spp;
-
     //@@@printf ("[%04X] Calling destroy.\n", (u_short) sock);
-
-    /*
-     * Remove socket from the list.
-     */
-    sp = tcpSocketList;
-    spp = &tcpSocketList;
-    while (sp) {
-        if (sp == sock) {
-            *spp = sp->so_next;
-            break;
-        }
-        spp = &sp->so_next;
-        sp = sp->so_next;
-    }
 
     /*
      * Free all memory occupied by the socket.
      */
-    if (sp) {
-        NutTcpDiscardBuffers(sock);
-        if (sock->so_devocnt)
-        {
-            free(sock->so_devobuf);
-            sock->so_devocnt = 0;
-        }
-        memset(sock, 0, sizeof(TCPSOCKET));
-        free(sock);
+    NutTcpDiscardBuffers(sock);
+    if (sock->so_devocnt)
+    {
+        free(sock->so_devobuf);
+        sock->so_devocnt = 0;
     }
+    memset(sock, 0, sizeof(TCPSOCKET));
+    free(sock);
 }
 
 /*!
@@ -175,7 +153,7 @@ TCPSOCKET *NutTcpFindSocket(uint16_t lport, uint16_t rport, uint32_t raddr)
      */
     for (sp = tcpSocketList; sp; sp = sp->so_next) {
         if (sp->so_local_port == lport) {
-            if (sp->so_remote_addr == raddr && sp->so_remote_port == rport && sp->so_state != TCPS_CLOSED) {
+            if (sp->so_remote_addr == raddr && sp->so_remote_port == rport && sp->so_state != TCPS_CLOSED && sp->so_state != TCPS_DESTROY) {
                 sock = sp;
                 break;
             }
@@ -228,8 +206,8 @@ TCPSOCKET *NutTcpCreateSocket(void)
         sock->so_state = TCPS_CLOSED;
 
         /*
-            * Initialize the virtual device interface.
-            */
+         * Initialize the virtual device interface.
+         */
         sock->so_devtype = IFTYP_TCPSOCK;
         sock->so_devread = NutTcpDeviceRead;
         sock->so_devwrite = NutTcpDeviceWrite;
@@ -1057,7 +1035,7 @@ int NutTcpDeviceSelect (TCPSOCKET * sock, int flags, HANDLE *wq, select_cmd_t cm
             rflags |= WQ_FLAG_WRITE;
         }
     }
-    if ((sock->so_state == TCPS_CLOSED) || (sock->so_state == TCPS_CLOSE_WAIT)) {
+    if ((sock->so_state == TCPS_CLOSED) || (sock->so_state == TCPS_CLOSE_WAIT) || (sock->so_state == TCPS_DESTROY)) {
         /* The socket has been closed. Signal for read and write. 
            Send and receive routines will then return EOF.
          */

@@ -119,6 +119,7 @@ static uint_fast8_t tcp_backlog_time[TCP_BACKLOG_MAX];
 
 static size_t tcp_adv_cnt;
 static size_t tcp_adv_max = TCP_WINSIZE;
+static int    tcp_run_gc = 0;
 
 static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb);
 
@@ -565,6 +566,10 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
             NutDelay(5);
 #endif
         } else
+        if (state == TCPS_DESTROY) {
+            /* Change to DESTROY. Socket will be destroyed ASAP */
+            break;
+        } else
             rc = -1;
         break;
 
@@ -588,6 +593,9 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
              */
             sock->so_tx_flags |= SO_ACK | SO_FORCE;
             txf = 1;
+            break;
+        case TCPS_DESTROY:
+            /* Change to DESTROY. Socket will be destroyed ASAP */
             break;
         default:
             rc = -1;
@@ -647,6 +655,9 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
              * FIN and ACK of FIN received.
              */
             break;
+        case TCPS_DESTROY:
+            /* Change to DESTROY. Socket will be destroyed ASAP */
+            break;
         default:
             rc = -1;
             break;
@@ -654,6 +665,10 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
         break;
 
     case TCPS_FIN_WAIT_2:
+        if (state == TCPS_DESTROY) {
+            /* Change to DESTROY. Socket will be destroyed ASAP */
+            break;        
+        } else 
         /*
          * FIN received.
          */
@@ -677,6 +692,10 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
         break;
 
     case TCPS_CLOSING:
+        if (state == TCPS_DESTROY) {
+            /* Change to DESTROY. Socket will be destroyed ASAP */
+            break;        
+        } else     
         /*
          * ACK of FIN received.
          */
@@ -686,11 +705,19 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
         break;
 
     case TCPS_LAST_ACK:
-        rc = -1;
+        if (state == TCPS_DESTROY) {
+            /* Change to DESTROY. Socket will be destroyed ASAP */
+            break;        
+        } else             
+            rc = -1;
         break;
 
     case TCPS_TIME_WAIT:
-        rc = -1;
+        if (state == TCPS_DESTROY) {
+            /* Change to DESTROY. Socket will be destroyed ASAP */
+            break;        
+        } else             
+            rc = -1;
         break;
 
     case TCPS_CLOSED:
@@ -707,10 +734,16 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
             sock->so_tx_flags |= SO_SYN;
             txf = 1;
             break;
+        case TCPS_DESTROY:
+            /* Change to DESTROY. Socket will be destroyed ASAP */
+            break;
         default:
             rc = -1;
             break;
         }
+        break;
+    case TCPS_DESTROY:
+        /* Do nothing, ignore the state change. Socket will be destroyed ASAP */
         break;
     }
 #ifdef NUTDEBUG
@@ -724,6 +757,9 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
 #endif
 
     if (rc == 0) {
+        if (state == TCPS_DESTROY) {
+            tcp_run_gc = 1;
+        }
         sock->so_state = state;
         if (txf && NutTcpOutput(sock, NULL, 0)) {
             if (state == TCPS_SYN_SENT) {
@@ -852,7 +888,7 @@ int NutTcpStateCloseEvent(TCPSOCKET * sock)
         /*
          * No connection yet, immediately destroy the socket.
          */
-        NutTcpDestroySocket(sock);
+        NutTcpStateChange(sock, TCPS_DESTROY);
         break;
 
     case TCPS_SYN_RECEIVED:
@@ -878,6 +914,7 @@ int NutTcpStateCloseEvent(TCPSOCKET * sock)
         sock->so_last_error = EALREADY;
         return -1;
 
+    case TCPS_DESTROY:
     default:
         sock->so_last_error = ENOTCONN;
         return -1;
@@ -1286,7 +1323,7 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
-        NutTcpDestroySocket(sock);
+        NutTcpStateChange(sock, TCPS_DESTROY);
         return;
     }
 
@@ -1359,7 +1396,7 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
-        NutTcpDestroySocket(sock);
+        NutTcpStateChange(sock, TCPS_DESTROY);
         return;
     }
 
@@ -1453,7 +1490,7 @@ static void NutTcpStateClosing(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
-        NutTcpDestroySocket(sock);
+        NutTcpStateChange(sock, TCPS_DESTROY);
         return;
     }
 
@@ -1504,7 +1541,7 @@ static void NutTcpStateLastAck(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
-        NutTcpDestroySocket(sock);
+        NutTcpStateChange(sock, TCPS_DESTROY);
         return;
     }
 
@@ -1528,7 +1565,7 @@ static void NutTcpStateLastAck(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
     NutNetBufFree(nb);
 
     if (sock->so_tx_nxt == sock->so_tx_una) {
-        NutTcpDestroySocket(sock);
+        NutTcpStateChange(sock, TCPS_DESTROY);
     }
 }
 
@@ -1601,14 +1638,46 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
         NutNetBufFree(nb);
         break;
     case TCPS_CLOSED:
+    case TCPS_DESTROY:
         /*
-         * Reject everything while in CLOSED state.
+         * Reject everything while in CLOSED or DESTROY state.
          */
         NutTcpReject(nb);
         break;
     default:
         NutNetBufFree(nb);
         break;
+    }
+}
+
+/*!
+ * \brief Destroy previously allocated socket marked for destroy.
+ *
+ * Remove socket from the socket list and release occupied memory.
+ *
+ * This function is called, if the TCP statemachine is idle
+ */
+void NutTcpGarbadgeCollect(void)
+{
+    TCPSOCKET *sp;
+    TCPSOCKET *volatile *spp;
+    TCPSOCKET *sock;
+
+    /*
+     * Remove socket from the list and free its allocated memory
+     */
+    sp = tcpSocketList;
+    spp = &tcpSocketList;
+    while (sp) {
+        if (sp->so_state == TCPS_DESTROY) {
+            sock = sp;
+            *spp = sp->so_next;
+            sp = sp->so_next;
+            NutTcpDestroySocket(sock);
+            continue;
+        }
+        spp = &sp->so_next;
+        sp = sp->so_next;
     }
 }
 
@@ -1636,9 +1705,13 @@ THREAD(NutTcpSm, arg)
     NutThreadSetPriority(32);
 
     for (;;) {
+        if (tcp_run_gc) {
+            tcp_run_gc = 0;
+            NutTcpGarbadgeCollect();
+        }
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {
             tac = 0;
-
+            
 #if TCP_BACKLOG_MAX
             /* Process backlog timer.
              *
@@ -1677,7 +1750,7 @@ THREAD(NutTcpSm, arg)
                  */
                 if (sock->so_state == TCPS_TIME_WAIT || sock->so_state == TCPS_FIN_WAIT_2) {
                     if (sock->so_time_wait++ >= 9) {
-                        NutTcpDestroySocket(sock);
+                        NutTcpStateChange(sock, TCPS_DESTROY);
                         break;
                     }
                 }

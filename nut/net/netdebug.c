@@ -116,6 +116,8 @@ void NutDumpSockState(FILE * stream, uint8_t state, char * lead, char * trail)
     case TCPS_CLOSED:
         fputs("CLOSED", stream);
         break;
+    case TCPS_DESTROY:
+        fputs("DESTROY", stream);
     default:
         fputs("?UNK?", stream);
         break;
