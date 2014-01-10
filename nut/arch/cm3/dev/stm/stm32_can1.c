@@ -88,7 +88,7 @@
   #define CAN1TX_GPIO_PIN    12
  #endif
 #else /*L1/F2/F3/F4*/
- #if !defined(CAN1_TX_PIN)
+ #if !defined(CANBUS1_TX_PIN)
   #if (CANBUS1_REMAP_CAN == 0)
    #define CAN1TX_GPIO_PORT  NUTGPIO_PORTA
    #define CAN1TX_GPIO_PIN   12
@@ -101,19 +101,19 @@
   #else
    #error "Illegal CANBUS1_REMAP_CAN value"
   #endif
- #elif (CAN1_TX_PIN == 12)
+ #elif (CANBUS1_TX_PIN == 12)
   #define CAN1TX_GPIO_PORT  NUTGPIO_PORTA
   #define CAN1TX_GPIO_PIN   12
- #elif (CAN1_TX_PIN == 9)
+ #elif (CANBUS1_TX_PIN == 9)
   #define CAN1TX_GPIO_PORT     NUTGPIO_PORTB
   #define CAN1TX_GPIO_PIN    9
- #elif (CAN1_TX_PIN == 1)
+ #elif (CANBUS1_TX_PIN == 1)
   #define CAN1TX_GPIO_PORT     NUTGPIO_PORTD
   #define CAN1TX_GPIO_PIN    1
  #else
   #errror "Illegal CAN1 TX value"
  #endif
- #if !defined(CAN1_RX_PIN)
+ #if !defined(CANBUS1_RX_PIN)
   #if (CANBUS1_REMAP_CAN == 0)
    #define CAN1RX_GPIO_PORT  NUTGPIO_PORTA
    #define CAN1RX_GPIO_PIN   11
@@ -126,13 +126,13 @@
   #else
    #error "Illegal CANBUS1_REMAP_CAN value"
   #endif
- #elif (CAN1_RX_PIN == 11)
+ #elif (CANBUS1_RX_PIN == 11)
   #define CAN1RX_GPIO_PORT  NUTGPIO_PORTA
   #define CAN1RX_GPIO_PIN   11
- #elif (CAN1_RX_PIN == 8)
+ #elif (CANBUS1_RX_PIN == 8)
   #define CAN1RX_GPIO_PORT     NUTGPIO_PORTB
   #define CAN1RX_GPIO_PIN    8
- #elif (CAN1_RX_PIN == 0)
+ #elif (CANBUS1_RX_PIN == 0)
   #define CAN1RX_GPIO_PORT     NUTGPIO_PORTD
   #define CAN1RX_GPIO_PIN    0
  #else

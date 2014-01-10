@@ -76,7 +76,7 @@
   #define CAN2TX_GPIO_PIN    13
  #endif
 #else /*L1/F2/F4*/
- #if !defined(CAN2_TX_PIN)
+ #if !defined(CANBUS2TX_PIN)
   #if (CANBUS2_REMAP_CAN == 0)
    #define CAN2TX_GPIO_PIN   13
   #elif (CANBUS2_REMAP_CAN == 1)
@@ -84,14 +84,14 @@
   #else
    #error "Illegal CANBUS2_REMAP_CAN value"
   #endif
- #elif (CAN2_TX_PIN == 13)
+ #elif (CANBUS2TX_PIN == 13)
   #define CAN2TX_GPIO_PIN   13
- #elif (CAN2_TX_PIN == 6)
+ #elif (CANBUS2TX_PIN == 6)
   #define CAN2TX_GPIO_PIN    6
  #else
   #errror "Illegal CAN2 TX value"
  #endif
- #if !defined(CAN2_RX_PIN)
+ #if !defined(CANBUS2RX_PIN)
   #if (CANBUS2_REMAP_CAN == 0)
    #define CAN2RX_GPIO_PIN   12
   #elif (CANBUS2_REMAP_CAN == 1)
@@ -99,9 +99,9 @@
   #else
    #error "Illegal CANBUS2_REMAP_CAN value"
   #endif
- #elif (CAN2_RX_PIN == 12)
+ #elif (CANBUS2RX_PIN == 12)
   #define CAN2RX_GPIO_PIN   12
- #elif (CAN2_RX_PIN == 5)
+ #elif (CANBUS2RX_PIN == 5)
   #define CAN2RX_GPIO_PIN    5
  #else
   #errror "Illegal CAN2 RX value"

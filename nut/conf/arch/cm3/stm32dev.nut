@@ -2571,9 +2571,28 @@ nutarch_cm3_stm32_devices =
                               "Choice 0: CAN_RX PA11 CAN_TX PA12\n"..
                               "Choice 1: CAN_RX PB8  CAN_TX PB9\n"..
                               "Choice 2: CAN_RX PD0  CAN_TX PD1\n",
+                requires = { "HW_GPIO_STM32V1" },
                 default = "0",
                 type = "enumerated",
                 choices = { "0", "1", "2" },
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "CANBUS1_TX_PIN",
+                brief = "CAN1 TX Pin selection",
+                description = "Choose CAN1 TX Pin, Default: PA12",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "12", "9", "1" },
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "CANBUS1_RX_PIN",
+                brief = "CAN1 RX Pin selection",
+                description = "Choose CAN1 RX Pin, Default: PA11",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "11", "8", "0" },
                 file = "include/cfg/can_dev.h"
             }
         }
@@ -2596,9 +2615,28 @@ nutarch_cm3_stm32_devices =
                 description = "This CAN bus can be internally connected to two sets of pins.\n\n"..
                               "Choice 0: CAN_RX PB12 CAN_TX PB13\n"..
                               "Choice 1: CAN_RX PB5  CAN_TX PB6\n",
+                requires = { "HW_GPIO_STM32V1" },
                 default = "0",
                 type = "enumerated",
                 choices = { "0", "1" },
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "CANBUS2_TX_PIN",
+                brief = "CAN2 TX Pin selection",
+                description = "Choose CAN2 TX Pin, Default: PB13",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "13", "6" },
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "CANBUS2_RX_PIN",
+                brief = "CAN2 RX Pin selection",
+                description = "Choose CAN2 RX Pin, Default: PB12",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "12", "5" },
                 file = "include/cfg/can_dev.h"
             }
         }
