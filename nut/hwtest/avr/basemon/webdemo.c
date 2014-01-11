@@ -202,6 +202,9 @@ static int ShowSockets(FILE * stream, REQUEST * req)
         case TCPS_CLOSED:
             fputs("CLOSED", stream);
             break;
+        case TCPS_DESTROY:
+            fputs("DESTROY", stream);
+            break;
         default:
             fputs("?UNK?", stream);
             break;

@@ -316,6 +316,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
         "LASTACK",
         "FINWAIT2",
         "TIMEWAIT",
+        "DESTROY",
         "?"
     };
     extern TCPSOCKET *tcpSocketList;
