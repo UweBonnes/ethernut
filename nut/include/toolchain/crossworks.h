@@ -1,7 +1,7 @@
 #ifndef _TOOLCHAIN_CROSSWORKS_H_
 #define _TOOLCHAIN_CROSSWORKS_H_
 /*
- * Copyright (C) 2011 by Michael Fischer
+ * Copyright (C) 2011-2014 by Michael Fischer
  *
  * All rights reserved.
  *
@@ -63,6 +63,18 @@ char *strdup(const char *str);
  */
 #define asm __asm__
 
+/*
+ * Define for __BEGIN_DECLS and __END_DECLS
+ */
+#ifdef  __cplusplus
+# define __BEGIN_DECLS  extern "C" {
+# define __END_DECLS    }
+#else
+# define __BEGIN_DECLS
+# define __END_DECLS
 #endif
 
-#endif
+#endif /* __ASSEMBLER__ */ 
+
+#endif /* _TOOLCHAIN_CROSSWORKS_H_ */
+/*** EOF ***/
