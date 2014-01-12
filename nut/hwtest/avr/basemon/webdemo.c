@@ -164,6 +164,9 @@ static int ShowSockets(FILE * stream, REQUEST * req)
 
     fputs_P(head_P, stream);
 
+    /* TODO: Its a bad idea to loop through the socket list while there are scheduling points in this loop.
+             It may lead to a race condition.
+     */
     NutEnterCritical();
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
         fprintf_P(stream, fmt1_P, (unsigned int)ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
