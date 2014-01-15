@@ -110,6 +110,18 @@ nutarch_cm3_lpc17xx_devices =
         sources = { "cm3/dev/nxp/lpc17xx_gpdma.c"}
     },
     --
+    -- LPC17xx SSP Controller 0, 1, 2
+    --
+    {
+        name = "nutarch_cm3_lpc176x_ssp",
+        brief = "SSP Bus 0, 1, (2)",
+        description = "LPC176x SSP-SPI driver, currently implemented as polling driver \n"..
+                      "without interrupt or dma usage\n",
+        requires = { "HW_SSP_LPC17xx" },
+        provides = { "SPIBUS_CONTROLLER" },
+        sources = { "cm3/dev/nxp/lpc17xx_ssp.c" },
+    },
+    --
     -- LPC17xx EMAC
     --
     {
@@ -253,6 +265,33 @@ nutarch_cm3_lpc17xx_devices =
                 brief = "I2C 2 Availability",
                 description = "I2C 2 Availability",
                 requires = { "HW_I2C2_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SSP0_LPC17xx",
+                brief = "SSP0 Availability",
+                description = "SSP0 Availability",
+                requires = { "HW_SSP0_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SSP1_LPC17xx",
+                brief = "SSP1 Availability",
+                description = "SSP1 Availability",
+                requires = { "HW_SSP1_LPC17xx" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_SSP2_LPC17xx",
+                brief = "SSP2 Availability",
+                description = "SSP2 Availability",
+                requires = { "HW_SSP2_LPC17xx" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
