@@ -74,12 +74,6 @@
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <dev/hwtimer_stm32.h>
 
-static uint16_t stm32_qenc16_0_last_value;
-static  int32_t stm32_qenc16_0_total_value;
-
-#define QENC16_LAST_VALUE  stm32_qenc16_0_last_value
-#define QENC16_TOTAL_VALUE stm32_qenc16_0_total_value
-
 /* Only compile code if needed defines are given*/
 #if defined(STM32_QENC16_0_I_PORT) && defined(STM32_QENC16_0_I_PIN) &&\
     defined(STM32_QENC16_0_Q_PORT) && defined(STM32_QENC16_0_Q_PIN) &&\
@@ -114,6 +108,12 @@ static  int32_t stm32_qenc16_0_total_value;
 #define STM32_QENC16_RST   STM32TIMER_RST
 #define STM32_QENC16_I_AF  STM32TIMER_AF(STM32_QENC16_I_PORT, STM32_QENC16_I_PIN)
 #define STM32_QENC16_Q_AF  STM32TIMER_AF(STM32_QENC16_Q_PORT, STM32_QENC16_Q_PIN)
+
+static uint16_t stm32_qenc16_0_last_value;
+static  int32_t stm32_qenc16_0_total_value;
+
+#define QENC16_LAST_VALUE  stm32_qenc16_0_last_value
+#define QENC16_TOTAL_VALUE stm32_qenc16_0_total_value
 
 #endif
 
