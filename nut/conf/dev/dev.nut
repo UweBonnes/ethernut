@@ -2245,6 +2245,15 @@ nutdev =
     },
 
     {
+        name = "nutdev_spi_lcd_st7565r",
+        brief = "ST7565R / C12832A1Z LCD Controller framebuffer driver",
+        description = "LCD framebuffer driver for LCD C12832A1Z with ST7565R controller."..
+                      "Such an LCD display is e.g. used on the MBED application board.",
+        sources = { "spi_lcd_st7565r.c" },
+        requires = { "SPIBUS_CONTROLLER", "HW_GPIO" },
+    },    
+
+    {
         name = "nutdev_spi_vscodec0",
         brief = "VLSI Audio Codec",
         description = "Early release tested with VS1053B on SAM7SE.",
