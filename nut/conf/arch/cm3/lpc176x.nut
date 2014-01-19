@@ -118,6 +118,7 @@ nutarch_cm3_lpc176x =
         brief = "LPC175x / LPC176x GPIO",
         description = "Generic port I/O API.",
         requires = { "HW_GPIO_LPC176x" },
+        provides = { "HW_GPIO" },
         sources =
         {
             "cm3/dev/nxp/lpc176x_gpio.c",
