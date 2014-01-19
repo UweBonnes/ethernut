@@ -711,7 +711,7 @@ static int St7565rInit(NUTDEVICE * dev)
 	rc |= St7565rWriteCmd(node, ST7565R_CMD_BOOSTER_RATIO_2X_3X_4X);
 
 	/* Set contrast to min value */
-	rc |= St7565rSetContrast(dev, ST7565R_CONTRAST_MIN);
+	rc |= St7565rSetContrast(dev, ST7565R_CONTRAST_MAX);
 
     rc |= St7565rSetDisplayStartLineAddress(dev, 0);
     
