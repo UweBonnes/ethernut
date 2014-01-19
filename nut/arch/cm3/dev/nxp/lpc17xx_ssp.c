@@ -69,7 +69,6 @@
 #define SSP0BUS_MOSI_PORT NUTGPIO_PORT0
 
 #define SSP0BUS_SCK_PIN  15
-#define SSP0BUS_SSEL_PIN 16
 #define SSP0BUS_MISO_PIN 17
 #define SSP0BUS_MOSI_PIN 18
 
@@ -82,7 +81,6 @@
 #define SSP1BUS_MOSI_PORT NUTGPIO_PORT0
 
 #define SSP1BUS_SCK_PIN   7
-#define SSP1BUS_SSEL_PIN  6
 #define SSP1BUS_MISO_PIN  8
 #define SSP1BUS_MOSI_PIN  9
 
@@ -92,51 +90,47 @@
 
 #elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
 
-#define SSP0BUS_SCK_PORT  NUTGPIO_PORT0
-#define SSP0BUS_MISO_PORT NUTGPIO_PORT0
-#define SSP0BUS_MOSI_PORT NUTGPIO_PORT0
+#define SSP0BUS_SCK_PORT  NUTGPIO_PORT2
+#define SSP0BUS_MISO_PORT NUTGPIO_PORT2
+#define SSP0BUS_MOSI_PORT NUTGPIO_PORT2
 
-#define SSP0BUS_SCK_PIN  15
-#define SSP0BUS_SSEL_PIN 16
-#define SSP0BUS_MISO_PIN 17
-#define SSP0BUS_MOSI_PIN 18
+#define SSP0BUS_SCK_PIN  22
+#define SSP0BUS_MISO_PIN 26
+#define SSP0BUS_MOSI_PIN 27
 
 #define SSP0BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
 #define SSP0BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL2)
 #define SSP0BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
 
-#define SSP1BUS_SCK_PORT  NUTGPIO_PORT0
-#define SSP1BUS_MISO_PORT NUTGPIO_PORT0
-#define SSP1BUS_MOSI_PORT NUTGPIO_PORT0
+#define SSP1BUS_SCK_PORT  NUTGPIO_PORT4
+#define SSP1BUS_MISO_PORT NUTGPIO_PORT4
+#define SSP1BUS_MOSI_PORT NUTGPIO_PORT4
 
-#define SSP1BUS_SCK_PIN   7
-#define SSP1BUS_SSEL_PIN  6
-#define SSP1BUS_MISO_PIN  8
-#define SSP1BUS_MOSI_PIN  9
+#define SSP1BUS_SCK_PIN   20
+#define SSP1BUS_MISO_PIN  22
+#define SSP1BUS_MOSI_PIN  23
 
-#define SSP1BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
-#define SSP1BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL2)
-#define SSP1BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+#define SSP1BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL3)
+#define SSP1BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL3)
+#define SSP1BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL3)
 
 #if defined(LPC_SSP2_BASE)
 
-#define SSP2BUS_SCK_PORT  NUTGPIO_PORT0
-#define SSP2BUS_MISO_PORT NUTGPIO_PORT0
-#define SSP2BUS_MOSI_PORT NUTGPIO_PORT0
+#define SSP2BUS_SCK_PORT  NUTGPIO_PORT1
+#define SSP2BUS_MISO_PORT NUTGPIO_PORT1
+#define SSP2BUS_MOSI_PORT NUTGPIO_PORT1
 
-#define SSP2BUS_SCK_PIN   7
-#define SSP2BUS_SSEL_PIN  6
-#define SSP2BUS_MISO_PIN  8
-#define SSP2BUS_MOSI_PIN  9
+#define SSP2BUS_SCK_PIN   0
+#define SSP2BUS_MISO_PIN  4
+#define SSP2BUS_MOSI_PIN  1
 
-#define SSP2BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
-#define SSP2BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL2)
-#define SSP2BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
-
-#endif
+#define SSP2BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL4)
+#define SSP2BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL4)
+#define SSP2BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL4)
 
 #endif
 
+#endif
 
 static int  Lpc17xxSspSetup       (NUTSPINODE * node);
 static int  Lpc17xxSspBusNodeInit (NUTSPINODE * node);
@@ -144,7 +138,6 @@ static int  Lpc17xxSspBusSelect   (NUTSPINODE * node, uint32_t tmo);
 static int  Lpc17xxSspBusDeselect (NUTSPINODE * node);
 static int  Lpc17xxSspBusTransfer (NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
 
-// TODO: Add a mutex for the bus access
 
 NUTSPIBUS spiBus0Lpc17xxSsp = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
@@ -256,8 +249,6 @@ static int Lpc17xxSspBusSelect(NUTSPINODE * node, uint32_t tmo)
         errno = EIO;
     } else {
         LPC_SSP_TypeDef *sspreg = node->node_stat;
-
-        // TODO: Avoid glitches, e.g. by deactivating the I/O lines 
 
         /* If the mode update bit is set, then update our shadow registers. */
         if (node->node_mode & SPI_MODE_UPDATE) {
