@@ -37,6 +37,7 @@
  * \endverbatim
  */
 
+#include <cfg/arch.h>
 #include <sys/timer.h>
 #include <sys/nutdebug.h>
 #include <dev/spibus.h>
@@ -45,10 +46,23 @@
 #include <arch/cm3.h>
 #include <arch/cm3/nxp/mach/lpc_sc.h>
 #include <arch/cm3/nxp/mach/lpc_ssp.h>
+#if defined(MCU_LPC176x)
+#include <arch/cm3/nxp/lpc176x.h>
 #include <arch/cm3/nxp/lpc176x_clk.h>
+#elif defined(MCU_LPC177x_8x)
+#include <arch/cm3/nxp/lpc177x_8x.h>
+#include <arch/cm3/nxp/lpc177x_8x_clk.h>
+#elif defined(MCU_LPC407x_8x)
+#include <arch/cm3/nxp/lpc407x_8x.h>
+#include <arch/cm3/nxp/lpc407x_8x_clk.h>
+#else
+#warning "Unknown LPC familiy"
+#endif
 
 #include <errno.h>
 #include <stdlib.h>
+
+#if defined(MCU_LPC176x)
 
 #define SSP0BUS_SCK_PORT  NUTGPIO_PORT0
 #define SSP0BUS_MISO_PORT NUTGPIO_PORT0
@@ -75,6 +89,54 @@
 #define SSP1BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
 #define SSP1BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL2)
 #define SSP1BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+
+#elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
+
+#define SSP0BUS_SCK_PORT  NUTGPIO_PORT0
+#define SSP0BUS_MISO_PORT NUTGPIO_PORT0
+#define SSP0BUS_MOSI_PORT NUTGPIO_PORT0
+
+#define SSP0BUS_SCK_PIN  15
+#define SSP0BUS_SSEL_PIN 16
+#define SSP0BUS_MISO_PIN 17
+#define SSP0BUS_MOSI_PIN 18
+
+#define SSP0BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+#define SSP0BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL2)
+#define SSP0BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+
+#define SSP1BUS_SCK_PORT  NUTGPIO_PORT0
+#define SSP1BUS_MISO_PORT NUTGPIO_PORT0
+#define SSP1BUS_MOSI_PORT NUTGPIO_PORT0
+
+#define SSP1BUS_SCK_PIN   7
+#define SSP1BUS_SSEL_PIN  6
+#define SSP1BUS_MISO_PIN  8
+#define SSP1BUS_MOSI_PIN  9
+
+#define SSP1BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+#define SSP1BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL2)
+#define SSP1BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+
+#if defined(LPC_SSP2_BASE)
+
+#define SSP2BUS_SCK_PORT  NUTGPIO_PORT0
+#define SSP2BUS_MISO_PORT NUTGPIO_PORT0
+#define SSP2BUS_MOSI_PORT NUTGPIO_PORT0
+
+#define SSP2BUS_SCK_PIN   7
+#define SSP2BUS_SSEL_PIN  6
+#define SSP2BUS_MISO_PIN  8
+#define SSP2BUS_MOSI_PIN  9
+
+#define SSP2BUS_SCK_PIN_CFG  (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+#define SSP2BUS_MISO_PIN_CFG (GPIO_CFG_PERIPHERAL2)
+#define SSP2BUS_MOSI_PIN_CFG (GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHERAL2)
+
+#endif
+
+#endif
+
 
 static int  Lpc17xxSspSetup       (NUTSPINODE * node);
 static int  Lpc17xxSspBusNodeInit (NUTSPINODE * node);
@@ -137,7 +199,6 @@ NUTSPIBUS spiBus2Lpc17xxSsp = {
  */
 static int Lpc17xxSspChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 {
-    GpioPinConfigSet(cs / 32, cs % 32, GPIO_CFG_OUTPUT);
     GpioPinSet(cs / 32, cs % 32, hi);
     return 0;
 }
@@ -196,53 +257,18 @@ static int Lpc17xxSspBusSelect(NUTSPINODE * node, uint32_t tmo)
     } else {
         LPC_SSP_TypeDef *sspreg = node->node_stat;
 
-        /* Dectivate the IO Pins to avoid glitches*/
-        if (node->node_bus->bus_base == LPC_SSP0_BASE) {
-            SysCtlPeripheralClkEnable (CLKPWR_PCONP_PCSSP0);
-            GpioPinConfigSet (SSP0BUS_SCK_PORT,  SSP0BUS_SCK_PIN,  GPIO_CFG_DISABLED);  // SCK
-            GpioPinConfigSet (SSP0BUS_MISO_PORT, SSP0BUS_MISO_PIN, GPIO_CFG_DISABLED);  // MISO
-            GpioPinConfigSet (SSP0BUS_MOSI_PORT, SSP0BUS_MOSI_PIN, GPIO_CFG_DISABLED);  // MOSI
-        } else if (node->node_bus->bus_base == LPC_SSP1_BASE) {
-            SysCtlPeripheralClkEnable (CLKPWR_PCONP_PCSSP1);
-            GpioPinConfigSet (SSP1BUS_SCK_PORT,  SSP1BUS_SCK_PIN,  GPIO_CFG_DISABLED);  // SCK
-            GpioPinConfigSet (SSP1BUS_MISO_PORT, SSP1BUS_MISO_PIN, GPIO_CFG_DISABLED);  // MISO
-            GpioPinConfigSet (SSP1BUS_MOSI_PORT, SSP1BUS_MOSI_PIN, GPIO_CFG_DISABLED);  // MOSI
-        } 
-#if defined(LPC_SSP2_BASE)
-        else if (node->node_bus->bus_base == LPC_SSP2_BASE) {
-            SysCtlPeripheralClkEnable (CLKPWR_PCONP_PCSSP2);
-            GpioPinConfigSet (SSP2BUS_SCK_PORT,  SSP2BUS_SCK_PIN,  GPIO_CFG_DISABLED);  // SCK
-            GpioPinConfigSet (SSP2BUS_MISO_PORT, SSP2BUS_MISO_PIN, GPIO_CFG_DISABLED);  // MISO
-            GpioPinConfigSet (SSP2BUS_MOSI_PORT, SSP2BUS_MOSI_PIN, GPIO_CFG_DISABLED);  // MOSI
-        }
-#endif
+        // TODO: Avoid glitches, e.g. by deactivating the I/O lines 
+
         /* If the mode update bit is set, then update our shadow registers. */
         if (node->node_mode & SPI_MODE_UPDATE) {
             Lpc17xxSspSetup(node);
         }
 
         /* Set SPI mode. */
-        base->CR0 = sspreg->CR0;
-        base->CR1 = sspreg->CR1;
+        base->CR0  = sspreg->CR0;
+        base->CR1  = sspreg->CR1;
         base->CPSR = sspreg->CPSR;
-
-        if (node->node_bus->bus_base == LPC_SSP0_BASE) {
-            GpioPinConfigSet(SSP0BUS_SCK_PORT,  SSP0BUS_SCK_PIN,  SSP0BUS_SCK_PIN_CFG);   // SCK
-            GpioPinConfigSet(SSP0BUS_MISO_PORT, SSP0BUS_MISO_PIN, SSP0BUS_MISO_PIN_CFG);  // MISO
-            GpioPinConfigSet(SSP0BUS_MOSI_PORT, SSP0BUS_MOSI_PIN, SSP0BUS_MOSI_PIN_CFG);  // MOSI
-        } else if (node->node_bus->bus_base == LPC_SSP1_BASE) {
-            GpioPinConfigSet(SSP1BUS_SCK_PORT,  SSP1BUS_SCK_PIN,  SSP1BUS_SCK_PIN_CFG);   // SCK
-            GpioPinConfigSet(SSP1BUS_MISO_PORT, SSP1BUS_MISO_PIN, SSP1BUS_MISO_PIN_CFG);  // MISO
-            GpioPinConfigSet(SSP1BUS_MOSI_PORT, SSP1BUS_MOSI_PIN, SSP1BUS_MOSI_PIN_CFG);  // MOSI
-        } 
-#if defined(LPC_SSP2_BASE)
-        else if (node->node_bus->bus_base == LPC_SSP2_BASE) {
-            GpioPinConfigSet(SSP2BUS_SCK_PORT,  SSP2BUS_SCK_PIN,  SSP2BUS_SCK_PIN_CFG);   // SCK
-            GpioPinConfigSet(SSP2BUS_MISO_PORT, SSP2BUS_MISO_PIN, SSP2BUS_MISO_PIN_CFG);  // MISO
-            GpioPinConfigSet(SSP2BUS_MOSI_PORT, SSP2BUS_MOSI_PIN, SSP2BUS_MOSI_PIN_CFG);  // MOSI
-        }
-#endif
-        
+      
         /* Finally activate the node's chip select. */
         rc = Lpc17xxSspChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) != 0);
         if (rc) {
@@ -252,7 +278,6 @@ static int Lpc17xxSspBusSelect(NUTSPINODE * node, uint32_t tmo)
     }
     return rc;
 }
-
 
 /*!
  * \brief Update SSP shadow registers.
@@ -264,7 +289,11 @@ static int Lpc17xxSspBusSelect(NUTSPINODE * node, uint32_t tmo)
 static int Lpc17xxSspSetup(NUTSPINODE * node)
 {
     uint32_t clk;
-    uint32_t clkdiv;
+
+    uint32_t prescale;
+    uint32_t cr0_div;
+    uint32_t cmp_clk;
+    
     LPC_SSP_TypeDef *sspreg;
 
     NUTASSERT(node != NULL);
@@ -288,6 +317,7 @@ static int Lpc17xxSspSetup(NUTSPINODE * node)
 
     clk = NutClockGet(NUT_HWCLK_PCLK);
 
+#if defined(MCU_LPC176x)
     if (node->node_bus->bus_base == LPC_SSP0_BASE) {
         clk /= Lpc176x_PclkDivGet(CLKPWR_PCLKSEL_SSP0);
     } else if (node->node_bus->bus_base == LPC_SSP1_BASE) {
@@ -298,26 +328,35 @@ static int Lpc17xxSspSetup(NUTSPINODE * node)
         clk /= Lpc176x_PclkDivGet(CLKPWR_PCLKSEL_SSP2);
     }
 #endif
-    
-    /* Calculate the SSP clock divider. Avoid rounding errors. */
-    clkdiv = (clk + node->node_rate - 1) / node->node_rate;
+#endif    
 
-    /* The divider value minimum is 2. */
-    if (clkdiv < 2) {
-        clkdiv = 2;
-    }
-    /* The divider value maximum is 255. */
-    else if (clkdiv > 255) {
-        clkdiv = 255;
-    }
+	/* Find closest divider to get at or under the target frequency.
+	   Use smallest prescale possible and rely on the divider to get
+	   the closest target frequency */
+	cr0_div = 0;
+	cmp_clk = 0xFFFFFFFF;
+	prescale = 2;
+	while (cmp_clk > node->node_rate)
+	{
+		cmp_clk = clk / ((cr0_div + 1) * prescale);
+		if (cmp_clk > node->node_rate)
+		{
+			cr0_div++;
+			if (cr0_div > 0xFF)
+			{
+				cr0_div = 0;
+				prescale += 2;
+			}
+		}
+	}
 
-    /* must be even */
-    clkdiv &= 0xfe;
-
-    sspreg->CPSR = clkdiv;
+    /* Write computed prescaler and divider back to register */
+    sspreg->CR0 &= ~SSP_CR0_SCR_MSK;
+    sspreg->CR0 |= (cr0_div << SSP_CR0_SCR_LSB) & SSP_CR0_SCR_MSK;
+    sspreg->CPSR = prescale & 0xFF;
 
     /* Update interface parameters. */
-    node->node_rate = clk / clkdiv;
+    node->node_rate = (clk / prescale) / (cr0_div + 1);
     node->node_mode &= ~SPI_MODE_UPDATE;
 
     return 0;
@@ -342,6 +381,24 @@ static int Lpc17xxSspBusNodeInit(NUTSPINODE * node)
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
 
+    if (node->node_bus->bus_base == LPC_SSP0_BASE) {   
+        GpioPinConfigSet(SSP0BUS_SCK_PORT,  SSP0BUS_SCK_PIN,  SSP0BUS_SCK_PIN_CFG);   // SCK
+        GpioPinConfigSet(SSP0BUS_MISO_PORT, SSP0BUS_MISO_PIN, SSP0BUS_MISO_PIN_CFG);  // MISO
+        GpioPinConfigSet(SSP0BUS_MOSI_PORT, SSP0BUS_MOSI_PIN, SSP0BUS_MOSI_PIN_CFG);  // MOSI
+    } else if (node->node_bus->bus_base == LPC_SSP1_BASE) {      
+        GpioPinConfigSet(SSP1BUS_SCK_PORT,  SSP1BUS_SCK_PIN,  SSP1BUS_SCK_PIN_CFG);   // SCK
+        GpioPinConfigSet(SSP1BUS_MISO_PORT, SSP1BUS_MISO_PIN, SSP1BUS_MISO_PIN_CFG);  // MISO
+        GpioPinConfigSet(SSP1BUS_MOSI_PORT, SSP1BUS_MOSI_PIN, SSP1BUS_MOSI_PIN_CFG);  // MOSI
+    } 
+#if defined(LPC_SSP2_BASE)
+    else if (node->node_bus->bus_base == LPC_SSP2_BASE) {
+        GpioPinConfigSet(SSP2BUS_SCK_PORT,  SSP2BUS_SCK_PIN,  SSP2BUS_SCK_PIN_CFG);   // SCK
+        GpioPinConfigSet(SSP2BUS_MISO_PORT, SSP2BUS_MISO_PIN, SSP2BUS_MISO_PIN_CFG);  // MISO
+        GpioPinConfigSet(SSP2BUS_MOSI_PORT, SSP2BUS_MOSI_PIN, SSP2BUS_MOSI_PIN_CFG);  // MOSI
+    }
+#endif
+    GpioPinConfigSet(node->node_cs / 32, node->node_cs % 32, GPIO_CFG_OUTPUT);
+    
     /* Try to deactivate the node's chip select. */
     rc = Lpc17xxSspChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
     /* It should not hurt us being called more than once. Thus, we
