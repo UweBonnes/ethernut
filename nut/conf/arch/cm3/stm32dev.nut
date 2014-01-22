@@ -2560,6 +2560,7 @@ nutarch_cm3_stm32_devices =
         provides = { "DEV_CANBUS" },
         sources =
         {
+            "cm3/dev/stm/stm32_can.c",
             "cm3/dev/stm/stm32_can1.c",
         },
         options =
@@ -2605,6 +2606,7 @@ nutarch_cm3_stm32_devices =
         provides = { "DEV_CANBUS" },
         sources =
         {
+            "cm3/dev/stm/stm32_can.c",
             "cm3/dev/stm/stm32_can2.c",
         },
         options =
