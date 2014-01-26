@@ -86,13 +86,13 @@ char *asctime_r(const struct _tm *timeptr, char *buf)
         return buf;
     }
 
-    if (timeptr->tm_wday < 0 || timeptr->tm_wday >= 6) {
+    if (timeptr->tm_wday < 0 || timeptr->tm_wday > 6) {
         wn = "???";
     } else {
         wn = wday_name[timeptr->tm_wday];
     }
 
-    if (timeptr->tm_mon < 0 || timeptr->tm_mon >= 11) {
+    if (timeptr->tm_mon < 0 || timeptr->tm_mon > 11) {
         mn = "???";
     } else {
         mn = mon_name[timeptr->tm_mon];
@@ -102,7 +102,7 @@ char *asctime_r(const struct _tm *timeptr, char *buf)
         sprintf(buf, ASCTIME_FMT, wn, mn,
             timeptr->tm_mday, timeptr->tm_hour,
             timeptr->tm_min, timeptr->tm_sec,
-            timeptr->tm_year + (int)_BASE_YEAR);
+            timeptr->tm_year + 1900);
     } else {
         errno = EINVAL;
         return NULL;
