@@ -314,6 +314,7 @@ nutcrt =
         {
             "gmtime.c",
             "localtime.c",
+            "asctime.c",
             "mktime.c",
             "time.c",
             "timeofday.c",

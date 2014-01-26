@@ -114,15 +114,21 @@ struct _tm {
 typedef long time_t;
 #endif
 
+char  *asctime_r(const struct _tm *timep, char *buf);
+char  *asctime(register const struct _tm *timep);
 
+char  *ctime(const time_t *timep);
+char  *ctime_r(const time_t *timep, char *buf);
+
+int    gmtime_r(const time_t * timer, tm * theTime);
+tm    *gmtime(const time_t * timer);
+
+int    localtime_r(const time_t * timer, tm * theTime);
+tm    *localtime(const time_t * timer);
 
 time_t time(time_t * timer);
-int gmtime_r(const time_t * timer, tm * theTime);
-tm *gmtime(const time_t * timer);
-int localtime_r(const time_t * timer, tm * theTime);
-tm *localtime(const time_t * timer);
 
-int stime(time_t * timer);
+int    stime(time_t * timer);
 time_t mktime(tm * timeptr);
 time_t _mkgmtime(tm * timeptr);
 
