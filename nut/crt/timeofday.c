@@ -74,8 +74,8 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
 #ifndef NUT_USE_OLD_TIME_API
         timeradd(&system_time, &epo_offs, tv);
 #else
-		tv->tv_sec  = time(NULL);
-		tv->tv_usec = (NutGetMillis() % 1000) * 1000;
+        tv->tv_sec  = time(NULL);
+        tv->tv_usec = (NutGetMillis() % 1000) * 1000;
 #endif
     }
 
@@ -118,8 +118,8 @@ int settimeofday (struct timeval *tv, struct timezone *tz)
     }
     return 0;
 #else
-	/* This function is not supported in the old clock API */
-	return -1;
+    /* This function is not supported in the old clock API */
+    return -1;
 #endif
 }
 
