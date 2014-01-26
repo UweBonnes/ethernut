@@ -67,5 +67,19 @@ void NUTPANIC(const char *fmt, ...)
     NutEnterCritical();
     va_start(ap, fmt);
     vfprintf(stdout, fmt, ap);
+    fflush(stdout);
     for(;;);
+}
+
+/*!
+ * \brief This function is called on fatal errors.
+ *
+ * This function calls NUTPANIC("ABORT!!!").
+ * It is mainly implemented to make third party code happy that
+ * relies on an abort function.
+ */
+void abort(void)
+{
+    NUTPANIC("\nABORT!!!\n");
+    for (;;);
 }
