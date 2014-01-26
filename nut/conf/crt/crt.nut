@@ -313,7 +313,7 @@ nutcrt =
         sources =
         {
             "gmtime.c",
-            "localtim.c",
+            "localtime.c",
             "mktime.c",
             "time.c",
             "timeofday.c",
