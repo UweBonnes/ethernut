@@ -319,6 +319,14 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         */
         mode |= _BV(7);
     }
+#if defined(MCU_LPC407x_8x)
+    if ((bank == NUTGPIO_PORT1) && (((bit >= 5) && (bit <= 7)) || (bit == 14) || (bit == 16) || (bit == 17))) {
+        /* Port P1-5 .. P1-7, P1-14, P1-16, P1-17 pins (W-Mode pins) are a little bit special and need
+           bit 7 always be set for normal operation
+        */
+        mode |= _BV(7);
+    }
+#endif
 
     *IOCON = mode;
 
