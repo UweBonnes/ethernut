@@ -130,28 +130,28 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 		settings.beginGroup( hash.toHex() );
 	}
 
-        if(!settings.contains("sourceDirectory")) {
-            /* Ask the user for the source path */
-            QString  srcpath;
-            srcpath = QFileDialog::getExistingDirectory
-                ( 0, tr("Ethernut source directory"),
-                  getenv("HOME"),
-                  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-            if ( srcpath.isEmpty() )  {// User canceled
-                /* Get source path */
-                //message( tr("Scanning disk for ethernut source") );
-                if ( srcpath.contains("/nut/") )
-                    srcpath.truncate( srcpath.lastIndexOf("nut") + 3 );
-                else
-                    srcpath.truncate( srcpath.lastIndexOf("/os/version.c") );
-           }
-            else
-                m_sourceDir = srcpath;
-            /* Set the value or otherwise the setting box doesn't pick up the new srcpath*/
-            settings.setValue("sourceDirectory", m_sourceDir);
-        }
-        else
-            m_sourceDir = settings.value("sourceDirectory", "").toString();
+	if(!settings.contains("sourceDirectory")) {
+		/* Ask the user for the source path */
+		QString  srcpath;
+		srcpath = QFileDialog::getExistingDirectory
+			( 0, tr("Ethernut source directory"),
+			getenv("HOME"),
+			QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+		if ( srcpath.isEmpty() )  {// User canceled
+			/* Get source path */
+			//message( tr("Scanning disk for ethernut source") );
+			if ( srcpath.contains("/nut/") )
+				srcpath.truncate( srcpath.lastIndexOf("nut") + 3 );
+			else
+				srcpath.truncate( srcpath.lastIndexOf("/os/version.c") );
+		}
+		else
+			m_sourceDir = srcpath;
+		/* Set the value or otherwise the setting box doesn't pick up the new srcpath*/
+		settings.setValue("sourceDirectory", m_sourceDir);
+	}
+	else
+		m_sourceDir = settings.value("sourceDirectory", "").toString();
 
 
 	repositoryFile = m_sourceDir + "/conf/repository.nut";
@@ -167,7 +167,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 
 	QString defaultToolPath;
 #if defined( Q_OS_WIN32 )
-	defaultToolPath = QDir(srcpath + "/tools/win32").absolutePath();
+	defaultToolPath = QDir(m_sourceDir + "/tools/win32").absolutePath();
 #endif
 	m_toolPath = settings.value("toolPath", defaultToolPath).toString();
 	m_programmer = settings.value("programmer").toString();
