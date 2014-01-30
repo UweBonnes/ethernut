@@ -185,6 +185,7 @@ RTENTRY *NutIpRouteList(int *numEntries)
 {
     RTENTRY *rc;
     RTENTRY *rte;
+    int i;
 
     /* First count the number of entries. */
     *numEntries = 0;
@@ -197,8 +198,9 @@ RTENTRY *NutIpRouteList(int *numEntries)
 
     /* Fill in the result. */
     if (rc) {
-        for (rte = rteList; rte; rc++, rte = rte->rt_next) {
-            memcpy(rc, rte, sizeof(RTENTRY));
+        i = 0;
+        for (rte = rteList; rte; i++, rte = rte->rt_next) {
+            memcpy(&rc[i], rte, sizeof(RTENTRY));
         }
     }
     else {
