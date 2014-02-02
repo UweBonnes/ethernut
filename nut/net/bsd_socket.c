@@ -39,6 +39,8 @@
 *  26.01.2014  mifi  First Version
 *  27.01.2014  mifi  More comments and connect added
 *  28.01.2014  mifi  Backlog functionality added
+*  02.02.2014  mifi  Backlog does not work correct.
+*                    Corrected sendto.
 **************************************************************************/
 #define __BSD_SOCKET_C__
 
@@ -51,7 +53,6 @@
 
 #include "sys/bsd_socket.h"
 #include "sys/socket.h"
-#include "sys/semaphore.h"
 
 /*=======================================================================*/
 /*  All Structures and Common Constants                                  */
@@ -64,7 +65,7 @@ typedef struct _bsd_socket_
 {
    int                  type;             /* Used to distinguish TCP and UDP */
    uint16_t             port;             /* Used by accept */
-   SEM                  backlog_sem;      /* Used by listen and accept */        
+   int                  backlog;          
    int                  is_listen_sock;   /* Used by accept */
    uint32_t             udp_rcv_timeo;    /* Used by NutUdpReceiveFrom */
    struct _bsd_socket_ *parent;           /* Used by accept */
@@ -214,9 +215,6 @@ int closesocket (socket_t sock)
           */
          if (bsd_sock->parent)
          {
-            /* Handle backlog of the listen socket, which is the parent, here */
-            NutSemPost(&bsd_sock->parent->backlog_sem);
-         
             /* Clear parent socket info */
             bsd_sock->parent->nut_tcp_sock = NULL;
          }
@@ -224,13 +222,6 @@ int closesocket (socket_t sock)
          /* Clear socket info */         
          bsd_sock->nut_tcp_sock = NULL;
          
-         /* Check if it is a listen socket */
-         if (bsd_sock->is_listen_sock)
-         {
-            /* Delete backlog semaphore */
-            NutSemDestroy(&bsd_sock->backlog_sem);
-         }
-            
          /* Free the wrapper memory */   
          free(bsd_sock);
          break;
@@ -343,10 +334,10 @@ int listen (socket_t sock, int backlog)
       return(-1);
    }
 
-   if (backlog > 0)
+   if (1 == backlog)
    {
-      /* Initialize backlog */
-      NutSemInit(&bsd_sock->backlog_sem, (short)backlog);
+      /* Store backlocg info */
+      bsd_sock->backlog = backlog;
 
       /* Mark socket as listen */
       bsd_sock->is_listen_sock = 1;
@@ -387,9 +378,6 @@ socket_t accept (socket_t sock, struct sockaddr *addr, int *addr_len)
       memset(addr, 0x00, *addr_len);
       addr_in->sin_family = AF_INET; 
       addr_in->sin_len    = sizeof(struct sockaddr_in);
-      
-      /* Handle backlog here */
-      NutSemWait(&bsd_sock_in->backlog_sem);
       
       /*
        * Check if we must create a new socket, this is the case
@@ -617,6 +605,10 @@ int sendto (socket_t sock, void *data, size_t len, int flags, struct sockaddr *a
       /* Send a UDP datagram */
       rc = NutUdpSendTo(bsd_sock->nut_udp_sock, remote_addr, remote_port,
                         data, (int)len);  
+      if (0 == rc)
+      {
+         rc = len;
+      }
    }
 
    return(rc);
