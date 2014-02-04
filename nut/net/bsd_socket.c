@@ -36,11 +36,14 @@
 ***************************************************************************
 *  History:
 *
-*  26.01.2014  mifi  First Version
-*  27.01.2014  mifi  More comments and connect added
-*  28.01.2014  mifi  Backlog functionality added
-*  02.02.2014  mifi  Backlog does not work correct.
-*                    Corrected sendto.
+*  26.01.2014  mifi  First Version.
+*  27.01.2014  mifi  More comments and connect added.
+*  28.01.2014  mifi  Backlog functionality added.
+*  02.02.2014  mifi  - Backlog does not work correct.
+*                    - Corrected sendto.
+*                    - Added support for setsockopt IP_ADD_MEMBERSHIP and
+*                      IP_DROP_MEMBERSHIP.
+*  04.02.2014  mifi  Corrected backlog functionality.
 **************************************************************************/
 #define __BSD_SOCKET_C__
 
@@ -51,8 +54,10 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "sys/bsd_socket.h"
-#include "sys/socket.h"
+#include <net/if_var.h>
+#include <sys/semaphore.h>
+#include <sys/bsd_socket.h>
+#include <sys/socket.h>
 
 /*=======================================================================*/
 /*  All Structures and Common Constants                                  */
@@ -65,10 +70,10 @@ typedef struct _bsd_socket_
 {
    int                  type;             /* Used to distinguish TCP and UDP */
    uint16_t             port;             /* Used by accept */
-   int                  backlog;          
+   SEM                  backlog_sem;      /* Used by accept and listen */
    int                  is_listen_sock;   /* Used by accept */
    uint32_t             udp_rcv_timeo;    /* Used by NutUdpReceiveFrom */
-   struct _bsd_socket_ *parent;           /* Used by accept */
+   struct _bsd_socket_ *listen;           /* Used by accept */
    
    TCPSOCKET           *nut_tcp_sock;     /* Handle to the NutNET TCP socket */
    UDPSOCKET           *nut_udp_sock;     /* Handle to the NutNET USP socket */
@@ -121,7 +126,7 @@ socket_t socket (int domain, int type, int proto)
                if (bsd_sock != NULL)
                {
                   /* Clear the memory first */
-                  memset(bsd_sock, 0x00, sizeof(bsd_sock));
+                  memset(bsd_sock, 0x00, sizeof(bsd_socket_t));
                   
                   /* Setup wrapper */
                   bsd_sock->type         = type;
@@ -148,7 +153,7 @@ socket_t socket (int domain, int type, int proto)
                if (bsd_sock != NULL)
                {
                   /* Clear the memory first */
-                  memset(bsd_sock, 0x00, sizeof(bsd_sock));
+                  memset(bsd_sock, 0x00, sizeof(bsd_socket_t));
 
                   /* Setup wrapper */
                   bsd_sock->type         = type;
@@ -207,16 +212,26 @@ int closesocket (socket_t sock)
          }
          
          /* 
-          * Check if a parent is available, this is the case
-          * if this socket was created by an accept. Here the
-          * socket was a copy from the parent. In this case 
-          * the parent socket information must be cleared. The 
-          * parent itself must be closed separately.
+          * Check if a listen socket is available, this is the case
+          * if this socket was created by an accept. Now the backlog
+          * must be handled too. The listen socket will be closed separately.
           */
-         if (bsd_sock->parent)
+         if (bsd_sock->listen)
          {
-            /* Clear parent socket info */
-            bsd_sock->parent->nut_tcp_sock = NULL;
+            /* Handle backlog */            
+            NutSemPost(&bsd_sock->listen->backlog_sem);
+            
+            /* Clear listen socket info */
+            bsd_sock->listen = NULL;
+         }
+         
+         /*
+          * Check if this is the listen socket itself. In this
+          * case the backlog semaphore must be deleted too.
+          */
+         if (bsd_sock->is_listen_sock)
+         {
+            NutSemDestroy(&bsd_sock->backlog_sem);
          }
 
          /* Clear socket info */         
@@ -334,13 +349,13 @@ int listen (socket_t sock, int backlog)
       return(-1);
    }
 
-   if (1 == backlog)
+   if (backlog > 0)
    {
-      /* Store backlocg info */
-      bsd_sock->backlog = backlog;
-
       /* Mark socket as listen */
       bsd_sock->is_listen_sock = 1;
+      
+      /* Create backlog semaphore */
+      NutSemInit(&bsd_sock->backlog_sem, (short)backlog);
       
       rc = 0;
    }   
@@ -361,12 +376,12 @@ socket_t accept (socket_t sock, struct sockaddr *addr, int *addr_len)
 {
    int                 rc;
    socket_t            ClientSocket = -1;
-   bsd_socket_t       *bsd_sock_in = (bsd_socket_t*)sock;
+   bsd_socket_t       *bsd_sock_listen = (bsd_socket_t*)sock;
    struct sockaddr_in *addr_in     = (struct sockaddr_in*)addr;
-   bsd_socket_t       *bsd_sock_out;
+   bsd_socket_t       *bsd_sock_client;
    
    /* accept is not supported for UDP */
-   if (SOCK_DGRAM == bsd_sock_in->type)
+   if (SOCK_DGRAM == bsd_sock_listen->type)
    {
       return(-1);
    }
@@ -379,54 +394,35 @@ socket_t accept (socket_t sock, struct sockaddr *addr, int *addr_len)
       addr_in->sin_family = AF_INET; 
       addr_in->sin_len    = sizeof(struct sockaddr_in);
       
-      /*
-       * Check if we must create a new socket, this is the case
-       * if (is_listen_sock == 1) and (nut_tcp_socket == NULL).
-       */
-      if ((1 == bsd_sock_in->is_listen_sock) &&    /* <= it is a listen socket */ 
-          (NULL == bsd_sock_in->nut_tcp_sock))     /* <= no socket available, was closed before */
-      {
-         /* Create a new NutNET socket */
-         bsd_sock_in->nut_tcp_sock = NutTcpCreateSocket();
-         if (NULL == bsd_sock_in->nut_tcp_sock)
-         {
-            /* Error */
-            return(-1);
-         }
-      }          
+      /* Check if we could create a new socket */      
+      NutSemWait(&bsd_sock_listen->backlog_sem);
    
-      /*
-       * Wait for incoming connect from a remote socket.
-       */
-      rc = NutTcpAccept(bsd_sock_in->nut_tcp_sock, bsd_sock_in->port);
-      if (0 == rc)
+      /* Create a new TCP socket */   
+      ClientSocket = socket(AF_INET, SOCK_STREAM, 0);
+      if (ClientSocket != -1)
       {
-         /* Get memory for a new wrapper */
-         bsd_sock_out = (bsd_socket_t*)malloc(sizeof(bsd_socket_t));
-         if (bsd_sock_out != NULL)
+         /* Convert to BSD socket */
+         bsd_sock_client = (bsd_socket_t *)ClientSocket;
+            
+         /* Set listen information */
+         bsd_sock_client->listen = bsd_sock_listen;         
+            
+         /* Wait for incoming connect from a remote socket */
+         rc = NutTcpAccept(bsd_sock_client->nut_tcp_sock, bsd_sock_listen->port);
+         if (0 == rc)
          {
-            /* Copy the socket information */
-            memcpy(bsd_sock_out, bsd_sock_in, sizeof(bsd_socket_t));
-            
-            /* The new socket is not the originate listen socket */
-            bsd_sock_out->is_listen_sock = 0;
-            
-            /* The new socket has a parent */
-            bsd_sock_out->parent = bsd_sock_in;
-            
             /* Set address information of the remote side */
-            addr_in->sin_port        = bsd_sock_in->nut_tcp_sock->so_remote_port;
-            addr_in->sin_addr.s_addr = bsd_sock_in->nut_tcp_sock->so_remote_addr;
-      
-            /* We have now the client socket */
-            ClientSocket = (int32_t)bsd_sock_out;
+            addr_in->sin_port        = bsd_sock_listen->nut_tcp_sock->so_remote_port;
+            addr_in->sin_addr.s_addr = bsd_sock_listen->nut_tcp_sock->so_remote_addr;
          }
          else
          {
-            /* No wrapper memory available */
+            /* Error, This should not happen */
+            NutSemPost(&bsd_sock_listen->backlog_sem);
+            NutTcpCloseSocket(bsd_sock_client->nut_tcp_sock);
             ClientSocket = -1;
          }
-      } /* end if (0 == NutTcpAccept */         
+      }         
    } /* end if (sizeof(struct sockaddr_in) == *addr_len) */      
    
    return(ClientSocket);
@@ -607,7 +603,7 @@ int sendto (socket_t sock, void *data, size_t len, int flags, struct sockaddr *a
                         data, (int)len);  
       if (0 == rc)
       {
-         rc = len;
+         rc = (int)len;
       }
    }
 
@@ -793,6 +789,43 @@ int setsockopt (socket_t sock, int level, int optname, void *optval, int optlen)
          } /* end if (SO_RCVTIMEO == optname) */   
       } /* end if (SOCK_STREAM == bsd_sock->type) */  
    } /* end if (SOL_SOCKET == level) */
+      
+   /* Check for the correct level */
+   if (IPPROTO_IP == level)
+   {
+      switch (optname)
+      {
+         case IP_ADD_MEMBERSHIP:
+         {
+            struct ip_mreq *mreq; 
+            
+            if ((optlen == sizeof(struct ip_mreq)) && (optval != NULL))
+            {
+               mreq = (struct ip_mreq *)optval;
+               rc = NutNetIfAddMcastAddr("eth0", mreq->imr_multiaddr.s_addr);
+            }
+            break;
+         } /* IP_ADD_MEMBERSHIP */
+         
+         case IP_DROP_MEMBERSHIP:
+         {
+            struct ip_mreq *mreq; 
+            
+            if ((optlen == sizeof(struct ip_mreq)) && (optval != NULL))
+            {
+               mreq = (struct ip_mreq *)optval;
+               rc = NutNetIfDelMcastAddr("eth0", mreq->imr_multiaddr.s_addr);
+            }
+            break;
+         } /* IP_DROP_MEMBERSHIP */
+         
+         default:
+         {
+            /* Do nothing */
+            break;
+         }
+      }
+   } /* end if (IPPROTO_IP == level) */
       
    return(rc);
 } /* setsockopt */
