@@ -110,7 +110,7 @@ static void STMCanRX0Interrupt( void *arg)
 
     if (CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0))])
     {
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0))]=0;
+        CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0))] = 1;
         ci->can_overruns++;
     }
     ci->can_rx_interrupts++;
@@ -151,7 +151,7 @@ static void STMCanRX1Interrupt( void *arg)
 
     if (CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1))])
     {
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1))]=0;
+        CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1))] = 1;
         ci->can_overruns++;
     }
     ci->can_rx_interrupts++;
