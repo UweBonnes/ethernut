@@ -667,6 +667,12 @@ void CANSetRxTimeout(NUTCANBUS *bus, uint32_t timeout)
     ci->can_rx_timeout = timeout;
 }
 
+void CANSetTxTimeout(NUTCANBUS *bus, uint32_t timeout)
+{
+    CANBUSINFO *ci = bus->bus_ci;
+    ci->can_tx_timeout = timeout;
+}
+
 static int Stm32CanBusInit( NUTCANBUS *bus)
 {
     int rc = 0;
@@ -991,7 +997,8 @@ int CanOutput(NUTCANBUS *bus, CANFRAME * frame)
         return CAN_IS_COMPANION;
     while ((rc = StmCanSendMsg(bus, frame)) == CAN_TXBUF_FULL)
     {
-        NutEventWait(&(ci->can_tx_rdy), NUT_WAIT_INFINITE);
+        if (NutEventWait(&ci->can_rx_rdy, ci->can_tx_timeout))
+            return 1;
     };
     ci->can_tx_frames++;
     return rc;

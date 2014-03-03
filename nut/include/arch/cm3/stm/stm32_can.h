@@ -66,7 +66,8 @@ struct _CANBUSINFO {
     uint32_t can_sce_interrupts;    /*!< Number of interrupts. */
     uint32_t can_overruns;          /*!< Number of packet overruns. */
     uint32_t can_errors;            /*!< Number of frame errors. */
-    uint32_t can_rx_timeout;            /*!< Receive timeout to wait when no frame available */
+    uint32_t can_rx_timeout;        /*!< Receive timeout to wait when no frame available */
+    uint32_t can_tx_timeout;        /*!< Transmit timeout to wait when slot gets available */
     CANBUFFER can_RxBuf;            /*!< Buffer for RX queue. */
 };
 

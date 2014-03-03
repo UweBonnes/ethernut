@@ -195,6 +195,7 @@ extern int NutRegisterCanBus( NUTCANBUS *bus, int entries );
 extern int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter );
 extern int CanSetBaud( NUTCANBUS *bus, int baud, uint32_t alt_btr);
 extern void CANSetRxTimeout(NUTCANBUS *bus, uint32_t timeout);
+extern void CANSetTxTimeout(NUTCANBUS *bus, uint32_t timeout);
 extern void CanEnableRx( NUTCANBUS *bus);
 extern int CanRxAvail( NUTCANBUS *bus);
 extern int CanInput(NUTCANBUS *bus, CANFRAME *output);
