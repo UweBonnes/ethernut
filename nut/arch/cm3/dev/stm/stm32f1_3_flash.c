@@ -205,7 +205,7 @@ static FLASH_Status FlashErasePage(uint32_t mem)
     rs = FlashWaitReady();
     if(rs == FLASH_COMPLETE) {
 #if defined(STM32F10X_XL)
-        if ((page / FLASH_PAGE_SIZE) >255) {
+        if ((current_page / FLASH_PAGE_SIZE) >255) {
             FLASH->CR2 = FLASH_CR_PER;
             FLASH->AR2 = mem;
             FLASH->CR2 = FLASH_CR_PER | FLASH_CR_STRT;
@@ -285,10 +285,10 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         rs = FLASH->CR & FLASH_CR_LOCK;
     }
 #if defined(STM32F10X_XL)
-    if ((dst + len - FLASH_BASE)/FLASH_PAGE_SIZE > 255) {
+    if (((uint32_t)dst + len - FLASH_BASE)/FLASH_PAGE_SIZE > 255) {
         FLASH->KEYR2 = FLASH_KEY1;
         FLASH->KEYR2 = FLASH_KEY2;
-        rs |= FLASH->SR2
+        rs |= FLASH->SR2;
     }
 #endif
     if (rs != FLASH_COMPLETE)
