@@ -441,6 +441,7 @@ nutarch_avr32 =
             "avr32/dev/ih_irq5.c",
             "avr32/dev/ih_irq6.c",
             "avr32/dev/ih_irq7.c",
+			"avr32/dev/ih_tc0.c",
             "avr32/dev/ih_nmi.c",
             "avr32/dev/ihndlr.c",
         },

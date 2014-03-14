@@ -40,12 +40,19 @@
 
 #include <arch/avr32.h>
 #include <dev/irqreg.h>
+#include <avr32/io.h>
+
+#include <arch/avr32/ihndlr.h>
 
 #ifndef NUT_IRQPRI_TC0
 #define NUT_IRQPRI_TC0  0
 #endif
 
 #define CHANNEL 0
+
+#ifndef NUT_IRQCHANNEL_TC0 
+#define NUT_IRQCHANNEL_TC0 AVR32_TC0_IRQ0
+#endif
 
 static int TimerCounter0IrqCtl(int cmd, void *param);
 
@@ -57,6 +64,21 @@ IRQ_HANDLER sig_TC0 = {
     NULL,                       /* Handler subroutine, ir_handler. */
     TimerCounter0IrqCtl         /* Interrupt control, ir_ctl. */
 };
+
+/*!
+ * \brief UART 0 interrupt entry.
+ */
+SIGNAL(TC0IrqEntry)
+{
+    IRQ_ENTRY();
+#ifdef NUT_PERFMON
+    sig_TC0.ir_count++;
+#endif
+    if (sig_TC0.ir_handler) {
+        (sig_TC0.ir_handler) (sig_TC0.ir_arg);
+    }
+    IRQ_EXIT();
+}
 
 /*!
 * \brief Timer/Counter 0 interrupt control.
@@ -79,34 +101,20 @@ static int TimerCounter0IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
-    int_fast8_t enabled = inr(AIC_IMR) & _BV(TC0_ID);
+	ureg_t imr = AVR32_TC0.channel[CHANNEL].imr;
+	static ureg_t enabledIMR = 0;
+	int_fast8_t enabled = imr;
 
-    /* Disable interrupt. */
-    if (enabled) {
-        AVR32_TC.channel[CHANNEL].sr;
-    }
+	/* Disable interrupt. */
+	if (enabled) {
+		AVR32_TC0.channel[CHANNEL].idr = 0xFFFFFFFF;
+		AVR32_TC0.channel[CHANNEL].sr;
+		enabledIMR = imr;
+	}
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
-        // GENERATE SIGNALS: Waveform operating mode.
-        AVR32_TC.channel[CHANNEL].cmr = AVR32_TC_NONE << AVR32_TC_BSWTRG_OFFSET |
-            AVR32_TC_NONE << AVR32_TC_BEEVT_OFFSET |
-            AVR32_TC_NONE << AVR32_TC_BCPC_OFFSET |
-            AVR32_TC_NONE << AVR32_TC_BCPB_OFFSET |
-            AVR32_TC_NONE << AVR32_TC_ASWTRG_OFFSET |
-            AVR32_TC_NONE << AVR32_TC_AEEVT_OFFSET |
-            AVR32_TC_NONE << AVR32_TC_ACPC_OFFSET |
-            AVR32_TC_NONE << AVR32_TC_ACPA_OFFSET |
-            1 << AVR32_TC_WAVE_OFFSET |
-            AVR32_TC_WAVSEL_UP_AUTO << AVR32_TC_WAVSEL_OFFSET |
-            0 << AVR32_TC_ENETRG_OFFSET |
-            0 << AVR32_TC_EEVT_OFFSET |
-            AVR32_TC_EEVTEDG_NO_EDGE << AVR32_TC_EEVTEDG_OFFSET |
-            0 << AVR32_TC_CPCDIS_OFFSET |
-            0 << AVR32_TC_CPCSTOP_OFFSET |
-            0 << AVR32_TC_BURST_OFFSET | 0 << AVR32_TC_CLKI_OFFSET | AVR32_TC_TCCLKS_TIMER_CLOCK3 << AVR32_TC_TCCLKS_OFFSET;
-
-
+		register_interrupt(TC0IrqEntry, NUT_IRQCHANNEL_TC0, NUT_IRQPRI_TC0);
 
         break;
     case NUT_IRQCTL_STATUS:
@@ -122,31 +130,6 @@ static int TimerCounter0IrqCtl(int cmd, void *param)
     case NUT_IRQCTL_DISABLE:
         enabled = 0;
         break;
-    case NUT_IRQCTL_GETMODE:
-        {
-            unsigned int val = inr(AIC_SMR(TC0_ID)) & AIC_SRCTYPE;
-            if (val == AIC_SRCTYPE_INT_LEVEL_SENSITIVE || val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
-                *ival = NUT_IRQMODE_LEVEL;
-            } else {
-                *ival = NUT_IRQMODE_EDGE;
-            }
-        }
-        break;
-    case NUT_IRQCTL_SETMODE:
-        if (*ival == NUT_IRQMODE_LEVEL) {
-            outr(AIC_SMR(TC0_ID), (inr(AIC_SMR(TC0_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_INT_LEVEL_SENSITIVE);
-        } else if (*ival == NUT_IRQMODE_EDGE) {
-            outr(AIC_SMR(TC0_ID), (inr(AIC_SMR(TC0_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_INT_EDGE_TRIGGERED);
-        } else {
-            rc = -1;
-        }
-        break;
-    case NUT_IRQCTL_GETPRIO:
-        *ival = inr(AIC_SMR(TC0_ID)) & AIC_PRIOR;
-        break;
-    case NUT_IRQCTL_SETPRIO:
-        outr(AIC_SMR(TC0_ID), (inr(AIC_SMR(TC0_ID)) & ~AIC_PRIOR) | *ival);
-        break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
         *ival = (unsigned int) sig_TC0.ir_count;
@@ -158,9 +141,10 @@ static int TimerCounter0IrqCtl(int cmd, void *param)
         break;
     }
 
-    /* Enable interrupt. */
-    if (enabled) {
-        outr(AIC_IECR, _BV(TC0_ID));
-    }
+	/* Enable interrupt. */
+	if (enabled) {
+		AVR32_TC0.channel[CHANNEL].ier = enabledIMR;
+		AVR32_TC0.channel[CHANNEL].sr;
+	}
     return rc;
 }
