@@ -247,6 +247,9 @@
 #elif defined(USPS)
 #include <arch/cm3/board/usps.h>
 #define BOARDNAME "USPS"
+#elif defined(NUCLEO)
+#include <arch/cm3/board/nucleo.h>
+#define BOARDNAME "USPS"
 #elif defined(OLIMEX_LPCE2294)
 #include <arch/arm/board/olimex_lpce2294.h>
 #define BOARDNAME "OLIMEX_LPCE229"
