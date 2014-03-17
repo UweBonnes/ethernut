@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *  stm32f105xB_flash.ld - linker script for nutos on cortex-m3 STM32F105xB
+ *  stm32l15Xx8_flash.ld - linker script for nutos on cortex-m3 STM32L15Xx8
  *
  *****************************************************************************/
 

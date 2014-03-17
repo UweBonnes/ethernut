@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *  stm32l15XxB-A_flash.ld - linker script for nutos on cortex-m3 STM32F15XxB
+ *  stm32l15XXx6-A_flash.ld - linker script for nutos on cortex-m3 STM32L15XXx6-A
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@ SEARCH_DIR(.)
 
 MEMORY
 {
-    FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = 128K
+    FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = 32K
     SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = 16K
 }
 
