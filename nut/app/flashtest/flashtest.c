@@ -73,6 +73,8 @@ int main(void)
     uint32_t iap_flash_end = IapFlashEnd();
     void *dword_aligned_end;
     uint32_t rd;
+    int i;
+    uint32_t *rptr;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
@@ -112,10 +114,16 @@ int main(void)
         if (memcmp(buffer, "uave2", 5))
             printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uave2");
     }
+    printf("NutNvMem test done\n");
 
     printf("Application Flash ends at 0x%08lx\n", iap_flash_end);
-    if (*(uint32_t*)(iap_flash_end -0xff) != FLASH_ERASED_PATTERN32)
-        printf("Not");
+    rptr = (uint32_t *) (iap_flash_end & 0xffffff00);
+    for(i = 0; i < 64; i++) {
+        if (rptr[i] !=  FLASH_ERASED_PATTERN32) {
+            printf("Not ");
+            break;
+        }
+    }
     printf("Empty\n");
     memset(buffer, FLASH_ERASED_PATTERN32 & 0xff, sizeof(buffer));
 
