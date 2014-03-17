@@ -514,8 +514,9 @@ typedef struct
   __IO uint32_t OBR;          /*!< Option byte register,                        Address offset: 0x1c */
   __IO uint32_t WRPR;         /*!< Write protection register,                   Address offset: 0x20 */
   uint32_t   RESERVED[23];    /*!< Reserved,                                    0x24                 */
-  __IO uint32_t WRPR1;        /*!< Write protection register 1,                 Address offset: 0x28 */
-  __IO uint32_t WRPR2;        /*!< Write protection register 2,                 Address offset: 0x2C */
+  __IO uint32_t WRPR1;        /*!< Write protection register 1,                 Address offset: 0x80 */
+  __IO uint32_t WRPR2;        /*!< Write protection register 2,                 Address offset: 0x84 */
+  __IO uint32_t WRPR3;        /*!< Write protection register 2,                 Address offset: 0x88 */
 } FLASH_TypeDef;
 
 /**
@@ -532,6 +533,9 @@ typedef struct
   __IO uint32_t WRP67;             /*!< write protection register 6 7,          Address offset: 0x14 */
   __IO uint32_t WRP89;             /*!< write protection register 8 9,          Address offset: 0x18 */
   __IO uint32_t WRP1011;           /*!< write protection register 10 11,        Address offset: 0x1C */
+  uint32_t   RESERVED[24];         /*!< Reserved,                               0x20-0x7c            */
+  __IO uint32_t WRP1213;           /*!< write protection register 12 13,        Address offset: 0x80 */
+  __IO uint32_t WRP1415;           /*!< write protection register 14 15,        Address offset: 0x84 */
 } OB_TypeDef;
 
 /**
