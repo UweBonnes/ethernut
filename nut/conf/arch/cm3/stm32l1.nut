@@ -35,9 +35,11 @@
 --
 --
 
-stm32_memory_l1xx = { "32" , "64" , "128" , "256" , "384" }
+stm32_memory_l1xx = { "32" , "64" , "128" , "256" , "384" , "512"}
 
-stm32l1_device_class = { "STML1XX_MD" ,"STML1XX_MDP", "STML1XX_HD" }
+stm32l1_device_class = {
+                     "STM32L1XX_MD" ,"STM32L1XX_MDP",
+                     "STM32L1XX_HD", "STM32L1XX_XL" }
 
 -- *****************************************************************************
 -- STM32L1 Family
@@ -86,9 +88,11 @@ nutarch_cm3_stm32l1 =
                     "HW_TIM3_STM32",
                     "HW_TIM4_STM32",
                     "HW_TIM6_STM32",
+                    "HW_TIM7_STM32",
                     "HW_TIM9_STM32",
                     "HW_STM32_TIM10",
                     "HW_STM32_TIM11",
+--                    "HW_USB_STM32",
                 },
                 file = "include/cfg/arch.h"
             }
@@ -100,36 +104,31 @@ nutarch_cm3_stm32l1 =
     {
         name = "nutarch_cm3_stm32l1_class",
         brief = "STM32L1 Device Classes",
-        requires = { "HW_MCU_STM32" },
+        requires = { "HW_MCU_STM32L1XX" },
         options =
         {
             {
                 macro = "STM32L1XX_MD",
                 brief = "STM32L1 MD Series",
                 description = "STM32L1 Medium Density devices.",
-                flavor = "booldata",
-                exclusivity = stm32l1_device_class,
-                makedefs = { "HWDEF+=-DSTM32L1XX_MD" },
-                provides =
-                {
-                         "STM32L1XX_MD",
-                         "HW_TIM7_STM32",
-                },
+                type = "integer",
+                default = 1,
+                requires = { "STM32L1XX_MD" },
                 file = "include/cfg/arch.h"
             },
             {
                 macro = "STM32L1XX_MDP",
                 brief = "STM32L1 MDP Series",
                 description = "STM32L1 Medium Density devices.",
-                flavor = "booldata",
-                exclusivity = stm32l1_device_class,
-                makedefs = { "HWDEF+=-DSTM32L1XX_MDP" },
+                type = "integer",
+                default = 1,
+                requires = { "STM32L1XX_MDP" },
                 provides =
                 {
-                         "STM32L1XX_MDP",
-                         "HW_SPI2_STM32",
                          "HW_TIM5_STM32",
-                         "HW_TIM7_STM32",
+                         "HW_SPI3_STM32",
+                         "HW_OPAMP1_STM32",
+                         "HW_OPAMP2_STM32",
                 },
                 file = "include/cfg/arch.h"
             },
@@ -137,17 +136,65 @@ nutarch_cm3_stm32l1 =
                 macro = "STM32L1XX_HD",
                 brief = "STM32L1 HD Series",
                 description = "STM32L1 Medium Density devices.",
-                flavor = "booldata",
-                exclusivity = stm32l1_device_class,
-                makedefs = { "HWDEF+=-DSTM32L1XX_HD" },
+                type = "integer",
+                default = 1,
+                requires = { "STM32L1XX_HD" },
                 provides =
                 {
-                         "STM32L1XX_HD",
                          "HW_UART4_STM32",
                          "HW_UART5_STM32",
-                         "HW_SPI2_STM32",
+                         "HW_SPI3_STM32",
+                         "HW_SDIO_STM32",
                          "HW_TIM5_STM32",
                          "HW_TIM7_STM32",
+                         "HW_OPAMP1_STM32",
+                         "HW_OPAMP2_STM32",
+                         "HW_OPAMP3_STM32",
+                         "HW_FSMC_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32L1XX_XL",
+                brief = "STM32L1 XL Series",
+                description = "STM32L1 XL-Density devices.",
+                type = "integer",
+                default = 1,
+                requires = { "STM32L1XX_XL" },
+                provides =
+                {
+                         "HW_UART4_STM32",
+                         "HW_UART5_STM32",
+                         "HW_SPI3_STM32",
+                         "HW_TIM5_STM32",
+                         "HW_TIM7_STM32",
+                         "HW_OPAMP1_STM32",
+                         "HW_OPAMP2_STM32",
+                         "HW_OPAMP3_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32L152",
+                brief = "STM32L152 Series",
+                description = "STM32L152 LCD devices.",
+                requires = { "HW_MCU_STM32L152" },
+                flavor = "booldata",
+                provides =
+                {
+                         "HW_LCD_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32L162",
+                brief = "STM32L152 Series",
+                description = "STM32L162 LCD with Crypto devices.",
+                requires = { "HW_MCU_STM32L152" },
+                flavor = "booldata",
+                provides =
+                {
+                         "HW_LCD_STM32",
                 },
                 file = "include/cfg/arch.h"
             },
