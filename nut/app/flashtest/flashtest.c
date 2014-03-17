@@ -114,10 +114,10 @@ int main(void)
     }
 
     printf("Application Flash ends at 0x%08lx\n", iap_flash_end);
-    if (*(uint32_t*)(iap_flash_end -0xff) != 0xffffffff)
+    if (*(uint32_t*)(iap_flash_end -0xff) != FLASH_ERASED_PATTERN32)
         printf("Not");
     printf("Empty\n");
-    memset(buffer, 0, sizeof(buffer));
+    memset(buffer, FLASH_ERASED_PATTERN32 & 0xff, sizeof(buffer));
 
     printf("Write to erased flash\n");
     res = IapFlashWrite((void*)(iap_flash_end ), &pattern4,

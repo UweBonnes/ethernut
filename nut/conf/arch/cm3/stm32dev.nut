@@ -375,8 +375,19 @@ nutarch_cm3_stm32_devices =
         brief = "Flash access",
         description = "Generic flash interface.",
         requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_FLASH_STM32L1" },
-        provides = { "HW_FLASH", "HW_FLASH_STM32" };
-        sources = { "cm3/dev/stm/stm32l1_flash.c"}
+        provides = { "HW_FLASH", "HW_FLASH_STM32" },
+        sources = { "cm3/dev/stm/stm32l1_flash.c"},
+        options =
+        {
+            {
+                macro = "FLASH_ERASED_PATTERN32",
+                brief = "Value of erase flash",
+                description = "Value of erase flash. Mostly 0xffffffff, but e.g 0 for STM32L1",
+                type = "integer",
+                default = "0",
+                file = "include/cfg/memory.h",
+             },
+        }
     },
     --
     -- STM32 EEPROM Interface L1

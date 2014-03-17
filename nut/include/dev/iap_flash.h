@@ -82,4 +82,10 @@ uint32_t IapFlashEnd(void)
 }
 void FlashUntouch(void){};
 #endif
+/* Most flash has a erased value of 0xffffffff. Use configurator to
+ * indicate else
+ */
+#ifndef FLASH_ERASED_PATTERN32
+#define FLASH_ERASED_PATTERN32 0xffffffff
+#endif
 #endif
