@@ -186,7 +186,7 @@ extern void *__stack;
  * \brief Get Base Address of the Bitband region belonging to Device Register structrure
  *
  */
-#define CM3BB_BASE(base) (volatile uint32_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))
+#define CM3BB_BASE(base) (volatile uint32_t *) (((uint32_t)base & 0xF0000000) + 0x02000000 + (((uint32_t)base & 0xFFFFF)<<5))
 
 /*!
  * \brief Get Offset of Bitband Bit in the (uint32_t*) Bitband Array
