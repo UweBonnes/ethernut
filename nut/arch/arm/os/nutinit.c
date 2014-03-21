@@ -43,6 +43,7 @@
 #endif
 
 #include <dev/board.h>
+#include <dev/gpio.h>
 
 #ifdef EARLY_STDIO_DEV
 #include <sys/device.h>
@@ -117,6 +118,26 @@ THREAD(NutIdle, arg)
     /* Initialize system timers. */
     NutTimerInit();
 
+#if defined(HEARTBEAT_IDLE_PORT) && defined(HEARTBEAT_IDLE_PIN)
+    GpioPinConfigSet(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN,
+PIO_CFG_OUTPUT);
+    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN);
+#if defined(HEARTBEAT_IDLE_INVERT)
+#define HEARTBEAT_ACTIVE() \
+    GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN)
+#define HEARTBEAT_IDLE()  \
+    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN)
+#else
+#define HEARTBEAT_ACTIVE()  \
+    GpioPinSetHigh(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN)
+#define HEARTBEAT_IDLE() \
+    GpioPinSetLow(HEARTBEAT_IDLE_PORT, HEARTBEAT_IDLE_PIN)
+#endif
+#else
+#define HEARTBEAT_ACTIVE()
+#define HEARTBEAT_IDLE()
+#endif
+
     /* Read OS configuration from non-volatile memory. We can't do this
     ** earlier, because the low level driver may be interrupt driven. */
     NutLoadConfig();
@@ -136,11 +157,13 @@ THREAD(NutIdle, arg)
     ** all other threads are waiting for an event. */
     NutThreadSetPriority(254);
     for (;;) {
+	HEARTBEAT_ACTIVE();
         /* Check if other threads became ready to run. */
         NutThreadYield();
         /* Remove terminated threads. */
         NutThreadDestroy();
         /* We could do some power management. */
+        HEARTBEAT_IDLE();
     }
 }
 
