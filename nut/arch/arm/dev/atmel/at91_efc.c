@@ -272,7 +272,7 @@ int At91EfcRegionLock(unsigned int off)
         return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, EFC_WRITE_WAIT);
     }
     off -= EFC_CHIP_SIZE;
-    return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, EFC_WRITE_WAIT);
+    return At91EfcCmdEx(1,(off & MC_PAGEN_MASK) | MC_FCMD_SLB, EFC_WRITE_WAIT);
 }
 
 /*!
@@ -288,7 +288,7 @@ int At91EfcRegionUnlock(unsigned int off)
         return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, EFC_WRITE_WAIT);
     }
     off -= EFC_CHIP_SIZE;
-    return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, EFC_WRITE_WAIT);
+    return At91EfcCmdEx(1,(off & MC_PAGEN_MASK) | MC_FCMD_CLB, EFC_WRITE_WAIT);
 }
 
 /*!
