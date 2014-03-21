@@ -470,12 +470,17 @@ TCPSOCKET *NutFtpDataConnect(FTPSESSION * session)
 #endif
     TCPSOCKET *sock;
     int rc;
+    uint32_t tmo;
 
     if ((sock = NutTcpCreateSocket()) != 0) {
 
         if (session->ftp_maxseg) {
             NutTcpSetSockOpt(sock, TCP_MAXSEG, &session->ftp_maxseg, sizeof(session->ftp_maxseg));
         }
+
+        NutTcpGetSockOpt(session->ftp_sock, SO_RCVTIMEO, &tmo, sizeof(tmo));
+        NutTcpSetSockOpt(sock, SO_RCVTIMEO, &tmo, sizeof(tmo));
+
         if (session->ftp_passive) {
             rc = NutTcpAccept(sock, session->ftp_data_port);
         } else {
