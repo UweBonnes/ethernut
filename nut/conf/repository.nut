@@ -572,6 +572,22 @@ repository =
         script = "lua/lua.nut"
     },
     {
+        name = "nutcrypto",
+        brief = "Cryptographic library",
+        description = "Cryptographic functions, needed to TLS support",
+        requires = { "HW_TARGET" },
+        subdir = "crypto",
+        script = "crypto/crypto.nut"
+    },
+    {
+        name = "nuttls",
+        brief = "TLS library",
+        description = "TLS client and server library. Needs libcrypto",
+        requires = { "HW_TARGET" },
+        subdir = "tls",
+        script = "tls/tls.nut"
+    },
+    {
         name = "nutcontrib",
         brief = "Non-BSDL Code",
         description = "Packages in this module are not released under BSD license.\n"..
