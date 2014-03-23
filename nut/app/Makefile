@@ -115,6 +115,7 @@ all:
 	-$(MAKE) -C twitest
 	-$(MAKE) -C uart
 	-$(MAKE) -C owibus
+	-$(MAKE) -C tls_client
 
 install:
 	-$(MAKE) -C caltime install
@@ -145,6 +146,7 @@ install:
 	-$(MAKE) -C timers install
 	-$(MAKE) -C uart install
 	-$(MAKE) -C owibus install
+	-$(MAKE) -C tls_client install
 
 clean:
 	-$(MAKE) -C caltime clean
@@ -177,6 +179,7 @@ clean:
 	-$(MAKE) -C twitest clean
 	-$(MAKE) -C uart clean
 	-$(MAKE) -C owibus clean
+	-$(MAKE) -C tls_client
 
 at90can:
 	-$(MAKE) -C caltime
