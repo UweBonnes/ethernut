@@ -48,6 +48,19 @@
  * This sample demonstrates the tls library in client mode usage.
  * It creates a TLS connection and prints out the server certificate,
  * the used cypher suite and session parameters.
+ *
+ * To use this example, you need to enable the TLS and crypto library
+ * in your configuration.
+ * You should enable the following settings in your my_board.conf
+ * file and re-configure your build tree:
+ * 
+ * CRYPTO_BIGINT_BARRETT = ""
+ * CRYPTO_BIGINT_CRT = ""
+ * CRYPTO_BIGINT_SLIDING_WINDOW = ""
+ * CRYPTO_BIGINT_SQUARE = ""
+ * TLS_SSL_ENABLE_CLIENT = ""
+ * TLS_SSL_PROT_MEDIUM = ""
+ * TLS_SSL_ENABLE_V23_HANDSHAKE = ""
  */
 
 #include <toolchain.h>
