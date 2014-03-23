@@ -570,11 +570,8 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
         sig->ios_vector = malloc(sizeof(GPIO_VECTOR) * 32);
         if (sig->ios_vector) {
             memset(sig->ios_vector, 0, sizeof(GPIO_VECTOR) * 32);
-            /* Register our internal PIO interrupt service. */
-            rc = NutRegisterIrqHandler(sig->ios_sig, sig->ios_handler, sig->ios_vector);
-            if (rc == 0) {
-                rc = NutIrqEnable(sig->ios_sig);
-            }
+			if (sig->ios_ctl)
+				rc = (sig->ios_ctl) (NUT_IRQCTL_INIT, NULL, bit);
         } else {
             rc = -1;
         }
@@ -612,4 +609,21 @@ int GpioIrqEnable(GPIO_SIGNAL * sig, int bit)
 int GpioIrqDisable(GPIO_SIGNAL * sig, int bit)
 {
     return (sig->ios_ctl) (NUT_IRQCTL_DISABLE, NULL, bit);
+}
+
+/*!
+ * \brief Set a specified GPIO interrupt mode.
+ *
+ * \param sig Interrupt to change mode.
+ * \param bit Bit number of the specified bank/port.
+ * \param mode Possible choices: 
+ *        NUT_IRQMODE_RISINGEDGE
+ *        NUT_IRQMODE_FALLINGEDGE
+ *        NUT_IRQMODE_BOTHEDGE
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int GpioIrqSetMode(GPIO_SIGNAL* sig, int bit, int mode)
+{
+    return (sig->ios_ctl) (NUT_IRQCTL_SETMODE, &mode, bit);
 }

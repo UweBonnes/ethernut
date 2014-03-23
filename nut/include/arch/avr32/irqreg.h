@@ -62,3 +62,5 @@ extern IRQ_HANDLER sig_INTERRUPT7;
 #ifdef INTERRUPT_NMI_ENABLE
 extern IRQ_HANDLER sig_INTERRUPTNMI;
 #endif
+
+#define PIO_ISR

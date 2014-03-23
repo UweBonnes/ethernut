@@ -203,10 +203,6 @@
 #define PIO_IFDR    (LCD_DATA_BASE + AVR32_GPIO_GFERC)   /*!< \brief Input filter disable register address. */
 #define PIO_IFSR    (LCD_DATA_BASE + AVR32_GPIO_GFER)   /*!< \brief Input filter status register address. */
 
-#define PIO_IER     (LCD_DATA_BASE + AVR32_GPIO_IERS)    /*!< \brief Interrupt enable register address. */
-#define PIO_IDR     (LCD_DATA_BASE + AVR32_GPIO_IERC)    /*!< \brief Interrupt disable register address. */
-#define PIO_ISR     (LCD_DATA_BASE + AVR32_GPIO_IER)    /*!< \brief Interrupt status register address. */
-
 /*!
  * \addtogroup xgDisplay
  */
