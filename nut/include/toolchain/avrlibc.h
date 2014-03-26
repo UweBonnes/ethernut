@@ -41,6 +41,7 @@
  */
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/version.h>
 #if __AVR_LIBC_VERSION__ < 10400UL
 #include <avr/signal.h>
 #endif
@@ -125,8 +126,8 @@
 #ifndef sbi
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
-#ifndef prog_char
-typedef char PROGMEM prog_char;
+#if __AVR_LIBC_VERSION__ >= 10800UL
+typedef const char PROGMEM prog_char;
 #endif
 #ifndef PGM_P
 #define  PGM_P      prog_char *
