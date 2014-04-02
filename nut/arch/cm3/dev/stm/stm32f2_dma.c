@@ -53,14 +53,7 @@
 #include <dev/irqreg.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/stm32_gpio.h>
-#if defined(MCU_STM32F2)
-#include <arch/cm3/stm/vendor/stm32f2xx.h>
-#elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/vendor/stm32f4xx.h>
-#else
-#warning "STM32 family has no F2/F4 compatible DMA"
-#endif
+#include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
 #define CH2NR(ch) ((ch & 0x70)>>4)

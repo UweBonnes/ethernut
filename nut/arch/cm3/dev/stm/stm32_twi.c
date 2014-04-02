@@ -331,7 +331,11 @@ void NutTwiSoftReset( NUTTWIBUS *bus)
     I2Cx->CR1 &= ~I2C_CR1_SWRST;
 }
 
+#if defined(MCU_STM32F4)
+int TwWaitForFlag( volatile uint32_t *reg, uint32_t mask, uint16_t flag)
+#else
 int TwWaitForFlag( volatile uint16_t *reg, uint16_t mask, uint16_t flag)
+#endif
 {
     int ret = 0;
     uint32_t sptout = 0xFFFF;

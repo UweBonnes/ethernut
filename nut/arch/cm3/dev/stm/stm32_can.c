@@ -711,7 +711,7 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
 
     /* We send tx mailboxes in chronological order and
        FOR NOW we don't retransmit on errer */
-    CanSetFeatures( bus, CAN_TXFP | CAN_NART | CAN_ABOM , ENABLE);
+    CanSetFeatures( bus, CAN_TXFP | CAN_NART | CAN_ABOM , 1);
 
     return rc;
 }

@@ -52,7 +52,7 @@ nutarch_cm3_stm32f4 =
     {
         name = "nutarch_cm3_stm32f4_family",
         brief = "MCU F4 Family",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32F4XX" },
+        requires = { "HW_MCU_STM32F4XX" },
         options =
         {
             {
@@ -100,7 +100,7 @@ nutarch_cm3_stm32f4 =
             {
                 macro = "MCU_STM32F40X_41X",
                 brief = "STM32F40x",
-                brief = "Devices available in all F40xand F41x additional to F4XX common devices",
+                brief = "Devices available in all F40x and F41x additional to F4XX common devices",
                 type = "integer",
                 default = 1,
                 provides =
@@ -120,42 +120,6 @@ nutarch_cm3_stm32f4 =
                     "HW_OTG_HS_STM32",
                 },
             },
-            {
-                macro = "STM32F401xx",
-                brief = "STM32F401",
-                brief = "Include needed for STM32F401",
-                type = "integer",
-                requires = { "STM32F401xx" },
-                default = 1,
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F40_41xxx",
-                brief = "STM32F40x/41x",
-                brief = "Include needed for STM32F405/407/415/417",
-                type = "integer",
-                requires = { "STM32F40_41xxx" },
-                default = 1,
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F427_437xx",
-                brief = "STM32F427/437",
-                brief = "Include needed for STM32F427/438",
-                type = "integer",
-                requires = { "STM32F427_437xx" },
-                default = 1,
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "STM32F429_439xx",
-                brief = "STM32F429/439",
-                brief = "Include needed for STM32F429/439",
-                type = "integer",
-                requires = { "STM32F429_439xx" },
-                default = 1,
-                file = "include/cfg/arch.h"
-            }
         }
     },
     --

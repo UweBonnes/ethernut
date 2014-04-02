@@ -39,12 +39,14 @@
 #include <arch/cm3/stm/stm32_clk.h>
 #include <cfg/clock.h>
 
-#if defined(MCU_STM32F2)
-#include <arch/cm3/stm/vendor/stm32f2xx.h>
-#elif defined(MCU_STM32F4)
-#include <arch/cm3/stm/vendor/stm32f4xx.h>
-#else
-#warning "Unknown STM32 family"
+#include <arch/cm3/stm/stm32xxxx.h>
+
+#if !defined(HSI_VALUE)
+#define HSI_VALUE 160000000
+#endif /* HSI_VALUE */
+
+#if !defined(HSE_STARTUP_TIMEOUT)
+#define HSE_STARTUP_TIMEOUT ((uint32_t)5000) /*!< Time out for HSE start up, in ms */
 #endif
 
 static uint32_t SystemCoreClock = 0;
@@ -153,7 +155,7 @@ int CtlHseClock( uint8_t ena)
             HSEStatus = RCC->CR & RCC_CR_HSERDY;
         } while((HSEStatus == 0) && (tout > 0));
 
-        if ((RCC->CR & RCC_CR_HSERDY) == RESET) {
+        if ((RCC->CR & RCC_CR_HSERDY) == 0) {
             /* HSE failed to start */
             rc = -1;
         }
@@ -190,7 +192,7 @@ int CtlHsiClock( uint8_t ena)
             HSIStatus = RCC->CR & RCC_CR_HSIRDY;
         } while((HSIStatus == 0) && (tout > 0));
 
-        if ((RCC->CR & RCC_CR_HSIRDY) == RESET) {
+        if ((RCC->CR & RCC_CR_HSIRDY) == 0) {
             /* HSI failed to start */
             rc = -1;
         }
@@ -227,7 +229,7 @@ int CtlPllClock( uint8_t ena)
             PLLStatus = RCC->CR & RCC_CR_PLLRDY;
         } while((PLLStatus == 0) && (tout > 0));
 
-        if ((RCC->CR & RCC_CR_PLLRDY) == RESET) {
+        if ((RCC->CR & RCC_CR_PLLRDY) == 0) {
             /* PLL failed to start */
             rc = -1;
         }
@@ -251,13 +253,13 @@ int SetPllClockSource( int src)
 {
     int rc = -1;
     if (src == PLLCLK_HSE) {
-        rc = CtlHseClock(ENABLE);
+        rc = CtlHseClock(1);
         if (rc==0) {
             CM3BBREG(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC)) = 1;
         }
     }
     else if (src == PLLCLK_HSI) {
-        rc = CtlHsiClock(ENABLE);
+        rc = CtlHsiClock(1);
         /* Select HSI/2 as PLL clock source */
         if (rc==0) {
             CM3BBREG(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC)) = 0;
@@ -278,7 +280,7 @@ int SetSysClockSource( int src)
     int rc = -1;
 
     if (src == SYSCLK_HSE) {
-        rc = CtlHseClock(ENABLE);
+        rc = CtlHseClock(1);
         if (rc == 0) {
             /* Select HSE as system clock source */
             RCC->CFGR &= ~RCC_CFGR_SW;
@@ -289,7 +291,7 @@ int SetSysClockSource( int src)
         }
     }
     else if (src == SYSCLK_HSI) {
-        rc = CtlHsiClock(ENABLE);
+        rc = CtlHsiClock(1);
         if (rc == 0) {
             /* Select HSI as system clock source */
             RCC->CFGR &= ~RCC_CFGR_SW;
@@ -300,7 +302,7 @@ int SetSysClockSource( int src)
         }
     }
     else if (src == SYSCLK_PLL) {
-        rc = CtlPllClock(ENABLE);
+        rc = CtlPllClock(1);
         if (rc == 0) {
             /* Select HSI as system clock source */
             RCC->CFGR &= ~RCC_CFGR_SW;
@@ -422,11 +424,11 @@ int SetSysClock(void)
     rcc_reg =  RCC->PLLCFGR;
     rcc_reg &= ~(RCC_PLLCFGR_PLLM | RCC_PLLCFGR_PLLN | RCC_PLLCFGR_PLLP | RCC_PLLCFGR_PLLQ);
 #if (PLLCLK_SOURCE==PLLCLK_HSE)
-    if (CtlHseClock(ENABLE) != 0)
+    if (CtlHseClock(1) != 0)
         return -1;
     rcc_reg = PLLM | PLLN | PLLP | PLLQ | RCC_PLLCFGR_PLLSRC_HSE;
 #else
-    if (CtlHsiClock(ENABLE) != 0)
+    if (CtlHsiClock(1) != 0)
         return -1;
     rcc_reg = PLLM| PLLN | PLLP | PLLQ | RCC_PLLCFGR_PLLSRC_HSI;
 #endif
