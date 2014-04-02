@@ -89,6 +89,7 @@ nutarch_cm3_stm32f1 =
                         "HW_TIM2_STM32",
                         "HW_TIM3_STM32",
                 },
+                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             }
         }

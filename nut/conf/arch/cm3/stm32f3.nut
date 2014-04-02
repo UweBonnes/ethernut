@@ -90,6 +90,7 @@ nutarch_cm3_stm32f3 =
                     "HW_GPIO",
                     "HW_MCU_FPU",
                 },
+                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             },
             {

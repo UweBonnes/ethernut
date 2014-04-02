@@ -38,7 +38,7 @@
 
 ifeq ($(PROJ),libnutarch)
 
-ifeq ($(ARCH_STM32),y)
+ifeq ($(MCD_LICENSE),y)
 
 ifneq ($(LICENSE_ST_GUIDANCE),y)
 MSG_LICENSE += "\n"

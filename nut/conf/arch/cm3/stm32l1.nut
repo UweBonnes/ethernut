@@ -94,6 +94,7 @@ nutarch_cm3_stm32l1 =
                     "HW_STM32_TIM11",
 --                    "HW_USB_STM32",
                 },
+                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             }
         }
