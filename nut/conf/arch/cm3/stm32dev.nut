@@ -1816,7 +1816,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 USART6 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_UART6_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_USART6_STM32", "DEV_IRQ_STM32", "NUT_EVENT" },
         provides =
         {
             "DEV_UART",
