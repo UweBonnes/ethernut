@@ -34,8 +34,6 @@
 -- STMicroelectronics STM32L Family Devices
 --
 --
-stm32_memory_f2 = { "128", "256", "512", "768", "1024" }
-stm32f2_device_class = { "STM32F205", "STM32F207", "STM32F215", "STM32F217" }
 
 -- *****************************************************************************
 -- STM32F2 Family
@@ -51,7 +49,7 @@ nutarch_cm3_stm32f2 =
     {
         name = "nutarch_cm3_stm32f2_family",
         brief = "MCU F2 Family",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32F2XX" },
+        requires = { "HW_MCU_STM32F2XX" },
         options =
         {
             {
@@ -78,6 +76,7 @@ nutarch_cm3_stm32f2 =
                     "HW_I2C1_STM32",
                     "HW_I2C2_STM32",
                     "HW_I2C3_STM32",
+                    "HW_RNG_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
@@ -99,7 +98,6 @@ nutarch_cm3_stm32f2 =
                     "HW_TIM7_STM32",
                     "HW_TIM8_TIM12_TIM13_TIM14_STM32",
                 },
-                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             }
         }
@@ -114,60 +112,55 @@ nutarch_cm3_stm32f2 =
         options =
         {
             {
-                macro = "STM32F205",
+                macro = "STM32F205xx",
                 brief = "STM32F205",
-                description = "STM32F2 w/o Ethernet and Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F2_device_class,
-                provides =
-                {
-                    "STM32F205",
-                    "HW_RNG_STM32",
-                },
+                description = "STM32F207 w/o ETH/DCMI and Crypto.",
+                requires = { "HW_MCU_STM32F205" },
+                type = "integer",
+                default = 1,
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F207",
+                macro = "STM32F207xx",
                 brief = "STM32F207",
-                description = "STM32F2 w/o Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F2_device_class,
+                description = "STM32F207 with ETH/DCMI w/o Crypto.",
+                requires = { "HW_MCU_STM32F207" },
+                type = "integer",
+                default = 1,
                 provides =
                 {
-                    "STM32F207",
-                    "HW_RNG_STM32",
                     "HW_EMAC_STM32",
                     "HW_DCMI_STM32",
                 },
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F215",
+                macro = "STM32F215xx",
                 brief = "STM32F215",
-                description = "STM32F2 w/o Ethernet, with Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F2_device_class,
+                description = "STM32F215 w/o Ethernet, with Crypto.",
+                requires = { "HW_MCU_STM32F215" },
+                type = "integer",
+                default = 1,
                 provides =
                 {
-                    "STM32F215",
                     "HW_HASH_RNG_STM32",
                     "HW_CRYP_STM32",
                 },
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F217",
+                macro = "STM32F217xx",
                 brief = "STM32F217",
-                description = "STM32F2 with Ethernet and Crypto.",
-                flavor = "booldata",
-                exclusivity = stm32F2_device_class,
+                description = "STM32F217 with Ethernet/DCMI and Crypto.",
+                requires = { "HW_MCU_STM32F217" },
+                type = "integer",
+                default = 1,
                 provides =
                 {
-                    "STM32F217",
                     "HW_EMAC_STM32",
+                    "HW_DCMI_STM32",
                     "HW_HASH_RNG_STM32",
                     "HW_CRYP_STM32",
-                    "HW_DCMI_STM32",
                 },
                 file = "include/cfg/arch.h"
             },

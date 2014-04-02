@@ -1680,8 +1680,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2XX",
-                    "HW_RNG_STM32",
-                    "HW_GPIO"
+                    "HW_MCU_STM32F205",
                 },
                 makedefs = { "MCU=cortex-m3" }
             },
@@ -1698,10 +1697,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2XX",
-                    "HW_RNG_STM32",
-                    "HW_EMAC_STM32",
-                    "HW_DCMI_STM32",
-                    "HW_GPIO"
+                    "HW_MCU_STM32F207",
                 },
                 makedefs = { "MCU=cortex-m3" }
             },
@@ -1718,9 +1714,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2XX",
-                    "HW_HASH_RNG_STM32",
-                    "HW_CRYP_STM32",
-                    "HW_GPIO"
+                    "HW_MCU_STM32F215",
                 },
                 makedefs = { "MCU=cortex-m3" }
             },
@@ -1737,11 +1731,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2XX",
-                    "HW_HASH_RNG_STM32",
-                    "HW_CRYP_STM32",
-                    "HW_EMAC_STM32",
-                    "HW_DCMI_STM32",
-                    "HW_GPIO"
+                    "HW_MCU_STM32F217",
                 },
                 makedefs = { "MCU=cortex-m3" }
             },

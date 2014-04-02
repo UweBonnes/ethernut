@@ -44,7 +44,28 @@
 #elif defined(MCU_STM32L1)
 #include <arch/cm3/stm/vendor/stm32l1xx.h>
 #elif defined(MCU_STM32F2)
-#include <arch/cm3/stm/vendor/stm32f2xx.h>
+/**
+  * @brief CMSIS Device version number V2.0.1
+  */
+#define __STM32F2xx_CMSIS_DEVICE_VERSION_MAIN   (0x02) /*!< [31:24] main version */
+#define __STM32F2xx_CMSIS_DEVICE_VERSION_SUB1   (0x00) /*!< [23:16] sub1 version */
+#define __STM32F2xx_CMSIS_DEVICE_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
+#define __STM32F2xx_CMSIS_DEVICE_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
+#define __STM32F2xx_CMSIS_DEVICE_VERSION        ((__CMSIS_DEVICE_VERSION_MAIN     << 24)\
+                                      |(__CMSIS_DEVICE_HAL_VERSION_SUB1 << 16)\
+                                      |(__CMSIS_DEVICE_HAL_VERSION_SUB2 << 8 )\
+                                      |(__CMSIS_DEVICE_HAL_VERSION_RC))
+#if defined(STM32F205xx)
+#include <arch/cm3/stm/vendor/stm32f205xx.h>
+#elif defined(STM32F215xx)
+#include  <arch/cm3/stm/vendor/stm32f215xx.h>
+#elif defined(STM32F207xx)
+#include  <arch/cm3/stm/vendor/stm32f207xx.h>
+#elif defined(STM32F217xx)
+#include  <arch/cm3/stm/vendor/stm32f217xx.h>
+#else
+#warning "Unknown STM32F2 family"
+#endif
 #elif defined(STM32F30X)
 #include <arch/cm3/stm/vendor/stm32f30x.h>
 #elif defined(STM32F37X)
