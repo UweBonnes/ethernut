@@ -95,7 +95,7 @@ CREATE_HANDLER(TWI1_ER,       I2C1_ER,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
 CREATE_HANDLER(TWI2_EV,       I2C2_EV,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
 CREATE_HANDLER(TWI2_ER,       I2C2_ER,  NUT_IRQPRI_DEF);     // I2C 1 Error
 #endif
-#if defined(I2C3)
+#if defined(HW_I2C3_STM32)
 CREATE_HANDLER(TWI3_EV,       I2C3_EV,  NUT_IRQPRI_DEF);     // I2C 2 Error
 CREATE_HANDLER(TWI3_ER,       I2C3_ER,  NUT_IRQPRI_DEF);     // I2C 2 Error
 #endif
