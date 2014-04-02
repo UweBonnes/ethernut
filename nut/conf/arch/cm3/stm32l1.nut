@@ -55,7 +55,7 @@ nutarch_cm3_stm32l1 =
     {
         name = "nutarch_cm3_stm32L1_family",
         brief = "MCU L1 Family",
-        requires = { "HW_MCU_STM32L1XX" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32L1XX" },
         options =
         {
             {
@@ -233,7 +233,7 @@ nutarch_cm3_stm32l1 =
         sources = { "cm3/dev/stm/system_stm32.c",
                     "cm3/dev/stm/stm32l1_clk.c"
                   },
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
+        requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
         options =
         {
             {

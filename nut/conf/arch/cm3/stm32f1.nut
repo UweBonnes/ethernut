@@ -60,6 +60,7 @@ nutarch_cm3_stm32f1 =
     {
         name = "nutarch_cm3_stm32f1_family",
         brief = "MCU F1 Family",
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY"},
         options =
         {
             {
@@ -309,7 +310,7 @@ nutarch_cm3_stm32f1 =
         brief = "STM32F Static Memory Controller",
         description = "Routines for configuration of the FSMC in STM32F controllers.\n"..
                       "The FSMC access access to SRAM, NAND- and NOR-Flash and PC-Memory Cards.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_FSMC_STM32" },
+        requires = { "HW_FSMC_STM32" },
 --        sources = { "cm3/dev/stm/stm32_fsmc.c" },
     },
 
@@ -320,7 +321,7 @@ nutarch_cm3_stm32f1 =
         name = "nutarch_cm3_stm32f_flash",
         brief = "STM32F Flash Memory Controller",
         description = "Routines for setup and programming STM32F series internal FLASH.\n",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_FLASHF1_STM32" },
+        requires = { "HW_FLASHF1_STM32" },
         sources = { "cm3/dev/stm/stm32f1_flash.c" },
     },
 
@@ -333,7 +334,7 @@ nutarch_cm3_stm32f1 =
         sources = { "cm3/dev/stm/system_stm32.c",
                     "cm3/dev/stm/stm32f1_clk.c"
                   },
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
+        requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
         options =
         {
             {
@@ -466,7 +467,7 @@ nutarch_cm3_stm32f1 =
         name = "nutarch_cm3_stm32f1_gpio",
         brief = "STM32F1 GPIO",
         description = "Generic port I/O API.",
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "HW_GPIO_STM32V1" },
+        requires = { "HW_MCU_STM32", "HW_GPIO_STM32V1" },
         provides = { "HW_GPIO_V1" };
         sources = { "cm3/dev/stm/stm32f1_gpio.c"}
     },

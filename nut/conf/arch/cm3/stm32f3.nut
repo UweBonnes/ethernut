@@ -52,7 +52,7 @@ nutarch_cm3_stm32f3 =
     {
         name = "nutarch_cm3_stm32f3_family",
         brief = "MCU F3 Family",
-        requires = { "HW_MCU_STM32F3XX" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32F3XX" },
         options =
         {
             {
@@ -190,7 +190,7 @@ nutarch_cm3_stm32f3 =
             "cm3/dev/stm/system_stm32.c",
             "cm3/dev/stm/stm32f30_clk.c"
         },
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC", "HW_PLL_STM32F3" },
+        requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC", "HW_PLL_STM32F3" },
         options =
         {
             {

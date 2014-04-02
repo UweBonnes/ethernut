@@ -52,7 +52,7 @@ nutarch_cm3_stm32f4 =
     {
         name = "nutarch_cm3_stm32f4_family",
         brief = "MCU F4 Family",
-        requires = { "HW_MCU_STM32F4XX" },
+        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32F4XX" },
         options =
         {
             {
@@ -216,7 +216,7 @@ nutarch_cm3_stm32f4 =
             "cm3/dev/stm/system_stm32.c",
             "cm3/dev/stm/stm32f4_clk.c"
         },
-        requires = { "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
+        requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
         options =
         {
             {
