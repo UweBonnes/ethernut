@@ -1047,6 +1047,25 @@ nutarch =
                 makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
             },
             {
+                macro = "MCU_STM32L151xB",
+                brief = "STM STM32L151xB",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32L1XX",
+                    "STM32L1XX_MD",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
                 macro = "MCU_STM32L151CC",
                 brief = "STM STM32L151CC",
                 description = "CortexM3 32-bit RISC microcontroller\n\n"..
@@ -1231,6 +1250,26 @@ nutarch =
             {
                 macro = "MCU_STM32L152xA",
                 brief = "STM STM32L152xA",
+                description = "CortexM3 32-bit RISC microcontroller\n\n"..
+                              "Select the correct sub-type in Architecture->CM3->STM32 Family.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32L1XX",
+                    "STM32L1XX_MD",
+                    "HW_MCU_STM32L152",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
+            },
+            {
+                macro = "MCU_STM32L152xB",
+                brief = "STM STM32L152xB",
                 description = "CortexM3 32-bit RISC microcontroller\n\n"..
                               "Select the correct sub-type in Architecture->CM3->STM32 Family.",
                 flavor = "boolean",
