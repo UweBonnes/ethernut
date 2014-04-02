@@ -52,7 +52,7 @@ nutarch_cm3_stm32f3 =
     {
         name = "nutarch_cm3_stm32f3_family",
         brief = "MCU F3 Family",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32F3XX" },
+        requires = { "HW_MCU_STM32F3XX" },
         options =
         {
             {
@@ -90,7 +90,6 @@ nutarch_cm3_stm32f3 =
                     "HW_GPIO",
                     "HW_MCU_FPU",
                 },
-                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             },
             {
@@ -119,7 +118,7 @@ nutarch_cm3_stm32f3 =
                 brief = "STM32F37X",
                 brief = "Include needed for STM32F373/385",
                 type = "integer",
-                requires = { "STM32F37X" },
+                requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "STM32F37X" },
                 default = 1,
                 provides =
                 {
@@ -140,6 +139,7 @@ nutarch_cm3_stm32f3 =
                     "HW_SDADC3_STM32",
                     "HW_COMP_STM32",
                  },
+                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             },
         }
