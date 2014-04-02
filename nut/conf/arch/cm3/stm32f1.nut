@@ -60,7 +60,6 @@ nutarch_cm3_stm32f1 =
     {
         name = "nutarch_cm3_stm32f1_family",
         brief = "MCU F1 Family",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY"},
         options =
         {
             {
@@ -89,7 +88,6 @@ nutarch_cm3_stm32f1 =
                         "HW_TIM2_STM32",
                         "HW_TIM3_STM32",
                 },
-                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             }
         }
