@@ -49,6 +49,9 @@
   * @{
   */
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifndef __STM32F405xx_H
 #define __STM32F405xx_H
 
@@ -171,15 +174,16 @@ typedef enum
   OTG_HS_WKUP_IRQn            = 76,     /*!< USB OTG HS Wakeup through EXTI interrupt                          */
   OTG_HS_IRQn                 = 77,     /*!< USB OTG HS global interrupt                                       */
   HASH_RNG_IRQn               = 80,     /*!< Hash and RNG global interrupt                                     */
-  FPU_IRQn                    = 81      /*!< FPU global interrupt                                              */
+  FPU_IRQn                    = 81,     /*!< FPU global interrupt                                              */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"             /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f4xx.h"
+#include <arch/cm3/core_cm4.h>          /* Cortex-M4 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

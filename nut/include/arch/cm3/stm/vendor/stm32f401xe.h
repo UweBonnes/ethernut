@@ -49,6 +49,9 @@
   * @{
   */
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifndef __STM32F401xE_H
 #define __STM32F401xE_H
 
@@ -149,15 +152,16 @@ typedef enum
   I2C3_EV_IRQn                = 72,     /*!< I2C3 event interrupt                                              */
   I2C3_ER_IRQn                = 73,     /*!< I2C3 error interrupt                                              */
   FPU_IRQn                    = 81,      /*!< FPU global interrupt                                             */
-  SPI4_IRQn                   = 84       /*!< SPI4 global Interrupt                                            */
+  SPI4_IRQn                   = 84,     /*!< SPI4 global Interrupt                                             */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"             /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f4xx.h"
+#include <arch/cm3/core_cm4.h>          /* Cortex-M4 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

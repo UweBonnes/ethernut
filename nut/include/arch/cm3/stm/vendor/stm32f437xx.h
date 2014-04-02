@@ -49,6 +49,9 @@
   * @{
   */
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifndef __STM32F437xx_H
 #define __STM32F437xx_H
 
@@ -181,15 +184,16 @@ typedef enum
   SPI5_IRQn                   = 85,     /*!< SPI5 global Interrupt                                             */
   SPI6_IRQn                   = 86,     /*!< SPI6 global Interrupt                                             */
   SAI1_IRQn                   = 87,     /*!< SAI1 global Interrupt                                             */
-  DMA2D_IRQn                  = 90      /*!< DMA2D global Interrupt                                            */
+  DMA2D_IRQn                  = 90,     /*!< DMA2D global Interrupt                                            */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"             /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f4xx.h"
+#include <arch/cm3/core_cm4.h>          /* Cortex-M4 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
