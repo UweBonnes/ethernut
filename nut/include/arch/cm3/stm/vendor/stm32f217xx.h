@@ -48,6 +48,9 @@
   * @{
   */
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifndef __STM32F217xx_H
 #define __STM32F217xx_H
 
@@ -172,15 +175,16 @@ typedef enum
   OTG_HS_IRQn                 = 77,     /*!< USB OTG HS global interrupt                                       */
   DCMI_IRQn                   = 78,     /*!< DCMI global interrupt                                             */
   CRYP_IRQn                   = 79,     /*!< CRYP crypto global interrupt                                      */
-  HASH_RNG_IRQn               = 80      /*!< Hash and Rng global interrupt                                     */
+  HASH_RNG_IRQn,              = 80      /*!< Hash and Rng global interrupt                                     */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm3.h"
-#include "system_stm32f2xx.h"
+#include <arch/cm3/core_cm3.h>          /* Cortex-M4 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
