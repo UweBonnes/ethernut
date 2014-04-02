@@ -62,7 +62,7 @@ static int InterruptCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *)param;
-    int_fast8_t enabled = NVIC_GetEnableIRQ(THIS_IRQn);
+    int_fast8_t enabled = NVIC_GetActive(THIS_IRQn);
 
     /* Disable interrupt. */
     if (enabled) {
