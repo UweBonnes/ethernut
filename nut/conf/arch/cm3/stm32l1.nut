@@ -55,7 +55,7 @@ nutarch_cm3_stm32l1 =
     {
         name = "nutarch_cm3_stm32L1_family",
         brief = "MCU L1 Family",
-        requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "HW_MCU_STM32L1XX" },
+        requires = { "HW_MCU_STM32L1XX" },
         options =
         {
             {
@@ -94,7 +94,6 @@ nutarch_cm3_stm32l1 =
                     "HW_STM32_TIM11",
 --                    "HW_USB_STM32",
                 },
-                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             }
         }
