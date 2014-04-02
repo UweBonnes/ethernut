@@ -58,7 +58,6 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32_gpio.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
@@ -1016,6 +1015,10 @@ int EmacInit(NUTDEVICE * dev)
     /*
      * MII or RMII mode selection
      */
+#if defined (SYSCFG_PMC_MII_RMII_SEL) && !defined(SYSCFG_PMC_MII_RMII)
+#define SYSCFG_PMC_MII_RMII SYSCFG_PMC_MII_RMII_SEL
+#endif
+
 #ifdef PHY_MODE_RMII
     /* switch to RMII mode */
  #ifdef STM32F10X_CL
