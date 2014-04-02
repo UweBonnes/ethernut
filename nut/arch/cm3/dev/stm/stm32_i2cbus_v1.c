@@ -308,8 +308,10 @@ static int checkpin_and_config(STM32_I2CCB *icb)
             return -1;
         if (icb->sda_pin == 11)
             sda_port= NUTGPIO_PORTB;
+#if defined(GPIOF_BASE)
         else if (icb->sda_pin == 0)
             sda_port= NUTGPIO_PORTF;
+#endif
 #if defined(GPIOH_BASE)
         else if (icb->sda_pin == 5)
             sda_port= NUTGPIO_PORTH;
@@ -319,8 +321,10 @@ static int checkpin_and_config(STM32_I2CCB *icb)
 
         if (icb->scl_pin == 10)
             scl_port= NUTGPIO_PORTB;
+#if defined(GPIOF_BASE)
         else if (icb->scl_pin == 1)
             scl_port= NUTGPIO_PORTF;
+#endif
 #if defined(GPIOH_BASE)
         else if (icb->scl_pin == 4)
             scl_port= NUTGPIO_PORTH;
@@ -330,8 +334,10 @@ static int checkpin_and_config(STM32_I2CCB *icb)
 
         if (icb->smba_pin == 12)
             scl_port= NUTGPIO_PORTB;
+#if defined(GPIOF_BASE)
         else if (icb->smba_pin == 2)
             scl_port= NUTGPIO_PORTF;
+#endif
 #if defined(GPIOH_BASE)
         else if (icb->scl_pin == 4)
             scl_port= NUTGPIO_PORTH;
@@ -341,8 +347,10 @@ static int checkpin_and_config(STM32_I2CCB *icb)
 
         if (icb->smba_pin == 12)
             scl_port= NUTGPIO_PORTB;
+#if defined(GPIOF_BASE)
         else if (icb->smba_pin == 2)
             scl_port= NUTGPIO_PORTF;
+#endif
 #if defined(GPIOH_BASE)
         else if (icb->smba_pin == 6)
             scl_port= NUTGPIO_PORTH;
