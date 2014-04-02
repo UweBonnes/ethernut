@@ -39,6 +39,7 @@
 
 #include <dev/board.h>
 #include <sys/confnet.h>
+#include <cfg/memory.h>
 
 #if defined(NUT_CONFIG_X12RTC)
 #include <dev/x12rtc.h>

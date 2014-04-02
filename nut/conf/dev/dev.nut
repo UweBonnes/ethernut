@@ -1129,7 +1129,8 @@ nutdev =
                               "Thus, this value may be less than the size of the configuration "..
                               "sector, in which case the rest of the sector is unused.",
                 requires = { "DEV_NVMEM_NORFLASH" },
-                flavor = "booldata",
+                default = "256",
+                flavor = "integer",
                 file = "include/cfg/memory.h"
             },
         }
