@@ -114,7 +114,7 @@ static void NutThreadEntry(void) __attribute__ ((naked));
 void NutThreadEntry(void)
 {
     /* Load argument in r0 and jump to thread entry. */
-    asm volatile ("ldmfd   sp!, {r0, lr}\n\tbx lr":::"r0", "lr");
+    asm volatile ("pop {r0, pc}\n\t":::"r0", "pc");
 }
 
 /*!
@@ -166,8 +166,7 @@ void NutThreadSwitch(void)
         "ldmfd   sp!, {r4}\n\t"         /* Get saved status... */
         "msr     xpsr_nzcvq, r4\n\t"   /* ...and save execution and application status in psr. */
         "cpsie   i\n\t"                 /* ...enable interrupts */
-        "ldmfd   sp!, {r4-r11, lr}\n\t" /* Restore registers. */
-        "bx      lr\n\t"                /* */
+        "ldmfd   sp!, {r4-r11, pc}\n\t" /* Restore registers. */
         ::"m"(runningThread->td_sp)     /* */
     );
 
@@ -317,8 +316,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
             "ldmfd   sp!, {r4}\n\t"         /* Get saved status... */
             "msr     xpsr_nzcvq, r4\n\t"   /* ...and save execution and application status in psr. */
             "cpsie   i\n\t"                 /* ...enable interrupts */
-            "ldmfd   sp!, {r4-r11, lr}\n\t" /* Restore registers. */
-            "bx     lr"                     /* */
+            "ldmfd   sp!, {r4-r11, pc}\n\t" /* Restore registers. */
             ::"m"(runningThread->td_sp)     /* */
         );
     }
