@@ -80,6 +80,27 @@ volatile static uint32_t mspStack[MSP_STACK_SIZE];
 __attribute__ ((section(".psp_stack")))
 volatile static uint32_t pspStack[PSP_STACK_SIZE];
 
+/*
+ * Get the appropriate stack pointer, depending on our mode,
+ * and use it as the parameter to the C handler. This function
+ * will never return
+ *
+ * Pass reason to R1 */
+#define JUMP_REGDUMP(reason)                                            \
+    __asm__ __volatile__ (                                              \
+        "@ JUMP_REGDUMP\n\t"                                            \
+        "MOV    R1, #4             \n\t"                                \
+        "MOV    R0, LR             \n\t"                                \
+        "TST    R0, R1             \n\t"                                \
+        "BEQ    1f                 \n\t"                                \
+        "MRS    R0, PSP            \n\t"                                \
+        "B      2f                 \n\t"                                \
+        "1:                        \n\t"                                \
+        "MRS    R0, MSP            \n\t"                                \
+        "2:                        \n\t"                                \
+        "MOV    R1, %0;            \n\t"                                \
+        "B      CortexRegDump      \n\t"                                \
+        ::"g" (reason))
 
 static void IntDefaultHandler(void *arg) __attribute__ ((naked));
 static void IntNmiHandler(void *arg) __attribute__ ((naked));
@@ -216,19 +237,11 @@ extern void * _stack_end;       /* Main stack end address */
 static void IntDefaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
-    /*
-     * Get the appropriate stack pointer, depending on our mode,
-     * and use it as the parameter to the C handler. This function
-     * will never return
+    /* 'DEFAULT_HANDLER' to R1.
+     * Will be the second parameter (Exception type) to RegDump.
      */
+    JUMP_REGDUMP(0);
 
-    __asm("TST    LR, #4  \n"
-          "ITE    EQ      \n"
-          "MRSEQ  R0, MSP \n"
-          "MRSNE  R0, PSP \n"
-          "MOV    R1, #0  \n"  // Pass 'DEFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDum
-          "B      CortexRegDump \n"
-          );
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
     while(1);
@@ -244,19 +257,10 @@ static void IntDefaultHandler(void *arg)
 static void IntNmiHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
-    /*
-     * Get the appropriate stack pointer, depending on our mode,
-     * and use it as the parameter to the C handler. This function
-     * will never return
-     */
-
-    __asm("TST    LR, #4  \n"
-          "ITE    EQ      \n"
-          "MRSEQ  R0, MSP \n"
-          "MRSNE  R0, PSP \n"
-          "MOV    R1, #1  \n"  // Pass 'NMI_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
-          "B      CortexRegDump \n"
-          );
+/* Pass 'NMI_HANDLER' to R1.
+ * Will be the second parameter (Exception type) to RegDump.
+ */
+    JUMP_REGDUMP(1);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
     while(1);
@@ -269,19 +273,10 @@ static void IntNmiHandler(void *arg)
 static void IntHardfaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
-    /*
-     * Get the appropriate stack pointer, depending on our mode,
-     * and use it as the parameter to the C handler. This function
-     * will never return
-     */
-
-    __asm("TST    LR, #4  \n"
-          "ITE    EQ      \n"
-          "MRSEQ  R0, MSP \n"
-          "MRSNE  R0, PSP \n"
-          "MOV    R1, #2  \n"  // Pass 'HARDFAULLT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
-          "B      CortexRegDump \n"
-          );
+/* Pass 'HARDFAULLT_HANDLER' to R1.
+ * Will be the second parameter (Exception type) to RegDump.
+ */
+    JUMP_REGDUMP(2);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
     while(1);
@@ -294,19 +289,11 @@ static void IntHardfaultHandler(void *arg)
 static void IntMemfaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
-    /*
-     * Get the appropriate stack pointer, depending on our mode,
-     * and use it as the parameter to the C handler. This function
-     * will never return
-     */
-
-    __asm("TST    LR, #4  \n"
-          "ITE    EQ      \n"
-          "MRSEQ  R0, MSP \n"
-          "MRSNE  R0, PSP \n"
-          "MOV    R1, #3  \n"  // Pass 'MEMFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
-          "B      CortexRegDump \n"
-          );
+/*
+ * Pass 'MEMFAULT_HANDLER' to R1.
+ * Will be the second parameter (Exception type) to RegDumpGet.
+ */
+    JUMP_REGDUMP(3);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
     while(1);
@@ -321,19 +308,11 @@ static void IntMemfaultHandler(void *arg)
 void IntBusfaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
-    /*
-     * Get the appropriate stack pointer, depending on our mode,
-     * and use it as the parameter to the C handler. This function
-     * will never return
-     */
-
-    __asm("TST    LR, #4  \n"
-          "ITE    EQ      \n"
-          "MRSEQ  R0, MSP \n"
-          "MRSNE  R0, PSP \n"
-          "MOV    R1, #4  \n"  // Pass 'BUSFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
-          "B      CortexRegDump \n"
-          );
+/*
+ * Pass 'BUSFAULT_HANDLER' to R1.
+ * Will be the second parameter (Exception type) to RegDump
+ */
+    JUMP_REGDUMP(4);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
     while(1);
@@ -346,19 +325,11 @@ void IntBusfaultHandler(void *arg)
 static void IntUsagefaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
-    /*
-     * Get the appropriate stack pointer, depending on our mode,
-     * and use it as the parameter to the C handler. This function
-     * will never return
-     */
-
-    __asm("TST    LR, #4  \n"
-          "ITE    EQ      \n"
-          "MRSEQ  R0, MSP \n"
-          "MRSNE  R0, PSP \n"
-          "MOV    R1, #5  \n"  // Pass 'USAGEFAULT_HANDLER' to R1, will be the second parameter (Exception type) to RegDump
-          "B      CortexRegDump \n"
-          );
+/*
+ * Pass 'USAGEFAULT_HANDLER' to R1.
+ * Will be the second parameter Exception type) to RegDump
+ */
+    JUMP_REGDUMP(5);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
     while(1);
