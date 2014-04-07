@@ -240,7 +240,7 @@ static int Stm32Tim_OwiSetup(NUTOWIBUS *bus)
     !defined(STM32_OWITIMER_BASE) || !defined(STM32TIM_OWI_CHANNEL)
     return OWI_INVALID_HW;
 #else
-    STM32_OWITIMER_CLK = 1;
+    STM32_OWITIMER_CLK();
     STM32_OWITIMER_RST = 1;
     STM32_OWITIMER_RST = 0;
     NutRegisterIrqHandler( &STM32_OWITIMER_SIG, &Stm32Tim_OwiInterrupt, NULL);
