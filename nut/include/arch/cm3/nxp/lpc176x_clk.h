@@ -133,7 +133,7 @@
 
 #define SysCtlPeripheralClkEnable(bit)  CM3BBSET(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
 #define SysCtlPeripheralClkDisable(bit) CM3BBCLR(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
-#define SysCtlPeripheralClkGet(bit)     CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
+#define SysCtlPeripheralClkGet(bit)     CM3BBGET(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
 
 extern uint32_t SysCtlClockGet(void);
 extern int SetSysClock(void);

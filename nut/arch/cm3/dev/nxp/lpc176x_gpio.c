@@ -109,7 +109,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
 
     PINMODE_OD = (uint32_t *)&LPC_PINCON->PINMODE_OD0 + bank;
 
-    if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit)) {
+    if (CM3BBGET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit)) {
         rc |= GPIO_CFG_OUTPUT;
     }
 

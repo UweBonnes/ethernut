@@ -86,12 +86,12 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     DMA_ClearFlag( ch, DMA_TEIF| DMA_HTIF| DMA_TCIF);
     cc |= (ch & 0x7)<<_BI32(DMA_SxCR_CHSEL_0);
     /* if DMA stream running, Stop DMA stream */
-    if (CM3BBREG(stream_base, DMA_Stream_TypeDef,
+    if (CM3BBGET(stream_base, DMA_Stream_TypeDef,
                  CR, _BI32(DMA_SxCR_EN)))
     {
         /* Disable stream */
         CM3BBCLR(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN));
-        while(CM3BBREG(stream_base, DMA_Stream_TypeDef,
+        while(CM3BBGET(stream_base, DMA_Stream_TypeDef,
                        CR, _BI32(DMA_SxCR_EN)));
     }
 
@@ -155,7 +155,7 @@ void DMA_Init(uint8_t ch)
     uint32_t dma_base = (ch& 0x80)?DMA2_BASE:DMA1_BASE;
     if (ch < 0x80)
     {
-        if (!(CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR,
+        if (!(CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR,
                        _BI32(RCC_AHB1ENR_DMA1EN ))))
         {
             /* Enable DMA1 Clock */
@@ -166,7 +166,7 @@ void DMA_Init(uint8_t ch)
             return;
         }
     }
-    else if (!(CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ))))
+    else if (!(CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ))))
     {
         /* Enable DMA2 Clock */
         CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
@@ -197,14 +197,14 @@ void DMA_Init(uint8_t ch)
 #else
 void DMA_Init(void)
 {
-    if (CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN )) == 0) {
+    if (!CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ))) {
         /* Enable DMA1 Clock */
         CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ));
         /* Reset DMA1 */
         CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
         CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
     }
-    if (CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN )) == 0) {
+    if (!CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ))) {
         /* Enable DMA2 Clock */
         CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
         /* Reset DMA2 */

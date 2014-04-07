@@ -57,14 +57,14 @@
 #define CLEAR_ERRS() USARTn->ICR = USART_ICR_PECF|USART_ICR_FECF|USART_ICR_NCF|USART_ICR_ORECF|\
         USART_ICR_IDLECF|USART_ICR_TCCF|USART_ICR_LBDCF|USART_ICR_CTSCF|USART_ICR_RTOCF|\
         USART_ICR_EOBCF|USART_ICR_CMCF|USART_ICR_WUCF
-#define TXE_SET CM3BBREG(USARTnBase, USART_TypeDef, ISR, _BI32(USART_ISR_TXE))
+#define TXE_SET CM3BBGET(USARTnBase, USART_TypeDef, ISR, _BI32(USART_ISR_TXE))
 #define CLEAR_TC() CM3BBSET(USARTnBase, USART_TypeDef, ICR, _BI32(USART_ICR_TCCF))
 #else
 #define USARTN_RDR (USARTn->DR)
 #define USARTN_TDR (USARTn->DR)
 #define USARTN_ISR (USARTn->SR)
 #define CLEAR_ERRS() (USARTn->SR)
-#define TXE_SET CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TXE))
+#define TXE_SET CM3BBGET(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TXE))
 #define CLEAR_TC() CM3BBCLR(USARTnBase, USART_TypeDef, SR, _BI32(USART_SR_TC))
 #endif
 #if !defined(USART_ISR_ORE)
@@ -438,7 +438,7 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
     else if (flow_control) {
         if(cnt >= rbf->rbf_hwm) {
             if((flow_control & XOFF_SENT) == 0) {
-                if (CM3BBREG(USARTnBase, USART_TypeDef, SR, _BI32(USART_CR1_TE))) {
+                if (CM3BBGET(USARTnBase, USART_TypeDef, SR, _BI32(USART_CR1_TE))) {
                     USARTN_TDR= ASCII_XOFF;
                     flow_control |= XOFF_SENT;
                     flow_control &= ~XOFF_PENDING;
@@ -553,7 +553,7 @@ static void Stm32UsartInterrupt(void *arg)
      * At end of DMA_TX Transfer, both TC and TXE are set.
      * Do not reinitialize transfer in that case!
      */
-    if ((csr & USART_ISR_TXE) && !CM3BBREG(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT))) {
+    if ((csr & USART_ISR_TXE) && !CM3BBGET(USARTnBase, USART_TypeDef, CR3, _BI32(USART_CR3_DMAT))) {
         Stm32UsartTxReady(&dcb->dcb_tx_rbf);
     }
     /* Last byte has been sent completely. */
@@ -626,7 +626,7 @@ static uint32_t Stm32UsartGetSpeed(void)
 #else
     clk = NutClockGet(NUT_HWCLK_PCLK2);
 #endif
-    if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    if (CM3BBGET(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
         uint32_t  frac = frac_div & 7;
         frac_div >>= 1;
@@ -662,7 +662,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
 #endif
 
     /* Determine the integer part */
-    if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    if (CM3BBGET(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
         /* In case Oversampling mode is 8 Samples */
         integerdivider = ((25 * apbclock) / (2 * rate));
@@ -692,7 +692,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     /* Determine the fractional part */
     fractionaldivider = integerdivider - (100 * (tmpreg >> 4));
 
-    if (CM3BBREG(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    if (CM3BBGET(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
     {
         /* In case Oversampling mode is 8 Samples */
         tmpreg |= ((((fractionaldivider * 8) + 50) / 100)) & ((uint8_t)0x07);

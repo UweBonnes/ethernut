@@ -88,7 +88,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     mode = *IOCON;
 
     /* Query pin direction */
-    if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit)) {
+    if (CM3BBGET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit)) {
         rc |= GPIO_CFG_OUTPUT;
     }
 
@@ -344,7 +344,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         rc = -1;
     }
 
-    if (CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) != (flags & GPIO_CFG_OUTPUT) ? 1 : 0) {
+    if (CM3BBGET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) != (flags & GPIO_CFG_OUTPUT) ? 1 : 0) {
         rc = -1;
     }
 

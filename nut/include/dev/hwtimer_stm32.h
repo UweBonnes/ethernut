@@ -141,9 +141,9 @@
 #define TIM_C2ClearInterruptFlag( timer )  CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC2IF  ))
 #define TIM_C3ClearInterruptFlag( timer )  CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC3IF  ))
 #define TIM_C4ClearInterruptFlag( timer )  CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC4IF  ))
-#define TIM_C1InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC1IF  )) != 0)
-#define TIM_C2InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC2IF  )) != 0)
-#define TIM_C3InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC3IF  )) != 0)
-#define TIM_C4InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC4IF  )) != 0)
+#define TIM_C1InterruptFlag( timer )       CM3BBGET(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC1IF  ))
+#define TIM_C2InterruptFlag( timer )       CM3BBGET(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC2IF  ))
+#define TIM_C3InterruptFlag( timer )       CM3BBGET(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC3IF  ))
+#define TIM_C4InterruptFlag( timer )       CM3BBGET(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC4IF  ))
 
 #endif

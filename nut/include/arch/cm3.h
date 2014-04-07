@@ -184,6 +184,8 @@ extern void *__stack;
 
 #define CM3BBCLR(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) ) = 0)
 
+#define CM3BBGET(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) ))
+
 #define CM3BBADDR(base, regstruct, reg, bit) ((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) )
 
 /*!

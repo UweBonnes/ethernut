@@ -327,7 +327,7 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf, uint32_t lsr)
             if(cnt >= rbf->rbf_hwm) {
                 if((flow_control & XOFF_SENT) == 0) {
                     /* Check it TX on and space in the FIFO, then send xoff */
-                    if ((CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS)) &&
+                    if ((CM3BBGET(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS)) &&
                         (lsr & UART_LSR_THRE)) {
                         USARTn->THR = ASCII_XOFF;
                         flow_control |= XOFF_SENT;

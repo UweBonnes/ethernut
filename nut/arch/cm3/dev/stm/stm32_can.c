@@ -682,10 +682,10 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
     if (!(bus->sig_tx_irq))
     { /* for the companion, we only check that CAN1/2 is clock */
         if (bus->bus_base == CAN1_BASE)
-            rc = CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
+            rc = CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
 #ifdef RCC_APB1ENR_CAN2EN
         else
-            rc = CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN));
+            rc = CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN));
 #endif
         if (rc)
             return 0;

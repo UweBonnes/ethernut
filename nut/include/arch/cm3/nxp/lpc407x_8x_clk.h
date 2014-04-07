@@ -143,8 +143,8 @@
                                           CM3BBCLR(LPC_SC_BASE, LPC_SC_TypeDef, PCONP1, (bit - 32));
 
 #define SysCtlPeripheralClkGet(bit)       if ((bit) < 32) \
-                                          CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP,  (bit)); else \
-                                          CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP1, (bit - 32));  
+                                          CM3BBGET(LPC_SC_BASE, LPC_SC_TypeDef, PCONP,  (bit)); else \
+                                          CM3BBGET(LPC_SC_BASE, LPC_SC_TypeDef, PCONP1, (bit - 32));
 
 #define SysCtlPeripheralResetEnable(bit)  if ((bit) < 32) \
                                           CM3BBSET(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON0, (bit)); else \

@@ -190,7 +190,7 @@ extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
-#define GpioPinGet(bank, bit)            CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN, (bit))
+#define GpioPinGet(bank, bit)            CM3BBGET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN, (bit))
 //#define GpioPinSet(bank, bit, value)   CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN, bit) = (value)
 
 #define GpioPinSet(bank, bit, value)     do { \
