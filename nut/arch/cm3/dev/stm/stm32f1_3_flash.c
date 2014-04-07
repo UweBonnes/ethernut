@@ -43,18 +43,19 @@
 #include <sys/heap.h>
 #include <dev/iap_flash.h>
 
-
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/vendor/stm32f10x.h>
-#elif defined(MCU_STM32F30X)
-#include <arch/cm3/stm/vendor/stm32f30x.h>
-#elif defined(MCU_STM32F37X)
-#include <arch/cm3/stm/vendor/stm32f37x.h>
+#if defined(MCU_STM32F0) || defined(MCU_STM32F1) || defined(MCU_STM32F3)
+#include <arch/cm3/stm/stm32xxxx.h>
 #else
 #warning "STM32 family has no F1/F3 compatible FLASH"
 #endif
 
-#if defined (STM32F10X_LD) || defined (STM32F10X_LD_VL)
+#if defined (STM32F030) || defined (STM32F031) || defined (STM32F051)
+#define FLASH_PAGE_SIZE 1024
+static uint32_t pagelist[2] = {0, 0};
+#elif defined (STM32F072)
+static uint32_t pagelist[2] = {0, 0};
+#define FLASH_PAGE_SIZE 2048
+#elif defined (STM32F10X_LD) || defined (STM32F10X_LD_VL)
 #define FLASH_PAGE_SIZE 1024
 static uint32_t pagelist[1] = {0};
 #elif defined (STM32F10X_MD) || defined(STM32F10X_MD_VL)

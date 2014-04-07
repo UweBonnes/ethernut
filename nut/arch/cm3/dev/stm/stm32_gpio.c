@@ -52,6 +52,8 @@
 #include <arch/cm3/stm/stm32_gpio.h>
 #if defined (MCU_STM32L1)
 #define GPIO_RCC_ENR AHBENR
+#elif defined (MCU_STM32F0)
+#define GPIO_RCC_ENR AHBENR
 #elif defined (MCU_STM32F2)
 #define GPIO_RCC_ENR AHB1ENR
 #elif defined (MCU_STM32F3)
@@ -61,8 +63,6 @@
 #else
 #warning "Unknown STM32 family"
 #endif
-#define NUTGPIOPORT_MAX NUTGPIO_PORTH+1
-
 
 /*!
  * \brief Get pin configuration.

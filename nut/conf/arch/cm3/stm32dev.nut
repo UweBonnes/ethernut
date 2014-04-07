@@ -2,8 +2,20 @@
 -- Retrieve U(S)ARTs available on the device.
 --
 function GetStmUsarts()
-    if c_is_provided("STM32F10X_LD") then
+    if c_is_provided("STM32F030") then
         return { "", "USART1", "USART2" }
+    end
+    if c_is_provided("STM32F031") then
+        return { "", "USART1" }
+    end
+    if c_is_provided("STM32F040") then
+        return { "", "USART1", "USART2" }
+    end
+    if c_is_provided("STM32F052") then
+        return { "", "USART1", "USART2" }
+    end
+    if c_is_provided("STM32F072") then
+        return { "", "USART1", "USART2", "USART3", "USART4", }
     end
     if c_is_provided("STM32F10X_LD_VL") then
         return { "", "USART1", "USART2" }
@@ -85,6 +97,9 @@ function GetTxUsart2()
     if c_is_provided("STM32F3XX") then
         return { "2", "5", "14", "3" }
     end
+    if c_is_provided("MCU_STM32F0") then
+        return { "2", "5", "14" }
+    end
     return { "1", "5" }
 end
 
@@ -96,6 +111,19 @@ function GetRxUsart2()
         return { "3", "6", "15", "4" }
     end
     return { "3", "6" }
+end
+
+--
+-- Retrieve USART3RX pins available on the device.
+--
+function GetTxUsart3()
+    if c_is_provided("STM32F07X") then
+        return { "4", "10", "310", "8"}
+    end
+    if c_is_provided("STM32F3XX") then
+        return { "11", "311", "9", "15" }
+    end
+    return { "11", "311", "9" }
 end
 
 --
