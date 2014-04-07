@@ -146,7 +146,7 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
 
 #if defined(STM32F10X_CL)
  #if defined(SPIBUS_REMAP_BB)
-        SPIBUS_REMAP_BB = SPI_DOREMAP;
+        SPIBUS_REMAP_BB();
  #endif
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
     GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_GPIO_AF);
