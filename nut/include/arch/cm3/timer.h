@@ -69,8 +69,6 @@
 #define NutDisableTimerIrq()    SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk
 
 #if defined(MCU_STM32)
-#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F2)|| \
-    defined(MCU_STM32F3) ||defined(MCU_STM32F4)
 
 /*!
  * Frequency of CPU Core(HCLK/AHB CLK)
@@ -93,9 +91,6 @@
 #define NUT_HWCLK_MAX   2
 
 #define NUT_HWCLK_PERIPHERAL NUT_HWCLK_PCLK1
-#else
-#warning "Unknown STM family"
-#endif /* STM32 families */
 #elif defined(MCU_LPC17xx)
 
 /*!
