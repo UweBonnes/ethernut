@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013,2014 by Uwe Bonnes
+ *                                (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -39,10 +40,8 @@
 #include <arch/cm3/stm/stm32_clk.h>
 #include <cfg/clock.h>
 
-#if defined(MCU_STM32F30X)
-#include <arch/cm3/stm/vendor/stm32f30x.h>
-#elif defined(MCU_STM32F37X)
-#include <arch/cm3/stm/vendor/stm32f37x.h>
+#if defined(MCU_STM32F0) || defined(MCU_STM32F3)
+#include <arch/cm3/stm/stm32xxxx.h>
 #else
 #warning "Unknown STM32 family"
 #endif
@@ -57,6 +56,35 @@ static uint32_t SystemCoreClock = 0;
 static const uint8_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
+
+/* Equalize missing STM32F0 register bits */
+#if !defined(RCC_CFGR_PPRE2)
+#define RCC_CFGR_PPRE2 0
+#endif
+#if !defined(RCC_CFGR_PPRE2_0)
+#define RCC_CFGR_PPRE2_0 0
+#endif
+#if defined( RCC_CFGR_PPRE) && !defined( RCC_CFGR_PPRE1)
+#define RCC_CFGR_PPRE1 RCC_CFGR_PPRE
+#endif
+#if defined (RCC_CFGR_PPRE_DIV1) && !defined(RCC_CFGR_PPRE1_DIV1)
+#define RCC_CFGR_PPRE1_DIV1 RCC_CFGR_PPRE_DIV1
+#endif
+#if defined (RCC_CFGR_PPRE_DIV2) && !defined(RCC_CFGR_PPRE1_DIV2)
+#define RCC_CFGR_PPRE1_DIV2 RCC_CFGR_PPRE_DIV2
+#endif
+#if !defined(RCC_CFGR_PPRE2_DIV1)
+#define RCC_CFGR_PPRE2_DIV1 0
+#endif
+#if !defined(RCC_CFGR_PPRE2_DIV2)
+#define RCC_CFGR_PPRE2_DIV2 0
+#endif
+#if defined(FLASH_ACR_LATENCY) && !defined(FLASH_ACR_LATENCY_0)
+#define FLASH_ACR_LATENCY_0 FLASH_ACR_LATENCY
+#endif
+#if defined(RCC_CFGR_PPRE_0) && !defined(RCC_CFGR_PPRE1_0)
+#define RCC_CFGR_PPRE1_0 RCC_CFGR_PPRE_0
+#endif
 
 /*----------------  Clock Setup Procedure ------------------------------
  *
@@ -156,7 +184,12 @@ int CtlHseClock( uint8_t ena)
     if( ena) {
         /* Enable HSE */
         RCC->CR |= RCC_CR_HSEON;
-
+#if defined(HSE_BYPASS)
+        /* Assume HSE if off */
+        RCC->CR |= RCC_CR_HSEBYP;
+#else
+        RCC->CR &= ~RCC_CR_HSEBYP;
+#endif
         /* Wait till HSE is ready or time out is reached */
         do {
             tout--;
@@ -363,12 +396,6 @@ int SetSysClock(void)
     return rc;
 }
 #elif (SYSCLK_SOURCE == SYSCLK_PLL)
-#if (PLLCLK_SOURCE==PLLCLK_HSE)
-#define PLLCLK_IN HSE_VALUE
-#else
-#define PLLCLK_IN HSI_VALUE
-#endif
-
 
 /**
   * @brief  Sets System clock frequency to 72MHz and configure HCLK, PCLK2
@@ -377,6 +404,68 @@ int SetSysClock(void)
   * @param  None
   * @retval None
   */
+#if (PLLCLK_SOURCE==PLLCLK_HSE)
+ #define PLLCLK_IN HSE_VALUE
+ #if (PLLCLK_MULT == 0 ) && (PLLCLK_DIV == 0)
+  #undef PLLCLK_DIV
+  #if   (((PLLCLK_IN % 24000000) == 0) && ((SYSCLK_FREQ  % 24000000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 24000000)
+  #elif (((PLLCLK_IN % 16000000) == 0) && ((SYSCLK_FREQ % 16000000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 16000000)
+  #elif (((PLLCLK_IN % 14400000) == 0) && ((SYSCLK_FREQ % 14400000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 14400000)
+  #elif (((PLLCLK_IN % 12000000) == 0) && ((SYSCLK_FREQ % 12000000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 12000000)
+  #elif (((PLLCLK_IN %  9600000) == 0) && ((SYSCLK_FREQ %  9600000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 9600000)
+  #elif (((PLLCLK_IN %  8000000) == 0) && ((SYSCLK_FREQ %  8000000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 8000000)
+  #elif (((PLLCLK_IN %  6000000) == 0) && ((SYSCLK_FREQ %  6000000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 6000000)
+  #elif (((PLLCLK_IN %  4800000) == 0) && ((SYSCLK_FREQ %  4800000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 4800000)
+  #elif (((PLLCLK_IN %  4000000) == 0) && ((SYSCLK_FREQ %  4000000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 4000000)
+  #elif (((PLLCLK_IN %  3000000) == 0) && ((SYSCLK_FREQ %  3000000) == 0))
+   #define PLLCLK_DIV  (PLLCLK_IN / 3000000)
+  #endif
+ #endif
+#else /* HSI Used*/
+/* HSI_VALUE value from vendor provided file as illegal type */
+ #define PLLCLK_IN 4000000
+ #if (PLLCLK_MULT == 0 ) && (PLLCLK_DIV == 0)
+  #undef PLLCLK_DIV
+  #define PLLCLK_DIV 1
+ #elif (PLLCLK_DIV != 0)
+  #warning "HSI/2 Input has no clock divider"
+ #endif
+#endif
+
+#if (PLLCLK_MULT == 0 ) && (PLLCLK_DIV > 0)
+ #undef PLLCLK_MULT
+ #define PLLCLK_MULT (SYSCLK_FREQ/(PLLCLK_IN / PLLCLK_DIV))
+#endif
+
+#if (PLLCLK_DIV < 1)  || (PLLCLK_DIV > 16)
+ # warning "Illegal PLLCLK_DIV value"
+#endif
+
+#if (PLLCLK_MULT < 2)  || (PLLCLK_MULT > 16)
+ # warning "Illegal PLLCLK_MULT value"
+#endif
+
+#if (PLLCLK_IN /PLLCLK_DIV * PLLCLK_MULT > 72000000)
+  #warning "Clock frequency too high"
+#elif (PLLCLK_IN /PLLCLK_DIV * PLLCLK_MULT >48000000)
+ #define NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_1
+ #if  defined(MCU_STM32F0)
+  #warning "Clock frequency too high"
+ #endif
+#elif (PLLCLK_IN /PLLCLK_DIV * PLLCLK_MULT >24000000)
+ #define NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_0
+#else
+ #define NUT_FLASH_LATENCY 0
+#endif
 
 /*
    Easy Approach:
@@ -387,71 +476,12 @@ int SetSysClock(void)
     int rc = 0;
     uint32_t rcc_reg;
 
-#if (PLLCLK_IN == 32000000)
-  #define  PLLM 4
-  #define  PLLN 9
-#elif (PLLCLK_IN == 24000000)
-  #define  PLLM 1
-  #define  PLLN 3
-#elif (PLLCLK_IN == 18000000)
-  #define  PLLM 1
-  #define  PLLN 4
-#elif (PLLCLK_IN == 16000000)
-  #define  PLLM 2
-  #define  PLLN 8
-#elif (PLLCLK_IN == 12000000)
-  #define  PLLM 1
-  #define  PLLN 6
-#elif (PLLCLK_IN ==  9000000)
-  #define  PLLM 1
-  #define  PLLN 8
-#elif (PLLCLK_IN == 8000000)
-  #define  PLLM 1
-  #define  PLLN 9
-#elif (PLLCLK_IN ==  6000000)
-  #define  PLLM 1
-  #define  PLLN 12
-/* 72 MHz not reachable, use 48 MHz */
-#elif (PLLCLK_IN == 20000000)
-  #define  PLLM 5
-  #define  PLLN 12
-#elif (PLLCLK_IN ==  4000000)
-  #define  PLLM 1
-  #define  PLLN 12
-#else
- #if defined(PLL_CLOCK_DIV)
-  #define  PLLM PLL_CLOCK_DIV
- #endif
- #if defined(PLL_CLOCK_MUL)
-  #define  PLLN PLL_CLOCK_MUL
- #endif
-#endif
-
-#if defined(PLLM) && defined(PLLN)
- #if (PLLM > 16)
-  # warning "Illegal PLL_CLOCK_DIV value"
- #endif
- #if (PLLN < 2) || (PLLN > 16)
-  # warning "Illegal PLL_CLOCK_MUL value"
- #endif
- #if (PLLCLK_IN /PLLM * PLLN >48000000)
-  #define NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_1
- #elif (PLLCLK_IN /PLLM * PLLN >24000000)
-  #define NUT_FLASH_LATENCY  FLASH_ACR_LATENCY_0
- #else
-  #define NUT_FLASH_LATENCY 0
- #endif
-#else
- # warning "Neither 72 nor 48 MHz reachable, define PLL_CLOCK_DIV and PLL_CLOCK_MUL for custom frequency"
-#endif
-
-
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 
     rcc_reg =  RCC->CFGR;
     rcc_reg &= ~(RCC_CFGR_PLLMULL |RCC_CFGR_PLLSRC |RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1 |RCC_CFGR_HPRE);
-    rcc_reg |= ((PLLN -2) * RCC_CFGR_PLLMULL_0) | RCC_CFGR_PPRE1_DIV2;
-#if (PLLCLK_SOURCE==PLLCLK_HSE)
+    rcc_reg |= ((PLLCLK_MULT -2) * RCC_CFGR_PLLMULL_0) | RCC_CFGR_PPRE1_DIV2;
+#if (PLLCLK_SOURCE == PLLCLK_HSE)
     if (CtlHseClock(ENABLE) != 0)
         return -1;
     rcc_reg |= RCC_CFGR_PLLSRC;
@@ -469,7 +499,7 @@ int SetSysClock(void)
     rcc_reg = RCC->CFGR2;
     rcc_reg  &= ~(RCC_CFGR2_PREDIV1);
     /* HCLK = SYSCLK, PCLK2 = HCLK , PCLK1 = HCLK/2 */
-    rcc_reg |= (PLLM-1);
+    rcc_reg |= (PLLCLK_DIV - 1);
     RCC->CFGR2 = rcc_reg;
 
     /* Start PLL, wait ready and switch to it as clock source */
@@ -482,7 +512,6 @@ int SetSysClock(void)
 
     return rc;
 }
-
 #endif /* (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE) */
 
 /**

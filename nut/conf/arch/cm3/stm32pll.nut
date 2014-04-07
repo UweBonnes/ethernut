@@ -76,6 +76,26 @@ nutarch_cm3_stm32_pll =
                         type = "long",
                         file = "include/cfg/clock.h"
                    },
+                   {
+                        macro = "PLLCLK_MULT",
+                        brief = "PLL Clock Multiplier",
+                        description = "In many cases HSE_VALUE and SYSCLK_FREQ is enough for the code\n"..
+                                      "to calculate PLLCLK_MULT and PLLCLK_DIV. If code is unable,\n"..
+                                      "enter non-zero integer PLL Clock Multiplier value here\n",
+                        flavor = "integer",
+                        default = "0",
+                        file = "include/cfg/clock.h"
+                  },
+                   {
+                        macro = "PLLCLK_DIV",
+                        brief = "PLL Clock Divider",
+                        description = "In many cases HSE_VALUE and SYSCLK_FREQ is enough for the code\n"..
+                                      "to calculate PLLCLK_MULT and PLLCLK_DIV. If code is unable,\n"..
+                                      "enter non-zero integer PLL Clock Divider value here\n",
+                        flavor = "integer",
+                        default = "0",
+                        file = "include/cfg/clock.h"
+                  },
             },
       },
 }
