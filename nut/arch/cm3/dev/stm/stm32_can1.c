@@ -150,17 +150,15 @@
  */
 int Stm32CanHw1Init(void)
 {
-    __IO uint32_t *rcc_bb = CM3BB_BASE(RCC_BASE);
-
 #if defined (CAN2_ACCEPTANCE_FILTERS)
     uint32_t fmr;
 #endif
     /* Enable CAN Bus 1 peripheral clock. */
-    rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN))] = 1;
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
 
     /* Reset CAN Bus 1 IP */
-    rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST))] = 1;
-    rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST))] = 0;
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
+    CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
 
 #if defined (CAN2_ACCEPTANCE_FILTERS)
     /* Set the CAN1/CAN2 Filter split */

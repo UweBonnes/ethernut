@@ -112,18 +112,17 @@
  */
 int Stm32CanHw2Init(void)
 {
-    __IO uint32_t *rcc_bb = CM3BB_BASE(RCC_BASE);
 #if defined (CAN2_ACCEPTANCE_FILTERS)
     uint32_t rc;
 #endif
 
-    if (!rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN))])
+    if (!CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN)))
     {
         /* CAN1 has no clock, unconditionally clock CAN 1 */
-        rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN))]=1;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
         /* Reset CAN Bus 1 IP */
-        rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST))] = 1;
-        rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST))] = 0;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
 #if defined (CAN2_ACCEPTANCE_FILTERS)
         /* Set the CAN1/CAN2 Filter split */
         rc =CAN1->FMR;
@@ -133,12 +132,12 @@ int Stm32CanHw2Init(void)
 #endif
     }
 
-    /* Enable CAN Bus 2 peripheral clock. */
-    rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN))]=1;
+/* Enable CAN Bus 2 peripheral clock. */
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN));
 
     /* Reset CAN Bus 2 IP */
-    rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST))]=1;
-    rcc_bb[CM3BB_OFFSET(RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST))]=0;
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST));
+    CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST));
 
     /* Setup Related GPIOs. */
     GpioPinConfigSet(CAN2_GPIO_PORT, CAN2RX_GPIO_PIN, GPIO_CFG_PULLUP|GPIO_CFG_PERIPHAL);
