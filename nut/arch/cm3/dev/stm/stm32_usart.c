@@ -1300,17 +1300,7 @@ static int Stm32UsartInit(void)
 
     /* Enable UART clock and reset device
      * We rely on the same value for RCC_APBxENR_USARTxEN and RCC_APBxRSTR_USARTxRST*/
-#if USARTclk == NUT_HWCLK_PCLK1
-    RCC->APB1ENR |= STM_USART_CLK;
-
-    RCC->APB1RSTR |= STM_USART_CLK;
-    RCC->APB1RSTR &= ~STM_USART_CLK;
-#else
-    RCC->APB2ENR |= STM_USART_CLK;
-
-    RCC->APB2RSTR |= STM_USART_CLK;
-    RCC->APB2RSTR &= ~STM_USART_CLK;
-#endif
+    StmUsartClkEnable(1);
 
 #if defined(USART_SWAP)
     /* Configure USART Tx as alternate function input*/
@@ -1434,13 +1424,7 @@ static int Stm32UsartDeinit(void)
     NutRegisterIrqHandler(&SigUSART, 0, 0);
 
     /* Reset UART. */
-#if USARTclk == NUT_HWCLK_PCLK1
-    RCC->APB2RSTR |= STM_USART_CLK;
-    RCC->APB2RSTR &= ~STM_USART_CLK;
-#else
-    RCC->APB1RSTR |= STM_USART_CLK;
-    RCC->APB1RSTR &= ~STM_USART_CLK;
-#endif
+    StmUsartClkEnable(0);
 
     return 0;
 }

@@ -480,7 +480,13 @@ int SetSysClock(void)
 
     rcc_reg =  RCC->CFGR;
     rcc_reg &= ~(RCC_CFGR_PLLMULL |RCC_CFGR_PLLSRC |RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1 |RCC_CFGR_HPRE);
+#if defined(MCU_STM32F0)
+/* APB Bus can run with full SYSCLK speed (48 MHz) */
+    rcc_reg |= ((PLLCLK_MULT -2) * RCC_CFGR_PLLMULL_0);
+#else
+/* APB1 Bus (Slow APB) bus can only run with half SYSCLK speed 36 MHz) */
     rcc_reg |= ((PLLCLK_MULT -2) * RCC_CFGR_PLLMULL_0) | RCC_CFGR_PPRE1_DIV2;
+#endif
 #if (PLLCLK_SOURCE == PLLCLK_HSE)
     if (CtlHseClock(ENABLE) != 0)
         return -1;

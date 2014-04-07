@@ -243,7 +243,15 @@ NUTDEVICE devUsartStm32_1 = {
 /*!
  * \brief USART1 base configuration.
  */
-#define STM_USART_CLK   RCC_APB2ENR_USART1EN
+static void  StmUsartClkEnable(int enable)
+{
+    if (enable)
+        RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+    RCC->APB2RSTR |= RCC_APB2RSTR_USART1RST;
+    RCC->APB2RSTR &= ~RCC_APB2RSTR_USART1RST;
+    if (!enable)
+        RCC->APB2ENR &= ~RCC_APB2ENR_USART1EN;
+}
 
 #ifdef USART1_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE USART1_INIT_BAUDRATE
@@ -310,7 +318,11 @@ NUTDEVICE devUsartStm32_1 = {
 #define USARTn      USART1
 #define USARTnBase  USART1_BASE
 #define USARTirqn   USART1_IRQn
+#if defined(MCU_STM32F0)
+#define USARTclk    NUT_HWCLK_PCLK1
+#else
 #define USARTclk    NUT_HWCLK_PCLK2
+#endif
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define SigUSART    sig_USART1

@@ -336,7 +336,15 @@ NUTDEVICE devUsartStm32_3 = {
 /*!
  * \brief USART3 base configuration.
  */
-#define STM_USART_CLK   RCC_APB1ENR_USART3EN
+static void  StmUsartClkEnable(int enable)
+{
+    if (enable)
+        RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
+    RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;
+    RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST;
+    if (!enable)
+        RCC->APB1ENR &= ~RCC_APB1ENR_USART3EN;
+}
 
 #ifdef USART3_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE USART3_INIT_BAUDRATE

@@ -284,7 +284,16 @@ NUTDEVICE devUsartStm32_2 = {
 /*!
  * \brief USART2 base configuration.
  */
-#define STM_USART_CLK   RCC_APB1ENR_USART2EN
+
+static void  StmUsartClkEnable(int enable)
+{
+    if (enable)
+        RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+    RCC->APB1RSTR |= RCC_APB1RSTR_USART2RST;
+    RCC->APB1RSTR &= ~RCC_APB1RSTR_USART2RST;
+    if (!enable)
+        RCC->APB1ENR &= ~RCC_APB1ENR_USART2EN;
+}
 
 #ifdef USART2_INIT_BAUDRATE
 #define USART_INIT_BAUTRATE USART2_INIT_BAUDRATE
