@@ -75,7 +75,7 @@ static int CanSetState(NUTCANBUS *bus, int enable)
 
         /* Wait the acknowledge */
         for(wait_ack = 0, rc = 1; (rc) && (wait_ack < INAK_TimeOut); wait_ack++)
-            rc  = CANBBx[CM3BB_OFFSET(CAN_TypeDef, MSR, _BI32(CAN_MSR_INAK))];
+            rc  = CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, MSR, CAN_MSR_INAK);
         return (rc == 0)?0:CAN_BUS_OFF;
     }
     else
@@ -84,7 +84,7 @@ static int CanSetState(NUTCANBUS *bus, int enable)
 
         /* Wait the acknowledge */
         for(wait_ack = 0, rc = 0; (!rc) && (wait_ack < INAK_TimeOut); wait_ack++)
-            rc  = CANBBx[CM3BB_OFFSET(CAN_TypeDef, MSR, _BI32(CAN_MSR_INAK))];
+            rc  = CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, MSR, CAN_MSR_INAK);
         return (rc==1)?0:CAN_ERROR;
     }
 }
@@ -108,7 +108,7 @@ static void STMCanRX0Interrupt( void *arg)
     CANBUFFER *rxbuf = &(ci->can_RxBuf);
     __IO uint32_t *CANBBx = bus->bb_base;
 
-    if (CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0))])
+    if (CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, RF0R, CAN_RF0R_FOVR0))
     {
         CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0));
         ci->can_overruns++;
@@ -129,7 +129,7 @@ static void STMCanRX0Interrupt( void *arg)
             /* Statistic housekeeping */
             ci->can_rx_frames++;
             CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF0R, CAN_RF0R_RFOM0);
-            while(CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_RFOM0))]);
+            while(CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, RF0R, CAN_RF0R_RFOM0));
         }
         else
         {
@@ -149,7 +149,7 @@ static void STMCanRX1Interrupt( void *arg)
     CANBUFFER *rxbuf = &(ci->can_RxBuf);
     __IO uint32_t *CANBBx = bus->bb_base;
 
-    if (CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1))])
+    if (CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, RF1R, CAN_RF1R_FOVR1))
     {
         CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1));
         ci->can_overruns++;
@@ -170,7 +170,7 @@ static void STMCanRX1Interrupt( void *arg)
             // Stat houskeeping
             ci->can_rx_frames++;
             CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF1R, CAN_RF1R_RFOM1);
-            while(CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_RFOM1))]);
+            while(CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, RF1R, CAN_RF1R_RFOM1));
         }
         else
         {
@@ -706,7 +706,7 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
     /* exit from sleep mode */
     CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, MCR, CAN_MCR_SLEEP);
     for(wait_ack = 0, rc = 1; (rc) && (wait_ack < SLAK_TimeOut); wait_ack++)
-        rc  = CANBBx[CM3BB_OFFSET(CAN_TypeDef, MSR, _BI32(CAN_MSR_SLAK))];
+        rc  = CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, MSR, CAN_MSR_SLAK);
         return (rc == 0)?0:CAN_ERROR;
 
     /* We send tx mailboxes in chronological order and

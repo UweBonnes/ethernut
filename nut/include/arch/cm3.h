@@ -3,6 +3,7 @@
 
 /*
  * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2012-2014 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -217,6 +218,11 @@ extern void *__stack;
 #define CM3BB_OFFSETCLR(bb_base, regstruct, reg, flag) (((volatile uint32_t *)bb_base)[CM3BB_OFFSET(regstruct, reg,  _BI32(flag))] = 0)
 /* Without bitband support set bb_base to base of register structure and use
  * ((regstruct*)bb_base)->reg &= ~(bit)
+ */
+
+#define CM3BB_OFFSETGET(bb_base, regstruct, reg, flag) (((volatile uint32_t *)bb_base)[CM3BB_OFFSET(regstruct, reg, _BI32(flag))])
+/* Without bitband support set bb_base to base of register structure and use
+ * ((regstruct*)bb_base)->reg & (bit)
  */
 
 #ifdef __IMAGECRAFT__
