@@ -330,9 +330,7 @@ nutarch_cm3_stm32f1 =
     {
         name = "nutarch_cm3_stm32f_pll",
         brief = "STM32F PLL Setup",
-        sources = { "cm3/dev/stm/system_stm32.c",
-                    "cm3/dev/stm/stm32f1_clk.c"
-                  },
+        sources = { "cm3/dev/stm/stm32f1_clk.c"},
         requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
         options =
         {

@@ -41,6 +41,7 @@ nutarch_cm3_stm32_family =
     {
         name = "nutarch_stm32_fam",
         brief = "MCU Family",
+        sources = { "cm3/dev/stm/system_stm32.c" },
         options =
         {
             {
@@ -50,7 +51,7 @@ nutarch_cm3_stm32_family =
                 default = 1,
                 requires = { "HW_MCU_STM32" },
                 provides = { "HW_UART_OWIMODE" },
-                file = "include/cfg/arch.h"
+                file = "include/cfg/arch.h",
             }
         }
     },

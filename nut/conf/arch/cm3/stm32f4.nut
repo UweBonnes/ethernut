@@ -420,11 +420,7 @@ nutarch_cm3_stm32f4 =
     {
         name = "nutarch_cm3_stm32f4_pll",
         brief = "STM32F4 PLL Setup",
-        sources =
-        {
-            "cm3/dev/stm/system_stm32.c",
-            "cm3/dev/stm/stm32f4_clk.c"
-        },
+        sources = { "cm3/dev/stm/stm32f4_clk.c" },
         requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
         options =
         {
