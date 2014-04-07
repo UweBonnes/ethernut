@@ -56,6 +56,7 @@ nutarch_cm3_stm32l1 =
         name = "nutarch_cm3_stm32L1_family",
         brief = "MCU L1 Family",
         requires = { "HW_MCU_STM32L1XX" },
+        sources = { "cm3/dev/stm/stm32l1_clk.c" },
         options =
         {
             {
@@ -66,7 +67,6 @@ nutarch_cm3_stm32l1 =
                 requires = { "HW_MCU_CM3" },
                 provides =
                 {
-                    "HW_PLL_STM32L1",
                     "HW_RCC_STM32",
                     "HW_FLASH_STM32L1",
                     "HW_EEPROM_STM32L1",
@@ -224,137 +224,4 @@ nutarch_cm3_stm32l1 =
             },
         }
     },
-    --
-    -- STM32L1 PLL Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32L1_pll",
-        brief = "STM32L1 PLL Setup",
-        sources = { "cm3/dev/stm/stm32l1_clk.c" },
-        requires = { "HW_MCU_STM32", "TOOL_CC_CM3", "TOOL_GCC" },
-        options =
-        {
-            {
-                macro = "SYSCLK_SOURCE",
-                brief = "SYSCLK Source",
-                description = "Select where SYSCLK should get its clock from.\n\n"..
-                              "SYSCLK_HSI is the internal 8MHz clock.\n"..
-                              "SYSCLK_PLL is the internal PLL output. Select the source for the PLL in the next option.\n"..
-                              "SYSCLK_HSE is the external oscillator or crystal input.\n",
-                requires = { "HW_PLL_STM32L1" },
-                type = "enumerated",
-                choices = { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE" },
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLLCLK_SOURCE",
-                brief = "PLL Clock Source",
-                description = "Select where the PLL should get its clock from.\n\n"..
-                              "SYSCLK_HSI is the internal 8MHz clock. PLL is fed with SYSCLK_HSI/2.\n"..
-                              "SYSCLK_HSE is the external oscillator or crystal input.\n",
-                requires = { "HW_PLL_STM32L1" },
-                type = "enumerated",
-                choices = { "PLLCLK_HSI", "PLLCLK_HSE" },
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "HSE_BYPASS",
-                brief = "HSE from external source",
-                description = "Use the clock signal applied to OSC_IN.",
-                requires = { "HW_PLL_STM32L1" },
-                flavor = "booldata",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLL_CLOCK_DIV",
-                brief = "PLL Clock Prescaler",
-                description = "Select this to force the HSE clock beeing divided by 2.",
-                requires = { "HW_PLL_STM32L1", "DISABLED" },
-                flavor = "booldata",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLL_CLOCK_MUL",
-                brief = "PLL Multiplier",
-                description = "Set this value to override automatic setup of the PLL.\n"..
-                              "Respect that the PLL output has to be at maximum 72MHz.\n"..
-                              "If USB is used the ouput must provide a frequency of 72MHz or 48MHz.\n"..
-                              "This clock is used for audio I2S interface directly.\n",
-                requires = { "HW_PLL_STM32L1", "DISABLED" },
-                flavor = "booldata",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "HSE_VALUE",
-                brief = "External Oszillator Frequency",
-                description = "Value of the external oscillator in Herz.\n"..
-                              "Typical Values are:\n"..
-                              "STM32F Conectivity Line Devices: 25MHz\n"..
-                              "STM32F Value Line devices asr limited to 24MHz and do not have a PLL."..
-                              "Other devices: 8MHz.",
-                requires = { "HW_PLL_STM32L1" },
-                flavor = "booldata",
-                type = "long",
-                default = "8000000",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "SYSCLK_FREQ",
-                brief = "CM3 System Clock",
-                description = "System clock (SYSCLK) target frequency after PLL setup.\n\n"..
-                              "24MHz USB not supported\n"..
-                              "36MHz USB not supported\n"..
-                              "48MHz USB supported\n"..
-                              "56MHz USB not supported\n"..
-                              "72MHz USB supported\n\n",
-                requires = { "HW_PLL_STM32L1" },
-                type = "enumerated",
-                choices = stm32_syclk_frequencies,
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLL_DIV_HCLK",
-                brief = "AHB Prescaler",
-                description = "This is the divider for the AHB bus. It is supplied by the SYSCLK and must not exceed 72MHz.\n"..
-                              "The AHB clocks the core, memory, DMA and all other busses.\n"..
-                              "To override auto calculation enter a value n here where the division is 2^n\n"..
-                              "where a value of 0 disables the prescaler and the auto-calculation.\n"..
-                              "Respect that usage of ethernet or USB requires at least 25MHz on this bus.\n",
-                requires = { "HW_PLL_STM32L1", "DISABLED" },
-                flavor = "booldata",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLL_DIV_APB1",
-                brief = "APB1 Prescaler",
-                description = "This is the divider for the slow peripheral bus (APB1). It is upplied by the AHB clock and "..
-                              "it must not exceed 36MHz.\n"..
-                              "To override auto calculation enter a value n here where the division is 2^n\n"..
-                              "where a value of 0 disables the prescaler and the auto-calculation.\n"..
-                              "specific BoardInit() function.\n\n",
-                requires = { "HW_PLL_STM32L1", "DISABLED" },
-                flavor = "booldata",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLL_DIV_APB2",
-                brief = "APB2 Prescaler",
-                description = "This is the divider for the fast peripheral bus (APB2). It is upplied by the AHB clock and "..
-                              "it must not exceed 36MHz.\n"..
-                              "To override auto calculation enter a value n here where the division is 2^n\n"..
-                              "where a value of 0 disables the prescaler and the auto-calculation.\n"..
-                              "specific BoardInit() function.\n\n",
-                requires = { "HW_PLL_STM32L1", "DISABLED" },
-                flavor = "booldata",
-                file = "include/cfg/clock.h"
-            },
-        }
-    },
-
-    -- ***********************************
-    --
-    -- STM32L Device Drivers
-    --
-    -- ***********************************
-
 }

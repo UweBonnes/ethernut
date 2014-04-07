@@ -92,6 +92,13 @@ nutarch_cm3_stm32_family =
         script = "arch/cm3/stm32f4.nut"
     },
     {
+        name = "nutarch_cm3_stm32_pll",
+        brief = "Common PLL settings",
+        description = "Common PLL settings",
+        requires = { "HW_MCU_STM32" },
+        script = "arch/cm3/stm32pll.nut"
+    },
+    {
         name = "nutarch_cm3_stm32_devices",
         brief = "Common devices",
         description = "Common devices to the STM32 families",
