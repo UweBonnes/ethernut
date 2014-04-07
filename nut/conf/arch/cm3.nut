@@ -67,9 +67,7 @@ nutarch_cm3 =
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_CM3" },
         provides = { "DEV_IRQ_CM3" },
-        sources = { "cm3/cmsis/core_cm3.c",
-                    "cm3/cmsis/cortex_init.c",
-                  },
+        sources = { "cm3/cmsis/cortex_init.c" },
         options =
         {
             {
