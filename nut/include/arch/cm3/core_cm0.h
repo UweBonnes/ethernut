@@ -46,7 +46,7 @@
 #ifndef __CORE_CM0_H_GENERIC
 #define __CORE_CM0_H_GENERIC
 
-/** \page CMSIS_MISRA_Exceptions  MISRA-C:2004 Compliance Exceptions
+/** \addtogroup CMSIS_MISRA_Exceptions  MISRA-C:2004 Compliance Exceptions
   CMSIS violates the following MISRA-C:2004 rules:
 
    \li Required Rule 8.5, object/function definition in header file.<br>
@@ -124,8 +124,8 @@
 #endif
 
 #include <stdint.h>                      /* standard types definitions                      */
-#include <core_cmInstr.h>                /* Core Instruction Access                         */
-#include <core_cmFunc.h>                 /* Core Function Access                            */
+#include <arch/cm3/core_cmInstr.h>       /* Core Instruction Access                         */
+#include <arch/cm3/core_cmFunc.h>        /* Core Function Access                            */
 
 #endif /* __CORE_CM0_H_GENERIC */
 

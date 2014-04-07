@@ -60,6 +60,9 @@
   * @{
   */
 
+#include <cfg/arch.h>
+#include <cfg/clock.h>
+
 #ifndef __STM32F0XX_H
 #define __STM32F0XX_H
 
@@ -76,7 +79,7 @@
   */
 
 #if !defined (STM32F030) && !defined (STM32F031) && !defined (STM32F051) && !defined (STM32F072) && !defined (STM32F042)
-#define STM32F030
+  /* #define STM32F030 */
   /* #define STM32F031 */
   /* #define STM32F051 */
   /* #define STM32F072 */
@@ -118,7 +121,7 @@
    In this case, these drivers will not be included and the application code will
    be based on direct access to peripherals registers
    */
-#define USE_STDPERIPH_DRIVER
+/*#define USE_STDPERIPH_DRIVER */
 #endif /* USE_STDPERIPH_DRIVER */
 
 /**
@@ -245,7 +248,7 @@ typedef enum IRQn
   SPI2_IRQn                   = 26,     /*!< SPI2 Interrupt                                          */
   USART1_IRQn                 = 27,     /*!< USART1 Interrupt                                        */
   USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                        */
-  CEC_IRQn                    = 30      /*!< CEC Interrupt                                           */
+  CEC_IRQn                    = 30,     /*!< CEC Interrupt                                           */
 #elif defined (STM32F031)
 /******  STM32F031 specific Interrupt Numbers *************************************/
   WWDG_IRQn                   = 0,      /*!< Window WatchDog Interrupt                               */
@@ -269,7 +272,7 @@ typedef enum IRQn
   TIM17_IRQn                  = 22,     /*!< TIM17 Interrupt                                         */
   I2C1_IRQn                   = 23,     /*!< I2C1 Interrupt                                          */
   SPI1_IRQn                   = 25,     /*!< SPI1 Interrupt                                          */
-  USART1_IRQn                 = 27      /*!< USART1 Interrupt                                        */
+  USART1_IRQn                 = 27,     /*!< USART1 Interrupt                                        */
 #elif defined (STM32F030)
 /******  STM32F030 specific Interrupt Numbers *************************************/
   WWDG_IRQn                   = 0,      /*!< Window WatchDog Interrupt                               */
@@ -295,7 +298,7 @@ typedef enum IRQn
   SPI1_IRQn                   = 25,     /*!< SPI1 Interrupt                                          */
   SPI2_IRQn                   = 26,     /*!< SPI2 Interrupt                                          */
   USART1_IRQn                 = 27,     /*!< USART1 Interrupt                                        */
-  USART2_IRQn                 = 28      /*!< USART2 Interrupt                                        */
+  USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                        */
 #elif defined (STM32F072)
   WWDG_IRQn                   = 0,      /*!< Window WatchDog Interrupt                                     */
   PVD_VDDIO2_IRQn             = 1,      /*!< PVD and VDDIO2 supply comparator through EXTI Line detect Interrupt */
@@ -328,7 +331,7 @@ typedef enum IRQn
   USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                              */
   USART3_4_IRQn               = 29,     /*!< USART3 and USART4 Interrupts                                  */
   CEC_CAN_IRQn                = 30,     /*!< CEC and CAN Interrupts                                        */
-  USB_IRQn                    = 31      /*!< USB Low Priority global Interrupt                             */
+  USB_IRQn                    = 31,     /*!< USB Low Priority global Interrupt                             */
 #elif defined (STM32F042)
   WWDG_IRQn                   = 0,      /*!< Window WatchDog Interrupt                                     */
   PVD_VDDIO2_IRQn             = 1,      /*!< PVD and VDDIO2 supply comparator through EXTI Line detect Interrupt */
@@ -356,16 +359,17 @@ typedef enum IRQn
   USART1_IRQn                 = 27,     /*!< USART1 Interrupt                                              */
   USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                              */
   CEC_CAN_IRQn                = 30,     /*!< CEC and CAN Interrupts                                        */
-  USB_IRQn                    = 31      /*!< USB Low Priority global Interrupt                             */
+  USB_IRQn                    = 31,     /*!< USB Low Priority global Interrupt                             */
 #endif /* STM32F051 */
+  IRQn_MAX                              /*!< Total number of interrupts                                    */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm0.h"
-#include "system_stm32f0xx.h"
+#include <arch/cm3/core_cm0.h>
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Exported_types
