@@ -1165,9 +1165,9 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR3 |= USART_CR3_HDSEL;
         /* Set Alternate function, open drain, Pull up */
 #if defined(__STM32F10x_H)
-        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, CRL, GPIO_CRL_CNF0_0)[TX_GPIO_PIN * 4] = 1;
+        CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4);
 #else
-        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, GPIO_PUPDR_PUPDR0_0)[TX_GPIO_PIN * 2] = 1;
+        CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
 #endif
         Stm32UsartEnable();
     }
@@ -1177,9 +1177,9 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR3 &= ~USART_CR3_HDSEL;
         /* Set Alternate function, push-pull */
 #if defined(__STM32F10x_H)
-        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, CRL, GPIO_CRL_CNF0_0)[TX_GPIO_PIN * 4] = 0;
+        CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4) ;
 #else
-        CM3BBADDR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, GPIO_PUPDR_PUPDR0_0)[TX_GPIO_PIN * 2] = 0;
+        CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
 #endif
         Stm32UsartEnable();
     }

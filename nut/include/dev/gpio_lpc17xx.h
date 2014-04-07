@@ -191,14 +191,14 @@ extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
 #define GpioPinGet(bank, bit)            CM3BBGET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN, (bit))
-//#define GpioPinSet(bank, bit, value)   CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN, bit) = (value)
+//#define GpioPinSet(bank, bit, value)   CM3BBSETVAL(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN, bit, value)
 
 #define GpioPinSet(bank, bit, value)     do { \
                                              if(value) CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOSET, (bit)); else \
                                                        CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOCLR, (bit)); \
                                          } while (0)
 
-#define GpioPinMaskSet(bank, bit, value) CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOMASK, (bit)) = (value)
+#define GpioPinMaskSet(bank, bit, value) CM3BBSETVAL(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOMASK, (bit), value)
 
 #define GpioPinSetHigh(bank, bit)        CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOSET, (bit))
 #define GpioPinSetLow(bank, bit)         CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOCLR, (bit))
