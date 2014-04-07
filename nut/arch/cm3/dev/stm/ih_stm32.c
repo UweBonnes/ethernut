@@ -57,9 +57,17 @@
      item with the HW_XXX_STM32 value.
 */
 CREATE_HANDLER(WWDG,          WWDG,     NUT_IRQPRI_DEF);    /* Window Watchdog */
+#if defined (STM32F072)
+CREATE_HANDLER(PVD,           PVD_VDDIO2, NUT_IRQPRI_DEF);    /* PVD through EXTI */
+#else
 CREATE_HANDLER(PVD,           PVD,      NUT_IRQPRI_DEF);    /* PVD through EXTI */
+#endif
 CREATE_HANDLER(FLASH,         FLASH,    NUT_IRQPRI_DEF);    /* Flash global */
+#if defined (STM32F072)
+CREATE_HANDLER(RCC,           RCC_CRS,  NUT_IRQPRI_DEF);    /* RCC global */
+#else
 CREATE_HANDLER(RCC,           RCC,      NUT_IRQPRI_DEF);    /* RCC global */
+#endif
 #if defined(HW_RTC_STM32F1)
 CREATE_HANDLER(RTC,           RTC,      NUT_IRQPRI_DEF);    // Real Time Clock
 #endif
@@ -67,7 +75,9 @@ CREATE_HANDLER(RTC,           RTC,      NUT_IRQPRI_DEF);    // Real Time Clock
 CREATE_HANDLER(RTC,           RTC_Alarm,NUT_IRQPRI_DEF);    // Real Time Clock
 #endif
 CREATE_HANDLER(SPI1,          SPI1,     NUT_IRQPRI_DEF);     // SPI 1 Controller
+#if defined(HW_SPI2_STM32)
 CREATE_HANDLER(SPI2,          SPI2,     NUT_IRQPRI_DEF);     // SPI 2 Controller
+#endif
 #if defined(HW_SPI3_STM32)
 CREATE_HANDLER(SPI3,          SPI3,     NUT_IRQPRI_DEF);     // SPI 3 Controller
 #endif
@@ -89,11 +99,21 @@ CREATE_HANDLER(SDIO,          SDIO,     NUT_IRQPRI_DEF);     // SDIO Controller
 CREATE_HANDLER(SAI1,          SAI1,     NUT_IRQPRI_DEF);     // SPI 2 Controller
 #endif
 
+#if defined(HW_I2C1_STM32)
+#if defined (MCU_STM32F0)
+CREATE_HANDLER(TWI1,          I2C1,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
+#else
 CREATE_HANDLER(TWI1_EV,       I2C1_EV,  NUT_IRQPRI_DEF);     // I2C 1 Data/Event
 CREATE_HANDLER(TWI1_ER,       I2C1_ER,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
+#endif
+#endif
 #if defined(HW_I2C2_STM32)
+#if defined (MCU_STM32F0)
+CREATE_HANDLER(TWI2,          I2C2,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
+#else
 CREATE_HANDLER(TWI2_EV,       I2C2_EV,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
 CREATE_HANDLER(TWI2_ER,       I2C2_ER,  NUT_IRQPRI_DEF);     // I2C 1 Error
+#endif
 #endif
 #if defined(HW_I2C3_STM32)
 CREATE_HANDLER(TWI3_EV,       I2C3_EV,  NUT_IRQPRI_DEF);     // I2C 2 Error
@@ -136,6 +156,9 @@ CREATE_HANDLER(USART3,        USART3,          NUT_IRQPRI_DEF);  // USART 3
 #if defined(HW_UART4_STM32)
 CREATE_HANDLER(UART4,         UART4,           NUT_IRQPRI_DEF);  // UART 4
 #endif
+#if defined(HW_USART3_4_STM32)
+CREATE_HANDLER(UART3_4,       UART3_4,         NUT_IRQPRI_DEF);  // UART 3/4 combined
+#endif
 #if defined(HW_UART5_STM32)
 CREATE_HANDLER(UART5,         UART5,           NUT_IRQPRI_DEF);  // UART 5
 #endif
@@ -149,7 +172,15 @@ CREATE_HANDLER(UART7,         UART7,          NUT_IRQPRI_DEF);  // UART 7
 CREATE_HANDLER(UART8,         UART8,          NUT_IRQPRI_DEF);  // UART 8
 #endif
 
-#if defined (DMA1_Channel1_BASE)
+#if defined (STM32F072)
+CREATE_HANDLER(DMA1_CH1, DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH2, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH3, DMA1_Channel4_5_6_7,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+#elif defined (MCU_STM32F0)
+CREATE_HANDLER(DMA1_CH1, DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH2, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH3, DMA1_Channel4_5    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+#elif defined (DMA1_Channel1_BASE)
 CREATE_HANDLER(DMA1_CH1, DMA1_Channel1,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA1_CH2, DMA1_Channel2,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA1_CH3, DMA1_Channel3,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
@@ -189,15 +220,22 @@ CREATE_HANDLER(EMAC,          ETH,          NUT_IRQPRI_DEF);     // Ethernet glo
 CREATE_HANDLER(EMAC_WAKE,     ETH_WKUP,     NUT_IRQPRI_DEF);     // Ethernet global interrupt
 #endif
 #if defined(HW_TIM1_STM32)
+#if defined(MCU_STM32F0)
+CREATE_HANDLER(TIM1_BRK_UP_TRG_COM,      TIM1_BRK_UP_TRG_COM,     NUT_IRQPRI_DEF);
+CREATE_HANDLER(TIM1_CC,       TIM1_CC,      NUT_IRQPRI_DEF);
+#else
 CREATE_HANDLER(TIM1_BRK,      TIM1_BRK,     NUT_IRQPRI_DEF);
 CREATE_HANDLER(TIM1_UP,       TIM1_UP,      NUT_IRQPRI_DEF);
 CREATE_HANDLER(TIM1_TRG_COM,  TIM1_TRG_COM, NUT_IRQPRI_DEF);
 CREATE_HANDLER(TIM1_CC,       TIM1_CC,      NUT_IRQPRI_DEF);
 #endif
+#endif
 /* Only Tim2 up to TIM5 have always a single TIMx_IRQn*/
 CREATE_HANDLER(TIM2,          TIM2,         NUT_IRQPRI_DEF);
 CREATE_HANDLER(TIM3,          TIM3,         NUT_IRQPRI_DEF);
+#if defined(HW_TIM4_STM32)
 CREATE_HANDLER(TIM4,          TIM4,         NUT_IRQPRI_DEF);
+#endif
 #if defined(HW_TIM5_STM32)
 CREATE_HANDLER(TIM5,          TIM5,         NUT_IRQPRI_DEF);
 #endif
