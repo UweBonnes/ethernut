@@ -72,8 +72,13 @@ int CM3_IrqCtl(int cmd, void *param, IRQn_Type interrupt,
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *)param;
-    int_fast8_t enabled = NVIC_GetActive(interrupt);
-
+    int enabled;
+#if       (__CORTEX_M >= 0x03)
+    enabled = (NVIC->ISER[((uint32_t)(interrupt) >> 5)] ==
+               (1 << ((uint32_t)(interrupt) & 0x1F)));
+#else
+    enabled = (NVIC->ISER[0] == (1 << ((uint32_t)(interrupt) & 0x1F)));
+#endif
     /* Disable interrupt. */
     if (enabled) {
         NVIC_DisableIRQ(interrupt);

@@ -62,7 +62,13 @@ static int InterruptCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *)param;
-    int_fast8_t enabled = NVIC_GetActive(THIS_IRQn);
+    int enabled;
+#if       (__CORTEX_M >= 0x03)
+    enabled = (NVIC->ISER[((uint32_t)(THIS_IRQn) >> 5)] ==
+               (1 << ((uint32_t)(THIS_IRQn) & 0x1F)));
+#else
+    enabled = (NVIC->ISER[0] == (1 << ((uint32_t)(THIS_IRQn) & 0x1F)));
+#endif
 
     /* Disable interrupt. */
     if (enabled) {
