@@ -227,13 +227,13 @@ static int Lpc17xxDevDebugSetSpeed(uint32_t baudrate)
 
     if (best_error < ((baudrate * UART_ACCEPTED_BAUDRATE_ERROR) / 100)) {
         /* Set DLAB bit */
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 1;
+        CM3BBSET(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS);
 
         USARTn->DLM  = UART_LOAD_DLM(best_divisor);
         USARTn->DLL  = UART_LOAD_DLL(best_divisor);
 
         /* Reset DLAB bit */
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 0;
+        CM3BBCLR(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS);
         USARTn->FDR  = (UART_FDR_MULVAL(bestm) | UART_FDR_DIVADDVAL(bestd)) & UART_FDR_BITMASK;
     } else {
         return -1;
@@ -351,14 +351,14 @@ static int Lpc17xxDevDebugSetStopBits(uint8_t bits)
 
     switch (bits) {
         case 1:
-            CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 0;
+            CM3BBCLR(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS);
             break;
         case 2:
-            CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 1;
+            CM3BBSET(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS);
             break;
         case 3:
             if ((USARTn->LCR & UART_LCR_WLEN_BITMASK) == UART_LCR_WLEN5) {
-                CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 1;
+                CM3BBSET(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS);
             } else {
                 Lpc17xxDevDebugEnable();
                 return -1;

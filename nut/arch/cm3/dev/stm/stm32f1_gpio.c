@@ -159,11 +159,11 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
     /* Important: Enable clock of port first
      * before trying to configure it!
      * Enable GPIO clock source */
-    CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR,
-             (((bank-GPIOA_BASE)/0x400) + _BI32(RCC_APB2ENR_IOPAEN))) = 1;
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR,
+             (((bank-GPIOA_BASE)/0x400) + _BI32(RCC_APB2ENR_IOPAEN)));
     if (flags & GPIO_CFG_PERIPHAL )
-        CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR,
-                 _BI32(RCC_APB2ENR_AFIOEN)) = 1;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR,
+                 _BI32(RCC_APB2ENR_AFIOEN));
 
     /* Set the inital value, if given
      *

@@ -131,8 +131,8 @@
 #define  CLKPWR_PCONP_PCENET        30  /* Ethernet        */
 #define  CLKPWR_PCONP_PCUSB         31  /* USB             */
 
-#define SysCtlPeripheralClkEnable(bit)  CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit)) = 1
-#define SysCtlPeripheralClkDisable(bit) CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit)) = 0
+#define SysCtlPeripheralClkEnable(bit)  CM3BBSET(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
+#define SysCtlPeripheralClkDisable(bit) CM3BBCLR(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
 #define SysCtlPeripheralClkGet(bit)     CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
 
 extern uint32_t SysCtlClockGet(void);

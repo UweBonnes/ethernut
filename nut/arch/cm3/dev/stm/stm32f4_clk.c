@@ -255,14 +255,14 @@ int SetPllClockSource( int src)
     if (src == PLLCLK_HSE) {
         rc = CtlHseClock(1);
         if (rc==0) {
-            CM3BBREG(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC)) = 1;
+            CM3BBSET(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC));
         }
     }
     else if (src == PLLCLK_HSI) {
         rc = CtlHsiClock(1);
         /* Select HSI/2 as PLL clock source */
         if (rc==0) {
-            CM3BBREG(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC)) = 0;
+            CM3BBCLR(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC));
         }
     }
 

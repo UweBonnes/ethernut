@@ -184,9 +184,9 @@ int CtlHseClock( uint8_t ena)
 
     if( ena) {
 #if defined(HSE_BYPASS)
-        CM3BBREG(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP)) = 1;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP));
 #else
-        CM3BBREG(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP)) = 0;
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP));
 #endif
 
 #if !defined(RTCPRE) || (RTCPRE <0) || (RTCPRE >3)
@@ -265,14 +265,14 @@ int SetPllClockSource( int src)
     if (src == PLLCLK_HSE) {
         rc = CtlHseClock(ENABLE);
         if (rc==0) {
-            CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PLLSRC)) = 1;
+            CM3BBSET(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PLLSRC));
         }
     }
     else if (src == PLLCLK_HSI) {
         rc = CtlHsiClock(ENABLE);
         /* Select HSI/2 as PLL clock source */
         if (rc==0) {
-            CM3BBREG(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PLLSRC)) = 0;
+            CM3BBCLR(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PLLSRC));
         }
     }
 
@@ -400,11 +400,11 @@ int SetRTCClock(int source)
 {
     int rc = -1;
     /* Enable PWR Controller and access to the RTC backup domain*/
-    CM3BBREG(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_PWREN))=1;
-    CM3BBREG(PWR_BASE, PWR_TypeDef, CR, _BI32(PWR_CR_DBP)) = 1;
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_PWREN));
+    CM3BBSET(PWR_BASE, PWR_TypeDef, CR, _BI32(PWR_CR_DBP));
     /* Reset RTC to allow selection */
-    CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST)) = 1;
-    CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST)) = 0;
+    CM3BBSET(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST));
+    CM3BBCLR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST));
     switch (source)
     {
     case RTCCLK_LSI:
@@ -424,9 +424,9 @@ int SetRTCClock(int source)
         if (rc == -1)
             return rc;
 #if defined(LSE_BYPASS)
-        CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP)) = 1;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP));
 #else
-        CM3BBREG(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP)) = 0;
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP));
 #endif
         rc = rcc_set_and_wait_rdy(
             CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEON)),

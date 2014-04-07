@@ -90,8 +90,7 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
                  CR, _BI32(DMA_SxCR_EN)))
     {
         /* Disable stream */
-        CM3BBREG(stream_base, DMA_Stream_TypeDef,
-                 CR, _BI32(DMA_SxCR_EN)) = 0;
+        CM3BBCLR(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN));
         while(CM3BBREG(stream_base, DMA_Stream_TypeDef,
                        CR, _BI32(DMA_SxCR_EN)));
     }
@@ -129,7 +128,7 @@ void DMA_Enable(uint8_t ch)
 {
     uint32_t dma_base = (ch& 0x80)?DMA2_BASE:DMA1_BASE;
     uint32_t stream_base = CH2STREAM(dma_base, ch);
-    CM3BBREG(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN)) = 1;
+    CM3BBSET(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN));
 }
 
 /*
@@ -139,7 +138,7 @@ void DMA_Disable(uint8_t ch)
 {
     uint32_t dma_base = (ch& 0x80)?DMA2_BASE:DMA1_BASE;
     uint32_t stream_base = CH2STREAM(dma_base, ch);
-    CM3BBREG(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN)) = 0;
+    CM3BBCLR(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN));
 }
 
 
@@ -160,20 +159,20 @@ void DMA_Init(uint8_t ch)
                        _BI32(RCC_AHB1ENR_DMA1EN ))))
         {
             /* Enable DMA1 Clock */
-            CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN )) = 1;
+            CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ));
              /* Reset DMA1 */
-            CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST)) = 1;
-            CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST)) = 0;
+            CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
+            CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
             return;
         }
     }
     else if (!(CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ))))
     {
         /* Enable DMA2 Clock */
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN )) = 1;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
         /* Reset DMA2 */
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST)) = 1;
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST)) = 0;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
         return;
     }
     switch (stream_nr)
@@ -200,17 +199,17 @@ void DMA_Init(void)
 {
     if (CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN )) == 0) {
         /* Enable DMA1 Clock */
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN )) = 1;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ));
         /* Reset DMA1 */
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST)) = 1;
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST)) = 0;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
     }
     if (CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN )) == 0) {
         /* Enable DMA2 Clock */
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN )) = 1;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
         /* Reset DMA2 */
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST)) = 1;
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST)) = 0;
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
     }
     return;
 }

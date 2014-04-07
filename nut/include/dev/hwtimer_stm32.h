@@ -118,29 +118,29 @@
 #define TIM_DMA_Address( timer)            CM3REG(timer, TIM_TypeDef, DMAR )
 #define TIM_Option( timer)                 CM3REG(timer, TIM_TypeDef, OR )
 #define TIM_Break_Deadtime( timer)         CM3REG(timer, TIM_TypeDef, BDTR )
-#define TIM_IRQEnable( timer )             CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 1
-#define TIM_IRQEnable( timer )             CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 1
-#define TIM_IRQDisable( timer )            CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  )) = 0
-#define TIM_C1IRQEnable( timer )           CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC1IE)) = 1
-#define TIM_C1IRQDisable( timer )          CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC1IE)) = 0
-#define TIM_C2IRQEnable( timer )           CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC2IE)) = 1
-#define TIM_C2IRQDisable( timer )          CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC2IE)) = 0
-#define TIM_C3IRQEnable( timer )           CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC3IE)) = 1
-#define TIM_C3IRQDisable( timer )          CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC3IE)) = 0
-#define TIM_C4IRQEnable( timer )           CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC4IE)) = 1
-#define TIM_C4IRQDisable( timer )          CM3BBREG(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC4IE)) = 0
-#define TIM_StartTimer( timer)             CM3BBREG(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_CEN   )) = 1
-#define TIM_StopTimer( timer )             CM3BBREG(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_CEN   )) = 0
-#define TIM_OnePulse( timer)               CM3BBREG(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_OPM   )) = 1
-#define TIM_ContPulse( timer)              CM3BBREG(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_OPM   )) = 0
-#define TIM_AutoReload( timer )            CM3BBREG(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_ARPE  )) = 1
-#define TIM_NoReload( timer )              CM3BBREG(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_ARPE  )) = 0
-#define TIM_Update( timer )                CM3BBREG(timer, TIM_TypeDef, EGR , _BI16(TIM_EGR_UG    )) = 1
-#define TIM_ClearInterruptFlag( timer)     CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_UIF    )) = 0
-#define TIM_C1ClearInterruptFlag( timer )  CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC1IF  )) = 0
-#define TIM_C2ClearInterruptFlag( timer )  CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC2IF  )) = 0
-#define TIM_C3ClearInterruptFlag( timer )  CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC3IF  )) = 0
-#define TIM_C4ClearInterruptFlag( timer )  CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC4IF  )) = 0
+#define TIM_IRQEnable( timer )             CM3BBSET(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  ))
+#define TIM_IRQEnable( timer )             CM3BBSET(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  ))
+#define TIM_IRQDisable( timer )            CM3BBCLR(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_UIE  ))
+#define TIM_C1IRQEnable( timer )           CM3BBSET(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC1IE))
+#define TIM_C1IRQDisable( timer )          CM3BBCLR(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC1IE))
+#define TIM_C2IRQEnable( timer )           CM3BBSET(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC2IE))
+#define TIM_C2IRQDisable( timer )          CM3BBCLR(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC2IE))
+#define TIM_C3IRQEnable( timer )           CM3BBSET(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC3IE))
+#define TIM_C3IRQDisable( timer )          CM3BBCLR(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC3IE))
+#define TIM_C4IRQEnable( timer )           CM3BBSET(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC4IE))
+#define TIM_C4IRQDisable( timer )          CM3BBCLR(timer, TIM_TypeDef, DIER, _BI16(TIM_DIER_CC4IE))
+#define TIM_StartTimer( timer)             CM3BBSET(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_CEN   ))
+#define TIM_StopTimer( timer )             CM3BBCLR(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_CEN   ))
+#define TIM_OnePulse( timer)               CM3BBSET(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_OPM   ))
+#define TIM_ContPulse( timer)              CM3BBCLR(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_OPM   ))
+#define TIM_AutoReload( timer )            CM3BBSET(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_ARPE  ))
+#define TIM_NoReload( timer )              CM3BBCLR(timer, TIM_TypeDef, CR1 , _BI16(TIM_CR1_ARPE  ))
+#define TIM_Update( timer )                CM3BBSET(timer, TIM_TypeDef, EGR , _BI16(TIM_EGR_UG    ))
+#define TIM_ClearInterruptFlag( timer)     CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_UIF    ))
+#define TIM_C1ClearInterruptFlag( timer )  CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC1IF  ))
+#define TIM_C2ClearInterruptFlag( timer )  CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC2IF  ))
+#define TIM_C3ClearInterruptFlag( timer )  CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC3IF  ))
+#define TIM_C4ClearInterruptFlag( timer )  CM3BBCLR(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC4IF  ))
 #define TIM_C1InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC1IF  )) != 0)
 #define TIM_C2InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC2IF  )) != 0)
 #define TIM_C3InterruptFlag( timer )      (CM3BBREG(timer, TIM_TypeDef, SR  , _BI16(TIM_SR_CC3IF  )) != 0)

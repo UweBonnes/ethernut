@@ -397,9 +397,9 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     }
 
     if (flags & GPIO_CFG_OUTPUT) {
-        CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) = 1;
+        CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit);
     } else {
-        CM3BBREG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit) = 0;
+        CM3BBCLR(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, bit);
     }
 
     if (flags & GPIO_CFG_MULTIDRIVE) {

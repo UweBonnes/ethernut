@@ -189,8 +189,8 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioPinGet(bank, bit)        (CM3BBREG((bank), GPIO_TypeDef, IDR, (bit)))
 #define GpioPinSet(bank, bit, value) (CM3BBREG((bank), GPIO_TypeDef, ODR, (bit)) = (value)?1:0)
 #if defined(MCU_STM32F1)
-#define GpioPinSetHigh(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, BSRR, (bit)) = 1)
-#define GpioPinSetLow(bank, bit)     (CM3BBREG((bank), GPIO_TypeDef, BRR , (bit)) = 1)
+#define GpioPinSetHigh(bank, bit)    CM3BBSET((bank), GPIO_TypeDef, BSRR, (bit))
+#define GpioPinSetLow(bank, bit)     CM3BBSET((bank), GPIO_TypeDef, BRR , (bit))
 /* We unconditionally switch back to 2 Mhz output speed after we released the pin at least once*/
 #define GpioPinDrive(bank, bit)     do {                                \
     __IO uint32_t *cr_bb = &CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<2)); \
@@ -199,10 +199,10 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
     __IO uint32_t *cr_bb = &CM3BBREG((bank), GPIO_TypeDef, CRL, ((bit)<<2)); \
     cr_bb[1] = 0; cr_bb[2] = 1; } while (0)
 #else
-#define GpioPinSetHigh(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, BSRRL, (bit)) = 1)
-#define GpioPinSetLow(bank, bit)     (CM3BBREG((bank), GPIO_TypeDef, BSRRH, (bit)) = 1)
-#define GpioPinDrive(bank, bit)      (CM3BBREG((bank), GPIO_TypeDef, MODER, (bit)<<1) = 1)
-#define GpioPinRelease(bank, bit)    (CM3BBREG((bank), GPIO_TypeDef, MODER, (bit)<<1) = 0)
+#define GpioPinSetHigh(bank, bit)    CM3BBSET((bank), GPIO_TypeDef, BSRRL, (bit))
+#define GpioPinSetLow(bank, bit)     CM3BBSET((bank), GPIO_TypeDef, BSRRH, (bit))
+#define GpioPinDrive(bank, bit)      CM3BBSET((bank), GPIO_TypeDef, MODER, (bit)<<1)
+#define GpioPinRelease(bank, bit)    CM3BBCLR((bank), GPIO_TypeDef, MODER, (bit)<<1)
 #endif
 #endif
 
@@ -212,18 +212,11 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioPortSetLow(bank, mask)   (CM3REG((bank), GPIO_TypeDef, BRR ) = mask)
 
 #if defined(MCU_STM32L1)
-#define GpioClkEnable(bank) do {                                        \
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,(bank-GPIOA_BASE)>>10) = 1; \
-    } while(0)
-
+#define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHBENR, (  bank-GPIOA_BASE)>>10)
 #elif defined(MCU_STM32F3)
-#define GpioClkEnable(bank) do {                \
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHBENR,                 \
-                 (((bank-GPIOA_BASE)>>10) +17)) = 1;} while(0)
+#define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHBENR, (((bank-GPIOA_BASE)>>10) +17))
 #else
-#define GpioClkEnable(bank) do {                                        \
-        CM3BBREG(RCC_BASE, RCC_TypeDef, AHB1ENR,(bank-GPIOA_BASE)>>10) = 1; } \
-    while(0);
+#define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR,(  bank-GPIOA_BASE)>>10)
 #endif
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, uint8_t bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, uint8_t bit);

@@ -241,8 +241,8 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         {
            /* On F4, if even one pin needs fastest (high) speed, we need to enable the SYSCFG clock
          and the IO compensation cell (whatever this compensation cell is ?)*/
-      CM3BBREG(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN)) = 1;
-      CM3BBREG(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD)) = 1;
+      CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
+      CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD));
         /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
     }
 #endif

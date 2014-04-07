@@ -159,8 +159,8 @@
 #define GPIO_PULLUP_ON(b)  (CM3REG(GPIO_ID, GPIO_TypeDef, PUPDR) |=  (_BV(b<<1)))
 #define GPIO_PULLUP_OFF(b) (CM3REG(GPIO_ID, GPIO_TypeDef, PUPDR) &= ~(_BV(b<<1)))
 #else
-#define GPIO_PULLUP_ON(b)  (CM3BBREG(GPIO_ID, GPIO_TypeDef, PUPDR, (b<<1)) = 1)
-#define GPIO_PULLUP_OFF(b) (CM3BBREG(GPIO_ID, GPIO_TypeDef, PUPDR, (b<<1)) = 0)
+#define GPIO_PULLUP_ON(b)  CM3BBSET(GPIO_ID, GPIO_TypeDef, PUPDR, (b<<1))
+#define GPIO_PULLUP_OFF(b) CM3BBCLR(GPIO_ID, GPIO_TypeDef, PUPDR, (b<<1))
 #endif
 
 #else

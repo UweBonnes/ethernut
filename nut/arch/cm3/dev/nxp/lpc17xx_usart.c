@@ -202,7 +202,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf, uint32_t lsr)
 
         /* Disable transmitter and transmitter interrupt */
         USARTn->TER = 0;
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 0;
+        CM3BBCLR(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS);
 
         return;
     }
@@ -239,7 +239,7 @@ static void Lpc17xxUsartTxReady(RINGBUF * rbf, uint32_t lsr)
 
     if ( rbf->rbf_cnt==0) {
         /* Nothing left to transmit: Disable transmit interrupts. */
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 0;
+        CM3BBCLR(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS);
         NutEventPostFromIrq(&rbf->rbf_que);
         NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
     }
@@ -285,7 +285,7 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf, uint32_t lsr)
                 /* Disable transmitter and transmitter interrupt */
                 USARTn->TER = 0;
 
-                CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 0;
+                CM3BBCLR(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS);
 
                 flow_control |= XOFF_RCVD;
                 return;
@@ -294,7 +294,7 @@ static void Lpc17xxUsartRxReady(RINGBUF * rbf, uint32_t lsr)
             else if (ch == ASCII_XON) {
                 /* Disable transmitter and transmitter interrupt */
                 USARTn->TER = UART_TER_TXEN;
-                CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 1;
+                CM3BBSET(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS);
 
                 flow_control &= ~XOFF_RCVD;
                 return;
@@ -569,13 +569,13 @@ static int Lpc17xxUsartSetSpeed(uint32_t baudrate)
 
     if (best_error < ((baudrate * UART_ACCEPTED_BAUDRATE_ERROR) / 100)) {
         /* Set DLAB bit */
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 1;
+        CM3BBSET(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS);
 
         USARTn->DLM  = UART_LOAD_DLM(best_divisor);
         USARTn->DLL  = UART_LOAD_DLL(best_divisor);
 
         /* Reset DLAB bit */
-        CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS) = 0;
+        CM3BBCLR(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_DLAB_EN_POS);
         USARTn->FDR  = (UART_FDR_MULVAL(bestm) | UART_FDR_DIVADDVAL(bestd)) & UART_FDR_BITMASK;
     } else {
         return -1;
@@ -762,14 +762,14 @@ static int Lpc17xxUsartSetStopBits(uint8_t bits)
 
     switch (bits) {
         case 1:
-            CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 0;
+            CM3BBCLR(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS);
             break;
         case 2:
-            CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 1;
+            CM3BBSET(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS);
             break;
         case 3:
             if ((USARTn->LCR & UART_LCR_WLEN_BITMASK) == UART_LCR_WLEN5) {
-                CM3BBREG(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS) = 1;
+                CM3BBSET(USARTnBase, LPC_UART_TypeDef, LCR, UART_LCR_STOPBIT_SEL_POS);
             } else {
                 Lpc17xxUsartEnable();
                 return -1;
@@ -1041,7 +1041,7 @@ static void Lpc17xxUsartTxStart(void)
 {
     register uint8_t *cp;
     /* Enable transmit interrupts. */
-    CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS) = 1;
+    CM3BBSET(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_THREINT_EN_POS);
     USARTn->TER = UART_TER_TXEN;
 
     /*
@@ -1107,7 +1107,7 @@ static void Lpc17xxUsartRxStart(void)
     }
 #endif
     /* Enable receive interrupts. */
-    CM3BBREG(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_RBRINT_EN_POS) = 1;
+    CM3BBSET(USARTnBase, LPC_UART_TypeDef, IER, UART_IER_RBRINT_EN_POS);
 }
 
 /*

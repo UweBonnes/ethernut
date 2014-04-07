@@ -132,16 +132,16 @@
 #define  CLKPWR_RSTCON1_CANACC  34  /* CAN ACC         */
 
 
-#define SysCtlPeripheralClkEnable(bit)    CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit)) = 1
-#define SysCtlPeripheralClkDisable(bit)   CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit)) = 0
+#define SysCtlPeripheralClkEnable(bit)    CM3BBSET(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
+#define SysCtlPeripheralClkDisable(bit)   CM3BBCLR(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
 #define SysCtlPeripheralClkGet(bit)       CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, PCONP, (bit))
 
 #define SysCtlPeripheralResetEnable(bit)  if ((bit) < 32) \
-                                          CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON0, (bit)) = 1; else \
-                                          CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON1, (bit - 32)) = 1;
+                                          CM3BBSET(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON0, (bit)); else \
+                                          CM3BBSET(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON1, (bit - 32));
 #define SysCtlPeripheralResetDisable(bit) if ((bit) < 32) \
-                                          CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON0, (bit)) = 0; else \
-                                          CM3BBREG(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON1, (bit - 32)) = 0;
+                                          CM3BBCLR(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON0, (bit)); else \
+                                          CM3BBCLR(LPC_SC_BASE, LPC_SC_TypeDef, RSTCON1, (bit - 32));
 
 extern uint32_t Lpc17xx_ClockGet(int idx);
 extern uint32_t SysCtlClockGet(void);
