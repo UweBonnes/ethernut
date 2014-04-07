@@ -41,6 +41,7 @@ nutarch_cm3_stm32_pll =
                         brief = "External Oszillator Frequency",
                         description = "Value of the external oscillator in Herz.\n"..
                               "Allowed values:\n"..
+                              "   STM32F0xx  : 1.. 32 Mhz\n"..
                               "   STM32F100  : 4.. 24 Mhz\n"..
                               "   STM32F101  : 4.. 16 Mhz\n"..
                               "   STM32F102/3: 1.. 25 Mhz\n"..
@@ -61,6 +62,7 @@ nutarch_cm3_stm32_pll =
                         description = "System clock (SYSCLK) target frequency.\n"..
                               "Allowed values:\n"..
                               "Allowed values:\n"..
+                              "   STM32F0XX   :  48 Mhz\n"..
                               "   STM32F100   :  24 Mhz\n"..
                               "   STM32F101   :  36 Mhz\n"..
                               "   STM32F102/3 :  48 Mhz\n"..
