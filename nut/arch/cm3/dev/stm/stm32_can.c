@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2012/2013 by Uwe Bonnes
+ * Copyright (C) 2012-2014 by Uwe Bonnes
  *                          (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  *
@@ -71,7 +71,7 @@ static int CanSetState(NUTCANBUS *bus, int enable)
         return CAN_IS_COMPANION;
     if(enable)
     {
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, MCR, _BI32(CAN_MCR_INRQ))] = 0;
+        CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, MCR, CAN_MCR_INRQ);
 
         /* Wait the acknowledge */
         for(wait_ack = 0, rc = 1; (rc) && (wait_ack < INAK_TimeOut); wait_ack++)
@@ -135,7 +135,7 @@ static void STMCanRX0Interrupt( void *arg)
         {
             /* No overrun yet, but we can't clean the FIFO yet */
             /* Disable the FIFO message pending interrupt*/
-            CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_FMPIE0))]= 0;
+            CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE0);
             return;
         }
     }
@@ -176,7 +176,7 @@ static void STMCanRX1Interrupt( void *arg)
         {
             /* No overrun yet, but we can't clean the FIFO yet */
             /* Disable the FIFO message pending interrupt*/
-            CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_FMPIE1))]= 0;
+            CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE1);
             return;
         }
 
@@ -192,7 +192,7 @@ static void STMCanErrorInterrupt( void *arg)
     CANBUSINFO *ci = bus->bus_ci;
     __IO uint32_t *CANBBx = bus->bb_base;
 
-    CANBBx[CM3BB_OFFSET(CAN_TypeDef, MSR,_BI32(CAN_MSR_ERRI))]= 0;
+    CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, MSR, CAN_MSR_ERRI);
     ci->can_sce_interrupts++;
 }
 
@@ -704,7 +704,7 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
     CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, MCR, CAN_MCR_RESET);
 
     /* exit from sleep mode */
-    CANBBx[CM3BB_OFFSET(CAN_TypeDef, MCR, _BI32(CAN_MCR_SLEEP))] = 0;
+    CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, MCR, CAN_MCR_SLEEP);
     for(wait_ack = 0, rc = 1; (rc) && (wait_ack < SLAK_TimeOut); wait_ack++)
         rc  = CANBBx[CM3BB_OFFSET(CAN_TypeDef, MSR, _BI32(CAN_MSR_SLAK))];
         return (rc == 0)?0:CAN_ERROR;
@@ -975,7 +975,7 @@ void CanEnableRx(NUTCANBUS *bus)
         CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE0);
     else
         CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE1);
-    CANBBx[CM3BB_OFFSET(CAN_TypeDef, FMR,_BI32(CAN_FMR_FINIT))]= 0;
+    CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, FMR, CAN_FMR_FINIT);
 }
 
 

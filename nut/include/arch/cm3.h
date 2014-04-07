@@ -214,6 +214,11 @@ extern void *__stack;
  * ((regstruct*)bb_base)->reg |= (bit)
  */
 
+#define CM3BB_OFFSETCLR(bb_base, regstruct, reg, flag) (((volatile uint32_t *)bb_base)[CM3BB_OFFSET(regstruct, reg,  _BI32(flag))] = 0)
+/* Without bitband support set bb_base to base of register structure and use
+ * ((regstruct*)bb_base)->reg &= ~(bit)
+ */
+
 #ifdef __IMAGECRAFT__
 #define __attribute__(x)
 #endif
