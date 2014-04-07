@@ -176,15 +176,18 @@ extern void *__stack;
  * Translates a register address into a volatile single cycle
  * read or write access of the register.
  *
- * Constant base part of address allows room for compiler optimization. GCC doesn't (201201)
+ * Constant base part of address allows room for compiler optimization.
+ *
+ * When writing these macros for archs without bitbanding, be sure to handle
+ * bit values >> 32!
  */
-#define CM3BBREG(base, regstruct, reg, bit) *((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) )
+#define CM3BBREG(base, regstruct, reg, bit) *((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) )
 
-#define CM3BBSET(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) ) = 1)
+#define CM3BBSET(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) ) = 1)
 
-#define CM3BBCLR(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) ) = 0)
+#define CM3BBCLR(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) ) = 0)
 
-#define CM3BBGET(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) ))
+#define CM3BBGET(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) ))
 
 #define CM3BBADDR(base, regstruct, reg, bit) ((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + (bit <<2)] ) )
 
