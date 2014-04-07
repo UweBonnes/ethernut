@@ -100,12 +100,14 @@ void CortexRegDump(uint32_t *arg, int exception_type)
 
     DebugPrint("["); DebugPrint(exception_names[exception_type]); DebugPrint(" handler - all numbers in hex]\n");
 
+#if defined(SCB_HFSR_FORCED_Msk)
     if (exception_type == 2) {
         /* This is a hard fault handler */
-        if ((SCB->HFSR & (1 << 30)) != 0) {
+        if ((SCB->HFSR & SCB_HFSR_FORCED_Msk) != 0) {
             DebugPrint("Forced Hard Fault!\n");
         }
     }
+#endif
 
     DebugPrint("\nR0        = 0x"); DebugPrintU32Hex(stacked_r0);
     DebugPrint("\nR1        = 0x"); DebugPrintU32Hex(stacked_r1);
