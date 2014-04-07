@@ -179,27 +179,54 @@ extern void *__stack;
  *
  * Constant base part of address allows room for compiler optimization.
  *
- * When writing these macros for archs without bitbanding, be sure to handle
- * bit values >> 32!
+ * Be sure to handle bit values >> 32!
  */
+#if defined (MCU_CM_NO_BITBAND)
+/* We can't map this macro, to lets abort compilation here if we ever use it */
+#else
 #define CM3BBREG(base, regstruct, reg, bit) *((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) )
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+#define CM3BBSET(base, regstruct, reg, bit) (*(volatile uint32_t *)((base) + offsetof(regstruct, reg) + ((bit)/32) * 4) |=  (1<<((bit)%32)))
+#else
 #define CM3BBSET(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) ) = 1)
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+#define CM3BBCLR(base, regstruct, reg, bit) (*(volatile uint32_t *)((base) + offsetof(regstruct, reg) + ((bit)/32) * 4) &= ~(1<<((bit)%32)))
+#else
 #define CM3BBCLR(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) ) = 0)
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+#define CM3BBGET(base, regstruct, reg, bit) ((*(volatile uint32_t *)((base) + offsetof(regstruct, reg) + ((bit)/32) * 4) & (1<<((bit)%32))) == (1<<((bit)%32)))
+#else
 #define CM3BBGET(base, regstruct, reg, bit) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) ))
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+/* We can't map this macro, to lets abort compilation here if we ever use it */
+#else
 #define CM3BBADDR(base, regstruct, reg, bit) ((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) )
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+#define CM3BBSETVAL(base, regstruct, reg, bit, value) (value)?CM3BBSET(base, regstruct, reg, bit):CM3BBCLR(base, regstruct, reg, bit)
+#else
 #define CM3BBSETVAL(base, regstruct, reg, bit, value) (*((volatile uint32_t *) &(((uint8_t *) ((base & 0xF0000000) + 0x02000000 + ((base & 0xFFFFF)<<5))) [(offsetof(regstruct, reg) <<5) + ((bit) <<2)] ) ) = (value)?1:0)
-
+#endif
 
 /*!
  * \brief Get Base Address of the Bitband region belonging to Device Register structrure
  *
  */
+#if defined (MCU_CM_NO_BITBAND)
+/* Reproduce the base address for the following macros */
+#define CM3BB_BASE(base) ((volatile uint32_t *)base)
+#else
 #define CM3BB_BASE(base) (volatile uint32_t *) (((uint32_t)base & 0xF0000000) + 0x02000000 + (((uint32_t)base & 0xFFFFF)<<5))
+#endif
 
 /*!
  * \brief Get Offset of Bitband Bit in the (uint32_t*) Bitband Array
@@ -208,22 +235,38 @@ extern void *__stack;
  * registers above the base can be reached witout loading an absolute address in a bitband access
  *
  */
+#if defined (MCU_CM_NO_BITBAND)
+/* We can't map this macro, to lets abort compilation here if we ever use it */
+#else
 #define CM3BB_OFFSET(regstruct, reg, bit) ((offsetof(regstruct, reg) <<3) + bit)
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+#define CM3BB_OFFSETSET(bb_base, regstruct, reg, flag) ((regstruct*)bb_base)->reg |= (flag)
+#else
 #define CM3BB_OFFSETSET(bb_base, regstruct, reg, flag) (((volatile uint32_t *)bb_base)[CM3BB_OFFSET(regstruct, reg, _BI32(flag))] = 1)
 /* Without bitband support set bb_base to base of register structure and use
  * ((regstruct*)bb_base)->reg |= (bit)
  */
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+#define CM3BB_OFFSETCLR(bb_base, regstruct, reg, flag) ((regstruct*)bb_base)->reg &= ~(flag)
+#else
 #define CM3BB_OFFSETCLR(bb_base, regstruct, reg, flag) (((volatile uint32_t *)bb_base)[CM3BB_OFFSET(regstruct, reg,  _BI32(flag))] = 0)
 /* Without bitband support set bb_base to base of register structure and use
  * ((regstruct*)bb_base)->reg &= ~(bit)
  */
+#endif
 
+#if defined (MCU_CM_NO_BITBAND)
+#define CM3BB_OFFSETGET(bb_base, regstruct, reg, flag) ((((regstruct*)bb_base)->reg & (flag)) == (flag))
+#else
 #define CM3BB_OFFSETGET(bb_base, regstruct, reg, flag) (((volatile uint32_t *)bb_base)[CM3BB_OFFSET(regstruct, reg, _BI32(flag))])
 /* Without bitband support set bb_base to base of register structure and use
  * ((regstruct*)bb_base)->reg & (bit)
  */
+#endif
 
 #ifdef __IMAGECRAFT__
 #define __attribute__(x)
