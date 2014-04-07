@@ -80,7 +80,7 @@ static int CanSetState(NUTCANBUS *bus, int enable)
     }
     else
     {
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, MCR, _BI32(CAN_MCR_INRQ))] = 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, MCR, CAN_MCR_INRQ);
 
         /* Wait the acknowledge */
         for(wait_ack = 0, rc = 0; (!rc) && (wait_ack < INAK_TimeOut); wait_ack++)
@@ -95,7 +95,7 @@ static void STMCanTXInterrupt( void *arg)
     CANBUSINFO *ci = bus->bus_ci;
     __IO uint32_t *CANBBx = bus->bb_base;
 
-    CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_TMEIE))]= 0;
+    CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_TMEIE);
     ci->can_tx_interrupts++;
     NutEventPostFromIrq(&(ci->can_tx_rdy));
 }
@@ -110,7 +110,7 @@ static void STMCanRX0Interrupt( void *arg)
 
     if (CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0))])
     {
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0))] = 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF0R,_BI32(CAN_RF0R_FOVR0));
         ci->can_overruns++;
     }
     ci->can_rx_interrupts++;
@@ -128,7 +128,7 @@ static void STMCanRX0Interrupt( void *arg)
             NutEventPostFromIrq(&ci->can_rx_rdy);
             /* Statistic housekeeping */
             ci->can_rx_frames++;
-            CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_RFOM0))]=1;
+            CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF0R, CAN_RF0R_RFOM0);
             while(CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF0R,_BI32(CAN_RF0R_RFOM0))]);
         }
         else
@@ -151,7 +151,7 @@ static void STMCanRX1Interrupt( void *arg)
 
     if (CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1))])
     {
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1))] = 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF1R,_BI32(CAN_RF1R_FOVR1));
         ci->can_overruns++;
     }
     ci->can_rx_interrupts++;
@@ -169,7 +169,7 @@ static void STMCanRX1Interrupt( void *arg)
             NutEventPostFromIrq(&ci->can_rx_rdy);
             // Stat houskeeping
             ci->can_rx_frames++;
-            CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_RFOM1))]=1;
+            CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, RF1R, CAN_RF1R_RFOM1);
             while(CANBBx[CM3BB_OFFSET(CAN_TypeDef, RF1R,_BI32(CAN_RF1R_RFOM1))]);
         }
         else
@@ -701,7 +701,7 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
         return rc;
 
     /* Software Master reset*/
-    CANBBx[CM3BB_OFFSET(CAN_TypeDef, MCR, _BI32(CAN_MCR_RESET))] = 1;
+    CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, MCR, CAN_MCR_RESET);
 
     /* exit from sleep mode */
     CANBBx[CM3BB_OFFSET(CAN_TypeDef, MCR, _BI32(CAN_MCR_SLEEP))] = 0;
@@ -878,7 +878,7 @@ static int StmCanSendMsg(NUTCANBUS  *bus, CANFRAME *frame)
 
     if (index < 0)
     {
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_TMEIE))] = 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_TMEIE);
         return CAN_TXBUF_FULL;
     }
 
@@ -949,9 +949,9 @@ int CanInput(NUTCANBUS *bus, CANFRAME * frame)
     NutExitCritical();
     /* Reenable interrupt*/
     if (bus->sig_tx_irq)
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_FMPIE0))]= 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE0);
     else
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_FMPIE1))]= 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE1);
 
     frame->rtr = (dataPtr->RIR & CAN_RI0R_RTR)?1:0;
     frame->id = dataPtr->RIR >>((dataPtr->RIR & CAN_RI0R_IDE)?3:21);
@@ -972,9 +972,9 @@ void CanEnableRx(NUTCANBUS *bus)
 {
     __IO uint32_t *CANBBx = bus->bb_base;
     if(bus->sig_tx_irq)
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_FMPIE0))]= 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE0);
     else
-        CANBBx[CM3BB_OFFSET(CAN_TypeDef, IER,_BI32(CAN_IER_FMPIE1))]= 1;
+        CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_FMPIE1);
     CANBBx[CM3BB_OFFSET(CAN_TypeDef, FMR,_BI32(CAN_FMR_FINIT))]= 0;
 }
 
