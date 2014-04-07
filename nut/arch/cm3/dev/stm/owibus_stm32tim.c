@@ -241,8 +241,7 @@ static int Stm32Tim_OwiSetup(NUTOWIBUS *bus)
     return OWI_INVALID_HW;
 #else
     STM32_OWITIMER_CLK();
-    STM32_OWITIMER_RST = 1;
-    STM32_OWITIMER_RST = 0;
+    STM32_OWITIMER_RST();
     NutRegisterIrqHandler( &STM32_OWITIMER_SIG, &Stm32Tim_OwiInterrupt, NULL);
     owi_timer->PSC = (STM32_OWITIMER_PCLK/2000000L)-1;
     TIM_OnePulse(STM32_OWITIMER_BASE);

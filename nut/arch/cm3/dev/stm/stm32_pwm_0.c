@@ -71,7 +71,7 @@
 #define STM32_PWM_BASE  STM32TIMER_BASE
 #define STM32_PWM_PCLK  STM32TIMER_PCLK
 #define STM32_PWM_CLK() STM32TIMER_CLK()
-#define STM32_PWM_RST   STM32TIMER_RST
+#define STM32_PWM_RST() STM32TIMER_RST()
 #define STM32_PWM_NCH   STM32TIMER_NCH
 #define STM32_PWM_BTDR  STM32TIMER_BTDR
 #define STM32_PWM_AF    STM32TIMER_AF(STM32_PWM_PORT, STM32_PWM_PIN)
@@ -128,8 +128,7 @@ int stm32_pwm0_init(uint32_t *freq, int bits)
     if (( 5 * (*freq << bits)  < 4 * pclk) || ( 5 * pclk  < 4 * (*freq << bits)))
         return -1;
     STM32_PWM_CLK();
-    STM32_PWM_RST = 1;
-    STM32_PWM_RST = 0;
+    STM32_PWM_RST();
     /* All registers now reset*/
     STM32_PWM_OUTPUT_EN();
     STM32_PWM_MODE();
