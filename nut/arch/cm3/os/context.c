@@ -51,6 +51,43 @@
 #include <sys/heap.h>
 #include <sys/thread.h>
 
+#define NUTDEBUG_CHECK_STACKMIN
+#define NUTDEBUG_CHECK_STACK
+/* For M0, push, pop, ldr etc only work on r0-r7
+ * push{<list>} stores highest register at highest stack address
+ * pop{<list>}  pops highest register from highest stack address
+ */
+#define M0_PushContext()                                                \
+    __asm__ volatile (                                                  \
+        "@ Save context\n\t"                                            \
+        "push    {r4-r7,lr}\n\t"        /* Save lr, r7, r6, r5, r4. */  \
+        "mov     r4, r8 \n\t"           /* Mov high registers */        \
+        "mov     r5, r9 \n\t"                                           \
+        "mov     r6, r10\n\t"                                           \
+        "mov     r7, r11\n\t"                                           \
+        "push    {r4-r7}\n\t"           /* Save regs r11, r10, r9, r8*/ \
+        "mrs     r4,  psr\n\t"          /* Save status. */              \
+        "push    {r4}\n\t"                                              \
+        "mov     r4, sp\n\t"                                            \
+        "str     r4, %0\n\t"                                            \
+        ::"m" (runningThread->td_sp))
+
+#define M0_PopContext()                                                 \
+    __asm__ __volatile__(                                               \
+        "@ Load context\n\t"                                            \
+        "ldr     r4, %0\n\t"            /* Get new stack address    */  \
+        "mov     sp, r4\n\t"            /* ... and store as sp      */  \
+        "pop     {r4}\n\t"              /* Get saved status...      */  \
+        "msr     xpsr_nzcvq, r4\n\t"    /* ... and restore psr.     */  \
+        "pop     {r4-r7}\n\t"           /* Pop r11, r10, r9, r8     */  \
+        "mov     r8 , r4\n\t"           /* and move tohigh registers*/  \
+        "mov     r9 , r5\n\t"                                           \
+        "mov     r10, r6\n\t"                                           \
+        "mov     r11, r7\n\t"                                           \
+        "cpsie   i\n\t"                 /* Enable interrupts        */  \
+        "pop     {r4-r7, pc}\n\t"       /* Pop PC, r7, r6, r5, r4   */  \
+        ::"m"(runningThread->td_sp))
+
 /*!
  * \addtogroup xgNutArchCm3OsContext
  */
@@ -85,6 +122,7 @@ typedef struct {
     uint32_t csf_s31;
 #endif
 
+#if       (__CORTEX_M >= 0x03)
     uint32_t csf_cpsr;
     uint32_t csf_r4;
     uint32_t csf_r5;
@@ -95,6 +133,18 @@ typedef struct {
     uint32_t csf_r10;
     uint32_t csf_r11;             /* AKA fp */
     uint32_t csf_lr;
+#else
+    uint32_t csf_cpsr;
+    uint32_t csf_r8;
+    uint32_t csf_r9;
+    uint32_t csf_r10;
+    uint32_t csf_r11;
+    uint32_t csf_r4;
+    uint32_t csf_r5;
+    uint32_t csf_r6;
+    uint32_t csf_r7;
+    uint32_t csf_lr;
+#endif
 } SWITCHFRAME;
 
 /*!
@@ -132,6 +182,7 @@ void NutThreadSwitch(void) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
     /* Save CPU context. */
+#if       (__CORTEX_M >= 0x03)
     __asm__ volatile (                  /* */
         "@ Save context\n\t"            /* */
         "stmfd   sp!, {r4-r11, lr}\n\t" /* Save registers. */
@@ -147,12 +198,16 @@ void NutThreadSwitch(void)
         "str     sp, %0"                /* Save stack pointer. */
         ::"m" (runningThread->td_sp)    /* */
     );
+#else
+    M0_PushContext();
+#endif
 
     /* Select thread on top of the run queue. */
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
 
     /* Restore context. */
+#if       (__CORTEX_M >= 0x03)
      __asm__ __volatile__(              /* */
         "@ Load context\n\t"            /* */
         "ldr     sp, %0\n\t"            /* Restore stack pointer. */
@@ -169,6 +224,9 @@ void NutThreadSwitch(void)
         "ldmfd   sp!, {r4-r11, pc}\n\t" /* Restore registers. */
         ::"m"(runningThread->td_sp)     /* */
     );
+#else
+     M0_PopContext();
+#endif
 
 #if defined(NUT_CRITICAL_NESTING) && !defined(NUT_CRITICAL_NESTING_STACK)
         critical_nesting_level = 0;
@@ -303,6 +361,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         runningThread = runQueue;
         runningThread->td_state = TDS_RUNNING;
         /* Restore context. */
+#if       (__CORTEX_M >= 0x03)
         __asm__ __volatile__(               /* */
             "@ Load context\n\t"            /* */
             "ldr     sp, %0\n\t"            /* Restore stack pointer. */
@@ -319,6 +378,9 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
             "ldmfd   sp!, {r4-r11, pc}\n\t" /* Restore registers. */
             ::"m"(runningThread->td_sp)     /* */
         );
+#else
+        M0_PopContext();
+#endif
     }
 
     /*
