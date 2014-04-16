@@ -58,7 +58,7 @@
 /*!
  * \brief Load data from AVR EEPROM.
  *
- * \return Allways 0.
+ * \return Always 0.
  */
 int OnChipNvMemLoad(unsigned int addr, void *buff, size_t siz)
 {
@@ -73,25 +73,24 @@ int OnChipNvMemLoad(unsigned int addr, void *buff, size_t siz)
 /*!
  * \brief Save data in AVR EEPROM.
  *
- * \return Allways 0.
+ * \return Always 0.
  */
 int OnChipNvMemSave(unsigned int addr, const void *buff, size_t len)
 {
+#if defined(__IMAGECRAFT__)
     uint8_t *cp;
     size_t i;
 
     for (cp = (uint8_t *) buff, i = 0; i < len; cp++, i++) {
-#if defined(__IMAGECRAFT__)
         if (EEPROMread((int) (addr + i)) != *cp) {
             EEPROMwrite((int) (addr + i), *cp);
         }
-#elif defined(__GNUC__)
-        if (eeprom_read_byte((uint8_t *) (addr + i)) != *cp) {
-            eeprom_write_byte((uint8_t *) (addr + i), *cp);
-        }
-#endif
+		
     }
-    return 0;
+#elif defined(__GNUC__)
+	eeprom_update_block(buff, (void *)addr, len);
+#endif
+	return 0;
 }
 
 /*@}*/
