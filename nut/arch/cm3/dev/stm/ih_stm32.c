@@ -99,14 +99,13 @@ CREATE_HANDLER(SDIO,          SDIO,     NUT_IRQPRI_DEF);     // SDIO Controller
 CREATE_HANDLER(SAI1,          SAI1,     NUT_IRQPRI_DEF);     // SPI 2 Controller
 #endif
 
-#if defined(HW_I2C1_STM32)
 #if defined (MCU_STM32F0)
 CREATE_HANDLER(TWI1,          I2C1,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
 #else
 CREATE_HANDLER(TWI1_EV,       I2C1_EV,  NUT_IRQPRI_DEF);     // I2C 1 Data/Event
 CREATE_HANDLER(TWI1_ER,       I2C1_ER,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
 #endif
-#endif
+
 #if defined(HW_I2C2_STM32)
 #if defined (MCU_STM32F0)
 CREATE_HANDLER(TWI2,          I2C2,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
