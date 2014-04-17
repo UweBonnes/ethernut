@@ -3388,7 +3388,7 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
             if(ilast_dir && *ilast_dir) {
                 fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
             }
-            fprintf(fp, "include $(top_blddir)/UserConf.mk", bld_dir);
+            fprintf(fp, "include $(top_blddir)/UserConf.mk\n", bld_dir);
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
             fprintf(fp, "include $(top_srcdir)/app/Makedefs.%s\n", mak_ext);
             fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
