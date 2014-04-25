@@ -92,6 +92,11 @@ struct __iobuf {
     int     iob_unget;      /*!< \internal Unget buffer. */
 };
 
+struct __memstream {
+    char   **spp;
+    size_t   size;
+};
+
 /*@}*/
 
 /* Filedescriptor list */
@@ -108,6 +113,7 @@ extern int _putf(int _putb(int, const void *, size_t),
 #ifdef __HARVARD_ARCH__
 extern int _write_P(int fd, PGM_P data, unsigned int count);
 extern int _sputb_P(int fd, PGM_P buffer_P, size_t count);
+extern int _snputb_P(int fd, PGM_P buffer_P, size_t count);
 #endif
 
 extern int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap);

@@ -277,9 +277,11 @@ nutcrt =
         {
             "asprintf.c",
             "sprintf.c",
+            "snprintf.c",
             "sscanf.c",
             "vasprintf.c",
             "vsprintf.c",
+            "vsnprintf.c",
             "vsscanf.c"
         }
     },
@@ -290,8 +292,10 @@ nutcrt =
         sources =
         {
             "sprintf_p.c",
+            "snprintf_p.c",
             "sscanf_p.c",
             "vsprintf_p.c",
+            "vsnprintf_p.c",
             "vsscanf_p.c"
         }
     },

@@ -173,12 +173,14 @@ extern int putchar(int c);
 extern int puts(const char *string);
 extern int scanf(const char *fmt, ...);
 extern int sprintf(char *buffer, const char *fmt, ...);
+extern int snprintf(char *buffer, size_t size, const char *fmt, ...);
 extern int sscanf(const char *string, const char *fmt, ...);
 extern int ungetc(int c, FILE * stream);
 extern int vasprintf(char **strp, const char *fmt, va_list ap);
 extern int vfprintf(FILE * stream, const char *fmt, va_list ap);
 extern int vfscanf(FILE * stream, const char *fmt, va_list ap);
 extern int vsprintf(char *buffer, const char *fmt, va_list ap);
+extern int vsnprintf(char *buffer, size_t size, const char *fmt, va_list ap);
 extern int vsscanf(const char *string, const char *fmt, va_list ap);
 extern int rename(const char *old_name, const char *new_name);
 
@@ -192,10 +194,12 @@ extern int printf_P(PGM_P fmt, ...) __attribute__((format(printf, 1, 2)));
 extern int puts_P(PGM_P string);
 extern int scanf_P(PGM_P fmt, ...) __attribute__((format(scanf, 1, 2)));
 extern int sprintf_P(char *buffer, PGM_P fmt, ...) __attribute__((format(printf, 2, 3)));
+extern int snprintf_P(char *buffer, size_t size, PGM_P fmt, ...) __attribute__((format(printf, 3, 4)));
 extern int sscanf_P(const char *string, const char *fmt, ...) __attribute__((format(scanf, 2, 3)));
 extern int vfprintf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vfscanf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vsprintf_P(char *buffer, PGM_P fmt, va_list ap);
+extern int vsnprintf_P(char *buffer, size_t size, PGM_P fmt, va_list ap);
 extern int vsscanf_P(const char *string, PGM_P fmt, va_list ap);
 
 #else /* __HARVARD_ARCH__ */
@@ -208,6 +212,7 @@ extern int vsscanf_P(const char *string, PGM_P fmt, va_list ap);
 #define vfprintf_P(stream, fmt, ap) vfprintf(stream, fmt, ap)
 #define vfscanf_P(stream, fmt, ap) vfscanf(stream, fmt, ap)
 #define vsprintf_P(buffer, fmt, ap) vsprintf(buffer, fmt, ap)
+#define vsnprintf_P(buffer, size, fmt, ap) vsnprintf(buffer, size, fmt, ap)
 #define vsscanf_P(string, fmt, ap) vsscanf(string, fmt, ap)
 
 #if defined(__GNUC__)
@@ -216,6 +221,7 @@ extern int vsscanf_P(const char *string, PGM_P fmt, va_list ap);
 #define printf_P(...)   printf(__VA_ARGS__)
 #define scanf_P(...)    scanf(__VA_ARGS__)
 #define sprintf_P(...)  sprintf(__VA_ARGS__)
+#define snprintf_P(...)  snprintf(__VA_ARGS__)
 #define sscanf_P(...)   sscanf(__VA_ARGS__)
 #else /* __GNUC__ */
 #define fprintf_P       fprintf
@@ -223,6 +229,7 @@ extern int vsscanf_P(const char *string, PGM_P fmt, va_list ap);
 #define printf_P        printf
 #define scanf_P         scanf
 #define sprintf_P       sprintf
+#define snprintf_P      snprintf
 #define sscanf_P        sscanf
 #endif /* __GNUC__ */
 
