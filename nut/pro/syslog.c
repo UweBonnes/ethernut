@@ -303,12 +303,7 @@ void vsyslog(int pri, const char *fmt, va_list ap)
         vfprintf(stderr, fmt, ap);
         fputc('\n', stderr);
 #else
-        /* Potentially dangerous. We need vsnprintf() */
-        if (cnt + strlen(fmt) >= SYSLOG_MAXBUF) {
-            puts("Buffer overflow");
-            return;
-        }
-        cnt += vsprintf(&syslog_buf[cnt], fmt, ap);
+        cnt += vsnprintf(&syslog_buf[cnt], SYSLOG_MAXBUF - cnt, fmt, ap);
         syslog_flush(cnt);
 #endif /* SYSLOG_PERROR_ONLY */
     }

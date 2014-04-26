@@ -107,11 +107,7 @@ void vsyslog_P(int pri, PGM_P fmt_P, va_list ap)
         vfprintf_P(stderr, fmt_P, ap);
         fputc('\n', stderr);
 #else
-        /* Potentially dangerous. We need vsnprintf() */
-        if (cnt + strlen_P(fmt_P) >= SYSLOG_MAXBUF) {
-            return;
-        }
-        cnt += vsprintf_P(&syslog_buf[cnt], fmt_P, ap);
+        cnt += vsnprintf_P(&syslog_buf[cnt], SYSLOG_MAXBUF - cnt, fmt_P, ap);
         syslog_flush(cnt);
 #endif /* SYSLOG_PERROR_ONLY */
     }

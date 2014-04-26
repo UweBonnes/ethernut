@@ -379,9 +379,7 @@ int PerCiWriteVarList(PERCI_WRITER * writer, const char *fmt, va_list ap)
 
     line = malloc(PERCI_DATASIZE);
     if (line) {
-        /* Potentially dangerous. We need vsnprintf() */
-        cnt = vsprintf(line, fmt, ap);
-        NUTASSERT(cnt < PERCI_DATASIZE);
+        cnt = vsnprintf(line, PERCI_DATASIZE, fmt, ap);
         cnt = PerCiWrite(writer, line, strlen(line));
         free(line);
     } else {
