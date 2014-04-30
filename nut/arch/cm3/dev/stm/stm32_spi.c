@@ -58,6 +58,16 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#if !defined(SPI_SCK_GPIO_AF)
+#define SPI_SCK_GPIO_AF SPI_GPIO_AF
+#endif
+#if !defined(SPI_MOSI_GPIO_AF)
+#define SPI_MOSI_GPIO_AF SPI_GPIO_AF
+#endif
+#if !defined(SPI_MISO_GPIO_AF)
+#define SPI_MISO_GPIO_AF SPI_GPIO_AF
+#endif
+
 /*!
  * \brief Set the specified chip select to a given level.
  */
@@ -149,9 +159,9 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
         SPIBUS_REMAP_BB();
  #endif
 #else
-    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_GPIO_AF);
-    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_GPIO_AF);
-    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_GPIO_AF);
+    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_SCK_GPIO_AF);
+    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_MISO_GPIO_AF);
+    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_MOSI_GPIO_AF);
 #endif
     GpioPinConfigSet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);//SCK
     GpioPinConfigSet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN,                 GPIO_CFG_PERIPHAL);//MISO
