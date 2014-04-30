@@ -1,7 +1,7 @@
-#ifndef _DEV_ARCH_CM3_STM_STM32_PWM_0_H_
-#define _DEV_ARCH_CM3_STM_STM32_PWM_0_H_
+#ifndef _DEV_ARCH_CM3_STM_STM32_PWM_1_H_
+#define _DEV_ARCH_CM3_STM_STM32_PWM_1_H_
 /*!
- * Copyright (C) 2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2014 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -35,8 +35,8 @@
  */
 
 /*!
- * \file arch/cm3/stm/stm32_pwm_0.h
- * \brief STM32 PWM 0 output.
+ * \file arch/cm3/stm/stm32_pwm_1.h
+ * \brief STM32 PWM 1 output.
  *
  * \verbatim
  * $Id$
@@ -47,7 +47,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <dev/hwtimer_stm32.h>
 
-extern uint32_t stm32_pwm0_init(unsigned bits);
-extern uint32_t stm32_pwm0_get(void);
-extern void     stm32_pwm0_set(int32_t value);
+extern uint32_t stm32_pwm1_init(unsigned bits);
+extern uint32_t stm32_pwm1_get(void);
+extern void     stm32_pwm1_set(int32_t value);
 #endif

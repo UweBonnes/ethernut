@@ -46,23 +46,23 @@
 #include <dev/hwtimer_stm32.h>
 
 /* Compile code only when needed definitions are available */
-#if defined(STM32_PWM0_TIMER_ID) && defined(STM32_PWM0_PORT) && defined(STM32_PWM0_PIN)\
-    && defined(STM32_PWM0_TIMER_CHANNEL)
+#if defined(STM32_PWM1_TIMER_ID) && defined(STM32_PWM1_PORT) && defined(STM32_PWM1_PIN)\
+    && defined(STM32_PWM1_TIMER_CHANNEL)
 
-#if defined(STM32_PWM0_TIMER_ID)
-#define STM32_PWM_TIMER_ID STM32_PWM0_TIMER_ID
+#if defined(STM32_PWM1_TIMER_ID)
+#define STM32_PWM_TIMER_ID STM32_PWM1_TIMER_ID
 #endif
 
-#if defined(STM32_PWM0_TIMER_CHANNEL)
-#define STM32_PWM_TIMER_CHANNEL STM32_PWM0_TIMER_CHANNEL
+#if defined(STM32_PWM1_TIMER_CHANNEL)
+#define STM32_PWM_TIMER_CHANNEL STM32_PWM1_TIMER_CHANNEL
 #endif
 
-#if defined(STM32_PWM0_PORT)
-#define STM32_PWM_PORT STM32_PWM0_PORT
+#if defined(STM32_PWM1_PORT)
+#define STM32_PWM_PORT STM32_PWM1_PORT
 #endif
 
-#if defined(STM32_PWM0_PIN)
-#define STM32_PWM_PIN STM32_PWM0_PIN
+#if defined(STM32_PWM1_PIN)
+#define STM32_PWM_PIN STM32_PWM1_PIN
 #endif
 
 #if defined(STM32_PWM_TIMER_ID)
@@ -111,7 +111,7 @@
  * \return Achieved frequency or -1
  */
 
-uint32_t stm32_pwm0_init(unsigned bits)
+uint32_t stm32_pwm1_init(unsigned bits)
 {
 #if (STM32_PWM_TIMER_CHANNEL == 0) || (STM32_PWM_TIMER_CHANNEL > STM32_PWM_NCH)
     /* We requested a channel not available */
@@ -149,7 +149,7 @@ uint32_t stm32_pwm0_init(unsigned bits)
  * \return None.
  */
 
-void stm32_pwm0_set(uint32_t value)
+void stm32_pwm1_set(uint32_t value)
 {
     if (value > TIM_AutoReloadValue(STM32_PWM_BASE))
         /* Clip at maximum*/
@@ -164,7 +164,7 @@ void stm32_pwm0_set(uint32_t value)
  *
  * \return Set PWM value.
  */
-uint32_t stm32_pwm0_get(void)
+uint32_t stm32_pwm1_get(void)
 {
     return STM32_PWM_VALUE;
 }
