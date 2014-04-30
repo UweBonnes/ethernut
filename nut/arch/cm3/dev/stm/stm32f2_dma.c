@@ -305,7 +305,7 @@ void DMA_ClearFlag( uint8_t ch, uint32_t flags)
 uint32_t DMA_GetFlag( uint8_t ch)
 {
     uint32_t dma_base = (ch& 0x80)?DMA2_BASE:DMA1_BASE;
-    uint32_t flags, ret = 0;
+    uint32_t flags = 0, ret = 0;
     switch (CH2NR(ch))
     {
     case 0: flags = (CM3REG(dma_base, DMA_TypeDef, LISR)    )   & 0x3d; break;
