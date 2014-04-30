@@ -3004,6 +3004,237 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32F SPI4 Interface
+    --
+    {
+        name = "nutarch_cm3_stm32f_spibus4",
+        brief = "STM32F SPI4 Bus Controller",
+        description = "STM32F SPI4 Bus Controller",
+        requires = { "HW_SPI4_STM32" },
+        provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
+        sources =  { "cm3/dev/stm/stm32_spi4.c" },
+        options =
+        {
+            {
+                macro = "SPIBUS4_SCK_PIN",
+                brief = "SPI4 SCK Pins",
+                description = "Choice of SPI4 SCK Pins: PE2(default) and PE11",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "2", "11" },
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_MISO_PIN",
+                brief = "SPI4 MISO Pins",
+                description = "Choice of SPI4 MISO Pins: PE5(default) and PE13",
+                requires = { "HW_GPIO_STM32V2"  },
+                type = "enumerated",
+                choices = { "5", "13" },
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_MOSI_PIN",
+                brief = "SPI4 MOSI Pins",
+                description = "Choice of SPI4 MOSI Pins: PE6(default) and PE14",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "6", "14" },
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_CS_PORT",
+                brief = "SPI4 CS Port",
+                description = "Choice of SPI4 CS Pins on GPIO BANK",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() GetGpioBanks() end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_CS_PIN",
+                brief = "SPI4 CS Pins",
+                description = "Choice of SPI4 CS Pins on GPIO PIN",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() GetGpioBits() end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_I2S_MODE",
+                brief = "I2S Mode (Third Controller)",
+                description = "If enabled, the controller will transfer I2S data.\n\n"..
+                              "Under development.",
+--                requires = { "NOT_AVAILABLE" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_POLLING_MODE",
+                brief = "Polling Mode (Second Controller)",
+                description = "If enabled, the controller will use polling mode. By default "..
+                              "interrupt mode is used.",
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_DOUBLE_BUFFER",
+                brief = "PDC Mode (Second Controller)",
+                description = "If enabled, the controller will use PDC mode.\n\n"..
+                              "Under development.",
+--                requires = { "NOT_AVAILABLE" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+        },
+    },
+
+    --
+    -- STM32F SPI5 Interface
+    --
+    {
+        name = "nutarch_cm3_stm32f_spibus5",
+        brief = "STM32F SPI5 Bus Controller",
+        description = "STM32F SPI5 Bus Controller",
+        requires = { "HW_SPI5_STM32" },
+        provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
+        sources =  { "cm3/dev/stm/stm32_spi5.c" },
+        options =
+        {
+            {
+                macro = "SPIBUS5_SCK_PIN",
+                brief = "SPI5 SCK Pins",
+                description = "Choice of SPI5 SCK Pins: PF7(default) and PH6",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "7", "6" },
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS5_MISO_PIN",
+                brief = "SPI5 MISO Pins",
+                description = "Choice of SPI5 MISO Pins: PF8(default) and PH7",
+                requires = { "HW_GPIO_STM32V2"  },
+                type = "enumerated",
+                choices = { "8", "7" },
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS5_MOSI_PIN",
+                brief = "SPI5 MOSI Pins",
+                description = "Choice of SPI5 MOSI Pins: PF9(default) and PF11",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "9", "11" },
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS5_CS_PORT",
+                brief = "SPI5 CS Port",
+                description = "Choice of SPI5 CS Pins on GPIO BANK",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() GetGpioBanks() end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS5_CS_PIN",
+                brief = "SPI5 CS Pins",
+                description = "Choice of SPI5 CS Pins on GPIO PIN",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() GetGpioBits() end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS5_I2S_MODE",
+                brief = "I2S Mode (Third Controller)",
+                description = "If enabled, the controller will transfer I2S data.\n\n"..
+                              "Under development.",
+--                requires = { "NOT_AVAILABLE" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS5_POLLING_MODE",
+                brief = "Polling Mode (Second Controller)",
+                description = "If enabled, the controller will use polling mode. By default "..
+                              "interrupt mode is used.",
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_DOUBLE_BUFFER",
+                brief = "PDC Mode (Second Controller)",
+                description = "If enabled, the controller will use PDC mode.\n\n"..
+                              "Under development.",
+--                requires = { "NOT_AVAILABLE" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+        },
+    },
+
+    --
+    -- STM32F SPI6 Interface
+    --
+    {
+        name = "nutarch_cm3_stm32f_spibus6",
+        brief = "STM32F SPI6 Bus Controller",
+        description = "STM32F SPI6 Bus Controller",
+        requires = { "HW_SPI6_STM32" },
+        provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
+        sources =  { "cm3/dev/stm/stm32_spi6.c" },
+        options =
+        {
+            {
+                macro = "SPIBUS6_CS_PORT",
+                brief = "SPI6 CS Port",
+                description = "Choice of SPI6 CS Pins on GPIO BANK",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() GetGpioBanks() end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS6_CS_PIN",
+                brief = "SPI6 CS Pins",
+                description = "Choice of SPI6 CS Pins on GPIO PIN",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() GetGpioBits() end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS6_I2S_MODE",
+                brief = "I2S Mode (Third Controller)",
+                description = "If enabled, the controller will transfer I2S data.\n\n"..
+                              "Under development.",
+--                requires = { "NOT_AVAILABLE" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS6_POLLING_MODE",
+                brief = "Polling Mode (Second Controller)",
+                description = "If enabled, the controller will use polling mode. By default "..
+                              "interrupt mode is used.",
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_DOUBLE_BUFFER",
+                brief = "PDC Mode (Second Controller)",
+                description = "If enabled, the controller will use PDC mode.\n\n"..
+                              "Under development.",
+--                requires = { "NOT_AVAILABLE" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+        },
+    },
+
+    --
     -- STM32F LCD Interface Drivers
     --
     {
