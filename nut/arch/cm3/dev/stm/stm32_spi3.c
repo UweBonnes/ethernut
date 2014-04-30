@@ -150,7 +150,7 @@
 
 //#define SPI_QUE spi3_que
 
-NUTSPIBUS spiBus2Stm32 = {
+NUTSPIBUS spiBus3Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
     NULL,                       /*!< Bus ready signal (bus_ready). */
     SPI3_BASE,                  /*!< Bus base address (bus_base). */

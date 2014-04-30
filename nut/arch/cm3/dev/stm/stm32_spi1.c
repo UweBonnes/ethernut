@@ -215,7 +215,7 @@
   */
 //static HANDLE spi1_que;
 
-NUTSPIBUS spiBus0Stm32 = {
+NUTSPIBUS spiBus1Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
     NULL,                       /*!< Bus ready signal (bus_ready). */
     SPI1_BASE,                  /*!< Bus base address (bus_base). */

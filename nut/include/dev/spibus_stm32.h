@@ -46,8 +46,9 @@
 
 #include <dev/spibus.h>
 
-extern NUTSPIBUS spiBus0Stm32;
 extern NUTSPIBUS spiBus1Stm32;
+extern NUTSPIBUS spiBus2Stm32;
+extern NUTSPIBUS spiBus3Stm32;
 
 extern int Stm32SpiBus1Select(NUTSPINODE * node, uint32_t tmo);
 extern int Stm32SpiBus1Deselect(NUTSPINODE * node);

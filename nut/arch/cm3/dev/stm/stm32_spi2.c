@@ -217,7 +217,7 @@
 
 //#define SPI_QUE spi2_que
 
-NUTSPIBUS spiBus1Stm32 = {
+NUTSPIBUS spiBus2Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
     NULL,                       /*!< Bus ready signal (bus_ready). */
     SPI2_BASE,                  /*!< Bus base address (bus_base). */
