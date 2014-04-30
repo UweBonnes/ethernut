@@ -74,9 +74,7 @@ CREATE_HANDLER(RTC,           RTC,      NUT_IRQPRI_DEF);    // Real Time Clock
 #if defined(HW_RTC_STM32_V2)
 CREATE_HANDLER(RTC,           RTC_Alarm,NUT_IRQPRI_DEF);    // Real Time Clock
 #endif
-#if defined(HW_SDIO_STM32)
-CREATE_HANDLER(SDIO,          SDIO,     NUT_IRQPRI_DEF);    // SDIO
-#endif
+
 CREATE_HANDLER(SPI1,          SPI1,     NUT_IRQPRI_DEF);     // SPI 1 Controller
 #if defined(HW_SPI2_STM32)
 CREATE_HANDLER(SPI2,          SPI2,     NUT_IRQPRI_DEF);     // SPI 2 Controller
