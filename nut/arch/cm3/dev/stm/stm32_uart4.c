@@ -156,6 +156,7 @@ NUTDEVICE devUartStm32_4 = {
  #if !defined(UART4_TX_PIN) || UART4_TX_PIN == 0
   #define TX_GPIO_PORT    NUTGPIO_PORTA
   #define TX_GPIO_PIN      0
+ #elif UART4_TX_PIN == -1
  #elif UART4_TX_PIN == 10
   #define TX_GPIO_PORT    NUTGPIO_PORTC
   #define TX_GPIO_PIN     10
@@ -165,6 +166,7 @@ NUTDEVICE devUartStm32_4 = {
  #if !defined(UART4_RX_PIN) || UART4_RX_PIN == 1
   #define RX_GPIO_PORT    NUTGPIO_PORTA
   #define RX_GPIO_PIN      1
+ #elif UART4_RX_PIN == -1
  #elif UART4_RX_PIN == 11
   #define RX_GPIO_PORT    NUTGPIO_PORTC
   #define RX_GPIO_PIN      11

@@ -1164,10 +1164,12 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR1 &= ~USART_CR1_UE;
         USARTn->CR3 |= USART_CR3_HDSEL;
         /* Set Alternate function, open drain, Pull up */
+#if defined(TX_GPIO_PORT)
 #if defined(__STM32F10x_H)
         CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4);
 #else
         CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
+#endif
 #endif
         Stm32UsartEnable();
     }
@@ -1176,10 +1178,12 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR1 &= ~USART_CR1_UE;
         USARTn->CR3 &= ~USART_CR3_HDSEL;
         /* Set Alternate function, push-pull */
+#if defined(TX_GPIO_PORT)
 #if defined(__STM32F10x_H)
         CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4) ;
 #else
         CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
+#endif
 #endif
         Stm32UsartEnable();
     }
@@ -1303,15 +1307,23 @@ static int Stm32UsartInit(void)
     StmUsartClkEnable(1);
 
 #if defined(USART_SWAP)
+#if defined(TX_GPIO_PORT)
     /* Configure USART Tx as alternate function input*/
     GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_PERIPHAL);
+#endif
+#if defined(RX_GPIO_PORT)
     /* Configure USART Rx as alternate function push-pull*/
     GpioPinConfigSet( RX_GPIO_PORT, RX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
+#endif
 #else
+#if defined(TX_GPIO_PORT)
     /* Configure USART Tx as alternate function push-pull */
     GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
+#endif
+#if defined(RX_GPIO_PORT)
     /* Configure USART Rx as alternate function input*/
     GpioPinConfigSet( RX_GPIO_PORT, RX_GPIO_PIN, GPIO_CFG_PERIPHAL);
+#endif
 #endif
 
 #if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
@@ -1339,8 +1351,12 @@ static int Stm32UsartInit(void)
     AFIO->MAPR |=  STM_USART_REMAP_VALUE;
  #endif
 #else
+#if defined(TX_GPIO_PORT)
     GPIO_PinAFConfig((GPIO_TypeDef*) TX_GPIO_PORT, TX_GPIO_PIN,  STM_USART_REMAP);
+#endif
+#if defined(RX_GPIO_PORT)
     GPIO_PinAFConfig((GPIO_TypeDef*) RX_GPIO_PORT, RX_GPIO_PIN,  STM_USART_REMAP);
+#endif
 #if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
     GPIO_PinAFConfig((GPIO_TypeDef*) RTS_GPIO_PORT, RTS_GPIO_PIN,  STM_USART_REMAP);
 #endif

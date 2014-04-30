@@ -75,9 +75,9 @@ end
 --
 function GetTxUsart1()
     if c_is_provided("STM32F3XX") then
-        return { "9", "4", "6", "0" }
+        return { "9", "4", "6", "0", "-1" }
     end
-    return { "9", "6" }
+    return { "9", "6", "-1" }
 end
 
 --
@@ -85,9 +85,9 @@ end
 --
 function GetRxUsart1()
     if c_is_provided("STM32F3XX") then
-        return { "10", "5", "7", "1" }
+        return { "10", "5", "7", "1", "-1" }
     end
-    return { "10", "7" }
+    return { "10", "7", "-1" }
 end
 
 --
@@ -95,12 +95,12 @@ end
 --
 function GetTxUsart2()
     if c_is_provided("STM32F3XX") then
-        return { "2", "5", "14", "3" }
+        return { "2", "5", "14", "3", "-1" }
     end
     if c_is_provided("MCU_STM32F0") then
-        return { "2", "5", "14" }
+        return { "2", "5", "14", "-1" }
     end
-    return { "1", "5" }
+    return { "1", "5", "-1" }
 end
 
 --
@@ -108,9 +108,9 @@ end
 --
 function GetRxUsart2()
     if c_is_provided("STM32F3XX") then
-        return { "3", "6", "15", "4" }
+        return { "3", "6", "15", "4", "-1" }
     end
-    return { "3", "6" }
+    return { "3", "6", "-1" }
 end
 
 --
@@ -118,12 +118,12 @@ end
 --
 function GetTxUsart3()
     if c_is_provided("STM32F07X") then
-        return { "4", "10", "310", "8"}
+        return { "4", "10", "310", "8", "-1"}
     end
     if c_is_provided("STM32F3XX") then
-        return { "11", "311", "9", "15" }
+        return { "11", "311", "9", "15", "-1" }
     end
-    return { "11", "311", "9" }
+    return { "11", "311", "9", "-1" }
 end
 
 --
@@ -131,9 +131,9 @@ end
 --
 function GetRxUsart3()
     if c_is_provided("STM32F3XX") then
-        return { "11", "311", "9", "15" }
+        return { "11", "311", "9", "15", "-1" }
     end
-    return { "11", "311", "9" }
+    return { "11", "311", "9", "-1" }
 end
 
 --
@@ -141,12 +141,12 @@ end
 --
 function GetTxUsart4()
     if c_is_provided("STM32F10X") then
-        return { "0" }
+        return { "0", "-1" }
     end
     if c_is_provided("STM32F3XX") then
-        return { "0" }
+        return { "0", "-1" }
     end
-    return { "0", "10" }
+    return { "0", "10", "-1" }
 end
 
 --
@@ -154,12 +154,12 @@ end
 --
 function GetRxUsart4()
     if c_is_provided("STM32F10X") then
-        return { "1" }
+        return { "1", "-1" }
     end
     if c_is_provided("STM32F3XX") then
-        return { "1" }
+        return { "1", "-1" }
     end
-    return { "1", "11" }
+    return { "1", "11", "-1" }
 end
 
 --
@@ -682,7 +682,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "USART1_TX_PIN",
                 brief = "USART1 TX Pin selection",
-                description = "Choose USART1 TX Pin, Default: PA9",
+                description = "Choose USART1 TX Pin, Default: PA9. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetTxUsart1() end,
@@ -691,7 +691,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "USART1_RX_PIN",
                 brief = "USART1 RX Pin selection",
-                description = "Choose USART1 RX Pin, Default: PA10",
+                description = "Choose USART1 RX Pin, Default: PA10. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetRxUsart1() end,
@@ -918,7 +918,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "USART2_TX_PIN",
                 brief = "USART2 TX Pin selection",
-                description = "Choose USART2 TX Pin, default: PA2",
+                description = "Choose USART2 TX Pin, default: PA2. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetTxUsart2() end,
@@ -927,7 +927,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "USART2_RX_PIN",
                 brief = "USART2 RX Pin selection",
-                description = "Choose USART2 RX Pin, default: PA3",
+                description = "Choose USART2 RX Pin, default: PA3. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetTxUsart2() end,
@@ -1201,7 +1201,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "USART3_TX_PIN",
                 brief = "USART3 TX Pin selection",
-                description = "Choose USART3 TX Pin, deafault: PB10",
+                description = "Choose USART3 TX Pin, default: PB10. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = { "10", "310", "8" },
@@ -1210,7 +1210,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "USART3_RX_PIN",
                 brief = "USART3 RX Pin selection",
-                description = "Choose USART3 RX Pin, default: PB11",
+                description = "Choose USART3 RX Pin, default: PB11. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetTxUsart3() end,
@@ -1463,7 +1463,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "UART4_TX_PIN",
                 brief = "UART4 TX Pin selection",
-                description = "Choose UART4 TX Pin, default: PA0",
+                description = "Choose UART4 TX Pin, default: PA0. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetTxUsart4() end,
@@ -1472,7 +1472,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "UART4_RX_PIN",
                 brief = "UART4 RX Pin selection",
-                description = "Choose UART4 RX Pin, default: PA1",
+                description = "Choose UART4 RX Pin, default: PA1. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetRxUsart4() end,
@@ -1873,19 +1873,19 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "USART6_TX_PIN",
                 brief = "USART6 TX Pin selection",
-                description = "Choose USART6 TX Pin from PC6(default) and PG14",
+                description = "Choose USART6 TX Pin from PC6(default) and PG14 or not used(-1)",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
-                choices = { "6", "14" },
+                choices = { "6", "14", "-1" },
                 file = "include/cfg/uart.h"
             },
             {
                 macro = "USART6_RX_PIN",
                 brief = "USART6 RX Pin selection",
-                description = "Choose USART6 RX Pin from PC7(default) and PG9",
+                description = "Choose USART6 RX Pin from PC7(default) and PG9 or not used(-1)",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
-                choices = { "7", "9" },
+                choices = { "7", "9", "-1" },
                 file = "include/cfg/uart.h"
             },
             {

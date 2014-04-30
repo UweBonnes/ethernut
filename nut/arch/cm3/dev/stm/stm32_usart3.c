@@ -208,6 +208,7 @@ NUTDEVICE devUsartStm32_3 = {
    #define TX_GPIO_PORT    NUTGPIO_PORTB
    #define TX_GPIO_PIN     10
   #endif
+ #elif USART3_TX_PIN == -1
  #elif USART3_TX_PIN == 10
   #define TX_GPIO_PORT    NUTGPIO_PORTB
   #define TX_GPIO_PIN     10
@@ -231,6 +232,7 @@ NUTDEVICE devUsartStm32_3 = {
    #define RX_GPIO_PORT    NUTGPIO_PORTB
    #define RX_GPIO_PIN     11
   #endif
+ #elif USART3_RX_PIN == -1
  #elif USART3_RX_PIN == 11
   #define RX_GPIO_PORT    NUTGPIO_PORTB
   #define RX_GPIO_PIN     11

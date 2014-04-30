@@ -173,6 +173,8 @@ NUTDEVICE devUsartStm32_1 = {
    #define TX_GPIO_PORT    NUTGPIO_PORTA
    #define TX_GPIO_PIN      9
   #endif
+ #elif USART1_TX_PIN == -1
+/* Allow non-used TX PIN*/
  #elif USART1_TX_PIN == 9
   #define TX_GPIO_PORT    NUTGPIO_PORTA
   #define TX_GPIO_PIN     9
@@ -196,6 +198,8 @@ NUTDEVICE devUsartStm32_1 = {
    #define RX_GPIO_PORT    NUTGPIO_PORTA
    #define RX_GPIO_PIN      10
  #endif
+ #elif USART1_RX_PIN == -1
+/* Allow non-used RX PIN*/
  #elif USART1_RX_PIN == 10
   #define RX_GPIO_PORT    NUTGPIO_PORTA
   #define RX_GPIO_PIN     10
