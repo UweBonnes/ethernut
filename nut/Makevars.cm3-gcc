@@ -53,7 +53,7 @@ CXXFLAGS_MCU = $(CFLAGS_MCU) -fno-delete-null-pointer-checks -fno-exceptions -fn
 CFLAGS_ASM = -Wa,-a=$(@:.o=.lst)
 CFLAGS_WRN = -Wall -Wstrict-prototypes -Werror
 CFLAGS_OPT ?= -Os
-CFLAGS     = $(CFLAGS_MCU) $(CFLAGS_OPT) $(CFLAGS_WRN) $(CFLAGS_ASM) $(UCPFLAGS)
+CFLAGS     = $(CFLAGS_MCU) $(CFLAGS_OPT) $(CFLAGS_WRN) $(CFLAGS_ASM) $(UCPFLAGS) $(MDEBUG)
 
 # C++ compiler options.
 CXXFLAGS_WRN = -Wall

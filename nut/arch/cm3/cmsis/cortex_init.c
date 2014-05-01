@@ -99,6 +99,7 @@ volatile static uint32_t pspStack[PSP_STACK_SIZE];
         "MRS    R0, MSP            \n\t"                                \
         "2:                        \n\t"                                \
         "MOV    R1, %0;            \n\t"                                \
+        "MOV    R2, R7             \n\t"                                \
         "B      CortexRegDump      \n\t"                                \
         ::"g" (reason))
 

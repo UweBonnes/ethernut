@@ -39,7 +39,7 @@
 include $(top_srcdir)/Makevars.cm3-gcc
 
 # Override compiler options to create debug code.
-CFLAGS_OPT   = -O0 -g3 -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst)
+CFLAGS_OPT   = -O0 -g3 -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(MDEBUG)
 CXXFLAGS_OPT = -O0 -g3 -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti
 LDFLAGS   = $(MCFLAGS) -g -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
 

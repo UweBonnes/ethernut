@@ -350,6 +350,33 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/cortex_debug.h"
             },
             {
+                macro = "DEBUG_BACKTRACE",
+                brief = "Enable call backtrace (experimental)",
+                description = "Check to enable call stack back trace in case of an exception.\n\n"..
+                              "In case of an exception the last 128 words on the stack will\n"..
+                              "be printed out and a call trace will be generated and printed out\n"..
+                              "(Address of the function entry and offset in the function).\n"..
+                              "Together with the .map file and / or the assembler listing\n"..
+                              "the call trace allows you to trace back your code flow in\n"..
+                              "which led to the exception. The assembler listing can be\n"..
+                              "created by 'arm-none-eabi-objdump -d myfile.elf'\n\n"..
+                              "This function is highly experimental and relies on a very\n"..
+                              "defined function entry code and existance of a stack\n"..
+                              "frame pointer\n"..
+                              "To ensure the correct function layout this option disables\n"..
+                              "compiler optimisation and enables a stack frame pointer\n"..
+                              "generation. The following compiler options will be set:\n\n"..
+                              "-O0 -mtpcs-frame -mtpcs-leaf-frame -fno-omit-frame-pointer\n\n"..
+                              "This will enlarge the resulkting binary size significantly\n"..
+                              "any may influence execution performance.\n\n"..
+                              "The backtrace will only work for functions compiled with\n"..
+                              "above compiler parameters. E.g. it will very likely not work"..
+                              "for any newlib functions.\n",
+                flavor = "boolean",
+                makedefs = { "MDEBUG+=-O0 -mtpcs-frame -mtpcs-leaf-frame -fno-omit-frame-pointer" },
+                file = "include/cfg/cortex_debug.h"
+            },
+            {
                 macro = "DEBUG_UART_NR",
                 brief = "Debug UART",
                 description = "Select the UART to use for low level debugging",

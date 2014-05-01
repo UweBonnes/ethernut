@@ -44,7 +44,7 @@
 #include <cfg/arch.h>
 #include <cfg/cortex_debug.h>
 
-void CortexRegDump(uint32_t *arg, int exception_type);
+void CortexRegDump(uint32_t *arg, int exception_type, uint32_t *fp);
 void CortexDumpStack(const uint32_t *fp);
 
 #endif
