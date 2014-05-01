@@ -173,7 +173,7 @@ void NutDumpThreadList(FILE * stream)
     while (tdp) {
 #ifdef __NUT_EMULATION__
         fprintf_P(stream, fmt1, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
-                  states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
+                  states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, (unsigned int) NutThreadStackAvailable(tdp->td_name), "--");
 #else
         fprintf_P(stream, fmt1, (int) tdp, tdp->td_name, tdp->td_priority,
                   states[tdp->td_state], (int) tdp->td_queue,
