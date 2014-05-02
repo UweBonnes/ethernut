@@ -119,6 +119,7 @@ int HttpSsiExecHandler(HTTPD_SESSION *hs, HTTP_SSI_PARAM *prm)
 {
     char *path = NULL;
     char *args;
+    char *argcpy = NULL;
     HTTP_REQUEST *orig_req;
 
     if (prm->ipar_valuelen) {
@@ -134,16 +135,37 @@ int HttpSsiExecHandler(HTTPD_SESSION *hs, HTTP_SSI_PARAM *prm)
             if (orig_req) {
                 memcpy(orig_req, &hs->s_req, sizeof(HTTP_REQUEST));
                 hs->s_req.req_method = HTTP_METHOD_GET;
-                hs->s_req.req_version = orig_req->req_version;
+                hs->s_req.req_argn = NULL;
 #if HTTP_VERSION >= 0x10
                 hs->s_req.req_length = 0;
 #endif
-                if (args == NULL || strcmp(args, "$QUERY_STRING")) {
+                if (args == NULL || hs->s_req.req_query == NULL) {
                     hs->s_req.req_query = args;
                 }
+                else {
+                    char *qs = strstr(args, "$QUERY_STRING");
+                    if (qs) {
+                        int len;
+
+                        *qs = '\0';
+                        len = strlen(args) + strlen(hs->s_req.req_query) + strlen(qs + 13);
+
+                        argcpy = malloc(len + 1);
+                        if (argcpy) {
+                            strcpy(argcpy, args);
+                            strcat(argcpy, hs->s_req.req_query);
+                            strcat(argcpy, qs + 13);
+                        }
+                        hs->s_req.req_query = argcpy;
+                    } else {
+                        hs->s_req.req_query = args;
+                    }
+                }
                 HttpCgiFunctionHandler(hs, NULL, path);
+                free(hs->s_req.req_argn);
                 memcpy(&hs->s_req, orig_req, sizeof(HTTP_REQUEST));
                 free(orig_req);
+                free(argcpy);
             }
             free(path);
         }
@@ -199,6 +221,7 @@ int HttpSsiParse(HTTPD_SESSION *hs, const char *buf, int len)
     HTTP_SSI_COMMAND *ssiCmd = NULL;
     HTTP_SSI_PARAM ssiPrm;
 
+    memset(&ssiPrm, 0, sizeof(ssiPrm));
     while (len && isspace((int)*buf)) {
         buf++;
         len--;
