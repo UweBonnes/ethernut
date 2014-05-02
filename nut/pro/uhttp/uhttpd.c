@@ -495,24 +495,24 @@ void HttpdClientHandler(HTTP_STREAM *sp)
             if (err) {
                 HttpSendError(hs, err);
             }
+            free(req->req_url);
+            free(req->req_query);
+            free(req->req_argp);
+            free(req->req_argn);
+#if HTTP_VERSION >= 0x10
+            free(req->req_realm);
+            free(req->req_type);
+            free(req->req_cookie);
+            free(req->req_auth);
+            free(req->req_agent);
+            free(req->req_referer);
+            free(req->req_host);
+            free(req->req_encoding);
+            free(req->req_bnd_dispo);
+            free(req->req_bnd_type);
+#endif
         } while(req->req_connection == HTTP_CONN_KEEP_ALIVE);
 
-        free(req->req_url);
-        free(req->req_query);
-        free(req->req_argp);
-        free(req->req_argn);
-#if HTTP_VERSION >= 0x10
-        free(req->req_realm);
-        free(req->req_type);
-        free(req->req_cookie);
-        free(req->req_auth);
-        free(req->req_agent);
-        free(req->req_referer);
-        free(req->req_host);
-        free(req->req_encoding);
-        free(req->req_bnd_dispo);
-        free(req->req_bnd_type);
-#endif
         free(hs);
     }
 }
