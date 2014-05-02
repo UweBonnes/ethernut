@@ -45,12 +45,12 @@ extern ISC_LIST(MEDIA_TYPE_ENTRY) mediaTypeList;
 
 static char mtc_text[] = "text";
 static char mtc_image[] = "image";
-static char mtc_application[] = "application";
+char mtc_application[] = "application";
 
 /* Extensions must be sorted in reverse order. */
 static MEDIA_TYPE_ENTRY mt_defaults[] = {
 #ifdef HTTP_MEDIATYPE_XML
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_application, "xml", MTFLAG_INITIAL, MediaTypeHandlerText, "xml" },
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, NULL, MTFLAG_INITIAL, MediaTypeHandlerText, "xml" },
 #endif
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, "plain", MTFLAG_INITIAL, MediaTypeHandlerText, "txt" },
 #ifdef HTTP_MEDIATYPE_SVG
@@ -59,9 +59,9 @@ static MEDIA_TYPE_ENTRY mt_defaults[] = {
 #ifdef HTTP_MEDIATYPE_SHTML
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, "html", MTFLAG_INITIAL, HttpSsiHandler, "shtml" },
 #endif
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_image, "png", MTFLAG_INITIAL, MediaTypeHandlerBinary, "png" },
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_image, NULL, MTFLAG_INITIAL, MediaTypeHandlerBinary, "png" },
 #ifdef HTTP_MEDIATYPE_PDF
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_application, "pdf", MTFLAG_INITIAL, MediaTypeHandlerBinary, "pdf" },
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_application, NULL, MTFLAG_INITIAL, MediaTypeHandlerBinary, "pdf" },
 #endif
 #ifdef HTTP_MEDIATYPE_JS
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY),  mtc_text, "javascript", MTFLAG_INITIAL, MediaTypeHandlerText, "js" },
@@ -72,18 +72,18 @@ static MEDIA_TYPE_ENTRY mt_defaults[] = {
 #ifdef HTTP_MEDIATYPE_JAR
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_application, "x-java-archive", MTFLAG_INITIAL, MediaTypeHandlerBinary, "jar" },
 #endif
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, "html", MTFLAG_INITIAL, MediaTypeHandlerText, "html" },
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, NULL, MTFLAG_INITIAL, MediaTypeHandlerText, "html" },
 #ifdef HTTP_MEDIATYPE_HTM
     { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, "html", MTFLAG_INITIAL, MediaTypeHandlerText, "htm" },
 #endif
 #ifdef HTTP_MEDIATYPE_GIF
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_image, "gif", MTFLAG_INITIAL, MediaTypeHandlerBinary, "gif" },
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_image, NULL, MTFLAG_INITIAL, MediaTypeHandlerBinary, "gif" },
 #endif
 #ifdef HTTP_MEDIATYPE_CSS
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, "css", MTFLAG_INITIAL, MediaTypeHandlerText, "css" },
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_text, NULL, MTFLAG_INITIAL, MediaTypeHandlerText, "css" },
 #endif
 #ifdef HTTP_MEDIATYPE_BMP
-    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_image, "bmp", MTFLAG_INITIAL, MediaTypeHandlerBinary, "bmp" }
+    { ISC_LINK_INITIAL(MEDIA_TYPE_ENTRY), mtc_image, NULL, MTFLAG_INITIAL, MediaTypeHandlerBinary, "bmp" }
 #endif
 };
 
@@ -94,8 +94,7 @@ int MediaTypeInitDefaults(void)
     int i;
 
     ISC_LIST_INIT(mediaTypeList);
-    (void)mtc_application; /* In case no user of mtc_application is defined */
-    for (i = 0; i < (int)MT_DEFAULTS; i++) {
+    for (i = 0; i < MT_DEFAULTS; i++) {
         ISC_LIST_APPEND(mediaTypeList, &mt_defaults[i], media_link);
     }
     return 0;

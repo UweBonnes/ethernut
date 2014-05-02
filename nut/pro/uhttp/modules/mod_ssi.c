@@ -363,7 +363,7 @@ int HttpSsiHandler(HTTPD_SESSION *hs, const MEDIA_TYPE_ENTRY *mt, const char *fi
         s_vputs(hs->s_stream, ct_Expires, ": ", Rfc1123TimeString(gmtime(&now)), " GMT\r\n", NULL);
     }
 #endif
-    HttpSendHeaderBottom(hs, mt->media_type, mt->media_subtype, -1);
+    HttpSendHeaderBottom(hs, mt->media_type, mt->media_subtype ? mt->media_subtype : mt->media_ext, -1);
     HttpSsiProcessFile(hs, fd);
     _close(fd);
 

@@ -133,7 +133,7 @@ int MediaTypeHandlerBinary(HTTPD_SESSION *hs, const MEDIA_TYPE_ENTRY *mt, const 
 #if !defined(HTTPD_EXCLUDE_DATE) && (HTTP_VERSION >= 0x10)
             HttpSendHeaderDate(hs, mtime);
 #endif
-            HttpSendHeaderBottom(hs, mt->media_type, mt->media_subtype, fsize);
+            HttpSendHeaderBottom(hs, mt->media_type, mt->media_subtype ? mt->media_subtype : mt->media_ext, fsize);
             do {
                 got = _read(fd, data, 1460);
                 if (got > 0) {
