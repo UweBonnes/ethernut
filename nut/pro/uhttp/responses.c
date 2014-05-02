@@ -205,7 +205,7 @@ void HttpSendHeaderDate(HTTPD_SESSION *hs, time_t mtime)
 
 #endif
 
-void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, char *type, char *subtype, int conn, long bytes)
+void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, const char *type, const char *subtype, int conn, long bytes)
 {
 #if HTTP_VERSION >= 0x10
     (void)conn;
@@ -231,7 +231,7 @@ void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, char *type, char *subtype, 
 #endif
 }
 
-void HttpSendHeaderBottom(HTTPD_SESSION *hs, char *type, char *subtype, long bytes)
+void HttpSendHeaderBottom(HTTPD_SESSION *hs, const char *type, const char *subtype, long bytes)
 {
 #if HTTP_VERSION >= 0x10
 

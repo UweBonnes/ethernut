@@ -271,9 +271,9 @@ extern void HttpSendStreamHeaderDate(HTTP_STREAM *stream, time_t mtime);
  *
  * \param hs Pointer to the session info structure.
  */
-extern void HttpSendHeaderBottom(HTTPD_SESSION *hs, char *type, char *subtype, long bytes);
+extern void HttpSendHeaderBottom(HTTPD_SESSION *hs, const char *type, const char *subtype, long bytes);
 
-extern void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, char *type, char *subtype, int conn, long bytes);
+extern void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, const char *type, const char *subtype, int conn, long bytes);
 
 /*!
  * \brief Send HTTP error response.
