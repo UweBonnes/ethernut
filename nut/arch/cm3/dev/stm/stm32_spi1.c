@@ -113,7 +113,7 @@
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
  #endif
 #elif defined(MCU_STM32F37X)
- #if SPIBUS1_SCK_PIN == 5
+ #if SPIBUS1_SCK_PIN == 5 || !defined(SPIBUS1_SCK_PIN)
  #define SPIBUS_SCK_PORT NUTGPIO_PORTA
  #define  SPIBUS_SCK_PIN  5
  #elif SPIBUS1_SCK_PIN == 12
@@ -129,7 +129,7 @@
  #else
  #warning "Illegal STM32F373 SPI1 SCK assignment"
  #endif
- #if SPIBUS1_MISO_PIN == 6
+ #if SPIBUS1_MISO_PIN == 6 || !defined(SPIBUS1_MISO_PIN)
  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
  #define  SPIBUS_MISO_PIN  6
  #elif SPIBUS1_MISO_PIN == 13
@@ -145,7 +145,7 @@
  #else
  #warning "Illegal STM32F373 SPI1 MISO assignment"
  #endif
- #if SPIBUS1_MOSI_PIN == 7
+ #if SPIBUS1_MOSI_PIN == 7 || !defined(SPIBUS1_MOSI_PIN)
  #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
  #define  SPIBUS_MOSI_PIN  7
  #elif SPIBUS1_MOSI_PIN == 5
