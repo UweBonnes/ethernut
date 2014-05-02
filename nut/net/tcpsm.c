@@ -1106,10 +1106,10 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
     }
 
     /*
-     * Reject SYNs.
+     * Silently discard duplicate SYN.
      */
     if (flags & TH_SYN) {
-        NutTcpReject(nb);
+        NutNetBufFree(nb);
         return;
     }
 
