@@ -179,7 +179,7 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
 #if defined(MCU_STM32F0) ||defined(MCU_STM32F3)
 /* GPIO on AHB2 is outside of bitband region */
-#define GpioPinGet(bank, bit)        (CM3REG((bank), GPIO_TypeDef, IDR ) & (1<<(bit)))?1:0
+#define GpioPinGet(bank, bit)        ((CM3REG((bank), GPIO_TypeDef, IDR ) & (1<<(bit)))?1:0)
 #define GpioPinSet(bank, bit, value) (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[(value)?0:1] = (1<<(bit)))
 #define GpioPinSetHigh(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BSRR) = (1<<(bit)))
 #define GpioPinSetLow(bank, bit)     (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = (1<<(bit)))
