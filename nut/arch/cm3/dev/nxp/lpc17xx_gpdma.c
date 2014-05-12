@@ -117,7 +117,7 @@ volatile const void *GPDMA_LUTPerAddr[] = {
         [GPDMA_CONN_MAT3_0]        = (&LPC_TIM3->MR0),     // MAT3.0
         [GPDMA_CONN_MAT3_1]        = (&LPC_TIM3->MR1),     // MAT3.1
 
-#if defined(MCU_LPC177x_8x)
+#if defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
         [GPDMA_CONN_MCI]           = (&LPC_MCI->FIFO),     // SD Card
         [GPDMA_CONN_SSP2_Tx]       = (&LPC_SSP2->DR),      // SSP2 Tx
         [GPDMA_CONN_SSP2_Rx]       = (&LPC_SSP2->DR),      // SSP2 Rx
@@ -170,7 +170,7 @@ const uint8_t GPDMA_LUTPerBurst[] = {
         [GPDMA_CONN_MAT3_0]        = GPDMA_BSIZE_1,    // MAT3.0
         [GPDMA_CONN_MAT3_1]        = GPDMA_BSIZE_1,    // MAT3.1
 
-#if defined(MCU_LPC177x_8x)
+#if defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
         [GPDMA_CONN_MCI]           = GPDMA_BSIZE_8,    // SD Card
         [GPDMA_CONN_SSP2_Tx]       = GPDMA_BSIZE_4,    // SSP2 Tx
         [GPDMA_CONN_SSP2_Rx]       = GPDMA_BSIZE_4,    // SSP2 Rx
@@ -209,7 +209,7 @@ const uint8_t GPDMA_LUTPerWid[] = {
         [GPDMA_CONN_MAT3_0]        = GPDMA_WIDTH_WORD,   // MAT3.0
         [GPDMA_CONN_MAT3_1]        = GPDMA_WIDTH_WORD,   // MAT3.1
 
-#if defined(MCU_LPC177x_8x)
+#if defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
         [GPDMA_CONN_MCI]           = GPDMA_WIDTH_WORD,   // SD Card
         [GPDMA_CONN_SSP2_Tx]       = GPDMA_WIDTH_BYTE,   // SSP2 Tx
         [GPDMA_CONN_SSP2_Rx]       = GPDMA_WIDTH_BYTE,   // SSP2 Rx

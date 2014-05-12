@@ -581,7 +581,7 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
     if((LPC_UART_TypeDef*)USARTn == LPC_UART3) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART3);
     }
-#elif defined(MCU_LPC177x_8x)
+#elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
     if((LPC_UART_TypeDef*)USARTn == LPC_UART0) {
         SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCUART0);
 
@@ -644,7 +644,7 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
         /* Set RS485 addr match to default state */
         ((LPC_UART1_TypeDef*)USARTn)->ADRMATCH = 0;
     }
-#elif defined(MCU_LPC177x_8x)
+#elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
     /* Set RS485 control to default state */
     USARTn->RS485CTRL = 0;
 
@@ -665,7 +665,7 @@ static int Lpc17xxDevDebugInit(NUTDEVICE * dev)
         /* Dummy Reading to Clear Status */
         (volatile uint32_t)((LPC_UART1_TypeDef *)USARTn)->MSR;
     }
-#if defined(MCU_LPC177x_8x)
+#if defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
     if(((LPC_UART4_TypeDef *)USARTn) == LPC_UART4) {
         /* Set IrDA to default state for all UART other than UART1 */
         ((LPC_UART4_TypeDef *)USARTn)->ICR = 0;

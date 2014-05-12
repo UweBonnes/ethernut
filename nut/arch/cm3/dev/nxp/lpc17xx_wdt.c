@@ -116,7 +116,7 @@ uint32_t Lpc17xxWatchDogStart(uint32_t ms, uint32_t xmode)
     /* Set reset mode to be compatible with other implementations too */
     LPC_WDT->MOD |= WDT_WDMOD_WDRESET;
 
-#if defined (MCU_LPC177x_8x)
+#if defined (MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
     /* Disable watchdog protect mode */
     LPC_WDT->MOD &= ~WDT_WDMOD_WDPROTECT;
 #endif
