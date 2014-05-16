@@ -54,6 +54,12 @@
 #define NUT_IRQCHANNEL_TC0 AVR32_TC0_IRQ0
 #endif
 
+// Some devices with only 1 TC like A0512 will define it as TC instead of TC0
+#if !defined(AVR32_TC0) && defined( AVR32_TC )
+# define AVR32_TC0 AVR32_TC
+# define AVR32_TC0_IRQ0 AVR32_TC_IRQ0
+#endif
+
 static int TimerCounter0IrqCtl(int cmd, void *param);
 
 IRQ_HANDLER sig_TC0 = {
