@@ -58,6 +58,10 @@
 #include <dev/gpio.h>
 #include <cfg/arch/stm32pio.h>
 #endif
+#if defined(MCU_LPC17xx)
+#include <dev/gpio.h>
+#include <cfg/arch/lpc17xxpio.h>
+#endif
 #endif
 
 /*

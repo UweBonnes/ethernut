@@ -698,6 +698,9 @@ function GetGpioBanks()
     end
     if c_is_provided("HW_MCU_STM32") then
         return GetStm32PioIds()
+    end
+    if c_is_provided("HW_MCU_LPC17xx") then
+        return GetLpc17xxPioIds()
     end;
     return gpio_port_choice
 end
@@ -717,6 +720,9 @@ function GetGpioPortIds()
     end
     if c_is_provided("HW_MCU_STM32") then
         return GetStm32PioIds()
+    end
+    if c_is_provided("HW_MCU_LPC17xx") then
+        return GetLpc17xxPioIds()
     end;
     if c_is_provided("HW_MCU_COLDFIRE") then
         return GetColdfirePioIds()
@@ -773,6 +779,22 @@ end
 --
 function GetStm32PioBase()
     return { " ", "GPIOA_BASE", "GPIOB_BASE", "GPIOC_BASE", "GPIOD_BASE", "GPIOE_BASE", "GPIOF_BASE", "GPIOG_BASE" }
+end
+
+--
+-- Retrieve LPC17xx PIO IDs.
+-- These IDs represet an struct pointer value of the port.
+--
+function GetLpc17xxPioIds()
+    return {
+        " ",
+        "NUTGPIO_PORT0",
+        "NUTGPIO_PORT1",
+        "NUTGPIO_PORT2",
+        "NUTGPIO_PORT3",
+        "NUTGPIO_PORT4",
+        "NUTGPIO_PORT5",
+    }
 end
 
 --
@@ -883,6 +905,9 @@ function GetGpioHeaderPath()
     end
     if c_is_provided("HW_MCU_AVR32") then
         return basepath .. "avr32pio.h"
+    end
+    if c_is_provided("HW_MCU_LPC17xx") then
+        return basepath .. "lpc17xxpio.h"
     end
     if c_is_provided("HW_MCU_STM32") then
         return basepath .. "stm32pio.h"
