@@ -53,6 +53,14 @@ extern IRQ_HANDLER sig_MCI;         // Multimedia Card Interface / SDIO Interfac
 extern IRQ_HANDLER sig_EMAC;        // Ethernet MAC
 extern IRQ_HANDLER sig_PIO;         // GPIO
 extern IRQ_HANDLER sig_DMA;         // General Purpose DMA controller
+extern IRQ_HANDLER sig_EINT0;       // External interrupt 0
+extern IRQ_HANDLER sig_EINT1;       // External interrupt 1
+extern IRQ_HANDLER sig_EINT2;       // External interrupt 2
+extern IRQ_HANDLER sig_EINT3;       // External interrupt 3
 
+#define sig_INTERRUPT0 sig_EINT0
+#define sig_INTERRUPT1 sig_EINT1
+#define sig_INTERRUPT2 sig_EINT2
+#define sig_INTERRUPT3 sig_EINT3
 
 #endif

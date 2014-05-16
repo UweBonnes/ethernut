@@ -74,4 +74,9 @@ CREATE_HANDLER(EMAC,          ENET,       NUT_IRQPRI_DEF);    /* Ethernet MAC */
 CREATE_HANDLER(GPIO,          GPIO,       NUT_IRQPRI_DEF);    /* GPIO */
 CREATE_HANDLER(DMA,           DMA,        NUT_IRQPRI_DEF);    /* General Purpose DMA Controller */
 
+CREATE_HANDLER(EINT0,         EINT0,      NUT_IRQPRI_DEF);    /* General Purpose DMA Controller */
+CREATE_HANDLER(EINT1,         EINT1,      NUT_IRQPRI_DEF);    /* General Purpose DMA Controller */
+CREATE_HANDLER(EINT2,         EINT2,      NUT_IRQPRI_DEF);    /* General Purpose DMA Controller */
+CREATE_HANDLER(EINT3,         EINT3,      NUT_IRQPRI_DEF);    /* General Purpose DMA Controller */
+
 
