@@ -208,6 +208,9 @@
 #elif defined(KSK_LPC4088)
 #include <arch/cm3/board/ksk_lpc4088.h>
 #define BOARDNAME "KSK_LPC4088"
+#elif defined(MCO_COMPACT)
+#include <arch/cm3/board/mco_compact.h>
+#define BOARDNAME "MCO_COMPACT"
 #elif defined(LISA)
 #include <arch/cm3/board/lisa.h>
 #define BOARDNAME "LISA"
