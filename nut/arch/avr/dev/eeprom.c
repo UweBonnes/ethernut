@@ -88,6 +88,7 @@ int OnChipNvMemSave(unsigned int addr, const void *buff, size_t len)
 		
     }
 #elif defined(__GNUC__)
+	eeprom_busy_wait();
 	eeprom_update_block(buff, (void *)addr, len);
 #endif
 	return 0;
