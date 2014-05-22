@@ -192,7 +192,9 @@ NUTSPIBUS spiBus2Lpc17xxSsp = {
  */
 static int Lpc17xxSspChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 {
-    GpioPinSet(cs / 32, cs % 32, hi);
+    if (cs != 0xFF) {
+        GpioPinSet(cs / 32, cs % 32, hi);
+    }
     return 0;
 }
 
@@ -388,7 +390,9 @@ static int Lpc17xxSspBusNodeInit(NUTSPINODE * node)
         GpioPinConfigSet(SSP2BUS_MOSI_PORT, SSP2BUS_MOSI_PIN, SSP2BUS_MOSI_PIN_CFG);  // MOSI
     }
 #endif
-    GpioPinConfigSet(node->node_cs / 32, node->node_cs % 32, GPIO_CFG_OUTPUT);
+    if (node->node_cs != 0xFF) {
+        GpioPinConfigSet(node->node_cs / 32, node->node_cs % 32, GPIO_CFG_OUTPUT);
+    }
     
     /* Try to deactivate the node's chip select. */
     rc = Lpc17xxSspChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
