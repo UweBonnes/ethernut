@@ -126,6 +126,7 @@ int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo)
  * - SPI_MODE_CPHA: Data updated on leading edge.
  * - SPI_MODE_CPOL: Idle clock is high.
  * - SPI_MODE_FAULT: Enables mode fault detection.
+ * - SPI_MODE_HALFDUPLEX: Enable half duplex mode.
  * - SPI_MODE_LOOPBACK: Loopback mode.
  * - SPI_MODE_SLAVE: Slave mode.
  * - SPI_MODE_CSKEEP: Chip select remains active after transfer.
@@ -181,6 +182,29 @@ uint_fast32_t NutSpiBusSetRate(NUTSPINODE * node, uint_fast32_t rate)
     if (rate != SPI_CURRENT_RATE) {
         node->node_rate = rate;
         node->node_mode |= SPI_MODE_UPDATE;
+    }
+    return rc;
+}
+
+/*!
+ * \brief Set Duplex mode.
+ *
+ * The new duplex mode will be used for the next transfer.
+ * When on, MOSI is tristated and data is read from MOSI.
+ *
+ * \param node Specifies the SPI bus node.
+ * \param ena  O to switch off, switch on else
+ *
+ * \return Previous half duplex state.
+ */
+uint_fast8_t NutSpiBusHalfDuplex(NUTSPINODE * node, uint_fast8_t ena)
+{
+    uint8_t rc = node->node_mode & SPI_MODE_HALFDUPLEX;
+
+    if (ena) {
+        node->node_mode |= SPI_MODE_HALFDUPLEX;
+    } else {
+        node->node_mode &= ~SPI_MODE_HALFDUPLEX;
     }
     return rc;
 }

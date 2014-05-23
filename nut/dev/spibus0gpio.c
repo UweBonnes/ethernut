@@ -134,7 +134,7 @@ static GSPIREG *GpioSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 }
 
 /* Idle clock is low and data is captured on the rising edge. */
-static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen, int half_duplex)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -149,7 +149,17 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
-            if (rxbuf) {
+            if (rxbu) && !half_duplex) {
+                if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
+                    *rxbuf |= mask;
+                }
+                else {
+                    *rxbuf &= ~mask;
+                }
+            }
+#endif /* SBBI0_MISO_BIT */
+#if defined(SBBI0_MISO_BIT)
+            if (rxbuf && half_duplex)) {
                 if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
                     *rxbuf |= mask;
                 }
@@ -172,7 +182,7 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is low and data is captured on the falling edge. */
-static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen, int half_duplex)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -189,7 +199,17 @@ static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
-            if (rxbuf) {
+            if (rxbuf && !half_duplex) {
+                if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
+                    *rxbuf |= mask;
+                }
+                else {
+                    *rxbuf &= ~mask;
+                }
+            }
+#endif /* SBBI0_MISO_BIT */
+#if defined(SBBI0_MISO_BIT)
+            if (rxbu) && half_duplex) {
                 if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
                     *rxbuf |= mask;
                 }
@@ -210,7 +230,7 @@ static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is high and data is captured on the falling edge. */
-static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen, int half_duplex)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -225,7 +245,17 @@ static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
-            if (rxbuf) {
+            if (rxbuf && half_duplex) {
+                if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
+                    *rxbuf |= mask;
+                }
+                else {
+                    *rxbuf &= ~mask;
+                }
+            }
+#endif /* SBBI0_MISO_BIT */
+#if defined(SBBI0_MISO_BIT)
+            if (rxbuf & half_duplex) {
                 if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
                     *rxbuf |= mask;
                 }
@@ -248,7 +278,7 @@ static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
 }
 
 /* Idle clock is high and data is captured on the rising edge. */
-static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf, int xlen, int half_duplex)
 {
 #if defined(SBBI0_SCK_BIT)
     uint_fast8_t mask;
@@ -265,7 +295,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
-            if (rxbuf) {
+            if (rxbu) && half_duplex) {
                 if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
                     *rxbuf |= mask;
                 }
@@ -274,7 +304,17 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 }
             }
 #endif /* SBBI0_MISO_BIT */
-        }
+#if defined(SBBI0_MOSI_BIT)
+            if (rxbuf && half_duplex) {
+                if (GpioPinGet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT)) {
+                    *rxbuf |= mask;
+                }
+                else {
+                    *rxbuf &= ~mask;
+                }
+            }
+#endif /* SBBI0_MISO_BIT */
+         }
         if (txbuf) {
             txbuf++;
         }
@@ -302,26 +342,33 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
 int GpioSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     GSPIREG *gspi;
+    int half_duplex;
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_stat != NULL);
     gspi = (GSPIREG *)node->node_stat;
-
+    half_duplex = (node->node_mode & SPI_MODE_HALFDUPLEX);
+#if defined(SBBI0_MOSI_BIT)
+    if (half_duplex)
+        GpioPinRelease(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
+    else
+        GpioPinDrive(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
+#endif
     /* We use dedicated static routines for each mode in the hope that
     ** this improves the compiler's optimization for the inner loop. */
     switch (node->node_mode & SPI_MODE_3) {
     case SPI_MODE_0:
-        SpiMode0Transfer(gspi, txbuf, rxbuf, xlen);
+        SpiMode0Transfer(gspi, txbuf, rxbuf, xlen, half_duplex);
         break;
     case SPI_MODE_1:
-        SpiMode1Transfer(gspi, txbuf, rxbuf, xlen);
+        SpiMode1Transfer(gspi, txbuf, rxbuf, xlen, half_duplex);
         break;
     case SPI_MODE_2:
-        SpiMode2Transfer(gspi, txbuf, rxbuf, xlen);
+        SpiMode2Transfer(gspi, txbuf, rxbuf, xlen, half_duplex);
         break;
     case SPI_MODE_3:
-        SpiMode3Transfer(gspi, txbuf, rxbuf, xlen);
+        SpiMode3Transfer(gspi, txbuf, rxbuf, xlen, half_duplex);
         break;
     }
     return 0;

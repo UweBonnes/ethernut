@@ -52,6 +52,7 @@
 #define SPI_MODE_CPHA       0x0001  /* Data updated on leading edge. */
 #define SPI_MODE_CPOL       0x0002  /* Idle clock is high. */
 #define SPI_MODE_FAULT      0x0004  /* Enables mode fault detection. */
+#define SPI_MODE_HALFDUPLEX 0x0200  /* HalfDuplex Mode: Release MOSI and treat as MISO */
 #define SPI_MODE_LOOPBACK   0x0400  /* Loopback mode. */
 #define SPI_MODE_SLAVE      0x0800  /* Slave mode. */
 #define SPI_MODE_CSKEEP     0x1000  /* Chip select remains active after transfer. */
@@ -183,6 +184,7 @@ extern int NutRegisterSpiDevice(NUTDEVICE * dev, NUTSPIBUS * bus, int cs);
 extern uint_fast16_t NutSpiBusSetMode(NUTSPINODE * node, uint_fast16_t mode);
 extern uint_fast32_t NutSpiBusSetRate(NUTSPINODE * node, uint_fast32_t rate);
 extern uint_fast8_t NutSpiBusSetBits(NUTSPINODE * node, uint_fast8_t bits);
+extern uint_fast8_t NutSpiBusHalfDuplex(NUTSPINODE * node, uint_fast8_t ena);
 extern int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo);
 
 #endif
