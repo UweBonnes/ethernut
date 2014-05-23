@@ -347,11 +347,11 @@ int GpioSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int x
     half_duplex = (node->node_mode & SPI_MODE_HALFDUPLEX);
 #if defined(SBBI0_MOSI_BIT)
     if (half_duplex) {
-        GpioPinSetHigh(NUTGPIO_PORTF, 6);
+        GpioPinSetHigh(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
         GpioPinRelease(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
     }
     else {
-        GpioPinSetLow(NUTGPIO_PORTF, 6);
+        GpioPinSetLow(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
         GpioPinDrive(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
     }
 #endif
