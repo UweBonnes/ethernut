@@ -332,8 +332,8 @@ static void  StmUsartClkEnable(int enable)
   #define UART_DMA_TXCHANNEL  DMA1_C7
   #define UART_DMA_RXCHANNEL  DMA1_C6
  #elif  defined(MCU_STM32F2)||defined(MCU_STM32F4)
-  #define UART_DMA_TXCHANNEL  DMA_CONTROL0 | DMA_STREAM6 | DMA_CHANNEL4
-  #define UART_DMA_RXCHANNEL  DMA_CONTROL0 | DMA_STREAM5 | DMA_CHANNEL4
+  #define UART_DMA_TXCHANNEL  USART2_TX_DMA
+  #define UART_DMA_RXCHANNEL  USART2_RX_DMA
  #else
   #warning "STM32 family has no implemented DMA"
  #endif

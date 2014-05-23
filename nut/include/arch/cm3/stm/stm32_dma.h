@@ -1,3 +1,5 @@
+#ifndef _DEV_STM32_DMA_H
+#define _DEV_STM32_DMA_H
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
@@ -40,6 +42,7 @@
  */
 
 #include <cfg/arch.h>
+#include <arch/cm3/stm/stm32_irqreg.h>
 
 #if defined(MCU_STM32F0) || defined(MCU_STM32F1) || \
     defined(MCU_STM32L1) ||  defined(MCU_STM32F3)
@@ -61,25 +64,6 @@
 #define DMA_FLAGMASK 0xF
 #define DMA_IRQMASK  0x1
 
-#define DMA_CONTROL0 0x00
-#define DMA_CONTROL1 0x80
-#define DMA_STREAM0  0x00
-#define DMA_STREAM1  0x10
-#define DMA_STREAM2  0x20
-#define DMA_STREAM3  0x30
-#define DMA_STREAM4  0x40
-#define DMA_STREAM5  0x50
-#define DMA_STREAM6  0x60
-#define DMA_STREAM7  0x70
-#define DMA_CHANNEL0 0x00
-#define DMA_CHANNEL1 0x01
-#define DMA_CHANNEL2 0x02
-#define DMA_CHANNEL3 0x03
-#define DMA_CHANNEL4 0x04
-#define DMA_CHANNEL5 0x05
-#define DMA_CHANNEL6 0x06
-#define DMA_CHANNEL7 0x07
-
 /*
  * DMA Handles and Interrupt Entry Points
  */
@@ -98,4 +82,5 @@ void DMA_Init(void);
 void DMA_IrqMask( uint8_t ch, uint32_t mask, uint8_t ena);
 void DMA_ClearFlag( uint8_t ch, uint32_t flags);
 uint32_t DMA_GetFlag( uint8_t ch);
+#endif
 

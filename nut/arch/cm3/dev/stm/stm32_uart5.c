@@ -209,8 +209,8 @@ static void  StmUsartClkEnable(int enable)
 
 #ifdef UART5_SUPPORT_DMA
  #if defined(MCU_STM32F2)||defined(MCU_STM32F4)
-  #define UART_DMA_TXCHANNEL  DMA_CONTROL0 | DMA_STREAM7 | DMA_CHANNEL4
-  #define UART_DMA_RXCHANNEL  DMA_CONTROL0 | DMA_STREAM0 | DMA_CHANNEL4
+  #define UART_DMA_TXCHANNEL  UART5_TX_DMA
+  #define UART_DMA_RXCHANNEL  UART5_RX_DMA
  #else
   #warning "STM32 family has no implemented DMA"
  #endif

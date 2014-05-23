@@ -92,6 +92,24 @@ extern IRQ_HANDLER sig_DMA2_CH2;    // DMA Controller 2 Channel 2
 extern IRQ_HANDLER sig_DMA2_CH3;    // DMA Controller 2 Channel 3
 extern IRQ_HANDLER sig_DMA2_CH4;    // DMA Controller 2 Channel 4
 extern IRQ_HANDLER sig_DMA2_CH5;    // DMA Controller 2 Channel 5
+
+extern IRQ_HANDLER sig_DMA1_STREAM0;    // DMA Controller 1 Stream 0
+extern IRQ_HANDLER sig_DMA1_STREAM1;    // DMA Controller 1 Stream 1
+extern IRQ_HANDLER sig_DMA1_STREAM2;    // DMA Controller 1 Stream 2
+extern IRQ_HANDLER sig_DMA1_STREAM3;    // DMA Controller 1 Stream 3
+extern IRQ_HANDLER sig_DMA1_STREAM4;    // DMA Controller 1 Stream 4
+extern IRQ_HANDLER sig_DMA1_STREAM5;    // DMA Controller 1 Stream 5
+extern IRQ_HANDLER sig_DMA1_STREAM6;    // DMA Controller 1 Stream 6
+extern IRQ_HANDLER sig_DMA1_STREAM7;    // DMA Controller 1 Stream 7
+extern IRQ_HANDLER sig_DMA2_STREAM0;    // DMA Controller 2 Stream 0
+extern IRQ_HANDLER sig_DMA2_STREAM1;    // DMA Controller 2 Stream 1
+extern IRQ_HANDLER sig_DMA2_STREAM2;    // DMA Controller 2 Stream 2
+extern IRQ_HANDLER sig_DMA2_STREAM3;    // DMA Controller 2 Stream 3
+extern IRQ_HANDLER sig_DMA2_STREAM4;    // DMA Controller 2 Stream 4
+extern IRQ_HANDLER sig_DMA2_STREAM5;    // DMA Controller 2 Stream 5
+extern IRQ_HANDLER sig_DMA2_STREAM6;    // DMA Controller 2 Stream 6
+extern IRQ_HANDLER sig_DMA2_STREAM7;    // DMA Controller 2 Stream 7
+
 extern IRQ_HANDLER sig_EMAC;        // Ethernet global interrupt
 
 extern IRQ_HANDLER sig_TIM1;
