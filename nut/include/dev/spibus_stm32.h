@@ -53,17 +53,4 @@ extern NUTSPIBUS spiBus4Stm32;
 extern NUTSPIBUS spiBus5Stm32;
 extern NUTSPIBUS spiBus6Stm32;
 
-extern int Stm32SpiBus1Select(NUTSPINODE * node, uint32_t tmo);
-extern int Stm32SpiBus1Deselect(NUTSPINODE * node);
-
-extern int Stm32SpiBus2Select(NUTSPINODE * node, uint32_t tmo);
-extern int Stm32SpiBus2Deselect(NUTSPINODE * node);
-
-extern int Stm32SpiSetup(NUTSPINODE * node);
-extern int Stm32SpiBusNodeInit(NUTSPINODE * node);
-extern int Stm32SpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
-extern int Stm32SpiBusDblBufTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
-extern int Stm32SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen);
-extern int Stm32SpiBusWait(NUTSPINODE * node, uint32_t tmo);
-
 #endif

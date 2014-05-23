@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
+ * Copyright (C) 2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +34,10 @@
  */
 
 /*
+ * \file arch/cm3/stm/stm32_spi.c
+ * \brief STM32 SPI handling. Only include from devices specific file
+ *        stm32_spiX.c.
+ *
  * \verbatim
  * $Id$
  * \endverbatim
@@ -41,18 +46,12 @@
 #include <arch/cm3.h>
 #include <sys/timer.h>
 #include <cfg/spi.h>
-#include <cfg/arch/gpio.h>
-#include <dev/spibus.h>
-#include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #endif
-#include <arch/cm3/stm/stm32_spi.h>
-#include <dev/irqreg.h>
-#include <sys/event.h>
 #include <sys/nutdebug.h>
 
 #include <stdlib.h>
@@ -71,7 +70,7 @@
 /*!
  * \brief Set the specified chip select to a given level.
  */
-static int Stm32SpiChipSelect(uint_fast8_t cs, uint_fast8_t hi)
+static int Stm32SpiChipSelect(int cs, unsigned int hi)
 {
     /* Fixme: Check for cs != 0 */
     GpioPinConfigSet(SPIBUS_CS_PORT, SPIBUS_CS_PIN, GPIO_CFG_OUTPUT);
