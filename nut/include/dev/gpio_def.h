@@ -134,6 +134,16 @@
  */
 #define GPIO_CFG_PERIPHERAL3 0x00000100
 
+/*!
+ * \brief GPIO starts with output high.
+ */
+#define GPIO_CFG_INIT_HIGH 0x00000200
+
+/*!
+ * \brief GPIO starts with output low.
+ */
+#define GPIO_CFG_INIT_LOW 0x00000400
+
 typedef struct {
     void (*iov_handler) (void *);
     void *iov_arg;
