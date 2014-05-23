@@ -159,7 +159,9 @@ static void Stm32SpiBusInterrupt(void *arg)
                 CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
                 CM3BBCLR(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXEIE));
             }
-            spi->DR = b;
+            /* Half word access via "spi->DR = b" shifts out two frames
+             * on the F373! */
+            *(uint8_t *) &spi->DR = b;
             spi_txp++;
             spi_tx_len --;
         }
@@ -467,7 +469,11 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
             /* Set interface defaults. */
             spireg->CR1 = SPI_CR1_SSM | SPI_CR1_MSTR;
             /* FIXME: Check values needed*/
-            spireg->CR2 = 0;
+#if defined(SPI_CR2_FRXTH)
+            spireg->CR2 = SPI_CR2_FRXTH | 0x700;
+#else
+            spireg->CR2 =  0;
+#endif
             spireg->I2SCFGR=0;
             spireg->I2SPR=2;
             /* Update with node's defaults. */
@@ -531,7 +537,9 @@ static int Stm32SpiBusTransfer
     if (tx_only) {
         base->CR1 |= SPI_CR1_SPE;
         while( xlen > 0) {
-            base->DR = *tx;
+            /* Half word access via "spi->DR = b" shifts out two frames
+             * on the F373! */
+            *(uint8_t *)&base->DR = *tx;
             xlen--;
             tx++;
             while ( (base->SR & SPI_SR_TXE ) == 0 ); /* Wait till TXE = 1*/
@@ -562,13 +570,13 @@ static int Stm32SpiBusTransfer
     }
     else {
         base->CR1 |= SPI_CR1_SPE;
-        base->DR = *tx; /* Write first item */
+        *(uint8_t *)&base->DR = *tx; /* Write first item */
         while( xlen > 0){
             tx++;
             xlen --;
             while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
             if (xlen > 0)
-                base->DR = *tx;
+                *(uint8_t *)&base->DR = *tx;
             while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
             *rx = base->DR;
             rx++;
@@ -603,7 +611,7 @@ static int Stm32SpiBusTransfer
             spi_rxp = rx;
             base->CR2 |= (SPI_CR2_RXNEIE | SPI_CR2_TXEIE);
         }
-        base->DR = b;
+        *(uint8_t *)&base->DR = b;
     }
     NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
 #else
