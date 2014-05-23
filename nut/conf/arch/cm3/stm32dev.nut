@@ -4481,7 +4481,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "HW_SPI3_STM32",
                 brief = "SPI3 Availability",
-                description = "SPI2 Availability",
+                description = "SPI3 Availability",
                 requires = { "HW_SPI3_STM32" },
                 default = "1",
                 type = "integer",

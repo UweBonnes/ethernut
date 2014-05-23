@@ -106,6 +106,65 @@
 #define SPIBUS_CS3_CLR()
 #endif
 
+#if !defined(SPIBUS0_POLLING_MODE)
+
+static uint8_t * volatile spi_txp;
+static uint8_t * volatile spi_rxp;
+static volatile size_t spi_rx_len;
+static volatile size_t spi_tx_len;
+static volatile size_t spi_len;
+
+static void Stm32SpiBusInterrupt(void *arg)
+{
+    uint8_t b;
+    SPI_TypeDef *spi = (SPI_TypeDef *)SPI_BASE;
+
+    if(CM3BBGET(SPI_BASE, SPI_TypeDef, SR, _BI32(SPI_SR_RXNE))) {
+        b = spi->DR;
+        spi_len --;
+        if (spi_rx_len) {
+            if (spi_rxp) {
+                *spi_rxp = b;
+                spi_rxp++;
+                spi_rx_len--;
+                if (spi_rx_len == 1) {
+                    if (spi->CR1 & (SPI_CR1_BIDIMODE| SPI_CR1_RXONLY)) {
+                        /* Follow "Disabling the SPI" */
+                        while( GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
+                        while(!GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
+                        CM3BBCLR(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+                    }
+                }
+            }
+        }
+        /* Terminate when the requested number of bytes have been received
+         * even so perhaps we didn't need to store them.
+         * That way we can make sure we don't deassert CS while SCK is still running.
+         */
+        if (spi_len == 0){
+            spi->CR2 &= ~(SPI_CR2_TXEIE | SPI_CR2_RXNEIE);
+            NutEventPostFromIrq((void **)arg);
+        }
+    }
+    if (CM3BBGET(SPI_BASE, SPI_TypeDef, SR, _BI32(SPI_SR_TXE))) {
+        if (spi_tx_len) {
+            b = *spi_txp;
+            /* After sending the last byte we need to wait for the last
+             * receive interrupt, but we are not interested in the transmitter
+             * empty interrupt
+             */
+            if (spi_tx_len == 1) {
+                CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
+                CM3BBCLR(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXEIE));
+            }
+            spi->DR = b;
+            spi_txp++;
+            spi_tx_len --;
+        }
+    }
+}
+#endif
+
 /*!
  * \brief Set the specified chip select to a given level.
  */
@@ -404,6 +463,12 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
             /* Update with node's defaults. */
             node->node_stat = (void *)spireg;
             Stm32SpiSetup(node);
+#if !defined(SPI_POLLING_MODE)
+            NUTSPIBUS *bus;
+            bus = node->node_bus;
+            NutRegisterIrqHandler(&sig_SPI, Stm32SpiBusInterrupt, &bus->bus_ready);
+            NutIrqEnable(&sig_SPI);
+#endif
         }
         else {
             /* Out of memory? */
@@ -446,6 +511,11 @@ static int Stm32SpiBusTransfer
 
     tx_only = txbuf && !rxbuf;
     rx_only = (!txbuf || node->node_mode & SPI_MODE_HALFDUPLEX);
+    /* Remove any remainders in DR */
+    while (CM3BBGET(SPI_BASE, SPI_TypeDef, SR, _BI32(SPI_SR_RXNE)))
+        (void) base->DR; /* Empty DR */
+
+#if defined(SPI_POLLING_MODE)
     if (tx_only) {
         base->CR1 |= SPI_CR1_SPE;
         while( xlen > 0) {
@@ -494,7 +564,38 @@ static int Stm32SpiBusTransfer
         while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
         while (base->SR & SPI_SR_BSY);         /* Wait till BSY = 0 */
     }
-    base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE);
+#else
+    spi_len = xlen;
+    if (rx_only) {
+        spi_rxp = rx;
+        spi_rx_len = xlen;
+        spi_tx_len = 0;
+        if (node->node_mode & SPI_MODE_HALFDUPLEX)
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_BIDIMODE));
+        else
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_RXONLY));
+        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
+        CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+    }
+    else {
+        uint8_t b = *tx++;
+        spi_tx_len = xlen -1;
+        spi_txp = tx;
+        CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+        if (tx_only) {
+            spi_rx_len = 0;
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXEIE));
+        }
+        else {
+            spi_rx_len = xlen;
+            spi_rxp = rx;
+            base->CR2 |= (SPI_CR2_RXNEIE | SPI_CR2_TXEIE);
+        }
+        base->DR = b;
+    }
+    NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
+#endif
+    base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE );
     return 0;
 }
 

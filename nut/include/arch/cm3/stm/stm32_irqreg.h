@@ -50,6 +50,10 @@ extern IRQ_HANDLER sig_RTC;         // Real Time Clock
 extern IRQ_HANDLER sig_SDIO;        // SDIO Controller
 extern IRQ_HANDLER sig_SPI1;        // SPI 1 Controller
 extern IRQ_HANDLER sig_SPI2;        // SPI 2 Controller
+extern IRQ_HANDLER sig_SPI3;        // SPI 2 Controller
+extern IRQ_HANDLER sig_SPI4;        // SPI 2 Controller
+extern IRQ_HANDLER sig_SPI5;        // SPI 2 Controller
+extern IRQ_HANDLER sig_SPI6;        // SPI 2 Controller
 extern IRQ_HANDLER sig_TWI1_EV;     // I2C 1 Data/Event
 extern IRQ_HANDLER sig_TWI2_EV;     // I2C 2 Data/Event
 extern IRQ_HANDLER sig_TWI3_EV;     // I2C 2 Data/Event

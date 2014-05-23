@@ -122,6 +122,9 @@
 #define SPI_GPIO_AF GPIO_AF_SPI5
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
+#define sig_SPI             sig_SPI5
+#define SPIBUS_POLLING_MODE SPIBUS5_POLLING_MODE
+#define SPI_BASE            SPI5_BASE
 
 NUTSPIBUS spiBus5Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
