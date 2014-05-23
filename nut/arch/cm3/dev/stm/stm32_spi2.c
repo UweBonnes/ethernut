@@ -80,19 +80,46 @@
  *        MISO: PA9/PB14/PC2/PD3
  *        MOSI: PA10/PB15/PC3/PD4/
  *
- * For Chip select, we use NSS pin as default or any other pin as pure GPIO
-*/
+ * Use PB12 or on F373 PA11 as default chip select
+ */
 
-#if !defined(SPIBUS2_CS_PORT)
- #define SPIBUS_CS_PORT NUTGPIO_PORTB
+#if !defined( SPIBUS2_NO_CS)
+#if !defined(SPIBUS2_CS0_PORT) && !defined(SPIBUS2_CS0_PIN)
+#if defined(MCU_STM32F37X)
+#define SPIBUS_CS0_PORT NUTGPIO_PORTA
+#define SPIBUS_CS0_PIN  11
 #else
- #define SPIBUS_CS_PORT SPIBUS2_CS_PORT
+#define SPIBUS_CS0_PORT NUTGPIO_PORTB
+#define SPIBUS_CS0_PIN  12
 #endif
-#if !defined(SPIBUS2_CS_PIN)
- #define SPIBUS_CS_PIN 12
+#elif !defined(SPIBUS2_CS0_PORT) || !defined(SPIBUS2_CS0_PIN)
+#warning "SPIBUS2 uncomplete chip select"
 #else
- #define SPIBUS_CS_PIN SPIBUS2_CS_PIN
+#define SPIBUS_CS0_PORT SPIBUS2_CS0_PORT
+#define SPIBUS_CS0_PIN  SPIBUS2_CS0_PIN
 #endif
+
+#if defined(SPIBUS2_CS1_PORT)
+#define SPIBUS_CS1_PORT SPIBUS2_CS1_PORT
+#endif
+#if defined(SPIBUS2_CS2_PORT)
+#define SPIBUS_CS2_PORT SPIBUS2_CS2_PORT
+#endif
+#if defined(SPIBUS2_CS3_PORT)
+#define SPIBUS_CS3_PORT SPIBUS2_CS3_PORT
+#endif
+#if defined(SPIBUS2_CS1_PIN)
+#define SPIBUS_CS1_PIN  SPIBUS2_CS1_PIN
+#endif
+#if defined(SPIBUS2_CS2_PIN)
+#define SPIBUS_CS2_PIN  SPIBUS2_CS2_PIN
+#endif
+#if defined(PIBUS2_CS2_PIN)
+#define SPIBUS_CS3_PIN  SPIBUS2_CS3_PIN
+#endif
+
+#endif
+
 #if defined(MCU_STM32F1)
  #undef SPIBUS_REMAP_BB
  #define SPIBUS_SCK_PIN 13
@@ -204,7 +231,8 @@
 #endif
 #define SPI_DEV 2
 #define SPI_GPIO_AF GPIO_AF_SPI2
-#define SPI_ENABLE_CLK (RCC->APB1ENR |= RCC_APB1ENR_SPI2EN)
+#define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
+#define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
 
 
 /*Dma Channels

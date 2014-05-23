@@ -64,19 +64,41 @@
  *
  * For Chip select, we use NSS pin as default or any other pin as pure GPIO
  *
- * For function pins, we use PE2/4/5/6 as default
- */
+ * Use PE4 as default chip select
+  */
 
-#if !defined(SPIBUS4_CS_PORT)
- #define SPIBUS_CS_PORT NUTGPIO_PORTE
+#if !defined( SPIBUS4_NO_CS)
+#if !defined(SPIBUS4_CS0_PORT) && !defined(SPIBUS4_CS0_PIN)
+#define SPIBUS_CS0_PORT NUTGPIO_PORTE
+#define SPIBUS_CS0_PIN  4
+#elif !defined(SPIBUS4_CS0_PORT) || !defined(SPIBUS4_CS0_PIN)
+#warnig "SPIBUS4 uncomplete chip select"
 #else
- #define SPIBUS_CS_PORT SPIBUS4_CS_PORT
+#define SPIBUS_CS0_PORT SPIBUS4_CS0_PORT
+#define SPIBUS_CS0_PIN  SPIBUS4_CS0_PIN
 #endif
-#if !defined(SPIBUS4_CS_PIN)
- #define SPIBUS_CS_PIN 4
-#else
- #define SPIBUS_CS_PIN SPIBUS4_CS_PIN
+
+#if defined(SPIBUS4_CS1_PORT)
+#define SPIBUS_CS1_PORT SPIBUS4_CS1_PORT
 #endif
+#if defined(SPIBUS4_CS2_PORT)
+#define SPIBUS_CS2_PORT SPIBUS4_CS2_PORT
+#endif
+#if defined(SPIBUS4_CS3_PORT)
+#define SPIBUS_CS3_PORT SPIBUS4_CS3_PORT
+#endif
+#if defined(SPIBUS4_CS1_PIN)
+#define SPIBUS_CS1_PIN  SPIBUS4_CS1_PIN
+#endif
+#if defined(SPIBUS4_CS2_PIN)
+#define SPIBUS_CS2_PIN  SPIBUS4_CS2_PIN
+#endif
+#if defined(PIBUS4_CS2_PIN)
+#define SPIBUS_CS3_PIN  SPIBUS4_CS3_PIN
+#endif
+
+#endif
+
  #if  SPIBUS4_SCK_PIN == 12
   #define SPIBUS_SCK_PIN 12
  #else
@@ -96,8 +118,9 @@
 #define SPIBUS_MISO_PORT NUTGPIO_PORTE
 #define SPIBUS_MOSI_PORT NUTGPIO_PORTE
 
-#define SPI_GPIO_AF GPIO_AF_SPI5
-#define SPI_ENABLE_CLK (RCC->APB2ENR |= RCC_APB2ENR_SPI4EN)
+#define SPI_GPIO_AF GPIO_AF_SPI4
+#define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))
+#define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))
 
 NUTSPIBUS spiBus4Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

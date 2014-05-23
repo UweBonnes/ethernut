@@ -52,6 +52,7 @@
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #endif
+#include <dev/spibus_stm32.h>
 #include <sys/nutdebug.h>
 
 #include <stdlib.h>
@@ -67,17 +68,95 @@
 #define SPI_MISO_GPIO_AF SPI_GPIO_AF
 #endif
 
+/* Keep SPIBUS_CSx_INIT()  undefined when PORT/PIN is not available*/
+
+#if defined(SPIBUS_CS0_PORT) && defined(SPIBUS_CS0_PIN)
+#define SPIBUS_CS0_INIT(x)  GpioPinConfigSet(SPIBUS_CS0_PORT,  SPIBUS_CS0_PIN, GPIO_CFG_OUTPUT | x)
+#define SPIBUS_CS0_SET()    GpioPinSetHigh(SPIBUS_CS0_PORT,  SPIBUS_CS0_PIN)
+#define SPIBUS_CS0_CLR()    GpioPinSetLow (SPIBUS_CS0_PORT,  SPIBUS_CS0_PIN)
+#else
+#define SPIBUS_CS0_SET()
+#define SPIBUS_CS0_CLR()
+#endif
+
+#if defined(SPIBUS_CS1_PORT) && defined(SPIBUS_CS1_PIN)
+#define SPIBUS_CS1_INIT(x)  GpioPinConfigSet(SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN, GPIO_CFG_OUTPUT | x)
+#define SPIBUS_CS1_SET()    GpioPinSetHigh(SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN)
+#define SPIBUS_CS1_CLR()    GpioPinSetLow (SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN)
+#else
+#define SPIBUS_CS1_SET()
+#define SPIBUS_CS1_CLR()
+#endif
+
+#if defined(SPIBUS_CS2_PORT) && defined(SPIBUS_CS2_PIN)
+#define SPIBUS_CS2_INIT(x)  GpioPinConfigSet(SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN, GPIO_CFG_OUTPUT | x)
+#define SPIBUS_CS2_SET()    GpioPinSetHigh(SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN)
+#define SPIBUS_CS2_CLR()    GpioPinSetLow (SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN)
+#else
+#define SPIBUS_CS2_SET()
+#define SPIBUS_CS2_CLR()
+#endif
+
+#if defined(SPIBUS_CS3_PORT) && defined(SPIBUS_CS3_PIN)
+#define SPIBUS_CS3_INIT(x)  GpioPinConfigSet(SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN, GPIO_CFG_OUTPUT | x)
+#define SPIBUS_CS3_SET()    GpioPinSetHigh(SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
+#define SPIBUS_CS3_CLR()    GpioPinSetLow (SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
+#else
+#define SPIBUS_CS3_SET()
+#define SPIBUS_CS3_CLR()
+#endif
+
 /*!
  * \brief Set the specified chip select to a given level.
  */
-static int Stm32SpiChipSelect(int cs, unsigned int hi)
+static int Stm32SpiChipSelect(NUTSPINODE *node, int assert)
 {
-    /* Fixme: Check for cs != 0 */
-    GpioPinConfigSet(SPIBUS_CS_PORT, SPIBUS_CS_PIN, GPIO_CFG_OUTPUT);
-    GpioPinSet(SPIBUS_CS_PORT, SPIBUS_CS_PIN, hi);
-    return 0;
+    int res;
+    int hi;
+    if (node->node_mode & SPI_MODE_CSHIGH)
+        hi = assert;
+    else
+        hi = !assert;
+    switch (node->node_cs) {
+    case 0:
+        if(hi)
+            SPIBUS_CS0_SET();
+        else
+            SPIBUS_CS0_CLR();
+        res = 0;
+        break;
+#if SPIBUS_CS1_SET !=0
+    case 1:
+        if(hi)
+            SPIBUS_CS1_SET();
+        else
+            SPIBUS_CS1_CLR();
+        res = 0;
+        break;
+#endif
+#if SPIBUS_CS2_SET !=0
+    case 2:
+        if(hi)
+            SPIBUS_CS2_SET();
+        else
+            SPIBUS_CS2_CLR();
+        res = 0;
+        break;
+#endif
+#if SPIBUS_CS3_SET !=0
+    case 2:
+        if(hi)
+            SPIBUS_CS3_SET();
+        else
+            SPIBUS_CS3_CLR();
+        res = 0;
+        break;
+#endif
+     default:
+         res = -1;
+    }
+    return res;
 }
-
 /*! \brief Deselect a device on the SPI bus.
  *
  * Deactivates the chip select and unlocks the bus.
@@ -94,7 +173,7 @@ static int Stm32SpiBusDeselect(NUTSPINODE * node)
 
     NutSpiBusWait(node, NUT_WAIT_INFINITE);
     /* Deactivate the node's chip select. */
-    Stm32SpiChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
+    Stm32SpiChipSelect(node, 0);
 
     /* Release the bus. */
     NutEventPostAsync(&node->node_bus->bus_mutex);
@@ -130,13 +209,7 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
     if (rc) {
         errno = EIO;
     } else {
-        SPI_TypeDef *spireg = node->node_stat;
-
-        SPI_ENABLE_CLK;
-        /* Activate the IO Pins to avoid glitches*/
-    GpioPinConfigSet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_DISABLED);//SCK
-    GpioPinConfigSet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, GPIO_CFG_DISABLED );//MISO
-    GpioPinConfigSet(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_DISABLED);//MOSI
+        STM32SPIREG *spireg = node->node_stat;
 
         /* If the mode update bit is set, then update our shadow registers. */
         if (node->node_mode & SPI_MODE_UPDATE) {
@@ -146,27 +219,12 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
         /* Set SPI mode. */
         base->CR1 = spireg->CR1;
         base->CR1 |= SPI_CR1_SSI|SPI_CR1_MSTR;
-        base->CR2=spireg->CR2;
-#if !defined(STM32L1XX_MD)
+        base->CR2 = spireg->CR2;
         base->I2SCFGR=spireg->I2SCFGR;
         base->I2SPR=spireg->I2SPR;
-#endif
-        //No enable - set it only during transfer
 
-#if defined(STM32F10X_CL)
- #if defined(SPIBUS_REMAP_BB)
-        SPIBUS_REMAP_BB();
- #endif
-#else
-    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_SCK_GPIO_AF);
-    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_MISO_GPIO_AF);
-    GPIO_PinAFConfig((GPIO_TypeDef*)SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_MOSI_GPIO_AF);
-#endif
-    GpioPinConfigSet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);//SCK
-    GpioPinConfigSet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN,                 GPIO_CFG_PERIPHAL);//MISO
-    GpioPinConfigSet(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);//MOSI
         /* Finally activate the node's chip select. */
-        rc = Stm32SpiChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) != 0);
+        rc = Stm32SpiChipSelect(node, 1);
         if (rc) {
             /* Release the bus in case of an error. */
             NutEventPost(&node->node_bus->bus_mutex);
@@ -174,23 +232,6 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
     }
     return rc;
 }
-
-
-/*Dma Channels
-  * DMA1.2 - spi1_rx        DMA1.3 - spi1_tx
-  * DMA1.4 - spi2_rx (I2c2_tx)  DMA1.5 - spi2_tx (i2c2_rx)
-  * DMA1.6 - i2c1_tx        DMA1.7 - i2c1_rx
-  * DMA2.1 - spi3_rx        DMA2.2 - spi3_tx
-  */
-
-static void Stm32SpiEnable(SPI_TypeDef* SPIx){
-    SPIx->CR1 |= SPI_CR1_SPE;
-};
-
-static void Stm32SpiDisable(SPI_TypeDef* SPIx){
-    SPIx->CR1&= ~(SPI_CR1_SPE);
-};
-
 
 /*!
  * \brief Update SPI shadow registers.
@@ -202,7 +243,6 @@ static void Stm32SpiDisable(SPI_TypeDef* SPIx){
 static int Stm32SpiSetup(NUTSPINODE * node)
 {
     uint32_t clk;
-    uint8_t i;
     uint32_t clkdiv;
     SPI_TypeDef *spireg;
 
@@ -241,40 +281,38 @@ static int Stm32SpiSetup(NUTSPINODE * node)
 #if defined (MCU_STM32F0)
     clk = NutClockGet(NUT_HWCLK_PCLK1);
 #else
-    if(node->node_bus->bus_base == SPI1_BASE){
-        //SPI1
-        clk = NutClockGet(NUT_HWCLK_PCLK2);
-    }else{
-        //SPI2,SPI3
+    if (node->node_bus->bus_base < APB2PERIPH_BASE)
         clk = NutClockGet(NUT_HWCLK_PCLK1);
-    };
+    else
+        clk = NutClockGet(NUT_HWCLK_PCLK2);
 #endif
     /* Calculate the SPI clock divider. Avoid rounding errors. */
     clkdiv = (clk + node->node_rate - 1) / node->node_rate;
-    /* The divider value minimum is 1. */
-    if (clkdiv < 2) {
-        clkdiv=2;
-    }
-    /* The divider value maximum is 255. */
-    else if (clkdiv > 256) {
-        clkdiv = 256;
-    }
-
-    for(i=8;i>=1;i--){
-        if(clkdiv& (1<<i)){
-            clkdiv=i-1;
-            break;
-        };
-    };
-    spireg->CR1 |= clkdiv << 3;//FIXME: write real code
+    /* Choose the actual clock rate not greater than the requested rate */
+    if (clkdiv > 128)
+        clkdiv = 7;
+    else if (clkdiv > 64)
+        clkdiv = 6;
+    else if (clkdiv > 32)
+        clkdiv = 5;
+    else if (clkdiv > 16)
+        clkdiv = 4;
+    else if (clkdiv >  8)
+        clkdiv = 3;
+    else if (clkdiv >  4)
+        clkdiv = 2;
+    else if (clkdiv >  2)
+        clkdiv = 1;
+    else
+        clkdiv = 0;
+    spireg->CR1 |= (clkdiv * SPI_CR1_BR_0);
 
     /* Update interface parameters. */
-    node->node_rate = clk / clkdiv;
+    node->node_rate = clk / (1 << (clkdiv + 1)) ;
     node->node_mode &= ~SPI_MODE_UPDATE;
 
     return 0;
 }
-
 
 /*!
  * \brief Initialize an SPI bus node.
@@ -288,33 +326,81 @@ static int Stm32SpiSetup(NUTSPINODE * node)
  */
 static int Stm32SpiBusNodeInit(NUTSPINODE * node)
 {
-    int rc = -1;
+    int rc = 0;
+    uint32_t init_flag;
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
-
-    /* Try to deactivate the node's chip select. */
-    rc = Stm32SpiChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
+    if ((node->node_mode & SPI_MODE_CSHIGH) == 0)
+        init_flag = GPIO_CFG_INIT_HIGH;
+    else
+        init_flag = GPIO_CFG_INIT_LOW;
+    (void) init_flag;
+    switch (node->node_cs) {
+    case 0:
+        /* If CS0 is undefined, we assume permanent selection. */
+#if defined(SPIBUS_CS0_INIT)
+        SPIBUS_CS0_INIT(init_flag);
+#endif
+        break;
+#if defined(SPIBUS_CS1_INIT)
+    case 1:
+        SPIBUS_CS1_INIT(init_flag);
+        break;
+#endif
+#if defined(SPIBUS_CS2_INIT)
+    case 2:
+        SPIBUS_CS2_INIT(init_flag);
+        break;
+#endif
+#if defined(SPIBUS_CS3_INIT)
+    case 3:
+        SPIBUS_CS3_INIT(init_flag);
+        break;
+#endif
+    default:
+        return -1;
+    }
+    /* Deactivate the node's chip select when initializing the port */
+    rc = Stm32SpiChipSelect(node, 0);
+    /* Test if  the SPI Bus is already initialized*/
+    if (SPI_ENABLE_CLK_GET() == 0) {
+        /* Initialize Hardware */
+        GpioPinConfigSet
+            (SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT |GPIO_CFG_INIT_LOW);//SCK
+        GpioPinConfigSet
+            (SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, GPIO_CFG_PERIPHAL);//MISO
+        GpioPinConfigSet
+            (SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT |GPIO_CFG_INIT_LOW);//MOSI
+#if defined(STM32F10X_CL)
+#if defined(SPIBUS_REMAP_BB)
+        SPIBUS_REMAP_BB();
+ #endif
+#else
+        GPIO_PinAFConfig
+            ((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_SCK_GPIO_AF);
+        GPIO_PinAFConfig
+            ((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_MISO_GPIO_AF);
+        GPIO_PinAFConfig
+            ((GPIO_TypeDef*)SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_MOSI_GPIO_AF);
+#endif
+        SPI_ENABLE_CLK_SET();
+    }
     /* It should not hurt us being called more than once. Thus, we
        ** check wether any initialization had been taken place already. */
     if (rc == 0 && node->node_stat == NULL)
     {
         /* Allocate and set our shadow registers. */
-        SPI_TypeDef *spireg = malloc(sizeof(SPI_TypeDef));
+        STM32SPIREG *spireg = malloc(sizeof(STM32SPIREG));
 
         if (spireg) {
             /* Set interface defaults. */
-            spireg->CR1 = SPI_CR1_SSI | SPI_CR1_SSM | SPI_CR1_MSTR;
-            /* Set Prescaler divide by 4 */
-            spireg->CR1 |= SPI_CR1_BR_0;
-
-#if !defined(STM32L1XX_MD)
-//          spireg->CR2 = SPI_I2S_DMAReq_Tx|SPI_I2S_DMAReq_Rx;//FIXME:
-//          commented out for debugging
+            spireg->CR1 = SPI_CR1_SSM | SPI_CR1_MSTR;
+            /* FIXME: Check values needed*/
+            spireg->CR2 = 0;
             spireg->I2SCFGR=0;
-            spireg->I2SPR=2; //FIXME: end of
-#endif
+            spireg->I2SPR=2;
             /* Update with node's defaults. */
             node->node_stat = (void *)spireg;
             Stm32SpiSetup(node);
@@ -341,57 +427,74 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
  *
  * \return Always 0.
  */
-static int Stm32SpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
+static int Stm32SpiBusTransfer
+    (NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
     SPI_TypeDef* base;
-  //  DMA_Channel_TypeDef* channel_rx,*channel_tx;
-
+    uint8_t *tx = (uint8_t *)txbuf;
+    uint8_t *rx = (uint8_t *)rxbuf;
+    int tx_only;
+    int rx_only;
 
     /* Sanity check. */
+    if (xlen == 0)
+        return 0;
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
     NUTASSERT(node->node_bus->bus_base != 0);
     base = (SPI_TypeDef*)node->node_bus->bus_base;
 
-   /* if(base == SPI1_BASE){
-        channel_rx=DMA1_Channel2;
-        channel_tx=DMA1_Channel3;
-    }else if(base == SPI2_BASE){
-        channel_rx=DMA1_Channel4;
-        channel_tx=DMA1_Channel5;
-    }else if(base == SPI3_BASE){
-        channel_rx=DMA2_Channel1;
-        channel_tx=DMA2_Channel2;
-    };*/
-//    DMA_Setup(channel_rx,(void*)rxbuf,(void*)(&(base->DR)),xlen,DMA_DIR_PeripheralSRC|DMA_MemoryDataSize_Byte|DMA_PeripheralDataSize_Byte|DMA_Priority_VeryHigh|DMA_IT_TC);//rx
-//    DMA_Setup(channel_tx,(void*)txbuf,(void*)(&(base->DR)),xlen,DMA_DIR_PeripheralDST|DMA_MemoryDataSize_Byte|DMA_PeripheralDataSize_Byte|DMA_Priority_VeryHigh|DMA_IT_TC);//tx
-//    DMA_Enable(channel_rx);DMA_Enable(channel_tx);
-
-//    DMA_Register_Interrupt(channel_rx,&SPI_QUE);
-
-    Stm32SpiEnable(base);
-
-    unsigned char * tx = (unsigned char*)txbuf;
-    unsigned char * rx = (unsigned char*)rxbuf;
-
-    while( xlen-- > 0){
-        unsigned char b = tx ? (* tx ++) : 0xff;
-
-        base->DR = b;
-        /* wait until receive buffer no longer empty */
-        while ( ( base->SR & SPI_SR_RXNE ) == 0 ) {
+    tx_only = txbuf && !rxbuf;
+    rx_only = (!txbuf || node->node_mode & SPI_MODE_HALFDUPLEX);
+    if (tx_only) {
+        base->CR1 |= SPI_CR1_SPE;
+        while( xlen > 0) {
+            base->DR = *tx;
+            xlen--;
+            tx++;
+            while ( (base->SR & SPI_SR_TXE ) == 0 ); /* Wait till TXE = 1*/
+        }
+        while (base->SR & SPI_SR_BSY);     /* Wait till BSY = 0 */
     }
-
-    b = base->DR;
-
-    if( rx ) {
-      * rx ++ = b;
+    else if (rx_only) {
+        (void) base->DR; /* Empty DR */
+        if (node->node_mode & SPI_MODE_HALFDUPLEX)
+            base->CR1 |= SPI_CR1_BIDIMODE;
+        else
+            base->CR1 |= SPI_CR1_RXONLY;
+        base->CR1 |= SPI_CR1_SPE;
+        while( xlen > 0) {
+            if(xlen < 2) {
+                /* Follow procedure "Disabling the SPI" */
+                while(!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
+                while(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN));
+                base->CR1 &= ~SPI_CR1_SPE;
+            }
+            xlen--;
+            while ((base->SR & SPI_SR_RXNE) == 0 ); /* Wait till RXNE = 1*/
+            if (rxbuf) {
+                *rx = base->DR;
+                rx++;
+            }
+        }
     }
-  }
-
-//    NutEventWait(&SPI_QUE,0);
-    Stm32SpiDisable(base);
+    else {
+        base->CR1 |= SPI_CR1_SPE;
+        base->DR = *tx; /* Write first item */
+        while( xlen > 0){
+            tx++;
+            xlen --;
+            while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
+            if (xlen > 0)
+                base->DR = *tx;
+            while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
+            *rx = base->DR;
+            rx++;
+        }
+        while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
+        while (base->SR & SPI_SR_BSY);         /* Wait till BSY = 0 */
+    }
+    base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE);
     return 0;
-
 }
 

@@ -62,21 +62,42 @@
  *        MISO: PF8/PH7
  *        MOSI: PF9/PF11
  *
- * For Chip select, we use NSS pin as default or any other pin as pure GPIO
  *
- * For function pins, we use PE2/4/5/6 as default
+ * For function pins, we use PF6/7/8/9 as default
  */
 
-#if !defined(SPIBUS5_CS_PORT)
- #define SPIBUS_CS_PORT NUTGPIO_PORTF
+#if !defined( SPIBUS5_NO_CS)
+#if !defined(SPIBUS5_CS0_PORT) & !defined(SPIBUS5_CS0_PIN)
+#define SPIBUS_CS0_PORT NUTGPIO_PORTF
+#define SPIBUS_CS0_PIN  6
+#elif !defined(SPIBUS2_CS0_PORT) || !defined(SPIBUS2_CS0_PIN)
+#warning "SPIBUS5 uncomplete chip select"
 #else
- #define SPIBUS_CS_PORT SPIBUS5_CS_PORT
+#define SPIBUS_CS0_PORT SPIBUS5_CS0_PORT
+#define SPIBUS_CS0_PIN  SPIBUS5_CS0_PIN
 #endif
-#if !defined(SPIBUS5_CS_PIN)
- #define SPIBUS_CS_PIN 6
-#else
- #define SPIBUS_CS_PIN SPIBUS5_CS_PIN
+
+#if defined(SPIBUS5_CS1_PORT)
+#define SPIBUS_CS1_PORT SPIBUS5_CS1_PORT
 #endif
+#if defined(SPIBUS5_CS2_PORT)
+#define SPIBUS_CS2_PORT SPIBUS5_CS2_PORT
+#endif
+#if defined(SPIBUS5_CS3_PORT)
+#define SPIBUS_CS3_PORT SPIBUS5_CS3_PORT
+#endif
+#if defined(SPIBUS5_CS1_PIN)
+#define SPIBUS_CS1_PIN  SPIBUS5_CS1_PIN
+#endif
+#if defined(SPIBUS5_CS2_PIN)
+#define SPIBUS_CS2_PIN  SPIBUS5_CS2_PIN
+#endif
+#if defined(PIBUS5_CS2_PIN)
+#define SPIBUS_CS3_PIN  SPIBUS5_CS3_PIN
+#endif
+
+#endif
+
 #if  SPIBUS5_SCK_PIN == 6
  #define SPIBUS_SCK_PORT  NUTGPIO_PORTH
  #define SPIBUS_SCK_PIN 6
@@ -98,8 +119,9 @@
 #endif
 #define SPIBUS_MOSI_PORT NUTGPIO_PORTF
 
-#define SPI_GPIO_AF GPIO_AF_SPI6
-#define SPI_ENABLE_CLK (RCC->APB2ENR |= RCC_APB2ENR_SPI5EN)
+#define SPI_GPIO_AF GPIO_AF_SPI5
+#define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
+#define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
 
 NUTSPIBUS spiBus5Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

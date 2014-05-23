@@ -44,7 +44,17 @@
  * \endverbatim
  */
 
+#include <cfg/arch.h>
 #include <dev/spibus.h>
+
+typedef struct _STM32SPIREG STM32SPIREG;
+
+struct _STM32SPIREG {
+    uint32_t CR1;
+    uint32_t CR2;
+    uint32_t I2SCFGR;
+    uint32_t I2SPR;
+};
 
 extern NUTSPIBUS spiBus1Stm32;
 extern NUTSPIBUS spiBus2Stm32;
