@@ -100,28 +100,24 @@ static GSPIREG *GpioSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
         /* If CS0 is undefined, we assume permanent selection. */
 #if defined(SBBI0_CS0_BIT)
         GpioPinSet(SBBI0_CS0_PORT, SBBI0_CS0_BIT, hi);
-        GpioPinConfigSet(SBBI0_CS0_PORT, SBBI0_CS0_BIT, GPIO_CFG_OUTPUT);
 #endif
         rc = &gspi_reg0;
         break;
 #if defined(SBBI0_CS1_BIT)
     case 1:
         GpioPinSet(SBBI0_CS1_PORT, SBBI0_CS1_BIT, hi);
-        GpioPinConfigSet(SBBI0_CS1_PORT, SBBI0_CS1_BIT, GPIO_CFG_OUTPUT);
         rc = &gspi_reg1;
         break;
 #endif
 #if defined(SBBI0_CS2_BIT)
     case 2:
         GpioPinSet(SBBI0_CS2_PORT, SBBI0_CS2_BIT, hi);
-        GpioPinConfigSet(SBBI0_CS2_PORT, SBBI0_CS2_BIT, GPIO_CFG_OUTPUT);
         rc = &gspi_reg2;
         break;
 #endif
 #if defined(SBBI0_CS3_BIT)
     case 3:
         GpioPinSet(SBBI0_CS3_PORT, SBBI0_CS3_BIT, hi);
-        GpioPinConfigSet(SBBI0_CS3_PORT, SBBI0_CS3_BIT, GPIO_CFG_OUTPUT);
         rc = &gspi_reg3;
         break;
 #endif
@@ -149,7 +145,7 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
-            if (rxbu) && !half_duplex) {
+            if (rxbuf && !half_duplex) {
                 if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
                     *rxbuf |= mask;
                 }
@@ -158,16 +154,16 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 }
             }
 #endif /* SBBI0_MISO_BIT */
-#if defined(SBBI0_MISO_BIT)
-            if (rxbuf && half_duplex)) {
-                if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
+#if defined(SBBI0_MOSI_BIT)
+            if (rxbuf && half_duplex) {
+                if (GpioPinGet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT)) {
                     *rxbuf |= mask;
                 }
                 else {
                     *rxbuf &= ~mask;
                 }
             }
-#endif /* SBBI0_MISO_BIT */
+#endif /* SBBI0_MOSI_BIT */
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
         }
@@ -208,16 +204,16 @@ static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 }
             }
 #endif /* SBBI0_MISO_BIT */
-#if defined(SBBI0_MISO_BIT)
-            if (rxbu) && half_duplex) {
-                if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
+#if defined(SBBI0_MOSI_BIT)
+            if (rxbuf && half_duplex) {
+                if (GpioPinGet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT)) {
                     *rxbuf |= mask;
                 }
                 else {
                     *rxbuf &= ~mask;
                 }
             }
-#endif /* SBBI0_MISO_BIT */
+#endif /* SBBI0_MOSI_BIT */
         }
         if (txbuf) {
             txbuf++;
@@ -254,16 +250,16 @@ static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 }
             }
 #endif /* SBBI0_MISO_BIT */
-#if defined(SBBI0_MISO_BIT)
-            if (rxbuf & half_duplex) {
-                if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
+#if defined(SBBI0_MOSI_BIT)
+            if (rxbuf && half_duplex) {
+                if (GpioPinGet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT)) {
                     *rxbuf |= mask;
                 }
                 else {
                     *rxbuf &= ~mask;
                 }
             }
-#endif /* SBBI0_MISO_BIT */
+#endif /* SBBI0_MOSI_BIT */
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
         }
@@ -295,7 +291,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
-            if (rxbu) && half_duplex) {
+            if (rxbuf && half_duplex) {
                 if (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT)) {
                     *rxbuf |= mask;
                 }
@@ -313,7 +309,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                     *rxbuf &= ~mask;
                 }
             }
-#endif /* SBBI0_MISO_BIT */
+#endif /* SBBI0_MOSI_BIT */
          }
         if (txbuf) {
             txbuf++;
@@ -350,10 +346,14 @@ int GpioSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int x
     gspi = (GSPIREG *)node->node_stat;
     half_duplex = (node->node_mode & SPI_MODE_HALFDUPLEX);
 #if defined(SBBI0_MOSI_BIT)
-    if (half_duplex)
+    if (half_duplex) {
+        GpioPinSetHigh(NUTGPIO_PORTF, 6);
         GpioPinRelease(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
-    else
+    }
+    else {
+        GpioPinSetLow(NUTGPIO_PORTF, 6);
         GpioPinDrive(SBBI0_MOSI_PORT,SBBI0_MOSI_BIT);
+    }
 #endif
     /* We use dedicated static routines for each mode in the hope that
     ** this improves the compiler's optimization for the inner loop. */
@@ -390,6 +390,18 @@ int GpioSpiBus0NodeInit(NUTSPINODE * node)
     NUTASSERT(node != NULL);
 
     /* Try to deactivate the node's chip select. */
+#if defined(SBBI0_CS0_BIT)
+        GpioPinConfigSet(SBBI0_CS0_PORT, SBBI0_CS0_BIT, GPIO_CFG_OUTPUT|GPIO_CFG_INIT_HIGH);
+#endif
+#if defined(SBBI0_CS1_BIT)
+        GpioPinConfigSet(SBBI0_CS1_PORT, SBBI0_CS1_BIT, GPIO_CFG_OUTPUT|GPIO_CFG_INIT_HIGH);
+#endif
+#if defined(SBBI0_CS2_BIT)
+        GpioPinConfigSet(SBBI0_CS2_PORT, SBBI0_CS2_BIT, GPIO_CFG_OUTPUT|GPIO_CFG_INIT_HIGH);
+#endif
+#if defined(SBBI0_CS3_BIT)
+        GpioPinConfigSet(SBBI0_CS3_PORT, SBBI0_CS3_BIT, GPIO_CFG_OUTPUT|GPIO_CFG_INIT_HIGH);
+#endif
     node->node_stat = GpioSpi0ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
     if (node->node_stat == NULL) {
         /* Chip select not configured. */
@@ -428,8 +440,8 @@ int GpioSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
         }
         /* Set clock output using the correct idle mode level. */
 #if defined(SBBI0_SCK_BIT)
-        GpioPinSetLow(SBBI0_SCK_PORT, (node->node_mode & SPI_MODE_CPOL) != 0);
         GpioPinConfigSet(SBBI0_SCK_PORT, SBBI0_SCK_BIT, GPIO_CFG_OUTPUT);
+        GpioPinSetLow(SBBI0_SCK_PORT, (node->node_mode & SPI_MODE_CPOL) != 0);
 #endif
         /* Enable MOSI output and MISO input. */
 #if defined(SBBI0_MOSI_BIT)
