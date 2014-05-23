@@ -121,9 +121,31 @@
 #define SPI_GPIO_AF GPIO_AF_SPI4
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))
-#define sig_SPI             sig_SPI4
-#define SPIBUS_POLLING_MODE SPIBUS4_POLLING_MODE
-#define SPI_BASE            SPI4_BASE
+#define sig_SPI     sig_SPI4
+#define SPI_BASE    SPI4_BASE
+
+#if !defined(SPIBUS4_MODE)
+#define SPIBUS_MODE IRQ_MODE
+#else
+#define SPIBUS_MODE SPIBUS4_MODE
+#endif
+
+#if SPIBUS_MODE == DMA_MODE
+ #if defined(SPIBUS1_DMA_TX_ALTERNATE_STREAM)
+  #define SPI_DMA_TX_CHANNEL SPI4_TX_ALT_DMA
+  #define sig_SPI_DMA_TX     SPI4_TX_ALT_DMA_IRQ
+ #else
+  #define SPI_DMA_TX_CHANNEL SPI4_TX_DMA
+  #define sig_SPI_DMA_TX     SPI4_TX_DMA_IRQ
+ #endif
+ #if defined(SPIBUS1_DMA_RX_ALTERNATE_STREAM)
+  #define SPI_DMA_RX_CHANNEL SPI4_RX_ALT_DMA
+  #define sig_SPI_DMA_RX     SPI4_RX_ALT_DMA_IRQ
+ #else
+  #define SPI_DMA_RX_CHANNEL SPI4_RX_DMA
+  #define sig_SPI_DMA_RX     SPI4_RX_DMA_IRQ
+ #endif
+#endif
 
 NUTSPIBUS spiBus4Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

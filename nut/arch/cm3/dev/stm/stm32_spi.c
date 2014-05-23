@@ -38,6 +38,10 @@
  * \brief STM32 SPI handling. Only include from devices specific file
  *        stm32_spiX.c.
  *
+ * The SPI IP has no interrupt for SPI getting idle, so it takes some effort
+ * to find the right moment to switch SPI and CS off. To do so, we always
+ * count the received byte even if we transmit only.
+ * DMA_Mode handles this case per se.
  * \verbatim
  * $Id$
  * \endverbatim
@@ -49,9 +53,6 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f1_dma.h>
-#endif
 #include <dev/spibus_stm32.h>
 #include <sys/nutdebug.h>
 
@@ -106,7 +107,8 @@
 #define SPIBUS_CS3_CLR()
 #endif
 
-#if !defined(SPIBUS0_POLLING_MODE)
+#if SPIBUS_MODE == POLLING_MODE
+#elif SPIBUS_MODE == IRQ_MODE
 
 static uint8_t * volatile spi_txp;
 static uint8_t * volatile spi_rxp;
@@ -162,6 +164,14 @@ static void Stm32SpiBusInterrupt(void *arg)
             spi_tx_len --;
         }
     }
+}
+#else
+#include <arch/cm3/stm/stm32_dma.h>
+static void Stm32SpiBusDMAInterrupt(void *arg)
+{
+    CM3BBCLR(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+    DMA_ClearFlag(SPI_DMA_RX_CHANNEL, DMA_TCIF);
+    NutEventPostFromIrq((void **)arg);
 }
 #endif
 
@@ -463,11 +473,13 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
             /* Update with node's defaults. */
             node->node_stat = (void *)spireg;
             Stm32SpiSetup(node);
-#if !defined(SPI_POLLING_MODE)
+#if SPIBUS_MODE == IRQ_MODE
             NUTSPIBUS *bus;
             bus = node->node_bus;
             NutRegisterIrqHandler(&sig_SPI, Stm32SpiBusInterrupt, &bus->bus_ready);
             NutIrqEnable(&sig_SPI);
+#elif SPIBUS_MODE == DMA_MODE
+            DMA_Init();
 #endif
         }
         else {
@@ -515,7 +527,7 @@ static int Stm32SpiBusTransfer
     while (CM3BBGET(SPI_BASE, SPI_TypeDef, SR, _BI32(SPI_SR_RXNE)))
         (void) base->DR; /* Empty DR */
 
-#if defined(SPI_POLLING_MODE)
+#if SPIBUS_MODE == POLLING_MODE
     if (tx_only) {
         base->CR1 |= SPI_CR1_SPE;
         while( xlen > 0) {
@@ -564,7 +576,7 @@ static int Stm32SpiBusTransfer
         while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
         while (base->SR & SPI_SR_BSY);         /* Wait till BSY = 0 */
     }
-#else
+#elif SPIBUS_MODE == IRQ_MODE
     spi_len = xlen;
     if (rx_only) {
         spi_rxp = rx;
@@ -594,8 +606,44 @@ static int Stm32SpiBusTransfer
         base->DR = b;
     }
     NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
+#else
+    (void) rx_only;
+    (void) rx;
+    NUTSPIBUS *bus;
+    bus = node->node_bus;
+    if (rx_only) {
+        if (node->node_mode & SPI_MODE_HALFDUPLEX)
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_BIDIMODE));
+        else
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_RXONLY));
+        DMA_Setup( SPI_DMA_RX_CHANNEL, rx, (void*)(&base->DR), xlen , DMA_MINC);
+        DMA_Enable( SPI_DMA_RX_CHANNEL);
+    }
+    else {
+        DMA_Setup( SPI_DMA_TX_CHANNEL, (void*)(&base->DR), tx, xlen, DMA_MINC);
+        DMA_Enable( SPI_DMA_TX_CHANNEL);
+        if (tx_only) {
+            uint32_t dummy;
+            DMA_Setup( SPI_DMA_RX_CHANNEL, &dummy, (void*)(&base->DR), xlen, 0);
+        }
+        else
+            DMA_Setup( SPI_DMA_RX_CHANNEL, rx, (void*)(&base->DR), xlen, DMA_MINC);
+        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXDMAEN));
+    }
+    /* Register the DMA interrupt after we have acquired the DMA channel.
+     * Otherwise we may disrupt an on-going transaction to an other device on the same
+     * channel.
+     */
+    NutRegisterIrqHandler(&sig_SPI_DMA_RX, Stm32SpiBusDMAInterrupt, &bus->bus_ready);
+    NutIrqEnable(&sig_SPI_DMA_RX);
+    DMA_Enable( SPI_DMA_RX_CHANNEL);
+    DMA_IrqMask(SPI_DMA_RX_CHANNEL, DMA_TCIF, 1);
+    CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXDMAEN));
+    CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+    NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
 #endif
-    base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE );
+    base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE |
+                   SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
     return 0;
 }
 

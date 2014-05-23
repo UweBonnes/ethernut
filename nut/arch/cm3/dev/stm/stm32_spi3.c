@@ -197,18 +197,30 @@
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI3EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI3EN))
 #define sig_SPI             sig_SPI3
-#define SPIBUS_POLLING_MODE SPIBUS3_POLLING_MODE
 #define SPI_BASE            SPI3_BASE
 
-/*Dma Channels
-  * DMA1.2 - spi1_rx        DMA1.3 - spi1_tx
-  * DMA1.4 - spi2_rx (I2c2_tx)  DMA1.5 - spi2_tx (i2c2_rx)
-  * DMA1.6 - i2c1_tx        DMA1.7 - i2c1_rx
-  * DMA2.1 - spi3_rx        DMA2.2 - spi3_tx
-  */
-//static HANDLE spi3_que;
+#if !defined(SPIBUS3_MODE)
+#define SPIBUS_MODE IRQ_MODE
+#else
+#define SPIBUS_MODE SPIBUS3_MODE
+#endif
 
-//#define SPI_QUE spi3_que
+#if SPIBUS_MODE == DMA_MODE
+ #if defined(SPIBUS3_DMA_TX_ALTERNATE_STREAM)
+  #define SPI_DMA_TX_CHANNEL SPI3_TX_ALT_DMA
+  #define sig_SPI_DMA_TX     SPI3_TX_ALT_DMA_IRQ
+ #else
+  #define SPI_DMA_TX_CHANNEL SPI3_TX_DMA
+  #define sig_SPI_DMA_TX     SPI3_TX_DMA_IRQ
+ #endif
+ #if defined(SPIBUS1_DMA_RX_ALTERNATE_STREAM)
+  #define SPI_DMA_RX_CHANNEL SPI3_RX_ALT_DMA
+  #define sig_SPI_DMA_RX     SPI3_RX_ALT_DMA_IRQ
+ #else
+  #define SPI_DMA_RX_CHANNEL SPI3_RX_DMA
+  #define sig_SPI_DMA_RX     SPI3_RX_DMA_IRQ
+ #endif
+#endif
 
 NUTSPIBUS spiBus3Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

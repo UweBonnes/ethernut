@@ -39,7 +39,7 @@
  * \endverbatim
  */
 
-#include <arch/cm3.h>
+#include <cfg/arch.h>
 #include <sys/timer.h>
 #include <cfg/spi.h>
 #include <cfg/arch/gpio.h>
@@ -47,9 +47,7 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32_gpio.h>
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f1_dma.h>
-#endif
+#include <arch/cm3/stm/stm32_dma.h>
 #include <arch/cm3/stm/stm32_spi.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
@@ -227,17 +225,31 @@
 #define SPI_GPIO_AF GPIO_AF_SPI1
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI1EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI1EN))
-#define sig_SPI             sig_SPI1
-#define SPIBUS_POLLING_MODE SPIBUS1_POLLING_MODE
-#define SPI_BASE            SPI1_BASE
+#define sig_SPI     sig_SPI1
+#define SPI_BASE    SPI1_BASE
 
-/*Dma Channels
-  * DMA1.2 - spi1_rx        DMA1.3 - spi1_tx
-  * DMA1.4 - spi2_rx (I2c2_tx)  DMA1.5 - spi2_tx (i2c2_rx)
-  * DMA1.6 - i2c1_tx        DMA1.7 - i2c1_rx
-  * DMA2.1 - spi3_rx        DMA2.2 - spi3_tx
-  */
-//static HANDLE spi1_que;
+#if !defined(SPIBUS1_MODE)
+#define SPIBUS_MODE IRQ_MODE
+#else
+#define SPIBUS_MODE SPIBUS1_MODE
+#endif
+
+#if SPIBUS_MODE == DMA_MODE
+ #if defined(SPIBUS1_DMA_TX_ALTERNATE_STREAM)
+  #define SPI_DMA_TX_CHANNEL SPI1_TX_ALT_DMA
+  #define sig_SPI_DMA_TX     SPI1_TX_ALT_DMA_IRQ
+ #else
+  #define SPI_DMA_TX_CHANNEL SPI1_TX_DMA
+  #define sig_SPI_DMA_TX     SPI1_TX_DMA_IRQ
+ #endif
+ #if defined(SPIBUS1_DMA_RX_ALTERNATE_STREAM)
+  #define SPI_DMA_RX_CHANNEL SPI1_RX_ALT_DMA
+  #define sig_SPI_DMA_RX     SPI1_RX_ALT_DMA_IRQ
+ #else
+  #define SPI_DMA_RX_CHANNEL SPI1_RX_DMA
+  #define sig_SPI_DMA_RX     SPI1_RX_DMA_IRQ
+ #endif
+#endif
 
 NUTSPIBUS spiBus1Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

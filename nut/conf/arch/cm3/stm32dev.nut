@@ -2875,19 +2875,24 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS1_POLLING_MODE",
-                brief = "Polling Mode (First Controller)",
-                description = "If enabled, the controller will use polling mode. By default "..
-                              "interrupt mode is used.",
+                macro = "SPIBUS1_MODE",
+                brief = "Select SPIBUS 1 MODE",
+                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
+                choices = { "0", "1", "2"},
+                default = "0",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS1_DMA_TX_ALTERNATE_STREAM",
+                brief = "Select SPI1 Alternate TX DMA stream ",
+                description = "Select to use stream 5 versus stream 3(default) as SPI1 TX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS1_DOUBLE_BUFFER",
-                brief = "DMA Mode (First Controller)",
-                description = "If enabled, the controller will use DMA mode.\n\n"..
-                              "Under development.",
---                requires = { "NOT_AVAILABLE" },
+                macro = "SPIBUS1_DMA_RX_ALTERNATE_STREAM",
+                brief = "Select SPI1 Alternate RX DMA stream ",
+                description = "Select to use stream 2 versus stream 0(default) as SPI1 RX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
@@ -3023,20 +3028,11 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS2_POLLING_MODE",
-                brief = "Polling Mode (Second Controller)",
-                description = "If enabled, the controller will use polling mode. By default "..
-                              "interrupt mode is used.",
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPIBUS2_DOUBLE_BUFFER",
-                brief = "PDC Mode (Second Controller)",
-                description = "If enabled, the controller will use PDC mode.\n\n"..
-                              "Under development.",
---                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
+                macro = "SPIBUS2_MODE",
+                brief = "Select SPIBUS 2 MODE",
+                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
+                choices = { "0", "1", "2"},
+                default = "0",
                 file = "include/cfg/spi.h"
             },
         }
@@ -3189,19 +3185,24 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS3_POLLING_MODE",
-                brief = "Polling Mode (Second Controller)",
-                description = "If enabled, the controller will use polling mode. By default "..
-                              "interrupt mode is used.",
+                macro = "SPIBUS3_MODE",
+                brief = "Select SPIBUS 3 MODE",
+                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
+                choices = { "0", "1", "2"},
+                default = "0",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS3_DMA_TX_ALTERNATE_STREAM",
+                brief = "Select SPI3 Alternate TX DMA stream ",
+                description = "Select to use stream 7 versus stream 5(default) as SPI3 TX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS3_DOUBLE_BUFFER",
-                brief = "PDC Mode (Second Controller)",
-                description = "If enabled, the controller will use PDC mode.\n\n"..
-                              "Under development.",
---                requires = { "NOT_AVAILABLE" },
+                macro = "SPIBUS3_DMA_RX_ALTERNATE_STREAM",
+                brief = "Select SPI3 Alternate RX DMA stream ",
+                description = "Select to use stream 2 versus stream 0(default) as SPI3 RX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
@@ -3344,19 +3345,24 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS4_POLLING_MODE",
-                brief = "Polling Mode (Second Controller)",
-                description = "If enabled, the controller will use polling mode. By default "..
-                              "interrupt mode is used.",
+                macro = "SPIBUS4_MODE",
+                brief = "Select SPIBUS 4 MODE",
+                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
+                choices = { "0", "1", "2"},
+                default = "0",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS4_DMA_TX_ALTERNATE_STREAM",
+                brief = "Select SPI4 Alternate TX DMA stream ",
+                description = "Select to use stream 4 versus stream 1(default) as SPI4 TX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS4_DOUBLE_BUFFER",
-                brief = "PDC Mode (Second Controller)",
-                description = "If enabled, the controller will use PDC mode.\n\n"..
-                              "Under development.",
---                requires = { "NOT_AVAILABLE" },
+                macro = "SPIBUS4_DMA_RX_ALTERNATE_STREAM",
+                brief = "Select SPI4 Alternate RX DMA stream ",
+                description = "Select to use stream 3 versus stream 0(default) as SPI4 TX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
@@ -3499,19 +3505,24 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS5_POLLING_MODE",
-                brief = "Polling Mode (Second Controller)",
-                description = "If enabled, the controller will use polling mode. By default "..
-                              "interrupt mode is used.",
+                macro = "SPIBUS5_MODE",
+                brief = "Select SPIBUS 5 MODE",
+                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
+                choices = { "0", "1", "2"},
+                default = "0",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS5_DMA_TX_ALTERNATE_STREAM",
+                brief = "Select SPI5 Alternate TX DMA stream ",
+                description = "Select to use stream 6 versus stream 4(default) as SPI5 TX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS4_DOUBLE_BUFFER",
-                brief = "PDC Mode (Second Controller)",
-                description = "If enabled, the controller will use PDC mode.\n\n"..
-                              "Under development.",
---                requires = { "NOT_AVAILABLE" },
+                macro = "SPIBUS5_DMA_RX_ALTERNATE_STREAM",
+                brief = "Select SPI5 Alternate RX DMA stream ",
+                description = "Select to use stream 5 versus stream 2(default) as SPI5 RX",
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
@@ -3609,20 +3620,11 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS6_POLLING_MODE",
-                brief = "Polling Mode (Second Controller)",
-                description = "If enabled, the controller will use polling mode. By default "..
-                              "interrupt mode is used.",
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPIBUS4_DOUBLE_BUFFER",
-                brief = "PDC Mode (Second Controller)",
-                description = "If enabled, the controller will use PDC mode.\n\n"..
-                              "Under development.",
---                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
+                macro = "SPIBUS6_MODE",
+                brief = "Select SPIBUS 6 MODE",
+                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
+                choices = { "0", "1", "2"},
+                default = "0",
                 file = "include/cfg/spi.h"
             },
         },

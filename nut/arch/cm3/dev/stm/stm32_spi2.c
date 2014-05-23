@@ -234,19 +234,20 @@
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
 #define sig_SPI             sig_SPI2
-#define SPIBUS_POLLING_MODE SPIBUS2_POLLING_MODE
 #define SPI_BASE            SPI2_BASE
 
+#if !defined(SPIBUS2_MODE)
+#define SPIBUS_MODE IRQ_MODE
+#else
+#define SPIBUS_MODE SPIBUS2_MODE
+#endif
 
-/*Dma Channels
-  * DMA1.2 - spi1_rx        DMA1.3 - spi1_tx
-  * DMA1.4 - spi2_rx (I2c2_tx)  DMA1.5 - spi2_tx (i2c2_rx)
-  * DMA1.6 - i2c1_tx        DMA1.7 - i2c1_rx
-  * DMA2.1 - spi3_rx        DMA2.2 - spi3_tx
-  */
-//static HANDLE spi2_que;
-
-//#define SPI_QUE spi2_que
+#if SPIBUS_MODE == DMA_MODE
+ #define SPI_DMA_TX_CHANNEL SPI2_TX_DMA
+ #define sig_SPI_DMA_TX     SPI2_TX_DMA_IRQ
+ #define SPI_DMA_RX_CHANNEL SPI2_RX_DMA
+ #define sig_SPI_DMA_RX     SPI2_RX_DMA_IRQ
+#endif
 
 NUTSPIBUS spiBus2Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
