@@ -176,7 +176,6 @@ void Lpc177x_8x_MciRXDisable( void );
 
 void Lpc177x_8x_MciCmdProcess( void );
 void Lpc177x_8x_MciDataErrorProcess( void );
-void Lpc177x_8x_MciDataErrorProcess( void );
 void Lpc177x_8x_MciDATA_END_InterruptService( void );
 void Lpc177x_8x_MciFIFOInterruptService( void );
 

@@ -285,7 +285,36 @@ static uint32_t Lpc177x_8x_MmcardReadData(uint8_t* buffer, int blk, int num)
             printf("%s() failed\n", __FUNCTION__);
             Lpc177x_8x_MmcardShowStatusBits(errorState);
 #endif
+
+            // perform 1 retry in case of an error
+
+            retVal = Lpc177x_8x_MciReadBlock(buffer, blk, num);
+
+            if (retVal == MCI_FUNC_OK)
+            {
+                /*
+                 *  Reading blocks have started, now wait till this job is finished
+                 *  Please note the driver uses 16 word FIFO in the background to
+                 *  transfer the data under interrupt from the card
+                 */
+                while (Lpc177x_8x_MciGetDataXferEndState() != 0);
+
+                errorState = Lpc177x_8x_MciGetXferErrState();
+
+                if ((num > 1) || errorState)
+                {
+                    Lpc177x_8x_MciCmd_StopTransmission();
+                }
+
+                if (errorState)
+                {
+        #ifdef NUTDEBUG
+                    printf("%s() failed again\n", __FUNCTION__);
+                    Lpc177x_8x_MmcardShowStatusBits(errorState);
+        #endif
             retVal = MCI_FUNC_FAILED;
+        }
+    }
         }
     }
 
