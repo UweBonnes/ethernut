@@ -2400,7 +2400,7 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
         return(MCI_FUNC_FAILED);
     }
 
-    LPC_MCI->DATATMR = DATA_TIMER_VALUE;
+    LPC_MCI->DATATMR = DATA_TIMER_VALUE_W;
 
     LPC_MCI->DATALEN = BLOCK_LENGTH*numOfBlock;
 
@@ -2482,7 +2482,7 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
     }
 
 
-    LPC_MCI->DATATMR = DATA_TIMER_VALUE;
+    LPC_MCI->DATATMR = DATA_TIMER_VALUE_R;
 
     LPC_MCI->DATALEN = BLOCK_LENGTH*numOfBlock;
 

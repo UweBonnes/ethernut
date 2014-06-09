@@ -626,7 +626,7 @@ static int Lpc177x_8x_MmcardBlockWrite(NUTFILE * nfp, const void *buffer, int nu
         blk *= BLOCK_LENGTH;
     }
 
-    if (Lpc177x_8x_MmcardWriteData(fcb->fcb_blkbuf, blk, 1) == MCI_FUNC_OK)
+    if (Lpc177x_8x_MmcardWriteData((uint8_t*)buffer, blk, num) == MCI_FUNC_OK)
     {
         return(num);
     }

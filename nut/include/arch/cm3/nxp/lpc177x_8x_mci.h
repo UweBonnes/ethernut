@@ -150,19 +150,17 @@
 #define SD_CARD             2
 
 
-/* MCI clk freq = PCLK/(2* (Clkdiv +1) -> LPC manual sais: MCI clk freq = MCLK(2*(ClkDiv+1) !*/
-#if MCI_DMA_ENABLED
-#define MCLKDIV_SLOW        (60 - 1)    /* 59 = 400,000Hz -> @48Mhz/(2*60) */
-#define MCLKDIV_NORMAL      (1 - 1)     /* 0 = 24Mhz -> @48Mhz/(2*1) */
-#else
-//    #define MCLKDIV_SLOW    75-1    // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(75-1+1)) = 120/150 = 800KHz
-    #define MCLKDIV_SLOW    150-1    // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(150-1+1)) = 120/300 = 400KHz
-//    #define MCLKDIV_NORMAL  3-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(3-1+1)) = 120/6 = 20MHz
-    #define MCLKDIV_NORMAL  6-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(6-1+1)) = 120/12 = 10MHz
-//    #define MCLKDIV_NORMAL  60-1     // when MCLK = 120 MHz, the SDIO clock will be 120/(2x(6-1+1)) = 120/120 = 1MHz
-#endif
+#define PCLK                48000000
+#define SDCLK_SLOW            400000
+#define SDCLK_NORMAL        10000000 
 
-#define DATA_TIMER_VALUE    0x10000
+
+/* MCI clk freq = PCLK/(2* (Clkdiv +1) -> LPC manual sais: MCI clk freq = MCLK(2*(ClkDiv+1) !*/
+#define MCLKDIV_SLOW        ((PCLK / SDCLK_SLOW) / 2 - 1)
+#define MCLKDIV_NORMAL      ((PCLK / SDCLK_NORMAL) / 2 - 1)
+
+#define DATA_TIMER_VALUE_R           ((PCLK / (2 * (MCLKDIV_NORMAL + 1))) / 4)   // 250ms
+#define DATA_TIMER_VALUE_W           (PCLK / (2 * (MCLKDIV_NORMAL + 1)))         // 1000ms
 
 #define EXPECT_NO_RESP      0
 #define EXPECT_SHORT_RESP   1
