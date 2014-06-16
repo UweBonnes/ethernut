@@ -62,8 +62,8 @@
 #define PIOK_ID     10
 #define PIOL_ID     11
 
-#define PIOA_BASE       AVR32_GPIO_ADDRESS      /*!< \brief PIO A base address.->GPIO_ADDRESS */
-#define PIOB_BASE       AVR32_GPIO_ADDRESS +0x200      /*!< \brief PIO B base address. */
+#define PIOA_BASE       AVR32_GPIO_ADDRESS                               /*!< \brief PIO A base address.->GPIO_ADDRESS */
+#define PIOB_BASE       AVR32_GPIO_ADDRESS + AVR32_GPIO_PORT_LENGTH      /*!< \brief PIO B base address. */
 
 /*@}*/
 
