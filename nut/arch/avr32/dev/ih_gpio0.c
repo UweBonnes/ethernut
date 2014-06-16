@@ -46,9 +46,21 @@
 #endif
 
 int GPIOpinNumber[] = {
+#if defined(AVR32_PIN_PA00)
 	AVR32_PIN_PA00,
+#else
+	-1,
+#endif
+#if defined(AVR32_PIN_PA01)
 	AVR32_PIN_PA01,
+#else
+	-1,
+#endif
+#if defined(AVR32_PIN_PA02)
 	AVR32_PIN_PA02,
+#else
+	-1,
+#endif
 	AVR32_PIN_PA03,
 	AVR32_PIN_PA04,
 	AVR32_PIN_PA05,
@@ -147,7 +159,10 @@ static int GpioIrqCtl(int cmd, void *param, int bit)
 
     switch (cmd) {
 		case NUT_IRQCTL_INIT:
-			register_interrupt(GPIO0IrqEntry, AVR32_GPIO_IRQ_0 + (GPIOpinNumber[bit]/8), NUT_IRQPRI_GPIO);
+			if ( GPIOpinNumber[bit] == -1 )
+				rc = -1;
+			else 
+				register_interrupt(GPIO0IrqEntry, AVR32_GPIO_IRQ_0 + (GPIOpinNumber[bit]/8), NUT_IRQPRI_GPIO);
 		break;
 
         case NUT_IRQCTL_STATUS:
