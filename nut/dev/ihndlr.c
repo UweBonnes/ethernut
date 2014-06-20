@@ -124,7 +124,7 @@ int NutIrqStatus(IRQ_HANDLER * irq)
     int status = 0;
 
     if (irq->ir_ctl) {
-        rc = (irq->ir_ctl) (NUT_IRQCTL_ENABLE, &status);
+        rc = (irq->ir_ctl) (NUT_IRQCTL_STATUS, &status);
     }
     if (rc != 0) {
         status = 0;
