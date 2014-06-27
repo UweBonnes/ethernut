@@ -54,12 +54,26 @@
 #ifndef LED1_PIN
 #define LED1_PIN 9
 #endif
-/* LD6 WEST BLUE*/
+/* LD6 WEST GREEN*/
 #ifndef LED2_PORT
 #define LED2_PORT NUTGPIO_PORTE
 #endif
 #ifndef LED2_PIN
 #define LED2_PIN 15
+#endif
+/* LD10 SOUTH RED*/
+#ifndef LED3_PORT
+#define LED3_PORT NUTGPIO_PORTE
+#endif
+#ifndef LED3_PIN
+#define LED3_PIN 13
+#endif
+/* LD7 EAST GREEN*/
+#ifndef LED4_PORT
+#define LED4_PORT NUTGPIO_PORTE
+#endif
+#ifndef LED4_PIN
+#define LED4_PIN 11
 #endif
 
 #ifndef DEV_UART
