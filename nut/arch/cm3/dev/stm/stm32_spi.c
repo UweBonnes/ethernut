@@ -604,14 +604,14 @@ static int Stm32SpiBusTransfer
         CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
         if (tx_only) {
             spi_rx_len = 0;
-            CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXEIE));
         }
         else {
             spi_rx_len = xlen;
             spi_rxp = rx;
-            base->CR2 |= (SPI_CR2_RXNEIE | SPI_CR2_TXEIE);
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
         }
         *(uint8_t *)&base->DR = b;
+        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXEIE));
     }
     NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
 #else
