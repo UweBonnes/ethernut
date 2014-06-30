@@ -126,11 +126,13 @@ typedef uint_fast16_t nutgpio_pin_t;
 /*!
  * \brief GPIO pin speed
  *
- * Speed L1      F2/F2
- * SLOW  400 kHz   2 MHz
- * MED     2 MHz  25 MHz
- * FAST   10 MHz  50 MHz
- * HIGH   40 MHz 100 MHz
+ * Lower Supply voltage or high loads means lower speed!
+ *
+ * Speed L0/L1   F0/F1/3 F2/F4
+ * SLOW  400 kHz  2 MHz    2 MHz
+ * MED     2 MHz  2 MHz   25 MHz
+ * FAST   10 MHz 10 MHz   50 MHz
+ * HIGH   50 MHz 50 MHz  100 MHz
  *
  * As default, we set GPIO_CFG_SPEED_MED
  */
@@ -140,6 +142,7 @@ typedef uint_fast16_t nutgpio_pin_t;
 #define GPIO_CFG_SPEED_FAST  0x00000080
 #define GPIO_CFG_SPEED_HIGH  0x000000C0
 
+extern const uint16_t ospeed_values[4];
 /*!
  * \brief GPIO Output Register inital value  Low
  */
