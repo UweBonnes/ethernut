@@ -67,10 +67,10 @@
  */
 
 #if !defined( SPIBUS5_NO_CS)
-#if !defined(SPIBUS5_CS0_PORT) & !defined(SPIBUS5_CS0_PIN)
+#if !defined(SPIBUS5_CS0_PORT) && !defined(SPIBUS5_CS0_PIN)
 #define SPIBUS_CS0_PORT NUTGPIO_PORTF
 #define SPIBUS_CS0_PIN  6
-#elif !defined(SPIBUS2_CS0_PORT) || !defined(SPIBUS2_CS0_PIN)
+#elif !defined(SPIBUS5_CS0_PORT) || !defined(SPIBUS5_CS0_PIN)
 #warning "SPIBUS5 uncomplete chip select"
 #else
 #define SPIBUS_CS0_PORT SPIBUS5_CS0_PORT
