@@ -47,3 +47,31 @@
 #ifndef DEV_CONSOLE_NAME
 #define DEV_CONSOLE_NAME devUsartStm32_1.dev_name
 #endif
+/* LD3 North RED*/
+#ifndef LED1_PORT
+#define LED1_PORT NUTGPIO_PORTG
+#endif
+#ifndef LED1_PIN
+#define LED1_PIN 14
+#endif
+/* Non available pin on available port*/
+#ifndef LED2_PORT
+#define LED2_PORT NUTGPIO_PORTK
+#endif
+#ifndef LED2_PIN
+#define LED2_PIN 8
+#endif
+/* Non available pin on available port*/
+#ifndef LED3_PORT
+#define LED3_PORT NUTGPIO_PORTK
+#endif
+#ifndef LED3_PIN
+#define LED3_PIN 8
+#endif
+/* Non available pin on available port*/
+#ifndef LED4_PORT
+#define LED4_PORT NUTGPIO_PORTK
+#endif
+#ifndef LED4_PIN
+#define LED4_PIN 8
+#endif
