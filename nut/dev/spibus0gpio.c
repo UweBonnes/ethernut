@@ -441,7 +441,7 @@ int GpioSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
         /* Set clock output using the correct idle mode level. */
 #if defined(SBBI0_SCK_BIT)
         GpioPinConfigSet(SBBI0_SCK_PORT, SBBI0_SCK_BIT, GPIO_CFG_OUTPUT);
-        GpioPinSetLow(SBBI0_SCK_PORT, (node->node_mode & SPI_MODE_CPOL) != 0);
+        GpioPinSet(SBBI0_SCK_PORT,  SBBI0_SCK_BIT, (node->node_mode & SPI_MODE_CPOL) != 0);
 #endif
         /* Enable MOSI output and MISO input. */
 #if defined(SBBI0_MOSI_BIT)
