@@ -929,27 +929,11 @@ static int send_raw_packet(SSL *ssl, uint8_t protocol)
         ret = NutTcpSend ((TCPSOCKET *)ssl->client_fd,
                         &ssl->bm_all_data[sent], pkt_size-sent);
 
-// TODO: OR
-        if (ret >= 0)
+        if (ret >= 0) {
             sent += ret;
-        else
-        {
-            if (errno != EAGAIN && errno != EWOULDBLOCK)
-                return SSL_ERROR_CONN_LOST;
+        } else {
+            return SSL_ERROR_CONN_LOST;
         }
-// TODO: OR
-        /* keep going until the write buffer has some space */
-        if (sent != pkt_size)
-        {
-            fd_set wfds;
-            FD_ZERO(&wfds);
-            FD_SET(ssl->client_fd, &wfds);
-
-            /* block and wait for it */
-            if (select(ssl->client_fd + 1, NULL, &wfds, NULL, NULL) < 0)
-                return SSL_ERROR_CONN_LOST;
-        }
-// TODO: OR
     }
 
     SET_SSL_FLAG(SSL_NEED_RECORD);  /* reset for next time */
@@ -1160,14 +1144,12 @@ int basic_read(SSL *ssl, uint8_t **in_data)
     read_len = NutTcpReceive ((TCPSOCKET *)ssl->client_fd, &buf[ssl->bm_read_index],
                             ssl->need_bytes-ssl->got_bytes);
 
-    if (read_len < 0)
-    {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-            return 0;
+    if (read_len == 0) {
+        /* We had a timeout */
     }
 
     /* connection has gone, so die */
-    if (read_len <= 0)
+    if (read_len < 0)
     {
         ret = SSL_ERROR_CONN_LOST;
         ssl->hs_status = SSL_ERROR_DEAD;  /* make sure it stays dead */
