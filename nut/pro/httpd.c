@@ -235,10 +235,11 @@ static const REQUEST_LOOKUP req_lookup[] = {
 #if defined(HTTPD_EXCLUDE_DATE)
     {  0, NULL },
 #else
-    {  17, "if-modified-since" },
+    { 17, "if-modified-since" },
 #endif
     {  7, "referer" },
-    { 10, "user-agent" }
+    { 10, "user-agent" },
+    { 19, "content-disposition" }
 };
 
 /*!
@@ -249,11 +250,7 @@ static const REQUEST_LOOKUP req_lookup[] = {
 /*!
  * \brief Size of the largest entry in the header name table.
  */
-#if defined(HTTPD_EXCLUDE_DATE)
-#define MAX_REQUEST_NAME_SIZE   15
-#else
-#define MAX_REQUEST_NAME_SIZE   17
-#endif
+#define MAX_REQUEST_NAME_SIZE   19
 
 /*!
  * \brief Known mime types.
@@ -1027,6 +1024,10 @@ static int ParserHeaderLines(FILE *stream, REQUEST *req)
                     case 9:
                         /* User-Agent: Store as string. */
                         strval = &req->req_agent;
+                        break;
+                    case 10:
+                        /* Content disposition: Store as a string. */
+                        strval = &req->req_disposition;
                         break;
                     }
                     /* Anything to store as a string. */
