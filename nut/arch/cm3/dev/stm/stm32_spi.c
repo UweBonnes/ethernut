@@ -252,6 +252,32 @@ static int Stm32SpiBusDeselect(NUTSPINODE * node)
     return 0;
 }
 
+/*! \brief Pull SCK to the node-dependant idle level.
+ *
+ * \param node Specifies the SPI bus node.
+ */
+static void SetNodeSckIdleLevel(NUTSPINODE * node)
+{
+#if defined (MCU_STM32F1)
+    if (node->node_mode & SPI_MODE_CPOL)
+        GpioPinSetHigh(SPIBUS_SCK_PORT, SPIBUS_SCK_PIN);
+    else
+        GpioPinSetLow(SPIBUS_SCK_PORT, SPIBUS_SCK_PIN);
+#else
+    GPIO_TypeDef* sck_port;
+    uint32_t pudr;
+
+    sck_port = (GPIO_TypeDef*)SPIBUS_SCK_PORT;
+    pudr = sck_port->PUPDR;
+    pudr &= ~(3 <<(SPIBUS_SCK_PIN<<1));
+     if (node->node_mode & SPI_MODE_CPOL)
+         pudr |= (1 <<(SPIBUS_SCK_PIN << 1));
+     else
+         pudr |= (2 <<(SPIBUS_SCK_PIN << 1));
+     sck_port->PUPDR = pudr;
+#endif
+}
+
 /*! \brief Select a device on the SPI bus.
  *
  * Locks and activates the bus for the specified node.
@@ -286,6 +312,11 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
         if (node->node_mode & SPI_MODE_UPDATE) {
             Stm32SpiSetup(node);
         }
+
+        /* Idle level be set before SPI is enabled
+         * See note e.g.  in RM0316 28.5.5 Communication formats
+         */
+        SetNodeSckIdleLevel(node);
 
         /* Set SPI mode. */
         base->CR1 = spireg->CR1;
