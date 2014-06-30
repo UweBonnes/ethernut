@@ -287,6 +287,19 @@ nutpro =
         }
     },
     {
+        name = "nutpro_mdnsd",
+        brief = "MDNSD API",
+        description = "Multicast DNS deamon library.",
+        requires = { "NET_UDP" },
+        provides = { "PRO_MDNSD" },
+        sources =
+        {
+            "mdnsd/dns_sd_txt.c",
+            "mdnsd/mdnsd.c",
+            "mdnsd/rfc1035.c",
+        }
+    },
+    {
         name = "nutpro_uri",
         brief = "URI Functions",
         description = "Convenience functions to split URI into its components.",
