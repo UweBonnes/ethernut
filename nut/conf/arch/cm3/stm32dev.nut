@@ -3158,24 +3158,6 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS3_CS_PORT",
-                brief = "SPI3 CS Port",
-                description = "Choice of SPI3 CS Pins on GPIO BANK",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPIBUS3_CS_PIN",
-                brief = "SPI3 CS Pins",
-                description = "Choice of SPI3 CS Pins on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
                 macro = "SPIBUS3_I2S_MODE",
                 brief = "I2S Mode (Third Controller)",
                 description = "If enabled, the controller will transfer I2S data.\n\n"..
@@ -3318,24 +3300,6 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPIBUS4_CS_PORT",
-                brief = "SPI4 CS Port",
-                description = "Choice of SPI4 CS Pins on GPIO BANK",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPIBUS4_CS_PIN",
-                brief = "SPI4 CS Pins",
-                description = "Choice of SPI4 CS Pins on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
                 macro = "SPIBUS4_I2S_MODE",
                 brief = "I2S Mode (Third Controller)",
                 description = "If enabled, the controller will transfer I2S data.\n\n"..
@@ -3475,24 +3439,6 @@ nutarch_cm3_stm32_devices =
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = { "9", "11" },
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPIBUS5_CS_PORT",
-                brief = "SPI5 CS Port",
-                description = "Choice of SPI5 CS Pins on GPIO BANK",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPIBUS5_CS_PIN",
-                brief = "SPI5 CS Pins",
-                description = "Choice of SPI5 CS Pins on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() GetGpioBits() end,
                 file = "include/cfg/spi.h"
             },
             {
