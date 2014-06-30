@@ -188,7 +188,7 @@ int process_sslv23_client_hello(SSL *ssl)
     int ret = SSL_OK;
 
     /* we have already read 3 extra bytes so far */
-    int read_len = NutTcpSend((TCPSOCKET *)ssl->client_fd, buf, bytes_needed-3);
+    int read_len = NutTcpReceive((TCPSOCKET *)ssl->client_fd, buf, bytes_needed-3);
     int cs_len = buf[1];
     int id_len = buf[3];
     int ch_len = buf[5];
@@ -197,13 +197,13 @@ int process_sslv23_client_hello(SSL *ssl)
 
     DISPLAY_BYTES(ssl, "received %d bytes", buf, read_len, read_len);
 
-    add_packet(ssl, buf, read_len);
-
     /* connection has gone, so die */
-    if (bytes_needed < 0)
+    if (read_len < 0)
     {
         return SSL_ERROR_CONN_LOST;
     }
+
+    add_packet(ssl, buf, read_len);
 
     /* now work out what cipher suite we are going to use */
     for (j = 0; j < NUM_PROTOCOLS; j++)
