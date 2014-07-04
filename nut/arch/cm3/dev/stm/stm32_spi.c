@@ -171,7 +171,6 @@ static void Stm32SpiBusInterrupt(void *arg)
 #include <arch/cm3/stm/stm32_dma.h>
 static void Stm32SpiBusDMAInterrupt(void *arg)
 {
-    CM3BBCLR(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
     DMA_ClearFlag(SPI_DMA_RX_CHANNEL, DMA_TCIF);
     NutEventPostFromIrq((void **)arg);
 }
