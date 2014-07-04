@@ -645,6 +645,11 @@ static int Stm32SpiBusTransfer
             while ( (base->SR & SPI_SR_TXE ) == 0 ); /* Wait till TXE = 1*/
         }
         while (base->SR & SPI_SR_BSY);     /* Wait till BSY = 0 */
+        /* Wait for SCK idle */
+        if (node->node_mode & SPI_MODE_CPOL)
+            while (!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
+        else
+            while ((GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
     }
     else if (rx_only) {
         (void) base->DR; /* Empty DR */
@@ -681,8 +686,10 @@ static int Stm32SpiBusTransfer
             *rx = base->DR;
             rx++;
         }
-        while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
-        while (base->SR & SPI_SR_BSY);         /* Wait till BSY = 0 */
+        if (node->node_mode & SPI_MODE_CPOL)
+            while (!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
+        else
+            while ((GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
     }
 #elif SPIBUS_MODE == IRQ_MODE
     spi_len = xlen;
