@@ -84,27 +84,18 @@
 #define SPIBUS_CS1_INIT(x)  GpioPinConfigSet(SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN, GPIO_CFG_OUTPUT | x)
 #define SPIBUS_CS1_SET()    GpioPinSetHigh(SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN)
 #define SPIBUS_CS1_CLR()    GpioPinSetLow (SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN)
-#else
-#define SPIBUS_CS1_SET()
-#define SPIBUS_CS1_CLR()
 #endif
 
 #if defined(SPIBUS_CS2_PORT) && defined(SPIBUS_CS2_PIN)
 #define SPIBUS_CS2_INIT(x)  GpioPinConfigSet(SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN, GPIO_CFG_OUTPUT | x)
 #define SPIBUS_CS2_SET()    GpioPinSetHigh(SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN)
 #define SPIBUS_CS2_CLR()    GpioPinSetLow (SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN)
-#else
-#define SPIBUS_CS2_SET()
-#define SPIBUS_CS2_CLR()
 #endif
 
 #if defined(SPIBUS_CS3_PORT) && defined(SPIBUS_CS3_PIN)
 #define SPIBUS_CS3_INIT(x)  GpioPinConfigSet(SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN, GPIO_CFG_OUTPUT | x)
 #define SPIBUS_CS3_SET()    GpioPinSetHigh(SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
 #define SPIBUS_CS3_CLR()    GpioPinSetLow (SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
-#else
-#define SPIBUS_CS3_SET()
-#define SPIBUS_CS3_CLR()
 #endif
 
 #if SPIBUS_MODE == POLLING_MODE
@@ -195,7 +186,7 @@ static int Stm32SpiChipSelect(NUTSPINODE *node, int assert)
             SPIBUS_CS0_CLR();
         res = 0;
         break;
-#if SPIBUS_CS1_SET !=0
+#if defined(SPIBUS_CS1_SET)
     case 1:
         if(hi)
             SPIBUS_CS1_SET();
@@ -204,7 +195,7 @@ static int Stm32SpiChipSelect(NUTSPINODE *node, int assert)
         res = 0;
         break;
 #endif
-#if SPIBUS_CS2_SET !=0
+#if defined(SPIBUS_CS2_SET)
     case 2:
         if(hi)
             SPIBUS_CS2_SET();
@@ -213,7 +204,7 @@ static int Stm32SpiChipSelect(NUTSPINODE *node, int assert)
         res = 0;
         break;
 #endif
-#if SPIBUS_CS3_SET !=0
+#if defined(SPIBUS_CS3_SET)
     case 2:
         if(hi)
             SPIBUS_CS3_SET();
