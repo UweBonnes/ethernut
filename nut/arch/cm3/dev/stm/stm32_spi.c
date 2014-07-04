@@ -351,14 +351,12 @@ static void SetNodeSckIdleLevel(NUTSPINODE * node)
 static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
 {
     int rc;
-    SPI_TypeDef* base;
+    SPI_TypeDef* base = (SPI_TypeDef *)SPI_BASE;
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
     NUTASSERT(node->node_stat != NULL);
-
-    base=(SPI_TypeDef*)(node->node_bus->bus_base);
 
     /* Allocate the bus. */
     rc = NutEventWait(&node->node_bus->bus_mutex, tmo);
@@ -410,7 +408,6 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_stat != NULL);
     NUTASSERT(node->node_bus != NULL);
-    NUTASSERT(node->node_bus->bus_base != 0);
     spireg = node->node_stat;
 
 #if defined(SPI_CR2_DS)
@@ -441,11 +438,10 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     /* Query peripheral clock. */
 #if defined (MCU_STM32F0)
     clk = NutClockGet(NUT_HWCLK_PCLK1);
+#elif (SPI_DEV == 2)
+    clk = NutClockGet(NUT_HWCLK_PCLK1);
 #else
-    if (node->node_bus->bus_base < APB2PERIPH_BASE)
-        clk = NutClockGet(NUT_HWCLK_PCLK1);
-    else
-        clk = NutClockGet(NUT_HWCLK_PCLK2);
+    clk = NutClockGet(NUT_HWCLK_PCLK2);
 #endif
     /* Calculate the SPI clock divider. Avoid rounding errors. */
     clkdiv = (clk + node->node_rate - 1) / node->node_rate;
@@ -604,7 +600,7 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
 static int Stm32SpiBusTransfer
     (NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
-    SPI_TypeDef* base;
+    SPI_TypeDef* base = (SPI_TypeDef *)SPI_BASE;
     uint8_t *tx = (uint8_t *)txbuf;
     uint8_t *rx = (uint8_t *)rxbuf;
     int tx_only;
@@ -615,8 +611,6 @@ static int Stm32SpiBusTransfer
         return 0;
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
-    NUTASSERT(node->node_bus->bus_base != 0);
-    base = (SPI_TypeDef*)node->node_bus->bus_base;
 
     tx_only = txbuf && !rxbuf;
     rx_only = (!txbuf || node->node_mode & SPI_MODE_HALFDUPLEX);
