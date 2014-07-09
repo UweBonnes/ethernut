@@ -174,10 +174,20 @@ int StreamReadUntilChars(HTTP_STREAM *sp, const char *delim, const char *ignore,
 int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz)
 {
     int rc = 0;
-    int n = 0;
+    static int n;
+#ifndef HTTP_PLATFORM_STREAMS
+    static HTTP_STREAM *last_stream;
+#endif
     int delen = strlen(delim);
 
     HTTP_ASSERT(sp != NULL);
+
+#ifndef HTTP_PLATFORM_STREAMS
+    if (!last_stream || last_stream != sp) {
+        n = 0;
+        last_stream = sp;
+    }
+#endif
 
     /* Do not read more characters than requested. */
     while (rc < siz) {
@@ -185,7 +195,7 @@ int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz
         int i;
 
         /* Check if the delimiter fits in the current stream buffer. */
-        if (sp->strm_ipos >= sp->strm_ilen - delen) {
+        while (sp->strm_ipos >= sp->strm_ilen - delen) {
             int got;
             /* Not enough data to fit the delimiter, re-fill the buffer. */
             sp->strm_ilen -= sp->strm_ipos;
@@ -231,6 +241,8 @@ int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz
         rc++;
         if (ch == delim[n]) {
             if (++n >= delen) {
+                rc -= n;
+                rc = rc > 0 ? rc : 0;
                 break;
             }
         } else {
