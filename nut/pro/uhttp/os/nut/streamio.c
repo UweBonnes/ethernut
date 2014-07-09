@@ -147,7 +147,7 @@ int StreamReadUntilChars(HTTP_STREAM *sp, const char *delim, const char *ignore,
         /* Check the current stream buffer. */
         if (sp->strm_ipos == sp->strm_ilen) {
             /* No more buffered data, re-fill the buffer. */
-            int got = NutTcpReceive(sp->strm_sock, sp->strm_ibuf, 1460);
+            int got = NutTcpReceive(sp->strm_sock, sp->strm_ibuf, sizeof(sp->strm_ibuf));
             if (got <= 0) {
                 /* Broken connection or timeout. */
                 if (got < 0) {
