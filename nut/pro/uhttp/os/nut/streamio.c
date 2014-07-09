@@ -70,21 +70,47 @@ int StreamClientAccept(HTTP_CLIENT_HANDLER handler, const char *params)
     TCPSOCKET *sock;
     HTTP_STREAM *sp;
     unsigned short port = 80;
+    uint32_t tmo = 1000;
+    uint16_t mss = 0;
+    uint16_t tcpbufsiz = 0;
+    const char *pp = params;
 
     HTTP_ASSERT(handler != NULL);
-    if (params) {
-        port = (unsigned short)atoi(params);
+    if (pp && *pp) {
+        /* First parameter defines the port. */
+        if (*pp != ':') {
+            port = (unsigned short) atoi(pp);
+            pp = strchr(pp, ':');
+        }
+        if (pp) {
+            /* Second parameter defines receive time out. */
+            if (*++pp != ':') {
+                tmo = (uint32_t) atol(pp);
+                pp = strchr(pp, ':');
+            }
+            if (pp) {
+                /* Third parameter specifies TCP input buffer. */
+                if (*++pp != ':') {
+                    tcpbufsiz = (uint16_t) atoi(pp);
+                    pp = strchr(pp, ':');
+                }
+                if (pp) {
+                    /* Forth parameter specifies TCP segment size. */
+                    mss = atol(pp);
+                }
+            }
+        }
     }
     for (;;) {
         sock = NutTcpCreateSocket();
         if (sock) {
-            static uint16_t mss = 1024; //1460;
-            static uint16_t tcpbufsiz = 23360;
-
-            NutTcpSetSockOpt(sock, TCP_MAXSEG, &mss, sizeof(mss));
-            NutTcpSetSockOpt(sock, SO_RCVBUF, &tcpbufsiz, sizeof(tcpbufsiz));
+            if (mss) {
+                NutTcpSetSockOpt(sock, TCP_MAXSEG, &mss, sizeof(mss));
+            }
+            if (tcpbufsiz) {
+                NutTcpSetSockOpt(sock, SO_RCVBUF, &tcpbufsiz, sizeof(tcpbufsiz));
+            }
             if (NutTcpAccept(sock, port) == 0) {
-                uint32_t tmo = 1000;
 
                 NutTcpSetSockOpt(sock, SO_RCVTIMEO, &tmo, sizeof(tmo));
 
