@@ -322,24 +322,23 @@ const char *StreamInfo(HTTP_STREAM *sp, int item)
 
     free(env_value);
     env_value = NULL;
+#ifdef HTTP_PLATFORM_STREAMS
     switch (item) {
     case SITEM_REMOTE_ADDR:
-        //env_value = strdup(inet_ntoa(sp->strm_caddr.sin_addr));
+        env_value = strdup(inet_ntoa(sp->strm_sock->so_remote_addr));
         break;
     case SITEM_REMOTE_PORT:
-        //env_value = malloc(16);
-        //sprintf(env_value, "%u", sp->strm_caddr.sin_port);
+        asprintf(&env_value, "%u", sp->strm_sock->so_remote_port);
         break;
     case SITEM_SERVER_NAME:
     case SITEM_SERVER_ADDR:
-        //env_value = strdup(inet_ntoa(sp->strm_saddr.sin_addr));
+        env_value = strdup(inet_ntoa(sp->strm_sock->so_local_addr));
         break;
     case SITEM_SERVER_PORT:
-        //env_value = malloc(16);
-        //sprintf(env_value, "%u", sp->strm_saddr.sin_port);
+        asprintf(&env_value, "%u", sp->strm_sock->so_local_port);
         break;
     }
-
+#endif
     if (env_value == NULL) {
         env_value = strdup("");
     }
