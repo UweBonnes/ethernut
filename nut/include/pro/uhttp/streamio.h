@@ -42,7 +42,7 @@
 #include <cfg/http.h>
 #include <pro/uhttp/compiler.h>
 
-#if defined _WIN32
+#if defined WIN32
 #include <pro/uhttp/os/win/streamio.h>
 #elif defined __linux__
 #include <unistd.h>

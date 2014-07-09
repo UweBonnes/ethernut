@@ -36,7 +36,7 @@
  * $Id$
  */
 
-#if !defined(_WIN32) && !defined(__linux__)
+#if !defined(WIN32) && !defined(__linux__)
 
 #include <pro/uhttp/streamio.h>
 
