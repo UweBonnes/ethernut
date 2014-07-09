@@ -387,7 +387,9 @@ int HttpSsiHandler(HTTPD_SESSION *hs, const MEDIA_TYPE_ENTRY *mt, const char *fi
     }
 #endif
     HttpSendHeaderBottom(hs, mt->media_type, mt->media_subtype ? mt->media_subtype : mt->media_ext, -1);
+    s_set_flags(hs->s_stream, S_FLG_CHUNKED);
     HttpSsiProcessFile(hs, fd);
+    s_clr_flags(hs->s_stream, S_FLG_CHUNKED);
     _close(fd);
 
     return 0;

@@ -215,6 +215,11 @@ void HttpSendStreamHeaderBottom(HTTP_STREAM *stream, const char *type, const cha
     if (bytes >= 0) {
         s_printf(stream, "%s: %ld\r\n", ct_Content_Length, bytes);
     }
+#ifdef HTTP_CHUNKED_TRANSFER
+    else {
+        s_puts("Transfer-Encoding: chunked\r\n", stream);
+    }
+#endif
 #if HTTP_VERSION >= 0x11
 #if HTTP_KEEP_ALIVE_REQ
     if (conn != HTTP_CONN_KEEP_ALIVE)
@@ -235,7 +240,7 @@ void HttpSendHeaderBottom(HTTPD_SESSION *hs, const char *type, const char *subty
 {
 #if HTTP_VERSION >= 0x10
 
-#if HTTP_KEEP_ALIVE_REQ
+#if HTTP_KEEP_ALIVE_REQ && !defined(HTTP_CHUNKED_TRANSFER)
     if (bytes < 0) {
         hs->s_req.req_connection = HTTP_CONN_CLOSE;
     }
@@ -273,7 +278,7 @@ void HttpSendError(HTTPD_SESSION *hs, int status)
 
 #if HTTP_KEEP_ALIVE_REQ && (HTTP_VERSION >= 0x10)
     if (status >= 400) {
-        //hs->s_req.req_connection = HTTP_CONN_CLOSE;
+        hs->s_req.req_connection = HTTP_CONN_CLOSE;
     }
 #endif
 #if HTTP_VERSION >= 0x10

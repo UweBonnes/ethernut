@@ -281,20 +281,82 @@ int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz
 
 #ifdef HTTP_PLATFORM_STREAMS
 
+#ifdef HTTP_CHUNKED_TRANSFER
+static int send_chunked(TCPSOCKET *sock, const char *buf, int len)
+{
+    char *cs = NULL;
+
+    asprintf(&cs, "%X\r\n", len);
+    if (cs && NutTcpDeviceWrite(sock, cs, strlen(cs)) < 0) {
+        free(cs);
+        return -1;
+    }
+    free(cs);
+    if (NutTcpDeviceWrite(sock, buf, len) < 0) {
+        return -1;
+    }
+    if (NutTcpDeviceWrite(sock, "\r\n", 2) < 0) {
+        return -1;
+    }
+    return len;
+}
+#endif
+
+int s_set_flags(HTTP_STREAM *sp, unsigned int flags)
+{
+#ifdef HTTP_CHUNKED_TRANSFER
+    sp->strm_flags |= flags;
+
+    return 0;
+#else
+    return -1;
+#endif
+}
+
+int s_clr_flags(HTTP_STREAM *sp, unsigned int flags)
+{
+#ifdef HTTP_CHUNKED_TRANSFER
+    if (sp->strm_flags & S_FLG_CHUNKED) {
+        NutTcpDeviceWrite(sp->strm_sock, "0\r\n\r\n", 5);
+    }
+    sp->strm_flags &= ~flags;
+
+    return 0;
+#else
+    return -1;
+#endif
+}
+
 int s_write(const void *buf, size_t size, size_t count, HTTP_STREAM *sp)
 {
     HTTP_ASSERT(sp != NULL);
     HTTP_ASSERT(buf != NULL);
 
+#ifdef HTTP_CHUNKED_TRANSFER
+    if (sp->strm_flags & S_FLG_CHUNKED) {
+        return send_chunked(sp->strm_sock, (const char *)buf, size * count);
+    }
+#endif
     return NutTcpDeviceWrite(sp->strm_sock, (const char *)buf, size * count);
 }
 
 int s_puts(const char *str, HTTP_STREAM *sp)
 {
+    int len;
+
     HTTP_ASSERT(sp != NULL);
     HTTP_ASSERT(str != NULL);
 
-    return *str ? NutTcpDeviceWrite(sp->strm_sock, str, strlen(str)) : 0;
+    len = strlen(str);
+    if (len) {
+#ifdef HTTP_CHUNKED_TRANSFER
+        if (sp->strm_flags & S_FLG_CHUNKED) {
+            return send_chunked(sp->strm_sock, str, len);
+        }
+#endif
+        return NutTcpDeviceWrite(sp->strm_sock, str, len);
+    }
+    return 0;
 }
 
 int s_printf(HTTP_STREAM *sp, const char *fmt, ...)
@@ -310,7 +372,14 @@ int s_printf(HTTP_STREAM *sp, const char *fmt, ...)
     rc = vasprintf(&buf, fmt, ap);
     va_end(ap);
     if (buf) {
-        rc = NutTcpDeviceWrite(sp->strm_sock, buf, rc);
+#ifdef HTTP_CHUNKED_TRANSFER
+        if (sp->strm_flags & S_FLG_CHUNKED) {
+            rc = send_chunked(sp->strm_sock, buf, rc);
+        } else
+#endif
+        {
+            rc = NutTcpDeviceWrite(sp->strm_sock, buf, rc);
+        }
         free(buf);
     } else {
         rc = -1;
@@ -344,7 +413,14 @@ int s_vputs(HTTP_STREAM *sp, ...)
         for (*buf = '\0'; (cp = va_arg(ap, char *)) != NULL; strcat(buf, cp));
         va_end(ap);
 #ifdef HTTP_PLATFORM_STREAMS
-        rc = NutTcpDeviceWrite(sp->strm_sock, buf, strlen(buf));
+#ifdef HTTP_CHUNKED_TRANSFER
+        if (sp->strm_flags & S_FLG_CHUNKED) {
+            rc = send_chunked(sp->strm_sock, buf, strlen(buf));
+        } else
+#endif
+        {
+            rc = NutTcpDeviceWrite(sp->strm_sock, buf, strlen(buf));
+        }
 #else
         if (fwrite(buf, 1, strlen(buf), sp) == strlen(buf)) {
             rc = 0;

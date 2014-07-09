@@ -62,6 +62,7 @@ struct _HTTP_STREAM {
     SOCKET strm_csock;
     struct sockaddr_in strm_saddr;
     struct sockaddr_in strm_caddr;
+    unsigned int strm_flags;
 };
 
 /*@}*/

@@ -230,11 +230,56 @@ int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz
     return rc;
 }
 
+#ifdef HTTP_CHUNKED_TRANSFER
+static int send_chunked(SOCKET sock, const char *buf, int len, int flags)
+{
+    static const char *crlf = "\r\n";
+    char cs[11];
+
+    itoa(len, cs, 16);
+    strcat(cs, crlf);
+    if (send(sock, cs, strlen(cs), flags) > 0 && send(sock, buf, len, flags) > 0 && send(sock, crlf, 2, flags) == 2) {
+        return len;
+    }
+    return -1;
+}
+#endif
+
+int s_set_flags(HTTP_STREAM *sp, unsigned int flags)
+{
+#ifdef HTTP_CHUNKED_TRANSFER
+    sp->strm_flags |= flags;
+
+    return 0;
+#else
+    return -1;
+#endif
+}
+
+int s_clr_flags(HTTP_STREAM *sp, unsigned int flags)
+{
+#ifdef HTTP_CHUNKED_TRANSFER
+    if (sp->strm_flags & S_FLG_CHUNKED) {
+        send(sp->strm_csock, "0\r\n\r\n", 5, flags);
+    }
+    sp->strm_flags &= ~flags;
+
+    return 0;
+#else
+    return -1;
+#endif
+}
+
 int s_write(const void *buf, size_t size, size_t count, HTTP_STREAM *sp)
 {
     HTTP_ASSERT(sp != NULL);
     HTTP_ASSERT(buf != NULL);
 
+#ifdef HTTP_CHUNKED_TRANSFER
+    if (sp->strm_flags & S_FLG_CHUNKED) {
+        return send_chunked(sp->strm_csock, (const char *)buf, size * count, 0);
+    }
+#endif
     return send(sp->strm_csock, (const char *)buf, size * count, 0);
 }
 
@@ -243,6 +288,11 @@ int s_puts(const char *str, HTTP_STREAM *sp)
     HTTP_ASSERT(sp != NULL);
     HTTP_ASSERT(str != NULL);
 
+#ifdef HTTP_CHUNKED_TRANSFER
+    if (sp->strm_flags & S_FLG_CHUNKED) {
+        return send_chunked(sp->strm_csock, str, strlen(str), 0);
+    }
+#endif
     return send(sp->strm_csock, str, strlen(str), 0);
 }
 
@@ -264,7 +314,14 @@ int s_vputs(HTTP_STREAM *sp, ...)
         va_start(ap, sp);
         for (*buf = '\0'; (cp = va_arg(ap, char *)) != NULL; strcat(buf, cp));
         va_end(ap);
-        rc = send(sp->strm_csock, buf, strlen(buf), 0);
+#ifdef HTTP_CHUNKED_TRANSFER
+        if (sp->strm_flags & S_FLG_CHUNKED) {
+            rc = send_chunked(sp->strm_csock, buf, strlen(buf), 0);
+        } else
+#endif
+        {
+            rc = send(sp->strm_csock, buf, strlen(buf), 0);
+        }
         free(buf);
     }
     return rc;
@@ -284,7 +341,14 @@ int s_printf(HTTP_STREAM *sp, const char *fmt, ...)
         va_start(ap, fmt);
         rc = vsnprintf(buf, 1023, fmt, ap);
         va_end(ap);
-        rc = send(sp->strm_csock, buf, rc, 0);
+#ifdef HTTP_CHUNKED_TRANSFER
+        if (sp->strm_flags & S_FLG_CHUNKED) {
+            rc = send_chunked(sp->strm_csock, buf, rc, 0);
+        } else
+#endif
+        {
+            rc = send(sp->strm_csock, buf, rc, 0);
+        }
         free(buf);
     }
     return rc;

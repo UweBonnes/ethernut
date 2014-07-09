@@ -202,6 +202,36 @@ extern int s_flush(HTTP_STREAM *sp);
 #define s_flush     fflush
 #endif
 
+/*! \name Stream flags */
+/*@{*/
+/*! \brief Enable chunked transfer. */
+#define S_FLG_CHUNKED       1
+/*@}*/
+
+/*!
+ * \brief Set stream flags.
+ *
+ * \param sp    Pointer to the stream's information structure.
+ * \param flags The flags to set. Currently only \ref S_FLG_CHUNKED
+ *              is supported.
+ *
+ * \return 0 if the flag has been successfully set or a negative value
+ *         to indicate an error.
+ */
+extern int s_set_flags(HTTP_STREAM *sp, unsigned int flags);
+
+/*!
+ * \brief Reset stream flags.
+ *
+ * \param sp    Pointer to the stream's information structure.
+ * \param flags The flags to clear. Currently only \ref S_FLG_CHUNKED
+ *              is supported.
+ *
+ * \return 0 if the flag has been successfully set or a negative value
+ *         to indicate an error.
+ */
+extern int s_clr_flags(HTTP_STREAM *sp, unsigned int flags);
+
 /*! \name Default environment variables */
 /*@{*/
 /*! \brief The IP address of the host making this request. */

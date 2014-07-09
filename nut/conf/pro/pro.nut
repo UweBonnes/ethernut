@@ -414,6 +414,16 @@ nutpro =
                               "more memory is required and that applications must use "..
                               "less portable stdio replacements like s_printf.",
                 flavor = "boolean",
+                provides = { "UHTTP_PLATFORM_STREAMS" },
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_CHUNKED_TRANSFER",
+                brief = "Chunked Transfer Encoding",
+                description = "Check this option to support persistent connections "..
+                              "with dynamically generated web content.",
+                flavor = "boolean",
+                requires = { "UHTTP_PLATFORM_STREAMS" },
                 file = "include/cfg/http.h"
             },
             {

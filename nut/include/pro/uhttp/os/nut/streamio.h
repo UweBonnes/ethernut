@@ -58,6 +58,7 @@ struct _HTTP_STREAM {
     int strm_ilen;
     char strm_ibuf[1460 + 128];
     TCPSOCKET *strm_sock;
+    unsigned int strm_flags;
 };
 
 #endif
