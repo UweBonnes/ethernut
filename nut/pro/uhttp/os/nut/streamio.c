@@ -256,7 +256,7 @@ int s_puts(const char *str, HTTP_STREAM *sp)
     HTTP_ASSERT(sp != NULL);
     HTTP_ASSERT(str != NULL);
 
-    return NutTcpDeviceWrite(sp->strm_sock, str, strlen(str));
+    return *str ? NutTcpDeviceWrite(sp->strm_sock, str, strlen(str)) : 0;
 }
 
 int s_printf(HTTP_STREAM *sp, const char *fmt, ...)
