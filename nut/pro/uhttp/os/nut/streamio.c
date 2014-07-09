@@ -262,19 +262,20 @@ int s_puts(const char *str, HTTP_STREAM *sp)
 int s_printf(HTTP_STREAM *sp, const char *fmt, ...)
 {
     int rc = -1;
-    char *buf;
+    char *buf = NULL;
     va_list ap;
 
     HTTP_ASSERT(sp != NULL);
     HTTP_ASSERT(fmt != NULL);
 
-    buf = malloc(1024);
+    va_start(ap, fmt);
+    rc = vasprintf(&buf, fmt, ap);
+    va_end(ap);
     if (buf) {
-        va_start(ap, fmt);
-        rc = vsprintf(buf, fmt, ap);
-        va_end(ap);
         rc = NutTcpDeviceWrite(sp->strm_sock, buf, rc);
         free(buf);
+    } else {
+        rc = -1;
     }
     return rc;
 }
