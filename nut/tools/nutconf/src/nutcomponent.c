@@ -3426,6 +3426,32 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
 }
 
 /*!
+ * \brief Return a copy of the string prepended with $cwd if string
+ * is not already a full path, starting with '/' or the DOS "X:"
+ * "./" and "../" are not removed.
+ *
+ * \param path    User provided string
+ *
+ * \return 0 on failure or reworked copy of string.
+ */
+char *GetRealPath(char* path)
+{
+    char fullpath[PATH_MAX +1], *p;
+    int len;
+    if ((path[0] == '/') || (path[1] == ':'))
+        p = path;
+    else {
+        getcwd(fullpath, PATH_MAX);
+        len = strlen(fullpath);
+        if (fullpath[len -1] != '/');
+        strncat(fullpath, "/", PATH_MAX - len);
+        len++;
+        p = strncat(fullpath, path, PATH_MAX - len);
+    }
+    return strdup(p);
+}
+
+/*!
  * \brief Running without GUI.
  *
  * All settings are passed as command line options.
@@ -3452,27 +3478,27 @@ int main(int argc, char **argv)
         switch(option) {
         case 'a':
             free(app_dir);
-            app_dir = strdup(optarg);
+            app_dir = GetRealPath(optarg);
             break;
         case 'b':
             free(bld_dir);
-            bld_dir = strdup(optarg);
+            bld_dir = GetRealPath(optarg);
             break;
         case 'c':
             free(conf_name);
-            conf_name = strdup(optarg);
+            conf_name = GetRealPath(optarg);
             break;
         case 'i':
             free(ifirst_dir);
-            ifirst_dir = strdup(optarg);
+            ifirst_dir = GetRealPath(optarg);
             break;
         case 'j':
             free(ilast_dir);
-            ilast_dir = strdup(optarg);
+            ilast_dir = GetRealPath(optarg);
             break;
         case 'l':
             free(lib_dir);
-            lib_dir = strdup(optarg);
+            lib_dir = GetRealPath(optarg);
             break;
         case 'm':
             free(mak_ext);
@@ -3487,11 +3513,11 @@ int main(int argc, char **argv)
             break;
         case 's':
             free(src_dir);
-            src_dir = strdup(optarg);
+            src_dir = GetRealPath(optarg);
             break;
         case 'r':
             free(repo_name);
-            repo_name = strdup(optarg);
+            repo_name = GetRealPath(optarg);
             break;
         default:
             usage();
