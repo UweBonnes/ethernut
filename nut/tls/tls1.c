@@ -305,7 +305,7 @@ int add_cert(SSL_CTX *ssl_ctx, const uint8_t *buf, int len)
     X509_CTX *cert = NULL;
     int offset;
 
-    while (ssl_ctx->certs[i].buf && i < TLS_SSL_MAX_CERTS)
+    while (i < TLS_SSL_MAX_CERTS && ssl_ctx->certs[i].buf)
         i++;
 
     if (i == TLS_SSL_MAX_CERTS) /* too many certs */
