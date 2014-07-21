@@ -3283,6 +3283,118 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
     return 0;
 }
 
+/*!
+ * \brief Create user directory for Nut/OS applications.
+ *
+ * This routine creates Makedefs and Makerules in the specified directory.
+ * It will also create the NutConf.mk and UserConf.mk. Except for UserConf.mk,
+ * any existing file will be replaced.
+ *
+ * \param repo       Pointer to the repository information.
+ * \param root       Pointer to the root component.
+ * \param bld_dir    Pathname of the top build directory.
+ * \param src_dir    Pathname of the top source directory.
+ * \param lib_dir    Pathname of the directory containing the libraries.
+ * \param mak_ext    Filename extension of the platform specific Makedefs/Makerules, e.g. avr-gcc.
+ * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
+ * \param ifirst_dir Optional include directory. Header files will be included first
+ *                   and thus may replace standard Nut/OS headers with the same name.
+ * \param ilast_dir  Optional include directory. Header files will be included last.
+ *                   This parameter is typically used to specify the compilers runtime
+ *                   library. Header files with the same name as Nut/OS standard headers
+ *                   are ignored.
+ *
+ * \return 0 on success, otherwise return -1.
+ */
+int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *user_dir,
+                          const char *src_dir, const char *lib_dir, const char *mak_ext, const char *prg_ext,
+                          const char *ifirst_dir, const char *ilast_dir)
+{
+    FILE *fp;
+    char path[255];
+    struct tm *ltime;
+    time_t now;
+
+    time(&now);
+    ltime = localtime(&now);
+
+    sprintf(path, "%s/NutConf.mk", user_dir);
+    if(CreateDirectoryPath(path) == 0) {
+        /* Create the configuration Makedefs file */
+        fp = fopen(path, "w");
+        if (fp) {
+            fprintf(fp, "# Automatically generated on %s", asctime(ltime));
+            fprintf(fp, "#\n# Do not edit, modify UserConf.mk instead!\n#\n\n");
+            WriteMakedefLines(fp, repo, root->nc_child);
+            fprintf(fp, "\n\ninclude $(top_appdir)/UserConf.mk\n");
+            fclose(fp);
+        }
+
+        /* Create the user's Makedefs file, if it doesn't exist */
+        sprintf(path, "%s/UserConf.mk", user_dir);
+        if(access(path, 0)) {
+            fp = fopen(path, "w");
+            if (fp) {
+                fprintf(fp, "# Automatically created on %s", asctime(ltime));
+                fprintf(fp, "#\n# You can use this file to modify values in NutConf.mk\n#\n\n");
+                fclose(fp);
+            }
+        }
+
+        /* Create the application Makedefs. */
+        sprintf(path, "%s/Makedefs", user_dir);
+        if ((fp = fopen(path, "w")) != 0) {
+            fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
+
+            fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
+            fprintf(fp, "top_blddir = %s\n", MakeTargetPath(bld_dir, "../.."));
+
+
+            fprintf(fp, "top_appdir = %s\n\n", user_dir);
+
+            fprintf(fp, "LIBDIR = %s\n", MakeTargetPath(lib_dir, "../.."));
+
+            fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
+            if(ifirst_dir && *ifirst_dir) {
+                fprintf(fp, " $(INCPRE)%s", ifirst_dir);
+            }
+            fputc('\n', fp);
+            if(ilast_dir && *ilast_dir) {
+                fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
+            }
+            fprintf(fp, "include $(top_blddir)/UserConf.mk\n");
+            fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
+            fprintf(fp, "include $(top_srcdir)/app/Makedefs.%s\n", mak_ext);
+            fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
+            fclose(fp);
+        }
+        else {
+            sprintf(errtxt, "Failed to create %s", path);
+            errsts++;
+            return -1;
+        }
+
+        /* Create the application Makerules. */
+        sprintf(path, "%s/Makerules", user_dir);
+        if ((fp = fopen(path, "w")) != 0) {
+            fprintf(fp, "# Do not edit! Automatically generated on %s\n\n", asctime(ltime));
+            fprintf(fp, "include $(top_srcdir)/app/Makerules.%s\n", mak_ext);
+            fclose(fp);
+        }
+        else {
+            sprintf(errtxt, "Failed to create %s", path);
+            errsts++;
+            return -1;
+        }
+    }
+    else {
+        sprintf(errtxt, "Failed to create directory for %s", path);
+        errsts++;
+        return -1;
+    }
+    return 0;
+}
+
 #ifdef NUT_CONFIGURE_EXEC
 
 /*!
@@ -3303,9 +3415,11 @@ void usage(void)
       "-q       quiet (verbose)\n"
       "-s<dir>  source directory (./nut)\n"
       "-r<file> repository (./nut/conf/repository.nut)\n"
+      "-u<dir>  user directory (./)\n"
       "ACTIONS:\n"
       "create-buildtree\n"
       "create-apptree\n"
+      "create-usertree\n"
     , stderr);
 }
 
@@ -3462,6 +3576,7 @@ int main(int argc, char **argv)
     int option;
     int quiet = 0;
     char *app_dir = strdup("./nutapp");
+    char *user_dir = strdup("./");
     char *bld_dir = strdup("./nutbld");
     char *conf_name = strdup("./nut/conf/ethernut21b.conf");
     char *ifirst_dir = strdup("");
@@ -3474,7 +3589,7 @@ int main(int argc, char **argv)
     NUTREPOSITORY *repo;
     NUTCOMPONENT *root;
 
-    while((option = getopt(argc, argv, "a:b:c:i:j:l:m:p:s:r:v?")) != EOF) {
+    while((option = getopt(argc, argv, "a:b:c:i:j:l:m:p:s:r:u:v?")) != EOF) {
         switch(option) {
         case 'a':
             free(app_dir);
@@ -3518,6 +3633,10 @@ int main(int argc, char **argv)
         case 'r':
             free(repo_name);
             repo_name = GetRealPath(optarg);
+            break;
+        case 'u':
+            free(user_dir);
+            user_dir = GetRealPath(optarg);
             break;
         default:
             usage();
@@ -3609,6 +3728,18 @@ int main(int argc, char **argv)
                         src_dir = realloc(src_dir, strlen(src_dir) + 5);
                         strcat(src_dir, "/app");
                         rc = copy_appdir(src_dir, app_dir, quiet);
+                    }
+                }
+                else if(strcmp(argv[0], "create-usertree") == 0) {
+                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
+                        if(!quiet) {
+                            printf("failed\n");
+                        }
+                    }
+                    else {
+                        if(!quiet) {
+                            printf("OK\n");
+                        }
                     }
                 }
                 else if(!quiet) {
