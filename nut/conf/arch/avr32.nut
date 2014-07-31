@@ -441,6 +441,7 @@ nutarch_avr32 =
             "avr32/dev/ih_irq5.c",
             "avr32/dev/ih_irq6.c",
             "avr32/dev/ih_irq7.c",
+            "avr32/dev/ih_irq8.c",
 			"avr32/dev/ih_tc0.c",
 			"avr32/dev/ih_gpio0.c",
             "avr32/dev/ih_nmi.c",
@@ -548,6 +549,19 @@ nutarch_avr32 =
             {
                 macro = "INTERRUPT7_ALT_PINSET",
                 brief = "External Interrupt 7 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+            },
+            {
+                macro = "INTERRUPT8_ALT_PIN",
+                brief = "External Interrupt 8 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+            },
+            {
+                macro = "INTERRUPT8_ALT_PINSET",
+                brief = "External Interrupt 8 Alternative Pinset",
                 type = "enumerated",
                 choices = function() return GetAlternativePinsets() end,
                 file = "include/cfg/arch/avr32pio.h"
