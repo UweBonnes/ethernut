@@ -481,10 +481,14 @@ QStringList TreeItem::optionChoices() const
 	char** it = choices;
 	QStringList result;
 
-	while( *it )
-		result.append( QLatin1String(*it++) );
+	if ( it )
+	{
+		while( *it )
+			result.append( QLatin1String(*it++) );
 
-	ReleaseStringArray( choices );
+		ReleaseStringArray( choices );
+	}
+
 	return result;
 }
 
