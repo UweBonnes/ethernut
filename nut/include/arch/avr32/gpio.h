@@ -58,7 +58,7 @@ extern void gpio_enable_module_pin(unsigned int pin, unsigned int function);
 
    This function is intended to be used by drivers
 */
-inline void gpio_enable_module(const gpio_map_t gpiomap, unsigned int size)
+inline static void gpio_enable_module(const gpio_map_t gpiomap, unsigned int size)
 {
 	int i = 0;
 	for( ; i < size; ++i )
