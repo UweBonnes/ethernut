@@ -41,18 +41,16 @@
 #include <cfg/os.h>
 #include <cfg/dev.h>
 #include <cfg/arch/gpio.h>
+#include <cfg/phycfg.h>
 
 #include <arch/avr32.h>
 #include <arch/avr32/gpio.h>
-
-#include <string.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/event.h>
 #include <sys/timer.h>
-#include <sys/confnet.h>
 
 #include <netinet/if_ether.h>
 #include <net/ether.h>
@@ -60,6 +58,7 @@
 
 #include <dev/irqreg.h>
 #include <dev/gpio.h>
+#include <dev/phy.h>
 
 #include <avr32/io.h>
 
@@ -86,89 +85,13 @@
 #endif
 
 /*!
-* \addtogroup xgDm9161aRegs
-*/
-/*@{*/
-#define NIC_PHY_BMCR            0x00    /*!< \brief Basic mode control register. */
-#define NIC_PHY_BMCR_COLTEST    0x0080  /*!< \brief Collision test. */
-#define NIC_PHY_BMCR_FDUPLEX    0x0100  /*!< \brief Full duplex mode. */
-#define NIC_PHY_BMCR_ANEGSTART  0x0200  /*!< \brief Restart auto negotiation. */
-#define NIC_PHY_BMCR_ISOLATE    0x0400  /*!< \brief Isolate from MII. */
-#define NIC_PHY_BMCR_PWRDN      0x0800  /*!< \brief Power-down. */
-#define NIC_PHY_BMCR_ANEGENA    0x1000  /*!< \brief Enable auto negotiation. */
-#define NIC_PHY_BMCR_100MBPS    0x2000  /*!< \brief Select 100 Mbps. */
-#define NIC_PHY_BMCR_LOOPBACK   0x4000  /*!< \brief Enable loopback mode. */
-#define NIC_PHY_BMCR_RESET      0x8000  /*!< \brief Software reset. */
-
-#define NIC_PHY_BMSR            0x01    /*!< \brief Basic mode status register. */
-#define NIC_PHY_BMSR_ANCOMPL    0x0020  /*!< \brief Auto negotiation complete. */
-#define NIC_PHY_BMSR_LINKSTAT   0x0004  /*!< \brief Link status. */
-
-#define NIC_PHY_ID1             0x02    /*!< \brief PHY identifier register 1. */
-#define NIC_PHY_ID2             0x03    /*!< \brief PHY identifier register 2. */
-#define NIC_PHY_ANAR            0x04    /*!< \brief Auto negotiation advertisement register. */
-#define NIC_PHY_ANLPAR          0x05    /*!< \brief Auto negotiation link partner availability register. */
-#define NIC_PHY_ANEG_NP         0x8000  /*!< \brief Next page available. */
-#define NIC_PHY_ANEG_ACK        0x4000  /*!< \brief Ability data reception acknowledged. */
-#define NIC_PHY_ANEG_RF         0x2000  /*!< \brief Remote fault. */
-#define NIC_PHY_ANEG_FCS        0x0400  /*!< \brief Flow control supported. */
-#define NIC_PHY_ANEG_T4         0x0200  /*!< \brief 100BASE-T4 supported. */
-#define NIC_PHY_ANEG_TX_FDX     0x0100  /*!< \brief 100BASE-T full duplex supported. */
-#define NIC_PHY_ANEG_TX_HDX     0x0080  /*!< \brief 100BASE-T half duplex supported. */
-#define NIC_PHY_ANEG_10_FDX     0x0040  /*!< \brief 10BASE-T full duplex supported. */
-#define NIC_PHY_ANEG_10_HDX     0x0020  /*!< \brief 10BASE-T half duplex supported. */
-#define NIC_PHY_ANEG_BINSEL     0x001F  /*!< \brief Binary encoded protocol selector. */
-
-#define NIC_PHY_ANER            0x06    /*!< \brief Auto negotiation expansion register. */
-
-/*!
- * \name Advertisement control register.
- */
-#define NIC_PHY_ADVERTISE_SLCT          0x001f  //!< Selector bits
-#define NIC_PHY_ADVERTISE_CSMA          0x0001  //!< Only selector supported
-#define NIC_PHY_ADVERTISE_10HALF        0x0020  //!< Try for 10mbps half-duplex
-#define NIC_PHY_ADVERTISE_1000XFULL     0x0020  //!< Try for 1000BASE-X full-duplex
-#define NIC_PHY_ADVERTISE_10FULL        0x0040  //!< Try for 10mbps full-duplex
-#define NIC_PHY_ADVERTISE_1000XHALF     0x0040  //!< Try for 1000BASE-X half-duplex
-#define NIC_PHY_ADVERTISE_100HALF       0x0080  //!< Try for 100mbps half-duplex
-#define NIC_PHY_ADVERTISE_1000XPAUSE    0x0080  //!< Try for 1000BASE-X pause
-#define NIC_PHY_ADVERTISE_100FULL       0x0100  //!< Try for 100mbps full-duplex
-#define NIC_PHY_ADVERTISE_1000XPSE_ASYM 0x0100  //!< Try for 1000BASE-X asym pause
-#define NIC_PHY_ADVERTISE_100BASE4      0x0200  //!< Try for 100mbps 4k packets
-#define NIC_PHY_ADVERTISE_PAUSE_CAP     0x0400  //!< Try for pause
-#define NIC_PHY_ADVERTISE_PAUSE_ASYM    0x0800  //!< Try for asymetric pause
-#define NIC_PHY_ADVERTISE_RESV          0x1000  //!< Unused...
-#define NIC_PHY_ADVERTISE_RFAULT        0x2000  //!< Say we can detect faults
-#define NIC_PHY_ADVERTISE_LPACK         0x4000  //!< Ack link partners response
-#define NIC_PHY_ADVERTISE_NPAGE         0x8000  //!< Next page bit
-
-#define NIC_PHY_ADVERTISE_FULL (NIC_PHY_ADVERTISE_100FULL | NIC_PHY_ADVERTISE_10FULL | NIC_PHY_ADVERTISE_CSMA)
-#define NIC_PHY_ADVERTISE_ALL (NIC_PHY_ADVERTISE_10HALF | NIC_PHY_ADVERTISE_10FULL | \
-    NIC_PHY_ADVERTISE_100HALF | NIC_PHY_ADVERTISE_100FULL)
-
-/*@}*/
-
-
-/*!
 * \brief PHY address.
 *
 * Any other than 0 seems to create problems with Atmel's evaluation kits.
 */
 #ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR            0
+#define NIC_PHY_ADDR            1
 #endif
-
-#ifndef NIC_PHY_UID
-#define NIC_PHY_UID 0xffffffff
-#endif
-
-/*!
-* The EVK1100 board is delivered with RMII by default. Thus.
-* we use the reduced MII for this CPU. However, this should be
-* handled by the Configurator.
-*/
-#define PHY_MODE_RMII
-
 
 /*!
 * \brief Network interface controller information structure.
@@ -218,11 +141,11 @@ typedef struct _TxTdDescriptor {
 } TxTdDescriptor;
 //! @}
 
-static volatile TxTdDescriptor txBufTab[EMAC_TX_BUFFERS];
+static volatile TxTdDescriptor txBufTab[EMAC_TX_BUFFERS] NUT_ALIGNED_TYPE(8);
 static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] NUT_ALIGNED_TYPE(4);
 static unsigned int txBufIdx;
 
-static volatile RxTdDescriptor rxBufTab[EMAC_RX_BUFFERS];
+static volatile RxTdDescriptor rxBufTab[EMAC_RX_BUFFERS] NUT_ALIGNED_TYPE(8);
 static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] NUT_ALIGNED_TYPE(4);
 static unsigned int rxBufIdx;
 
@@ -258,7 +181,7 @@ static unsigned int rxBufIdx;
 
 
 /*!
-* \addtogroup xgNutArchArmAt91Emac
+* \addtogroup xgNutArchAVR32Macb
 */
 /*@{*/
 
@@ -269,28 +192,28 @@ static unsigned int rxBufIdx;
 *
 * \return Contents of the specified register.
 */
-static uint16_t phy_inw(volatile avr32_macb_t * macb, uint8_t reg)
+static uint16_t phy_inw(uint8_t reg)
 {
     uint16_t value;
 
     // initiate transaction: enable management port
-    macb->ncr |= AVR32_MACB_NCR_MPE_MASK;
+    AVR32_MACB.ncr |= AVR32_MACB_NCR_MPE_MASK;
 
     // Write the PHY configuration frame to the MAN register
-    macb->man = (AVR32_MACB_SOF_MASK & (0x01 << AVR32_MACB_SOF_OFFSET)) // SOF
+    AVR32_MACB.man = (AVR32_MACB_SOF_MASK & (0x01 << AVR32_MACB_SOF_OFFSET)) // SOF
         | (2 << AVR32_MACB_CODE_OFFSET) // Code
         | (2 << AVR32_MACB_RW_OFFSET)   // Read operation
         | ((NIC_PHY_ADDR & 0x1f) << AVR32_MACB_PHYA_OFFSET)     // Phy Add
         | (reg << AVR32_MACB_REGA_OFFSET);      // Reg Add
 
     // wait for PHY to be ready
-    while (!(macb->nsr & AVR32_MACB_NSR_IDLE_MASK));
+    while (!(AVR32_MACB.nsr & AVR32_MACB_NSR_IDLE_MASK));
 
     // read the register value in maintenance register
-    value = macb->man & 0x0000ffff;
+    value = AVR32_MACB.man & 0x0000ffff;
 
     // disable management port
-    macb->ncr &= ~AVR32_MACB_NCR_MPE_MASK;
+    AVR32_MACB.ncr &= ~AVR32_MACB_NCR_MPE_MASK;
 
     return value;
 }
@@ -301,13 +224,13 @@ static uint16_t phy_inw(volatile avr32_macb_t * macb, uint8_t reg)
 * \param reg PHY register number.
 * \param val Value to write.
 */
-static void phy_outw(volatile avr32_macb_t * macb, uint8_t reg, uint16_t val)
+static void phy_outw(uint8_t reg, uint16_t val)
 {
     // initiate transaction : enable management port
-    macb->ncr |= AVR32_MACB_NCR_MPE_MASK;
+    AVR32_MACB.ncr |= AVR32_MACB_NCR_MPE_MASK;
 
     // Write the PHY configuration frame to the MAN register
-    macb->man = ((AVR32_MACB_SOF_MASK & (0x01 << AVR32_MACB_SOF_OFFSET))        // SOF
+    AVR32_MACB.man = ((AVR32_MACB_SOF_MASK & (0x01 << AVR32_MACB_SOF_OFFSET))        // SOF
                  | (2 << AVR32_MACB_CODE_OFFSET)        // Code
                  | (1 << AVR32_MACB_RW_OFFSET)  // Write operation
                  | ((NIC_PHY_ADDR & 0x1f) << AVR32_MACB_PHYA_OFFSET)    // Phy Add
@@ -315,72 +238,10 @@ static void phy_outw(volatile avr32_macb_t * macb, uint8_t reg, uint16_t val)
         | (val & 0xffff);       // Data
 
     // wait for PHY to be ready
-    while (!(macb->nsr & AVR32_MACB_NSR_IDLE_MASK));
+    while (!(AVR32_MACB.nsr & AVR32_MACB_NSR_IDLE_MASK));
 
     // disable management port
-    macb->ncr &= ~AVR32_MACB_NCR_MPE_MASK;
-}
-
-/*!
- * \brief Probe PHY.
- *
- * \return 0 on success, -1 otherwise.
- */
-static int probePhy(volatile avr32_macb_t * macb)
-{
-    uint32_t physID;
-    uint16_t phyval;
-    // Read Phy ID. Ignore revision number.
-    physID = (phy_inw(macb, NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(macb, NIC_PHY_ID1) << 16) & 0xFFFF0000);
-#if NIC_PHY_UID != 0xffffffff
-    if (physID != (NIC_PHY_UID & 0xFFFFFFF0)) {
-        return -1;
-    }
-#endif
-
-    phyval = NIC_PHY_ADVERTISE_CSMA | NIC_PHY_ADVERTISE_ALL;
-    phy_outw(macb, NIC_PHY_ANAR, phyval);
-
-    phyval = phy_inw(macb, NIC_PHY_BMCR);
-    phyval |= (NIC_PHY_BMCR_ANEGSTART | NIC_PHY_BMCR_ANEGENA);
-    phy_outw(macb, NIC_PHY_BMCR, phyval);
-
-    /* Handle auto negotiation if configured. */
-    phyval = phy_inw(macb, NIC_PHY_BMCR);
-    if (phyval & NIC_PHY_BMCR_ANEGENA) {
-        int loops = EMAC_LINK_LOOPS;
-        /* Wait for auto negotiation completed. */
-        phy_inw(macb, NIC_PHY_BMSR);    /* Discard previously latched status. */
-        while (--loops) {
-            if (phy_inw(macb, NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
-                break;
-            }
-        }
-        /* Return error on link timeout. */
-        if (loops == 0) {
-            macb->ncr &= ~AVR32_MACB_NCR_MPE_MASK;
-            return -1;
-        }
-
-        /*
-         * Read link partner abilities and configure EMAC.
-         */
-        phyval = phy_inw(macb, NIC_PHY_ANLPAR);
-        if (phyval & NIC_PHY_ANEG_TX_FDX) {
-            /* 100Mb full duplex. */
-            macb->ncfgr |= AVR32_MACB_SPD_MASK | AVR32_MACB_FD_MASK;
-        } else if (phyval & NIC_PHY_ANEG_TX_HDX) {
-            /* 100Mb half duplex. */
-            macb->ncfgr = (macb->ncfgr & ~AVR32_MACB_FD_MASK) | AVR32_MACB_SPD_MASK;
-        } else if (phyval & NIC_PHY_ANEG_10_FDX) {
-            /* 10Mb full duplex. */
-            macb->ncfgr = (macb->ncfgr & ~AVR32_MACB_SPD_MASK) | AVR32_MACB_FD_MASK;
-        } else {
-            /* 10Mb half duplex. */
-            macb->ncfgr &= ~(AVR32_MACB_SPD_MASK | AVR32_MACB_FD_MASK);
-        }
-    }
-    return 0;
+    AVR32_MACB.ncr &= ~AVR32_MACB_NCR_MPE_MASK;
 }
 
 /*!
@@ -390,6 +251,10 @@ static int probePhy(volatile avr32_macb_t * macb)
 */
 static int EmacReset(NUTDEVICE * dev)
 {
+    int rc = 0;
+    uint32_t phyval;
+	int link_wait;
+	volatile unsigned long reg_ncfgr;
     volatile avr32_macb_t *macb = (avr32_macb_t *) dev->dev_base;
     const uint32_t hclk_hz = NutArchClockGet(NUT_HWCLK_PERIPHERAL_B);
 
@@ -428,7 +293,50 @@ static int EmacReset(NUTDEVICE * dev)
     /* Wait for PHY ready. */
     NutDelay(255);
 
-    return probePhy(macb);
+    /* Register PHY */
+    rc = NutRegisterPhy( 1, phy_outw, phy_inw);
+	
+#ifndef PHY_MODE_RMII
+	/* Clear MII isolate. */
+	phyval = 0;
+	NutPhyCtl(PHY_CTL_ISOLATE, &phyval);
+#endif
+
+	/* Restart auto negotiation */
+	phyval = 1;
+	NutPhyCtl(PHY_CTL_AUTONEG_RE, &phyval);
+
+	/* Wait for auto negotiation completed and link established. */
+	for (link_wait = EMAC_LINK_LOOPS;; link_wait--) {
+		phyval = 0;
+		NutPhyCtl(PHY_GET_STATUS, &phyval);
+
+		if((phyval & PHY_STATUS_HAS_LINK) && (phyval & PHY_STATUS_AUTONEG_OK)) {
+			/* Check link state and configure EMAC accordingly */
+			reg_ncfgr = macb->ncfgr;
+			if (phyval & PHY_STATUS_FULLDUPLEX) {
+				reg_ncfgr |= AVR32_MACB_FD_MASK;
+            } else {
+				reg_ncfgr &= ~AVR32_MACB_FD_MASK;
+			}
+
+			if (phyval & PHY_STATUS_100M) {
+				reg_ncfgr |= AVR32_MACB_SPD_MASK;
+				} else {
+				reg_ncfgr &= ~AVR32_MACB_SPD_MASK;
+			}
+			macb->ncfgr = reg_ncfgr;
+
+			break;
+		}
+		if (link_wait == 0) {
+			/* Return error on link timeout. */
+			return -1;
+		}
+		NutSleep(10);
+	}
+  
+	return 0;
 }
 
 /*
@@ -436,7 +344,7 @@ static int EmacReset(NUTDEVICE * dev)
 */
 static void EmacInterrupt(void *arg)
 {
-    unsigned int isr;
+    volatile unsigned int isr;
     unsigned int event;
     NUTDEVICE *dev = (NUTDEVICE *) arg;
     volatile avr32_macb_t *macb = (avr32_macb_t *) dev->dev_base;
@@ -447,7 +355,7 @@ static void EmacInterrupt(void *arg)
     event = macb->rsr;
 
     /* Receiver interrupt. */
-    if ((isr & AVR32_MACB_IMR_RCOMP_MASK) || (event & AVR32_MACB_REC_MASK)) {
+    if ((isr & (AVR32_MACB_IMR_RCOMP_MASK | AVR32_MACB_IMR_ROVR_MASK | AVR32_MACB_IMR_RXUBR_MASK)) || (event & AVR32_MACB_REC_MASK)) {
         macb->rsr = AVR32_MACB_REC_MASK;        // Clear
         macb->rsr;              // Read to force the previous write
         macb->idr = AVR32_MACB_IDR_RCOMP_MASK | AVR32_MACB_IDR_ROVR_MASK | AVR32_MACB_IDR_RXUBR_MASK;
@@ -511,36 +419,27 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
     }
 
     if (fbc) {
-        /*
-         * Receiving long packets is unexpected. Let's declare the
-         * chip insane. Short packets will be handled by the caller.
-         */
-//              if (fbc > 1536) {
-//                      ni->ni_insane = 1;
-//              } else
-        {
-            *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t) fbc);
-            if (*nbp != NULL) {
-                uint8_t *bp = (uint8_t *) (*nbp)->nb_dl.vp;
-                unsigned int len;
+        *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t) fbc);
+        if (*nbp != NULL) {
+            uint8_t *bp = (uint8_t *) (*nbp)->nb_dl.vp;
+            unsigned int len;
 
-                while (fbc) {
-                    if (fbc > EMAC_RX_BUFSIZ) {
-                        len = EMAC_RX_BUFSIZ;
-                    } else {
-                        len = fbc;
-                    }
-                    memcpy(bp, (void *) (rxBufTab[rxBufIdx].addr & RXBUF_ADDRMASK), len);
-                    rxBufTab[rxBufIdx].addr &= ~RXBUF_OWNERSHIP;
-                    rxBufIdx++;
-                    if (rxBufIdx >= EMAC_RX_BUFFERS) {
-                        rxBufIdx = 0;
-                    }
-                    fbc -= len;
-                    bp += len;
+            while (fbc) {
+                if (fbc > EMAC_RX_BUFSIZ) {
+                    len = EMAC_RX_BUFSIZ;
+                } else {
+                    len = fbc;
                 }
-                rc = 0;
+                memcpy(bp, (void *) (rxBufTab[rxBufIdx].addr & RXBUF_ADDRMASK), len);
+                rxBufTab[rxBufIdx].addr &= ~RXBUF_OWNERSHIP;
+                rxBufIdx++;
+                if (rxBufIdx >= EMAC_RX_BUFFERS) {
+                    rxBufIdx = 0;
+                }
+                fbc -= len;
+                bp += len;
             }
+            rc = 0;
         }
     }
     return rc;
@@ -627,9 +526,9 @@ static int EmacStart(volatile avr32_macb_t * macb, const uint8_t * mac)
     unsigned int i;
 
     /* Set local MAC address. */
-    // Must be written SA1L then SA1H.
-    macb->sa1b = (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0];
-    macb->sa1t = (mac[5] << 8) | mac[4];
+    // Must be written SA1B then SA1T.
+    macb->sa1b = (( unsigned long ) mac[3] << 24) | ( ( unsigned long ) mac[2] << 16) | ( ( unsigned long ) mac[1] << 8) | mac[0];
+    macb->sa1t = (( unsigned long ) mac[5] << 8) | mac[4];
 
     /* Initialize receive buffer descriptors. */
     for (i = 0; i < EMAC_RX_BUFFERS - 1; i++) {
@@ -709,10 +608,16 @@ THREAD(EmacRxThread, arg)
     for (;;) {
         /*
          * Wait for the arrival of new packets or poll the receiver every
-         * 200 milliseconds. This short timeout helps a bit to deal with
+         * 500 milliseconds. This short timeout helps a bit to deal with
          * the SAM9260 Ethernet problem.
+         *
+         * Sometimes an interrupt status change doesn't trigger an interrupt.
+         * We need to read the status register, so that the flags get cleared
+         * and the next change triggers an interrupt again.
          */
-        NutEventWait(&ni->ni_rx_rdy, 200);
+        if (NutEventWait(&ni->ni_rx_rdy, 500)) {
+            macb->isr;
+        }
 
         /*
          * Fetch all packets from the NIC's internal buffer and pass
@@ -768,19 +673,28 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         if (ni->ni_insane) {
             break;
         }
-        if (NutEventWait(&ni->ni_mutex, mx_wait)) {
+		
+        if (NutEventWait(&ni->ni_mutex, mx_wait))
             break;
-        }
 
         /* Check for packet queue space. */
         if ((txBufTab[txBufIdx].status & TXS_USED) == 0) {
-            if (NutEventWait(&ni->ni_tx_rdy, 500) && (txBufTab[txBufIdx].status & TXS_USED) == 0) {
-                /* No queue space. Release the lock and give up. */
-                txBufTab[txBufIdx].status |= TXS_USED;
-                txBufIdx++;
-                txBufIdx &= 1;
-                NutEventPost(&ni->ni_mutex);
-                break;
+            if (NutEventWait(&ni->ni_tx_rdy, 500)) {
+                /*
+                 * We may have a timeout here because the last status change
+                 * didn't trigger an interrupt. Reading the status register
+                 * will clear the current status and the next change triggers
+                 * an interrupt again, hopefully.
+                 */
+                macb->isr;
+                if ((txBufTab[txBufIdx].status & TXS_USED) == 0) {
+                    /* No queue space. Release the lock and give up. */
+                    txBufTab[txBufIdx].status |= TXS_USED;
+                    txBufIdx++;
+                    txBufIdx &= 1;
+                    NutEventPost(&ni->ni_mutex);
+                    break;
+                }
             }
         } else {
             if (macb->tsr & AVR32_MACB_TSR_UND_MASK) {
@@ -858,7 +772,8 @@ int EmacInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("emacrx", EmacRxThread, dev, NUT_THREAD_NICRXSTACK) == NULL) {
+    if (NutThreadCreate("emacrx", EmacRxThread, dev, 
+        (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
     return 0;
