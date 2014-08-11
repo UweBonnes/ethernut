@@ -69,7 +69,16 @@
 #include <dev/gpio.h>
 #include <dev/irqreg.h>
 
+#if defined(MCU_LPC177x_8x)
+#include <arch/cm3/nxp/lpc177x_8x.h>
 #include <arch/cm3/nxp/lpc177x_8x_clk.h>
+#elif defined(MCU_LPC407x_8x)
+#include <arch/cm3/nxp/lpc407x_8x.h>
+#include <arch/cm3/nxp/lpc407x_8x_clk.h>
+#else
+#warning "Unknown LPC familiy"
+#endif
+
 #include <arch/cm3/nxp/lpc177x_8x_mci.h>
 
 //#define NUTDEBUG
@@ -184,6 +193,8 @@ int32_t Lpc177x_8x_MciCheckStatus(void);
 
 
 /* These pointers get an initial value here, but will be overwritten when 'Lpc177x_8x_MciWriteBlock()' is called.... */
+volatile int32_t  dataLenTx = 0;
+volatile int32_t  dataLenRx = 0;
 volatile uint8_t* dataSrcBlock = (uint8_t *) MCI_DMA_SRC_ADDR;
 volatile uint8_t* dataDestBlock = (uint8_t *) MCI_DMA_DST_ADDR;;
 
@@ -615,8 +626,10 @@ void Lpc177x_8x_MciFIFOInterruptService( void )
         {
 
             // There's no data, return
-            if (dataSrcBlock == NULL)
+            if ((dataSrcBlock == NULL) || (dataLenTx <= 0))
             {
+                /* disable FIFO int until next block write */
+                LPC_MCI->MASK0 &= ~(FIFO_TX_INT_MASK);
                 return;
             }
 
@@ -624,6 +637,7 @@ void Lpc177x_8x_MciFIFOInterruptService( void )
             Lpc177x_8x_MciWriteFifo((uint32_t *)&dataSrcBlock[txBlockCnt]);
 
             txBlockCnt += 32;
+            dataLenTx  -= 32;
 
 //            LPC_MCI->CLEAR = MCI_TX_HALF_EMPTY;       // no need to clear the pending interrupt here?
         }
@@ -642,8 +656,10 @@ void Lpc177x_8x_MciFIFOInterruptService( void )
         // if using RX_HALF_FULL remove one ReadFIFO below
         if (MCIStatus & MCI_RX_HALF_FULL)
         {
-            if (dataDestBlock == NULL)
+            if ((dataDestBlock == NULL) || (dataLenRx <= 0))
             {
+                /* disable FIFO int until next block read */
+                LPC_MCI->MASK0 &= ~(FIFO_RX_INT_MASK);
                 return;
             }
 
@@ -651,6 +667,7 @@ void Lpc177x_8x_MciFIFOInterruptService( void )
             Lpc177x_8x_MciReadFifo((uint32_t *)&dataDestBlock[rxBlockCnt]);
 
             rxBlockCnt += 32;
+            dataLenRx  -= 32;
 
 //            LPC_MCI->CLEAR = MCI_RX_HALF_FULL;        // no need to clear the pending interrupt here?
         }
@@ -2403,6 +2420,7 @@ int32_t Lpc177x_8x_MciWriteBlock(uint8_t* memblock, uint32_t blockNum, uint32_t 
     LPC_MCI->DATATMR = DATA_TIMER_VALUE_W;
 
     LPC_MCI->DATALEN = BLOCK_LENGTH*numOfBlock;
+    dataLenTx        = BLOCK_LENGTH*numOfBlock;
 
     Mci_Data_Xfer_End = 1;
     Mci_Data_Xfer_ERR = 0;
@@ -2485,6 +2503,7 @@ int32_t Lpc177x_8x_MciReadBlock(uint8_t* destBlock, uint32_t blockNum, uint32_t 
     LPC_MCI->DATATMR = DATA_TIMER_VALUE_R;
 
     LPC_MCI->DATALEN = BLOCK_LENGTH*numOfBlock;
+    dataLenRx        = BLOCK_LENGTH*numOfBlock;
 
     Mci_Data_Xfer_End = 1;
     Mci_Data_Xfer_ERR = 0;
