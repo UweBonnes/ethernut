@@ -39,43 +39,25 @@
 *
 */
 
-#include <sys/atom.h>
-#include <dev/nvmem.h>
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <avr32/io.h>
 #include <arch/avr32.h>
 #include <arch/avr32/flashc.h>
 
-#include <avr32/io.h>
+#include <sys/atom.h>
+#include <sys/nutdebug.h>
 
+#include <dev/nvmem.h>
+
+#include <toolchain.h>
 
 /*!
  * \addtogroup xgAvr32Efc
  */
 /*@{*/
-
-/*! \brief Address offset of the configuration sector.
- */
-#ifndef FLASH_CONF_SECTOR
-#define FLASH_CONF_SECTOR  0x0003FF00
-#endif
-
-
-/*! \brief Size of the configuration area.
- *
- * During write operations a buffer with this size is allocated
- * from heap and may cause memory problems with large sectors.
- * Thus, this value may be less than the size of the configuration
- * sector, in which case the rest of the sector is unused.
- *
- * Currently only 1 sector can be used for system configurations.
- */
-#ifndef FLASH_CONF_SIZE
-#define FLASH_CONF_SIZE         AVR32_FLASHC_PAGE_SIZE
-#endif
 
 #ifndef FLASH_WRITE_WAIT
 #define FLASH_WRITE_WAIT        60000
@@ -85,48 +67,76 @@
 #define FLASH_ERASE_WAIT        60000
 #endif
 
+#ifndef FLASH_COMMAND_WAIT
+#define FLASH_COMMAND_WAIT      6000
+#endif
+
 #ifndef FLASH_CHIP_ERASE_WAIT
 #define FLASH_CHIP_ERASE_WAIT   600000
 #endif
-
 
 typedef uint32_t flashdat_t;
 typedef unsigned long flashadr_t;
 typedef volatile flashdat_t *flashptr_t;
 
-static int flashc_is_ready(void)
+#if !defined(__flash_nvram_size__)
+#define __flash_nvram_size__ 4*1024
+#endif
+
+//! NVRAM data structure located in the flash array.
+#if defined (__GNUC__)
+__attribute__((__section__(".flash_nvram")))
+#endif
+static uint8_t flash_nvram_data[__flash_nvram_size__] NUT_LINKER_SECT(".flash_nvram");
+
+#define WORKAROUND_FLASH_CONTROLER_BUG
+
+RAMFUNC int flashc_wait_until_ready(uint32_t tmo)
 {
-    return ((AVR32_FLASHC.fsr & AVR32_FLASHC_FSR_FRDY_MASK) != 0);
+    while (!(AVR32_FLASHC.fsr & AVR32_FLASHC_FSR_FRDY_MASK)) {
+	    if (tmo && --tmo < 1) {
+		    return -1;
+	    }
+    }
+	
+#if defined(WORKAROUND_FLASH_CONTROLER_BUG)
+    // Make sure we wait at least tmo cycles.
+	while( --tmo > 1 )
+		_NOP();
+#endif
+	return 0;
 }
 
 /*!
  * \brief Execute flash controller command.
  *
  */
-int Avr32FlashcCmd(unsigned int cmd, uint32_t tmo)
+RAMFUNC int Avr32FlashcCmd(unsigned int cmd, int page, uint32_t tmo)
 {
     int rc = 0;
+	union {
+		uint32_t            fcmd;
+		avr32_flashc_fcmd_t	FCMD;
+	} flashc_fcmd;
+	
 
     /* Make sure that the previous command has finished. */
-    while (!flashc_is_ready()) {
-        if (tmo && --tmo < 1) {
-            return -1;
-        }
-    }
+    flashc_wait_until_ready(tmo);
 
     /* IRQ handlers are located in flash. Disable them. */
     NutEnterCritical();
 
     /* Write command. */
-    outr(AVR32_FLASHC.fcmd, AVR32_FLASHC_FCMD_KEY_KEY | cmd);
+	flashc_fcmd.fcmd = AVR32_FLASHC.fcmd;
+	flashc_fcmd.FCMD.cmd = cmd;
+	if (page >= 0) {
+		flashc_fcmd.FCMD.pagen = page;
+	}
+	flashc_fcmd.FCMD.key = AVR32_FLASHC_FCMD_KEY_KEY;
+	AVR32_FLASHC.fcmd = flashc_fcmd.fcmd;
 
     /* Wait for ready flag set. */
-    while (!flashc_is_ready()) {
-        if (tmo && --tmo < 1) {
-            rc = -1;
-            break;
-        }
-    }
+    flashc_wait_until_ready(tmo);
 
     /* Flash command finished. Re-enable IRQ handlers. */
     NutExitCritical();
@@ -138,92 +148,57 @@ int Avr32FlashcCmd(unsigned int cmd, uint32_t tmo)
     return rc;
 }
 
-/*!
- * \brief Read data from flash memory.
- *
- * \param off  Start location within the chip, starting at 0.
- * \param data Points to a buffer that receives the data.
- * \param len  Number of bytes to read.
- *
- * \return Always 0.
- */
-int Avr32FlashcSectorRead(unsigned int off, void *data, unsigned int len)
+void Avr32FlashClearPageBuffer(void)
 {
-    memcpy(data, (void *) (uptr_t) (AVR32_FLASH_ADDRESS + off), len);
-
-    return 0;
+	Avr32FlashcCmd(AVR32_FLASHC_FCMD_CMD_CPB, -1, FLASH_COMMAND_WAIT);
 }
 
-/*!
- * \brief Write data into flash memory.
- *
- * The related sector will be automatically erased before writing.
- *
- * \param off  Start location within the chip, starting at 0.
- * \param data Points to a buffer that contains the bytes to be written.
- *             If this is a NULL pointer, then the sector will be erased.
- * \param len  Number of bytes to write, 1 full sector max.
- *
- * \return 0 on success or -1 in case of an error.
- */
-int Avr32FlashcSectorWrite(unsigned int off, const void *data, unsigned int len)
+void Avr32FlashEraseCurrentPage(void)
 {
-    flashptr_t dp = (flashptr_t) (uptr_t) (AVR32_FLASH_ADDRESS + off);
-    int rc;
-    unsigned int i;
-
-    if (data) {
-        flashptr_t sp = (flashptr_t) data;
-
-        /* Copy data to the flash write buffer. */
-        for (i = 0; i < len; i += sizeof(flashdat_t)) {
-            *dp++ = *sp++;
-        }
-    } else {
-        /* All bits set to emulate sector erasing. */
-        for (i = 0; i < len; i += sizeof(flashdat_t)) {
-            *dp++ = (flashdat_t) (-1);
-        }
-    }
-
-    /* Erase target flash page. */
-    Avr32FlashcSectorErase(off);
-    /* Execute page write command. */
-    rc = Avr32FlashcCmd((off & AVR32_FLASHC_FCMD_PAGEN_MASK) | AVR32_FLASHC_FCMD_CMD_WP, FLASH_WRITE_WAIT);
-
-    return rc;
+	Avr32FlashcCmd(AVR32_FLASHC_FCMD_CMD_EP, -1, FLASH_ERASE_WAIT);
 }
 
-/*!
- * \brief Erase sector at the specified offset.
- */
-int Avr32FlashcSectorErase(unsigned int off)
+void Avr32FlashWriteCurrentPage(void)
 {
-    return Avr32FlashcCmd((off & AVR32_FLASHC_FCMD_PAGEN_MASK) | AVR32_FLASHC_FCMD_CMD_EP, FLASH_ERASE_WAIT);
+	Avr32FlashcCmd(AVR32_FLASHC_FCMD_CMD_WP, -1, FLASH_WRITE_WAIT);
 }
 
-/*!
- * \brief Lock specified region.
- *
- * \param off Location within the region to be locked.
- *
- * \return 0 on success or -1 in case of an error.
- */
-int Avr32FlashcRegionLock(unsigned int off)
+int Avr32FlashFillPageBuffer( volatile uint8_t* dst, const uint8_t* src, size_t nbytes )
 {
-    return Avr32FlashcCmd((off & AVR32_FLASHC_FCMD_PAGEN_MASK) | AVR32_FLASHC_FCMD_CMD_LP, FLASH_WRITE_WAIT);
-}
+	union {
+		uint64_t uint64;
+		uint8_t  uint8[8];
+	} flash_dword;
+	uint8_t* flash_add;
+	int consumedBytes = 0;
+	int page_pos;
+	int i;
 
-/*!
- * \brief Unlock specified region.
- *
- * \param off Location within the region to be unlocked.
- *
- * \return 0 on success or -1 in case of an error.
- */
-int Avr32FlashcRegionUnlock(unsigned int off)
-{
-    return Avr32FlashcCmd((off & AVR32_FLASHC_FCMD_PAGEN_MASK) | AVR32_FLASHC_FCMD_CMD_UP, FLASH_WRITE_WAIT);
+	// Point to start of the requested address's page
+	flash_add = (uint8_t*)((uint32_t)dst - ((uint32_t)src % AVR32_FLASHC_PAGE_SIZE));
+	
+	Avr32FlashClearPageBuffer();
+
+	for (page_pos = 0; page_pos < AVR32_FLASHC_PAGE_SIZE; page_pos += sizeof(uint64_t) ) {
+
+		// Load original flash contents to page buffer
+		flash_dword.uint64 = *((volatile uint64_t*)flash_add);
+
+		// Update page buffer contents only if overlaps with [dst..dst+nbytes]
+		for (i = 0; i < sizeof(uint64_t); ++i) {
+			if (consumedBytes < nbytes && (flash_add == dst)) {
+				// Update page with source contents
+				flash_dword.uint8[i] = *src++;
+				dst++;
+				consumedBytes++;
+			}
+			flash_add++;
+		}
+
+		// Write flash page buffer in chunks of 64 bits as required by FLASHC
+		(*(volatile uint64_t*)((uint32_t)flash_add - sizeof(uint64_t))) = flash_dword.uint64;
+	}
+	return consumedBytes;	
 }
 
 /*!
@@ -235,11 +210,16 @@ int Avr32FlashcRegionUnlock(unsigned int off)
  * \param data  Points to a buffer that receives the contents.
  * \param len   Number of bytes to read.
  *
- * \return Always 0.
+ * \return 0 if successful.
  */
 int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len)
 {
-    return Avr32FlashcSectorRead(FLASH_CONF_SECTOR + pos, data, len);
+	if ( len > sizeof(flash_nvram_data) )
+		return -1;
+
+    memcpy(data, (void *) (uptr_t) (flash_nvram_data + pos), len);
+
+    return 0;
 }
 
 /*!
@@ -258,26 +238,16 @@ int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len)
  */
 int Avr32FlashcParamWrite(unsigned int pos, const void *data, unsigned int len)
 {
-    int rc = -1;
-    uint8_t *buff;
+	NUTASSERT( pos + len <= __flash_nvram_size__ );
 
-    /* Load the complete configuration area. */
-    if ((buff = malloc(FLASH_CONF_SIZE)) != NULL) {
+	int byteCount = 0;
+	
+	while( byteCount < len )
+	{
+		byteCount += Avr32FlashFillPageBuffer( (void *)&flash_nvram_data + pos + byteCount, data + byteCount, len - byteCount );
+		Avr32FlashEraseCurrentPage();
+		Avr32FlashWriteCurrentPage();
+	}
 
-        rc = Avr32FlashcSectorRead(FLASH_CONF_SECTOR, buff, FLASH_CONF_SIZE);
-        /* Compare old with new contents. */
-        if (memcmp(buff + pos, data, len)) {
-            /* New contents differs. Copy it into the sector buffer. */
-            memcpy(buff + pos, data, len);
-            /* Write back new data. Maintain region lock. */
-            if (Avr32FlashcRegionUnlock(FLASH_CONF_SECTOR) == 0) {
-                rc = Avr32FlashcSectorWrite(FLASH_CONF_SECTOR, buff, FLASH_CONF_SIZE);
-                Avr32FlashcRegionLock(FLASH_CONF_SECTOR);
-            }
-        }
-        free(buff);
-    }
-    return rc;
+    return 0;
 }
-
-/*@}*/

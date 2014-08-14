@@ -38,13 +38,6 @@
 
 #include <sys/types.h>
 
-extern int Avr32FlashcSectorErase(unsigned int off);
-extern int Avr32FlashcSectorRead(unsigned int off, void *data, unsigned int len);
-extern int Avr32FlashcSectorWrite(unsigned int off, const void *data, unsigned int len);
-
-extern int Avr32FlashcRegionLock(unsigned int off);
-extern int Avr32FlashcRegionUnlock(unsigned int off);
-
 extern int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len);
 extern int Avr32FlashcParamWrite(unsigned int pos, const void *data, unsigned int len);
 

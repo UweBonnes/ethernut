@@ -83,6 +83,8 @@
 #include <dev/at49bv.h>
 #elif defined(NUT_CONFIG_AT91EFC)
 #include <arch/arm/atmel/at91_efc.h>
+#elif defined(NUT_CONFIG_AVR32EFC)
+#include <arch/avr32/flashc.h>
 #elif defined(NUT_CONFIG_STM32_IAP)
 #include <arch/cm3/stm/stm32_flash.h>
 #elif defined(NUT_CONFIG_STM32L1_EEPROM)
@@ -137,6 +139,8 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
 #elif defined(NUT_CONFIG_AT24)
     EEInit();
     return EEReadData( addr, buff, siz);
+#elif defined(NUT_CONFIG_AVR32EFC)
+	return Avr32FlashcParamRead( addr, buff, siz);
 #else
     return -1;
 #endif
@@ -178,6 +182,8 @@ int NutNvMemSave(unsigned int addr, const void *buff, size_t len)
     return Lpc17xxIapParamWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_AT24)
     return EEWriteData( addr, buff, len);
+#elif defined(NUT_CONFIG_AVR32EFC)
+	return Avr32FlashcParamWrite( addr, buff, len);
 #else
     return -1;
 #endif
