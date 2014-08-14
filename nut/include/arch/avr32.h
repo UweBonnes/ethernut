@@ -143,14 +143,6 @@ extern void *__bss_end;
 
 #endif
 
-#ifndef _NOP
-# ifdef __GNUC__
-#  define _NOP() __asm__ __volatile__ ("nop")
-# else
-#  define _NOP() asm("nop")
-# endif
-#endif
-
 #define outb(_reg, _val)  (*((volatile unsigned char *)(_reg)) = (_val))
 #define outw(_reg, _val)  (*((volatile unsigned short *)(_reg)) = (_val))
 #define outr(_reg, _val)  (*((volatile unsigned long *)(_reg)) = (_val))
@@ -212,29 +204,6 @@ extern void *__bss_end;
 #elif __ICCAVR32__
 # define Set_system_register(sysreg, value)  __set_system_register(sysreg, value)
 #endif
-
-/*! \brief Tells whether interrupts are globally enabled.
- *
- * \return \c 1 if interrupts are globally enabled, else \c 0.
- */
-#define Is_global_interrupt_enabled()        (!Tst_bits(Get_system_register(AVR32_SR), AVR32_SR_GM_MASK))
-
-/*! \brief Disables interrupts globally.
- */
-#if (defined __GNUC__)
-  #define Disable_global_interrupt()          ({__asm__ __volatile__ ("ssrf\t%0" :  : "i" (AVR32_SR_GM_OFFSET));})
-#elif (defined __ICCAVR32__)
-  #define Disable_global_interrupt()          (__disable_interrupt())
-#endif
-
-/*! \brief Enables interrupts globally.
- */
-#if (defined __GNUC__)
-  #define Enable_global_interrupt()           ({__asm__ __volatile__ ("csrf\t%0" :  : "i" (AVR32_SR_GM_OFFSET));})
-#elif (defined __ICCAVR32__)
-  #define Enable_global_interrupt()           (__enable_interrupt())
-#endif
-
 
 
 #endif // _ARCH_AVR32_H_
