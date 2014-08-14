@@ -85,7 +85,7 @@ typedef struct {
     uint8_t node_flags;
     uint8_t node_type;
     uint32_t ip_addr;             /* end of answer */
-} __attribute__((packed)) WINSHEADER;
+} NUT_PACKED_TYPE WINSHEADER;
 
 
 /* ********************************************************* */
