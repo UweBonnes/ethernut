@@ -170,7 +170,11 @@
  *
  * This section will be copied to RAM during runtime initialization.
  */
+#if defined(__arm__)
 #define RAMFUNC __attribute__((__long_call__, __section__(".ramfunc")))
+#else
+#define RAMFUNC __attribute__((__section__(".ramfunc")))
+#endif
 #endif
 
 #ifndef NUT_PACKED_TYPE
