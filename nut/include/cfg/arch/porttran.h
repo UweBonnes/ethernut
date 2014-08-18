@@ -113,38 +113,6 @@
  *       strategy. Even if the compiler supports the inline keyword,
  *       it may decide to generate a callable function.
  */
-#if defined(MCU_STM32)
-#if defined(MCU_STM32L1)
-#define GPIO_SPEED GPIO_CFG_SPEED_MED
-#else
-#define GPIO_SPEED GPIO_CFG_SPEED_SLOW
-#endif
-#define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
-#define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
-#define GPIO_IS_HI(b)  GpioPinGet(GPIO_ID, b)
-#define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
-#define GPIO_ENABLE(b) GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT|GPIO_SPEED)
-#define GPIO_OUTPUT(b) GpioPinDrive(GPIO_ID, b)
-#define GPIO_INPUT(b)  GpioPinRelease(GPIO_ID, b)
-#if defined(MCU_STM32F1)
-#define  GPIO_PULLUP_ON(b) 
-#define  GPIO_PULLUP_OFF(b) 
-#else
-#define  GPIO_PULLUP_ON(b) do { \
-    uint32_t pudr = GPIO_ID->PUPDR;             \
-    pudr &=   ~(3<<(b<<1));                      \
-    pudr |=   1<<(b<<1);                        \
-    GPIO_ID->PUPDR = pudr; } while(0)
-#define  GPIO_PULLUP_OFF(b) do { \
-    uint32_t pudr = GPIO_ID->PUPDR;             \
-    pudr &=   3<<(b<<1);                        \
-    GPIO_ID->PUPDR = pudr; } while(0)
-#endif
-#define  GPIO_FILTER_ON(b)
-#define  GPIO_FILTER_OFF(b)
-#define GPIO_OPENDRAIN(b) GpioPinRelease(GPIO_ID, b)
-#define GPIO_PUSHPULL(b)  GpioPinDrive(GPIO_ID, b)
-#else
 
 /*
  * Remove any previously defined register names.
@@ -396,7 +364,9 @@
 #endif /* GPIO_ID */
 
 #elif defined(__AVR32__)
-
+/*
+ * Determine AT91 port names.
+ */
 #include <avr32/io.h>
 
 #define  GPIO_PE_REG    &AVR32_GPIO.port[GPIO_ID].gpers
@@ -419,10 +389,55 @@
 #define  GPIO_IFD_REG   &AVR32_GPIO.port[GPIO_ID].gferc
 #define  GPIO_IFS_REG   &AVR32_GPIO.port[GPIO_ID].gfer
 
+#elif defined(MCU_STM32)
+
+#if defined(MCU_STM32L1)
+#define GPIO_SPEED GPIO_CFG_SPEED_MED
+#else
+#define GPIO_SPEED GPIO_CFG_SPEED_SLOW
+#endif
+
+#define ARCH_DEFINES_FUNCTIONS_DIRECTLY
+
+#define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
+#define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
+#define GPIO_IS_HI(b)  GpioPinGet(GPIO_ID, b)
+#define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
+#define GPIO_ENABLE(b) GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT|GPIO_SPEED)
+#define GPIO_OUTPUT(b) GpioPinDrive(GPIO_ID, b)
+#define GPIO_INPUT(b)  GpioPinRelease(GPIO_ID, b)
+#if defined(MCU_STM32F1)
+#define  GPIO_PULLUP_ON(b)
+#define  GPIO_PULLUP_OFF(b)
+#else
+#define  GPIO_PULLUP_ON(b) do { \
+	uint32_t pudr = GPIO_ID->PUPDR;             \
+	pudr &=   ~(3<<(b<<1));                      \
+	pudr |=   1<<(b<<1);                        \
+GPIO_ID->PUPDR = pudr; } while(0)
+#define  GPIO_PULLUP_OFF(b) do { \
+	uint32_t pudr = GPIO_ID->PUPDR;             \
+	pudr &=   3<<(b<<1);                        \
+GPIO_ID->PUPDR = pudr; } while(0)
+#endif
+#define  GPIO_FILTER_ON(b)
+#define  GPIO_FILTER_OFF(b)
+#define GPIO_OPENDRAIN(b) GpioPinRelease(GPIO_ID, b)
+#define GPIO_PUSHPULL(b)  GpioPinDrive(GPIO_ID, b)
+
+
 /* Additional targets can be added here. */
 
 #endif /* MCU */
 
+
+/*
+ * MCU arch implementation my define GPIO_* function macros directy instead
+ * of defining registers for this generic implementation. In that case,
+ * skip the generic implementation.
+*/
+
+#if !defined( ARCH_DEFINES_FUNCTIONS_DIRECTLY )
 
 /*
  * Remove any previously defined port macros.
@@ -548,6 +563,6 @@
 #define GPIO_PUSHPULL(b)
 #endif
 
-#endif
+#endif //ARCH_DEFINES_FUNCTIONS_DIRECTLY
 
 /*@}*/
