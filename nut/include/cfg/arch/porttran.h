@@ -49,8 +49,10 @@
  * \brief Port translations.
  *
  * This header file determines the target specific GPIO register names
- * by a simple configured port identifier. In addition it provides
+ * by a simple configured port identifier GPIO_ID. In addition it provides
  * several macros to configure, set, clear or query GPIO bits.
+ * GPIO_ID should be defined prior to including this header file as one of
+ * PIOn_ID constants.
  *
  * Unlike most other header files, this one may be included several
  * times within a single source file, typically once for each configured
@@ -58,13 +60,13 @@
  *
  * \code
  * #undef GPIO_ID
- * #define GPIO_ID MY_PORT1_ID
+ * #define GPIO_ID PIOA_ID
  * #include <cfg/arch/porttran.h>
  * static INLINE void MY_PORT1_SET(int bit) { GPIO_SET_HI(bit); }
  * static INLINE void MY_PORT1_CLR(int bit) { GPIO_SET_LO(bit); }
  *
  * #undef GPIO_ID
- * #define GPIO_ID MY_PORT2_ID
+ * #define GPIO_ID PIOB_ID
  * #include <cfg/arch/porttran.h>
  * static INLINE void MY_PORT2_SET(int bit) { GPIO_SET_HI(bit); }
  * static INLINE void MY_PORT2_CLR(int bit) { GPIO_SET_LO(bit); }
