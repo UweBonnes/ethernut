@@ -83,7 +83,7 @@
 #if !defined(SPIBUS1_CS0_PORT) && !defined(SPIBUS1_CS0_PIN)
 #define SPIBUS_CS0_PORT NUTGPIO_PORTA
 #define SPIBUS_CS0_PIN  4
-#elif !defined(SPIBUS2_CS0_PORT) || !defined(SPIBUS2_CS0_PIN)
+#elif !defined(SPIBUS1_CS0_PORT) || !defined(SPIBUS1_CS0_PIN)
 #warning "SPIBUS1 uncomplete chip select"
 #else
 #define SPIBUS_CS0_PORT SPIBUS1_CS0_PORT
@@ -178,44 +178,46 @@
  #warning "Illegal STM32F373 SPI1 MOSI assignment"
  #endif
 #else
- #if !defined(SPIBUS1_SCK_PIN)
+ #if !defined(SPIBUS1_SCK_PIN) || SPIBUS1_SCK_PIN == 5
   #define SPIBUS_SCK_PIN 5
   #define SPIBUS_SCK_PORT NUTGPIO_PORTA
- #elif SPIBUS1_SCK_PIN == 5
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTA
  #elif SPIBUS1_SCK_PIN == 3
+  #define SPIBUS_SCK_PIN 3
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
  #elif defined(MCU_STM32L1) && SPIBUS1_SCK_PIN == 13
+  #define SPIBUS_SCK_PIN 13
   #define SPIBUS_SCK_PORT NUTGPIO_PORTE
  #else
   #warning "Illegal SPI1 SCK pin assignement"
  #endif
 
- #if !defined(SPIBUS1_MISO_PIN)
+ #if !defined(SPIBUS1_MISO_PIN) || SPIBUS1_MISO_PIN == 6
   #define SPIBUS_MISO_PIN 6
   #define SPIBUS_MISO_PORT NUTGPIO_PORTA
- #elif SPIBUS1_MISO_PIN == 6
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
  #elif SPIBUS1_MISO_PIN == 11
+  #define SPIBUS_MISO_PIN 11
   #define SPIBUS_MISO_PORT NUTGPIO_PORTA
  #elif SPIBUS1_MISO_PIN == 4
+  #define SPIBUS_MISO_PIN 4
   #define SPIBUS_MISO_PORT NUTGPIO_PORTB
  #elif defined(MCU_STM32L1) && SPIBUS1_MISO_PIN == 14
+  #define SPIBUS_MISO_PIN 14
   #define SPIBUS_MISO_PORT NUTGPIO_PORTE
  #else
   #warning "Illegal SPI1 MISO pin assignement"
  #endif
 
- #if !defined(SPIBUS1_MOSI_PIN)
+ #if !defined(SPIBUS1_MOSI_PIN) || SPIBUS1_MOSI_PIN == 7
   #define SPIBUS_MOSI_PIN 7
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
- #elif SPIBUS1_MOSI_PIN == 7
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
  #elif SPIBUS1_MOSI_PIN == 12
+  #define SPIBUS_MOSI_PIN 12
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
  #elif SPIBUS1_MOSI_PIN == 5
+  #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #elif defined(MCU_STM32L1) && SSPIBUS1_MOSI_PIN == 15
+  #define SPIBUS_MOSI_PIN 15
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTE
  #else
   #warning "Illegal SPI1 MOSI pin assignement"

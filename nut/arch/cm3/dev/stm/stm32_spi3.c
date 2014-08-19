@@ -158,34 +158,31 @@
   #warning "Illegal STM32F373 SPI3 MISO assignment"
  #endif
 #elif defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F3)|| defined(MCU_STM32F4 )
- #if !defined(SPIBUS3_SCK_PIN)
+ #if !defined(SPIBUS3_SCK_PIN) || SPIBUS3_SCK_PIN == 3
   #define SPIBUS_SCK_PIN 3
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #elif SPIBUS3_SCK_PIN == 3
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
  #elif SPIBUS3_SCK_PIN == 10
+  #define SPIBUS_SCK_PIN 10
   #define SPIBUS_SCK_PORT NUTGPIO_PORTC
  #else
   #warning "Illegal SPI3 SCK pin assignement"
  #endif
 
- #if !defined(SPIBUS3_MISO_PIN)
+ #if !defined(SPIBUS3_MISO_PIN) || SPIBUS3_MISO_PIN == 4
   #define SPIBUS_MISO_PIN 4
   #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #elif SPIBUS3_MISO_PIN == 4
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTB
  #elif SPIBUS3_MISO_PIN == 11
+  #define SPIBUS_MISO_PIN 11
   #define SPIBUS_MISO_PORT NUTGPIO_PORTC
  #else
   #warning "Illegal SPI3 MISO pin assignement"
  #endif
 
- #if !defined(SPIBUS3_MOSI_PIN)
+ #if !defined(SPIBUS3_MOSI_PIN) || SPIBUS3_MOSI_PIN == 5
   #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #elif SPIBUS3_MOSI_PIN == 5
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #elif SPIBUS3_MOSI_PIN == 12
+  #define SPIBUS_MOSI_PIN 12
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
  #else
   #warning "Illegal SPI3 MOSI pin assignement"
