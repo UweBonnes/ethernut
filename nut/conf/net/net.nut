@@ -401,7 +401,7 @@ nutnet =
                               "for the MAC address and 16 bytes for the IP configuration.\n\n"..
                               "The length of the host name is configurable.\n\n"..
                               "This item is disabled if the system doesn't offer any "..
-                              "non-volatile memory. Check the non-volatile memory"..
+                              "non-volatile memory. Check the non-volatile memory "..
                               "module in the device driver section.",
                 requires = { "DEV_NVMEM" },
                 provides = { "CONFNET_INIT_IN_NVMEM" },
