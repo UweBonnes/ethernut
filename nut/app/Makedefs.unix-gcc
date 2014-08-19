@@ -35,20 +35,19 @@
 # $Id$
 #
 
+# Set defaults for building in source tree.
 ifeq ($(top_srcdir),)
 top_srcdir = ../..
 endif
-
 ifeq ($(top_blddir),)
-top_blddir = ../..
+top_blddir = $(top_srcdir)
 endif
-
 ifeq ($(top_appdir),)
-top_appdir = ../..
+top_appdir = $(top_srcdir)
 endif
-
 ifeq ($(MCU),)
 include $(top_srcdir)/UserConf.mk
+LIBDIR = $(top_blddir)/lib
 endif
 
 include $(top_srcdir)/Makedefs.unix-gcc
