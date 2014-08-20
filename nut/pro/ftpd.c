@@ -387,6 +387,12 @@ char *CreateFullPathName(char *root, char *work, char *path)
             cp = strcpy(full, root) + rl;
         }
 
+        /* Strip of stray trailing slashes from the pathname */
+        if (pl && pl > 1 && *(path + pl - 1) == '/') {
+            *(path + pl - 1) = 0;
+	        pl--;
+        }
+
         /* If path is relative, prepend the working directory. */
         if(pl == 0 || *path != '/') {
             if (wl) {
