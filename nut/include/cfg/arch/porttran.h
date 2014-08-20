@@ -367,9 +367,10 @@
 
 #elif defined(__AVR32__)
 /*
- * Determine AT91 port names.
+ * Determine AVR32 port names.
  */
 #include <avr32/io.h>
+#include <cfg/arch/avr32.h>
 
 #define  GPIO_PE_REG    &AVR32_GPIO.port[GPIO_ID].gpers
 #define  GPIO_PD_REG    &AVR32_GPIO.port[GPIO_ID].pderc
