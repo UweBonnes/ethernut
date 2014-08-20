@@ -69,17 +69,22 @@ static uint8_t virgin_mac[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00 };
 /*!
  * \brief Global network configuration structure.
  *
- * Contains the current network configuration. Nut/Net will load
- * this structure from non-volatile memory during initialization.
+ * Contains the current network configuration.
+ * \sa NutNetLoadConfig NutNetSaveConfig
  */
 CONFNET confnet;
 
 /*!
- * \brief Load network configuration from non-volatile memory.
+ * \brief Load network configuration from non-volatile memory
+ * into the Global network configuration structure confnet.
  *
- * If no configuration is available in EEPROM, all configuration
- * parameters are cleared to zero. Except the MAC address, which
+ * If no configuration is available in non-volatile and 
+ * CONFNET_HARDCODED_DEFAULTS configuration option is not set, 
+ * all configuration parameters are cleared to zero. Except the MAC address, which
  * is set to the locally administered address 02-00-00-00-00-00.
+ * When CONFNET_HARDCODED_DEFAULTS option is set, the Nut/OS compile
+ * time defaults specified in the configuration is used and the
+ * function will return 0.
  *
  * \param name Name of the device.
  *
@@ -109,7 +114,7 @@ int NutNetLoadConfig(const char *name)
     confnet.cdn_gateway = inet_addr(CONFNET_VIRGIN_GATE);
 #endif
 
-#ifdef CONFNET_HARDCODED
+#if defined(CONFNET_HARDCODED) || defined(CONFNET_HARDCODED_DEFAULTS)
     /* If hard coded, set the default mask and return success. */
     confnet.cdn_ip_mask = VIRGIN_NETMASK;
     return 0;

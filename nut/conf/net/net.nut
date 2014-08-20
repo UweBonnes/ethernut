@@ -406,7 +406,7 @@ nutnet =
                 requires = { "DEV_NVMEM" },
                 provides = { "CONFNET_INIT_IN_NVMEM" },
                 flavor = "boolean",
-                exclusivity = { "CONFNET_NVMEM", "CONFNET_HARDCODED" },
+                exclusivity = { "CONFNET_NVMEM", "CONFNET_HARDCODED", "CONFNET_HARDCODED_DEFAULTS" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -420,7 +420,25 @@ nutnet =
                               "solution when porting Nut/Net to a new platform.",
                 provides = { "CONFNET_INIT_IN_CODE" },
                 flavor = "boolean",
-                exclusivity = { "CONFNET_NVMEM", "CONFNET_HARDCODED" },
+                exclusivity = { "CONFNET_NVMEM", "CONFNET_HARDCODED", "CONFNET_HARDCODED_DEFAULTS" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFNET_HARDCODED_DEFAULTS",
+                brief = "Use Hard-Coded Default Values",
+                description = "Initial network settings are stored in non volatile memory."..
+                              "The current version uses 10 bytes for validity check, 6 bytes "..
+                              "for the MAC address and 16 bytes for the IP configuration.\n "..
+							  "If the non volatile memory is invalid or empty, load hard-coded "..
+							  "settings specified below\n\n"..
+                              "The length of the host name is configurable.\n\n"..
+                              "This item is disabled if the system doesn't offer any "..
+                              "non-volatile memory. Check the non-volatile memory "..
+                              "module in the device driver section.",
+				requires = { "DEV_NVMEM" },
+                provides = { "CONFNET_INIT_IN_CODE", "CONFNET_INIT_IN_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { "CONFNET_NVMEM", "CONFNET_HARDCODED", "CONFNET_HARDCODED_DEFAULTS" },
                 file = "include/cfg/eeprom.h"
             },
             {
