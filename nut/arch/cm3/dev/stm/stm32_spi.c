@@ -531,10 +531,10 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
             (SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, GPIO_CFG_PERIPHAL);//MISO
         GpioPinConfigSet
             (SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT |GPIO_CFG_INIT_LOW);//MOSI
-#if defined(STM32F10X_CL)
+#if defined(MCU_STM32F1)
 #if defined(SPIBUS_REMAP_BB)
         SPIBUS_REMAP_BB();
- #endif
+#endif
 #else
         GPIO_PinAFConfig
             ((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_SCK_GPIO_AF);

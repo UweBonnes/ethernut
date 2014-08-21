@@ -47,6 +47,7 @@
 #define GPIO_PuPd_UP     1
 #define GPIO_PuPd_DOWN   2
 
+#if !defined(MCU_STM32F1)
 #define GPIO_AF_0 0
 #define GPIO_AF_1 1
 #define GPIO_AF_2 2
@@ -125,3 +126,4 @@
 #define GPIO_AF_EVENTOUT GPIO_AD_F
 
 void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF);
+#endif

@@ -248,7 +248,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
     {
         sda_port= NUTGPIO_PORTB;
         scl_port= NUTGPIO_PORTB;
-#if defined (GPIO_AF_I2C1)
+#if !defined (MCU_STM32F1)
         if ((icb->sda_pin != 7) && (icb->sda_pin != 9))
             return -1;
         if ((icb->scl_pin != 6) && (icb->scl_pin != 8))
@@ -288,7 +288,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
                 NUTGPIO_PORTA, icb->scl_pin, GPIO_CFG_OUTPUT|
                 GPIO_CFG_PERIPHAL| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |
                 GPIO_CFG_SPEED_FAST);
-#if defined(GPIO_AF_I2C1)
+#if !defined (MCU_STM32F1)
             GPIO_PinAFConfig(GPIOA, icb->smba_pin, GPIO_AF_I2C1);
 #endif
         }
@@ -298,7 +298,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
     }
     else if (icb->icb_base == I2C2_BASE)
     {
-#if defined(GPIO_AF_I2C1)
+#if !defined (MCU_STM32F1)
         if ((icb->sda_pin != 0) && (icb->sda_pin != 5)&& (icb->sda_pin != 11))
             return -1;
         if ((icb->scl_pin != 1) && (icb->scl_pin != 4) && (icb->sda_pin != 10))
@@ -381,7 +381,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
                 NUTGPIO_PORTA, icb->scl_pin, GPIO_CFG_OUTPUT|
                 GPIO_CFG_PERIPHAL| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |
                 GPIO_CFG_SPEED_FAST);
-#if defined(GPIO_AF_I2C1)
+#if !defined (MCU_STM32F1)
             GPIO_PinAFConfig(GPIOA, icb->smba_pin, GPIO_AF_I2C1);
 #endif
         }
@@ -392,7 +392,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
 #if defined(I2C3_BASE)
     else if (icb->icb_base == I2C3_BASE)
     {
-#if defined(GPIO_AF_I2C1)
+#if !defined (MCU_STM32F1)
          if ((icb->sda_pin != 9) && (icb->sda_pin != 8))
             return -1;
         if ((icb->scl_pin != 8) && (icb->scl_pin != 7))
@@ -442,7 +442,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
                 NUTGPIO_PORTA, icb->scl_pin, GPIO_CFG_OUTPUT|
                 GPIO_CFG_PERIPHAL| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |
                 GPIO_CFG_SPEED_FAST);
-#if defined(GPIO_AF_I2C1)
+#if !defined (MCU_STM32F1)
             GPIO_PinAFConfig(GPIOA, icb->smba_pin, GPIO_AF_I2C1);
 #endif
         }

@@ -105,7 +105,7 @@
 #if defined(SPIBUS1_CS2_PIN)
 #define SPIBUS_CS2_PIN  SPIBUS1_CS2_PIN
 #endif
-#if defined(PIBUS1_CS2_PIN)
+#if defined(SPIBUS1_CS2_PIN)
 #define SPIBUS_CS3_PIN  SPIBUS1_CS3_PIN
 #endif
 
