@@ -2616,6 +2616,15 @@ nutarch_cm3_stm32_devices =
     -- STM32F CAN Configuration
     --
     {
+        name = "nutarch_cm3_stm32f_usb_can1",
+        brief = "STM32F CAN 1",
+        description = "CAN support for STM32F.\n\n"..
+                      "CAN bus shares pins and interrupts with USB bus!\n"..
+                      "You cannot use them together!",
+        requires = { "HW_USB_CAN1_STM32" },
+        provides = { "HW_CAN1_STM32" }
+    },
+    {
         name = "nutarch_cm3_stm32f_can1",
         brief = "STM32F CAN 1",
         description = "CAN support for STM32F.\n\n"..
@@ -4224,6 +4233,15 @@ nutarch_cm3_stm32_devices =
                 brief = "CAN1 Availability",
                 description = "CAN1 Availability",
                 requires = { "HW_CAN1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USB_CAN1_STM32",
+                brief = "USB/CAN1 exlusive Availability",
+                description = "USB/CAN1 Availability",
+                requires = { "HW_USB_CAN1_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
