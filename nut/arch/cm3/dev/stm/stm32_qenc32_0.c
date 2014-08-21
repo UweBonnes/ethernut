@@ -64,29 +64,17 @@
 /* Only compile code if needed defines are given*/
 #if defined(STM32_QENC32_0_I_PORT) && defined(STM32_QENC32_0_I_PIN) &&\
     defined(STM32_QENC32_0_Q_PORT) && defined(STM32_QENC32_0_Q_PIN) &&\
-    defined(STM32_QENC32_0_TIMER_ID)
+    defined(STM32_QENC32_0_TIMER_ID) && !defined(MCU_STM32F1)
 
-#if defined(STM32_QENC32_0_I_PORT)
 #define STM32_QENC32_I_PORT STM32_QENC32_0_I_PORT
-#endif
-
-#if defined(STM32_QENC32_0_I_PIN)
 #define STM32_QENC32_I_PIN STM32_QENC32_0_I_PIN
-#endif
-
-#if defined(STM32_QENC32_0_Q_PORT)
 #define STM32_QENC32_Q_PORT STM32_QENC32_0_Q_PORT
-#endif
-
-#if defined(STM32_QENC32_0_Q_PIN)
 #define STM32_QENC32_Q_PIN STM32_QENC32_0_Q_PIN
-#endif
 
 #if defined(STM32_QENC32_0_INVERT)
 #define STM32_QENC32_INVERT STM32_QENC32_0_INVERT
 #endif
 
-#if defined(STM32_QENC32_0_TIMER_ID)
 #undef STM32TIMER_ID
 #define STM32TIMER_ID STM32_QENC32_0_TIMER_ID
 #include <arch/cm3/stm/stm32timertran.h>
@@ -95,7 +83,6 @@
 #define STM32_QENC32_RST() STM32TIMER_RST()
 #define STM32_QENC32_I_AF  STM32TIMER_AF(STM32_QENC32_I_PORT, STM32_QENC32_I_PIN)
 #define STM32_QENC32_Q_AF  STM32TIMER_AF(STM32_QENC32_Q_PORT, STM32_QENC32_Q_PIN)
-#endif
 
 /*!
  * \brief Initialize the quadrature encoder

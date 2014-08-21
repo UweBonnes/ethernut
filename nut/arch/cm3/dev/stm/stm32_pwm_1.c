@@ -46,26 +46,22 @@
 #include <dev/hwtimer_stm32.h>
 
 /* Compile code only when needed definitions are available */
-#if defined(STM32_PWM1_TIMER_ID) && defined(STM32_PWM1_PORT) && defined(STM32_PWM1_PIN)\
-    && defined(STM32_PWM1_TIMER_CHANNEL)
+#if defined(STM32_PWM1_TIMER_ID) && defined(STM32_PWM1_TIMER_CHANNEL)\
+    && defined(STM32_PWM1_PORT) && defined(STM32_PWM1_PIN)
 
-#if defined(STM32_PWM1_TIMER_ID)
 #define STM32_PWM_TIMER_ID STM32_PWM1_TIMER_ID
-#endif
-
-#if defined(STM32_PWM1_TIMER_CHANNEL)
 #define STM32_PWM_TIMER_CHANNEL STM32_PWM1_TIMER_CHANNEL
-#endif
-
-#if defined(STM32_PWM1_PORT)
 #define STM32_PWM_PORT STM32_PWM1_PORT
-#endif
-
-#if defined(STM32_PWM1_PIN)
 #define STM32_PWM_PIN STM32_PWM1_PIN
+
+#if defined(MCU_STM32F1)
+#if defined(STM32_PWM1_REMAP)
+#define STM32_PWM_REMAP STM32_PWM1_REMAP
+#else
+#define STM32_PWM_REMAP 0
+#endif
 #endif
 
-#if defined(STM32_PWM_TIMER_ID)
 #undef STM32TIMER_ID
 #define STM32TIMER_ID STM32_PWM_TIMER_ID
 #include <arch/cm3/stm/stm32timertran.h>
@@ -75,6 +71,11 @@
 #define STM32_PWM_RST() STM32TIMER_RST()
 #define STM32_PWM_NCH   STM32TIMER_NCH
 #define STM32_PWM_BTDR  STM32TIMER_BTDR
+#if defined(MCU_STM32F1)
+#define STM32_PWM_REMAP_REG   STM32TIMER_REMAP_REG
+#define STM32_PWM_REMAP_MASK  STM32TIMER_REMAP_MASK
+#define STM32_PWM_REMAP_SHIFT STM32TIMER_REMAP_SHIFT
+#else
 #define STM32_PWM_AF    STM32TIMER_AF(STM32_PWM_PORT, STM32_PWM_PIN)
 #endif
 
@@ -134,7 +135,12 @@ uint32_t stm32_pwm1_init(unsigned bits)
     TIM_AutoReload(STM32_PWM_BASE);
     TIM_Update(STM32_PWM_BASE);
     GpioPinConfigSet(STM32_PWM_PORT, STM32_PWM_PIN, GPIO_CFG_PERIPHAL);
+#if defined(MCU_STM32F1)
+    CM3REG(AFIO_BASE, AFIO_TypeDef, STM32_PWM_REMAP_REG) &= ~(STM32_PWM_REMAP_MASK                    );
+    CM3REG(AFIO_BASE, AFIO_TypeDef, STM32_PWM_REMAP_REG) |=  (STM32_PWM_REMAP << STM32_PWM_REMAP_SHIFT);
+#else
     GPIO_PinAFConfig((GPIO_TypeDef*)STM32_PWM_PORT, STM32_PWM_PIN, STM32_PWM_AF);
+#endif
     TIM_StartTimer(STM32_PWM_BASE);
     return pclk >> bits;
 #endif
