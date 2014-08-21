@@ -59,6 +59,7 @@
  * #define STM32_OWITIMER_PCLK STM32TIMER_PCLK
  * #define STM32_OWITIMER_NCH  STM32TIMER_NCH
  * #if defined(MCU_STM32F1)
+ * #define STM32_OWITIMER_REMAP_REG    STM32TIMER_REMAP_REG
  * #define STM32_OWITIMER_REMAP_MASK   STM32TIMER_REMAP_MASK
  * #define STM32_OWITIMER_REMAP_SHIFT  STM32TIMER_REMAP_SHIFT
  * #else
@@ -76,9 +77,9 @@
  * - STM32TIMER_NCH   Compare/Capture channels available for the timer.
  * - STM32TIMER_BDTR  Timer has Break and dead-time register.
  * (STM32F1)
- * - STM32TIMER_REMAP_MASK  Mask and shift value to remap the timer in AFIO_MAPR
- * - STM32TIMER_REMAP_SHIFT Mask and shift value to remap the timer in AFIO_MAPR
- *                    FIXME: The actual remap value must be given from the programmer.
+ * - STM32TIMER_REMAP_REG   Involved MAPR register.
+ * - STM32TIMER_REMAP_MASK  Mask to clear MAPR.
+ * - STM32TIMER_REMAP_SHIFT Shift value for user provided REMAP Value.
  *(else)
  * - STM32TIMER_AF    The alternate function index to connect timer to pin.
  *                    FIXME: Handle some F3 corner cases
@@ -99,9 +100,13 @@
 #undef STM32TIMER_PCLK
 #undef STM32TIMER_NCH
 #undef STM32TIMER_BDTR
-#undef STM32TIMER_AF
+#if defined(MCU_STM32F1)
+#undef STM32TIMER_REMAP_REG
 #undef STM32TIMER_REMAP_MASK
 #undef STM32TIMER_REMAP_SHIFT
+#else
+#undef STM32TIMER_AF
+#endif
 #undef STM32TIMER_WIDTH
 
 #define CM3BBPULSE(base, regstruct, reg, bit) do {      \
@@ -142,6 +147,7 @@
     (( port == GPIOA_BASE) && (pin == 15))?                                          9 : \
     (((port == GPIOA_BASE) && (pin == 11))||((port == GPIOB_BASE) && (pin ==  8)))? 12 : 6
 #elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM1_REMAP
 #define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM1_REMAP_0))
 #endif
@@ -162,6 +168,7 @@
     (port == GPIOD_BASE) ? 2 :                                          \
     (((port == GPIOA_BASE) && (pin ==  9))||((port == GPIOA_BASE) && (pin == 10)))? 10 : 1
 #elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM2_REMAP
 #define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM2_REMAP_0))
 #endif
@@ -198,6 +205,10 @@
 #elif defined(STM32F37X)
 #define STM32TIMER_AF(port, pin) \
     ((port == GPIOB_BASE) && ((pin ==  0) || (pin == 3) || (pin == 6) || (pin == 7)))? 10 : 2
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM3_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM3_REMAP_0))
 #else
 #warning Illegal pin mapping for TIM3
 #endif
@@ -216,6 +227,7 @@
 #elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) (port == GPIOA_BASE)? 10 : 2
 #elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM4_REMAP
 #define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM4_REMAP))
 #endif
@@ -231,6 +243,11 @@
 #define STM32TIMER_NCH 4
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 2
+#elif defined(MCU_STM32F1)
+/* Only valid for channel 4*/
+#define STM32TIMER_REMAP_REG   MAPR
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR_TIM5CH4_IREMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR_TIM5CH4_IREMAP))
 #endif
 #if defined(MCU_STM32F2) || defined(MCU_STM32F4)
 #define STM32TIMER_WIDTH 32
@@ -306,6 +323,10 @@
 #define STM32TIMER_NCH 2
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 4
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM9_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM9_REMAP))
 #endif
 
 #elif defined (RCC_APB2ENR_TIM10EN) && defined(RCC_APB2RSTR_TIM10RST) && (STM32TIMER_ID == 10 )
@@ -319,6 +340,10 @@
 #define STM32TIMER_NCH 1
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 3
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM10_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM10_REMAP))
 #endif
 
 #elif defined (RCC_APB2ENR_TIM11EN) && defined(RCC_APB2RSTR_TIM11RST) && (STM32TIMER_ID == 11 )
@@ -332,6 +357,10 @@
 #define STM32TIMER_NCH 1
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 3
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM11_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM11_REMAP))
 #endif
 
 #elif defined (RCC_APB1ENR_TIM12EN) && defined(RCC_APB1RSTR_TIM12RST) && (STM32TIMER_ID == 12)
@@ -345,6 +374,10 @@
 #define STM32TIMER_NCH 2
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 9
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM12_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM12_REMAP))
 #endif
 
 #elif defined (RCC_APB1ENR_TIM13EN) && defined(RCC_APB1RSTR_TIM13RST) && (STM32TIMER_ID == 13 )
@@ -358,6 +391,10 @@
 #define STM32TIMER_NCH 1
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 9
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM13_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM13_REMAP))
 #endif
 
 #elif defined (RCC_APB1ENR_TIM14EN) && defined(RCC_APB1RSTR_TIM14RST) && (STM32TIMER_ID == 14 )
@@ -373,6 +410,10 @@
 #define STM32TIMER_AF(port, pin) 9
 #elif defined(STM32F37X)
 #define STM32TIMER_AF(port, pin) (port == GPIOF_BASE)? 2: 9
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM14_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM14_REMAP))
 #else
 #warning Illegal AF for Tim14
 #endif
@@ -397,6 +438,10 @@
 #endif
 #if defined(STM32F37X)
 #define STM32TIMER_AF(port, pin) ((port == GPIOB_BASE) && ((pin == 14) || (pin == 14)))? 1 : 9
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM15_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM15_REMAP))
 #endif
 
 #elif defined (RCC_APB2ENR_TIM16EN) && defined(RCC_APB2RSTR_TIM16RST) && (STM32TIMER_ID == 16 )
@@ -411,6 +456,10 @@
 #define STM32TIMER_BDTR
 #if defined(MCU_STM32F3)
 #define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?  4 :  1
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM16_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM16_REMAP))
 #endif
 
 #elif defined (RCC_APB2ENR_TIM17EN) && defined(RCC_APB2RSTR_TIM17RST) && (STM32TIMER_ID == 17 )
@@ -432,6 +481,10 @@
 #define STM32TIMER_AF(port, pin) (  port == GPIOA_BASE)    ?     1 : \
     (( port == GPIOB_BASE) && ((pin ==  7) || (pin ==  9)))?     1 : \
     (( port == GPIOB_BASE) && ((pin ==  4) || (pin ==  5)))?    10 : 1
+#elif defined(MCU_STM32F1)
+#define STM32TIMER_REMAP_REG   MAPR2
+#define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM17_REMAP
+#define STM32TIMER_REMAP_SHIFT (_BI32(AFIO_MAPR2_TIM17_REMAP))
 #endif
 
 #elif defined (RCC_APB2ENR_TIM18EN) && defined(RCC_APB2RSTR_TIM18RST) && (STM32TIMER_ID == 18 )
