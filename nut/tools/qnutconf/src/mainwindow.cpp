@@ -31,15 +31,16 @@
  *
  */
 
+#include <QUrl>
+#include <QDir>
 #include <QTime>
 #include <QTimer>
 #include <QSettings>
 #include <QFileDialog>
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QDirIterator>
 #include <QDesktopServices>
-#include <QUrl>
-#include <QDir>
 
 #include "mainwindow.h"
 #include "finddialog.h"
@@ -216,6 +217,28 @@ void MainWindow::on_actionExit_triggered()
 	}
 
 	QApplication::quit();
+}
+
+void MainWindow::closeEvent( QCloseEvent *event )
+{
+	if ( isWindowModified() )
+	{
+		QMessageBox::StandardButton ret;
+		ret = QMessageBox::warning(this, QString(),
+			tr("The document has been modified.\n"
+			"Do you want to save your changes?"),
+			QMessageBox::Save | QMessageBox::Discard
+			| QMessageBox::Cancel);
+		if (ret == QMessageBox::Save)
+			saveConfig();
+		else if (ret == QMessageBox::Cancel)
+		{
+			event->ignore();
+			return;
+		}
+	}
+
+	event->accept();
 }
 
 void MainWindow::clearFoundItems(void)

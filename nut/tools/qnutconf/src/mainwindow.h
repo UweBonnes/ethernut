@@ -75,6 +75,7 @@ private:
     void updateWindowTitle();
     void generateApplicationTree();
     void saveConfig( QString filename = QString() );
+	void closeEvent(QCloseEvent *event);
 
 private slots:
     void buildFinished( int exitCode );
