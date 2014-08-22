@@ -562,7 +562,7 @@ static int Lpc177x_8x_MmcardBlockRead(NUTFILE * nfp, void *buffer, int num)
         blk *= BLOCK_LENGTH;
     }
 
-    if (Lpc177x_8x_MmcardReadData(fcb->fcb_blkbuf, blk, 1) == MCI_FUNC_OK)
+    if (Lpc177x_8x_MmcardReadData(fcb->fcb_blkbuf, blk, num) == MCI_FUNC_OK)
     {
         // return the number of blocks that were succesfully read
         return(num);
