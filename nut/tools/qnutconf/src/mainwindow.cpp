@@ -86,6 +86,9 @@ MainWindow::MainWindow()
     connect( ui.actionViewComponentTreeDisabledItems, SIGNAL(triggered()), this, SLOT(clearFoundItems()) );
 	connect( ui.actionViewComponentTreeDisabledItems, SIGNAL(triggered(bool)), proxyModel, SLOT(showDisabledItems(bool)) );
 
+	ui.logPanel->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect( ui.logPanel, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showLogPanelContextMenu()));
+
 	readSettings();
 
 	message( tr("Nut/OS Configurator Version %1").arg(QUOTE(NUTCONF_VERSION)) );
@@ -423,3 +426,10 @@ void MainWindow::documentModified()
 	updateWindowTitle();
 }
 
+void MainWindow::showLogPanelContextMenu()
+{
+	QMenu* logPanelContextMenu = ui.logPanel->createStandardContextMenu();
+	logPanelContextMenu->addAction(tr("Clear"), ui.logPanel, SLOT(clear()));
+	logPanelContextMenu->exec(QCursor::pos());
+	delete logPanelContextMenu;
+}

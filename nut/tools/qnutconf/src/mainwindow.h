@@ -84,6 +84,7 @@ private slots:
     void resizeComponentTreeToContents();
     void documentModified();
     void detailDoubleClicked(const QModelIndex& index);
+	void showLogPanelContextMenu();
 
 private:
     NutComponentModel* model;
