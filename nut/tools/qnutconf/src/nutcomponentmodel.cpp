@@ -270,7 +270,7 @@ bool NutComponentModel::setData( const QModelIndex &index, const QVariant &value
 			emit errorMessage( tr("WARNING: Cyclic Dependency Detected. Check dependencies on the .nut files") );
 
 		// RefreshComponents might have changed the status on the whole tree, refresh everything.
-		emit dataChanged( this->index(0, 0), this->index(rowCount(), 2) );
+		emit dataChanged( this->index(0, 0), this->index(rowCount() - 1, columnCount() - 1) );
 		emit modified();
 		return true;
 	}
