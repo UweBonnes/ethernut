@@ -184,6 +184,9 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #if defined(MCU_STM32F0)|| defined(MCU_STM32F1)|| defined(MCU_STM32F3)
 #define GpioPinSetHigh(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BSRR ) = (1<<(bit)))
 #define GpioPinSetLow(bank, bit)     (CM3REG((bank), GPIO_TypeDef, BRR )  = (1<<(bit)))
+#elif defined(MCU_STM32F2)|| defined(MCU_STM32F4)|| defined(MCU_STM32L1)
+#define GpioPinSetHigh(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BSRRL) = (1<<(bit)))
+#define GpioPinSetLow(bank, bit)     (CM3REG((bank), GPIO_TypeDef, BSRRH )  = (1<<(bit)))
 #else
 #define GpioPinSetHigh(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BSRRL) = (1<<(bit)))
 #define GpioPinSetLow(bank, bit)     (CM3REG((bank), GPIO_TypeDef, BRR )  = (1<<(bit)))
