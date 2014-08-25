@@ -61,7 +61,7 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#if defined(I2CBUS1_USE_DMA)
+#if defined(I2C1_USE_DMA)
 #if defined(MCU_STM32F1)
     #include <arch/cm3/stm/stm32f1_dma.h>
 #else
@@ -72,7 +72,7 @@
 #include <arch/cm3/stm/stm32_twi.h>
 
 /*!
- * \brief I2CBUS1 GPIO configuartion and assignment.
+ * \brief I2C1 GPIO configuartion and assignment.
  * F1/L1/F2/F4: SMBA PB5
  *              SCL  PB6 PB8
  *              SDA  PB7 PB9
@@ -80,65 +80,65 @@
 #define I2C_PORT    NUTGPIO_PORTB
 
 #if defined(MCU_STM32F1)
- #if defined(I2CBUS1_REMAP_I2C)
-  #define I2CBUS1_SDA_PIN     9
-  #define I2CBUS1_SCL_PIN     8
- #else /* I2CBUS1_REMAP_I2C */
-  #define I2CBUS1_SDA_PIN     7
-  #define I2CBUS1_SCL_PIN     6
- #endif /* I2CBUS1_REMAP_I2C */
+ #if defined(I2C1_REMAP)
+  #define I2C1_SDA_PIN     9
+  #define I2C1_SCL_PIN     8
+ #else /* I2C1_REMAP */
+  #define I2C1_SDA_PIN     7
+  #define I2C1_SCL_PIN     6
+ #endif /* I2C1_REMAP */
 #else /*L1/F2/F4*/
- #if !defined(I2CBUS1_SDA_PIN)
-  #if defined(I2CBUS1_REMAP_I2C)
-   #define I2CBUS1_SDA_PIN     9
+ #if !defined(I2C1_SDA_PIN)
+  #if defined(I2C1_REMAP)
+   #define I2C1_SDA_PIN     9
   #else
-   #define I2CBUS1_SDA_PIN     7
+   #define I2C1_SDA_PIN     7
   #endif
  #endif
- #if I2CBUS1_SDA_PIN != 7 && I2CBUS1_SDA_PIN != 9
+ #if I2C1_SDA_PIN != 7 && I2C1_SDA_PIN != 9
   #warning "Illegal I2C1 SDA pin assignement"
  #endif
- #if !defined(I2CBUS1_SCL_PIN)
-  #if defined(I2CBUS1_REMAP_I2C)
-   #define I2CBUS1_SCL_PIN     8
+ #if !defined(I2C1_SCL_PIN)
+  #if defined(I2C1_REMAP)
+   #define I2C1_SCL_PIN     8
   #else
-   #define I2CBUS1_SCL_PIN     6
+   #define I2C1_SCL_PIN     6
   #endif
  #endif
- #if I2CBUS1_SCL_PIN != 6 && I2CBUS1_SCL_PIN != 8
+ #if I2C1_SCL_PIN != 6 && I2C1_SCL_PIN != 8
   #warning "Illegal I2C1 SCL pin assignement"
  #endif
 #endif
-#ifdef I2CBUS1_MODE_SMBUS
+#ifdef I2C1_MODE_SMBUS
   #define SMBA_PIN  5
 #endif
 
 /*!
  * \brief Unlock a broken slave by clocking 8 SCL pulses manually.
  */
-int Stm32I2cBus1Recover( void)
+int Stm32I2c1Recover( void)
 {
     uint_fast8_t i;
 
     /* Handle pins as GPIOs, set SCL low */
-    GpioPortConfigSet( I2C_PORT, _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN), GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE);
-    GpioPinSetLow( I2C_PORT, I2CBUS1_SDA_PIN);
+    GpioPortConfigSet( I2C_PORT, _BV(I2C1_SDA_PIN) | _BV(I2C1_SCL_PIN), GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE);
+    GpioPinSetLow( I2C_PORT, I2C1_SDA_PIN);
     NutMicroDelay(10);
 
     /* Run sequence of 8 SCL clocks */
     for( i=0; i<9; i++) {
-        GpioPinSetLow( I2C_PORT, I2CBUS1_SCL_PIN);
+        GpioPinSetLow( I2C_PORT, I2C1_SCL_PIN);
         NutMicroDelay(10);
-        GpioPinSetHigh( I2C_PORT, I2CBUS1_SCL_PIN);
+        GpioPinSetHigh( I2C_PORT, I2C1_SCL_PIN);
         NutMicroDelay(10);
     }
 
     /* Issue Stop condition on the bus */
-    GpioPinSetHigh( I2C_PORT, I2CBUS1_SDA_PIN);
+    GpioPinSetHigh( I2C_PORT, I2C1_SDA_PIN);
     NutMicroDelay(10);
-    GpioPinSetHigh( I2C_PORT, I2CBUS1_SCL_PIN);
+    GpioPinSetHigh( I2C_PORT, I2C1_SCL_PIN);
 
-    GpioPortConfigSet(I2C_PORT, _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN), GPIO_CFG_OUTPUT
+    GpioPortConfigSet(I2C_PORT, _BV(I2C1_SDA_PIN) | _BV(I2C1_SCL_PIN), GPIO_CFG_OUTPUT
                                                  | GPIO_CFG_PERIPHAL
                                                  | GPIO_CFG_MULTIDRIVE);
 
@@ -149,9 +149,9 @@ int Stm32I2cBus1Recover( void)
  * \brief Processor specific Hardware Initiliaization
  *
  */
-int Stm32I2cBus1Init(void)
+int Stm32I2c1Init(void)
 {
-    uint16_t pins = _BV(I2CBUS1_SDA_PIN) | _BV(I2CBUS1_SCL_PIN);
+    uint16_t pins = _BV(I2C1_SDA_PIN) | _BV(I2C1_SCL_PIN);
 
     /* Enable I2C Bus 1 peripheral clock. */
     RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
@@ -160,7 +160,7 @@ int Stm32I2cBus1Init(void)
     RCC->APB1RSTR &= ~RCC_APB1RSTR_I2C1RST;
 
     /* Setup Related GPIOs. */
-#ifdef I2CBUS1_MODE_SMBUS
+#ifdef I2C1_MODE_SMBUS
     pins |= _BV(SMBA_PIN);
 #endif
     GpioPortConfigSet( I2C_PORT, pins,
@@ -170,23 +170,23 @@ int Stm32I2cBus1Init(void)
     NVIC_SetPriority( I2C1_EV_IRQn, 0);
     NVIC_SetPriority( I2C1_ER_IRQn, 1);
 
-#ifdef I2CBUS1_MODE_SMBUS
+#ifdef I2C1_MODE_SMBUS
      GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, SMBA_PIN, GPIO_AF_I2C1);
 #endif
 #if defined (MCU_STM32F1)
     /* Configure alternate configuration. */
-#if defined(I2CBUS1_REMAP_I2C)
+#if defined(I2C1_REMAP)
     CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP));
 #else
     CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP));
 #endif
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SDA_PIN, GPIO_AF_I2C1);
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2CBUS1_SCL_PIN, GPIO_AF_I2C1);
+    GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2C1_SDA_PIN, GPIO_AF_I2C1);
+    GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2C1_SCL_PIN, GPIO_AF_I2C1);
 #else
 #warning "Unhandled STM32 family"
 #endif
-#if defined(I2CBUS1_USE_DMA)
+#if defined(I2C1_USE_DMA)
 #if defined (MCU_STM32F1)
     DMA_Init();
     DMA_Disable(I2C1_DMA_CHANNEL_TX);
@@ -208,14 +208,14 @@ NUTTWIBUS Stm32TwiBus_1 = {
   /*.bus_sig_er =  */ &sig_TWI1_ER,            /* Bus error interrupt handler. */
   /*.bus_mutex =   */  NULL,                   /* Bus lock queue. */
   /*.bus_icb   =   */  NULL,                   /* Bus Runtime Data Pointer */
-#if defined(I2CBUS1_USE_DMA)
+#if defined(I2C1_USE_DMA)
   /*.bus_dma_tx =  */  I2C1_DMA_CHANNEL_TX,    /* DMA channel for TX direction. */
   /*.bus_dma_rx =  */  I2C1_DMA_CHANNEL_RX,    /* DMA channel for RX direction. */
 #else
   /*.bus_dma_tx =  */  0,
   /*.bus_dma_rx =  */  0,
 #endif
-  /*.bus_initbus = */  Stm32I2cBus1Init,       /* Initialize bus controller. */
-  /*.bus_recover = */  Stm32I2cBus1Recover,    /* Recover bus in case a slave hangs with SCL low */
+  /*.bus_initbus = */  Stm32I2c1Init,       /* Initialize bus controller. */
+  /*.bus_recover = */  Stm32I2c1Recover,    /* Recover bus in case a slave hangs with SCL low */
 };
 
