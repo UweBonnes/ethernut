@@ -163,6 +163,71 @@ function GetRxUsart4()
 end
 
 --
+-- Retrieve I2C1 pins available on the device.
+--
+function GetI2c1Sda()
+    if c_is_provided("STM32F3XX") then
+        return { "14", "7", "9" }
+    end
+    return { "7", "9" }
+end
+function GetI2c1Scl()
+    if c_is_provided("STM32F3XX") then
+        return { "15", "6", "8" }
+    end
+    return { "6", "8" }
+end
+
+--
+-- Retrieve I2C2 pins available on the device.
+--
+function GetI2c2Sda()
+    if c_is_provided("STM32F30X") then
+        return { "10", "0" }
+    end
+    if c_is_provided("STM32F37X") then
+        return { "10", "0", "7" }
+    end
+    if c_is_provided("STM32F10X") then
+        return { "11" }
+    end
+    return { "11", "0", "5" }
+end
+function GetI2c2SdaDefault()
+    if c_is_provided("STM32F3XX") then
+        return "10"
+    end
+    return "11"
+end
+function GetI2c2Scl()
+    if c_is_provided("STM32F3XX") then
+        return { "9", "1", "6" }
+    end
+    if c_is_provided("STM32F10X") then
+        return { "10" }
+    end
+    return { "10", "1", "4" }
+end
+function GetI2c2SclDefault()
+    if c_is_provided("STM32F3XX") then
+        return "9"
+    end
+    return "10"
+end
+function GetI2c2Scl()
+    if c_is_provided("STM32F30X") then
+        return { "5" }
+    end
+    if c_is_provided("STM32F37X") then
+        return { "8", "2" }
+    end
+    if c_is_provided("STM32F10X") then
+        return { "12" }
+    end
+    return { "12", "2", "6" }
+end
+
+--
 -- Retrieve 32 bit Timers.
 --
 function GetStmTimers32bit()
@@ -2537,30 +2602,30 @@ nutarch_cm3_stm32_devices =
                 macro = "I2C1_SDA_PIN",
                 brief = "I2C1 SDA Pins",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C1 SDA Pin PB7 (Default) or PB9 or PA14",
-                default = "7",
+                description = "Choose I2C1 SDA according to availability. Default: PB7",
                 type = "enumerated",
-                choices = { "7", "9", "14" },
+                default = "7",
+                choices = function() return GetI2c1Sda() end,
                 file = "include/cfg/twi.h"
             },
             {
                 macro = "I2C1_SCL_PIN",
                 brief = "I2C1 SCL Pins",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C1 SCL Pin PB6 (Default) or PB8",
-                default = "6",
+                description = "Choose I2C1 SCL Pin according to availability.Default: PB6",
                 type = "enumerated",
-                choices = { "6", "8" },
+                default = "6",
+                choices = function() return GetI2c1Scl() end,
                 file = "include/cfg/twi.h"
             },
             {
                 macro = "I2C1_SMBA_PIN",
                 brief = "I2C1 SCL Pins",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C1 SMBA -1 (default) to not use SMBA or Pin PB5",
+                description = "Choose I2C1 SMBA Pin according to availability. Choose -1 to not use SMBA.",
                 default = "-1",
                 type = "enumerated",
-                choices = { "-1", "5" },
+                choices = function() return GetI2c1Smba() end,
                 file = "include/cfg/twi.h"
             }
          }
@@ -2584,30 +2649,29 @@ nutarch_cm3_stm32_devices =
                 macro = "I2C2_SDA_PIN",
                 brief = "I2C2 SDA Pins",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C2 SDA Pin PA10(Default) or PF0",
-                default = "10",
+                description = "Choose I2C2 SDA according to availability. Default: PA10 on F3, PB11 else.",
                 type = "enumerated",
-                choices = { "10", "0" },
+                default = function() return GetI2c2SdaDefault() end,
+                choices = function() return GetI2c2Sda() end,
                 file = "include/cfg/twi.h"
             },
             {
                 macro = "I2C2_SCL_PIN",
                 brief = "I2C2 SCL Pins",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C2 SCL Pin PA9 (Default) or PF1 or PF6",
-                default = "11",
+                description = "Choose I2C2 SCL Pin according to availability. Default: PA9 on F3, PB10 else.",
                 type = "enumerated",
-                choices = { "11", "1", "6" },
+                choices = function() return GetI2c2Scl() end,
+                default = function() return GetI2c2SclDefault() end,
                 file = "include/cfg/twi.h"
             },
             {
                 macro = "I2C2_SMBA_PIN",
                 brief = "I2C2 SCL Pins",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C2 SMBA Pin -1 (default) to not use SMBA or PA8 or PB12",
+                description = "Choose I2C2 SMBA Pin according to availability. Choose -1 to not use SMBA.",
                 default = "-1",
-                type = "enumerated",
-                choices = { "-1", "8" , "12"},
+                choices = function() return GetI2c2Smba() end,
                 file = "include/cfg/twi.h"
             }
          }
