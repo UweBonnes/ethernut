@@ -871,7 +871,7 @@ void MdnsdDumpRessource (FILE *file, DNSRESOURCE *res)
 
     switch (res->type) {
         case QTYPE_A:
-            fprintf (file, "%d.%d.%d.%d\n",
+            fprintf (file, "%ld.%ld.%ld.%ld\n",
                      (res->known.a.ip >> 24) & 0xff,
                      (res->known.a.ip >> 16) & 0xff,
                      (res->known.a.ip >> 8) & 0xff,
