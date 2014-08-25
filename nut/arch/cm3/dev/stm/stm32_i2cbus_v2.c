@@ -297,21 +297,24 @@ static int checkpin_and_config(STM32_I2CCB *icb)
     }
     if (icb->hw->icb_base == I2C1_BASE)
     {
-        RCC->APB1ENR  &= ~RCC_APB1ENR_I2C1EN;
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_I2C1EN));
         /* Use HSI clock*/
-        RCC->CFGR3    &= ~RCC_CFGR3_I2C1SW;
-        RCC->APB1ENR  |=  RCC_APB1ENR_I2C1EN;
-        RCC->APB1RSTR |=  RCC_APB1RSTR_I2C1RST;
-        RCC->APB1RSTR &= ~RCC_APB1RSTR_I2C1RST;
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, CFGR3,    _BI32(RCC_CFGR3_I2C1SW));
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB1ENR_I2C1EN));
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
     }
     else if (icb->hw->icb_base == I2C2_BASE)
     {
-        RCC->APB1ENR  &= ~RCC_APB1ENR_I2C2EN;
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_I2C2EN));
         /* Use HSI clock*/
-        RCC->CFGR3    &= ~RCC_CFGR3_I2C2SW;
-        RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
-        RCC->APB1RSTR |=  RCC_APB1RSTR_I2C2RST;
-        RCC->APB1RSTR &= ~RCC_APB1RSTR_I2C2RST;
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, CFGR3,    _BI32(RCC_CFGR3_I2C2SW));
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB1ENR_I2C2EN));
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C2RST));
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C2RST));
+    }
+    else if (icb->hw->icb_base == I2C2_BASE)
+    {
     }
     else
         return -1;
