@@ -4426,6 +4426,15 @@ nutarch_cm3_stm32_devices =
                 type = "integer",
                 file = "include/cfg/devices.h"
             },
+            {
+                macro = "HW_I2C2_STM32V2",
+                brief = "I2C2 Availability",
+                description = "I2C2 Availability Version 2 on STM32F3",
+                requires = { "HW_I2C2_STM32V2" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
              {
                 macro = "HW_I2C3_STM32",
                 brief = "I2C3 Availability",
