@@ -58,7 +58,6 @@ const uint16_t ospeed_values[4] =
 #define GPIO_RCC_ENR AHBENR
 const uint16_t ospeed_values[4] =
 {2000000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
-const uint16_t ospeed_value[4] =
 #elif defined (MCU_STM32F2)
 #define GPIO_RCC_ENR AHB1ENR
 const uint16_t ospeed_values[4] =
