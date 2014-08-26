@@ -76,23 +76,31 @@
 /*@{*/
 
 /*!
+ * \brief Constant local data of the STM32 I2C hardware.
+ */
+typedef struct _STM32_I2C_HW{
+    /*! \brief Register base. */
+    const uptr_t icb_base;
+    /*! \brief SDA_PIN. */
+    const uint32_t sda_pin;
+    /*! \brief SDA_PORT. */
+    const uint32_t sda_port;
+    /*! \brief SCL_PIN. */
+    const uint32_t scl_pin;
+     /*! \brief SCL_PORT. */
+    const uint32_t scl_port;
+    /*! \brief SMBA_PIN. */
+    const uint32_t smba_pin;
+    /*! \brief SMBA_PORT. */
+    const uint32_t smba_port;
+    /*! \brief System event handler. */
+}STM32_I2C_HW;
+
+/*!
  * \brief Local data of the STM32 I2C bus driver.
  */
 typedef struct _STM32_I2CCB {
-    /*! \brief Register base. */
-    uptr_t icb_base;
-    /*! \brief SDA_PIN. */
-    uint32_t sda_pin;
-    /*! \brief SDA_PORT. */
-    uint32_t sda_port;
-    /*! \brief SCL_PIN. */
-    uint32_t scl_pin;
-    /*! \brief SCL_PORT. */
-    uint32_t scl_port;
-    /*! \brief SMBA_PIN. */
-    uint32_t smba_pin;
-    /*! \brief SMBA_PORT. */
-    uint32_t smba_port;
+    const STM32_I2C_HW *hw;
     /*! \brief System event handler. */
     IRQ_HANDLER *icb_sig_ev;
     /*! \brief System error handler. */
@@ -113,7 +121,7 @@ static void I2cEventBusIrqHandler(void *arg)
 {
     STM32_I2CCB *icb = (STM32_I2CCB *) arg;
     NUTI2C_MSG *msg = icb->icb_msg;
-    I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->icb_base;
+    I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->hw->icb_base;
 
     if(I2Cx->SR1 & I2C_SR1_SB)
     { /* Receiver EV5 */
@@ -200,7 +208,7 @@ static void I2cEventBusIrqHandler(void *arg)
 static void I2cErrorBusIrqHandler(void *arg)
 {
     STM32_I2CCB *icb = (STM32_I2CCB *) arg;
-    I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->icb_base;
+    I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->hw->icb_base;
 
     icb->errors = I2Cx->SR1;
     I2Cx->SR1 &= ~(I2C_SR1_SMBALERT|I2C_SR1_TIMEOUT|I2C_SR1_PECERR|I2C_SR1_OVR|
@@ -227,7 +235,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     NUTASSERT(bus->bus_icb != NULL);
     icb = (STM32_I2CCB *) bus->bus_icb;
     icb->icb_msg = msg;
-    I2Cx = (I2C_TypeDef *) icb->icb_base;
+    I2Cx = (I2C_TypeDef *) icb->hw->icb_base;
     msg->msg_widx = 0;
     msg->msg_ridx = 0;
     icb->slave = slave;
@@ -249,29 +257,30 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
 
 static int checkpin_and_config(STM32_I2CCB *icb)
 {
+    const STM32_I2C_HW *hw = icb->hw;
     GpioPinConfigSet(
-        icb->sda_port, icb->sda_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
+        hw->sda_port, hw->sda_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
         GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST);
     GpioPinConfigSet(
-        icb->scl_port, icb->scl_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
+        hw->scl_port, hw->scl_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
         GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST);
 #if !defined (MCU_STM32F1)
-    GPIO_PinAFConfig((GPIO_TypeDef*) icb->sda_port, icb->sda_pin, GPIO_AF_4);
-    GPIO_PinAFConfig((GPIO_TypeDef*) icb->scl_port, icb->scl_pin, GPIO_AF_4);
+    GPIO_PinAFConfig((GPIO_TypeDef*) hw->sda_port, hw->sda_pin, GPIO_AF_4);
+    GPIO_PinAFConfig((GPIO_TypeDef*) hw->scl_port, hw->scl_pin, GPIO_AF_4);
 #endif
-    if (icb->smba_pin != -1)
+    if (hw->smba_pin != -1)
     {
         /* TODO: How should SMBA pin be set?*/
         GpioPinConfigSet(
-            icb->smba_port, icb->smba_pin, GPIO_CFG_OUTPUT|
+            hw->smba_port, hw->smba_pin, GPIO_CFG_OUTPUT|
             GPIO_CFG_PERIPHAL| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |
             GPIO_CFG_SPEED_FAST);
 #if !defined (MCU_STM32F1)
-        GPIO_PinAFConfig((GPIO_TypeDef*) icb->smba_port,
-                         icb->smba_pin, GPIO_AF_4);
+        GPIO_PinAFConfig((GPIO_TypeDef*) hw->smba_port,
+                         hw->smba_pin, GPIO_AF_4);
 #endif
     }
-    if (icb->icb_base == I2C1_BASE)
+    if (hw->icb_base == I2C1_BASE)
     {
 #if defined (MCU_STM32F1)
 #if defined(I2C1_REMAP)
@@ -285,7 +294,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
     }
 #if defined(I2C2_BASE)
-    else if (icb->icb_base == I2C2_BASE)
+    else if (hw->icb_base == I2C2_BASE)
     {
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB1ENR_I2C2EN));
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C2RST));
@@ -293,7 +302,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
     }
 #endif
 #if defined(I2C3_BASE)
-    else if (icb->icb_base == I2C3_BASE)
+    else if (hw->icb_base == I2C3_BASE)
     {
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB1ENR_I2C3EN));
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C3RST));
@@ -328,7 +337,7 @@ static int I2cBusConf(NUTI2C_BUS *bus)
     NUTASSERT(bus != NULL);
     NUTASSERT(bus->bus_icb != NULL);
     icb = (STM32_I2CCB *) bus->bus_icb;
-    I2Cx = (I2C_TypeDef*) icb->icb_base;
+    I2Cx = (I2C_TypeDef*) icb->hw->icb_base;
     cr1  = I2Cx->CR1;
 
     /* Get requested speed or use the default. */
@@ -406,7 +415,7 @@ static int I2cBusInit(NUTI2C_BUS *bus)
     if (I2cBusConf(bus)) {
         return -1;
     }
-    I2Cx = (I2C_TypeDef*) icb->icb_base;
+    I2Cx = (I2C_TypeDef*) icb->hw->icb_base;
     I2Cx->CR2  = I2C_CR2_FREQ;
     I2Cx->CR2 |= (NutClockGet(NUT_HWCLK_PCLK1)/1000000);
     I2Cx->CR1 |= I2C_CR1_PE;
@@ -439,7 +448,7 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
     int res = -1;
 
     icb = (STM32_I2CCB *) bus->bus_icb;
-    I2Cx = (I2C_TypeDef*) icb->icb_base;
+    I2Cx = (I2C_TypeDef*) icb->hw->icb_base;
     if ((I2Cx->CR1 & I2C_CR1_PE)== 0)
     {
         int res;
@@ -532,14 +541,18 @@ I2C1_SMBA PB5
 #define I2C1_SMBA_PORT -1
 #endif
 
-static STM32_I2CCB i2c1cb = {
-    I2C1_BASE,             /* Register Base   */
+static const STM32_I2C_HW i2c1_hw = {
+    I2C1_BASE,              /* Register Base   */
     I2C1_SDA_PIN,           /* SDA Pin number  */
     I2C1_SDA_PORT,          /* SDA Port number  */
     I2C1_SCL_PIN,           /* SCL Pin number  */
     I2C1_SCL_PORT,          /* SDA Port number  */
     I2C1_SMBA_PIN,          /* SMBA Pin number */
     I2C1_SMBA_PORT,         /* SMBA Pin number */
+};
+
+static STM32_I2CCB i2c1cb = {
+    &i2c1_hw,               /* Constant hardware data*/
     &sig_TWI1_EV,           /* Event signal   */
     &sig_TWI1_ER,           /* Error signal   */
     NULL,                   /* icb_msg        */
@@ -620,14 +633,18 @@ I2C2_SMBA PB12 PF2 PH6
 #define I2C2_SMBA_PORT -1
 #endif
 
-static STM32_I2CCB i2c2cb = {
-    I2C2_BASE,             /* Register Base   */
+static const STM32_I2C_HW i2c2_hw = {
+    I2C2_BASE,              /* Register Base   */
     I2C2_SDA_PIN,           /* SDA Pin number  */
     I2C2_SDA_PORT,          /* SDA Port number  */
     I2C2_SCL_PIN,           /* SCL Pin number  */
     I2C2_SCL_PORT,          /* SDA Port number  */
     I2C2_SMBA_PIN,          /* SMBA Pin number */
     I2C2_SMBA_PORT,         /* SMBA Pin number */
+};
+
+static STM32_I2CCB i2c2cb = {
+    &i2c2_hw,               /* Constant hardware data*/
     &sig_TWI2_EV,           /* Event signal   */
     &sig_TWI2_ER,           /* Error signal   */
     NULL,                   /* icb_msg        */
@@ -683,14 +700,18 @@ I2C3 SMBA PA9 PH9
 #define I2C3_SMBA_PORT NUTGPIO_PORTH
 #endif
 
-static STM32_I2CCB i2c3cb = {
-    I2C3_BASE,             /* Register Base   */
+static const STM32_I2C_HW i2c3_hw = {
+    I2C3_BASE,              /* Register Base   */
     I2C3_SDA_PIN,           /* SDA Pin number  */
     I2C3_SDA_PORT,          /* SDA Port number  */
     I2C3_SCL_PIN,           /* SCL Pin number  */
     I2C3_SCL_PORT,          /* SDA Port number  */
     I2C3_SMBA_PIN,          /* SMBA Pin number */
     I2C3_SMBA_PORT,         /* SMBA Pin number */
+};
+
+static STM32_I2CCB i2c3cb = {
+    &i2c3_hw,               /* Constant hardware data*/
     &sig_TWI3_EV,           /* Event signal   */
     &sig_TWI3_ER,           /* Error signal   */
     NULL,                   /* icb_msg        */
