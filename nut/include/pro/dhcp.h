@@ -303,6 +303,7 @@
 
 /*@}*/
 
+extern int NutNetDhcpIfSetup(const char *name, uint32_t timeout);
 extern int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout);
 extern int NutDhcpRelease(const char *name, uint32_t timeout);
 extern int NutDhcpInform(const char *name, uint32_t timeout);

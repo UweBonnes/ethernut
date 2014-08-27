@@ -74,6 +74,93 @@
  */
 /*@{*/
 
+/*
+ * \brief Configure a network interface.
+ *
+ * Devices must have been registered by NutRegisterDevice() and CONFNET
+ * cdn_mac should have a valid MAC address before calling this function
+ *
+ * Applications may alternatively call NutDhcpIfConfig(), which allows
+ * automatic configuration by DHCP or the so called ARP method.
+ *
+ * \param name    Name of the device to configure.
+ * \param ip_addr Specified IP address in network byte order. This must
+ *                be a unique address within the Internet. If you do not
+ *                directly communicate with other Internet hosts, you can
+ *                use a locally assigned address.
+ * \param ip_mask Specified IP network mask in network byte order.
+ *                Typical Ethernet networks use 255.255.255.0, which
+ *                allows up to 254 hosts.
+ * \param gateway Specified IP for the default gateway in network byte order.
+ *                This argument might be 0 in which case the default route
+ *                will be disabled.
+ *
+ * \return 0 on success, -1 otherwise.
+ *
+ */
+int NutNetStaticIfSetup(const char* name, uint32_t ip_addr, uint32_t ip_mask, uint32_t gateway)
+{
+    NUTDEVICE *dev;
+    IFNET *nif;
+
+    /*
+     * Check if arguments are valid.
+     */
+    if (ip_addr == 0 || ip_mask == 0)
+        return -1;
+
+    /*
+     * Check if this is a registered network device.
+     */
+    if ((dev = NutDeviceLookup(name)) == 0 || dev->dev_type != IFTYP_NET)
+        return -1;
+
+    /*
+     * Setup Ethernet interface with MAC address.
+     */
+    nif = dev->dev_icb;
+    if (nif->if_type == IFT_ETHER) {
+        /* Check if ioctl is supported. */
+        if (dev->dev_ioctl) {
+            uint32_t flags;
+
+            /* Driver has ioctl, use it. */
+            dev->dev_ioctl(dev, SIOCGIFFLAGS, &flags);
+            dev->dev_ioctl(dev, SIOCSIFADDR, confnet.cdn_mac);
+            flags |= IFF_UP;
+            dev->dev_ioctl(dev, SIOCSIFFLAGS, &flags);
+        } else {
+            /* No ioctl, set MAC address to start driver. */
+            memcpy(nif->if_mac, confnet.cdn_mac, sizeof(nif->if_mac));
+        }
+    }
+
+    nif->if_local_ip = ip_addr;
+
+    /*
+     * Add routing entries.
+     */
+    NutIpRouteAdd(ip_addr & ip_mask, ip_mask, 0, dev);
+    if (gateway)
+        NutIpRouteAdd(0, 0, gateway, dev);
+
+    /*
+     * Load confnet with current settings.
+     */
+    memcpy(confnet.cd_name, dev->dev_name, sizeof(confnet.cd_name));
+    confnet.cdn_ip_addr = ip_addr;
+    confnet.cdn_ip_mask = ip_mask;
+
+    /*
+     * Set gateway, if one was provided by the caller. Remove
+     * gateway, if it's outside of our network.
+     */
+    if (gateway || (confnet.cdn_gateway & ip_mask) != (ip_addr & ip_mask))
+        confnet.cdn_gateway = gateway;
+
+    return 0;
+}
+
 /*!
  * \brief Network interface setup.
  *

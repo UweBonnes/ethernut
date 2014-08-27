@@ -234,6 +234,7 @@ struct ifnet {
 
 /*@}*/
 
+extern int NutNetStaticIfSetup(const char* name, uint32_t ip_addr, uint32_t ip_mask, uint32_t gateway);
 extern int NutNetIfConfig2(const char *name, void *mac_dev, uint32_t ip_addr,
                           uint32_t ip_mask, uint32_t gateway);
 extern int NutNetIfConfig(const char *name, void *mac_dev, uint32_t ip_addr,

@@ -97,6 +97,7 @@
 #include <time.h>
 #include <memdebug.h>
 
+#include <net/if.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
@@ -1811,6 +1812,132 @@ static int DhcpKick(const char *name, uint8_t state, uint32_t timeout)
     NutEventWait(&dhcpDone, NUT_WAIT_INFINITE);
 
     return 0;
+}
+
+/*!
+ * \brief Configure an Ethernet Interface with DHCP
+ *
+ * This routine will
+ * start the DHCP client thread and wait up to a given number of
+ * milliseconds for an acknowledged configuration from a DHCP server.
+ *
+ * \param name    Name of the registered Ethernet device.
+ * \param timeout Maximum number of milliseconds to wait. To disable
+ *                timeout, set this parameter to \ref NUT_WAIT_INFINITE.
+ *                Otherwise the value must be larger than 3 times of
+ *                \ref MIN_DHCP_WAIT to enable collection of offers
+ *                from multiple servers.
+ *
+ * \return 0 if the interface had been successfully configured.
+ * \sa NutDhcpError NutDhcpStatus
+ */
+int NutNetDhcpIfSetup(const char *name, uint32_t timeout)
+{
+    NUTDEVICE *dev;
+    IFNET *nif = NULL;
+
+    /*
+     * Verify the given Ethernet device.
+     */
+    dev = NutDeviceLookup(name);
+    if (dev && dev->dev_type == IFTYP_NET) {
+        nif = (IFNET *) dev->dev_icb;
+    }
+    if (nif == NULL || nif->if_type != IFT_ETHER) {
+        /* Not a network device or wrong interface type. */
+        dhcpError = DHCPERR_BADDEV;
+        return -1;
+    }
+
+    /*
+     * Check if we have a valid MAC address. In order to maintain
+     * backward compatibility, we accept anything which is neither
+     * zero nor the broadcast address. Later versions may become more
+     * restrictive and demand a valid unicast address.
+     */
+    if (ETHER_IS_ZERO(confnet.cdn_mac) || ETHER_IS_BROADCAST(confnet.cdn_mac)) {
+        dhcpError = DHCPERR_NOMAC;
+        return -1;
+    }
+
+    /*
+     * Copy the MAC address to the interface structure. This will
+     * magically enable the brain dead interface.
+     */
+    if (nif->if_type == IFT_ETHER) {
+        /* Check if ioctl is supported. */
+        if (dev->dev_ioctl) {
+            uint32_t flags;
+
+            /* Driver has ioctl, use it. */
+            dev->dev_ioctl(dev, SIOCGIFFLAGS, &flags);
+            dev->dev_ioctl(dev, SIOCSIFADDR, confnet.cdn_mac);
+            flags |= IFF_UP;
+            dev->dev_ioctl(dev, SIOCSIFFLAGS, &flags);
+        } else {
+            /* No ioctl, set MAC address to start driver. */
+            memcpy(nif->if_mac, confnet.cdn_mac, sizeof(confnet.cdn_mac));
+        }
+		NutSleep(500);
+    }
+
+    /*
+     * Zero out the ip address and mask. This allows to switch between
+     * DHCP and static IP addresses without resetting/power cycling.
+     * See patch #2903940.
+     */
+    nif->if_local_ip = 0;
+    nif->if_mask = confnet.cdn_ip_mask;
+
+    /*
+     * Start the DHCP thread if not running or wake it up. Pass the caller's
+     * timeout to the thread and wait an infinite time. We rely on the thread
+     * to wake us up on timeout.
+     */
+    if (DhcpKick(name, DHCPST_INIT, timeout) == 0) {
+        /*
+         * The thread finished its task. If it reached the bound state, then
+         * we got a valid configuration from DHCP.
+         */
+        if (dhcpState == DHCPST_BOUND) {
+#ifdef NUTDEBUG
+            if (__tcp_trf) {
+                fprintf(__tcp_trs, "[DHCP-Config %s]", inet_ntoa(dhcpConfig->dyn_yiaddr));
+            }
+#endif
+            NutNetStaticIfSetup(name, dhcpConfig->dyn_yiaddr, dhcpConfig->dyn_netmask, dhcpConfig->dyn_gateway);
+            NutDnsConfig2(NULL, NULL, dhcpConfig->dyn_pdns, dhcpConfig->dyn_sdns);
+            return 0;
+        }
+
+        /*
+         * Our interface has been configured externally, possibly by auto
+         * ARP or a similar function implemented by the application.
+         */
+        if (nif->if_local_ip) {
+#ifdef NUTDEBUG
+            if (__tcp_trf) {
+                fprintf(__tcp_trs, "[DHCP-External %s]", inet_ntoa(nif->if_local_ip));
+            }
+#endif
+            return 0;
+        }
+
+        /*
+         * DHCP failed. In case we remember a previously allocated address,
+         * then let's use it.
+         */
+        if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) != 0) {
+#ifdef NUTDEBUG
+            if (__tcp_trf) {
+                fprintf(__tcp_trs, "[DHCP-Reusing %s]", inet_ntoa(confnet.cdn_ip_addr));
+            }
+#endif
+            NutNetIfConfig2(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask, confnet.cdn_gateway);
+            return 0;
+        }
+    }
+    return -1;
 }
 
 /*!
