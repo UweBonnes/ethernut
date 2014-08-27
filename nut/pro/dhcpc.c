@@ -649,10 +649,8 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
         /* All remaining options require at least 4 octets. */
         else if (ol >= 4) {
             /* Preset most often used long value. */
-            uint32_t lval = *(op + 2);
-            lval += (uint32_t)(*(op + 3)) << 8;
-            lval += (uint32_t)(*(op + 4)) << 16;
-            lval += (uint32_t)(*(op + 5)) << 24;
+            uint32_t lval;
+			memcpy(&lval, op + 2, 4);
 
             /* Our IP network mask. */
             if (*op == DHCPOPT_NETMASK) {
@@ -673,10 +671,7 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
             else if (*op == DHCPOPT_DNS) {
                 cfgp->dyn_pdns = lval;
                 if (ol >= 8) {
-                    cfgp->dyn_sdns = *(op + 6);
-                    cfgp->dyn_sdns += (uint32_t)(*(op + 7)) << 8;
-                    cfgp->dyn_sdns += (uint32_t)(*(op + 8)) << 16;
-                    cfgp->dyn_sdns += (uint32_t)(*(op + 9)) << 24;
+					memcpy(&cfgp->dyn_sdns, op + 6, 4);
                 }
             }
             /* Server identifier. */
