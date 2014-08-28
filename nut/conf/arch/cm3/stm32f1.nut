@@ -220,6 +220,8 @@ nutarch_cm3_stm32f1 =
                         "HW_I2C2_STM32",
                         "HW_SPI2_STM32",
                         "HW_USART3_STM32",
+                        "HW_UART4_STM32",
+                        "HW_UART5_STM32",
                         "HW_FSMC_STM32",
                         "HW_SDIO_STM32",
                         "HW_SPI3_STM32",
