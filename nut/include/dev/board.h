@@ -199,6 +199,9 @@
 #elif defined(MBED_NXP_LPC1768)
 #include <arch/cm3/board/mbed.h>
 #define BOARDNAME "MBED_NXP_LPC1768"
+#elif defined(M24SR_DISCOVERY)
+#include <arch/cm3/board/m24sr_discovery.h>
+#define BOARDNAME "M24SR_DISCOVERY"
 #elif defined(KOBOLD1)
 #include <arch/cm3/board/kobold1.h>
 #define BOARDNAME "KOBOLD1"
