@@ -49,6 +49,9 @@
 
 #define NUTGPIOPORT_MAX NUTGPIO_PORTG+1
 
+const uint16_t ospeed_values[4] =
+{-1,  10000000 >> 16, 2000000 >> 16,  50000000 >> 16};
+
 /*!
  * \brief Get pin configuration.
  *

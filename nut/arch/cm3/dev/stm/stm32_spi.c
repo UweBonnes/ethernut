@@ -47,12 +47,7 @@
  * \endverbatim
  */
 
-#include <arch/cm3.h>
-#include <sys/timer.h>
-#include <cfg/spi.h>
-
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_gpio.h>
 #include <dev/spibus_stm32.h>
 #include <sys/nutdebug.h>
 
