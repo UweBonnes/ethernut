@@ -258,31 +258,31 @@ static void SetPinSpeed( NUTSPINODE * node, uint32_t rate)
     rate_div64k = node->node_rate >> 16;
 
 #if defined (MCU_STM32F1)
-    if      (rate_div64k * OSPEED_MULT < ospeed_values[1])
-        ospeed_set = 1;
-    else if (rate_div64k * OSPEED_MULT < ospeed_values[2])
+    if      (rate_div64k * OSPEED_MULT < ospeed_values[2])
         ospeed_set = 2;
+    else if (rate_div64k * OSPEED_MULT < ospeed_values[1])
+        ospeed_set = 1;
     else
         ospeed_set = 3;
 #if SPIBUS_MOSI_PIN < 8
     speed_reg = ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRL;
-    speed_reg &= ~(0xc << (SPIBUS_MOSI_PIN << 2));
+    speed_reg &= ~(GPIO_CRL_MODE0 << (SPIBUS_MOSI_PIN << 2));
     speed_reg |= (ospeed_set << (SPIBUS_MOSI_PIN << 2));
     ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRL = speed_reg;
 #else
     speed_reg = ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRH;
-    speed_reg &= ~(0xc << ((SPIBUS_MOSI_PIN - 8) << 2));
+    speed_reg &= ~(GPIO_CRH_MODE8 << ((SPIBUS_MOSI_PIN - 8) << 2));
     speed_reg |= (ospeed_set << ((SPIBUS_MOSI_PIN - 8) << 2));
     ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRH = speed_reg;
 #endif
 #if SPIBUS_SCK_PIN < 8
     speed_reg = ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRL;
-    speed_reg &= ~(0xc << (SPIBUS_SCK_PIN << 2));
+    speed_reg &= ~(GPIO_CRL_MODE0 << (SPIBUS_SCK_PIN << 2));
     speed_reg |= (ospeed_set << (SPIBUS_SCK_PIN << 2));
     ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRL = speed_reg;
 #else
     speed_reg = ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRH;
-    speed_reg &= ~(0xc << ((SPIBUS_SCK_PIN - 8) << 2));
+    speed_reg &= ~(GPIO_CRH_MODE8 << ((SPIBUS_SCK_PIN - 8) << 2));
     speed_reg |= (ospeed_set << ((SPIBUS_SCK_PIN - 8) << 2));
     ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRH = speed_reg;
 #endif
