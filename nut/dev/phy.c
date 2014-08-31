@@ -193,6 +193,11 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
     uint16_t p16 = (uint16_t)*par;
     uint8_t  reg = (uint8_t)(*par>>16);
 
+    if (phydcb == NULL) {
+        /* Return with an error, if the phy has not yet been registered */
+        return -1;
+    }
+
     PHPRINTF("NPCtl(0x%x, 0x%04x)\n", ctl, p16);
 
     /* Execute standard ioctl function */
