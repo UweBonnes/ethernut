@@ -615,7 +615,7 @@ static int Stm32SpiBusTransfer
         while( xlen > 0) {
             /* Half word access via "spi->DR = b" shifts out two frames
              * on the F373! */
-            base->DR = *(const uint8_t *)txbuf;
+            *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
             xlen--;
             txbuf++;
             while ( (base->SR & SPI_SR_TXE ) == 0 ); /* Wait till TXE = 1*/
