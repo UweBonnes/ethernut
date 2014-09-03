@@ -45,42 +45,167 @@
 #define NUT_IRQPRI_GPIO  0
 #endif
 
-int GPIOpinNumber[] = {
+static int const GPIOpinNumber[] = {
 #if defined(AVR32_PIN_PA00)
-	AVR32_PIN_PA00,
+AVR32_PIN_PA00,
 #else
-	-1,
+-1,
 #endif
 #if defined(AVR32_PIN_PA01)
-	AVR32_PIN_PA01,
+AVR32_PIN_PA01,
 #else
-	-1,
+-1,
 #endif
 #if defined(AVR32_PIN_PA02)
-	AVR32_PIN_PA02,
+AVR32_PIN_PA02,
 #else
-	-1,
+-1,
 #endif
-	AVR32_PIN_PA03,
-	AVR32_PIN_PA04,
-	AVR32_PIN_PA05,
-	AVR32_PIN_PA06,
-	AVR32_PIN_PA07,
-	AVR32_PIN_PA08,
-	AVR32_PIN_PA09,
-	AVR32_PIN_PA10,
-	AVR32_PIN_PA11,
-	AVR32_PIN_PA12,
-	AVR32_PIN_PA13,
-	AVR32_PIN_PA14,
-	AVR32_PIN_PA15,
-	AVR32_PIN_PA16,
-	AVR32_PIN_PA17,
-	AVR32_PIN_PA18,
-	AVR32_PIN_PA19,
-	AVR32_PIN_PA20,
-	AVR32_PIN_PA21,
-	AVR32_PIN_PA22,
+#if defined(AVR32_PIN_PA03)
+AVR32_PIN_PA03,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA04)
+AVR32_PIN_PA04,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA05)
+AVR32_PIN_PA05,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA06)
+AVR32_PIN_PA06,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA07)
+AVR32_PIN_PA07,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA08)
+AVR32_PIN_PA08,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA09)
+AVR32_PIN_PA09,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA10)
+AVR32_PIN_PA10,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA11)
+AVR32_PIN_PA11,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA12)
+AVR32_PIN_PA12,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA13)
+AVR32_PIN_PA13,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA14)
+AVR32_PIN_PA14,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA15)
+AVR32_PIN_PA15,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA16)
+AVR32_PIN_PA16,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA17)
+AVR32_PIN_PA17,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA18)
+AVR32_PIN_PA18,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA19)
+AVR32_PIN_PA19,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA20)
+AVR32_PIN_PA20,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA21)
+AVR32_PIN_PA21,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA22)
+AVR32_PIN_PA22,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA23)
+AVR32_PIN_PA23,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA24)
+AVR32_PIN_PA24,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA25)
+AVR32_PIN_PA25,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA26)
+AVR32_PIN_PA26,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA27)
+AVR32_PIN_PA27,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA28)
+AVR32_PIN_PA28,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA29)
+AVR32_PIN_PA29,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA30)
+AVR32_PIN_PA30,
+#else
+-1,
+#endif
+#if defined(AVR32_PIN_PA31)
+AVR32_PIN_PA31,
+#else
+-1,
+#endif
 };
 
 static int GpioIrqCtl(int cmd, void *param, int bit);
@@ -105,7 +230,7 @@ SIGNAL(GPIO0IrqEntry)
 
 	GPIO_VECTOR *vct;
 	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[0];
-	uint32_t ier = gpio_port->ier;
+	uint32_t const ier = gpio_port->ier;
 	uint32_t port_status = gpio_port->ifr & ier;
 
 	vct = sig_GPIO.ios_vector;
@@ -117,12 +242,17 @@ SIGNAL(GPIO0IrqEntry)
 		vct++;
 	}
 
+#if (AVR32_GPIO_H_VERSION == 211)
 	// Clear interrupt
 	// Workaround errata bug in UC3L, simply setting IRFC with interrupts enabled won't work.
-	gpio_port->ierc = 0xffffffff;
-	gpio_port->ifrc = 0xffffffff;
+	gpio_port->ierc = ier;
+	gpio_port->ifrc = ier;
 	gpio_port->pvr;
 	gpio_port->iers = ier;
+#else
+	gpio_port->ifrc = ier;
+	gpio_port->pvr;
+#endif
 
     IRQ_EXIT();
 }
@@ -152,6 +282,9 @@ static int GpioIrqCtl(int cmd, void *param, int bit)
 	ureg_t ier = gpio_port->ier;
 	int_fast8_t enabled = ier;
 
+	if ( bit >= sizeof(GPIOpinNumber) || GPIOpinNumber[bit] == -1 )
+		return -1;
+
 	/* Disable interrupt. */
 	if (enabled) {
 		gpio_port->ierc = 0xFFFFFFFF;
@@ -159,10 +292,6 @@ static int GpioIrqCtl(int cmd, void *param, int bit)
 
     switch (cmd) {
 		case NUT_IRQCTL_INIT:
-			if ( GPIOpinNumber[bit] == -1 )
-				rc = -1;
-			else 
-				register_interrupt(GPIO0IrqEntry, AVR32_GPIO_IRQ_0 + (GPIOpinNumber[bit]/8), NUT_IRQPRI_GPIO);
 		break;
 
         case NUT_IRQCTL_STATUS:
@@ -176,6 +305,8 @@ static int GpioIrqCtl(int cmd, void *param, int bit)
         case NUT_IRQCTL_ENABLE:
             ier |= _BV(bit);
 			enabled = 1;
+			gpio_port->gfers = (1 << bit);
+			register_interrupt(GPIO0IrqEntry, AVR32_GPIO_IRQ_0 + (GPIOpinNumber[bit]/AVR32_GPIO_IRQS_PER_GROUP), NUT_IRQPRI_GPIO);
             break;
 
         case NUT_IRQCTL_DISABLE:
