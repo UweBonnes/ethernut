@@ -67,7 +67,7 @@ QString SystemInfo::GetOsString()
     default:
         return "Unknown Mac OS Version";
     }
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN32)
     switch(QSysInfo::WindowsVersion) {
     case QSysInfo::WV_NT:
         return "Windows NT";
