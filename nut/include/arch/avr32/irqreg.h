@@ -66,3 +66,4 @@ extern IRQ_HANDLER sig_INTERRUPTNMI;
 #endif
 
 #define PIO_ISR
+#define PIOA_ISR
