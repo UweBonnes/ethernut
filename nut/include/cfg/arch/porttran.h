@@ -372,25 +372,30 @@
 #include <avr32/io.h>
 #include <cfg/arch/avr32.h>
 
-#define  GPIO_PE_REG    &AVR32_GPIO.port[GPIO_ID].gpers
-#define  GPIO_PD_REG    &AVR32_GPIO.port[GPIO_ID].pderc
-#define  GPIO_PS_REG    &AVR32_GPIO.port[GPIO_ID].pder
-#define  GPIO_OE_REG    &AVR32_GPIO.port[GPIO_ID].oders
-#define  GPIO_OD_REG    &AVR32_GPIO.port[GPIO_ID].oderc
-#define  GPIO_OS_REG    &AVR32_GPIO.port[GPIO_ID].oder
-#define  GPIO_SOD_REG   &AVR32_GPIO.port[GPIO_ID].ovrs
-#define  GPIO_COD_REG   &AVR32_GPIO.port[GPIO_ID].ovrc
-#define  GPIO_ODS_REG   &AVR32_GPIO.port[GPIO_ID].ovr
-#define  GPIO_PDS_REG   &AVR32_GPIO.port[GPIO_ID].pvr
-#define  GPIO_PUE_REG   &AVR32_GPIO.port[GPIO_ID].puers
-#define  GPIO_PUD_REG   &AVR32_GPIO.port[GPIO_ID].puerc
-#define  GPIO_PUS_REG   &AVR32_GPIO.port[GPIO_ID].puer
-#define  GPIO_MDE_REG   &AVR32_GPIO.port[GPIO_ID].odmerc
-#define  GPIO_MDD_REG   &AVR32_GPIO.port[GPIO_ID].odmers
-#define  GPIO_MDS_REG   &AVR32_GPIO.port[GPIO_ID].odmer
-#define  GPIO_IFE_REG   &AVR32_GPIO.port[GPIO_ID].gfers
-#define  GPIO_IFD_REG   &AVR32_GPIO.port[GPIO_ID].gferc
-#define  GPIO_IFS_REG   &AVR32_GPIO.port[GPIO_ID].gfer
+// Check consistency
+#if GPIO_ID - NUTGPIO_PORTA < 0
+#error Please use one of PIOx_ID constants for GPIO_ID
+#endif
+
+#define  GPIO_PE_REG    &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].gpers
+#define  GPIO_PD_REG    &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].pderc
+#define  GPIO_PS_REG    &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].pder
+#define  GPIO_OE_REG    &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].oders
+#define  GPIO_OD_REG    &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].oderc
+#define  GPIO_OS_REG    &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].oder
+#define  GPIO_SOD_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].ovrs
+#define  GPIO_COD_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].ovrc
+#define  GPIO_ODS_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].ovr
+#define  GPIO_PDS_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].pvr
+#define  GPIO_PUE_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].puers
+#define  GPIO_PUD_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].puerc
+#define  GPIO_PUS_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].puer
+#define  GPIO_MDE_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].odmerc
+#define  GPIO_MDD_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].odmers
+#define  GPIO_MDS_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].odmer
+#define  GPIO_IFE_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].gfers
+#define  GPIO_IFD_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].gferc
+#define  GPIO_IFS_REG   &AVR32_GPIO.port[GPIO_ID - NUTGPIO_PORTA].gfer
 
 #elif defined(MCU_STM32)
 

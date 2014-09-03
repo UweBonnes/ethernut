@@ -48,19 +48,20 @@
  * \file include/cfg/arch/avr32.h
  * \brief AVR32 hardware configuration.
  */
+#include <dev/gpio.h>
 
-#define PIOA_ID     0
-#define PIOB_ID     1
-#define PIOC_ID     2
-#define PIOD_ID     3
-#define PIOE_ID     4
-#define PIOF_ID     5
-#define PIOG_ID     6
-#define PIOH_ID     7
-#define PIOI_ID     8
-#define PIOJ_ID     9
-#define PIOK_ID     10
-#define PIOL_ID     11
+#define PIOA_ID     NUTGPIO_PORTA
+#define PIOB_ID     NUTGPIO_PORTB
+#define PIOC_ID     NUTGPIO_PORTC
+#define PIOD_ID     NUTGPIO_PORTD
+#define PIOE_ID     NUTGPIO_PORTE
+#define PIOF_ID     NUTGPIO_PORTF
+#define PIOG_ID     NUTGPIO_PORTG
+#define PIOH_ID     NUTGPIO_PORTH
+#define PIOI_ID     NUTGPIO_PORTI
+#define PIOJ_ID     NUTGPIO_PORTJ
+#define PIOK_ID     NUTGPIO_PORTK
+#define PIOL_ID     NUTGPIO_PORTL
 
 #define PIOA_BASE       AVR32_GPIO_ADDRESS                               /*!< \brief PIO A base address.->GPIO_ADDRESS */
 #define PIOB_BASE       AVR32_GPIO_ADDRESS + AVR32_GPIO_PORT_LENGTH      /*!< \brief PIO B base address. */
