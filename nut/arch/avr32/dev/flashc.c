@@ -175,7 +175,7 @@ int Avr32FlashFillPageBuffer( volatile uint8_t* dst, const uint8_t* src, size_t 
 	int i;
 
 	// Point to start of the requested address's page
-	flash_add = (uint8_t*)((uint32_t)dst - ((uint32_t)src % AVR32_FLASHC_PAGE_SIZE));
+	flash_add = (uint8_t*)((uint32_t)dst - ((uint32_t)dst % AVR32_FLASHC_PAGE_SIZE));
 	
 	Avr32FlashClearPageBuffer();
 
