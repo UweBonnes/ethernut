@@ -197,7 +197,7 @@ static int Lpc17xxSpiSetup(NUTSPINODE * node)
     NUTASSERT(node->node_bus->bus_base != 0);
     spireg = node->node_stat;
 
-    spireg->SPCR &= ~(SPI_CR_BITENABLE | SPI_CR_BITS_MASK | SPI_CR_CPOL | SPI_CR_CPHA);
+    spireg->SPCR &= ~( SPI_CR_LSBF | SPI_CR_BITENABLE | SPI_CR_BITS_MASK | SPI_CR_CPOL | SPI_CR_CPHA);
     if (node->node_bits != 8) {
         spireg->SPCR |= (SPI_CR_BITENABLE | SPI_CR_BITS(node->node_bits));
     }
@@ -206,6 +206,9 @@ static int Lpc17xxSpiSetup(NUTSPINODE * node)
     }
     if (node->node_mode & SPI_MODE_CPHA) {
         spireg->SPCR |= SPI_CR_CPHA;
+    }
+    if (node->node_mode & SPI_MODE_LSB) {
+        spireg->SPCR |= SPI_CR_LSBF;
     }
     spireg->SPCR |= SPI_CR_MSTR;  /* master only for now */
 

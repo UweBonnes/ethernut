@@ -52,6 +52,9 @@
 #define SPI_MODE_CPHA       0x0001  /* Data updated on leading edge. */
 #define SPI_MODE_CPOL       0x0002  /* Idle clock is high. */
 #define SPI_MODE_FAULT      0x0004  /* Enables mode fault detection. */
+/*! \brief Enable LSB Transfers. Only STM32/GPIO for now.
+ */
+#define SPI_MODE_LSB        0x0008  /* Send LSB first.*/
 #define SPI_MODE_HALFDUPLEX 0x0200  /* HalfDuplex Mode: Release MOSI and treat as MISO */
 #define SPI_MODE_LOOPBACK   0x0400  /* Loopback mode. */
 #define SPI_MODE_SLAVE      0x0800  /* Slave mode. */

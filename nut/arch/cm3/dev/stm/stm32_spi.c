@@ -404,12 +404,12 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     spireg = node->node_stat;
 
 #if defined(SPI_CR2_DS)
-    spireg->CR1 &= ~( SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR);
+    spireg->CR1 &= ~( SPI_CR1_LSBFIRST | SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR);
     spireg->CR2 &= ~SPI_CR2_DS;
     if((node->node_bits > 6) && (node->node_bits <= 16))
         spireg->CR2 |= (node->node_bits -1) <<8;
 #else
-    spireg->CR1 &= ~(SPI_CR1_DFF | SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR);
+    spireg->CR1 &= ~(SPI_CR1_LSBFIRST | SPI_CR1_DFF | SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR);
     switch(node->node_bits){
         case 8:
             spireg->CR1 &= ~(SPI_CR1_DFF);
@@ -426,6 +426,9 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     }
     if (node->node_mode & SPI_MODE_CPHA) {
         spireg->CR1 |= SPI_CR1_CPHA;
+    }
+    if (node->node_mode & SPI_MODE_LSB) {
+        spireg->CR1 |= SPI_CR1_LSBFIRST;
     }
 
     /* Query peripheral clock. */

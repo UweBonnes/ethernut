@@ -53,11 +53,19 @@ int AvrSpiSetup(NUTSPINODE * node)
     uint_fast8_t i;
     uint32_t clk;
     AVRSPIREG *spireg;
+    uint_fast8_t mode;
 
     spireg = node->node_stat;
 
+    mode =  _BV(SPE) | _BV(MSTR);
+    if (node->node_mode & SPI_MODE_CPHA)
+        mode |= _BV(CPHA);
+    if (node->node_mode & SPI_MODE_CPOL)
+        mode |= _BV(CPOL);
+    if (node->node_mode & SPI_MODE_LSB)
+        mode |= _BV(DORD);
     /* Select SPI master mode. */
-    spireg->avrspi_spcr = _BV(SPE) | _BV(MSTR) | (uint8_t)(node->node_mode & SPI_MODE_3) << 2;
+    spireg->avrspi_spcr = mode;
 
     /* Find the frequency that is below or equal the requested
        ** one, using the double speed bit if available. */
