@@ -136,7 +136,8 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
     uint_fast8_t mask;
 
     while (xlen--) {
-        for (mask = 0x80; mask; mask >>= 1) {
+        mask = 0x80;
+        while (mask) {
 #if defined(SBBI0_MOSI_BIT)
             if (txbuf) {
                 GpioPinSet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT, (*txbuf & mask) != 0);
@@ -173,6 +174,7 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
         if (rxbuf) {
             rxbuf++;
         }
+        mask >>= 1;
     }
 #endif /* SBBI0_SCK_BIT */
 }
@@ -184,7 +186,8 @@ static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
     uint_fast8_t mask;
 
     while (xlen--) {
-        for (mask = 0x80; mask; mask >>= 1) {
+        mask = 0x80;
+        while (mask) {
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MOSI_BIT)
@@ -221,6 +224,7 @@ static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
         if (rxbuf) {
             rxbuf++;
         }
+        mask >>= 1;
     }
 #endif /* SBBI0_SCK_BIT */
 }
@@ -232,7 +236,8 @@ static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
     uint_fast8_t mask;
 
     while (xlen--) {
-        for (mask = 0x80; mask; mask >>= 1) {
+        mask = 0x80;
+        while (mask) {
 #if defined(SBBI0_MOSI_BIT)
             if (txbuf) {
                 GpioPinSet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT, (*txbuf & mask) != 0);
@@ -269,6 +274,7 @@ static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
         if (rxbuf) {
             rxbuf++;
         }
+        mask >>= 1;
     }
 #endif /* SBBI0_SCK_BIT */
 }
@@ -280,7 +286,8 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
     uint_fast8_t mask;
 
     while (xlen--) {
-        for (mask = 0x80; mask; mask >>= 1) {
+        mask = 0x80;
+        while (mask) {
             NutMicroDelay(gspi->gspi_dly_rate);
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MOSI_BIT)
@@ -317,6 +324,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
         if (rxbuf) {
             rxbuf++;
         }
+        mask >>= 1;
     }
 #endif /* SBBI0_SCK_BIT */
 }
