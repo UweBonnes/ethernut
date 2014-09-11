@@ -5129,6 +5129,152 @@ nutdev =
     },
 
     --
+    -- HD44780 Driver
+    --
+    {
+        name = "nutdev_hd44780",
+        brief = "HD44780 Driver",
+        requires = { "HW_GPIO" },
+        provides = { "DEV_FILE", "DEV_WRITE", "LCD_GPIO" },
+        sources = { "hd44780.c" },
+        options =
+        {
+            --
+            --  LCD size parameters
+            --
+            {
+                macro = "LCD_ROWS",
+                brief = "Rows",
+                description = "The number of available display rows, either 1, 2 or 4.",
+                default = "4",
+                type = "enumerated",
+                choices = {"1", "2", "4"},
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_COLS",
+                brief = "Columns",
+                description = "The number of available display columns, either 8, 16, 20 or 40.",
+                default = "20",
+                type = "enumerated",
+                choices = {"8", "16", "20", "40"},
+                file = "include/cfg/lcd.h"
+            },
+            --
+            --  Selection of parallel interface parameters
+            --
+            {
+                macro = "LCD_IF_8BIT",
+                brief = "8-Bit Mode",
+                description = "Select parallel bus width is 8 bit.\n"..
+                              "Splitting single bus lines accross ports is not "..
+                              "supported for data bit lines.\n",
+                requires = { "LCD_GPIO" },
+                flavor = "booldata",
+                exclusivity = { "LCD_IF_8BIT", "LCD_IF_4BIT" },
+                provides = { "LCD_IF_8BIT" },
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_IF_4BIT",
+                brief = "4-Bit Mode",
+                description = "Select parallel bus width is 4 bit."..
+                              "Splitting single bus lines accross ports is not"..
+                              "supported for data bit lines.",
+                requires = { "LCD_GPIO" },
+                flavor = "booldata",
+                exclusivity = { "LCD_IF_8BIT", "LCD_IF_4BIT" },
+                provides = { "LCD_IF_4BIT" },
+                file = "include/cfg/lcd.h"
+            },
+            --
+            --  Selection of parallel interface parameters
+            --
+            {
+                macro = "LCD_DATA_PIO_ID",
+                brief = "Port of LCD data pins",
+                requires = { "LCD_GPIO" },
+                description = "Port of the below defined data pins. Valid for "..
+                              "both, single bit definitions or LSB.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_DATA_LSB",
+                brief = "Least Significant Data Bit",
+                requires = { "LCD_GPIO" },
+                description = "GPIO number of the least significant data bit. The remaining "..
+                              "data bits must be connected to the following port bits.",
+                type = "enumerated",
+                flavor = "booldata",
+                choices = mcu_32bit_choice,
+
+                file = "include/cfg/lcd.h"
+            },
+            --
+            --  Selection of display control lines
+            --
+            {
+                macro = "LCD_EN_PIO_ID",
+                brief = "Enable Port",
+                description = "Choose port used for the enable line.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_EN_BIT",
+                brief = "Enable Bit",
+                description = "Port bit of the LCD enable line. "..
+                              "This line must be exclusively reserved."..
+                              "For parallel chips this is the active high enable signal.\n"..
+                              "For serial chips this is the active low chip select line.",
+                default = "8",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_RS_PIO_ID",
+                brief = "RS Port",
+                description = "Choose port for the Register Select line.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_RS_BIT",
+                brief = "RS Bit",
+                description = "Choose bit for the Register Select line.",
+                default = "3",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_RW_PIO_ID",
+                brief = "RW Port",
+                description = "Choose port for the Read Write line.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_RW_BIT",
+                brief = "RW Bit",
+                description = "Choose bit for the Read Write line.",
+                default = "9",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/lcd.h"
+            }
+        }
+    },
+
+    --
     -- WAN Drivers.
     --
     {
