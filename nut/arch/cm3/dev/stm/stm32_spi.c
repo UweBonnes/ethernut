@@ -198,7 +198,7 @@ static int Stm32SpiChipSelect(NUTSPINODE *node, int assert)
         break;
 #endif
 #if defined(SPIBUS_CS3_SET)
-    case 2:
+    case 3:
         if(hi)
             SPIBUS_CS3_SET();
         else
