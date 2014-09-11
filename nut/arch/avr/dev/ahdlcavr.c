@@ -243,8 +243,8 @@ static const char fcstab[512] PROGMEM = {
 #define IN_ACC_MAP(c, m) in_acc_map(c, &(m))
 /* Trust me, this is a whole lot smaller when compiled than it looks in C.
  * It is written explicitly so that gcc can make good AVR asm out of it. */
-static NUT_INLINE_FUNC uint8_t in_acc_map(u_char ch, void * esc_mask) NUT_FORCE_INLINE;  /* gcc specific attribute */
-static NUT_INLINE_FUNC uint8_t in_acc_map(u_char ch, void * esc_mask)
+static NUT_INLINE_FUNC uint8_t in_acc_map(uint8_t ch, void * esc_mask) NUT_FORCE_INLINE;  /* gcc specific attribute */
+static NUT_INLINE_FUNC uint8_t in_acc_map(uint8_t ch, void * esc_mask)
 {
     const uint8_t shift_mask = 0x07;
     const uint8_t index_mask = 0x18;

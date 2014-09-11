@@ -158,7 +158,7 @@ static int SnmpMsgBuild(SNMP_SESSION * session, SNMP_PDU * pdu, uint8_t * packet
             return -1;
         }
         /* Agent address. */
-        cp = AsnOctetStringBuild(cp, &length, ASN_IPADDRESS, (u_char *) & confnet.cdn_ip_addr, sizeof(confnet.cdn_ip_addr));
+        cp = AsnOctetStringBuild(cp, &length, ASN_IPADDRESS, (uint8_t *) & confnet.cdn_ip_addr, sizeof(confnet.cdn_ip_addr));
         if (cp == NULL) {
             return -1;
         }
@@ -210,7 +210,7 @@ static int SnmpMsgBuild(SNMP_SESSION * session, SNMP_PDU * pdu, uint8_t * packet
      * Encode the PDU header containing its type.
      */
     length = SNMP_MAX_LEN;
-    cp = AsnHeaderBuild(temp_buffer, &length, (u_char) pdu->pdu_cmd, total);
+    cp = AsnHeaderBuild(temp_buffer, &length, (uint8_t) pdu->pdu_cmd, total);
     if (cp == NULL || length < total) {
         return -1;
     }

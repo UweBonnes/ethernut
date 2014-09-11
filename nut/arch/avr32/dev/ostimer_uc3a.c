@@ -42,10 +42,10 @@
  *
  * \return Frequency of the selected PLL in Hertz.
  */
-static u_int AVR32GetPllClock(int pll)
+static uint32_t AVR32GetPllClock(int pll)
 {
-    u_int rc;
-    u_int osc = 0;
+    uint32_t rc;
+    uint32_t osc = 0;
 
     if ( AVR32_PM.PLL[pll].pllosc )
         osc = 0;
@@ -59,8 +59,8 @@ static u_int AVR32GetPllClock(int pll)
     rc = osc;
 
     if ( AVR32_PM.PLL[pll].pllen ) {
-        u_int divider = AVR32_PM.PLL[pll].plldiv;
-        u_int multiplier = AVR32_PM.PLL[pll].pllmul;
+        uint32_t divider = AVR32_PM.PLL[pll].plldiv;
+        uint32_t multiplier = AVR32_PM.PLL[pll].pllmul;
 
         if ( divider )
             rc *= (multiplier +1)/divider;
@@ -80,8 +80,8 @@ static u_int AVR32GetPllClock(int pll)
  */
 static uint32_t Avr32GetProcessorClock(void)
 {
-    u_int rc = 0;
-    u_int mckr = AVR32_PM.mcctrl;
+    uint32_t rc = 0;
+    uint32_t mckr = AVR32_PM.mcctrl;
 
     /* Determine the clock source. */
     switch(mckr & AVR32_PM_MCCTRL_MCSEL_MASK) {

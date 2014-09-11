@@ -39,17 +39,17 @@
 #include <string.h>
 #include <vis.h>
 
-#define isoctal(c)  (((u_char)(c)) >= '0' && ((u_char)(c)) <= '7')
+#define isoctal(c)  (((uint8_t)(c)) >= '0' && ((uint8_t)(c)) <= '7')
 #define isvisible(c)    \
-    (((u_int)(c) <= UCHAR_MAX && isascii((u_char)(c)) &&        \
+    (((uint32_t)(c) <= UCHAR_MAX && isascii((uint8_t)(c)) &&        \
     (((c) != '*' && (c) != '?' && (c) != '[' && (c) != '#') ||  \
-        (flag & VIS_GLOB) == 0) && isgraph((u_char)(c))) ||     \
+        (flag & VIS_GLOB) == 0) && isgraph((uint8_t)(c))) ||     \
     ((flag & VIS_SP) == 0 && (c) == ' ') ||                     \
     ((flag & VIS_TAB) == 0 && (c) == '\t') ||                   \
     ((flag & VIS_NL) == 0 && (c) == '\n') ||                    \
     ((flag & VIS_SAFE) && ((c) == '\b' ||                       \
         (c) == '\007' || (c) == '\r' ||                         \
-        isgraph((u_char)(c)))))
+        isgraph((uint8_t)(c)))))
 
 /*!
  * \brief Visually encode a single character.
@@ -159,9 +159,9 @@ char *vis(char *dst, int c, int flag, int nextc)
         ((flag & VIS_GLOB)
          && (c == '*' || c == '?' || c == '[' || c == '#'))) {
         *dst++ = '\\';
-        *dst++ = ((u_char) c >> 6 & 07) + '0';
-        *dst++ = ((u_char) c >> 3 & 07) + '0';
-        *dst++ = ((u_char) c & 07) + '0';
+        *dst++ = ((uint8_t) c >> 6 & 07) + '0';
+        *dst++ = ((uint8_t) c >> 3 & 07) + '0';
+        *dst++ = ((uint8_t) c & 07) + '0';
         goto done;
     }
     if ((flag & VIS_NOSLASH) == 0)
@@ -170,7 +170,7 @@ char *vis(char *dst, int c, int flag, int nextc)
         c &= 0177;
         *dst++ = 'M';
     }
-    if (iscntrl((u_char) c)) {
+    if (iscntrl((uint8_t) c)) {
         *dst++ = '^';
         if (c == 0177)
             *dst++ = '?';
