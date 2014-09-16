@@ -54,6 +54,9 @@
  *
  */
 
+// Disable compilation if essential settings are not defined
+#if defined( LCD_ROWS ) && defined( LCD_COLS ) && defined( LCD_EN_PIO_ID ) && defined( LCD_DATA_PIO_ID )
+
 #ifndef LCD_ROWS
 #define LCD_ROWS    2
 #endif
@@ -374,4 +377,5 @@ NUTDEVICE devLcd = {
     0,                          /*!< Select function, dev_select, optional. */
 };
 
+#endif // Disable compilation if essential settings are not defined
 /*@}*/
