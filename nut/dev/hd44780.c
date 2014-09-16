@@ -195,7 +195,7 @@ static void LcdWriteByte(unsigned int data)
     /* If using 4-bit access, write two nibbles now */
 #ifdef LCD_IF_4BIT
     LcdWriteNibble(data >> 4);
-    LcdNanoDelay(LCD_SHORT_DELAY);
+    LcdDelay(LCD_SHORT_DELAY);
     LcdWriteNibble(data);
 #else
     /* else write one byte */
