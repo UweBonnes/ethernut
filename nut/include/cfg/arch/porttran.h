@@ -461,6 +461,8 @@ GPIO_ID->PUPDR = pudr; } while(0)
 #undef GPIO_PULLUP_OFF
 #undef GPIO_OPENDRAIN
 #undef GPIO_PUSHPULL
+#undef GPIO_FILTER_ON
+#undef GPIO_FILTER_OFF
 
 #if defined(GPIO_COD_REG)
 #define GPIO_SET_LO(b)      outr(GPIO_COD_REG, _BV(b))
