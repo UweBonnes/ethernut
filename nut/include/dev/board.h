@@ -434,11 +434,29 @@
 #ifndef DEV_UART0
 #define DEV_UART0       devUsartAvr320
 #endif
+#ifndef DEV_UART0_NAME
+#define DEV_UART0_NAME  DEV_UART0.dev_name
+#endif
+
 #ifndef DEV_UART1
 #define DEV_UART1       devUsartAvr321
 #endif
+#ifndef DEV_UART1_NAME
+#define DEV_UART1_NAME  DEV_UART1.dev_name
+#endif
+
 #ifndef DEV_UART2
 #define DEV_UART2       devUsartAvr322
+#endif
+#ifndef DEV_UART2_NAME
+#define DEV_UART2_NAME  DEV_UART2.dev_name
+#endif
+
+#ifndef DEV_UART3
+#define DEV_UART3       devUsartAvr323
+#endif
+#ifndef DEV_UART3_NAME
+#define DEV_UART3_NAME  DEV_UART3.dev_name
 #endif
 
 /*

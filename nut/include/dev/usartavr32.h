@@ -52,5 +52,6 @@
 extern NUTDEVICE devUsartAvr320;
 extern NUTDEVICE devUsartAvr321;
 extern NUTDEVICE devUsartAvr322;
+extern NUTDEVICE devUsartAvr323;
 
 #endif
