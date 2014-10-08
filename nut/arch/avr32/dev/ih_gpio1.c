@@ -234,7 +234,7 @@ SIGNAL(GPIO1IrqEntry)
 	uint32_t const ier = gpio_port->ier;
 	uint32_t port_status = gpio_port->ifr & ier;
 
-	vct = sig_GPIO.ios_vector;
+	vct = sig_GPIO1.ios_vector;
 	while (port_status) {
 		if ((port_status & 1) != 0 && vct->iov_handler) {
 			(vct->iov_handler) (vct->iov_arg);
