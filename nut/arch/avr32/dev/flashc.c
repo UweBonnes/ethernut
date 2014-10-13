@@ -201,6 +201,45 @@ int Avr32FlashFillPageBuffer( volatile uint8_t* dst, const uint8_t* src, size_t 
 	return consumedBytes;	
 }
 
+int Avr32FlashErasePageBuffer( volatile uint8_t* dst, size_t nbytes )
+{
+	union {
+		uint64_t uint64;
+		uint8_t  uint8[8];
+	} flash_dword;
+	uint8_t* flash_add;
+	int consumedBytes = 0;
+	int page_pos;
+	int i;
+
+	// Point to start of the requested address's page
+	flash_add = (uint8_t*)((uint32_t)dst - ((uint32_t)dst % AVR32_FLASHC_PAGE_SIZE));
+
+	Avr32FlashClearPageBuffer();
+
+	for (page_pos = 0; page_pos < AVR32_FLASHC_PAGE_SIZE; page_pos += sizeof(uint64_t) ) {
+
+		// Load original flash contents to page buffer
+		flash_dword.uint64 = *((volatile uint64_t*)flash_add);
+
+		// Update page buffer contents only if overlaps with [dst..dst+nbytes]
+		for (i = 0; i < sizeof(uint64_t); ++i) {
+			if (consumedBytes < nbytes && (flash_add == dst)) {
+				// Update page with source contents
+				flash_dword.uint8[i] = 0xFF;
+				dst++;
+				consumedBytes++;
+			}
+			flash_add++;
+		}
+
+		// Write flash page buffer in chunks of 64 bits as required by FLASHC
+		(*(volatile uint64_t*)((uint32_t)flash_add - sizeof(uint64_t))) = flash_dword.uint64;
+	}
+	return consumedBytes;	
+}
+
+
 /*!
  * \brief Load configuration parameters from embedded flash memory.
  *
@@ -227,9 +266,6 @@ int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len)
  *
  * Applications should call NutNvMemSave().
  *
- * The region that contains the configuration sector will be automatically
- * locked.
- *
  * \param pos   Start location within configuration sector.
  * \param data  Points to a buffer that contains the bytes to store.
  * \param len   Number of bytes to store.
@@ -247,6 +283,39 @@ int Avr32FlashcParamWrite(unsigned int pos, const void *data, unsigned int len)
 		byteCount += Avr32FlashFillPageBuffer( (void *)&flash_nvram_data + pos + byteCount, data + byteCount, len - byteCount );
 		Avr32FlashEraseCurrentPage();
 		Avr32FlashWriteCurrentPage();
+	}
+
+    return 0;
+}
+
+/*!
+ * \brief Erase configuration parameters in embedded flash memory.
+ *
+ * Applications should call NutNvMemErase().
+ *
+ * \param pos   Start location within configuration sector.
+ * \param len   Number of bytes to erase. 
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+int Avr32FlashcParamErase(unsigned int pos, int len)
+{
+	NUTASSERT( pos + len <= __flash_nvram_size__ );
+
+	int byteCount = 0;
+	int currentPageByteCount;
+
+	if ( len == -1 || len > __flash_nvram_size__ - pos)
+		len = __flash_nvram_size__ - pos;
+
+	while( byteCount < len )
+	{
+		currentPageByteCount = Avr32FlashErasePageBuffer( (void *)&flash_nvram_data + pos + byteCount, len - byteCount );
+		Avr32FlashEraseCurrentPage();
+		if ( currentPageByteCount != AVR32_FLASHC_PAGE_SIZE )
+			Avr32FlashWriteCurrentPage();
+
+		byteCount += currentPageByteCount;
 	}
 
     return 0;

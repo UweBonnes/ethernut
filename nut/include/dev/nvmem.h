@@ -63,9 +63,11 @@
 
 extern int NutNvMemLoad(unsigned int addr, void *buff, size_t siz);
 extern int NutNvMemSave(unsigned int addr, const void *buff, size_t len);
+extern int NutNvMemErase(unsigned int addr, size_t len);
 
 extern int OnChipNvMemLoad(unsigned int addr, void *buff, size_t siz);
 extern int OnChipNvMemSave(unsigned int addr, const void *buff, size_t len);
+extern int OnChipNvMemErase(unsigned int addr, size_t len);
 
 extern int NutNvMemLock(void);
 extern int NutNvMemUnlock(void);

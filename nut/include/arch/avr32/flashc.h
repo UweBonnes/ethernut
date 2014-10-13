@@ -40,5 +40,6 @@
 
 extern int Avr32FlashcParamRead(unsigned int pos, void *data, unsigned int len);
 extern int Avr32FlashcParamWrite(unsigned int pos, const void *data, unsigned int len);
+extern int Avr32FlashcParamErase(unsigned int pos, int len);
 
 #endif

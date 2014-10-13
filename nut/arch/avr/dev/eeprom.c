@@ -94,4 +94,31 @@ int OnChipNvMemSave(unsigned int addr, const void *buff, size_t len)
 	return 0;
 }
 
+
+/*!
+ * \brief Erase data in AVR EEPROM.
+ *
+ * \return Always 0.
+ */
+int OnChipNvMemErase(unsigned int addr, size_t len)
+{
+	size_t i;
+
+	if ( len == -1 || len > E2END - addr )
+		len = E2END - addr;
+
+	for (i = 0; i < len; ++i) {
+#if defined(__IMAGECRAFT__)
+		if (EEPROMread((int) (addr + i)) != 0xFF) {
+			EEPROMwrite((int) (addr + i), 0xFF);
+		}
+
+#elif defined(__GNUC__)
+		eeprom_busy_wait();
+		eeprom_update_byte((void *)addr, 0xFF);
+#endif
+	}
+
+	return 0;
+}
 /*@}*/

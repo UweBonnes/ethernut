@@ -152,6 +152,8 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
  * This routine provides platform independent access to non-volatile
  * configuration data.
  *
+ * It is NOT necessary to call NutNvMemErase before calling this function.
+ *
  * \param addr Location to write to.
  * \param buff Pointer to a buffer that contains the data.
  * \param len  Number of bytes to write.
@@ -184,6 +186,30 @@ int NutNvMemSave(unsigned int addr, const void *buff, size_t len)
     return EEWriteData( addr, buff, len);
 #elif defined(NUT_CONFIG_AVR32EFC)
 	return Avr32FlashcParamWrite( addr, buff, len);
+#else
+    return -1;
+#endif
+}
+
+/*!
+ * \brief Erase data in non-volatile memory.
+ *
+ * This routine provides platform independent access to non-volatile
+ * configuration data. Erasing all configuration data will return
+ * Nut/OS configuration to defaults
+ *
+ * \param addr Location to erase.
+ * \param len  Number of bytes erase or -1 to erase to the end of
+ *             non-volatile memory configuration area.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutNvMemErase(unsigned int addr, size_t len)
+{
+#if defined(__AVR__)
+    return OnChipNvMemErase(addr, len);
+#elif defined(NUT_CONFIG_AVR32EFC)
+	return Avr32FlashcParamErase( addr, len);
 #else
     return -1;
 #endif
