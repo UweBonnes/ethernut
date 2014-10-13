@@ -67,7 +67,7 @@ public slots:
     void on_actionAbout_triggered();
 
     void clearFoundItems(void);
-    void on_findNext_triggered(const QString &text);
+    void findNextText(const QString &text);
 
 private:
     void readSettings();

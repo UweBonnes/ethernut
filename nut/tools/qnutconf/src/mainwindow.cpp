@@ -253,7 +253,7 @@ void MainWindow::on_actionFind_triggered()
 {
 	if (m_findDialog == 0) {
 		m_findDialog = new FindDialog(this);
-		connect(m_findDialog, SIGNAL(findNext(const QString &)), this, SLOT(on_findNext_triggered(const QString &)));
+		connect(m_findDialog, SIGNAL(findNext(const QString &)), this, SLOT(findNextText(const QString &)));
 	}
     clearFoundItems();
 	m_findDialog->show();
@@ -261,7 +261,7 @@ void MainWindow::on_actionFind_triggered()
 	m_findDialog->activateWindow();
 }
 
-void MainWindow::on_findNext_triggered(const QString &text)
+void MainWindow::findNextText(const QString &text)
 {
 	if (m_findText != text || m_foundItems.isEmpty()) {
 		QApplication::setOverrideCursor(Qt::WaitCursor);
