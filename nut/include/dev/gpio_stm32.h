@@ -152,30 +152,19 @@ extern const uint16_t ospeed_values[4];
  */
 #define GPIO_CFG_INIT_HIGH   0x80000000
 
-typedef struct {
+typedef struct _gpio_vector{
     void (*iov_handler) (void *);
     void *iov_arg;
 } GPIO_VECTOR;
 
-typedef struct {
-    IRQ_HANDLER *ios_sig;
-    void (*ios_handler) (void *);
-    int (*ios_ctl) (int cmd, void *param, int bit);
-    GPIO_VECTOR *ios_vector;
-} GPIO_SIGNAL;
+typedef struct _gpio_signal GPIO_SIGNAL;
 
-#if defined(PIO_ISR)
-extern GPIO_SIGNAL sig_GPIO;
-#endif
-#if defined(PIOA_ISR)
-extern GPIO_SIGNAL sig_GPIO1;
-#endif
-#if defined(PIOB_ISR)
-extern GPIO_SIGNAL sig_GPIO2;
-#endif
-#if defined(PIOC_ISR)
-extern GPIO_SIGNAL sig_GPIO3;
-#endif
+struct _gpio_signal{
+    int   ios_port;
+    int   ios_pin;
+    GPIO_VECTOR ios_vector;
+    GPIO_SIGNAL *sig_next;
+};
 
 extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
@@ -227,6 +216,8 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #else
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR,(  bank-GPIOA_BASE)>>10)
 #endif
-extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, uint8_t bit, void (*handler) (void *), void *arg);
-extern int GpioIrqEnable(GPIO_SIGNAL * sig, uint8_t bit);
-extern int GpioIrqDisable(GPIO_SIGNAL * sig, uint8_t bit);
+extern GPIO_SIGNAL *GpioCreateIrqHandler(nutgpio_port_t port, nutgpio_pin_t bit, void (*handler) (void *), void *arg);
+extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg);
+extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);
+extern int GpioIrqDisable(GPIO_SIGNAL * sig, int bit);
+extern int GpioIrqSetMode(GPIO_SIGNAL * sig, int bit, int mode);

@@ -338,7 +338,10 @@ nutarch_cm3_stm32f1 =
         description = "Generic port I/O API.",
         requires = { "HW_MCU_STM32", "HW_GPIO_STM32V1" },
         provides = { "HW_GPIO_V1" };
-        sources = { "cm3/dev/stm/stm32f1_gpio.c"}
+        sources = {
+                "cm3/dev/stm/stm32f1_gpio.c",
+                "cm3/dev/stm/stm32_gpioirq.c",
+        }
     },
 }
 

@@ -576,7 +576,10 @@ nutarch_cm3_stm32_devices =
         description = "Generic port I/O API.",
         requires = { "HW_GPIO_STM32V2" },
         provides = { "HW_GPIO_V2", "HW_GPIO" },
-        sources = { "cm3/dev/stm/stm32_gpio.c"}
+        sources = {
+                "cm3/dev/stm/stm32_gpio.c",
+                "cm3/dev/stm/stm32_gpioirq.c"
+        }
     },
     --
     -- STM32 CEC V2 on STM32F373
