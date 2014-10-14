@@ -56,7 +56,23 @@
    - If the device is only available on some F1 devices, create a configurator
      item with the HW_XXX_STM32 value.
 */
-CREATE_HANDLER(WWDG,          WWDG,     NUT_IRQPRI_DEF);    /* Window Watchdog */
+#if defined(MCU_STM32F0) || defined(MCU_STM32L0)
+CREATE_HANDLER(INTERRUPT0_1,  EXTI0_1,     NUT_IRQPRI_DEF); /* EXTI Line 0 and 1 */
+CREATE_HANDLER(INTERRUPT2_3,  EXTI2_3,     NUT_IRQPRI_DEF); /* EXTI Line 2 and 3 */
+CREATE_HANDLER(INTERRUPT4_15, EXTI4_15,    NUT_IRQPRI_DEF); /* EXTI Line 4 to 15 */
+#else
+CREATE_HANDLER(INTERRUPT0,    EXTI0,       NUT_IRQPRI_DEF); /* EXTI Line 0 */
+CREATE_HANDLER(INTERRUPT1,    EXTI1,       NUT_IRQPRI_DEF); /* EXTI Line 1 */
+#if defined(MCU_STM32F3)
+CREATE_HANDLER(INTERRUPT2,    EXTI2_TS,    NUT_IRQPRI_DEF); /* EXTI Line 2 and Touch controller*/
+#else
+CREATE_HANDLER(INTERRUPT2,    EXTI2,       NUT_IRQPRI_DEF); /* EXTI Line 2 */
+#endif
+CREATE_HANDLER(INTERRUPT3,    EXTI3,       NUT_IRQPRI_DEF); /* EXTI Line 3 */
+CREATE_HANDLER(INTERRUPT4,    EXTI4,       NUT_IRQPRI_DEF); /* EXTI Line 4 */
+CREATE_HANDLER(INTERRUPT9_5,  EXTI9_5,     NUT_IRQPRI_DEF); /* EXTI Line 5 to 9 */
+CREATE_HANDLER(INTERRUPT15_10,EXTI15_10,   NUT_IRQPRI_DEF); /* EXTI Line 10 to 15 */
+#endif
 #if defined (STM32F072)
 CREATE_HANDLER(PVD,           PVD_VDDIO2, NUT_IRQPRI_DEF);    /* PVD through EXTI */
 #else

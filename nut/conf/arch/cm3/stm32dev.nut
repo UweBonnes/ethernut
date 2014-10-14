@@ -579,36 +579,6 @@ nutarch_cm3_stm32_devices =
         sources = { "cm3/dev/stm/stm32_gpio.c"}
     },
     --
-    -- STM32F EXTI Interrupt handler
-    --
-    {
-        name = "nutarch_cm3_stm32_devices_exti04",
-        brief = "STM32F External Interrupt 4..0",
-        description = "Interrupt Configuration for external interrups through GPIO.",
-        requires = { "HW_MCU_STM32", "HW_EXTI04_STM32" },
-        sources = { "cm3/dev/stm/ih_stm32_exti0.c",
-                    "cm3/dev/stm/ih_stm32_exti1.c",
-                    "cm3/dev/stm/ih_stm32_exti2.c",
-                    "cm3/dev/stm/ih_stm32_exti3.c",
-                    "cm3/dev/stm/ih_stm32_exti4.c",
-                    }
-    },
-    {
-        name = "nutarch_cm3_stm32_devices_exti95",
-        brief = "STM32F External Interrupts 9..5",
-        description = "Interrupt Configuration for external interrups through GPIO.",
-        requires = { "HW_MCU_STM32", "HW_EXTI95_STM32" },
-        sources = { "cm3/dev/stm/ih_stm32_exti9_5.c" }
-    },
-    {
-        name = "nutarch_cm3_stm32_devices_exti1510",
-        brief = "STM32F External Interrupts 15..10",
-        description = "Interrupt Configuration for external interrups through GPIO.",
-        requires = { "HW_MCU_STM32", "HW_EXTI1510_STM32" },
-        sources = { "cm3/dev/stm/ih_stm32_exti15_10.c" }
-    },
-
-    --
     -- STM32 CEC V2 on STM32F373
     --
     {
