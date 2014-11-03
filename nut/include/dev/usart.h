@@ -202,6 +202,13 @@ struct _RINGBUF {
      */
     HANDLE rbf_que;
 
+    /*! \brief Mutex for flush operation on this buffer.
+     *
+     * The lock is closed if a flush is called on this buffer, allowing
+     * only one fflush() to be called at a time
+     */
+    HANDLE flush_mutex;
+
     /*! \brief Number of bytes for block-read
      *
      * If this is zero, incoming bytes are stored in ringbuffer

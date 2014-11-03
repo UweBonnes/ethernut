@@ -98,6 +98,8 @@ int UsartInit(NUTDEVICE * dev)
         /* Ignore errors on initial configuration. */
         (*dcb->dcb_set_speed) (USART_INITSPEED);
     }
+    /* Initialise the fflush mutex to signalled state */
+    NutEventPost(&dcb->dcb_tx_rbf.flush_mutex);
     return rc;
 }
 
@@ -320,6 +322,9 @@ static size_t UsartFlushOutput(USARTDCB *dcb, size_t added, size_t left)
     size_t rc;
     RINGBUF *rbf = &dcb->dcb_tx_rbf;
 
+    if ((added == 0) && (left == 0)) {
+        NutEventWait(&rbf->flush_mutex, 0);
+    }
     /*
      * Add the new characters to the buffer count.
      */
@@ -339,6 +344,9 @@ static size_t UsartFlushOutput(USARTDCB *dcb, size_t added, size_t left)
         rc = rbf->rbf_cnt;
         NutExitCritical();
     };
+    if ((added == 0) && (left == 0)) {
+        NutEventPost(&rbf->flush_mutex);
+    }
     return rc;
 }
 
@@ -565,6 +573,8 @@ int UsartClose(NUTFILE * fp)
     free(fp);
     UsartResetBuffer(&dcb->dcb_tx_rbf, 0, 0, 0);
     UsartResetBuffer(&dcb->dcb_rx_rbf, 0, 0, 0);
+    /* Wake up all threads waiting for a fflush */
+    NutEventBroadcast(&dcb->dcb_tx_rbf.flush_mutex);
     /* Wake-up all threads waiting for incoming data. */
     NutEventBroadcast(&dcb->dcb_rx_rbf.rbf_que);
     NutSelectWakeup(dcb->dcb_rx_rbf.wq_list, WQ_FLAG_READ);
