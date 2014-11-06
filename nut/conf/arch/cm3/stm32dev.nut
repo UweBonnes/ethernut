@@ -602,6 +602,13 @@ nutarch_cm3_stm32_devices =
         provides = { "HW_TIM2_STM32" , "HW_STM32_TIMER_32BIT" },
     },
     {
+        name = "nutarch_cm3_stm32_timer5_32bit",
+        brief = "STM32 Timer5 32Bit",
+        description = "STM32 Timer infrastructure.",
+        requires = { "HW_TIM5_32BIT_STM32" },
+        provides = { "HW_TIM5_STM32" , "HW_STM32_TIMER_32BIT" },
+    },
+    {
         name = "nutarch_cm3_stm32_qenc32_0",
         brief = "STM32 32Bit Quadrature Encoder0",
         description = "STM32 32Bit Quadrature Encoder 0.",
