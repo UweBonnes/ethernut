@@ -164,7 +164,8 @@ nuttools =
             macro = "CM3_GCC",
             flavor = "boolean",
             exclusivity = toolchain_names,
-            file = "include/cfg/arch.h"
+            file = "include/cfg/arch.h",
+            makedefs = function() return { "LDINCLUDE=" .. GetLDScriptsPath() }; end,
         },
         {
             brief = "GCC for CortexM (no libc)",
