@@ -198,7 +198,7 @@ extern void RSA_pub_key_new(RSA_CTX **rsa_ctx,
         const uint8_t *pub_exp, int pub_len);
 extern void RSA_free(RSA_CTX *ctx);
 extern int RSA_decrypt(const RSA_CTX *ctx, const uint8_t *in_data, uint8_t *out_data,
-        int is_decryption);
+        int out_len, int is_decryption);
 extern bigint *RSA_private(const RSA_CTX *c, bigint *bi_msg);
 extern bigint *RSA_sign_verify(BI_CTX *ctx, const uint8_t *sig, int sig_len,
         bigint *modulus, bigint *pub_exp);
@@ -213,7 +213,7 @@ extern void RSA_print(const RSA_CTX *ctx);
 extern void RNG_initialize(void);
 extern void RNG_custom_init(const uint8_t *seed_buf, int size);
 extern void RNG_terminate(void);
-extern void get_random(int num_rand_bytes, uint8_t *rand_data);
-extern void get_random_NZ(int num_rand_bytes, uint8_t *rand_data);
+extern int get_random(int num_rand_bytes, uint8_t *rand_data);
+extern int get_random_NZ(int num_rand_bytes, uint8_t *rand_data);
 
 #endif

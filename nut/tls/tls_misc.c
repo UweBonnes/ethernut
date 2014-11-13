@@ -116,7 +116,7 @@ void RNG_terminate(void)
 /**
  * Set a series of bytes with a random number. Individual bytes can be 0
  */
-void get_random(int num_rand_bytes, uint8_t *rand_data)
+int get_random(int num_rand_bytes, uint8_t *rand_data)
 {
     /* The method we use when we've got nothing better. Use RC4, time
        and a couple of random seeds to generate a random sequence */
@@ -150,21 +150,25 @@ void get_random(int num_rand_bytes, uint8_t *rand_data)
 
     /* insert the digest at the start of the entropy pool */
     memcpy(entropy_pool, digest, MD5_SIZE);
+    return 0;
 }
 
 /**
  * Set a series of bytes with a random number. Individual bytes are not zero.
  */
-void get_random_NZ(int num_rand_bytes, uint8_t *rand_data)
+int get_random_NZ(int num_rand_bytes, uint8_t *rand_data)
 {
     int i;
-    get_random(num_rand_bytes, rand_data);
+    if (get_random(num_rand_bytes, rand_data))
+        return -1;
 
     for (i = 0; i < num_rand_bytes; i++)
     {
         while (rand_data[i] == 0)  /* can't be 0 */
             rand_data[i] = (uint8_t)(rand());
     }
+
+    return 0;
 }
 
 /**
