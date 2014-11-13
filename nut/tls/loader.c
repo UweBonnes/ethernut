@@ -80,7 +80,7 @@ int ssl_obj_load(SSL_CTX *ssl_ctx, int obj_type,
 #ifdef TLS_SSL_HAS_PEM
         ret = ssl_obj_PEM_load(ssl_ctx, obj_type, ssl_obj, password);
 #else
-        printf(unsupported_str);
+        printf("%s", unsupported_str);
         ret = SSL_ERROR_NOT_SUPPORTED;
 #endif
     }
@@ -144,7 +144,7 @@ static int do_obj(SSL_CTX *ssl_ctx, int obj_type,
             break;
 #endif
         default:
-            printf(unsupported_str);
+            printf("%s", unsupported_str);
             ret = SSL_ERROR_NOT_SUPPORTED;
             break;
     }
