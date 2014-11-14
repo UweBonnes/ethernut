@@ -27,7 +27,7 @@
 #include <wx/wx.h>
 #include <wx/dataview.h>
 
-#include "nutcomponent.h"
+#include "../../common/nutcomponent.h"
 
 /*!
  * \brief Component types.

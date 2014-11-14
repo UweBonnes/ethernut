@@ -27,8 +27,8 @@ bin_PROGRAMS += nutconf
 nutconf_SOURCES = \
 	nutconf.cpp       \
 	nutconf.h         \
-	nutcomponent.c    \
-	nutcomponent.h    \
+	../../common/nutcomponent.c    \
+	../../common/nutcomponent.h    \
 	appoptdlg.cpp     \
 	appoptdlg.h       \
 	bldoptdlg.cpp     \
@@ -84,8 +84,8 @@ nutconf_LDADD = \
 endif
 
 nutconfigure_SOURCES = \
-	nutcomponent.c \
-	nutcomponent.h
+	../../common/nutcomponent.c \
+	../../common/nutcomponent.h
 
 nutconfigure_CPPFLAGS = \
 	-DNUT_CONFIGURE_EXEC \

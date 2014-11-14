@@ -30,7 +30,7 @@
 #include <wx/docview.h>
 
 #include "nutconfview.h"
-#include "nutcomponent.h"
+#include "../../common/nutcomponent.h"
 #include "conftreemodel.h"
 
 class CConfTreeModel;
