@@ -38,7 +38,7 @@
 #include <QVariant>
 #include <QAbstractItemModel>
 
-#include "nutcomponent.h"
+#include "../../common/nutcomponent.h"
 
 class QTextStream;
 

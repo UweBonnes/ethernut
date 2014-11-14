@@ -41,7 +41,6 @@
 #include "nutcomponentmodel.h"
 #include "nutcomponentmodel_p.h"
 
-#include "nutcomponent.h"
 #include "settings.h"
 
 

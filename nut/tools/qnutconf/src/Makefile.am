@@ -124,8 +124,8 @@ qnutconf_SOURCES =          \
 	main.cpp                \
 	mainwindow.cpp          \
 	mainwindow.h            \
-	nutcomponent.c          \
-	nutcomponent.h          \
+	../../common/nutcomponent.c          \
+	../../common/nutcomponent.h          \
 	nutcomponentdelegate.cpp\
 	nutcomponentdelegate.h  \
 	nutcomponentmodel.cpp   \

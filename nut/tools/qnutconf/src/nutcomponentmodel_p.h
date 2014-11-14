@@ -39,7 +39,7 @@
 #include <QAbstractItemModel>
 #include <QPixmap>
 
-#include "nutcomponent.h"
+#include "../../common/nutcomponent.h"
 #include "nutcomponentmodel.h"
 
 class TreeItem
