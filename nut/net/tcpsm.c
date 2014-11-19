@@ -667,8 +667,8 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
     case TCPS_FIN_WAIT_2:
         if (state == TCPS_DESTROY) {
             /* Change to DESTROY. Socket will be destroyed ASAP */
-            break;        
-        } else 
+            break;
+        } else
         /*
          * FIN received.
          */
@@ -694,8 +694,8 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
     case TCPS_CLOSING:
         if (state == TCPS_DESTROY) {
             /* Change to DESTROY. Socket will be destroyed ASAP */
-            break;        
-        } else     
+            break;
+        } else
         /*
          * ACK of FIN received.
          */
@@ -707,16 +707,16 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
     case TCPS_LAST_ACK:
         if (state == TCPS_DESTROY) {
             /* Change to DESTROY. Socket will be destroyed ASAP */
-            break;        
-        } else             
+            break;
+        } else
             rc = -1;
         break;
 
     case TCPS_TIME_WAIT:
         if (state == TCPS_DESTROY) {
             /* Change to DESTROY. Socket will be destroyed ASAP */
-            break;        
-        } else             
+            break;
+        } else
             rc = -1;
         break;
 
@@ -777,7 +777,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
             NutEventBroadcast(&sock->so_ac_tq);
             /* Wake up all running selects (read and write queue) on this socket */
             NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
-            NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);       
+            NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);
         }
     }
     return rc;
@@ -1714,7 +1714,7 @@ THREAD(NutTcpSm, arg)
         }
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {
             tac = 0;
-            
+
 #if TCP_BACKLOG_MAX
             /* Process backlog timer.
              *
@@ -1900,7 +1900,7 @@ int NutTcpAbortSocket(TCPSOCKET * sock, uint16_t last_error)
     NutEventBroadcast(&sock->so_tx_tq);
     NutEventBroadcast(&sock->so_pc_tq);
     NutEventBroadcast(&sock->so_ac_tq);
-    /* Check if we had a timeout on NutTcpConnect(). In this case there is no 
+    /* Check if we had a timeout on NutTcpConnect(). In this case there is no
        need for a notification of the select wait queues.
      */
     if (!((current_state == TCPS_SYN_SENT) && (last_error == ETIMEDOUT))) {
