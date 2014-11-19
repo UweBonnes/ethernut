@@ -144,7 +144,6 @@ bool NutComponentModel::openConfig( const QString& fileName )
 			emit message( tr("OK") );
 	}
 	rebuildTree();
-	reset();
 	return true;
 }
 
@@ -343,8 +342,16 @@ int NutComponentModel::rowCount(const QModelIndex &parent) const
 
 void NutComponentModel::rebuildTree()
 {
+#if QT_VERSION_CHECK(5,0,0)
+	beginResetModel();
+#endif
 	d->rootItem->clear();
 	d->addChildItems( d->rootComponent, d->rootItem, this );
+#if QT_VERSION_CHECK(5,0,0)
+	endResetModel();
+#else
+	reset();
+#endif
 }
 
 NUTREPOSITORY* NutComponentModel::repository()

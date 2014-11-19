@@ -2,12 +2,14 @@
 TEMPLATE = app
 TARGET = qnutconf
 DEPENDPATH += $$PWD
-INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD ../../include/win32
 
 CONFIG += qt thread
 # CONFIG -= flat
+QT += widgets
 
 win32:DEFINES += _CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_WARNINGS
+win32:INCLUDEPATH += ../../include/win32
 
 DEFINES += NUTCONF_VERSION=3.1.0
 
@@ -18,7 +20,7 @@ SOURCES +=	\
 			finddialog.cpp \
 			main.cpp \
 			mainwindow.cpp \
-			nutcomponent.c \
+			../../common/nutcomponent.c \
 			nutcomponentdelegate.cpp \
 			nutcomponentmodel.cpp \
 			nutcomponentmodelfilterproxy.cpp \
@@ -33,7 +35,7 @@ HEADERS +=	\
 			dirtraverser.h \
 			finddialog.h \
 			mainwindow.h \
-			nutcomponent.h \
+			../../common/nutcomponent.h \
 			nutcomponentdelegate.h \
 			nutcomponentmodel.h \
 			nutcomponentmodelfilterproxy.h \
