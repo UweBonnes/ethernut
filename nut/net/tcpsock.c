@@ -670,10 +670,13 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
                 i = sock->so_rx_bsz;
 
             if (sock->so_rx_win <= sock->so_mss && i > sock->so_mss) {
+                /* Force immediate window update. */
                 sock->so_rx_win = i;
                 NutTcpStateWindowEvent(sock);
             } else {
+                /* Lazy window update. */
                 sock->so_rx_win = i;
+                sock->so_tx_flags |= SO_ACK;
             }
         }
     }
