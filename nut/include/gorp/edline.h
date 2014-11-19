@@ -65,6 +65,9 @@
 #define EDIT_MODE_BINARY    0x0002
 /*! \brief Enables input line history. */
 #define EDIT_MODE_HISTORY   0x0004
+/*! \brief Enables calls to the flush function when the editor modifies
+ *  the input line during a read. */
+#define EDIT_MODE_AUTOFLUSH 0x0008
 /*@}*/
 
 /*!
@@ -155,6 +158,8 @@ typedef struct _EDITHISTORY {
 typedef int (*EDLINEGET) (void *);
 /*! \brief Output routine type. */
 typedef int (*EDLINEPUT) (void *, int);
+/*! \brief Flush routine type. */
+typedef void (*EDLINEFLUSH) (void *);
 /*! \brief Character mapping routine type. */
 typedef int (*EDLINEMAP) (int, int *);
 
@@ -168,6 +173,10 @@ typedef struct _EDLINE {
     EDLINEPUT el_put;
     /*! \brief Output routine parameter. */
     void *el_oparm;
+    /*! \brief Flush routine. */
+    EDLINEFLUSH el_flush;
+    /*! \brief Flush routine parameter. */
+    void *el_fparm;
     /*! \brief Character mapping routine. */
     EDLINEMAP el_map;
     /*! \brief Editor mode flags. */
@@ -200,5 +209,6 @@ extern int EdLineKeyMapVt100(int key, int *seq);
 
 extern void EdLineRegisterInput(EDLINE *el, EDLINEGET get, void *iparm);
 extern void EdLineRegisterOutput(EDLINE *el, EDLINEPUT put, void *oparm);
+extern void EdLineRegisterFlush(EDLINE *el, EDLINEFLUSH flush, void *oparm);
 
 #endif

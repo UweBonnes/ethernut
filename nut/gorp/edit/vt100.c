@@ -111,6 +111,10 @@ int EdLineKeyMapVt100(int key, int *seq)
         (*seq) = 1;
         key = EDIT_KEY_IGNORE;
     }
+    else if (key == 0x7f) {
+        (*seq) = 0;
+        key = EDIT_KEY_REMOVE;
+    }
     else {
         key = EdLineKeyMap(key, seq);
     }

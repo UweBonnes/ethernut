@@ -81,12 +81,25 @@ static int EdLineGetChar(void *param)
  * Uses stdout and may be replaced by calling EdLineRegisterOutput().
  *
  * \param param Optional parameter, ignored here.
+ * \param ch    Character to print.
  *
  * \return Character written or EOF in case of an error.
  */
 static int EdLinePutChar(void *param, int ch)
 {
     return putchar(ch);
+}
+
+/*!
+ * \brief Default flush routine.
+ *
+ * Uses stdout and may be replaced by calling EdLineRegisterFlush().
+ *
+ * \param param Optional parameter, ignored here.
+ */
+static void EdLineFlush(void *param)
+{
+    fflush(stdout);
 }
 
 /*!
@@ -133,6 +146,28 @@ void EdLineRegisterOutput(EDLINE *el, EDLINEPUT put, void *param)
         el->el_put = EdLinePutChar;
     }
     el->el_oparm = param;
+}
+
+/*!
+ * \brief Register a flush routine.
+ *
+ * Applications may use this function to replace the default flush routine.
+ *
+ * \param el    Pointer to an \ref EDLINE structure, obtained by a
+ *              previous call to \ref EdLineOpen.
+ * \param flush Pointer to the new flush routine. If NULL, then the
+ *              default routine is restored.
+ * \param param Optional parameter, which is passed to the output
+ *              routine.
+ */
+void EdLineRegisterFlush(EDLINE *el, EDLINEFLUSH flush, void *param)
+{
+    if (flush) {
+        el->el_flush = flush;
+    } else {
+        el->el_flush = EdLineFlush;
+    }
+    el->el_fparm = param;
 }
 
 /*!
@@ -208,6 +243,7 @@ EDLINE *EdLineOpen(uint16_t mode)
         el->el_mode = mode;
         EdLineRegisterInput(el, NULL, stdin);
         EdLineRegisterOutput(el, NULL, stdout);
+        EdLineRegisterFlush(el, NULL, stdout);
         EdLineRegisterKeymap(el, NULL);
 #ifndef EDIT_DISABLE_HISTORY
         if (mode & EDIT_MODE_HISTORY) {
@@ -410,19 +446,21 @@ int EdLineRead(EDLINE *el, char *buf, int siz)
             cpos = strlen(buf);
         }
         /* Normal character, insert at cursor position if buffer is not full. */
-        else if (isprint(ch) && strlen(buf) < siz - 1) {
-            for (i = siz - 1; i > cpos; i--) {
-                buf[i] = buf[i - 1];
+        else if (isprint(ch)) {
+            if (strlen(buf) < siz - 1) {
+                for (i = siz - 1; i > cpos; i--) {
+                    buf[i] = buf[i - 1];
+                }
+                buf[cpos++] = ch;
+                if (el->el_mode & EDIT_MODE_ECHO) {
+                    (*el->el_put)(el->el_oparm, ch);
+                }
+                PrintString(el, &buf[cpos]);
+                PrintCharacter(el, EDIT_CHAR_BACKSPACE, strlen(buf) - cpos);
+            } else {
+                /* Beep on buffer overflow. */
+                (*el->el_put)(el->el_oparm, EDIT_CHAR_ALARM);
             }
-            buf[cpos++] = ch;
-            if (el->el_mode & EDIT_MODE_ECHO) {
-                (*el->el_put)(el->el_oparm, ch);
-            }
-            PrintString(el, &buf[cpos]);
-            PrintCharacter(el, EDIT_CHAR_BACKSPACE, strlen(buf) - cpos);
-        } else {
-            /* Beep on buffer overflow. */
-            (*el->el_put)(el->el_oparm, EDIT_CHAR_ALARM);
         }
 #ifndef EDIT_DISABLE_HISTORY
         if (refresh && (el->el_mode & EDIT_MODE_HISTORY) != 0) {
@@ -435,6 +473,9 @@ int EdLineRead(EDLINE *el, char *buf, int siz)
             ClearLineEnd(el, ipos - cpos);
         }
 #endif
+        if (el->el_mode & EDIT_MODE_AUTOFLUSH) {
+            el->el_flush(el->el_fparm);
+        }
     }
     PrintString(el, EDIT_STR_EOL);
 #ifndef EDIT_DISABLE_HISTORY
