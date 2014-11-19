@@ -141,7 +141,7 @@ int NutTcpOutput(TCPSOCKET * sock, const uint8_t * data, uint16_t size)
      * Process ACK flag.
      */
     th->th_seq = htonl(sock->so_tx_nxt);
-    if (sock->so_tx_flags & SO_ACK) {
+    if (size || (sock->so_tx_flags & SO_ACK) != 0) {
         th->th_flags = TH_ACK;
         sock->so_tx_flags &= ~SO_ACK;
         th->th_ack = htonl(sock->so_rx_nxt);

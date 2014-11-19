@@ -300,16 +300,10 @@ static void NutTcpProcessAppData(TCPSOCKET * sock, NETBUF * nb)
     }
 
     /*
-     * Set the socket's ACK flag. This will enable ACK transmission in
-     * the next outgoing segment. If no more NETBUFs are queued, we
-     * force immediate transmission of the ACK.
+     * Enable ACK transmission in the next outgoing segment.
      */
     sock->so_tx_flags |= SO_ACK;
-    if (nb->nb_next) {
-        nb->nb_next = NULL;
-    } else {
-        sock->so_tx_flags |= SO_FORCE;
-    }
+    nb->nb_next = NULL;
     if (++sock->so_rx_apc > TCP_COLLECT_INADV) {
         NETBUF *nbq;
         int_fast8_t apc = sock->so_rx_apc;
