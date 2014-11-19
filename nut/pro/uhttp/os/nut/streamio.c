@@ -226,6 +226,7 @@ int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz
             /* Not enough data to fit the delimiter, re-fill the buffer. */
             sp->strm_ilen -= sp->strm_ipos;
             memcpy(sp->strm_ibuf, sp->strm_ibuf + sp->strm_ipos, sp->strm_ilen);
+            sp->strm_ipos = 0;
             got = NutTcpReceive(sp->strm_sock, sp->strm_ibuf + sp->strm_ilen, sizeof(sp->strm_ibuf) - sp->strm_ilen);
             if (got <= 0) {
                 /* Broken connection or timeout. */
@@ -235,7 +236,6 @@ int StreamReadUntilString(HTTP_STREAM *sp, const char *delim, char *buf, int siz
                 break;
             }
             sp->strm_ilen += got;
-            sp->strm_ipos = 0;
         }
         for (i = sp->strm_ipos, n = 0; i < sp->strm_ilen && rc + n < siz; i++, n++) {
             if (*delim == sp->strm_ibuf[i]) {
