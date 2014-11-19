@@ -403,9 +403,9 @@ int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval, int optlen)
  * will be suspended until a connection is successfully established
  * or an error occurs.
  *
- * If a write timeout is set for this socket, the function will return 
- * an error, if the connection could not be established before the 
- * timeout. In this case the last error is set to ETIMEOUT. 
+ * If a write timeout is set for this socket, the function will return
+ * an error, if the connection could not be established before the
+ * timeout. In this case the last error is set to ETIMEOUT.
  *
  * This function is typically used by TCP client applications.
  *
@@ -1002,7 +1002,7 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
 
 #ifndef CRT_DISABLE_SELECT_POLL
 /*!
- * \brief Callback function called by select routine to check, if read 
+ * \brief Callback function called by select routine to check, if read
  *        or write to this socket would block
  * \internal
  *
@@ -1014,7 +1014,7 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
  * \param sock  Socket descriptor. This pointer must have been
  *              retrieved by calling NutTcpCreateSocket().
  * \param flags Flags representing what we are waiting for (read / write / exception)
- * \param wq    Waitqueue, which should be added to the drivers waitqueue list. The 
+ * \param wq    Waitqueue, which should be added to the drivers waitqueue list. The
  *              thread that called select is waiting on this waitqueue
  * \param cmd   Internal command, that is passed to NutSelectManageWq
  *
@@ -1040,7 +1040,7 @@ int NutTcpDeviceSelect (TCPSOCKET * sock, int flags, HANDLE *wq, select_cmd_t cm
         }
     }
     if ((sock->so_state == TCPS_CLOSED) || (sock->so_state == TCPS_CLOSE_WAIT) || (sock->so_state == TCPS_DESTROY)) {
-        /* The socket has been closed. Signal for read and write. 
+        /* The socket has been closed. Signal for read and write.
            Send and receive routines will then return EOF.
          */
         rflags |= WQ_FLAG_READ | WQ_FLAG_WRITE;
