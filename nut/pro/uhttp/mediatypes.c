@@ -118,13 +118,15 @@ int MediaTypeHandlerBinary(HTTPD_SESSION *hs, const MEDIA_TYPE_ENTRY *mt, const 
         }
 #if !defined(HTTPD_EXCLUDE_DATE)
         if (rc) {
-            mtime = RfcTimeParse("Fri " __DATE__ " " __TIME__);
+            mtime = RfcTimeParse("Fri " __DATE__ " " __TIME__) + _timezone;
         } else {
             mtime = s.st_mtime;
         }
         /* Check if-modified-since condition. */
         if (hs->s_req.req_ims && s.st_mtime <= hs->s_req.req_ims) {
-            HttpSendError(hs, 304);
+            HttpSendHeaderTop(hs, 304);
+            HttpSendHeaderDate(hs, mtime);
+            HttpSendHeaderBottom(hs, NULL, NULL, 0);
         } else
 #endif
 #endif
