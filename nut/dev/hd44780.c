@@ -178,6 +178,7 @@ static void LcdWriteNibble(unsigned int nib)
     LCD_EN_SET();
     NutMicroDelay(LCD_SHORT_DELAY);
     LCD_EN_CLR();
+	NutMicroDelay(LCD_SHORT_DELAY);
 }
 
 /*!
