@@ -1,6 +1,7 @@
 /*!
  * Copyright (C) 2001-2005 by egnite Software GmbH
  * Copyright (C) 2009-2010 by egnite GmbH
+ * Copyright (C) 2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -47,6 +48,7 @@
 #include <stdio.h>
 #include <io.h>
 #include <string.h>
+#include <ctype.h>
 #include <time.h>
 #ifdef USE_BUILD_TIME
 #include <pro/rfctime.h>
@@ -77,6 +79,52 @@ static char *rotor = "|/-\\";
 static char *weekday_name[7] = {
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 };
+
+static void Alarm(int idx)
+{
+    struct _tm rtctime;
+    int aflag = RTC_ALARM_SECOND;
+    uint32_t rtc_stat;
+    uint_fast8_t i;
+    uint32_t rtc_alarm;
+
+    if (NutRtcGetTime(&rtctime) == 0) {
+        rtctime.tm_sec += 10;
+        rtctime.tm_sec %= 60;
+        if (NutRtcSetAlarm(idx, &rtctime, aflag) == 0) {
+            puts("Setting Alarm Time 10 seconds from now");
+        }
+        else {
+            puts("Setting Alarm Time failed");
+            return;
+        }
+    }
+    else
+        puts("Getting RTC time failed");
+
+    rtc_alarm = (idx)?RTC_STATUS_AL1:RTC_STATUS_AL0;
+    i = 0;
+    do {
+        printf(" [%c] Waiting for Alarm%c\r"
+               , rotor[++i & 3]
+               , 'A' + idx);
+        NutSleep(200);
+        NutRtcGetStatus(&rtc_stat);
+    } while (((rtc_stat & rtc_alarm) != rtc_alarm) && ( i < 60));
+    putchar('\n');
+    NutRtcGetAlarm(idx, &rtctime, &aflag);
+    NutRtcSetAlarm(idx, &rtctime, 0); /* Switch off alarm */
+    if ((rtc_stat & rtc_alarm) != rtc_alarm)
+        printf(" Failed!");
+    else {
+        printf("Alarm set time was %4d/%2d/%2d (%s) ",
+               rtctime.tm_year + 1900, rtctime.tm_mon + 1, rtctime.tm_mday,
+               weekday_name[rtctime.tm_wday]);
+        printf("%2d:%02d:%02d (UTC) Flags: %08x\n",
+               rtctime.tm_hour, rtctime.tm_min, rtctime.tm_sec, aflag);
+    }
+}
+
 
 /*
  * Print content of tm structure.
@@ -487,6 +535,10 @@ int main(void)
         puts("  1 - Display universal time");
         puts("  2 - Display local time");
         puts("  3 - Display system uptime");
+#ifdef RTC_CHIP
+        puts("  A - Calculate RTC Alarm A in 10 seconds");
+        puts("  A - Calculate RTC Alarm B in 10 seconds");
+#endif
         puts("  C - Calculate weekday");
         puts("  S - Set local time");
         puts("  Y - Toggle DST calculation");
@@ -517,6 +569,14 @@ int main(void)
         case '3':
             DisplayUpTime();
             break;
+#ifdef RTC_CHIP
+        case 'a':
+        case 'A':
+        case 'b':
+        case 'B':
+            Alarm(tolower(cmd) - 'a');
+            break;
+#endif
         case 'C':
         case 'c':
             CalcWeekDay();
