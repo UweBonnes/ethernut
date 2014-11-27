@@ -185,6 +185,44 @@ static int RTC_CLK_SETUP(void)
 #endif
 
 
+typedef struct _stm32_rtc_dcb stm32_rtc_dcb;
+
+struct _stm32_rtc_dcb {
+    uint32_t flags;
+};
+
+/* We only have one RTC, so static allocation should be okay */
+stm32_rtc_dcb rtc_dcb = { RTC_STATUS_HAS_QUEUE };
+
+/*!
+ * \brief Interrupt handler for RTC Alarm
+ *
+ */
+static void Stm32RtcInterrupt(void *arg)
+{
+    NUTRTC *rtc = (NUTRTC *)arg;
+    stm32_rtc_dcb *dcb = (stm32_rtc_dcb *)rtc->dcb;
+
+    int do_alert = 0;
+    if (RTC->ISR & RTC_ISR_ALRAF) {
+        dcb->flags |= RTC_STATUS_AL0;
+        /* Clear pending interrupt */
+        RTC->ISR &= ~RTC_ISR_ALRAF;
+        do_alert ++;
+    }
+    if (RTC->ISR & RTC_ISR_ALRBF) {
+        dcb->flags |= RTC_STATUS_AL1;
+        /* Clear pending interrupt */
+        RTC->ISR &= ~RTC_ISR_ALRBF;
+        do_alert ++;
+    }
+    if(do_alert) {
+        /* Clear Pending EXTI17 Interrupt*/
+        EXTI->PR   =  (1 << 17);
+        /* Signal alarm event queue */
+        NutEventPostFromIrq(&rtc->alarm);
+    }
+}
 /*!
  * \brief Get status of the STM32 V2 hardware clock.
  *
@@ -195,29 +233,35 @@ static int RTC_CLK_SETUP(void)
  */
 static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
 {
-    uint32_t res = 0;
 
+    stm32_rtc_dcb *dcb = (stm32_rtc_dcb *)rtc->dcb;
     /* Check for power failure */
     if (!(RTC->ISR & RTC_ISR_INITS)) {
-        res = RTC_STATUS_PF;
-    }
-
-    if ((RTC->ISR & RTC_ISR_ALRAF)) {
-        res |= RTC_STATUS_AL0;
-        RTC->ISR &= ~RTC_ISR_ALRAF;
-    }
-
-    if ((RTC->ISR & RTC_ISR_ALRBF)) {
-        res |= RTC_STATUS_AL1;
-        RTC->ISR &= ~RTC_ISR_ALRBF;
+        dcb->flags |= RTC_STATUS_PF;
     }
 
     if (sflags) {
-        *sflags = res;
+        *sflags = dcb->flags;
         return 0;
     } else {
         return -1;
     }
+}
+
+
+/*!
+ * \brief Clear status of the Stm32 hardware clock.
+ *
+ * \param tm Points to a structure which contains the date and time
+ *           information.
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+static int Stm32RtcClearStatus(NUTRTC *rtc, uint32_t sflags)
+{
+    ((stm32_rtc_dcb *)rtc->dcb)->flags &= ~sflags;
+
+    return 0;
 }
 
 /*!
@@ -457,6 +501,16 @@ int Stm32RtcInit(NUTRTC *rtc)
 {
     int res;
 
+    if (NutRegisterIrqHandler(&sig_RTC, Stm32RtcInterrupt, rtc) != 0)
+        return -1;
+    /* Alarm Interrupt is on EXTI 17 Line, Rising Edge */
+    EXTI->PR   =  (1 << 17);
+    EXTI->IMR  |= (1 << 17);
+    EXTI->RTSR |=  (1 << 17);
+    EXTI->FTSR &= ~(1 << 17);
+    NutIrqEnable(&sig_RTC);
+    rtc->dcb = &rtc_dcb;
+    rtc->alarm = NULL;
     if (((RTC->ISR & RTC_ISR_INITS)    != RTC_ISR_INITS) &&
 #if defined(RCC_BDCR_RTCSEL)
         ((RCC_BDCR & RCC_BDCR_RTCSEL) == RTC_CLKSEL)     &&
@@ -496,6 +550,8 @@ int Stm32RtcInit(NUTRTC *rtc)
     while (!(RTC->ISR & RTC_ISR_INITF));
 
     RTC->PRER = RTC_SYNC + RTC_ASYNC * 0x10000;
+    /* Enable RTC ALARM A/B Interrupt*/
+    RTC->CR |= (RTC_CR_ALRAIE | RTC_CR_ALRBIE);
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0; /* Disable  RTC Write Access */
     PWR->CR &= ~PWR_CR_DBP; /* Disable Backup domain write access*/
@@ -511,6 +567,6 @@ NUTRTC rtcStm32 = {
   /*.rtc_getalarm  = */ Stm32RtcGetAlarm,   /*!< Read alarm date and time, rtc_getalarm */
   /*.rtc_setalarm  = */ Stm32RtcSetAlarm,   /*!< Set alarm date and time, rtc_setalarm */
   /*.rtc_getstatus = */ Stm32RtcGetStatus,  /*!< Read status flags, rtc_getstatus */
-  /*.rtc_clrstatus = */ NULL,               /*!< Clear status flags, rtc_clrstatus */
+  /*.rtc_clrstatus = */ Stm32RtcClearStatus,/*!< Clear status flags, rtc_clrstatus */
   /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
 };
