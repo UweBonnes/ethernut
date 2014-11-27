@@ -56,70 +56,130 @@
 #include <errno.h>
 
 /* Handle the PIN remap possibilities
- * F4
+ * F42
  *        NSS:  PF6/PH5
  *        SCK:  PF7/PH6
  *        MISO: PF8/PH7
  *        MOSI: PF9/PF11
- *
- *
  * For function pins, we use PF6/7/8/9 as default
+ *
+ * F411
+ *        NSS:  PB1/PE4/PE11
+ *        SCK:  PB0/PE2/PE12
+ *        MISO: PA12/PE5/PE13
+ *        MOSI: PA10/PB8/PE6/PE14
+ * For function pins, we use PB1/PB0/PA12/PA10 as default
  */
 
 #if !defined( SPIBUS5_NO_CS)
-#if !defined(SPIBUS5_CS0_PORT) && !defined(SPIBUS5_CS0_PIN)
-#define SPIBUS_CS0_PORT NUTGPIO_PORTF
-#define SPIBUS_CS0_PIN  6
-#elif !defined(SPIBUS5_CS0_PORT) || !defined(SPIBUS5_CS0_PIN)
-#warning "SPIBUS5 uncomplete chip select"
-#else
-#define SPIBUS_CS0_PORT SPIBUS5_CS0_PORT
-#define SPIBUS_CS0_PIN  SPIBUS5_CS0_PIN
+ #if !defined(SPIBUS5_CS0_PORT) && !defined(SPIBUS5_CS0_PIN)
+  #if defined(STM32F411)
+   #define SPIBUS_CS0_PORT NUTGPIO_PORTB
+   #define SPIBUS_CS0_PIN  1
+  #else
+   #define SPIBUS_CS0_PORT NUTGPIO_PORTF
+   #define SPIBUS_CS0_PIN  6
+  #endif
+ #elif !defined(SPIBUS5_CS0_PORT) || !defined(SPIBUS5_CS0_PIN)
+  #warning "SPIBUS5 uncomplete chip select"
+ #else
+  #define SPIBUS_CS0_PORT SPIBUS5_CS0_PORT
+  #define SPIBUS_CS0_PIN  SPIBUS5_CS0_PIN
+ #endif
+
+ #if defined(SPIBUS5_CS1_PORT) && defined(SPIBUS5_CS1_PIN)
+  #define SPIBUS_CS1_PORT SPIBUS5_CS1_PORT
+  #define SPIBUS_CS1_PIN  SPIBUS5_CS1_PIN
+ #endif
+ #if defined(SPIBUS5_CS2_PORT) && defined(SPIBUS5_CS2_PIN)
+  #define SPIBUS_CS2_PORT SPIBUS5_CS2_PORT
+  #define SPIBUS_CS2_PIN  SPIBUS5_CS2_PIN
+ #endif
+ #if defined(SPIBUS5_CS3_PORT) && defined(SPIBUS5_CS3_PIN)
+  #define SPIBUS_CS3_PORT SPIBUS5_CS3_PORT
+  #define SPIBUS_CS3_PIN  SPIBUS5_CS1_PIN
+ #endif
 #endif
 
-#if defined(SPIBUS5_CS1_PORT)
-#define SPIBUS_CS1_PORT SPIBUS5_CS1_PORT
-#endif
-#if defined(SPIBUS5_CS2_PORT)
-#define SPIBUS_CS2_PORT SPIBUS5_CS2_PORT
-#endif
-#if defined(SPIBUS5_CS3_PORT)
-#define SPIBUS_CS3_PORT SPIBUS5_CS3_PORT
-#endif
-#if defined(SPIBUS5_CS1_PIN)
-#define SPIBUS_CS1_PIN  SPIBUS5_CS1_PIN
-#endif
-#if defined(SPIBUS5_CS2_PIN)
-#define SPIBUS_CS2_PIN  SPIBUS5_CS2_PIN
-#endif
-#if defined(PIBUS5_CS2_PIN)
-#define SPIBUS_CS3_PIN  SPIBUS5_CS3_PIN
-#endif
+#if defined(STM32F411)
+ #define SPI_GPIO_AF GPIO_AF_5
+ #if  !defined(SPIBUS5_SCK_PIN) || SPIBUS5_SCK_PIN == 0
+  #define SPIBUS_SCK_PORT  NUTGPIO_PORTB
+  #define SPIBUS_SCK_PIN 10
+ #elif  SPIBUS5_SCK_PIN == 2
+  #define SPIBUS_SCK_PORT  NUTGPIO_PORTE
+  #define SPIBUS_SCK_PIN 2
+ #elif  SPIBUS5_SCK_PIN == 12
+  #define SPIBUS_SCK_PORT  NUTGPIO_PORTE
+  #define SPIBUS_SCK_PIN 12
+ #else
+  #warning Unknown STM32F411 SPIBUS5_SCK_PIN
+ #endif
+
+ #if !defined(SPIBUS5_MISO_PIN) || SPIBUS5_MISO_PIN == 13
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
+  #define SPIBUS_MISO_PIN 12
+ #elif  SPIBUS5_MISO_PIN == 13
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTE
+  #define SPIBUS_MISO_PIN 13
+ #elif  SPIBUS5_MISO_PIN == 5
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTE
+  #define SPIBUS_MISO_PIN 5
+ #else
+  #warning Unknown STM32F411 SPIBUS5_MISO_PIN
+ #endif
+
+ #if !defined(SPIBUS5_MOSI_PIN) || SPIBUS5_MOSI_PIN == 10
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
+  #define SPIBUS_MOSI_PIN 10
+ #elif  SPIBUS5_MOSI_PIN == 8
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
+  #define SPIBUS_MOSI_PIN 8
+ #elif  SPIBUS5_MOSI_PIN == 6
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTE
+  #define SPIBUS_MOSI_PIN 6
+ #elif  SPIBUS5_MOSI_PIN == 14
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTE
+  #define SPIBUS_MOSI_PIN 14
+ #else
+  #warning Unknown STM32F411 SPIBUS5_MOSI_PIN
+ #endif
+
+#else
+/* F42x */
+ #define SPI_GPIO_AF GPIO_AF_SPI5
+ #if !defined(SPIBUS5_SCK_PIN) || SPIBUS5_SCK_PIN == 7
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTF
+  #define SPIBUS_MISO_PIN 7
+ #elif SPIBUS5_SCK_PIN == 6
+  #define SPIBUS_SCK_PORT  NUTGPIO_PORTH
+  #define SPIBUS_SCK_PIN 6
+ #else
+  #warning Unknown STM32F42/3 SPIBUS5_SCK_PIN
+ #endif
+
+ #if !defined(SPIBUS5_MISO_PIN) || SPIBUS5_MISO_PIN ==8
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTF
+  #define SPIBUS_MISO_PIN 8
+ #elif SPIBUS5_MISO_PIN == 7
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTH
+  #define SPIBUS_MISO_PIN 7
+ #else
+  #warning Unknown STM32F42/3 SPIBUS5_MISO_PIN
+ #endif
+
+ #if !defined(SPIBUS5_MOSI_PIN) || SPIBUS5_MOSI_PIN ==9
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTF
+  #define SPIBUS_MOSI_PIN 9
+ #elif  SPIBUS5_MOSI_PIN == 11
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTF
+  #define SPIBUS_MOSI_PIN 11
+ #else
+  #warning Unknown STM32F42/3 SPIBUS5_MOSI_PIN
+ #endif
 
 #endif
 
-#if  SPIBUS5_SCK_PIN == 6
- #define SPIBUS_SCK_PORT  NUTGPIO_PORTH
- #define SPIBUS_SCK_PIN 6
-#else
- #define SPIBUS_SCK_PORT  NUTGPIO_PORTF
- #define SPIBUS_SCK_PIN 7
-#endif
-#if  SPIBUS5_MISO_PIN == 7
- #define SPIBUS_MISO_PORT NUTGPIO_PORTH
- #define SPIBUS_MISO_PIN 7
-#else
- #define SPIBUS_MISO_PORT NUTGPIO_PORTF
- #define SPIBUS_MISO_PIN 8
-#endif
-#if  SPIBUS5_MOSI_PIN == 11
- #define SPIBUS_MOSI_PIN 11
-#else
- #define SPIBUS_MOSI_PIN 9
-#endif
-#define SPIBUS_MOSI_PORT NUTGPIO_PORTF
-
-#define SPI_GPIO_AF GPIO_AF_SPI5
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
 #define sig_SPI             sig_SPI5

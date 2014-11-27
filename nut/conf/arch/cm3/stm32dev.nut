@@ -172,6 +172,26 @@ function GetRxUsart4()
 end
 
 --
+-- Retrieve USART6TX pins available on the device.
+--
+function GetTxUsart6()
+    if c_is_provided("STM32F411") then
+        return { "6", "11", "-1" }
+    end
+    return { "6", "14", "-1" }
+end
+
+--
+-- Retrieve USART6RX pins available on the device.
+--
+function GetRxUsart6()
+    if c_is_provided("STM32F411") then
+        return { "7", "12", "-1" }
+    end
+    return { "7", "9", "-1" }
+end
+
+--
 -- Retrieve I2C1 pins available on the device.
 --
 function GetI2c1Sda()
@@ -221,6 +241,7 @@ end
 function GetI2c2SdaDefault()
     if c_is_provided("STM32F3XX") then
         return "10"
+    end
     if c_is_provided("STM32F411") then
         return { "3" }
     end
@@ -232,6 +253,7 @@ function GetI2c2Scl()
     end
     if c_is_provided("STM32F10X") then
         return { "10" }
+    end
     if c_is_provided("STM32F411") then
         return { "10" }
     end
@@ -321,7 +343,7 @@ function GetStmTimers2Ch()
         return { "", "1", "2", "3", "4", "5", "9"}
     end
     if c_is_provided("STM32F411") then
-        return { "", "1", "2", "3", "4", "5", "9", "10, "11"}
+        return { "", "1", "2", "3", "4", "5", "9", "10", "11"}
     end
     if c_is_provided("STM32F40_41xxx") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
@@ -1311,7 +1333,7 @@ nutarch_cm3_stm32_devices =
                 description = "Choose USART3 TX Pin, default: PB10. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
-                choices = { "10", "310", "8" },
+                choices = function() return GetTxUsart3() end,
                 file = "include/cfg/uart.h"
             },
             {
@@ -1320,7 +1342,7 @@ nutarch_cm3_stm32_devices =
                 description = "Choose USART3 RX Pin, default: PB11. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
-                choices = function() return GetTxUsart3() end,
+                choices = function() return GetRxUsart3() end,
                 file = "include/cfg/uart.h"
             },
             {
@@ -1967,32 +1989,21 @@ nutarch_cm3_stm32_devices =
         options =
         {
             {
-                macro = "USART6_REMAP_USART",
-                brief = "Use Alternate Pins",
-                description = "Leaving this option unchecked, the driver will initialize the standard Pins.\n\n"..
-                              "Pin Mapping is:\n TXD PC6\n RXD PC7 \n CTS PG13\n RTS PG8\n CK PC8"..
-                              "Enabling the option the driver remaps RXD and TXD to its alternate port pins:\n\n"..
-                              "Pin Mapping is:\n TXD PG14\n RXD PG9\n CTS PG15\n RTS PG12\n CK PG7"..
-                                      "For L1/F2/F4 Pins may also get assigned individually",
-                flavor = "booldata",
-                file = "include/cfg/uart.h"
-            },
-            {
                 macro = "USART6_TX_PIN",
                 brief = "USART6 TX Pin selection",
-                description = "Choose USART6 TX Pin from PC6(default) and PG14 or not used(-1)",
+                description = "Choose USART6 TX Pin, default PC6. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
-                choices = { "6", "14", "-1" },
+                choices = function() return GetTxUsart6() end,
                 file = "include/cfg/uart.h"
             },
             {
                 macro = "USART6_RX_PIN",
                 brief = "USART6 RX Pin selection",
-                description = "Choose USART6 RX Pin from PC7(default) and PG9 or not used(-1)",
+                description = "Choose USART6 RX Pin, default PC7. Used(-1) if not used",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
-                choices = { "7", "9", "-1" },
+                choices = function() return GetRxUsart6() end,
                 file = "include/cfg/uart.h"
             },
             {

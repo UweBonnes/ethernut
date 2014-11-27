@@ -58,6 +58,7 @@
 #include <errno.h>
 
 /* Handle the PIN remap possibilities
+ * FIXME: Nearly every chip has some mapping exception!
  * F1:    NSS:  PB12
  *        SCK:  PB13
  *        MISO: PB14
@@ -70,6 +71,13 @@
  *        SCK:  PB13/PB10/PI1
  *        MISO: PB14/PC2/PI2
  *        MOSI: PB15/PC3/PI3
+ * F411 : NSS:  PB12/PB9
+ *        SCK:  PB13/PB10/PC7/PD3
+ *        MISO: PB14/PC2
+ *        MOSI: PB15/PC3
+ * (AF5)  SCK:  PB13/PB10/PC7/PD3
+ *        MISO: PB14/PC2
+ *        MOSI: PB15/PC3
  * F30x:  NSS:  PB12/PD12
  *        SCK:  PB13/PF9/PF10
  *        MISO: PB14

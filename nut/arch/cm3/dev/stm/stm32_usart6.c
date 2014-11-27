@@ -135,10 +135,11 @@ NUTDEVICE devUsartStm32_6 = {
  * \brief USART6 GPIO configuartion and assignment.
  */
 /*
- * F2/F4  NOREMAP REMAP
+ * Only available on F2/F4 (201411)
+ * F2/F4          -F411 F411
  * CK     PC8     PG7
- * TX     PC6     PG14
- * RX     PC7     PG9
+ * TX     PC6     PG14  PA11
+ * RX     PC7     PG9   PA12
  * CTS    PG13    PG15
  * RTS    PG8     PG12
  */
@@ -150,6 +151,9 @@ NUTDEVICE devUsartStm32_6 = {
 #elif USART6_TX_PIN == 14
  #define TX_GPIO_PORT    NUTGPIO_PORTG
  #define TX_GPIO_PIN     14
+#elif defined(STM32F411) && USART6_TX_PIN == 11
+ #define TX_GPIO_PORT    NUTGPIO_PORTA
+ #define TX_GPIO_PIN     11
 #else
  #warning "Illegal USART6 TX pin assignement"
 #endif
@@ -160,6 +164,9 @@ NUTDEVICE devUsartStm32_6 = {
 #elif USART6_RX_PIN == 9
  #define RX_GPIO_PORT    NUTGPIO_PORTG
  #define RX_GPIO_PIN     9
+#elif defined(STM32F411) && USART6_TX_PIN == 12
+ #define RX_GPIO_PORT    NUTGPIO_PORTA
+ #define RX_GPIO_PIN     12
 #else
  #warning "Illegal USART6 RX pin assignement"
 #endif

@@ -140,6 +140,14 @@ NUTDEVICE devUsartStm32_1 = {
  * RX  PA10    PB7    PC5  PB7  PE1 PB7
  * CTS PA11    PA11
  * RTS PA12    PA12
+ *
+ * RX on PA14: F0
+ * RX on PB3 : F411
+ * RX on PC5 : F30
+ * RX on PE0 : F30
+ * TX on PA15: F0/F411
+ * TX on PC4 : F30
+ * TX on PE1 : F30
  */
 #if defined(MCU_STM32F1)
  #define STM_USART_REMAP_MASK AFIO_MAPR_USART1_REMAP
@@ -187,6 +195,9 @@ NUTDEVICE devUsartStm32_1 = {
  #elif defined(MCU_STM32F3) && USART1_TX_PIN == 0
   #define TX_GPIO_PORT    NUTGPIO_PORTE
   #define TX_GPIO_PIN      0
+ #elif defined(STM32F411) && USART1_TX_PIN == 15
+  #define TX_GPIO_PORT    NUTGPIO_PORTA
+  #define TX_GPIO_PIN      15
  #else
   #warning "Illegal USART1 TX pin assignement"
  #endif
@@ -212,6 +223,9 @@ NUTDEVICE devUsartStm32_1 = {
  #elif defined(MCU_STM32F3) && USART1_RX_PIN == 1
   #define RX_GPIO_PORT    NUTGPIO_PORTE
   #define RX_GPIO_PIN      1
+ #elif defined(STM32F411) && USART1_RX_PIN == 3
+  #define RX_GPIO_PORT    NUTGPIO_PORTB
+  #define RX_GPIO_PIN      3
  #else
   #warning "Illegal USART1 RX pin assignement"
  #endif

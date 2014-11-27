@@ -56,67 +56,88 @@
 #include <errno.h>
 
 /* Handle the PIN remap possibilities
- * F4
+ * F401/F42
  *        NSS:  PE4/PE11
  *        SCK:  PE2/PE12
  *        MISO: PE5/PE13
  *        MOSI: PE6/PE14
- *
+ * F411
+ *        NSS:  PE4/PB12(AF6)
+ *        SCK:  PE2/PB13(AF6)
+ *        MISO: PE5/PA11(AF6)
+ *        MOSI: PE6/PA1
  * For Chip select, we use NSS pin as default or any other pin as pure GPIO
  *
  * Use PE4 as default chip select
   */
 
 #if !defined( SPIBUS4_NO_CS)
-#if !defined(SPIBUS4_CS0_PORT) && !defined(SPIBUS4_CS0_PIN)
-#define SPIBUS_CS0_PORT NUTGPIO_PORTE
-#define SPIBUS_CS0_PIN  4
-#elif !defined(SPIBUS4_CS0_PORT) || !defined(SPIBUS4_CS0_PIN)
-#warnig "SPIBUS4 uncomplete chip select"
-#else
-#define SPIBUS_CS0_PORT SPIBUS4_CS0_PORT
-#define SPIBUS_CS0_PIN  SPIBUS4_CS0_PIN
+ #if !defined(SPIBUS4_CS0_PORT) && !defined(SPIBUS4_CS0_PIN)
+  #define SPIBUS_CS0_PORT NUTGPIO_PORTE
+  #define SPIBUS_CS0_PIN  4
+ #elif !defined(SPIBUS4_CS0_PORT) || !defined(SPIBUS4_CS0_PIN)
+  #warnig "SPIBUS4 uncomplete chip select"
+ #else
+  #define SPIBUS_CS0_PORT SPIBUS4_CS0_PORT
+  #define SPIBUS_CS0_PIN  SPIBUS4_CS0_PIN
+ #endif
+
+ #if defined(SPIBUS4_CS1_PORT) && defined(SPIBUS4_CS1_PIN)
+  #define SPIBUS_CS1_PORT SPIBUS4_CS1_PORT
+  #define SPIBUS_CS1_PIN  SPIBUS4_CS1_PIN
+ #endif
+ #if defined(SPIBUS4_CS2_PORT) && defined(SPIBUS4_CS2_PIN)
+  #define SPIBUS_CS2_PORT SPIBUS4_CS2_PORT
+  #define SPIBUS_CS2_PIN  SPIBUS4_CS2_PIN
+ #endif
+ #if defined(SPIBUS4_CS3_PORT) && defined(SPIBUS4_CS3_PIN)
+  #define SPIBUS_CS3_PORT SPIBUS4_CS3_PORT
+  #define SPIBUS_CS3_PIN  SPIBUS4_CS1_PIN
+ #endif
 #endif
 
-#if defined(SPIBUS4_CS1_PORT)
-#define SPIBUS_CS1_PORT SPIBUS4_CS1_PORT
-#endif
-#if defined(SPIBUS4_CS2_PORT)
-#define SPIBUS_CS2_PORT SPIBUS4_CS2_PORT
-#endif
-#if defined(SPIBUS4_CS3_PORT)
-#define SPIBUS_CS3_PORT SPIBUS4_CS3_PORT
-#endif
-#if defined(SPIBUS4_CS1_PIN)
-#define SPIBUS_CS1_PIN  SPIBUS4_CS1_PIN
-#endif
-#if defined(SPIBUS4_CS2_PIN)
-#define SPIBUS_CS2_PIN  SPIBUS4_CS2_PIN
-#endif
-#if defined(PIBUS4_CS2_PIN)
-#define SPIBUS_CS3_PIN  SPIBUS4_CS3_PIN
-#endif
-
-#endif
-
- #if  SPIBUS4_SCK_PIN == 12
-  #define SPIBUS_SCK_PIN 12
- #else
-  #define SPIBUS_SCK_PIN 2
- #endif
- #if  SPIBUS4_MISO_PIN == 13
-  #define SPIBUS_MISO_PIN 13
- #else
-  #define SPIBUS_MISO_PIN 5
- #endif
- #if  SPIBUS4_MOSI_PIN == 14
-  #define SPIBUS_MOSI_PIN 14
- #else
-  #define SPIBUS_MOSI_PIN 6
- #endif
+/* Assume SPI4 only on F4 */
+#if  SPIBUS4_SCK_PIN == 2 || !defined(SPIBUS4_SCK_PIN)
+#define SPIBUS_SCK_PIN 2
 #define SPIBUS_SCK_PORT  NUTGPIO_PORTE
-#define SPIBUS_MISO_PORT NUTGPIO_PORTE
-#define SPIBUS_MOSI_PORT NUTGPIO_PORTE
+#elif defined(STM32F411) && SPIBUS4_SCK_PIN == 13
+#define SPIBUS_SCK_PIN   13
+#define SPIBUS_SCK_PORT  NUTGPIO_PORTB
+#define SPIBUS_SCK_AF    6
+#elif (defined(STM32F401) || defined(STM32F42X)) && SPIBUS4_SCK_PIN == 12
+#define SPIBUS_SCK_PIN   12
+#define SPIBUS_SCK_PORT  NUTGPIO_PORTE
+#else
+#warning  Unknown SPIBUS4_SCK_PIN
+#endif
+
+#if  SPIBUS4_MISO_PIN == 5 || !defined(SPIBUS4_MISO_PIN)
+#define SPIBUS_MISO_PIN 5
+#define SPIBUS_MISO_PORT  NUTGPIO_PORTE
+#elif defined(STM32F411) && SPIBUS4_MISO_PIN == 11
+#define SPIBUS_MISO_PIN   11
+#define SPIBUS_MISO_PORT  NUTGPIO_PORTA
+#define SPIBUS_MISO_AF    6
+#elif (defined(STM32F401) || defined(STM32F42X)) && SPIBUS4_MISO_PIN == 13
+#define SPIBUS_MISO_PIN   13
+#define SPIBUS_MISO_PORT  NUTGPIO_PORTE
+#else
+#warning  Unknown SPIBUS4_MISO_PIN
+#endif
+
+#if  SPIBUS4_MOSI_PIN == 6 || !defined(SPIBUS4_MOSI_PIN)
+#define SPIBUS_MOSI_PIN 6
+#define SPIBUS_MOSI_PORT  NUTGPIO_PORTE
+#elif defined(STM32F411) && SPIBUS4_MOSI_PIN == 1
+#define SPIBUS_MOSI_PIN   1
+#define SPIBUS_MOSI_PORT  NUTGPIO_PORTA
+#define SPIBUS_MOSI_AF    6
+#elif (defined(STM32F401) || defined(STM32F42X)) && SPIBUS4_MOSI_PIN == 14
+#define SPIBUS_MOSI_PIN   14
+#define SPIBUS_MOSI_PORT  NUTGPIO_PORTE
+#else
+#warning  Unknown SPIBUS4_MOSI_PIN
+#endif
 
 #define SPI_GPIO_AF GPIO_AF_SPI4
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))

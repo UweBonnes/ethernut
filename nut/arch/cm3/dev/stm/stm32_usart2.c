@@ -139,6 +139,8 @@ NUTDEVICE devUsartStm32_2 = {
  * TX  PA2     PD5   PA14  PB3  PA14
  * RX  PA3     PD6   PA15  PB4  PA15
  * CK  PA4     PD7         PB5
+ *
+ * F411: No additional mapping
  */
 
 

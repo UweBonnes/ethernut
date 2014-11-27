@@ -59,45 +59,42 @@
 #include <errno.h>
 
 /* Handle the PIN remap possibilities
- * F1_CL/F2/F3/F4
+ * F1_CL/F2/F3/F4/L1 >= 256 k flash
  *        NSS:  PA15/PA4
  *        SCK:  PB3/PC10
  *        MISO: PB4/PC11
  *        MOSI: PB5/PC12
- * No SPI3 on L1, for F1 only STM32F10X_CL can remap
- *
+ * F1: Only STM32F10X_CL can remap
+ * F373:  SCK:  PA1
+ *        MISO: PA2
+ *        MOSI: PA3
+ * F411:  SCK:  PB12/AF7
+ * F401/F411/F42/F43 : MOSI/PD6/AF5
  * Use PA15 as default chip select
  */
 
 #if !defined( SPIBUS3_NO_CS)
-#if !defined(SPIBUS3_CS0_PORT) && !defined(SPIBUS3_CS0_PIN)
-#define SPIBUS_CS0_PORT NUTGPIO_PORTA
-#define SPIBUS_CS0_PIN  15
-#elif !defined(SPIBUS3_CS0_PORT) || !defined(SPIBUS3_CS0_PIN)
-#warnig "SPIBUS3 uncomplete chip select"
-#else
-#define SPIBUS_CS0_PORT SPIBUS3_CS0_PORT
-#define SPIBUS_CS0_PIN  SPIBUS3_CS0_PIN
-#endif
-#endif
-
-#if defined(SPIBUS3_CS1_PORT)
-#define SPIBUS_CS1_PORT SPIBUS3_CS1_PORT
-#endif
-#if defined(SPIBUS3_CS2_PORT)
-#define SPIBUS_CS2_PORT SPIBUS3_CS2_PORT
-#endif
-#if defined(SPIBUS3_CS3_PORT)
-#define SPIBUS_CS3_PORT SPIBUS3_CS3_PORT
-#endif
-#if defined(SPIBUS3_CS1_PIN)
-#define SPIBUS_CS1_PIN  SPIBUS3_CS1_PIN
-#endif
-#if defined(SPIBUS3_CS2_PIN)
-#define SPIBUS_CS2_PIN  SPIBUS3_CS2_PIN
-#endif
-#if defined(PIBUS3_CS2_PIN)
-#define SPIBUS_CS3_PIN  SPIBUS3_CS3_PIN
+ #if !defined(SPIBUS3_CS0_PORT) && !defined(SPIBUS3_CS0_PIN)
+  #define SPIBUS_CS0_PORT NUTGPIO_PORTA
+  #define SPIBUS_CS0_PIN  15
+ #elif !defined(SPIBUS3_CS0_PORT) || !defined(SPIBUS3_CS0_PIN)
+  #warnig "SPIBUS3 uncomplete chip select"
+ #else
+  #define SPIBUS_CS0_PORT SPIBUS3_CS0_PORT
+  #define SPIBUS_CS0_PIN  SPIBUS3_CS0_PIN
+ #endif
+ #if defined(SPIBUS3_CS1_PORT) && defined(SPIBUS3_CS1_PIN)
+  #define SPIBUS_CS1_PORT SPIBUS3_CS1_PORT
+  #define SPIBUS_CS1_PIN  SPIBUS3_CS1_PIN
+ #endif
+ #if defined(SPIBUS3_CS2_PORT) && defined(SPIBUS3_CS2_PIN)
+  #define SPIBUS_CS2_PORT SPIBUS3_CS2_PORT
+  #define SPIBUS_CS2_PIN  SPIBUS3_CS2_PIN
+ #endif
+ #if defined(SPIBUS3_CS3_PORT) && defined(SPIBUS3_CS3_PIN)
+  #define SPIBUS_CS3_PORT SPIBUS3_CS3_PORT
+  #define SPIBUS_CS3_PIN  SPIBUS3_CS1_PIN
+ #endif
 #endif
 
 #if defined(MCU_STM32F1)
@@ -110,9 +107,7 @@
   #define SPIBUS_MOSI_PIN 12
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
  #else
-  #if defined(STM32F10X_CL) && defined(SPIBUS3_REMAP_SPI)
-   #define SPIBUS_REMAP_BB() CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_SPI3_REMAP))
-  #endif
+  #define SPIBUS_REMAP_BB() CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_SPI3_REMAP))
   #define SPIBUS_SCK_PIN 3
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
   #define SPIBUS_MISO_PIN 4
@@ -120,72 +115,50 @@
   #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #endif
-#elif defined(MCU_STM32F37X)
- #if  SPIBUS3_SCK_PIN == 1 || !defined(SPIBUS3_SCK_PIN )
+#else
+/* Handle SCK */
+ #if   SPIBUS3_SCK_PIN == 3 || !defined(SPIBUS3_SCK_PIN )
+  #define SPIBUS_SCK_PIN 3
+  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
+ #elif SPIBUS3_SCK_PIN == 10
+  #define SPIBUS_SCK_PIN 10
+  #define SPIBUS_SCK_PORT NUTGPIO_PORTC
+ #elif defined(STM32F37X) && SPIBUS3_SCK_PIN == 1
   #define SPIBUS_SCK_PIN 1
   #define SPIBUS_SCK_PORT NUTGPIO_PORTA
- #elif SPIBUS3_SCK_PIN == 3
-  #define SPIBUS_SCK_PIN 3
+ #elif defined(STM32F411) && SPIBUS3_SCK_PIN == 12
+  #define SPIBUS_SCK_PIN 12
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #elif SPIBUS3_SCK_PIN == 10
-  #define SPIBUS_SCK_PIN 10
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTC
+  #define SPIBUS_SCK_AF   7
  #else
-  #warning "Illegal STM32F373 SPI3 SCK assignment"
- #endif
- #if  SPIBUS3_MOSI_PIN == 3 || !defined(SPIBUS3_MOSI_PIN )
-  #define SPIBUS_MOSI_PIN 3
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
- #elif SPIBUS3_MOSI_PIN == 5
-  #define SPIBUS_MOSI_PIN 5
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #elif SPIBUS3_MOSI_PIN == 12
-  #define SPIBUS_MOSI_PIN 12
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
- #else
-  #warning "Illegal STM32F373 SPI3 MOSI assignment"
- #endif
- #if  SPIBUS3_MISO_PIN == 2 || !defined(SPIBUS3_MISO_PIN )
-  #define SPIBUS_MISO_PIN 2
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
- #elif SPIBUS3_MISO_PIN == 4
-  #define SPIBUS_MISO_PIN 4
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #elif SPIBUS3_MISO_PIN == 12
-  #define SPIBUS_MISO_PIN 12
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTC
- #else
-  #warning "Illegal STM32F373 SPI3 MISO assignment"
- #endif
-#elif defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F3)|| defined(MCU_STM32F4 )
- #if !defined(SPIBUS3_SCK_PIN) || SPIBUS3_SCK_PIN == 3
-  #define SPIBUS_SCK_PIN 3
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #elif SPIBUS3_SCK_PIN == 10
-  #define SPIBUS_SCK_PIN 10
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTC
- #else
-  #warning "Illegal SPI3 SCK pin assignement"
+  #warning Unknown SPIBUS3_SCK_PIN
  #endif
 
- #if !defined(SPIBUS3_MISO_PIN) || SPIBUS3_MISO_PIN == 4
+ #if  SPIBUS3_MISO_PIN == 4 || !defined(SPIBUS3_MISO_PIN )
   #define SPIBUS_MISO_PIN 4
   #define SPIBUS_MISO_PORT NUTGPIO_PORTB
  #elif SPIBUS3_MISO_PIN == 11
   #define SPIBUS_MISO_PIN 11
   #define SPIBUS_MISO_PORT NUTGPIO_PORTC
+ #elif defined(STM32F37X) && SPIBUS3_SCK_PIN == 2
+  #define SPIBUS_MISO_PIN 2
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
  #else
-  #warning "Illegal SPI3 MISO pin assignement"
+  #warning Unknown SPIBUS3_MISO_PIN
  #endif
 
- #if !defined(SPIBUS3_MOSI_PIN) || SPIBUS3_MOSI_PIN == 5
+ #if  SPIBUS3_MOSI_PIN == 5 || !defined(SPIBUS3_MOSI_PIN )
   #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #elif SPIBUS3_MOSI_PIN == 12
   #define SPIBUS_MOSI_PIN 12
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
+ #elif defined(STM32F4XX) && !defined(STM32F40X) || SPIBUS3_MISO_PIN == 6
+  #define SPIBUS_MOSI_PIN  6
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTD
+  #define SPIBUS_MOSI_AF   5
  #else
-  #warning "Illegal SPI3 MOSI pin assignement"
+  #warning Unknown SPIBUS3_MOSI_PIN
  #endif
 #endif
 
