@@ -357,7 +357,7 @@ static int Lpc17xxRtcInit(NUTRTC *rtc)
     /* enable RTC (run) */
     LPC_RTC->CCR |= RTC_CCR_CLKEN;
 
-    ((lpc17xx_rtc_dcb *)rtc->dcb)->flags = 0x00000000;
+    ((lpc17xx_rtc_dcb *)rtc->dcb)->flags =  RTC_STATUS_HAS_QUEUE;
     rtc->alarm = NULL;
 
     NutIrqEnable(&sig_RTC);
