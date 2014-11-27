@@ -174,7 +174,7 @@ NUTDEVICE devUsartStm32_2 = {
 #else /*L1/F2/F3/F4*/
  #if defined(MCU_STM32F3)
   #define STM_USART_REMAP  GPIO_AF_7
- #elif defined(MCU_STM32F1)
+ #elif defined(MCU_STM32F0)
   #define STM_USART_REMAP  GPIO_AF_1
  #else
   #define STM_USART_REMAP  GPIO_AF_USART2
