@@ -40,6 +40,7 @@
 #include <cfg/os.h>
 #include <cfg/clock.h>
 #include <cfg/arch.h>
+#include <cfg/rtc.h>
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <dev/rtc.h>
@@ -50,6 +51,139 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#define RTCCLK_LSE 1
+#define RTCCLK_HSE 2
+#define RTCCLK_LSI 3
+
+/*Equalize L1 anormalies */
+#if defined (RCC_CSR_RTCEN) && !defined(RCC_BDCR_RTCEN)
+#define RCC_BDCR_RTCEN RCC_CSR_RTCEN
+#endif
+#if defined (RCC_CSR_LSEBYP) && !defined(RCC_BDCR_LSEBYP)
+#define RCC_BDCR_LSEBYP RCC_CSR_LSEBYP
+#endif
+#if defined (RCC_CSR_LSEON) && !defined(RCC_BDCR_LSEON)
+#define RCC_BDCR_LSEON RCC_CSR_LSEON
+#endif
+#if defined (RCC_CSR_LSERDY) && !defined(RCC_BDCR_LSERDY)
+#define RCC_BDCR_LSERDY RCC_CSR_LSERDY
+#endif
+#if defined (RCC_CSR_RTCRST) && !defined(RCC_BDCR_BDRST)
+#define RCC_BDCR_BDRST RCC_CSR_RTCRST
+#endif
+#if defined (RCC_CSR_RTCSEL_0) && !defined(RCC_BDCR_RTCSEL_0)
+#define RCC_BDCR_RTCSEL_0 RCC_CSR_RTCSEL_0
+#endif
+#if defined (RCC_CSR_RTCSEL_1) && !defined(RCC_BDCR_RTCSEL_1)
+#define RCC_BDCR_RTCSEL_1 RCC_CSR_RTCSEL_1
+#endif
+#if defined (RCC_CSR_RTCSEL) && !defined(RCC_BDCR_RTCSEL)
+#define RCC_BDCR_RTCSEL RCC_CSR_RTCSEL
+#define RCC_BDCR RCC->CSR
+#else
+#define RCC_BDCR RCC->BDCR
+#endif
+
+#if (RTC_CLK_SRC == RTCCLK_HSE )
+/* Handle HSE as RTC clock */
+ #define RTC_CLKSEL RCC_BDCR_RTCSEL
+ #if defined(RTC_PRE) && (!defined(RTC_ASYNC) || !defined(RTC_SYNC))
+  #warning Please define also RTC_ASYNC and RTC_SYNC
+ #endif
+ #if !defined RTC_PRE
+  #if HSE_VALUE > 31000000
+   #warning HSE to large to reach max 1 MHz RTC clock
+  #elif (HSE_VALUE % 1000000) || (HSE_VALUE < 2000000)
+   #warning Please define RTC_PRE, RTC_ASYNC and RTC_SYNC for 1 Hz RTC clock
+  #else
+   #define RTC_PRE (HSE_VALUE / 1000000)
+   #undef  RTC_ASYNC
+   #define RTC_ASYNC 125 -1
+   #undef  RTC_SYNC
+   #define RTC_SYNC (1000000/125) -1
+   #define RTC_CLKSEL RCC_BDCR_RTCSEL
+  #endif
+ #endif
+static int RTC_CLK_SETUP(void)
+{
+    uint32_t cfgr;
+    cfgr = RCC->CFGR;
+    cfgr &= ~RCC_CFGR_RTCPRE;
+    cfgr |= RTC_PRE * RCC_CFGR_RTCPRE_0;
+    RCC->CFGR = cfgr;
+    return 0;
+}
+#elif (RTC_CLK_SRC == RTCCLK_LSE)
+ #define RTC_CLKSEL RCC_BDCR_RTCSEL_0
+ #if defined(RTC_CLK_LSE_BYPASS) || RTC_CLK_LSE != 32768
+ /* Handle LSE with external clock as RTC clock or clock != 2^15*/
+   #if (!defined(RTC_ASYNC) || !defined(RTC_SYNC))
+    #warning Please define RTC_ASYNC and RTC_SYNC for 1 Hz RTC clock
+   #endif
+  /* Handle LSE with oscillator as RTC clock */
+ #else
+  #undef  RTC_ASYNC
+  #define RTC_ASYNC 0x7f
+  #undef  RTC_SYNC
+  #define RTC_SYNC  0xff
+ #endif
+static int RTC_CLK_SETUP(void)
+{
+    int i;
+
+    RCC_BDCR &= ~RCC_BDCR_RTCEN;
+  #if defined(RTC_CLK_LSE_BYPASS)
+    RCC_BDCR |= RCC_BDCR_LSEBYP;
+  #else
+    RCC_BDCR &= ~RCC_BDCR_LSEBYP;
+  #endif
+  #if defined(RCC_BDCR_LSEMOD)
+   #if defined(RTC_LSE_HIGH_POWER)
+    RCC_BDCR |= RCC_BDCR_LSEMOD;
+    #else
+    RCC_BDCR &= ~RCC_BDCR_LSEMOD;
+   #endif
+  #endif
+    RCC_BDCR |= RCC_BDCR_LSEON;
+    /* LSE startup time is 2 s typical */
+    for(i = 0; i < 4000; i++) {
+        NutSleep(1);
+        if(RCC_BDCR & RCC_BDCR_LSERDY)
+            return 0;
+    }
+    return -1;
+}
+#elif RTC_CLK_SRC == RTCCLK_LSI
+ #define RTC_CLKSEL RCC_BDCR_RTCSEL_1
+ #undef  RTC_ASYNC
+ #undef  RTC_SYNC
+/* 32 kHz on F2/F4, 40(37?) kHz else.
+ * Values used from AN3371/Table 3 Rev. 5
+ */
+ #if defined(STM32F2) || defined(STM32F4)
+  #define RTC_ASYNC 124
+  #define RTC_SYNC  295
+ #else
+  #define RTC_ASYNC 127
+  #define RTC_SYNC  249
+ #endif
+static int RTC_CLK_SETUP(void)
+{
+    int i;
+    /* LSI startup is 40 us typical*/
+    RCC->CSR |= RCC_CSR_LSION;
+    for(i = 0; i < 10; i++) {
+        NutSleep(1);
+        if(RCC->CSR & RCC_CSR_LSIRDY)
+            return 0;
+    }
+    return -1;
+}
+#else
+ #warning No RTC Clock source defined!
+#endif
+
 
 /*!
  * \brief Get status of the STM32 V2 hardware clock.
@@ -88,17 +222,20 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 {
     if (tm)
     {
-        tm->tm_mday = ((RTC->DR >>  0) & 0xf) + (((RTC->DR >>  4) & 0x3) * 10);
-        tm->tm_mon  = ((RTC->DR >>  8) & 0xf) + (((RTC->DR >> 12) & 0x1) * 10);
+        uint32_t tr, dr;
+        /* Accessing RTC->TR locks shadow register until RTC->DR is accessed */
+        tr = RTC->TR;
+        dr = RTC->DR;
+        tm->tm_mday = ((dr >>  0) & 0xf) + (((dr >>  4) & 0x3) * 10);
+        tm->tm_mon  = ((dr >>  8) & 0xf) + (((dr >> 12) & 0x1) * 10);
         tm->tm_mon  -= 1;
-        tm->tm_year = ((RTC->DR >> 16) & 0xf) + (((RTC->DR >> 20) & 0xf) * 10)
-            + 100;
-        tm->tm_hour = ((RTC->TR >> 16) & 0xf) + (((RTC->TR >> 20) & 0x7) * 10);
-        if (RTC->TR & RTC_TR_PM)
+        tm->tm_year = ((dr >> 16) & 0xf) + (((dr >> 20) & 0xf) * 10) + 100;
+        tm->tm_hour = ((tr >> 16) & 0xf) + (((tr >> 20) & 0x7) * 10);
+        if (tr & RTC_TR_PM)
             tm->tm_hour += 12;
-        tm->tm_min  = ((RTC->TR >>  8) & 0xf) + (((RTC->TR >> 12) & 0x7) * 10);
-        tm->tm_sec  = ((RTC->TR >>  0) & 0xf) + (((RTC->TR >>  4) & 0x7) * 10);
-        tm->tm_wday = ((RTC->DR >> 13) & 0x7);
+        tm->tm_min  = ((tr >>  8) & 0xf) + (((tr >> 12) & 0x7) * 10);
+        tm->tm_sec  = ((tr >>  0) & 0xf) + (((tr >>  4) & 0x7) * 10);
+        tm->tm_wday = ((dr >> 13) & 0x7);
         tm->tm_yday = 0/*FIXME*/;
         return 0;
     }
@@ -118,6 +255,7 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint32_t bcd_date, bcd_time, year, month;
 
+    PWR->CR |= PWR_CR_DBP;
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
@@ -148,6 +286,9 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
     /*enable clock and inhibit RTC write access */
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0;
+    PWR->CR &= ~PWR_CR_DBP;
+    /* Wait until shadow registers are updated with new value*/
+    while ((RTC->ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
     return 0;
 }
 
@@ -160,33 +301,39 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
  */
 int Stm32RtcInit(NUTRTC *rtc)
 {
+    int res;
 
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    PWR->CR |= PWR_CR_DBP;
-    RCC->BDCR|= RCC_BDCR_RTCEN;
-
-    if(RTC->ISR & RTC_ISR_INITS)
+    if (((RTC->ISR & RTC_ISR_INITS)    != RTC_ISR_INITS) &&
+#if defined(RCC_BDCR_RTCSEL)
+        ((RCC_BDCR & RCC_BDCR_RTCSEL) == RTC_CLKSEL)     &&
+#endif
+#if defined(RCC_CSR_RTCSEL)
+        ((RCC->CSR & RCC_CSR_RTCSEL) == RTC_CLKSEL)      &&
+#endif
+#if defined(RTC_PRE)
+        ((RCC->CFGR & RCC_CFGR_RTCPRE) == RTC_PRE)       &&
+#endif
+        ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC * 0x10000)))
         /* The RTC has been set before. Do not set it*/
-        /* Fixme: May give problems when reflashing to a different CLK source*/
         return 0;
 
-    /* Backup Domain software reset*/
-    RCC->BDCR |= RCC_BDCR_BDRST;
-    RCC->BDCR &= ~RCC_BDCR_BDRST;
-    /* Reenable RTC clk */
-    RCC->BDCR|= RCC_BDCR_RTCEN;
-
-/*#if RTC_CLK_SRC == HSE_RTC*/
-#if 1
-    RCC->BDCR &= ~RCC_BDCR_RTCSEL;
-    RCC->BDCR |= RCC_BDCR_RTCSEL_0 | RCC_BDCR_RTCSEL_1;
-#if (HSE_VALUE % (32 * 250) != 0)
-#warning FIXME: RTC clock setup for given HSE_VALUE
-    return -1;
-#endif
-#elif RTC_CLK_SRC == LSE
-#elif RTC_CLK_SRC == LSI
-#endif
+    /* Allow write access to the Backup Registers */
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    PWR->CR |= PWR_CR_DBP;
+    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != RTC_CLKSEL) {
+        /* We need a backup domain reset to set the new source */
+        RCC_BDCR |= RCC_BDCR_BDRST;
+        RCC_BDCR &= ~RCC_BDCR_BDRST;
+        /* Select clock source */
+        RCC_BDCR |= RTC_CLKSEL;
+    }
+    res = RTC_CLK_SETUP();
+    if (res) {
+        PWR->CR &= ~PWR_CR_DBP; /* Disable Backup domain write access*/
+        return res;
+    }
+    /* Enable RTC CLK*/
+    RCC_BDCR|= RCC_BDCR_RTCEN;
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
@@ -194,10 +341,10 @@ int Stm32RtcInit(NUTRTC *rtc)
     RTC->ISR |= RTC_ISR_INIT;
     while (!(RTC->ISR & RTC_ISR_INITF));
 
-    /* 1 Mhz/32 = 31.250 kHz. So use 125 for the asyn prescaler */
-    RTC->PRER = ((125 - 1) <<16) | ((HSE_VALUE/32/125) - 1);
+    RTC->PRER = RTC_SYNC + RTC_ASYNC * 0x10000;
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0; /* Disable  RTC Write Access */
+    PWR->CR &= ~PWR_CR_DBP; /* Disable Backup domain write access*/
 
     return 0;
 }

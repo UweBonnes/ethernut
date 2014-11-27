@@ -455,14 +455,14 @@ nutarch_cm3_stm32_devices =
                 brief = "RTC Clock Source",
                 description = "Source for RTC Clock",
                 type = "enumerated",
-                choices = { "LSE", "HSE_RTC", "LSI" },
-                default = "HSE_RTC",
+                choices = { "RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI" },
+                default = "RTCCLK_LSE",
                 file = "include/cfg/rtc.h"
             },
             {
-                macro = "RTC_CLK_LSE_BYPASS",
-                brief = "LSE provides exernal",
-                description = "LSE Clock provided from external oscillator",
+                macro = "RTC_LSE_HIGH_POWER",
+                brief = "RTC osc power",
+                description = "Power level of RTC oscillator",
                 flavor = "boolean",
                 file = "include/cfg/rtc.h"
             },
@@ -471,7 +471,7 @@ nutarch_cm3_stm32_devices =
                 brief = "Frequency of Clock ",
                 description = "Frequency of LSE quarz",
                 type = "integer",
-                default = "32786",
+                default = "32768",
                 file = "include/cfg/rtc.h"
             },
         }
