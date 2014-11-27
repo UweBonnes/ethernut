@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012, 2014 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -332,12 +332,13 @@ int SetSysClock(void)
 {
     int rc = 0;
     register uint32_t cfgr;
+    int i;
 
 /* Todo: Check Voltage range! Here 2.7-3.6 Volt is assumed */
 /* For 2.7-3.6 Volt up to 30 MHz no Wait state required */
     cfgr = RCC->CFGR;
 
-    cfgr &= ~(RCC_CFGR_HPRE|RCC_CFGR_PPRE1|RCC_CFGR_PPRE2);
+    cfgr &= ~(RCC_CFGR_HPRE|RCC_CFGR_PPRE1|RCC_CFGR_PPRE2 | RCC_CFGR_RTCPRE);
 
     /* HCLK = SYSCLK */
     cfgr |= (uint32_t)RCC_CFGR_HPRE_DIV1;
@@ -347,6 +348,14 @@ int SetSysClock(void)
 
     /* PCLK1 = HCLK */
     cfgr |= (uint32_t)RCC_CFGR_PPRE1_DIV1;
+
+    /* Find suitable RTC clock divisor */
+    i = 2;
+    while ((SYSCLK_SOURCE / i) > 1000000)
+        i++;
+    if (i > 31)
+        return -1;
+    cfgr |= i + RCC_CFGR_RTCPRE_0;
 
     RCC->CFGR = cfgr;
 
@@ -405,9 +414,11 @@ int SetSysClock(void)
 #warning PLL Input frequency too high
 #endif
 
+/* Multiple of 2 MHZ*/
 #if (PLLCLK_IN > 3999999) && ((PLLCLK_IN % 2000000L) == 0)
  #define  PLLM (PLLCLK_IN/2000000)
  #define  PLLN ((SYSCLK_FREQ/1000000) << _BI32(RCC_PLLCFGR_PLLN_0))
+/*Multiple of 1 MHZ */
 #elif (PLLCLK_IN > 1999999) && ((PLLCLK_IN % 1000000L) == 0)
  #define  PLLM (PLLCLK_IN/1000000)
  #define  PLLN ((SYSCLK_FREQ/500000 ) << _BI32(RCC_PLLCFGR_PLLN_0))
@@ -447,9 +458,11 @@ int SetSysClock(void)
     FLASH->ACR = rcc_reg;
 
     rcc_reg = RCC->CFGR;
-    rcc_reg  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1);
+    rcc_reg  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1 |RCC_CFGR_RTCPRE);
     /* HCLK = SYSCLK, PCLK2 = HCLK/2 , PCLK1 = HCLK/4 */
     rcc_reg |= (RCC_CFGR_HPRE_DIV1 | RCC_CFGR_PPRE2_DIV2| RCC_CFGR_PPRE1_DIV4);
+    /* Set RTC clock divider to get 1 MHz max*/
+    rcc_reg |= (PLLCLK_IN / 1000000) * RCC_CFGR_RTCPRE_0;
     RCC->CFGR = rcc_reg;
 
     /* Start PLL, wait ready and switch to it as clock source */
