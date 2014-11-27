@@ -166,6 +166,31 @@ nutarch_cm3_stm32f4 =
                 file = "include/cfg/arch.h"
              },
              {
+                macro = "STM32F411",
+                brief = "STM32F411",
+                brief = "STM32F4 Low Power with USB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F411" },
+                default = 1,
+                provides =
+                {
+                    "HW_SPI4_STM32",
+                    "HW_SPI5_STM32"
+                },
+                file = "include/cfg/arch.h",
+                makedefs = { "LDPATH=$(LDINCLUDE)" }
+             },
+             {
+                macro = "STM32F411E",
+                brief = "STM32F411",
+                brief = "STM32F4 Low Power with USB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F411E" },
+                default = 1,
+                file = "include/cfg/arch.h",
+                makedefs = { "LDSCRIPT=stm32f411xE_flash.ld" }
+             },
+             {
                 macro = "STM32F415xx",
                 brief = "STM32F415",
                 brief = "STM32F4 basic device with Crypto, w/o ETH/DCMI/DMA2D",

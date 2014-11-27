@@ -53,6 +53,9 @@ function GetStmUsarts()
     if c_is_provided("STM32F401xx") then
         return { "", "USART1", "USART2",                               "USART6" }
     end
+    if c_is_provided("STM32F411") then
+        return { "", "USART1", "USART2",                               "USART6" }
+    end
     if c_is_provided("STM32F427_437xx") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5", "USART6", "USART7", "USART8" }
     end
@@ -77,6 +80,9 @@ function GetTxUsart1()
     if c_is_provided("STM32F3XX") then
         return { "9", "4", "6", "0", "-1" }
     end
+    if c_is_provided("STM32F411") then
+        return { "9", "15", "6", "-1" }
+    end
     return { "9", "6", "-1" }
 end
 
@@ -86,6 +92,9 @@ end
 function GetRxUsart1()
     if c_is_provided("STM32F3XX") then
         return { "10", "5", "7", "1", "-1" }
+    end
+    if c_is_provided("STM32F411") then
+        return { "10", "3", "7", "-1" }
     end
     return { "10", "7", "-1" }
 end
@@ -203,11 +212,17 @@ function GetI2c2Sda()
     if c_is_provided("STM32F10X") then
         return { "11" }
     end
+-- No PB10 on small packages
+    if c_is_provided("STM32F411") then
+        return { "3", "9", "11" }
+    end
     return { "11", "0", "5" }
 end
 function GetI2c2SdaDefault()
     if c_is_provided("STM32F3XX") then
         return "10"
+    if c_is_provided("STM32F411") then
+        return { "3" }
     end
     return "11"
 end
@@ -216,6 +231,8 @@ function GetI2c2Scl()
         return { "9", "1", "6" }
     end
     if c_is_provided("STM32F10X") then
+        return { "10" }
+    if c_is_provided("STM32F411") then
         return { "10" }
     end
     return { "10", "1", "4" }
@@ -234,6 +251,9 @@ function GetI2c2Smba()
         return { "-1" , "8", "2" }
     end
     if c_is_provided("STM32F10X") then
+        return { "-1" , "12" }
+    end
+    if c_is_provided("STM32F411") then
         return { "-1" , "12" }
     end
     return { "-1" , "12", "2", "6" }
@@ -299,6 +319,9 @@ function GetStmTimers2Ch()
     end
     if c_is_provided("STM32F401xx") then
         return { "", "1", "2", "3", "4", "5", "9"}
+    end
+    if c_is_provided("STM32F411") then
+        return { "", "1", "2", "3", "4", "5", "9", "10, "11"}
     end
     if c_is_provided("STM32F40_41xxx") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}

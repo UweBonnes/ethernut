@@ -1579,6 +1579,23 @@ nutarch =
                 makedefs = { "MCU=cortex-m4" }
             },
             {
+                macro = "MCU_STM32F411xE",
+                brief = "STM STM32F411xE",
+                description = "Low power 512 kB STM32F4 with USB OTG (FS).",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F4XX",
+                    "HW_MCU_STM32F411",
+                    "HW_MCU_STM32F411E",
+                },
+                makedefs = { "MCU=cortex-m4" }
+            },
+            {
                 macro = "MCU_STM32F415",
                 brief = "STM STM32F415",
                 description = "STM32F4 with Crypto and FSMC.",
