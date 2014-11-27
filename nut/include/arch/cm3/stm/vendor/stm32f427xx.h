@@ -52,8 +52,8 @@
 #include <cfg/arch.h>
 #include <cfg/clock.h>
 
-#ifndef __stm32f427xx_H
-#define __stm32f427xx_H
+#ifndef __STM32F427XX_H
+#define __STM32F427XX_H
 
 #ifdef __cplusplus
  extern "C" {
