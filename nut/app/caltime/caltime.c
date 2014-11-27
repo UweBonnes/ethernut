@@ -50,6 +50,7 @@
 #include <time.h>
 #ifdef USE_BUILD_TIME
 #include <pro/rfctime.h>
+#include <cfg/crt.h>
 #endif
 
 #ifdef USE_LINE_EDITOR
@@ -363,7 +364,20 @@ static void SetLocalTime(void)
         /* mktime expects local time and returns seconds since the epoch. */
         now = mktime(&ltm);
         /* stime expects seconds since the epoch. */
+#if defined(NUT_USE_OLD_TIME_API)
         stime(&now);
+#else
+        if (NutRtcSetTime(gmtime(&now)) == 0) {
+            puts("Setting RTC Time from Build date");
+        }
+        if (NutRtcGetTime(&ltm) == 0) {
+            time_t now = _mkgmtime(&ltm);
+            if (now != -1) {
+                stime(&now);
+                puts("Setting System Time from RTC");
+            }
+        }
+#endif
     }
 }
 
@@ -374,6 +388,9 @@ int main(void)
 {
     uint32_t baud = 115200;
     int cmd;
+    time_t now;
+    time_t secs;
+    struct _tm *gmt;
 
     /* Use UART device for stdin and stdout. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
@@ -389,6 +406,7 @@ int main(void)
     edline = EdLineOpen(EDIT_MODE_ECHO);
     if (edline) {
         puts("OK");
+        puts("Use ^H for Delete");
     } else {
         puts("failed");
     }
@@ -400,6 +418,8 @@ int main(void)
     _timezone = USE_TIME_ZONE;
 #endif
 
+    now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
+    puts("Built " __DATE__ " " __TIME__);
 #ifdef RTC_CHIP
     /* Register and query hardware RTC, if available. */
     printf("Registering RTC hardware...");
@@ -408,30 +428,57 @@ int main(void)
     } else {
         uint32_t rtc_stat;
 
+        puts("OK");
         NutRtcGetStatus(&rtc_stat);
         if (rtc_stat & RTC_STATUS_PF) {
+            puts("Power failure");
 #if defined(USE_BUILD_TIME)
-            puts("power failure, Setting Time from Build date");
+#if defined(NUT_USE_OLD_TIME_API)
+            puts("Setting Time from Build date");
             /* Initially use the compile date and time. */
-            time_t now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
             stime(&now);
             puts("Built " __DATE__ " " __TIME__);
 #else
-            puts("power failure");
+            struct _tm gmt;
+            if (NutRtcSetTime(gmtime(&now)) == 0) {
+                puts("Setting RTC Time from Build date");
+            }
+            if (NutRtcGetTime(&gmt) == 0) {
+                time_t now = _mkgmtime(&gmt);
+                if (now != -1) {
+                    stime(&now);
+                    puts("Setting System Time from RTC");
+                }
+            }
+#endif
 #endif
         } else {
+#if defined(NUT_USE_OLD_TIME_API)
             puts("OK");
+#else
+            struct _tm gmt;
+            if (NutRtcGetTime(&gmt) == 0) {
+                now = _mkgmtime(&gmt);
+                if (now != -1) {
+                    stime(&now);
+                    puts("Setting system time from RTC");
+                }
+            }
+#endif
         }
     }
 #elif USE_BUILD_TIME
     {
         /* Initially use the compile date and time. */
-        time_t now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
         stime(&now);
-        puts("Built " __DATE__ " " __TIME__);
     }
 #endif
 
+    secs = time(NULL);
+    gmt = gmtime(&secs);
+    printf("Universal time: ");
+    PrintDateTime(gmt);
+    printf("\r");
     for (;;) {
         /* Print command menu. */
         puts("\n  0 - Display seconds counter");
