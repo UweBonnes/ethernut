@@ -43,6 +43,7 @@
 
 #include <sys/version.h>
 #include <sys/timer.h>
+#include <sys/event.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -87,6 +88,7 @@ static void Alarm(int idx)
     uint32_t rtc_stat;
     uint_fast8_t i;
     uint32_t rtc_alarm;
+    int has_queue;
 
     if (NutRtcGetTime(&rtctime) == 0) {
         rtctime.tm_sec += 10;
@@ -104,16 +106,32 @@ static void Alarm(int idx)
 
     rtc_alarm = (idx)?RTC_STATUS_AL1:RTC_STATUS_AL0;
     i = 0;
-    do {
-        printf(" [%c] Waiting for Alarm%c\r"
-               , rotor[++i & 3]
-               , 'A' + idx);
-        NutSleep(200);
-        NutRtcGetStatus(&rtc_stat);
-    } while (((rtc_stat & rtc_alarm) != rtc_alarm) && ( i < 60));
+    NutRtcGetStatus(&rtc_stat);
+    /* Most RTC Implementations don't have a Event queue yet */
+    has_queue = rtc_stat & RTC_STATUS_HAS_QUEUE;
+    if (has_queue) {
+        HANDLE *alarm = NutRtcGetHandle();
+        do {
+            printf(" [%c] Waiting for Alarm%c\r"
+                   , rotor[++i & 3]
+                   , 'A' + idx);
+            if (NutEventWait(alarm, 200) == 0)
+                break;
+        } while (i < 60);
+    }
+    else {
+        do {
+            printf(" [%c] Waiting for Alarm%c\r"
+                   , rotor[++i & 3]
+                   , 'A' + idx);
+            NutSleep(200);
+            NutRtcGetStatus(&rtc_stat);
+        } while (((rtc_stat & rtc_alarm) != rtc_alarm) && ( i < 60));
+    }
     putchar('\n');
     NutRtcGetAlarm(idx, &rtctime, &aflag);
     NutRtcSetAlarm(idx, &rtctime, 0); /* Switch off alarm */
+    NutRtcGetStatus(&rtc_stat);
     if ((rtc_stat & rtc_alarm) != rtc_alarm)
         printf(" Failed!");
     else {
