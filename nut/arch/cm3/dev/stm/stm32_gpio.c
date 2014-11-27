@@ -288,10 +288,11 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
   *            @arg GPIO_AF_EVENTOUT: Connect EVENTOUT pins to AF15
   * @retval None
   */
-void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF)
+void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF)
 {
   uint32_t temp = 0x00;
   uint32_t temp_2 = 0x00;
+  GPIO_TypeDef * gpio = (GPIO_TypeDef *)GPIOx
 
   /* Check the parameters */
   NUTASSERT(IS_GPIO_ALL_PERIPH(GPIOx));
@@ -299,7 +300,7 @@ void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t
   NUTASSERT(IS_GPIO_AF(GPIO_AF));
 
   temp = ((uint32_t)(GPIO_AF) << ((uint32_t)((uint32_t)GPIO_PinSource & (uint32_t)0x07) * 4)) ;
-  GPIOx->AFR[GPIO_PinSource >> 0x03] &= ~((uint32_t)0xF << ((uint32_t)((uint32_t)GPIO_PinSource & (uint32_t)0x07) * 4)) ;
-  temp_2 = GPIOx->AFR[GPIO_PinSource >> 0x03] | temp;
-  GPIOx->AFR[GPIO_PinSource >> 0x03] = temp_2;
+  gpio->AFR[GPIO_PinSource >> 0x03] &= ~((uint32_t)0xF << ((uint32_t)((uint32_t)GPIO_PinSource & (uint32_t)0x07) * 4)) ;
+  temp_2 = gpio->AFR[GPIO_PinSource >> 0x03] | temp;
+  gpio->AFR[GPIO_PinSource >> 0x03] = temp_2;
 }

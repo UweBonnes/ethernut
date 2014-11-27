@@ -115,9 +115,9 @@ void stm32_qenc32_0_init(void)
                      GPIO_CFG_PULLDOWN | GPIO_CFG_PERIPHAL);
     GpioPinConfigSet(STM32_QENC32_Q_PORT, STM32_QENC32_Q_PIN,
                      GPIO_CFG_PULLDOWN | GPIO_CFG_PERIPHAL);
-    GPIO_PinAFConfig((GPIO_TypeDef*)STM32_QENC32_I_PORT, STM32_QENC32_I_PIN,
+    GPIO_PinAFConfig(STM32_QENC32_I_PORT, STM32_QENC32_I_PIN,
                      STM32_QENC32_I_AF );
-    GPIO_PinAFConfig((GPIO_TypeDef*)STM32_QENC32_Q_PORT, STM32_QENC32_Q_PIN,
+    GPIO_PinAFConfig(STM32_QENC32_Q_PORT, STM32_QENC32_Q_PIN,
                      STM32_QENC32_Q_AF );
     TIM_StartTimer(STM32_QENC32_BASE);
 }

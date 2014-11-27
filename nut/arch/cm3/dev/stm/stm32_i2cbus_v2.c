@@ -283,8 +283,8 @@ static int checkpin_and_config(STM32_I2CCB *icb)
     GpioPinConfigSet(
         icb->hw->scl_port, icb->hw->scl_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
         GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST);
-    GPIO_PinAFConfig((GPIO_TypeDef*) icb->hw->sda_port, icb->hw->sda_pin, GPIO_AF_4);
-    GPIO_PinAFConfig((GPIO_TypeDef*) icb->hw->scl_port, icb->hw->scl_pin, GPIO_AF_4);
+    GPIO_PinAFConfig(icb->hw->sda_port, icb->hw->sda_pin, GPIO_AF_4);
+    GPIO_PinAFConfig(icb->hw->scl_port, icb->hw->scl_pin, GPIO_AF_4);
     if (icb->hw->smba_pin != -1)
     {
         /* TODO: How should SMBA pin be set?*/
@@ -292,7 +292,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
             icb->hw->smba_port, icb->hw->smba_pin, GPIO_CFG_OUTPUT|
             GPIO_CFG_PERIPHAL| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |
             GPIO_CFG_SPEED_FAST);
-        GPIO_PinAFConfig((GPIO_TypeDef*) icb->hw->smba_port,
+        GPIO_PinAFConfig(icb->hw->smba_port,
                          icb->hw->smba_pin, GPIO_AF_4);
     }
     if (icb->hw->icb_base == I2C1_BASE)

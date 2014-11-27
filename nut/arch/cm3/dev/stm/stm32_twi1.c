@@ -171,7 +171,7 @@ int Stm32I2c1Init(void)
     NVIC_SetPriority( I2C1_ER_IRQn, 1);
 
 #ifdef I2C1_MODE_SMBUS
-     GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, SMBA_PIN, GPIO_AF_I2C1);
+     GPIO_PinAFConfig(I2C_PORT, SMBA_PIN, GPIO_AF_I2C1);
 #endif
 #if defined (MCU_STM32F1)
     /* Configure alternate configuration. */
@@ -181,8 +181,8 @@ int Stm32I2c1Init(void)
     CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP));
 #endif
 #elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2C1_SDA_PIN, GPIO_AF_I2C1);
-    GPIO_PinAFConfig((GPIO_TypeDef*) I2C_PORT, I2C1_SCL_PIN, GPIO_AF_I2C1);
+    GPIO_PinAFConfig(I2C_PORT, I2C1_SDA_PIN, GPIO_AF_I2C1);
+    GPIO_PinAFConfig(I2C_PORT, I2C1_SCL_PIN, GPIO_AF_I2C1);
 #else
 #warning "Unhandled STM32 family"
 #endif

@@ -265,8 +265,8 @@ static int checkpin_and_config(STM32_I2CCB *icb)
         hw->scl_port, hw->scl_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
         GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST);
 #if !defined (MCU_STM32F1)
-    GPIO_PinAFConfig((GPIO_TypeDef*) hw->sda_port, hw->sda_pin, GPIO_AF_4);
-    GPIO_PinAFConfig((GPIO_TypeDef*) hw->scl_port, hw->scl_pin, GPIO_AF_4);
+    GPIO_PinAFConfig(hw->sda_port, hw->sda_pin, GPIO_AF_4);
+    GPIO_PinAFConfig(hw->scl_port, hw->scl_pin, GPIO_AF_4);
 #endif
     if (hw->smba_pin != -1)
     {
@@ -276,7 +276,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
             GPIO_CFG_PERIPHAL| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |
             GPIO_CFG_SPEED_FAST);
 #if !defined (MCU_STM32F1)
-        GPIO_PinAFConfig((GPIO_TypeDef*) hw->smba_port,
+        GPIO_PinAFConfig(hw->smba_port,
                          hw->smba_pin, GPIO_AF_4);
 #endif
     }

@@ -125,5 +125,5 @@
 
 #define GPIO_AF_EVENTOUT GPIO_AD_F
 
-void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF);
+void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF);
 #endif

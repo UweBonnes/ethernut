@@ -532,12 +532,9 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
         SPIBUS_REMAP_BB();
 #endif
 #else
-        GPIO_PinAFConfig
-            ((GPIO_TypeDef*)SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_SCK_GPIO_AF);
-        GPIO_PinAFConfig
-            ((GPIO_TypeDef*)SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_MISO_GPIO_AF);
-        GPIO_PinAFConfig
-            ((GPIO_TypeDef*)SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_MOSI_GPIO_AF);
+        GPIO_PinAFConfig(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_SCK_GPIO_AF);
+        GPIO_PinAFConfig(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_MISO_GPIO_AF);
+        GPIO_PinAFConfig(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_MOSI_GPIO_AF);
 #endif
         SPI_ENABLE_CLK_SET();
     }

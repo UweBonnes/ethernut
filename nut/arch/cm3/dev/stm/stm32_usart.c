@@ -1352,16 +1352,16 @@ static int Stm32UsartInit(void)
  #endif
 #else
 #if defined(TX_GPIO_PORT)
-    GPIO_PinAFConfig((GPIO_TypeDef*) TX_GPIO_PORT, TX_GPIO_PIN,  STM_USART_REMAP);
+    GPIO_PinAFConfig(TX_GPIO_PORT, TX_GPIO_PIN,  STM_USART_REMAP);
 #endif
 #if defined(RX_GPIO_PORT)
-    GPIO_PinAFConfig((GPIO_TypeDef*) RX_GPIO_PORT, RX_GPIO_PIN,  STM_USART_REMAP);
+    GPIO_PinAFConfig(RX_GPIO_PORT, RX_GPIO_PIN,  STM_USART_REMAP);
 #endif
 #if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
-    GPIO_PinAFConfig((GPIO_TypeDef*) RTS_GPIO_PORT, RTS_GPIO_PIN,  STM_USART_REMAP);
+    GPIO_PinAFConfig(RTS_GPIO_PORT, RTS_GPIO_PIN,  STM_USART_REMAP);
 #endif
 #if defined(CTS_GPIO_PORT) && defined(CTS_GPIO_PIN)
-    GPIO_PinAFConfig((GPIO_TypeDef*) CTS_GPIO_PORT, CTS_GPIO_PIN,  STM_USART_REMAP);
+    GPIO_PinAFConfig(CTS_GPIO_PORT, CTS_GPIO_PIN,  STM_USART_REMAP);
 #endif
 #endif/*F1 */
 

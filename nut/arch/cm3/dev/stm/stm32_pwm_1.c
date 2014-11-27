@@ -139,7 +139,7 @@ uint32_t stm32_pwm1_init(unsigned bits)
     CM3REG(AFIO_BASE, AFIO_TypeDef, STM32_PWM_REMAP_REG) &= ~(STM32_PWM_REMAP_MASK                    );
     CM3REG(AFIO_BASE, AFIO_TypeDef, STM32_PWM_REMAP_REG) |=  (STM32_PWM_REMAP << STM32_PWM_REMAP_SHIFT);
 #else
-    GPIO_PinAFConfig((GPIO_TypeDef*)STM32_PWM_PORT, STM32_PWM_PIN, STM32_PWM_AF);
+    GPIO_PinAFConfig(STM32_PWM_PORT, STM32_PWM_PIN, STM32_PWM_AF);
 #endif
     TIM_StartTimer(STM32_PWM_BASE);
     return pclk >> bits;
