@@ -73,7 +73,8 @@ CREATE_HANDLER(INTERRUPT4,    EXTI4,       NUT_IRQPRI_DEF); /* EXTI Line 4 */
 CREATE_HANDLER(INTERRUPT9_5,  EXTI9_5,     NUT_IRQPRI_DEF); /* EXTI Line 5 to 9 */
 CREATE_HANDLER(INTERRUPT15_10,EXTI15_10,   NUT_IRQPRI_DEF); /* EXTI Line 10 to 15 */
 #endif
-#if defined (STM32F072)
+#if defined (STM32F030)
+#elif defined (MCU_STM32F0)
 CREATE_HANDLER(PVD,           PVD_VDDIO2, NUT_IRQPRI_DEF);    /* PVD through EXTI */
 #else
 CREATE_HANDLER(PVD,           PVD,      NUT_IRQPRI_DEF);    /* PVD through EXTI */
@@ -255,7 +256,9 @@ CREATE_HANDLER(TIM1_CC,       TIM1_CC,      NUT_IRQPRI_DEF);
 #endif
 
 /* Only Tim2 up to TIM5 have always a single TIMx_IRQn*/
+#if defined(HW_TIM2_STM32)
 CREATE_HANDLER(TIM2,          TIM2,         NUT_IRQPRI_DEF);
+#endif
 CREATE_HANDLER(TIM3,          TIM3,         NUT_IRQPRI_DEF);
 #if defined(HW_TIM4_STM32)
 CREATE_HANDLER(TIM4,          TIM4,         NUT_IRQPRI_DEF);
