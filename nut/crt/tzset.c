@@ -49,6 +49,7 @@
 #include <stdint.h>
 
 #include <time.h>
+#include <cfg/crt.h>
 #include "ctime.h"
 
 typedef struct {
@@ -62,9 +63,9 @@ typedef struct {
  */
 static transitiondate dststart = { -1, 0, 0L };
 static transitiondate dstend = { -1, 0, 0L };
-int _daylight = 1;                   /* daylight saving default enabled */
-long _dstbias = -1 * 60L * 60L;         /* bias for daylight saving in seconds */
-long _timezone = 5L * 60L * 60L;        /* default time zone is EST = -05:00:00 */
+int _daylight = (CRT_DAYLIGHT != 0);    /* daylight saving default enabled */
+long _dstbias =  CRT_DAYLIGHT * 60L;    /* bias for daylight saving in seconds */
+long _timezone = -CRT_TIMEZONE * 60L;    /* default time zone is EST = -05:00:00 */
 
 /*
  * The macro below is valid for years between 1901 and 2099, which easily

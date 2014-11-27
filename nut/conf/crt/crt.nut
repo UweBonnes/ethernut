@@ -323,7 +323,28 @@ nutcrt =
             "time.c",
             "timeofday.c",
             "tzset.c"
-        }
+        },
+        options =
+        {
+            {
+                macro = "CRT_TIMEZONE",
+                brief = "Default Timezone",
+                description = "Timezone Offset in Minutes. "..
+                            "E.g. EST = -300. Default: -300.",
+                default = "-300",
+                type = "integer",
+                file = "include/cfg/crt.h"
+             },
+             {
+                macro = "CRT_DAYLIGHT",
+                brief = "Dayligh saving enabled",
+                description = "Daylight saving offset in minutes. "..
+                            "Default: -60 (daylight savings enabled).",
+                default = "-60",
+                type = "integer",
+                file = "include/cfg/crt.h"
+             }
+        },
     },
 
     --
