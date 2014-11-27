@@ -189,3 +189,10 @@ int NutRtcClearStatus(uint32_t sflags)
     }
     return -1;
 }
+
+HANDLE *NutRtcGetHandle(void)
+{
+    if (!reg_rtc)
+        return NULL;
+    return &reg_rtc->alarm;
+}
