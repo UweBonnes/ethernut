@@ -84,6 +84,7 @@ nutarch_cm3_stm32l1 =
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
                     "HW_USART3_STM32",
+                    "HW_RTC_STM32_V2",
                     "HW_TIM2_STM32",
                     "HW_TIM3_STM32",
                     "HW_TIM4_STM32",
