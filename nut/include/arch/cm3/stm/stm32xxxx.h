@@ -74,7 +74,7 @@
 #include <arch/cm3/stm/vendor/stm32f37x.h>
 #elif defined(MCU_STM32F4)
 #define __STM32F4xx_CMSIS_DEVICE_VERSION_MAIN   (0x02) /*!< [31:24] main version */
-#define __STM32F4xx_CMSIS_DEVICE_VERSION_SUB1   (0x00) /*!< [23:16] sub1 version */
+#define __STM32F4xx_CMSIS_DEVICE_VERSION_SUB1   (0x01) /*!< [23:16] sub1 version */
 #define __STM32F4xx_CMSIS_DEVICE_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
 #define __STM32F4xx_CMSIS_DEVICE_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
 #define __STM32F4xx_CMSIS_DEVICE_VERSION        ((__CMSIS_DEVICE_VERSION_MAIN     << 24)\
@@ -88,6 +88,8 @@
 #include <arch/cm3/stm/vendor/stm32f405xx.h>
 #elif defined(MCU_STM32F407)
 #include <arch/cm3/stm/vendor/stm32f407xx.h>
+#elif defined(STM32F411E)
+#include <arch/cm3/stm/vendor/stm32f411xe.h>
 #elif defined(MCU_STM32F415)
 #include <arch/cm3/stm/vendor/stm32f415xx.h>
 #elif defined(MCU_STM32F417)
