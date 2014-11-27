@@ -199,7 +199,17 @@ static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
 
     /* Check for power failure */
     if (!(RTC->ISR & RTC_ISR_INITS)) {
-        res = 1;
+        res = RTC_STATUS_PF;
+    }
+
+    if ((RTC->ISR & RTC_ISR_ALRAF)) {
+        res |= RTC_STATUS_AL0;
+        RTC->ISR &= ~RTC_ISR_ALRAF;
+    }
+
+    if ((RTC->ISR & RTC_ISR_ALRBF)) {
+        res |= RTC_STATUS_AL1;
+        RTC->ISR &= ~RTC_ISR_ALRBF;
     }
 
     if (sflags) {
@@ -294,6 +304,150 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 
 
 /*!
+ * \brief Get an alarm using the STM32 hardware clock.
+ *
+ * \param Idx Zero based index. Two alarms are supported>
+ * \param tm Points to a structure to receive date and time information.
+ *
+ * \param aflags Points to an unsigned long that receives the enable flags.
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
+{
+    uint32_t bcd_alarm;
+    if (idx > 1)
+        return -1;
+    bcd_alarm = (idx)?RTC->ALRMBR:RTC->ALRMAR;
+    if (aflags) {
+        uint32_t flags = 0;
+        if ((bcd_alarm & RTC_ALRMAR_MSK1) != RTC_ALRMAR_MSK1)
+            flags |= RTC_ALARM_SECOND;
+        if ((bcd_alarm & RTC_ALRMAR_MSK2) != RTC_ALRMAR_MSK2)
+            flags |= RTC_ALARM_MINUTE;
+        if ((bcd_alarm & RTC_ALRMAR_MSK3) != RTC_ALRMAR_MSK3)
+            flags |= RTC_ALARM_HOUR;
+        if ((bcd_alarm & RTC_ALRMAR_MSK4) != RTC_ALRMAR_MSK4) {
+            if(bcd_alarm & RTC_ALRMAR_WDSEL)
+                 flags |= RTC_ALARM_WDAY;
+            else
+                 flags |= RTC_ALARM_MDAY;
+        }
+        *aflags = flags;
+    }
+    if (tm) {
+        tm->tm_sec   =  (bcd_alarm & RTC_ALRMAR_SU ) *  1 /RTC_ALRMAR_SU_0;
+        tm->tm_sec  +=  (bcd_alarm & RTC_ALRMAR_ST ) * 10 /RTC_ALRMAR_ST_0;
+        tm->tm_min   =  (bcd_alarm & RTC_ALRMAR_MNU) *  1 /RTC_ALRMAR_MNU_0;
+        tm->tm_min  +=  (bcd_alarm & RTC_ALRMAR_MNT) * 10 /RTC_ALRMAR_MNT_0;
+        tm->tm_hour  =  (bcd_alarm & RTC_ALRMAR_HU ) *  1 /RTC_ALRMAR_HU_0;
+        tm->tm_hour +=  (bcd_alarm & RTC_ALRMAR_HT ) * 10 /RTC_ALRMAR_HT_0;
+        if(bcd_alarm & RTC_ALRMAR_WDSEL)
+            tm->tm_wday =(bcd_alarm & RTC_ALRMAR_DU) *  1 /RTC_ALRMAR_DU_0;
+        else {
+            tm->tm_mday =(bcd_alarm & RTC_ALRMAR_DU) *  1 /RTC_ALRMAR_DU_0;
+            tm->tm_mday+=(bcd_alarm & RTC_ALRMAR_DT) * 10 /RTC_ALRMAR_DT_0;
+        }
+    }
+    return 0;
+}
+
+/*!
+ * \brief Set an alarm using the STM32 Ver 2 hardware clock.
+ *
+ * \param Idx   Zero based index. Two alarms are supported.
+ *
+ * \param tm    Points to a structure which contains the date and time
+ *              information. May be NULL to clear the alarm.
+ * \param aflgs Each bit enables a specific comparision.
+ *              - Bit 0: Seconds
+ *              - Bit 1: Minutes
+ *              - Bit 2: Hours
+ *              - Bit 3: Day of month
+ *              - Bit 4: Month
+ *              - Bit 7: Day of week (Sunday is zero)
+ *              - Bit 8: Year
+ *              - Bit 9: Day of year
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflags)
+{
+    uint32_t bcd_alarm;
+    if (idx > 1)
+        return -1;
+    /* Either use Weekday or day of month*/
+    if ((aflags & RTC_ALARM_WDAY) && (aflags & RTC_ALARM_MDAY))
+        return -1;
+    /* No Month or day of year */
+    if ((aflags & RTC_ALARM_MONTH) || (aflags & RTC_ALARM_YDAY))
+        return -1;
+    /* Check minimum RTC_PRER if seconds are active */
+    if (aflags & RTC_ALARM_SECOND) {
+        if ((RTC->PRER & 0x7ffff) < 3)
+            return -1;
+    }
+
+    bcd_alarm  = (tm->tm_sec  % 10) * RTC_ALRMAR_SU_0;
+    bcd_alarm |= (tm->tm_sec  / 10) * RTC_ALRMAR_ST_0;
+    bcd_alarm |= (tm->tm_min  % 10) * RTC_ALRMAR_MNU_0;
+    bcd_alarm |= (tm->tm_min  / 10) * RTC_ALRMAR_MNT_0;
+    bcd_alarm |= (tm->tm_hour % 10) * RTC_ALRMAR_HU_0;
+    bcd_alarm |= (tm->tm_hour / 10) * RTC_ALRMAR_HT_0;
+    if (aflags & RTC_ALARM_WDAY) {
+        bcd_alarm |= RTC_ALRMAR_WDSEL;
+        bcd_alarm |= (tm->tm_wday ) * RTC_ALRMAR_DU_0;
+    }
+    else {
+        bcd_alarm  &= ~RTC_ALRMAR_WDSEL;
+        bcd_alarm |= (tm->tm_mday % 10 ) * RTC_ALRMAR_DU_0;
+        bcd_alarm |= (tm->tm_mday / 10 ) * RTC_ALRMAR_DT_0;
+    }
+    if (aflags & RTC_ALARM_SECOND)
+        bcd_alarm &= ~RTC_ALRMAR_MSK1;
+    else
+        bcd_alarm |=  RTC_ALRMAR_MSK1;
+    if (aflags & RTC_ALARM_MINUTE)
+        bcd_alarm &= ~RTC_ALRMAR_MSK2;
+    else
+        bcd_alarm |=  RTC_ALRMAR_MSK2;
+    if (aflags & RTC_ALARM_HOUR)
+        bcd_alarm &= ~RTC_ALRMAR_MSK3;
+    else
+        bcd_alarm |=  RTC_ALRMAR_MSK3;
+    if (aflags & (RTC_ALARM_WDAY | RTC_ALARM_MDAY))
+        bcd_alarm &= ~RTC_ALRMAR_MSK4;
+    else
+        bcd_alarm |=  RTC_ALRMAR_MSK4;
+
+    PWR->CR |= PWR_CR_DBP;
+    /* Allow RTC Write Access */
+    RTC->WPR = 0xca;
+    RTC->WPR = 0x53;
+    switch(idx) {
+    case 0:
+        RTC->CR &= ~RTC_CR_ALRAE;
+        if (aflags != 0) {
+            while ((RTC->ISR & RTC_ISR_ALRAWF) != RTC_ISR_ALRAWF);
+            RTC->ALRMAR = bcd_alarm;
+            RTC->CR |=  RTC_CR_ALRAE;
+        }
+        break;
+    case 1:
+        RTC->CR &= ~RTC_CR_ALRBE;
+        if (aflags != 0) {
+            while ((RTC->ISR & RTC_ISR_ALRBWF) != RTC_ISR_ALRBWF);
+            RTC->ALRMBR = bcd_alarm;
+            RTC->CR |=  RTC_CR_ALRBE;
+        }
+        break;
+    }
+    RTC->WPR = 0;
+    PWR->CR &= ~PWR_CR_DBP;
+    return 0;
+}
+
+/*!
  * \brief Initialize the RTC in stm32f30x controller
  *
  * \return 0 on success or -1 in case of an error.
@@ -354,8 +508,8 @@ NUTRTC rtcStm32 = {
   /*.rtc_init      = */ Stm32RtcInit,       /*!< Hardware initializatiuon, rtc_init */
   /*.rtc_gettime   = */ Stm32RtcGetClock,   /*!< Read date and time, rtc_gettime */
   /*.rtc_settime   = */ Stm32RtcSetClock,   /*!< Set date and time, rtc_settime */
-  /*.rtc_getalarm  = */ NULL,               /*!< Read alarm date and time, rtc_getalarm */
-  /*.rtc_setalarm  = */ NULL,               /*!< Set alarm date and time, rtc_setalarm */
+  /*.rtc_getalarm  = */ Stm32RtcGetAlarm,   /*!< Read alarm date and time, rtc_getalarm */
+  /*.rtc_setalarm  = */ Stm32RtcSetAlarm,   /*!< Set alarm date and time, rtc_setalarm */
   /*.rtc_getstatus = */ Stm32RtcGetStatus,  /*!< Read status flags, rtc_getstatus */
   /*.rtc_clrstatus = */ NULL,               /*!< Clear status flags, rtc_clrstatus */
   /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
