@@ -554,6 +554,11 @@
 #include <dev/twif.h>
 #include <arch/cm3/stm/stm32_twi.h>
 
+#ifndef RTC_CHIP
+#include <dev/stm32_rtc.h>
+#define RTC_CHIP rtcStm32
+#endif
+
 #elif defined(__NUT_EMULATION__)
 /*
  * UART devices for the UNIX emulation.
