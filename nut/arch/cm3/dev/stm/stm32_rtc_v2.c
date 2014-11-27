@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 by Uwe Bonnes(bon@elektron.ikp,physik.tu-darmmstadt.de).
+ * Copyright (C) 2013,2014 by Uwe Bonnes(bon@elektron.ikp,physik.tu-darmmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -176,12 +176,16 @@ int Stm32RtcInit(NUTRTC *rtc)
     /* Reenable RTC clk */
     RCC->BDCR|= RCC_BDCR_RTCEN;
 
-    /* Select HSE/32 Clock for now. FIXME! */
+/*#if RTC_CLK_SRC == HSE_RTC*/
+#if 1
     RCC->BDCR &= ~RCC_BDCR_RTCSEL;
     RCC->BDCR |= RCC_BDCR_RTCSEL_0 | RCC_BDCR_RTCSEL_1;
 #if (HSE_VALUE % (32 * 250) != 0)
 #warning FIXME: RTC clock setup for given HSE_VALUE
     return -1;
+#endif
+#elif RTC_CLK_SRC == LSE
+#elif RTC_CLK_SRC == LSI
 #endif
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;

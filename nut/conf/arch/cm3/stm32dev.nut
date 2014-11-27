@@ -448,6 +448,33 @@ nutarch_cm3_stm32_devices =
         requires = { "HW_RTC_STM32_V2" },
         provides = { "DEV_RTC" },
         sources = { "cm3/dev/stm/stm32_rtc_v2.c" },
+        options =
+        {
+            {
+                macro = "RTC_CLK_SRC",
+                brief = "RTC Clock Source",
+                description = "Source for RTC Clock",
+                type = "enumerated",
+                choices = { "LSE", "HSE_RTC", "LSI" },
+                default = "HSE_RTC",
+                file = "include/cfg/rtc.h"
+            },
+            {
+                macro = "RTC_CLK_LSE_BYPASS",
+                brief = "LSE provides exernal",
+                description = "LSE Clock provided from external oscillator",
+                flavor = "boolean",
+                file = "include/cfg/rtc.h"
+            },
+            {
+                macro = "RTC_CLK_LSE",
+                brief = "Frequency of Clock ",
+                description = "Frequency of LSE quarz",
+                type = "integer",
+                default = "32786",
+                file = "include/cfg/rtc.h"
+            },
+        }
     },
 
 
