@@ -85,6 +85,16 @@
 #define RCC_BDCR RCC->BDCR
 #endif
 
+/* L0 has only one Alarm channel*/
+#if defined (RTC_ISR_ALRBF)
+#define NUM_ALARMS 2
+#else
+#define NUM_ALARMS 1
+#if !defined(RTC_CR_ALRBIE)
+#define  RTC_CR_ALRBIE 0
+#endif
+#endif
+
 #if (RTC_CLK_SRC == RTCCLK_HSE )
 /* Handle HSE as RTC clock */
  #define RTC_CLKSEL RCC_BDCR_RTCSEL
@@ -210,12 +220,14 @@ static void Stm32RtcInterrupt(void *arg)
         RTC->ISR &= ~RTC_ISR_ALRAF;
         do_alert ++;
     }
+#if NUM_ALARMS == 2
     if (RTC->ISR & RTC_ISR_ALRBF) {
         dcb->flags |= RTC_STATUS_AL1;
         /* Clear pending interrupt */
         RTC->ISR &= ~RTC_ISR_ALRBF;
         do_alert ++;
     }
+#endif
     if(do_alert) {
         /* Clear Pending EXTI17 Interrupt*/
         EXTI->PR   =  (1 << 17);
@@ -360,9 +372,13 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
 {
     uint32_t bcd_alarm;
-    if (idx > 1)
-        return -1;
-    bcd_alarm = (idx)?RTC->ALRMBR:RTC->ALRMAR;
+    switch (idx) {
+    case 0:  bcd_alarm = RTC->ALRMAR; break;
+#if (NUM_ALARMS == 2)
+    case 1:  bcd_alarm = RTC->ALRMBR; break;
+#endif
+    default: return -1;
+    }
     if (aflags) {
         uint32_t flags = 0;
         if ((bcd_alarm & RTC_ALRMAR_MSK1) != RTC_ALRMAR_MSK1)
@@ -418,7 +434,7 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
 static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflags)
 {
     uint32_t bcd_alarm;
-    if (idx > 1)
+    if (idx >= NUM_ALARMS)
         return -1;
     /* Either use Weekday or day of month*/
     if ((aflags & RTC_ALARM_WDAY) && (aflags & RTC_ALARM_MDAY))
@@ -477,6 +493,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
             RTC->CR |=  RTC_CR_ALRAE;
         }
         break;
+#if NUM_ALARMS == 2
     case 1:
         RTC->CR &= ~RTC_CR_ALRBE;
         if (aflags != 0) {
@@ -485,6 +502,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
             RTC->CR |=  RTC_CR_ALRBE;
         }
         break;
+#endif
     }
     RTC->WPR = 0;
     PWR->CR &= ~PWR_CR_DBP;
