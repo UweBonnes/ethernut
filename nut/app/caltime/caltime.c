@@ -68,7 +68,7 @@ static EDLINE *edline;
  *
  * Check the Makefile for additional options.
  */
-static char *version = "2.1";
+static char *version = "2.2";
 
 
 /* Used for ASCII Art Animation. */
@@ -419,7 +419,9 @@ int main(void)
 #endif
 
     now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
-    puts("Built " __DATE__ " " __TIME__);
+    now -= (CRT_TIMEZONE - CRT_DAYLIGHT) * 60;
+    printf("Built " __DATE__ " " __TIME__ " TZ OFFSet %d CRT_DAYLIGHT %d\n",
+           CRT_TIMEZONE,  CRT_DAYLIGHT);
 #ifdef RTC_CHIP
     /* Register and query hardware RTC, if available. */
     printf("Registering RTC hardware...");
