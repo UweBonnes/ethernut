@@ -72,7 +72,7 @@
 #define  CLKPWR_PCONP_PCCAN1    13 /* CAN 1           */
 #define  CLKPWR_PCONP_PCCAN2    14 /* CAN 2           */
 #define  CLKPWR_PCONP_PCGPIO    15 /* GPIO            */
-#define  CLKPWR_PCONP_PCSIFI    16 /* SPIFI           */
+#define  CLKPWR_PCONP_PCSPIFI   16 /* SPIFI           */
 #define  CLKPWR_PCONP_PCMCPWM   17 /* Motor PWM       */
 #define  CLKPWR_PCONP_PCQEI     18 /* QEI             */
 #define  CLKPWR_PCONP_PCI2C1    19 /* I2C 1           */
