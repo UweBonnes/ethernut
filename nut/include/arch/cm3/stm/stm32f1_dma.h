@@ -66,8 +66,8 @@
 #define STM_HAS_DMA2 5
 #endif
 
-#define ADC1_DMA_DMA                   DMA1_CH1
-#define ADC1_DMA_DMA_SIG               sig_DMA1_CH1
+#define ADC1_DMA                       DMA1_CH1
+#define ADC1_DMA_IRQ                   sig_DMA1_CH1
 #define TIM2_CH3_DMA                   DMA1_CH1
 #define TIM2_CH3_DMA_IRQ               sig_DMA1_CH1
 #define TIM4_CH1_DMA                   DMA1_CH1
@@ -81,6 +81,8 @@
 #define SPI1_RX_DMA_IRQ                sig_DMA1_CH2
 #define USART3_TX_DMA                  DMA1_CH2
 #define USART3_TX_DMA_IRQ              sig_DMA1_CH2
+#define TIM1_CH1_DMA                   DMA1_CH2
+#define TIM1_CH1_DMA_IRQ               sig_DMA1_CH2
 #define TIM2_UP_DMA                    DMA1_CH2
 #define TIM2_UP_DMA_IRQ                sig_DMA1_CH2
 #define TIM3_CH3_DMA                   DMA1_CH2
@@ -105,6 +107,8 @@
 #define SPI2_RX_DMA_IRQ                sig_DMA1_CH4
 #define USART1_TX_DMA                  DMA1_CH4
 #define USART1_TX_DMA_IRQ              sig_DMA1_CH4
+#define I2C2_TX_DMA                    DMA1_CH4
+#define I2C2_TX_DMA_IRQ                sig_DMA1_CH4
 #define TIM4_CH2_DMA                   DMA1_CH4
 #define TIM4_CH2_DMA_IRQ               sig_DMA1_CH4
 #define TIM7_UP_DAC1_CH2_DMA           DMA1_CH4
@@ -116,8 +120,8 @@
 #define SPI2_TX_DMA_IRQ                sig_DMA1_CH5
 #define USART1_RX_DMA                  DMA1_CH5
 #define USART1_RX_DMA_IRQ              sig_DMA1_CH5
-#define TIM1_CH1_DMA                   DMA1_CH5
-#define TIM1_CH1_DMA_IRQ               sig_DMA1_CH5
+#define TIM1_UP_DMA                    DMA1_CH5
+#define TIM1_UP_DMA_IRQ                sig_DMA1_CH5
 #define TIM4_CH3_DMA                   DMA1_CH5
 #define TIM4_CH3_DMA_IRQ               sig_DMA1_CH5
 #define TIM18_UP_DAC2_CH1_DMA          DMA1_CH5
@@ -149,17 +153,29 @@
 #define SPI3_RX_DMA_IRQ                sig_DMA2_CH1
 #define TIM5_CH4_TRIG_DMA              DMA2_CH1
 #define TIM5_CH4_TRIG_DMA_IRQ          sig_DMA2_CH1
+#define TIM8_CH3_UP_DMA                DMA2_CH1
+#define TIM8_CH3_UP_DMA_IRQ            sig_DMA2_CH1
 
+#define ADC4_DMA                       DMA2_CH2
+#define ADC4_DMA_IRQ                   sig_DMA2_CH2
 #define SPI3_TX_DMA                    DMA2_CH2
 #define SPI3_TX_DMA_IRQ                sig_DMA2_CH2
 #define TIM5_CH3_UP_DMA                DMA2_CH2
 #define TIM5_CH3_UP_DMA_IRQ            sig_DMA2_CH2
+#define TIM8_CH4_TRIG_COM_DMA          DMA2_CH2
+#define TIM8_CH4_TRIG_COM_DMA_IRQ      sig_DMA2_CH2
 
+#define USART4_RX_DMA                  DMA2_CH3
+#define USART4_RX_DMA_IRQ              sig_DMA2_CH3
 #define SDADC1_DMA                     DMA2_CH3
 #define SDADC1_DMA_IRQ                 sig_DMA2_CH3
 #define TIM6_UP_DAC1_CH1_ALT_DMA       DMA2_CH3
 #define TIM6_UP_DAC1_CH1_ALT_DMA_IRQ   sig_DMA2_CH3
+#define TIM8_CH1_DMA                   DMA2_CH3
+#define TIM8_CH1_DMA_IRQ               sig_DMA2_CH3
 
+#define ADC4_ALT_DMA                   DMA2_CH4
+#define ADC4_ALT_DMA_IRQ               sig_DMA2_CH4
 #define SDADC2_DMA                     DMA2_CH4
 #define SDADC2_DMA_IRQ                 sig_DMA2_CH4
 #define TIM5_CH2_DMA                   DMA2_CH4
@@ -167,12 +183,31 @@
 #define TIM7_UP_DAC1_CH2_ALT_DMA       DMA2_CH4
 #define TIM7_UP_DAC1_CH2_ALT_DMA_IRQ   sig_DMA2_CH4
 
+#define ADC3_DMA                       DMA2_CH5
+#define ADC3_DMA_IRQ                   sig_DMA2_CH5
+#define UART4_TX_DMA                   DMA2_CH5
+#define UART4_TX_DMA_IRQ               sig_DMA2_CH5
 #define SDADC3_DMA                     DMA2_CH5
 #define SDADC3_DMA_IRQ                 sig_DMA2_CH5
 #define TIM5_CH1                       DMA2_CH5
 #define TIM5_CH1_IRQ                   sig_DMA2_CH5
 #define TIM18_UP_DAC2_CH1_ALT_DMA      DMA2_CH5
 #define TIM18_UP_DAC2_CH1_ALT_DMA_IRQ  sig_DMA2_CH5
+#define TIM8_CH2_DMA                   DMA2_CH5
+#define TIM8_CH2_DMA_IRQ               sig_DMA2_CH5
+
+/* Care for ADC2 on F3 devices without DMA2 */
+#if defined(HW_DMA2_STM32F1)
+#define ADC2_DMA                       DMA2_CH1
+#define ADC2_DMA_IRQ                   sig_DMA2_CH1
+#define ADC2_ALT_DMA                   DMA2_CH3
+#define ADC2_ALT_DMA_IRQ               sig_DMA2_CH3
+#else
+#define ADC2_DMA                       DMA1_CH2
+#define ADC2_DMA_IRQ                   sig_DMA1_CH2
+#define ADC2_ALT_DMA                   DMA1_CH4
+#define ADC2_ALT_DMA_IRQ               sig_DMA1_CH4
+#endif
 
 /* RM0008 defines the bits for CCR1, CCR2 etc. only.
  * Equalize the names by using the general names from STM32F3*/
