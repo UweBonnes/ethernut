@@ -74,13 +74,6 @@ const DMATAB DmaTab[] = {
 };
 
 const uint8_t DMACount = sizeof(DmaTab)/sizeof(DMATAB);
-/*
- * Tricky but simple, small and fast
- */
-const DMATAB *DmaTab1 = &DmaTab[0];
-#ifdef STM_HAS_DMA2
-const DMATAB *DmaTab2 = &DmaTab[STM_HAS_DMA1];
-#endif
 
 /*
  * \brief DMA Transfer Setup Function.
@@ -168,31 +161,24 @@ void DMA_Init(void)
 
         /* Clear pending interrupts in DMA 1 ISR */
         DMA1->IFCR = 0xFFFFFFFF;
-        /* Clear interrupt related flags in channels */
-        for(i=0; i<STM_HAS_DMA1; i++) {
-            channel = (DMA_Channel_TypeDef*)DmaTab1[i].dma_ch;
-            channel->CCR = 0;
-            DMA_ClearFlag(i,0xf);
-        }
-    }
-
 /* FIXME: The ST defined headers don't define RCC_AHBENR_DMA2EN for XL
  * devices,  but RM0008 says that XL devices have DMA2
  * Assume no DMA2 for XL devices for now
  */
 #if defined(STM_HAS_DMA2) && defined(RCC_AHBENR_DMA2EN)
-    if ((RCC->AHBENR & RCC_AHBENR_DMA2EN ) == 0) {
-        RCC->AHBENR |= RCC_AHBENR_DMA2EN;
-        /* Clear pending interrupts in DMA 2 ISR */
-        DMA2->IFCR = 0xFFFFFFFF;
+        if ((RCC->AHBENR & RCC_AHBENR_DMA2EN ) == 0) {
+            RCC->AHBENR |= RCC_AHBENR_DMA2EN;
+            /* Clear pending interrupts in DMA 2 ISR */
+            DMA2->IFCR = 0xFFFFFFFF;
+        }
+#endif
         /* Clear interrupt related flags in channels */
-        for(i=0;i<STM_HAS_DMA2;i++) {
-            channel = (DMA_Channel_TypeDef*)DmaTab2[i].dma_ch;
+        for(i=0; i < DMACount ; i++) {
+            channel = (DMA_Channel_TypeDef*)DmaTab[i].dma_ch;
             channel->CCR = 0;
             DMA_ClearFlag(i,0xf);
         }
     }
-#endif
 }
 
 /*!
