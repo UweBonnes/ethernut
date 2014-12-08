@@ -146,4 +146,9 @@ extern IRQ_HANDLER sig_TIM16;
 extern IRQ_HANDLER sig_TIM17;
 extern IRQ_HANDLER sig_TIM18;
 extern IRQ_HANDLER sig_TIM19;
+
+extern IRQ_HANDLER sig_ADC1;
+extern IRQ_HANDLER sig_ADC2;
+extern IRQ_HANDLER sig_ADC3;
+extern IRQ_HANDLER sig_ADC4;
 #endif
