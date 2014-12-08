@@ -136,7 +136,7 @@ static void Stm32SpiBusInterrupt(void *arg)
     }
     if (CM3BBGET(SPI_BASE, SPI_TypeDef, SR, _BI32(SPI_SR_TXE))) {
         if (spi_tx_len) {
-            spi->DR = *spi_txp;
+            *(uint8_t*)&spi->DR = *spi_txp;
             /* After sending the last byte we need to wait for the last
              * receive interrupt, but we are not interested in the transmitter
              * empty interrupt
