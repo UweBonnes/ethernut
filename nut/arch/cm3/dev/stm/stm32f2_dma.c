@@ -321,6 +321,18 @@ uint32_t DMA_GetFlag( uint8_t ch)
     if (flags & DMA_LISR_HTIF0) ret |= DMA_HTIF;
     if (flags & DMA_LISR_TEIF0) ret |= DMA_TEIF;
     return ret;
-
 }
 
+/*!
+ * \brief     Get number of remaining transfers.
+ **
+ * \param ch  Channel number to query.
+ *
+ * \return    Number of remaining transfers.
+ */
+uint16_t  DMA_GetRemainingTransfers( uint8_t ch)
+{
+    uint32_t dma_base = (ch & 0x80)? DMA2_BASE : DMA1_BASE;
+    uint32_t stream_base = CH2STREAM(dma_base, ch);
+    return CM3REG(stream_base, DMA_Stream_TypeDef, NDTR);
+}

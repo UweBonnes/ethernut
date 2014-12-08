@@ -249,3 +249,17 @@ uint32_t DMA_GetFlag( uint8_t ch)
     return flags;
 }
 
+
+/*!
+ * \brief     Get number of remaining transfers.
+ **
+ * \param ch  Channel number to query.
+ *
+ * \return    Number of remaining transfers.
+ */
+uint16_t  DMA_GetRemainingTransfers( uint8_t ch)
+{
+    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    return channel->CNDTR;
+}
+
