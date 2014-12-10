@@ -156,6 +156,17 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     GPIO_TypeDef *gpio = (GPIO_TypeDef *) bank;
 
     GpioClkEnable(bank);
+    if (flags == GPIO_CFG_DISABLED) {
+        /* Set Analog Mode and reset all other bits */
+        gpio->MODER   |=  (3 << (bit << 1));
+        gpio->OTYPER  &= ~(1 << bit);
+        gpio->OSPEEDR &= ~(3 << (1 << bit));
+        gpio->PUPDR   &= ~(3 << (1 << bit));
+        if( GpioPinConfigGet( bank, bit ) != flags ) {
+            return -1;
+        }
+        return 0;
+    }
     /* Set the inital value, if given
      *
      * Otherwise we may introduce unwanted transistions on the port
