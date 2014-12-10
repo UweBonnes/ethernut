@@ -414,6 +414,19 @@ int SetSysClock(void)
 #warning PLL Input frequency too high
 #endif
 
+#if defined(STM32F411)
+#define SYSCLK_MAX 100000000
+#elif defined(STM32F401)
+#define SYSCLK_MAX 84000000
+#else
+/* FIXME: Differentiale F40x/F41x and F42x/F43x */
+#define SYSCLK_MAX > 168000000
+#endif
+
+#if SYSCLK_FREQ > SYSCLK_MAX
+#warning "SYSCLK_FREQ overclocked"
+#endif
+
 /* Multiple of 2 MHZ*/
 #if (PLLCLK_IN > 3999999) && ((PLLCLK_IN % 2000000L) == 0)
  #define  PLLM (PLLCLK_IN/2000000)
