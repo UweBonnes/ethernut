@@ -42,7 +42,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 
 #if !defined(HSI_VALUE)
-#define HSI_VALUE 160000000
+#define HSI_VALUE 16000000
 #endif /* HSI_VALUE */
 
 #if !defined(HSE_STARTUP_TIMEOUT)
