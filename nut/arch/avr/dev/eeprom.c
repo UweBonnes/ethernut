@@ -115,7 +115,7 @@ int OnChipNvMemErase(unsigned int addr, size_t len)
 
 #elif defined(__GNUC__)
 		eeprom_busy_wait();
-		eeprom_update_byte((void *)addr, 0xFF);
+		eeprom_update_byte((void *)addr + i, 0xFF);
 #endif
 	}
 
