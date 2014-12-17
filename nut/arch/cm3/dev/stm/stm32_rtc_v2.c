@@ -58,129 +58,292 @@
 
 /*Equalize L1 anormalies */
 #if defined (RCC_CSR_RTCEN) && !defined(RCC_BDCR_RTCEN)
-#define RCC_BDCR_RTCEN RCC_CSR_RTCEN
+# define RCC_BDCR_RTCEN RCC_CSR_RTCEN
 #endif
+
 #if defined (RCC_CSR_LSEBYP) && !defined(RCC_BDCR_LSEBYP)
-#define RCC_BDCR_LSEBYP RCC_CSR_LSEBYP
+# define RCC_BDCR_LSEBYP RCC_CSR_LSEBYP
 #endif
+
 #if defined (RCC_CSR_LSEON) && !defined(RCC_BDCR_LSEON)
-#define RCC_BDCR_LSEON RCC_CSR_LSEON
+# define RCC_BDCR_LSEON RCC_CSR_LSEON
 #endif
+
 #if defined (RCC_CSR_LSERDY) && !defined(RCC_BDCR_LSERDY)
-#define RCC_BDCR_LSERDY RCC_CSR_LSERDY
+# define RCC_BDCR_LSERDY RCC_CSR_LSERDY
 #endif
+
 #if defined (RCC_CSR_RTCRST) && !defined(RCC_BDCR_BDRST)
-#define RCC_BDCR_BDRST RCC_CSR_RTCRST
+# define RCC_BDCR_BDRST RCC_CSR_RTCRST
 #endif
+
 #if defined (RCC_CSR_RTCSEL_0) && !defined(RCC_BDCR_RTCSEL_0)
-#define RCC_BDCR_RTCSEL_0 RCC_CSR_RTCSEL_0
+# define RCC_BDCR_RTCSEL_0 RCC_CSR_RTCSEL_0
 #endif
+
 #if defined (RCC_CSR_RTCSEL_1) && !defined(RCC_BDCR_RTCSEL_1)
-#define RCC_BDCR_RTCSEL_1 RCC_CSR_RTCSEL_1
+# define RCC_BDCR_RTCSEL_1 RCC_CSR_RTCSEL_1
 #endif
+
 #if defined (RCC_CSR_RTCSEL) && !defined(RCC_BDCR_RTCSEL)
-#define RCC_BDCR_RTCSEL RCC_CSR_RTCSEL
-#define RCC_BDCR RCC->CSR
+# define RCC_BDCR_RTCSEL RCC_CSR_RTCSEL
+# define RCC_BDCR RCC->CSR
 #else
-#define RCC_BDCR RCC->BDCR
+# define RCC_BDCR RCC->BDCR
+#endif
+
+#if defined(RCC_CFGR_RTCPRE)
+# define HSE_RTCPRE 0
+#endif
+
+#if !defined(RCC_CFGR_RTCPRE_0)
+# define RCC_CFGR_RTCPRE_0 0
 #endif
 
 /* L0 has only one Alarm channel*/
 #if defined (RTC_ISR_ALRBF)
-#define NUM_ALARMS 2
+# define NUM_ALARMS 2
 #else
-#define NUM_ALARMS 1
-#if !defined(RTC_CR_ALRBIE)
-#define  RTC_CR_ALRBIE 0
-#endif
+# define NUM_ALARMS 1
+# if !defined(RTC_CR_ALRBIE)
+#  define  RTC_CR_ALRBIE 0
+# endif
 #endif
 
-#if (RTC_CLK_SRC == RTCCLK_HSE )
+/* F411 has some power level setting for the LSE */
+#if !defined(RCC_BDCR_LSEMOD)
+# define RCC_BDCR_LSEMOD 0
+#endif
+
+#if defined(RTC_LSE_MOD)
+# define RTC_LSEMODF RCC_BDCR_LSEMOD
+#else
+# define  RTC_LSEMODF 0
+#endif
+
+#if defined(RTC_LSE_BYPASS)
+# define RTC_BYPASSF RCC_BDCR_LSEBYP
+#else
+# define RTC_BYPASSF 0
+#endif
+
+static int RtcRccHsePrepare(void) __attribute__ ((unused));
+static int RtcLseSetup(void) __attribute__ ((unused));
+static int RtcRccLsiPrepare(void) __attribute__ ((unused));
+
+/* STM CMSIS definition has (uint32_t) marker and so can not be used
+ * for math in preprocessor */
+#if defined(HSE_RTCPRE) && !defined(RCC_CFGR_RTCPRE_2)
+/* 15 bit on L1/L0 */
+# define SYNC_MAX 0x7fff
+#else
+# define SYNC_MAX 0x1fff
+#endif
+
+#if RTC_CLK_SRC == RTCCLK_HSE
 /* Handle HSE as RTC clock */
- #define RTC_CLKSEL RCC_BDCR_RTCSEL
- #if defined(RTC_PRE) && (!defined(RTC_ASYNC) || !defined(RTC_SYNC))
-  #warning Please define also RTC_ASYNC and RTC_SYNC
- #endif
- #if !defined RTC_PRE
-  #if HSE_VALUE > 31000000
-   #warning HSE to large to reach max 1 MHz RTC clock
-  #elif (HSE_VALUE % 1000000) || (HSE_VALUE < 2000000)
-   #warning Please define RTC_PRE, RTC_ASYNC and RTC_SYNC for 1 Hz RTC clock
-  #else
-   #define RTC_PRE (HSE_VALUE / 1000000)
-   #undef  RTC_ASYNC
-   #define RTC_ASYNC 125 -1
-   #undef  RTC_SYNC
-   #define RTC_SYNC (1000000/125) -1
-   #define RTC_CLKSEL RCC_BDCR_RTCSEL
-  #endif
- #endif
-static int RTC_CLK_SETUP(void)
+# define RTC_CLKSEL RCC_BDCR_RTCSEL
+# define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
+# define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
+# define BDCR_MASK RCC_BDCR_RTCSEL
+# define BDCR_FLAG RCC_BDCR_RTCSEL
+# define RTC_CLK_SETUP() 0
+
+# if !defined(RTC_PRE)
+/* Calculate RTC_PRE divisor as it is not given*/
+#  if defined(HCE_RTCPRE)
+#   if !defined(RCC_CFGR_RTCPRE_2)
+/* L1 has HSE prescaler 2/4/8/16 */
+#    if HSE_VALUE >   8000000
+#     define RTC_PRE     16
+#    elif HSE_VALUE > 4000000
+#     define RTC_PRE      8
+#    elif HSE_VALUE > 2000000
+#     define RTC_PRE      4
+#    else
+#     define RTC_PRE      2
+#    endif
+#   else
+/* F2/F4 has HSE prescaler 2.. 32*/
+#    if HSE_VALUE <= 2000000
+#     define RTC_PRE 2
+#    elif HSE_VALUE > 32000000
+#     warning HSE_VALUE to high to reach 1 MHz RTC clock
+#    else
+#     define RTC_PRE (HSE_VALUE / 1000000)
+#    endif
+#   endif
+/* F3/F0/L0 has fixed HSE prescaler of 32*/
+#  else
+#   define RTC_PRE 32
+#  endif
+# endif
+
+/* Check value of calculated or given RTC_PRE and find RTC_PRE_VAL*/
+# if defined(HSE_RTCPRE)
+#  define RTC_RCC_PPREPARE() RtcRccHsePrepare()
+#  if !defined(RCC_CFGR_RTCPRE_2)
+#   if  RTC_PRE == 16
+#    define  RTC_PRE_VAL  3
+#   elif  RTC_PRE == 8
+#    define  RTC_PRE_VAL  2
+#   elif  RTC_PRE == 4
+#    define  RTC_PRE_VAL  1
+#   elif  RTC_PRE == 2
+#    define  RTC_PRE_VAL  0
+#   elif
+#    warning Illegal RTC_PRE for L1/L0 given
+#   endif
+#  else
+#   if RTC_PRE  < 2 || RTC_PRE > 32
+#    warning Illegal RTC_PRE for F2/F4 given
+#   else
+#    define RTC_PRE_VAL (RTC_PRE -1 )
+#   endif
+#  endif
+# else
+#   define RTC_RCC_PPREPARE() 0
+#  if RTC_PRE != 32
+#    warning Illegal RTC_PRE for F0/F3 given, only 32 allowed
+#  else
+#   define RTC_PRE_VAL 0
+#  endif
+# endif
+
+/* Guess RTC_ASYNC and RTC_SYNC if not given*/
+# if !defined(RTC_ASYNC) && !defined(RTC_SYNC)
+#  define RTC_ASYNC (125 -1)
+#  define RTC_SYNC (HSE_VALUE/(RTC_PRE * 125) -1)
+# elif !defined(RTC_ASYNC) && defined(RTC_SYNC)
+#  define RTC_ASYNC (HSE_VALUE/(RTC_PRE * (RTC_SYNC + 1)) -1)
+# elif defined(RTC_ASYNC) && !defined(RTC_SYNC)
+#  define RTC_SYNC (HSE_VALUE/(RTC_PRE * (RTC_ASYNC + 1)) -1)
+# endif
+
+/* Warn if values do not give 1 Hz */
+# if (HSE_VALUE /RTC_PRE) % ((RTC_ASYNC + 1 ) * (RTC_SYNC + 1 )) != 0 || \
+    (HSE_VALUE /RTC_PRE) / ((RTC_ASYNC + 1 ) * (RTC_SYNC + 1 )) != 1
+#  warning Given RTC_SYNC/RTC_ASYNC do not give 1 Hz. Please set manual!
+# endif
+
+#elif RTC_CLK_SRC == RTCCLK_LSE
+/* LSE as Clock source*/
+# define RTC_RCC_PPREPARE() 0
+# define RTC_CLK_SETUP() RtcLseSetup()
+# define RTC_CLKSEL RCC_BDCR_RTCSEL_0
+# if RTC_CLK_LSE != 32768
+ /* Handle LSE with external clock or clock with other frequency as 32768*/
+#   if (!defined(RTC_ASYNC) || !defined(RTC_SYNC))
+#    warning Please define RTC_ASYNC and RTC_SYNC for 1 Hz RTC clock from LSE
+#   endif
+# else
+#  undef  RTC_ASYNC
+#  define RTC_ASYNC 0x7f
+#  undef  RTC_SYNC
+#  define RTC_SYNC  0xff
+# endif
+# define BDCR_MASK (RCC_BDCR_RTCEN  | RCC_BDCR_RTCSEL | RCC_BDCR_LSERDY | \
+                    RCC_BDCR_LSEBYP | RCC_BDCR_LSEMOD)
+# define BDCR_FLAG (RCC_BDCR_RTCEN  | RTC_CLKSEL      | RTC_BYPASSF |\
+                    RTC_LSEMODF     | RCC_BDCR_LSERDY)
+# define RTC_STATUS_START RTC_STATUS_HAS_QUEUE
+# define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
+# define RTC_PRE_VAL 0
+#elif RTC_CLK_SRC == RTCCLK_LSI
+# define RTC_CLKSEL RCC_BDCR_RTCSEL_1
+# define RTC_RCC_PPREPARE() RtcRccLsiPrepare()
+# define RTC_CLK_SETUP() 0
+# undef  RTC_ASYNC
+# undef  RTC_SYNC
+/* 32 kHz on F2/F4, 40(37?) kHz else.
+ * Values used from AN3371/Table 3 Rev. 5
+ */
+# if defined(STM32F2) || defined(STM32F4)
+#  define RTC_ASYNC 124
+#  define RTC_SYNC  295
+# else
+#  define RTC_ASYNC 127
+#  define RTC_SYNC  249
+# endif
+# define BDCR_MASK (RCC_BDCR_RTCEN | RCC_BDCR_RTCSEL)
+# define BDCR_FLAG (RCC_BDCR_RTCEN | RTC_CLKSEL)
+# define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
+# define RTC_STATUS_FLAG  (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
+# define RTC_PRE_VAL 0
+#else
+# warning No RTC Clock source defined!
+#endif
+
+/* Check if RTC_SYNC and RTC_ASYNC for overflow */
+#if RTC_SYNC > SYNC_MAX
+# warning RTC_SYNC is too large
+#endif
+#define RTC_ASYNC_VAL ( RTC_ASYNC * 0x10000)
+#if RTC_ASYNC_VAL > 0x007F0000
+# warning RTC_ASYNC is too large
+#endif
+
+typedef struct _stm32_rtc_dcb stm32_rtc_dcb;
+
+struct _stm32_rtc_dcb {
+    uint32_t flags;
+};
+
+/* We only have one RTC, so static allocation should be okay */
+static stm32_rtc_dcb rtc_dcb = {RTC_STATUS_START};
+
+
+/*!
+ * \brief Setup HSE as RTC Clock
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+static int RtcRccHsePrepare(void)
 {
     uint32_t cfgr;
+
+    if((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY)
+    /* If Hse was not already set, don't try to
+     * fiddle with the HSE clock but return error.
+     */
+        return -1;
     cfgr = RCC->CFGR;
     cfgr &= ~RCC_CFGR_RTCPRE;
-    cfgr |= RTC_PRE * RCC_CFGR_RTCPRE_0;
+    cfgr |= RTC_PRE_VAL * RCC_CFGR_RTCPRE_0;
     RCC->CFGR = cfgr;
     return 0;
 }
-#elif (RTC_CLK_SRC == RTCCLK_LSE)
- #define RTC_CLKSEL RCC_BDCR_RTCSEL_0
- #if defined(RTC_CLK_LSE_BYPASS) || RTC_CLK_LSE != 32768
- /* Handle LSE with external clock as RTC clock or clock != 2^15*/
-   #if (!defined(RTC_ASYNC) || !defined(RTC_SYNC))
-    #warning Please define RTC_ASYNC and RTC_SYNC for 1 Hz RTC clock
-   #endif
-  /* Handle LSE with oscillator as RTC clock */
- #else
-  #undef  RTC_ASYNC
-  #define RTC_ASYNC 0x7f
-  #undef  RTC_SYNC
-  #define RTC_SYNC  0xff
- #endif
-static int RTC_CLK_SETUP(void)
+
+/*!
+ * \brief Setup LSE as RTC Clock
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+static int RtcLseSetup(void)
 {
     int i;
-
-    RCC_BDCR &= ~RCC_BDCR_RTCEN;
-  #if defined(RTC_CLK_LSE_BYPASS)
-    RCC_BDCR |= RCC_BDCR_LSEBYP;
-  #else
-    RCC_BDCR &= ~RCC_BDCR_LSEBYP;
-  #endif
-  #if defined(RCC_BDCR_LSEMOD)
-   #if defined(RTC_LSE_HIGH_POWER)
-    RCC_BDCR |= RCC_BDCR_LSEMOD;
-    #else
-    RCC_BDCR &= ~RCC_BDCR_LSEMOD;
-   #endif
-  #endif
+    uint32_t bdcr;
+    uint32_t mask = (RCC_BDCR_RTCEN | RCC_BDCR_LSERDY |
+                     RCC_BDCR_LSEBYP | RCC_BDCR_LSEMOD);
+    uint32_t flag = (RTC_BYPASSF | RTC_LSEMODF);
+    bdcr = RCC_BDCR;
+    bdcr &= ~mask;
+    bdcr |= flag;
+    RCC_BDCR = bdcr;
     RCC_BDCR |= RCC_BDCR_LSEON;
     /* LSE startup time is 2 s typical */
     for(i = 0; i < 4000; i++) {
         NutSleep(1);
-        if(RCC_BDCR & RCC_BDCR_LSERDY)
+        if (RCC_BDCR & RCC_BDCR_LSERDY)
             return 0;
     }
     return -1;
 }
-#elif RTC_CLK_SRC == RTCCLK_LSI
- #define RTC_CLKSEL RCC_BDCR_RTCSEL_1
- #undef  RTC_ASYNC
- #undef  RTC_SYNC
-/* 32 kHz on F2/F4, 40(37?) kHz else.
- * Values used from AN3371/Table 3 Rev. 5
- */
- #if defined(STM32F2) || defined(STM32F4)
-  #define RTC_ASYNC 124
-  #define RTC_SYNC  295
- #else
-  #define RTC_ASYNC 127
-  #define RTC_SYNC  249
- #endif
-static int RTC_CLK_SETUP(void)
+static int RtcRccLsiPrepare(void)
 {
     int i;
+    if(RCC->CSR & RCC_CSR_LSIRDY)
+            return 0;
     /* LSI startup is 40 us typical*/
     RCC->CSR |= RCC_CSR_LSION;
     for(i = 0; i < 10; i++) {
@@ -190,20 +353,6 @@ static int RTC_CLK_SETUP(void)
     }
     return -1;
 }
-#else
- #warning No RTC Clock source defined!
-#endif
-
-
-typedef struct _stm32_rtc_dcb stm32_rtc_dcb;
-
-struct _stm32_rtc_dcb {
-    uint32_t flags;
-};
-
-/* We only have one RTC, so static allocation should be okay */
-stm32_rtc_dcb rtc_dcb = { RTC_STATUS_HAS_QUEUE };
-
 /*!
  * \brief Interrupt handler for RTC Alarm
  *
@@ -245,21 +394,23 @@ static void Stm32RtcInterrupt(void *arg)
  */
 static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
 {
+    int res;
 
     stm32_rtc_dcb *dcb = (stm32_rtc_dcb *)rtc->dcb;
     /* Check for power failure */
     if (!(RTC->ISR & RTC_ISR_INITS)) {
         dcb->flags |= RTC_STATUS_PF;
     }
-
     if (sflags) {
         *sflags = dcb->flags;
-        return 0;
+        res = 0;
     } else {
-        return -1;
+        res = -1;
     }
+    dcb->flags &= ~RTC_STATUS_START;
+    dcb->flags |=  RTC_STATUS_FLAG;
+    return res;
 }
-
 
 /*!
  * \brief Clear status of the Stm32 hardware clock.
@@ -271,6 +422,8 @@ static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
  */
 static int Stm32RtcClearStatus(NUTRTC *rtc, uint32_t sflags)
 {
+    /* Don't reset persistant flags*/
+    sflags &= ~RTC_STATUS_FLAG;
     ((stm32_rtc_dcb *)rtc->dcb)->flags &= ~sflags;
 
     return 0;
@@ -320,7 +473,6 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint32_t bcd_date, bcd_time, year, month;
-
     PWR->CR |= PWR_CR_DBP;
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;
@@ -374,7 +526,7 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
     uint32_t bcd_alarm;
     switch (idx) {
     case 0:  bcd_alarm = RTC->ALRMAR; break;
-#if (NUM_ALARMS == 2)
+#if NUM_ALARMS == 2
     case 1:  bcd_alarm = RTC->ALRMBR; break;
 #endif
     default: return -1;
@@ -527,64 +679,67 @@ int Stm32RtcInit(NUTRTC *rtc)
     EXTI->RTSR |=  (1 << 17);
     EXTI->FTSR &= ~(1 << 17);
     NutIrqEnable(&sig_RTC);
-    rtc->dcb = &rtc_dcb;
+    rtc->dcb   = &rtc_dcb;
     rtc->alarm = NULL;
-    if (((RTC->ISR & RTC_ISR_INITS)    != RTC_ISR_INITS) &&
-#if defined(RCC_BDCR_RTCSEL)
-        ((RCC_BDCR & RCC_BDCR_RTCSEL) == RTC_CLKSEL)     &&
-#endif
-#if defined(RCC_CSR_RTCSEL)
-        ((RCC->CSR & RCC_CSR_RTCSEL) == RTC_CLKSEL)      &&
-#endif
-#if defined(RTC_PRE)
-        ((RCC->CFGR & RCC_CFGR_RTCPRE) == RTC_PRE)       &&
-#endif
-        ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC * 0x10000)))
-        /* The RTC has been set before. Do not set it*/
-        return 0;
-
-    /* Allow write access to the Backup Registers */
+    res  = RTC_RCC_PPREPARE();
+    if (res) {
+        /* Some failure happend */
+        goto rtc_done;
+    }
+    /* Allow read access to the Backup Registers */
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
     PWR->CR |= PWR_CR_DBP;
-    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != RTC_CLKSEL) {
+    /* Check for valid or changed settings */
+    if ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC_VAL)) {
+        if ((RTC->ISR & RTC_ISR_INITS) ==  RTC_ISR_INITS) {
+            if ((RCC_BDCR  & BDCR_MASK) ==  BDCR_FLAG) {
+                /* The RTC has been set before. Do not set it*/
+                goto rtc_done;
+            }
+        }
+    }
+    if ((RCC_BDCR & BDCR_MASK) != BDCR_FLAG) {
         /* We need a backup domain reset to set the new source */
         RCC_BDCR |= RCC_BDCR_BDRST;
         RCC_BDCR &= ~RCC_BDCR_BDRST;
         /* Select clock source */
         RCC_BDCR |= RTC_CLKSEL;
     }
+    rtc_dcb.flags &=  ~RTC_STATUS_START;
+    /* Enable RTC CLK*/
     res = RTC_CLK_SETUP();
     if (res) {
-        PWR->CR &= ~PWR_CR_DBP; /* Disable Backup domain write access*/
-        return res;
+        /* Some failure happend */
+        goto rtc_done;
     }
-    /* Enable RTC CLK*/
-    RCC_BDCR|= RCC_BDCR_RTCEN;
-    /* Allow RTC Write Access */
+    /* Allow write access to the Backup Registers */
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
+    RCC_BDCR|= RCC_BDCR_RTCEN;
 
     RTC->ISR |= RTC_ISR_INIT;
     while (!(RTC->ISR & RTC_ISR_INITF));
 
-    RTC->PRER = RTC_SYNC + RTC_ASYNC * 0x10000;
+    RTC->PRER = RTC_SYNC + RTC_ASYNC_VAL;
     /* Enable RTC ALARM A/B Interrupt*/
     RTC->CR |= (RTC_CR_ALRAIE | RTC_CR_ALRBIE);
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0; /* Disable  RTC Write Access */
-    PWR->CR &= ~PWR_CR_DBP; /* Disable Backup domain write access*/
+rtc_done:
+    /* Disable Backup domain write access*/
+    PWR->CR &= ~PWR_CR_DBP;
 
-    return 0;
+    return res;
 }
 
 NUTRTC rtcStm32 = {
   /*.dcb           = */ NULL,               /*!< Driver control block */
-  /*.rtc_init      = */ Stm32RtcInit,       /*!< Hardware initializatiuon, rtc_init */
-  /*.rtc_gettime   = */ Stm32RtcGetClock,   /*!< Read date and time, rtc_gettime */
-  /*.rtc_settime   = */ Stm32RtcSetClock,   /*!< Set date and time, rtc_settime */
-  /*.rtc_getalarm  = */ Stm32RtcGetAlarm,   /*!< Read alarm date and time, rtc_getalarm */
-  /*.rtc_setalarm  = */ Stm32RtcSetAlarm,   /*!< Set alarm date and time, rtc_setalarm */
-  /*.rtc_getstatus = */ Stm32RtcGetStatus,  /*!< Read status flags, rtc_getstatus */
-  /*.rtc_clrstatus = */ Stm32RtcClearStatus,/*!< Clear status flags, rtc_clrstatus */
-  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue, not supported right now */
+  /*.rtc_init      = */ Stm32RtcInit,       /*!< Hardware initialization */
+  /*.rtc_gettime   = */ Stm32RtcGetClock,   /*!< Read date and time */
+  /*.rtc_settime   = */ Stm32RtcSetClock,   /*!< Set date and time */
+  /*.rtc_getalarm  = */ Stm32RtcGetAlarm,   /*!< Read alarm date and time */
+  /*.rtc_setalarm  = */ Stm32RtcSetAlarm,   /*!< Set alarm date and time */
+  /*.rtc_getstatus = */ Stm32RtcGetStatus,  /*!< Read status flags */
+  /*.rtc_clrstatus = */ Stm32RtcClearStatus,/*!< Clear status flags */
+  /*.alarm         = */ NULL,               /*!< Handle for alarm event queue */
 };
