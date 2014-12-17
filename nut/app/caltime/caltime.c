@@ -534,6 +534,15 @@ int main(void)
             }
 #endif
         }
+        if (rtc_stat & RTC_STATUS_INACCURATE) {
+            uint32_t rtc_run_status;
+            NutRtcGetStatus(&rtc_run_status);
+            if (rtc_run_status & RTC_STATUS_INACCURATE)
+                puts("RTC running from inaccurate source");
+            else
+                puts("RTC may have lost clock ticks");
+        }
+
     }
 #elif USE_BUILD_TIME
     {
