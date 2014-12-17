@@ -85,6 +85,10 @@
 # define RCC_BDCR_RTCSEL_1 RCC_CSR_RTCSEL_1
 #endif
 
+#if !defined(RCC_CFGR_RTCPRE) && defined(RCC_CR_RTCPRE)
+# define RCC_CFGR_RTCPRE RCC_CR_RTCPRE
+#endif
+
 #if defined (RCC_CSR_RTCSEL) && !defined(RCC_BDCR_RTCSEL)
 # define RCC_BDCR_RTCSEL RCC_CSR_RTCSEL
 # define RCC_BDCR RCC->CSR
@@ -93,7 +97,7 @@
 #endif
 
 #if defined(RCC_CFGR_RTCPRE)
-# define HSE_RTCPRE 0
+# define HSE_RTCPRE
 #endif
 
 #if !defined(RCC_CFGR_RTCPRE_0)
