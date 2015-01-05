@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2007, Cameron Rich
- *
+ * Copyright (c) 2007-2014, Cameron Rich
+ * 
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -183,7 +183,7 @@ int RSA_decrypt(const RSA_CTX *ctx, const uint8_t *in_data,
             pad_count++;
     }
 
-    /* check separator byte - and padding must be 8 or more bytes */
+    /* check separator byte 0x00 - and padding must be 8 or more bytes */
     if (i == byte_size || pad_count < 8) 
         return -1;
 
