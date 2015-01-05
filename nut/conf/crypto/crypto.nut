@@ -207,6 +207,16 @@ nutcrypto =
         }
     },
     {
+        name = "nutcrypto_sha256",
+        brief = "SHA256 implementation",
+        description = "FIPS-180-2 compliant SHA-256 implementation",
+        provides = { "CRYPTO_SHA256" },
+        sources =
+        {
+            "sha256.c"
+        }
+    },
+    {
         name = "nutcrypto_rc4",
         brief = "RC4 implementation",
         description = "Implementation of the RC4/ARC4 algorithm.",
@@ -214,16 +224,6 @@ nutcrypto =
         sources =
         {
             "rc4.c"
-        }
-    },
-    {
-        name = "nutcrypto_md2",
-        brief = "MD2 implementation",
-        description = "RFC 1115/1319 compliant MD2 implementation",
-        provides = { "CRYPTO_MD2" },
-        sources =
-        {
-            "md2.c"
         }
     },
     {
