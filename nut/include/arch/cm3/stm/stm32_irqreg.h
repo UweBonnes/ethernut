@@ -115,26 +115,34 @@ extern IRQ_HANDLER sig_DMA2_STREAM7;    // DMA Controller 2 Stream 7
 
 extern IRQ_HANDLER sig_EMAC;        // Ethernet global interrupt
 
-extern IRQ_HANDLER sig_TIM1;
 extern IRQ_HANDLER sig_TIM1_BRK;
+extern IRQ_HANDLER sig_TIM1_BRK_UP_TRG_COM;
 extern IRQ_HANDLER sig_TIM1_BRK_TIM9;
 extern IRQ_HANDLER sig_TIM1_BRK_TIM15;
-extern IRQ_HANDLER sig_TIM1_UP;
-extern IRQ_HANDLER sig_TIM1_BRK_TIM10;
-extern IRQ_HANDLER sig_TIM1_UP_TIM16;
+extern IRQ_HANDLER sig_TIM1_CC;
 extern IRQ_HANDLER sig_TIM1_TRG_COM;
 extern IRQ_HANDLER sig_TIM1_TRG_COM_TIM11;
 extern IRQ_HANDLER sig_TIM1_TRG_COM_TIM17;
-extern IRQ_HANDLER sig_TIM1_CC;
+extern IRQ_HANDLER sig_TIM1_UP_TIM16;
+extern IRQ_HANDLER sig_TIM1_UP;
+extern IRQ_HANDLER sig_TIM1_UP_TIM10;
+extern IRQ_HANDLER sig_TIM1_UP_TIM16;
 extern IRQ_HANDLER sig_TIM2;
 extern IRQ_HANDLER sig_TIM3;
 extern IRQ_HANDLER sig_TIM4;
 extern IRQ_HANDLER sig_TIM5;
 extern IRQ_HANDLER sig_TIM6;
+extern IRQ_HANDLER sig_TIM6_DAC;
+extern IRQ_HANDLER sig_TIM6_DAC1;
 extern IRQ_HANDLER sig_TIM7;
+extern IRQ_HANDLER sig_TIM7_DAC2;
 extern IRQ_HANDLER sig_TIM8_BRK;
+extern IRQ_HANDLER sig_TIM8_BRK_TIM12;
+extern IRQ_HANDLER sig_TIM8_CC;
+extern IRQ_HANDLER sig_TIM8_TRG_COM;
+extern IRQ_HANDLER sig_TIM8_TRG_COM_TIM14;
 extern IRQ_HANDLER sig_TIM8_UP;
-extern IRQ_HANDLER sig_TIM8_TRG;
+extern IRQ_HANDLER sig_TIM8_UP_TIM13;
 extern IRQ_HANDLER sig_TIM9;
 extern IRQ_HANDLER sig_TIM10;
 extern IRQ_HANDLER sig_TIM11;
@@ -145,6 +153,7 @@ extern IRQ_HANDLER sig_TIM15;
 extern IRQ_HANDLER sig_TIM16;
 extern IRQ_HANDLER sig_TIM17;
 extern IRQ_HANDLER sig_TIM18;
+extern IRQ_HANDLER sig_TIM18_DAC2;
 extern IRQ_HANDLER sig_TIM19;
 
 extern IRQ_HANDLER sig_ADC1;
