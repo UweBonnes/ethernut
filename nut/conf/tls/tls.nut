@@ -54,7 +54,7 @@ nuttls =
         name = "nuttls_tls1",
         brief = "SSL/TLSv1 client / server",
         description = "SSL/TLSv1 client and server implementation",
-        requires = { "CRYPTO_AES", "CRYPTO_MD2", "CRYPTO_MD5", "CRYPTO_SHA1", "CRYPTO_RSA" },
+        requires = { "CRYPTO_AES", "CRYPTO_MD5", "CRYPTO_SHA1", "CRYPTO_SHA256", "CRYPTO_RSA" },
         provides = { "TLS_TLS1" },
         sources =
         {
