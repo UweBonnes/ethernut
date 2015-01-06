@@ -33,6 +33,7 @@
 
 #ifndef _INCLUDE_IAP_FLASH_H
 #define _INCLUDE__IAP_FLASH_H
+#include <sys/types.h>
 #include <cfg/memory.h>
 
 typedef enum
