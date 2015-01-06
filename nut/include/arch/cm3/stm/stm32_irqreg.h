@@ -50,6 +50,7 @@ extern IRQ_HANDLER sig_INTERRUPT0_1;    // EXTI 0 to 1 on F0/L0
 extern IRQ_HANDLER sig_INTERRUPT2_3;    // EXTI 2 to 3 on F0/L0
 extern IRQ_HANDLER sig_INTERRUPT4_15;   // EXTI 4 to 15 on F0/L0
 extern IRQ_HANDLER sig_RTC;         // Real Time Clock
+extern IRQ_HANDLER sig_RTC_WAKEUP;  // Real Time Clock periodic Wake
 extern IRQ_HANDLER sig_SDIO;        // SDIO Controller
 extern IRQ_HANDLER sig_SPI1;        // SPI 1 Controller
 extern IRQ_HANDLER sig_SPI2;        // SPI 2 Controller

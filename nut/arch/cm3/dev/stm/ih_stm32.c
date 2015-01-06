@@ -89,6 +89,7 @@ CREATE_HANDLER(RCC,           RCC,      NUT_IRQPRI_DEF);    /* RCC global */
 CREATE_HANDLER(RTC,           RTC,      NUT_IRQPRI_DEF);    // Real Time Clock
 #elif defined(HW_RTC_STM32_V2)
 CREATE_HANDLER(RTC,           RTC_Alarm,NUT_IRQPRI_DEF);    // Real Time Clock
+CREATE_HANDLER(RTC_WAKEUP,    RTC_WKUP, NUT_IRQPRI_DEF);    // Real Time Clock
 #endif
 
 CREATE_HANDLER(SPI1,          SPI1,     NUT_IRQPRI_DEF);     // SPI 1 Controller
