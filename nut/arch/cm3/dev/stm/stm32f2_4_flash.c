@@ -142,7 +142,7 @@ static uint32_t FlashAddr2Sector(void* Addr)
         sector = (addr - FLASH_BASE)/0x4000;
     else if (addr < (FLASH_BASE + 0x20000))
         sector = 4;
-#if defined(MCU_STM32F42X)
+#if defined(FLASH_OPTCR_DB1M)
     else if (FLASH->OPTCR & FLASH_OPTCR_DB1M) {
         if (addr < (FLASH_BASE + 0x80000))
             sector = ((addr - FLASH_BASE)/0x20000) + 4;
@@ -231,7 +231,7 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
     int size;
     uint32_t offset = 0;
 
-#if defined(MCU_STM32F42X)
+#if defined(FLASH_OPTCR_DB1M)
     /* On STM32F42x/F43x with 1 MiByte, a dual bank option is available.
      * When mapped, sectors 7..11 and 19.. 23 are not used and sector 12
      * starts at offset 0x80000 instead of 0x100000. */
@@ -334,14 +334,14 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     for (i = sector_start; i <= sector_end; i++)
         if (i < 12) {
             /* Skip not available sectors on 1 MiBB dual boot devices*/
-#if defined(STM32F2X)
+#if defined(FLASH_OPTCR_DB1M)
             if ((optcr & FLASH_OPTCR_DB1M) && (i > 6))
                 continue;
 #endif
             if ((optcr & (1 << (i +_BI32(FLASH_OPTCR_nWRP_0)))) == 0)
                 return FLASH_ERROR_WRP;
         }
-#if defined(STM32F2X)
+#if defined(FLASH_OPTCR1_nWRP)
         else {
             int j  = i - 12;
             uint32_t optcr1 = FLASH->OPTCR1;
@@ -727,7 +727,7 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     sector_end = FlashAddr2Sector(dst + len -1);
     for (i = sector_start; i <= sector_end; i++) {
         if (i < 12) {
-#if defined(STM32F2X)
+#if defined(FLASH_OPTCR_DB1M)
             /* Skip not available sectors on 1 MiBB dual boot devices*/
             if ((FLASH->OPTCR & FLASH_OPTCR_DB1M) && i > 6)
                 continue;
@@ -737,7 +737,7 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
             else
                 optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
         }
-#if defined(STM32F2X)
+#if defined(FLASH_OPTCR_DB1M)
         else {
             int j = i - 12;
             uint32_t optcr1 = FLASH->OPTCR1;
@@ -749,9 +749,8 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
                 optcr1 |=  (1 << (j + _BI32(FLASH_OPTCR1_nWRP_0)));
             FLASH->OPTCR1 = optcr1;
         }
-#else
-    }
 #endif
+    }
     FLASH->OPTCR = optcr;
     FLASH->OPTCR = optcr |FLASH_OPTCR_OPTSTRT;
     /* Wait for last operation to be completed */
