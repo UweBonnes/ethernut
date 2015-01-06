@@ -330,8 +330,8 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
 
     /* Check for write protected sectors */
     sector_start = FlashAddr2Sector(dst);
-    sector_end = FlashAddr2Sector(dst+len);
-    for (i = sector_start; i < sector_end; i++)
+    sector_end = FlashAddr2Sector(dst + len - 1);
+    for (i = sector_start; i <= sector_end; i++)
         if (i < 12) {
             /* Skip not available sectors on 1 MiBB dual boot devices*/
 #if defined(STM32F2X)
