@@ -651,6 +651,18 @@ nutarch_cm3_stm32_devices =
         sources = {
                 "cm3/dev/stm/stm32_gpio.c",
                 "cm3/dev/stm/stm32_gpioirq.c"
+        },
+        options =
+        {
+            {
+                macro = "STM32_GPIO_DEFAULT_MODE",
+                brief = "STM32 Pin Default",
+                description = "Select default pin mode. JTAG/SWD is not touched.",
+                type = "enumerated",
+                choices = { "GPIO_DEFAULT_MODE", "GPIO_DEFAULT_MODE_ANALOG"},
+                default = "GPIO_DEFAULT_MODE",
+                file = "include/cfg/arch.h",
+            }
         }
     },
     --
