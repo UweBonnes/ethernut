@@ -402,7 +402,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
             }
             /* Write Bulk of data in requested width*/
             rs = FlashWaitReady();
-            FLASH->CR =  FLASH_CR_PG | FLASH_PSIZE_32 ;
+            FLASH->CR =  FLASH_CR_PG | FLASH_PSIZE ;
             while((current_length > FLASH_LEN_MASK) && (rs == FLASH_COMPLETE))
             {
                 rs = FlashWaitReady();
