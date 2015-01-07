@@ -158,24 +158,26 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
 int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
 {
     int res;
-    uint8_t command;
+    uint8_t data[10];
+    uint8_t *c;
+    int len;
 
     res = bus->OwiTouchReset(bus);
     if (res) {
         return res;
     }
+    c = data;
     if (hid) {
-        uint8_t *id = (uint8_t *) hid;
-
-        command = OWI_MATCH_ROM;
-        res = bus->OwiWriteBlock(bus, &command, 8); /* to a single device */
-        res = bus->OwiWriteBlock(bus, id, 64);
+        *c++ = OWI_MATCH_ROM;
+        memcpy(c, hid, 8);
+        len = 80;
     } else {
-        command = OWI_SKIP_ROM; /* to all devices */
-        res = bus->OwiWriteBlock(bus, &command, 8);
+        *c++ = OWI_SKIP_ROM; /* to all devices */
+        len = 16;
     }
-    res = bus->OwiWriteBlock(bus, &cmd, 8);
-    return 0;
+    *c++ = cmd;
+    res = bus->OwiWriteBlock(bus, data, len);
+    return res;
 }
 
 /*!
