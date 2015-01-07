@@ -66,7 +66,7 @@
 #define STM32TIMER_ID STM32_PWM_TIMER_ID
 #include <arch/cm3/stm/stm32timertran.h>
 #define STM32_PWM_BASE  STM32TIMER_BASE
-#define STM32_PWM_PCLK  STM32TIMER_PCLK
+#define STM32_PWM_PCLK()  STM32TIMER_PCLK()
 #define STM32_PWM_CLK() STM32TIMER_CLK()
 #define STM32_PWM_RST() STM32TIMER_RST()
 #define STM32_PWM_NCH   STM32TIMER_NCH
@@ -118,7 +118,7 @@ uint32_t stm32_pwm1_init(unsigned bits)
     /* We requested a channel not available */
     return -1;
 #else
-    uint32_t pclk = STM32_PWM_PCLK;
+    uint32_t pclk = STM32_PWM_PCLK();
 
     if (bits > STM32TIMER_WIDTH)
         return -1;
