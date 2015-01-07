@@ -81,14 +81,24 @@
 #define NUT_HWCLK_PCLK1 1
 
 /*!
+ * Clock for timers on APB1 bus
+ */
+#define NUT_HWCLK_TCLK1 2
+
+/*!
  * Clock for devices on APB2 bus
  */
-#define NUT_HWCLK_PCLK2 2
+#define NUT_HWCLK_PCLK2 3
+
+/*!
+ * Clock for timers on APB2 bus
+ */
+#define NUT_HWCLK_TCLK2 4
 
 /*!
  * Number of clocks for this device
  */
-#define NUT_HWCLK_MAX   2
+#define NUT_HWCLK_MAX   5
 
 #define NUT_HWCLK_PERIPHERAL NUT_HWCLK_PCLK1
 #elif defined(MCU_LPC17xx)

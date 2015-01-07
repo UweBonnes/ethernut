@@ -50,6 +50,7 @@
 #endif
 
 static uint32_t SystemCoreClock = 0;
+static uint8_t clk_div[NUT_HWCLK_MAX] = {1};
 
 /* Prepare some defaults if configuration is incomplete */
 #if !defined(SYSCLK_SOURCE)
@@ -91,6 +92,37 @@ static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
  *
  */
 
+/**
+  * @brief  Get timer clock divisor
+  *
+  * @param  div  Connected PCLK APB prescaler
+  * @retval Corrected prescaler
+  */
+static uint8_t GetTimerDiv(uint8_t div)
+{
+    uint8_t res;
+#if defined(RCC_DCKCFGR_TIMPRE)
+    if ((RCC->DCKCFRG & RCC_DCKCFGR_TIMPRE) ==   RCC_DCKCFGR_TIMPRE) {
+        if (div < 4)
+            res = 1;
+        else
+            res = div * 4;
+    }
+    else {
+        if (div < 2)
+            res = 1;
+        else
+            res = div * 2;
+    }
+#else
+    if (div < 2)
+        res =  1;
+    else
+        res = div * 2;
+#endif
+    return res;
+}
+
 /*!
  * \brief  Update SystemCoreClock according to Clock Register Values
  *
@@ -129,6 +161,12 @@ static void SystemCoreClockUpdate(void)
     }
     hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
     SystemCoreClock = tmp >> AHBPrescTable[hpre];
+    tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
+    clk_div[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
+    clk_div[NUT_HWCLK_TCLK1] = GetTimerDiv(clk_div[NUT_HWCLK_PCLK1]);
+    tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
+    clk_div[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
+    clk_div[NUT_HWCLK_TCLK2] = GetTimerDiv(clk_div[NUT_HWCLK_PCLK2]);
 }
 
 /* Functional same as F1 */
@@ -502,22 +540,7 @@ uint32_t SysCtlClockGet(void)
 uint32_t STM_ClockGet(int idx)
 {
     SystemCoreClockUpdate();
-    switch(idx) {
-    case NUT_HWCLK_CPU:
-        return SystemCoreClock;
-        break;
-    case NUT_HWCLK_PCLK1: {
-        uint32_t tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
-        return SystemCoreClock/APBPrescTable[tmp];
-        break;
-    }
-    case NUT_HWCLK_PCLK2: {
-        uint32_t tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
-        return SystemCoreClock/APBPrescTable[tmp];
-        break;
-    }
-    default:
-        return 0;
-        break;
-    }
+    if (idx < NUT_HWCLK_MAX)
+        return SystemCoreClock/clk_div[idx];
+    return 0;
 }
