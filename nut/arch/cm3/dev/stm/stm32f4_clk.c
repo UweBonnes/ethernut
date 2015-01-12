@@ -449,7 +449,7 @@ int SetSysClock(void)
 #define SYSCLK_MAX 84000000
 #else
 /* FIXME: Differentiale F40x/F41x and F42x/F43x */
-#define SYSCLK_MAX > 168000000
+#define SYSCLK_MAX  168000000
 #endif
 
 #if SYSCLK_FREQ > SYSCLK_MAX
