@@ -1,5 +1,5 @@
 --
---  * Copyright (C) 2011-13 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+--  * Copyright (C) 2011-15 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -120,6 +120,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_FSMC_STM32",
@@ -146,6 +147,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_ETH_STM32",
@@ -199,6 +201,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_CRYP_STM32",
@@ -226,6 +229,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_CRYP_STM32",
@@ -255,6 +259,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_ETH_STM32",
@@ -290,6 +295,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_ETH_STM32",
@@ -326,6 +332,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_CRYP_STM32",
@@ -363,6 +370,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_CRYP_STM32",

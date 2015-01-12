@@ -87,6 +87,8 @@
 #include <arch/avr32/flashc.h>
 #elif defined(NUT_CONFIG_STM32_IAP)
 #include <arch/cm3/stm/stm32_flash.h>
+#elif defined(NUT_CONFIG_STM32_BACKUP)
+#include <arch/cm3/stm/stm32_backup.h>
 #elif defined(NUT_CONFIG_STM32L1_EEPROM)
 #include <arch/cm3/stm/stm32l1_eeprom.h>
 #elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
@@ -130,6 +132,8 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
     return At91EfcParamRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_STM32_IAP)
     return Stm32FlashParamRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_STM32_BACKUP)
+    return Stm32BkupMemLoad(addr, buff, siz);
 #elif defined(NUT_CONFIG_STM32L1_EEPROM)
     return Stm32l1_EepromRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
@@ -176,6 +180,8 @@ int NutNvMemSave(unsigned int addr, const void *buff, size_t len)
     return At91EfcParamWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_STM32_IAP)
     return Stm32FlashParamWrite(addr, buff, len);
+#elif defined(NUT_CONFIG_STM32_BACKUP)
+    return Stm32BkupMemSave(addr, buff, len);
 #elif defined(NUT_CONFIG_STM32L1_EEPROM)
     return Stm32l1_EepromWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)

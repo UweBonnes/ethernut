@@ -61,6 +61,7 @@ nutarch_cm3_stm32f2 =
                 provides =
                 {
                     "HW_RCC_STM32",
+                    "HW_BKPSRAM_STM32",
                     "HW_FLASH_STM32F2_4",
                     "HW_GPIO_STM32V2",
                     "HW_CRC32_STM32",
