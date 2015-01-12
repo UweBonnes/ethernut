@@ -447,7 +447,7 @@ nutarch_cm3_stm32_devices =
         description = "STM32 RTC driver V2.",
         requires = { "HW_RTC_STM32_V2" },
         provides = { "DEV_RTC" },
-        sources = { "cm3/dev/stm/stm32_rtc_v2.c" },
+        sources = { "cm3/dev/stm/stm32_rtc_v2.c" , "cm3/dev/stm/stm32_backup.c" },
         options =
         {
             {
@@ -474,10 +474,23 @@ nutarch_cm3_stm32_devices =
                 default = "32768",
                 file = "include/cfg/rtc.h"
             },
+            {
+                macro = "BACKUP_REGULATOR_OFF",
+                brief = "Disable RTC/Backup SRAM in VBAT MODE",
+                description = "RTC and BACKKP SRAM will loose content in"..
+                " Standby and VBAT mode",
+                type = "integer",
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "BACKUP_SRAM_OFF",
+                brief = "Disable Backup SRAM",
+                description = "BKP SRAM access disabled",
+                type = "integer",
+                file = "include/cfg/arch.h"
+            },
         }
     },
-
-
 
     --
     -- STM32 DEBUG Macro (Low-Level Debug UART definition)

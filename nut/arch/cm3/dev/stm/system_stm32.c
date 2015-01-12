@@ -164,6 +164,16 @@ void SystemInit (void)
     RCC_TypeDef *rcc = (RCC_TypeDef *) RCC_BASE;
 
     GpioSetDefault();
+#if defined(PWR_CSR_BRE) && !defined(BACKUP_REGULATOR_OFF)
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    PWR->CR |= PWR_CR_DBP;
+    PWR->CSR |= PWR_CSR_BRE;
+    while( PWR_CSR_BRR != (PWR->CSR & PWR_CSR_BRR));
+#endif
+#if defined(RCC_AHB1ENR_BKPSRAMEN) &&  !defined(BACKUP_SRAM_OFF)
+    RCC->AHB1ENR |= RCC_AHB1ENR_BKPSRAMEN;
+#endif
+    PWR->CR &= ~PWR_CR_DBP;
     /* FPU settings ---------------------------------------------------------*/
 #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
     /* set CP10 and CP11 Full Access */
