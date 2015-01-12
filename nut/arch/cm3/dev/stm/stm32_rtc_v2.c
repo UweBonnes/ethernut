@@ -155,7 +155,7 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 
 # if !defined(RTC_PRE)
 /* Calculate RTC_PRE divisor as it is not given*/
-#  if defined(HCE_RTCPRE)
+#  if defined(HSE_RTCPRE)
 #   if !defined(RCC_CFGR_RTCPRE_2)
 /* L1 has HSE prescaler 2/4/8/16 */
 #    if HSE_VALUE >   8000000
@@ -304,17 +304,20 @@ static stm32_rtc_dcb rtc_dcb = {RTC_STATUS_START};
  */
 static int RtcRccHsePrepare(void)
 {
-    uint32_t cfgr;
+    uint32_t reg32u;
 
-    if((RCC->CR & RCC_CR_HSERDY) != RCC_CR_HSERDY)
+    reg32u = RCC->CR & RCC_CR_HSERDY;
+    if(reg32u != RCC_CR_HSERDY)
     /* If Hse was not already set, don't try to
      * fiddle with the HSE clock but return error.
      */
         return -1;
-    cfgr = RCC->CFGR;
-    cfgr &= ~RCC_CFGR_RTCPRE;
-    cfgr |= RTC_PRE_VAL * RCC_CFGR_RTCPRE_0;
-    RCC->CFGR = cfgr;
+#if defined(RCC_CFGR_RTCPR)
+    reg32u = RCC->CFGR;
+    reg32u &= ~RCC_CFGR_RTCPRE;
+    reg32u |= RTC_PRE_VAL * RCC_CFGR_RTCPRE_0;
+    RCC->CFGR = reg32u;
+#endif
     return 0;
 }
 
