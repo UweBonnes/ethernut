@@ -399,6 +399,78 @@ int SetSysClock(void)
 #define PLLCLK_IN HSI_VALUE
 #endif
 
+#if !defined(STM32_VRANGE) || STM32_VRANGE == 0
+#define FLASH_BASE_FREQ 30000000
+#elif STM32_VRANGE == 1
+#define FLASH_BASE_FREQ 24000000
+#elif STM32_VRANGE == 2
+#define FLASH_BASE_FREQ 22000000
+#elif STM32_VRANGE == 3
+#define FLASH_BASE_FREQ 20000000
+#endif
+
+#if PLLCLK_IN > 26000000
+#warning PLL Input frequency too high
+#endif
+
+#if defined(STM32F411)
+#define SYSCLK_MAX 100000000
+#elif defined(STM32F401)
+#define SYSCLK_MAX 84000000
+#else
+/* FIXME: Differentiate F40x/F41x and F42x/F43x */
+#define SYSCLK_MAX  168000000
+#endif
+
+#if SYSCLK_FREQ > SYSCLK_MAX
+#warning "SYSCLK_FREQ overclocked"
+#endif
+
+/* Multiple of 2 MHZ*/
+#if (PLLCLK_IN > 3999999) && ((PLLCLK_IN % 2000000L) == 0)
+ #define  PLLM (PLLCLK_IN/2000000)
+ #define  PLLN ((SYSCLK_FREQ/1000000) << _BI32(RCC_PLLCFGR_PLLN_0))
+/*Multiple of 1 MHZ */
+#elif (PLLCLK_IN > 1999999) && ((PLLCLK_IN % 1000000L) == 0)
+ #define  PLLM (PLLCLK_IN/1000000)
+ #define  PLLN ((SYSCLK_FREQ/500000 ) << _BI32(RCC_PLLCFGR_PLLN_0))
+#else
+ #warning "PLL Source frequency isn't a multiple of 1 or 2 MHz"
+#endif
+#define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
+#define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
+#define  NUT_FLASH_LATENCY  (SYSCLK_FREQ/FLASH_BASE_FREQ)
+
+/* Voltage Scaling in PWR->CR register */
+#if defined(STM32F401)
+#if SYSCLK_FREQ > 60000000
+#define VOS 2
+#else
+#define VOS 1
+#endif
+#elif defined(STM32F411)
+#if SYSCLK_FREQ > 84000000
+#define VOS 3
+#elif SYSCLK_FREQ > 64000000
+#define VOS 2
+#else
+#define VOS 1
+#endif
+#elif defined(STM32F40X)
+#if SYSCLK_FREQ > 144000000
+#define VOS 1
+#else
+#define VOS 0
+#endif
+#else
+#if SYSCLK_FREQ > 168000000
+#define VOS 3
+#elif SYSCLK_FREQ > 144000000
+#define VOS 2
+#else
+#define VOS 1
+#endif
+#endif
 
 /**
   * @brief  Sets System clock frequency to 120/168MHz and configure HCLK, PCLK2
@@ -428,51 +500,15 @@ int SetSysClock(void)
 {
     int rc = 0;
     uint32_t rcc_reg;
-
-#if !defined(STM32_VRANGE) || STM32_VRANGE == 0
-#define FLASH_BASE_FREQ 30000000
-#elif STM32_VRANGE == 1
-#define FLASH_BASE_FREQ 24000000
-#elif STM32_VRANGE == 2
-#define FLASH_BASE_FREQ 22000000
-#elif STM32_VRANGE == 3
-#define FLASH_BASE_FREQ 20000000
-#endif
-
-#if PLLCLK_IN > 26000000
-#warning PLL Input frequency too high
-#endif
-
-#if defined(STM32F411)
-#define SYSCLK_MAX 100000000
-#elif defined(STM32F401)
-#define SYSCLK_MAX 84000000
-#else
-/* FIXME: Differentiale F40x/F41x and F42x/F43x */
-#define SYSCLK_MAX  168000000
-#endif
-
-#if SYSCLK_FREQ > SYSCLK_MAX
-#warning "SYSCLK_FREQ overclocked"
-#endif
-
-/* Multiple of 2 MHZ*/
-#if (PLLCLK_IN > 3999999) && ((PLLCLK_IN % 2000000L) == 0)
- #define  PLLM (PLLCLK_IN/2000000)
- #define  PLLN ((SYSCLK_FREQ/1000000) << _BI32(RCC_PLLCFGR_PLLN_0))
-/*Multiple of 1 MHZ */
-#elif (PLLCLK_IN > 1999999) && ((PLLCLK_IN % 1000000L) == 0)
- #define  PLLM (PLLCLK_IN/1000000)
- #define  PLLN ((SYSCLK_FREQ/500000 ) << _BI32(RCC_PLLCFGR_PLLN_0))
-#else
- #warning "PLL Source frequency isn't a multiple of 1 or 2 MHz"
-#endif
-#define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
-#define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
-#define  NUT_FLASH_LATENCY  (SYSCLK_FREQ/FLASH_BASE_FREQ)
+    uint32_t cr;
 
     /* Select System frequency up to 168 MHz */
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+
+    cr = PWR->CR;
+    cr &= ~(PWR_CR_VOS);
+    cr |= VOS * PWR_CR_VOS_0;
+    PWR->CR = cr;
 
     rcc_reg =  RCC->PLLCFGR;
     rcc_reg &= ~(RCC_PLLCFGR_PLLM | RCC_PLLCFGR_PLLN | RCC_PLLCFGR_PLLP | RCC_PLLCFGR_PLLQ);
