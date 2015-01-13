@@ -102,7 +102,7 @@ static uint8_t GetTimerDiv(uint8_t div)
 {
     uint8_t res;
 #if defined(RCC_DCKCFGR_TIMPRE)
-    if ((RCC->DCKCFRG & RCC_DCKCFGR_TIMPRE) ==   RCC_DCKCFGR_TIMPRE) {
+    if ((RCC->DCKCFGR & RCC_DCKCFGR_TIMPRE) ==   RCC_DCKCFGR_TIMPRE) {
         if (div < 4)
             res = 1;
         else
