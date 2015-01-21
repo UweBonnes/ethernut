@@ -140,6 +140,16 @@ typedef uint32_t nutgpio_pin_t;
 #define GPIO_CFG_DAC_ENABLE 0x00000800
 #endif
 
+/*!
+ * \brief GPIO starts with output high.
+ */
+#define GPIO_CFG_INIT_HIGH 0x00001000
+
+/*!
+ * \brief GPIO starts with output low.
+ */
+#define GPIO_CFG_INIT_LOW 0x00002000
+
 
 
 /*!
@@ -202,6 +212,9 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
 #define GpioPinSetHigh(bank, bit)        CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOSET, (bit))
 #define GpioPinSetLow(bank, bit)         CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOCLR, (bit))
+
+#define GpioPinDrive(bank, bit)          CM3BBSET(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, (bit))
+#define GpioPinRelease(bank, bit)        CM3BBCLR(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIODIR, (bit))
 
 #define GpioPortGet(bank)                CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN)
 #define GpioPortSet(bank, value)         CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOPIN)  = (value)

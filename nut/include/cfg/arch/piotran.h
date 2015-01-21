@@ -137,6 +137,15 @@
 #undef GPIO_PULLUP_ON
 #undef GPIO_PULLUP_OFF
 
+#if defined(MCU_LPC17xx)
+#define GPIO_INIT(b)   GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT|GPIO_SPEED)
+#define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
+#define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
+#define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
+#define GPIO_OUTPUT(b) GpioPinDrive(GPIO_ID, b)
+#define GPIO_INPUT(b)  GpioPinRelease(GPIO_ID, b);
+#endif
+
 #if defined(MCU_STM32)
 #if defined(MCU_STM32L1)
 #define GPIO_SPEED GPIO_CFG_SPEED_MED

@@ -433,6 +433,23 @@ GPIO_ID->PUPDR = pudr; } while(0)
 #define GPIO_OPENDRAIN(b) GpioPinRelease(GPIO_ID, b)
 #define GPIO_PUSHPULL(b)  GpioPinDrive(GPIO_ID, b)
 
+#elif defined(MCU_LPC17xx)
+
+#define ARCH_DEFINES_FUNCTIONS_DIRECTLY
+
+#define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
+#define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
+#define GPIO_IS_HI(b)  GpioPinGet(GPIO_ID, b)
+#define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
+#define GPIO_ENABLE(b) GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT)
+#define GPIO_OUTPUT(b) GpioPinDrive(GPIO_ID, b)
+#define GPIO_INPUT(b)  GpioPinRelease(GPIO_ID, b)
+#define GPIO_OPENDRAIN(b) GpioPinRelease(GPIO_ID, b)
+#define GPIO_PUSHPULL(b)  GpioPinDrive(GPIO_ID, b)
+//#define GPIO_FILTER_ON(b)
+//#define GPIO_FILTER_OFF(b)
+//#define GPIO_PULLUP_ON(b)
+//#define GPIO_PULLUP_OFF(b)
 
 /* Additional targets can be added here. */
 

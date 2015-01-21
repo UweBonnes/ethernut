@@ -264,6 +264,27 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     NUTASSERT(bank < NUTGPIOPORT_MAX);
     NUTASSERT((bit < 32) && ((bank != NUTGPIOPORT_MAX - 1) || (bit < 5)));
 
+
+    /* Set the inital value, if given
+     *
+     * Otherwise we may introduce unwanted transistions on the port
+     */
+    if (flags & GPIO_CFG_INIT_HIGH)
+    {
+        if (flags & GPIO_CFG_INIT_LOW) {
+            return -1;
+        } else {
+            GpioPinSetHigh(bank, bit);
+        }
+    }
+    if (flags & GPIO_CFG_INIT_LOW) {
+        GpioPinSetLow(bank, bit);
+    }    
+
+    /* we can't check for these flags, so clear them */
+    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
+
     /* Calculate the address of the desired IOCON register */
     IOCON = (uint32_t *)(LPC_IOCON_BASE + ((bank * 32 + bit) * sizeof(uint32_t)));
 
