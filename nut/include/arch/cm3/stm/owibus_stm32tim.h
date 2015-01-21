@@ -47,5 +47,7 @@
 #include <dev/owibus.h>
 
 extern NUTOWIBUS owiBus0Stm32Tim;
+extern NUTOWIBUS owiBus1Stm32Tim;
+extern NUTOWIBUS owiBus2Stm32Tim;
 
 #endif

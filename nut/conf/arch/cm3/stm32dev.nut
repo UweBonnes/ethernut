@@ -4032,53 +4032,181 @@ nutarch_cm3_stm32_devices =
         }
     },
     --
-    -- STM32 OWI using hardware timer
+    -- STM32 OWIBUS0 using hardware timer
     --
     {
-        name = "nutarch_cm3_stm32_owi",
-        brief = "STM32 OWI with hardware timer",
-        description = "STM32 OWI with hardware timer, library compile time configured",
+        name = "nutarch_cm3_stm32_owibus0tim",
+        brief = "STM32 OWIBUS0 with hardware timer",
+        description = "STM32 OWIBUS0 with hardware timer, "..
+                    "library compile time configured",
         provides = { "OWIBUS" },
         sources = { "cm3/dev/stm/owibus0stm32tim.c" },
         options =
         {
             {
                 macro = "STM32TIM_OWI0_PIN",
-                brief = "PIN for STM32 hardware timer OWI0 bus",
-                description = "Port bit used for OWI Bus 0. Only some pins are valid!",
+                brief = "PIN for STM32 hardware timer OWIBUS0",
+                description = "Port bit used for OWIBUS0. "..
+                            "Check datasheet for Port/Pin function!",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/owi.h",
             },
             {
                 macro = "STM32TIM_OWI0_PORT",
-                brief = "PORT for STM32 hardware timer OWI0 bus",
-                description = "Port used for OWI Bus 0. Only some ports are valid!",
+                brief = "PORT for STM32 hardware timer OWIBUS0",
+                description = "Port used for OWIBUS0. "..
+                            "Check datasheet for Port/Pin function!",
                 type = "enumerated",
                 choices = function() return GetGpioPortIds() end,
                 file = "include/cfg/owi.h",
             },
             {
                 macro = "STM32TIM_OWI0_TIMER_ID",
-                brief = "Timer for STM32 hardware timer OWI0 bus",
-                description = "Timer used for OWI Bus 0. Requires at least dual channel!",
+                brief = "Timer for STM32 hardware timer OWIBUS0",
+                description = "Timer used for OWIBUS0. "..
+                            "Requires at least dual channel!",
                 type = "enumerated",
                 choices = function() return GetStmTimers2ChIrq() end,
                 file = "include/cfg/owi.h",
             },
             {
                 macro = "STM32TIM_OWI0_CHANNEL",
-                brief = "Channel for STM32 hardware timer OWI0 bus",
-                description = "Channel used for STM32 hardware timer OWI0 bus. Check for Channel 3/4 availability!",
+                brief = "Channel for STM32 hardware timer OWIBUS0",
+                description = "Channel for STM32 hardware timer OWIBUS0. "..
+                            "Check for Channel 3/4 availability!",
                 type = "enumerated",
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
             },
             {
                 macro = "STM32TIM_OWI0_REMAP",
-                brief = "REMAP for STM32 hardware timer OWI0 bus",
+                brief = "REMAP for STM32 hardware timer OWIBUS0",
                 requires = { "HW_MCU_STM32F10X" },
-                description = "Give Remap used for STM32F1 hardware timer OWI0 bus if needed!",
+                description = "Give Remap used for STM32F1 hardware "..
+                            "timer OWIBUS0 if needed!",
+                type = "interger",
+                default = "0",
+                file = "include/cfg/owi.h",
+            },
+        }
+     },
+
+    --
+    -- STM32 OWIBUS1 using hardware timer
+    --
+    {
+        name = "nutarch_cm3_stm32_owibus1tim",
+        brief = "STM32 OWIBUS1 with hardware timer",
+        description = "STM32 OWIBUS1 with hardware timer, "..
+                    "library compile time configured",
+        provides = { "OWIBUS" },
+        sources = { "cm3/dev/stm/owibus1stm32tim.c" },
+        options =
+        {
+            {
+                macro = "STM32TIM_OWI1_PIN",
+                brief = "PIN for STM32 hardware timer OWIBUS1",
+                description = "Port bit used for OWIBUS1. "..
+                            "Check datasheet for Port/Pin function!",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI1_PORT",
+                brief = "PORT for STM32 hardware timer OWIBUS1",
+                description = "Port used for OWIBUS1. "..
+                            "Check datasheet for Port/Pin function!",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI1_TIMER_ID",
+                brief = "Timer for STM32 hardware timer OWIBUS1",
+                description = "Timer used for OWIBUS1. "..
+                            "Requires at least dual channel!",
+                type = "enumerated",
+                choices = function() return GetStmTimers2ChIrq() end,
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI1_CHANNEL",
+                brief = "Channel for STM32 hardware timer OWIBUS1",
+                description = "Channel for STM32 hardware timer OWIBUS1. "..
+                            "Check for Channel 3/4 availability!",
+                type = "enumerated",
+                choices = { "1", "2", "3", "4" },
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI1_REMAP",
+                brief = "REMAP for STM32 hardware timer OWIBUS1",
+                requires = { "HW_MCU_STM32F10X" },
+                description = "Give Remap used for STM32F1 hardware "..
+                            "timer OWIBUS1 if needed!",
+                type = "interger",
+                default = "0",
+                file = "include/cfg/owi.h",
+            },
+        }
+     },
+
+    --
+    -- STM32 OWIBUS2 using hardware timer
+    --
+    {
+        name = "nutarch_cm3_stm32_owibus2tim",
+        brief = "STM32 OWIBUS2 with hardware timer",
+        description = "STM32 OWIBUS2 with hardware timer, "..
+                    "library compile time configured",
+        provides = { "OWIBUS" },
+        sources = { "cm3/dev/stm/owibus2stm32tim.c" },
+        options =
+        {
+            {
+                macro = "STM32TIM_OWI2_PIN",
+                brief = "PIN for STM32 hardware timer OWIBUS2",
+                description = "Port bit used for OWIBUS2. "..
+                            "Check datasheet for Port/Pin function!",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI2_PORT",
+                brief = "PORT for STM32 hardware timer OWIBUS2",
+                description = "Port used for OWIBUS2. "..
+                            "Check datasheet for Port/Pin function!",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI2_TIMER_ID",
+                brief = "Timer for STM32 hardware timer OWIBUS2",
+                description = "Timer used for OWIBUS2. "..
+                            "Requires at least dual channel!",
+                type = "enumerated",
+                choices = function() return GetStmTimers2ChIrq() end,
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI2_CHANNEL",
+                brief = "Channel for STM32 hardware timer OWIBUS2",
+                description = "Channel for STM32 hardware timer OWIBUS2. "..
+                            "Check for Channel 3/4 availability!",
+                type = "enumerated",
+                choices = { "1", "2", "3", "4" },
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI2_REMAP",
+                brief = "REMAP for STM32 hardware timer OWIBUS2",
+                requires = { "HW_MCU_STM32F10X" },
+                description = "Give Remap used for STM32F1 hardware"..
+                            " timer OWIBUS2 if needed!",
                 type = "interger",
                 default = "0",
                 file = "include/cfg/owi.h",

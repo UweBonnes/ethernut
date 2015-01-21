@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-15 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2015 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -33,8 +33,8 @@
  */
 
 /*!
- * \file dev/owibus0stm32tim.c
- * \brief Configuration of owiBus0Stm32Tim with dual channel STM32
+ * \file dev/owibus1stm32tim.c
+ * \brief Configuration of owiBus1Stm32Tim with dual channel STM32
  *        timer, configured at library compile time.
  *
  * The OWI Bus needs to be connected of CH1|2 or CH3|4 of some timer. The
@@ -45,6 +45,7 @@
  * $Id$
  * \endverbatim
  */
+
 #include <cfg/arch.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -60,33 +61,33 @@
 #include <cfg/owi.h>
 
 /* Compile code only when needed definitions are available */
-#if !defined(STM32TIM_OWI0_TIMER_ID) && !defined(STM32TIM_OWI0_CHANNEL) &&\
-    !defined(STM32TIM_OWI0_PORT) && !defined(STM32TIM_OWI0_PIN)
-#elif defined(STM32TIM_OWI0_TIMER_ID) && defined(STM32TIM_OWI0_CHANNEL) &&\
-    defined(STM32TIM_OWI0_PORT) && defined(STM32TIM_OWI0_PIN)
+#if !defined(STM32TIM_OWI1_TIMER_ID) && !defined(STM32TIM_OWI1_CHANNEL) &&\
+    !defined(STM32TIM_OWI1_PORT) && !defined(STM32TIM_OWI1_PIN)
+#elif defined(STM32TIM_OWI1_TIMER_ID) && defined(STM32TIM_OWI1_CHANNEL) &&\
+    defined(STM32TIM_OWI1_PORT) && defined(STM32TIM_OWI1_PIN)
 
-static HANDLE STM32TIM_OWI0_MUTEX;
-#define STM32TIM_OWI_MUTEX STM32TIM_OWI0_MUTEX
+static HANDLE STM32TIM_OWI1_MUTEX;
+#define STM32TIM_OWI_MUTEX STM32TIM_OWI1_MUTEX
 
-#if defined(STM32TIM_OWI0_PORT)
-#define STM32TIM_OWI_PORT STM32TIM_OWI0_PORT
+#if defined(STM32TIM_OWI1_PORT)
+#define STM32TIM_OWI_PORT STM32TIM_OWI1_PORT
 #endif
 
-#if defined(STM32TIM_OWI0_PIN)
-#define STM32TIM_OWI_PIN STM32TIM_OWI0_PIN
+#if defined(STM32TIM_OWI1_PIN)
+#define STM32TIM_OWI_PIN STM32TIM_OWI1_PIN
 #endif
 
-#if defined(STM32TIM_OWI0_CHANNEL)
-#define STM32TIM_OWI_CHANNEL STM32TIM_OWI0_CHANNEL
+#if defined(STM32TIM_OWI1_CHANNEL)
+#define STM32TIM_OWI_CHANNEL STM32TIM_OWI1_CHANNEL
 #endif
 
-#if defined(STM32TIM_OWI0_REMAP)
-#define STM32TIM_OWI_REMAP STM32TIM_OWI0_REMAP
+#if defined(STM32TIM_OWI1_REMAP)
+#define STM32TIM_OWI_REMAP STM32TIM_OWI1_REMAP
 #endif
 
-#if defined  (STM32TIM_OWI0_TIMER_ID)
+#if defined  (STM32TIM_OWI1_TIMER_ID)
 #undef  STM32TIMER_ID
-#define STM32TIMER_ID STM32TIM_OWI0_TIMER_ID
+#define STM32TIMER_ID STM32TIM_OWI1_TIMER_ID
 #include <arch/cm3/stm/stm32timertran.h>
 #define STM32_OWITIMER_BASE STM32TIMER_BASE
 #define STM32_OWITIMER_SIG  STM32TIMER_SIG
@@ -95,7 +96,7 @@ static HANDLE STM32TIM_OWI0_MUTEX;
 #define STM32_OWITIMER_REMAP_MASK   STM32TIMER_REMAP_MASK
 #define STM32_OWITIMER_REMAP_SHIFT  STM32TIMER_REMAP_SHIFT
 #else
-#define STM32_OWITIMER_AF  STM32TIMER_AF(STM32TIM_OWI_PORT, STM32TIM_OWI0_PIN)
+#define STM32_OWITIMER_AF  STM32TIMER_AF(STM32TIM_OWI_PORT, STM32TIM_OWI1_PIN)
 #endif
 #endif
 
@@ -110,7 +111,7 @@ static int Stm32TimOwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len
  *        STM32 hardware timer.
  *
  */
- NUTOWIBUS owiBus0Stm32Tim = {
+ NUTOWIBUS owiBus1Stm32Tim = {
     0,                   /*!< \brief OWIBUSBUS::owibus_info */
     OWI_MODE_NORMAL,     /*!< \brief OWIBUSBUS::mode */
     Stm32TimOwiSetup,      /*!< \brief OWIBUSBUS::OwiSetup */
