@@ -767,6 +767,16 @@ nutarch_cm3_stm32_devices =
         },
     },
      --
+    -- STM32 Timers Helper Functions
+    --
+    {
+        name = "nutarch_cm3_stm32_timer_helper",
+        brief = "STM32 Timer Helper functions",
+        description = "STM32 Timer helper functions.",
+        provides = { "HW_TIM_STM32_HELPER" },
+        sources = { "cm3/dev/stm/stm32_timer.c" },
+    },
+     --
     -- STM32 16bit Timers for Encode
     --
     {
