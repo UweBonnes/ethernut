@@ -69,7 +69,7 @@ extern void At25dfNodeUnlock(NUTSPINODE * node);
 extern int At25dfNodeTransfer(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen, const void *txbuf, void *rxbuf, int xlen);
 extern int At25dfNodeCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t oplen);
 extern int At25dfNodeWaitReady(NUTSPINODE * node, uint32_t tmo, int poll);
-extern int At25dfNodeStatus(NUTSPINODE * node, uint16_t *status);
+extern int At25dfNodeStatus(NUTSPINODE * node, uint8_t *status0, uint8_t *status1);
 extern int At25dfDeviceID(NUTSPINODE * node, uint8_t *man_id, uint8_t *dev_id1, uint8_t *dev_id2);
 
 #endif
