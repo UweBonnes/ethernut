@@ -178,7 +178,7 @@ int At25dfNodeCommand(NUTSPINODE * node, uint8_t op, uint32_t parm, uint_fast8_t
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At25dfNodeStatus(NUTSPINODE * node, uint16_t *status)
+int At25dfNodeStatus(NUTSPINODE * node, uint8_t *status0, uint8_t *status1)
 {
     int rc;
     uint8_t cmd[3] = { DFCMD_READ_STATUS, 0xFF, 0xFF };
@@ -199,7 +199,8 @@ int At25dfNodeStatus(NUTSPINODE * node, uint16_t *status)
         rc = (*bus->bus_transfer) (node, cmd, cmd, 3);
         if (rc == 0) {
             (*bus->bus_wait) (node, NUT_WAIT_INFINITE);
-            *status = cmd[1] | cmd[2];
+            *status0 = cmd[1];
+            *status1 = cmd[2];
         }
         (*bus->bus_release) (node);
     }
@@ -257,9 +258,9 @@ int At25dfDeviceID(NUTSPINODE * node, uint8_t *man_id, uint8_t *dev_id1, uint8_t
 int At25dfNodeWaitReady(NUTSPINODE * node, uint32_t tmo, int poll)
 {
     int      rc;
-    uint16_t sr;
+    uint8_t  sr0, sr1;
 
-    while (((rc = At25dfNodeStatus(node, &sr)) == 0) && ((sr & 0x01) == 0)) {
+    while (((rc = At25dfNodeStatus(node, &sr0, &sr1)) == 0) && ((sr0 & 0x01) != 0)) {
         if (!poll) {
             NutSleep(1);
         }
