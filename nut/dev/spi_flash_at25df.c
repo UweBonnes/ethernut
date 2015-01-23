@@ -207,7 +207,7 @@ static int At25dfFlashSaveUnit(NUTSERIALFLASH * sfi, int_fast8_t b)
 
         /* Wait for the erasing to be finished */
         if (rc == 0) {
-            rc = At25dfNodeWaitReady(sfi->sf_node, AT25_WRITE_POLLS, 1);
+            rc = At25dfNodeWaitReady(sfi->sf_node, AT25_BLOCK_ERASE_WAIT, 0);
         }
 
         len = at->dxb_dfinfo->at25df_ebsize;
@@ -768,9 +768,12 @@ static int SpiAt25dfFlashCommit(NUTSERIALFLASH * sfi, sf_unit_t pgn)
  */
 static int SpiAt25dfFlashErase(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
 {
-    int rc = 0;
-    int_fast8_t b;
+    int           rc = 0;
+    int_fast8_t   b;
     AT25DF_FLASH *at;
+    uint8_t       erase_cmd;
+    int           erase_wait;
+    uint32_t      pga;
 
     /* Sanity checks. */
     NUTASSERT(sfi != NULL);
@@ -785,9 +788,34 @@ static int SpiAt25dfFlashErase(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
             at->flags[b] &= ~FLASH_BUFFER_DIRTY;
         }
     }
-    while (rc == 0 && cnt--) {
-        uint32_t pga = pgn + cnt;
-        pga <<= at->dxb_dfinfo->at25df_ebshft;
+    while (rc == 0 && cnt) {
+        if ((pgn == 0) && (cnt == at->dxb_dfinfo->at25df_erase_blocks)) {
+            erase_cmd = DFCMD_CHIP_ERASE;
+            pga = pgn << at->dxb_dfinfo->at25df_ebshft;
+            cnt -= at->dxb_dfinfo->at25df_erase_blocks;
+            pgn += at->dxb_dfinfo->at25df_erase_blocks;
+            erase_wait = AT25_CHIP_ERASE_WAIT;
+        } else
+        if (((pgn & 0x0F) == 0) && (cnt >= 16)) {
+            erase_cmd = DFCMD_BLOCK_ERASE_64K;
+            pga = pgn << at->dxb_dfinfo->at25df_ebshft;
+            cnt -= 16;
+            pgn += 16;
+            erase_wait = AT25_BLOCK_ERASE_WAIT;
+        } else 
+        if (((pgn & 0x07) == 0) && (cnt >= 8)) {
+            erase_cmd = DFCMD_BLOCK_ERASE_32K;
+            pga = pgn << at->dxb_dfinfo->at25df_ebshft;
+            cnt -= 8;
+            pgn += 8;
+            erase_wait = AT25_BLOCK_ERASE_WAIT;
+        } else {
+            erase_cmd = DFCMD_BLOCK_ERASE_4K;
+            pga = pgn << at->dxb_dfinfo->at25df_ebshft;
+            cnt -= 1;
+            pgn += 1;
+            erase_wait = AT25_BLOCK_ERASE_WAIT;
+        }
 
         rc = At25dfNodeLock(sfi->sf_node);
 
@@ -798,12 +826,12 @@ static int SpiAt25dfFlashErase(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
             
             /* Erase the erase block. */
             if (rc == 0) {
-                rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_BLOCK_ERASE_4K, pga, 4, NULL, NULL, 0);
+                rc = At25dfNodeTransfer(sfi->sf_node, erase_cmd, pga, 4, NULL, NULL, 0);
             }
             
             /* Wait for the erase operation to complete */
             if (rc == 0) {
-                rc = At25dfNodeWaitReady(sfi->sf_node, AT25_WRITE_POLLS, 1);
+                rc = At25dfNodeWaitReady(sfi->sf_node, erase_wait, 0);
             }
 
             At25dfNodeUnlock(sfi->sf_node);

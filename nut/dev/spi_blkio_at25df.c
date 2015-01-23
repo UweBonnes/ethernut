@@ -222,7 +222,7 @@ static int At25dfBlkIoWrite(NUTDEVICE * dev, uint32_t block, const void *data, i
         }
 
         /* Wait for the erasing to be finished */
-        if (At25dfNodeWaitReady(node, AT25_WRITE_POLLS, 1)) {
+        if (At25dfNodeWaitReady(node, AT25_BLOCK_ERASE_WAIT, 0)) {
             At25dfNodeUnlock(node);
             break;
         }

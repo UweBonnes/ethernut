@@ -48,9 +48,9 @@
 
 
 #define MAX_AT25_CMDLEN         6
-#define AT25_ERASE_WAIT         3000
-#define AT25_CHIP_ERASE_WAIT    50000
-#define AT25_WRITE_POLLS        1000
+#define AT25_BLOCK_ERASE_WAIT   1500      // max: 4K: 200ms, 32K: 600ms, 64K: 950ms
+#define AT25_CHIP_ERASE_WAIT    50000     // max: 40s
+#define AT25_WRITE_POLLS        1000      // Poll cycles busy looping. Might be better to implement same wait as for other operations. 
 
 #define AT25_MAX_SPEED_SLOW     50000000
 #define AT25_MAX_SPEED_MED      85000000
