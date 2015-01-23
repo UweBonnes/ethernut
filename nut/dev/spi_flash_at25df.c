@@ -218,7 +218,7 @@ static int At25dfFlashSaveUnit(NUTSERIALFLASH * sfi, int_fast8_t b)
             
             /* Put the flash in write enable mode. */
             if (rc == 0) {
-                rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE, pga + offset, 4, (&at->dxb_pbuf[b]) + offset, NULL, at->dxb_dfinfo->at25df_psize);
+                rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE, pga + offset, 4, at->dxb_pbuf[b] + offset, NULL, at->dxb_dfinfo->at25df_psize);
             }
 
             /* Wait for the erasing to be finished */
