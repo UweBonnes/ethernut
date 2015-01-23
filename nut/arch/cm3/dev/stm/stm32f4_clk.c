@@ -421,11 +421,17 @@ int SetSysClock(void)
 
 #if defined(STM32F411)
 #define SYSCLK_MAX 100000000
+#define PCLK1_MAX   50000000
+#define PCLK2_MAX  100000000
 #elif defined(STM32F401)
-#define SYSCLK_MAX 84000000
+#define SYSCLK_MAX  84000000
+#define PCLK1_MAX   42000000
+#define PCLK2_MAX   84000000
 #else
 /* FIXME: Differentiate F40x/F41x and F42x/F43x */
 #define SYSCLK_MAX  168000000
+#define PCLK1_MAX   42000000
+#define PCLK2_MAX   84000000
 #endif
 
 #if SYSCLK_FREQ > SYSCLK_MAX
@@ -477,6 +483,51 @@ int SetSysClock(void)
 #define VOS 1
 #endif
 #endif
+
+#if !defined(PCLK1_TARGET) || (PCLK1_TARGET > PCLK1_MAX)
+#define PCLK1_TARGET PCLK1_MAX
+#endif
+
+#if !defined(PCLK2_TARGET) || (PCLK2_TARGET > PCLK2_MAX)
+#define PCLK2_TARGET PCLK2_MAX
+#endif
+
+/*
+  * @brief  Get divisor for APB clock
+  *
+  * Return needed divisor so that resulting frequency
+  * is smaller or equal the selected frequency or maximum
+  * PCLK divisor is reached.
+  *
+  * @param  target_frequency Selected Frequency
+  * @retval RCC_CFGR_PPRE base value
+  */
+
+uint32_t GetPclkDiv(uint32_t target_frequency)
+{
+    uint32_t div;
+    uint32_t res_freq;
+
+    div = 3;
+    res_freq = SYSCLK_FREQ;
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    return div;
+}
 
 /**
   * @brief  Sets System clock frequency to 120/168MHz and configure HCLK, PCLK2
@@ -543,8 +594,9 @@ int SetSysClock(void)
 
     rcc_reg = RCC->CFGR;
     rcc_reg  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1 |RCC_CFGR_RTCPRE);
-    /* HCLK = SYSCLK, PCLK2 = HCLK/2 , PCLK1 = HCLK/4 */
-    rcc_reg |= (RCC_CFGR_HPRE_DIV1 | RCC_CFGR_PPRE2_DIV2| RCC_CFGR_PPRE1_DIV4);
+    rcc_reg |= RCC_CFGR_HPRE_DIV1;
+    rcc_reg |= GetPclkDiv(PCLK1_TARGET) * RCC_CFGR_PPRE1_0;
+    rcc_reg |= GetPclkDiv(PCLK2_TARGET) * RCC_CFGR_PPRE2_0;
     RCC->CFGR = rcc_reg;
 
     /* Start PLL, wait ready and switch to it as clock source */
