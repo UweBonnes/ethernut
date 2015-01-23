@@ -85,17 +85,17 @@ static int At25dfBlkIoInit(NUTDEVICE * dev)
 
     /* Put the flash in write enable mode. */
     if (rc == 0) {
-        rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE_ENABLE, 0, 1, NULL, NULL, 0);
+        rc = At25dfNodeTransfer(node, DFCMD_WRITE_ENABLE, 0, 1, NULL, NULL, 0);
     }
 
     /* Global unprotect the flash */
     if (rc == 0) {
-        rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE_STATUS1, 0, 2, NULL, NULL, 0);
+        rc = At25dfNodeTransfer(node, DFCMD_WRITE_STATUS1, 0, 2, NULL, NULL, 0);
     }
            
     /* Wait for the erase operation to complete */
     if (rc == 0) {
-        rc = At25dfNodeWaitReady(sfi->sf_node, AT25_WRITE_POLLS, 1);
+        rc = At25dfNodeWaitReady(node, AT25_WRITE_POLLS, 1);
     }    
     return rc;
 }
