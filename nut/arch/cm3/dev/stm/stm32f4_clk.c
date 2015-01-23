@@ -106,20 +106,14 @@ static uint8_t GetTimerDiv(uint8_t div)
         if (div < 4)
             res = 1;
         else
-            res = div * 4;
+            res = div / 4;
+        return res;
     }
-    else {
-        if (div < 2)
-            res = 1;
-        else
-            res = div * 2;
-    }
-#else
+#endif
     if (div < 2)
         res =  1;
     else
-        res = div * 2;
-#endif
+        res = div / 2;
     return res;
 }
 
@@ -411,6 +405,7 @@ int SetSysClock(void)
 #define FLASH_BASE_FREQ 24000000
 #elif STM32_VRANGE == 2
 #define FLASH_BASE_FREQ 22000000
+
 #elif STM32_VRANGE == 3
 #define FLASH_BASE_FREQ 20000000
 #endif
