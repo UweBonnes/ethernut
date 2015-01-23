@@ -82,6 +82,9 @@ void Stm32TimerConfig(
     }
 
     switch(clk_mode) {
+    case TIM_CLK_MODE_ETR:
+        smcr = smcr | TIM_SMCR_ECE;
+        /* Fall through to treat like internal clock mode */
     case TIM_CLK_MODE_CKINT:
         switch(slave_mode){
 #if defined(TIM_SMCR_SMS_3)
@@ -98,8 +101,6 @@ void Stm32TimerConfig(
     case TIM_CLK_MODE_TI2:
         smcr = smcr | 7 * TIM_SMCR_SMS_0 | 6 * TIM_SMCR_TS_0;
         break;
-    case TIM_CLK_MODE_ETR:
-        smcr = smcr | TIM_SMCR_ECE;
     }
     tim->SMCR = smcr;
 #if defined(TIM_BDTR_MOE)
