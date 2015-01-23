@@ -1250,6 +1250,13 @@ nutdev =
         options =
         {
             {
+                macro = "SBBI0_NO_DELAY",
+                brief = "Disable all delay calls during bitbanging for maximum speed",
+                description = "If enabled, no NutMicroDelay() calls will be made.",
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
                 macro = "SBBI0_SCK_PORT",
                 brief = "SCK Port",
                 description = "ID of the port used for SPI clock.",
@@ -1459,6 +1466,13 @@ nutdev =
         options =
         {
             {
+                macro = "SBBI1_NO_DELAY",
+                brief = "Disable all delay calls during bitbanging for maximum speed",
+                description = "If enabled, no NutMicroDelay() calls will be made.",
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
                 macro = "SBBI1_SCK_PORT",
                 brief = "SCK Port",
                 description = "ID of the port used for SPI clock.",
@@ -1667,6 +1681,13 @@ nutdev =
         options =
         {
             {
+                macro = "SBBI2_NO_DELAY",
+                brief = "Disable all delay calls during bitbanging for maximum speed",
+                description = "If enabled, no NutMicroDelay() calls will be made.",
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
                 macro = "SBBI2_SCK_PORT",
                 brief = "SCK Port",
                 description = "ID of the port used for SPI clock.",
@@ -1874,6 +1895,13 @@ nutdev =
         requires = { "HW_GPIO" },
         options =
         {
+            {
+                macro = "SBBI3_NO_DELAY",
+                brief = "Disable all delay calls during bitbanging for maximum speed",
+                description = "If enabled, no NutMicroDelay() calls will be made.",
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
             {
                 macro = "SBBI3_SCK_PORT",
                 brief = "SCK Port",

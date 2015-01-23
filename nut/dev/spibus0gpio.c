@@ -146,7 +146,9 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 GpioPinSet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT, (*txbuf & mask) != 0);
             }
 #endif /* SBBI0_MOSI_BIT */
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
             if (rxbuf && !half_duplex) {
@@ -168,7 +170,9 @@ static void SpiMode0Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 }
             }
 #endif /* SBBI0_MOSI_BIT */
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
             if (lsb) {
                 mask <<= 1;
@@ -198,14 +202,18 @@ static void SpiMode1Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
         else
             mask = 0x80;
         while (mask && (mask < 0x100)) {
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MOSI_BIT)
             if (txbuf) {
                 GpioPinSet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT, (*txbuf & mask) != 0);
             }
 #endif /* SBBI0_MOSI_BIT */
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
             if (rxbuf && !half_duplex) {
@@ -260,7 +268,9 @@ static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 GpioPinSet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT, (*txbuf & mask) != 0);
             }
 #endif /* SBBI0_MOSI_BIT */
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
             if (rxbuf && !half_duplex) {
@@ -282,7 +292,9 @@ static void SpiMode2Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
                 }
             }
 #endif /* SBBI0_MOSI_BIT */
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
             if (lsb) {
                 mask <<= 1;
@@ -312,14 +324,18 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
         else
             mask = 0x80;
         while (mask && (mask < 0x100)) {
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetLow(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MOSI_BIT)
             if (txbuf) {
                 GpioPinSet(SBBI0_MOSI_PORT, SBBI0_MOSI_BIT, (*txbuf & mask) != 0);
             }
 #endif /* SBBI0_MOSI_BIT */
+#if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(gspi->gspi_dly_rate);
+#endif
             GpioPinSetHigh(SBBI0_SCK_PORT, SBBI0_SCK_BIT);
 #if defined(SBBI0_MISO_BIT)
             if (rxbuf && !half_duplex) {
