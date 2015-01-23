@@ -324,7 +324,7 @@
 #define STM32TIMER_PCLK() NutClockGet(NUT_HWCLK_TCLK2)
 #define STM32TIMER_NCH 2
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
-#define STM32TIMER_AF(port, pin) 4
+#define STM32TIMER_AF(port, pin) 3
 #elif defined(MCU_STM32F1)
 #define STM32TIMER_REMAP_REG   MAPR2
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM9_REMAP
