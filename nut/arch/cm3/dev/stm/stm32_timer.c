@@ -72,13 +72,18 @@ void Stm32TimerConfig(
     }
 
     i = 0;
-    smcr = 0;
+    if (trg_sel > TIM_TRG_SELECTION_ETR8) {
+        trg_sel -= 4;
+        smcr = TIM_SMCR_ETP;
+    }
+    else
+        smcr = 0;
     switch(trg_sel) {
     case TIM_TRG_SELECTION_NONE: break;
     case TIM_TRG_SELECTION_ETR8: i++;
     case TIM_TRG_SELECTION_ETR4: i++;
     case TIM_TRG_SELECTION_ETR2: i++;
-    default: smcr = i * TIM_SMCR_ETPS_0 + trg_sel * TIM_SMCR_TS_0;
+    default: smcr |= i * TIM_SMCR_ETPS_0 + trg_sel * TIM_SMCR_TS_0;
     }
 
     switch(clk_mode) {
