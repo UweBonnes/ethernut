@@ -138,7 +138,7 @@ static int At25dfBlkIoRead(NUTDEVICE * dev, uint32_t block, void *data, int len)
         read_cmd = DFCMD_READ_ARRAY_SLOW;
         oplen = 4;
     } else 
-    if (node->node_rate <= AT25_MAX_SPEED_SLOW) {
+    if (node->node_rate <= AT25_MAX_SPEED_MED) {
         read_cmd = DFCMD_READ_ARRAY_MED;
         oplen = 5;
     } else {

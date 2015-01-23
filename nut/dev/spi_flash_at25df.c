@@ -186,7 +186,6 @@ static int At25dfFlashSaveUnit(NUTSERIALFLASH * sfi, int_fast8_t b)
     }
 #endif
 
-
     rc = At25dfNodeLock(sfi->sf_node);
 
     if (rc == 0) {
@@ -225,8 +224,7 @@ static int At25dfFlashSaveUnit(NUTSERIALFLASH * sfi, int_fast8_t b)
             if (rc == 0) {
                 rc = At25dfNodeWaitReady(sfi->sf_node, AT25_WRITE_POLLS, 1);
             }            
-        }
-       
+        }    
         
         At25dfNodeUnlock(sfi->sf_node);
 
@@ -281,7 +279,7 @@ static int_fast8_t At25dfFlashLoadUnit(NUTSERIALFLASH * sfi, sf_unit_t pgn, int_
         read_cmd = DFCMD_READ_ARRAY_SLOW;
         oplen = 4;
     } else 
-    if (sfi->sf_node->node_rate <= AT25_MAX_SPEED_SLOW) {
+    if (sfi->sf_node->node_rate <= AT25_MAX_SPEED_MED) {
         read_cmd = DFCMD_READ_ARRAY_MED;
         oplen = 5;
     } else {
@@ -328,7 +326,7 @@ static int_fast8_t At25dfFlashLoadUnit(NUTSERIALFLASH * sfi, sf_unit_t pgn, int_
                 if (lock) {
                     at->dxb_locks[b]++;
                 }
-        
+
                 /* Load the selected page from flash */
                 rc = At25dfNodeTransfer(sfi->sf_node, read_cmd, pga, oplen, NULL, at->dxb_pbuf[b], sfi->sf_unit_size + AT25DF_CRC_SIZE);
 
@@ -837,6 +835,7 @@ static int SpiAt25dfFlashErase(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
             At25dfNodeUnlock(sfi->sf_node);
         }
     }
+
     return rc;
 }
 
@@ -852,7 +851,7 @@ static int SpiAt25dfFlashErase(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
 #ifdef MOUNT_TOP_RESERVE_AT25DF0
 #define FLASH_MOUNT_TOP_RESERVE_AT25DF0  MOUNT_TOP_RESERVE_AT25DF0
 #else
-#define FLASH_MOUNT_TOP_RESERVE_AT25DF0  1
+#define FLASH_MOUNT_TOP_RESERVE_AT25DF0  0
 #endif
 #endif
 
@@ -890,7 +889,7 @@ NUTSERIALFLASH flashAt25df0 = {
 #ifdef MOUNT_TOP_RESERVE_AT25DF1
 #define FLASH_MOUNT_TOP_RESERVE_AT25DF1  MOUNT_TOP_RESERVE_AT25DF1
 #else
-#define FLASH_MOUNT_TOP_RESERVE_AT25DF1  1
+#define FLASH_MOUNT_TOP_RESERVE_AT25DF1  0
 #endif
 #endif
 
@@ -928,7 +927,7 @@ NUTSERIALFLASH flashAt25df1 = {
 #ifdef MOUNT_TOP_RESERVE_AT25DF2
 #define FLASH_MOUNT_TOP_RESERVE_AT25DF2  MOUNT_TOP_RESERVE_AT25DF2
 #else
-#define FLASH_MOUNT_TOP_RESERVE_AT25DF2  1
+#define FLASH_MOUNT_TOP_RESERVE_AT25DF2  0
 #endif
 #endif
 
@@ -966,7 +965,7 @@ NUTSERIALFLASH flashAt25df2 = {
 #ifdef MOUNT_TOP_RESERVE_AT25DF3
 #define FLASH_MOUNT_TOP_RESERVE_AT25DF3  MOUNT_TOP_RESERVE_AT25DF3
 #else
-#define FLASH_MOUNT_TOP_RESERVE_AT25DF3  1
+#define FLASH_MOUNT_TOP_RESERVE_AT25DF3  0
 #endif
 #endif
 
