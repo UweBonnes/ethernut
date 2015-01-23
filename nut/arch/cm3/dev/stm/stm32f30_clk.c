@@ -182,14 +182,14 @@ int CtlHseClock( uint8_t ena)
     volatile uint32_t HSEStatus = 0;
 
     if( ena) {
-        /* Enable HSE */
-        RCC->CR |= RCC_CR_HSEON;
 #if defined(HSE_BYPASS)
         /* Assume HSE if off */
         RCC->CR |= RCC_CR_HSEBYP;
 #else
         RCC->CR &= ~RCC_CR_HSEBYP;
 #endif
+        /* Enable HSE */
+        RCC->CR |= RCC_CR_HSEON;
         /* Wait till HSE is ready or time out is reached */
         do {
             tout--;

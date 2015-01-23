@@ -216,6 +216,12 @@ int CtlHseClock( uint8_t ena)
     volatile uint32_t HSEStatus = 0;
 
     if( ena) {
+#if defined(HSE_BYPASS)
+        /* Assume HSE if off */
+        RCC->CR |= RCC_CR_HSEBYP;
+#else
+        RCC->CR &= ~RCC_CR_HSEBYP;
+#endif
         /* Enable HSE clock */
         RCC->CR |= ((uint32_t)RCC_CR_HSEON);
 
