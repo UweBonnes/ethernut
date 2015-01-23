@@ -65,31 +65,34 @@
  *
  * Reads a continous stream in high speed mode.
  */
-#define DFCMD_READ_ARRAY_SLOW   0x03
-#define DFCMD_READ_ARRAY_MED    0x0B
-#define DFCMD_READ_ARRAY_FAST   0x1B
+#define DFCMD_READ_ARRAY_SLOW    0x03
+#define DFCMD_READ_ARRAY_MED     0x0B
+#define DFCMD_READ_ARRAY_FAST    0x1B
 
 /*! \brief Block erase 4k.
  */
-#define DFCMD_BLOCK_ERASE_4K    0x20
+#define DFCMD_BLOCK_ERASE_4K     0x20
 /*! \brief Block erase 32k.
  */
-#define DFCMD_BLOCK_ERASE_32K   0x52
+#define DFCMD_BLOCK_ERASE_32K    0x52
 /*! \brief Block erase 64k.
  */
-#define DFCMD_BLOCK_ERASE_64K   0xd8
+#define DFCMD_BLOCK_ERASE_64K    0xd8
 /*! \brief Chip erase
  */
-#define DFCMD_CHIP_ERASE    0xC7
+#define DFCMD_CHIP_ERASE         0xC7
 /*! \brief Write bytes/page.
  */
-#define DFCMD_WRITE         0x02
-/*! \brief Read status register.
+#define DFCMD_WRITE              0x02
+/*! \brief Read / Write status register.
  */
-#define DFCMD_READ_STATUS       0x05
-#define DFCMD_READ_DEVICEID 0x9F
-#define DFCMD_WRITE_ENABLE  0x06
-#define DFCMD_WRITE_DISABLE 0x04
+#define DFCMD_READ_STATUS        0x05
+#define DFCMD_READ_DEVICEID      0x9F
+
+#define DFCMD_WRITE_STATUS1      0x01
+
+#define DFCMD_WRITE_ENABLE       0x06
+#define DFCMD_WRITE_DISABLE      0x04
 /*@}*/
 
 

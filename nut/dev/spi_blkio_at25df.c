@@ -63,8 +63,9 @@
  */
 static int At25dfBlkIoInit(NUTDEVICE * dev)
 {
-    NUTBLOCKIO *blkio;
-    NUTSPINODE *node;
+    int          rc = -1;
+    NUTBLOCKIO  *blkio;
+    NUTSPINODE  *node;
     AT25DF_INFO *df;
 
     NUTASSERT(dev != NULL);
@@ -79,10 +80,24 @@ static int At25dfBlkIoInit(NUTDEVICE * dev)
         blkio->blkio_info = (void *) df;
         blkio->blkio_blk_cnt = df->at25df_erase_blocks;
         blkio->blkio_blk_siz = df->at25df_ebsize;
-        return 0;
+        rc = 0;
     }
-    /* No known DataFlash type detected. */
-    return -1;
+
+    /* Put the flash in write enable mode. */
+    if (rc == 0) {
+        rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE_ENABLE, 0, 1, NULL, NULL, 0);
+    }
+
+    /* Global unprotect the flash */
+    if (rc == 0) {
+        rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE_STATUS1, 0, 2, NULL, NULL, 0);
+    }
+           
+    /* Wait for the erase operation to complete */
+    if (rc == 0) {
+        rc = At25dfNodeWaitReady(sfi->sf_node, AT25_WRITE_POLLS, 1);
+    }    
+    return rc;
 }
 
 /*!

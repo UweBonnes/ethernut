@@ -380,8 +380,9 @@ static int_fast8_t At25dfFlashLoadUnit(NUTSERIALFLASH * sfi, sf_unit_t pgn, int_
  */
 static int SpiAt25dfFlashInit(NUTSERIALFLASH * sfi)
 {
-    int_fast8_t b;
-    AT25DF_INFO *df;
+    int           rc;
+    int_fast8_t   b;
+    AT25DF_INFO  *df;
     AT25DF_FLASH *at;
 
     /* Sanity checks. */
@@ -401,13 +402,27 @@ static int SpiAt25dfFlashInit(NUTSERIALFLASH * sfi)
     at->dxb_dfinfo = df;
     for (b = 0; b < FLASH_BUFFERS_AT25DF; b++) {
         at->dxb_page[b] = SERIALFLASH_MAX_UNITS;
-        at->dxb_pbuf[b] = malloc(df->at25df_ebsize);
+        at->dxb_pbuf[b] = calloc(1, df->at25df_ebsize);
     }
     sfi->sf_info = (void *) at;
     sfi->sf_units = (sf_unit_t) df->at25df_erase_blocks;
     sfi->sf_unit_size = df->at25df_ebsize - AT25DF_CRC_SIZE;
 
-    return 0;
+
+    /* Put the flash in write enable mode. */
+    rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE_ENABLE, 0, 1, NULL, NULL, 0);
+            
+    /* Global unprotect the flash */
+    if (rc == 0) {
+        rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE_STATUS1, 0, 2, NULL, NULL, 0);
+    }
+           
+    /* Wait for the erase operation to complete */
+    if (rc == 0) {
+        rc = At25dfNodeWaitReady(sfi->sf_node, AT25_WRITE_POLLS, 1);
+    }
+
+    return rc;
 }
 
 /*!
