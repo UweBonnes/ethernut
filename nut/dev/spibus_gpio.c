@@ -76,8 +76,12 @@ uint_fast32_t GpioSpiBusSetRate(NUTSPINODE * node, uint_fast32_t rate)
 
     if (rate != SPI_CURRENT_RATE) {
         gspi->gspi_dly_rate = 500000 / rate;
-        node->node_rate = (gspi->gspi_dly_rate)?
-            (500000 /gspi->gspi_dly_rate):500000;
+        if (gspi->gspi_dly_rate) {
+            node->node_rate = (500000 /gspi->gspi_dly_rate);
+        } else {
+            node->node_rate = 500000;
+            gspi->gspi_dly_rate = 1;
+        }
         node->node_mode |= SPI_MODE_UPDATE;
     }
     return rc;
