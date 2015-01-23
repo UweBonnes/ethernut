@@ -252,5 +252,34 @@
 #define TIM8_CH4_TRIG_COM_DMA      (DMA_CONTROL2 | DMA_STREAM7 | DMA_CHANNEL7)
 #define TIM8_CH4_TRIG_COM_DMA_IRQ  (sig_DMA2_STREAM7)
 
-#define DMA_MINC DMA_SxCR_MINC
-#define DMA_CIRC DMA_SxCR_CIRC
+/*!
+ * \brief STM32 F2/F4 DMA Control Flags.
+ */
+#define DMA_EN           DMA_SxCR_EN
+#define DMA_TEIE         DMA_SxCR_TEIE
+#define DMA_HTIE         DMA_SxCR_HTIE
+#define DMA_TCIE         DMA_SxCR_TCIE
+#define DMA_MINC         DMA_SxCR_MINC
+#define DMA_PINC         DMA_SxCR_MINC
+#define DMA_CIRC         DMA_SxCR_CIRC
+#define DMA_MSIZE_8      0
+#define DMA_MSIZE_16     DMA_SxCR_MSIZE_0
+#define DMA_MSIZE_32     DMA_SxCR_MSIZE_1
+#define DMA_PSIZE_8      0
+#define DMA_PSIZE_16     DMA_SxCR_PSIZE_0
+#define DMA_PSIZE_32     DMA_SxCR_PSIZE_1
+#define DMA_PRIO_LOW     0
+#define DMA_PRIO_MEDIUM  DMA_SxCR_PL_0
+#define DMA_PRIO_HIGH    DMA_SxCR_PL_1
+#define DMA_PRIO_HIGHEST DMA_SxCR_PL
+#define DMA_MEM2MEN      DMA_SxCR_MEM2MEM
+
+/*!
+ * \brief STM32 F2/F4 DMA Status and Interrupt Flags.
+ */
+#define DMA_TEIF DMA_LISR_TEIF0  /*< Channel x Transfer Error Flag */
+#define DMA_HTIF DMA_LISR_HTIF0  /*< Channel x Half Transfer Complete Flag */
+#define DMA_TCIF DMA_LISR_TCIF0  /*< Channel x Transfer Complete Flag */
+
+#define DMA_FLAGMASK (DMA_LISR_TEIF1 | DMA_LISR_HTIF1 | DMA_LISR_TCIF1)
+#define DMA_IRQMASK  (DMA_SxCR_TEIE | DMA_SxCR_HTIE | DMA_SxCR_TCIE)

@@ -266,8 +266,37 @@
 #define DMA_CCR_MEM2MEM DMA_CCR1_MEM2MEM
 #endif
 
-#define  DMA_MINC DMA_CCR_MINC
-#define  DMA_CIRC DMA_CCR_CIRC
+/*!
+ * \brief STM32 F0/F1/F3/L0/L3 DMA Control Flags.
+ */
+#define DMA_EN          DMA_CCR_EN
+#define DMA_TEIE        DMA_CCR_TEIE
+#define DMA_HTIE        DMA_CCR_HTIE
+#define DMA_TCIE        DMA_CCR_TCIE
+#define DMA_MINC        DMA_CCR_MINC
+#define DMA_PINC        DMA_CCR_MINC
+#define DMA_CIRC        DMA_CCR_CIRC
+#define DMA_MSIZE_8     0
+#define DMA_MSIZE_16    DMA_CCR_MSIZE_0
+#define DMA_MSIZE_32    DMA_CCR_MSIZE_1
+#define DMA_PSIZE_8     0
+#define DMA_PSIZE_16    DMA_CCR_PSIZE_0
+#define DMA_PSIZE_32    DMA_CCR_PSIZE_1
+#define DMA_PRIO_LOW    0
+#define DMA_PRIO_MEDIUM DMA_CCR_PL_0
+#define DMA_PRIO_HIGH   DMA_CCR_PL_1
+#define DMA_PRIO_HIGEST DMA_CCR_PL
+#define DMA_MEM2MEN     DMA_CCR_MEM2MEM
+
+/*!
+ * \brief STM32 F0/F1/F3/L0/L1 DMA Status and Interrupt Flags.
+ */
+#define DMA_TEIF DMA_ISR_TEIF1  /*< Channel x Transfer Error Flag */
+#define DMA_HTIF DMA_ISR_HTIF1  /*< Channel x Half Transfer Complete Flag */
+#define DMA_TCIF DMA_ISR_TCIF1  /*< Channel x Transfer Complete Flag */
+
+#define DMA_FLAGMASK (DMA_ISR_GIF1 | DMA_ISR_TCIF1 | DMA_ISR_HTIF1 | DMA_ISR_TEIF1)
+
 
 /* Internally used struct and table to align
  * DMA channels and interrupts. */

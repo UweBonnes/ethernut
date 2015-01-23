@@ -53,17 +53,6 @@
 #warning "STM32 family has no implemented DMA"
 #endif
 
-/*!
- * \brief STM32 DMA Status and Interrupt Flags.
- */
-#define DMA_TEIF 0x8  /*< Channel x Transfer Error Flag */
-#define DMA_HTIF 0x4  /*< Channel x Half Transfer Complete Flag */
-#define DMA_TCIF 0x2  /*< Channel x Transfer Complete Flag */
-#define DMA_GIF  0x1  /*< Channel x Global Interrupt Flag */
-
-#define DMA_FLAGMASK 0xF
-#define DMA_IRQMASK  0x1
-
 /*
  * DMA Handles and Interrupt Entry Points
  */
