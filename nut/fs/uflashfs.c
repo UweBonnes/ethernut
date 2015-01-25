@@ -1816,6 +1816,9 @@ static int UFlashUnmount(NUTDEVICE * dev)
     NUTASSERT(dev->dev_dcb != NULL);
     vol = (UFLASHVOLUME *) dev->dev_dcb;
 
+    /* Wait for the volume to get ready */
+    NutEventWait(&vol->vol_mutex, 0);
+
     /* Release allocated heap space. */
     NUTASSERT(vol->vol_l2p != NULL);
     free(vol->vol_l2p);
@@ -1876,6 +1879,7 @@ int UFlashAttach(NUTDEVICE * dev, NUTSERIALFLASH * sfi, NUTSPIBUS * bus)
  */
 void UFlashDetach(NUTDEVICE * dev)
 {
+
     NUTSERIALFLASH *sfi;
     
     /* Check of the filesystem is attached */
