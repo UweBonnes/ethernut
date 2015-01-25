@@ -196,19 +196,6 @@ static int At25dfFlashSaveUnit(NUTSERIALFLASH * sfi, int_fast8_t b)
         pga = at->dxb_page[b];
         pga <<= at->dxb_dfinfo->at25df_ebshft;
 
-        /* Put the flash in write enable mode. */
-        rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_WRITE_ENABLE, 0, 1, NULL, NULL, 0);
-
-        /* Erase the erase block. */
-        if (rc == 0) {
-            rc = At25dfNodeTransfer(sfi->sf_node, DFCMD_BLOCK_ERASE_4K, pga, 4, NULL, NULL, 0);
-        }
-
-        /* Wait for the erasing to be finished */
-        if (rc == 0) {
-            rc = At25dfNodeWaitReady(sfi->sf_node, AT25_BLOCK_ERASE_WAIT, 0);
-        }
-
         len = at->dxb_dfinfo->at25df_ebsize;
 
         for (offset = 0; (len > 0) && (rc == 0); len -= at->dxb_dfinfo->at25df_psize, offset += at->dxb_dfinfo->at25df_psize) {
