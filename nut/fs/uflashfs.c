@@ -1877,6 +1877,9 @@ int UFlashAttach(NUTDEVICE * dev, NUTSERIALFLASH * sfi, NUTSPIBUS * bus)
 void UFlashDetach(NUTDEVICE * dev)
 {
     NUTSERIALFLASH *sfi;
+    
+    /* Check of the filesystem is attached */
+    if (dev->dev_icb == NULL) return;
 
     UFlashUnmount(dev);
 
