@@ -130,12 +130,10 @@ static uint16_t crc_ccitt_update(uint16_t crc, uint8_t data)
  * \param b     Number of the buffer, either 0 or 1.
  * \param crc16 Pointer to the variable that receives the checksum.
  * \param xlen  Number of byte to use for the calculation.
+ * \return 0 on success, -1 on errors.
  */
 static int CalculateChecksum(AT45D_FLASH * at, int_fast8_t b, uint16_t * crc16, int xlen)
 {
-    int rc;
-    NUTSPIBUS *bus;
-
     /* Sanity checks. */
     NUTASSERT(at != NULL);
     NUTASSERT(crc16 != NULL);
@@ -147,7 +145,7 @@ static int CalculateChecksum(AT45D_FLASH * at, int_fast8_t b, uint16_t * crc16, 
         uint_fast8_t ne = 0;
 
         for (i = 0; i < xlen; i++) {
-            c = at->dxb_pbuf[i];
+            c = at->dxb_pbuf[b][i];
             if (ne || c != 0xff) {
                 ne = 1;
                 *crc16 = crc_ccitt_update(*crc16, c);
@@ -157,6 +155,7 @@ static int CalculateChecksum(AT45D_FLASH * at, int_fast8_t b, uint16_t * crc16, 
             *crc16 = 0xffff;
         }
     }
+    return 0;
 }
 
 #endif                          /* AT45D_CRC_PAGE */
