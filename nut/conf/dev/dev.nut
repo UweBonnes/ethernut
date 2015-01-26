@@ -3102,6 +3102,16 @@ nutdev =
                 file = "include/cfg/memory.h"
             },
             {
+                macro = "FLASH_BUFFERS_AT45D",
+                brief = "Number of page cache buffers. Default is 2.",
+                description = "A write through cache for flash pages is implemented using RAM buffers. "..
+                              "If enough RAM is available, a higher value (up to the number of flash pages) "..
+                              "helps to speed up flash access",
+                flavor = "booldata",
+                default = "2",
+                file = "include/cfg/memory.h"
+            },
+            {
                 macro = "FLASH_MOUNT_OFFSET_AT45D0",
                 brief = "FFS Reserved Bottom Pages (First Device)",
                 description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
@@ -3281,10 +3291,20 @@ nutdev =
         options =
         {
             {
-                macro = "AT25D_CRC_PAGE",
+                macro = "AT25DF_CRC_PAGE",
                 brief = "Use Page CRC",
                 description = "If enabled, each page is protected by a 16 bit CRC ",
                 flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_BUFFERS_AT25DF",
+                brief = "Number of page cache buffers. Default is 2.",
+                description = "A write through cache for flash pages is implemented using RAM buffers. "..
+                              "If enough RAM is available, a higher value (up to the number of flash pages) "..
+                              "helps to speed up flash access",
+                flavor = "booldata",
+                default = "2",
                 file = "include/cfg/memory.h"
             },
             {
