@@ -105,7 +105,20 @@ int ssl_obj_memory_load(SSL_CTX *ssl_ctx, int mem_type,
     ssl_obj->buf = (uint8_t *)malloc(len);
     memcpy(ssl_obj->buf, data, len);
     ssl_obj->len = len;
-    ret = do_obj(ssl_ctx, mem_type, ssl_obj, password);
+
+    /* is the file a PEM file? */
+    if (strstr((char *)ssl_obj->buf, begin) != NULL)
+    {
+#ifdef TLS_SSL_HAS_PEM
+        ret = ssl_obj_PEM_load(ssl_ctx, obj_type, ssl_obj, password);
+#else
+        printf("%s", unsupported_str);
+        ret = SSL_ERROR_NOT_SUPPORTED;
+#endif
+    }
+    else
+        ret = do_obj(ssl_ctx, mem_type, ssl_obj, password);
+
     ssl_obj_free(ssl_obj);
     return ret;
 }
