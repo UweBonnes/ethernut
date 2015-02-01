@@ -98,6 +98,7 @@ error:
 int ssl_obj_memory_load(SSL_CTX *ssl_ctx, int mem_type,
         const uint8_t *data, int len, const char *password)
 {
+    static const char * const begin = "-----BEGIN";
     int ret;
     SSLObjLoader *ssl_obj;
 
@@ -110,7 +111,7 @@ int ssl_obj_memory_load(SSL_CTX *ssl_ctx, int mem_type,
     if (strstr((char *)ssl_obj->buf, begin) != NULL)
     {
 #ifdef TLS_SSL_HAS_PEM
-        ret = ssl_obj_PEM_load(ssl_ctx, obj_type, ssl_obj, password);
+        ret = ssl_obj_PEM_load(ssl_ctx, mem_type, ssl_obj, password);
 #else
         printf("%s", unsupported_str);
         ret = SSL_ERROR_NOT_SUPPORTED;
