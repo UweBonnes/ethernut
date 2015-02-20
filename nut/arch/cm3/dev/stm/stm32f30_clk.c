@@ -52,6 +52,7 @@
 #endif
 
 static uint32_t SystemCoreClock = 0;
+static uint8_t clk_div[NUT_HWCLK_MAX] = {1};
 
 static const uint8_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
@@ -165,6 +166,18 @@ void SystemCoreClockUpdate(void)
     }
     hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
     SystemCoreClock = tmp >> AHBPrescTable[hpre];
+    tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
+    clk_div[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
+    if (clk_div[NUT_HWCLK_PCLK1] < 2)
+        clk_div[NUT_HWCLK_TCLK1] = 1;
+    else
+        clk_div[NUT_HWCLK_TCLK1] = clk_div[NUT_HWCLK_PCLK1] *2;
+    tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
+    clk_div[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
+    if (clk_div[NUT_HWCLK_PCLK2] < 2)
+        clk_div[NUT_HWCLK_TCLK2] = 1;
+    else
+        clk_div[NUT_HWCLK_TCLK2] = clk_div[NUT_HWCLK_PCLK2] *2;
 }
 
 /* Functional same as F1 */
@@ -542,22 +555,7 @@ uint32_t SysCtlClockGet(void)
 uint32_t STM_ClockGet(int idx)
 {
     SystemCoreClockUpdate();
-    switch(idx) {
-    case NUT_HWCLK_CPU:
-        return SystemCoreClock;
-        break;
-    case NUT_HWCLK_PCLK1: {
-        uint32_t tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
-        return SystemCoreClock/APBPrescTable[tmp];
-        break;
-    }
-    case NUT_HWCLK_PCLK2: {
-        uint32_t tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
-        return SystemCoreClock/APBPrescTable[tmp];
-        break;
-    }
-    default:
-        return 0;
-        break;
-    }
+    if (idx < NUT_HWCLK_MAX)
+        return SystemCoreClock/clk_div[idx];
+    return 0;
 }
