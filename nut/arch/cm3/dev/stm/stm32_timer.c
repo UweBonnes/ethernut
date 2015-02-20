@@ -65,11 +65,12 @@ void Stm32TimerConfig(
 {
     uint32_t smcr;
     int i;
+    uint32_t cr2;
 
-    switch (master_mode1) {
-    case TIM_MASTER_MODE1_NONE: break;
-    default: tim-> CR2 = master_mode1 * TIM_CR2_MMS_0;
-    }
+    cr2 = tim->CR2;
+    cr2 &= ~TIM_CR2_MMS;
+    cr2 |= master_mode1 * TIM_CR2_MMS_0;
+    tim->CR2 = cr2;
 
     i = 0;
     if (trg_sel > TIM_TRG_SELECTION_ETR8) {
