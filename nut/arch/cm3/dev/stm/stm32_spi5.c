@@ -97,7 +97,7 @@
  #endif
  #if defined(SPIBUS5_CS3_PORT) && defined(SPIBUS5_CS3_PIN)
   #define SPIBUS_CS3_PORT SPIBUS5_CS3_PORT
-  #define SPIBUS_CS3_PIN  SPIBUS5_CS1_PIN
+  #define SPIBUS_CS3_PIN  SPIBUS5_CS3_PIN
  #endif
 #endif
 
