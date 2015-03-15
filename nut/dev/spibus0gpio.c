@@ -88,12 +88,14 @@ static GSPIREG gspi_reg2;
 static GSPIREG gspi_reg3;
 #endif
 
+#if defined(SBBI0_SCK_BIT)
 static void GpioSpiMicroDelay(uint32_t delay)
 {
 #if !defined(SBBI0_NO_DELAY)
             NutMicroDelay(delay);
 #endif
 }
+#endif
 
 /*!
  * \brief Set the specified chip select to a given level.
