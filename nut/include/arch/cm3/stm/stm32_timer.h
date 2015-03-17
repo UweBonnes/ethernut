@@ -112,9 +112,9 @@ void Stm32TimerConfig(
     TIM_TRG_SELECTION trg_sel,
     TIM_SLAVE_MODE    slave_mode,
     TIM_MASTER_MODE1  master_mode1);
-#define Stm32TimerSetReload(x, y) x->ARR = y
+#define Stm32TimerSetReload(x, y) x->ARR = (y)
 #define Stm32TimerGetReload(x)    x->ARR;
-#define Stm32TimerSetPrescaler(x, y)  x->PSC = y
+#define Stm32TimerSetPrescaler(x, y)  x->PSC = (y)
 #define Stm32TimerGetPrescaler(x   )  x->PSC
 #define Stm32TimerStart(x)        x->CR1 |= TIM_CR1_CEN
 #define Stm32TimerStop(x)         x->CR1 &= ~TIM_CR1_CEN
