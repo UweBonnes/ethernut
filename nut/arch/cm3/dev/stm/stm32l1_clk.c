@@ -154,13 +154,13 @@ void SystemCoreClockUpdate(void)
     if (clk_div[NUT_HWCLK_PCLK1] < 2)
         clk_div[NUT_HWCLK_TCLK1] = 1;
     else
-        clk_div[NUT_HWCLK_TCLK1] = clk_div[NUT_HWCLK_PCLK1] *2;
+        clk_div[NUT_HWCLK_TCLK1] = clk_div[NUT_HWCLK_PCLK1] / 2;
     tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
     clk_div[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
     if (clk_div[NUT_HWCLK_PCLK2] < 2)
         clk_div[NUT_HWCLK_TCLK2] = 1;
     else
-        clk_div[NUT_HWCLK_TCLK2] = clk_div[NUT_HWCLK_PCLK2] *2;
+        clk_div[NUT_HWCLK_TCLK2] = clk_div[NUT_HWCLK_PCLK2] / 2;
 }
 
 /*!
