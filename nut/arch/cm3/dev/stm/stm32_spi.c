@@ -432,12 +432,13 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     }
 
     /* Query peripheral clock. */
-#if defined (MCU_STM32F0)
-    clk = NutClockGet(NUT_HWCLK_PCLK1);
-#elif (SPI_DEV == 2)
-    clk = NutClockGet(NUT_HWCLK_PCLK1);
+#if defined (APB2PERIPH_BASE)
+    if (SPI_BASE < APB2PERIPH_BASE)
+        clk = NutClockGet(NUT_HWCLK_PCLK1);
+    else
+        clk = NutClockGet(NUT_HWCLK_PCLK2);
 #else
-    clk = NutClockGet(NUT_HWCLK_PCLK2);
+    clk = NutClockGet(NUT_HWCLK_PCLK1);
 #endif
     /* Calculate the SPI clock divider. Avoid rounding errors. */
     clkdiv = (clk + node->node_rate - 1) / node->node_rate;
