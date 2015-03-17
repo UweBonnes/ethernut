@@ -105,6 +105,8 @@ NUTTHREADINFO * nutThreadList;
 
 NUTTHREADINFO * runQueue;
 
+volatile int16_t total_pending;
+
 void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 {
     NUTTHREADINFO *tqp;
@@ -125,6 +127,7 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
     if (tqp == SIGNALED) {
         tqp = 0;
         td->td_qpec++;          // transfer the signaled state
+        total_pending ++;
     } else if (tqp) {
         NutExitCritical();      // there are other threads in queue
                         // so its save to leave critical.
@@ -199,6 +202,7 @@ void NutThreadResume(void)
             qhp = (NUTTHREADINFO **)(td->td_queue);
             NutEnterCritical();
             td->td_qpec--;
+            total_pending--;
             tqp = *qhp;
             NutExitCritical();
             if (tqp != SIGNALED) {

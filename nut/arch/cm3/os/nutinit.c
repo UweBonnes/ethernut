@@ -227,7 +227,8 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
         /* Sleep Mode*/
 #endif
         HEARTBEAT_IDLE();
-        __WFI();
+        if(0 == total_pending)
+            __WFI();
         HEARTBEAT_ACTIVE();
     }
 }

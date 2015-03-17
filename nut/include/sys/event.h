@@ -95,6 +95,7 @@
  */
 
 #include <sys/thread.h>
+#include <sys/atom.h>
 
 /*!
  * \file sys/event.h
@@ -152,6 +153,7 @@
     else if (*qp != SIGNALED) {     \
         NUTTHREADINFO *tp = (NUTTHREADINFO *)(*qp);    \
         tp->td_qpec++;              \
+        total_pending++;            \
     }                               \
 }
 

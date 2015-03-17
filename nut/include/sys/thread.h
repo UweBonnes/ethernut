@@ -245,6 +245,8 @@ extern NUTTHREADINFO *nutThreadList;
  */
 extern NUTTHREADINFO *runQueue;
 
+extern volatile int16_t total_pending;
+
 #ifndef __NUT_EMULATION__
 /*!
  * \private
