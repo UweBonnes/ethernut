@@ -489,7 +489,7 @@ I2C2_SMBA PB12
 
 #if defined(MCU_STM32F30X) || defined(MCU_STM32F37X)
 /* Check that we got the right pin */
-#if I2C1_SDA_PIN  != 14 && I2C1_SDA_PIN  != 7 && I2C1_SDA_PIN  != 0
+#if I2C1_SDA_PIN  != 14 && I2C1_SDA_PIN  != 7 && I2C1_SDA_PIN  != 9
 #warning Illegal I2C1_SDA Pin
 #endif
 
