@@ -135,16 +135,7 @@ static void I2cEventBusIrqHandler(void *arg)
     }
     if(I2Cx->SR1 & I2C_SR1_ADDR)
     {
-        if (I2Cx->SR2 & I2C_SR2_TRA)
-        {
-            /* Transmitting*/
-            if (msg->msg_widx < msg->msg_wlen)
-            {
-                I2Cx->DR = msg->msg_wdat[msg->msg_widx];
-                msg->msg_widx++;
-            }
-        }
-        else
+        if (!(I2Cx->SR2 & I2C_SR2_TRA))
         {
             /* Inhibit IRQ storm as TXE not cleared as we
              * have nothing written to DR Register
@@ -173,8 +164,10 @@ static void I2cEventBusIrqHandler(void *arg)
             I2Cx->CR2 &= ~I2C_CR2_ITBUFEN;
             if (msg->msg_rsiz)
                 I2Cx->CR1 |= I2C_CR1_START;
-            else
+            else {
                 I2Cx->CR1 |= I2C_CR1_STOP;
+                NutEventPostFromIrq(&icb->icb_queue);
+            }
         }
     }
     if (I2Cx->SR1 & I2C_SR1_RXNE)
@@ -188,15 +181,6 @@ static void I2cEventBusIrqHandler(void *arg)
         }
         if (msg->msg_ridx + 1 > msg->msg_rsiz)
         {
-            NutEventPostFromIrq(&icb->icb_queue);
-        }
-    }
-    if (I2Cx->SR1 & I2C_SR1_BTF)
-    {
-        /* Terminate write transaction without read*/
-        if ((I2Cx->SR2 & I2C_SR2_TRA) && !(msg->msg_rsiz))
-        {
-            I2Cx->CR2 &= ~(I2C_CR2_ITEVTEN|I2C_CR2_ITBUFEN);
             NutEventPostFromIrq(&icb->icb_queue);
         }
     }
@@ -242,6 +226,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     icb->errors = 0;
     /* Enable Interrupts */
     I2Cx->CR2 |= I2C_CR2_ITEVTEN|I2C_CR2_ITBUFEN |I2C_CR2_ITERREN;
+    I2Cx->CR1 &= ~I2C_CR1_STOP;
     I2Cx->CR1 |= I2C_CR1_START;
     rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
     I2Cx->CR2 &= ~I2C_CR2_ITEVTEN|I2C_CR2_ITBUFEN |I2C_CR2_ITERREN;
@@ -462,6 +447,7 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
         if (res)
             return res;
     }
+    I2Cx->CR1 &= ~I2C_CR1_STOP;
     I2Cx->CR1 |= I2C_CR1_START;
     /* Wait until START has been sent*/
     for(tmo = NutGetMillis(); NutGetMillis() - tmo < bus->bus_timeout;)
