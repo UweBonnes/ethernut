@@ -303,15 +303,18 @@ void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_
 {
   uint32_t temp = 0x00;
   uint32_t temp_2 = 0x00;
-  GPIO_TypeDef * gpio = (GPIO_TypeDef *)GPIOx
+  GPIO_TypeDef * gpio = (GPIO_TypeDef *)GPIOx;
+  volatile uint32_t *afr;
 
   /* Check the parameters */
   NUTASSERT(IS_GPIO_ALL_PERIPH(GPIOx));
   NUTASSERT(IS_GPIO_PIN_SOURCE(GPIO_PinSource));
   NUTASSERT(IS_GPIO_AF(GPIO_AF));
 
-  temp = ((uint32_t)(GPIO_AF) << ((uint32_t)((uint32_t)GPIO_PinSource & (uint32_t)0x07) * 4)) ;
-  gpio->AFR[GPIO_PinSource >> 0x03] &= ~((uint32_t)0xF << ((uint32_t)((uint32_t)GPIO_PinSource & (uint32_t)0x07) * 4)) ;
-  temp_2 = gpio->AFR[GPIO_PinSource >> 0x03] | temp;
-  gpio->AFR[GPIO_PinSource >> 0x03] = temp_2;
+  afr = &gpio->AFR[GPIO_PinSource / 8 ];
+  temp = 0xf << ((GPIO_PinSource % 8) * 4);
+  temp_2 = *afr;
+  temp_2 &= ~temp;
+  temp_2 |= GPIO_AF << ((GPIO_PinSource % 8) * 4);
+  *afr = temp_2;
 }
