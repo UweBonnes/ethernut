@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -108,7 +108,6 @@ void Hardware_Init(void)
 #endif
 }
 
-#if defined(DEF_I2CBUS)
 #ifndef I2C_SLA_MAX44009
 #define I2C_SLA_MAX44009  0x4a
 #endif
@@ -122,11 +121,9 @@ static NUTI2C_SLAVE i2cMax44009 = {
     3000,
     NULL
 };
-#endif
 
 int dump_max44009(NUTI2C_BUS *bus)
 {
-#if defined(DEF_I2CBUS)
 #define MAX44009_CFG      0x2
     int res;
     uint8_t reg_addr, cfg, lux_h, lux_l;
@@ -164,7 +161,6 @@ int dump_max44009(NUTI2C_BUS *bus)
 #define I2C_SLA_CS43L22   0x4a
 #endif
 
-#if defined(DEF_I2CBUS)
 /*!
  * \brief I2C driver control block.
  */
@@ -174,7 +170,6 @@ static NUTI2C_SLAVE i2cCs43l22 = {
     3000,
     NULL
 };
-#endif
 
 int dump_cs43l22(NUTI2C_BUS *bus)
 {
@@ -200,9 +195,6 @@ int dump_cs43l22(NUTI2C_BUS *bus)
     if ((i & 0xf) != 0)
         puts("");
     return 0;
-#else
-    return -1;
-#endif
 }
 
 #define LMS303_AUTO_INC        0x80
@@ -211,7 +203,6 @@ int dump_cs43l22(NUTI2C_BUS *bus)
 #define I2C_SLA_LSM303_ACCEL    0x19
 #endif
 
-#if defined(DEF_I2CBUS)
 /*!
  * \brief I2C driver control block.
  */
@@ -221,11 +212,9 @@ static NUTI2C_SLAVE i2cLsm303_accel = {
     3000,
     NULL
 };
-#endif
 
 int dump_lsm303_accel(NUTI2C_BUS *bus)
 {
-#if defined(DEF_I2CBUS)
 #define LSM303_ACCEL_DATA_LEN  0x6
 #define LSM303_ACCEL_DATA      0x28
     uint8_t data[LSM303_ACCEL_DATA_LEN];
@@ -255,16 +244,12 @@ int dump_lsm303_accel(NUTI2C_BUS *bus)
 
     printf("Accel:  ax %6d ay %6d az %6d\n", ax, ay, az);
     return 0;
-#else
-    return -1;
-#endif
 }
 
 #ifndef I2C_SLA_LSM303_MAGNET
 #define I2C_SLA_LSM303_MAGNET   0x1e
 #endif
 
-#if defined(DEF_I2CBUS)
 /*!
  * \brief I2C driver control block.
  */
@@ -274,11 +259,9 @@ static NUTI2C_SLAVE i2cLsm303_magnet = {
     3000,
     NULL
 };
-#endif
 
 int dump_lsm303_magnet(NUTI2C_BUS *bus)
 {
-#if defined(DEF_I2CBUS)
 #define LSM303_MAGNET_DATA_LEN  0x6
 #define LSM303_MAGNET_DATA      0x3
 #define LSM303_MAGNET_DATA      0x3
@@ -323,16 +306,12 @@ int dump_lsm303_magnet(NUTI2C_BUS *bus)
     temp = temp *125;
     printf(" temp  %4d.%03d\n", temp/1000, temp%1000);
     return 0;
-#else
-    return -1;
-#endif
 }
 
 #ifndef I2C_SLA_SHT21
 #define I2C_SLA_SHT21   0x40
 #endif
 
-#if defined(DEF_I2CBUS)
 /*!
  * \brief I2C driver control block.
  */
@@ -342,11 +321,9 @@ static NUTI2C_SLAVE i2cSht21 = {
     3000,
     NULL
 };
-#endif
 
 int dump_sht21(NUTI2C_BUS *bus)
 {
-#if defined(DEF_I2CBUS)
     int i, res;
     int rh, temp;
     uint8_t data[2], raw0[8], raw1[6];
@@ -414,15 +391,10 @@ int dump_sht21(NUTI2C_BUS *bus)
            temp/1000, temp%1000, rh/1000, rh%1000);
 
     return 0;
-#else
-    return -1;
-#endif
 }
 
-#if defined(DEV_I2CBUS_H)
 int ScanBus(NUTI2C_BUS *bus)
 {
-#if defined(DEF_I2CBUS)
     int res = 1, i;
     int sla =0;
     for (i=0; i<MAX_TEST_DEVICES-1; i++) {
@@ -437,11 +409,7 @@ int ScanBus(NUTI2C_BUS *bus)
     }
     found_device[i] = 0;
     return res;
-#else
-    return -1;
-#endif
 }
-#endif
 
 /*
  * I2C sample: Scan the I2C Bus and look for connected devices
@@ -467,7 +435,7 @@ int main(void)
     LED2_START_THREAD;
     Hardware_Init();
 
-#if !defined(DEF_I2CBUS) || !defined(DEV_I2CBUS_H)
+#if !defined(DEF_I2CBUS)
     puts("Please indicate the I2C Bus to scan!");
     goto error;
 #else
