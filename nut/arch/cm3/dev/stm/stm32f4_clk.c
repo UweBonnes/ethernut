@@ -478,6 +478,9 @@ int SetSysClock(void)
 #define VOS 1
 #endif
 #endif
+#if !defined(PWR_CR_VOS_0) && defined(PWR_CR_VOS)
+#define PWR_CR_VOS_0 PWR_CR_VOS
+#endif
 
 #if !defined(PCLK1_TARGET) || (PCLK1_TARGET > PCLK1_MAX)
 #define PCLK1_TARGET PCLK1_MAX
@@ -552,6 +555,7 @@ int SetSysClock(void)
 {
     int rc = 0;
     uint32_t rcc_reg;
+#if defined(PWR_CR_VOS_0)
     uint32_t cr;
 
     /* Select System frequency up to 168 MHz */
@@ -561,6 +565,7 @@ int SetSysClock(void)
     cr &= ~(PWR_CR_VOS);
     cr |= VOS * PWR_CR_VOS_0;
     PWR->CR = cr;
+#endif
 
     rcc_reg =  RCC->PLLCFGR;
     rcc_reg &= ~(RCC_PLLCFGR_PLLM | RCC_PLLCFGR_PLLN | RCC_PLLCFGR_PLLP | RCC_PLLCFGR_PLLQ);
