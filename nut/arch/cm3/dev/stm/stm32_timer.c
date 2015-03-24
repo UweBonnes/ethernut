@@ -184,9 +184,13 @@ int Stm32TimerChannelConfig(
 uint32_t Stm32TimerGetClock(TIM_TypeDef *tim)
 {
     int ret;
-
+#if defined(APB2PERIPH_BASE)
     if ((uint32_t) tim > APB2PERIPH_BASE)
         ret = NutClockGet(NUT_HWCLK_TCLK2);
+#else
+    if (0) {
+    }
+#endif
     else
         ret = NutClockGet(NUT_HWCLK_TCLK1);
     return ret;
