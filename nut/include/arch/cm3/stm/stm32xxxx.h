@@ -88,6 +88,8 @@
 #include <arch/cm3/stm/vendor/stm32f405xx.h>
 #elif defined(MCU_STM32F407)
 #include <arch/cm3/stm/vendor/stm32f407xx.h>
+#elif defined(STM32F401E)
+#include <arch/cm3/stm/vendor/stm32f401xe.h>
 #elif defined(STM32F411E)
 #include <arch/cm3/stm/vendor/stm32f411xe.h>
 #elif defined(MCU_STM32F415)

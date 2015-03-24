@@ -33,20 +33,14 @@
  */
 
 /*
- * \file arch/cm3/board/usps.h
- * \brief USPS board specific settings.
+ * \file arch/cm3/board/nucleo.h
+ * \brief STM32 Nucleo board specific settings.
  *
  * \verbatim
  * $Id$
  * \endverbatim
  */
-#ifndef LED1_PORT
-#define LED1_PORT NUTGPIO_PORTA
-#endif
-#ifndef LED1_PIN
-#define LED1_PIN 5
-#endif
-
+/* LED1 collides with Chip select for VL6180 X-Nucleo-IJP01A1 !*/
 #ifndef DEV_UART
 #define DEV_UART devUsartStm32_2
 #endif
@@ -59,4 +53,14 @@
 #endif
 #ifndef DEV_DEBUG_NAME
 #define DEV_DEBUG_NAME  devUsartStm32_2.dev_name
+#endif
+
+#ifndef DEF_I2CBUS
+#define DEF_I2CBUS i2cBus1Stm32
+#include <dev/i2cbus_stm32.h>
+#endif
+
+#ifndef DEF_SPIBUS
+#define DEF_SPIBUS spiBus1Stm32
+#include <dev/spibus_stm32.h>
 #endif

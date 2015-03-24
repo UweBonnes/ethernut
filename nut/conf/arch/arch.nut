@@ -1528,12 +1528,11 @@ nutarch =
                 makedefs = { "MCU=cortex-m3", "MFIX=-mfix-cortex-m3-ldrd" }
             },
             {
-                macro = "MCU_STM32F401",
-                brief = "STM STM32F401",
-                description = "STM32F401.",
+                macro = "MCU_STM32F401xE",
+                brief = "STM STM32F401xE",
+                description = "Low power 512 kB STM32F4 with USB OTG (FS).",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1541,6 +1540,7 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4XX",
                     "HW_MCU_STM32F401",
+                    "HW_MCU_STM32F401E",
                 },
                 makedefs = { "MCU=cortex-m4" }
             },

@@ -30,11 +30,10 @@
 -- For additional information see http://www.ethernut.de/
 --
 
--- ARM CortexM3 Architecture
--- STMicroelectronics STM32L Family Devices
+-- ARM CortexM4 Architecture
+-- STMicroelectronics STM32F4 Family Devices
 --
 --
-stm32_memory_f401 = { "128", "256" }
 stm32_memory_f40x = { "512", "1024" }
 stm32_memory_f42x = { "1024", "2048" }
 
@@ -98,10 +97,10 @@ nutarch_cm3_stm32f4 =
                  },
                 file = "include/cfg/arch.h"
             },
-            {
-                macro = "STM32F401xe",
+              {
+                macro = "STM32F401",
                 brief = "STM32F401",
-                brief = "STM32F4 w/o CAN etc.",
+                brief = "STM32F4 Low Power with USB",
                 type = "integer",
                 requires = { "HW_MCU_STM32F401" },
                 default = 1,
@@ -109,7 +108,18 @@ nutarch_cm3_stm32f4 =
                 {
                     "HW_SPI4_STM32",
                 },
-                file = "include/cfg/arch.h"
+                file = "include/cfg/arch.h",
+                makedefs = { "LDPATH=$(LDINCLUDE)" }
+             },
+             {
+                macro = "STM32F401E",
+                brief = "STM32F401E",
+                brief = "STM32F401 with 512 kiB.",
+                type = "integer",
+                requires = { "HW_MCU_STM32F401E" },
+                default = 1,
+                file = "include/cfg/arch.h",
+                makedefs = { "LDSCRIPT=stm32f401xE_flash.ld" }
              },
              {
                 macro = "STM32F405xx",
@@ -184,8 +194,8 @@ nutarch_cm3_stm32f4 =
              },
              {
                 macro = "STM32F411E",
-                brief = "STM32F411",
-                brief = "STM32F4 Low Power with USB",
+                brief = "STM32F411E",
+                brief = "STM32F4 Low Power 512 kiB with USB.",
                 type = "integer",
                 requires = { "HW_MCU_STM32F411E" },
                 default = 1,
@@ -410,18 +420,6 @@ nutarch_cm3_stm32f4 =
         requires = { "HW_MCU_STM32" },
         options =
         {
-            {
-                macro = "MCU_STM32F401",
-                brief = "STM32F4xx memory",
-                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
-                              "STM32F401>Y<zz where Y is one of the list below.\n\n"..
-                              "B =  128 kbytes Flash\n"..
-                              "C =  256 kbytes Flash\n",
-                requires = { "HW_MCU_STM32F401" },
-                type = "enumerated",
-                choices = stm32_memory_f401,
-                file = "include/cfg/arch.h"
-            },
             {
                 macro = "MCU_STM32F40X",
                 brief = "STM32F4xx memory",
