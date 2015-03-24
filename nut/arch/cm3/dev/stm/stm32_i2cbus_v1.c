@@ -406,6 +406,7 @@ static int I2cBusInit(NUTI2C_BUS *bus)
 {
     I2C_TypeDef *I2Cx;
     STM32_I2CCB *icb;
+    uint32_t apbclk;
 
     icb = (STM32_I2CCB *) bus->bus_icb;
 
@@ -415,9 +416,14 @@ static int I2cBusInit(NUTI2C_BUS *bus)
     if (I2cBusConf(bus)) {
         return -1;
     }
+    apbclk = NutClockGet(NUT_HWCLK_PCLK1);
+    if (apbclk < 2000000) {
+        /* PCLK1 clock to slow for valid setup/hold timing */
+        return -1;
+    }
     I2Cx = (I2C_TypeDef*) icb->hw->icb_base;
-    I2Cx->CR2  = I2C_CR2_FREQ;
-    I2Cx->CR2 |= (NutClockGet(NUT_HWCLK_PCLK1)/1000000);
+    I2Cx->CR2 &= ~I2C_CR2_FREQ;
+    I2Cx->CR2 |= apbclk/1000000;
     I2Cx->CR1 |= I2C_CR1_PE;
     if (NutRegisterIrqHandler(icb->icb_sig_ev, I2cEventBusIrqHandler, icb))
         return -1;
