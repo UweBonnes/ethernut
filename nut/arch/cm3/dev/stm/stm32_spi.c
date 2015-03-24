@@ -93,9 +93,9 @@
 #define SPIBUS_CS3_CLR()    GpioPinSetLow (SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
 #endif
 
-#if SPIBUS_MODE == POLLING_MODE
-#elif SPIBUS_MODE == IRQ_MODE
-
+#if SPIBUS_MODE != POLLING_MODE
+static uint32_t clk_ratio;
+#if SPIBUS_MODE == IRQ_MODE
 static const uint8_t * spi_txp;
 static uint8_t *       spi_rxp;
 static volatile size_t spi_rx_len;
@@ -151,13 +151,14 @@ static void Stm32SpiBusInterrupt(void *arg)
         }
     }
 }
-#else
+#elif SPIBUS_MODE == DMA_MODE
 #include <arch/cm3/stm/stm32_dma.h>
 static void Stm32SpiBusDMAInterrupt(void *arg)
 {
     DMA_ClearFlag(SPI_DMA_RX_CHANNEL, DMA_TCIF);
     NutEventPostFromIrq((void **)arg);
 }
+#endif
 #endif
 
 /*!
@@ -460,7 +461,11 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     else
         clkdiv = 0;
     spireg->CR1 |= (clkdiv * SPI_CR1_BR_0);
-
+#if SPIBUS_MODE != POLLING_MODE
+    /* Calculate ratio between Processor and SPI clock */
+    clk_ratio =  NutClockGet(NUT_HWCLK_CPU)/clk;
+    clk_ratio = clk_ratio << clkdiv;
+#endif
     /* Update interface parameters. */
     node->node_rate = clk / (1 << (clkdiv + 1)) ;
     SetPinSpeed(node, node->node_rate);
@@ -610,123 +615,133 @@ static int Stm32SpiBusTransfer
     while (CM3BBGET(SPI_BASE, SPI_TypeDef, SR, _BI32(SPI_SR_RXNE)))
         (void) base->DR; /* Empty DR */
 
-#if SPIBUS_MODE == POLLING_MODE
-    if (tx_only) {
-        base->CR1 |= SPI_CR1_SPE;
-        while( xlen > 0) {
-            /* Half word access via "spi->DR = b" shifts out two frames
-             * on the F373! */
-            *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
-            xlen--;
-            txbuf++;
-            while ( (base->SR & SPI_SR_TXE ) == 0 ); /* Wait till TXE = 1*/
+/* Dump guess for the numbers of cycles where a schedule make sense*/
+#define SCHEDULE_CYCLES (1<<10)
+
+#if SPIBUS_MODE == DMA_MODE
+    /* Let's assume about 1000 CPU clocks is break even where a DMA
+       transfer is faster than pure polling */
+    if (xlen * clk_ratio > SCHEDULE_CYCLES/8) {
+        if (rx_only) {
+            if (node->node_mode & SPI_MODE_HALFDUPLEX)
+                CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_BIDIMODE));
+            else
+                CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_RXONLY));
+            DMA_Setup( SPI_DMA_RX_CHANNEL, rxbuf, (void*)(&base->DR), xlen , DMA_MINC);
+            DMA_Enable( SPI_DMA_RX_CHANNEL);
         }
-        while (base->SR & SPI_SR_BSY);     /* Wait till BSY = 0 */
-        /* Wait for SCK idle */
-        if (node->node_mode & SPI_MODE_CPOL)
-            while (!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
-        else
-            while ((GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
-    }
-    else if (rx_only) {
-        (void) base->DR; /* Empty DR */
-        if (node->node_mode & SPI_MODE_HALFDUPLEX)
-            base->CR1 |= SPI_CR1_BIDIMODE;
-        else
-            base->CR1 |= SPI_CR1_RXONLY;
-        base->CR1 |= SPI_CR1_SPE;
-        while( xlen > 0) {
-            if(xlen < 2) {
-                /* Follow procedure "Disabling the SPI" */
-                while(!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
-                while(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN));
-                base->CR1 &= ~SPI_CR1_SPE;
+        else {
+            DMA_Setup( SPI_DMA_TX_CHANNEL, (void*)(&base->DR), (void*) txbuf, xlen, DMA_MINC);
+            DMA_Enable( SPI_DMA_TX_CHANNEL);
+            if (tx_only) {
+                uint32_t dummy;
+                DMA_Setup( SPI_DMA_RX_CHANNEL, &dummy, (void*)(&base->DR), xlen, 0);
             }
-            xlen--;
-            while ((base->SR & SPI_SR_RXNE) == 0 ); /* Wait till RXNE = 1*/
-            if (rxbuf) {
+            else
+                DMA_Setup( SPI_DMA_RX_CHANNEL, rxbuf, (void*)(&base->DR), xlen, DMA_MINC);
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXDMAEN));
+        }
+        /* Register the DMA interrupt after we have acquired the DMA channel.
+         * Otherwise we may disrupt an on-going transaction to an other device on the same
+         * channel.
+         */
+        NutRegisterIrqHandler(&sig_SPI_DMA_RX, Stm32SpiBusDMAInterrupt, &node->node_bus->bus_ready);
+        NutIrqEnable(&sig_SPI_DMA_RX);
+        DMA_Enable( SPI_DMA_RX_CHANNEL);
+        DMA_IrqMask(SPI_DMA_RX_CHANNEL, DMA_TCIF, 1);
+        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXDMAEN));
+        CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+        NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
+    }
+#elif SPIBUS_MODE == IRQ_MODE
+    /* Let's assume about 1000 CPU clocks is break even where a single Byte IRQ
+       transfer is faster than pure polling */
+    if (clk_ratio > SCHEDULE_CYCLES/8) {
+        spi_txp = txbuf;
+        spi_rxp = rxbuf;
+        spi_len = xlen;
+        spi_rx_len = xlen;
+        if (rx_only) {
+            spi_tx_len = 0;
+            if (node->node_mode & SPI_MODE_HALFDUPLEX)
+                CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_BIDIMODE));
+            else
+                CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_RXONLY));
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+        }
+        else {
+            spi_tx_len = xlen;
+            if (tx_only)
+                spi_rx_len = 0;
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+            CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXEIE));
+        }
+        NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
+    }
+#else
+    if (0) {}
+#endif
+    else {
+        if (tx_only) {
+            base->CR1 |= SPI_CR1_SPE;
+            while( xlen > 0) {
+                /* Half word access via "spi->DR = b" shifts out two frames
+                 * on the F373! */
+                *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
+                xlen--;
+                txbuf++;
+                while ( (base->SR & SPI_SR_TXE ) == 0 ); /* Wait till TXE = 1*/
+            }
+            while (base->SR & SPI_SR_BSY);     /* Wait till BSY = 0 */
+            /* Wait for SCK idle */
+            if (node->node_mode & SPI_MODE_CPOL)
+                while (!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
+            else
+                while ((GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
+        }
+        else if (rx_only) {
+            (void) base->DR; /* Empty DR */
+            if (node->node_mode & SPI_MODE_HALFDUPLEX)
+                base->CR1 |= SPI_CR1_BIDIMODE;
+            else
+                base->CR1 |= SPI_CR1_RXONLY;
+            base->CR1 |= SPI_CR1_SPE;
+            while( xlen > 0) {
+                if(xlen < 2) {
+                    /* Follow procedure "Disabling the SPI" */
+                    while(!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
+                    while(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN));
+                    base->CR1 &= ~SPI_CR1_SPE;
+                }
+                xlen--;
+                while ((base->SR & SPI_SR_RXNE) == 0 ); /* Wait till RXNE = 1*/
+                if (rxbuf) {
+                    *(uint8_t *)rxbuf = base->DR;
+                    rxbuf++;
+                }
+            }
+        }
+        else {
+            base->CR1 |= SPI_CR1_SPE;
+            *(uint8_t *)&base->DR = *(const uint8_t *)txbuf; /* Write first item */
+            while( xlen > 0){
+                txbuf++;
+                xlen --;
+                while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
+                if (xlen > 0)
+                    *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
+                while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
                 *(uint8_t *)rxbuf = base->DR;
                 rxbuf++;
             }
+            if (node->node_mode & SPI_MODE_CPOL)
+                while (!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
+            else
+                while ((GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
         }
     }
-    else {
-        base->CR1 |= SPI_CR1_SPE;
-        *(uint8_t *)&base->DR = *(const uint8_t *)txbuf; /* Write first item */
-        while( xlen > 0){
-            txbuf++;
-            xlen --;
-            while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
-            if (xlen > 0)
-                *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
-            while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
-            *(uint8_t *)rxbuf = base->DR;
-            rxbuf++;
-        }
-        if (node->node_mode & SPI_MODE_CPOL)
-            while (!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
-        else
-            while ((GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
-    }
-#elif SPIBUS_MODE == IRQ_MODE
-    spi_txp = txbuf;
-    spi_rxp = rxbuf;
-    spi_len = xlen;
-    spi_rx_len = xlen;
-    if (rx_only) {
-        spi_tx_len = 0;
-        if (node->node_mode & SPI_MODE_HALFDUPLEX)
-            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_BIDIMODE));
-        else
-            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_RXONLY));
-        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
-        CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
-    }
-    else {
-        spi_tx_len = xlen;
-        if (tx_only)
-            spi_rx_len = 0;
-        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXNEIE));
-        CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
-        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXEIE));
-    }
-    NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
-#elif SPIBUS_MODE == DMA_MODE
-    NUTSPIBUS *bus;
-    bus = node->node_bus;
-    if (rx_only) {
-        if (node->node_mode & SPI_MODE_HALFDUPLEX)
-            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_BIDIMODE));
-        else
-            CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_RXONLY));
-        DMA_Setup( SPI_DMA_RX_CHANNEL, rxbuf, (void*)(&base->DR), xlen , DMA_MINC);
-        DMA_Enable( SPI_DMA_RX_CHANNEL);
-    }
-    else {
-        DMA_Setup( SPI_DMA_TX_CHANNEL, (void*)(&base->DR), (void*) txbuf, xlen, DMA_MINC);
-        DMA_Enable( SPI_DMA_TX_CHANNEL);
-        if (tx_only) {
-            uint32_t dummy;
-            DMA_Setup( SPI_DMA_RX_CHANNEL, &dummy, (void*)(&base->DR), xlen, 0);
-        }
-        else
-            DMA_Setup( SPI_DMA_RX_CHANNEL, rxbuf, (void*)(&base->DR), xlen, DMA_MINC);
-        CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_TXDMAEN));
-    }
-    /* Register the DMA interrupt after we have acquired the DMA channel.
-     * Otherwise we may disrupt an on-going transaction to an other device on the same
-     * channel.
-     */
-    NutRegisterIrqHandler(&sig_SPI_DMA_RX, Stm32SpiBusDMAInterrupt, &bus->bus_ready);
-    NutIrqEnable(&sig_SPI_DMA_RX);
-    DMA_Enable( SPI_DMA_RX_CHANNEL);
-    DMA_IrqMask(SPI_DMA_RX_CHANNEL, DMA_TCIF, 1);
-    CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXDMAEN));
-    CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
-    NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
-#else
-#warning Unknown SPI Mode
-#endif
     base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE |
                    SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
     return 0;
