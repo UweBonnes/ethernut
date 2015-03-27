@@ -42,12 +42,18 @@
  */
 #include <stdint.h>
 
-/* STM32F Clock source selectors */
-#define SYSCLK_HSI  0
-#define SYSCLK_PLL  1
-#define SYSCLK_HSE  2
-#define PLLCLK_HSI  3
-#define PLLCLK_HSE  4
+/* STM32 Clock source selectors */
+#define SYSCLK_HSI    1
+#define SYSCLK_PLL    2
+#define SYSCLK_HSE    3
+#define SYSCLK_HSI48  4
+
+#define PLLCLK_HSI_DIV2     0
+#define PLLCLK_HSI_PREDIV   1
+#define PLLCLK_HSE_PREDIV   2
+#define PLLCLK_HSI48_PREDIV 3
+#define PLLCLK_HSI          4
+#define PLLCLK_HSE          5
 
 /* RTC clock sources */
 #define RTCCLK_NONE   0

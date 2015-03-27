@@ -884,7 +884,7 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F0XX",
+                    "HW_MCU_STM32F0",
                     "HW_MCU_STM32F030"
                 },
                 makedefs = { "MCU=cortex-m0" },
@@ -901,7 +901,7 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F0XX",
+                    "HW_MCU_STM32F0",
                     "HW_MCU_STM32F031"
                 },
                 makedefs = { "MCU=cortex-m0"},
@@ -918,7 +918,7 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F0XX",
+                    "HW_MCU_STM32F0",
                     "HW_MCU_STM32F042"
                 },
                 makedefs = { "MCU=cortex-m0" },
@@ -935,7 +935,7 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F0XX",
+                    "HW_MCU_STM32F0",
                     "HW_MCU_STM32F051"
                 },
                 makedefs = { "MCU=cortex-m0" },
@@ -952,10 +952,27 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F0XX",
+                    "HW_MCU_STM32F0",
                     "HW_MCU_STM32F072"
                 },
                 makedefs = { "MCU=cortex-m0" },
+            },
+            {
+                macro = "MCU_STM32F091xC",
+                brief = "STM STM32F091xC",
+                description = "STM32F091 256 kB STM32F0.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F0",
+                    "HW_MCU_STM32F091",
+                    "HW_MCU_STM32F091C",
+                },
+                makedefs = { "MCU=cortex-m0" }
             },
              --
             -- STM STM32F10X SERIES CONTROLLER

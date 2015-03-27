@@ -55,6 +55,9 @@ static uint32_t pagelist[2] = {0, 0};
 #elif defined (STM32F072)
 static uint32_t pagelist[2] = {0, 0};
 #define FLASH_PAGE_SIZE 2048
+#elif defined (STM32F091)
+static uint32_t pagelist[4] = {0, 0, 0, 0};
+#define FLASH_PAGE_SIZE 2048
 #elif defined (STM32F10X_LD) || defined (STM32F10X_LD_VL)
 #define FLASH_PAGE_SIZE 1024
 static uint32_t pagelist[1] = {0};

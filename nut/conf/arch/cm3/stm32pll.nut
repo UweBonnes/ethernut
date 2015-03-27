@@ -1,6 +1,44 @@
     --
     -- STM32 PLL Configuration
     --
+--
+-- Retrieve SYSCLK available on the device.
+--
+function GetSysClkSrc()
+    if c_is_provided("HW_CLK48_STM32") then
+        return { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE", "SYSCLK_HSI48" }
+    end
+    return { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE" }
+end
+
+--
+-- Retrieve PLL Input CLK available on the device.
+--
+function GetPllClkSrc()
+    if c_is_provided("HW_MCU_STM32F0") then
+       if c_is_provided("HW_CLK48_STM32") then
+          return { "PLLCLK_HSI_DIV2", "PLLCLK_HSI_PREDIV", "PLLCLK_HSE_PREDIV", "SYSCLK_HSI48_PREDIV" }
+       end
+       return { "PLLCLK_HSI_DIV2", "PLLCLK_HSI_PREDIV" }
+    end
+    if c_is_provided("HW_MCU_STM32F3") then
+       return { "PLLCLK_HSI_PREDIV", "PLLCLK_HSE_PREDIV" }
+    end
+    return { "PLLCLK_HSI", "PLLCLK_HSE" }
+end
+--
+-- Retrieve PLL Input CLK default.
+--
+function GetPllClkSrcDefault()
+    if c_is_provided("HW_MCU_STM32F0") then
+       return { "PLLCLK_HSI_DIV2"}
+    end
+    if c_is_provided("HW_MCU_STM32F3") then
+       return { "PLLCLK_HSI_PREDIV" }
+    end
+    return { "PLLCLK_HSI" }
+end
+
 nutarch_cm3_stm32_pll =
 {     
       {
@@ -14,19 +52,26 @@ nutarch_cm3_stm32_pll =
                         description = "Select where SYSCLK should get its clock from.\n\n"..
                               "SYSCLK_HSI is the internal 8MHz clock.\n"..
                               "SYSCLK_PLL is the internal PLL output. Select the source for the PLL in the next option.\n"..
-                              "SYSCLK_HSE is the external oscillator or crystal input.\n",
+                              "SYSCLK_HSE is the external oscillator or crystal input.\n"..
+                              "SYSCLK_HSI48 is the internal 48MHz clock on F042/072/091.\n",
                         type = "enumerated",
-                        choices = { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE" },
+                        choices = function() return GetSysClkSrc() end,
+                        default = "SYSCLK_HSI",
                         file = "include/cfg/clock.h"
                  },
                  {
                         macro = "PLLCLK_SOURCE",
                         brief = "PLL Clock Source",
                         description = "Select where the PLL should get its clock from.\n\n"..
-                              "SYSCLK_HSI is the internal 8MHz clock. PLL is fed with SYSCLK_HSI/2.\n"..
-                              "SYSCLK_HSE is the external oscillator or crystal input.\n",
+                              "SYSCLK_HSI_DIV2 is the internal 8 MHz clock divided by 2.\n"..
+                              "SYSCLK_HSI_PREDIV is the internal 8 MHz clock divided by 1...16.\n"..
+                              "SYSCLK_HSE_PREDIV is external oscillator or crystal input divided by 1...16.\n"..
+                              "SYSCLK_HSI48_PREDIV is internal 48 MHz clock divided by 1...16.\n"..
+                              "If not explicit given as PLLCLK_DIV and PLLCLK_MULT, is it tried to calculate\n"..
+                              "both values from SYSCLK_FREQ and the choosen PLL input clock.",
                               type = "enumerated",
-                              choices = { "PLLCLK_HSI", "PLLCLK_HSE" },
+                        choices = function() return GetPllClkSrc() end;
+                        default = function() return GetPllClkSrcDefault() end;
                         file = "include/cfg/clock.h"
                   },
                   {
@@ -83,7 +128,6 @@ nutarch_cm3_stm32_pll =
                                       "to calculate PLLCLK_MULT and PLLCLK_DIV. If code is unable,\n"..
                                       "enter non-zero integer PLL Clock Multiplier value here\n",
                         flavor = "integer",
-                        default = "0",
                         file = "include/cfg/clock.h"
                   },
                    {
@@ -93,7 +137,6 @@ nutarch_cm3_stm32_pll =
                                       "to calculate PLLCLK_MULT and PLLCLK_DIV. If code is unable,\n"..
                                       "enter non-zero integer PLL Clock Divider value here\n",
                         flavor = "integer",
-                        default = "0",
                         file = "include/cfg/clock.h"
                   },
             },

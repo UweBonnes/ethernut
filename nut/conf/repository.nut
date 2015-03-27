@@ -203,6 +203,7 @@ mcu_names = {
     "MCU_STM32F042",
     "MCU_STM32F051",
     "MCU_STM32F072",
+    "MCU_STM32F091xC",
     "MCU_STM32F101",
     "MCU_STM32F103",
     "MCU_STM32F105",

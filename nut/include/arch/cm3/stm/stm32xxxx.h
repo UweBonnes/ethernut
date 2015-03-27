@@ -40,7 +40,11 @@
 
 #include <cfg/arch.h>
 #if defined(MCU_STM32F0)
+#if defined(STM32F091C)
+#include <arch/cm3/stm/vendor/stm32f091xc.h>
+#else
 #include <arch/cm3/stm/vendor/stm32f0xx.h>
+#endif
 #elif defined(MCU_STM32F1)
 #include <arch/cm3/stm/vendor/stm32f10x.h>
 #elif defined(MCU_STM32L1)

@@ -53,12 +53,14 @@ nutarch_cm3_stm32f0 =
     {
         name = "nutarch_cm3_stm32f0_family",
         brief = "MCU F0 Family",
+        requires = { "HW_MCU_STM32F0" },
         sources = { "cm3/dev/stm/stm32f30_clk.c"},
         options =
         {
             {
                 macro = "MCU_STM32F0",
                 brief = "STM32F0",
+                description = "Devices available in all F0 devices",
                 type = "integer",
                 default = 1,
                 provides = {
@@ -193,6 +195,42 @@ nutarch_cm3_stm32f0 =
                     },
                 file = "include/cfg/arch.h"
             },
+            {
+                macro = "STM32F091",
+                brief = "STM32F091",
+                description = "STM32F091",
+                type = "integer",
+                requires = { "HW_MCU_STM32F091" },
+                default = 1,
+                provides =
+                {
+                    "HW_CLK48_STM32",
+                    "HW_TIM2_32BIT_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM14_STM32",
+                    "HW_TIM15_STM32",
+                    "HW_TIM16_STM32",
+                    "HW_TIM17_STM32",
+--                    "HW_I2C2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_8_STM32",
+                    "HW_CEC_CAN_STM32",
+                 },
+                file = "include/cfg/arch.h",
+                makedefs = { "LDPATH=$(LDINCLUDE)" }
+             },
+             {
+                macro = "STM32F091C",
+                brief = "STM32F091C",
+                brief = "STM32091 with 512 kiB.",
+                type = "integer",
+                requires = { "HW_MCU_STM32F091C" },
+                default = 1,
+                file = "include/cfg/arch.h",
+                makedefs = { "LDSCRIPT=stm32f091xC_flash.ld" }
+             },
         },
     },
 }
