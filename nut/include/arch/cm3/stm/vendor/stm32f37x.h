@@ -3769,33 +3769,33 @@ typedef struct
 #define  RCC_CFGR_PLLXTPRE                   ((uint32_t)0x00020000)        /*!< HSE divider for PLL entry */
 
 /*!< PLLMUL configuration */
-#define  RCC_CFGR_PLLMULL                    ((uint32_t)0x003C0000)        /*!< PLLMUL[3:0] bits (PLL multiplication factor) */
-#define  RCC_CFGR_PLLMULL_0                  ((uint32_t)0x00040000)        /*!< Bit 0 */
-#define  RCC_CFGR_PLLMULL_1                  ((uint32_t)0x00080000)        /*!< Bit 1 */
-#define  RCC_CFGR_PLLMULL_2                  ((uint32_t)0x00100000)        /*!< Bit 2 */
-#define  RCC_CFGR_PLLMULL_3                  ((uint32_t)0x00200000)        /*!< Bit 3 */
+#define  RCC_CFGR_PLLMUL                     ((uint32_t)0x003C0000)        /*!< PLLMUL[3:0] bits (PLL multiplication factor) */
+#define  RCC_CFGR_PLLMUL_0                   ((uint32_t)0x00040000)        /*!< Bit 0 */
+#define  RCC_CFGR_PLLMUL_1                   ((uint32_t)0x00080000)        /*!< Bit 1 */
+#define  RCC_CFGR_PLLMUL_2                   ((uint32_t)0x00100000)        /*!< Bit 2 */
+#define  RCC_CFGR_PLLMUL_3                   ((uint32_t)0x00200000)        /*!< Bit 3 */
 
-#define  RCC_CFGR_PLLSRC_HSI_Div2            ((uint32_t)0x00000000)        /*!< HSI clock divided by 2 selected as PLL entry clock source */
-#define  RCC_CFGR_PLLSRC_PREDIV1             ((uint32_t)0x00010000)        /*!< PREDIV1 clock selected as PLL entry clock source */
+#define  RCC_CFGR_PLLSRC_HSI_DIV2            ((uint32_t)0x00000000)        /*!< HSI clock divided by 2 selected as PLL entry clock source */
+#define  RCC_CFGR_PLLSRC_HSE_PREDIV          ((uint32_t)0x00010000)        /*!< PREDIV1 clock selected as PLL entry clock source */
 
 #define  RCC_CFGR_PLLXTPRE_PREDIV1           ((uint32_t)0x00000000)        /*!< PREDIV1 clock not divided for PLL entry */
-#define  RCC_CFGR_PLLXTPRE_PREDIV1_Div2      ((uint32_t)0x00020000)        /*!< PREDIV1 clock divided by 2 for PLL entry */
+#define  RCC_CFGR_PLLXTPRE_PREDIV1_DIV2      ((uint32_t)0x00020000)        /*!< PREDIV1 clock divided by 2 for PLL entry */
 
-#define  RCC_CFGR_PLLMULL2                   ((uint32_t)0x00000000)        /*!< PLL input clock*2 */
-#define  RCC_CFGR_PLLMULL3                   ((uint32_t)0x00040000)        /*!< PLL input clock*3 */
-#define  RCC_CFGR_PLLMULL4                   ((uint32_t)0x00080000)        /*!< PLL input clock*4 */
-#define  RCC_CFGR_PLLMULL5                   ((uint32_t)0x000C0000)        /*!< PLL input clock*5 */
-#define  RCC_CFGR_PLLMULL6                   ((uint32_t)0x00100000)        /*!< PLL input clock*6 */
-#define  RCC_CFGR_PLLMULL7                   ((uint32_t)0x00140000)        /*!< PLL input clock*7 */
-#define  RCC_CFGR_PLLMULL8                   ((uint32_t)0x00180000)        /*!< PLL input clock*8 */
-#define  RCC_CFGR_PLLMULL9                   ((uint32_t)0x001C0000)        /*!< PLL input clock*9 */
-#define  RCC_CFGR_PLLMULL10                  ((uint32_t)0x00200000)        /*!< PLL input clock10 */
-#define  RCC_CFGR_PLLMULL11                  ((uint32_t)0x00240000)        /*!< PLL input clock*11 */
-#define  RCC_CFGR_PLLMULL12                  ((uint32_t)0x00280000)        /*!< PLL input clock*12 */
-#define  RCC_CFGR_PLLMULL13                  ((uint32_t)0x002C0000)        /*!< PLL input clock*13 */
-#define  RCC_CFGR_PLLMULL14                  ((uint32_t)0x00300000)        /*!< PLL input clock*14 */
-#define  RCC_CFGR_PLLMULL15                  ((uint32_t)0x00340000)        /*!< PLL input clock*15 */
-#define  RCC_CFGR_PLLMULL16                  ((uint32_t)0x00380000)        /*!< PLL input clock*16 */
+#define  RCC_CFGR_PLLMUL2                    ((uint32_t)0x00000000)        /*!< PLL input clock*2 */
+#define  RCC_CFGR_PLLMUL3                    ((uint32_t)0x00040000)        /*!< PLL input clock*3 */
+#define  RCC_CFGR_PLLMUL4                    ((uint32_t)0x00080000)        /*!< PLL input clock*4 */
+#define  RCC_CFGR_PLLMUL5                    ((uint32_t)0x000C0000)        /*!< PLL input clock*5 */
+#define  RCC_CFGR_PLLMUL6                    ((uint32_t)0x00100000)        /*!< PLL input clock*6 */
+#define  RCC_CFGR_PLLMUL7                    ((uint32_t)0x00140000)        /*!< PLL input clock*7 */
+#define  RCC_CFGR_PLLMUL8                    ((uint32_t)0x00180000)        /*!< PLL input clock*8 */
+#define  RCC_CFGR_PLLMUL9                    ((uint32_t)0x001C0000)        /*!< PLL input clock*9 */
+#define  RCC_CFGR_PLLMUL10                   ((uint32_t)0x00200000)        /*!< PLL input clock10 */
+#define  RCC_CFGR_PLLMUL11                   ((uint32_t)0x00240000)        /*!< PLL input clock*11 */
+#define  RCC_CFGR_PLLMUL12                   ((uint32_t)0x00280000)        /*!< PLL input clock*12 */
+#define  RCC_CFGR_PLLMUL13                   ((uint32_t)0x002C0000)        /*!< PLL input clock*13 */
+#define  RCC_CFGR_PLLMUL14                   ((uint32_t)0x00300000)        /*!< PLL input clock*14 */
+#define  RCC_CFGR_PLLMUL15                   ((uint32_t)0x00340000)        /*!< PLL input clock*15 */
+#define  RCC_CFGR_PLLMUL16                   ((uint32_t)0x00380000)        /*!< PLL input clock*16 */
 
 /*!< USB configuration */
 #define  RCC_CFGR_USBPRE                     ((uint32_t)0x00400000)        /*!< USB prescaler */
