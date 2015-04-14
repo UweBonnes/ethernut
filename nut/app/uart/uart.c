@@ -112,7 +112,7 @@ int main(void)
      */
     _write(_fileno(uart), banner, strlen(banner));
     {
-        _write_P(_fileno(uart), presskey_P, sizeof(presskey_P));
+        _write_P(_fileno(uart), presskey_P, strlen(presskey_P));
     }
 
     /*
