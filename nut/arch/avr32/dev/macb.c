@@ -143,11 +143,11 @@ typedef struct _TxTdDescriptor {
 
 static volatile TxTdDescriptor txBufTab[EMAC_TX_BUFFERS] NUT_ALIGNED_TYPE(8);
 static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] NUT_ALIGNED_TYPE(4);
-static unsigned int txBufIdx;
+static unsigned int txBufIdx = 0;
 
 static volatile RxTdDescriptor rxBufTab[EMAC_RX_BUFFERS] NUT_ALIGNED_TYPE(8);
 static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] NUT_ALIGNED_TYPE(4);
-static unsigned int rxBufIdx;
+static unsigned int rxBufIdx = 0;
 
 #define RXBUF_OWNERSHIP     0x00000001
 #define RXBUF_WRAP          0x00000002
@@ -294,7 +294,7 @@ static int EmacReset(NUTDEVICE * dev)
     NutDelay(255);
 
     /* Register PHY */
-    rc = NutRegisterPhy( 1, phy_outw, phy_inw);
+    rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
 	
 #ifndef PHY_MODE_RMII
 	/* Clear MII isolate. */
@@ -355,8 +355,8 @@ static void EmacInterrupt(void *arg)
     event = macb->rsr;
 
     /* Receiver interrupt. */
-    if ((isr & (AVR32_MACB_IMR_RCOMP_MASK | AVR32_MACB_IMR_ROVR_MASK | AVR32_MACB_IMR_RXUBR_MASK)) || (event & AVR32_MACB_REC_MASK)) {
-        macb->rsr = AVR32_MACB_REC_MASK;        // Clear
+    if ((isr & (AVR32_MACB_IMR_RCOMP_MASK | AVR32_MACB_IMR_ROVR_MASK | AVR32_MACB_IMR_RXUBR_MASK)) || (event & (AVR32_MACB_REC_MASK | AVR32_MACB_BNA_MASK))) {
+        macb->rsr = AVR32_MACB_REC_MASK | AVR32_MACB_BNA_MASK;        // Clear
         macb->rsr;              // Read to force the previous write
         macb->idr = AVR32_MACB_IDR_RCOMP_MASK | AVR32_MACB_IDR_ROVR_MASK | AVR32_MACB_IDR_RXUBR_MASK;
         NutEventPostFromIrq(&ni->ni_rx_rdy);
