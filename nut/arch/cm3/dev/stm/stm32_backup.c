@@ -50,10 +50,7 @@
 #include <cfg/arch.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
-#if !defined(RTC_BKP0R)
-#warning STM family has no registers with battery backup
-#endif
-
+#if defined(RTC_BKP0R)
 #if !defined(RTC_BKP5R)
 #define BKUP_SIZE ( 5 * 4)
 #elif !defined(RTC_BKP16R)
@@ -132,6 +129,7 @@ int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
     return 0;
 
 }
+#endif
 
 #if defined(MCU_STM32F4) && !defined(STM32F411)  && !defined(STM32F401)
 /*!
