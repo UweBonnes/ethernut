@@ -349,3 +349,19 @@ uint16_t  DMA_GetRemainingTransfers( uint8_t ch)
     uint32_t stream_base = CH2STREAM(dma_base, ch);
     return CM3REG(stream_base, DMA_Stream_TypeDef, NDTR);
 }
+
+/*!
+ * \brief     Get memory base address of transfer.
+ *
+ * For memory-to-memory transfer, we return the destination address.
+ *
+ * \param ch  Channel number to query.
+ *
+ * \return    Base address of transfer memory.
+ */
+void*  DmaGetMemoryBase( uint8_t ch)
+{
+    uint32_t dma_base = (ch & 0x80)? DMA2_BASE : DMA1_BASE;
+    uint32_t stream_base = CH2STREAM(dma_base, ch);
+    return (void*) CM3REG(stream_base, DMA_Stream_TypeDef, M0AR);
+}

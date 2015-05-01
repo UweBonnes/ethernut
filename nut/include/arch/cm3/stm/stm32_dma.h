@@ -73,5 +73,6 @@ void DMA_IrqMask( uint8_t ch, uint32_t mask, uint8_t ena);
 void DMA_ClearFlag( uint8_t ch, uint32_t flags);
 uint32_t DMA_GetFlag( uint8_t ch);
 uint16_t DMA_GetRemainingTransfers( uint8_t ch);
+extern void *DmaGetMemoryBase( uint8_t ch);
 #endif
 

@@ -263,3 +263,18 @@ uint16_t  DMA_GetRemainingTransfers( uint8_t ch)
     return channel->CNDTR;
 }
 
+/*!
+ * \brief     Get memory base address of transfer.
+ *
+ * For memory-to-memory transfer, we return the destination address.
+ *
+ * \param ch  Channel number to query.
+ *
+ * \return    Base address of transfer memory
+ */
+void*  DmaGetMemoryBase( uint8_t ch)
+{
+    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    return (void *)channel->CMAR;
+}
+
