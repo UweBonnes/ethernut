@@ -75,6 +75,7 @@ extern int SetPllClock( int src);
 extern int SetPllClockSource( int src);
 extern int SetSysClock(void);
 extern uint32_t SysCtlClockGet(void);
+uint32_t Stm32ClockSwitchGet(int bi);
 
 #if defined(MCU_STM32L1)
 extern int SetRTCClock(int source);

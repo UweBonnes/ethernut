@@ -39,6 +39,7 @@
 #include <arch/cm3/timer.h>
 #include <arch/cm3/stm/stm32_clk.h>
 #include <cfg/clock.h>
+#include <cfg/rtc.h>
 
 #if defined(MCU_STM32F0) || defined(MCU_STM32F3)
 #include <arch/cm3/stm/stm32xxxx.h>
@@ -688,5 +689,28 @@ uint32_t STM_ClockGet(int idx)
     SystemCoreClockUpdate();
     if (idx < NUT_HWCLK_MAX)
         return SystemCoreClock/clk_div[idx];
+    return 0;
+}
+
+/**
+  * @brief  Some devices may use HSI/LSE and SYSCLK additional to PCLKx
+  *
+  * @param  bi  Bitindex of RCC_CFGR3_xxxSW_1
+  * @retval Clock frequency of choosen clk or 0 if PCLKx choosen
+  */
+uint32_t Stm32ClockSwitchGet(int bi)
+{
+    if (bi) {
+        int clksrc;
+        bi--;
+        clksrc = RCC->CFGR3 >> bi;
+        clksrc &= 3;
+        if (1 == clksrc)
+            return SystemCoreClock;
+        else if (2 == clksrc)
+            return HSI_VALUE;
+        else if (3 == clksrc)
+            return RTC_CLK_LSE;
+    }
     return 0;
 }
