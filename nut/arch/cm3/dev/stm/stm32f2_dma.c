@@ -151,7 +151,9 @@ void DMA_Disable(uint8_t ch)
 {
     uint32_t dma_base = (ch& 0x80)?DMA2_BASE:DMA1_BASE;
     uint32_t stream_base = CH2STREAM(dma_base, ch);
-    CM3BBCLR(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN));
+    do{
+        CM3BBCLR(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN));
+    } while (CM3BBGET(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN)));
 }
 
 

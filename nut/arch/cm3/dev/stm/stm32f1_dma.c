@@ -141,7 +141,9 @@ void DMA_Enable(uint8_t ch)
 void DMA_Disable(uint8_t ch)
 {
     DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
-    channel->CCR &= ~DMA_CCR_EN;
+    do {
+        channel->CCR &= ~DMA_CCR_EN;
+    } while(channel->CCR & DMA_CCR_EN);
 }
 
 
