@@ -132,6 +132,19 @@ void DMA_Enable(uint8_t ch)
 }
 
 /*
+ * \brief Query if DMA Channel is enable.
+ *
+ * \param ch Channel to query
+ * \return 0 if disabled
+ */
+int DmaIsEnabled(uint8_t ch)
+{
+    uint32_t dma_base = (ch& 0x80)?DMA2_BASE:DMA1_BASE;
+    uint32_t stream_base = CH2STREAM(dma_base, ch);
+    return CM3BBGET(stream_base, DMA_Stream_TypeDef, CR, _BI32(DMA_SxCR_EN));
+}
+
+/*
  * \brief Disable DMA Transfer.
  */
 void DMA_Disable(uint8_t ch)
