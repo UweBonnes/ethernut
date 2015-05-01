@@ -125,5 +125,9 @@
 
 #define GPIO_AF_EVENTOUT GPIO_AD_F
 
+#if defined(RCC_APB2ENR_AFIOEN)
+void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF) {};
+#else
 void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF);
+#endif
 #endif
