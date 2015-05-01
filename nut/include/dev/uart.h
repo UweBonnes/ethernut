@@ -680,11 +680,23 @@
  */
 /*@{*/
 
+/*! \brief CTS hardware handshake.
+ *
+ * Nut/OS uses DTE definitions, where CTS is input.
+ */
+#define UART_HS_CTS      0x0001
+
+/*! \brief RTS hardware handshake.
+ *
+ * Nut/OS uses DTE definitions, where RTS is output.
+ */
+#define UART_HS_RTS      0x0002
+
 /*! \brief RTS / CTS hardware handshake.
  *
  * Nut/OS uses DTE definitions, where RTS is output and CTS is input.
  */
-#define UART_HS_RTSCTS      0x0003
+#define UART_HS_RTSCTS   (UART_HS_CTS | UART_HS_RTS)
 
 /*! \brief Full modem hardware handshake.
  *
