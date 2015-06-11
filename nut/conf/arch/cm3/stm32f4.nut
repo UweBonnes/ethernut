@@ -173,6 +173,7 @@ nutarch_cm3_stm32f4 =
                     "HW_ADC3_STM32F2_4",
                     "HW_DAC1_STM32",
                     "HW_DAC2_STM32",
+                    "HW_EMAC_STM32",
                     "HW_OTG_HS_STM32",
                 },
                 file = "include/cfg/arch.h"
@@ -256,6 +257,7 @@ nutarch_cm3_stm32f4 =
                     "HW_ADC3_STM32F2_4",
                     "HW_DAC1_STM32",
                     "HW_DAC2_STM32",
+                    "HW_EMAC_STM32",
                     "HW_OTG_HS_STM32",
                 },
                 file = "include/cfg/arch.h"
@@ -292,6 +294,7 @@ nutarch_cm3_stm32f4 =
                     "HW_ADC3_STM32F2_4",
                     "HW_DAC1_STM32",
                     "HW_DAC2_STM32",
+                    "HW_EMAC_STM32",
                     "HW_OTG_HS_STM32",
                 },
                 file = "include/cfg/arch.h"
@@ -329,6 +332,7 @@ nutarch_cm3_stm32f4 =
                     "HW_ADC3_STM32F2_4",
                     "HW_DAC1_STM32",
                     "HW_DAC2_STM32",
+                    "HW_EMAC_STM32",
                     "HW_OTG_HS_STM32",
                 },
                 file = "include/cfg/arch.h"
