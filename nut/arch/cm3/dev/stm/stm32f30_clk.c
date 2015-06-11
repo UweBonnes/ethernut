@@ -402,7 +402,7 @@ int SetPllClockSource( int src)
     if (src == PLLCLK_HSI_DIV2) {
         rc = CtlHsiClock(ENABLE);
     }
-    else if (src == PLLCLK_HSE_PREDIV) {
+    else if ((src == PLLCLK_HSE_PREDIV) || (src == PLLCLK_HSE)){
         rc = CtlHseClock(ENABLE);
         if (rc==0) {
             cfgr |=  RCC_CFGR_PLLSRC_HSE_PREDIV;
@@ -534,8 +534,8 @@ int SetSysClock(void)
 #elif (SYSCLK_SOURCE == SYSCLK_PLL)
 
 /**
-  * @brief  Sets System clock frequency to 72MHz and configure HCLK, PCLK2
-  *          and PCLK1 prescalers.
+  * @brief  Sets System clock frequency to 48 MHz (F0)/ 72MHz (F3) and
+  *         configure HCLK, PCLK2 and PCLK1 prescalers.
   * @note   This function should be used only after reset.
   * @param  None
   * @retval None
@@ -558,15 +558,17 @@ int SetSysClock(void)
 #warning No PLLCLK_SOURCE defined
 #endif
 
+#if defined(RCC_CFGR_PLLSRC_HSI_PREDIV)
 #if (PLLCLK_SOURCE==PLLCLK_HSE) || (PLLCLK_SOURCE==PLLCLK_HSI)
-#warning PLLCLK_SOURCE PLLCLK_HSE or PLLCLK_HSI ileagal for this family
+#warning PLLCLK_SOURCE PLLCLK_HSE or PLLCLK_HSI illegal for this family
 #endif
-
-#if !defined(RCC_CFGR_PLLSRC_HSI_PREDIV) && (PLLCLK_SOURCE==PLLCLK_HSI_PREDIV)
+#else
+#if (PLLCLK_SOURCE==PLLCLK_HSI_PREDIV)
 #warning PLLCLK_SOURCE PLLCLK_HSI_PREDIV illegal for this device
 #endif
+#endif
 
-#if (PLLCLK_SOURCE==PLLCLK_HSE_PREDIV)
+#if (PLLCLK_SOURCE==PLLCLK_HSE_PREDIV) || (PLLCLK_SOURCE==PLLCLK_HSE)
  #define PLLCLK_IN HSE_VALUE
  #if !defined(PLLCLK_MULT)
  /* No user provided values, try to calculate for some discrete values */
