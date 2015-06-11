@@ -140,25 +140,26 @@ int Stm32TimerChannelConfig(
     uint32_t tmp, ccer;
     int channel_index;
 
+
     if ((filter > 0xf) || ((fin != TIM_CC_OUTPUT) && (fout != TIM_CC_FROZEN)))
         return -1;
     /* Set Input Capture Filter and function*/
     tmp = (filter * TIM_CCMR1_IC1F_0) | (fin) | (fout * TIM_CCMR1_OC1M_0);
     switch (channel) {
     case 1:
-        tim->CCMR1 &= 0x10f0;
+        tim->CCMR1 &= 0x100ff00;
         tim->CCMR1 |= tmp;
         break;
     case 2:
-        tim->CCMR1 &= 0x010f;
+        tim->CCMR1 &= 0x0100ff;
         tim->CCMR1 |= tmp << 8;
         break;
     case 3:
-        tim->CCMR2 &= 0x10f0;
+        tim->CCMR2 &= 0x100ff00;
         tim->CCMR2 |= tmp;
         break;
     case 4:
-        tim->CCMR2 &= 0x010f;
+        tim->CCMR2 &= 0x100ff00;
         tim->CCMR2 |= tmp << 8;
         break;
     }
