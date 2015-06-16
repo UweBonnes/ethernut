@@ -609,9 +609,6 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
         return -1;
     }
     sz += nb->nb_dl.sz;
-    if (sz & 1) {
-        sz++;
-    }
 
     /* Disable EMAC interrupts. */
     NutIrqDisable(&sig_EMAC);
