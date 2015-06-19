@@ -209,7 +209,7 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
      */
 
 
-    if( flags & GPIO_CFG_OUTPUT ) {
+    if(( flags & GPIO_CFG_OUTPUT ) || (flags & GPIO_CFG_PERIPHAL)){
         switch (flags & GPIO_CFG_SPEED)
         {
         case GPIO_CFG_SPEED_SLOW: cxmx = 0x2; break;
