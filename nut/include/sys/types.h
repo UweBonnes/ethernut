@@ -300,6 +300,16 @@ typedef void *HANDLE;
      (((val) & 0xff0000) >> 8) |    \
      (((val) & 0xff000000) >> 24))
 
+#define __byte_swap8(val)                      \
+    ((((val) & 0xff00000000000000ULL) >> 56) | \
+     (((val) & 0x00ff000000000000ULL) >> 40) | \
+     (((val) & 0x0000ff0000000000ULL) >> 24) | \
+     (((val) & 0x000000ff00000000ULL) >> 8)  | \
+     (((val) & 0x00000000ff000000ULL) << 8)  | \
+     (((val) & 0x0000000000ff0000ULL) << 24) | \
+     (((val) & 0x000000000000ff00ULL) << 40) | \
+     (((val) & 0x00000000000000ffULL) << 56))
+
 #if defined(__GNUC__) && defined(__AVR__)
 /*
  * Conversion of 16 bit value to network order.
@@ -363,6 +373,61 @@ typedef void *HANDLE;
 #else
 #define ntohl(x) (x)
 #endif
+
+/*!
+ * \brief Convert uint16 value from bigendian to host byte order.
+ */
+#ifndef __BIG_ENDIAN__
+#define be16toh(x)  __byte_swap2(x)
+#else 
+#define be16toh(x)  (x)
+#endif
+
+/*!
+ * \brief Convert uint32 value from bigendian to host byte order.
+ */
+#ifndef __BIG_ENDIAN__
+#define be32toh(x)  __byte_swap4(x)
+#else 
+#define be32toh(x)  (x)
+#endif
+
+/*!
+ * \brief Convert uint64 value from bigendian to host byte order.
+ */
+#ifndef __BIG_ENDIAN__
+#define be64toh(x)  __byte_swap8(x)
+#else 
+#define be64toh(x)  (x)
+#endif
+
+/*!
+ * \brief Convert uint16 value from littleendian to host byte order.
+ */
+#ifdef __BIG_ENDIAN__
+#define le16toh(x)  __byte_swap2(x)
+#else 
+#define le16toh(x)  (x)
+#endif
+
+/*!
+ * \brief Convert uint32 value from littleendian to host byte order.
+ */
+#ifdef __BIG_ENDIAN__
+#define le32toh(x)  __byte_swap4(x)
+#else 
+#define le32toh(x)  (x)
+#endif
+
+/*!
+ * \brief Convert uint64 value from littleendian to host byte order.
+ */
+#ifdef __BIG_ENDIAN__
+#define le64toh(x)  __byte_swap8(x)
+#else 
+#define le64toh(x)  (x)
+#endif
+
 
 #endif /* network to host byte conversion */
 
