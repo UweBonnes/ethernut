@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, Cameron Rich
+ * Copyright (c) 2007-2014, Cameron Rich
  *
  * All rights reserved.
  *
@@ -140,7 +140,7 @@ static int gen_dn(const char *name, uint8_t dn_type,
     buf[(*offset)++] = dn_type;
     buf[(*offset)++] = ASN1_PRINTABLE_STR;
     buf[(*offset)++] = name_size;
-    strcpy((char*)&buf[*offset], name);
+    strcpy((char *)&buf[*offset], name);
     *offset += name_size;
 
 error:
