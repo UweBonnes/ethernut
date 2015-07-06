@@ -217,6 +217,26 @@ nutcrypto =
         }
     },
     {
+        name = "nutcrypto_sha384",
+        brief = "SHA384 implementation",
+        description = "FIPS-180-2 compliant SHA-384 implementation",
+        provides = { "CRYPTO_SHA384" },
+        sources =
+        {
+            "sha384.c"
+        }
+    },
+    {
+        name = "nutcrypto_sha512",
+        brief = "SHA512 implementation",
+        description = "FIPS-180-2 compliant SHA-512 implementation",
+        provides = { "CRYPTO_SHA512" },
+        sources =
+        {
+            "sha512.c"
+        }
+    },
+    {
         name = "nutcrypto_rc4",
         brief = "RC4 implementation",
         description = "Implementation of the RC4/ARC4 algorithm.",

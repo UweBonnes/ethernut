@@ -351,7 +351,7 @@ error:
  */
 int add_cert_auth(SSL_CTX *ssl_ctx, const uint8_t *buf, int len)
 {
-    int ret = SSL_OK; /* ignore errors for now */
+    int ret = X509_OK; /* ignore errors for now */
     int i = 0;
     CA_CERT_CTX *ca_cert_ctx;
 
@@ -373,9 +373,9 @@ int add_cert_auth(SSL_CTX *ssl_ctx, const uint8_t *buf, int len)
                     "compile-time configuration required\n",
                     TLS_X509_MAX_CA_CERTS);
 #endif
+            ret = X509_MAX_CERTS;
             break;
         }
-
 
         /* ignore the return code */
         if (x509_new(buf, &offset, &ca_cert_ctx->cert[i]) == X509_OK)
