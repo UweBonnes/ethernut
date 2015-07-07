@@ -119,9 +119,9 @@ int x509_new(const uint8_t *cert, int *len, X509_CTX **ctx)
         goto end_cert;
     }
 
+#ifdef TLS_SSL_CERT_VERIFICATION /* only care if doing verification */
     bi_ctx = x509_ctx->rsa_ctx->bi_ctx;
 
-#ifdef TLS_SSL_CERT_VERIFICATION /* only care if doing verification */
     /* use the appropriate signature algorithm */
     switch (x509_ctx->sig_type)
     {
