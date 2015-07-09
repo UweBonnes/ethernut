@@ -133,6 +133,10 @@ int NutNetSaveConfig(void)
 {
 #if !defined (__NUT_EMULATION__) && !defined (CONFNET_HARDCODED)
     confnet.cd_size = sizeof(CONFNET);
+    /* Sanity Checks */
+    if ((ETHER_IS_BROADCAST(confnet.cdn_ip_addr)) ||
+        (ETHER_IS_ZERO     (confnet.cdn_ip_addr)))
+        return -1;
     if (NutNvMemSave(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
         return -1;
     }
