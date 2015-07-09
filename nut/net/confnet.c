@@ -97,7 +97,10 @@ int NutNetLoadConfig(const char *name)
     /* Read non-volatile memory. */
     if (NutNvMemLoad(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET)) == 0) {
         /* Sanity check. */
-        if (confnet.cd_size == sizeof(CONFNET) && strcmp(confnet.cd_name, name) == 0) {
+        if (confnet.cd_size == sizeof(CONFNET) &&
+            strcmp(confnet.cd_name, name) == 0 &&
+            !ETHER_IS_ZERO(confnet.cdn_mac) &&
+            !ETHER_IS_BROADCAST(confnet.cdn_mac)) {
             /* Got a (hopefully) valid configuration. */
             return 0;
         }
@@ -134,8 +137,8 @@ int NutNetSaveConfig(void)
 #if !defined (__NUT_EMULATION__) && !defined (CONFNET_HARDCODED)
     confnet.cd_size = sizeof(CONFNET);
     /* Sanity Checks */
-    if ((ETHER_IS_BROADCAST(confnet.cdn_ip_addr)) ||
-        (ETHER_IS_ZERO     (confnet.cdn_ip_addr)))
+    if ((ETHER_IS_BROADCAST(confnet.cdn_mac)) ||
+        (ETHER_IS_ZERO     (confnet.cdn_mac)))
         return -1;
     if (NutNvMemSave(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
         return -1;
