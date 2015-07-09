@@ -208,8 +208,16 @@ int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags)
      *      11    Output mode, max speed 50MHz
      */
 
-
-    if(( flags & GPIO_CFG_OUTPUT ) || (flags & GPIO_CFG_PERIPHAL)){
+/* All newer STM32 GPIO needs to set peripheral mode for
+ * peripheral input too, STM32F1 needs to set peripheral
+ * mode only for peripheral outputs.
+ * To keep compatibility between both version, we need to qualify the
+ * peripheral flag with GPIO_CFG_OUTPUT for peripheral outputs.
+ *
+ * Ignore GPIO_CFG_PERIPHAL without GPIO_CFG_OUTPUT on STM32F1!
+ * Ignore GPIO_CFG_OUTPUT with GPIO_CFG_PERIPHAL on other STM32 GPIO.
+ */
+    if( flags & GPIO_CFG_OUTPUT ) {
         switch (flags & GPIO_CFG_SPEED)
         {
         case GPIO_CFG_SPEED_SLOW: cxmx = 0x2; break;
