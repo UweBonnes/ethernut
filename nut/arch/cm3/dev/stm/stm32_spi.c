@@ -373,8 +373,6 @@ static int Stm32SpiBusSelect(NUTSPINODE * node, uint32_t tmo)
         base->CR1 = spireg->CR1;
         base->CR1 |= SPI_CR1_SSI|SPI_CR1_MSTR;
         base->CR2 = spireg->CR2;
-        base->I2SCFGR=spireg->I2SCFGR;
-        base->I2SPR=spireg->I2SPR;
 
         /* Finally activate the node's chip select. */
         rc = Stm32SpiChipSelect(node, 1);
@@ -560,8 +558,6 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
 #else
             spireg->CR2 =  0;
 #endif
-            spireg->I2SCFGR=0;
-            spireg->I2SPR=2;
             /* Update with node's defaults. */
             node->node_stat = (void *)spireg;
             Stm32SpiSetup(node);
