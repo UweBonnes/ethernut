@@ -304,6 +304,7 @@ static int checkpin_and_config(STM32_I2CCB *icb)
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
     }
+#if defined(I2C2_BASE)
     else if (icb->hw->icb_base == I2C2_BASE)
     {
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_I2C2EN));
@@ -313,9 +314,12 @@ static int checkpin_and_config(STM32_I2CCB *icb)
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C2RST));
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C2RST));
     }
-    else if (icb->hw->icb_base == I2C2_BASE)
+#endif
+#if defined(I2C3_BASE)
+    else if (icb->hw->icb_base == I2C3_BASE)
     {
     }
+#endif
     else
         return -1;
     return 0;
