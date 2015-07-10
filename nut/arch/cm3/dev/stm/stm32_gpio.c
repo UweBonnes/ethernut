@@ -51,23 +51,18 @@
 #include <dev/gpio.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #if defined (MCU_STM32L1)
-#define GPIO_RCC_ENR AHBENR
 const uint16_t ospeed_values[4] =
 { 400000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
 #elif defined (MCU_STM32F0)
-#define GPIO_RCC_ENR AHBENR
 const uint16_t ospeed_values[4] =
 {2000000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
 #elif defined (MCU_STM32F2)
-#define GPIO_RCC_ENR AHB1ENR
 const uint16_t ospeed_values[4] =
 {2000000 >> 16, 25000000 >> 16, 50000000 >> 16, 100000000 >> 16};
 #elif defined (MCU_STM32F3)
-#define GPIO_RCC_ENR AHBENR
 const uint16_t ospeed_values[4] =
 {2000000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
 #elif defined (MCU_STM32F4)
-#define GPIO_RCC_ENR AHB1ENR
 const uint16_t ospeed_values[4] =
 {2000000 >> 16, 25000000 >> 16, 50000000 >> 16, 100000000 >> 16};
 #else
