@@ -218,12 +218,12 @@ NUTDEVICE devUsartStm32_2 = {
  #elif USART2_RX_PIN == 3
   #define RX_GPIO_PORT  NUTGPIO_PORTA
   #define RX_GPIO_PIN   3
- #elif defined(MCU_STM32F3) && USART2_TX_PIN == 15
-  #define TX_GPIO_PORT  NUTGPIO_PORT1
-  #define TX_GPIO_PIN   15
- #elif defined(MCU_STM32F3) && USART2_TX_PIN == 4
-  #define TX_GPIO_PORT  NUTGPIO_PORTB
-  #define TX_GPIO_PIN   4
+ #elif defined(MCU_STM32F3) && USART2_RX_PIN == 15
+  #define RX_GPIO_PORT  NUTGPIO_PORT1
+  #define RX_GPIO_PIN   15
+ #elif defined(MCU_STM32F3) && USART2_RX_PIN == 4
+  #define RX_GPIO_PORT  NUTGPIO_PORTB
+  #define RX_GPIO_PIN   4
  #else
   #warning "Illegal USART2 RX pin assignement"
  #endif
