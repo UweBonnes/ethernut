@@ -304,7 +304,7 @@ static int ShowTimers(FILE * stream, REQUEST * req)
  */
 static int ShowSockets(FILE * stream, REQUEST * req)
 {
-    static const char *sock_states[12] = {
+    static const char *sock_states[13] = {
         "CLOSED",
         "LISTEN",
         "SYNSENT",
