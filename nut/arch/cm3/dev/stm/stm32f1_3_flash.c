@@ -112,8 +112,8 @@ static uint32_t pagelist[4] = {0,0,0,0};
 void FlashUntouch(void)
 {
     int i;
-    for (i = 0; i< sizeof(pagelist); i++)
-        pagelist[1] = 0;
+    for (i = 0; i< sizeof(pagelist)/4; i++)
+        pagelist[i] = 0;
 }
 
 static uint32_t FlashEnd(void)
