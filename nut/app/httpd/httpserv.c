@@ -395,14 +395,26 @@ int ShowForm(FILE * stream, REQUEST * req)
 
 #if !defined(EXCLUDE_ASP) && !defined(EXCLUDE_SSI)
 
+static struct _tm *GetLocaltime(void) {
+    struct _tm gmt;
+    time_t now;
+
+    now = 0;
+    if (0 == NutRtcGetTime(&gmt)) {
+        now = _mkgmtime(&gmt);
+    }
+    else
+        now = time(NULL);
+    return localtime(&now);
+}
+
 static void PrintTime(FILE *stream)
 {
 #if defined(HTTPD_EXCLUDE_DATE)
     fputs(__TIME__, stream);
 #else
-    time_t now = time(NULL);
-    struct _tm *lot = localtime(&now);
-
+    struct _tm *lot;
+    lot = GetLocaltime();
     fprintf(stream, "%02d:%02d:%02d", lot->tm_hour, lot->tm_min, lot->tm_sec);
 #endif
 }
@@ -412,9 +424,8 @@ static void PrintDate(FILE *stream)
 #if defined(HTTPD_EXCLUDE_DATE)
     fputs(__DATE__, stream);
 #else
-    time_t now = time(NULL);
-    struct _tm *lot = localtime(&now);
-
+    struct _tm *lot;
+    lot = GetLocaltime();
     fprintf(stream, "%02d.%02d.%04d", lot->tm_mday, lot->tm_mon + 1, lot->tm_year + 1900);
 #endif
 }
@@ -594,6 +605,11 @@ int main(void)
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     printf("\n\nNut/OS %s HTTP Daemon...", NutVersionString());
 
+#ifdef RTC_CHIP
+    if (NutRegisterRtc(&RTC_CHIP)) {
+        puts("RTC failed");
+    }
+#endif
     /*
      * Initialize Ethernet controller.
      */
