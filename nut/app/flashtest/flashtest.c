@@ -187,7 +187,8 @@ int main(void)
     dword_aligned_end = (void*)((iap_flash_end - 0xff + strlen(pattern))
                                 & 0xfffffff0);
 
-    printf("Write to programmed flash\n");
+    memset(buffer, 0, sizeof(buffer));
+    printf("Write to NULL byte/halfword/word toprogrammed flash\n");
     res = IapFlashWrite(dword_aligned_end - 1, buffer, 1,
                         FLASH_ERASE_NEVER);
     printf("%40s %3d: ", "0x00 at (address & 3 == 3). Res", res);
