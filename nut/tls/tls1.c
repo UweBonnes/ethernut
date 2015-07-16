@@ -2104,27 +2104,5 @@ SSL * ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
 }
 #endif
 
-#if !defined(TLS_SSL_CERT_VERIFICATION)
-int ssl_verify_cert(const SSL *ssl)
-{
-    printf("%s", unsupported_str);
-    return -1;
-}
-
-
-const char * ssl_get_cert_dn(const SSL *ssl, int component)
-{
-    printf("%s", unsupported_str);
-    return NULL;
-}
-
-const char * ssl_get_cert_subject_alt_dnsname(const SSL *ssl, int index)
-{
-    printf("%s", unsupported_str);
-    return NULL;
-}
-
-#endif  /* TLS_SSL_CERT_VERIFICATION */
-
 #endif /* TLS_BINDINGS */
 
