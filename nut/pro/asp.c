@@ -79,6 +79,7 @@
 #include <pro/httpd.h>
 #include <pro/asp.h>
 #include <arpa/inet.h>
+#include <dev/board.h>
 
 extern CONFNET confnet;
 
@@ -140,6 +141,11 @@ static void ProcessAspFunction(char *pASPFunction, FILE * stream)
 
     if (strstr(pASPFunction, "nut_gateway") != NULL) {
         fputs(inet_ntoa(confnet.cdn_gateway), stream);
+        return;
+    }
+
+    if (strstr(pASPFunction, "nut_board") != NULL) {
+        fprintf(stream, "%s", BOARDNAME);
         return;
     }
 
