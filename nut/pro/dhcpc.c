@@ -110,12 +110,11 @@
 #include <net/netdebug.h>
 #endif
 
-#if 0
-/* Use for local debugging. */
-#define NUTDEBUG
+#if defined(NUTDEBUG)
 #include <stdio.h>
-#define __tcp_trs stdout
-static uint_fast8_t __tcp_trf = 1;
+#define DHCPPRINTF(args,...) do{printf(args,##__VA_ARGS__); fflush(stdout);}while(0);
+#else
+#define DHCPPRINTF(args,...)
 #endif
 
 /*!
@@ -613,11 +612,7 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
     while (*op != DHCPOPT_END && left > 0) {
         uint8_t ol;
 
-#ifdef NUTDEBUG
-        if (__tcp_trf) {
-            fprintf(__tcp_trs, "[DHCP-Opt-%u]", *op);
-        }
-#endif
+        DHCPPRINTF("[DHCP-Opt-%u]", *op);
         /* Pad option is used for boundary alignment. */
         if (*op == DHCPOPT_PAD) {
             op++;
@@ -704,11 +699,7 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
         (cfgp->dyn_msgtyp != DHCP_OFFER &&      /* */
          cfgp->dyn_msgtyp != DHCP_ACK &&        /* */
          cfgp->dyn_msgtyp != DHCP_NAK)) {
-#ifdef NUTDEBUG
-        if (__tcp_trf) {
-            fprintf(__tcp_trs, "[DHCP-Parse Error]");
-        }
-#endif
+        DHCPPRINTF("[DHCP-Parse Error]");
         ReleaseDynCfg(cfgp);
         return 0;
     }
@@ -892,11 +883,7 @@ static int DhcpSendMessage(UDPSOCKET * sock, uint32_t addr, BOOTP *bp, size_t le
     if (len < MIN_DHCP_MSGSIZE) {
         len = MIN_DHCP_MSGSIZE;
     }
-#ifdef NUTDEBUG
-    if (__tcp_trf) {
-        fprintf(__tcp_trs, "[DHCP-Send to %s]", inet_ntoa(addr));
-    }
-#endif
+    DHCPPRINTF("[DHCP-Send to %s]", inet_ntoa(addr));
     if (NutUdpSendTo(sock, addr, DHCP_SERVERPORT, bp, len) < 0) {
         dhcpError = DHCPERR_TRANSMIT;
         return -1;
@@ -932,14 +919,12 @@ static int DhcpRecvMessage(UDPSOCKET * sock, uint32_t xid, BOOTP *bp, uint32_t t
     for (;;) {
         rc = NutUdpReceiveFrom(sock, &addr, &port, bp, sizeof(BOOTP), wtim);
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
-            if (rc > 0) {
-                fprintf(__tcp_trs, "[DHCP-Recv from %s]", inet_ntoa(addr));
-            } else if (rc < 0) {
-                fprintf(__tcp_trs, "[DHCP-Recv Error]");
-            } else {
-                fprintf(__tcp_trs, "[DHCP-Recv Timeout %lu]", tmo);
-            }
+        if (rc > 0) {
+            DHCPPRINTF("[DHCP-Recv from %s]", inet_ntoa(addr));
+        } else if (rc < 0) {
+            DHCPPRINTF("[DHCP-Recv Error]");
+        } else {
+            DHCPPRINTF("[DHCP-Recv Timeout %lu]", tmo);
         }
 #endif
         /* Immediately return on receive errors and timeouts. */
@@ -1264,47 +1249,45 @@ THREAD(NutDhcpClient, arg)
     for (;;) {
         procStart = NutGetSeconds();
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
-            fprintf(__tcp_trs, "\n[%u.DHCP-", retries + 1);
-            switch (dhcpState) {
-            case DHCPST_INIT:
-                fprintf(__tcp_trs, "INIT]");
-                break;
-            case DHCPST_SELECTING:
-                fprintf(__tcp_trs, "SELECTING]");
-                break;
-            case DHCPST_REQUESTING:
-                fprintf(__tcp_trs, "REQUESTING]");
-                break;
-            case DHCPST_REBOOTING:
-                fprintf(__tcp_trs, "REBOOTING %s]", inet_ntoa(last_ip));
-                break;
-            case DHCPST_BOUND:
-                fprintf(__tcp_trs, "BOUND %lu]", procStart - leaseStart);
-                break;
-            case DHCPST_RENEWING:
-                fprintf(__tcp_trs, "RENEWING %lu]", procStart - leaseStart);
-                break;
-            case DHCPST_REBINDING:
-                fprintf(__tcp_trs, "REBINDING %lu]", procStart - leaseStart);
-                break;
-            case DHCPST_INFORMING:
-                fprintf(__tcp_trs, "INFORMING]");
-                break;
-            case DHCPST_RELEASING:
-                fprintf(__tcp_trs, "RELEASING]");
-                break;
-            case DHCPST_IDLE:
-                if (dhcpError) {
-                    fprintf(__tcp_trs, "ERROR %u]", dhcpError);
-                } else {
-                    fprintf(__tcp_trs, "IDLE]");
-                }
-                break;
-            default:
-                fprintf(__tcp_trs, "UNKNOWN %u]", dhcpState);
-                break;
+        DHCPPRINTF("\n[%u.DHCP-", retries + 1);
+        switch (dhcpState) {
+        case DHCPST_INIT:
+            DHCPPRINTF("INIT]");
+            break;
+        case DHCPST_SELECTING:
+            DHCPPRINTF("SELECTING]");
+            break;
+        case DHCPST_REQUESTING:
+            DHCPPRINTF("REQUESTING]");
+            break;
+        case DHCPST_REBOOTING:
+            DHCPPRINTF("REBOOTING %s]", inet_ntoa(last_ip));
+            break;
+        case DHCPST_BOUND:
+            DHCPPRINTF("BOUND %lu]", procStart - leaseStart);
+            break;
+        case DHCPST_RENEWING:
+            DHCPPRINTF("RENEWING %lu]", procStart - leaseStart);
+            break;
+        case DHCPST_REBINDING:
+            DHCPPRINTF("REBINDING %lu]", procStart - leaseStart);
+            break;
+        case DHCPST_INFORMING:
+            DHCPPRINTF("INFORMING]");
+            break;
+        case DHCPST_RELEASING:
+            DHCPPRINTF("RELEASING]");
+            break;
+        case DHCPST_IDLE:
+            if (dhcpError) {
+                DHCPPRINTF("ERROR %u]", dhcpError);
+            } else {
+                DHCPPRINTF("IDLE]");
             }
+            break;
+        default:
+            DHCPPRINTF("UNKNOWN %u]", dhcpState);
+            break;
         }
 #endif
 
@@ -1900,11 +1883,7 @@ int NutNetDhcpIfSetup(const char *name, uint32_t timeout)
          * we got a valid configuration from DHCP.
          */
         if (dhcpState == DHCPST_BOUND) {
-#ifdef NUTDEBUG
-            if (__tcp_trf) {
-                fprintf(__tcp_trs, "[DHCP-Config %s]", inet_ntoa(dhcpConfig->dyn_yiaddr));
-            }
-#endif
+            DHCPPRINTF("[DHCP-Config %s]", inet_ntoa(dhcpConfig->dyn_yiaddr));
             NutNetStaticIfSetup(name, dhcpConfig->dyn_yiaddr, dhcpConfig->dyn_netmask, dhcpConfig->dyn_gateway);
             NutDnsConfig2(NULL, NULL, dhcpConfig->dyn_pdns, dhcpConfig->dyn_sdns);
             return 0;
@@ -1915,11 +1894,7 @@ int NutNetDhcpIfSetup(const char *name, uint32_t timeout)
          * ARP or a similar function implemented by the application.
          */
         if (nif->if_local_ip) {
-#ifdef NUTDEBUG
-            if (__tcp_trf) {
-                fprintf(__tcp_trs, "[DHCP-External %s]", inet_ntoa(nif->if_local_ip));
-            }
-#endif
+            DHCPPRINTF("[DHCP-External %s]", inet_ntoa(nif->if_local_ip));
             return 0;
         }
 
@@ -1928,11 +1903,7 @@ int NutNetDhcpIfSetup(const char *name, uint32_t timeout)
          * then let's use it.
          */
         if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) != 0) {
-#ifdef NUTDEBUG
-            if (__tcp_trf) {
-                fprintf(__tcp_trs, "[DHCP-Reusing %s]", inet_ntoa(confnet.cdn_ip_addr));
-            }
-#endif
+            DHCPPRINTF("[DHCP-Reusing %s]", inet_ntoa(confnet.cdn_ip_addr));
             NutNetIfConfig2(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask, confnet.cdn_gateway);
             return 0;
         }
@@ -2027,6 +1998,9 @@ int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout)
      * magically enable the brain dead interface.
      */
     memcpy(nif->if_mac, confnet.cdn_mac, 6);
+    DHCPPRINTF("Trying MAC %02x.%02x.%02x.%02x.%02x.%02x\n",
+               nif->if_mac[0], nif->if_mac[1], nif->if_mac[2],
+               nif->if_mac[3], nif->if_mac[4], nif->if_mac[5] );
     NutSleep(500);
 
     /*
@@ -2062,11 +2036,7 @@ int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout)
          * we got a valid configuration from DHCP.
          */
         if (dhcpState == DHCPST_BOUND) {
-#ifdef NUTDEBUG
-            if (__tcp_trf) {
-                fprintf(__tcp_trs, "[DHCP-Config %s]", inet_ntoa(dhcpConfig->dyn_yiaddr));
-            }
-#endif
+            DHCPPRINTF("[DHCP-Config %s]", inet_ntoa(dhcpConfig->dyn_yiaddr));
             NutNetIfSetup(dev, dhcpConfig->dyn_yiaddr, dhcpConfig->dyn_netmask, dhcpConfig->dyn_gateway);
             NutDnsConfig2(NULL, NULL, dhcpConfig->dyn_pdns, dhcpConfig->dyn_sdns);
             return 0;
@@ -2077,11 +2047,7 @@ int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout)
          * ARP or a similar function implemented by the application.
          */
         if (nif->if_local_ip) {
-#ifdef NUTDEBUG
-            if (__tcp_trf) {
-                fprintf(__tcp_trs, "[DHCP-External %s]", inet_ntoa(nif->if_local_ip));
-            }
-#endif
+            DHCPPRINTF("[DHCP-External %s]", inet_ntoa(nif->if_local_ip));
             return 0;
         }
 
@@ -2090,13 +2056,9 @@ int NutDhcpIfConfig(const char *name, uint8_t * mac, uint32_t timeout)
          * then let's use it.
          */
         if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) != 0) {
-#ifdef NUTDEBUG
-            if (__tcp_trf) {
-                fprintf(__tcp_trs, "[DHCP-Reusing %s]", inet_ntoa(confnet.cdn_ip_addr));
-            }
-#endif
-            NutNetIfConfig2(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask, confnet.cdn_gateway);
-            return 0;
+                DHCPPRINTF("[DHCP-Reusing %s]", inet_ntoa(confnet.cdn_ip_addr));
+                NutNetIfConfig2(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask, confnet.cdn_gateway);
+                return 0;
         }
     }
     return -1;
