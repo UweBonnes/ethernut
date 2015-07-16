@@ -94,8 +94,12 @@ static char *html_mt = "text/html";
 static void Fatal(char *msg) NUT_NORETURN_FUNC;
 void Fatal(char *msg)
 {
-    puts(msg);
-    for (;;);
+    while(1) {
+        /* Print a message ... */
+        puts(msg);
+        /* Give Debugger a chancd to attach */
+        NutSleep(1000);
+    }
 }
 
 /*

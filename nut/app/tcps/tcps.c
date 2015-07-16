@@ -91,10 +91,12 @@ static time_t start_time;
  */
 static void FatalError(char *msg)
 {
-    /* Print a message ... */
-    puts(msg);
-    /* ... and never return. */
-    for (;;);
+    while(1) {
+        /* Print a message ... */
+        puts(msg);
+        /* Give Debugger a chancd to attach */
+        NutSleep(1000);
+    }
 }
 
 /*

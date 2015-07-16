@@ -455,7 +455,12 @@ int main(void)
 
     /* Initialize the Ethernet device and print our IP address. */
     if (InitEthernetDevice()) {
-        for(;;);
+        while(1) {
+            /* Print a message ... */
+        puts("Init ETH failed");
+        /* Give Debugger a chancd to attach */
+        NutSleep(1000);
+        }
     }
 #if defined(DEV_ETHER)
     printf("IP Addr: %s\n", inet_ntoa(confnet.cdn_ip_addr));
