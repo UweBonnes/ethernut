@@ -89,8 +89,8 @@
 *
 * Any other than 0 seems to create problems with Atmel's evaluation kits.
 */
-#ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR            1
+#ifndef NIC_PHY_ADDR_DEPRECATED
+#define NIC_PHY_ADDR_DEPRECATED            1
 #endif
 
 /*!
@@ -203,7 +203,7 @@ static uint16_t phy_inw(uint8_t reg)
     AVR32_MACB.man = (AVR32_MACB_SOF_MASK & (0x01 << AVR32_MACB_SOF_OFFSET)) // SOF
         | (2 << AVR32_MACB_CODE_OFFSET) // Code
         | (2 << AVR32_MACB_RW_OFFSET)   // Read operation
-        | ((NIC_PHY_ADDR & 0x1f) << AVR32_MACB_PHYA_OFFSET)     // Phy Add
+        | ((NIC_PHY_ADDR_DEPRECATED & 0x1f) << AVR32_MACB_PHYA_OFFSET)     // Phy Add
         | (reg << AVR32_MACB_REGA_OFFSET);      // Reg Add
 
     // wait for PHY to be ready
@@ -233,7 +233,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
     AVR32_MACB.man = ((AVR32_MACB_SOF_MASK & (0x01 << AVR32_MACB_SOF_OFFSET))        // SOF
                  | (2 << AVR32_MACB_CODE_OFFSET)        // Code
                  | (1 << AVR32_MACB_RW_OFFSET)  // Write operation
-                 | ((NIC_PHY_ADDR & 0x1f) << AVR32_MACB_PHYA_OFFSET)    // Phy Add
+                 | ((NIC_PHY_ADDR_DEPRECATED & 0x1f) << AVR32_MACB_PHYA_OFFSET)    // Phy Add
                  | (reg << AVR32_MACB_REGA_OFFSET))     // Reg Add
         | (val & 0xffff);       // Data
 
@@ -274,7 +274,7 @@ static int EmacReset(NUTDEVICE * dev)
     macb->isr;
     NutExitCritical();
 
-#if defined(PHY_MODE_RMII)
+#if defined(PHY_MODE_RMII_DEPRECATED)
     macb->usrio &= ~AVR32_MACB_RMII_MASK;
 #else
     macb->usrio |= AVR32_MACB_RMII_MASK;
@@ -294,9 +294,9 @@ static int EmacReset(NUTDEVICE * dev)
     NutDelay(255);
 
     /* Register PHY */
-    rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
+    rc = NutRegisterPhy( NIC_PHY_ADDR_DEPRECATED, phy_outw, phy_inw);
 	
-#ifndef PHY_MODE_RMII
+#ifndef PHY_MODE_RMII_DEPRECATED
 	/* Clear MII isolate. */
 	phyval = 0;
 	NutPhyCtl(PHY_CTL_ISOLATE, &phyval);
@@ -741,7 +741,7 @@ int EmacInit(NUTDEVICE * dev)
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     /* Reserve Pins with the GPIO Controller */
-#if !defined(PHY_MODE_RMII)
+#if !defined(PHY_MODE_RMII_DEPRECATED)
     gpio_enable_module_pin(AVR32_MACB_CRS_0_PIN, AVR32_MACB_CRS_0_FUNCTION);
     gpio_enable_module_pin(AVR32_MACB_COL_0_PIN, AVR32_MACB_COL_0_FUNCTION);
     gpio_enable_module_pin(AVR32_MACB_RX_CLK_0_PIN, AVR32_MACB_RX_CLK_0_FUNCTION);

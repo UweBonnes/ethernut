@@ -2849,7 +2849,7 @@ nutdev =
                 file = "include/cfg/phycfg.h"
             },
             {
-                macro = "NIC_PHY_ADDR",
+                macro = "NIC_PHY_ADDR_DEPRECATED",
                 brief = "PHY Address",
                 description = "Default is 1 for EVK1100 and EVK1105.\n\n",
                 flavor = "integer",
@@ -2865,8 +2865,8 @@ nutdev =
                 file = "include/cfg/phycfg.h"
             },
             {
-                macro = "PHY_MODE_RMII",
-                brief = "PHY_MODE_RMII",
+                macro = "PHY_MODE_RMII_DEPRECATED",
+                brief = "PHY_MODE_RMII_DEPRECATED",
                 description = "Use RMII mode for the phy, default is MII mode",
                 flavor = "boolean",
                 file = "include/cfg/phycfg.h"

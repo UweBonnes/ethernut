@@ -326,7 +326,7 @@ void PrintBlockingDebug(char *Str);
 
 /*! \name AT91SAM9G45-EKES-Specific LAN defintitions */
 /*@{*/
-#define PHY_MODE_RMII
+#define PHY_MODE_RMII_DEPRECATED
 #define EMAC_PIO_ASR                PIO_ASR_OFF
 #define PHY_MII_PINS_A          (PA10_ETX0_A | PA11_ETX1_A | PA12_ERX0_A | PA13_ERX1_A | PA14_ETXEN_A | PA15_ERXDV_A | PA16_ERXER_A | \
                              PA17_ETXCK_A | PA18_EMDC_A | PA19_EMDIO_A)

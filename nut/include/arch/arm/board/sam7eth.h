@@ -59,7 +59,7 @@
 /*
  * Ethernet devices
  */
-#define PHY_MODE_RMII
+#define PHY_MODE_RMII_DEPRECATED
 #include <dev/at91_emac.h>
 
 /*

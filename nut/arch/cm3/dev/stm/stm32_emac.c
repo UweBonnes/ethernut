@@ -83,7 +83,7 @@
  * For the benefit of EMC the GPIO is run at the lowest speed
  * required to operate. For RMII this is 50 MHz for MII 25 MHz.
  */
-#ifdef PHY_MODE_RMII
+#ifdef PHY_MODE_RMII_DEPRECATED
 #define EMAC_GPIO_SPEED         GPIO_CFG_SPEED_FAST
 #else
 #define EMAC_GPIO_SPEED         GPIO_CFG_SPEED_MED
@@ -103,8 +103,8 @@
 #define EMAC_TX_BUFSIZ          1536
 #endif
 
-#ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR            1
+#ifndef NIC_PHY_ADDR_DEPRECATED
+#define NIC_PHY_ADDR_DEPRECATED            1
 #endif
 
 /*
@@ -288,7 +288,7 @@ static uint16_t phy_inw(uint8_t reg)
     /* PHY read command. */
     tempReg = inr(&(ETH->MACMIIAR));
     tempReg &= 0xffff0020;
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
+    tempReg |= ((NIC_PHY_ADDR_DEPRECATED) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
     outr(&(ETH->MACMIIAR), tempReg);
 
     /* Wait until PHY logic completed. */
@@ -326,7 +326,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
     outr(&(ETH->MACMIIDR), val);
     tempReg = inr(&(ETH->MACMIIAR));
     tempReg &= 0xffff0020;
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
+    tempReg |= ((NIC_PHY_ADDR_DEPRECATED) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
     outr(&(ETH->MACMIIAR), tempReg);
 
     /* Wait until PHY logic completed. */
@@ -374,7 +374,7 @@ static int EmacReset(void)
     RCC->AHB1RSTR &= ~RCC_AHB1RSTR_ETHMACRST;
 #endif
     /* Register PHY to be able to reset it */
-    rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
+    rc = NutRegisterPhy( NIC_PHY_ADDR_DEPRECATED, phy_outw, phy_inw);
 
     /* Reset PHY
        (Note that this does not set all PHY registers to reset values!) */
@@ -383,7 +383,7 @@ static int EmacReset(void)
     NutSleep(250);
 
     /* Register PHY again to do all the initianlization */
-    rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
+    rc = NutRegisterPhy( NIC_PHY_ADDR_DEPRECATED, phy_outw, phy_inw);
 
 #if 0
     /* Clear MII isolate. */
@@ -893,8 +893,8 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 int EmacInit(NUTDEVICE * dev)
 {
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
-    EMPRINTF("Using Mode %s, Remap %s, NIC_PHY_ADDR %d, \n",
-#ifdef PHY_MODE_RMII
+    EMPRINTF("Using Mode %s, Remap %s, NIC_PHY_ADDR_DEPRECATED %d, \n",
+#ifdef PHY_MODE_RMII_DEPRECATED
              "RMII",
 #else
              "MII",
@@ -904,7 +904,7 @@ int EmacInit(NUTDEVICE * dev)
 #else
              "disabled",
 #endif
-             NIC_PHY_ADDR
+             NIC_PHY_ADDR_DEPRECATED
         );
 
     /* Clear EMACINFO structure. */
@@ -944,7 +944,7 @@ int EmacInit(NUTDEVICE * dev)
     GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TX_EN (50MHz)
     GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TXD0 (50MHz)
     GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TXD1 (50MHz)
-    #if !defined(PHY_MODE_RMII)
+    #if !defined(PHY_MODE_RMII_DEPRECATED)
         /* Configure additional MII lines as alternate function */
         GpioPinConfigSet(NUTGPIO_PORTC,  2, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MII_TXD2 (50MHz)
         GpioPinConfigSet(NUTGPIO_PORTB,  8, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MII_TXD3 (50MHz)
@@ -986,7 +986,7 @@ int EmacInit(NUTDEVICE * dev)
     RCC->CFGR = (RCC->CFGR & ~(RCC_CFGR_MCO1 | RCC_CFGR_MCO1PRE)) | RCC_CFGR_MCO1_1;
    #endif /* PHY_CLOCK_MCO */
 
-  #if !defined(PHY_MODE_RMII)
+  #if !defined(PHY_MODE_RMII_DEPRECATED)
     GpioPinConfigSet(NUTGPIO_PORTB, 8, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // ETH_MII_TXD3
     GPIO_PinAFConfig(NUTGPIO_PORTB,  8,  GPIO_AF_ETH); // ETH_MII_TXD3
 
@@ -1006,7 +1006,7 @@ int EmacInit(NUTDEVICE * dev)
     GPIO_PinAFConfig(EMAC_RXD2_PORT, EMAC_RXD2_PIN, GPIO_AF_ETH); // ETH_MII_RXD2
     GPIO_PinAFConfig(EMAC_RXD3_PORT, EMAC_RXD3_PIN, GPIO_AF_ETH); // ETH_MII_RXD3
     GPIO_PinAFConfig(EMAC_RX_ER_PORT, 10, GPIO_AF_ETH); // ETH_MII_RX_ER
-  #endif /* !PHY_MODE_RMII */
+  #endif /* !PHY_MODE_RMII_DEPRECATED */
 #endif
 
     /*
@@ -1016,7 +1016,7 @@ int EmacInit(NUTDEVICE * dev)
 #define SYSCFG_PMC_MII_RMII SYSCFG_PMC_MII_RMII_SEL
 #endif
 
-#ifdef PHY_MODE_RMII
+#ifdef PHY_MODE_RMII_DEPRECATED
     /* switch to RMII mode */
  #ifdef STM32F10X_CL
     CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));

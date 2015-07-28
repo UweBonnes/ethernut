@@ -94,8 +94,8 @@
  *
  * Any other than 0 seems to create problems with Atmel's evaluation kits.
  */
-#ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR            0
+#ifndef NIC_PHY_ADDR_DEPRECATED
+#define NIC_PHY_ADDR_DEPRECATED            0
 #endif
 
 /*!
@@ -123,7 +123,7 @@
  * we use the reduced MII for this CPU. However, this should be
  * handled by the Configurator.
  */
-#define PHY_MODE_RMII
+#define PHY_MODE_RMII_DEPRECATED
 
 //#define EMAC_PIO_PER            PIOA_PER
 //#define EMAC_PIO_OER            PIOA_OER
@@ -143,7 +143,7 @@
 #define PHY_MDC_BIT             PA20_EMDC_A     /*!< \brief Management data clock pin. */
 #define PHY_MDIO_BIT            PA21_EMDIO_A    /*!< \brief Management data I/O pin. */
 
-#ifndef PHY_MODE_RMII
+#ifndef PHY_MODE_RMII_DEPRECATED
 #define PHY_TXD2_BIT            PA10_ETX2_B     /*!< \brief Transmit data bit 2 pin. */
 #define PHY_TXD3_BIT            PA11_ETX3_B     /*!< \brief Transmit data bit 3 pin. */
 #define PHY_TXER_TXD4_BIT       PA22_ETXER_B    /*!< \brief Transmit error pin. */
@@ -167,7 +167,7 @@
     | _BV(PHY_MDC_BIT) \
     | _BV(PHY_MDIO_BIT)
 
-#ifdef PHY_MODE_RMII
+#ifdef PHY_MODE_RMII_DEPRECATED
 #define PHY_MII_PINS_B 0
 #else
 #define PHY_MII_PINS_B 0 \
@@ -336,7 +336,7 @@ static uint16_t phy_inw(uint8_t reg)
 {
     /* PHY read command. */
     outr(EMAC_MAN, EMAC_SOF | EMAC_RW_READ | EMAC_CODE |
-        (NIC_PHY_ADDR << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB));
+        (NIC_PHY_ADDR_DEPRECATED << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB));
 
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
@@ -355,7 +355,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
 {
     /* PHY write command. */
     outr(EMAC_MAN, EMAC_SOF | EMAC_RW_WRITE | EMAC_CODE |
-        (NIC_PHY_ADDR << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB) | val);
+        (NIC_PHY_ADDR_DEPRECATED << EMAC_PHYA_LSB) | (reg << EMAC_REGA_LSB) | val);
 
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
@@ -387,7 +387,7 @@ static int EmacReset(uint32_t tmo)
     outr(EMAC_PIO_PDR, PHY_MII_PINS_A | PHY_MII_PINS_B);
 
     /* Enable receive and transmit clocks and set MII mode. */
-#ifdef PHY_MODE_RMII
+#ifdef PHY_MODE_RMII_DEPRECATED
     outr(EMAC_USRIO, EMAC_RMII | EMAC_CLKEN);
 #else
     outr(EMAC_USRIO, EMAC_CLKEN);
@@ -420,7 +420,7 @@ static int EmacReset(uint32_t tmo)
     NutPhyCtl(PHY_CTL_RESET, &phyval);
 #endif
 
-#ifndef PHY_MODE_RMII
+#ifndef PHY_MODE_RMII_DEPRECATED
     /* Clear MII isolate. */
     phyval = 0;
     NutPhyCtl(PHY_CTL_ISOLATE, &phyval);

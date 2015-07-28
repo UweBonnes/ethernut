@@ -103,8 +103,8 @@
  *
  * Any other than 0 seems to create problems with Atmel's evaluation kits.
  */
-#ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR            0
+#ifndef NIC_PHY_ADDR_DEPRECATED
+#define NIC_PHY_ADDR_DEPRECATED            0
 #endif
 
 #ifndef TRUE
@@ -166,7 +166,7 @@ static uint16_t phy_inw(uint8_t reg)
 {
     unsigned int tout;
 
-    LPC_EMAC->MADR = (NIC_PHY_ADDR << 8) | reg;
+    LPC_EMAC->MADR = (NIC_PHY_ADDR_DEPRECATED << 8) | reg;
     LPC_EMAC->MCMD = EMAC_MCMD_READ;
 
     /* Wait until operation completed */
@@ -192,7 +192,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
 {
     unsigned int tout;
 
-    LPC_EMAC->MADR = (NIC_PHY_ADDR << 8) | reg;
+    LPC_EMAC->MADR = (NIC_PHY_ADDR_DEPRECATED << 8) | reg;
     LPC_EMAC->MWTD = val;
 
     /* Wait utill operation completed */
@@ -356,7 +356,7 @@ static int Lpc17xxEmacReset(NUTDEVICE *dev)
     LPC_EMAC->CLRT = EMAC_CLRT_DEF;
     LPC_EMAC->IPGR = EMAC_IPGR_P2_DEF;
 
-#ifdef PHY_MODE_RMII
+#ifdef PHY_MODE_RMII_DEPRECATED
     /* Enable Reduced MII interface. */
     LPC_EMAC->Command = EMAC_CR_RMII | EMAC_CR_PASS_RUNT_FRM;
 #endif
@@ -374,7 +374,7 @@ static int Lpc17xxEmacReset(NUTDEVICE *dev)
     */
     rc = NutRegisterPhy(1, phy_outw, phy_inw);
 
-#ifndef PHY_MODE_RMII
+#ifndef PHY_MODE_RMII_DEPRECATED
     /* Clear MII isolate. */
     phyval = 0;
     NutPhyCtl(PHY_CTL_ISOLATE, &phyval);
@@ -1174,7 +1174,7 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
     GpioPinConfigSet(NUTGPIO_PORT1, 16, GPIO_CFG_PERIPHERAL1);  /* ETH_MDC  */
     GpioPinConfigSet(NUTGPIO_PORT1, 17, GPIO_CFG_PERIPHERAL1);  /* ETH_MDIO */
 
-#ifndef PHY_MODE_RMII
+#ifndef PHY_MODE_RMII_DEPRECATED
     /* Configure further I/O pins for MII interface */
     GpioPinConfigSet(NUTGPIO_PORT1, 2, GPIO_CFG_PERIPHERAL1);   /* ETH_TXD2 */
     GpioPinConfigSet(NUTGPIO_PORT1, 3, GPIO_CFG_PERIPHERAL1);   /* ETH_TXD3 */

@@ -114,7 +114,7 @@
 #define EMAC_TX_BUFSIZ          1536
 #endif
 
-#define NIC_PHY_ADDR            31
+#define NIC_PHY_ADDR_DEPRECATED            31
 
 #define PHY_TXCLK_ISOLATE_BIT   0
 #define PHY_REFCLK_XT2_BIT      0
@@ -247,7 +247,7 @@ static unsigned int rxBufIdx;
 static int phy_inw(uint8_t reg, uint16_t *val)
 {
     /* PHY read command. */
-    outr(EMAC_MAN, _BV(30) | _BV(29) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18));
+    outr(EMAC_MAN, _BV(30) | _BV(29) | _BV(17) | ((NIC_PHY_ADDR_DEPRECATED) << 23) | ((reg & 0x1F) << 18));
 
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
@@ -267,7 +267,7 @@ static int phy_inw(uint8_t reg, uint16_t *val)
 static int phy_outw(uint8_t reg, uint16_t *val)
 {
     /* PHY write command. */
-    outr(EMAC_MAN, _BV(30) | _BV(28) | _BV(17) | ((NIC_PHY_ADDR) << 23) | ((reg & 0x1F) << 18) | *val);
+    outr(EMAC_MAN, _BV(30) | _BV(28) | _BV(17) | ((NIC_PHY_ADDR_DEPRECATED) << 23) | ((reg & 0x1F) << 18) | *val);
 
     /* Wait until PHY logic completed. */
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
