@@ -39,9 +39,9 @@ AC_ARG_ENABLE(qnutconf,
 )
 
 AC_ARG_ENABLE(nutdisc,
-  AS_HELP_STRING([--disable-nutdisc],[disable NutOs Discoverer]),
+  AS_HELP_STRING([--enable-nutdisc],[enable WX NutOs Discoverer]),
   [],
-  [enable_nutdisc=yes]
+  [enable_nutdisc=no]
 )
 
 AC_ARG_ENABLE(qnutdisc,
