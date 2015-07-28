@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2011-2013 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2011-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -39,7 +39,7 @@
  * \endverbatim
  */
 
-/* GPIO Configuration for the GPIO of L1/F2/F4 */
+/* GPIO Configuration for the GPIO of L0/L1/F2/F3/F4/F7 */
 
 #include <cfg/os.h>
 #include <cfg/arch.h>
@@ -68,6 +68,18 @@ const uint16_t ospeed_values[4] =
 #else
 #warning "Unknown STM32 family"
 #endif
+
+static void Stm32GpioCompensationEnable(void)
+{
+#if defined(SYSCFG_CMPCR_CMP_PD)
+    /* On F4, if even one pin needs fastest (high) speed, we need to
+     * enable the SYSCFG clock and the IO compensation cell
+     */
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
+    CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD));
+    /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
+#endif
+}
 
 /*!
  * \brief Get pin configuration.
@@ -111,6 +123,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     switch (speed)
     {
     case 0:  rc |= GPIO_CFG_SPEED_SLOW; break;
+    case 1:  rc |= GPIO_CFG_SPEED_MED;  break ;
     case 2:  rc |= GPIO_CFG_SPEED_HIGH; break;
     case 3:  rc |= GPIO_CFG_SPEED_FAST; break;
      }
@@ -191,8 +204,12 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     /* For non-output, ospeedr is don't care*/
     switch(flags & GPIO_CFG_SPEED_FAST)
     {
-    case GPIO_CFG_SPEED_FAST:
+    case GPIO_CFG_SPEED_HIGH:
         gpio->OSPEEDR |=  (3 <<(bit << 1));
+        Stm32GpioCompensationEnable();
+        break;
+    case GPIO_CFG_SPEED_FAST:
+        gpio->OSPEEDR |=  (2 <<(bit << 1));
         break;
     case GPIO_CFG_SPEED_MED:
         gpio->OSPEEDR |=  (0x1 <<(bit << 1));
@@ -212,15 +229,6 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     {
         gpio->MODER |=  1<<((bit << 1));
     }
-#if defined(SYSCFG_CMPCR_CMP_PD)
-    if ((flags & GPIO_CFG_SPEED_HIGH) == GPIO_CFG_SPEED_HIGH) {
-        /* On F4, if even one pin needs fastest (high) speed, we need to enable the SYSCFG clock
-           and the IO compensation cell (whatever this compensation cell is ?)*/
-        CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
-        CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD));
-        /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
-    }
-#endif
 
     /* Check the result. */
     if( GpioPinConfigGet( bank, bit ) != flags ) {
