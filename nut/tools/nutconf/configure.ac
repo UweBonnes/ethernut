@@ -15,12 +15,6 @@ AM_PROG_CC_C_O
 # Commandline arguments ###################################################################################
 
 
-AC_ARG_ENABLE(nutconf-gui,
-  AS_HELP_STRING([--disable-nutconf-gui],[disable GUI configuration tool build]),
-  [],
-  [enable_nutconf_gui=yes]
-)
-
 REQWX="2.9.1"
 nutconf_gui_ok=no
 if test x$enable_nutconf_gui = xyes; then
@@ -71,7 +65,7 @@ else
 	AC_MSG_WARN([nutconfgui won't be build])
 fi
 
-AM_CONDITIONAL(BUILD_NUTCONF_GUI, test x$nutconf_gui_ok = xyes)
+AM_CONDITIONAL(ENABLE_NUTCONF_GUI, test x$nutconf_gui_ok = xyes)
 
 AC_OUTPUT([
 Makefile

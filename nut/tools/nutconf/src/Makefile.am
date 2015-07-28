@@ -20,7 +20,7 @@ AM_CFLAGS =\
 
 bin_PROGRAMS = nutconfigure
 
-if BUILD_NUTCONF_GUI
+if ENABLE_NUTCONF_GUI
 
 bin_PROGRAMS += nutconf
 

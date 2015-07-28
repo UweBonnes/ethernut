@@ -32,6 +32,12 @@ AC_ARG_ENABLE(nutconf,
   [enable_nutconf=yes]
 )
 
+AC_ARG_ENABLE(nutconf-gui,
+  AS_HELP_STRING([--enable-nutconf-gui],[enable GUI configuration tool build]),
+  [],
+  [enable_nutconf_gui=no]
+)
+
 AC_ARG_ENABLE(qnutconf,
   AS_HELP_STRING([--disable-qnutconf],[disable qt configuration tool build]),
   [],
@@ -79,6 +85,7 @@ AM_CONDITIONAL(HAVE_GRAPHVIZ, $HAVE_GRAPHVIZ)
 
 AM_CONDITIONAL(ENABLE_CRUROM, test "x$enable_crurom" = "xyes")
 AM_CONDITIONAL(ENABLE_NUTCONF, test "x$enable_nutconf" = "xyes")
+AM_CONDITIONAL(ENABLE_NUTCONF_GUI, test "x$enable_nutconf_gui" = "xyes")
 AM_CONDITIONAL(ENABLE_QNUTCONF, test "x$enable_qnutconf" = "xyes")
 AM_CONDITIONAL(ENABLE_NUTDISC, test "x$enable_nutdisc" = "xyes")
 AM_CONDITIONAL(ENABLE_QNUTDISC, test "x$enable_qnutdisc" = "xyes")
