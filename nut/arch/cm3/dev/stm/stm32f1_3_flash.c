@@ -119,7 +119,7 @@ void FlashUntouch(void)
 static uint32_t FlashEnd(void)
 {
     uint16_t size;
-#if defined(MCU_STM32F3)
+#if defined(MCU_STM32F0) || defined(MCU_STM32F3)
     size = *(__I uint16_t *) 0x1FFFF7CC;
 #else
     size = *(__I uint16_t *) 0x1FFFF7E0;
