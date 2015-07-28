@@ -302,7 +302,7 @@ erase_done:
  *
  * \return FLASH Status: FLASH_COMPLETE or appropriate error.
  */
-static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
+static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
                                 FLASH_ERASE_MODE mode)
 {
     FLASH_Status rs = FLASH_COMPLETE;
@@ -310,7 +310,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     int i;
     uint32_t optcr = FLASH->OPTCR;
     void *wptr = dst;
-    void *rptr = src;
+    const void *rptr = src;
     uint32_t length = len;
     uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
     uint32_t flash_end_addr = FLASH_BASE + (flash_size << 10);
@@ -497,7 +497,7 @@ uint32_t IapFlashEnd(void)
  *
  * \return FLASH Status: FLASH_COMPLETE or appropriate error.
  */
-FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
+FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
                             FLASH_ERASE_MODE mode)
 {
     uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;

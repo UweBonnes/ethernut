@@ -57,7 +57,7 @@ static char *pattern =  "0123456789abcdef0123456789ABCDEF";
 static char *pattern1 = "FEDCBA9876543210fedcba987654321";
 static char *pattern2 = "0123456789abcdef0123456789ABCD";
 static char *pattern3 = "abcdef0123456789abcdef0123456";
-static char  pattern4 = 0x55;
+static const char  pattern4 = 0x55;
 
 /*
  * UART sample.

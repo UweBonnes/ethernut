@@ -215,14 +215,14 @@ static FLASH_Status FlashErasePage(void *address_in_page)
  *
  * \return FLASH Status: FLASH_COMPLETE or appropriate error.
  */
-FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
+FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
                                 FLASH_ERASE_MODE mode)
 {
     FLASH_Status rs = FLASH_COMPLETE;
     uint32_t sector_start, sector_end;
     int i;
     void *wptr = dst;
-    void *rptr = src;
+    const void *rptr = src;
     uint32_t length = len;
     volatile uint32_t *wrpr_bb  = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR , 0);
     volatile uint32_t *wrpr1_bb = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR1, 0);

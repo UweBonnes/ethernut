@@ -252,7 +252,7 @@ erase_done:
  *
  * \return FLASH Status: FLASH_COMPLETE or appropriate error.
  */
-static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
+static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
                             FLASH_ERASE_MODE mode)
 {
     FLASH_Status rs = FLASH_COMPLETE;
@@ -260,7 +260,7 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
     uint32_t page_start, page_end;
     int i;
     void *wptr = dst;
-    void *rptr = src;
+    const void *rptr = src;
     uint32_t length = len;
     if (len == 0)
         return FLASH_COMPLETE;
@@ -428,7 +428,7 @@ done:
  *
  * \return FLASH Status: FLASH_COMPLETE or appropriate error.
  */
-FLASH_Status IapFlashWrite( void* dst, void* src, size_t len,
+FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
                             FLASH_ERASE_MODE mode)
 {
     uint32_t iap_flash_end = FlashEnd();
@@ -635,7 +635,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
  *
  * \return FLASH_Status: FLASH_COMPLETE or appropriate error.
  */
-FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
+FLASH_Status Stm32FlashParamWrite(unsigned int pos, const void *data,
                                   size_t len)
 {
     FLASH_Status rs = 0;
