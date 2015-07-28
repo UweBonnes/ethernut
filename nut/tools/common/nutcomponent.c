@@ -292,16 +292,6 @@ static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
         fclose(fpl);
     }
 }
-
-#else
-static void DumpStack(FILE *fp, char * pos, lua_State * ls)
-{
-    if (fp && pos && ls);
-}
-static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
-{
-    if (fp && compo && level);
-}
 #endif
 
 /*!
