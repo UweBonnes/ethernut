@@ -79,6 +79,7 @@ static uint32_t pagelist[4] = {0,0,0,0};
 #endif
 
 #define ERASED_PATTERN_16 0xffff
+#define FLASH_ACCESS_SIZE 2
 
 #ifndef FLASH_CONF_SIZE
 #define FLASH_CONF_SIZE         FLASH_PAGE_SIZE
@@ -574,15 +575,16 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
     if (FLASH_CONF_SIZE > FLASH_PAGE_SIZE)
         return FLASH_ERR_CONF_LAYOUT;
 #if defined(FLASH_CONF_SIZE) && (FLASH_CONF_SIZE << 1) <= FLASH_PAGE_SIZE
+/* More than one FLASH_CONF_SIZE sectors fit into one FLASH_PAGE_SIZE */
 
     uint8_t  conf_page = 0;
-    uint16_t marker = *(uint16_t*) (flash_conf_sector + ((conf_page + 1)  * FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
+    uint16_t marker = *(uint16_t*) (flash_conf_sector + ((conf_page + 1)  * FLASH_CONF_SIZE) - FLASH_ACCESS_SIZE);
 
     if (len == 0)
         return FLASH_COMPLETE;
 
     /* Check boundaries */
-    if (pos + len + sizeof(ERASED_PATTERN_16) > FLASH_CONF_SIZE)
+    if (pos + len + FLASH_ACCESS_SIZE > FLASH_CONF_SIZE)
     {
         return FLASH_CONF_OVERFLOW;
     }
@@ -590,7 +592,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
     /* Find configuration page in CONF_SECTOR*/
     while ((marker !=  ERASED_PATTERN_16) && (conf_page < ((FLASH_PAGE_SIZE/FLASH_CONF_SIZE) - 1 ))) {
         conf_page++;
-        marker = *(uint32_t*)(flash_conf_sector + ((conf_page + 1)* FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
+        marker = *(uint32_t*)(flash_conf_sector + ((conf_page + 1)* FLASH_CONF_SIZE) - FLASH_ACCESS_SIZE);
     }
     if (marker !=  ERASED_PATTERN_16)
         /* no page sizes unit in CONF_SECTOR has a valid mark */
@@ -598,6 +600,7 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
 
     memcpy( data, (uint8_t *)((uint8_t*)flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos), len);
 #else
+    /* FLASH_CONF size and FLASH page size are the same */
     if (len == 0)
         return FLASH_COMPLETE;
 
@@ -643,15 +646,16 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     if(FLASH_CONF_SIZE > FLASH_PAGE_SIZE)
         return FLASH_ERR_CONF_LAYOUT;
 #if defined(FLASH_CONF_SIZE) && (FLASH_CONF_SIZE << 1) <= FLASH_PAGE_SIZE
+/* More than one FLASH_CONF_SIZE sectors fit into one FLASH_PAGE_SIZE */
     uint8_t  conf_page = 0;
-    uint16_t marker = *(uint16_t*) (flash_conf_sector + ((conf_page +1) * FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
+    uint16_t marker = *(uint16_t*) (flash_conf_sector + ((conf_page +1) * FLASH_CONF_SIZE) - FLASH_ACCESS_SIZE);
     FLASH_ERASE_MODE mode;
 
     if (len == 0)
         return FLASH_COMPLETE;
 
     /* Check top boundaries */
-    if (pos + len + sizeof(ERASED_PATTERN_16) > FLASH_CONF_SIZE)
+    if (pos + len + FLASH_ACCESS_SIZE > FLASH_CONF_SIZE)
     {
         return FLASH_BOUNDARY;
     }
@@ -659,7 +663,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     /* Find configuration page in CONF_SECTOR*/
     while ((marker !=  ERASED_PATTERN_16) && conf_page < ((FLASH_PAGE_SIZE/FLASH_CONF_SIZE) -1)) {
         conf_page++;
-        marker = *(uint16_t*)(flash_conf_sector + ((conf_page + 1)* FLASH_CONF_SIZE) - sizeof(ERASED_PATTERN_16));
+        marker = *(uint16_t*)(flash_conf_sector + ((conf_page + 1)* FLASH_CONF_SIZE) - FLASH_ACCESS_SIZE);
     }
     if (marker !=  ERASED_PATTERN_16) {
         /* no page sizes unit in CONF_SECTOR has a valid mark
@@ -717,6 +721,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     }
     rs = FlashWrite( flash_conf_sector + conf_page * FLASH_CONF_SIZE , buffer, FLASH_CONF_SIZE, mode);
 #else
+    /* FLASH_CONF size and FLASH page size are the same */
     /* Check top boundaries */
     if (pos + len > FLASH_PAGE_SIZE)
     {
