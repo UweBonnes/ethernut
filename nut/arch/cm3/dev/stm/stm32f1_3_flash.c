@@ -309,6 +309,17 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
         int prepend = 0, append = 0;
         uint16_t prepend_data = 0, append_data = 0;
 
+        /* Check if page needs erase*/
+        if ((mode == FLASH_ERASE_ALWAYS) ||
+            ((mode == FLASH_ERASE_FIRST_TOUCH) &&
+             (((pagelist[current_page/32] & (1 <<(current_page%32))) == 0)))) {
+            if (i < (FLASH_PAGE_SIZE>>1)) {
+                rs = FlashErasePage((uint32_t)wptr);
+                if (rs != FLASH_COMPLETE)
+                    /* Erase failed for any reason */
+                    goto done;
+            }
+        }
         if (length > FLASH_PAGE_SIZE)
             current_length = FLASH_PAGE_SIZE;
         length -= current_length;
@@ -326,17 +337,6 @@ static FLASH_Status FlashWrite( void* dst, void* src, size_t len,
                 if (saved_data != (ERASED_PATTERN_16 & 0xff))
                     return FLASH_ERR_ALIGNMENT;
                 append_data  = *(uint8_t*)( rptr + current_length -1) | (saved_data << 8);
-            }
-        }
-        /* Check if page needs erase*/
-        if ((mode == FLASH_ERASE_ALWAYS) ||
-            ((mode == FLASH_ERASE_FIRST_TOUCH) &&
-             (((pagelist[current_page/32] & (1 <<(current_page%32))) == 0)))) {
-            if (i < (FLASH_PAGE_SIZE>>1)) {
-                rs = FlashErasePage((uint32_t)wptr);
-                if (rs != FLASH_COMPLETE)
-                    /* Erase failed for any reason */
-                    goto done;
             }
         }
         /* Program the sector */
