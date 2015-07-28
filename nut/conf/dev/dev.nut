@@ -2878,6 +2878,7 @@ nutdev =
                 brief = "PHY_MODE_MII",
                 description = "Use MII mode for the phy, default is RMII mode",
                 flavor = "boolean",
+                provides = { "PHY_MODE_MII" },
                 file = "include/cfg/phycfg.h"
             },
             {
