@@ -32,7 +32,7 @@
  */
 
 #ifndef _INCLUDE_IAP_FLASH_H
-#define _INCLUDE__IAP_FLASH_H
+#define _INCLUDE_IAP_FLASH_H
 #include <sys/types.h>
 #include <cfg/memory.h>
 
@@ -69,19 +69,10 @@ extern FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena);
 extern uint32_t IapFlashEnd(void);
 extern void FlashUntouch(void);
 #else
-FLASH_Status  IapFlashWrite( void* dst, void* src, size_t len, FLASH_ERASE_MODE mode)
-{
-    return FLASH_NOT_IMPLEMENTED;
-}
-FLASH_Status  IapFlashWriteProtect(void *dst, size_t len, int ena)
-{
-    return FLASH_NOT_IMPLEMENTED;
-}
-uint32_t IapFlashEnd(void)
-{
-    return 0;
-}
-void FlashUntouch(void){};
+#define IapFlashWrite(x, y, z, xy) FLASH_NOT_IMPLEMENTED
+#define IapFlashWriteProtect() FLASH_NOT_IMPLEMENTED
+#define IapFlashEnd() 0
+#define FlashUntouch()
 #endif
 /* Most flash has a erased value of 0xffffffff. Use configurator to
  * indicate else
