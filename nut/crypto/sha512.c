@@ -1,18 +1,18 @@
 /*
  * Copyright (c) 2015, Cameron Rich
- * 
+ *
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * * Redistributions of source code must retain the above copyright notice, 
+ * * Redistributions of source code must retain the above copyright notice,
  *   this list of conditions and the following disclaimer.
- * * Redistributions in binary form must reproduce the above copyright notice, 
- *   this list of conditions and the following disclaimer in the documentation 
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
- * * Neither the name of the axTLS project nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of the axTLS project nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -30,7 +30,7 @@
 
 #include <string.h>
 #include <crypto/crypto.h>
- 
+
 #define SHR64(a, n) ((a) >> (n))
 #define ROR64(a, n) (((a) >> (n)) | ((a) << (64 - (n))))
 #define CH(x, y, z) (((x) & (y)) | (~(x) & (z)))
@@ -40,7 +40,7 @@
 #define SIGMA3(x) (ROR64(x, 1) ^ ROR64(x, 8) ^ SHR64(x, 7))
 #define SIGMA4(x) (ROR64(x, 19) ^ ROR64(x, 61) ^ SHR64(x, 6))
 #define MIN(x, y) ((x) < (y) ? x : y)
- 
+
 static const uint8_t padding[128] =
 {
     0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -52,7 +52,7 @@ static const uint8_t padding[128] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
- 
+
 static const uint64_t k[80] =
 {
     0x428A2F98D728AE22LL, 0x7137449123EF65CDLL, 0xB5C0FBCFEC4D3B2FLL, 0xE9B5DBA58189DBBCLL,
@@ -76,7 +76,7 @@ static const uint64_t k[80] =
     0x28DB77F523047D84LL, 0x32CAAB7B40C72493LL, 0x3C9EBE0A15C9BEBCLL, 0x431D67C49C100D4CLL,
     0x4CC5D4BECB3E42B6LL, 0x597F299CFC657E2ALL, 0x5FCB6FAB3AD6FAECLL, 0x6C44198C4A475817LL
 };
- 
+
 /**
 * Initialize the SHA512 context
 */
@@ -93,13 +93,13 @@ void SHA512_Init(SHA512_CTX *ctx)
     ctx->size = 0;
     ctx->totalSize = 0;
 }
- 
+
 static void SHA512_Process(SHA512_CTX *ctx)
 {
     int t;
     uint64_t temp1;
     uint64_t temp2;
- 
+
     // Initialize the 8 working registers
     uint64_t a = ctx->h_dig.h[0];
     uint64_t b = ctx->h_dig.h[1];
@@ -109,10 +109,10 @@ static void SHA512_Process(SHA512_CTX *ctx)
     uint64_t f = ctx->h_dig.h[5];
     uint64_t g = ctx->h_dig.h[6];
     uint64_t h = ctx->h_dig.h[7];
- 
+
     // Process message in 16-word blocks
     uint64_t *w = ctx->w_buf.w;
- 
+
     // Convert from big-endian byte order to host byte order
     for (t = 0; t < 16; t++)
        w[t] = be64toh(w[t]);
@@ -120,14 +120,14 @@ static void SHA512_Process(SHA512_CTX *ctx)
     // Prepare the message schedule
     for (t = 16; t < 80; t++)
        w[t] = SIGMA4(w[t - 2]) + w[t - 7] + SIGMA3(w[t - 15]) + w[t - 16];
- 
+
     // SHA-512 hash computation
     for (t = 0; t < 80; t++)
     {
        // Calculate T1 and T2
        temp1 = h + SIGMA2(e) + CH(e, f, g) + k[t] + w[t];
        temp2 = SIGMA1(a) + MAJ(a, b, c);
- 
+
        // Update the working registers
        h = g;
        g = f;
@@ -138,7 +138,7 @@ static void SHA512_Process(SHA512_CTX *ctx)
        b = a;
        a = temp1 + temp2;
     }
- 
+
     // Update the hash value
     ctx->h_dig.h[0] += a;
     ctx->h_dig.h[1] += b;
@@ -160,10 +160,10 @@ void SHA512_Update(SHA512_CTX *ctx, const uint8_t * msg, int len)
     {
         // The buffer can hold at most 128 bytes
         size_t n = MIN(len, 128 - ctx->size);
- 
+
         // Copy the data to the buffer
         memcpy(ctx->w_buf.buffer + ctx->size, msg, n);
- 
+
         // Update the SHA-512 ctx
         ctx->size += n;
         ctx->totalSize += n;
@@ -171,7 +171,7 @@ void SHA512_Update(SHA512_CTX *ctx, const uint8_t * msg, int len)
         msg = (uint8_t *) msg + n;
         // Remaining bytes to process
         len -= n;
- 
+
         // Process message in 16-word blocks
         if (ctx->size == 128)
         {
@@ -182,7 +182,7 @@ void SHA512_Update(SHA512_CTX *ctx, const uint8_t * msg, int len)
         }
     }
 }
- 
+
 /**
 * Return the 512-bit message digest into the user's array
 */
@@ -191,29 +191,28 @@ void SHA512_Final(uint8_t *digest, SHA512_CTX *ctx)
     int i;
     size_t paddingSize;
     uint64_t totalSize;
- 
+
     // Length of the original message (before padding)
     totalSize = ctx->totalSize * 8;
- 
+
     // Pad the message so that its length is congruent to 112 modulo 128
-    paddingSize = (ctx->size < 112) ? (112 - ctx->size) : 
+    paddingSize = (ctx->size < 112) ? (112 - ctx->size) :
                                         (128 + 112 - ctx->size);
     // Append padding
     SHA512_Update(ctx, padding, paddingSize);
- 
+
     // Append the length of the original message
     ctx->w_buf.w[14] = 0;
     ctx->w_buf.w[15] = be64toh(totalSize);
- 
+
     // Calculate the message digest
     SHA512_Process(ctx);
- 
+
     // Convert from host byte order to big-endian byte order
     for (i = 0; i < 8; i++)
        ctx->h_dig.h[i] = be64toh(ctx->h_dig.h[i]);
- 
+
     // Copy the resulting digest
     if (digest != NULL)
        memcpy(digest, ctx->h_dig.digest, SHA512_SIZE);
  }
- 

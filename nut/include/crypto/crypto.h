@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2007-2015, Cameron Rich
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -134,9 +134,9 @@ typedef struct
 void SHA256_Init(SHA256_CTX *c);
 void SHA256_Update(SHA256_CTX *, const uint8_t *input, int len);
 void SHA256_Final(uint8_t *digest, SHA256_CTX *);
- 
+
  /**************************************************************************
- * SHA512 declarations 
+ * SHA512 declarations
  **************************************************************************/
 
 #define SHA512_SIZE   64
@@ -162,7 +162,7 @@ void SHA512_Update(SHA512_CTX *, const uint8_t *input, int len);
 void SHA512_Final(uint8_t *digest, SHA512_CTX *);
 
 /**************************************************************************
- * SHA384 declarations 
+ * SHA384 declarations
  **************************************************************************/
 
 #define SHA384_SIZE   48

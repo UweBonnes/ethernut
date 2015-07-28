@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2007-2015, Cameron Rich
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@
 /* sha256WithRSAEncryption (11) */
 /* sha384WithRSAEncryption (12) */
 /* sha512WithRSAEncryption (13) */
-static const uint8_t sig_oid_prefix[] = 
+static const uint8_t sig_oid_prefix[] =
 {
     0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01
 };
@@ -601,26 +601,26 @@ int asn1_signature_type(const uint8_t *cert,
 
     len = get_asn1_length(cert, offset);
 
-    if (len == sizeof(sig_sha1WithRSAEncrypt) && 
-            memcmp(sig_sha1WithRSAEncrypt, &cert[*offset], 
+    if (len == sizeof(sig_sha1WithRSAEncrypt) &&
+            memcmp(sig_sha1WithRSAEncrypt, &cert[*offset],
                                     sizeof(sig_sha1WithRSAEncrypt)) == 0)
     {
         x509_ctx->sig_type = SIG_TYPE_SHA1;
     }
-    else if (len == sizeof(sig_sha256) && 
-            memcmp(sig_sha256, &cert[*offset], 
+    else if (len == sizeof(sig_sha256) &&
+            memcmp(sig_sha256, &cert[*offset],
                                     sizeof(sig_sha256)) == 0)
     {
         x509_ctx->sig_type = SIG_TYPE_SHA256;
     }
-    else if (len == sizeof(sig_sha384) && 
-            memcmp(sig_sha384, &cert[*offset], 
+    else if (len == sizeof(sig_sha384) &&
+            memcmp(sig_sha384, &cert[*offset],
                                     sizeof(sig_sha384)) == 0)
     {
         x509_ctx->sig_type = SIG_TYPE_SHA384;
     }
-    else if (len == sizeof(sig_sha512) && 
-            memcmp(sig_sha512, &cert[*offset], 
+    else if (len == sizeof(sig_sha512) &&
+            memcmp(sig_sha512, &cert[*offset],
                                     sizeof(sig_sha512)) == 0)
     {
         x509_ctx->sig_type = SIG_TYPE_SHA512;
