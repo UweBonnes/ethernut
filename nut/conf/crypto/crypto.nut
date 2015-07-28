@@ -230,7 +230,7 @@ nutcrypto =
         name = "nutcrypto_sha512",
         brief = "SHA512 implementation",
         description = "FIPS-180-2 compliant SHA-512 implementation",
-        provides = { "CRYPTO_SHA512" },
+        requires = { "CRYPTO_SHA512" },
         sources =
         {
             "sha512.c"
