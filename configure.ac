@@ -15,9 +15,9 @@ AC_CONFIG_HEADERS([config.h])
 #AM_MAINTAINER_MODE
 
 AC_ARG_ENABLE(html-docs,
-  AS_HELP_STRING([--disable-html-docs],[disable generation of API documents]),
+  AS_HELP_STRING([--enable-html-docs],[enable generation of API documents]),
   [],
-  [enable_html_docs=yes]
+  [enable_html_docs=no]
 )
 
 AC_ARG_ENABLE(crurom,
