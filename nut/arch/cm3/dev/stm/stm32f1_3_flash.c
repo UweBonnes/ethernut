@@ -197,13 +197,16 @@ static FLASH_Status FlashErasePage(uint32_t mem)
     FLASH_Status rs = FLASH_COMPLETE;
 
     uint32_t current_page = ((uint32_t)mem - FLASH_BASE)/FLASH_PAGE_SIZE;
-    uint32_t *addr = (uint32_t *)(current_page * FLASH_PAGE_SIZE);
-    int i;
+    uint32_t pagestart, pageend, *pagemem;
 
-    for(i = 0; i < FLASH_PAGE_SIZE >> 2; i++)
-        if (addr[i] != ((ERASED_PATTERN_16 << 16) | ERASED_PATTERN_16))
+    /* Check if page is erased */
+    pagestart = mem & ~(FLASH_PAGE_SIZE -1);
+    pageend   =  pagestart + FLASH_PAGE_SIZE;
+    for(pagemem = (uint32_t*) pagestart; (uint32_t)pagemem < pageend; pagemem++) {
+        if (*pagemem != ((ERASED_PATTERN_16 << 16) | ERASED_PATTERN_16))
             break;
-    if (i >= (FLASH_PAGE_SIZE >> 2))
+        }
+    if ((uint32_t) pagemem >= pageend)
         goto erase_done;
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
