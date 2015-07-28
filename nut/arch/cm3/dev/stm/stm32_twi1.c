@@ -153,10 +153,10 @@ int Stm32I2c1Init(void)
 {
     uint16_t pins = _BV(I2C1_SDA_PIN) | _BV(I2C1_SCL_PIN);
 
-    /* Enable I2C Bus 1 peripheral clock. */
-    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
     /* Reset I2C Bus 1 IP */
     RCC->APB1RSTR |=  RCC_APB1RSTR_I2C1RST;
+    /* Enable I2C Bus 1 peripheral clock. */
+    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
     RCC->APB1RSTR &= ~RCC_APB1RSTR_I2C1RST;
 
     /* Setup Related GPIOs. */

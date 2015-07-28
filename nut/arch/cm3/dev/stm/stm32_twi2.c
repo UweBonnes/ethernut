@@ -170,10 +170,10 @@ int Stm32I2cBus2Recover( void)
  */
 int Stm32I2cBus2Init(void)
 {
-    /* Enable I2C Bus 2 peripheral clock. */
-    RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
     /* Reset I2C Bus 2 IP */
     RCC->APB1RSTR |=  RCC_APB1RSTR_I2C2RST;
+    /* Enable I2C Bus 2 peripheral clock. */
+    RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
     RCC->APB1RSTR &= ~RCC_APB1RSTR_I2C2RST;
 
     /* Setup Related GPIOs.

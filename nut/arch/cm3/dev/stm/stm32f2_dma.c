@@ -173,20 +173,20 @@ void DMA_Init(uint8_t ch)
         if (!(CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR,
                        _BI32(RCC_AHB1ENR_DMA1EN ))))
         {
+            /* Reset DMA1 */
+            CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
             /* Enable DMA1 Clock */
             CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ));
-             /* Reset DMA1 */
-            CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
             CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
             return;
         }
     }
     else if (!(CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ))))
     {
-        /* Enable DMA2 Clock */
-        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
         /* Reset DMA2 */
         CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
+        /* Enable DMA2 Clock */
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
         CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
         return;
     }
@@ -213,17 +213,17 @@ void DMA_Init(uint8_t ch)
 void DMA_Init(void)
 {
     if (!CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ))) {
-        /* Enable DMA1 Clock */
-        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ));
         /* Reset DMA1 */
         CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
+        /* Enable DMA1 Clock */
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA1EN ));
         CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA1RST));
     }
     if (!CM3BBGET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ))) {
-        /* Enable DMA2 Clock */
-        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
         /* Reset DMA2 */
         CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
+        /* Enable DMA2 Clock */
+        CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR, _BI32(RCC_AHB1ENR_DMA2EN ));
         CM3BBCLR(RCC_BASE, RCC_TypeDef, AHB1RSTR, _BI32(RCC_AHB1RSTR_DMA2RST));
     }
     return;
