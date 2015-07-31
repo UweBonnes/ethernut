@@ -534,15 +534,18 @@ static uint8_t Avr32UsartGetDataBits(void)
 static int Avr32UsartSetDataBits(uint8_t bits)
 {
 	volatile avr32_usart_t* usart = (avr32_usart_t*)USARTn_BASE;
+	uint32_t mr = usart->mr;
 
-    Avr32UsartDisable();
     if (bits == 9) {
         /* Character length set to 9 bits. MODE9 dominates CHRL. */
-        usart->mr |= AVR32_USART_MR_MODE9_MASK;
+        mr |= AVR32_USART_MR_MODE9_MASK;
     } else {
-		usart->mr |= (bits - 5) << AVR32_USART_MR_CHRL_OFFSET;
+		mr &= ~AVR32_USART_MR_MODE9_MASK;
+		mr = (mr & ~AVR32_USART_MR_CHRL_MASK) | ((bits - 5) << AVR32_USART_MR_CHRL_OFFSET);
     }
-    Avr32UsartEnable();
+	Avr32UsartDisable();
+	usart->mr = mr;
+	Avr32UsartEnable();
 
     /*
      * Verify the result.
