@@ -422,6 +422,10 @@ uint32_t GpioPinConfigGet(int bank, int bit)
         rc |= GPIO_CFG_PULLUP;
     }
 
+	if (gpio_port->odmer & _BV(bit)) {
+		rc |= GPIO_CFG_MULTIDRIVE;
+	}
+
     if (is_gpio == 0) {
         if (gpio_port->pmr1 & _BV(bit)) {
             if (gpio_port->pmr0 & _BV(bit)) {
@@ -478,6 +482,12 @@ int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
     } else {
         gpio_port->oderc = mask;
     }
+
+	if (flags & GPIO_CFG_MULTIDRIVE) {
+		gpio_port->odmers = mask;
+	} else {
+		gpio_port->odmerc = mask;
+	}
 
     if (flags & PERIPHERALS_MASK) {
         enable_module_pin(avr32_bank, mask, flags & PERIPHERALS_MASK);
