@@ -125,7 +125,7 @@ static void ExtiSharedIsr(void *arg) {
 GPIO_SIGNAL *GpioCreateIrqHandler(nutgpio_port_t port, nutgpio_pin_t bit, void (*handler) (void *), void *arg)
 {
     GPIO_SIGNAL *sig;
-    int port_nr = (port & 0x3fff) >> 10;
+    int port_nr = (port - GPIOA_BASE) >> 10;
     sig = malloc(sizeof(GPIO_SIGNAL));
     if (sig) {
         int rc;
