@@ -248,18 +248,20 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
         GPIO_SIGNAL *sig_chain;
         sig_chain = isrhandler->ir_arg;
         while (sig_chain) {
-            if(sig_chain->ios_pin != bit) {
-                /* Pin is not already mapped */
-                if (0 == sig_chain->sig_next) {
-                    /* we have a free slot*/
-                    /* Clear any pending interrupts and mask */
-                    EXTI->PR   =  (1 << bit);
-                    EXTI->IMR &= ~(1 << bit);
-                    sig_chain->sig_next = sig;
-                    rc = 0;
-                    break;
-                }
+            if(bit == sig_chain->ios_pin ) {
+                /* Pin is already mapped */
+                break;
             }
+            if (NULL == sig_chain->sig_next) {
+                /* We found last slot in chain */
+                /* Clear any pending interrupts and mask */
+                EXTI->PR   =  (1 << bit);
+                EXTI->IMR &= ~(1 << bit);
+                sig_chain->sig_next = sig;
+                rc = 0;
+                break;
+            }
+            sig_chain = sig_chain->sig_next;
         }
     }
     if (0 == rc) {
