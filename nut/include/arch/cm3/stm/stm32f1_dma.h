@@ -274,7 +274,7 @@
 #define DMA_HTIE        DMA_CCR_HTIE
 #define DMA_TCIE        DMA_CCR_TCIE
 #define DMA_MINC        DMA_CCR_MINC
-#define DMA_PINC        DMA_CCR_MINC
+#define DMA_PINC        DMA_CCR_PINC
 #define DMA_CIRC        DMA_CCR_CIRC
 #define DMA_MSIZE_8     0
 #define DMA_MSIZE_16    DMA_CCR_MSIZE_0
@@ -294,8 +294,9 @@
 #define DMA_TEIF DMA_ISR_TEIF1  /*< Channel x Transfer Error Flag */
 #define DMA_HTIF DMA_ISR_HTIF1  /*< Channel x Half Transfer Complete Flag */
 #define DMA_TCIF DMA_ISR_TCIF1  /*< Channel x Transfer Complete Flag */
+#define DMA_GIF  DMA_ISR_GIF1   /*< Channel x Global Flag */
 
-#define DMA_FLAGMASK (DMA_ISR_GIF1 | DMA_ISR_TCIF1 | DMA_ISR_HTIF1 | DMA_ISR_TEIF1)
+#define DMA_FLAGMASK (DMA_TEIF | DMA_HTIF | DMA_TCIF| DMA_GIF)
 
 
 /* Internally used struct and table to align

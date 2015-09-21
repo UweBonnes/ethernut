@@ -260,7 +260,7 @@
 #define DMA_HTIE         DMA_SxCR_HTIE
 #define DMA_TCIE         DMA_SxCR_TCIE
 #define DMA_MINC         DMA_SxCR_MINC
-#define DMA_PINC         DMA_SxCR_MINC
+#define DMA_PINC         DMA_SxCR_PINC
 #define DMA_CIRC         DMA_SxCR_CIRC
 #define DMA_MSIZE_8      0
 #define DMA_MSIZE_16     DMA_SxCR_MSIZE_0
@@ -281,5 +281,7 @@
 #define DMA_HTIF DMA_LISR_HTIF0  /*< Channel x Half Transfer Complete Flag */
 #define DMA_TCIF DMA_LISR_TCIF0  /*< Channel x Transfer Complete Flag */
 
-#define DMA_FLAGMASK (DMA_LISR_TEIF1 | DMA_LISR_HTIF1 | DMA_LISR_TCIF1)
-#define DMA_IRQMASK  (DMA_SxCR_TEIE | DMA_SxCR_HTIE | DMA_SxCR_TCIE)
+#define DMA_GIF  (DMA_TEIF | DMA_HTIF | DMA_TCIF | DMA_LISR_DMEIF0 | DMA_LISR_FEIF0 )
+
+#define DMA_FLAGMASK DMA_GIF
+#define DMA_IRQMASK  DMA_GIF

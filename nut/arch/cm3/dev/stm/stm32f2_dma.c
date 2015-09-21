@@ -110,7 +110,7 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     else {
         /* Memory to Memory Transfer */
         cc |= DMA_SxCR_DIR_1;
-        cp =(uint32_t)dst;
+        cp =(uint32_t)src;
         cm =(uint32_t)dst;
     }
 
