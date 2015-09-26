@@ -413,10 +413,10 @@ static void Cortex_IntInit(void)
     SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 
 #ifndef NUTDEBUG_RAM
-    /* Copy Reset vector to RAM vector table */
+    /* Copy Stackpointer to RAM vector table */
     g_pfnRAMVectors[0] = (void(*)(void*))g_pfnVectors[0];
 
-    /* Copy Stackpointer to RAM vector table */
+    /* Copy Reset vector to RAM vector table */
     g_pfnRAMVectors[1] = (void(*)(void*))g_pfnVectors[1];
 #endif
 
