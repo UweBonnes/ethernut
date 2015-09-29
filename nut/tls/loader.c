@@ -102,8 +102,21 @@ int ssl_obj_memory_load(SSL_CTX *ssl_ctx, int mem_type,
     int ret;
     SSLObjLoader *ssl_obj;
 
+    if ((len < 0) || (data == NULL)) {
+        return SSL_ERROR_NOT_SUPPORTED;
+    }
+
     ssl_obj = (SSLObjLoader *)calloc(1, sizeof(SSLObjLoader));
+    if (ssl_obj == NULL) {
+        return SSL_ERROR_NOT_SUPPORTED;
+    }
+    
     ssl_obj->buf = (uint8_t *)malloc(len);
+    if (ssl_obj->buf == NULL) {
+        free(ssl_obj->buf); 
+        return SSL_ERROR_NOT_SUPPORTED;
+    }
+
     memcpy(ssl_obj->buf, data, len);
     ssl_obj->len = len;
 
@@ -173,7 +186,9 @@ void ssl_obj_free(SSLObjLoader *ssl_obj)
 {
     if (ssl_obj)
     {
-        free(ssl_obj->buf);
+        if (ssl_obj->buf != NULL) {
+            free(ssl_obj->buf);
+        }
         free(ssl_obj);
     }
 }
