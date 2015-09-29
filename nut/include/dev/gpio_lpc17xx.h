@@ -222,6 +222,7 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioPortSetLow(bank, mask)       CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOCLR)  = (mask)
 #define GpioPortMaskSet(bank, mask)      CM3REG(GPIO_BANKID2BASE(bank), LPC_GPIO_TypeDef, FIOMASK) = (mask)
 
+extern GPIO_SIGNAL *GpioCreateIrqHandler(nutgpio_port_t port, nutgpio_pin_t bit, void (*handler) (void *), void *arg);
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);
 extern int GpioIrqStatus(GPIO_SIGNAL * sig, int bit);

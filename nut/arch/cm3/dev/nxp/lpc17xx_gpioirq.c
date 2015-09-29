@@ -38,6 +38,7 @@
  * \endverbatim
  */
 
+#include <stdlib.h>
 #include <arch/cm3.h>
 
 #if defined(MCU_LPC176x)
@@ -198,3 +199,192 @@ GPIO_SIGNAL sig_GPIO2 = {
     0                /* mode_falling_enabled */
 
 };
+
+/*!
+ * \brief Create a GPIO signal.
+ *
+ * The following code fragment registers an interrupt handler which is
+ * called on each change of bit 4 of the first GPIO port:
+ * \code
+ * #include <dev/gpio.h>
+ *
+ * static void PinChange(void *arg)
+ * {
+ *     ...
+ * }
+ *
+ * {
+ *     GPIO_SIGNAL *sig;
+ *     ...
+ *     GpioPinConfigSet(NUTGPIO_PORTA, 4, GPIO_CFG_PULLUP);
+ *     sig = GpioCreateIrqHandler(NUTGPIO_PORTA, 4, PinChange, NULL);
+ *     if (sig) {
+ *         GpioIrqEnable(sig, 4);
+ *         GpioIrqSetMode(sig, 4, NUT_IRQMODE_RISINGEDGE);
+ *     ...
+ * }
+ * \endcode
+ *
+ * \param port    Port number of the specified bank/port.
+ * \param bit     Bit number of the specified bank/port.
+ * \param handler This routine will be called by Nut/OS, when the specified
+ *                pin changes its state.
+ * \param arg     Argument to be passed to the interrupt handler routine.
+ *
+ * \return
+ */
+GPIO_SIGNAL *GpioCreateIrqHandler(nutgpio_port_t port, nutgpio_pin_t bit, void (*handler) (void *), void *arg)
+{
+    int rc;
+    GPIO_SIGNAL *sig = NULL;
+    if(port == NUTGPIO_PORT0)
+        sig = &sig_GPIO0;
+    else if (port == NUTGPIO_PORT2)
+        sig = &sig_GPIO2;
+    else
+        return 0;
+    rc = GpioRegisterIrqHandler(sig, bit, handler, arg);
+    if (rc)
+        return NULL;
+    return sig;
+}
+
+/*!
+ * \brief Register a GPIO pin interrupt handler.
+ *
+ * Generating interrupts on GPIO pin changes is not supported on all
+ * platforms. In this case dedicated external interrupt pins may
+ * be used with NutRegisterIrqHandler().
+ *
+ * On the LPC17xx interrupts are triggered on rising, falling or both
+ * edges. Level triggering is not supported.
+ *
+ * After registering, interrupts are disabled. Calling GpioIrqEnable()
+ * is required to activate the interrupt.
+ *
+ * The following code fragment registers an interrupt handler which is
+ * called on a rising edge of bit 4 of the first GPIO port:
+ * \code
+ * #include <dev/gpio.h>
+ *
+ * static void PinChange(void *arg)
+ * {
+ *     ...
+ * }
+ *
+ * {
+ *     ...
+ *     GpioPinConfigSet(0, 4, GPIO_CFG_PULLUP);
+ *     GpioRegisterIrqHandler(&sig_GPIO0, 4, PinChange, NULL);
+ *     GpioIrqSetMode(&sig_GPIO0, 4, NUT_IRQMODE_RISINGEDGE);
+ *     GpioIrqEnable(&sig_GPIO0, 4);
+ *     ...
+ * }
+ * \endcode
+ *
+ * \param sig     Bank/port interrupt to be associated with this handler.
+ * \param bit     Bit number of the specified bank/port.
+ * \param handler This routine will be called by Nut/OS, when the specified
+ *                pin changes its state.
+ * \param arg     Argument to be passed to the interrupt handler routine.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg)
+{
+    int rc = 0;
+
+    if (sig->ios_vector == 0) {
+        /* This is the first call. Allocate the vector table. */
+        sig->ios_vector = malloc(sizeof(GPIO_VECTOR) * 32);
+        if (sig->ios_vector) {
+            memset(sig->ios_vector, 0, sizeof(GPIO_VECTOR) * 32);
+            /* Register our internal PIO interrupt service. */
+            if (sig_GPIO.ir_handler == NULL) {
+                rc = NutRegisterIrqHandler(&sig_GPIO, sig->ios_handler, NULL);
+                if (rc == 0) {
+                    /* Clear any pending interrupts */
+                    LPC_GPIOINT->IO0IntClr = 0xFFFFFFFF;
+                    LPC_GPIOINT->IO2IntClr = 0xFFFFFFFF;
+
+                    rc = NutIrqEnable(&sig_GPIO);
+                }
+            }
+        }
+        else {
+            return -1;
+        }
+    }
+    sig->ios_vector[bit].iov_handler = handler;
+    sig->ios_vector[bit].iov_arg = arg;
+
+    return rc;
+}
+
+/*!
+ * \brief Enable a specified GPIO interrupt.
+ *
+ * A related interrupt handler must have been registered before calling
+ * this function. See GpioRegisterIrqHandler().
+ *
+ * \param sig Interrupt to enable.
+ * \param bit Bit number of the specified bank/port.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int GpioIrqEnable(GPIO_SIGNAL * sig, int bit)
+{
+    return (sig->ios_ctl) (sig, NUT_IRQCTL_ENABLE, NULL, bit);
+}
+
+/*!
+ * \brief Disable a specified GPIO interrupt.
+ *
+ * \param sig Interrupt to disable.
+ * \param bit Bit number of the specified bank/port.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int GpioIrqDisable(GPIO_SIGNAL * sig, int bit)
+{
+    return (sig->ios_ctl) (sig, NUT_IRQCTL_DISABLE, NULL, bit);
+}
+
+/*!
+ * \brief Query the status of a specified GPIO interrupt.
+ *
+ * A related interrupt handler must have been registered before calling
+ * this function. See GpioRegisterIrqHandler().
+ *
+ * \param sig Interrupt to query
+ * \param bit Bit number of the specified bank/port.
+ *
+ * \return 0 if interrupt is disabled, 1 of enabled
+ */
+
+int GpioIrqStatus(GPIO_SIGNAL * sig, int bit)
+{
+    uint32_t status;
+    (sig->ios_ctl) (sig, NUT_IRQCTL_STATUS, &status, bit);
+
+    return status;
+}
+
+/*!
+ * \brief Set the GPIO interrupt mode for a pin
+ *
+ * \param sig Interrupt to configure.
+ * \param bit Bit number of the specified bank/port.
+ * \param mode one of the following modes:
+ *          NUT_IRQMODE_RISINGEDGE,
+ *          NUT_IRQMODE_FALLINGEDGE,
+ *          NUT_IRQMODE_BOTHEDGE,
+ *          NUT_IRQMODE_NONE,
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int GpioIrqSetMode(GPIO_SIGNAL * sig, int bit, int mode)
+{
+    return (sig->ios_ctl) (sig, NUT_IRQCTL_SETMODE, &mode, bit);
+}
+
