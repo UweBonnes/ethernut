@@ -150,7 +150,7 @@ nutnet =
                 macro = "TCP_COLLECT_INADV",
                 brief = "Segment Collection",
                 description = "TCP segments received in advance are stored in a special queue "..
-                              " with complete headers. Due to this overhead, available memory may "..
+                              "with complete headers. Due to this overhead, available memory may "..
                               "become exhausted when the remote sends many small segments after one "..
                               "segment got lost.\n\n"..
                               "When the number of segments received in advance reaches the given "..
@@ -170,6 +170,18 @@ nutnet =
                               "This option specifies the limit, below which segments are conidered "..
                               "small. Segments equal or larger in size will not be collected.",
                 default = "256",
+                file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_TOTAL_INBUF_HEAP_LIMIT",
+                brief = "TCP incomming buffer heap limit (system wide)",
+                description = "The TCP statemachines buffers all incomming packets, until they "..
+                              "are evaluated and used. This can cause the available heap to drop "..
+                              "very fast.\n\n"..
+                              "This option limit the amount of heap used for buffering. If the "..
+                              "availabl heap drops below this limit, further incomming packets "..
+                              "will be dropped.",
+                default = "2048",
                 file = "include/cfg/tcp.h"
             },
             {

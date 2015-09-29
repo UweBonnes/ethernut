@@ -105,6 +105,10 @@ static HANDLE tcpThread = 0;
 #define TCP_COLLECT_SLIMIT  256
 #endif
 
+#ifndef TCP_TOTAL_INBUF_HEAP_LIMIT
+#define TCP_TOTAL_INBUF_HEAP_LIMIT 2048
+#endif
+
 #ifndef TCP_BACKLOG_MAX
 #define TCP_BACKLOG_MAX     8
 #endif
@@ -1153,6 +1157,7 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
 /*
  * \brief Process incoming segments from established connections.
  *
+
  * Received application data will be delivered to the application
  * until we receive a FIN segment.
  *
@@ -1830,7 +1835,7 @@ void NutTcpStateMachine(NETBUF * nb)
         NutEventPost(&tcp_in_rdy);
     } else {
         size = nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz;
-        if (tcp_in_cnt + size + 2048 < NutHeapAvailable()) {
+        if (tcp_in_cnt + size + TCP_TOTAL_INBUF_HEAP_LIMIT < NutHeapAvailable()) {
             tcp_in_cnt += size;
             while (nbp->nb_next)
                 nbp = nbp->nb_next;
