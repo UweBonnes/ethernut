@@ -633,10 +633,10 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
         size = sock->so_rx_cnt - sock->so_rd_cnt;
     if (size) {
         NETBUF *nb;
-        uint16_t rd_cnt;         /* Bytes read from NETBUF. */
-        uint16_t nb_cnt;         /* Bytes left in NETBUF. */
-        uint16_t ab_cnt;         /* Total bytes in app buffer. */
-        uint16_t mv_cnt;         /* Bytes to move to app buffer. */
+        int rd_cnt;         /* Bytes read from NETBUF. */
+        int nb_cnt;         /* Bytes left in NETBUF. */
+        int ab_cnt;         /* Total bytes in app buffer. */
+        int mv_cnt;         /* Bytes to move to app buffer. */
 
         rd_cnt = sock->so_rd_cnt;
 
@@ -820,7 +820,7 @@ static int SendBuffer(TCPSOCKET * sock, const void *buffer, int size)
 int NutTcpDeviceWrite(TCPSOCKET * sock, const void *buf, int size)
 {
     int rc;
-    uint16_t sz;
+    int sz;
     /* hack alert for ICCAVR */
     uint8_t *buffer = (uint8_t*) buf;
 
@@ -854,7 +854,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, const void *buf, int size)
          * send first part of data to NIC and store remaining
          * bytes in buffer
          */
-        if ((uint16_t) size >= sock->so_devobsz) {
+        if (size >= sock->so_devobsz) {
             rc = size % sock->so_devobsz;
             if (SendBuffer(sock, buffer, size - rc) < 0)
                 return -1;
