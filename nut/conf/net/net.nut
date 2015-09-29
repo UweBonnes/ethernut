@@ -173,6 +173,23 @@ nutnet =
                 file = "include/cfg/tcp.h"
             },
             {
+                macro = "TCP_SOCK_RXBUF_LIMIT",
+                brief = "Socket Receive Buffer Limit",
+                description = "Limit the socket receive buffer. The value is a multiple of the ".. 
+                              "software configured socket receive buffer (SO_RCVBUF).\n\n"..
+                              "Under normal conditons no buffering beyond the SO_RCVBUF should occur, "..
+                              "but some TCP implementations seem to not follow the TCP RFCs correctly "..
+                              "and continue sending bytes, even when sending a zero-window ack. So this "..
+                              "option is for limitting the used HEAP in these situations.\n\n"..
+                              "If configured to a value > 0, we allow to buffer a maxmimum of "..
+                              "TCP_SOCK_RXBUF_LIMIT * SO_RCVBUF bytes, until we drop further "..
+                              "incomming packets for this socket. A value of '0' (default) will result "..
+                              "in the known default behaviour, where the buffer size is unlimmited.",
+
+                default = "0",
+                file = "include/cfg/tcp.h"
+            },
+            {
                 macro = "TCP_TOTAL_INBUF_HEAP_LIMIT",
                 brief = "TCP incomming buffer heap limit (system wide)",
                 description = "The TCP statemachines buffers all incomming packets, until they "..

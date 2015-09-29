@@ -105,6 +105,10 @@ static HANDLE tcpThread = 0;
 #define TCP_COLLECT_SLIMIT  256
 #endif
 
+#ifndef TCP_SOCK_RXBUF_LIMIT
+#define TCP_SOCK_RXBUF_LIMIT 0
+#endif
+
 #ifndef TCP_TOTAL_INBUF_HEAP_LIMIT
 #define TCP_TOTAL_INBUF_HEAP_LIMIT 2048
 #endif
@@ -1214,6 +1218,17 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
         uint32_t thq_seq;
 
         if (nb->nb_ap.sz) {
+
+#if (TCP_SOCK_RXBUF_LIMIT > 0)
+            if (sock->so_rx_cnt - sock->so_rd_cnt > sock->so_rx_bsz * TCP_SOCK_RXBUF_LIMIT) {
+                /* Silently discard further data packets, if socket receive buffer contains
+                   just more than TCP_SOCK_RXBUF_LIMIT * configured receive buffer size.
+                 */
+                NutNetBufFree(nb);
+                return;
+            }
+#endif
+
             /* Keep track of the number of bytes used by packets
                received in advance. Honor a global limit. */
             tcp_adv_cnt += nb->nb_dl.sz + sizeof(IPHDR) + sizeof(TCPHDR) + nb->nb_ap.sz;
@@ -1274,6 +1289,16 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
      * The sequence number is exactly what we expected.
      */
     else if (nb->nb_ap.sz) {
+
+#if (TCP_SOCK_RXBUF_LIMIT > 0) 
+        if (sock->so_rx_cnt - sock->so_rd_cnt > sock->so_rx_bsz * TCP_SOCK_RXBUF_LIMIT) {
+            /* Silently discard further data packets, if socket receive buffer contains 
+               just more than TCP_SOCK_RXBUF_LIMIT * configured receive buffer size.
+             */                                       
+            NutNetBufFree(nb);
+            return;
+        }
+#endif
         NutTcpProcessAppData(sock, nb);
         /*
          * Process segments we may have received in advance.
