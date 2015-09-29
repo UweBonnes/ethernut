@@ -47,6 +47,8 @@
 #include <cfg/memory.h>
 #include <cfg/cortex_debug.h>
 
+#include <toolchain.h>
+
 #include <arch/cm3.h>
 #include <arch/cm3/cortex_debug.h>
 #include <dev/rtc.h>
@@ -235,7 +237,7 @@ extern void * _stack_start;     /* Main stack start address */
 extern void * _stack_end;       /* Main stack end address */
 
 /* Default interrupt handler */
-static void IntDefaultHandler(void *arg)
+static RAMFUNC void IntDefaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
     /* 'DEFAULT_HANDLER' to R1.
@@ -255,7 +257,7 @@ static void IntDefaultHandler(void *arg)
 /*!
  * \brief Non mascable interrupt handler
  */
-static void IntNmiHandler(void *arg)
+static RAMFUNC void IntNmiHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
 /* Pass 'NMI_HANDLER' to R1.
@@ -271,7 +273,7 @@ static void IntNmiHandler(void *arg)
 /*!
  * \brief Hard fault handler
  */
-static void IntHardfaultHandler(void *arg)
+static RAMFUNC void IntHardfaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
 /* Pass 'HARDFAULLT_HANDLER' to R1.
@@ -287,7 +289,7 @@ static void IntHardfaultHandler(void *arg)
 /*!
  * \brief Mem fault handler
  */
-static void IntMemfaultHandler(void *arg)
+static RAMFUNC void IntMemfaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
 /*
@@ -306,7 +308,7 @@ static void IntMemfaultHandler(void *arg)
  * \brief Bus fault handler
  */
 
-void IntBusfaultHandler(void *arg)
+RAMFUNC void IntBusfaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
 /*
@@ -323,7 +325,7 @@ void IntBusfaultHandler(void *arg)
 /*!
  * \brief Usage fault handler
  */
-static void IntUsagefaultHandler(void *arg)
+static RAMFUNC void IntUsagefaultHandler(void *arg)
 {
 #ifdef DEBUG_MACRO
 /*

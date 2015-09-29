@@ -84,14 +84,13 @@
  * \endverbatim
  */
 
-
 #include <cfg/arch.h>
 #include <sys/types.h>
 #include <sys/thread.h>
 #include <inttypes.h>
 #include <cfg/cortex_debug.h>
 #include <arch/cm3/cortex_debug.h>
-
+#include <toolchain.h>
 #if defined (MCU_LPC17xx)
 #include <arch/cm3/nxp/lpc17xx_debug_macro.h>
 #elif defined (MCU_STM32)
@@ -117,7 +116,7 @@ extern void * _etext;           /* Start of constants in FLASH */
 
 static char *exception_names[6] = {"Default", "NMI", "Hard Fault", "Mem Fault", "Bus Fault", "Usage Fault"};
 
-static void DebugPrint(const char *str)
+static RAMFUNC void DebugPrint(const char *str)
 {
 #ifdef DEBUG_MACRO
     while (*str != 0) {
@@ -128,7 +127,7 @@ static void DebugPrint(const char *str)
 #endif
 }
 
-static void DebugPrintU32Hex(uint32_t val) {
+static RAMFUNC void DebugPrintU32Hex(uint32_t val) {
 #ifdef DEBUG_MACRO
     int i;
     for (i = 7; i >= 0; i--) {
@@ -138,24 +137,26 @@ static void DebugPrintU32Hex(uint32_t val) {
 #endif
 }
 
-static inline uint32_t bits(const uint32_t val, const uint32_t msbit, const uint32_t lsbit)
+#ifdef DEBUG_BACKTRACE
+
+static inline RAMFUNC uint32_t bits(const uint32_t val, const uint32_t msbit, const uint32_t lsbit)
 {
     return (val & ~(0xFFFFFFFF << (msbit + 1))) >> lsbit;
 }
 
-static inline uint32_t bit(const uint32_t val, const uint32_t msbit)
+static inline RAMFUNC uint32_t bit(const uint32_t val, const uint32_t msbit)
 {
     return bits(val, msbit, msbit);
 }
 
-static uint32_t ror(uint32_t val, uint32_t N, uint32_t shift)
+static RAMFUNC uint32_t ror(uint32_t val, uint32_t N, uint32_t shift)
 {
     uint32_t m = shift % N;
     return (val >> m) | (val << (N - m));
 }
 
 // (imm32, carry_out) = ThumbExpandImm_C(imm12, carry_in)
-static inline uint32_t ThumbExpandImm_C(uint32_t opcode, uint32_t carry_in, uint32_t *carry_out)
+static inline RAMFUNC uint32_t ThumbExpandImm_C(uint32_t opcode, uint32_t carry_in, uint32_t *carry_out)
 {
     uint32_t imm32; // the expaned result
     const uint32_t i = bit(opcode, 26);
@@ -193,7 +194,7 @@ static inline uint32_t ThumbExpandImm_C(uint32_t opcode, uint32_t carry_in, uint
     return imm32;
 }
 
-static inline uint32_t ThumbExpandImm(uint32_t opcode)
+static inline RAMFUNC uint32_t ThumbExpandImm(uint32_t opcode)
 {
     // 'carry_in' argument to following function call does not affect the imm32 result.
     uint32_t carry_in = 0;
@@ -202,7 +203,7 @@ static inline uint32_t ThumbExpandImm(uint32_t opcode)
 }
 
 // imm32 = ZeroExtend(i:imm3:imm8, 32)
-static inline uint32_t ThumbImm12(uint32_t opcode)
+static inline RAMFUNC uint32_t ThumbImm12(uint32_t opcode)
 {
   const uint32_t i = bit(opcode, 26);
   const uint32_t imm3 = bits(opcode, 14, 12);
@@ -211,17 +212,19 @@ static inline uint32_t ThumbImm12(uint32_t opcode)
   return imm12;
 }
 
-static inline uint32_t ThumbImm7(uint32_t opcode)
+static inline RAMFUNC uint32_t ThumbImm7(uint32_t opcode)
 {
   return bits(opcode, 6, 0);
 }
 
-static inline uint32_t ThumbImm8(uint32_t opcode)
+static inline RAMFUNC uint32_t ThumbImm8(uint32_t opcode)
 {
   return bits(opcode, 7, 0);
 }
 
-void CortexRegDump(uint32_t *arg, int exception_type, uint32_t *fp)
+#endif
+
+void RAMFUNC CortexRegDump(uint32_t *arg, int exception_type, uint32_t *fp)
 {
     uint32_t  stacked_r0;
     uint32_t  stacked_r1;
