@@ -254,69 +254,73 @@ static void Lpc177x_8x_MmcardShowStatusBits(uint32_t MCIStatus)
  */
 static uint32_t Lpc177x_8x_MmcardReadData(uint8_t* buffer, int blk, int num)
 {
-    int32_t retVal;
+    int32_t  retVal;
     uint32_t errorState;
+    int      retry = 1;
 
 
     /* Gain mutex access. */
     NutEventWait(&mutex, 0);
 
-    retVal = Lpc177x_8x_MciReadBlock(buffer, blk, num);
+    /* Read with max. one retry in case of an error */
+    do {
+        retVal = Lpc177x_8x_MciReadBlock(buffer, blk, num);
 
-    if (retVal == MCI_FUNC_OK)
-    {
-        /*
-         *  Reading blocks have started, now wait till this job is finished
-         *  Please note the driver uses 16 word FIFO in the background to
-         *  transfer the data under interrupt from the card
-         */
-        while (Lpc177x_8x_MciGetDataXferEndState() != 0);
-
-        errorState = Lpc177x_8x_MciGetXferErrState();
-
-        if ((num > 1) || errorState)
+        if (retVal == MCI_FUNC_OK)
         {
-            Lpc177x_8x_MciCmd_StopTransmission();
-        }
+            /*
+             *  Reading blocks have started, now wait till this job is finished
+             *  Please note the driver uses 16 word FIFO in the background to
+             *  transfer the data under interrupt from the card
+             */
+            while (Lpc177x_8x_MciGetDataXferEndState() != 0);
 
-        if (errorState)
-        {
+            errorState = Lpc177x_8x_MciGetXferErrState();
+
+            if ((num > 1) || errorState)
+            {
+                Lpc177x_8x_MciCmd_StopTransmission();
+            }
+
+            if (errorState)
+            {
 #ifdef NUTDEBUG
-            printf("%s() failed\n", __FUNCTION__);
-            Lpc177x_8x_MmcardShowStatusBits(errorState);
+                printf("%s() failed\n", __FUNCTION__);
+                Lpc177x_8x_MmcardShowStatusBits(errorState);
 #endif
 
-            // perform 1 retry in case of an error
+                // perform 1 retry in case of an error
 
-            retVal = Lpc177x_8x_MciReadBlock(buffer, blk, num);
+                retVal = Lpc177x_8x_MciReadBlock(buffer, blk, num);
 
-            if (retVal == MCI_FUNC_OK)
-            {
-                /*
-                 *  Reading blocks have started, now wait till this job is finished
-                 *  Please note the driver uses 16 word FIFO in the background to
-                 *  transfer the data under interrupt from the card
-                 */
-                while (Lpc177x_8x_MciGetDataXferEndState() != 0);
-
-                errorState = Lpc177x_8x_MciGetXferErrState();
-
-                if ((num > 1) || errorState)
+                if (retVal == MCI_FUNC_OK)
                 {
-                    Lpc177x_8x_MciCmd_StopTransmission();
+                    /*
+                     *  Reading blocks have started, now wait till this job is finished
+                     *  Please note the driver uses 16 word FIFO in the background to
+                     *  transfer the data under interrupt from the card
+                     */
+                    while (Lpc177x_8x_MciGetDataXferEndState() != 0);
+
+                    errorState = Lpc177x_8x_MciGetXferErrState();
+
+                    if ((num > 1) || errorState)
+                    {
+                        Lpc177x_8x_MciCmd_StopTransmission();
+                    }
+
+                    if (errorState)
+                    {
+#ifdef NUTDEBUG
+                        printf("%s() failed again\n", __FUNCTION__);
+                        Lpc177x_8x_MmcardShowStatusBits(errorState);
+#endif
+                        retVal = MCI_FUNC_FAILED;
+                    }
                 }
-
-                if (errorState)
-                {
-        #ifdef NUTDEBUG
-                    printf("%s() failed again\n", __FUNCTION__);
-                    Lpc177x_8x_MmcardShowStatusBits(errorState);
-        #endif
-            retVal = MCI_FUNC_FAILED;
+            }
         }
-    }
-        }
-    }
+    } while (errorState && (retry-- > 0));
 
     /* Release mutex access. */
     NutEventPost(&mutex);
