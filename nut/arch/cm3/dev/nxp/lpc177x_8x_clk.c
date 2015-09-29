@@ -497,7 +497,7 @@ int SetSysClock(void)
 #endif
 
 #if (FLASH_SETUP == 1)                    /* Flash Accelerator Setup            */
-    LPC_SC->FLASHCFG  = FLASHCFG_Val|0x03A;
+    LPC_SC->FLASHCFG  = (LPC_SC->FLASHCFG & 0x00000FFF) | FLASHCFG_Val;
 #endif
 
     SystemCoreClockUpdate();
