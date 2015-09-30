@@ -107,6 +107,11 @@
 #  define SPI2_SCK_AF   5
 #  define SPI2_MISO_AF  5
 #  define SPI2_MOSI_AF  5
+# elif defined(MCU_STM32L4)
+#  define SPI2_NSS_AF   5
+#  define SPI2_SCK_AF   5
+#  define SPI2_MISO_AF  5
+#  define SPI2_MOSI_AF  5
 # else
 #  define SPI2_NSS_AF  ((SPI2_NSS == PD01)? 7:5)
 #  define SPI2_SCK_AF   5
@@ -140,6 +145,11 @@
 #  define SPI3_SCK_AF   6
 #  define SPI3_MISO_AF  6
 #  define SPI3_MOSI_AF  ((SPI3_MOSI == PC01 || SPI3_MOSI == PD06)? 5 : (SPI3_MOSI == PB00 || SPI3_MOSI == PB02) ? 7 : 6)
+# elif defined(MCU_STM32L4)
+#  define SPI3_NSS_AF   6
+#  define SPI3_SCK_AF   6
+#  define SPI3_MISO_AF  6
+#  define SPI3_MOSI_AF  6
 # else
 #  define SPI3_NSS_AF   6
 #  define SPI3_SCK_AF   ((SPI3_SCK  == PB12)? 7 : 6)

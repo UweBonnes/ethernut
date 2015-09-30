@@ -50,21 +50,7 @@
 #include <cfg/arch.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
-#if defined(RTC_BKP0R)
-# if defined(RTC_BKP_NUMBER)
-#  define BKUP_SIZE RTC_BKP_NUMBER
-# elif !defined(RTC_BKP5R)
-#  define BKUP_SIZE ( 5 * 4)
-#  elif !defined(RTC_BKP10R)
-#  define BKUP_SIZE (10 * 4)
-#  elif !defined(RTC_BKP16R)
-#  define BKUP_SIZE (16 * 4)
-# elif !defined(RTC_BKP20R)
-#  define BKUP_SIZE (20 * 4)
-# elif defined(RTC_BKP32R)
-#  define BKUP_SIZE (32 * 4)
-# endif
-
+#if defined(RTC_BKP_NUMBER)
 /*!
  * \brief Get pointer to read parameters in backup registerss.
  *  RTC needs to be set up!.
@@ -97,7 +83,7 @@ int Stm32BkupRegLoad(uint32_t pos, void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKUP_SIZE)
+    if (pos + len > RTC_BKP_NUMBER)
         return -1;
     bkp = Stm32BkupRegGet(pos);
     if (NULL == bkp)
@@ -119,7 +105,7 @@ int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKUP_SIZE)
+    if (pos + len > RTC_BKP_NUMBER)
         return -1;
     bkp = Stm32BkupRegGet(pos);
     if (NULL == bkp)

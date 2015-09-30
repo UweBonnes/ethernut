@@ -235,7 +235,7 @@ CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Contro
 CREATE_HANDLER(DMA_GROUP1, DMA1_Channel2_3,       NUT_IRQPRI_DEF); // DMA Controller 1 Group 1
 CREATE_HANDLER(DMA_GROUP2, DMA1_Channel4_5_6_7,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 2
 # endif
-#elif defined (MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F3)
+#elif defined (MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F3) || defined(MCU_STM32L4)
 CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA1_CH2,   DMA1_Channel2,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA1_CH3,   DMA1_Channel3,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
@@ -252,6 +252,10 @@ CREATE_HANDLER(DMA2_CH4,   DMA2_Channel4_5,       NUT_IRQPRI_DEF); // DMA Contro
 #  else
 CREATE_HANDLER(DMA2_CH4,   DMA2_Channel4,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA2_CH5,   DMA2_Channel5,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+#  endif
+#  if defined(HW_DMA2_7CH_STM32)
+CREATE_HANDLER(DMA2_CH6,   DMA2_Channel6,         NUT_IRQPRI_DEF); // DMA Controller 2 Channel 6
+CREATE_HANDLER(DMA2_CH7,   DMA2_Channel7,         NUT_IRQPRI_DEF); // DMA Controller 2 Channel 7
 #  endif
 # endif
 #else

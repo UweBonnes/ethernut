@@ -153,6 +153,9 @@ function GetStmUsarts()
     if c_is_provided("HW_MCU_STM32L1_XL") then
         return { "", "USART1", "USART2", "USART3", "UART4", "UART5" }
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5" }
+    end
 end
 
 --
@@ -170,6 +173,9 @@ function GetTxUsart1()
     end
     if c_is_provided("HW_MCU_STM32F411") then
         return { "PA09", "PB06", "PA15", "PIN_NONE" }
+    end
+     if c_is_provided("HW_MCU_STM32L4") then
+        return { "PA09", "PB06", "PG09", "PIN_NONE" }
     end
     return { "PA09", "PB06", "PIN_NONE" }
 end
@@ -190,8 +196,12 @@ function GetRxUsart1()
     if c_is_provided("HW_MCU_STM32F411") then
         return { "PA10", "PB07", "PB03", "PIN_NONE" }
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PA10", "PB07", "PG10", "PIN_NONE" }
+    end
     return { "PA10", "PB07", "PIN_NONE" }
 end
+-- FIXME: USART1 CTS/RTS/CK Pin enummeration!
 
 --
 -- Retrieve USART2TX pins available on the device.
@@ -224,6 +234,7 @@ function GetRxUsart2()
     end
     return { "PA03", "PD06", "PIN_NONE" }
 end
+-- FIXME: USART1 CTS/RTS/CK Pin enummeration!
 
 --
 -- Retrieve USART3TX pins available on the device.
@@ -234,6 +245,9 @@ function GetTxUsart3()
     end
     if c_is_provided("HW_MCU_STM32F3") then
         return { "PB10", "PC10", "PD08", "PB09", "PIN_NONE" }
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB10", "PC10", "PC04", "PD08", "PIN_NONE" }
     end
     return { "PB10", "PC10", "PD08", "PIN_NONE" }
 end
@@ -251,6 +265,9 @@ function GetRxUsart3()
     if c_is_provided("HW_MCU_STM32F446") then
         return { "PB11", "PC11", "PC05", "PD09", "PIN_NONE"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB11", "PC11", "PC05", "PD09", "PIN_NONE" }
+    end
     return { "PB11", "PC11", "PD09", "PIN_NONE" }
 end
 
@@ -263,6 +280,9 @@ function GetCtsUsart3()
    end
    if c_is_provided("HW_MCU_STM32F446") then
         return { "PB13", "PD11", "PIN_NONE"}
+   end
+   if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB13", "PA06", "PD11", "PIN_NONE" }
    end
    return { "PB13", "PC13", "PD13", "PIN_NONE" }
 end
@@ -277,6 +297,9 @@ function GetRtsUsart3()
     if c_is_provided("HW_MCU_STM32F3") then
         return { "PB14", "PD12", "PF06", "PIN_NONE"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB14", "PB01", "PD02", "PD12", "PIN_NONE" }
+    end
     return { "PB14", "PD12", "PIN_NONE" }
 end
 
@@ -286,6 +309,9 @@ end
 function GetCkUsart3()
    if c_is_provided("HW_MCU_STM32F0") then
         return { "PB12", "PC12", "PB00", "PD10", "PIN_NONE"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB12", "PC12", "PD10", "PB00", "PIN_NONE" }
     end
     return { "PB12", "PC12", "PD10", "PIN_NONE" }
 end
@@ -334,6 +360,9 @@ function GetCtsUsart4()
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PB00", "PIN_NONE"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB00", "PIN_NONE"}
+    end
     return "PIN_NONE"
 end
 function GetRtsUsart4()
@@ -341,6 +370,9 @@ function GetRtsUsart4()
         return { "PIN_NONE", "PA12"}
     end
     if c_is_provided("HW_MCU_STM32F446") then
+        return { "PA15", "PIN_NONE"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
         return { "PA15", "PIN_NONE"}
     end
     return "PIN_NONE"
@@ -380,6 +412,9 @@ function GetRtsUsart5()
     end
    if c_is_provided("HW_MCU_STM32F446") then
         return { "PC08", "PIN_NONE"}
+    end
+   if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB04", "PIN_NONE"}
     end
    return { "PC12", "PIN_NONE" }
 end

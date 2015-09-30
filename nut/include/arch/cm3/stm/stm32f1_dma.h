@@ -251,7 +251,9 @@ typedef struct {
 
 extern const DMATAB DmaTab[];
 
-#if defined(HW_DMA2_STM32F1)
+#if defined(HW_DMA2_7CH_STM32)
+#define DMA_COUNT 14
+#elif defined(HW_DMA2_STM32F1)
 #define DMA_COUNT 12
 #elif !defined(HW_DMA1_5CH_STM32)
 #define DMA_COUNT  7

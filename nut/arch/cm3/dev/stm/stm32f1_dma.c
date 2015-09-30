@@ -69,6 +69,10 @@ const DMATAB DmaTab[] = {
     { DMA2_BASE, 12, DMA2_Channel4 },
     { DMA2_BASE, 16, DMA2_Channel5 },
 #endif
+#if defined(HW_DMA2_7CH_STM32)
+    { DMA1_BASE, 20, DMA2_Channel6 },
+    { DMA1_BASE, 24, DMA2_Channel7 },
+#endif
 };
 
 /*

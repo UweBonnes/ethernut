@@ -133,6 +133,12 @@
 # define RTC_BYPASSF 0
 #endif
 
+#if defined(MCU_STM32L4)
+# define EXTI_RTC_LINE 18
+#else
+# define EXTI_RTC_LINE 17
+#endif
+
 static int RtcRccHsePrepare(void) __attribute__ ((unused));
 static int RtcLseSetup(void) __attribute__ ((unused));
 static int RtcRccLsiPrepare(void) __attribute__ ((unused));
@@ -179,7 +185,7 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 #     define RTC_PRE (HSE_VALUE / 1000000)
 #    endif
 #   endif
-/* F3/F0/L0 has fixed HSE prescaler of 32*/
+/* F3/F0/L0/L4 has fixed HSE prescaler of 32*/
 #  else
 #   define RTC_PRE 32
 #  endif
@@ -335,6 +341,8 @@ static int RtcLseSetup(void)
     uint32_t mask = (RCC_BDCR_RTCEN | RCC_BDCR_LSERDY |
                      RCC_BDCR_LSEBYP | RCC_BDCR_LSEDRV_MASK);
     uint32_t flag = (RTC_BYPASSF | RTC_LSEMODF);
+    if (RCC_BDCR & RCC_BDCR_LSERDY)
+        return 0;
     bdcr = RCC_BDCR;
     bdcr &= ~mask;
     bdcr |= flag;
@@ -387,8 +395,8 @@ static void Stm32RtcInterrupt(void *arg)
     }
 #endif
     if(do_alert) {
-        /* Clear Pending EXTI17 Interrupt*/
-        EXTI->PR   =  (1 << 17);
+        /* Clear Pending EXTI RTC Interrupt*/
+        EXTI->PR   =  (1 << EXTI_RTC_LINE);
         /* Signal alarm event queue */
         NutEventPostFromIrq(&rtc->alarm);
     }
@@ -682,11 +690,11 @@ int Stm32RtcInit(NUTRTC *rtc)
 
     if (NutRegisterIrqHandler(&sig_RTC, Stm32RtcInterrupt, rtc) != 0)
         return -1;
-    /* Alarm Interrupt is on EXTI 17 Line, Rising Edge */
-    EXTI->PR   =  (1 << 17);
-    EXTI->IMR  |= (1 << 17);
-    EXTI->RTSR |=  (1 << 17);
-    EXTI->FTSR &= ~(1 << 17);
+    /* Alarm Interrupt is on EXTI RTC Line, Rising Edge */
+    EXTI->PR   =  (1 << EXTI_RTC_LINE);
+    EXTI->IMR  |= (1 << EXTI_RTC_LINE);
+    EXTI->RTSR |=  (1 << EXTI_RTC_LINE);
+    EXTI->FTSR &= ~(1 << EXTI_RTC_LINE);
     NutIrqEnable(&sig_RTC);
     rtc->dcb   = &rtc_dcb;
     rtc->alarm = NULL;

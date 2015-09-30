@@ -1,25 +1,3 @@
-function GetLseDriveLevel()
-    if c_is_provided("HW_MCU_STM32F411") then
-        return { "0" , "1"}
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "0" , "1"}
-    end
-    if c_is_provided("HW_MCU_STM32L1") then
-        return "0"
-    end
-    if c_is_provided("HW_MCU_STM32F1") then
-        return "0"
-    end
-    if c_is_provided("HW_MCU_STM32F2") then
-        return "0"
-    end
-    if c_is_provided("HW_MCU_STM32F4") then
-        return "0"
-    end
-    return { "0", "1", "2", "3"}
-end
-
 nutarch_cm3_stm32_devices =
 {
     -- ***********************************
@@ -56,34 +34,6 @@ nutarch_cm3_stm32_devices =
                 type = "enumerated",
                 choices = { "RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI" },
                 default = "RTCCLK_LSE",
-                file = "include/cfg/rtc.h"
-            },
-            {
-                macro = "LSE_DRIVE_LEVEL",
-                brief = "LSE osc power",
-                description = "Power level of LSE oscillator\n"..
-                              "0 = Low drive\n"..
-                              "1 = Medium high drive\n"..
-                              "2 = Medium low drive\n"..
-                              "3 = High drive.",
-                type = "enumerated",
-                choices = function() return GetLseDriveLevel() end,
-                default = "0",
-                file = "include/cfg/rtc.h"
-            },
-            {
-                macro = "RTC_LSE_BYPASS",
-                brief = "RTC_LSE_BYPASS",
-                description = "External LSE input provided on OSC32_IN.",
-                flavor = "boolean",
-                file = "include/cfg/rtc.h"
-            },
-            {
-                macro = "RTC_CLK_LSE",
-                brief = "Frequency of Clock ",
-                description = "Frequency of LSE quarz",
-                type = "integer",
-                default = "32768",
                 file = "include/cfg/rtc.h"
             },
             {
@@ -1017,6 +967,19 @@ nutarch_cm3_stm32_devices =
         },
     },
     --
+    -- STM32L4 DMA2 Interface
+    --
+    {
+        name = "nutarch_cm3_stm32L4_dma2",
+        brief = "STM32L4 DMA2  Controller",
+        description = "Generic DMA2 Support for L4",
+        requires = { "HW_MCU_STM32", "HW_DMA2_STM32L4" },
+        provides = {
+            "HW_DMA2_STM32F1",
+            "HW_DMA2_7CH_STM32",
+        },
+    },
+    --
     -- STM32F0 DMA Interface
     --
     {
@@ -1166,6 +1129,15 @@ nutarch_cm3_stm32_devices =
                 brief = "STM32 Devices with combined DMA IRQ",
                 description = "RTC V1 Availability",
                 requires = { "HW_DMA_COMBINED_IRQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DMA2_7CH_STM32",
+                brief = "STM32L4 Devices 7 Channel DMA2",
+                description = "STM32L4 Devices 7 Channel DMA2",
+                requires = { "HW_DMA2_7CH_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"

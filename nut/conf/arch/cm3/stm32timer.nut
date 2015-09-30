@@ -190,6 +190,9 @@ function GetStmTimers1Ch()
     if c_is_provided("HW_MCU_STM32L1_HD") then
         return { "", "2", "3", "4", "5", "9", "10", "11"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "", "1", "2", "3", "4", "5", "8", "15", "16", "17"}
+    end
     if c_is_provided("HW_MCU_STM32L1_XL") then
         return { "", "2", "3", "4", "5", "9", "10", "11"}
     end
@@ -351,6 +354,9 @@ function GetStmTimers2Ch()
     if c_is_provided("HW_MCU_STM32L1_XL") then
         return { "", "2", "3", "4", "5", "9"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "", "1", "2", "3", "4", "5", "8", "15", "16", "17"}
+    end
 end
 
 --
@@ -496,6 +502,9 @@ function GetStmTimers2ChIrq()
     end
     if c_is_provided("HW_MCU_STM32L1_XL") then
         return { "", "2", "3", "4", "5", "9"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "", "1", "2", "3", "4", "5", "8"}
     end
 end
 

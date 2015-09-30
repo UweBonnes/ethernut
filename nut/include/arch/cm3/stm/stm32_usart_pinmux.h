@@ -216,7 +216,7 @@
 #  define USART4_RTS_AF 4
 #  define USART4_CTS_AF 4
 #  define USART4_CK_AF  0
-# elif  defined(MCU_STM32F7)
+# elif  defined(MCU_STM32F7) || defined(MCU_STM32L4)
 #  define USART4_RX_AF   8
 #  define USART4_TX_AF   8
 #  define USART4_CTS_AF  8
@@ -292,6 +292,12 @@
 #  define USART5_RX_AF   8
 #  define USART5_RTS_AF  7
 #  define USART5_CTS_AF  7
+#  define USART5_CK_AF   -1
+# elif defined(MCU_STM32L4)
+#  define USART5_TX_AF   8
+#  define USART5_RX_AF   8
+#  define USART5_RTS_AF  8
+#  define USART5_CTS_AF  8
 #  define USART5_CK_AF   -1
 # endif
 

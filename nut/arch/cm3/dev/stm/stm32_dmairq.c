@@ -54,13 +54,8 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
-#if defined(MCU_STM32F1) || defined(MCU_STM32F3) ||  defined(MCU_STM32L1)
+#if defined(MCU_STM32F1) || defined(MCU_STM32F3) ||  defined(MCU_STM32L1) ||defined(MCU_STM32L4)
 # define FIRST_COMBINED_CHANNEL DMA2_CH5
-# if defined(HW_DMA2_STM32F1)
-#  define DMA_COUNT 12
-# else
-#  define DMA_COUNT 7
-# endif
 static IRQ_HANDLER *ch2irq[DMA_COUNT] = {
     &sig_DMA1_CH1,
     &sig_DMA1_CH2,
@@ -78,6 +73,10 @@ static IRQ_HANDLER *ch2irq[DMA_COUNT] = {
     &sig_DMA2_CH4,
 #  else
     &sig_DMA2_CH5,
+#  endif
+#  if defined(HW_DMA2_7CH_STM32)
+    &sig_DMA2_CH6,
+    &sig_DMA2_CH7,
 #  endif
 # endif
 };

@@ -50,6 +50,7 @@ extern IRQ_HANDLER sig_INTERRUPT0_1;    // EXTI 0 to 1 on F0/L0
 extern IRQ_HANDLER sig_INTERRUPT2_3;    // EXTI 2 to 3 on F0/L0
 extern IRQ_HANDLER sig_INTERRUPT4_15;   // EXTI 4 to 15 on F0/L0
 extern IRQ_HANDLER sig_RTC;         // Real Time Clock
+extern IRQ_HANDLER sig_RCC;         // Reset and Clock setup
 extern IRQ_HANDLER sig_RTC_WAKEUP;  // Real Time Clock periodic Wake
 extern IRQ_HANDLER sig_SDIO;        // SDIO Controller
 extern IRQ_HANDLER sig_SPI1;        // SPI 1 Controller
@@ -103,6 +104,8 @@ extern IRQ_HANDLER sig_DMA2_CH2;    // DMA Controller 2 Channel 2
 extern IRQ_HANDLER sig_DMA2_CH3;    // DMA Controller 2 Channel 3
 extern IRQ_HANDLER sig_DMA2_CH4;    // DMA Controller 2 Channel 4
 extern IRQ_HANDLER sig_DMA2_CH5;    // DMA Controller 2 Channel 5
+extern IRQ_HANDLER sig_DMA2_CH6;    // DMA Controller 2 Channel 6
+extern IRQ_HANDLER sig_DMA2_CH7;    // DMA Controller 2 Channel 7
 
 extern IRQ_HANDLER sig_DMA1_STREAM0;    // DMA Controller 1 Stream 0
 extern IRQ_HANDLER sig_DMA1_STREAM1;    // DMA Controller 1 Stream 1

@@ -88,6 +88,18 @@ nutarch_cm3_stm32_family =
         script = "arch/cm3/stm32l0.nut"
     },
     {
+        name = "nutarch_cm3_stm32l4",
+        brief = "STM32L4",
+        requires = { "HW_MCU_STM32", "HW_MCU_STM32L4" },
+        description = "ST Microelectronics STM32 L4 Series",
+        sources = { "cm3/dev/stm/stm32l4_clk.c" },
+        makedefs = {
+                  "MCU=cortex-m4",
+                  "LDPATH=$(LDINCLUDE)"
+        },
+        script = "arch/cm3/stm32l4.nut"
+    },
+    {
         name = "nutarch_cm3_stm32l1",
         brief = "STM32L1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L1" },
@@ -138,8 +150,8 @@ nutarch_cm3_stm32_family =
     },
     {
         name = "nutarch_cm3_stm32_pll",
-        brief = "Common PLL settings",
-        description = "Common PLL settings",
+        brief = "Clock settings",
+        description = "Clock settings",
         requires = { "HW_MCU_STM32" },
         script = "arch/cm3/stm32pll.nut"
     },

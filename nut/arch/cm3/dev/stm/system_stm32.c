@@ -130,15 +130,16 @@ static void GpioSetDefault(void)
 #else
 #warning Unknown GPIO default mode
 #endif
-
-#if defined(RCC_CR_MSION)
-#define RCC_CR_RESET_VALUE RCC_CR_MSION 
+#if defined(MCU_STM32L4)
+# define RCC_CR_RESET_VALUE (RCC_CR_MSION | (6 * RCC_CR_MSIRANGE_1))
+#elif defined(RCC_CR_MSION)
+# define RCC_CR_RESET_VALUE RCC_CR_MSION
 #else
-#if !defined(RCC_CR_HSITRIM_4)
-#define RCC_CR_RESET_VALUE (RCC_CR_HSION | 0x80)
-#else
-#define RCC_CR_RESET_VALUE (RCC_CR_HSION | RCC_CR_HSITRIM_4)
-#endif
+# if !defined(RCC_CR_HSITRIM_4)
+#  define RCC_CR_RESET_VALUE (RCC_CR_HSION | 0x80)
+# else
+#  define RCC_CR_RESET_VALUE (RCC_CR_HSION | RCC_CR_HSITRIM_4)
+# endif
 #endif
 
 /** @addtogroup STM32_System_Defines

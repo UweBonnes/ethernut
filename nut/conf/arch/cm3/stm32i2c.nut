@@ -43,6 +43,9 @@ function GetI2c1Sda()
     if c_is_provided("HW_MCU_STM32F446") then
         return { "PB07", "PB09", "PC07", "PD13", "PD15", "PF15"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB07", "PB09", "PG13"}
+    end
     return { "PA07", "PA09" }
 end
 function GetI2c1Scl()
@@ -55,11 +58,17 @@ function GetI2c1Scl()
     if c_is_provided("HW_MCU_STM32F446") then
         return { "PB06", "PB08", "PC06", "PD12", "PD14", "PF14"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB06", "PB08", "PG14"}
+    end
     return { "PA06", "PA08" }
 end
 function GetI2c1Smba()
     if c_is_provided("HW_MCU_STM32F446") then
         return { "PIN_NONE", "PB05", "PD11", "PF13"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB05", "PG15"}
     end
     return { "PIN_NONE", "PB05" }
 end
@@ -73,6 +82,9 @@ function GetI2c2Sda()
     end
     if c_is_provided("HW_MCU_STM32L1") then
         return "PB11"
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"PB11", "PB14", "PF00"}
     end
     if c_is_provided("HW_MCU_STM32F0") then
         return { "PB11", "PB14", "PA12"}
@@ -115,6 +127,9 @@ function GetI2c2Scl()
     if c_is_provided("HW_MCU_STM32L1") then
         return "PB10"
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"PB10", "PB13", "PF01"}
+    end
     if c_is_provided("HW_MCU_STM32F0") then
         return { "PB10", "PB13", "PA11"}
     end
@@ -155,6 +170,9 @@ function GetI2c2Smba()
     end
     if c_is_provided("HW_MCU_STM32L1") then
         return { "PIN_NONE", "PB12"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"PB12", "PF02"}
     end
     if c_is_provided("HW_MCU_STM32F0") then
         return "PIN_NONE"
@@ -212,6 +230,9 @@ function GetI2c3Sda()
     if c_is_provided("HW_MCU_STM32F7") then
         return {"PC09", "PH08"}
     end
+    if c_is_provided("HW_MCU_STM32F7") then
+        return { "PC01", "PG08"}
+    end
 end
 function GetI2c3Scl()
     if c_is_provided("HW_MCU_STM32F2") then
@@ -238,6 +259,9 @@ function GetI2c3Scl()
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PA08", "PH07"}
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PC00", "PG07"}
+    end
 end
 function GetI2c3Smba()
     if c_is_provided("HW_MCU_STM32F2") then
@@ -254,6 +278,9 @@ function GetI2c3Smba()
     end
     if c_is_provided("HW_MCU_STM32F446") then
         return {"PIN_NONE", "PA08", "PA09"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"PIN_NONE", "PB02", "PG06"}
     end
 end
 nutarch_cm3_stm32_i2c_devices =

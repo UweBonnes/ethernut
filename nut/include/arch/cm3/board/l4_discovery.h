@@ -1,8 +1,5 @@
-#ifndef _STM32_CLK_H_
-#define _STM32_CLK_H_
-
 /*
- * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
+ * Copyright 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -36,73 +33,26 @@
  */
 
 /*
+ * \file arch/cm3/board/l4_discovery.h
+ * \brief STM32L4_Discovery board specific settings.
+ *
  * \verbatim
- * $Id: stm32_gpio.c 3182 2010-10-17 21:46:04Z Astralix $
+ * $Id$
  * \endverbatim
  */
-#include <stdint.h>
 
-/* STM32 Clock source selectors */
-#define SYSCLK_HSI    1
-#define SYSCLK_PLL    2
-#define SYSCLK_HSE    3
-#define SYSCLK_HSI48  4
-#define SYSCLK_MSI    5
-#define SYSCLK_HSIDIV 6
-#define SYSCLK_PLLR   7
-
-#define PLLCLK_AUTO         0
-#define PLLCLK_HSI_DIV2     1
-#define PLLCLK_HSI_PREDIV   2
-#define PLLCLK_HSE_PREDIV   3
-#define PLLCLK_HSI48_PREDIV 4
-#define PLLCLK_HSI          5
-#define PLLCLK_HSE          6
-#define PLLCLK_PLL2         7
-#define PLLCLK_MSI          8
-
-/* RTC clock sources */
-#define RTCCLK_NONE   0
-#define RTCCLK_LSE    1
-#define RTCCLK_LSI    2
-#define RTCCLK_HSE    3
-#define RTCCLK_LSEBYP 4
-
-/* MSI clock ranges*/
-typedef enum
-{
-    MSI_OFF = -1,
-    MSI_100k,
-    MSI_200k,
-    MSI_400k,
-    MSI_800k,
-    MSI_1M,
-    MSI_2M,
-    MSI_4M,
-    MSI_8M,
-    MSI_16M,
-    MSI_24M,
-    MSI_32M,
-    MSI_48M
-}msi_range_t;
-
-
-/* Retrieve CPU/AHB/APBx clock*/
-extern uint32_t STM_ClockGet(int idx);
-
-/* Control functions for the separate clocks */
-extern int CtlHseClock( uint8_t ena);
-extern int CtlHsiClock( uint8_t ena);
-extern int CtlPllClock( uint8_t ena);
-
-/* Selection functions for the clock sources */
-extern int SetPllClock( int src);
-extern int SetPllClockSource( int src);
-extern int SetSysClock(void);
-extern uint32_t SysCtlClockGet(void);
-uint32_t Stm32ClockSwitchGet(int bi);
-
-#if defined(MCU_STM32L1)
-extern int SetRTCClock(int source);
+#ifndef DEV_UART
+#include <dev/semihosting.h>
+#define DEV_UART devSemihosting
 #endif
-#endif /* _STM32_CLK_H_ */
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME  devSemihosting.dev_name
+#endif
+
+#ifndef DEV_CONSOLE
+#define DEV_CONSOLE devUsartStm32_2
+#endif
+
+#ifndef DEV_CONSOLE_NAME
+#define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
+#endif

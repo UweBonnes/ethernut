@@ -43,6 +43,9 @@ function GetSpi1Nss()
     if c_is_provided("HW_MCU_STM32F37") then
         return { "PIN_NONE", "PA04", "PA15", "PC06" }
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PIN_NONE", "PA04", "PA15", "PE12", "PG05" }
+    end
     return { "PIN_NONE", "PA04", "PA15" }
 end
 --
@@ -52,6 +55,9 @@ function GetSpi1Sck()
     end
     if c_is_provided("HW_MCU_STM32F37") then
         return { "PA05", "PB03", "PA12" , "PC07" }
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PA05", "PB03", "PE13", "PG02" }
     end
     return { "PA05", "PB03" }
 end
@@ -68,6 +74,9 @@ function GetSpi1Miso()
     if c_is_provided("HW_MCU_STM32F37") then
         return { "PA06", "PB04", "PA13" , "PC08" }
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {  "PA06", "PB04", "PE14", "PG03" }
+    end
     return { "PA06", "PB04" }
 end
 function GetSpi1Mosi()
@@ -82,6 +91,9 @@ function GetSpi1Mosi()
     end
     if c_is_provided("HW_MCU_STM32F37") then
         return { "PA07", "PB05", "PB00", "PC09" , "PF06" }
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PA07", "PB05", "PE15", "PG04" }
     end
     return { "PA07", "PB05" }
 end
@@ -111,6 +123,9 @@ function GetSpi2Nss()
     end
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PIN_NONE", "PB12", "PB09", "PB04", "PI00"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PIN_NONE", "PB12", "PB09", "PD00" }
     end
     return { "PIN_NONE", "PB12", "PB09" }
 end
@@ -154,6 +169,9 @@ function GetSpi2Sck()
     end
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PB13", "PB10", "PA09", "PD03", "PI10"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB13", "PB10", "PD01" }
     end
     return { "PB13", "PB10" }
 end
@@ -200,6 +218,9 @@ function GetSpi2Miso()
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PB14", "PC02", "PI02" }
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB14", "PC02", "PD03" }
+    end
     return { "PB14", "PA10" }
 end
 function GetSpi2Mosi()
@@ -239,6 +260,9 @@ function GetSpi2Mosi()
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PB15", "PC03", "PI03" }
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB15", "PC03", "PD04" }
+    end
     return { "PB15", "PC03" }
 end
 
@@ -247,6 +271,9 @@ end
 -- Retrieve SPI3 pins available on the device.
 --
 function GetSpi3Nss()
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PIN_NONE", "PA04", "PA15", "PG12" }
+    end
     return { "PIN_NONE", "PA04", "PA15" }
 end
 --
@@ -257,11 +284,17 @@ function GetSpi3Sck()
     if c_is_provided("HW_MCU_STM32F411") then
         return { "PB03", "PC10", "PB12" }
     end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB03", "PC10", "PG09"}
+    end
     return { "PB03", "PC10" }
 end
 function GetSpi3Miso()
     if c_is_provided("HW_MCU_STM32F37") then
         return { "PB04", "PC11", "PA02"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB04", "PC11", "PG10"}
     end
     return { "PB04", "PC11" }
 end
@@ -283,6 +316,9 @@ function GetSpi3Mosi()
     end
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PB05", "PC12", "PB02", "PD06"}
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return { "PB05", "PC12", "PG11"}
     end
     return { "PB05", "PC12" }
 end

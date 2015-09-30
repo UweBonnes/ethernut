@@ -1037,6 +1037,22 @@ nutarch =
                 makedefs = { "LDSCRIPT=stm32l15XxB_flash.ld" }
             },
             {
+                macro = "MCU_STM32L476xG",
+                brief = "STM STM32L476xG",
+                description = "STM32L476 1024 kB",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32L4",
+                    "HW_MCU_STM32L476",
+                },
+                makedefs = { "LDSCRIPT=stm32l4XXxG_flash.ld" }
+            },
+            {
                 macro = "MCU_STM32L053x8",
                 brief = "STM STM32L053x8",
                 description = "STM32L053 64 kB",
@@ -1105,6 +1121,22 @@ nutarch =
                     "HW_MCU_STM32L152_E",
                 },
                 makedefs = { "LDSCRIPT=stm32l15XxE_flash.ld" }
+            },
+            {
+                macro = "MCU_STM32L476xG",
+                brief = "STM32L476xG",
+                description = "STM32L476 1024 kiB",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32L4",
+                    "HW_MCU_STM32L476",
+                },
+                makedefs = { "LDSCRIPT=stm32l4xxxG_flash.ld" }
             },
             {
                 macro = "MCU_STM32F401xC",

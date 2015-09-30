@@ -39,7 +39,7 @@
  * \endverbatim
  */
 
-/* GPIO Configuration for the GPIO of L0/L1/F2/F3/F4/F7 */
+/* GPIO Configuration for the GPIO of L0/L1/L4/F0/F2/F3/F4/F7 */
 
 #include <cfg/os.h>
 #include <cfg/arch.h>
@@ -56,6 +56,9 @@ const uint16_t ospeed_values[4] =
 #elif defined (MCU_STM32L1)
 const uint16_t ospeed_values[4] =
 { 400000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
+#elif defined (MCU_STM32L4)
+const uint16_t ospeed_values[4] =
+{ 5000000 >> 16, 25000000 >> 16, 50000000 >> 16,  80000000 >> 16};
 #elif defined (MCU_STM32F0)
 const uint16_t ospeed_values[4] =
 {2000000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
