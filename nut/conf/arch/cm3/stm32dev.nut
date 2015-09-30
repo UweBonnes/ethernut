@@ -2,19 +2,19 @@
 -- Retrieve U(S)ARTs available on the device.
 --
 function GetStmUsarts()
-    if c_is_provided("STM32F030") then
+    if c_is_provided("HW_MCU_STM32F030") then
         return { "", "USART1", "USART2" }
     end
-    if c_is_provided("STM32F031") then
+    if c_is_provided("HW_MCU_STM32F031") then
         return { "", "USART1" }
     end
-    if c_is_provided("STM32F040") then
+    if c_is_provided("HW_MCU_STM32F040") then
         return { "", "USART1", "USART2" }
     end
-    if c_is_provided("STM32F052") then
+    if c_is_provided("HW_MCU_STM32F052") then
         return { "", "USART1", "USART2" }
     end
-    if c_is_provided("STM32F072") then
+    if c_is_provided("HW_MCU_STM32F072") then
         return { "", "USART1", "USART2", "USART3", "USART4", }
     end
     if c_is_provided("STM32F10X_LD_VL") then
@@ -126,7 +126,7 @@ end
 -- Retrieve USART3RX pins available on the device.
 --
 function GetTxUsart3()
-    if c_is_provided("STM32F07X") then
+    if c_is_provided("HW_MCU_STM32F07X") then
         return { "4", "10", "310", "8", "-1"}
     end
     if c_is_provided("STM32F3XX") then
@@ -285,6 +285,54 @@ end
 -- Retrieve 32 bit Timers.
 --
 function GetStmTimers32bit()
+    if c_is_provided("HW_MCU_STM32F030x6") then
+        return { "" }
+    end
+    if c_is_provided("HW_MCU_STM32F030x8") then
+        return { "" }
+    end
+    if c_is_provided("HW_MCU_STM32F030xC") then
+        return { "" }
+    end
+    if c_is_provided("HW_MCU_STM32F031x6") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F038xx") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F042x6") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F048xx") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F051x8") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F058xx") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F070x6") then
+        return { "" }
+    end
+    if c_is_provided("HW_MCU_STM32F070xB") then
+        return { "" }
+    end
+    if c_is_provided("HW_MCU_STM32F071xB") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F072xB") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F078xx") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F091xC") then
+        return { "", "2" }
+    end
+    if c_is_provided("HW_MCU_STM32F098xx") then
+        return { "", "2" }
+    end
     if c_is_provided("STM32F2XX") then
         return { "2", "5"}
     end
@@ -300,12 +348,119 @@ function GetStmTimers32bit()
 end
 
 --
+-- Retrieve Timer with at least one output channel
+--
+function GetStmTimers1Ch()
+    if c_is_provided("HW_MCU_STM32F030x6") then
+        return { "", "1" , "3", "14" , "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F030x8") then
+        return { "", "1" , "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F030xC") then
+        return { "", "1" , "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F031x6") then
+        return { "", "1" , "2", "3", "14" , "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F038xx") then
+        return { "", "1" , "2", "3", "14" , "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F042x6") then
+        return { "", "1" , "2", "3", "14" , "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F048xx") then
+        return { "", "1" , "2", "3", "14" , "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F051x8") then
+        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F058xx") then
+        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F070x6") then
+        return { "", "1" , "3", "14" , "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F070xB") then
+        return { "", "1" , "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F071xB") then
+        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F072xB") then
+        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F078xx") then
+        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F091xC") then
+        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F098xx") then
+        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    end
+    if c_is_provided("STM32F2XX") then
+        return { "", "1" , "2", "3", "4", "5", "8", "9", "10", "11", "12" , "13" , "14" }
+    end
+--  For all other devices return all known values for now
+    return { "", "1", "2", "3", "4", "5", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"}
+end
+
+--
 -- Retrieve Timer with at least two channels.
 --
 function GetStmTimers2Ch()
 -- List timers with at least two channels
 -- List of all known timers with two channels min:
 -- {"", "1", "2", "3", "4", "5", "8", "9", "12", "16", "17", "19"}
+    if c_is_provided("HW_MCU_STM32F030x6") then
+        return { "", "1" , "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F030x8") then
+        return { "", "1" , "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F030xC") then
+        return { "", "1" , "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F031x6") then
+        return { "", "1" , "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F038xx") then
+        return { "", "1" , "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F042x6") then
+        return { "", "1" , "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F048xx") then
+        return { "", "1" , "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F051x8") then
+        return { "", "1" , "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F058xx") then
+        return { "", "1" , "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F070x6") then
+        return { "", "1" , "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F070xB") then
+        return { "", "1" , "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F071xB") then
+        return { "", "1" , "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F072xB") then
+        return { "", "1" , "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F078xx") then
+        return { "", "1" , "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F091xC") then
+        return { "", "1" , "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F098xx") then
+        return { "", "1" , "2", "3",   "16", "17" }
+    end
     if c_is_provided("STM32F10X_LD") then
         return { "", "1", "2", "3"}
     end
@@ -374,6 +529,54 @@ function GetStmTimers2ChIrq()
 -- {"", "1", "2", "3", "4", "5", "8", "9", "12", "16", "17", "19"}
 -- TIM1/TIM8/TIM9/TIM12/TIM16/TIM17 with seperated/coupled interrupts on most devices
 -- and so not usable yet
+    if c_is_provided("HW_MCU_STM32F030x6") then
+        return { "",  "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F030x8") then
+        return { "",  "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F030xC") then
+        return { "",  "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F031x6") then
+        return { "",  "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F038xx") then
+        return { "",  "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F042x6") then
+        return { "",  "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F048xx") then
+        return { "",  "2", "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F051x8") then
+        return { "",  "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F058xx") then
+        return { "",  "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F070x6") then
+        return { "",  "3",  "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F070xB") then
+        return { "",  "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F071xB") then
+        return { "",  "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F072xB") then
+        return { "",  "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F078xx") then
+        return { "",  "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F091xC") then
+        return { "",  "2", "3",   "16", "17" }
+    end
+    if c_is_provided("HW_MCU_STM32F098xx") then
+        return { "",  "2", "3",   "16", "17" }
+    end
     if c_is_provided("STM32F10X_LD") then
         return { "", "2", "3"}
     end
@@ -725,7 +928,7 @@ nutarch_cm3_stm32_devices =
                 macro = "STM32_QENC32_0_I_PORT",
                 brief = "STM32 qenc32 I input port",
                 description = "STM32 32Bit Quadrature Encoder I input port. Can by TI1 or TI2",
-                requires = { "HW_STM32_TIMER_32BIT" },
+               requires = { "HW_STM32_TIMER_32BIT" },
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 file = "include/cfg/qenc.h",
@@ -3961,7 +4164,7 @@ nutarch_cm3_stm32_devices =
                 brief = "STM32 32Bit PWM0 Timer ID",
                 description = "Select Timer for PWM0 output. Check for availability on selected device.",
                 type = "enumerated",
-                choices = { "1", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" },
+                choices = function() return  GetStmTimers1Ch() end,
                 file = "include/cfg/pwm.h",
             },
             {
@@ -4002,7 +4205,7 @@ nutarch_cm3_stm32_devices =
                 brief = "STM32 32Bit PWM1 Timer ID",
                 description = "Select Timer for PWM1 output. Check for availability on selected device.",
                 type = "enumerated",
-                choices = { "1", "2", "3", "4", "5", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" },
+                choices = function() return  GetStmTimers1Ch() end,
                 file = "include/cfg/pwm.h",
             },
             {
