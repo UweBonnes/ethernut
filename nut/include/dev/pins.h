@@ -1,6 +1,9 @@
 #if !defined(__PINS_H)
 #define __PINS_H
 
+#define  GPIO_PORT_MASK 0xffe0
+#define  GPIO_PIN_MASK  0xf
+
 typedef enum
 {
     PIN_NONE = 0,

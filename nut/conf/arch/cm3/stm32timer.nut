@@ -526,6 +526,205 @@ nutarch_cm3_stm32_timer_devices =
         provides = { "HW_TIM5_STM32" , "HW_STM32_TIMER_32BIT" },
     },
     {
+        name = "nutarch_cm3_stm32f1_timer_remap",
+        brief = "STM32F1 Timer Pin remap",
+        description = "STM32F1 can only remap functions global.",
+        requires = { "HW_MCU_STM32F1" },
+        options =
+        {
+           {
+              macro = "STM32F1_TIM1_REMAP",
+              brief = "STM32F1 Timer 1 Remap",
+              description = "Select Timer 1 global remap\n"..
+                            "FUNCTION\t0\t1\t3\n"..
+                            "TIM1_ETR\tPA12\tPA12\tPE07\n"..
+                            "TIM1_CH1\tPA08\tPA08\tPE09\n"..
+                            "TIM1_CH2\tPA09\tPA09\tPE11\n"..
+                            "TIM1_CH3\tPA10\tPA10\tPE13\n"..
+                            "TIM1_CH4\tPA11\tPA11\tPE14\n"..
+                            "TIM1_BKIN\tPB12\tPA06\tPE15\n"..
+                            "TIM1_CH1N\tPB13\tPA07\tPE08\n"..
+                            "TIM1_CH2N\tPB14\tPB00\tPE08\n"..
+                            "TIM1_CH3N\tPB15\tPB01\tPE12",
+              requires = { "HW_TIM1_STM32" },
+              type = "enumerated",
+              choices = { "0", "1", "3"},
+              default = "0",
+              file = "include/cfg/timer.h",
+           },
+           {
+              macro = "STM32F1_TIM2_REMAP",
+              brief = "STM32F1 Timer 2 Remap",
+              description = "Select Timer 2 global remap\n\n"..
+                            "Check PA15/PB03 against JTAG mapping!\n\n"..
+                            "FUNCTION\t\t0\t1\t2\t3\n"..
+                            "TIM2_CH1_ETR\tPA00\tPA15\tPA00\tPA15\n"..
+                            "TIM2_CH2\t\tPA01\tPB03\tPA01\tPB03\n"..
+                            "TIM2_CH3\t\tPA02\tPA02\tPB10\tPB10\n"..
+                            "TIM2_CH4\t\tPA03\tPA03\tPB11\tPB12",
+              requires = { "HW_TIM2_STM32" },
+              type = "enumerated",
+              choices = { "0", "1", "2", "3"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM3_REMAP",
+              brief = "STM32F1 Timer 3 Remap",
+              description = "Select Timer 3 global remap\n\n"..
+                            "Check PB04 against JTAG mapping.\n\n"..
+                            "FUNCTION\t0\t2\t3\n"..
+                            "TIM3_CH1\tPA06\tPB04\tPC06\n"..
+                            "TIM3_CH2\tPA07\tPB05\tPC07\n"..
+                            "TIM3_CH3\tPB00\tPB00\tPC08\n"..
+                            "TIM3_CH4\tPB01\tPB01\tPC09",
+              requires = { "HW_TIM3_STM32" },
+              type = "enumerated",
+              choices = { "0", "2", "3"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM4_REMAP",
+              brief = "STM32F1 Timer 4 Remap",
+              description = "Select Timer 4 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM4_CH1\tPB06\tPD12\n"..
+                            "TIM4_CH2\tPB07\tPD13\n"..
+                            "TIM4_CH3\tPB08\tPD14\n"..
+                            "TIM4_CH4\tPB09\tPD15",
+              requires = { "HW_TIM4_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM5_REMAP",
+              brief = "STM32F1 Timer 5 Remap",
+              description = "Select Timer 4 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM5_CH4\tPA03\tInternal LSI clock",
+              requires = { "HW_TIM5_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM9_REMAP",
+              brief = "STM32F1 Timer 9 Remap",
+              description = "Select Timer 9 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM9_CH1\tPA02\tPE05\n"..
+                            "TIM9_CH2\tPA03\tPE06",
+              requires = { "HW_TIM9_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM10_REMAP",
+              brief = "STM32F1 Timer 10 Remap",
+              description = "Select Timer 10 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM10_CH1\tPB08\tPF06",
+              requires = { "HW_TIM10_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM11_REMAP",
+              brief = "STM32F1 Timer 11 Remap",
+              description = "Select Timer 11 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM11_CH1\tPB09\tPF07",
+              requires = { "HW_TIM11_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM12_REMAP",
+              brief = "STM32F1 Timer 12 Remap",
+              description = "Select Timer 12 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM12_CH1\tPC04\tPB12\n"..
+                            "TIM12_CH2\tPC05\tPB13",
+              requires = { "HW_TIM12_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM13_REMAP",
+              brief = "STM32F1 Timer 13 Remap",
+              description = "Select Timer 13 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM13_CH1\tPC08\tPB00",
+              requires = { "HW_TIM13_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM14_REMAP",
+              brief = "STM32F1 Timer 14 Remap",
+              description = "Select Timer 14 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM14_CH1\tPC09\tPB01",
+              requires = { "HW_TIM14_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM15_REMAP",
+              brief = "STM32F1 Timer 15 Remap",
+              description = "Select Timer 15 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM15_CH1\tPA02\tPB14\n",
+                            "TIM15_CH1\tPA03\tPB15",
+              requires = { "HW_TIM15_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+         {
+              macro = "STM32F1_TIM16_REMAP",
+              brief = "STM32F1 Timer 16 Remap",
+              description = "Select Timer 16 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM16_CH1\tPB08\tPA06",
+              requires = { "HW_TIM16_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+          {
+              macro = "STM32F1_TIM17_REMAP",
+              brief = "STM32F1 Timer 17 Remap",
+              description = "Select Timer 17 global remap\n"..
+                            "FUNCTION\t0\t1\n"..
+                            "TIM17_CH1\tPB09\tPA07",
+              requires = { "HW_TIM17_STM32" },
+              type = "enumerated",
+              choices = { "0", "1"},
+              default = "0",
+              file = "include/cfg/timer.h",
+         },
+      }
+    },
+    {
         name = "nutarch_cm3_stm32_qenc32_0",
         brief = "STM32 32Bit Quadrature Encoder0",
         description = "STM32 32Bit Quadrature Encoder 0.",
@@ -542,39 +741,15 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/qenc.h",
             },
             {
-                macro = "STM32_QENC32_0_I_PORT",
-                brief = "STM32 qenc32 I input port",
+                macro = "STM32_QENC32_0_I_GPIO",
+                brief = "STM32 qenc32 I input gpio",
                 description = "STM32 32Bit Quadrature Encoder I input port. Can by TI1 or TI2",
-               requires = { "HW_STM32_TIMER_32BIT" },
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
                 file = "include/cfg/qenc.h",
             },
             {
-                macro = "STM32_QENC32_0_I_PIN",
-                brief = "STM32 qenc32 I input pin",
+                macro = "STM32_QENC32_0_Q_GPIO",
+                brief = "STM32 qenc32 Q input gpio",
                 description = "STM32 32Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
-                requires = { "HW_STM32_TIMER_32BIT" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/qenc.h",
-            },
-            {
-                macro = "STM32_QENC32_0_Q_PORT",
-                brief = "STM32 qenc32 Q input port",
-                description = "STM32 32Bit Quadrature Encoder I input port. Can by TI1 or TI2",
-                requires = { "HW_STM32_TIMER_32BIT" },
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/qenc.h",
-            },
-            {
-                macro = "STM32_QENC32_0_Q_PIN",
-                brief = "STM32 qenc32 Q input pin",
-                description = "STM32 32Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
-                requires = { "HW_STM32_TIMER_32BIT" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
                 file = "include/cfg/qenc.h",
             },
             {
@@ -615,35 +790,17 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/qenc.h",
             },
             {
-                macro = "STM32_QENC16_0_I_PORT",
-                brief = "STM32 qenc16 I input port",
-                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                macro = "STM32_QENC16_0_I_GPIO",
+                brief = "STM32 qenc16 I input Gpio",
+                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2\n"..
+                            "For STM32F1, check Timer global remap!",
                 file = "include/cfg/qenc.h",
             },
             {
-                macro = "STM32_QENC16_0_I_PIN",
-                brief = "STM32 qenc16 I input pin",
-                description = "STM32 16 Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/qenc.h",
-            },
-            {
-                macro = "STM32_QENC16_0_Q_PORT",
-                brief = "STM32 qenc16 Q input port",
-                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/qenc.h",
-            },
-            {
-                macro = "STM32_QENC16_0_Q_PIN",
-                brief = "STM32 qenc16 Q input pin",
-                description = "STM32 16 Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                macro = "STM32_QENC16_0_Q_GPIO",
+                brief = "STM32 qenc16 Q input Gpio",
+                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2\n"..
+                            "For STM32F1, check Timer global remap!",
                 file = "include/cfg/qenc.h",
             },
             {
@@ -682,19 +839,10 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/pwm.h",
             },
             {
-                macro = "STM32_PWM0_PIN",
-                brief = "PIN for STM32 PWM0 output",
-                description = "Port bit used for PWM0. Only some pins are valid!",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/pwm.h",
-            },
-            {
-                macro = "STM32_PWM0_PORT",
-                brief = "PORT for STM32 PWM0 output",
-                description = "Port used for PWM0. Only some ports are valid!",
-                type = "enumerated",
-                choices = function() return GetGpioPortIds() end,
+                macro = "STM32_PWM0_GPIO",
+                brief = "Gpio for STM32 PWM0 output",
+                description = "Gpio used for PWM0. Only some pins are valid!\n"..
+                            "For STM32F1, check Timer global remap!",
                 file = "include/cfg/pwm.h",
             },
         }
@@ -723,19 +871,10 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/pwm.h",
             },
             {
-                macro = "STM32_PWM1_PIN",
-                brief = "PIN for STM32 PWM1 output",
-                description = "Port bit used for PWM1. Only some pins are valid!",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/pwm.h",
-            },
-            {
-                macro = "STM32_PWM1_PORT",
-                brief = "PORT for STM32 PWM1 output",
-                description = "Port used for PWM1. Only some ports are valid!",
-                type = "enumerated",
-                choices = function() return GetGpioPortIds() end,
+                macro = "STM32_PWM1_GPIO",
+                brief = "Gpio for STM32 PWM1 output",
+                description = "Gpio used for PWM1. Only some pins are valid!\n"..
+                            "For STM32F1, check Timer global remap!",
                 file = "include/cfg/pwm.h",
             },
         }
@@ -753,21 +892,11 @@ nutarch_cm3_stm32_timer_devices =
         options =
         {
             {
-                macro = "STM32TIM_OWI0_PIN",
-                brief = "PIN for STM32 hardware timer OWIBUS0",
-                description = "Port bit used for OWIBUS0. "..
-                            "Check datasheet for Port/Pin function!",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/owi.h",
-            },
-            {
-                macro = "STM32TIM_OWI0_PORT",
-                brief = "PORT for STM32 hardware timer OWIBUS0",
-                description = "Port used for OWIBUS0. "..
-                            "Check datasheet for Port/Pin function!",
-                type = "enumerated",
-                choices = function() return GetGpioPortIds() end,
+                macro = "STM32TIM_OWI0_GPIO",
+                brief = "Gpio for STM32 hardware timer OWIBUS0",
+                description = "Gpio used for OWIBUS0. "..
+                            "Check datasheet for Port/Pin function!\n"..
+                            "For STM32F1, check Timer global remap!",
                 file = "include/cfg/owi.h",
             },
             {
@@ -788,16 +917,6 @@ nutarch_cm3_stm32_timer_devices =
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
             },
-            {
-                macro = "STM32TIM_OWI0_REMAP",
-                brief = "REMAP for STM32 hardware timer OWIBUS0",
-                requires = { "HW_MCU_STM32F10X" },
-                description = "Give Remap used for STM32F1 hardware "..
-                            "timer OWIBUS0 if needed!",
-                type = "interger",
-                default = "0",
-                file = "include/cfg/owi.h",
-            },
         }
      },
 
@@ -814,21 +933,11 @@ nutarch_cm3_stm32_timer_devices =
         options =
         {
             {
-                macro = "STM32TIM_OWI1_PIN",
-                brief = "PIN for STM32 hardware timer OWIBUS1",
-                description = "Port bit used for OWIBUS1. "..
-                            "Check datasheet for Port/Pin function!",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/owi.h",
-            },
-            {
-                macro = "STM32TIM_OWI1_PORT",
-                brief = "PORT for STM32 hardware timer OWIBUS1",
-                description = "Port used for OWIBUS1. "..
-                            "Check datasheet for Port/Pin function!",
-                type = "enumerated",
-                choices = function() return GetGpioPortIds() end,
+                macro = "STM32TIM_OWI1_GPIO",
+                brief = "GPIO for STM32 hardware timer OWIBUS1",
+                description = "GPIO used for OWIBUS1. "..
+                            "Check datasheet for Port/Pin function!\n"..
+                            "For STM32F1, check Timer global remap!",
                 file = "include/cfg/owi.h",
             },
             {
@@ -849,16 +958,6 @@ nutarch_cm3_stm32_timer_devices =
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
             },
-            {
-                macro = "STM32TIM_OWI1_REMAP",
-                brief = "REMAP for STM32 hardware timer OWIBUS1",
-                requires = { "HW_MCU_STM32F10X" },
-                description = "Give Remap used for STM32F1 hardware "..
-                            "timer OWIBUS1 if needed!",
-                type = "interger",
-                default = "0",
-                file = "include/cfg/owi.h",
-            },
         }
      },
 
@@ -875,21 +974,11 @@ nutarch_cm3_stm32_timer_devices =
         options =
         {
             {
-                macro = "STM32TIM_OWI2_PIN",
-                brief = "PIN for STM32 hardware timer OWIBUS2",
-                description = "Port bit used for OWIBUS2. "..
-                            "Check datasheet for Port/Pin function!",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/owi.h",
-            },
-            {
-                macro = "STM32TIM_OWI2_PORT",
-                brief = "PORT for STM32 hardware timer OWIBUS2",
-                description = "Port used for OWIBUS2. "..
-                            "Check datasheet for Port/Pin function!",
-                type = "enumerated",
-                choices = function() return GetGpioPortIds() end,
+                macro = "STM32TIM_OWI2_GPIO",
+                brief = "Gpio for STM32 hardware timer OWIBUS2",
+                description = "Gpio used for OWIBUS2. "..
+                            "Check datasheet for Port/Pin function!\n"..
+                            "For STM32F1, check Timer global remap!",
                 file = "include/cfg/owi.h",
             },
             {
@@ -908,16 +997,6 @@ nutarch_cm3_stm32_timer_devices =
                             "Check for Channel 3/4 availability!",
                 type = "enumerated",
                 choices = { "1", "2", "3", "4" },
-                file = "include/cfg/owi.h",
-            },
-            {
-                macro = "STM32TIM_OWI2_REMAP",
-                brief = "REMAP for STM32 hardware timer OWIBUS2",
-                requires = { "HW_MCU_STM32F10X" },
-                description = "Give Remap used for STM32F1 hardware"..
-                            " timer OWIBUS2 if needed!",
-                type = "interger",
-                default = "0",
                 file = "include/cfg/owi.h",
             },
         }
