@@ -134,7 +134,7 @@ NUTDEVICE devUsartStm32_1 = {
  * \brief USART1 GPIO configuartion and assignment.
  */
 /*
- * F1  NOREMAP REMAP  F30  F30  F30  F0
+ * F1  NOREMAP REMAP  F30  F30  F30  F0 L0
  * CK  PA8     PA8
  * TX  PA9     PB6    PC4  PB6  PE0 PB6
  * RX  PA10    PB7    PC5  PB7  PE1 PB7
@@ -148,6 +148,13 @@ NUTDEVICE devUsartStm32_1 = {
  * TX on PA15: F0/F411
  * TX on PC4 : F30
  * TX on PE1 : F30
+ *
+ * L0:
+ * USART1_TX :  PA9(AF4) PB6(AF0)
+ * USART1_RX : PA10(AF4) PB7(AF0)
+ * USART1_CK :  PA8(AF4)
+ * USART1_RTS: PA12(AF4)
+ * USART1_CTS: PA11(AF4)
  */
 #if defined(MCU_STM32F1)
  #define STM_USART_REMAP_MASK AFIO_MAPR_USART1_REMAP
@@ -167,6 +174,8 @@ NUTDEVICE devUsartStm32_1 = {
 #else /* L1/F2/F3/F4*/
  #if defined(MCU_STM32F3)
   #define STM_USART_REMAP  GPIO_AF_7
+# elif defined(MCU_STM32L0)
+#  define STM_USART_REMAP  GPIO_AF_4
  #elif defined(MCU_STM32F0)
   #define STM_USART_REMAP  GPIO_AF_1
 /* Fixme: May also be GPIO_AF_0*/

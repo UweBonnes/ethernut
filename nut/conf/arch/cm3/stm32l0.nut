@@ -87,6 +87,15 @@ nutarch_cm3_stm32l0 =
                 file = "include/cfg/arch.h",
             },
             {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                type = "integer",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+-- Use macro names so that ST vendor defines are produced
+            {
                 macro = "STM32L051xx",
                 brief = "STM32L051 32/64 kB.",
                 description = "STM32L051 32/64 kB.",

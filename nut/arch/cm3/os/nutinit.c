@@ -53,13 +53,6 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3.h>
-#if defined(MCU_STM32F3) || defined(MCU_STM32F4) || defined(MCU_LPC407x_8x)
-#include <arch/cm3/core_cm4.h>
-#elif defined(MCU_STM32F0)
-#include <arch/cm3/core_cm0.h>
-#else
-#include <arch/cm3/core_cm3.h>
-#endif
 
 #if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32_clk.h>

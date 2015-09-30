@@ -239,7 +239,7 @@
 #define DMA_TCIF DMA_ISR_TCIF1  /*< Channel x Transfer Complete Flag */
 #define DMA_GIF  DMA_ISR_GIF1   /*< Channel x Global Flag */
 
-#define DMA_FLAGMASK (DMA_TEIF | DMA_HTIF | DMA_TCIF| DMA_GIF)
+#define DMA_FLAGMASK (DMA_TCIF | DMA_HTIF | DMA_TEIF | DMA_GIF)
 
 /* Internally used struct and table to align
  * DMA channels and interrupts. */

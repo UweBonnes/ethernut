@@ -177,6 +177,7 @@
 #define BOARDNAME "EVK1105"
 #elif defined(L0_DISCOVERY)
 #include <arch/cm3/board/l0_discovery.h>
+#define BOARDNAME "L0_DISCOVERY"
 #elif defined(L1_DISCOVERY)
 #include <arch/cm3/board/l1_discovery.h>
 #define BOARDNAME "L1_DISCOVERY"

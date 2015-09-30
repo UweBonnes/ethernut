@@ -141,6 +141,12 @@ NUTDEVICE devUsartStm32_2 = {
  * CK  PA4     PD7         PB5
  *
  * F411: No additional mapping
+ * L0:
+ * USART2_TX :  PA2(AF4) PA14(AF4)
+ * USART2_RX :  PA3(AF4) PA15(AF4)
+ * USART2_CK :  PA4(AF4)
+ * USART2_RTS:  PA1(AF4)
+ * USART2_CTS:  PA0(AF4)
  */
 
 
@@ -174,6 +180,8 @@ NUTDEVICE devUsartStm32_2 = {
 #else /*L1/F2/F3/F4*/
  #if defined(MCU_STM32F3)
   #define STM_USART_REMAP  GPIO_AF_7
+# elif defined(MCU_STM32L0)
+#  define STM_USART_REMAP  GPIO_AF_4
  #elif defined(MCU_STM32F0)
   #define STM_USART_REMAP  GPIO_AF_1
  #else

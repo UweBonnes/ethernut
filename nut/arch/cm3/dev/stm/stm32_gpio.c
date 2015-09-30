@@ -50,7 +50,10 @@
 #include <arch/cm3.h>
 #include <dev/gpio.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#if defined (MCU_STM32L1)
+#if defined (MCU_STM32L0)
+const uint16_t ospeed_values[4] =
+{2000000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
+#elif defined (MCU_STM32L1)
 const uint16_t ospeed_values[4] =
 { 400000 >> 16,  2000000 >> 16, 10000000 >> 16,  50000000 >> 16};
 #elif defined (MCU_STM32F0)

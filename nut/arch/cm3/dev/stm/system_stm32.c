@@ -180,7 +180,11 @@ void SystemInit (void)
     SCB->CPACR |= ((3UL << 10*2)|(3UL << 11*2)); 
 #endif
     /* Disable clock related interrupts*/
+#if defined(RCC_CICR_LSIRDYC)
+    rcc->CICR = 0x1ff;
+#else
     rcc->CIR = 0;
+#endif
     /* Switch on HSI Clock */
     rcc->CR = RCC_CR_RESET_VALUE;
     rcc->CFGR = 0;

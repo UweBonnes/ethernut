@@ -213,7 +213,9 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioPortGet(bank)             CM3REG((bank), GPIO_TypeDef, IDR )
 #define GpioPortSet(bank, value)     (CM3REG((bank), GPIO_TypeDef, ODR ) = value)
 
-#if defined(MCU_STM32L1)
+#if defined(RCC_IOPENR_GPIOAEN)
+#define GpioClkEnable(bank) (RCC->IOPENR |= 1 <<((bank-GPIOA_BASE)>>10))
+#elif defined(MCU_STM32L1)
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHBENR, (  bank-GPIOA_BASE)>>10)
 #elif defined(MCU_STM32F0) ||defined(MCU_STM32F3)
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHBENR, (((bank-GPIOA_BASE)>>10) +17))

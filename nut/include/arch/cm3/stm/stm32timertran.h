@@ -173,6 +173,9 @@
 #define STM32TIMER_AF(port, pin) \
     (port == GPIOD_BASE) ? 2 :                                          \
     (((port == GPIOA_BASE) && (pin ==  9))||((port == GPIOA_BASE) && (pin == 10)))? 10 : 1
+#elif defined (MCU_STM32L0)
+/* This doesn't map TIM2_ETR on PA5 and prefers TIM2 CH1 on PA5 */
+#define STM32TIMER_AF(port, pin) ((pin ==  5)? 5 : 2)
 #elif defined (MCU_STM32F0)
 #define STM32TIMER_AF(port, pin) 2
 #elif defined(MCU_STM32F1)
@@ -564,6 +567,36 @@
 #define STM32TIMER_PCLK() NutClockGet(NUT_HWCLK_TCLK2)
 #define STM32TIMER_NCH 4
 #define STM32TIMER_AF(port, pin) (((port == GPIOC_BASE) || (port == GPIOD_BASE))?     2 : 11)
+
+/* Only on L0  as of June 2015 */
+#elif defined (RCC_APB2ENR_TIM21EN) && defined(RCC_APB2RSTR_TIM21RST) && (STM32TIMER_ID == 21 )
+#define STM32TIMER_BASE TIM21_BASE
+#define STM32TIMER_SIG sig_TIM21
+#define STM32TIMER_CLK() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR,  _BI32(RCC_APB2ENR_TIM21EN))
+#define STM32TIMER_RST() CM3BBPULSE(RCC_BASE, RCC_TypeDef, APB2RSTR,  _BI32(RCC_APB2RSTR_TIM21RST))
+#define STM32TIMER_INIT() do{                                           \
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB2ENR_TIM21EN)); \
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB2RSTR_TIM21RST); \
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB2RSTR_TIM21RST)); } while(0)
+#define STM32TIMER_PCLK() NutClockGet(NUT_HWCLK_TCLK2)
+#define STM32TIMER_NCH 2
+#define STM32TIMER_AF(port, pin) (              \
+    (port == GPIOB_BASE) ? 6:                   \
+    ((port == GPIOA_BASE) && (pin == 1)) ? 5 : 0
+
+/* Only on L0  as of June 2015 */
+#elif defined (RCC_APB2ENR_TIM22EN) && defined(RCC_APB2RSTR_TIM22RST) && (STM32TIMER_ID == 22 )
+#define STM32TIMER_BASE TIM22_BASE
+#define STM32TIMER_SIG sig_TIM22
+#define STM32TIMER_CLK() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR,  _BI32(RCC_APB2ENR_TIM22EN))
+#define STM32TIMER_RST() CM3BBPULSE(RCC_BASE, RCC_TypeDef, APB2RSTR,  _BI32(RCC_APB2RSTR_TIM22RST))
+#define STM32TIMER_INIT() do{                                           \
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB2ENR_TIM22EN)); \
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB2RSTR_TIM22RST); \
+        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB2RSTR_TIM22RST)); } while(0)
+#define STM32TIMER_PCLK() NutClockGet(NUT_HWCLK_TCLK2)
+#define STM32TIMER_NCH 2
+#define STM32TIMER_AF(port, pin) ((port == GPIOC_BASE) ? 0 : 4)
 
 #else
 #warning No match

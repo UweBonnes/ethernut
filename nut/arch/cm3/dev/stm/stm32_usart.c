@@ -50,7 +50,7 @@
 #include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
-#if defined(MCU_STM32F0) || defined(MCU_STM32F3)
+#if defined(MCU_STM32L0) || defined(MCU_STM32F0) || defined(MCU_STM32F3)
 #define USARTN_RDR (USARTn->RDR)
 #define USARTN_TDR (USARTn->TDR)
 #define USARTN_ISR (USARTn->ISR)
@@ -1171,6 +1171,8 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
 #if defined(TX_GPIO_PORT)
 #if defined(MCU_STM32F1)
         CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4);
+#elif defined(MCU_STM32L0)
+        CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPD0_0) + TX_GPIO_PIN * 2);
 #else
         CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
 #endif
@@ -1185,6 +1187,8 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
 #if defined(TX_GPIO_PORT)
 #if defined(MCU_STM32F1)
         CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4) ;
+#elif defined(MCU_STM32L0)
+        CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPD0_0) + TX_GPIO_PIN * 2);
 #else
         CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
 #endif

@@ -125,9 +125,9 @@ uint8_t CRC_GetIDRegister(void)
   */
 void CRC_Init(void)
 {
-#if defined(MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F3)
+#if defined(RCC_AHBENR_CRCEN)
     RCC->AHBENR |= RCC_AHBENR_CRCEN;
-#elif defined(MCU_STM32F2) || defined(MCU_STM32F4)
+#elif defined(RCC_AHB1ENR_CRCEN)
     RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
 #else
 #warning "Unknown STM32 family"
