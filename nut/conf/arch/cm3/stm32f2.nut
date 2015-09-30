@@ -1,5 +1,6 @@
 --
---  * Copyright (C) 2011 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+--  * Copyright (C) 2011-2015
+--               Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -49,8 +50,6 @@ nutarch_cm3_stm32f2 =
     {
         name = "nutarch_cm3_stm32f2_family",
         brief = "MCU F2 Family",
-        requires = { "HW_MCU_STM32F2XX" },
-        sources = { "cm3/dev/stm/stm32f4_clk.c" },
         options =
         {
             {
@@ -101,18 +100,7 @@ nutarch_cm3_stm32f2 =
                     "HW_TIM8_TIM12_TIM13_TIM14_STM32",
                 },
                 file = "include/cfg/arch.h"
-            }
-        }
-    },
-    --
-    -- STM32F2 MCU Classes
-    --
-    {
-        name = "nutarch_cm3_stm32F2_class",
-        brief = "STM32F2 Device Classes",
-        requires = { "HW_MCU_STM32F2XX" },
-        options =
-        {
+            },
             {
                 macro = "STM32F205xx",
                 brief = "STM32F205",
@@ -164,30 +152,6 @@ nutarch_cm3_stm32f2 =
                     "HW_HASH_RNG_STM32",
                     "HW_CRYP_STM32",
                 },
-                file = "include/cfg/arch.h"
-            },
-        }
-    },
-    {
-        name = "nutarch_cm3_stm32F2_memory",
-        brief = "STM32F2 Device Memory",
-        requires = { "HW_MCU_STM32" },
-        options =
-        {
-            {
-                macro = "MCU_STM32F2XX",
-                brief = "STM32F2xx memory",
-                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
-                              "STM32F2xx>Y<zz where Y is one of the list below.\n\n"..
-                              "B =  128 kbytes Flash\n"..
-                              "C =  256 kbytes Flash\n"..
-                              "E =  512 kbytes Flash\n"..
-                              "F =  768 kbytes Flash\n"..
-                              "G =  1024 kbytes Flash\n",
-
-                requires = { "HW_MCU_STM32F2XX" },
-                type = "enumerated",
---                choices = stm32_memory_f2xx,
                 file = "include/cfg/arch.h"
             },
         }

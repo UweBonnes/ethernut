@@ -1245,72 +1245,52 @@ nutarch =
                 makedefs = { "LDSCRIPT=stm32f429xI_flash.ld" }
             },
             {
-                macro = "MCU_STM32F205",
-                brief = "STM STM32F205",
-                description = "STM32F205 with FSMC.",
+                macro = "MCU_STM32F205xC",
+                brief = "STM STM32F205 256 kB",
+                description = "STM32F205 256 kb with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F2XX",
+                    "HW_MCU_STM32F2",
                     "HW_MCU_STM32F205",
                 },
-                makedefs = { "MCU=cortex-m3" }
+                makedefs = { "LDSCRIPT=stm32f205xC_flash.ld" }
             },
             {
-                macro = "MCU_STM32F207",
-                brief = "STM STM32F207",
-                description = "STM32F207 with Ethernet, Camera and FSMC.",
+                macro = "MCU_STM32F207xC",
+                brief = "STM STM32F207 256 kB",
+                description = "STM32F207 256 kb with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F2XX",
+                    "HW_MCU_STM32F2",
                     "HW_MCU_STM32F207",
                 },
-                makedefs = { "MCU=cortex-m3" }
+                makedefs = { "LDSCRIPT=stm32f207xC_flash.ld" }
             },
             {
-                macro = "MCU_STM32F215",
-                brief = "STM STM32F215",
-                description = "STM32F215 with Crypto and FSMC.",
+                macro = "MCU_STM32F207xG",
+                brief = "STM STM32F207",
+                description = "STM32F207 with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F2XX",
-                    "HW_MCU_STM32F215",
+                    "HW_MCU_STM32F2",
+                    "HW_MCU_STM32F207",
                 },
-                makedefs = { "MCU=cortex-m3" }
-            },
-            {
-                macro = "MCU_STM32F217",
-                brief = "STM STM32F217",
-                description = "STM32F217 with Crypto, Ethernet, Camera and FSMC.",
-                flavor = "boolean",
-                exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
-                requires = { "TOOL_CC_CM3" },
-                provides = {
-                    "HW_TARGET",
-                    "HW_MCU_CM3",
-                    "HW_MCU_STM32",
-                    "HW_MCU_STM32F2XX",
-                    "HW_MCU_STM32F217",
-                },
-                makedefs = { "MCU=cortex-m3" }
+                makedefs = { "LDSCRIPT=stm32f207xG_flash.ld" }
             },
             {
                 macro = "MCU_STM32F303xC",
