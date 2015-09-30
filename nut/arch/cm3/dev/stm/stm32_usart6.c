@@ -151,7 +151,7 @@ NUTDEVICE devUsartStm32_6 = {
 #elif USART6_TX_PIN == 14
  #define TX_GPIO_PORT    NUTGPIO_PORTG
  #define TX_GPIO_PIN     14
-#elif defined(STM32F411) && USART6_TX_PIN == 11
+#elif defined(STM32F411xE) && USART6_TX_PIN == 11
  #define TX_GPIO_PORT    NUTGPIO_PORTA
  #define TX_GPIO_PIN     11
 #else
@@ -164,7 +164,7 @@ NUTDEVICE devUsartStm32_6 = {
 #elif USART6_RX_PIN == 9
  #define RX_GPIO_PORT    NUTGPIO_PORTG
  #define RX_GPIO_PIN     9
-#elif defined(STM32F411) && USART6_TX_PIN == 12
+#elif defined(STM32F411xE) && USART6_TX_PIN == 12
  #define RX_GPIO_PORT    NUTGPIO_PORTA
  #define RX_GPIO_PIN     12
 #else

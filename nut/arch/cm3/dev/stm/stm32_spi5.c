@@ -73,7 +73,7 @@
 
 #if !defined( SPIBUS5_NO_CS)
  #if !defined(SPIBUS5_CS0_PORT) && !defined(SPIBUS5_CS0_PIN)
-  #if defined(STM32F411)
+  #if defined(STM32F411xE)
    #define SPIBUS_CS0_PORT NUTGPIO_PORTB
    #define SPIBUS_CS0_PIN  1
   #else
@@ -101,7 +101,7 @@
  #endif
 #endif
 
-#if defined(STM32F411)
+#if defined(STM32F411xE)
  #define SPI_GPIO_AF GPIO_AF_5
  #if  !defined(SPIBUS5_SCK_PIN) || SPIBUS5_SCK_PIN == 0
   #define SPIBUS_SCK_PORT  NUTGPIO_PORTB

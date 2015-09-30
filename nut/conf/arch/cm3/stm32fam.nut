@@ -31,8 +31,23 @@
 -- For additional information see http://www.ethernut.de/
 --
 
--- STM Family selection
+-- Remarks for the STM Family selection
 --
+-- Define the Full device with flash size designator but without package
+-- designator in the .conf File e.g. as MCU_STM32F429xG
+-- arch.nut deciphers this as
+-- - architecture (CM3)
+-- - vendor iImplementation (MCU_STM32)
+-- - vendor family (MCU_STM32F4)
+-- - vendor subfamily (MCU_STM32F42) if applicable
+-- - and the device (MCU_STM32F429).
+-- Stm32f4.nut adds the devices in all F4,
+-- devices in common in F427/429/437/439 and finally the specific
+-- devices in STM32F420.
+-- All internal defines start in MCU_, only the final clause for the STM32F429
+-- defines "STM32F429xx", as this is the same define as used by STM Cube
+-- to include the vendor header.
+
 nutarch_cm3_stm32_family =
 {
     --
@@ -97,8 +112,10 @@ nutarch_cm3_stm32_family =
     {
         name = "nutarch_cm3_stm32f4",
         brief = "STM32F4",
-        requires = { "HW_MCU_STM32", "HW_MCU_STM32F4XX" },
+        requires = { "HW_MCU_STM32", "HW_MCU_STM32F4" },
         description = "ST Microelectronics STM32 F4 Series",
+        sources = { "cm3/dev/stm/stm32f4_clk.c" },
+        makedefs = { "MCU=cortex-m4", "LDPATH=$(LDINCLUDE)" },
         script = "arch/cm3/stm32f4.nut"
     },
     {

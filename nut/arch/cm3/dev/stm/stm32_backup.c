@@ -131,7 +131,7 @@ int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
 }
 #endif
 
-#if defined(MCU_STM32F4) && !defined(STM32F411)  && !defined(STM32F401)
+#if defined(MCU_STM32F4) && !defined(STM32F411xE)  && !defined(MCU_STM32F401)
 /*!
  * \brief Get (pointer to read parameters from Backup memory.
  *

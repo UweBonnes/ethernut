@@ -83,19 +83,16 @@ function GetStmUsarts()
     if c_is_provided("HW_MCU_STM32F398xX") then
         return { "", "USART1", "USART2", "USART3", "UART4", "UART5"   }
     end
-    if c_is_provided("HW_STM32F40_41xxx") then
-        return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6" }
-    end
-    if c_is_provided("HW_STM32F401xx") then
+    if c_is_provided("HW_MCU_STM32F401xx") then
         return { "", "USART1", "USART2",                               "USART6" }
     end
-    if c_is_provided("HW_STM32F411") then
+    if c_is_provided("HW_MCU_STM32F411") then
         return { "", "USART1", "USART2",                               "USART6" }
     end
-    if c_is_provided("HW_STM32F427_437xx") then
-        return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6", "USART7", "USART8" }
+    if c_is_provided("HW_MCU_STM32F40") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6"}
     end
-    if c_is_provided("HW_STM32F429_439xx") then
+    if c_is_provided("HW_MCU_STM32F42") then
         return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6", "USART7", "USART8" }
     end
     if c_is_provided("HW_STM32L1XX_MD") then
@@ -334,6 +331,9 @@ function GetStmTimers32bit()
     if c_is_provided("STM32F2XX") then
         return { "2", "5"}
     end
+    if c_is_provided("HW_MCU_STM32F4") then
+        return { "2", "5"}
+    end
     return { "2"}
 end
 
@@ -568,13 +568,10 @@ function GetStmTimers2Ch()
     if c_is_provided("HW_STM32F411") then
         return { "", "1", "2", "3", "4", "5", "9", "10", "11"}
     end
-    if c_is_provided("HW_STM32F40_41xxx") then
+    if c_is_provided("HW_STM32F40") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
     end
-    if c_is_provided("HW_STM32F427_437x") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
-    end
-    if c_is_provided("HW_STM32F429_439x") then
+    if c_is_provided("HW_STM32F42") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
     end
     if c_is_provided("HW_STM32L1XX_MD") then
@@ -720,7 +717,7 @@ function GetStmTimers2ChIrq()
     if c_is_provided("HW_STM32F37X") then
         return { "", "2", "3", "4", "5", "9", "12", "16", "17", "19" }
     end
-    if c_is_provided("HW_STM32F4XX") then
+    if c_is_provided("HW_STM32F4") then
         return { "", "2", "3", "4", "5"}
     end
     if c_is_provided("HW_STM32L1XX_MD") then

@@ -138,40 +138,31 @@
 # end
 # endif
 #elif defined(MCU_STM32F4)
-#define __STM32F4xx_CMSIS_DEVICE_VERSION_MAIN   (0x02) /*!< [31:24] main version */
-#define __STM32F4xx_CMSIS_DEVICE_VERSION_SUB1   (0x01) /*!< [23:16] sub1 version */
-#define __STM32F4xx_CMSIS_DEVICE_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
-#define __STM32F4xx_CMSIS_DEVICE_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
-#define __STM32F4xx_CMSIS_DEVICE_VERSION        ((__CMSIS_DEVICE_VERSION_MAIN     << 24)\
-                                      |(__CMSIS_DEVICE_HAL_VERSION_SUB1 << 16)\
-                                      |(__CMSIS_DEVICE_HAL_VERSION_SUB2 << 8 )\
-                                      |(__CMSIS_DEVICE_HAL_VERSION_RC))
-
-#if defined(MCU_STM32F401)
-#include <arch/cm3/stm/vendor/stm32f401xe.h>
-#elif defined(MCU_STM32F405)
-#include <arch/cm3/stm/vendor/stm32f405xx.h>
-#elif defined(MCU_STM32F407)
-#include <arch/cm3/stm/vendor/stm32f407xx.h>
-#elif defined(STM32F401E)
-#include <arch/cm3/stm/vendor/stm32f401xe.h>
-#elif defined(STM32F411E)
-#include <arch/cm3/stm/vendor/stm32f411xe.h>
-#elif defined(MCU_STM32F415)
-#include <arch/cm3/stm/vendor/stm32f415xx.h>
-#elif defined(MCU_STM32F417)
-#include <arch/cm3/stm/vendor/stm32f417xx.h>
-#elif defined(MCU_STM32F427)
-#include <arch/cm3/stm/vendor/stm32f427xx.h>
-#elif defined(MCU_STM32F429)
-#include <arch/cm3/stm/vendor/stm32f429xx.h>
-#elif defined(MCU_STM32F437)
-#include <arch/cm3/stm/vendor/stm32f437xx.h>
-#elif defined(MCU_STM32F439)
-#include <arch/cm3/stm/vendor/stm32f439xx.h>
-#else
-#warning "Unknown STM32F4 family"
-#endif
+# if defined(STM32F401xC)
+#  include <arch/cm3/stm/vendor/stm32f401xc.h>
+# elif defined(STM32F401xE)
+#  include <arch/cm3/stm/vendor/stm32f401xe.h>
+# elif defined(STM32F405xx)
+#  include <arch/cm3/stm/vendor/stm32f405xx.h>
+# elif defined(STM32F407xx)
+#  include <arch/cm3/stm/vendor/stm32f407xx.h>
+# elif defined(STM32F411xE)
+#  include <arch/cm3/stm/vendor/stm32f411xe.h>
+# elif defined(STM32F415xx)
+#  include <arch/cm3/stm/vendor/stm32f415xx.h>
+# elif defined(STM32F417xx)
+#  include <arch/cm3/stm/vendor/stm32f417xx.h>
+# elif defined(STM32F427xx)
+#  include <arch/cm3/stm/vendor/stm32f427xx.h>
+# elif defined(STM32F429xx)
+#  include <arch/cm3/stm/vendor/stm32f429xx.h>
+# elif defined(STM32F437xx)
+#  include <arch/cm3/stm/vendor/stm32f437xx.h>
+# elif defined(STM32F439xx)
+#  include <arch/cm3/stm/vendor/stm32f439xx.h>
+# else
+#  warning "Unknown STM32F4 family"
+# endif
 #else
 #warning "Unknown STM32 family"
 #endif

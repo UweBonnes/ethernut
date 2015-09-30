@@ -130,7 +130,7 @@
  #elif SPIBUS3_SCK_PIN == 10
   #define SPIBUS_SCK_PIN 10
   #define SPIBUS_SCK_PORT NUTGPIO_PORTC
- #elif defined(STM32F411) && SPIBUS3_SCK_PIN == 12
+ #elif defined(STM32F411xE) && SPIBUS3_SCK_PIN == 12
   #define SPIBUS_SCK_PIN 12
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
   #define SPIBUS_SCK_AF   7
@@ -160,7 +160,7 @@
  #elif SPIBUS3_MOSI_PIN == 12
   #define SPIBUS_MOSI_PIN 12
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
- #elif defined(STM32F4XX) && !defined(STM32F40X) || SPIBUS3_MISO_PIN == 6
+ #elif defined(MCU_STM32F4) && !defined(MCU_STM32F40) || SPIBUS3_MISO_PIN == 6
   #define SPIBUS_MOSI_PIN  6
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTD
   #define SPIBUS_MOSI_AF   5

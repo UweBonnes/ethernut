@@ -414,7 +414,7 @@ int SetSysClock(void)
 #warning PLL Input frequency too high
 #endif
 
-#if defined(STM32F411)
+#if defined(STM32F411xE)
 #define SYSCLK_MAX 100000000
 #define PCLK1_MAX   50000000
 #define PCLK2_MAX  100000000
@@ -455,7 +455,7 @@ int SetSysClock(void)
 #else
 #define VOS 1
 #endif
-#elif defined(STM32F411)
+#elif defined(STM32F411xE)
 #if SYSCLK_FREQ > 84000000
 #define VOS 3
 #elif SYSCLK_FREQ > 64000000
@@ -463,7 +463,7 @@ int SetSysClock(void)
 #else
 #define VOS 1
 #endif
-#elif defined(STM32F40X)
+#elif defined(MCU_STM32F40)
 #if SYSCLK_FREQ > 144000000
 #define VOS 1
 #else

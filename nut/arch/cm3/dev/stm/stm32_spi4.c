@@ -100,11 +100,11 @@
 #if  SPIBUS4_SCK_PIN == 2 || !defined(SPIBUS4_SCK_PIN)
 #define SPIBUS_SCK_PIN 2
 #define SPIBUS_SCK_PORT  NUTGPIO_PORTE
-#elif defined(STM32F411) && SPIBUS4_SCK_PIN == 13
+#elif defined(STM32F411xE) && SPIBUS4_SCK_PIN == 13
 #define SPIBUS_SCK_PIN   13
 #define SPIBUS_SCK_PORT  NUTGPIO_PORTB
 #define SPIBUS_SCK_AF    6
-#elif (defined(STM32F401) || defined(STM32F42X)) && SPIBUS4_SCK_PIN == 12
+#elif (defined(MCU_STM32F401) || defined(STM32F42X)) && SPIBUS4_SCK_PIN == 12
 #define SPIBUS_SCK_PIN   12
 #define SPIBUS_SCK_PORT  NUTGPIO_PORTE
 #else
@@ -114,11 +114,11 @@
 #if  SPIBUS4_MISO_PIN == 5 || !defined(SPIBUS4_MISO_PIN)
 #define SPIBUS_MISO_PIN 5
 #define SPIBUS_MISO_PORT  NUTGPIO_PORTE
-#elif defined(STM32F411) && SPIBUS4_MISO_PIN == 11
+#elif defined(STM32F411xE) && SPIBUS4_MISO_PIN == 11
 #define SPIBUS_MISO_PIN   11
 #define SPIBUS_MISO_PORT  NUTGPIO_PORTA
 #define SPIBUS_MISO_AF    6
-#elif (defined(STM32F401) || defined(STM32F42X)) && SPIBUS4_MISO_PIN == 13
+#elif (defined(MCU_STM32F401) || defined(MCU_STM32F42)) && SPIBUS4_MISO_PIN == 13
 #define SPIBUS_MISO_PIN   13
 #define SPIBUS_MISO_PORT  NUTGPIO_PORTE
 #else
@@ -128,11 +128,11 @@
 #if  SPIBUS4_MOSI_PIN == 6 || !defined(SPIBUS4_MOSI_PIN)
 #define SPIBUS_MOSI_PIN 6
 #define SPIBUS_MOSI_PORT  NUTGPIO_PORTE
-#elif defined(STM32F411) && SPIBUS4_MOSI_PIN == 1
+#elif defined(STM32F411xE) && SPIBUS4_MOSI_PIN == 1
 #define SPIBUS_MOSI_PIN   1
 #define SPIBUS_MOSI_PORT  NUTGPIO_PORTA
 #define SPIBUS_MOSI_AF    6
-#elif (defined(STM32F401) || defined(STM32F42X)) && SPIBUS4_MOSI_PIN == 14
+#elif (defined(MCU_STM32F401) || defined(MCU_STM32F42)) && SPIBUS4_MOSI_PIN == 14
 #define SPIBUS_MOSI_PIN   14
 #define SPIBUS_MOSI_PORT  NUTGPIO_PORTE
 #else

@@ -262,7 +262,7 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 /* 32 kHz on F2/F4, 40(37?) kHz else.
  * Values used from AN3371/Table 3 Rev. 5
  */
-# if defined(STM32F2) || defined(STM32F4)
+# if defined(STM32F2) || defined(MCU_STM32F4)
 #  define RTC_ASYNC 124
 #  define RTC_SYNC  295
 # else
