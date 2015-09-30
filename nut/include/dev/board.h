@@ -190,6 +190,9 @@
 #elif defined(F3_DISCOVERY)
 #include <arch/cm3/board/f3_discovery.h>
 #define BOARDNAME "F3_DISCOVERY"
+#elif defined(F334_DISCOVERY)
+#include <arch/cm3/board/f334_discovery.h>
+#define BOARDNAME "F334_DISCOVERY"
 #elif defined(FLECX1)
 #include <arch/cm3/board/flecx1.h>
 #define BOARDNAME "FLECX1"

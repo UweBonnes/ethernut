@@ -1754,9 +1754,9 @@ nutarch =
                 makedefs = { "MCU=cortex-m3" }
             },
             {
-                macro = "MCU_STM32F302",
-                brief = "STM STM32F302",
-                description = "STM32F302 with CAN, USB, 2 ADC, 1 DAC, 4 COMP, 2 OP and Capsense.",
+                macro = "MCU_STM32F303xC",
+                brief = "STM STM32F303 256 kB",
+                description = "STM32F303 with CCM, CAN, USB, 4 ADC, 2 DAC, 7 COMP, 4 OP.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1764,60 +1764,32 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F3XX",
-                    "HW_MCU_STM32F30X",
-                    "STM32F30X",
-                    "HW_USB_STM32",
-                    "HW_CAPSENSE_STM32",
+                    "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F303_MD",
                 },
-                makedefs = { "MCU=cortex-m4" }
+                makedefs = { "LDSCRIPT=stm32f303xC_flash.ld" }
             },
             {
-                macro = "MCU_STM32F303",
-                brief = "STM STM32F303",
-                description = "STM32F303 with CCM, CAN, USB, 4 ADC, 2 DAC, 7 COMP, 4 OP and Capsense.",
+                macro = "MCU_STM32F334x8",
+                brief = "STM STM32F334 64 kb",
+                description = "STM32F334 64 kB with HRTIM, CAN, 2 ADC, 3DAC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
+                file = "include/cfg/arch.h",
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F3XX",
-                    "HW_MCU_STM32F30X",
-                    "STM32F30X",
-                    "HW_USB_STM32",
-                    "HW_CAPSENSE_STM32",
-                    "HW_ADC3_STM32",
-                    "HW_ADC4_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_OP3_4_STM32",
+                    "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F334_LD",
                 },
-                makedefs = { "MCU=cortex-m4" }
+                makedefs = { "LDSCRIPT=stm32f334x8_flash.ld" }
             },
+-- STM32F373 and STM32F378 are quite similar to each other and quite different
+-- in pinout to other STM32F3, so introduce a subclass
             {
-                macro = "MCU_STM32F313",
-                brief = "STM STM32F313",
-                description = "STM32F313 with CCM, CAN, 4 ADC, 2 DAC, 7 COMP and 4 OP.",
-                flavor = "boolean",
-                exclusivity = mcu_names,
-                requires = { "TOOL_CC_CM3" },
-                provides = {
-                    "HW_TARGET",
-                    "HW_MCU_CM3",
-                    "HW_MCU_STM32",
-                    "HW_MCU_STM32F3XX",
-                    "HW_MCU_STM32F30X",
-                    "STM32F30X",
-                    "HW_ADC3_STM32",
-                    "HW_ADC4_STM32",
-                    "HW_DAC2_STM32",
-                    "HW_OP3_4_STM32",
-                },
-                makedefs = { "MCU=cortex-m4" }
-            },
-            {
-                macro = "MCU_STM32F373",
+                macro = "MCU_STM32F373xC",
                 brief = "STM STM32F373",
                 description = "STM32F373 with USB, CAN, 3 SDADC, 1 ADC, 3 DAC, 2 COMP and Capsense.",
                 flavor = "boolean",
@@ -1827,30 +1799,11 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
-                    "HW_MCU_STM32F3XX",
-                    "HW_MCU_STM32F37X",
-                    "STM32F37X",
-                    "HW_USB_STM32",
-                    "HW_CAPSENSE_STM32",
+                    "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F37",
+                    "HW_MCU_STM32F373_MD",
                 },
-                makedefs = { "MCU=cortex-m4" }
-            },
-            {
-                macro = "MCU_STM32F383",
-                brief = "STM STM32F383",
-                description = "STM32F383 with CAN, 3 SDADC, 1 ADC, 3 DAC, and 2 COMP.",
-                flavor = "boolean",
-                exclusivity = mcu_names,
-                requires = { "TOOL_CC_CM3" },
-                provides = {
-                    "HW_TARGET",
-                    "HW_MCU_CM3",
-                    "HW_MCU_STM32",
-                    "HW_MCU_STM32F3XX",
-                    "HW_MCU_STM32F37X",
-                    "STM32F37X",
-                },
-                makedefs = { "MCU=cortex-m4" }
+                makedefs = { "LDSCRIPT=stm32f303xC_flash.ld" }
             },
             --
             -- TI LM3S SERIES CONTROLLER

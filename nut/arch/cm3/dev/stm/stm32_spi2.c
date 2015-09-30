@@ -93,7 +93,7 @@
 
 #if !defined( SPIBUS2_NO_CS)
 #if !defined(SPIBUS2_CS0_PORT) && !defined(SPIBUS2_CS0_PIN)
-#if defined(MCU_STM32F37X)
+#if defined(MCU_STM32F37)
 #define SPIBUS_CS0_PORT NUTGPIO_PORTA
 #define SPIBUS_CS0_PIN  11
 #else
@@ -136,7 +136,7 @@
  #define SPIBUS_MISO_PORT NUTGPIO_PORTB
  #define SPIBUS_MOSI_PIN 15
  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
-#elif defined(MCU_STM32F37X)
+#elif defined(MCU_STM32F37)
  #if SPIBUS2_SCK_PIN == 8 || !defined(SPIBUS2_SCK_PIN)
  #define SPIBUS_SCK_PORT NUTGPIO_PORTA
  #define SPIBUS_SCK_PIN  8
@@ -206,7 +206,7 @@
   #define SPIBUS_SCK_PIN 1
   #define SPIBUS_SCK_PORT NUTGPIO_PORTI
  #else
-  #warning "Illegal I2C2 SCK pin assignement"
+  #warning "Illegal SPI2 SCK pin assignement"
  #endif
  #if !defined(SPIBUS2_MISO_PIN)
   #define SPIBUS_MISO_PIN 14
@@ -225,7 +225,7 @@
   #define SPIBUS_MISO_PIN 2
   #define SPIBUS_MISO_PORT NUTGPIO_PORTI
  #else
-  #warning "Illegal I2C2 MISO pin assignement"
+  #warning "Illegal SPI2 MISO pin assignement"
  #endif
  #if !defined(SPIBUS2_MOSI_PIN)
   #define SPIBUS_MOSI_PIN 15
@@ -244,7 +244,7 @@
   #define SPIBUS_MOSI_PIN 3
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTI
  #else
-  #warning "Illegal I2C2 MOSI pin assignement"
+  #warning "Illegal SPI2 MOSI pin assignement"
  #endif
 #endif
 #define SPI_DEV 2

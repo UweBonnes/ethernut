@@ -491,7 +491,7 @@ I2C2_SCL  PB10 PC13
 I2C2_SMBA PB12
 */
 
-#if defined(MCU_STM32F30X) || defined(MCU_STM32F37X)
+#if defined(MCU_STM32F3)
 /* Check that we got the right pin */
 #if I2C1_SDA_PIN  != 14 && I2C1_SDA_PIN  != 7 && I2C1_SDA_PIN  != 9
 #warning Illegal I2C1_SDA Pin
@@ -528,7 +528,7 @@ I2C2_SMBA PB12
 
 #if defined(HW_I2C2_STM32V2)
 /* Check that we got the right pin */
-#if I2C2_SDA_PIN != 10 && I2C2_SDA_PIN != 0 && (defined(MCU_STM32F37X) && I2C2_SDA_PIN != 7)
+#if I2C2_SDA_PIN != 10 && I2C2_SDA_PIN != 0 && (defined(MCU_STM32F373_MD) && I2C2_SDA_PIN != 7)
 #warning Illegal I2C2_SDA Pin
 #endif
 

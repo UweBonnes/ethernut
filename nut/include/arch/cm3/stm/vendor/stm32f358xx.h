@@ -153,15 +153,16 @@ typedef enum
   COMP1_2_3_IRQn              = 64,     /*!< COMP1, COMP2 and COMP3 global Interrupt via EXTI Line21, 22 and 29*/
   COMP4_5_6_IRQn              = 65,     /*!< COMP4, COMP5 and COMP6 global Interrupt via EXTI Line30, 31 and 32*/
   COMP7_IRQn                  = 66,     /*!< COMP7 global Interrupt via EXTI Line33                            */
-  FPU_IRQn                    = 81      /*!< Floating point Interrupt                                          */
+  FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"            /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f3xx.h"    /* STM32F3xx System Header */
+#include <arch/cm3/core_cm4.h>         /* Cortex-M0 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h> /* STM32 System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

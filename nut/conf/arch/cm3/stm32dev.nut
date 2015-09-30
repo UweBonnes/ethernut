@@ -17,59 +17,95 @@ function GetStmUsarts()
     if c_is_provided("HW_MCU_STM32F072") then
         return { "", "USART1", "USART2", "USART3", "USART4", }
     end
-    if c_is_provided("STM32F10X_LD_VL") then
+    if c_is_provided("HW_STM32F10X_LD_VL") then
         return { "", "USART1", "USART2" }
     end
-    if c_is_provided("STM32F10X_MD") then
+    if c_is_provided("HW_STM32F10X_MD") then
         return { "", "USART1", "USART2", "USART3" }
     end
-    if c_is_provided("STM32F10X_MD_VL") then
+    if c_is_provided("HW_STM32F10X_MD_VL") then
         return { "", "USART1", "USART2", "USART3" }
     end
-    if c_is_provided("STM32F10X_HD") then
+    if c_is_provided("HW_STM32F10X_HD") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("STM32F10X_HD_VL") then
+    if c_is_provided("HW_STM32F10X_HD_VL") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("STM32F10X_XL") then
+    if c_is_provided("HW_STM32F10X_XL") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("STM32F10X_CL") then
+    if c_is_provided("HW_STM32F10X_CL") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("STM32F2x") then
+    if c_is_provided("HW_STM32F2x") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5", "USART6" }
     end
-    if c_is_provided("STM32F30X") then
-        return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
+    if c_is_provided("HW_MCU_STM32F301x8") then
+        return { "", "USART1", "USART2", "USART3"                     }
     end
-    if c_is_provided("STM32F37X") then
-        return { "", "USART1", "USART2", "USART3" }
+    if c_is_provided("HW_MCU_STM32F302_LD") then
+        return { "", "USART1", "USART2", "USART3"                     }
     end
-    if c_is_provided("STM32F40_41xxx") then
-        return { "", "USART1", "USART2", "USART3", "USART4", "USART5", "USART6" }
+    if c_is_provided("HW_MCU_STM32F302_MD") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5"   }
     end
-    if c_is_provided("STM32F401xx") then
+    if c_is_provided("HW_MCU_STM32F302_HD") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5"   }
+    end
+    if c_is_provided("HW_MCU_STM32F303_LD") then
+        return { "", "USART1", "USART2", "USART3"                     }
+    end
+    if c_is_provided("HW_MCU_STM32F303_MD") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5"   }
+    end
+    if c_is_provided("HW_MCU_STM32F303_HD") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5"   }
+    end
+    if c_is_provided("HW_MCU_STM32F318xX") then
+        return { "", "USART1", "USART2", "USART3"                     }
+    end
+    if c_is_provided("HW_MCU_STM32F328xX") then
+        return { "", "USART1", "USART2", "USART3"                     }
+    end
+    if c_is_provided("HW_MCU_STM32F334x8") then
+        return { "", "USART1", "USART2", "USART3"                     }
+    end
+    if c_is_provided("HW_MCU_STM32F358xX") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5"   }
+    end
+    if c_is_provided("HW_MCU_STM32F373_MD") then
+        return { "", "USART1", "USART2", "USART3"                     }
+    end
+    if c_is_provided("HW_MCU_STM32F378xX") then
+        return { "", "USART1", "USART2", "USART3"                     }
+    end
+    if c_is_provided("HW_MCU_STM32F398xX") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5"   }
+    end
+    if c_is_provided("HW_STM32F40_41xxx") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6" }
+    end
+    if c_is_provided("HW_STM32F401xx") then
         return { "", "USART1", "USART2",                               "USART6" }
     end
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "", "USART1", "USART2",                               "USART6" }
     end
-    if c_is_provided("STM32F427_437xx") then
-        return { "", "USART1", "USART2", "USART3", "USART4", "USART5", "USART6", "USART7", "USART8" }
+    if c_is_provided("HW_STM32F427_437xx") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6", "USART7", "USART8" }
     end
-    if c_is_provided("STM32F429_439xx") then
-        return { "", "USART1", "USART2", "USART3", "USART4", "USART5", "USART6", "USART7", "USART8" }
+    if c_is_provided("HW_STM32F429_439xx") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6", "USART7", "USART8" }
     end
-    if c_is_provided("STM32L1XX_MD") then
+    if c_is_provided("HW_STM32L1XX_MD") then
         return { "", "USART1", "USART2", "USART3" }
     end
-    if c_is_provided("STM32L1XX_MDP") then
+    if c_is_provided("HW_STM32L1XX_MDP") then
         return { "", "USART1", "USART2", "USART3" }
     end
-    if c_is_provided("STM32L1XX_HD") then
-        return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
+    if c_is_provided("HW_STM32L1XX_HD") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5" }
     end
 end
 
@@ -77,10 +113,10 @@ end
 -- Retrieve USART1TX pins available on the device.
 --
 function GetTxUsart1()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "9", "4", "6", "0", "-1" }
     end
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "9", "15", "6", "-1" }
     end
     return { "9", "6", "-1" }
@@ -90,10 +126,10 @@ end
 -- Retrieve USART1RX pins available on the device.
 --
 function GetRxUsart1()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "10", "5", "7", "1", "-1" }
     end
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "10", "3", "7", "-1" }
     end
     return { "10", "7", "-1" }
@@ -103,7 +139,7 @@ end
 -- Retrieve USART2TX pins available on the device.
 --
 function GetTxUsart2()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "2", "5", "14", "3", "-1" }
     end
     if c_is_provided("MCU_STM32F0") then
@@ -116,21 +152,21 @@ end
 -- Retrieve USART2RX pins available on the device.
 --
 function GetRxUsart2()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "3", "6", "15", "4", "-1" }
     end
     return { "3", "6", "-1" }
 end
 
 --
--- Retrieve USART3RX pins available on the device.
+-- Retrieve USART3TX pins available on the device.
 --
 function GetTxUsart3()
     if c_is_provided("HW_MCU_STM32F07X") then
         return { "4", "10", "310", "8", "-1"}
     end
-    if c_is_provided("STM32F3XX") then
-        return { "11", "311", "9", "15", "-1" }
+    if c_is_provided("HW_MCU_STM32F3") then
+        return { "10", "310", "8", "15", "-1" }
     end
     return { "11", "311", "9", "-1" }
 end
@@ -139,7 +175,7 @@ end
 -- Retrieve USART3RX pins available on the device.
 --
 function GetRxUsart3()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "11", "311", "9", "15", "-1" }
     end
     return { "11", "311", "9", "-1" }
@@ -149,10 +185,10 @@ end
 -- Retrieve USART4TX pins available on the device.
 --
 function GetTxUsart4()
-    if c_is_provided("STM32F10X") then
+    if c_is_provided("HW_STM32F10X") then
         return { "0", "-1" }
     end
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "0", "-1" }
     end
     return { "0", "10", "-1" }
@@ -162,10 +198,10 @@ end
 -- Retrieve USART4RX pins available on the device.
 --
 function GetRxUsart4()
-    if c_is_provided("STM32F10X") then
+    if c_is_provided("HW_STM32F10X") then
         return { "1", "-1" }
     end
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "1", "-1" }
     end
     return { "1", "11", "-1" }
@@ -175,7 +211,7 @@ end
 -- Retrieve USART6TX pins available on the device.
 --
 function GetTxUsart6()
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "6", "11", "-1" }
     end
     return { "6", "14", "-1" }
@@ -185,7 +221,7 @@ end
 -- Retrieve USART6RX pins available on the device.
 --
 function GetRxUsart6()
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "7", "12", "-1" }
     end
     return { "7", "9", "-1" }
@@ -195,25 +231,25 @@ end
 -- Retrieve I2C1 pins available on the device.
 --
 function GetI2c1Sda()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "14", "7", "9" }
     end
     return { "7", "9" }
 end
 function GetI2c1SdaDefault()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return "14"
     end
     return "7"
 end
 function GetI2c1Scl()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "15", "6", "8" }
     end
     return { "6", "8" }
 end
 function GetI2c1SclDefault()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return "15"
     end
     return "6"
@@ -223,59 +259,53 @@ end
 -- Retrieve I2C2 pins available on the device.
 --
 function GetI2c2Sda()
-    if c_is_provided("STM32F30X") then
-        return { "10", "0" }
-    end
-    if c_is_provided("STM32F37X") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return { "10", "0", "7" }
     end
-    if c_is_provided("STM32F10X") then
+    if c_is_provided("HW_STM32F10X") then
         return { "11" }
     end
 -- No PB10 on small packages
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "3", "9", "11" }
     end
     return { "11", "0", "5" }
 end
 function GetI2c2SdaDefault()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return "10"
     end
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "3" }
     end
     return "11"
 end
 function GetI2c2Scl()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("MCU_STM32F3") then
         return { "9", "1", "6" }
     end
-    if c_is_provided("STM32F10X") then
+    if c_is_provided("HW_STM32F10X") then
         return { "10" }
     end
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "10" }
     end
     return { "10", "1", "4" }
 end
 function GetI2c2SclDefault()
-    if c_is_provided("STM32F3XX") then
+    if c_is_provided("HW_MCU_STM32F3") then
         return "9"
     end
     return "10"
 end
 function GetI2c2Smba()
-    if c_is_provided("STM32F30X") then
-        return { "-1" , "5" }
+    if c_is_provided("HW_MCU_STM32F3") then
+        return { "-1" , "8", "12", "2" }
     end
-    if c_is_provided("STM32F37X") then
-        return { "-1" , "8", "2" }
-    end
-    if c_is_provided("STM32F10X") then
+    if c_is_provided("HW_STM32F10X") then
         return { "-1" , "12" }
     end
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "-1" , "12" }
     end
     return { "-1" , "12", "2", "6" }
@@ -285,6 +315,7 @@ end
 -- Retrieve 32 bit Timers.
 --
 function GetStmTimers32bit()
+-- Devices with 2 32-bit timer
     if c_is_provided("HW_MCU_STM32F030x6") then
         return { "" }
     end
@@ -294,57 +325,16 @@ function GetStmTimers32bit()
     if c_is_provided("HW_MCU_STM32F030xC") then
         return { "" }
     end
-    if c_is_provided("HW_MCU_STM32F031x6") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F038xx") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F042x6") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F048xx") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F051x8") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F058xx") then
-        return { "", "2" }
-    end
     if c_is_provided("HW_MCU_STM32F070x6") then
         return { "" }
     end
     if c_is_provided("HW_MCU_STM32F070xB") then
         return { "" }
     end
-    if c_is_provided("HW_MCU_STM32F071xB") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F072xB") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F078xx") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F091xC") then
-        return { "", "2" }
-    end
-    if c_is_provided("HW_MCU_STM32F098xx") then
-        return { "", "2" }
-    end
     if c_is_provided("STM32F2XX") then
         return { "2", "5"}
     end
-    if c_is_provided("STM32F30X") then
-        return { "2"}
-    end
-    if c_is_provided("STM32F37X") then
-        return { "2", "5"}
-    end
-    if c_is_provided("STM32F4X") then
-        return { "2", "5"}
-    end
+    return { "2"}
 end
 
 --
@@ -399,8 +389,50 @@ function GetStmTimers1Ch()
     if c_is_provided("HW_MCU_STM32F098xx") then
         return { "", "1" , "2", "3", "14" , "15", "16", "17" }
     end
-    if c_is_provided("STM32F2XX") then
+    if c_is_provided("HW_STM32F2XX") then
         return { "", "1" , "2", "3", "4", "5", "8", "9", "10", "11", "12" , "13" , "14" }
+    end
+    if c_is_provided("HW_MCU_STM32F301x8") then
+        return { "", "1", "2",                                       "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F302_LD") then
+        return { "", "1", "2",                                       "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F302_MD") then
+        return { "", "1", "2", "3", "4",                             "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F302_HD") then
+        return { "", "1", "2", "3", "4",                             "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F303_LD") then
+        return { "", "1", "2", "3",                                  "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F303_MD") then
+        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F303_HD") then
+        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17",             "20"}
+    end
+    if c_is_provided("HW_MCU_STM32F318xX") then
+        return { "", "1", "2",                                       "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F328xX") then
+        return { "", "1", "2", "3",                                  "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F334x8") then
+        return { "", "1", "2", "3",                                  "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F358xX") then
+        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17"                  }
+    end
+    if c_is_provided("HW_MCU_STM32F373_MD") then
+        return { "",      "2", "3", "4", "5",      "12", "13", "14", "15", "16", "17", "18", "19",     }
+    end
+    if c_is_provided("HW_MCU_STM32F378xX") then
+        return { "",      "2", "3", "4", "5",      "12", "13", "14", "15", "16", "17", "18", "19",     }
+    end
+    if c_is_provided("HW_MCU_STM32F398xX") then
+        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17",             "20"}
     end
 --  For all other devices return all known values for now
     return { "", "1", "2", "3", "4", "5", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"}
@@ -461,61 +493,97 @@ function GetStmTimers2Ch()
     if c_is_provided("HW_MCU_STM32F098xx") then
         return { "", "1" , "2", "3",   "16", "17" }
     end
-    if c_is_provided("STM32F10X_LD") then
+    if c_is_provided("HW_STM32F10X_LD") then
         return { "", "1", "2", "3"}
     end
-    if c_is_provided("STM32F10X_LD_VL") then
+    if c_is_provided("HW_STM32F10X_LD_VL") then
         return { "", "1", "2", "3"}
     end
-    if c_is_provided("STM32F10X_MD") then
+    if c_is_provided("HW_STM32F10X_MD") then
         return { "", "1", "2", "3", "4"}
     end
-    if c_is_provided("STM32F10X_MD_VL") then
+    if c_is_provided("HW_STM32F10X_MD_VL") then
         return { "", "1", "2", "3", "4"}
     end
-    if c_is_provided("STM32F10X_HD") then
+    if c_is_provided("HW_STM32F10X_HD") then
         return { "", "1", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F10X_HD_VL") then
+    if c_is_provided("HW_STM32F10X_HD_VL") then
         return { "", "1", "2", "3", "4", "5", "12"}
     end
-    if c_is_provided("STM32F10X_XL") then
+    if c_is_provided("HW_STM32F10X_XL") then
         return { "", "1", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F10X_CL") then
+    if c_is_provided("HW_STM32F10X_CL") then
         return { "", "1", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F2XX") then
+    if c_is_provided("HW_STM32F2XX") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
     end
-    if c_is_provided("STM32F30X") then
-        return { "", "1", "2", "3", "4", "8", "16", "17"}
+    if c_is_provided("HW_MCU_STM32F301x8") then
+        return { "", "1", "2",                           "15", "16", "17"           }
     end
-    if c_is_provided("STM32F37X") then
-        return { "", "2", "3", "4", "5", "9", "12", "16", "17", "19" }
+    if c_is_provided("HW_MCU_STM32F302_LD") then
+        return { "", "1", "2",                           "15", "16", "17"           }
     end
-    if c_is_provided("STM32F401xx") then
+    if c_is_provided("HW_MCU_STM32F302_MD") then
+        return { "", "1", "2", "3", "4",                 "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F302_HD") then
+        return { "", "1", "2", "3", "4",                 "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F303_LD") then
+        return { "", "1", "2", "3",                      "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F303_MD") then
+        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F303_HD") then
+        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17",      "20"}
+    end
+    if c_is_provided("HW_MCU_STM32F318xX") then
+        return { "", "1", "2",                           "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F328xX") then
+        return { "", "1", "2", "3",                      "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F334x8") then
+        return { "", "1", "2", "3",                      "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F358xX") then
+        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17"           }
+    end
+    if c_is_provided("HW_MCU_STM32F373_MD") then
+        return { "",      "2", "3", "4", "5",      "12", "15", "16", "17", "19"      }
+    end
+    if c_is_provided("HW_MCU_STM32F378xX") then
+        return { "",      "2", "3", "4", "5",      "12", "15", "16", "17", "19"      }
+    end
+    if c_is_provided("HW_MCU_STM32F398xX") then
+        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17",      "20"}
+    end
+    if c_is_provided("HW_STM32F401xx") then
         return { "", "1", "2", "3", "4", "5", "9"}
     end
-    if c_is_provided("STM32F411") then
+    if c_is_provided("HW_STM32F411") then
         return { "", "1", "2", "3", "4", "5", "9", "10", "11"}
     end
-    if c_is_provided("STM32F40_41xxx") then
+    if c_is_provided("HW_STM32F40_41xxx") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
     end
-    if c_is_provided("STM32F427_437x") then
+    if c_is_provided("HW_STM32F427_437x") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
     end
-    if c_is_provided("STM32F429_439x") then
+    if c_is_provided("HW_STM32F429_439x") then
         return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
     end
-    if c_is_provided("STM32L1XX_MD") then
+    if c_is_provided("HW_STM32L1XX_MD") then
         return { "", "2", "3", "4", "9"}
     end
-    if c_is_provided("STM32L1XX_MDP") then
+    if c_is_provided("HW_STM32L1XX_MDP") then
         return { "", "2", "3", "4", "5", "9"}
     end
-    if c_is_provided("STM32L1XX_HD") then
+    if c_is_provided("HW_STM32L1XX_HD") then
         return { "", "2", "3", "4", "5", "9"}
     end
 end
@@ -577,49 +645,91 @@ function GetStmTimers2ChIrq()
     if c_is_provided("HW_MCU_STM32F098xx") then
         return { "",  "2", "3",   "16", "17" }
     end
-    if c_is_provided("STM32F10X_LD") then
+    if c_is_provided("HW_STM32F10X_LD") then
         return { "", "2", "3"}
     end
-    if c_is_provided("STM32F10X_LD_VL") then
+    if c_is_provided("HW_STM32F10X_LD_VL") then
         return { "", "2", "3"}
     end
-    if c_is_provided("STM32F10X_MD") then
+    if c_is_provided("HW_STM32F10X_MD") then
         return { "", "2", "3", "4"}
     end
-    if c_is_provided("STM32F10X_MD_VL") then
+    if c_is_provided("HW_STM32F10X_MD_VL") then
         return { "", "2", "3", "4"}
     end
-    if c_is_provided("STM32F10X_HD") then
+    if c_is_provided("HW_STM32F10X_HD") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F10X_HD_VL") then
+    if c_is_provided("HW_STM32F10X_HD_VL") then
         return { "", "2", "3", "4", "5", "12"}
     end
-    if c_is_provided("STM32F10X_XL") then
+    if c_is_provided("HW_STM32F10X_XL") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F10X_CL") then
+    if c_is_provided("HW_STM32F10X_CL") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F2XX") then
+    if c_is_provided("HW_STM32F2XX") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32F30X") then
+    if c_is_provided("HW_MCU_STM32F301x8") then
+        return { "", "2",                               }
+    end
+    if c_is_provided("HW_MCU_STM32F302_LD") then
+        return { "", "2",                               }
+    end
+    if c_is_provided("HW_MCU_STM32F302_MD") then
+        return { "", "2", "3", "4",                     }
+    end
+    if c_is_provided("HW_MCU_STM32F302_HD") then
+        return { "", "2", "3", "4",                     }
+    end
+    if c_is_provided("HW_MCU_STM32F303_LD") then
+        return { "", "2", "3",                          }
+    end
+    if c_is_provided("HW_MCU_STM32F303_MD") then
+        return { "", "2", "3", "4",                     }
+    end
+    if c_is_provided("HW_MCU_STM32F303_HD") then
+        return { "", "2", "3", "4",                     }
+    end
+    if c_is_provided("HW_MCU_STM32F318xX") then
+        return { "", "2",                               }
+    end
+    if c_is_provided("HW_MCU_STM32F328xX") then
+        return { "", "2", "3",                          }
+    end
+    if c_is_provided("HW_MCU_STM32F334x8") then
+        return { "", "2", "3",                          }
+    end
+    if c_is_provided("HW_MCU_STM32F358xX") then
+        return { "", "2", "3", "4",                     }
+    end
+    if c_is_provided("HW_MCU_STM32F373_MD") then
+        return { "",      "2", "3", "4", "5", "12", "19"}
+    end
+    if c_is_provided("HW_MCU_STM32F378xX") then
+        return { "",      "2", "3", "4", "5", "12", "19"}
+    end
+    if c_is_provided("HW_MCU_STM32F398xX") then
+        return { "", "2", "3", "4",                     }
+    end
+    if c_is_provided("HW_STM32F30X") then
         return { "", "2", "3", "4"}
     end
-    if c_is_provided("STM32F37X") then
+    if c_is_provided("HW_STM32F37X") then
         return { "", "2", "3", "4", "5", "9", "12", "16", "17", "19" }
     end
-    if c_is_provided("STM32F4XX") then
+    if c_is_provided("HW_STM32F4XX") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("STM32L1XX_MD") then
+    if c_is_provided("HW_STM32L1XX_MD") then
         return { "", "2", "3", "4", "9"}
     end
-    if c_is_provided("STM32L1XX_MDP") then
+    if c_is_provided("HW_STM32L1XX_MDP") then
         return { "", "2", "3", "4", "5", "9"}
     end
-    if c_is_provided("STM32L1XX_HD") then
+    if c_is_provided("HW_STM32L1XX_HD") then
         return { "", "2", "3", "4", "5", "9"}
     end
 end
@@ -2830,7 +2940,23 @@ nutarch_cm3_stm32_devices =
                       "CAN bus shares pins and interrupts with USB bus!\n"..
                       "You cannot use them together!",
         requires = { "HW_USB_CAN1_STM32" },
-        provides = { "HW_CAN1_STM32" }
+        provides = { "CAN1_STM32" }
+    },
+    {
+        name = "nutarch_cm3_stm32f_usb_can",
+        brief = "STM32F CAN",
+        description = "CAN support for STM32F.\n\n"..
+                      "CAN bus shares pins and interrupts with USB bus!\n"..
+                      "You cannot use them together!",
+        requires = { "HW_USB_CAN_STM32" },
+        provides = { "CAN1_STM32" }
+    },
+    {
+        name = "nutarch_cm3_stm32f_can",
+        brief = "STM32F CAN",
+        description = "CAN support for STM32F.",
+        requires = { "HW_CAN_STM32" },
+        provides = { "CAN1_STM32" }
     },
     {
         name = "nutarch_cm3_stm32f_can1",
@@ -2838,7 +2964,7 @@ nutarch_cm3_stm32_devices =
         description = "CAN support for STM32F.\n\n"..
                       "On some devices this bus shares pins and interrupts with USB bus!\n"..
                       "You cannot use them together!",
-        requires = { "HW_CAN1_STM32" },
+        requires = { "CAN1_STM32" },
         provides = { "DEV_CANBUS" },
         sources =
         {
@@ -4583,10 +4709,28 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_CAN_STM32",
+                brief = "CAN Availability",
+                description = "CAN Availability",
+                requires = { "HW_CAN_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_CAN1_STM32",
                 brief = "CAN1 Availability",
                 description = "CAN1 Availability",
                 requires = { "HW_CAN1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USB_CAN_STM32",
+                brief = "USB/CAN exlusive Availability",
+                description = "USB/CAN Availability",
+                requires = { "HW_USB_CAN_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"

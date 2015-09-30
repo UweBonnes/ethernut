@@ -134,15 +134,16 @@ typedef enum
   TIM7_DAC2_IRQn              = 55,     /*!< TIM7 global and DAC2 channel1 underrun error Interrupt            */
   COMP2_IRQn                  = 64,     /*!< COMP2 global Interrupt via EXT Line22                             */
   COMP4_6_IRQn                = 65,     /*!< COMP4 and COMP6 global Interrupt via EXT Line30 and 32            */
-  FPU_IRQn                    = 81      /*!< Floating point Interrupt                                          */
+  FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"            /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f3xx.h"    /* STM32F3xx System Header */
+#include <arch/cm3/core_cm4.h>         /* Cortex-M0 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h> /* STM32 System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

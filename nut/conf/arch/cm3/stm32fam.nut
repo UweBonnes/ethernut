@@ -1,6 +1,6 @@
 --
 -- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
--- Copyright (C) 2011-2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+-- Copyright (C) 2011-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -88,9 +88,10 @@ nutarch_cm3_stm32_family =
     {
         name = "nutarch_cm3_stm32f3",
         brief = "STM32F3",
-        requires = { "HW_MCU_STM32", "HW_MCU_STM32F3XX" },
-        provides = { "STM32F3XX" },
+        requires = { "HW_MCU_STM32", "HW_MCU_STM32F3" },
         description = "ST Microelectronics STM32 F3 Series",
+        sources = { "cm3/dev/stm/stm32f30_clk.c" },
+        makedefs = { "MCU=cortex-m4", "LDPATH=$(LDINCLUDE)" },
         script = "arch/cm3/stm32f3.nut"
     },
     {

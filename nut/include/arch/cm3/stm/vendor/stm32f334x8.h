@@ -142,15 +142,16 @@ typedef enum
   HRTIM1_TIMD_IRQn            = 71,     /*!< HRTIM Timer D global Interrupt                                    */
   HRTIM1_TIME_IRQn            = 72,     /*!< HRTIM Timer E global Interrupt                                    */
   HRTIM1_FLT_IRQn             = 73,     /*!< HRTIM Fault global Interrupt                                      */
-  FPU_IRQn                    = 81      /*!< Floating point Interrupt                                          */
+  FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"            /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f3xx.h"    /* STM32F3xx System Header */
+#include <arch/cm3/core_cm4.h>         /* Cortex-M0 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h> /* STM32 System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

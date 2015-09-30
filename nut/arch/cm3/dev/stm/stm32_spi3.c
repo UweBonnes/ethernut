@@ -121,15 +121,15 @@
  #endif
 #else
 /* Handle SCK */
- #if   SPIBUS3_SCK_PIN == 3 || !defined(SPIBUS3_SCK_PIN )
+ #if   defined(MCU_STM32F37) && SPIBUS3_SCK_PIN == 1
+  #define SPIBUS_SCK_PIN 1
+  #define SPIBUS_SCK_PORT NUTGPIO_PORTA
+ #elif SPIBUS3_SCK_PIN == 3 || !defined(SPIBUS3_SCK_PIN )
   #define SPIBUS_SCK_PIN 3
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
  #elif SPIBUS3_SCK_PIN == 10
   #define SPIBUS_SCK_PIN 10
   #define SPIBUS_SCK_PORT NUTGPIO_PORTC
- #elif defined(STM32F37X) && SPIBUS3_SCK_PIN == 1
-  #define SPIBUS_SCK_PIN 1
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTA
  #elif defined(STM32F411) && SPIBUS3_SCK_PIN == 12
   #define SPIBUS_SCK_PIN 12
   #define SPIBUS_SCK_PORT NUTGPIO_PORTB
@@ -138,20 +138,23 @@
   #warning Unknown SPIBUS3_SCK_PIN
  #endif
 
- #if  SPIBUS3_MISO_PIN == 4 || !defined(SPIBUS3_MISO_PIN )
+ #if   defined(MCU_STM32F37) && SPIBUS3_MISO_PIN == 2
+  #define SPIBUS_MISO_PIN 2
+  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
+ #elif SPIBUS3_MISO_PIN == 4 || !defined(SPIBUS3_MISO_PIN )
   #define SPIBUS_MISO_PIN 4
   #define SPIBUS_MISO_PORT NUTGPIO_PORTB
  #elif SPIBUS3_MISO_PIN == 11
   #define SPIBUS_MISO_PIN 11
   #define SPIBUS_MISO_PORT NUTGPIO_PORTC
- #elif defined(STM32F37X) && SPIBUS3_SCK_PIN == 2
-  #define SPIBUS_MISO_PIN 2
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
  #else
   #warning Unknown SPIBUS3_MISO_PIN
  #endif
 
- #if  SPIBUS3_MOSI_PIN == 5 || !defined(SPIBUS3_MOSI_PIN )
+ #if   defined(MCU_STM32F37) && SPIBUS3_MOSI_PIN == 3
+  #define SPIBUS_MOSI_PIN 3
+  #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
+ #elif  SPIBUS3_MOSI_PIN == 5 || !defined(SPIBUS3_MOSI_PIN )
   #define SPIBUS_MOSI_PIN 5
   #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
  #elif SPIBUS3_MOSI_PIN == 12

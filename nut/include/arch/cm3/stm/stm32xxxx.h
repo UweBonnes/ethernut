@@ -104,10 +104,39 @@
 #else
 #warning "Unknown STM32F2 family"
 #endif
-#elif defined(STM32F30X)
-#include <arch/cm3/stm/vendor/stm32f30x.h>
-#elif defined(STM32F37X)
-#include <arch/cm3/stm/vendor/stm32f37x.h>
+#elif defined(MCU_STM32F3)
+# if   defined(STM32F301x8)
+#  include <arch/cm3/stm/vendor/stm32f301x8.h>
+# elif defined(STM32F302x8)
+#  include <arch/cm3/stm/vendor/stm32f302x8.h>
+# elif defined(STM32F302xC)
+#  include <arch/cm3/stm/vendor/stm32f302xc.h>
+# elif defined(STM32F302xE)
+#  include <arch/cm3/stm/vendor/stm32f302xe.h>
+# elif defined(STM32F303x8)
+#  include <arch/cm3/stm/vendor/stm32f303x8.h>
+# elif defined(STM32F303xC)
+#  include <arch/cm3/stm/vendor/stm32f303xc.h>
+# elif defined(STM32F303xE)
+#  include <arch/cm3/stm/vendor/stm32f303xe.h>
+# elif defined(STM32F318xx)
+#  include <arch/cm3/stm/vendor/stm32f318xx.h>
+# elif defined(STM32F328xx)
+#  include <arch/cm3/stm/vendor/stm32f328xx.h>
+# elif defined(STM32F334x8)
+#  include <arch/cm3/stm/vendor/stm32f334x8.h>
+# elif defined(STM32F358xx)
+#  include <arch/cm3/stm/vendor/stm32f358xx.h>
+# elif defined(STM32F373xC)
+#  include <arch/cm3/stm/vendor/stm32f373xc.h>
+# elif defined(STM32F378xx)
+#  include <arch/cm3/stm/vendor/stm32f378xx.h>
+# elif defined(STM32F379xx)
+#  include <arch/cm3/stm/vendor/stm32f398xx.h>
+# else
+#  warning "Unhandled STM32F3 device"
+# end
+# endif
 #elif defined(MCU_STM32F4)
 #define __STM32F4xx_CMSIS_DEVICE_VERSION_MAIN   (0x02) /*!< [31:24] main version */
 #define __STM32F4xx_CMSIS_DEVICE_VERSION_SUB1   (0x01) /*!< [23:16] sub1 version */
@@ -145,4 +174,22 @@
 #endif
 #else
 #warning "Unknown STM32 family"
+#endif
+
+/* Equalize names in a common place. Even recent CUBE uses "random" names.*/
+#if defined(RCC_APB1ENR_CANEN) && !defined(RCC_APB1ENR_CAN1EN)
+#define RCC_APB1ENR_CAN1EN RCC_APB1ENR_CANEN
+#endif
+#if defined(RCC_APB1RSTR_CANRST) && !defined(RCC_APB1RSTR_CAN1RST)
+#define RCC_APB1RSTR_CAN1RST RCC_APB1RSTR_CANRST
+#endif
+#if defined(CAN) && !defined(CAN1)
+#define CAN1 CAN
+#endif
+#if defined(CAN_BASE) && !defined(CAN1_BASE)
+#define CAN1_BASE CAN_BASE
+#endif
+
+#if defined(RCC_APB1ENR_DACEN) && !defined(RCC_APB1ENR_DAC1EN)
+#define RCC_APB1ENR_DAC1EN RCC_APB1ENR_DACEN
 #endif

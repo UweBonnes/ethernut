@@ -158,15 +158,16 @@ typedef enum
   USB_HP_IRQn                 = 74,     /*!< USB High Priority global Interrupt remap                          */
   USB_LP_IRQn                 = 75,     /*!< USB Low Priority global Interrupt  remap                          */
   USBWakeUp_RMP_IRQn          = 76,     /*!< USB Wakeup Interrupt remap                                        */
-  FPU_IRQn                    = 81      /*!< Floating point Interrupt                                          */
+  FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm4.h"            /* Cortex-M4 processor and core peripherals */
-#include "system_stm32f3xx.h"    /* STM32F3xx System Header */
+#include <arch/cm3/core_cm4.h>         /* Cortex-M0 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h> /* STM32 System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

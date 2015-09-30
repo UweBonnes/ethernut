@@ -89,6 +89,12 @@
 #include <cfg/arch.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
+/* In the Cube headers, smaller devices that don't have GPIOX don't
+ * defined that GPIOX_BASE. This confused out heuristic!
+ */
+#if defined(MCU_STM32F3) && !defined(GPIOE_BASE)
+# define GPIOE_BASE 0
+#endif
 /*
  * Remove any previously defined register names.
  */
@@ -206,12 +212,14 @@
 #elif defined(MCU_STM32F0)
 # define STM32TIMER_AF(port, pin) \
      ((port == GPIOA_BASE) || (port == GPIOB_BASE))? 1 : 0
-#elif defined(STM32F30X)
-#define STM32TIMER_AF(port, pin) \
-    ((port == GPIOB_BASE) && (pin ==  3))? 10 : 2
-#elif defined(STM32F37X)
-#define STM32TIMER_AF(port, pin) \
+#elif defined(MCU_STM32F3)
+# if defined(MCU_STM32F37)
+#  define STM32TIMER_AF(port, pin) \
     ((port == GPIOB_BASE) && ((pin ==  0) || (pin == 3) || (pin == 6) || (pin == 7)))? 10 : 2
+# else
+#  define STM32TIMER_AF(port, pin) \
+    ((port == GPIOB_BASE) && (pin ==  3))? 10 : 2
+# endif
 #elif defined (MCU_STM32F0)
 #define STM32TIMER_AF(port, pin) \
     ((port == GPIOA_BASE) || (port == GPIOB_BASE))? 1 : 0
@@ -431,7 +439,7 @@
 #define STM32TIMER_NCH 1
 #if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(port, pin) 9
-#elif defined(STM32F37X)
+#elif defined(MCU_STM32F37)
 #define STM32TIMER_AF(port, pin) (port == GPIOF_BASE)? 2: 9
 #elif defined (MCU_STM32F0)
 #define STM32TIMER_AF(port, pin) \
@@ -461,11 +469,12 @@
    F37: PB4/CH1_N/AF9, PB6/CH1/AF9, PB7/CH1/AF9, PB14/CH1/AF1, PB15/CH2/AF1
    FIXME: This doesn't map TIM15 CH1N
 */
-#if defined(STM32F30X)
-#define STM32TIMER_AF(port, pin) (port == GPIOF_BASE)?  3 : (port == GPIOB_BASE)? 1 : 9
-#endif
-#if defined(STM32F37X)
-#define STM32TIMER_AF(port, pin) ((port == GPIOB_BASE) && ((pin == 14) || (pin == 14)))? 1 : 9
+#if defined(MCU_STM32F3)
+# if defined(MCU_STM32F37)
+#  define STM32TIMER_AF(port, pin) ((port == GPIOB_BASE) && ((pin == 14) || (pin == 14)))? 1 : 9
+# else
+#  define STM32TIMER_AF(port, pin) (port == GPIOF_BASE)?  3 : (port == GPIOB_BASE)? 1 : 9
+# endif
 #elif defined (MCU_STM32F0)
 #define STM32TIMER_AF(port, pin) \
     ((port == GPIOA_BASE) && (pin ==  1))? 5 : \
@@ -491,7 +500,7 @@
 #define STM32TIMER_NCH 1
 #define STM32TIMER_BDTR
 #if defined(MCU_STM32F3)
-#define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?  4 :  1
+# define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?  4 :  1
 #elif defined(MCU_STM32F1)
 #define STM32TIMER_REMAP_REG   MAPR2
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM16_REMAP
@@ -510,15 +519,17 @@
 #define STM32TIMER_PCLK() NutClockGet(NUT_HWCLK_TCLK2)
 #define STM32TIMER_NCH 1
 #define STM32TIMER_BDTR
-#if defined(STM32F30X)
-#define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?           4 : \
+#if defined(MCU_STM32F3)
+# if defined(MCU_STM32F37)
+#  define STM32TIMER_AF(port, pin) (  port == GPIOA_BASE)    ?     1 : \
+    (( port == GPIOB_BASE) && ((pin ==  7) || (pin ==  9)))?     1 : \
+    (( port == GPIOB_BASE) && ((pin ==  4) || (pin ==  5)))?    10 : 1
+# else
+#  define STM32TIMER_AF(port, pin) (port == GPIOE_BASE)?           4 : \
     (  port == GPIOA_BASE)?                                      1 : \
     (( port == GPIOB_BASE) && ((pin ==  7) || (pin ==  9)))?     1 : \
     (( port == GPIOA_BASE) && ((pin ==  4) || (pin ==  5)))?    10 : 1
-#elif defined(STM32F37X)
-#define STM32TIMER_AF(port, pin) (  port == GPIOA_BASE)    ?     1 : \
-    (( port == GPIOB_BASE) && ((pin ==  7) || (pin ==  9)))?     1 : \
-    (( port == GPIOB_BASE) && ((pin ==  4) || (pin ==  5)))?    10 : 1
+# endif
 #elif defined (MCU_STM32F0)
 #define STM32TIMER_AF(port, pin) \
     (port == GPIOA_BASE)? 5 : \

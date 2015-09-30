@@ -1,5 +1,6 @@
 --
---  * Copyright (C) 2013 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+--  * Copyright (C) 2013,2015
+--               Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -34,9 +35,6 @@
 -- STMicroelectronics STM32L Family Devices
 --
 --
-stm32_memory_f30 = { "128", "256" }
-stm32_memory_f37 = { "64", "128", "256" }
-stm32f3_device_class = { "STM32F302" , "STM32F303", "STM32F313", "STM32F373", "STM32F383" }
 
 -- *****************************************************************************
 -- STM32F30 Family
@@ -52,13 +50,13 @@ nutarch_cm3_stm32f3 =
     {
         name = "nutarch_cm3_stm32f3_family",
         brief = "MCU F3 Family",
-        requires = { "HW_MCU_STM32F3XX" },
-        sources = { "cm3/dev/stm/stm32f30_clk.c" },
+        requires = { "HW_MCU_STM32F3" },
         options =
         {
             {
                 macro = "MCU_STM32F3",
                 brief = "STM32F3 family",
+                description = "Common devices in all STM32F3",
                 type = "integer",
                 default = 1,
                 provides =
@@ -68,25 +66,21 @@ nutarch_cm3_stm32f3 =
                     "HW_CRC32_STM32V2",
                     "DEV_IRQ_STM32",
                     "HW_DMA1_STM32F1",
-                    "HW_DMA2_STM32F1",
-                    "HW_EXTI04_STM32",
+                    "HW_EXTI0_STM32",
+                    "HW_EXTI1_STM32",
+                    "HW_EXTI2_TSC_STM32",
+                    "HW_EXTI3_STM32",
+                    "HW_EXTI4_STM32",
                     "HW_EXTI95_STM32",
                     "HW_EXTI1510_STM32",
                     "HW_I2C1_STM32V2",
-                    "HW_I2C2_STM32V2",
                     "HW_PVD_STM32",
                     "HW_SPI1_STM32",
-                    "HW_SPI2_STM32",
-                    "HW_SPI3_STM32",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
                     "HW_USART3_STM32",
-                    "HW_CAN1_STM32",
                     "HW_RTC_STM32_V2",
                     "HW_TIM2_32BIT_STM32",
-                    "HW_TIM3_STM32",
-                    "HW_TIM4_STM32",
-                    "HW_TIM6_DAC_STM32",
                     "HW_DAC1_STM32",
                     "HW_GPIO",
                     "HW_MCU_FPU",
@@ -94,36 +88,309 @@ nutarch_cm3_stm32f3 =
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F30X",
-                brief = "STM32F40X",
-                brief = "Include needed for STM32F302/303/313",
+                macro = "STM32F301x8",
+                brief = "STM32F301",
+                description = "Additional devices in STM32F301",
                 type = "integer",
-                requires = { "STM32F30X" },
+                requires = { "HW_MCU_STM32F301" },
                 default = 1,
                 provides =
                 {
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
+                    "HW_ADC1_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_I2C3_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
-                    "HW_TIM8_STM32",
-                    "HW_ADC1_2_STM32",
-                    "HW_COMP1_2_3_STM32",
-                    "HW_COMP4_5_6_STM32",
-                    "HW_COMP7_STM32",
-                    "HW_OP1_2_STM32",
+                    "HW_COMP2_STM32",
+                    "HW_COMP4_6_STM32",
+                    "HW_OP1_STM32",
                  },
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F37X",
-                brief = "STM32F37X",
-                brief = "Include needed for STM32F373/385",
+                macro = "STM32F302x8",
+                brief = "STM32F302 32/64 kB",
+                description = "Additional devices in STM32F302 32/64 kB",
                 type = "integer",
-                requires = { "LICENSE_MCD_ST_LIBERTY", "LICENSE_ST_GUIDANCE_ONLY", "STM32F37X" },
+                requires = { "HW_MCU_STM32F302_LD" },
                 default = 1,
                 provides =
                 {
-                    "HW_TIM5_32BIT_STM32",
+                    "HW_ADC1_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_I2C3_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_USB_CAN_STM32",
+                    "HW_ADC1_STM32",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_COMP2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                    "HW_OP_2_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F302xC",
+                brief = "STM32F302 128/256 kB",
+                description = "Additional devices in STM32F302 128/256 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F302_MD" },
+                default = 1,
+                provides =
+                {
+                    "HW_DMA2_STM32F1",
+                    "HW_ADC1_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_USB_CAN_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_COMP1_2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                    "HW_OP_2_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F302xE",
+                brief = "STM32F302 512 kB",
+                description = "Additional devices in STM32F302 512 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F302_HD" },
+                default = 1,
+                provides =
+                {
+                    "HW_DMA2_STM32F1",
+                    "HW_ADC1_2_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_I2C3_STM32V2",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_SPI4_STM32V2",
+                    "HW_USB_CAN_STM32",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_COMP1_2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                    "HW_OP_2_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F303x8",
+                brief = "STM32F303 32/64 kB",
+                description = "Additional devices in STM32F303 32/64 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F303_LD" },
+                default = 1,
+                provides =
+                {
+                    "HW_ADC1_2_STM32",
+                    "HW_USB_CAN_STM32",
+                    "HW_SPI1_STM32",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_DAC_STM32",
+                    "HW_COMP2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                    "HW_OP_2_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F303xC",
+                brief = "STM32F303 128/256 kB",
+                description = "Additional devices in STM32F303 128/256 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F303_MD" },
+                default = 1,
+                provides =
+                {
+                    "HW_DMA2_STM32F1",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_ADC3_STM32",
+                    "HW_ADC4_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_USB_CAN_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM8_STM32",
+                    "HW_COMP1_2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                    "HW_OP_2_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F303xE",
+                brief = "STM32F303 512 kB",
+                description = "Additional devices in STM32F303 512 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F303_HD" },
+                default = 1,
+                provides =
+                {
+                    "HW_DMA2_STM32F1",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_ADC3_STM32",
+                    "HW_ADC4_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_I2C3_STM32V2",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_SPI4_STM32",
+                    "HW_USB_CAN_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM8_STM32",
+                    "HW_COMP1_2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                    "HW_OP_2_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F318xx",
+                brief = "STM32F318 64 kB",
+                description = "Additional devices in STM32F318 64 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F318xx" },
+                default = 1,
+                provides =
+                {
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_I2C3_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_COMP2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F328xx",
+                brief = "STM32F328 64 kB",
+                description = "Additional devices in STM32F328 64 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F328xx" },
+                default = 1,
+                provides =
+                {
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_CAN_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_SPI1_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_COMP2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F334x8",
+                brief = "STM32F334  up to 64 kB",
+                description = "Additional devices in STM32F334 up to  64 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F334_LD" },
+                default = 1,
+                provides =
+                {
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_CAN_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_SPI1_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_HRTIM1_STM32",
+                    "HW_COMP2_STM32",
+                    "HW_COMP4_5_6_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F358xx",
+                brief = "STM32F358 256 kB",
+                description = "Additional devices in STM32F358 256 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F358xx" },
+                default = 1,
+                provides =
+                {
+                    "HW_DMA2_STM32F1",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_CAN_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_ADC1_2_STM32",
+                    "HW_ADC3_STM32",
+                    "HW_ADC4_STM32",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM8_STM32",
+                    "HW_COMP1_2_3_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F37",
+                brief = "STM32F37x family",
+                description = "Common devices in STM32F37x subfamily",
+                requires = { "HW_MCU_STM32F37" },
+                type = "integer",
+                default = 1,
+                provides =
+                {
+                    "HW_DMA2_STM32F1",
+                    "HW_ADC1_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_CAN_STM32",
+                    "HW_COMP_STM32",
+                    "HW_SDADC1_STM32",
+                    "HW_SDADC2_STM32",
+                    "HW_SDADC3_STM32",
+                    "HW_TIM12_STM32",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM5_STM32",
+                    "HW_TIM6_DAC1_STM32",
                     "HW_TIM7_STM32",
                     "HW_TIM12_STM32",
                     "HW_TIM13_STM32",
@@ -133,51 +400,71 @@ nutarch_cm3_stm32f3 =
                     "HW_TIM17_STM32",
                     "HW_TIM18_DAC2_STM32",
                     "HW_TIM19_STM32",
-                    "HW_CEC_STM32V2",
-                    "HW_ADC1_STM32",
-                    "HW_SDADC1_STM32",
-                    "HW_SDADC2_STM32",
-                    "HW_SDADC3_STM32",
-                    "HW_COMP_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_STM32",
+                    "HW_CEC_STM32",
                  },
-                makedefs = { "MCD_LICENSE=y" },
                 file = "include/cfg/arch.h"
             },
-        }
-    },
-    --
-    -- STM32F30 Memory
-    --
-    {
-        name = "nutarch_cm3_stm32F3_memory",
-        brief = "STM32F30x Device Memory",
-        requires = { "HW_MCU_STM32F3XX" },
-        options =
-        {
             {
-                macro = "MCU_STM32F30X",
-                brief = "STM32F30x memory",
-                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
-                              "STM32F30x>Y<zz where Y is one of the list below.\n\n"..
-                              "B =   128 kbytes Flash\n"..
-                              "C =   256 kbytes Flash\n",
-                requires = { "HW_MCU_STM32F30X" },
-                type = "enumerated",
-                choices = stm32_memory_f30,
-                file = "include/cfg/arch.h",
+                macro = "STM32F373xC",
+                brief = "STM32F373 64 up to 256 kB",
+                description = "Additional devices in STM32F373 64 up to 256 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F373_MD" },
+                default = 1,
+                provides =
+                {
+                    "HW_USB_STM32",
+                },
+                file = "include/cfg/arch.h"
             },
             {
-                macro = "MCU_STM32F37X",
-                brief = "STM32F37x memory",
-                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
-                              "STM32F37x>Y<zz where Y is one of the list below.\n\n"..
-                              "8 =    64 kbytes Flash\n"..
-                              "B =   128 kbytes Flash\n"..
-                              "C =   256 kbytes Flash\n",
-                requires = { "HW_MCU_STM32F37X" },
-                type = "enumerated",
-                choices = stm32_memory_f37,
-                file = "include/cfg/arch.h",
+                macro = "STM32F378xx",
+                brief = "STM32F378 256 kB",
+                description = "Additional devices in STM32F378 256 kB",
+                type = "integer",
+                requires = { "HW_MCU_STM32F378xx" },
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F398xx",
+                brief = "STM32F398 512 kB",
+                description = "Additional devices in STM32F398 512 kB",
+                brief = "Include needed for STM32F398",
+                requires = { "HW_MCU_STM32F398xx" },
+                default = 1,
+                provides =
+                {
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_DMA2_STM32F1",
+                    "HW_CAN_STM32",
+                    "HW_ADC1_2_STM32",
+                    "HW_ADC3_STM32",
+                    "HW_ADC4_STM32",
+                    "HW_I2C2_STM32",
+                    "HW_I2C3_STM32",
+                    "HW_TIM12_STM32",
+                    "HW_SPI1_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_SPI3_STM32",
+                    "HW_SPI4_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM8_STM32",
+                    "HW_TIM20_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_COMP1_2_3_STM32",
+                    "HW_COMP4_5_6_STM32",
+                    "HW_COMP7_STM32",
+                },
+                file = "include/cfg/arch.h"
             },
         }
     },
