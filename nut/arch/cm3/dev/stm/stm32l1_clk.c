@@ -46,8 +46,14 @@
 #include <arch/cm3/stm/stm32_clk.h>
 #include <cfg/clock.h>
 
-#include <arch/cm3/stm/vendor/stm32l1xx.h>
+#include <arch/cm3/stm/stm32xxxx.h>
 
+#if !defined(HSI_VALUE)
+#define HSI_VALUE  16000000
+#endif
+#if !defined  (HSE_STARTUP_TIMEOUT)
+#define HSE_STARTUP_TIMEOUT   0x5000
+#endif
 
 /* Prepare some defaults if configuration is incomplete */
 #if !defined(SYSCLK_SOURCE)
@@ -276,13 +282,13 @@ int SetPllClockSource( int src)
 {
     int rc = -1;
     if (src == PLLCLK_HSE) {
-        rc = CtlHseClock(ENABLE);
+        rc = CtlHseClock(1);
         if (rc==0) {
             CM3BBSET(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PLLSRC));
         }
     }
     else if (src == PLLCLK_HSI) {
-        rc = CtlHsiClock(ENABLE);
+        rc = CtlHsiClock(1);
         /* Select HSI/2 as PLL clock source */
         if (rc==0) {
             CM3BBCLR(RCC_BASE, RCC_TypeDef, CFGR, _BI32(RCC_CFGR_PLLSRC));
@@ -304,7 +310,7 @@ int SetSysClockSource( int src)
 
     /* Fixme: Set MSI source with MSI frequency parameter */
     if (src == SYSCLK_HSE) {
-        rc = CtlHseClock(ENABLE);
+        rc = CtlHseClock(1);
         if (rc == 0) {
             /* Select HSE as system clock source */
             RCC->CFGR &= ~RCC_CFGR_SW;
@@ -315,7 +321,7 @@ int SetSysClockSource( int src)
         }
     }
     else if (src == SYSCLK_HSI) {
-        rc = CtlHsiClock(ENABLE);
+        rc = CtlHsiClock(1);
         if (rc == 0) {
             /* Select HSI as system clock source */
             RCC->CFGR &= ~RCC_CFGR_SW;
@@ -326,7 +332,7 @@ int SetSysClockSource( int src)
         }
     }
     else if (src == SYSCLK_PLL) {
-        rc = CtlPllClock(ENABLE);
+        rc = CtlPllClock(1);
         if (rc == 0) {
             /* Select HSI as system clock source */
             RCC->CFGR &= ~RCC_CFGR_SW;

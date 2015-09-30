@@ -150,15 +150,16 @@ typedef enum
   DMA2_Channel4_IRQn          = 53,     /*!< DMA2 Channel 4 global Interrupt                         */
   DMA2_Channel5_IRQn          = 54,     /*!< DMA2 Channel 5 global Interrupt                         */
   AES_IRQn                    = 55,     /*!< AES global Interrupt                                    */
-  COMP_ACQ_IRQn               = 56      /*!< Comparator Channel Acquisition global Interrupt         */
+  COMP_ACQ_IRQn               = 56,     /*!< Comparator Channel Acquisition global Interrupt         */
+  IRQn_MAX                              /*!< Total number of interrupts                              */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm3.h"
-#include "system_stm32l1xx.h"
+#include <arch/cm3/core_cm3.h>
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

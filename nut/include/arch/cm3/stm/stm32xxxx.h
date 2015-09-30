@@ -80,7 +80,45 @@
 #elif defined(MCU_STM32F1)
 #include <arch/cm3/stm/vendor/stm32f10x.h>
 #elif defined(MCU_STM32L1)
-#include <arch/cm3/stm/vendor/stm32l1xx.h>
+# if   defined(STM32L151xB)
+#  include <arch/cm3/stm/vendor/stm32l151xb.h>
+# elif defined(STM32L151xBA)
+#  include <arch/cm3/stm/vendor/stm32l151xba.h>
+# elif defined(STM32L151xC)
+#  include <arch/cm3/stm/vendor/stm32l151xc.h>
+# elif defined(STM32L151xCA)
+#  include <arch/cm3/stm/vendor/stm32l151xca.h>
+# elif defined(STM32L151xD)
+#  include <arch/cm3/stm/vendor/stm32l151xd.h>
+# elif defined(STM32L151xDX)
+#  include <arch/cm3/stm/vendor/stm32l151xdx.h>
+# elif defined(STM32L151xE)
+#  include <arch/cm3/stm/vendor/stm32l151xe.h>
+# elif defined(STM32L152xB)
+#  include <arch/cm3/stm/vendor/stm32l152xb.h>
+# elif defined(STM32L152xBA)
+#  include <arch/cm3/stm/vendor/stm32l152xba.h>
+# elif defined(STM32L152xC)
+#  include <arch/cm3/stm/vendor/stm32l152xc.h>
+# elif defined(STM32L152xCA)
+#  include <arch/cm3/stm/vendor/stm32l152xca.h>
+# elif defined(STM32L152xD)
+#  include <arch/cm3/stm/vendor/stm32l152xd.h>
+# elif defined(STM32L152xDX)
+#  include <arch/cm3/stm/vendor/stm32l152xdx.h>
+# elif defined(STM32L152xE)
+#  include <arch/cm3/stm/vendor/stm32l152xe.h>
+# elif defined(STM32L162xC)
+#  include <arch/cm3/stm/vendor/stm32l162xc.h>
+# elif defined(STM32L162xCA)
+#  include <arch/cm3/stm/vendor/stm32l162xca.h>
+# elif defined(STM32L162xD)
+#  include <arch/cm3/stm/vendor/stm32l162xd.h>
+# elif defined(STM32L162xDX)
+#  include <arch/cm3/stm/vendor/stm32l162xdx.h>
+# elif defined(STM32L162xE)
+#  include <arch/cm3/stm/vendor/stm32l162xe.h>
+#endif
 #elif defined(MCU_STM32F2)
 /**
   * @brief CMSIS Device version number V2.0.1

@@ -40,11 +40,10 @@
 #include <sys/nutdebug.h>
 #include <dev/iap_flash.h>
 
-#if defined(MCU_STM32L1)
-#include <arch/cm3/stm/vendor/stm32l1xx.h>
-#else
+#if !defined(MCU_STM32L1)
 #warning "STM32 family has no L1 compatible FLASH/EEPROM"
 #endif
+#include <arch/cm3/stm/stm32xxxx.h>
 
 #define ERASED_PATTERN_32  0
 

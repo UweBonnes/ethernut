@@ -141,14 +141,15 @@ typedef enum
   USB_FS_WKUP_IRQn            = 42,     /*!< USB FS WakeUp from suspend through EXTI Line Interrupt  */
   TIM6_IRQn                   = 43,     /*!< TIM6 global Interrupt                                   */
   TIM7_IRQn                   = 44,     /*!< TIM7 global Interrupt                                   */
+  IRQn_MAX                              /*!< Total number of interrupts                              */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm3.h"
-#include "system_stm32l1xx.h"
+#include <arch/cm3/core_cm3.h>
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

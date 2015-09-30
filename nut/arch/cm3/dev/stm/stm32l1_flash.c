@@ -38,11 +38,15 @@
 #include <arch/cm3.h>
 #include <dev/iap_flash.h>
 
-#if defined(MCU_STM32L1)
-#include <arch/cm3/stm/vendor/stm32l1xx.h>
-#else
+#if !defined(MCU_STM32L1)
 #warning "STM32 family has no L1 compatible FLASH/EEPROM"
 #endif
+
+#if !defined(FLASH_SR_OPTVERRUSR)
+#define FLASH_SR_OPTVERRUSR 0
+#endif
+
+#include <arch/cm3/stm/stm32xxxx.h>
 
 /*Sectors are the unit for write protection, pages for erase */
 #define FLASH_SECTOR_SIZE  (1<<12)
@@ -219,13 +223,12 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
                                 FLASH_ERASE_MODE mode)
 {
     FLASH_Status rs = FLASH_COMPLETE;
-    uint32_t sector_start, sector_end;
+    int sector_start, sector_end;
     int i;
     void *wptr = dst;
     const void *rptr = src;
     uint32_t length = len;
-    volatile uint32_t *wrpr_bb  = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR , 0);
-    volatile uint32_t *wrpr1_bb = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR1, 0);
+    volatile uint32_t *wrpr_bb;
 
     if (len == 0)
         return FLASH_COMPLETE;
@@ -246,25 +249,27 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     /* Check for write protected sectors */
     sector_start = ((uint32_t)dst - FLASH_BASE) >> FLASH_SECTOR_SHIFT;
     sector_end = ((uint32_t)dst + len - FLASH_BASE) >> FLASH_SECTOR_SHIFT;
-    for (i = sector_start; i < sector_end; i++) {
-        if (i < 32) {
-            if (wrpr_bb[i]) {
-                rs = FLASH_ERROR_WRP;
-                goto done;
-            }
-        }
-        else {
-            if (wrpr1_bb[i - 32]) {
-                rs = FLASH_ERROR_WRP;
-                goto done;
-            }
-        }
-    }
-    if (src == NULL) {
-        /* Only a check for write protection was requested */
-        rs =  FLASH_COMPLETE;
+    wrpr_bb = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR1 , 0);
+    rs = FLASH_ERROR_WRP;
+    for (i = sector_start; (i < sector_end) && (i < 32); i++) {
+        if (wrpr_bb[i]) {
             goto done;
         }
+    }
+#if defined(FLASH_WRPR2_WRP)
+    /* WPR1 is not adjacent to WRP2/3/4, so two bitband bases are needed */
+    wrpr_bb = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR2 , 0);
+    for (i = 0; i < (sector_end - 32); i++) {
+        if (wrpr_bb[i]) {
+            goto done;
+        }
+    }
+#endif
+    rs = FLASH_COMPLETE;
+     if (src == NULL) {
+         /* Only a check for write protection was requested */
+         goto done;
+     }
 
     if (pagelist_init_done == 0)
         FlashUntouch();
@@ -437,11 +442,16 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     uint32_t flash_end_addr = IapFlashEnd();
     uint8_t nwrpr;
     uint32_t cwrpr;
-    uint32_t wrpr = FLASH->WRPR; /* Old write protection state */
-    volatile uint32_t *wrpr_bb =  CM3BB_BASE(&wrpr);
-#if defined (STM32L1XX_MDP) || defined (STM32L1XX_HD) || defined (STM32L1XX_XL)
-    uint32_t wrpr1[3] = {FLASH->WRPR1, FLASH->WRPR2, FLASH->WRPR3} ; /* Old write protection state */
-    volatile uint32_t *wrpr1_bb =  CM3BB_BASE(wrpr1);
+    volatile uint32_t *wrpr_bb;
+    /* Old write protection state */
+#if defined (FLASH_WRPR4_WR)
+    uint32_t wrpr[4] = {FLASH->WRPR1, FLASH->WRPR2, FLASH->WRPR3, FLASH->WRPR4};
+#elif defined (FLASH_WRPR3_WR)
+    uint32_t wrpr[3] = {FLASH->WRPR1, FLASH->WRPR2, FLASH->WRPR3};
+#elif defined (FLASH_WRPR3_WR)
+    uint32_t wrpr[2] = {FLASH->WRPR1, FLASH->WRPR2};
+#else
+    uint32_t wrpr[1] = {FLASH->WRPR1};
 #endif
 
     /* Check boundaries */
@@ -468,16 +478,16 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
         ena = 1;
     else
         ena = 0;
-    for (i = sector_start; i <= sector_end; i++) {
-        if (i < 32) {
-            wrpr_bb[i] = ena;
-        }
-#if defined (STM32L1XX_MDP) || defined (STM32L1XX_HD)|| defined (STM32L1XX_XL)
-        else {
-             wrpr1_bb[i - 32] = ena;
-        }
-#endif
+    wrpr_bb = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR1, 0);
+    for (i = sector_start; (i < sector_end) && (i < 32); i++) {
+        wrpr_bb[i] = ena;
     }
+#if defined (FLASH_WRPR2_WR)
+    wrpr_bb = CM3BBADDR(FLASH_R_BASE, FLASH_TypeDef, WRPR2, 0);
+    for (i = 0; i < (sector_end - 32); i++) {
+        wrpr_bb[i] = ena;
+    }
+#endif
     FLASH->PEKEYR = FLASH_PEKEY1;
     FLASH->PEKEYR = FLASH_PEKEY2;
     if (FLASH->PECR & FLASH_PECR_PELOCK)
@@ -489,9 +499,9 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
         return FLASH_ERROR_PG;
     }
     if (sector_start < 16) {
-        nwrpr = wrpr >> 8;
+        nwrpr = wrpr[0] >> 8;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr ;
+        nwrpr = wrpr[0] ;
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP01 = cwrpr;
         /* pm0062 tells to clear option byte errors */
@@ -499,62 +509,62 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     }
 
     if ((sector_start >= 16) || (sector_end < 32)) {
-        nwrpr = wrpr >> 24;
+        nwrpr = wrpr[0] >> 24;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr >> 16;
+        nwrpr = wrpr[0] >> 16;
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP23 = cwrpr;
         FLASH->SR = FLASH_SR_OPTVERRUSR | FLASH_SR_OPTVERR;
     }
-#if defined (STM32L1XX_MDP) || defined (STM32L1XX_HD) || defined (STM32L1XX_XL)
+#if defined (FLASH_WRPR2_WR)
     if ((sector_start >= 32) || (sector_end < 48)) {
-        nwrpr = wrpr1[0] >> 8;
+        nwrpr = wrpr[1] >> 8;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr1[0];
+        nwrpr = wrpr[1];
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP45 = cwrpr;
         FLASH->SR = FLASH_SR_OPTVERRUSR | FLASH_SR_OPTVERR;
     }
     if ((sector_start >= 48) || (sector_end < 64)) {
-        nwrpr = wrpr1[0] >> 24;
+        nwrpr = wrpr[1] >> 24;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr1[0] >> 16;
+        nwrpr = wrpr[1] >> 16;
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP67 = cwrpr;
         FLASH->SR = FLASH_SR_OPTVERRUSR | FLASH_SR_OPTVERR;
     }
 #endif
-#if defined (STM32L1XX_HD) || defined (STM32L1XX_XL)
+#if defined (FLASH_WRPR3_WR)
     if ((sector_start >= 64) || (sector_end < 80)) {
-        nwrpr = wrpr1[1] >> 8;
+        nwrpr = wrpr[2] >> 8;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr1[1];
+        nwrpr = wrpr[2];
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP89 = cwrpr;
         FLASH->SR = FLASH_SR_OPTVERRUSR | FLASH_SR_OPTVERR;
     }
     if ((sector_start >= 80) || (sector_end < 96)) {
-        nwrpr = wrpr1[1] >> 24;
+        nwrpr = wrpr[2] >> 24;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr1[1] >> 16;
+        nwrpr = wrpr[2] >> 16;
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP1011 = cwrpr;
         FLASH->SR = FLASH_SR_OPTVERRUSR | FLASH_SR_OPTVERR;
     }
 #endif
-#if defined (STM32L1XX_XL)
+#if defined (FLASH_WRPR3_WR)
     if ((sector_start >= 80) || (sector_end < 96)) {
-        nwrpr = wrpr1[2] >> 8;
+        nwrpr = wrpr[3] >> 8;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr1[2];
+        nwrpr = wrpr[3];
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP89 = cwrpr;
         FLASH->SR = FLASH_SR_OPTVERRUSR | FLASH_SR_OPTVERR;
     }
     if ((sector_start >= 80) || (sector_end < 96)) {
-        nwrpr = wrpr1[2] >> 24;
+        nwrpr = wrpr[3] >> 24;
         cwrpr = ~nwrpr << 8  | nwrpr;
-        nwrpr = wrpr1[2] >> 16;
+        nwrpr = wrpr[3] >> 16;
         cwrpr = cwrpr << 16 | ~nwrpr << 8  | nwrpr;
         OB->WRP1011 = cwrpr;
         FLASH->SR = FLASH_SR_OPTVERRUSR | FLASH_SR_OPTVERR;

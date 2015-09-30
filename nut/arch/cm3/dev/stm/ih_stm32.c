@@ -168,6 +168,8 @@ CREATE_HANDLER(USB_HP,        USB_HP,          NUT_IRQPRI_DEF);  // USB High Pri
 CREATE_HANDLER(USB_LP,        USB_LP,          NUT_IRQPRI_DEF);  // USB Low Priority, separted
 #if defined(STM32F30X)
 CREATE_HANDLER(USB_WAKE,      USBWakeUp_RMP,   NUT_IRQPRI_DEF);  // USB Wake Priority, separted
+#elif defined(MCU_STM32L1)
+CREATE_HANDLER(USB_WAKE,      USB_FS_WKUP,   NUT_IRQPRI_DEF);  // USB Wake Priority, separted
 #else
 CREATE_HANDLER(USB_WAKE,      USBWakeUp,   NUT_IRQPRI_DEF);  // USB Wake Priority, separted
 #endif
