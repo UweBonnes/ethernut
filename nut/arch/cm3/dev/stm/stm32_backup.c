@@ -51,15 +51,19 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 
 #if defined(RTC_BKP0R)
-#if !defined(RTC_BKP5R)
-#define BKUP_SIZE ( 5 * 4)
-#elif !defined(RTC_BKP16R)
-#define BKUP_SIZE (16 * 4)
-#elif !defined(RTC_BKP20R)
-#define BKUP_SIZE (20 * 4)
-#else
-#define BKUP_SIZE (32 * 4)
-#endif
+# if defined(RTC_BKP_NUMBER)
+#  define BKUP_SIZE RTC_BKP_NUMBER
+# elif !defined(RTC_BKP5R)
+#  define BKUP_SIZE ( 5 * 4)
+#  elif !defined(RTC_BKP10R)
+#  define BKUP_SIZE (10 * 4)
+#  elif !defined(RTC_BKP16R)
+#  define BKUP_SIZE (16 * 4)
+# elif !defined(RTC_BKP20R)
+#  define BKUP_SIZE (20 * 4)
+# elif defined(RTC_BKP32R)
+#  define BKUP_SIZE (32 * 4)
+# endif
 
 /*!
  * \brief Get pointer to read parameters in backup registerss.
@@ -131,7 +135,8 @@ int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
 }
 #endif
 
-#if defined(MCU_STM32F4) && !defined(STM32F411xE)  && !defined(MCU_STM32F401)
+#if defined(BKPSRAM_BASE)
+#define BKPSRAM_SIZE 0x1000
 /*!
  * \brief Get (pointer to read parameters from Backup memory.
  *
@@ -158,7 +163,7 @@ int Stm32BkupMemLoad(uint32_t pos, void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKUP_SIZE)
+    if (pos + len > BKPSRAM_SIZE)
         return -1;
     bkp = Stm32BkupMemGet(pos);
     if(NULL == bkp)
@@ -180,7 +185,7 @@ int Stm32BkupMemSave(unsigned int pos, const void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKUP_SIZE)
+    if (pos + len > BKPSRAM_SIZE)
         return -1;
     bkp = Stm32BkupMemGet(pos);
     if(NULL == bkp)

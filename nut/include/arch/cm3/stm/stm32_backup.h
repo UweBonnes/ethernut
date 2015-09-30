@@ -40,11 +40,13 @@
  * \verbatim
  */
 
+#if defined(RTC_BKP0R)
 extern int Stm32BkupRegSave(unsigned int pos, const void *data, unsigned int len);
 extern int Stm32BkupRegLoad(unsigned int pos, void *data, unsigned int len);
 extern void* Stm32BkupRegGet(unsigned int pos);
+#endif
 
-#if defined(MCU_STM32F4) && !defined(STM32F411)  && !defined(STM32F401)
+#if defined(BKPSRAM_BASE) && !defined(STM32F401)
 extern int Stm32BkupMemSave(unsigned int pos, const void *data, unsigned int len);
 extern int Stm32BkupMemLoad(unsigned int pos, void *data, unsigned int len);
 extern void* Stm32BkupMemGet(unsigned int pos);
