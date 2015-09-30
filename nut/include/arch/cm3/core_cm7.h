@@ -185,9 +185,9 @@
 #endif
 
 #include <stdint.h>                      /* standard types definitions                      */
-#include <core_cmInstr.h>                /* Core Instruction Access                         */
-#include <core_cmFunc.h>                 /* Core Function Access                            */
-#include <core_cmSimd.h>                 /* Compiler specific SIMD Intrinsics               */
+#include <arch/cm3/core_cmInstr.h>       /* Core Instruction Access                         */
+#include <arch/cm3/core_cmFunc.h>        /* Core Function Access                            */
+#include <arch/cm3/core_cmSimd.h>        /* Compiler specific SIMD Intrinsics               */
 
 #ifdef __cplusplus
 }

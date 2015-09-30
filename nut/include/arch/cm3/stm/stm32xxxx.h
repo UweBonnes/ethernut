@@ -249,6 +249,16 @@
 # else
 #  warning "Unknown STM32F4 family"
 # endif
+#elif defined(MCU_STM32F7)
+# if   defined(STM32F745xx)
+#  include <arch/cm3/stm/vendor/stm32f745xx.h>
+# elif defined(STM32F746xx)
+#  include <arch/cm3/stm/vendor/stm32f745xx.h>
+# elif defined(STM32F756xx)
+#  include <arch/cm3/stm/vendor/stm32f745xx.h>
+# else
+#  warning "Unknown STM32F7 family"
+# endif
 #else
 #warning "Unknown STM32 family"
 #endif

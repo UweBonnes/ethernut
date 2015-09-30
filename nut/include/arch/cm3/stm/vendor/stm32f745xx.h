@@ -170,7 +170,8 @@ typedef enum IRQn
   CEC_IRQn                    = 94,     /*!< HDMI-CEC global Interrupt                                         */
   I2C4_EV_IRQn                = 95,     /*!< I2C4 Event Interrupt                                              */
   I2C4_ER_IRQn                = 96,     /*!< I2C4 Error Interrupt                                              */
-  SPDIF_RX_IRQn               = 97      /*!< SPDIF-RX global Interrupt                                         */
+  SPDIF_RX_IRQn               = 97,     /*!< SPDIF-RX global Interrupt                                         */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
@@ -187,10 +188,9 @@ typedef enum IRQn
 #define __FPU_PRESENT             1       /*!< FPU present                                   */
 #define __ICACHE_PRESENT          1       /*!< CM7 instruction cache present                 */
 #define __DCACHE_PRESENT          1       /*!< CM7 data cache present                        */
-#include "core_cm7.h"                 /*!< Cortex-M7 processor and core peripherals      */
 
-
-#include "system_stm32f7xx.h"
+#include <arch/cm3/core_cm7.h>            /* Cortex-M7 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
