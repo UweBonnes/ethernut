@@ -40,6 +40,9 @@ function GetI2c1Sda()
     if c_is_provided("HW_MCU_STM32F3") then
         return { "PB07", "PB09", "PA14"  }
     end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return { "PB07", "PB09", "PC07", "PD13", "PD15", "PF15"}
+    end
     return { "PA07", "PA09" }
 end
 function GetI2c1Scl()
@@ -49,7 +52,16 @@ function GetI2c1Scl()
     if c_is_provided("HW_MCU_STM32F3") then
         return { "PB06", "PB08", "PA15" }
     end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return { "PB06", "PB08", "PC06", "PD12", "PD14", "PF14"}
+    end
     return { "PA06", "PA08" }
+end
+function GetI2c1Smba()
+    if c_is_provided("HW_MCU_STM32F446") then
+        return { "PIN_NONE", "PB05", "PD11", "PF13"}
+    end
+    return { "PIN_NONE", "PB05" }
 end
 
 --
@@ -225,6 +237,23 @@ function GetI2c3Scl()
     end
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PA08", "PH07"}
+    end
+end
+function GetI2c3Smba()
+    if c_is_provided("HW_MCU_STM32F2") then
+        return {"PIN_NONE", "PA08" }
+    end
+    if c_is_provided("HW_MCU_STM32F401") then
+        return {"PIN_NONE", "PA08" }
+    end
+    if c_is_provided("HW_MCU_STM32F411") then
+        return {"PIN_NONE", "PA08" }
+    end
+    if c_is_provided("HW_MCU_STM32F42") then
+        return {"PIN_NONE", "PA08" , "PH09"}
+    end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return {"PIN_NONE", "PA08", "PA09"}
     end
 end
 nutarch_cm3_stm32_i2c_devices =
@@ -465,7 +494,7 @@ nutarch_cm3_stm32_i2c_devices =
                 description = "Choose I2C1 SMBA PA5 or -1 to not use SMBA.",
                 default = "PIN_NONE",
                 type = "enumerated",
-                choices = { "PIN_NONE" , "PB05"},
+                choices = function() return GetI2c1Smba() end,
                 file = "include/cfg/twi.h"
             }
          }

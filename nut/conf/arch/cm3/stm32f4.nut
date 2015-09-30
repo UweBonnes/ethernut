@@ -135,8 +135,6 @@ nutarch_cm3_stm32f4 =
                     "HW_CAN2_STM32",
                     "HW_FSMC_STM32",
                     "HW_USART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_UART5_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_TIM7_STM32",
                     "HW_TIM8_TIM12_TIM13_TIM14_STM32",
@@ -290,6 +288,33 @@ nutarch_cm3_stm32f4 =
                     "HW_DCMI_STM32",
                     "HW_LTDC_STM32",
                 },
+                file = "include/cfg/arch.h"
+             },
+             {
+                macro = "STM32F446xx",
+                brief = "STM32F446",
+                description = "Provides vendor header for STM32F446 and additional devices.",
+                requires = { "HW_MCU_STM32F446" },
+                default = 1,
+                provides =
+                {
+                    "HW_CAN1_STM32",
+                    "HW_CAN2_STM32",
+                    "HW_CEC_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_QUADSPI_STM32",
+                    "HW_RTC_STM32_V2",
+                    "HW_SAI1_STM32",
+                    "HW_SAI2_STM32",
+                    "HW_SPI4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM8_TIM12_TIM13_TIM14_STM32",
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                 },
                 file = "include/cfg/arch.h"
              },
         }

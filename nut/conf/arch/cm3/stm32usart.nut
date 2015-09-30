@@ -135,6 +135,9 @@ function GetStmUsarts()
     if c_is_provided("HW_MCU_STM32F42") then
         return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6", "USART7", "USART8" }
     end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6"}
+    end
     if c_is_provided("HW_MCU_STM32F7") then
         return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6", "USART7", "USART8"}
     end
@@ -258,6 +261,9 @@ function GetCtsUsart3()
    if c_is_provided("HW_MCU_STM32F0") then
         return { "PB13", "PD11", "PA06", "PIN_NONE"}
    end
+   if c_is_provided("HW_MCU_STM32F446") then
+        return { "PB13", "PD11", "PIN_NONE"}
+   end
    return { "PB13", "PC13", "PD13", "PIN_NONE" }
 end
 
@@ -322,14 +328,20 @@ function GetCtsUsart4()
     if c_is_provided("HW_MCU_STM32F0") then
         return { "PB07", "PIN_NONE"}
     end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return { "PB00", "PIN_NONE"}
+    end
     if c_is_provided("HW_MCU_STM32F7") then
         return { "PB00", "PIN_NONE"}
     end
     return "PIN_NONE"
 end
-function GetCtsUsart4()
+function GetRtsUsart4()
     if c_is_provided("HW_MCU_STM32F0") then
         return { "PIN_NONE", "PA12"}
+    end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return { "PA15", "PIN_NONE"}
     end
     return "PIN_NONE"
 end
@@ -387,6 +399,9 @@ function GetRxUsart6()
    end
    if c_is_provided("HW_MCU_STM32F401") then
         return { "PC07", "PA12", "PIN_NONE" }
+   end
+   if c_is_provided("HW_MCU_STM32F446") then
+        return { "PC07", "PG09", "PIN_NONE" }
    end
    return { "PC07", "PG09", "PIN_NONE" }
 end
