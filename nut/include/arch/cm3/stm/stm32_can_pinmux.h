@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2013 proconX Pty Ltd <www.proconX.com>
- *
- * All rights reserved.
+ * Copyright (C) 2015 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -19,8 +17,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -30,38 +28,43 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
+ *
  */
-
-/*
- * \file arch/cm3/board/stm3230g_eval.h
- * \brief STM3220G-EVAL board specific settings.
- */
-
-#ifndef _DEV_BOARD_H_
-#error "Do not include this file directly. Use dev/board.h instead!"
+#if !defined(__STM32_CAN_PINMUX_H__)
+# define __STM32_CAN_PINMUX_H__
+# if defined(MCU_STM32F1)
+/* AF definition only to keep the compiler happy*/
+#  define CAN1_RX_AF 9
+#  define CAN1_TX_AF 9
+#  define CAN2_RX_AF 9
+#  define CAN2_TX_AF 9
+#  if   (CAN1_REMAP == 3)
+#   define CAN1_RX PD00
+#   define CAN1_TX PD01
+#  elif (CAN1_REMAP == 1)
+#   define CAN1_RX PB08
+#   define CAN1_TX PB09
+#  else
+#   define CAN1_RX PA11
+#   define CAN1_TX PA12
+#  endif
+#  if   (CAN2_REMAP == 1)
+#   define CAN2_RX PB12
+#   define CAN2_TX PB13
+#  else
+#   define CAN2_RX PB05
+#   define CAN2_TX PB06
+#  endif
+# elif defined(MCU_STM32F0)
+#  define CAN1_RX_AF 4
+#  define CAN1_TX_AF 4
+# elif defined(MCU_STM32F3)
+#  define CAN1_RX_AF ((CAN1_RX == PD00) ? 7 : 9)
+#  define CAN1_TX_AF ((CAN1_TX == PD01) ? 7 : 9)
+# else
+#  define CAN1_RX_AF 9
+#  define CAN1_TX_AF 9
+#  define CAN2_RX_AF 9
+#  define CAN2_TX_AF 9
+# endif
 #endif
-
-
-/*
- * Sertial devices
- */
-#ifndef DEV_DEBUG
-#define DEV_DEBUG       devUsartStm32_3
-#endif
-#ifndef DEV_DEBUG_NAME
-#define DEV_DEBUG_NAME  devUsartStm32_3.dev_name
-#endif
-
-#ifndef DEV_UART
-#define DEV_UART        devUsartStm32_3
-#endif
-#ifndef DEV_UART_NAME
-#define DEV_UART_NAME   devUsartStm32_3.dev_name
-#endif
-
-/*
- * Ethernet devices, incl. board specific settings for alternate function pins
- * Pin setting now done in configurator and .conf file.
- * Values here to keep old configurations happy.
- */
-#include <dev/stm32_emac.h>

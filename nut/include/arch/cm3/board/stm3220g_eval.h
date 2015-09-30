@@ -61,15 +61,6 @@
 
 
 /*
- * CAN devices
- */
-#define CAN1_RX_PIN          0
-#define CAN1_TX_PIN          1
-#define CAN2_RX_PIN          5
-#define CAN2_TX_PIN          13
-
-
-/*
  * Ethernet devices, incl. board specific settings for alternate function pins
  * Pin setting now done via configurator and .conf file.
  * Values here to keep old configurations happy.

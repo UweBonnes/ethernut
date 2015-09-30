@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2012 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
+ * Copyright (C) 2012, 2015 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
  *
  * All rights reserved.
  *
@@ -57,92 +57,7 @@
 #include <arch/cm3.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-
-#ifndef CANBUS1_REMAP_CAN
-#define CANBUS1_REMAP_CAN 0
-#endif
-
-/*!
- * \brief CANBUS1 GPIO configuartion and assignment.
- */
-#if defined(MCU_STM32F1)
- #if (CANBUS1_REMAP_CAN == 1)
-  #define CANBUS_REMAP       AFIO_MAPR_CAN_REMAP_REMAP2
-  #define CAN1RX_GPIO_PORT   NUTGPIO_PORTB
-  #define CAN1TX_GPIO_PORT   NUTGPIO_PORTB
-  #define CAN1RX_GPIO_PIN    8
-  #define CAN1TX_GPIO_PIN    9
-
- #elif (CANBUS1_REMAP_CAN == 2)
-  #define CANBUS_REMAP       AFIO_MAPR_CAN_REMAP_REMAP3
-  #define CAN1RX_GPIO_PORT   NUTGPIO_PORTD
-  #define CAN1TX_GPIO_PORT   NUTGPIO_PORTD
-  #define CAN1RX_GPIO_PIN    0
-  #define CAN1TX_GPIO_PIN    1
- #else
-  #undef CANBUS_REMAP
-  #define CANBUS_REMAP       AFIO_MAPR_CAN_REMAP_REMAP1
-  #define CAN1RX_GPIO_PORT   NUTGPIO_PORTA
-  #define CAN1TX_GPIO_PORT   NUTGPIO_PORTA
-  #define CAN1RX_GPIO_PIN    11
-  #define CAN1TX_GPIO_PIN    12
- #endif
-#else /*L1/F2/F3/F4*/
- #if !defined(CANBUS1_TX_PIN)
-  #if (CANBUS1_REMAP_CAN == 0)
-   #define CAN1TX_GPIO_PORT  NUTGPIO_PORTA
-   #define CAN1TX_GPIO_PIN   12
-  #elif (CANBUS1_REMAP_CAN == 1)
-   #define CAN1TX_GPIO_PORT     NUTGPIO_PORTB
-   #define CAN1TX_GPIO_PIN    9
-  #elif (CANBUS1_REMAP_CAN == 2)
-   #define CAN1TX_GPIO_PORT     NUTGPIO_PORTD
-   #define CAN1TX_GPIO_PIN    1
-  #else
-   #error "Illegal CANBUS1_REMAP_CAN value"
-  #endif
- #elif (CANBUS1_TX_PIN == 12)
-  #define CAN1TX_GPIO_PORT  NUTGPIO_PORTA
-  #define CAN1TX_GPIO_PIN   12
- #elif (CANBUS1_TX_PIN == 9)
-  #define CAN1TX_GPIO_PORT     NUTGPIO_PORTB
-  #define CAN1TX_GPIO_PIN    9
- #elif (CANBUS1_TX_PIN == 1)
-  #define CAN1TX_GPIO_PORT     NUTGPIO_PORTD
-  #define CAN1TX_GPIO_PIN    1
- #else
-  #errror "Illegal CAN1 TX value"
- #endif
- #if !defined(CANBUS1_RX_PIN)
-  #if (CANBUS1_REMAP_CAN == 0)
-   #define CAN1RX_GPIO_PORT  NUTGPIO_PORTA
-   #define CAN1RX_GPIO_PIN   11
-  #elif (CANBUS1_REMAP_CAN == 1)
-   #define CAN1RX_GPIO_PORT     NUTGPIO_PORTB
-   #define CAN1RX_GPIO_PIN    8
-  #elif (CANBUS1_REMAP_CAN == 2)
-   #define CAN1RX_GPIO_PORT     NUTGPIO_PORTD
-   #define CAN1RX_GPIO_PIN    0
-  #else
-   #error "Illegal CANBUS1_REMAP_CAN value"
-  #endif
- #elif (CANBUS1_RX_PIN == 11)
-  #define CAN1RX_GPIO_PORT  NUTGPIO_PORTA
-  #define CAN1RX_GPIO_PIN   11
- #elif (CANBUS1_RX_PIN == 8)
-  #define CAN1RX_GPIO_PORT     NUTGPIO_PORTB
-  #define CAN1RX_GPIO_PIN    8
- #elif (CANBUS1_RX_PIN == 0)
-  #define CAN1RX_GPIO_PORT     NUTGPIO_PORTD
-  #define CAN1RX_GPIO_PIN    0
- #else
-  #errror "Illegal CAN1 RX value"
- #endif
-#endif
-
-#if defined(MCU_STM32F3)
-#define F3_GPIO_AF_CAN1(x) (x == NUTGPIO_PORTD)?7:9
-#endif
+#include <arch/cm3/stm/stm32_can_pinmux.h>
 
 /*!
  * \brief Processor specific Hardware Initiliaization
@@ -153,11 +68,12 @@ int Stm32CanHw1Init(void)
 #if defined (CAN2_ACCEPTANCE_FILTERS)
     uint32_t fmr;
 #endif
+    /* Reset CAN Bus 1 IP */
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
     /* Enable CAN Bus 1 peripheral clock. */
     CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
 
-    /* Reset CAN Bus 1 IP */
-    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
+    /* Release Reset on CAN Bus 1 IP */
     CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
 
 #if defined (CAN2_ACCEPTANCE_FILTERS)
@@ -169,18 +85,15 @@ int Stm32CanHw1Init(void)
 #endif
 
     /* Setup Related GPIOs. */
-    GpioPinConfigSet(CAN1RX_GPIO_PORT, CAN1RX_GPIO_PIN, GPIO_CFG_PULLUP|GPIO_CFG_PERIPHAL);
-    GpioPinConfigSet(CAN1TX_GPIO_PORT, CAN1TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
+    Stm32GpioConfigSet(CAN1_RX, GPIO_CFG_PULLUP | GPIO_CFG_PERIPHAL,
+                       CAN1_RX_AF);
+    Stm32GpioConfigSet(CAN1_TX,
+                       GPIO_CFG_PULLUP | GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT,
+                       CAN1_TX_AF);
 
 #if defined (MCU_STM32F1)
     AFIO->MAPR &= ~AFIO_MAPR_CAN_REMAP;
-    AFIO->MAPR |=  CANBUS_REMAP;
-#elif defined (MCU_STM32F3)
-    GPIO_PinAFConfig(CAN1RX_GPIO_PORT, CAN1RX_GPIO_PIN, F3_GPIO_AF_CAN1(CAN1RX_GPIO_PORT));
-    GPIO_PinAFConfig(CAN1TX_GPIO_PORT, CAN1TX_GPIO_PIN, F3_GPIO_AF_CAN1(CAN1RX_GPIO_PORT));
-#else
-    GPIO_PinAFConfig(CAN1RX_GPIO_PORT, CAN1RX_GPIO_PIN, GPIO_AF_CAN1);
-    GPIO_PinAFConfig(CAN1TX_GPIO_PORT, CAN1TX_GPIO_PIN, GPIO_AF_CAN1);
+    AFIO->MAPR |=  CAN1_REMAP * AFIO_MAPR_CAN_REMAP;
 #endif
 
     return 0;

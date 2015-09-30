@@ -540,7 +540,7 @@ int CanGetFeatures( NUTCANBUS *bus, uint32_t flags)
 #define STM_CAN_BTR_50k  (CAN_APB1_DIV(30) |CAN_BS1(16)|CAN_BS2(3)|CAN_SJW(2))
 #define STM_CAN_BTR_20k  (CAN_APB1_DIV(75) |CAN_BS1(16)|CAN_BS2(3)|CAN_SJW(2))
 #define STM_CAN_BTR_10k  (CAN_APB1_DIV(150)|CAN_BS1(16)|CAN_BS2(3)|CAN_SJW(2))
-#elif defined(MCU_STM32F4)
+#elif defined(MCU_STM32F4) || defined(MCU_STM32F7)
 #define STM_CAN_ABP1_CHECK 42000000
 #define STM_CAN_BTR_1M   (CAN_APB1_DIV(2)  |CAN_BS1(16)|CAN_BS2(4)|CAN_SJW(2))
 #define STM_CAN_BTR_800k 0

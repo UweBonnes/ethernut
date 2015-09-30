@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2012 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012,2015 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -56,55 +56,7 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-
-#ifndef CANBUS2_REMAP_CAN
-#define CANBUS2_REMAP_CAN 0
-#endif
-
-/*!
- * \brief CANBUS2 GPIO configuartion and assignment.
- */
-#define CAN2_GPIO_PORT   NUTGPIO_PORTB
-#if defined(MCU_STM32F1)
- #if (CANBUS2_REMAP_CAN == 1)
-  #define CAN2RX_GPIO_PIN    5
-  #define CAN2TX_GPIO_PIN    6
- #else
-  #define CAN2RX_GPIO_PIN    12
-  #define CAN2TX_GPIO_PIN    13
- #endif
-#else /*L1/F2/F4*/
- #if !defined(CANBUS2TX_PIN)
-  #if (CANBUS2_REMAP_CAN == 0)
-   #define CAN2TX_GPIO_PIN   13
-  #elif (CANBUS2_REMAP_CAN == 1)
-   #define CAN2TX_GPIO_PIN   6
-  #else
-   #error "Illegal CANBUS2_REMAP_CAN value"
-  #endif
- #elif (CANBUS2TX_PIN == 13)
-  #define CAN2TX_GPIO_PIN   13
- #elif (CANBUS2TX_PIN == 6)
-  #define CAN2TX_GPIO_PIN    6
- #else
-  #errror "Illegal CAN2 TX value"
- #endif
- #if !defined(CANBUS2RX_PIN)
-  #if (CANBUS2_REMAP_CAN == 0)
-   #define CAN2RX_GPIO_PIN   12
-  #elif (CANBUS2_REMAP_CAN == 1)
-   #define CAN2RX_GPIO_PIN    5
-  #else
-   #error "Illegal CANBUS2_REMAP_CAN value"
-  #endif
- #elif (CANBUS2RX_PIN == 12)
-  #define CAN2RX_GPIO_PIN   12
- #elif (CANBUS2RX_PIN == 5)
-  #define CAN2RX_GPIO_PIN    5
- #else
-  #errror "Illegal CAN2 RX value"
- #endif
-#endif
+#include <arch/cm3/stm/stm32_can_pinmux.h>
 
 /*!
  * \brief Processor specific Hardware Initiliaization
@@ -118,10 +70,11 @@ int Stm32CanHw2Init(void)
 
     if (!CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN)))
     {
-        /* CAN1 has no clock, unconditionally clock CAN 1 */
-        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
         /* Reset CAN Bus 1 IP */
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
+        /* CAN1 has no clock, unconditionally clock CAN 1 */
+        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
+        /* Release Reset on CAN Bus 1 IP */
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
 #if defined (CAN2_ACCEPTANCE_FILTERS)
         /* Set the CAN1/CAN2 Filter split */
@@ -133,25 +86,23 @@ int Stm32CanHw2Init(void)
     }
 
 /* Enable CAN Bus 2 peripheral clock. */
-    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN));
-
     /* Reset CAN Bus 2 IP */
     CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST));
+    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN));
+
+    /* Release CAN Bus 2 IP */
     CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST));
 
     /* Setup Related GPIOs. */
-    GpioPinConfigSet(CAN2_GPIO_PORT, CAN2RX_GPIO_PIN, GPIO_CFG_PULLUP|GPIO_CFG_PERIPHAL);
-    GpioPinConfigSet(CAN2_GPIO_PORT, CAN2TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
+    Stm32GpioConfigSet(CAN2_RX, GPIO_CFG_PULLUP | GPIO_CFG_PERIPHAL,
+                       CAN2_RX_AF);
+    Stm32GpioConfigSet(CAN2_TX,
+                       GPIO_CFG_PULLUP | GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT,
+                       CAN2_TX_AF);
 
 #if defined (MCU_STM32F1)
-#if (CANBUS2_REMAP_CAN == 1)
-    CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_CAN2_REMAP));
-#else
-    CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_CAN2_REMAP));
-#endif
-#else
-    GPIO_PinAFConfig(CAN2_GPIO_PORT, CAN2RX_GPIO_PIN, GPIO_AF_CAN2);
-    GPIO_PinAFConfig(CAN2_GPIO_PORT, CAN2TX_GPIO_PIN, GPIO_AF_CAN2);
+    CM3BBSETVAL(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_CAN2_REMAP),
+                CAN2_REMAP);
 #endif
 
     return 0;
