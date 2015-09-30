@@ -88,6 +88,17 @@ nutarch_cm3_stm32_devices =
         }
     },
     --
+    -- STM32 Flash Interface on STM32L4
+    --
+    {
+        name = "nutarch_cm3_stm32l4_flash",
+        brief = "Flash access",
+        description = "STM32L4 flash interface.",
+        requires = { "HW_FLASH_STM32L4" },
+        provides = { "HW_FLASH", "HW_FLASH_STM32" },
+        sources = { "cm3/dev/stm/stm32l4_flash.c"},
+    },
+    --
     -- STM32 EEPROM Interface on STM32L0 and STM32L1
     --
     {

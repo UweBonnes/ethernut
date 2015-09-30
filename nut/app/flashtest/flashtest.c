@@ -58,11 +58,11 @@ static char *pattern1 = "FEDCBA9876543210fedcba987654321";
 static char *pattern2 = "0123456789abcdef0123456789ABCD";
 static char *pattern3 = "abcdef0123456789abcdef0123456";
 static const char  pattern4 = 0x55;
+static const uint32_t cafebabe = 0xCAFEBABE;
 
 /*
- * UART sample.
+ * Test for the IAP flash and configuration storage API.
  *
- * Some functions do not work with ICCAVR.
  */
 int main(void)
 {
@@ -75,6 +75,8 @@ int main(void)
     uint32_t rd;
     int i;
     uint32_t *rptr;
+    uint32_t user_area;
+    uint64_t deadbeef_ll = 0xdeadbeef01234567LL;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
@@ -85,12 +87,12 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     printf(banner);
     NutSleep(10);
-    res = NutNvMemSave(0x0, "Save0", 6);
+    res = NutNvMemSave(0x0, "Save_", 6);
     if(res)
         printf("NutNvMemSave failed: %d\n", res);
     else {
         NutNvMemLoad(0x0, buffer, 6);
-        if (memcmp(buffer, "Save0", 5))
+        if (memcmp(buffer, "Save_", 5))
             printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save0");
 
         res = NutNvMemSave(0x0, "Save1", 6);
@@ -113,18 +115,63 @@ int main(void)
         NutNvMemLoad(0x0, buffer, 6);
         if (memcmp(buffer, "uave2", 5))
             printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uave2");
+
+        res = NutNvMemSave(0x1, "x", 1);
+        if(res)
+            printf("NutNvMemSave failed: %d\n", res);
+        NutNvMemLoad(0x0, buffer, 6);
+        if (memcmp(buffer, "uxve2", 5))
+            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uxve2");
     }
     printf("NutNvMem test done\n");
 
     printf("Application Flash ends at 0x%08lx\n", iap_flash_end);
-    rptr = (uint32_t *) (iap_flash_end & 0xffffff00);
-    for(i = 0; i < 64; i++) {
+    printf("Last 128 bytes in user space");
+    user_area = (iap_flash_end & ~0x7f);
+    rptr = (uint32_t *)user_area;
+    for (i = 0; i < 128 / 4; i++) {
         if (rptr[i] !=  FLASH_ERASED_PATTERN32) {
-            printf("Not ");
+            printf(" Not");
+            /* User area already programmed. Change patter so that
+             * erase is needed.
+             */
+            if(*(uint64_t*)(user_area) == deadbeef_ll)
+                deadbeef_ll |=  FLASH_ERASED_PATTERN32;
             break;
         }
     }
-    printf("Empty\n");
+    printf(" Empty\n");
+    printf("Write uint64_t to erased flash: ");
+    res = IapFlashWrite((void*)user_area, &deadbeef_ll,
+                        8, FLASH_ERASE_ALWAYS);
+    if (res != FLASH_COMPLETE) {
+        printf("Failed: res %d\n", res);
+    } else {
+        if (*(uint64_t*)(user_area) != deadbeef_ll) {
+            puts("Compare failed");
+        } else {
+            puts("Succeeded");
+        }
+    }
+
+    user_area += 8;
+    printf("Write uint32_t to erased flash: ");
+    res = IapFlashWrite((void*)user_area, &cafebabe,
+                        4, FLASH_ERASE_ALWAYS);
+    if (res != FLASH_COMPLETE) {
+        if (res == FLASH_ERR_ALIGNMENT){
+            puts("Device only supports full 8-byte writes. Aborting");
+            goto end;
+        }
+        printf("Failed: res %d\n", res);
+    } else {
+        if (*(uint32_t*)(user_area) != cafebabe) {
+            puts("Compare failed");
+        } else {
+            puts("Succeeded");
+        }
+    }
+
     memset(buffer, FLASH_ERASED_PATTERN32 & 0xff, sizeof(buffer));
 
     printf("Write to erased flash\n");
@@ -159,21 +206,27 @@ int main(void)
     res = IapFlashWrite((void*)(iap_flash_end -0x3f), pattern1,
                         strlen(pattern1) + 1, FLASH_ERASE_NEVER);
     printf("%40s %3d: ", "Up to (address & 3 == 3). Res", res);
-    printf((char*)(iap_flash_end -0x3f));
+    if (*(uint32_t*)(iap_flash_end -0x3f) !=  FLASH_ERASED_PATTERN32) {
+        printf((char*)(iap_flash_end -0x3f));
+    }
     printf("\n");
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end -0x7f), pattern2,
                         strlen(pattern2) + 1, FLASH_ERASE_NEVER);
     printf("%40s %3d: ", "Up to (address & 3 == 2). Res", res);
-    printf((char*)(iap_flash_end -0x7f));
+    if (*(uint32_t*)(iap_flash_end -0x7f) !=  FLASH_ERASED_PATTERN32) {
+        printf((char*)(iap_flash_end -0x7f));
+    }
     printf("\n");
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end -0xcf), pattern3,
                         strlen(pattern2) + 1, FLASH_ERASE_NEVER);
     printf("%40s %3d: ", "Up to (address & 3 == 1). Res", res);
-    printf((char*)(iap_flash_end -0xcf));
+    if (*(uint32_t*)(iap_flash_end -0xcf) !=  FLASH_ERASED_PATTERN32) {
+        printf((char*)(iap_flash_end -0xcf));
+    }
     printf("\n");
     NutSleep(10);
 
@@ -188,7 +241,7 @@ int main(void)
                                 & 0xfffffff0);
 
     memset(buffer, 0, sizeof(buffer));
-    printf("Write to NULL byte/halfword/word toprogrammed flash\n");
+    printf("Write NULL byte/halfword/word to programmed flash\n");
     res = IapFlashWrite(dword_aligned_end - 1, buffer, 1,
                         FLASH_ERASE_NEVER);
     printf("%40s %3d: ", "0x00 at (address & 3 == 3). Res", res);
@@ -288,6 +341,7 @@ int main(void)
     printf("\n");
     NutSleep(10);
 
+end:
     for (;;) {
         NutSleep(100);
     }
