@@ -584,18 +584,7 @@ repository =
         description = "Cryptographic functions, needed to TLS support",
         requires = { "HW_TARGET" },
         subdir = "crypto",
-        script = "crypto/crypto.nut",
-        options =
-        {
-            {
-                macro = "nutsha512",
-                brief = "SHA512 implementation",
-                description = "Implement SHA512.\n"..
-                              "Avr-gcc is not able to compile yet.",
-                flavor = "booldata",
-                provides = { "CRYPTO_SHA512" },
-            }
-        },
+        script = "crypto/crypto.nut"
     },
     {
         name = "nuttls",
