@@ -28,15 +28,6 @@ nutarch_cm3_stm32_devices =
         options =
         {
             {
-                macro = "RTC_CLK_SRC",
-                brief = "RTC Clock Source",
-                description = "Source for RTC Clock",
-                type = "enumerated",
-                choices = { "RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI" },
-                default = "RTCCLK_LSE",
-                file = "include/cfg/rtc.h"
-            },
-            {
                 macro = "BACKUP_REGULATOR_OFF",
                 brief = "Disable RTC/Backup SRAM in VBAT MODE",
                 description = "RTC and BACKKP SRAM will loose content in"..

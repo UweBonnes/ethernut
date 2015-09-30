@@ -114,12 +114,30 @@ nutarch_cm3_stm32_pll =
                 file = "include/cfg/clock.h"
             },
             {
-                macro = "RTC_CLK_LSE",
+                macro = "LSE_VALUE",
                 brief = "Frequency of LSE Clock ",
                 description = "Frequency of LSE quarz/external LSE input.\n"..
-                              "Use 0 to disable LSE clock.",
+                              "Use 0 to disable LSE clock. Default is 32768 Hz.",
                 type = "integer",
                 default = "32768",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "LSI_ON",
+                brief = "Turn LSI on",
+                description = "Turn LSI on(1) or off(0).\n"..
+                              "Default is on.",
+                type = "integer",
+                default = "1",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "RTCCLK_SOURCE",
+                brief = "RTC(/LCD) clock source",
+                description = "Clock used for RTC and LCD.",
+                type = "enumerated",
+                choices = {"RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI"},
+                default = "RTCCLK_LSE",
                 file = "include/cfg/clock.h"
             },
         }

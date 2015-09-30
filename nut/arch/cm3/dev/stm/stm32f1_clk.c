@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
@@ -230,6 +231,8 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
  *
  */
 
+/* Include common routines*/
+#include "stm32_clk.c"
 
 /*!
  * \brief  Update SystemCoreClock according to Clock Register Values
@@ -531,6 +534,11 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
+
 #if defined(FLASH_ACR_PRFTBE)
     /* Enable Prefetch Buffer */
     FLASH->ACR |= FLASH_ACR_PRFTBE;
@@ -577,6 +585,11 @@ int SetSysClock(void)
 {
     uint32_t cfgr;
     int rc;
+
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
 
     cfgr = RCC->CFGR;
     cfgr &= ~RCC_CFGR_PLLMULL;

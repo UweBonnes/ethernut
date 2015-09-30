@@ -92,6 +92,9 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
  *
  */
 
+/* Include common routines*/
+#include "stm32_clk.c"
+
 /**
   * @brief  Get timer clock shift
   *
@@ -373,11 +376,16 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
+
 /* Todo: Check Voltage range! Here 2.7-3.6 Volt is assumed */
 /* For 2.7-3.6 Volt up to 30 MHz no Wait state required */
     cfgr = RCC->CFGR;
 
-    cfgr &= ~(RCC_CFGR_HPRE|RCC_CFGR_PPRE1|RCC_CFGR_PPRE2 | RCC_CFGR_RTCPRE);
+    cfgr &= ~(RCC_CFGR_HPRE|RCC_CFGR_PPRE1|RCC_CFGR_PPRE2 );
 
     /* HCLK = SYSCLK */
     cfgr |= (uint32_t)RCC_CFGR_HPRE_DIV1;
@@ -523,6 +531,11 @@ int SetSysClock(void)
     uint32_t rcc_reg;
     uint32_t cr;
 
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
+
     /* Select System frequency up to 168 MHz */
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 
@@ -556,7 +569,7 @@ int SetSysClock(void)
     FLASH->ACR = rcc_reg;
 
     rcc_reg = RCC->CFGR;
-    rcc_reg  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1 |RCC_CFGR_RTCPRE);
+    rcc_reg  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1);
     rcc_reg |= RCC_CFGR_HPRE_DIV1;
     rcc_reg |= GetPclkDiv(PCLK1_TARGET) * RCC_CFGR_PPRE1_0;
     rcc_reg |= GetPclkDiv(PCLK2_TARGET) * RCC_CFGR_PPRE2_0;

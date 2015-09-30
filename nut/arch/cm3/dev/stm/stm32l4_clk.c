@@ -180,7 +180,6 @@ static const uint8_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 
-
 /*----------------  Clock Setup Procedure ------------------------------
  *
  * Clock system ist arranged like this:
@@ -214,6 +213,9 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
  * Call SetSysClock(); to do this automatically.
  *
  */
+
+/* Include common routines*/
+#include "stm32_clk.c"
 
 /**
   * @brief  Get timer clock divisor
@@ -307,45 +309,6 @@ static void SystemCoreClockUpdate(void)
     tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
     clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
     clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
-}
-
-/*!
- * \brief Control LSE clock.
- *
- * This function is called early during startup. LSE startup takes
- * typical 2 seconds. If PLL stabilized MSI is needed, code must
- * wait for LSEON before enabling MSIPLL.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return none
- */
-
-static void CtlLseClock(uint8_t ena)
-{
-#if RTC_CLK_LSE > 0
-    uint32_t bdcr;
-    /* Allow read access to the Backup Registers */
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    PWR->CR1 |= PWR_CR1_DBP;
-    bdcr = RCC->BDCR;
-    if( ena) {
-        /* FIXME: LSE_BYP may only be changed with LSE off */
-        bdcr &= ~(RCC_BDCR_LSEDRV | RCC_BDCR_LSEBYP);
-# if defined(LSE_BYPASS)
-        bdcr |= RCC_BDCR_LSEBYP;
-# endif
-        bdcr |= LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV;
-        bdcr |= RCC_BDCR_LSEON;
-        RCC->BDCR = bdcr;
-    }
-    else {
-        bdcr &= ~RCC_BDCR_LSEON;
-        RCC->BDCR = bdcr;
-        while(RCC->BDCR & RCC_BDCR_LSERDY);
-    }
-    PWR->CR1 &= ~PWR_CR1_DBP;
-
-#endif
 }
 
 /*!
@@ -575,8 +538,10 @@ static int SetSysClockSource( int src)
     uint32_t cr, cfgr;
     uint32_t old_latency, new_latency, new_sysclk;
 
-    /* Enable LSE */
-    CtlLseClock(1);
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
 
     /* Set voltage scaling*/
     RCC->APB1ENR1 |= RCC_APB1ENR1_PWREN;
@@ -695,18 +660,6 @@ int SetSysClock(void)
     return rc;
 }
 
-#if RTC_CLK_LSE > 0
-static void RccIrq(void *arg)
-{
-    uint32_t flags;
-    flags = RCC->CIFR;
-    if (flags & RCC_CIFR_LSERDYF) {
-        RCC->CR |= RCC_CR_MSIPLLEN;
-        RCC->CIER &= RCC_CIER_LSERDYIE;
-    }
-    RCC->CICR = flags;
-}
-#endif
 /**
   * @brief  requests System clock frequency
   *
@@ -716,14 +669,6 @@ static void RccIrq(void *arg)
   */
 uint32_t SysCtlClockGet(void)
 {
-#if RTC_CLK_LSE > 0
-    if (RCC->BDCR & RCC_BDCR_LSERDY)
-        RCC->CR |= RCC_CR_MSIPLLEN;
-    else if (NutRegisterIrqHandler(&sig_RCC, RccIrq, NULL)) {
-        RCC->CIER |= RCC_CIER_LSERDYIE;
-        NutIrqEnable(&sig_RCC);
-    }
-#endif
     return STM_ClockGet(NUT_HWCLK_CPU);
 }
 

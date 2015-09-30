@@ -61,11 +61,7 @@
  */
 const void *Stm32BkupRegGet(unsigned int pos)
 {
-#if !defined(RCC_BDCR_RTCEN) && defined(RCC_CSR_RTCEN)
-    if (!(RCC->CSR & RCC_CSR_RTCEN))
-#else
-    if (!(RCC->BDCR & RCC_BDCR_RTCEN))
-#endif
+    if (!(RCC_BDCR & RCC_BDCR_RTCEN))
         return 0;
     return (void*)&RTC->BKP0R;
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * (C) 2011, 2012 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de
+ * (C) 2011 - 2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * All rights reserved.
  *
@@ -100,6 +100,8 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
  *
  */
 
+/* Include common routines*/
+#include "stm32_clk.c"
 
 /*!
  * \brief  Update SystemCoreClock according to Clock Register Values
@@ -210,12 +212,6 @@ int CtlHseClock( uint8_t ena)
 #else
         CM3BBCLR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP));
 #endif
-
-#if !defined(RTCPRE) || (RTCPRE <0) || (RTCPRE >3)
-#define RTCPRE 3
-#endif
-        RCC->CR &= ~RCC_CR_RTCPRE;
-        RCC->CR |=  RTCPRE<< _BI32(RCC_CR_RTCPRE_0);
 
         /* Enable HSE */
         rc = rcc_set_and_wait_rdy(
@@ -365,6 +361,10 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
     /* Fixme: Allow more flexible Flash Setting
      * For the moment, use 32-bit access with no prefetch . Latency has no meaning
      * for 32-bit access
@@ -407,64 +407,14 @@ int SetSysClock(void)
 int SetSysClock(void)
 {
     int rc = 0;
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
     /* FIXME*/
     return rc;
 }
 #endif /* (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE) */
-
-/**
-  * @brief  Sets RTC clock to selected source.
-  *
-  * @param  source Clock source LSI/LSE/HSE
-  * @retval -1 on error, 0 on success
-  */
-int SetRTCClock(int source)
-{
-    int rc = -1;
-    /* Enable PWR Controller and access to the RTC backup domain*/
-    CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_PWREN));
-    CM3BBSET(PWR_BASE, PWR_TypeDef, CR, _BI32(PWR_CR_DBP));
-    /* Reset RTC to allow selection */
-    CM3BBSET(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST));
-    CM3BBCLR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_RTCRST));
-    switch (source)
-    {
-    case RTCCLK_LSI:
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSION)),
-            1, HSE_STARTUP_TIMEOUT*1000);
-        if (rc == -1)
-            return rc;
-        RCC->CSR &= ~RCC_CSR_RTCSEL;
-        RCC->CSR |= RCC_CSR_RTCSEL_LSI;
-        break;
-    case RTCCLK_LSE:
-        /* LSE Bypass can only be written with LSE off*/
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEON)),
-            0, HSE_STARTUP_TIMEOUT*1000);
-        if (rc == -1)
-            return rc;
-#if defined(LSE_BYPASS)
-        CM3BBSET(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP));
-#else
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEBYP));
-#endif
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CSR, _BI32(RCC_CSR_LSEON)),
-            1, HSE_STARTUP_TIMEOUT*1000);
-        if (rc == -1)
-            return rc;
-        RCC->CSR &= ~RCC_CSR_RTCSEL;
-        RCC->CSR |= RCC_CSR_RTCSEL_LSE;
-        break;
-    case RTCCLK_HSE:
-        RCC->CSR &= ~RCC_CSR_RTCSEL;
-        RCC->CSR |= RCC_CSR_RTCSEL_HSE;
-        break;
-    }
-    return rc;
-}
 
 /**
   * @brief  requests System clock frequency

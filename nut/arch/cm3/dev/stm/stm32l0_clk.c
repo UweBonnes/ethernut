@@ -225,6 +225,9 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 # warning Illegal APB2_DIV
 #endif
 
+/* Include common routines*/
+#include "stm32_clk.c"
+
 /*!
  * \brief  Update SystemCoreClock according to Clock Register Values
  *
@@ -343,12 +346,6 @@ int CtlHseClock( uint8_t ena)
 #else
         RCC->CR &= ~RCC_CR_HSEBYP;
 #endif
-
-#if !defined(RTCPRE) || (RTCPRE <0) || (RTCPRE >3)
-#define RTCPRE 3
-#endif
-        RCC->CR &= ~RCC_CR_RTCPRE;
-        RCC->CR |=  RTCPRE<< _BI32(RCC_CR_RTCPRE_0);
 
         /* Enable HSE */
         rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_HSEON, RCC_CR_HSERDY, 1, HSE_STARTUP_TIMEOUT);
@@ -501,6 +498,11 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
+
     /* Switch on HSE to have intermediate clock */
     rc = CtlMsiClock(1);
     if (rc == 0)
@@ -527,59 +529,6 @@ int SetSysClock(void)
 
     rc = SetSysClockSource(SYSCLK_SOURCE);
 
-    return rc;
-}
-
-
-
-/**
-  * @brief  Sets RTC clock to selected source.
-  *
-  * @param  source Clock source LSI/LSE/HSE
-  * @retval -1 on error, 0 on success
-  */
-int SetRTCClock(int source)
-{
-    int rc = -1;
-    /* Enable PWR Controller and access to the RTC backup domain*/
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    PWR->CR      |= PWR_CR_DBP;
-    /* Reset RTC to allow selection */
-    RCC->CSR     |= RCC_CSR_RTCRST;
-    RCC->CSR     &= ~RCC_CSR_RTCRST;
-    switch (source)
-    {
-    case RTCCLK_LSI:
-        rc = rcc_set_and_wait_rdy(&RCC->CSR, RCC_CSR_LSION, RCC_CSR_LSIRDY,
-            1, HSE_STARTUP_TIMEOUT*1000);
-        if (rc == -1)
-            return rc;
-        RCC->CSR &= ~RCC_CSR_RTCSEL;
-        RCC->CSR |= RCC_CSR_RTCSEL_LSI;
-        break;
-    case RTCCLK_LSE:
-        /* LSE Bypass can only be written with LSE off*/
-        rc = rcc_set_and_wait_rdy(&RCC->CSR, RCC_CSR_LSION, RCC_CSR_LSIRDY,
-            0, HSE_STARTUP_TIMEOUT*1000);
-        if (rc == -1)
-            return rc;
-#if defined(LSE_BYPASS)
-        RCC->CSR |= RCC_CSR_LSEBYP;
-#else
-        RCC->CSR &= ~RCC_CSR_LSEBYP;
-#endif
-        rc = rcc_set_and_wait_rdy(&RCC->CSR, RCC_CSR_LSEON, RCC_CSR_LSERDY,
-            1, HSE_STARTUP_TIMEOUT*1000);
-        if (rc == -1)
-            return rc;
-        RCC->CSR &= ~RCC_CSR_RTCSEL;
-        RCC->CSR |= RCC_CSR_RTCSEL_LSE;
-        break;
-    case RTCCLK_HSE:
-        RCC->CSR &= ~RCC_CSR_RTCSEL;
-        RCC->CSR |= RCC_CSR_RTCSEL_HSE;
-        break;
-    }
     return rc;
 }
 

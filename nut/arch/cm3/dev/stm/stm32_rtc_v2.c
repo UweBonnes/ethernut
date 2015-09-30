@@ -47,62 +47,11 @@
 
 #include <cfg/arch/gpio.h>
 #include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32_clk.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#define RTCCLK_LSE 1
-#define RTCCLK_HSE 2
-#define RTCCLK_LSI 3
-
-/*Equalize L1 anormalies */
-#if defined (RCC_CSR_RTCEN) && !defined(RCC_BDCR_RTCEN)
-# define RCC_BDCR_RTCEN RCC_CSR_RTCEN
-#endif
-
-#if defined (RCC_CSR_LSEBYP) && !defined(RCC_BDCR_LSEBYP)
-# define RCC_BDCR_LSEBYP RCC_CSR_LSEBYP
-#endif
-
-#if defined (RCC_CSR_LSEON) && !defined(RCC_BDCR_LSEON)
-# define RCC_BDCR_LSEON RCC_CSR_LSEON
-#endif
-
-#if defined (RCC_CSR_LSERDY) && !defined(RCC_BDCR_LSERDY)
-# define RCC_BDCR_LSERDY RCC_CSR_LSERDY
-#endif
-
-#if defined (RCC_CSR_RTCRST) && !defined(RCC_BDCR_BDRST)
-# define RCC_BDCR_BDRST RCC_CSR_RTCRST
-#endif
-
-#if defined (RCC_CSR_RTCSEL_0) && !defined(RCC_BDCR_RTCSEL_0)
-# define RCC_BDCR_RTCSEL_0 RCC_CSR_RTCSEL_0
-#endif
-
-#if defined (RCC_CSR_RTCSEL_1) && !defined(RCC_BDCR_RTCSEL_1)
-# define RCC_BDCR_RTCSEL_1 RCC_CSR_RTCSEL_1
-#endif
-
-#if !defined(RCC_CFGR_RTCPRE) && defined(RCC_CR_RTCPRE)
-# define RCC_CFGR_RTCPRE RCC_CR_RTCPRE
-#endif
-
-#if defined (RCC_CSR_RTCSEL) && !defined(RCC_BDCR_RTCSEL)
-# define RCC_BDCR_RTCSEL RCC_CSR_RTCSEL
-# define RCC_BDCR RCC->CSR
-#else
-# define RCC_BDCR RCC->BDCR
-#endif
-
-#if defined(RCC_CFGR_RTCPRE)
-# define HSE_RTCPRE
-#endif
-
-#if !defined(RCC_CFGR_RTCPRE_0)
-# define RCC_CFGR_RTCPRE_0 0
-#endif
 
 /* L0 has only one Alarm channel*/
 #if defined (RTC_ISR_ALRBF)
@@ -114,52 +63,25 @@
 # endif
 #endif
 
-#if defined(RCC_BDCR_LSEMOD)
-/* F411/446 have one power level setting for the LSE */
-# define RCC_BDCR_LSEDRV_MASK RCC_BDCR_LSEMOD
-# define RTC_LSEMODF ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEMOD) & RCC_BDCR_LSEMOD)
-#elif defined(RCC_BDCR_LSEDRV)
-/* F0, L0, F3, F7 and L4 have four levels*/
-# define RCC_BDCR_LSEDRV_MASK RCC_BDCR_LSEDRV
-# define RTC_LSEMODF ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) & RCC_BDCR_LSEDRV)
-#else
-# define RCC_BDCR_LSEDRV_MASK 0
-# define RTC_LSEMODF 0
-#endif
-
-#if defined(RTC_LSE_BYPASS)
-# define RTC_BYPASSF RCC_BDCR_LSEBYP
-#else
-# define RTC_BYPASSF 0
-#endif
-
 #if defined(MCU_STM32L4)
 # define EXTI_RTC_LINE 18
 #else
 # define EXTI_RTC_LINE 17
 #endif
 
-static int RtcRccHsePrepare(void) __attribute__ ((unused));
-static int RtcLseSetup(void) __attribute__ ((unused));
-static int RtcRccLsiPrepare(void) __attribute__ ((unused));
-
-/* STM CMSIS definition has (uint32_t) marker and so can not be used
- * for math in preprocessor */
-#if defined(HSE_RTCPRE) && !defined(RCC_CFGR_RTCPRE_2)
-/* 15 bit on L1/L0 */
-# define SYNC_MAX 0x7fff
-#else
+/* STM CMSIS definition  RTC_PRER_PREDIV_S has (uint32_t) marker and so can
+ * not be used for math in preprocessor.*/
+#if defined(MCU_STM32F2) || defined(STM32L100xB) || defined(STM32L151xB) || defined(STM32L152xB)
+/* 153 bit on some older dvices */
 # define SYNC_MAX 0x1fff
+#else
+# define SYNC_MAX 0x7fff
 #endif
 
-#if RTC_CLK_SRC == RTCCLK_HSE
+#if RTCCLK_SOURCE == RTCCLK_HSE
 /* Handle HSE as RTC clock */
-# define RTC_CLKSEL RCC_BDCR_RTCSEL
 # define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
 # define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
-# define BDCR_MASK RCC_BDCR_RTCSEL
-# define BDCR_FLAG RCC_BDCR_RTCSEL
-# define RTC_CLK_SETUP() 0
 
 # if !defined(RTC_PRE)
 /* Calculate RTC_PRE divisor as it is not given*/
@@ -182,10 +104,12 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 #    elif HSE_VALUE > 32000000
 #     warning HSE_VALUE to high to reach 1 MHz RTC clock
 #    else
-#     define RTC_PRE (HSE_VALUE / 1000000)
+#     define RTC_PRE (((HSE_VALUE -1 )/ 1000000) + 1)
 #    endif
 #   endif
-/* F3/F0/L0/L4 has fixed HSE prescaler of 32*/
+# elif defined(MCU_STM32F1)
+#  define RTC_PRE 128
+/* F3/F0/L4 has fixed HSE prescaler of 32*/
 #  else
 #   define RTC_PRE 32
 #  endif
@@ -193,7 +117,7 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 
 /* Check value of calculated or given RTC_PRE and find RTC_PRE_VAL*/
 # if defined(HSE_RTCPRE)
-#  define RTC_RCC_PPREPARE() RtcRccHsePrepare()
+//#  define RTC_RCC_PPREPARE() RtcRccHsePrepare()
 #  if !defined(RCC_CFGR_RTCPRE_2)
 #   if  RTC_PRE == 16
 #    define  RTC_PRE_VAL  3
@@ -238,12 +162,9 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 #  warning Given RTC_SYNC/RTC_ASYNC do not give 1 Hz. Please set manual!
 # endif
 
-#elif RTC_CLK_SRC == RTCCLK_LSE
+#elif RTCCLK_SOURCE == RTCCLK_LSE
 /* LSE as Clock source*/
-# define RTC_RCC_PPREPARE() 0
-# define RTC_CLK_SETUP() RtcLseSetup()
-# define RTC_CLKSEL RCC_BDCR_RTCSEL_0
-# if RTC_CLK_LSE != 32768
+# if LSE_VALUE != 32768
  /* Handle LSE with external clock or clock with other frequency as 32768*/
 #   if (!defined(RTC_ASYNC) || !defined(RTC_SYNC))
 #    warning Please define RTC_ASYNC and RTC_SYNC for 1 Hz RTC clock from LSE
@@ -254,17 +175,10 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 #  undef  RTC_SYNC
 #  define RTC_SYNC  0xff
 # endif
-# define BDCR_MASK (RCC_BDCR_RTCEN  | RCC_BDCR_RTCSEL | RCC_BDCR_LSERDY | \
-                    RCC_BDCR_LSEBYP | RCC_BDCR_LSEDRV_MASK)
-# define BDCR_FLAG (RCC_BDCR_RTCEN  | RTC_CLKSEL      | RTC_BYPASSF |\
-                    RTC_LSEMODF     | RCC_BDCR_LSERDY)
 # define RTC_STATUS_START RTC_STATUS_HAS_QUEUE
 # define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
 # define RTC_PRE_VAL 0
-#elif RTC_CLK_SRC == RTCCLK_LSI
-# define RTC_CLKSEL RCC_BDCR_RTCSEL_1
-# define RTC_RCC_PPREPARE() RtcRccLsiPrepare()
-# define RTC_CLK_SETUP() 0
+#elif RTCCLK_SOURCE == RTCCLK_LSI
 # undef  RTC_ASYNC
 # undef  RTC_SYNC
 /* 32 kHz on F2/F4, 40(37?) kHz else.
@@ -304,72 +218,6 @@ struct _stm32_rtc_dcb {
 /* We only have one RTC, so static allocation should be okay */
 static stm32_rtc_dcb rtc_dcb = {RTC_STATUS_START};
 
-
-/*!
- * \brief Setup HSE as RTC Clock
- *
- * \return 0 on success or -1 in case of an error.
- */
-static int RtcRccHsePrepare(void)
-{
-    uint32_t reg32u;
-
-    reg32u = RCC->CR & RCC_CR_HSERDY;
-    if(reg32u != RCC_CR_HSERDY)
-    /* If Hse was not already set, don't try to
-     * fiddle with the HSE clock but return error.
-     */
-        return -1;
-#if defined(RCC_CFGR_RTCPR)
-    reg32u = RCC->CFGR;
-    reg32u &= ~RCC_CFGR_RTCPRE;
-    reg32u |= RTC_PRE_VAL * RCC_CFGR_RTCPRE_0;
-    RCC->CFGR = reg32u;
-#endif
-    return 0;
-}
-
-/*!
- * \brief Setup LSE as RTC Clock
- *
- * \return 0 on success or -1 in case of an error.
- */
-static int RtcLseSetup(void)
-{
-    int i;
-    uint32_t bdcr;
-    uint32_t mask = (RCC_BDCR_RTCEN | RCC_BDCR_LSERDY |
-                     RCC_BDCR_LSEBYP | RCC_BDCR_LSEDRV_MASK);
-    uint32_t flag = (RTC_BYPASSF | RTC_LSEMODF);
-    if (RCC_BDCR & RCC_BDCR_LSERDY)
-        return 0;
-    bdcr = RCC_BDCR;
-    bdcr &= ~mask;
-    bdcr |= flag;
-    RCC_BDCR = bdcr;
-    RCC_BDCR |= RCC_BDCR_LSEON;
-    /* LSE startup time is 2 s typical */
-    for(i = 0; i < 4000; i++) {
-        NutSleep(1);
-        if (RCC_BDCR & RCC_BDCR_LSERDY)
-            return 0;
-    }
-    return -1;
-}
-static int RtcRccLsiPrepare(void)
-{
-    int i;
-    if(RCC->CSR & RCC_CSR_LSIRDY)
-            return 0;
-    /* LSI startup is 40 us typical*/
-    RCC->CSR |= RCC_CSR_LSION;
-    for(i = 0; i < 10; i++) {
-        NutSleep(1);
-        if(RCC->CSR & RCC_CSR_LSIRDY)
-            return 0;
-    }
-    return -1;
-}
 /*!
  * \brief Interrupt handler for RTC Alarm
  *
@@ -698,41 +546,25 @@ int Stm32RtcInit(NUTRTC *rtc)
     NutIrqEnable(&sig_RTC);
     rtc->dcb   = &rtc_dcb;
     rtc->alarm = NULL;
-    res  = RTC_RCC_PPREPARE();
+    /* Enable RTC CLK*/
+    res  = SetRtcClock(RTCCLK_SOURCE);
     if (res) {
         /* Some failure happend */
-        goto rtc_done;
+        return -1;
     }
-    /* Allow read access to the Backup Registers */
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    PWR_CR |= PWR_CR_DBP;
     /* Check for valid or changed settings */
     if ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC_VAL)) {
         if ((RTC->ISR & RTC_ISR_INITS) ==  RTC_ISR_INITS) {
-            if ((RCC_BDCR  & BDCR_MASK) ==  BDCR_FLAG) {
-                /* The RTC has been set before. Do not set it*/
-                goto rtc_done;
-            }
+            /* The RTC has been set before. Do not set it*/
+            return 0;
         }
     }
-    if ((RCC_BDCR & BDCR_MASK) != BDCR_FLAG) {
-        /* We need a backup domain reset to set the new source */
-        RCC_BDCR |= RCC_BDCR_BDRST;
-        RCC_BDCR &= ~RCC_BDCR_BDRST;
-        /* Select clock source */
-        RCC_BDCR |= RTC_CLKSEL;
-    }
     rtc_dcb.flags &=  ~RTC_STATUS_START;
-    /* Enable RTC CLK*/
-    res = RTC_CLK_SETUP();
-    if (res) {
-        /* Some failure happend */
-        goto rtc_done;
-    }
-    /* Allow write access to the Backup Registers */
+    /* Disable Backup Write Protection */
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    PWR_CR |= PWR_CR_DBP;
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
-    RCC_BDCR|= RCC_BDCR_RTCEN;
 
     RTC->ISR |= RTC_ISR_INIT;
     while (!(RTC->ISR & RTC_ISR_INITF));
@@ -742,7 +574,6 @@ int Stm32RtcInit(NUTRTC *rtc)
     RTC->CR |= (RTC_CR_ALRAIE | RTC_CR_ALRBIE);
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0; /* Disable  RTC Write Access */
-rtc_done:
     /* Disable Backup domain write access*/
     PWR_CR &= ~PWR_CR_DBP;
 

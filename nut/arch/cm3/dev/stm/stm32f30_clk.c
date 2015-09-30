@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-15 by Uwe Bonnes
+ * Copyright (C) 2013-2015 by Uwe Bonnes
  *                                (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -158,6 +158,9 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
  * Call SetSysClock(); to do this automatically.
  *
  */
+
+/* Include common routines*/
+#include "stm32_clk.c"
 
 /*!
  * \brief  Update SystemCoreClock according to Clock Register Values
@@ -511,6 +514,11 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
+
 /* Todo: Check Voltage range! Here 2.7-3.6 Volt is assumed */
 /* For 2.7-3.6 Volt up to 30 MHz no Wait state required */
     cfgr = RCC->CFGR;
@@ -629,6 +637,11 @@ int SetSysClock(void)
     int rc = 0;
     uint32_t rcc_reg;
 
+    /* Eventual enable LSE */
+    CtlLseClock(LSE_VALUE);
+    /* Eventual enable LSI */
+    CtlLsiClock(LSI_ON);
+
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 
     rcc_reg =  RCC->CFGR;
@@ -713,7 +726,7 @@ uint32_t Stm32ClockSwitchGet(int bi)
         else if (2 == clksrc)
             return HSI_VALUE;
         else if (3 == clksrc)
-            return RTC_CLK_LSE;
+            return LSE_VALUE;
     }
     return 0;
 }

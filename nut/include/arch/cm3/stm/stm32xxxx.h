@@ -300,6 +300,38 @@
 #  define PWR_CR (PWR->CR)
 # endif
 
+# if !defined(RCC_BDCR_LSEBYP) && defined(RCC_CSR_LSEBYP)
+#  define RCC_BDCR (RCC->CSR)
+#  define RCC_BDCR_LSEBYP RCC_CSR_LSEBYP
+#  define RCC_BDCR_LSERDY RCC_CSR_LSERDY
+#  define RCC_BDCR_RTCEN  RCC_CSR_RTCEN
+#  define RCC_BDCR_RTCSEL_0  RCC_CSR_RTCSEL_0
+#  define RCC_BDCR_RTCSEL_1  RCC_CSR_RTCSEL_1
+#  define RCC_BDCR_RTCSEL    RCC_CSR_RTCSEL
+#  define RCC_BDCR_BDRST     RCC_CSR_RTCRST
+#  if defined(RCC_CSR_LSEDRV)
+#   define RCC_BDCR_LSEDRV_0 RCC_CSR_LSEDRV_0
+#   define RCC_BDCR_LSEDRV   RCC_CSR_LSEDRV
+#  else
+#   define RCC_BDCR_LSEDRV_0 0
+#   define RCC_BDCR_LSEDRV   0
+#  endif
+# else
+#  define RCC_BDCR (RCC->BDCR)
+# endif
+
+# if !defined(RCC_BDCR_LSEON) && defined(RCC_CSR_LSEON)
+#  define RCC_BDCR_LSEON RCC_CSR_LSEON
+# endif
+
+# if !defined(RCC_CR_RTCPRE_0) && defined(RCC_CFGR_RTCPRE_0)
+#  define RCC_CR (RCC->CFGR)
+#  define RCC_CR_RTCPRE_0 RCC_CFGR_RTCPRE_0
+#  define RCC_CR_RTCPRE   RCC_CFGR_RTCPRE
+# else
+#  define RCC_CR (RCC->CR)
+# endif
+
 # if !defined(FLASH_SR_PGSERR) && defined(FLASH_SR_ERSERR)
 #  define FLASH_SR_PGSERR FLASH_SR_ERSERR
 # endif
@@ -324,6 +356,7 @@
 # define RCC_APB1ENR_CAN1EN   RCC_APB1ENR1_CAN1EN
 # define RCC_APB1ENR_PWREN    RCC_APB1ENR1_PWREN
 # define RCC_APB1ENR_DAC1EN   RCC_APB1ENR1_DAC1EN
+# define RCC_APB1ENR_LCDEN    RCC_APB1ENR1_LCDEN
 
 # define APB1RSTR             APB1RSTR1
 # define RCC_APB1RSTR_TIM2RST   RCC_APB1RSTR1_TIM2RST
