@@ -108,7 +108,6 @@ volatile static uint32_t pspStack[PSP_STACK_SIZE];
 static void IntDefaultHandler(void *arg) __attribute__ ((naked));
 static void IntNmiHandler(void *arg) __attribute__ ((naked));
 static void IntHardfaultHandler(void *arg) __attribute__ ((naked));
-static void IntMemfaultHandler(void *arg) __attribute__ ((naked));
 /*!
  * \brief CortexM3 memory pointers
  *
@@ -119,9 +118,14 @@ static void IntMemfaultHandler(void *arg) __attribute__ ((naked));
  * later after system start.
  */
 #if       (__CORTEX_M >= 0x03)
+static void IntMemfaultHandler(void *arg) __attribute__ ((naked));
 static void IntBusfaultHandler(void *arg) __attribute__ ((naked));
 static void IntUsagefaultHandler(void *arg) __attribute__ ((naked));
-
+#else
+#define IntMemfaultHandler   0
+#define IntBusfaultHandler   0
+#define IntUsagefaultHandler 0
+#endif
 __attribute__ ((section(".isr_vector")))
 #if defined(NUTDEBUG_RAM)
 void (* g_pfnVectors[NUM_INTERRUPTS])(void*) =
@@ -141,62 +145,6 @@ void (* const g_pfnVectors[])(void *) =
     0,                   /* Reserved */
     0,                   /* Reserved */
 };
-#else
-static void IntRedirect(void *arg);
-__attribute__ ((section(".isr_vector")))
-void (* const g_pfnVectors[])(void *) =
-{
-    (void (*)(void *))((uint32_t)mspStack + sizeof(mspStack)), /* Initial Stack Pointer */
-    NUT_BOOT_FUNCTION,   /* Reset_Handler */
-    IntNmiHandler,       /* NMI_Handler */
-    IntHardfaultHandler, /* HardFault_Handler */
-    IntMemfaultHandler,  /* MemManage_Handler */
-    0,                   /* Reserved */
-    0,                   /* Reserved */
-    0,                   /* Reserved */
-    0,                   /* Reserved */
-    0,                   /* Reserved */
-    0,                   /* Reserved */
-    0,                   /* Reserved */
-    IntRedirect,         /* SVCAall*/
-    0,                   /* Reserved */
-    0,                   /* Reserved */
-    IntRedirect,         /* PendSV*/
-    IntRedirect,         /* SysTick*/
-    IntRedirect,         /* IRQn 0*/
-    IntRedirect,         /* IRQn 1*/
-    IntRedirect,         /* IRQn 2*/
-    IntRedirect,         /* IRQn 3*/
-    IntRedirect,         /* IRQn 4*/
-    IntRedirect,         /* IRQn 5*/
-    IntRedirect,         /* IRQn 6*/
-    IntRedirect,         /* IRQn 7*/
-    IntRedirect,         /* IRQn 8*/
-    IntRedirect,         /* IRQn 9*/
-    IntRedirect,         /* IRQn 10*/
-    IntRedirect,         /* IRQn 11*/
-    IntRedirect,         /* IRQn 12*/
-    IntRedirect,         /* IRQn 13*/
-    IntRedirect,         /* IRQn 14*/
-    IntRedirect,         /* IRQn 15*/
-    IntRedirect,         /* IRQn 16*/
-    IntRedirect,         /* IRQn 17*/
-    IntRedirect,         /* IRQn 18*/
-    IntRedirect,         /* IRQn 19*/
-    IntRedirect,         /* IRQn 20*/
-    IntRedirect,         /* IRQn 21*/
-    IntRedirect,         /* IRQn 22*/
-    IntRedirect,         /* IRQn 23*/
-    IntRedirect,         /* IRQn 24*/
-    IntRedirect,         /* IRQn 25*/
-    IntRedirect,         /* IRQn 26*/
-    IntRedirect,         /* IRQn 27*/
-    IntRedirect,         /* IRQn 28*/
-    IntRedirect,         /* IRQn 29*/
-    IntRedirect,         /* IRQn 30*/
-    IntRedirect,         /* IRQn 31*/
-};
-#endif
 
 /*!
  * \brief Dynamic interrupt vector table in RAM
@@ -286,6 +234,7 @@ static RAMFUNC void IntHardfaultHandler(void *arg)
 #endif
 }
 
+#if       (__CORTEX_M >= 0x03)
 /*!
  * \brief Mem fault handler
  */
@@ -303,7 +252,6 @@ static RAMFUNC void IntMemfaultHandler(void *arg)
 #endif
 }
 
-#if       (__CORTEX_M >= 0x03)
 /*!
  * \brief Bus fault handler
  */
@@ -401,16 +349,16 @@ static void Cortex_MemInit(void)
     __set_PSP((uint32_t)&_pspstack_end);
 }
 
-#if       (__CORTEX_M >= 0x03)
 static void Cortex_IntInit(void)
 {
     int int_id;
 
+#if       (__CORTEX_M >= 0x03)
     /* Disable exceptions */
-    SCB->SHCSR &= ~(SCB_SHCSR_USGFAULTENA_Msk |
+        SCB->SHCSR &= ~(SCB_SHCSR_USGFAULTENA_Msk |
                     SCB_SHCSR_BUSFAULTENA_Msk |
                     SCB_SHCSR_MEMFAULTENA_Msk);
-
+#endif
     /* Disable SysTick interrupt */
     SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 
@@ -425,10 +373,15 @@ static void Cortex_IntInit(void)
     /* Set the exception handler */
     g_pfnRAMVectors[2] = &IntNmiHandler;
     g_pfnRAMVectors[3] = &IntHardfaultHandler;
+#if       (__CORTEX_M >= 0x03)
     g_pfnRAMVectors[4] = &IntMemfaultHandler;
     g_pfnRAMVectors[5] = &IntBusfaultHandler;
     g_pfnRAMVectors[6] = &IntUsagefaultHandler;
-
+#else
+    g_pfnRAMVectors[4] = NULL;
+    g_pfnRAMVectors[5] = NULL;
+    g_pfnRAMVectors[6] = NULL;
+#endif
     /* Init reserved vectors with NULL */
     g_pfnRAMVectors[7]  = NULL;
     g_pfnRAMVectors[8]  = NULL;
@@ -445,10 +398,12 @@ static void Cortex_IntInit(void)
     g_pfnRAMVectors[14] = &IntDefaultHandler;
     g_pfnRAMVectors[15] = &IntDefaultHandler;
 
+#if       (__CORTEX_M >= 0x03)
     /* Enable exceptions again. The NMI and Hard-Fault handler are always enabled */
     SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk |
                   SCB_SHCSR_BUSFAULTENA_Msk |
                   SCB_SHCSR_MEMFAULTENA_Msk;
+#endif
 
     for (int_id = 16; int_id < NUM_INTERRUPTS - 16; int_id ++) {
         /* Make sure the interrupt is disabled */
@@ -461,31 +416,22 @@ static void Cortex_IntInit(void)
     /* Clear pending bits for SysTick interrupt, PendSV exception and ISRs */
     SCB->ICSR |= (SCB_ICSR_PENDSTCLR_Msk | SCB_ICSR_PENDSVCLR_Msk | SCB_ICSR_ISRPENDING_Msk);
 
+#if (!defined(__VTOR_PRESENT) && (__CORTEX_M == 0x00)) || \
+    (defined(__VTOR_PRESENT) && (__VTOR_PRESENT == 0))
+#if defined(MCU_STM32)
+/*  Map RAM also at address 0 so that our interrupts in ram get active */
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
+    SYSCFG->CFGR1 |= SYSCFG_CFGR1_MEM_MODE;
+#else
+#warning Check how to activate IRQ table in RAM for your architecture!
+#endif
+#else
     /* Point NVIC at the RAM vector table. */
     SCB->VTOR = (uint32_t)g_pfnRAMVectors;
     __enable_fault_irq();
-    __enable_irq();
-}
-#else
-/*!
- * \brief Usage fault handler
- */
-static void IntRedirect(void *arg)
-{
-    int int_id = SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk;
-    if (g_pfnRAMVectors[int_id])
-        g_pfnRAMVectors[int_id](NULL);
-}
-
-static void Cortex_IntInit(void)
-{
-    __disable_irq();
-    memset (g_pfnRAMVectors, 0, sizeof(g_pfnRAMVectors));
-    /* Clear pending bits for SysTick interrupt, PendSV exception and ISRs */
-    SCB->ICSR |= (SCB_ICSR_PENDSTCLR_Msk | SCB_ICSR_PENDSVCLR_Msk | SCB_ICSR_ISRPENDING_Msk);
-    __enable_irq();
-}
 #endif
+    __enable_irq();
+}
 
 /*!
  * \brief CortexM3 Startup.
