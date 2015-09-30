@@ -285,6 +285,7 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
         /* if the previous operation is completed, proceed to erase the page */
         FLASH->CR = flash_cr;
         FLASH->CR = flash_cr | FLASH_CR_STRT;
+        __DSB();
 
         /* Wait for last operation to be completed */
         rs = FlashWaitReady();
@@ -420,6 +421,7 @@ static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
             {
                 rs = FlashWaitReady();
                 *(volatile uint8_t*)wptr++ = *(volatile uint8_t*)rptr++;
+                __DSB();
                 current_length--;
             }
             /* Write Bulk of data in requested width*/
@@ -429,6 +431,7 @@ static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
             {
                 rs = FlashWaitReady();
                 * FLASH_TYPE_CAST wptr = * FLASH_TYPE_CAST rptr  ;
+                __DSB();
                 current_length -= (FLASH_LEN_MASK +1);
                 wptr += (FLASH_LEN_MASK +1);
                 rptr += (FLASH_LEN_MASK +1);
@@ -439,6 +442,7 @@ static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
             {
                 rs = FlashWaitReady();
                 *(volatile uint8_t*)wptr++ = *(volatile uint8_t*)rptr++;
+                __DSB();
                 current_length --;
             }
 
