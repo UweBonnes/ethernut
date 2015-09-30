@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
+ * Copyright (C) 2015, Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,7 +39,10 @@
  * \endverbatim
  */
 
+#include <stdlib.h>
+
 #include <cfg/arch.h>
+#include <cfg/devices.h>
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 
@@ -54,15 +58,9 @@ const DMATAB DmaTab[] = {
     { DMA1_BASE,  8, DMA1_Channel3 },
     { DMA1_BASE, 12, DMA1_Channel4 },
     { DMA1_BASE, 16, DMA1_Channel5 },
+#if !defined(HW_DMA1_5CH_STM32)
     { DMA1_BASE, 20, DMA1_Channel6 },
     { DMA1_BASE, 24, DMA1_Channel7 },
-#if defined(STM32F10X_HD) || defined(STM32F10X_XL)
-    { DMA2_BASE,  0, DMA2_Channel1 },
-    { DMA2_BASE,  4, DMA2_Channel2 },
-    { DMA2_BASE,  8, DMA2_Channel3 },
-      /* These chips have one IRQ for ch. 4 & 5 */
-    { DMA2_BASE, 12, DMA2_Channel4 },
-    { DMA2_BASE, 16, DMA2_Channel4 },
 #endif
 #if defined(HW_DMA2_STM32F1)
     { DMA2_BASE,  0, DMA2_Channel1 },
@@ -72,8 +70,6 @@ const DMATAB DmaTab[] = {
     { DMA2_BASE, 16, DMA2_Channel5 },
 #endif
 };
-
-const uint8_t DMACount = sizeof(DmaTab)/sizeof(DMATAB);
 
 /*
  * \brief DMA Transfer Setup Function.
@@ -171,7 +167,7 @@ void DMA_Init(void)
         }
 #endif
         /* Clear interrupt related flags in channels */
-        for(i=0; i < DMACount ; i++) {
+        for (i=0; i < DMA_COUNT; i++) {
             channel = (DMA_Channel_TypeDef*)DmaTab[i].dma_ch;
             channel->CCR = 0;
             DMA_ClearFlag(i,0xf);
@@ -275,4 +271,3 @@ void*  DmaGetMemoryBase( uint8_t ch)
     DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
     return (void *)channel->CMAR;
 }
-

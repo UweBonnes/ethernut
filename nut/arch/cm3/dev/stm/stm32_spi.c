@@ -618,7 +618,8 @@ static int Stm32SpiBusTransfer
     /* Let's assume about 1000 CPU clocks is break even where a DMA
        transfer is faster than pure polling */
     if (xlen * clk_ratio > SCHEDULE_CYCLES/8) {
-        if (rx_only) {
+        DMA_SIGNAL *sig;
+       if (rx_only) {
             if (node->node_mode & SPI_MODE_HALFDUPLEX)
                 CM3BBSET(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_BIDIMODE));
             else
@@ -641,8 +642,8 @@ static int Stm32SpiBusTransfer
          * Otherwise we may disrupt an on-going transaction to an other device on the same
          * channel.
          */
-        NutRegisterIrqHandler(&sig_SPI_DMA_RX, Stm32SpiBusDMAInterrupt, &node->node_bus->bus_ready);
-        NutIrqEnable(&sig_SPI_DMA_RX);
+       sig = DmaCreateHandler(SPI_DMA_RX_CHANNEL);
+       DmaRegisterHandler(sig, SPI_DMA_RX_CHANNEL, Stm32SpiBusDMAInterrupt, &node->node_bus->bus_ready);
         DMA_Enable( SPI_DMA_RX_CHANNEL);
         DMA_IrqMask(SPI_DMA_RX_CHANNEL, DMA_TCIF, 1);
         CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXDMAEN));

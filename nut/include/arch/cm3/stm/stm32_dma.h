@@ -44,10 +44,9 @@
 #include <cfg/arch.h>
 #include <arch/cm3/stm/stm32_irqreg.h>
 
-#if defined(MCU_STM32F0) || defined(MCU_STM32F1) || \
-    defined(MCU_STM32L1) ||  defined(MCU_STM32F3)
+#if defined(DMA1_Channel1)
 #include <arch/cm3/stm/stm32f1_dma.h>
-#elif  defined(MCU_STM32F2)||defined(MCU_STM32F4)
+#elif  defined( DMA1_Stream0)
 #include <arch/cm3/stm/stm32f2_dma.h>
 #else
 #warning "STM32 family has no implemented DMA"
@@ -74,5 +73,10 @@ void DMA_ClearFlag( uint8_t ch, uint32_t flags);
 uint32_t DMA_GetFlag( uint8_t ch);
 uint16_t DMA_GetRemainingTransfers( uint8_t ch);
 extern void *DmaGetMemoryBase( uint8_t ch);
+extern DMA_SIGNAL *DmaCreateHandler(uint8_t ch);
+extern int DmaRegisterHandler(
+    DMA_SIGNAL* signal, uint8_t ch, void (*handler) (void *), void *arg);
+extern int DmaEnableHandler(DMA_SIGNAL* signal, uint8_t ch);
+extern int DmaDisableHandler(DMA_SIGNAL* signal, uint8_t ch);
 #endif
 

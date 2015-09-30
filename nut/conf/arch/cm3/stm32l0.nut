@@ -68,7 +68,7 @@ nutarch_cm3_stm32l0 =
                     "HW_GPIO_STM32V2",
                     "HW_CRC32_STM32",
                     "DEV_IRQ_STM32",
-                    "HW_DMA1_STM32F0",
+                    "HW_DMA1_STM32L0",
                     "HW_EXTI01_STM32",
                     "HW_EXTI23_STM32",
                     "HW_EXTI415_STM32",

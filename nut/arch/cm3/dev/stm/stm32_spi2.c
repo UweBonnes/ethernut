@@ -262,9 +262,7 @@
 
 #if SPIBUS_MODE == DMA_MODE
  #define SPI_DMA_TX_CHANNEL SPI2_TX_DMA
- #define sig_SPI_DMA_TX     SPI2_TX_DMA_IRQ
  #define SPI_DMA_RX_CHANNEL SPI2_RX_DMA
- #define sig_SPI_DMA_RX     SPI2_RX_DMA_IRQ
 #endif
 
 NUTSPIBUS spiBus2Stm32 = {

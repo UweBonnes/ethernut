@@ -201,31 +201,45 @@ CREATE_HANDLER(UART7,         UART7,          NUT_IRQPRI_DEF);  // UART 7
 CREATE_HANDLER(UART8,         UART8,          NUT_IRQPRI_DEF);  // UART 8
 #endif
 
-#if defined (STM32F072)
-CREATE_HANDLER(DMA1_CH1, DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH2, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH3, DMA1_Channel4_5_6_7,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+#if defined (MCU_STM32L0)
+CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA_GROUP1, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 1
+CREATE_HANDLER(DMA_GROUP2, DMA1_Channel4_5_6_7,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 2
 #elif defined (MCU_STM32F0)
-CREATE_HANDLER(DMA1_CH1, DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH2, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH3, DMA1_Channel4_5    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-#elif defined (DMA1_Channel1_BASE)
-CREATE_HANDLER(DMA1_CH1, DMA1_Channel1,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH2, DMA1_Channel2,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH3, DMA1_Channel3,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH4, DMA1_Channel4,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH5, DMA1_Channel5,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH6, DMA1_Channel6,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA1_CH7, DMA1_Channel7,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-#endif
-#if defined(HW_DMA2_STM32F1)
-CREATE_HANDLER(DMA2_CH1, DMA2_Channel1,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA2_CH2, DMA2_Channel2,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA2_CH3, DMA2_Channel3,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA2_CH4, DMA2_Channel4,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-CREATE_HANDLER(DMA2_CH5, DMA2_Channel5,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
-#endif
-#if defined(DMA1_Stream0)
+# if defined(HW_DMA2_STM32F1)
+CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA_GROUP1, DMA1_Ch2_3_DMA2_Ch1_2, NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA_GROUP2, DMA1_Ch4_7_DMA2_Ch3_5, NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+# elif defined(HW_DMA1_5CH_STM32)
+CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA_GROUP1, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA_GROUP2, DMA1_Channel4_5    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+# else
+CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA_GROUP1, DMA1_Channel2_3,       NUT_IRQPRI_DEF); // DMA Controller 1 Group 1
+CREATE_HANDLER(DMA_GROUP2, DMA1_Channel4_5_6_7,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 2
+# endif
+#elif defined (MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F3)
+CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH2,   DMA1_Channel2,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH3,   DMA1_Channel3,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH4,   DMA1_Channel4,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH5,   DMA1_Channel5,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH6,   DMA1_Channel6,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA1_CH7,   DMA1_Channel7,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+# if defined(HW_DMA2_STM32F1)
+CREATE_HANDLER(DMA2_CH1,   DMA2_Channel1,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA2_CH2,   DMA2_Channel2,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA2_CH3,   DMA2_Channel3,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+#  if defined(HW_DMA_COMBINED_IRQ_STM32)
+CREATE_HANDLER(DMA2_CH4,   DMA2_Channel4_5,       NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+#  else
+CREATE_HANDLER(DMA2_CH4,   DMA2_Channel4,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA2_CH5,   DMA2_Channel5,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+#  endif
+# endif
+#else
+/* STM32F2, DTM32F4 */
 CREATE_HANDLER(DMA1_STREAM0, DMA1_Stream0,    NUT_IRQPRI_DEF); // DMA Controller 0 Stream 1
 CREATE_HANDLER(DMA1_STREAM1, DMA1_Stream1,    NUT_IRQPRI_DEF); // DMA Controller 0 Stream 1
 CREATE_HANDLER(DMA1_STREAM2, DMA1_Stream2,    NUT_IRQPRI_DEF); // DMA Controller 0 Stream 2

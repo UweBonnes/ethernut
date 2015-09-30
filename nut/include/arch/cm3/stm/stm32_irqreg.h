@@ -84,7 +84,11 @@ extern IRQ_HANDLER sig_OTG_FS;      // USB OTG on F2/F4
 extern IRQ_HANDLER sig_USB_HP;      // USB FS High Priority
 extern IRQ_HANDLER sig_USB_LP;      // USB FS Low Priority
 extern IRQ_HANDLER sig_USB_Wake;    // USB FS Wakeup
-extern IRQ_HANDLER sig_DMA1_CH1;    // DMA Controller 1 Channel 1
+extern IRQ_HANDLER sig_DMA_GROUP1;  // F0 DMA Combined Group 1
+extern IRQ_HANDLER sig_DMA_GROUP2;  // F0 DMA Combined Group 2
+extern IRQ_HANDLER sig_DMA1_CH1;    // DMA Controller 1 Channel 2
+extern IRQ_HANDLER sig_DMA1_CH2;    // DMA Controller 1 Channel 2
+extern IRQ_HANDLER sig_DMA1_CH2;    // DMA Controller 1 Channel 2
 extern IRQ_HANDLER sig_DMA1_CH2;    // DMA Controller 1 Channel 2
 extern IRQ_HANDLER sig_DMA1_CH3;    // DMA Controller 1 Channel 3
 extern IRQ_HANDLER sig_DMA1_CH4;    // DMA Controller 1 Channel 4

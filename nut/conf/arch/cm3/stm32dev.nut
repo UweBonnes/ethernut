@@ -4561,6 +4561,54 @@ nutarch_cm3_stm32_devices =
      },
 
     --
+    -- STM32L0 DMA Interface
+    --
+    {
+        name = "nutarch_cm3_stm32L0_dma",
+        brief = "STM32F0 DMA1  Controller",
+        description = "Generic DMA1 Support for L0",
+        requires = { "HW_MCU_STM32", "HW_DMA1_STM32L0" },
+        provides = {
+            "HW_DMA1_STM32F1",
+            "HW_DMA_COMBINED_IRQ_STM32",
+        },
+    },
+    --
+    -- STM32F0 DMA Interface
+    --
+    {
+        name = "nutarch_cm3_stm32f0_dma",
+        brief = "STM32F0 DMA1 5 ch Controller",
+        description = "Generic DMA1 5 Ch Support for F0",
+        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F0" },
+        provides = {
+            "HW_DMA1_STM32F1",
+            "HW_DMA1_5CH_STM32",
+            "HW_DMA_COMBINED_IRQ_STM32",
+        },
+    },
+    {
+        name = "nutarch_cm3_stm32f07_dma",
+        brief = "STM32F0 DMA1 7 ch Controller",
+        description = "Generic DMA1 7 Ch Support for F07",
+        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F07" },
+        provides = {
+            "HW_DMA1_STM32F1",
+            "HW_DMA_COMBINED_IRQ_STM32",
+        },
+    },
+    {
+        name = "nutarch_cm3_stm32f09_dma",
+        brief = "STM32F0 DMA1/2 12 ch Controller",
+        description = "Generic DMA 1/2 12 ch Support for F09",
+        requires = { "HW_MCU_STM32", "HW_DMA1_2_STM32F09" },
+        provides = {
+            "HW_DMA1_STM32F1",
+            "HW_DMA2_STM32F1",
+            "HW_DMA_COMBINED_IRQ_STM32",
+        },
+    },
+    --
     -- STM32F1/L1 DMA Interface
     --
     {
@@ -4569,15 +4617,27 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA Support for F1/L1",
         requires = { "HW_MCU_STM32", "HW_DMA1_STM32F1" },
         provides = { "HW_DMA1_F1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c" }
+        sources = {
+            "cm3/dev/stm/stm32f1_dma.c",
+            "cm3/dev/stm/stm32_dmairq.c",
+        }
+    },
+    {
+        name = "nutarch_cm3_stm32f1_dma_combined",
+        brief = "STM32F1 HD/XL DMA1 Controller",
+        description = "STM32F1 HD/XL support to separate DMA CH4/CH5",
+        requires = { "HW_MCU_STM32", "HW_DMA2_CH4_5_STM32F1" },
+        provides = {
+            "HW_DMA2_STM32F1",
+            "HW_DMA_COMBINED_IRQ_STM32",
+        },
     },
     {
         name = "nutarch_cm3_stm32f1_dma2",
         brief = "STM32F1/L1 DMA2 Controller",
         description = "Generic DMA Support for F1/L1",
-        requires = { "HW_MCU_STM32", "HW_DMA2_STM32F1" },
+        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F1", "HW_DMA2_STM32F1" },
         provides = { "HW_DMA2_F1" },
-        sources = { "cm3/dev/stm/stm32f1_dma.c" }
     },
 
     --
@@ -4589,7 +4649,10 @@ nutarch_cm3_stm32_devices =
         description = "Generic DMA1 Support for F2/F4",
         requires = { "HW_MCU_STM32", "HW_DMA1_STM32F2" },
         provides = { "HW_DMA1_F2" },
-        sources = { "cm3/dev/stm/stm32f2_dma.c"}
+        sources = {
+            "cm3/dev/stm/stm32f2_dma.c",
+            "cm3/dev/stm/stm32_dmairq.c",
+        },
     },
     {
         name = "nutarch_cm3_stm32f2_dma2",
@@ -4643,6 +4706,33 @@ nutarch_cm3_stm32_devices =
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DMA1_5CH_STM32",
+                brief = "STM32F0 Devices 5 Channel DMA1",
+                description = "STM32F0 Devices 5 Channel DMA1",
+                requires = { "HW_DMA1_5CH_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DMA_COMBINED_IRQ_STM32",
+                brief = "STM32 Devices with combined DMA IRQ",
+                description = "RTC V1 Availability",
+                requires = { "HW_DMA_COMBINED_IRQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART_COMBINED_IRQ_STM32",
+                brief = "STM32F0 Devices with combined DMA IRQ",
+                description = "STM32F0 Devices with combined DMA IRQ",
+                requires = { "HW_USART_COMBINED_IRQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/uart.h"
             },
             {
                 macro = "HW_PVD_STM32",

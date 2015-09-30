@@ -252,4 +252,34 @@ typedef struct {
 
 extern const DMATAB DmaTab[];
 
+#if defined(HW_DMA2_STM32F1)
+#define DMA_COUNT 12
+#elif !defined(HW_DMA1_5CH_STM32)
+#define DMA_COUNT  7
+#else
+#define DMA_COUNT  5
+#endif
+
+# if defined(HW_DMA_COMBINED_IRQ_STM32)
+
+typedef struct _dma_signal DMA_SIGNAL;
+
+struct _dma_signal{
+    uint8_t ch;
+    void (*dma_channel_handler) (void *);
+    void *dma_channel_arg;
+# if defined(SYSCFG_ITLINE10_SR_DMA1_CH2)
+    __IO uint32_t *it_line_sr;
+    uint8_t   it_line_mask;
+#endif
+    DMA_SIGNAL *next;
+};
+#  define DmaIrqEnable(x, y) 0
+#  define DmaIrqDisable(x, y) 0
+
+# else
+#  define DMA_SIGNAL  IRQ_HANDLER
+#  define DmaEnableHandler(signal, ch)  NutIrqEnable(signal)
+#  define DmaDisableHandler(signal, ch) NutIrqDisable(signal)
+# endif
 #endif /* _STM32F1_DMA_H_ */

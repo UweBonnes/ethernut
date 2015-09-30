@@ -194,17 +194,13 @@
 #if SPIBUS_MODE == DMA_MODE
  #if defined(SPIBUS1_DMA_TX_ALTERNATE_STREAM)
   #define SPI_DMA_TX_CHANNEL SPI5_TX_ALT_DMA
-  #define sig_SPI_DMA_TX     SPI5_TX_ALT_DMA_IRQ
  #else
   #define SPI_DMA_TX_CHANNEL SPI5_TX_DMA
-  #define sig_SPI_DMA_TX     SPI5_TX_DMA_IRQ
  #endif
  #if defined(SPIBUS1_DMA_RX_ALTERNATE_STREAM)
   #define SPI_DMA_RX_CHANNEL SPI5_RX_ALT_DMA
-  #define sig_SPI_DMA_RX     SPI5_RX_ALT_DMA_IRQ
  #else
   #define SPI_DMA_RX_CHANNEL SPI5_RX_DMA
-  #define sig_SPI_DMA_RX     SPI5_RX_DMA_IRQ
  #endif
 #endif
 

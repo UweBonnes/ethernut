@@ -285,3 +285,7 @@
 
 #define DMA_FLAGMASK DMA_GIF
 #define DMA_IRQMASK  DMA_GIF
+
+#define DMA_SIGNAL  IRQ_HANDLER
+#define DmaEnableHandler(signal, ch)  NutIrqEnable(signal)
+#define DmaDisableHandler(signal, ch) NutIrqDisable(signal)
