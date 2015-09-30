@@ -57,33 +57,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/* Use PA04 as default chip select
- */
-#if !defined( SPIBUS1_NO_CS)
- #if !defined(SPIBUS1_CS0_PORT) && !defined(SPIBUS1_CS0_PIN)
-  #define SPIBUS_CS0_PORT NUTGPIO_PORTA
-  #define SPIBUS_CS0_PIN  4
- #elif !defined(SPIBUS1_CS0_PORT) || !defined(SPIBUS1_CS0_PIN)
-  #warning "SPIBUS1 uncomplete chip select"
- #else
-  #define SPIBUS_CS0_PORT SPIBUS1_CS0_PORT
-  #define SPIBUS_CS0_PIN  SPIBUS1_CS0_PIN
- #endif
-
- #if defined(SPIBUS1_CS1_PORT) && defined(SPIBUS1_CS1_PIN)
-  #define SPIBUS_CS1_PORT SPIBUS1_CS1_PORT
-  #define SPIBUS_CS1_PIN  SPIBUS1_CS1_PIN
- #endif
- #if defined(SPIBUS1_CS2_PORT) && defined(SPIBUS1_CS2_PIN)
-  #define SPIBUS_CS2_PORT SPIBUS1_CS2_PORT
-  #define SPIBUS_CS2_PIN  SPIBUS1_CS2_PIN
- #endif
- #if defined(SPIBUS1_CS3_PORT) && defined(SPIBUS1_CS3_PIN)
-  #define SPIBUS_CS3_PORT SPIBUS1_CS3_PORT
-  #define SPIBUS_CS3_PIN  SPIBUS1_CS3_PIN
- #endif
-
-#endif
+#define SPI_CS0 SPI1_CS0
+#define SPI_CS1 SPI1_CS1
+#define SPI_CS2 SPI1_CS2
+#define SPI_CS3 SPI1_CS3
 
 #if defined(MCU_STM32F1)
 void Stm32F1SpiRemap(void)

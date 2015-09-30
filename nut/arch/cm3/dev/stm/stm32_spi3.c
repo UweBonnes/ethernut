@@ -59,29 +59,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#if !defined( SPIBUS3_NO_CS)
- #if !defined(SPIBUS3_CS0_PORT) && !defined(SPIBUS3_CS0_PIN)
-  #define SPIBUS_CS0_PORT NUTGPIO_PORTA
-  #define SPIBUS_CS0_PIN  15
- #elif !defined(SPIBUS3_CS0_PORT) || !defined(SPIBUS3_CS0_PIN)
-  #warnig "SPIBUS3 uncomplete chip select"
- #else
-  #define SPIBUS_CS0_PORT SPIBUS3_CS0_PORT
-  #define SPIBUS_CS0_PIN  SPIBUS3_CS0_PIN
- #endif
- #if defined(SPIBUS3_CS1_PORT) && defined(SPIBUS3_CS1_PIN)
-  #define SPIBUS_CS1_PORT SPIBUS3_CS1_PORT
-  #define SPIBUS_CS1_PIN  SPIBUS3_CS1_PIN
- #endif
- #if defined(SPIBUS3_CS2_PORT) && defined(SPIBUS3_CS2_PIN)
-  #define SPIBUS_CS2_PORT SPIBUS3_CS2_PORT
-  #define SPIBUS_CS2_PIN  SPIBUS3_CS2_PIN
- #endif
- #if defined(SPIBUS3_CS3_PORT) && defined(SPIBUS3_CS3_PIN)
-  #define SPIBUS_CS3_PORT SPIBUS3_CS3_PORT
-  #define SPIBUS_CS3_PIN  SPIBUS3_CS3_PIN
- #endif
-#endif
+#define SPI_CS0 SPI3_CS0
+#define SPI_CS1 SPI3_CS1
+#define SPI_CS2 SPI3_CS2
+#define SPI_CS3 SPI3_CS3
 
 #if defined(MCU_STM32F1) && defined(AFIO_MAPR_SPI3_REMAP)
 void Stm32F1SpiRemap(void)

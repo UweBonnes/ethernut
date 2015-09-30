@@ -56,31 +56,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#if !defined( SPIBUS6_NO_CS)
- #if !defined(SPIBUS6_CS0_PORT) && !defined(SPIBUS6_CS0_PIN)
-  #define SPIBUS_CS0_PORT NUTGPIO_PORTG
-  #define SPIBUS_CS0_PIN  8
- #elif !defined(SPIBUS6_CS0_PORT) || !defined(SPIBUS6_CS0_PIN)
-  #warning "SPIBUS6 uncomplete chip select"
- #else
-  #define SPIBUS_CS0_PORT SPIBUS6_CS0_PORT
-  #define SPIBUS_CS0_PIN  SPIBUS6_CS0_PIN
- #endif
-
- #if defined(SPIBUS6_CS1_PORT) && defined(SPIBUS6_CS1_PIN)
-  #define SPIBUS_CS1_PORT SPIBUS6_CS1_PORT
-  #define SPIBUS_CS1_PIN  SPIBUS6_CS1_PIN
- #endif
- #if defined(SPIBUS6_CS2_PORT) && defined(SPIBUS6_CS2_PIN)
-  #define SPIBUS_CS2_PORT SPIBUS6_CS2_PORT
-  #define SPIBUS_CS2_PIN  SPIBUS6_CS2_PIN
- #endif
- #if defined(SPIBUS6_CS3_PORT) && defined(SPIBUS6_CS3_PIN)
-  #define SPIBUS_CS3_PORT SPIBUS6_CS3_PORT
-  #define SPIBUS_CS3_PIN  SPIBUS6_CS3_PIN
- #endif
-
-#endif
+#define SPI_CS0 SPI6_CS0
+#define SPI_CS1 SPI6_CS1
+#define SPI_CS2 SPI6_CS2
+#define SPI_CS3 SPI6_CS3
 
 #define Stm32F1SpiRemap()
 

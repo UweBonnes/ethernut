@@ -58,42 +58,11 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#if !defined( SPIBUS2_NO_CS)
-#if !defined(SPIBUS2_CS0_PORT) && !defined(SPIBUS2_CS0_PIN)
-#if defined(MCU_STM32F37)
-#define SPIBUS_CS0_PORT NUTGPIO_PORTA
-#define SPIBUS_CS0_PIN  11
-#else
-#define SPIBUS_CS0_PORT NUTGPIO_PORTB
-#define SPIBUS_CS0_PIN  12
-#endif
-#elif !defined(SPIBUS2_CS0_PORT) || !defined(SPIBUS2_CS0_PIN)
-#warning "SPIBUS2 uncomplete chip select"
-#else
-#define SPIBUS_CS0_PORT SPIBUS2_CS0_PORT
-#define SPIBUS_CS0_PIN  SPIBUS2_CS0_PIN
-#endif
+#define SPI_CS0 SPI2_CS0
+#define SPI_CS1 SPI2_CS1
+#define SPI_CS2 SPI2_CS2
+#define SPI_CS3 SPI2_CS3
 
-#if defined(SPIBUS2_CS1_PORT)
-#define SPIBUS_CS1_PORT SPIBUS2_CS1_PORT
-#endif
-#if defined(SPIBUS2_CS2_PORT)
-#define SPIBUS_CS2_PORT SPIBUS2_CS2_PORT
-#endif
-#if defined(SPIBUS2_CS3_PORT)
-#define SPIBUS_CS3_PORT SPIBUS2_CS3_PORT
-#endif
-#if defined(SPIBUS2_CS1_PIN)
-#define SPIBUS_CS1_PIN  SPIBUS2_CS1_PIN
-#endif
-#if defined(SPIBUS2_CS2_PIN)
-#define SPIBUS_CS2_PIN  SPIBUS2_CS2_PIN
-#endif
-#if defined(PIBUS2_CS2_PIN)
-#define SPIBUS_CS3_PIN  SPIBUS2_CS3_PIN
-#endif
-
-#endif
 
 #define Stm32F1SpiRemap()
 

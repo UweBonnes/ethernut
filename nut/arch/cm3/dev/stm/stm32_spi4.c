@@ -56,30 +56,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#if !defined( SPIBUS4_NO_CS)
- #if !defined(SPIBUS4_CS0_PORT) && !defined(SPIBUS4_CS0_PIN)
-  #define SPIBUS_CS0_PORT NUTGPIO_PORTE
-  #define SPIBUS_CS0_PIN  4
- #elif !defined(SPIBUS4_CS0_PORT) || !defined(SPIBUS4_CS0_PIN)
-  #warnig "SPIBUS4 uncomplete chip select"
- #else
-  #define SPIBUS_CS0_PORT SPIBUS4_CS0_PORT
-  #define SPIBUS_CS0_PIN  SPIBUS4_CS0_PIN
- #endif
-
- #if defined(SPIBUS4_CS1_PORT) && defined(SPIBUS4_CS1_PIN)
-  #define SPIBUS_CS1_PORT SPIBUS4_CS1_PORT
-  #define SPIBUS_CS1_PIN  SPIBUS4_CS1_PIN
- #endif
- #if defined(SPIBUS4_CS2_PORT) && defined(SPIBUS4_CS2_PIN)
-  #define SPIBUS_CS2_PORT SPIBUS4_CS2_PORT
-  #define SPIBUS_CS2_PIN  SPIBUS4_CS2_PIN
- #endif
- #if defined(SPIBUS4_CS3_PORT) && defined(SPIBUS4_CS3_PIN)
-  #define SPIBUS_CS3_PORT SPIBUS4_CS3_PORT
-  #define SPIBUS_CS3_PIN  SPIBUS4_CS3_PIN
- #endif
-#endif
+#define SPI_CS0 SPI4_CS0
+#define SPI_CS1 SPI4_CS1
+#define SPI_CS2 SPI4_CS2
+#define SPI_CS3 SPI4_CS3
 
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))

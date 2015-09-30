@@ -114,6 +114,12 @@ function GetSpi2Nss()
     end
     return { "PIN_NONE", "PB12", "PB09" }
 end
+function GetSpi2NssDefault()
+    if c_is_provided("HW_MCU_STM32F37") then
+        return "PB09"
+    end
+    return "PB12"
+end
 --
 function GetSpi2Sck()
     if c_is_provided("HW_MCU_STM32L1") then
@@ -338,6 +344,12 @@ function GetSpi5Nss()
     end
     return {"PIN_NONE", "PF06", "PH05"}
 end
+function GetSpi5NssDefault()
+    if c_is_provided("W_MCU_STM32F411") then
+        return "PB01"
+    end
+    return "PF06"
+end
 function GetSpi5Sck()
     if c_is_provided("W_MCU_STM32F411") then
         return {"PB00", "PE02", "PE12"}
@@ -391,7 +403,7 @@ nutarch_cm3_stm32_spi_devices =
         brief = "STM32 SPI1 Bus Controller",
         description = "First SPI Controller with up to four Chip select line.",
         requires = { "HW_SPI1_STM32" },
-        provides = { "SPI_CONTROLLER", "HW_SPI_STM32" },
+        provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi1.c" },
         options =
         {
@@ -416,70 +428,35 @@ nutarch_cm3_stm32_spi_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "SPI1_CS0_PORT",
-                brief = "SPI1 CS0 Port",
-                description = "Choice of SPI1 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_CS0_PIN",
-                brief = "SPI1 CS0 Pins",
-                description = "Choice of SPI1 Node 0 CS on GPIO PIN",
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_CS1_PORT",
-                brief = "SPI1 CS1 Port",
-                description = "Choice of SPI1 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_CS1_PIN",
-                brief = "SPI1 CS1 Pins",
-                description = "Choice of SPI1 Node 0 CS on GPIO PIN",
+                macro = "SPI1_CS0",
+                brief = "SPI1 CS0 Gpio",
+                description = "Choice of SPI1 CS0 Gpio.\n"..
+                              "Default is default NSS pin.\n",
+                              "Use PIN_NONE if no CS is required.\n",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PA04",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI1_CS2_PORT",
-                brief = "SPI1 CS2 Port",
-                description = "Choice of SPI1 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_CS2_PIN",
-                brief = "SPI1 CS2 Pins",
-                description = "Choice of SPI1 Node 0 CS on GPIO PIN",
+                macro = "SPI1_CS1",
+                brief = "SPI1 CS1 Gpio",
+                description = "Choice of SPI1 CS1 Gpio.",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI1_CS3_PORT",
-                brief = "SPI1 CS3 Port",
-                description = "Choice of SPI1 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                macro = "SPI1_CS2",
+                brief = "SPI1 CS2 Gpio",
+                description = "Choice of SPI1 CS2 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI1_CS3_PIN",
-                brief = "SPI1 CS3 Pins",
-                description = "Choice of SPI1 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                macro = "SPI1_CS3",
+                brief = "SPI1 CS3 Gpio",
+                description = "Choice of SPI1 CS3 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -564,77 +541,41 @@ nutarch_cm3_stm32_spi_devices =
         brief = "STM32F SPI2 Bus Controller",
         description = "Second SPI Controller with up to four Chip select line.",
         requires = { "HW_SPI2_STM32" },
-        provides = { "SPI_CONTROLLER", "HW_SPI_STM32" },
+        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi2.c" },
         options =
         {
 -- No Remap of SPI2 on F1
             {
-                macro = "SPI2_CS0_PORT",
-                brief = "SPI2 CS0 Port",
-                description = "Choice of SPI2 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS0_PIN",
-                brief = "SPI2 CS0 Pins",
-                description = "Choice of SPI2 Node 0 CS on GPIO PIN",
+                macro = "SPI2_CS0",
+                brief = "SPI2 CS0 Gpio",
+                description = "Choice of SPI2 CS0 Gpio.\n"..
+                              "Default is default NSS pin.\n",
+                              "Use PIN_NONE if no CS is required.\n",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = function() return GetSpi2NssDefault() end,
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI2_CS1_PORT",
-                brief = "SPI2 CS1 Port",
-                description = "Choice of SPI2 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS1_PIN",
-                brief = "SPI2 CS1 Pins",
-                description = "Choice of SPI2 Node 0 CS on GPIO PIN",
+                macro = "SPI2_CS1",
+                brief = "SPI2 CS1 Gpio",
+                description = "Choice of SPI2 CS1 Gpio.",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI2_CS2_PORT",
-                brief = "SPI2 CS2 Port",
-                description = "Choice of SPI2 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                macro = "SPI2_CS2",
+                brief = "SPI2 CS2 Gpio",
+                description = "Choice of SPI2 CS2 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI2_CS2_PIN",
-                brief = "SPI2 CS2 Pins",
-                description = "Choice of SPI2 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS3_PORT",
-                brief = "SPI2 CS3 Port",
-                description = "Choice of SPI2 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS3_PIN",
-                brief = "SPI2 CS3 Pins",
-                description = "Choice of SPI2 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                macro = "SPI2_CS3",
+                brief = "SPI2 CS3 Gpio",
+                description = "Choice of SPI2 CS3 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -705,7 +646,7 @@ nutarch_cm3_stm32_spi_devices =
         brief = "STM32F SPI3 Bus Controller",
         description = "3. SPI Controller with up to four Chip select line.",
         requires = { "HW_SPI3_STM32" },
-        provides = { "SPI_CONTROLLER", "HW_SPI_STM32" },
+        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi3.c" },
         options =
         {
@@ -722,71 +663,35 @@ nutarch_cm3_stm32_spi_devices =
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI3_CS0_PORT",
-                brief = "SPI3 CS0 Port",
-                description = "Choice of SPI3 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS0_PIN",
-                brief = "SPI3 CS0 Pins",
-                description = "Choice of SPI3 Node 0 CS on GPIO PIN",
+                macro = "SPI3_CS0",
+                brief = "SPI3 CS0 Gpio",
+                description = "Choice of SPI3 CS0 Gpio.\n"..
+                              "Default is default NSS pin.\n",
+                              "Use PIN_NONE if no CS is required.\n",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PA04",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI3_CS1_PORT",
-                brief = "SPI3 CS1 Port",
-                description = "Choice of SPI3 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS1_PIN",
-                brief = "SPI3 CS1 Pins",
-                description = "Choice of SPI3 Node 0 CS on GPIO PIN",
+                macro = "SPI3_CS1",
+                brief = "SPI3 CS1 Gpio",
+                description = "Choice of SPI3 CS1 Gpio.",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI3_CS2_PORT",
-                brief = "SPI3 CS2 Port",
-                description = "Choice of SPI3 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                macro = "SPI3_CS2",
+                brief = "SPI3 CS2 Gpio",
+                description = "Choice of SPI3 CS2 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI3_CS2_PIN",
-                brief = "SPI3 CS2 Pins",
-                description = "Choice of SPI3 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS3_PORT",
-                brief = "SPI3 CS3 Port",
-                description = "Choice of SPI3 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS3_PIN",
-                brief = "SPI3 CS3 Pins",
-                description = "Choice of SPI3 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                macro = "SPI3_CS3",
+                brief = "SPI3 CS3 Gpio",
+                description = "Choice of SPI3 CS3 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -871,77 +776,41 @@ nutarch_cm3_stm32_spi_devices =
         brief = "STM32F SPI4 Bus Controller",
         description = "STM32 SPI4 Bus Controller",
         requires = { "HW_SPI4_STM32" },
-        provides = { "SPI_CONTROLLER", "HW_SPI_STM32" },
+        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi4.c" },
         options =
         {
 -- Not available on F1, so no global remap
             {
-                macro = "SPI4_CS0_PORT",
-                brief = "SPI4 CS0 Port",
-                description = "Choice of SPI4 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS0_PIN",
-                brief = "SPI4 CS0 Pins",
-                description = "Choice of SPI4 Node 0 CS on GPIO PIN",
+                macro = "SPI4_CS0",
+                brief = "SPI4 CS0 Gpio",
+                description = "Choice of SPI4 CS0 Gpio.\n"..
+                              "Default is default NSS pin.\n",
+                              "Use PIN_NONE if no CS is required.\n",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PE04",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI4_CS1_PORT",
-                brief = "SPI4 CS1 Port",
-                description = "Choice of SPI4 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS1_PIN",
-                brief = "SPI4 CS1 Pins",
-                description = "Choice of SPI4 Node 0 CS on GPIO PIN",
+                macro = "SPI4_CS1",
+                brief = "SPI4 CS1 Gpio",
+                description = "Choice of SPI4 CS1 Gpio.",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI4_CS2_PORT",
-                brief = "SPI4 CS2 Port",
-                description = "Choice of SPI4 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                macro = "SPI4_CS2",
+                brief = "SPI4 CS2 Gpio",
+                description = "Choice of SPI4 CS2 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI4_CS2_PIN",
-                brief = "SPI4 CS2 Pins",
-                description = "Choice of SPI4 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS3_PORT",
-                brief = "SPI4 CS3 Port",
-                description = "Choice of SPI4 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS3_PIN",
-                brief = "SPI4 CS3 Pins",
-                description = "Choice of SPI4 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                macro = "SPI4_CS3",
+                brief = "SPI4 CS3 Gpio",
+                description = "Choice of SPI4 CS3 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -1026,77 +895,41 @@ nutarch_cm3_stm32_spi_devices =
         brief = "STM32F SPI5 Bus Controller",
         description = "STM32F SPI5 Bus Controller",
         requires = { "HW_SPI5_STM32" },
-        provides = { "SPI_CONTROLLER", "HW_SPI_STM32" },
+        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi5.c" },
         options =
         {
 -- Not available on F1, so no global remap
             {
-                macro = "SPI5_CS0_PORT",
-                brief = "SPI5 CS0 Port",
-                description = "Choice of SPI5 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS0_PIN",
-                brief = "SPI5 CS0 Pins",
-                description = "Choice of SPI5 Node 0 CS on GPIO PIN",
+                macro = "SPI5_CS0",
+                brief = "SPI5 CS0 Gpio",
+                description = "Choice of SPI5 CS0 Gpio.\n"..
+                              "Default is default NSS pin.\n",
+                              "Use PIN_NONE if no CS is required.\n",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = function() return GetSpi5NssDefault() end,
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI5_CS1_PORT",
-                brief = "SPI5 CS1 Port",
-                description = "Choice of SPI5 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS1_PIN",
-                brief = "SPI5 CS1 Pins",
-                description = "Choice of SPI5 Node 0 CS on GPIO PIN",
+                macro = "SPI5_CS1",
+                brief = "SPI5 CS1 Gpio",
+                description = "Choice of SPI5 CS1 Gpio.",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI5_CS2_PORT",
-                brief = "SPI5 CS2 Port",
-                description = "Choice of SPI5 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                macro = "SPI5_CS2",
+                brief = "SPI5 CS2 Gpio",
+                description = "Choice of SPI5 CS2 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI5_CS2_PIN",
-                brief = "SPI5 CS2 Pins",
-                description = "Choice of SPI5 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS3_PORT",
-                brief = "SPI5 CS3 Port",
-                description = "Choice of SPI5 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS3_PIN",
-                brief = "SPI5 CS3 Pins",
-                description = "Choice of SPI5 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                macro = "SPI5_CS3",
+                brief = "SPI5 CS3 Gpio",
+                description = "Choice of SPI5 CS3 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -1181,77 +1014,41 @@ nutarch_cm3_stm32_spi_devices =
         brief = "STM32F SPI6 Bus Controller",
         description = "STM32F SPI6 Bus Controller",
         requires = { "HW_SPI6_STM32" },
-        provides = { "SPI_CONTROLLER", "HW_SPI_STM32" },
+        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
         sources =  { "cm3/dev/stm/stm32_spi6.c" },
         options =
         {
 -- Not available on F1, so no global remap
             {
-                macro = "SPI6_CS0_PORT",
-                brief = "SPI6 CS0 Port",
-                description = "Choice of SPI6 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS0_PIN",
-                brief = "SPI6 CS0 Pins",
-                description = "Choice of SPI6 Node 0 CS on GPIO PIN",
+                macro = "SPI6_CS0",
+                brief = "SPI6 CS0 Gpio",
+                description = "Choice of SPI6 CS0 Gpio.\n"..
+                              "Default is default NSS pin.\n",
+                              "Use PIN_NONE if no CS is required.\n",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PG08",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI6_CS1_PORT",
-                brief = "SPI6 CS1 Port",
-                description = "Choice of SPI6 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS1_PIN",
-                brief = "SPI6 CS1 Pins",
-                description = "Choice of SPI6 Node 0 CS on GPIO PIN",
+                macro = "SPI6_CS1",
+                brief = "SPI6 CS1 Gpio",
+                description = "Choice of SPI6 CS1 Gpio.",
                 requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI6_CS2_PORT",
-                brief = "SPI6 CS2 Port",
-                description = "Choice of SPI6 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                macro = "SPI6_CS2",
+                brief = "SPI6 CS2 Gpio",
+                description = "Choice of SPI6 CS2 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
-                macro = "SPI6_CS2_PIN",
-                brief = "SPI6 CS2 Pins",
-                description = "Choice of SPI6 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS3_PORT",
-                brief = "SPI6 CS3 Port",
-                description = "Choice of SPI6 Node0 CS on GPIO BANK",
-                type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS3_PIN",
-                brief = "SPI6 CS3 Pins",
-                description = "Choice of SPI6 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                macro = "SPI6_CS3",
+                brief = "SPI6 CS3 Gpio",
+                description = "Choice of SPI6 CS3 Gpio.",
+                default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
             {
