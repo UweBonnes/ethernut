@@ -2736,9 +2736,9 @@ nutarch_cm3_stm32_devices =
                 macro = "EMAC_REMAP",
                 brief = "Use Alternate Pins",
                 description = "Leaving this option unchecked, the driver will initialize the standard Pins.\n\n"..
-                              "Pin Mapping is:\n RX_DV-CRS PA7\n RXD0 PC4 \n RXD1 PC5\n RXD2 PB0\n RXD3 PB1\n"..
+                              "Pin Mapping is:\n RX_DV-CRS PA07\n RXD0 PC04 \n RXD1 PC05\n RXD2 PB00\n RXD3 PB01\n"..
                               "Enabling the option the driver remaps to its alternate port pins:\n\n"..
-                              "Pin Mapping is:\n RX_DV-CRS PD8\n RXD0 PD9 \n RXD1 PD10\n RXD2 PD11\n RXD3 PD12\n",
+                              "Pin Mapping is:\n RX_DV-CRS PD08\n RXD0 PD09 \n RXD1 PD10\n RXD2 PD11\n RXD3 PD12\n",
                 requires = { "HW_GPIO_STM32V1" },
                 flavor = "booldata",
                 file = "include/cfg/emac.h"

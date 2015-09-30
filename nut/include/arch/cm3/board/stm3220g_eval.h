@@ -71,49 +71,7 @@
 
 /*
  * Ethernet devices, incl. board specific settings for alternate function pins
+ * Pin setting now done via configurator and .conf file.
+ * Values here to keep old configurations happy.
  */
 #include <dev/stm32_emac.h>
-
-//#define EMAC_USE_RMII_MODE /* requires 50 MHz oscillator mounted on STM3230G_EVAL board */
-
-#ifndef EMAC_PHY_CLOCK_MCO
-#define EMAC_PHY_CLOCK_MCO
-#endif
-
-#ifndef EMAC_CRS_PORT
-#define EMAC_CRS_PORT        NUTGPIO_PORTH
-#define EMAC_CRS_PIN         2
-#endif
-
-#ifndef EMAC_COL_PORT
-#define EMAC_COL_PORT        NUTGPIO_PORTH
-#endif
-
-#ifndef EMAC_RXD2_PORT
-#define EMAC_RXD2_PORT       NUTGPIO_PORTH
-#define EMAC_RXD2_PIN        6
-#endif
-
-#ifndef EMAC_RXD3_PORT
-#define EMAC_RXD3_PORT       NUTGPIO_PORTH
-#define EMAC_RXD3_PIN        7
-#endif
-
-#ifndef EMAC_RX_ER_PORT
-#define EMAC_RX_ER_PORT      NUTGPIO_PORTI
-#endif
-
-#ifndef EMAC_TXEN_PORT
-#define EMAC_TXEN_PORT       NUTGPIO_PORTG
-#endif
-
-#ifndef EMAC_TXD0_PORT
-#define EMAC_TXD0_PORT       NUTGPIO_PORTG
-#define EMAC_TXD0_PIN        13
-#endif
-
-#ifndef EMAC_TXD1_PORT
-#define EMAC_TXD1_PORT       NUTGPIO_PORTG
-#define EMAC_TXD1_PIN        14
-#endif
-
