@@ -1,3 +1,25 @@
+function GetLseDriveLevel()
+    if c_is_provided("HW_MCU_STM32F411") then
+        return { "0" , "1"}
+    end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return { "0" , "1"}
+    end
+    if c_is_provided("HW_MCU_STM32L1") then
+        return "0"
+    end
+    if c_is_provided("HW_MCU_STM32F1") then
+        return "0"
+    end
+    if c_is_provided("HW_MCU_STM32F2") then
+        return "0"
+    end
+    if c_is_provided("HW_MCU_STM32F4") then
+        return "0"
+    end
+    return { "0", "1", "2", "3"}
+end
+
 nutarch_cm3_stm32_devices =
 {
     -- ***********************************
@@ -37,9 +59,22 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/rtc.h"
             },
             {
-                macro = "RTC_LSE_HIGH_POWER",
-                brief = "RTC osc power",
-                description = "Power level of RTC oscillator",
+                macro = "LSE_DRIVE_LEVEL",
+                brief = "LSE osc power",
+                description = "Power level of LSE oscillator\n"..
+                              "0 = Low drive\n"..
+                              "1 = Medium high drive\n"..
+                              "2 = Medium low drive\n"..
+                              "3 = High drive.",
+                type = "enumerated",
+                choices = function() return GetLseDriveLevel() end,
+                default = "0",
+                file = "include/cfg/rtc.h"
+            },
+            {
+                macro = "RTC_LSE_BYPASS",
+                brief = "RTC_LSE_BYPASS",
+                description = "External LSE input provided on OSC32_IN.",
                 flavor = "boolean",
                 file = "include/cfg/rtc.h"
             },

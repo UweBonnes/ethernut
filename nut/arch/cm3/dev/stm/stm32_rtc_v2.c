@@ -114,15 +114,17 @@
 # endif
 #endif
 
-/* F411 has some power level setting for the LSE */
-#if !defined(RCC_BDCR_LSEMOD)
-# define RCC_BDCR_LSEMOD 0
-#endif
-
-#if defined(RTC_LSE_MOD)
-# define RTC_LSEMODF RCC_BDCR_LSEMOD
+#if defined(RCC_BDCR_LSEMOD)
+/* F411/446 have one power level setting for the LSE */
+# define RCC_BDCR_LSEDRV_MASK RCC_BDCR_LSEMOD
+# define RTC_LSEMODF ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEMOD) & RCC_BDCR_LSEMOD)
+#elif defined(RCC_BDCR_LSEDRV)
+/* F0, L0, F3, F7 and L4 have four levels*/
+# define RCC_BDCR_LSEDRV_MASK RCC_BDCR_LSEDRV
+# define RTC_LSEMODF ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) & RCC_BDCR_LSEDRV)
 #else
-# define  RTC_LSEMODF 0
+# define RCC_BDCR_LSEDRV_MASK 0
+# define RTC_LSEMODF 0
 #endif
 
 #if defined(RTC_LSE_BYPASS)
@@ -247,7 +249,7 @@ static int RtcRccLsiPrepare(void) __attribute__ ((unused));
 #  define RTC_SYNC  0xff
 # endif
 # define BDCR_MASK (RCC_BDCR_RTCEN  | RCC_BDCR_RTCSEL | RCC_BDCR_LSERDY | \
-                    RCC_BDCR_LSEBYP | RCC_BDCR_LSEMOD)
+                    RCC_BDCR_LSEBYP | RCC_BDCR_LSEDRV_MASK)
 # define BDCR_FLAG (RCC_BDCR_RTCEN  | RTC_CLKSEL      | RTC_BYPASSF |\
                     RTC_LSEMODF     | RCC_BDCR_LSERDY)
 # define RTC_STATUS_START RTC_STATUS_HAS_QUEUE
@@ -331,7 +333,7 @@ static int RtcLseSetup(void)
     int i;
     uint32_t bdcr;
     uint32_t mask = (RCC_BDCR_RTCEN | RCC_BDCR_LSERDY |
-                     RCC_BDCR_LSEBYP | RCC_BDCR_LSEMOD);
+                     RCC_BDCR_LSEBYP | RCC_BDCR_LSEDRV_MASK);
     uint32_t flag = (RTC_BYPASSF | RTC_LSEMODF);
     bdcr = RCC_BDCR;
     bdcr &= ~mask;
