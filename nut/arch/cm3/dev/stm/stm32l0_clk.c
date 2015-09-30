@@ -60,9 +60,6 @@
 #define SYSCLK_SOURCE SYSCLK_HSI
 #endif
 
-static uint32_t sys_clock;
-static uint8_t clk_shift[NUT_HWCLK_MAX];
-
 const uint32_t MSIFreqTable[8] = {
     65536,
     131072,
@@ -73,8 +70,6 @@ const uint32_t MSIFreqTable[8] = {
     4194000,
     0
 };
-static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
-static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 
 /*----------------  Clock Setup Procedure ------------------------------
  *

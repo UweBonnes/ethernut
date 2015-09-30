@@ -172,13 +172,7 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 # warning "SYSCLK_FREQ overclocked"
 #endif
 
-static uint32_t sys_clock;
 static uint32_t msi_clock;
-static uint8_t clk_shift[NUT_HWCLK_MAX];
-
-static const uint8_t AHBPrescTable[16] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
-static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 
 /*----------------  Clock Setup Procedure ------------------------------
  *

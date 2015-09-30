@@ -49,17 +49,11 @@
 #define HSE_STARTUP_TIMEOUT ((uint32_t)5000) /*!< Time out for HSE start up, in ms */
 #endif
 
-static uint32_t sys_clock;
-static uint8_t clk_shift[NUT_HWCLK_MAX];
-
 /* Prepare some defaults if configuration is incomplete */
 #if !defined(SYSCLK_SOURCE)
 #define SYSCLK_SOURCE SYSCLK_HSI
 #endif
 
-static const uint8_t AHBPrescTable[16] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
-static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 /*----------------  Clock Setup Procedure ------------------------------
  *
  * Clock system ist arranged like this:

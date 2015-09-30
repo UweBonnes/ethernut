@@ -67,13 +67,6 @@
 #define HSE_STARTUP_TIMEOUT 5000
 
 
-static uint32_t sys_clock;
-static uint8_t clk_shift[NUT_HWCLK_MAX];
-
-static const uint8_t AHBPrescTable[16] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
-static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
-
 /* Equalize missing STM32F0 register bits */
 #if !defined(RCC_CFGR_PPRE2)
 #define RCC_CFGR_PPRE2 0
@@ -107,15 +100,6 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 #endif
 #if defined(RCC_CFGR2_PREDIV_0) && !defined(RCC_CFGR2_PREDIV1_0)
 #define RCC_CFGR2_PREDIV1_0 RCC_CFGR2_PREDIV_0
-#endif
-#if defined(RCC_CFGR2_PREDIV_1) && !defined(RCC_CFGR2_PREDIV1_1)
-#define RCC_CFGR2_PREDIV1_1 RCC_CFGR2_PREDIV_1
-#endif
-#if defined(RCC_CFGR2_PREDIV_2) && !defined(RCC_CFGR2_PREDIV1V_2)
-#define RCC_CFGR2_PREDIV1V_2 RCC_CFGR2_PREDIVV_2
-#endif
-#if defined(RCC_CFGR2_PREDIV_3) && !defined(RCC_CFGR2_PREDIV1_3)
-#define RCC_CFGR2_PREDIV1_3 RCC_CFGR2_PREDIV_3
 #endif
 
 /*----------------  Clock Setup Procedure ------------------------------
