@@ -81,9 +81,22 @@ static char *weekday_name[7] = {
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 };
 
+/*
+ * Print content of tm structure.
+ */
+static void PrintDateTime(const struct _tm *stm)
+{
+    printf("%s, %04d/%02d/%02d, %02d:%02d:%02d%s"
+           , weekday_name[stm->tm_wday]
+           , stm->tm_year + 1900, stm->tm_mon + 1, stm->tm_mday
+           , stm->tm_hour, stm->tm_min, stm->tm_sec
+           , stm->tm_isdst ? " DST" : ""
+           );
+}
+
 static void Alarm(int idx)
 {
-    struct _tm rtctime;
+    struct _tm rtctime, alarmtime;
     int aflag = RTC_ALARM_SECOND;
     uint32_t rtc_stat;
     uint_fast8_t i;
@@ -94,7 +107,10 @@ static void Alarm(int idx)
         rtctime.tm_sec += 10;
         rtctime.tm_sec %= 60;
         if (NutRtcSetAlarm(idx, &rtctime, aflag) == 0) {
-            puts("Setting Alarm Time 10 seconds from now");
+            NutRtcGetAlarm(idx, &alarmtime, NULL);
+            printf("Setting Alarm to: ");
+            PrintDateTime(&alarmtime);
+            puts("");
         }
         else {
             puts("Setting Alarm Time failed");
@@ -112,9 +128,12 @@ static void Alarm(int idx)
     if (has_queue) {
         HANDLE *alarm = NutRtcGetHandle();
         do {
-            printf(" [%c] Waiting for Alarm%c\r"
+            NutRtcGetTime(&rtctime);
+            printf(" [%c] Alarm%c : Current time: "
                    , rotor[++i & 3]
                    , 'A' + idx);
+            PrintDateTime(&rtctime);
+            printf("\r");
             if (NutEventWait(alarm, 200) == 0)
                 break;
         } while (i < 60);
@@ -143,19 +162,6 @@ static void Alarm(int idx)
     }
 }
 
-
-/*
- * Print content of tm structure.
- */
-static void PrintDateTime(const struct _tm *stm)
-{
-    printf("%s, %04d/%02d/%02d, %02d:%02d:%02d%s"
-           , weekday_name[stm->tm_wday]
-           , stm->tm_year + 1900, stm->tm_mon + 1, stm->tm_mday
-           , stm->tm_hour, stm->tm_min, stm->tm_sec
-           , stm->tm_isdst ? " DST" : ""
-           );
-}
 
 /*
  * Query calendar date from user.
@@ -564,7 +570,7 @@ int main(void)
         puts("  3 - Display system uptime");
 #ifdef RTC_CHIP
         puts("  A - Calculate RTC Alarm A in 10 seconds");
-        puts("  A - Calculate RTC Alarm B in 10 seconds");
+        puts("  B - Calculate RTC Alarm B in 10 seconds");
 #endif
         puts("  C - Calculate weekday");
         puts("  S - Set local time");
