@@ -112,6 +112,7 @@ nutarch_cm3_stm32f7 =
                     "HW_ADC_STM32",
                     "HW_ADC1_STM32F2_4",
                     "HW_WWDG_STM32",
+                    "HW_EMAC_STM32",
                  },
                 file = "include/cfg/arch.h"
              },

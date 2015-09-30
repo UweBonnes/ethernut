@@ -70,3 +70,13 @@
 #ifndef DEF_CANBUS_SLAVE
 #define  DEF_CANBUS_SLAVE Stm32CanBus1C
 #endif
+
+/* Ethernet interface */
+
+#include <dev/stm32_emac.h>
+#ifndef DEV_ETHER
+#define DEV_ETHER devStm32Emac
+#endif
+#ifndef DEV_ETHER_NAME
+#define DEV_ETHER_NAME  "eth0"
+#endif
