@@ -136,14 +136,6 @@
 #define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
 #endif
 
-#ifndef I2CBUS1_SDA_PIN
-#define I2CBUS1_SDA_PIN 9
-#endif
-
-#ifndef I2CBUS1_SCL_PIN
-#define I2CBUS1_SCL_PIN 6
-#endif
-
 #ifndef DEF_TWIBUS
 #define  DEF_TWIBUS Stm32TwiBus_1
 #endif

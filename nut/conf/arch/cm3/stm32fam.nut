@@ -167,5 +167,12 @@ nutarch_cm3_stm32_family =
         requires = { "HW_MCU_STM32" },
         script = "arch/cm3/stm32dev.nut"
     },
+    {
+        name = "nutarch_cm3_stm32_i2c_devices",
+        brief = "I2C devices",
+        description = "I2C devices of STM32 family",
+        requires = { "HW_MCU_STM32" },
+        script = "arch/cm3/stm32i2c.nut"
+    },
 }
 

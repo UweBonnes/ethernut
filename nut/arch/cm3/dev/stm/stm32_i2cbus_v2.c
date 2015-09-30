@@ -69,6 +69,7 @@
 #include <arch/cm3.h>
 #include <dev/gpio.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include <arch/cm3/stm/stm32_i2c_pinmux.h>
 #include <arch/cm3/stm/stm32_irqreg.h>
 #include <dev/i2cbus.h>
 #include <cfg/twi.h>
@@ -85,24 +86,17 @@ typedef struct _STM32_I2C_HW{
     /*! \brief Register base. */
     const uptr_t icb_base;
     /*! \brief SDA_PIN. */
-    const uint8_t sda_pin;
+    const nutgpio_t sda;
      /*! \brief SDA Pinmux. */
     const uint8_t sda_af;
-    /*! \brief SDA_PORT. */
-    const uint32_t sda_port;
     /*! \brief SCL_PIN. */
-    const uint8_t scl_pin;
+    const nutgpio_t scl;
      /*! \brief SCL PinMux. */
     const uint8_t scl_af;
-     /*! \brief SCL_PORT. */
-    const uint32_t scl_port;
     /*! \brief SMBA_PIN. */
-    const uint8_t smba_pin;
+    const nutgpio_t smba;
     /*! \brief SMBA PinMux. */
     const uint8_t smba_af;
-    /*! \brief SMBA_PORT. */
-    const uint32_t smba_port;
-    /*! \brief System event handler. */
 }STM32_I2C_HW;
 
 /*!
@@ -284,24 +278,18 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
 
 static int checkpin_and_config(STM32_I2CCB *icb)
 {
-    GpioPinConfigSet(
-        icb->hw->sda_port, icb->hw->sda_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
-        GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST);
-    GpioPinConfigSet(
-        icb->hw->scl_port, icb->hw->scl_pin, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
-        GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST);
-    GPIO_PinAFConfig(icb->hw->sda_port, icb->hw->sda_pin, icb->hw->sda_af);
-    GPIO_PinAFConfig(icb->hw->scl_port, icb->hw->scl_pin, icb->hw->scl_af);
-    if (icb->hw->smba_pin != (uint8_t)-1)
-    {
-        /* TODO: How should SMBA pin be set?*/
-        GpioPinConfigSet(
-            icb->hw->smba_port, icb->hw->smba_pin, GPIO_CFG_OUTPUT|
-            GPIO_CFG_PERIPHAL| GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |
-            GPIO_CFG_SPEED_FAST);
-        GPIO_PinAFConfig(icb->hw->smba_port,
-                         icb->hw->smba_pin, GPIO_AF_4);
-    }
+    Stm32GpioConfigSet(
+        icb->hw->sda, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
+        GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST,
+        icb->hw->sda_af);
+    Stm32GpioConfigSet(
+        icb->hw->scl, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
+        GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST,
+        icb->hw->scl_af);
+    Stm32GpioConfigSet(
+        icb->hw->smba, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL|
+        GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |GPIO_CFG_SPEED_FAST,
+        icb->hw->smba_af);
     if (icb->hw->icb_base == I2C1_BASE)
     {
         CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
@@ -466,393 +454,14 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
     return ret;
 }
 
-/*
-F30: AF4
-I2C1 SDA  PA14 PB7  PB9
-I2C1_SCL  PA15 PB6  PB8
-I2C1_SMBA PB5
-
-I2C2_SDA  PA10 PF0
-I2C2_SCL  PA9  PF1  PF6
-I2C2_SMBA PA8  PB12
-
-F37: AF4
-I2C1 SDA  PA14 PB7  PB9
-I2C1_SCL  PA15 PB6  PB8
-I2C1_SMBA PB5
-
-I2C2_SDA  PA10 PF0  PF7
-I2C2_SCL  PA9  PF1  PF6
-I2C2_SMBA PA8  PF2
-
-F0: AF1
-I2C1 SDA  PB7(AF1)  PB9(AF1) PA10(AF4) PF0(AF1)
-I2C1_SCL  PB6(AF1)  PB8(AF1)  PA9(AF4) PF1(AF1)
-I2C1_SMBA PB5(AF3)
-
-I2C2_SDA  PB11(AF1) PB14(AF5) PA12(AF5)
-I2C2_SCL  PB10(AF1) PB13(AF5) PA11(AF5)
-I2C2_SMBA NA
-
-L0: AF1
-I2C1 SDA  PB7(AF1)  PB9(AF4)
-I2C1_SCL  PB6(AF1)  PB8(AF4)
-I2C1_SMBA PB5(AF3)
-
-I2C2_SDA  PB11(AF6) PB14(AF5)
-I2C2_SCL  PB10(AF6) PC13(AF5)
-I2C2_SMBA PB12(AF5)
-
-F7: AF4
-I2C2_SDA  PB11  PF0  PH5
-I2C2_SCL  PB10  PF1  PH4
-I2C2_SMBA PB12  PF2  PH6
-
-I2C3 SDA  PC9   PH8
-I2C3 SCL  PA8   PH7
-I2C3 SMBA PA9   PH9
-
-I2C4 SDA  PD13  PF15 PH12
-I2C4 SCL  PD12  PF13 PH11
-I2C4 SMBA PD11  PF13 PH10
-*/
-
-#if   defined(MCU_STM32F7)
-/*
- * F7: AF4
- * I2C1 SDA  PB7 PB9
- * I2C1_SCL  PB6 PB8
- * I2C1_SMBA PB5
- */
-# if I2C1_SDA_PIN != 7 && I2C1_SDA_PIN != 9
-#  warning Illegal F7 I2C1_SDA Pin
-# endif
-
-# if I2C1_SCL_PIN != 6 && I2C1_SCL_PIN != 8
-#  warning Illegal F7 I2C1_SCL Pin
-# endif
-
-# if I2C1_SMBA_PIN != -1 && I2C1_SMBA_PIN != 5
-#  warning Illegal F7 I2C1_SMBA Pin
-# endif
-
-/* Get the Port for the given pin */
-# define I2C1_SDA_PORT NUTGPIO_PORTB
-# define I2C1_SDA_AF 4
-# define I2C1_SCL_PORT NUTGPIO_PORTB
-# define I2C1_SCL_AF 4
-# define I2C1_SMBA_PORT NUTGPIO_PORTB
-# define I2C1_SMBA_AF 4
-
-#elif defined(MCU_STM32L0)
-# if I2C1_SDA_PIN != 7 && I2C1_SDA_PIN != 9
-#  warning Illegal L0 I2C1_SDA Pin
-# endif
-
-# if I2C1_SCL_PIN != 6 && I2C1_SCL_PIN != 8
-#  warning Illegal LO I2C1_SCL Pin
-# endif
-
-# if !defined(I2C1_SMBA_PIN)
-#  define I2C1_SMBA_PIN -1
-# elif I2C1_SMBA_PIN != -1 && I2C1_SMBA_PIN != 5
-#  warning Illegal L0 I2C1_SMBA Pin
-# endif
-
-/* Get the Port for the given pin */
-# define I2C1_SDA_PORT NUTGPIO_PORTB
-# if  I2C1_SDA_PIN == 7
-#  define I2C1_SDA_AF 1
-# else
-#  define I2C1_SDA_AF 4
-# endif
-
-# define I2C1_SCL_PORT NUTGPIO_PORTB
-# if  I2C1_SCL_PIN == 6
-#  define I2C1_SCL_AF 1
-# else
-#  define I2C1_SCL_AF 4
-# endif
-
-# define I2C1_SMBA_AF 5
-# if I2C1_SMBA_PIN == 5
-#  define I2C1_SMBA_PORT NUTGPIO_PORTB
-# else
-#  define I2C1_SMBA_PORT -1
-# endif
-
-#elif defined(MCU_STM32F0)
-# if I2C1_SDA_PIN != 7 && I2C1_SDA_PIN != 9     \
-    && I2C1_SDA_PIN != 10 && I2C1_SDA_PIN != 0
-#  warning Illegal F0 I2C1_SDA Pin
-# endif
-
-# if I2C1_SCL_PIN != 6 && I2C1_SCL_PIN != 8     \
-    && I2C1_SCL_PIN != 9 && I2C1_SCL_PIN != 1
-#  warning Illegal FO I2C1_SCL Pin
-# endif
-
-# if !defined(I2C1_SMBA_PIN)
-#  define I2C1_SMBA_PIN -1
-# elif I2C1_SMBA_PIN != -1 && I2C1_SMBA_PIN != 5
-#  warning Illegal F0 I2C1_SMBA Pin
-# endif
-
-/* Get the Port for the given pin */
-# if  I2C1_SDA_PIN == 10
-#  define I2C1_SDA_PORT NUTGPIO_PORTA
-#  define I2C1_SDA_AF 4
-# else
-#  define I2C1_SDA_AF 1
-#  if I2C1_SDA_PIN == 0
-#   define I2C1_SDA_PORT NUTGPIO_PORTF
-#  else
-#   define I2C1_SDA_PORT NUTGPIO_PORTB
-#  endif
-# endif
-
-# if I2C1_SCL_PIN == 9
-#  define I2C1_SCL_PORT NUTGPIO_PORTA
-#  define I2C1_SCL_AF 4
-# else
-#  define I2C1_SCL_AF 1
-#  if  I2C1_SCL_PIN == 1
-#   define I2C1_SCL_PORT NUTGPIO_PORTF
-#  else
-#   define  I2C1_SCL_PORT NUTGPIO_PORTB
-#  endif
-# endif
-
-# define I2C1_SMBA_AF 3
-# if I2C1_SMBA_PIN == 5
-#  define I2C1_SMBA_PORT NUTGPIO_PORTB
-# else
-#  define I2C1_SMBA_PORT -1
-# endif
-
-#elif defined(MCU_STM32F3)
-# define I2C1_SDA_AF  4
-# define I2C1_SCL_AF  4
-# define I2C1_SMBA_AF 4
-/* Check that we got the right pin */
-#if I2C1_SDA_PIN  != 14 && I2C1_SDA_PIN  != 7 && I2C1_SDA_PIN  != 9
-#warning Illegal I2C1_SDA Pin
-#endif
-
-#if I2C1_SCL_PIN  != 15 && I2C1_SCL_PIN  != 6 && I2C1_SCL_PIN  != 8
-#warning Illegal I2C1_SCL Pin
-#endif
-
-#if !defined(I2C1_SMBA_PIN)
-#define I2C1_SMBA_PIN -1
-#elif I2C1_SMBA_PIN != -1 && I2C1_SMBA_PIN != 5
-#warning Illegal I2C1_SMBA Pin
-#endif
-
-/* Get the Port for the given pin */
-#if I2C1_SDA_PIN == 14
-#define I2C1_SDA_PORT NUTGPIO_PORTA
-#elif  I2C1_SDA_PIN == 7 || I2C1_SDA_PIN == 9
-#define I2C1_SDA_PORT NUTGPIO_PORTB
-#endif
-
-#if I2C1_SCL_PIN == 15
-#define I2C1_SCL_PORT NUTGPIO_PORTA
-#elif  I2C1_SCL_PIN == 6 || I2C1_SCL_PIN == 8
-#define I2C1_SCL_PORT NUTGPIO_PORTB
-#endif
-
-#if I2C1_SMBA_PIN == 5
-#define I2C1_SMBA_PORT NUTGPIO_PORTB
-#else
-#define I2C1_SMBA_PORT -1
-#endif
-#endif
-
-#if defined(HW_I2C2_STM32V2)
-# if   defined(MCU_STM32F7)
-/*
- * F7: AF4
- * I2C2_SDA  PB11  PF0  PH5
- * I2C2_SCL  PB10  PF1  PH4
- * I2C2_SMBA PB12  PF2  PH6
- */
-#  if I2C2_SDA_PIN != 11 && I2C2_SDA_PIN != 0 && I2C2_SDA_PIN != 5
-#   warning Illegal F7 I2C2_SDA Pin
-#  endif
-
-#  if I2C2_SCL_PIN != 10 && I2C2_SCL_PIN != 1 && I2C2_SCL_PIN != 4
-#   warning Illegal F7 I2C2_SCL Pin
-#  endif
-
-#  if I2C2_SMBA_PIN != -1 && I2C2_SMBA_PIN != 12 && I2C2_SMBA_PIN != 2 && I2C2_SMBA_PIN != 6
-#   warning Illegal F5 I2C2_SMBA Pin
-#  endif
-
-/* Get the Port for the given pin */
-#  define I2C2_SDA_AF 4
-#  define I2C2_SCL_AF 4
-#  define I2C2_SMBA_AF 4
-
-#  if I2C2_SDA_PIN == 11
-#   define I2C2_SDA_PORT NUTGPIO_PORTB
-#  elif I2C2_SDA_PIN == 0
-#   define I2C2_SDA_PORT NUTGPIO_PORTH
-#  else
-#   define I2C2_SDA_PORT NUTGPIO_PORTH
-#  endif
-
-#  if I2C2_SCL_PIN == 10
-#   define I2C2_SCL_PORT NUTGPIO_PORTB
-#  elif  I2C2_SCL_PIN == 1
-#   define I2C2_SCL_PORT NUTGPIO_PORTF
-#  else
-#   define I2C2_SCL_PORT NUTGPIO_PORTH
-#  endif
-
-#  if I2C2_SMBA_PIN == 12
-#   define I2C2_SMBA_PORT NUTGPIO_PORTB
-#  elif  I2C2_SMBA_PIN == 2
-#   define I2C2_SMBA_PORT NUTGPIO_PORTF
-#  else
-#   define I2C2_SMBA_PORT NUTGPIO_PORTH
-#  endif
-
-# elif defined(MCU_STM32L0)
-#  if I2C2_SDA_PIN != 11 && I2C2_SDA_PIN != 14
-#   warning Illegal L0 I2C2_SDA Pin
-#  endif
-
-#  if I2C2_SCL_PIN != 10 && I2C2_SCL_PIN != 13
-#   warning Illegal L0 I2C2_SCL Pin
-#  endif
-
-#  if !defined(I2C2_SMBA_PIN)
-#   define I2C2_SMBA_PIN -1
-#  elif I2C2_SMBA_PIN != -1 && I2C2_SMBA_PIN != 12
-#   warning Illegal L0 I2C2_SMBA Pin
-#  endif
-
-/* Get the Port for the given pin */
-#  define I2C2_SDA_PORT NUTGPIO_PORTB
-#  if I2C2_SDA_PIN == 11
-#   define I2C2_SDA_AF 6
-#  else
-#   define I2C2_SDA_AF 5
-#  endif
-
-#  if I2C2_SCL_PIN == 10
-#   define I2C2_SCL_PORT NUTGPIO_PORTB
-#   define I2C2_SCL_AF 6
-#  elif  I2C2_SCL_PIN == 13
-#   define I2C2_SCL_PORT NUTGPIO_PORTC
-#   define I2C2_SCL_AF 5
-#  endif
-
-#  define I2C2_SMBA_AF 5
-#  if I2C2_SMBA_PIN == 12
-#   define I2C2_SMBA_PORT NUTGPIO_PORTB
-#  else
-#   define I2C2_SMBA_PORT -1
-#  endif
-
-# elif defined(MCU_STM32F0)
-#  if I2C2_SDA_PIN != 11 && I2C2_SDA_PIN != 14 &&  I2C2_SDA_PIN != 12
-#   warning Illegal F0 I2C2_SDA Pin
-#  endif
-
-#  if I2C2_SCL_PIN != 10 && I2C2_SCL_PIN != 13 && I2C2_SCL_PIN != 11
-#   warning Illegal F0 I2C2_SCL Pin
-#  endif
-
-#  if (I2C2_SMBA_PIN != -1)
-#   warning STM32F0: Illegal SMBA pin, no SMBA pin available on I2C2
-#  endif
-
-/* Get the Port for the given pin */
-#  if I2C2_SDA_PIN == 11
-#   define I2C2_SDA_PORT NUTGPIO_PORTB
-#   define I2C2_SDA_AF 1
-#  else
-#   define I2C2_SDA_AF 5
-#   if I2C2_SDA_PIN == 14
-#    define I2C2_SDA_PORT NUTGPIO_PORTB
-#   else
-#    define I2C2_SDA_PORT NUTGPIO_PORTA
-#   endif
-#  endif
-
-#  if I2C2_SCL_PIN == 10
-#   define I2C2_SCL_PORT NUTGPIO_PORTB
-#   define I2C2_SCL_AF 1
-#  else
-#   define I2C2_SCL_AF 1
-#   if  I2C2_SCL_PIN == 13
-#    define I2C2_SCL_PORT NUTGPIO_PORTB
-#   else
-#    define I2C2_SCL_PORT NUTGPIO_PORTA
-#   endif
-#  endif
-
-#  define I2C2_SMBA_PORT -1
-#  define I2C2_SMBA_PIN  -1
-#  define I2C2_SMBA_AF 17
-# else /* STM32F3*/
-#  define I2C2_SDA_AF  4
-#  define I2C2_SCL_AF  4
-#  define I2C2_SMBA_AF 4
-/* Check that we got the right pin */
-#if I2C2_SDA_PIN != 10 && I2C2_SDA_PIN != 0 && (defined(MCU_STM32F373_MD) && I2C2_SDA_PIN != 7)
-#warning Illegal I2C2_SDA Pin
-#endif
-
-#if I2C2_SCL_PIN != 9 && I2C2_SCL_PIN != 1 && I2C2_SCL_PIN != 6
-#warning Illegal I2C2_SCL Pin
-#endif
-
-#if !defined(I2C2_SMBA_PIN)
-#define I2C2_SMBA_PIN -1
-#elif  I2C2_SMBA_PIN != -1 && I2C2_SMBA_PIN != 8 && I2C2_SMBA_PIN != 12
-#warning Illegal I2C2_SMBA Pin
-/* Get the Port for the given pin */
-#endif
-
-#if I2C2_SDA_PIN == 10
-#define I2C2_SDA_PORT NUTGPIO_PORTA
-#elif  I2C2_SDA_PIN == 7 || I2C2_SDA_PIN == 0
-#define I2C2_SDA_PORT NUTGPIO_PORTF
-#endif
-
-#if I2C2_SCL_PIN == 9
-#define I2C2_SCL_PORT NUTGPIO_PORTA
-#elif  I2C2_SCL_PIN == 6 || I2C2_SCL_PIN == 1
-#define I2C2_SCL_PORT NUTGPIO_PORTF
-#endif
-
-#if I2C2_SMBA_PIN == 8
-#define I2C2_SMBA_PORT NUTGPIO_PORTA
-#elif I2C2_SMBA_PIN == 2
-#define I2C2_SMBA_PORT NUTGPIO_PORTF
-#else
-#define I2C2_SMBA_PORT NUTGPIO_PORTF
-#endif
-
-#endif
-#else
-#warning Unknown family
-#endif
-
 static const STM32_I2C_HW i2c1_hw = {
     .icb_base  = I2C1_BASE,
-    .sda_pin   = I2C1_SDA_PIN,
+    .sda       = I2C1_SDA,
     .sda_af    = I2C1_SDA_AF,
-    .sda_port  = I2C1_SDA_PORT,
-    .scl_pin   = I2C1_SCL_PIN,
+    .scl       = I2C1_SCL,
     .scl_af    = I2C1_SCL_AF,
-    .scl_port  = I2C1_SCL_PORT,
-    .smba_pin  = I2C1_SMBA_PIN,
+    .smba      = I2C1_SMBA,
     .smba_af   = I2C1_SMBA_AF,
-    .smba_port = I2C1_SMBA_PORT,
 };
 
 static STM32_I2CCB i2c1cb = {
@@ -878,15 +487,12 @@ NUTI2C_BUS i2cBus1Stm32 = {
 #if defined(HW_I2C2_STM32V2)
 static const STM32_I2C_HW i2c2_hw = {
     .icb_base  = I2C2_BASE,
-    .sda_pin   = I2C2_SDA_PIN,
+    .sda       = I2C2_SDA,
     .sda_af    = I2C2_SDA_AF,
-    .sda_port  = I2C2_SDA_PORT,
-    .scl_pin   = I2C2_SCL_PIN,
+    .scl       = I2C2_SCL,
     .scl_af    = I2C2_SCL_AF,
-    .scl_port  = I2C2_SCL_PORT,
-    .smba_pin  = I2C2_SMBA_PIN,
+    .smba      = I2C2_SMBA,
     .smba_af   = I2C2_SMBA_AF,
-    .smba_port = I2C2_SMBA_PORT,
 };
 
 static STM32_I2CCB i2c2cb = {

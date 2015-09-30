@@ -62,74 +62,8 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#if defined(I2CBUS2_USE_DMA)
-#if defined(MCU_STM32F1)
-    #include <arch/cm3/stm/stm32f1_dma.h>
-#else
-#warning "Unhandled STM32 family"
-#endif
-#endif
-
+#include <arch/cm3/stm/stm32_i2c_pinmux.h>
 #include <arch/cm3/stm/stm32_twi.h>
-
-/*!
- * \brief I2CBUS2 GPIO configuartion and assignment.
- *
- * F1:     SMBA PB12
- *         SCL  PB10
- *         SDA  PB11
- * L1:     SMBA PB12
- *         SCL  PB10
- *         SDA  PB11
- * F2/F4L  SMBA PB12 PF2 PH6
- *         SCL  PB10 PF1 PH4
- *         SDA  PB11 PF0 PH5
- */
-#if defined(MCU_STM32F1)
- #define I2CBUS2_SCL_PORT    NUTGPIO_PORTB
- #define I2CBUS2_SCL_PIN     10
- #define I2CBUS2_SDA_PORT    NUTGPIO_PORTB
- #define I2CBUS2_SDA_PIN     11
-#else
- #if !defined(I2CBUS2_SCL_PIN)
-  #define I2CBUS2_SCL_PORT    NUTGPIO_PORTB
-  #define I2CBUS2_SCL_PIN     10
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F2)) && I2CBUS2_SCL_PIN == 1
-  #define I2CBUS2_SCL_PORT    NUTGPIO_PORTF
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F2)) && I2CBUS2_SCL_PIN == 4
-  #define I2CBUS2_SCL_PORT    NUTGPIO_PORTH
- #else
-  #warning "Illegal I2C2 SCL pin assignement"
- #endif
- #if !defined(I2CBUS2_SDA_PIN)
-  #define I2CBUS2_SDA_PORT    NUTGPIO_PORTB
-  #define I2CBUS2_SDA_PIN     11
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F2)) && I2CBUS2_SDA_PIN == 0
-  #define I2CBUS2_SDA_PORT    NUTGPIO_PORTF
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F2)) && I2CBUS2_SDA_PIN == 5
-  #define I2CBUS2_SDA_PORT    NUTGPIO_PORTH
- #else
-  #warning "Illegal I2C2 SCL pin assignement"
- #endif
-#endif
-
-#ifdef I2CBUS2_MODE_SMBUS
- #if defined(MCU_STM32F1)
-  #define I2CBUS2_SMBA_PORT    NUTGPIO_PORTB
-  #define I2CBUS2_SMBA_PIN     11
- #endif
-#else
- #ifndef I2CBUS2_SMBA_PIN
-  #define I2CBUS2_SMBA_PORT    NUTGPIO_PORTB
-  #define I2CBUS2_SMBA_PIN     11
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F2)) && I2CBUS2_SMBA_PIN == 2
-  #define I2CBUS2_SMBA_PORT    NUTGPIO_PORTF
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F2)) && I2CBUS2_SMBA_PIN == 6
- #define I2CBUS2_SMBA_PORT    NUTGPIO_PORTH
- #else
-  #warning "Illegal I2C2 SMBA pin assignement"
- #endif
-#endif
 
 #ifdef I2CBUS2_DEFAULT_SPEED
 #define I2C_DEFAULT_SPEED
@@ -140,27 +74,39 @@ int Stm32I2cBus2Recover( void)
 {
     uint_fast8_t i;
 
+    GPIO_TypeDef * sda_port, *scl_port;
+    uint8_t sda_pin, scl_pin;
+
+    sda_port = stm32_port_nr2gpio[I2C2_SDA >> 8];
+    scl_port = stm32_port_nr2gpio[I2C2_SCL >> 8];
+    sda_pin = I2C2_SDA & 0xf;
+    scl_pin = I2C2_SCL & 0xf;
+
     /* Handle pins as GPIOs, set SCL low */
-    GpioPinConfigSet( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE);
-    GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE);
-    GpioPinSetLow( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN);
+    Stm32GpioConfigSet(I2C2_SDA, GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE, 0);
+    Stm32GpioConfigSet(I2C2_SCL, GPIO_CFG_OUTPUT|GPIO_CFG_MULTIDRIVE, 0);
+    GpioPinSetLow((uint32_t)sda_port, sda_pin);
     NutMicroDelay(10);
 
     /* Run sequence of 8 SCL clocks */
     for( i=0; i<8; i++) {
-        GpioPinSetLow( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN);
+        GpioPinSetLow((uint32_t)scl_port, scl_pin);
         NutMicroDelay(10);
-        GpioPinSetHigh( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN);
+        GpioPinSetHigh((uint32_t)scl_port, scl_pin);
         NutMicroDelay(10);
     }
 
     /* Issue Stop condition on the bus */
-    GpioPinSetHigh( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN);
+    GpioPinSetHigh((uint32_t)sda_port, sda_pin);
     NutMicroDelay(10);
-    GpioPinSetHigh( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN);
 
-    GpioPinConfigSet( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|GPIO_CFG_MULTIDRIVE);
-    GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|GPIO_CFG_MULTIDRIVE);
+    Stm32GpioConfigSet(I2C2_SDA,
+                       GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE,
+                       I2C2_SDA_AF);
+    Stm32GpioConfigSet(I2C2_SCL,
+                       GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE,
+                       I2C2_SCL_AF);
+
     return 0;
 }
 
@@ -179,25 +125,16 @@ int Stm32I2cBus2Init(void)
     /* Setup Related GPIOs.
      * On non-F1 parts, pins may be mapped to different ports!
      */
-    GpioPinConfigSet( I2CBUS2_SCL_PORT, I2CBUS2_SCL_PIN,
-                      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL |
-                      GPIO_CFG_MULTIDRIVE | GPIO_CFG_INIT_HIGH);
-    GpioPinConfigSet( I2CBUS2_SDA_PORT, I2CBUS2_SDA_PIN,
-                      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL |
-                      GPIO_CFG_MULTIDRIVE | GPIO_CFG_INIT_HIGH);
-#ifdef I2CBUS2_MODE_SMBUS
-    GpioPinConfigSet( I2CBUS2_SMBA_PORT, I2CBUS2_SMBA_PIN,
-                      GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL |
-                      GPIO_CFG_MULTIDRIVE | GPIO_CFG_INIT_HIGH);
-    GPIO_PinAFConfig(I2CBUS2_SMBA_PORT,
-                     I2CBUS2_SMBA_PIN, GPIO_AF_I2C2);
-#endif
-#if defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
-    GPIO_PinAFConfig(I2CBUS2_SDA_PORT,
-                     I2CBUS2_SDA_PIN, GPIO_AF_I2C2);
-    GPIO_PinAFConfig(I2CBUS2_SCL_PORT,
-                     I2CBUS2_SCL_PIN, GPIO_AF_I2C2);
-#endif
+     /* Setup Related GPIOs. */
+    Stm32GpioConfigSet( I2C2_SDA,
+                        GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL
+                        | GPIO_CFG_MULTIDRIVE |GPIO_CFG_INIT_HIGH, I2C2_SDA_AF);
+    Stm32GpioConfigSet( I2C2_SCL,
+                        GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL
+                        | GPIO_CFG_MULTIDRIVE |GPIO_CFG_INIT_HIGH, I2C2_SCL_AF);
+    Stm32GpioConfigSet( I2C2_SMBA,
+                        GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL
+                        | GPIO_CFG_MULTIDRIVE |GPIO_CFG_INIT_HIGH, I2C2_SMBA_AF);
     NVIC_SetPriorityGrouping(4);
     NVIC_SetPriority( I2C2_EV_IRQn, 0);
     NVIC_SetPriority( I2C2_ER_IRQn, 1);
