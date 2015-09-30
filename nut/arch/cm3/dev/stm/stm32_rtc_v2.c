@@ -480,7 +480,7 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
 int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     uint32_t bcd_date, bcd_time, year, month;
-    PWR->CR |= PWR_CR_DBP;
+    PWR_CR |= PWR_CR_DBP;
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
@@ -511,7 +511,7 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
     /*enable clock and inhibit RTC write access */
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0;
-    PWR->CR &= ~PWR_CR_DBP;
+    PWR_CR &= ~PWR_CR_DBP;
     /* Wait until shadow registers are updated with new value*/
     while ((RTC->ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
     return 0;
@@ -639,7 +639,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
     else
         bcd_alarm |=  RTC_ALRMAR_MSK4;
 
-    PWR->CR |= PWR_CR_DBP;
+    PWR_CR |= PWR_CR_DBP;
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
@@ -664,7 +664,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
 #endif
     }
     RTC->WPR = 0;
-    PWR->CR &= ~PWR_CR_DBP;
+    PWR_CR &= ~PWR_CR_DBP;
     return 0;
 }
 
@@ -695,7 +695,7 @@ int Stm32RtcInit(NUTRTC *rtc)
     }
     /* Allow read access to the Backup Registers */
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    PWR->CR |= PWR_CR_DBP;
+    PWR_CR |= PWR_CR_DBP;
     /* Check for valid or changed settings */
     if ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC_VAL)) {
         if ((RTC->ISR & RTC_ISR_INITS) ==  RTC_ISR_INITS) {
@@ -734,7 +734,7 @@ int Stm32RtcInit(NUTRTC *rtc)
     RTC->WPR = 0; /* Disable  RTC Write Access */
 rtc_done:
     /* Disable Backup domain write access*/
-    PWR->CR &= ~PWR_CR_DBP;
+    PWR_CR &= ~PWR_CR_DBP;
 
     return res;
 }

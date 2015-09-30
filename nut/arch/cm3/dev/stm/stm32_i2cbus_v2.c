@@ -51,7 +51,7 @@
  */
 
 /*!
- * \brief I2C bus driver for STM32F0/3 hardware.
+ * \brief I2C bus driver for STM32F0/3/7 hardware.
  *
  * This is an interrupt driver, which supports master mode only.
  * No support for FM+
@@ -502,9 +502,49 @@ I2C1_SMBA PB5(AF3)
 I2C2_SDA  PB11(AF6) PB14(AF5)
 I2C2_SCL  PB10(AF6) PC13(AF5)
 I2C2_SMBA PB12(AF5)
+
+F7: AF4
+I2C2_SDA  PB11  PF0  PH5
+I2C2_SCL  PB10  PF1  PH4
+I2C2_SMBA PB12  PF2  PH6
+
+I2C3 SDA  PC9   PH8
+I2C3 SCL  PA8   PH7
+I2C3 SMBA PA9   PH9
+
+I2C4 SDA  PD13  PF15 PH12
+I2C4 SCL  PD12  PF13 PH11
+I2C4 SMBA PD11  PF13 PH10
 */
 
-#if defined(MCU_STM32L0)
+#if   defined(MCU_STM32F7)
+/*
+ * F7: AF4
+ * I2C1 SDA  PB7 PB9
+ * I2C1_SCL  PB6 PB8
+ * I2C1_SMBA PB5
+ */
+# if I2C1_SDA_PIN != 7 && I2C1_SDA_PIN != 9
+#  warning Illegal F7 I2C1_SDA Pin
+# endif
+
+# if I2C1_SCL_PIN != 6 && I2C1_SCL_PIN != 8
+#  warning Illegal F7 I2C1_SCL Pin
+# endif
+
+# if I2C1_SMBA_PIN != -1 && I2C1_SMBA_PIN != 5
+#  warning Illegal F7 I2C1_SMBA Pin
+# endif
+
+/* Get the Port for the given pin */
+# define I2C1_SDA_PORT NUTGPIO_PORTB
+# define I2C1_SDA_AF 4
+# define I2C1_SCL_PORT NUTGPIO_PORTB
+# define I2C1_SCL_AF 4
+# define I2C1_SMBA_PORT NUTGPIO_PORTB
+# define I2C1_SMBA_AF 4
+
+#elif defined(MCU_STM32L0)
 # if I2C1_SDA_PIN != 7 && I2C1_SDA_PIN != 9
 #  warning Illegal L0 I2C1_SDA Pin
 # endif
@@ -630,7 +670,55 @@ I2C2_SMBA PB12(AF5)
 #endif
 
 #if defined(HW_I2C2_STM32V2)
-# if defined(MCU_STM32L0)
+# if   defined(MCU_STM32F7)
+/*
+ * F7: AF4
+ * I2C2_SDA  PB11  PF0  PH5
+ * I2C2_SCL  PB10  PF1  PH4
+ * I2C2_SMBA PB12  PF2  PH6
+ */
+#  if I2C2_SDA_PIN != 11 && I2C2_SDA_PIN != 0 && I2C2_SDA_PIN != 5
+#   warning Illegal F7 I2C2_SDA Pin
+#  endif
+
+#  if I2C2_SCL_PIN != 10 && I2C2_SCL_PIN != 1 && I2C2_SCL_PIN != 4
+#   warning Illegal F7 I2C2_SCL Pin
+#  endif
+
+#  if I2C2_SMBA_PIN != -1 && I2C2_SMBA_PIN != 12 && I2C2_SMBA_PIN != 2 && I2C2_SMBA_PIN != 6
+#   warning Illegal F5 I2C2_SMBA Pin
+#  endif
+
+/* Get the Port for the given pin */
+#  define I2C2_SDA_AF 4
+#  define I2C2_SCL_AF 4
+#  define I2C2_SMBA_AF 4
+
+#  if I2C2_SDA_PIN == 11
+#   define I2C2_SDA_PORT NUTGPIO_PORTB
+#  elif I2C2_SDA_PIN == 0
+#   define I2C2_SDA_PORT NUTGPIO_PORTH
+#  else
+#   define I2C2_SDA_PORT NUTGPIO_PORTH
+#  endif
+
+#  if I2C2_SCL_PIN == 10
+#   define I2C2_SCL_PORT NUTGPIO_PORTB
+#  elif  I2C2_SCL_PIN == 1
+#   define I2C2_SCL_PORT NUTGPIO_PORTF
+#  else
+#   define I2C2_SCL_PORT NUTGPIO_PORTH
+#  endif
+
+#  if I2C2_SMBA_PIN == 12
+#   define I2C2_SMBA_PORT NUTGPIO_PORTB
+#  elif  I2C2_SMBA_PIN == 2
+#   define I2C2_SMBA_PORT NUTGPIO_PORTF
+#  else
+#   define I2C2_SMBA_PORT NUTGPIO_PORTH
+#  endif
+
+# elif defined(MCU_STM32L0)
 #  if I2C2_SDA_PIN != 11 && I2C2_SDA_PIN != 14
 #   warning Illegal L0 I2C2_SDA Pin
 #  endif
@@ -770,7 +858,7 @@ static const STM32_I2C_HW i2c1_hw = {
 static STM32_I2CCB i2c1cb = {
     .hw         = &i2c1_hw,
     .icb_sig_ev = &sig_TWI1_EV,
-#if defined(MCU_STM32F3)
+#if defined(MCU_STM32F3) || defined(MCU_STM32F7)
     .icb_sig_er = &sig_TWI1_ER,
 #endif
 };
@@ -804,7 +892,7 @@ static const STM32_I2C_HW i2c2_hw = {
 static STM32_I2CCB i2c2cb = {
     .hw         = &i2c2_hw,
     .icb_sig_ev = &sig_TWI2_EV,
-#if defined(MCU_STM32F3)
+#if defined(MCU_STM32F3) || defined(MCU_STM32F7)
     .icb_sig_er = &sig_TWI2_ER,
 #endif
 };

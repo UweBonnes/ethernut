@@ -240,6 +240,9 @@ function GetI2c1Sda()
     if c_is_provided("HW_MCU_STM32F3") then
         return { "14", "7", "9" }
     end
+    if c_is_provided("HW_MCU_STM32F7") then
+        return { "14", "7", "9" }
+    end
     return { "7", "9" }
 end
 function GetI2c1SdaDefault()
@@ -248,9 +251,6 @@ function GetI2c1SdaDefault()
     end
     if c_is_provided("HW_MCU_STM32F0") then
         return "7"
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return "14"
     end
     return "7"
 end
@@ -294,6 +294,9 @@ function GetI2c2Sda()
     end
     if c_is_provided("HW_MCU_STM32F1") then
         return { "11" }
+    end
+    if c_is_provided("HW_MCU_STM32F7") then
+        return {"11", "0", "5"}
     end
 -- No PB10 on small packages
     if c_is_provided("HW_STM32F411") then

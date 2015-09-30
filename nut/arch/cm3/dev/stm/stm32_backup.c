@@ -120,12 +120,12 @@ int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
     bkp = Stm32BkupRegGet(pos);
     if (NULL == bkp)
         return -1;
-    PWR->CR |= PWR_CR_DBP;
+    PWR_CR |= PWR_CR_DBP;
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
     memcpy((void *)bkp , data, len);
     RTC->WPR = 0;
-    PWR->CR &= ~PWR_CR_DBP;
+    PWR_CR &= ~PWR_CR_DBP;
     return 0;
 
 }
@@ -185,9 +185,9 @@ int Stm32BkupMemSave(unsigned int pos, const void *data, size_t len)
     bkp = Stm32BkupMemGet(pos);
     if(NULL == bkp)
         return -1;
-    PWR->CR |= PWR_CR_DBP;
+    PWR_CR |= PWR_CR_DBP;
     memcpy((void *)bkp , data, len);
-    PWR->CR &= ~PWR_CR_DBP;
+    PWR_CR &= ~PWR_CR_DBP;
     return 0;
 }
 #endif

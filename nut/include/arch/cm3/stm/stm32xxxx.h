@@ -1,3 +1,5 @@
+#ifndef _STM32XXXX_H_
+#define _STM32XXXX_H_
 /*
  * Copyright (C) 2012-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
@@ -279,4 +281,17 @@
 
 #if defined(RCC_APB1ENR_DACEN) && !defined(RCC_APB1ENR_DAC1EN)
 #define RCC_APB1ENR_DAC1EN RCC_APB1ENR_DACEN
+#endif
+
+# if !defined(PWR_CR_DBP) && defined (PWR_CR1_DBP)
+#  define PWR_CR_DBP  PWR_CR1_DBP
+#  define PWR_CR (PWR->CR1)
+# else
+#  define PWR_CR (PWR->CR)
+# endif
+
+# if !defined(FLASH_SR_PGSERR) && defined(FLASH_SR_ERSERR)
+#  define FLASH_SR_PGSERR FLASH_SR_ERSERR
+# endif
+
 #endif

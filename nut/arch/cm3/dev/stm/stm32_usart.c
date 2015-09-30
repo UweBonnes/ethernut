@@ -50,7 +50,7 @@
 #include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
-#if defined(MCU_STM32L0) || defined(MCU_STM32F0) || defined(MCU_STM32F3)
+#if defined(MCU_STM32L0) || defined(MCU_STM32F0) || defined(MCU_STM32F3) ||  defined(MCU_STM32F7)
 #define USARTN_RDR (USARTn->RDR)
 #define USARTN_TDR (USARTn->TDR)
 #define USARTN_ISR (USARTn->ISR)

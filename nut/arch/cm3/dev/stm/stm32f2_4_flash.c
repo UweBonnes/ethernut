@@ -41,18 +41,34 @@
 #include <sys/heap.h>
 #include <dev/iap_flash.h>
 
-#if !defined(MCU_STM32F2) && !defined(MCU_STM32F4)
-#warning "STM32 family has no F2/F4 compatible FLASH"
+#if defined(MCU_STM32F2) || defined(MCU_STM32F4)
+# define FLASH_SIZE_REG   0x1fff7A22
+# define FLASH_SECTOR_SIZE      (1 << 17)
+static const uint8_t sector2size[] = {
+    0x04, 0x04, 0x04, 0x04, 0x10, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
+};
+static const uint8_t sector2start[] =  {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38
+};
+#elif defined(MCU_STM32F7)
+# define FLASH_SIZE_REG   0x1ff0F442
+# define FLASH_SECTOR_SIZE      (1 << 18)
+static const uint8_t sector2size[] = {
+    0x08, 0x08, 0x08, 0x08, 0x20, 0x40, 0x40, 0x40
+};
+static const uint8_t sector2start[] =  {
+    0x00, 0x02, 0x04, 0x06, 0x08, 0x10, 0x20, 0x30
+};
+#else
+# warning Flash for this STM32 family not supported
 #endif
-#define FLASH_SECTOR_SIZE      (1 << 17)
-#define FLASH_PSIZE_8    0
-#define FLASH_PSIZE_16   FLASH_CR_PSIZE_0
-#define FLASH_PSIZE_32   FLASH_CR_PSIZE_1
-#define FLASH_PSIZE_64   (FLASH_CR_PSIZE_0 | FLASH_CR_PSIZE_1)
-#define FLASH_PSIZE_MASK (FLASH_PSIZE_64)
-#define ERASED_PATTERN_32 0xffffffff
 
-#define FLASH_SIZE_REG   0x1fff7A22
+# define FLASH_PSIZE_8    0
+# define FLASH_PSIZE_16   FLASH_CR_PSIZE_0
+# define FLASH_PSIZE_32   FLASH_CR_PSIZE_1
+# define FLASH_PSIZE_64   (FLASH_CR_PSIZE_0 | FLASH_CR_PSIZE_1)
+# define FLASH_PSIZE_MASK (FLASH_PSIZE_64)
+# define ERASED_PATTERN_32 0xffffffff
 
 #define FLASH_CR_SNB_MASK (FLASH_CR_SNB_0 | FLASH_CR_SNB_1 | FLASH_CR_SNB_2 |\
                            FLASH_CR_SNB_3)
@@ -107,9 +123,6 @@
  */
 static uint32_t sectorlist = 0;
 
-static const uint8_t sector2size[] = {
-    0x04, 0x04, 0x04, 0x04, 0x10, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
-};
 
 void FlashUntouch(void)
 {
@@ -138,34 +151,45 @@ static uint32_t FlashAddr2Sector(void* Addr)
 {
     uint32_t sector;
     uint32_t addr = (uint32_t) Addr;
-    if (addr < (FLASH_BASE + 0x10000))
-        sector = (addr - FLASH_BASE)/0x4000;
-    else if (addr < (FLASH_BASE + 0x20000))
+
+    addr = addr - FLASH_BASE;
+    if (addr < ( FLASH_SECTOR_SIZE/2)) {
+        sector = addr / (FLASH_SECTOR_SIZE/8);
+    } else if (addr < FLASH_SECTOR_SIZE) {
         sector = 4;
+    }
 #if defined(FLASH_OPTCR_DB1M)
     else if (FLASH->OPTCR & FLASH_OPTCR_DB1M) {
-        if (addr < (FLASH_BASE + 0x80000))
-            sector = ((addr - FLASH_BASE)/0x20000) + 4;
-        else if (addr < (FLASH_BASE + 0x90000))
-            sector = ((addr - FLASH_BASE - 0x80000)/0x4000) + 12;
-        else if (addr < (FLASH_BASE + 0xA0000))
-            sector = 16;
-        else
-            sector = ((addr - FLASH_BASE - 0x80000)/0x20000) + 16;
+        if (addr < 4 * FLASH_SECTOR_SIZE) {
+            sector = (addr / FLASH_SECTOR_SIZE) + 4;
+        } else {
+            addr  = addr - 4 * FLASH_SECTOR_SIZE;
+            if (addr < FLASH_SECTOR_SIZE /2) {
+                sector = addr /(FLASH_SECTOR_SIZE/8) + 12;
+            } else if (addr < FLASH_SECTOR_SIZE) {
+                sector = 16;
+            } else {
+                sector = addr / FLASH_SECTOR_SIZE + 16;
+            }
+        }
     }
     else { /* Dual bank mapping of 1 MiB device F42x/F43x */
-        if (addr < (FLASH_BASE + 0x100000))
-            sector = ((addr - FLASH_BASE)/0x20000) + 4;
-        else if (addr < (FLASH_BASE + 0x110000))
-            sector = ((addr - FLASH_BASE - 0x100000)/0x4000) + 12;
-        else if (addr < (FLASH_BASE + 0x120000))
-            sector = 16;
-        else
-            sector = ((addr - FLASH_BASE - 0x100000)/0x20000) + 16;
+        if (addr < 8 * FLASH_SECTOR_SIZE) {
+            sector = addr / FLASH_SECTOR_SIZE + 4;
+        } else {
+            addr  = addr - 8 * FLASH_SECTOR_SIZE;
+            if (addr < FLASH_SECTOR_SIZE /2) {
+                sector = addr /(FLASH_SECTOR_SIZE/8) + 12;
+            } else if (addr < FLASH_SECTOR_SIZE) {
+                sector = 16;
+            } else {
+                sector = addr / FLASH_SECTOR_SIZE + 16;
+            }
+        }
     }
 #else /* STM32F2xx has only one bank*/
     else
-        sector = ((addr - FLASH_BASE)/0x20000) + 4;
+        sector = addr / FLASH_SECTOR_SIZE + 4;
 #endif
     return sector;
 }
@@ -221,8 +245,6 @@ static FLASH_Status FlashWaitReady(void)
  */
 static FLASH_Status FlashEraseSector(uint32_t sector)
 {
-    const uint8_t sector2start[] =  {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38};
     uint32_t flash_cr = FLASH_CR_SER;
     FLASH_Status rs = FLASH_COMPLETE;
 
@@ -237,9 +259,9 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
      * starts at offset 0x80000 instead of 0x100000. */
     if (sector > 11) {
         if (FLASH->OPTCR & FLASH_OPTCR_DB1M)
-            offset = 0x80000;
+            offset = 4 * FLASH_SECTOR_SIZE;
         else
-            offset = 0x100000;
+            offset = 8 * FLASH_SECTOR_SIZE;
         flash_cr |= FLASH_CR_SNB_4;
         sector = sector - 12;
     }

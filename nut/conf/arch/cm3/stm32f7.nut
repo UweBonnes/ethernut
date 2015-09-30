@@ -53,6 +53,14 @@ nutarch_cm3_stm32f7 =
         options =
         {
             {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                type = "integer",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
                 macro = "MCU_STM32F7",
                 brief = "STM32F7",
                 brief = "Devices available in all F7xx devices",
@@ -104,7 +112,6 @@ nutarch_cm3_stm32f7 =
                     "HW_ADC_STM32",
                     "HW_ADC1_STM32F2_4",
                     "HW_WWDG_STM32",
-                    "HW_SDIO_STM32",
                  },
                 file = "include/cfg/arch.h"
              },
