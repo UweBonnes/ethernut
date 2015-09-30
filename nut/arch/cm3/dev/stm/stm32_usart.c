@@ -1321,65 +1321,12 @@ static int Stm32UsartInit(void)
     /* Enable UART clock and reset device
      * We rely on the same value for RCC_APBxENR_USARTxEN and RCC_APBxRSTR_USARTxRST*/
     StmUsartClkEnable(1);
-
-#if defined(USART_SWAP)
-#if defined(TX_GPIO_PORT)
-    /* Configure USART Tx as alternate function input*/
-    GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_PERIPHAL);
-#endif
-#if defined(RX_GPIO_PORT)
-    /* Configure USART Rx as alternate function push-pull*/
-    GpioPinConfigSet( RX_GPIO_PORT, RX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
-#endif
-#else
-#if defined(TX_GPIO_PORT)
-    /* Configure USART Tx as alternate function push-pull */
-    GpioPinConfigSet( TX_GPIO_PORT, TX_GPIO_PIN, GPIO_CFG_OUTPUT|GPIO_CFG_PERIPHAL);
-#endif
-#if defined(RX_GPIO_PORT)
-    /* Configure USART Rx as alternate function input*/
-    GpioPinConfigSet( RX_GPIO_PORT, RX_GPIO_PIN, GPIO_CFG_PERIPHAL);
-#endif
-#endif
-
-#if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
-    /* Configure USART RTS as alternate function push-pull */
-    GpioPinConfigSet( RTS_GPIO_PORT, RTS_GPIO_PIN, GPIO_CFG_PERIPHAL);
-#endif
-#if defined(CTS_GPIO_PORT) && defined(CTS_GPIO_PIN)
-    /* Configure USART CTS as input floating */
-    GpioPinConfigSet( CTS_GPIO_PORT, CTS_GPIO_PIN, GPIO_CFG_PERIPHAL);
-#endif
-
-#if defined(DE_GPIO_PORT) && defined(DE_GPIO_PIN)
-   /* Configure RS485 direction switching pin */
-    GpioPinConfigSet( DE_GPIO_PORT, DE_GPIO_PIN, GPIO_CFG_OUTPUT);
-#endif
-#if defined(NRE_GPIO_PORT) && defined(NRE_GPIO_PIN)
-    /* Configure RS485 direction switching pin */
-    GpioPinConfigSet( NRE_GPIO_PORT, NRE_GPIO_PIN, GPIO_CFG_OUTPUT);
-#endif
-
-    /* USART Related GPIO Init */
-#if defined (MCU_STM32F1)
- #ifdef STM_USART_REMAP_MASK
-    AFIO->MAPR &= ~STM_USART_REMAP_MASK;
-    AFIO->MAPR |=  STM_USART_REMAP_VALUE;
- #endif
-#else
-#if defined(TX_GPIO_PORT)
-    GPIO_PinAFConfig(TX_GPIO_PORT, TX_GPIO_PIN,  STM_USART_REMAP);
-#endif
-#if defined(RX_GPIO_PORT)
-    GPIO_PinAFConfig(RX_GPIO_PORT, RX_GPIO_PIN,  STM_USART_REMAP);
-#endif
-#if defined(RTS_GPIO_PORT) && defined(RTS_GPIO_PIN)
-    GPIO_PinAFConfig(RTS_GPIO_PORT, RTS_GPIO_PIN,  STM_USART_REMAP);
-#endif
-#if defined(CTS_GPIO_PORT) && defined(CTS_GPIO_PIN)
-    GPIO_PinAFConfig(CTS_GPIO_PORT, CTS_GPIO_PIN,  STM_USART_REMAP);
-#endif
-#endif/*F1 */
+    Stm32F1UsartRemap();
+    Stm32GpioConfigSet( USART_TX,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, USART_TX_AF );
+    Stm32GpioConfigSet( USART_RX,  GPIO_CFG_PERIPHAL,                   USART_RX_AF );
+    Stm32GpioConfigSet( USART_CTS, GPIO_CFG_PERIPHAL,                   USART_CTS_AF);
+    Stm32GpioConfigSet( USART_RTS, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, USART_RTS_AF);
+    Stm32GpioConfigSet( USART_CK,  GPIO_CFG_PERIPHAL,                   USART_CK_AF );
 
     /*
      *   USART Communication Init

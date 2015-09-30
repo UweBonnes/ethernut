@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2015 Uwe Bonnes bon@elektron.ikp,physik.tu-darmdstadt.de
  *
  * All rights reserved.
  *
@@ -58,6 +59,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
+#include <arch/cm3/stm/stm32_usart_pinmux.h>
 
 /*!
  * \addtogroup xgNutArchArmStm32Us
@@ -128,117 +130,27 @@ NUTDEVICE devUsartStm32_1 = {
     UsartSelect,                /* Select function, dev_select */
 };
 
-/*@}*/
-
-/*!
- * \brief USART1 GPIO configuartion and assignment.
- */
-/*
- * F1  NOREMAP REMAP  F30  F30  F30  F0 L0
- * CK  PA8     PA8
- * TX  PA9     PB6    PC4  PB6  PE0 PB6
- * RX  PA10    PB7    PC5  PB7  PE1 PB7
- * CTS PA11    PA11
- * RTS PA12    PA12
- *
- * RX on PA14: F0
- * RX on PB3 : F411
- * RX on PC5 : F30
- * RX on PE0 : F30
- * TX on PA15: F0/F411
- * TX on PC4 : F30
- * TX on PE1 : F30
- *
- * L0:
- * USART1_TX :  PA9(AF4) PB6(AF0)
- * USART1_RX : PA10(AF4) PB7(AF0)
- * USART1_CK :  PA8(AF4)
- * USART1_RTS: PA12(AF4)
- * USART1_CTS: PA11(AF4)
- */
 #if defined(MCU_STM32F1)
- #define STM_USART_REMAP_MASK AFIO_MAPR_USART1_REMAP
- #if defined(USART1_REMAP_USART)
-  #define STM_USART_REMAP_VALUE AFIO_MAPR_USART1_REMAP
-  #define TX_GPIO_PORT    NUTGPIO_PORTB
-  #define TX_GPIO_PIN     6
-  #define RX_GPIO_PORT    NUTGPIO_PORTB
-  #define RX_GPIO_PIN     7
- #else
-  #define STM_USART_REMAP_VALUE DISABLE
-  #define TX_GPIO_PORT    NUTGPIO_PORTA
-  #define TX_GPIO_PIN      9
-  #define RX_GPIO_PORT    NUTGPIO_PORTA
-  #define RX_GPIO_PIN     10
- #endif
-#else /* L1/F2/F3/F4*/
- #if defined(MCU_STM32F3)
-  #define STM_USART_REMAP  GPIO_AF_7
-# elif defined(MCU_STM32L0)
-#  define STM_USART_REMAP  GPIO_AF_4
- #elif defined(MCU_STM32F0)
-  #define STM_USART_REMAP  GPIO_AF_1
-/* Fixme: May also be GPIO_AF_0*/
- #else
-  #define STM_USART_REMAP  GPIO_AF_USART1
- #endif
- #if !defined(USART1_TX_PIN)
-  #if defined(USART1_REMAP_USART)
-   #define TX_GPIO_PORT  NUTGPIO_PORTB
-   #define TX_GPIO_PIN   6
-  #else
-   #define TX_GPIO_PORT    NUTGPIO_PORTA
-   #define TX_GPIO_PIN      9
-  #endif
- #elif USART1_TX_PIN == -1
-/* Allow non-used TX PIN*/
- #elif USART1_TX_PIN == 9
-  #define TX_GPIO_PORT    NUTGPIO_PORTA
-  #define TX_GPIO_PIN     9
- #elif USART1_TX_PIN == 6
-  #define TX_GPIO_PORT    NUTGPIO_PORTB
-  #define TX_GPIO_PIN     6
- #elif defined(MCU_STM32F3) && USART1_TX_PIN == 4
-  #define TX_GPIO_PORT    NUTGPIO_PORTC
-  #define TX_GPIO_PIN      4
- #elif defined(MCU_STM32F3) && USART1_TX_PIN == 0
-  #define TX_GPIO_PORT    NUTGPIO_PORTE
-  #define TX_GPIO_PIN      0
- #elif defined(STM32F411xE) && USART1_TX_PIN == 15
-  #define TX_GPIO_PORT    NUTGPIO_PORTA
-  #define TX_GPIO_PIN      15
- #else
-  #warning "Illegal USART1 TX pin assignement"
- #endif
- #if !defined(USART1_RX_PIN)
-  #if defined(USART1_REMAP_USART)
-   #define TX_GPIO_PORT  NUTGPIO_PORTB
-   #define TX_GPIO_PIN   7
-  #else
-   #define RX_GPIO_PORT    NUTGPIO_PORTA
-   #define RX_GPIO_PIN      10
- #endif
- #elif USART1_RX_PIN == -1
-/* Allow non-used RX PIN*/
- #elif USART1_RX_PIN == 10
-  #define RX_GPIO_PORT    NUTGPIO_PORTA
-  #define RX_GPIO_PIN     10
- #elif USART1_RX_PIN == 7
-  #define RX_GPIO_PORT    NUTGPIO_PORTB
-  #define RX_GPIO_PIN     7
- #elif defined(MCU_STM32F3) && USART1_RX_PIN == 5
-  #define RX_GPIO_PORT    NUTGPIO_PORTC
-  #define RX_GPIO_PIN      5
- #elif defined(MCU_STM32F3) && USART1_RX_PIN == 1
-  #define RX_GPIO_PORT    NUTGPIO_PORTE
-  #define RX_GPIO_PIN      1
- #elif defined(STM32F411xE) && USART1_RX_PIN == 3
-  #define RX_GPIO_PORT    NUTGPIO_PORTB
-  #define RX_GPIO_PIN      3
- #else
-  #warning "Illegal USART1 RX pin assignement"
- #endif
+static void Stm32F1UsartRemap(void)
+{
+    AFIO->MAPR &= ~AFIO_MAPR_USART1_REMAP;
+    AFIO->MAPR |= USART1_REMAP * AFIO_MAPR_USART1_REMAP;
+}
+#else
+# define  Stm32F1UsartRemap()
 #endif
+
+#define USART_TX  USART1_TX
+#define USART_RX  USART1_RX
+#define USART_CTS USART1_CTS
+#define USART_RTS USART1_RTS
+#define USART_CK  USART1_CK
+
+#define USART_TX_AF  USART1_TX_AF
+#define USART_RX_AF  USART1_RX_AF
+#define USART_CTS_AF USART1_CTS_AF
+#define USART_RTS_AF USART1_RTS_AF
+#define USART_CK_AF  USART1_CK_AF
 
 #ifdef USART1_HARDWARE_HANDSHAKE
 #define RTS_GPIO_PORT   NUTGPIO_PORTA

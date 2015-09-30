@@ -59,6 +59,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
+#include <arch/cm3/stm/stm32_usart_pinmux.h>
 
 /*!
  * \addtogroup xgNutArchArmStm32Us
@@ -129,47 +130,20 @@ NUTDEVICE devUsartStm32_6 = {
     UsartSelect,                /* Select function, dev_select. */
 };
 
-/*@}*/
+# define  Stm32F1UsartRemap()
 
-/*!
- * \brief USART6 GPIO configuartion and assignment.
- */
-/*
- * Only available on F2/F4 (201411)
- * F2/F4          -F411 F411
- * CK     PC8     PG7
- * TX     PC6     PG14  PA11
- * RX     PC7     PG9   PA12
- * CTS    PG13    PG15
- * RTS    PG8     PG12
- */
-#define STM_USART_REMAP  GPIO_AF_USART6
-#if !defined(USART6_TX_PIN) || USART6_TX_PIN == 6
- #define TX_GPIO_PORT    NUTGPIO_PORTC
- #define TX_GPIO_PIN      6
-#elif USART6_TX_PIN == -1
-#elif USART6_TX_PIN == 14
- #define TX_GPIO_PORT    NUTGPIO_PORTG
- #define TX_GPIO_PIN     14
-#elif defined(STM32F411xE) && USART6_TX_PIN == 11
- #define TX_GPIO_PORT    NUTGPIO_PORTA
- #define TX_GPIO_PIN     11
-#else
- #warning "Illegal USART6 TX pin assignement"
-#endif
-#if !defined(USART6_RX_PIN) || USART6_RX_PIN == 7
- #define RX_GPIO_PORT    NUTGPIO_PORTC
- #define RX_GPIO_PIN      7
-#elif USART6_RX_PIN == -1
-#elif USART6_RX_PIN == 9
- #define RX_GPIO_PORT    NUTGPIO_PORTG
- #define RX_GPIO_PIN     9
-#elif defined(STM32F411xE) && USART6_TX_PIN == 12
- #define RX_GPIO_PORT    NUTGPIO_PORTA
- #define RX_GPIO_PIN     12
-#else
- #warning "Illegal USART6 RX pin assignement"
-#endif
+#define USART_TX  USART6_TX
+#define USART_RX  USART6_RX
+#define USART_CTS USART6_CTS
+#define USART_RTS USART6_RTS
+#define USART_CK  USART6_CK
+
+#define USART_TX_AF  USART6_TX_AF
+#define USART_RX_AF  USART6_RX_AF
+#define USART_CTS_AF USART6_CTS_AF
+#define USART_RTS_AF USART6_RTS_AF
+#define USART_CK_AF  USART6_CK_AF
+
 #ifdef USART6_HARDWARE_HANDSHAKE
  #define CTS_GPIO_PORT    NUTGPIO_PORTG
  #if !defined(USART6_CTS_PIN) || USART6_CTS_PIN  == 13

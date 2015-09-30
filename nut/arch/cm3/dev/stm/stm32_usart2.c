@@ -57,6 +57,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
+#include <arch/cm3/stm/stm32_usart_pinmux.h>
 
 /*!
  * \addtogroup xgNutArchCm3Stm32
@@ -129,147 +130,62 @@ NUTDEVICE devUsartStm32_2 = {
 
 /*@}*/
 
-/*!
- * \brief USART2 GPIO configuartion and assignment.
- */
-/* F1  NOREMAP REMAP
- * L1/F0/F2/F4       F3    F3   F0
- * CTS PA0     PD3
- * RTS PA1     PD4
- * TX  PA2     PD5   PA14  PB3  PA14
- * RX  PA3     PD6   PA15  PB4  PA15
- * CK  PA4     PD7         PB5
- *
- * F411: No additional mapping
- * L0:
- * USART2_TX :  PA2(AF4) PA14(AF4)
- * USART2_RX :  PA3(AF4) PA15(AF4)
- * USART2_CK :  PA4(AF4)
- * USART2_RTS:  PA1(AF4)
- * USART2_CTS:  PA0(AF4)
- */
-
-
 #if defined(MCU_STM32F1)
- #define STM_USART_REMAP_MASK AFIO_MAPR_USART2_REMAP
- #if defined(USART2_REMAP_USART)
-  #define STM_USART_REMAP_VALUE AFIO_MAPR_USART2_REMAP
-  #define TX_GPIO_PORT  NUTGPIO_PORTD
-  #define TX_GPIO_PIN   5
-  #define RX_GPIO_PORT  NUTGPIO_PORTD
-  #define RX_GPIO_PIN   6
-  #ifdef USART2_HARDWARE_HANDSHAKE
-   #define RTS_GPIO_PORT NUTGPIO_PORTD
-   #define RTS_GPIO_PIN  4
-   #define CTS_GPIO_PORT NUTGPIO_PORTD
-   #define CTS_GPIO_PIN  3
-  #endif /* USART2_HARDWARE_HANDSHAKE */
- #else
-  #define STM_USART_REMAP_VALUE DISABLE
-  #define TX_GPIO_PORT  NUTGPIO_PORTA
-  #define TX_GPIO_PIN   2
-  #define RX_GPIO_PORT  NUTGPIO_PORTA
-  #define RX_GPIO_PIN   3
-  #ifdef USART2_HARDWARE_HANDSHAKE
-   #define RTS_GPIO_PORT NUTGPIO_PORTA
-   #define RTS_GPIO_PIN  1
-   #define CTS_GPIO_PORT NUTGPIO_PORTA
-   #define CTS_GPIO_PIN  0
-  #endif /* USART2_HARDWARE_HANDSHAKE */
- #endif /* USART2_REMAP_USART */
-#else /*L1/F2/F3/F4*/
- #if defined(MCU_STM32F3)
-  #define STM_USART_REMAP  GPIO_AF_7
-# elif defined(MCU_STM32L0)
-#  define STM_USART_REMAP  GPIO_AF_4
- #elif defined(MCU_STM32F0)
-  #define STM_USART_REMAP  GPIO_AF_1
- #else
-  #define STM_USART_REMAP  GPIO_AF_USART2
- #endif
- #if !defined(USART2_TX_PIN)
+static void Stm32F1UsartRemap(void)
+{
+    AFIO->MAPR &= ~AFIO_MAPR_USART2_REMAP;
+    AFIO->MAPR |= USART2_REMAP * AFIO_MAPR_USART2_REMAP;
+}
+#else
+# define  Stm32F1UsartRemap()
+#endif
+
+#define USART_TX  USART2_TX
+#define USART_RX  USART2_RX
+#define USART_CTS USART2_CTS
+#define USART_RTS USART2_RTS
+#define USART_CK  USART2_CK
+
+#define USART_TX_AF  USART2_TX_AF
+#define USART_RX_AF  USART2_RX_AF
+#define USART_CTS_AF USART2_CTS_AF
+#define USART_RTS_AF USART2_RTS_AF
+#define USART_CK_AF  USART2_CK_AF
+
+#ifdef USART2_HARDWARE_HANDSHAKE
+ #if !defined(USART2_CTS_PIN)
   #if defined(USART2_REMAP_USART)
-   #define TX_GPIO_PORT  NUTGPIO_PORTD
-   #define TX_GPIO_PIN   5
-  #else
-   #define TX_GPIO_PORT  NUTGPIO_PORTA
-   #define TX_GPIO_PIN   2
-  #endif
- #elif USART2_TX_PIN == -1
- #elif USART2_TX_PIN == 5
-  #define TX_GPIO_PORT  NUTGPIO_PORTD
-  #define TX_GPIO_PIN   5
- #elif USART2_TX_PIN == 2
-  #define TX_GPIO_PORT  NUTGPIO_PORTA
-  #define TX_GPIO_PIN   2
- #elif (defined(STM32F0) || defined(MCU_STM32F3)) && USART2_TX_PIN == 14
-  #define TX_GPIO_PORT  NUTGPIO_PORTA
-  #define TX_GPIO_PIN   14
- #elif (defined(STM32F0) || defined(MCU_STM32F3)) && USART2_TX_PIN == 3
-  #define TX_GPIO_PORT  NUTGPIO_PORTB
-  #define TX_GPIO_PIN   3
- #else
-  #warning "Illegal USART2 TX pin assignement"
- #endif
- #if !defined(USART2_RX_PIN)
-  #if defined(USART2_REMAP_USART)
-   #define RX_GPIO_PORT  NUTGPIO_PORTD
-   #define RX_GPIO_PIN   6
-  #else
-   #define RX_GPIO_PORT  NUTGPIO_PORTA
-   #define RX_GPIO_PIN   3
-  #endif
- #elif USART2_RX_PIN == -1
- #elif USART2_RX_PIN == 6
-  #define RX_GPIO_PORT  NUTGPIO_PORTD
-  #define RX_GPIO_PIN   6
- #elif USART2_RX_PIN == 3
-  #define RX_GPIO_PORT  NUTGPIO_PORTA
-  #define RX_GPIO_PIN   3
- #elif defined(MCU_STM32F3) && USART2_RX_PIN == 15
-  #define RX_GPIO_PORT  NUTGPIO_PORT1
-  #define RX_GPIO_PIN   15
- #elif defined(MCU_STM32F3) && USART2_RX_PIN == 4
-  #define RX_GPIO_PORT  NUTGPIO_PORTB
-  #define RX_GPIO_PIN   4
- #else
-  #warning "Illegal USART2 RX pin assignement"
- #endif
- #ifdef USART2_HARDWARE_HANDSHAKE
-  #if !defined(USART2_CTS_PIN)
-   #if defined(USART2_REMAP_USART)
-    #define CTS_GPIO_PORT  NUTGPIO_PORTD
-    #define CTS_GPIO_PIN   3
-   #else
-    #define CTS_GPIO_PORT  NUTGPIO_PORTA
-    #define CTS_GPIO_PIN   0
-   #endif
-  #elif USART2_CTS_PIN == 3
    #define CTS_GPIO_PORT  NUTGPIO_PORTD
    #define CTS_GPIO_PIN   3
-  #elif USART2_CTS_PIN == 0
-    #define CTS_GPIO_PORT  NUTGPIO_PORTA
-    #define CTS_GPIO_PIN   0
   #else
-   #warning "Illegal USART2 CTS pin assignement"
+   #define CTS_GPIO_PORT  NUTGPIO_PORTA
+   #define CTS_GPIO_PIN   0
   #endif
-  #if !defined(USART2_RTS_PIN)
-   #if defined(USART2_REMAP_USART)
-    #define RTS_GPIO_PORT  NUTGPIO_PORTD
-    #define RTS_GPIO_PIN   4
-   #else
-    #define RTS_GPIO_PORT  NUTGPIO_PORTA
-    #define RTS_GPIO_PIN   1
-   #endif
-  #elif USART2_CTS_PIN == 4
+ #elif USART2_CTS_PIN == 3
+  #define CTS_GPIO_PORT  NUTGPIO_PORTD
+  #define CTS_GPIO_PIN   3
+ #elif USART2_CTS_PIN == 0
+   #define CTS_GPIO_PORT  NUTGPIO_PORTA
+   #define CTS_GPIO_PIN   0
+ #else
+  #warning "Illegal USART2 CTS pin assignement"
+ #endif
+ #if !defined(USART2_RTS_PIN)
+  #if defined(USART2_REMAP_USART)
    #define RTS_GPIO_PORT  NUTGPIO_PORTD
    #define RTS_GPIO_PIN   4
-  #elif USART2_CTS_PIN == 1
+  #else
    #define RTS_GPIO_PORT  NUTGPIO_PORTA
    #define RTS_GPIO_PIN   1
-  #else
-   #warning "Illegal USART2 RTS pin assignement"
   #endif
+ #elif USART2_CTS_PIN == 4
+  #define RTS_GPIO_PORT  NUTGPIO_PORTD
+  #define RTS_GPIO_PIN   4
+ #elif USART2_CTS_PIN == 1
+  #define RTS_GPIO_PORT  NUTGPIO_PORTA
+  #define RTS_GPIO_PIN   1
+ #else
+  #warning "Illegal USART2 RTS pin assignement"
  #endif
 #endif
 

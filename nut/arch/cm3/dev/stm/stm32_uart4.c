@@ -58,6 +58,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
+#include <arch/cm3/stm/stm32_usart_pinmux.h>
 
 #if !defined(UART4) && defined(USART4)
 #define UART4 USART4
@@ -141,53 +142,22 @@ NUTDEVICE devUartStm32_4 = {
     UsartSelect,                /* Select function, dev_select. */
 };
 
-/*@}*/
-
 /*!
- * \brief UART4 GPIO configuartion and assignment.
+ * \brief USART3 GPIO configuartion and assignment.
  */
-/*
- * F1/F3  no alternate pins
- * L1/F2/F4
- * TX  PA0     PC10
- * RX  PA1     PC11
- */
-#if defined(MCU_STM32F1)
- #undef STM_USART_REMAP_MASK
- #define TX_GPIO_PORT    NUTGPIO_PORTC
- #define TX_GPIO_PIN      10
- #define RX_GPIO_PORT    NUTGPIO_PORTC
- #define RX_GPIO_PIN      11
-#elif defined(MCU_STM32F3)
- #define STM_USART_REMAP  GPIO_AF_5
- #define TX_GPIO_PORT    NUTGPIO_PORTC
- #define TX_GPIO_PIN     10
- #define RX_GPIO_PORT    NUTGPIO_PORTC
- #define RX_GPIO_PIN      11
-#else /* L1/F2/F4*/
- #define STM_USART_REMAP  GPIO_AF_UART4
- #if !defined(UART4_TX_PIN) || UART4_TX_PIN == 0
-  #define TX_GPIO_PORT    NUTGPIO_PORTA
-  #define TX_GPIO_PIN      0
- #elif UART4_TX_PIN == -1
- #elif UART4_TX_PIN == 10
-  #define TX_GPIO_PORT    NUTGPIO_PORTC
-  #define TX_GPIO_PIN     10
- #else
-  #warning "Illegal USART TX pin assignement"
- #endif
- #if !defined(UART4_RX_PIN) || UART4_RX_PIN == 1
-  #define RX_GPIO_PORT    NUTGPIO_PORTA
-  #define RX_GPIO_PIN      1
- #elif UART4_RX_PIN == -1
- #elif UART4_RX_PIN == 11
-  #define RX_GPIO_PORT    NUTGPIO_PORTC
-  #define RX_GPIO_PIN      11
- #else
-  #warning "Illegal UART4 RX pin assignement"
- #endif
-#endif
+# define  Stm32F1UsartRemap()
 
+#define USART_TX  USART4_TX
+#define USART_RX  USART4_RX
+#define USART_CTS USART4_CTS
+#define USART_RTS USART4_RTS
+#define USART_CK  USART4_CK
+
+#define USART_TX_AF  USART4_TX_AF
+#define USART_RX_AF  USART4_RX_AF
+#define USART_CTS_AF USART4_CTS_AF
+#define USART_RTS_AF USART4_RTS_AF
+#define USART_CK_AF  USART4_CK_AF
 
 #ifdef UART4_RS485_CTRL
 #define USART_485_CTRL

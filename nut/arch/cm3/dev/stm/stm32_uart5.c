@@ -58,6 +58,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
+#include <arch/cm3/stm/stm32_usart_pinmux.h>
 
 #if !defined(UART5) && defined(USART5)
 #define UART5 USART5
@@ -141,26 +142,22 @@ NUTDEVICE devUartStm32_5 = {
     UsartSelect,                /* Select function, dev_select. */
 };
 
-/*@}*/
-
 /*!
- * \brief UART5 GPIO configuartion and assignment.
+ * \brief USART3 GPIO configuartion and assignment.
  */
+# define  Stm32F1UsartRemap()
 
-/* No alternate pins for F1/L1/F2/F4 so long */
+#define USART_TX  USART5_TX
+#define USART_RX  USART5_RX
+#define USART_CTS USART5_CTS
+#define USART_RTS USART5_RTS
+#define USART_CK  USART5_CK
 
-#if defined(MCU_STM32F1)
-#undef  STM_USART_REMAP_MASK
-#elif defined(MCU_STM32F3)
- #define STM_USART_REMAP  GPIO_AF_5
-#else
- #define STM_USART_REMAP  GPIO_AF_UART5
-#endif
-
-#define TX_GPIO_PORT    NUTGPIO_PORTC
-#define TX_GPIO_PIN     12
-#define RX_GPIO_PORT    NUTGPIO_PORTD
-#define RX_GPIO_PIN     2
+#define USART_TX_AF  USART5_TX_AF
+#define USART_RX_AF  USART5_RX_AF
+#define USART_CTS_AF USART5_CTS_AF
+#define USART_RTS_AF USART5_RTS_AF
+#define USART_CK_AF  USART5_CK_AF
 
 #ifdef UART5_RS485_CTRL
 #define USART_485_CTRL
