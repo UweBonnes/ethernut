@@ -557,17 +557,17 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
         *aflags = flags;
     }
     if (tm) {
-        tm->tm_sec   =  (bcd_alarm & RTC_ALRMAR_SU ) *  1 /RTC_ALRMAR_SU_0;
-        tm->tm_sec  +=  (bcd_alarm & RTC_ALRMAR_ST ) * 10 /RTC_ALRMAR_ST_0;
-        tm->tm_min   =  (bcd_alarm & RTC_ALRMAR_MNU) *  1 /RTC_ALRMAR_MNU_0;
-        tm->tm_min  +=  (bcd_alarm & RTC_ALRMAR_MNT) * 10 /RTC_ALRMAR_MNT_0;
-        tm->tm_hour  =  (bcd_alarm & RTC_ALRMAR_HU ) *  1 /RTC_ALRMAR_HU_0;
-        tm->tm_hour +=  (bcd_alarm & RTC_ALRMAR_HT ) * 10 /RTC_ALRMAR_HT_0;
+        tm->tm_sec   =  (bcd_alarm & RTC_ALRMAR_SU ) / RTC_ALRMAR_SU_0  *  1 ;
+        tm->tm_sec  +=  (bcd_alarm & RTC_ALRMAR_ST ) / RTC_ALRMAR_ST_0  * 10 ;
+        tm->tm_min   =  (bcd_alarm & RTC_ALRMAR_MNU) / RTC_ALRMAR_MNU_0 *  1 ;
+        tm->tm_min  +=  (bcd_alarm & RTC_ALRMAR_MNT) / RTC_ALRMAR_MNT_0 * 10 ;
+        tm->tm_hour  =  (bcd_alarm & RTC_ALRMAR_HU ) / RTC_ALRMAR_HU_0  *  1 ;
+        tm->tm_hour +=  (bcd_alarm & RTC_ALRMAR_HT ) / RTC_ALRMAR_HT_0  * 10 ;
         if(bcd_alarm & RTC_ALRMAR_WDSEL)
-            tm->tm_wday =(bcd_alarm & RTC_ALRMAR_DU) *  1 /RTC_ALRMAR_DU_0;
+            tm->tm_wday =(bcd_alarm & RTC_ALRMAR_DU) / RTC_ALRMAR_DU_0  *  1 ;
         else {
-            tm->tm_mday =(bcd_alarm & RTC_ALRMAR_DU) *  1 /RTC_ALRMAR_DU_0;
-            tm->tm_mday+=(bcd_alarm & RTC_ALRMAR_DT) * 10 /RTC_ALRMAR_DT_0;
+            tm->tm_mday =(bcd_alarm & RTC_ALRMAR_DU) / RTC_ALRMAR_DU_0  *  1 ;
+            tm->tm_mday+=(bcd_alarm & RTC_ALRMAR_DT) / RTC_ALRMAR_DT_0   * 10;
         }
     }
     return 0;
