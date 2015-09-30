@@ -93,6 +93,18 @@ nutarch_cm3_stm32_family =
         script = "arch/cm3/stm32f1.nut"
     },
     {
+        name = "nutarch_cm3_stm32l0",
+        brief = "STM32L0",
+        requires = { "HW_MCU_STM32", "HW_MCU_STM32L0" },
+        description = "ST Microelectronics STM32 L0 Series",
+        sources = { "cm3/dev/stm/stm32l1_clk.c" },
+        makedefs = {
+                  "MCU=cortex-m0plus",
+                  "LDPATH=$(LDINCLUDE)"
+        },
+        script = "arch/cm3/stm32l0.nut"
+    },
+    {
         name = "nutarch_cm3_stm32l1",
         brief = "STM32L1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L1" },

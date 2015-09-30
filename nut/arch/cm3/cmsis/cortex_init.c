@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2012 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ * Copyright (C) 2015 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de>
  *
  * All rights reserved.
  *
@@ -428,7 +429,9 @@ static void Cortex_IntInit(void)
 #else
     /* Point NVIC at the RAM vector table. */
     SCB->VTOR = (uint32_t)g_pfnRAMVectors;
+#if defined(__enable_fault_irq)
     __enable_fault_irq();
+#endif
 #endif
     __enable_irq();
 }

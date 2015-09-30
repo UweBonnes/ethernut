@@ -121,15 +121,16 @@ typedef enum
   USART1_IRQn                 = 27,     /*!< USART1 Interrupt                                              */
   USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                              */
   AES_RNG_LPUART1_IRQn        = 29,     /*!< AES and RNG and LPUART1 Interrupts                            */
-  USB_IRQn                    = 31      /*!< USB global Interrupt                                          */
+  USB_IRQn                    = 31,     /*!< USB global Interrupt                                          */
+  IRQn_MAX,                             /*!< Total number of interrupts                                      */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm0plus.h"
-#include "system_stm32l0xx.h"
+#include <arch/cm3/core_cm0plus.h>     /* Cortex-M0 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h> /* STM32F0xx System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

@@ -68,7 +68,7 @@
 #define __CM0PLUS_REV             0 /*!< Core Revision r0p0                            */
 #define __MPU_PRESENT             1 /*!< STM32L0xx  provides an MPU                    */
 #define __VTOR_PRESENT            1 /*!< Vector  Table  Register supported             */
-#define __NVIC_PRIO_BITS          2 /*!< STM32L0xx uses 2 Bits for the Priority Levels */
+ }#define __NVIC_PRIO_BITS          2 /*!< STM32L0xx uses 2 Bits for the Priority Levels */
 #define __Vendor_SysTickConfig    0 /*!< Set to 1 if different SysTick Config is used  */
 
 
@@ -120,14 +120,15 @@ typedef enum
   USART1_IRQn                 = 27,     /*!< USART1 Interrupt                                              */
   USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                              */
   LPUART1_IRQn                = 29,     /*!< LPUART1 Interrupts                                            */
+  IRQn_MAX,                             /*!< Total number of interrupts                                      */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include "core_cm0plus.h"
-#include "system_stm32l0xx.h"
+#include <arch/cm3/core_cm0plus.h>     /* Cortex-M0 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h> /* STM32F0xx System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

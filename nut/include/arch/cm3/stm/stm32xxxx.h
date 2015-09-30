@@ -107,8 +107,28 @@
 # elif defined(STM32F107xC)
 #  include <arch/cm3/stm/vendor/stm32f107xc.h>
 # endif
+#elif defined(MCU_STM32L0)
+# if   defined(STM32L051xx)
+#  include <arch/cm3/stm/vendor/stm32l051xx.h>
+# elif defined(STM32L052xx)
+#  include <arch/cm3/stm/vendor/stm32l052xx.h>
+# elif defined(STM32L053xx)
+#  include <arch/cm3/stm/vendor/stm32l053xx.h>
+# elif defined(STM32L061xx)
+#  include <arch/cm3/stm/vendor/stm32l061xx.h>
+# elif defined(STM32L062xx)
+#  include <arch/cm3/stm/vendor/stm32l062xx.h>
+# elif defined(STM32L063xx)
+#  include <arch/cm3/stm/vendor/stm32l063xx.h>
+# endif
 #elif defined(MCU_STM32L1)
-# if   defined(STM32L151xB)
+# if   defined(STM32L100xB)
+#  include <arch/cm3/stm/vendor/stm32l100xb.h>
+# elif defined(STM32L100xBA)
+#  include <arch/cm3/stm/vendor/stm32l100xba.h>
+# elif defined(STM32L100xC)
+#  include <arch/cm3/stm/vendor/stm32l100xc.h>
+# elif defined(STM32L151xB)
 #  include <arch/cm3/stm/vendor/stm32l151xb.h>
 # elif defined(STM32L151xBA)
 #  include <arch/cm3/stm/vendor/stm32l151xba.h>
