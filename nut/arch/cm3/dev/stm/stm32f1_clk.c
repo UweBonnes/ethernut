@@ -180,11 +180,11 @@
 #define PLLCLK_PREDIV 1
 #endif
 
-static uint32_t SystemCoreClock = 0;
-static uint8_t clk_div[NUT_HWCLK_MAX] = {1};
+static uint32_t sys_clock;
+static uint8_t clk_shift[NUT_HWCLK_MAX];
 
 static const uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
-static const uint8_t APBPrescTable[8]  = {1, 1, 1, 1, 2, 4, 8, 16};
+static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 
 /*----------------  Clock Setup Procedure ------------------------------
  *
@@ -247,10 +247,10 @@ static void SystemCoreClockUpdate(void)
     switch (tmp)
     {
         case 0x00:  /* HSI used as system clock */
-            SystemCoreClock = HSI_VALUE;
+            sys_clock = HSI_VALUE;
             break;
         case 0x04:  /* HSE used as system clock */
-            SystemCoreClock = HSE_VALUE;
+            sys_clock = HSE_VALUE;
             break;
         case 0x08:  /* PLL used as system clock */
             /* Get PLL clock source and multiplication factor ----------------------*/
@@ -301,31 +301,31 @@ static void SystemCoreClockUpdate(void)
                 pllinput = HSE_VALUE / (prediv1factor + 1);
             }
 #endif
-            SystemCoreClock = pllinput * (pllmult + 2);
+            sys_clock = pllinput * (pllmult + 2);
             break;
 
         default:
-            SystemCoreClock = HSI_VALUE;
+            sys_clock = HSI_VALUE;
             break;
     }
 
     /* Compute HCLK clock frequency ----------------*/
     /* Get HCLK prescaler */
-    tmp = AHBPrescTable[((RCC->CFGR & RCC_CFGR_HPRE) >> 4)];
+    tmp = (RCC->CFGR & RCC_CFGR_HPRE) >> 4;
     /* HCLK clock frequency */
-    SystemCoreClock >>= tmp;
+    clk_shift[NUT_HWCLK_CPU] = AHBPrescTable[tmp];
     tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
-    clk_div[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
-    if (clk_div[NUT_HWCLK_PCLK1] < 2)
-        clk_div[NUT_HWCLK_TCLK1] = 1;
+    clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
+    if (clk_shift[NUT_HWCLK_PCLK1] < 1)
+        clk_shift[NUT_HWCLK_TCLK1] = 0;
     else
-        clk_div[NUT_HWCLK_TCLK1] = clk_div[NUT_HWCLK_PCLK1] / 2;
+        clk_shift[NUT_HWCLK_TCLK1] = clk_shift[NUT_HWCLK_PCLK1] - 1;
     tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
-    clk_div[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
-    if (clk_div[NUT_HWCLK_PCLK2] < 2)
-        clk_div[NUT_HWCLK_TCLK2] = 1;
+    clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
+    if (clk_shift[NUT_HWCLK_PCLK2] < 1)
+        clk_shift[NUT_HWCLK_TCLK2] = 0;
     else
-        clk_div[NUT_HWCLK_TCLK2] = clk_div[NUT_HWCLK_PCLK2] / 2;
+        clk_shift[NUT_HWCLK_TCLK2] = clk_shift[NUT_HWCLK_PCLK2] -1;
 }
 
 
@@ -694,8 +694,7 @@ int SetSysClock(void)
   */
 uint32_t SysCtlClockGet(void)
 {
-    SystemCoreClockUpdate();
-    return SystemCoreClock;
+    return STM_ClockGet(NUT_HWCLK_CPU);
 }
 
 /**
@@ -706,8 +705,9 @@ uint32_t SysCtlClockGet(void)
   */
 uint32_t STM_ClockGet(int idx)
 {
-    SystemCoreClockUpdate();
+    if(!sys_clock)
+        SystemCoreClockUpdate();
     if (idx < NUT_HWCLK_MAX)
-        return SystemCoreClock/clk_div[idx];
+        return sys_clock >> clk_shift[idx];
     return 0;
 }

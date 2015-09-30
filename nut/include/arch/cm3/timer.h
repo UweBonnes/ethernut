@@ -71,34 +71,38 @@
 #if defined(MCU_STM32)
 
 /*!
+ * Frequency of Sysclk
+ */
+#define NUT_HWCLK_SYS 0
+/*!
  * Frequency of CPU Core(HCLK/AHB CLK)
  */
-#define NUT_HWCLK_CPU 0
+#define NUT_HWCLK_CPU 1
 
 /*!
  * Clock for devices on APB1 bus
  */
-#define NUT_HWCLK_PCLK1 1
+#define NUT_HWCLK_PCLK1 2
 
 /*!
  * Clock for timers on APB1 bus
  */
-#define NUT_HWCLK_TCLK1 2
+#define NUT_HWCLK_TCLK1 3
 
 /*!
  * Clock for devices on APB2 bus
  */
-#define NUT_HWCLK_PCLK2 3
+#define NUT_HWCLK_PCLK2 4
 
 /*!
  * Clock for timers on APB2 bus
  */
-#define NUT_HWCLK_TCLK2 4
+#define NUT_HWCLK_TCLK2 5
 
 /*!
  * Number of clocks for this device
  */
-#define NUT_HWCLK_MAX   5
+#define NUT_HWCLK_MAX   6
 
 #define NUT_HWCLK_PERIPHERAL NUT_HWCLK_PCLK1
 #elif defined(MCU_LPC17xx)

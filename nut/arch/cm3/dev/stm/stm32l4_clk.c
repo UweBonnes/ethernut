@@ -172,9 +172,9 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 # warning "SYSCLK_FREQ overclocked"
 #endif
 
-static uint32_t SystemCoreClock = 0;
-static uint32_t msi_clock = 0;
-static uint8_t clk_div[NUT_HWCLK_MAX] = {1};
+static uint32_t sys_clock;
+static uint32_t msi_clock;
+static uint8_t clk_shift[NUT_HWCLK_MAX];
 
 static const uint8_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
@@ -218,16 +218,16 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 /**
   * @brief  Get timer clock divisor
   *
-  * @param  div  Connected PCLK APB prescaler
+  * @param  shift  Connected PCLK APB prescaler
   * @retval Corrected prescaler
   */
-static uint8_t GetTimerDiv(uint8_t div)
+static uint8_t GetTimerShift(uint8_t shift)
 {
     uint8_t res;
-    if (div < 2) {
-        res =  1;
-    } else {
-        res = div / 2;
+    if (shift < 1) {
+        res =  0;
+    }else {
+        res = shift - 1;
     }
     return res;
 }
@@ -298,14 +298,15 @@ static void SystemCoreClockUpdate(void)
     default:
         tmp = HSI_VALUE;
     }
+    sys_clock = tmp;
     hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
-    SystemCoreClock = tmp >> AHBPrescTable[hpre];
+    clk_shift[NUT_HWCLK_CPU] = AHBPrescTable[hpre];
     tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
-    clk_div[NUT_HWCLK_PCLK1] = (1 << APBPrescTable[tmp]);
-    clk_div[NUT_HWCLK_TCLK1] = GetTimerDiv(clk_div[NUT_HWCLK_PCLK1]);
+    clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
+    clk_shift[NUT_HWCLK_TCLK1] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK1]);
     tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
-    clk_div[NUT_HWCLK_PCLK2] = (1 << APBPrescTable[tmp]);
-    clk_div[NUT_HWCLK_TCLK2] = GetTimerDiv(clk_div[NUT_HWCLK_PCLK2]);
+    clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
+    clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
 }
 
 /*!
@@ -715,7 +716,6 @@ static void RccIrq(void *arg)
   */
 uint32_t SysCtlClockGet(void)
 {
-    SystemCoreClockUpdate();
 #if RTC_CLK_LSE > 0
     if (RCC->BDCR & RCC_BDCR_LSERDY)
         RCC->CR |= RCC_CR_MSIPLLEN;
@@ -724,7 +724,7 @@ uint32_t SysCtlClockGet(void)
         NutIrqEnable(&sig_RCC);
     }
 #endif
-    return SystemCoreClock;
+    return STM_ClockGet(NUT_HWCLK_CPU);
 }
 
 /**
@@ -735,9 +735,11 @@ uint32_t SysCtlClockGet(void)
   */
 uint32_t STM_ClockGet(int idx)
 {
-    SystemCoreClockUpdate();
+    if (!sys_clock) {
+            SystemCoreClockUpdate();
+    }
     if (idx < NUT_HWCLK_MAX) {
-        return SystemCoreClock/clk_div[idx];
+        return sys_clock >> clk_shift[idx];
     }
     return 0;
 }
