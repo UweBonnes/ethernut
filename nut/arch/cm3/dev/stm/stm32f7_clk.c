@@ -95,31 +95,6 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 /* Include common routines*/
 #include "stm32_clk.c"
 
-/**
-  * @brief  Get timer clock shift
-  *
-  * @param  shift  Connected PCLK APB prescaler
-  * @retval Corrected prescaler
-  */
-static uint8_t GetTimerShift(uint8_t shift)
-{
-    uint8_t res;
-    if ((RCC->DCKCFGR1 & RCC_DCKCFGR1_TIMPRE) ==   RCC_DCKCFGR1_TIMPRE) {
-        if (shift < 2) {
-            res = 0;
-        } else {
-            res = shift - 2;
-        }
-        return res;
-    }
-    if (shift < 1) {
-        res =  0;
-    } else {
-        res = shift - 1;
-    }
-    return res;
-}
-
 /*!
  * \brief  Update SystemCoreClock according to Clock Register Values
  *

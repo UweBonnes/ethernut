@@ -292,18 +292,10 @@ void SystemCoreClockUpdate(void)
     }
     tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
     clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
-    if (clk_shift[NUT_HWCLK_PCLK1] < 1) {
-        clk_shift[NUT_HWCLK_TCLK1] = 0;
-    } else {
-        clk_shift[NUT_HWCLK_TCLK1] = clk_shift[NUT_HWCLK_PCLK1] - 1;
-    }
+    clk_shift[NUT_HWCLK_TCLK1] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK1]);
     tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
     clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
-    if (clk_shift[NUT_HWCLK_PCLK2] < 1) {
-        clk_shift[NUT_HWCLK_TCLK2] = 0;
-    } else {
-        clk_shift[NUT_HWCLK_TCLK2] = clk_shift[NUT_HWCLK_PCLK2] - 1;
-    }
+    clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
 }
 
 /*!

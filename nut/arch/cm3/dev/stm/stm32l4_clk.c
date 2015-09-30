@@ -218,23 +218,6 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 #include "stm32_clk.c"
 
 /**
-  * @brief  Get timer clock divisor
-  *
-  * @param  shift  Connected PCLK APB prescaler
-  * @retval Corrected prescaler
-  */
-static uint8_t GetTimerShift(uint8_t shift)
-{
-    uint8_t res;
-    if (shift < 1) {
-        res =  0;
-    }else {
-        res = shift - 1;
-    }
-    return res;
-}
-
-/**
   * @brief  Get Msi Frequency
   *
   * @retval MsiFrequency

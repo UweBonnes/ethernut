@@ -39,6 +39,33 @@
  * Include this file in the device specific setup to allow better optimization!
  */
 
+/**
+  * \brief  Get timer clock shift
+  *
+  * \param  div  Connected PCLK APB prescaler
+  * \retval Corrected prescaler
+  */
+static uint8_t GetTimerShift(uint8_t shift)
+{
+    uint8_t res;
+#if defined(RCC_DCKCFGR_TIMPRE)
+    if ((RCC->DCKCFGR & RCC_DCKCFGR_TIMPRE) ==  RCC_DCKCFGR_TIMPRE) {
+        if (shift < 2) {
+            res = 0;
+        } else {
+            res = shift - 2;
+        }
+        return res;
+    }
+#endif
+    if (shift < 1) {
+        res =  0;
+    } else {
+        res = shift - 1;
+    }
+    return res;
+}
+
 /*!
  * \brief Re/Set RCC register bit and wait for same state of connected RDY bit or timeout
  *
