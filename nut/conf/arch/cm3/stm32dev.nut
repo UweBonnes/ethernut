@@ -1336,21 +1336,21 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART1_TX_PIN",
-                brief = "USART1 TX Pin selection",
-                description = "Choose USART1 TX Pin, Default: PA9. Use -1 for not used.",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetTxUsart1() end,
-                file = "include/cfg/uart.h"
-            },
-            {
                 macro = "USART1_RX_PIN",
                 brief = "USART1 RX Pin selection",
                 description = "Choose USART1 RX Pin, Default: PA10. Use -1 for not used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetRxUsart1() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                  macro = "USART1_TX_PIN",
+                brief = "USART1 TX Pin selection",
+                description = "Choose USART1 TX Pin, Default: PA9. Use -1 for not used.",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() return GetTxUsart1() end,
                 file = "include/cfg/uart.h"
             },
             {
@@ -2739,26 +2739,183 @@ nutarch_cm3_stm32_devices =
                               "Pin Mapping is:\n RX_DV-CRS PA7\n RXD0 PC4 \n RXD1 PC5\n RXD2 PB0\n RXD3 PB1\n"..
                               "Enabling the option the driver remaps to its alternate port pins:\n\n"..
                               "Pin Mapping is:\n RX_DV-CRS PD8\n RXD0 PD9 \n RXD1 PD10\n RXD2 PD11\n RXD3 PD12\n",
+                requires = { "HW_GPIO_STM32V1" },
                 flavor = "booldata",
+                file = "include/cfg/emac.h"
+            },
+--List all Pins, even if there are no alternate pins
+            {
+                macro = "EMAC_TX_EN",
+                description = "Choice of STM32 EMAC TX_EN pins\n"..
+                              "Possible pins: PB11, PG11.\n"..
+                              "Default: PB11\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PB11",
+                type = "enumerated",
+                choices = { "PB11", "PG11" },
                 file = "include/cfg/dev.h"
             },
             {
-                macro = "PHY_PWRDN_BIT",
-                brief = "PHY Power Down Bit",
-                description = "For the SAM7X default is 18.\n\n",
-                provides = { "PHY_PWRDN_CONTROL" },
-                flavor = "booldata",
+                macro = "EMAC_TXD0",
+                description = "Choice of STM32 EMAC TXD0 pins\n"..
+                               "Possible pins: PB12, PG13.\n"..
+                               "Default: PB12\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PB12",
                 type = "enumerated",
-                choices = mcu_32bit_choice,
-                file = "include/cfg/arch/armpio.h"
+                choices = { "PB12", "PG13" },
+                file = "include/cfg/dev.h"
             },
             {
-                macro = "PHY_PWRDN_NEGPOL",
-                brief = "PHY Power Down Polarity",
-                description = "Select this, if the PHY is powered down by a low signal.",
-                requires = { "PHY_PWRDN_CONTROL" },
-                flavor = "boolean",
-                file = "include/cfg/arch/armpio.h"
+                macro = "EMAC_TXD1",
+                description = "Choice of STM32 EMAC TXD1 pins\n"..
+                               "Possible pins: PB13, PG14.\n"..
+                               "Default: PB13\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PB13",
+                type = "enumerated",
+                choices = { "PB13", "PG14" },
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_TXD2",
+                description = "STM32 EMAC TXD2 pins\n",
+                requires = { "HW_GPIO_STM32V2", "PHY_MODE_MII" },
+                default = "PC02",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_TXD3",
+                description = "Choice of STM32 EMAC TXD3 pins\n"..
+                               "Possible pins: PB08, PE02.\n"..
+                               "Default: PB08\n",
+                 requires = { "HW_GPIO_STM32V2" , "PHY_MODE_MII" },
+                default = "PB08",
+                type = "enumerated",
+                choices = { "PB08", "PE02" },
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_MII_TX_CLK",
+                description = "Stm32 EMAC MII TX_CLK pin\n",
+                requires = { "HW_GPIO_STM32V2", "PHY_MODE_MII" },
+                default = "PC03",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_RXD0",
+                description = "STM32 EMAC RXD0 pins\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PC04",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_RXD1",
+                description = "STM32 EMAC RXD1 pins\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PC05",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_RXD2",
+                description = "Choice of STM32 EMAC RXD2 pins\n"..
+                               "Possible pins: PB00, PH06.\n"..
+                               "Default: PB00\n",
+                requires = { "HW_GPIO_STM32V2" , "PHY_MODE_MII" },
+                default = "PB00",
+                type = "enumerated",
+                choices = { "PB00", "PH06" },
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_RXD3",
+                description = "Choice of STM32 EMAC RXD3 pins\n"..
+                              "Possible pins: PB01, PH07.\n"..
+                              "Default: PB01\n",
+                requires = { "HW_GPIO_STM32V2" , "PHY_MODE_MII" },
+                default = "PB01",
+                type = "enumerated",
+                choices = { "PB01", "PH07" },
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_RX_ER",
+                description = "Choice of STM32 EMAC RX_ER pins\n"..
+                              "Possible pins: PIN_NONE, PB10, PI10.\n"..
+                              "Default: PB10.\n"..
+                              "Use PIN_NONE if normal GPIO pin is used for error detection.\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PB10",
+                type = "enumerated",
+                choices = { "PB10", "PI10", "PIN_NONE" },
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_PPS",
+                description = "Choice of STM32 EMAC PPS pins\n",
+                               "Possible pins: PIN_NONE, PB05, PG08.\n"..
+                               "Default: PIN_NONE to disable PPS functionality\n",
+                 requires = { "HW_GPIO_STM32V2" },
+                default = "PIN_NONE",
+                type = "enumerated",
+                choices = { "PIN_NONE", "PB05", "PG08" },
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_MII_COL",
+                description = "Stm32 EMAC MII COL pin\n",
+                requires = { "HW_GPIO_STM32V2" , "PHY_MODE_MII"},
+                default = "PA03",
+                type = "enumerated",
+                choices = { "PIN_NONE", "PA03", "PH03" },
+                file = "include/cfg/dev.h"
+            },
+             {
+                macro = "EMAC_PHY_CLOCK_MCO",
+                description = "25 MHz from MCU to EMAC\n",
+                default = "PIN_NONE",
+                type = "enumerated",
+                choices = { "PIN_NONE", "PA08", "PC09" },
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_MII_CLK_RMII_REF_CLK",
+                description = "Stm32 MII CLK/RMI REF CLK pin\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PA01",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_MDIO",
+                description = "Stm32 EMAC MDIO pin\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PA02",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_MDC",
+                description = "Stm32 EMAC MDC pin\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PC01",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_MII_RX_DV_RMII_CRS_DV",
+                description = "Stm32 EMAC MII RX_DV/ RMII CRS_DV  pin\n",
+                requires = { "HW_GPIO_STM32V2" },
+                default = "PA07",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_MII_CRS",
+                description = "Choice of STM32 EMAC CRS Coll pins\n"..
+                              "Possible pins: PA00, PH02.\n"..
+                              "Default: PA00\n",
+                 requires = { "HW_GPIO_STM32V2" , "PHY_MODE_MII"},
+                default = "PA00",
+                type = "enumerated",
+                choices = { "PA00", "PH02" },
+                file = "include/cfg/dev.h"
             },
             {
                 macro = "NUT_THREAD_NICRXSTACK",

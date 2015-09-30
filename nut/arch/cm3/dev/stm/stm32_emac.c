@@ -36,6 +36,7 @@
 #include <cfg/os.h>
 #include <cfg/clock.h>
 #include <cfg/phycfg.h>
+#include <cfg/dev.h>
 #include <dev/board.h>
 
 #include <string.h>
@@ -54,6 +55,7 @@
 #include <dev/irqreg.h>
 #include <dev/gpio.h>
 #include <dev/phy.h>
+#include <dev/pins.h>
 #include <dev/stm32_emac.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
@@ -77,16 +79,52 @@
 #define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div62
 #elif SYSCLK_FREQ < 168000001L
 #define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div102
+#else
+# warning Unhandled SYSCLK_FREQ
 #endif
 
+#ifdef STM32F10X_CL /* STM32F1 */
+/* None remappable EMAC pins */
+# define  EMAC_MDC                   PC01
+# define  EMAC_MDIO                  PA02
+# define  EMAC_TX_EN                 PB11
+# define  EMAC_MII_TX_CLK            PC03
+# define  EMAC_TXD0                  PB12
+# define  EMAC_TXD1                  PB13
+# define  EMAC_TXD2                  PC02
+# define  EMAC_TXD3                  PB08
+# define  EMAC_MII_CLK_RMII_REF_CLK  PA01
+# define  EMAC_MII_CRS               PA00
+# define  EMAC_MII_COL               PA03
+# define  EMAC_RX_ER                 PB10
+/* PPS is defined at configurator level*/
+/* Remappable pins */
+# ifdef EMAC_REMAP_ENABLE
+#  define EMAC_MII_RX_DV_RMII_CRS_DV PD08
+#  define EMAC_RXD0                  PD09
+#  define EMAC_RXD1                  PD10
+#  define EMAC_RXD2                  PD11
+#  define EMAC_RXD3                  PD12
+# else
+#  define EMAC_MII_RX_DV_RMII_CRS_DV PA07
+#  define EMAC_RXD0                  PC04
+#  define EMAC_RXD1                  PC05
+#  define EMAC_RXD2                  PB00
+#  define EMAC_RXD3                  PB01
+# endif
+#endif
 /*
  * For the benefit of EMC the GPIO is run at the lowest speed
  * required to operate. For RMII this is 50 MHz for MII 25 MHz.
  */
-#if !defined(PHY_MODE_MII)
-#define EMAC_GPIO_SPEED         GPIO_CFG_SPEED_FAST
+#if defined(STM32F10X_CL)
+# define EMAC_GPIO_SPEED        GPIO_CFG_SPEED_HIGH
 #else
-#define EMAC_GPIO_SPEED         GPIO_CFG_SPEED_MED
+# ifdef PHY_MODE_MII
+#  define EMAC_GPIO_SPEED       GPIO_CFG_SPEED_MED
+# else
+#  define EMAC_GPIO_SPEED       GPIO_CFG_SPEED_FAST
+# endif
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -102,58 +140,6 @@
 #ifndef EMAC_TX_BUFSIZ
 #define EMAC_TX_BUFSIZ          1536
 #endif
-
-#ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR            0
-#endif
-
-/*
- * EMAC default GPIO definitions for alternate
- * functions which can be assigned to different ports on
- * STM32F2/F4 parts.
- */
-#ifndef EMAC_CRS_PORT
-#define EMAC_CRS_PORT        NUTGPIO_PORTA
-#define EMAC_CRS_PIN         0
-#endif
-
-#ifndef EMAC_COL_PORT
-#define EMAC_COL_PORT        NUTGPIO_PORTA
-#endif
-
-#ifndef EMAC_RXD2_PORT
-#define EMAC_RXD2_PORT       NUTGPIO_PORTB
-#define EMAC_RXD2_PIN        0
-#endif
-
-#ifndef EMAC_RXD3_PORT
-#define EMAC_RXD3_PORT       NUTGPIO_PORTB
-#define EMAC_RXD3_PIN        1
-#endif
-
-#ifndef EMAC_RX_ER_PORT
-#define EMAC_RX_ER_PORT      NUTGPIO_PORTB
-#endif
-
-#ifndef EMAC_TXEN_PORT
-#define EMAC_TXEN_PORT       NUTGPIO_PORTB
-#endif
-
-#ifndef EMAC_TXD0_PORT
-#define EMAC_TXD0_PORT       NUTGPIO_PORTB
-#define EMAC_TXD0_PIN        12
-#endif
-
-#ifndef EMAC_TXD1_PORT
-#define EMAC_TXD1_PORT       NUTGPIO_PORTB
-#define EMAC_TXD1_PIN        13
-#endif
-
-#ifndef EMAC_PPS_OUT_PORT
-#undef EMAC_PPS_OUT_PORT /* Default is not to use a PPS signal */
-#undef EMAC_PPS_OUT_PIN
-#endif
-
 
  /*!
  * \brief Network interface controller information structure.
@@ -354,23 +340,23 @@ static int EmacReset(void)
     int link_wait;
 
 #ifdef STM32F10X_CL
-    /* force reset mac */
+    /* force reset emac */
     RCC->AHBRSTR |= RCC_AHBRSTR_ETHMACRST;
 
-    /* enable clocks for mac */
+    /* enable clocks for emac */
     RCC->AHBENR |= RCC_AHBENR_ETHMACEN | RCC_AHBENR_ETHMACTXEN |
         RCC_AHBENR_ETHMACRXEN;
 
-    /* release reset mac */
+    /* release reset emac */
     RCC->AHBRSTR &= ~RCC_AHBRSTR_ETHMACRST;
 #else
     RCC->AHB1RSTR |= RCC_AHB1RSTR_ETHMACRST;
 
-    /* enable clocks for mac */
+    /* enable clocks for emac */
     RCC->AHB1ENR |= RCC_AHB1ENR_ETHMACEN | RCC_AHB1ENR_ETHMACTXEN |
         RCC_AHB1ENR_ETHMACRXEN;
 
-    /* release reset mac */
+    /* release reset emac */
     RCC->AHB1RSTR &= ~RCC_AHB1RSTR_ETHMACRST;
 #endif
     /* Register PHY to be able to reset it */
@@ -915,99 +901,53 @@ int EmacInit(NUTDEVICE * dev)
         return -1;
     }
 
-#ifdef STM32F10X_CL
-    /* disable clocks for mac */
+#ifdef STM32F10X_CL /* STM32F1 */
+    /* disable clocks for MAC */
     RCC->AHBENR &= ~(RCC_AHBENR_ETHMACEN | RCC_AHBENR_ETHMACTXEN |
                      RCC_AHBENR_ETHMACRXEN);
 
-#else
-    /* disable clocks for mac */
+    CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP));
+#else /* STM32F2/F4 parts */
+    /* disable clocks for MAC */
     RCC->AHB1ENR &= ~(RCC_AHB1ENR_ETHMACEN | RCC_AHB1ENR_ETHMACTXEN |
                      RCC_AHB1ENR_ETHMACRXEN);
 
     /* Switch on SYSCFG Clock*/
     CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
 #endif
+    Stm32GpioConfigSet(EMAC_MII_CLK_RMII_REF_CLK, GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_RXD0,  GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_RXD1,  GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_RX_ER, GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
 
-    /*
-     * Alternate function remapping and GPIO set-up
-     */
-#ifdef STM32F10X_CL /* STM32F1 */
- #ifdef EMAC_REMAP_ENABLE
-    CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP));
- #else
-    CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_ETH_REMAP));
- #endif
-    /* Configure (R)MII lines as alternate function */
-    GpioPinConfigSet(NUTGPIO_PORTC,  1, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MDC (50MHz)
-    GpioPinConfigSet(NUTGPIO_PORTA,  2, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MDIO (50MHz)
-    GpioPinConfigSet(NUTGPIO_PORTB, 11, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TX_EN (50MHz)
-    GpioPinConfigSet(NUTGPIO_PORTB, 12, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TXD0 (50MHz)
-    GpioPinConfigSet(NUTGPIO_PORTB, 13, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_(R)MII_TXD1 (50MHz)
-    #if defined(PHY_MODE_MII)
-        /* Configure additional MII lines as alternate function */
-        GpioPinConfigSet(NUTGPIO_PORTC,  2, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MII_TXD2 (50MHz)
-        GpioPinConfigSet(NUTGPIO_PORTB,  8, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL | GPIO_CFG_SPEED_FAST); // ETH_MII_TXD3 (50MHz)
-    #endif
-#else /* STM32F2/F4 parts */
- #ifdef EMAC_REMAP_ENABLE
-  #error General remapping not available for this part. Use alternate function remapping instead!
- #endif
-    GpioPinConfigSet(NUTGPIO_PORTA, 1, GPIO_CFG_PERIPHAL); // ETH_RMII_REF_CLK / ETH_MII_RX_CLK
-    GpioPinConfigSet(NUTGPIO_PORTA, 2, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // ETH_MDIO
-    GpioPinConfigSet(NUTGPIO_PORTA, 7, GPIO_CFG_PERIPHAL); // CRS_DV / ETH_MII_RX_DV
-    GPIO_PinAFConfig(NUTGPIO_PORTA, 1, GPIO_AF_ETH); // REF_CLK / ETH_MII_RX_CLK
-    GPIO_PinAFConfig(NUTGPIO_PORTA, 2, GPIO_AF_ETH); // ETH_MDIO
-    GPIO_PinAFConfig(NUTGPIO_PORTA, 7, GPIO_AF_ETH); // CRS_DV / ETH_MII_RX_DV
+    Stm32GpioConfigSet(EMAC_MII_RX_DV_RMII_CRS_DV, GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
 
-    GpioPinConfigSet(NUTGPIO_PORTC, 1, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // ETH_MDC
-    GpioPinConfigSet(NUTGPIO_PORTC, 4, GPIO_CFG_PERIPHAL); // ETH_RX_D0
-    GpioPinConfigSet(NUTGPIO_PORTC, 5, GPIO_CFG_PERIPHAL); // ETH_RX_D1
-    GPIO_PinAFConfig(NUTGPIO_PORTC, 1, GPIO_AF_ETH); // ETH_MDC
-    GPIO_PinAFConfig(NUTGPIO_PORTC, 4, GPIO_AF_ETH); // ETH_RX_D0
-    GPIO_PinAFConfig(NUTGPIO_PORTC, 5, GPIO_AF_ETH); // ETH_RX_D1
+    Stm32GpioConfigSet(EMAC_MDIO,  GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_MDC,   GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
 
-    GpioPinConfigSet(EMAC_TXEN_PORT, 11, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // TXEN
-    GpioPinConfigSet(EMAC_TXD0_PORT, EMAC_TXD0_PIN, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // TXD0
-    GpioPinConfigSet(EMAC_TXD1_PORT, EMAC_TXD1_PIN, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // TXD1
-    GPIO_PinAFConfig(EMAC_TXEN_PORT, 11, GPIO_AF_ETH); // TXEN
-    GPIO_PinAFConfig(EMAC_TXD0_PORT, EMAC_TXD0_PIN, GPIO_AF_ETH); // TXD0
-    GPIO_PinAFConfig(EMAC_TXD1_PORT, EMAC_TXD1_PIN, GPIO_AF_ETH); // TXD1
+    Stm32GpioConfigSet(EMAC_TX_EN, GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_TXD0,  GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_TXD1,  GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
 
-   #ifdef EMAC_PPS_OUT_PORT
-    GpioPinConfigSet(EMAC_PPS_OUT_PORT, EMAC_PPS_OUT_PIN, GPIO_CFG_PERIPHAL); // ETH_PPS_OUT
-    GPIO_PinAFConfig(EMAC_PPS_OUT_PORT, EMAC_PPS_OUT_PIN, GPIO_AF_ETH); // ETH_PPS_OUT
-   #endif /* EMAC_PPS_OUT_PORT */
+    Stm32GpioConfigSet(EMAC_PPS,   GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
 
-   #ifdef EMAC_PHY_CLOCK_MCO
-    GpioPinConfigSet(NUTGPIO_PORTA, 8, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // MCO1
-    GPIO_PinAFConfig(NUTGPIO_PORTA, 8, GPIO_AF_MCO); // MCO1
+#if EMAC_PHY_CLOCK_MCO != PIN_NONE
+    Stm32GpioConfigSet(EMAC_PHY_CLOCK_MCO, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT | EMAC_GPIO_SPEED, GPIO_AF_MCO); // MCO1
     /* Output HSE clock (25MHz) on MCO pin (PA8) to clock the PHY */
     RCC->CFGR = (RCC->CFGR & ~(RCC_CFGR_MCO1 | RCC_CFGR_MCO1PRE)) | RCC_CFGR_MCO1_1;
-   #endif /* PHY_CLOCK_MCO */
-
-  #if defined(PHY_MODE_MII)
-    GpioPinConfigSet(NUTGPIO_PORTB, 8, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // ETH_MII_TXD3
-    GPIO_PinAFConfig(NUTGPIO_PORTB,  8,  GPIO_AF_ETH); // ETH_MII_TXD3
-
-    GpioPinConfigSet(NUTGPIO_PORTC, 2, GPIO_CFG_PERIPHAL|GPIO_CFG_OUTPUT|EMAC_GPIO_SPEED); // ETH_MII_TXD2
-    GpioPinConfigSet(NUTGPIO_PORTC, 3, GPIO_CFG_PERIPHAL); // ETH_MII_TX_CLK
-    GPIO_PinAFConfig(NUTGPIO_PORTC, 2, GPIO_AF_ETH); // ETH_MII_TXD2
-    GPIO_PinAFConfig(NUTGPIO_PORTC, 3, GPIO_AF_ETH); // ETH_MII_TX_CLK
-
-    GpioPinConfigSet(EMAC_CRS_PORT, EMAC_CRS_PIN, GPIO_CFG_PERIPHAL|EMAC_GPIO_SPEED); // ETH_MII_CRS
-    GpioPinConfigSet(EMAC_COL_PORT, 3, GPIO_CFG_PERIPHAL|EMAC_GPIO_SPEED); // ETH_MII_COL
-    GPIO_PinAFConfig(EMAC_CRS_PORT, EMAC_CRS_PIN,  GPIO_AF_ETH); // ETH_MII_CRS
-    GPIO_PinAFConfig(EMAC_COL_PORT, 3, GPIO_AF_ETH); // ETH_MII_COL
-
-    GpioPinConfigSet(EMAC_RXD2_PORT, EMAC_RXD2_PIN, GPIO_CFG_PERIPHAL); // ETH_MII_RXD2
-    GpioPinConfigSet(EMAC_RXD3_PORT, EMAC_RXD3_PIN, GPIO_CFG_PERIPHAL); // ETH_MII_RXD3
-    GpioPinConfigSet(EMAC_RX_ER_PORT, 10, GPIO_CFG_PERIPHAL); // ETH_MII_RX_ER
-    GPIO_PinAFConfig(EMAC_RXD2_PORT, EMAC_RXD2_PIN, GPIO_AF_ETH); // ETH_MII_RXD2
-    GPIO_PinAFConfig(EMAC_RXD3_PORT, EMAC_RXD3_PIN, GPIO_AF_ETH); // ETH_MII_RXD3
-    GPIO_PinAFConfig(EMAC_RX_ER_PORT, 10, GPIO_AF_ETH); // ETH_MII_RX_ER
-  #endif /* PHY_MODE_MII */
 #endif
+#if defined(PHY_MODE_MII)
+    Stm32GpioConfigSet(EMAC_TXD2, GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_TXD3, GPIO_CFG_PERIPHAL| GPIO_CFG_OUTPUT| EMAC_GPIO_SPEED, GPIO_AF_ETH);
+
+    Stm32GpioConfigSet(EMAC_MII_TX_CLK, GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
+
+    Stm32GpioConfigSet(EMAC_MII_CRS, GPIO_CFG_PERIPHAL | EMAC_GPIO_SPEED, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_MII_COL, GPIO_CFG_PERIPHAL | EMAC_GPIO_SPEED, GPIO_AF_ETH);
+
+    Stm32GpioConfigSet(EMAC_RXD2, GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
+    Stm32GpioConfigSet(EMAC_RXD3, GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
+  #endif /* !PHY_MODE_MII */
 
     /*
      * MII or RMII mode selection
@@ -1016,19 +956,19 @@ int EmacInit(NUTDEVICE * dev)
 #define SYSCFG_PMC_MII_RMII SYSCFG_PMC_MII_RMII_SEL
 #endif
 
-#if !defined(PHY_MODE_MII)
-    /* switch to RMII mode */
- #ifdef STM32F10X_CL
-    CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
- #else
-    CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII));
- #endif
-#else
+#ifdef PHY_MODE_MII
     /* switch to MII mode */
  #ifdef STM32F10X_CL
     CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
  #else
     CM3BBCLR(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII));
+ #endif
+#else
+    /* switch to RMII mode */
+ #ifdef STM32F10X_CL
+    CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
+ #else
+    CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII));
  #endif
 #endif
 
