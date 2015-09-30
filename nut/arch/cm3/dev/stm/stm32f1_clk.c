@@ -332,41 +332,6 @@ static void SystemCoreClockUpdate(void)
 }
 
 /*!
- * \brief Control HSI clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on HSI start failed.
- */
-int CtlHsiClock( uint8_t ena)
-{
-    int rc = 0;
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t HSIStatus = 0;
-
-    if( ena) {
-        /* Enable HSE clock */
-        RCC->CR |= ((uint32_t)RCC_CR_HSION);
-
-        /* Wait till HSE is ready or time out is reached */
-        do {
-            HSIStatus = RCC->CR & RCC_CR_HSIRDY;
-            tout--;
-        } while((HSIStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_HSIRDY) == 0) {
-            /* HSE failed to start */
-            rc = -1;
-        }
-    }
-    else {
-        /* Disable HSI clock */
-        RCC->CR &= ~RCC_CR_HSION;
-    }
-
-    return rc;
-}
-
-/*!
  * \brief Control PLL clock.
  *
  * \param  ena 0 disable clock, any other value enable it.

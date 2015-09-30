@@ -323,22 +323,6 @@ int CtlMsiClock( uint8_t ena)
 }
 
 /*!
- * \brief Control HSI clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on HSI start failed.
- */
-int CtlHsiClock( uint8_t ena)
-{
-    int rc = 0;
-
-    rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_HSION, RCC_CR_HSIRDY,
-            ena, HSE_STARTUP_TIMEOUT);
-
-    return rc;
-}
-
-/*!
  * \brief Control PLL clock.
  *
  * \param  ena 0 disable clock, any other value enable it.

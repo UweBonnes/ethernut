@@ -176,31 +176,6 @@ void SystemCoreClockUpdate(void)
 
 /* Functional same as F1 */
 /*!
- * \brief Control HSI clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on HSI start failed.
- */
-int CtlHsiClock( uint8_t ena)
-{
-    int rc = 0;
-
-    if( ena) {
-        /* Enable HSI */
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSION)), 1, HSE_STARTUP_TIMEOUT);
-    }
-    else {
-        /* Disable HSE clock */
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSION)), 0, HSE_STARTUP_TIMEOUT);
-    }
-
-    return rc;
-}
-
-/* Functional same as F1 */
-/*!
  * \brief Control PLL clock.
  *
  * \param  ena 0 disable clock, any other value enable it.

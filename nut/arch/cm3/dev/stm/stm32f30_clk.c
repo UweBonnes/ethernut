@@ -237,43 +237,6 @@ void SystemCoreClockUpdate(void)
         clk_shift[NUT_HWCLK_TCLK2] = clk_shift[NUT_HWCLK_PCLK2] - 1;
 }
 
-/* Functional same as F1 */
-/*!
- * \brief Control HSI clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on HSI start failed.
- */
-int CtlHsiClock( uint8_t ena)
-{
-    int rc = 0;
-
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t HSIStatus = 0;
-
-    if( ena) {
-        /* Enable HSI */
-        RCC->CR |= RCC_CR_HSION;
-
-        /* Wait till HSI is ready or time out is reached */
-        do {
-            tout--;
-            HSIStatus = RCC->CR & RCC_CR_HSIRDY;
-        } while((HSIStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_HSIRDY) == RESET) {
-            /* HSI failed to start */
-            rc = -1;
-        }
-    }
-    else {
-        /* Disable HSE clock */
-        RCC->CR &= ~RCC_CR_HSION;
-    }
-
-    return rc;
-}
-
 #if defined(RCC_CFGR_SWS_HSI48)
 /*!
  * \brief Control HSI48 clock.

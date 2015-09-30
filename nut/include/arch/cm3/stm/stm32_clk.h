@@ -92,7 +92,7 @@ extern uint32_t STM_ClockGet(int idx);
 
 /* Control functions for the separate clocks */
 extern int CtlHseClock(int ena);
-extern int CtlHsiClock( uint8_t ena);
+extern int CtlHsiClock(int ena);
 extern int CtlPllClock( uint8_t ena);
 
 /* Selection functions for the clock sources */
