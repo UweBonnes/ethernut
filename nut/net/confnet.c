@@ -46,10 +46,11 @@
 #include <netinet/if_ether.h>
 #include <sys/confnet.h>
 #include <dev/nvmem.h>
+#include <dev/hw_signature.h>
 
 #ifdef CONFNET_VIRGIN_MAC
 #define VIRGIN_MAC  ether_aton(CONFNET_VIRGIN_MAC)
-#else
+#elif !defined(UNIQUE_PRIVATE_MAC)
 static uint8_t virgin_mac[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00 };
 #define VIRGIN_MAC  virgin_mac
 #endif
@@ -107,7 +108,11 @@ int NutNetLoadConfig(const char *name)
     }
 #endif
     memset(&confnet, 0, sizeof(CONFNET));
+#if defined(UNIQUE_PRIVATE_MAC)
+    UNIQUE_PRIVATE_MAC(confnet.cdn_mac);
+#else
     memcpy(confnet.cdn_mac, VIRGIN_MAC, sizeof(confnet.cdn_mac));
+#endif
 
     /* Set local IP and the gate's IP, if configured. */
 #ifdef CONFNET_VIRGIN_IP

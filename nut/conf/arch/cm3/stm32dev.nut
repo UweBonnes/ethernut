@@ -2721,6 +2721,17 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32 Unique ID
+    --
+    {
+        name = "nutarch_cm3_stm32_uidc",
+        brief = "STM32 Unique ID",
+        description = "Access to unique ID.",
+        sources = {
+           "cm3/dev/stm/stm32_signature.c",
+        },
+    },
+      --
     -- STM32F EMAC Configuration
     --
     {
@@ -2729,7 +2740,9 @@ nutarch_cm3_stm32_devices =
         description = "LAN driver for STM32Fxx7xx.",
         requires = { "HW_EMAC_STM32", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_MAC" },
-        sources = { "cm3/dev/stm/stm32_emac.c" },
+        sources = {
+           "cm3/dev/stm/stm32_emac.c",
+        },
         options =
         {
             {
