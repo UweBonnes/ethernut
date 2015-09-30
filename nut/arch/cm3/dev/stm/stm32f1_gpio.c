@@ -46,6 +46,7 @@
 
 #include <arch/cm3.h>
 #include <dev/gpio.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 
 #define NUTGPIOPORT_MAX NUTGPIO_PORTG+1
 
@@ -315,4 +316,37 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
         return -1;
     }
     return 0;
+}
+
+/*!
+ * \brief Set pin configuration
+ *
+ * STM32F1 has only a function global pin remapping, not an indivudual
+ * remap as newer families. To keep common code possible, the value of
+ * the af parameter is ignored for STM32F1.
+ *
+ *
+ * \param GPIO  Pin designator like PA1 as defined in dev/pins.h.
+ * \param flags Flags for the pin.
+ * \param af    Ignored.
+ *
+ * \return 0 on success, -1 on error.
+ */
+int Stm32GpioConfigSet(nutgpio_t GPIO, uint32_t flags, uint32_t af)
+{
+    int gpio_nr;
+    int pin_nr;
+    GPIO_TypeDef *gpio;
+
+    (void) af;
+    pin_nr = GPIO & 0xff;
+    if (pin_nr > 15)
+        return -1;
+    gpio_nr = GPIO >> 8;
+    if (gpio_nr >= STM32_NR_GPIO)
+        return -1;
+    gpio = stm32_port_nr2gpio[gpio_nr];
+    if (!gpio)
+        return -1;
+    return GpioPortConfigSet((uint32_t)gpio, _BV(pin_nr), flags);
 }

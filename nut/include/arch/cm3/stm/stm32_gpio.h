@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-15 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,87 @@
  * $Id$
  * \endverbatim
  */
+#if !defined(__STM32_GPIO_H)
+#define __STM32_GPIO_H
+
+#include <dev/pins.h>
+
+/* stm32_port_nr2gpio[] includes a NULL at position NULL
+ * to facilitate translation from gpio_t to GPIO_TypeDef and
+ * catch invalid gpio_t constructs.
+ *
+ * All devices seen until June 2015 have at least GPIOA/B/C,
+ * so STM32_NR_GPIO is 4 at least.
+ *
+ * Some devices provide an intermitted list of ports. e.g.
+ * STM32F042x6 has GPIOA/B/C/F.
+ *
+ */
+#if   defined(GPIOK_BASE)
+# define STM32_NR_GPIO 12
+#elif  defined(GPIOJ_BASE)
+# define STM32_NR_GPIO 11
+#elif  defined(GPIOI_BASE)
+# define STM32_NR_GPIO 10
+#elif  defined(GPIOH_BASE)
+# define STM32_NR_GPIO  9
+#elif  defined(GPIOG_BASE)
+# define STM32_NR_GPIO  8
+#elif  defined(GPIOF_BASE)
+# define STM32_NR_GPIO  7
+#elif  defined(GPIOE_BASE)
+# define STM32_NR_GPIO  6
+#elif  defined(GPIOD_BASE)
+# define STM32_NR_GPIO  5
+#else
+# define STM32_NR_GPIO  4
+#endif
+static GPIO_TypeDef *const stm32_port_nr2gpio[STM32_NR_GPIO] = {
+    NULL,
+    GPIOA,
+    GPIOB,
+    GPIOC,
+#if defined(GPIOD_BASE)
+    GPIOD,
+#elif STM32_NR_GPIO >4
+    NULL,
+#endif
+#if defined(GPIOE_BASE)
+    GPIOE,
+#elif STM32_NR_GPIO >5
+    NULL,
+#endif
+#if defined(GPIOF_BASE)
+    GPIOF,
+#elif STM32_NR_GPIO >6
+    NULL,
+#endif
+#if defined(GPIOG_BASE)
+    GPIOG,
+#elif STM32_NR_GPIO >7
+    NULL,
+#endif
+#if defined(GPIOH_BASE)
+    GPIOH,
+#elif STM32_NR_GPIO >8
+    NULL,
+#endif
+#if defined(GPIOI_BASE)
+    GPIOI,
+#elif STM32_NR_GPIO >9
+    NULL,
+#endif
+#if defined(GPIOJ_BASE)
+    GPIOJ,
+#elif STM32_NR_GPIO >10
+    NULL,
+#endif
+#if defined(GPIOK_BASE)
+    GPIOK,
+#elif STM32_NR_GPIO >11
+    NULL,
+#endif
+};
 
 /* STM32 Remapping defines for L1/F2/3/4*/
 #define GPIO_Mode_IN 0
@@ -130,4 +211,7 @@ void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_
 #else
 void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF);
 #endif
+#endif
+extern int Stm32GpioConfigSet(nutgpio_t gpio,  uint32_t flags, uint32_t af);
+
 #endif

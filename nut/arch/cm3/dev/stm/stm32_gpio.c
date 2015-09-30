@@ -75,16 +75,125 @@ const uint16_t ospeed_values[4] =
 #warning "Unknown STM32 family"
 #endif
 
-static void Stm32GpioCompensationEnable(void)
-{
+/*!
+ * \brief Internal function to set checked pin configuration
+ *  and eventually alternate function
+ *
+ *
+ * \param GPIO  Pin designator like PA1 as defined in dev/pins.h.
+ * \param flags Flags for the pin
+ * \param af    Number of alternate function to set.
+ *              Use -1 to set pure GPIO.
+ *
+ * \return 0 on success, -1 on error.
+ */
+int Stm32GpioConfigSetDo(GPIO_TypeDef *gpio, int pin_nr, uint32_t flags, uint32_t af) {
+    uint32_t moder;
+    uint32_t ospeedr;
+    uint32_t pupdr;
+    uint32_t otyper;
+    uint32_t bsrr;
+    uint32_t afr = 0;
+    int afr_index = 2;
+    int shift;
+
+    GpioClkEnable((uint32_t)gpio);
+    shift = pin_nr << 1;
+
+/* Work on local copy of registers and only write
+ * out when successfull at end of function
+ */
+    moder   = gpio->MODER;
+    ospeedr = gpio->OSPEEDR;
+    pupdr   = gpio->PUPDR;
+    otyper  = gpio->OTYPER;
+    bsrr    = 0;
+    /* Reset all two bit entries */
+    moder   &= ~(0x3 << shift);
+    ospeedr &= ~(0x3 << shift);
+    pupdr   &= ~(0x3 << shift);
+    otyper  &= ~(1 << pin_nr);
+    if (flags & GPIO_CFG_DISABLED) {
+        /* Set Analog Mode, ignore all other flags and reset all other bits */
+        moder   |=  (3 << shift);
+    } else {
+        /* Set the inital value, if given
+         *
+         * Otherwise we may introduce unwanted transistions on the port
+         */
+        if (flags & GPIO_CFG_INIT_HIGH) {
+            if (flags & GPIO_CFG_INIT_LOW) {
+                return -1;
+            } else {
+                bsrr |= GPIO_BSRR_BS_0 << pin_nr ;
+            }
+        }
+        if (flags & GPIO_CFG_INIT_LOW) {
+            bsrr |= GPIO_BSRR_BR_0 << pin_nr ;
+        }
+        /* we can't check for these flags, so clear them */
+        flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
+
+        /* For non-output, multidrive is don't care*/
+        if (flags & GPIO_CFG_MULTIDRIVE ) {
+            otyper |= 1 << pin_nr;
+        }
+        /* For non-output, ospeedr is don't care*/
+        switch (flags & GPIO_CFG_SPEED_FAST) {
+        case GPIO_CFG_SPEED_HIGH:
+            ospeedr |=  (3 << shift);
 #if defined(SYSCFG_CMPCR_CMP_PD)
-    /* On F4, if even one pin needs fastest (high) speed, we need to
-     * enable the SYSCFG clock and the IO compensation cell
-     */
-    CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
-    CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD));
-    /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
+            /* On F4, if even one pin needs fastest (high) speed, we need to
+             * enable the SYSCFG clock and the IO compensation cell
+             */
+            CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
+            CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD));
+            /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
 #endif
+            break;
+        case GPIO_CFG_SPEED_FAST:
+            ospeedr |=  (2 << shift);
+            break;
+        case GPIO_CFG_SPEED_MED:
+            ospeedr |=  (0x1 << shift);
+            break;
+        }
+        /* Pull Up/Pull Down applies to all configurations*/
+        if (flags & GPIO_CFG_PULLUP ) {
+            pupdr |=  (1 << shift);
+        }
+        if (flags & GPIO_CFG_PULLDOWN ) {
+            pupdr |=  (2 << shift );
+        }
+        if (flags & GPIO_CFG_PERIPHAL) {
+            moder |=  2 << shift;
+            if ((uint32_t)-1 != af) {
+                int af_shift;
+                if (pin_nr > 7) {
+                    af_shift = (pin_nr -8) << 2;
+                    afr_index = 1;
+                } else {
+                    af_shift = pin_nr << 2;
+                    afr_index = 0;
+                }
+                afr  = gpio->AFR[afr_index];
+                afr &= ~(0xf << af_shift);
+                afr |=  ( af << af_shift);
+            }
+        } else if (flags & GPIO_CFG_OUTPUT) {
+            moder |=  1 << shift;
+        }
+    }
+    if (afr_index < 2) {
+        gpio->AFR[afr_index] = afr;
+    }
+    gpio->OSPEEDR =  ospeedr;
+    gpio->PUPDR   =  pupdr;
+    gpio->OTYPER  =  otyper;
+/* The families still differ in BSSR vs. BSSRL. Use the macro. */
+    GpioPortSetHigh((uint32_t)gpio, bsrr);
+    gpio->MODER   =  moder;
+    return 0;
 }
 
 /*!
@@ -168,76 +277,13 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     NUTASSERT(IS_GPIO_ALL_PERIPH(bank));
     GPIO_TypeDef *gpio = (GPIO_TypeDef *) bank;
-
-    GpioClkEnable(bank);
-    if (flags == GPIO_CFG_DISABLED) {
-        /* Set Analog Mode and reset all other bits */
-        gpio->MODER   |=  (3 << (bit << 1));
-        gpio->OTYPER  &= ~(1 << bit);
-        gpio->OSPEEDR &= ~(3 << (1 << bit));
-        gpio->PUPDR   &= ~(3 << (1 << bit));
-        if( GpioPinConfigGet( bank, bit ) != flags ) {
-            return -1;
-        }
-        return 0;
+    if (bit > 15) {
+        return -1;
     }
-    /* Set the inital value, if given
-     *
-     * Otherwise we may introduce unwanted transistions on the port
-     */
-    if (flags & GPIO_CFG_INIT_HIGH)
-    {
-        if (flags & GPIO_CFG_INIT_LOW)
-            return -1;
-        else
-            GpioPinSetHigh(bank, bit);
-    }
-    if (flags & GPIO_CFG_INIT_LOW)
-        GpioPinSetLow(bank, bit);
-
-    /* we can't check for these flags, so clear them */
-    flags &= ~(GPIO_CFG_INIT_LOW |GPIO_CFG_INIT_HIGH);
-
-    /* Reset all two bit entries */
-    gpio->MODER   &= ~(0x3 <<(bit << 1));
-    gpio->OSPEEDR &= ~(0x3 <<(bit << 1));
-    gpio->PUPDR   &= ~(0x3 <<(bit << 1));
-    /* For non-output, multidrive is don't care*/
-    if (flags & GPIO_CFG_MULTIDRIVE )
-        gpio->OTYPER |= 1<<bit;
-    else
-        gpio->OTYPER &= ~(1<<bit);
-    /* For non-output, ospeedr is don't care*/
-    switch(flags & GPIO_CFG_SPEED_FAST)
-    {
-    case GPIO_CFG_SPEED_HIGH:
-        gpio->OSPEEDR |=  (3 <<(bit << 1));
-        Stm32GpioCompensationEnable();
-        break;
-    case GPIO_CFG_SPEED_FAST:
-        gpio->OSPEEDR |=  (2 <<(bit << 1));
-        break;
-    case GPIO_CFG_SPEED_MED:
-        gpio->OSPEEDR |=  (0x1 <<(bit << 1));
-        break;
-    }
-    /* Pull Up/Pull Down applies to all configurations*/
-        if (flags & GPIO_CFG_PULLUP )
-            gpio->PUPDR |=  (1<<((bit << 1)));
-        if (flags & GPIO_CFG_PULLDOWN )
-            gpio->PUPDR |=  (2<<((bit << 1)));
-
-    if (flags & GPIO_CFG_PERIPHAL)
-    {
-        gpio->MODER |=  2<<((bit << 1));
-    }
-    else if (flags & GPIO_CFG_OUTPUT)
-    {
-        gpio->MODER |=  1<<((bit << 1));
-    }
-
+    if (Stm32GpioConfigSetDo(gpio, bit, flags, (uint32_t) -1))
+        return -1;
     /* Check the result. */
-    if( GpioPinConfigGet( bank, bit ) != flags ) {
+    if (GpioPinConfigGet(bank, bit) != flags) {
         return -1;
     }
     return 0;
@@ -326,4 +372,37 @@ void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_
   temp_2 &= ~temp;
   temp_2 |= GPIO_AF << ((GPIO_PinSource % 8) * 4);
   *afr = temp_2;
+}
+
+/*!
+ * \brief Set pin configuration and alternate function
+ *
+ * When code calls Stm32GpioConfigSet() for both STM32F1 and all
+ * newer families, use the GPIO_CFG_OUTPUT flag together with the
+ * GPIO_CFG_PERIPHAL flag to allow STM32F1 configuration.
+ *
+ * \param GPIO  Pin designator like PA1 as defined in dev/pins.h.
+ * \param flags Flags for the pin.
+ * \param af    Number of alternate function to set
+ *
+ * \return 0 on success, -1 on error.
+ */
+int Stm32GpioConfigSet(nutgpio_t GPIO, uint32_t flags, uint32_t af)
+{
+    int gpio_nr;
+    int pin_nr;
+    GPIO_TypeDef *gpio;
+
+    if (af > 15)
+        return -1;
+    pin_nr = GPIO & 0xff;
+    if (pin_nr > 15)
+        return -1;
+    gpio_nr = GPIO >> 8;
+    if (gpio_nr >= STM32_NR_GPIO)
+        return -1;
+    gpio = stm32_port_nr2gpio[gpio_nr];
+    if (!gpio)
+        return -1;
+    return Stm32GpioConfigSetDo(gpio, pin_nr, flags, af);
 }
