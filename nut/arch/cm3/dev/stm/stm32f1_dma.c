@@ -163,10 +163,6 @@ void DMA_Init(void)
 
         /* Clear pending interrupts in DMA 1 ISR */
         DMA1->IFCR = 0xFFFFFFFF;
-/* FIXME: The ST defined headers don't define RCC_AHBENR_DMA2EN for XL
- * devices,  but RM0008 says that XL devices have DMA2
- * Assume no DMA2 for XL devices for now
- */
 #if defined(STM_HAS_DMA2) && defined(RCC_AHBENR_DMA2EN)
         if ((RCC->AHBENR & RCC_AHBENR_DMA2EN ) == 0) {
             RCC->AHBENR |= RCC_AHBENR_DMA2EN;

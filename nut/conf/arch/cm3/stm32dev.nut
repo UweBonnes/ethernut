@@ -17,25 +17,25 @@ function GetStmUsarts()
     if c_is_provided("HW_MCU_STM32F072") then
         return { "", "USART1", "USART2", "USART3", "USART4", }
     end
-    if c_is_provided("HW_STM32F10X_LD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_LD_VL") then
         return { "", "USART1", "USART2" }
     end
-    if c_is_provided("HW_STM32F10X_MD") then
+    if c_is_provided("HW_MCU_STM32F1_MD") then
         return { "", "USART1", "USART2", "USART3" }
     end
-    if c_is_provided("HW_STM32F10X_MD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_MD_VL") then
         return { "", "USART1", "USART2", "USART3" }
     end
-    if c_is_provided("HW_STM32F10X_HD") then
+    if c_is_provided("HW_MCU_STM32F1_HD") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("HW_STM32F10X_HD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_HD_VL") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("HW_STM32F10X_XL") then
+    if c_is_provided("HW_MCU_STM32F1_XL") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("HW_STM32F10X_CL") then
+    if c_is_provided("HW_MCU_STM32F1_CL") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
     if c_is_provided("HW_MCU_STM32F2x") then
@@ -185,7 +185,7 @@ end
 -- Retrieve USART4TX pins available on the device.
 --
 function GetTxUsart4()
-    if c_is_provided("HW_STM32F10X") then
+    if c_is_provided("HW_MCU_STM32F1") then
         return { "0", "-1" }
     end
     if c_is_provided("HW_MCU_STM32F3") then
@@ -198,7 +198,7 @@ end
 -- Retrieve USART4RX pins available on the device.
 --
 function GetRxUsart4()
-    if c_is_provided("HW_STM32F10X") then
+    if c_is_provided("HW_MCU_STM32F1") then
         return { "1", "-1" }
     end
     if c_is_provided("HW_MCU_STM32F3") then
@@ -262,7 +262,7 @@ function GetI2c2Sda()
     if c_is_provided("HW_MCU_STM32F3") then
         return { "10", "0", "7" }
     end
-    if c_is_provided("HW_STM32F10X") then
+    if c_is_provided("HW_MCU_STM32F1") then
         return { "11" }
     end
 -- No PB10 on small packages
@@ -284,7 +284,7 @@ function GetI2c2Scl()
     if c_is_provided("MCU_STM32F3") then
         return { "9", "1", "6" }
     end
-    if c_is_provided("HW_STM32F10X") then
+    if c_is_provided("HW_MCU_STM32F1") then
         return { "10" }
     end
     if c_is_provided("HW_STM32F411") then
@@ -302,7 +302,7 @@ function GetI2c2Smba()
     if c_is_provided("HW_MCU_STM32F3") then
         return { "-1" , "8", "12", "2" }
     end
-    if c_is_provided("HW_STM32F10X") then
+    if c_is_provided("HW_MCU_STM32F1") then
         return { "-1" , "12" }
     end
     if c_is_provided("HW_STM32F411") then
@@ -508,28 +508,28 @@ function GetStmTimers2Ch()
     if c_is_provided("HW_MCU_STM32F098xx") then
         return { "", "1" , "2", "3",   "16", "17" }
     end
-    if c_is_provided("HW_STM32F10X_LD") then
+    if c_is_provided("HW_MCU_STM32F1_LD") then
         return { "", "1", "2", "3"}
     end
-    if c_is_provided("HW_STM32F10X_LD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_LD_VL") then
         return { "", "1", "2", "3"}
     end
-    if c_is_provided("HW_STM32F10X_MD") then
+    if c_is_provided("HW_MCU_STM32F1_MD") then
         return { "", "1", "2", "3", "4"}
     end
-    if c_is_provided("HW_STM32F10X_MD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_MD_VL") then
         return { "", "1", "2", "3", "4"}
     end
-    if c_is_provided("HW_STM32F10X_HD") then
+    if c_is_provided("HW_MCU_STM32F1_HD") then
         return { "", "1", "2", "3", "4", "5"}
     end
-    if c_is_provided("HW_STM32F10X_HD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_HD_VL") then
         return { "", "1", "2", "3", "4", "5", "12"}
     end
-    if c_is_provided("HW_STM32F10X_XL") then
+    if c_is_provided("HW_MCU_STM32F1_XL") then
         return { "", "1", "2", "3", "4", "5"}
     end
-    if c_is_provided("HW_STM32F10X_CL") then
+    if c_is_provided("HW_MCU_STM32F1_CL") then
         return { "", "1", "2", "3", "4", "5"}
     end
     if c_is_provided("HW_MCU_STM32F2") then
@@ -660,28 +660,28 @@ function GetStmTimers2ChIrq()
     if c_is_provided("HW_MCU_STM32F098xx") then
         return { "",  "2", "3",   "16", "17" }
     end
-    if c_is_provided("HW_STM32F10X_LD") then
+    if c_is_provided("HW_MCU_STM32F1_LD") then
         return { "", "2", "3"}
     end
-    if c_is_provided("HW_STM32F10X_LD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_LD_VL") then
         return { "", "2", "3"}
     end
-    if c_is_provided("HW_STM32F10X_MD") then
+    if c_is_provided("HW_MCU_STM32F1_MD") then
         return { "", "2", "3", "4"}
     end
-    if c_is_provided("HW_STM32F10X_MD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_MD_VL") then
         return { "", "2", "3", "4"}
     end
-    if c_is_provided("HW_STM32F10X_HD") then
+    if c_is_provided("HW_MCU_STM32F1_HD") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("HW_STM32F10X_HD_VL") then
+    if c_is_provided("HW_MCU_STM32F1_HD_VL") then
         return { "", "2", "3", "4", "5", "12"}
     end
-    if c_is_provided("HW_STM32F10X_XL") then
+    if c_is_provided("HW_MCU_STM32F1_XL") then
         return { "", "2", "3", "4", "5"}
     end
-    if c_is_provided("HW_STM32F10X_CL") then
+    if c_is_provided("HW_MCU_STM32F1_CL") then
         return { "", "2", "3", "4", "5"}
     end
     if c_is_provided("HW_MCU_STM32F2") then
@@ -3143,7 +3143,6 @@ nutarch_cm3_stm32_devices =
                 macro = "SPIBUS1_CS0_PIN",
                 brief = "SPI1 CS0 Pins",
                 description = "Choice of SPI1 Node 0 CS on GPIO PIN",
-                requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() GetGpioBits() end,
                 file = "include/cfg/spi.h"
@@ -4429,7 +4428,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32TIM_OWI0_REMAP",
                 brief = "REMAP for STM32 hardware timer OWIBUS0",
-                requires = { "HW_MCU_STM32F10X" },
+                requires = { "HW_MCU_STM32F1" },
                 description = "Give Remap used for STM32F1 hardware "..
                             "timer OWIBUS0 if needed!",
                 type = "interger",
@@ -4490,7 +4489,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32TIM_OWI1_REMAP",
                 brief = "REMAP for STM32 hardware timer OWIBUS1",
-                requires = { "HW_MCU_STM32F10X" },
+                requires = { "HW_MCU_STM32F1" },
                 description = "Give Remap used for STM32F1 hardware "..
                             "timer OWIBUS1 if needed!",
                 type = "interger",
@@ -4551,7 +4550,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32TIM_OWI2_REMAP",
                 brief = "REMAP for STM32 hardware timer OWIBUS2",
-                requires = { "HW_MCU_STM32F10X" },
+                requires = { "HW_MCU_STM32F1" },
                 description = "Give Remap used for STM32F1 hardware"..
                             " timer OWIBUS2 if needed!",
                 type = "interger",

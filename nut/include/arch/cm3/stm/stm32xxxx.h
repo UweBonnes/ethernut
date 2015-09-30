@@ -78,7 +78,35 @@
 #  warning Unhandled STM32F0 device
 # endif
 #elif defined(MCU_STM32F1)
-#include <arch/cm3/stm/vendor/stm32f10x.h>
+# if   defined(STM32F100xB)
+#  include <arch/cm3/stm/vendor/stm32f100xb.h>
+# elif defined(STM32F100xE)
+#  include <arch/cm3/stm/vendor/stm32f100xe.h>
+# elif defined(STM32F101x6)
+#  include <arch/cm3/stm/vendor/stm32f101x8.h>
+# elif defined(STM32F101xB)
+#  include <arch/cm3/stm/vendor/stm32f101xb.h>
+# elif defined(STM32F101xE)
+#  include <arch/cm3/stm/vendor/stm32f101xe.h>
+# elif defined(STM32F102x6)
+#  include <arch/cm3/stm/vendor/stm32f102x6.h>
+# elif defined(STM32F102xB)
+#  include <arch/cm3/stm/vendor/stm32f102xb.h>
+# elif defined(STM32F101xG)
+#  include <arch/cm3/stm/vendor/stm32f101xg.h>
+# elif defined(STM32F103x8)
+#  include <arch/cm3/stm/vendor/stm32f103x8.h>
+# elif defined(STM32F103xB)
+#  include <arch/cm3/stm/vendor/stm32f103xb.h>
+# elif defined(STM32F103xE)
+#  include <arch/cm3/stm/vendor/stm32f103xe.h>
+# elif defined(STM32F103xG)
+#  include <arch/cm3/stm/vendor/stm32f103xg.h>
+# elif defined(STM32F105xC)
+#  include <arch/cm3/stm/vendor/stm32f105xc.h>
+# elif defined(STM32F107xC)
+#  include <arch/cm3/stm/vendor/stm32f107xc.h>
+# endif
 #elif defined(MCU_STM32L1)
 # if   defined(STM32L151xB)
 #  include <arch/cm3/stm/vendor/stm32l151xb.h>

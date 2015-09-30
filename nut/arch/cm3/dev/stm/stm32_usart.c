@@ -88,7 +88,9 @@
 #if !defined(USART_ISR_TXE)
 #define USART_ISR_TXE USART_SR_TXE
 #endif
-
+#if !defined(USART_CR1_OVER8)
+# define USART_CR1_OVER8 0
+#endif
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
 #include <arch/cm3/stm/stm32_dma.h>
 #endif
@@ -619,21 +621,23 @@ static void Stm32UsartDisable(void)
  */
 static uint32_t Stm32UsartGetSpeed(void)
 {
-    uint32_t clk, frac_div = USARTn->BRR;
+    uint32_t clk;
 
 #if USARTclk == NUT_HWCLK_PCLK1
     clk = NutClockGet(NUT_HWCLK_PCLK1);
 #else
     clk = NutClockGet(NUT_HWCLK_PCLK2);
 #endif
-    if (CM3BBGET(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    if (USARTn->CR1 & USART_CR1_OVER8)
     {
-        uint32_t  frac = frac_div & 7;
+        uint32_t frac_div = USARTn->BRR;
+        uint32_t frac = frac_div & 7;
         frac_div >>= 1;
         frac_div &= ~0x7;
         frac_div |= frac;
+        return clk / frac_div;
     }
-    return clk / frac_div;
+    return clk;
 }
 
 /*!
@@ -662,14 +666,14 @@ static int Stm32UsartSetSpeed(uint32_t rate)
 #endif
 
     /* Determine the integer part */
-    if (CM3BBGET(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    if (USARTn->CR1 & USART_CR1_OVER8)
     {
         /* In case Oversampling mode is 8 Samples */
         integerdivider = ((25 * apbclock) / (2 * rate));
         if (integerdivider > 200)
         {
             /* switch back to 16 Sample Oversampling when possible*/
-            CM3BBCLR(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8));
+            USARTn->CR1 &= ~USART_CR1_OVER8;
             integerdivider = ((25 * apbclock) / (4 * rate));
         }
     }
@@ -680,7 +684,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
         if (integerdivider < 100)
         {
             /* switch back to 8 Sample Oversampling*/
-            CM3BBSET(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8));
+            USARTn->CR1 |= USART_CR1_OVER8;
             integerdivider = ((25 * apbclock) / (2 * rate));
         }
     }
@@ -692,7 +696,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
     /* Determine the fractional part */
     fractionaldivider = integerdivider - (100 * (tmpreg >> 4));
 
-    if (CM3BBGET(USARTnBase, USART_TypeDef, CR1, _BI32(USART_CR1_OVER8)))
+    if (USARTn->CR1 & USART_CR1_OVER8)
     {
         /* In case Oversampling mode is 8 Samples */
         tmpreg |= ((((fractionaldivider * 8) + 50) / 100)) & ((uint8_t)0x07);
@@ -1165,7 +1169,7 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR3 |= USART_CR3_HDSEL;
         /* Set Alternate function, open drain, Pull up */
 #if defined(TX_GPIO_PORT)
-#if defined(__STM32F10x_H)
+#if defined(MCU_STM32F1)
         CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4);
 #else
         CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
@@ -1179,7 +1183,7 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR3 &= ~USART_CR3_HDSEL;
         /* Set Alternate function, push-pull */
 #if defined(TX_GPIO_PORT)
-#if defined(__STM32F10x_H)
+#if defined(MCU_STM32F1)
         CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4) ;
 #else
         CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);

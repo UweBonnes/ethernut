@@ -38,6 +38,7 @@
  * \endverbatim
  */
 
+#include <cfg/arch.h>
 #include <cfg/os.h>
 #include <cfg/clock.h>
 #include <cfg/arch.h>
@@ -45,8 +46,11 @@
 #include <sys/timer.h>
 #include <dev/rtc.h>
 
-#include <cfg/arch/gpio.h>
-#include <arch/cm3/stm/vendor/stm32f10x.h>
+#if !defined(MCU_STM32F1)
+# warning "Unknown STM32 family"
+#endif
+
+#include <arch/cm3/stm/stm32xxxx.h>
 
 #include <stdlib.h>
 #include <string.h>

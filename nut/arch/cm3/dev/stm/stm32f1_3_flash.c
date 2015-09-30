@@ -44,9 +44,9 @@
 #include <dev/iap_flash.h>
 
 #if defined(MCU_STM32F0) || defined(MCU_STM32F1) || defined(MCU_STM32F3)
-#include <arch/cm3/stm/stm32xxxx.h>
+# include <arch/cm3/stm/stm32xxxx.h>
 #else
-#warning "STM32 family has no F1/F3 compatible FLASH"
+# warning "STM32 family has no F1/F3 compatible FLASH"
 #endif
 
 #if defined (MCU_STM32F0)
@@ -63,24 +63,26 @@ static uint32_t pagelist[4] = {0, 0, 0, 0};
 /* Lets waste one word here. So no need to break down further*/
 static uint32_t pagelist[2] = {0, 0};
 # endif
-#elif defined (STM32F10X_LD) || defined (STM32F10X_LD_VL)
-#define FLASH_PAGE_SIZE 1024
-static uint32_t pagelist[1] = {0};
-#elif defined (STM32F10X_MD) || defined(STM32F10X_MD_VL)
-#define FLASH_PAGE_SIZE 1024
-static uint32_t pagelist[4] = {0, 0, 0, 0};
-#elif defined (STM32F10X_HD) || defined (STM32F10X_HD_VL) ||\
-    defined (STM32F10X_CL) /* || defined(STM32F3) */
-#define FLASH_PAGE_SIZE 2048
-static uint32_t pagelist[8] = {0,0,0,0,0,0,0,0};
-#elif defined(STM32F10X_XL)
-#define FLASH_PAGE_SIZE 2048
-static uint32_t pagelist[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+#elif defined(MCU_STM32F1)
+# if defined (MCU_STM32F1_LD) || defined (MCU_STM32F1_LD_VL)
+#  define FLASH_PAGE_SIZE 1024
+   static uint32_t pagelist[1] = {0};
+# elif defined (MCU_STM32F1_MD) || defined(MCU_STM32F1_MD_VL)
+#  define FLASH_PAGE_SIZE 1024
+   static uint32_t pagelist[4] = {0, 0, 0, 0};
+# elif defined (MCU_STM32F1_HD) || defined (MCU_STM32F1_HD_VL) ||\
+    defined (MCU_STM32F1_CL)
+#  define FLASH_PAGE_SIZE 2048
+   static uint32_t pagelist[8] = {0,0,0,0,0,0,0,0};
+# elif defined(MCU_STM32F1_XL)
+#  define FLASH_PAGE_SIZE 2048
+   static uint32_t pagelist[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+# endif
 #elif defined(MCU_STM32F3)
-#define FLASH_PAGE_SIZE 2048
-static uint32_t pagelist[4] = {0,0,0,0};
+# define FLASH_PAGE_SIZE 2048
+  static uint32_t pagelist[4] = {0,0,0,0};
 #else
-#warning Unknown STM32 Type
+# warning Unknown STM32 Type
 #endif
 
 #define ERASED_PATTERN_16 0xffff
@@ -153,7 +155,7 @@ static FLASH_Status FLASH_GetStatus(void)
         rs = FLASH_BUSY;
     FLASH->SR =  FLASH_SR_EOP | FLASH_SR_WRPRTERR | FLASH_SR_PGERR;
 
-#if defined(STM32F10X_XL)
+#if defined(MCU_STM32F1_XL)
     /* Decode the Flash Status */
     if (FLASH->SR2 & FLASH_SR_WRPRTERR)
         rs |= FLASH_ERROR_WRP;
@@ -161,7 +163,7 @@ static FLASH_Status FLASH_GetStatus(void)
         rs |= FLASH_ERROR_PG;
     else if (FLASH->SR2 & FLASH_SR_BSY)
         rs |= FLASH_BUSY;
-#endif /* STM32F10X_XL */
+#endif /* MCU_STM32F1_XL */
 
      /* Return the Flash Status */
     return rs;
@@ -217,7 +219,7 @@ static FLASH_Status FlashErasePage(uint32_t mem)
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
     if(rs == FLASH_COMPLETE) {
-#if defined(STM32F10X_XL)
+#if defined(MCU_STM32F1_XL)
         if ((current_page / FLASH_PAGE_SIZE) >255) {
             FLASH->CR2 = FLASH_CR_PER;
             FLASH->AR2 = mem;
@@ -297,7 +299,7 @@ static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
         FLASH->KEYR = FLASH_KEY2;
         rs = FLASH->CR & FLASH_CR_LOCK;
     }
-#if defined(STM32F10X_XL)
+#if defined(MCU_STM32F1_XL)
     if (((uint32_t)dst + len - FLASH_BASE)/FLASH_PAGE_SIZE > 255) {
         FLASH->KEYR2 = FLASH_KEY1;
         FLASH->KEYR2 = FLASH_KEY2;
@@ -350,7 +352,7 @@ static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
             goto done;
         if (((uint32_t)wptr -FLASH_BASE)/FLASH_PAGE_SIZE <256)
             FLASH->CR = FLASH_CR_PG;
-#if defined(STM32F10X_XL)
+#if defined(MCU_STM32F1_XL)
         else
             FLASH->CR2 = FLASH_CR_PG;
 #endif
@@ -413,7 +415,7 @@ cmp_err:
 done:
     /* Lock the FLASH again */
     FLASH->CR = FLASH_CR_LOCK;
-#if defined(STM32F10X_XL)
+#if defined(MCU_STM32F1_XL)
     FLASH->CR2 = FLASH_CR_LOCK;
 #endif
     return rs;
@@ -535,7 +537,7 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
         /* If one high page is write protected, protect all high pages*/
         else if (ena) wrpr &= ~0x80000000;
     }
-#if defined (STM32F10X_LD) || defined (STM32F10X_LD_VL)
+#if defined (MCU_STM32F1_LD) || defined (MCU_STM32F1_LD_VL)
     for(i = 0; i < 1 && rs == FLASH_COMPLETE; i++)
 #else
     for(i = 0; i < 4 && rs == FLASH_COMPLETE; i++)

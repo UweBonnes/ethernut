@@ -47,13 +47,16 @@
 #define SYSCLK_PLL    2
 #define SYSCLK_HSE    3
 #define SYSCLK_HSI48  4
+#define SYSCLK_PLLR   5
 
-#define PLLCLK_HSI_DIV2     0
-#define PLLCLK_HSI_PREDIV   1
-#define PLLCLK_HSE_PREDIV   2
-#define PLLCLK_HSI48_PREDIV 3
-#define PLLCLK_HSI          4
-#define PLLCLK_HSE          5
+#define PLLCLK_AUTO         0
+#define PLLCLK_HSI_DIV2     1
+#define PLLCLK_HSI_PREDIV   2
+#define PLLCLK_HSE_PREDIV   3
+#define PLLCLK_HSI48_PREDIV 4
+#define PLLCLK_HSI          5
+#define PLLCLK_HSE          6
+#define PLLCLK_PLL2         7
 
 /* RTC clock sources */
 #define RTCCLK_NONE   0
