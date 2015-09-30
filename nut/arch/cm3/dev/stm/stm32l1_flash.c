@@ -246,7 +246,6 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     void *wptr = dst;
     const void *rptr = src;
     uint32_t length = len;
-    volatile uint32_t *wrpr_bb;
 
     if (len == 0)
         return FLASH_COMPLETE;
@@ -517,7 +516,6 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
         } else {
             wrpr2[i / 32] &= ~(1 <<(i % 32));
         }
-    }
     }
 #endif
     FLASH->PEKEYR = FLASH_PEKEY1;
