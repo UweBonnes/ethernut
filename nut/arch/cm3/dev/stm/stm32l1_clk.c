@@ -174,52 +174,6 @@ void SystemCoreClockUpdate(void)
         clk_shift[NUT_HWCLK_TCLK2] = clk_shift[NUT_HWCLK_PCLK2] - 1;
 }
 
-/*!
- * \brief Re/Set RCC register bit and wait for same state of connected RDY bit or timeout
- *
- * \param  bbreg Bitband address of the bit to set
- * \param  tout timeout in delay units.
- * \return 0 on success, -1 on HSE start failed.
- */
-int rcc_set_and_wait_rdy(__IO uint32_t *bbreg, int value, uint32_t tout)
-{
-    int state = (value)?1:0;
-    *bbreg = state;
-    do {
-        tout--;
-    } while ((bbreg[1] != state) && (tout > 0));
-    return ( bbreg[1] == state)?0:-1;
-}
-
-/* Functional same as F1 */
-/*!
- * \brief Control HSE clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on HSE start failed.
- */
-int CtlHseClock( uint8_t ena)
-{
-    int rc;
-
-    /* switch HSE off to allow to set HSE_BYPASS */
-    rc = rcc_set_and_wait_rdy(
-        CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEON)), 0, HSE_STARTUP_TIMEOUT);
-
-    if( ena) {
-#if defined(HSE_BYPASS)
-        CM3BBSET(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP));
-#else
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEBYP));
-#endif
-
-        /* Enable HSE */
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_HSEON)), 1, HSE_STARTUP_TIMEOUT);
-    }
-    return rc;
-}
-
 /* Functional same as F1 */
 /*!
  * \brief Control HSI clock.
@@ -254,20 +208,8 @@ int CtlHsiClock( uint8_t ena)
  */
 int CtlPllClock( uint8_t ena)
 {
-    int rc = 0;
-
-    if( ena) {
-        /* Enable PLL */
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_PLLON)), 1, HSE_STARTUP_TIMEOUT);
-    }
-    else {
-        /* Disable HSE clock */
-        rc = rcc_set_and_wait_rdy(
-            CM3BBADDR(RCC_BASE, RCC_TypeDef, CR, _BI32(RCC_CR_PLLON)), 0, HSE_STARTUP_TIMEOUT);
-    }
-
-    return rc;
+    return rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_PLLON, RCC_CR_PLLRDY,
+                                  ena, HSE_STARTUP_TIMEOUT);
 }
 
 

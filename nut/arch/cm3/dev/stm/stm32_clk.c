@@ -40,6 +40,72 @@
  */
 
 /*!
+ * \brief Re/Set RCC register bit and wait for same state of connected RDY bit or timeout
+ *
+ * \param  reg       Register to check
+ * \param  setmask   Bit to (re)set
+ * \param  checkmask Bit to check
+ * \param  value     Value to set and check
+ * \param  tout      timeout in delay units.
+ * \return 0 on success, -1 on HSE start failed.
+ */
+static int rcc_set_and_wait_rdy(__IO uint32_t *reg, uint32_t setmask,
+                                uint32_t checkmask, int value, uint32_t tout)
+{
+    if (value) {
+        *reg |= setmask;
+    } else {
+        *reg &= ~setmask;
+    }
+    for (; tout; tout--) {
+        if (((value) && (*reg & checkmask)) ||
+            (!value && (!(*reg & checkmask)))) {
+            return 0;
+        }
+    }
+    return -1;
+}
+
+/*!
+ * \brief Control HSE clock.
+ *
+ * \param  ena 0 disable clock, any other value enable it.
+ * \return 0 on success, -1 on HSE start failed.
+ */
+int CtlHseClock(int ena)
+{
+    int rc, byp;
+    uint32_t cr;
+
+    /* Is HSE set already? */
+    cr = RCC->CR;
+    rc = (cr & RCC_CR_HSERDY);
+    byp = (cr & RCC_CR_HSEBYP);
+#if !defined(HSE_BYPASS)
+    byp = !byp;
+#endif
+    if (rc && (ena) && byp) {
+        return 0;
+    } else {
+        /* switch HSE off to allow to set HSE_BYPASS */
+        rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_HSEON, RCC_CR_HSERDY,
+                              0, HSE_STARTUP_TIMEOUT);
+    }
+    if (ena) {
+#if defined(HSE_BYPASS)
+        RCC->CR |= RCC_CR_HSEBYP;
+#else
+        RCC->CR &= ~RCC_CR_HSEBYP;
+#endif
+
+        /* Enable HSE */
+        rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_HSEON, RCC_CR_HSERDY,
+                                  1, HSE_STARTUP_TIMEOUT);
+    }
+    return rc;
+}
+
+/*!
  * \brief Control LSI clock.
  *
  * When there are useres of LSI, LSI might be on even if LSION == 0.
