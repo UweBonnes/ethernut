@@ -78,6 +78,7 @@ nutarch_cm3_stm32f4 =
                     "HW_I2C1_STM32",
                     "HW_I2C2_STM32",
                     "HW_I2C3_STM32",
+                    "HW_PVD_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",

@@ -78,6 +78,7 @@ nutarch_cm3_stm32f1 =
                         "HW_DMA1_STM32F1",
                         "HW_EXTI95_STM32",
                         "HW_I2C1_STM32",
+                        "HW_PVD_STM32",
                         "HW_SPI1_STM32",
                         "HW_USART1_STM32",
                         "HW_USART2_STM32",

@@ -96,7 +96,7 @@ static void GpioSetDefault(void)
 #endif
 
 /* Only SWD on F0/L0 */
-#if defined(__STM32F0XX_H)
+#if defined(MCU_STM32F0)
     GPIOA->MODER |= 0xc3ffffff;
     GPIOB->MODER |= 0xffffffff;
 #else

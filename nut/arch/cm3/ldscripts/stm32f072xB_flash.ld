@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *  stm32F07XxB_flash.ld - linker script for nutos on cortex-m0 STM32F07XxB
+ *  stm32F072xB_flash.ld - linker script for nutos on cortex-m0 STM32F072xB
  *
  *****************************************************************************/
 

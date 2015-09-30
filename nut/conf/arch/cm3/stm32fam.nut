@@ -60,6 +60,8 @@ nutarch_cm3_stm32_family =
         brief = "STM32F0",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F0" },
         description = "ST Microelectronics STM32 F0 Series",
+        sources = { "cm3/dev/stm/stm32f30_clk.c"},
+        makedefs = { "MCU=cortex-m0", "LDPATH=$(LDINCLUDE)" },
         script = "arch/cm3/stm32f0.nut"
     },
     {

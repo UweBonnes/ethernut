@@ -1,5 +1,6 @@
 --
---  * Copyright (C) 2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+--  * Copyright (C) 2014-2015
+--             by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -54,7 +55,6 @@ nutarch_cm3_stm32f0 =
         name = "nutarch_cm3_stm32f0_family",
         brief = "MCU F0 Family",
         requires = { "HW_MCU_STM32F0" },
-        sources = { "cm3/dev/stm/stm32f30_clk.c"},
         options =
         {
             {
@@ -74,7 +74,6 @@ nutarch_cm3_stm32f0 =
                     "HW_EXTI23_STM32",
                     "HW_EXTI415_STM32",
                     "HW_WWDG_STM32",
---                    "HW_DMA1_STM32F1",
 --                    "HW_I2C1_STM32",
                     "HW_SPI1_STM32",
                     "HW_USART1_STM32",
@@ -93,54 +92,86 @@ nutarch_cm3_stm32f0 =
                 type = "integer",
                 default = 1,
                 file = "include/cfg/arch.h"
-             },
-         }
-    },
-
-    --
-    -- STM32F0 MCU Classes
-    --
-    {
-        name = "nutarch_cm3_stm32f0_class",
-        brief = "STM32F0 Device Classes",
-        options =
-        {
+            },
             {
-                macro = "STM32F030",
-                brief = "STM32F030",
-                description = "STM32F030",
+                macro = "MCU_STM32F030",
+                brief = "STM32F030 w/o uinique ID",
+                description = "Seleted devices have no unique ID.",
+                requires = { "HW_MCU_STM32F030"},
+                type = "integer",
+                default = 1,
+                provides = {
+                    "HW_DMA1_STM32F0",
+                    "HW_ADC1_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+-- Use macro names so that ST vendor defines are produced
+            {
+                macro = "STM32F030x6",
+                brief = "STM32F030  16/32 kB",
+                description = "STM32F030 16/32 kb",
                 flavor = "integer",
                 default = 1,
-                requires = { "HW_MCU_STM32F030" };
+                requires = { "HW_MCU_STM32F030_LD" };
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F030x8",
+                brief = "STM32F030 64 kB",
+                description = "STM32F030 64 kB",
+                flavor = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32F030x8" };
                 provides = {
                     "HW_USART2_STM32",
 --                    "HW_I2C2_STM32",
                     "HW_SPI2_STM32",
+                    "HW_TIM6_STM32",
                     "HW_TIM15_STM32",
                    },
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F031",
-                brief = "STM32F031",
-                description = "STM32F031.",
+                macro = "STM32F030xC",
+                brief = "STM32F030 256 kB",
+                description = "STM32F030 256 kB",
                 flavor = "integer",
                 default = 1,
-                requires = { "HW_MCU_STM32F031" };
+                requires = { "HW_MCU_STM32F030xC" };
                 provides = {
-                    "HW_PVD_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_6_STM32",
+--                    "HW_I2C2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_TIM6_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM15_STM32",
+                   },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F038xx",
+                brief = "STM32F038",
+                description = "STM32F038.",
+                flavor = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32F038xx" };
+                provides = {
                     "HW_TIM2_32BIT_STM32",
                      },
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F042",
-                brief = "STM32F042",
-                description = "STM32F042.",
+                macro = "STM32F042x6",
+                brief = "STM32F042 16/32 kB",
+                description = "STM32F042 16/32kB.",
                 flavor = "integer",
                 default = 1,
-                requires = { "HW_MCU_STM32F042" };
+                requires = { "HW_MCU_STM32F042_MD" };
                 provides = {
+                    "HW_DMA1_STM32F0",
+                    "HW_ADC1_STM32",
                     "HW_CEC_CAN_STM32",
                     "HW_PVD_VDDIO2_STM32",
                     "HW_SPI2_STM32",
@@ -152,15 +183,36 @@ nutarch_cm3_stm32f0 =
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F051",
-                brief = "STM32F051",
-                description = "STM32F051.",
+                macro = "STM32F048xx",
+                brief = "STM32F048.",
+                description = "STM32F042.",
                 flavor = "integer",
                 default = 1,
-                requires = { "HW_MCU_STM32F051" };
+                requires = { "HW_MCU_STM32F048xx" };
                 provides = {
+                    "HW_DMA1_STM32F0",
+                    "HW_ADC1_STM32",
+                    "HW_CEC_CAN_STM32",
+                    "HW_VDDIO2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_TIM2_32BIT_STM32",
+                    "HW_TSC_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USB_STM32",
+                    },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F051x8",
+                brief = "STM32F051 16/32/64 kB",
+                description = "STM32F051 16/32/64 kB.",
+                flavor = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32F051_LD" };
+                provides = {
+                    "HW_DMA1_STM32F0",
                     "HW_ADC1_COMP_STM32",
-                    "HW_CEC_STM32",
+                    "HW_CEC_CAN_STM32",
 --                    "HW_I2C2_STM32",
                     "HW_PVD_STM32",
                     "HW_TSC_STM32",
@@ -173,13 +225,74 @@ nutarch_cm3_stm32f0 =
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F072",
-                brief = "STM32F072",
-                description = "STM32F072.",
+                macro = "STM32F070x6",
+                brief = "STM32F070 16/32 kB",
+                description = "STM32F070 16/32 kB.",
                 flavor = "integer",
                 default = 1,
-                requires = { "HW_MCU_STM32F072" };
+                requires = { "HW_MCU_STM32F070_LD" };
                 provides = {
+                    "HW_DMA1_STM32F07",
+                    "HW_ADC1_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USB_STM32",
+                    },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F070xB",
+                brief = "STM32F070 64/128 kB",
+                description = "STM32F070 128 kB.",
+                flavor = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32F070_MD" };
+                provides = {
+                    "HW_DMA1_STM32F07",
+                    "HW_ADC1_STM32",
+--                    "HW_I2C2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_TIM6_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM15_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_4_STM32",
+                    "HW_USB_STM32",
+                    },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F071xB",
+                brief = "STM32F071 64/128 kB",
+                description = "STM32F071 64/128 kB.",
+                flavor = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32F071_MD" };
+                provides = {
+                    "HW_DMA1_STM32F07",
+                    "HW_ADC1_COMP_STM32",
+                    "HW_CEC_CAN_STM32",
+--                    "HW_I2C2_STM32",
+                    "HW_PVD_VDDIO2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_TIM6_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM15_STM32",
+                    "HW_TSC_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_4_STM32",
+                    "HW_USB_STM32",
+                    },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F072xB",
+                brief = "STM32F072 64/128 kB",
+                description = "STM32F072 64/128 kB.",
+                flavor = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32F072_MD" };
+                provides = {
+                    "HW_DMA1_STM32F07",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
 --                    "HW_I2C2_STM32",
@@ -193,43 +306,85 @@ nutarch_cm3_stm32f0 =
                     "HW_USART2_STM32",
                     "HW_USART3_4_STM32",
                     },
-                file = "include/cfg/arch.h"
+                file = "include/cfg/arch.h",
             },
             {
-                macro = "STM32F091",
+                macro = "STM32F078xx",
+                brief = "STM32F078",
+                description = "STM32F078.",
+                flavor = "integer",
+                default = 1,
+                requires = { "HW_MCU_STM32F078xx" };
+                provides = {
+                    "HW_DMA1_STM32F07",
+                    "HW_ADC1_COMP_STM32",
+                    "HW_CEC_CAN_STM32",
+                    "HW_VDDIO2_STM32",
+--                    "HW_I2C2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_TIM2_32BIT_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM15_STM32",
+                    "HW_TSC_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_4_STM32",
+                    },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32F091xC",
                 brief = "STM32F091",
                 description = "STM32F091",
                 type = "integer",
-                requires = { "HW_MCU_STM32F091" },
+                requires = { "HW_MCU_STM32F091xC" },
                 default = 1,
                 provides =
                 {
+                    "HW_DMA1_2_STM32F09",
+                    "HW_ADC1_COMP_STM32",
+                    "HW_CEC_CAN_STM32",
+                    "HW_PVD_VDDIO2_STM32",
                     "HW_CLK48_STM32",
+--                    "HW_I2C2_STM32",
+                    "HW_SPI2_STM32",
                     "HW_TIM2_32BIT_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_TIM7_STM32",
                     "HW_TIM14_STM32",
                     "HW_TIM15_STM32",
-                    "HW_TIM16_STM32",
-                    "HW_TIM17_STM32",
---                    "HW_I2C2_STM32",
-                    "HW_SPI2_STM32",
+                    "HW_TSC_STM32",
                     "HW_USART2_STM32",
                     "HW_USART3_8_STM32",
-                    "HW_CEC_CAN_STM32",
                  },
                 file = "include/cfg/arch.h",
-                makedefs = { "LDPATH=$(LDINCLUDE)" }
              },
-             {
-                macro = "STM32F091C",
-                brief = "STM32F091C",
-                brief = "STM32091 with 512 kiB.",
+            {
+                macro = "STM32F098xx",
+                brief = "STM32F098",
+                description = "STM32F098",
                 type = "integer",
-                requires = { "HW_MCU_STM32F091C" },
+                requires = { "HW_MCU_STM32F098xx" },
                 default = 1,
+                provides =
+                {
+                    "HW_DMA1_2_STM32F09",
+                    "HW_ADC1_COMP_STM32",
+                    "HW_CEC_CAN_STM32",
+                    "HW_VDDIO2_STM32",
+                    "HW_CLK48_STM32",
+--                    "HW_I2C2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_TIM2_32BIT_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM14_STM32",
+                    "HW_TIM15_STM32",
+                    "HW_TSC_STM32",
+                    "HW_USART2_STM32",
+                    "HW_USART3_8_STM32",
+                 },
                 file = "include/cfg/arch.h",
-                makedefs = { "LDSCRIPT=stm32f091xC_flash.ld" }
              },
         },
     },

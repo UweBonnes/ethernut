@@ -188,7 +188,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
     int shared;
     int rc = -1;
 
-#if defined(STM32F0XX_H)
+#if defined(MCU_STM32F0)
     shared = 1;
     if (bit < 2)
         isrhandler = &sig_INTERRUPT0_1;

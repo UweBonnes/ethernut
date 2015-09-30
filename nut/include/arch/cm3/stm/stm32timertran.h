@@ -198,6 +198,9 @@
              PC6/CH1/AF2, PC7/CH2/AF2, PC8/CH3/AF2, PC9/CH4/AF2,
              PD2/ETR/AF2
 */
+#elif defined(MCU_STM32F0)
+# define STM32TIMER_AF(port, pin) \
+     ((port == GPIOA_BASE) || (port == GPIOB_BASE))? 1 : 0
 #elif defined(STM32F30X)
 #define STM32TIMER_AF(port, pin) \
     ((port == GPIOB_BASE) && (pin ==  3))? 10 : 2

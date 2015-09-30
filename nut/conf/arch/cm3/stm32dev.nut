@@ -4299,6 +4299,24 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_PVD_STM32",
+                brief = "PVD availability",
+                description = "Device provides PVD IRQ.",
+                requires = { "HW_PVD_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_PVD_VDDIO2_STM32",
+                brief = "PVD availability",
+                description = "Device provides combined PVD/VDDIO2 IRQ.",
+                requires = { "HW_PVD_VDDIO2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_USART2_STM32",
                 brief = "USART2 Availability",
                 description = "USART2 Availability",

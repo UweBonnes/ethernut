@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,11 +40,43 @@
 
 #include <cfg/arch.h>
 #if defined(MCU_STM32F0)
-#if defined(STM32F091C)
-#include <arch/cm3/stm/vendor/stm32f091xc.h>
-#else
-#include <arch/cm3/stm/vendor/stm32f0xx.h>
-#endif
+# if   defined(STM32F030x6)
+#  include <arch/cm3/stm/vendor/stm32f030x6.h>
+# elif defined(STM32F030x8)
+#  include <arch/cm3/stm/vendor/stm32f030x8.h>
+# elif defined(STM32F030xC)
+#  include <arch/cm3/stm/vendor/stm32f030xC.h>
+# elif defined(STM32F031x6)
+#  include <arch/cm3/stm/vendor/stm32f031x6.h>
+# elif defined(STM32F038xx)
+#  include <arch/cm3/stm/vendor/stm32f031x6.h>
+# elif defined(STM32F042x6)
+#  include <arch/cm3/stm/vendor/stm32f042x6.h>
+# elif defined(STM32F048xx)
+#  include <arch/cm3/stm/vendor/stm32f048xx.h>
+# elif defined(STM32F051x8)
+#  include <arch/cm3/stm/vendor/stm32f051x8.h>
+# elif defined(STM32F058xx)
+#  include <arch/cm3/stm/vendor/stm32f058xx.h>
+# elif defined(STM32F070x6)
+#  include <arch/cm3/stm/vendor/stm32f070x6.h>
+# elif defined(STM32F070x8)
+#  include <arch/cm3/stm/vendor/stm32f070x8.h>
+# elif defined(STM32F070xB)
+#  include <arch/cm3/stm/vendor/stm32f070xb.h>
+# elif defined(STM32F071xB)
+#  include <arch/cm3/stm/vendor/stm32f071xb.h>
+# elif defined(STM32F072xB)
+#  include <arch/cm3/stm/vendor/stm32f072xb.h>
+# elif defined(STM32F078xx)
+#  include <arch/cm3/stm/vendor/stm32f078xx.h>
+# elif defined(STM32F091xC)
+#  include <arch/cm3/stm/vendor/stm32f091xc.h>
+# elif defined(STM32F098xx)
+#  include <arch/cm3/stm/vendor/stm32f098xx.h>
+# else
+#  warning Unhandled STM32F0 device
+# endif
 #elif defined(MCU_STM32F1)
 #include <arch/cm3/stm/vendor/stm32f10x.h>
 #elif defined(MCU_STM32L1)

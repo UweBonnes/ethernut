@@ -49,15 +49,20 @@
 #warning "STM32 family has no F1/F3 compatible FLASH"
 #endif
 
-#if defined (STM32F030) || defined (STM32F031) || defined (STM32F051)
-#define FLASH_PAGE_SIZE 1024
-static uint32_t pagelist[2] = {0, 0};
-#elif defined (STM32F072)
-static uint32_t pagelist[2] = {0, 0};
-#define FLASH_PAGE_SIZE 2048
-#elif defined (STM32F091)
+#if defined (MCU_STM32F0)
+# if  defined(STM32F030xC) ||  defined(STM32F070xB) || \
+    defined(STM32F071xB) || defined(STM32F072xB) || defined(STM32F078xx) || \
+    defined(STM32F091xC) || defined(STM32F098xx)
+#  define FLASH_PAGE_SIZE 2048
+# else
+#  define FLASH_PAGE_SIZE 1024
+# endif
+# if  defined(STM32F030xC) || defined(STM32F091xC)
 static uint32_t pagelist[4] = {0, 0, 0, 0};
-#define FLASH_PAGE_SIZE 2048
+# else
+/* Lets waste one word here. So no need to break down further*/
+static uint32_t pagelist[2] = {0, 0};
+# endif
 #elif defined (STM32F10X_LD) || defined (STM32F10X_LD_VL)
 #define FLASH_PAGE_SIZE 1024
 static uint32_t pagelist[1] = {0};
