@@ -231,24 +231,48 @@ end
 -- Retrieve I2C1 pins available on the device.
 --
 function GetI2c1Sda()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return { "7", "9"}
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return { "7", "9", "10", "12" }
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return { "14", "7", "9" }
     end
     return { "7", "9" }
 end
 function GetI2c1SdaDefault()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return "7"
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return "7"
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return "14"
     end
     return "7"
 end
 function GetI2c1Scl()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return { "6", "8"}
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return { "6", "8", "9", "11" }
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return { "15", "6", "8" }
     end
     return { "6", "8" }
 end
 function GetI2c1SclDefault()
+    if c_is_provided("HW_MCU_STM32FL0") then
+        return "6"
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return "6"
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return "15"
     end
@@ -259,6 +283,12 @@ end
 -- Retrieve I2C2 pins available on the device.
 --
 function GetI2c2Sda()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return { "11", "14"}
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return { "11", "14", "12"}
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return { "10", "0", "7" }
     end
@@ -272,6 +302,12 @@ function GetI2c2Sda()
     return { "11", "0", "5" }
 end
 function GetI2c2SdaDefault()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return "11"
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return "11"
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return "10"
     end
@@ -281,6 +317,15 @@ function GetI2c2SdaDefault()
     return "11"
 end
 function GetI2c2Scl()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return { "10", "13" }
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return { "10", "13", "11" }
+    end
+    if c_is_provided("MCU_STM32F3") then
+        return { "9", "1", "6" }
+    end
     if c_is_provided("MCU_STM32F3") then
         return { "9", "1", "6" }
     end
@@ -293,12 +338,21 @@ function GetI2c2Scl()
     return { "10", "1", "4" }
 end
 function GetI2c2SclDefault()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return "10"
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return "10"
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return "9"
     end
     return "10"
 end
 function GetI2c2Smba()
+    if c_is_provided("HW_MCU_STM32F0") then
+        return { "-1", "12"}
+    end
     if c_is_provided("HW_MCU_STM32F3") then
         return { "-1" , "8", "12", "2" }
     end

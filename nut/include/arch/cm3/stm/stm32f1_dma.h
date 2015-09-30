@@ -241,7 +241,6 @@
 
 #define DMA_FLAGMASK (DMA_TEIF | DMA_HTIF | DMA_TCIF| DMA_GIF)
 
-
 /* Internally used struct and table to align
  * DMA channels and interrupts. */
 typedef struct {

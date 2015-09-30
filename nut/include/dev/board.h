@@ -175,12 +175,17 @@
 #elif defined(EVK1105)
 #include <arch/avr32/board/evk1105.h>
 #define BOARDNAME "EVK1105"
+#elif defined(L0_DISCOVERY)
+#include <arch/cm3/board/l0_discovery.h>
 #elif defined(L1_DISCOVERY)
 #include <arch/cm3/board/l1_discovery.h>
 #define BOARDNAME "L1_DISCOVERY"
-#elif defined(F1_DISCOVERY)
-#include <arch/cm3/board/f1_discovery.h>
-#define BOARDNAME "F1_DISCOVERY"
+#elif defined(F0_DISCOVERY)
+#include <arch/cm3/board/f0_discovery.h>
+#define BOARDNAME "F0_DISCOVERY"
+#elif defined(F07_DISCOVERY)
+#include <arch/cm3/board/f07_discovery.h>
+#define BOARDNAME "F07_DISCOVERY"
 #elif defined(F4_DISCOVERY)
 #include <arch/cm3/board/f4_discovery.h>
 #define BOARDNAME "F4_DISCOVERY"

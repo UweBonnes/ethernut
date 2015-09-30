@@ -180,7 +180,7 @@ int Stm32I2c1Init(void)
 #else
     CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_I2C1_REMAP));
 #endif
-#elif defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
+#elif defined (MCU_STM32F0) || defined (MCU_STM32L1) || defined (MCU_STM32F2) || defined (MCU_STM32F4)
     GPIO_PinAFConfig(I2C_PORT, I2C1_SDA_PIN, GPIO_AF_I2C1);
     GPIO_PinAFConfig(I2C_PORT, I2C1_SCL_PIN, GPIO_AF_I2C1);
 #else
