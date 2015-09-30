@@ -145,6 +145,15 @@ nutarch_cm3_stm32_family =
         script = "arch/cm3/stm32f4.nut"
     },
     {
+        name = "nutarch_cm3_stm32f7",
+        brief = "STM32F7",
+        requires = { "HW_MCU_STM32", "HW_MCU_STM32F7" },
+        description = "ST Microelectronics STM32 F4 Series",
+        sources = { "cm3/dev/stm/stm32f4_clk.c" },
+        makedefs = { "MCU=cortex-m7", "LDPATH=$(LDINCLUDE)" },
+        script = "arch/cm3/stm32f7.nut"
+    },
+    {
         name = "nutarch_cm3_stm32_pll",
         brief = "Common PLL settings",
         description = "Common PLL settings",

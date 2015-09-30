@@ -1213,6 +1213,23 @@ nutarch =
                 makedefs = { "LDSCRIPT=stm32f429xI_flash.ld" }
             },
             {
+                macro = "MCU_STM32F746xG",
+                brief = "STM STM32F446 1 MB",
+                description = "STM32F748 with LCD, Ethernet and FMC.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F7",
+                    "HW_MCU_STM32F746",
+                },
+                makedefs = { "LDSCRIPT=stm32f7XXxG_flash.ld" }
+            },
+            {
                 macro = "MCU_STM32F205xC",
                 brief = "STM STM32F205 256 kB",
                 description = "STM32F205 256 kb with FSMC.",
