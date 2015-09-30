@@ -48,28 +48,13 @@
 
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_spi.h>
+#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
 #include <sys/nutdebug.h>
 
 #include <stdlib.h>
 #include <errno.h>
-
-/* Handle the PIN remap possibilities
- * F42
- *        NSS:  PF6/PH5
- *        SCK:  PF7/PH6
- *        MISO: PF8/PH7
- *        MOSI: PF9/PF11
- * For function pins, we use PF6/7/8/9 as default
- *
- * F411
- *        NSS:  PB1/PE4/PE11
- *        SCK:  PB0/PE2/PE12
- *        MISO: PA12/PE5/PE13
- *        MOSI: PA10/PB8/PE6/PE14
- * For function pins, we use PB1/PB0/PA12/PA10 as default
- */
 
 #if !defined( SPIBUS5_NO_CS)
  #if !defined(SPIBUS5_CS0_PORT) && !defined(SPIBUS5_CS0_PIN)
@@ -101,85 +86,6 @@
  #endif
 #endif
 
-#if defined(STM32F411xE)
- #define SPI_GPIO_AF GPIO_AF_5
- #if  !defined(SPIBUS5_SCK_PIN) || SPIBUS5_SCK_PIN == 0
-  #define SPIBUS_SCK_PORT  NUTGPIO_PORTB
-  #define SPIBUS_SCK_PIN 10
- #elif  SPIBUS5_SCK_PIN == 2
-  #define SPIBUS_SCK_PORT  NUTGPIO_PORTE
-  #define SPIBUS_SCK_PIN 2
- #elif  SPIBUS5_SCK_PIN == 12
-  #define SPIBUS_SCK_PORT  NUTGPIO_PORTE
-  #define SPIBUS_SCK_PIN 12
- #else
-  #warning Unknown STM32F411 SPIBUS5_SCK_PIN
- #endif
-
- #if !defined(SPIBUS5_MISO_PIN) || SPIBUS5_MISO_PIN == 13
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
-  #define SPIBUS_MISO_PIN 12
- #elif  SPIBUS5_MISO_PIN == 13
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTE
-  #define SPIBUS_MISO_PIN 13
- #elif  SPIBUS5_MISO_PIN == 5
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTE
-  #define SPIBUS_MISO_PIN 5
- #else
-  #warning Unknown STM32F411 SPIBUS5_MISO_PIN
- #endif
-
- #if !defined(SPIBUS5_MOSI_PIN) || SPIBUS5_MOSI_PIN == 10
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
-  #define SPIBUS_MOSI_PIN 10
- #elif  SPIBUS5_MOSI_PIN == 8
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
-  #define SPIBUS_MOSI_PIN 8
- #elif  SPIBUS5_MOSI_PIN == 6
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTE
-  #define SPIBUS_MOSI_PIN 6
- #elif  SPIBUS5_MOSI_PIN == 14
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTE
-  #define SPIBUS_MOSI_PIN 14
- #else
-  #warning Unknown STM32F411 SPIBUS5_MOSI_PIN
- #endif
-
-#else
-/* F42x */
- #define SPI_GPIO_AF GPIO_AF_SPI5
- #if !defined(SPIBUS5_SCK_PIN) || SPIBUS5_SCK_PIN == 7
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTF
-  #define SPIBUS_SCK_PIN 7
- #elif SPIBUS5_SCK_PIN == 6
-  #define SPIBUS_SCK_PORT  NUTGPIO_PORTH
-  #define SPIBUS_SCK_PIN 6
- #else
-  #warning Unknown STM32F42/3 SPIBUS5_SCK_PIN
- #endif
-
- #if !defined(SPIBUS5_MISO_PIN) || SPIBUS5_MISO_PIN ==8
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTF
-  #define SPIBUS_MISO_PIN 8
- #elif SPIBUS5_MISO_PIN == 7
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTH
-  #define SPIBUS_MISO_PIN 7
- #else
-  #warning Unknown STM32F42/3 SPIBUS5_MISO_PIN
- #endif
-
- #if !defined(SPIBUS5_MOSI_PIN) || SPIBUS5_MOSI_PIN ==9
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTF
-  #define SPIBUS_MOSI_PIN 9
- #elif  SPIBUS5_MOSI_PIN == 11
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTF
-  #define SPIBUS_MOSI_PIN 11
- #else
-  #warning Unknown STM32F42/3 SPIBUS5_MOSI_PIN
- #endif
-
-#endif
-
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI5EN))
 #define sig_SPI             sig_SPI5
@@ -191,13 +97,29 @@
 #define SPIBUS_MODE SPIBUS5_MODE
 #endif
 
+#define Stm32F1SpiRemap()
+
+#define SPI_SCK     SPI5_SCK
+#define SPI_MISO    SPI5_MISO
+#define SPI_MOSI    SPI5_MOSI
+
+#define SPI_SCK_AF  SPI5_SCK_AF
+#define SPI_MISO_AF SPI5_MISO_AF
+#define SPI_MOSI_AF SPI5_MOSI_AF
+
+#if !defined(SPIBUS5_MODE)
+#define SPIBUS_MODE IRQ_MODE
+#else
+#define SPIBUS_MODE SPIBUS5_MODE
+#endif
+
 #if SPIBUS_MODE == DMA_MODE
- #if defined(SPIBUS1_DMA_TX_ALTERNATE_STREAM)
+ #if defined(SPIBUS5_DMA_TX_ALTERNATE_STREAM)
   #define SPI_DMA_TX_CHANNEL SPI5_TX_ALT_DMA
  #else
   #define SPI_DMA_TX_CHANNEL SPI5_TX_DMA
  #endif
- #if defined(SPIBUS1_DMA_RX_ALTERNATE_STREAM)
+ #if defined(SPIBUS5_DMA_RX_ALTERNATE_STREAM)
   #define SPI_DMA_RX_CHANNEL SPI5_RX_ALT_DMA
  #else
   #define SPI_DMA_RX_CHANNEL SPI5_RX_DMA

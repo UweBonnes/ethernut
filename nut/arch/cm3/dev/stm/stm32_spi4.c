@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2014 by Uwe Bonnes.
+ * Copyright (C) 2014-2015 by Uwe Bonnes.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -48,28 +48,13 @@
 
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_spi.h>
+#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
 #include <sys/nutdebug.h>
 
 #include <stdlib.h>
 #include <errno.h>
-
-/* Handle the PIN remap possibilities
- * F401/F42
- *        NSS:  PE4/PE11
- *        SCK:  PE2/PE12
- *        MISO: PE5/PE13
- *        MOSI: PE6/PE14
- * F411
- *        NSS:  PE4/PB12(AF6)
- *        SCK:  PE2/PB13(AF6)
- *        MISO: PE5/PA11(AF6)
- *        MOSI: PE6/PA1
- * For Chip select, we use NSS pin as default or any other pin as pure GPIO
- *
- * Use PE4 as default chip select
-  */
 
 #if !defined( SPIBUS4_NO_CS)
  #if !defined(SPIBUS4_CS0_PORT) && !defined(SPIBUS4_CS0_PIN)
@@ -96,54 +81,20 @@
  #endif
 #endif
 
-/* Assume SPI4 only on F4 */
-#if  SPIBUS4_SCK_PIN == 2 || !defined(SPIBUS4_SCK_PIN)
-#define SPIBUS_SCK_PIN 2
-#define SPIBUS_SCK_PORT  NUTGPIO_PORTE
-#elif defined(STM32F411xE) && SPIBUS4_SCK_PIN == 13
-#define SPIBUS_SCK_PIN   13
-#define SPIBUS_SCK_PORT  NUTGPIO_PORTB
-#define SPIBUS_SCK_AF    6
-#elif (defined(MCU_STM32F401) || defined(STM32F42X)) && SPIBUS4_SCK_PIN == 12
-#define SPIBUS_SCK_PIN   12
-#define SPIBUS_SCK_PORT  NUTGPIO_PORTE
-#else
-#warning  Unknown SPIBUS4_SCK_PIN
-#endif
-
-#if  SPIBUS4_MISO_PIN == 5 || !defined(SPIBUS4_MISO_PIN)
-#define SPIBUS_MISO_PIN 5
-#define SPIBUS_MISO_PORT  NUTGPIO_PORTE
-#elif defined(STM32F411xE) && SPIBUS4_MISO_PIN == 11
-#define SPIBUS_MISO_PIN   11
-#define SPIBUS_MISO_PORT  NUTGPIO_PORTA
-#define SPIBUS_MISO_AF    6
-#elif (defined(MCU_STM32F401) || defined(MCU_STM32F42)) && SPIBUS4_MISO_PIN == 13
-#define SPIBUS_MISO_PIN   13
-#define SPIBUS_MISO_PORT  NUTGPIO_PORTE
-#else
-#warning  Unknown SPIBUS4_MISO_PIN
-#endif
-
-#if  SPIBUS4_MOSI_PIN == 6 || !defined(SPIBUS4_MOSI_PIN)
-#define SPIBUS_MOSI_PIN 6
-#define SPIBUS_MOSI_PORT  NUTGPIO_PORTE
-#elif defined(STM32F411xE) && SPIBUS4_MOSI_PIN == 1
-#define SPIBUS_MOSI_PIN   1
-#define SPIBUS_MOSI_PORT  NUTGPIO_PORTA
-#define SPIBUS_MOSI_AF    6
-#elif (defined(MCU_STM32F401) || defined(MCU_STM32F42)) && SPIBUS4_MOSI_PIN == 14
-#define SPIBUS_MOSI_PIN   14
-#define SPIBUS_MOSI_PORT  NUTGPIO_PORTE
-#else
-#warning  Unknown SPIBUS4_MOSI_PIN
-#endif
-
-#define SPI_GPIO_AF GPIO_AF_SPI4
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI4EN))
 #define sig_SPI     sig_SPI4
 #define SPI_BASE    SPI4_BASE
+
+#define Stm32F1SpiRemap()
+
+#define SPI_SCK     SPI4_SCK
+#define SPI_MISO    SPI4_MISO
+#define SPI_MOSI    SPI4_MOSI
+
+#define SPI_SCK_AF  SPI4_SCK_AF
+#define SPI_MISO_AF SPI4_MISO_AF
+#define SPI_MOSI_AF SPI4_MOSI_AF
 
 #if !defined(SPIBUS4_MODE)
 #define SPIBUS_MODE IRQ_MODE

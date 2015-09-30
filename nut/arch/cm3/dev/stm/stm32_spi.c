@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
+ * Copyright (C) 2014-15 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -54,16 +54,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#if !defined(SPI_SCK_GPIO_AF)
-#define SPI_SCK_GPIO_AF SPI_GPIO_AF
-#endif
-#if !defined(SPI_MOSI_GPIO_AF)
-#define SPI_MOSI_GPIO_AF SPI_GPIO_AF
-#endif
-#if !defined(SPI_MISO_GPIO_AF)
-#define SPI_MISO_GPIO_AF SPI_GPIO_AF
-#endif
-
 /* Keep SPIBUS_CSx_INIT()  undefined when PORT/PIN is not available*/
 
 #if defined(SPIBUS_CS0_PORT) && defined(SPIBUS_CS0_PIN)
@@ -91,6 +81,18 @@
 #define SPIBUS_CS3_INIT(x)  GpioPinConfigSet(SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN, GPIO_CFG_OUTPUT | x)
 #define SPIBUS_CS3_SET()    GpioPinSetHigh(SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
 #define SPIBUS_CS3_CLR()    GpioPinSetLow (SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
+#endif
+
+#define SPIBUS_SCK_PORT  (uint32_t)(stm32_port_nr2gpio[SPI_SCK  >> 8])
+#define SPIBUS_SCK_PIN   (SPI_SCK & 0xf)
+#define SPIBUS_MISO_PORT (uint32_t)(stm32_port_nr2gpio[SPI_MISO >> 8])
+#define SPIBUS_MISO_PIN  (SPI_MISO & 0xf)
+#define SPIBUS_MOSI_PORT (uint32_t)(stm32_port_nr2gpio[SPI_MOSI >> 8])
+#define SPIBUS_MOSI_PIN  (SPI_MOSI & 0xf)
+
+#if defined (MCU_STM32F1)
+/* For F1, all SPI pins are on the same port */
+#define GPIO_CRL_CM3BB   CM3BBADDR(SPIBUS_MOSI_PORT, GPIO_TypeDef, CRL, 0)
 #endif
 
 #if SPIBUS_MODE != POLLING_MODE
@@ -253,7 +255,6 @@ static void SetPinSpeed( NUTSPINODE * node, uint32_t rate)
 {
     uint16_t rate_div64k = rate >> 16;
     uint8_t ospeed_set;
-    uint32_t speed_reg;
     rate_div64k = node->node_rate >> 16;
 
 #if defined (MCU_STM32F1)
@@ -263,29 +264,13 @@ static void SetPinSpeed( NUTSPINODE * node, uint32_t rate)
         ospeed_set = 1;
     else
         ospeed_set = 3;
-#if SPIBUS_MOSI_PIN < 8
-    speed_reg = ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRL;
-    speed_reg &= ~(GPIO_CRL_MODE0 << (SPIBUS_MOSI_PIN << 2));
-    speed_reg |= (ospeed_set << (SPIBUS_MOSI_PIN << 2));
-    ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRL = speed_reg;
+    GPIO_CRL_CM3BB[SPIBUS_SCK_PIN  * 4 + 0] = (ospeed_set & 1);
+    GPIO_CRL_CM3BB[SPIBUS_MOSI_PIN * 4 + 0] = (ospeed_set & 1);
+    ospeed_set = ospeed_set >> 1;
+    GPIO_CRL_CM3BB[SPIBUS_SCK_PIN  * 4 + 1] = (ospeed_set & 2);
+    GPIO_CRL_CM3BB[SPIBUS_MOSI_PIN * 4 + 1] = (ospeed_set & 2);
 #else
-    speed_reg = ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRH;
-    speed_reg &= ~(GPIO_CRH_MODE8 << ((SPIBUS_MOSI_PIN - 8) << 2));
-    speed_reg |= (ospeed_set << ((SPIBUS_MOSI_PIN - 8) << 2));
-    ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->CRH = speed_reg;
-#endif
-#if SPIBUS_SCK_PIN < 8
-    speed_reg = ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRL;
-    speed_reg &= ~(GPIO_CRL_MODE0 << (SPIBUS_SCK_PIN << 2));
-    speed_reg |= (ospeed_set << (SPIBUS_SCK_PIN << 2));
-    ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRL = speed_reg;
-#else
-    speed_reg = ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRH;
-    speed_reg &= ~(GPIO_CRH_MODE8 << ((SPIBUS_SCK_PIN - 8) << 2));
-    speed_reg |= (ospeed_set << ((SPIBUS_SCK_PIN - 8) << 2));
-    ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->CRH = speed_reg;
-#endif
-#else
+    uint32_t speed_reg;
     if      (rate_div64k * OSPEED_MULT < ospeed_values[0])
         ospeed_set = 0;
     else if (rate_div64k * OSPEED_MULT < ospeed_values[1])
@@ -525,21 +510,13 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
     /* Test if  the SPI Bus is already initialized*/
     if (SPI_ENABLE_CLK_GET() == 0) {
         /* Initialize Hardware */
-        GpioPinConfigSet
-            (SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT |GPIO_CFG_INIT_LOW);//SCK
-        GpioPinConfigSet
-            (SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, GPIO_CFG_PERIPHAL);//MISO
-        GpioPinConfigSet
-            (SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT |GPIO_CFG_INIT_LOW);//MOSI
-#if defined(MCU_STM32F1)
-#if defined(SPIBUS_REMAP_BB)
-        SPIBUS_REMAP_BB();
-#endif
-#else
-        GPIO_PinAFConfig(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN,  SPI_SCK_GPIO_AF);
-        GPIO_PinAFConfig(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN, SPI_MISO_GPIO_AF);
-        GPIO_PinAFConfig(SPIBUS_MOSI_PORT, SPIBUS_MOSI_PIN, SPI_MOSI_GPIO_AF);
-#endif
+        Stm32GpioConfigSet
+            (SPI_SCK,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT | GPIO_CFG_INIT_LOW, SPI_SCK_AF );
+        Stm32GpioConfigSet
+            (SPI_MISO, GPIO_CFG_PERIPHAL                                      , SPI_MISO_AF);
+        Stm32GpioConfigSet
+            (SPI_MOSI, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT | GPIO_CFG_INIT_LOW, SPI_MOSI_AF);
+        Stm32F1SpiRemap();
         SPI_ENABLE_CLK_SET();
     }
     /* It should not hurt us being called more than once. Thus, we

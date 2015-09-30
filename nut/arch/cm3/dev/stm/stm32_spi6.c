@@ -48,22 +48,13 @@
 
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_spi.h>
+#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
 #include <sys/nutdebug.h>
 
 #include <stdlib.h>
 #include <errno.h>
-
-/* Handle the PIN remap possibilities
- * F4
- *        NSS:  PG8
- *        SCK:  PG13
- *        MISO: PG12
- *        MOSI: PG14
- *
- * For function pins, we use PG8/12/13/14 as default
- */
 
 #if !defined( SPIBUS6_NO_CS)
  #if !defined(SPIBUS6_CS0_PORT) && !defined(SPIBUS6_CS0_PIN)
@@ -91,14 +82,16 @@
 
 #endif
 
-#define SPIBUS_SCK_PORT  NUTGPIO_PORTG
-#define SPIBUS_SCK_PIN 13
-#define SPIBUS_MISO_PORT NUTGPIO_PORTG
-#define SPIBUS_MISO_PIN 12
-#define SPIBUS_MOSI_PORT NUTGPIO_PORTG
-#define SPIBUS_MOSI_PIN 14
+#define Stm32F1SpiRemap()
 
-#define SPI_GPIO_AF GPIO_AF_SPI6
+#define SPI_SCK     SPI6_SCK
+#define SPI_MISO    SPI6_MISO
+#define SPI_MOSI    SPI6_MOSI
+
+#define SPI_SCK_AF  SPI6_SCK_AF
+#define SPI_MISO_AF SPI6_MISO_AF
+#define SPI_MOSI_AF SPI6_MOSI_AF
+
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI6EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI6EN))
 #define sig_SPI             sig_SPI6

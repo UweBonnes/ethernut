@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2014-15 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,6 +49,7 @@
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_dma.h>
 #include <arch/cm3/stm/stm32_spi.h>
+#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
 #include <sys/nutdebug.h>
@@ -56,37 +57,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/* Handle the PIN remap possibilities
- * F1:      NSS:  PA4/PA15
- *          SCK:  PA5/PB3
- *          MISO: PA6/PB4
- *          MOSI: PA7/PB5
- * All:
- *          NSS:  PA4/PA15
- *          SCK:  PA5/PB3
- *          MISO: PA6/PB4
- *          MOSI: PA7/PB5
- * Remap:
- * F03
- *          NSS:  PB12
- *          SCK:  PB13
- *          MISO: PB14
- *          MOSI: PB15
- * F07/L1XX
- *          NSS:  PE12
- *          SCK:  PE13
- *          MISO: PE14
- *          MOSI: PE15
- * F05/L1:  MOSI: PA12
- * F37X:
- *          NSS:  PA11/PC6
- *          SCK:  PA12/PC7
- *          MISO: PA13/PC8
- *          MOSI: PB0/ PC9/PF6
-
- * Use PA4 as default chip select
+/* Use PA04 as default chip select
  */
-
 #if !defined( SPIBUS1_NO_CS)
  #if !defined(SPIBUS1_CS0_PORT) && !defined(SPIBUS1_CS0_PIN)
   #define SPIBUS_CS0_PORT NUTGPIO_PORTA
@@ -114,97 +86,23 @@
 #endif
 
 #if defined(MCU_STM32F1)
- #if defined(SPIBUS3_REMAP_SPI)
-  #define SPIBUS_REMAP_BB() CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_SPI1_REMAP))
-  #define SPIBUS_SCK_PIN 3
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
-  #define SPIBUS_MISO_PIN 4
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTB
-  #define SPIBUS_MOSI_PIN 5
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #else
-  #define SPIBUS_REMAP_BB() CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_SPI1_REMAP))
-  #define SPIBUS_SCK_PIN 5
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTA
-  #define SPIBUS_MISO_PIN 6
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTA
-  #define SPIBUS_MOSI_PIN 7
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
- #endif
+void Stm32F1SpiRemap(void)
+{
+    AFIO->MAPR &= ~AFIO_MAPR_SPI1_REMAP;
+    AFIO->MAPR |= SPI1_REMAP * AFIO_MAPR_SPI1_REMAP;
+}
 #else
-
-#if SPIBUS1_SCK_PIN == 5 || !defined(SPIBUS1_SCK_PIN)
- #define SPIBUS_SCK_PORT NUTGPIO_PORTA
- #define  SPIBUS_SCK_PIN  5
-#elif SPIBUS1_SCK_PIN == 3
- #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #define SPIBUS_SCK_PIN  3
-#elif defined(MCU_STM32F37) && SPIBUS1_SCK_PIN == 12
- #define SPIBUS_SCK_PORT NUTGPIO_PORTA
- #define SPIBUS_SCK_PIN  12
-#elif defined(MCU_STM32F37) && SPIBUS1_SCK_PIN == 7
- #define SPIBUS_SCK_PORT NUTGPIO_PORTC
- #define SPIBUS_SCK_PIN  7
-#elif defined(STM32L1XX) && SPIBUS1_SCK_PIN == 13
- #define SPIBUS_SCK_PORT NUTGPIO_PORTE
- #define SPIBUS_SCK_PIN  13
-#elif defined(STM32F03X) && SPIBUS1_SCK_PIN == 13
- #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #define SPIBUS_SCK_PIN  13
-#else
- #warning Unknown SPIBUS1_SCK_PIN
+#define Stm32F1SpiRemap()
 #endif
 
-#if SPIBUS1_MISO_PIN == 6 || !defined(SPIBUS1_MISO_PIN)
- #define SPIBUS_MISO_PORT NUTGPIO_PORTA
- #define  SPIBUS_MISO_PIN  6
-#elif SPIBUS1_MISO_PIN == 4
- #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #define SPIBUS_MISO_PIN  4
-#elif defined(MCU_STM32F37) && SPIBUS1_MISO_PIN == 13
- #define SPIBUS_MISO_PORT NUTGPIO_PORTA
- #define SPIBUS_MISO_PIN  13
-#elif defined(MCU_STM32F37) && SPIBUS1_MISO_PIN == 8
- #define SPIBUS_MISO_PORT NUTGPIO_PORTC
- #define SPIBUS_MISO_PIN  8
-#elif defined(STM32L1XX) && SPIBUS1_MISO_PIN == 14
- #define SPIBUS_MISO_PORT NUTGPIO_PORTE
- #define SPIBUS_MISO_PIN  14
-#elif defined(STM32F03X) && SPIBUS1_MISO_PIN == 14
- #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #define SPIBUS_MISO_PIN  14
-#else
- #warning Unknown SPIBUS1_MISO_PIN
-#endif
+#define SPI_SCK  SPI1_SCK
+#define SPI_MISO SPI1_MISO
+#define SPI_MOSI SPI1_MOSI
 
-#if SPIBUS1_MOSI_PIN == 7 || !defined(SPIBUS1_MOSI_PIN)
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
- #define  SPIBUS_MOSI_PIN  7
-#elif SPIBUS1_MOSI_PIN == 7
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #define SPIBUS_MOSI_PIN  7
-#elif defined(MCU_STM32F37) && SPIBUS1_MOSI_PIN == 0
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #define SPIBUS_MOSI_PIN  0
-#elif defined(MCU_STM32F37) && SPIBUS1_MOSI_PIN == 9
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
- #define SPIBUS_MOSI_PIN  9
-#elif defined(MCU_STM32F37) && SPIBUS1_MOSI_PIN == 6
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTF
- #define SPIBUS_MOSI_PIN  6
-#elif defined(STM32L1XX) && SPIBUS1_MOSI_PIN == 15
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTE
- #define SPIBUS_MOSI_PIN  15
-#elif defined(STM32F03X) && SPIBUS1_MOSI_PIN == 15
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #define SPIBUS_MOSI_PIN  15
-#else
- #warning Unknown SPIBUS1_MOSI_PIN
-#endif
-#endif
+#define SPI_SCK_AF  SPI1_SCK_AF
+#define SPI_MISO_AF SPI1_MISO_AF
+#define SPI_MOSI_AF SPI1_MOSI_AF
 
-#define SPI_REMAP GPIO_Remap_SPI1
-#define SPI_GPIO_AF GPIO_AF_SPI1
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI1EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI1EN))
 #define sig_SPI     sig_SPI1

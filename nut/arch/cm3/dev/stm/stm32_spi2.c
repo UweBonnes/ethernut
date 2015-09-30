@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2012-2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2012-2015 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,46 +50,13 @@
 #include <arch/cm3/stm/stm32f1_dma.h>
 #endif
 #include <arch/cm3/stm/stm32_spi.h>
+#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
 #include <sys/nutdebug.h>
 
 #include <stdlib.h>
 #include <errno.h>
-
-/* Handle the PIN remap possibilities
- * FIXME: Nearly every chip has some mapping exception!
- * F1:    NSS:  PB12
- *        SCK:  PB13
- *        MISO: PB14
- *        MOSI: PB15
- *  L1:   NSS:  PB12/PD0
- *        SCK:  PB13/PD1
- *        MISO: PB14/PD3
- *        MOSI: PB15/PD4
- * F2/F4: NSS:  PB12/PB9/PI0
- *        SCK:  PB13/PB10/PI1
- *        MISO: PB14/PC2/PI2
- *        MOSI: PB15/PC3/PI3
- * F411 : NSS:  PB12/PB9
- *        SCK:  PB13/PB10/PC7/PD3
- *        MISO: PB14/PC2
- *        MOSI: PB15/PC3
- * (AF5)  SCK:  PB13/PB10/PC7/PD3
- *        MISO: PB14/PC2
- *        MOSI: PB15/PC3
- * F30x:  NSS:  PB12/PD12
- *        SCK:  PB13/PF9/PF10
- *        MISO: PB14
- *        MOSI: PB15
- *
- * F373:  NSS:  PA11/PB9/PD6
- *        SCK:  PA8/PB8/PB10/PD7/PD8
- *        MISO: PA9/PB14/PC2/PD3
- *        MOSI: PA10/PB15/PC3/PD4/
- *
- * Use PB12 or on F373 PA11 as default chip select
- */
 
 #if !defined( SPIBUS2_NO_CS)
 #if !defined(SPIBUS2_CS0_PORT) && !defined(SPIBUS2_CS0_PIN)
@@ -128,127 +95,17 @@
 
 #endif
 
-#if defined(MCU_STM32F1)
- #undef SPIBUS_REMAP_BB
- #define SPIBUS_SCK_PIN 13
- #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #define SPIBUS_MISO_PIN 14
- #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #define SPIBUS_MOSI_PIN 15
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
-#elif defined(MCU_STM32F37)
- #if SPIBUS2_SCK_PIN == 8 || !defined(SPIBUS2_SCK_PIN)
- #define SPIBUS_SCK_PORT NUTGPIO_PORTA
- #define SPIBUS_SCK_PIN  8
- #elif SPIBUS2_SCK_PIN == 208
- #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #define SPIBUS_SCK_PIN  8
- #elif SPIBUS2_SCK_PIN == 408
- #define SPIBUS_SCK_PORT NUTGPIO_PORTD
- #define SPIBUS_SCK_PIN  8
- #elif SPIBUS2_SCK_PIN == 7
- #define SPIBUS_SCK_PORT NUTGPIO_PORTD
- #define SPIBUS_SCK_PIN  7
- #elif SPIBUS2_SCK_PIN == 10
- #define SPIBUS_SCK_PORT NUTGPIO_PORTB
- #define SPIBUS_SCK_PIN  10
- #else
- #warning "Illegal STM32F373 SPI2 SCK assignment"
- #endif
- #if SPIBUS2_MOSI_PIN == 10 || !defined(SPIBUS2_MOSI_PIN)
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTA
- #define SPIBUS_MOSI_PIN  10
- #elif SPIBUS2_MOSI_PIN == 15
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #define SPIBUS_MOSI_PIN  15
- #elif SPIBUS2_MOSI_PIN == 3
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
- #define SPIBUS_MOSI_PIN  3
- #elif SPIBUS2_MOSI_PIN == 4
- #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #define SPIBUS_MOSI_PIN  4
- #else
- #warning "Illegal STM32F373 SPI2 MOSI assignment"
- #endif
- #if SPIBUS2_MISO_PIN == 9 || !defined(SPIBUS2_MISO_PIN)
- #define SPIBUS_MISO_PORT NUTGPIO_PORTA
- #define SPIBUS_MISO_PIN  9
- #elif SPIBUS2_MISO_PIN == 14
- #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #define SPIBUS_MISO_PIN  14
- #elif SPIBUS2_MISO_PIN == 2
- #define SPIBUS_MISO_PORT NUTGPIO_PORTC
- #define SPIBUS_MISO_PIN  2
- #elif SPIBUS2_MISO_PIN == 3
- #define SPIBUS_MISO_PORT NUTGPIO_PORTD
- #define SPIBUS_MISO_PIN  3
- #else
- #warning "Illegal STM32F373 SPI2 MISO assignment"
- #endif
-#else
- #if !defined(SPIBUS2_SCK_PIN)
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
-  #define SPIBUS_SCK_PIN 13
- #elif SPIBUS2_SCK_PIN == 13
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
-  #define SPIBUS_SCK_PIN 13
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F4)) && SPIBUS2_SCK_PIN == 10
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTB
-  #define SPIBUS_SCK_PIN 10
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F4)) && SPIBUS2_SCK_PIN == 1
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTD
-  #define SPIBUS_SCK_PIN 1
- #elif defined(MCU_STM32L1) && SPIBUS2_SCK_PIN == 1
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTD
-  #define SPIBUS_SCK_PIN 1
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F4)) && SPIBUS2_SCK_PIN == 901
-  #undef SPIBUS2_SCK_PIN
-  #define SPIBUS_SCK_PIN 1
-  #define SPIBUS_SCK_PORT NUTGPIO_PORTI
- #else
-  #warning "Illegal SPI2 SCK pin assignement"
- #endif
- #if !defined(SPIBUS2_MISO_PIN)
-  #define SPIBUS_MISO_PIN 14
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #elif  SPIBUS2_MISO_PIN == 14
-  #define SPIBUS_MISO_PIN 14
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTB
- #elif defined(MCU_STM32L1) && SPIBUS2_MISO_PIN == 3
-  #define SPIBUS_MISO_PIN 3
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTD
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F4)) && SPIBUS2_MISO_PIN == 2
-  #define SPIBUS_MISO_PIN 2
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTC
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F4)) && SPIBUS2_MISO_PIN == 902
-  #undef SPIBUS2_MISO_PIN
-  #define SPIBUS_MISO_PIN 2
-  #define SPIBUS_MISO_PORT NUTGPIO_PORTI
- #else
-  #warning "Illegal SPI2 MISO pin assignement"
- #endif
- #if !defined(SPIBUS2_MOSI_PIN)
-  #define SPIBUS_MOSI_PIN 15
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #elif SPIBUS2_MOSI_PIN == 15
-  #define SPIBUS_MOSI_PIN 15
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTB
- #elif defined(MCU_STM32L1) && SPIBUS2_MOSI_PIN == 4
-  #define SPIBUS_MOSI_PIN 4
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTD
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F4)) && SPIBUS2_MOSI_PIN == 3
-  #define SPIBUS_MOSI_PIN 3
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTC
- #elif (defined(MCU_STM32F2) || defined(MCU_STM32F4)) && SPIBUS2_MOSI_PIN == 903
-  #undef SPIBUS2_MOSI_PIN
-  #define SPIBUS_MOSI_PIN 3
-  #define SPIBUS_MOSI_PORT NUTGPIO_PORTI
- #else
-  #warning "Illegal SPI2 MOSI pin assignement"
- #endif
-#endif
+#define Stm32F1SpiRemap()
+
+#define SPI_SCK     SPI2_SCK
+#define SPI_MISO    SPI2_MISO
+#define SPI_MOSI    SPI2_MOSI
+
+#define SPI_SCK_AF  SPI2_SCK_AF
+#define SPI_MISO_AF SPI2_MISO_AF
+#define SPI_MOSI_AF SPI2_MOSI_AF
+
 #define SPI_DEV 2
-#define SPI_GPIO_AF GPIO_AF_SPI2
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
 #define sig_SPI             sig_SPI2
