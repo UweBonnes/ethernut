@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    stm32f091xc.h
+  * @file    stm32f098xx.h
   * @author  MCD Application Team
   * @version V2.2.2
   * @date    26-June-2015
-  * @brief   CMSIS STM32F091xC devices Peripheral Access Layer Header File.
+  * @brief   CMSIS STM32F098xx devices Peripheral Access Layer Header File.
   *
   *          This file contains:
   *           - Data structures and the address mapping for all peripherals
@@ -45,12 +45,12 @@
   * @{
   */
 
-/** @addtogroup stm32f091xc
+/** @addtogroup stm32f098xx
   * @{
   */
 
-#ifndef __STM32F091xC_H
-#define __STM32F091xC_H
+#ifndef __STM32F098xx_H
+#define __STM32F098xx_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -76,7 +76,7 @@
   */
 
 /**
- * @brief STM32F091xC device Interrupt Number Definition
+ * @brief STM32F098xx device Interrupt Number Definition
  */
 typedef enum
 {
@@ -89,7 +89,7 @@ typedef enum
 
 /******  STM32F091xC specific Interrupt Numbers **************************************************/
   WWDG_IRQn                   = 0,      /*!< Window WatchDog Interrupt                                       */
-  PVD_VDDIO2_IRQn             = 1,      /*!< PVD & VDDIO2 Interrupts through EXTI Lines 16 and 31            */
+  VDDIO2_IRQn                 = 1,      /*!< VDDIO2 Interrupt through EXTI Line 31                           */
   RTC_IRQn                    = 2,      /*!< RTC Interrupt through EXTI Lines 17, 19 and 20                  */
   FLASH_IRQn                  = 3,      /*!< FLASH global Interrupt                                          */
   RCC_CRS_IRQn                = 4,      /*!< RCC & CRS global Interrupts                                     */
@@ -118,16 +118,15 @@ typedef enum
   USART1_IRQn                 = 27,     /*!< USART1 global Interrupt & EXTI Line25 Interrupt (USART1 wakeup) */
   USART2_IRQn                 = 28,     /*!< USART2 global Interrupt & EXTI Line26 Interrupt (USART2 wakeup) */
   USART3_8_IRQn               = 29,     /*!< USART3 to USART8 global Interrupts                              */
-  CEC_CAN_IRQn                = 30,     /*!< CEC and CAN global Interrupts & EXTI Line27 Interrupt           */
-  IRQn_MAX,                             /*!< Total number of interrupts                                      */
+  CEC_CAN_IRQn                = 30      /*!< CEC and CAN global Interrupts & EXTI Line27 Interrupt           */
 } IRQn_Type;
 
 /**
   * @}
   */
 
-#include <arch/cm3/core_cm0.h>         /* Cortex-M0 processor and core peripherals */
-#include <arch/cm3/stm/system_stm32.h> /* STM32F0xx System Header */
+#include "core_cm0.h"            /* Cortex-M0 processor and core peripherals */
+#include "system_stm32f0xx.h"    /* STM32F0xx System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
@@ -325,7 +324,7 @@ typedef struct
 {
   __IO uint32_t ISR;          /*!< DMA interrupt status register,                            Address offset: 0x00 */
   __IO uint32_t IFCR;         /*!< DMA interrupt flag clear register,                        Address offset: 0x04 */
-  uint32_t      RESERVED0[40];/*!< Reserved as declared by channel typedef                   0x08 - 0xA4          */
+  uint32_t      RESERVED0[40];/*!< Reserved as declared by channel typedef                         0x08 - 0xA4*/
   __IO uint32_t CSELR;        /*!< Channel selection register,                               Address offset: 0xA8 */
 }DMA_TypeDef;
 
@@ -1196,7 +1195,7 @@ typedef struct
 #define  CAN_FS1R_FSC27                      ((uint32_t)0x08000000)        /*!<Filter Scale Configuration bit 27 */
 
 /******************  Bit definition for CAN_FFA1R register  *******************/
-#define  CAN_FFA1R_FFA                        ((uint32_t)0x0FFFFFFF)        /*!<Filter FIFO Assignment */
+#define  CAN_FFA1R_FFA                       ((uint32_t)0x0FFFFFFF)        /*!<Filter FIFO Assignment */
 #define  CAN_FFA1R_FFA0                       ((uint32_t)0x00000001)        /*!<Filter FIFO Assignment bit 0 */
 #define  CAN_FFA1R_FFA1                       ((uint32_t)0x00000002)        /*!<Filter FIFO Assignment bit 1 */
 #define  CAN_FFA1R_FFA2                       ((uint32_t)0x00000004)        /*!<Filter FIFO Assignment bit 2 */
@@ -3563,29 +3562,11 @@ typedef struct
 #define  PWR_CR_PDDS                         ((uint32_t)0x00000002)        /*!< Power Down Deepsleep */
 #define  PWR_CR_CWUF                         ((uint32_t)0x00000004)        /*!< Clear Wakeup Flag */
 #define  PWR_CR_CSBF                         ((uint32_t)0x00000008)        /*!< Clear Standby Flag */
-#define  PWR_CR_PVDE                         ((uint32_t)0x00000010)        /*!< Power Voltage Detector Enable */
-
-#define  PWR_CR_PLS                          ((uint32_t)0x000000E0)        /*!< PLS[2:0] bits (PVD Level Selection) */
-#define  PWR_CR_PLS_0                        ((uint32_t)0x00000020)        /*!< Bit 0 */
-#define  PWR_CR_PLS_1                        ((uint32_t)0x00000040)        /*!< Bit 1 */
-#define  PWR_CR_PLS_2                        ((uint32_t)0x00000080)        /*!< Bit 2 */
-
-/*!< PVD level configuration */
-#define  PWR_CR_PLS_LEV0                     ((uint32_t)0x00000000)        /*!< PVD level 0 */
-#define  PWR_CR_PLS_LEV1                     ((uint32_t)0x00000020)        /*!< PVD level 1 */
-#define  PWR_CR_PLS_LEV2                     ((uint32_t)0x00000040)        /*!< PVD level 2 */
-#define  PWR_CR_PLS_LEV3                     ((uint32_t)0x00000060)        /*!< PVD level 3 */
-#define  PWR_CR_PLS_LEV4                     ((uint32_t)0x00000080)        /*!< PVD level 4 */
-#define  PWR_CR_PLS_LEV5                     ((uint32_t)0x000000A0)        /*!< PVD level 5 */
-#define  PWR_CR_PLS_LEV6                     ((uint32_t)0x000000C0)        /*!< PVD level 6 */
-#define  PWR_CR_PLS_LEV7                     ((uint32_t)0x000000E0)        /*!< PVD level 7 */
-
 #define  PWR_CR_DBP                          ((uint32_t)0x00000100)        /*!< Disable Backup Domain write protection */
 
 /*******************  Bit definition for PWR_CSR register  *******************/
 #define  PWR_CSR_WUF                         ((uint32_t)0x00000001)        /*!< Wakeup Flag */
 #define  PWR_CSR_SBF                         ((uint32_t)0x00000002)        /*!< Standby Flag */
-#define  PWR_CSR_PVDO                        ((uint32_t)0x00000004)        /*!< PVD Output */
 #define  PWR_CSR_VREFINTRDYF                 ((uint32_t)0x00000008)        /*!< Internal voltage reference (VREFINT) ready flag */
 
 #define  PWR_CSR_EWUP1                       ((uint32_t)0x00000100)        /*!< Enable WKUP pin 1 */
@@ -4569,13 +4550,11 @@ typedef struct
 /*****************  Bit definition for SYSCFG_CFGR2 register  ****************/
 #define SYSCFG_CFGR2_LOCKUP_LOCK               ((uint32_t)0x00000001) /*!< Enables and locks the LOCKUP (Hardfault) output of CortexM0 with Break Input of TIMER1 */
 #define SYSCFG_CFGR2_SRAM_PARITY_LOCK          ((uint32_t)0x00000002) /*!< Enables and locks the SRAM_PARITY error signal with Break Input of TIMER1 */
-#define SYSCFG_CFGR2_PVD_LOCK                  ((uint32_t)0x00000004) /*!< Enables and locks the PVD connection with Timer1 Break Input and also the PVD_EN and PVDSEL[2:0] bits of the Power Control Interface */
 #define SYSCFG_CFGR2_SRAM_PEF                  ((uint32_t)0x00000100) /*!< SRAM Parity error flag */
 #define SYSCFG_CFGR2_SRAM_PE                   SYSCFG_CFGR2_SRAM_PEF /*!< SRAM Parity error flag (define maintained for legacy purpose) */
 
 /*****************  Bit definition for SYSCFG_xxx ISR Wrapper register  ****************/
 #define SYSCFG_ITLINE0_SR_EWDG                ((uint32_t)0x00000001) /*!< EWDG interrupt */
-#define SYSCFG_ITLINE1_SR_PVDOUT              ((uint32_t)0x00000001) /*!< Power voltage detection -> exti[31] Interrupt */
 #define SYSCFG_ITLINE1_SR_VDDIO2              ((uint32_t)0x00000002) /*!< VDDIO2 -> exti[16] Interrupt */
 #define SYSCFG_ITLINE2_SR_RTC_WAKEUP          ((uint32_t)0x00000001) /*!< RTC WAKEUP -> exti[20] Interrupt */
 #define SYSCFG_ITLINE2_SR_RTC_TSTAMP          ((uint32_t)0x00000002) /*!< RTC Time Stamp -> exti[19] interrupt */
@@ -5740,8 +5719,7 @@ typedef struct
 /******************************************************************************/
 
 /* Aliases for __IRQn */
-#define PVD_IRQn                       PVD_VDDIO2_IRQn
-#define VDDIO2_IRQn                    PVD_VDDIO2_IRQn
+#define PVD_VDDIO2_IRQn                VDDIO2_IRQn
 #define RCC_IRQn                       RCC_CRS_IRQn
 #define DMA1_Channel1_IRQn             DMA1_Ch1_IRQn
 #define DMA1_Channel2_3_IRQn           DMA1_Ch2_3_DMA2_Ch1_2_IRQn
@@ -5752,8 +5730,7 @@ typedef struct
 #define USART3_4_IRQn                  USART3_8_IRQn
 
 /* Aliases for __IRQHandler */
-#define PVD_IRQHandler                 PVD_VDDIO2_IRQHandler
-#define VDDIO2_IRQHandler              PVD_VDDIO2_IRQHandler
+#define PVD_VDDIO2_IRQHandler          VDDIO2_IRQHandler
 #define RCC_IRQHandler                 RCC_CRS_IRQHandler
 #define DMA1_Channel1_IRQHandler       DMA1_Ch1_IRQHandler
 #define DMA1_Channel2_3_IRQHandler     DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler
@@ -5767,7 +5744,7 @@ typedef struct
 }
 #endif /* __cplusplus */
 
-#endif /* __STM32F091xC_H */
+#endif /* __STM32F098xx_H */
 
 /**
   * @}
