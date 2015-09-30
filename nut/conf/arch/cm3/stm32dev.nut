@@ -1145,6 +1145,15 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_LCD_STM32",
+                brief = "STM32 LCD",
+                description = "LCD Availability",
+                requires = { "HW_LCD_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_DMA2_7CH_STM32",
                 brief = "STM32L4 Devices 7 Channel DMA2",
                 description = "STM32L4 Devices 7 Channel DMA2",

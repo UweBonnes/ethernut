@@ -92,6 +92,10 @@ CREATE_HANDLER(RTC,           RTC_Alarm,NUT_IRQPRI_DEF);    // Real Time Clock
 CREATE_HANDLER(RTC_WAKEUP,    RTC_WKUP, NUT_IRQPRI_DEF);    // Real Time Clock
 #endif
 
+#if defined(HW_LCD_STM32)
+CREATE_HANDLER(LCD,           LCD,      NUT_IRQPRI_DEF);
+#endif
+
 CREATE_HANDLER(SPI1,          SPI1,     NUT_IRQPRI_DEF);     // SPI 1 Controller
 #if defined(HW_SPI2_STM32)
 CREATE_HANDLER(SPI2,          SPI2,     NUT_IRQPRI_DEF);     // SPI 2 Controller

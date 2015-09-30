@@ -49,6 +49,7 @@ extern IRQ_HANDLER sig_INTERRUPT15_10;  // EXTI 10 to 15
 extern IRQ_HANDLER sig_INTERRUPT0_1;    // EXTI 0 to 1 on F0/L0
 extern IRQ_HANDLER sig_INTERRUPT2_3;    // EXTI 2 to 3 on F0/L0
 extern IRQ_HANDLER sig_INTERRUPT4_15;   // EXTI 4 to 15 on F0/L0
+extern IRQ_HANDLER sig_LCD;         // LCD Display
 extern IRQ_HANDLER sig_RTC;         // Real Time Clock
 extern IRQ_HANDLER sig_RCC;         // Reset and Clock setup
 extern IRQ_HANDLER sig_RTC_WAKEUP;  // Real Time Clock periodic Wake
