@@ -181,6 +181,16 @@ CREATE_HANDLER(USB_WAKE,      USBWakeUp,   NUT_IRQPRI_DEF);  // USB Wake Priorit
 #endif
 
 CREATE_HANDLER(USART1,        USART1,          NUT_IRQPRI_DEF);  // USART 1
+#if defined(MCU_STM32F0)
+CREATE_HANDLER(USART2,        USART2,          NUT_IRQPRI_DEF);  // USART 2
+# if   defined(USART3_8_COMBINED_IRQ)
+CREATE_HANDLER(USART_GROUP,   USART3_8,        NUT_IRQPRI_DEF);  // USART 2
+# elif defined(USART3_6_COMBINED_IRQ)
+CREATE_HANDLER(USART_GROUP,   USART3_6,        NUT_IRQPRI_DEF);  // USART 2
+# elif defined(USART3_4_COMBINED_IRQ)
+CREATE_HANDLER(USART_GROUP,   USART3_4,        NUT_IRQPRI_DEF);  // USART 2
+# endif
+#else
 #if defined(HW_USART2_STM32)
 CREATE_HANDLER(USART2,        USART2,          NUT_IRQPRI_DEF);  // USART 2
 #endif
@@ -204,6 +214,7 @@ CREATE_HANDLER(UART7,         UART7,          NUT_IRQPRI_DEF);  // UART 7
 #endif
 #if defined(HW_UART8_STM32)
 CREATE_HANDLER(UART8,         UART8,          NUT_IRQPRI_DEF);  // UART 8
+#endif
 #endif
 
 #if defined (MCU_STM32L0)

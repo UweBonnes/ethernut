@@ -59,6 +59,19 @@
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
+#if !defined(UART5) && defined(USART5)
+#define UART5 USART5
+#endif
+#if !defined(UART5_BASE) && defined(USART5_BASE)
+#define UART5_BASE USART5_BASE
+#endif
+#if !defined(RCC_APB1RSTR_UART5RST) && defined(RCC_APB1RSTR_USART5RST)
+#define RCC_APB1RSTR_UART5RST RCC_APB1RSTR_USART5RST
+#endif
+#if !defined(RCC_APB1ENR_UART5EN) && defined(RCC_APB1ENR_USART5EN)
+#define RCC_APB1ENR_UART5EN RCC_APB1ENR_USART5EN
+#endif
+
 /*!
  * \addtogroup xgNutArchCm3Stm32
  */
@@ -115,7 +128,7 @@ NUTDEVICE devUartStm32_5 = {
     {'u', 'a', 'r', 't', '5', 0, 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
     UART5_BASE,                 /* Base address, dev_base. */
-    UART5_IRQn,                 /* First interrupt number, dev_irq. */
+    0,                          /* First interrupt number, dev_irq. */
     NULL,                       /* Interface control block, dev_icb. */
     &dcb_uart5,                 /* Driver control block, dev_dcb. */
     UsartInit,                  /* Driver initialization routine, dev_init. */
@@ -242,7 +255,6 @@ static void  StmUsartClkEnable(int enable)
 #define USARTclk    NUT_HWCLK_PCLK1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
-#define SigUSART sig_UART5
 #define DcbUSART dcb_uart5
 
 /*@}*/

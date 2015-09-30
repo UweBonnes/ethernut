@@ -114,7 +114,7 @@ NUTDEVICE devUsartStm32_2 = {
     {'u', 's', 'a', 'r', 't', '2', 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
     USART2_BASE,                /* Base address, dev_base. */
-    USART2_IRQn,                /* First interrupt number, dev_irq. */
+    0,                          /* First interrupt number, dev_irq. */
     NULL,                       /* Interface control block, dev_icb. */
     &dcb_usart2,                /* Driver control block, dev_dcb. */
     UsartInit,                  /* Driver initialization routine, dev_init. */
@@ -371,11 +371,9 @@ static void  StmUsartClkEnable(int enable)
 
 #define USARTn      USART2
 #define USARTnBase  USART2_BASE
-#define USARTirqn   USART2_IRQn
 #define USARTclk    NUT_HWCLK_PCLK1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
-#define SigUSART sig_USART2
 #define DcbUSART dcb_usart2
 
 /*@}*/

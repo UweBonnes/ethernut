@@ -78,6 +78,9 @@ extern IRQ_HANDLER sig_USART3;      // USART 3
 extern IRQ_HANDLER sig_UART4;       // UART 4
 extern IRQ_HANDLER sig_UART5;       // UART 5
 extern IRQ_HANDLER sig_USART6;      // USART 6
+extern IRQ_HANDLER sig_UART7;       // USART 7
+extern IRQ_HANDLER sig_UART8;       // USART 8
+extern IRQ_HANDLER sig_USART_GROUP; // Combined USART3-[4/6/8] on F0
 extern IRQ_HANDLER sig_OTG_FS;      // USB OTG on F2/F4
 /* On F30, USB interrupt is remapped from CAN on startup. On F1, beside
    communication line devices, USB and CAN can't be used together*/

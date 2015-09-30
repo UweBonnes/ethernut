@@ -49,6 +49,7 @@
 #include <dev/usart.h>
 #include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
+#include <arch/cm3/stm/stm32_usartirq.h>
 
 #if defined(MCU_STM32L0) || defined(MCU_STM32F0) || defined(MCU_STM32F3) ||  defined(MCU_STM32F7)
 #define USARTN_RDR (USARTn->RDR)
@@ -248,6 +249,8 @@ static void Stm32UsartDmaRxIrq(void* arg)
 }
 #endif
 #endif
+
+USART_SIGNAL *usart_sig;
 
 /*
  * \brief USARTn transmitter ready interrupt handler.
@@ -1306,7 +1309,12 @@ static int Stm32UsartInit(void)
     /*
      * Register receive and transmit interrupts.
      */
-    if (NutRegisterIrqHandler(&SigUSART, Stm32UsartInterrupt, &DcbUSART)) {
+    usart_sig = Stm32UsartCreateHandler(USARTnBase);
+    if (!usart_sig)
+        return -1;
+
+    if (Stm32UsartRegisterHandler(usart_sig, USARTnBase,
+                                     Stm32UsartInterrupt, &DcbUSART)) {
         return -1;
     }
 
@@ -1426,7 +1434,7 @@ static int Stm32UsartInit(void)
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
     DMA_Init();
 #endif
-    NutIrqEnable(&SigUSART);
+//    NutIrqEnable(&SigUSART);
     return 0;
 }
 
@@ -1441,11 +1449,11 @@ static int Stm32UsartInit(void)
 static int Stm32UsartDeinit(void)
 {
     /* Disable interrupts */
-    NutIrqDisable(&SigUSART);
+//    NutIrqDisable(&SigUSART);
     USARTn->CR1 = 0;
 
     /* Deregister receive and transmit interrupts. */
-    NutRegisterIrqHandler(&SigUSART, 0, 0);
+    Stm32UsartRegisterHandler(usart_sig, USARTnBase, 0, 0);
 
     /* Reset UART. */
     StmUsartClkEnable(0);

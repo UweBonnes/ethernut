@@ -2,20 +2,29 @@
 -- Retrieve U(S)ARTs available on the device.
 --
 function GetStmUsarts()
-    if c_is_provided("HW_MCU_STM32F030") then
-        return { "", "USART1", "USART2" }
+-- STM32F03 members has different number of USARTs
+    if c_is_provided("HW_MCU_STM32F030x6") then
+        return { "", "USART1"}
     end
-    if c_is_provided("HW_MCU_STM32F031") then
-        return { "", "USART1" }
+    if c_is_provided("HW_MCU_STM32F031x6") then
+        return { "", "USART1"}
     end
-    if c_is_provided("HW_MCU_STM32F040") then
-        return { "", "USART1", "USART2" }
+    if c_is_provided("HW_MCU_STM32F038xx") then
+        return { "", "USART1"}
     end
-    if c_is_provided("HW_MCU_STM32F052") then
-        return { "", "USART1", "USART2" }
+    if c_is_provided("HW_MCU_STM32F030xC") then
+        return { "", "USART1", "USART2", "USART3", "USART4", "UART5", "UART6" }
     end
-    if c_is_provided("HW_MCU_STM32F072") then
-        return { "", "USART1", "USART2", "USART3", "USART4", }
+-- For other STM32F0 families, the number of USARTs is constant per familie
+    if c_is_provided("HW_MCU_STM32F07") then
+        return { "", "USART1", "USART2", "USART3", "USART4" }
+    end
+   if c_is_provided("HW_MCU_STM32F09") then
+        return { "", "USART1", "USART2", "USART3", "USART4", "UART5", "UART6", "UART7", "UART8" }
+    end
+-- All other STM32F0 are considered to have 2 USARTs
+    if c_is_provided("HW_MCU_STM32F0") then
+        return { "", "USART1", "USART2"}
     end
     if c_is_provided("HW_MCU_STM32F1_LD_VL") then
         return { "", "USART1", "USART2" }
@@ -1224,6 +1233,73 @@ nutarch_cm3_stm32_devices =
         },
     },
     --
+    -- STM32F0 Combined USART Interface
+    --
+    {
+        name = "nutarch_cm3_stm32f0_usart_combined",
+        brief = "STM32FO Combined Usart",
+        description = "STM32FO Combined Usart IRQ Separation Helpers",
+        requires = { "HW_MCU_STM32F0" },
+        options =
+        {
+            {
+                macro = "USART3_4_COMBINED_IRQ",
+                brief = "STM32F07 USART3_4 Combined Usart",
+                description = "STM32FO7 Combined Usart3_4 IRQ Separation Helpers",
+                type = "integer",
+                default = 1,
+                requires = { "HW_USART3_4_STM32" },
+                provides = {
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_USART4_STM32",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                },
+                file = "include/cfg/devices.h",
+            },
+            {
+                macro = "USART3_6_COMBINED_IRQ",
+                brief = "STM32F030xC USART3_6 Combined Usart ",
+                description = "STM32FO30xC Combined Usart3_6 IRQ Separation Helpers",
+                type = "integer",
+                default = 1,
+                requires = { "HW_USART3_6_STM32" },
+                provides = {
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_USART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_USART5_STM32",
+                    "HW_USART6_STM32",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                },
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "USART3_8_COMBINED_IRQ",
+                brief = "STM32F09 USART3_8 Combined Usart ",
+                description = "STM32FO9 Combined Usart3_8 IRQ Separation Helpers",
+                type = "integer",
+                default = 1,
+                requires = { "HW_USART3_8_STM32" },
+                provides = {
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_USART4_STM32",
+                    "HW_UART5_STM32",
+                    "HW_USART5_STM32",
+                    "HW_USART6_STM32",
+                    "HW_UART7_STM32",
+                    "HW_USART7_STM32",
+                    "HW_UART8_STM32",
+                    "HW_USART8_STM32",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                },
+                file = "include/cfg/devices.h"
+            },
+        },
+    },
+    --
     -- STM32F USART1 Interface
     --
     {
@@ -1243,6 +1319,7 @@ nutarch_cm3_stm32_devices =
         },
         sources =
         {
+            "cm3/dev/stm/stm32_usartirq.c",
             "cm3/dev/stm/stm32_usart1.c",
         },
         options =
@@ -4837,10 +4914,28 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_USART4_STM32",
+                brief = "USART4 Availability",
+                description = "USART4 Availability",
+                requires = { "HW_USART4_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_UART5_STM32",
                 brief = "UART5 Availability",
                 description = "USART5 Availability",
                 requires = { "HW_UART5_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART5_STM32",
+                brief = "USART5 Availability",
+                description = "USART5 Availability",
+                requires = { "HW_USART5_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
@@ -4864,10 +4959,28 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_USART7_STM32",
+                brief = "USART7 Availability",
+                description = "USART7 Availability",
+                requires = { "HW_USART7_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_UART8_STM32",
                 brief = "UART8 Availability",
                 description = "UART8 Availability",
                 requires = { "HW_UART8_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART8_STM32",
+                brief = "USART8 Availability",
+                description = "USART8 Availability",
+                requires = { "HW_SUART8_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"

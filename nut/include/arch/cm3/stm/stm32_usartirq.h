@@ -1,9 +1,8 @@
-#ifndef _STM32_USART_H_
-#define _STM32_USART_H_
+#ifndef _STM32_USARTIRQ_H_
+#define _STM32_USARTIRQ_H_
 
 /*
- * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2015, Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,36 +34,20 @@
  *
  */
 
-/*
- * \verbatim
- * $Id$
- * \endverbatim
- */
+# if defined(HW_USART_COMBINED_IRQ_STM32)
+typedef struct _usart_signal USART_SIGNAL;
+struct _usart_signal {
+    uint8_t usart_nr;
+    void (*usart_handler) (void *);
+    void *usart_arg;
+    USART_SIGNAL *next;
+};
+#else
+# define USART_SIGNAL IRQ_HANDLER
+#endif
 
-/*
- * Nut/OS to STM32 Abstraction handler
- */
-
-/*
- * Function prototypes.
- */
-static uint32_t Stm32UsartGetSpeed(void);
-static int Stm32UsartSetSpeed(uint32_t rate);
-static uint8_t Stm32UsartGetDataBits(void);
-static int Stm32UsartSetDataBits(uint8_t bits);
-static uint8_t Stm32UsartGetParity(void);
-static int Stm32UsartSetParity(uint8_t mode);
-static uint8_t Stm32UsartGetStopBits(void);
-static int Stm32UsartSetStopBits(uint8_t bits);
-static uint32_t Stm32UsartGetFlowControl(void);
-static int Stm32UsartSetFlowControl(uint32_t flags);
-static uint32_t Stm32UsartGetStatus(void);
-static int Stm32UsartSetStatus(uint32_t flags);
-static uint8_t Stm32UsartGetClockMode(void);
-static int Stm32UsartSetClockMode(uint8_t mode);
-static void Stm32UsartTxStart(void);
-static void Stm32UsartRxStart(void);
-static int Stm32UsartInit(void);
-static int Stm32UsartDeinit(void);
-
+extern USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base);
+extern int Stm32UsartRegisterHandler(
+    USART_SIGNAL* signal, uint32_t usart_base,
+    void (*handler) (void *), void *arg);
 #endif

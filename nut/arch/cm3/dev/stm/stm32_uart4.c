@@ -59,6 +59,19 @@
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
+#if !defined(UART4) && defined(USART4)
+#define UART4 USART4
+#endif
+#if !defined(UART4_BASE) && defined(USART4_BASE)
+#define UART4_BASE USART4_BASE
+#endif
+#if !defined(RCC_APB1RSTR_UART4RST) && defined(RCC_APB1RSTR_USART4RST)
+#define RCC_APB1RSTR_UART4RST RCC_APB1RSTR_USART4RST
+#endif
+#if !defined(RCC_APB1ENR_UART4EN) && defined(RCC_APB1ENR_USART4EN)
+#define RCC_APB1ENR_UART4EN RCC_APB1ENR_USART4EN
+#endif
+
 /*!
  * \addtogroup xgNutArchCm3Stm32
  */
@@ -115,7 +128,7 @@ NUTDEVICE devUartStm32_4 = {
     {'u', 'a', 'r', 't', '4', 0, 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
     UART4_BASE,                 /* Base address, dev_base. */
-    UART4_IRQn,                 /* First interrupt number, dev_irq. */
+    0,                          /* First interrupt number, dev_irq. */
     NULL,                       /* Interface control block, dev_icb. */
     &dcb_uart4,                 /* Driver control block, dev_dcb. */
     UsartInit,                  /* Driver initialization routine, dev_init. */
@@ -268,11 +281,9 @@ static void  StmUsartClkEnable(int enable)
 
 #define USARTn      UART4
 #define USARTnBase  UART4_BASE
-#define USARTirqn   UART4_IRQn
 #define USARTclk    NUT_HWCLK_PCLK1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
-#define SigUSART sig_UART4
 #define DcbUSART dcb_uart4
 
 /*@}*/
