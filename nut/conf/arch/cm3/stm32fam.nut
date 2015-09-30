@@ -54,23 +54,6 @@ nutarch_cm3_stm32_family =
     -- STM32 Based Cpu Directory
     --
     {
-        name = "nutarch_stm32_fam",
-        brief = "MCU Family",
-        sources = { "cm3/dev/stm/system_stm32.c" },
-        options =
-        {
-            {
-                macro = "MCU_STM32",
-                brief = "STM32",
-                type = "integer",
-                default = 1,
-                requires = { "HW_MCU_STM32" },
-                provides = { "HW_UART_OWIMODE" },
-                file = "include/cfg/arch.h",
-            }
-        }
-    },
-    {
         name = "nutarch_cm3_stm32f0",
         brief = "STM32F0",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F0" },

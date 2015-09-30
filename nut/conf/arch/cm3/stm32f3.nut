@@ -57,7 +57,6 @@ nutarch_cm3_stm32f3 =
                 macro = "MCU_STM32F3",
                 brief = "STM32F3 family",
                 description = "Common devices in all STM32F3",
-                type = "integer",
                 default = 1,
                 provides =
                 {
@@ -91,7 +90,6 @@ nutarch_cm3_stm32f3 =
                 macro = "STM32F301x8",
                 brief = "STM32F301",
                 description = "Additional devices in STM32F301",
-                type = "integer",
                 requires = { "HW_MCU_STM32F301" },
                 default = 1,
                 provides =
@@ -111,8 +109,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F302x8",
                 brief = "STM32F302 32/64 kB",
-                description = "Additional devices in STM32F302 32/64 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F302 32/64 kB",
                 requires = { "HW_MCU_STM32F302_LD" },
                 default = 1,
                 provides =
@@ -136,8 +133,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F302xC",
                 brief = "STM32F302 128/256 kB",
-                description = "Additional devices in STM32F302 128/256 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F302 128/256 kB",
                 requires = { "HW_MCU_STM32F302_MD" },
                 default = 1,
                 provides =
@@ -164,8 +160,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F302xE",
                 brief = "STM32F302 512 kB",
-                description = "Additional devices in STM32F302 512 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F302 512 kB",
                 requires = { "HW_MCU_STM32F302_HD" },
                 default = 1,
                 provides =
@@ -193,8 +188,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F303x8",
                 brief = "STM32F303 32/64 kB",
-                description = "Additional devices in STM32F303 32/64 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F303 32/64 kB",
                 requires = { "HW_MCU_STM32F303_LD" },
                 default = 1,
                 provides =
@@ -215,8 +209,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F303xC",
                 brief = "STM32F303 128/256 kB",
-                description = "Additional devices in STM32F303 128/256 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F303 128/256 kB",
                 requires = { "HW_MCU_STM32F303_MD" },
                 default = 1,
                 provides =
@@ -246,8 +239,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F303xE",
                 brief = "STM32F303 512 kB",
-                description = "Additional devices in STM32F303 512 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F303 512 kB",
                 requires = { "HW_MCU_STM32F303_HD" },
                 default = 1,
                 provides =
@@ -278,8 +270,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F318xx",
                 brief = "STM32F318 64 kB",
-                description = "Additional devices in STM32F318 64 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F318 64 kB",
                 requires = { "HW_MCU_STM32F318xx" },
                 default = 1,
                 provides =
@@ -299,8 +290,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F328xx",
                 brief = "STM32F328 64 kB",
-                description = "Additional devices in STM32F328 64 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F328 64 kB",
                 requires = { "HW_MCU_STM32F328xx" },
                 default = 1,
                 provides =
@@ -318,8 +308,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F334x8",
                 brief = "STM32F334  up to 64 kB",
-                description = "Additional devices in STM32F334 up to  64 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F334 up to  64 kB",
                 requires = { "HW_MCU_STM32F334_LD" },
                 default = 1,
                 provides =
@@ -339,8 +328,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F358xx",
                 brief = "STM32F358 256 kB",
-                description = "Additional devices in STM32F358 256 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F358 256 kB",
                 requires = { "HW_MCU_STM32F358xx" },
                 default = 1,
                 provides =
@@ -369,9 +357,8 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "MCU_STM32F37",
                 brief = "STM32F37x family",
-                description = "Common devices in STM32F37x subfamily",
+                description = "Additional devices in STM32F37x subfamily",
                 requires = { "HW_MCU_STM32F37" },
-                type = "integer",
                 default = 1,
                 provides =
                 {
@@ -409,8 +396,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F373xC",
                 brief = "STM32F373 64 up to 256 kB",
-                description = "Additional devices in STM32F373 64 up to 256 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F373 64 up to 256 kB",
                 requires = { "HW_MCU_STM32F373_MD" },
                 default = 1,
                 provides =
@@ -422,8 +408,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F378xx",
                 brief = "STM32F378 256 kB",
-                description = "Additional devices in STM32F378 256 kB",
-                type = "integer",
+                description = "Provide vendor header and additional devices in STM32F378 256 kB",
                 requires = { "HW_MCU_STM32F378xx" },
                 default = 1,
                 file = "include/cfg/arch.h"
@@ -431,7 +416,7 @@ nutarch_cm3_stm32f3 =
             {
                 macro = "STM32F398xx",
                 brief = "STM32F398 512 kB",
-                description = "Additional devices in STM32F398 512 kB",
+                description = "Provide vendor header and additional devices in STM32F398 512 kB",
                 brief = "Include needed for STM32F398",
                 requires = { "HW_MCU_STM32F398xx" },
                 default = 1,

@@ -2248,10 +2248,9 @@ nutdev =
             {
                 macro = "OWIBUS0_HALDUPLEX",
                 brief = "OWIBUS0_HALDUPLEX",
-                description = "Use RX connected internally to TX for OWI Bus 0."..
+                description = "Use RX connected internally to TX for OWI Bus 0.\n"..
                                "Hardware must supports this mode.",
-                requries = { "HW_UART_OWIMODE" },
-                flavor = "boolean",
+                requries = { "HW_UART_SINGLE_WIRE_MODE" },
                 file = "include/cfg/owi.h",
 
             },

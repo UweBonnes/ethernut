@@ -74,8 +74,7 @@ nutarch_cm3_stm32f1 =
             {
                 macro = "MCU_STM32F1",
                 brief = "STM32F1",
-                description = "STM32F1 common peripherals.",
-                type = "integer",
+                description = "Provides STM32F1 common peripherals.",
                 default = 1,
                 provides = {
                         "HW_RCC_STM32",
@@ -116,7 +115,6 @@ nutarch_cm3_stm32f1 =
                 brief = "STM32F MD Series",
                 description = "STM32F Medium Density additional peripherals.",
                 requires = { "HW_MCU_STM32F1_MD" },
-                type = "integer",
                 default = 1,
                 provides = {
                    "HW_I2C2_STM32",
@@ -131,7 +129,6 @@ nutarch_cm3_stm32f1 =
                 brief = "STM32F MD Series",
                 description = "STM32F Medium Density Value line additional peripherals to STM32F1 MD.",
                 requires = { "HW_MCU_STM32F1_MD_VL" },
-                type = "integer",
                 default = 1,
                 provides = {
                   "HW_CEC_STM32",
@@ -146,7 +143,6 @@ nutarch_cm3_stm32f1 =
                 brief = "STM32F HD Series",
                 description = "STM32F1 High Density additional peripherals.",
                 requires = { "HW_MCU_STM32F1_HD" },
-                type = "integer",
                 default = 1,
                 provides = {
                    "HW_I2C2_STM32",
@@ -168,7 +164,6 @@ nutarch_cm3_stm32f1 =
                 description = "STM32F1 High Density Value line.\n"..
                             "Additional peripherals to STM32F1 HD.",
                 requires = { "HW_MCU_STM32F1_HD_VL" },
-                type = "integer",
                 default = 1,
                 provides = {
                     "HW_CEC_STM32",
@@ -185,7 +180,6 @@ nutarch_cm3_stm32f1 =
                 brief = "STM32F XL Series",
                 description = "STM32F XL Density additional peripherals.",
                 requires = { "HW_MCU_STM32F1_XL" },
-                type = "integer",
                 default = 1,
                 provides = {
                    "HW_I2C2_STM32",
@@ -213,7 +207,6 @@ nutarch_cm3_stm32f1 =
                 brief = "STM32F CL Series",
                 description = "STM32F1 Communication Line additional peripherals.",
                 requires = { "HW_MCU_STM32F1_CL" },
-                type = "integer",
                 default = 1,
                 provides = {
                     "HW_CAN1_STM32",
@@ -276,9 +269,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F101x6",
                 brief = "STM32F101 16/32 kB",
-                description = "STM32F101 16/32 kB.",
+                description = "Provides vendor header for STM32F101 16/32 kB and additional device.",
                 requires = { "HW_MCU_STM32F101x6" },
-                type = "integer",
                 default = 1,
                 provides = {
                 },
@@ -287,9 +279,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F101xB",
                 brief = "STM32F101 64/128 kB",
-                description = "STM32F101 64/128 kB.",
+                description = "Provides vendor header for STM32F101 64/128 kB and additional device.",
                 requires = { "HW_MCU_STM32F101xB" },
-                type = "integer",
                 default = 1,
                 provides = {
                 },
@@ -298,9 +289,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F101xE",
                 brief = "STM32F101 256/384/512 kB",
-                description = "STM32F101 256/384/512 kB.",
+                description = "Provides vendor header for STM32F101 256/384/512 kB and additional device.",
                 requires = { "HW_MCU_STM32F101xE" },
-                type = "integer",
                 default = 1,
                 provides = {
                     "HW_DMA2_CH4_5_STM32F1",
@@ -310,9 +300,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F101xG",
                 brief = "STM32F101 768/1024 kB",
-                description = "STM32F101 768/1024  kB.",
+                description = "STM32F101 768/1024  kB and additional device.",
                 requires = { "HW_MCU_STM32F101xG" },
-                type = "integer",
                 default = 1,
                 provides = {
                     "HW_DMA2_CH4_5_STM32F1",
@@ -335,9 +324,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F102x6",
                 brief = "STM32F102 16/32 kB",
-                description = "STM32F102 16/32 kB.",
+                description = "Provides vendor header for STM32F102 16/32 kB and additional device.",
                 requires = { "HW_MCU_STM32F102x6" },
-                type = "integer",
                 default = 1,
                 provides = {
                 },
@@ -346,9 +334,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F102xB",
                 brief = "STM32F102 64/128 kB",
-                description = "STM32F102 64/128 kB.",
+                description = "Provides vendor header for STM32F102 64/128 kB and additional device.",
                 requires = { "HW_MCU_STM32F102xB" },
-                type = "integer",
                 default = 1,
                 provides = {
                 },
@@ -372,9 +359,8 @@ nutarch_cm3_stm32f1 =
             {
                 macro = "STM32F103x6",
                 brief = "STM32F103 16/32 kB",
-                description = "STM32F103 16/32 kB.",
+                description = "Provides vendor header for STM32F103 16/32 kB and additional device.",
                 requires = { "HW_MCU_STM32F103_LD" },
-                type = "integer",
                 default = 1,
                 provides = {
                 },
@@ -383,9 +369,8 @@ nutarch_cm3_stm32f1 =
             {
                 macro = "STM32F103xB",
                 brief = "STM32F103 64/128 kB",
-                description = "STM32F103 64/128 kB.",
+                description = "Provides vendor header for STM32F103 64/128 kB and additional device.",
                 requires = { "HW_MCU_STM32F103_MD" },
-                type = "integer",
                 default = 1,
                 provides = {
                 },
@@ -394,9 +379,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F103xE",
                 brief = "STM32F103 256/384/512 kB",
-                description = "STM32F103 256/384/512 kB.",
+                description = "Provides vendor header for STM32F103 256/384/512 kB and additional device.",
                 requires = { "HW_MCU_STM32F103_HD" },
-                type = "integer",
                 default = 1,
                 provides = {
                     "HW_DMA2_CH4_5_STM32F1",
@@ -409,9 +393,8 @@ nutarch_cm3_stm32f1 =
              {
                 macro = "STM32F103xG",
                 brief = "STM32F103 768/1024 kB",
-                description = "STM32F103 768/1024 kB.",
+                description = "Provides vendor header for STM32F103 768/1024 kB and additional device.",
                 requires = { "HW_MCU_STM32F103_XL" },
-                type = "integer",
                 default = 1,
                 provides = {
                     "HW_DMA2_CH4_5_STM32F1",
@@ -428,9 +411,8 @@ nutarch_cm3_stm32f1 =
             {
                 macro = "STM32F105xC",
                 brief = "STM32F105 256 kB",
-                description = "STM32F103 1024 kB.",
+                description = "Provides vendor header for STM32F103 1024 kB and additional device.",
                 requires = { "HW_MCU_STM32F105xC" },
-                type = "integer",
                 default = 1,
                 provides = {
                     "HW_DMA2_STM32F1",
@@ -488,7 +470,7 @@ nutarch_cm3_stm32f1 =
     {
         name = "nutarch_cm3_stm32f1_gpio",
         brief = "STM32F1 GPIO",
-        description = "Generic port I/O API.",
+        description = "Generic port I/O API for STM32F1.",
         requires = { "HW_MCU_STM32", "HW_GPIO_STM32V1" },
         provides = { "HW_GPIO_V1" };
         sources = {

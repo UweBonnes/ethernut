@@ -49,8 +49,7 @@ nutarch_cm3 =
         {
             {
                 macro = "MCU_CM3",
-                brief = "CortexM3 Family",
-                type = "integer",
+                brief = "Cortex-M Family",
                 default = 1,
                 requires = { "HW_MCU_CM3" },
                 file = "include/cfg/arch.h"
@@ -59,15 +58,28 @@ nutarch_cm3 =
     },
 
     --
-    -- CortexM3 Core Functions
+    -- Cortex-M Core Functions
     --
     {
         name = "nutarch_cm3_init",
-        brief = "Initialization and interrupt registration(CortexM3)",
-        description = "Contains spurious interrupt handler.",
+        brief = "Cortex-M initialization.",
+        description = "Selection of :\n"..
+                      "- Boot function\n"..
+                      "- Stack sizes.",
         requires = { "HW_MCU_CM3" },
-        provides = { "DEV_IRQ_CM3" },
-        sources = { "cm3/cmsis/cortex_init.c" },
+        provides = {
+           "DEV_IRQ_CM3",
+           "NUT_OSTIMER_DEV",
+           "NUT_CONTEXT_SWITCH",
+           "DEV_IRQ_CM3",
+        },
+        sources = {
+            "cm3/cmsis/cortex_init.c",
+            "cm3/cmsis/ostimer_cortex.c",
+            "cm3/os/context.c",
+            "cm3/os/cortex_irqctl.c",
+            "cm3/cmsis/cortex_reset.c",
+        },
         options =
         {
             {
@@ -102,53 +114,8 @@ nutarch_cm3 =
         }
     },
 
-    --
-    -- CortexM3 SysTick Timer
-    --
-    {
-        name = "nutarch_cm3_ostimer",
-        brief = "System Timer (CortexM3)",
-        requires = { "HW_MCU_CM3" },
-        provides = { "NUT_OSTIMER_DEV" },
-        sources = { "cm3/cmsis/ostimer_cortex.c" },
-    },
 
-    --
-    -- CortexM3 Context Switching
-    --
-    {
-        name = "nutarch_cm3_context",
-        brief = "Context Switching (CortexM3)",
-        provides = { "NUT_CONTEXT_SWITCH" },
-        requires = { "HW_MCU_CM3", "TOOL_GCC" },
-        sources = { "cm3/os/context.c" },
-    },
-
-    --
-    -- CortexM3 Common IRQ Control
-    --
-    {
-        name = "nutarch_cm3_irqctl",
-        brief = "Common IRQ control for CM3",
-        provides = { "DEV_IRQ_CM3" },
-        requires = { "HW_MCU_CM3", "TOOL_GCC" },
-        sources = { "cm3/os/cortex_irqctl.c" },
-    },
-
-    --
-    -- CortexM3 Reset Controller
-    --
-    {
-        name = "nutarch_cm3_reset",
-        brief = "Cortex Reset Controller support",
-        requires = { "HW_MCU_CM3" },
-        sources =
-        {
-            "cm3/cmsis/cortex_reset.c",
-        },
-    },
-
-    --
+     --
     -- CortexM4 FPU
     --    
     {
@@ -189,7 +156,22 @@ nutarch_cm3 =
         brief = "STM32 Family",
         requires = { "HW_MCU_STM32" },
         description = "ST Microelectronics STM32 Series",
-        script = "arch/cm3/stm32fam.nut"
+        script = "arch/cm3/stm32fam.nut",
+        sources = {
+            "cm3/dev/stm/system_stm32.c",
+        },
+        options =
+        {
+            {
+                macro = "MCU_STM32",
+                brief = "STM32 Family",
+                descrition ="STM32 Family.",
+                default = 1,
+                requires = { "HW_MCU_STM32" },
+                provides = { "HW_UART_SINGLE_WIRE_MODE" },
+                file = "include/cfg/arch.h"
+            }
+        }
     },
     {
         name = "nutarch_cm3_sam3",

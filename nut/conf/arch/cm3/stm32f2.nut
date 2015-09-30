@@ -55,7 +55,7 @@ nutarch_cm3_stm32f2 =
             {
                 macro = "MCU_STM32F2",
                 brief = "STM32F2",
-                type = "integer",
+                description = "Common devices in STM32F2 family.",
                 default = 1,
                 provides =
                 {
@@ -104,18 +104,16 @@ nutarch_cm3_stm32f2 =
             {
                 macro = "STM32F205xx",
                 brief = "STM32F205",
-                description = "STM32F207 w/o ETH/DCMI and Crypto.",
+                description = "Provide vendor header for STM32F205.",
                 requires = { "HW_MCU_STM32F205" },
-                type = "integer",
                 default = 1,
                 file = "include/cfg/arch.h"
             },
             {
                 macro = "STM32F207xx",
                 brief = "STM32F207",
-                description = "STM32F207 with ETH/DCMI w/o Crypto.",
+                description = "Provide vendor header for STM32F207 and additional devices.",
                 requires = { "HW_MCU_STM32F207" },
-                type = "integer",
                 default = 1,
                 provides =
                 {
@@ -127,9 +125,8 @@ nutarch_cm3_stm32f2 =
             {
                 macro = "STM32F215xx",
                 brief = "STM32F215",
-                description = "STM32F215 w/o Ethernet, with Crypto.",
+                description = "Provide vendor header for STM32F215 and additional devices.",
                 requires = { "HW_MCU_STM32F215" },
-                type = "integer",
                 default = 1,
                 provides =
                 {
@@ -141,9 +138,8 @@ nutarch_cm3_stm32f2 =
             {
                 macro = "STM32F217xx",
                 brief = "STM32F217",
-                description = "STM32F217 with Ethernet/DCMI and Crypto.",
+                description = "Provide vendor header for STM32F217 and additional devices.",
                 requires = { "HW_MCU_STM32F217" },
-                type = "integer",
                 default = 1,
                 provides =
                 {

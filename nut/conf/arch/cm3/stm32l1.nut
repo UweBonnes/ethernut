@@ -57,8 +57,7 @@ nutarch_cm3_stm32l1 =
         {
             {
                 macro = "MCU_STM32L1",
-                brief = "STM32L1 common devices",
-                type = "integer",
+                brief = "Provides devices available in all STM32L1 devices",
                 default = 1,
                 provides =
                 {
@@ -99,8 +98,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "MCU_STM32L1_CAT1",
                 brief = "STM32L1 Cat1.",
-                description = "STM32L1 Cat 1 Devices.",
-                type = "integer",
+                description = "Additional devices in STM32L1 Cat 1 Devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L1_CAT1" },
                 file = "include/cfg/arch.h",
@@ -108,8 +106,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "MCU_STM32L1_CAT2",
                 brief = "STM32L1 Cat2.",
-                description = "STM32L1 Cat 1 Devices.",
-                type = "integer",
+                description = "Additional devices in STM32L1 Cat 1 Devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L1_CAT2" },
                 file = "include/cfg/arch.h",
@@ -117,8 +114,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "MCU_STM32L1_CAT3",
                 brief = "STM32L1 Cat3.",
-                description = "STM32L1 Cat 3 Devices.",
-                type = "integer",
+                description = "Additional devices in STM32L1 Cat 3 Devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L1_CAT3" },
                 file = "include/cfg/arch.h",
@@ -126,8 +122,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "MCU_STM32L1_CAT4",
                 brief = "STM32L1 Cat4.",
-                description = "STM32L1 Cat 4 Devices.",
-                type = "integer",
+                description = "Additional devices in STM32L1 Cat 4 Devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L1_CAT4" },
                 provides = {
@@ -138,8 +133,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "MCU_STM32L1_CAT5",
                 brief = "STM32L1 Cat5.",
-                description = "STM32L1 Cat 5 Devices.",
-                type = "integer",
+                description = "Additional devices in STM32L1 Cat 5 Devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L1_CAT5" },
                 file = "include/cfg/arch.h",
@@ -147,8 +141,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "MCU_STM32L1_CAT6",
                 brief = "STM32L1 Cat6.",
-                description = "STM32L1 Cat 6 Devices.",
-                type = "integer",
+                description = "Additional devices in STM32L1 Cat 6 Devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L1_CAT6" },
                 file = "include/cfg/arch.h",
@@ -156,8 +149,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L100xB",
                 brief = "STM32L100 32/64/128 kB.",
-                description = "STM32L100 32/64/128 kB.",
-                type = "integer",
+                description = "Provides vendor header for STM32L100 32/64/128 kB and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L100_MD" },
                 provides =
@@ -169,8 +161,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L100xBA",
                 brief = "STM32L100A 32/64/128 kB.",
-                description = "STM32L100 32/64/128 kB A-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L100 32/64/128 kB A-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L100_MDA" },
                 provides =
@@ -182,8 +173,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L151xB",
                 brief = "STM32L151 32/64/128 kb",
-                description = "STM32L151 32/64/128 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L151 32/64/128 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L151_MD" },
                 provides = {
@@ -194,8 +184,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L151xBA",
                 brief = "STM32L151 32/64/128 kb A",
-                description = "STM32L151 32/64/128 kB A-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L151 32/64/128 kB A-Series and additional devices.",
                 default = 1,
                 provides = {
                     "HW_MCU_STM32L1_MD";
@@ -206,8 +195,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L151xC",
                 brief = "STM32L151 256 kb",
-                description = "STM32L151 256 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L151 256 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L151_C" },
                 provides = {
@@ -222,8 +210,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L151xCA",
                 brief = "STM32L151 256 kb A",
-                description = "STM32L151 256 kb A-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L151 256 kb A-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L151_CA" },
                 provides = {
@@ -238,8 +225,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L151xD",
                 brief = "STM32L151 384 kb",
-                description = "STM32L151 384 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L151 384 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L151_D" },
                 provides = {
@@ -257,8 +243,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L151xDX",
                 brief = "STM32L151 384 kb X",
-                description = "STM32L151 384 kb X-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L151 384 kb X-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L151_DA" },
                 provides = {
@@ -275,8 +260,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L151xE",
                 brief = "STM32L151 512 kb",
-                description = "STM32L151 512 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L151 512 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L151_E" },
                 provides = {
@@ -293,8 +277,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L152xB",
                 brief = "STM32L152 32/64/128 kb",
-                description = "STM32L152 32/64/128 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L152 32/64/128 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L152_MD" },
                 provides = {
@@ -306,8 +289,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L152xBA",
                 brief = "STM32L152 32/64/128 kb A",
-                description = "STM32L152 32/64/128 kB A-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L152 32/64/128 kB A-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L152_MDA" },
                 provides = {
@@ -319,8 +301,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L152xC",
                 brief = "STM32L152 256 kb",
-                description = "STM32L152 256 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L152 256 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L152_C" },
                 provides = {
@@ -336,8 +317,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L152xCA",
                 brief = "STM32L152 256 kb A",
-                description = "STM32L152 256 kb A-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L152 256 kb A-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L152_CA" },
                 provides = {
@@ -353,8 +333,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L152xD",
                 brief = "STM32L152 384 kb",
-                description = "STM32L152 384 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L152 384 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L152_D" },
                 provides = {
@@ -373,8 +352,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L152xDX",
                 brief = "STM32L152 384 kb X",
-                description = "STM32L152 384 kb X-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L152 384 kb X-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L152_DA" },
                 provides = {
@@ -392,8 +370,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L152xE",
                 brief = "STM32L152 512 kb",
-                description = "STM32L152 512 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L152 512 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L152_E" },
                 provides = {
@@ -411,8 +388,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L162xC",
                 brief = "STM32L162 256 kb",
-                description = "STM32L162 256 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L162 256 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L162_C" },
                 provides = {
@@ -429,8 +405,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L162xCA",
                 brief = "STM32L162 256 kb A",
-                description = "STM32L162 256 kb A-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L162 256 kb A-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L162_CA" },
                 provides = {
@@ -447,8 +422,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L162xD",
                 brief = "STM32L162 384 kb",
-                description = "STM32L162 384 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L162 384 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L162_D" },
                 provides = {
@@ -468,8 +442,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L162xDX",
                 brief = "STM32L162 384 kb X",
-                description = "STM32L162 384 kb X-Series.",
-                type = "integer",
+                description = "Provides vendor header for STM32L162 384 kb X-Series and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L162_DA" },
                 provides = {
@@ -488,8 +461,7 @@ nutarch_cm3_stm32l1 =
             {
                 macro = "STM32L162xE",
                 brief = "STM32L162 512 kb",
-                description = "STM32L162 512 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L162 512 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L162_E" },
                 provides = {

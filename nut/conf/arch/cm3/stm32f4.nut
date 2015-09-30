@@ -34,8 +34,6 @@
 -- STMicroelectronics STM32F4 Family Devices
 --
 --
-stm32_memory_f40x = { "512", "1024" }
-stm32_memory_f42x = { "1024", "2048" }
 
 -- *****************************************************************************
 -- STM32F4 Family
@@ -57,8 +55,7 @@ nutarch_cm3_stm32f4 =
             {
                 macro = "MCU_STM32F4",
                 brief = "STM32F4",
-                brief = "Devices available in all F4xx devices",
-                type = "integer",
+                description = "Devices available in all STM32F4xx devices",
                 default = 1,
                 provides =
                 {
@@ -100,8 +97,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "MCU_STM32F401",
                 brief = "STM32F401 256/512 kB",
-                brief = "STM32F401 256/512 kB Low Power with USB",
-                type = "integer",
+                description = "Provides additional devices in STM32F401",
                 requires = { "HW_MCU_STM32F401" },
                 default = 1,
                 provides =
@@ -113,8 +109,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F401xC",
                 brief = "STM32F401 256 kB",
-                brief = "STM32F401 256 kB Low Power with USB",
-                type = "integer",
+                description = "Provides vender header for STM32F401 256 kB Low Power with USB.",
                 requires = { "HW_MCU_STM32F401xC" },
                 default = 1,
                 file = "include/cfg/arch.h",
@@ -122,8 +117,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F401xE",
                 brief = "STM32F401 512 kB Low Power with USB",
-                brief = "STM32F401 with 512 kB.",
-                type = "integer",
+                description = "Provides vender header for STM32F401 512 kB Low Power with USB.",
                 requires = { "HW_MCU_STM32F401xE" },
                 default = 1,
                 file = "include/cfg/arch.h",
@@ -131,8 +125,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "MCU_STM32F40",
                 brief = "STM32F405/407/415/417",
-                description = "STM32F405/407/415/417 commen peripherals.",
-                type = "integer",
+                description = "Provides additional devices in STM32F405/407/415/417.",
                 requires = { "HW_MCU_STM32F40" },
                 default = 1,
                 provides =
@@ -158,8 +151,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F405xx",
                 brief = "STM32F405",
-                brief = "STM32F4 basic device",
-                type = "integer",
+                description = "Provides vendor header for STM32F405.",
                 requires = { "HW_MCU_STM32F405" },
                 default = 1,
                 file = "include/cfg/arch.h"
@@ -167,13 +159,11 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F407xx",
                 brief = "STM32F407",
-                brief = "STM32F4 with ETH/DCMI, w/o Crypto/DMA2D",
-                type = "integer",
+                description = "Provides vendor header for STM32F407 and additional devices.",
                 requires = { "HW_MCU_STM32F407" },
                 default = 1,
                 provides =
                 {
-                    "HW_ETH_STM32",
                     "HW_DCMI_STM32",
                     "HW_EMAC_STM32",
                 },
@@ -181,10 +171,8 @@ nutarch_cm3_stm32f4 =
              },
              {
                 macro = "STM32F411xE",
-                brief = "STM32F411",
-                description = "STM32F4 Low Power 512 kiB with USB.",
-                brief = "STM32F4 Low Power with USB",
-                type = "integer",
+                brief = "STM32F411 Low Power",
+                description = "Provides vendor header for STM32F411 and additional devices.",
                 requires = { "HW_MCU_STM32F411" },
                 default = 1,
                 provides =
@@ -197,36 +185,35 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F415xx",
                 brief = "STM32F415",
-                brief = "STM32F4 basic device with Crypto, w/o ETH/DCMI/DMA2D",
-                type = "integer",
+                description = "Provides vendor header for STM32F415 and additional devices.",
                 requires = { "HW_MCU_STM32F415" },
                 default = 1,
                 provides =
                 {
+                    "HW_HASH_RNG_STM32",
                     "HW_CRYP_STM32",
-                    "HW_ETH_STM32",
-                    "HW_DCMI_STM32",
-                    "HW_EMAC_STM32",
                 },
                 file = "include/cfg/arch.h"
              },
              {
                 macro = "STM32F417xx",
                 brief = "STM32F417",
-                brief = "STM32F4 basic device with Crypto/ETH/DCMI, w/o DMA2D",
-                type = "integer",
+                description = "Provides vendor header for STM32F417 and additional devices.",
                 requires = { "HW_MCU_STM32F417" },
                 default = 1,
                 provides =
                 {
-                },
+                    "HW_HASH_RNG_STM32",
+                    "HW_CRYP_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                 },
                 file = "include/cfg/arch.h"
              },
              {
                 macro = "MCU_STM32F42",
                 brief = "STM32F427/29/37/39",
-                brief = "STM32F4427/29/37/39 common peripherals.",
-                type = "integer",
+                description = "Additional devices in STM32F427/29/37/39.",
                 requires = { "HW_MCU_STM32F42" },
                 default = 1,
                 provides =
@@ -234,7 +221,6 @@ nutarch_cm3_stm32f4 =
                     "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
-                    "HW_ETH_STM32",
                     "HW_DCMI_STM32",
                     "HW_DMA2D_STM32",
                     "HW_FMC_STM32",
@@ -262,8 +248,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F427xx",
                 brief = "STM32F427",
-                brief = "STM32F4 extended device with ETH/DCMI/DMA2D w/o Crypto/LTDC",
-                type = "integer",
+                description = "Provides vendor header for STM32F427.",
                 requires = { "HW_MCU_STM32F427" },
                 default = 1,
                 file = "include/cfg/arch.h"
@@ -271,8 +256,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F429xx",
                 brief = "STM32F429",
-                brief = "STM32F4 extended device with ETH/DCMI/DMA2D/LTDC w/o Crypto",
-                type = "integer",
+                description = "Provides vendor header for STM32F429 and additional devices.",
                 requires = { "HW_MCU_STM32F429" },
                 default = 1,
                 provides =
@@ -285,8 +269,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F437xx",
                 brief = "STM32F437",
-                brief = "STM32F4 extended device with Crypto/ETH/DCMI/DMA2D w/o LTDC",
-                type = "integer",
+                description = "Provides vendor header for STM32F437 and additional devices.",
                 requires = { "HW_MCU_STM32F437" },
                 default = 1,
                 provides =
@@ -298,8 +281,7 @@ nutarch_cm3_stm32f4 =
              {
                 macro = "STM32F439xx",
                 brief = "STM32F439",
-                brief = "STM32F4 extended device with Crypto/ETH/DCMI/DMA2D/LTDC.",
-                type = "integer",
+                description = "Provides vendor header for STM32F439 and additional devices.",
                 requires = { "HW_MCU_STM32F439" },
                 default = 1,
                 provides =
@@ -310,41 +292,6 @@ nutarch_cm3_stm32f4 =
                 },
                 file = "include/cfg/arch.h"
              },
-        }
-    },
-    --
-    -- STM32F4 MCU Memory
-    --
-    {
-        name = "nutarch_cm3_stm32F4_memory",
-        brief = "STM32F4 Device Memory",
-        requires = { "HW_MCU_STM32" },
-        options =
-        {
-            {
-                macro = "MCU_STM32F40X",
-                brief = "STM32F4xx memory",
-                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
-                              "STM32F4xx>Y<zz where Y is one of the list below.\n\n"..
-                              "E =  512 kbytes Flash\n"..
-                              "G =  1024 kbytes Flash\n",
-                requires = { "HW_MCU_STM32F40X" },
-                type = "enumerated",
-                choices = stm32_memory_f40x,
-                file = "include/cfg/arch.h"
-            },
-            {
-                macro = "MCU_STM32F42X",
-                brief = "STM32F4xx memory",
-                description = "Select your devices memory by the marked alphanumeric code on the chip:\n"..
-                              "STM32F4xx>Y<zz where Y is one of the list below.\n\n"..
-                              "G =  1024 kbytes Flash\n"..
-                              "I =  2048 kbytes Flash\n",
-                requires = { "HW_MCU_STM32F42X" },
-                type = "enumerated",
-                choices = stm32_memory_f42x,
-                file = "include/cfg/arch.h"
-            },
         }
     },
 }

@@ -56,15 +56,13 @@ nutarch_cm3_stm32f7 =
                 macro = "MCU_CM_NO_BITBAND",
                 brief = "No Bitbanding",
                 description = "Selected family has no bitband support",
-                type = "integer",
                 default = 1,
                 file = "include/cfg/arch.h"
             },
             {
                 macro = "MCU_STM32F7",
-                brief = "STM32F7",
-                brief = "Devices available in all F7xx devices",
-                type = "integer",
+                brief = "STM32F7 Devices",
+                description = "Provide devices available in all STM32F7xx devices",
                 default = 1,
                 provides =
                 {
@@ -122,8 +120,7 @@ nutarch_cm3_stm32f7 =
              {
                 macro = "STM32F745xx",
                 brief = "STM32F745 512/1024 kB",
-                brief = "STM32F745 512/1024 kB",
-                type = "integer",
+                description = "Provides vendor header for STM32F745 512/1024 kB device.",
                 requires = { "HW_MCU_STM32F745" },
                 default = 1,
                 provides =
@@ -134,8 +131,7 @@ nutarch_cm3_stm32f7 =
              {
                 macro = "STM32F746xx",
                 brief = "STM32F746 512/1024 kB",
-                brief = "STM32F746 512/1024 kB",
-                type = "integer",
+                description = "Provides vendor header for STM32F745 512/1024 kB device.",
                 requires = { "HW_MCU_STM32F746" },
                 default = 1,
                 provides =

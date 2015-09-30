@@ -56,7 +56,7 @@ nutarch_cm3_stm32l0 =
             {
                 macro = "MCU_STM32L0",
                 brief = "STM32L0 common devices",
-                type = "integer",
+                description = "Provides devices common in all STM32L0 devices.",
                 default = 1,
                 provides =
                 {
@@ -90,7 +90,6 @@ nutarch_cm3_stm32l0 =
                 macro = "MCU_CM_NO_BITBAND",
                 brief = "No Bitbanding",
                 description = "Selected family has no bitband support",
-                type = "integer",
                 default = 1,
                 file = "include/cfg/arch.h"
             },
@@ -98,8 +97,7 @@ nutarch_cm3_stm32l0 =
             {
                 macro = "STM32L051xx",
                 brief = "STM32L051 32/64 kB.",
-                description = "STM32L051 32/64 kB.",
-                type = "integer",
+                description = "Provides vendor header for STM32L051 32/64 kB and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L051" },
                 provides =
@@ -113,8 +111,7 @@ nutarch_cm3_stm32l0 =
             {
                 macro = "STM32L052xx",
                 brief = "STM32L052 32/64 kB.",
-                description = "STM32L052 32/64 kB.",
-                type = "integer",
+                description = "Provides vendor header for STM32L052 32/64 kB and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L052" },
                 provides =
@@ -130,8 +127,7 @@ nutarch_cm3_stm32l0 =
             {
                 macro = "STM32L053xx",
                 brief = "STM32L053 32/64 kb",
-                description = "STM32L053 32/64 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L053 32/64 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L053" },
                 provides = {
@@ -147,8 +143,7 @@ nutarch_cm3_stm32l0 =
             {
                 macro = "STM32L061xx",
                 brief = "STM32L061 32/64 kB.",
-                description = "STM32L061 32/64 kB.",
-                type = "integer",
+                description = "Provides vendor header for STM32L061 32/64 kB and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L061" },
                 provides =
@@ -162,8 +157,7 @@ nutarch_cm3_stm32l0 =
             {
                 macro = "STM32L062xx",
                 brief = "STM32L062 32/64 kB.",
-                description = "STM32L062 32/64 kB.",
-                type = "integer",
+                description = "Provides vendor header for STM32L062 32/64 kB and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L062" },
                 provides =
@@ -179,8 +173,7 @@ nutarch_cm3_stm32l0 =
             {
                 macro = "STM32L063xx",
                 brief = "STM32L063 32/64 kb",
-                description = "STM32L063 32/64 kb.",
-                type = "integer",
+                description = "Provides vendor header for STM32L063 32/64 kb and additional devices.",
                 default = 1,
                 requires = { "HW_MCU_STM32L063" },
                 provides = {

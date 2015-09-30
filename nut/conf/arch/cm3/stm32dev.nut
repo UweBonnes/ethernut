@@ -718,14 +718,14 @@ nutarch_cm3_stm32_devices =
     --
     {
         name = "nutarch_cm3_stm32_qenc16_0",
-        brief = "STM32 32 Bit Quadrature Encoder0 using 16 bit timer",
-        description = "STM32 32Bit Quadrature Encoder 0.",
+        brief = "STM32 16 Bit Quadrature Encoder0.",
+        description = "STM32 16 Bit Quadrature Encoder 0.",
         sources = { "cm3/dev/stm/stm32_qenc16_0.c" },
         options =
         {
             {
                 macro = "STM32_QENC16_0_TIMER_ID",
-                brief = "STM32 32Bit Quadrature Encoder using 16 bit timer Timer ID",
+                brief = "STM32 16 Bit Quadrature Encoder Timer ID",
                 description = "Select Timer for 16 bit Quadrature Enoder",
                 type = "enumerated",
                 choices = function() return GetStmTimers2Ch() end,
@@ -734,7 +734,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32_QENC16_0_I_PORT",
                 brief = "STM32 qenc16 I input port",
-                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input port. Can by TI1 or TI2",
+                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2",
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 file = "include/cfg/qenc.h",
@@ -742,7 +742,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32_QENC16_0_I_PIN",
                 brief = "STM32 qenc16 I input pin",
-                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input pin. Can by TI1 or TI2",
+                description = "STM32 16 Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/qenc.h",
@@ -750,7 +750,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32_QENC16_0_Q_PORT",
                 brief = "STM32 qenc16 Q input port",
-                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input port. Can by TI1 or TI2",
+                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2",
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 file = "include/cfg/qenc.h",
@@ -758,7 +758,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32_QENC16_0_Q_PIN",
                 brief = "STM32 qenc16 Q input pin",
-                description = "STM32 32Bit Quadrature Encoder using 16 bit timer I input pin. Can by TI1 or TI2",
+                description = "STM32 16 Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/qenc.h",
@@ -766,7 +766,7 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "STM32_QENC16_0_INVERT",
                 brief = "STM32 qenc16 reverse count direction",
-                description = "STM32 32Bit Quadrature Encoder using 16 bit timer reverse count direction. Effective exchanges I and Q.",
+                description = "STM32 16 Bit Quadrature Encoder reverse count direction. Effective exchanges I and Q.",
                 flavor = "booldata",
                 file = "include/cfg/qenc.h",
             },
@@ -1929,8 +1929,10 @@ nutarch_cm3_stm32_devices =
     -- STM32 Signal handler
     {
         name = "nutarch_cm3_stm32_sig",
-        brief = "STM32 Signals ",
-        description = "Helper to create the sig_DEVXX entries",
+        brief = "List of additional devices",
+        description = "Helper to create the sig_DEVXX entries.\n\n"..
+                      "USART1, SPI1 and I2c are avaible on all devices.\n"..
+                      "No User configuration needed here.\n",
         sources = { "cm3/dev/stm/ih_stm32.c"},
         options =
         {
@@ -2128,6 +2130,15 @@ nutarch_cm3_stm32_devices =
                 brief = "CAN1 Availability",
                 description = "CAN1 Availability",
                 requires = { "HW_CAN1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_CAN2_STM32",
+                brief = "CAN2 Availability",
+                description = "CAN2 Availability",
+                requires = { "HW_CAN2_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
