@@ -165,7 +165,7 @@ void ShowHardwareConfiguration(void)
     puts("Address : 0x50");
 #endif
 
-#elif defined(NUT_CONFIG_STM32L1_EEPROM)
+#elif defined(NUT_CONFIG_STM32_EEPROM)
     puts("Internal EEPROM");
 #elif defined(NUT_CONFIG_STM32_IAP)
     puts("STM32F1/2/3/4 NOR Flash");

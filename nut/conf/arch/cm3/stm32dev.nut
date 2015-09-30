@@ -81,13 +81,13 @@ nutarch_cm3_stm32_devices =
         sources = { "cm3/dev/stm/stm32f1_3_flash.c"}
     },
     --
-    -- STM32 Flash Interface L1
+    -- STM32 Flash Interface on STM32L0 and STM32L1
     --
     {
-        name = "nutarch_cm3_stm32l1_flash",
+        name = "nutarch_cm3_stm32l_flash",
         brief = "Flash access",
-        description = "Generic flash interface.",
-        requires = { "HW_FLASH_STM32L1" },
+        description = "STM32L0 and STM32L1 generic flash interface.",
+        requires = { "HW_FLASH_STM32L" },
         provides = { "HW_FLASH", "HW_FLASH_STM32" },
         sources = { "cm3/dev/stm/stm32l1_flash.c"},
         options =
@@ -103,13 +103,13 @@ nutarch_cm3_stm32_devices =
         }
     },
     --
-    -- STM32 EEPROM Interface L1
+    -- STM32 EEPROM Interface on STM32L0 and STM32L1
     --
     {
-        name = "nutarch_cm3_stm32l1_eeprom",
+        name = "nutarch_cm3_stm32_eeprom",
         brief = "EEPROM access",
-        description = "Generic EEPROM interface.",
-        requires = { "HW_EEPROM_STM32L1" },
+        description = "STM32L0 and STM32L1 EEPROM interface.",
+        requires = { "HW_EEPROM_STM32" },
         provides = { "DEV_NVMEM" };
         sources = { "cm3/dev/stm/stm32l1_eeprom.c"}
     },

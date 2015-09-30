@@ -40,7 +40,7 @@
 #include <sys/nutdebug.h>
 #include <dev/iap_flash.h>
 
-#if !defined(MCU_STM32L1)
+#if !defined(MCU_STM32L0) && !defined(MCU_STM32L1)
 #warning "STM32 family has no L1 compatible FLASH/EEPROM"
 #endif
 #include <arch/cm3/stm/stm32xxxx.h>
@@ -50,14 +50,19 @@
 #define FLASH_PEKEY1 0x89abcdef
 #define FLASH_PEKEY2 0x02030405
 
-#if defined (STM32L1XX_MDP)
-#define STM32L1_EEPROM_SIZE ( 8 << 10)
-#elif defined (STM32L1XX_HD)
-#define STM32L1_EEPROM_SIZE ( 8 << 10)
+#if defined(MCU_STM32L1)
+# if defined (STM32L1XX_MDP)
+#  define STM32L1_EEPROM_SIZE ( 8 << 10)
+# elif defined (STM32L1XX_HD)
+#  define STM32L1_EEPROM_SIZE ( 8 << 10)
+# else
+#  define STM32L1_EEPROM_SIZE ( 4 << 10)
+# endif
+#elif defined(MCU_STM32L0)
+#  define STM32L1_EEPROM_SIZE ( 2 << 10)
 #else
-#define STM32L1_EEPROM_SIZE ( 4 << 10)
+# warning Unhandled STM32 family
 #endif
-
 #define STM32L1_EEPROM_BASE 0x08080000
 
 /*!
