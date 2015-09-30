@@ -168,7 +168,7 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
  * This function reads out the CPUs clock and PLL registers and assembles
  * the actual clock speed values into the SystemCoreClock local variable.
  */
-void SystemCoreClockUpdate(void)
+static void SystemCoreClockUpdate(void)
 {
     RCC_TypeDef *rcc = (RCC_TypeDef*) RCC_BASE;
     uint32_t cfgr;
@@ -595,33 +595,6 @@ int SetSysClock(void)
     return rc;
 }
 #endif /* (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE) */
-
-/**
-  * @brief  requests System clock frequency
-  *
-  * @note   This function should be used only after reset.
-  * @param  None
-  * @retval None
-  */
-uint32_t SysCtlClockGet(void)
-{
-    return STM_ClockGet(NUT_HWCLK_CPU);
-}
-
-/**
-  * @brief  requests frequency of the given clock
-  *
-  * @param  idx NUT_HWCLK Index
-  * @retval clock or 0 if idx points to an invalid clock
-  */
-uint32_t STM_ClockGet(int idx)
-{
-    if(!sys_clock)
-        SystemCoreClockUpdate();
-    if (idx < NUT_HWCLK_MAX)
-        return sys_clock >> clk_shift[idx];
-    return 0;
-}
 
 /**
   * @brief  Some devices may use HSI/LSE and SYSCLK additional to PCLKx
