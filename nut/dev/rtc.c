@@ -52,6 +52,10 @@
  */
 
 #include <dev/rtc.h>
+#include <time.h>
+
+#include <pro/rfctime.h>
+#include <cfg/crt.h>
 
 static NUTRTC *reg_rtc;
 
@@ -196,3 +200,47 @@ HANDLE *NutRtcGetHandle(void)
         return NULL;
     return &reg_rtc->alarm;
 }
+
+/* Function for fall back dummy RTC device*/
+
+/*!
+ * \brief Get date and time from an system time
+ *
+ * \param tm Points to a structure that receives the date and time
+ *           information.
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+int RtcNullGetClock(NUTRTC *rtc, struct _tm *tm)
+{
+    if (tm) {
+        time_t now;
+        now = time(NULL);
+        gmtime_r(&now, tm);
+        return 0;
+    }
+    return -1;
+}
+
+/*!
+ * \brief Set system time from time string.
+ *
+ * \param tm Points to a structure that receives the date and time
+ *           information.
+ *
+ * \return 0 on success or -1 in case of an error.
+ */
+int RtcNullSetClock(NUTRTC *rtc, const struct _tm *tm)
+{
+    time_t now;
+
+    now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
+    now -= (CRT_TIMEZONE - CRT_DAYLIGHT) * 60;
+    stime(&now);
+    return 0;
+}
+
+NUTRTC rtcNull = {
+    .rtc_gettime   =  RtcNullGetClock,
+    .rtc_settime   =  RtcNullSetClock,
+};

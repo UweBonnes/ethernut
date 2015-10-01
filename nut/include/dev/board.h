@@ -872,6 +872,11 @@
 #endif
 #endif
 
+#if !defined(RTC_CHIP)
+# include <dev/rtc.h>
+# define RTC_CHIP rtcNULL
+#endif
+
 
 extern void NutBoardInit(void);
 extern void NutIdleInit(void);

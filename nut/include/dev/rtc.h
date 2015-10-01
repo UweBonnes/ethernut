@@ -106,4 +106,6 @@ extern int NutRtcGetStatus(uint32_t *sflags);
 extern int NutRtcClearStatus(uint32_t sflags);
 
 extern HANDLE *NutRtcGetHandle(void);
+
+extern NUTRTC rtcNull;
 #endif
