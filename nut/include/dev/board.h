@@ -877,6 +877,12 @@
 # define RTC_CHIP rtcNULL
 #endif
 
+#if !defined(DEV_DISPLAY)
+# undef DEV_DISPLAY_NAME
+# define DEV_DISPLAY DEV_CONSOLE
+# define DEV_DISPLAY_NAME DEV_CONSOLE_NAME
+#endif
+
 
 extern void NutBoardInit(void);
 extern void NutIdleInit(void);
