@@ -48,3 +48,10 @@
 #ifndef DEV_UART_NAME
 #define DEV_UART_NAME  devSemihosting.dev_name
 #endif
+
+#ifndef DEV_DISPLAY
+# undef DEV_DISPLAY_NAME
+# include <arch/cm3/stm/stm32_lcd16seg.h>
+# define DEV_DISPLAY      devStm32Lcd16Seg
+# define DEV_DISPLAY_NAME devStm32Lcd16Seg.dev_name
+#endif

@@ -1,5 +1,7 @@
+#ifndef _DEV_STM32_LCD16SEG_H_
+#define _DEV_STM32_LCD16SEG_H_
 /*
- * Copyright 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2015 by bon@elektron.ikp.physik.tu-darmstadt.de.
  *
  * All rights reserved.
  *
@@ -32,34 +34,17 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
- * \file arch/cm3/board/l4_discovery.h
- * \brief STM32L4_Discovery board specific settings.
+/*!
+ * \file include/arch/cm3/stm/stm32_lcd16seg.h
+ * \brief
  *
  * \verbatim
- * $Id$
+ * $Id: stm32_lcd16seg.h$
  * \endverbatim
  */
 
-#ifndef DEV_UART
-#include <dev/semihosting.h>
-#define DEV_UART devSemihosting
-#endif
-#ifndef DEV_UART_NAME
-#define DEV_UART_NAME  devSemihosting.dev_name
-#endif
+#include <sys/device.h>
 
-#ifndef DEV_CONSOLE
-#define DEV_CONSOLE devUsartStm32_2
-#endif
+extern NUTDEVICE devStm32Lcd16Seg;
 
-#ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
-#endif
-
-#ifndef DEV_DISPLAY
-# undef DEV_DISPLAY_NAME
-# include <arch/cm3/stm/stm32_lcd16seg.h>
-# define DEV_DISPLAY      devStm32Lcd16Seg
-# define DEV_DISPLAY_NAME devStm32Lcd16Seg.dev_name
 #endif
