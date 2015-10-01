@@ -74,6 +74,7 @@ nutarch_cm3_stm32l4 =
                     "HW_I2C1_STM32V2",
                     "HW_I2C2_STM32V2",
                     "HW_I2C3_STM32V2",
+                    "HW_OTG_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
@@ -125,7 +126,6 @@ nutarch_cm3_stm32l4 =
                 default = 1,
                 requires = { "HW_MCU_STM32L476" },
                 provides = {
-                    "HW_OTG_STM32",
                     "HW_LCD_STM32",
                  },
                 file = "include/cfg/arch.h"
