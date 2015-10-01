@@ -82,14 +82,14 @@ static const uint64_t k[80] =
 */
 void SHA512_Init(SHA512_CTX *ctx)
 {
-    ctx->h_dig.h[0] = 0x6A09E667F3BCC908;
-    ctx->h_dig.h[1] = 0xBB67AE8584CAA73B;
-    ctx->h_dig.h[2] = 0x3C6EF372FE94F82B;
-    ctx->h_dig.h[3] = 0xA54FF53A5F1D36F1;
-    ctx->h_dig.h[4] = 0x510E527FADE682D1;
-    ctx->h_dig.h[5] = 0x9B05688C2B3E6C1F;
-    ctx->h_dig.h[6] = 0x1F83D9ABFB41BD6B;
-    ctx->h_dig.h[7] = 0x5BE0CD19137E2179;
+    ctx->h_dig.h[0] = 0x6A09E667F3BCC908LL;
+    ctx->h_dig.h[1] = 0xBB67AE8584CAA73BLL;
+    ctx->h_dig.h[2] = 0x3C6EF372FE94F82BLL;
+    ctx->h_dig.h[3] = 0xA54FF53A5F1D36F1LL;
+    ctx->h_dig.h[4] = 0x510E527FADE682D1LL;
+    ctx->h_dig.h[5] = 0x9B05688C2B3E6C1FLL;
+    ctx->h_dig.h[6] = 0x1F83D9ABFB41BD6BLL;
+    ctx->h_dig.h[7] = 0x5BE0CD19137E2179LL;
     ctx->size = 0;
     ctx->totalSize = 0;
 }
