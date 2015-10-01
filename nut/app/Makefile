@@ -86,6 +86,7 @@ all:
 	-$(MAKE) -C cantest
 # Broken: C++ no longer available?	
 #	-$(MAKE) -C cppdemo
+	-$(MAKE) -C display
 	-$(MAKE) -C editconf
 	-$(MAKE) -C events
 	-$(MAKE) -C flashtest
@@ -120,6 +121,7 @@ all:
 install:
 	-$(MAKE) -C caltime install
 #	-$(MAKE) -C cppdemo install
+	-$(MAKE) -C display install
 	-$(MAKE) -C editconf install
 	-$(MAKE) -C events install
 	-$(MAKE) -C flashtest install
@@ -152,6 +154,7 @@ clean:
 	-$(MAKE) -C caltime clean
 	-$(MAKE) -C cantest clean
 #	-$(MAKE) -C cppdemo clean
+	-$(MAKE) -C display clean
 	-$(MAKE) -C editconf clean
 	-$(MAKE) -C events clean
 	-$(MAKE) -C flashtest clean
@@ -185,6 +188,7 @@ at90can:
 	-$(MAKE) -C caltime
 	-$(MAKE) -C cantest
 	-$(MAKE) -C canbus
+	-$(MAKE) -C display
 	-$(MAKE) -C events
 	-$(MAKE) -C ftpd
 	-$(MAKE) -C httpd
