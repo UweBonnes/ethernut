@@ -733,8 +733,8 @@ static int Stm32SpiBusTransfer
                 while ((GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
         }
     }
-    base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE |
-                   SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
+    base->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_RXONLY | SPI_CR1_BIDIMODE);
+    base->CR2 &= ~(SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
     return 0;
 }
 
