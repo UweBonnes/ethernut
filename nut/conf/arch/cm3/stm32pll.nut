@@ -257,7 +257,7 @@ nutarch_cm3_stm32_pll =
     {
         name = "nutarch_cm3_stm32l4_rccl",
         brief = "STM32L4 PLL Setup",
-        requires = "HW_RCC_STM32l4",
+        requires = {"HW_RCC_STM32L4"},
         options =
         {
             {
