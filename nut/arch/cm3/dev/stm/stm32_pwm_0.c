@@ -47,19 +47,11 @@
 
 /* Compile code only when needed definitions are available */
 #if defined(STM32_PWM0_TIMER_ID) && defined(STM32_PWM0_TIMER_CHANNEL)\
-    && defined(STM32_PWM0_GPIO)
+    && defined(STM32_PWM0)
 
 #define STM32_PWM_TIMER_ID STM32_PWM0_TIMER_ID
 #define STM32_PWM_TIMER_CHANNEL STM32_PWM0_TIMER_CHANNEL
-#define STM32_PWM_GPIO STM32_PWM0_GPIO
-
-#if defined(MCU_STM32F1)
-#if defined(STM32_PWM0_REMAP)
-#define STM32_PWM_REMAP STM32_PWM0_REMAP
-#else
-#define STM32_PWM_REMAP 0
-#endif
-#endif
+#define STM32_PWM STM32_PWM0
 
 #undef STM32TIMER_ID
 #define STM32TIMER_ID STM32_PWM_TIMER_ID
@@ -76,7 +68,7 @@
 #define STM32_PWM_REMAP_SHIFT STM32TIMER_REMAP_SHIFT
 #define STM32_PWM_REMAP_VALUE STM32TIMER_REMAP_VALUE
 #endif
-#define STM32_PWM_AF    STM32TIMER_AF(STM32_PWM_GPIO)
+#define STM32_PWM_AF    STM32TIMER_AF(STM32_PWM)
 
 /* Use PWM Mode 1 (0x110 on OCxM), Only reload on update event (OCxPE set) */
 #if defined(STM32_PWM_TIMER_CHANNEL)
@@ -137,7 +129,7 @@ uint32_t stm32_pwm0_init(unsigned bits)
     CM3REG(AFIO_BASE, AFIO_TypeDef, STM32_PWM_REMAP_REG) &= ~(STM32_PWM_REMAP_MASK                         );
     CM3REG(AFIO_BASE, AFIO_TypeDef, STM32_PWM_REMAP_REG) |= ((STM32_PWM_REMAP_VALUE << STM32_PWM_REMAP_SHIFT) & STM32_PWM_REMAP_MASK);
 #endif
-    Stm32GpioConfigSet(STM32_PWM_GPIO,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, STM32_PWM_AF);
+    Stm32GpioConfigSet(STM32_PWM,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, STM32_PWM_AF);
     TIM_StartTimer(STM32_PWM_BASE);
     return pclk >> bits;
 #endif

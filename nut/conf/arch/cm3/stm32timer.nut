@@ -848,7 +848,7 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/pwm.h",
             },
             {
-                macro = "STM32_PWM0_GPIO",
+                macro = "STM32_PWM0",
                 brief = "Gpio for STM32 PWM0 output",
                 description = "Gpio used for PWM0. Only some pins are valid!\n"..
                             "For STM32F1, check Timer global remap!",
@@ -880,7 +880,7 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/pwm.h",
             },
             {
-                macro = "STM32_PWM1_GPIO",
+                macro = "STM32_PWM1",
                 brief = "Gpio for STM32 PWM1 output",
                 description = "Gpio used for PWM1. Only some pins are valid!\n"..
                             "For STM32F1, check Timer global remap!",
