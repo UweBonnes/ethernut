@@ -50,8 +50,10 @@
 
 /*! \brief Parameter table of known DataFlash types. */
 AT25DF_INFO at25df_info[] = {
-    {12, 1024, 4096, 256, 0x47}, /* AT25DF321 - 4MB */
-    {12, 2048, 4096, 256, 0x48}, /* AT25DF641 - 8MB */
+    {12, 1024, 4096, 256, 0x47, 0x00}, /* AT25DF321 - 4MB */
+    {12, 2048, 4096, 256, 0x48, 0x00}, /* AT25DF641 - 8MB */
+    {12,  256, 4096, 256, 0x20, 0x14}, /* Macronix MX25L8006E - 1MB */
+    {12,  512, 4096, 256, 0x20, 0x15}, /* Macronix MX25L1606E - 2MB */
 };
 
 /*! \brief Number of known Dataflash types. */

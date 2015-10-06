@@ -296,7 +296,8 @@ AT25DF_INFO *At25dfNodeProbe(NUTSPINODE * node)
         if (At25dfDeviceID(node, &man_id, &dev_id1, &dev_id2) == 0) {
             for (i = at25df_known_types; --i >= 0;) {
                 /* Check for known DataFlash type */                
-                if (dev_id1 == at25df_info[i].at25df_srval) {
+                if ((dev_id1 == at25df_info[i].at25df_id1) && 
+                    (dev_id2 == at25df_info[i].at25df_id2)) {
                     return &at25df_info[i];
                 }
             }

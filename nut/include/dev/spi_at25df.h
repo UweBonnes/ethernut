@@ -114,8 +114,10 @@ struct _AT25DF_INFO {
     size_t at25df_ebsize;
     /*! \brief Number of bytes per page */
     size_t at25df_psize;
-    /*! \brief Type determination value. */
-    uint_fast8_t at25df_srval;
+    /*! \brief device id1. */
+    uint_fast8_t at25df_id1;
+    /*! \brief device id2. */
+    uint_fast8_t at25df_id2;
 };
 
 
