@@ -213,5 +213,6 @@ void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_
 #endif
 #endif
 extern int Stm32GpioConfigSet(nutgpio_t gpio,  uint32_t flags, uint32_t af);
+extern int Stm32GpioSet(nutgpio_t gpio, int value);
 
 #endif

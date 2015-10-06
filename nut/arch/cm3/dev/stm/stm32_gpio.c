@@ -409,3 +409,51 @@ int Stm32GpioConfigSet(nutgpio_t GPIO, uint32_t flags, uint32_t af)
         return -1;
     return Stm32GpioConfigSetDo(gpio, pin_nr, flags, af);
 }
+
+/*!
+ * \brief Set pin to value
+ *
+ * \param GPIO  Pin designator like PA01 as defined in dev/pins.h.
+ * \param value If value == 0, set pin to 0, otherwise to 1;
+ *
+ * \return 0 on success, -1 for PIN_NONE.
+ */
+int Stm32GpioSet(nutgpio_t gpio_pin, int value)
+{
+    if (gpio_pin == PIN_NONE) {
+        return -1;
+    } else {
+        int gpio_nr;
+        int pin_nr;
+        GPIO_TypeDef *gpio;
+
+        pin_nr = gpio_pin & 0xff;
+        NUTASSERT(pin_nr > 16)
+            gpio_nr = gpio_pin >> 8;
+        gpio = stm32_port_nr2gpio[gpio_nr];
+        NUTASSERT(IS_GPIO_ALL_INSTANCE(gpio));
+#if   defined(MCU_STM32F2) ||  defined(MCU_STM32F3)
+/* F2 has BSRRL defined as  __IO uint16_t, F3 has additional BRR */
+        if (value) {
+            gpio->BSRRL = 1 << pin_nr;
+        } else {
+            gpio->BSRRH  = 1 << pin_nr;
+        }
+#elif defined(MCU_STM32L1) || defined(MCU_STM32F4) || defined(MCU_STM32F7)
+/* L1/F4/F7 have only BSRR */
+        if (value) {
+            gpio->BSRR = 1 << pin_nr;
+        } else {
+            gpio->BSRR = 1 << (16 + pin_nr);
+        }
+#else
+/* F0/F1/L0/L4 have explicit BRR register */
+        if (value) {
+            gpio->BSRR = 1 << pin_nr;
+        } else {
+            gpio->BRR  = 1 << pin_nr;
+        }
+#endif
+    }
+    return 0;
+}
