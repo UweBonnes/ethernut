@@ -54,52 +54,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/* Keep SPIBUS_CSx_INIT()  undefined when PORT/PIN is not available*/
-
-#if SPI_CS0 != PIN_NONE
-#define SPIBUS_SCK_PORT     (uint32_t)(stm32_port_nr2gpio[SPI_CS0  >> 8])
-#define SPIBUS_SCK_PIN      (SPI_CS0 & 0xf)
-#define SPIBUS_CS0_INIT(x)  Stm32GpioConfigSet(SPI_CS0, GPIO_CFG_OUTPUT | x, 0)
-#define SPIBUS_CS0_SET()    GpioPinSetHigh(SPIBUS_CS0_PORT,  SPIBUS_CS0_PIN)
-#define SPIBUS_CS0_CLR()    GpioPinSetLow (SPIBUS_CS0_PORT,  SPIBUS_CS0_PIN)
-#else
-#define SPIBUS_CS0_SET()
-#define SPIBUS_CS0_CLR()
-#endif
-
-#if SPI_CS1 != PIN_NONE
-#define SPIBUS_SCK_PORT     (uint32_t)(stm32_port_nr2gpio[SPI_CS1  >> 8])
-#define SPIBUS_SCK_PIN      (SPI_CS1 & 0xf)
-#define SPIBUS_CS1_INIT(x)  Stm32GpioConfigSet(SPI_CS1, GPIO_CFG_OUTPUT | x, 0)
-#define SPIBUS_CS1_SET()    GpioPinSetHigh(SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN)
-#define SPIBUS_CS1_CLR()    GpioPinSetLow (SPIBUS_CS1_PORT,  SPIBUS_CS1_PIN)
-#else
-#define SPIBUS_CS1_SET()
-#define SPIBUS_CS1_CLR()
-#endif
-
-#if SPI_CS2 != PIN_NONE
-#define SPIBUS_SCK_PORT     (uint32_t)(stm32_port_nr2gpio[SPI_CS2  >> 8])
-#define SPIBUS_SCK_PIN      (SPI_CS2 & 0xf)
-#define SPIBUS_CS2_INIT(x)  Stm32GpioConfigSet(SPI_CS2, GPIO_CFG_OUTPUT | x, 0)
-#define SPIBUS_CS2_SET()    GpioPinSetHigh(SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN)
-#define SPIBUS_CS2_CLR()    GpioPinSetLow (SPIBUS_CS2_PORT,  SPIBUS_CS2_PIN)
-#else
-#define SPIBUS_CS2_SET()
-#define SPIBUS_CS2_CLR()
-#endif
-
-#if SPI_CS3 != PIN_NONE
-#define SPIBUS_SCK_PORT     (uint32_t)(stm32_port_nr2gpio[SPI_CS3  >> 8])
-#define SPIBUS_SCK_PIN      (SPI_CS3 & 0xf)
-#define SPIBUS_CS3_INIT(x)  Stm32GpioConfigSet(SPI_CS3, GPIO_CFG_OUTPUT | x, 0)
-#define SPIBUS_CS3_SET()    GpioPinSetHigh(SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
-#define SPIBUS_CS3_CLR()    GpioPinSetLow (SPIBUS_CS3_PORT,  SPIBUS_CS3_PIN)
-#else
-#define SPIBUS_CS3_SET()
-#define SPIBUS_CS3_CLR()
-#endif
-
 #define SPIBUS_SCK_PORT  (uint32_t)(stm32_port_nr2gpio[SPI_SCK  >> 8])
 #define SPIBUS_SCK_PIN   (SPI_SCK & 0xf)
 #define SPIBUS_MISO_PORT (uint32_t)(stm32_port_nr2gpio[SPI_MISO >> 8])
@@ -187,50 +141,29 @@ static int Stm32SpiChipSelect(NUTSPINODE *node, int assert)
 {
     int res;
     int hi;
+
+    res = -1;
     if (node->node_mode & SPI_MODE_CSHIGH)
         hi = assert;
     else
         hi = !assert;
     switch (node->node_cs) {
     case 0:
-        if(hi)
-            SPIBUS_CS0_SET();
-        else
-            SPIBUS_CS0_CLR();
-        res = 0;
+        res = Stm32GpioSet(SPI_CS0, hi);
         break;
-#if defined(SPIBUS_CS1_SET)
     case 1:
-        if(hi)
-            SPIBUS_CS1_SET();
-        else
-            SPIBUS_CS1_CLR();
-        res = 0;
+        res = Stm32GpioSet(SPI_CS1, hi);
         break;
-#endif
-#if defined(SPIBUS_CS2_SET)
     case 2:
-        if(hi)
-            SPIBUS_CS2_SET();
-        else
-            SPIBUS_CS2_CLR();
-        res = 0;
+        res = Stm32GpioSet(SPI_CS2, hi);
         break;
-#endif
-#if defined(SPIBUS_CS3_SET)
     case 3:
-        if(hi)
-            SPIBUS_CS3_SET();
-        else
-            SPIBUS_CS3_CLR();
-        res = 0;
+        res = Stm32GpioSet(SPI_CS3, hi);
         break;
-#endif
-     default:
-         res = -1;
     }
     return res;
 }
+
 /*! \brief Deselect a device on the SPI bus.
  *
  * Deactivates the chip select and unlocks the bus.
@@ -496,29 +429,19 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
         init_flag = GPIO_CFG_INIT_HIGH;
     else
         init_flag = GPIO_CFG_INIT_LOW;
-    (void) init_flag;
     switch (node->node_cs) {
     case 0:
-        /* If CS0 is undefined, we assume permanent selection. */
-#if defined(SPIBUS_CS0_INIT)
-        SPIBUS_CS0_INIT(init_flag);
-#endif
+        Stm32GpioConfigSet(SPI_CS0, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
-#if defined(SPIBUS_CS1_INIT)
     case 1:
-        SPIBUS_CS1_INIT(init_flag);
+        Stm32GpioConfigSet(SPI_CS1, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
-#endif
-#if defined(SPIBUS_CS2_INIT)
     case 2:
-        SPIBUS_CS2_INIT(init_flag);
+        Stm32GpioConfigSet(SPI_CS2, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
-#endif
-#if defined(SPIBUS_CS3_INIT)
     case 3:
-        SPIBUS_CS3_INIT(init_flag);
+        Stm32GpioConfigSet(SPI_CS3, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
-#endif
     default:
         return -1;
     }
