@@ -66,10 +66,10 @@
 #  define SPI1_MISO_AF ((SPI1_MISO == PE14) ? 1 : 0)
 #  define SPI1_MOSI_AF ((SPI1_MOSI == PE15) ? 1 : 0)
 # elif defined(MCU_STM32F3)
-#  define SPI1_NSS_AF  6
+#  define SPI1_NSS_AF  5
 #  define SPI1_SCK_AF  ((SPI1_SCK  == PA12) ? 6 : 5)
 #  define SPI1_MISO_AF ((SPI1_MISO == PA13) ? 6 : 5)
-#  define SPI1_MOSI_AF 6
+#  define SPI1_MOSI_AF 5
 #else
 #  define SPI1_NSS_AF  5
 #  define SPI1_SCK_AF  5

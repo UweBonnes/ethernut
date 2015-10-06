@@ -431,16 +431,16 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
         init_flag = GPIO_CFG_INIT_LOW;
     switch (node->node_cs) {
     case 0:
-        Stm32GpioConfigSet(SPI_CS0, GPIO_CFG_OUTPUT | init_flag, 0);
+        rc = Stm32GpioConfigSet(SPI_CS0, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
     case 1:
-        Stm32GpioConfigSet(SPI_CS1, GPIO_CFG_OUTPUT | init_flag, 0);
+        rc = Stm32GpioConfigSet(SPI_CS1, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
     case 2:
-        Stm32GpioConfigSet(SPI_CS2, GPIO_CFG_OUTPUT | init_flag, 0);
+        rc = Stm32GpioConfigSet(SPI_CS2, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
     case 3:
-        Stm32GpioConfigSet(SPI_CS3, GPIO_CFG_OUTPUT | init_flag, 0);
+        rc = Stm32GpioConfigSet(SPI_CS3, GPIO_CFG_OUTPUT | init_flag, 0);
         break;
     default:
         return -1;
