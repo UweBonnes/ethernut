@@ -1,5 +1,5 @@
-#if !defined(__PINS_H)
-#define __PINS_H
+#if !defined(_DEV_PINS_H_)
+#define _DEV_PINS_H_
 
 #define  GPIO_PORT_MASK 0xffe0
 #define  GPIO_PIN_MASK  0xf

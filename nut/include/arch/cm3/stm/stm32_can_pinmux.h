@@ -30,8 +30,13 @@
  * For additional information see http://www.ethernut.de/
  *
  */
-#if !defined(__STM32_CAN_PINMUX_H__)
-# define __STM32_CAN_PINMUX_H__
+#if !defined(_STM32_CAN_PINMUX_H_)
+# define _STM32_CAN_PINMUX_H_
+
+#if defined(_DEV_PINS_H_)
+# warning Include Pinmux before arch/cm3/stm/stm32_gpio.h
+#endif
+
 # if defined(MCU_STM32F1)
 /* AF definition only to keep the compiler happy*/
 #  define CAN1_RX_AF 9

@@ -60,8 +60,8 @@
 #include <dev/twif.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_i2c_pinmux.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_twi.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 

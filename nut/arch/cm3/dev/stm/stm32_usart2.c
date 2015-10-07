@@ -55,9 +55,9 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32_usart_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
-#include <arch/cm3/stm/stm32_usart_pinmux.h>
 
 /*!
  * \addtogroup xgNutArchCm3Stm32

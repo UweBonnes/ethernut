@@ -55,9 +55,9 @@
 #include <dev/canbus.h>
 
 #include <arch/cm3.h>
+#include <arch/cm3/stm/stm32_can_pinmux.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32_can_pinmux.h>
 
 /*!
  * \brief Processor specific Hardware Initiliaization

@@ -45,12 +45,12 @@
 #include <dev/spibus.h>
 #include <dev/gpio.h>
 
+#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #if defined(MCU_STM32F1)
 #include <arch/cm3/stm/stm32f1_dma.h>
 #endif
 #include <arch/cm3/stm/stm32_spi.h>
-#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
 #include <sys/nutdebug.h>

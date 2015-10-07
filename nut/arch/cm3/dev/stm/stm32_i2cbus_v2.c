@@ -68,11 +68,11 @@
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 #include <dev/gpio.h>
-#include <arch/cm3/stm/stm32_gpio.h>
+#include <cfg/twi.h>
 #include <arch/cm3/stm/stm32_i2c_pinmux.h>
+#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_irqreg.h>
 #include <dev/i2cbus.h>
-#include <cfg/twi.h>
 #include <cfg/devices.h>
 /*!
  * \addtogroup xgI2cBusSTM32

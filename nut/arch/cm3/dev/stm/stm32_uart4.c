@@ -56,9 +56,9 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32_usart_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_usart.h>
-#include <arch/cm3/stm/stm32_usart_pinmux.h>
 
 #if !defined(UART4) && defined(USART4)
 #define UART4 USART4
