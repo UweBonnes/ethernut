@@ -469,7 +469,6 @@ nutarch_cm3_stm32_spi_devices =
                 description = "Choice of SPI1 CS0 Gpio.\n"..
                               "Default is default NSS pin.\n",
                               "Use PIN_NONE if no CS is required.\n",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PA04",
                 file = "include/cfg/spi.h"
             },
@@ -477,7 +476,6 @@ nutarch_cm3_stm32_spi_devices =
                 macro = "SPI1_CS1",
                 brief = "SPI1 CS1 Gpio",
                 description = "Choice of SPI1 CS1 Gpio.",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
@@ -588,7 +586,6 @@ nutarch_cm3_stm32_spi_devices =
                 description = "Choice of SPI2 CS0 Gpio.\n"..
                               "Default is default NSS pin.\n",
                               "Use PIN_NONE if no CS is required.\n",
-                requires = { "HW_GPIO_STM32V2" },
                 default = function() return GetSpi2NssDefault() end,
                 file = "include/cfg/spi.h"
             },
@@ -596,7 +593,6 @@ nutarch_cm3_stm32_spi_devices =
                 macro = "SPI2_CS1",
                 brief = "SPI2 CS1 Gpio",
                 description = "Choice of SPI2 CS1 Gpio.",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
@@ -704,7 +700,6 @@ nutarch_cm3_stm32_spi_devices =
                 description = "Choice of SPI3 CS0 Gpio.\n"..
                               "Default is default NSS pin.\n",
                               "Use PIN_NONE if no CS is required.\n",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PA04",
                 file = "include/cfg/spi.h"
             },
@@ -712,7 +707,6 @@ nutarch_cm3_stm32_spi_devices =
                 macro = "SPI3_CS1",
                 brief = "SPI3 CS1 Gpio",
                 description = "Choice of SPI3 CS1 Gpio.",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
@@ -823,7 +817,6 @@ nutarch_cm3_stm32_spi_devices =
                 description = "Choice of SPI4 CS0 Gpio.\n"..
                               "Default is default NSS pin.\n",
                               "Use PIN_NONE if no CS is required.\n",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PE04",
                 file = "include/cfg/spi.h"
             },
@@ -831,7 +824,6 @@ nutarch_cm3_stm32_spi_devices =
                 macro = "SPI4_CS1",
                 brief = "SPI4 CS1 Gpio",
                 description = "Choice of SPI4 CS1 Gpio.",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
@@ -942,7 +934,6 @@ nutarch_cm3_stm32_spi_devices =
                 description = "Choice of SPI5 CS0 Gpio.\n"..
                               "Default is default NSS pin.\n",
                               "Use PIN_NONE if no CS is required.\n",
-                requires = { "HW_GPIO_STM32V2" },
                 default = function() return GetSpi5NssDefault() end,
                 file = "include/cfg/spi.h"
             },
@@ -950,7 +941,6 @@ nutarch_cm3_stm32_spi_devices =
                 macro = "SPI5_CS1",
                 brief = "SPI5 CS1 Gpio",
                 description = "Choice of SPI5 CS1 Gpio.",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
@@ -1061,7 +1051,6 @@ nutarch_cm3_stm32_spi_devices =
                 description = "Choice of SPI6 CS0 Gpio.\n"..
                               "Default is default NSS pin.\n",
                               "Use PIN_NONE if no CS is required.\n",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PG08",
                 file = "include/cfg/spi.h"
             },
@@ -1069,7 +1058,6 @@ nutarch_cm3_stm32_spi_devices =
                 macro = "SPI6_CS1",
                 brief = "SPI6 CS1 Gpio",
                 description = "Choice of SPI6 CS1 Gpio.",
-                requires = { "HW_GPIO_STM32V2" },
                 default = "PIN_NONE",
                 file = "include/cfg/spi.h"
             },
