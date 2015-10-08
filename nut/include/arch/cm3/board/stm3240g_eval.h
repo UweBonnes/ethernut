@@ -65,3 +65,13 @@
  * Values here to keep old configurations happy.
  */
 #include <dev/stm32_emac.h>
+
+#ifndef DEF_I2CBUS
+#define DEF_I2CBUS i2cBus1Stm32
+#include <dev/i2cbus_stm32.h>
+#endif
+
+#ifndef DEF_SPIBUS
+#define DEF_SPIBUS spiBus1Stm32
+#include <dev/spibus_stm32.h>
+#endif
