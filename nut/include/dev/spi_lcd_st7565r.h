@@ -100,7 +100,7 @@ typedef struct _ST7565R_DCB {
 	int    reset_pin;
 } ST7565R_DCB;
 
-extern NUTSPINODE nodeAt45d0;
+extern NUTSPINODE nodeSt7565r0;
 extern NUTDEVICE devSt7565rFb0;
 
 extern int  St7565rNodeLock(NUTDEVICE * dev);
