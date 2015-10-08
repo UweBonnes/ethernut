@@ -42,8 +42,8 @@
 
 #include <cfg/os.h>
 #include <cfg/clock.h>
-#include <cfg/arch.h>
 #include <cfg/can_dev.h>
+#include <cfg/arch.h>
 #include <cfg/arch/gpio.h>
 
 #include <sys/atom.h>
@@ -54,9 +54,9 @@
 #include <dev/gpio.h>
 #include <dev/canbus.h>
 
+#include <arch/cm3/stm/stm32_can_pinmux.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#include <arch/cm3/stm/stm32_can_pinmux.h>
 
 /*!
  * \brief Processor specific Hardware Initiliaization
