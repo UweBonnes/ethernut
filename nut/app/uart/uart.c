@@ -39,7 +39,8 @@
 /*!
  * \example uart/uart.c
  *
- * This sample demonstrates the usage of the ATmega on-chip UART.
+ * This sample demonstrates the usage of the UART.
+ * DEV_CONSOLE must be defined in the board/xxx.h file!
  * Note, that we don't do any error checking, because without this
  * UART we can't tell the user our problem.
  *
