@@ -457,3 +457,27 @@ int Stm32GpioSet(nutgpio_t gpio_pin, int value)
     }
     return 0;
 }
+
+/*!
+ * \brief Get pin value
+ *
+ * \param Gpio pin to query.
+ *
+ * \return 1 if pin is set, else 0, e.g. for non-existing pin.
+ */
+int Stm32GpioGet(nutgpio_t gpio_pin)
+{
+    if (gpio_pin != PIN_NONE) {
+        int gpio_nr;
+        int pin_nr;
+        GPIO_TypeDef *gpio;
+
+        pin_nr = gpio_pin & 0xff;
+        NUTASSERT(pin_nr > 16)
+            gpio_nr = gpio_pin >> 8;
+        gpio = stm32_port_nr2gpio[gpio_nr];
+        NUTASSERT(IS_GPIO_ALL_INSTANCE(gpio));
+        return (gpio->IDR & (1 << pin_nr));
+    }
+    return 0;
+}
