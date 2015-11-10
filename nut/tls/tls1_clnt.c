@@ -32,6 +32,8 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+#include <sys/timer.h>
+#include <sys/socket.h>
 #include <tls/ssl.h>
 
 #ifdef TLS_SSL_ENABLE_CLIENT        /* all commented out if no client */
@@ -66,6 +68,7 @@ SSL * ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
     }
 
     SET_SSL_FLAG(SSL_IS_CLIENT);
+
     do_client_connect(ssl);
     return ssl;
 }
@@ -150,9 +153,20 @@ int do_client_connect(SSL *ssl)
     /* sit in a loop until it all looks good */
     if (!IS_SET_SSL_FLAG(SSL_CONNECT_IN_PARTS))
     {
+        uint32_t recv_to;
+        uint32_t start;
+
+        NutTcpGetSockOpt(((TCPSOCKET *)ssl->client_fd), SO_RCVTIMEO, &recv_to, sizeof(recv_to));
+
         while (ssl->hs_status != SSL_OK)
         {
+            start = NutGetMillis();
+        
             ret = ssl_read(ssl, NULL);
+
+            /* Check if the read timed out */
+            if ((ret == SSL_OK) && ((NutGetMillis() - start) >= recv_to) && (recv_to != 0) && (recv_to != (uint32_t)-1))
+                return SSL_NOT_OK;            
 
             if (ret < SSL_OK)
                 break;
