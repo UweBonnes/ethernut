@@ -132,7 +132,7 @@ static uint16_t crc_ccitt_update(uint16_t crc, uint8_t data)
  * \param xlen  Number of byte to use for the calculation.
  * \return 0 on success, -1 on errors.
  */
-static int CalculateChecksum(AT25DF_FLASH * at, int_fast8_t b, uint16_t * crc16, int xlen)
+static int CalculateChecksum(AT25DF_FLASH * at, int_fast16_t b, uint16_t * crc16, int xlen)
 {
     /* Sanity checks. */
     NUTASSERT(at != NULL);
@@ -168,7 +168,7 @@ static int CalculateChecksum(AT25DF_FLASH * at, int_fast8_t b, uint16_t * crc16,
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int At25dfFlashSaveUnit(NUTSERIALFLASH * sfi, int_fast8_t b)
+static int At25dfFlashSaveUnit(NUTSERIALFLASH * sfi, int_fast16_t b)
 {
     int rc;
     AT25DF_FLASH *at;
@@ -252,10 +252,10 @@ static void At25dfFlashRelease(NUTSERIALFLASH * sfi, int b)
  *
  * \return Number of the buffer.
  */
-static int_fast8_t At25dfFlashLoadUnit(NUTSERIALFLASH * sfi, sf_unit_t pgn, int_fast8_t lock)
+static int_fast16_t At25dfFlashLoadUnit(NUTSERIALFLASH * sfi, sf_unit_t pgn, int_fast8_t lock)
 {
-    static int_fast8_t bnxt = 0;
-    int_fast8_t b;
+    static int_fast16_t bnxt = 0;
+    int_fast16_t b;
     AT25DF_FLASH *at;
     uint8_t read_cmd;
     uint8_t oplen;
@@ -365,7 +365,7 @@ static int_fast8_t At25dfFlashLoadUnit(NUTSERIALFLASH * sfi, sf_unit_t pgn, int_
 static int SpiAt25dfFlashInit(NUTSERIALFLASH * sfi)
 {
     int           rc;
-    int_fast8_t   b;
+    int_fast16_t   b;
     AT25DF_INFO  *df;
     AT25DF_FLASH *at;
 
@@ -416,7 +416,7 @@ static int SpiAt25dfFlashInit(NUTSERIALFLASH * sfi)
  */
 static void SpiAt25dfFlashExit(NUTSERIALFLASH * sfi)
 {
-    int_fast8_t b;
+    int_fast16_t b;
     AT25DF_FLASH *at;
 
     NUTASSERT(sfi != NULL);
@@ -445,7 +445,7 @@ static int SpiAt25dfFlashCheck(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
 
 #ifdef AT25DF_CRC_PAGE
     AT25DF_FLASH *at;
-    int_fast8_t b;
+    int_fast16_t b;
     uint16_t crc16 = 0;
 
     /* Sanity checks. */
@@ -494,7 +494,7 @@ static int SpiAt25dfFlashRead(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, void
     NUTASSERT(len >= 0 && len <= sfi->sf_unit_size);
 
     if (len) {
-        int_fast8_t b;
+        int_fast16_t b;
         AT25DF_FLASH *at = (AT25DF_FLASH *) sfi->sf_info;
 
         /* Normalize the offset. */
@@ -538,7 +538,7 @@ static int SpiAt25dfFlashCompare(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, c
     NUTASSERT(len >= 0 && len <= sfi->sf_unit_size);
 
     if (len) {
-        int_fast8_t b;
+        int_fast16_t b;
         AT25DF_FLASH *at = (AT25DF_FLASH *) sfi->sf_info;
 
         /* Normalize the offset. */
@@ -573,7 +573,7 @@ static int SpiAt25dfFlashUsed(NUTSERIALFLASH * sfi, sf_unit_t pgn, int skip)
     int rc;
     int len;
     AT25DF_FLASH *at;
-    int_fast8_t b;
+    int_fast16_t b;
 
     /* Sanity checks. */
     NUTASSERT(sfi != NULL);
@@ -638,7 +638,7 @@ static int SpiAt25dfFlashWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, con
     NUTASSERT(len >= 0 && len <= sfi->sf_unit_size);
 
     if (len) {
-        int_fast8_t b;
+        int_fast16_t b;
         AT25DF_FLASH *at = (AT25DF_FLASH *) sfi->sf_info;
 
         /* Normalize the offset. */
@@ -674,7 +674,7 @@ static int SpiAt25dfFlashWrite(NUTSERIALFLASH * sfi, sf_unit_t pgn, int off, con
  */
 static int SpiAt25dfFlashCopy(NUTSERIALFLASH * sfi, sf_unit_t spg, sf_unit_t dpg)
 {
-    int_fast8_t b;
+    int_fast16_t b;
 
     /* Sanity checks. */
     NUTASSERT(sfi != NULL);
@@ -726,7 +726,7 @@ static int SpiAt25dfFlashCopy(NUTSERIALFLASH * sfi, sf_unit_t spg, sf_unit_t dpg
 static int SpiAt25dfFlashCommit(NUTSERIALFLASH * sfi, sf_unit_t pgn)
 {
     int rc = 0;
-    int_fast8_t b;
+    int_fast16_t b;
     AT25DF_FLASH *at;
 
     /* Sanity checks. */
@@ -753,7 +753,7 @@ static int SpiAt25dfFlashCommit(NUTSERIALFLASH * sfi, sf_unit_t pgn)
 static int SpiAt25dfFlashErase(NUTSERIALFLASH * sfi, sf_unit_t pgn, int cnt)
 {
     int           rc = 0;
-    int_fast8_t   b;
+    int_fast16_t   b;
     AT25DF_FLASH *at;
     uint8_t       erase_cmd;
     int           erase_wait;
