@@ -262,6 +262,14 @@
 #define VSP4_AAC_SBR_PS_FLAGS_OFF           0x31
 #define VSP4_VORBIS_GAIN_OFF                0x2a
 
+/*! \brief Adjust configured crystal clock frequency.
+ 
+     You can adjust the configured XTAL frequency in small ranges to adjust the 
+     plackback speed / sample rate. For example this may help to govern the 
+     buffer filling level when playing a stream.
+ */
+#define AUDIO_ADJ_CLOCK       0x3042
+
 #define VS_PLAYMODE_MONO_OUTPUT_ON  ox0001
 #define VS_PLAYMODE_PAUSE_ON        0x0002
 #define VS_PLAYMODE_VUMETER_ON      0x0004
@@ -1285,6 +1293,7 @@ typedef struct _VSDCB {
     int dcb_tfin;           /*!< \brief Treble limit frequency *1000Hz. */
     int dcb_bass;           /*!< \brief Bass enhancement *1dB. */
     int dcb_bfin;           /*!< \brief Bass limit frequency *10Hz. */
+    uint32_t dcb_xtalfreq;  /*!< \brief XTAL frequency, see SCI CLOCKF */
     uint16_t dcb_sinefreq;  /*!< \brief Requested beep frequency. */
     uint32_t dcb_pbwlo;     /*!< \brief Playback buffer low watermark. */
     uint32_t dcb_pbwhi;     /*!< \brief Playback buffer high watermark. */
@@ -1322,6 +1331,7 @@ extern uint16_t VsCodecReg(NUTDEVICE *dev, uint_fast8_t op, uint_fast8_t reg, ui
 extern uint16_t VsCodecMode(NUTDEVICE *dev, uint_fast16_t flags, uint_fast16_t mask);
 extern int VsDecoderSetVolume(NUTDEVICE *dev, int left, int right);
 extern int VsDecoderSetBass(NUTDEVICE *dev, int treb, int tfin, int bass, int bfin);
+extern int VsDecoderAdjXtal(NUTDEVICE *dev, uint32_t xtal);
 extern uint16_t VsCodecBeep(NUTDEVICE *dev, uint16_t fsin);
 extern int VsDecoderBufferInit(NUTDEVICE *dev, uint32_t size);
 extern int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf);

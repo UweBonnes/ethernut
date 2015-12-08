@@ -68,6 +68,8 @@
 #define VSREQ_BEEP      0x00000010
 /*! \brief Start recording. */
 #define VSREQ_RECORD    0x00000020
+/*! \brief Adjust current XTAL frequency */
+#define VSREQ_CLOCK_ADJ 0x00000040
 /*@}*/
 
 
@@ -236,6 +238,43 @@ int VsDecoderSetBass(NUTDEVICE *dev, int treb, int tfin, int bass, int bfin)
 
     return 0;
 }
+
+/*!
+ * \brief Set crystal clock configuration.
+ *
+ * \param dev   Specifies the audio codec device.
+ * \param xtal  crystal frequency
+ *
+ * \return Always 0.
+ */
+int VsDecoderAdjClock(NUTDEVICE *dev, uint32_t xtal)
+{
+#if VS_HAS_SC_X3FREQ 
+    uint32_t sc_freq;
+
+    sc_freq = (xtal - 8000000) / 4000;
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_CLOCKF_REG, (VsCodecReg(dev, VS_OPCODE_READ, VS_CLOCKF_REG, 0) & 0xF800) | (sc_freq & 0x7FF));
+#else
+    /* Old hardware, requires clock doubler with lower frequence crystal. */
+    if (xtal < 20000000UL) {
+        VsCodecReg(&devSpiVsCodec0, VS_OPCODE_WRITE, VS_CLOCKF_REG, (uint16_t)(VS_CF_DOUBLER | (xtal / 2000UL)));
+    } else {
+        VsCodecReg(&devSpiVsCodec0, VS_OPCODE_WRITE, VS_CLOCKF_REG, (uint16_t)(xtal / 2000UL));
+    }
+#endif
+
+    /* Force frequency change (see VS1001 datasheet). */
+#if defined(AUDIO0_VS1001K)
+    VsCodecReg(&devSpiVsCodec0, VS_OPCODE_WRITE, VS_INT_FCTLH_REG, 0x8008);
+#elif defined(AUDIO0_VSAUTO) && defined(VS_INT_FCTLH_REG)
+    if (((VSDCB *)dev->dev_dcb)->dcb_codec_ver == 1001) {
+        VsCodecReg(&devSpiVsCodec0, VS_OPCODE_WRITE, VS_INT_FCTLH_REG, 0x8008);
+    }
+#endif
+
+    return 0;
+}
+
 
 /*!
  * \brief Start or stop sine wave beeper.
@@ -414,6 +453,10 @@ THREAD(FeederThread, arg)
                 if (dcb->dcb_scmd & VSREQ_AUDIOE) {
                     VsDecoderSetBass( dev, dcb->dcb_treb, dcb->dcb_tfin, dcb->dcb_bass, dcb->dcb_bfin);
                     dcb->dcb_scmd &= ~VSREQ_AUDIOE;
+                }
+                if (dcb->dcb_scmd & VSREQ_CLOCK_ADJ) {
+                    VsDecoderAdjClock( dev, dcb->dcb_xtalfreq);
+                    dcb->dcb_scmd &= ~VSREQ_CLOCK_ADJ;
                 }
             } else if (NutSegBufUsed() == 0) {
                 /* Running out of data. */
@@ -742,6 +785,10 @@ int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
     case AUDIO_WRITE_CMEM:
         VsCodecWriteWRam(dev, (VS_WRAM_DATA *) conf);
+        break;
+    case AUDIO_ADJ_CLOCK:
+        dcb->dcb_xtalfreq = *lvp;
+        dcb->dcb_scmd |= VSREQ_CLOCK_ADJ;        
         break;
 
     default:
