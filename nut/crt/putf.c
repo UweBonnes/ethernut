@@ -185,7 +185,7 @@ uint64_t va_args_ulval(int flags, va_list *ap)
     if (flags & LONGLONG)
         result = va_arg(*ap, uint64_t);
     else if (flags & LONGINT)
-        result = (uint64_t)va_arg(*ap, uint32_t);
+        result = (uint64_t)va_arg(*ap, int32_t);
     else if (flags & UNSIGNED)
         result = (uint64_t)va_arg(*ap, unsigned int);
     else
