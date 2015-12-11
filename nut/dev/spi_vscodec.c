@@ -48,6 +48,7 @@
 #include <string.h>
 #include <memdebug.h>
 #include <fcntl.h>
+#include <dev/vscodec.h>
 
 /*!
  * \addtogroup xgVsCodec
@@ -249,18 +250,22 @@ int VsDecoderSetBass(NUTDEVICE *dev, int treb, int tfin, int bass, int bfin)
  */
 int VsDecoderAdjClock(NUTDEVICE *dev, uint32_t xtal)
 {
-#if VS_HAS_SC_X3FREQ 
+#if VS_HAS_SC_X3FREQ
     uint32_t sc_freq;
 
     sc_freq = (xtal - 8000000) / 4000;
     VsCodecReg(dev, VS_OPCODE_WRITE, VS_CLOCKF_REG, (VsCodecReg(dev, VS_OPCODE_READ, VS_CLOCKF_REG, 0) & 0xF800) | (sc_freq & 0x7FF));
 #else
+# if VS_HAS_CF_DOUBLER
     /* Old hardware, requires clock doubler with lower frequence crystal. */
     if (xtal < 20000000UL) {
         VsCodecReg(&devSpiVsCodec0, VS_OPCODE_WRITE, VS_CLOCKF_REG, (uint16_t)(VS_CF_DOUBLER | (xtal / 2000UL)));
     } else {
         VsCodecReg(&devSpiVsCodec0, VS_OPCODE_WRITE, VS_CLOCKF_REG, (uint16_t)(xtal / 2000UL));
     }
+#else
+    VsCodecReg(&devSpiVsCodec0, VS_OPCODE_WRITE, VS_CLOCKF_REG, (uint16_t)(xtal / 2000UL));
+#endif
 #endif
 
     /* Force frequency change (see VS1001 datasheet). */
