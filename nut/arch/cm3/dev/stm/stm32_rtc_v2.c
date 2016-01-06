@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013,2014 by Uwe Bonnes(bon@elektron.ikp,physik.tu-darmmstadt.de).
+ * Copyright (C) 2013-2016 by Uwe Bonnes
+ *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -244,7 +245,7 @@ static void Stm32RtcInterrupt(void *arg)
 #endif
     if(do_alert) {
         /* Clear Pending EXTI RTC Interrupt*/
-        EXTI->PR   =  (1 << EXTI_RTC_LINE);
+        EXTI_PR =  (1 << EXTI_RTC_LINE);
         /* Signal alarm event queue */
         NutEventPostFromIrq(&rtc->alarm);
     }
@@ -539,10 +540,10 @@ int Stm32RtcInit(NUTRTC *rtc)
     if (NutRegisterIrqHandler(&sig_RTC, Stm32RtcInterrupt, rtc) != 0)
         return -1;
     /* Alarm Interrupt is on EXTI RTC Line, Rising Edge */
-    EXTI->PR   =  (1 << EXTI_RTC_LINE);
-    EXTI->IMR  |= (1 << EXTI_RTC_LINE);
-    EXTI->RTSR |=  (1 << EXTI_RTC_LINE);
-    EXTI->FTSR &= ~(1 << EXTI_RTC_LINE);
+    EXTI_PR   =  (1 << EXTI_RTC_LINE);
+    EXTI_IMR  |= (1 << EXTI_RTC_LINE);
+    EXTI_RTSR |=  (1 << EXTI_RTC_LINE);
+    EXTI_FTSR &= ~(1 << EXTI_RTC_LINE);
     NutIrqEnable(&sig_RTC);
     rtc->dcb   = &rtc_dcb;
     rtc->alarm = NULL;

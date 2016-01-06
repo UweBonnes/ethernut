@@ -1,7 +1,7 @@
 #ifndef _STM32XXXX_H_
 #define _STM32XXXX_H_
 /*
- * Copyright (C) 2012-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2016 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -381,11 +381,18 @@
 # define AHBENR AHB1ENR
 # define RCC_AHBENR_DMA1EN RCC_AHB1ENR_DMA1EN
 # define RCC_AHBENR_DMA2EN RCC_AHB1ENR_DMA2EN
+#endif
 
-# define PR PR1
-# define IMR IMR1
-# define FTSR FTSR1
-# define RTSR RTSR1
+#if defined(EXTI_PR1_PIF0) && !defined(EXTI_PR_PR0)
+# define EXTI_PR   (EXTI->PR1)
+# define EXTI_IMR  (EXTI->IMR1)
+# define EXTI_FTSR (EXTI->FTSR1)
+# define EXTI_RTSR (EXTI->RTSR1)
+#else
+# define EXTI_PR   (EXTI->PR)
+# define EXTI_IMR  (EXTI->IMR)
+# define EXTI_FTSR (EXTI->FTSR)
+# define EXTI_RTSR (EXTI->RTSR)
 #endif
 
 #endif

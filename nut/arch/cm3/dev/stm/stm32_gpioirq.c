@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2014-2016 by Uwe Bonnes
+ *                                (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -56,10 +57,10 @@
  */
 static void ExtiIsr(void *arg) {
     GPIO_SIGNAL *signal = (GPIO_SIGNAL *) arg;
-    uint32_t pending = EXTI->PR;
+    uint32_t pending = EXTI_PR;
     if(pending & (1 << signal->ios_pin)) {
         GPIO_VECTOR *vector = &signal->ios_vector;
-        EXTI->PR = (1 << signal->ios_pin);
+        EXTI_PR = (1 << signal->ios_pin);
         if (vector->iov_handler)
             (vector->iov_handler)(vector->iov_arg);
     }
@@ -75,13 +76,13 @@ static void ExtiIsr(void *arg) {
  */
 static void ExtiSharedIsr(void *arg) {
     GPIO_SIGNAL *signal;
-    uint32_t pending = EXTI->PR;
+    uint32_t pending = EXTI_PR;
     for (signal = (GPIO_SIGNAL *) arg; signal; signal = signal->sig_next) {
         /* It seems, "pending" is only set for an unmasked IRQ, so no need
            to check here. */
         if (pending & (1 << signal->ios_pin)) {
             GPIO_VECTOR *vector = &signal->ios_vector;
-            EXTI->PR = (1 << signal->ios_pin);
+            EXTI_PR = (1 << signal->ios_pin);
             if (vector->iov_handler)
                 (vector->iov_handler)(vector->iov_arg);
         }
@@ -238,8 +239,8 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
             rc = NutRegisterIrqHandler(isrhandler, ExtiIsr, sig);
         if (0 == rc ) {
             /* Clear any pending interrupts and mask */
-            EXTI->PR   =  (1 << bit);
-            EXTI->IMR &= ~(1 << bit);
+            EXTI_PR   =  (1 << bit);
+            EXTI_IMR &= ~(1 << bit);
             rc = NutIrqEnable(isrhandler);
         }
     }
@@ -255,8 +256,8 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
             if (NULL == sig_chain->sig_next) {
                 /* We found last slot in chain */
                 /* Clear any pending interrupts and mask */
-                EXTI->PR   =  (1 << bit);
-                EXTI->IMR &= ~(1 << bit);
+                EXTI_PR   =  (1 << bit);
+                EXTI_IMR &= ~(1 << bit);
                 sig_chain->sig_next = sig;
                 rc = 0;
                 break;
@@ -293,20 +294,20 @@ int GpioIrqSetMode(GPIO_SIGNAL *sig, int bit, int mode)
 
     switch (mode) {
     case NUT_IRQMODE_RISINGEDGE:
-        EXTI->RTSR |=  (1 << bit);
-        EXTI->FTSR &= ~(1 << bit);
+        EXTI_RTSR |=  (1 << bit);
+        EXTI_FTSR &= ~(1 << bit);
         break;
     case NUT_IRQMODE_FALLINGEDGE:
-        EXTI->RTSR &= ~(1 << bit);
-        EXTI->FTSR |=  (1 << bit);
+        EXTI_RTSR &= ~(1 << bit);
+        EXTI_FTSR |=  (1 << bit);
         break;
     case NUT_IRQMODE_BOTHEDGE:
-        EXTI->RTSR |=  (1 << bit);
-        EXTI->FTSR |=  (1 << bit);
+        EXTI_RTSR |=  (1 << bit);
+        EXTI_FTSR |=  (1 << bit);
         break;
     case NUT_IRQMODE_NONE:
-        EXTI->RTSR &= ~(1 << bit);
-        EXTI->FTSR &= ~(1 << bit);
+        EXTI_RTSR &= ~(1 << bit);
+        EXTI_FTSR &= ~(1 << bit);
         break;
     default:
         rc = -1;
@@ -327,7 +328,7 @@ int GpioIrqSetMode(GPIO_SIGNAL *sig, int bit, int mode)
  */
 int GpioIrqEnable(GPIO_SIGNAL * sig, int bit)
 {
-    EXTI->IMR |=  (1 << bit);
+    EXTI_IMR |=  (1 << bit);
     return 0;
 }
 
@@ -341,6 +342,6 @@ int GpioIrqEnable(GPIO_SIGNAL * sig, int bit)
  */
 int GpioIrqDisable(GPIO_SIGNAL * sig, int bit)
 {
-    EXTI->IMR &= ~(1 << bit);
+    EXTI_IMR &= ~(1 << bit);
     return 0;
 }
