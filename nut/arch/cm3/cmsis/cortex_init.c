@@ -162,8 +162,8 @@ void (* const g_pfnVectors[])(void *) =
 /* Code is just running in RAM, so re-use the g_pfnVectors */
 #define g_pfnRAMVectors g_pfnVectors
 #else
-__attribute__((section(".vtable")))
-void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void*);
+static __attribute__((section(".vtable")))
+void (*volatile g_pfnRAMVectors[NUM_INTERRUPTS])(void*);
 #endif
 
 
