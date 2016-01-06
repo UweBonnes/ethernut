@@ -116,6 +116,7 @@ all:
 	-$(MAKE) -C twitest
 	-$(MAKE) -C uart
 	-$(MAKE) -C owibus
+	-$(MAKE) -C watchdog
 	-$(MAKE) -C tls_client
 
 install:
@@ -148,6 +149,7 @@ install:
 	-$(MAKE) -C timers install
 	-$(MAKE) -C uart install
 	-$(MAKE) -C owibus install
+	-$(MAKE) -C watchdog
 	-$(MAKE) -C tls_client install
 
 clean:
@@ -182,6 +184,7 @@ clean:
 	-$(MAKE) -C twitest clean
 	-$(MAKE) -C uart clean
 	-$(MAKE) -C owibus clean
+	-$(MAKE) -C watchdog
 	-$(MAKE) -C tls_client
 
 at90can:
@@ -209,3 +212,4 @@ at90can:
 	-$(MAKE) -C timers
 	-$(MAKE) -C uart
 	-$(MAKE) -C owibus
+	-$(MAKE) -C watchdog
