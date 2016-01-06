@@ -168,6 +168,11 @@ extern uint32_t Mcf5225xWatchDogStart(uint32_t ms);
 extern void Mcf5225xWatchDogRestart(void);
 extern void Mcf5225xWatchDogDisable(void);
 extern void Mcf5225xWatchDogEnable(void);
+#elif defined(MCU_STM32)
+extern uint32_t Stm32WatchDogStart(uint32_t ms, uint32_t xmode);
+extern void Stm32WatchDogRestart(void);
+extern void Stm32WatchDogDisable(void);
+extern void Stm32WatchDogEnable(void);
 #endif
 
 /*@}*/
