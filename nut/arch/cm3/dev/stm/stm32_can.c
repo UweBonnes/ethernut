@@ -95,7 +95,7 @@ static void STMCanTXInterrupt( void *arg)
     CANBUSINFO *ci = bus->bus_ci;
     __IO uint32_t *CANBBx = bus->bb_base;
 
-    CM3BB_OFFSETSET(CANBBx, CAN_TypeDef, IER, CAN_IER_TMEIE);
+    CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, IER, CAN_IER_TMEIE);
     ci->can_tx_interrupts++;
     NutEventPostFromIrq(&(ci->can_tx_rdy));
 }
