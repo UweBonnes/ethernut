@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2012 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
- * Copyright (C) 2015 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de>
+ * Copyright (C) 2015-2016 by Uwe Bonnes
+ *                            <bon@elektron.ikp.physik.tu-darmstadt.de>
  *
  * All rights reserved.
  *
@@ -161,7 +162,7 @@ void (* const g_pfnVectors[])(void *) =
 /* Code is just running in RAM, so re-use the g_pfnVectors */
 #define g_pfnRAMVectors g_pfnVectors
 #else
-static __attribute__((section(".vtable")))
+__attribute__((section(".vtable")))
 void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void*);
 #endif
 
