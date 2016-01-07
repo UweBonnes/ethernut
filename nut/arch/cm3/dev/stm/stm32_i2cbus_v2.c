@@ -34,7 +34,9 @@
 
 /*!
  * \file arch/cm3/dev/stm/stm32_i2cbus_v2.c
- * \brief I2C bus driver for I2C hardware in STM32F0 and STM32F3.
+ * \brief I2C bus driver for I2C hardware in STM32F0/F3/F7 and L0/4.
+ *
+ * L0/F0 don't have a seperate Error interrupt.
  *
  * This driver is in an early stage and has been tested on STM32F3 only.
  * It doesn't consider Slave operation yet
@@ -45,17 +47,9 @@
  * This new I2C driver layout allows to attach any I2C slave driver to
  * any I2C bus driver by calling NutRegisterI2cSlave().
  *
- * \verbatim
- * $Id$
- * \endverbatim
- */
-
-/*!
- * \brief I2C bus driver for STM32F0/3/7 hardware.
- *
  * This is an interrupt driver, which supports master mode only.
  * No support for FM+
- * No error handling
+ * No error handling (ERRIE not enabled)
  */
 
 #include <dev/irqreg.h>
@@ -197,7 +191,7 @@ static void I2cEventBusIrqHandler(void *arg)
         i2c->CR1 &= ~I2C_CR1_NACKIE;
         i2c->ICR |=  I2C_ICR_NACKCF;
     }
-#if defined(MCU_STM32F3)
+#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
 
 }
 
@@ -407,7 +401,7 @@ static int I2cBusInit(NUTI2C_BUS *bus)
     if (NutRegisterIrqHandler(icb->icb_sig_ev, I2cEventBusIrqHandler, icb))
         return -1;
     NutIrqEnable(icb->icb_sig_ev);
-#if defined(MCU_STM32F3)
+#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
     if (NutRegisterIrqHandler(icb->icb_sig_er, I2cErrorBusIrqHandler, icb))
         return -1;
     NutIrqDisable(icb->icb_sig_er);
@@ -467,7 +461,7 @@ static const STM32_I2C_HW i2c1_hw = {
 static STM32_I2CCB i2c1cb = {
     .hw         = &i2c1_hw,
     .icb_sig_ev = &sig_TWI1_EV,
-#if defined(MCU_STM32F3) || defined(MCU_STM32F7)
+#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
     .icb_sig_er = &sig_TWI1_ER,
 #endif
 };
@@ -498,7 +492,7 @@ static const STM32_I2C_HW i2c2_hw = {
 static STM32_I2CCB i2c2cb = {
     .hw         = &i2c2_hw,
     .icb_sig_ev = &sig_TWI2_EV,
-#if defined(MCU_STM32F3) || defined(MCU_STM32F7)
+#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
     .icb_sig_er = &sig_TWI2_ER,
 #endif
 };
