@@ -62,8 +62,14 @@
 #define DMA2_CH4  10
 /* FIXME: Some F1 devices have C4 and C5 coupled*/
 #define DMA2_CH5  11
+#define DMA2_CH6  12
+#define DMA2_CH7  13
 #if defined(HW_DMA2_STM32F1)
-#define STM_HAS_DMA2 5
+# if defined(HW_DMA2_STM32L4)
+#  define STM_HAS_DMA2 7
+# else
+#  define STM_HAS_DMA2 5
+# endif
 #endif
 
 #define ADC1_DMA                       DMA1_CH1
