@@ -887,21 +887,21 @@ nutarch_cm3_stm32_usart_devices =
             {
                 macro = "USART2_RX",
                 brief = "USART2 RX Pin selection",
-                description = "Choose USART2 RX Pin. Default is PA02. Use PIN_NONE if unused with USART used.",
+                description = "Choose USART2 RX Pin. Default is PA03. Use PIN_NONE if unused with USART used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetRxUsart2() end,
-                default = "PA02",
+                default = "PA03",
                 file = "include/cfg/uart.h"
             },
             {
                 macro = "USART2_TX",
                 brief = "USART2 TX Pin selection",
-                description = "Choose USART2 TX Pin. Default is PA03. Use PIN_NONE if unused with USART used.",
+                description = "Choose USART2 TX Pin. Default is PA02. Use PIN_NONE if unused with USART used.",
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = function() return GetTxUsart2() end,
-                default = "PA03",
+                default = "PA02",
                 file = "include/cfg/uart.h"
             },
             {
