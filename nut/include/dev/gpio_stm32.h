@@ -190,7 +190,7 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 # define GpioPortSetLow(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BRR ) = mask)
 #endif
 
-#if defined(MCU_STM32F0) ||defined(MCU_STM32F3)
+#if defined(MCU_STM32F0) ||defined(MCU_STM32F3) || defined(MCU_STM32L4)
 /* GPIO on AHB2 is outside of bitband region */
 #define GpioPinGet(bank, bit)        ((CM3REG((bank), GPIO_TypeDef, IDR ) & (1<<(bit)))?1:0)
 #define GpioPinSet(bank, bit, value) ((value)? GpioPinSetHigh(bank, bit): GpioPinSetLow(bank, bit))
