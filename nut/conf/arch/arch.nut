@@ -1327,6 +1327,22 @@ nutarch =
                 makedefs = { "LDSCRIPT=stm32f207xG_flash.ld" }
             },
             {
+                macro = "MCU_STM32F303x8",
+                brief = "STM STM32F303 64 kB",
+                description = "STM32F303 with CCM, CAN, USB, 2 ADC, 2 DAC, 3 COMP, 1 OP.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F303_LD",
+                },
+                makedefs = { "LDSCRIPT=stm32f303x8_flash.ld" }
+            },
+            {
                 macro = "MCU_STM32F303xC",
                 brief = "STM STM32F303 256 kB",
                 description = "STM32F303 with CCM, CAN, USB, 4 ADC, 2 DAC, 7 COMP, 4 OP.",
