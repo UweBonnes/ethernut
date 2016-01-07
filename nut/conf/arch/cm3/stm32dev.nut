@@ -1207,6 +1207,15 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_SPI1_STM32",
+                brief = "SPI1 Availability",
+                description = "SPI1 Availability",
+                requires = { "HW_SPI1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_SPI2_STM32",
                 brief = "SPI2 Availability",
                 description = "SPI2 Availability",
