@@ -10,7 +10,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt5Widgets)
+#find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Lua)
 
 if(NOT Lua_FOUND)
@@ -74,6 +75,6 @@ source_group("Resource Files" REGULAR_EXPRESSION .*\\.qrc)
 qt5_add_resources(QRC_GENERATED src/qnutconf.qrc)
 add_executable(qnutconf WIN32 ${QNUTCONF_SRCS} ${QNUTCONF_HDRS} ${UIC_GENERATED} ${QRC_GENERATED} ${PROTO_SRCS})
 qt5_use_modules(qnutconf Widgets)
-target_link_libraries(qnutconf ${LUA_LIBRARIES})
+target_link_libraries(qnutconf ${LUA_LIBRARIES} Qt5::Widgets)
 
 target_compile_features( qnutconf PRIVATE cxx_auto_type cxx_final cxx_lambdas cxx_nullptr cxx_range_for)
