@@ -59,7 +59,7 @@
 #elif defined(MCU_STM32L0) || defined (MCU_STM32L1)
 # define LSI_VALUE 38000
 #else
-# define LSI_VALUE 40000
+# define LSI_VALUE 32000
 #endif
 /*!
  * \brief Start the STM32 hardware independent watch dog timer.
