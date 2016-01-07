@@ -230,7 +230,15 @@ const nutgpio_t lcd_pins[] = {
                  (4 * LCD_FCR_CC_0) | (9 * LCD_FCR_DEAD_0) | \
                  (4 * LCD_FCR_PON_0))
 #else
+/* No LCD defined*/
 static const nutgpio_t lcd_pins[] = {PIN_NONE};
+static const uint16_t seg2offset[1] = {0};
+#define LCD_MUX      0
+#define LCD_DUTY     0
+#define LCD_BIAS     0
+#define LCD_FCR      0
+#define SEG16_DIGITS 0
+
 #endif
 /*!
  * \brief Device Control Block for 16-Segment Display
@@ -245,7 +253,7 @@ typedef struct {
 } DCB_16SEG;
 
 #if defined(MCU_CM_NO_BITBAND)
-static void Stm32Lcd16Seg2Ram(DCB_16SEG * dcb)
+static void Stm32Lcd16SegWriteRam(DCB_16SEG * dcb)
 {
     int i;
     for (i = 0; i < 16 * SEG16_DIGITS; i++) {
