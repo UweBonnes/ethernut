@@ -884,7 +884,10 @@ int NutTcpStateCloseEvent(TCPSOCKET * sock)
     if (sock == NULL) {
         return -1;
     }
+
+#ifdef TCP_REENABLE_THREADYIELDS
     NutThreadYield();
+#endif
 
     switch (sock->so_state) {
     case TCPS_LISTEN:

@@ -232,6 +232,18 @@ nutnet =
                               "This option is ignored, if TCP_BACKLOG_MAX is zero.",
                 default = "5",
                 file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_REENABLE_THREADYIELDS",
+                brief = "Re-Enable NutThreadYield in NutTcpSend, NutTcpReceive and NutTcpStateCloseEvent",
+                description = "A NutThreadYield had been added to the head of the following functions: \n"..
+                              "NutTcpSend, NutTcpReceive and NutTcpStateCloseEvente \n"..
+                              "for unknown reasons. Especially for single character stream access (putc / getc) "..
+                              "these yields heavily slowed down the communication, so that these yields had been "..
+                              "removed by default. \n" ..
+                              "Enable this option to re-enable the old implementation",
+                flavor = "boolean",
+                file = "include/cfg/tcp.h"
             }
         }
     },
