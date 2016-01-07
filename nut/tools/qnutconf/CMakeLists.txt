@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1.3)
 
 # Check if environment variable QTDIR is set.
 if (DEFINED ENV{QTDIR})
