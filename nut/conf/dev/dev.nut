@@ -4509,6 +4509,46 @@ nutdev =
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
+            {
+                macro = "JTAG0_TRST_PIO_ID",
+                brief = "TCK Port",
+                description = "Port ID of JTAG reser pin.\n"..
+                            "Leave undefined if not used.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TRST_PIO_BIT",
+                brief = "TCK Bit",
+                description = "Port bit number of the JTAG reset pin.\n"..
+                            "Leave undefined if not used.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_SRST_PIO_ID",
+                brief = "TCK Port",
+                description = "Port ID of the system reset pin.\n"..
+                            "Leave undefined if not used.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_SRST_PIO_BIT",
+                brief = "TCK Bit",
+                description = "Port bit number of system reset pin.\n"..
+                            "Leave undefined if not used.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
         }
     },
     {
