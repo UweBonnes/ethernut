@@ -96,6 +96,7 @@ HANDLE tcp_in_rdy;
 NETBUF *volatile tcp_in_nbq;
 static uint16_t tcp_in_cnt;
 static HANDLE tcpThread = 0;
+static HANDLE tcpsm_init_queue = SIGNALED;
 
 #ifndef TCP_COLLECT_INADV
 #define TCP_COLLECT_INADV   8
@@ -1881,16 +1882,24 @@ void NutTcpStateMachine(NETBUF * nb)
  * soon as the first socket is created.
  *
  * \return 0 on success, -1 otherwise.
+ * 
+ * \note  Access to this function is synchronized using an event queue to
+ *  prevent concurrent accesses from starting multiple state machine
+ *  threads. See
+ *  http://lists.egnite.de/pipermail/en-nut-discussion/2014-November/029522.html
  */
 int NutTcpInitStateMachine(void)
 {
+    int rc = 0;
+    NutEventWait(&tcpsm_init_queue, NUT_WAIT_INFINITE);
     if (tcpThread == NULL) {
         tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, NUT_THREAD_TCPSMSTACK * NUT_THREAD_STACK_MULT + NUT_THREAD_STACK_ADD);
         if (tcpThread == NULL) {
-            return -1;
+            rc = -1;
         }
     }
-    return 0;
+    NutEventPost(&tcpsm_init_queue);
+    return rc;
 }
 
 /*!
