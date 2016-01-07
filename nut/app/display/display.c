@@ -44,10 +44,12 @@
 #include <pro/rfctime.h>
 #include <cfg/crt.h>
 
-#include <arch/cm3/stm/stm32xxxx.h>
-
-static const char banner[] = "\nLCD on "
+static const char banner[] = "\nDisplay on "
     BOARDNAME " " __DATE__ " " __TIME__"     \n";
+
+#if !defined(DEV_DISPLAY)
+# define DEV_DISPLAY DEV_CONSOLE
+#endif
 
 static int SetRtc(time_t *now)
 {
@@ -96,13 +98,11 @@ NUTRTC *RTC_Init(void)
 
 int main(void)
 {
-    RCC_TypeDef *rcc= (RCC_TypeDef *) RCC_BASE;
     FILE *lcd;
     int i = 0;
 
-    rcc->APB1ENR |= RCC_APB1ENR_PWREN;
     NutRegisterDevice(&DEV_DISPLAY, 0, 0);
-    lcd = fopen(DEV_DISPLAY_NAME, "r+");
+    lcd = fopen(DEV_DISPLAY.dev_name, "r+");
     fprintf(lcd, banner);
     RTC_Init();
     while (1) {
