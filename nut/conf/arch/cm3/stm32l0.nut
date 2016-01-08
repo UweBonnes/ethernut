@@ -60,6 +60,7 @@ nutarch_cm3_stm32l0 =
                 default = 1,
                 provides =
                 {
+                    "HW_RCC_STM32",
 -- Todo: FLASH_WRPROT
 --                    "HW_FLASH_STM32L1",
                     "HW_RTC_STM32_V2",
@@ -102,7 +103,6 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L051" },
                 provides =
                 {
-                    "HW_RCC_STM32",
                     "HW_TIM6_STM32",
                     "HW_LPUART1_STM32",
                 },
@@ -116,7 +116,7 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L052" },
                 provides =
                 {
-                    "HW_RCC_CRS_STM32",
+                    "HW_CRS_STM32",
                     "HW_TSC_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_RNG_LPUART1_STM32",
@@ -131,7 +131,7 @@ nutarch_cm3_stm32l0 =
                 default = 1,
                 requires = { "HW_MCU_STM32L053" },
                 provides = {
-                   "HW_RCC_CRS_STM32",
+                   "HW_CRS_STM32",
                     "HW_TSC_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_RNG_LPUART1_STM32",
@@ -148,7 +148,6 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L061" },
                 provides =
                 {
-                    "HW_RCC_STM32",
                     "HW_TIM6_STM32",
                     "HW_AES_LPUART1_STM32",
                 },
@@ -162,7 +161,7 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L062" },
                 provides =
                 {
-                    "HW_RCC_CRS_STM32",
+                    "HW_CRS_STM32",
                     "HW_TSC_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_AES_RNG_LPUART1_STM32",
@@ -177,7 +176,7 @@ nutarch_cm3_stm32l0 =
                 default = 1,
                 requires = { "HW_MCU_STM32L063" },
                 provides = {
-                   "HW_RCC_CRS_STM32",
+                   "HW_CRS_STM32",
                     "HW_TSC_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_AES_RNG_LPUART1_STM32",

@@ -163,6 +163,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F042_MD" };
                 provides = {
+                    "HW_CRS_STM32",
                     "HW_DMA1_STM32F0",
                     "HW_ADC1_STM32",
                     "HW_CEC_CAN_STM32",
@@ -182,6 +183,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F048xx" };
                 provides = {
+                    "HW_CRS_STM32",
                     "HW_DMA1_STM32F0",
                     "HW_ADC1_STM32",
                     "HW_CEC_CAN_STM32",
@@ -222,6 +224,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F070_LD" };
                 provides = {
+                    "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
                     "HW_ADC1_STM32",
                     "HW_USART2_STM32",
@@ -236,6 +239,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F070_MD" };
                 provides = {
+                    "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
                     "HW_ADC1_STM32",
                     "HW_I2C2_STM32V2",
@@ -256,6 +260,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F071_MD" };
                 provides = {
+                    "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
@@ -279,6 +284,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F072_MD" };
                 provides = {
+                    "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
@@ -302,6 +308,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F078xx" };
                 provides = {
+                    "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
@@ -326,6 +333,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 provides =
                 {
+                    "HW_CRS_STM32",
                     "HW_DMA1_2_STM32F09",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
@@ -352,6 +360,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 provides =
                 {
+                    "HW_CRS_STM32",
                     "HW_DMA1_2_STM32F09",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
