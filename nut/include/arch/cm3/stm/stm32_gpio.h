@@ -71,52 +71,8 @@
 #else
 # define STM32_NR_GPIO  4
 #endif
-static GPIO_TypeDef *const stm32_port_nr2gpio[STM32_NR_GPIO] = {
-    NULL,
-    GPIOA,
-    GPIOB,
-    GPIOC,
-#if defined(GPIOD_BASE)
-    GPIOD,
-#elif STM32_NR_GPIO >4
-    NULL,
-#endif
-#if defined(GPIOE_BASE)
-    GPIOE,
-#elif STM32_NR_GPIO >5
-    NULL,
-#endif
-#if defined(GPIOF_BASE)
-    GPIOF,
-#elif STM32_NR_GPIO >6
-    NULL,
-#endif
-#if defined(GPIOG_BASE)
-    GPIOG,
-#elif STM32_NR_GPIO >7
-    NULL,
-#endif
-#if defined(GPIOH_BASE)
-    GPIOH,
-#elif STM32_NR_GPIO >8
-    NULL,
-#endif
-#if defined(GPIOI_BASE)
-    GPIOI,
-#elif STM32_NR_GPIO >9
-    NULL,
-#endif
-#if defined(GPIOJ_BASE)
-    GPIOJ,
-#elif STM32_NR_GPIO >10
-    NULL,
-#endif
-#if defined(GPIOK_BASE)
-    GPIOK,
-#elif STM32_NR_GPIO >11
-    NULL,
-#endif
-};
+
+GPIO_TypeDef *const stm32_port_nr2gpio[STM32_NR_GPIO];
 
 /* STM32 Remapping defines for L1/F2/3/4*/
 #define GPIO_Mode_IN 0

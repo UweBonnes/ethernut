@@ -154,6 +154,7 @@ nutarch_cm3_stm32_devices =
         requires = { "HW_GPIO_STM32V2" },
         provides = { "HW_GPIO_V2", "HW_GPIO" },
         sources = {
+                "cm3/dev/stm/stm32_gpio.c",
                 "cm3/dev/stm/stm32_gpio_v2.c",
                 "cm3/dev/stm/stm32_gpioirq.c"
         },
