@@ -471,7 +471,7 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
             spireg->CR1 = SPI_CR1_SSM | SPI_CR1_MSTR;
             /* FIXME: Check values needed*/
 #if defined(SPI_CR2_FRXTH)
-            spireg->CR2 = SPI_CR2_FRXTH | 0x700;
+            spireg->CR2 = SPI_CR2_FRXTH | ((node->node_bits - 1) * SPI_CR2_DS_0);
 #else
             spireg->CR2 =  0;
 #endif
