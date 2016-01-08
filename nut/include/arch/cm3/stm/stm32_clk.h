@@ -42,6 +42,10 @@
  */
 #include <stdint.h>
 
+#if !defined(HSE_VALUE)
+# define HSE_VALUE 0
+#endif
+
 /* STM32 Clock source selectors */
 #define SYSCLK_HSI    1
 #define SYSCLK_PLL    2
