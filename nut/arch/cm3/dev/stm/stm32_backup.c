@@ -50,6 +50,24 @@
 #include <cfg/arch.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
+#if !defined(RTC_BKP_NUMBER)
+# if defined(RTC_BKP0R)
+#  if defined(RTC_BKP_NUMBER)
+#   define RTC_BKP_NUMBER RTC_BKP_NUMBER
+#  elif !defined(RTC_BKP5R)
+#   define RTC_BKP_NUMBER ( 5 * 4)
+#  elif !defined(RTC_BKP10R)
+#   define RTC_BKP_NUMBER (10 * 4)
+#  elif !defined(RTC_BKP16R)
+#   define RTC_BKP_NUMBER (16 * 4)
+#  elif !defined(RTC_BKP20R)
+#   define RTC_BKP_NUMBER (20 * 4)
+#  elif defined(RTC_BKP32R)
+#   define RTC_BKP_NUMBER (32 * 4)
+#  endif
+# endif
+#endif
+
 #if defined(RTC_BKP_NUMBER)
 /*!
  * \brief Get pointer to read parameters in backup registerss.
