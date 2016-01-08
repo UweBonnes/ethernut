@@ -388,43 +388,6 @@ int SetSysClock(void)
 #define PCLK2_TARGET PCLK2_MAX
 #endif
 
-/*
-  * @brief  Get divisor for APB clock
-  *
-  * Return needed divisor so that resulting frequency
-  * is smaller or equal the selected frequency or maximum
-  * PCLK divisor is reached.
-  *
-  * @param  target_frequency Selected Frequency
-  * @retval RCC_CFGR_PPRE base value
-  */
-
-uint32_t GetPclkDiv(uint32_t target_frequency)
-{
-    uint32_t div;
-    uint32_t res_freq;
-
-    div = 3;
-    res_freq = SYSCLK_FREQ;
-    if (res_freq > target_frequency) {
-        div = div + 1;
-        res_freq = res_freq /2;
-    }
-    if (res_freq > target_frequency) {
-        div = div + 1;
-        res_freq = res_freq /2;
-    }
-    if (res_freq > target_frequency) {
-        div = div + 1;
-        res_freq = res_freq /2;
-    }
-    if (res_freq > target_frequency) {
-        div = div + 1;
-        res_freq = res_freq /2;
-    }
-    return div;
-}
-
 /**
   * @brief  Sets System clock frequency to 120/168MHz and configure HCLK, PCLK2
   *          and PCLK1 prescalers.

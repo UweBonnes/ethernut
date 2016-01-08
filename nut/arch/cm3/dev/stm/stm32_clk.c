@@ -46,6 +46,45 @@ static const uint8_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 
+#if defined(MCU_STM32F2) || defined(MCU_STM32F4) || defined(MCU_STM32F7)
+/*!
+  * \brief  Get divisor for APB clock
+  *
+  * Return needed divisor so that resulting frequency
+  * is smaller or equal the selected frequency or maximum
+  * PCLK divisor is reached.
+  *
+  * @param  target_frequency Selected Frequency
+  * @retval RCC_CFGR_PPRE base value
+  */
+static uint32_t GetPclkDiv(uint32_t target_frequency) __attribute__((unused));
+static uint32_t GetPclkDiv(uint32_t target_frequency)
+{
+    uint32_t div;
+    uint32_t res_freq;
+
+    div = 3;
+    res_freq = SYSCLK_FREQ;
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    if (res_freq > target_frequency) {
+        div = div + 1;
+        res_freq = res_freq /2;
+    }
+    return div;
+}
+#endif
+
 /**
   * \brief  Get timer clock shift
   *
