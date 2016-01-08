@@ -348,5 +348,6 @@ int Stm32GpioConfigSet(nutgpio_t GPIO, uint32_t flags, uint32_t af)
     gpio = stm32_port_nr2gpio[gpio_nr];
     if (!gpio)
         return -1;
-    return GpioPortConfigSet((uint32_t)gpio, _BV(pin_nr), flags);
+    GpioPortConfigSet((uint32_t)gpio, _BV(pin_nr), flags);
+    return 0;
 }
