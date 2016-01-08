@@ -85,12 +85,12 @@
 #include <arch/arm/atmel/at91_efc.h>
 #elif defined(NUT_CONFIG_AVR32EFC)
 #include <arch/avr32/flashc.h>
-#elif defined(NUT_CONFIG_STM32_IAP)
-#include <arch/cm3/stm/stm32_flash.h>
 #elif defined(NUT_CONFIG_STM32_BACKUP)
 #include <arch/cm3/stm/stm32_backup.h>
 #elif defined(NUT_CONFIG_STM32_EEPROM)
 #include <arch/cm3/stm/stm32l1_eeprom.h>
+#elif defined(NUT_CONFIG_STM32_IAP)
+#include <arch/cm3/stm/stm32_flash.h>
 #elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
 #include <arch/cm3/nxp/lpc177x_8x_eeprom.h>
 #elif defined(NUT_CONFIG_LPC17xx_IAP)
@@ -130,14 +130,14 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
     return OnChipNvMemLoad(addr, buff, siz);
 #elif defined(NUT_CONFIG_AT91EFC)
     return At91EfcParamRead(addr, buff, siz);
-#elif defined(NUT_CONFIG_STM32_IAP)
-    return Stm32FlashParamRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_STM32_BACKUP)
     return Stm32BkupMemLoad(addr, buff, siz);
 #elif defined(NUT_CONFIG_STM32_EEPROM)
     return Stm32l1_EepromRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
     return Lpc177x_8x_EepromRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_STM32_IAP)
+    return Stm32FlashParamRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_LPC17xx_IAP)
     return Lpc17xxIapParamRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_AT24)
@@ -178,12 +178,12 @@ int NutNvMemSave(unsigned int addr, const void *buff, size_t len)
     return OnChipNvMemSave(addr, buff, len);
 #elif defined(NUT_CONFIG_AT91EFC)
     return At91EfcParamWrite(addr, buff, len);
-#elif defined(NUT_CONFIG_STM32_IAP)
-    return Stm32FlashParamWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_STM32_BACKUP)
     return Stm32BkupMemSave(addr, buff, len);
 #elif defined(NUT_CONFIG_STM32_EEPROM)
     return Stm32l1_EepromWrite(addr, buff, len);
+#elif defined(NUT_CONFIG_STM32_IAP)
+    return Stm32FlashParamWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_LPC177x_8x_EEPROM)
     return Lpc177x_8x_EepromWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_LPC17xx_IAP)
