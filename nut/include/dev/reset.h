@@ -57,6 +57,11 @@
 #define NUT_RSTTYP_EXTERNAL 3
 #define NUT_RSTTYP_SOFTWARE 4
 #define NUT_RSTTYP_BROWNOUT 5
+#define NUT_RSTTYP_LOWPOWER  6
+#define NUT_RSTTYP_WWATCHDOG 7
+#define NUT_RSTTYP_COREPOWER 8
+#define NUT_RSTTYP_FIREWALL  9
+#define NUT_RSTTYP_OPTIONLOADER  10
 
 #if defined(MCU_AT91)
 #include <arch/arm/atmel/at91_reset.h>

@@ -395,4 +395,6 @@
 # define EXTI_RTSR (EXTI->RTSR)
 #endif
 
+extern int Stm32ResetCause(void);
+
 #endif

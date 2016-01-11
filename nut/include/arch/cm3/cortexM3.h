@@ -70,7 +70,6 @@ extern void (* const g_pfnVectors[])(void *);
 
 extern void Cortex_RegisterInt(IRQn_Type int_id, void (*pfnHandler)(void*));
 extern int  Cortex_ResetCause(void);
-extern void Cortex_Reset(void);
 extern void Cortex_Start(void);
 
 /*! \addtogroup xgNutArchCm3 */

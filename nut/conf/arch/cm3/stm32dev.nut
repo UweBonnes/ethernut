@@ -46,13 +46,16 @@ nutarch_cm3_stm32_devices =
     },
 
     --
-    -- Stm32 Watchdog Timer
+    -- Stm32 Common devices
     --
     {
-        name = "nutarch_cm3_stm32_wdt",
-        brief = "Stm32 Watchdog Timer",
--- All stm32 devices have the both watchdogs
-        sources = { "cm3/dev/stm/stm32_wdt.c"}
+        name = "nutarch_cm3_stm32_common",
+        brief = "STM32 common devices",
+        description = "Sources for all families listed here.",
+        sources = {
+            "cm3/dev/stm/stm32_wdt.c",
+            "cm3/dev/stm/stm32_reset.c",
+        }
     },
     --
     -- STM32 Flash Interface F1 and F3

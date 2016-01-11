@@ -53,6 +53,10 @@ void Cortex_Reset(void)
 
 int Cortex_ResetCause(void)
 {
+#if defined(MCU_STM32)
+    return Stm32ResetCause();
+#else
     return NUT_RSTTYP_UNKNOWN;
+#endif
 }
 

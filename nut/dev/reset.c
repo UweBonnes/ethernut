@@ -62,7 +62,7 @@ void NutReset(void)
 #elif defined(__AVR32__)
     Avr32Reset();
 #elif defined(__CORTEX__)
-    Cortex_Reset();
+    NVIC_SystemReset();
 #elif defined(MCU_MCF5225X)
     Mcf5225x_Reset();
 #elif defined(MCU_MCF51CN)
