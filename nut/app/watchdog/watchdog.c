@@ -37,12 +37,15 @@
  */
 
 /*!
- * \example threads/watchdo.c
+ * \example threads/watchdog.c
  *
- * This sample demonstrates watchdog behaviour.
+ * This sample demonstrates watchdog behaviour and reset functions.
  *
- * The application requested a timeout of 200 ms. It starts with
- * sleeping 150 ms and increased the sleeping time until reset happens.
+ * On startup or after external reset, NutReset() is called.
+ * Otherwise the application sets a watchdog timeout of 200 ms.
+ * As watchdog clock source may be inaccurate ( - 25/+ 50 % on some STM32),
+ * application starts with sleeping 150 ms and increased the sleeping
+ * timeout until reset happens.
  */
 
 #include <stdio.h>
@@ -51,6 +54,7 @@
 #include <sys/thread.h>
 #include <sys/timer.h>
 
+#include <dev/reset.h>
 #include <dev/board.h>
 #include <dev/watchdog.h>
 
@@ -62,6 +66,7 @@ int main(void)
     uint32_t baud = 115200;
     uint32_t ms;
     uint32_t ms_requested;
+    int cause;
 
     /*
      * Register the UART device, open it, assign stdout to it and set
@@ -71,7 +76,19 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
+    cause = NutResetCause();
     puts("\nWatchdog Test. Compiled " __DATE__ " " __TIME__);
+    printf("Reset cause 0x%04x\n", cause);
+    if ((cause == NUT_RSTTYP_POWERUP) | (cause == NUT_RSTTYP_EXTERNAL)) {
+        int i;
+        puts("Testing NutReset");
+        for (i =0; i < 20; i++) {
+            putchar('.');
+            fflush(stdout);
+            NutSleep(100);
+        }
+        NutReset();
+    }
 
     /*
      * Endless loop in main thread.
