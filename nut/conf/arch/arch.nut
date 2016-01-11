@@ -1338,6 +1338,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F30",
                     "HW_MCU_STM32F303_LD",
                 },
                 makedefs = { "LDSCRIPT=stm32f303x8_flash.ld" }
@@ -1354,6 +1355,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F30",
                     "HW_MCU_STM32F303_MD",
                 },
                 makedefs = { "LDSCRIPT=stm32f303xC_flash.ld" }
@@ -1371,6 +1373,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F30",
                     "HW_MCU_STM32F334_LD",
                 },
                 makedefs = { "LDSCRIPT=stm32f334x8_flash.ld" }

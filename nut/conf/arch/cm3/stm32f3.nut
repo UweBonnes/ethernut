@@ -87,6 +87,13 @@ nutarch_cm3_stm32f3 =
                 file = "include/cfg/arch.h"
             },
             {
+                macro = "MCU_STM32F30",
+                brief = "STM32F30 family",
+                requires = {"HW_MCU_STM32F30"},
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
                 macro = "STM32F301x8",
                 brief = "STM32F301",
                 description = "Additional devices in STM32F301",
