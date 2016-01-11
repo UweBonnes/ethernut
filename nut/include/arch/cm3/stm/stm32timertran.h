@@ -491,15 +491,16 @@
 */
 #if defined(MCU_STM32F3)
 # if defined(MCU_STM32F37)
-#  define STM32TIMER_AF(gpio)  ( \
-((port == GPIOB_BASE) && ((pin == 14) || (pin == 14)))? 1 : 9
+#  define STM32TIMER_AF(gpio) ((PB14 == gpio) ||(PB15 == gpio))? 1 :9
 # else
-#  define STM32TIMER_AF(port, pin) (port == GPIOF_BASE)?  3 : (port == GPIOB_BASE)? 1 : 9
+#  define STM32TIMER_AF(gpio) (                   \
+        (PF00 == (gpio & GPIO_PORT_MASK))? 3 :    \
+        (PB00 == (gpio & GPIO_PORT_MASK))? 1 : 9 )
 # endif
 #elif defined (MCU_STM32F0)
-#define STM32TIMER_AF(port, pin) (              \
-    (PA01 == gpio)? 5 :                         \
-    (PA11 == gpio)? 5 :                         \
+#define STM32TIMER_AF(gpio) (  \
+    (PA01 == gpio)? 5 :        \
+    (PA11 == gpio)? 5 :        \
     (PB11 == gpio)? 1 : 0)
 /* PB13 as TIM15_CH1N not handled here !*/
 #elif defined(MCU_STM32F1)
