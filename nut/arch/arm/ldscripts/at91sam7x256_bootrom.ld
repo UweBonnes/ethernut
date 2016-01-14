@@ -36,7 +36,7 @@
  */
 
 ENTRY(_start)
-STARTUP(crtat91sam7x256_rom.o)
+STARTUP(crtat91sam7x256_bootrom.o)
 SEARCH_DIR(.)
 
 MEMORY
