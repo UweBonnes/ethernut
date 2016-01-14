@@ -87,7 +87,7 @@ static uint32_t FlashEnd(void)
     return FLASH_BASE + size - 1;
 }
 
-uint32_t IapFlashEnd(void)
+size_t IapFlashEnd(void)
 {
     uint32_t prog_flash_end;
     prog_flash_end = FlashEnd();

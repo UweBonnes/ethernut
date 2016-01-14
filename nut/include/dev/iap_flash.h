@@ -66,11 +66,11 @@ typedef enum
 #if defined(IAP_FLASH)
 extern FLASH_Status  IapFlashWrite( void* dst, const void* src, size_t len, FLASH_ERASE_MODE mode);
 extern FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena);
-extern uint32_t IapFlashEnd(void);
+extern size_t IapFlashEnd(void);
 extern void FlashUntouch(void);
 #else
-#define IapFlashWrite(x, y, z, xy) FLASH_NOT_IMPLEMENTED
-#define IapFlashWriteProtect() FLASH_NOT_IMPLEMENTED
+#define IapFlashWrite(x, y, z, xy)          FLASH_NOT_IMPLEMENTED
+#define IapFlashWriteProtect(dst, len, ena) FLASH_NOT_IMPLEMENTED
 #define IapFlashEnd() 0
 #define FlashUntouch()
 #endif

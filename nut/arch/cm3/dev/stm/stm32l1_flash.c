@@ -107,7 +107,7 @@ void FlashUntouch(void)
     pagelist_init_done = 1;
 }
 
-uint32_t IapFlashEnd(void)
+size_t IapFlashEnd(void)
 {
     uint16_t size;
     size = *(__I uint16_t *) FLASH_SIZE_REG;

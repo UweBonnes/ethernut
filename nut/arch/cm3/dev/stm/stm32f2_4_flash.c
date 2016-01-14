@@ -497,7 +497,7 @@ done:
  * \param NONE
  * \return Last Flash Address.
  */
-uint32_t IapFlashEnd(void)
+size_t IapFlashEnd(void)
 {
     uint32_t area_end = FLASH_BASE + (((*(uint16_t*)FLASH_SIZE_REG)<<10)) - 1;
 #if defined(NUT_CONFIG_STM32_IAP)

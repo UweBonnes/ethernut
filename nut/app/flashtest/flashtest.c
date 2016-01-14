@@ -1,6 +1,6 @@
 /*!
  * Copyright (C) 2001-2003 by egnite Software GmbH
- * Copyright (C) 2013 Uwe Bonnes
+ * Copyright (C) 2013, 2016 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -70,12 +70,12 @@ int main(void)
     uint32_t baud = 115200, read_timeout = 10;
     FILE *uart;
     char buffer[7];
-    uint32_t iap_flash_end = IapFlashEnd();
+    size_t iap_flash_end = IapFlashEnd();
     void *dword_aligned_end;
     uint32_t rd;
     int i;
     uint32_t *rptr;
-    uint32_t user_area;
+    size_t user_area;
     uint64_t deadbeef_ll = 0xdeadbeef01234567LL;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
@@ -125,7 +125,7 @@ int main(void)
     }
     printf("NutNvMem test done\n");
 
-    printf("Application Flash ends at 0x%08lx\n", iap_flash_end);
+    printf("Application Flash ends at 0x%08zx\n", iap_flash_end);
     printf("Last 128 bytes in user space");
     user_area = (iap_flash_end & ~0x7f);
     rptr = (uint32_t *)user_area;
@@ -238,7 +238,7 @@ int main(void)
     NutSleep(10);
 
     dword_aligned_end = (void*)((iap_flash_end - 0xff + strlen(pattern))
-                                & 0xfffffff0);
+                                & ~0xf);
 
     memset(buffer, 0, sizeof(buffer));
     printf("Write NULL byte/halfword/word to programmed flash\n");

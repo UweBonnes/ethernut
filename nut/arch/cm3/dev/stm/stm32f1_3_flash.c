@@ -124,7 +124,7 @@ void FlashUntouch(void)
         pagelist[i] = 0;
 }
 
-static uint32_t FlashEnd(void)
+static size_t FlashEnd(void)
 {
     uint16_t size;
 #if defined(MCU_STM32F0) || defined(MCU_STM32F3)
@@ -438,7 +438,7 @@ done:
 FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
                             FLASH_ERASE_MODE mode)
 {
-    uint32_t iap_flash_end = FlashEnd();
+    size_t iap_flash_end = FlashEnd();
 #if defined(NUT_CONFIG_STM32_IAP) && FLASH_CONF_SIZE > FLASH_PAGE_SIZE
     iap_flash_end -= FLASH_CONF_SIZE ;
 #elif defined(NUT_CONFIG_STM32_IAP)
@@ -464,7 +464,7 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
  * \param NONE
  * \return Last Flash Address.
  */
-uint32_t IapFlashEnd(void)
+size_t IapFlashEnd(void)
 {
 #if defined(NUT_CONFIG_STM32_IAP) && FLASH_CONF_SIZE > FLASH_PAGE_SIZE
     return FlashEnd() - FLASH_CONF_SIZE;
