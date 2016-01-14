@@ -278,9 +278,11 @@
 #define GPIO_PUE_REG    PORTA
 #endif
 
-#define GPIO_INIT do {\
-    cbi(GPIO_OE_REG, b); \
-    cbi(GPIO_SOD_REG, b);} while(0)
+#define GPIO_INIT(b) do {                       \
+        cbi(GPIO_OE_REG, b);                    \
+        cbi(GPIO_SOD_REG, b);} while(0)
+
+#define GPIO_GET(b) bit_is_set(GPIO_PDS_REG, b)
 #elif defined(MCU_AT91)
 /*
  * Determine AT91 port names.
@@ -461,10 +463,8 @@
 #define GPIO_SET_HI(b)
 #endif
 
-#if defined(GPIO_PDS_REG)
+#if !defined(GPIO_GET)
 #define GPIO_GET(b)         ((inr(GPIO_PDS_REG) & _BV(b)) == _BV(b))
-#else
-#define GPIO_GET(b)
 #endif
 
 #if defined(GPIO_OD_REG)
