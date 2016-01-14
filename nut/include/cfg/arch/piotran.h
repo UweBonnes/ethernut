@@ -138,7 +138,7 @@
 #undef GPIO_PULLUP_OFF
 
 #if defined(MCU_LPC17xx)
-#define GPIO_INIT(b)   GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT|GPIO_SPEED)
+#define GPIO_INIT(b)   GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT)
 #define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
 #define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
 #define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
@@ -459,8 +459,12 @@
 #define GPIO_SET_LO(b)      cbi(GPIO_SOD_REG, b)
 #define GPIO_SET_HI(b)      sbi(GPIO_SOD_REG, b)
 #else
-#define GPIO_SET_LO(b)
-#define GPIO_SET_HI(b)
+# if !defined(GPIO_SET_LO)
+#  define GPIO_SET_LO(b)
+# endif
+# if !defined(GPIO_SET_HI)
+#  define GPIO_SET_HI(b)
+# endif
 #endif
 
 #if !defined(GPIO_GET)
@@ -472,7 +476,9 @@
 #elif defined(GPIO_OE_REG)
 #define GPIO_OUTPUT(b)      sbi(GPIO_OE_REG, b)
 #else
-#define GPIO_OUTPUT(b)
+# if !defined(GPIO_OUTPUT)
+#  define GPIO_OUTPUT(b)
+# endif
 #endif
 
 #if defined(GPIO_OD_REG)
@@ -480,7 +486,9 @@
 #elif defined(GPIO_OE_REG)
 #define GPIO_INPUT(b)       cbi(GPIO_OE_REG, b)
 #else
-#define GPIO_INPUT(b)
+# if !defined(GPIO_INPUT)
+#  define GPIO_INPUT(b)
+# endif
 #endif
 
 #if defined(GPIO_PUD_REG)
