@@ -69,30 +69,6 @@
 #define LED4_PIN 15
 #endif
 
-#ifndef DEF_OWIBUS
-#if 1
-#define DEF_OWIBUS owiBus0Stm32Tim
-#include <arch/cm3/stm/owibus_stm32tim.h>
-#else
-#define DEF_OWIBUS owiBus0Gpio
-#include <dev/owibus_gpio.h>
-#endif
-#endif
-
-/* Some extension*/
-#ifndef OWI_PORT
-#define OWI_PORT NUTGPIO_PORTB
-#endif
-#ifndef OWI_PIN
-#define OWI_PIN  1
-#endif
-#ifndef OWI_TIMER
-#define OWI_TIMER NUTTIMER3
-#endif
-#ifndef OWI_CHANNEL
-#define OWI_CHANNEL 4
-#endif
-
 #ifndef DEV_UART
 #define DEV_UART devUsartStm32_2
 #endif
