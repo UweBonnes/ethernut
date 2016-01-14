@@ -216,17 +216,17 @@ static int ShowThreads(FILE * stream, REQUEST * req)
             "<TR><TD>%s</TD>" /* Name */
             "<TD>%u</TD>" /* Priority */
             "<TD>%s</TD>" /* Status */
-            "<TD>%08X</TD>" /* Event queue */
-            "<TD>%08X</TD>" /* Timer */
-            "<TD>%08X</TD>" /* Stack pointer */
-            "<TD>%lu %s</TD></TR>\r\n", /* Stack available */
+            "<TD>%08zX</TD>" /* Event queue */
+            "<TD>%08zX</TD>" /* Timer */
+            "<TD>%08zX</TD>" /* Stack pointer */
+            "<TD>%zu %s</TD></TR>\r\n", /* Stack available */
             tlist[i].td_name,
             tlist[i].td_priority,
             thread_states[tlist[i].td_state],
-            (uintptr_t) tlist[i].td_queue,
-            (uintptr_t) tlist[i].td_timer,
-            (uintptr_t) tlist[i].td_sp,
-            (unsigned long) ((uintptr_t) tlist[i].td_sp - (uintptr_t) tlist[i].td_memory),
+            (size_t) tlist[i].td_queue,
+            (size_t) tlist[i].td_timer,
+            (size_t) tlist[i].td_sp,
+            ((size_t) tlist[i].td_sp - (size_t) tlist[i].td_memory),
             *((uint32_t *) tlist[i].td_memory) != DEADBEEF ? "Corrupted" : "");
     }
 
@@ -281,12 +281,12 @@ static int ShowTimers(FILE * stream, REQUEST * req)
         fprintf(stream,
             "<TR><TD>%lu</TD>"
             "<TD>%lu</TD>"
-            "<TD>%08X</TD>"
-            "<TD>%08X</TD></TR>\r\n",
+            "<TD>%08zX</TD>"
+            "<TD>%08zX</TD></TR>\r\n",
             ticks_left,
             tlist[i].tn_ticks,
-            (uintptr_t) tlist[i].tn_callback,
-            (uintptr_t) tlist[i].tn_arg);
+            (size_t) tlist[i].tn_callback,
+            (size_t) tlist[i].tn_arg);
     }
 
     /* Release the thread list copy. */
@@ -548,7 +548,7 @@ THREAD(Service, arg)
          * from a client.
          */
         NutTcpAccept(sock, 80);
-        printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
+        printf("[%u] Connected, %zu bytes free\n", id, NutHeapAvailable());
 
         /*
          * Wait until at least 4 kByte of free RAM is available. This will

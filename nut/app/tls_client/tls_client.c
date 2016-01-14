@@ -336,7 +336,7 @@ static int tls_client(char *uri)
                 HttpSchemeRelease(http_sch);
                 return -1;
             }
-            printf("SSL session established: RAM: %d\n", NutHeapAvailable()); fflush(stdout);
+            printf("SSL session established: RAM: %zd\n", NutHeapAvailable()); fflush(stdout);
 
             printf("Server cert detailes:\n");
             const char *common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
@@ -382,7 +382,7 @@ static int tls_client(char *uri)
 
             rc = ssl_write(ssl, (uint8_t*)buf, strlen(buf));
 
-            printf("Available memory after session establishment: %d\n", NutHeapAvailable());
+            printf("Available memory after session establishment: %zd\n", NutHeapAvailable());
             printf("-----------------------------------------------------------\n");
             printf("Request Header:\n%s", buf);
             printf("-----------------------------------------------------------\n");
@@ -427,7 +427,7 @@ static int tls_client(char *uri)
     ssl_ctx_free(ssl_ctx);
     HttpSchemeRelease(http_sch);
 
-    printf("\nEverything cleaned up: RAM: %d\n", NutHeapAvailable()); fflush(stdout);
+    printf("\nEverything cleaned up: RAM: %zd\n", NutHeapAvailable()); fflush(stdout);
     return 0;
 }
 
