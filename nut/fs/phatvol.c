@@ -214,6 +214,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
     pari.par_nfp = blkmnt;
     if ((*blkdev->dev_ioctl) (blkdev, NUTBLKDEV_INFO, &pari)) {
         free(vol);
+        dev->dev_dcb = NULL;
         errno = ENODEV;
         return -1;
     }
@@ -375,6 +376,7 @@ int PhatVolUnmount(NUTDEVICE * dev)
         }
 #endif
         free(vol);
+        dev->dev_dcb = NULL;
     }
     return 0;
 }
