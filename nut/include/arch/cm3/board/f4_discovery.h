@@ -150,10 +150,14 @@
 #endif
 #endif
 
-#ifndef DEF_CANBUS
-#define DEF_CANBUS Stm32CanBus1
-#endif
-
-#ifndef DEF_CANBUS_SLAVE
-#define  DEF_CANBUS_SLAVE Stm32CanBus1C
+#include <cfg/devices.h>
+#if defined(HW_CAN1_STM32)
+# ifndef DEF_CANBUS
+#  define DEF_CANBUS Stm32CanBus1
+# endif
+# if defined(HW_CAN2_STM32)
+#  ifndef DEF_CANBUS_SLAVE
+#   define  DEF_CANBUS_SLAVE Stm32CanBus1C
+#  endif
+# endif
 #endif

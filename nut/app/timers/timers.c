@@ -85,6 +85,7 @@ static void OneShotDemo(int s)
 
     printf("Start %d s one-shot timer\n", s);
     t = NutTimerStart(s * 1000UL, TimerCallback, &e, TM_ONESHOT);
+    (void) t;
     for (w = 1; w < s + 1; w++) {
         printf("  Waiting %d s...", w);
         if (NutEventWait(&e, 1000UL) == 0) {

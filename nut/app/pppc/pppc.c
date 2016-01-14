@@ -87,6 +87,22 @@
 #include <fcntl.h>
 #include <time.h>
 
+
+/*
+ * Open serial debug port for standard output.
+ */
+static void DebugPortOpen(void)
+{
+    uint32_t baud = 115200;
+
+    /* Register debug UART. */
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    /* Open debug device for standard output. */
+    freopen(DEV_CONSOLE.dev_name, "w", stdout);
+    /* Set baud rate. */
+    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+}
+
 /*
  * Conversational script with a modem.
  *
@@ -131,24 +147,6 @@
 #define PPP_DEV_NAME    "uart1"     /* Physical device name */
 #define PPP_SPEED       115200      /* Baudrate */
 #define PPP_RXTO        1000        /* Receive timeout (ms) */
-#else
-#warning "PPP is not supported on your target"
-#endif
-
-/*
- * Open serial debug port for standard output.
- */
-static void DebugPortOpen(void)
-{
-    uint32_t baud = 115200;
-
-    /* Register debug UART. */
-    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-    /* Open debug device for standard output. */
-    freopen(DEV_CONSOLE.dev_name, "w", stdout);
-    /* Set baud rate. */
-    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
-}
 
 /*
  * Initialize the protocol port.
@@ -386,3 +384,16 @@ int main(void)
 
     return 0;
 }
+#else
+int main(void)
+{
+        /* Initialize a debug port for standard output and display a banner. */
+    DebugPortOpen();
+    printf("\n\nPPP Client Sample - Nut/OS %s\n", NutVersionString());
+
+    for (;;) {
+        puts("PPP is not supported on your target");
+        NutSleep(500);
+    }
+}
+#endif

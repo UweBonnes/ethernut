@@ -517,6 +517,7 @@ int main(void)
 #else
     volid = 0;
 #endif
+    (void) volid;
 
 #if defined(DEV_ETHER)
     /* Register root path. */

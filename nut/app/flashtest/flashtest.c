@@ -205,6 +205,7 @@ int main(void)
 
     res = IapFlashWrite((void*)(iap_flash_end -0x3f), pattern1,
                         strlen(pattern1) + 1, FLASH_ERASE_NEVER);
+    (void) pattern1;
     printf("%40s %3d: ", "Up to (address & 3 == 3). Res", res);
     if (*(uint32_t*)(iap_flash_end -0x3f) !=  FLASH_ERASED_PATTERN32) {
         printf((char*)(iap_flash_end -0x3f));
@@ -214,6 +215,7 @@ int main(void)
 
     res = IapFlashWrite((void*)(iap_flash_end -0x7f), pattern2,
                         strlen(pattern2) + 1, FLASH_ERASE_NEVER);
+    (void) pattern2;
     printf("%40s %3d: ", "Up to (address & 3 == 2). Res", res);
     if (*(uint32_t*)(iap_flash_end -0x7f) !=  FLASH_ERASED_PATTERN32) {
         printf((char*)(iap_flash_end -0x7f));
@@ -223,6 +225,7 @@ int main(void)
 
     res = IapFlashWrite((void*)(iap_flash_end -0xcf), pattern3,
                         strlen(pattern2) + 1, FLASH_ERASE_NEVER);
+    (void) pattern3;
     printf("%40s %3d: ", "Up to (address & 3 == 1). Res", res);
     if (*(uint32_t*)(iap_flash_end -0xcf) !=  FLASH_ERASED_PATTERN32) {
         printf((char*)(iap_flash_end -0xcf));
@@ -239,7 +242,7 @@ int main(void)
 
     dword_aligned_end = (void*)((iap_flash_end - 0xff + strlen(pattern))
                                 & ~0xf);
-
+    (void) dword_aligned_end;
     memset(buffer, 0, sizeof(buffer));
     printf("Write NULL byte/halfword/word to programmed flash\n");
     res = IapFlashWrite(dword_aligned_end - 1, buffer, 1,

@@ -874,7 +874,7 @@
 
 #if !defined(RTC_CHIP)
 # include <dev/rtc.h>
-# define RTC_CHIP rtcNULL
+# define RTC_CHIP rtcNull
 #endif
 
 #if !defined(DEV_DISPLAY)

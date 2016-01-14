@@ -85,7 +85,6 @@ int main(void)
     int res;
     uint32_t baud = 115200;
     JTAG_TAP *jtag = 0;
-    char inbuf[128];
 
     res = NutRegisterDevice(&DEV_CONSOLE, 0, 0);
     if (res )
@@ -98,8 +97,9 @@ int main(void)
     fprintf(stdout, banner);
 
 #if !defined(DEF_JTAG_CABLE)
-    fprintf(stdout, "Please indicate the JTAG Cable to scan! ",
+    fprintf(stdout, "Please indicate the JTAG Cable to scan! "
             "Best place is <board>.h\n");
+    (void) jtag;
     goto error;
 #else
     jtag = TapOpen( &DEF_JTAG_CABLE);
@@ -116,6 +116,7 @@ int main(void)
     ScanJtagBus(jtag);
 
     for (;;) {
+        char inbuf[128];
         puts("Press \"Enter\" to scan JTAG bus for devices ");
         fflush(stdout);
         fgets(inbuf, sizeof(inbuf), stdin);

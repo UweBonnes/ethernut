@@ -119,7 +119,7 @@ THREAD(Service, arg)
          * from a client.
          */
         NutTcpAccept(sock, 80);
-        printf("[%u] Connected, %lu bytes free\n", id, NutHeapAvailable());
+        printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
 
         /*
          * Wait until at least 4 kByte of free RAM is available. This will

@@ -187,6 +187,7 @@ void ProcessRequests(FILE * stream)
     char *cp;
     int stat = -1;
 
+    (void) stat;
     fputs("200 Welcome to portdio. Type help to get help.\r\n", stream);
     for (;;) {
         fflush(stream);

@@ -172,6 +172,7 @@ int main(void)
     if (res !=0)
     {
         printf("Can't set speed TWI\n");
+        tmo = 1;
     }
     else
     {
@@ -182,13 +183,11 @@ int main(void)
         printf("Using %ld ms as Timeout\n", tmo);
     }
 
-    ScanBus(tmo);
-
     for (;;) {
+        ScanBus(tmo);
         LED1_TOGGLE;
         puts("Press \"Enter\" to scan I2C bus for devices ");
         fgets(inbuf, sizeof(inbuf), stdin);
-        ScanBus(tmo);
     }
     return 0;
 #endif

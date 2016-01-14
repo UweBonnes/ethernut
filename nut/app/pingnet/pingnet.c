@@ -57,6 +57,7 @@
 #include <sys/confnet.h>
 #include <sys/heap.h>
 #include <sys/timer.h>
+#include <sys/event.h>
 
 /* Network specific definitions. */
 #include <arpa/inet.h>

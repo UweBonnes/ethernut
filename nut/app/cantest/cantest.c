@@ -68,6 +68,7 @@ THREAD(service_thread, arg)
     CANFRAME data;
     uint32_t millis;
 
+    pending = 0;
     for (;;)
     {
         res = _read(_fileno(uart), inbuf, sizeof(inbuf));
