@@ -1238,8 +1238,8 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
             tcp_adv_cnt += nb->nb_dl.sz + sizeof(IPHDR) + sizeof(TCPHDR) + nb->nb_ap.sz;
             if (tcp_adv_cnt > tcp_adv_max) {
                 /* Limit reached, discard the packet. */
-                NutNetBufFree(nb);
                 tcp_adv_cnt -= nb->nb_dl.sz + sizeof(IPHDR) + sizeof(TCPHDR) + nb->nb_ap.sz;
+                NutNetBufFree(nb);
             } else {
                 nbq = sock->so_rx_nbq;
                 nbqp = &sock->so_rx_nbq;
