@@ -45,6 +45,7 @@
 
 #include <cfg/os.h>
 #include <cfg/crt.h>
+#include <cfg/tcp.h>
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
