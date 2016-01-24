@@ -202,6 +202,23 @@ nutnet =
                 file = "include/cfg/tcp.h"
             },
             {
+                macro = "TCP_ADV_MAX",
+                brief = "TCP advance receive buffer global limit",
+                description = "The TCP statemachines buffers packages, received in advance. "..
+                              "This speeds up recovery in case of package lost, but needs extra "..
+                              "heap memory.\n\n"..
+                              "This option introduces a system wide limit for the advance package "..
+                              "If the size of all currently buffered advance packages reaches this "..
+                              "limit, further packages received in advance are dropped.\n\n"..
+                              "The higher this value is, the faster the tcp recovery will work "..
+                              "on unreliable connections. "..
+                              "The default value is the default window size.\n"..
+                              "Set this value to 0 to disable the advance buffer limit and allow "..
+                              "pre-buffering up to TCP_SOCK_RXBUF_LIMIT",
+                default = "3216",
+                file = "include/cfg/tcp.h"
+            },
+            {
                 macro = "TCP_BACKLOG_MAX",
                 brief = "Backlog Buffer Size",
                 description = "The backlog buffers incoming TCP connections for which no server "..

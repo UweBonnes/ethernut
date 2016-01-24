@@ -114,6 +114,10 @@ static HANDLE tcpsm_init_queue = SIGNALED;
 #define TCP_TOTAL_INBUF_HEAP_LIMIT 2048
 #endif
 
+#ifndef TCP_ADV_MAX
+#define TCP_ADV_MAX TCP_WINSIZE
+#endif
+
 #ifndef TCP_BACKLOG_MAX
 #define TCP_BACKLOG_MAX     8
 #endif
@@ -122,12 +126,13 @@ static HANDLE tcpsm_init_queue = SIGNALED;
 #ifndef TCP_BACKLOG_TIME
 #define TCP_BACKLOG_TIME    5
 #endif
+
 static NETBUF *tcp_backlog[TCP_BACKLOG_MAX];
 static uint_fast8_t tcp_backlog_time[TCP_BACKLOG_MAX];
 #endif
 
-static size_t tcp_adv_cnt;
-static size_t tcp_adv_max = TCP_WINSIZE;
+static size_t tcp_adv_cnt = 0;
+static size_t tcp_adv_max = TCP_ADV_MAX;
 static int    tcp_run_gc = 0;
 
 static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb);
@@ -1236,7 +1241,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
             /* Keep track of the number of bytes used by packets
                received in advance. Honor a global limit. */
             tcp_adv_cnt += nb->nb_dl.sz + sizeof(IPHDR) + sizeof(TCPHDR) + nb->nb_ap.sz;
-            if (tcp_adv_cnt > tcp_adv_max) {
+            if ((tcp_adv_max > 0) && (tcp_adv_cnt > tcp_adv_max)) {
                 /* Limit reached, discard the packet. */
                 tcp_adv_cnt -= nb->nb_dl.sz + sizeof(IPHDR) + sizeof(TCPHDR) + nb->nb_ap.sz;
                 NutNetBufFree(nb);
@@ -1298,7 +1303,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
         if (sock->so_rx_cnt - sock->so_rd_cnt > sock->so_rx_bsz * TCP_SOCK_RXBUF_LIMIT) {
             /* Silently discard further data packets, if socket receive buffer contains 
                just more than TCP_SOCK_RXBUF_LIMIT * configured receive buffer size.
-             */                                       
+             */
             NutNetBufFree(nb);
             return;
         }
