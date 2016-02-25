@@ -143,8 +143,13 @@ void MainWindow::on_actionOpen_triggered()
 	// Retrieve conf directory visited last.
 	QSettings settings;
 	QString confdir = settings.value("confpath", Settings::instance()->sourceDir() + "/conf").toString();
-
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), confdir, tr("Nut/OS Configuration (*.conf)") );
+	QString fileName;
+	const QStringList arguments = QCoreApplication::arguments();
+	if (arguments.count() > 1) {
+		fileName = arguments.at(1);
+	} else {
+		fileName = QFileDialog::getOpenFileName(this, tr("Open file"), confdir, tr("Nut/OS Configuration (*.conf)") );
+	}
 	if ( !fileName.isEmpty() )
 	{
 		// Save conf directory for later retrieval.
