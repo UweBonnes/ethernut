@@ -157,6 +157,7 @@ void MainWindow::on_actionOpen_triggered()
 		settings.setValue("confpath", confdir);
 
 		QApplication::setOverrideCursor( Qt::BusyCursor );
+		message( tr("Working on %1").arg( fileName));
 		if ( !model->openConfig( fileName ) )
 		{
 			QApplication::restoreOverrideCursor();
