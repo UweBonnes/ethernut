@@ -120,7 +120,7 @@ int main(void)
         } else {
             puts("\nConfiguration loaded");
         }
-
+        puts("Use ^H for backspace!");
         /* Edit MAC address. */
         do {
             strcpy(buf, ether_ntoa(confnet.cdn_mac));
@@ -153,8 +153,18 @@ int main(void)
         } while (addr == -1);
         confnet.cdn_gateway = addr;
 
-        /* Prompt for saving. */
-        printf("\nPress S to save this configuration ");
+        puts("\nData after edit:");
+        strcpy(buf, ether_ntoa(confnet.cdn_mac));
+        printf("MAC Address: %s\n", buf);
+        strcpy(buf, inet_ntoa(confnet.cdn_cip_addr));
+        printf("IP Address: %s\n", buf);
+        strcpy(buf, inet_ntoa(confnet.cdn_ip_mask));
+        printf("IP Mask: %s\n", buf);
+        strcpy(buf, inet_ntoa(confnet.cdn_gateway));
+        printf("IP Gate: %s\n", buf);
+         /* Prompt for saving. */
+        puts("Press S to save this configuration");
+        puts("Press D to delete saved configuration");
 
         /* Flush input buffer and read next character. */
         while (kbhit()) {
@@ -162,14 +172,21 @@ int main(void)
         }
         ch = getchar();
 
-        /* Save or discard edited configuration. */
-        if (ch == 's' || ch == 'S') {
+        switch (ch) {
+        case 'D':
+            ch = 'd';
+        case 'd':
+            /* Invalidate entry by setting cd_name to ''*/
+            confnet.cd_name[0] = 0;
+        case 's':
+        case 'S':
             if (NutNetSaveConfig()) {
                 puts("Failed");
             } else {
-                puts("Saved");
+                printf("%s\n", (ch == 'd')? "Deledted":"Saved");
             }
-        } else {
+            break;
+        default:
             puts("Discarded");
         }
     }
