@@ -138,12 +138,19 @@
 #undef GPIO_PULLUP_OFF
 
 #if defined(MCU_LPC17xx)
+/* We need to add _NOP() instructions to some of the functions as the GPIO_SET_x 
+   and GPIO_INPUT and GPIO_OUTPUT macros set the related bits using the bitband  
+   area. Unfortunately the bitbanding access to the registers seems somewhat 
+   broken in the LPC17xx and the operations are not that atomic as one would expect. 
+   If do two consecutive bitband writes to the GPIO pin registers, the first one 
+   could get lost, if there is no NOP() between the two writes. 
+*/
 #define GPIO_INIT(b)   GpioPinConfigSet(GPIO_ID, b, GPIO_CFG_INPUT)
-#define GPIO_SET_LO(b) GpioPinSetLow(GPIO_ID, b)
-#define GPIO_SET_HI(b) GpioPinSetHigh(GPIO_ID, b)
-#define GPIO_GET(b)    GpioPinGet(GPIO_ID, b)
-#define GPIO_OUTPUT(b) GpioPinDrive(GPIO_ID, b)
-#define GPIO_INPUT(b)  GpioPinRelease(GPIO_ID, b);
+#define GPIO_SET_LO(b) { GpioPinSetLow(GPIO_ID, b); _NOP(); };
+#define GPIO_SET_HI(b) { GpioPinSetHigh(GPIO_ID, b); _NOP(); };
+#define GPIO_GET(b)    GpioPinGet(GPIO_ID, b);
+#define GPIO_OUTPUT(b) { GpioPinDrive(GPIO_ID, b); _NOP(); };
+#define GPIO_INPUT(b)  { GpioPinRelease(GPIO_ID, b); _NOP(); };
 #endif
 
 #if defined(MCU_STM32)
