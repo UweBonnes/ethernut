@@ -10,6 +10,11 @@ _ramend = ORIGIN(SRAM0) + LENGTH(SRAM0);
 
 SECTIONS
 {
+    .bootloader (NOLOAD):
+    {
+	. = bootloader_offset;
+    } > FLASH0
+
     .text :
     {
 	    . = ALIGN(4);
