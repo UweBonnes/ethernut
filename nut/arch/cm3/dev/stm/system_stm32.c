@@ -164,6 +164,11 @@ void SystemInit (void)
 {
     RCC_TypeDef *rcc = (RCC_TypeDef *) RCC_BASE;
 
+    /* Reset system control register.
+     * Bootloader might have set exotic modes.
+     */
+    SCB->SCR = 0;
+
     GpioSetDefault();
 #if defined(PWR_CSR_BRE) && !defined(BACKUP_REGULATOR_OFF)
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
