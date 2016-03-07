@@ -169,9 +169,24 @@ void SystemInit (void)
      */
     SCB->SCR = 0;
 
+    /* During setup, PWR is needed in multiple places.
+     * Unconditionally enable it here.
+     * If current consumption of PWR is a concern, application
+     * should disable PWR after setup on it's own risk.
+     */
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    /* Global enable AFIO/SYSCFG clock, as these clock might
+     * be used at several places.
+     * If current consumption of AFIO/SYSCFG is a concern,
+     * application should disable PWR after setup on it's own risk.
+     */
+#if defined(RCC_APB2ENR_AFIOEN)
+    RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+#else
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+#endif
     GpioSetDefault();
 #if defined(PWR_CSR_BRE) && !defined(BACKUP_REGULATOR_OFF)
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
     PWR_CR |= PWR_CR_DBP;
     PWR->CSR |= PWR_CSR_BRE;
     while( PWR_CSR_BRR != (PWR->CSR & PWR_CSR_BRR));
@@ -214,9 +229,7 @@ void SystemInit (void)
 #endif
 /* Seperate USB and CAN interrupts on F30 */
 #if defined(STM32F30X)
-    rcc->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-    SYSCFG_TypeDef *syscfg = (SYSCFG_TypeDef *) SYSCFG_BASE;
-    syscfg->CFGR1 |= SYSCFG_CFGR1_USB_IT_RMP;
+    SYSCFG->CFGR1 |= SYSCFG_CFGR1_USB_IT_RMP;
 #endif
 
 }

@@ -422,7 +422,6 @@ static void Cortex_IntInit(void)
     (defined(__VTOR_PRESENT) && (__VTOR_PRESENT == 0))
 #if defined(MCU_STM32)
 /*  Map RAM also at address 0 so that our interrupts in ram get active */
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
     SYSCFG->CFGR1 |= SYSCFG_CFGR1_MEM_MODE;
 #else
 #warning Check how to activate IRQ table in RAM for your architecture!

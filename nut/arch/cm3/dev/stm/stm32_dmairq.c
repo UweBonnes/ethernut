@@ -237,7 +237,6 @@ DMA_SIGNAL *DmaCreateHandler(uint8_t ch)
     if (sig) {
 # if defined(SYSCFG_ITLINE10_SR_DMA1_CH2)
 /* Get SYSCFG IL_LINE_SR going */
-        RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
         sig->it_line_sr = ch2it_line_sr[ch];
         sig->it_line_mask = ch2it_line_mask[ch];
 # endif

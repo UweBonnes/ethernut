@@ -210,10 +210,6 @@ USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base)
     }
     sig = malloc(sizeof(USART_SIGNAL));
     if (sig) {
-# if defined(SYSCFG_ITLINE29_SR_USART3_GLB)
-/* Get SYSCFG IL_LINE_SR going */
-        RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-#endif
         sig->usart_nr = usart_nr;
         sig->usart_handler = NULL;
         sig->next = NULL;

@@ -275,7 +275,6 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
         /* Any GpioPortConfigSet already enabled the AFIO Clock */
         cr = (uint32_t *)AFIO->EXTICR;
 #else
-        CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
         cr = (uint32_t *)SYSCFG->EXTICR;
 #endif
         offset = (bit % 4) * 4;

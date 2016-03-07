@@ -911,9 +911,6 @@ int EmacInit(NUTDEVICE * dev)
     /* disable clocks for MAC */
     RCC->AHB1ENR &= ~(RCC_AHB1ENR_ETHMACEN | RCC_AHB1ENR_ETHMACTXEN |
                      RCC_AHB1ENR_ETHMACRXEN);
-
-    /* Switch on SYSCFG Clock*/
-    CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SYSCFGEN));
 #endif
     Stm32GpioConfigSet(EMAC_MII_CLK_RMII_REF_CLK, GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
     Stm32GpioConfigSet(EMAC_RXD0,  GPIO_CFG_PERIPHAL, GPIO_AF_ETH);
