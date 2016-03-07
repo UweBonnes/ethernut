@@ -8,7 +8,7 @@ ENTRY(ResetISR)
 STARTUP(crtsam3u4_flash.o)
 SEARCH_DIR(.)
 OUTPUT_ARCH(arm)
- 
+
  "bootloader_offset" = 0x00;
 
 MEMORY

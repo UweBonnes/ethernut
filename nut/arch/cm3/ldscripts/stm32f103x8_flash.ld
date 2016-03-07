@@ -16,4 +16,3 @@ MEMORY
 }
 
 INCLUDE stm32f10x_flash.ld
-

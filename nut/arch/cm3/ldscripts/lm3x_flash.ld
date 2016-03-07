@@ -33,7 +33,7 @@ SECTIONS
     	. = ALIGN(4);
 	    _evtable = .;
     } > SRAM0
-    
+
     .data : AT (_etext)
     {
         _sdata = _evtable;
@@ -56,9 +56,9 @@ SECTIONS
         . = ALIGN(8);
         _stack_start = .;
         *(.stack .stack.*)
-        _stack_end = .;        
+        _stack_end = .;
     } > SRAM0
-    
+
     .heap (NOLOAD):
     {
         . = ALIGN(8);
@@ -111,7 +111,4 @@ SECTIONS
     .debug_funcnames 0 : { *(.debug_funcnames) }
     .debug_typenames 0 : { *(.debug_typenames) }
     .debug_varnames  0 : { *(.debug_varnames) }
-
 }
-
-

@@ -10,7 +10,6 @@ SEARCH_DIR(.)
 
 "bootloader_offset" = 0x00;
 
-
 /* Forget about different memories for now*/
 MEMORY
 {
