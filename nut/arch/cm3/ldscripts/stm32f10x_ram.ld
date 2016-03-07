@@ -34,6 +34,7 @@ SECTIONS
     .vtable (NOLOAD):
     {
         . += 0x1000;
+
     	. = ALIGN(512);
 	    _vtable = .;
 	    *(.vtable*)

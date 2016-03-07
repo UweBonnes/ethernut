@@ -7,6 +7,8 @@
 ENTRY(NutInit)
 SEARCH_DIR(.)
 
+ "bootloader_offset" = 0x00;
+
 MEMORY
 {
     FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = 1024K

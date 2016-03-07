@@ -9,6 +9,8 @@ STARTUP(crtsam3u4_flash.o)
 SEARCH_DIR(.)
 OUTPUT_ARCH(arm)
  
+ "bootloader_offset" = 0x00;
+
 MEMORY
 {
     FLASH0 (rx) : ORIGIN = 0x00080000, LENGTH = 128K
@@ -47,8 +49,10 @@ SECTIONS
 	 . = ALIGN(4);
 	 PROVIDE (_ebss = .);
 	 . += 0x400;
+
 	 PROVIDE (__exp_stack = .);
 	 . += 0x400;
+
 	 PROVIDE (__stack = .);
 	 PROVIDE (__heap_start = .);
     } > SRAM0
