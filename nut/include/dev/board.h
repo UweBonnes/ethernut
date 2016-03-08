@@ -244,6 +244,9 @@
 #elif defined(STM3210C_EVAL)
 #include <arch/cm3/board/stm3210c_eval.h>
 #define BOARDNAME "STM3210C_EVAL"
+#elif defined(SHENZHOU_IV)
+#include <arch/cm3/board/shenzhou_iv.h>
+#define BOARDNAME "SHENZHOU_IV"
 #elif defined(STM3210E_EVAL)
 #include <arch/cm3/board/stm3210e_eval.h>
 #define BOARDNAME "STM3210E_EVA"
