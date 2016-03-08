@@ -889,7 +889,8 @@ nutarch =
                     "HW_MCU_STM32F030",
                     "HW_MCU_STM32F030x8",
                 },
-                makedefs = { "LDSCRIPT=stm32f051x8_flash.ld" },
+                makedefs = { "FLASH0_LENGTH=64K",
+                             "RAM0_LENGTH=4K" },
             },
             {
                 macro = "MCU_STM32F051x8",
@@ -907,7 +908,8 @@ nutarch =
                     "HW_MCU_STM32F05",
                     "HW_MCU_STM32F051_LD",
                 },
-                makedefs = { "LDSCRIPT=stm32f051x8_flash.ld" },
+                makedefs = { "FLASH0_LENGTH=64K",
+                             "RAM0_LENGTH=8K" },
             },
             {
                 macro = "MCU_STM32F072xB",
@@ -925,7 +927,8 @@ nutarch =
                     "HW_MCU_STM32F07",
                     "HW_MCU_STM32F072_MD",
                 },
-                makedefs = { "LDSCRIPT=stm32f072xB_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=128K",
+                             "RAM0_LENGTH=16K" },
             },
             {
                 macro = "MCU_STM32F091xC",
@@ -943,7 +946,8 @@ nutarch =
                     "HW_MCU_STM32F09",
                     "HW_MCU_STM32F091xC",
                 },
-                makedefs = { "LDSCRIPT=stm32f091xC_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=32K" },
             },
              --
             -- STM STM32F10X SERIES CONTROLLER
@@ -964,7 +968,8 @@ nutarch =
                     "HW_MCU_STM32F100",
                     "HW_MCU_STM32F100_MD"
                 },
-                makedefs = { "LDSCRIPT=stm32f100xB_flash.ld"},
+                makedefs = { "FLASH0_LENGTH=128K",
+                             "RAM0_LENGTH=16K" },
             },
             {
                 macro = "MCU_STM32F103xB",
@@ -982,7 +987,8 @@ nutarch =
                     "HW_MCU_STM32F103",
                     "HW_MCU_STM32F103_MD"
                 },
-                makedefs = { "LDSCRIPT=stm32f103xB_flash.ld"},
+                makedefs = { "FLASH0_LENGTH=128K",
+                             "RAM0_LENGTH=20K" },
             },
             {
                 macro = "MCU_STM32F103xE",
@@ -1000,7 +1006,8 @@ nutarch =
                     "HW_MCU_STM32F103",
                     "HW_MCU_STM32F103_HD"
                 },
-                makedefs = { "LDSCRIPT=stm32f103xE_flash.ld"},
+                makedefs = { "FLASH0_LENGTH=512K",
+                             "RAM0_LENGTH=64K" },
             },
             {
                 macro = "MCU_STM32F107xC",
@@ -1017,7 +1024,8 @@ nutarch =
                     "HW_MCU_STM32F1_CL",
                     "HW_MCU_STM32F107",
                 },
-                makedefs = { "LDSCRIPT=stm32f107xC_flash.ld"},
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=64K" },
             },
             {
                 macro = "MCU_STM32L151xB",
@@ -1034,23 +1042,8 @@ nutarch =
                     "HW_MCU_STM32L1_CAT1",
                     "HW_MCU_STM32L151_MD",
                 },
-                makedefs = { "LDSCRIPT=stm32l15XxB_flash.ld" }
-            },
-            {
-                macro = "MCU_STM32L476xG",
-                brief = "STM STM32L476xG",
-                description = "STM32L476 1024 kB",
-                flavor = "boolean",
-                exclusivity = mcu_names,
-                requires = { "TOOL_CC_CM3" },
-                provides = {
-                    "HW_TARGET",
-                    "HW_MCU_CM3",
-                    "HW_MCU_STM32",
-                    "HW_MCU_STM32L4",
-                    "HW_MCU_STM32L476",
-                },
-                makedefs = { "LDSCRIPT=stm32l4XXxG_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=128K",
+                             "RAM0_LENGTH=16K" },
             },
             {
                 macro = "MCU_STM32L053x8",
@@ -1066,7 +1059,8 @@ nutarch =
                     "HW_MCU_STM32L0",
                     "HW_MCU_STM32L053",
                 },
-                makedefs = { "LDSCRIPT=stm32l0XXx8_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=64K",
+                             "RAM0_LENGTH=8K" },
             },
             {
                 macro = "MCU_STM32L152xB",
@@ -1083,7 +1077,8 @@ nutarch =
                     "HW_MCU_STM32L1_CAT1",
                     "HW_MCU_STM32L152_MD",
                 },
-                makedefs = { "LDSCRIPT=stm32l15XxB_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=128K",
+                             "RAM0_LENGTH=16K" },
             },
             {
                 macro = "MCU_STM32L152xC",
@@ -1102,7 +1097,8 @@ nutarch =
                     "HW_MCU_STM32L1_CAT3",
                     "HW_MCU_STM32L152_C",
                 },
-                makedefs = { "LDSCRIPT=stm32l15XxC_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=32K" },
             },
             {
                 macro = "MCU_STM32L152xE",
@@ -1120,12 +1116,13 @@ nutarch =
                     "HW_MCU_STM32L1_CAT5",
                     "HW_MCU_STM32L152_E",
                 },
-                makedefs = { "LDSCRIPT=stm32l15XxE_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=512K",
+                             "RAM0_LENGTH=80K" },
             },
             {
                 macro = "MCU_STM32L476xG",
-                brief = "STM32L476xG",
-                description = "STM32L476 1024 kiB",
+                brief = "STM STM32L476xG",
+                description = "STM32L476 1024 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1136,7 +1133,10 @@ nutarch =
                     "HW_MCU_STM32L4",
                     "HW_MCU_STM32L476",
                 },
-                makedefs = { "LDSCRIPT=stm32l4xxxG_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=1024K",
+                             "RAM0_LENGTH=96K",
+                             "RAM1_ORIGIN=0x10000000",
+                             "RAM1_LENGTH=32K" },
             },
             {
                 macro = "MCU_STM32F401xC",
@@ -1154,7 +1154,8 @@ nutarch =
                     "HW_MCU_STM32F401",
                     "HW_MCU_STM32F401xC",
                 },
-                makedefs = { "LDSCRIPT=stm32f401xC_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=64K" },
             },
             {
                 macro = "MCU_STM32F401xE",
@@ -1172,7 +1173,8 @@ nutarch =
                     "HW_MCU_STM32F401",
                     "HW_MCU_STM32F401xE",
                 },
-                makedefs = { "LDSCRIPT=stm32f401xE_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=512K",
+                             "RAM0_LENGTH=96K" },
             },
             {
                 macro = "MCU_STM32F405xG",
@@ -1190,7 +1192,10 @@ nutarch =
                     "HW_MCU_STM32F40",
                     "HW_MCU_STM32F405",
                 },
-                makedefs = { "LDSCRIPT=stm32f40XxG_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=1024K",
+                             "RAM0_LENGTH=112K"
+-- FIXME: Handle DMA and CCM memory
+                            },
             },
             {
                 macro = "MCU_STM32F407xG",
@@ -1208,7 +1213,10 @@ nutarch =
                     "HW_MCU_STM32F40",
                     "HW_MCU_STM32F407",
                 },
-                makedefs = { "LDSCRIPT=stm32f40XxG_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=1024K",
+                             "RAM0_LENGTH=112K"
+-- FIXME: Handle DMA and CCM memory
+                            },
             },
             {
                 macro = "MCU_STM32F411xE",
@@ -1224,7 +1232,8 @@ nutarch =
                     "HW_MCU_STM32F4",
                     "HW_MCU_STM32F411",
                 },
-                makedefs = { "LDSCRIPT=stm32f411xE_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=512K",
+                             "RAM0_LENGTH=128K" },
             },
             {
                 macro = "MCU_STM32F429xI",
@@ -1242,7 +1251,10 @@ nutarch =
                     "HW_MCU_STM32F42",
                     "HW_MCU_STM32F429",
                 },
-                makedefs = { "LDSCRIPT=stm32f429xI_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=2048K",
+                             "RAM0_LENGTH=20K"
+-- FIXME: Handle DMA and CCM memory
+                            },
             },
             {
                 macro = "MCU_STM32F446xE",
@@ -1259,7 +1271,10 @@ nutarch =
                     "HW_MCU_STM32F4",
                     "HW_MCU_STM32F446",
                 },
-                makedefs = { "LDSCRIPT=stm32f429xI_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=512K",
+                             "RAM0_LENGTH=112K"
+-- FIXME: Handle DMA and CCM memory
+                            },
             },
             {
                 macro = "MCU_STM32F746xG",
@@ -1276,7 +1291,10 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F746",
                 },
-                makedefs = { "LDSCRIPT=stm32f7XXxG_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=1024K",
+                             "RAM0_LENGTH=320K"
+-- FIXME: Handle different memory regions
+                           }
             },
             {
                 macro = "MCU_STM32F205xC",
@@ -1292,7 +1310,10 @@ nutarch =
                     "HW_MCU_STM32F2",
                     "HW_MCU_STM32F205",
                 },
-                makedefs = { "LDSCRIPT=stm32f205xC_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=80K"
+-- FIXME: Handle different memory regions
+                           }
             },
             {
                 macro = "MCU_STM32F207xC",
@@ -1308,7 +1329,10 @@ nutarch =
                     "HW_MCU_STM32F2",
                     "HW_MCU_STM32F207",
                 },
-                makedefs = { "LDSCRIPT=stm32f207xC_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=112K"
+-- FIXME: Handle different memory regions
+                           }
             },
             {
                 macro = "MCU_STM32F207xG",
@@ -1324,7 +1348,10 @@ nutarch =
                     "HW_MCU_STM32F2",
                     "HW_MCU_STM32F207",
                 },
-                makedefs = { "LDSCRIPT=stm32f207xG_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=1024K",
+                             "RAM0_LENGTH=112K"
+-- FIXME: Handle different memory regions
+                           }
             },
             {
                 macro = "MCU_STM32F303x8",
@@ -1341,7 +1368,10 @@ nutarch =
                     "HW_MCU_STM32F30",
                     "HW_MCU_STM32F303_LD",
                 },
-                makedefs = { "LDSCRIPT=stm32f303x8_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=64K",
+                             "RAM0_LENGTH=12K"
+-- FIXME: Handle different memory regions
+                           }
             },
             {
                 macro = "MCU_STM32F303xC",
@@ -1358,7 +1388,10 @@ nutarch =
                     "HW_MCU_STM32F30",
                     "HW_MCU_STM32F303_MD",
                 },
-                makedefs = { "LDSCRIPT=stm32f303xC_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=40K"
+-- FIXME: Handle different memory regions
+                           }
             },
             {
                 macro = "MCU_STM32F334x8",
@@ -1376,7 +1409,8 @@ nutarch =
                     "HW_MCU_STM32F30",
                     "HW_MCU_STM32F334_LD",
                 },
-                makedefs = { "LDSCRIPT=stm32f334x8_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=64K",
+                             "RAM0_LENGTH=16K" },
             },
 -- STM32F373 and STM32F378 are quite similar to each other and quite different
 -- in pinout to other STM32F3, so introduce a subclass
@@ -1395,7 +1429,8 @@ nutarch =
                     "HW_MCU_STM32F37",
                     "HW_MCU_STM32F373_MD",
                 },
-                makedefs = { "LDSCRIPT=stm32f303xC_flash.ld" }
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=32K" },
             },
             --
             -- TI LM3S SERIES CONTROLLER

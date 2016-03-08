@@ -1,8 +1,17 @@
-/***********************************************************************************
+/*****************************************************************************
  *
- * stm32f10x_flash.ld - linker script include for nutos on cotrex-m3 STM32F series
+ * stm32_generic_flash.ld - linker script  for nutos on cortex-m3 STM32 series
  *
- ***********************************************************************************/
+ *****************************************************************************/
+
+ENTRY(NutInit)
+SEARCH_DIR(.)
+
+MEMORY
+{
+    FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = flash0_length
+    SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = ram0_length
+}
 
 /* PROVIDE (__heap_start = _sheap); */
 
@@ -17,7 +26,7 @@ SECTIONS
 
     .text :
     {
-	    . = ALIGN(512);
+	    . = ALIGN(4);
         _svect = .;
         KEEP(*(.isr_vector))
         _evect = .;
@@ -26,19 +35,24 @@ SECTIONS
         *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.glue_7t)
         *(.glue_7)
-    	*(.gcc_except_table)
+	*(.gcc_except_table)
 	    . = ALIGN(4);
-        _etext = .;
-    } > SRAM0
+    } > FLASH0
+
+    /* .ARM.exidx is sorted, so has to go in its own output section. */
+    .exidx : {
+        __exidx_start = .;
+        *(..exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } > FLASH0
+    _etext = .;
 
     .vtable (NOLOAD):
     {
-        . += 0x1000;
-
-    	. = ALIGN(512);
+	. = ALIGN(4);
 	    _vtable = .;
 	    *(.vtable*)
-    	. = ALIGN(4);
+	. = ALIGN(4);
 	    _evtable = .;
     } > SRAM0
 
@@ -46,9 +60,9 @@ SECTIONS
     {
         _sdata = .;
         *(.data .data.* .gnu.linkonce.d.*)
-    	. = ALIGN(4);
-    	*(.ramfunc);
-    	. = ALIGN(4);
+	. = ALIGN(4);
+	*(.ramfunc);
+	. = ALIGN(4);
         _edata = .;
     } > SRAM0
 
@@ -63,7 +77,7 @@ SECTIONS
 
     .stack (NOLOAD):
     {
-        . = ALIGN(4);
+        . = ALIGN(8);
         _stack_start = .;
         KEEP(*(.stack .stack.*));
         _stack_end = .;
@@ -71,7 +85,7 @@ SECTIONS
 
     .psp_stack (NOLOAD):
     {
-        . = ALIGN(4);
+        . = ALIGN(8);
         _pspstack_start = .;
         KEEP(*(.psp_stack .psp_stack.*));
         _pspstack_end = .;

@@ -160,6 +160,7 @@ nutarch_cm3 =
         sources = {
             "cm3/dev/stm/system_stm32.c",
         },
+        makedefs = { "LDSCRIPT=stm32_generic_flash.ld" },
         options =
         {
             {

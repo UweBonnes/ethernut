@@ -7,7 +7,7 @@
 ENTRY(NutInit)
 SEARCH_DIR(.)
 
- "bootloader_offset" = 0x00;
+"bootloader_offset" = 0x00;
 
 MEMORY
 {
