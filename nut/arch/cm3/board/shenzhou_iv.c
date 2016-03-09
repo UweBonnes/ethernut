@@ -36,7 +36,7 @@
  * \file arch/cm3/board/shenzhou_iv.c
  * \brief shenzhou_iv board initialization.
  *
- * cpu:       STM32107FVCT6
+ * cpu:       STM32F107VCT6
  * schematic: http://pan.baidu.com/s/1jGTdHOU
  *
  * \verbatim
