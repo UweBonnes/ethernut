@@ -351,3 +351,58 @@ int Stm32GpioConfigSet(nutgpio_t GPIO, uint32_t flags, uint32_t af)
     GpioPortConfigSet((uint32_t)gpio, _BV(pin_nr), flags);
     return 0;
 }
+
+/*!
+ * \brief Set pin to value
+ *
+ * \param GPIO  Pin designator like PA01 as defined in dev/pins.h.
+ * \param value If value == 0, set pin to 0, otherwise to 1;
+ *
+ * \return 0 on success, -1 for PIN_NONE.
+ */
+int Stm32GpioSet(nutgpio_t gpio_pin, int value)
+{
+    if (gpio_pin == PIN_NONE) {
+        return -1;
+    } else {
+        int gpio_nr;
+        int pin_nr;
+        GPIO_TypeDef *gpio;
+
+        pin_nr = gpio_pin & 0xff;
+        NUTASSERT(pin_nr < 16);
+        gpio_nr = gpio_pin >> 8;
+        gpio = stm32_port_nr2gpio[gpio_nr];
+        NUTASSERT(IS_GPIO_ALL_INSTANCE(gpio));
+        if (value) {
+            gpio->BSRR = 1 << pin_nr;
+        } else {
+            gpio->BRR  = 1 << pin_nr;
+        }
+    }
+    return 0;
+}
+
+/*!
+ * \brief Get pin value
+ *
+ * \param Gpio pin to query.
+ *
+ * \return 1 if pin is set, else 0, e.g. for non-existing pin.
+ */
+int Stm32GpioGet(nutgpio_t gpio_pin)
+{
+    if (gpio_pin != PIN_NONE) {
+        int gpio_nr;
+        int pin_nr;
+        GPIO_TypeDef *gpio;
+
+        pin_nr = gpio_pin & 0xff;
+        NUTASSERT(pin_nr > 16);
+        gpio_nr = gpio_pin >> 8;
+        gpio = stm32_port_nr2gpio[gpio_nr];
+        NUTASSERT(IS_GPIO_ALL_INSTANCE(gpio));
+        return (gpio->IDR & (1 << pin_nr));
+    }
+    return 0;
+}
