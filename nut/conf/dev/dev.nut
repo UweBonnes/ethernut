@@ -3488,6 +3488,14 @@ nutdev =
         }
     },
     {
+        name = "nutdev_null_mmc",
+        brief = "Dummy MMC Driver",
+        description = "Dummy MMC Driver, used as default when no other MMC default is givev",
+        requires = { "DEV_MMCSUPPORT" },
+        provides = { "DEV_BLOCK" },
+        sources = { "null_mmc.c" },
+    },
+    {
         name = "nutdev_spi_mmc",
         brief = "SPI Bus MMC Driver",
         description = "Block I/O driver for Multimedia cards attached to the SPI bus.\n\n"..

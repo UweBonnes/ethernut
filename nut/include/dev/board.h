@@ -826,6 +826,19 @@
 #endif
 
 /*
+ * MMCard device defaults.
+ *
+ * Provide a dummy MMC interface for examples in the common directory.
+ */
+#ifndef DEV_MMCARD
+# include <dev/null_mmc.h>
+# define DEV_MMCARD      devNullMmc0
+#endif
+#ifndef DEV_MMCARD_NAME
+# define DEV_MMCARD_NAME  "MMC0"
+#endif
+
+/*
  * SPI bus controller defaults.
  *
  * Select the interface with the lowest index as our default.
