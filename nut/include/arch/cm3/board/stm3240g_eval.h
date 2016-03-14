@@ -71,7 +71,7 @@
 #include <dev/i2cbus_stm32.h>
 #endif
 
-#ifndef DEF_SPIBUS
-#define DEF_SPIBUS spiBus1Stm32
+#ifndef DEV_SPIBUS
+#define DEV_SPIBUS spiBus1Stm32
 #include <dev/spibus_stm32.h>
 #endif
