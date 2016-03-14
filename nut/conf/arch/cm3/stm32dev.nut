@@ -1,3 +1,41 @@
+--Pin Speed setting
+
+function PinSpeedDesc()
+    if c_is_provided("HW_MCU_STM32F1") then
+        return "GPIO Pin Setting must match function speed, CPU supply "..
+               "and circuit load.\n\n"..
+               "GPIO_SLOW:\tmax.  2 MHz\n"..
+               "GPIO_MED:\tmax. 10 Mhz\n"..
+               "GPIO_FAST:\tmax. 50 MHz\n"
+    end
+    if c_is_provided("HW_GPIO_STM32L_0_1") then
+        return "GPIO Pin Setting must match function speed, CPU supply "..
+               "and circuit load.\n\n"..
+               "GPIO_SLOW:\tmax. 400 kHz\n"..
+               "GPIO_MED:\tmax.   2 Mhz\n"..
+               "GPIO_FAST:\tmax. 10 MHz\n"..
+               "GPIO_HIGH:\tmax. 50(L1)/35(L0) MHz\n"
+    end
+    return "GPIO Pin Setting must match function speed, CPU supply "..
+           "and circuit load.\n\n"..
+           "GPIO_SLOW:\tmax.   5 MHz\n"..
+           "GPIO_MED:\tmax.  10 Mhz\n"..
+           "GPIO_FAST:\tmax. 50 MHz\n"..
+           "GPIO_HIGH:\tmax. 100 MHz\n"
+end
+function GetPinSpeedChoices()
+    if c_is_provided("HW_MCU_STM32F1") then
+        return {"GPIO_SLOW", "GPIO_MED", "GPIO_FAST"}
+    end
+    if c_is_provided("HW_GPIO_STM32F0") then
+        return {"GPIO_SLOW", "GPIO_MED", "GPIO_FAST"}
+    end
+    if c_is_provided("HW_GPIO_STM32F3") then
+        return {"GPIO_SLOW", "GPIO_MED", "GPIO_FAST"}
+    end
+    return {"GPIO_SLOW", "GPIO_MED", "GPIO_FAST", "GPIO_HIGH"}
+end
+
 nutarch_cm3_stm32_devices =
 {
     -- ***********************************

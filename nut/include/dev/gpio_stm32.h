@@ -152,6 +152,13 @@ extern const uint16_t ospeed_values[4];
  */
 #define GPIO_CFG_INIT_HIGH   0x80000000
 
+typedef enum {
+    GPIO_SLOW = GPIO_CFG_SPEED_SLOW,
+    GPIO_MED  = GPIO_CFG_SPEED_MED,
+    GPIO_FAST = GPIO_CFG_SPEED_FAST,
+    GPIO_HIGH = GPIO_CFG_SPEED_HIGH,
+} device_pin_speed_t;
+
 typedef struct _gpio_vector{
     void (*iov_handler) (void *);
     void *iov_arg;

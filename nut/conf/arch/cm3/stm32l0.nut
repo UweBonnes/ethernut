@@ -66,6 +66,7 @@ nutarch_cm3_stm32l0 =
                     "HW_RTC_STM32_V2",
                     "HW_FLASH_STM32L",
                     "HW_EEPROM_STM32",
+                    "HW_GPIO_STM32L_0_1",
                     "HW_GPIO_STM32V2",
                     "HW_CRC32_STM32",
                     "DEV_IRQ_STM32",
