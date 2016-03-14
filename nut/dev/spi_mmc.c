@@ -352,7 +352,20 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
     }
 
     do {
-        bus = CardAllocate(node);
+        if (cmd == MMCMD_GO_IDLE_STATE) {
+            /* MMCMD_GO_IDLE_STATE is used to switch to SPI mode.
+             * CardAllocate will fail if not in SPI mode.
+             * So unconditionally send the command. */
+            int res;
+            res = (node->node_bus->bus_alloc) (node, 1000);
+            if (res == 0) {
+                bus = node->node_bus;
+            } else {
+                bus = NULL;
+            }
+        } else {
+            bus = CardAllocate(node);
+        }
         if (bus) {
 #ifdef NUTDEBUG
             printf("\n[CMD%u,%lu]", cmd, param);
@@ -402,6 +415,7 @@ static int CardInit(NUTSPINODE * node)
     MEMCARDSUPP *mcs;
     uint32_t op_cond;
     uint_fast8_t mmc = 0;
+    int rc;
 
     /*
      * Switch to idle state and wait until initialization is running
@@ -409,9 +423,19 @@ static int CardInit(NUTSPINODE * node)
      */
     mcs = (MEMCARDSUPP *) node->node_dcb;
     bus = (NUTSPIBUS *) node->node_bus;
+
+    node->node_mode |= SPI_MODE_CSHIGH;
     (*bus->bus_set_rate)(node, 400000);
-    /* Send 80 dummy clocks. Some cards need this. */
-    (*bus->bus_transfer) (node, NULL, NULL, 10);
+    rc = (bus->bus_alloc) (node, 1000);
+    if (rc == 0) {
+        uint8_t txb[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                           0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+        (bus->bus_transfer) (node, &txb, NULL, 10);
+    } else {
+        return -1;
+    }
+    node->node_mode &= ~SPI_MODE_CSHIGH;
+    (bus->bus_release) (node);
     /* Reset card and switch to SPI mode. */
     rsp = CardTxCommand(node, MMCMD_GO_IDLE_STATE, 0, 1);
     /* Send 0x100 for voltage range 2.7 - 3.6V and add pattern 0xAA. */

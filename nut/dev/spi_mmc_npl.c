@@ -164,16 +164,6 @@ static int NplMmc0Power(int mode)
  */
 static int NplMmc0Reset(NUTDEVICE * dev)
 {
-    uint_fast8_t i;
-
-    /* Deactivate negated chip select. */
-    outb(NPL_XER, inb(NPL_XER) | NPL_MMCS);
-    /* Perform 80 clock cycles. */
-    for (i = 0; i < 10; i++) {
-        outb(NPL_MMCDR, 0xFF);
-        while ((inb(NPL_SLR) & NPL_MMCREADY) == 0);
-        inb(NPL_MMCDR);
-    }
     /* Switch LED off. */
     NplMmc0Led(NUTMC_IND_OFF);
 

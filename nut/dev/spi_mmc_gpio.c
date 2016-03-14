@@ -163,27 +163,6 @@ static int SpiMmcGpioPower(int mode)
  */
 static int SpiMmcGpioReset(NUTDEVICE * dev)
 {
-    NUTSPINODE * node;
-    NUTSPIBUS  * bus;
-
-    int rc;
-
-    node = (NUTSPINODE *) dev->dev_icb;
-    bus = (NUTSPIBUS *) node->node_bus;
-
-    /*
-     * 80 bits of ones with deactivated chip select will put the card
-     * in SPI mode.
-     */
-    node->node_mode |= SPI_MODE_CSHIGH;
-    rc = (bus->bus_alloc) (node, 1000);
-    if (rc == 0) {
-        uint8_t txb[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-        (bus->bus_transfer) (node, &txb, NULL, 10);
-    }
-    node->node_mode &= ~SPI_MODE_CSHIGH;
-    (bus->bus_release) (node);
-
     /* Switch LED off. */
     SpiMmcGpioLed(NUTMC_IND_OFF);
 
