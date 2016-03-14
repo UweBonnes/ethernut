@@ -134,6 +134,14 @@ struct _NUTSPIBUS {
     /*! \brief Set node's data bit size.
      */
      uint_fast8_t (*bus_set_bits) (NUTSPINODE *, uint_fast8_t);
+
+    /*! \brief Private data of the hardware specific implementation.
+     */
+     void *bus_icb;
+
+    /*! \brief Pointer to the bus driver's device control block.
+     */
+     void *bus_dcb;
 };
 
 /*!

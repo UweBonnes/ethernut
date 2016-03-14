@@ -545,5 +545,7 @@ NUTSPIBUS spiBus0Gpio = {
     NutSpiBusWait,              /*!< Wait for bus transfer ready (bus_wait). */
     NutSpiBusSetMode,           /*!< Set SPI mode of a specified device (bus_set_mode). */
     GpioSpiBusSetRate,          /*!< Set clock rate of a specified device (bus_set_rate). */
-    NutSpiBusSetBits            /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NutSpiBusSetBits,           /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NULL,                       /*!< Private data of the hardware specific implementation. */
+    NULL,                       /*!< Pointer to the bus driver's device control block. */
 };

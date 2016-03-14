@@ -151,7 +151,9 @@ NUTSPIBUS spiBus0Lpc17xxSsp = {
     NutSpiBusWait,
     NutSpiBusSetMode,           /*!< Set SPI mode of a specified device (bus_set_mode). */
     NutSpiBusSetRate,           /*!< Set clock rate of a specified device (bus_set_rate). */
-    NutSpiBusSetBits            /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NutSpiBusSetBits,           /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NULL,                       /*!< Private data of the hardware specific implementation. */
+    NULL,                       /*!< Pointer to the bus driver's device control block. */
 };
 
 NUTSPIBUS spiBus1Lpc17xxSsp = {
@@ -166,7 +168,9 @@ NUTSPIBUS spiBus1Lpc17xxSsp = {
     NutSpiBusWait,
     NutSpiBusSetMode,           /*!< Set SPI mode of a specified device (bus_set_mode). */
     NutSpiBusSetRate,           /*!< Set clock rate of a specified device (bus_set_rate). */
-    NutSpiBusSetBits            /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NutSpiBusSetBits,           /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NULL,                       /*!< Private data of the hardware specific implementation. */
+    NULL,                       /*!< Pointer to the bus driver's device control block. */
 };
 
 #if defined(LPC_SSP2_BASE)
@@ -182,7 +186,9 @@ NUTSPIBUS spiBus2Lpc17xxSsp = {
     NutSpiBusWait,
     NutSpiBusSetMode,           /*!< Set SPI mode of a specified device (bus_set_mode). */
     NutSpiBusSetRate,           /*!< Set clock rate of a specified device (bus_set_rate). */
-    NutSpiBusSetBits            /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NutSpiBusSetBits,           /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NULL,                       /*!< Private data of the hardware specific implementation. */
+    NULL,                       /*!< Pointer to the bus driver's device control block. */
 };
 #endif
 

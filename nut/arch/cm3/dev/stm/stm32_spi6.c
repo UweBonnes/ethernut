@@ -99,7 +99,9 @@ NUTSPIBUS spiBus6Stm32 = {
     NutSpiBusWait,
     NutSpiBusSetMode,           /*!< Set SPI mode of a specified device (bus_set_mode). */
     NutSpiBusSetRate,           /*!< Set clock rate of a specified device (bus_set_rate). */
-    NutSpiBusSetBits            /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NutSpiBusSetBits,           /*!< Set number of data bits of a specified device (bus_set_bits). */
+    NULL,                       /*!< Private data of the hardware specific implementation. */
+    NULL,                       /*!< Pointer to the bus driver's device control block. */
 };
 
 #include "stm32_spi.c"
