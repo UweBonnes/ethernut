@@ -271,7 +271,7 @@ NUTDEVICE devSpiMmcGpio = {
     0,                  /*!< Pointer to next device, dev_next. */
     {'M', 'M', 'C', '0', 0, 0, 0, 0, 0}
     ,                   /*!< Unique device name, dev_name. */
-    0,                  /*!< Type of device, dev_type. Obsolete. */
+    IF_LAYER_SPI,       /*!< Type of device, dev_type. Obsolete. */
     0,                  /*!< Base address, dev_base. Unused. */
     0,                  /*!< First interrupt number, dev_irq. Unused. */
     &nodeSpiMmcGpio,    /*!< Interface control block, dev_icb. */

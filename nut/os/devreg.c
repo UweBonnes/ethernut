@@ -171,7 +171,7 @@ int NutRegisterDevice(NUTDEVICE * dev, uintptr_t base, uint8_t irq)
         dev->dev_base = base;
     if (irq)
         dev->dev_irq = irq;
-
+    dev->dev_type &= ~IF_LAYER_SPI;
     if (NutDeviceLookup(dev->dev_name) == 0) {
         if(dev->dev_init == 0 || (*dev->dev_init)(dev) == 0) {
             dev->dev_next = nutDeviceList;

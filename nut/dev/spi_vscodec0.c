@@ -711,7 +711,7 @@ static int VsCodec0Init(NUTDEVICE * dev)
 NUTDEVICE devSpiVsCodec0 = {
     0,                  /* Pointer to next device, dev_next. */
     {'a', 'u', 'd', 'i', 'o', '0', 0, 0, 0},    /* Unique device name, dev_name. */
-    IFTYP_CHAR,         /* Type of device, dev_type. */
+    IFTYP_CHAR | IF_LAYER_SPI, /* Type of device, dev_type. */
     0,                  /* Codec number, dev_base. */
     0,                  /* First interrupt number, dev_irq (not used). */
     &nodeSpiVsCodec0,   /* Interface control block, dev_icb (not used). */

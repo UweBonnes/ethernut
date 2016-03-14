@@ -141,6 +141,7 @@
 #define IFTYP_BLKIO     7   /*!< \brief Block I/O device */
 #define IFTYP_FB        8   /*!< \brief Framebuffer device */
 #define IFTYP_FS       16   /*!< \brief file system device */
+#define IF_LAYER_SPI 0x80   /*!< \brief Device is on SPIBUS */
 
 /*!
  * \brief Device structure type.

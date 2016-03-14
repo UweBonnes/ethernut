@@ -749,7 +749,7 @@ NUTSPINODE nodeSt7565r0 = {
 NUTDEVICE devSt7565rFb0 = {
     NULL,                           /*!< \brief Pointer to next device, dev_next. */
     {'F', 'B', '0', 0, 0, 0, 0, 0, 0},  /*!< \brief Unique device name, dev_name. */
-    IFTYP_FB,                       /*!< \brief Type of device, dev_type. */
+    IFTYP_FB | IF_LAYER_SPI,        /*!< \brief Type of device, dev_type. */
     0,                              /*!< \brief Base address, dev_base (not used). */
     0,                              /*!< \brief First interrupt number, dev_irq (not used). */
     &nodeSt7565r0,                  /*!< \brief Interface control block, dev_icb. */

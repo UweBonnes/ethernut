@@ -101,7 +101,7 @@ static NUTBLOCKIO blkIoAt45d3 = {
 NUTDEVICE devSpiAt45d3 = {
     NULL,                       /* Pointer to next device, dev_next. */
     {'A', 'T', '4', '5', 'D', '3', 0, 0, 0},    /* Unique device name, dev_name. */
-    IFTYP_BLKIO,                /* Type of device, dev_type. */
+    IFTYP_BLKIO | IF_LAYER_SPI, /* Type of device, dev_type. */
     0,                          /* Base address, dev_base (not used). */
     0,                          /* First interrupt number, dev_irq (not used). */
     &nodeSpiAt45d3,             /* Interface control block, dev_icb. */

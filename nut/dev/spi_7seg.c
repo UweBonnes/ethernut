@@ -614,7 +614,7 @@ NUTSPINODE nodeSpi7SEG = {
 NUTDEVICE devSpi7SEG = {
     NULL,                           /*!< \brief Pointer to next device, dev_next. */
     {'7', 'S', 'E', 'G', 0, 0, 0},  /*!< \brief Unique device name, dev_name. */
-    IFTYP_CHAR,                     /*!< \brief Type of device, dev_type. */
+    IFTYP_CHAR | IF_LAYER_SPI,      /*!< \brief Type of device, dev_type. */
     0,                              /*!< \brief Base address, dev_base (not used). */
     0,                              /*!< \brief First interrupt number, dev_irq (not used). */
     &nodeSpi7SEG,                   /*!< \brief Interface control block, dev_icb. */

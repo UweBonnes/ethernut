@@ -287,7 +287,7 @@ static NUTBLOCKIO blkIoAt45d0 = {
 NUTDEVICE devSpiBlkAt45d0 = {
     NULL,                       /*!< \brief Pointer to next device, dev_next. */
     {'A', 'T', '4', '5', 'D', '0', 0, 0, 0},    /*!< \brief Unique device name, dev_name. */
-    IFTYP_BLKIO,                /*!< \brief Type of device, dev_type. */
+    IFTYP_BLKIO | IF_LAYER_SPI, /*!< \brief Type of device, dev_type. */
     0,                          /*!< \brief Base address, dev_base (not used). */
     0,                          /*!< \brief First interrupt number, dev_irq (not used). */
     &nodeAt45d0,                /*!< \brief Interface control block, dev_icb. */
@@ -344,7 +344,7 @@ static NUTBLOCKIO blkIoAt45d1 = {
 NUTDEVICE devSpiBlkAt45d1 = {
     NULL,                       /*!< \brief Pointer to next device, dev_next. */
     {'A', 'T', '4', '5', 'D', '1', 0, 0, 0},    /*!< \brief Unique device name, dev_name. */
-    IFTYP_BLKIO,                /*!< \brief Type of device, dev_type. */
+    IFTYP_BLKIO | IF_LAYER_SPI, /*!< \brief Type of device, dev_type. */
     0,                          /*!< \brief Base address, dev_base (not used). */
     0,                          /*!< \brief First interrupt number, dev_irq (not used). */
     &nodeAt45d1,                /*!< \brief Interface control block, dev_icb. */
@@ -401,7 +401,7 @@ static NUTBLOCKIO blkIoAt45d2 = {
 NUTDEVICE devSpiBlkAt45d2 = {
     NULL,                       /*!< \brief Pointer to next device, dev_next. */
     {'A', 'T', '4', '5', 'D', '2', 0, 0, 0},    /*!< \brief Unique device name, dev_name. */
-    IFTYP_BLKIO,                /*!< \brief Type of device, dev_type. */
+    IFTYP_BLKIO | IF_LAYER_SPI, /*!< \brief Type of device, dev_type. */
     0,                          /*!< \brief Base address, dev_base (not used). */
     0,                          /*!< \brief First interrupt number, dev_irq (not used). */
     &nodeAt45d2,                /*!< \brief Interface control block, dev_icb. */
@@ -458,7 +458,7 @@ static NUTBLOCKIO blkIoAt45d3 = {
 NUTDEVICE devSpiBlkAt45d3 = {
     NULL,                       /*!< \brief Pointer to next device, dev_next. */
     {'A', 'T', '4', '5', 'D', '3', 0, 0, 0},    /*!< \brief Unique device name, dev_name. */
-    IFTYP_BLKIO,                /*!< \brief Type of device, dev_type. */
+    IFTYP_BLKIO | IF_LAYER_SPI, /*!< \brief Type of device, dev_type. */
     0,                          /*!< \brief Base address, dev_base (not used). */
     0,                          /*!< \brief First interrupt number, dev_irq (not used). */
     &nodeAt45d3,                /*!< \brief Interface control block, dev_icb. */
