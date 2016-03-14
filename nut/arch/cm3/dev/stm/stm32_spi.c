@@ -643,11 +643,11 @@ static int Stm32SpiBusTransfer
             while( xlen > 0){
                 txbuf++;
                 xlen --;
+                while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
+                *(uint8_t *)rxbuf = base->DR;
                 while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
                 if (xlen > 0)
                     *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
-                while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
-                *(uint8_t *)rxbuf = base->DR;
                 rxbuf++;
             }
             if (node->node_mode & SPI_MODE_CPOL)
