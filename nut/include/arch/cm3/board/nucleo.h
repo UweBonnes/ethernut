@@ -72,3 +72,8 @@
 #define DEV_SPIBUS spiBus1Stm32
 #include <dev/spibus_stm32.h>
 #endif
+
+#if PLATFORM_SUB == ETHERNET_SHIELD_2
+# include <dev/spi_mmc_gpio.h>
+# define DEV_MMCARD devSpiMmcGpio
+#endif
