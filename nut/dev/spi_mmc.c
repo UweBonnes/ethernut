@@ -416,6 +416,7 @@ static int CardInit(NUTSPINODE * node)
     uint32_t op_cond;
     uint_fast8_t mmc = 0;
     int rc;
+    uint32_t rate;
 
     /*
      * Switch to idle state and wait until initialization is running
@@ -425,7 +426,7 @@ static int CardInit(NUTSPINODE * node)
     bus = (NUTSPIBUS *) node->node_bus;
 
     node->node_mode |= SPI_MODE_CSHIGH;
-    (*bus->bus_set_rate)(node, 400000);
+    rate = (*bus->bus_set_rate)(node, 400000);
     rc = (bus->bus_alloc) (node, 1000);
     if (rc == 0) {
         uint8_t txb[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -453,7 +454,7 @@ static int CardInit(NUTSPINODE * node)
         if (mmc) {
             rsp = CardTxCommand(node, MMCMD_SEND_OP_COND, 0, 1);
             if (rsp == MMR1_IDLE_STATE) {
-                (*bus->bus_set_rate)(node, 20000000);
+                (*bus->bus_set_rate)(node, rate);
                 return 0;
             }
         } else {
@@ -473,7 +474,7 @@ static int CardInit(NUTSPINODE * node)
                         /* Card is SDHC. */
                         mcs->mcs_sf |= NUTMC_SF_HC;
                     }
-                    (*bus->bus_set_rate)(node, 20000000);
+                    (*bus->bus_set_rate)(node, rate);
                     return 0;
                 }
             }
