@@ -69,7 +69,7 @@ void Stm32TimerConfig(
 
     cr2 = tim->CR2;
     cr2 &= ~TIM_CR2_MMS;
-    cr2 |= master_mode1 * TIM_CR2_MMS_0;
+    cr2 |= (master_mode1 * TIM_CR2_MMS_0) & TIM_CR2_MMS;
     tim->CR2 = cr2;
 
     i = 0;
@@ -84,7 +84,9 @@ void Stm32TimerConfig(
     case TIM_TRG_SELECTION_ETR8: i++;
     case TIM_TRG_SELECTION_ETR4: i++;
     case TIM_TRG_SELECTION_ETR2: i++;
-    default: smcr |= i * TIM_SMCR_ETPS_0 + trg_sel * TIM_SMCR_TS_0;
+    default:
+        smcr |= i * TIM_SMCR_ETPS_0;
+        smcr |= (trg_sel * TIM_SMCR_TS_0) & TIM_SMCR_TS;
     }
 
     switch(clk_mode) {
@@ -98,7 +100,7 @@ void Stm32TimerConfig(
             smcr = smcr | TIM_SMCR_SMS_3;
             break;
 #endif
-        default: smcr = smcr | slave_mode * TIM_SMCR_SMS_0;
+        default: smcr = smcr | ((slave_mode * TIM_SMCR_SMS_0) & TIM_SMCR_SMS);
         }
         break;
     case TIM_CLK_MODE_TI1:
