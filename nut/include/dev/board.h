@@ -844,11 +844,14 @@
  * Select the interface with the lowest index as our default.
  */
 #ifndef DEV_SPIBUS
-#if defined(DEV_SPIBUS0)
-#define DEV_SPIBUS      DEV_SPIBUS0
-#elif defined(DEV_SPIBUS1)
-#define DEV_SPIBUS      DEV_SPIBUS1
-#endif
+# if defined(DEV_SPIBUS0)
+#  define DEV_SPIBUS      DEV_SPIBUS0
+# elif defined(DEV_SPIBUS1)
+#  define DEV_SPIBUS      DEV_SPIBUS1
+# else
+#  include <dev/null_spibus.h>
+#  define DEV_SPIBUS     spiBusNull
+# endif
 #endif
 
 /*

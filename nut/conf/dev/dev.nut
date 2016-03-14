@@ -1234,6 +1234,17 @@ nutdev =
     },
 
     --
+    -- dummp Interface Drivers.
+    --
+    {
+        name = "nutdev_null_spibus",
+        brief = "Null Spibus",
+        description = "Dummy Spibus .",
+        provides = { "DEV_SPI" },
+        sources = {"null_spibus.c",
+        },
+    },
+    --
     -- Simple Interface Drivers.
     --
     {
