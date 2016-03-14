@@ -357,13 +357,13 @@ typedef struct NUT_PACKED_TYPE _MMC_CID {
     /*! \brief OEM/Application identifier. */
     uint16_t mmcid_oid;
     /*! \brief Product name. */
-    uint8_t mmcid_pnm[6];
+    char mmcid_pnm[5];
     /*! \brief Product revision. */
     uint8_t mmcid_rev;
     /*! \brief Serial number. */
     uint32_t mmcid_psn;
     /*! \brief Manufacturing date code. */
-    uint8_t mmcid_mdt;
+    uint8_t mmcid_mdt[2];
     /*! \brief CRC7 checksum. */
     uint8_t mmcid_crc;
 } MMC_CID;
