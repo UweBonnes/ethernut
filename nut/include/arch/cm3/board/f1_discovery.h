@@ -68,7 +68,7 @@
 #define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
 #endif
 
-#ifndef DEF_I2CBUS
-#define DEF_I2CBUS  i2cBus1Stm32
+#ifndef DEV_I2CBUS
+#define DEV_I2CBUS  i2cBus1Stm32
 #include <dev/i2cbus_stm32.h>
 #endif

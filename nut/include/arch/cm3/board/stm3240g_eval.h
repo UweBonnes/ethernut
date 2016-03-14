@@ -66,8 +66,8 @@
  */
 #include <dev/stm32_emac.h>
 
-#ifndef DEF_I2CBUS
-#define DEF_I2CBUS i2cBus1Stm32
+#ifndef DEV_I2CBUS
+#define DEV_I2CBUS i2cBus1Stm32
 #include <dev/i2cbus_stm32.h>
 #endif
 

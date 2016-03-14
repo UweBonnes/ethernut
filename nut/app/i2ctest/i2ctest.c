@@ -48,7 +48,7 @@
 static const char *banner = "\nNut/OS I2C Sample on " BOARDNAME
     " " __DATE__ " " __TIME__;
 
-#if defined(DEF_I2CBUS)
+#if defined(DEV_I2CBUS)
 static char inbuf[128];
 #endif
 
@@ -435,11 +435,11 @@ int main(void)
     LED2_START_THREAD;
     Hardware_Init();
 
-#if !defined(DEF_I2CBUS)
+#if !defined(DEV_I2CBUS)
     puts("Please indicate the I2C Bus to scan!");
     goto error;
 #else
-    res = NutI2cBusRate( &DEF_I2CBUS, 100000);
+    res = NutI2cBusRate( &DEV_I2CBUS, 100000);
     if (res !=0)
     {
         puts("NutI2cBusRate failed\n");
@@ -450,8 +450,8 @@ int main(void)
         printf("NutI2cBusRate success\n");
     }
 
-    NutI2cBusTimeout(&DEF_I2CBUS, 10);
-    ScanBus(&DEF_I2CBUS);
+    NutI2cBusTimeout(&DEV_I2CBUS, 10);
+    ScanBus(&DEV_I2CBUS);
 
     for (;;) {
         int i;
@@ -463,23 +463,23 @@ int main(void)
             {
 #if defined(F3_DISCOVERY)
             case I2C_SLA_LSM303_ACCEL: /* ST LSM303 Accel on F3Discovery*/
-                dump_lsm303_accel(&DEF_I2CBUS);
+                dump_lsm303_accel(&DEV_I2CBUS);
                 break;
             case I2C_SLA_LSM303_MAGNET: /* ST LSM303 Magnet on F3Discovery*/
-                dump_lsm303_magnet(&DEF_I2CBUS);
+                dump_lsm303_magnet(&DEV_I2CBUS);
                 break;
 #endif
 #if defined(F4_DISCOVERY)
             case I2C_SLA_CS43L22: /* Cirrus CS43L22 on F4Discovery, AD0 == 0*/
-                dump_cs43l22(&DEF_I2CBUS);
+                dump_cs43l22(&DEV_I2CBUS);
                 break;
 #endif
 #if defined(STM32_CAN)
             case I2C_SLA_MAX44009: /* MAX44009 on STM32_CAN  AD0 == 0*/
-                dump_max44009(&DEF_I2CBUS);
+                dump_max44009(&DEV_I2CBUS);
                 break;
             case I2C_SLA_SHT21: /* SHT21 on STM32_CAN */
-                dump_sht21(&DEF_I2CBUS);
+                dump_sht21(&DEV_I2CBUS);
                 break;
 #endif
             }

@@ -146,12 +146,12 @@
 #include <dev/jtag_gpio.h>
 #endif
 
-#ifndef DEF_I2CBUS
+#ifndef DEV_I2CBUS
 #if 1
-#define DEF_I2CBUS i2cBus2Stm32
+#define DEV_I2CBUS i2cBus2Stm32
 #include <dev/i2cbus_stm32.h>
 #else
-#define DEF_I2CBUS i2cBus0Gpio
+#define DEV_I2CBUS i2cBus0Gpio
 #include <dev/i2cbus_gpio.h>
 #endif
 #endif
