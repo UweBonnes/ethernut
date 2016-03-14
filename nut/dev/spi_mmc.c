@@ -526,7 +526,7 @@ static int CardRxData(NUTSPINODE * node, mmcmd_t cmd, uint32_t param, uint8_t *b
                 }
             }
             /* Send 8 additional clocks and release the bus. */
-            (*bus->bus_transfer) (node, NULL, NULL, 1);
+            (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 1);
             (*bus->bus_release) (node);
         }
     }
@@ -646,7 +646,7 @@ int SpiMmcBlockWrite(NUTFILE * nfp, const void *buffer, int num)
                     tkn = CardRxTkn(node);
                     if (tkn == 0xE5) {
                         /* Send 8 additional clocks and release the bus. */
-                        (*bus->bus_transfer) (node, NULL, NULL, 1);
+                        (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 1);
                         (*bus->bus_release) (node);
                         /* Deactivate the indicator. */
                         msc->mcs_act(NUTMC_IND_OFF);
@@ -692,7 +692,7 @@ int SpiMmcBlockWrite(NUTFILE * nfp, const void *buffer, int num)
                         (*bus->bus_transfer) (node, &b, NULL, 1);
                     }
                     /* Send 8 additional clocks and release the bus. */
-                    (*bus->bus_transfer) (node, NULL, NULL, 1);
+                    (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 1);
                     (*bus->bus_release) (node);
                     /* Deactivate the indicator. */
                     msc->mcs_act(NUTMC_IND_OFF);
