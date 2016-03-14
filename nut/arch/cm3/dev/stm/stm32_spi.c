@@ -66,6 +66,31 @@
 #define GPIO_CRL_CM3BB   CM3BBADDR(SPIBUS_MOSI_PORT, GPIO_TypeDef, CRL, 0)
 #endif
 
+static void Stm32SpiBusStopRx(SPI_TypeDef *spi)
+{
+    /* Follow "Disabling the SPI"
+     * Disable SPE after first sampling edge and before last clock.
+     * RXNE is set with active edge of last cycle of last transfer
+     *
+     * So wait until last cycle of last transfer ends.
+     * And wait until active edge of first clock of current cycle happens.
+     */
+    uint32_t mode = spi->CR1 & (SPI_CR1_CPOL | SPI_CR1_CPHA);
+    switch (mode) {
+    case 0:
+    case 3:
+        /* Sample at rising edge */
+        while( GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
+        while(!GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
+        break;
+    default:
+        /* Sample at falling edge */
+        while(!GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
+        while( GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
+    }
+    CM3BBCLR(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+}
+
 #if SPIBUS_MODE != POLLING_MODE
 static uint32_t clk_ratio;
 #if SPIBUS_MODE == IRQ_MODE
@@ -90,10 +115,7 @@ static void Stm32SpiBusInterrupt(void *arg)
                 spi_rx_len--;
                 if (spi_rx_len == 1) {
                     if (spi->CR1 & (SPI_CR1_BIDIMODE| SPI_CR1_RXONLY)) {
-                        /* Follow "Disabling the SPI" */
-                        while( GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
-                        while(!GpioPinGet(SPIBUS_SCK_PORT,  SPIBUS_SCK_PIN));
-                        CM3BBCLR(SPI_BASE, SPI_TypeDef, CR1, _BI32(SPI_CR1_SPE));
+                        Stm32SpiBusStopRx(spi);
                     }
                 }
             }
@@ -624,10 +646,7 @@ static int Stm32SpiBusTransfer
             base->CR1 |= SPI_CR1_SPE;
             while( xlen > 0) {
                 if(xlen < 2) {
-                    /* Follow procedure "Disabling the SPI" */
-                    while(!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
-                    while(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN));
-                    base->CR1 &= ~SPI_CR1_SPE;
+                    Stm32SpiBusStopRx(base);
                 }
                 xlen--;
                 while ((base->SR & SPI_SR_RXNE) == 0 ); /* Wait till RXNE = 1*/
