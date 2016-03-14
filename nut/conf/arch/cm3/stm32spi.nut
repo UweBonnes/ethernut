@@ -456,6 +456,15 @@ nutarch_cm3_stm32_spi_devices =
                 file = "include/cfg/spi.h"
             },
             {
+                macro = "SPI1_SPEED",
+                brief = "Pin speed setting for SPI1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/spi.h"
+            },
+            {
                 macro = "SPI1_USE_NSS",
                 brief = "Use SPI1 NSS on F1",
                 description = "Use SPI1  Hardware NSS on F1. Default off.",
@@ -581,6 +590,15 @@ nutarch_cm3_stm32_spi_devices =
         {
 -- No Remap of SPI2 on F1
             {
+                macro = "SPI2_SPEED",
+                brief = "Pin speed setting for SPI1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/spi.h"
+            },
+            {
                 macro = "SPI2_CS0",
                 brief = "SPI2 CS0 Gpio",
                 description = "Choice of SPI2 CS0 Gpio.\n"..
@@ -692,6 +710,15 @@ nutarch_cm3_stm32_spi_devices =
                 type = "enumerated",
                 choices = {"0", "1"},
                 default = "0",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPI3_SPEED",
+                brief = "Pin speed setting for SPI1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
                 file = "include/cfg/spi.h"
             },
             {
@@ -812,6 +839,15 @@ nutarch_cm3_stm32_spi_devices =
         {
 -- Not available on F1, so no global remap
             {
+                macro = "SPI4_SPEED",
+                brief = "Pin speed setting for SPI1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/spi.h"
+            },
+            {
                 macro = "SPI4_CS0",
                 brief = "SPI4 CS0 Gpio",
                 description = "Choice of SPI4 CS0 Gpio.\n"..
@@ -929,6 +965,15 @@ nutarch_cm3_stm32_spi_devices =
         {
 -- Not available on F1, so no global remap
             {
+                macro = "SPI5_SPEED",
+                brief = "Pin speed setting for SPI1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/spi.h"
+            },
+            {
                 macro = "SPI5_CS0",
                 brief = "SPI5 CS0 Gpio",
                 description = "Choice of SPI5 CS0 Gpio.\n"..
@@ -1045,6 +1090,15 @@ nutarch_cm3_stm32_spi_devices =
         options =
         {
 -- Not available on F1, so no global remap
+            {
+                macro = "SPI6_SPEED",
+                brief = "Pin speed setting for SPI1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/spi.h"
+            },
             {
                 macro = "SPI6_CS0",
                 brief = "SPI6 CS0 Gpio",

@@ -58,6 +58,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#define SPI_SPEED SPI2_SPEED
+
 #define SPI_CS0 SPI2_CS0
 #define SPI_CS1 SPI2_CS1
 #define SPI_CS2 SPI2_CS2

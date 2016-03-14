@@ -210,58 +210,6 @@ static int Stm32SpiBusDeselect(NUTSPINODE * node)
     return 0;
 }
 
-#define OSPEED_MULT 5
-    /* Choose pin speed according to rate. Try to choose pin speed ~ OSPEED_MULT * rate */
-
-/*! \brief Choose pin speed according to spi rate
- *
- * Try to choose pin speed ~ OSPEED_MULT * rate.
- * Watch out if with low supply voltag
- *
- * \param node Specifies the SPI bus node.
- * \param rate Effective SPI clock.
- *
- */
-
-static void SetPinSpeed( NUTSPINODE * node, uint32_t rate)
-{
-    uint16_t rate_div64k = rate >> 16;
-    uint8_t ospeed_set;
-    rate_div64k = node->node_rate >> 16;
-
-#if defined (MCU_STM32F1)
-    if      (rate_div64k * OSPEED_MULT < ospeed_values[2])
-        ospeed_set = 2;
-    else if (rate_div64k * OSPEED_MULT < ospeed_values[1])
-        ospeed_set = 1;
-    else
-        ospeed_set = 3;
-    GPIO_CRL_CM3BB[SPIBUS_SCK_PIN  * 4 + 0] = (ospeed_set & 1);
-    GPIO_CRL_CM3BB[SPIBUS_MOSI_PIN * 4 + 0] = (ospeed_set & 1);
-    ospeed_set = ospeed_set >> 1;
-    GPIO_CRL_CM3BB[SPIBUS_SCK_PIN  * 4 + 1] = (ospeed_set & 2);
-    GPIO_CRL_CM3BB[SPIBUS_MOSI_PIN * 4 + 1] = (ospeed_set & 2);
-#else
-    uint32_t speed_reg;
-    if      (rate_div64k * OSPEED_MULT < ospeed_values[0])
-        ospeed_set = 0;
-    else if (rate_div64k * OSPEED_MULT < ospeed_values[1])
-        ospeed_set = 1;
-    else if (rate_div64k * OSPEED_MULT < ospeed_values[2])
-        ospeed_set = 2;
-    else
-        ospeed_set = 3;
-    speed_reg = ((GPIO_TypeDef*)SPIBUS_MOSI_PORT)->OSPEEDR;
-    speed_reg &= ~(0x3 << (SPIBUS_MOSI_PIN << 1));
-    speed_reg |= (ospeed_set << (SPIBUS_MOSI_PIN << 1));
-    ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->OSPEEDR = speed_reg;
-    speed_reg = ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->OSPEEDR;
-    speed_reg &= ~(0x3 << (SPIBUS_SCK_PIN << 1));
-    speed_reg |= (ospeed_set << (SPIBUS_SCK_PIN << 1));
-    ((GPIO_TypeDef*)SPIBUS_SCK_PORT)->OSPEEDR = speed_reg;
-#endif
-}
-
 /*! \brief Pull SCK to the node-dependant idle level.
  *
  * \param node Specifies the SPI bus node.
@@ -423,7 +371,6 @@ static int Stm32SpiSetup(NUTSPINODE * node)
 #endif
     /* Update interface parameters. */
     node->node_rate = clk / (1 << (clkdiv + 1)) ;
-    SetPinSpeed(node, node->node_rate);
     node->node_mode &= ~SPI_MODE_UPDATE;
 
     return 0;
@@ -451,6 +398,7 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
         init_flag = GPIO_CFG_INIT_HIGH;
     else
         init_flag = GPIO_CFG_INIT_LOW;
+    init_flag |= SPI_SPEED;
     switch (node->node_cs) {
     case 0:
         rc = Stm32GpioConfigSet(SPI_CS0, GPIO_CFG_OUTPUT | init_flag, 0);
