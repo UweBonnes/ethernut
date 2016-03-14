@@ -81,7 +81,6 @@ nutarch_cm3_stm32f3 =
                     "HW_RTC_STM32_V2",
                     "HW_TIM2_32BIT_STM32",
                     "HW_DAC1_STM32",
-                    "HW_GPIO",
                     "HW_MCU_FPU",
                 },
                 file = "include/cfg/arch.h"
