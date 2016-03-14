@@ -37,6 +37,9 @@
  * \file dev/mmcard.h
  * \brief Header file for basic multimedia card driver.
  *
+ * See
+ * https://www.sdcard.org/downloads/pls/pdf/part1_410.pdf
+ *
  * \verbatim
  *
  * $Log$
@@ -126,101 +129,104 @@ typedef struct _MMCIFC {
 #define MMC_BLOCK_MODE                  0   // access card in block mode,
 #define MMC_BYTE_MODE                   1   // acces card using byte-addresses iso sector addresses
 
+typedef enum
+{
 /*! \brief Reset card to idle state.
  *
  * In idle state the card will not accept any other commands than
- * MMCMD_SEND_OP_COND or MMCMD_READ_OCR.
+ * MMCMD_SEN_DOP_COND or MMCMD_READ_OCR.
  */
-#define MMCMD_GO_IDLE_STATE             0
+    MMCMD_GO_IDLE_STATE =              0,
 
 /*! \brief Activate card's initialization process. */
-#define MMCMD_SEND_OP_COND              1
+    MMCMD_SEND_OP_COND  =              1,
 
 /*! \brief Send operation condition register.
  *
  * Queries the operation condition register content from all cards, which
  * are in idle state.
  */
-#define MMCMD_ALL_SEND_CID              2
+    MMCMD_ALL_SEND_CID =               2,
 
 /*! \brief Assign relative card address. */
-#define MMCMD_SEND_RELATIVE_ADDR        3
+    MMCMD_SEND_RELATIVE_ADDR =         3,
 
 /*! \brief Assign relative card address. */
-#define MMCMD_SELECT_CARD               7
+    MMCMD_SELECT_CARD =                7,
 
 /*! \brief negociate operating voltage (mandatory for 2.0). */
 // TODO: Double command? Same as extcsd?
-#define MMCMD_SEND_IF_COND              8
+    MMCMD_SEND_IF_COND =               8,
 
 /*! \brief Query card's extended CSD. */
-#define MMCMD_SEND_EXTCSD               8
+//    MMCMD_SEND_EXTCSD =               8
 
 /*! \brief Query card's CSD. */
-#define MMCMD_SEND_CSD                  9
+    MMCMD_SEND_CSD =                   9,
 
 /*! \brief Query card's CID. */
-#define MMCMD_SEND_CID                  10
+    MMCMD_SEND_CID =                  10,
 
 /*! \brief Stop multiple block transmission. */
-#define MMCMD_STOP_TRANSMISSION         12
+    MMCMD_STOP_TRANSMISSION =         12,
 
 /*! \brief Query card's status register. */
-#define MMCMD_SEND_STATUS               13
+    MMCMD_SEND_STATUS =                13,
 
 /*! \brief Select block length for following read/write commands. */
-#define MMCMD_SET_BLOCKLEN              16
+    MMCMD_SET_BLOCKLEN =              16,
 
 /*! \brief Initiate single block read. */
-#define MMCMD_READ_SINGLE_BLOCK         17
+    MMCMD_READ_SINGLE_BLOCK =         17,
 
 /*! \brief Initiate continuous block read. */
-#define MMCMD_READ_MULTIPLE_BLOCK       18
+    MMCMD_READ_MULTIPLE_BLOCK =       18,
 
 /*! \brief Initiate single block write. */
-#define MMCMD_WRITE_BLOCK               24
+    MMCMD_WRITE_BLOCK =               24,
 
 /*! \brief Initiate continuous block write. */
-#define MMCMD_WRITE_MULTIPLE_BLOCK      25
+    MMCMD_WRITE_MULTIPLE_BLOCK =      25,
 
 /*! \brief Initiate programming of programmable CSD bits. */
-#define MMCMD_PROGRAM_CSD               27
+    MMCMD_PROGRAM_CSD =               27,
 
 /*! \brief Enable card's optional write protection. */
-#define MMCMD_SET_WRITE_PROTECT         28
+    MMCMD_SET_WRITE_PROTECT =         28,
 
 /*! \brief Disable card's write protection. */
-#define MMCMD_CLR_WRITE_PROTECT         29
+    MMCMD_CLR_WRITE_PROTECT =         29,
 
 /*! \brief Query card's write protect status. */
-#define MMCMD_SEND_WRITE_PROTECT        30
+    MMCMD_SEND_WRITE_PROTECT =        30,
 
-/*! \brief Set address of the first erase group. */
-#define MMCMD_TAG_ERASE_GROUP_START     35
+/*! \brief Set address of the first erase group. Mode specific!*/
+    MMCMD_TAG_ERASE_GROUP_START =     35,
 
-/*! \brief Set address of the last erase group. */
-#define MMCMD_TAG_ERASE_GROUP_END       36
+/*! \brief Set address of the last erase group.  Mode specific!*/
+    MMCMD_TAG_ERASE_GROUP_END =       36,
 
 /*! \brief Erase previously selected sectors. */
-#define MMCMD_ERASE                     38
+    MMCMD_ERASE =                     38,
 
 /*! \brief Activate SD card's initialization process. */
-#define MMCMD_SEND_APP_OP_COND          41
+    MMCMD_SEND_APP_OP_COND =          41,
 
 /*! \brief Set/clear password or lock/unlock the card. */
-#define MMCMD_LOCK_UNLOCK               42
+    MMCMD_LOCK_UNLOCK =               42,
 
 /*! \brief Application command follows. */
-#define MMCMD_SEND_APP_CMD              55
+    MMCMD_SEND_APP_CMD =              55,
 
 /*! \brief Query card's operating condition register. */
-#define MMCMD_READ_OCR                  58
+    MMCMD_READ_OCR =                  58,
 
 /*! \brief Enable or disable CRC mode.
  *
  * In SPI mode CRC is disabled by default.
  */
-#define MMCMD_CRC_ON_OFF                59
+    MMCMD_CRC_ON_OFF =               59
+} mmcmd_t;
 
 /*! \brief Card is idle. */
 #define MMR1_IDLE_STATE         0x00

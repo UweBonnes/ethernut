@@ -327,7 +327,7 @@ static uint8_t CardRxTkn(NUTSPINODE * node)
  * \return The 1 or 2 byte response. On time out 0xFFFF is returned and
  *         the bus is released, regardless of the expected response length.
  */
-static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, int len)
+static uint16_t CardTxCommand(NUTSPINODE * node, mmcmd_t cmd, uint32_t param, int len)
 {
     uint16_t rc = 0xFFFF;
     int retries = 10;
@@ -345,7 +345,7 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
     /* We are running with CRC disabled. However, the reset command must
     ** be send with a valid CRC. Fortunately this command is sent with a
     ** fixed parameter value of zero, which results in a fixed CRC value. */
-    if (cmd == 8) {
+    if (cmd == MMCMD_SEND_IF_COND) {
         txb[5] = MMCMD_IF_COND_CRC;
     } else {
         txb[5] = MMCMD_RESET_CRC;
@@ -498,7 +498,7 @@ static int CardInit(NUTSPINODE * node)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int CardRxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, uint8_t *buf, int len)
+static int CardRxData(NUTSPINODE * node, mmcmd_t cmd, uint32_t param, uint8_t *buf, int len)
 {
     int rc = -1;
     uint8_t rsp;
@@ -1029,7 +1029,8 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
         rc = CardRxData(node, MMCMD_SEND_CSD, 0, (uint8_t *) conf, sizeof(MMC_CSD));
         break;
     case MMCARD_GETEXTCSD:
-        rc = CardRxData(node, MMCMD_SEND_EXTCSD, 0, (uint8_t *) conf, sizeof(MMC_CSD));
+        /* Checkme: MMCMD_SEND_EXTCSD and MMCMD_SEND_IF_COND are the same.*/
+        rc = CardRxData(node, MMCMD_SEND_IF_COND, 0, (uint8_t *) conf, sizeof(MMC_CSD));
         break;
     default:
         rc = -1;
