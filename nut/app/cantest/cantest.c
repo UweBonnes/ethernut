@@ -59,7 +59,7 @@ static char *banner = "\nNut/OS CANTEST Sample " __DATE__ " " __TIME__"\n";
 #define MASTER 0
 #define SLAVE  1
 
-#if defined(DEF_CANBUS)
+#if defined(DEV_CANBUS)
 THREAD(service_thread, arg)
 {
     FILE *uart = arg;
@@ -78,39 +78,39 @@ THREAD(service_thread, arg)
         {
         case 'C':
             printf("MASTER CAN_RX_FRAMES %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_RX_FRAMES));
+                   CanGetCounter(&DEV_CANBUS, CAN_RX_FRAMES));
             printf("MASTER CAN_TX_FRAMES %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_TX_FRAMES));
+                   CanGetCounter(&DEV_CANBUS, CAN_TX_FRAMES));
             printf("MASTER CAN_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS, CAN_INTERRUPTS));
             printf("MASTER CAN_RX_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_RX_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS, CAN_RX_INTERRUPTS));
             printf("MASTER CAN_TX_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_TX_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS, CAN_TX_INTERRUPTS));
             printf("MASTER CAN_SCE_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_SCE_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS, CAN_SCE_INTERRUPTS));
             printf("MASTER CAN_OVERRUNS %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_OVERRUNS));
+                   CanGetCounter(&DEV_CANBUS, CAN_OVERRUNS));
             printf("MASTER CAN_ERRORS %d\n",
-                   CanGetCounter(&DEF_CANBUS, CAN_ERROR));
+                   CanGetCounter(&DEV_CANBUS, CAN_ERROR));
 
-#if defined(DEF_CANBUS_SLAVE)
+#if defined(DEV_CANBUS_SLAVE)
             printf(" SLAVE CAN_RX_FRAMES %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_RX_FRAMES));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_RX_FRAMES));
             printf(" SLAVE CAN_TX_FRAMES %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_TX_FRAMES));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_TX_FRAMES));
             printf(" SLAVE CAN_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_INTERRUPTS));
             printf(" SLAVE CAN_RX_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_RX_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_RX_INTERRUPTS));
             printf(" SLAVE CAN_TX_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_TX_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_TX_INTERRUPTS));
             printf(" SLAVE CAN_SCE_INTERRUPTS %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_SCE_INTERRUPTS));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_SCE_INTERRUPTS));
             printf(" SLAVE CAN_OVERRUNS %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_OVERRUNS));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_OVERRUNS));
             printf(" SLAVE CAN_ERRORS %d\n",
-                   CanGetCounter(&DEF_CANBUS_SLAVE, CAN_ERROR));
+                   CanGetCounter(&DEV_CANBUS_SLAVE, CAN_ERROR));
 #endif
             break;
         case 's':
@@ -131,9 +131,9 @@ THREAD(service_thread, arg)
             pending = 1;
             break;
         }
-        if (pending && CanTxFree(&DEF_CANBUS))
+        if (pending && CanTxFree(&DEV_CANBUS))
         {
-            CanOutput(&DEF_CANBUS, &data);
+            CanOutput(&DEV_CANBUS, &data);
             pending = 0;
         }
     }
@@ -144,7 +144,7 @@ void print_frame(int type)
     int res, i;
     CANFRAME data;
 
-    res = CanInput((type)?&DEF_CANBUS_SLAVE:&DEF_CANBUS, &data);
+    res = CanInput((type)?&DEV_CANBUS_SLAVE:&DEV_CANBUS, &data);
     if (res)
     {
         printf("CanInput %s failed %d\n", (type)?" SLAVE":"MASTER", res);
@@ -200,7 +200,7 @@ int main(void)
     printf(banner);
     NutThreadCreate("input", service_thread, uart, 1024);
 
-#if !defined(DEF_CANBUS)
+#if !defined(DEV_CANBUS)
     (void) res;
     (void) filter;
     printf("No suitable CAN driver found for that device");
@@ -208,13 +208,13 @@ int main(void)
         NutSleep(100);
     }
 #else
-    res = NutRegisterCanBus( &DEF_CANBUS, -1);
+    res = NutRegisterCanBus( &DEV_CANBUS, -1);
     if (res) {
         printf("NutRegisterCanBus failed %d\n", res);
         while(1) NutSleep(100);
     }
 
-    res = CanSetBaud(&DEF_CANBUS, CAN_SPEED_1M, 0);
+    res = CanSetBaud(&DEV_CANBUS, CAN_SPEED_1M, 0);
     if (res) {
         printf("CanSetBaud failed %d\n", res);
         while(1) NutSleep(100);
@@ -224,14 +224,14 @@ int main(void)
     memset(&filter, 0, sizeof(filter));
     filter.mask_ext = 1;
     filter.id_ext = 1;
-    res = CanAddFilter(&DEF_CANBUS, &filter);
+    res = CanAddFilter(&DEV_CANBUS, &filter);
     if (res) {
         printf("CanAddFilter Slave failed %d\n", res);
         while(1) NutSleep(100);
     }
 
-#if defined(DEF_CANBUS_SLAVE)
-    res = NutRegisterCanBus( &DEF_CANBUS_SLAVE, -1);
+#if defined(DEV_CANBUS_SLAVE)
+    res = NutRegisterCanBus( &DEV_CANBUS_SLAVE, -1);
     if (res) {
         printf("NutRegisterCanBus compaignon failed %d\n", res);
         while(1) NutSleep(100);
@@ -239,22 +239,22 @@ int main(void)
 
     /* Receive standard frame with any address on Slave*/
     filter.id_ext = 0;
-    res = CanAddFilter(&DEF_CANBUS_SLAVE, &filter);
+    res = CanAddFilter(&DEV_CANBUS_SLAVE, &filter);
     if (res) {
         printf("CanAddFilter Master failed %d\n", res);
         while(1) NutSleep(100);
     }
 #endif
 
-    CanEnableRx(&DEF_CANBUS);
-#if defined(DEF_CANBUS_SLAVE)
-    CanEnableRx(&DEF_CANBUS_SLAVE);
+    CanEnableRx(&DEV_CANBUS);
+#if defined(DEV_CANBUS_SLAVE)
+    CanEnableRx(&DEV_CANBUS_SLAVE);
 #endif
     for (;;) {
-        if(CanRxAvail(&DEF_CANBUS))
+        if(CanRxAvail(&DEV_CANBUS))
            print_frame(MASTER);
-#if defined(DEF_CANBUS_SLAVE)
-        if(CanRxAvail(&DEF_CANBUS_SLAVE))
+#if defined(DEV_CANBUS_SLAVE)
+        if(CanRxAvail(&DEV_CANBUS_SLAVE))
            print_frame(SLAVE);
 #endif
         NutSleep(100);

@@ -83,12 +83,12 @@
 #define DEV_UART_NAME  devUsartStm32_1.dev_name
 #endif
 
-#ifndef DEF_CANBUS
-#define DEF_CANBUS Stm32CanBus1
+#ifndef DEV_CANBUS
+#define DEV_CANBUS Stm32CanBus1
 #endif
 
-#ifndef DEF_CANBUS_SLAVE
-#define  DEF_CANBUS_SLAVE Stm32CanBus1C
+#ifndef DEV_CANBUS_SLAVE
+#define  DEV_CANBUS_SLAVE Stm32CanBus1C
 #endif
 
 #ifndef DEV_I2CBUS

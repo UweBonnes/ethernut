@@ -819,7 +819,7 @@ nutdev =
         options =
         {
             {
-                macro = "DEV_CANBUS",
+                macro = "DEV_CAN",
                 brief = "CANBUS Driver",
                 description = "Enable use of the CANBUS drivers",
                 requires = { "DEV_CANBUS" },

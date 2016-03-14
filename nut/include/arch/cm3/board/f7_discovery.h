@@ -63,12 +63,12 @@
 #define DEV_CONSOLE_NAME DEV_UART_NAME
 #endif
 
-#ifndef DEF_CANBUS
-#define DEF_CANBUS Stm32CanBus1
+#ifndef DEV_CANBUS
+#define DEV_CANBUS Stm32CanBus1
 #endif
 
-#ifndef DEF_CANBUS_SLAVE
-#define  DEF_CANBUS_SLAVE Stm32CanBus1C
+#ifndef DEV_CANBUS_SLAVE
+#define  DEV_CANBUS_SLAVE Stm32CanBus1C
 #endif
 
 /* Ethernet interface */

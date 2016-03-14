@@ -138,7 +138,7 @@ typedef struct _CANBUFFER CANBUFFER;
 
 
 /* Include architecture specific CAN implementation */
-#if defined(DEV_CANBUS)
+#if defined(DEV_CAN)
 #if defined(MCU_STM32)
 #include <arch/cm3/stm/stm32_can.h>
 #else
