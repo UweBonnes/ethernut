@@ -66,7 +66,7 @@ extern void Dma2IrqEntry(void *arg);
 void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flags);
 void DMA_Enable(uint8_t ch);
 void DMA_Disable(uint8_t ch);
-int  DmaIsEnabled(uint8_t ch);
+extern int  DmaIsEnabled(uint8_t ch);
 void DMA_Init(void);
 void DMA_IrqMask( uint8_t ch, uint32_t mask, uint8_t ena);
 void DMA_ClearFlag( uint8_t ch, uint32_t flags);

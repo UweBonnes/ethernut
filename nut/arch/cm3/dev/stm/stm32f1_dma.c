@@ -136,6 +136,18 @@ void DMA_Enable(uint8_t ch)
 }
 
 /*
+ * \brief Query if DMA Channel is enable.
+ *
+ * \param ch Channel to query
+ * \return 0 if disabled
+ */
+int DmaIsEnabled(uint8_t ch)
+{
+    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    return (channel->CCR & DMA_CCR_EN);
+}
+
+/*
  * \brief Disable DMA Transfer.
  */
 void DMA_Disable(uint8_t ch)
