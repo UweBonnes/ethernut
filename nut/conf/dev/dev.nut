@@ -5694,4 +5694,315 @@ nutdev =
             },
         },
     },
+    {
+        name = "nutdev_mux_7seg",
+        brief = "Gpio multiplexs 7 segment driver",
+        description = "Direct GPIO connected multiplexed 7 segment driver.",
+        sources = { "mux_7seg.c" },
+        options =
+        {
+            {
+                macro = "SEG7_SEG_NEG",
+                brief = "Segments active with low level",
+                description = "Select if segments are active with GPIO low level.",
+                flavor = "boolean",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT_NEG",
+                brief = "Digits active with low level",
+                description = "Select if digits are active with GPIO low level.",
+                flavor = "boolean",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_A_PORT",
+                brief = "Segment A Port",
+                description = "Choose port for segment A.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_A_PIN",
+                brief = "Segment A Pin",
+                description = "Choose bit for segment A.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_B_PORT",
+                brief = "Segment B Port",
+                description = "Choose port for segment B.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_B_PIN",
+                brief = "Segment B Pin",
+                description = "Choose bit for segment B.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_C_PORT",
+                brief = "Segment C Port",
+                description = "Choose port for segment C.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_C_PIN",
+                brief = "Segment C Pin",
+                description = "Choose bit for segment C.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_D_PORT",
+                brief = "Segment D Port",
+                description = "Choose port for segment D.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_D_PIN",
+                brief = "Segment D Pin",
+                description = "Choose bit for segment D.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_E_PORT",
+                brief = "Segment E Port",
+                description = "Choose port for segment E.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_E_PIN",
+                brief = "Segment E Pin",
+                description = "Choose bit for segment E.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_F_PORT",
+                brief = "Segment F Port",
+                description = "Choose port for segment F.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_F_PIN",
+                brief = "Segment F Pin",
+                description = "Choose bit for segment F.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_G_PORT",
+                brief = "Segment G Port",
+                description = "Choose port for segment G.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_G_PIN",
+                brief = "Segment G Pin",
+                description = "Choose bit for segment G.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DP_PORT",
+                brief = "Segment DP Port",
+                description = "Choose port for segment DP.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DP_PIN",
+                brief = "Segment DP Pin",
+                description = "Choose bit for segment DP.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT0_PORT",
+                brief = "Digit 0 Port",
+                description = "Choose port for digit 0.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT0_PIN",
+                brief = "Digit 0 Pin",
+                description = "Choose bit for digit 0.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT1_PORT",
+                brief = "Digit 1 Port",
+                description = "Choose port for digit 1.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT1_PIN",
+                brief = "Digit 1 Pin",
+                description = "Choose bit for digit 1.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT2_PORT",
+                brief = "Digit 2 Port",
+                description = "Choose port for digit 2.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT2_PIN",
+                brief = "Digit 2 Pin",
+                description = "Choose bit for digit 2.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT3_PORT",
+                brief = "Digit 3 Port",
+                description = "Choose port for digit 3.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT3_PIN",
+                brief = "Digit 3 Pin",
+                description = "Choose bit for digit 3.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT4_PORT",
+                brief = "Digit 4 Port",
+                description = "Choose port for digit 4.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT4_PIN",
+                brief = "Digit 4 Pin",
+                description = "Choose bit for digit 4.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT5_PORT",
+                brief = "Digit 5 Port",
+                description = "Choose port for digit 5.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT5_PIN",
+                brief = "Digit 5 Pin",
+                description = "Choose bit for digit 5.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT6_PORT",
+                brief = "Digit 6 Port",
+                description = "Choose port for digit 6.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT6_PIN",
+                brief = "Digit 6 Pin",
+                description = "Choose bit for digit 6.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT7_PORT",
+                brief = "Digit 7 Port",
+                description = "Choose port for digit 7.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+             {
+                macro = "SEG7_DIGIT7_PIN",
+                brief = "Digit 7 Pin",
+                description = "Choose bit for digit 7.",
+                type = "enumerated",
+                choices =  mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/mux_7seg.h"
+             },
+         }
+    }
 }
