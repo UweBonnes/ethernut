@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2013-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-2016 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -41,11 +41,19 @@
 #include <stdio.h>
 #include <sys/timer.h>
 
+#include <io.h>
+
+#include <dev/term.h>
+
 #include <pro/rfctime.h>
 #include <cfg/crt.h>
 
 static const char banner[] = "\nDisplay on "
     BOARDNAME " " __DATE__ " " __TIME__"     \n";
+
+#undef DEV_DISPLAY
+#define DEV_DISPLAY devMux7Seg
+extern NUTDEVICE devMux7Seg;
 
 #if !defined(DEV_DISPLAY)
 # define DEV_DISPLAY DEV_CONSOLE
@@ -100,19 +108,36 @@ int main(void)
 {
     FILE *lcd;
     int i = 0;
+    WINSIZE win_size;
+    int res;
+    int n_digits;
 
     NutRegisterDevice(&DEV_DISPLAY, 0, 0);
     lcd = fopen(DEV_DISPLAY.dev_name, "r+");
-    fprintf(lcd, banner);
-    RTC_Init();
-    while (1) {
-        struct _tm rtctime;
-        if (NutRtcGetTime(&rtctime) == 0) {
-            fprintf(lcd, "%2d:%02d:%02d\n", rtctime.tm_hour,
-                    rtctime.tm_min, rtctime.tm_sec);
+    /* Find number of display digits.*/
+    memset(&win_size, 0, sizeof(WINSIZE));
+    res = _ioctl(_fileno(lcd), TIOCGWINSZ, &win_size);
+    n_digits = win_size.ws_row;
+    if (!res && n_digits && win_size.ws_row && (n_digits < 6)) {
+        /* If we _know_ we have less than 6 digit, only  count!*/
+        while (1) {
+            fprintf(lcd, "%*d\n", n_digits, i);
+            NutSleep(250);
+            i++;
         }
-        else fprintf(lcd, "Failed");
-        i++;
-        NutSleep(250);
+    } else {
+        /* display time */
+        fprintf(lcd, banner);
+        RTC_Init();
+        while (1) {
+            struct _tm rtctime;
+            if (NutRtcGetTime(&rtctime) == 0) {
+                fprintf(lcd, "%2d:%02d:%02d\n", rtctime.tm_hour,
+                        rtctime.tm_min, rtctime.tm_sec);
+            }
+            else fprintf(lcd, "Failed");
+            i++;
+            NutSleep(250);
+        }
     }
 }
