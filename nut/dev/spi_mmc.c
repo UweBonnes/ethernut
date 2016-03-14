@@ -159,7 +159,12 @@
    into internal SRAM anyway. Another possibility to rid of this buffer
    would be to switch the output line to GPIO and set it high during
    read transfers. This needs to be tested. */
+# if defined(__GNUC__) && !defined(__HARVARD_ARCH__)
+const uint8_t dummy_tx_buf[MMC_BLOCK_SIZE]
+         = {[0 ... (MMC_BLOCK_SIZE -1)] = 0xff};
+#else
 static uint8_t dummy_tx_buf[MMC_BLOCK_SIZE];
+#endif
 #else
 #define dummy_tx_buf    NULL
 #endif
@@ -1053,7 +1058,9 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
 int SpiMmcInit(NUTDEVICE * dev)
 {
 #ifndef ELEKTOR_IR1
+# if !defined(__GNUC__) ||  defined(__HARVARD_ARCH__)
     memset(dummy_tx_buf, 0xFF, MMC_BLOCK_SIZE);
+# endif
 #endif
     return 0;
 }
