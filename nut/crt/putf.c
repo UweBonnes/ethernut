@@ -184,10 +184,10 @@ uint64_t va_args_ulval(int flags, va_list *ap)
     uint64_t result;
     if (flags & LONGLONG)
         result = va_arg(*ap, uint64_t);
-    else if (flags & LONGINT)
-        result = (uint64_t)va_arg(*ap, int32_t);
     else if (flags & UNSIGNED)
         result = (uint64_t)va_arg(*ap, unsigned int);
+    else if (flags & LONGINT)
+        result = (uint64_t)va_arg(*ap, int32_t);
     else
         result = (uint64_t)va_arg(*ap, int);
     return result;
@@ -455,6 +455,7 @@ int _putf(int _putb(int, const void *, size_t),
         case 'p':
         case 'X':
         case 'x':
+            flags |= UNSIGNED;
 #ifndef STDIO_64_BIT
             if (flags & LONGLONG) {
                 (void)va_arg(ap, uint64_t);
