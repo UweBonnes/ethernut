@@ -252,14 +252,9 @@ static void  StmUsartClkEnable(int enable)
 
 #define USARTn      USART6
 #define USARTnBase  USART6_BASE
-#if defined(MCU_STM32F0)
-# define USARTclk    HWCLK_APB1
-#else
-# define USARTclk    HWCLK_APB2
-#endif
+#define USARTclk    BASE2CLKSRC(USART6_BASE)
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
-#define SigUSART    sig_USART6
 #define DcbUSART    dcb_usart6
 
 /*@}*/

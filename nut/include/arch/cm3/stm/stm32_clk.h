@@ -130,6 +130,15 @@ typedef enum
     HWCLK_MAX,
 }clock_index_t;
 
+#if defined(APB2PERIPH_BASE)
+# define BASE2CLKSRC(base) ((base < APB2PERIPH_BASE) ? HWCLK_APB1 : HWCLK_APB2)
+# define BASE2TCLKSRC(base) ((base < APB2PERIPH_BASE) ? \
+                             HWCLK_APB1_TIMER : HWCLK_APB2_TIMER)
+#else
+# define BASE2CLKSRC(base) HWCLK_APB1
+# define BASE2TCLKSRC(base) HWCLK_APB1_TIMER
+#endif
+
 extern uint32_t STM_ClockGet(clock_index_t idx);
 
 /* Control functions for the separate clocks */
