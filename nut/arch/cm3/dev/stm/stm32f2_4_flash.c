@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013 Uwe Bonnes
+ * Copyright (C) 2012, 2013, 2015 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,7 @@
 #include <string.h>
 
 #include <cfg/arch.h>
+#include <cfg/clock.h>
 #include <cfg/memory.h>
 #include <cfg/eeprom.h>
 #include <sys/nutdebug.h>
@@ -73,25 +74,23 @@ static const uint8_t sector2start[] =  {
 #define FLASH_CR_SNB_MASK (FLASH_CR_SNB_0 | FLASH_CR_SNB_1 | FLASH_CR_SNB_2 |\
                            FLASH_CR_SNB_3)
 
+#if (STM32_EXTERNAL_VPP == ENABLE)
+#define FLASH_TYPE_CAST   (volatile uint64_t *)
+#define FLASH_PSIZE       FLASH_PSIZE_64
+#define FLASH_LEN_MASK    7
 /* If no other value is given, use 32-bit access*/
-#if (FLASH_PE_PARALLELISM == 8)
+#elif  (STM32_SUPPLY_MINIMUM < 2100)
 #define FLASH_PSIZE       FLASH_PSIZE_8
 #define FLASH_TYPE_CAST   (volatile uint8_t *)
 #define FLASH_LEN_MASK    0
-#elif (FLASH_PE_PARALLELISM == 16)
+#elif (STM32_SUPPLY_MINIMUM < 2700)
 #define FLASH_PSIZE       FLASH_PSIZE_16
 #define FLASH_TYPE_CAST   (volatile uint16_t *)
 #define FLASH_LEN_MASK    1
 #else
-#if (FLASH_PE_PARALLELISM == 64)
-#define FLASH_TYPE_CAST   (volatile uint64_t *)
-#define FLASH_PSIZE       FLASH_PSIZE_64
-#define FLASH_LEN_MASK    7
-#else
 #define FLASH_TYPE_CAST   (volatile uint32_t *)
 #define FLASH_PSIZE       FLASH_PSIZE_32
 #define FLASH_LEN_MASK    3
-#endif
 #endif
 
 #define FLASH_KEY1 0x45670123L

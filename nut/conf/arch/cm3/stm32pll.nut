@@ -979,6 +979,17 @@ nutarch_cm3_stm32_pll =
             file = "include/cfg/clock.h"
         },
         {
+            macro = "STM32_EXTERNAL_VPP",
+            brief = "External VPP",
+            description = "External VPP applied to allow 64-bit "..
+                        "programming.\nDefault: DISABLE.\n",
+            requires = {"HW_FLASH_STM32F2_4"},
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "DISABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
             macro = "STM32_OVERDRIVE",
             brief = "Over-Drive mode",
             description = "Over-Drive Mode\n\n"..
