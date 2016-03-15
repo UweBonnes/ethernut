@@ -625,18 +625,19 @@ static void Stm32UsartDisable(void)
 static uint32_t Stm32UsartGetSpeed(void)
 {
     uint32_t clk;
+    uint32_t brr;
 
     clk = NutClockGet(USARTclk);
-    if (USARTn->CR1 & USART_CR1_OVER8)
+    brr = USARTn->BRR;
+    if (USART_CR1_OVER8 && (USARTn->CR1 & USART_CR1_OVER8))
     {
-        uint32_t frac_div = USARTn->BRR;
-        uint32_t frac = frac_div & 7;
-        frac_div >>= 1;
-        frac_div &= ~0x7;
-        frac_div |= frac;
-        return clk / frac_div;
+        uint32_t frac;
+        frac = brr & 7;
+        brr >>= 1;
+        brr &= ~0x7;
+        brr |= frac;
     }
-    return clk;
+    return clk / brr;
 }
 
 /*!
@@ -651,59 +652,36 @@ static uint32_t Stm32UsartGetSpeed(void)
  */
 static int Stm32UsartSetSpeed(uint32_t rate)
 {
-    uint32_t tmpreg = 0x00;
-    uint32_t apbclock = 0x00;
-    uint32_t integerdivider = 0x00;
-    uint32_t fractionaldivider = 0x00;
+    uint32_t apbclock;
+    uint32_t divider;
+    uint32_t cr1;
 
     Stm32UsartDisable();
 
     apbclock = NutClockGet(USARTclk);
 
-    /* Determine the integer part */
-    if (USARTn->CR1 & USART_CR1_OVER8)
-    {
-        /* In case Oversampling mode is 8 Samples */
-        integerdivider = ((25 * apbclock) / (2 * rate));
-        if (integerdivider > 200)
-        {
-            /* switch back to 16 Sample Oversampling when possible*/
-            USARTn->CR1 &= ~USART_CR1_OVER8;
-            integerdivider = ((25 * apbclock) / (4 * rate));
-        }
-    }
-    else
-    {
-        /* In case Oversampling mode is 16 Samples */
-        integerdivider = ((25 * apbclock) / (4 * rate));
-        if (integerdivider < 100)
-        {
-            /* switch back to 8 Sample Oversampling*/
-            USARTn->CR1 |= USART_CR1_OVER8;
-            integerdivider = ((25 * apbclock) / (2 * rate));
-        }
-    }
-    /* Cap rate to highest possible */
-    if (integerdivider <100)
-        integerdivider = 100;
-    tmpreg = (integerdivider / 100) << 4;
+    divider = (2 * apbclock) / rate;
+    cr1 = USARTn->CR1;
 
-    /* Determine the fractional part */
-    fractionaldivider = integerdivider - (100 * (tmpreg >> 4));
-
-    if (USARTn->CR1 & USART_CR1_OVER8)
-    {
-        /* In case Oversampling mode is 8 Samples */
-        tmpreg |= ((((fractionaldivider * 8) + 50) / 100)) & ((uint8_t)0x07);
+    if ((divider > 0x20) || (USART_CR1_OVER8 == 0)) {
+        cr1 &= ~USART_CR1_OVER8;
+        divider = divider >> 1;
+    } else {
+        cr1 |= USART_CR1_OVER8;
     }
-    else
-    {
-        /* In case Oversampling mode is 16 Samples */
-        tmpreg |= ((((fractionaldivider * 16) + 50) / 100)) & ((uint8_t)0x0F);
+    if (divider < 0x10) {
+        divider = 0x10;
     }
+    if (USART_CR1_OVER8 && (cr1 & USART_CR1_OVER8)) {
+        uint32_t remainder;
 
+        remainder = divider & 0xf;
+        divider &= ~0xf;
+        divider |= remainder >> 1;
+    }
+    USARTn->CR1 = cr1;
     /* Write to USART BRR */
-    USARTn->BRR = (uint16_t)tmpreg;
+    USARTn->BRR = divider;
 
     Stm32UsartEnable();
     return 0;
