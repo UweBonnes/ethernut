@@ -62,7 +62,7 @@
 #define PLLCLK_HSI48_PREDIV 4
 #define PLLCLK_HSI          5
 #define PLLCLK_HSE          6
-#define PLLCLK_PLL2         7
+#define PLLCLK_HSE_PLL2     7
 #define PLLCLK_MSI          8
 
 /* RTC clock sources */

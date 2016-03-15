@@ -50,9 +50,9 @@
 
 function GetF1ClockHandler()
     if c_is_provided("HW_MCU_STM32F100") then
-        return "cm3/dev/stm/stm32f30_clk.c"
+        return {"cm3/dev/stm/stm32f30_clk.c"}
     end
-    return "cm3/dev/stm/stm32f1_clk.c"
+    return {"cm3/dev/stm/stm32f1_clk.c"}
 end
 
 nutarch_cm3_stm32_family =

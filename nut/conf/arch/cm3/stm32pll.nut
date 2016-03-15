@@ -905,7 +905,9 @@ nutarch_cm3_stm32_pll =
                 "PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV.\n\n"..
                 "For unhandled special settings, enter suitable and\n"..
                 "allowed PLL Clock Multiplier value here"..
-                "or better extend clock setting!",
+                "or better extend clock setting!\n"..
+                "For STM32F1  CL devices enter the desired factor * 2 so\n"..
+                "that the multiplication factor 6.5 becomes 13.\n",
             requires = {"SYSCLK_FREQ"},
             file = "include/cfg/clock.h"
         },
