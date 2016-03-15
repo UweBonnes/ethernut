@@ -99,13 +99,19 @@
 #  if RTC_PRE != 128
 #    warning Illegal RTC_PRE for F1 given, only 128 allowed
 #  else
-#   define RTC_PRE_VAL 0
+#   define RTC_PRE_VAL       0
+#   define RCC_CR_RTCPRE     0
+#   define RCC_CR_RTCPRE_0   0
+#   define RCC_CFGR_RTCPRE_0 0
 #  endif
 # else
 #  if RTC_PRE != 32
 #    warning Illegal RTC_PRE for F0/F3 given, only 32 allowed
 #  else
 #   define RTC_PRE_VAL 0
+#   define RCC_CR_RTCPRE     0
+#   define RCC_CR_RTCPRE_0   0
+#   define RCC_CFGR_RTCPRE_0 0
 #  endif
 # endif
 
