@@ -34,7 +34,6 @@
 
 #include <sys/nutdebug.h>
 
-#include <cfg/arch.h>
 #include <arch/cm3.h>
 
 #include <arch/cm3/timer.h>
@@ -47,129 +46,171 @@
 
 /* Prepare some defaults if configuration is incomplete */
 
-#if !defined(HSE_VALUE)
-# define HSE_VALUE 0
-#endif
+#define MSI_DEFAULT MSI_4M
 
-#if !defined(HSI_VALUE)
-# define HSI_VALUE 16000000
-#endif
+#define HSI_VALUE 16000000
 
 #if !defined(HSE_STARTUP_TIMEOUT)
 /*!< Time out for HSE start up, in loops*/
 # define HSE_STARTUP_TIMEOUT ((uint32_t)5000)
 #endif
 
-#if !defined(AHB_PRE)
-#define AHB_PRE 1
-#endif
-
-#if !defined(APB1_PRE)
-#define APB1_PRE 1
-#endif
-
-#if !defined(APB2_PRE)
-#define APB2_PRE 1
-#endif
-#if !defined(SYSCLK_SOURCE)
-# define SYSCLK_SOURCE SYSCLK_MSI
-#endif
-
-#if !defined(MSI_RANGE)
-# define MSI_RANGE MSI_4M
-#endif
-
 #define NUM_MSI_FREQ 12
 static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
     /* Values from STM32L476 Rev. 2 datasheet, table 47
-     *  Exact values only for MSI PLL on.
+     * Exact values only for MSI PLL on.
      */
-    98304,
-    196608,
-    393216,
-    786432,
-    1016000,
-    1999000,
-    3998000,
-    7995000,
-    15991000,
-    23986000,
-    32014000,
-    48005000
+       98304, /* (   3 * (1 << 15))*/
+      196608, /* (   6 * (1 << 15))*/
+      393216, /* (  12 * (1 << 15))*/
+      786432, /* (  24 * (1 << 15))*/
+     1016808, /* (  31 * (1 << 15))*/
+     1999848, /* (  61 * (1 << 15))*/
+     3997696, /* ( 122 * (1 << 15))*/
+     7995392, /* ( 244 * (1 << 15))*/
+    15990784, /* ( 488 * (1 << 15))*/
+    23986176, /* ( 732 * (1 << 15))*/
+    32014336, /* ( 977 * (1 << 15))*/
+    48005120, /* (1465 * (1 << 15))*/
 };
 
-#if (PLLCLK_SOURCE == PLLCLK_HSE)
-# define PLLCLK_IN HSE_VALUE
-#elif (PLLCLK_SOURCE == PLLCLK_HSI)
-# define PLLCLK_IN HSI_VALUE
-#else
-# define PLLCLK_IN 3998000
-# undef MSI_RANGE
-# define MSI_RANGE MSI_4M
-#endif
-
-#if !defined(STM32_POWERSCALE) || STM32_POWERSCALE == 1
+/* Prepare system limits*/
+#if   (STM32_POWERSCALE == 1)
 /* Give some tolerance to that MSI_32M use 1 WS and MSI_48M 2 WS*/
-# define FLASH_BASE_FREQ 16007001
+# define FLASH_BASE_FREQ 16007000
 # define SYSCLK_MAX      80000000
 # define PLLVCO_MAX     344000000
-# if !defined(SYSCLK_FREQ)
-/* 8 MHz PLL Input, 160 MHz PLL VCO, 80 MHz PLL R output */
-#  if (PLLCLK_IN == 16000000)
-#   define PLLM 2
-#   define PLLN 20
-#   define PLLR 2
-#  elif (PLLCLK_IN == 8000000)
-#   define PLLM 1
-#   define PLLN 20
-#   define PLLR 2
-#  elif (PLLCLK_IN == 3998000)
-#   define PLLM 1
-#   define PLLN 40
-#   define PLLR 2
-#  endif
-# endif
-#elif STM32_POWERSCALE == 2
+#elif (STM32_POWERSCALE == 2)
 # define FLASH_BASE_FREQ  6000000
 # define SYSCLK_MAX      26000000
 # define PLLVCO_MAX     128000000
-# if !defined(SYSCLK_FREQ)
-/* 8 MHz PLL Input, 104 MHz PLL VCO, 26 MHz PLL R output */
-#  if (PLLCLK_IN == 16000000)
-#   define PLLM 2
-#   define PLLN 13
-#   define PLLR 4
-#  elif (PLLCLK_IN == 8000000)
-#   define PLLM 1
-#   define PLLN 13
-#   define PLLR 4
-#  elif (PLLCLK_IN == 3998000)
-#   define PLLM 1
-#   define PLLN 26
-#   define PLLR 2
-#  endif
-# endif
 #else
-# warning Unhandled STM32_POWERSCALE
-#endif
-
-#if (PLLCLK_IN / PLLM) < 3998000
-# warning PLL Input frequency too high
-#endif
-
-#if (PLLCLK_IN / PLLM) > 16000000
-# warning PLL Input frequency too high
-#endif
-
-#if ((PLLCLK_IN / PLLM) * PLLn) > PLLVCO_MAX
-# warning PLL VCO frequency too high
+# warning Invalid STM32_POWERSCALE
 #endif
 
 #define PCLK1_MAX   SYSCLK_MAX
 #define PCLK2_MAX   SYSCLK_MAX
 
-#if defined(SYSCLK_FREQ) && SYSCLK_FREQ > SYSCLK_MAX
-# warning "SYSCLK_FREQ overclocked"
+/* Define PLL Input Clock */
+#if (PLLCLK_SOURCE == PLLCLK_HSE)
+# if (HSE_VALUE < 1000000)
+#  warning HSE_VALUE not given or too low!
+# endif
+# define PLLCLK_IN HSE_VALUE
+#elif (PLLCLK_SOURCE == PLLCLK_HSI)
+# define PLLCLK_IN HSI_VALUE
+#elif (PLLCLK_SOURCE == PLLCLK_MSI)
+/* Use rounded MSI value here to keep calculation below easy */
+# define PLLCLK_IN 4000000
+# undef MSI_RANGE
+# define MSI_RANGE MSI_4M
+#else
+# define PLLCLK_IN 0
+#endif
+
+#if (SYSCLK_SOURCE == SYSCLK_PLL)
+/* 7 < PLL_MULT < 87
+ * 0 < PLL_PREDIV < 9
+ * 0 < PLLCLK_DIV /2 < 3
+ */
+# if !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT) && !defined(PLLCLK_DIV)
+#  if (STM32_POWERSCALE == 1)
+#   if defined(SYSCLK_FREQ)
+#    if (SYSCLK_FREQ != 80000000)
+#     warning Only 80 MHz accepted without PLL factors given
+#    endif
+#   else
+#    define SYSCLK_FREQ 80000000
+#   endif
+/* 160 MHz PLL output */
+#   if   ((PLLCLK_IN % 8000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
+#    define PLLCLK_MULT   20
+#    define PLLCLK_DIV     2
+#   elif ((PLLCLK_IN % 6000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
+#    define PLLCLK_MULT   25
+#    define PLLCLK_DIV     2
+#   elif ((PLLCLK_IN % 5000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#    define PLLCLK_MULT   32
+#    define PLLCLK_DIV     2
+#   elif ((PLLCLK_IN % 4000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#    define PLLCLK_MULT   40
+#    define PLLCLK_DIV     2
+#   else
+#    warning Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV to reach 80 MHz
+#   endif
+#  elif (STM32_VRANGE == 2)
+#   if defined(SYSCLK_FREQ)
+#    if (SYSCLK_FREQ != 26000000))
+#     warning Only 26 MHz accepted without PLL factors given
+#    endif
+#   else
+#    define SYSCLK_FREQ 26000000
+#   endif
+/*  8 MHz PLL Input, 104 MHz PLL VCO, 26 MHz PLL R output */
+#   if   ((PLLCLK_IN % 8000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
+#    define PLLCLK_MULT   13
+#    define PLLCLK_DIV     4
+/*  7 MHz PLL Input, 98 MHz PLL VCO, 24,5 MHz PLL R output */
+#   elif ((PLLCLK_IN % 7000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 7000000)
+#    define PLLCLK_MULT   14
+#    define PLLCLK_DIV     4
+/*  6 MHz PLL Input, 96 MHz PLL VCO, 24 MHz PLL R output */
+#   elif ((PLLCLK_IN % 6000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
+#    define PLLCLK_MULT   16
+#    define PLLCLK_DIV     4
+/*  5 MHz PLL Input, 100 MHz PLL VCO, 25 MHz PLL R output */
+#   elif ((PLLCLK_IN % 5000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#    define PLLCLK_MULT   20
+#    define PLLCLK_DIV     4
+/*  4 MHz PLL Input, 104 MHz PLL VCO, 26 MHz PLL R output */
+#   elif ((PLLCLK_IN % 4000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#    define PLLCLK_MULT   26
+#    define PLLCLK_DIV     4
+#   else
+#    warning Please Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV
+#   endif
+#  endif
+# endif
+# if   (PLLCLK_IN / PLLCLK_PREDIV) < 4000000
+#  warning PLL Input frequency too low
+# elif (PLLCLK_IN / PLLCLK_PREDIV) > 16000000
+#  warning PLL Input frequency too high
+# elif ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) < 64000000
+#  warning PLL VCO frequency too low
+# elif ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) > PLLVCO_MAX
+#  warning PLL VCO frequency too high
+# elif (((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) / PLLCLK_DIV) > SYSCLK_MAX
+#  warning "SYSCLK_FREQ overclocked"
+# endif
+#endif
+
+/* Provide fallback values for PLLCLK PREDIV, MULT, DIV */
+#if !defined(PLLCLK_PREDIV)
+# define PLLCLK_PREDIV 1
+#endif
+#if !defined(PLLCLK_MULT)
+# define PLLCLK_MULT   8
+#endif
+#if !defined(PLLCLK_DIV)
+# define PLLCLK_DIV    2
+#endif
+
+/* Check PLL factors */
+#if  (PLLCLK_PREDIV < 1) || (PLLCLK_PREDIV > 8)
+# warning Wrong PLLCLK_PREDIV
+#elif (PLLCLK_MULT < 8) || (PLLCLK_MULT > 86)
+# warning Wrong PLLCLK_MULT
+#elif (PLLCLK_DIV < 2) || ((PLLCLK_DIV % 2) || (PLLCLK_DIV / 2) > 3)
+# warning Wrong PLLCLK_DIV
 #endif
 
 static uint32_t msi_clock;
@@ -261,7 +302,6 @@ static void SystemCoreClockUpdate(void)
         uint32_t m = (pllcfgr & RCC_PLLCFGR_PLLM) >> _BI32(RCC_PLLCFGR_PLLM_0);
         uint32_t r = (pllcfgr & RCC_PLLCFGR_PLLR) >> _BI32(RCC_PLLCFGR_PLLR_0);
 
-        n += 1;
         m += 1;
         r = 2 * (r + 1);
         if ((pllcfgr & RCC_PLLCFGR_PLLSRC) == RCC_PLLCFGR_PLLSRC_HSE) {
@@ -294,103 +334,41 @@ static void SystemCoreClockUpdate(void)
  * \param  ena 0 disable clock, any other value enable it.
  * \return 0 on success, -1 on MSI start failed.
  */
-static int CtlMsiClock( uint8_t ena)
+static msi_range_t CtlMsiClock(msi_range_t range)
 {
-    int rc = 0;
+    msi_range_t res;
+    uint32_t cr;
 
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t HSIStatus = 0;
+    cr = RCC->CR;
+    if (cr & RCC_CR_MSIRGSEL) {
+        res = (cr & RCC_CR_MSIRANGE) / RCC_CR_MSIRANGE_1;
+    } else {
+        uint32_t csr;
 
-    if (ena) {
-        uint32_t cr;
-        msi_range_t msi_range;
-        /* Enable MSI and MSI range selection in CR */
-        RCC->CR |= RCC_CR_MSION ;
+        csr = RCC->CSR;
+        res = (csr & RCC_CSR_MSISRANGE) >> 8;
+    }
 
-        /* Wait till HSI is ready or time out is reached */
-        do {
-            tout--;
-            HSIStatus = RCC->CR & RCC_CR_MSIRDY;
-        } while((HSIStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_MSIRDY) == 0) {
-            /* HSI failed to start */
-            rc = -1;
-        }
-
-        msi_range = MSI_RANGE;
-
-        /* Now switch MSI to selected value.*/
+    if (range != MSI_OFF) {
+        /* MSIRANGE must NOT be modified when MSI is ON and NOT
+         *  ready (MSION=1 and MSIRDY=0)
+         */
+        while ((RCC_CR & RCC_CR_MSION) && !(RCC_CR & RCC_CR_MSIRDY)) {};
         cr = RCC->CR;
         cr &= ~RCC_CR_MSIRANGE;
-        cr |= (msi_range * RCC_CR_MSIRANGE_1) | RCC_CR_MSIRGSEL;
+        cr |= range * RCC_CR_MSIRANGE_1;
+        RCC->CR = cr;
+        cr |= RCC_CR_MSIRGSEL;
+        RCC->CR = cr;
+        cr |= RCC_CR_MSION;
         RCC->CR = cr;
     } else {
-        /* Disable HSE clock */
+        /* Disable MSI clock */
         RCC->CR &= ~RCC_CR_MSION;
     }
 
-    return rc;
+    return res;
 }
-
-/*!
- * \brief Control PLL clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on PLL start failed.
- */
-int CtlPllClock( uint8_t ena)
-{
-    int rc = 0;
-    uint32_t pllcfgr;
-
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t PLLStatus = 0;
-
-    pllcfgr =  RCC->PLLCFGR;
-    pllcfgr &= ~(RCC_PLLCFGR_PLLM | RCC_PLLCFGR_PLLN | RCC_PLLCFGR_PLLR);
-    pllcfgr |=  (PLLM - 1) * RCC_PLLCFGR_PLLM_0;
-    pllcfgr |=  (PLLN - 1) * RCC_PLLCFGR_PLLN_0;
-    pllcfgr |=  ((PLLR / 2) - 1) * RCC_PLLCFGR_PLLR_0;
-    pllcfgr |=  RCC_PLLCFGR_PLLREN;
-
-#if (PLLCLK_SOURCE == PLLCLK_HSE)
-    if (CtlHseClock(1) != 0)
-        return -1;
-    pllcfgr |= RCC_PLLCFGR_PLLSRC_HSE;
-#elif (PLLCLK_SOURCE == PLLCLK_HSI)
-    if (CtlHsiClock(1) != 0)
-        return -1;
-    pllcfgr |= RCC_PLLCFGR_PLLSRC_HSI;
-#else
-    if (CtlMsiClock(1) != 0)
-        return -1;
-    pllcfgr |= RCC_PLLCFGR_PLLSRC_MSI;
-#endif
-    RCC->PLLCFGR = pllcfgr;
-
-    if( ena) {
-        /* Enable PLL */
-        RCC->CR |= RCC_CR_PLLON;
-
-        /* Wait till PLL is ready or time out is reached */
-        do {
-            tout--;
-            PLLStatus = RCC->CR & RCC_CR_PLLRDY;
-        } while((PLLStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_PLLRDY) == 0) {
-            /* PLL failed to start */
-            rc = -1;
-        }
-    } else {
-        /* Disable HSE clock */
-        RCC->CR &= ~RCC_CR_PLLON;
-    }
-
-    return rc;
-}
-
 
 /*!
  * \brief  Configures the System clock source: HSE or HSI.
@@ -398,30 +376,61 @@ int CtlPllClock( uint8_t ena)
  * \param  src is one of PLLCLK_HSE, PLLCLK_HSI.
  * \return 0 if clock is running else -1.
  */
-int SetPllClockSource( int src)
+int SetPllClockSource(int src)
 {
     int rc = -1;
     uint32_t pllcfgr;
 
-    pllcfgr = RCC->PLLCFGR;
-    pllcfgr &= ~RCC_PLLCFGR_PLLSRC;
-    if (src == PLLCLK_HSE) {
-        rc = CtlHseClock(1);
-        if (rc == 0) {
-            pllcfgr |= RCC_PLLCFGR_PLLSRC_HSE;
+    /* Enable PLLCLK source and switch to that source */
+    switch (src) {
+    case (PLLCLK_HSE):
+        rc = CtlHseClock(ENABLE);
+        if (rc) {
+            return rc;
         }
-    } else if (src == PLLCLK_HSI) {
-        rc = CtlHsiClock(1);
-        /* Select HSI as PLL clock source */
-        if (rc == 0) {
-            pllcfgr |= RCC_PLLCFGR_PLLSRC_HSI;
+        rc = rcc_set_and_wait_rdy_value(
+            &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSE,
+            RCC_CFGR_SWS, RCC_CFGR_SWS_HSE, HSE_STARTUP_TIMEOUT);
+        if (rc) {
+            return rc;
         }
-    } else if (src == PLLCLK_MSI) {
-        rc = CtlMsiClock(1);
-        /* Select MSI as PLL clock source */
-        if (rc == 0) {
-            pllcfgr |= RCC_PLLCFGR_PLLSRC_MSI;
+        break;
+    case (PLLCLK_MSI):
+        CtlMsiClock(MSI_4M);
+        rc = rcc_set_and_wait_rdy_value(
+            &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_MSI,
+            RCC_CFGR_SWS, RCC_CFGR_SWS_MSI, HSE_STARTUP_TIMEOUT);
+        if (rc) {
+            return rc;
         }
+        break;
+    case (PLLCLK_HSI) :
+        CtlHsiClock(ENABLE);
+        rc = rcc_set_and_wait_rdy_value(
+            &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI,
+            RCC_CFGR_SWS, RCC_CFGR_SWS_HSI, HSE_STARTUP_TIMEOUT);
+        if (rc) {
+            return rc;
+        }
+        break;
+    }
+    pllcfgr =  RCC->PLLCFGR;
+    pllcfgr &= ~(RCC_PLLCFGR_PLLM | RCC_PLLCFGR_PLLN | RCC_PLLCFGR_PLLP);
+    pllcfgr |=  ( PLLCLK_PREDIV - 1)   * RCC_PLLCFGR_PLLM_0;
+    pllcfgr |=    PLLCLK_MULT          * RCC_PLLCFGR_PLLN_0;
+    pllcfgr |=  ((PLLCLK_DIV / 2) - 1) * RCC_PLLCFGR_PLLR_0;
+    pllcfgr |=  RCC_PLLCFGR_PLLREN;
+
+    switch (src) {
+    case (PLLCLK_HSE):
+        pllcfgr |= RCC_PLLCFGR_PLLSRC_HSE;
+        break;
+    case (PLLCLK_MSI):
+        pllcfgr |= RCC_PLLCFGR_PLLSRC_MSI;
+        break;
+    case (PLLCLK_HSI):
+        pllcfgr |= RCC_PLLCFGR_PLLSRC_HSI;
+        break;
     }
     RCC->PLLCFGR = pllcfgr;
     return rc;
@@ -435,7 +444,7 @@ int SetPllClockSource( int src)
  */
 static int SetSysClockSource( int src)
 {
-    int rc = -1, i;
+    int rc = -1;
     uint32_t cr, cfgr;
     uint32_t old_latency, new_latency, new_sysclk;
 
@@ -450,43 +459,33 @@ static int SetSysClockSource( int src)
 
     /* Set Latency*/
     old_latency = FLASH->ACR & FLASH_ACR_LATENCY;
-    if (src == SYSCLK_MSI) {
+    switch (src) {
+    case (SYSCLK_MSI):
         new_sysclk = MSI_FREQUENCY[MSI_RANGE];
-    } else if (src == SYSCLK_HSE) {
+        break;
+    case (SYSCLK_HSE):
         new_sysclk = HSE_VALUE;
-    } else if (src == SYSCLK_HSI) {
+        break;
+    case (SYSCLK_PLL):
+        new_sysclk = ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) / PLLCLK_DIV;
+        break;
+    default:
         new_sysclk = HSI_VALUE;
-    } else {
-        new_sysclk = ((PLLCLK_IN / PLLM) * PLLN) / PLLR;
+        break;
     }
-    new_latency = new_sysclk / FLASH_BASE_FREQ;
+    new_latency = (new_sysclk - 1)/ FLASH_BASE_FREQ;
 
     if (new_latency > old_latency) {
         uint32_t flash_acr;
         flash_acr = FLASH->ACR;
         flash_acr &= ~FLASH_ACR_LATENCY;
         flash_acr |= new_latency;
-        flash_acr |= FLASH_ACR_PRFTEN;
         FLASH->ACR = flash_acr;
     }
-    /* Set AHB/APB1 and APB2 dividers. */
-    cfgr = RCC->CFGR;
-    cfgr  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1);
-    i = 0;
-    while((1 << AHBPrescTable[i]) < AHB_PRE)
-        i++;
-    cfgr |= i *RCC_CFGR_HPRE_0;
-    i = 0;
-    while((1 << APBPrescTable[i]) < APB1_PRE)
-        i++;
-    cfgr |= i *RCC_CFGR_PPRE1_0;
-    i = 0;
-    while((1 << APBPrescTable[i]) < APB2_PRE)
-        i++;
-    cfgr |= i *RCC_CFGR_PPRE2_0;
-
-    RCC->CFGR = cfgr;
-
+    CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_PRFTEN), FLASH_PREFETCH);
+    CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_ICEN),   FLASH_ICACHE);
+    CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_DCEN),   FLASH_DCACHE);
+    SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
     cfgr = RCC->CFGR;
     cfgr &= ~RCC_CFGR_SW;
     if (src == SYSCLK_MSI) {
@@ -510,30 +509,20 @@ static int SetSysClockSource( int src)
             while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE);
         }
     } else if (src == SYSCLK_HSI) {
-        rc = CtlHsiClock(1);
-        if (rc == 0) {
-            /* Select HSI as system clock source */
-            cfgr |= RCC_CFGR_SW_HSI;
-            RCC->CFGR = cfgr;
+        CtlHsiClock(1);
+        /* Select HSI as system clock source */
+        cfgr |= RCC_CFGR_SW_HSI;
+        RCC->CFGR = cfgr;
 
-            /* Wait till HSI is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
-        }
+        /* Wait till HSI is used as system clock source */
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
     } else if (src == SYSCLK_PLL) {
-        rc = CtlPllClock(1);
-        if (rc == 0) {
-            /* Select PLL as system clock source */
-            cfgr |= RCC_CFGR_SW_PLL;
-            RCC->CFGR = cfgr;
+        SetPllClockSource(PLLCLK_SOURCE);
+        cfgr |= RCC_CFGR_SW_PLL;
+        RCC->CFGR = cfgr;
 
-            /* Wait till PLL is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
-        } else {
-            rc = CtlMsiClock(1);
-            cfgr &= ~RCC_CFGR_SW;
-            cfgr |= RCC_CFGR_SW_MSI;
-            RCC->CFGR = cfgr;
-        }
+        /* Wait till PLL is used as system clock source */
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
     }
 
     if (new_latency < old_latency) {
@@ -541,7 +530,6 @@ static int SetSysClockSource( int src)
         flash_acr = FLASH->ACR;
         flash_acr &= ~FLASH_ACR_LATENCY;
         flash_acr |= new_latency;
-        flash_acr |= FLASH_ACR_PRFTEN;
         FLASH->ACR = flash_acr;
     }
     /* Update core clock information */

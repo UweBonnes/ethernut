@@ -59,7 +59,6 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
-                    "HW_RCC_STM32",
                     "HW_VOS_STM32",
                     "HW_ICACHE_STM32",
                     "HW_DCACHE_STM32",

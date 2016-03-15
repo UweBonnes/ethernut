@@ -63,7 +63,6 @@ nutarch_cm3_stm32f0 =
                 description = "Devices available in all STM32F0 devices",
                 default = 1,
                 provides = {
-                    "HW_RCC_STM32",
                     "HW_HSI8_STM32F",
                     "HW_RTC_STM32_V2",
                     "HW_FLASH_STM32F1_3",

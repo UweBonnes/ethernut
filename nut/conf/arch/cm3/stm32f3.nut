@@ -60,7 +60,6 @@ nutarch_cm3_stm32f3 =
                 default = 1,
                 provides =
                 {
-                    "HW_RCC_STM32",
                     "HW_HSI8_STM32F",
                     "HW_FLASH_STM32F1_3",
                     "HW_GPIO_STM32V2",

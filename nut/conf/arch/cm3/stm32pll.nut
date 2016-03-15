@@ -540,7 +540,7 @@ end
 --
 function GetPllClkSrc()
     if c_is_provided("HW_MCU_STM32L4") then
-        return {"PLLCLK_NONE", "PLLCLK_HSI", "PLLCLK_HSE"}
+        return {"PLLCLK_NONE", "PLLCLK_HSI", "PLLCLK_HSE", "PLLCLK_MSI"}
     end
     return {"PLLCLK_HSI", "PLLCLK_HSE"}
 end
@@ -1069,76 +1069,4 @@ nutarch_cm3_stm32_pll =
             file = "include/cfg/clock.h"
         },
     },
-    {
-        name = "nutarch_cm3_stm32l4_rccl",
-        brief = "STM32L4 PLL Setup",
-        requires = {"HW_MCU_STM32L4"},
-        options =
-        {
-            {
-                macro = "PLLM",
-                brief = "PLL input clock divisor",
-                description = "PLL input clock M divisor.\n"..
-                              "Must be 1..8. Input Clock must be 4..16 MHz.\n"..
-                              "Only required if SYSCLK_FREQ is given.",
-                requires = {"SYSCLK_FREQ"},
-                type = "enumerated",
-                choices =  {"1", "2", "3", "4", "5", "6", "7", "8"},
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLLN",
-                brief = "PLL clock multiplicator.",
-                description = "PLL input clock Multiplicator N.\n"..
-                              "Must be 8 .. 86.\n"..
-                              "Resulting VCO output must be 64 .. 344(Range 1)/128 (Range2) Mhz.\n"..
-                              "Only required if SYSCLK_FREQ is given.",
-                requires = {"SYSCLK_FREQ"},
-                type = "long",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLLR",
-                brief = "PLL VCO Clock divisor.",
-                description = "PLL input clock N Multiplicator.\n"..
-                              "Must be 8 .. 86.\n"..
-                              "Resulting PLL cloxk must be <= 80 (Range 1)/ 26 (Range2) Mhz.\n"..
-                              "Only required if SYSCLK_FREQ is given.",
-                requires = {"SYSCLK_FREQ"},
-                type = "enumerated",
-                choices =  {"2", "4", "6", "8"},
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "AHB_PRE",
-                brief = "AHB clock divisor.",
-                description = "Divisor between SYSCLK and HCLK.\n"..
-                              "Allowed values are 1, 2, 4, 8, 16, 32, 64. 128, 256 and 512.",
-                type = "enumerated",
-                choices =  {"1", "2", "4", "8", "16", "32", "64", "128", "256", "512"},
-                default = "1",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "APB1_PRE",
-                brief = "APB1 clock divisor.",
-                description = "Divisor between HCLK and PCLK1.\n"..
-                              "Allowed values are 1, 2, 4, 8, and 16.",
-                type = "enumerated",
-                choices =  {"1", "2", "4", "8", "16"},
-                default = "1",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "APB2_PRE",
-                brief = "APB2 clock divisor.",
-                description = "Divisor between HCLK and PCLK2.\n"..
-                              "Allowed values are 1, 2, 4, 8, and 16.",
-                type = "enumerated",
-                choices =  {"1", "2", "4", "8", "16"},
-                default = "1",
-                file = "include/cfg/clock.h"
-            },
-        },
-    }
 }

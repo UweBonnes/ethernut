@@ -61,7 +61,6 @@ nutarch_cm3_stm32l1 =
                 default = 1,
                 provides =
                 {
-                    "HW_RCC_STM32",
                     "HW_VOS_STM32",
                     "HW_RCC_STM32L",
                     "HW_FLASH_STM32L",

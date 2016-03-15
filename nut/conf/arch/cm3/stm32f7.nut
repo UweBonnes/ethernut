@@ -66,7 +66,6 @@ nutarch_cm3_stm32f7 =
                 default = 1,
                 provides =
                 {
-                    "HW_RCC_STM32",
                     "HW_VOS_STM32",
                     "HW_OVERDRIVE_STM32",
                     "HW_HSI16_STM32F",
