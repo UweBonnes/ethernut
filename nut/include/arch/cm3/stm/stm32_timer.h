@@ -105,6 +105,39 @@ typedef enum{
 # define BASE2TIM_RSTR(base) ((base < (PERIPH_BASE + 0x10000)) ?        \
                               &RCC->APB1RSTR : &RCC->APB2RSTR)
 
+/*!
+ * \brief Return address of CCRx register for given Timerbase and channel
+ */
+#if defined(TIM_CCR6_CCR6)
+#define CCR_REG(BASE, CH) (                                           \
+        (((CH) == 1) || ((CH) == -1))? &((TIM_TypeDef *)BASE)->CCR1:  \
+        (((CH) == 2) || ((CH) == -2))? &((TIM_TypeDef *)BASE)->CCR2:  \
+        (((CH) == 3) || ((CH) == -3))? &((TIM_TypeDef *)BASE)->CCR3:  \
+        (((CH) == 4) || ((CH) == -4))? &((TIM_TypeDef *)BASE)->CCR4:  \
+        (((CH) == 5) || ((CH) == -5))? &((TIM_TypeDef *)BASE)->CCR5   \
+        :                              &((TIM_TypeDef *)BASE)->CCR6)
+
+#define CCMR_REG(BASE, CH) (                                          \
+        (((CH) == 1) || ((CH) == -1))? &((TIM_TypeDef *)BASE)->CCMR1: \
+        (((CH) == 2) || ((CH) == -2))? &((TIM_TypeDef *)BASE)->CCMR1: \
+        (((CH) == 3) || ((CH) == -3))? &((TIM_TypeDef *)BASE)->CCMR2: \
+        (((CH) == 4) || ((CH) == -4))? &((TIM_TypeDef *)BASE)->CCMR2: \
+        (((CH) == 5) || ((CH) == -5))? &((TIM_TypeDef *)BASE)->CCMR3  \
+        :                              &((TIM_TypeDef *)BASE)->CCMR3)
+#else
+#define CCR_REG(BASE, CH) (                                           \
+        (((CH) == 1) || ((CH) == -1))? &((TIM_TypeDef *)BASE)->CCR1:  \
+        (((CH) == 2) || ((CH) == -2))? &((TIM_TypeDef *)BASE)->CCR2:  \
+        (((CH) == 3) || ((CH) == -3))? &((TIM_TypeDef *)BASE)->CCR3   \
+        :                              &((TIM_TypeDef *)BASE)->CCR4)
+
+#define CCMR_REG(BASE, CH) (                                          \
+        (((CH) == 1) || ((CH) == -1))? &((TIM_TypeDef *)BASE)->CCMR1: \
+        (((CH) == 2) || ((CH) == -2))? &((TIM_TypeDef *)BASE)->CCMR1: \
+        (((CH) == 3) || ((CH) == -3))? &((TIM_TypeDef *)BASE)->CCMR2  \
+        :                              &((TIM_TypeDef *)BASE)->CCMR2)
+#endif
+
 int Stm32TimerChannelConfig(
     TIM_TypeDef    *tim,
     int8_t          channel,
