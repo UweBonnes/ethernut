@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright 2015, 2016 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -75,4 +75,14 @@
 #endif
 #ifndef LED4_PIN
 #define LED4_PIN 3
+#endif
+
+#ifndef DEV_SPIBUS
+# include <dev/spibus_gpio.h>
+# define DEV_SPIBUS spiBus0Gpio
+#endif
+
+#ifndef DEV_MMCARD
+# include <dev/spi_mmc_gpio.h>
+# define DEV_MMCARD devSpiMmcGpio
 #endif
