@@ -361,8 +361,6 @@
 
 # if !defined(RCC_CR_RTCPRE_0) && defined(RCC_CFGR_RTCPRE_0)
 #  define RCC_CR (RCC->CFGR)
-#  define RCC_CR_RTCPRE_0 RCC_CFGR_RTCPRE_0
-#  define RCC_CR_RTCPRE   RCC_CFGR_RTCPRE
 # else
 #  define RCC_CR (RCC->CR)
 # endif

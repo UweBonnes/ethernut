@@ -84,67 +84,6 @@
 # define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
 # define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
 
-# if !defined(RTC_PRE)
-/* Calculate RTC_PRE divisor as it is not given*/
-#  if defined(HSE_RTCPRE)
-#   if !defined(RCC_CFGR_RTCPRE_2)
-/* L1 has HSE prescaler 2/4/8/16 */
-#    if HSE_VALUE >   8000000
-#     define RTC_PRE     16
-#    elif HSE_VALUE > 4000000
-#     define RTC_PRE      8
-#    elif HSE_VALUE > 2000000
-#     define RTC_PRE      4
-#    else
-#     define RTC_PRE      2
-#    endif
-#   else
-/* F2/F4 has HSE prescaler 2.. 32*/
-#    if HSE_VALUE <= 2000000
-#     define RTC_PRE 2
-#    elif HSE_VALUE > 32000000
-#     warning HSE_VALUE to high to reach 1 MHz RTC clock
-#    else
-#     define RTC_PRE (((HSE_VALUE -1 )/ 1000000) + 1)
-#    endif
-#   endif
-# elif defined(MCU_STM32F1)
-#  define RTC_PRE 128
-/* F3/F0/L4 has fixed HSE prescaler of 32*/
-#  else
-#   define RTC_PRE 32
-#  endif
-# endif
-
-/* Check value of calculated or given RTC_PRE and find RTC_PRE_VAL*/
-# if defined(HSE_RTCPRE)
-#  if !defined(RCC_CFGR_RTCPRE_2)
-#   if  RTC_PRE == 16
-#    define  RTC_PRE_VAL  3
-#   elif  RTC_PRE == 8
-#    define  RTC_PRE_VAL  2
-#   elif  RTC_PRE == 4
-#    define  RTC_PRE_VAL  1
-#   elif  RTC_PRE == 2
-#    define  RTC_PRE_VAL  0
-#   elif
-#    warning Illegal RTC_PRE for L1/L0 given
-#   endif
-#  else
-#   if RTC_PRE  < 2 || RTC_PRE > 32
-#    warning Illegal RTC_PRE for F2/F4 given
-#   else
-#    define RTC_PRE_VAL (RTC_PRE -1 )
-#   endif
-#  endif
-# else
-#  if RTC_PRE != 32
-#    warning Illegal RTC_PRE for F0/F3 given, only 32 allowed
-#  else
-#   define RTC_PRE_VAL 0
-#  endif
-# endif
-
 /* Guess RTC_ASYNC and RTC_SYNC if not given*/
 # if !defined(RTC_ASYNC) && !defined(RTC_SYNC)
 #  define RTC_ASYNC (125 -1)
@@ -176,7 +115,6 @@
 # endif
 # define RTC_STATUS_START RTC_STATUS_HAS_QUEUE
 # define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
-# define RTC_PRE_VAL 0
 #elif RTCCLK_SOURCE == RTCCLK_LSI
 # undef  RTC_ASYNC
 # undef  RTC_SYNC
@@ -192,7 +130,6 @@
 # endif
 # define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
 # define RTC_STATUS_FLAG  (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
-# define RTC_PRE_VAL 0
 #else
 # warning No RTC Clock source defined!
 #endif
@@ -209,7 +146,7 @@
 /* HSE_VALUE / RTCPRE must be <= 1 MHz*/
 # if !defined(RTCPRE)
 /* L0/L1 may divide HSE by 2/4/8/16*/
-#  if defined(RCC_CR_RTCPRE_1)
+#  if defined(RCC_CR_RTCPRE)
 #   if HSE_VALUE > 8000000
 #    define RTCPRE 3
 #   elif HSE_VALUE > 4000000
@@ -282,16 +219,11 @@ int EnableRtcClock(int source)
             return -1;
         break;
     case RTCCLK_HSE:
-#if defined(RCC_CR_RTCPRE)
-    {
-        uint32_t rcc_cr;
-        rcc_cr = RCC_CR;
-        rcc_cr &= RCC_CR_RTCPRE;
-        rcc_cr |= RTCPRE * RCC_CR_RTCPRE_0;
-        RCC_CR = rcc_cr;
-    }
-#endif
         if (!(RCC->CR & RCC_CR_HSERDY)) {
+            /* RCC_CR_RTCPRE_0 only != 0 on L0/1.
+             * If HSE was not set up yet, set divisor and bypass before enabling HSE.
+             */
+            RCC->CR |= (RTC_PRE_VAL * RCC_CR_RTCPRE_0) | (HSE_BYPASS * RCC_CR_HSEBYP);
             RCC->CR |= RCC_CR_HSEON;
             NutSleep(4);
         }

@@ -318,20 +318,38 @@ static int rcc_set_and_wait_rdy_value(
  */
 int CtlHseClock(int ena)
 {
-    int rc, byp;
+    int hse_is_on, byp;
+    int rc = -1;
     uint32_t cr;
 
     /* Is HSE set already? */
     cr = RCC->CR;
-    rc = (cr & RCC_CR_HSERDY);
+    hse_is_on = (cr & RCC_CR_HSEON);
     byp = (cr & RCC_CR_HSEBYP);
-    if (rc && (ena) && (byp == (HSE_BYPASS))) {
-        return 0;
-    } else {
-        /* switch HSE off to allow to set HSE_BYPASS */
+    /* On L0/L1, RTCPRE can only be changed with HSE off.
+     * On F2/F4/F7, RTCPRE can be changed with HSE on.
+     * We switch off HSE only if BYPASS or RCC_CR_RTCPRE missmatch.
+     * RCC_CR_RTCPRE is non-null only for L0/L1.
+     */
+    if (hse_is_on && (
+            (ena != ENABLE) ||
+            (byp != HSE_BYPASS) ||
+            (RCC->CR & RCC_CR_RTCPRE) != RTC_PRE_VAL * RCC_CR_RTCPRE_0)) {
+        /* switch HSE off as requested or to allow to set HSE_BYPASS
+           or to change RTC_CFGR_PRE on L0/L1*/
         rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_HSEON, RCC_CR_HSERDY,
-                              0, HSE_STARTUP_TIMEOUT);
+                                  0, HSE_STARTUP_TIMEOUT);
     }
+    /* L0/1 use encoded RTC prescaler value.
+     * RCC_CR_RTCPRE(_O) is non-null only for L0/L1.
+     */
+    RCC->CR &= ~RCC_CR_RTCPRE;
+    RCC->CR |= RTC_PRE_VAL * RCC_CR_RTCPRE_0;
+    /* F2/F4/F7 use unencoded RTC prescaler value.
+     * RCC_CFGR_RTCPRE(_O) is non-null only for F2/F4/F7.
+     */
+    RCC->CFGR &= ~RCC_CFGR_RTCPRE;
+    RCC->CFGR |= RTC_PRE * RCC_CFGR_RTCPRE_0;
     if (ena) {
         if (HSE_BYPASS) {
             RCC->CR |= RCC_CR_HSEBYP;

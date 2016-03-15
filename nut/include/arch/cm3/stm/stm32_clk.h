@@ -46,6 +46,80 @@
 # define HSE_VALUE 0
 #endif
 
+# if !defined(RTC_PRE)
+/* Calculate RTC_PRE divisor as it is not given*/
+#  if defined(RCC_CR_RTCPRE)
+/*  L0/1 have HSE prescaler 2/4/8/16 */
+#   if HSE_VALUE >   8000000
+#    define RTC_PRE     16
+#   elif HSE_VALUE > 4000000
+#    define RTC_PRE      8
+#   elif HSE_VALUE > 2000000
+#    define RTC_PRE      4
+#   else
+#    define RTC_PRE      2
+#   endif
+#  elif defined(RCC_CFGR_RTCPR)
+/* F2/F4 has HSE prescaler 2.. 32*/
+#   if HSE_VALUE <= 2000000
+#    define RTC_PRE 2
+#   elif HSE_VALUE > 32000000
+#    warning HSE_VALUE to high to reach 1 MHz RTC clock
+#   else
+#    define RTC_PRE (((HSE_VALUE -1 )/ 1000000) + 1)
+#   endif
+#  elif defined(MCU_STM32F1)
+#   define RTC_PRE 128
+/* F3/F0/L4 has fixed HSE prescaler of 32*/
+#  else
+#   define RTC_PRE 32
+#  endif
+# endif
+
+/* Check value of calculated or given RTC_PRE and find RTC_PRE_VAL*/
+# if defined(RCC_CR_RTCPRE)
+#  if  RTC_PRE == 16
+#   define  RTC_PRE_VAL  3
+#  elif  RTC_PRE == 8
+#   define  RTC_PRE_VAL  2
+#  elif  RTC_PRE == 4
+#   define  RTC_PRE_VAL  1
+#  elif  RTC_PRE == 2
+#   define  RTC_PRE_VAL  0
+#  else
+#   warning Illegal RTC_PRE for L1/L0 given
+#  endif
+# elif defined(RCC_CFGR_RTCPRE_2)
+#  if RTC_PRE  < 2 || RTC_PRE > 32
+#   warning Illegal RTC_PRE for F2/F4 given
+#  else
+#   define RTC_PRE_VAL (RTC_PRE -1 )
+#  endif
+# elif defined(MCU_STM32F1)
+#  if RTC_PRE != 128
+#    warning Illegal RTC_PRE for F1 given, only 128 allowed
+#  else
+#   define RTC_PRE_VAL 0
+#  endif
+# else
+#  if RTC_PRE != 32
+#    warning Illegal RTC_PRE for F0/F3 given, only 32 allowed
+#  else
+#   define RTC_PRE_VAL 0
+#  endif
+# endif
+
+/* L0/L1 use RCC_CR_RTCPRE, define to 0 else */
+# if !defined(RCC_CR_RTCPRE)
+#  define RCC_CR_RTCPRE   0
+#  define RCC_CR_RTCPRE_0 0
+# endif
+/* F2/4/7 use RCC_CFGR_RTCPRE, define to 0 else */
+# if !defined(RCC_CFGR_RTCPRE)
+#  define RCC_CFGR_RTCPRE   0
+#  define RCC_CFGR_RTCPRE_0 0
+#endif
+
 /* STM32 Clock source selectors */
 #define SYSCLK_HSI    1
 #define SYSCLK_PLL    2
