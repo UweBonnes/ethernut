@@ -965,6 +965,19 @@ nutarch_cm3_stm32_pll =
             default = "ENABLE",
             file = "include/cfg/clock.h"
         },
+        {
+            macro = "FLASH_PREFETCH",
+            brief = "Instruction prefetch",
+            description = "Flash buswidth is wider than instruction width.\n"..
+                          "Prefetch reads next flash row while old row\n"..
+                          "is still executed. With linear code, effective\n"..
+                          "no wait state is needed.\n"..
+                          "Default is enabled!",
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "ENABLE",
+            file = "include/cfg/clock.h"
+        },
     },
     {
         name = "nutarch_cm3_stm32l4_rccl",
