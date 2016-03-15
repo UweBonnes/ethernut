@@ -38,6 +38,7 @@
 typedef struct _usart_signal USART_SIGNAL;
 struct _usart_signal {
     uint8_t usart_nr;
+    USART_TypeDef *usart;
     void (*usart_handler) (void *);
     void *usart_arg;
     USART_SIGNAL *next;
@@ -46,8 +47,8 @@ struct _usart_signal {
 # define USART_SIGNAL IRQ_HANDLER
 #endif
 
-extern USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base);
+extern USART_SIGNAL *Stm32UsartCreateHandler(
+    int usart_nr, USART_TypeDef *usart);
 extern int Stm32UsartRegisterHandler(
-    USART_SIGNAL* signal, uint32_t usart_base,
-    void (*handler) (void *), void *arg);
+    USART_SIGNAL* signal, void (*handler) (void *), void *arg, int usart_nr);
 #endif

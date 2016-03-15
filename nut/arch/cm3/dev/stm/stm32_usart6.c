@@ -250,6 +250,7 @@ static void  StmUsartClkEnable(int enable)
  #undef UART_DMA_RXCHANNEL
 #endif
 
+#define USARTidx    5
 #define USARTn      USART6
 #define USARTnBase  USART6_BASE
 #define USARTclk    BASE2CLKSRC(USART6_BASE)

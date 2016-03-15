@@ -42,7 +42,6 @@
 #include <arch/cm3.h>
 #include <dev/irqreg.h>
 
-#include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_usartirq.h>
 
 #if defined(MCU_STM32F0) || defined(MCU_STM32L0)
@@ -58,25 +57,6 @@
 #  define NUM_USART 1
 # endif
 
-static uint32_t usart_nr2base[NUM_USART + 1] = {
-    USART1_BASE,
-# if defined(HW_USART2_STM32)
-    USART2_BASE,
-# endif
-# if defined(HW_USART4_STM32)
-    USART3_BASE,
-    USART4_BASE,
-# endif
-# if defined(HW_USART6_STM32)
-    USART5_BASE,
-    USART6_BASE,
-# endif
-# if defined(HW_USART8_STM32)
-    USART7_BASE,
-    USART8_BASE,
-# endif
-    0
-};
 static IRQ_HANDLER *usart_nr2irq[] = {
     &sig_USART1,
 # if defined(HW_USART2_STM32)
@@ -85,30 +65,6 @@ static IRQ_HANDLER *usart_nr2irq[] = {
 };
 #else
 /* F1-F4 */
-static uint32_t usart_nr2base[] = {
-    USART1_BASE,
-# if defined(HW_USART2_STM32)
-    USART2_BASE,
-# endif
-# if defined(HW_USART3_STM32)
-    USART3_BASE,
-# endif
-# if defined(HW_UART4_STM32)
-    UART4_BASE,
-# endif
-# if defined(HW_UART5_STM32)
-    UART5_BASE,
-# endif
-# if defined(HW_USART6_STM32)
-    USART6_BASE,
-# endif
-# if defined(HW_UART7_STM32)
-    UART7_BASE,
-# endif
-# if defined(HW_UART8_STM32)
-    UART8_BASE,
-# endif
-};
 static IRQ_HANDLER *usart_nr2irq[] = {
     &sig_USART1,
 # if defined(HW_USART2_STM32)
@@ -141,14 +97,13 @@ static IRQ_HANDLER *usart_nr2irq[] = {
 static void Stm32UsartGroupHandler(void *arg) {
     USART_SIGNAL *signal;
     for (signal = (USART_SIGNAL *) arg; signal; signal = signal->next) {
-        int usart_nr = signal->usart_nr;;
         uint32_t flags;
 # if defined(SYSCFG_ITLINE29_SR_USART3_GLB)
 /* Only F09x devices have 8 Usarts and have the IT_LINE */
-        flags = SYSCFG->IT_LINE_SR[29] & (1 << (usart_nr - 3));
+        flags = SYSCFG->IT_LINE_SR[29] & (1 << (signal->usart_nr - 3));
 #else
         USART_TypeDef * usart;
-        usart = (USART_TypeDef*)usart_nr2base[usart_nr];
+        usart = signal->usart;
         flags = usart->ISR;
         flags &= (USART_ISR_WUF  | USART_ISR_CMF   | USART_ISR_EOBF |
                   USART_ISR_RTOF | USART_ISR_CTSIF | USART_ISR_LBDF |
@@ -163,7 +118,7 @@ static void Stm32UsartGroupHandler(void *arg) {
                 /* IRQ flag handling must be done by user */
             } else {
                 USART_TypeDef* usart;
-                usart = (USART_TypeDef*)usart_nr2base[usart_nr];
+                usart = signal->usart;
                 /* ToDo: Clear dangling Interrupts */
                 (void)usart;
                 /* Dangling interrupt, reset flags */
@@ -172,16 +127,11 @@ static void Stm32UsartGroupHandler(void *arg) {
     }
 }
 
-USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base)
+USART_SIGNAL *Stm32UsartCreateHandler(int usart_nr, USART_TypeDef *usart)
 {
     IRQ_HANDLER *irq;
     USART_SIGNAL *sig, *chain;
-    int usart_nr;
 
-    for (usart_nr = 0; usart_nr2base[usart_nr];usart_nr++)
-        if (usart_base == usart_nr2base[usart_nr]) {
-            break;
-        }
     if (usart_nr >= NUM_USART) { /* No such USART*/
         return NULL;
     }
@@ -211,6 +161,7 @@ USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base)
     sig = malloc(sizeof(USART_SIGNAL));
     if (sig) {
         sig->usart_nr = usart_nr;
+        sig->usart     = usart;
         sig->usart_handler = NULL;
         sig->next = NULL;
         if (chain) {
@@ -230,19 +181,12 @@ USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base)
 }
 
 int Stm32UsartRegisterHandler(
-    USART_SIGNAL *sig, uint32_t usart_base,
-    void (*handler) (void *), void *arg)
+    USART_SIGNAL *sig, void (*handler) (void *), void *arg, int usart_nr)
 {
     IRQ_HANDLER *irq = NULL;
     USART_SIGNAL *chain;
-    int usart_nr;
 
-    for (usart_nr = 0; usart_nr2base[usart_nr];usart_nr++) {
-        if (usart_base == usart_nr2base[usart_nr]) {
-            break;
-        }
-    }
-    if (usart_nr >= NUM_USART) { /* No such USART*/
+   if (usart_nr >= NUM_USART) { /* No such USART*/
         return 1;
     }
     irq = usart_nr2irq[usart_nr];
@@ -279,16 +223,9 @@ int Stm32UsartRegisterHandler(
 #else
 
 
-USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base)
+USART_SIGNAL *Stm32UsartCreateHandler(int usart_nr, USART_TypeDef *usart)
 {
     IRQ_HANDLER *irq;
-    int usart_nr;
-
-    for (usart_nr = 0; usart_nr2base[usart_nr];usart_nr++) {
-        if (usart_base == usart_nr2base[usart_nr]) {
-            break;
-        }
-    }
     if (usart_nr >= NUM_USART) { /* No such USART*/
         return NULL;
     }
@@ -298,8 +235,7 @@ USART_SIGNAL *Stm32UsartCreateHandler(uint32_t usart_base)
 }
 
 int Stm32UsartRegisterHandler(
-    USART_SIGNAL *sig, uint32_t usart_base,
-    void (*handler) (void *), void *arg)
+    USART_SIGNAL *sig, void (*handler) (void *), void *arg, int usart_nr)
 {
     return NutRegisterIrqHandler(sig, handler, arg);
 }

@@ -254,6 +254,7 @@ static void  StmUsartClkEnable(int enable)
 #undef USART_SWAP
 #endif
 
+#define USARTidx    0
 #define USARTn      USART1
 #define USARTnBase  USART1_BASE
 #define USARTclk    BASE2CLKSRC(USART1_BASE)

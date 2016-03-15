@@ -246,6 +246,7 @@ static void  StmUsartClkEnable(int enable)
 #undef USART_SWAP
 #endif
 
+#define USARTidx    4
 #define USARTn      UART5
 #define USARTnBase  UART5_BASE
 #define USARTirqn   UART5_IRQn
