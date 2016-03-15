@@ -40,12 +40,13 @@
  * $Id$
  * \endverbatim
  */
-#ifndef DEV_CONSOLE
-#define DEV_CONSOLE devUsartStm32_3
+#ifndef DEV_UART
+#define DEV_UART devUsartStm32_3
+#include <dev/usartstm32.h>
 #endif
 
-#ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME devUsartStm32_3.dev_name
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME devUsartStm32_3.dev_name
 #endif
 /* LD1 Green*/
 #ifndef LED1_PORT

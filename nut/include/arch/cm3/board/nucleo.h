@@ -43,6 +43,7 @@
 /* LED1 collides with Chip select for VL6180 X-Nucleo-IJP01A1 !*/
 #ifndef DEV_UART
 #define DEV_UART devUsartStm32_2
+#include <dev/usartstm32.h>
 #endif
 #ifndef DEV_UART_NAME
 #define DEV_UART_NAME  devUsartStm32_2.dev_name

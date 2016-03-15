@@ -70,6 +70,7 @@
 #endif
 
 #ifndef DEV_UART
+#include <dev/usartstm32.h>
 #define DEV_UART devUsartStm32_2
 #endif
 #ifndef DEV_UART_NAME
@@ -104,12 +105,13 @@
 #define AUDIO_RST_PORT NUTGPIO_PORTD
 #define AUDIO_RST_PIN  4
 
-#ifndef DEV_CONSOLE
-#define DEV_CONSOLE devUsartStm32_2
+#ifndef DEV_UART
+#define DEV_UART devUsartStm32_2
+#include <dev/usartstm32.h>
 #endif
 
-#ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME devUsartStm32_2.dev_name
 #endif
 
 #ifndef DEF_TWIBUS

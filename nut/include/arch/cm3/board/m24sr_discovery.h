@@ -76,12 +76,13 @@
 #define LED4_PIN 0
 #endif
 
-#ifndef DEV_CONSOLE
-#define DEV_CONSOLE devUartStm32_4
+#ifndef DEV_UART
+#define DEV_UART devUartStm32_4
+#include <dev/usartstm32.h>
 #endif
 
-#ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME devUsartStm32_4.dev_name
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME devUsartStm32_4.dev_name
 #endif
 
 #ifndef DEV_I2CBUS

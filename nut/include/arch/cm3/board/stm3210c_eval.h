@@ -46,6 +46,7 @@
 #endif
 
 #ifndef DEV_DEBUG
+#include <dev/usartstm32.h>
 #define DEV_DEBUG       devUsartStm32_2
 #endif
 #ifndef DEV_DEBUG_NAME
@@ -53,9 +54,9 @@
 #endif
 
 #ifndef DEV_UART
-#define DEV_UART        DEV_UART2
+#define DEV_UART        DEV_DEBUG
 #endif
 
 #ifndef DEV_UART_NAME
-#define DEV_UART_NAME   DEV_UART2_NAME
+#define DEV_UART_NAME   DEV_DEBUG_NAME
 #endif

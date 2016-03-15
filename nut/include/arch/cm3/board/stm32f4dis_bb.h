@@ -1,9 +1,10 @@
-#ifndef DEV_CONSOLE
-#define DEV_CONSOLE devUsartStm32_6
+#ifndef DEV_UART
+#define DEV_UART devUsartStm32_6
+#include <dev/usartstm32.h>
 #endif
 
-#ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME devUsartStm32_6.dev_name
+#ifndef DEV_UART_NAME
+#define DEV_UART_NAME devUsartStm32_6.dev_name
 #endif
 
 /* Ethernet interface */

@@ -81,16 +81,10 @@
 
 #ifndef DEV_UART
 #define DEV_UART devUsartStm32_2
+#include <dev/usartstm32.h>
 #endif
 #ifndef DEV_UART_NAME
 #define DEV_UART_NAME  "uart2"
-#endif
-
-#ifndef DEV_DEBUG
-#define DEV_DEBUG devUsartStm32_2
-#endif
-#ifndef DEV_DEBUG_NAME
-#define DEV_DEBUG_NAME  "uart2"
 #endif
 
 #ifndef DEV_TWIBUS

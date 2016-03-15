@@ -45,11 +45,12 @@
 #error Do not include this file directly. Use dev/board.h instead.
 #endif
 
-#ifndef DEV_DEBUG
-#define DEV_DEBUG       devUsartStm32_1
+#ifndef DEV_UART1
+#include <dev/usartstm32.h>
+#define DEV_UART1       devUsartStm32_1
 #endif
-#ifndef DEV_DEBUG_NAME
-#define DEV_DEBUG_NAME  devUsartStm32_1.dev_name
+#ifndef DEV_UART1_NAME
+#define DEV_UART1_NAME  devUsartStm32_1.dev_name
 #endif
 
 #ifndef DEV_UART

@@ -190,6 +190,9 @@
 #elif defined(F07_DISCOVERY)
 #include <arch/cm3/board/f07_discovery.h>
 #define BOARDNAME "F07_DISCOVERY"
+#elif defined(F1_DISCOVERY)
+#include <arch/cm3/board/f1_discovery.h>
+#define BOARDNAME "F1_DISCOVERY"
 #elif defined(F4_DISCOVERY)
 #include <arch/cm3/board/f4_discovery.h>
 #define BOARDNAME "F4_DISCOVERY"
@@ -489,14 +492,17 @@
 
 #elif defined(MCU_STM32)
 /*
- * Debug devices for the ARM based STM32 family.
+ * Fallback Debug devices for the ARM based STM32 family.
  *
- * \todo Looks like this debug driver is using a normal, possibly
- *       interrupt driven UART driver, which makes its use quite
- *       limited. Better do not use it within interrupt routines
- *       and do not rely on synchronicity. Output may be intermixed
- *       or even scrambled during debugging.
  */
+#ifndef DEV_UART1
+# include <dev/usartstm32.h>
+# define DEV_UART1      devUsartStm32_1
+#endif
+#ifndef DEV_UART1_NAME
+# define DEV_UART1_NAME devUsartStm32_1.dev_name
+#endif
+
 #ifndef DEV_DEBUG
 #define DEV_DEBUG       DEV_UART1
 #endif
@@ -504,67 +510,11 @@
 #define DEV_DEBUG_NAME  DEV_UART1_NAME
 #endif
 
-/*
- * UART devices for the ARM based STM32 family.
- *
- * \note Instead of providing literal names, references to the
- *       driver structure are used here. Therefore all names are
- *       given here, even it they use the system wide default
- *       name. Furthermore, all possible devices seem to have
- *       been added here, which makes it hard for applications
- *       to figure out, if they are available at all on the
- *       target hardware.
- */
-#include <dev/usartstm32.h>
 
-#ifndef DEV_UART1
-#define DEV_UART1       devUsartStm32_1
-#endif
-#ifndef DEV_UART1_NAME
-#define DEV_UART1_NAME  DEV_UART1.dev_name
-#endif
-
-#ifndef DEV_UART2
-#define DEV_UART2       devUsartStm32_2
-#endif
-#ifndef DEV_UART2_NAME
-#define DEV_UART2_NAME  DEV_UART2.dev_name
-#endif
-
-#ifndef DEV_UART3
-#define DEV_UART3       devUsartStm32_3
-#endif
-#ifndef DEV_UART3_NAME
-#define DEV_UART3_NAME  DEV_UART3.dev_name
-#endif
-
-#ifndef DEV_UART4
-#define DEV_UART4       devUartStm32_4
-#endif
-#ifndef DEV_UART4_NAME
-#define DEV_UART4_NAME  DEV_UART4.dev_name
-#endif
-
-#ifndef DEV_UART5
-#define DEV_UART5       devUartStm32_5
-#endif
-#ifndef DEV_UART5_NAME
-#define DEV_UART5_NAME  DEV_UART5.dev_name
-#endif
-
-#ifndef DEV_UART6
-#define DEV_UART6       devUsartStm32_6
-#endif
-#ifndef DEV_UART6_NAME
-#define DEV_UART6_NAME  DEV_USART6.dev_name
-#endif
-
-/*
- * System default UART0 is not available on STM32 boards. Thus,
- * we declare UART1 as the default.
- */
 #ifndef DEV_UART
 #define DEV_UART        DEV_UART1
+#endif
+#ifndef DEV_UART_NAME
 #define DEV_UART_NAME   DEV_UART1_NAME
 #endif
 
