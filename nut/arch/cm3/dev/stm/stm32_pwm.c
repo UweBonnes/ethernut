@@ -68,6 +68,10 @@ struct _STM32_PWM_HW {
     /*! \brief Remap value on F1.  Set by user if needed.*/
     const uint32_t remap_value;
 #endif
+#if defined(MCU_STM32F3)
+    /*! \brief RCC_CFGR3 bit indicating if PLLCLKx2 is selected */
+    const uint32_t pll_sw;
+#endif
     /*! \brief Device Clock enable register */
     volatile uint32_t *const enable_reg;
     /*! \brief Device Clock enable mask */
@@ -155,9 +159,25 @@ unsigned int Stm32PwmGet(NUTPWM *pwm_dev)
 /* Return Timer Clock*/
 uint32_t Stm32PwmGetClock(NUTPWM *pwm_dev)
 {
-    return Stm32ClockGet(BASE2TCLKSRC((uint32_t)pwm_dev->hw));
+    uint32_t clk;
+#if defined(MCU_STM32F3)
+    uint32_t cfgr3;
+    STM32_PWM_HW *hw;
 
+    hw = (STM32_PWM_HW *) pwm_dev->hw;
+    cfgr3 = RCC->CFGR3;
+    if (cfgr3 & hw->pll_sw) {
+        clk = Stm32ClockGet(HWCLK_CPU);
+        clk *= 2;
+    } else {
+        clk = BASE2TCLKSRC((uint32_t)hw);
+    }
+#else
+    clk = BASE2TCLKSRC((uint32_t)pwm_dev->hw);
+#endif
+    return clk;
 }
+
 #if defined(STM32_PWM0) && defined(STM32_PWM0_TIMER_CHANNEL)   \
     && defined(STM32_PWM0_TIMER_ID)
 
@@ -170,6 +190,9 @@ static const STM32_PWM_HW Stm32Pwm0Hw = {
     .remap_reg       = &AFIO->STM32_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_SHIFT,
     .remap_value     = TIM_ID2REMAP(STM32_PWM0_TIMER_ID),
+#endif
+#if defined(STM32TIMER_SW)
+    .pll_sw          = STM32TIMER_SW,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
     .enable_mask     = STM32TIMER_MASK,
@@ -200,6 +223,9 @@ static const STM32_PWM_HW Stm32Pwm1Hw = {
     .remap_reg       = &AFIO->STM32_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_SHIFT,
     .remap_value     = TIM_ID2REMAP(STM32_PWM1_TIMER_ID),
+#endif
+#if defined(STM32TIMER_SW)
+    .pll_sw          = STM32TIMER_SW,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
     .enable_mask     = STM32TIMER_MASK,
