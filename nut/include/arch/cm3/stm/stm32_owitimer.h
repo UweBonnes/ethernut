@@ -45,33 +45,116 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-/*!
- * \brief OWI runtime controlblock container.
- *
- * This is installed in heap at initialization.
- */
-struct _NUTOWIINFO_STM32TIM {
-    HANDLE volatile owi_irq_done;     /*!< Primitive done event.*/
-    IRQ_HANDLER *owi_ev;
-    uint32_t timer;
-#if defined(MCU_STM32F1)
-    __IO uint16_t *compare;
-    __IO uint16_t *capture;
-#else
-    __IO uint32_t *compare;
-    __IO uint32_t *capture;
-#endif
-#if defined(MCU_STM32F3)
-    __IO uint32_t *ccmr;
-#else
-    __IO uint16_t *ccmr;
-#endif
-    int ccmr_shift;
+typedef enum {
+    RESET_CYCLE = 0,
+    RESET_ACTIVE,
+    RESET_SAMPLE,
+    CYCLE,
+    WRITE_1,
+    WRITE_0,
+    SAMPLE,
+    OWI_TIM_SIZE
+}OWI_TIM_TIMES;
+
+/* Total duration, period low, sample point  straight from AN126*/
+static const uint16_t owi_tim_times_us[OWI_TIM_SIZE]  = {
+    960, /* H+I+J     */
+    480, /* H         */
+    550, /* H+I       */
+    70,  /* A+E+F/C+D */
+    6,   /* A         */
+    60,  /* C         */
+    15   /* A+E       */
 };
 
-typedef struct _NUTOWIINFO_STM32TIM NUTOWIINFO_STM32TIM;
+/*!
+ * \brief Constant local data of the Owibus with dual channel timer
+ *
+ * Used for values only needed during initialization!
+ *
+ * ToDo: Order in a way that few padding happens!
+ * Flash access will need flash access wait states.
+ *
+ */
+typedef struct _STM32_OWIBUS_TIMER_HW STM32_OWIBUS_TIMER_HW;
 
-int NutRegisterOwiBus_STM32TIM(NUTOWIBUS *bus, int tx_port, uint_fast8_t tx_pin, uint32_t timer, uint32_t channel);
+struct _STM32_OWIBUS_TIMER_HW {
+    /*! \brief Timer to use. Set by configuration*/
+    uint32_t owi_base;
+    /*! \brief Timer Interrupt*/
+    IRQ_HANDLER *owi_irq;
+#if defined(MCU_STM32F1)
+    /*! \brief F1 pin remapping. Set by user if needed.*/
+    volatile uint32_t *const remap_reg;
+    /*! \brief Remap mask on F1.  Set by user if needed.*/
+    const uint32_t remap_mask;
+    /*! \brief Remap value on F1.  Set by user if needed.*/
+    const uint32_t remap_value;
+#endif
+    /*| \brief Device Clock enable register */
+    volatile uint32_t *const enable_reg;
+    /*| \brief Device Clock enable mask */
+    const uint32_t enable_mask;
+    /*| \brief Device Reset register */
+    volatile uint32_t *const reset_reg;
+    /*! \brief OWI Pin. */
+    nutgpio_t owi_pin;
+    /*! \brief OWI Pinmux. */
+    uint8_t owi_pin_af;
+    /*! \brief Owi timer channel. */
+    uint8_t owi_channel;
+    /*! \brief OWI TX Pin. PIN_NONE is unsed. */
+    nutgpio_t owi_tx_pin;
+    /*! \brief OWI TX Pinmux. */
+    uint8_t owi_tx_pin_af;
+     /*! \brief Owi TX timer channel. */
+    uint8_t owi_tx_channel;
+     /*! \brief Do not invert Owi TX timer. */
+    uint8_t owi_tx_invert;
+};
 
-/*@}*/
+/*!
+ * \brief Runtime data of the Owibus with dual channel timer
+ *
+ * ToDo: Order in a way that few padding happens!
+ */
+typedef struct _STM32_OWIBUS_TIMER_INFO STM32_OWIBUS_TIMER_INFO;
+
+struct _STM32_OWIBUS_TIMER_INFO {
+    /*! \brief Wait queue. */
+    HANDLE mutex;
+    /*! \brief Hardware information. */
+    const STM32_OWIBUS_TIMER_HW *owi_hw;
+    /*! \brief Used timer. */
+    TIM_TypeDef *timer;
+    /*! \brief (Bitband) Register for Update generation. */
+    volatile uint32_t *const timer_egr;
+     /*! \brief (Bitband) Register for Counter start. */
+    volatile uint32_t *const timer_cr1;
+     /*! \brief Register to hold output length. */
+    volatile uint32_t *ccr_pulse;
+    /*! \brief Register to capture rising edge. */
+    volatile uint32_t *ccr_capture;
+    /*! \brief Sampled value rising edge. */
+    volatile uint16_t sample_value;
+    /*! \brief Reference value for rising edge. */
+    uint16_t owi_compare;
+    /*! \brief Array of pulse length in counter tick. */
+    uint16_t owi_tim_values[OWI_TIM_SIZE];
+    /*! \brief Current receive bit. */
+    volatile uint8_t owi_rx_len;
+    /*! \brief Current transmit bit. */
+    volatile uint8_t owi_tx_len;
+    /*! \brief index in current byte. */
+    volatile int owi_index;
+    /*! \brief Pointer to current transmit byte. */
+    uint8_t  *owi_txp;
+    /*! \brief Pointer to current receive byte.. */
+    uint8_t  *owi_rxp;
+};
+
+extern int Stm32TimOwiTouchReset(NUTOWIBUS *bus);
+extern int Stm32TimOwiWriteBlock(NUTOWIBUS *, uint8_t *, uint_fast8_t);
+extern int Stm32TimOwiReadBlock (NUTOWIBUS *, uint8_t *, uint_fast8_t);
+extern int Stm32TimOwiSetup(NUTOWIBUS *bus);
 #endif

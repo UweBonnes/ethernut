@@ -894,10 +894,9 @@ nutarch_cm3_stm32_timer_devices =
     {
         name = "nutarch_cm3_stm32_owibus0tim",
         brief = "STM32 OWIBUS0 with hardware timer",
-        description = "STM32 OWIBUS0 with hardware timer, "..
-                    "library compile time configured",
+        description = "STM32 OWIBUS0 with hardware timer.",
         provides = { "OWIBUS" },
-        sources = { "cm3/dev/stm/owibus0stm32tim.c" },
+        sources = { "cm3/dev/stm/stm32_owitim.c" },
         options =
         {
             {
@@ -926,7 +925,39 @@ nutarch_cm3_stm32_timer_devices =
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
             },
-        }
+            {
+                macro = "STM32TIM_OWI0_TX_GPIO",
+                brief = "TX GPIO for STM32 hardware timer OWIBUS0",
+                description = "If OWI Tx and Rx use different pins,"..
+                            "enter the GPIO for the TX pin here!\n"..
+                            "For STM32F1, check Timer global remap!\n",
+                file = "include/cfg/owi.h",
+                provides = {"STM32TIM_OWI0_TX"},
+            },
+            {
+                macro = "STM32TIM_OWI0_TX_CHANNEL",
+                brief = "TX Channel for STM32 hardware timer OWIBUS0",
+                description = "TX Channel for separate TX/RX.\n"..
+                            "Check for Channel 3/4 availability!",
+                type = "enumerated",
+                requires = {"STM32TIM_OWI0_TX"},
+                choices = { "1", "2", "3", "4" },
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI0_TX_INVERT",
+                brief = "Invert TX Channel for OWIBUS0",
+                description = "Separated TX/RX is normally used for "..
+                            "slew-rate controlled TX.\n"..
+                            "This normally results in logic inversion.\n"..
+                            "Default is ENABLE to compensate inversion",
+                type = "enumerated",
+                requires = {"STM32TIM_OWI0_TX"},
+                default = "ENABLE",
+                choices = { "ENABLE", "DISABLE" },
+                file = "include/cfg/owi.h",
+            },
+         }
      },
 
     --
@@ -938,7 +969,7 @@ nutarch_cm3_stm32_timer_devices =
         description = "STM32 OWIBUS1 with hardware timer, "..
                     "library compile time configured",
         provides = { "OWIBUS" },
-        sources = { "cm3/dev/stm/owibus1stm32tim.c" },
+        sources = { "cm3/dev/stm/stm32_owitim.c" },
         options =
         {
             {
@@ -967,7 +998,39 @@ nutarch_cm3_stm32_timer_devices =
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
             },
-        }
+            {
+                macro = "STM32TIM_OWI1_TX_GPIO",
+                brief = "TX GPIO for STM32 hardware timer OWIBUS0",
+                description = "If OWI Tx and Rx use different pins,"..
+                            "enter the GPIO for the TX pin here!\n"..
+                            "For STM32F1, check Timer global remap!\n",
+                file = "include/cfg/owi.h",
+                provides = {"STM32TIM_OWI1_TX"},
+            },
+            {
+                macro = "STM32TIM_OWI1_TX_CHANNEL",
+                brief = "TX Channel for STM32 hardware timer OWIBUS0",
+                description = "TX Channel separate TX/RX.\n"..
+                            "Check for Channel 3/4 availability!",
+                type = "enumerated",
+                requires = {"STM32TIM_OWI1_TX"},
+                choices = { "1", "2", "3", "4" },
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI1_TX_INVERT",
+                brief = "Invert TX Channel for OWIBUS0",
+                description = "Separated TX/RX is normally used for "..
+                            "slew-rate controlled TX.\n"..
+                            "This normally results in logic inversion.\n"..
+                            "Default is ENABLE to compensate inversion",
+                type = "enumerated",
+                requires = {"STM32TIM_OWI1_TX"},
+                default = "ENABLE",
+                choices = { "ENABLE", "DISABLE" },
+                file = "include/cfg/owi.h",
+            },
+       }
      },
 
     --
@@ -978,8 +1041,8 @@ nutarch_cm3_stm32_timer_devices =
         brief = "STM32 OWIBUS2 with hardware timer",
         description = "STM32 OWIBUS2 with hardware timer, "..
                     "library compile time configured",
-        provides = { "OWIBUS" },
-        sources = { "cm3/dev/stm/owibus2stm32tim.c" },
+        provides = {"OWIBUS"},
+        sources = { "cm3/dev/stm/stm32_owitim.c" },
         options =
         {
             {
@@ -1006,6 +1069,38 @@ nutarch_cm3_stm32_timer_devices =
                             "Check for Channel 3/4 availability!",
                 type = "enumerated",
                 choices = { "1", "2", "3", "4" },
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI2_TX_GPIO",
+                brief = "TX GPIO for STM32 hardware timer OWIBUS2",
+                description = "If OWI Tx and Rx use different pins,"..
+                            "enter the GPIO for the TX pin here!\n"..
+                            "For STM32F1, check Timer global remap!\n",
+                file = "include/cfg/owi.h",
+                provides = {"STM32TIM_OWI2_TX"},
+            },
+            {
+                macro = "STM32TIM_OWI2_TX_CHANNEL",
+                brief = "TX Channel for STM32 hardware timer OWIBUS2",
+                description = "TX Channel for separate TX/RX.\n"..
+                            "Check for Channel 3/4 availability!",
+                type = "enumerated",
+                requires = {"STM32TIM_OWI2_TX"},
+                choices = { "1", "2", "3", "4" },
+                file = "include/cfg/owi.h",
+            },
+            {
+                macro = "STM32TIM_OWI2_TX_INVERT",
+                brief = "Invert TX Channel for OWIBUS2",
+                description = "Separated TX/RX is normally used for "..
+                            "slew-rate controlled TX.\n"..
+                            "This normally results in logic inversion.\n"..
+                            "Default is ENABLE to compensate inversion",
+                type = "enumerated",
+                requires = {"STM32TIM_OWI2_TX"},
+                default = "ENABLE",
+                choices = { "ENABLE", "DISABLE" },
                 file = "include/cfg/owi.h",
             },
         }
