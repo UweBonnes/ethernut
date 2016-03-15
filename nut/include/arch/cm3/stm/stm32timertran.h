@@ -163,7 +163,7 @@
 #define STM32TIMER_NCH 4
 #endif
 #define STM32TIMER_PCLK() NutClockGet(HWCLK_APB2_TIMER)
-#if defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32F2) ||defined(MCU_STM32F4) || defined(MCU_STM32L4)
 #define STM32TIMER_AF(gpio) 1
 #elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(gpio)  (                          \
@@ -193,7 +193,7 @@
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_TIM2RST)); } while(0)
 #define STM32TIMER_PCLK() NutClockGet(HWCLK_APB1_TIMER)
 #define STM32TIMER_NCH 4
-#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4) || defined(MCU_STM32L4)
 #define STM32TIMER_AF(gpio) 1
 #elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(gpio) (                   \
@@ -226,7 +226,7 @@
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_TIM3RST)); } while(0)
 #define STM32TIMER_PCLK() NutClockGet(HWCLK_APB1_TIMER)
 #define STM32TIMER_NCH 4
-#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4) || defined(MCU_STM32L4)
 #define STM32TIMER_AF(gpio) 2
 /* STM32F30: PA04/CH2/AF2 , PA06/CH1/AF2 , PA07/CH3/AF2,
              PB00/CH3/AF2 , PB01/CH4/AF2 , PB05/CH2/AF2,
@@ -275,7 +275,7 @@
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_TIM4RST)); } while(0)
 #define STM32TIMER_PCLK() NutClockGet(HWCLK_APB1_TIMER)
 #define STM32TIMER_NCH 4
-#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)|| defined(MCU_STM32L4)
 #define STM32TIMER_AF(gpio) 2
 #elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(gpio) ((PA00 == (gpio & GPIO_PORT_MASK))? 10 : 2)
@@ -298,7 +298,7 @@
         CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_TIM5RST)); } while(0)
 #define STM32TIMER_PCLK() NutClockGet(HWCLK_APB1_TIMER)
 #define STM32TIMER_NCH 4
-#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32L1) || defined(MCU_STM32F2) || defined(MCU_STM32F4) || defined(MCU_STM32L4)
 #define STM32TIMER_AF(gpio) 2
 #elif defined(MCU_STM32F1)
 /* Only valid for channel 4*/
@@ -354,7 +354,7 @@
 #else
 #define STM32TIMER_NCH 4
 #endif
-#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4) || defined(MCU_STM32L4)
 #define STM32TIMER_AF(gpio) 3
 #elif defined(MCU_STM32F3)
 /* FIXME: This doesn't map TIM*_BKIN2 */
@@ -536,6 +536,8 @@
     (PA11 == gpio)? 5 :        \
     (PB11 == gpio)? 1 : 0)
 /* PB13 as TIM15_CH1N not handled here !*/
+#elif defined(MCU_STM32L4)
+#  define STM32TIMER_AF(gpio) 14
 #elif defined(MCU_STM32F1)
 #define STM32TIMER_REMAP_REG   MAPR2
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM15_REMAP
@@ -558,6 +560,8 @@
 #define STM32TIMER_BDTR
 #if defined(MCU_STM32F3)
 # define STM32TIMER_AF(gpio) ((PE00 == (gpio & GPIO_PORT_MASK) )? 4 :  1)
+#elif defined(MCU_STM32L4)
+# define STM32TIMER_AF(gpio) 14
 #elif defined(MCU_STM32F1)
 #define STM32TIMER_REMAP_REG   MAPR2
 #define STM32TIMER_REMAP_MASK  AFIO_MAPR2_TIM16_REMAP
@@ -595,6 +599,8 @@
         (PA04 == gpio)                   ? 10:      \
         (PA05 == gpio)                   ? 10: 1)
 # endif
+#elif defined(MCU_STM32L4)
+# define STM32TIMER_AF(gpio) 14
 #elif defined (MCU_STM32F0)
 #define STM32TIMER_AF(gpio) (                  \
     (PA00 == (gpio & GPIO_PORT_MASK))?  5:     \
