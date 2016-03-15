@@ -108,7 +108,7 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 # define MSI_RANGE MSI_4M
 #endif
 
-#if !defined(STM32_VRANGE) || STM32_VRANGE == 1
+#if !defined(STM32_POWERSCALE) || STM32_POWERSCALE == 1
 /* Give some tolerance to that MSI_32M use 1 WS and MSI_48M 2 WS*/
 # define FLASH_BASE_FREQ 16007001
 # define SYSCLK_MAX      80000000
@@ -129,7 +129,7 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 #   define PLLR 2
 #  endif
 # endif
-#elif STM32_VRANGE == 2
+#elif STM32_POWERSCALE == 2
 # define FLASH_BASE_FREQ  6000000
 # define SYSCLK_MAX      26000000
 # define PLLVCO_MAX     128000000
@@ -150,7 +150,7 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 #  endif
 # endif
 #else
-# warning Unhandled STM32_VRANGE
+# warning Unhandled STM32_POWERSCALE
 #endif
 
 #if (PLLCLK_IN / PLLM) < 3998000
@@ -445,7 +445,7 @@ static int SetSysClockSource( int src)
     /* Set voltage scaling*/
     cr = PWR->CR1;
     cr &= ~(PWR_CR1_VOS);
-    cr |= STM32_VRANGE * PWR_CR1_VOS_0;
+    cr |= STM32_POWERSCALE * PWR_CR1_VOS_0;
     PWR->CR1 = cr;
 
     /* Set Latency*/

@@ -64,6 +64,7 @@ nutarch_cm3_stm32l0 =
                     "HW_RCC_STM32L",
 -- Todo: FLASH_WRPROT
 --                    "HW_FLASH_STM32L1",
+                    "HW_VOS_STM32",
                     "HW_RTC_STM32_V2",
                     "HW_FLASH_STM32L",
                     "HW_EEPROM_STM32",

@@ -612,6 +612,21 @@ function GetRtcClkSrcDefault()
     return "RTCCLK_LSI"
 end
 
+function GetMsiRangeDesc()
+    if c_is_provided("HW_MCU_STM32L4") then
+        return "Select MSI frequency.\n"..
+               "Possible values are 100/200/400/800 kHz "..
+               "and 1/2/4/8/16/24/32/48 MHz.\n"..
+               "Default value after reset is 4 MHz.\n",
+               "In Range 2, maximum allowed frequency is 24 MHz.\n"..
+               "Use MSI_OFF to disable MSI."
+    end
+    return "Select MSI frequency.\n"..
+           "Possible values are 65/131/262/524 kHz/1.05/2.1/4.2/MHz.\n"..
+           "Default value after reset is 4 MHz.\n",
+          "Use MSI_OFF to disable MSI."
+end
+
 function GetMsiRange()
     if c_is_provided("HW_MCU_STM32L4") then
         return {"MSI_OFF", "MSI_100k", "MSI_200k", "MSI_400k",
@@ -626,6 +641,93 @@ function GetMsiRangeDefault()
         return "MSI_4M"
     end
     return "MSI_4200k"
+end
+
+function GetPowerScaleRegisterDesc()
+    if c_is_provided("HW_MCU_STM32L4") then
+        return "Select Core voltage scaling:\n"..
+               "Range\tV core\tfmax\n"..
+               "1\t1.2 Volt\t80 MHz\n"..
+               "2\t1.0 Volt\t26 MHz\n"..
+               "Default register setting is 1."
+    end
+    if c_is_provided("HW_RCC_STM32L") then
+        return "Select Core voltage scaling:\n"..
+               "Range\tV core\tV supply(min\tfmax\n"..
+               "1\t1.8 Volt\t1.71 Volt\t32 MHz\n"..
+               "2\t1.5 Volt\t1.65 Volt\t16 MHz\n"..
+               "3\t1.2 Volt\t1.65 Volt\t4.2 MHz\n"..
+               "Default register is 1."
+    end
+    if c_is_provided("HW_MCU_STM32F401") then
+        return "Select Power Scale:\n"..
+               "Power Scale\tfmax\n"..
+               "2\t84 MHz\n"..
+               "3\t60 MHz\n"..
+               "Default register setting is 2.\n"..
+               "With PLL off, Power scale is 3 independant from register value."
+    end
+    if c_is_provided("HW_MCU_STM32F411") then
+        return "Select Power Scale:\n"..
+               "Power Scale\tfmax\n"..
+               "1\t100 MHz\n"..
+               "2\t84 MHz\n"..
+               "3\t64 MHz\n"..
+               "Default is 1.\n"..
+               "With PLL off, Power scale is 3 independant from register value."
+    end
+    if c_is_provided("HW_MCU_STM32F40") then
+        return "Select Power Scale:\n"..
+               "Power scale\tfmax\n"..
+               "1\t168 MHz\n"..
+               "2\t144 MHz\n"..
+               "Default register setting is 1."
+    end
+    if c_is_provided("HW_MCU_STM32F42") then
+        return "Select Power Scale:\n"..
+               "Power scale\tfmax Overdrive off/on\n"..
+               "1\t168/180 MHz\n"..
+               "2\t144/168 MHz\n"..
+               "3\t144/144 MHz\n"..
+               "Default register setting is 1."
+    end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return "Select Power Scale register value:\n"..
+               "Power scale\tfmax Overdrive off/on\n"..
+               "1\t168/180 MHz\n"..
+               "2\t144/168 MHz\n"..
+               "3\t120/120 MHz\n"..
+               "Default register setting is 1."
+    end
+    if c_is_provided("HW_MCU_STM32F7") then
+        return "Select Power Scale:\n"..
+               "Power scale\tfmax Overdrive off/on\n"..
+               "1\t180/216 MHz\n"..
+               "2\t168/180 MHz\n"..
+               "3\t144/144 MHz\n"..
+               "Default register setting is 1."
+    end
+    return "Unhandled"
+end
+
+function GetPowerScaleRegister()
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"1", "2"}
+    end
+    if c_is_provided("HW_MCU_STM32F401") then
+        return {"2", "3"}
+    end
+    if c_is_provided("HW_MCU_STM32F40") then
+        return {"1", "2"}
+    end
+    return {"1", "2", "3"}
+end
+
+function GetPowerScaleRegisterDefault()
+    if c_is_provided("HW_MCU_STM32F401") then
+        return "2"
+    end
+    return "1"
 end
 
 nutarch_cm3_stm32_pll =
@@ -815,6 +917,16 @@ nutarch_cm3_stm32_pll =
                 default = function() return GetMsiRangeDefault() end,
                 file = "include/cfg/clock.h"
             },
+            {
+                macro = "STM32_POWERSCALE",
+                brief = "Power Scaling",
+                description = function() return GetPowerScaleRegisterDesc() end,
+                requires = {"HW_VOS_STM32"},
+                type = "enumerated",
+                choices = function() return GetPowerScaleRegister() end,
+                default = function() return GetPowerScaleRegisterDefault() end,
+                file = "include/cfg/clock.h"
+            },
     },
     {
         name = "nutarch_cm3_stm32l4_rccl",
@@ -822,16 +934,6 @@ nutarch_cm3_stm32_pll =
         requires = {"HW_MCU_STM32L4"},
         options =
         {
-            {
-                macro = "STM32_VRANGE",
-                brief = "Voltage Scaling",
-                description = "Use 2 for extra low power. Restrictions apply.\n"..
-                              "E.g. max SYSCLK is  26 MHz in range 2.",
-                type = "enumerated",
-                choices = {"1", "2"},
-                default = "1",
-                file = "include/cfg/clock.h"
-            },
             {
                 macro = "PLLM",
                 brief = "PLL input clock divisor",
