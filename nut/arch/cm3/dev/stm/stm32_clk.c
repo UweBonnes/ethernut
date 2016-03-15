@@ -63,6 +63,29 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 # define APB2_DIV 1
 #endif
 
+#if defined(CLOCK_DEBUG)
+#define XSTR(x) STR(x)
+#define STR(x) #x
+
+#pragma message "SYSCLK_SOURCE = " XSTR(SYSCLK_SOURCE)
+#pragma message "SYSCLK_FREQ   = " XSTR(SYSCLK_FREQ)
+#pragma message "PLLCLK_IN     = " XSTR(PLLCLK_IN)
+# if defined(MCU_STM32F1_CL)
+#pragma message "PLL2CLK_PREDIV= " XSTR(PLL2CLK_PREDIV)
+#pragma message "PLL2CLK_MULT  = " XSTR(PLL2CLK_MULT)
+# endif
+#pragma message "PLLCLK_PREDIV = " XSTR(PLLCLK_PREDIV)
+#pragma message "PLLCLK_MULT   = " XSTR(PLLCLK_MULT)
+#pragma message "PLLCLK_DIV    = " XSTR(PLLCLK_DIV)
+#pragma message "SYSCLK_MAX    = " XSTR(SYSCLK_MAX)
+#pragma message "SYSCLK_RES    = " XSTR(SYSCLK_RES)
+#pragma message "AHB_DIV       = " XSTR(AHB_DIV)
+#pragma message "APB1_DIV      = " XSTR(APB1_DIV)
+#if !defined(MCU_STM32F0)
+# pragma message "APB2_DIV      = " XSTR(APB2_DIV)
+#endif
+#endif
+
 #if defined(MCU_STM32F2) || defined(MCU_STM32F4) || defined(MCU_STM32F7)
 /*!
   * \brief  Get divisor for APB clock
