@@ -397,4 +397,8 @@
 
 extern int Stm32ResetCause(void);
 
+/* Allow readable values in the configurator */
+#define ENABLE  1
+#define DISABLE 0
+
 #endif

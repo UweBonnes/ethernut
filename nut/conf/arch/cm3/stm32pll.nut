@@ -78,6 +78,16 @@ function GetLseDriveLevel()
     return { "0", "1", "2", "3"}
 end
 
+function GetRtcClkSrcDefault()
+    if c_is_provided("LSE_VALUE") then
+       return "RTCCLK_LSE"
+    end
+    if c_is_provided("HSE_VALUE") then
+       return "RTCCLK_HSE"
+    end
+    return "RTCCLK_LSI"
+end
+
 nutarch_cm3_stm32_pll =
 {
     {
@@ -90,7 +100,9 @@ nutarch_cm3_stm32_pll =
                 macro = "HSE_BYPASS",
                 brief = "HSE from external source",
                 description = "Use the clock signal applied to OSC_IN.",
-                flavor = "booldata",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/clock.h",
             },
             {
@@ -107,19 +119,22 @@ nutarch_cm3_stm32_pll =
                 file = "include/cfg/clock.h"
             },
             {
-                macro = "RTC_LSE_BYPASS",
-                brief = "LSE_BYPASS",
-                description = "External LSE input provided on OSC32_IN.",
-                flavor = "booldata",
+                macro = "LSE_BYPASS",
+                brief = "LSE from external source",
+                description = "Use clock signal applied to OSC32_IN.",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/clock.h"
             },
             {
                 macro = "LSE_VALUE",
                 brief = "Frequency of LSE Clock ",
                 description = "Frequency of LSE quarz/external LSE input.\n"..
-                              "Use 0 to disable LSE clock. Default is 32768 Hz.",
+                              "Standard is 32768 Hz.\n"..
+                              "Default is undefined.",
                 type = "integer",
-                default = "32768",
+                provides = {"LSE_VALUE"},
                 file = "include/cfg/clock.h"
             },
             {
@@ -127,8 +142,9 @@ nutarch_cm3_stm32_pll =
                 brief = "Turn LSI on",
                 description = "Turn LSI on(1) or off(0).\n"..
                               "Default is on.",
-                type = "integer",
-                default = "1",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/clock.h"
             },
             {
@@ -137,7 +153,7 @@ nutarch_cm3_stm32_pll =
                 description = "Clock used for RTC and LCD.",
                 type = "enumerated",
                 choices = {"RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI"},
-                default = "RTCCLK_LSE",
+                default = function() return GetRtcClkSrcDefault() end,
                 file = "include/cfg/clock.h"
             },
         }

@@ -46,6 +46,14 @@ static const uint8_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 
+#if (HSE_BYPASS != ENABLE) &&  (HSE_BYPASS != DISABLE)
+# warning HSE_BYPASS needs explicit value
+#endif
+
+#if !defined(LSE_VALUE)
+#define LSE_VALUE 0
+#endif
+
 #if defined(MCU_STM32F2) || defined(MCU_STM32F4) || defined(MCU_STM32F7)
 /*!
   * \brief  Get divisor for APB clock
@@ -154,10 +162,7 @@ int CtlHseClock(int ena)
     cr = RCC->CR;
     rc = (cr & RCC_CR_HSERDY);
     byp = (cr & RCC_CR_HSEBYP);
-#if !defined(HSE_BYPASS)
-    byp = !byp;
-#endif
-    if (rc && (ena) && byp) {
+    if (rc && (ena) && (byp == (HSE_BYPASS))) {
         return 0;
     } else {
         /* switch HSE off to allow to set HSE_BYPASS */
@@ -165,11 +170,11 @@ int CtlHseClock(int ena)
                               0, HSE_STARTUP_TIMEOUT);
     }
     if (ena) {
-#if defined(HSE_BYPASS)
-        RCC->CR |= RCC_CR_HSEBYP;
-#else
-        RCC->CR &= ~RCC_CR_HSEBYP;
-#endif
+        if (HSE_BYPASS) {
+            RCC->CR |= RCC_CR_HSEBYP;
+        } else {
+            RCC->CR &= ~RCC_CR_HSEBYP;
+        }
 
         /* Enable HSE */
         rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_HSEON, RCC_CR_HSERDY,

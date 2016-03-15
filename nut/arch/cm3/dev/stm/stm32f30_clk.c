@@ -52,11 +52,6 @@
 #define SYSCLK_SOURCE SYSCLK_HSI
 #endif
 
-#undef ENABLE
-#define ENABLE 1
-#undef RESET
-#define RESET 0
-
 #undef HSI_VALUE
 #define HSI_VALUE 8000000
 #if defined(RCC_CFGR_SWS_HSI48)
@@ -239,7 +234,7 @@ int CtlHsi48Clock( uint8_t ena)
             HSIStatus = RCC->CR2 & RCC_CR2_HSI48RDY;
         } while((HSIStatus == 0) && (tout > 0));
 
-        if ((RCC->CR2 & RCC_CR2_HSI48RDY) == RESET) {
+        if ((RCC->CR2 & RCC_CR2_HSI48RDY) == ENABLE) {
             /* HSI failed to start */
             rc = -1;
         }
@@ -277,7 +272,7 @@ int CtlPllClock( uint8_t ena)
             PLLStatus = RCC->CR & RCC_CR_PLLRDY;
         } while((PLLStatus == 0) && (tout > 0));
 
-        if ((RCC->CR & RCC_CR_PLLRDY) == RESET) {
+        if ((RCC->CR & RCC_CR_PLLRDY) == ENABLE) {
             /* PLL failed to start */
             rc = -1;
         }
