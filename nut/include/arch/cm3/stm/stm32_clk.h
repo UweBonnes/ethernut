@@ -83,7 +83,17 @@
 /* MSI clock ranges*/
 typedef enum
 {
-    MSI_OFF = -1,
+    MSI_OFF = -2,
+    MSI_FAILURE,
+#if   defined(MCU_STM32L0) || defined(MCU_STM32L1)
+    MSI_65_5k,
+    MSI_131k,
+    MSI_262k,
+    MSI_524k,
+    MSI_1050k,
+    MSI_2100k,
+    MSI_4200k,
+#elif defined(MCU_STM32L4)
     MSI_100k,
     MSI_200k,
     MSI_400k,
@@ -96,6 +106,7 @@ typedef enum
     MSI_24M,
     MSI_32M,
     MSI_48M
+#endif
 }msi_range_t;
 
 

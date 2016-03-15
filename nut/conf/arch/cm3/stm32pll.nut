@@ -612,6 +612,22 @@ function GetRtcClkSrcDefault()
     return "RTCCLK_LSI"
 end
 
+function GetMsiRange()
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"MSI_OFF", "MSI_100k", "MSI_200k", "MSI_400k",
+               "MSI_800k", "MSI_1M", "MSI_2M", "MSI_4M", "MSI_8M",
+               "MSI_16M", "MSI_24M", "MSI_32M", "MSI_48M"}
+    end
+    return {"MSI_OFF", "MSI_65k", "MSI_131k", "MSI_262k",
+           "MSI_524k", "MSI_1050k", "MSI_2100k", "MSI_4200k"}
+end
+function GetMsiRangeDefault()
+    if c_is_provided("HW_MCU_STM32L4") then
+        return "MSI_4M"
+    end
+    return "MSI_4200k"
+end
+
 nutarch_cm3_stm32_pll =
 {
         name = "nutarch_cm3_stm32_rcc_common",
@@ -789,6 +805,16 @@ nutarch_cm3_stm32_pll =
                         choices = { "8", "9", "10", "11", "12", "13", "14", "16", "20"},
                         file = "include/cfg/clock.h"
                   },
+            {
+                macro = "MSI_RANGE",
+                brief = "MSI value",
+                description = function() return GetMsiRangeDesc() end,
+                type = "enumerated",
+                requires = {"HW_RCC_STM32L"},
+                choices = function() return GetMsiRange() end,
+                default = function() return GetMsiRangeDefault() end,
+                file = "include/cfg/clock.h"
+            },
     },
     {
         name = "nutarch_cm3_stm32l4_rccl",
@@ -796,20 +822,6 @@ nutarch_cm3_stm32_pll =
         requires = {"HW_MCU_STM32L4"},
         options =
         {
-            {
-                macro = "MSI_RANGE",
-                brief = "MSI value",
-                description = "Select MSI frequency.\n"..
-                              "Possible values are 100/200/400/800 kHz "..
-                              "and 1/2/4/8/16/24/32/48 MHz.\n"..
-                              "Default value after reset is 4 MHz.\n",
-                              "In Range 2, maximum allowed frequency is 24 MHz.\n"..
-                              "Use MSI_OFF to disable MSI.",
-                type = "enumerated",
-                choices = {"MSI_OFF", "MSI_100k", "MSI_200k", "MSI_400k", "MSI_800k", "MSI_1M", "MSI_2M", "MSI_4M", "MSI_8M", "MSI_16M", "MSI_24M", "MSI_32M", "MSI_48M"},
-                default = "MSI_4M",
-                file = "include/cfg/clock.h"
-            },
             {
                 macro = "STM32_VRANGE",
                 brief = "Voltage Scaling",
