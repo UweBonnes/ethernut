@@ -504,7 +504,9 @@ int SetSysClock(void)
    #warning Please provide PLLCLK_MULT and PLLCLK_DIV for your settings!
   #endif
  #endif
-#elif (PLLCLK_SOURCE==PLLCLK_HSI_DIV2) || (PLLCLK_SOURCE==PLLCLK_HSI_PREDIV)
+#elif (PLLCLK_SOURCE==PLLCLK_HSI_DIV2) || (PLLCLK_SOURCE==PLLCLK_HSI_PREDIV) \
+    || (PLLCLK_SOURCE == PLLCLK_HSI)
+
  #define PLLCLK_IN HSI_VALUE
  #if !defined(PLLCLK_MULT)
  /* No user provided values, try to calculate for some discrete values */
@@ -519,6 +521,9 @@ int SetSysClock(void)
   #warning Use PLLCLK_MULT and PLLCLK_DIV with HSI48 as PLLCLK!
  #endif
 #endif
+
+#define XSTR(x) STR(x)
+#define STR(x) #x
 
 #if (PLLCLK_DIV < 1)  || (PLLCLK_DIV > 16)
 # warning "Illegal PLLCLK_DIV value"

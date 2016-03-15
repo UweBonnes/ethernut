@@ -182,29 +182,141 @@ function GetHseValueDesc()
     end
     return Unhandled
 end
+
+--
+-- Retrieve PLL Input CLK description for the device.
+--
+function GetPllClockSourceDesc()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 16 MHz oscillator, "..
+                        "eventually divided by 4.\n"..
+            "Input clock must be in the range 2 .. 24 MHz.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, PLLCLK_HSI else."
+    end
+    if c_is_provided("HW_MCU_STM32L1") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 16 MHz oscillator.\n"..
+            "Input clock must be in range 2 .. 24 MHz.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, PLLCLK_HSI else."
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_NONE is PLL off.\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 16 MHz oscillator.\n"..
+            "PLLCLK_MSI is internal multispeed oscillator. "..
+                        "See MSI_ related values.\n"..
+            "Pll input clock range is 4 .. 16 MHz.\n"..
+            "Clock division by 1 .. 8 is available.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, with\n"..
+            "LSE_VALUE provided PLLCLK_MSI, PLLCLK_HSI else."
+   end
+-- F03/F05/F100/F37
+    if c_is_provided("HW_HSI8_DIV2_STM32") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 8 MHz oscillator divided by 2.\n"..
+            "Input clock must be in range 1 .. 24 MHz.\n"..
+            "HSE Clock division by 1 .. 16 is available.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, PLLCLK_HSI else."
+    end
+-- F04/F07/F09/F3_HD
+    if c_is_provided("HW_HSI8_STM32") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 8 MHz oscillator.\n"..
+            "Input clock must be in range 1 .. 24 MHz.\n"..
+            "Clock division by 1 .. 16 is available.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, PLLCLK_HSI else."
+    end
+-- F105/F107
+    if c_is_provided("HW_MCU_STM32F1_CL") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 8 MHz oscillator divided by 2.\n"..
+            "Input clock must be in range 1 .. 12 MHz.\n"..
+            "HSE Clock division by 1 .. 16 is available.\n"..
+            "HSE may also be provided by PLL2.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, PLLCLK_HSI else."
+    end
+    if c_is_provided("HW_MCU_STM32F1") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 8 MHz oscillator divided by 2.\n"..
+            "Input clock must be in range 1 .. 25 MHz.\n"..
+            "HSE Clock division by 2 is available.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, PLLCLK_HSI else."
+    end
+    if c_is_provided("HW_MCU_STM32F3") then
+        return "Select source for PLL input.\n\n"..
+            "PLLCLK_HSE is external resonator or input. "..
+                        "See HSE_ related values.\n"..
+            "PLLCLK_HSI is internal 8 MHz oscillator divided by 2.\n"..
+            "Input clock must be in range 1 .. 24 MHz.\n"..
+            "HSE Clock division by 2 .. 16 is available.\n"..
+            "PLL setup is done automatic for some default value.\n"..
+            "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+            "Default with HSE_VALUE provided is PLLCLK_HSE, PLLCLK_HSI else."
+    end
+-- F2/F4/F7
+    return "Select source for PLL input.\n\n"..
+        "PLLCLK_HSE is external resonator or input. "..
+                    "See HSE_ related values.\n"..
+        "PLLCLK_HSI is internal 16 MHz oscillator.\n"..
+        "Input clock must be in range 0.95 .. 2.1 MHz.\n"..
+        "HSE Clock division by 2 .. 63 is available.\n"..
+        "PLL setup is done automatic for some default value.\n"..
+        "Use SYSCLK_FREQ to disable automatic setup only when needed!\n\n"..
+        "Default is PLLCLK_HSI."
+end
+
 --
 -- Retrieve PLL Input CLK available on the device.
 --
 function GetPllClkSrc()
-    if c_is_provided("HW_MCU_STM32F0") then
-       if c_is_provided("HW_CLK48_STM32") then
-          return { "PLLCLK_HSI_DIV2", "PLLCLK_HSI_PREDIV", "PLLCLK_HSE_PREDIV", "SYSCLK_HSI48_PREDIV" }
-       end
-       return { "PLLCLK_HSI_DIV2", "PLLCLK_HSI_PREDIV" }
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"PLLCLK_NONE", "PLLCLK_HSI", "PLLCLK_HSE"}
     end
-    if c_is_provided("HW_MCU_STM32F1") then
-       if c_is_provided("HW_MCU_STM32F1_CL") then
-          return { "PLLCLK_HSI_DIV2", "PLLCLK_HSE_PREDIV", "PLLCLK_PLL2" }
-       end
-       if c_is_provided("HW_MCU_STM32F100") then
-          return { "PLLCLK_HSI_DIV2", "PLLCLK_HSE_PREDIV"}
-       end
-       return { "PLLCLK_HSI_DIV2", "PLLCLK_HSE", "PLLCLK_HSE_DIV2"}
+    return {"PLLCLK_HSI", "PLLCLK_HSE"}
+end
+
+--
+-- Retrieve PLL Input CLK default.
+--
+function GetPllClkSrcDefault()
+    if c_is_provided("HW_MCU_STM32L4") then
+        if c_is_provided("LSE_VALUE") then
+            return "PLLCLK_MSI"
+        end
     end
-    if c_is_provided("HW_MCU_STM32F3") then
-       return { "PLLCLK_HSI_PREDIV", "PLLCLK_HSE_PREDIV" }
+    if c_is_provided("HSE_VALUE") then
+        return "PLLCLK_HSE"
     end
-    return { "PLLCLK_HSI", "PLLCLK_HSE" }
+    return "PLLCLK_HSI"
 end
 
 function GetPllMult()
@@ -274,6 +386,15 @@ nutarch_cm3_stm32_pll =
                 type = "enumerated",
                 choices = function() return GetSysClkSrc() end,
                 default = "SYSCLK_PLL",
+                file = "include/cfg/clock.h"
+            },
+            {
+               macro = "PLLCLK_SOURCE",
+                brief = "PLL Clock Source",
+                description = function() return GetPllClockSourceDesc() end,
+                type = "enumerated",
+                choices = function() return GetPllClkSrc() end,
+                default = function() return GetPllClkSrcDefault() end,
                 file = "include/cfg/clock.h"
             },
             {
@@ -352,20 +473,6 @@ nutarch_cm3_stm32_pll =
         requires = {"HW_RCC_STM32"},
         options =
         {
-            {
-                        macro = "PLLCLK_SOURCE",
-                        brief = "PLL Clock Source",
-                        description = "Select where the PLL should get its clock from.\n\n"..
-                              "SYSCLK_HSI_DIV2 is the internal 8 MHz clock divided by 2.\n"..
-                              "SYSCLK_HSI_PREDIV is the internal 8 MHz clock divided by 1...16.\n"..
-                              "SYSCLK_HSI48_PREDIV is internal 48 MHz clock divided by 1...16.\n"..
-                              "SYSCLK_HSE is external oscillator or crystal undivided.\n"..
-                              "SYSCLK_HSE_PREDIV is external oscillator or crystal input divided by 1...16.\n"..
-                              "With PLLCLK_AUTO NutOS tries to configure for highest speed.",
-                              type = "enumerated",
-                        default = "PLLCLK_AUTO";
-                        file = "include/cfg/clock.h"
-                  },
                   {
                         macro = "SYSCLK_FREQ",
                         brief = "CM3 System Clock",
@@ -432,16 +539,6 @@ nutarch_cm3_stm32_pll =
         requires = {"HW_RCC_STM32L4"},
         options =
         {
-            {
-                macro = "PLLCLK_SOURCE",
-                brief = "PLL Clock Source",
-                description = "Select PLL input clock. Available sources:\n\n"..
-                      "SYSCLK_MSI is internal multi-speed oscillator.\n"..
-                      "SYSCLK_HSI is internal 16 MHz oscillator..\n"..
-                      "SYSCLK_HSE is external oscillator.",
-                type = "long",
-                file = "include/cfg/clock.h"
-            },
             {
                 macro = "MSI_RANGE",
                 brief = "MSI value",

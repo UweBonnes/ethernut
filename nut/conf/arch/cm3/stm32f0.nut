@@ -100,6 +100,7 @@ nutarch_cm3_stm32f0 =
                 type = "integer",
                 default = 1,
                 provides = {
+                    "HW_HSI8_DIV2_STM32",
                     "HW_DMA1_STM32F0",
                     "HW_ADC1_STM32",
                 },
@@ -204,6 +205,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 requires = { "HW_MCU_STM32F051_LD" };
                 provides = {
+                    "HW_HSI8_DIV2_STM32",
                     "HW_DMA1_STM32F0",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",

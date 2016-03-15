@@ -172,6 +172,7 @@ nutarch_cm3_stm32f3 =
                 default = 1,
                 provides =
                 {
+                    "HW_HSI8_STM32",
                     "HW_DMA2_STM32F1",
                     "HW_ADC1_2_STM32",
                     "HW_I2C2_STM32V2",
@@ -253,6 +254,7 @@ nutarch_cm3_stm32f3 =
                 default = 1,
                 provides =
                 {
+                    "HW_HSI8_STM32",
                     "HW_DMA2_STM32F1",
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
                     "HW_ADC1_2_STM32",
@@ -376,6 +378,7 @@ nutarch_cm3_stm32f3 =
                 default = 1,
                 provides =
                 {
+                    "HW_HSI8_DIV2_STM32",
                     "HW_DMA2_STM32F1",
                     "HW_ADC1_STM32",
                     "HW_I2C2_STM32V2",

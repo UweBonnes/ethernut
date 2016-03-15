@@ -236,6 +236,7 @@ nutarch_cm3_stm32f1 =
                 type = "integer",
                 default = 1,
                 provides = {
+                  "HW_HSI8_DIV2_STM32",
                   "HW_ADC1_2_STM32",
                   "HW_CEC_STM32",
                   "HW_TIM6_DAC_STM32",
