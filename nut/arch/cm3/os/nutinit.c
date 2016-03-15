@@ -252,6 +252,11 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     ** are all hacks and could be done in a more general way. */
     SystemInit();
 
+#if defined(__CORE_CM7_H_GENERIC)
+    SCB_EnableICache();
+    SCB_EnableDCache();
+#endif
+
     /* Configure the System clock frequency, HCLK, PCLK2 and PCLK1 prescalers */
     /* Configure the Flash Latency cycles and enable prefetch buffer */
     SetSysClock();
