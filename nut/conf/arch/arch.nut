@@ -1296,6 +1296,26 @@ nutarch =
                             },
             },
             {
+                macro = "MCU_STM32F469xI",
+                brief = "STM STM32F469 2 MB",
+                description = "STM32F469 with DSI, Ethernet and FMC.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F4",
+                    "HW_MCU_STM32F469",
+                },
+                makedefs = { "FLASH0_LENGTH=512K",
+                             "RAM0_LENGTH=320K"
+-- FIXME: Handle different RAM regions
+                            },
+            },
+            {
                 macro = "MCU_STM32F746xG",
                 brief = "STM STM32F446 1 MB",
                 description = "STM32F748 with LCD, Ethernet and FMC.",

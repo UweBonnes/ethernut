@@ -321,6 +321,32 @@ nutarch_cm3_stm32f4 =
                  },
                 file = "include/cfg/arch.h"
              },
-        }
+             {
+                 macro = "STM32F469xx",
+                 brief = "STM32F460",
+                 description = "Provides vendor header for STM32F469 and additional devices.",
+                 requires = { "HW_MCU_STM32F469" },
+                 default = 1,
+                 provides =
+                 {
+                    "HW_OVERDRIVE_STM32",
+                    "HW_CAN1_STM32",
+                    "HW_CAN2_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_QUADSPI_STM32",
+                    "HW_RTC_STM32_V2",
+                    "HW_SAI1_STM32",
+                    "HW_SAI2_STM32",
+                    "HW_SPI4_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM8_TIM12_TIM13_TIM14_STM32",
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_UART5_STM32",
+                 },
+                 file = "include/cfg/arch.h"
+              }
+         }
     },
 }

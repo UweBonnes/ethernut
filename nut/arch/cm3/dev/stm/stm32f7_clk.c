@@ -109,7 +109,7 @@
 # define APB2_MAX         84000000
 #endif
 
-#if defined(MCU_STM32F42) ||  defined(STM32F446xx)
+#if defined(MCU_STM32F42) ||  defined(STM32F446xx) || defined(STM32F469xx)
 # if   (STM32_POWERSCALE == 1)
 #  if (STM32_OVERDRIVE == ENABLE)
 #   define SYSCLK_MAX     180000000
