@@ -258,6 +258,10 @@
 #  include <arch/cm3/stm/vendor/stm32f439xx.h>
 # elif defined(STM32F446xx)
 #  include <arch/cm3/stm/vendor/stm32f446xx.h>
+# elif defined(STM32F469xx)
+#  include <arch/cm3/stm/vendor/stm32f469xx.h>
+# elif defined(STM32F479xx)
+#  include <arch/cm3/stm/vendor/stm32f479xx.h>
 # else
 #  warning "Unknown STM32F4 family"
 # endif
