@@ -564,20 +564,24 @@ function GetPllMult()
     if c_is_provided("HW_MCU_STM32F1_CL") then
        return { "4", "5", "6", "7", "8", "9", "6.5"}
     end
-    return { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"}
+    return { "1", "2", "3", "4", "5", "6", "7", "8", "9",
+             "10", "11", "12", "13", "14", "15", "16"}
 end
 
 function GetPllPrediv()
     if c_is_provided("HW_MCU_STM32F1") then
        if c_is_provided("HW_MCU_STM32F1_CL") then
-          return { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"}
+          return { "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                   "10", "11", "12", "13", "14", "15", "16"}
        end
        if c_is_provided("HW_MCU_STM32F100") then
-          return { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"}
+          return { "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                   "10", "11", "12", "13", "14", "15", "16"}
        end
        return { "1", "2"}
     end
-    return { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"}
+    return { "1", "2", "3", "4", "5", "6", "7", "8", "9",
+             "10", "11", "12", "13", "14", "15", "16"}
 end
 
 function GetLseDriveLevel()
@@ -732,201 +736,217 @@ end
 
 nutarch_cm3_stm32_pll =
 {
-        name = "nutarch_cm3_stm32_rcc_common",
-        brief = "STM32 Clock and system settings.",
-        description = "STM32 Clock and system settings.",
-        options =
+    name = "nutarch_cm3_stm32_rcc_common",
+    brief = "STM32 Clock and system settings.",
+    description = "STM32 Clock and system settings.",
+    options =
+    {
         {
-            {
-                macro = "SYSCLK_SOURCE",
-                brief = "System clock source",
-                description =function() return GetSysClockSourceDesc() end,
-                type = "enumerated",
-                choices = function() return GetSysClkSrc() end,
-                default = "SYSCLK_PLL",
-                file = "include/cfg/clock.h"
-            },
-            {
-               macro = "PLLCLK_SOURCE",
-                brief = "PLL Clock Source",
-                description = function() return GetPllClockSourceDesc() end,
-                type = "enumerated",
-                choices = function() return GetPllClkSrc() end,
-                default = function() return GetPllClkSrcDefault() end,
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "SYSCLK_FREQ",
-                brief = "CM3 System Clock",
-                description = function() return GetSysClockFrequencyDesc() end,
-                provides = {"SYSCLK_FREQ"},
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "HSE_VALUE",
-                brief = "External Oszillator Frequency",
-                description = function() return GetHseValueDesc() end,
-                type = "integer",
-                provides = {"HSE_VALUE"},
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "HSE_BYPASS",
-                brief = "HSE from external source",
-                description = "Use the clock signal applied to OSC_IN.",
-                type = "enumerated",
-                choices = {"DISABLE", "ENABLE"},
-                default = "DISABLE",
-                file = "include/cfg/clock.h",
-            },
-            {
-                macro = "LSE_DRIVE_LEVEL",
-                brief = "LSE osc power",
-                description = "Power level of LSE oscillator\n"..
-                              "0 = Low drive\n"..
-                              "1 = Medium high drive\n"..
-                              "2 = Medium low drive\n"..
-                              "3 = High drive.",
-                type = "enumerated",
-                choices = function() return GetLseDriveLevel() end,
-                default = "0",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "LSE_BYPASS",
-                brief = "LSE from external source",
-                description = "Use clock signal applied to OSC32_IN.",
-                type = "enumerated",
-                choices = {"DISABLE", "ENABLE"},
-                default = "DISABLE",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "LSE_VALUE",
-                brief = "Frequency of LSE Clock ",
-                description = "Frequency of LSE quarz/external LSE input.\n"..
-                              "Standard is 32768 Hz.\n"..
-                              "Default is undefined.",
-                type = "integer",
-                provides = {"LSE_VALUE"},
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "LSI_ON",
-                brief = "Turn LSI on",
-                description = "Turn LSI on(1) or off(0).\n"..
-                              "Default is on.",
-                type = "enumerated",
-                choices = {"DISABLE", "ENABLE"},
-                default = "DISABLE",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "RTCCLK_SOURCE",
-                brief = "RTC(/LCD) clock source",
-                description = "Clock used for RTC and LCD.",
-                type = "enumerated",
-                choices = {"RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI"},
-                default = function() return GetRtcClkSrcDefault() end,
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "AHB_DIV",
-                brief = "AHB clock divisor.",
-                description = "Divisor between SYSCLK and HCLK.\n"..
-                              "Allowed values are 1, 2, 4, 8, 16, 32, "..
-                              "64,  128, 256 and 512."..
-                              "Default is 1.",
-                type = "enumerated",
-                choices =  {"1", "2", "4", "8", "16", "32", "64",
-                            "128", "256", "512"},
-                default = "1",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "APB1_DIV",
-                brief = "APB1 clock divisor.",
-                description = "Divisor between HCLK and PCLK1 "..
-                              "for low speed APB bus.\n"..
-                              "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
-                              "Auto tries to reach highest allowed "..
-                              "frequency.\nDefault is AUTO",
-                type = "enumerated",
-                choices =  {"AUTO", "1", "2", "4", "8", "16"},
-                default = "AUTO",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "APB2_DIV",
-                brief = "APB2 clock divisor.",
-                description = "Divisor between HCLK and PCLK1 "..
-                              "for high speed APB bus.\n"..
-                              "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
-                              "Auto tries to reach highest allowed "..
-                              "frequency.\nDefault is AUTO",
-                type = "enumerated",
-                choices =  {"AUTO", "1", "2", "4", "8", "16"},
-                default = "AUTO",
-                file = "include/cfg/clock.h"
-            },
-                   {
-                        macro = "PLLCLK_MULT",
-                        brief = "PLL Clock Multiplier",
-                        type = "enumerated",
-                        choices = function() return GetPllMult() end,
-                        requires = {"SYSCLK_FREQ"},
-                        file = "include/cfg/clock.h"
-                  },
-                  {
-                        macro = "PLLCLK_PREDIV",
-                        brief = "PLL Clock Divider",
-                        description = "In many cases HSE_VALUE and SYSCLK_FREQ is enough for the code\n"..
-                                      "to calculate PLLCLK_MULT and PLLCLK_DIV. If code is unable,\n"..
-                                      "enter non-zero integer PLL Clock Divider value here\n",
-                        requires = {"SYSCLK_FREQ"},
-                        type = "enumerated",
-                        choices =  function() return GetPllPrediv() end,
-                        file = "include/cfg/clock.h"
-                  },
---STM32F1_CL specific values
-                  {
-                        macro = "PLL2CLK_PREDIV",
-                        brief = "PLL2 Clock Predivider",
-                        description = "Divider between HSE and PLL2 input.\n",
-                        type = "enumerated",
-                        choices = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"};
-                        requires = {"HW_MCU_STM32F1_CL", "SYSCLK_FREQ"},
-                        file = "include/cfg/clock.h"
-                  },
-                  {
-                        macro = "PLL2CLK_MULT",
-                        brief = "PLL2 Clock Multiplier",
-                        description = "Multiplier for PLL2 clock.\n",
-                        requires = {"HW_MCU_STM32F1_CL", "SYSCLK_FREQ"},
-                        type = "enumerated",
-                        choices = { "8", "9", "10", "11", "12", "13", "14", "16", "20"},
-                        file = "include/cfg/clock.h"
-                  },
-            {
-                macro = "MSI_RANGE",
-                brief = "MSI value",
-                description = function() return GetMsiRangeDesc() end,
-                type = "enumerated",
-                requires = {"HW_RCC_STM32L"},
-                choices = function() return GetMsiRange() end,
-                default = function() return GetMsiRangeDefault() end,
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "STM32_POWERSCALE",
-                brief = "Power Scaling",
-                description = function() return GetPowerScaleRegisterDesc() end,
-                requires = {"HW_VOS_STM32"},
-                type = "enumerated",
-                choices = function() return GetPowerScaleRegister() end,
-                default = function() return GetPowerScaleRegisterDefault() end,
-                file = "include/cfg/clock.h"
-            },
+            macro = "SYSCLK_SOURCE",
+            brief = "System clock source",
+            description =function() return GetSysClockSourceDesc() end,
+            type = "enumerated",
+            choices = function() return GetSysClkSrc() end,
+            default = "SYSCLK_PLL",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "PLLCLK_SOURCE",
+            brief = "PLL Clock Source",
+            description = function() return GetPllClockSourceDesc() end,
+            type = "enumerated",
+            choices = function() return GetPllClkSrc() end,
+            default = function() return GetPllClkSrcDefault() end,
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "SYSCLK_FREQ",
+            brief = "CM3 System Clock",
+            description = function() return GetSysClockFrequencyDesc() end,
+            provides = {"SYSCLK_FREQ"},
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "HSE_VALUE",
+            brief = "External Oszillator Frequency",
+            description = function() return GetHseValueDesc() end,
+            type = "integer",
+            provides = {"HSE_VALUE"},
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "HSE_BYPASS",
+            brief = "HSE from external source",
+            description = "Use the clock signal applied to OSC_IN.",
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "DISABLE",
+            file = "include/cfg/clock.h",
+        },
+        {
+            macro = "LSE_DRIVE_LEVEL",
+            brief = "LSE osc power",
+            description = "Power level of LSE oscillator\n"..
+                          "0 = Low drive\n"..
+                          "1 = Medium high drive\n"..
+                          "2 = Medium low drive\n"..
+                          "3 = High drive.",
+            type = "enumerated",
+            choices = function() return GetLseDriveLevel() end,
+            default = "0",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "LSE_BYPASS",
+            brief = "LSE from external source",
+            description = "Use clock signal applied to OSC32_IN.",
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "DISABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "LSE_VALUE",
+            brief = "Frequency of LSE Clock ",
+            description = "Frequency of LSE quarz/external LSE input.\n"..
+                          "Standard is 32768 Hz.\n"..
+                          "Default is undefined.",
+            type = "integer",
+            provides = {"LSE_VALUE"},
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "LSI_ON",
+            brief = "Turn LSI on",
+            description = "Turn LSI on(1) or off(0).\n"..
+                          "Default is on.",
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "DISABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "RTCCLK_SOURCE",
+            brief = "RTC(/LCD) clock source",
+            description = "Clock used for RTC and LCD.",
+            type = "enumerated",
+            choices = {"RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI"},
+            default = function() return GetRtcClkSrcDefault() end,
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "AHB_DIV",
+            brief = "AHB clock divisor.",
+            description = "Divisor between SYSCLK and HCLK.\n"..
+                          "Allowed values are 1, 2, 4, 8, 16, 32, "..
+                          "64,  128, 256 and 512."..
+                          "Default is 1.",
+            type = "enumerated",
+            choices =  {"1", "2", "4", "8", "16", "32", "64",
+                        "128", "256", "512"},
+            default = "1",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "APB1_DIV",
+            brief = "APB1 clock divisor.",
+            description = "Divisor between HCLK and PCLK1 "..
+                          "for low speed APB bus.\n"..
+                          "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
+                          "Auto tries to reach highest allowed "..
+                          "frequency.\nDefault is AUTO",
+            type = "enumerated",
+            choices =  {"AUTO", "1", "2", "4", "8", "16"},
+            default = "AUTO",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "APB2_DIV",
+            brief = "APB2 clock divisor.",
+            description = "Divisor between HCLK and PCLK1 "..
+                          "for high speed APB bus.\n"..
+                          "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
+                          "Auto tries to reach highest allowed "..
+                          "frequency.\nDefault is AUTO",
+            type = "enumerated",
+            choices =  {"AUTO", "1", "2", "4", "8", "16"},
+            default = "AUTO",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "PLLCLK_MULT",
+            brief = "PLL Clock Multiplier",
+            type = "enumerated",
+            choices = function() return GetPllMult() end,
+            requires = {"SYSCLK_FREQ"},
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "PLLCLK_PREDIV",
+            brief = "PLL Clock Divider",
+            description =
+                "In many cases HSE_VALUE and SYSCLK_FREQ\n"..
+                "is enough for the code to calculate\n"..
+                "PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV.\n\n"..
+                "For unhandled special set,\n"..
+                "enter non-zero integer PLL Clock Divider value here"..
+                "or better extend clock setting!",
+            requires = {"SYSCLK_FREQ"},
+            type = "enumerated",
+            choices =  function() return GetPllPrediv() end,
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "PLL2CLK_PREDIV",
+            brief = "PLL2 Clock Predivider",
+            description = "Divider between HSE and PLL2 input.\n",
+            type = "enumerated",
+            choices = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"};
+            requires = {"HW_MCU_STM32F1_CL", "SYSCLK_FREQ"},
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "PLL2CLK_MULT",
+            brief = "PLL2 Clock Multiplier",
+            description = "Multiplier for PLL2 clock.\n",
+            requires = {"HW_MCU_STM32F1_CL", "SYSCLK_FREQ"},
+            type = "enumerated",
+            choices = { "8", "9", "10", "11", "12", "13", "14", "16", "20"},
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "MSI_RANGE",
+            brief = "MSI value",
+            description = function() return GetMsiRangeDesc() end,
+            type = "enumerated",
+            requires = {"HW_RCC_STM32L"},
+            choices = function() return GetMsiRange() end,
+            default = function() return GetMsiRangeDefault() end,
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "STM32_POWERSCALE",
+            brief = "Power Scaling",
+            description = function() return GetPowerScaleRegisterDesc() end,
+            requires = {"HW_VOS_STM32"},
+            type = "enumerated",
+            choices = function() return GetPowerScaleRegister() end,
+            default = function() return GetPowerScaleRegisterDefault() end,
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "STM32_OVERDRIVE",
+            brief = "Over-Drive mode",
+            description = "Over-Drive Mode\n\n"..
+                          "Allow higher sysclock a the expense of "..
+                                 "higher power.\n"..
+                          "Default is ENABLE",
+            requires = {"HW_OVERDRIVE_STM32"},
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "ENABLE",
+            file = "include/cfg/clock.h"
+        },
     },
     {
         name = "nutarch_cm3_stm32l4_rccl",

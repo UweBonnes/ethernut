@@ -217,6 +217,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_OVERDRIVE_STM32",
                     "HW_BKPSRAM_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
@@ -299,6 +300,7 @@ nutarch_cm3_stm32f4 =
                 default = 1,
                 provides =
                 {
+                    "HW_OVERDRIVE_STM32",
                     "HW_CAN1_STM32",
                     "HW_CAN2_STM32",
                     "HW_CEC_STM32",
