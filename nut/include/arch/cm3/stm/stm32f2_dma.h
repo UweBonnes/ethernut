@@ -259,6 +259,9 @@
 #define DMA_TEIE         DMA_SxCR_TEIE
 #define DMA_HTIE         DMA_SxCR_HTIE
 #define DMA_TCIE         DMA_SxCR_TCIE
+#define DMA_P2M          0
+#define DMA_M2P          DMA_SxCR_DIR_0
+#define DMA_M2M          DMA_SxCR_DIR_2
 #define DMA_MINC         DMA_SxCR_MINC
 #define DMA_PINC         DMA_SxCR_PINC
 #define DMA_CIRC         DMA_SxCR_CIRC

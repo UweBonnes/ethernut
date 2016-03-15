@@ -60,6 +60,26 @@ extern void Dma1IrqEntry(void *arg);
 extern void Dma2IrqEntry(void *arg);
 #endif
 
+/* Both DMA IPs have nearly the same register layout, bus use different names.
+ * Provide a common structure and register layout.
+ */
+typedef struct {
+  __IO uint32_t CR;    /*!< DMA channel configuration register  */
+  __IO uint32_t NDTR;  /*!< DMA channel number of data register */
+  __IO void     *PAR;  /*!< DMA channel pheriperal address      */
+  __IO void     *MAR;  /*!< DMA channel memory address          */
+} DmaChannelCommon;
+
+#if defined(DMA1_Channel1)
+#define Ch2DmaCh(ch) ((DmaChannelCommon*)                       \
+                      (((ch < DMA2_CH1)? DMA1_BASE : DMA2_BASE) \
+                       + 8 + ((ch % 7) * 20)))
+#else
+#define Ch2DmaCh(ch) ((DmaChannelCommon*)                           \
+                      (((ch < DMA_CONTROL2)? DMA1_BASE : DMA2_BASE) \
+                       + 10 + (((ch & 0x70) >> 4) * 0x18)))
+#endif
+
 /*
  * DMA Control Functions
  */

@@ -222,6 +222,9 @@
 #define DMA_TEIE        DMA_CCR_TEIE
 #define DMA_HTIE        DMA_CCR_HTIE
 #define DMA_TCIE        DMA_CCR_TCIE
+#define DMA_P2M         0
+#define DMA_M2P         DMA_CCR_DIR
+#define DMA_M2M         DMA_CCR_MEM2MEM
 #define DMA_MINC        DMA_CCR_MINC
 #define DMA_PINC        DMA_CCR_PINC
 #define DMA_CIRC        DMA_CCR_CIRC
@@ -246,6 +249,7 @@
 #define DMA_GIF  DMA_ISR_GIF1   /*< Channel x Global Flag */
 
 #define DMA_FLAGMASK (DMA_TCIF | DMA_HTIF | DMA_TEIF | DMA_GIF)
+#define DMA_IRQMASK (DMA_CCR_TCIE | DMA_CCR_HTIE | DMA_CCR_TEIE)
 
 /* Internally used struct and table to align
  * DMA channels and interrupts. */
