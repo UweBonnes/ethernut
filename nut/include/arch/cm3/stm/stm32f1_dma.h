@@ -54,13 +54,11 @@
 #define DMA1_CH5   4
 #define DMA1_CH6   5
 #define DMA1_CH7   6
-#define STM_HAS_DMA1 7
 
 #define DMA2_CH1   7
 #define DMA2_CH2   8
 #define DMA2_CH3   9
 #define DMA2_CH4  10
-/* FIXME: Some F1 devices have C4 and C5 coupled*/
 #define DMA2_CH5  11
 #define DMA2_CH6  12
 #define DMA2_CH7  13
@@ -214,7 +212,6 @@
 #define ADC2_ALT_DMA                   DMA1_CH4
 #define ADC2_ALT_DMA_IRQ               sig_DMA1_CH4
 #endif
-
 /*!
  * \brief STM32 F0/F1/F3/L0/L3 DMA Control Flags.
  */
@@ -239,6 +236,75 @@
 #define DMA_PRIO_HIGH   DMA_CCR_PL_1
 #define DMA_PRIO_HIGEST DMA_CCR_PL
 #define DMA_MEM2MEN     DMA_CCR_MEM2MEM
+
+#if defined(HW_DMA_COMBINED_IRQ_STM32)
+# if   defined(SYSCFG_ITLINE10_SR_DMA1_CH2)
+#  define DMA_CH2IRQ_P(ch) (                 \
+        (ch == DMA_NONE) ? NULL            : \
+        (ch == DMA2_CH5) ? &sig_DMA_GROUP2 : \
+        (ch == DMA2_CH4) ? &sig_DMA_GROUP2 : \
+        (ch == DMA2_CH3) ? &sig_DMA_GROUP2 : \
+        (ch == DMA2_CH2) ? &sig_DMA_GROUP1 : \
+        (ch == DMA2_CH1) ? &sig_DMA_GROUP1 : \
+        (ch == DMA1_CH7) ? &sig_DMA_GROUP2 : \
+        (ch == DMA1_CH6) ? &sig_DMA_GROUP2 : \
+        (ch == DMA1_CH5) ? &sig_DMA_GROUP2 : \
+        (ch == DMA1_CH4) ? &sig_DMA_GROUP2 : \
+        (ch == DMA1_CH3) ? &sig_DMA_GROUP1 : \
+        (ch == DMA1_CH2) ? &sig_DMA_GROUP1 : &sig_DMA1_CH1)
+# elif defined(HW_DMA2_STM32F1)
+#  define DMA_CH2IRQ_P(ch) (               \
+        (ch == DMA_NONE) ? NULL          : \
+        (ch == DMA2_CH5) ? &sig_DMA2_CH4 : \
+        (ch == DMA2_CH4) ? &sig_DMA2_CH4 : \
+        (ch == DMA2_CH3) ? &sig_DMA2_CH3 : \
+        (ch == DMA2_CH2) ? &sig_DMA2_CH2 : \
+        (ch == DMA2_CH1) ? &sig_DMA2_CH1 : \
+        (ch == DMA1_CH7) ? &sig_DMA1_CH7 : \
+        (ch == DMA1_CH6) ? &sig_DMA1_CH6 : \
+        (ch == DMA1_CH5) ? &sig_DMA1_CH5 : \
+        (ch == DMA1_CH4) ? &sig_DMA1_CH4 : \
+        (ch == DMA1_CH3) ? &sig_DMA1_CH3 : \
+        (ch == DMA1_CH2) ? &sig_DMA1_CH2 : &sig_DMA1_CH1)
+# else
+#  define DMA_CH2IRQ_P(ch) (                 \
+        (ch == DMA_NONE) ? NULL            : \
+        (ch >= DMA1_CH4) ? &sig_DMA_GROUP2 : \
+        (ch >= DMA1_CH2) ? &sig_DMA_GROUP1 : &sig_DMA1_CH1 )
+# endif
+#else
+# if defined(HW_DMA2_STM32L4)
+#  define DMA_CH2IRQ_P(ch) (               \
+        (ch == DMA_NONE) ? NULL         :  \
+        (ch == DMA2_CH7) ? &sig_DMA2_CH7 : \
+        (ch == DMA2_CH6) ? &sig_DMA2_CH6 : \
+        (ch == DMA2_CH5) ? &sig_DMA2_CH5 : \
+        (ch == DMA2_CH4) ? &sig_DMA2_CH4 : \
+        (ch == DMA2_CH3) ? &sig_DMA2_CH3 : \
+        (ch == DMA2_CH2) ? &sig_DMA2_CH2 : \
+        (ch == DMA2_CH1) ? &sig_DMA2_CH1 : \
+        (ch == DMA1_CH7) ? &sig_DMA1_CH7 : \
+        (ch == DMA1_CH6) ? &sig_DMA1_CH6 : \
+        (ch == DMA1_CH5) ? &sig_DMA1_CH5 : \
+        (ch == DMA1_CH4) ? &sig_DMA1_CH4 : \
+        (ch == DMA1_CH3) ? &sig_DMA1_CH3 : \
+        (ch == DMA1_CH2) ? &sig_DMA1_CH2 : &sig_DMA1_CH1 )
+# else
+#  define DMA_CH2IRQ_P(ch) (             \
+        (ch == DMA_NONE) ? NULL         : \
+        (ch == DMA2_CH5) ? &sig_DMA2_CH5 : \
+        (ch == DMA2_CH4) ? &sig_DMA2_CH4 : \
+        (ch == DMA2_CH3) ? &sig_DMA2_CH3 : \
+        (ch == DMA2_CH2) ? &sig_DMA2_CH2 : \
+        (ch == DMA2_CH1) ? &sig_DMA2_CH1 : \
+        (ch == DMA1_CH7) ? &sig_DMA1_CH7 : \
+        (ch == DMA1_CH6) ? &sig_DMA1_CH6 : \
+        (ch == DMA1_CH5) ? &sig_DMA1_CH5 : \
+        (ch == DMA1_CH4) ? &sig_DMA1_CH4 : \
+        (ch == DMA1_CH3) ? &sig_DMA1_CH3 : \
+        (ch == DMA1_CH2) ? &sig_DMA1_CH2 : &sig_DMA1_CH1)
+# endif
+#endif
 
 /*!
  * \brief STM32 F0/F1/F3/L0/L1 DMA Status and Interrupt Flags.

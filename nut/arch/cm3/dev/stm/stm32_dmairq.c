@@ -54,60 +54,19 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_dma.h>
 
-#if defined(MCU_STM32F1) || defined(MCU_STM32F3) ||  defined(MCU_STM32L1) ||defined(MCU_STM32L4)
-# define FIRST_COMBINED_CHANNEL DMA2_CH5
-static IRQ_HANDLER *ch2irq[DMA_COUNT] = {
-    &sig_DMA1_CH1,
-    &sig_DMA1_CH2,
-    &sig_DMA1_CH3,
-    &sig_DMA1_CH4,
-    &sig_DMA1_CH5,
-    &sig_DMA1_CH6,
-    &sig_DMA1_CH7,
-# if defined(HW_DMA2_STM32F1)
-    &sig_DMA2_CH1,
-    &sig_DMA2_CH2,
-    &sig_DMA2_CH3,
-    &sig_DMA2_CH4,
-#  if defined(HW_DMA_COMBINED_IRQ_STM32)
-    &sig_DMA2_CH4,
-#  else
-    &sig_DMA2_CH5,
-#  endif
-#  if defined(HW_DMA2_7CH_STM32)
-    &sig_DMA2_CH6,
-    &sig_DMA2_CH7,
-#  endif
-# endif
-};
-#elif defined(MCU_STM32F0) || defined(MCU_STM32L0)
-# define FIRST_COMBINED_CHANNEL DMA1_CH2
-# if   defined(HW_DMA1_5CH_STM32)
-#  define DMA_COUNT  5
-# elif defined(HW_DMA2_STM32F1)
+#if defined(HW_DMA_COMBINED_IRQ_STM32)
+# if   defined(HW_DMA2_STM32F1)
+#  define FIRST_COMBINED_CHANNEL DMA2_CH4
 #  define DMA_COUNT 12
 # else
-#  define DMA_COUNT  7
+#  define FIRST_COMBINED_CHANNEL DMA1_CH2
+#  if defined(HW_DMA1_5CH_STM32)
+#   define DMA_COUNT  5
+#  else
+#   define DMA_COUNT  7
+#  endif
 # endif
-static IRQ_HANDLER *ch2irq[DMA_COUNT] = {
-    &sig_DMA1_CH1,
-    &sig_DMA_GROUP1,
-    &sig_DMA_GROUP1,
-    &sig_DMA_GROUP2,
-    &sig_DMA_GROUP2,
-# if !defined(HW_DMA1_5CH_STM32)
-    &sig_DMA_GROUP2,
-    &sig_DMA_GROUP2,
-# endif
-# if defined(HW_DMA2_STM32F1)
-    &sig_DMA_GROUP1,
-    &sig_DMA_GROUP1,
-    &sig_DMA_GROUP2,
-    &sig_DMA_GROUP2,
-    &sig_DMA_GROUP2,
-# endif
-};
-# if defined(SYSCFG_ITLINE10_SR_DMA1_CH2)
+# if   defined(SYSCFG_ITLINE10_SR_DMA1_CH2)
 static __IO uint32_t *ch2it_line_sr[DMA_COUNT] = {
     &SYSCFG->IT_LINE_SR[ 9],
     &SYSCFG->IT_LINE_SR[10],
@@ -137,32 +96,6 @@ static uint32_t ch2it_line_mask[DMA_COUNT] = {
     SYSCFG_ITLINE11_SR_DMA2_CH5,
 };
 # endif
-#else
-static IRQ_HANDLER *dma2irq[2][8] = {
-    {
-        &sig_DMA1_STREAM0,
-        &sig_DMA1_STREAM1,
-        &sig_DMA1_STREAM2,
-        &sig_DMA1_STREAM3,
-        &sig_DMA1_STREAM4,
-        &sig_DMA1_STREAM5,
-        &sig_DMA1_STREAM6,
-        &sig_DMA1_STREAM7
-    },
-    {
-        &sig_DMA2_STREAM0,
-        &sig_DMA2_STREAM1,
-        &sig_DMA2_STREAM2,
-        &sig_DMA2_STREAM3,
-        &sig_DMA2_STREAM4,
-        &sig_DMA2_STREAM5,
-        &sig_DMA2_STREAM6,
-        &sig_DMA2_STREAM7
-    }
-};
-#endif
-
-#if defined(HW_DMA_COMBINED_IRQ_STM32)
 static void DmaGroupHandler(void *arg) {
     DMA_SIGNAL *signal;
     for (signal = (DMA_SIGNAL *) arg; signal; signal = signal->next) {
@@ -202,20 +135,17 @@ static void DmaGroupHandler(void *arg) {
     }
 }
 
-DMA_SIGNAL *DmaCreateHandler(uint8_t ch)
+DMA_SIGNAL *DmaCreateHandler(uint8_t ch, IRQ_HANDLER *irq)
 {
-    IRQ_HANDLER *irq;
     DMA_SIGNAL *sig, *chain;
 
     if (ch >= DMA_COUNT) { /* No such DMA*/
         return NULL;
     }
     if (ch < FIRST_COMBINED_CHANNEL) {
-        irq = ch2irq[ch];
         NutIrqEnable(irq);
         return (DMA_SIGNAL*)irq;
     }
-    irq = ch2irq[ch];
     if (irq->ir_arg) {
         /* Interrupt already installed, check chain*/
         chain = irq->ir_arg;
@@ -260,15 +190,14 @@ DMA_SIGNAL *DmaCreateHandler(uint8_t ch)
 }
 
 int DmaRegisterHandler(
-    DMA_SIGNAL *sig, uint8_t ch, void (*handler) (void *), void *arg)
+    DMA_SIGNAL *sig, void (*handler) (void *), void *arg,
+    uint8_t ch, IRQ_HANDLER *irq)
 {
-    IRQ_HANDLER *irq = NULL;
     DMA_SIGNAL *chain;
 
     if (ch >= DMA_COUNT) { /* No such DMA*/
-        return 0;
+        return -1;
     }
-    irq = ch2irq[ch];
     if (ch < FIRST_COMBINED_CHANNEL) {
         int res;
         res = NutRegisterIrqHandler(irq, handler, arg);
@@ -301,44 +230,28 @@ int DmaRegisterHandler(
 
 #else
 # if defined(MCU_STM32F2) || defined(MCU_STM32F4) ||defined(MCU_STM32F7)
-extern DMA_SIGNAL *DmaCreateHandler(uint8_t ch)
+extern DMA_SIGNAL *DmaCreateHandler(uint8_t ch, IRQ_HANDLER *irq)
 {
-    uint8_t dma, stream;
-    IRQ_HANDLER *irq;
-
-    dma = ch >> 7;
-    stream = ch & 0x7f;
-
-    if (dma > 1) {
-        /* No such DMA*/
-        return NULL;
-    }
-    if (stream > 7) {
+    if ((ch & 0x7f) > 7) {
         /* No such stream*/
         return NULL;
     }
-    irq = dma2irq[dma][stream];
     NutIrqEnable(irq);
     return irq;
 }
 
 # else
-extern DMA_SIGNAL *DmaCreateHandler(uint8_t ch)
+/* F1/F3/l4*/
+extern DMA_SIGNAL *DmaCreateHandler(uint8_t ch, IRQ_HANDLER *irq)
 {
-    IRQ_HANDLER *irq;
-
-    if (ch >= DMA_COUNT) {
-        /* No such DMA*/
-        return NULL;
-    }
-    irq = ch2irq[ch];
     NutIrqEnable(irq);
     return irq;
 }
 # endif
 
 int DmaRegisterHandler(
-    DMA_SIGNAL *sig, uint8_t ch, void (*handler) (void *), void *arg)
+    DMA_SIGNAL *sig, void (*handler) (void *), void *arg,
+    uint8_t ch, IRQ_HANDLER *irq)
 {
     int res;
     res = NutRegisterIrqHandler(sig, handler, arg);

@@ -71,9 +71,13 @@ typedef struct {
 } DmaChannelCommon;
 
 #if defined(DMA1_Channel1)
-#define Ch2DmaCh(ch) ((DmaChannelCommon*)                       \
-                      (((ch < DMA2_CH1)? DMA1_BASE : DMA2_BASE) \
-                       + 8 + ((ch % 7) * 20)))
+# if defined(DMA2_Channel1)
+#  define Ch2DmaCh(ch) ((DmaChannelCommon*)                       \
+                        (((ch < DMA2_CH1)? DMA1_BASE : DMA2_BASE) \
+                         + 8 + ((ch % 7) * 20)))
+# else
+#  define Ch2DmaCh(ch) (DmaChannelCommon*)DMA1_BASE
+# endif
 #else
 #define Ch2DmaCh(ch) ((DmaChannelCommon*)                           \
                       (((ch < DMA_CONTROL2)? DMA1_BASE : DMA2_BASE) \
@@ -96,9 +100,10 @@ void DMA_ClearFlag( uint8_t ch, uint32_t flags);
 uint32_t DMA_GetFlag( uint8_t ch);
 uint16_t DMA_GetRemainingTransfers( uint8_t ch);
 extern void *DmaGetMemoryBase( uint8_t ch);
-extern DMA_SIGNAL *DmaCreateHandler(uint8_t ch);
+extern DMA_SIGNAL *DmaCreateHandler(uint8_t ch, IRQ_HANDLER *irq);
 extern int DmaRegisterHandler(
-    DMA_SIGNAL* signal, uint8_t ch, void (*handler) (void *), void *arg);
+    DMA_SIGNAL* signal, void (*handler) (void *), void *arg,
+    uint8_t ch, IRQ_HANDLER *irq);
 extern int DmaEnableHandler(DMA_SIGNAL* signal, uint8_t ch);
 extern int DmaDisableHandler(DMA_SIGNAL* signal, uint8_t ch);
 #endif

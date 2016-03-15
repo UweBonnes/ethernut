@@ -535,8 +535,10 @@ static int Stm32SpiBusTransfer
          * Otherwise we may disrupt an on-going transaction to an other device on the same
          * channel.
          */
-       sig = DmaCreateHandler(SPI_DMA_RX_CHANNEL);
-       DmaRegisterHandler(sig, SPI_DMA_RX_CHANNEL, Stm32SpiBusDMAInterrupt, &node->node_bus->bus_ready);
+       sig = DmaCreateHandler(SPI_DMA_RX_CHANNEL, DMA_CH2IRQ_P(SPI_DMA_RX_CHANNEL));
+       DmaRegisterHandler(
+           sig, Stm32SpiBusDMAInterrupt, &node->node_bus->bus_ready,
+           SPI_DMA_RX_CHANNEL, DMA_CH2IRQ_P(SPI_DMA_RX_CHANNEL));
         DMA_Enable( SPI_DMA_RX_CHANNEL);
         DMA_IrqMask(SPI_DMA_RX_CHANNEL, DMA_TCIF, 1);
         CM3BBSET(SPI_BASE, SPI_TypeDef, CR2, _BI32(SPI_CR2_RXDMAEN));

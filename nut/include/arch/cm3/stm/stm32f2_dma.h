@@ -17,6 +17,25 @@
 #define DMA_CHANNEL6 0x06
 #define DMA_CHANNEL7 0x07
 
+#define DMA_CH2IRQ_P(ch) (                                             \
+        (ch == DMA_NONE)                                                              ? NULL              : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM7))? &sig_DMA2_STREAM7 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM6))? &sig_DMA2_STREAM6 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM5))? &sig_DMA2_STREAM5 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM4))? &sig_DMA2_STREAM4 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM3))? &sig_DMA2_STREAM3 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM2))? &sig_DMA2_STREAM2 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM1))? &sig_DMA2_STREAM1 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL2) && ((ch & DMA_STREAM7) == DMA_STREAM0))? &sig_DMA2_STREAM0 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL1) && ((ch & DMA_STREAM7) == DMA_STREAM7))? &sig_DMA1_STREAM7 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL1) && ((ch & DMA_STREAM7) == DMA_STREAM6))? &sig_DMA1_STREAM6 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL1) && ((ch & DMA_STREAM7) == DMA_STREAM5))? &sig_DMA1_STREAM5 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL1) && ((ch & DMA_STREAM7) == DMA_STREAM4))? &sig_DMA1_STREAM4 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL1) && ((ch & DMA_STREAM7) == DMA_STREAM3))? &sig_DMA1_STREAM3 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL1) && ((ch & DMA_STREAM7) == DMA_STREAM2))? &sig_DMA1_STREAM2 : \
+        (((ch & DMA_CONTROL2) == DMA_CONTROL1) && ((ch & DMA_STREAM7) == DMA_STREAM1))? &sig_DMA1_STREAM1 : \
+                                                                                        &sig_DMA1_STREAM0)
+
 /* Also tedious, lets define all channels and interrupts here so
  * we have everything in one place.
  */
