@@ -99,6 +99,12 @@ typedef enum{
     TIM_CC_ACTIVE_IF_GREATER = 7
 }TIM_CC_FOUT;
 
+/* APB1 devices are always below 0x40010000! */
+# define BASE2TIM_ENR(base)  ((base < (PERIPH_BASE + 0x10000)) ?        \
+                              &RCC->APB1ENR  : &RCC->APB2ENR)
+# define BASE2TIM_RSTR(base) ((base < (PERIPH_BASE + 0x10000)) ?        \
+                              &RCC->APB1RSTR : &RCC->APB2RSTR)
+
 int Stm32TimerChannelConfig(
     TIM_TypeDef    *tim,
     uint8_t         channel,
