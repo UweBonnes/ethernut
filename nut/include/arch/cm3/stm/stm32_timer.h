@@ -107,7 +107,7 @@ typedef enum{
 
 int Stm32TimerChannelConfig(
     TIM_TypeDef    *tim,
-    uint8_t         channel,
+    int8_t          channel,
     uint8_t         filter,
     TIM_CC_FIN      fin,
     TIM_CC_FOUT     fout,

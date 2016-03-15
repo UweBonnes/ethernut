@@ -123,7 +123,7 @@ void Stm32TimerConfig(
  *
  * \param  tim           Timer to set
  *
- * \param  channel       Channel to set values
+ * \param  channel       Channel to set values, negative values for CHxN
  * \param  filter        Input capture filter
  * \param  fin           Input capture function
  * \param  fout          Output compare function
@@ -133,44 +133,71 @@ void Stm32TimerConfig(
  */
 int Stm32TimerChannelConfig(
     TIM_TypeDef    *tim,
-    uint8_t         channel,
+    int8_t          channel,
     uint8_t         filter,
     TIM_CC_FIN      fin,
     TIM_CC_FOUT     fout,
     TIM_CC_POLARITY polarity)
 {
     uint32_t tmp, ccer;
-    int channel_index;
+    int ch, channel_index;
 
-
-    if ((filter > 0xf) || ((fin != TIM_CC_OUTPUT) && (fout != TIM_CC_FROZEN)))
+    if (channel < 0 ) {
+        ch = -channel - 1;
+    } else {
+        ch = channel - 1;
+    }
+    if ((ch > 3) && (fin != TIM_CC_OUTPUT)) {
+        /* Obly 4 input channels even on 6 channel timers */
+        return - 1;
+    }
+    if ((channel < -3) ||          /* No CH(4|5|6)N */
+        (ch > 5 ) ||               /* Only 6 channels max. */
+        (filter > 0xf) ||
+        ((fin != TIM_CC_OUTPUT) && (fout != TIM_CC_FROZEN))) {
         return -1;
+    }
     /* Set Input Capture Filter and function*/
     tmp = (filter * TIM_CCMR1_IC1F_0) | (fin) | (fout * TIM_CCMR1_OC1M_0);
-    switch (channel) {
-    case 1:
+    /* Enable preload PWM value. New value gets active on timer update.*/
+    tmp |= TIM_CCMR1_OC1PE;
+    switch (ch) {
+    case 0:
         tim->CCMR1 &= 0x100ff00;
         tim->CCMR1 |= tmp;
         break;
-    case 2:
+    case 1:
         tim->CCMR1 &= 0x0100ff;
         tim->CCMR1 |= tmp << 8;
         break;
-    case 3:
+    case 2:
         tim->CCMR2 &= 0x100ff00;
         tim->CCMR2 |= tmp;
         break;
-    case 4:
-        tim->CCMR2 &= 0x100ff00;
+    case 3:
+        tim->CCMR2 &= 0x0100ff;
         tim->CCMR2 |= tmp << 8;
         break;
+#if defined(TIM_CCMR3_OC5M)
+    case 4:
+        tim->CCMR3 &= 0x100ff00;
+        tim->CCMR3 |= tmp;
+        break;
+    case 5:
+        tim->CCMR3 &= 0x0100ff;
+        tim->CCMR3 |= tmp << 8;
+        break;
+#endif
     }
     /* Select polarity of input capture/ output compare and enable channel*/
     /* Clear CC1NP/CC1P */
-    channel_index =  (channel - 1) * 4;
+    channel_index =  ch * 4;
     ccer = tim->CCER;
     ccer &= ~( 0xf << channel_index);
     tmp = TIM_CCER_CC1E + polarity * TIM_CCER_CC1P;
+    if (channel < 0) {
+        tmp = tmp << 2;
+    }
     tmp <<= channel_index;
     ccer |= tmp;
     tim->CCER = ccer;
