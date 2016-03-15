@@ -61,6 +61,7 @@ nutarch_cm3_stm32l0 =
                 provides =
                 {
                     "HW_RCC_STM32",
+                    "HW_RCC_STM32L",
 -- Todo: FLASH_WRPROT
 --                    "HW_FLASH_STM32L1",
                     "HW_RTC_STM32_V2",

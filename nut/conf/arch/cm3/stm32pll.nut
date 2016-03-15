@@ -5,10 +5,82 @@
 -- Retrieve SYSCLK available on the device.
 --
 function GetSysClkSrc()
-    if c_is_provided("HW_CLK48_STM32") then
-        return { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE", "SYSCLK_HSI48" }
+    if c_is_provided("HW_RCC_STM32L") then
+        return {"SYSCLK_MSI", "SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
     end
-    return { "SYSCLK_HSI", "SYSCLK_PLL", "SYSCLK_HSE" }
+    if c_is_provided("HW_MCU_STM32F446") then
+        return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL", "SYSCLK_PLLR"}
+    end
+    return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
+end
+
+--
+-- Retrieve SYSCLK description
+--
+function GetSysClockSourceDesc()
+    if c_is_provided("HW_HSI8_STM32F") then
+-- F0/F1/F3
+       return "Select where SYSCLK should get its clock from.\n\n"..
+              "SYSCLK_HSI is internal 8 MHz oscillator.\n"..
+              "SYSCLK_HSE is external oscillator or crystal input.\n"..
+              "SYSCLK_PLL is internal PLL output.\n"..
+              "\tSelect PLL source with PLLCLK_SOURCE.\n\n"..
+              "Default is SYSCLK_PLL."
+    end
+    if c_is_provided("HW_MCU_STM32F446") then
+-- F44x: Choice from two outputs of the PLL
+       return "Select where SYSCLK should get its clock from.\n\n"..
+              "SYSCLK_HSI is internal 16 MHz oscillator.\n"..
+              "SYSCLK_HSE is external oscillator or crystal input.\n"..
+              "SYSCLK_PLL is internal PLL output.\n"..
+              "SYSCLK_PLLR is internal PLL R output.\n"..
+              "\tSelect PLL source with PLLCLK_SOURCE.\n"..
+              "\tPLLR is also used for I2S, SA1 and SPDIF.\n"..
+              "\tPLL is dedicated to core.\n\n"..
+              "Default is SYSCLK_PLL."
+    end
+    if c_is_provided("HW_HSI16_STM32F") then
+-- F2/F4/F7
+       return "Select where SYSCLK should get its clock from.\n\n"..
+              "SYSCLK_HSI is internal 16 MHz oscillator.\n"..
+              "SYSCLK_HSE is external oscillator or crystal input.\n"..
+              "SYSCLK_PLL is internal PLL output.\n"..
+              "\tSelect PLL source with PLLCLK_SOURCE.\n\n"..
+              "Default is SYSCLK_PLL."
+    end
+    if c_is_provided("HW_MCU_STM32L0") then
+       return "Select where SYSCLK should get its clock from.\n\n"..
+              "SYSCLK_HSI is internal 16 MHz oscillator, "..
+                          "eventually divided by 4.\n"..
+              "\tSelect with HSICLK_DIV4.\n"..
+              "SYSCLK_HSE is external oscillator or crystal input.\n"..
+              "SYSCLK_PLL is internal PLL output.\n"..
+              "\tSelect PLL source with PLLCLK_SOURCE.\n"..
+              "PLLCLK_MSI is internal multi-speed oscillator.\n"..
+              "\tSelect MSI Frequency with MSI_RANGE.\n\n"..
+              "Default is SYSCLK_PLL."
+    end
+    if c_is_provided("HW_MCU_STM32L1") then
+       return "Select where SYSCLK should get its clock from.\n\n"..
+              "SYSCLK_HSI is internal 16 MHz oscillator.\n"..
+              "SYSCLK_HSE is external oscillator or crystal input.\n"..
+              "SYSCLK_PLL is internal PLL output.\n"..
+              "\tSelect PLL source with PLLCLK_SOURCE.\n"..
+              "PLLCLK_MSI is internal multi-speed oscillator.\n"..
+              "\tSelect MSI Frequency with MSI_RANGE.\n\n"..
+              "Default is SYSCLK_PLL."
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+       return "Select where SYSCLK should get its clock from.\n\n"..
+              "SYSCLK_HSI is internal 16 MHz oscillator.\n"..
+              "SYSCLK_HSE is external oscillator or crystal input.\n"..
+              "SYSCLK_PLL is internal PLL output.\n"..
+              "\tSelect PLL source with PLLCLK_SOURCE.\n"..
+              "PLLCLK_MSI is internal multi-speed oscillator.\n"..
+              "\tSelect MSI Frequency with MSI_RANGE.\n\n"..
+              "Default is SYSCLK_PLL."
+    end
+    return "Unhandled case"
 end
 
 --
@@ -97,6 +169,15 @@ nutarch_cm3_stm32_pll =
         options =
         {
             {
+                macro = "SYSCLK_SOURCE",
+                brief = "System clock source",
+                description =function() return GetSysClockSourceDesc() end,
+                type = "enumerated",
+                choices = function() return GetSysClkSrc() end,
+                default = "SYSCLK_PLL",
+                file = "include/cfg/clock.h"
+            },
+            {
                 macro = "HSE_BYPASS",
                 brief = "HSE from external source",
                 description = "Use the clock signal applied to OSC_IN.",
@@ -164,19 +245,6 @@ nutarch_cm3_stm32_pll =
         requires = {"HW_RCC_STM32"},
         options =
         {
-            {
-                macro = "SYSCLK_SOURCE",
-                brief = "SYSCLK Source",
-                description = "Select where SYSCLK should get its clock from.\n\n"..
-                    "SYSCLK_HSI is the internal 8MHz clock.\n"..
-                    "SYSCLK_PLL is the internal PLL output. Select the source for the PLL in the next option.\n"..
-                    "SYSCLK_HSE is the external oscillator or crystal input.\n"..
-                    "SYSCLK_HSI48 is the internal 48MHz clock on F042/072/091.\n",
-                    "SYSCLK_PLLR is the R PLL output on STM32F7.\n",
-                type = "enumerated",
-                choices = function() return GetSysClkSrc() end,
-                file = "include/cfg/clock.h"
-            },
             {
                         macro = "PLLCLK_SOURCE",
                         brief = "PLL Clock Source",
@@ -276,18 +344,6 @@ nutarch_cm3_stm32_pll =
         requires = {"HW_RCC_STM32L4"},
         options =
         {
-            {
-                macro = "SYSCLK_SOURCE",
-                brief = "SYSCLK Source",
-                description = "Select where SYSCLK should get its clock from.\n\n"..
-                      "SYSCLK_HSE is the external oscillator or crystal input.\n"..
-                      "SYSCLK_MSI is the internal multi speed oscillator. Select speed in option MSI_SPEED.\n"..
-                      "SYSCLK_HSI is the internal 16 MHz oscillator.\n"..
-                      "SYSCLK_PLL is the internal PLL output. Select the source for the PLL in the next option.\n",
-                type = "enumerated",
-                choices = {"SYSCLK_HSE", "SYSCLK_MSI", "SYSCLK_HSI", "SYSCLK_PLL"},
-                file = "include/cfg/clock.h"
-            },
             {
                 macro = "PLLCLK_SOURCE",
                 brief = "PLL Clock Source",

@@ -442,9 +442,14 @@ int SetSysClock(void)
   * @retval None
   */
 #if defined(MCU_STM32F0)
-#define PLLCLK_MAX 48000000
+# define PLLCLK_MAX 48000000
 #else
-#define PLLCLK_MAX 72000000
+# if (HSE_VALUE > 0) || defined(RCC_CFGR_PLLSRC_HSI_PREDIV)
+#  define PLLCLK_MAX  72000000
+# else
+/*  HSI is divided by 2. Maximum PLLMULT is 16*/
+#  define PLLCLK_MAX 64000000
+# endif
 #endif
 
 #if !defined(SYSCLK_FREQ)
@@ -460,17 +465,31 @@ int SetSysClock(void)
 #endif
 
 #if defined(RCC_CFGR_PLLSRC_HSI_PREDIV)
-#if (PLLCLK_SOURCE==PLLCLK_HSE) || (PLLCLK_SOURCE==PLLCLK_HSI)
-#warning PLLCLK_SOURCE PLLCLK_HSE or PLLCLK_HSI illegal for this family
-#endif
+# if (PLLCLK_SOURCE==PLLCLK_HSE) || (PLLCLK_SOURCE==PLLCLK_HSI)
+#  warning PLLCLK_SOURCE PLLCLK_HSE or PLLCLK_HSI illegal for this family
+# elif !(PLLCLK_SOURCE) || (PLLCLK_SOURCE == PLLCLK_AUTO)
+#  undef PLLCLK_SOURCE
+#  if HSE_VALUE > 0
+#   define PLLCLK_SOURCE PLLCLK_HSE_PREDIV
+#  else
+#   define PLLCLK_SOURCE PLLCLK_HSI_PREDIV
+#  endif
+# endif
 #else
-#if (PLLCLK_SOURCE==PLLCLK_HSI_PREDIV)
-#warning PLLCLK_SOURCE PLLCLK_HSI_PREDIV illegal for this device
-#endif
+# if (PLLCLK_SOURCE==PLLCLK_HSI_PREDIV)
+#  warning PLLCLK_SOURCE PLLCLK_HSI_PREDIV illegal for this device
+# elif !defined (PLLCLK_SOURCE) || (PLLCLK_SOURCE == PLLCLK_AUTO)
+#  undef PLLCLK_SOURCE
+#  if HSE_VALUE > 0
+#   define PLLCLK_SOURCE PLLCLK_HSE
+#  else
+#   define PLLCLK_SOURCE PLLCLK_HSI_DIV2
+#  endif
+# endif
 #endif
 
 #if (PLLCLK_SOURCE==PLLCLK_HSE_PREDIV) || (PLLCLK_SOURCE==PLLCLK_HSE)
- #define PLLCLK_IN HSE_VALUE
+# define PLLCLK_IN  HSE_VALUE
  #if !defined(PLLCLK_MULT)
  /* No user provided values, try to calculate for some discrete values */
   #if (PLLCLK_IN == 8000000)

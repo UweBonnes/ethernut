@@ -60,6 +60,7 @@ nutarch_cm3_stm32f4 =
                 provides =
                 {
                     "HW_RCC_STM32",
+                    "HW_HSI16_STM32F",
                     "HW_MCU_FPU",
                     "HW_FLASH_STM32F2_4",
                     "HW_GPIO_STM32V2",
