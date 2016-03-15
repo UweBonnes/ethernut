@@ -953,6 +953,22 @@ nutarch_cm3_stm32_pll =
             file = "include/cfg/clock.h"
         },
         {
+            macro = "STM32_SUPPLY_MINIMUM",
+            brief = "Minimum Supply voltage",
+            description = "Flash access and flash programming parallelisme \n"..
+                        "on F2/4/7 depends on supply voltage.\n"..
+                        "2700 mV up to 3600 mV is fastest\n"..
+                        "2400 mV up to 2700 mV is medium\n"..
+                        "2100 mV up to 2400 mV is slow\n"..
+                        "1800 mV up to 2100 mV is slowest\n\n"..
+                        "Default is 2700 (mV)\n",
+            type = "enumerated",
+            requires = {"HW_FLASH_STM32F2_4"},
+            choices =  {"1800", "2100", "2400", "2700"},
+            default = "2700",
+            file = "include/cfg/clock.h"
+        },
+        {
             macro = "STM32_OVERDRIVE",
             brief = "Over-Drive mode",
             description = "Over-Drive Mode\n\n"..
