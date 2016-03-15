@@ -102,7 +102,7 @@ uint32_t NutArchClockGet(int idx)
 {
     uint32_t clock = 0;
 #if defined(MCU_STM32)
-    clock = STM_ClockGet(idx);
+    clock = Stm32ClockGet(idx);
 #elif defined(MCU_LPC17xx)
     clock = Lpc17xx_ClockGet(idx);
 #else

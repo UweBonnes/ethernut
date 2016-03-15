@@ -496,17 +496,17 @@ check_lse:
   */
 uint32_t SysCtlClockGet(void)
 {
-    return STM_ClockGet(HWCLK_CPU);
+    return Stm32ClockGet(HWCLK_CPU);
 }
 
 static void SystemCoreClockUpdate(void);
 /**
-  * \brief  requests frequency of the given clock
+  * \brief  requests frequency for a given clock type
   *
-  * \param  idx NUT_HWCLK Index
+  * \param  idx index of clock in clock_index_t
   * \retval clock or 0 if idx points to an invalid clock
   */
-uint32_t STM_ClockGet(clock_index_t idx)
+uint32_t Stm32ClockGet(clock_index_t idx)
 {
     if (!sys_clock) {
         SystemCoreClockUpdate();

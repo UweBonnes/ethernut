@@ -139,7 +139,7 @@ typedef enum
 # define BASE2TCLKSRC(base) HWCLK_APB1_TIMER
 #endif
 
-extern uint32_t STM_ClockGet(clock_index_t idx);
+extern uint32_t Stm32ClockGet(clock_index_t idx);
 
 /* Control functions for the separate clocks */
 extern int CtlHseClock(int ena);
