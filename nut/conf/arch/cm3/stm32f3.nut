@@ -200,6 +200,7 @@ nutarch_cm3_stm32f3 =
                 provides =
                 {
                     "HW_ADC1_2_STM32",
+                    "HW_SPI1_DMA_REMAP_STM32F1",
                     "HW_USB_CAN_STM32",
                     "HW_SPI1_STM32",
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
@@ -303,6 +304,7 @@ nutarch_cm3_stm32f3 =
                 default = 1,
                 provides =
                 {
+                    "HW_SPI1_DMA_REMAP_STM32F1",
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
                     "HW_CAN_STM32",
                     "HW_ADC1_2_STM32",
@@ -322,6 +324,7 @@ nutarch_cm3_stm32f3 =
                 default = 1,
                 provides =
                 {
+                    "HW_SPI1_DMA_REMAP_STM32F1",
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
                     "HW_CAN_STM32",
                     "HW_ADC1_2_STM32",

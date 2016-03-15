@@ -93,16 +93,8 @@ void Stm32F1SpiRemap(void)
 #define SPIBUS_MODE SPI1_MODE
 #endif
 
-#if defined(SPIBUS1_DMA_TX_ALTERNATE_STREAM)
- #define SPI_DMA_TX_CHANNEL SPI1_TX_ALT_DMA
-#else
- #define SPI_DMA_TX_CHANNEL SPI1_TX_DMA
-#endif
-#if defined(SPIBUS1_DMA_RX_ALTERNATE_STREAM)
- #define SPI_DMA_RX_CHANNEL SPI1_RX_ALT_DMA
-#else
- #define SPI_DMA_RX_CHANNEL SPI1_RX_DMA
-#endif
+#define SPI_DMA_TX_CHANNEL SPI1_TX_DMA
+#define SPI_DMA_RX_CHANNEL SPI1_RX_DMA
 
 NUTSPIBUS spiBus1Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

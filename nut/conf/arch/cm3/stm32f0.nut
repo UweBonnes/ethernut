@@ -226,6 +226,7 @@ nutarch_cm3_stm32f0 =
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
+                    "HW_SPI2_DMA_REMAP_STM32F0",
                     "HW_ADC1_STM32",
                     "HW_USART2_STM32",
                     "HW_USB_STM32",
@@ -241,6 +242,7 @@ nutarch_cm3_stm32f0 =
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
+                    "HW_SPI2_DMA_REMAP_STM32F0",
                     "HW_ADC1_STM32",
                     "HW_I2C2_STM32V2",
                     "HW_SPI2_STM32",
@@ -262,6 +264,7 @@ nutarch_cm3_stm32f0 =
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
+                    "HW_SPI2_DMA_REMAP_STM32F0",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
                     "HW_I2C2_STM32",
@@ -286,6 +289,7 @@ nutarch_cm3_stm32f0 =
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
+                    "HW_SPI2_DMA_REMAP_STM32F0",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
                     "HW_I2C2_STM32V2",
@@ -310,6 +314,7 @@ nutarch_cm3_stm32f0 =
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
+                    "HW_SPI2_DMA_REMAP_STM32F0",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
                     "HW_VDDIO2_STM32",

@@ -84,16 +84,8 @@
 #define SPIBUS_MODE SPI4_MODE
 #endif
 
-#if defined(SPIBUS1_DMA_TX_ALTERNATE_STREAM)
- #define SPI_DMA_TX_CHANNEL SPI4_TX_ALT_DMA
-#else
- #define SPI_DMA_TX_CHANNEL SPI4_TX_DMA
-#endif
-#if defined(SPIBUS1_DMA_RX_ALTERNATE_STREAM)
- #define SPI_DMA_RX_CHANNEL SPI4_RX_ALT_DMA
-#else
- #define SPI_DMA_RX_CHANNEL SPI4_RX_DMA
-#endif
+#define SPI_DMA_TX_CHANNEL SPI4_TX_DMA
+#define SPI_DMA_RX_CHANNEL SPI4_RX_DMA
 
 NUTSPIBUS spiBus4Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
