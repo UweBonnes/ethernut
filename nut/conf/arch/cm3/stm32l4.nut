@@ -90,6 +90,7 @@ nutarch_cm3_stm32l4 =
                     "HW_TIM7_STM32",
                     "HW_TIM8_STM32",
                     "HW_TIM21_STM32",
+                    "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
                     "HW_USART3_STM32",

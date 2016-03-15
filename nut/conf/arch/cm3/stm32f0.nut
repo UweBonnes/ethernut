@@ -75,6 +75,7 @@ nutarch_cm3_stm32f0 =
                     "HW_WWDG_STM32",
                     "HW_I2C1_STM32V2",
                     "HW_SPI1_STM32",
+                    "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_TIM1_STM32",
                     "HW_TIM3_STM32",

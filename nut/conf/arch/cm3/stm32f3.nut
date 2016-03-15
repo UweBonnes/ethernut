@@ -75,6 +75,7 @@ nutarch_cm3_stm32f3 =
                     "HW_EXTI1510_STM32",
                     "HW_I2C1_STM32V2",
                     "HW_PVD_STM32",
+                    "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
                     "HW_USART3_STM32",

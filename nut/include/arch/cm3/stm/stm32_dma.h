@@ -80,6 +80,9 @@ typedef struct {
                        + 10 + (((ch & 0x70) >> 4) * 0x18)))
 #endif
 
+/* 0 is a valid DMA channel. Provide indicator for DMA channel not used. */
+#define DMA_NONE 0xff
+
 /*
  * DMA Control Functions
  */

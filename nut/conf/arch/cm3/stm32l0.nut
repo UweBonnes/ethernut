@@ -84,6 +84,7 @@ nutarch_cm3_stm32l0 =
                     "HW_TIM2_32BIT_STM32",
                     "HW_TIM21_STM32",
                     "HW_TIM21_STM32",
+                    "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
                 },

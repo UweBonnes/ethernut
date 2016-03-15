@@ -94,6 +94,7 @@ nutarch_cm3_stm32f7 =
                     "HW_SPI4_STM32",
                     "HW_SPI5_STM32",
                     "HW_SPI6_STM32",
+                    "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
                     "HW_USART3_STM32",

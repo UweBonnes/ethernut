@@ -475,6 +475,300 @@ function GetCkUsart6()
    return { "PC08", "PG07", "PIN_NONE" }
 end
 
+-- USART1 TX DMA
+function GetUsart1TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL2 | DMA_STREAM7 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"DMA_NONE", "DMA1_CH4", "DMA2_CH6"}
+        end
+    if c_is_provided("HW_DMA1_STM32F0") then
+        return {"DMA_NONE", "DMA1_CH2", "DMA2_CH4"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH2", "DMA2_CH4"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH2", "DMA1_CH4"}
+        end
+    return {"DMA_NONE", "DMA1_CH4"}
+end
+-- USART1 DMA RX
+function GetUsart1RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL2 | DMA_STREAM2 | DMA_CHANNEL4)",
+                "(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return {"DMA_NONE", "DMA1_CH5", "DMA2_CH5"}
+        end
+    if c_is_provided("HW_DMA1_STM32F0") then
+        return {"DMA_NONE", "DMA1_CH3", "DMA2_CH5"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH3", "DMA2_CH5"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH3", "DMA1_CH5"}
+        end
+    return {"DMA_NONE", "DMA1_CH2"}
+end
+
+-- USART2 TX DMA
+function GetUsart2TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM6 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_DMA1_STM32F0") then
+        return {"DMA_NONE", "DMA1_CH4"}
+        end
+    if c_is_provided("HW_DMA1_STM32F0") then
+        return {"DMA_NONE", "DMA1_CH4", "DMA2_CH2"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH4", "DMA2_CH7"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+     if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH4", "DMA1_CH6", "DMA1_CH2"}
+        end
+     return {"DMA_NONE", "DMA1_CH7"}
+end
+-- USART2 DMA RX
+function GetUsart2RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_DMA1_STM32F0") then
+        return {"DMA_NONE", "DMA1_CH5"}
+        end
+    if c_is_provided("HW_DMA1_STM32F0") then
+        return {"DMA_NONE", "DMA1_CH5", "DMA2_CH3"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH5", "DMA2_CH6"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+     if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH3", "DMA1_CH7", "DMA1_CH1"}
+        end
+    return {"DMA_NONE", "DMA1_CH6"}
+end
+
+-- USART3 TX DMA
+function GetUsart3TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL4)",
+                "(DMA_CONTROL1 | DMA_STREAM4 | DMA_CHANNEL7)"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH7", "DMA2_CH2"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return {"DMA_NONE", "DMA1_CH4"}
+        end
+    return {"DMA_NONE", "DMA_CH2"}
+end
+-- USART3 DMA RX
+function GetUsart3RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM1 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH6", "DMA2_CH3"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    return {"DMA_NONE", "DMA1_CH3"}
+end
+
+-- USART4 TX DMA
+function GetUsart4TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM4 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH7"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+     if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH3", "DMA1_CH7"}
+        end
+    return {"DMA_NONE", "DMA2_CH3"}
+end
+-- USART4 DMA RX
+function GetUsart4RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM2 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_DMA1_STM32F07") then
+        return {"DMA_NONE", "DMA1_CH6"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+     if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH2", "DMA1_CH6"}
+        end
+      return {"DMA_NONE", "DMA2_CH5"}
+end
+
+-- USART5 TX DMA
+function GetUsart5TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM7 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+     if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH3", "DMA1_CH7"}
+        end
+     return {"DMA_NONE", "DMA2_CH1"}
+end
+-- USART5 DMA RX
+function GetUsart5RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM0 | DMA_CHANNEL4)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+     if c_is_provided("HW_STM32L0") then
+        return {"DMA_NONE", "DMA1_CH2", "DMA2_CH6"}
+        end
+     return {"DMA_NONE", "DMA2_CH2"}
+end
+
+-- USART6 TX DMA
+function GetUsart6TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL2 | DMA_STREAM1 | DMA_CHANNEL5)",
+                "(DMA_CONTROL2 | DMA_STREAM2 | DMA_CHANNEL5)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    return {"DMA_NONE", "DMA2_CH1"}
+end
+-- USART6 DMA RX
+function GetUsart6RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL5)",
+                "(DMA_CONTROL2 | DMA_STREAM7 | DMA_CHANNEL5)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    return {"DMA_NONE", "DMA2_CH2"}
+end
+
+-- USART7 TX DMA
+function GetUsart7TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM1 | DMA_CHANNEL5)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    return {"DMA_NONE", "DMA2_CH1"}
+end
+-- USART7 DMA RX
+function GetUsart7RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL5)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    return {"DMA_NONE", "DMA2_CH2"}
+end
+
+-- USART8 TX DMA
+function GetUsart8TxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM0 | DMA_CHANNEL5)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    return {"DMA_NONE", "DMA2_CH1"}
+end
+-- USART8 DMA RX
+function GetUsart8RxDmaChoices()
+    if c_is_provided("HW_DMA_STM32F2") then
+        return {"DMA_NONE",
+                "(DMA_CONTROL1 | DMA_STREAM6 | DMA_CHANNEL5)"}
+        end
+    if c_is_provided("HW_DMA1_2_STM32F09") then
+        return {"DMA_NONE",
+                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+        end
+    return {"DMA_NONE", "DMA2_CH2"}
+end
 
 nutarch_cm3_stm32_usart_devices =
 {
@@ -669,6 +963,36 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART1_DMA_TX",
+                brief = "Select USART1 TX DMA stream ",
+                description = "Eventual select USART1 TX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart1TxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_DMA_RX",
+                brief = "Select USART1 RX DMA stream ",
+                description = "Eventual select USART1 RX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart1TxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "SPI1_MODE",
+                brief = "Select SPIBUS 1 MODE",
+                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
+                choices = { "0", "1", "2"},
+                default = "0",
+                file = "include/cfg/spi.h"
+            },
+            {
                 macro = "USART1_USE_CTS",
                 brief = "Use USART1 CTS on F1",
                 description = "Use USART1 Hardware CTS on F1",
@@ -703,6 +1027,17 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART1_RX_INV",
+                brief = "Invert USART1 RX level.",
+                description = "Invert USART1 RX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART1_TX",
                 brief = "USART1 TX Pin selection",
                 description = "Choose USART1 TX Pin, Default: PA09. Use PIN_NONE if unused with USART used.",
@@ -710,6 +1045,60 @@ nutarch_cm3_stm32_usart_devices =
                 type = "enumerated",
                 choices = function() return GetTxUsart1() end,
                 default = "PA09",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_TX_MULTIDRIVE",
+                brief = "USART1 TX Pin as Open-Drain",
+                description = "Drive USART1 TX as Open-Drain\n\n"..
+                              "Default is DISABLE for Push/Pull",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_TX_INV",
+                brief = "Invert USART1 TX level.",
+                description = "Invert USART1 TX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_TX_RX_SWAP",
+                brief = "Swap USART1 TX and RX pins.",
+                description = "Swap USART1 TX and RX pins.\n\n"..
+                              "Default is DISABLE for no swap.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_DATA_INV",
+                brief = "USART1 Binary data inversion.",
+                description = "USART1 Binary data inversion.\n\n"..
+                              "Default is DISABLE for no data inversion.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_MSBFIRST",
+                brief = "USART1 sends MSB first.",
+                description = "USART1 USART1 sends MSB first.\n\n"..
+                              "Default is DISABLE for send LSB first.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/uart.h"
             },
             {
@@ -755,6 +1144,26 @@ nutarch_cm3_stm32_usart_devices =
                 description = "Initial baudrate the Port is set to.",
                 type = "integer",
                 default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_INIT_RX_BUFSIZE",
+                brief = "Initial size of RX buffer",
+                description = "Bytes used for RX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART1_INIT_TX_BUFSIZE",
+                brief = "Initial size of TX buffer",
+                description = "Bytes used for TX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
                 file = "include/cfg/uart.h"
             },
             {
@@ -821,6 +1230,15 @@ nutarch_cm3_stm32_usart_devices =
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
             },
+            {
+                macro = "USART1_SPEED",
+                brief = "Pin speed setting for USART1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/uart.h"
+            },
         },
     },
 
@@ -861,6 +1279,28 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART2_DMA_TX",
+                brief = "Select USART2 TX DMA stream ",
+                description = "Eventual select USART2 TX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart2TxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_DMA_RX",
+                brief = "Select USART2 RX DMA stream ",
+                description = "Eventual select USART2 RX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart2RxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART2_USE_CTS",
                 brief = "Use USART2 CTS on F1",
                 description = "Use USART2 Hardware CTS on F1",
@@ -895,6 +1335,17 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART2_RX_INV",
+                brief = "Invert USART2 RX level.",
+                description = "Invert USART2 RX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART2_TX",
                 brief = "USART2 TX Pin selection",
                 description = "Choose USART2 TX Pin. Default is PA02. Use PIN_NONE if unused with USART used.",
@@ -902,6 +1353,60 @@ nutarch_cm3_stm32_usart_devices =
                 type = "enumerated",
                 choices = function() return GetTxUsart2() end,
                 default = "PA02",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_TX_MULTIDRIVE",
+                brief = "USART2 TX Pin as Open-Drain",
+                description = "Drive USART2 TX as Open-Drain\n\n"..
+                              "Default is DISABLE for Push/Pull",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_TX_INV",
+                brief = "Invert USART2 TX level.",
+                description = "Invert USART2 TX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_TX_RX_SWAP",
+                brief = "Swap USART2 TX and RX pins.",
+                description = "Swap USART2 TX and RX pins.\n\n"..
+                              "Default is DISABLE for no swap.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_DATA_INV",
+                brief = "USART2 Binary data inversion.",
+                description = "USART2 Binary data inversion.\n\n"..
+                              "Default is DISABLE for no data inversion.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_MSBFIRST",
+                brief = "USART2 sends MSB first.",
+                description = "USART2 USART2 sends MSB first.\n\n"..
+                              "Default is DISABLE for send LSB first.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/uart.h"
             },
             {
@@ -947,6 +1452,26 @@ nutarch_cm3_stm32_usart_devices =
                 description = "Initial baudrate the Port is set to.",
                 type = "integer",
                 default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_INIT_RX_BUFSIZE",
+                brief = "Initial size of RX buffer",
+                description = "Bytes used for RX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART2_INIT_TX_BUFSIZE",
+                brief = "Initial size of TX buffer",
+                description = "Bytes used for TX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
                 file = "include/cfg/uart.h"
             },
             {
@@ -1013,7 +1538,16 @@ nutarch_cm3_stm32_usart_devices =
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
             },
-        },
+            {
+                macro = "USART2_SPEED",
+                brief = "Pin speed setting for USART2 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/uart.h"
+            },
+         },
     },
 
     --
@@ -1054,6 +1588,82 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART3_DMA_TX",
+                brief = "Select USART3 TX DMA stream ",
+                description = "Eventual select USART3 TX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart3TxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_TX_MULTIDRIVE",
+                brief = "USART3 TX Pin as Open-Drain",
+                description = "Drive USART3 TX as Open-Drain\n\n"..
+                              "Default is DISABLE for Push/Pull",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_TX_INV",
+                brief = "Invert USART3 TX level.",
+                description = "Invert USART3 TX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_TX_RX_SWAP",
+                brief = "Swap USART3 TX and RX pins.",
+                description = "Swap USART3 TX and RX pins.\n\n"..
+                              "Default is DISABLE for no swap.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_DATA_INV",
+                brief = "USART3 Binary data inversion.",
+                description = "USART3 Binary data inversion.\n\n"..
+                              "Default is DISABLE for no data inversion.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_MSBFIRST",
+                brief = "USART3 sends MSB first.",
+                description = "USART3 USART3 sends MSB first.\n\n"..
+                              "Default is DISABLE for send LSB first.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_DMA_RX",
+                brief = "Select USART3 RX DMA stream ",
+                description = "Eventual select USART3 RX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart3RxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART3_USE_CTS",
                 brief = "Use USART3 CTS on F1",
                 description = "Use USART3 Hardware CTS on F1",
@@ -1085,6 +1695,17 @@ nutarch_cm3_stm32_usart_devices =
                 type = "enumerated",
                 choices = function() return GetRxUsart3() end,
                 default = "PB11",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_RX_INV",
+                brief = "Invert USART3 RX level.",
+                description = "Invert USART3 RX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/uart.h"
             },
             {
@@ -1140,6 +1761,26 @@ nutarch_cm3_stm32_usart_devices =
                 description = "Initial baudrate the Port is set to.",
                 type = "integer",
                 default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_INIT_RX_BUFSIZE",
+                brief = "Initial size of RX buffer",
+                description = "Bytes used for RX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART3_INIT_TX_BUFSIZE",
+                brief = "Initial size of TX buffer",
+                description = "Bytes used for TX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
                 file = "include/cfg/uart.h"
             },
             {
@@ -1206,6 +1847,15 @@ nutarch_cm3_stm32_usart_devices =
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
             },
+            {
+                macro = "USART3_SPEED",
+                brief = "Pin speed setting for USART3 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/uart.h"
+            },
         },
      },
 
@@ -1232,6 +1882,28 @@ nutarch_cm3_stm32_usart_devices =
         options =
         {
             {
+                macro = "USART4_DMA_TX",
+                brief = "Select USART4 TX DMA stream ",
+                description = "Eventual select USART4 TX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart4TxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_DMA_RX",
+                brief = "Select USART4 RX DMA stream ",
+                description = "Eventual select USART4 RX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart4RxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART4_RX",
                 brief = "USART4 RX Pin selection",
                 description = "Choose USART4 RX Pin. Default is PC11. Use PIN_NONE if unused with USART used.",
@@ -1242,6 +1914,17 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART4_RX_INV",
+                brief = "Invert USART4 RX level.",
+                description = "Invert USART4 RX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART4_TX",
                 brief = "USART4 TX Pin selection",
                 description = "Choose USART4 TX Pin. Default is PC10. Use PIN_NONE if unused with USART used.",
@@ -1249,6 +1932,60 @@ nutarch_cm3_stm32_usart_devices =
                 type = "enumerated",
                 choices = function() return GetTxUsart4() end,
                 default = "PC10",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_TX_MULTIDRIVE",
+                brief = "USART4 TX Pin as Open-Drain",
+                description = "Drive USART4 TX as Open-Drain\n\n"..
+                              "Default is DISABLE for Push/Pull",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_TX_INV",
+                brief = "Invert USART4 TX level.",
+                description = "Invert USART4 TX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_TX_RX_SWAP",
+                brief = "Swap USART4 TX and RX pins.",
+                description = "Swap USART4 TX and RX pins.\n\n"..
+                              "Default is DISABLE for no swap.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_DATA_INV",
+                brief = "USART4 Binary data inversion.",
+                description = "USART4 Binary data inversion.\n\n"..
+                              "Default is DISABLE for no data inversion.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_MSBFIRST",
+                brief = "USART4 sends MSB first.",
+                description = "USART4 USART4 sends MSB first.\n\n"..
+                              "Default is DISABLE for send LSB first.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/uart.h"
             },
             {
@@ -1294,6 +2031,26 @@ nutarch_cm3_stm32_usart_devices =
                 description = "Initial baudrate the Port is set to.",
                 type = "integer",
                 default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_INIT_RX_BUFSIZE",
+                brief = "Initial size of RX buffer",
+                description = "Bytes used for RX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART4_INIT_TX_BUFSIZE",
+                brief = "Initial size of TX buffer",
+                description = "Bytes used for TX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
                 file = "include/cfg/uart.h"
             },
             {
@@ -1360,6 +2117,15 @@ nutarch_cm3_stm32_usart_devices =
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
             },
+            {
+                macro = "USART4_SPEED",
+                brief = "Pin speed setting for U(S)ART4 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/uart.h"
+            },
         },
     },
 
@@ -1385,6 +2151,28 @@ nutarch_cm3_stm32_usart_devices =
         options =
         {
             {
+                macro = "USART5_DMA_TX",
+                brief = "Select USART5 TX DMA stream ",
+                description = "Eventual select USART5 TX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart5TxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_DMA_RX",
+                brief = "Select USART5 RX DMA stream ",
+                description = "Eventual select USART5 RX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart5RxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART5_RX",
                 brief = "USART5 RX Pin selection",
                 description = "Choose USART5 RX Pin, Default: PD02. Use PIN_NONE if unused with USART used.",
@@ -1395,6 +2183,17 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART5_RX_INV",
+                brief = "Invert USART5 RX level.",
+                description = "Invert USART5 RX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART5_TX",
                 brief = "USART5 TX Pin selection",
                 description = "Choose USART5 TX Pin, Default: PC12. Use PIN_NONE if unused, with USART used.",
@@ -1402,6 +2201,60 @@ nutarch_cm3_stm32_usart_devices =
                 type = "enumerated",
                 choices = function() return GetTxUsart5() end,
                 default = "PC12",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_TX_MULTIDRIVE",
+                brief = "USART5 TX Pin as Open-Drain",
+                description = "Drive USART5 TX as Open-Drain\n\n"..
+                              "Default is DISABLE for Push/Pull",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_TX_INV",
+                brief = "Invert USART5 TX level.",
+                description = "Invert USART5 TX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_TX_RX_SWAP",
+                brief = "Swap USART5 TX and RX pins.",
+                description = "Swap USART5 TX and RX pins.\n\n"..
+                              "Default is DISABLE for no swap.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_DATA_INV",
+                brief = "USART5 Binary data inversion.",
+                description = "USART5 Binary data inversion.\n\n"..
+                              "Default is DISABLE for no data inversion.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_MSBFIRST",
+                brief = "USART5 sends MSB first.",
+                description = "USART5 USART5 sends MSB first.\n\n"..
+                              "Default is DISABLE for send LSB first.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/uart.h"
             },
             {
@@ -1447,6 +2300,26 @@ nutarch_cm3_stm32_usart_devices =
                 description = "Initial baudrate the Port is set to.",
                 type = "integer",
                 default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_INIT_RX_BUFSIZE",
+                brief = "Initial size of RX buffer",
+                description = "Bytes used for RX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART5_INIT_TX_BUFSIZE",
+                brief = "Initial size of TX buffer",
+                description = "Bytes used for TX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
                 file = "include/cfg/uart.h"
             },
             {
@@ -1513,6 +2386,15 @@ nutarch_cm3_stm32_usart_devices =
                 choices = function() return GetGpioBits() end,
                 file = "include/cfg/uart.h"
             },
+            {
+                macro = "USART5_SPEED",
+                brief = "Pin speed setting for U(S)ART5 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/uart.h"
+            },
         },
     },
     --
@@ -1540,6 +2422,28 @@ nutarch_cm3_stm32_usart_devices =
         options =
         {
             {
+                macro = "USART6_DMA_TX",
+                brief = "Select USART6 TX DMA stream ",
+                description = "Eventual select USART6 TX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart6TxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_DMA_RX",
+                brief = "Select USART6 RX DMA stream ",
+                description = "Eventual select USART6 RX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = function() return GetUsart6RxDmaChoices() end,
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART6_RX",
                 brief = "USART6 RX Pin selection",
                 description = "Choose USART6 RX Pin. Default is device specific. Use PIN_NONE if unused with USART used.",
@@ -1550,6 +2454,17 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART6_RX_INV",
+                brief = "Invert USART6 RX level.",
+                description = "Invert USART6 RX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "USART6_TX",
                 brief = "USART6 TX Pin selection",
                 description = "Choose USART6 TX Pin. Default is device specific. Use PIN_NONE if unused with USART used.",
@@ -1557,6 +2472,60 @@ nutarch_cm3_stm32_usart_devices =
                 type = "enumerated",
                 choices = function() return GetTxUsart6() end,
                 default = function() return GetTxUsart6Default() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_TX_MULTIDRIVE",
+                brief = "USART6 TX Pin as Open-Drain",
+                description = "Drive USART6 TX as Open-Drain\n\n"..
+                              "Default is DISABLE for Push/Pull",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_TX_INV",
+                brief = "Invert USART6 TX level.",
+                description = "Invert USART6 TX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_TX_RX_SWAP",
+                brief = "Swap USART6 TX and RX pins.",
+                description = "Swap USART6 TX and RX pins.\n\n"..
+                              "Default is DISABLE for no swap.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_DATA_INV",
+                brief = "USART6 Binary data inversion.",
+                description = "USART6 Binary data inversion.\n\n"..
+                              "Default is DISABLE for no data inversion.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_MSBFIRST",
+                brief = "USART6 sends MSB first.",
+                description = "USART6 USART6 sends MSB first.\n\n"..
+                              "Default is DISABLE for send LSB first.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
                 file = "include/cfg/uart.h"
             },
             {
@@ -1602,6 +2571,26 @@ nutarch_cm3_stm32_usart_devices =
                 description = "Initial baudrate the Port is set to.",
                 type = "integer",
                 default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_INIT_RX_BUFSIZE",
+                brief = "Initial size of RX buffer",
+                description = "Bytes used for RX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_INIT_TX_BUFSIZE",
+                brief = "Initial size of TX buffer",
+                description = "Bytes used for TX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
                 file = "include/cfg/uart.h"
             },
             {
@@ -1666,6 +2655,15 @@ nutarch_cm3_stm32_usart_devices =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "USART6_SPEED",
+                brief = "Pin speed setting for USART6 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
                 file = "include/cfg/uart.h"
             },
         },
