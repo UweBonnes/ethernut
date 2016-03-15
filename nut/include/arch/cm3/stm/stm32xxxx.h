@@ -294,7 +294,9 @@
 #endif
 
 # if !defined(PWR_CR_DBP) && defined (PWR_CR1_DBP)
-#  define PWR_CR_DBP  PWR_CR1_DBP
+#  define PWR_CR_DBP   PWR_CR1_DBP
+#  define PWR_CR_VOS   PWR_CR1_VOS
+#  define PWR_CR_VOS_0 PWR_CR1_VOS_0
 #  define PWR_CR (PWR->CR1)
 # else
 #  define PWR_CR (PWR->CR)
