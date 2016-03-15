@@ -873,27 +873,45 @@ nutarch_cm3_stm32_pll =
             default = "AUTO",
             file = "include/cfg/clock.h"
         },
+-- PLLCLK PREDIV, MULT and DIV vary wide between devices.
+-- No sensible user guidance here!
         {
-            macro = "PLLCLK_MULT",
-            brief = "PLL Clock Multiplier",
-            type = "enumerated",
-            choices = function() return GetPllMult() end,
+            macro = "PLLCLK_PREDIV",
+            brief = "PLL Input Clock Divider",
+            description =
+                "In many cases HSE_VALUE and SYSCLK_FREQ\n"..
+                "is enough for the code to calculate\n"..
+                "PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV.\n\n"..
+                "For unhandled special settings, enter suitable and\n"..
+                "allowed PLL Input Clock Divider value here"..
+                "or better extend clock setting!",
             requires = {"SYSCLK_FREQ"},
             file = "include/cfg/clock.h"
         },
         {
-            macro = "PLLCLK_PREDIV",
+            macro = "PLLCLK_MULT",
+            brief = "PLL Clock Multiplier",
+            description =
+                "In many cases HSE_VALUE and SYSCLK_FREQ\n"..
+                "is enough for the code to calculate\n"..
+                "PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV.\n\n"..
+                "For unhandled special settings, enter suitable and\n"..
+                "allowed PLL Clock Multiplier value here"..
+                "or better extend clock setting!",
+            requires = {"SYSCLK_FREQ"},
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "PLLCLK_DIV",
             brief = "PLL Clock Divider",
             description =
                 "In many cases HSE_VALUE and SYSCLK_FREQ\n"..
                 "is enough for the code to calculate\n"..
                 "PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV.\n\n"..
-                "For unhandled special set,\n"..
-                "enter non-zero integer PLL Clock Divider value here"..
+                "For unhandled special set, enter suitable and\n"..
+                "allowed PLL Clock Divider value here"..
                 "or better extend clock setting!",
             requires = {"SYSCLK_FREQ"},
-            type = "enumerated",
-            choices =  function() return GetPllPrediv() end,
             file = "include/cfg/clock.h"
         },
         {
