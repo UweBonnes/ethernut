@@ -158,11 +158,14 @@ int Stm32TimerChannelConfig(
         return -1;
     }
     /* Set Input Capture Filter and function*/
-    tmp = (filter * TIM_CCMR1_IC1F_0) | (fin) | (fout * TIM_CCMR1_OC1M_0);
-    /* Enable preload PWM value. New value gets active on timer update.*/
-    if (fout != TIM_CC_FROZEN) {
+    tmp = (filter * TIM_CCMR1_IC1F_0) | (fin);
+    if (fout < TIM_CC_FROZEN_DIRECT) {
         tmp |= TIM_CCMR1_OC1PE;
+    } else {
+        fout = fout - TIM_CC_FROZEN_DIRECT;
     }
+    tmp |= (fout  * TIM_CCMR1_OC1M_0);
+    /* Enable preload PWM value. New value gets active on timer update.*/
     switch (ch) {
     case 0:
         tim->CCMR1 &= 0x100ff00;
