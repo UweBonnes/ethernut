@@ -63,6 +63,8 @@ nutarch_cm3_stm32l4 =
 -- Todo: FLASH_WRPROT
                     "HW_RCC_STM32L",
                     "HW_VOS_STM32",
+                    "HW_ICACHE_STM32",
+                    "HW_DCACHE_STM32",
                     "HW_RTC_STM32_V2",
                     "HW_FLASH_STM32L4",
                     "HW_GPIO_STM32V2",

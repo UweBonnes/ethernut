@@ -1005,6 +1005,39 @@ nutarch_cm3_stm32_pll =
             file = "include/cfg/clock.h"
         },
         {
+            macro = "FLASH_ART_ACCELARATION",
+            brief = "Unified flash acceleration buffer",
+            description = "Enable a unified cache of 64 lines of 256 bits.\n"..
+                          "Default is enabled!",
+            requires = {"HW_MCU_STM32F7"},
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "ENABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "FLASH_ICACHE",
+            brief = "Instruction cache",
+            description = "Enable instruction cache of 64/32 lines of 128/256 bits.\n"..
+                          "Default is enabled!",
+            requires = {"HW_ICACHE_STM32"},
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "ENABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "FLASH_DCACHE",
+            brief = "Data cache",
+            description = "Enable data cache of 8 lines of 128/256 bits.\n"..
+                          "Default is enabled!",
+            requires = {"HW_DCACHE_STM32"},
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "ENABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
             macro = "FLASH_PRE_READ",
             brief = "Pre-read data",
             description = "Use one flash buffers for data.\n\n"..

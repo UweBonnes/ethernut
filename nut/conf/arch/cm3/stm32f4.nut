@@ -61,6 +61,8 @@ nutarch_cm3_stm32f4 =
                 {
                     "HW_RCC_STM32",
                     "HW_VOS_STM32",
+                    "HW_ICACHE_STM32",
+                    "HW_DCACHE_STM32",
                     "HW_HSI16_STM32F",
                     "HW_MCU_FPU",
                     "HW_FLASH_STM32F2_4",
