@@ -39,6 +39,11 @@
  * Include this file in the device specific setup to allow better optimization!
  */
 
+#if !defined  (HSE_STARTUP_TIMEOUT)
+/*!< Time out for HSE start up, in loops*/
+#define HSE_STARTUP_TIMEOUT   0x5000
+#endif
+
 static uint32_t sys_clock;
 static uint8_t clk_shift[NUT_HWCLK_MAX];
 
@@ -54,13 +59,65 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 # define LSE_VALUE 0
 #endif
 
-#if (APB1_DIV == AUTO)
-# undef APB1_DIV
-# define APB1_DIV 1
+#if (SYSCLK_SOURCE == SYSCLK_PLL)
+/* Check match between requested and resulting SYSCLK_FREQ,
+   either auto-setup or user provided */
+/* No PLLCLK_DIV on L0 and L1*/
+# if !defined(PLLCLK_PREDIV)
+#  define PLLCLK_PREDIV 1
+# endif
+/* No PLLCLK_DIV on F0 and F3*/
+# if !defined(PLLCLK_DIV)
+#  define PLLCLK_DIV 1
+# endif
+# if defined(MCU_STM32F1_CL)
+#  define SYSCLK_RES (((PLLCLK_IN / PLL2CLK_PREDIV) * PLL2CLK_MULT) * PLLCLK_MULT / PLLCLK_DIV)
+# else
+#  define SYSCLK_RES (((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) / PLLCLK_DIV)
+# endif
+/* Allow 1/1000 toleranz */
+# if(((SYSCLK_RES / 1000 * 1001 ) < SYSCLK_FREQ) ||     \
+     ((SYSCLK_RES / 1000 *  999 ) > SYSCLK_FREQ))
+#  warning Requested and resulting frequency differ!
+# endif
+#elif (SYSCLK_SOURCE == SYSCLK_HSI)
+# define SYSCLK_RES HSI_VALUE
+#elif (SYSCLK_SOURCE == SYSCLK_HSE)
+# define SYSCLK_RES HSI_VALUE
+#else
+# warning SYSCLK_SOURCE undefined or unknown!
 #endif
-#if (APB2_DIV == AUTO)
-# undef APB2_DIV
-# define APB2_DIV 1
+
+#if !defined( APB1_MAX)
+# define APB1_MAX SYSCLK_MAX
+#endif
+#if !defined(APB1_DIV)
+# if (SYSCLK_SOURCE == SYSCLK_PLL)
+#  if   ((SYSCLK_RES / AHB_DIV) / 1 <= APB1_MAX)
+#   define APB1_DIV 1
+#  elif ((SYSCLK_RES / AHB_DIV) / 2 <= APB1_MAX)
+#   define APB1_DIV 2
+#  else
+#   define APB1_DIV 4
+#  endif
+# else
+#  define APB1_DIV 1
+# endif
+#endif
+
+#if !defined( APB2_MAX)
+# define APB2_MAX SYSCLK_MAX
+#endif
+#if !defined(APB2_DIV)
+# if (SYSCLK_SOURCE == SYSCLK_PLL)
+#  if   ((SYSCLK_RES / AHB_DIV) / 1 <= APB2_MAX)
+#   define APB2_DIV 1
+#  else
+#   define APB2_DIV 2
+#  endif
+# else
+#  define APB2_DIV 1
+# endif
 #endif
 
 #if defined(CLOCK_DEBUG)
@@ -81,9 +138,11 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 #pragma message "SYSCLK_RES    = " XSTR(SYSCLK_RES)
 #pragma message "AHB_DIV       = " XSTR(AHB_DIV)
 #pragma message "APB1_DIV      = " XSTR(APB1_DIV)
-#if !defined(MCU_STM32F0)
-# pragma message "APB2_DIV      = " XSTR(APB2_DIV)
-#endif
+#pragma message "APB1_MAX      = " XSTR(APB1_MAX)
+# if !defined(MCU_STM32F0)
+#pragma message "APB2_DIV      = " XSTR(APB2_DIV)
+#pragma message "APB2_MAX      = " XSTR(APB2_MAX)
+# endif
 #endif
 
 #if defined(MCU_STM32F2) || defined(MCU_STM32F4) || defined(MCU_STM32F7)

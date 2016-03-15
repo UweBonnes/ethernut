@@ -32,6 +32,15 @@
  * For additional information see http://www.ethernut.de/
  */
 
+/*!
+ * \file arch/cm3/dev/stm/stm32f7_clk.c
+ * \brief Clock handling for F2 and F7
+ *
+ * \verbatim
+ * $Id$
+ * \endverbatim
+ */
+
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 
@@ -41,17 +50,243 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 
-#if !defined(HSI_VALUE)
 #define HSI_VALUE 16000000
-#endif /* HSI_VALUE */
 
-#if !defined(HSE_STARTUP_TIMEOUT)
-#define HSE_STARTUP_TIMEOUT ((uint32_t)5000) /*!< Time out for HSE start up, in ms */
+/* Define PLL Input Clock */
+#if (PLLCLK_SOURCE == PLLCLK_HSE)
+# define PLLCLK_IN HSE_VALUE
+#elif (PLLCLK_SOURCE == PLLCLK_HSI)
+# define PLLCLK_IN HSI_VALUE
 #endif
 
-/* Prepare some defaults if configuration is incomplete */
-#if !defined(SYSCLK_SOURCE)
-#define SYSCLK_SOURCE SYSCLK_HSI
+/* VCO limits for F2/F4/F7*/
+# define PLLVCO_MAX      432000000
+# define PLLVCO_MIN      192000000
+
+/* Prepare system linits */
+
+/* FLASH_BASE_FREQ is dependant on supply voltage */
+#if   (STM32_SUPPLY_MINIMUM >= 2700)
+# define FLASH_BASE_FREQ  30000000
+#elif (STM32_SUPPLY_MINIMUM >= 2400)
+# define FLASH_BASE_FREQ  24000000
+#elif (STM32_SUPPLY_MINIMUM >= 2100)
+# if defined(MCU_STM32F2)
+#  define FLASH_BASE_FREQ  18000000
+# else
+#  define FLASH_BASE_FREQ  22000000
+# endif
+#else
+# if defined(MCU_STM32F2)
+#  define FLASH_BASE_FREQ  16000000
+# else
+#  define FLASH_BASE_FREQ  20000000
+# endif
+#endif
+
+#if defined(MCU_STM32F2)
+# define HSE_MAX           26000000
+#else
+# define HSE_MAX           50000000
+#endif
+
+/* System Speed on powerscale and overdrive*/
+#if defined(MCU_STM32F2)
+# define SYSCLK_MAX      120000000
+# define APB1_MAX         30000000
+# define APB2_MAX         60000000
+#endif
+
+#if defined(MCU_STM32F40)
+# if   (STM32_POWERSCALE == 1)
+#  define SYSCLK_MAX     168000000
+# elif (STM32_POWERSCALE == 0)
+#  define SYSCLK_MAX     144000000
+# else
+#  warning Wrong POWERSCALE for F40x
+# endif
+# define APB1_MAX         42000000
+# define APB2_MAX         84000000
+#endif
+
+#if defined(MCU_STM32F42) ||  defined(STM32F446xx)
+# if   (STM32_POWERSCALE == 1)
+#  if (STM32_OVERDRIVE == ENABLE)
+#   define SYSCLK_MAX     180000000
+#  elif (STM32_OVERDRIVE == DISABLE)
+#   define SYSCLK_MAX     168000000
+#  endif
+# elif (STM32_POWERSCALE == 2)
+#  if (STM32_OVERDRIVE == ENABLE)
+#   define SYSCLK_MAX     168000000
+#  elif (STM32_OVERDRIVE == DISABLE)
+#   define SYSCLK_MAX     144000000
+#  endif
+# elif (STM32_POWERSCALE == 3)
+#  define SYSCLK_MAX      120000000
+# else
+#  warning Wrong POWERSCALE for F42x/F446
+# endif
+# if (STM32_OVERDRIVE == ENABLE)
+#  define APB1_MAX  45000000
+#  define APB2_MAX  90000000
+#else
+#  define APB1_MAX  42000000
+#  define APB2_MAX  84000000
+# endif
+#endif
+
+#if defined(MCU_STM32F401)
+# if   (STM32_POWERSCALE == 1)
+#   define SYSCLK_MAX      84000000
+# elif (STM32_POWERSCALE == 2)
+#   define SYSCLK_MAX      60000000
+# else
+#  warning Wrong POWERSCALE for F401
+# endif
+# define APB1_MAX  42000000
+# define APB2_MAX  84000000
+#endif
+
+#if defined(STM32F411xE)
+# if   (STM32_POWERSCALE == 1)
+#   define SYSCLK_MAX     100000000
+# elif (STM32_POWERSCALE == 2)
+#   define SYSCLK_MAX      84000000
+# elif (STM32_POWERSCALE == 3)
+#   define SYSCLK_MAX      64000000
+# else
+#  warning Wrong POWERSCALE for F411
+# endif
+# define APB1_MAX  50000000
+# define APB2_MAX 100000000
+#endif
+
+#if defined(MCU_STM32F7)
+# if   (STM32_POWERSCALE == 1)
+#  if (STM32_OVERDRIVE == ENABLE)
+#   define SYSCLK_MAX     216000000
+#  elif (STM32_OVERDRIVE == DISABLE)
+#   define SYSCLK_MAX     180000000
+#  endif
+# elif (STM32_POWERSCALE == 2)
+#  if (STM32_OVERDRIVE == ENABLE)
+#   define SYSCLK_MAX     180000000
+#  elif (STM32_OVERDRIVE == DISABLE)
+#   define SYSCLK_MAX     168000000
+#  endif
+# elif (STM32_POWERSCALE == 3)
+#  define SYSCLK_MAX      144000000
+#  endif
+
+# if (STM32_OVERDRIVE == ENABLE)
+#  define APB1_MAX  45000000
+#  define APB2_MAX  90000000
+#else
+#  define APB1_MAX  54000000
+#  define APB2_MAX 108000000
+# endif
+#endif
+
+/* No device dependant values below */
+
+#if !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT) && !defined(PLLCLK_DIV)
+# if !defined(SYSCLK_FREQ)
+/* Choose highest possible frequency with no SYSCLK_FREQ value given */
+#  define SYSCLK_FREQ SYSCLK_MAX
+# endif
+/* Check partial missing values */
+#elif defined(PLLCLK_PREDIV) || defined(PLLCLK_MULT) || defined(PLLCLK_DIV)
+# warning Please provide all 3 PLL factors
+#endif
+
+/* Try to auto-setup PLL values if not given */
+#if !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT) && !defined(PLLCLK_DIV)
+# if   (SYSCLK_FREQ < (PLLVCO_MIN / 8))
+#  warning SYSCLK_FREQ to low
+# elif (SYSCLK_FREQ < (PLLVCO_MIN / 6))
+#  if (SYSCLK_SOURCE == SYSCLK_PLL) &&  (SYSCLK_FREQ % 125000)
+#   warning SYSCLK_FREQ must be multiple of 125 kHz
+#  endif
+#  define PLLCLK_DIV 8
+# elif (SYSCLK_FREQ < (PLLVCO_MIN / 4))
+#  if (SYSCLK_SOURCE == SYSCLK_PLL)
+#   if (((SYSCLK_FREQ * 6) % 1000000) > 100) && (((SYSCLK_FREQ * 6) % 1000000) < 999900)
+#    warning SYSCLK_FREQ must be multiple of 1 MHz/6
+#   endif
+#  endif
+#  define PLLCLK_DIV 6
+# elif (SYSCLK_FREQ < (PLLVCO_MIN / 2))
+#  if (SYSCLK_SOURCE == SYSCLK_PLL) &&  (SYSCLK_FREQ % 125000)
+#   warning SYSCLK_FREQ must be multiple of 250 kHz
+#  endif
+#  define PLLCLK_DIV 4
+# else
+#  if (SYSCLK_SOURCE == SYSCLK_PLL) &&  (SYSCLK_FREQ % 125000)
+#   warning SYSCLK_FREQ must be multiple of 500 kHz
+#  endif
+#  define PLLCLK_DIV 2
+# endif
+# if   ((PLLCLK_IN % 1000000) == 0)
+#  define PLLCLK_PREDIV (PLLCLK_IN / 1000000)
+# elif ((PLLCLK_IN % 1500000) == 0)
+#  define PLLCLK_PREDIV (PLLCLK_IN / 1500000)
+# elif ((PLLCLK_IN % 1250000) == 0)
+#  define PLLCLK_PREDIV (PLLCLK_IN / 1250000)
+# elif (SYSCLK_SOURCE == SYSCLK_PLL)
+#  warning Please provide PLLCLK PREDIV, MULT and DIV for your PLL input
+# endif
+# define PLLCLK_MULT ((SYSCLK_FREQ * PLLCLK_DIV) / (PLLCLK_IN / PLLCLK_PREDIV))
+#endif
+
+/* Check for data sheet limits*/
+#if   (PLLCLK_IN / PLLCLK_PREDIV) <  950000
+# warning PLL Input frequency too low
+#elif (PLLCLK_IN / PLLCLK_PREDIV) > 2100000
+# warning PLL Input frequency too high
+#elif ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) < PLLVCO_MIN
+# warning PLL VCO frequency too low
+#elif ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) > PLLVCO_MAX
+# warning PLL VCO frequency too high
+#elif (SYSCLK_RES  > SYSCLK_MAX)
+# warning "SYSCLK_FREQ overclocked"
+#endif
+
+/* Provide fallback values for PLLCLK PREDIV, MULT, DIV */
+#if !defined(PLLCLK_PREDIV)
+# define PLLCLK_PREDIV 2
+#endif
+#if !defined(PLLCLK_MULT)
+# define PLLCLK_MULT   2
+#endif
+#if !defined(PLLCLK_DIV)
+# define PLLCLK_DIV    2
+#endif
+
+/* Check PLL factors */
+/* 2 <= PLL_MULT   <= 433  (PLLN)
+ * 2 <= PLL_PREDIV <=  63  (PLLM)
+ * 0 < PLLCLK_DIV /2 < 3 (PLLP)
+ */
+#if  (PLLCLK_PREDIV < 2) || (PLLCLK_PREDIV > 63)
+# warning Wrong PLLCLK_PREDIV
+#elif (PLLCLK_MULT < 2) || (PLLCLK_MULT > 433)
+# warning Wrong PLLCLK_MULT
+#elif (PLLCLK_DIV < 2) || ((PLLCLK_DIV % 2) || (PLLCLK_DIV / 2) > 3)
+# warning Wrong PLLCLK_DIV
+#endif
+
+/* Check HSE settings if HSE is used */
+#if (SYSCLK_SOURCE == SYSCLK_HSE) ||  (PLLCLK_SOURCE == PLLCLK_HSE)
+# if (HSE_VALUE > HSE_MAX)
+#  warning HSE_VALUE to high
+# elif (HSE_VALUE > 26000000) && (HSE_BYPASS == DISABLE)
+#  warning HSE_VALUE to high for resonator
+# elif (HSE_VALUE <  4000000) && (HSE_BYPASS == DISABLE)
+#  warning HSE_VALUE to low for resonator
+# elif (HSE_VALUE <  1000000)
+#  warning HSE_VALUE to low
+# endif
 #endif
 
 /*----------------  Clock Setup Procedure ------------------------------
@@ -93,7 +328,7 @@
  * \brief  Update SystemCoreClock according to Clock Register Values
  *
  * This function reads out the CPUs clock and PLL registers and assembles
- * the actual clock speed values into the SystemCoreClock local variable.
+ * the actual clock speed values into the sys_clock local variable.
  */
 static void SystemCoreClockUpdate(void)
 {
@@ -129,299 +364,160 @@ static void SystemCoreClockUpdate(void)
     SetClockShift();
 }
 
-/* Functional same as F1 */
-/*!
- * \brief Control PLL clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on PLL start failed.
- */
-int CtlPllClock( uint8_t ena)
-{
-    int rc = 0;
-
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t PLLStatus = 0;
-
-    if (ena) {
-        /* Enable PLL */
-        RCC->CR |= RCC_CR_PLLON;
-
-        /* Wait till PLL is ready or time out is reached */
-        do {
-            tout--;
-            PLLStatus = RCC->CR & RCC_CR_PLLRDY;
-        } while((PLLStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_PLLRDY) == 0) {
-            /* PLL failed to start */
-            rc = -1;
-        }
-    }
-    else {
-        /* Disable HSE clock */
-        RCC->CR &= ~RCC_CR_PLLON;
-    }
-
-    return rc;
-}
-
-
 /*!
  * \brief  Configures the System clock source: HSE or HSI.
- * \note   This function should be used with PLL disables
+ *
  * \param  src is one of PLLCLK_HSE, PLLCLK_HSI.
- * \return 0 if clock is running ale -1.
+ * \return 0 if clock is running else -1.
  */
 int SetPllClockSource( int src)
 {
     int rc = -1;
-    if (src == PLLCLK_HSE) {
-        rc = CtlHseClock(1);
-        if (rc==0) {
-            CM3BBSET(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC));
-        }
-    }
-    else if (src == PLLCLK_HSI) {
-        rc = CtlHsiClock(1);
-        /* Select HSI/2 as PLL clock source */
-        if (rc==0) {
-            CM3BBCLR(RCC_BASE, RCC_TypeDef, PLLCFGR, _BI32(RCC_PLLCFGR_PLLSRC));
-        }
-    }
+    uint32_t pllcfgr;
 
+    /* Enable PLLCLK source and switch to that source */
+    switch (src) {
+    case (PLLCLK_HSE):
+        rc = CtlHseClock(ENABLE);
+        if (rc) {
+            return rc;
+        }
+        rc = rcc_set_and_wait_rdy_value(
+            &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSE,
+            RCC_CFGR_SWS, RCC_CFGR_SWS_HSE, HSE_STARTUP_TIMEOUT);
+        if (rc) {
+            return rc;
+        }
+        break;
+    case (PLLCLK_HSI) :
+        CtlHsiClock(ENABLE);
+        rc = rcc_set_and_wait_rdy_value(
+            &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI,
+            RCC_CFGR_SWS, RCC_CFGR_SWS_HSI, HSE_STARTUP_TIMEOUT);
+        if (rc) {
+            return rc;
+        }
+        break;
+    }
+    pllcfgr =  RCC->PLLCFGR;
+    pllcfgr &= ~(RCC_PLLCFGR_PLLM | RCC_PLLCFGR_PLLN | RCC_PLLCFGR_PLLP);
+    pllcfgr |=    PLLCLK_PREDIV        * RCC_PLLCFGR_PLLM_0;
+    pllcfgr |=    PLLCLK_MULT          * RCC_PLLCFGR_PLLN_0;
+    pllcfgr |=  ((PLLCLK_DIV / 2) - 1) * RCC_PLLCFGR_PLLP_0;
+
+    switch (src) {
+    case (PLLCLK_HSE):
+        pllcfgr |= RCC_PLLCFGR_PLLSRC_HSE;
+        break;
+    case (PLLCLK_HSI):
+        pllcfgr |= RCC_PLLCFGR_PLLSRC_HSI;
+        break;
+    }
+    RCC->PLLCFGR = pllcfgr;
+    RCC->CR |= RCC_CR_PLLON;
+#if defined(PWR_CR1_ODEN)
+    /* Procedure "Entering Over-drive mode"*/
+    if (STM32_OVERDRIVE == ENABLE) {
+        while (!PWR_CSR1_ODRDY) {
+            PWR->CR1 |= PWR_CR1_ODEN;
+        }
+        while (!PWR_CSR1_ODSWRDY) {
+            PWR->CR1 |= PWR_CR1_ODSWEN;
+        }
+    }
+#endif
     return rc;
 }
 
+
 /*!
- * \brief  Configures the System clock source: HSI, HS or PLL.
- * \note   This function should be used only after reset.
+ * \brief  Configures the System clock source: HSI, HSE or PLL.
+ * \note   This function should be used only with SYSCLK == HSI or
+ * \note   HSE and peripheralks clocks disabled
  * \param  src is one of SYSCLK_HSE, SYSCLK_HSI or SYSCLK_PLL.
  * \return 0 if selected clock is running else -1.
  */
-int SetSysClockSource( int src)
+int SetSysClockSource(int src)
 {
     int rc = -1;
+    uint32_t old_latency, new_latency, new_sysclk;
 
-    if (src == SYSCLK_HSE) {
-        rc = CtlHseClock(1);
-        if (rc == 0) {
-            /* Select HSE as system clock source */
-            RCC->CFGR &= ~RCC_CFGR_SW;
-            RCC->CFGR |= RCC_CFGR_SW_HSE;
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
 
-            /* Wait till HSE is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE);
+#if defined(PWR_CR_VOS)
+# if !defined(PWR_CR_VOS_0)
+# define  PWR_CR_VOS_0 PWR_CR_VOS
+# endif
+     /* Powerscale is only activated with PLL as system source */
+    uint32_t pwr_cr;
+    pwr_cr = PWR_CR;
+    pwr_cr &= PWR_CR_VOS;
+    pwr_cr |= ((~STM32_POWERSCALE & PWR_CR_VOS) * PWR_CR_VOS_0);
+    PWR_CR = pwr_cr;
+#endif
+
+    old_latency = FLASH->ACR & FLASH_ACR_LATENCY;
+    if (src == SYSCLK_PLL) {
+        new_sysclk = (((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) / PLLCLK_DIV);
+    } else if (src == SYSCLK_HSE) {
+        new_sysclk = HSE_VALUE;
+    } else {
+        new_sysclk = HSI_VALUE;
+    }
+    new_latency = (new_sysclk - 1)/ FLASH_BASE_FREQ;
+
+    if (new_latency > old_latency) {
+        /* New flash latency must be in effect when switching frequency!*/
+        while ((FLASH->ACR & FLASH_ACR_LATENCY) != new_latency) {
+            uint32_t flash_acr;
+            flash_acr = FLASH->ACR;
+            flash_acr &= ~FLASH_ACR_LATENCY;
+            flash_acr |= new_latency;
+            FLASH->ACR = flash_acr;
         }
     }
-    else if (src == SYSCLK_HSI) {
-        rc = CtlHsiClock(1);
-        if (rc == 0) {
-            /* Select HSI as system clock source */
-            RCC->CFGR &= ~RCC_CFGR_SW;
-            RCC->CFGR |= RCC_CFGR_SW_HSI;
-
-            /* Wait till HSI is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
-        }
+#if defined(FLASH_ACR_ARTEN)
+     if (FLASH_PREFETCH == ENABLE) {
+        FLASH->ACR |= FLASH_ACR_PRFTEN;
+    } else {
+        FLASH->ACR &= ~FLASH_ACR_PRFTEN;
     }
-    else if (src == SYSCLK_PLL) {
-        rc = CtlPllClock(1);
-        if (rc == 0) {
-            /* Select HSI as system clock source */
-            RCC->CFGR &= ~RCC_CFGR_SW;
-            RCC->CFGR |= RCC_CFGR_SW_PLL;
-
-            /* Wait till PLL is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
-        }
+    if (FLASH_ART_ACCELARATION == ENABLE) {
+        FLASH->ACR |= FLASH_ACR_ARTEN;
+    } else {
+        FLASH->ACR &= ~FLASH_ACR_ARTEN;
     }
-
+#else
+    if (FLASH_ICACHE == ENABLE) {
+        FLASH->ACR |= FLASH_ACR_ICEN;
+    } else {
+        FLASH->ACR &= ~FLASH_ACR_ICEN;
+    }
+    if (FLASH_DCACHE == ENABLE) {
+        FLASH->ACR |= FLASH_ACR_DCEN;
+    } else {
+        FLASH->ACR &= ~FLASH_ACR_DCEN;
+    }
+#endif
+    SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
+    rc = SwitchSystemClock(src);
+    if (new_latency < old_latency) {
+        uint32_t flash_acr;
+        flash_acr = FLASH->ACR;
+        flash_acr &= ~FLASH_ACR_LATENCY;
+        flash_acr |= new_latency;
+    }
     /* Update core clock information */
     SystemCoreClockUpdate();
 
     return rc;
 }
 
-#if (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE)
-/*!
- * \brief  Configures the System clock coming from HSE or HSI oscillator.
- *
- * Enable HSI/HSE clock and setup HCLK, PCLK2 and PCLK1 prescalers.
- *
- * \param  None.
- * \return 0 on success, -1 on fault of HSE.
- */
 int SetSysClock(void)
 {
     int rc = 0;
-    register uint32_t cfgr;
-
-    /* Set up RTC clock source and eventually LSE and LSI */
-    SetRtcClockSource(RTCCLK_SOURCE);
-
-/* Todo: Check Voltage range! Here 2.7-3.6 Volt is assumed */
-/* For 2.7-3.6 Volt up to 30 MHz no Wait state required */
-    cfgr = RCC->CFGR;
-
-    cfgr &= ~(RCC_CFGR_HPRE|RCC_CFGR_PPRE1|RCC_CFGR_PPRE2 );
-
-    /* HCLK = SYSCLK */
-    cfgr |= (uint32_t)RCC_CFGR_HPRE_DIV1;
-
-    /* PCLK2 = HCLK */
-    cfgr |= (uint32_t)RCC_CFGR_PPRE2_DIV1;
-
-    /* PCLK1 = HCLK */
-    cfgr |= (uint32_t)RCC_CFGR_PPRE1_DIV1;
-
-    RCC->CFGR = cfgr;
-
     rc = SetSysClockSource(SYSCLK_SOURCE);
 
     return rc;
 }
-#else /* (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE) */
-#if (PLLCLK_SOURCE==PLLCLK_HSE)
-#define PLLCLK_IN HSE_VALUE
-#else
-#define PLLCLK_IN HSI_VALUE
-#endif
-
-#if !defined(STM32_VRANGE) || STM32_VRANGE == 0
-#define FLASH_BASE_FREQ 30000000
-#elif STM32_VRANGE == 1
-#define FLASH_BASE_FREQ 24000000
-#elif STM32_VRANGE == 2
-#define FLASH_BASE_FREQ 22000000
-
-#elif STM32_VRANGE == 3
-#define FLASH_BASE_FREQ 20000000
-#endif
-
-#if PLLCLK_IN > 26000000
-#warning PLL Input frequency too high
-#endif
-
-#define SYSCLK_MAX  180000000
-#define PCLK1_MAX   45000000
-#define PCLK2_MAX   90000000
-
-#if SYSCLK_FREQ > SYSCLK_MAX
-#warning "SYSCLK_FREQ overclocked"
-#endif
-
-/* Multiple of 2 MHZ*/
-#if (PLLCLK_IN > 3999999) && ((PLLCLK_IN % 2000000L) == 0)
- #define  PLLM (PLLCLK_IN/2000000)
- #define  PLLN ((SYSCLK_FREQ/1000000) << _BI32(RCC_PLLCFGR_PLLN_0))
-/*Multiple of 1 MHZ */
-#elif (PLLCLK_IN > 1999999) && ((PLLCLK_IN % 1000000L) == 0)
- #define  PLLM (PLLCLK_IN/1000000)
- #define  PLLN ((SYSCLK_FREQ/500000 ) << _BI32(RCC_PLLCFGR_PLLN_0))
-#else
- #warning "PLL Source frequency isn't a multiple of 1 or 2 MHz"
-#endif
-#define  PLLP ((2/2-1) << _BI32(RCC_PLLCFGR_PLLP_0))
-#define  PLLQ (5 << _BI32(RCC_PLLCFGR_PLLQ_0))
-#define  NUT_FLASH_LATENCY  ((SYSCLK_FREQ - 1)/FLASH_BASE_FREQ)
-
-/* Voltage Scaling in PWR->CR register */
-#if SYSCLK_FREQ > 168000000
-# define VOS 3
-#elif SYSCLK_FREQ > 144000000
-# define VOS 2
-#else
-# define VOS 1
-#endif
-
-#if !defined(PCLK1_TARGET) || (PCLK1_TARGET > PCLK1_MAX)
-#define PCLK1_TARGET PCLK1_MAX
-#endif
-
-#if !defined(PCLK2_TARGET) || (PCLK2_TARGET > PCLK2_MAX)
-#define PCLK2_TARGET PCLK2_MAX
-#endif
-
-/**
-  * @brief  Sets System clock frequency to 120/168MHz and configure HCLK, PCLK2
-  *          and PCLK1 prescalers.
-  * @note   This function should be used only after reset.
-  * @param  None
-  * @retval None
-  */
-
-/*
-   Ranges :
-   M: 2..63
-   N: 64.. 432
-   P: 2, 4, 6, 8
-   Q: 2..15
-
-   0.95 MHz < PLLCLK_IN/M < 2 MHz, Prefer 2 MHz for low jitter
-   192 MHz < PLLCLK_IN/M*N < 432 MHz
-   PLLCLK_IN/M*N/P < 168 MHz
-   PLLCLK_IN/M*N/Q < 48 MHz, Use 48 MHz for USB
-
-   Easy Approach:
-   Try to reach fvco = 336 Mhz with M/N.
-   Require a clock >= 4 MHz in 2 MHz Steps
-*/
-int SetSysClock(void)
-{
-    int rc = 0;
-    uint32_t rcc_reg;
-    uint32_t cr;
-
-    /* Set up RTC clock source and eventually LSE and LSI */
-    SetRtcClockSource(RTCCLK_SOURCE);
-
-    /* Select System frequency up to 168 MHz */
-    cr = PWR->CR1;
-    cr &= ~(PWR_CR1_VOS);
-    cr |= VOS * PWR_CR1_VOS_0;
-    PWR->CR1 = cr;
-
-    rcc_reg =  RCC->PLLCFGR;
-    rcc_reg &= ~(RCC_PLLCFGR_PLLM | RCC_PLLCFGR_PLLN | RCC_PLLCFGR_PLLP | RCC_PLLCFGR_PLLQ);
-#if (PLLCLK_SOURCE==PLLCLK_HSE)
-    if (CtlHseClock(1) != 0)
-        return -1;
-    rcc_reg = PLLM | PLLN | PLLP | PLLQ | RCC_PLLCFGR_PLLSRC_HSE;
-#else
-    if (CtlHsiClock(1) != 0)
-        return -1;
-    rcc_reg = PLLM| PLLN | PLLP | PLLQ | RCC_PLLCFGR_PLLSRC_HSI;
-#endif
-    RCC->PLLCFGR = rcc_reg;
-
-    rcc_reg = FLASH->ACR;
-    rcc_reg &= ~FLASH_ACR_LATENCY;
-#if STM32_VRANGE == 3
-    /* Prefetch must be off*/
-    rcc_reg |= NUT_FLASH_LATENCY;
-#else
-    rcc_reg |= NUT_FLASH_LATENCY | FLASH_ACR_PRFTEN | FLASH_ACR_ARTEN ;
-#endif
-    /* Enable Instruction and Data cache */
-    FLASH->ACR = rcc_reg;
-
-    rcc_reg = RCC->CFGR;
-    rcc_reg  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2| RCC_CFGR_PPRE1);
-    rcc_reg |= RCC_CFGR_HPRE_DIV1;
-    rcc_reg |= GetPclkDiv(PCLK1_TARGET) * RCC_CFGR_PPRE1_0;
-    rcc_reg |= GetPclkDiv(PCLK2_TARGET) * RCC_CFGR_PPRE2_0;
-    RCC->CFGR = rcc_reg;
-
-    /* Start PLL, wait ready and switch to it as clock source */
-    rc = SetSysClockSource(SYSCLK_SOURCE);
-    if (rc) {
-        /* Something went wrong with the PLL startup! */
-        SetSysClockSource(SYSCLK_HSI);
-        return rc;
-    }
-
-    return rc;
-}
-
-#endif /* (SYSCLK_SOURCE == SYSCLK_HSI) || (SYSCLK_SOURCE == SYSCLK_HSE) */

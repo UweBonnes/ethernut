@@ -50,11 +50,6 @@
 
 #define HSI_VALUE 16000000
 
-#if !defined(HSE_STARTUP_TIMEOUT)
-/*!< Time out for HSE start up, in loops*/
-# define HSE_STARTUP_TIMEOUT ((uint32_t)5000)
-#endif
-
 #define NUM_MSI_FREQ 12
 static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
     /* Values from STM32L476 Rev. 2 datasheet, table 47

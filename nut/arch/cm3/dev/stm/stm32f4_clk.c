@@ -45,10 +45,6 @@
 #define HSI_VALUE 16000000
 #endif /* HSI_VALUE */
 
-#if !defined(HSE_STARTUP_TIMEOUT)
-#define HSE_STARTUP_TIMEOUT ((uint32_t)5000) /*!< Time out for HSE start up, in ms */
-#endif
-
 /* Prepare some defaults if configuration is incomplete */
 #if !defined(SYSCLK_SOURCE)
 #define SYSCLK_SOURCE SYSCLK_HSI

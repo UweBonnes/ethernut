@@ -55,9 +55,6 @@
 #define HSI_VALUE 8000000
 #endif
 
-#if !defined(HSE_STARTUP_TIMEOUT)
-#define HSE_STARTUP_TIMEOUT 0x5000
-#endif
 #include <arch/cm3/stm/stm32xxxx.h>
 
 /* Prepare some defaults if configuration is incomplete */
@@ -83,15 +80,6 @@
 # define SYSCLK_MAX 72000000
 #endif
 
-#if !defined(SYSCLK_FREQ)
-# define SYSCLK_FREQ SYSCLK_MAX
-#endif
-
-/* Some checks*/
-#if SYSCLK_FREQ > SYSCLK_MAX
-# warning Requested SYSCLK_FREQ too high
-#endif
-
 #if defined(HSE_VALUE)
 # if HSE_VALUE < 4000000
 #  warning HSE_VALUE too low
@@ -101,7 +89,7 @@
 #endif
 
 /* TODO: Provide more heuristics*/
-#if !defined(SYSCLK_FREQ)
+#if (SYSCLK_SOURCE == SYSCLK_PLL)
 # undef PLLCLK_SOURCE
 # undef SYSCLK_SOURCE
 # undef PLLCLK_DIV
@@ -109,7 +97,6 @@
 # undef PLL2CLK_DIV
 # undef PLL2CLK_MULT
 # if   defined(MCU_STM32F100)
-#  define SYSCLK_FREQ         24000000
 #  if defined(HSE_VALUE) && HSE_VALUE == 24000000
 #   define SYSCLK_SOURCE     SYSCLK_HSE
 #  endif
@@ -126,7 +113,6 @@
 # elif defined(MCU_STM32F1_CL)
 #  define SYSCLK_SOURCE     SYSCLK_PLL
 #  if defined(HSE_VALUE)
-#   define SYSCLK_FREQ 72000000
 #   if (HSE_VALUE == 25000000)
 /* Values From STM32F105xx datasheet*/
 #    define PLLCLK_SOURCE     PLLCLK_PLL2
@@ -148,7 +134,6 @@
 #    warning Please supply fitting values
 #   endif
 #  else
-#   define SYSCLK_FREQ        36000000
 #   define PLLCLK_SOURCE      PLLCLK_HSI
 #   define PLLCLK_MULT        9
 #  endif
@@ -173,12 +158,26 @@
 # endif
 #endif
 
+# if (PLLCLK_SOURCE == PLLCLK_HSI)
+#  define PLLCLK_IN (HSI_VALUE / 2)
+# else
+# define PLLCLK_IN HSE_VALUE
+# endif
+
 /* Provide Fallback values*/
+#if !defined(SYSCLK_FREQ)
+# define SYSCLK_FREQ SYSCLK_MAX
+#endif
 #if !defined(PLL2CLK_PREDIV)
 #define PLL2CLK_PREDIV 1
 #endif
 #if !defined(PLLCLK_PREDIV)
 #define PLLCLK_PREDIV 1
+#endif
+
+/* Some checks*/
+#if SYSCLK_FREQ > SYSCLK_MAX
+# warning Requested SYSCLK_FREQ too high
 #endif
 
 /*----------------  Clock Setup Procedure ------------------------------

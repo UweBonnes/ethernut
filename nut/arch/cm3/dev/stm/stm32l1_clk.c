@@ -48,11 +48,6 @@
 
 #define HSI_VALUE  16000000
 
-#if !defined  (HSE_STARTUP_TIMEOUT)
-/*!< Time out for HSE start up, in loops*/
-# define HSE_STARTUP_TIMEOUT   0x5000
-#endif
-
 #define NUM_MSI_FREQ 7
 static const uint32_t MSIFreqTable[7] =
 {

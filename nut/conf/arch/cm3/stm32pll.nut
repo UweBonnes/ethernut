@@ -864,11 +864,9 @@ nutarch_cm3_stm32_pll =
             description = "Divisor between HCLK and PCLK1 "..
                           "for low speed APB bus.\n"..
                           "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
-                          "Auto tries to reach highest allowed "..
-                          "frequency.\nDefault is AUTO",
+                          "Leave undefined tries to reach highest allowed ",
             type = "enumerated",
-            choices =  {"AUTO", "1", "2", "4", "8", "16"},
-            default = "AUTO",
+            choices =  {"1", "2", "4", "8", "16"},
             file = "include/cfg/clock.h"
         },
         {
@@ -877,11 +875,10 @@ nutarch_cm3_stm32_pll =
             description = "Divisor between HCLK and PCLK1 "..
                           "for high speed APB bus.\n"..
                           "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
-                          "Auto tries to reach highest allowed "..
-                          "frequency.\nDefault is AUTO",
+                          "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
+                          "Leave undefined tries to reach highest allowed ",
             type = "enumerated",
-            choices =  {"AUTO", "1", "2", "4", "8", "16"},
-            default = "AUTO",
+            choices =  {"1", "2", "4", "8", "16"},
             file = "include/cfg/clock.h"
         },
 -- PLLCLK PREDIV, MULT and DIV vary wide between devices.
