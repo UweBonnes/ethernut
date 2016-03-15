@@ -525,7 +525,7 @@ uint32_t Stm32ClockSwitchGet(int bi)
         clksrc = RCC->CFGR3 >> bi;
         clksrc &= 3;
         if (1 == clksrc)
-            return  STM_ClockGet(NUT_HWCLK_CPU);
+            return  STM_ClockGet(HWCLK_CPU);
         else if (2 == clksrc)
             return HSI_VALUE;
         else if (3 == clksrc)

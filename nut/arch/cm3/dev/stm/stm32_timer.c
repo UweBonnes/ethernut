@@ -189,12 +189,12 @@ uint32_t Stm32TimerGetClock(TIM_TypeDef *tim)
     int ret;
 #if defined(APB2PERIPH_BASE)
     if ((uint32_t) tim > APB2PERIPH_BASE)
-        ret = NutClockGet(NUT_HWCLK_TCLK2);
+        ret = NutClockGet(HWCLK_APB2_TIMER);
 #else
     if (0) {
     }
 #endif
     else
-        ret = NutClockGet(NUT_HWCLK_TCLK1);
+        ret = NutClockGet(HWCLK_APB1_TIMER);
     return ret;
 }

@@ -3,6 +3,7 @@
 
 #include <cfg/arch.h>
 #include <sys/timer.h>
+#include <arch/cm3/stm/stm32_clk.h>
 
 struct TIMERINFO{
     TIM_TypeDef *tim;

@@ -69,42 +69,22 @@
 #define NutDisableTimerIrq()    SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk
 
 #if defined(MCU_STM32)
-
-/*!
- * Frequency of Sysclk
+/* We can't use HWCLK_MAX from clock_index_t here. NUT_HWCLK_MAX is used
+ * with the  preprocessor. enums always resolve to 0 in the preprocessor!
  */
-#define NUT_HWCLK_SYS 0
-/*!
- * Frequency of CPU Core(HCLK/AHB CLK)
- */
-#define NUT_HWCLK_CPU 1
-
-/*!
- * Clock for devices on APB1 bus
- */
-#define NUT_HWCLK_PCLK1 2
-
-/*!
- * Clock for timers on APB1 bus
- */
-#define NUT_HWCLK_TCLK1 3
-
-/*!
- * Clock for devices on APB2 bus
- */
-#define NUT_HWCLK_PCLK2 4
-
-/*!
- * Clock for timers on APB2 bus
- */
-#define NUT_HWCLK_TCLK2 5
-
-/*!
- * Number of clocks for this device
- */
-#define NUT_HWCLK_MAX   6
-
-#define NUT_HWCLK_PERIPHERAL NUT_HWCLK_PCLK1
+# if defined(MCU_STM32F0)
+/* AHB_CLK, APB1, APB1_TIM, SYSCLK */
+#  define NUT_HWCLK_MAX 4
+# elif defined(MCU_STM32F3)
+/* AHB_CLK, APB1, APB1_TIM, APB2, APB2_TIM, SYSCLK, PLLCLK */
+#  define NUT_HWCLK_MAX 7
+# elif defined(MCU_STM32L0) || defined(MCU_STM32L4) || defined(MCU_STM32F7)
+/* AHB_CLK, APB1, APB1_TIM, APB2, APB2_TIM, SYSCLK, PLLCLK, HSI, LSE*/
+#  define NUT_HWCLK_MAX 9
+# else
+/* AHB_CLK, APB1, APB1_TIM, APB2, APB2_TIM, SYSCLK*/
+#  define NUT_HWCLK_MAX 6
+# endif
 #elif defined(MCU_LPC17xx)
 
 /*!

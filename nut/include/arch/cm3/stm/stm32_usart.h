@@ -41,6 +41,8 @@
  * \endverbatim
  */
 
+#include <arch/cm3/stm/stm32_clk.h>
+
 /*
  * Nut/OS to STM32 Abstraction handler
  */

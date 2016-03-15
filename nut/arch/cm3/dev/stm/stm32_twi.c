@@ -55,6 +55,7 @@
 #include <string.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32_clk.h>
 #if defined(I2CBUS1_USE_DMA) || defined(I2CBUS2_USE_DMA)
 #if defined(MCU_STM32F1)
     #include <arch/cm3/stm/stm32f1_dma.h>
@@ -822,7 +823,7 @@ int NutTwiSetSpeed( NUTTWIBUS *bus, uint32_t speed)
 
     register uint16_t ccr;
     I2C_TypeDef* I2Cx = (I2C_TypeDef*)bus->bus_base;
-    uint32_t apbclk = NutClockGet(NUT_HWCLK_PCLK1);
+    uint32_t apbclk = NutClockGet(HWCLK_APB1);
     uint16_t frqrange = (uint16_t)(apbclk/1000000);
     uint16_t cr1 = I2Cx->CR1;
 
@@ -879,7 +880,7 @@ uint32_t NutTwiGetSpeed( NUTTWIBUS *bus)
 {
     uint32_t speed = 0;
     uint32_t ccr = 0;
-    uint32_t apbclk = NutClockGet(NUT_HWCLK_PCLK1);
+    uint32_t apbclk = NutClockGet(HWCLK_APB1);
     I2C_TypeDef* I2Cx = (I2C_TypeDef*)bus->bus_base;
 
     ccr=I2Cx->CCR;
@@ -1042,7 +1043,7 @@ int NutRegisterTwiBus( NUTTWIBUS *bus, uint8_t sla )
 #endif
     I2Cx->CR2 = 0x0000;
     I2Cx->CR2 &= I2C_CR2_FREQ;
-    I2Cx->CR2 |= (NutClockGet(NUT_HWCLK_PCLK1)/1000000);
+    I2Cx->CR2 |= (NutClockGet(HWCLK_APB1)/1000000);
     I2Cx->CR1 = I2C_CR1_PE;
 
     // TODO: Slave Address Setup

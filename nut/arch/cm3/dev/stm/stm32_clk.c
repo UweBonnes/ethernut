@@ -45,7 +45,7 @@
 #endif
 
 static uint32_t sys_clock;
-static uint8_t clk_shift[NUT_HWCLK_MAX];
+static uint8_t clk_shift[HWCLK_SYS];
 
 static const uint8_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
@@ -464,7 +464,7 @@ check_lse:
   */
 uint32_t SysCtlClockGet(void)
 {
-    return STM_ClockGet(NUT_HWCLK_CPU);
+    return STM_ClockGet(HWCLK_CPU);
 }
 
 static void SystemCoreClockUpdate(void);
@@ -474,12 +474,33 @@ static void SystemCoreClockUpdate(void);
   * \param  idx NUT_HWCLK Index
   * \retval clock or 0 if idx points to an invalid clock
   */
-uint32_t STM_ClockGet(int idx)
+uint32_t STM_ClockGet(clock_index_t idx)
 {
     if (!sys_clock) {
         SystemCoreClockUpdate();
     }
-    if (idx < NUT_HWCLK_MAX) {
+    switch (idx) {
+#if defined(RCC_CFGR3_USART1SW) || defined(RCC_DCKCFGR2_USART1SEL) ||\
+    defined(RCC_CCIPR_USART1SEL)
+    case HWCLK_LSE:
+        return LSE_VALUE;
+    case HWCLK_HSI:
+        return HSI_VALUE;
+#endif
+#if defined(MCU_STM32L4)
+    case HWCLK_MSI:
+        return msi_clock;
+#endif
+#if 0
+/* FIXME: Handle case when PLL is running as USB clock,
+   but SYSCLK is not PLLCLK!
+*/
+# if defined(MCU_STM32F3)
+    case HWCLK_PLL:
+        return 0;
+# endif
+#endif
+    default:
         return sys_clock >> clk_shift[idx];
     }
     return 0;
@@ -579,13 +600,13 @@ static void SetClockShift(void)
 
     cfgr = RCC->CFGR;
     hpre = (cfgr & RCC_CFGR_HPRE) / RCC_CFGR_HPRE_0;
-    clk_shift[NUT_HWCLK_CPU] = AHBPrescTable[hpre];
+    clk_shift[HWCLK_CPU] = AHBPrescTable[hpre];
     tmp = (RCC->CFGR & RCC_CFGR_PPRE1) / RCC_CFGR_PPRE1_0;
-    clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK1] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK1]);
-#if !defined(MCU_STM32F0)
+    clk_shift[HWCLK_APB1] = APBPrescTable[tmp];
+    clk_shift[HWCLK_APB1_TIMER] = GetTimerShift(clk_shift[HWCLK_APB1]);
+#if defined(APB2PERIPH_BASE) || defined(MCU_STM32L0)
     tmp = (RCC->CFGR & RCC_CFGR_PPRE2) / RCC_CFGR_PPRE2_0;
-    clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
+    clk_shift[HWCLK_APB2] = APBPrescTable[tmp];
+    clk_shift[HWCLK_APB2_TIMER] = GetTimerShift(clk_shift[HWCLK_APB2]);
 #endif
 }

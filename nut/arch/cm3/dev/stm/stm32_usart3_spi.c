@@ -238,7 +238,7 @@ int Stm32UsartSpiSetup(NUTSPINODE * node)
     }
 
     /* Query peripheral clock. */
-    clk = NutClockGet(NUT_HWCLK_PCLK1);
+    clk = NutClockGet(HWCLK_APB1);
     /* Calculate the SPI clock divider. Avoid rounding errors. */
     clkdiv = clk/(node->node_rate);
     if (clkdiv < 16) {

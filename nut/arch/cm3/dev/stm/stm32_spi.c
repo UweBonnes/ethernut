@@ -344,11 +344,11 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     /* Query peripheral clock. */
 #if defined (APB2PERIPH_BASE)
     if (SPI_BASE < APB2PERIPH_BASE)
-        clk = NutClockGet(NUT_HWCLK_PCLK1);
+        clk = NutClockGet(HWCLK_APB1);
     else
-        clk = NutClockGet(NUT_HWCLK_PCLK2);
+        clk = NutClockGet(HWCLK_APB2);
 #else
-    clk = NutClockGet(NUT_HWCLK_PCLK1);
+    clk = NutClockGet(HWCLK_APB1);
 #endif
     /* Calculate the SPI clock divider. Avoid rounding errors. */
     clkdiv = (clk + node->node_rate - 1) / node->node_rate;
@@ -372,7 +372,7 @@ static int Stm32SpiSetup(NUTSPINODE * node)
     spireg->CR1 |= (clkdiv * SPI_CR1_BR_0);
 #if SPIBUS_MODE != POLLING_MODE
     /* Calculate ratio between Processor and SPI clock */
-    clk_ratio =  NutClockGet(NUT_HWCLK_CPU)/clk;
+    clk_ratio =  NutClockGet(HWCLK_CPU)/clk;
     clk_ratio = clk_ratio << clkdiv;
 #endif
     /* Update interface parameters. */

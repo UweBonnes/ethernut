@@ -68,6 +68,7 @@
 #include <dev/gpio.h>
 #include <arch/cm3/stm/stm32_i2c_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include <arch/cm3/stm/stm32_clk.h>
 #include <arch/cm3/stm/stm32_irqreg.h>
 #include <dev/i2cbus.h>
 #include <cfg/twi.h>
@@ -303,7 +304,7 @@ static int I2cBusConf(NUTI2C_BUS *bus)
     uint32_t speed;
     I2C_TypeDef *I2Cx;
     uint16_t ccr;
-    uint32_t apbclk = NutClockGet(NUT_HWCLK_PCLK1);
+    uint32_t apbclk = NutClockGet(HWCLK_APB1);
     uint16_t frqrange = (uint16_t)(apbclk/1000000);
     uint16_t cr1;
 
@@ -390,7 +391,7 @@ static int I2cBusInit(NUTI2C_BUS *bus)
     if (I2cBusConf(bus)) {
         return -1;
     }
-    apbclk = NutClockGet(NUT_HWCLK_PCLK1);
+    apbclk = NutClockGet(HWCLK_APB1);
     if (apbclk < 2000000) {
         /* PCLK1 clock to slow for valid setup/hold timing */
         return -1;

@@ -257,9 +257,9 @@ static void  StmUsartClkEnable(int enable)
 #define USARTn      USART1
 #define USARTnBase  USART1_BASE
 #if defined(MCU_STM32F0)
-#define USARTclk    NUT_HWCLK_PCLK1
+#define USARTclk    HWCLK_APB1
 #else
-#define USARTclk    NUT_HWCLK_PCLK2
+#define USARTclk    HWCLK_APB2
 #endif
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 

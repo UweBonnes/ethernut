@@ -109,9 +109,28 @@ typedef enum
 #endif
 }msi_range_t;
 
+typedef enum
+{
+    HWCLK_CPU = 0,
+    HWCLK_APB1,
+    HWCLK_APB1_TIMER,
+#if defined(APB2PERIPH_BASE) || defined(MCU_STM32L0)
+    HWCLK_APB2,
+    HWCLK_APB2_TIMER,
+#endif
+    HWCLK_SYS,
+#if defined(RCC_CFGR3_USART1SW) || defined(RCC_DCKCFGR2_USART1SEL) ||\
+    defined(RCC_CCIPR_USART1SEL)
+    HWCLK_HSI,
+    HWCLK_LSE,
+#endif
+#if defined(MCU_STM32L4)
+    HWCLK_MSI,
+#endif
+    HWCLK_MAX,
+}clock_index_t;
 
-/* Retrieve CPU/AHB/APBx clock*/
-extern uint32_t STM_ClockGet(int idx);
+extern uint32_t STM_ClockGet(clock_index_t idx);
 
 /* Control functions for the separate clocks */
 extern int CtlHseClock(int ena);

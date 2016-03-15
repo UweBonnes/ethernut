@@ -626,11 +626,7 @@ static uint32_t Stm32UsartGetSpeed(void)
 {
     uint32_t clk;
 
-#if USARTclk == NUT_HWCLK_PCLK1
-    clk = NutClockGet(NUT_HWCLK_PCLK1);
-#else
-    clk = NutClockGet(NUT_HWCLK_PCLK2);
-#endif
+    clk = NutClockGet(USARTclk);
     if (USARTn->CR1 & USART_CR1_OVER8)
     {
         uint32_t frac_div = USARTn->BRR;
@@ -662,11 +658,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
 
     Stm32UsartDisable();
 
-#if USARTclk == NUT_HWCLK_PCLK1
-    apbclock = NutClockGet(NUT_HWCLK_PCLK1);
-#else
-    apbclock = NutClockGet(NUT_HWCLK_PCLK2);
-#endif
+    apbclock = NutClockGet(USARTclk);
 
     /* Determine the integer part */
     if (USARTn->CR1 & USART_CR1_OVER8)
