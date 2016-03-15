@@ -84,6 +84,105 @@ function GetSysClockSourceDesc()
 end
 
 --
+-- HSE Value Description
+--
+-- With value given, SYSCLK_SOURCE will be SYSCLK_PLL with PLLCLK_HSE
+--
+function GetHseValueDesc()
+    if c_is_provided("HW_MCU_STM32L4") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN (Range 1)\t: 0 .. 46 Mhz\n"..
+               "External input at OSCIN (Range 2)\t: 0 .. 26 Mhz\n"..
+               "External resonator\t\t: 4 .. 48 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_RCC_STM32L") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 32 Mhz\n"..
+               "With CSS off and PLL off\t: 0 .. 32 MHz\n"..
+               "External resonator\t: 4 .. 25 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 32 Mhz\n"..
+               "External resonator\t: 4 .. 32 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F100") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 24 Mhz\n"..
+               "External resonator\t: 4 .. 24 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F101") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 25 Mhz\n"..
+               "External resonator\t: 4 .. 16 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F102") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 25 Mhz\n"..
+               "External resonator\t: 4 .. 16 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F1_CL") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 50 Mhz\n"..
+               "External resonator\t: 3 .. 25 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Builtin USB bootloader starts much faster with 25 MHz.\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F2") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 26 Mhz\n"..
+               "External resonator\t: 4 .. 26 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F3") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 32 Mhz\n"..
+               "External resonator\t: 4 .. 32 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F4") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 50 Mhz\n"..
+               "External resonator\t: 4 .. 26 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32F7") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 1 .. 50 Mhz\n"..
+               "External resonator\t: 4 .. 26 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    return Unhandled
+end
+--
 -- Retrieve PLL Input CLK available on the device.
 --
 function GetPllClkSrc()
@@ -178,6 +277,14 @@ nutarch_cm3_stm32_pll =
                 file = "include/cfg/clock.h"
             },
             {
+                macro = "HSE_VALUE",
+                brief = "External Oszillator Frequency",
+                description = function() return GetHseValueDesc() end,
+                type = "integer",
+                provides = {"HSE_VALUE"},
+                file = "include/cfg/clock.h"
+            },
+            {
                 macro = "HSE_BYPASS",
                 brief = "HSE from external source",
                 description = "Use the clock signal applied to OSC_IN.",
@@ -257,25 +364,6 @@ nutarch_cm3_stm32_pll =
                               "With PLLCLK_AUTO NutOS tries to configure for highest speed.",
                               type = "enumerated",
                         default = "PLLCLK_AUTO";
-                        file = "include/cfg/clock.h"
-                  },
-                  {
-                        macro = "HSE_VALUE",
-                        brief = "External Oszillator Frequency",
-                        description = "Value of the external oscillator in Herz.\n"..
-                              "Allowed values:\n"..
-                              "   STM32F0xx  : 1.. 32 Mhz\n"..
-                              "   STM32F100  : 4.. 24 Mhz\n"..
-                              "   STM32F101  : 4.. 16 Mhz\n"..
-                              "   STM32F102/3: 4.. 25 Mhz\n"..
-                              "   STM32F105/7: 4.. 25 Mhz\n"..
-                              "   STM32F20X  : 1.. 26 Mhz\n"..
-                              "   STM32F3XX  : 1.. 32 Mhz\n"..
-                              "   STM32F4XX  : 1.. 50 Mhz\n"..
-                              "Typical Values is 8MHz. On F105/7 DFU bootloader works\n"..
-                              "better with 25 MHz\n",
-                        flavor = "integer",
-                        type = "long",
                         file = "include/cfg/clock.h"
                   },
                   {
@@ -376,19 +464,6 @@ nutarch_cm3_stm32_pll =
                 type = "enumerated",
                 choices = {"1", "2"},
                 default = "1",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "HSE_VALUE",
-                brief = "External Oszillator Frequency",
-                description = "Value of the external oscillator in Herz.\n"..
-                      "Allowed values:\n"..
-                      "   HSE_BYPASS/Range 1:  0.. 48 MHZ\n"..
-                      "   HSE_BYPASS/Range 2:  0.. 26 MHZ\n"..
-                      "   External crystal  :  4.. 48 MHZ\n"..
-                      "Typical Values is 8MHz.\n",
-                flavor = "integer",
-                type = "long",
                 file = "include/cfg/clock.h"
             },
             {

@@ -72,6 +72,14 @@
 #define RTCCLK_HSE    3
 #define RTCCLK_LSEBYP 4
 
+#if !defined(HSE_VALUE)
+# define HSE_VALUE 0
+#endif
+
+#if !defined(LSE_VALUE)
+# define LSE_VALUE 0
+#endif
+
 /* MSI clock ranges*/
 typedef enum
 {
