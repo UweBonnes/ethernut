@@ -169,7 +169,6 @@ nutarch_cm3 =
                 descrition ="STM32 Family.",
                 default = 1,
                 requires = { "HW_MCU_STM32" },
-                provides = { "HW_UART_SINGLE_WIRE_MODE" },
                 file = "include/cfg/arch.h"
             }
         }

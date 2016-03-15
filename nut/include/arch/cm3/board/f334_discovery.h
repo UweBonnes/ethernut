@@ -101,16 +101,6 @@
 #endif
 #endif
 
-#ifndef OWIBUS0_UART
-#include <dev/usartstm32.h>
-#define OWIBUS0_UART devUsartStm32_1
-#endif
-
-#ifndef DEF_OWIBUS
-#include <dev/owibus.h>
-#define DEF_OWIBUS owiBus0Uart
-#endif
-
 /* define RTC */
 
 #ifndef RTC_CHIP

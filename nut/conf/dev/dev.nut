@@ -2242,26 +2242,20 @@ nutdev =
         }
     },
     {
-        name = "nutdev_owibusuartif",
-        brief = "Run Time configurable OWI bus driver using uart",
---        requires = { "HW_UART"}, -- definition not yet provided
-        provides = { "OWIBUS_CONTROLLER" },
-        sources = { "owibus_uart.c", "owibus_uartif.c"},
-    },
-    {
         name = "nutdev_owibus0uart",
         brief = "Library compiled time configured OWI bus driver using uart",
 --        requires = { "HW_UART"}, -- definition not yet provided
         provides = { "OWIBUS_CONTROLLER" },
-        sources = { "owibus_uart.c", "owibus0uart.c"},
+        sources = { "owibus_uart.c"},
         options =
         {
             {
-                macro = "OWIBUS0_HALDUPLEX",
-                brief = "OWIBUS0_HALDUPLEX",
-                description = "Use RX connected internally to TX for OWI Bus 0.\n"..
-                               "Hardware must supports this mode.",
-                requries = { "HW_UART_SINGLE_WIRE_MODE" },
+                macro = "OWI0_UART",
+                brief = "UART to use for OWIBUS 0",
+                description = "Choosen Uart must provide suitable "..
+                            "hardware connections!\n"..
+                            "Usart setup must configure "..
+                            "hardware for this setup!\n",
                 file = "include/cfg/owi.h",
 
             },

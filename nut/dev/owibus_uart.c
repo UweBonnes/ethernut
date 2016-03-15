@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2012/2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012/2014/2015 by Uwe Bonnes
+ *                                    (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -42,6 +43,7 @@
  */
 
 #include <cfg/arch.h>
+#include <cfg/owi.h>
 #include <stdint.h>
 #include <fcntl.h>
 #include <dev/uart.h>
@@ -53,22 +55,36 @@
  */
 /*@{*/
 
+/*!
+ * \brief Initialize the Owibus uart device.
+ *
+ * If NUTOWIINFO_UART->uart is given, the uart is registered and opened.
+ * If NUTOWIINFO_UART->uart_fd is given (not 0), uart_fd is used as usart file.
+ *
+ * \param bus Specifies the One-Wire bus.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
 
-int Uart_OwiInit(NUTOWIINFO_UART *owcb, NUTDEVICE *uart, int mode)
+int Uart_OwiSetup(NUTOWIBUS *bus)
 {
+    NUTOWIINFO_UART *owcb;
     int uart_fd;
     uint32_t timeout = 5;
     uint32_t stopbits = 2;
     int res;
-    uint8_t data[1];
 
-    uart_fd = _open(uart->dev_name, _O_RDWR | _O_BINARY);
-    if (uart_fd == -1) {
+    owcb = (NUTOWIINFO_UART *) bus->owibus_info;
+    if (owcb->uart_fd) {
+        return OWI_SUCCESS;
+    }
+    res = NutRegisterDevice(owcb->uart, owcb->base, 0);
+    if (res ) {
         return OWI_INVALID_HW;
     }
-    res = _ioctl(uart_fd, UART_SETOWIMODE, &mode);
-    if (res) {
-        _close(uart_fd);
+
+    uart_fd = _open(owcb->uart->dev_name, _O_RDWR | _O_BINARY);
+    if (uart_fd == -1) {
         return OWI_INVALID_HW;
     }
 
@@ -77,11 +93,10 @@ int Uart_OwiInit(NUTOWIINFO_UART *owcb, NUTDEVICE *uart, int mode)
 
     /* Empty RX buffer, as pin setup might have caused several
        transitions on RX */
-    while(_read(uart_fd, data, 1) == 1);
+    _read(uart_fd, NULL, 0);
     owcb->uart_fd = uart_fd;
     return OWI_SUCCESS;
 }
-
 
 /*!
  * \brief Reset the One-Wire bus and check if device(s) present.
@@ -94,7 +109,7 @@ int Uart_OwiTouchReset(NUTOWIBUS *bus)
 {
     NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *) (bus->owibus_info);
     uint8_t send_data[1] = { OWI_UART_WRITE_RST };
-    uint8_t rec_data[10] = { 0 };
+    uint8_t rec_data[1] = { 0 };
     uint32_t baud_presence = OWI_UART_BAUD_RESET;
     uint32_t baud_owi_rwbit = OWI_UART_BAUD_RWBIT;
     int res;
@@ -186,4 +201,24 @@ int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
     return OWI_SUCCESS;
 }
 
+#if 0
+/* OWI0_UART needs to be resolved here. This would require to
+ * include all files declaring possible usart NUTDEVICEs...
+ */
+# if defined(OWI0_UART)
+static NUTOWIINFO_UART owcb0 = {
+    OWI0_UART,          /*!< \brief Uart to use, e.g, set by configurator */
+    0,                  /*!< \brief Base settings of UART */
+    0                   /*!< \brief File descriptor */
+};
+NUTOWIBUS owiBus0Uart = {
+    (uintptr_t )&owcb0, /*!< \brief OWIBUSBUS::owibus_info */
+    OWI_MODE_NORMAL,    /*!< \brief OWIBUSBUS::mode */
+    Uart_OwiSetup,      /*!< \brief OWIBUSBUS::OwiSetup */
+    Uart_OwiTouchReset, /*!< \brief OWIBUSBUS::OwiTouchReset*/
+    Uart_OwiReadBlock,  /*!< \brief OWIBUSBUS::OwiReadBlock */
+    Uart_OwiWriteBlock  /*!< \brief OWIBUSBUS::OwiWriteBlock */
+ };
+# endif
+#endif
 /*@}*/
