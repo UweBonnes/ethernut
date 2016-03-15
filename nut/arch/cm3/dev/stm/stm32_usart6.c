@@ -254,6 +254,7 @@ static void  StmUsartClkEnable(int enable)
 #define USARTn      USART6
 #define USARTnBase  USART6_BASE
 #define USARTclk    BASE2CLKSRC(USART6_BASE)
+#define USARTnSIG   USART2SIG(USART6)
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define DcbUSART    dcb_usart6

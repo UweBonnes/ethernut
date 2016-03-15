@@ -43,12 +43,15 @@ struct _usart_signal {
     void *usart_arg;
     USART_SIGNAL *next;
 };
+#define USART2SIG(x) sig_USART_GROUP
 #else
 # define USART_SIGNAL IRQ_HANDLER
+#define USART2SIG(USART) (sig_ ##USART)
 #endif
 
 extern USART_SIGNAL *Stm32UsartCreateHandler(
-    int usart_nr, USART_TypeDef *usart);
+    int usart_nr, USART_TypeDef *usart, IRQ_HANDLER *irq);
 extern int Stm32UsartRegisterHandler(
-    USART_SIGNAL* signal, void (*handler) (void *), void *arg, int usart_nr);
+    USART_SIGNAL* signal, void (*handler) (void *),void *arg,
+    int usart_nr, IRQ_HANDLER *irq);
 #endif

@@ -1280,12 +1280,12 @@ static int Stm32UsartInit(void)
     /*
      * Register receive and transmit interrupts.
      */
-    usart_sig = Stm32UsartCreateHandler(USARTidx, USARTn);
+    usart_sig = Stm32UsartCreateHandler(USARTidx, USARTn, &USARTnSIG);
     if (!usart_sig)
         return -1;
 
     res = Stm32UsartRegisterHandler(
-        usart_sig, Stm32UsartInterrupt, &DcbUSART,USARTidx);
+        usart_sig, Stm32UsartInterrupt, &DcbUSART,USARTidx, &USARTnSIG);
     if (res) {
         return -1;
     }
@@ -1372,7 +1372,7 @@ static int Stm32UsartDeinit(void)
     USARTn->CR1 = 0;
 
     /* Deregister receive and transmit interrupts. */
-    Stm32UsartRegisterHandler(usart_sig, 0, 0, USARTidx);
+    Stm32UsartRegisterHandler(usart_sig, 0, 0, USARTidx, &USARTnSIG);
 
     /* Reset UART. */
     StmUsartClkEnable(0);

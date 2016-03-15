@@ -56,40 +56,25 @@
 # else
 #  define NUM_USART 1
 # endif
-
-static IRQ_HANDLER *usart_nr2irq[] = {
-    &sig_USART1,
-# if defined(HW_USART2_STM32)
-    &sig_USART2,
-# endif
-};
 #else
 /* F1-F4 */
-static IRQ_HANDLER *usart_nr2irq[] = {
-    &sig_USART1,
-# if defined(HW_USART2_STM32)
-    &sig_USART2,
+# if    defined(HW_UART8_STM32)
+    # define NUM_USART 8
+# elif  defined(HW_UART7_STM32)
+    # define NUM_USART 7
+# elif  defined(HW_UART6_STM32)
+    # define NUM_USART 6
+# elif  defined(HW_UART5_STM32)
+    # define NUM_USART 5
+# elif  defined(HW_UART4_STM32)
+    # define NUM_USART 4
+# elif  defined(HW_UART3_STM32)
+    # define NUM_USART 3
+# elif  defined(HW_UART2_STM32)
+    # define NUM_USART 2
+# else
+    # define NUM_USART 1
 # endif
-# if defined(HW_USART3_STM32)
-    &sig_USART3,
-# endif
-# if defined(HW_UART4_STM32)
-    &sig_USART4,
-# endif
-# if defined(HW_UART5_STM32)
-    &sig_USART5,
-# endif
-# if defined(HW_USART6_STM32)
-    &sig_USART6,
-# endif
-# if defined(HW_UART7_STM32)
-    &sig_USART7,
-# endif
-# if defined(HW_UART8_STM32)
-    &sig_USART8,
-# endif
-};
-# define NUM_USART sizeof(usart_nr2irq)/sizeof(usart_nr2irq[0])
 #endif
 
 # if defined(HW_USART_COMBINED_IRQ_STM32)
@@ -127,16 +112,15 @@ static void Stm32UsartGroupHandler(void *arg) {
     }
 }
 
-USART_SIGNAL *Stm32UsartCreateHandler(int usart_nr, USART_TypeDef *usart)
+USART_SIGNAL *Stm32UsartCreateHandler(
+    int usart_nr, USART_TypeDef *usart, IRQ_HANDLER *irq)
 {
-    IRQ_HANDLER *irq;
     USART_SIGNAL *sig, *chain;
 
     if (usart_nr >= NUM_USART) { /* No such USART*/
         return NULL;
     }
     if (usart_nr < 2) {
-        irq = usart_nr2irq[usart_nr];
         NutIrqEnable(irq);
         return (USART_SIGNAL*)irq;
     }
@@ -181,15 +165,14 @@ USART_SIGNAL *Stm32UsartCreateHandler(int usart_nr, USART_TypeDef *usart)
 }
 
 int Stm32UsartRegisterHandler(
-    USART_SIGNAL *sig, void (*handler) (void *), void *arg, int usart_nr)
+    USART_SIGNAL *sig, void (*handler) (void *), void *arg,
+    int usart_nr, IRQ_HANDLER *irq)
 {
-    IRQ_HANDLER *irq = NULL;
     USART_SIGNAL *chain;
 
    if (usart_nr >= NUM_USART) { /* No such USART*/
         return 1;
     }
-    irq = usart_nr2irq[usart_nr];
     if (usart_nr < 2) {
         int res;
         res = NutRegisterIrqHandler(irq, handler, arg);
@@ -222,20 +205,16 @@ int Stm32UsartRegisterHandler(
 
 #else
 
-
-USART_SIGNAL *Stm32UsartCreateHandler(int usart_nr, USART_TypeDef *usart)
+USART_SIGNAL *Stm32UsartCreateHandler(
+    int usart_nr, USART_TypeDef *usart, IRQ_HANDLER *irq)
 {
-    IRQ_HANDLER *irq;
-    if (usart_nr >= NUM_USART) { /* No such USART*/
-        return NULL;
-    }
-    irq = usart_nr2irq[usart_nr];
     NutIrqEnable(irq);
     return (USART_SIGNAL*)irq;
 }
 
 int Stm32UsartRegisterHandler(
-    USART_SIGNAL *sig, void (*handler) (void *), void *arg, int usart_nr)
+    USART_SIGNAL *sig, void (*handler) (void *), void *arg,
+    int usart_nr, IRQ_HANDLER *irq)
 {
     return NutRegisterIrqHandler(sig, handler, arg);
 }
