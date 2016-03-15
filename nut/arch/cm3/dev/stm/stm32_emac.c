@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2012 by Rittal GmbH & Co. KG. All rights reserved.
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2012-2016 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,9 +57,9 @@
 #include <dev/gpio.h>
 #include <dev/phy.h>
 #include <dev/pins.h>
-#include <dev/stm32_emac.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32_clk.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 
 /* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
@@ -67,20 +68,6 @@
 #define EMPRINTF(args,...) printf(args,##__VA_ARGS__)
 #else
 #define EMPRINTF(args,...)
-#endif
-
-#if SYSCLK_FREQ < 35000001L
-#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div16
-#elif SYSCLK_FREQ < 60000001L
-#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div26
-#elif SYSCLK_FREQ < 100000001L
-#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div42
-#elif SYSCLK_FREQ < 150000001L
-#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div62
-#elif SYSCLK_FREQ < 216000001L
-#define ETH_MACMIIAR_CR_Div ETH_MACMIIAR_CR_Div102
-#else
-# warning Unhandled SYSCLK_FREQ
 #endif
 
 #ifdef STM32F10X_CL /* STM32F1 */
@@ -193,6 +180,7 @@ static unsigned int txBufIdx = 0;
 static volatile RBufDescriptor_t rxBufTab[EMAC_RX_BUFFERS];
 static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(8)));
 static unsigned int rxBufIdx = 0;
+static uint32_t mii_clk_range;
 
 #define TDES0_OWN           0x80000000  /* Bit set: descriptor is owned by DMA */
 #define TDES0_IC            0x40000000  /* Set transmit interrupt after transmission */
@@ -274,7 +262,8 @@ static uint16_t phy_inw(uint8_t reg)
     /* PHY read command. */
     tempReg = inr(&(ETH->MACMIIAR));
     tempReg &= 0xffff0020;
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
+    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB;
+    tempReg |=  mii_clk_range;
     outr(&(ETH->MACMIIAR), tempReg);
 
     /* Wait until PHY logic completed. */
@@ -312,7 +301,8 @@ static void phy_outw(uint8_t reg, uint16_t val)
     outr(&(ETH->MACMIIDR), val);
     tempReg = inr(&(ETH->MACMIIAR));
     tempReg &= 0xffff0020;
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB| ETH_MACMIIAR_CR_Div;
+    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6);
+    tempReg |= ETH_MACMIIAR_MW | ETH_MACMIIAR_MB | mii_clk_range;
     outr(&(ETH->MACMIIAR), tempReg);
 
     /* Wait until PHY logic completed. */
@@ -878,6 +868,8 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
  */
 int EmacInit(NUTDEVICE * dev)
 {
+    uint32_t ahb_clock;
+
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
     EMPRINTF("Using Mode %s, Remap %s, NIC_PHY_ADDR %d, \n",
 #ifdef PHY_MODE_MII
@@ -895,6 +887,25 @@ int EmacInit(NUTDEVICE * dev)
 
     /* Clear EMACINFO structure. */
     memset(ni, 0, sizeof(EMACINFO));
+
+    ahb_clock = Stm32ClockGet(HWCLK_CPU);
+    if        (ahb_clock <  35000000LL) {
+        mii_clk_range = ETH_MACMIIAR_CR_Div16;
+    } else if (ahb_clock <  60000000LL) {
+        mii_clk_range = ETH_MACMIIAR_CR_Div26;
+    } else if (ahb_clock < 100000000LL) {
+        mii_clk_range = ETH_MACMIIAR_CR_Div42;
+#if defined(ETH_MACMIIAR_CR_Div102)
+    } else if (ahb_clock < 150000000LL) {
+        mii_clk_range = ETH_MACMIIAR_CR_Div62;
+    } else  {
+        mii_clk_range = ETH_MACMIIAR_CR_Div102;
+    }
+#else
+    } else  {
+        mii_clk_range = ETH_MACMIIAR_CR_Div62;
+    }
+#endif
 
     /* Register interrupt handler. */
     if (NutRegisterIrqHandler(&sig_EMAC, EmacInterrupt, dev)) {
