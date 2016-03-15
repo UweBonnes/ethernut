@@ -804,6 +804,13 @@ nutdev =
         sources = { "netbuf.c" }
     },
     {
+        name = "nutdev_pwm",
+        brief = "Pwm driver",
+        description = "Generic Pwn driver framework.",
+        provides = { "DEV_pwm" },
+        sources = { "pwm.c" }
+    },
+    {
         name = "nutdev_can",
         brief = "CAN Driver Framework",
         description = "Generic CAN driver framework.",
