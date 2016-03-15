@@ -166,13 +166,45 @@ int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int res;
     int i;
+#define OWI_BLOCK
+#if defined(OWI_BLOCK)
+    NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *) (bus->owibus_info);
+    uint8_t tx_rx_data[8];
 
+    i = 0;
+    while(len) {
+        uint8_t temp;
+        int j, k;
+
+        if (len > 8) {
+            j = 8;
+        } else {
+            j = len;
+        }
+        temp = data[i];
+        for (k = 0; k < j; k++) {
+            if (temp & (1 << k)) {
+                tx_rx_data[k] =OWI_UART_WRITE_ONE;
+            } else {
+                tx_rx_data[k] =OWI_UART_WRITE_ZERO;
+            }
+        }
+        _write(owcb->uart_fd, tx_rx_data, j);
+        res = _read(owcb->uart_fd, tx_rx_data, j);
+        if (res != j) {
+            return OWI_HW_ERROR;
+        }
+        i++;
+        len -= j;
+    }
+#else
     for (i = 0; i < len; i++) {
         res = Uart_OwiRWBit(bus, data[i >> 3] & (1 << (i & 0x7)));
         if (res < 0) {
             return OWI_HW_ERROR;
         }
     }
+#endif
     return OWI_SUCCESS;
 }
 
@@ -189,7 +221,43 @@ int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
     int res;
     int i;
+#if defined(OWI_BLOCK)
+    NUTOWIINFO_UART *owcb = (NUTOWIINFO_UART *) (bus->owibus_info);
+    static const char owi_ones[8] PROGMEM = {
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+    };
+    uint8_t rec_data[8];
 
+    i = 0;
+    while(len) {
+        int j, k;
+        uint8_t temp;
+
+        temp = 0;
+        if (len > 8) {
+            j = 8;
+        } else {
+            j = len;
+        }
+#ifdef __HARVARD_ARCH__
+        _write_P(owcb->uart_fd, owi_ones, j);
+#else
+        _write(owcb->uart_fd, owi_ones, j);
+#endif
+        res = _read(owcb->uart_fd,rec_data, j);
+        if (res != j) {
+            return OWI_HW_ERROR;
+        }
+        for(k = 0; k < j; k++ ) {
+            if (rec_data[k] & OWI_UART_READ_ONE) {
+                temp |= 1 << k;
+            }
+        }
+        data[i] = temp;
+        i++;
+        len -= j;
+    }
+#else
     memset(data, 0, ((len +7) >> 3));
     for (i = 0; i < len; i++) {
         res = Uart_OwiRWBit(bus, 1);
@@ -198,6 +266,7 @@ int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
         }
         data[i >> 3] |= (res << (i & 0x7));
     }
+#endif
     return OWI_SUCCESS;
 }
 
