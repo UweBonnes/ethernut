@@ -64,7 +64,7 @@
 /* Equalize missing STM32F0 register bits */
 #if !defined(RCC_CFGR_PPRE2)
 #define RCC_CFGR_PPRE2   0
-#define RCC_CFGR_PPRE2_0 0
+#define RCC_CFGR_PPRE2_0 1
 #endif
 #if defined( RCC_CFGR_PPRE) && !defined( RCC_CFGR_PPRE1)
 #define RCC_CFGR_PPRE1   RCC_CFGR_PPRE

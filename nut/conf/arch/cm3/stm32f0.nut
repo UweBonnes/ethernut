@@ -158,9 +158,11 @@ nutarch_cm3_stm32f0 =
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32F042x6",
-                brief = "STM32F042 16/32 kB",
-                description = "Provides vendor header for STM32F042 16/32kB and additional devices.",
+                macro = "MCU_STM32F04",
+                brief = "STM32F04x with USB/CAN",
+                description = "Devices available in all STM32F04x.",
+                requires = { "HW_MCU_STM32F04"},
+                type = "integer",
                 default = 1,
                 requires = { "HW_MCU_STM32F042_MD" };
                 provides = {
@@ -174,6 +176,17 @@ nutarch_cm3_stm32f0 =
                     "HW_TSC_STM32",
                     "HW_USART2_STM32",
                     "HW_USB_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32F042x6",
+                brief = "STM32F042 16/32 kB",
+                description = "Provides vendor header for STM32F042 16/32kB and additional devices.",
+                default = 1,
+                requires = { "HW_MCU_STM32F042" };
+                provides = {
+                    "HW_PVD_VDDIO2_STM32",
                     },
                 file = "include/cfg/arch.h"
             },
