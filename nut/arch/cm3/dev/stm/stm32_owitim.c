@@ -51,7 +51,6 @@
  * $Id$
  * \endverbatim
  */
-
 #include <cfg/arch.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -71,26 +70,34 @@
 /*!
  * \brief Load reloaded values and start timer
  *
- * With Update, TX geta active. Befor timer reaches top, pulse
- * needs to be reset or TX will stay active. So Guard with
- * critical section and use Bitband access when available to keep
- * critical section short.
-
+ * Before timer start, TX ist forced get active. Timer match
+ * sets output inactive again. Interruption will prolong active period.
+ * So guard by global interrupt disable.
+ *
  * \param info STM32_OWIBUS_TIMER_INFO
  *
  * \return None
  */
 static inline void OwiTimerStart(STM32_OWIBUS_TIMER_INFO *info)
 {
-    NutEnterCritical();
+    uint16_t ccmr_value, ccmr_force;
+
 #if defined (MCU_CM_NO_BITBAND)
     *info->timer_egr |= TIM_EGR_UG;
-    *info->timer_cr1 |= TIM_CR1_CEN;
 #else
     *info->timer_egr = 1;
+#endif
+    NutEnterCritical();
+    ccmr_value = *info->ccmr;
+    ccmr_force = ccmr_value & info->ccmr_mask;
+    ccmr_force = ccmr_force | info->ccmr_force;
+    *info->ccmr = ccmr_force;
+    *info->ccmr = ccmr_value;
+#if defined (MCU_CM_NO_BITBAND)
+    *info->timer_cr1 |= TIM_CR1_CEN;
+#else
     *info->timer_cr1 = 1;
 #endif
-    *info->ccr_pulse = 0;
     NutExitCritical();
 }
 
@@ -109,7 +116,6 @@ static void Stm32TimOwiInterrupt(void *arg)
     info->timer->SR = ~flags;
     if (flags & TIM_SR_UIF) {
         if (info->owi_rxp) {
-            int res;
             unsigned int value;
 
             /* read value before starting next cycle*/
@@ -119,13 +125,14 @@ static void Stm32TimOwiInterrupt(void *arg)
                 OwiTimerStart(info);
             }
             if (info->owi_rx_len) {
+                int res;
                 res = 1 << info->owi_index;
                 if (value < info->owi_compare) {
                     *info->owi_rxp |= res;
                 } else {
                     *info->owi_rxp &= ~res;
                 }
-                info->owi_rx_len --;
+                info->owi_rx_len--;
                 if ( info->owi_index >= 7) {
                     info->owi_index = 0;
                     info->owi_rxp++;
@@ -177,7 +184,6 @@ static int Stm32TimOwiTransaction(NUTOWIBUS *bus)
     int res;
 
     info = (STM32_OWIBUS_TIMER_INFO *)bus->owibus_info;
-    info->timer->CNT = 0;
     info->timer->SR  = 0;
     *info->ccr_pulse = info->sample_value;
     /* Transfer Values to shadow register*/
@@ -283,7 +289,6 @@ int Stm32TimOwiReadBlock(
     info->timer->ARR = info->owi_tim_values[CYCLE];
     info->sample_value   = info->owi_tim_values[WRITE_1];
     info->owi_index      = 0;
-    data           = 0; /* Checkme*/
     info->owi_compare    = info->owi_tim_values[SAMPLE];
     res = Stm32TimOwiTransaction(bus);
     if (res) {
@@ -291,13 +296,6 @@ int Stm32TimOwiReadBlock(
     }
     return OWI_SUCCESS;
 }
-
-static const uint8_t CH2CCR_OFFSET[4] = {
-    offsetof(TIM_TypeDef, CCR1),
-    offsetof(TIM_TypeDef, CCR2),
-    offsetof(TIM_TypeDef, CCR3),
-    offsetof(TIM_TypeDef, CCR4)
-};
 
 /*!
  * \brief Initialize the driver.
@@ -313,38 +311,27 @@ int Stm32TimOwiSetup(NUTOWIBUS *bus)
     uint32_t freq;
     int res;
     int prescaler;
-    int capture_channel;
-    int output_channel;
     uint16_t *p;
     const uint16_t *q;
 
     info = (STM32_OWIBUS_TIMER_INFO *)bus->owibus_info;
     hw = info->owi_hw;
-    info->timer = (TIM_TypeDef *)hw->owi_base;
     *hw->enable_reg |= hw->enable_mask;
     *hw->reset_reg  |= hw->enable_mask;
     *hw->reset_reg  &= ~hw->enable_mask;
 
     Stm32TimerConfig(info->timer, TIM_CLK_MODE_CKINT, TIM_TRG_SELECTION_NONE,
                        TIM_SLAVE_MODE_NONE, TIM_MASTER_MODE1_NONE);
-    capture_channel = hw->owi_channel;
-    if (hw->owi_tx_pin != PIN_NONE) {
-        output_channel = hw->owi_tx_channel;
-    } else {
-        output_channel = capture_channel;
-        /* Capture Rising edge an companion channel, e.g, 1->2 or 2->1*/
-        capture_channel = ((capture_channel - 1) ^ 1) +1;
-    }
+    /* Capture rising edg on receive channel*/
     res = Stm32TimerChannelConfig(
-        info->timer, capture_channel, 0,
+        info->timer, hw->owi_rx_channel, 0,
         (hw->owi_tx_pin != PIN_NONE)? TIM_CC_DIRECT: TIM_CC_EXCHANGE,
         TIM_CC_FROZEN, TIM_CC_POL_TRUE);
-    /* Active low while CNT < CCR */
+    /* On match set inactive on transmit channel */
     res |= Stm32TimerChannelConfig(
-        info->timer, output_channel, 0,
-        TIM_CC_OUTPUT, TIM_CC_ACTIVE_IF_LESS,
-        ((hw->owi_tx_invert == ENABLE)? TIM_CC_POL_TRUE: TIM_CC_POL_INVERT));
-    if (res) {
+        info->timer, hw->owi_tx_channel, 0,
+        TIM_CC_OUTPUT, TIM_CC_INACTIVE_ON_MATCH, hw->owi_tx_invert);
+     if (res) {
         return -1;
     }
     info->owi_txp = 0;
@@ -353,25 +340,7 @@ int Stm32TimOwiSetup(NUTOWIBUS *bus)
     /* Store registers for capture/compare access
      * And set Output compare 1 preload enable
      */
-    switch(output_channel ) {
-    case 1:
-        info->timer->CCMR1 |= TIM_CCMR1_OC1PE;
-        break;
-    case 2:
-        info->timer->CCMR1 |= TIM_CCMR1_OC2PE;
-        break;
-    case 3:
-        info->timer->CCMR2 |= TIM_CCMR2_OC3PE;
-        break;
-    case 4:
-        info->timer->CCMR2 |= TIM_CCMR2_OC4PE;
-        break;
-    }
-    info->ccr_capture = (uint32_t *)
-        (hw->owi_base + CH2CCR_OFFSET[capture_channel - 1]);
-    info->ccr_pulse   = (uint32_t *)
-        (hw->owi_base + CH2CCR_OFFSET[output_channel - 1]);
-    freq =  Stm32ClockGet(BASE2TCLKSRC(hw->owi_base));
+    freq =  Stm32ClockGet(hw->clk_idx);
     /* We need as longest a 1 ms periode.
        We have 16 bit timers available.
        So at 2^16 * 1kHz ~= 64 MHz can be handled without prescaler */
@@ -393,24 +362,22 @@ int Stm32TimOwiSetup(NUTOWIBUS *bus)
     }
     while (q < &owi_tim_times_us[OWI_TIM_SIZE]);
     /* Set the counter to one before overflow*/
-    *info->ccr_pulse = 0;
-    info->timer->CNT = -1;
     info->timer->DIER = TIM_DIER_UIE;
     NutRegisterIrqHandler( hw->owi_irq, &Stm32TimOwiInterrupt, info);
     NutIrqEnable(hw->owi_irq);
 #if defined(MCU_STM32F1)
-        uint32_t mapr;
-        mapr =  *hw->remap_reg;
-        mapr &= ~hw->remap_mask;
-        mapr |= (hw->remap_value & hw->remap_mask);
-        *hw->remap_reg = mapr;
+    uint32_t mapr;
+    mapr =  *hw->remap_reg;
+    mapr &= ~hw->remap_mask;
+    mapr |= (hw->remap_value & hw->remap_mask);
+    *hw->remap_reg = mapr;
 #endif
     if (hw->owi_tx_pin != PIN_NONE) {
         uint32_t reg32u;
         reg32u  = GPIO_CFG_PERIPHAL | GPIO_CFG_PULLUP ;
         Stm32GpioConfigSet(hw->owi_pin, reg32u, hw->owi_pin_af);
         reg32u  = GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT ;
-        if (hw->owi_tx_invert == ENABLE) {
+        if (hw->owi_tx_invert == DISABLE) {
             reg32u |=  GPIO_CFG_INIT_LOW;
         } else {
             reg32u |=  GPIO_CFG_INIT_HIGH;
@@ -425,15 +392,20 @@ int Stm32TimOwiSetup(NUTOWIBUS *bus)
     return OWI_SUCCESS;
 }
 
+/* Do not test STM32TIM_OWI0_TX_GPIO against e.g. PIN_NONE in the
+ * preprocessor, as enums are involved that always resolve to 0!
+ */
+
 #if defined(STM32TIM_OWI0_GPIO) && defined(STM32TIM_OWI0_CHANNEL) \
     && defined(STM32TIM_OWI0_TIMER_ID)
 # undef  STM32TIMER_ID
 # define STM32TIMER_ID STM32TIM_OWI0_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
-
-static STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
+# define CC_EXCHANGE_CHANNEL (((STM32TIM_OWI0_CHANNEL - 1) ^ 1) + 1)
+static const STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
     .owi_base        = STM32TIMER_BASE,
     .owi_irq         = &STM32TIMER_SIG,
+    .clk_idx         = BASE2TCLKSRC(STM32TIMER_BASE),
 #if defined(MCU_STM32F1)
     .remap_reg       = &AFIO->STM32_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_SHIFT,
@@ -444,27 +416,44 @@ static STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
     .owi_pin         = STM32TIM_OWI0_GPIO,
     .owi_pin_af      = STM32TIMER_AF(STM32TIM_OWI0_GPIO),
-    .owi_channel     = STM32TIM_OWI0_CHANNEL,
 #if defined(STM32TIM_OWI0_TX_GPIO)
+    .owi_rx_channel  = STM32TIM_OWI0_CHANNEL,
     .owi_tx_pin      = STM32TIM_OWI0_TX_GPIO,
     .owi_tx_pin_af   = STM32TIMER_AF(STM32TIM_OWI0_TX_GPIO),
     .owi_tx_channel  = STM32TIM_OWI0_TX_CHANNEL,
-    .owi_tx_invert   = STM32TIM_OWI0_TX_INVERT,
+    .owi_tx_invert   = STM32TIM_OWI0_TX_TRUE,
 #else
+    .owi_rx_channel  = CC_EXCHANGE_CHANNEL,
+    .owi_tx_channel  = STM32TIM_OWI0_CHANNEL,
+    .owi_tx_invert   = ENABLE,
     .owi_tx_pin      = PIN_NONE,
 #endif
 };
 
 static STM32_OWIBUS_TIMER_INFO Stm32Owi0TimInfo = {
     .owi_hw = &Stm32Owi0TimHw,
+    .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined (MCU_CM_NO_BITBAND)
-    .timer_egr = &info->timer->EGR,
-    .timer_cr1 = &info->timer->CR1,
+    .timer_egr = &(((TIM_TypeDef *) STM32TIMER_BASE)->EGR),
+    .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
 #else
     .timer_egr = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, EGR,
                            _BI32(TIM_EGR_UG)),
     .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
                            _BI32(TIM_CR1_CEN)),
+#endif
+#if defined(STM32TIM_OWI0_TX_GPIO)
+    .ccr_capture = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI0_CHANNEL),
+    .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI0_TX_CHANNEL),
+    .ccmr        = CCMR_REG (STM32TIMER_BASE, STM32TIM_OWI0_TX_CHANNEL),
+    .ccmr_mask   = (STM32TIM_OWI0_TX_CHANNEL & 1) ? ~0x070 : ~0x7000,
+    .ccmr_force  = (STM32TIM_OWI0_TX_CHANNEL & 1) ? 0x0050 : 0x5000,
+#else
+    .ccr_capture = CCR_REG  (STM32TIMER_BASE, CC_EXCHANGE_CHANNEL),
+    .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI0_CHANNEL),
+    .ccmr        = CCMR_REG (STM32TIMER_BASE, STM32TIM_OWI0_CHANNEL),
+    .ccmr_mask   = (STM32TIM_OWI0_CHANNEL & 1) ? ~0x0070 : ~0x7000,
+    .ccmr_force  = (STM32TIM_OWI0_CHANNEL & 1) ? 0x0050 : 0x5000,
 #endif
 };
 
@@ -476,6 +465,7 @@ NUTOWIBUS owiBus0Stm32Tim = {
     .OwiReadBlock = Stm32TimOwiReadBlock,
     .OwiWriteBlock = Stm32TimOwiWriteBlock,
 };
+#undef CC_EXCHANGE_CHANNEL
 #endif
 
 #if defined(STM32TIM_OWI1_GPIO) && defined(STM32TIM_OWI1_CHANNEL) \
@@ -483,10 +473,11 @@ NUTOWIBUS owiBus0Stm32Tim = {
 # undef  STM32TIMER_ID
 # define STM32TIMER_ID STM32TIM_OWI1_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
-
-static STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
-    .owi_base = STM32TIMER_BASE,
+# define CC_EXCHANGE_CHANNEL (((STM32TIM_OWI1_CHANNEL - 1) ^ 1) + 1)
+static const STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
+    .owi_base        = STM32TIMER_BASE,
     .owi_irq         = &STM32TIMER_SIG,
+    .clk_idx         = BASE2TCLKSRC(STM32TIMER_BASE),
 #if defined(MCU_STM32F1)
     .remap_reg       = &AFIO->STM32_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_SHIFT,
@@ -497,27 +488,44 @@ static STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
     .owi_pin         = STM32TIM_OWI1_GPIO,
     .owi_pin_af      = STM32TIMER_AF(STM32TIM_OWI1_GPIO),
-    .owi_channel     = STM32TIM_OWI1_CHANNEL,
 #if defined(STM32TIM_OWI1_TX_GPIO)
+    .owi_rx_channel  = STM32TIM_OWI1_CHANNEL,
     .owi_tx_pin      = STM32TIM_OWI1_TX_GPIO,
     .owi_tx_pin_af   = STM32TIMER_AF(STM32TIM_OWI1_TX_GPIO),
     .owi_tx_channel  = STM32TIM_OWI1_TX_CHANNEL,
-    .owi_tx_invert   = STM32TIM_OWI1_TX_INVERT,
+    .owi_tx_invert   = STM32TIM_OWI1_TX_TRUE,
 #else
+    .owi_rx_channel  = CC_EXCHANGE_CHANNEL,
+    .owi_tx_channel  = STM32TIM_OWI1_CHANNEL,
+    .owi_tx_invert   = ENABLE,
     .owi_tx_pin      = PIN_NONE,
 #endif
 };
 
 static STM32_OWIBUS_TIMER_INFO Stm32Owi1TimInfo = {
     .owi_hw = &Stm32Owi1TimHw,
+    .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined (MCU_CM_NO_BITBAND)
-    .timer_egr = &info->timer->EGR,
-    .timer_cr1 = &info->timer->CR1,
+    .timer_egr = &(((TIM_TypeDef *) STM32TIMER_BASE)->EGR),
+    .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
 #else
     .timer_egr = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, EGR,
                            _BI32(TIM_EGR_UG)),
     .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
                            _BI32(TIM_CR1_CEN)),
+#endif
+#if defined(STM32TIM_OWI1_TX_GPIO)
+    .ccr_capture = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI1_CHANNEL),
+    .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI1_TX_CHANNEL),
+    .ccmr        = CCMR_REG (STM32TIMER_BASE, STM32TIM_OWI1_TX_CHANNEL),
+    .ccmr_mask   = (STM32TIM_OWI1_TX_CHANNEL & 1) ? ~0x0070 : ~0x7000,
+    .ccmr_force  = (STM32TIM_OWI1_TX_CHANNEL & 1) ? 0x0050 : 0x5000,
+#else
+    .ccr_capture = CCR_REG  (STM32TIMER_BASE, CC_EXCHANGE_CHANNEL),
+    .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI1_CHANNEL),
+    .ccmr        = CCMR_REG (STM32TIMER_BASE, STM32TIM_OWI1_CHANNEL),
+    .ccmr_mask   = (STM32TIM_OWI1_CHANNEL & 1) ? ~0x0070 : ~0x7000,
+    .ccmr_force  = (STM32TIM_OWI1_CHANNEL & 1) ? 0x0050 : 0x5000,
 #endif
 };
 
@@ -529,6 +537,7 @@ NUTOWIBUS owiBus1Stm32Tim = {
     .OwiReadBlock = Stm32TimOwiReadBlock,
     .OwiWriteBlock = Stm32TimOwiWriteBlock,
 };
+#undef CC_EXCHANGE_CHANNEL
 #endif
 
 #if defined(STM32TIM_OWI2_GPIO) && defined(STM32TIM_OWI2_CHANNEL) \
@@ -536,10 +545,11 @@ NUTOWIBUS owiBus1Stm32Tim = {
 # undef  STM32TIMER_ID
 # define STM32TIMER_ID STM32TIM_OWI2_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
-
-static STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
-    .owi_base = STM32TIMER_BASE,
+# define CC_EXCHANGE_CHANNEL (((STM32TIM_OWI2_CHANNEL - 1) ^ 1) + 1)
+static const STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
+    .owi_base        = STM32TIMER_BASE,
     .owi_irq         = &STM32TIMER_SIG,
+    .clk_idx         = BASE2TCLKSRC(STM32TIMER_BASE),
 #if defined(MCU_STM32F1)
     .remap_reg       = &AFIO->STM32_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_SHIFT,
@@ -550,31 +560,48 @@ static STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
     .owi_pin         = STM32TIM_OWI2_GPIO,
     .owi_pin_af      = STM32TIMER_AF(STM32TIM_OWI2_GPIO),
-    .owi_channel     = STM32TIM_OWI2_CHANNEL,
 #if defined(STM32TIM_OWI2_TX_GPIO)
+    .owi_rx_channel  = STM32TIM_OWI2_CHANNEL,
     .owi_tx_pin      = STM32TIM_OWI2_TX_GPIO,
     .owi_tx_pin_af   = STM32TIMER_AF(STM32TIM_OWI2_TX_GPIO),
     .owi_tx_channel  = STM32TIM_OWI2_TX_CHANNEL,
-    .owi_tx_invert   = STM32TIM_OWI2_TX_INVERT,
+    .owi_tx_invert   = STM32TIM_OWI2_TX_TRUE,
 #else
+    .owi_rx_channel  = CC_EXCHANGE_CHANNEL,
+    .owi_tx_channel  = STM32TIM_OWI2_CHANNEL,
+    .owi_tx_invert   = ENABLE,
     .owi_tx_pin      = PIN_NONE,
 #endif
 };
 
 static STM32_OWIBUS_TIMER_INFO Stm32Owi2TimInfo = {
     .owi_hw = &Stm32Owi2TimHw,
+    .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined (MCU_CM_NO_BITBAND)
-    .timer_egr = &info->timer->EGR,
-    .timer_cr1 = &info->timer->CR1,
+    .timer_egr = &(((TIM_TypeDef *) STM32TIMER_BASE)->EGR),
+    .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
 #else
     .timer_egr = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, EGR,
                            _BI32(TIM_EGR_UG)),
     .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
                            _BI32(TIM_CR1_CEN)),
 #endif
+#if defined(STM32TIM_OWI2_TX_GPIO)
+    .ccr_capture = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI2_CHANNEL),
+    .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI2_TX_CHANNEL),
+    .ccmr        = CCMR_REG (STM32TIMER_BASE, STM32TIM_OWI2_TX_CHANNEL),
+    .ccmr_mask   = (STM32TIM_OWI2_TX_CHANNEL & 1) ? ~0x0070 : ~0x7000,
+    .ccmr_force  = (STM32TIM_OWI2_TX_CHANNEL & 1) ? 0x0050 : 0x5000,
+#else
+    .ccr_capture = CCR_REG  (STM32TIMER_BASE, CC_EXCHANGE_CHANNEL),
+    .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI2_CHANNEL),
+    .ccmr        = CCMR_REG (STM32TIMER_BASE, STM32TIM_OWI2_CHANNEL),
+    .ccmr_mask   = (STM32TIM_OWI2_CHANNEL & 1) ? ~0x0070 : ~0x7000,
+    .ccmr_force  = (STM32TIM_OWI2_CHANNEL & 1) ? 0x0050 : 0x5000,
+#endif
 };
 
-NUTOWIBUS owiBus2Stm32Tim2 = {
+NUTOWIBUS owiBus2Stm32Tim = {
     .owibus_info = (uintptr_t)&Stm32Owi2TimInfo,
     .mode = OWI_MODE_NORMAL,
     .OwiSetup = Stm32TimOwiSetup,
@@ -582,4 +609,5 @@ NUTOWIBUS owiBus2Stm32Tim2 = {
     .OwiReadBlock = Stm32TimOwiReadBlock,
     .OwiWriteBlock = Stm32TimOwiWriteBlock,
 };
+#undef CC_EXCHANGE_CHANNEL
 #endif

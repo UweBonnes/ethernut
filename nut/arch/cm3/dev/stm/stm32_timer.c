@@ -148,7 +148,7 @@ int Stm32TimerChannelConfig(
         ch = channel - 1;
     }
     if ((ch > 3) && (fin != TIM_CC_OUTPUT)) {
-        /* Obly 4 input channels even on 6 channel timers */
+        /* Only 4 input channels even on 6 channel timers */
         return - 1;
     }
     if ((channel < -3) ||          /* No CH(4|5|6)N */
@@ -160,7 +160,9 @@ int Stm32TimerChannelConfig(
     /* Set Input Capture Filter and function*/
     tmp = (filter * TIM_CCMR1_IC1F_0) | (fin) | (fout * TIM_CCMR1_OC1M_0);
     /* Enable preload PWM value. New value gets active on timer update.*/
-    tmp |= TIM_CCMR1_OC1PE;
+    if (fout != TIM_CC_FROZEN) {
+        tmp |= TIM_CCMR1_OC1PE;
+    }
     switch (ch) {
     case 0:
         tim->CCMR1 &= 0x100ff00;

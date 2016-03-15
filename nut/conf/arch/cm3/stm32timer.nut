@@ -917,7 +917,8 @@ nutarch_cm3_stm32_timer_devices =
                 brief = "TX GPIO for STM32 hardware timer OWIBUS0",
                 description = "If OWI Tx and Rx use different pins,"..
                             "enter the GPIO for the TX pin here!\n"..
-                            "For STM32F1, check Timer global remap!\n",
+                            "For STM32F1, check Timer global remap!\n"..
+                            "Leave undefined when not used!",
                 file = "include/cfg/owi.h",
                 provides = {"STM32TIM_OWI0_TX"},
             },
@@ -932,15 +933,15 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/owi.h",
             },
             {
-                macro = "STM32TIM_OWI0_TX_INVERT",
+                macro = "STM32TIM_OWI0_TX_TRUE",
                 brief = "Invert TX Channel for OWIBUS0",
                 description = "Separated TX/RX is normally used for "..
                             "slew-rate controlled TX.\n"..
                             "This normally results in logic inversion.\n"..
-                            "Default is ENABLE to compensate inversion",
+                            "Default is DISABLE for inverting buffer",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI0_TX"},
-                default = "ENABLE",
+                default = "DISABLE",
                 choices = { "ENABLE", "DISABLE" },
                 file = "include/cfg/owi.h",
             },
@@ -997,11 +998,12 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI1_TX_CHANNEL",
                 brief = "TX Channel for STM32 hardware timer OWIBUS0",
-                description = "TX Channel separate TX/RX.\n"..
-                            "Check for Channel 3/4 availability!",
+                description = "OWI1 TX Channel separate TX/RX.\n"..
+                            "Negative values X (1|2|3) mean CHxN.\n",
+                            "Check for availability!",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI1_TX"},
-                choices = { "1", "2", "3", "4" },
+                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
                 file = "include/cfg/owi.h",
             },
             {
@@ -1070,11 +1072,12 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI2_TX_CHANNEL",
                 brief = "TX Channel for STM32 hardware timer OWIBUS2",
-                description = "TX Channel for separate TX/RX.\n"..
-                            "Check for Channel 3/4 availability!",
+                description = "OWI2 TX Channel separate TX/RX.\n"..
+                            "Negative values X (1|2|3) mean CHxN.\n",
+                            "Check for availability!",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI2_TX"},
-                choices = { "1", "2", "3", "4" },
+                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
                 file = "include/cfg/owi.h",
             },
             {

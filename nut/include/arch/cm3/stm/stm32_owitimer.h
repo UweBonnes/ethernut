@@ -80,9 +80,11 @@ typedef struct _STM32_OWIBUS_TIMER_HW STM32_OWIBUS_TIMER_HW;
 
 struct _STM32_OWIBUS_TIMER_HW {
     /*! \brief Timer to use. Set by configuration*/
-    uint32_t owi_base;
+    const uint32_t owi_base;
     /*! \brief Timer Interrupt*/
-    IRQ_HANDLER *owi_irq;
+    IRQ_HANDLER *const owi_irq;
+    /*! \brief Clock index of timer*/
+    const clock_index_t clk_idx;
 #if defined(MCU_STM32F1)
     /*! \brief F1 pin remapping. Set by user if needed.*/
     volatile uint32_t *const remap_reg;
@@ -98,19 +100,19 @@ struct _STM32_OWIBUS_TIMER_HW {
     /*| \brief Device Reset register */
     volatile uint32_t *const reset_reg;
     /*! \brief OWI Pin. */
-    nutgpio_t owi_pin;
+    const nutgpio_t owi_pin;
     /*! \brief OWI Pinmux. */
-    uint8_t owi_pin_af;
+    const uint8_t owi_pin_af;
     /*! \brief Owi timer channel. */
-    uint8_t owi_channel;
+    const uint8_t owi_rx_channel;
     /*! \brief OWI TX Pin. PIN_NONE is unsed. */
-    nutgpio_t owi_tx_pin;
+    const nutgpio_t owi_tx_pin;
     /*! \brief OWI TX Pinmux. */
-    uint8_t owi_tx_pin_af;
+    const uint8_t owi_tx_pin_af;
      /*! \brief Owi TX timer channel. */
-    uint8_t owi_tx_channel;
+    const int8_t owi_tx_channel;
      /*! \brief Do not invert Owi TX timer. */
-    uint8_t owi_tx_invert;
+    const TIM_CC_POLARITY owi_tx_invert;
 };
 
 /*!
@@ -131,22 +133,28 @@ struct _STM32_OWIBUS_TIMER_INFO {
     volatile uint32_t *const timer_egr;
      /*! \brief (Bitband) Register for Counter start. */
     volatile uint32_t *const timer_cr1;
-     /*! \brief Register to hold output length. */
+     /*! \brief Timer Register to set output active length on next update. */
     volatile uint32_t *ccr_pulse;
-    /*! \brief Register to capture rising edge. */
+    /*! \brief Timer Register that captured rising edge. */
     volatile uint32_t *ccr_capture;
-    /*! \brief Sampled value rising edge. */
-    volatile uint16_t sample_value;
+    /*! \brief CCMR register. */
+    volatile uint32_t *ccmr;
+    /*! \brief CCMR register mask to clear CCS selection. */
+    uint16_t ccmr_mask;
+    /*! \brief CCMR register CCS value for "Force active value". */
+    uint16_t ccmr_force;
+    /*! \brief Active length of next cycle. */
+    uint16_t sample_value;
     /*! \brief Reference value for rising edge. */
     uint16_t owi_compare;
     /*! \brief Array of pulse length in counter tick. */
     uint16_t owi_tim_values[OWI_TIM_SIZE];
     /*! \brief Current receive bit. */
-    volatile uint8_t owi_rx_len;
+    uint8_t owi_rx_len;
     /*! \brief Current transmit bit. */
-    volatile uint8_t owi_tx_len;
+    uint8_t owi_tx_len;
     /*! \brief index in current byte. */
-    volatile int owi_index;
+    uint8_t owi_index;
     /*! \brief Pointer to current transmit byte. */
     uint8_t  *owi_txp;
     /*! \brief Pointer to current receive byte.. */
