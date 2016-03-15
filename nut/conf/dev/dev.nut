@@ -811,6 +811,13 @@ nutdev =
         sources = { "pwm.c" }
     },
     {
+        name = "nutdev_qenc",
+        brief = "Quadrature encoder",
+        description = "Generic Quadrature encoder framework.",
+        provides = {"DEV_QENC"},
+        sources = {"qenc.c" }
+    },
+    {
         name = "nutdev_can",
         brief = "CAN Driver Framework",
         description = "Generic CAN driver framework.",
