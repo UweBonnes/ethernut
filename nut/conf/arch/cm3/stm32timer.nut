@@ -828,13 +828,13 @@ nutarch_cm3_stm32_timer_devices =
         name = "nutarch_cm3_stm32_pwm0",
         brief = "STM32 PWM Output 0",
         description = "STM32 PWM_Output 0.",
-        sources = { "cm3/dev/stm/stm32_pwm_0.c" },
+        sources = { "cm3/dev/stm/stm32_pwm.c" },
         options =
         {
             {
                 macro = "STM32_PWM0_TIMER_ID",
                 brief = "STM32 32Bit PWM0 Timer ID",
-                description = "Select Timer for PWM0 output. Check for availability on selected device.",
+                description = "Select Timer for PWM0 output..",
                 type = "enumerated",
                 choices = function() return  GetStmTimers1Ch() end,
                 file = "include/cfg/pwm.h",
@@ -842,9 +842,11 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_PWM0_TIMER_CHANNEL",
                 brief = "STM32 32Bit PWM0 Timer Channel",
-                description = "Select Timer Channel for PWM0 output. Check for availability on selected device.",
+                description = "Select Timer Channel for PWM0 output.\n"..
+                              "Negative numbers x indicate CHxN.\n"..
+                              "Check for availability on selected device.",
                 type = "enumerated",
-                choices = { "1", "2", "3", "4" },
+                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
                 file = "include/cfg/pwm.h",
             },
             {
@@ -860,13 +862,13 @@ nutarch_cm3_stm32_timer_devices =
         name = "nutarch_cm3_stm32_pwm1",
         brief = "STM32 PWM Output 1",
         description = "STM32 PWM_Output 1.",
-        sources = { "cm3/dev/stm/stm32_pwm_1.c" },
+        sources = { "cm3/dev/stm/stm32_pwm.c" },
         options =
         {
             {
                 macro = "STM32_PWM1_TIMER_ID",
                 brief = "STM32 32Bit PWM1 Timer ID",
-                description = "Select Timer for PWM1 output. Check for availability on selected device.",
+                description = "Select Timer for PWM1 output.",
                 type = "enumerated",
                 choices = function() return  GetStmTimers1Ch() end,
                 file = "include/cfg/pwm.h",
@@ -874,9 +876,11 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_PWM1_TIMER_CHANNEL",
                 brief = "STM32 32Bit PWM1 Timer Channel",
-                description = "Select Timer Channel for PWM1 output. Check for availability on selected device.",
+                description = "Select Timer Channel for PWM1 output.\n"..
+                              "Negative numbers x indicate CHxN.\n"..
+                              "Check for availability on selected device.",
                 type = "enumerated",
-                choices = { "1", "2", "3", "4" },
+                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
                 file = "include/cfg/pwm.h",
             },
             {
