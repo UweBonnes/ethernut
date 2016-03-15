@@ -618,13 +618,29 @@ static int Stm32SpiBusTransfer
             while( xlen > 0){
                 txbuf++;
                 xlen --;
+#if defined(SPI_CR2_FRXTH)
+                /* F0/F3/F7/L4 has 4 byte Fifo.
+                   Write new data before reading last data.*/
+                if (xlen > 0) {
+                    while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
+                    *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
+                }
                 while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
                 *(uint8_t *)rxbuf = base->DR;
-                while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
-                if (xlen > 0)
+#else
+                /* First version of SPI implementation has only "one-byte" Fifo.
+                   Read last data before writing next data as otherwise with
+                   fast transfer, received byte can get lost.*/
+                while ((base->SR & SPI_SR_RXNE) == 0 );/* Wait till RXNE = 1*/
+                *(uint8_t *)rxbuf = base->DR;
+                if (xlen > 0) {
+                    while ((base->SR & SPI_SR_TXE) == 0 ); /* Wait till TXE = 1*/
                     *(uint8_t *)&base->DR = *(const uint8_t *)txbuf;
+                }
+#endif
                 rxbuf++;
             }
+            /* Wait until SCK reaches idle level.*/
             if (node->node_mode & SPI_MODE_CPOL)
                 while (!(GpioPinGet(SPIBUS_SCK_PORT,SPIBUS_SCK_PIN)));
             else
