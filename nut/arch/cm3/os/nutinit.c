@@ -292,6 +292,9 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
         puts("\nStarting Nut/OS");
     }
 #endif
+#if defined(NUT_INIT_DEV)
+    NutDeviceInit();
+#endif
 #ifdef NUT_INIT_BOARD
     NutBoardInit();
 #endif

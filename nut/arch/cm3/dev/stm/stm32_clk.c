@@ -38,6 +38,7 @@
  *
  * Include this file in the device specific setup to allow better optimization!
  */
+#include <dev/irqreg.h>
 
 #if !defined  (HSE_STARTUP_TIMEOUT)
 /*!< Time out for HSE start up, in loops*/
@@ -370,17 +371,46 @@ int CtlHsiClock(int ena)
     return rc;
 }
 
-#if defined(RCC_BDCR_LSEMOD)
-/* F411/446 have one power level setting for the LSE */
-# define RCC_BDCR_LSEDRV_MASK RCC_BDCR_LSEMOD
-# define RTC_LSEMODF ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEMOD) & RCC_BDCR_LSEMOD)
-#elif defined(RCC_BDCR_LSEDRV)
-/* F0, L0, F3, F7 and L4 have four levels*/
-# define RCC_BDCR_LSEDRV_MASK RCC_BDCR_LSEDRV
-# define RTC_LSEMODF ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) & RCC_BDCR_LSEDRV)
-#else
-# define RCC_BDCR_LSEDRV_MASK 0
-# define RTC_LSEMODF 0
+#if defined(NUT_INIT_DEV)
+/* When LSE gets ready:
+ *  - enable the MSI PLL on L4
+ *  - check if lower LSE drive level is wanted
+ */
+static void LseFinishSetup(void *arg) {
+    if (RCC_BDCR & RCC_BDCR_LSERDY) {
+        uint32_t bdcr;
+        uint32_t lse_level;
+
+        NutIrqDisable(&sig_RCC);
+        RCC->CR |= RCC_CR_MSIPLLEN;
+        bdcr = RCC_BDCR;
+        lse_level = (bdcr & RCC_BDCR_LSEDRV) / RCC_BDCR_LSEDRV_0;
+        if (LSE_DRIVE_LEVEL != lse_level) {
+            PWR_CR |= PWR_CR_DBP;
+            bdcr &= ~RCC_BDCR_LSEDRV;
+            bdcr |= LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
+            RCC_BDCR = bdcr;
+            PWR_CR &= ~PWR_CR_DBP;
+        }
+        if (RCC_CIFR & RCC_CIFR_LSERDYF) {
+            RCC_CIER &= ~RCC_CIER_LSERDYIE;
+            RCC_CICR |= RCC_CICR_LSERDYC;
+        }
+    }
+}
+
+void NutDeviceInit(void)
+{
+    if (LSE_VALUE) {
+        if (RCC_BDCR & RCC_BDCR_LSERDY) {
+            LseFinishSetup(NULL);
+        } else {
+            NutRegisterIrqHandler(&sig_RCC, LseFinishSetup, NULL);
+            RCC_CIER |= RCC_CIER_LSERDYIE;
+            NutIrqEnable(&sig_RCC);
+        }
+    }
+}
 #endif
 
 /**
@@ -437,7 +467,9 @@ void SetRtcClockSource(int source)
         RCC_BDCR |= RCC_BDCR_RTCSEL_1;
         break;
     case RTCCLK_LSE:
-        RCC_BDCR |= RCC_BDCR_RTCSEL_0 | ((LSE_BYPASS * RCC_BDCR_LSEBYP));
+        /* Start with highest drive level for short startup*/
+        RCC_BDCR |= RCC_BDCR_RTCSEL_0 | (LSE_BYPASS * RCC_BDCR_LSEBYP) |
+            RCC_BDCR_LSEDRV;
         break;
     case RTCCLK_HSE:
         RCC_BDCR |= RCC_BDCR_RTCSEL;

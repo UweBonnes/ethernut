@@ -306,7 +306,21 @@
 #  define PWR_CR (PWR->CR)
 # endif
 
+# if !defined(RCC_CIFR_LSERDYF) && defined(RCC_CIR_LSERDYF)
+#  define RCC_CIFR (RCC->CIR)
+#  define RCC_CIER (RCC->CIR)
+#  define RCC_CICR (RCC->CIR)
+#  define RCC_CIFR_LSERDYF   RCC_CIR_LSERDYF
+#  define RCC_CIER_LSERDYIE  RCC_CIR_LSERDYIE
+#  define RCC_CICR_LSERDYC   RCC_CIR_LSERDYC
+# else
+#  define RCC_CIFR (RCC->CIFR)
+#  define RCC_CIER (RCC->CIER)
+#  define RCC_CICR (RCC->CICR)
+#endif
+
 # if !defined(RCC_BDCR_LSEBYP) && defined(RCC_CSR_LSEBYP)
+/* L1 and F0*/
 #  define RCC_BDCR (RCC->CSR)
 #  define RCC_BDCR_LSEBYP RCC_CSR_LSEBYP
 #  define RCC_BDCR_LSERDY RCC_CSR_LSERDY
@@ -321,16 +335,29 @@
 #   define RCC_BDCR_LSEDRV_0 RCC_CSR_LSEDRV_0
 #   define RCC_BDCR_LSEDRV   RCC_CSR_LSEDRV
 #  else
-#   define RCC_BDCR_LSEDRV_0 0
+#   define RCC_BDCR_LSEDRV_0 1
 #   define RCC_BDCR_LSEDRV   0
 #  endif
-# else
+# elif defined(RCC_BDCR_LSEBYP)
 #  define RCC_BDCR (RCC->BDCR)
+#  if !defined(RCC_BDCR_LSEDRV)
+#   if   defined(RCC_BCDR_LSEMOD)
+#    define RCC_BDCR_LSEDRV_0 RCC_BCDR_LSEMOD
+#    define RCC_BDCR_LSEDRV   RCC_BCDR_LSEMOD
+#   else
+#    define RCC_BDCR_LSEDRV_0 1
+#    define RCC_BDCR_LSEDRV   0
+#    define NO_LSEDRV
+#   endif
+#  endif
 # endif
 
 # if !defined(RCC_BDCR_LSEON) && defined(RCC_CSR_LSEON)
 #  define RCC_BDCR_LSEON RCC_CSR_LSEON
 # endif
+#if !defined(RCC_CR_MSIPLLEN)
+# define RCC_CR_MSIPLLEN 0
+#endif
 
 # if !defined(RCC_CR_RTCPRE_0) && defined(RCC_CFGR_RTCPRE_0)
 #  define RCC_CR (RCC->CFGR)

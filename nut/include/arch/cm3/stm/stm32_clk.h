@@ -146,4 +146,9 @@ extern uint32_t SysCtlClockGet(void);
 extern void SetRtcClockSource(int source);
 extern int EnableRtcClock(int source);
 
+#if (LSE_VALUE) && (defined(RCC_CR1_MSIPLLEN) || !defined(NO_LSEDRV))
+# define NUT_INIT_DEV
+extern void NutDeviceInit(void);
+#endif
+
 #endif /* _STM32_CLK_H_ */
