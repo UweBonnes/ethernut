@@ -734,38 +734,62 @@ nutarch_cm3_stm32_timer_devices =
       }
     },
     {
-        name = "nutarch_cm3_stm32_qenc32_0",
-        brief = "STM32 32Bit Quadrature Encoder0",
-        description = "STM32 32Bit Quadrature Encoder 0.",
-        requires = { "HW_STM32_TIMER_32BIT" },
-        sources = { "cm3/dev/stm/stm32_qenc32_0.c" },
+        name = "nutarch_cm3_stm32_qenc0",
+        brief = "STM32 Quadrature Encoder0",
+        description = "STM32 Quadrature Encoder 0.\n\nAny dual channel "..
+                      "STM32 timer can count quadrature encoded signals.\n"..
+                      "Hardware used 32-bit feature, if available.\n"..
+                      "For 16-bit timers, make sure readout happens before overflow!",
+        sources = {"cm3/dev/stm/stm32_qenc.c"},
         options =
         {
             {
-                macro = "STM32_QENC32_0_TIMER_ID",
-                brief = "STM32 32Bit Quadrature Encoder Timer ID",
+                macro = "STM32_QENC0_TIMER_ID",
+                brief = "STM32 Quadrature Encoder Timer ID",
                 description = "Select Timer for 32 bit Quadrature Enoder",
                 type = "enumerated",
-                choices = function() return GetStmTimers32bit() end,
+                choices = function() return GetStmTimers2Ch() end,
                 file = "include/cfg/qenc.h",
             },
             {
-                macro = "STM32_QENC32_0_I_GPIO",
-                brief = "STM32 qenc32 I input gpio",
-                description = "STM32 32Bit Quadrature Encoder I input port. Can by TI1 or TI2",
+                macro = "STM32_QENC0_I_GPIO",
+                brief = "STM32 Quadrature Encoder I input gpio",
+                description = "STM32 Quadrature Encoder I input port. Can by TI1 or TI2",
                 file = "include/cfg/qenc.h",
             },
             {
-                macro = "STM32_QENC32_0_Q_GPIO",
-                brief = "STM32 qenc32 Q input gpio",
-                description = "STM32 32Bit Quadrature Encoder I input pin. Can by TI1 or TI2",
+                macro = "STM32_QENC0_Q_GPIO",
+                brief = "STM32 Quadrature Encoder Q input gpio",
+                description = "STM32 Quadrature Encoder I input pin. Can by TI1 or TI2",
                 file = "include/cfg/qenc.h",
             },
             {
-                macro = "STM32_QENC32_0_INVERT",
-                brief = "STM32 qenc32 reverse count direction",
-                description = "STM32 32Bit Quadrature Encoder reverse count direction. Effective exchanges I and Q.",
-                flavor = "booldata",
+                macro = "STM32_QENC0_INVERT",
+                brief = "STM32 Quadrature Encoder reverse count direction",
+                description = "STM32 Quadrature Encoder reverse count "..
+                              " direction.\n"..
+                              "Effective exchanges I and Q.\n"..
+                              "Default is DISABLE.",
+                type = "enumerated",
+                default = "DISABLE",
+                choices = { "ENABLE", "DISABLE" },
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC0_INDEX_GPIO",
+                brief = "STM32 Quadrature Encoder Index input gpio",
+                description = "STM32 Quadrature Encoder Index pulse gpio.\n"..
+                            "If hardware has index pulse, the "..
+                            "captured index pulses allow consistancy check\n"..
+                            "Leave undefined if not used.",
+                file = "include/cfg/qenc.h",
+            },
+            {
+                macro = "STM32_QENC0_INDEX_TIMER_CHANNEL",
+                brief = "STM32 Quadrature Encoder Index input timer channel.",
+                description = "STM32 Quadrature Encoder Index pulse "..
+                              "timer channel.\n"..
+                            "Leave undefined if not used.",
                 file = "include/cfg/qenc.h",
             },
         },
@@ -779,47 +803,6 @@ nutarch_cm3_stm32_timer_devices =
         description = "STM32 Timer helper functions.",
         provides = { "HW_TIM_STM32_HELPER" },
         sources = { "cm3/dev/stm/stm32_timer.c" },
-    },
-     --
-    -- STM32 16bit Timers for Encode
-    --
-    {
-        name = "nutarch_cm3_stm32_qenc16_0",
-        brief = "STM32 16 Bit Quadrature Encoder0.",
-        description = "STM32 16 Bit Quadrature Encoder 0.",
-        sources = { "cm3/dev/stm/stm32_qenc16_0.c" },
-        options =
-        {
-            {
-                macro = "STM32_QENC16_0_TIMER_ID",
-                brief = "STM32 16 Bit Quadrature Encoder Timer ID",
-                description = "Select Timer for 16 bit Quadrature Enoder",
-                type = "enumerated",
-                choices = function() return GetStmTimers2Ch() end,
-                file = "include/cfg/qenc.h",
-            },
-            {
-                macro = "STM32_QENC16_0_I_GPIO",
-                brief = "STM32 qenc16 I input Gpio",
-                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2\n"..
-                            "For STM32F1, check Timer global remap!",
-                file = "include/cfg/qenc.h",
-            },
-            {
-                macro = "STM32_QENC16_0_Q_GPIO",
-                brief = "STM32 qenc16 Q input Gpio",
-                description = "STM32 16 Bit Quadrature Encoder I input port. Can by TI1 or TI2\n"..
-                            "For STM32F1, check Timer global remap!",
-                file = "include/cfg/qenc.h",
-            },
-            {
-                macro = "STM32_QENC16_0_INVERT",
-                brief = "STM32 qenc16 reverse count direction",
-                description = "STM32 16 Bit Quadrature Encoder reverse count direction. Effective exchanges I and Q.",
-                flavor = "booldata",
-                file = "include/cfg/qenc.h",
-            },
-        },
     },
     --
     -- STM32 PWMs using hardware timer

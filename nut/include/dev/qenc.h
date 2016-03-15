@@ -83,4 +83,5 @@ extern void QencSet(NUTQENC *qenc_dev, int value);
 extern int QencGet(NUTQENC *qenc_dev);
 
 /* List of implemented QENC devices */
+extern NUTQENC  Stm32Qenc0;
 #endif
