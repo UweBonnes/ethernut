@@ -784,6 +784,17 @@ nutarch_cm3_stm32_pll =
             file = "include/cfg/clock.h",
         },
         {
+            macro = "HSI_DIVIDE_BY_FOUR",
+            brief = "HSI divided by four",
+            description = "HSI may be used divided by four.\n\n"..
+                          "Default is DISABLE.",
+            requires = {"HW_MCU_STM32L0"},
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "DISABLE",
+            file = "include/cfg/clock.h",
+        },
+        {
             macro = "LSE_DRIVE_LEVEL",
             brief = "LSE osc power",
             description = "Power level of LSE oscillator\n"..

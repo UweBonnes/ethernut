@@ -273,6 +273,15 @@ int CtlHsiClock(int ena)
 {
     int rc = 0;
 
+#if defined(RCC_CR_HSI16DIVF)
+    while ((RCC->CR & RCC_CR_HSI16DIVF) != HSI_DIVIDE_BY_FOUR) {
+        if (HSI_DIVIDE_BY_FOUR) {
+            RCC->CR |= RCC_CR_HSI16DIVEN;
+        } else {
+            RCC->CR &= ~RCC_CR_HSI16DIVEN;
+        }
+    }
+#endif
     rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_HSION, RCC_CR_HSIRDY,
             ena, HSE_STARTUP_TIMEOUT);
 

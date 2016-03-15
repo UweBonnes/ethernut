@@ -103,7 +103,11 @@ static const uint32_t flash_base_freq[4] = {0, 16000000, 8000000, 4000000};
 # endif
 # define PLLCLK_IN HSE_VALUE
 #else
-# define PLLCLK_IN HSI_VALUE
+# if defined(MCU_STM32L0)
+#  define PLLCLK_IN (HSI_VALUE / ((HSI_DIVIDE_BY_FOUR == ENABLE) ? 4 : 1))
+# else
+#  define PLLCLK_IN HSI_VALUE
+# endif
 #endif
 
 /* Calculate PLL values for some well know frequencies */
@@ -278,9 +282,15 @@ static uint32_t MsiFrequencyUpdate(void)
 static void SystemCoreClockUpdate(void)
 {
     uint32_t tmp = 0;
+    uint32_t hsi_value = HSI_VALUE;
     uint32_t cfgr;
     uint32_t hpre;
 
+#if defined(RCC_CFGR_HSI16DIVF)
+    if (cfgr & RCC_CFGR_HSI16DIVF) {
+        hsi_value = hsi_value / 4;
+    }
+#endif
     msi_clock = MsiFrequencyUpdate();
     /* Get SYSCLK source ---------------------------------------------------*/
     cfgr = RCC->CFGR;
@@ -304,13 +314,13 @@ static void SystemCoreClockUpdate(void)
         if (cfgr & RCC_CFGR_PLLSRC_HSE) {
             tmp = HSE_VALUE;
         } else{
-            tmp = HSI_VALUE;
+            tmp = hsi_value;
         }
         tmp =  tmp * pll_mul / pll_div;
         break;
     }
     default:
-        tmp = HSI_VALUE;
+        tmp = hsi_value;
     }
     sys_clock = tmp;
     hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
@@ -445,6 +455,11 @@ int SetSysClockSource(int src)
         new_sysclk = HSE_VALUE;
     } else if (src == SYSCLK_HSI) {
         new_sysclk = HSI_VALUE;
+#if defined(RCC_CFGR_HSI16DIVF)
+        if (cfgr & RCC_CFGR_HSI16DIVF) {
+            new_sysclk = new_sysclk / 4;
+        }
+#endif
     } else if (src == SYSCLK_PLL) {
         new_sysclk = (PLLCLK_IN * PLLCLK_MULT) / PLLCLK_DIV;
     } else {
