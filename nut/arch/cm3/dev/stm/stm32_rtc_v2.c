@@ -231,7 +231,13 @@ int EnableRtcClock(int source)
             return -1;
         break;
     }
-    RCC_BDCR |= RCC_BDCR_RTCEN;
+    while( (RCC_BDCR & RCC_BDCR_RTCEN) == 0 ){
+        /* NUCLEO-F7 seems to hang here with RTC == LSE
+         * when commands where only issued once.
+         */
+        PWR_CR |= PWR_CR_DBP;
+        RCC_BDCR |= RCC_BDCR_RTCEN;
+    }
     PWR_CR &= ~PWR_CR_DBP;
     return 0;
 }
@@ -362,8 +368,9 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
     RTC->WPR = 0x53;
 
     /* Stop Clock*/
-    RTC->ISR |= RTC_ISR_INIT;
-    while (!(RTC->ISR & RTC_ISR_INITF));
+    while (!(RTC->ISR & RTC_ISR_INITF)) {
+        RTC->ISR |= RTC_ISR_INIT;
+    }
 
     month = tm->tm_mon +1 ; /* Range 1..12*/
     year = tm->tm_year - 100; /* only two digits available*/
@@ -584,8 +591,9 @@ int Stm32RtcInit(NUTRTC *rtc)
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
 
-    RTC->ISR |= RTC_ISR_INIT;
-    while (!(RTC->ISR & RTC_ISR_INITF));
+    while (!(RTC->ISR & RTC_ISR_INITF)) {
+         RTC->ISR |= RTC_ISR_INIT;
+    }
 
     RTC->PRER = RTC_SYNC + RTC_ASYNC_VAL;
     /* Enable RTC ALARM A/B Interrupt*/
