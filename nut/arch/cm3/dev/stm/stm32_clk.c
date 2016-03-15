@@ -196,6 +196,38 @@ static int rcc_set_and_wait_rdy(__IO uint32_t *reg, uint32_t setmask,
 }
 
 /*!
+ * \brief Set RCC register bits and wait for status bits
+ *
+ * \param  reg        Register to check
+ * \param  setmask    Bit to set/reset
+ * \param  setvalue   Value to set
+ * \param  checkmask  Bit to check
+ * \param  checkvalue Value to set and check
+ * \param  tout       timeout in delay units.
+ * \return 0 on success, -1 on HSE start failed.
+ */
+static int rcc_set_and_wait_rdy_value(
+    __IO uint32_t *reg, uint32_t setmask, uint32_t setvalue,
+    uint32_t checkmask, int checkvalue, uint32_t tout) __attribute__((unused));
+static int rcc_set_and_wait_rdy_value(
+    __IO uint32_t *reg, uint32_t setmask, uint32_t setvalue,
+    uint32_t checkmask, int checkvalue, uint32_t tout)
+{
+    uint32_t reg_value;
+
+    reg_value = *reg;
+    reg_value &= ~setmask;
+    reg_value |= setvalue;
+    *reg = reg_value;
+    for (; tout; tout--) {
+        if ((*reg & checkmask) ==  checkvalue) {
+            return 0;
+        }
+    }
+    return -1;
+}
+
+/*!
  * \brief Control HSE clock.
  *
  * \param  ena 0 disable clock, any other value enable it.
