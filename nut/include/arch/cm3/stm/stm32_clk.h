@@ -142,7 +142,6 @@ extern int SetPllClock( int src);
 extern int SetPllClockSource( int src);
 extern int SetSysClock(void);
 extern uint32_t SysCtlClockGet(void);
-uint32_t Stm32ClockSwitchGet(int bi);
 
 extern void SetRtcClockSource(int source);
 extern int EnableRtcClock(int source);

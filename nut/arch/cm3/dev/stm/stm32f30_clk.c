@@ -509,28 +509,3 @@ int SetSysClock(void)
 {
     return SetSysClockSource(SYSCLK_SOURCE);
 }
-
-#if defined(RCC_CFGR3_USART1SW_0)
-/*!
-  * \brief  Some devices may use HSI/LSE and SYSCLK additional to PCLKx
-  *
-  * \param  bi  Bitindex of RCC_CFGR3_xxxSW_1
-  * \retval Clock frequency of choosen clk or 0 if PCLKx choosen
-  */
-uint32_t Stm32ClockSwitchGet(int bi)
-{
-    if (bi) {
-        int clksrc;
-        bi--;
-        clksrc = RCC->CFGR3 >> bi;
-        clksrc &= 3;
-        if (1 == clksrc)
-            return  STM_ClockGet(HWCLK_CPU);
-        else if (2 == clksrc)
-            return HSI_VALUE;
-        else if (3 == clksrc)
-            return LSE_VALUE;
-    }
-    return 0;
-}
-#endif
