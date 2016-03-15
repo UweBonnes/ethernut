@@ -2,6 +2,247 @@
     -- STM32 PLL Configuration
     --
 --
+-- Retrieve maximun system clock description
+--
+function GetSysClockFrequencyDesc()
+    if c_is_provided("HW_MCU_STM32L0") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL input (range)\t2 .. 24\n"..
+               "PLL output(range)\t2 .. 32\n"..
+               "SYSCLK_FREQ\t\t0 .. 32"
+    end
+    if c_is_provided("HW_MCU_STM32L1") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL input (range)\t2 .. 24\n"..
+               "PLL output(range)\t2 .. 32\n"..
+               "SYSCLK_FREQ (max)\t0 .. 32"
+    end
+    if c_is_provided("HW_MCU_STM32L4") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "Value (MHz)\t\tRange1\tRange2\n"..
+               "PLL input (range)\t4 .. 16\t4 .. 16\n"..
+               "PLL VCO output(range)\t64 .. 344\t64 .. 128\n"..
+               "PLLR output(range)\t8 .. 80\t8 .. 26\n"..
+               "SYSCLK_FREQ\t\t0 .. 80\t0 .. 26"
+    end
+    if c_is_provided("HW_MCU_STM32F0") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: HSE Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "SYSCLK_FREQ (max)\t16 .. 48"
+    end
+    if c_is_provided("HW_RCC_STM32F1_CL") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: HSE Division factor at Pll input (1 or 2).\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               "And with PLL2 as PLL1 input selected:\n"..
+               " - PLL2CLK_PREDIV\t: HSE Division factor at Pll2 input.\n"..
+               " - PLL2CLK_MULT\t: Pll2 multiplier factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL2 input (range)\t3 .. 5\n"..
+               "PLL2 output (range)\t40 .. 74\n"..
+               "PLL input (range)\t3 .. 12\n"..
+               "SYSCLK_FREQ (max)\t18 .. 72"
+    end
+    if c_is_provided("HW_MCU_STM32F100") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: HSE Division factor at Pll input (1 or 2).\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL input (range)\t1 .. 24\n"..
+               "SYSCLK_FREQ (max)\t16 .. 24"
+    end
+    if c_is_provided("HW_MCU_STM32F101") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: HSE Division factor at Pll input (1 or 2).\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL input (range)\t1 .. 25\n"..
+               "SYSCLK_FREQ (max)\t16 .. 36"
+    end
+    if c_is_provided("HW_MCU_STM32F102") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: HSE Division factor at Pll input (1 or 2).\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "SYSCLK_FREQ (max)\t16 .. 48\n"..
+               "PLL input (range)\t1 .. 25"
+    end
+    if c_is_provided("HW_MCU_STM32F103") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: HSE Division factor at Pll input (1 or 2).\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL input (range)\t1 .. 25\n"..
+               "SYSCLK_FREQ (max)\t16 .. 72"
+    end
+    if c_is_provided("HW_MCU_STM32F2") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
+               " - PLLCLK_DIV\t: Pll VCO output division factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL input (range)\t0.95 .. 2.10\n"..
+               "PLL VCO output(range)\t192 .. 432\n"..
+               "SYSCLK_FREQ (max)\t24 .. 120"
+    end
+    if c_is_provided("HW_MCU_STM32F3") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "highest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: HSE Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
+               "Value (MHz)\t\tRange1\n"..
+               "PLL input (range)\t1 .. 24\n"..
+               "SYSCLK_FREQ (max)\t16 .. 72"
+    end
+    if c_is_provided("HW_MCU_STM32F401") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "PLL input (MHz)\t0.95 .. 2.10\n"..
+               "PLL VCO output (MHz)\t192 .. 432\n"..
+               "PLL output (MHz)\t24 .. 84\n\n"..
+               "Voltage scaling\t2\t3\n"..
+               "SYSCLK_FREQ (MHz)\t0 .. 84\t0 .. 60"
+    end
+    if c_is_provided("HW_MCU_STM32F411") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "PLL input (MHz)\t0.95 .. 2.10\n"..
+               "PLL VCO output (MHz)\t100 .. 432\n"..
+               "PLL output (MHz)\t24 .. 100\n\n"..
+               "Voltage scaling\t1\t2\t3\n"..
+               "SYSCLK_FREQ (MHz)\t0 .. 100\t0 .. 84\t0 .. 64"
+    end
+    if c_is_provided("HW_MCU_STM32F40") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "PLL input (MHz)\t0.95 .. 2.10\n"..
+               "PLL VCO output (MHz)\t192 .. 432\n"..
+               "PLL output (MHz)\t24 .. 168\n\n"..
+               "Voltage scaling\t1\t0\n"..
+               "SYSCLK_FREQ (MHz)\t0 .. 168\t0 .. 144"
+    end
+    if c_is_provided("HW_MCU_STM32F42") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "PLL input (MHz)\t0.95 .. 2.10\n"..
+               "PLL VCO output (MHz)\t192 .. 432\n"..
+               "PLL output (MHz)\t24 .. 180\n\n"..
+               "Voltage scaling/Overdrive\t1, on\t1, off\t2, on\t2, off\t3\n"..
+               "SYSCLK_FREQ (MHz)\t0 .. 180\t0 .. 168\t0 .. 168\t0 .. 144\t0 .. 120"
+    end
+    if c_is_provided("HW_MCU_STM32F446") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               " - PLLCLK_DIV_R\t\t: PLL VCO output R division factor.\n\n"..
+               "PLL input (MHz)\t0.95 .. 2.10\n"..
+               "PLL VCO output (MHz)\t100 .. 432\n"..
+               "PLL output (MHz)\t24 .. 180\n\n"..
+               "Voltage scaling/Overdrive\t1, on\t1, off\t2, on\t2, off\t3\n"..
+               "SYSCLK_FREQ (MHz)\t0 .. 180\t0 .. 168\t0 .. 168\t0 .. 144\t0 .. 120"
+    end
+    if c_is_provided("HW_MCU_STM32F7") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "PLL input (MHz)\t0.95 .. 2.10\n"..
+               "PLL VCO output (MHz)\t100 .. 432\n"..
+               "PLL output (MHz)\t24 .. 180\n\n"..
+               "Voltage scaling/Overdrive\t1, on\t1, off\t2, on\t2, off\t3\n"..
+               "SYSCLK_FREQ (MHz)\t0 .. 216\t0 .. 180\t0 .. 180\t0 .. 168\t0 .. 144"
+    end
+    return "Unhandled"
+end
+
+--
 -- Retrieve SYSCLK available on the device.
 --
 function GetSysClkSrc()
@@ -373,10 +614,9 @@ end
 
 nutarch_cm3_stm32_pll =
 {
-    {
         name = "nutarch_cm3_stm32_rcc_common",
-        brief = "STM32 RCC common",
-        description = "STM Common RCC parameters.",
+        brief = "STM32 Clock and system settings.",
+        description = "STM32 Clock and system settings.",
         options =
         {
             {
@@ -395,6 +635,13 @@ nutarch_cm3_stm32_pll =
                 type = "enumerated",
                 choices = function() return GetPllClkSrc() end,
                 default = function() return GetPllClkSrcDefault() end,
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "SYSCLK_FREQ",
+                brief = "CM3 System Clock",
+                description = function() return GetSysClockFrequencyDesc() end,
+                provides = {"SYSCLK_FREQ"},
                 file = "include/cfg/clock.h"
             },
             {
@@ -465,34 +712,45 @@ nutarch_cm3_stm32_pll =
                 default = function() return GetRtcClkSrcDefault() end,
                 file = "include/cfg/clock.h"
             },
-        }
-    },
-    {
-        name = "nutarch_cm3_stm32_rcc",
-        brief = "STM32 PLL Setup",
-        requires = {"HW_RCC_STM32"},
-        options =
-        {
-                  {
-                        macro = "SYSCLK_FREQ",
-                        brief = "CM3 System Clock",
-                        description = "System clock (SYSCLK) target frequency.\n"..
-                              "Do not define so that NutOS may choose highest possible:\n"..
-                              "Allowed values:\n"..
-                              "   STM32F0XX   :  48 Mhz\n"..
-                              "   STM32F100   :  24 Mhz\n"..
-                              "   STM32F101   :  36 Mhz\n"..
-                              "   STM32F102/3 :  48 Mhz\n"..
-                              "   STM32F105/7 :  72 Mhz\n"..
-                              "   STM32F20X   : 120 Mhz\n"..
-                              "   STM32F3XX   :  72 Mhz\n"..
-                              "   STM32F401   :  72 Mhz\n"..
-                              "   STM32F40_1X : 168 Mhz\n"..
-                              "   STM32F42_3X : 184 Mhz\n",
-                              "   STM32F7     : 216 Mhz\n",
-                        provides = {"SYSCLK_FREQ"},
-                        file = "include/cfg/clock.h"
-                   },
+            {
+                macro = "AHB_DIV",
+                brief = "AHB clock divisor.",
+                description = "Divisor between SYSCLK and HCLK.\n"..
+                              "Allowed values are 1, 2, 4, 8, 16, 32, "..
+                              "64,  128, 256 and 512."..
+                              "Default is 1.",
+                type = "enumerated",
+                choices =  {"1", "2", "4", "8", "16", "32", "64",
+                            "128", "256", "512"},
+                default = "1",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "APB1_DIV",
+                brief = "APB1 clock divisor.",
+                description = "Divisor between HCLK and PCLK1 "..
+                              "for low speed APB bus.\n"..
+                              "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
+                              "Auto tries to reach highest allowed "..
+                              "frequency.\nDefault is AUTO",
+                type = "enumerated",
+                choices =  {"AUTO", "1", "2", "4", "8", "16"},
+                default = "AUTO",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "APB2_DIV",
+                brief = "APB2 clock divisor.",
+                description = "Divisor between HCLK and PCLK1 "..
+                              "for high speed APB bus.\n"..
+                              "Allowed values are AUTO, 1, 2, 4, 8, and 16.\n"..
+                              "Auto tries to reach highest allowed "..
+                              "frequency.\nDefault is AUTO",
+                type = "enumerated",
+                choices =  {"AUTO", "1", "2", "4", "8", "16"},
+                default = "AUTO",
+                file = "include/cfg/clock.h"
+            },
                    {
                         macro = "PLLCLK_MULT",
                         brief = "PLL Clock Multiplier",
@@ -531,12 +789,11 @@ nutarch_cm3_stm32_pll =
                         choices = { "8", "9", "10", "11", "12", "13", "14", "16", "20"},
                         file = "include/cfg/clock.h"
                   },
-            },
-      },
+    },
     {
         name = "nutarch_cm3_stm32l4_rccl",
         brief = "STM32L4 PLL Setup",
-        requires = {"HW_RCC_STM32L4"},
+        requires = {"HW_MCU_STM32L4"},
         options =
         {
             {
@@ -561,17 +818,6 @@ nutarch_cm3_stm32_pll =
                 type = "enumerated",
                 choices = {"1", "2"},
                 default = "1",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "SYSCLK_FREQ",
-                brief = "System Clock",
-                description = "System clock (SYSCLK) target frequency.\n"..
-                      "When not defined, setup tries to choose highest possible value.\n"..
-                      "With value given, PLLM/PLLN and PLLR need to be given!\n"..
-                      "Maximum allowed frequency is 80 Mhz in Range 1 and 26 MHz in Range 2.\n",
-                type = "long",
-                provides = {"SYSCLK_FREQ"},
                 file = "include/cfg/clock.h"
             },
             {

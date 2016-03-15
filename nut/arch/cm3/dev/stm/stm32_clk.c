@@ -54,6 +54,15 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 # define LSE_VALUE 0
 #endif
 
+#if (APB1_DIV == AUTO)
+# undef APB1_DIV
+# define APB1_DIV 1
+#endif
+#if (APB2_DIV == AUTO)
+# undef APB2_DIV
+# define APB2_DIV 1
+#endif
+
 #if defined(MCU_STM32F2) || defined(MCU_STM32F4) || defined(MCU_STM32F7)
 /*!
   * \brief  Get divisor for APB clock
@@ -118,6 +127,45 @@ static uint8_t GetTimerShift(uint8_t shift)
         res = shift - 1;
     }
     return res;
+}
+
+ /*!
+ * \brief Set bus dividers
+ *
+ * \param  ahb_div    Division factor for AHB BUS
+ * \param  apb1_div   Division factor for APB1 BUS
+ * \param  apb2_div   Division factor for APB2 BUS
+ */
+static void SetBusDividers(uint32_t ahb_div, uint32_t apb1_div,
+                           uint32_t apb2_div) __attribute__((unused));
+static void SetBusDividers(uint32_t ahb_div, uint32_t apb1_div,
+                           uint32_t apb2_div)
+{
+    uint32_t cfgr;
+    int i;
+
+    cfgr = RCC->CFGR;
+    cfgr  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2);
+    /* Skip zeros at start of table*/
+    i = 7;
+    while ((1 << AHBPrescTable[i]) < AHB_DIV) {
+        i++;
+    }
+    cfgr |= i * RCC_CFGR_HPRE_0;
+#if defined(RCC_CFGR_PPRE1)
+    cfgr  &= ~RCC_CFGR_PPRE1;
+    i = 3;
+    while ((1 << APBPrescTable[i]) < APB1_DIV) {
+        i++;
+    }
+    cfgr |= i * RCC_CFGR_PPRE1_0;
+#endif
+    i = 3;
+    while ((1 << APBPrescTable[i]) < APB2_DIV) {
+        i++;
+    }
+    cfgr |= i * RCC_CFGR_PPRE2_0;
+    RCC->CFGR = cfgr;
 }
 
 /*!

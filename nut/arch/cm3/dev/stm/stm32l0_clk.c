@@ -185,10 +185,12 @@ const uint32_t MSIFreqTable[8] = {
 #endif
 
 /* Allow to configure ABP1/2 division */
-#if !defined(APB1_DIV)
+#if (APB1_DIV == AUTO)
+# undef APB1_DIV
 # define APB1_DIV 1
 #endif
-#if !defined(APB2_DIV)
+#if (APB2_DIV == AUTO)
+# undef APB2_DIV
 # define APB2_DIV 1
 #endif
 

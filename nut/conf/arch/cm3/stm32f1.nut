@@ -417,6 +417,7 @@ nutarch_cm3_stm32f1 =
                 requires = { "HW_MCU_STM32F105xC" },
                 default = 1,
                 provides = {
+                    "HW_RCC_STM32F1_CL",
                     "HW_DMA2_STM32F1",
                 },
                 file = "include/cfg/arch.h",
@@ -429,6 +430,7 @@ nutarch_cm3_stm32f1 =
                 type = "integer",
                 default = 1,
                 provides = {
+                    "HW_RCC_STM32F1_CL",
                     "HW_DMA2_STM32F1",
                     "HW_ETH_STM32",
                 },
