@@ -88,10 +88,8 @@
 #define SPIBUS_MODE SPI2_MODE
 #endif
 
-#if SPIBUS_MODE == DMA_MODE
- #define SPI_DMA_TX_CHANNEL SPI2_TX_DMA
- #define SPI_DMA_RX_CHANNEL SPI2_RX_DMA
-#endif
+#define SPI_DMA_TX_CHANNEL SPI2_TX_DMA
+#define SPI_DMA_RX_CHANNEL SPI2_RX_DMA
 
 NUTSPIBUS spiBus2Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

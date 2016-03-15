@@ -84,10 +84,8 @@
 #define SPIBUS_MODE SPI6_MODE
 #endif
 
-#if SPIBUS_MODE == DMA_MODE
- #define SPI_DMA_TX_CHANNEL SPI6_TX_DMA
- #define SPI_DMA_RX_CHANNEL SPI6_RX_DMA
-#endif
+#define SPI_DMA_TX_CHANNEL SPI6_TX_DMA
+#define SPI_DMA_RX_CHANNEL SPI6_RX_DMA
 
 NUTSPIBUS spiBus6Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */
