@@ -445,10 +445,8 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
 
 #if defined(FLASH_ACR_PRFTBE)
     /* Enable Prefetch Buffer */
@@ -497,10 +495,8 @@ int SetSysClock(void)
     uint32_t cfgr;
     int rc;
 
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
 
     cfgr = RCC->CFGR;
     cfgr &= ~RCC_CFGR_PLLMULL;

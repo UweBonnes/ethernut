@@ -73,7 +73,7 @@
 /* STM CMSIS definition  RTC_PRER_PREDIV_S has (uint32_t) marker and so can
  * not be used for math in preprocessor.*/
 #if defined(MCU_STM32F2) || defined(STM32L100xB) || defined(STM32L151xB) || defined(STM32L152xB)
-/* 153 bit on some older dvices */
+/* 13 bit on some older devices */
 # define SYNC_MAX 0x1fff
 #else
 # define SYNC_MAX 0x7fff
@@ -118,7 +118,6 @@
 
 /* Check value of calculated or given RTC_PRE and find RTC_PRE_VAL*/
 # if defined(HSE_RTCPRE)
-//#  define RTC_RCC_PPREPARE() RtcRccHsePrepare()
 #  if !defined(RCC_CFGR_RTCPRE_2)
 #   if  RTC_PRE == 16
 #    define  RTC_PRE_VAL  3
@@ -139,7 +138,6 @@
 #   endif
 #  endif
 # else
-#   define RTC_RCC_PPREPARE() 0
 #  if RTC_PRE != 32
 #    warning Illegal RTC_PRE for F0/F3 given, only 32 allowed
 #  else
@@ -192,8 +190,6 @@
 #  define RTC_ASYNC 127
 #  define RTC_SYNC  249
 # endif
-# define BDCR_MASK (RCC_BDCR_RTCEN | RCC_BDCR_RTCSEL)
-# define BDCR_FLAG (RCC_BDCR_RTCEN | RTC_CLKSEL)
 # define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
 # define RTC_STATUS_FLAG  (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
 # define RTC_PRE_VAL 0
@@ -210,6 +206,30 @@
 # warning RTC_ASYNC is too large
 #endif
 
+/* HSE_VALUE / RTCPRE must be <= 1 MHz*/
+# if !defined(RTCPRE)
+/* L0/L1 may divide HSE by 2/4/8/16*/
+#  if defined(RCC_CR_RTCPRE_1)
+#   if HSE_VALUE > 8000000
+#    define RTCPRE 3
+#   elif HSE_VALUE > 4000000
+#    define RTCPRE 2
+#   elif HSE_VALUE > 2000000
+#    define RTCPRE 1
+#   else
+#    define RTCPRE 0
+#   endif
+#  elif defined(RCC_CFGR_RTCPRE_3)
+/* F2/F4/F7 may devide HSE by 2..32*/
+#   if HSE_VALUE < 2000000
+#    define RTCPRE 2
+#   else
+#    define RTCPRE (((HSE_VALUE - 1) / 1000000) + 1)
+#   endif
+#  endif
+# endif
+/* F0/F3/L4 uses HSE/32, F1 uses HSE/128 */
+
 typedef struct _stm32_rtc_dcb stm32_rtc_dcb;
 
 struct _stm32_rtc_dcb {
@@ -218,6 +238,71 @@ struct _stm32_rtc_dcb {
 
 /* We only have one RTC, so static allocation should be okay */
 static stm32_rtc_dcb rtc_dcb = {RTC_STATUS_START};
+
+/*!
+ * \brief Enable RTC clock from source selected before
+ *
+ * Only call from application, as this LSE startup
+ * can take up to 2 seconds.
+ *
+ * \param  ena 0 disable clock, any other value enable it.
+ * \return 0 on success, -1 on HSE start failed.
+ */
+int EnableRtcClock(int source)
+{
+    /* Now check that source setup was successfull and source is running.
+     */
+    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != (source * RCC_BDCR_RTCSEL_0)) {
+        SetRtcClockSource(source);
+    }
+    PWR_CR |= PWR_CR_DBP;
+    switch (source) {
+    case RTCCLK_NONE:
+        return -1;
+        break;
+    case RTCCLK_LSE:
+        if (!(RCC_BDCR & RCC_BDCR_LSERDY)) {
+            int i;
+            RCC_BDCR |= RCC_BDCR_LSEON;
+            for (i = 0; i < 4000; i++) {
+                NutSleep(1);
+                if (RCC_BDCR & RCC_BDCR_LSERDY)
+                    break;
+            }
+            if (!(RCC_BDCR & RCC_BDCR_LSERDY))
+                return -1;
+        }
+        break;
+    case RTCCLK_LSI:
+        if (!(RCC->CSR & RCC_CSR_LSIRDY)) {
+            RCC->CSR |= RCC_CSR_LSION;
+            NutSleep(1);
+            }
+        if (!(RCC->CSR & RCC_CSR_LSIRDY))
+            return -1;
+        break;
+    case RTCCLK_HSE:
+#if defined(RCC_CR_RTCPRE)
+    {
+        uint32_t rcc_cr;
+        rcc_cr = RCC_CR;
+        rcc_cr &= RCC_CR_RTCPRE;
+        rcc_cr |= RTCPRE * RCC_CR_RTCPRE_0;
+        RCC_CR = rcc_cr;
+    }
+#endif
+        if (!(RCC->CR & RCC_CR_HSERDY)) {
+            RCC->CR |= RCC_CR_HSEON;
+            NutSleep(4);
+        }
+        if (!(RCC->CR & RCC_CR_HSERDY))
+            return -1;
+        break;
+    }
+    RCC_BDCR |= RCC_BDCR_RTCEN;
+    PWR_CR &= ~PWR_CR_DBP;
+    return 0;
+}
 
 /*!
  * \brief Interrupt handler for RTC Alarm
@@ -548,10 +633,10 @@ int Stm32RtcInit(NUTRTC *rtc)
     rtc->dcb   = &rtc_dcb;
     rtc->alarm = NULL;
     /* Enable RTC CLK*/
-    res  = SetRtcClock(RTCCLK_SOURCE);
+    res = EnableRtcClock(RTCCLK_SOURCE);
     if (res) {
         /* Some failure happend */
-        return -1;
+        return res;
     }
     /* Check for valid or changed settings */
     if ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC_VAL)) {
@@ -561,9 +646,9 @@ int Stm32RtcInit(NUTRTC *rtc)
         }
     }
     rtc_dcb.flags &=  ~RTC_STATUS_START;
-    /* Disable Backup Write Protection */
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    /* Enable Backup domain write access*/
     PWR_CR |= PWR_CR_DBP;
+    /* Disable Backup Write Protection */
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
 

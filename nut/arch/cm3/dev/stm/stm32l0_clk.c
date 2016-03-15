@@ -422,10 +422,8 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
 
     /* Switch on HSE to have intermediate clock */
     rc = CtlMsiClock(1);

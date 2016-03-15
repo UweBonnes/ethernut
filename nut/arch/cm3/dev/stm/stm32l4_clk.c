@@ -439,13 +439,10 @@ static int SetSysClockSource( int src)
     uint32_t cr, cfgr;
     uint32_t old_latency, new_latency, new_sysclk;
 
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
 
     /* Set voltage scaling*/
-    RCC->APB1ENR1 |= RCC_APB1ENR1_PWREN;
     cr = PWR->CR1;
     cr &= ~(PWR_CR1_VOS);
     cr |= STM32_VRANGE * PWR_CR1_VOS_0;

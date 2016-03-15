@@ -106,6 +106,7 @@ extern int SetSysClock(void);
 extern uint32_t SysCtlClockGet(void);
 uint32_t Stm32ClockSwitchGet(int bi);
 
-extern int SetRtcClock(int source);
+extern void SetRtcClockSource(int source);
+extern int EnableRtcClock(int source);
 
 #endif /* _STM32_CLK_H_ */

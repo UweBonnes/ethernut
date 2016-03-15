@@ -268,10 +268,8 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
     /* Fixme: Allow more flexible Flash Setting
      * For the moment, use 32-bit access with no prefetch . Latency has no meaning
      * for 32-bit access
@@ -314,10 +312,8 @@ int SetSysClock(void)
 int SetSysClock(void)
 {
     int rc = 0;
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
     /* FIXME*/
     return rc;
 }

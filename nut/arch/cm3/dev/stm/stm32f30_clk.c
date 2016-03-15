@@ -408,10 +408,8 @@ int SetSysClock(void)
     int rc = 0;
     register uint32_t cfgr;
 
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
 
 /* Todo: Check Voltage range! Here 2.7-3.6 Volt is assumed */
 /* For 2.7-3.6 Volt up to 30 MHz no Wait state required */
@@ -531,12 +529,8 @@ int SetSysClock(void)
     int rc = 0;
     uint32_t rcc_reg;
 
-    /* Eventual enable LSE */
-    CtlLseClock(LSE_VALUE);
-    /* Eventual enable LSI */
-    CtlLsiClock(LSI_ON);
-
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    /* Set up RTC clock source and eventually LSE and LSI */
+    SetRtcClockSource(RTCCLK_SOURCE);
 
     rcc_reg =  RCC->CFGR;
     rcc_reg &= ~(RCC_CFGR_PLLMUL |RCC_CFGR_PLLSRC |RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1 |RCC_CFGR_HPRE);
