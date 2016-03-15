@@ -33,6 +33,14 @@
  * For additional information see http://www.ethernut.de/
  */
 
+/*!
+ * \file arch/cm3/dev/stm/stm32f30_clk.c
+ * \brief Clock handling for F3, F0 and F100 (not F101/2/3/5/7!)
+ *
+ * \verbatim
+ * $Id$
+ * \endverbatim
+ */
 #include <cfg/arch.h>
 #include <arch/cm3.h>
 
@@ -41,11 +49,7 @@
 #include <cfg/clock.h>
 #include <cfg/rtc.h>
 
-#if defined(MCU_STM32F0) || defined(MCU_STM32F3)
 #include <arch/cm3/stm/stm32xxxx.h>
-#else
-#warning "Unknown STM32 family"
-#endif
 
 /* Prepare some defaults if configuration is incomplete */
 #if !defined(SYSCLK_SOURCE)
@@ -69,11 +73,28 @@
 #define FLASH_ACR_LATENCY_0 FLASH_ACR_LATENCY
 #endif
 
+/* Equalize missing STM32F100 register bits (F100 handled here!)*/
+#if defined(RCC_CFGR2_PREDIV1) && !defined(RCC_CFGR2_PREDIV)
+#define RCC_CFGR2_PREDIV   RCC_CFGR2_PREDIV1
+#define RCC_CFGR2_PREDIV_0 RCC_CFGR2_PREDIV1_0
+#endif
+#if defined(RCC_CFGR_PLLMULL) && !defined(RCC_CFGR_PLLMUL)
+#define RCC_CFGR_PLLMUL   RCC_CFGR_PLLMULL
+#define RCC_CFGR_PLLMUL_0 RCC_CFGR_PLLMULL_0
+#endif
+#if defined(RCC_CFGR_PLLSRC) && !defined(RCC_CFGR_PLLSRC_HSI_DIV2)
+# define RCC_CFGR_PLLSRC_HSI_DIV2   0
+# define RCC_CFGR_PLLSRC_HSE_PREDIV RCC_CFGR_PLLSRC
+#endif
+
 /* Prepare system limits*/
 #define FLASH_BASE_FREQ 24000000
 #if   defined(MCU_STM32F0)
 # define SYSCLK_MAX     48000000
 # define APB1_MAX       48000000
+#elif defined(MCU_STM32F100)
+# define SYSCLK_MAX     24000000
+# define APB1_MAX       24000000
 #elif defined(MCU_STM32F3)
 # if !defined(RCC_CFGR_PLLSRC_HSI_PREDIV) && (PLLCLK_SOURCE == PLLCLK_HSI)
 /* Only 64 Mhz can be reached With PLL input 4 MHZ (HSI / 2) and PLL_MULT <= 16 */
@@ -429,13 +450,14 @@ int SetPllClockSource( int src)
 static int SetSysClockSource( int src)
 {
     int rc = -1;
-    uint32_t old_latency, new_latency, new_sysclk;
 
     /* Set up RTC clock source and eventually LSE and LSI */
     SetRtcClockSource(RTCCLK_SOURCE);
 
     /* No voltage range on F0/F3*/
 
+#if defined(FLASH_ACR_LATENCY)
+    uint32_t old_latency, new_latency, new_sysclk;
     /* Calculate Latency*/
     old_latency = FLASH->ACR & FLASH_ACR_LATENCY;
     if (src == SYSCLK_HSE) {
@@ -463,9 +485,11 @@ static int SetSysClockSource( int src)
         flash_acr |= new_latency;
         FLASH->ACR = flash_acr;
     }
+#endif
     SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
     rc = SwitchSystemClock(src);
 
+#if defined(FLASH_ACR_LATENCY)
     /* Set lower latency after setting clock*/
     if (new_latency < old_latency) {
         uint32_t flash_acr;
@@ -474,6 +498,7 @@ static int SetSysClockSource( int src)
         flash_acr |= new_latency;
         FLASH->ACR = flash_acr;
     }
+#endif
     /* Update core clock information */
     SystemCoreClockUpdate();
 
@@ -485,6 +510,7 @@ int SetSysClock(void)
     return SetSysClockSource(SYSCLK_SOURCE);
 }
 
+#if defined(RCC_CFGR3_USART1SW_0)
 /*!
   * \brief  Some devices may use HSI/LSE and SYSCLK additional to PCLKx
   *
@@ -507,3 +533,4 @@ uint32_t Stm32ClockSwitchGet(int bi)
     }
     return 0;
 }
+#endif

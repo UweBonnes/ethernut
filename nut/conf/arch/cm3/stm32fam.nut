@@ -48,6 +48,13 @@
 -- defines "STM32F429xx", as this is the same define as used by STM Cube
 -- to include the vendor header.
 
+function GetF1ClockHandler()
+    if c_is_provided("HW_MCU_STM32F100") then
+        return "cm3/dev/stm/stm32f30_clk.c"
+    end
+    return "cm3/dev/stm/stm32f1_clk.c"
+end
+
 nutarch_cm3_stm32_family =
 {
     --
@@ -67,7 +74,7 @@ nutarch_cm3_stm32_family =
         brief = "STM32F1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F1" },
         description = "ST Microelectronics STM32 F1 Series",
-        sources = { "cm3/dev/stm/stm32f1_clk.c"},
+        sources = function() return GetF1ClockHandler() end,
         makedefs = {
             "MCU=cortex-m3",
             "MFIX=-mfix-cortex-m3-ldrd",
@@ -126,7 +133,7 @@ nutarch_cm3_stm32_family =
         brief = "STM32F3",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F3" },
         description = "ST Microelectronics STM32 F3 Series",
-        sources = { "cm3/dev/stm/stm32f30_clk.c" },
+        sources = { "cm3/dev/stm/stm32f30_clk.c"},
         makedefs = { "MCU=cortex-m4", "LDPATH=$(LDINCLUDE)" },
         script = "arch/cm3/stm32f3.nut"
     },
