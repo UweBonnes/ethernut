@@ -68,10 +68,10 @@
 #define sig_SPI             sig_SPI5
 #define SPI_BASE            SPI5_BASE
 
-#if !defined(SPIBUS5_MODE)
+#if !defined(SPI5_MODE)
 #define SPIBUS_MODE IRQ_MODE
 #else
-#define SPIBUS_MODE SPIBUS5_MODE
+#define SPIBUS_MODE SPI5_MODE
 #endif
 
 #define Stm32F1SpiRemap()
@@ -84,10 +84,10 @@
 #define SPI_MISO_AF SPI5_MISO_AF
 #define SPI_MOSI_AF SPI5_MOSI_AF
 
-#if !defined(SPIBUS5_MODE)
+#if !defined(SPI5_MODE)
 #define SPIBUS_MODE IRQ_MODE
 #else
-#define SPIBUS_MODE SPIBUS5_MODE
+#define SPIBUS_MODE SPI5_MODE
 #endif
 
 #if SPIBUS_MODE == DMA_MODE

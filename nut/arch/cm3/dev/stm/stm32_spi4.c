@@ -78,10 +78,10 @@
 #define SPI_MISO_AF SPI4_MISO_AF
 #define SPI_MOSI_AF SPI4_MOSI_AF
 
-#if !defined(SPIBUS4_MODE)
+#if !defined(SPI4_MODE)
 #define SPIBUS_MODE IRQ_MODE
 #else
-#define SPIBUS_MODE SPIBUS4_MODE
+#define SPIBUS_MODE SPI4_MODE
 #endif
 
 #if SPIBUS_MODE == DMA_MODE

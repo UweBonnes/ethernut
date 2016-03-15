@@ -87,10 +87,10 @@ void Stm32F1SpiRemap(void)
 #define sig_SPI     sig_SPI1
 #define SPI_BASE    SPI1_BASE
 
-#if !defined(SPIBUS1_MODE)
+#if !defined(SPI1_MODE)
 #define SPIBUS_MODE IRQ_MODE
 #else
-#define SPIBUS_MODE SPIBUS1_MODE
+#define SPIBUS_MODE SPI1_MODE
 #endif
 
 #if SPIBUS_MODE == DMA_MODE

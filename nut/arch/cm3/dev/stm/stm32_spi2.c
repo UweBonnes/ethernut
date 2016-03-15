@@ -82,10 +82,10 @@
 #define sig_SPI             sig_SPI2
 #define SPI_BASE            SPI2_BASE
 
-#if !defined(SPIBUS2_MODE)
+#if !defined(SPI2_MODE)
 #define SPIBUS_MODE IRQ_MODE
 #else
-#define SPIBUS_MODE SPIBUS2_MODE
+#define SPIBUS_MODE SPI2_MODE
 #endif
 
 #if SPIBUS_MODE == DMA_MODE

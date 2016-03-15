@@ -78,10 +78,10 @@
 #define sig_SPI             sig_SPI6
 #define SPI_BASE            SPI6_BASE
 
-#if !defined(SPIBUS6_MODE)
+#if !defined(SPI6_MODE)
 #define SPIBUS_MODE IRQ_MODE
 #else
-#define SPIBUS_MODE SPIBUS6_MODE
+#define SPIBUS_MODE SPI6_MODE
 #endif
 
 #if SPIBUS_MODE == DMA_MODE

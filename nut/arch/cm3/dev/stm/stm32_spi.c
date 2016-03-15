@@ -54,6 +54,12 @@
 #include <stdlib.h>
 #include <errno.h>
 
+/* Warn user about change in configuration */
+#if defined(SPIBUS1_MODE) || defined(SPIBUS2_MODE) || defined(SPIBUS3_MODE) ||\
+    defined(SPIBUS4_MODE) || defined(SPIBUS5_MODE) || defined(SPIBUS6_MODE)
+# warning Please change SPIBUSX_MODE to SPIX_MODE in your configuration
+#endif
+
 #define SPIBUS_SCK_PORT  (uint32_t)(stm32_port_nr2gpio[SPI_SCK  >> 8])
 #define SPIBUS_SCK_PIN   (SPI_SCK & 0xf)
 #define SPIBUS_MISO_PORT (uint32_t)(stm32_port_nr2gpio[SPI_MISO >> 8])
