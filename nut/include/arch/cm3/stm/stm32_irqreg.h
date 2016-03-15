@@ -77,11 +77,11 @@ extern IRQ_HANDLER sig_CAN2_SCE;    // CAN 2 SCE
 extern IRQ_HANDLER sig_USART1;      // USART 1
 extern IRQ_HANDLER sig_USART2;      // USART 2
 extern IRQ_HANDLER sig_USART3;      // USART 3
-extern IRQ_HANDLER sig_UART4;       // UART 4
-extern IRQ_HANDLER sig_UART5;       // UART 5
+extern IRQ_HANDLER sig_USART4;      // USART 4
+extern IRQ_HANDLER sig_USART5;      // USART 5
 extern IRQ_HANDLER sig_USART6;      // USART 6
-extern IRQ_HANDLER sig_UART7;       // USART 7
-extern IRQ_HANDLER sig_UART8;       // USART 8
+extern IRQ_HANDLER sig_USART7;      // USART 7
+extern IRQ_HANDLER sig_USART8;      // USART 8
 extern IRQ_HANDLER sig_USART_GROUP; // Combined USART3-[4/6/8] on F0
 extern IRQ_HANDLER sig_OTG_FS;      // USB OTG on F2/F4
 /* On F30, USB interrupt is remapped from CAN on startup. On F1, beside

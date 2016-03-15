@@ -202,22 +202,34 @@ CREATE_HANDLER(USART2,        USART2,          NUT_IRQPRI_DEF);  // USART 2
 CREATE_HANDLER(USART3,        USART3,          NUT_IRQPRI_DEF);  // USART 3
 #endif
 #if defined(HW_UART4_STM32)
-CREATE_HANDLER(UART4,         UART4,           NUT_IRQPRI_DEF);  // UART 4
+CREATE_HANDLER(USART4,        UART4,           NUT_IRQPRI_DEF);  // UART 4
+#endif
+#if defined(HW_USART4_STM32)
+CREATE_HANDLER(USART4,        USART4,          NUT_IRQPRI_DEF);  // USART 4
 #endif
 #if defined(HW_USART3_4_STM32)
-CREATE_HANDLER(UART3_4,       UART3_4,         NUT_IRQPRI_DEF);  // UART 3/4 combined
+CREATE_HANDLER(USART3_4,      UART3_4,         NUT_IRQPRI_DEF);  // UART 3/4 combined
 #endif
 #if defined(HW_UART5_STM32)
-CREATE_HANDLER(UART5,         UART5,           NUT_IRQPRI_DEF);  // UART 5
+CREATE_HANDLER(USART5,        UART5,           NUT_IRQPRI_DEF);  // UART 5
+#endif
+#if defined(HW_USART5_STM32)
+CREATE_HANDLER(USART5,        USART5,          NUT_IRQPRI_DEF);  // USART 5
 #endif
 #if defined(HW_USART6_STM32)
 CREATE_HANDLER(USART6,        USART6,          NUT_IRQPRI_DEF);  // USART 6
 #endif
 #if defined(HW_UART7_STM32)
-CREATE_HANDLER(UART7,         UART7,          NUT_IRQPRI_DEF);  // UART 7
+CREATE_HANDLER(USART7,        UART7,          NUT_IRQPRI_DEF);  // UART 7
+#endif
+#if defined(HW_USART7_STM32)
+CREATE_HANDLER(USART7,        USART7,         NUT_IRQPRI_DEF);  // USART 7
 #endif
 #if defined(HW_UART8_STM32)
-CREATE_HANDLER(UART8,         UART8,          NUT_IRQPRI_DEF);  // UART 8
+CREATE_HANDLER(USART8,        UART8,          NUT_IRQPRI_DEF);  // UART 8
+#endif
+#if defined(HW_USART8_STM32)
+CREATE_HANDLER(USART8,        USART8,         NUT_IRQPRI_DEF);  // UART 8
 #endif
 #endif
 

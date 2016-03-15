@@ -74,19 +74,19 @@ static IRQ_HANDLER *usart_nr2irq[] = {
     &sig_USART3,
 # endif
 # if defined(HW_UART4_STM32)
-    &sig_UART4,
+    &sig_USART4,
 # endif
 # if defined(HW_UART5_STM32)
-    &sig_UART5,
+    &sig_USART5,
 # endif
 # if defined(HW_USART6_STM32)
     &sig_USART6,
 # endif
 # if defined(HW_UART7_STM32)
-    &sig_UART7,
+    &sig_USART7,
 # endif
 # if defined(HW_UART8_STM32)
-    &sig_UART8,
+    &sig_USART8,
 # endif
 };
 # define NUM_USART sizeof(usart_nr2irq)/sizeof(usart_nr2irq[0])
