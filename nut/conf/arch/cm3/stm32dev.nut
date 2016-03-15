@@ -769,23 +769,14 @@ nutarch_cm3_stm32_devices =
     -- STM32F2/F4 DMA Interface
     --
     {
-        name = "nutarch_cm3_stm32f2_dma1",
-        brief = "STM32F2/F4 DMA1 Controller",
-        description = "Generic DMA1 Support for F2/F4",
-        requires = { "HW_MCU_STM32", "HW_DMA1_STM32F2" },
-        provides = { "HW_DMA1_F2" },
+        name = "nutarch_cm3_stm32f2_dma",
+        brief = "STM32F2/F4 DMA Controller",
+        description = "Generic DMA Support for F2/F4",
+        requires = { "HW_MCU_STM32", "HW_DMA_STM32F2" },
         sources = {
             "cm3/dev/stm/stm32f2_dma.c",
             "cm3/dev/stm/stm32_dmairq.c",
         },
-    },
-    {
-        name = "nutarch_cm3_stm32f2_dma2",
-        brief = "STM32F2/F4 DMA2 Controller",
-        description = "Generic DMA2 Support for F2/F4",
-        requires = { "HW_MCU_STM32", "HW_DMA2_STM32F2" },
-        provides = { "HW_DMA2_F2" },
-        sources = { "cm3/dev/stm/stm32f2_dma.c" }
     },
     --
     -- STM32 Signal handler
