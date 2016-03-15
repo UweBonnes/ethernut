@@ -48,6 +48,11 @@
 
 #define HSI_VALUE  16000000
 
+#if !defined  (HSE_STARTUP_TIMEOUT)
+/*!< Time out for HSE start up, in loops*/
+# define HSE_STARTUP_TIMEOUT   0x5000
+#endif
+
 #define NUM_MSI_FREQ 7
 static const uint32_t MSIFreqTable[7] =
 {
@@ -61,11 +66,6 @@ static const uint32_t MSIFreqTable[7] =
 };
 
 #define MSI_DEFAULT MSI_4200k
-
-#if !defined(HSE_STARTUP_TIMEOUT)
-/*!< Time out for HSE start up, in loops*/
-# define HSE_STARTUP_TIMEOUT ((uint32_t)5000)
-#endif
 
 /* Prepare system limits*/
 /* Power range may be switched dynamic */
@@ -254,6 +254,9 @@ static uint32_t msi_clock;
  *
  */
 
+/* Forward declarations */
+static msi_range_t CtlMsiClock(msi_range_t range);
+
 /* Include common routines*/
 #include "stm32_clk.c"
 
@@ -435,7 +438,7 @@ int SetPllClockSource(int src)
 int SetSysClockSource(int src)
 {
     int rc = -1;
-    uint32_t cr, cfgr;
+    uint32_t cr;
     uint32_t new_latency, new_sysclk, old_scale;
 
     /* Set up RTC clock source and eventually LSE and LSI */
@@ -496,60 +499,7 @@ int SetSysClockSource(int src)
 #endif
     }
     SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
-    cfgr = RCC->CFGR;
-    cfgr &= ~RCC_CFGR_SW;
-    if (src == SYSCLK_HSE) {
-        rc = CtlHseClock(1);
-        if (rc == 0) {
-            /* Select HSE as system clock source */
-            cfgr |= RCC_CFGR_SW_HSE;
-            /* Wait till HSE is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {
-                RCC->CFGR = cfgr;
-            }
-        }
-    } else if (src == SYSCLK_HSI) {
-        rc = CtlHsiClock(1);
-        if (rc == 0) {
-            cfgr |= RCC_CFGR_SW_HSI;
-            /* Wait till HSI is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI) {
-                RCC->CFGR = cfgr;
-            }
-        }
-    } else if (src == SYSCLK_MSI) {
-        rc = CtlMsiClock(MSI_4200k);
-        if (rc == 0) {
-            cfgr |= RCC_CFGR_SW_MSI;
-            /* Wait till HSI is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI) {
-                RCC->CFGR = cfgr;
-            }
-        }
-    } else if (src == SYSCLK_PLL) {
-        rc = SetPllClockSource(PLLCLK_SOURCE);
-        if (!rc) {
-            /* Switch On PLL */
-            rc =  rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_PLLON, RCC_CR_PLLRDY,
-                                       1, HSE_STARTUP_TIMEOUT);
-            if (!rc) {
-                cfgr |= RCC_CFGR_SW_PLL;
-                /* Wait till PLL is used as system clock source */
-                while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {
-                    RCC->CFGR = cfgr;
-                }
-           }
-        }
-    }
-
-    if (rc) {
-        /* something went wrong, switch to MSI */
-        CtlMsiClock(MSI_4200k);
-        cfgr = RCC->CFGR;
-        cfgr &= ~RCC_CFGR_SW;
-        cfgr |= RCC_CFGR_SW_MSI;
-        RCC->CFGR = cfgr;
-    }
+    rc = SwitchSystemClock(src);
 
      /* Range may change to lower voltage only with new frequency set*/
     cr = PWR_CR;

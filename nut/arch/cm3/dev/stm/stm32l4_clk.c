@@ -249,6 +249,9 @@ static uint32_t msi_clock;
  *
  */
 
+/* Forward declarations */
+static msi_range_t CtlMsiClock(msi_range_t range);
+
 /* Include common routines*/
 #include "stm32_clk.c"
 
@@ -445,7 +448,7 @@ int SetPllClockSource(int src)
 static int SetSysClockSource( int src)
 {
     int rc = -1;
-    uint32_t cr, cfgr;
+    uint32_t cr;
     uint32_t old_latency, new_latency, new_sysclk;
 
     /* Set up RTC clock source and eventually LSE and LSI */
@@ -486,45 +489,7 @@ static int SetSysClockSource( int src)
     CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_ICEN),   FLASH_ICACHE);
     CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_DCEN),   FLASH_DCACHE);
     SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
-    cfgr = RCC->CFGR;
-    cfgr &= ~RCC_CFGR_SW;
-    if (src == SYSCLK_MSI) {
-        rc = CtlMsiClock(1);
-        if (rc == 0) {
-            /* Select Msi as system clock source */
-            cfgr |= RCC_CFGR_SW_MSI;
-            RCC->CFGR = cfgr;
-
-            /* Wait till HSE is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI);
-        }
-    } else if (src == SYSCLK_HSE) {
-        rc = CtlHseClock(1);
-        if (rc == 0) {
-            /* Select HSE as system clock source */
-            cfgr |= RCC_CFGR_SW_HSE;
-            RCC->CFGR = cfgr;
-
-            /* Wait till HSE is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE);
-        }
-    } else if (src == SYSCLK_HSI) {
-        CtlHsiClock(1);
-        /* Select HSI as system clock source */
-        cfgr |= RCC_CFGR_SW_HSI;
-        RCC->CFGR = cfgr;
-
-        /* Wait till HSI is used as system clock source */
-        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
-    } else if (src == SYSCLK_PLL) {
-        SetPllClockSource(PLLCLK_SOURCE);
-        cfgr |= RCC_CFGR_SW_PLL;
-        RCC->CFGR = cfgr;
-
-        /* Wait till PLL is used as system clock source */
-        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
-    }
-
+    rc = SwitchSystemClock(src);
     if (new_latency < old_latency) {
         uint32_t flash_acr;
         flash_acr = FLASH->ACR;

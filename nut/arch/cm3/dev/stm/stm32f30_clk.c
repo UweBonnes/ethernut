@@ -442,7 +442,6 @@ int SetPllClockSource( int src)
 static int SetSysClockSource( int src)
 {
     int rc = -1;
-    uint32_t cfgr;
     uint32_t old_latency, new_latency, new_sysclk;
 
     /* Set up RTC clock source and eventually LSE and LSI */
@@ -478,63 +477,7 @@ static int SetSysClockSource( int src)
         FLASH->ACR = flash_acr;
     }
     SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
-    cfgr = RCC->CFGR;
-    cfgr &= ~RCC_CFGR_SW;
-    if (src == SYSCLK_HSE) {
-        rc = CtlHseClock(ENABLE);
-        if (rc == 0) {
-            /* Select HSE as system clock source */
-            cfgr |= RCC_CFGR_SW_HSE;
-            /* Wait till HSE is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {
-                RCC->CFGR = cfgr;
-            }
-        }
-    } else if (src == SYSCLK_HSI) {
-        rc = CtlHsiClock(ENABLE);
-        if (rc == 0) {
-            cfgr |= RCC_CFGR_SW_HSI;
-            /* Wait till HSI is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI) {
-                RCC->CFGR = cfgr;
-            }
-        }
-#if defined(RCC_CFGR_SWS_HSI48)
-    } else if (src == SYSCLK_HSI48) {
-        rc = rcc_set_and_wait_rdy(&RCC->CR2, RCC_CR2_HSI48ON, RCC_CR2_HSI48RDY,
-                                  1, HSE_STARTUP_TIMEOUT);
-        if (rc == 0) {
-            cfgr |= RCC_CFGR_SW_HSI48;
-            /* Wait till HSI is used as system clock source */
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI48) {
-                RCC->CFGR = cfgr;
-            }
-        }
-#endif
-    } else if (src == SYSCLK_PLL) {
-        rc = SetPllClockSource(PLLCLK_SOURCE);
-        if (!rc) {
-            /* Switch On PLL */
-            rc = rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_PLLON, RCC_CR_PLLRDY,
-                                  1, HSE_STARTUP_TIMEOUT);
-            if (!rc) {
-                cfgr |= RCC_CFGR_SW_PLL;
-                /* Wait till PLL is used as system clock source */
-                while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {
-                    RCC->CFGR = cfgr;
-                }
-            }
-        }
-    }
-
-    if (rc) {
-        /* something went wrong, switch to HSI */
-        CtlHsiClock(1);
-        cfgr = RCC->CFGR;
-        cfgr &= ~RCC_CFGR_SW;
-        cfgr |= RCC_CFGR_SW_HSI;
-        RCC->CFGR = cfgr;
-    }
+    rc = SwitchSystemClock(src);
 
     /* Set lower latency after setting clock*/
     if (new_latency < old_latency) {

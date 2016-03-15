@@ -402,3 +402,84 @@ uint32_t STM_ClockGet(int idx)
     }
     return 0;
 }
+
+/*!
+ * \brief Switch to PLL with selected source
+ *
+ * \param  ahb_div    Division factor for AHB BUS
+ * \param  apb1_div   Division factor for APB1 BUS
+ * \param  apb2_div   Division factor for APB2 BUS
+ */
+static int SwitchSystemClock(int source)  __attribute__((unused));
+static int SwitchSystemClock(int source)
+{
+    int rc = -1;
+
+    switch (source) {
+    case SYSCLK_HSI:
+        rc = CtlHsiClock(1);
+        if (!rc) {
+            rc = rcc_set_and_wait_rdy_value(
+                &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI,
+                RCC_CFGR_SWS, RCC_CFGR_SWS_HSI, HSE_STARTUP_TIMEOUT);
+        }
+        break;
+#if defined(RCC_CFGR_SWS_HSI48)
+    case SYSCLK_HSI48:
+        rc = rcc_set_and_wait_rdy(&RCC->CR2, RCC_CR2_HSI48ON, RCC_CR2_HSI48RDY,
+                                  1, HSE_STARTUP_TIMEOUT);
+        if (!rc) {
+            rc = rcc_set_and_wait_rdy_value(
+                &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI48,
+                RCC_CFGR_SWS, RCC_CFGR_SWS_HSI48, HSE_STARTUP_TIMEOUT);
+        }
+        break;
+#endif
+#if defined(RCC_CFGR_SWS_MSI)
+    case SYSCLK_MSI:
+        rc = CtlMsiClock(MSI_DEFAULT);
+        if (!rc) {
+            rc = rcc_set_and_wait_rdy_value(
+                &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_MSI,
+                RCC_CFGR_SWS, RCC_CFGR_SWS_MSI, HSE_STARTUP_TIMEOUT);
+        }
+        break;
+#endif
+    case SYSCLK_HSE:
+        rc = CtlHseClock(1);
+        if (!rc) {
+            rc = rcc_set_and_wait_rdy_value(
+                &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSE,
+                RCC_CFGR_SWS, RCC_CFGR_SWS_HSE, HSE_STARTUP_TIMEOUT);
+        }
+        break;
+    case SYSCLK_PLL:
+        rc = SetPllClockSource(PLLCLK_SOURCE);
+        if (!rc) {
+            /* Switch On PLL */
+            rc =  rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_PLLON, RCC_CR_PLLRDY,
+                                       1, HSE_STARTUP_TIMEOUT);
+            if (!rc) {
+                rc = rcc_set_and_wait_rdy_value(
+                    &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL,
+                    RCC_CFGR_SWS, RCC_CFGR_SWS_PLL, HSE_STARTUP_TIMEOUT);
+            }
+        }
+        break;
+    }
+    if (rc) {
+#if defined(RCC_CFGR_SWS_MSI)
+        /* something went wrong, switch to MSI */
+        CtlMsiClock(MSI_DEFAULT);
+        rcc_set_and_wait_rdy_value(
+            &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_MSI,
+            RCC_CFGR_SWS, RCC_CFGR_SWS_MSI, HSE_STARTUP_TIMEOUT);
+#else
+        CtlHsiClock(1);
+        rcc_set_and_wait_rdy_value(
+            &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI,
+            RCC_CFGR_SWS, RCC_CFGR_SWS_HSI, HSE_STARTUP_TIMEOUT);
+#endif
+    }
+    return rc;
+}
