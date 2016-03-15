@@ -117,6 +117,12 @@
 
 #define min(a,b) ((a>b)?b:a)
 
+#if defined(EMAC_ALLOC_DMA_BUFFER_FROM_HEAP)
+uintptr_t emac_dma_buffer_base = 0;
+uint8_t *emac_dma_buffer = NULL;
+#endif
+
+
 /* MII Mgmt Configuration register - Clock divider setting */
 const uint8_t emac_clkdiv[] = { 4, 6, 8, 10, 14, 20, 28, 36, 40, 44, 48, 52, 56, 60, 64 };
 
@@ -556,6 +562,10 @@ static int Lpc17xxEmacGetPacket(NUTDEVICE *dev, NETBUF ** nbp)
 
         /* "status" represents the status flag of the last frame fragment */
 
+        if (status & (EMAC_RINFO_NO_DESCR)) {
+            EMPRINTF("Emac Rx Err, Status: %08lx\n", status & (EMAC_RINFO_NO_DESCR));
+        } 
+
         /* Check if the frame was correctly received */
         if((status & EMAC_RINFO_ERR_MASK) == 0) {
             /*
@@ -597,6 +607,7 @@ static int Lpc17xxEmacGetPacket(NUTDEVICE *dev, NETBUF ** nbp)
                 }
             }
         } else {
+            EMPRINTF("Emac Rx Err, Discard Packet. Status: %08lx\n", status);
             /* Silently discard the frame from EMAC buffer, update the Rx consume index */
         }
 
@@ -1158,6 +1169,13 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     EMPRINTF("Lpc17xxEmacInit()\n");
+
+#if defined(EMAC_ALLOC_DMA_BUFFER_FROM_HEAP)
+    /* Allocate DMA buffer from heap. Make sure it is 128 byte alligned */
+    emac_dma_buffer = malloc(EMAC_DMA_BUFFER_SIZE + 128);
+    /* Align the buffer to a 128 byte boundary */
+    emac_dma_buffer_base = ((uintptr_t)emac_dma_buffer + 128) & (~128L);
+#endif
 
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCENET);
 

@@ -169,26 +169,37 @@ nutarch_cm3_lpc17xx_devices =
                 file = "include/cfg/dev.h"
             },
             {
-                macro = "EMAC_RX_BUFFERS",
+                macro = "EMAC_NUM_RX_FRAG",
                 brief = "Receive Buffers",
-                description = "Number of 128 byte receive buffers.\n"..
+                description = "Number of 128 byte DMA receive buffers.\n"..
                               "Increase to handle high traffic situations.\n"..
                               "Decrease to handle low memory situations.\n"..
-                              "Default is 32.\n",
+                              "Default is 64.\n",
                 flavor = "booldata",
                 type = "integer",
                 file = "include/cfg/dev.h"
             },
             {
-                macro = "EMAC_TX_BUFSIZ",
+                macro = "EMAC_NUM_TX_FRAG",
                 brief = "Transmit Buffer Size",
-                description = "The driver will allocate two transmit buffers.\n"..
+                description = "Number of 128 byte DMA transmit buffers.\n"..
                               "Can be decreased in low memory situations. Be aware, "..
                               "that this may break your network application. Do not "..
                               "change this without exactly knowing the consequences.\n"..
-                              "Default is 1536.\n",
+                              "Default is 48.\n",
                 flavor = "booldata",
                 type = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_ALLOC_DMA_BUFFER_FROM_HEAP",
+                brief = "Allocate EMAC DMA buffers from heap instead using internal SRAM",
+                description = "If you enable this option, the DMA buffers for the EMAC "..
+                              "RX and TX channel will be allocated from heap.\n\n"..
+                              "By default, the internal AHB SRAM Bank 1 (16K) is used.\n\n"..
+                              "If the configured buffer size exceeds 16K, this option "..
+                              "is selected automatically\n",
+                flavor = "booldata",
                 file = "include/cfg/dev.h"
             },
             {

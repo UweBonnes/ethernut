@@ -65,6 +65,7 @@
  * \endverbatim
  */
 
+#include <cfg/dev.h>
 
 /*============================================================================*
   Ethernet MAC register defines
@@ -438,21 +439,44 @@
  *----------------------------------------------------------------------------*/
 
 /* EMAC Memory Buffer configuration for 16K Ethernet RAM */
+#ifndef EMAC_NUM_RX_FRAG
 #define EMAC_NUM_RX_FRAG          64         /* Num.of RX Fragments (64 * 128 Byte) = 8.0kB */
+#endif
+
+#ifndef EMAC_NUM_TX_FRAG
 #define EMAC_NUM_TX_FRAG          48         /* Num.of TX Fragments (4 * 1536 Byte) = 6.0kB */
+#endif
+
 #define EMAC_ETH_RX_FRAG_SIZE     128        /* Max. Ethernet RX fragment Size      */
 #define EMAC_ETH_TX_FRAG_SIZE     128        /* Max. Ethernet RX fragment Size      */
 #define EMAC_ETH_MAX_FRAME_LEN    1536       /* Max. Ethernet Frame Size            */
 #define EMAC_TX_FRAME_TOUT        0x00100000 /* Frame Transmit timeout count        */
 
-/* EMAC variables located in 16K Ethernet SRAM */
+#define EMAC_DMA_BUFFER_SIZE      (EMAC_NUM_RX_FRAG * (EMAC_ETH_RX_FRAG_SIZE + 8 + 8) + \
+                                   EMAC_NUM_TX_FRAG * (EMAC_ETH_TX_FRAG_SIZE + 8 + 4))
 
+
+#if (EMAC_DMA_BUFFER_SIZE >= 16384)
+#ifndef EMAC_ALLOC_DMA_BUFFER_FROM_HEAP
+#define EMAC_ALLOC_DMA_BUFFER_FROM_HEAP
+#endif
+#endif
+
+#if defined(EMAC_ALLOC_DMA_BUFFER_FROM_HEAP)
+/* EMAC DMA buffers will be allocated from HEAP */
+#define RX_DESC_BASE              emac_dma_buffer_base
+
+#else 
+
+/* EMAC DMA buffers will be located in 16K Ethernet SRAM */
 #if defined(MCU_LPC176x)
 #define RX_DESC_BASE              0x20080000
 #elif defined(MCU_LPC177x_8x) || defined(MCU_LPC407x_8x)
 #define RX_DESC_BASE              0x20004000
 #else
 #warning "Unknown LPC familiy"
+#endif
+
 #endif
 
 
