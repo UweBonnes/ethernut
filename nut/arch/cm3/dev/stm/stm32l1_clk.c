@@ -106,7 +106,6 @@ static const uint32_t flash_base_freq[4] = {0, 16000000, 8000000, 4000000};
 # define PLLCLK_IN HSI_VALUE
 #endif
 
-
 /* Calculate PLL values for some well know frequencies */
 #if (SYSCLK_SOURCE == SYSCLK_PLL)
 # if (STM32_POWERSCALE == 1)
@@ -218,6 +217,11 @@ static const uint32_t flash_base_freq[4] = {0, 16000000, 8000000, 4000000};
 
 #if ((FLASH_32BIT_ACCESS == ENABLE) && (FLASH_PREFETCH == ENABLE))
 # warning Disable FLASH_32BIT_ACCESS as prefetch is requested!
+#endif
+
+#if ((FLASH_DISABLE_BUFFER == ENABLE) &&                                \
+     ((FLASH_PREFETCH == ENABLE) || (FLASH_PRE_READ == ENABLE)))
+# warning Disable FLASH_DISABLE_BUFFER as (data) prefetch is requested!
 #endif
 
 static const uint8_t PllMulReg2PllMul[9] = {3, 4, 6, 8, 12, 16, 24, 32, 48};
@@ -456,15 +460,25 @@ int SetSysClockSource(int src)
      * LATENCY can only be changed with ACC64 set/
      */
     if (new_latency) {
+#if defined(FLASH_ACR_ACC64)
         while (!(FLASH->ACR & FLASH_ACR_ACC64)) {
             FLASH->ACR |= FLASH_ACR_ACC64;
         }
+#else
+        while (FLASH->ACR & FLASH_ACR_DISAB_BUF) {
+            FLASH->ACR &= ~FLASH_ACR_DISAB_BUF;
+        }
+#endif
         while (!(FLASH->ACR & FLASH_ACR_LATENCY)) {
             FLASH->ACR |= FLASH_ACR_LATENCY;
         }
 # if (FLASH_PREFETCH == ENABLE)
        FLASH->ACR |= FLASH_ACR_PRFTEN;
 # endif
+# if defined(FLASH_ACR_PRE_READ)
+       FLASH->ACR &= ~FLASH_ACR_PRE_READ;
+       FLASH->ACR |= FLASH_PRE_READ *FLASH_ACR_PRE_READ;
+#endif
     }
     SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
     cfgr = RCC->CFGR;
@@ -541,9 +555,16 @@ int SetSysClockSource(int src)
         while ((FLASH->ACR & FLASH_ACR_LATENCY)) {
             FLASH->ACR &= ~FLASH_ACR_LATENCY;
         }
+#if defined(FLASH_ACR_ACC64)
 /* Disable 64-bit access only with Prefetch disabled */
-#if (FLASH__32BIT_ACCESS == ENABLE) && (FLASH_PREFETCH == DISABLE)
+# if (FLASH__32BIT_ACCESS == ENABLE) && (FLASH_PREFETCH == DISABLE)
         FLASH->ACR &= ~FLASH_ACR_ACC64;
+# endif
+#else
+# if ((FLASH_PREFETCH == DISABLE) && (FLASH_PRE_READ == DISABLE) &&     \
+      (FLASH_DISABLE_BUFFER == ENABLE))
+        FLASH->ACR |= FLASH_ACR_DISAB_BUF;
+# endif
 #endif
     }
     /* Update core clock information */
