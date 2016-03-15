@@ -966,6 +966,32 @@ nutarch_cm3_stm32_pll =
             file = "include/cfg/clock.h"
         },
         {
+            macro = "FLASH_32BIT_ACCESS",
+            brief = "Access flash only with 32-bit",
+            description = "By default, instructions are fetched from flash "..
+                          "in rows of 64 bit\n"..
+                          "Needed for FLASH_PREFETCH.\n"..
+                          "In special low system speed cases access with only"..
+                          " 32-bit width may reduce power consumption.\n\n"..
+                          "Default is DISABLE!",
+            requires = {"HW_MCU_STM32L1"},
+            type = "enumerated",
+            choices = {"DISABLE", "ENABLE"},
+            default = "DISABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "FLASH_DISABLE_BUFFER",
+            brief = "Don't use flash buffers",
+            description = "Disables Flash prefetch and Data preread.\n"..
+                          "Default is DISABLE to allow Prefetch.",
+            type = "enumerated",
+            requires = {"HW_MCU_STM32L0"},
+            choices =  {"ENABLE", "DISABLE"},
+            default = "DISABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
             macro = "FLASH_PREFETCH",
             brief = "Instruction prefetch",
             description = "Flash buswidth is wider than instruction width.\n"..
@@ -976,6 +1002,21 @@ nutarch_cm3_stm32_pll =
             type = "enumerated",
             choices = {"DISABLE", "ENABLE"},
             default = "ENABLE",
+            file = "include/cfg/clock.h"
+        },
+        {
+            macro = "FLASH_PRE_READ",
+            brief = "Pre-read data",
+            description = "Use one flash buffers for data.\n\n"..
+                          "If enabled, the memory interface stores the \n"..
+                          "last address read as data and tries to read\n"..
+                          " the next one when no other read or write or\n"..
+                          "prefetch operation is ongoing.\n\n"..
+                          "Default is DISABLE.",
+            type = "enumerated",
+            requires = {"HW_MCU_STM32L0"},
+            choices =  {"ENABLE", "DISABLE"},
+            default = "DISABLE",
             file = "include/cfg/clock.h"
         },
     },
