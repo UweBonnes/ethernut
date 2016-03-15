@@ -73,6 +73,7 @@ int main(void)
     char *cp;
     uint32_t baud = 115200;
     FILE *uart;
+    uint32_t clk;
 #ifdef STDIO_FLOATING_POINT
     float dval = 0.0;
 #endif
@@ -112,10 +113,12 @@ int main(void)
      * Writing program space data is supported too.
      */
     _write(_fileno(uart), banner, strlen(banner));
+    clk =  NutGetCpuClock();
+    fprintf(uart, "Running at %3ld.%06ld MHz\n",  clk / 1000000,
+            clk % 1000000);
     {
         _write_P(_fileno(uart), presskey_P, strlen(presskey_P));
     }
-
     /*
      * Stream devices do buffered I/O. That means, nothing will be
      * passed to the hardware device until either the output buffer
