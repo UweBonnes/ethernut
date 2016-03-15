@@ -101,6 +101,7 @@ all:
 	-$(MAKE) -C jtagtest
 	-$(MAKE) -C logtime
 	-$(MAKE) -C lua
+	-$(MAKE) -C mmc_test
 	-$(MAKE) -C pingnet
 	-$(MAKE) -C pioled
 	-$(MAKE) -C portdio
@@ -135,6 +136,7 @@ install:
 	-$(MAKE) -C jtagtest
 	-$(MAKE) -C logtime install
 	-$(MAKE) -C lua install
+	-$(MAKE) -C mmc_test install
 	-$(MAKE) -C pingnet install
 	-$(MAKE) -C pioled install
 	-$(MAKE) -C portdio install
@@ -169,6 +171,7 @@ clean:
 	-$(MAKE) -C jtagtest
 	-$(MAKE) -C logtime clean
 	-$(MAKE) -C lua clean
+	-$(MAKE) -C mmc_test clean
 	-$(MAKE) -C pingnet clean
 	-$(MAKE) -C pioled clean
 	-$(MAKE) -C portdio clean
@@ -198,6 +201,7 @@ at90can:
 	-$(MAKE) -C httpd_simple
 	-$(MAKE) -C inetq
 	-$(MAKE) -C logtime
+	-$(MAKE) -C mmc_test
 	-$(MAKE) -C pingnet
 	-$(MAKE) -C pioled
 	-$(MAKE) -C portdio
