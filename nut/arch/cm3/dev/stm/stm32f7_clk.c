@@ -100,7 +100,6 @@ static void SystemCoreClockUpdate(void)
     RCC_TypeDef *rcc =  (RCC_TypeDef *)RCC_BASE;
     uint32_t tmp = 0;
     uint32_t cfgr;
-    uint32_t hpre;
 
     /* Get SYSCLK source ---------------------------------------------------*/
     cfgr = RCC->CFGR & RCC_CFGR_SWS;
@@ -127,14 +126,7 @@ static void SystemCoreClockUpdate(void)
         tmp = HSI_VALUE;
     }
     sys_clock = tmp;
-    hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
-    clk_shift[NUT_HWCLK_CPU] = AHBPrescTable[hpre];
-    tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
-    clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK1] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK1]);
-    tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
-    clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
+    SetClockShift();
 }
 
 /* Functional same as F1 */

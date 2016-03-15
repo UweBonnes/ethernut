@@ -305,18 +305,7 @@ static void SystemCoreClockUpdate(void)
             sys_clock = HSI_VALUE;
             break;
     }
-
-    /* Compute HCLK clock frequency ----------------*/
-    /* Get HCLK prescaler */
-    tmp = (RCC->CFGR & RCC_CFGR_HPRE) >> 4;
-    /* HCLK clock frequency */
-    clk_shift[NUT_HWCLK_CPU] = AHBPrescTable[tmp];
-    tmp = (RCC->CFGR & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
-    clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK1] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK1]);
-    tmp = (RCC->CFGR & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
-    clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
+    SetClockShift();
 }
 
 /*!

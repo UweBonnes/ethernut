@@ -287,7 +287,6 @@ static void SystemCoreClockUpdate(void)
     uint32_t tmp = 0;
     uint32_t hsi_value = HSI_VALUE;
     uint32_t cfgr;
-    uint32_t hpre;
 
 #if defined(RCC_CFGR_HSI16DIVF)
     if (cfgr & RCC_CFGR_HSI16DIVF) {
@@ -326,14 +325,7 @@ static void SystemCoreClockUpdate(void)
         tmp = hsi_value;
     }
     sys_clock = tmp;
-    hpre = (cfgr & RCC_CFGR_HPRE) >> _BI32(RCC_CFGR_HPRE_0);
-    clk_shift[NUT_HWCLK_CPU] = AHBPrescTable[hpre];
-    tmp = (cfgr & RCC_CFGR_PPRE1) >> _BI32( RCC_CFGR_PPRE1_0);
-    clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK1] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK1]);
-    tmp = (cfgr & RCC_CFGR_PPRE2) >> _BI32( RCC_CFGR_PPRE2_0);
-    clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
-    clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
+    SetClockShift();
 }
 
 /*!

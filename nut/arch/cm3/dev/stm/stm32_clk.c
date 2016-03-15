@@ -483,3 +483,27 @@ static int SwitchSystemClock(int source)
     }
     return rc;
 }
+
+/*!
+ * \brief Set Clock Shift array
+ *
+ */
+static void SetClockShift(void)  __attribute__((unused));
+static void SetClockShift(void)
+{
+    uint32_t hpre;
+    uint32_t cfgr;
+    uint32_t tmp;
+
+    cfgr = RCC->CFGR;
+    hpre = (cfgr & RCC_CFGR_HPRE) / RCC_CFGR_HPRE_0;
+    clk_shift[NUT_HWCLK_CPU] = AHBPrescTable[hpre];
+    tmp = (RCC->CFGR & RCC_CFGR_PPRE1) / RCC_CFGR_PPRE1_0;
+    clk_shift[NUT_HWCLK_PCLK1] = APBPrescTable[tmp];
+    clk_shift[NUT_HWCLK_TCLK1] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK1]);
+#if !defined(MCU_STM32F0)
+    tmp = (RCC->CFGR & RCC_CFGR_PPRE2) / RCC_CFGR_PPRE2_0;
+    clk_shift[NUT_HWCLK_PCLK2] = APBPrescTable[tmp];
+    clk_shift[NUT_HWCLK_TCLK2] = GetTimerShift(clk_shift[NUT_HWCLK_PCLK2]);
+#endif
+}
