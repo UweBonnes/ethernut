@@ -890,9 +890,18 @@ nutarch_cm3_stm32_devices =
             },
             {
                 macro = "HW_USART_STM32V2",
-                brief = "USART2 IP Version 2",
+                brief = "USART IP Version 2",
                 description = "USART2 Version 2 availability",
                 requires = { "HW_USART_STM32V2" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART1_STM32",
+                brief = "USART1 Availability",
+                description = "USART2 Availability",
+                requires = { "HW_USART1_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"

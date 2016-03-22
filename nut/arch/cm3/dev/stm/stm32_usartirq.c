@@ -44,7 +44,15 @@
 
 #include <arch/cm3/stm/stm32_usartirq.h>
 
-#if defined(MCU_STM32F0) || defined(MCU_STM32L0)
+#if defined(MCU_STM32L0)
+# if defined(MCU_STM32L0_CAT1)
+#  define NUM_USART 1
+# elif defined(MCU_STM32L0_CAT2) || defined(MCU_STM32L0_CAT3)
+#  define NUM_USART 2
+# else
+#  define NUM_USART 3
+# endif
+#elif defined(MCU_STM32F0)
 # if defined(HW_USART8_STM32)
 #  define NUM_USART 8
 # elif defined(HW_USART6_STM32)

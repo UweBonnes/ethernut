@@ -1262,6 +1262,7 @@ nutarch_cm3_stm32_usart_devices =
         },
         sources =
         {
+            "cm3/dev/stm/stm32_usartirq.c",
             "cm3/dev/stm/stm32_usart2.c",
         },
         options =
