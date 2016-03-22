@@ -18,7 +18,7 @@
 
 #include <cfg/mmci.h>
 
-#define VERSION     "0.0"
+#define VERSION     "0.1"
 
 static int ScanFolder(char *root);
 
@@ -51,8 +51,26 @@ static void DumpInfo(int volid)
                 +    ((uint32_t) csd.mmcsd_rfld[1]          <<  16)
                 +   ((uint32_t) (csd.mmcsd_rfld[0] &  0x3f) <<  24);
             printf("Capacity %ld MiB\n", (c_size + 1) >> 1);
+        } else if (version == 1) {
+            uint16_t c_size;
+            uint8_t  c_mult;
+            uint8_t  read_bl_len;
+            uint16_t  mult;
+            uint16_t  bl_len;
+            uint32_t size;
+
+            c_size  = (csd.mmcsd_rfld[0] & 0x03) << 10; /* Bit 73/72    */
+            c_size += (csd.mmcsd_rfld[1]       ) <<  2; /* Bit 71 .. 64 */
+            c_size += (csd.mmcsd_rfld[2] & 0xc0) >>  6; /* Bit 63/62    */
+            c_mult  = (csd.mmcsd_rfld[3] & 0x03) <<  1; /* Bit 49/48    */
+            c_mult += (csd.mmcsd_rfld[4] & 0x80) >>  7; /* Bit 47       */
+            read_bl_len  = (csd.mmcsd_ccc_bl[1] & 0xf); /* Bit 83..80   */
+
+            mult  = 1 << (c_mult +2);
+            bl_len = 1 << read_bl_len;
+            size = (c_size  + 1) * mult * bl_len;
+            printf("Capacity %ld MiB\n", size >> 20);
         }
-        /* FIXME: calculate version 1 capacity! */
     }
 }
 
