@@ -70,6 +70,31 @@
 # endif
 #endif
 
+/* Argh! F0 and L0/4 define DMA CSELR in different structures! */
+#if defined(MCU_STM32L0)
+#define SPI1_DMA_RX_SEL(ch) ((ch == DMA1_CH2)? 1 : 4)
+#define SPI1_DMA_TX_SEL(ch) ((ch == DMA1_CH3)? 1 : 4)
+#define SPI2_DMA_RX_SEL(ch) 2
+#define SPI2_DMA_TX_SEL(ch) 2
+#define DMA1_CSELR_REG &DMA1_CSELR->CSELR
+#elif defined(MCU_STM32L4)
+#define SPI1_DMA_RX_SEL(ch) ((ch == DMA1_CH2)? 1 : 4)
+#define SPI1_DMA_TX_SEL(ch) ((ch == DMA1_CH3)? 1 : 4)
+#define SPI2_DMA_TX_SEL(ch) 1
+#define SPI2_DMA_RX_SEL(ch) 1
+#define SPI3_DMA_TX_SEL(ch) 3
+#define SPI3_DMA_RX_SEL(ch) 3
+#define DMA1_CSELR_REG &DMA1_CSELR->CSELR
+#define DMA2_CSELR_REG &DMA2_CSELR->CSELR
+#elif defined(MCU_STM32F09)
+#define SPI1_DMA_RX_SEL(ch) 3
+#define SPI1_DMA_TX_SEL(ch) 3
+#define SPI1_DMA_RX_SEL(ch) 3
+#define SPI1_DMA_TX_SEL(ch) 3
+#define DMA1_CSELR_REG &DMA1->CSELR
+#define DMA2_CSELR_REG &DMA2->CSELR
+#endif
+
 #define ADC1_DMA                       DMA1_CH1
 #define ADC1_DMA_IRQ                   sig_DMA1_CH1
 #define TIM2_CH3_DMA                   DMA1_CH1

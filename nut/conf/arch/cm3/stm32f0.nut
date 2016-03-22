@@ -347,10 +347,10 @@ nutarch_cm3_stm32f0 =
                 file = "include/cfg/arch.h",
             },
             {
-                macro = "STM32F091xC",
-                brief = "STM32F091",
-                description = "Provides vendor header for STM32F091 and additional devices.",
-                requires = { "HW_MCU_STM32F091xC" },
+                macro = "MCU_STM32F09",
+                brief = "STM32F09x",
+                description = "Provide STM32F09 class devices.",
+                requires = { "HW_MCU_STM32F09" },
                 default = 1,
                 provides =
                 {
@@ -358,7 +358,6 @@ nutarch_cm3_stm32f0 =
                     "HW_DMA1_2_STM32F09",
                     "HW_ADC1_COMP_STM32",
                     "HW_CEC_CAN_STM32",
-                    "HW_PVD_VDDIO2_STM32",
                     "HW_CLK48_STM32",
                     "HW_I2C2_STM32V2",
                     "HW_SPI2_STM32",
@@ -370,9 +369,21 @@ nutarch_cm3_stm32f0 =
                     "HW_TSC_STM32",
                     "HW_USART2_STM32",
                     "HW_USART3_8_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32F091xC",
+                brief = "STM32F091",
+                description = "Provides vendor header for STM32F091 and additional devices.",
+                requires = { "HW_MCU_STM32F091xC" },
+                default = 1,
+                provides =
+                {
+                    "HW_PVD_VDDIO2_STM32",
                  },
                 file = "include/cfg/arch.h",
-             },
+            },
             {
                 macro = "STM32F098xx",
                 brief = "STM32F098",
@@ -381,22 +392,7 @@ nutarch_cm3_stm32f0 =
                 default = 1,
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_DMA1_2_STM32F09",
-                    "HW_ADC1_COMP_STM32",
-                    "HW_CEC_CAN_STM32",
                     "HW_VDDIO2_STM32",
-                    "HW_CLK48_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_TIM2_32BIT_STM32",
-                    "HW_TIM6_DAC_STM32",
-                    "HW_TIM7_STM32",
-                    "HW_TIM14_STM32",
-                    "HW_TIM15_STM32",
-                    "HW_TSC_STM32",
-                    "HW_USART2_STM32",
-                    "HW_USART3_8_STM32",
                  },
                 file = "include/cfg/arch.h",
              },

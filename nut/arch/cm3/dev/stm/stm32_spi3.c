@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2014 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2012-1016 by Uwe Bonnes
+ *                               (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -48,9 +49,7 @@
 
 #include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
-#if defined(MCU_STM32F1)
-#include <arch/cm3/stm/stm32f1_dma.h>
-#endif
+#include <arch/cm3/stm/stm32_dma.h>
 #include <arch/cm3/stm/stm32_spi.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>
@@ -98,6 +97,14 @@ void Stm32F1SpiRemap(void)
 
 #define SPI_DMA_TX_CHANNEL SPI3_TX_DMA
 #define SPI_DMA_RX_CHANNEL SPI3_RX_DMA
+
+#if SPIBUS_MODE == DMA_MODE && defined(HW_DMA_CSELR_STM32)
+static void SpiDmaChannelSelection(void)
+{
+    DmaChannelSelection(SPI3_TX_DMA, SPI3_DMA_TX_SEL(SPI3_TX_DMA));
+    DmaChannelSelection(SPI3_RX_DMA, SPI3_DMA_RX_SEL(SPI3_RX_DMA));
+}
+#endif
 
 NUTSPIBUS spiBus3Stm32 = {
     NULL,                       /*!< Bus mutex semaphore (bus_mutex). */

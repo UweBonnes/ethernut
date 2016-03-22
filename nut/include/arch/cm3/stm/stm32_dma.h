@@ -3,7 +3,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2012-2013 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2016 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -106,5 +106,8 @@ extern int DmaRegisterHandler(
     uint8_t ch, IRQ_HANDLER *irq);
 extern int DmaEnableHandler(DMA_SIGNAL* signal, uint8_t ch);
 extern int DmaDisableHandler(DMA_SIGNAL* signal, uint8_t ch);
+#if defined(HW_DMA_CSELR_STM32)
+extern void DmaChannelSelection(uint8_t ch, uint8_t csel);
+#endif
 #endif
 

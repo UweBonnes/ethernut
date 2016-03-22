@@ -683,6 +683,7 @@ nutarch_cm3_stm32_devices =
         provides = {
             "HW_DMA1_STM32F1",
             "HW_DMA_COMBINED_IRQ_STM32",
+            "HW_DMA_CSELR_STM32"
         },
     },
     --
@@ -696,6 +697,7 @@ nutarch_cm3_stm32_devices =
         provides = {
             "HW_DMA2_STM32F1",
             "HW_DMA2_7CH_STM32",
+            "HW_DMA_CSELR_STM32"
         },
     },
     --
@@ -731,6 +733,7 @@ nutarch_cm3_stm32_devices =
             "HW_DMA1_STM32F1",
             "HW_DMA2_STM32F1",
             "HW_DMA_COMBINED_IRQ_STM32",
+            "HW_DMA_CSELR_STM32"
         },
     },
     --
@@ -839,6 +842,15 @@ nutarch_cm3_stm32_devices =
                 brief = "STM32 Devices with combined DMA IRQ",
                 description = "RTC V1 Availability",
                 requires = { "HW_DMA_COMBINED_IRQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_DMA_CSELR_STM32",
+                brief = "STM32 DMA CSEL",
+                description = "STM32 F1 type DMA with Channel selection",
+                requires = { "HW_DMA_CSELR_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"

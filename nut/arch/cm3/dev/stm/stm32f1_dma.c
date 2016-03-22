@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2015, Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2013-2016 by Uwe Bonnes
+ *                          (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -286,4 +287,39 @@ void*  DmaGetMemoryBase( uint8_t ch)
 {
     DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
     return (void *)channel->CMAR;
+}
+
+/*!
+ * \brief     Set DMA channel selection
+ *
+ * F090, L0 and L4 need channel selection set for each type of device.
+
+ *
+ * \param ch   Channel number to set.
+ * \param csel Channel to set.
+ *
+ * \return    None
+ */
+void DmaChannelSelection(uint8_t ch, uint8_t csel)
+{
+#if defined(HW_DMA_CSELR_STM32)
+    uint32_t cselr;
+    volatile uint32_t *cselr_p;
+    uint8_t shift;
+#if defined(MCU_STM32F09) || defined(MCU_STM32L4)
+    if (ch > 6 ) {
+        cselr_p  = DMA2_CSELR_REG;
+        ch -= 6;
+    } else {
+        cselr_p = DMA1_CSELR_REG;
+    }
+#else
+    cselr_p  = DMA1_CSELR_REG;
+#endif
+    cselr = *cselr_p;
+    shift = ch << 2;
+    cselr &= ~( 0xf << shift);
+    cselr |=  (csel << shift);
+    *cselr_p = cselr;
+#endif
 }

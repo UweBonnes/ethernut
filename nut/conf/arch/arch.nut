@@ -956,7 +956,6 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
-                file = "include/cfg/arch.h",
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",

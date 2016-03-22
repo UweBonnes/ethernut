@@ -461,6 +461,9 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
             NutIrqEnable(&sig_SPI);
 #elif SPIBUS_MODE == DMA_MODE
             DMA_Init();
+# if defined(HW_DMA_CSELR_STM32)
+            SpiDmaChannelSelection();
+# endif
 #endif
         }
         else {
