@@ -66,19 +66,20 @@
 #elif defined(MCU_STM32F102)
 # define SYSCLK_MAX     48000000
 # define APB1_MAX       24000000
-#elif defined(MCU_STM32F102)
+#else
 # if(SYSCLK_SOURCE == SYSCLK_PLL) && (PLLCLK_SOURCE == PLLCLK_HSI)
-#  define SYSCLK_MAX    64000000
+#  if defined(MCU_STM32F1_CL)
+#   define SYSCLK_MAX   36000000
+#  else
+#   define SYSCLK_MAX   64000000
+#  endif
 # else
 #  define SYSCLK_MAX    72000000
 # endif
 # define APB1_MAX       36000000
-#else
-# define SYSCLK_MAX     72000000
-# define APB1_MAX       36000000
 #endif
 
-#if defined(HSE_VALUE)
+#if HSE_VALUE > 0
 # if HSE_VALUE < 4000000
 #  warning HSE_VALUE too low
 # elif HSE_VALUE > HSE_MAX
@@ -90,7 +91,7 @@
 #if (PLLCLK_SOURCE == PLLCLK_HSE)
 # define PLLCLK_IN HSE_VALUE
 #else
-# define PLLCLK_IN HSI_VALUE
+# define PLLCLK_IN (HSI_VALUE/2)
 #endif
 
 #if (SYSCLK_SOURCE == SYSCLK_PLL)
@@ -133,10 +134,15 @@
 # if !defined(PLLCLK_DIV) && !defined(PLLCLK_MULT)
 #  if  (((PLLCLK_IN ==  8000000) && ((SYSCLK_FREQ %  8000000) == 0)) || \
         ((PLLCLK_IN ==  6000000) && ((SYSCLK_FREQ %  6000000) == 0)) || \
+        ((PLLCLK_IN ==  4000000) && ((SYSCLK_FREQ %  4000000) == 0)) || \
         ((PLLCLK_IN ==  9000000) && ((SYSCLK_FREQ %  9000000) == 0)) || \
         ((PLLCLK_IN == 12000000) && ((SYSCLK_FREQ % 12000000) == 0)) || \
         ((PLLCLK_IN == 25000000) && ((SYSCLK_FREQ % 15000000) == 0)))
-#   define PLLCLK_SOURCE  PLLCLK_HSE
+#   if HSE_VALUE > 0
+#    define PLLCLK_SOURCE  PLLCLK_HSE
+#   else
+#    define PLLCLK_SOURCE  PLLCLK_HSI
+#   endif
 #   define PLLCLK_DIV     1
 #   define PLLCLK_MULT    (SYSCLK_FREQ / PLLCLK_IN)
 #  else
@@ -144,12 +150,6 @@
 #  endif
 # endif
 #endif
-
-# if (PLLCLK_SOURCE == PLLCLK_HSI)
-#  define PLLCLK_IN (HSI_VALUE / 2)
-# else
-# define PLLCLK_IN HSE_VALUE
-# endif
 
 /* Provide Fallback values*/
 #if !defined(SYSCLK_FREQ)
