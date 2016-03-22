@@ -424,30 +424,16 @@ function GetSpi5MosiDefault()
 end
 
 -- SPI1 TX
-function GetSpi1TxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI1 TX stream on DMA2.\n\n"..
-               "If SPI1 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 3."
-        end
-    if c_is_provided("HW_SPI1_DMA_REMAP_STM32F1") then
-        return "Select SPI1 TX channel on DMA1.\n\n"..
-               "If SPI1 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is channel 3."
-        end
-    return "SPI1 TX uses DMA1 channel 3."
-end
 function GetSpi1TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL2 | DMA_STREAM3 | DMA_CHANNEL3)",
-                "(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL3)"}
+                "(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL3)",
+                "DMA_NONE"}
         end
     if c_is_provided("HW_SPI1_DMA_REMAP_STM32F1") then
-        return {"DMA1_CH3", "DMA2_CH5", "DMA1_CH7"}
+        return {"DMA1_CH3", "DMA2_CH5", "DMA1_CH7", "DMA_NONE"}
         end
-    return "DMA1_CH3"
+    return {"DMA1_CH3", "DMA_NONE"}
 end
 function GetSpi1TxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -456,30 +442,16 @@ function GetSpi1TxDmaDefault()
     return "DMA1_CH3"
 end
 -- SPI1 RX
-function GetSpi1RxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI1 RX stream on DMA2.\n\n"..
-               "If SPI1 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 0."
-        end
-    if c_is_provided("HW_SPI1_DMA_REMAP_STM32F1") then
-        return "Select SPI1 RX channel on DMA1.\n\n"..
-               "If SPI1 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is channel 2."
-        end
-    return "SPI1 RX uses DMA1 channel 2."
-end
 function GetSpi1RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL2 | DMA_STREAM0 | DMA_CHANNEL3)",
-                "(DMA_CONTROL2 | DMA_STREAM2 | DMA_CHANNEL3)"}
+                "(DMA_CONTROL2 | DMA_STREAM2 | DMA_CHANNEL3)",
+                "DMA_NONE"}
         end
     if c_is_provided("HW_SPI1_DMA_REMAP_STM32F1") then
-        return {"DMA1_CH2", "DMA2_CH4", "DMA1_CH6"}
+        return {"DMA1_CH2", "DMA2_CH4", "DMA1_CH6", "DMA_NONE"}
         end
-    return "DMA1_CH2"
+    return {"DMA1_CH2", "DMA_NONE"}
 end
 function GetSpi1RxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -492,19 +464,12 @@ end
 --
 -- FIXME: STM32F07  may remap SPI2 DMA
 --
-function GetSpi2TxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "SPI2 TX uses DMA1 stream 4.\n\n"..
-               "If SPI2 uses DMA, User must care for "..
-               "possible stream collisions!"
-        end
-    return "SPI2 TX uses DMA1 channel 5."
-end
 function GetSpi2TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL1 | DMA_STREAM4 | DMA_CHANNEL0)"
+        return {"(DMA_CONTROL1 | DMA_STREAM4 | DMA_CHANNEL0)",
+                "DMA_NONE"}
         end
-    return "DMA1_CH5"
+    return {"DMA1_CH5", "DMA_NONE"}
 end
 function GetSpi2TxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -513,20 +478,12 @@ function GetSpi2TxDmaDefault()
     return "DMA1_CH5"
 end
 --SPI2 RX
-function GetSpi2RxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "SPI2 RX uses DMA1 stream 3.\n\n"..
-               "If SPI2 uses DMA, User must care for "..
-               "possible stream collisions!"
---               "Default is steam 3."
-        end
-    return "SPI2 RX uses DMA1 channel 4."
-end
 function GetSpi2RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL0)"
+        return {"(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL0)",
+                "DMA_NONE"}
         end
-    return "DMA1_CH4"
+    return {"DMA1_CH4", "DMA_NONE"}
 end
 function GetSpi2RxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -536,21 +493,13 @@ function GetSpi2RxDmaDefault()
 end
 
 -- SPI3 TX
-function GetSpi3TxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI3 TX stream on DMA1.\n\n"..
-               "If SPI3 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 0."
-        end
-    return "SPI3 TX uses DMA2 channel 2."
-end
 function GetSpi3TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL0)",
-                "(DMA_CONTROL1 | DMA_STREAM7 | DMA_CHANNEL0)"}
+                "(DMA_CONTROL1 | DMA_STREAM7 | DMA_CHANNEL0)",
+                "DMA_NONE"}
         end
-    return "DMA2_CH2"
+    return {"DMA2_CH2", "DMA_NONE"}
 end
 function GetSpi3TxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -559,21 +508,13 @@ function GetSpi3TxDmaDefault()
     return "DMA2_CH2"
 end
 -- SPI3 RX
-function GetSpi3RxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI3 RX stream on DMA2.\n\n"..
-               "If SPI3 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 0."
-        end
-    return "SPI3 RX uses DMA2 channel 1."
-end
 function GetSpi3RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM0 | DMA_CHANNEL0)",
-                "(DMA_CONTROL1 | DMA_STREAM2 | DMA_CHANNEL0)"}
+                "(DMA_CONTROL1 | DMA_STREAM2 | DMA_CHANNEL0)",
+                "DMA_NONE"}
         end
-    return "DMA2_CH1"
+    return {"DMA2_CH1", "DMA_NONE"}
 end
 function GetSpi3RxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -583,21 +524,13 @@ function GetSpi3RxDmaDefault()
 end
 
 -- SPI4 TX
-function GetSpi4TxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI4 TX stream on DMA2.\n\n"..
-               "If SPI4 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 0."
-        end
-    return "SPI4 TX uses DMA2 channel 5."
-end
 function GetSpi4TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL2 | DMA_STREAM1 | DMA_CHANNEL4)",
-                "(DMA_CONTROL2 | DMA_STREAM3 | DMA_CHANNEL5)"}
+                "(DMA_CONTROL2 | DMA_STREAM3 | DMA_CHANNEL5)",
+                "DMA_NONE"}
         end
-    return "DMA2_CH5"
+    return {"DMA2_CH5", "DMA_NONE"}
 end
 function GetSpi4TxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -606,21 +539,13 @@ function GetSpi4TxDmaDefault()
     return "DMA2_CH5"
 end
 -- SPI4 RX
-function GetSpi4RxDmaDesc()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI4 RX stream on DMA2.\n\n"..
-               "If SPI4 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 0."
-        end
-    return "SPI4 RX uses DMA2 channel 4."
-end
 function GetSpi4RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM0 | DMA_CHANNEL4)",
-                "(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL5)"}
+                "(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL5)",
+                "DMA_NONE"}
         end
-    return "DMA2_CH4"
+    return {"DMA2_CH4", "DMA_NONE"}
 end
 function GetSpi4RxDmaDefault()
     if c_is_provided("HW_DMA_STM32F2") then
@@ -630,21 +555,13 @@ function GetSpi4RxDmaDefault()
 end
 
 -- SPI5 TX
-function GetSpi5TxDmaDesc()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI5 TX stream on DMA2.\n\n"..
-               "If SPI5 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 0."
---        end
---    return "SPI5 TX uses DMA2 channel 5."
-end
 function GetSpi5TxDmaChoices()
 --    if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL2 | DMA_STREAM4 | DMA_CHANNEL2)",
-                "(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL7)"}
+                "(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL7)",
+                "DMA_NONE"}
 --        end
---    return "DMA2_CH5"
+--    return {"DMA2_CH5", "DMA_NONE"}
 end
 function GetSpi5TxDmaDefault()
 --    if c_is_provided("HW_DMA_STM32F2") then
@@ -653,21 +570,13 @@ function GetSpi5TxDmaDefault()
 --    return "DMA2_CH5"
 end
 -- SPI5 RX
-function GetSpi5RxDmaDesc()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "Select SPI5 RX stream on DMA2.\n\n"..
-               "If SPI5 uses DMA, User must care for "..
-               "possible stream collisions!\n"..
-               "Default is steam 0."
---        end
---    return "SPI5 RX uses DMA2 channel 4."
-end
 function GetSpi5RxDmaChoices()
 --    if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL2)",
-                "(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL7)"}
+                "(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL7)",
+                "DMA_NONE"}
 --        end
---    return "DMA2_CH4"
+--    return {"DMA2_CH4", "DMA_NONE"}
 end
 function GetSpi5RxDmaDefault()
 --    if c_is_provided("HW_DMA_STM32F2") then
@@ -677,17 +586,10 @@ function GetSpi5RxDmaDefault()
 end
 
 -- SPI6 TX
-function GetSpi6TxDmaDesc()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "SPI6 TX uses DMA2 stream 5.\n\n"..
-               "If SPI6 uses DMA, User must care for "..
-               "possible stream collisions!"
---        end
---    return "SPI6 TX uses DMA1 channel 5."
-end
 function GetSpi6TxDmaChoices()
 --    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL1)"
+        return {"(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL1)",
+                "DMA_NONE"}
 --        end
 --    return "DMA1_CH5"
 end
@@ -698,18 +600,10 @@ function GetSpi6TxDmaDefault()
 --    return "DMA1_CH5"
 end
 --SPI6 RX
-function GetSpi6RxDmaDesc()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "SPI6 RX uses DMA1 stream 6.\n\n"..
-               "If SPI6 uses DMA, User must care for "..
-               "possible stream collisions!"
---               "Default is steam 0."
---        end
---    return "SPI6 RX uses DMA1 channel 4."
-end
 function GetSpi6RxDmaChoices()
 --    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL1)"
+        return {"(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL1)",
+                "DMA_NONE"}
 --        end
 --    return "DMA1_CH4"
 end
@@ -772,8 +666,10 @@ nutarch_cm3_stm32_spi_devices =
                 macro = "SPI1_CS0",
                 brief = "SPI1 CS0 Gpio",
                 description = "Choice of SPI1 CS0 Gpio.\n"..
-                              "Default is default NSS pin.\n",
+                              "Default is default NSS pin.\n"..
                               "Use PIN_NONE if no CS is required.\n",
+                type = "enumerated",
+                choices = {"PIN_NONE", "PA04"},
                 default = "PA04",
                 file = "include/cfg/spi.h"
             },
@@ -850,7 +746,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI1_DMA_TX",
                 brief = "Select SPI1 TX DMA",
-                description = function() return GetSpi1TxDmaDesc() end,
+                description = "Select SPI1 TX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi1TxDmaChoices() end,
                 default = function() return GetSpi1TxDmaDefault() end,
@@ -858,8 +756,10 @@ nutarch_cm3_stm32_spi_devices =
             },
             {
                 macro = "SPI1_DMA_RX",
-                brief = "Select SPI1 RX DMA stream ",
-                description = function() return GetSpi1RxDmaDesc() end,
+                brief = "Select SPI1 RX DMA.",
+                description = "Select SPI1 RX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi1RxDmaChoices() end,
                 default = function() return GetSpi1RxDmaDefault() end,
@@ -988,7 +888,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI2_DMA_TX",
                 brief = "Select SPI2 TX DMA",
-                description = function() return GetSpi2TxDmaDesc() end,
+                description = "Select SPI2 TX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi2TxDmaChoices() end,
                 default = function() return GetSpi2TxDmaDefault() end,
@@ -996,8 +898,10 @@ nutarch_cm3_stm32_spi_devices =
             },
             {
                 macro = "SPI2_DMA_RX",
-                brief = "Select SPI2 RX DMA stream ",
-                description = function() return GetSpi2RxDmaDesc() end,
+                brief = "Select SPI2 RX DMA.",
+                description = "Select SPI2 RX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi2RxDmaChoices() end,
                 default = function() return GetSpi2RxDmaDefault() end,
@@ -1129,7 +1033,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI3_DMA_TX",
                 brief = "Select SPI3 TX DMA",
-                description = function() return GetSpi3TxDmaDesc() end,
+                description = "Select SPI3 TX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi3TxDmaChoices() end,
                 default = function() return GetSpi3TxDmaDefault() end,
@@ -1137,8 +1043,10 @@ nutarch_cm3_stm32_spi_devices =
             },
             {
                 macro = "SPI3_DMA_RX",
-                brief = "Select SPI3 RX DMA stream ",
-                description = function() return GetSpi3RxDmaDesc() end,
+                brief = "Select SPI3 RX DMA.",
+                description = "Select SPI3 rX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi3RxDmaChoices() end,
                 default = function() return GetSpi3RxDmaDefault() end,
@@ -1259,7 +1167,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI4_DMA_TX",
                 brief = "Select SPI4 TX DMA",
-                description = function() return GetSpi4TxDmaDesc() end,
+                description = "Select SPI4 TX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi4TxDmaChoices() end,
                 default = function() return GetSpi4TxDmaDefault() end,
@@ -1267,8 +1177,10 @@ nutarch_cm3_stm32_spi_devices =
             },
             {
                 macro = "SPI4_DMA_RX",
-                brief = "Select SPI4 RX DMA stream ",
-                description = function() return GetSpi4RxDmaDesc() end,
+                brief = "Select SPI4 RX DMA.",
+                description = "Select SPI4 RX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
                 choices = function() return GetSpi4RxDmaChoices() end,
                 default = function() return GetSpi4RxDmaDefault() end,
@@ -1388,28 +1300,24 @@ nutarch_cm3_stm32_spi_devices =
             },
             {
                 macro = "SPI5_DMA_TX",
-                brief = "Select SPI5 TX DMA stream ",
-                description = "Select SPI5 TX DMA channel.\n\n"..
-                            "If SPI5 uses DMA, User must care for "..
-                            "possible channel collisions!\n"..
-                            "Default to SPI5_TX_DMA.\n"..
-                            "SPI5_TX_ALT_DMA may not exist on some decvices.\n",
+                brief = "Select SPI5 TX DMA.",
+                description = "Select SPI5 TX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
-                choices = {"SPI5_TX_DMA" , "SPI5_TX_ALT_DMA"},
-                default = "SPI5_TX_DMA",
+                choices = function() return GetSpi5TxDmaChoices() end,
+                default = function() return GetSpi5TxDmaDefault() end,
                 file = "include/cfg/spi.h"
             },
             {
                 macro = "SPI5_DMA_RX",
-                brief = "Select SPI5 RX DMA stream ",
-                description = "Select SPI5 Rx DMA channel.\n\n"..
-                            "If SPI5 uses DMA, User must care for "..
-                            "possible channel collisions!\n"..
-                            "Default to SPI5_RX_DMA.\n"..
-                            "SPI5_RX_ALT_DMA may not exist on some decvices.\n",
+                brief = "Select SPI5 RX DMA.",
+                description = "Select SPI5 RX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
-                choices = {"SPI5_RX_DMA" , "SPI5_RX_ALT_DMA"},
-                default = "SPI5_RX_DMA",
+                choices = function() return GetSpi5RxDmaChoices() end,
+                default = function() return GetSpi5RxDmaDefault() end,
                 file = "include/cfg/spi.h"
             },
         },
@@ -1522,28 +1430,24 @@ nutarch_cm3_stm32_spi_devices =
             },
             {
                 macro = "SPI6_DMA_TX",
-                brief = "Select SPI6 TX DMA stream ",
-                description = "Select SPI6 TX DMA channel.\n\n"..
-                            "If SPI6 uses DMA, User must care for "..
-                            "possible channel collisions!\n"..
-                            "Default to SPI6_TX_DMA.\n"..
-                            "SPI6_TX_ALT_DMA may not exist on some decvices.\n",
+                brief = "Select SPI6 TX DMA.",
+                description = "Select SPI6 TX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
                 type = "enumerated",
-                choices = {"SPI6_TX_DMA" , "SPI6_TX_ALT_DMA"},
-                default = "SPI6_TX_DMA",
+                choices = function() return GetSpi6TxDmaChoices() end,
+                default = function() return GetSpi6TxDmaDefault() end,
                 file = "include/cfg/spi.h"
             },
             {
                 macro = "SPI6_DMA_RX",
-                brief = "Select SPI6 RX DMA stream ",
-                description = "Select SPI6 Rx DMA channel.\n\n"..
-                            "If SPI6 uses DMA, User must care for "..
-                            "possible channel collisions!\n"..
-                            "Default to SPI6_RX_DMA.\n"..
-                            "SPI6_RX_ALT_DMA may not exist on some decvices.\n",
+                brief = "Select SPI6 RX DMA.",
+                description = "Select SPI6 RX DMA.\n"..
+                              "Take care for collisions!\n"..
+                              "Use DMA_NONE to disable.",
+                choices = function() return GetSpi6RxDmaChoices() end,
+                default = function() return GetSpi6RxDmaDefault() end,
                 type = "enumerated",
-                choices = {"SPI6_RX_DMA" , "SPI6_RX_ALT_DMA"},
-                default = "SPI6_RX_DMA",
                 file = "include/cfg/spi.h"
             },
         },
