@@ -415,6 +415,7 @@ static int CardInit(NUTSPINODE * node)
 {
     NUTSPIBUS *bus;
     int i;
+    uint16_t rsp_word;
     uint8_t rsp;
     uint8_t rsp7[5];
     MEMCARDSUPP *mcs;
@@ -445,7 +446,12 @@ static int CardInit(NUTSPINODE * node)
     /* Reset card and switch to SPI mode. */
     rsp = CardTxCommand(node, MMCMD_GO_IDLE_STATE, 0, 1);
     /* Send 0x100 for voltage range 2.7 - 3.6V and add pattern 0xAA. */
-    rsp = CardTxCommand(node, MMCMD_SEND_IF_COND, 0x1AA, 1);
+    rsp_word = CardTxCommand(node, MMCMD_SEND_IF_COND, 0x1AA, 1);
+    if (rsp_word == 0xffff) {
+        /* Timeout from card. Probably not card inserted */
+        return -1;
+    }
+    rsp = rsp_word;
     /* Default to SD version 1 or MMC. */
     mcs->mcs_sf &= ~NUTMC_SF_HC;
     op_cond = 0;
