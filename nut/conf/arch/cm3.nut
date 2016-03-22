@@ -160,7 +160,7 @@ nutarch_cm3 =
         sources = {
             "cm3/dev/stm/system_stm32.c",
         },
-        makedefs = { "LDSCRIPT=stm32_generic_flash.ld" },
+        makedefs = { "LDSCRIPT_FLASH=stm32_generic_flash.ld" },
         options =
         {
             {
@@ -170,6 +170,17 @@ nutarch_cm3 =
                 default = 1,
                 requires = { "HW_MCU_STM32" },
                 file = "include/cfg/arch.h"
+            },
+            {
+                macro = "NUT_RAMLINK",
+                brief = "Place code in RAM",
+                description = "Place code in RAM."..
+                              "Use Boot configuration Embedded SRAM or set\n"..
+                              "MEN_MODE to SRAM and set stack and pc before "..
+                              "programm start.",
+                default = 1,
+                requires = { "NUTDEBUG_RAM" },
+                makedefs = { "LDSCRIPT_RAM=stm32_generic_ram.ld" },
             }
         }
     },

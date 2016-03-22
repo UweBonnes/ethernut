@@ -634,10 +634,12 @@ nutos =
             },
             {
                 macro = "NUTDEBUG_RAM",
-                brief = "Placement of code",
-                description = "Code is placed in ram",
-                 flavor = "boolean",
-                 file = "include/cfg/os.h"
+                brief = "Place code in RAM",
+                description = "If checked, prepare placement of code in RAM.\n"..
+                              "For Cortex, initial vector table is reused.",
+                provides = { "NUTDEBUG_RAM" },
+                flavor = "boolean",
+                file = "include/cfg/os.h"
             },
             {
                 macro = "NUTDEBUG_LAZY",
