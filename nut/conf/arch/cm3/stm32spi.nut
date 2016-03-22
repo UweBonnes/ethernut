@@ -219,7 +219,7 @@ function GetSpi2Miso()
         return { "PB14", "PC02", "PI02" }
     end
     if c_is_provided("HW_MCU_STM32L4") then
-        return { "PB14", "PC02", "PD03" }
+        return { "PB14", "PB10", "PC02", "PD03" }
     end
     return { "PB14", "PA10" }
 end
