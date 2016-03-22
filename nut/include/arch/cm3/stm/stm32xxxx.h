@@ -110,7 +110,19 @@
 #  include <arch/cm3/stm/vendor/stm32f107xc.h>
 # endif
 #elif defined(MCU_STM32L0)
-# if   defined(STM32L051xx)
+# if   defined(STM32L011xx)
+#  include <arch/cm3/stm/vendor/stm32l011xx.h>
+#  define MCU_STM32L0_CAT1
+# elif defined(STM32L021xx)
+#  include <arch/cm3/stm/vendor/stm32l021xx.h>
+#  define MCU_STM32L0_CAT1
+# elif defined(STM32L031xx)
+#  include <arch/cm3/stm/vendor/stm32l031xx.h>
+#  define MCU_STM32L0_CAT2
+# elif defined(STM32L041xx)
+#  include <arch/cm3/stm/vendor/stm32l041xx.h>
+#  define MCU_STM32L0_CAT2
+# elif defined(STM32L051xx)
 #  include <arch/cm3/stm/vendor/stm32l051xx.h>
 #  define MCU_STM32L0_CAT3
 # elif defined(STM32L052xx)
@@ -128,6 +140,23 @@
 # elif defined(STM32L063xx)
 #  include <arch/cm3/stm/vendor/stm32l063xx.h>
 #  define MCU_STM32L0_CAT3
+# elif defined(STM32L071xx)
+#  include <arch/cm3/stm/vendor/stm32l071xx.h>
+#  define MCU_STM32L0_CAT5
+# elif defined(STM32L072xx)
+#  include <arch/cm3/stm/vendor/stm32l072xx.h>
+#  define MCU_STM32L0_CAT5
+# elif defined(STM32L073xx)
+#  include <arch/cm3/stm/vendor/stm32l073xx.h>
+#  define MCU_STM32L0_CAT5
+# elif defined(STM32L081xx)
+#  include <arch/cm3/stm/vendor/stm32l081xx.h>
+# elif defined(STM32L082xx)
+#  define MCU_STM32L0_CAT5
+#  include <arch/cm3/stm/vendor/stm32l082xx.h>
+# elif defined(STM32L083xx)
+#  include <arch/cm3/stm/vendor/stm32l083xx.h>
+#  define MCU_STM32L0_CAT5
 # endif
 #elif defined(MCU_STM32L1)
 # if   defined(STM32L100xB)

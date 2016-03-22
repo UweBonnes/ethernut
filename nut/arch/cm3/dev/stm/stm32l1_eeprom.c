@@ -135,7 +135,7 @@ int Stm32l1_EepromWrite(uint16_t addr, const void* buff, size_t size)
         uint8_t data = *(uint8_t *)buff;
         if (data != *(uint8_t *)ee_addr) {
             if (*(uint8_t *)ee_addr != (uint8_t)ERASED_PATTERN_32)
-                FLASH->PECR =  FLASH_PECR_FTDW;
+                FLASH->PECR =  FLASH_PECR_FIX;
             else
                 FLASH->PECR = 0;
             *(uint8_t *)ee_addr = data;
@@ -148,7 +148,7 @@ int Stm32l1_EepromWrite(uint16_t addr, const void* buff, size_t size)
         uint16_t data = *(uint16_t *)buff;
         if (data != *(uint16_t *)ee_addr) {
             if (*(uint16_t *)ee_addr != (uint16_t)ERASED_PATTERN_32)
-                FLASH->PECR =  FLASH_PECR_FTDW;
+                FLASH->PECR =  FLASH_PECR_FIX;
             else
                 FLASH->PECR = 0;
             *(uint16_t *)ee_addr = data;
@@ -161,7 +161,7 @@ int Stm32l1_EepromWrite(uint16_t addr, const void* buff, size_t size)
         uint32_t data = *(uint32_t *)buff;
         if (data != *(uint32_t *)ee_addr) {
             if (*(uint32_t *)ee_addr != ERASED_PATTERN_32)
-                FLASH->PECR =  FLASH_PECR_FTDW;
+                FLASH->PECR =  FLASH_PECR_FIX;
             else
                 FLASH->PECR = 0;
             *(uint32_t *)ee_addr = data;
@@ -174,7 +174,7 @@ int Stm32l1_EepromWrite(uint16_t addr, const void* buff, size_t size)
         uint16_t data = *(uint16_t *)buff;
         if (data != *(uint16_t *)ee_addr) {
             if (*(uint16_t *)ee_addr != (uint16_t)ERASED_PATTERN_32)
-                FLASH->PECR =  FLASH_PECR_FTDW;
+                FLASH->PECR =  FLASH_PECR_FIX;
             else
                 FLASH->PECR = 0;
             *(uint16_t *)ee_addr = data;
@@ -187,7 +187,7 @@ int Stm32l1_EepromWrite(uint16_t addr, const void* buff, size_t size)
         uint8_t data = *(uint8_t *)buff;
         if (data != *(uint8_t *)ee_addr) {
             if (*(uint8_t *)ee_addr != (uint8_t)ERASED_PATTERN_32)
-                FLASH->PECR =  FLASH_PECR_FTDW;
+                FLASH->PECR =  FLASH_PECR_FIX;
             else
                 FLASH->PECR = 0;
             *(uint8_t *)ee_addr = data;
