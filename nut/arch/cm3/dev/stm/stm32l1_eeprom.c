@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 Uwe Bonnes
+ * Copyright (C) 2013, 2015-2016 Uwe Bonnes
+ *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,15 +52,9 @@
 #define FLASH_PEKEY2 0x02030405
 
 #if defined(MCU_STM32L1)
-# if defined (STM32L1XX_MDP)
-#  define STM32L1_EEPROM_SIZE ( 8 << 10)
-# elif defined (STM32L1XX_HD)
-#  define STM32L1_EEPROM_SIZE ( 8 << 10)
-# else
-#  define STM32L1_EEPROM_SIZE ( 4 << 10)
-# endif
+#  define STM32L1_EEPROM_SIZE (FLASH_EEPROM_END - FLASH_EEPROM_BASE)
 #elif defined(MCU_STM32L0)
-#  define STM32L1_EEPROM_SIZE ( 2 << 10)
+#  define STM32L1_EEPROM_SIZE (DATA_EEPROM_END - DATA_EEPROM_BASE)
 #else
 # warning Unhandled STM32 family
 #endif
@@ -114,7 +109,7 @@ int Stm32l1_EepromRead(uint16_t addr, void* buff, size_t size)
  * \param       buff    buffer that contain data that will be written to buffer
  * \param       size    number of bytes to be written
  *
- * \return      FLASH_STARUS
+ * \return      FLASH_STATUS
  */
 
 int Stm32l1_EepromWrite(uint16_t addr, const void* buff, size_t size)

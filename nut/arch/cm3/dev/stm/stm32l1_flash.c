@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Uwe Bonnes
+ * Copyright (C) 2013-2016 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -59,18 +59,18 @@
 # define FLASH_PAGE_MASK    0xffffff00
 # define FLASH_PAGE_SHIFT   8
 
-# if defined (STM32L1XX_MDP)
+# if defined (MCU_STM32L1_CAT3)
 #  define FLASH_SIZE_REG   0x1ff800cc
-static uint32_t pagelist[32] = { 0 };
-# elif defined (STM32L1XX_HD)
+static uint32_t pagelist[32] = { 0 }; /* 256 k*/
+# elif defined (MCU_STM32L1_CAT4) ||  defined (MCU_STM32L1_CAT6) /* 384k*/
 #  define FLASH_SIZE_REG   0x1ff800cc
-static uint32_t pagelist[48] = { 0 };
-# elif defined (STM32L1XX_XL)
+static uint32_t pagelist[48] = { 0 }; /* 384k*/
+# elif defined (MCU_STM32L1_CAT5)
 #  define FLASH_SIZE_REG   0x1ff800cc
-static uint32_t pagelist[64] = { 0 };
+static uint32_t pagelist[64] = { 0 }; /* 512 k*/
 # else
 #  define FLASH_SIZE_REG   0x1ff8004c
-static uint32_t pagelist[16] = { 0 };
+static uint32_t pagelist[16] = { 0 }; /* Up to 128 k*/
 # endif
 #elif defined(MCU_STM32L0)
 /*Sectors are the unit for write protection, pages for erase */
@@ -79,7 +79,15 @@ static uint32_t pagelist[16] = { 0 };
 # define FLASH_PAGE_SHIFT   7
 
 # define FLASH_SIZE_REG   0x1ff8007C
+# if   defined (MCU_STM32L0_CAT1) /*  16 k*/
+static uint32_t pagelist[ 4] = { 0 };
+# elif defined (MCU_STM32L0_CAT2) /*  32 k*/
+static uint32_t pagelist[ 8] = { 0 };
+# elif defined (MCU_STM32L0_CAT3) /*  64 k*/
 static uint32_t pagelist[16] = { 0 };
+# elif defined (MCU_STM32L0_CAT5) /* 192 k*/
+static uint32_t pagelist[48] = { 0 };
+# endif
 #else
 #warning Unhandled family
 #endif
@@ -112,12 +120,25 @@ size_t IapFlashEnd(void)
     uint16_t size;
     size = *(__I uint16_t *) FLASH_SIZE_REG;
     uint32_t retval = FLASH_BASE - 1;
-#if defined (STM32L1XX_MDP) || defined (STM32L1XX_HD) || defined (STM32L1XX_)
-    if (((*(__I uint32_t *)0xe0042000) & 0xfff) == 0x436) {
+#if defined(MCU_STM32L1)
+    uint32_t dev_id;
+    dev_id = *(volatile uint32_t *)0xe0042000 & 0xfff;
+    switch (dev_id) {
+    case 0x436:
+        /* RM0038 Rev.12 p 883:
+         *  "For DEV_ID = 0x436, the field value can be `0' or `1',
+         *  with `0' for 384 Kbytes and `1' for 256 Kbytes."
+         */
         if (size == 0)
             retval += 384 * 1024;
         else
             retval += 256 * 1024;
+        break;
+    case 0x429:
+        /* RM0038 Rev.12 p 883:
+         * "For DEV_ID = 0x429, only LSB part of F_SIZE: F_SIZE[7:0] is valid."
+        */
+        size  &= 0xff;
     }
 #endif
     retval +=  size * 1024;

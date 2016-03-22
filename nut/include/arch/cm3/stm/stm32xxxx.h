@@ -112,16 +112,22 @@
 #elif defined(MCU_STM32L0)
 # if   defined(STM32L051xx)
 #  include <arch/cm3/stm/vendor/stm32l051xx.h>
+#  define MCU_STM32L0_CAT3
 # elif defined(STM32L052xx)
 #  include <arch/cm3/stm/vendor/stm32l052xx.h>
+#  define MCU_STM32L0_CAT3
 # elif defined(STM32L053xx)
 #  include <arch/cm3/stm/vendor/stm32l053xx.h>
+#  define MCU_STM32L0_CAT3
 # elif defined(STM32L061xx)
 #  include <arch/cm3/stm/vendor/stm32l061xx.h>
+#  define MCU_STM32L0_CAT3
 # elif defined(STM32L062xx)
 #  include <arch/cm3/stm/vendor/stm32l062xx.h>
+#  define MCU_STM32L0_CAT3
 # elif defined(STM32L063xx)
 #  include <arch/cm3/stm/vendor/stm32l063xx.h>
+#  define MCU_STM32L0_CAT3
 # endif
 #elif defined(MCU_STM32L1)
 # if   defined(STM32L100xB)
@@ -277,6 +283,11 @@
 # endif
 #else
 #warning "Unknown STM32 family"
+#endif
+
+/* Equalize name changes in newer header versions.*/
+#if !defined(FLASH_PECR_FIX) && defined(FLASH_PECR_FTDW)
+# define FLASH_PECR_FIX FLASH_PECR_FTDW
 #endif
 
 /* Equalize names in a common place. Even recent CUBE uses "random" names.*/
