@@ -260,6 +260,13 @@ static void SystemCoreClockUpdate(void)
             /* Get PLL clock source and multiplication factor ----------------------*/
             pllmult = RCC->CFGR & RCC_CFGR_PLLMULL;
             pllmult = pllmult / RCC_CFGR_PLLMULL_0;
+#if defined(RCC_CFGR2_PREDIV1)
+            pllmult = pll1mult[pllmult];
+#else
+            pllmult = pllmult + 2;
+            if (pllmult > 16)
+                pllmult = 16;
+#endif
             switch (RCC->CFGR & RCC_CFGR_PLLSRC) {
             case 0 :
                 pllinput = HSI_VALUE / 2;
@@ -281,13 +288,9 @@ static void SystemCoreClockUpdate(void)
                     pllinput = HSE_VALUE / (prediv1factor + 1);
                 }
                 pllinput = pllmuxinput / (2 *(prediv1 + 1));
-                pllmult = pll1mult[pllmult];
                 break;
 #else
             case RCC_CFGR_PLLSRC :
-                pllmult = pllmult + 2;
-                if (pllmult > 16)
-                    pllmult = 16;
                 if (RCC_CFGR_PLLXTPRE_HSE_DIV2 == (RCC->CFGR & RCC_CFGR_PLLXTPRE)) {
                     pllinput = HSE_VALUE / 2;
                 } else {
@@ -370,7 +373,7 @@ int SetPllClockSource( int src)
         }
         break;
     case (PLLCLK_HSI) :
-        CtlHseClock(ENABLE);
+        CtlHsiClock(ENABLE);
         rc = rcc_set_and_wait_rdy_value(
             &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI,
             RCC_CFGR_SWS, RCC_CFGR_SWS_HSI, HSE_STARTUP_TIMEOUT);
