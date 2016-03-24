@@ -193,6 +193,9 @@ function GetStmTimers1Ch()
     if c_is_provided("HW_MCU_STM32L4") then
         return { "", "1", "2", "3", "4", "5", "8", "15", "16", "17"}
     end
+    if c_is_provided("HW_MCU_STM32L0") then
+        return { "", "2", "3", "21", "22"}
+    end
     if c_is_provided("HW_MCU_STM32L1_XL") then
         return { "", "2", "3", "4", "5", "9", "10", "11"}
     end
@@ -357,6 +360,9 @@ function GetStmTimers2Ch()
     if c_is_provided("HW_MCU_STM32L4") then
         return { "", "1", "2", "3", "4", "5", "8", "15", "16", "17"}
     end
+    if c_is_provided("HW_MCU_STM32L0") then
+        return { "", "2", "3", "21", "22"}
+    end
 end
 
 --
@@ -505,6 +511,9 @@ function GetStmTimers2ChIrq()
     end
     if c_is_provided("HW_MCU_STM32L4") then
         return { "", "1", "2", "3", "4", "5", "8"}
+    end
+    if c_is_provided("HW_MCU_STM32L0") then
+        return { "", "2", "3", "21", "22"}
     end
 end
 
@@ -746,7 +755,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_QENC0_TIMER_ID",
                 brief = "STM32 Quadrature Encoder Timer ID",
-                description = "Select Timer for 32 bit Quadrature Enoder",
+                description = "Select Timer for 32 bit Quadrature Encoder.\n\n"..
+                              "Check for availability on selected device.",
                 type = "enumerated",
                 choices = function() return GetStmTimers2Ch() end,
                 file = "include/cfg/qenc.h",
@@ -817,7 +827,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_PWM0_TIMER_ID",
                 brief = "STM32 32Bit PWM0 Timer ID",
-                description = "Select Timer for PWM0 output..",
+                description = "Select Timer for PWM0 output.\n\n"..
+                              "Check for availability on selected device!",
                 type = "enumerated",
                 choices = function() return  GetStmTimers1Ch() end,
                 file = "include/cfg/pwm.h",
@@ -825,7 +836,7 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_PWM0_TIMER_CHANNEL",
                 brief = "STM32 32Bit PWM0 Timer Channel",
-                description = "Select Timer Channel for PWM0 output.\n"..
+                description = "Select Timer Channel for PWM0 output.\n\n"..
                               "Negative numbers x indicate CHxN.\n"..
                               "Check for availability on selected device.",
                 type = "enumerated",
@@ -851,7 +862,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_PWM1_TIMER_ID",
                 brief = "STM32 32Bit PWM1 Timer ID",
-                description = "Select Timer for PWM1 output.",
+                description = "Select Timer for PWM1 output.\n\n"..
+                              "Check for availability on selected device.",
                 type = "enumerated",
                 choices = function() return  GetStmTimers1Ch() end,
                 file = "include/cfg/pwm.h",
@@ -859,7 +871,7 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_PWM1_TIMER_CHANNEL",
                 brief = "STM32 32Bit PWM1 Timer Channel",
-                description = "Select Timer Channel for PWM1 output.\n"..
+                description = "Select Timer Channel for PWM1 output.\n\n"..
                               "Negative numbers x indicate CHxN.\n"..
                               "Check for availability on selected device.",
                 type = "enumerated",
@@ -897,8 +909,9 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI0_TIMER_ID",
                 brief = "Timer for STM32 hardware timer OWIBUS0",
-                description = "Timer used for OWIBUS0. "..
-                            "Requires at least dual channel!",
+                description = "Timer used for OWIBUS0.\n\n"..
+                               "Requires at least dual channel!\n"..
+                              "Check for availability on selected device.",
                 type = "enumerated",
                 choices = function() return GetStmTimers2ChIrq() end,
                 file = "include/cfg/owi.h",
@@ -906,8 +919,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI0_CHANNEL",
                 brief = "Channel for STM32 hardware timer OWIBUS0",
-                description = "Channel for STM32 hardware timer OWIBUS0. "..
-                            "Check for Channel 3/4 availability!",
+                description = "Channel for STM32 hardware timer OWIBUS0.\n\n"..
+                               "Check for Channel 3/4 availability!",
                 type = "enumerated",
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
@@ -925,8 +938,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI0_TX_CHANNEL",
                 brief = "TX Channel for STM32 hardware timer OWIBUS0",
-                description = "TX Channel for separate TX/RX.\n"..
-                            "Check for Channel 3/4 availability!",
+                description = "TX Channel for separate TX/RX.\n\n"..
+                              "Check for Channel 3/4 availability!",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI0_TX"},
                 choices = { "1", "2", "3", "4" },
@@ -971,8 +984,9 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI1_TIMER_ID",
                 brief = "Timer for STM32 hardware timer OWIBUS1",
-                description = "Timer used for OWIBUS1. "..
-                            "Requires at least dual channel!",
+                description = "Timer used for OWIBUS1.\n\n"..
+                              "Requires at least dual channel!\n"..
+                              "Check for availability on selected device.",
                 type = "enumerated",
                 choices = function() return GetStmTimers2ChIrq() end,
                 file = "include/cfg/owi.h",
@@ -980,8 +994,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI1_CHANNEL",
                 brief = "Channel for STM32 hardware timer OWIBUS1",
-                description = "Channel for STM32 hardware timer OWIBUS1. "..
-                            "Check for Channel 3/4 availability!",
+                description = "Channel for STM32 hardware timer OWIBUS1.\n\n"..
+                              "Check for Channel 3/4 availability!",
                 type = "enumerated",
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
@@ -998,9 +1012,9 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI1_TX_CHANNEL",
                 brief = "TX Channel for STM32 hardware timer OWIBUS0",
-                description = "OWI1 TX Channel separate TX/RX.\n"..
-                            "Negative values X (1|2|3) mean CHxN.\n",
-                            "Check for availability!",
+                description = "OWI1 TX Channel separate TX/RX.\n\n"..
+                              "Negative values X (1|2|3) mean CHxN.\n"..
+                              "Check for availability!",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI1_TX"},
                 choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
@@ -1045,8 +1059,9 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI2_TIMER_ID",
                 brief = "Timer for STM32 hardware timer OWIBUS2",
-                description = "Timer used for OWIBUS2. "..
-                            "Requires at least dual channel!",
+                description = "Timer used for OWIBUS2.\n\n"..
+                              "Requires at least dual channel!\n"..
+                              "Check for availability on selected device.",
                 type = "enumerated",
                 choices = function() return GetStmTimers2ChIrq() end,
                 file = "include/cfg/owi.h",
@@ -1054,8 +1069,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI2_CHANNEL",
                 brief = "Channel for STM32 hardware timer OWIBUS2",
-                description = "Channel for STM32 hardware timer OWIBUS2. "..
-                            "Check for Channel 3/4 availability!",
+                description = "Channel for STM32 hardware timer OWIBUS2.\n\n"..
+                              "Check for Channel 3/4 availability!",
                 type = "enumerated",
                 choices = { "1", "2", "3", "4" },
                 file = "include/cfg/owi.h",
@@ -1072,8 +1087,8 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32TIM_OWI2_TX_CHANNEL",
                 brief = "TX Channel for STM32 hardware timer OWIBUS2",
-                description = "OWI2 TX Channel separate TX/RX.\n"..
-                            "Negative values X (1|2|3) mean CHxN.\n",
+                description = "OWI2 TX Channel separate TX/RX.\n\n"..
+                            "Negative values X (1|2|3) mean CHxN.\n"..
                             "Check for availability!",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI2_TX"},

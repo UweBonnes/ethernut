@@ -813,7 +813,8 @@ nutdev =
     {
         name = "nutdev_qenc",
         brief = "Quadrature encoder",
-        description = "Generic Quadrature encoder framework.",
+        description = "Generic Quadrature encoder framework.\n"..
+                      "A quadrature encoder driver must also be selected.",
         provides = {"DEV_QENC"},
         sources = {"qenc.c" }
     },
