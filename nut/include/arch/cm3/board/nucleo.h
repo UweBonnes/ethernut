@@ -70,7 +70,7 @@
 #endif
 
 #ifndef DEV_SPIBUS
-#define DEV_SPIBUS spiBus1Stm32
+#define DEV_SPIBUS spiBus1Stm32Cb
 #include <dev/spibus_stm32.h>
 #endif
 

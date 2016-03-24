@@ -56,7 +56,7 @@
 #endif
 
 #ifndef DEF_SPIBUS
-#define DEF_SPIBUS spiBus1Stm32
+#define DEF_SPIBUS spiBus1Stm32Cb
 #include <dev/spibus_stm32.h>
 #endif
 
