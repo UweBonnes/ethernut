@@ -2,7 +2,8 @@
 #define _DEV_SPIBUS_STM32_H_
 /*
  * Copyright (C) 2008-2009 by egnite GmbH
- * Copyright (C) 2012 Uwe Bonnes
+ * Copyright (C) 2012, 2016 Uwe Bonnes
+ *                          (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -52,8 +53,6 @@ typedef struct _STM32SPIREG STM32SPIREG;
 struct _STM32SPIREG {
     uint32_t CR1;
     uint32_t CR2;
-    uint32_t I2SCFGR;
-    uint32_t I2SPR;
 };
 
 extern NUTSPIBUS spiBus1Stm32;
@@ -63,4 +62,10 @@ extern NUTSPIBUS spiBus4Stm32;
 extern NUTSPIBUS spiBus5Stm32;
 extern NUTSPIBUS spiBus6Stm32;
 
+extern NUTSPIBUS spiBus1Stm32Cb;
+extern NUTSPIBUS spiBus2Stm32Cb;
+extern NUTSPIBUS spiBus3Stm32Cb;
+extern NUTSPIBUS spiBus4Stm32Cb;
+extern NUTSPIBUS spiBus5Stm32Cb;
+extern NUTSPIBUS spiBus6Stm32Cb;
 #endif

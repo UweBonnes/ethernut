@@ -89,8 +89,8 @@
 #elif defined(MCU_STM32F09)
 #define SPI1_DMA_RX_SEL(ch) 3
 #define SPI1_DMA_TX_SEL(ch) 3
-#define SPI1_DMA_RX_SEL(ch) 3
-#define SPI1_DMA_TX_SEL(ch) 3
+#define SPI2_DMA_RX_SEL(ch) 3
+#define SPI2_DMA_TX_SEL(ch) 3
 #define DMA1_CSELR_REG &DMA1->CSELR
 #define DMA2_CSELR_REG &DMA2->CSELR
 #endif

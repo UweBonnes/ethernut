@@ -181,6 +181,7 @@ nutarch_cm3_stm32_family =
         brief = "SPI devices",
         description = "STM32 SPI devices.",
         requires = { "HW_MCU_STM32" },
+        sources  = { "cm3/dev/stm/stm32_spi_cb.c" },
         script = "arch/cm3/stm32spi.nut"
     },
     {
