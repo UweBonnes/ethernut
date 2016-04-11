@@ -76,7 +76,11 @@ OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutfs -lnutnet -lnutdev -lnutarch -lnutcrt -lnutnet -lnutdev -lnutos
 TARG =  $(PROJ).hex
 
+ifndef SMALL_FLASH
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
+else
+all:
+endif
 
 include ../Makerules
 

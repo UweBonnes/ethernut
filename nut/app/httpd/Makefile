@@ -45,7 +45,11 @@ OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutos -lnutarch -lnutdev -lnutgorp -lnutnet -lnutfs -lnutcrt
 TARG =  $(PROJ).hex
 
+ifndef SMALL_FLASH
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
+else
+all:
+endif
 
 $(WEBFILE): $(WEBDIR)/nutos.png $(WEBDIR)/index.html $(WEBDIR)/form.html
 	$(CRUROM) -r -o$(WEBFILE) $(WEBDIR)

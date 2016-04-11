@@ -100,7 +100,11 @@ LIBS += -lnutentry -lc -lgcc
 endif
 
 ifndef SMALL_RAM
+ ifndef SMALL_FLASH
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
+ else
+all:
+ endif
 else
 all:
 endif

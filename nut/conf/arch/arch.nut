@@ -910,7 +910,8 @@ nutarch =
                     "HW_MCU_STM32F042",
                 },
                 makedefs = { "FLASH0_LENGTH=32K",
-                             "RAM0_LENGTH=6K" },
+                             "RAM0_LENGTH=6K",
+                             "SMALL_FLASH=1" },
             },
             {
                 macro = "MCU_STM32F051x8",
@@ -1048,8 +1049,8 @@ nutarch =
             },
             {
                 macro = "MCU_STM32L031x6",
-                brief = "STM STM32L031x6",
-                description = "STM32L031 16 kB",
+                brief = "STM STM32L031 32 k",
+                description = "STM32L031 32 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
@@ -1062,7 +1063,8 @@ nutarch =
                 },
                 makedefs = { "FLASH0_LENGTH=16K",
                              "RAM0_LENGTH=2K",
-                             "SMALL_RAM=1" },
+                             "SMALL_RAM=1",
+                             "SMALL_FLASH=1" },
             },
             {
                 macro = "MCU_STM32L053x8",

@@ -56,7 +56,11 @@ LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutnet -lnutcrt -lnutos -lnutdev -lnutarc
 TARG =  $(PROJ).hex
 PARM =  $(PROJ).eep
 
+ifndef SMALL_FLASH
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
+else
+all:
+endif
 
 include ../Makerules
 
