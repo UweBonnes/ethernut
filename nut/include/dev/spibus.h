@@ -198,4 +198,9 @@ extern uint_fast8_t NutSpiBusSetBits(NUTSPINODE * node, uint_fast8_t bits);
 extern uint_fast8_t NutSpiBusHalfDuplex(NUTSPINODE * node, uint_fast8_t ena);
 extern int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo);
 
+#define NutSpiBusInit(NODE)      ((NODE.node_bus)->bus_initnode)(&NODE)
+#define NutSpiBusAlloc(NODE, to) ((NODE.node_bus)->bus_alloc)   (&NODE, to)
+#define NutSpiBusRelease(NODE)   ((NODE.node_bus)->bus_release) (&NODE)
+#define NutSpiBusTransfer(NODE, bi, bo, cnt) \
+    ((NODE.node_bus)->bus_transfer)(&NODE, bi, bo, cnt)
 #endif
