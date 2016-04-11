@@ -890,7 +890,8 @@ nutarch =
                     "HW_MCU_STM32F030x8",
                 },
                 makedefs = { "FLASH0_LENGTH=64K",
-                             "RAM0_LENGTH=4K" },
+                             "RAM0_LENGTH=4K",
+                             "SMALL_RAM=1" },
             },
             {
                 macro = "MCU_STM32F042x6",
@@ -1060,7 +1061,8 @@ nutarch =
                     "HW_MCU_STM32L031",
                 },
                 makedefs = { "FLASH0_LENGTH=16K",
-                             "RAM0_LENGTH=2K" },
+                             "RAM0_LENGTH=2K",
+                             "SMALL_RAM=1" },
             },
             {
                 macro = "MCU_STM32L053x8",

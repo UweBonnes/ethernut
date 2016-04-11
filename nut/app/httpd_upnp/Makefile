@@ -99,7 +99,11 @@ ifneq (, $(findstring h8300, $(ARCH)))
 LIBS += -lnutentry -lc -lgcc
 endif
 
+ifndef SMALL_RAM
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
+else
+all:
+endif
 
 $(WEBFILE): $(WEBDIR)/enlogo.gif $(WEBDIR)/entail.gif $(WEBDIR)/index.html \
             $(WEBDIR)/flash/egnite.swf $(WEBDIR)/flash/flash.html \
