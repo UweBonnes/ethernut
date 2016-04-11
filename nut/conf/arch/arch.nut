@@ -1337,8 +1337,28 @@ nutarch =
             },
             {
                 macro = "MCU_STM32F746xG",
-                brief = "STM STM32F446 1 MB",
-                description = "STM32F748 with LCD, Ethernet and FMC.",
+                brief = "STM STM32F746 1 MB",
+                description = "STM32F746 with LCD, Ethernet and FMC.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F7",
+                    "HW_MCU_STM32F746",
+                },
+                makedefs = { "FLASH0_LENGTH=1024K",
+                             "RAM0_LENGTH=320K"
+-- FIXME: Handle different memory regions
+                           }
+            },
+            {
+                macro = "MCU_STM32F756xG",
+                brief = "STM STM32F756 1 MB",
+                description = "STM32F746 with Crypto, LCD, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
