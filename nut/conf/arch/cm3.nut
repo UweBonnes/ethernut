@@ -53,6 +53,13 @@ nutarch_cm3 =
                 default = 1,
                 requires = { "HW_MCU_CM3" },
                 file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_CM7",
+                brief = "Cortex-M7 Core",
+                default = 1,
+                requires = { "HW_MCU_CM7" },
+                file = "include/cfg/arch.h"
             }
         }
     },
@@ -181,6 +188,15 @@ nutarch_cm3 =
                 default = 1,
                 requires = { "NUTDEBUG_RAM" },
                 makedefs = { "LDSCRIPT_RAM=stm32_generic_ram.ld" },
+            },
+            {
+                macro = "NUT_ITCM_LINK",
+                brief = "Flash/ITCM",
+                description = "Place code in Flash and RAM_FUNC in ITCM.",
+                default = 1,
+                requires = { "HW_MCU_CM7" },
+                makedefs = { "LDSCRIPT_FLASH_ITCM=stm32_itcm_flash.ld" },
+                file = "include/cfg/arch.h"
             }
         }
     },

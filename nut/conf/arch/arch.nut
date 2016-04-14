@@ -1350,7 +1350,8 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F746",
                 },
-                makedefs = { "FLASH0_LENGTH=1024K",
+                makedefs = { "ITCM_LENGTH=16k",
+                             "FLASH0_LENGTH=1024K",
                              "RAM0_LENGTH=320K"
 -- FIXME: Handle different memory regions
                            }
@@ -1370,7 +1371,8 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F746",
                 },
-                makedefs = { "FLASH0_LENGTH=1024K",
+                makedefs = { "ITCM_LENGTH=16k",
+                             "FLASH0_LENGTH=1024K",
                              "RAM0_LENGTH=320K"
 -- FIXME: Handle different memory regions
                            }

@@ -174,7 +174,6 @@ void (*volatile g_pfnRAMVectors[NUM_INTERRUPTS])(void*);
  * linker script.
  */
 extern void * _etext;           /* Start of constants in FLASH */
-extern void * _sidata;          /* Start of variables in FLASH */
 extern void * _sdata;           /* Start of variables in RAM */
 extern void * _edata;           /* End of variables in RAM */
 extern void * _sbss;            /* Start of unset variables in RAM */
@@ -340,6 +339,16 @@ static void Cortex_MemInit(void)
     {
         *dst++ = *src++;
     }
+
+#if defined(NUT_ITCM_LINK)
+extern void * _eramfunc;        /* End of RAMFUNC in ITCM */
+
+    /* Copy Ramfunc to ITCM at 0x00000000 */
+    end = (uint32_t*)&_eramfunc;
+    for (dst = (uint32_t*)0; dst < end;) {
+        *dst++ = *src++;
+    }
+#endif
 
     /* Fill the bss segment with 0x00 */
     end = (uint32_t*)&_ebss;
