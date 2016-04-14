@@ -1346,6 +1346,7 @@ nutarch =
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
+                    "HW_MCU_CM7",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F746",
@@ -1367,6 +1368,7 @@ nutarch =
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
+                    "HW_MCU_CM7",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F746",

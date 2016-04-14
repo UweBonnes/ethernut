@@ -141,7 +141,41 @@ nutarch_cm3 =
             }
         }
     },
-    
+    --
+    -- Cortex-M7 I/D Cache
+    --
+    {
+        name = "nutarch_cm7_cache",
+        brief = "Cache Support (Cortex M7)",
+        description = "Cortex M7 I/D cache setting";
+        requires = { "HW_MCU_CM7" },
+        options =
+        {
+            {
+                macro = "CORTEX_USE_ICACHE",
+                brief = "Enable ICACHE",
+                description = "Enable Instruction cache for AXIM Bus access.\n\n"..
+                         "For Instruction access above 0x00300000.\n"..
+                         "Default is enabled\n",
+                type = "enumerated",
+                choices =  {"ENABLE", "DISABLE"},
+                default = "ENABLE",
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "CORTEX_USE_DCACHE",
+                brief = "Enable DCACHE",
+                description = "Enable Data cache for AXIM Bus access.\n\n"..
+                         "For Data access outside DTCM range.\n"..
+                         "Default is enabled\n",
+                type = "enumerated",
+                choices =  {"ENABLE", "DISABLE"},
+                default = "ENABLE",
+                file = "include/cfg/arch.h",
+            },
+        }
+    },
+
     --
     -- Board Initialization
     --

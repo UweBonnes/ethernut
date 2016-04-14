@@ -300,8 +300,12 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
      *  E.g. see DM00169764, 4.2 Tips
      *  "It's not recommended to enable the cache before calling
      * the main function... "*/
-#if defined(__CORE_CM7_H_GENERIC)
+#if defined(CORTEX_USE_ICACHE)
+    SCB_InvalidateICache();
     SCB_EnableICache();
+#endif
+#if defined(CORTEX_USE_DCACHE)
+    SCB_InvalidateDCache();
     SCB_EnableDCache();
 #endif
 
