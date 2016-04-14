@@ -252,11 +252,6 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     ** are all hacks and could be done in a more general way. */
     SystemInit();
 
-#if defined(__CORE_CM7_H_GENERIC)
-    SCB_EnableICache();
-    SCB_EnableDCache();
-#endif
-
     /* Configure the System clock frequency, HCLK, PCLK2 and PCLK1 prescalers */
     /* Configure the Flash Latency cycles and enable prefetch buffer */
     SetSysClock();
@@ -300,6 +295,15 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
 #endif
     /* Initialize our heap memory. */
     NutHeapAdd(HEAP_START, HEAP_SIZE & ~3);
+
+    /* Initialize caches just before starting main, at least after load phase.
+     *  E.g. see DM00169764, 4.2 Tips
+     *  "It's not recommended to enable the cache before calling
+     * the main function... "*/
+#if defined(__CORE_CM7_H_GENERIC)
+    SCB_EnableICache();
+    SCB_EnableDCache();
+#endif
 
     /* Create idle thread. Note, that the first call to NutThreadCreate
     ** will never return. */
