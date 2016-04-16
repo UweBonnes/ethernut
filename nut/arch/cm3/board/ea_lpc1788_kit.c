@@ -120,7 +120,9 @@ static SDRAM sdram_is42s32800b =
  */
 void NutBoardInit(void)
 {
-   /* Configure SDRAM interface GPIO Pins  */
+   /* 
+    * Configure SDRAM interface GPIO Pins
+    */
 
    LPC_IOCON->P3_0  = 1; /* D0 */
    LPC_IOCON->P3_1  = 1; /* D1 */
@@ -206,10 +208,27 @@ void NutBoardInit(void)
    LPC_IOCON->P2_30 = 1; /* DQM[2] */
    LPC_IOCON->P2_31 = 1; /* DQM[3] */
 
-   /* Initialize the external memory controller */
-   Lpc177x_8x_EmcInit();
 
+   /* 
+    * Initialize the external memory controller 
+    */
+   Lpc177x_8x_EmcInit();
    Lpc177x_8x_EmcSDRAMInit(sdram_is42s32800b, 0x00004480 /* 12 rows, 9 cols, 32MB */);
+   
+
+   /* 
+    * Init LED controlled by the memory bus 
+    */
+   LPC_EMC->StaticConfig2   = 0x00000081;
+   LPC_EMC->StaticWaitWen2  = 0x00000003; /* ( n + 1 ) -> 4 clock cycles */
+   LPC_EMC->StaticWaitOen2  = 0x00000003; /* ( n )     -> 3 clock cycles */
+   LPC_EMC->StaticWaitRd2   = 0x00000006; /* ( n + 1 ) -> 7 clock cycles */
+   LPC_EMC->StaticWaitPage2 = 0x00000003; /* ( n + 1 ) -> 4 clock cycles */
+   LPC_EMC->StaticWaitWr2   = 0x00000005; /* ( n + 2 ) -> 7 clock cycles */
+   LPC_EMC->StaticWaitTurn2 = 0x00000003; /* ( n + 1 ) -> 4 clock cycles */
+
+   /* Clear all LEDs controlled by the memory bus */
+   *((uint16_t*)0x98000000) = 0;
 }
 
 
