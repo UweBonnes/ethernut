@@ -43,7 +43,7 @@
 
 
 /*
- * Sertial devices
+ * Serial devices
  */
 #ifndef DEV_DEBUG
 #include <dev/usartstm32.h>
