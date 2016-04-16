@@ -94,7 +94,7 @@ int MediaTypeInitDefaults(void)
     int i;
 
     ISC_LIST_INIT(mediaTypeList);
-    for (i = 0; i < MT_DEFAULTS; i++) {
+    for (i = 0; i < (int)MT_DEFAULTS; i++) {
         ISC_LIST_APPEND(mediaTypeList, &mt_defaults[i], media_link);
     }
     return 0;

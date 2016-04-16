@@ -164,6 +164,9 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
  */
 static int UromWrite(NUTFILE * fp, const void *buffer, int len)
 {
+    (void)fp;
+    (void)buffer;
+    (void)len;
     return -1;
 }
 
@@ -189,6 +192,9 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, const char *name, int mode,
     NUTFILE *fp = malloc(sizeof(NUTFILE));
     ROMENTRY *rome;
     ROMFILE *romf = 0;
+
+    (void)mode;
+    (void)acc;
 
     if (fp == 0) {
         errno = ENOMEM;
@@ -251,6 +257,8 @@ static long UromSize(NUTFILE * fp)
 int UromIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     int rc = -1;
+
+    (void)dev;
 
     switch (req) {
     case FS_FILE_SEEK:

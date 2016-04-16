@@ -82,7 +82,7 @@ FILE *__iob[FOPEN_MAX] = { (FILE *) 1, (FILE *) 2, (FILE *) 3 };
  */
 FILE *fopen(const char *name, const char *mode)
 {
-    int mflags = _O_TEXT;
+    int mflags;
     uint_fast8_t i;
 
     /*

@@ -397,6 +397,7 @@ int HttpSsiHandler(HTTPD_SESSION *hs, const MEDIA_TYPE_ENTRY *mt, const char *fi
 
 static const char* HttpSsiVarHandler(HTTPD_SESSION *hs, const char *name)
 {
+    (void)hs;
     return name;
 }
 

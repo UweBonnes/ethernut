@@ -81,7 +81,7 @@
  */
 FILE *_fdopen(int fd, const char *mode)
 {
-    int mflags = _O_TEXT;
+    int mflags;
     uint_fast8_t i;
 
     /*

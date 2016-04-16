@@ -309,6 +309,8 @@ int s_set_flags(HTTP_STREAM *sp, unsigned int flags)
 
     return 0;
 #else
+    (void)sp;
+    (void)flags;
     return -1;
 #endif
 }
@@ -323,6 +325,8 @@ int s_clr_flags(HTTP_STREAM *sp, unsigned int flags)
 
     return 0;
 #else
+    (void)sp;
+    (void)flags;
     return -1;
 #endif
 }
@@ -453,6 +457,9 @@ const char *StreamInfo(HTTP_STREAM *sp, int item)
         asprintf(&env_value, "%u", sp->strm_sock->so_local_port);
         break;
     }
+#else
+    (void)sp; 
+    (void)item;
 #endif
     if (env_value == NULL) {
         env_value = strdup("");

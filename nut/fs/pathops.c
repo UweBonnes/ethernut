@@ -138,6 +138,8 @@ int access(const char *path, int what)
 {
     struct stat s;
 
+    (void)what;
+
     if (stat(path, &s)) {
         return -1;
     }
@@ -155,6 +157,9 @@ int access(const char *path, int what)
  */
 long lseek(int fh, long pos, int whence)
 {
+    (void)fh;
+    (void)pos;
+    (void)whence;
     //IOCTL_ARG3 args;
 
     //args.arg1 = (void *)fh;
@@ -227,6 +232,8 @@ int stat(const char *path, struct stat *s)
  */
 int fstat(int fh, struct stat *s)
 {
+    (void)fh;
+    (void)s;
     return -1;
 }
 
@@ -237,6 +244,7 @@ int fstat(int fh, struct stat *s)
  */
 int mkdir(const char *path, int mode)
 {
+    (void)mode;
     return PathOperation(path, FS_DIR_CREATE);
 }
 

@@ -145,6 +145,9 @@ static INLINE int ValidateUserArea(HEAPNODE * node)
     }
 #endif
 #endif
+
+    (void)node; 
+
     return 0;
 }
 
