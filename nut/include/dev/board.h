@@ -235,6 +235,9 @@
 #elif defined(EA_LPC1788_KIT)
 #include <arch/cm3/board/ea_lpc1788_kit.h>
 #define BOARDNAME "EA_LPC1788_KIT"
+#elif defined(EA_LPC4088_KIT)
+#include <arch/cm3/board/ea_lpc4088_kit.h>
+#define BOARDNAME "EA_LPC4088_KIT"
 #elif defined(MCO_COMPACT)
 #include <arch/cm3/board/mco_compact.h>
 #define BOARDNAME "MCO_COMPACT"
