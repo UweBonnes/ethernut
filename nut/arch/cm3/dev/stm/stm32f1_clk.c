@@ -340,7 +340,7 @@ static int SetRccCfgr2(int src)
         cfgr2 |= RCC_CFGR2_PREDIV1SRC_PLL2;
         RCC->CFGR2 = cfgr2;
         return rcc_set_and_wait_rdy(&RCC->CR, RCC_CR_PLL2ON, RCC_CR_PLL2RDY,
-                                    0, HSE_STARTUP_TIMEOUT);
+                                    1, HSE_STARTUP_TIMEOUT);
     }
     RCC->CFGR2 = cfgr2;
     return 0;
