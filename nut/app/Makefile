@@ -101,6 +101,7 @@ all:
 	-$(MAKE) -C jtagtest
 	-$(MAKE) -C logtime
 	-$(MAKE) -C lua
+	-$(MAKE) -C mdnsd_uhttp
 	-$(MAKE) -C mmc_test
 	-$(MAKE) -C pingnet
 	-$(MAKE) -C pioled
@@ -136,6 +137,7 @@ install:
 	-$(MAKE) -C jtagtest
 	-$(MAKE) -C logtime install
 	-$(MAKE) -C lua install
+	-$(MAKE) -C mdnsd_uhttp install
 	-$(MAKE) -C mmc_test install
 	-$(MAKE) -C pingnet install
 	-$(MAKE) -C pioled install
@@ -171,6 +173,7 @@ clean:
 	-$(MAKE) -C jtagtest
 	-$(MAKE) -C logtime clean
 	-$(MAKE) -C lua clean
+	-$(MAKE) -C mdnsd_uhttp clean
 	-$(MAKE) -C mmc_test clean
 	-$(MAKE) -C pingnet clean
 	-$(MAKE) -C pioled clean
