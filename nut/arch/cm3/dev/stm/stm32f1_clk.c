@@ -109,7 +109,8 @@
 #   define PLLCLK_SOURCE     PLLCLK_HSE_PLL2
 #   define PLL2CLK_PREDIV    (PLLCLK_IN / 5000000)
 #   define PLL2CLK_MULT      8
-#   define PLLCLK_DIV        5
+#   define PLLCLK_DIV        1
+#   define PLLCLK_PREDIV     5
 #   define PLLCLK_MULT       (SYSCLK_FREQ / 8000000)
 #  elif (HSE_VALUE % (14745600 / 4))
 #   define PLLCLK_SOURCE     PLLCLK_HSE_PLL2
