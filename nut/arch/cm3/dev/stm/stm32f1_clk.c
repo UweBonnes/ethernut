@@ -242,7 +242,7 @@ static void SystemCoreClockUpdate(void)
     /* Use value * 2 to get integer value for multiplication factor 6.5 */
     const uint8_t pll1mult[16] = { 0,  0,  8, 10, 12, 14, 16, 18,  0,  0,  0,  0,  0, 13, 0 ,  0};
     const uint8_t pll2mult[16] = { 0,  0,  0,  0,  0,  0,  8,  9, 10, 11, 12, 13, 14,  0, 16, 20};
-    uint32_t prediv1factor;
+    uint32_t prediv1factor = 0;
 #endif
 
     /* Get SYSCLK source -------------------------------------------------------*/
