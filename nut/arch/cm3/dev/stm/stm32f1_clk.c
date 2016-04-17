@@ -434,8 +434,7 @@ int SetSysClockSource( int src)
         new_sysclk = HSE_VALUE;
     } else if (src == SYSCLK_PLL) {
         if (PLLCLK_SOURCE == PLLCLK_HSE_PLL2) {
-/* PLLCLK_MULT is is actual value * 2, so divide by two*/
-            new_sysclk = ((((PLLCLK_IN * PLL2CLK_MULT) / PLL2CLK_PREDIV) * PLLCLK_MULT) / (PLLCLK_PREDIV * 2));
+            new_sysclk = (((PLLCLK_IN / PLL2CLK_PREDIV) * PLL2CLK_MULT) / PLLCLK_PREDIV) * PLLCLK_MULT;
         } else {
             new_sysclk = (PLLCLK_IN * PLLCLK_MULT) / PLLCLK_PREDIV;
         }
