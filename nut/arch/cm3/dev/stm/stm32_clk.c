@@ -72,7 +72,7 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 #  define PLLCLK_DIV 1
 # endif
 # if defined(MCU_STM32F1_CL)
-#  define SYSCLK_RES (((PLLCLK_IN / PLL2CLK_PREDIV) * PLL2CLK_MULT) * PLLCLK_MULT / PLLCLK_DIV)
+#  define SYSCLK_RES ((((PLLCLK_IN / PLL2CLK_PREDIV) * PLL2CLK_MULT) / PLLCLK_PREDIV) * PLLCLK_MULT)
 # else
 #  define SYSCLK_RES (((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) / PLLCLK_DIV)
 # endif
