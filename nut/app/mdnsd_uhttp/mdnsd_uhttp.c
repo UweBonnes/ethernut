@@ -47,6 +47,7 @@
 #include <arpa/inet.h>
 #include <pro/dhcp.h>
 
+#include <pro/uhttp/modules/mod_redir.h>
 #include <pro/uhttp/mediatypes.h>
 #include <pro/mdnsd/mdnsd.h>
 
