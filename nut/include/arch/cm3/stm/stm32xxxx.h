@@ -304,9 +304,9 @@
 # if   defined(STM32F745xx)
 #  include <arch/cm3/stm/vendor/stm32f745xx.h>
 # elif defined(STM32F746xx)
-#  include <arch/cm3/stm/vendor/stm32f745xx.h>
+#  include <arch/cm3/stm/vendor/stm32f746xx.h>
 # elif defined(STM32F756xx)
-#  include <arch/cm3/stm/vendor/stm32f745xx.h>
+#  include <arch/cm3/stm/vendor/stm32f756xx.h>
 # else
 #  warning "Unknown STM32F7 family"
 # endif
