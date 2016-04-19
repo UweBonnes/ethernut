@@ -229,8 +229,10 @@ static void SetBusDividers(uint32_t ahb_div, uint32_t apb1_div,
 
     cfgr = RCC->CFGR;
     cfgr  &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2);
-    /* Skip zeros at start of table*/
-    i = 7;
+    /* Vendor code expects 0 <= HPRE <= 3 for AHB_DIV == 1, while
+     * register description allows 0 <= HPRE <= 7.
+     * So waste some cycle and start searching at 3. */
+    i = 3;
     while ((1 << AHBPrescTable[i]) < AHB_DIV) {
         i++;
     }
