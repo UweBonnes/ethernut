@@ -174,9 +174,12 @@ static void I2cEventBusIrqHandler(void *arg)
     {
         msg->msg_rdat[msg->msg_ridx] = i2c->RXDR;
         msg->msg_ridx++;
-        if (msg->msg_ridx == msg->msg_rsiz)
+        if (msg->msg_ridx == msg->msg_rsiz) {
             /* No more RX Interrupts*/
             i2c->CR1 &= ~I2C_CR1_RXIE;
+            /* Generate Stop at end of byte */
+            i2c->CR2 |=  I2C_CR2_STOP;
+        }
     }
     if (i2c->ISR & I2C_ISR_STOPF)
     {
