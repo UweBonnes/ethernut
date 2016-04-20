@@ -50,5 +50,6 @@ extern NUTDEVICE devStm32Emac;
 #define devEth0   devStm32Emac
 #endif
 
-#endif
+void Emac_SetPhyAddr(unsigned int new_phy_addr);
 
+#endif

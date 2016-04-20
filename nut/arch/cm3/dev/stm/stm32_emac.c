@@ -182,6 +182,9 @@ static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((
 static unsigned int rxBufIdx = 0;
 static uint32_t mii_clk_range;
 
+static unsigned int nic_phy_addr = NIC_PHY_ADDR;
+
+
 #define TDES0_OWN           0x80000000  /* Bit set: descriptor is owned by DMA */
 #define TDES0_IC            0x40000000  /* Set transmit interrupt after transmission */
 #define TDES0_LS            0x20000000  /* Indicates last segment of the frame */
@@ -247,6 +250,23 @@ static uint32_t mii_clk_range;
 #define RDES1_RBS1_MASK     0x00001FFF  /* Receiver buffer 1 size */
 #define RDES1_RBS1_SHIFT    0           /* Number of right shifts to get received buffer 1 size */
 
+
+
+/*!
+ * \brief changes the PHY address.
+ *
+ * \param new PHY address.
+ *
+ * \remark this must be done before calling the Emac Init Function.
+ */
+void Emac_SetPhyAddr(unsigned int new_phy_addr)
+{
+	nic_phy_addr = new_phy_addr;
+}
+
+
+
+
 /*!
  * \brief Read contents of PHY register.
  *
@@ -262,7 +282,7 @@ static uint16_t phy_inw(uint8_t reg)
     /* PHY read command. */
     tempReg = inr(&(ETH->MACMIIAR));
     tempReg &= 0xffff0020;
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB;
+    tempReg |= ((nic_phy_addr) << 11) | ((reg & 0x1F) << 6) | ETH_MACMIIAR_MB;
     tempReg |=  mii_clk_range;
     outr(&(ETH->MACMIIAR), tempReg);
 
@@ -301,7 +321,7 @@ static void phy_outw(uint8_t reg, uint16_t val)
     outr(&(ETH->MACMIIDR), val);
     tempReg = inr(&(ETH->MACMIIAR));
     tempReg &= 0xffff0020;
-    tempReg |= ((NIC_PHY_ADDR) << 11) | ((reg & 0x1F) << 6);
+    tempReg |= ((nic_phy_addr) << 11) | ((reg & 0x1F) << 6);
     tempReg |= ETH_MACMIIAR_MW | ETH_MACMIIAR_MB | mii_clk_range;
     outr(&(ETH->MACMIIAR), tempReg);
 
@@ -350,7 +370,7 @@ static int EmacReset(void)
     RCC->AHB1RSTR &= ~RCC_AHB1RSTR_ETHMACRST;
 #endif
     /* Register PHY to be able to reset it */
-    rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
+    rc = NutRegisterPhy( nic_phy_addr, phy_outw, phy_inw);
 
     /* Reset PHY
        (Note that this does not set all PHY registers to reset values!) */
@@ -359,7 +379,7 @@ static int EmacReset(void)
     NutSleep(250);
 
     /* Register PHY again to do all the initianlization */
-    rc = NutRegisterPhy( NIC_PHY_ADDR, phy_outw, phy_inw);
+    rc = NutRegisterPhy( nic_phy_addr, phy_outw, phy_inw);
 
 #if 0
     /* Clear MII isolate. */
@@ -871,7 +891,7 @@ int EmacInit(NUTDEVICE * dev)
     uint32_t ahb_clock;
 
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
-    EMPRINTF("Using Mode %s, Remap %s, NIC_PHY_ADDR %d, \n",
+    EMPRINTF("Using Mode %s, Remap %s, nic_phy_addr %d, \n",
 #ifdef PHY_MODE_MII
              "MII",
 #else
@@ -882,7 +902,7 @@ int EmacInit(NUTDEVICE * dev)
 #else
              "disabled",
 #endif
-             NIC_PHY_ADDR
+             nic_phy_addr
         );
 
     /* Clear EMACINFO structure. */
