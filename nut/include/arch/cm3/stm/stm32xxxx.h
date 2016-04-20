@@ -470,8 +470,12 @@
 
 extern int Stm32ResetCause(void);
 
-/* Allow readable values in the configurator */
-#define ENABLE  1
-#define DISABLE 0
+/* Allow readable values in the configurator, but avoid
+ * name clash when STM libraries are used too.
+ */
+#ifndef USE_STD_PERIPHERAL_DRIVERS
+# define ENABLE  1
+# define DISABLE 0
+#endif
 
 #endif
