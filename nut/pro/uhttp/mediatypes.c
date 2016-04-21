@@ -38,6 +38,8 @@
 
 #include <io.h>
 #include <fcntl.h>
+
+#include <cfg/http.h>
 #if !defined(HTTPD_EXCLUDE_DATE)
 #include <time.h>
 #endif

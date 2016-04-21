@@ -36,6 +36,7 @@
  * $Id$
  */
 
+#include <cfg/http.h>
 #if !defined(HTTPD_EXCLUDE_DATE)
 #include <pro/rfctime.h>
 #endif
