@@ -806,6 +806,9 @@ static uint32_t Lpc17xxUsartGetStatus(void)
     if ((rx_errors & UART_LSR_PE) != 0) {
         rc |= UART_PARITYERROR;
     }
+    if ((rx_errors & UART_LSR_BI) != 0) {
+        rc |= UART_BREAKERROR;
+    }
 
 #if defined(UART_XONXOFF_CONTROL)
     /*
@@ -899,6 +902,7 @@ static int Lpc17xxUsartSetStatus(uint32_t flags)
     if (flags & UART_ERRORS) {
         /* Clear errors by reading the line status register */
         (volatile uint32_t)USARTn->LSR;
+        rx_errors = 0;
     }
 
     /*
