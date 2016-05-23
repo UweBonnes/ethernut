@@ -89,7 +89,7 @@
 #  define I2C2_SCL_AF  4
 #  define I2C2_SMBA_AF 4
 #
-#  if I2C3_SDA == PB04 && (defined(MCU_STM32F401) || defined(MCU_STM32F411))
+#  if I2C3_SDA == PB04 && (defined(MCU_STM32F401xC) || defined(MCU_STM32F401xE) || defined(MCU_STM32F411xE))
 #   define I2C3_SDA_AF 9
 #  elif I2C3_SDA == PC09 && defined(MCU_STM32F3)
 #   define I2C3_SDA_AF 3
