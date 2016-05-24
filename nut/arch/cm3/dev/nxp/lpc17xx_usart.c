@@ -795,7 +795,7 @@ static uint32_t Lpc17xxUsartGetStatus(void)
     uint32_t rc = 0;
 
     /*
-     * Set receiver error flags.
+     * Set receiver error and status flags.
      */
     if ((rx_errors & UART_LSR_FE) != 0) {
         rc |= UART_FRAMINGERROR;
@@ -807,7 +807,7 @@ static uint32_t Lpc17xxUsartGetStatus(void)
         rc |= UART_PARITYERROR;
     }
     if ((rx_errors & UART_LSR_BI) != 0) {
-        rc |= UART_BREAKERROR;
+        rc |= UART_BREAKCONDITION;
     }
 
 #if defined(UART_XONXOFF_CONTROL)

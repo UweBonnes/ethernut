@@ -584,17 +584,17 @@
  */
 #define UART_PARITYERROR    0x00000004UL
 
-/*! \brief Break error.
+/*! \brief Break condition.
  *
- * \ref UART_SETSTATUS will clear this error.
+ * \ref UART_SETSTATUS will clear this status flag.
  */
-#define UART_BREAKERROR     0x00000008UL
+#define UART_BREAKCONDITION 0x00000008UL
 
-/*! \brief UART errors.
+/*! \brief UART errors and status flags.
  *
- * \ref UART_SETSTATUS will clear all errors.
+ * \ref UART_SETSTATUS will clear all errors and flags.
  */
-#define UART_ERRORS         (UART_FRAMINGERROR | UART_OVERRUNERROR | UART_PARITYERROR | UART_BREAKERROR)
+#define UART_ERRORS         (UART_FRAMINGERROR | UART_OVERRUNERROR | UART_PARITYERROR | UART_BREAKCONDITION)
 
 /*! \brief Receiver buffer empty.
  */
