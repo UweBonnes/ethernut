@@ -144,7 +144,7 @@
 #   define SPI3_NSS  PIN_NONE
 #  endif
 /* End STM32F1*/
-# elif defined(MCU_STM32F446xE)
+# elif defined(MCU_STM32F446)
 #  define SPI3_NSS_AF   6
 #  define SPI3_SCK_AF   6
 #  define SPI3_MISO_AF  6
@@ -162,16 +162,16 @@
 # endif
 
 /* SPI4*/
-# if   defined(MCU_STM32F411xE)
+# if   defined(MCU_STM32F411)
 #  define SPI4_NSS_AF   ((SPI4_NSS  == PB12)? 6 : 5)
 #  define SPI4_SCK_AF   ((SPI4_SCK  == PB13)? 6 : 5)
 #  define SPI4_MISO_AF  ((SPI4_MISO == PA11)? 6 : 5)
 #  define SPI4_MOSI_AF  5
-# elif  defined(MCU_STM32F446xE)
+# elif  defined(MCU_STM32F446)
 #  define SPI4_NSS_AF   ((SPI4_NSS  == PG14)? 6 : 5)
-#  define SPI4_SCK_AF   ((SPI4_SCK  == PG11)? 6 : 5
-#  define SPI4_MISO_AF  ((SPI4_MISO == PG12)? 6 : 5
-#  define SPI4_MOSI_AF  ((SPI4_MOSI == PG13)? 6 : 5
+#  define SPI4_SCK_AF   ((SPI4_SCK  == PG11)? 6 : 5)
+#  define SPI4_MISO_AF  ((SPI4_MISO == PG12)? 6 : 5)
+#  define SPI4_MOSI_AF  ((SPI4_MOSI == PG13)? 6 : 5)
 # else
 #  define SPI4_NSS_AF   5
 #  define SPI4_SCK_AF   5
@@ -180,7 +180,7 @@
 # endif
 
 /* SPI5*/
-# if   defined(MCU_STM32F411xE)
+# if   defined(MCU_STM32F411)
 #  define SPI_NSS_AF    6
 #  define SPI5_SCK_AF   6
 #  define SPI5_MISO_AF  6

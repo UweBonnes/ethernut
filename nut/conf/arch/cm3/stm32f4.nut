@@ -170,9 +170,9 @@ nutarch_cm3_stm32f4 =
                 file = "include/cfg/arch.h"
              },
              {
-                macro = "STM32F411xE",
+                macro = "MCU_STM32F411",
                 brief = "STM32F411 Low Power",
-                description = "Provides vendor header for STM32F411 and additional devices.",
+                description = "Provides additional devices for STM32F411.",
                 requires = { "HW_MCU_STM32F411" },
                 default = 1,
                 provides =
@@ -180,6 +180,14 @@ nutarch_cm3_stm32f4 =
                     "HW_SPI4_STM32",
                     "HW_SPI5_STM32"
                 },
+                file = "include/cfg/arch.h",
+             },
+             {
+                macro = "STM32F411xE",
+                brief = "STM32F411 Low Power",
+                description = "Provides vendor header for STM32F411xE.",
+                requires = { "HW_MCU_STM32F411xE" },
+                default = 1,
                 file = "include/cfg/arch.h",
              },
              {
@@ -294,10 +302,10 @@ nutarch_cm3_stm32f4 =
                 file = "include/cfg/arch.h"
              },
              {
-                macro = "STM32F446xx",
-                brief = "STM32F446",
-                description = "Provides vendor header for STM32F446 and additional devices.",
-                requires = { "HW_MCU_STM32F446" },
+                macro = "MCU_STM32F446",
+                brief = "MCU_STM32F446",
+                description = "Provides additional devices for STM32F446.",
+                requires = { "HW_MCU_STM32F44" },
                 default = 1,
                 provides =
                 {
@@ -322,10 +330,18 @@ nutarch_cm3_stm32f4 =
                 file = "include/cfg/arch.h"
              },
              {
-                 macro = "STM32F469xx",
-                 brief = "STM32F460",
-                 description = "Provides vendor header for STM32F469 and additional devices.",
-                 requires = { "HW_MCU_STM32F469" },
+                macro = "STM32F446xx",
+                brief = "STM32F446xx",
+                description = "Provides vendor header for STM32F446.",
+                requires = { "HW_MCU_STM32F446" },
+                default = 1,
+                file = "include/cfg/arch.h"
+             },
+             {
+                 macro = "MCU_STM32F469",
+                 brief = "MCU_STM32F469",
+                 description = "Provides additional devices for STM32F46 subfamily.",
+                 requires = { "HW_MCU_STM32F46" },
                  default = 1,
                  provides =
                  {
@@ -345,6 +361,14 @@ nutarch_cm3_stm32f4 =
                     "HW_UART4_STM32",
                     "HW_UART5_STM32",
                  },
+                 file = "include/cfg/arch.h"
+              },
+              {
+                 macro = "STM32F469xx",
+                 brief = "STM32F469xx",
+                 description = "Provides vendor header for STM32F469.",
+                 requires = { "HW_MCU_STM32F469" },
+                 default = 1,
                  file = "include/cfg/arch.h"
               }
          }

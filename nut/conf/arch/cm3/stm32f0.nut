@@ -165,7 +165,6 @@ nutarch_cm3_stm32f0 =
                 requires = { "HW_MCU_STM32F04"},
                 type = "integer",
                 default = 1,
-                requires = { "HW_MCU_STM32F042_MD" };
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F0",

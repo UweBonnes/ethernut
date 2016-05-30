@@ -82,16 +82,55 @@ nutarch_cm3_stm32l0 =
                     "HW_SPI1_STM32",
                     "HW_TIM2_32BIT_STM32",
                     "HW_TIM21_STM32",
-                    "HW_TIM21_STM32",
                     "HW_USART2_STM32",
                 },
                 file = "include/cfg/arch.h",
             },
             {
-                macro = "MCU_CM_NO_BITBAND",
-                brief = "No Bitbanding",
-                description = "Selected family has no bitband support",
+                macro = "MCU_STM32L0X1",
+                brief = "STM32L0X1 Subfamily",
+                description = "STM32L0 Access Subfamily",
+                requires = {"HW_MCU_STM32L0X1"},
                 default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32L0X2",
+                brief = "STM32L0X2 Subfamily",
+                description = "STM32L0 USB Subfamily",
+                requires = {"HW_MCU_STM32L0X2"},
+                default = 1,
+                provides =
+                {
+                    "HW_CRS_STM32",
+                    "HW_TSC_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM22_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_USART1_STM32",
+                    "HW_USB_STM32",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32L0X3",
+                brief = "STM32L0X3 Subfamily",
+                description = "STM32L0 USB & LCD Subfamily",
+                requires = {"HW_MCU_STM32L0X3"},
+                default = 1,
+                provides =
+                {
+                    "HW_CRS_STM32",
+                    "HW_TSC_STM32",
+                    "HW_TIM6_DAC_STM32",
+                    "HW_TIM22_STM32",
+                    "HW_I2C2_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_USART1_STM32",
+                    "HW_LCD_STM32",
+                    "HW_USB_STM32",
+                },
                 file = "include/cfg/arch.h"
             },
 -- Use macro names so that ST vendor defines are produced
@@ -103,8 +142,7 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L011" },
                 provides =
                 {
-                    "HW_DMA1_STM32L0",
-                    "HW_LPUART1_STM32",
+                   "HW_LPUART1_STM32",
                 },
                 file = "include/cfg/arch.h",
             },
@@ -171,15 +209,7 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L052" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
-                    "HW_TIM6_DAC_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
-                    "HW_RNG_LPUART1_STM32",
-                    "HW_USB_STM32",
+                   "HW_RNG_LPUART1_STM32",
                 },
                 file = "include/cfg/arch.h",
             },
@@ -191,17 +221,8 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L053" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
-                    "HW_TIM6_DAC_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
                     "HW_RNG_LPUART1_STM32",
-                    "HW_LCD_STM32",
-                    "HW_USB_STM32",
-                },
+                 },
                 file = "include/cfg/arch.h"
             },
             {
@@ -228,15 +249,7 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L062" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
-                    "HW_TIM6_DAC_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
                     "HW_AES_RNG_LPUART1_STM32",
-                    "HW_USB_STM32",
                 },
                 file = "include/cfg/arch.h",
             },
@@ -248,16 +261,7 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L063" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
-                    "HW_TIM6_DAC_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
                     "HW_AES_RNG_LPUART1_STM32",
-                    "HW_LCD_STM32",
-                    "HW_USB_STM32",
                 },
                 file = "include/cfg/arch.h",
             },
@@ -291,20 +295,11 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L072" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
+                    "HW_RNG_LPUART1_STM32",
                     "HW_USART4_5_STM32",
                     "HW_TIM3_STM32",
-                    "HW_TIM6_STM32",
                     "HW_TIM7_STM32",
                     "HW_I2C3_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
-                    "HW_USART2_STM32",
-                    "HW_RNG_LPUART1_STM32",
-                    "HW_USB_STM32",
                  },
                 file = "include/cfg/arch.h"
             },
@@ -316,22 +311,12 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L073" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
                     "HW_USART4_5_STM32",
                     "HW_TIM3_STM32",
-                    "HW_TIM6_STM32",
                     "HW_TIM7_STM32",
                     "HW_I2C3_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
-                    "HW_USART2_STM32",
                     "HW_RNG_LPUART1_STM32",
-                    "HW_LCD_STM32",
-                    "HW_USB_STM32",
-                 },
+                },
                 file = "include/cfg/arch.h"
             },
             {
@@ -364,20 +349,10 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L082" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
                     "HW_USART4_5_STM32",
                     "HW_TIM3_STM32",
-                    "HW_TIM6_STM32",
                     "HW_TIM7_STM32",
-                    "HW_I2C3_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
-                    "HW_USART2_STM32",
                     "HW_AES_RNG_LPUART1_STM32",
-                    "HW_USB_STM32",
                  },
                 file = "include/cfg/arch.h"
             },
@@ -389,22 +364,19 @@ nutarch_cm3_stm32l0 =
                 requires = { "HW_MCU_STM32L083" },
                 provides =
                 {
-                    "HW_CRS_STM32",
-                    "HW_TSC_STM32",
                     "HW_USART4_5_STM32",
                     "HW_TIM3_STM32",
-                    "HW_TIM6_STM32",
                     "HW_TIM7_STM32",
                     "HW_I2C3_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32V2",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
-                    "HW_USART2_STM32",
                     "HW_AES_RNG_LPUART1_STM32",
-                    "HW_LCD_STM32",
-                    "HW_USB_STM32",
                  },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                default = 1,
                 file = "include/cfg/arch.h"
             },
         }

@@ -103,6 +103,13 @@ nutarch_cm3_stm32f2 =
                 file = "include/cfg/arch.h"
             },
             {
+                macro = "MCU_STM32F20",
+                brief = "STM32F20",
+                description = "Common devices in STM32F20 subfamily.",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
                 macro = "STM32F205xx",
                 brief = "STM32F205",
                 description = "Provide vendor header for STM32F205.",

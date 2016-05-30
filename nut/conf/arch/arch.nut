@@ -872,13 +872,19 @@ nutarch =
             --
             -- STM STM32F0 SERIES CONTROLLER
             --
+            -- For each STM device include/cfg/arch.h should export at least
+            -- Architecture   (MCU_CM3      triggered by HW_MCU_CM3)
+            -- Vendor         (MCU_STM32    triggered by HW_MCU_STM32)
+            -- Family    (e.g. MCU_STM32F0  triggered by HW_MCU_STM32F0)
+            -- Subfamily (e.g. MCU_STM32F04 triggered by HW_MCU_STM32F04)
+            -- Header    (e.g. STM32F042x6  triggered by HW_MCU_STM32F042)
+            -- Subfamily may have another level of differentiation
             {
                 macro = "MCU_STM32F030x8",
                 brief = "STM STM32F030 64 kB",
                 description = "STM STM32F030 with 64 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -899,7 +905,6 @@ nutarch =
                 description = "STM STM32F042 with 32 kB and USB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -919,7 +924,6 @@ nutarch =
                 description = "STM STM32F051 with 64 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -939,7 +943,6 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
-                file = "include/cfg/arch.h",
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
@@ -957,7 +960,6 @@ nutarch =
                 description = "STM32F091 256 kB STM32F0.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -979,7 +981,6 @@ nutarch =
                 description = "STM STM32F100 128 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -999,7 +1000,6 @@ nutarch =
                 description = "STM STM32F103 128 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1019,7 +1019,6 @@ nutarch =
                 description = "STM STM32F103 512 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1039,7 +1038,6 @@ nutarch =
                 description = "STM STM32F107 256 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1058,13 +1056,13 @@ nutarch =
                 description = "STM32L031 32 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32L0",
+                    "HW_MCU_STM32L0X1",
                     "HW_MCU_STM32L031",
                 },
                 makedefs = { "FLASH0_LENGTH=16K",
@@ -1078,14 +1076,14 @@ nutarch =
                 description = "STM32L053 64 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32L0",
-                    "HW_MCU_STM32L051",
+                    "HW_MCU_STM32L0X3",
+                    "HW_MCU_STM32L053",
                 },
                 makedefs = { "FLASH0_LENGTH=64K",
                              "RAM0_LENGTH=8K" },
@@ -1096,7 +1094,6 @@ nutarch =
                 description = "STM32L151 256 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1115,7 +1112,6 @@ nutarch =
                 description = "STM32L152 128 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1134,7 +1130,6 @@ nutarch =
                 description = "STM32L152 256 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1154,7 +1149,6 @@ nutarch =
                 description = "STM32L152 512 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1174,7 +1168,6 @@ nutarch =
                 description = "STM32L476 1024 kB",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1194,7 +1187,6 @@ nutarch =
                 description = "STM32F401 256 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = {  },
                 provides = {
                     "HW_TARGET",
@@ -1213,7 +1205,6 @@ nutarch =
                 description = "STM32F401 512 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = {  },
                 provides = {
                     "HW_TARGET",
@@ -1232,7 +1223,6 @@ nutarch =
                 description = "STM32F405 with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = {  },
                 provides = {
                     "HW_TARGET",
@@ -1253,7 +1243,6 @@ nutarch =
                 description = "STM32F407 with Ethernet and FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1274,7 +1263,6 @@ nutarch =
                 description = "Low power 512 kB STM32F4 with USB OTG (FS).",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1282,6 +1270,7 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4",
                     "HW_MCU_STM32F411",
+                    "HW_MCU_STM32F411xE",
                 },
                 makedefs = { "FLASH0_LENGTH=512K",
                              "RAM0_LENGTH=128K" },
@@ -1292,7 +1281,6 @@ nutarch =
                 description = "STM32F429 with LCD, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1313,13 +1301,13 @@ nutarch =
                 description = "STM32F446 512 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4",
+                    "HW_MCU_STM32F44",
                     "HW_MCU_STM32F446",
                 },
                 makedefs = { "FLASH0_LENGTH=512K",
@@ -1333,13 +1321,13 @@ nutarch =
                 description = "STM32F469 with DSI, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F4",
+                    "HW_MCU_STM32F46",
                     "HW_MCU_STM32F469",
                 },
                 makedefs = { "FLASH0_LENGTH=512K",
@@ -1353,7 +1341,6 @@ nutarch =
                 description = "STM32F746 with LCD, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1375,7 +1362,6 @@ nutarch =
                 description = "STM32F746 with Crypto, LCD, Ethernet and FMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1397,13 +1383,13 @@ nutarch =
                 description = "STM32F205 256 kb with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2",
+                    "HW_MCU_STM32F20",
                     "HW_MCU_STM32F205",
                 },
                 makedefs = { "FLASH0_LENGTH=256K",
@@ -1424,6 +1410,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2",
+                    "HW_MCU_STM32F20",
                     "HW_MCU_STM32F207",
                 },
                 makedefs = { "FLASH0_LENGTH=256K",
@@ -1437,13 +1424,13 @@ nutarch =
                 description = "STM32F207 with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F2",
+                    "HW_MCU_STM32F20",
                     "HW_MCU_STM32F207",
                 },
                 makedefs = { "FLASH0_LENGTH=1024K",
@@ -1457,7 +1444,6 @@ nutarch =
                 description = "STM32F303 with CCM, CAN, USB, 2 ADC, 2 DAC, 3 COMP, 1 OP.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1478,7 +1464,6 @@ nutarch =
                 description = "STM32F303 with CCM, CAN, USB, 4 ADC, 2 DAC, 7 COMP, 4 OP.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
@@ -1500,7 +1485,6 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },
-                file = "include/cfg/arch.h",
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
