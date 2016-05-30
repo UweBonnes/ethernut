@@ -1042,7 +1042,7 @@ nutarch_cm3_stm32_pll =
             file = "include/cfg/clock.h"
         },
         {
-            macro = "FLASH_ART_ACCELARATION",
+            macro = "FLASH_ART_ACCELERATION",
             brief = "Unified flash acceleration buffer",
             description = "Enable a unified cache of 64 lines of 256 bits.\n"..
                           "Default is enabled!",

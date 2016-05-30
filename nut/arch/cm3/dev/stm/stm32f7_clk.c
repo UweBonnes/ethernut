@@ -34,7 +34,7 @@
 
 /*!
  * \file arch/cm3/dev/stm/stm32f7_clk.c
- * \brief Clock handling for F2 and F7
+ * \brief Clock handling for F2, F4 and F7
  *
  * \verbatim
  * $Id$
@@ -483,7 +483,7 @@ int SetSysClockSource(int src)
     } else {
         FLASH->ACR &= ~FLASH_ACR_PRFTEN;
     }
-    if (FLASH_ART_ACCELARATION == ENABLE) {
+    if (FLASH_ART_ACCELERATION == ENABLE) {
         FLASH->ACR |= FLASH_ACR_ARTEN;
     } else {
         FLASH->ACR &= ~FLASH_ACR_ARTEN;
