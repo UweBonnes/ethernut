@@ -727,6 +727,13 @@ function GetPowerScaleRegister()
     return {"1", "2", "3"}
 end
 
+function GetFlashPrefetchDefault()
+    if c_is_provided("HW_MCU_STM32F7") then
+        return "DISABLE"
+    end
+    return "ENABLE"
+end
+
 function GetPowerScaleRegisterDefault()
     if c_is_provided("HW_MCU_STM32F401") then
         return "2"
@@ -1034,17 +1041,20 @@ nutarch_cm3_stm32_pll =
                           "Prefetch reads next flash row while old row\n"..
                           "is still executed. With linear code, effective\n"..
                           "no wait state is needed.\n"..
-                          "Default is enabled!",
+                          "On F7, program needs to access code at 0x00200000 and"..
+                          " FLASH_ART_ACCELARATION must be enabled.\n"..
+                          "Default is enabled(F7: disabled)!",
             type = "enumerated",
             choices = {"DISABLE", "ENABLE"},
-            default = "ENABLE",
+            default = function() return GetFlashPrefetchDefault() end,
             file = "include/cfg/clock.h"
         },
         {
             macro = "FLASH_ART_ACCELERATION",
             brief = "Unified flash acceleration buffer",
             description = "Enable a unified cache of 64 lines of 256 bits.\n"..
-                          "Default is enabled!",
+                          "Needs program mapped to 0x00200000.\n"..
+                          "Default is disabled!",
             requires = {"HW_MCU_STM32F7"},
             type = "enumerated",
             choices = {"DISABLE", "ENABLE"},
