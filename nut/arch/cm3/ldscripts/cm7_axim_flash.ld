@@ -2,6 +2,8 @@
  *
  * stm32_generic_flash.ld - linker script  for nutos on cortex-m3 STM32 series
  *
+ * Text is linked at 0x08000000 so AXIM access and maybe ICache is used.
+ *
  *****************************************************************************/
 
 ENTRY(NutInit)
@@ -27,7 +29,7 @@ SECTIONS
 
     .text :
     {
-	    . = ALIGN(4);
+	. = ALIGN(4);
         _svect = .;
         KEEP(*(.isr_vector))
         _evect = .;
@@ -37,7 +39,7 @@ SECTIONS
         *(.glue_7t)
         *(.glue_7)
 	*(.gcc_except_table)
-	    . = ALIGN(4);
+	. = ALIGN(4);
     } > FLASH0
 
     /* .ARM.exidx is sorted, so has to go in its own output section. */
@@ -51,19 +53,19 @@ SECTIONS
     .vtable (NOLOAD):
     {
 	. = ALIGN(4);
-	    _vtable = .;
-	    *(.vtable*)
+	_vtable = .;
+	*(.vtable*)
 	. = ALIGN(4);
-	    _evtable = .;
+	_evtable = .;
     } > SRAM0
 
-    .data : AT (_etext)
+    .data :
     {
         _sdata = .;
         *(.data .data.* .gnu.linkonce.d.*)
 	. = ALIGN(4);
         _edata = .;
-    } > SRAM0
+    } > SRAM0 AT > FLASH0
 
     .bss (NOLOAD):
     {
@@ -103,12 +105,12 @@ SECTIONS
 
 end = .;
 
-    .itcm_text : AT (_etext - _sdata + _edata)
+    .itcm_text :
     {
 	*(.ramfunc);
 	. = ALIGN(4);
         _eramfunc = .;
-    } > ITCM
+    } > ITCM AT > FLASH0
 
 /*
     DISCARD :

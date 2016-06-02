@@ -60,8 +60,8 @@ else
         LDFLAGS+= -Wl,--defsym=bootloader_offset=0
 endif
 
-ifdef LDSCRIPT_FLASH_ITCM
-        LDFLAGS += -T$(LDSCRIPT_FLASH_ITCM)
+ifdef LDSCRIPT_FLASH_AXIM
+        LDFLAGS += -T$(LDSCRIPT_FLASH_AXIM)
 else ifdef LDSCRIPT_RAM
         LDFLAGS += -T$(LDSCRIPT_RAM)
 else ifdef LDSCRIPT_FLASH

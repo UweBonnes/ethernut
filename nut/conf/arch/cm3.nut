@@ -224,12 +224,12 @@ nutarch_cm3 =
                 makedefs = { "LDSCRIPT_RAM=stm32_generic_ram.ld" },
             },
             {
-                macro = "NUT_ITCM_LINK",
-                brief = "Flash/ITCM",
-                description = "Place code in Flash and RAM_FUNC in ITCM.",
+                macro = "NUT_AXIM_LINK",
+                brief = "Flash/AXIM access",
+                description = "Code in Flash, access with AXIM.",
                 default = 1,
                 requires = { "HW_MCU_CM7" },
-                makedefs = { "LDSCRIPT_FLASH_ITCM=stm32_itcm_flash.ld" },
+                makedefs = { "LDSCRIPT_FLASH_AXIM=cm7_axim_flash.ld" },
                 file = "include/cfg/arch.h"
             }
         }
