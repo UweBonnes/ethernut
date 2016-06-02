@@ -51,10 +51,6 @@
 static const char banner[] = "\nDisplay on "
     BOARDNAME " " __DATE__ " " __TIME__"     \n";
 
-#undef DEV_DISPLAY
-#define DEV_DISPLAY devMux7Seg
-extern NUTDEVICE devMux7Seg;
-
 #if !defined(DEV_DISPLAY)
 # define DEV_DISPLAY DEV_CONSOLE
 #endif
