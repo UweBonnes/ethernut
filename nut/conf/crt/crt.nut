@@ -382,7 +382,7 @@ nutcrt =
     {
         name = "nutcrt_sbrk",
         brief = "Library Heap Support",
-        requires = { "NUT_HEAPMEM", "TOOL_ARMLIB" },
+        requires = { "NUT_HEAPMEM" },
         provides = { "CRT_SBRK" },
         sources = { "sbrk.c" }
     },
