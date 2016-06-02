@@ -98,11 +98,11 @@
 /* We can't use token pasting here */
 #define TIM_ID2REMAP(x) (                                       \
         (x ==  1) ? STM32F1_TIM1_REMAP:                         \
-        (x ==  2) ? STM32F1_TIM1_REMAP:                         \
-        (x ==  3) ? STM32F1_TIM1_REMAP:                         \
-        (x ==  4) ? STM32F1_TIM1_REMAP:                         \
-        (x ==  5) ? STM32F1_TIM1_REMAP:                         \
-        (x ==  9) ? STM32F1_TIM1_REMAP:                         \
+        (x ==  2) ? STM32F1_TIM2_REMAP:                         \
+        (x ==  3) ? STM32F1_TIM3_REMAP:                         \
+        (x ==  4) ? STM32F1_TIM4_REMAP:                         \
+        (x ==  5) ? STM32F1_TIM5_REMAP:                         \
+        (x ==  9) ? STM32F1_TIM9_REMAP:                         \
         (x == 10) ? STM32F1_TIM10_REMAP:                        \
         (x == 11) ? STM32F1_TIM11_REMAP:                        \
         (x == 12) ? STM32F1_TIM12_REMAP:                        \
