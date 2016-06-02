@@ -112,7 +112,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F030  16/32 kB",
                 description = "Provides vendor header for STM32F030 16/32 kb and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F030_LD" };
+                requires = {"HW_MCU_STM32F030_LD"},
                 file = "include/cfg/arch.h"
             },
             {
@@ -120,7 +120,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F030 64 kB",
                 description = "Provides vendor header for STM32F030 64 kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F030x8" };
+                requires = {"HW_MCU_STM32F030x8"},
                 provides = {
                     "HW_USART2_STM32",
                     "HW_I2C2_STM32V2",
@@ -135,7 +135,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F030 256 kB",
                 description = "Provides vendor header for STM32F030 256 kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F030xC" };
+                requires = {"HW_MCU_STM32F030xC"},
                 provides = {
                     "HW_USART2_STM32",
                     "HW_USART3_6_STM32",
@@ -152,7 +152,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F038",
                 description = "Provides vendor header for STM32F038 and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F038xx" };
+                requires = {"HW_MCU_STM32F038xx"},
                 provides = {
                     "HW_TIM2_32BIT_STM32",
                      },
@@ -184,7 +184,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F042 16/32 kB",
                 description = "Provides vendor header for STM32F042 16/32kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F042" };
+                requires = {"HW_MCU_STM32F042"},
                 provides = {
                     "HW_PVD_VDDIO2_STM32",
                     },
@@ -195,7 +195,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F048.",
                 description = "Provides vendor header for STM32F042 and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F048xx" };
+                requires = {"HW_MCU_STM32F048xx"},
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F0",
@@ -215,7 +215,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F051 16/32/64 kB",
                 description = "Provides vendor header for STM32F051 16/32/64 kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F051_LD" };
+                requires = {"HW_MCU_STM32F051_LD"},
                 provides = {
                     "HW_HSI8_DIV2_STM32",
                     "HW_DMA1_STM32F0",
@@ -237,7 +237,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F070 16/32 kB",
                 description = "Provides vendor header for STM32F070 16/32 kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F070_LD" };
+                requires = {"HW_MCU_STM32F070_LD"},
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
@@ -253,7 +253,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F070 64/128 kB",
                 description = "Provides vendor header for STM32F070 128 kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F070_MD" };
+                requires = {"HW_MCU_STM32F070_MD"},
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
@@ -275,7 +275,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F071 64/128 kB",
                 description = "Provides vendor header for STM32F071 64/128 kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F071_MD" };
+                requires = {"HW_MCU_STM32F071_MD"},
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
@@ -300,7 +300,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F072 64/128 kB",
                 description = "Provides vendor header for STM32F072 64/128 kB and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F072_MD" };
+                requires = {"HW_MCU_STM32F072_MD"},
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
@@ -325,7 +325,7 @@ nutarch_cm3_stm32f0 =
                 brief = "STM32F078",
                 description = "Provides vendor header for STM32F078 and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32F078xx" };
+                requires = {"HW_MCU_STM32F078xx"},
                 provides = {
                     "HW_CRS_STM32",
                     "HW_DMA1_STM32F07",
