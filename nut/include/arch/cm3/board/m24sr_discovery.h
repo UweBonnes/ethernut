@@ -82,7 +82,7 @@
 #endif
 
 #ifndef DEV_UART_NAME
-#define DEV_UART_NAME devUsartStm32_4.dev_name
+#define DEV_UART_NAME devUartStm32_4.dev_name
 #endif
 
 #ifndef DEV_I2CBUS
