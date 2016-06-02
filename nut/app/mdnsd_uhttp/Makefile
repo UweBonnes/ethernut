@@ -45,7 +45,11 @@ SRCS =  $(PROJ).c $(WEBIMG)
 OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutnet -lnutgorp -lnutfs -lnutcrt -lnutos -lnutdev -lnutarch
 
+ifndef SMALL_FLASH
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
+else
+all:
+endif
 
 $(WEBIMG):
 	$(CRUROM) -r -o$(WEBIMG) $(WEBDIR)
