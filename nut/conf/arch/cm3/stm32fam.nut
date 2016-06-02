@@ -66,7 +66,7 @@ nutarch_cm3_stm32_family =
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F0" },
         description = "ST Microelectronics STM32 F0 Series",
         sources = { "cm3/dev/stm/stm32f30_clk.c"},
-        makedefs = { "MCU=cortex-m0", "LDPATH=$(LDINCLUDE)" },
+        makedefs = {"MCU=cortex-m0"},
         script = "arch/cm3/stm32f0.nut"
     },
     {
@@ -78,7 +78,6 @@ nutarch_cm3_stm32_family =
         makedefs = {
             "MCU=cortex-m3",
             "MFIX=-mfix-cortex-m3-ldrd",
-            "LDPATH=$(LDINCLUDE)",
         },
         script = "arch/cm3/stm32f1.nut"
     },
@@ -90,7 +89,6 @@ nutarch_cm3_stm32_family =
         sources = { "cm3/dev/stm/stm32l1_clk.c" },
         makedefs = {
                   "MCU=cortex-m0plus",
-                  "LDPATH=$(LDINCLUDE)"
         },
         script = "arch/cm3/stm32l0.nut"
     },
@@ -102,7 +100,6 @@ nutarch_cm3_stm32_family =
         sources = { "cm3/dev/stm/stm32l4_clk.c" },
         makedefs = {
                   "MCU=cortex-m4",
-                  "LDPATH=$(LDINCLUDE)"
         },
         script = "arch/cm3/stm32l4.nut"
     },
@@ -115,7 +112,6 @@ nutarch_cm3_stm32_family =
         makedefs = {
                   "MCU=cortex-m3",
                   "MFIX=-mfix-cortex-m3-ldrd",
-                  "LDPATH=$(LDINCLUDE)"
         },
         script = "arch/cm3/stm32l1.nut"
     },
@@ -125,7 +121,7 @@ nutarch_cm3_stm32_family =
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F2" },
         description = "ST Microelectronics STM32 F2 Series",
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
-        makedefs = { "MCU=cortex-m3", "LDPATH=$(LDINCLUDE)"},
+        makedefs = { "MCU=cortex-m3"},
         script = "arch/cm3/stm32f2.nut"
     },
     {
@@ -134,7 +130,7 @@ nutarch_cm3_stm32_family =
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F3" },
         description = "ST Microelectronics STM32 F3 Series",
         sources = { "cm3/dev/stm/stm32f30_clk.c"},
-        makedefs = { "MCU=cortex-m4", "LDPATH=$(LDINCLUDE)" },
+        makedefs = { "MCU=cortex-m4"},
         script = "arch/cm3/stm32f3.nut"
     },
     {
@@ -143,7 +139,7 @@ nutarch_cm3_stm32_family =
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F4" },
         description = "ST Microelectronics STM32 F4 Series",
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
-        makedefs = { "MCU=cortex-m4", "LDPATH=$(LDINCLUDE)" },
+        makedefs = { "MCU=cortex-m4"},
         script = "arch/cm3/stm32f4.nut"
     },
     {
@@ -152,7 +148,7 @@ nutarch_cm3_stm32_family =
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F7" },
         description = "ST Microelectronics STM32 F4 Series",
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
-        makedefs = { "MCU=cortex-m7", "LDPATH=$(LDINCLUDE)" },
+        makedefs = { "MCU=cortex-m7"},
         script = "arch/cm3/stm32f7.nut"
     },
     {

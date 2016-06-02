@@ -1,8 +1,6 @@
 /*****************************************************************************
  *
- * cm7_axim_flash.ld - linker script for Nut/OS on Cortex-M7, AXIM flash access
- *
- * Text is linked at 0x08000000 so AXIM access and maybe ICache is used.
+ * stm32_ram.ld - linker script for Nut/OS on Cortex-M STM32, Code in RAM
  *
  *****************************************************************************/
 
@@ -11,8 +9,6 @@ SEARCH_DIR(.)
 
 MEMORY
 {
-    ITCM  (rwx) : ORIGIN = 0x00000000, LENGTH = itcm_length
-    FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = flash0_length
     SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = ram0_length
 }
 
@@ -25,11 +21,11 @@ SECTIONS
     .bootloader (NOLOAD):
     {
 	. = bootloader_offset;
-    } > FLASH0
+    } > SRAM0
 
     .text :
     {
-	. = ALIGN(4);
+	    . = ALIGN(4);
         _svect = .;
         KEEP(*(.isr_vector))
         _evect = .;
@@ -39,33 +35,34 @@ SECTIONS
         *(.glue_7t)
         *(.glue_7)
 	*(.gcc_except_table)
-	. = ALIGN(4);
-    } > FLASH0
+	    . = ALIGN(4);
+    } > SRAM0
 
     /* .ARM.exidx is sorted, so has to go in its own output section. */
     .exidx : {
         __exidx_start = .;
         *(..exidx* .gnu.linkonce.armexidx.*)
         __exidx_end = .;
-    } > FLASH0
-    _etext = .;
-
-    .vtable (NOLOAD):
-    {
-	. = ALIGN(4);
-	_vtable = .;
-	*(.vtable*)
-	. = ALIGN(4);
-	_evtable = .;
     } > SRAM0
 
-    .data :
+    .data : AT (_etext)
     {
         _sdata = .;
         *(.data .data.* .gnu.linkonce.d.*)
 	. = ALIGN(4);
+	*(.ramfunc);
+	. = ALIGN(4);
         _edata = .;
-    } > SRAM0 AT > FLASH0
+    } > SRAM0
+    _etext = .;
+
+    /* Initialized data is stored above the data section, as
+     * section size is only known after section has been allocated!
+     */
+    .data_storage :
+    {
+	. += SIZEOF( .data);
+    } > SRAM0
 
     .bss (NOLOAD):
     {
@@ -92,7 +89,6 @@ SECTIONS
         _pspstack_end = .;
 	PROVIDE (__heap_start = .);
     } > SRAM0
-
 /*
     .heap (NOLOAD):
     {
@@ -104,14 +100,6 @@ SECTIONS
 */
 
 end = .;
-
-    .itcm_text :
-    {
-	*(.ramfunc);
-	. = ALIGN(4);
-        _eramfunc = .;
-    } > ITCM AT > FLASH0
-
 /*
     DISCARD :
     {

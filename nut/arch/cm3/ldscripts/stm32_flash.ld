@@ -1,6 +1,6 @@
 /*****************************************************************************
  *
- * stm32_generic_flash.ld - linker script  for nutos on cortex-m3 STM32 series
+ * stm32_flash.ld - linker script  for Nut/OS on Cortex-M STM32, Code in Flash
  *
  *****************************************************************************/
 
@@ -9,6 +9,7 @@ SEARCH_DIR(.)
 
 MEMORY
 {
+    FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = flash0_length
     SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = ram0_length
 }
 
@@ -21,7 +22,7 @@ SECTIONS
     .bootloader (NOLOAD):
     {
 	. = bootloader_offset;
-    } > SRAM0
+    } > FLASH0
 
     .text :
     {
@@ -36,13 +37,23 @@ SECTIONS
         *(.glue_7)
 	*(.gcc_except_table)
 	    . = ALIGN(4);
-    } > SRAM0
+    } > FLASH0
 
     /* .ARM.exidx is sorted, so has to go in its own output section. */
     .exidx : {
         __exidx_start = .;
         *(..exidx* .gnu.linkonce.armexidx.*)
         __exidx_end = .;
+    } > FLASH0
+    _etext = .;
+
+    .vtable (NOLOAD):
+    {
+	. = ALIGN(4);
+	    _vtable = .;
+	    *(.vtable*)
+	. = ALIGN(4);
+	    _evtable = .;
     } > SRAM0
 
     .data : AT (_etext)
@@ -53,15 +64,6 @@ SECTIONS
 	*(.ramfunc);
 	. = ALIGN(4);
         _edata = .;
-    } > SRAM0
-    _etext = .;
-
-    /* Initialized data is stored above the data section, as
-     * section size is only known after section has been allocated!
-     */
-    .data_storage :
-    {
-	. += SIZEOF( .data);
     } > SRAM0
 
     .bss (NOLOAD):

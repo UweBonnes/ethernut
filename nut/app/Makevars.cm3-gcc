@@ -39,8 +39,7 @@
 include $(top_srcdir)/app/Makevars.gcc
 
 # set linker options
-#LDFLAGS = $(MCFLAGS) -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
-LDFLAGS = $(MCFLAGS) -nostartfiles -L$(LDPATH) -Wl,-Map=$(PROJ).map,--cref,--gc-sections -L$(LIBDIR)
+LDFLAGS = $(MCFLAGS) -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--gc-sections -L$(LIBDIR)
 ifdef ITCM_LENGTH
       LDFLAGS+= -Wl,--defsym=itcm_length=$(ITCM_LENGTH)
 endif
@@ -58,14 +57,4 @@ ifdef BOOTLOADER_OFFSET
         LDFLAGS+= -Wl,--defsym=bootloader_offset=$(BOOTLOADER_OFFSET)
 else
         LDFLAGS+= -Wl,--defsym=bootloader_offset=0
-endif
-
-ifdef LDSCRIPT_FLASH_AXIM
-        LDFLAGS += -T$(LDSCRIPT_FLASH_AXIM)
-else ifdef LDSCRIPT_RAM
-        LDFLAGS += -T$(LDSCRIPT_RAM)
-else ifdef LDSCRIPT_FLASH
-        LDFLAGS += -T$(LDSCRIPT_FLASH)
-else
-        LDFLAGS += -T$(LDSCRIPT)
 endif

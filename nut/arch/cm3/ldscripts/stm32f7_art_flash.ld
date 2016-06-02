@@ -1,6 +1,9 @@
 /*****************************************************************************
  *
- * stm32_generic_flash.ld - linker script  for nutos on cortex-m3 STM32 series
+ * stm32_art_flash.ld - linker script for Nut/OS on Cortex-M7 STM32 series
+ *
+ * Text is linked at 0x00200000 so ITCM access and maybe ART acceleration
+ * is used. Code load address is 0x08000000.
  *
  *****************************************************************************/
 
@@ -9,6 +12,8 @@ SEARCH_DIR(.)
 
 MEMORY
 {
+    ITCM  (rwx) : ORIGIN = 0x00000000, LENGTH = itcm_length
+    ITCMFL (rx) : ORIGIN = 0x00200000, LENGTH = flash0_length
     FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = flash0_length
     SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = ram0_length
 }
@@ -21,22 +26,28 @@ SECTIONS
 {
     .bootloader (NOLOAD):
     {
-	. = bootloader_offset;
+        . = bootloader_offset;
     } > FLASH0
 
-    .text :
+    .itcmtext :
     {
-	    . = ALIGN(4);
+        . = ALIGN(4);
         _svect = .;
         KEEP(*(.isr_vector))
         _evect = .;
         *(.nutinit)
         *(.text .text.* .gnu.linkonce.t.*)
-        *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.glue_7t)
         *(.glue_7)
-	*(.gcc_except_table)
-	    . = ALIGN(4);
+        *(.gcc_except_table)
+        . = ALIGN(4);
+    } > ITCMFL AT > FLASH0
+
+/* Constant data must be reachable via AXIM access at 0x08xxxxxx*/
+    .rodata :
+    {
+        *(.rodata .rodata* .gnu.linkonce.r.*)
+        . = ALIGN(4);
     } > FLASH0
 
     /* .ARM.exidx is sorted, so has to go in its own output section. */
@@ -49,22 +60,20 @@ SECTIONS
 
     .vtable (NOLOAD):
     {
-	. = ALIGN(4);
-	    _vtable = .;
-	    *(.vtable*)
-	. = ALIGN(4);
-	    _evtable = .;
+        . = ALIGN(4);
+        _vtable = .;
+        *(.vtable*)
+        . = ALIGN(4);
+        _evtable = .;
     } > SRAM0
 
-    .data : AT (_etext)
+    .data :
     {
         _sdata = .;
         *(.data .data.* .gnu.linkonce.d.*)
-	. = ALIGN(4);
-	*(.ramfunc);
-	. = ALIGN(4);
+        . = ALIGN(4);
         _edata = .;
-    } > SRAM0
+    } > SRAM0 AT > FLASH0
 
     .bss (NOLOAD):
     {
@@ -89,8 +98,9 @@ SECTIONS
         _pspstack_start = .;
         KEEP(*(.psp_stack .psp_stack.*));
         _pspstack_end = .;
-	PROVIDE (__heap_start = .);
+        PROVIDE (__heap_start = .);
     } > SRAM0
+
 /*
     .heap (NOLOAD):
     {
@@ -102,6 +112,14 @@ SECTIONS
 */
 
 end = .;
+
+    .itcm_text : AT (_etext + SIZEOF(.data))
+    {
+        *(.ramfunc);
+        . = ALIGN(4);
+        _eramfunc = .;
+    } > ITCM
+
 /*
     DISCARD :
     {

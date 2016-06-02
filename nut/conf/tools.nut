@@ -165,7 +165,6 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = function() return { "LDINCLUDE=" .. GetLDScriptsPath() }; end,
         },
         {
             brief = "GCC for CortexM (no libc)",
@@ -423,109 +422,30 @@ arm_ld_choice =
     "zero"
 }
 
-stm32f10x_ld_header = { "Select the matching predefined linker script for your chip\n\n" }
-
-stm32f100_ld_description =
+stm32_ld_description =
 {
-    stm32f100x8_flash = "STM32F100x8, code running in FLASH, data in SRAM",
-    stm32f100xB_flash = "STM32F100xB, code running in FLASH, data in SRAM",
-    stm32f100xC_flash = "STM32F100xC, code running in FLASH, data in SRAM",
-    stm32f100xD_flash = "STM32F100xD, code running in FLASH, data in SRAM",
-    stm32f100xE_flash = "STM32F100xE, code running in FLASH, data in SRAM",
+    stm32_ram   = "Place code in RAM and keep initialization data.",
+    stm32_flash = "Stm32 code running in FLASH, data in SRAM",
 }
 
-stm32f101_ld_description =
+stm32_ld_choice =
 {
-    stm32f101x8_flash = "STM32F101x8 and STM32F102x8, code running in FLASH, data in SRAM",
-    stm32f101xB_flash = "STM32F101xB and STM32F102xB, code running in FLASH, data in SRAM",
-    stm32f101xC_flash = "STM32F101xC and STM32F102xC, code running in FLASH, data in SRAM",
-    stm32f101xD_flash = "STM32F101xD and STM32F102xD, code running in FLASH, data in SRAM",
-    stm32f101xE_flash = "STM32F101xE and STM32F102xE, code running in FLASH, data in SRAM",
+    "stm32_ram",
+    "stm32_flash",
 }
 
-stm32f102_ld_description =
+stm32f7_ld_description =
 {
-    stm32f102x8_flash = "STM32F102x8 and STM32F102x8, code running in FLASH, data in SRAM",
-    stm32f102xB_flash = "STM32F102xB and STM32F102xB, code running in FLASH, data in SRAM",
+    cm7_axim_flash    = "Code running in FLASH, access by AXIM.",
+    stm32f7_art_flash = "Code running in FLASH, access by ITCM."..
+                        " Check ART acceleration!",
+    stm32_ram = "Place code in RAM and keep initialization data.",
 }
-
-stm32f103_ld_description =
+stm32f7_ld_choice =
 {
-    stm32f103x8_flash = "STM32F103x8 and STM32F102x8, code running in FLASH, data in SRAM",
-    stm32f103xB_flash = "STM32F103xB and STM32F102xB, code running in FLASH, data in SRAM",
-    stm32f103xC_flash = "STM32F103xC and STM32F102xC, code running in FLASH, data in SRAM",
-    stm32f103xD_flash = "STM32F103xD and STM32F102xD, code running in FLASH, data in SRAM",
-    stm32f103xE_flash = "STM32F103xE and STM32F102xE, code running in FLASH, data in SRAM",
-}
-
-stm32f105_ld_description =
-{
-    stm32f105x8_flash = "STM32F105x8 and STM32F102x8, code running in FLASH, data in SRAM",
-    stm32f105xB_flash = "STM32F105xB and STM32F102xB, code running in FLASH, data in SRAM",
-    stm32f105xC_flash = "STM32F105xC and STM32F102xC, code running in FLASH, data in SRAM",
-}
-
-stm32f107_ld_description =
-{
-    stm32f107xB_flash = "STM32F107xB and STM32F102xB, code running in FLASH, data in SRAM",
-    stm32f107xC_flash = "STM32F107xC and STM32F102xC, code running in FLASH, data in SRAM",
-}
-
-stm32l151_ld_description =
-{
-    stm32f151x6_flash = "STM32L151x6 and STM32L152x6, code running in FLASH, data in SRAM",
-    stm32f151x8_flash = "STM32L151x8 and STM32L152x8, code running in FLASH, data in SRAM",
-    stm32f151xB_flash = "STM32L151xB and STM32L152xB, code running in FLASH, data in SRAM",
-}
-stm32f100_ld_choice =
-{
-    "stm32f100x8_flash",
-    "stm32f100xB_flash",
-    "stm32f100xC_flash",
-    "stm32f100xD_flash",
-    "stm32f100xE_flash",
-}
-
-stm32f101_ld_choice =
-{
-    "stm32f101x8_flash",
-    "stm32f101xB_flash",
-    "stm32f101xC_flash",
-    "stm32f101xD_flash",
-    "stm32f101xE_flash",
-}
-
-stm32f102_ld_choice =
-{
-    "stm32f102x8_flash",
-    "stm32f102xB_flash",
-}
-
-stm32f103_ld_choice =
-{
-    "stm32f103x8_flash",
-    "stm32f103xB_flash",
-    "stm32f103xC_flash",
-    "stm32f103xD_flash",
-    "stm32f103xE_flash",
-}
-stm32f105_ld_choice =
-{
-    "stm32f105x8_flash",
-    "stm32f105xB_flash",
-    "stm32f105xC_flash",
-}
-stm32f107_ld_choice =
-{
-    "stm32f107xB_flash",
-    "stm32f107xC_flash",
-}
-
-stm32l151_ld_choice =
-{
-    "stm32l15Xx6_flash",
-    "stm32f15Xx8_flash",
-    "stm32f15XxB_flash",
+    "cm7_axim_flash",
+    "stm32f7_art_flash",
+    "stm32_ram",
 }
 
 lm3_ld_description =
@@ -606,26 +526,11 @@ function GetLDScripts()
         return arm_ld_choice
     end
     if c_is_provided("TOOL_CC_CM3") then
-         if c_is_provided("MCU_STM32F100") then
-              return stm32f100_ld_choice
-         end
-         if c_is_provided("MCU_STM32F101") then
-              return stm32f101_ld_choice
-         end
-        if c_is_provided("MCU_STM32F102") then
-            return stm32f102_ld_choice
+        if c_is_provided("HW_MCU_STM32F7") then
+            return stm32f7_ld_choice
         end
-        if c_is_provided("MCU_STM32F103") then
-            return stm32f103_ld_choice
-        end
-        if c_is_provided("MCU_STM32F105") then
-            return stm32f105_ld_choice
-        end
-        if c_is_provided("MCU_STM32F107") then
-            return stm32f107_ld_choice
-        end
-        if c_is_provided("MCU_STM32L151") then
-            return stm32l151_ld_choice
+        if c_is_provided("HW_MCU_STM32") then
+            return stm32_ld_choice
         end
         if c_is_provided("HW_MCU_LM3") then
             return lm3_ld_choice
@@ -655,26 +560,11 @@ function GetLDScriptDescription()
         return FormatLDScriptDescription(arm_ld_description)
     end
     if c_is_provided("TOOL_CC_CM3") then
-       if c_is_provided("MCU_STM32F100") then
-           return FormatLDScriptDescription(stm32f100_ld_description)
+       if c_is_provided("HW_MCU_STM32F7") then
+           return FormatLDScriptDescription(stm32f7_ld_description)
        end
-       if c_is_provided("MCU_STM32F101") then
-           return FormatLDScriptDescription(stm32f101_ld_description)
-       end
-       if c_is_provided("MCU_STM32F102") then
-           return FormatLDScriptDescription(stm32f102_ld_description)
-       end
-       if c_is_provided("MCU_STM32F103") then
-           return FormatLDScriptDescription(stm32f103_ld_description)
-       end
-       if c_is_provided("MCU_STM32F105") then
-           return FormatLDScriptDescription(stm32f105_ld_description)
-       end
-       if c_is_provided("MCU_STM32F107") then
-           return FormatLDScriptDescription(stm32f107_ld_description)
-       end
-       if c_is_provided("MCU_STM32L151") then
-           return FormatLDScriptDescription(stm32l151_ld_description)
+       if c_is_provided("HW_MCU_STM32") then
+           return FormatLDScriptDescription(stm32_ld_description)
        end
        if c_is_provided("HW_MCU_LM3") then
            return FormatLDScriptDescription(lm3_ld_description)
@@ -683,15 +573,15 @@ function GetLDScriptDescription()
            return FormatLDScriptDescription(lpc17xx_ld_description)
        end
     end
-	if c_is_provided("TOOL_CC_M68K") then
-	   if c_is_provided("MCU_MCF5525X") then
-           return FormatLDScriptDescription(mcf5225x_ld_description)
+    if c_is_provided("TOOL_CC_M68K") then
+       if c_is_provided("MCU_MCF5525X") then
+          return FormatLDScriptDescription(mcf5225x_ld_description)
        end
        if c_is_provided("MCU_MCF51CN") then
-           return FormatLDScriptDescription(mcf51cn_ld_description)
+          return FormatLDScriptDescription(mcf51cn_ld_description)
        end
-           return ""
-	end
+       return ""
+    end
 end
 
 --

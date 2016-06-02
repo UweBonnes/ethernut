@@ -201,7 +201,6 @@ nutarch_cm3 =
         sources = {
             "cm3/dev/stm/system_stm32.c",
         },
-        makedefs = { "LDSCRIPT_FLASH=stm32_generic_flash.ld" },
         options =
         {
             {
@@ -212,26 +211,6 @@ nutarch_cm3 =
                 requires = { "HW_MCU_STM32" },
                 file = "include/cfg/arch.h"
             },
-            {
-                macro = "NUT_RAMLINK",
-                brief = "Place code in RAM",
-                description = "Place code in RAM."..
-                              "Use Boot configuration Embedded SRAM or set\n"..
-                              "MEN_MODE to SRAM and set stack and pc before "..
-                              "programm start.",
-                default = 1,
-                requires = { "NUTDEBUG_RAM" },
-                makedefs = { "LDSCRIPT_RAM=stm32_generic_ram.ld" },
-            },
-            {
-                macro = "NUT_AXIM_LINK",
-                brief = "Flash/AXIM access",
-                description = "Code in Flash, access with AXIM.",
-                default = 1,
-                requires = { "HW_MCU_CM7" },
-                makedefs = { "LDSCRIPT_FLASH_AXIM=cm7_axim_flash.ld" },
-                file = "include/cfg/arch.h"
-            }
         }
     },
     {
