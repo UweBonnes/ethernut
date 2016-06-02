@@ -1,7 +1,12 @@
 /*****************************************************************************
  *
- * stm32_flash.ld - linker script  for Nut/OS on Cortex-M STM32, Code in Flash
+ * stm32f4_ccm_flash.ld - linker script for Nut/Os on Cortex-M4 STM32F4 series
  *
+ * CCM Data RAM at 0x1000000.
+ * Use for Stacks, constant data and on user allocation.
+ * CCM RAM is inaccessible for DMA.
+ *
+ * VTOR in CCM Data RAM doesn't work, as vector access is done by ICODE access
  *****************************************************************************/
 
 ENTRY(NutInit)
@@ -12,6 +17,7 @@ SRAM2_START = SRAM1_START + ram1_length;
 MEMORY
 {
     FLASH0 (rx) : ORIGIN = 0x08000000,  LENGTH = flash0_length
+    CCM   (rwx) : ORIGIN = 0x10000000,  LENGTH = ccm_length
     SRAM0 (rwx) : ORIGIN = 0x20000000,  LENGTH = ram0_length
     SRAM1 (rwx) : ORIGIN = SRAM1_START, LENGTH = ram1_length
     SRAM2 (rwx) : ORIGIN = SRAM2_START, LENGTH = ram2_length
@@ -20,33 +26,30 @@ MEMORY
 /* PROVIDE (__heap_start = _sheap); */
 
 _ramend = ORIGIN(SRAM0) + LENGTH(SRAM0);
-_rodata_start  = 0;
-_rodata_end    = 0;
-_rodata_load   = 0;
 _ramfunc_start = 0;
 _ramfunc_end   = 0;
 _ramfunc_load  = 0;
-_ccm_used      = 0;
+_ccm_used     = -1;
 
-SECTIONS{
+SECTIONS
+{
     .bootloader (NOLOAD):
     {
-	. = bootloader_offset;
+        . = bootloader_offset;
     } > FLASH0
 
     .text :
     {
-	    . = ALIGN(4);
+        . = ALIGN(4);
         _svect = .;
         KEEP(*(.isr_vector))
         _evect = .;
         *(.nutinit)
         *(.text .text.* .gnu.linkonce.t.*)
-        *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.glue_7t)
         *(.glue_7)
-	*(.gcc_except_table)
-	    . = ALIGN(4);
+        *(.gcc_except_table)
+        . = ALIGN(4);
     } > FLASH0
 
     /* .ARM.exidx is sorted, so has to go in its own output section. */
@@ -66,15 +69,15 @@ SECTIONS{
 	    _evtable = .;
     } > SRAM0
 
-    .data : AT (_etext)
+    .data :
     {
         _sdata = .;
         *(.data .data.* .gnu.linkonce.d.*)
-	. = ALIGN(4);
-	*(.ramfunc);
-	. = ALIGN(4);
-        _edata = .;
-    } > SRAM0
+        . = ALIGN(4);
+        *(.ramfunc)
+        . = ALIGN(4);
+       _edata = .;
+    } > SRAM0 AT > FLASH0
 
     .bss (NOLOAD):
     {
@@ -83,15 +86,29 @@ SECTIONS{
         *(COMMON)
         . = ALIGN(4);
         _ebss = .;
+        . = ALIGN(8);
+        PROVIDE (__heap_start = .);
     } > SRAM0
 
+/* Constant data in CCM*/
+    .rodata : ALIGN_WITH_INPUT
+    {
+        _rodata_start = .;
+        *(.rodata .rodata* .gnu.linkonce.r.*)
+        *(.flashdata .flashdata.*)
+        . = ALIGN(4);
+        _rodata_end = .;
+    } > CCM AT >FLASH0
+    _rodata_load = LOADADDR(.rodata);
+
+/* STACK in CCM*/
     .stack (NOLOAD):
     {
         . = ALIGN(8);
         _stack_start = .;
         KEEP(*(.stack .stack.*));
         _stack_end = .;
-    } > SRAM0
+    } > CCM
 
     .psp_stack (NOLOAD):
     {
@@ -99,8 +116,8 @@ SECTIONS{
         _pspstack_start = .;
         KEEP(*(.psp_stack .psp_stack.*));
         _pspstack_end = .;
-	PROVIDE (__heap_start = .);
-    } > SRAM0
+    } > CCM
+
 /*
     .heap (NOLOAD):
     {
@@ -112,6 +129,7 @@ SECTIONS{
 */
 
 end = .;
+
 /*
     DISCARD :
     {

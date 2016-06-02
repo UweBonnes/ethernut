@@ -34,6 +34,7 @@
 
 #include <stdint.h>
 #include <cfg/arch.h>
+#include <arch/cm3.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
 #define GPIO_DEFAULT_MODE          0
@@ -180,6 +181,10 @@ void SystemInit (void)
      * If current consumption of AFIO/SYSCFG is a concern,
      * application should disable PWR after setup on it's own risk.
      */
+#if defined(MCU_STM32F4) && defined(HW_CCM_STM32)
+    /* Fixme: Find a way to evaluate linker variable _ccm_used! */
+    RCC->AHB1ENR |= RCC_AHB1ENR_CCMDATARAMEN;
+#endif
 #if defined(RCC_APB2ENR_AFIOEN)
     RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
 #else

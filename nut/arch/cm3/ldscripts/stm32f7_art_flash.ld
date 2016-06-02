@@ -9,6 +9,8 @@
 
 ENTRY(NutInit)
 SEARCH_DIR(.)
+SRAM1_START = DEFINED(ram1_start) ? ram1_start : 0x20000000  + ram0_length;
+SRAM2_START = SRAM1_START + ram1_length;
 
 MEMORY
 {
@@ -16,11 +18,17 @@ MEMORY
     ITCMFL (rx) : ORIGIN = 0x00200000, LENGTH = flash0_length
     FLASH0 (rx) : ORIGIN = 0x08000000, LENGTH = flash0_length
     SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = ram0_length
+    SRAM1 (rwx) : ORIGIN = SRAM1_START, LENGTH = ram1_length
+    SRAM2 (rwx) : ORIGIN = SRAM2_START, LENGTH = ram2_length
 }
 
 /* PROVIDE (__heap_start = _sheap); */
 
 _ramend = ORIGIN(SRAM0) + LENGTH(SRAM0);
+_rodata_load  = 0;
+_rodata_start = 0;
+_rodata_end   = 0;
+_ccm_used      = 1;
 
 SECTIONS
 {
@@ -113,12 +121,14 @@ SECTIONS
 
 end = .;
 
-    .itcm_text : AT (_etext + SIZEOF(.data))
+    .itcm_text : ALIGN_WITH_INPUT
     {
+        _ramfunc_start = .;
         *(.ramfunc);
         . = ALIGN(4);
-        _eramfunc = .;
-    } > ITCM
+        _ramfunc_end = .;
+    } > ITCM AT > FLASH0
+    _ramfunc_load = LOADADDR(.ram_func);
 
 /*
     DISCARD :

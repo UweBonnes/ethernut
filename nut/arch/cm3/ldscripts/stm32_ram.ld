@@ -6,15 +6,26 @@
 
 ENTRY(NutInit)
 SEARCH_DIR(.)
+SRAM1_START = DEFINED(ram1_start) ? ram1_start : 0x20000000  + ram0_length;
+SRAM2_START = SRAM1_START + ram1_length;
 
 MEMORY
 {
     SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = ram0_length
+    SRAM1 (rwx) : ORIGIN = SRAM1_START, LENGTH = ram1_length
+    SRAM2 (rwx) : ORIGIN = SRAM2_START, LENGTH = ram2_length
 }
 
 /* PROVIDE (__heap_start = _sheap); */
 
 _ramend = ORIGIN(SRAM0) + LENGTH(SRAM0);
+_rodata_start  = 0;
+_rodata_end    = 0;
+_rodata_load   = 0;
+_ramfunc_start = 0;
+_ramfunc_end   = 0;
+_ramfunc_load  = 0;
+_ccm_used      = 1;
 
 SECTIONS
 {

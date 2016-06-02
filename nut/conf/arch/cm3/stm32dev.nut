@@ -1566,6 +1566,15 @@ nutarch_cm3_stm32_devices =
                 type = "integer",
                 file = "include/cfg/devices.h"
             },
+             {
+                macro = "HW_CCM_STM32",
+                brief = "CCM Availability",
+                description = "Core coupled RAM",
+                requires = { "HW_CCM_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/arch.h"
+            },
         }
     }
 }

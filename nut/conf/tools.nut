@@ -424,8 +424,8 @@ arm_ld_choice =
 
 stm32_ld_description =
 {
+    stm32_flash = "Place code in FLASH, data in SRAM,",
     stm32_ram   = "Place code in RAM and keep initialization data.",
-    stm32_flash = "Stm32 code running in FLASH, data in SRAM",
 }
 
 stm32_ld_choice =
@@ -434,18 +434,47 @@ stm32_ld_choice =
     "stm32_flash",
 }
 
+stm32f4_ccm_ld_description =
+{
+    stm32f4_ccm_flash = "Place code in FLASH, data in SRAM, VTOR/RODATA/STACKS in CCMRAM.",
+    stm32_flash = "Place code in FLASH, data in SRAM",
+    stm32_ram   = "Place code in RAM and keep initialization data.",
+}
+
+stm32_ccm_ld_description =
+{
+    stm32_ccm_flash     = "Place code in FLASH, data in SRAM,RAMFUNC in CCMRAM.",
+    stm32_flash = "Place code in FLASH, data in SRAM",
+    stm32_ram   = "Place code in RAM and keep initialization data.",
+}
+
+stm32f4_ccm_ld_choice =
+{
+    "stm32_ram",
+    "stm32_flash",
+    "stm32f4_ccm_flash",
+}
+
+stm32_ccm_ld_choice =
+{
+    "stm32_ram",
+    "stm32_flash",
+    "stm32_ccm_flash",
+}
+
 stm32f7_ld_description =
 {
     cm7_axim_flash    = "Code running in FLASH, access by AXIM.",
-    stm32f7_art_flash = "Code running in FLASH, access by ITCM."..
-                        " Check ART acceleration!",
-    stm32_ram = "Place code in RAM and keep initialization data.",
+    stm32f7_art_flash = "Code running in FLASH, access by ITCM, Check ART acceleration!",
+    stm32_flash = "Place code in FLASH.",
+    stm32_ram   = "Place code in RAM and keep initialization data.",
 }
 stm32f7_ld_choice =
 {
     "cm7_axim_flash",
     "stm32f7_art_flash",
     "stm32_ram",
+    "stm32_flash",
 }
 
 lm3_ld_description =
@@ -529,6 +558,15 @@ function GetLDScripts()
         if c_is_provided("HW_MCU_STM32F7") then
             return stm32f7_ld_choice
         end
+        if c_is_provided("HW_MCU_STM32F4") then
+            return stm32f4_ccm_ld_choice
+        end
+        if c_is_provided("HW_MCU_STM32F3") then
+            return stm32_ccm_ld_choice
+        end
+        if c_is_provided("HW_MCU_STM32L4") then
+            return stm32_ccm_ld_choice
+        end
         if c_is_provided("HW_MCU_STM32") then
             return stm32_ld_choice
         end
@@ -539,14 +577,14 @@ function GetLDScripts()
             return lpc17xx_ld_choice
         end
     end
-	if c_is_provided("TOOL_CC_M68K") then
+    if c_is_provided("TOOL_CC_M68K") then
         if c_is_provided("HW_MCU_MCF5225X") then
             return mcf5225x_ld_choice
         end
         if c_is_provided("HW_MCU_MCF51CN") then
             return mcf51cn_ld_choice
         end
-	end
+    end
 end
 
 --
@@ -561,16 +599,25 @@ function GetLDScriptDescription()
     end
     if c_is_provided("TOOL_CC_CM3") then
        if c_is_provided("HW_MCU_STM32F7") then
-           return FormatLDScriptDescription(stm32f7_ld_description)
+          return FormatLDScriptDescription(stm32f7_ld_description)
+       end
+       if c_is_provided("HW_MCU_STM32F4") then
+          return FormatLDScriptDescription(stm32f4_ccm_ld_description)
+       end
+       if c_is_provided("HW_MCU_STM32F3") then
+          return FormatLDScriptDescription(stm32_ccm_ld_description)
+       end
+       if c_is_provided("HW_MCU_STM32L4") then
+          return FormatLDScriptDescription(stm32_ccm_ld_description)
        end
        if c_is_provided("HW_MCU_STM32") then
-           return FormatLDScriptDescription(stm32_ld_description)
+          return FormatLDScriptDescription(stm32_ld_description)
        end
        if c_is_provided("HW_MCU_LM3") then
-           return FormatLDScriptDescription(lm3_ld_description)
+          return FormatLDScriptDescription(lm3_ld_description)
        end
        if c_is_provided("HW_MCU_LPC17xx") then
-           return FormatLDScriptDescription(lpc17xx_ld_description)
+          return FormatLDScriptDescription(lpc17xx_ld_description)
        end
     end
     if c_is_provided("TOOL_CC_M68K") then

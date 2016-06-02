@@ -335,17 +335,28 @@ static void Cortex_MemInit(void)
     /* Copy the data segment initializers from flash to SRAM. */
     src = (uint32_t*)&_etext;
     end = (uint32_t*)&_edata;
-    for( dst = (uint32_t*)&_sdata; dst < end;)
-    {
+    for(dst = (uint32_t*)&_sdata; dst < end;) {
         *dst++ = *src++;
     }
-
-#if defined(NUT_ITCM_LINK)
-extern void * _eramfunc;        /* End of RAMFUNC in ITCM */
-
-    /* Copy Ramfunc to ITCM at 0x00000000 */
-    end = (uint32_t*)&_eramfunc;
-    for (dst = (uint32_t*)0; dst < end;) {
+#if defined(MCU_STM32)
+/* Use LOADADRR() in the linker script to determine where data
+ * is stored in FLASH! Otherwise section alignment and flash
+ * data alignment will easily disagree!
+ */
+extern void * _rodata_start;      /* Start of RODATA in CCM */
+extern void * _rodata_end;        /* End of RODATA in CCM */
+extern void * _rodata_load;       /* Start of RODATA data in FLASH0 */
+extern void * _ramfunc_start;     /* Start of RAMFUNC in ITCM/CCM */
+extern void * _ramfunc_end;       /* End of RAMFUNC in ITCM/CCM */
+extern void * _ramfunc_load;      /* Start of RAMFUNC data in FLASH0 */
+    end = (uint32_t*)&_rodata_end;
+    src = (uint32_t*)&_rodata_load;
+    for (dst = (uint32_t*)&_rodata_start; dst < end;) {
+        *dst++ = *src++;
+    }
+    end = (uint32_t*)&_ramfunc_end;
+    src = (uint32_t*)&_ramfunc_load;
+    for (dst = (uint32_t*)&_ramfunc_start; dst < end;) {
         *dst++ = *src++;
     }
 #endif
