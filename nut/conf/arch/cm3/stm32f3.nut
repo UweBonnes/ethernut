@@ -1,5 +1,5 @@
 --
---  * Copyright (C) 2013,2015
+--  * Copyright (C) 2013,2015-16
 --               Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -202,6 +202,7 @@ nutarch_cm3_stm32f3 =
                 provides =
                 {
                     "HW_ADC1_2_STM32",
+                    "HW_CCM_STM32",
                     "HW_SPI1_DMA_REMAP_STM32F1",
                     "HW_USB_CAN_STM32",
                     "HW_SPI1_STM32",
@@ -228,6 +229,7 @@ nutarch_cm3_stm32f3 =
                     "HW_ADC1_2_STM32",
                     "HW_ADC3_STM32",
                     "HW_ADC4_STM32",
+                    "HW_CCM_STM32",
                     "HW_I2C2_STM32V2",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
@@ -260,6 +262,7 @@ nutarch_cm3_stm32f3 =
                     "HW_ADC1_2_STM32",
                     "HW_ADC3_STM32",
                     "HW_ADC4_STM32",
+                    "HW_CCM_STM32",
                     "HW_I2C2_STM32V2",
                     "HW_I2C3_STM32V2",
                     "HW_SPI1_STM32",
@@ -311,6 +314,7 @@ nutarch_cm3_stm32f3 =
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
                     "HW_CAN_STM32",
                     "HW_ADC1_2_STM32",
+                    "HW_CCM_STM32",
                     "HW_SPI1_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_TIM7_DAC2_STM32",
@@ -331,6 +335,7 @@ nutarch_cm3_stm32f3 =
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
                     "HW_CAN_STM32",
                     "HW_ADC1_2_STM32",
+                    "HW_CCM_STM32",
                     "HW_SPI1_STM32",
                     "HW_TIM3_STM32",
                     "HW_TIM6_DAC_STM32",
@@ -356,6 +361,7 @@ nutarch_cm3_stm32f3 =
                     "HW_ADC1_2_STM32",
                     "HW_ADC3_STM32",
                     "HW_ADC4_STM32",
+                    "HW_CCM_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
@@ -445,6 +451,7 @@ nutarch_cm3_stm32f3 =
                     "HW_ADC1_2_STM32",
                     "HW_ADC3_STM32",
                     "HW_ADC4_STM32",
+                    "HW_CCM_STM32",
                     "HW_I2C2_STM32",
                     "HW_I2C3_STM32",
                     "HW_TIM12_STM32",

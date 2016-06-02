@@ -1233,8 +1233,9 @@ nutarch =
                     "HW_MCU_STM32F405",
                 },
                 makedefs = { "FLASH0_LENGTH=1024K",
-                             "RAM0_LENGTH=112K"
--- FIXME: Handle DMA and CCM memory
+                             "RAM0_LENGTH=112K",
+                             "RAM1_LENGTH=16K",
+                             "CCM_LENGTH=64k",
                             },
             },
             {
@@ -1253,8 +1254,9 @@ nutarch =
                     "HW_MCU_STM32F407",
                 },
                 makedefs = { "FLASH0_LENGTH=1024K",
-                             "RAM0_LENGTH=112K"
--- FIXME: Handle DMA and CCM memory
+                             "RAM0_LENGTH=112K",
+                             "RAM1_LENGTH=16K",
+                             "CCM_LENGTH=64K",
                             },
             },
             {
@@ -1291,8 +1293,10 @@ nutarch =
                     "HW_MCU_STM32F429",
                 },
                 makedefs = { "FLASH0_LENGTH=2048K",
-                             "RAM0_LENGTH=20K"
--- FIXME: Handle DMA and CCM memory
+                             "RAM0_LENGTH=112K",
+                             "RAM1_LENGTH=16K",
+                             "RAM2_LENGTH=64K",
+                             "CCM_LENGTH=64K",
                             },
             },
             {
@@ -1311,9 +1315,9 @@ nutarch =
                     "HW_MCU_STM32F446",
                 },
                 makedefs = { "FLASH0_LENGTH=512K",
-                             "RAM0_LENGTH=112K"
--- FIXME: Handle DMA and CCM memory
-                            },
+                             "RAM0_LENGTH=112K",
+                             "RAM1_LENGTH=16K",
+                           },
             },
             {
                 macro = "MCU_STM32F469xI",
@@ -1330,9 +1334,12 @@ nutarch =
                     "HW_MCU_STM32F46",
                     "HW_MCU_STM32F469",
                 },
-                makedefs = { "FLASH0_LENGTH=512K",
-                             "RAM0_LENGTH=320K"
--- FIXME: Handle different RAM regions
+                makedefs = { "ITCM_LENGTH=16k",
+                             "FLASH0_LENGTH=512K",
+                             "RAM0_LENGTH=160K",
+                             "RAM1_LENGTH=32K",
+                             "RAM2_LENGTH=128K",
+                             "CCM_LENGTH=64K",
                             },
             },
             {
@@ -1352,8 +1359,9 @@ nutarch =
                 },
                 makedefs = { "ITCM_LENGTH=16k",
                              "FLASH0_LENGTH=1024K",
-                             "RAM0_LENGTH=320K"
--- FIXME: Handle different memory regions
+                             "RAM0_LENGTH=64K",
+                             "RAM1_LENGTH=240K",
+                             "RAM2_LENGTH=16K",
                            }
             },
             {
@@ -1373,9 +1381,10 @@ nutarch =
                 },
                 makedefs = { "ITCM_LENGTH=16k",
                              "FLASH0_LENGTH=1024K",
-                             "RAM0_LENGTH=320K"
--- FIXME: Handle different memory regions
-                           }
+                             "RAM0_LENGTH=64K",
+                             "RAM1_LENGTH=240K",
+                             "RAM2_LENGTH=16K",
+                          }
             },
             {
                 macro = "MCU_STM32F205xC",
@@ -1393,8 +1402,8 @@ nutarch =
                     "HW_MCU_STM32F205",
                 },
                 makedefs = { "FLASH0_LENGTH=256K",
-                             "RAM0_LENGTH=80K"
--- FIXME: Handle different memory regions
+                             "RAM0_LENGTH=80K",
+                             "RAM1_LENGTH=16k"
                            }
             },
             {
@@ -1414,8 +1423,8 @@ nutarch =
                     "HW_MCU_STM32F207",
                 },
                 makedefs = { "FLASH0_LENGTH=256K",
-                             "RAM0_LENGTH=112K"
--- FIXME: Handle different memory regions
+                             "RAM0_LENGTH=80K",
+                             "RAM1_LENGTH=16k",
                            }
             },
             {
@@ -1434,8 +1443,8 @@ nutarch =
                     "HW_MCU_STM32F207",
                 },
                 makedefs = { "FLASH0_LENGTH=1024K",
-                             "RAM0_LENGTH=112K"
--- FIXME: Handle different memory regions
+                             "RAM0_LENGTH=112K",
+                             "RAM1_LENGTH=16k",
                            }
             },
             {
@@ -1454,9 +1463,9 @@ nutarch =
                     "HW_MCU_STM32F303_LD",
                 },
                 makedefs = { "FLASH0_LENGTH=64K",
-                             "RAM0_LENGTH=12K"
--- FIXME: Handle different memory regions
-                           }
+                             "RAM0_LENGTH=12K",
+                             "CCM_LENGTH=4K",
+                          }
             },
             {
                 macro = "MCU_STM32F303xC",
@@ -1474,8 +1483,8 @@ nutarch =
                     "HW_MCU_STM32F303_MD",
                 },
                 makedefs = { "FLASH0_LENGTH=256K",
-                             "RAM0_LENGTH=40K"
--- FIXME: Handle different memory regions
+                             "RAM0_LENGTH=40K",
+                             "CCM_LENGTH=8K",
                            }
             },
             {
