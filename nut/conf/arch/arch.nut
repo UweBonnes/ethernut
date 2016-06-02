@@ -1014,6 +1014,25 @@ nutarch =
                              "RAM0_LENGTH=20K" },
             },
             {
+                macro = "MCU_STM32F103xC",
+                brief = "STM STM32F103 257 kB",
+                description = "STM STM32F103 256 kB.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F1",
+                    "HW_MCU_STM32F1_HD",
+                    "HW_MCU_STM32F103",
+                    "HW_MCU_STM32F103_HD"
+                },
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=48K" },
+            },
+            {
                 macro = "MCU_STM32F103xE",
                 brief = "STM STM32F103 512 kB",
                 description = "STM STM32F103 512 kB.",
@@ -1031,6 +1050,25 @@ nutarch =
                 },
                 makedefs = { "FLASH0_LENGTH=512K",
                              "RAM0_LENGTH=64K" },
+            },
+            {
+                macro = "MCU_STM32F103xG",
+                brief = "STM STM32F103 1024 kB",
+                description = "STM STM32F103 1024 kB.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F1",
+                    "HW_MCU_STM32F1_XL",
+                    "HW_MCU_STM32F103",
+                    "HW_MCU_STM32F103_XL"
+                },
+                makedefs = { "FLASH0_LENGTH=1024K",
+                             "RAM0_LENGTH=96K" },
             },
             {
                 macro = "MCU_STM32F107xC",
