@@ -360,7 +360,7 @@
 #endif
 
 # if !defined(RCC_BDCR_LSEBYP) && defined(RCC_CSR_LSEBYP)
-/* L1 and F0*/
+/* L0 and  L1 */
 #  define RCC_BDCR (RCC->CSR)
 #  define RCC_BDCR_LSEBYP RCC_CSR_LSEBYP
 #  define RCC_BDCR_LSERDY RCC_CSR_LSERDY
@@ -372,32 +372,34 @@
 #  define RCC_BDCR_LSIRDY    RCC_CSR_LSIRDY
 #  define RCC_BDCR_LSION     RCC_CSR_LSION
 #  if defined(RCC_CSR_LSEDRV)
+/* L0 */
 #   define RCC_BDCR_LSEDRV_0 RCC_CSR_LSEDRV_0
 #   define RCC_BDCR_LSEDRV   RCC_CSR_LSEDRV
 #  else
+/* L1 */
 #   define RCC_BDCR_LSEDRV_0 1
 #   define RCC_BDCR_LSEDRV   0
+#   define NO_LSEDRV
 #  endif
 # elif defined(RCC_BDCR_LSEBYP)
 #  define RCC_BDCR (RCC->BDCR)
-#  if !defined(RCC_BDCR_LSEDRV)
-#   if   defined(RCC_BCDR_LSEMOD)
-#    define RCC_BDCR_LSEDRV_0 RCC_BCDR_LSEMOD
-#    define RCC_BDCR_LSEDRV   RCC_BCDR_LSEMOD
-#   else
-#    define RCC_BDCR_LSEDRV_0 1
-#    define RCC_BDCR_LSEDRV   0
-#    define NO_LSEDRV
-#   endif
+#  if   defined(RCC_BCDR_LSEMOD)
+/* F411, F446, F469 and F479*/
+#   define RCC_BDCR_LSEDRV_0 RCC_BDCR_LSEMOD
+#   define RCC_BDCR_LSEDRV   RCC_BDCR_LSEMOD
+#  elif !defined(RCC_BDCR_LSEDRV)
+/* F1, F2 and older F4 */
+#   define RCC_BDCR_LSEDRV_0 1
+#   define RCC_BDCR_LSEDRV   0
+#   define NO_LSEDRV
+#  else
+/* F0, F3, F7 and F4 */
 #  endif
 # endif
 
 # if !defined(RCC_BDCR_LSEON) && defined(RCC_CSR_LSEON)
 #  define RCC_BDCR_LSEON RCC_CSR_LSEON
 # endif
-#if !defined(RCC_CR_MSIPLLEN)
-# define RCC_CR_MSIPLLEN 0
-#endif
 
 # if !defined(RCC_CR_RTCPRE_0) && defined(RCC_CFGR_RTCPRE_0)
 #  define RCC_CR (RCC->CFGR)

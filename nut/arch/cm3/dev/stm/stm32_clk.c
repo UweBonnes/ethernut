@@ -402,7 +402,13 @@ static void LseFinishSetup(void *arg) {
         uint32_t lse_level;
 
         NutIrqDisable(&sig_RCC);
+        if (RCC_CIFR & RCC_CIFR_LSERDYF) {
+            RCC_CIER &= ~RCC_CIER_LSERDYIE;
+            RCC_CICR |= RCC_CICR_LSERDYC;
+        }
+#if defined(RCC_CR_MSIPLLEN)
         RCC->CR |= RCC_CR_MSIPLLEN;
+#endif
         bdcr = RCC_BDCR;
         lse_level = (bdcr & RCC_BDCR_LSEDRV) / RCC_BDCR_LSEDRV_0;
         if (LSE_DRIVE_LEVEL != lse_level) {
@@ -411,10 +417,6 @@ static void LseFinishSetup(void *arg) {
             bdcr |= LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
             RCC_BDCR = bdcr;
             PWR_CR &= ~PWR_CR_DBP;
-        }
-        if (RCC_CIFR & RCC_CIFR_LSERDYF) {
-            RCC_CIER &= ~RCC_CIER_LSERDYIE;
-            RCC_CICR |= RCC_CICR_LSERDYC;
         }
     }
 }
