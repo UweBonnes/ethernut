@@ -162,6 +162,9 @@ NutIdleCallback NutRegisterIdleCallback(NutIdleCallback func)
  */
 THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
 {
+#if defined(STM32_RTC_FINISH)
+    Stm32RtcFinish();
+#endif
 #ifdef NUT_INIT_IDLE
     NutIdleInit();
 #endif
@@ -286,9 +289,6 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
         /* A first trial. */
         puts("\nStarting Nut/OS");
     }
-#endif
-#if defined(NUT_INIT_DEV)
-    NutDeviceInit();
 #endif
 #ifdef NUT_INIT_BOARD
     NutBoardInit();

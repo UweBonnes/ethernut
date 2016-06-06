@@ -38,6 +38,8 @@
  *
  * Include this file in the device specific setup to allow better optimization!
  */
+#include <sys/timer.h>
+#include <sys/event.h>
 #include <dev/irqreg.h>
 
 #if !defined  (HSE_STARTUP_TIMEOUT)
@@ -391,47 +393,34 @@ int CtlHsiClock(int ena)
     return rc;
 }
 
-#if defined(NUT_INIT_DEV)
-/* When LSE gets ready:
+#if defined(STM32_RTC_FINISH)
+/*!
+ * \brief   Check if LSE clock got ready
+ *
+ * This function is called as timer callback which was initialised at
+ * Stm32RtcFinish()
+ *
+ * LSE may take several seconds to stabilize.
+ *
+ * When LSE gets ready, as a one-short
  *  - enable the MSI PLL on L4
- *  - check if lower LSE drive level is wanted
+ *
+ * CHECKME: May we call TimerStop inside the timer callback?
  */
-static void LseFinishSetup(void *arg) {
+static void LseFinishSetup(HANDLE this, void *arg) {
     if (RCC_BDCR & RCC_BDCR_LSERDY) {
-        uint32_t bdcr;
-        uint32_t lse_level;
-
-        NutIrqDisable(&sig_RCC);
-        if (RCC_CIFR & RCC_CIFR_LSERDYF) {
-            RCC_CIER &= ~RCC_CIER_LSERDYIE;
-            RCC_CICR |= RCC_CICR_LSERDYC;
-        }
-#if defined(RCC_CR_MSIPLLEN)
         RCC->CR |= RCC_CR_MSIPLLEN;
-#endif
-        bdcr = RCC_BDCR;
-        lse_level = (bdcr & RCC_BDCR_LSEDRV) / RCC_BDCR_LSEDRV_0;
-        if (LSE_DRIVE_LEVEL != lse_level) {
-            PWR_CR |= PWR_CR_DBP;
-            bdcr &= ~RCC_BDCR_LSEDRV;
-            bdcr |= LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
-            RCC_BDCR = bdcr;
-            PWR_CR &= ~PWR_CR_DBP;
-        }
+        NutEventPostAsync(arg);
     }
 }
 
-void NutDeviceInit(void)
+void Stm32RtcFinish(void)
 {
-    if (LSE_VALUE) {
-        if (RCC_BDCR & RCC_BDCR_LSERDY) {
-            LseFinishSetup(NULL);
-        } else {
-            NutRegisterIrqHandler(&sig_RCC, LseFinishSetup, NULL);
-            RCC_CIER |= RCC_CIER_LSERDYIE;
-            NutIrqEnable(&sig_RCC);
-        }
-    }
+    HANDLE t;
+    HANDLE e = NULL;
+    t = NutTimerStart(255, &LseFinishSetup, &e, 0);
+    NutEventWait(&e, NUT_WAIT_INFINITE);
+    NutTimerStop(t);
 }
 #endif
 
@@ -489,9 +478,9 @@ void SetRtcClockSource(int source)
         RCC_BDCR |= RCC_BDCR_RTCSEL_1;
         break;
     case RTCCLK_LSE:
-        /* Start with highest drive level for short startup*/
+        /* Always start with selected drive level. */
         RCC_BDCR |= RCC_BDCR_RTCSEL_0 | (LSE_BYPASS * RCC_BDCR_LSEBYP) |
-            RCC_BDCR_LSEDRV;
+            LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
         break;
     case RTCCLK_HSE:
         RCC_BDCR |= RCC_BDCR_RTCSEL;
