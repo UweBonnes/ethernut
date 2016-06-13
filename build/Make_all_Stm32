@@ -6,11 +6,12 @@
 ./MakeTest cm3 f334_discovery
 ./MakeTest cm3 f401_discovery
 ./MakeTest cm3 f429_discovery
+./MakeTest cm3 f469_discovery
 ./MakeTest cm3 f4_discovery
 ./MakeTest cm3 f7_discovery
+./MakeTest cm3 f769_discovery
 ./MakeTest cm3 jkt_8020_410
 ./MakeTest cm3 l152c_discovery
-./MakeTest cm3 l0_discovery
 ./MakeTest cm3 l0_discovery
 ./MakeTest cm3 l1_discovery
 ./MakeTest cm3 l152c_discovery
@@ -20,6 +21,8 @@
 ./MakeTest cm3 nucleo_f072rb
 ./MakeTest cm3 nucleo_f091rc
 ./MakeTest cm3 nucleo_l152re
+./MakeTest cm3 nucleo_f103rb
+./MakeTest cm3 nucleo_f303k8
 ./MakeTest cm3 nucleo_f401re
 ./MakeTest cm3 nucleo_f411re
 ./MakeTest cm3 nucleo_f446re
