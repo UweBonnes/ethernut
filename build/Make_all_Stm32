@@ -1,4 +1,6 @@
 #! /bin/sh
+./MakeTest cm3 f0_discovery
+./MakeTest cm3 f07_discovery
 ./MakeTest cm3 f1_discovery
 ./MakeTest cm3 f3_discovery
 ./MakeTest cm3 f401_discovery
@@ -8,7 +10,12 @@
 ./MakeTest cm3 l152c_discovery
 ./MakeTest cm3 l1_discovery
 ./MakeTest cm3 m24sr_discovery
+./MakeTest cm3 nucleo_f030r8
+./MakeTest cm3 nucleo_f072rb
+./MakeTest cm3 nucleo_f091rc
 ./MakeTest cm3 nucleo_l152re
+./MakeTest cm3 nucleo_f401re
+./MakeTest cm3 nucleo_f411re
 ./MakeTest cm3 steval_pcc010v2
 ./MakeTest cm3 stm3210c-eval
 ./MakeTest cm3 stm3210e-eval
