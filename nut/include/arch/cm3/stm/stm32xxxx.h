@@ -205,12 +205,26 @@
 #  include <arch/cm3/stm/vendor/stm32l162xe.h>
 #endif
 #elif defined(MCU_STM32L4)
-# if   defined(STM32L471xx)
+# if   defined(STM32L431xx)
+#  include <arch/cm3/stm/vendor/stm32l431xx.h>
+# elif defined(STM32L432xx)
+#  include <arch/cm3/stm/vendor/stm32l432xx.h>
+# elif defined(STM32L433xx)
+#  include <arch/cm3/stm/vendor/stm32l433xx.h>
+# elif defined(STM32L442xx)
+#  include <arch/cm3/stm/vendor/stm32l442xx.h>
+# elif defined(STM32L443xx)
+#  include <arch/cm3/stm/vendor/stm32l443xx.h>
+# elif defined(STM32L471xx)
 #  include <arch/cm3/stm/vendor/stm32l471xx.h>
 # elif defined(STM32L475xx)
 #  include <arch/cm3/stm/vendor/stm32l475xx.h>
 # elif defined(STM32L476xx)
 #  include <arch/cm3/stm/vendor/stm32l476xx.h>
+# elif defined(STM32L485xx)
+#  include <arch/cm3/stm/vendor/stm32l485xx.h>
+# elif defined(STM32L486xx)
+#  include <arch/cm3/stm/vendor/stm32l486xx.h>
 # endif
 #elif defined(MCU_STM32F2)
 /**
