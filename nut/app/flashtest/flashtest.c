@@ -60,6 +60,15 @@ static char *pattern3 = "abcdef0123456789abcdef0123456";
 static const char  pattern4 = 0x55;
 static const uint32_t cafebabe = 0xCAFEBABE;
 
+static void Compare(char *wr, size_t len)
+{
+    char rd[8];
+    NutNvMemLoad(0x0, rd, 5);
+    if (strncmp(rd, wr, 5)) {
+        printf("NutNvMemSave compare failed: %5s vs %s\n", rd, wr);
+    }
+}
+
 /*
  * Test for the IAP flash and configuration storage API.
  *
@@ -87,41 +96,36 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     printf(banner);
     NutSleep(10);
-    res = NutNvMemSave(0x0, "Save_", 6);
+    strcpy(buffer, "Save_");
+    res = NutNvMemSave(0x0, buffer, 5);
     if(res)
         printf("NutNvMemSave failed: %d\n", res);
     else {
-        NutNvMemLoad(0x0, buffer, 6);
-        if (memcmp(buffer, "Save_", 5))
-            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save0");
-
-        res = NutNvMemSave(0x0, "Save1", 6);
-        if(res)
+        Compare(buffer, 5);
+        strcpy(buffer, "Save1");
+        res = NutNvMemSave(0x0, buffer, 5);
+        if(res) {
             printf("NutNvMemSave failed: %d\n", res);
-        NutNvMemLoad(0x0, buffer, 6);
-        if (memcmp(buffer, "Save1", 5))
-            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save1");
-
-        res = NutNvMemSave(0x0, "Save2", 6);
-        if(res)
+        }
+        Compare(buffer, 5);
+        strcpy(buffer, "Save2");
+        res = NutNvMemSave(0x0, buffer, 5);
+        if(res) {
             printf("NutNvMemSave failed: %d\n", res);
-        NutNvMemLoad(0x0, buffer, 6);
-        if (memcmp(buffer, "Save2", 5))
-            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "Save2");
-
+        }
+        Compare(buffer, 5);
         res = NutNvMemSave(0x0, "u", 1);
-        if(res)
+        buffer[0] = 'u';
+        if(res) {
             printf("NutNvMemSave failed: %d\n", res);
-        NutNvMemLoad(0x0, buffer, 6);
-        if (memcmp(buffer, "uave2", 5))
-            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uave2");
-
+        }
+        Compare(buffer, 5);
         res = NutNvMemSave(0x1, "x", 1);
-        if(res)
+        buffer[1] = 'x';
+        if(res) {
             printf("NutNvMemSave failed: %d\n", res);
-        NutNvMemLoad(0x0, buffer, 6);
-        if (memcmp(buffer, "uxve2", 5))
-            printf("NutNvMemSave compare failed: %s vs %s\n", buffer, "uxve2");
+        }
+        Compare(buffer, 5);
     }
     printf("NutNvMem test done\n");
 
