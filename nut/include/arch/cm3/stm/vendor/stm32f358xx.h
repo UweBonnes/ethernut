@@ -671,12 +671,12 @@ typedef struct
   * @{
   */
 
-#define FLASH_BASE            ((uint32_t)0x08000000U) /*!< FLASH base address in the alias region */
-#define CCMDATARAM_BASE       ((uint32_t)0x10000000U) /*!< CCM(core coupled memory) data RAM base address in the alias region     */
-#define SRAM_BASE             ((uint32_t)0x20000000U) /*!< SRAM base address in the alias region */
-#define PERIPH_BASE           ((uint32_t)0x40000000U) /*!< Peripheral base address in the alias region */
-#define SRAM_BB_BASE          ((uint32_t)0x22000000U) /*!< SRAM base address in the bit-band region */
-#define PERIPH_BB_BASE        ((uint32_t)0x42000000U) /*!< Peripheral base address in the bit-band region */
+#define FLASH_BASE            (0x08000000U) /*!< FLASH base address in the alias region */
+#define CCMDATARAM_BASE       (0x10000000U) /*!< CCM(core coupled memory) data RAM base address in the alias region     */
+#define SRAM_BASE             (0x20000000U) /*!< SRAM base address in the alias region */
+#define PERIPH_BASE           (0x40000000U) /*!< Peripheral base address in the alias region */
+#define SRAM_BB_BASE          (0x22000000U) /*!< SRAM base address in the bit-band region */
+#define PERIPH_BB_BASE        (0x42000000U) /*!< Peripheral base address in the bit-band region */
 
 
 /*!< Peripheral memory map */
@@ -751,9 +751,9 @@ typedef struct
 #define DMA2_Channel5_BASE    (AHB1PERIPH_BASE + 0x00000458U)
 #define RCC_BASE              (AHB1PERIPH_BASE + 0x00001000U)
 #define FLASH_R_BASE          (AHB1PERIPH_BASE + 0x00002000U) /*!< Flash registers base address */
-#define OB_BASE               ((uint32_t)0x1FFFF800U)         /*!< Flash Option Bytes base address */
-#define FLASHSIZE_BASE        ((uint32_t)0x1FFFF7CCU)         /*!< FLASH Size register base address */
-#define UID_BASE              ((uint32_t)0x1FFFF7ACU)         /*!< Unique device ID register base address */
+#define OB_BASE               (0x1FFFF800U)         /*!< Flash Option Bytes base address */
+#define FLASHSIZE_BASE        (0x1FFFF7CCU)         /*!< FLASH Size register base address */
+#define UID_BASE              (0x1FFFF7ACU)         /*!< Unique device ID register base address */
 #define CRC_BASE              (AHB1PERIPH_BASE + 0x00003000U)
 #define TSC_BASE              (AHB1PERIPH_BASE + 0x00004000U)
 
@@ -773,7 +773,7 @@ typedef struct
 #define ADC4_BASE             (AHB3PERIPH_BASE + 0x00000500U)
 #define ADC3_4_COMMON_BASE    (AHB3PERIPH_BASE + 0x00000700U)
 
-#define DBGMCU_BASE          ((uint32_t)0xE0042000U) /*!< Debug MCU registers base address */
+#define DBGMCU_BASE          (0xE0042000U) /*!< Debug MCU registers base address */
 /**
   * @}
   */
