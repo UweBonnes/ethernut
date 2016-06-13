@@ -58,6 +58,15 @@ SECTIONS
     } > FLASH0
     _etext = .;
 
+    .vtable (NOLOAD):
+    {
+	. = ALIGN(4);
+	_vtable = .;
+	*(.vtable*)
+	. = ALIGN(4);
+	_evtable = .;
+    } > SRAM0
+
     .data :
     {
         _sdata = .;
@@ -74,15 +83,6 @@ SECTIONS
         _ramfunc_end = .;
     } > ITCM AT > FLASH0
     _ramfunc_load = LOADADDR(.ram_func);
-
-    .vtable (NOLOAD):
-    {
-	. = ALIGN(4);
-	_vtable = .;
-	*(.vtable*)
-	. = ALIGN(4);
-	_evtable = .;
-    } > SRAM0
 
     .bss (NOLOAD):
     {
