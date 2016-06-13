@@ -178,24 +178,16 @@ extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
-#if   defined(MCU_STM32F2)
-/* F2 has BSSRL defined as  __IO uint16_t, F3 has additional BRR */
-# define GpioPinSetHigh(bank, bit)   (CM3REG((bank), GPIO_TypeDef, BSRRL) = (1 << (bit)))
-# define GpioPinSetLow(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BSRRH) = (1 << (bit)))
-# define GpioPortSetHigh(bank, mask) (CM3REG((bank), GPIO_TypeDef, BSRRL) = mask)
-# define GpioPortSetLow(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BSRRH) = mask)
-#elif defined(MCU_STM32L1) || defined(MCU_STM32F4) || defined(MCU_STM32F7)
-/* L1/F4/F7 have only BSRR */
-# define GpioPinSetHigh(bank, bit)   (CM3REG((bank), GPIO_TypeDef, BSRR) = (1<<(bit)))
-# define GpioPinSetLow(bank, bit)    (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = (1 << (bit)))
-# define GpioPortSetHigh(bank, mask) (CM3REG((bank), GPIO_TypeDef, BSRR) = mask)
-# define GpioPortSetLow(bank, mask)  (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = mask)
-#else
+#define GpioPinSetHigh(bank, bit)   (CM3REG((bank), GPIO_TypeDef, BSRR ) = (1<<(bit)))
+#define GpioPortSetHigh(bank, mask) (CM3REG((bank), GPIO_TypeDef, BSRR) = mask)
+#if defined(GPIO_BRR_BR_0)
 /* F0/F1/F3/L0/L4 have explicit BRR register */
-# define GpioPinSetHigh(bank, bit)   (CM3REG((bank), GPIO_TypeDef, BSRR ) = (1<<(bit)))
 # define GpioPinSetLow(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BRR )  = (1<<(bit)))
-# define GpioPortSetHigh(bank, mask) (CM3REG((bank), GPIO_TypeDef, BSRR) = mask)
 # define GpioPortSetLow(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BRR ) = mask)
+#else
+/* L1/F2/F4/F7 have only BSRR */
+# define GpioPinSetLow(bank, bit)    (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = (1 << (bit)))
+# define GpioPortSetLow(bank, mask)  (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = mask)
 #endif
 
 #if defined(MCU_STM32F0) ||defined(MCU_STM32F3) || defined(MCU_STM32L4)

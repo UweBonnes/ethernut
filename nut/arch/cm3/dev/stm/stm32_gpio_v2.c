@@ -431,26 +431,19 @@ int Stm32GpioSet(nutgpio_t gpio_pin, int value)
             gpio_nr = gpio_pin >> 8;
         gpio = stm32_port_nr2gpio[gpio_nr];
         NUTASSERT(IS_GPIO_ALL_INSTANCE(gpio));
-#if   defined(MCU_STM32F2)
-/* F2 has BSRRL defined as  __IO uint16_t, F3 has additional BRR */
-        if (value) {
-            gpio->BSRRL = 1 << pin_nr;
-        } else {
-            gpio->BSRRH  = 1 << pin_nr;
-        }
-#elif defined(MCU_STM32L1) || defined(MCU_STM32F4) || defined(MCU_STM32F7)
-/* L1/F4/F7 have only BSRR */
-        if (value) {
-            gpio->BSRR = 1 << pin_nr;
-        } else {
-            gpio->BSRR = 1 << (16 + pin_nr);
-        }
-#else
+#if defined(GPIO_BRR_BR_0)
 /* F0/F1/F3/L0/L4 have explicit BRR register */
         if (value) {
             gpio->BSRR = 1 << pin_nr;
         } else {
             gpio->BRR  = 1 << pin_nr;
+        }
+#else
+/* L1/F2/F4/F7 have only BSRR */
+        if (value) {
+            gpio->BSRR = 1 << pin_nr;
+        } else {
+            gpio->BSRR = 1 << (16 + pin_nr);
         }
 #endif
     }

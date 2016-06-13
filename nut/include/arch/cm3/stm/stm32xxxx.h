@@ -358,6 +358,10 @@
 #endif
 
 /* Equalize names in a common place. Even recent CUBE uses "random" names.*/
+#if defined(GPIO_BRR_BR0) && !defined(GPIO_BRR_BR_0)
+# define GPIO_BRR_BR_0 GPIO_BRR_BR0
+#endif
+
 #if defined(RCC_APB1ENR_CANEN) && !defined(RCC_APB1ENR_CAN1EN)
 #define RCC_APB1ENR_CAN1EN RCC_APB1ENR_CANEN
 #endif
