@@ -557,7 +557,7 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
  */
 FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
 {
-    uint8_t  conf_page = 0;
+    uint16_t conf_page = 0;
     uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
     uint32_t flash_conf_sector =
         FLASH_BASE + (flash_size << 10) - FLASH_SECTOR_SIZE;
@@ -618,7 +618,8 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
 {
     FLASH_Status rs = 0;
     uint8_t *buffer;
-    uint8_t  conf_page = 0, *mem;
+    uint8_t *mem;
+    uint16_t conf_page = 0;
     uint16_t flash_size = *(uint16_t*)FLASH_SIZE_REG;
     void* flash_conf_sector = (void*)FLASH_BASE +
         (flash_size << 10) - FLASH_SECTOR_SIZE;
