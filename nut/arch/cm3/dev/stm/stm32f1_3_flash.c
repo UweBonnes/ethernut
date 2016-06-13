@@ -58,29 +58,29 @@
 #  define FLASH_PAGE_SIZE 1024
 # endif
 # if  defined(STM32F030xC) || defined(STM32F091xC)
-static uint32_t pagelist[4] = {0, 0, 0, 0};
+static uint32_t pagelist[4];
 # else
 /* Lets waste one word here. So no need to break down further*/
-static uint32_t pagelist[2] = {0, 0};
+static uint32_t pagelist[2];
 # endif
 #elif defined(MCU_STM32F1)
 # if defined (MCU_STM32F1_LD) || defined (MCU_STM32F1_LD_VL)
 #  define FLASH_PAGE_SIZE 1024
-   static uint32_t pagelist[1] = {0};
+   static uint32_t pagelist[1];
 # elif defined (MCU_STM32F1_MD) || defined(MCU_STM32F1_MD_VL)
 #  define FLASH_PAGE_SIZE 1024
-   static uint32_t pagelist[4] = {0, 0, 0, 0};
+   static uint32_t pagelist[4];
 # elif defined (MCU_STM32F1_HD) || defined (MCU_STM32F1_HD_VL) ||\
     defined (MCU_STM32F1_CL)
 #  define FLASH_PAGE_SIZE 2048
-   static uint32_t pagelist[8] = {0,0,0,0,0,0,0,0};
+   static uint32_t pagelist[8];
 # elif defined(MCU_STM32F1_XL)
 #  define FLASH_PAGE_SIZE 2048
-   static uint32_t pagelist[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+   static uint32_t pagelist[16];
 # endif
 #elif defined(MCU_STM32F3)
 # define FLASH_PAGE_SIZE 2048
-  static uint32_t pagelist[4] = {0,0,0,0};
+  static uint32_t pagelist[4];
 #else
 # warning Unknown STM32 Type
 #endif

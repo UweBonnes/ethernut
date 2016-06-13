@@ -49,6 +49,7 @@
 #include <cfg/os.h>
 #include <sys/heap.h>
 
+#include <dev/iap_flash.h>
 #include <dev/board.h>
 #include <dev/gpio.h>
 
@@ -165,6 +166,8 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
 #if defined(STM32_RTC_FINISH)
     Stm32RtcFinish();
 #endif
+    /* Initialize In-application flash programming */
+    FlashUntouch();
 #ifdef NUT_INIT_IDLE
     NutIdleInit();
 #endif

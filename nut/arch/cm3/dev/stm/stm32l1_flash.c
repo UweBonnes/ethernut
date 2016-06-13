@@ -61,16 +61,16 @@
 
 # if defined (MCU_STM32L1_CAT3)
 #  define FLASH_SIZE_REG   0x1ff800cc
-static uint32_t pagelist[32] = { 0 }; /* 256 k*/
+static uint32_t pagelist[32]; /* 256 k*/
 # elif defined (MCU_STM32L1_CAT4) ||  defined (MCU_STM32L1_CAT6) /* 384k*/
 #  define FLASH_SIZE_REG   0x1ff800cc
-static uint32_t pagelist[48] = { 0 }; /* 384k*/
+static uint32_t pagelist[48]; /* 384k*/
 # elif defined (MCU_STM32L1_CAT5)
 #  define FLASH_SIZE_REG   0x1ff800cc
-static uint32_t pagelist[64] = { 0 }; /* 512 k*/
+static uint32_t pagelist[64]; /* 512 k*/
 # else
 #  define FLASH_SIZE_REG   0x1ff8004c
-static uint32_t pagelist[16] = { 0 }; /* Up to 128 k*/
+static uint32_t pagelist[16]; /* Up to 128 k*/
 # endif
 #elif defined(MCU_STM32L0)
 /*Sectors are the unit for write protection, pages for erase */
@@ -80,19 +80,17 @@ static uint32_t pagelist[16] = { 0 }; /* Up to 128 k*/
 
 # define FLASH_SIZE_REG   0x1ff8007C
 # if   defined (MCU_STM32L0_CAT1) /*  16 k*/
-static uint32_t pagelist[ 4] = { 0 };
+static uint32_t pagelist[ 4];
 # elif defined (MCU_STM32L0_CAT2) /*  32 k*/
-static uint32_t pagelist[ 8] = { 0 };
+static uint32_t pagelist[ 8];
 # elif defined (MCU_STM32L0_CAT3) /*  64 k*/
-static uint32_t pagelist[16] = { 0 };
+static uint32_t pagelist[16];
 # elif defined (MCU_STM32L0_CAT5) /* 192 k*/
-static uint32_t pagelist[48] = { 0 };
+static uint32_t pagelist[48];
 # endif
 #else
 #warning Unhandled family
 #endif
-
-uint8_t pagelist_init_done = 0;
 
 #if defined(FLASH_WRPR_WRP) && !defined( FLASH_WRPR1_WRP)
 # define FLASH_WRPR (FLASH->WRPR)
@@ -112,7 +110,6 @@ uint8_t pagelist_init_done = 0;
 void FlashUntouch(void)
 {
     memset(pagelist, 0, sizeof(pagelist));
-    pagelist_init_done = 1;
 }
 
 size_t IapFlashEnd(void)
@@ -306,9 +303,6 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
          /* Only a check for write protection was requested */
          goto done;
      }
-
-    if (pagelist_init_done == 0)
-        FlashUntouch();
 
     while( (length) && (rs==FLASH_COMPLETE))
     {

@@ -120,7 +120,7 @@ static const uint8_t sector2start[] =  {
 /*!
  *\brief Bitmask of sectors either empty or active erased when first touched
  */
-static uint32_t sectorlist = 0;
+static uint32_t sectorlist;
 
 
 void FlashUntouch(void)
