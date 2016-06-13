@@ -56,6 +56,7 @@ typedef uint_fast16_t nutgpio_pin_t;
 #define NUTGPIO_PORTG   GPIOG_BASE
 #define NUTGPIO_PORTH   GPIOH_BASE
 #define NUTGPIO_PORTI   GPIOI_BASE
+#define NUTGPIO_PORTJ   GPIOJ_BASE
 #define NUTGPIO_PORTK   GPIOK_BASE
 
 #define NUTGPIO_EXTINT0     1

@@ -124,21 +124,28 @@ nutarch_cm3 =
 
      --
     -- CortexM4 FPU
-    --    
+    --
     {
         name = "nutarch_cm4_fpu",
         brief = "FPU support (CortexM4)",
-        requires = { "HW_MCU_FPU" },
         options =
         {
             {
                 macro = "MCU_USE_CORTEX_FPU",
-                brief = "Enable FPU support",
-                provides = { "MCU_USE_CORTEX_FPU" },
+                brief = "Enable single precission FPU support",
+                requires = {"HW_MCU_FPU"},
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
                 makedefs = { "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
-            }
+            },
+            {
+                macro = "MCU_USE_CORTEX_DFPU",
+                brief = "Enable double precession FPU support",
+                requires = {"HW_MCU_DFPU"},
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+                makedefs = { "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv5-d16" }
+            },
         }
     },
     --

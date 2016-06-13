@@ -307,6 +307,16 @@
 #  include <arch/cm3/stm/vendor/stm32f746xx.h>
 # elif defined(STM32F756xx)
 #  include <arch/cm3/stm/vendor/stm32f756xx.h>
+# elif defined(STM32F765xx)
+#  include <arch/cm3/stm/vendor/stm32f765xx.h>
+# elif defined(STM32F767xx)
+#  include <arch/cm3/stm/vendor/stm32f767xx.h>
+# elif defined(STM32F769xx)
+#  include <arch/cm3/stm/vendor/stm32f769xx.h>
+# elif defined(STM32F777xx)
+#  include <arch/cm3/stm/vendor/stm32f777xx.h>
+# elif defined(STM32F779xx)
+#  include <arch/cm3/stm/vendor/stm32f779xx.h>
 # else
 #  warning "Unknown STM32F7 family"
 # endif

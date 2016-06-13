@@ -1391,14 +1391,10 @@ nutarch =
                     "HW_MCU_CM7",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F7",
+                    "HW_MCU_STM32F74",
                     "HW_MCU_STM32F746",
                 },
-                makedefs = { "ITCM_LENGTH=16k",
-                             "FLASH0_LENGTH=1024K",
-                             "RAM0_LENGTH=64K",
-                             "RAM1_LENGTH=240K",
-                             "RAM2_LENGTH=16K",
-                           }
+                makedefs = {"FLASH0_LENGTH=1024K"}
             },
             {
                 macro = "MCU_STM32F756xG",
@@ -1413,14 +1409,28 @@ nutarch =
                     "HW_MCU_CM7",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F7",
+                    "HW_MCU_STM32F74",
                     "HW_MCU_STM32F746",
                 },
-                makedefs = { "ITCM_LENGTH=16k",
-                             "FLASH0_LENGTH=1024K",
-                             "RAM0_LENGTH=64K",
-                             "RAM1_LENGTH=240K",
-                             "RAM2_LENGTH=16K",
-                          }
+                makedefs = {"FLASH0_LENGTH=1024K"}
+            },
+            {
+                macro = "MCU_STM32F769xI",
+                brief = "STM STM32F769 2 MB",
+                description = "STM32F769 with douple precession FPU and DSI.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_CM7",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F7",
+                    "HW_MCU_STM32F76",
+                    "HW_MCU_STM32F769",
+                },
+                makedefs = {"FLASH0_LENGTH=2048K"}
             },
             {
                 macro = "MCU_STM32F205xC",
