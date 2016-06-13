@@ -26,6 +26,13 @@
 #./MakeTest avr mmnet103
 #./MakeTest avr mmnet104
 ./MakeTest avr stk501
+./MakeTest avr32 evk1100-extram
+./MakeTest avr32 evk1100-intram
+./MakeTest avr32 evk1100-spi
+./MakeTest avr32 evk1101
+./MakeTest avr32 evk1104-extram
+./MakeTest avr32 evk1104-intram
+./MakeTest avr32 evk1105-intram
 ./MakeTest arm at91eb40a
 #./MakeTest arm at91eb40a_redboot
 ./MakeTest arm at91sam7s
