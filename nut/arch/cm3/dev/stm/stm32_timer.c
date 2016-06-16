@@ -129,7 +129,7 @@ void Stm32TimerConfig(
  * \param  fout          Output compare function
  * \param  polarity      Function polarity
  *
- * \return -1 if illegal/inconsistant parameters or 0 on success
+ * \return -1 if illegal/ inconsistent parameters or 0 on success
  */
 int Stm32TimerChannelConfig(
     TIM_TypeDef    *tim,

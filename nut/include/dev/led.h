@@ -95,7 +95,7 @@
  * The parameter timOn specifies the on-time and parameter timOff the off-time.
  * Together with higher timer settings a software dimming can as well be
  * established as a simple blink effect or short / long flash effects.
- * Be adviced that high timer rates can decrease overall system speed.
+ * Be advised that high timer rates can decrease overall system speed.
  * Therefore you have to modify the timer rate in the led.c directly. Standard
  * setting is 10ms cycle time.
  */

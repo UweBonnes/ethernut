@@ -229,7 +229,7 @@ static uint32_t msi_clock;
 
 /*----------------  Clock Setup Procedure ------------------------------
  *
- * Clock system ist arranged like this:
+ * Clock system is arranged like this:
  *
  *                                       ,--------------------------- USB
  *                                       |            ,--------------- CPU
