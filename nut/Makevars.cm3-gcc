@@ -40,7 +40,7 @@ include $(top_srcdir)/Makevars.gcc
 
 # Set target specific variables.
 ARCH       = cm3
-TRGT       = arm-none-eabi-
+TRGT       ?= arm-none-eabi-
 MCFLAGS    = -mcpu=$(MCU) -mthumb -D__CORTEX__ $(FPUFLAGS)
 
 # CXXFLAGS_OPT = -Os -g3 -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti
