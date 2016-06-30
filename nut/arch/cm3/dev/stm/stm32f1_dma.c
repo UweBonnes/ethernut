@@ -53,26 +53,26 @@
 /*!
  * \brief Table to align channels and interrupts for simpler access
  */
-const DMATAB DmaTab[] = {
-    { DMA1_BASE,  0, DMA1_Channel1 },
-    { DMA1_BASE,  4, DMA1_Channel2 },
-    { DMA1_BASE,  8, DMA1_Channel3 },
-    { DMA1_BASE, 12, DMA1_Channel4 },
-    { DMA1_BASE, 16, DMA1_Channel5 },
+static const DMATAB DmaTab[] = {
+    { DMA1,  0, DMA1_Channel1 },
+    { DMA1,  4, DMA1_Channel2 },
+    { DMA1,  8, DMA1_Channel3 },
+    { DMA1, 12, DMA1_Channel4 },
+    { DMA1, 16, DMA1_Channel5 },
 #if !defined(HW_DMA1_5CH_STM32)
-    { DMA1_BASE, 20, DMA1_Channel6 },
-    { DMA1_BASE, 24, DMA1_Channel7 },
+    { DMA1, 20, DMA1_Channel6 },
+    { DMA1, 24, DMA1_Channel7 },
 #endif
 #if defined(HW_DMA2_STM32F1)
-    { DMA2_BASE,  0, DMA2_Channel1 },
-    { DMA2_BASE,  4, DMA2_Channel2 },
-    { DMA2_BASE,  8, DMA2_Channel3 },
-    { DMA2_BASE, 12, DMA2_Channel4 },
-    { DMA2_BASE, 16, DMA2_Channel5 },
+    { DMA2,  0, DMA2_Channel1 },
+    { DMA2,  4, DMA2_Channel2 },
+    { DMA2,  8, DMA2_Channel3 },
+    { DMA2, 12, DMA2_Channel4 },
+    { DMA2, 16, DMA2_Channel5 },
 #endif
 #if defined(HW_DMA2_7CH_STM32)
-    { DMA1_BASE, 20, DMA2_Channel6 },
-    { DMA1_BASE, 24, DMA2_Channel7 },
+    { DMA2, 20, DMA2_Channel6 },
+    { DMA2, 24, DMA2_Channel7 },
 #endif
 };
 
@@ -94,7 +94,7 @@ const DMATAB DmaTab[] = {
 void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flags)
 {
     DMA_Channel_TypeDef* channel = DmaTab[ch].dma_ch;
-    uint32_t cc = flags & ~(DMA_CCR_MEM2MEM|DMA_CCR_DIR|DMA_CCR_EN);
+    uint32_t cc = flags & ~(DMA_CCR_MEM2MEM | DMA_CCR_DIR | DMA_CCR_EN);
     uint32_t cp;
     uint32_t cm;
 
@@ -104,26 +104,24 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
     /* Detect transfer type and set Registers accordingly */
     if ((uint32_t)src & PERIPH_BASE) {
         /* Peripheral to Memory */
-        cp=(uint32_t)src;
-        cm=(uint32_t)dst;
-    }
-    else if ((uint32_t)dst & PERIPH_BASE) {
+        cp = (uint32_t)src;
+        cm = (uint32_t)dst;
+    } else if ((uint32_t)dst & PERIPH_BASE) {
         /* Memory to Peripheral */
         cc |= DMA_CCR_DIR;
-        cp=(uint32_t)dst;
-        cm=(uint32_t)src;
-    }
-    else {
+        cp = (uint32_t)dst;
+        cm = (uint32_t)src;
+    } else {
         /* Memory to Memory Transfer */
         cc |= DMA_CCR_MEM2MEM | DMA_CCR_DIR;
-        cp =(uint32_t)src;
-        cm =(uint32_t)dst;
+        cp = (uint32_t)src;
+        cm = (uint32_t)dst;
     }
 
-    channel->CCR=cc;
-    channel->CNDTR=length;
-    channel->CPAR=cp;
-    channel->CMAR=cm;
+    channel->CCR   = cc;
+    channel->CNDTR = length;
+    channel->CPAR  = cp;
+    channel->CMAR  = cm;
 
 };
 
@@ -132,7 +130,7 @@ void DMA_Setup( uint8_t ch, void* dst, void* src, uint16_t length, uint32_t flag
  */
 void DMA_Enable(uint8_t ch)
 {
-    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    DMA_Channel_TypeDef *channel = DmaTab[ch].dma_ch;
     channel->CCR |= DMA_CCR_EN;
 }
 
@@ -144,7 +142,7 @@ void DMA_Enable(uint8_t ch)
  */
 int DmaIsEnabled(uint8_t ch)
 {
-    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    DMA_Channel_TypeDef *channel = DmaTab[ch].dma_ch;
     return (channel->CCR & DMA_CCR_EN);
 }
 
@@ -153,7 +151,7 @@ int DmaIsEnabled(uint8_t ch)
  */
 void DMA_Disable(uint8_t ch)
 {
-    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    DMA_Channel_TypeDef *channel = DmaTab[ch].dma_ch;
     do {
         channel->CCR &= ~DMA_CCR_EN;
     } while(channel->CCR & DMA_CCR_EN);
@@ -184,8 +182,8 @@ void DMA_Init(void)
         }
 #endif
         /* Clear interrupt related flags in channels */
-        for (i=0; i < DMA_COUNT; i++) {
-            channel = (DMA_Channel_TypeDef*)DmaTab[i].dma_ch;
+        for (i = 0; i < DMA_COUNT; i++) {
+            channel = DmaTab[i].dma_ch;
             channel->CCR = 0;
             DMA_ClearFlag(i,0xf);
         }
@@ -205,16 +203,15 @@ void DMA_Init(void)
  */
 void DMA_IrqMask( uint8_t ch, uint32_t mask, uint8_t ena)
 {
-    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    DMA_Channel_TypeDef *channel = DmaTab[ch].dma_ch;
     uint32_t ccr = channel->CCR;
-    DMA_TypeDef *dma = (DMA_TypeDef*)DmaTab[ch].dma;
+    DMA_TypeDef *dma = DmaTab[ch].dma;
     uint32_t msk = mask & DMA_FLAGMASK;
 
-    if( ena) {
+    if (ena) {
         /* Enable some/all of the DMA channels interrupts */
         ccr |= msk;
-    }
-    else {
+    } else {
         /* Disable some/all of the DMA channels interrupts */
         ccr &= ~msk;
     }
@@ -238,8 +235,8 @@ void DMA_IrqMask( uint8_t ch, uint32_t mask, uint8_t ena)
  */
 void DMA_ClearFlag( uint8_t ch, uint32_t flags)
 {
-    volatile DMA_TypeDef *dma = (DMA_TypeDef*)DmaTab[ch].dma;
-    uint32_t msk = (flags&DMA_FLAGMASK)<<DmaTab[ch].fofs;
+    volatile DMA_TypeDef *dma = DmaTab[ch].dma;
+    uint32_t msk = (flags & DMA_FLAGMASK) << DmaTab[ch].fofs;
 
     dma->IFCR = msk;
 }
@@ -255,8 +252,8 @@ void DMA_ClearFlag( uint8_t ch, uint32_t flags)
  */
 uint32_t DMA_GetFlag( uint8_t ch)
 {
-    volatile DMA_TypeDef *dma = (DMA_TypeDef*)DmaTab[ch].dma;
-    uint32_t flags = (dma->ISR>>DmaTab[ch].fofs)&DMA_FLAGMASK;
+    volatile DMA_TypeDef *dma = DmaTab[ch].dma;
+    uint32_t flags = (dma->ISR>>DmaTab[ch].fofs) & DMA_FLAGMASK;
     return flags;
 }
 
@@ -270,7 +267,7 @@ uint32_t DMA_GetFlag( uint8_t ch)
  */
 uint16_t  DMA_GetRemainingTransfers( uint8_t ch)
 {
-    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    DMA_Channel_TypeDef *channel = DmaTab[ch].dma_ch;
     return channel->CNDTR;
 }
 
@@ -285,7 +282,7 @@ uint16_t  DMA_GetRemainingTransfers( uint8_t ch)
  */
 void*  DmaGetMemoryBase( uint8_t ch)
 {
-    DMA_Channel_TypeDef *channel = (DMA_Channel_TypeDef*)DmaTab[ch].dma_ch;
+    DMA_Channel_TypeDef *channel = DmaTab[ch].dma_ch;
     return (void *)channel->CMAR;
 }
 

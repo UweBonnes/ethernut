@@ -345,12 +345,10 @@
 /* Internally used struct and table to align
  * DMA channels and interrupts. */
 typedef struct {
-    uint32_t dma;       /*< DMA Controller Register Base Address */
-    uint32_t fofs;      /*< DMA Channel Flags Offset */
-    DMA_Channel_TypeDef* dma_ch;    /*< DMA Channel Register Base Address */
+    DMA_TypeDef *dma;            /*< DMA Controller Register Base Address */
+    uint32_t fofs;               /*< DMA Channel Flags Offset */
+    DMA_Channel_TypeDef* dma_ch; /*< DMA Channel Register Base Address */
 } DMATAB;
-
-extern const DMATAB DmaTab[];
 
 #if defined(HW_DMA2_7CH_STM32)
 #define DMA_COUNT 14
