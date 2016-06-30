@@ -270,16 +270,15 @@ nuttools =
                 brief = "Flash Bootloader reserved",
                 description = "Space in flash allocated for bootloader",
                 requires = { "TOOL_GCC" },
-                makedefs = { "BOOTLOADER_RESERVED",
-                        "HWDEF+=-DBOOTLOADER_RESERVED=$(BOOTLOADER_RESERVED)"
-                },
+                file = "include/cfg/arch.h",
+                exclusivity = {"BOOTLOADER_OFFSET"},
             },
             {
                 macro = "BOOTLOADER_OFFSET",
                 brief = "Bootloader Offset",
                 description = "Offset of application code in flash.",
                 requires = { "TOOL_GCC" },
-                default = "0",
+                exclusivity = {"BOOTLOADER_RESERVED"},
                 makedefs = { "BOOTLOADER_OFFSET",
                              "HWDEF+=-DBOOTLOADER_OFFSET=$(BOOTLOADER_OFFSET)"
                 },
