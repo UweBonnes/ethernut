@@ -93,7 +93,7 @@ static void Stm32UsartGroupHandler(void *arg) {
         uint32_t flags;
 # if defined(SYSCFG_ITLINE29_SR_USART3_GLB)
 /* Only F09x devices have 8 Usarts and have the IT_LINE */
-        flags = SYSCFG->IT_LINE_SR[29] & (1 << (signal->usart_nr - 3));
+        flags = SYSCFG->IT_LINE_SR[29] & (1 << (signal->usart_nr - 2));
 #else
         USART_TypeDef * usart;
         usart = signal->usart;
