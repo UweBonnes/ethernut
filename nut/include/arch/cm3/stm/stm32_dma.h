@@ -76,7 +76,7 @@ typedef struct {
                         (((ch < DMA2_CH1)? DMA1_BASE : DMA2_BASE) \
                          + 8 + ((ch % 7) * 20)))
 # else
-#  define Ch2DmaCh(ch) (DmaChannelCommon*)DMA1_BASE
+#  define Ch2DmaCh(ch) ((DmaChannelCommon*)(DMA1_BASE + 8 + ch * 20))
 # endif
 #else
 #define Ch2DmaCh(ch) ((DmaChannelCommon*)                           \
