@@ -393,37 +393,6 @@ int CtlHsiClock(int ena)
     return rc;
 }
 
-#if defined(STM32_RTC_FINISH)
-/*!
- * \brief   Check if LSE clock got ready
- *
- * This function is called as timer callback which was initialised at
- * Stm32RtcFinish()
- *
- * LSE may take several seconds to stabilize.
- *
- * When LSE gets ready, as a one-short
- *  - enable the MSI PLL on L4
- *
- * CHECKME: May we call TimerStop inside the timer callback?
- */
-static void LseFinishSetup(HANDLE this, void *arg) {
-    if (RCC_BDCR & RCC_BDCR_LSERDY) {
-        RCC->CR |= RCC_CR_MSIPLLEN;
-        NutEventPostAsync(arg);
-    }
-}
-
-void Stm32RtcFinish(void)
-{
-    HANDLE t;
-    HANDLE e = NULL;
-    t = NutTimerStart(255, &LseFinishSetup, &e, 0);
-    NutEventWait(&e, NUT_WAIT_INFINITE);
-    NutTimerStop(t);
-}
-#endif
-
 /**
   * \brief  Set RTC clock to selected source.
   *

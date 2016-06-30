@@ -235,9 +235,4 @@ extern uint32_t SysCtlClockGet(void);
 extern void SetRtcClockSource(int source);
 extern int EnableRtcClock(int source);
 
-#if (LSE_VALUE) && defined(RCC_CR_MSIPLLEN)
-# define STM32_RTC_FINISH
-extern void Stm32RtcFinish(void);
-#endif
-
 #endif /* _STM32_CLK_H_ */

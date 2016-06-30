@@ -163,9 +163,6 @@ NutIdleCallback NutRegisterIdleCallback(NutIdleCallback func)
  */
 THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
 {
-#if defined(STM32_RTC_FINISH)
-    Stm32RtcFinish();
-#endif
     /* Initialize In-application flash programming */
     FlashUntouch();
 #ifdef NUT_INIT_IDLE
