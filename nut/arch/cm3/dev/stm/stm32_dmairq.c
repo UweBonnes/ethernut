@@ -55,16 +55,13 @@
 #include <arch/cm3/stm/stm32_dma.h>
 
 #if defined(HW_DMA_COMBINED_IRQ_STM32)
+# define FIRST_COMBINED_CHANNEL DMA1_CH2
 # if   defined(HW_DMA2_STM32F1)
-#  define FIRST_COMBINED_CHANNEL DMA2_CH4
 #  define DMA_COUNT 12
+# elif defined(HW_DMA1_5CH_STM32)
+#  define DMA_COUNT  5
 # else
-#  define FIRST_COMBINED_CHANNEL DMA1_CH2
-#  if defined(HW_DMA1_5CH_STM32)
-#   define DMA_COUNT  5
-#  else
-#   define DMA_COUNT  7
-#  endif
+#  define DMA_COUNT  7
 # endif
 # if   defined(SYSCFG_ITLINE10_SR_DMA1_CH2)
 static __IO uint32_t *ch2it_line_sr[DMA_COUNT] = {
