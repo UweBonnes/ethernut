@@ -492,8 +492,8 @@ function GetUsart1TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
     if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH2", "DMA1_CH4"}
@@ -518,8 +518,8 @@ function GetUsart1RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
     if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH3", "DMA1_CH5"}
@@ -544,8 +544,8 @@ function GetUsart2TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
      if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH4", "DMA1_CH6", "DMA1_CH2"}
@@ -569,8 +569,8 @@ function GetUsart2RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
      if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH3", "DMA1_CH7", "DMA1_CH1"}
@@ -590,8 +590,8 @@ function GetUsart3TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
     if c_is_provided("HW_MCU_STM32F0") then
         return {"DMA_NONE", "DMA1_CH4"}
@@ -609,8 +609,8 @@ function GetUsart3RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
     return {"DMA_NONE", "DMA1_CH3"}
 end
@@ -626,8 +626,8 @@ function GetUsart4TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
      if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH3", "DMA1_CH7"}
@@ -645,8 +645,8 @@ function GetUsart4RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
      if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH2", "DMA1_CH6"}
@@ -662,8 +662,8 @@ function GetUsart5TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
      if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH3", "DMA1_CH7"}
@@ -678,8 +678,8 @@ function GetUsart5RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
      if c_is_provided("HW_STM32L0") then
         return {"DMA_NONE", "DMA1_CH2", "DMA2_CH6"}
@@ -696,8 +696,8 @@ function GetUsart6TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
     return {"DMA_NONE", "DMA2_CH1"}
 end
@@ -710,8 +710,8 @@ function GetUsart6RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
     return {"DMA_NONE", "DMA2_CH2"}
 end
@@ -724,8 +724,8 @@ function GetUsart7TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
     return {"DMA_NONE", "DMA2_CH1"}
 end
@@ -737,8 +737,8 @@ function GetUsart7RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
     return {"DMA_NONE", "DMA2_CH2"}
 end
@@ -751,8 +751,8 @@ function GetUsart8TxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH2", "DMA1_CH4", "DMA1_CH7",
+                "DMA2_CH1", "DMA2_CH4", "DMA2_CH5"}
         end
     return {"DMA_NONE", "DMA2_CH1"}
 end
@@ -764,8 +764,8 @@ function GetUsart8RxDmaChoices()
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
-                "DMA1_CH1", "DMA1_CH2", "DMA1_CH3", "DMA1_CH4", "DMA1_CH5", "DMA1_CH6", "DMA1_CH7",
-                "DMA2_CH1", "DMA2_CH2", "DMA2_CH3", "DMA2_CH3", "DMA2_CH5"}
+                "DMA1_CH1", "DMA1_CH3", "DMA1_CH5", "DMA1_CH6",
+                "DMA2_CH2", "DMA2_CH3"}
         end
     return {"DMA_NONE", "DMA2_CH2"}
 end
