@@ -81,3 +81,5 @@
 # include <dev/spi_mmc_gpio.h>
 # define DEV_MMCARD devSpiMmcGpio
 #endif
+
+#define HAS_ARDUINO_CONNECTOR

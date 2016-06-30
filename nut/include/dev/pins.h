@@ -1,4 +1,9 @@
 #if !defined(_DEV_PINS_H_)
+
+#if defined(HAS_ARDUINO_CONNECTOR)
+# include <dev/arduino_pins.h>
+#endif
+
 #define _DEV_PINS_H_
 
 #define  GPIO_PORT_MASK 0xffe0

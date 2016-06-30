@@ -818,6 +818,10 @@
 # endif
 #endif
 
+#ifndef DEV_ARDUINO_SPIBUS
+# define DEV_ARDUINO_SPIBUS DEV_SPIBUS
+#endif
+
 /*
  * No TWI / I2C bus controller defaults.
  */

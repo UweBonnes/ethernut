@@ -50,14 +50,19 @@
 #define DEV_UART_NAME  devUsartStm32_3.dev_name
 #endif
 
-#ifndef DEF_I2CBUS
-#define DEF_I2CBUS i2cBus1Stm32
+#ifndef DEV_I2CBUS
+#define DEV_I2CBUS i2cBus1Stm32
 #include <dev/i2cbus_stm32.h>
 #endif
 
-#ifndef DEF_SPIBUS
-#define DEF_SPIBUS spiBus1Stm32Cb
+#ifndef DEV_SPIBUS
+#define DEV_SPIBUS spiBus1Stm32Cb
 #include <dev/spibus_stm32.h>
+#endif
+
+#ifndef DEV_ARDUINO_SPIBUS
+# include <dev/spibus_gpio.h>
+# define DEV_ARDUINO_SPIBUS spiBus0Gpio
 #endif
 
 /* Ethernet interface */
@@ -69,3 +74,5 @@
 #ifndef DEV_ETHER_NAME
 #define DEV_ETHER_NAME  "eth0"
 #endif
+
+#define HAS_ARDUINO_CONNECTOR
