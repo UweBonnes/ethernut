@@ -788,10 +788,10 @@ STM32_SPI_ICB Stm32Spi3Icb = {
 #endif
      .enable_reg = &RCC->APB1ENR,
      .enable_mask = RCC_APB1ENR_SPI3EN,
-     .dma_tx_irq = DMA_CH2IRQ_P(DMA_NONE),
-     .dma_rx_irq = DMA_CH2IRQ_P(DMA_NONE),
-     .dma_tx = DMA_NONE,
-     .dma_rx = DMA_NONE,
+     .dma_tx_irq = DMA_CH2IRQ_P(SPI3_DMA_TX),
+     .dma_rx_irq = DMA_CH2IRQ_P(SPI3_DMA_RX),
+     .dma_tx = SPI3_DMA_TX,
+     .dma_rx = SPI3_DMA_RX,
 #if defined(HW_DMA_CSELR_STM32)
      .dma_rx_csel = SPI3_DMA_RX_SEL(SPI3_DMA_RX),
      .dma_tx_csel = SPI3_DMA_TX_SEL(SPI3_DMA_TX),
