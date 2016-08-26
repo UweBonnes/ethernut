@@ -1415,9 +1415,27 @@ nutarch =
                 makedefs = {"FLASH0_LENGTH=1024K"}
             },
             {
+                macro = "MCU_STM32F767xI",
+                brief = "STM STM32F767 2 MB",
+                description = "STM32F767 with double precession FPU, LTDC and JPEG.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_CM7",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F7",
+                    "HW_MCU_STM32F76",
+                    "HW_MCU_STM32F767",
+                },
+                makedefs = {"FLASH0_LENGTH=2048K"}
+            },
+            {
                 macro = "MCU_STM32F769xI",
                 brief = "STM STM32F769 2 MB",
-                description = "STM32F769 with douple precession FPU and DSI.",
+                description = "STM32F769 with double precession FPU, LTDC, JPEG and DSI.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 requires = { "TOOL_CC_CM3" },

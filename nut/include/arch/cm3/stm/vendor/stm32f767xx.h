@@ -183,7 +183,8 @@ typedef enum
   CAN3_RX1_IRQn               = 106,    /*!< CAN3 RX1 Interrupt                                                */
   CAN3_SCE_IRQn               = 107,    /*!< CAN3 SCE Interrupt                                                */
   JPEG_IRQn                   = 108,    /*!< JPEG global Interrupt                                             */
-  MDIOS_IRQn                  = 109     /*!< MDIO Slave global Interrupt                                       */
+  MDIOS_IRQn                  = 109,    /*!< MDIO Slave global Interrupt                                       */
+  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
@@ -200,10 +201,9 @@ typedef enum
 #define __FPU_PRESENT             1       /*!< FPU present                                   */
 #define __ICACHE_PRESENT          1       /*!< CM7 instruction cache present                 */
 #define __DCACHE_PRESENT          1       /*!< CM7 data cache present                        */
-#include "core_cm7.h"                     /*!< Cortex-M7 processor and core peripherals      */
 
-
-#include "system_stm32f7xx.h"
+#include <arch/cm3/core_cm7.h>            /* Cortex-M7 processor and core peripherals */
+#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
