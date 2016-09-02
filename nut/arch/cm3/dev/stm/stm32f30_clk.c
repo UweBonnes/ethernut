@@ -307,89 +307,13 @@ static void SystemCoreClockUpdate(void)
     SetClockShift();
 }
 
-#if defined(RCC_CFGR_SWS_HSI48)
-/*!
- * \brief Control HSI48 clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on HSI start failed.
- */
-int CtlHsi48Clock( uint8_t ena)
-{
-    int rc = 0;
-
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t HSIStatus = 0;
-
-    if( ena) {
-        /* Enable HSI */
-        RCC->CR2 |= RCC_CR2_HSI48ON;
-
-        /* Wait till HSI is ready or time out is reached */
-        do {
-            tout--;
-            HSIStatus = RCC->CR2 & RCC_CR2_HSI48RDY;
-        } while((HSIStatus == 0) && (tout > 0));
-
-        if ((RCC->CR2 & RCC_CR2_HSI48RDY) == ENABLE) {
-            /* HSI failed to start */
-            rc = -1;
-        }
-    }
-    else {
-        /* Disable HSE clock */
-        RCC->CR2 &= ~RCC_CR2_HSI48ON;
-    }
-
-    return rc;
-}
-#endif
-
-/* Functional same as F1 */
-/*!
- * \brief Control PLL clock.
- *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on PLL start failed.
- */
-int CtlPllClock( uint8_t ena)
-{
-    int rc = 0;
-
-    uint32_t tout = HSE_STARTUP_TIMEOUT;
-    volatile uint32_t PLLStatus = 0;
-
-    if( ena) {
-        /* Enable PLL */
-        RCC->CR |= RCC_CR_PLLON;
-
-        /* Wait till PLL is ready or time out is reached */
-        do {
-            tout--;
-            PLLStatus = RCC->CR & RCC_CR_PLLRDY;
-        } while((PLLStatus == 0) && (tout > 0));
-
-        if ((RCC->CR & RCC_CR_PLLRDY) == ENABLE) {
-            /* PLL failed to start */
-            rc = -1;
-        }
-    }
-    else {
-        /* Disable HSE clock */
-        RCC->CR &= ~RCC_CR_PLLON;
-    }
-
-    return rc;
-}
-
-
 /*!
  * \brief  Configures the System clock source: HSE or HSI.
  *
  * \param  src is one of PLLCLK_HSE, PLLCLK_HSI.
  * \return 0 if clock is running else -1.
  */
-int SetPllClockSource( int src)
+static int SetPllClockSource( int src)
 {
     int rc;
     uint32_t cfgr, cfgr2;
@@ -447,7 +371,7 @@ int SetPllClockSource( int src)
  * \param  src is one of SYSCLK_HSE, SYSCLK_HSI, SYSCLK_HSI48 or SYSCLK_PLL.
  * \return 0 if selected clock is running else -1.
  */
-int SetSysClockSource(int src)
+static int SetSysClockSource(int src)
 {
     int rc = -1;
 

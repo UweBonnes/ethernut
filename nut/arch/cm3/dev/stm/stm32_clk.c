@@ -42,6 +42,10 @@
 #include <sys/event.h>
 #include <dev/irqreg.h>
 
+static int SetPllClockSource(int src);
+static void SetRtcClockSource(int source);
+static int SetSysClockSource(int src);
+
 #if !defined  (HSE_STARTUP_TIMEOUT)
 /*!< Time out for HSE start up, in loops*/
 #define HSE_STARTUP_TIMEOUT   0x5000
@@ -320,7 +324,7 @@ static int rcc_set_and_wait_rdy_value(
  * \param  ena 0 disable clock, any other value enable it.
  * \return 0 on success, -1 on HSE start failed.
  */
-int CtlHseClock(int ena)
+static int CtlHseClock(int ena)
 {
     int hse_is_on, byp;
     int rc = -1;
@@ -374,7 +378,7 @@ int CtlHseClock(int ena)
  * \param  ena 0 disable clock, any other value enable it.
  * \return 0 on success, -1 on HSI start failed.
  */
-int CtlHsiClock(int ena)
+static int CtlHsiClock(int ena)
 {
     int rc = 0;
 
@@ -406,7 +410,7 @@ int CtlHsiClock(int ena)
   * \param  source Clock source NONE/LSI/LSE/HSE
   * \retval NONE
   */
-void SetRtcClockSource(int source)
+static void SetRtcClockSource(int source)
 {
     int lsebyp_state;
 
@@ -466,17 +470,6 @@ check_lse:
         RCC->CSR &= ~RCC_CSR_LSION;
     }
     PWR_CR &= ~PWR_CR_DBP;
-}
-
-/**
-  * \brief  requests System clock frequency
-  *
-  * \param  None
-  * \retval None
-  */
-uint32_t SysCtlClockGet(void)
-{
-    return Stm32ClockGet(HWCLK_CPU);
 }
 
 static void SystemCoreClockUpdate(void);

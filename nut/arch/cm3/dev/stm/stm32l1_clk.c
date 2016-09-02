@@ -367,7 +367,7 @@ static msi_range_t CtlMsiClock(msi_range_t range)
  * \param  src is one of PLLCLK_HSE, PLLCLK_HSI.
  * \return 0 if clock is running else -1.
  */
-int SetPllClockSource(int src)
+static int SetPllClockSource(int src)
 {
     int rc;
     uint32_t cfgr;
@@ -422,7 +422,7 @@ int SetPllClockSource(int src)
  * \param  src is one of SYSCLK_HSE, SYSCLK_HSI or SYSCLK_PLL.
  * \return 0 if selected clock is running else -1.
  */
-int SetSysClockSource(int src)
+static int SetSysClockSource(int src)
 {
     int rc = -1;
     uint32_t cr;

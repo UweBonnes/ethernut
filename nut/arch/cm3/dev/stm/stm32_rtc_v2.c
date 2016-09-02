@@ -185,15 +185,16 @@ static stm32_rtc_dcb rtc_dcb = {RTC_STATUS_START};
  * \param  ena 0 disable clock, any other value enable it.
  * \return 0 on success, -1 on HSE start failed.
  */
-int EnableRtcClock(int source)
+int EnableRtcClock(void)
 {
     /* Now check that source setup was successfull and source is running.
+     * RTC source setup was done during system initialis
      */
-    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != (source * RCC_BDCR_RTCSEL_0)) {
-        SetRtcClockSource(source);
+    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != (RTCCLK_SOURCE * RCC_BDCR_RTCSEL_0)) {
+        return -1;
     }
     PWR_CR |= PWR_CR_DBP;
-    switch (source) {
+    switch (RTCCLK_SOURCE) {
     case RTCCLK_NONE:
         return -1;
         break;
@@ -572,7 +573,7 @@ int Stm32RtcInit(NUTRTC *rtc)
     rtc->dcb   = &rtc_dcb;
     rtc->alarm = NULL;
     /* Enable RTC CLK*/
-    res = EnableRtcClock(RTCCLK_SOURCE);
+    res = EnableRtcClock();
     if (res) {
         /* Some failure happend */
         return res;

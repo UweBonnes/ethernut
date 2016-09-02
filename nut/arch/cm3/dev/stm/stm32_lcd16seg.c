@@ -499,7 +499,7 @@ int Stm32Lcd16SegInit(NUTDEVICE * dev)
 
     NUTASSERT(dev != NULL);
 
-    res  = EnableRtcClock(RTCCLK_SOURCE);
+    res  = EnableRtcClock();
     if (res) {
         /* FIXME: Set RTC clock*/
         return res;

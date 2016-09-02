@@ -221,20 +221,9 @@ typedef enum
 
 extern uint32_t Stm32ClockGet(clock_index_t idx);
 
-/* Control functions for the separate clocks */
-extern int CtlHseClock(int ena);
-extern int CtlHsiClock(int ena);
-extern int CtlPllClock( uint8_t ena);
+#define SysCtlClockGet() Stm32ClockGet(HWCLK_CPU)
 
-/* Selection functions for the clock sources */
-extern int SetPllClock( int src);
-extern int SetPllClockSource( int src);
 extern int SetSysClock(void);
-extern uint32_t SysCtlClockGet(void);
-
-extern int SetSysClockSource(int src);
-
-extern void SetRtcClockSource(int source);
-extern int EnableRtcClock(int source);
+int EnableRtcClock(void);
 
 #endif /* _STM32_CLK_H_ */
