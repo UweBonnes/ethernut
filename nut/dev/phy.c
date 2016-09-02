@@ -419,6 +419,46 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
 }
 
 /*!
+ * \brief Set Phy Default, overwriting eventual wrong captured strap values,
+ * if chips provides this option.
+ *
+ * When the NIC hardware reset pin is not connected to a dedicated GPIO
+ * pin but to system reset, EMI, bad layout or other reasons may result
+ * in wrong strap values captured. This happens e.g. on the STM32 Nucleo144
+ * boards.
+ *
+ * Overwriting wrong strapped values with valid values may be an option
+ * to resolve this problem. Another option is phy hardware reset with a
+ * dedicated GPIO and all strap line in a well defined state.
+ *
+ * No parameter, no return
+ */
+
+void NutPhySetDefault(void)
+{
+    uint16_t regval;
+    switch (phydcb->oui) {
+    case LAN8700:
+    case LAN8720:
+    case LAN8742A:
+        /* LAN87xx has the strap values in register 18: Special Modes Register.
+         * Register 18 content is protected from Soft reset.
+         */
+        regval = phyr(18);
+        if ((regval & 0x00e1) != (0x00e0 | NIC_PHY_ADDR)) {
+#ifdef NUTDEBUG
+            uint16_t tmp = regval;
+#endif
+            regval &= 0xff00;
+            regval |= 0x00e0 | NIC_PHY_ADDR;
+            phyw(18, regval);
+            PHPRINTF("Correcting strap value 0x%04x -> 0x%04x\n", tmp, regval);
+        }
+        break;
+    }
+}
+
+/*!
  * \brief Register and initialize PHY communication.
  *
  * This function registers a PHY for use by an EMAC.
@@ -477,6 +517,7 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
         PHPRINTF("Unknown tranceiver ");
 
     PHPRINTF("PHY OUI=0x%08lx\n", phydcb->oui);
+    NutPhySetDefault();
 
     return 0;
 }
