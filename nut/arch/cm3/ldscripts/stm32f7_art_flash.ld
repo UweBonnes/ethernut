@@ -121,7 +121,7 @@ SECTIONS
 
 end = .;
 
-    .itcm_text : ALIGN_WITH_INPUT
+    .ram_func : ALIGN_WITH_INPUT
     {
         _ramfunc_start = .;
         *(.ramfunc);
