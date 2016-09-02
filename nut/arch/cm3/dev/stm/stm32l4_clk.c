@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2015-2016 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -486,6 +487,13 @@ static int SetSysClockSource(int src)
     }
     /* Update core clock information */
     SystemCoreClockUpdate();
-
+    if (LSE_VALUE) {
+        /* Enable MSI/LSE PLL.
+         * This may take up to 2 seconds on a cold start!
+         * But neither interrupts nor timers are set up yet,
+         * so busy waiting is a resonable choice!*/
+        while (!(RCC_BDCR & RCC_BDCR_LSERDY));
+        RCC->CR |= RCC_CR_MSIPLLEN;
+    }
     return rc;
 }
