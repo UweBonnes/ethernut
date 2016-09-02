@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2015-2016 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -402,9 +403,10 @@ static int CtlHsiClock(int ena)
   *
   * Call early during startup, as LSE Startup may take two seconds!
   *
-  * Check, if LSEBYP or RTCEN need change
-  * Change can only be done by resetting Backup Domain.
-  * With reset, rebuild LSEON, LSEBYP or RTCEN.
+  * Check, if LSEON, LSEBYP, RTCSEL or LSE_DRIVE_LEVEL need change.
+  * Reset of LSEON or LSEBYP or change in  RTCSEL or LSE_DRIVE_LEVEL
+  * needs reset of backup domain.
+  *
   * Check success later when using RTC clock.
   *
   * \param  source Clock source NONE/LSI/LSE/HSE
@@ -412,64 +414,31 @@ static int CtlHsiClock(int ena)
   */
 static void SetRtcClockSource(int source)
 {
-    int lsebyp_state;
-
-    if (RCC_BDCR & RCC_BDCR_RTCEN) {
-        /* RTC is already running. Reset Backup domain if source differs*/
-        switch (RCC_BDCR & RCC_BDCR_RTCSEL) {
-        case 0: /* No source selected */
-            if (source == RTCCLK_NONE) {
-                goto check_lse;
-            }
-            break;
-        case RCC_BDCR_RTCSEL_0: /* LSE */
-            lsebyp_state = (RCC_BDCR & RCC_BDCR_LSEBYP);
-            if ((source == RTCCLK_LSE) && (lsebyp_state == LSE_BYPASS)) {
-                return;
-            }
-            break;
-        case RCC_BDCR_RTCSEL_1: /* LSI */
-            if (source == RTCCLK_LSI) {
-                goto check_lse;
-            }
-            break;
-        case RCC_BDCR_RTCSEL: /* HSE */
-            if (source == RTCCLK_HSE) {
-                goto check_lse;
-            }
-            break;
-        }
+    int bd_change = 0;
+    if  (((RCC_BDCR & RCC_BDCR_LSEON) && (LSE_VALUE == 0)) ||
+         ((RCC_BDCR & RCC_BDCR_LSEBYP) && LSE_BYPASS)      ||
+         ((source * RCC_BDCR_RTCSEL_0) != (RCC_BDCR & RCC_BDCR_RTCSEL)) ||
+         ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) !=
+          (RCC_BDCR & RCC_BDCR_LSEDRV))) {
+        bd_change = 1;
     }
     /* Enable backup domain access*/
     PWR_CR |= PWR_CR_DBP;
-    /* Reset LSEON, RTCSEL and backupregisters, as RTC clock source/LSEBYP needs change*/
-    RCC_BDCR |= RCC_BDCR_BDRST;
-    RCC_BDCR &= ~RCC_BDCR_BDRST;
-    /* If LSE_VALUE is > 0, we assume we need LSE anyway */
-    switch (source) {
-    case RTCCLK_LSI:
-        RCC_BDCR |= RCC_BDCR_RTCSEL_1;
-        break;
-    case RTCCLK_LSE:
-        /* Always start with selected drive level. */
-        RCC_BDCR |= RCC_BDCR_RTCSEL_0 | (LSE_BYPASS * RCC_BDCR_LSEBYP) |
-            LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
-        break;
-    case RTCCLK_HSE:
-        RCC_BDCR |= RCC_BDCR_RTCSEL;
-        break;
+    if (bd_change) {
+       /* RTC clock source needs change and so needs BDRST/. */
+        RCC_BDCR = RCC_BDCR_BDRST;
     }
-check_lse:
-    /* LSE might be needed even if no RTC is needed */
-    if (LSE_VALUE) {
-        RCC_BDCR |= RCC_BDCR_LSEON;
-    }
+    RCC_BDCR =
+        source * RCC_BDCR_RTCSEL_0 |
+        ((LSE_VALUE)? RCC_BDCR_LSEON : 0) |
+        LSE_BYPASS * RCC_BDCR_LSEBYP |
+        LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
+    PWR_CR &= ~PWR_CR_DBP;
     if (LSI_ON) {
         RCC->CSR |= RCC_CSR_LSION;
     } else {
         RCC->CSR &= ~RCC_CSR_LSION;
     }
-    PWR_CR &= ~PWR_CR_DBP;
 }
 
 static void SystemCoreClockUpdate(void);
