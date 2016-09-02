@@ -99,6 +99,7 @@ int Stm32GpioConfigSetDo(GPIO_TypeDef *gpio, int pin_nr, uint32_t flags, uint32_
     uint32_t afr = 0;
     int afr_index = 2;
     int shift;
+    int speed;
 
     GpioClkEnable((uint32_t)gpio);
     shift = pin_nr << 1;
@@ -142,24 +143,30 @@ int Stm32GpioConfigSetDo(GPIO_TypeDef *gpio, int pin_nr, uint32_t flags, uint32_
             otyper |= 1 << pin_nr;
         }
         /* For non-output, ospeedr is don't care*/
-        switch (flags & GPIO_CFG_SPEED_FAST) {
+        switch (flags & GPIO_CFG_SPEED) {
         case GPIO_CFG_SPEED_HIGH:
-            ospeedr |=  (3 << shift);
+            speed = 3;
+            break;
+        case GPIO_CFG_SPEED_FAST:
+            speed = 2;
+            break;
+        case GPIO_CFG_SPEED_MED:
+            speed = 1;
+            break;
+        default:
+            speed = 0;
+            break;
+        }
 #if defined(SYSCFG_CMPCR_CMP_PD)
-            /* On F4, if even one pin needs fastest (high) speed, we need to
+        if (speed > 1 ) {
+            /* On F4/F7, even if one pin needs high or fast speed, we need to
              * enable the SYSCFG clock and the IO compensation cell
              */
             CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD));
             /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
 #endif
-            break;
-        case GPIO_CFG_SPEED_FAST:
-            ospeedr |=  (2 << shift);
-            break;
-        case GPIO_CFG_SPEED_MED:
-            ospeedr |=  (0x1 << shift);
-            break;
         }
+        ospeedr |=  (speed << shift);
         /* Pull Up/Pull Down applies to all configurations*/
         if (flags & GPIO_CFG_PULLUP ) {
             pupdr |=  (1 << shift);
