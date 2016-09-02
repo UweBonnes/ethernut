@@ -622,3 +622,8 @@ static void SetClockShift(void)
     clk_shift[HWCLK_APB2_TIMER] = GetTimerShift(clk_shift[HWCLK_APB2]);
 #endif
 }
+
+int SetSysClock(void)
+{
+    return SetSysClockSource(SYSCLK_SOURCE);
+}

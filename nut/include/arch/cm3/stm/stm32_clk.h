@@ -232,6 +232,8 @@ extern int SetPllClockSource( int src);
 extern int SetSysClock(void);
 extern uint32_t SysCtlClockGet(void);
 
+extern int SetSysClockSource(int src);
+
 extern void SetRtcClockSource(int source);
 extern int EnableRtcClock(int source);
 

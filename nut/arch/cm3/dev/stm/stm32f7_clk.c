@@ -513,11 +513,3 @@ int SetSysClockSource(int src)
 
     return rc;
 }
-
-int SetSysClock(void)
-{
-    int rc = 0;
-    rc = SetSysClockSource(SYSCLK_SOURCE);
-
-    return rc;
-}

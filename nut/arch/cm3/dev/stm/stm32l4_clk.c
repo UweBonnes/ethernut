@@ -432,7 +432,7 @@ int SetPllClockSource(int src)
  * \param  src is one of SYSCLK_HSE, SYSCLK_HSI or SYSCLK_PLL.
  * \return 0 if selected clock is running else -1.
  */
-static int SetSysClockSource( int src)
+int SetSysClockSource(int src)
 {
     int rc = -1;
     uint32_t cr;
@@ -486,14 +486,6 @@ static int SetSysClockSource( int src)
     }
     /* Update core clock information */
     SystemCoreClockUpdate();
-
-    return rc;
-}
-
-int SetSysClock(void)
-{
-    int rc = 0;
-    rc = SetSysClockSource(SYSCLK_SOURCE);
 
     return rc;
 }

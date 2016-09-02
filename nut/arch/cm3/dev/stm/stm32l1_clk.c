@@ -524,16 +524,3 @@ int SetSysClockSource(int src)
 
     return rc;
 }
-
-/*!
- * \brief  Configures the System clock coming from HSE or HSI oscillator.
- *
- * Enable HSI/HSE clock and setup HCLK, PCLK2 and PCLK1 prescalers.
- *
- * \param  None.
- * \return 0 on success, -1 on fault of HSE.
- */
-int SetSysClock(void)
-{
-    return SetSysClockSource(SYSCLK_SOURCE);
-}

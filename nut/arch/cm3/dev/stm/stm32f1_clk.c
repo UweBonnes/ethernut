@@ -353,7 +353,7 @@ static int SetRccCfgr2(int src)
  * \param  src is one of PLLCLK_HSE, PLLCLK_HSI.
  * \return 0 if clock is running ale -1.
  */
-int SetPllClockSource( int src)
+int SetPllClockSource(int src)
 {
     int rc = -1;
     uint32_t cfgr;
@@ -468,8 +468,4 @@ int SetSysClockSource( int src)
     SystemCoreClockUpdate();
 
     return rc;
-}
-int SetSysClock(void)
-{
-    return SetSysClockSource(SYSCLK_SOURCE);
 }
