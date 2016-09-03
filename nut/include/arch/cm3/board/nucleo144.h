@@ -42,6 +42,30 @@
  */
 #define BOARDNAME "NUCLEO144"
 
+#ifndef LED1_PORT
+/* Green: SB120 on, SB119 off -> PB00, with  SB120 off, SB119 on -> PA05*/
+#define LED1_PORT NUTGPIO_PORTB
+#endif
+#ifndef LED1_PIN
+#define LED1_PIN 0
+#endif
+
+#ifndef LED2_PORT
+/* Blue */
+#define LED2_PORT NUTGPIO_PORTB
+#endif
+#ifndef LED2_PIN
+#define LED2_PIN 7
+#endif
+
+#ifndef LED3_PORT
+/* red */
+#define LED3_PORT NUTGPIO_PORTB
+#endif
+#ifndef LED3_PIN
+#define LED3_PIN 14
+#endif
+
 #ifndef DEV_UART
 #define DEV_UART devUsartStm32_3
 #include <dev/usartstm32.h>
