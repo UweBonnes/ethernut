@@ -72,8 +72,8 @@
 /*!
  * \brief Constanst used for OwiRomSearch
  */
-#define OWI_LAST_DEVICE     0x00        /*!< \brief No more devices. */
-#define OWI_SEARCH_FIRST    0xFF        /*!< \brief Start value for ID search. */
+#define OWI_LAST_DEVICE     0xFF   /*!< \brief No more devices. */
+#define OWI_SEARCH_FIRST    0x40   /*!< \brief Start value for ID search. */
 
 /*!
  * \brief Known Owi-Wire families
@@ -107,7 +107,8 @@ enum OWI_ERRORS {
     OWI_OUT_OF_MEM = -3,        /*!< \brief No more memory. */
     OWI_HW_ERROR = -4,          /*!< \brief Unexpected hardware behavior. */
     OWI_DATA_ERROR = -5,        /*!< \brief Unexpected data. */
-    OWI_NOT_IMPLEMENTED = -6,   /*!< \brief No OWI implementation available. */
+    OWI_CRC_ERROR       = -6,   /*!< \bried CRC error detected. */
+    OWI_NOT_IMPLEMENTED = -7,   /*!< \brief No OWI implementation available. */
 };
 
 /*!
@@ -172,7 +173,8 @@ struct _NUTOWIBUS {
 };
 
 int OwiInit(NUTOWIBUS *bus);
-int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint8_t *hid);
+int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
+                 uint8_t *hid);
 int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint8_t *hid);
 int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);

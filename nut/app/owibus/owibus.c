@@ -56,7 +56,10 @@
 #include <dev/board.h>
 #include <dev/gpio.h>
 
-#if !defined(__GNUC__) || !defined(DEF_OWIBUS)
+#include <arch/cm3/stm/owibus_stm32tim.h>
+#define DEF_OWIBUS owiBus1Stm32Tim
+
+#if !defined(DEF_OWIBUS)
 
 int main(void)
 {
@@ -80,6 +83,11 @@ int main(void)
 
 static char *banner = "\nNut/OS OWI Bus on " BOARDNAME
     " "__DATE__ " " __TIME__"\n";
+
+/* Maximum number of devices we scan for. */
+#define N_MAX 8
+static uint8_t hid[N_MAX][8]  = { 0 };
+static int num_devices;
 /*
  * UART sample.
  *
@@ -90,12 +98,10 @@ int main(void)
     uint32_t baud = 115200;
     FILE *uart;
     int res, i = 0;
-    uint8_t hid[8]  = { 0 };
     int32_t xcelsius;
     int run =0;
-    uint8_t raw[2];
+    uint8_t raw[9];
     uint8_t diff;
-    uint8_t family;
 
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
@@ -115,53 +121,87 @@ int main(void)
             NutSleep(10);
     }
     diff = OWI_SEARCH_FIRST;
-    res = OwiRomSearch(&DEF_OWIBUS, &diff, hid);
-    if(res)
-    {
-        printf("OwiRomSearch failed\n");
-        while(1)
-            NutSleep(10);
-    }
-    fprintf(stdout,
-            "Hardware ID of first device %02x%02x%02x%02x%02x%02x%02x%02x\n",
-            hid[7], hid[6], hid[5], hid[4], hid[3], hid[2], hid[1], hid[0]);
-    family = hid[0];
-    if ((family != W1_THERM_DS18B20) && (family != W1_THERM_DS18S20))
-    {
-        fprintf(stdout, "One-wire device found, but family not handled"
-                "in this example\n");
-        while(1) NutSleep(10);
-    }
+    i = 0;
+    do {
+        res = OwiRomSearch(&DEF_OWIBUS, &diff,
+                           (i) ? hid[i - 1] : hid[0], hid[i]);
+        if(res)
+        {
+            printf("OwiRomSearch failed\n");
+            while(1)
+                NutSleep(10);
+        }
+        fprintf(stdout,
+                "Hardware ID of device %d: %02x%02x%02x%02x%02x%02x%02x%02x\n",
+                i,
+                hid[i][7], hid[i][6], hid[i][5], hid[i][4],
+                hid[i][3], hid[i][2], hid[i][1], hid[i][0]);
+        i++;
+    } while ((i < N_MAX) && (diff != OWI_LAST_DEVICE));
+    num_devices = i;
     while(1)
     {
         res = OwiCommand(&DEF_OWIBUS, OWI_CONVERT_T, NULL);
         if (res)
             printf("OwiCommand convert_t error %d\n", res);
-        NutSleep(750);
-        while (!(res = OwiReadBlock(&DEF_OWIBUS, &diff, 1)) && !diff && i < 100)
-        {
-            NutSleep(10);
-            i++;
+        NutSleep(1000);
+        printf("%4d: ", run++);
+        for (i = 0; i < num_devices; i++) {
+            int status = 0;
+            int position = 0;
+            int j;
+            res = OwiCommand(&DEF_OWIBUS, OWI_READ, hid[i]);
+            if (res) {
+                printf("Device %d: OwiCommand read error %d\n", i, res);
+            }
+            do {
+                res = OwiReadBlock(&DEF_OWIBUS, raw, 9 * 8);
+                j++;
+            } while ((res == OWI_CRC_ERROR) && (j < 10));
+            if (res) {
+                printf("Device %d: OwiReadBlock error %d\n", i, res);
+            }
+            switch (hid[i][0]) {
+            case W1_THERM_DS18B20:
+                xcelsius = (raw[1] & 0x80)? 0xffff0000: 0;
+                xcelsius |= ((raw[1] << 8) | raw[0]);
+                xcelsius *= 625;
+                break;
+            case W1_THERM_DS18S20:
+                xcelsius = (raw[1] & 0x80)? 0xffff0000: 0;
+                xcelsius |= ((raw[1] << 8) | raw[0]);
+                xcelsius *= 5000;
+                break;
+            case W1_THERM_DS1825:
+                xcelsius = (raw[3] & 0x80)? 0xfffff000: 0;
+                xcelsius |= ((raw[3] << 4) | (raw[2] >> 4));
+                xcelsius *= 625;
+                status = raw[2] & 7;
+                position = raw[4] & 0xf;
+                break;
+            }
+            printf(" P%02d:", position);
+            switch (status) {
+            case 0:
+                printf(" Okay");
+                break;
+            case 1:
+                printf(" Open");
+                break;
+            case 2:
+                printf(" SGND");
+                break;
+            case 3:
+                printf(" SVDD");
+                break;
+            default:
+                printf(" MULT");
+            }
+            printf("%4ld.%04ld ",
+                   xcelsius / 10000,
+                   ((xcelsius < 0) ? -xcelsius : xcelsius) % 10000);
         }
-        if (i)
-        {
-            printf(
-                "Conversion took additional %d poll cycles\n",
-                i);
-            i = 0;
-        }
-        res = OwiCommand(&DEF_OWIBUS, OWI_READ, NULL);
-        if (res)
-            printf("OwiCommand read error %d\n", res);
-        res = OwiReadBlock(&DEF_OWIBUS, raw, 16);
-        if (res)
-            printf("OwiReadBlock error %d\n", res);
-        if (family == W1_THERM_DS18B20 )
-            xcelsius = ((raw[1]<<8) | raw[0]) * (int32_t)625;
-        else
-            xcelsius = ((raw[1]<< 8) | raw[0]) * (int32_t)5000;
-        fprintf(stdout, "Run %3d: Temp %ld.%04ld\r",
-                run++, xcelsius/10000, xcelsius%10000);
+        putchar('\n');
     }
     return 0;
 }

@@ -88,21 +88,62 @@ const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE
 };
 
 /*!
+ * \brief Calculate onewire CRC over a data block.
+ *
+ * There are many implemenations out there. Here taken from
+ * https://github.com/paeaetech/paeae/blob/master/Libraries/ds2482/DS2482.cpp
+ *
+ *
+ * \param addr Pointer to data block
+ * \param len  Length of data block
+ *
+ * \return Calculate 8 bit Onewire CRC
+ */
+static uint8_t crc8(const uint8_t *addr, uint8_t len)
+{
+     uint8_t crc=0;
+     uint_fast8_t j;
+
+     for (uint8_t i=0; i<len;i++)
+     {
+           uint8_t inbyte = addr[i];
+           for (j=0;j < 8;j++)
+           {
+                 uint8_t mix = (crc ^ inbyte) & 0x01;
+                 crc >>= 1;
+                 if (mix)
+                       crc ^= 0x8C;
+                 inbyte >>= 1;
+           }
+     }
+     return crc;
+}
+
+/*!
  * \brief Search the connected One-Wire bus for devices.
  *
+ * Eventually read Maxim AN187, Atmel doc2579.pdf and/or TI spma057b.pdf
+ *
  * \param bus   Specifies the One-Wire bus.
- * \param diff  On entry, pointer to either OWI_SEARCH_FIRST or the
- *              device found in the last call. On exit, pointer to
- *              either OWI_LAST_DEVICE or the diff to use in the next
- *              call.
- * \param value Pointer to the Hardware ID found.
+ * \param diff  Entry: Collision bit position of last scan.
+ *              Use OWI_SEARCH_FIRST for first scan.
+ *              Exit: Collision bit position of current scan.
+ *              OWI_LAST_DEVICE when no more devices found.
+ * \param last_hid Hardware ID found during last scan. Must be 0 on first scan!
+ * \param hid      Hardware ID found in this scan.
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint8_t *hid)
+int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
+                 uint8_t *hid)
 {
-    uint_fast8_t i, j, next_diff;
-    uint8_t b, c, command;
+    int i;                 /* Bit position in scan. */
+    uint8_t mask = 1;      /* Mask for bit position in current byte.*/
+    uint8_t new_diff = 0 ; /* Collision bit position during current scan. */
+    uint8_t bit;           /* Target for OWI read/write transaction.*/
+    int branch_flag = 0;   /* During scan, a collision found and 0 path
+                            * choosen. So next scan must use 1 .path.*/
+    uint8_t command;
     int res;
 
     res = bus->OwiTouchReset(bus);
@@ -114,35 +155,73 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint8_t *hid)
     if (res) {
         return res;
     }
-    next_diff = OWI_LAST_DEVICE;    /* unchanged on last device */
-    i = 8 * 8;                      /* 8 bytes */
-    do {
-        j = 8;                      /* 8 bits */
-        do {
-            res |= bus->OwiReadBlock(bus, &b, 1);
-            res |= bus->OwiReadBlock(bus, &c, 1);
-            if (c) {                /* read bit */
-                if (b) {            /* read complement bit */
-                    return OWI_DATA_ERROR;  /* error: no reaction on bus */
+    for (i = 0; i < 64; i++) {
+        res = bus->OwiReadBlock(bus, &bit, 2); /* Read bit and complement.*/
+        switch (bit) {
+        case 1:
+        case 2:
+            /* No conflict, use bit and go on. */
+            break;
+        case 3:
+            /* No response. Abort. */
+            return OWI_DATA_ERROR;
+            break;
+        case 0: /* Bit conflict at current bit position. */
+            if (i < *diff) {
+            /* Below collisions position found in last scan.
+             * Use bit from last scan. */
+                if ((last_hid[i / 8])  & mask) {
+                    bit = 1;
+                } else {
+                    /* Use 0 path now, handle 1 path in next scan!*/
+                    /* bit = 0; */
+                    new_diff = i;
+                    branch_flag = 1;
                 }
+            } else if (i == *diff) {
+                /* Last scan took 0 path, choose 1 path now!*/
+                bit = 1;
             } else {
-                if (!b) {           /* Two devices with different bits here */
-                    if (*diff > i || ((*hid & 1) && *diff != i)) {
-                        b = 1;      /* Choose device with '1' for now */
-                        next_diff = i;  /* Choose device with '0' on next pass */
-                    }
-                }
+                /* First collision at this position.*/
+                /* Start with 0 path, handle 1 path in next scan.*/
+                /* bit = 0; */
+                new_diff = i;
+                branch_flag = 1;
             }
-            res |= bus->OwiWriteBlock(bus, &b, 1);  /* write bit */
-            *hid >>= 1;
-            if (b) {                /* store bit as hid */
-                *hid |= 0x80;
-            }
-            i--;
-        } while (--j && !res);
-        hid++;                       /* next byte */
-    } while (i && !res);
-    *diff = next_diff;
+            break;
+        }
+
+        res |= bus->OwiWriteBlock(bus, &bit, 1);  /* write choosen path */
+        if (bit & 1) { /* Set bit value in new hid. */
+            hid[i / 8] |= mask;
+        } else {
+            hid[i / 8] &= ~mask;
+        }
+        if (mask & 0x80) {
+            mask = 1;
+        } else {
+            mask <<= 1;
+        }
+    }
+#if 0
+#include <stdio.h>
+    fprintf(stdout,"\nlast hid: %02x%02x%02x%02x%02x%02x%02x%02x ",
+            last_hid[7], last_hid[6], last_hid[5], last_hid[4],
+            last_hid[3], last_hid[2], last_hid[1], last_hid[0]);
+    printf("last diff :%2d, new diff %2d, branch %1d, ",
+           *diff, new_diff, branch_flag);
+    fprintf(stdout,"new hid: %02x%02x%02x%02x%02x%02x%02x%02x\n",
+            hid[7], hid[6], hid[5], hid[4],
+            hid[3], hid[2], hid[1], hid[0]);
+#endif
+    if (!branch_flag) {
+        *diff = OWI_LAST_DEVICE;
+    } else {
+        *diff = new_diff;
+    }
+    if (crc8(hid, 7) != hid[7]) {
+        return OWI_CRC_ERROR;
+    }
     return res;
 }
 
@@ -182,17 +261,24 @@ int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint8_t *hid)
 }
 
 /*!
- * \brief Read a block of data
+ * \brief Read a block of data, evt checking CRC.
  *
  * \param bus  Specifies the One-Wire bus.
  * \param data Data read.
- * \param len  Number of bits to read.
+ * \param len  Number of bits to read. Check CRC if 9 bytes to read.
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
 {
-    return bus->OwiReadBlock(bus, data, len);
+    int res;
+    res = bus->OwiReadBlock(bus, data, len);
+    if (!res && (len == (9 * 8))) {
+        if (crc8(data, 8) != data[8]) {
+            return OWI_CRC_ERROR;
+        }
+    }
+    return res;
 }
 
 /*!
