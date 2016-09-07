@@ -134,8 +134,8 @@ static uint8_t crc8(const uint8_t *addr, uint8_t len)
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
-                 uint8_t *hid)
+static int OwiSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t command,
+                    const uint8_t *last_hid, uint8_t *hid)
 {
     int i;                 /* Bit position in scan. */
     uint8_t mask = 1;      /* Mask for bit position in current byte.*/
@@ -143,14 +143,12 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
     uint8_t bit;           /* Target for OWI read/write transaction.*/
     int branch_flag = 0;   /* During scan, a collision found and 0 path
                             * choosen. So next scan must use 1 .path.*/
-    uint8_t command;
     int res;
 
     res = bus->OwiTouchReset(bus);
     if (res) {
         return res;
     }
-    command = OWI_SEARCH_ROM;
     res = bus->OwiWriteBlock(bus, &command, 8);
     if (res) {
         return res;
@@ -223,6 +221,48 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
         return OWI_CRC_ERROR;
     }
     return res;
+}
+
+/*!
+ * \brief Search the connected One-Wire bus for devices.
+ *
+ * Eventually read Maxim AN187, Atmel doc2579.pdf and/or TI spma057b.pdf
+ *
+ * \param bus   Specifies the One-Wire bus.
+ * \param diff  Entry: Collision bit position of last scan.
+ *              Use OWI_SEARCH_FIRST for first scan.
+ *              Exit: Collision bit position of current scan.
+ *              OWI_LAST_DEVICE when no more devices found.
+ * \param last_hid Hardware ID found during last scan. Must be 0 on first scan!
+ * \param hid      Hardware ID found in this scan.
+ *
+ * \return OWI_SUCCESS on success, a negative value otherwise.
+ */
+int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
+                        uint8_t *hid)
+{
+    return OwiSearch(bus, diff, OWI_SEARCH_ROM, last_hid, hid);
+}
+
+/*!
+ * \brief Search the connected One-Wire bus for devices in Alarm state.
+ *
+ * Eventually read Maxim AN187, Atmel doc2579.pdf and/or TI spma057b.pdf
+ *
+ * \param bus   Specifies the One-Wire bus.
+ * \param diff  Entry: Collision bit position of last scan.
+ *              Use OWI_SEARCH_FIRST for first scan.
+ *              Exit: Collision bit position of current scan.
+ *              OWI_LAST_DEVICE when no more devices found.
+ * \param last_hid Hardware ID found during last scan. Must be 0 on first scan!
+ * \param hid      Hardware ID found in this scan.
+ *
+ * \return OWI_SUCCESS on success, a negative value otherwise.
+ */
+int OwiAlarmSearch(NUTOWIBUS *bus, uint8_t *diff,
+                          const uint8_t *last_hid, uint8_t *hid)
+{
+    return OwiSearch(bus, diff, OWI_SEARCH_ALARM, last_hid, hid);
 }
 
 /*!

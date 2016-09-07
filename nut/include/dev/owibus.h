@@ -67,10 +67,11 @@
 #define OWI_OVERDRIVE_MATCH_ROM 0x69    /*!< \brief As OWI_MATCH_ROM but with command phase in fast mode. */
 #define OWI_SKIP_ROM            0xCC    /*!< \brief Qualify command as broadcast. */
 #define OWI_READ                0xBE    /*!< \brief Read data from addressed device. */
+#define OWI_SEARCH_ALARM        0xEC    /*!< \brief Prepare devices in alarm state for ID search. */
 #define OWI_SEARCH_ROM          0xF0    /*!< \brief Prepare devices for ID search. */
 
 /*!
- * \brief Constanst used for OwiRomSearch
+ * \brief Constanst used for OwiSearch
  */
 #define OWI_LAST_DEVICE     0xFF   /*!< \brief No more devices. */
 #define OWI_SEARCH_FIRST    0x40   /*!< \brief Start value for ID search. */
@@ -174,6 +175,8 @@ struct _NUTOWIBUS {
 
 int OwiInit(NUTOWIBUS *bus);
 int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
+                 uint8_t *hid);
+int OwiAlarmSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
                  uint8_t *hid);
 int OwiCommand(NUTOWIBUS *bus, const uint8_t cmd, uint8_t *hid);
 int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
