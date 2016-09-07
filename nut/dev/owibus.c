@@ -171,11 +171,12 @@ int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
         *c++ = OWI_MATCH_ROM;
         memcpy(c, hid, 8);
         len = 80;
+        c += 8;
     } else {
         *c++ = OWI_SKIP_ROM; /* to all devices */
         len = 16;
     }
-    *c++ = cmd;
+    *c = cmd;
     res = bus->OwiWriteBlock(bus, data, len);
     return res;
 }
