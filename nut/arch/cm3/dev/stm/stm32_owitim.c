@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-15 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-16 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -242,7 +242,7 @@ int Stm32TimOwiTouchReset(NUTOWIBUS *bus)
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
 int Stm32TimOwiWriteBlock(
-    NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+    NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len)
 {
     STM32_OWIBUS_TIMER_INFO *info;
     int res;

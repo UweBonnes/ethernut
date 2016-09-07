@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013, 2016 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -133,7 +134,8 @@ static int Gpio_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-static int Gpio_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+static int Gpio_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data,
+                              uint_fast8_t len)
 {
     int res;
     int i;

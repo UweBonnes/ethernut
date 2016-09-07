@@ -1,7 +1,8 @@
 #ifndef _OWI_STM32TIM_H_
 #define _OWI_STM32TIM_H_
 /*
- * Copyright (C) 2013 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013, 2016 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -156,13 +157,13 @@ struct _STM32_OWIBUS_TIMER_INFO {
     /*! \brief index in current byte. */
     uint8_t owi_index;
     /*! \brief Pointer to current transmit byte. */
-    uint8_t  *owi_txp;
+    const uint8_t  *owi_txp;
     /*! \brief Pointer to current receive byte.. */
     uint8_t  *owi_rxp;
 };
 
 extern int Stm32TimOwiTouchReset(NUTOWIBUS *bus);
-extern int Stm32TimOwiWriteBlock(NUTOWIBUS *, uint8_t *, uint_fast8_t);
+extern int Stm32TimOwiWriteBlock(NUTOWIBUS *, const uint8_t *, uint_fast8_t);
 extern int Stm32TimOwiReadBlock (NUTOWIBUS *, uint8_t *, uint_fast8_t);
 extern int Stm32TimOwiSetup(NUTOWIBUS *bus);
 #endif

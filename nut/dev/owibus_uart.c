@@ -162,7 +162,7 @@ int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+int Uart_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len)
 {
     int res;
     int i;

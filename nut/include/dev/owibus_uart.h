@@ -1,7 +1,8 @@
 #ifndef _OWI_UART_H_
 #define _OWI_UART_H_
 /*
- * Copyright (C) 2012/14 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012/14, 2016 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -86,7 +87,7 @@ typedef struct _NUTOWIINFO_UART NUTOWIINFO_UART;
 int Uart_OwiSetup(NUTOWIBUS *bus);
 int Uart_OwiTouchReset(NUTOWIBUS *bus);
 int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit);
-int Uart_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
+int Uart_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len);
 int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 
 /*@}*/

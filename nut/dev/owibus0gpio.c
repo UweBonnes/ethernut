@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013, 2016 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -69,7 +70,8 @@ static INLINE int  OWI_GET(void) { return GPIO_GET(OWI0_PIN); }
 static int Gpio_Setup(NUTOWIBUS *bus);
 static int Gpio_OwiTouchReset(NUTOWIBUS *bus);
 static int Gpio_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
-static int Gpio_OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
+static int Gpio_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data,
+                              uint_fast8_t len);
 
 /*!
  * \brief Library compile time configured OWI bus driver for GPIO.

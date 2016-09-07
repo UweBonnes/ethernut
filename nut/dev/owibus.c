@@ -234,7 +234,7 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint8_t *hid)
+int OwiCommand(NUTOWIBUS *bus, const uint8_t cmd, uint8_t *hid)
 {
     int res;
     uint8_t data[10];
@@ -290,7 +290,7 @@ int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
+int OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len)
 {
     return bus->OwiWriteBlock(bus, data, len);
 }

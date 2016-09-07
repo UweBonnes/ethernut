@@ -169,16 +169,16 @@ struct _NUTOWIBUS {
     int(*OwiSetup) (NUTOWIBUS *);
     int(*OwiTouchReset) (NUTOWIBUS *);
     int(*OwiReadBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
-    int(*OwiWriteBlock) (NUTOWIBUS *bus, uint8_t *data, uint_fast8_t);
+    int(*OwiWriteBlock) (NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t);
 };
 
 int OwiInit(NUTOWIBUS *bus);
 int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t *last_hid,
                  uint8_t *hid);
-int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint8_t *hid);
+int OwiCommand(NUTOWIBUS *bus, const uint8_t cmd, uint8_t *hid);
 int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
-int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
-int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode);
+int OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len);
+int OwiSetMode(NUTOWIBUS *bus, const uint_fast8_t mode);
 int OwiGetMode(NUTOWIBUS *bus);
 
 extern NUTOWIBUS owiBus0Uart;
