@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2012 Uwe Bonnes. All rights reserved.
+ * Copyright (C) 2012, 2013, 2016 Uwe Bonnes.
+ *                               (bon@elektron.ikp.physik.tu-darmstadt.de)
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -87,7 +90,7 @@ int main(void)
     uint32_t baud = 115200;
     FILE *uart;
     int res, i = 0;
-    uint64_t hid  = 0;
+    uint8_t hid[8]  = { 0 };
     int32_t xcelsius;
     int run =0;
     uint8_t raw[2];
@@ -112,17 +115,17 @@ int main(void)
             NutSleep(10);
     }
     diff = OWI_SEARCH_FIRST;
-    res = OwiRomSearch(&DEF_OWIBUS, &diff, &hid);
+    res = OwiRomSearch(&DEF_OWIBUS, &diff, hid);
     if(res)
     {
         printf("OwiRomSearch failed\n");
         while(1)
             NutSleep(10);
     }
-    fprintf(stdout, "Hardware ID of first device %08lx%08lx\n",
-            (uint32_t)(hid>>32),
-            (uint32_t)(hid &0xffffffff));
-    family = hid & 0xff;
+    fprintf(stdout,
+            "Hardware ID of first device %02x%02x%02x%02x%02x%02x%02x%02x\n",
+            hid[7], hid[6], hid[5], hid[4], hid[3], hid[2], hid[1], hid[0]);
+    family = hid[0];
     if ((family != W1_THERM_DS18B20) && (family != W1_THERM_DS18S20))
     {
         fprintf(stdout, "One-wire device found, but family not handled"

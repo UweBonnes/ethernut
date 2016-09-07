@@ -2,7 +2,8 @@
 #define _OWIBUS_H_
 
 /*
- * Copyright (C) 2012 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-14, 2016 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -171,8 +172,8 @@ struct _NUTOWIBUS {
 };
 
 int OwiInit(NUTOWIBUS *bus);
-int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid);
-int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid);
+int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint8_t *hid);
+int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint8_t *hid);
 int OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 int OwiWriteBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len);
 int OwiSetMode(NUTOWIBUS *bus, uint_fast8_t mode);

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2012 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012,2013, 2016  by Uwe Bonnes
+ *                               (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -98,11 +99,10 @@ const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
+int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint8_t *hid)
 {
     uint_fast8_t i, j, next_diff;
     uint8_t b, c, command;
-    uint8_t *id = (uint8_t *) hid;
     int res;
 
     res = bus->OwiTouchReset(bus);
@@ -127,20 +127,20 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
                 }
             } else {
                 if (!b) {           /* Two devices with different bits here */
-                    if (*diff > i || ((*id & 1) && *diff != i)) {
+                    if (*diff > i || ((*hid & 1) && *diff != i)) {
                         b = 1;      /* Choose device with '1' for now */
                         next_diff = i;  /* Choose device with '0' on next pass */
                     }
                 }
             }
             res |= bus->OwiWriteBlock(bus, &b, 1);  /* write bit */
-            *id >>= 1;
-            if (b) {                /* store bit as id */
-                *id |= 0x80;
+            *hid >>= 1;
+            if (b) {                /* store bit as hid */
+                *hid |= 0x80;
             }
             i--;
         } while (--j && !res);
-        id++;                       /* next byte */
+        hid++;                       /* next byte */
     } while (i && !res);
     *diff = next_diff;
     return res;
@@ -155,7 +155,7 @@ int OwiRomSearch(NUTOWIBUS *bus, uint8_t *diff, uint64_t *hid)
  *
  * \return OWI_SUCCESS on success, a negative value otherwise.
  */
-int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint64_t *hid)
+int OwiCommand(NUTOWIBUS *bus, uint8_t cmd, uint8_t *hid)
 {
     int res;
     uint8_t data[10];
