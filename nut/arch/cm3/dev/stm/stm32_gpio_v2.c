@@ -164,8 +164,8 @@ int Stm32GpioConfigSetDo(GPIO_TypeDef *gpio, int pin_nr, uint32_t flags, uint32_
              */
             CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, CMPCR, _BI32(SYSCFG_CMPCR_CMP_PD));
             /* FIXME: Do we need to check SYSCFG_CMPCR_READY ? */
-#endif
         }
+#endif
         ospeedr |=  (speed << shift);
         /* Pull Up/Pull Down applies to all configurations*/
         if (flags & GPIO_CFG_PULLUP ) {
