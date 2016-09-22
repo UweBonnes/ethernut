@@ -334,6 +334,9 @@ static int Stm32RtcClearStatus(NUTRTC *rtc, uint32_t sflags)
 /*!
  * \brief Get date and time from an STM32 V2 hardware clock.
  *
+ * Wait until RSF indicates shadow register update, and then read
+ * TR first to lock DR from getting updated in between.
+ *
  * \param tm Points to a structure that receives the date and time
  *           information.
  *
@@ -347,16 +350,21 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
         while ((RTC->ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
         tr = RTC->TR;
         dr = RTC->DR;
+        RTC->ISR &= ~RTC_ISR_RSF;
         tm->tm_mday = ((dr >>  0) & 0xf) + (((dr >>  4) & 0x3) * 10);
         tm->tm_mon  = ((dr >>  8) & 0xf) + (((dr >> 12) & 0x1) * 10);
-        tm->tm_mon  -= 1;
-        tm->tm_year = ((dr >> 16) & 0xf) + (((dr >> 20) & 0xf) * 10) + 100;
+        tm->tm_mon  -= 1; /* Range 0..11 */
+        tm->tm_year = ((dr >> 16) & 0xf) + (((dr >> 20) & 0xf) * 10);
+        tm->tm_year += 100; /* Base of struct _tm years is 1900. */
         tm->tm_hour = ((tr >> 16) & 0xf) + (((tr >> 20) & 0x7) * 10);
         if (tr & RTC_TR_PM)
             tm->tm_hour += 12;
         tm->tm_min  = ((tr >>  8) & 0xf) + (((tr >> 12) & 0x7) * 10);
         tm->tm_sec  = ((tr >>  0) & 0xf) + (((tr >>  4) & 0x7) * 10);
         tm->tm_wday = ((dr >> 13) & 0x7);
+        if (tm->tm_wday == 7) {
+            tm->tm_wday = 0; /* Range 0..6*/
+        }
         tm->tm_yday = 0/*FIXME*/;
         return 0;
     }
@@ -374,27 +382,37 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
  */
 int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
-    uint32_t bcd_date, bcd_time, year, month;
+    int year;
+    uint32_t bcd_date, bcd_time, month, wday;
+    year = tm->tm_year - 100; /* Base of RTC years is 2000.*/
+    if ((year <  1)
+        /* RTC_DR year == 0 is interpreted as uninitialized RTC,
+         * signalling Power Failure.*/
+        || (year > 99)) {
+        /* only two digits available*/
+        return -1;
+    }
+    wday = tm->tm_wday;
+    if (wday == 0) {
+        /* Range 1..7 for RTC weekdays. RTC_DR weekday == 0 is forbidden. */
+        wday = 7;
+    }
     PWR_CR |= PWR_CR_DBP;
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
 
     /* Stop Clock*/
-    while (!(RTC->ISR & RTC_ISR_INITF)) {
-        RTC->ISR |= RTC_ISR_INIT;
-    }
+    RTC->ISR |= RTC_ISR_INIT;
 
     month = tm->tm_mon +1 ; /* Range 1..12*/
-    year = tm->tm_year - 100; /* only two digits available*/
     bcd_date  = (tm->tm_mday % 10);
     bcd_date |= (tm->tm_mday / 10) <<  4;
     bcd_date |= (     month  % 10) <<  8;
     bcd_date |= (     month  / 10) << 12;
-    bcd_date |= (tm-> tm_wday    ) << 13;
+    bcd_date |= (     wday       ) << 13;
     bcd_date |= (       year % 10) << 16;
     bcd_date |= (       year / 10) << 20;
-    RTC->DR = bcd_date;
 
     bcd_time  = (tm->tm_sec  % 10);
     bcd_time |= (tm->tm_sec  / 10) <<  4;
@@ -402,14 +420,13 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
     bcd_time |= (tm->tm_min  / 10) << 12;
     bcd_time |= (tm->tm_hour % 10) << 16;
     bcd_time |= (tm->tm_hour / 10) << 20;
+    while (!(RTC->ISR & RTC_ISR_INITF));
+    RTC->DR = bcd_date;
     RTC->TR = bcd_time;
-
     /*enable clock and inhibit RTC write access */
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0;
     PWR_CR &= ~PWR_CR_DBP;
-    /* Wait until shadow registers are updated with new value*/
-    while ((RTC->ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
     return 0;
 }
 
