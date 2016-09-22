@@ -415,17 +415,27 @@ static int CtlHsiClock(int ena)
 static void SetRtcClockSource(int source)
 {
     int bd_change = 0;
-    if  (((RCC_BDCR & RCC_BDCR_LSEON) && (LSE_VALUE == 0)) ||
-         ((RCC_BDCR & RCC_BDCR_LSEBYP) && LSE_BYPASS)      ||
-         ((source * RCC_BDCR_RTCSEL_0) != (RCC_BDCR & RCC_BDCR_RTCSEL)) ||
-         ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) !=
-          (RCC_BDCR & RCC_BDCR_LSEDRV))) {
+    if (LSI_ON) {
+        RCC->CSR |= RCC_CSR_LSION;
+    } else {
+        RCC->CSR &= ~RCC_CSR_LSION;
+    }
+    if (source == RTCCLK_KEEP) {
+        return;
+    }
+    if ((source == RTCCLK_NONE) && (RCC_BDCR & RCC_BDCR_RTCEN) ){
+        bd_change = 1;
+    } else if (((RCC_BDCR & RCC_BDCR_LSEON) && (LSE_VALUE == 0)) ||
+               ((RCC_BDCR & RCC_BDCR_LSEBYP) && LSE_BYPASS)      ||
+               ((source * RCC_BDCR_RTCSEL_0) != (RCC_BDCR & RCC_BDCR_RTCSEL)) ||
+               ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) !=
+                (RCC_BDCR & RCC_BDCR_LSEDRV))) {
         bd_change = 1;
     }
     /* Enable backup domain access*/
     PWR_CR |= PWR_CR_DBP;
     if (bd_change) {
-       /* RTC clock source needs change and so needs BDRST/. */
+       /* Backup Domain protected bits need to be reset by BDRST. */
         RCC_BDCR = RCC_BDCR_BDRST;
     }
     RCC_BDCR =
@@ -434,11 +444,6 @@ static void SetRtcClockSource(int source)
         LSE_BYPASS * RCC_BDCR_LSEBYP |
         LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
     PWR_CR &= ~PWR_CR_DBP;
-    if (LSI_ON) {
-        RCC->CSR |= RCC_CSR_LSION;
-    } else {
-        RCC->CSR &= ~RCC_CSR_LSION;
-    }
 }
 
 static void SystemCoreClockUpdate(void);

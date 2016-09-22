@@ -146,11 +146,11 @@
 #define PLLCLK_MSI          8
 
 /* RTC clock sources */
-#define RTCCLK_NONE   0
-#define RTCCLK_LSE    1
-#define RTCCLK_LSI    2
-#define RTCCLK_HSE    3
-#define RTCCLK_LSEBYP 4
+#define RTCCLK_KEEP  0
+#define RTCCLK_LSE   1
+#define RTCCLK_LSI   2
+#define RTCCLK_HSE   3
+#define RTCCLK_NONE  4
 
 #if !defined(HSE_VALUE)
 # define HSE_VALUE 0

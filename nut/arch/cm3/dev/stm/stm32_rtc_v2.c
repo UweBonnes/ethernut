@@ -70,6 +70,8 @@
 # define EXTI_RTC_LINE 17
 #endif
 
+# define RTC_STATUS_MASK  (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
+
 /* STM CMSIS definition  RTC_PRER_PREDIV_S has (uint32_t) marker and so can
  * not be used for math in preprocessor.*/
 #if defined(MCU_STM32F2) || defined(STM32L100xB) || defined(STM32L151xB) || defined(STM32L152xB)
@@ -81,9 +83,6 @@
 
 #if RTCCLK_SOURCE == RTCCLK_HSE
 /* Handle HSE as RTC clock */
-# define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
-# define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
-
 /* Guess RTC_ASYNC and RTC_SYNC if not given*/
 # if !defined(RTC_ASYNC) && !defined(RTC_SYNC)
 #  define RTC_ASYNC (125 -1)
@@ -113,8 +112,6 @@
 #  undef  RTC_SYNC
 #  define RTC_SYNC  0xff
 # endif
-# define RTC_STATUS_START RTC_STATUS_HAS_QUEUE
-# define RTC_STATUS_FLAG  RTC_STATUS_HAS_QUEUE
 #elif RTCCLK_SOURCE == RTCCLK_LSI
 # undef  RTC_ASYNC
 # undef  RTC_SYNC
@@ -128,8 +125,8 @@
 #  define RTC_ASYNC 127
 #  define RTC_SYNC  249
 # endif
-# define RTC_STATUS_START (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
-# define RTC_STATUS_FLAG  (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
+#elif RTCCLK_SOURCE == RTCCLK_KEEP
+#elif RTCCLK_SOURCE == RTCCLK_NONE
 #else
 # warning No RTC Clock source defined!
 #endif
@@ -171,44 +168,56 @@ typedef struct _stm32_rtc_dcb stm32_rtc_dcb;
 
 struct _stm32_rtc_dcb {
     uint32_t flags;
+    uint32_t start_flags;
+    uint32_t update_flags;
 };
 
 /* We only have one RTC, so static allocation should be okay */
-static stm32_rtc_dcb rtc_dcb = {RTC_STATUS_START};
+static stm32_rtc_dcb rtc_dcb;
 
 /*!
- * \brief Enable RTC clock from source selected before
+ * \brief Enable RTC clock from source selected  in configuration
  *
- * Only call from application, as this LSE startup
- * can take up to 2 seconds.
+ * Called by RtcInit or xxxLcdInit, during User Initialization.
+ * LSE startup can take up to 2 seconds. User initialization is done
+ * late and so eventually less waiting for LSE is needed.
  *
- * \param  ena 0 disable clock, any other value enable it.
- * \return 0 on success, -1 on HSE start failed.
+ * \return 0 on success, -1.
  */
 int EnableRtcClock(void)
 {
-    /* Now check that source setup was successfull and source is running.
-     * RTC source setup was done during system initialis
-     */
-    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != (RTCCLK_SOURCE * RCC_BDCR_RTCSEL_0)) {
+    int source;
+    int res = 0;
+
+    if (RTCCLK_SOURCE == RTCCLK_NONE) {
         return -1;
     }
+    source = (RCC_BDCR & RCC_BDCR_RTCSEL) / RCC_BDCR_RTCSEL_0;
+    if ((RTCCLK_SOURCE != RTCCLK_KEEP) && (source != RTCCLK_SOURCE)) {
+        /* Source mismatch.*/
+        res = -1;
+        goto done;
+    }
+    if (RCC_BDCR & RCC_BDCR_RTCEN) {
+    /* Clock is already running.*/
+        goto done;
+    }
     PWR_CR |= PWR_CR_DBP;
-    switch (RTCCLK_SOURCE) {
-    case RTCCLK_NONE:
-        return -1;
-        break;
+    switch (source) {
     case RTCCLK_LSE:
         if (!(RCC_BDCR & RCC_BDCR_LSERDY)) {
             int i;
             RCC_BDCR |= RCC_BDCR_LSEON;
             for (i = 0; i < 4000; i++) {
                 NutSleep(1);
-                if (RCC_BDCR & RCC_BDCR_LSERDY)
+                if (RCC_BDCR & RCC_BDCR_LSERDY) {
                     break;
+                }
             }
-            if (!(RCC_BDCR & RCC_BDCR_LSERDY))
-                return -1;
+            if (!(RCC_BDCR & RCC_BDCR_LSERDY)) {
+                res = -1;
+                goto done;
+            }
         }
         break;
     case RTCCLK_LSI:
@@ -216,31 +225,37 @@ int EnableRtcClock(void)
             RCC->CSR |= RCC_CSR_LSION;
             NutSleep(1);
             }
-        if (!(RCC->CSR & RCC_CSR_LSIRDY))
-            return -1;
+        if (!(RCC->CSR & RCC_CSR_LSIRDY)) {
+            res = -1;
+            goto done;
+        }
         break;
     case RTCCLK_HSE:
         if (!(RCC->CR & RCC_CR_HSERDY)) {
             /* RCC_CR_RTCPRE_0 only != 0 on L0/1.
-             * If HSE was not set up yet, set divisor and bypass before enabling HSE.
+             * HSE was not set up yet.
+             * Set divisor and bypass before enabling HSE.
              */
-            RCC->CR |= (RTC_PRE_VAL * RCC_CR_RTCPRE_0) | (HSE_BYPASS * RCC_CR_HSEBYP);
+            RCC->CR |= (RTC_PRE_VAL * RCC_CR_RTCPRE_0) |
+                (HSE_BYPASS * RCC_CR_HSEBYP);
             RCC->CR |= RCC_CR_HSEON;
             NutSleep(4);
         }
-        if (!(RCC->CR & RCC_CR_HSERDY))
-            return -1;
+        if (!(RCC->CR & RCC_CR_HSERDY)) {
+            res = -1;
+            goto done;
+        }
         break;
     }
     while( (RCC_BDCR & RCC_BDCR_RTCEN) == 0 ){
         /* NUCLEO-F7 seems to hang here with RTC == LSE
          * when commands where only issued once.
          */
-        PWR_CR |= PWR_CR_DBP;
         RCC_BDCR |= RCC_BDCR_RTCEN;
     }
+done:
     PWR_CR &= ~PWR_CR_DBP;
-    return 0;
+    return res;
 }
 
 /*!
@@ -297,23 +312,20 @@ static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
     } else {
         res = -1;
     }
-    dcb->flags &= ~RTC_STATUS_START;
-    dcb->flags |=  RTC_STATUS_FLAG;
     return res;
 }
 
 /*!
  * \brief Clear status of the Stm32 hardware clock.
  *
- * \param tm Points to a structure which contains the date and time
- *           information.
+ * \param sflags Mask of flags to clear
  *
  * \return 0 on success or -1 in case of an error.
  */
 static int Stm32RtcClearStatus(NUTRTC *rtc, uint32_t sflags)
 {
     /* Don't reset persistant flags*/
-    sflags &= ~RTC_STATUS_FLAG;
+    sflags &= ~RTC_STATUS_MASK;
     ((stm32_rtc_dcb *)rtc->dcb)->flags &= ~sflags;
 
     return 0;
@@ -332,7 +344,7 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
     if (tm)
     {
         uint32_t tr, dr;
-        /* Accessing RTC->TR locks shadow register until RTC->DR is accessed */
+        while ((RTC->ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
         tr = RTC->TR;
         dr = RTC->DR;
         tm->tm_mday = ((dr >>  0) & 0xf) + (((dr >>  4) & 0x3) * 10);
@@ -561,7 +573,9 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
 int Stm32RtcInit(NUTRTC *rtc)
 {
     int res;
-
+#if RTCCLK_SOURCE == RTCCLK_NONE
+    return -1;
+#else
     if (NutRegisterIrqHandler(&sig_RTC, Stm32RtcInterrupt, rtc) != 0)
         return -1;
     /* Alarm Interrupt is on EXTI RTC Line, Rising Edge */
@@ -578,6 +592,11 @@ int Stm32RtcInit(NUTRTC *rtc)
         /* Some failure happend */
         return res;
     }
+    rtc_dcb.flags = RTC_STATUS_HAS_QUEUE;
+    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != (RTCCLK_LSE * RCC_BDCR_RTCSEL_0)) {
+        rtc_dcb.flags |= RTC_STATUS_INACCURATE;
+    }
+#if RTCCLK_SOURCE != RTCCLK_KEEP
     /* Check for valid or changed settings */
     if ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC_VAL)) {
         if ((RTC->ISR & RTC_ISR_INITS) ==  RTC_ISR_INITS) {
@@ -585,7 +604,7 @@ int Stm32RtcInit(NUTRTC *rtc)
             return 0;
         }
     }
-    rtc_dcb.flags &=  ~RTC_STATUS_START;
+#endif
     /* Enable Backup domain write access*/
     PWR_CR |= PWR_CR_DBP;
     /* Disable Backup Write Protection */
@@ -596,7 +615,9 @@ int Stm32RtcInit(NUTRTC *rtc)
          RTC->ISR |= RTC_ISR_INIT;
     }
 
+#if RTCCLK_SOURCE != RTCCLK_KEEP
     RTC->PRER = RTC_SYNC + RTC_ASYNC_VAL;
+#endif
     /* Enable RTC ALARM A/B Interrupt*/
     RTC->CR |= (RTC_CR_ALRAIE | RTC_CR_ALRBIE);
     RTC->ISR &= ~RTC_ISR_INIT;
@@ -618,3 +639,4 @@ NUTRTC rtcStm32 = {
   /*.rtc_clrstatus = */ Stm32RtcClearStatus,/*!< Clear status flags */
   /*.alarm         = */ NULL,               /*!< Handle for alarm event queue */
 };
+#endif

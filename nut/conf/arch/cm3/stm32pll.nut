@@ -613,10 +613,7 @@ function GetRtcClkSrcDefault()
     if c_is_provided("LSE_VALUE") then
        return "RTCCLK_LSE"
     end
-    if c_is_provided("HSE_VALUE") then
-       return "RTCCLK_HSE"
-    end
-    return "RTCCLK_LSI"
+    return "RTCCLK_KEEP"
 end
 
 function GetMsiRangeDesc()
@@ -857,9 +854,12 @@ nutarch_cm3_stm32_pll =
         {
             macro = "RTCCLK_SOURCE",
             brief = "RTC(/LCD) clock source",
-            description = "Clock used for RTC and LCD.",
+            description = "Clock used for RTC and LCD.\n\n"..
+                          "RTCCLK_KEEPS keeps current RTC setting.\n"..
+                          "RTCCLK_NONE turns off RTC.",
             type = "enumerated",
-            choices = {"RTCCLK_LSE", "RTCCLK_HSE", "RTCCLK_LSI"},
+            choices = {"RTCCLK_KEEP", "RTCCLK_LSE", "RTCCLK_HSE",
+                       "RTCCLK_LSI", "RTCCLK_NONE"},
             default = function() return GetRtcClkSrcDefault() end,
             file = "include/cfg/clock.h"
         },
