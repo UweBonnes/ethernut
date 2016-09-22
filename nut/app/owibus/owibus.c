@@ -56,9 +56,6 @@
 #include <dev/board.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/owibus_stm32tim.h>
-#define DEF_OWIBUS owiBus1Stm32Tim
-
 #if !defined(DEF_OWIBUS)
 
 int main(void)
@@ -98,7 +95,6 @@ int main(void)
     uint32_t baud = 115200;
     FILE *uart;
     int res, i = 0;
-    int32_t xcelsius;
     int run =0;
     uint8_t raw[9];
     uint8_t diff;
@@ -149,7 +145,8 @@ int main(void)
         for (i = 0; i < num_devices; i++) {
             int status = 0;
             int position = 0;
-            int j;
+            int j = 0;
+            int32_t xcelsius = 0;
             res = OwiCommand(&DEF_OWIBUS, OWI_READ, hid[i]);
             if (res) {
                 printf("Device %d: OwiCommand read error %d\n", i, res);
