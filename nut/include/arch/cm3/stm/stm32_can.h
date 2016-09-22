@@ -44,7 +44,7 @@
 struct _CANBUFFER {
     CAN_FIFOMailBox_TypeDef *dataptr;  //<physical memory address where the buffer is stored, may be device specific
     uint8_t size;         // the allocated size of the buffer
-    uint8_t datalength;   // the length of the data currently in the buffer
+    volatile uint8_t datalength;   // the length of the data currently in the buffer
     uint8_t dataindex;    // the index into the buffer where the data starts
 };
 /*!
