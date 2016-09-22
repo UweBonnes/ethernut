@@ -1,5 +1,6 @@
 /*!
- * Copyright (C) 2013 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013, 2016 Uwe Bonnes
+ *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -107,7 +108,7 @@ int main(void)
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     printf(banner);
 #if !defined(LED1_PORT) || !defined(LED1_PIN) ||\
-    !defined(LED1_PORT) || !defined(LED1_PIN)
+    !defined(LED2_PORT) || !defined(LED2_PIN)
     printf("Some LEDs are not defined for yout board\n");
 #endif
     MY_LED1_INIT();

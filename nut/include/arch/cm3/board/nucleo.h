@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright 2014, 2016 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -40,7 +40,9 @@
  * $Id$
  * \endverbatim
  */
-/* LED1 collides with Chip select for VL6180 X-Nucleo-IJP01A1 !*/
+
+#include <cfg/arch.h>
+
 #ifndef DEV_UART
 #define DEV_UART devUsartStm32_2
 #include <dev/usartstm32.h>
@@ -80,6 +82,24 @@
  */
 # include <dev/spi_mmc_gpio.h>
 # define DEV_MMCARD devSpiMmcGpio
+#endif
+
+/* LED1 collides with Chip select for VL6180 X-Nucleo-IJP01A1 !*/
+/* LED1 is PB13 on NUCLEO_F303R8 and PA5 else! */
+#ifndef LED1_PORT
+# if defined(STM32F302x8)
+#  define LED1_PORT NUTGPIO_PORTB
+# else
+#  define LED1_PORT NUTGPIO_PORTA
+# endif
+#endif
+
+#ifndef LED1_PIN
+# if defined(STM32F302x8)
+#  define LED1_PIN 13
+# else
+#  define LED1_PIN  5
+# endif
 #endif
 
 #define HAS_ARDUINO_CONNECTOR
