@@ -101,18 +101,17 @@ const uint16_t owi_timervalues_250ns[OWI_MODE_NONE][OWI_CMD_NONE][OWI_PHASE_NONE
  */
 static uint8_t crc8(const uint8_t *addr, uint8_t len)
 {
-     uint8_t crc=0;
-     uint_fast8_t j;
+     uint8_t crc = 0;
+     uint_fast8_t i, j;
 
-     for (uint8_t i=0; i<len;i++)
-     {
+     for (i = 0; i < len; i++) {
            uint8_t inbyte = addr[i];
-           for (j=0;j < 8;j++)
-           {
+           for (j = 0;j < 8; j++) {
                  uint8_t mix = (crc ^ inbyte) & 0x01;
                  crc >>= 1;
-                 if (mix)
+                 if (mix) {
                        crc ^= 0x8C;
+                 }
                  inbyte >>= 1;
            }
      }
