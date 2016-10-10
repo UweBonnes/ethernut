@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013, 15 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013, 2015-16 by Uwe Bonnes
+ *                             (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -200,14 +201,19 @@
 #  define STM32TIMER_SW RCC_CFGR3_TIM2SW_PLL
 # endif
 #define STM32TIMER_NCH 4
-#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4) || defined(MCU_STM32L4)
+#if defined(MCU_STM32L1) || defined(MCU_STM32F2) ||defined(MCU_STM32F4)
 #define STM32TIMER_AF(gpio) 1
+#elif  defined(MCU_STM32L4)
+# define STM32TIMER_AF(gpio) 1
+# define STM32TIMER_ETR_AF(gpio) (PA00 == gpio) ? 14 : 2
 #elif defined(MCU_STM32F3)
 #define STM32TIMER_AF(gpio) (                   \
     ( PD00 == (gpio & GPIO_PORT_MASK)) ? 2 :    \
     ((PA09  == gpio) ||(PA10 == gpio))? 10 : 1)
 #elif defined (MCU_STM32L0)
-/* This doesn't map TIM2_ETR on PA05 and prefers TIM2 CH1 on PA05 */
+# define STM32TIMER_CH1_AF(gpio) (PA00 == gpio) ? 2 : 5
+# define STM32TIMER_ETR_AF(gpio) (PA00 == gpio) ? 5 : 2
+# define STM32TIMER_AF(gpio) 2
 #define STM32TIMER_AF(gpio) ((5 == (gpio & GPIO_PIN_MASK))? 5 : 2)
 #elif defined (MCU_STM32F0)
 #define STM32TIMER_AF(gpio) 2
@@ -374,6 +380,10 @@
 #define STM32TIMER_AF(gpio) 3
 #elif defined(MCU_STM32F3)
 /* FIXME: This doesn't map TIM*_BKIN2 */
+#define STM32TIMER_ETR_AF(gpio) (PA00 == gpio)? 10:6
+#define STM32TIMER_BKIN_AF(gpio) \
+    (PA00 == gpio)? 9:(PA10 == gpio)? 11 : (PB07 == gpio) ? 5 : 4
+
 #define STM32TIMER_AF(gpio) (                           \
         ( PC00 == (gpio & GPIO_PORT_MASK)) ?  4 :       \
         ( PD00 == (gpio & GPIO_PORT_MASK)) ?  4 :       \
@@ -723,6 +733,8 @@
 #warning No match
 #endif
 
+#define STM32TIMER ((TIM_TypeDef*)STM32TIMER_BASE)
+
 /* Only few timers are 32 bit. Use this "catch all else" to reduce duplication*/
 #if !defined(STM32TIMER_WIDTH)
 #define STM32TIMER_WIDTH 16
@@ -731,4 +743,15 @@
 /* For F1 we need STM32TIMER_AF() defined, but the value is don't care. */
 #if !defined(STM32TIMER_AF)
 #define STM32TIMER_AF(gpio) 0
+#endif
+
+/* Allow finer grained AF */
+#if !defined(STM32TIMER_ETR_AF)
+# define STM32TIMER_ETR_AF(gpio) STM32TIMER_AF(gpio)
+#endif
+#if !defined(STM32TIMER_CH1_AF)
+# define STM32TIMER_CH1_AF(gpio) STM32TIMER_AF(gpio)
+#endif
+#if !defined(STM32TIMER_BKIN_AF)
+# define STM32TIMER_BKIN_AF(gpio) STM32TIMER_AF(gpio)
 #endif
