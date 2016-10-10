@@ -55,8 +55,6 @@
 #define FLASH_PAGE_SIZE    (1 << FLASH_PAGE_SHIFT)
 #define FLASH_PAGE_MASK    (~(FLASH_PAGE_SIZE - 1))
 
-#define FLASH_SIZE_REG   0x1fff75E0
-
 static uint32_t pagelist[16];
 static uint8_t bank_split;
 
@@ -83,7 +81,7 @@ static uint32_t FlashEnd(void)
 {
     uint32_t size;
     /* Early silicon has only 12 valid bits for the flash size*/
-    size = (*(__I uint16_t *) FLASH_SIZE_REG & 0xfff) * 1024;
+    size = (*(__I uint16_t *) FLASHSIZE_BASE & 0xfff) * 1024;
     return FLASH_BASE + size - 1;
 }
 
@@ -102,7 +100,7 @@ size_t IapFlashEnd(void)
 static void BankSplit(void)
 {
     uint16_t size;
-    size = *(__I uint16_t *) FLASH_SIZE_REG * 1024;
+    size = *(__I uint16_t *) FLASHSIZE_BASE * 1024;
     if ((size < 1024) && (FLASH->OPTR & FLASH_OPTR_DUALBANK)) {
         bank_split = size/2 - 1;
     } else {

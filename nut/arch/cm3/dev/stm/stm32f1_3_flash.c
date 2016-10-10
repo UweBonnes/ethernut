@@ -43,12 +43,6 @@
 #include <sys/heap.h>
 #include <dev/iap_flash.h>
 
-#if defined(MCU_STM32F0) || defined(MCU_STM32F1) || defined(MCU_STM32F3)
-# include <arch/cm3/stm/stm32xxxx.h>
-#else
-# warning "STM32 family has no F1/F3 compatible FLASH"
-#endif
-
 #if defined (MCU_STM32F0)
 # if  defined(STM32F030xC) ||  defined(STM32F070xB) || \
     defined(STM32F071xB) || defined(STM32F072xB) || defined(STM32F078xx) || \
@@ -127,11 +121,7 @@ void FlashUntouch(void)
 static size_t FlashEnd(void)
 {
     uint16_t size;
-#if defined(MCU_STM32F0) || defined(MCU_STM32F3)
-    size = *(__I uint16_t *) 0x1FFFF7CC;
-#else
-    size = *(__I uint16_t *) 0x1FFFF7E0;
-#endif
+    size = *(uint16_t *) FLASHSIZE_BASE;
     return FLASH_BASE - 1 + size * 1024;
 }
 

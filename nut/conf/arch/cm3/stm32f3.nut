@@ -84,6 +84,9 @@ nutarch_cm3_stm32f3 =
                     "HW_DAC1_STM32",
                     "HW_MCU_FPU",
                 },
+                makedefs = {
+                    "FLASH_PAGE_SIZE=2048",
+                },
                 file = "include/cfg/arch.h"
             },
             {

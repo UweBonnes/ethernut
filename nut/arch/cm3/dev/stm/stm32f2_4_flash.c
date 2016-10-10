@@ -42,12 +42,8 @@
 #include <sys/heap.h>
 #include <dev/iap_flash.h>
 
-#if defined(MCU_STM32F2) || defined(MCU_STM32F4)
-# define FLASH_SIZE_REG   0x1fff7A22
-#elif defined(MCU_STM32F7)
-# define FLASH_SIZE_REG   0x1ff0F442
-#else
-#
+#if !defined(FLASHSIZE_BASE)
+# define FLASHSIZE_BASE  0x1fff7A22
 #endif
 
 /* How many smallest sectors fit into the selected sector*/
@@ -132,7 +128,7 @@ static int      has_gap;
 void FlashUntouch(void)
 {
     sectorlist = 0;
-    flashsize = *(uint16_t*)FLASH_SIZE_REG << 10;
+    flashsize = *(uint16_t*)FLASHSIZE_BASE << 10;
     sectorsize = 1 << 14;
     is_dual_bank = 0;
     has_gap = 0;

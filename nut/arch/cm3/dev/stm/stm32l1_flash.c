@@ -46,8 +46,6 @@
 #define FLASH_SR_OPTVERRUSR 0
 #endif
 
-#include <arch/cm3/stm/stm32xxxx.h>
-
 #define FLASH_SECTOR_SIZE  (1<<12)
 #define FLASH_SECTOR_MASK  0xfffff000
 #define FLASH_SECTOR_SHIFT 12
@@ -60,16 +58,12 @@
 # define FLASH_PAGE_SHIFT   8
 
 # if defined (MCU_STM32L1_CAT3)
-#  define FLASH_SIZE_REG   0x1ff800cc
 static uint32_t pagelist[32]; /* 256 k*/
 # elif defined (MCU_STM32L1_CAT4) ||  defined (MCU_STM32L1_CAT6) /* 384k*/
-#  define FLASH_SIZE_REG   0x1ff800cc
 static uint32_t pagelist[48]; /* 384k*/
 # elif defined (MCU_STM32L1_CAT5)
-#  define FLASH_SIZE_REG   0x1ff800cc
 static uint32_t pagelist[64]; /* 512 k*/
 # else
-#  define FLASH_SIZE_REG   0x1ff8004c
 static uint32_t pagelist[16]; /* Up to 128 k*/
 # endif
 #elif defined(MCU_STM32L0)
@@ -78,7 +72,6 @@ static uint32_t pagelist[16]; /* Up to 128 k*/
 # define FLASH_PAGE_MASK    0xffffff80
 # define FLASH_PAGE_SHIFT   7
 
-# define FLASH_SIZE_REG   0x1ff8007C
 # if   defined (MCU_STM32L0_CAT1) /*  16 k*/
 static uint32_t pagelist[ 4];
 # elif defined (MCU_STM32L0_CAT2) /*  32 k*/
@@ -115,7 +108,7 @@ void FlashUntouch(void)
 size_t IapFlashEnd(void)
 {
     uint16_t size;
-    size = *(__I uint16_t *) FLASH_SIZE_REG;
+    size = *(__I uint16_t *) FLASHSIZE_BASE;
     uint32_t retval = FLASH_BASE - 1;
 #if defined(MCU_STM32L1)
     uint32_t dev_id;
