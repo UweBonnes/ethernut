@@ -88,8 +88,9 @@ void NutRegisterTimer(void (*handler)(void*))
      * Then it programs the timer and starts it.
      */
     Cortex_RegisterInt(SysTick_IRQn, handler);
-    /* Program frequency and enable is done by CMSIS function */
-    SysTick_Config(SysCtlClockGet()/NUT_TICK_FREQ);
+    /* Program Systick frequency. Enable is done by CMSIS function.
+     * Round Reload value, to get as close as possible. */
+    SysTick_Config((SysCtlClockGet() + (NUT_TICK_FREQ / 2)) / NUT_TICK_FREQ);
 }
 
 /*!
