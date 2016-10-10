@@ -315,7 +315,7 @@ void NutTimerIntr(void *arg)
 
 #ifndef NUT_USE_OLD_TIME_API
     system_time.tv_usec += systick_us;
-    if (system_time.tv_usec > 1000000) {
+    if (system_time.tv_usec >= 1000000) {
         system_time.tv_sec ++;
         system_time.tv_usec -= 1000000;
     }
