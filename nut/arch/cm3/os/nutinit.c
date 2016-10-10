@@ -222,10 +222,11 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
         LPC_SC->PCON = 0x00;
         /* Sleep Mode*/
 #endif
-        HEARTBEAT_IDLE();
-        if(0 == total_pending)
+        if(0 == total_pending) {
+            HEARTBEAT_IDLE();
             __WFI();
-        HEARTBEAT_ACTIVE();
+            HEARTBEAT_ACTIVE();
+        }
     }
 }
 
