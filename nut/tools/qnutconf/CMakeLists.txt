@@ -41,8 +41,8 @@ set(QNUTCONF_SRCS
 )
 
 set(QNUTCONF_HDRS
-     src/builder.h 
-     src/dirtraverser.h 
+     src/builder.h
+     src/dirtraverser.h
      src/finddialog.h
      src/mainwindow.h
      src/../../common/nutcomponent.h
@@ -62,7 +62,7 @@ set(QNUTCONF_FORMS
      src/finddialog.ui
 )
 
-include_directories( 
+include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/win32
 	${LUA_INCLUDE_DIR}
 )
