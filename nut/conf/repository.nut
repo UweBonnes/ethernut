@@ -474,7 +474,20 @@ repository =
                           "INCLUDE_LAST",
                           "INCLAST+=$(INCPRE)$(INCLUDE_LAST)",
                       }
-            }
+            },
+            {
+                macro = "PROGRAMMER_EXTENSION",
+                brief = "Filename extension of the programmer",
+                description =
+                    "Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.",
+-- FIXME: Provide architecture specific defaults!
+                default = "arm-jlink",
+                makedefs =
+                      {
+                          "PROGRAMMER_EXTENSION",
+                          "BURN=$(PROGRAMMER_EXTENSION)",
+                      }
+            },
         }
     },
     {

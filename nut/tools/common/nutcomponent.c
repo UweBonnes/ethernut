@@ -3131,12 +3131,11 @@ int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_
  * \param app_dir    Pathname of the application build directory.
  * \param src_dir    Pathname of the top source directory.
  * \param lib_dir    Pathname of the directory containing the libraries.
- * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
  *
  * \return 0 on success, otherwise return -1.
  */
 int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir,
-                          const char *src_dir, const char *lib_dir, const char *prg_ext)
+                          const char *src_dir, const char *lib_dir)
 {
     FILE *fp;
     char path[255];
@@ -3188,7 +3187,6 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
             fprintf(fp, "include $(top_blddir)/UserConf.mk\n");
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
             fprintf(fp, "include $(top_srcdir)/app/Makedefs.$(TOOLCHAIN)\n");
-            fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
             fclose(fp);
         }
         else {
@@ -3230,12 +3228,11 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
  * \param bld_dir    Pathname of the top build directory.
  * \param src_dir    Pathname of the top source directory.
  * \param lib_dir    Pathname of the directory containing the libraries.
- * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
  *
  * \return 0 on success, otherwise return -1.
  */
 int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *user_dir,
-                          const char *src_dir, const char *lib_dir, const char *prg_ext)
+                          const char *src_dir, const char *lib_dir)
 {
     FILE *fp;
     char path[255];
@@ -3285,7 +3282,6 @@ int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bl
             fprintf(fp, "include $(top_blddir)/UserConf.mk\n");
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
             fprintf(fp, "include $(top_srcdir)/app/Makedefs.$(TOOLCHAIN)\n");
-            fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
             fclose(fp);
         }
         else {
@@ -3328,7 +3324,6 @@ void usage(void)
       "-b<dir>  build directory (./nutbld)\n"
       "-c<file> configuration file (./nut/conf/ethernut21b.conf)\n"
       "-l<dir>  library directory ()\n"
-      "-p<type> programming adapter (avr-dude)\n"
       "-q       quiet (verbose)\n"
       "-s<dir>  source directory (./nut)\n"
       "-r<file> repository (./nut/conf/repository.nut)\n"
@@ -3497,7 +3492,6 @@ int main(int argc, char **argv)
     char *bld_dir = strdup("./nutbld");
     char *conf_name = strdup("./nut/conf/ethernut21b.conf");
     char *lib_dir = strdup("");
-    char *prg_ext = strdup("avr-dude");
     char *src_dir = strdup("./nut");
     char *repo_name = strdup("./nut/conf/repository.nut");
     NUTREPOSITORY *repo;
@@ -3520,10 +3514,6 @@ int main(int argc, char **argv)
         case 'l':
             free(lib_dir);
             lib_dir = GetRealPath(optarg);
-            break;
-        case 'p':
-            free(prg_ext);
-            prg_ext = strdup(optarg);
             break;
         case 'q':
             quiet = 1;
@@ -3617,7 +3607,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-apptree") == 0) {
-                    if (CreateSampleDirectory(repo, root, bld_dir, app_dir, src_dir, lib_dir, prg_ext)) {
+                    if (CreateSampleDirectory(repo, root, bld_dir, app_dir, src_dir, lib_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }
@@ -3632,7 +3622,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-usertree") == 0) {
-                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir, prg_ext)) {
+                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }

@@ -49,7 +49,6 @@ public slots:
     void accept();
 
 private slots:
-    void populateProgrammer();
     void browseFolder();
     void browseFile();
 

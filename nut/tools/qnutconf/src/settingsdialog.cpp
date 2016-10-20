@@ -58,39 +58,11 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	// Samples tab
 	ui.e_AppDirectory->setText( Settings::instance()->appDir() );
 	ui.cb_AbsolutePathInSamples->setChecked( Settings::instance()->absolutePathInSamples() );
-	populateProgrammer();
 }
 
 SettingsDialog::~SettingsDialog()
 {
 
-}
-
-/*!
-	Fills the programmer selection combo box.
-	Scans the <source directory>/app for files with a base name of 'Makeburn'.
-	The extensions of all files found are added to the combo box.
-*/
-void SettingsDialog::populateProgrammer()
-{
-	QDir src_dir( ui.e_SourceDirectory->text() + QDir::separator() + "app" );
-	QString programmer = ui.cb_Programmer->currentText();
-
-	if ( src_dir.exists() )
-	{
-		ui.cb_Programmer->clear();
-		foreach( QString file, src_dir.entryList( QStringList() << "Makeburn.*") )
-		{
-			ui.cb_Programmer->addItem( file.mid( 9 ) );
-		}
-	}
-	
-	if ( programmer.isEmpty() )
-		programmer = Settings::instance()->programmer();
-
-	int index = ui.cb_Programmer->findText( programmer );
-	if ( index >= 0 )
-		ui.cb_Programmer->setCurrentIndex( index );
 }
 
 void SettingsDialog::accept()
@@ -113,7 +85,6 @@ void SettingsDialog::accept()
 
 	// Samples tab
 	Settings::instance()->setAppDir( ui.e_AppDirectory->text() );
-	Settings::instance()->setProgrammer( ui.cb_Programmer->currentText() );
 	Settings::instance()->setAbsolutePathInSamples( ui.cb_AbsolutePathInSamples->checkState() == Qt::Checked  );
 
 	Settings::instance()->save();

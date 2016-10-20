@@ -450,7 +450,6 @@ bool NutComponentModel::generateSampleMakefiles()
 	QString srcDir = Settings::instance()->sourceDir();
 	QString instDir = Settings::instance()->installPath();
 	QByteArray platform = Settings::instance()->targetPlatform().toLocal8Bit();
-	QByteArray programmer = Settings::instance()->programmer().toLocal8Bit();
 
 	if (instDir.isEmpty()) {
 		instDir = buildPath + "/lib";
@@ -464,7 +463,7 @@ bool NutComponentModel::generateSampleMakefiles()
 	}
 
 	if( CreateSampleDirectory( d->repository, d->rootComponent, qPrintable(buildPath), qPrintable(appDir), qPrintable(srcDir),
-		qPrintable(instDir), programmer) )
+		qPrintable(instDir)) )
 			return false;
 	return true;
 }

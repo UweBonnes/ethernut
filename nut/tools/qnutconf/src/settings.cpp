@@ -180,7 +180,6 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	defaultToolPath = QDir(m_sourceDir + "/tools/win32").absolutePath();
 #endif
 	m_toolPath = settings.value("toolPath", defaultToolPath).toString();
-	m_programmer = settings.value("programmer").toString();
 	m_absolutePathInSamples = settings.value("absolutePathInSamples", true).toBool();
 	m_clearLogBeforeBuild = settings.value("clearLogBeforeBuild", true).toBool();
 	m_verboseBuild = settings.value("verboseBuild", false).toBool();
@@ -206,7 +205,6 @@ void Settings::save()
 	settings.setValue("sourceDirectory", m_sourceDir);
 	settings.setValue("applicationDirectory", m_appDir);
 	settings.setValue("toolPath", m_toolPath);
-	settings.setValue("programmer", m_programmer);
 	settings.setValue("absolutePathInSamples", m_absolutePathInSamples);
 	settings.setValue("clearLogBeforeBuild", m_clearLogBeforeBuild);
 	settings.setValue("verboseBuild", m_verboseBuild);

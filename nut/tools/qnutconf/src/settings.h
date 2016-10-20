@@ -67,8 +67,6 @@ public:
     void setToolPath(const QString& val) { m_toolPath = val; }
     QString targetPlatform() const { return m_targetPlatform; }
     void setTargetPlatform(const QString& val) { m_targetPlatform = val; }
-    QString programmer() const { return m_programmer; }
-    void setProgrammer(const QString& val) { m_programmer = val; }
     bool absolutePathInSamples() { return m_absolutePathInSamples; }
     void setAbsolutePathInSamples( bool val ) { m_absolutePathInSamples = val; }
     void setMultipleConfigs( bool val ) { m_multipleConfigs = val; }
@@ -93,7 +91,6 @@ private:
     QString m_appDir;
     QString m_toolPath;
     QString m_targetPlatform;
-    QString m_programmer;
     bool m_absolutePathInSamples;
     bool m_multipleConfigs;
     bool m_clearLogBeforeBuild;
