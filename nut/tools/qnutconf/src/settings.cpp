@@ -44,6 +44,7 @@
 
 Settings::Settings()
 {
+	m_multipleConfigs = false;
 	::atexit( Settings::destroy );
 }
 
