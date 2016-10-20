@@ -123,13 +123,23 @@ QString Settings::findRelativePath( const QString& filename )
 
 bool Settings::load( const QString& fileName /*= QString() */ )
 {
+	QString basePath;
+	QString baseName;
 	QSettings settings;
 	if ( multipleConfigs() && !fileName.isEmpty() )
 	{
 		QByteArray hash = QCryptographicHash::hash( fileName.toLocal8Bit(), QCryptographicHash::Md5 );
 		settings.beginGroup( hash.toHex() );
 	}
-
+	if (!fileName.isEmpty()) {
+		baseName = QFileInfo(fileName).baseName();
+		basePath = QFileInfo(fileName).canonicalPath();
+		if (basePath.contains("nut/conf", Qt::CaseSensitive)) {
+			basePath.truncate(basePath.lastIndexOf("/nut/conf"));
+			m_sourceDir = basePath + "/nut";
+			settings.setValue("sourceDirectory", m_sourceDir);
+		}
+	}
 	if(!settings.contains("sourceDirectory")) {
 		/* Ask the user for the source path */
 		QString  srcpath;
@@ -159,10 +169,11 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	m_multipleConfigs = settings.value("settings/multipleconfig").toBool();
 	m_configFileName = settings.value("settings/configFileName").toString();
 
-	m_buildPath = settings.value("buildPath", "nutbld").toString();
+        basePath = basePath + "/" + baseName;
+	m_buildPath = settings.value("buildPath", basePath + "/nutbld").toString();
 	m_includePath = settings.value("includePath").toStringList();
 	m_installPath = settings.value("installPath").toString();
-	m_appDir = settings.value("applicationDirectory", "nutapp").toString();
+	m_appDir = settings.value("applicationDirectory", basePath + "/nutapp").toString();
 
 	QString defaultToolPath;
 #if defined( Q_OS_WIN32 )

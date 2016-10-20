@@ -61,8 +61,13 @@
 
 MainWindow::MainWindow()
 {
+	const QStringList arguments = QCoreApplication::arguments();
 	ui.setupUi( this );
-	Settings::instance()->load();
+	if (arguments.count() > 1) {
+		Settings::instance()->load(arguments.at(1));
+	} else {
+		Settings::instance()->load();
+	}
 	model = new NutComponentModel( this );
 	m_findDialog = 0;
 
@@ -144,12 +149,10 @@ void MainWindow::on_actionOpen_triggered()
 	// Retrieve conf directory visited last.
 	QSettings settings;
 	QString confdir = settings.value("confpath", Settings::instance()->sourceDir() + "/conf").toString();
-	QString fileName;
-	const QStringList arguments = QCoreApplication::arguments();
-	if (arguments.count() > 1) {
-		fileName = arguments.at(1);
-	} else {
-		fileName = QFileDialog::getOpenFileName(this, tr("Open file"), confdir, tr("Nut/OS Configuration (*.conf)") );
+	QString fileName = Settings::instance()->configFileName();
+	if (fileName.isEmpty()) {
+		fileName = QFileDialog::getOpenFileName(
+		this, tr("Open file"),confdir, tr("Nut/OS Configuration (*.conf)") );
 	}
 	if ( !fileName.isEmpty() )
 	{
@@ -158,11 +161,12 @@ void MainWindow::on_actionOpen_triggered()
 		settings.setValue("confpath", confdir);
 
 		QApplication::setOverrideCursor( Qt::BusyCursor );
-		message( tr("Working on %1").arg( fileName));
+		message( tr("Working on %1").arg(QFileInfo(fileName).canonicalFilePath()));
 		if ( !model->openConfig( fileName ) )
 		{
 			QApplication::restoreOverrideCursor();
 			QMessageBox::critical(this, tr("Erro"), tr("There was a problem opening the file, please check the log message"));
+			Settings::instance()->setConfigFileName("");
 		}
 		else
 		{
