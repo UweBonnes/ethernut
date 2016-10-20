@@ -198,7 +198,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = {"TOOLCHAIN=avr-gcc"},
+            makedefs = {"TOOLCHAIN=avr32-gcc"},
         },
         {
             brief = "GCC for Linux",
