@@ -48,7 +48,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.10"
+#define NUT_CONFIGURE_VERSION   "2.0.99"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,6 +56,9 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <ctype.h>
+#include <libgen.h>
+#include <limits.h>
+#include <stdlib.h>
 
 #if defined(_MSC_VER) || defined( __MINGW32__ )
 
@@ -3320,18 +3323,27 @@ void usage(void)
 {
     fputs("Usage: nutconfigure OPTIONS ACTIONS\n"
       "OPTIONS:\n"
-      "-a<dir>  application directory (./nutapp)\n"
-      "-b<dir>  build directory (./nutbld)\n"
-      "-c<file> configuration file (./nut/conf/ethernut21b.conf)\n"
-      "-l<dir>  library directory ()\n"
+      "-a<dir>  application directory (Default: <user_dir>/nutapp)\n"
+      "-b<dir>  build directory (Default: <user_dir>/nutbld)\n"
+      "-c<file> configuration file (Required)\n"
+      "-l<dir>  library directory (Default: <user_dir>/nutbld/lib)\n"
       "-q       quiet (verbose)\n"
-      "-s<dir>  source directory (./nut)\n"
-      "-r<file> repository (./nut/conf/repository.nut)\n"
-      "-u<dir>  user directory (./)\n"
+      "-s<dir>  source directory (Default: See below)\n"
+      "-r<file> repository (Default: <src_dir>/conf)\n"
+      "-u<dir>  user directory (Default: See below)\n"
       "ACTIONS:\n"
       "create-buildtree\n"
       "create-apptree\n"
       "create-usertree\n"
+      "Default for src_dir if not given:\n"
+      "\tIf configuration file has /nut/conf in path: Use /nut.\n"
+      "\tIf located elsewhere: Abort.\n"
+      "Default for user_dir if not given:\n"
+      "\tIf configuration file has /nut/conf in path:\n"
+      "\t\tUse a directory with name of configuration file in /nut/..\n"
+      "\tIf configuration file is outside nut/conf:\n"
+      "\t\tUse directory where configuration is found.\n"
+
     , stderr);
 }
 
@@ -3487,48 +3499,42 @@ int main(int argc, char **argv)
     int rc = 3;
     int option;
     int quiet = 0;
-    char *app_dir = strdup("./nutapp");
-    char *user_dir = strdup("./");
-    char *bld_dir = strdup("./nutbld");
-    char *conf_name = strdup("./nut/conf/ethernut21b.conf");
-    char *lib_dir = strdup("");
-    char *src_dir = strdup("./nut");
-    char *repo_name = strdup("./nut/conf/repository.nut");
+    char *app_dir = NULL;
+    char *user_dir = NULL;
+    char *bld_dir = NULL;
+    char *conf_name = NULL;
+    char *lib_dir = NULL;
+    char *src_dir = NULL;
+    char *repo_name = NULL;
+    char *dirc = NULL;
     NUTREPOSITORY *repo;
     NUTCOMPONENT *root;
 
     while((option = getopt(argc, argv, "a:b:c:i:j:l:m:p:s:r:u:v?")) != EOF) {
         switch(option) {
         case 'a':
-            free(app_dir);
-            app_dir = GetRealPath(optarg);
+            app_dir = realpath(optarg, NULL);
             break;
         case 'b':
-            free(bld_dir);
-            bld_dir = GetRealPath(optarg);
+            bld_dir = realpath(optarg, NULL);
             break;
         case 'c':
-            free(conf_name);
-            conf_name = GetRealPath(optarg);
+            conf_name = realpath(optarg, NULL);
             break;
         case 'l':
-            free(lib_dir);
-            lib_dir = GetRealPath(optarg);
+            lib_dir = realpath(optarg, NULL);
             break;
         case 'q':
             quiet = 1;
             break;
         case 's':
-            free(src_dir);
-            src_dir = GetRealPath(optarg);
+            src_dir = realpath(optarg, NULL);
             break;
         case 'r':
-            free(repo_name);
-            repo_name = GetRealPath(optarg);
+            repo_name = realpath(optarg, NULL);
             break;
         case 'u':
-            free(user_dir);
-            user_dir = GetRealPath(optarg);
+             user_dir = realpath(optarg, NULL);
             break;
         default:
             usage();
@@ -3538,8 +3544,81 @@ int main(int argc, char **argv)
     argc -= optind;
     argv += optind;
 
-    if (*lib_dir == '\0') {
-        free(lib_dir);
+    if (!conf_name) {
+            usage();
+            rc = 1;
+            goto cleanup;
+    }
+    if (src_dir == NULL) {
+        char *p, *q;
+        char *board_name_c;
+        char *board_name;
+        /* Look if the .conf file is inside the Nut/OS tree.
+         * If no, at least src_dir must be provided.*/
+        p = strstr(conf_name, "/nut/conf/");
+        if (p == NULL) {
+            if (!src_dir) {
+                puts("Please provide src_dir.");
+                puts("This is the directory in the Nut/OS source "
+                      "where all the Makedef.xxx exist.");
+                rc = 1;
+                goto cleanup;
+            }
+        }
+        src_dir = strndup(conf_name, p - conf_name + 4);
+        if (!user_dir) {
+            user_dir = strndup(conf_name, p - conf_name);
+            board_name_c = strdup(conf_name);
+            board_name = basename(board_name_c);
+            q = strrchr(board_name, '.');
+            if (q) {
+                *q = 0;
+            }
+            user_dir = malloc( p - conf_name + 1 + strlen(board_name) + 1);
+            if (!user_dir) {
+                rc = 1;
+                goto cleanup;
+            }
+            strncpy(user_dir, conf_name, p - conf_name);
+            strcat(user_dir, "/");
+            strcat(user_dir, board_name);
+            free(board_name_c);
+        }
+    } else if (!user_dir) {
+        dirc = strdup(conf_name);
+        user_dir = dirname(dirc);
+    }
+    printf("src_dir = %s\n", src_dir);
+    printf("user_dir = %s\n", user_dir);
+    if (!repo_name) {
+        repo_name = malloc(strlen(src_dir) +
+                           strlen ("/conf/repository.nut") +1);
+        if (!repo_name) {
+            rc = 1;
+            goto cleanup;
+        }
+        strcpy(repo_name, src_dir);
+        strcat(repo_name, "/conf/repository.nut");
+    }
+    if (!bld_dir) {
+        bld_dir = malloc(strlen(user_dir) + strlen("/nutbld") + 1);
+        if (!bld_dir) {
+            rc = 1;
+            goto cleanup;
+        }
+        strcpy(bld_dir, user_dir);
+        strcat(bld_dir, "/nutbld");
+    }
+    if (!app_dir) {
+        app_dir = malloc(strlen(user_dir) + strlen("/nutapp") + 1);
+        if (!app_dir) {
+            rc = 1;
+            goto cleanup;
+        }
+        strcpy(app_dir, user_dir);
+        strcat(app_dir, "/nutapp");
+    }
+    if (!lib_dir) {
         lib_dir = malloc(strlen(bld_dir) + 5);
         strcpy(lib_dir, bld_dir);
         strcat(lib_dir, "/lib");
@@ -3646,6 +3725,15 @@ int main(int argc, char **argv)
     else if(!quiet) {
         printf("failed\n");
     }
+cleanup:
+    free(app_dir);
+    free(user_dir);
+    free(bld_dir);
+    free(conf_name);
+    free(lib_dir);
+    free(src_dir);
+    free(repo_name);
+    free(dirc);
     return rc;
 }
 
