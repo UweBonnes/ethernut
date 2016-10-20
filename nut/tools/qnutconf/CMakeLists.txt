@@ -6,6 +6,10 @@ if (DEFINED ENV{QTDIR})
 endif ()
 
 project(qnutconf)
+if (CMAKE_COMPILER_IS_GNUCC)
+  set( CMAKE_C_FLAGS   "-fstack-protector -fstack-protector-all" )
+endif ()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
