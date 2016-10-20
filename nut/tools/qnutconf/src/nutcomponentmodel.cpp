@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 by Comm5 Tecnologia Ltda. All rights reserved.
+ * Copyright (C) Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -426,7 +427,7 @@ bool NutComponentModel::generateBuildTree()
 	emit message( tr("Creating Makefiles for %1 in %2").arg(Settings::instance()->targetPlatform(), Settings::instance()->buildPath()) );
 
 	if ( CreateMakeFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit(),
-		Settings::instance()->sourceDir().toLocal8Bit(), Settings::instance()->targetPlatform().toLocal8Bit(),
+		Settings::instance()->sourceDir().toLocal8Bit(),
 #ifdef Q_OS_WIN32
 		Settings::instance()->includePath()[0].toLocal8Bit(),
 		Settings::instance()->includePath()[1].toLocal8Bit(),
@@ -470,7 +471,7 @@ bool NutComponentModel::generateSampleMakefiles()
 	}
 
 	if( CreateSampleDirectory( d->repository, d->rootComponent, qPrintable(buildPath), qPrintable(appDir), qPrintable(srcDir),
-		qPrintable(instDir), platform, programmer, 0, 0 ) )
+		qPrintable(instDir), programmer, 0, 0 ) )
 			return false;
 	return true;
 }

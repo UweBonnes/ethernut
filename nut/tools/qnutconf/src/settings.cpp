@@ -163,7 +163,6 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	m_includePath = settings.value("includePath").toStringList();
 	m_installPath = settings.value("installPath").toString();
 	m_appDir = settings.value("applicationDirectory", "nutapp").toString();
-	m_targetPlatform = settings.value("targetPlatform").toString();
 
 	QString defaultToolPath;
 #if defined( Q_OS_WIN32 )
@@ -196,7 +195,6 @@ void Settings::save()
 	settings.setValue("installPath", m_installPath);
 	settings.setValue("sourceDirectory", m_sourceDir);
 	settings.setValue("applicationDirectory", m_appDir);
-	settings.setValue("targetPlatform", m_targetPlatform);
 	settings.setValue("toolPath", m_toolPath);
 	settings.setValue("programmer", m_programmer);
 	settings.setValue("absolutePathInSamples", m_absolutePathInSamples);

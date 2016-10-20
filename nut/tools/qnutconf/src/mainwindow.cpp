@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 by Comm5 Tecnologia Ltda. All rights reserved.
+ * Copyright (C) 2016 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -306,10 +307,9 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	 */
 	QString question = tr(
 							"\nBuild directory:   %1"
-							"\nTarget platform:   %2"
 							"\nInstall directory: %3"
 							"\n\nDo you want to build the Nut/OS libraries?\n"
-							).arg( Settings::instance()->buildPath(), Settings::instance()->targetPlatform(), Settings::instance()->installPath() );
+							).arg( Settings::instance()->buildPath(), Settings::instance()->installPath() );
 	if ( QMessageBox::question( this, tr("Build Nut/OS"), question, QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
 		return;
 

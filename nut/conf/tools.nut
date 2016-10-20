@@ -144,7 +144,8 @@ nuttools =
             macro = "ARM_GCC",
             flavor = "boolean",
             exclusivity = toolchain_names,
-            file = "include/cfg/arch.h"
+            file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=arm-gcc"}
         },
         {
             brief = "GCC for ARM (no libc)",
@@ -155,7 +156,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = { "ADDLIBS = -lnutc" }
+            makedefs = {"TOOLCHAIN=arm-gcc", "ADDLIBS = -lnutc" }
         },
         {
             brief = "GCC for CortexM",
@@ -165,6 +166,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=cm3-gcc"}
         },
         {
             brief = "GCC for CortexM (no libc)",
@@ -175,7 +177,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = { "ADDLIBS = -lnutc" }
+            makedefs = {"TOOLCHAIN=cm3-gcc", "ADDLIBS = -lnutc"}
         },
         {
             brief = "GCC for AVR",
@@ -186,7 +188,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA2560=atmega2560", "MCU_ATMEGA2561=atmega2561", "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
+            makedefs = {"TOOLCHAIN=avr-gcc","MCU_ATMEGA2560=atmega2560", "MCU_ATMEGA2561=atmega2561", "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
         },
         {
             brief = "GCC for AVR32",
@@ -196,6 +198,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=avr-gcc"},
         },
         {
             brief = "GCC for Linux",
@@ -204,7 +207,8 @@ nuttools =
             macro = "LINUX_GCC",
             flavor = "boolean",
             exclusivity = toolchain_names,
-            file = "include/cfg/arch.h"
+            file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=unix-gcc"},
         },
         {
             brief = "ImageCraft for AVR",
@@ -214,7 +218,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA2560=Extended", "MCU_ATMEGA2561=Extended", "MCU_ATMEGA128=Enhanced", "MCU_ATMEGA103=LongJump" }
+            makedefs = {"TOOLCHAIN=avr-icc7", "MCU_ATMEGA2560=Extended", "MCU_ATMEGA2561=Extended", "MCU_ATMEGA128=Enhanced", "MCU_ATMEGA103=LongJump" }
         },
         {
             brief = "ImageCraft for ARM",
@@ -224,6 +228,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=avr-icc7"},
         },
         {
             brief = "Sourcery G++ for Coldfire ELF (nolibc)",
@@ -235,7 +240,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = { "ADDLIBS = -lnutc" }
+            makedefs = {"TOOLCHAIN=m68k-gcc", "ADDLIBS = -lnutc" }
         }
     },
     {

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 by Comm5 Tecnologia Ltda. All rights reserved.
+ * Copyright (C) 2016 Uwe Bonnes (bon@elektron.ikp.phsyik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -64,7 +65,6 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	}
 	ui.e_IncludeFirst->setText( includeFirst );
 	ui.e_IncludeLast->setText( includeLast );
-	populatePlatform();
 
 	// Tools tab
 	ui.e_ToolPath->setText( Settings::instance()->toolPath() );
@@ -78,33 +78,6 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 SettingsDialog::~SettingsDialog()
 {
 
-}
-
-/*!
-	Fills the platform selection combo box.
-	Scans the source directory for files with a base name of 'Makedefs'. 
-	The extensions of all files found are added to the combo box.
-*/
-void SettingsDialog::populatePlatform()
-{
-	QDir src_dir( ui.e_SourceDirectory->text() );
-	QString platform = ui.cb_Platform->currentText();
-
-	if ( src_dir.exists() )
-	{
-		ui.cb_Platform->clear();
-		foreach( QString file, src_dir.entryList( QStringList() << "Makedefs.*") )
-		{
-			ui.cb_Platform->addItem( file.mid( 9 ) );
-		}
-	}
-
-	if ( platform.isEmpty() )
-		platform = Settings::instance()->targetPlatform();
-
-	int index = ui.cb_Platform->findText( platform );
-	if ( index >= 0 )
-		ui.cb_Platform->setCurrentIndex( index );
 }
 
 /*!
@@ -148,7 +121,6 @@ void SettingsDialog::accept()
 	Settings::instance()->setSourceDir( ui.e_SourceDirectory->text() );
 	Settings::instance()->setBuildPath( ui.e_BuildDirectory->text() );
 	Settings::instance()->setInstallPath( ui.e_InstallDirectory->text() );
-	Settings::instance()->setTargetPlatform( ui.cb_Platform->currentText() );
 	QStringList list = QStringList() << ui.e_IncludeFirst->text() << ui.e_IncludeLast->text();
 	Settings::instance()->setIncludePath( list );
 

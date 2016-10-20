@@ -173,10 +173,10 @@ extern char * GetConfigValueOrDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, c
 extern int RefreshComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root);
 
 extern int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir, const char *src_dir,
-                           const char *mak_ext, const char *ifirst_dir, const char *ilast_dir, const char *ins_dir);
+                           const char *ifirst_dir, const char *ilast_dir, const char *ins_dir);
 extern int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir);
 extern int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir,
-                                 const char *src_dir, const char *lib_dir, const char *mak_ext, const char *prg_ext,
+                                 const char *src_dir, const char *lib_dir, const char *prg_ext,
                                  const char *ifirst_dir, const char *ilast_dir);
 
 const int GetScriptStatus(void);

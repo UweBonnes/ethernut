@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2008-2012 by egnite GmbH
  * Copyright (C) 2004-2007 by egnite Software GmbH
+ * Copyright (C) 2016 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -184,7 +185,6 @@ static char errtxt[1024];
 #define LRK_NUTLIBPATH          "nutconf.NUTLIBPATH"
 #define LRK_NUTBUILDPATH        "nutconf.NUTSBUILDPATH"
 #define LRK_NUTSAMPLEPATH       "nutconf.NUTSAMPLEPATH"
-#define LRK_NUTCOMPILERPLATFORM "nutconf.NUTCOMPILERPLATFORM"
 
 static int IsProvided(NUTREPOSITORY *repo, NUTCOMPONENT *compo, const char *requirement);
 
@@ -470,31 +470,6 @@ static int l_nut_sample_path(lua_State *ls)
     return 1;
 }
 
-/*!
- * \brief Process c_compiler_platform call from Lua.
- *
- * \param ls Lua state.
- */
-static int l_compiler_platform(lua_State *ls)
-{
-    const char *str;
-
-    lua_pushstring(ls, LRK_NUTCOMPILERPLATFORM);
-    lua_gettable(ls, LUA_REGISTRYINDEX);
-    str = lua_tostring(ls, -1);
-
-    /* push result */
-    if (str) {
-        lua_pushstring(ls, str);
-    }
-    else {
-        lua_pushnil(ls);
-        lua_pushstring(ls, "Internal registry error");
-    }
-    /* number of results */
-    return 1;
-}
-
 static char * GetMacroEdit(NUTREPOSITORY *repo, NUTCOMPONENT *compo, const char *macro)
 {
     char *rc = NULL;
@@ -691,7 +666,6 @@ static const struct luaL_reg nutcomp_lib[] = {
     { "c_nut_build_path", l_nut_build_path },
     { "c_nut_lib_path", l_nut_lib_path },
     { "c_nut_sample_path", l_nut_sample_path },
-    { "c_compiler_platform", l_compiler_platform },
     { "c_macro_edit", l_macro_edit },
     { "c_is_enabled", l_is_enabled },
     { "c_is_active", l_is_active },
@@ -1810,17 +1784,6 @@ int RegisterSamplePath(NUTREPOSITORY *repo, const char *path)
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTSAMPLEPATH, path);
 }
 
-/*!
- * \brief Store target compiler platform in the Lua registry.
- *
- * \param repo     Pointer to the repository information.
- * \param platform Pointer to the platform name.
- */
-int RegisterCompilerPlatform(NUTREPOSITORY *repo, const char *platform)
-{
-    return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTCOMPILERPLATFORM, platform);
-}
-
 void ReleaseStringArray(char **stringarray)
 {
     int cnt = 0;
@@ -2765,7 +2728,6 @@ void WriteMakeRootLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, ch
  * \param root       Pointer to the root component.
  * \param bld_dir    Pathname of the top build directory.
  * \param src_dir    Pathname of the top source directory.
- * \param mak_ext    Filename extension of the Makedefs/Makerules to be used, e.g. avr-gcc.
  * \param ifirst_dir Optional include directory. Header files will be included first
  *                   and thus may replace standard Nut/OS headers with the same name.
  * \param ilast_dir  Optional include directory. Header files will be included last.
@@ -2781,7 +2743,7 @@ void WriteMakeRootLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, ch
  *       or use a parameter structure.
  */
 int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir, const char *src_dir,
-                    const char *mak_ext, const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
+                    const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
 {
     FILE *fp;
     char path[255];
@@ -2858,7 +2820,7 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
                     //    fprintf(fp, "OBJ%d = $(SRC%d:.c=.o)\n", i + 1, i + 1);
                     //}
                     fprintf(fp, "include $(top_blddir)/NutConf.mk\n\n");
-                    fprintf(fp, "include $(top_srcdir)/Makedefs.%s\n\n", mak_ext);
+                    fprintf(fp, "include $(top_srcdir)/Makedefs.$(TOOLCHAIN)\n\n");
 
                     fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
                     if(ifirst_dir && *ifirst_dir) {
@@ -2892,7 +2854,7 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
                             fprintf(fp, "\t$(CP) $(OBJ%d) %s/$(notdir $(OBJ%d))\n", i + 1, path, i + 1);
                         }
                     }
-                    fprintf(fp, "\ninclude $(top_srcdir)/Makerules.%s\n\n", mak_ext);
+                    fprintf(fp, "\ninclude $(top_srcdir)/Makerules.$(TOOLCHAIN)\n\n");
 
                     fprintf(fp, ".PHONY: clean\n");
                     fprintf(fp, "clean: cleancc cleanedit\n");
@@ -3183,7 +3145,6 @@ int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_
  * \param app_dir    Pathname of the application build directory.
  * \param src_dir    Pathname of the top source directory.
  * \param lib_dir    Pathname of the directory containing the libraries.
- * \param mak_ext    Filename extension of the platform specific Makedefs/Makerules, e.g. avr-gcc.
  * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
  * \param ifirst_dir Optional include directory. Header files will be included first
  *                   and thus may replace standard Nut/OS headers with the same name.
@@ -3195,7 +3156,7 @@ int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_
  * \return 0 on success, otherwise return -1.
  */
 int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir,
-                          const char *src_dir, const char *lib_dir, const char *mak_ext, const char *prg_ext,
+                          const char *src_dir, const char *lib_dir, const char *prg_ext,
                           const char *ifirst_dir, const char *ilast_dir)
 {
     FILE *fp;
@@ -3254,7 +3215,7 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
             }
             fprintf(fp, "include $(top_blddir)/UserConf.mk\n");
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
-            fprintf(fp, "include $(top_srcdir)/app/Makedefs.%s\n", mak_ext);
+            fprintf(fp, "include $(top_srcdir)/app/Makedefs.$(TOOLCHAIN)\n");
             fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
             fclose(fp);
         }
@@ -3268,7 +3229,7 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
         sprintf(path, "%s/Makerules", app_dir);
         if ((fp = fopen(path, "w")) != 0) {
             fprintf(fp, "# Do not edit! Automatically generated on %s\n\n", asctime(ltime));
-            fprintf(fp, "include $(top_srcdir)/app/Makerules.%s\n", mak_ext);
+            fprintf(fp, "include $(top_srcdir)/app/Makerules.$(TOOLCHAIN)\n");
             fclose(fp);
         }
         else {
@@ -3297,7 +3258,6 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
  * \param bld_dir    Pathname of the top build directory.
  * \param src_dir    Pathname of the top source directory.
  * \param lib_dir    Pathname of the directory containing the libraries.
- * \param mak_ext    Filename extension of the platform specific Makedefs/Makerules, e.g. avr-gcc.
  * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
  * \param ifirst_dir Optional include directory. Header files will be included first
  *                   and thus may replace standard Nut/OS headers with the same name.
@@ -3309,7 +3269,7 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
  * \return 0 on success, otherwise return -1.
  */
 int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *user_dir,
-                          const char *src_dir, const char *lib_dir, const char *mak_ext, const char *prg_ext,
+                          const char *src_dir, const char *lib_dir, const char *prg_ext,
                           const char *ifirst_dir, const char *ilast_dir)
 {
     FILE *fp;
@@ -3366,7 +3326,7 @@ int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bl
             }
             fprintf(fp, "include $(top_blddir)/UserConf.mk\n");
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
-            fprintf(fp, "include $(top_srcdir)/app/Makedefs.%s\n", mak_ext);
+            fprintf(fp, "include $(top_srcdir)/app/Makedefs.$(TOOLCHAIN)\n");
             fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
             fclose(fp);
         }
@@ -3380,7 +3340,7 @@ int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bl
         sprintf(path, "%s/Makerules", user_dir);
         if ((fp = fopen(path, "w")) != 0) {
             fprintf(fp, "# Do not edit! Automatically generated on %s\n\n", asctime(ltime));
-            fprintf(fp, "include $(top_srcdir)/app/Makerules.%s\n", mak_ext);
+            fprintf(fp, "include $(top_srcdir)/app/Makerules.$(TOOLCHAIN)\n");
             fclose(fp);
         }
         else {
@@ -3412,7 +3372,6 @@ void usage(void)
       "-i<dir>  first include path ()\n"
       "-j<dir>  last include path ()\n"
       "-l<dir>  library directory ()\n"
-      "-m<type> target platform (avr-gcc)\n"
       "-p<type> programming adapter (avr-dude)\n"
       "-q       quiet (verbose)\n"
       "-s<dir>  source directory (./nut)\n"
@@ -3584,7 +3543,6 @@ int main(int argc, char **argv)
     char *ifirst_dir = strdup("");
     char *ilast_dir = strdup("");
     char *lib_dir = strdup("");
-    char *mak_ext = strdup("avr-gcc");
     char *prg_ext = strdup("avr-dude");
     char *src_dir = strdup("./nut");
     char *repo_name = strdup("./nut/conf/repository.nut");
@@ -3616,10 +3574,6 @@ int main(int argc, char **argv)
         case 'l':
             free(lib_dir);
             lib_dir = GetRealPath(optarg);
-            break;
-        case 'm':
-            free(mak_ext);
-            mak_ext = strdup(optarg);
             break;
         case 'p':
             free(prg_ext);
@@ -3684,7 +3638,6 @@ int main(int argc, char **argv)
                 RegisterBuildPath(repo, bld_dir);
                 RegisterLibPath(repo, lib_dir);
                 RegisterSamplePath(repo, app_dir);
-                RegisterCompilerPlatform(repo, mak_ext);
                 RefreshComponents(repo, root);
                 if(argc == 0) {
                     if(!quiet) {
@@ -3693,9 +3646,9 @@ int main(int argc, char **argv)
                 }
                 else if(strcmp(argv[0], "create-buildtree") == 0) {
                     if(!quiet) {
-                        printf("Creating Makefiles for %s in %s...", mak_ext, bld_dir);
+                        printf("Creating Makefiles in %s...", bld_dir);
                     }
-                    if (CreateMakeFiles(repo, root, bld_dir, src_dir, mak_ext, ifirst_dir, ilast_dir, lib_dir)) {
+                    if (CreateMakeFiles(repo, root, bld_dir, src_dir, ifirst_dir, ilast_dir, lib_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }
@@ -3718,7 +3671,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-apptree") == 0) {
-                    if (CreateSampleDirectory(repo, root, bld_dir, app_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
+                    if (CreateSampleDirectory(repo, root, bld_dir, app_dir, src_dir, lib_dir, prg_ext, ifirst_dir, ilast_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }
@@ -3733,7 +3686,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-usertree") == 0) {
-                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
+                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir, prg_ext, ifirst_dir, ilast_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }

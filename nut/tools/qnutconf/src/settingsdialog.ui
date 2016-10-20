@@ -158,36 +158,6 @@
             </item>
            </layout>
           </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Platform</string>
-              </property>
-              <property name="buddy">
-               <cstring>cb_Platform</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cb_Platform"/>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
          </layout>
         </widget>
        </item>
@@ -359,9 +329,6 @@
               <property name="text">
                <string>Programmer</string>
               </property>
-              <property name="buddy">
-               <cstring>cb_Platform</cstring>
-              </property>
              </widget>
             </item>
             <item>
@@ -431,7 +398,6 @@
   <tabstop>cb_ClearLogBeforeBuild</tabstop>
   <tabstop>e_SourceDirectory</tabstop>
   <tabstop>btn_BrowseSource</tabstop>
-  <tabstop>cb_Platform</tabstop>
   <tabstop>e_IncludeFirst</tabstop>
   <tabstop>btn_BrowseIncludeFirst</tabstop>
   <tabstop>e_IncludeLast</tabstop>
