@@ -2728,12 +2728,6 @@ void WriteMakeRootLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, ch
  * \param root       Pointer to the root component.
  * \param bld_dir    Pathname of the top build directory.
  * \param src_dir    Pathname of the top source directory.
- * \param ifirst_dir Optional include directory. Header files will be included first
- *                   and thus may replace standard Nut/OS headers with the same name.
- * \param ilast_dir  Optional include directory. Header files will be included last.
- *                   This parameter is typically used to specify the compilers runtime
- *                   library. Header files with the same name as Nut/OS standard headers
- *                   are ignored.
  * \param ins_dir    Final target directory of the Nut/OS libraries. Will be used with
  *                   'make install'.
  *
@@ -2743,7 +2737,7 @@ void WriteMakeRootLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, ch
  *       or use a parameter structure.
  */
 int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir, const char *src_dir,
-                    const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
+                    const char *ins_dir)
 {
     FILE *fp;
     char path[255];
@@ -2823,14 +2817,6 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
                     fprintf(fp, "include $(top_srcdir)/Makedefs.$(TOOLCHAIN)\n\n");
 
                     fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
-                    if(ifirst_dir && *ifirst_dir) {
-                        fprintf(fp, " $(INCPRE)%s", ifirst_dir);
-                    }
-                    fputc('\n', fp);
-                    if(ilast_dir && *ilast_dir) {
-                        fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
-                    }
-
                     fprintf(fp, "\nall: $(PROJ).a $(OBJS)");
                     for(i = 0; i < targets; i++) {
                         fprintf(fp, " $(OBJ%d)", i + 1);
@@ -3146,18 +3132,11 @@ int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_
  * \param src_dir    Pathname of the top source directory.
  * \param lib_dir    Pathname of the directory containing the libraries.
  * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
- * \param ifirst_dir Optional include directory. Header files will be included first
- *                   and thus may replace standard Nut/OS headers with the same name.
- * \param ilast_dir  Optional include directory. Header files will be included last.
- *                   This parameter is typically used to specify the compilers runtime
- *                   library. Header files with the same name as Nut/OS standard headers
- *                   are ignored.
  *
  * \return 0 on success, otherwise return -1.
  */
 int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir,
-                          const char *src_dir, const char *lib_dir, const char *prg_ext,
-                          const char *ifirst_dir, const char *ilast_dir)
+                          const char *src_dir, const char *lib_dir, const char *prg_ext)
 {
     FILE *fp;
     char path[255];
@@ -3205,14 +3184,7 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
             //fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
             fprintf(fp, "LIBDIR = %s\n", MakeTargetPath(lib_dir, "../.."));
 
-            fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
-            if(ifirst_dir && *ifirst_dir) {
-                fprintf(fp, " $(INCPRE)%s", ifirst_dir);
-            }
-            fputc('\n', fp);
-            if(ilast_dir && *ilast_dir) {
-                fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
-            }
+            fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include\n");
             fprintf(fp, "include $(top_blddir)/UserConf.mk\n");
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
             fprintf(fp, "include $(top_srcdir)/app/Makedefs.$(TOOLCHAIN)\n");
@@ -3259,18 +3231,11 @@ int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *
  * \param src_dir    Pathname of the top source directory.
  * \param lib_dir    Pathname of the directory containing the libraries.
  * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
- * \param ifirst_dir Optional include directory. Header files will be included first
- *                   and thus may replace standard Nut/OS headers with the same name.
- * \param ilast_dir  Optional include directory. Header files will be included last.
- *                   This parameter is typically used to specify the compilers runtime
- *                   library. Header files with the same name as Nut/OS standard headers
- *                   are ignored.
  *
  * \return 0 on success, otherwise return -1.
  */
 int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *user_dir,
-                          const char *src_dir, const char *lib_dir, const char *prg_ext,
-                          const char *ifirst_dir, const char *ilast_dir)
+                          const char *src_dir, const char *lib_dir, const char *prg_ext)
 {
     FILE *fp;
     char path[255];
@@ -3316,14 +3281,7 @@ int CreateUserDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bl
 
             fprintf(fp, "LIBDIR = %s\n", MakeTargetPath(lib_dir, "../.."));
 
-            fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
-            if(ifirst_dir && *ifirst_dir) {
-                fprintf(fp, " $(INCPRE)%s", ifirst_dir);
-            }
-            fputc('\n', fp);
-            if(ilast_dir && *ilast_dir) {
-                fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
-            }
+            fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include\n");
             fprintf(fp, "include $(top_blddir)/UserConf.mk\n");
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
             fprintf(fp, "include $(top_srcdir)/app/Makedefs.$(TOOLCHAIN)\n");
@@ -3369,8 +3327,6 @@ void usage(void)
       "-a<dir>  application directory (./nutapp)\n"
       "-b<dir>  build directory (./nutbld)\n"
       "-c<file> configuration file (./nut/conf/ethernut21b.conf)\n"
-      "-i<dir>  first include path ()\n"
-      "-j<dir>  last include path ()\n"
       "-l<dir>  library directory ()\n"
       "-p<type> programming adapter (avr-dude)\n"
       "-q       quiet (verbose)\n"
@@ -3540,8 +3496,6 @@ int main(int argc, char **argv)
     char *user_dir = strdup("./");
     char *bld_dir = strdup("./nutbld");
     char *conf_name = strdup("./nut/conf/ethernut21b.conf");
-    char *ifirst_dir = strdup("");
-    char *ilast_dir = strdup("");
     char *lib_dir = strdup("");
     char *prg_ext = strdup("avr-dude");
     char *src_dir = strdup("./nut");
@@ -3562,14 +3516,6 @@ int main(int argc, char **argv)
         case 'c':
             free(conf_name);
             conf_name = GetRealPath(optarg);
-            break;
-        case 'i':
-            free(ifirst_dir);
-            ifirst_dir = GetRealPath(optarg);
-            break;
-        case 'j':
-            free(ilast_dir);
-            ilast_dir = GetRealPath(optarg);
             break;
         case 'l':
             free(lib_dir);
@@ -3648,7 +3594,7 @@ int main(int argc, char **argv)
                     if(!quiet) {
                         printf("Creating Makefiles in %s...", bld_dir);
                     }
-                    if (CreateMakeFiles(repo, root, bld_dir, src_dir, ifirst_dir, ilast_dir, lib_dir)) {
+                    if (CreateMakeFiles(repo, root, bld_dir, src_dir, lib_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }
@@ -3671,7 +3617,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-apptree") == 0) {
-                    if (CreateSampleDirectory(repo, root, bld_dir, app_dir, src_dir, lib_dir, prg_ext, ifirst_dir, ilast_dir)) {
+                    if (CreateSampleDirectory(repo, root, bld_dir, app_dir, src_dir, lib_dir, prg_ext)) {
                         if(!quiet) {
                             printf("failed\n");
                         }
@@ -3686,7 +3632,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-usertree") == 0) {
-                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir, prg_ext, ifirst_dir, ilast_dir)) {
+                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir, prg_ext)) {
                         if(!quiet) {
                             printf("failed\n");
                         }

@@ -132,13 +132,6 @@ bool IccProjectCopyFilter::onFile( const QFileInfo& fileInfo, const QString& des
 
 							if (line.startsWith("Edit1=")) {
 								line.clear();
-								/* If we have a first include path, add it first. */
-								if (Settings::instance()->includePath().size() > 0) {
-									item = Settings::instance()->includePath()[0];
-									if (!item.isEmpty()) {
-										line += item + ";";
-									}
-								}
 								/* Add the include path of the build tree. */
 								item = Settings::instance()->buildPath() + "/include";
 								line += QDir(item).absolutePath() + ";";
@@ -148,13 +141,6 @@ bool IccProjectCopyFilter::onFile( const QFileInfo& fileInfo, const QString& des
 								/* Add the include path of the source tree. */
 								item = Settings::instance()->sourceDir() + "/include";
 								line += QDir(item).absolutePath();
-								/* If we have a last include path, add it last. */
-								if (Settings::instance()->includePath().size() > 1) {
-									item = Settings::instance()->includePath()[1];
-									if (!item.isEmpty()) {
-										line += ";" + item;
-									}
-								}
 								line = "Edit1=" + line + "\n";
 								line.replace("/", "\\");
 							}

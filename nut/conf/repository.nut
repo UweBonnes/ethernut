@@ -448,6 +448,32 @@ repository =
                 provides = { "HW_BOARD_SUPPORT" },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
+            },
+            {
+                macro = "INCLUDE_FIRST",
+                brief = "Additional include files, included first",
+                description =
+                    "Optional include directory. Header files will be included first\n"..
+                    "and thus may replace standard Nut/OS headers with the same name.",
+                makedefs =
+                      {
+                          "INCLUDE_FIRST",
+                          "INCFIRST+=$(INCPRE)$(INCLUDE_FIRST)",
+                      }
+            },
+            {
+                macro = "INCLUDE_LAST",
+                brief = "Additional include files, included last",
+                description =
+                    "Optional include directory. Header files will be included last.\n"..
+                    "This parameter is typically used to specify the compilers runtime\n"..
+                    "library. Header files with the same name as Nut/OS standard headers\n"..
+                    "are ignored.",
+                makedefs =
+                      {
+                          "INCLUDE_LAST",
+                          "INCLAST+=$(INCPRE)$(INCLUDE_LAST)",
+                      }
             }
         }
     },

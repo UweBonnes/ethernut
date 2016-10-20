@@ -428,13 +428,6 @@ bool NutComponentModel::generateBuildTree()
 
 	if ( CreateMakeFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit(),
 		Settings::instance()->sourceDir().toLocal8Bit(),
-#ifdef Q_OS_WIN32
-		Settings::instance()->includePath()[0].toLocal8Bit(),
-		Settings::instance()->includePath()[1].toLocal8Bit(),
-#else
-		Settings::instance()->includePath()[0].toLocal8Bit(),
-		Settings::instance()->includePath()[1].toLocal8Bit(),
-#endif
 		qPrintable(instDir)) )
 	{
 		return false;
@@ -471,7 +464,7 @@ bool NutComponentModel::generateSampleMakefiles()
 	}
 
 	if( CreateSampleDirectory( d->repository, d->rootComponent, qPrintable(buildPath), qPrintable(appDir), qPrintable(srcDir),
-		qPrintable(instDir), programmer, 0, 0 ) )
+		qPrintable(instDir), programmer) )
 			return false;
 	return true;
 }

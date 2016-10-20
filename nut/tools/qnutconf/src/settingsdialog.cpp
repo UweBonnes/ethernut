@@ -52,20 +52,6 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	ui.e_SourceDirectory->setText( Settings::instance()->sourceDir() );
 	ui.e_BuildDirectory->setText( Settings::instance()->buildPath() );
 	ui.e_InstallDirectory->setText( Settings::instance()->installPath() );
-	QStringList list = Settings::instance()->includePath();
-	QString includeFirst;
-	QString includeLast;
-	if (list.size() > 1)
-	{
-		includeLast = list[1];
-	}
-	if (list.size() > 0)
-	{
-		includeFirst = list[0];
-	}
-	ui.e_IncludeFirst->setText( includeFirst );
-	ui.e_IncludeLast->setText( includeLast );
-
 	// Tools tab
 	ui.e_ToolPath->setText( Settings::instance()->toolPath() );
 
@@ -121,8 +107,6 @@ void SettingsDialog::accept()
 	Settings::instance()->setSourceDir( ui.e_SourceDirectory->text() );
 	Settings::instance()->setBuildPath( ui.e_BuildDirectory->text() );
 	Settings::instance()->setInstallPath( ui.e_InstallDirectory->text() );
-	QStringList list = QStringList() << ui.e_IncludeFirst->text() << ui.e_IncludeLast->text();
-	Settings::instance()->setIncludePath( list );
 
 	// Tools tab
 	Settings::instance()->setToolPath( ui.e_ToolPath->text() );

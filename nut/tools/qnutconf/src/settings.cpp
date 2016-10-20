@@ -172,7 +172,6 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 
         basePath = basePath + "/" + baseName;
 	m_buildPath = settings.value("buildPath", basePath + "/nutbld").toString();
-	m_includePath = settings.value("includePath").toStringList();
 	m_installPath = settings.value("installPath").toString();
 	m_appDir = settings.value("applicationDirectory", basePath + "/nutapp").toString();
 
@@ -203,7 +202,6 @@ void Settings::save()
 	}
 
 	settings.setValue("buildPath", m_buildPath);
-	settings.setValue("includePath", m_includePath);
 	settings.setValue("installPath", m_installPath);
 	settings.setValue("sourceDirectory", m_sourceDir);
 	settings.setValue("applicationDirectory", m_appDir);

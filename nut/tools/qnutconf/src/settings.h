@@ -57,8 +57,6 @@ public:
     void setConfigFileName(const QString& val) { m_configFileName = val; }
     QString buildPath() const { return m_buildPath; }
     void setBuildPath(const QString& val) { m_buildPath = val; }
-    QStringList includePath() const { return m_includePath; }
-    void setIncludePath( const QStringList& val) { m_includePath = val; }
     QString installPath() const { return m_installPath; }
     void setInstallPath(const QString& val) { m_installPath = val; }
     QString sourceDir() const { return m_sourceDir; }
@@ -90,7 +88,6 @@ private:
     QString repositoryFile;
     QString m_configFileName;
     QString m_buildPath;
-    QStringList m_includePath;
     QString m_installPath;
     QString m_sourceDir;
     QString m_appDir;
