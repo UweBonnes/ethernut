@@ -77,7 +77,7 @@ bool AppDirCopyFilter::onFile( const QFileInfo &fileInfo, const QString& dest)
 		"Makevars\\..*"
 	};
 
-	for (int i = 0; i < sizeof(exclude_pattern) / sizeof(exclude_pattern[0]); i++)
+	for (unsigned int i = 0; i < sizeof(exclude_pattern) / sizeof(exclude_pattern[0]); i++)
 		if ( QRegExp(exclude_pattern[i]).exactMatch(fileName) )
 			return true;
 

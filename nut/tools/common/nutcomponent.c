@@ -300,7 +300,7 @@ static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
 /*!
  * \brief Get the current script status.
  */
-const int GetScriptStatus(void)
+int GetScriptStatus(void)
 {
     return errsts;
 }

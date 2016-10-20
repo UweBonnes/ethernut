@@ -178,7 +178,7 @@ extern int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const cha
 extern int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir,
                                  const char *src_dir, const char *lib_dir);
 
-const int GetScriptStatus(void);
+extern int GetScriptStatus(void);
 const char *GetScriptErrorString(void);
 
 __END_DECLS                     /* */
