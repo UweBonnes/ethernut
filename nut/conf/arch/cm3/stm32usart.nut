@@ -2669,4 +2669,265 @@ nutarch_cm3_stm32_usart_devices =
             },
         },
     },
+    -- STM32 LPUART1 Interface
+    --
+    {
+        name = "nutarch_cm3_stm32_devices_lpuart",
+        brief = "STM32 LPUART1 Driver",
+        requires = { "HW_LPUART1_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+         options =
+        {
+            {
+                macro = "LPUART1_DMA_TX",
+                brief = "Select LPUART1 TX DMA stream ",
+                description = "FIXME: Provide selection!\n\n"..
+                              "Eventual select LPUART1 TX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.",
+                type = "enumerated",
+                choices =  {"DMA_NONE"},
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_DMA_RX",
+                brief = "Select LPUART1 RX DMA stream ",
+                description = "FIXME: Provide selection!\n\n"..
+                              "Eventual select LPUART1 RX stream.\n\n"..
+                              "If selected, check for collision with other DMA!\n"..
+                              "Default is DMA_NONE to not use DMA.\n",
+                type = "enumerated",
+                choices = {"DMA_NONE"},
+                default = "DMA_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_RX",
+                brief = "LPUART1 RX Pin selection",
+                description = "FIXME: Provide selection!\n\n"..
+                              "Choose LPUART1 RX Pin. Default is device specific. Use PIN_NONE if unused with USART used.",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = {"PB11", "PIN_NONE"},
+                default = "PIN_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_RX_INV",
+                brief = "Invert LPUART1 RX level.",
+                description = "Invert LPUART1 RX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_TX",
+                brief = "LPUART1 TX Pin selection",
+                description = "FIXME: Provide selection!\n\n"..
+                              "Choose LPUART1 TX Pin. Default is device specific. Use PIN_NONE if unused with USART used.",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = {"PB10", "PIN_NONE"},
+                default = PIN_NONE,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_TX_MULTIDRIVE",
+                brief = "LPUART1 TX Pin as Open-Drain",
+                description = "Drive LPUART1 TX as Open-Drain\n\n"..
+                              "Default is DISABLE for Push/Pull",
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_TX_INV",
+                brief = "Invert LPUART1 TX level.",
+                description = "Invert LPUART1 TX level.\n\n"..
+                              "Default is DISABLE for normal level",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_TX_RX_SWAP",
+                brief = "Swap LPUART1 TX and RX pins.",
+                description = "Swap LPUART1 TX and RX pins.\n\n"..
+                              "Default is DISABLE for no swap.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_DATA_INV",
+                brief = "LPUART1 Binary data inversion.",
+                description = "LPUART1 Binary data inversion.\n\n"..
+                              "Default is DISABLE for no data inversion.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_MSBFIRST",
+                brief = "LPUART1 sends MSB first.",
+                description = "LPUART1 LPUART1 sends MSB first.\n\n"..
+                              "Default is DISABLE for send LSB first.",
+                requires = {"HW_USART_STM32V2"},
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_CTS",
+                brief = "LPUART1 CTS Pin selection",
+                description = "FIXME: Provide selection!\n\n"..
+                              "Choose LPUART1 CTS Pin, Default: PIN_NONE to leave unconnected.",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = {"PIN_NONE"},
+                default = "PIN_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_RTS",
+                brief = "LPUART1 RTS Pin selection",
+                description = "FIXME: Provide selection!\n\n"..
+                              "Choose LPUART1 RTS Pin, Default: PIN_NONE to leave unconnected.",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = {"PIN_NONE"},
+                default = "PIN_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_CK",
+                brief = "LPUART1 CK Pin selection",
+                description = "Choose LPUART1 RTS Pin, Default: PIN_NONE to leave unconnected.",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = { "PIN_NONE", "PC08", "PG07"},
+                default = "PIN_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_XONXOFF_CONTROL",
+                brief = "XON/XOFF Protocol",
+                description = "When selected, the driver will use software XON/XOFF protocol.",
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_INIT_BAUDRATE",
+                brief = "Initial Baudrate",
+                description = "Initial baudrate the Port is set to.",
+                type = "integer",
+                default = 115200,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_INIT_RX_BUFSIZE",
+                brief = "Initial size of RX buffer",
+                description = "Bytes used for RX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_INIT_TX_BUFSIZE",
+                brief = "Initial size of TX buffer",
+                description = "Bytes used for TX buffer.\n"..
+                    "Only size - 1 bytes can be written.\n"..
+                    "Guard byte is used for Full/Empty recognition",
+                type = "integer",
+                default = 64,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_RS485_CTRL",
+                brief = "Support RS485 control",
+                description = "When selected a GPIO pin must be configured for RS485 direction control.",
+                flavor = "booldata",
+                provides = { "LPUART1_RS485_CTRL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_485DE_INV",
+                brief = "RS485 DE Invert",
+                description = "Sets the DE signal as active low.",
+                requires = { "LPUART1_RS485_CTRL" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_485DE_PORT",
+                brief = "RS485 DE Control Port",
+                description = "Select the port of the DE signal.",
+                requires = { "LPUART1_RS485_CTRL" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_485DE_PIN",
+                brief = "RS485 DE Control Pin",
+                description = "Select the pin for the DE signal.",
+                requires = { "LPUART1_RS485_CTRL" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_485RE_INV",
+                brief = "RS485 RE Invert",
+                description = "Sets the RE signal as active high.",
+                requires = { "LPUART1_RS485_CTRL" },
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_485RE_PORT",
+                brief = "RS485 /RE Control Port",
+                description = "Select the port of the /RE signal.",
+                requires = { "LPUART1_RS485_CTRL" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_485RE_PIN",
+                brief = "RS485 /RE Control Pin",
+                description = "Select the pin for the /RE signal.",
+                requires = { "LPUART1_RS485_CTRL" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "LPUART1_SPEED",
+                brief = "Pin speed setting for LPUART1 device",
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/uart.h"
+            },
+        },
+    },
 }

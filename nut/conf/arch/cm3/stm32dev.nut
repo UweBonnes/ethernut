@@ -1018,6 +1018,28 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_RNG_LPUART1_STM32",
+                brief = "STM32 LPUSART/RNG separation",
+                description = "Separate LPUART and RNG",
+                requires = {"HW_RNG_LPUART1_STM32" },
+                provides = {
+                    "HW_LPUART1_STM32",
+                    "HW_RNG_STM32",
+                },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_LPUART1_STM32",
+                brief = "LPUART1 Availability",
+                description = "LPUART1 Availability",
+                requires = { "HW_LPUART1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_CAN_STM32",
                 brief = "CAN Availability",
                 description = "CAN Availability",

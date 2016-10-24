@@ -352,4 +352,13 @@
 #  define USART8_CTS_AF -1
 # endif
 
+/* LPUART1 */
+# if defined(MCU_STM32L0)
+/* FIXME: Check for special cases*/
+#  define LPUART1_TX_AF 4
+#  define LPUART1_RX_AF  4
+#  define LPUART1_CTS_AF -1
+#  define LPUART1_RTS_AF -1
+#  define LPUART1_CK_AF  -1
+# endif
 #endif
