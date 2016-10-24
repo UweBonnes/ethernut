@@ -3514,15 +3514,24 @@ int main(int argc, char **argv)
         switch(option) {
         case 'a':
             app_dir = realpath(optarg, NULL);
+            if (!app_dir) {
+                app_dir = strdup(optarg);
+            }
             break;
         case 'b':
             bld_dir = realpath(optarg, NULL);
+            if (!bld_dir) {
+                bld_dir = strdup(optarg);
+            }
             break;
         case 'c':
             conf_name = realpath(optarg, NULL);
             break;
         case 'l':
             lib_dir = realpath(optarg, NULL);
+            if (!lib_dir) {
+                lib_dir = strdup(optarg);
+            }
             break;
         case 'q':
             quiet = 1;
@@ -3534,7 +3543,10 @@ int main(int argc, char **argv)
             repo_name = realpath(optarg, NULL);
             break;
         case 'u':
-             user_dir = realpath(optarg, NULL);
+            user_dir = realpath(optarg, NULL);
+            if (!user_dir) {
+                user_dir = strdup(optarg);
+            }
             break;
         default:
             usage();
