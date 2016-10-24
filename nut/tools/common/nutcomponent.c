@@ -3586,7 +3586,7 @@ int main(int argc, char **argv)
         }
     } else if (!user_dir) {
         dirc = strdup(conf_name);
-        user_dir = dirname(dirc);
+        user_dir = strdup(dirname(dirc));
     }
     printf("src_dir = %s\n", src_dir);
     printf("user_dir = %s\n", user_dir);
