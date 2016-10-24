@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
@@ -148,7 +149,7 @@
 # define APB2_MAX  84000000
 #endif
 
-#if defined(STM32F411xE)
+#if defined(MCU_STM32F410) || defined(MCU_STM32F411) || defined(MCU_STM32F412)
 # if   (STM32_POWERSCALE == 1)
 #   define SYSCLK_MAX     100000000
 # elif (STM32_POWERSCALE == 2)
@@ -156,7 +157,7 @@
 # elif (STM32_POWERSCALE == 3)
 #   define SYSCLK_MAX      64000000
 # else
-#  warning Wrong POWERSCALE for F411
+#  warning Wrong POWERSCALE for F410/411/412
 # endif
 # define APB1_MAX  50000000
 # define APB2_MAX 100000000
