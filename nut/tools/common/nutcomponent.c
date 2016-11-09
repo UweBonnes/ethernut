@@ -3713,7 +3713,8 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-usertree") == 0) {
-                    if (CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir)) {
+                    rc = CreateUserDirectory(repo, root, bld_dir, user_dir, src_dir, lib_dir);
+                    if (rc) {
                         if(!quiet) {
                             printf("failed\n");
                         }
