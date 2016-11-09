@@ -253,4 +253,8 @@ extern void RNG_terminate(void);
 extern int get_random(int num_rand_bytes, uint8_t *rand_data);
 extern int get_random_NZ(int num_rand_bytes, uint8_t *rand_data);
 
+# ifdef __cplusplus
+}
+# endif
+
 #endif
