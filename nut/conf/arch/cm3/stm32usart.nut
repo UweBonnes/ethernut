@@ -129,6 +129,9 @@ function GetStmUsarts()
     if c_is_provided("HW_MCU_STM32F411") then
         return { "", "USART1", "USART2",                               "USART6" }
     end
+    if c_is_provided("HW_MCU_STM32F412") then
+        return { "", "USART1", "USART2", "USART3",                   "USART6"}
+    end
     if c_is_provided("HW_MCU_STM32F40") then
         return { "", "USART1", "USART2", "USART3", "UART4", "UART5", "USART6"}
     end
@@ -174,6 +177,9 @@ function GetTxUsart1()
     if c_is_provided("HW_MCU_STM32F411") then
         return { "PA09", "PB06", "PA15", "PIN_NONE" }
     end
+    if c_is_provided("HW_MCU_STM32F412") then
+        return { "PA09", "PB06", "PA15", "PIN_NONE" }
+    end
      if c_is_provided("HW_MCU_STM32L4") then
         return { "PA09", "PB06", "PG09", "PIN_NONE" }
     end
@@ -194,6 +200,9 @@ function GetRxUsart1()
         return { "PA10", "PB07", "PC05", "PE01", "PIN_NONE" }
     end
     if c_is_provided("HW_MCU_STM32F411") then
+        return { "PA10", "PB07", "PB03", "PIN_NONE" }
+    end
+    if c_is_provided("HW_MCU_STM32F412") then
         return { "PA10", "PB07", "PB03", "PIN_NONE" }
     end
     if c_is_provided("HW_MCU_STM32L4") then
@@ -265,6 +274,9 @@ function GetRxUsart3()
     if c_is_provided("HW_MCU_STM32F446") then
         return { "PB11", "PC11", "PC05", "PD09", "PIN_NONE"}
     end
+    if c_is_provided("HW_MCU_STM32F412") then
+        return { "PB11", "PC11", "PC05", "PD09", "PIN_NONE"}
+    end
     if c_is_provided("HW_MCU_STM32L4") then
         return { "PB11", "PC11", "PC05", "PD09", "PIN_NONE" }
     end
@@ -279,6 +291,9 @@ function GetCtsUsart3()
         return { "PB13", "PD11", "PA06", "PIN_NONE"}
    end
    if c_is_provided("HW_MCU_STM32F446") then
+        return { "PB13", "PD11", "PIN_NONE"}
+   end
+   if c_is_provided("HW_MCU_STM32F412") then
         return { "PB13", "PD11", "PIN_NONE"}
    end
    if c_is_provided("HW_MCU_STM32L4") then
@@ -435,6 +450,9 @@ function GetRxUsart6()
    if c_is_provided("HW_MCU_STM32F401") then
         return { "PC07", "PA12", "PIN_NONE" }
    end
+   if c_is_provided("HW_MCU_STM32F412") then
+        return { "PC07", "PA12", "PG09", "PIN_NONE" }
+   end
    if c_is_provided("HW_MCU_STM32F446") then
         return { "PC07", "PG09", "PIN_NONE" }
    end
@@ -453,6 +471,9 @@ function GetTxUsart6()
     end
     if c_is_provided("HW_MCU_STM32F401") then
         return { "PC06", "PA11", "PIN_NONE" }
+    end
+    if c_is_provided("HW_MCU_STM32F412") then
+        return { "PC06", "PA11", "PG14", "PIN_NONE" }
     end
     return { "PC06", "PG14", "PIN_NONE" }
 end
@@ -556,7 +577,8 @@ end
 function GetUsart2RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"DMA_NONE",
-                "(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL4)"}
+                "(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL4)",
+                "(DMA_CONTROL1 | DMA_STREAM7 | DMA_CHANNEL6)"}
         end
     if c_is_provided("HW_DMA1_STM32F0") then
         return {"DMA_NONE", "DMA1_CH5"}
@@ -691,8 +713,8 @@ end
 function GetUsart6TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"DMA_NONE",
-                "(DMA_CONTROL2 | DMA_STREAM1 | DMA_CHANNEL5)",
-                "(DMA_CONTROL2 | DMA_STREAM2 | DMA_CHANNEL5)"}
+                "(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL5)",
+                "(DMA_CONTROL2 | DMA_STREAM7 | DMA_CHANNEL5)"}
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
@@ -705,8 +727,8 @@ end
 function GetUsart6RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"DMA_NONE",
-                "(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL5)",
-                "(DMA_CONTROL2 | DMA_STREAM7 | DMA_CHANNEL5)"}
+                "(DMA_CONTROL2 | DMA_STREAM1 | DMA_CHANNEL5)",
+                "(DMA_CONTROL2 | DMA_STREAM2 | DMA_CHANNEL5)"}
         end
     if c_is_provided("HW_DMA1_2_STM32F09") then
         return {"DMA_NONE",
@@ -980,7 +1002,7 @@ nutarch_cm3_stm32_usart_devices =
                               "If selected, check for collision with other DMA!\n"..
                               "Default is DMA_NONE to not use DMA.\n",
                 type = "enumerated",
-                choices = function() return GetUsart1TxDmaChoices() end,
+                choices = function() return GetUsart1RxDmaChoices() end,
                 default = "DMA_NONE",
                 file = "include/cfg/uart.h"
             },

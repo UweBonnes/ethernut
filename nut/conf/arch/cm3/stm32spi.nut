@@ -426,7 +426,8 @@ end
 -- SPI1 TX
 function GetSpi1TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
-        return {"(DMA_CONTROL2 | DMA_STREAM3 | DMA_CHANNEL3)",
+        return {"(DMA_CONTROL2 | DMA_STREAM2 | DMA_CHANNEL2)",
+                "(DMA_CONTROL2 | DMA_STREAM3 | DMA_CHANNEL3)",
                 "(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL3)",
                 "DMA_NONE"}
         end
