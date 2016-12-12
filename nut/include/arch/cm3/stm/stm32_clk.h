@@ -59,7 +59,7 @@
 #   else
 #    define RTC_PRE      2
 #   endif
-#  elif defined(RCC_CFGR_RTCPR)
+#  elif defined(RCC_CFGR_RTCPRE)
 /* F2/F4 has HSE prescaler 2.. 32*/
 #   if HSE_VALUE <= 2000000
 #    define RTC_PRE 2
