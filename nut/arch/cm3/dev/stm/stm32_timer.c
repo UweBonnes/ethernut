@@ -144,7 +144,9 @@ int Stm32TimerChannelConfig(
     uint32_t tmp, ccer;
     int ch, channel_index;
 
-    if (channel < 0 ) {
+    if (!channel) {
+        return -1;
+    } else if (channel < 0 ) {
         ch = -channel - 1;
     } else {
         ch = channel - 1;
