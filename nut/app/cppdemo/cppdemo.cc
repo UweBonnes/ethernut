@@ -91,7 +91,7 @@ Counter::Counter(uint8_t initValue)
     m_value = initValue;
 }
 
-
+Counter counter2;
 
 int main(void) {
     u_long baud = 115200;
@@ -104,6 +104,7 @@ int main(void) {
 
     Counter counter;
     counter.print(stream);
+    counter2.print(stream);
 
     for (;;) {
         char c;
