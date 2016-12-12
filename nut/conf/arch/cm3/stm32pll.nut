@@ -783,7 +783,7 @@ nutarch_cm3_stm32_pll =
         },
         {
             macro = "HSE_VALUE",
-            brief = "External Oszillator Frequency",
+            brief = "External Oscillator Frequency",
             description = function() return GetHseValueDesc() end,
             type = "integer",
             provides = {"HSE_VALUE"},
