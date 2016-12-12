@@ -230,6 +230,18 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
     }
 }
 
+/* Call static constructors
+ *
+ * For c++ code with constructors, we need to call __libc_init_array() here.
+ * For pure C Code, this adds about 64 bytes "useless" code.
+ *
+ * Compiling nutinit for the application code withe either gcc or g++ and
+ * not using precompiled nutinit.o in the user makefile could perhaps
+ * do the trick, with code guarded by #if defined (__cplusplus)
+ */
+extern void __libc_init_array(void);
+/* Empty definitio n for _init needed with the -nostartfiles option.*/
+void _init(void){};
 
 /*!
  * \brief Nut/OS Initialization.
@@ -263,6 +275,8 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     /* Load data segment into ram, clear bss segment, initialize stacks... */
     Cortex_Start();
 
+/* Call static constructors*/
+    __libc_init_array();
 
 #ifdef EARLY_STDIO_DEV
     /* We may optionally initialize stdout as early as possible.
