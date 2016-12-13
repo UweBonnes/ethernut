@@ -41,43 +41,6 @@
 #include <cfg/arch.h>
 #include <dev/reset.h>
 
-/* Equalize reset causes not available on all families */
-#if !defined(RCC_CSR_BORRSTF)
-# define RCC_CSR_BORRSTF 0
-#endif
-
-#if !defined(RCC_CSR_V18PWRSTF)
-# define RCC_CSR_V18PWRSTF 0
-#endif
-
-#if !defined(RCC_CSR_OBLRSTF)
-# define RCC_CSR_OBLRSTF 0
-#endif
-
-#if !defined(RCC_CSR_FWRSTF)
-# define RCC_CSR_FWRSTF 0
-#endif
-
-/* L476 has no explicit POR. Map Bor as POR! */
-#if !defined(RCC_CSR_PORRSTF)
-# if defined(RCC_CSR_BORRSTF)
-#  define RCC_CSR_PORRSTF RCC_CSR_BORRSTF
-#  undef  RCC_CSR_BORRSTF
-#  define RCC_CSR_BORRSTF 0
-# else
-#  define RCC_CSR_PORRSTF 0
-# endif
-#endif
-
-/* Equalize name differences */
-#if defined(RCC_CSR_WDGRSTF) && !defined(RCC_CSR_IWDGRSTF)
-#define RCC_CSR_IWDGRSTF RCC_CSR_WDGRSTF
-#endif
-
-#if defined(RCC_CSR_PADRSTF) && !defined(RCC_CSR_PINRSTF)
-#define RCC_CSR_PINRSTF RCC_CSR_PADRSTF
-#endif
-
 /*!
  * \brief Find cause of Reset.
  */
@@ -88,26 +51,48 @@ int Stm32ResetCause(void)
 
     csr = RCC->CSR;
     flags = 0;
-    if        (csr & RCC_CSR_IWDGRSTF)  {
-        flags |= NUT_RSTTYP_WATCHDOG;
-    } else if (csr & RCC_CSR_WWDGRSTF)  {
+    if        (csr & RCC_CSR_WWDGRSTF)  {
         flags |= NUT_RSTTYP_WWATCHDOG;
-    } else if (csr & RCC_CSR_FWRSTF)    {
-        flags |= NUT_RSTTYP_FIREWALL;
     } else  if (csr & RCC_CSR_SFTRSTF)  {
         flags |= NUT_RSTTYP_SOFTWARE;
     } else if (csr & RCC_CSR_LPWRRSTF) {
         flags |= NUT_RSTTYP_LOWPOWER;
-    } else if (csr & RCC_CSR_OBLRSTF)   {
-        flags |= NUT_RSTTYP_OPTIONLOADER;
-    } else if (csr & RCC_CSR_V18PWRSTF) {
-        flags |= NUT_RSTTYP_COREPOWER;
-    } else if (csr & RCC_CSR_BORRSTF)   {
-        flags |= NUT_RSTTYP_BROWNOUT;
-    } else if (csr & RCC_CSR_PORRSTF)   {
-        flags |= NUT_RSTTYP_POWERUP;
+#if defined(RCC_CSR_WDGRSTF)
+    } else if (csr & RCC_CSR_WDGRSTF)  {
+        flags |= NUT_RSTTYP_WATCHDOG;
+#endif
+#if defined(RCC_CSR_IWDGRSTF)
+    } else if (csr & RCC_CSR_IWDGRSTF)  {
+        flags |= NUT_RSTTYP_WATCHDOG;
+#endif
+#if defined(RCC_CSR_PINRSTF)
     } else if (csr & RCC_CSR_PINRSTF)   {
         flags |= NUT_RSTTYP_EXTERNAL;
+#endif
+#if defined(RCC_CSR_PADRSTF)
+    } else if (csr & RCC_CSR_PADRSTF)   {
+        flags |= NUT_RSTTYP_EXTERNAL;
+#endif
+#if defined(RCC_CSR_FWRSTF)
+    } else if (csr & RCC_CSR_FWRSTF)    {
+        flags |= NUT_RSTTYP_FIREWALL;
+#endif
+#if defined(RCC_CSR_OBLRST)
+    } else if (csr & RCC_CSR_OBLRSTF)   {
+        flags |= NUT_RSTTYP_OPTIONLOADER;
+#endif
+#if defined(RCC_CSR_V18PWRSTF)
+    } else if (csr & RCC_CSR_V18PWRSTF) {
+        flags |= NUT_RSTTYP_COREPOWER;
+#endif
+#if defined(RCC_CSR_BORRSTF)
+    } else if (csr & RCC_CSR_BORRSTF)   {
+        flags |= NUT_RSTTYP_BROWNOUT;
+#endif
+#if defined(RCC_CSR_PORRSTF)
+    } else if (csr & RCC_CSR_PORRSTF)   {
+        flags |= NUT_RSTTYP_POWERUP;
+#endif
     }
     RCC->CSR |= RCC_CSR_RMVF;
     return (flags) ? flags : NUT_RSTTYP_UNKNOWN;

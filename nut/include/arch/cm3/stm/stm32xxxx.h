@@ -328,6 +328,11 @@
 # else
 #  warning "Unknown STM32F4 family"
 # endif
+# if !defined(RCC_CSR_BORRSTF)
+/* This definition is missing for F412 devices in F4 headers up
+ * to at least STM32Cube_FW_F4_V1.14.0. */
+#  define RCC_CSR_BORRSTF 0x02000000
+# endif
 #elif defined(MCU_STM32F7)
 # if   defined(STM32F745xx)
 #  include <arch/cm3/stm/vendor/stm32f745xx.h>
