@@ -49,6 +49,7 @@
 
 #include <cfg/arch.h>
 #include <arch/cm3/stm/stm32xxxx.h>
+#include <arch/cm3/stm/stm32_clk.h>
 
 #if !defined(RTC_BKP_NUMBER)
 # if defined(RTC_BKP0R)
@@ -79,8 +80,13 @@
  */
 const void *Stm32BkupRegGet(unsigned int pos)
 {
-    if (!(RCC_BDCR & RCC_BDCR_RTCEN))
-        return 0;
+    if (!(RCC_BDCR & RCC_BDCR_RTCEN)) {
+        int res;
+        res = EnableRtcClock();
+        if (res) {
+            return 0;
+        }
+    }
     return (void*)&RTC->BKP0R;
 }
 
