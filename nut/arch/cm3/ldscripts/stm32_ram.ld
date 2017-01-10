@@ -70,21 +70,21 @@ SECTIONS
         PROVIDE_HIDDEN (__preinit_array_start = .);
         KEEP (*(.preinit_array*))
         PROVIDE_HIDDEN (__preinit_array_end = .);
-    } > FLASH0
+    } > SRAM0
 
     .init_array : {
         PROVIDE_HIDDEN (__init_array_start = .);
         KEEP (*(SORT(.init_array.*)))
         KEEP (*(.init_array*))
         PROVIDE_HIDDEN (__init_array_end = .);
-    } > FLASH0
+    } > SRAM0
 
     .fini_array : {
         PROVIDE_HIDDEN (__fini_array_start = .);
         KEEP (*(SORT(.fini_array.*)))
         KEEP (*(.fini_array*))
             PROVIDE_HIDDEN (__fini_array_end = .);
-    } > FLASH0
+    } > SRAM0
 
     _etext = .;
 
