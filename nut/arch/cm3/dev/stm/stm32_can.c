@@ -712,7 +712,9 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
     CM3BB_OFFSETCLR(CANBBx, CAN_TypeDef, MCR, CAN_MCR_SLEEP);
     for(wait_ack = 0, rc = 1; (rc) && (wait_ack < SLAK_TimeOut); wait_ack++)
         rc  = CM3BB_OFFSETGET(CANBBx, CAN_TypeDef, MSR, CAN_MSR_SLAK);
-        return (rc == 0)?0:CAN_ERROR;
+    if (rc) {
+        return CAN_ERROR;
+    }
 
     /* We send tx mailboxes in chronological order and
        FOR NOW we don't retransmit on errer */
