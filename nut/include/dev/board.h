@@ -292,8 +292,12 @@
 #elif defined(NUCLEO)
 #include <arch/cm3/board/nucleo.h>
 #define BOARDNAME "NUCLEO"
+#elif defined(NUCLEO32)
+#include <arch/cm3/board/nucleo32.h>
+#define BOARDNAME "NUCLEO32"
 #elif defined(NUCLEO144)
 #include <arch/cm3/board/nucleo144.h>
+#define BOARDNAME "NUCLEO144"
 #elif defined(OLIMEX_LPCE2294)
 #include <arch/arm/board/olimex_lpce2294.h>
 #define BOARDNAME "OLIMEX_LPCE229"
