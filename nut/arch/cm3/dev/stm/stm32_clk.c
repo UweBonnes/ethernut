@@ -460,7 +460,7 @@ uint32_t Stm32ClockGet(clock_index_t idx)
     }
     switch (idx) {
 #if defined(RCC_CFGR3_USART1SW) || defined(RCC_DCKCFGR2_USART1SEL) ||\
-    defined(RCC_CCIPR_USART1SEL)
+    defined(RCC_CCIPR_USART2SEL)
     case HWCLK_LSE:
         return LSE_VALUE;
     case HWCLK_HSI:

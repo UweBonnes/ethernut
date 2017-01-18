@@ -200,7 +200,7 @@ typedef enum
 #endif
     HWCLK_SYS,
 #if defined(RCC_CFGR3_USART1SW) || defined(RCC_DCKCFGR2_USART1SEL) ||\
-    defined(RCC_CCIPR_USART1SEL)
+    defined(RCC_CCIPR_USART2SEL)
     HWCLK_HSI,
     HWCLK_LSE,
 #endif
