@@ -334,7 +334,15 @@
 #  define RCC_CSR_BORRSTF 0x02000000
 # endif
 #elif defined(MCU_STM32F7)
-# if   defined(STM32F745xx)
+# if   defined(STM32F722xx)
+#  include <arch/cm3/stm/vendor/stm32f722xx.h>
+# elif defined(STM32F723xx)
+#  include <arch/cm3/stm/vendor/stm32f723xx.h>
+# elif defined(STM32F732xx)
+#  include <arch/cm3/stm/vendor/stm32f732xx.h>
+# elif defined(STM32F733xx)
+#  include <arch/cm3/stm/vendor/stm32f733xx.h>
+# elif defined(STM32F745xx)
 #  include <arch/cm3/stm/vendor/stm32f745xx.h>
 # elif defined(STM32F746xx)
 #  include <arch/cm3/stm/vendor/stm32f746xx.h>
