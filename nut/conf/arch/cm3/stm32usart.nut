@@ -2753,7 +2753,7 @@ nutarch_cm3_stm32_usart_devices =
                 requires = { "HW_GPIO_STM32V2" },
                 type = "enumerated",
                 choices = {"PB10", "PIN_NONE"},
-                default = PIN_NONE,
+                default = "PIN_NONE",
                 file = "include/cfg/uart.h"
             },
             {
