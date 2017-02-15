@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 by Uwe Bonnes <bon@elektron.ikp.physik.tu-darmstadt.de>
+ * Copyright (C) 2013, 2015-1027 by Uwe Bonnes
+ *                              <bon@elektron.ikp.physik.tu-darmstadt.de>
  *
  * All rights reserved.
  *
@@ -37,12 +38,6 @@
 #include <arch/cm3.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 
-#define GPIO_DEFAULT_MODE          0
-#define GPIO_DEFAULT_MODE_FLOAT    1
-#define GPIO_DEFAULT_MODE_ANALOG   2
-#define GPIO_DEFAULT_MODE_PULLDOWN 3
-#define GPIO_DEFAULT_MODE_PULLUP   4
-
 #if !defined(RCC_AHBENR_GPIOFEN)
 #define RCC_AHBENR_GPIOFEN 0
 #endif
@@ -72,10 +67,17 @@
 #define RCC_AHB1ENR_GPIOKEN 0
 #endif
 
-#if !defined(STM32_GPIO_DEFAULT_MODE) || STM32_GPIO_DEFAULT_MODE == GPIO_DEFAULT_MODE || defined( GPIO_CRL_CNF)
-#define GpioSetDefault()
-#elif STM32_GPIO_DEFAULT_MODE == GPIO_DEFAULT_MODE_ANALOG
-static void GpioSetDefault(void)
+#if defined(MCU_STM32F1) || defined(MCU_STM32L0) || defined(MCU_STM32L4) || !defined(STM32_GPIO_ANALOG_MODE)
+/*  F1, L0 and L4 have  analog mode as reset state.*/
+#define GpioSetAnalogDefault()
+#else
+/*!
+ * \brief Set (nearly) all pins to analog mode
+ *
+ * \para None
+ *
+ */
+static void GpioSetAnalogDefault(void)
 {
     uint32_t ahbxenr_value;
     volatile uint32_t *ahbxenr;
@@ -128,9 +130,8 @@ static void GpioSetDefault(void)
 
     *ahbxenr = ahbxenr_value;
 }
-#else
-#warning Unknown GPIO default mode
 #endif
+
 #if defined(MCU_STM32L4)
 # define RCC_CR_RESET_VALUE (RCC_CR_MSION | (6 * RCC_CR_MSIRANGE_1))
 #elif defined(RCC_CR_MSION)
@@ -190,7 +191,7 @@ void SystemInit (void)
 #else
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 #endif
-    GpioSetDefault();
+    GpioSetAnalogDefault();
 #if defined(PWR_CSR_BRE) && !defined(BACKUP_REGULATOR_OFF)
     PWR_CR |= PWR_CR_DBP;
     PWR->CSR |= PWR_CSR_BRE;

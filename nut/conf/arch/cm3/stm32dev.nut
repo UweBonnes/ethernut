@@ -202,12 +202,11 @@ nutarch_cm3_stm32_devices =
         options =
         {
             {
-                macro = "STM32_GPIO_DEFAULT_MODE",
-                brief = "STM32 Pin Default",
-                description = "Select default pin mode. JTAG/SWD is not touched.",
-                type = "enumerated",
-                choices = { "GPIO_DEFAULT_MODE", "GPIO_DEFAULT_MODE_ANALOG"},
-                default = "GPIO_DEFAULT_MODE",
+                macro = "STM32_GPIO_ANALOG_MODE",
+                brief = "STM32 Pin Default Analog",
+                description = "Select default pin mode as ANLOG.\n"..
+                "JTAG/SWD is not touched.\n"..
+                "L0 and L4 come out of reste already in ANALOG mode",
                 file = "include/cfg/arch.h",
             }
         }
