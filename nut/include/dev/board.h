@@ -868,7 +868,11 @@
 
 #if !defined(RTC_CHIP)
 # include <dev/rtc.h>
-# define RTC_CHIP rtcNull
+# if defined(MCU_STM32)
+#  define RTC_CHIP rtcSTM32
+# else
+#  define RTC_CHIP rtcNull
+# endif
 #endif
 
 #if !defined(DEV_DISPLAY)
@@ -876,7 +880,6 @@
 # define DEV_DISPLAY DEV_CONSOLE
 # define DEV_DISPLAY_NAME DEV_CONSOLE_NAME
 #endif
-
 
 extern void NutBoardInit(void);
 extern void NutIdleInit(void);
