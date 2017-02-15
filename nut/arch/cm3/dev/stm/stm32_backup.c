@@ -82,7 +82,7 @@ const void *Stm32BkupRegGet(unsigned int pos)
 {
     if (!(RCC_BDCR & RCC_BDCR_RTCEN)) {
         int res;
-        res = EnableRtcClock();
+        res = Stm32EnableRtcClock();
         if (res) {
             return 0;
         }

@@ -224,6 +224,6 @@ extern uint32_t Stm32ClockGet(clock_index_t idx);
 #define SysCtlClockGet() Stm32ClockGet(HWCLK_CPU)
 
 extern int SetSysClock(void);
-int EnableRtcClock(void);
+int Stm32EnableRtcClock(void);
 
 #endif /* _STM32_CLK_H_ */

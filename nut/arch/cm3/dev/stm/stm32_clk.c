@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 by Uwe Bonnes
+ * Copyright (C) 2015-2017 by Uwe Bonnes
  *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -593,4 +593,87 @@ static void SetClockShift(void)
 int SetSysClock(void)
 {
     return SetSysClockSource(SYSCLK_SOURCE);
+}
+
+/*!
+ * \brief Enable RTC clock from source selected  in configuration
+ *
+ * Called by RtcInit, LcdInit and BackupInit.
+ * LSE startup can take up to 2 seconds. User initialization is done
+ * late and so eventually less waiting for LSE is needed.
+ *
+ * \return 0 on success, -1.
+ */
+int Stm32EnableRtcClock(void)
+{
+    int source;
+    int res = 0;
+
+    if (RTCCLK_SOURCE == RTCCLK_NONE) {
+        return -1;
+    }
+    source = (RCC_BDCR & RCC_BDCR_RTCSEL) / RCC_BDCR_RTCSEL_0;
+    if ((RTCCLK_SOURCE != RTCCLK_KEEP) && (source != RTCCLK_SOURCE)) {
+        /* Source mismatch.*/
+        res = -1;
+        goto done;
+    }
+    if (RCC_BDCR & RCC_BDCR_RTCEN) {
+    /* Clock is already running.*/
+        goto done;
+    }
+    PWR_CR |= PWR_CR_DBP;
+    switch (source) {
+    case RTCCLK_LSE:
+        if (!(RCC_BDCR & RCC_BDCR_LSERDY)) {
+            int i;
+            RCC_BDCR |= RCC_BDCR_LSEON;
+            for (i = 0; i < 4000; i++) {
+                NutSleep(1);
+                if (RCC_BDCR & RCC_BDCR_LSERDY) {
+                    break;
+                }
+            }
+            if (!(RCC_BDCR & RCC_BDCR_LSERDY)) {
+                res = -1;
+                goto done;
+            }
+        }
+        break;
+    case RTCCLK_LSI:
+        if (!(RCC->CSR & RCC_CSR_LSIRDY)) {
+            RCC->CSR |= RCC_CSR_LSION;
+            NutSleep(1);
+            }
+        if (!(RCC->CSR & RCC_CSR_LSIRDY)) {
+            res = -1;
+            goto done;
+        }
+        break;
+    case RTCCLK_HSE:
+        if (!(RCC->CR & RCC_CR_HSERDY)) {
+            /* RCC_CR_RTCPRE_0 only != 0 on L0/1.
+             * HSE was not set up yet.
+             * Set divisor and bypass before enabling HSE.
+             */
+            RCC->CR |= (RTC_PRE_VAL * RCC_CR_RTCPRE_0) |
+                (HSE_BYPASS * RCC_CR_HSEBYP);
+            RCC->CR |= RCC_CR_HSEON;
+            NutSleep(4);
+        }
+        if (!(RCC->CR & RCC_CR_HSERDY)) {
+            res = -1;
+            goto done;
+        }
+        break;
+    }
+    while( (RCC_BDCR & RCC_BDCR_RTCEN) == 0 ){
+        /* NUCLEO-F7 seems to hang here with RTC == LSE
+         * when commands where only issued once.
+         */
+        RCC_BDCR |= RCC_BDCR_RTCEN;
+    }
+done:
+    PWR_CR &= ~PWR_CR_DBP;
+    return res;
 }
