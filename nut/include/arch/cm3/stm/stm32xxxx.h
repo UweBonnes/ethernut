@@ -437,7 +437,6 @@
 #   define NO_LSEDRV
 #  endif
 # elif defined(RCC_BDCR_LSEBYP)
-#  define RCC_BDCR (RCC->BDCR)
 #  if   defined(RCC_BCDR_LSEMOD)
 /* F411, F446, F469 and F479*/
 #   define RCC_BDCR_LSEDRV_0 RCC_BDCR_LSEMOD
@@ -451,6 +450,9 @@
 /* F0, F3, F7 and F4 */
 #  endif
 # endif
+#if !defined(RCC_BDCR)
+# define RCC_BDCR (RCC->BDCR)
+#endif
 
 # if !defined(RCC_BDCR_LSEON) && defined(RCC_CSR_LSEON)
 #  define RCC_BDCR_LSEON RCC_CSR_LSEON
