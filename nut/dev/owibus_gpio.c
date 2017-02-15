@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013, 2016 by Uwe Bonnes
+ * Copyright (C) 2013, 2016-2017 by Uwe Bonnes
  *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -47,6 +47,7 @@
  */
 /*@{*/
 
+#include <sys/atom.h>
 /*!
  * \brief Perform One-Wire transaction.
  *
@@ -86,6 +87,7 @@ static int Gpio_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t 
      * cooperative multitasking for up to 480 us
      */
     NutSleep(0);
+    NutEnterCritical();
     OWI_LO();
     NutMicroDelay(delay1);
     OWI_HI();
@@ -93,9 +95,10 @@ static int Gpio_OwiTransaction(NUTOWIBUS *bus, int_fast8_t command, int_fast8_t 
         NutMicroDelay(delay2);
         res = OWI_GET();
         NutMicroDelay(delay3);
-    }
-    else
+    } else {
         NutMicroDelay(delay2);
+    }
+    NutExitCritical();
     return res;
 }
 
