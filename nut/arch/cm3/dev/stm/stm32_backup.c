@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Uwe Bonnes
+ * Copyright (C) 2015, 2017 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,23 +53,23 @@
 
 #if !defined(RTC_BKP_NUMBER)
 # if defined(RTC_BKP0R)
-#  if defined(RTC_BKP_NUMBER)
-#   define RTC_BKP_NUMBER RTC_BKP_NUMBER
-#  elif !defined(RTC_BKP5R)
-#   define RTC_BKP_NUMBER ( 5 * 4)
+#  if !defined(RTC_BKP5R)
+#   define RTC_BKP_NUMBER    5
 #  elif !defined(RTC_BKP10R)
-#   define RTC_BKP_NUMBER (10 * 4)
+#   define RTC_BKP_NUMBER   10
 #  elif !defined(RTC_BKP16R)
-#   define RTC_BKP_NUMBER (16 * 4)
+#   define RTC_BKP_NUMBER   16
 #  elif !defined(RTC_BKP20R)
-#   define RTC_BKP_NUMBER (20 * 4)
-#  elif defined(RTC_BKP32R)
-#   define RTC_BKP_NUMBER (32 * 4)
+#   define RTC_BKP_NUMBER   20
+#  elif defined(RTC_BKP31R)
+#   define RTC_BKP_NUMBER   32
 #  endif
 # endif
 #endif
 
-#if defined(RTC_BKP_NUMBER)
+#if defined(RTC_BKP_NUMBER) && !defined(RTC_BKP_BYTES)
+# define RTC_BKP_BYTES (RTC_BKP_NUMBER * 4)
+
 /*!
  * \brief Get pointer to read parameters in backup registerss.
  *  RTC needs to be set up!.
@@ -87,7 +87,7 @@ const void *Stm32BkupRegGet(unsigned int pos)
             return 0;
         }
     }
-    return (void*)&RTC->BKP0R;
+    return (void*)(&RTC->BKP0R + pos);
 }
 
 /*!
@@ -101,19 +101,18 @@ const void *Stm32BkupRegGet(unsigned int pos)
  */
 int Stm32BkupRegLoad(uint32_t pos, void *data, size_t len)
 {
-    const void *bkp;
 
-    if (pos + len > RTC_BKP_NUMBER)
+    if (pos + len > RTC_BKP_BYTES) {
         return -1;
-    bkp = Stm32BkupRegGet(pos);
-    if (NULL == bkp)
-        return -1;
-    memcpy(data, bkp, len);
+    }
+    memcpy(data, (const void *) (&RTC->BKP0R + pos), len);
     return 0;
 }
 
 /*!
  * \brief Store parameters in Backup registers.
+ *
+ * At least for L0, only aligned uint32_t can be written!
  *
  * \param pos Offset in byte of parameter.
  * \param data Pointer to source data.
@@ -123,21 +122,27 @@ int Stm32BkupRegLoad(uint32_t pos, void *data, size_t len)
  */
 int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
 {
-    const void *bkp;
+    union {
+        uint8_t  bytes[RTC_BKP_BYTES];
+        uint32_t words[RTC_BKP_NUMBER];
+    } shadow;
+    uint32_t *bkp  = (uint32_t *)&RTC->BKP0R;
+    int i;
 
-    if (pos + len > RTC_BKP_NUMBER)
+    if (pos + len > RTC_BKP_BYTES) {
         return -1;
-    bkp = Stm32BkupRegGet(pos);
-    if (NULL == bkp)
-        return -1;
+    }
+    memcpy(shadow.bytes, (const void *) &RTC->BKP0R, RTC_BKP_BYTES);
+    memcpy(shadow.bytes + pos, data, len);
     PWR_CR |= PWR_CR_DBP;
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
-    memcpy((void *)bkp , data, len);
+    for (i = 0; i < RTC_BKP_NUMBER; i++) {
+        bkp[i] = shadow.words[i];
+    }
     RTC->WPR = 0;
     PWR_CR &= ~PWR_CR_DBP;
     return 0;
-
 }
 #endif
 
@@ -152,8 +157,9 @@ int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
  */
 const void *Stm32BkupMemGet(unsigned int pos)
 {
-    if (RCC_AHB1ENR_BKPSRAMEN != (RCC->AHB1ENR & RCC_AHB1ENR_BKPSRAMEN))
+    if (RCC_AHB1ENR_BKPSRAMEN != (RCC->AHB1ENR & RCC_AHB1ENR_BKPSRAMEN)) {
         return 0;
+    }
     return (void*)BKPSRAM_BASE;
 }
 /*!
@@ -169,11 +175,13 @@ int Stm32BkupMemLoad(uint32_t pos, void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKPSRAM_SIZE)
+    if (pos + len > BKPSRAM_SIZE) {
         return -1;
+    }
     bkp = Stm32BkupMemGet(pos);
-    if(NULL == bkp)
+    if (NULL == bkp) {
         return -1;
+    }
     memcpy(data, bkp, len);
     return 0;
 }
@@ -191,11 +199,13 @@ int Stm32BkupMemSave(unsigned int pos, const void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKPSRAM_SIZE)
+    if (pos + len > BKPSRAM_SIZE) {
         return -1;
+    }
     bkp = Stm32BkupMemGet(pos);
-    if(NULL == bkp)
+    if (NULL == bkp) {
         return -1;
+    }
     PWR_CR |= PWR_CR_DBP;
     memcpy((void *)bkp , data, len);
     PWR_CR &= ~PWR_CR_DBP;
