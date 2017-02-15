@@ -76,14 +76,6 @@
 #include <dev/spibus_stm32.h>
 #endif
 
-#ifndef DEV_MMCARD
-/* Assume an Ethernet_Shield_2 attached, with ICSP SPI
- * inputs handwired to Arduino SPI lines
- */
-# include <dev/spi_mmc_gpio.h>
-# define DEV_MMCARD devSpiMmcGpio
-#endif
-
 /* LED3 is Arduino D12 PB3*/
 #ifndef LED1_PORT
 #  define LED1_PORT NUTGPIO_PORTB

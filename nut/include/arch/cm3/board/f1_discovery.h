@@ -65,6 +65,14 @@
 #include <dev/usartstm32.h>
 #endif
 
+/* Blue user button */
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTA
+#endif
+#ifndef SW1_PIN
+# define SW1_PIN  0
+#endif
+
 #ifndef DEV_UART_NAME
 #define DEV_UART_NAME devUsartStm32_2.dev_name
 #endif

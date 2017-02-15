@@ -81,6 +81,7 @@
 #ifndef LED_SET_ON
 # define LED_SET_ON 0
 #endif
+
 /* Selection switch of joystick (Center) */
 #ifndef SW1_PORT
 # define SW1_PORT NUTGPIO_PORTA

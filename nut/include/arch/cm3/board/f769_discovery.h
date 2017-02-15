@@ -64,6 +64,14 @@
 #define LED3_PIN 12
 #endif
 
+/* Blue user button */
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTA
+#endif
+#ifndef SW1_PIN
+# define SW1_PIN  0
+#endif
+
 #ifndef DEV_UART
 #include <dev/usartstm32.h>
 #define DEV_UART devUsartStm32_1

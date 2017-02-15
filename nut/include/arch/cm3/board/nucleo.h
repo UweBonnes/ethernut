@@ -102,4 +102,12 @@
 # endif
 #endif
 
+/* Blue user button */
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTC
+#endif
+#ifndef SW1_PIN
+# define SW1_PIN  13
+#endif
+
 #define HAS_ARDUINO_CONNECTOR
