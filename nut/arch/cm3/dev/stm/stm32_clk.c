@@ -92,6 +92,8 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 # define SYSCLK_RES HSI_VALUE
 #elif (SYSCLK_SOURCE == SYSCLK_HSE)
 # define SYSCLK_RES HSI_VALUE
+#elif (SYSCLK_SOURCE == SYSCLK_MSI)
+# define SYSCLK_RES MSI_2100k
 #else
 # warning SYSCLK_SOURCE undefined or unknown!
 #endif
