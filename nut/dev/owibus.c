@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012,2013, 2016  by Uwe Bonnes
+ * Copyright (C) 2012,2013, 2016-2017  by Uwe Bonnes
  *                               (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -389,13 +389,16 @@ int OWIGetMode(NUTOWIBUS *bus)
  */
 int OwiInit(NUTOWIBUS *bus)
 {
+    if (!bus) {
+        return OWI_INVALID_HW;
+    }
     if (bus->OwiSetup) {
         int res = bus->OwiSetup(bus);
         NutSleep(1);
         return res;
-    }
-    else
+    } else {
         return OWI_SUCCESS;
+    }
 }
 
 /*@}*/
