@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-16 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-17 by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -407,8 +407,8 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
     .owi_irq         = &STM32TIMER_SIG,
     .clk_idx         = BASE2TCLKSRC(STM32TIMER_BASE),
 #if defined(MCU_STM32F1)
-    .remap_reg       = &AFIO->STM32_REMAP_REG,
-    .remap_mask      = STM32TIMER_REMAP_SHIFT,
+    .remap_reg       = &STM32TIMER_REMAP_REG,
+    .remap_mask      = STM32TIMER_REMAP_MASK,
     .remap_value     = 0,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
@@ -479,8 +479,8 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
     .owi_irq         = &STM32TIMER_SIG,
     .clk_idx         = BASE2TCLKSRC(STM32TIMER_BASE),
 #if defined(MCU_STM32F1)
-    .remap_reg       = &AFIO->STM32_REMAP_REG,
-    .remap_mask      = STM32TIMER_REMAP_SHIFT,
+    .remap_reg       = &STM32TIMER_REMAP_REG,
+    .remap_mask      = STM32TIMER_REMAP_MASK,
     .remap_value     = 0,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
@@ -551,8 +551,8 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
     .owi_irq         = &STM32TIMER_SIG,
     .clk_idx         = BASE2TCLKSRC(STM32TIMER_BASE),
 #if defined(MCU_STM32F1)
-    .remap_reg       = &AFIO->STM32_REMAP_REG,
-    .remap_mask      = STM32TIMER_REMAP_SHIFT,
+    .remap_reg       = &STM32TIMER_REMAP_REG,
+    .remap_mask      = STM32TIMER_REMAP_MASK,
     .remap_value     = 0,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
