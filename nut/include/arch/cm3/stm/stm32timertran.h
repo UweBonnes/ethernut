@@ -90,6 +90,7 @@
  */
 
 #include <cfg/arch.h>
+#include <cfg/devices.h>
 #if defined(MCU_STM32F1)
 # include <cfg/timer.h>
 #endif
@@ -150,8 +151,15 @@
 #if defined(RCC_APB2ENR_TIM1EN) && defined(RCC_APB2RSTR_TIM1RST) && (STM32TIMER_ID == 1)
 #define STM32TIMER_BASE TIM1_BASE
 #define STM32TIMER_MASK RCC_APB2ENR_TIM1EN
-//#define STM32TIMER_SIG sig_TIM1
-#define STM32TIMER_SIG sig_TIM1_UP_TIM10
+#if defined(MCU_STM32F0)
+# define STM32TIMER_SIG sig_TIM1_BRK_UP_TRG_COM
+#elif defined(MCU_STM32F30) || defined(STM32F10X_LD_VL) || defined (STM32F10X_MD_VL) || defined(STM32F10X_HD_VL) || defined(MCU_STM32L4)
+# define STM32TIMER_SIG sig_TIM1_UP_TIM16
+#elif defined(MCU_STM32F4) || defined (MCU_STM32F2)
+# define STM32TIMER_SIG sig_TIM1_UP_TIM10
+#elif defined(HW_TIM1_STM32)
+# define STM32TIMER_SIG sig_TIM1_UP
+#endif
 #define STM32TIMER_CLK() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR,  _BI32(RCC_APB2ENR_TIM1EN))
 #define STM32TIMER_RST() CM3BBPULSE(RCC_BASE, RCC_TypeDef, APB2RSTR,  _BI32(RCC_APB2RSTR_TIM1RST))
 #define STM32TIMER_INIT() do{                                           \
