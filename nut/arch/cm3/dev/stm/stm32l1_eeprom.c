@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013, 2015-2016 Uwe Bonnes
+ * Copyright (C) 2013, 2015-2017 Uwe Bonnes
  *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,10 +51,12 @@
 #define FLASH_PEKEY1 0x89abcdef
 #define FLASH_PEKEY2 0x02030405
 
-#if defined(MCU_STM32L1)
+#if defined(FLASH_EEPROM_END)
 #  define STM32L1_EEPROM_SIZE (FLASH_EEPROM_END - FLASH_EEPROM_BASE)
-#elif defined(MCU_STM32L0)
+#elif defined(DATA_EEPROM_END)
 #  define STM32L1_EEPROM_SIZE (DATA_EEPROM_END - DATA_EEPROM_BASE)
+#elif defined(DATA_EEPROM_BANK2_END)
+#  define STM32L1_EEPROM_SIZE (DATA_EEPROM_BANK2_END - DATA_EEPROM_BASE)
 #else
 # warning Unhandled STM32 family
 #endif
