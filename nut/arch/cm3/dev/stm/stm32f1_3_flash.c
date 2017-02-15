@@ -91,7 +91,8 @@ static uint32_t pagelist[2];
         (FLASH_CONF_SIZE != 4096) && (FLASH_CONF_SIZE != 8192))
 #error FLASH_CONF_SIZE has to be either FLASH_PAGE_SIZE (default), 256, 512, 1024, 2048, 4096 or 8192
 #endif
-#  define FLASH_PAGE_MASK (~(FLASH_ACCESS_SIZE - 1))
+
+#define FLASH_PAGE_MASK (~(FLASH_PAGE_SIZE - 1))
 
 #if !defined(RDP_KEY)
 #define RDP_KEY 0x00aa;
