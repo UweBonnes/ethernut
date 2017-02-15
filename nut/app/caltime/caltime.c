@@ -490,10 +490,14 @@ int main(void)
     _timezone = USE_TIME_ZONE;
 #endif
 
+#if defined(USE_BUILD_TIME)
     now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
     now -= (CRT_TIMEZONE - CRT_DAYLIGHT) * 60;
     printf("Built " __DATE__ " " __TIME__ " TZ OFFSet %d CRT_DAYLIGHT %d\n",
            CRT_TIMEZONE,  CRT_DAYLIGHT);
+#else
+    now = 0;
+#endif
 #ifdef RTC_CHIP
     /* Register and query hardware RTC, if available. */
     printf("Registering RTC hardware...");
