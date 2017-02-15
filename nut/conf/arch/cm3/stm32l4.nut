@@ -40,10 +40,14 @@
 -- STM32L4 Family
 -- *****************************************************************************
 --
+-- rm0351: L476
+-- rm0392: L471
+-- rm0392: L432/L442/L452/L462
+-- rm0394: L431/L422/L443
+-- rm0395: L4x5
 
 nutarch_cm3_stm32l4 =
 {
-
     --
     -- MCU Family
     --
@@ -65,6 +69,7 @@ nutarch_cm3_stm32l4 =
                     "HW_VOS_STM32",
                     "HW_ICACHE_STM32",
                     "HW_DCACHE_STM32",
+--                   "HW_CAN1_STM32",  TODO: Can Timing
                     "HW_RTC_STM32_V2",
                     "HW_FLASH_STM32L4",
                     "HW_GPIO_STM32V2",
@@ -75,37 +80,147 @@ nutarch_cm3_stm32l4 =
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
                     "HW_I2C1_STM32V2",
-                    "HW_I2C2_STM32V2",
                     "HW_I2C3_STM32V2",
-                    "HW_OTG_STM32",
+                    "HW_LPUART1_STM32",
+                    "HW_RNG_STM32",
                     "HW_SPI1_STM32",
-                    "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
-                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
                     "HW_TIM2_32BIT_STM32",
-                    "HW_TIM3_STM32",
-                    "HW_TIM4_STM32",
-                    "HW_TIM5_STM32",
                     "HW_TIM6_DAC_STM32",
                     "HW_TIM7_STM32",
-                    "HW_TIM8_STM32",
-                    "HW_TIM21_STM32",
                     "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "HW_MCU_STM32_L43",
+                brief = "STM32L43x/44x.",
+                description = "Provides common devices in L43x/L44x",
+                default = 1,
+                requires = {"HW_MCU_STM32L43"},
+                provides =
+                {
+                   "HW_TIM1_TIM15_TIM16_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "HW_MCU_STM32_L45",
+                brief = "STM32L45x/46x.",
+                description = "Provides common devices in L45x/L46x",
+                default = 1,
+                requires = {"HW_MCU_STM32L45"},
+                provides =
+                {
+                    "HW_I2C2_STM32V2",
+                    "HW_TIM1_TIM15_TIM16_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "HW_MCU_STM32_L47",
+                brief = "STM32L47x/48x.",
+                description = "Provides common devices in L47x/L48x",
+                default = 1,
+                requires = {"HW_MCU_STM32L47"},
+                provides =
+                {
+                    "HW_I2C2_STM32V2",
+                    "HW_TIM1_TIM15_TIM16_TIM17_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_TIM3_STM32",
+                    "HW_TIM4_STM32",
+                    "HW_TIM5_STM32",
+                    "HW_TIM8_STM32",
                     "HW_USART3_STM32",
                     "HW_UART4_STM32",
                     "HW_UART5_STM32",
                 },
                 file = "include/cfg/arch.h",
             },
--- Use macro names so that ST vendor defines are produced
+            {
+                macro = "STM32L431xx",
+                brief = "STM32L431 128/256 kB.",
+                description = "Provides vendor header for STM32L431.",
+                default = 1,
+                requires = {"HW_MCU_STM32L431"},
+                provides =
+                {
+                    "HW_I2C2_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_USART3_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32L432xx",
+                brief = "STM32L432 128/256 kB.",
+                description = "Provides vendor header for STM32L432.",
+                default = 1,
+                requires = {"HW_MCU_STM32L432"},
+                provides =
+                {
+                    "HW_USB_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32L433xx",
+                brief = "STM32L433 128/256 kB.",
+                description = "Provides vendor header for STM32L433.",
+                default = 1,
+                requires = {"HW_MCU_STM32L433"},
+                provides =
+                {
+                    "HW_I2C2_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_USART3_STM32",
+                    "HW_USB_STM32",
+                    "HW_LCD_STM32",
+                 },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32L442xx",
+                brief = "STM32L442 128/256 kB.",
+                description = "Provides vendor header for STM32L442.",
+                default = 1,
+                requires = {"HW_MCU_STM32L442"},
+                provides =
+                {
+                    "HW_USB_STM32",
+                    "HW_AES_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32L443xx",
+                brief = "STM32L443 128/256 kB.",
+                description = "Provides vendor header for STM32L443.",
+                default = 1,
+                requires = {"HW_MCU_STM32L443"},
+                provides =
+                {
+                    "HW_I2C2_STM32V2",
+                    "HW_SPI2_STM32",
+                    "HW_USART3_STM32",
+                    "HW_USB_STM32",
+                    "HW_LCD_STM32",
+                    "HW_AES_STM32",
+                 },
+                file = "include/cfg/arch.h",
+            },
             {
                 macro = "STM32L471xx",
                 brief = "STM32L471 512/1024 kB.",
                 description = "Provides vendor header for STM32L471.",
                 default = 1,
-                requires = { "HW_MCU_STM32L471" },
+                requires = {"HW_MCU_STM32L471"},
                 provides =
                 {
                 },
@@ -113,10 +228,22 @@ nutarch_cm3_stm32l4 =
             },
             {
                 macro = "STM32L475xx",
+                brief = "STM32L475 512/1024 kB.",
+                description = "Provides vendor header for STM32L475.",
+                default = 1,
+                requires = {"HW_MCU_STM32L475"},
+                provides =
+                {
+                     "HW_OTG_STM32",
+               },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32L475xx",
                 brief = "STM32L475 256/512/1024 kB.",
                 description = "Provides vendor header for STM32L475 and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32L475" },
+                requires = {"HW_MCU_STM32L475"},
                 provides =
                 {
                     "HW_OTG_STM32",
@@ -128,8 +255,35 @@ nutarch_cm3_stm32l4 =
                 brief = "STM32L476xx 256/512/1024 kB.",
                 description = "Provides vendor header for STM32L476 and additional devices.",
                 default = 1,
-                requires = { "HW_MCU_STM32L476" },
+                requires = {"HW_MCU_STM32L476"},
                 provides = {
+                    "HW_OTG_STM32",
+                    "HW_LCD_STM32",
+                 },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "STM32L485xx",
+                brief = "STM32L485 256/512/1024 kB.",
+                description = "Provides vendor header for STM32L485 and additional devices.",
+                default = 1,
+                requires = {"HW_MCU_STM32L485"},
+                provides =
+                {
+                    "HW_AES_STM32",
+                    "HW_OTG_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32L486xx",
+                brief = "STM32L486xx 256/512/1024 kB.",
+                description = "Provides vendor header for STM32L486 and additional devices.",
+                default = 1,
+                requires = {"HW_MCU_STM32L486"},
+                provides = {
+                    "HW_AES_STM32",
+                    "HW_OTG_STM32",
                     "HW_LCD_STM32",
                  },
                 file = "include/cfg/arch.h"

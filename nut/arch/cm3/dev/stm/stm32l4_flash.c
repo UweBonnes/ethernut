@@ -57,8 +57,13 @@
 
 uint32_t program_end_raw;
 
+#if defined(FLASH_OPTR_DUALBANK)
 static uint32_t pagelist[16];
 static uint8_t bank_split;
+#else
+static uint32_t pagelist[4];
+static const uint8_t bank_split = 0xff;
+#endif
 
 #define FLASH_KEY1 0x45670123L
 #define FLASH_KEY2 0xCDEF89ABL
@@ -125,6 +130,7 @@ size_t IapPageSize(size_t addr)
     return FLASH_PAGE_SIZE;
 }
 
+#if defined(FLASH_OPTR_DUALBANK)
 /* Look for bank split on 256/512 kiB devices*/
 static void BankSplit(void)
 {
@@ -136,6 +142,7 @@ static void BankSplit(void)
         bank_split = 0xff;
     }
 }
+#endif
 
 /*!
   * \brief  Unlocks the FLASH Program Erase Controller.
@@ -207,11 +214,11 @@ static FLASH_Status FlashErasePage(uint16_t sector)
 
     content = (uint64_t*)((sector << FLASH_PAGE_SHIFT) + FLASH_BASE);
     /* Check, if page really needs erase */
-    for (i = 0; i < FLASH_PAGE_SIZE; i = i + 8) {
+    for (i = 0; i < (FLASH_PAGE_SIZE / 8) ; i++) {
         if (content[i] != ERASED_PATTERN_64)
             break;
     }
-    if ( i >= FLASH_PAGE_SIZE) {
+    if ( i >= (FLASH_PAGE_SIZE / 8)) {
         rs = FLASH_COMPLETE;
     } else {
         /* Wait for last operation to be completed */
@@ -220,9 +227,11 @@ static FLASH_Status FlashErasePage(uint16_t sector)
             uint32_t cr;
 
             cr = FLASH_CR_PER | ((sector & bank_split) << 3);
+#if defined(FLASH_OPTR_DUALBANK)
             if (sector > bank_split) {
                 cr |= FLASH_CR_BKER;
             }
+#endif
             FLASH->CR = cr;
             FLASH->CR = cr | FLASH_CR_STRT;
             rs = FlashWaitReady();
@@ -272,9 +281,11 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
         return FLASH_BOUNDARY;
     }
 
+#if defined(FLASH_OPTR_DUALBANK)
     if (bank_split == 0) {
         BankSplit();
     }
+#endif
 
     /* Check for write protected sectors */
     sector_start = ((uint32_t)dst - FLASH_BASE) >> FLASH_PAGE_SHIFT;
@@ -294,6 +305,7 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
             rs = FLASH_ERROR_WRP;
             goto done;
         }
+#if defined(FLASH_OPTR_DUALBANK)
     } else if (sector_start > bank_split) {
         uint8_t area2a_start;
         uint8_t area2a_end;
@@ -344,6 +356,7 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
             rs = FLASH_ERROR_WRP;
             goto done;
         }
+#endif
     }
 
     if (src == NULL) {

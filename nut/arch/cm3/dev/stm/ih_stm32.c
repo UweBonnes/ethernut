@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadty.de).
+ * Copyright (C) 2013-17 Uwe Bonnes
+ *                             (bon@elektron.ikp.physik.tu-darmstadty.de).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -168,13 +169,13 @@ CREATE_HANDLER(CAN2_RX1,      CAN2_RX1,        NUT_IRQPRI_DEF);  // CAN 2 RX1
 CREATE_HANDLER(CAN2_SCE,      CAN2_SCE,        NUT_IRQPRI_DEF);  // CAN 2 SCE
 #endif
 #if defined(HW_USB_STM32)
-# if defined(MCU_STM32L0) ||defined(MCU_STM32F0)
+# if defined(MCU_STM32L0) || defined(MCU_STM32F0) || defined(MCU_STM32L4)
 CREATE_HANDLER(USB,           USB,             NUT_IRQPRI_DEF);  // USB High Priority, separted
 #else
 CREATE_HANDLER(USB_HP,        USB_HP,          NUT_IRQPRI_DEF);  // USB High Priority, separted
 CREATE_HANDLER(USB_LP,        USB_LP,          NUT_IRQPRI_DEF);  // USB Low Priority, separted
 #endif
-# if defined(MCU_STM32L0) ||defined(MCU_STM32F0)
+# if defined(MCU_STM32L0) || defined(MCU_STM32F0) || defined(MCU_STM32L4)
 #elif defined(MCU_STM32F30)
 CREATE_HANDLER(USB_WAKE,      USBWakeUp_RMP,   NUT_IRQPRI_DEF);  // USB Wake Priority, separted
 #elif defined(MCU_STM32L1)
