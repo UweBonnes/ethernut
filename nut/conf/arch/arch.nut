@@ -1103,7 +1103,7 @@ nutarch =
                     "HW_MCU_STM32L0X1",
                     "HW_MCU_STM32L031",
                 },
-                makedefs = { "FLASH0_LENGTH=16K",
+                makedefs = { "FLASH0_LENGTH=32K",
                              "RAM0_LENGTH=8K",
                              "SMALL_FLASH=1" },
             },
