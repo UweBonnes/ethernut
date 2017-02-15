@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2016 by Uwe Bonnes
+ * Copyright (C) 2014-2017 by Uwe Bonnes
  *                                (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -189,7 +189,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
     int shared;
     int rc = -1;
 
-#if defined(MCU_STM32F0)
+#if defined(MCU_STM32F0) || defined(MCU_STM32L0)
     shared = 1;
     if (bit < 2)
         isrhandler = &sig_INTERRUPT0_1;
