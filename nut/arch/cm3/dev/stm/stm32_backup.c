@@ -71,26 +71,6 @@
 # define RTC_BKP_BYTES (RTC_BKP_NUMBER * 4)
 
 /*!
- * \brief Get pointer to read parameters in backup registerss.
- *  RTC needs to be set up!.
- *
- * \param pos Offset of parameter.
- *
- * \return pointer to requested parameter, NULL on error.
- */
-const void *Stm32BkupRegGet(unsigned int pos)
-{
-    if (!(RCC_BDCR & RCC_BDCR_RTCEN)) {
-        int res;
-        res = Stm32EnableRtcClock();
-        if (res) {
-            return 0;
-        }
-    }
-    return (void*)(&RTC->BKP0R + pos);
-}
-
-/*!
  * \brief Load parameters from Backup Registers.
  *
  * \param pos Offset in bytes of parameter.
@@ -101,11 +81,22 @@ const void *Stm32BkupRegGet(unsigned int pos)
  */
 int Stm32BkupRegLoad(uint32_t pos, void *data, size_t len)
 {
+    union {
+        uint8_t byte[4];
+        uint32_t word;
+    } bkp_data;
+    uint32_t *bkp= (uint32_t *)&RTC->BKP0R;
+    uint8_t *data_byte= (uint8_t *)data;
+    int i;
 
-    if (pos + len > RTC_BKP_BYTES) {
+    if ((!data) || (pos + len > RTC_BKP_BYTES)) {
         return -1;
     }
-    memcpy(data, (const void *) (&RTC->BKP0R + pos), len);
+    for (i = 0; i < len ; i++) {
+        int j = pos + i;
+        bkp_data.word = bkp[j >> 2];
+        data_byte[i] = bkp_data.byte[j & 3];
+    }
     return 0;
 }
 
@@ -123,22 +114,23 @@ int Stm32BkupRegLoad(uint32_t pos, void *data, size_t len)
 int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
 {
     union {
-        uint8_t  bytes[RTC_BKP_BYTES];
-        uint32_t words[RTC_BKP_NUMBER];
+        uint8_t byte[4];
+        uint32_t word;
     } shadow;
+    uint8_t *data_byte  = (uint8_t *)data;
     uint32_t *bkp  = (uint32_t *)&RTC->BKP0R;
     int i;
 
-    if (pos + len > RTC_BKP_BYTES) {
+    if ((!data) || (pos + len > RTC_BKP_BYTES)) {
         return -1;
     }
-    memcpy(shadow.bytes, (const void *) &RTC->BKP0R, RTC_BKP_BYTES);
-    memcpy(shadow.bytes + pos, data, len);
     PWR_CR |= PWR_CR_DBP;
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
-    for (i = 0; i < RTC_BKP_NUMBER; i++) {
-        bkp[i] = shadow.words[i];
+    for (i = 0; i < len; i++) {
+        shadow.word = bkp[(pos + i) >> 2];
+        shadow.byte[(pos + i) & 3 ] = data_byte[i];
+        bkp[(pos + i) >> 2] = shadow.word;
     }
     RTC->WPR = 0;
     PWR_CR &= ~PWR_CR_DBP;
@@ -160,7 +152,7 @@ const void *Stm32BkupMemGet(unsigned int pos)
     if (RCC_AHB1ENR_BKPSRAMEN != (RCC->AHB1ENR & RCC_AHB1ENR_BKPSRAMEN)) {
         return 0;
     }
-    return (void*)BKPSRAM_BASE;
+    return (void*)BKPSRAM_BASE + pos;
 }
 /*!
  * \brief Load parameters from Backup memory.
@@ -175,7 +167,7 @@ int Stm32BkupMemLoad(uint32_t pos, void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKPSRAM_SIZE) {
+    if ((!data) || (pos + len > BKPSRAM_SIZE)) {
         return -1;
     }
     bkp = Stm32BkupMemGet(pos);
@@ -199,7 +191,7 @@ int Stm32BkupMemSave(unsigned int pos, const void *data, size_t len)
 {
     const void *bkp;
 
-    if (pos + len > BKPSRAM_SIZE) {
+    if ((!data) || (pos + len > BKPSRAM_SIZE)) {
         return -1;
     }
     bkp = Stm32BkupMemGet(pos);

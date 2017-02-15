@@ -51,8 +51,11 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F1 RTC Driver",
         description = "STM32F1 RTC driver.",
         requires = { "HW_RTC_STM32F1" },
-        provides = { "DEV_RTC" },
-        sources = { "cm3/dev/stm/stm32f1_rtc.c" },
+        provides = { "DEV_RTC", "HW_STM32_BACKUP_REG"},
+        sources = {
+           "cm3/dev/stm/stm32f1_rtc.c",
+           "cm3/dev/stm/stm32f1_backup.c"
+        },
     },
     -- STM32 RTC V2
     --
@@ -61,7 +64,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 RTC Driver V2",
         description = "STM32 RTC driver V2.",
         requires = { "HW_RTC_STM32_V2" },
-        provides = { "DEV_RTC" },
+        provides = { "DEV_RTC", "HW_STM32_BACKUP_REG"},
         sources = { "cm3/dev/stm/stm32_rtc_v2.c" , "cm3/dev/stm/stm32_backup.c" },
         options =
         {

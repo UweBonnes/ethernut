@@ -39,11 +39,10 @@
  * \brief On-Chip backup register access.
  * \verbatim
  */
-
-#if defined(RTC_BKP0R)
+#include <cfg/arch.h>
+#if defined(RTC_BKP0R) || defined(BKP_DR4_D)
 extern int Stm32BkupRegSave(unsigned int pos, const void *data, unsigned int len);
 extern int Stm32BkupRegLoad(unsigned int pos, void *data, unsigned int len);
-extern void* Stm32BkupRegGet(unsigned int pos);
 #endif
 
 #if defined(BKPSRAM_BASE) && !defined(STM32F401)

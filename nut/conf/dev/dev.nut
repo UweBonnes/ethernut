@@ -872,7 +872,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
 		    "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -896,7 +897,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
 		    "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                      "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -920,7 +922,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -945,7 +948,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -970,7 +974,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -994,7 +999,8 @@ nutdev =
                     "NUT_CONFIG_AT49BV",
                     "NUT_CONFIG_AT91EFC",
 	            "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -1002,12 +1008,41 @@ nutdev =
                 file = "include/cfg/eeprom.h"
             },
             {
-                macro = "NUT_CONFIG_STM32_BACKUP",
+                macro = "NUT_CONFIG_STM32_BACKUP_REG",
+                brief = "STM32 RTC Backup",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in Backup Registers.\n"..
+                              "Data will be valid after reset, as long as "..
+                              "Backup Domain is powered.",
+                requires = {"HW_STM32_BACKUP_REG"},
+                provides = {"DEV_NVMEM"},
+                flavor = "boolean",
+                exclusivity =
+                {
+                    "NUT_CONFIG_AT24",
+                    "NUT_CONFIG_X12RTC",
+                    "NUT_CONFIG_AT45D",
+                    "NUT_CONFIG_AT45DB",
+                    "NUT_CONFIG_AT49BV",
+                    "NUT_CONFIG_AT91EFC",
+                    "NUT_CONFIG_AVR32EFC",
+                    "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
+                    "NUT_CONFIG_STM32_EEPROM",
+                    "NUT_CONFIG_LPC177x_8x_EEPROM",
+                    "NUT_CONFIG_LPC17xx_IAP"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_STM32_BACKUP_MEM",
                 brief = "STM32 Backup SRAM",
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in last sector of on-chip flash memory.",
-                requires = { "HW_BKPSRAM_STM32" },
-                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                              "be stored in Backup Memory.\n"..
+                              "Data will be valid after reset, as long as "..
+                              "Backup Domain is powered.",
+                requires = {"HW_BKPSRAM_STM32"},
+                provides = {"DEV_NVMEM"},
                 flavor = "boolean",
                 exclusivity =
                 {
@@ -1019,6 +1054,7 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
 		    "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -1043,7 +1079,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -1068,7 +1105,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -1093,7 +1131,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -1116,7 +1155,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
@@ -1139,7 +1179,8 @@ nutdev =
                     "NUT_CONFIG_AT91EFC",
                     "NUT_CONFIG_AVR32EFC",
                     "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP",
+                    "NUT_CONFIG_STM32_BACKUP_REG",
+                    "NUT_CONFIG_STM32_BACKUP_MEM",
                     "NUT_CONFIG_STM32_EEPROM",
                     "NUT_CONFIG_LPC177x_8x_EEPROM",
                     "NUT_CONFIG_LPC17xx_IAP"
