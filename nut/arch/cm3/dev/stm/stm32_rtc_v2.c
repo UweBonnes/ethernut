@@ -369,18 +369,21 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
     default: return -1;
     }
     if (aflags) {
-        uint32_t flags = 0;
-        if ((bcd_alarm & RTC_ALRMAR_MSK1) != RTC_ALRMAR_MSK1)
-            flags |= RTC_ALARM_SECOND;
-        if ((bcd_alarm & RTC_ALRMAR_MSK2) != RTC_ALRMAR_MSK2)
-            flags |= RTC_ALARM_MINUTE;
-        if ((bcd_alarm & RTC_ALRMAR_MSK3) != RTC_ALRMAR_MSK3)
-            flags |= RTC_ALARM_HOUR;
-        if ((bcd_alarm & RTC_ALRMAR_MSK4) != RTC_ALRMAR_MSK4) {
-            if(bcd_alarm & RTC_ALRMAR_WDSEL)
+        uint32_t flags = RTC_ALARM_EXACT;
+        if (bcd_alarm & RTC_ALRMAR_MSK1) {
+            flags &= ~RTC_ALARM_SECOND;
+        }
+        if (bcd_alarm & RTC_ALRMAR_MSK2) {
+            flags &= ~RTC_ALARM_MINUTE;
+        }
+        if (bcd_alarm & RTC_ALRMAR_MSK3) {
+            flags &= ~RTC_ALARM_HOUR;
+        }
+        if(bcd_alarm & RTC_ALRMAR_WDSEL) {
+            flags &= RTC_ALARM_MDAY;
+            if (!(bcd_alarm & RTC_ALRMAR_MSK4)) {
                  flags |= RTC_ALARM_WDAY;
-            else
-                 flags |= RTC_ALARM_MDAY;
+           }
         }
         *aflags = flags;
     }
@@ -418,6 +421,8 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
  *              - Bit 8: Year
  *              - Bit 9: Day of year
  *
+ *                RTC version 2 can not be set on Day of year
+ *
  * \return 0 on success or -1 in case of an error.
  */
 static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflags)
@@ -425,12 +430,13 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
     uint32_t bcd_alarm;
     if (idx >= NUM_ALARMS)
         return -1;
-    /* Either use Weekday or day of month*/
+    /* Weekday and day of month together does not make sense*/
     if ((aflags & RTC_ALARM_WDAY) && (aflags & RTC_ALARM_MDAY))
         return -1;
-    /* No Month or day of year */
-    if ((aflags & RTC_ALARM_MONTH) || (aflags & RTC_ALARM_YDAY))
+    /* RTCv2 does not evaluate day of year */
+    if (aflags & RTC_ALARM_YDAY) {
         return -1;
+    }
     /* Check minimum RTC_PRER if seconds are active */
     if (aflags & RTC_ALARM_SECOND) {
         if ((RTC->PRER & 0x7ffff) < 3)
@@ -452,23 +458,26 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
         bcd_alarm |= (tm->tm_mday % 10 ) * RTC_ALRMAR_DU_0;
         bcd_alarm |= (tm->tm_mday / 10 ) * RTC_ALRMAR_DT_0;
     }
-    if (aflags & RTC_ALARM_SECOND)
+    if (aflags & RTC_ALARM_SECOND) {
         bcd_alarm &= ~RTC_ALRMAR_MSK1;
-    else
+    } else {
         bcd_alarm |=  RTC_ALRMAR_MSK1;
-    if (aflags & RTC_ALARM_MINUTE)
+    }
+    if (aflags & RTC_ALARM_MINUTE) {
         bcd_alarm &= ~RTC_ALRMAR_MSK2;
-    else
+    } else {
         bcd_alarm |=  RTC_ALRMAR_MSK2;
-    if (aflags & RTC_ALARM_HOUR)
+    }
+    if (aflags & RTC_ALARM_HOUR) {
         bcd_alarm &= ~RTC_ALRMAR_MSK3;
-    else
+    } else {
         bcd_alarm |=  RTC_ALRMAR_MSK3;
-    if (aflags & (RTC_ALARM_WDAY | RTC_ALARM_MDAY))
+    }
+    if (aflags & (RTC_ALARM_WDAY | RTC_ALARM_MDAY)) {
         bcd_alarm &= ~RTC_ALRMAR_MSK4;
-    else
+    } else {
         bcd_alarm |=  RTC_ALRMAR_MSK4;
-
+    }
     PWR_CR |= PWR_CR_DBP;
     /* Allow RTC Write Access */
     RTC->WPR = 0xca;
