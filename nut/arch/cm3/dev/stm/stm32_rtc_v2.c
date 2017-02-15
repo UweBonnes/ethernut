@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 by Uwe Bonnes
+ * Copyright (C) 2013-2017 by Uwe Bonnes
  *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -288,9 +288,10 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
         tm->tm_sec  = ((tr >>  0) & 0xf) + (((tr >>  4) & 0x7) * 10);
         tm->tm_wday = ((dr >> 13) & 0x7);
         if (tm->tm_wday == 7) {
-            tm->tm_wday = 0; /* Range 0..6*/
+            tm->tm_wday = 0; /* RTC wday = 7 (sunday) is tm_wday =  0. */
         }
         tm->tm_yday = 0/*FIXME*/;
+        tm->tm_isdst = 0; /*FIXME*/
         return 0;
     }
     else
@@ -309,6 +310,9 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 {
     int year;
     uint32_t bcd_date, bcd_time, month, wday;
+    if (!tm) {
+        return -1;
+    }
     year = tm->tm_year - 100; /* Base of RTC years is 2000.*/
     if ((year <  1)
         /* RTC_DR year == 0 is interpreted as uninitialized RTC,
@@ -352,6 +356,9 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
     RTC->ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0;
     PWR_CR &= ~PWR_CR_DBP;
+   /* Remove power failure flag after setting time.*/
+    stm32_rtc_dcb *dcb = (stm32_rtc_dcb *)rtc->dcb;
+    dcb->flags &= ~RTC_STATUS_PF;
     return 0;
 }
 
@@ -369,6 +376,8 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
 static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
 {
     uint32_t bcd_alarm;
+    uint32_t now;
+    now = RTC->DR;
     switch (idx) {
     case 0:  bcd_alarm = RTC->ALRMAR; break;
 #if NUM_ALARMS == 2
@@ -402,12 +411,28 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
         tm->tm_min  +=  (bcd_alarm & RTC_ALRMAR_MNT) / RTC_ALRMAR_MNT_0 * 10 ;
         tm->tm_hour  =  (bcd_alarm & RTC_ALRMAR_HU ) / RTC_ALRMAR_HU_0  *  1 ;
         tm->tm_hour +=  (bcd_alarm & RTC_ALRMAR_HT ) / RTC_ALRMAR_HT_0  * 10 ;
-        if(bcd_alarm & RTC_ALRMAR_WDSEL)
+        /* Fill in missing values from RTC. */
+        if(bcd_alarm & RTC_ALRMAR_WDSEL) {
             tm->tm_wday =(bcd_alarm & RTC_ALRMAR_DU) / RTC_ALRMAR_DU_0  *  1 ;
-        else {
-            tm->tm_mday =(bcd_alarm & RTC_ALRMAR_DU) / RTC_ALRMAR_DU_0  *  1 ;
-            tm->tm_mday+=(bcd_alarm & RTC_ALRMAR_DT) / RTC_ALRMAR_DT_0   * 10;
+            tm->tm_mday =(now       & RTC_DR_DU)     / RTC_DR_DU_0      *  1 ;
+            tm->tm_mday+=(now       & RTC_DR_DT)     / RTC_DR_DT        * 10;
         }
+        else {
+            tm->tm_wday =(now       & RTC_DR_WDU   ) / RTC_DR_WDU_0     *  1 ;
+            tm->tm_mday =(bcd_alarm & RTC_ALRMAR_DU) / RTC_ALRMAR_DU_0  *  1 ;
+            tm->tm_mday+=(bcd_alarm & RTC_ALRMAR_DT) / RTC_ALRMAR_DT_0  * 10;
+        }
+        if (tm->tm_wday == 7) {
+            tm->tm_wday = 0; /* RTC wday = 7 (sunday) is tm_wday =  0. */
+        }
+        tm->tm_mon   =  (now       & RTC_DR_MU)     / RTC_DR_MU_0      *  1 ;
+        tm->tm_mon  +=  (now       & RTC_DR_MT)? 10 : 0 ;
+        tm->tm_mon--; /* Range 0..11 */
+        tm->tm_year  =  (now       & RTC_DR_YU)     / RTC_DR_YU_0      *  1 ;
+        tm->tm_year +=  (now       & RTC_DR_YT)     / RTC_DR_YT_0      *  10 ;
+        tm->tm_year += 100; /* Base of struct _tm years is 1900. */
+        tm->tm_yday  = 0;  /*FIXME*/
+        tm->tm_isdst = 0; /*FIXME*/
     }
     return 0;
 }
@@ -435,9 +460,12 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
  */
 static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int aflags)
 {
-    uint32_t bcd_alarm;
-    if (idx >= NUM_ALARMS)
+    uint32_t bcd_alarm = 0;
+    int wday;
+
+    if (idx >= NUM_ALARMS) {
         return -1;
+    }
     /* Weekday and day of month together does not make sense*/
     if ((aflags & RTC_ALARM_WDAY) && (aflags & RTC_ALARM_MDAY))
         return -1;
@@ -451,40 +479,52 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
             return -1;
     }
 
-    bcd_alarm  = (tm->tm_sec  % 10) * RTC_ALRMAR_SU_0;
-    bcd_alarm |= (tm->tm_sec  / 10) * RTC_ALRMAR_ST_0;
-    bcd_alarm |= (tm->tm_min  % 10) * RTC_ALRMAR_MNU_0;
-    bcd_alarm |= (tm->tm_min  / 10) * RTC_ALRMAR_MNT_0;
-    bcd_alarm |= (tm->tm_hour % 10) * RTC_ALRMAR_HU_0;
-    bcd_alarm |= (tm->tm_hour / 10) * RTC_ALRMAR_HT_0;
-    if (aflags & RTC_ALARM_WDAY) {
-        bcd_alarm |= RTC_ALRMAR_WDSEL;
-        bcd_alarm |= (tm->tm_wday ) * RTC_ALRMAR_DU_0;
-    }
-    else {
-        bcd_alarm  &= ~RTC_ALRMAR_WDSEL;
-        bcd_alarm |= (tm->tm_mday % 10 ) * RTC_ALRMAR_DU_0;
-        bcd_alarm |= (tm->tm_mday / 10 ) * RTC_ALRMAR_DT_0;
-    }
-    if (aflags & RTC_ALARM_SECOND) {
-        bcd_alarm &= ~RTC_ALRMAR_MSK1;
+    if (!tm) {
+        if (aflags != RTC_ALARM_OFF) {
+            return -1;
+        }
     } else {
-        bcd_alarm |=  RTC_ALRMAR_MSK1;
-    }
-    if (aflags & RTC_ALARM_MINUTE) {
-        bcd_alarm &= ~RTC_ALRMAR_MSK2;
-    } else {
-        bcd_alarm |=  RTC_ALRMAR_MSK2;
-    }
-    if (aflags & RTC_ALARM_HOUR) {
-        bcd_alarm &= ~RTC_ALRMAR_MSK3;
-    } else {
-        bcd_alarm |=  RTC_ALRMAR_MSK3;
-    }
-    if (aflags & (RTC_ALARM_WDAY | RTC_ALARM_MDAY)) {
-        bcd_alarm &= ~RTC_ALRMAR_MSK4;
-    } else {
-        bcd_alarm |=  RTC_ALRMAR_MSK4;
+        bcd_alarm  = (tm->tm_sec  % 10) * RTC_ALRMAR_SU_0;
+        bcd_alarm |= (tm->tm_sec  / 10) * RTC_ALRMAR_ST_0;
+        bcd_alarm |= (tm->tm_min  % 10) * RTC_ALRMAR_MNU_0;
+        bcd_alarm |= (tm->tm_min  / 10) * RTC_ALRMAR_MNT_0;
+        bcd_alarm |= (tm->tm_hour % 10) * RTC_ALRMAR_HU_0;
+        bcd_alarm |= (tm->tm_hour / 10) * RTC_ALRMAR_HT_0;
+        wday = tm->tm_wday;
+        if (wday == 0) {
+            /* Range 1..7 for RTC weekdays. RTC_DR weekday == 0 is forbidden.
+             *  RTC sunday = 7.*/
+            wday = 7;
+        }
+        if (aflags & RTC_ALARM_WDAY) {
+            bcd_alarm |= RTC_ALRMAR_WDSEL;
+            bcd_alarm |= (wday ) * RTC_ALRMAR_DU_0;
+        }
+        else {
+            bcd_alarm  &= ~RTC_ALRMAR_WDSEL;
+            bcd_alarm |= (tm->tm_mday % 10 ) * RTC_ALRMAR_DU_0;
+            bcd_alarm |= (tm->tm_mday / 10 ) * RTC_ALRMAR_DT_0;
+        }
+        if (aflags & RTC_ALARM_SECOND) {
+            bcd_alarm &= ~RTC_ALRMAR_MSK1;
+        } else {
+            bcd_alarm |=  RTC_ALRMAR_MSK1;
+        }
+        if (aflags & RTC_ALARM_MINUTE) {
+            bcd_alarm &= ~RTC_ALRMAR_MSK2;
+        } else {
+            bcd_alarm |=  RTC_ALRMAR_MSK2;
+        }
+        if (aflags & RTC_ALARM_HOUR) {
+            bcd_alarm &= ~RTC_ALRMAR_MSK3;
+        } else {
+            bcd_alarm |=  RTC_ALRMAR_MSK3;
+        }
+        if (aflags & (RTC_ALARM_WDAY | RTC_ALARM_MDAY)) {
+            bcd_alarm &= ~RTC_ALRMAR_MSK4;
+        } else {
+            bcd_alarm |=  RTC_ALRMAR_MSK4;
+        }
     }
     PWR_CR |= PWR_CR_DBP;
     /* Allow RTC Write Access */
@@ -493,7 +533,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
     switch(idx) {
     case 0:
         RTC->CR &= ~RTC_CR_ALRAE;
-        if (aflags != 0) {
+        if (aflags != RTC_ALARM_OFF) {
             while ((RTC->ISR & RTC_ISR_ALRAWF) != RTC_ISR_ALRAWF);
             RTC->ALRMAR = bcd_alarm;
             RTC->CR |=  RTC_CR_ALRAE;
@@ -502,7 +542,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
 #if NUM_ALARMS == 2
     case 1:
         RTC->CR &= ~RTC_CR_ALRBE;
-        if (aflags != 0) {
+        if (aflags != RTC_ALARM_OFF) {
             while ((RTC->ISR & RTC_ISR_ALRBWF) != RTC_ISR_ALRBWF);
             RTC->ALRMBR = bcd_alarm;
             RTC->CR |=  RTC_CR_ALRBE;
