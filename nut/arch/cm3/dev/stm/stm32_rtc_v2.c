@@ -70,6 +70,14 @@
 # define EXTI_RTC_LINE 17
 #endif
 
+#if defined(MCU_STM32L0) || defined(MCU_STM32L4) || defined(MCU_STM32F07) || defined(MCU_STM32F09)
+# define EXTI_RTC_WAKEUP 20
+#elif defined(MCU_STM32L1) || defined(MCU_STM32F1) || defined(MCU_STM32F2) || defined(MCU_STM32F3)
+# define EXTI_RTC_WAKEUP 17
+#elif defined(MCU_STM32F4) || defined(MCU_STM32F7)
+# define EXTI_RTC_WAKEUP 22
+#endif
+
 # define RTC_STATUS_MASK  (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
 
 /* STM CMSIS definition  RTC_PRER_PREDIV_S has (uint32_t) marker and so can
