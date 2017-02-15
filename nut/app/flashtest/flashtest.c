@@ -1,6 +1,7 @@
 /*!
  * Copyright (C) 2001-2003 by egnite Software GmbH
- * Copyright (C) 2013, 2016 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013, 2016-17 Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -129,7 +130,8 @@ int main(void)
     }
     printf("NutNvMem test done\n");
 
-    printf("Application Flash ends at 0x%08zx\n", iap_flash_end);
+    printf("Free Flash from 0x%08zx to 0x%08zx\n",
+           IapProgramEnd(), iap_flash_end);
     printf("Last 128 bytes in user space");
     user_area = (iap_flash_end & ~0x7f);
     rptr = (uint32_t *)user_area;
@@ -178,6 +180,7 @@ int main(void)
 
     memset(buffer, FLASH_ERASED_PATTERN32 & 0xff, sizeof(buffer));
 
+    FlashUntouch();
     printf("Write to erased flash\n");
     res = IapFlashWrite((void*)(iap_flash_end ), &pattern4,
                         1, FLASH_ERASE_FIRST_TOUCH);
@@ -194,21 +197,21 @@ int main(void)
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end - 10), &pattern4,
-                        1, FLASH_ERASE_NEVER);
+                        1, FLASH_ERASE_FIRST_TOUCH);
     printf("%40s %3d: ", "0x55 at (address & 3 == 1). Res", res);
     rd = *(uint32_t*)((iap_flash_end - 8) & ~3);
     printf("0x%08lx\n", rd);
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end - 15), &pattern4,
-                        1, FLASH_ERASE_NEVER);
+                        1, FLASH_ERASE_FIRST_TOUCH);
     printf("%40s %3d: ", "0x55 at (address & 3 == 0). Res", res);
     rd = *(uint32_t*)(iap_flash_end &  ~15);
     printf("0x%08lx\n", rd);
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end -0x3f), pattern1,
-                        strlen(pattern1) + 1, FLASH_ERASE_NEVER);
+                        strlen(pattern1) + 1, FLASH_ERASE_FIRST_TOUCH);
     (void) pattern1;
     printf("%40s %3d: ", "Up to (address & 3 == 3). Res", res);
     if (*(uint32_t*)(iap_flash_end -0x3f) !=  FLASH_ERASED_PATTERN32) {
@@ -218,7 +221,7 @@ int main(void)
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end -0x7f), pattern2,
-                        strlen(pattern2) + 1, FLASH_ERASE_NEVER);
+                        strlen(pattern2) + 1, FLASH_ERASE_FIRST_TOUCH);
     (void) pattern2;
     printf("%40s %3d: ", "Up to (address & 3 == 2). Res", res);
     if (*(uint32_t*)(iap_flash_end -0x7f) !=  FLASH_ERASED_PATTERN32) {
@@ -228,7 +231,7 @@ int main(void)
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end -0xcf), pattern3,
-                        strlen(pattern2) + 1, FLASH_ERASE_NEVER);
+                        strlen(pattern2) + 1, FLASH_ERASE_FIRST_TOUCH);
     (void) pattern3;
     printf("%40s %3d: ", "Up to (address & 3 == 1). Res", res);
     if (*(uint32_t*)(iap_flash_end -0xcf) !=  FLASH_ERASED_PATTERN32) {
@@ -238,7 +241,7 @@ int main(void)
     NutSleep(10);
 
     res = IapFlashWrite((void*)(iap_flash_end -0xff), pattern,
-                        strlen(pattern) + 1, FLASH_ERASE_NEVER);
+                        strlen(pattern) + 1, FLASH_ERASE_FIRST_TOUCH);
     printf("%40s %3d: ", "Up to (address & 3 == 0). Res", res);
     printf((char*)(iap_flash_end -0xff));
     printf("\n");
