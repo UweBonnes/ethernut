@@ -613,7 +613,10 @@ function GetRtcClkSrcDefault()
     if c_is_provided("LSE_VALUE") then
        return "RTCCLK_LSE"
     end
-    return "RTCCLK_KEEP"
+    if c_is_provided("HSE_VALUE") then
+       return "RTCCLK_HSE"
+    end
+    return "RTCCLK_LSI"
 end
 
 function GetMsiRangeDesc()
