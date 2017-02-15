@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2015 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2015-2017 by Uwe Bonnes
+ *                               (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -173,24 +174,26 @@
 #endif
 #endif
 
+#if (SYSCLK_SOURCE == SYSCLK_PLL)
 /* Check PLL factors */
-#if defined(MCU_STM32F1_CL)
-# if (PLL2CLK_PREDIV < 1) || (PLL2CLK_PREDIV > 16)
-#  warning PLL2CLK_PREDIV wrong
-# elif (PLL2CLK_MULT < 8) || ((PLL2CLK_MULT > 14) && (PLL2CLK_MULT != 16) && (PLL2CLK_MULT != 20))
-#  warning PLL2CLK_MULT wrong
-# elif (PLLCLK_PREDIV < 1) || (PLLCLK_PREDIV > 16)
-#  warning PLLCLK_PREDIV wrong
-# elif ((PLLCLK_MULT  != 13) && (PLLCLK_MULT/2 < 4) && (PLLCLK_MULT > 9))
-#  warning PLLCLK_MULT wrong
+# if defined(MCU_STM32F1_CL)
+#  if (PLL2CLK_PREDIV < 1) || (PLL2CLK_PREDIV > 16)
+#   warning PLL2CLK_PREDIV wrong
+#  elif (PLL2CLK_MULT < 8) || ((PLL2CLK_MULT > 14) && (PLL2CLK_MULT != 16) && (PLL2CLK_MULT != 20))
+#   warning PLL2CLK_MULT wrong
+#  elif (PLLCLK_PREDIV < 1) || (PLLCLK_PREDIV > 16)
+#   warning PLLCLK_PREDIV wrong
+#  elif ((PLLCLK_MULT  != 13) && (PLLCLK_MULT/2 < 4) && (PLLCLK_MULT > 9))
+#   warning PLLCLK_MULT wrong
+#  endif
+# else
+#  if  ((PLLCLK_PREDIV < 1) || (PLLCLK_PREDIV > 2))
+#  warning Wrong PLLCLK_PREDIV
+#  elif (PLLCLK_MULT < 2) || (PLLCLK_MULT > 16)
+#   warning Wrong PLLCLK_MULT
+#  endif
 # endif
-#else
-# if  ((PLLCLK_PREDIV < 1) || (PLLCLK_PREDIV > 2))
-# warning Wrong PLLCLK_PREDIV
-# elif (PLLCLK_MULT < 2) || (PLLCLK_MULT > 16)
-#  warning Wrong PLLCLK_MULT
 # endif
-#endif
 
 /* Some checks*/
 #if SYSCLK_FREQ > SYSCLK_MAX
