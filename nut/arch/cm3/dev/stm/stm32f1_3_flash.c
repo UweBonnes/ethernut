@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2012, 2013 Uwe Bonnes
+ * Copyright (C) 2012, 2013, 2017 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -43,11 +43,13 @@
 #include <sys/heap.h>
 #include <dev/iap_flash.h>
 
+uint32_t program_end_raw;
+
 #if defined (MCU_STM32F0)
 # if  defined(STM32F030xC) ||  defined(STM32F070xB) || \
     defined(STM32F071xB) || defined(STM32F072xB) || defined(STM32F078xx) || \
     defined(STM32F091xC) || defined(STM32F098xx)
-#  define FLASH_PAGE_SIZE 2048
+#  define FLASH_PAGE_SIZE (1 << 11)
 # else
 #  define FLASH_PAGE_SIZE 1024
 # endif
@@ -89,6 +91,7 @@ static uint32_t pagelist[2];
         (FLASH_CONF_SIZE != 4096) && (FLASH_CONF_SIZE != 8192))
 #error FLASH_CONF_SIZE has to be either FLASH_PAGE_SIZE (default), 256, 512, 1024, 2048, 4096 or 8192
 #endif
+#  define FLASH_PAGE_MASK (~(FLASH_ACCESS_SIZE - 1))
 
 #if !defined(RDP_KEY)
 #define RDP_KEY 0x00aa;
@@ -198,7 +201,7 @@ static FLASH_Status FlashErasePage(uint32_t mem)
     uint32_t pagestart, pageend, *pagemem;
 
     /* Check if page is erased */
-    pagestart = mem & ~(FLASH_PAGE_SIZE -1);
+    pagestart = mem & FLASH_PAGE_MASK;
     pageend   =  pagestart + FLASH_PAGE_SIZE;
     for(pagemem = (uint32_t*) pagestart; (uint32_t)pagemem < pageend; pagemem++) {
         if (*pagemem != ((ERASED_PATTERN_16 << 16) | ERASED_PATTERN_16))
@@ -466,6 +469,33 @@ size_t IapFlashEnd(void)
 }
 
 /*!
+ * \brief Get start address in first page above program storage.
+ *
+ * \param NONE
+ * \return Start address in first page above program storage.
+ */
+extern size_t __end_rom;
+
+size_t IapProgramEnd(void)
+{
+    size_t program_end = (size_t)&__end_rom;
+    program_end +=  FLASH_PAGE_SIZE - 1;
+    program_end &=  FLASH_PAGE_MASK;
+    return program_end;
+}
+
+/*!
+ * \brief Return pagesize of given address.
+ *
+ * \param addr Adress
+ * \return Size of current page.
+ */
+size_t IapPageSize(size_t addr)
+{
+    return FLASH_PAGE_SIZE;
+}
+
+/*!
  * \brief Try to protect/unprotect the requested flash region.
  *
  * \param dst Pointer to address anywhere in FLASH.
@@ -567,7 +597,7 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
  */
 FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
 {
-    uint32_t flash_conf_sector = FlashEnd() & ~(FLASH_PAGE_SIZE - 1);
+    uint32_t flash_conf_sector = FlashEnd() & FLASH_PAGE_MASK;
 
     if (FLASH_CONF_SIZE > FLASH_PAGE_SIZE)
         return FLASH_ERR_CONF_LAYOUT;
@@ -637,7 +667,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, const void *data,
 {
     FLASH_Status rs = 0;
     uint8_t *buffer;
-    void* flash_conf_sector = (void*)(FlashEnd() & ~(FLASH_PAGE_SIZE - 1));
+    void* flash_conf_sector = (void*)(FlashEnd() & FLASH_PAGE_MASK);
     int i;
     uint8_t  *mem, *src;
     if(FLASH_CONF_SIZE > FLASH_PAGE_SIZE)

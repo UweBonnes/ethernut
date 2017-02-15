@@ -131,6 +131,7 @@ SECTIONS{
         _eheap = .;
     } > SRAM0
 */
+    __end_rom = _etext +  SIZEOF(.data );
 
 end = .;
 /*

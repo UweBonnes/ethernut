@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-2017 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,6 +50,8 @@
 #define FLASH_SECTOR_MASK  0xfffff000
 #define FLASH_SECTOR_SHIFT 12
 #define ERASED_PATTERN_32  0
+
+uint32_t program_end_raw;
 
 #if defined(MCU_STM32L1)
 /*Sectors are the unit for write protection, pages for erase */
@@ -133,6 +135,32 @@ size_t IapFlashEnd(void)
 #endif
     retval +=  size * 1024;
     return retval;
+}
+
+/*!
+ * \brief Get start address in first page above program storage.
+ *
+ * \param NONE
+ * \return Start address in first page above program storage.
+ */
+extern size_t __end_rom;
+size_t IapProgramEnd(void)
+{
+    size_t program_end = (size_t)&__end_rom;
+    program_end +=  FLASH_PAGE_SIZE - 1;
+    program_end &=  FLASH_PAGE_MASK;
+    return program_end;
+}
+
+/*!
+ * \brief Return pagesize of given address.
+ *
+ * \param addr Adress
+ * \return Size of current page.
+ */
+size_t IapPageSize(size_t addr)
+{
+    return FLASH_PAGE_SIZE;
 }
 
 /*!

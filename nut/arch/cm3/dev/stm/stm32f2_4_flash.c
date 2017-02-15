@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013, 2015, 2016 Uwe Bonnes
+ * Copyright (C) 2012, 2013, 2015 - 2017 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -523,8 +523,7 @@ done:
 /*!
  * \brief Get Upper limit of Flash.
  *
- * This function writes data from source address to FLASH. Write to
- * configuration area, if configured, is denied.
+ * This function return upper limit of flash, excluding parameter storage.
  *
  * \param NONE
  * \return Last Flash Address.
@@ -535,7 +534,38 @@ size_t IapFlashEnd(void)
 #if defined(NUT_CONFIG_STM32_IAP)
     area_end -= 8 * sectorsize;
 #endif
-     return area_end;
+    return area_end;
+}
+
+/*!
+ * \brief Get address of first full size sector above program storage.
+ *
+ * \param NONE
+ * \return Address of first full size sector above program storage.
+ */
+extern uint32_t __end_rom;
+
+size_t IapProgramEnd(void)
+{
+    uint32_t sector;
+
+    sector = FlashAddr2Sector(&__end_rom);
+    sector++;
+    return FLASH_BASE + sector2start[sector] * sectorsize;
+}
+
+/*!
+ * \brief Return pagesize of given address.
+ *
+ * \param addr Address
+ * \return Size of current page.
+ */
+size_t IapPageSize(size_t addr)
+{
+    uint32_t sector;
+
+    sector = FlashAddr2Sector((void*)addr);
+    return sector2mult[sector] * sectorsize;
 }
 
 /*!

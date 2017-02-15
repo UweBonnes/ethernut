@@ -67,11 +67,15 @@ typedef enum
 extern FLASH_Status  IapFlashWrite( void* dst, const void* src, size_t len, FLASH_ERASE_MODE mode);
 extern FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena);
 extern size_t IapFlashEnd(void);
+extern size_t IapProgramEnd(void);
+extern size_t IapPageSize(size_t addr);
 extern void FlashUntouch(void);
 #else
 #define IapFlashWrite(x, y, z, xy)          FLASH_NOT_IMPLEMENTED
 #define IapFlashWriteProtect(dst, len, ena) FLASH_NOT_IMPLEMENTED
 #define IapFlashEnd() 0
+#define IapProgramEnd() 0
+#define IapPageSize(x) 0
 #define FlashUntouch()
 #endif
 /* Most flash has a erased value of 0xffffffff. Use configurator to

@@ -119,8 +119,6 @@ SECTIONS
     } > SRAM0
 */
 
-end = .;
-
     .ram_func : ALIGN_WITH_INPUT
     {
         _ramfunc_start = .;
@@ -130,6 +128,9 @@ end = .;
     } > ITCM AT > FLASH0
     _ramfunc_load = LOADADDR(.ram_func);
 
+    __end_rom = _etext +  SIZEOF(.data) + SIZEOF(.ram_func) + SIZEOF(.itcmtext);
+
+end = .;
 /*
     DISCARD :
     {

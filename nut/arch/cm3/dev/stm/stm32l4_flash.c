@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Uwe Bonnes
+ * Copyright (C) 2015 - 2017 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,6 +55,8 @@
 #define FLASH_PAGE_SIZE    (1 << FLASH_PAGE_SHIFT)
 #define FLASH_PAGE_MASK    (~(FLASH_PAGE_SIZE - 1))
 
+uint32_t program_end_raw;
+
 static uint32_t pagelist[16];
 static uint8_t bank_split;
 
@@ -94,6 +96,33 @@ size_t IapFlashEnd(void)
     prog_flash_end -= FLASH_PAGE_SIZE;
 #endif
     return prog_flash_end;
+}
+
+/*!
+ * \brief Get start address in first size page above program storage.
+ *
+ * \param NONE
+ * \return Start address in first page above program storage.
+ */
+extern size_t __end_rom;
+
+size_t IapProgramEnd(void)
+{
+    size_t program_end = (size_t)&__end_rom;
+    program_end +=  FLASH_PAGE_SIZE - 1;
+    program_end &=  FLASH_PAGE_MASK;
+    return program_end;
+}
+
+/*!
+ * \brief Return pagesize of given address.
+ *
+ * \param addr Address
+ * \return Size of current page.
+ */
+size_t IapPageSize(size_t addr)
+{
+    return FLASH_PAGE_SIZE;
 }
 
 /* Look for bank split on 256/512 kiB devices*/
