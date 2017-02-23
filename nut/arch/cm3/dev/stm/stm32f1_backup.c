@@ -70,7 +70,7 @@ static uint32_t Pos2Offset(uint32_t byte_idx)
     res  = (((byte_idx >> 1) << 2) | (byte_idx & 1));
 #if defined(BKP_DR42_D)
     if (res >= 40) {
-        res += offsetof(BKP_Typedef, DR11) - offsetof(BKP_Typedef, RTCCR);
+        res += offsetof(BKP_TypeDef, DR11) - offsetof(BKP_TypeDef, RTCCR);
     }
 #endif
     return res;
