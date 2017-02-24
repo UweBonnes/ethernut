@@ -371,7 +371,7 @@
 #endif
 
 /* Equalize names in a common place. Even recent CUBE uses "random" names.*/
-#if defined(GPIO_BRR_BR0) && !defined(GPIO_BRR_BR_0)
+#if defined(GPIO_BRR_BR0) && !defined(GPIO_BRR_BR_0) && !defined(MCU_STM32F4)
 # define GPIO_BRR_BR_0 GPIO_BRR_BR0
 #endif
 
