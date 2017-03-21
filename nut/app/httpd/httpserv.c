@@ -587,6 +587,11 @@ THREAD(Service, arg)
     }
 }
 
+static void DhcpWait(HANDLE timer, void *arg)
+{
+    putchar('.');
+}
+
 /*!
  * \brief Main application routine.
  *
@@ -596,6 +601,7 @@ int main(void)
 {
     uint32_t baud = 115200;
     uint8_t i;
+    HANDLE h;
 
     /*
      * Initialize stdio console.
@@ -616,10 +622,12 @@ int main(void)
     if (NutRegisterDevice(&DEV_ETHER, 0, 0)) {
         Fatal("Registering device failed");
     }
-    printf("Configure %s...", DEV_ETHER_NAME);
+    printf("Configure %s", DEV_ETHER_NAME);
+    h = NutTimerStart(1000, DhcpWait, NULL, 0);
     if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
         Fatal("failed, run editconf first!");
     }
+    NutTimerStop(h);
     printf("%s ready\n", inet_ntoa(confnet.cdn_ip_addr));
 
     /*
