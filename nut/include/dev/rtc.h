@@ -55,6 +55,7 @@
 #define RTC_STATUS_INACCURATE 0x00004000
 #define RTC_STATUS_HAS_QUEUE  0x00008000
 
+#define RTC_ALARM_OFF       0x00000000
 #define RTC_ALARM_SECOND    0x00000001
 #define RTC_ALARM_MINUTE    0x00000002
 #define RTC_ALARM_HOUR      0x00000004
@@ -63,6 +64,9 @@
 #define RTC_ALARM_WDAY      0x00000080
 #define RTC_ALARM_YEAR      0x00000100
 #define RTC_ALARM_YDAY      0x00000200
+#define RTC_ALARM_EXACT     (RTC_ALARM_SECOND | RTC_ALARM_MINUTE |      \
+                             RTC_ALARM_HOUR | RTC_ALARM_MDAY |          \
+                             RTC_ALARM_MONTH | RTC_ALARM_YEAR)
 
 /*!
  * \brief Convert binary coded decimal to binary value.
