@@ -124,18 +124,19 @@ int NutIpRouteAdd(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev)
 int NutIpRouteDelAll(NUTDEVICE * dev)
 {
     RTENTRY **rtpp;
-    RTENTRY *rte;
 
     rtpp = &rteList;
-
     while (*rtpp) {
-        rte = *rtpp;
+        RTENTRY *rte = *rtpp;
 
         if (rte->rt_dev == dev || dev == 0) {
+            /* Remove this entry from list and free this entry.*/
             *rtpp = rte->rt_next;
             free(rte);
-        } else
-            *rtpp = (*rtpp)->rt_next;
+        } else {
+            /* Follow linked list.*/
+            rtpp = &rte->rt_next;
+        }
     }
     return 0;
 }
