@@ -225,5 +225,6 @@ extern uint32_t Stm32ClockGet(clock_index_t idx);
 
 extern int SetSysClock(void);
 int Stm32EnableRtcClock(void);
+extern void Stm32RestartClock(void);
 
 #endif /* _STM32_CLK_H_ */

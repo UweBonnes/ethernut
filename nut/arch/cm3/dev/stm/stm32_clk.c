@@ -569,6 +569,15 @@ static int SwitchSystemClock(int source)
 }
 
 /*!
+ * \brief Restart Clock after Stop Mode
+ *
+ */
+void Stm32RestartClock(void)
+{
+    SwitchSystemClock(SYSCLK_SOURCE);
+}
+
+/*!
  * \brief Set Clock Shift array
  *
  */
