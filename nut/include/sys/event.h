@@ -161,6 +161,7 @@
 
 extern void NutEventTimeout(HANDLE timer, void *arg);
 
+extern int NutEventTryWait(volatile HANDLE * qhp);
 extern int NutEventWait(volatile HANDLE *qhp, uint32_t ms);
 extern int NutEventWaitNext(volatile HANDLE *qhp, uint32_t ms);
 extern int NutEventPostAsync(volatile HANDLE *qhp);

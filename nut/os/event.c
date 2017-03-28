@@ -250,6 +250,52 @@ void NutEventTimeout(HANDLE timer, void *arg)
 }
 
 /*!
+ * \brief Test to see if an event queue has been signaled.
+ *
+ * Similar to the POSIX sem_trywait; for situations where you can't
+ * afford to wait for the lock and you'd rather fail the operation
+ * than wait until the lock becomes available. Very few applications
+ * actually have requirements like this, so in general this should
+ * NOT be your go-to solution. We've implemented it to support SMX.
+ *
+ * Nut does ship with a semaphore that does provide a TryWait(), but
+ * it can't be used in an ISR; an event queue is the only thing that's
+ * safe to use in an ISR context.
+ *
+ * \param qhp Identifies the queue to wait on.
+ *
+ * \return 0 if event queue was already signaled, -1 if it wasn't.
+ */
+int NutEventTryWait(volatile HANDLE * qhp)
+{
+    NUTTHREADINFO *tdp;
+
+    NUTASSERT(qhp != NULL);
+
+    /* Get the queue's root atomically. */
+    NutEnterCritical();
+    tdp = *qhp;
+    NutExitCritical();
+
+    /*
+     * Check for posts on a previously empty queue.
+     */
+    if (tdp == SIGNALED) {
+        /* Clear the signaled state. */
+        NutEnterCritical();
+        *qhp = 0;
+        NutExitCritical();
+        /*
+         * Even if already signaled, switch to any other thread, which
+         * is ready to run and has the same or higher priority.
+         */
+        NutThreadYield();
+        return 0;
+    }
+    return -1;
+}
+
+/*!
  * \brief Wait for an event in a specified queue.
  *
  * Give up the CPU until another thread or an interrupt routine posts an
@@ -270,29 +316,9 @@ void NutEventTimeout(HANDLE timer, void *arg)
  */
 int NutEventWait(volatile HANDLE * qhp, uint32_t ms)
 {
-    NUTTHREADINFO *tdp;
+    /*  Check for queue being already signaled.*/
 
-    NUTASSERT(qhp != NULL);
-
-    /* Get the queue's root atomically. */
-    NutEnterCritical();
-    tdp = *qhp;
-    NutExitCritical();
-
-    /*
-     * Check for posts on a previously empty queue.
-     */
-    if (tdp == SIGNALED) {
-        /* Clear the singaled state. */
-        NutEnterCritical();
-        *qhp = 0;
-        NutExitCritical();
-
-        /*
-         * Even if already signaled, switch to any other thread, which
-         * is ready to run and has the same or higher priority.
-         */
-        NutThreadYield();
+    if (NutEventTryWait(qhp) == 0) {
         return 0;
     }
 
