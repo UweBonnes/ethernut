@@ -307,6 +307,8 @@
 #  include <arch/cm3/stm/vendor/stm32f412vx.h>
 # elif defined(STM32F412Zx)
 #  include <arch/cm3/stm/vendor/stm32f412zx.h>
+# elif defined(STM32F413xx)
+#  include <arch/cm3/stm/vendor/stm32f413xx.h>
 # elif defined(STM32F415xx)
 #  include <arch/cm3/stm/vendor/stm32f415xx.h>
 # elif defined(STM32F417xx)

@@ -149,7 +149,7 @@
 # define APB2_MAX  84000000
 #endif
 
-#if defined(MCU_STM32F410) || defined(MCU_STM32F411) || defined(MCU_STM32F412)
+#if defined(MCU_STM32F41)
 # if   (STM32_POWERSCALE == 1)
 #   define SYSCLK_MAX     100000000
 # elif (STM32_POWERSCALE == 2)
@@ -157,7 +157,7 @@
 # elif (STM32_POWERSCALE == 3)
 #   define SYSCLK_MAX      64000000
 # else
-#  warning Wrong POWERSCALE for F410/411/412
+#  warning Wrong POWERSCALE for F41[0..3]
 # endif
 # define APB1_MAX  50000000
 # define APB2_MAX 100000000

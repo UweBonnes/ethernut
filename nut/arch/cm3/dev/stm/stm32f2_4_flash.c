@@ -46,13 +46,23 @@
 # define FLASHSIZE_BASE  0x1fff7A22
 #endif
 
+#if defined(STM32F413xx)
+#define MAX_SECTOR_IN_BANK 16
+#endif
+
 /* How many smallest sectors fit into the selected sector*/
-static const uint8_t sector2mult[12] = {
-    1,  1,  1,  1,  4,  8,  8,  8,  8,  8,  8,  8
+static const uint8_t sector2mult[MAX_SECTOR_IN_BANK] = {
+    1,  1,  1,  1,  4,  8,  8,  8,  8,  8,  8,  8,
+#if defined(STM32F413xx)
+    8,  8,  8,  8
+#endif
 };
 /* How many smallest sectors fit up to the selected sector */
-static const uint8_t sector2start[12] = {
-    0,  1,  2,  3,  4,  8, 16, 24, 32, 40, 48, 56
+static const uint8_t sector2start[MAX_SECTOR_IN_BANK] = {
+    0,  1,  2,  3,  4,  8, 16, 24, 32, 40, 48, 56,
+#if defined(STM32F413xx)
+    64, 72, 80, 88
+#endif
 };
 
 # define FLASH_PSIZE_8    0
@@ -389,11 +399,19 @@ static FLASH_Status FlashWrite(void* dst, const void* src, size_t len,
     }
 #else
     for (i = sector_start; i <= sector_end; i++) {
-        if (i < 12) {
+        if (i < MAX_SECTOR_IN_BANK) {
             if (has_gap && (i > 7)) {
                 /* Skip not available sectors on 1 MiB dual boot devices*/
                 continue;
             }
+# if defined(STM32F413xx)
+/* Sector 14 and 15 are protected together!*/
+            if ((i == 15) && ((optcr & FLASH_OPTCR_nWRP_14) == 0)) {
+                return FLASH_ERROR_WRP;
+            } else {
+                break;
+            }
+# endif
             if ((optcr & (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)))) == 0) {
                 return FLASH_ERROR_WRP;
             }
@@ -420,7 +438,7 @@ static FLASH_Status FlashWrite(void* dst, const void* src, size_t len,
     }
     while ((length) && (rs == FLASH_COMPLETE)) {
         uint32_t sector_nr = FlashAddr2Sector(wptr);
-        uint32_t sector_length = sector2mult[sector_nr % 12] << 12;
+        uint32_t sector_length = sector2mult[sector_nr % MAX_SECTOR_IN_BANK] << 12;
         uint32_t current_length = length;
 
         if (((uint32_t)wptr & (sector_length -1)) + length > sector_length) {
@@ -840,16 +858,35 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     }
 #else
     for (i = sector_start; i <= sector_end; i++) {
-        if (i < 12) {
+        if (i < MAX_SECTOR_IN_BANK) {
             /* Skip not available sectors on 1 MiBB dual boot devices*/
             if ((has_gap) && i > 7) {
                 continue;
             }
+# if defined(STM32F413xx)
+/* Sector 14 and 15 are protected together!
+ *  FIXME: Check for disjunct protection request on Sector 14/15!
+ */
+            if (i == 15) {
+                if (ena) {
+                    optcr &= ~FLASH_OPTCR_nWRP_14;
+                } else {
+                    optcr |=  FLASH_OPTCR_nWRP_14;
+                }
+            } else {
+                if (ena) {
+                    optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
+                } else {
+                    optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
+                }
+            }
+# else
             if (ena) {
                 optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
             } else {
                 optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
             }
+#endif
         } else {
 # if defined(FLASH_OPTCR1_nWRP)
             int j = i - 12;
