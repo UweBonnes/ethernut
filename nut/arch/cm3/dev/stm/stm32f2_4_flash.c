@@ -48,6 +48,8 @@
 
 #if defined(STM32F413xx)
 #define MAX_SECTOR_IN_BANK 16
+#else
+#define MAX_SECTOR_IN_BANK 12
 #endif
 
 /* How many smallest sectors fit into the selected sector*/
