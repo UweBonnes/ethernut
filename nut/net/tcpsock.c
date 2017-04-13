@@ -225,6 +225,9 @@ TCPSOCKET *NutTcpCreateSocket(void)
 
         sock->so_mss = TCP_MSS;
         sock->so_rtto = 1000; /* Initial retransmission time out */
+#if !defined(RFC793)
+        sock->so_rtsv = 1000;
+#endif
 
         sock->so_next = tcpSocketList;
 

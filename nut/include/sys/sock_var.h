@@ -132,6 +132,7 @@
  *
  */
 
+#include <cfg/tcp.h>
 #include <compiler.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -259,6 +260,10 @@ struct tcp_socket {
 
     uint32_t  so_rtt_seq;     /*!< \brief Sequence number for RTT calculation. */
     uint16_t so_rtto;        /*!< \brief Current retransmission timeout. */
+#if !defined(TCP_RFC793)
+    uint16_t  so_rtsv;      /*!< \brief Statistical variance estimator.*/
+    uint32_t  so_rtsa;      /*!< \brief Statistical average estimator*/
+#endif
     uint16_t so_retransmits; /*!< \brief Number of retransmits. */
     uint16_t so_time_wait;   /*!< \brief Time wait counter. */
     uint16_t so_retran_time; /*!< \brief Retransmit time counter. */

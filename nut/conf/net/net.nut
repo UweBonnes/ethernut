@@ -147,6 +147,14 @@ nutnet =
                 file = "include/cfg/tcp.h"
             },
             {
+                macro = "TCP_RFC793",
+                brief = "Use old congestion algorithm",
+                description = "Use RFC793 as congestion algorithm. Used in NutOs before March 2017."..
+                              "Default is to use algorithm according to RFC6298.",
+                flavor = "boolean",
+                file = "include/cfg/tcp.h"
+            },
+            {
                 macro = "TCP_COLLECT_INADV",
                 brief = "Segment Collection",
                 description = "TCP segments received in advance are stored in a special queue "..
