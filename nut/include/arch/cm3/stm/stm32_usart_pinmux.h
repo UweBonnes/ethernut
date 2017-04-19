@@ -132,6 +132,12 @@
 #  define USART2_CTS_AF ((USART2_CTS == PD03) ? 0 : 1)
 #  define USART2_RTS_AF ((USART2_RTS == PD04) ? 0 : 1)
 #  define USART2_CK_AF  ((USART2_CK  == PD07) ? 0 : 1)
+# elif defined(MCU_STM32L4)
+#  define USART2_RX_AF  ((USART2_RX  == PA15) ? 3 : 7)
+#  define USART2_TX_AF  7
+#  define USART2_CTS_AF 7
+#  define USART2_RTS_AF 7
+#  define USART2_CK_AF  7
 # else
 #  define USART2_TX_AF  7
 #  define USART2_RX_AF  7
