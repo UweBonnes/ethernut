@@ -127,7 +127,7 @@ void NutTcpCalcRtt(TCPSOCKET * sock)
 
 # ifdef NUTDEBUG
     fprintf(stdout,
-            "%lu [%x]NutTcpCalcRTT() so_rtto: %u, so_rtsa: %lu so_rtsv: %lu\n",
+            "%lu [%x]NutTcpCalcRTT() so_rtto: %u, so_rtsa: %lu so_rtsv: %u\n",
             NutGetMillis(), (int)sock, sock->so_rtto, sock->so_rtsa,
             sock->so_rtsv);
 # endif
