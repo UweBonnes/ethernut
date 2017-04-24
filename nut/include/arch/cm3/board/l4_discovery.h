@@ -56,3 +56,21 @@
 # define DEV_DISPLAY      devStm32Lcd16Seg
 # define DEV_DISPLAY_NAME devStm32Lcd16Seg.dev_name
 #endif
+
+/* LD5/PE8: green*/
+#ifndef LED1_PORT
+# define LED1_PORT NUTGPIO_PORTE
+#endif
+
+#ifndef LED1_PIN
+# define LED1_PIN 8
+#endif
+
+/* LD4/PB2: Red. */
+#ifndef LED2_PORT
+# define LED2_PORT NUTGPIO_PORTB
+#endif
+
+#ifndef LED2_PIN
+# define LED2_PIN 2
+#endif
