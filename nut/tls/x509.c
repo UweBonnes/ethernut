@@ -384,8 +384,12 @@ int x509_verify(const CA_CERT_CTX *ca_cert_ctx, const X509_CTX *cert)
         goto end_verify;
     }
 
-    /* check the not after date */
-    if (tv.tv_sec > cert->not_after)
+    /* check the not after date.
+     * GeneralizedTime = 99991231235959Z as marker for a non-expiring
+     * certificate results in -1 after mktime().
+     * So check expiration only if inside the epoch.
+     */
+    if ((cert->not_after != -1) && (tv.tv_sec > cert->not_after))
     {
         ret = X509_VFY_ERROR_EXPIRED;
         goto end_verify;
