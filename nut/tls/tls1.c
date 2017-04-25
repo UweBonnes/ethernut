@@ -38,6 +38,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <sys/socket.h>
+#include <sys/thread.h>
 #include <tls/ssl.h>
 
 /* The session expiry time */
