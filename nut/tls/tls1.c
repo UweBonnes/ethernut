@@ -936,7 +936,6 @@ static int send_raw_packet(SSL *ssl, uint8_t protocol)
         }
     }
 
-    SET_SSL_FLAG(SSL_NEED_RECORD);  /* reset for next time */
     ssl->bm_index = 0;
 
     if (protocol != PT_APP_PROTOCOL_DATA)
@@ -1142,6 +1141,15 @@ int basic_read(SSL *ssl, uint8_t **in_data)
     int ret = SSL_OK;
     int read_len, is_client = IS_SET_SSL_FLAG(SSL_IS_CLIENT);
     uint8_t *buf = ssl->bm_data;
+
+    uint32_t avail = 0;
+    NutTcpDeviceIOCtl((TCPSOCKET *) ssl->client_fd, IOCTL_GETINBUFCOUNT,
+                      &avail);
+    if (avail < ssl->need_bytes) {
+        /* allow another thread to receive data from network*/
+        NutThreadYield();
+        return SSL_OK;
+    }
 
     read_len = NutTcpReceive ((TCPSOCKET *)ssl->client_fd, &buf[ssl->bm_read_index],
                             ssl->need_bytes-ssl->got_bytes);
