@@ -74,10 +74,7 @@ nutarch_cm3_stm32f7 =
                     "HW_BKPSRAM_STM32",
                     "HW_CRC32_STM32",
                     "HW_CAN1_STM32",
-                    "HW_CAN2_STM32",
-                    "HW_EMAC_STM32",
                     "DEV_IRQ_STM32",
-                    "HW_DCMI_STM32",
                     "HW_DMA_STM32F2",
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
@@ -86,15 +83,12 @@ nutarch_cm3_stm32f7 =
                     "HW_I2C1_STM32V2",
                     "HW_I2C2_STM32V2",
                     "HW_I2C3_STM32V2",
-                    "HW_I2C4_STM32V2",
                     "HW_PVD_STM32",
                     "HW_SPI1_STM32",
                     "HW_SPI2_STM32",
                     "HW_SPI3_STM32",
                     "HW_SPI4_STM32",
                     "HW_SPI5_STM32",
-                    "HW_SPI6_STM32",
-                    "HW_QSPI_STM32",
                     "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
@@ -111,7 +105,7 @@ nutarch_cm3_stm32f7 =
                     "HW_TIM3_STM32",
                     "HW_TIM4_STM32",
                     "HW_TIM5_32BIT_STM32",
-                    "HW_TIM4_DAC_STM32",
+                    "HW_TIM6_DAC_STM32",
                     "HW_TIM7_STM32",
                     "HW_TIM8_TIM12_TIM13_COM_TIM14_STM32",
                     "HW_ADC_STM32",
@@ -122,6 +116,31 @@ nutarch_cm3_stm32f7 =
                 makedefs = {"ITCM_LENGTH=16k", "RAM2_LENGTH=16K"}
             },
             {
+                macro = "MCU_STM32F72",
+                brief = "STM32F72 family, 256/512, 256 kB Ram",
+                description = "STM32F72 family with single precision FPU.",
+                requires = { "HW_MCU_STM32F72" },
+                default = 1,
+                provides =
+                {
+                    "HW_MCU_FPU",
+                },
+                file = "include/cfg/arch.h",
+                makedefs = {"RAM0_LENGTH=64k", "RAM1_LENGTH=176K", "RAM2_LENGHT = 16k"}
+            },
+            {
+                macro = "STM32F723xx",
+                brief = "STM32F72 family, 256/512, 256 kB Ram",
+                description = "STM32F74 family with single precision FPU.",
+                requires = { "HW_MCU_STM32F723" },
+                default = 1,
+                provides =
+                {
+                    "HW_RNG_STM32",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
                 macro = "MCU_STM32F74",
                 brief = "STM32F745 family, 512/1024 kB flash, 320 kB Ram",
                 description = "STM32F74 family with single precision FPU.",
@@ -130,6 +149,12 @@ nutarch_cm3_stm32f7 =
                 provides =
                 {
                     "HW_MCU_FPU",
+                    "HW_CAN2_STM32",
+                    "HW_DCMI_STM32",
+                    "HW_EMAC_STM32",
+                    "HW_I2C4_STM32V2",
+                    "HW_QSPI_STM32",
+                    "HW_SPI6_STM32",
                 },
                 file = "include/cfg/arch.h",
                 makedefs = {"RAM0_LENGTH=64k", "RAM1_LENGTH=240K"}
@@ -181,10 +206,16 @@ nutarch_cm3_stm32f7 =
                 default = 1,
                 provides =
                 {
+                    "HW_CAN2_STM32",
                     "HW_CAN3_STM32",
+                    "HW_DCMI_STM32",
                     "HW_DFSDM_STM32",
+                    "HW_EMAC_STM32",
                     "HW_MCU_DFPU",
+                    "HW_I2C4_STM32V2",
                     "HW_MIOS_STM32",
+                    "HW_QSPI_STM32",
+                    "HW_SPI6_STM32",
                 },
                 file = "include/cfg/arch.h",
                 makedefs = {"RAM0_LENGTH=128k", "RAM1_LENGTH=368K"}
