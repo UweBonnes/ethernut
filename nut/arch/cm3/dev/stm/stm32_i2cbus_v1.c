@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2013, 2017 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * All rights reserved.
  *
@@ -126,64 +126,80 @@ static void I2cEventBusIrqHandler(void *arg)
     NUTI2C_MSG *msg = icb->icb_msg;
     I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->hw->icb_base;
 
-    if(I2Cx->SR1 & I2C_SR1_SB)
-    { /* Receiver EV5 */
-        if(msg->msg_widx >=  msg->msg_wlen)
-        {
-            /* All bytes written, (re)start reading */
-            I2Cx->DR = icb->slave->slave_address<<1|1;
-        }
-        else
-            I2Cx->DR = icb->slave->slave_address<<1;
-    }
-    if(I2Cx->SR1 & I2C_SR1_ADDR)
-    {
-        if (!(I2Cx->SR2 & I2C_SR2_TRA))
-        {
-            /* Inhibit IRQ storm as TXE not cleared as we
-             * have nothing written to DR Register
-             */
-            I2Cx->CR2 |= I2C_CR2_ITBUFEN;
-
-            if (msg->msg_rsiz >1)
-                /* Receiver EV6*/
-                I2Cx->CR1 |= I2C_CR1_ACK;
-            else
-            { /* EV6_1*/
-                I2Cx->CR1 &= ~I2C_CR1_ACK;
-                I2Cx->CR1 |= I2C_CR1_STOP;
+    if(I2Cx->SR1 & I2C_SR1_SB) { /* Receiver EV5 */
+        uint8_t address = icb->slave->slave_address << 1;
+        int do_stop = 0;
+        if (msg->msg_widx >= msg->msg_wlen) {
+            if (msg->msg_ridx < msg->msg_rsiz) {
+                address |= 1; /* Read transaction.*/
+            } else {
+                do_stop = 1;  /* Single adress transfer.*/
             }
         }
-    }
-    if (I2Cx->SR1 & I2C_SR1_TXE)
-    {
-        if (msg->msg_widx < msg->msg_wlen)
-        {
-            I2Cx->DR = msg->msg_wdat[msg->msg_widx];
-            msg->msg_widx++;
-        }
-        else
-        {
-            I2Cx->CR2 &= ~I2C_CR2_ITBUFEN;
-            if (msg->msg_rsiz)
-                I2Cx->CR1 |= I2C_CR1_START;
-            else {
-                I2Cx->CR1 |= I2C_CR1_STOP;
-                NutEventPostFromIrq(&icb->icb_queue);
-            }
-        }
-    }
-    if (I2Cx->SR1 & I2C_SR1_RXNE)
-    { /* Receiver EV7*/
-        msg->msg_rdat[msg->msg_ridx]= I2Cx->DR;
-        msg->msg_ridx++;
-        if(msg->msg_ridx + 2 > msg->msg_rsiz)
-        {
-            I2Cx->CR1 &= ~I2C_CR1_ACK;
+        I2Cx->DR = address;
+        if (do_stop) {
             I2Cx->CR1 |= I2C_CR1_STOP;
         }
-        if (msg->msg_ridx + 1 > msg->msg_rsiz)
-        {
+    }
+    if(I2Cx->SR1 & I2C_SR1_ADDR) {
+        if (!(I2Cx->SR2 & I2C_SR2_TRA) && (msg->msg_rsiz > 1)) {
+            I2Cx->CR1 |= I2C_CR1_ACK;
+        }
+        (void) I2Cx->SR1;
+        (void) I2Cx->SR2; /* Clear SR1_ADDR. */
+        if ((msg->msg_widx >=  msg->msg_wlen) &&
+            (msg->msg_ridx >=  msg->msg_rsiz)) {
+            /* Only address cycle requested! Done!*/
+            I2Cx->CR1 &= ~I2C_CR1_STOP;
+            NutEventPostFromIrq(&icb->icb_queue);
+        } else {
+            I2Cx->CR2 |= I2C_CR2_ITBUFEN;
+            if (!(I2Cx->SR2 & I2C_SR2_TRA)) {
+                if (msg->msg_rsiz == 1) {
+                    I2Cx->CR1 |= I2C_CR1_STOP;
+                }
+                if (msg->msg_rsiz > 1) {
+                    I2Cx->CR1 |= I2C_CR1_ACK;
+                }
+            }
+        }
+    }
+    if (I2Cx->SR1 & I2C_SR1_TXE) {
+        if (msg->msg_widx < msg->msg_wlen) {
+            I2Cx->DR = msg->msg_wdat[msg->msg_widx++];
+        } else {
+            /* Last byte already written to DR. Now last byte is in shift
+             * register. Disable TXE Interrupts and set stop or repeated start
+             * for this last transfer. */
+            I2Cx->CR2 &= ~I2C_CR2_ITBUFEN;
+            if (msg->msg_rsiz) {
+                /* Repeated start for reading. */
+                I2Cx->CR1 |= I2C_CR1_START;
+            } else {
+                /* Wait for BTF to indicate end.*/
+                I2Cx->CR1 |= I2C_CR1_STOP;
+            }
+        }
+    }
+    if (I2Cx->SR1 & I2C_SR1_RXNE) { /* Receiver EV7*/
+        msg->msg_rdat[msg->msg_ridx++]= I2Cx->DR;
+        if (msg->msg_ridx >= msg->msg_rsiz - 1) { /* Ev 7.1 */
+            I2Cx->CR1 &= ~I2C_CR1_ACK;
+            if (msg->msg_rsiz  > 1) {
+                I2Cx->CR1 |= I2C_CR1_STOP;
+            }
+        }
+        if (msg->msg_ridx >= msg->msg_rsiz) {
+            I2Cx->CR1 &= ~I2C_CR1_STOP;
+            I2Cx->CR2 &= ~I2C_CR2_ITEVTEN;
+            NutEventPostFromIrq(&icb->icb_queue);
+        }
+    }
+    if (I2Cx->SR1 & I2C_SR1_BTF) {
+        (void) I2Cx->DR;
+        if (msg->msg_rsiz == 0) {
+            I2Cx->CR1 &= ~I2C_CR1_STOP;
+            I2Cx->CR2 &= ~I2C_CR2_ITEVTEN;
             NutEventPostFromIrq(&icb->icb_queue);
         }
     }
@@ -196,10 +212,20 @@ static void I2cErrorBusIrqHandler(void *arg)
 {
     STM32_I2CCB *icb = (STM32_I2CCB *) arg;
     I2C_TypeDef *I2Cx = (I2C_TypeDef *) icb->hw->icb_base;
+    uint32_t errors;
 
-    icb->errors = I2Cx->SR1;
-    I2Cx->SR1 &= ~(I2C_SR1_SMBALERT|I2C_SR1_TIMEOUT|I2C_SR1_PECERR|I2C_SR1_OVR|
-                   I2C_SR1_AF|I2C_SR1_ARLO|I2C_SR1_BERR);
+    errors = I2Cx->SR1;
+    if (errors & I2C_SR1_ARLO) {
+        NUTI2C_MSG *msg = icb->icb_msg;
+        if (msg->msg_ridx) {
+            msg->msg_rdat[msg->msg_ridx++]= I2Cx->DR;
+            I2Cx->CR1 &= ~I2C_CR1_STOP;
+            I2Cx->CR2 &= ~I2C_CR2_ITEVTEN;
+            NutEventPostFromIrq(&icb->icb_queue);
+            errors &= ~I2C_SR1_ARLO;
+        }
+    }
+    I2Cx->SR1 = 0;
     NutEventPostFromIrq(&icb->icb_queue);
 
 }
@@ -228,11 +254,12 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     icb->slave = slave;
     icb->errors = 0;
     /* Enable Interrupts */
-    I2Cx->CR2 |= I2C_CR2_ITEVTEN|I2C_CR2_ITBUFEN |I2C_CR2_ITERREN;
+    I2Cx->CR2 |= I2C_CR2_ITEVTEN | I2C_CR2_ITERREN;
     I2Cx->CR1 &= ~I2C_CR1_STOP;
     I2Cx->CR1 |= I2C_CR1_START;
     rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
     I2Cx->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITBUFEN | I2C_CR2_ITERREN);
+    while (I2Cx->SR2 & I2C_SR2_BUSY);
     if(icb->errors)
     {
         I2Cx->CR1 |= I2C_CR1_STOP;
