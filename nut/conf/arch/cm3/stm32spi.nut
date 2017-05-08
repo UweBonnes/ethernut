@@ -769,9 +769,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI1_MODE",
                 brief = "Select SPIBUS 1 MODE",
-                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
-                choices = { "0", "1", "2"},
-                default = "0",
+                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
+                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
+                default = "IRQ_MODE",
                 file = "include/cfg/spi.h"
             },
         },
@@ -881,9 +881,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI2_MODE",
                 brief = "Select SPIBUS 2 MODE",
-                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
-                choices = { "0", "1", "2"},
-                default = "0",
+                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
+                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
+                default = "IRQ_MODE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -1026,9 +1026,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI3_MODE",
                 brief = "Select SPIBUS 3 MODE",
-                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
-                choices = { "0", "1", "2"},
-                default = "0",
+                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
+                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
+                default = "IRQ_MODE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -1160,9 +1160,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI4_MODE",
                 brief = "Select SPIBUS 4 MODE",
-                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
-                choices = { "0", "1", "2"},
-                default = "0",
+                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
+                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
+                default = "IRQ_MODE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -1294,9 +1294,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI5_MODE",
                 brief = "Select SPIBUS 5 MODE",
-                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
-                choices = { "0", "1", "2"},
-                default = "0",
+                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
+                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
+                default = "IRQ_MODE",
                 file = "include/cfg/spi.h"
             },
             {
@@ -1424,9 +1424,9 @@ nutarch_cm3_stm32_spi_devices =
             {
                 macro = "SPI6_MODE",
                 brief = "Select SPIBUS 6 MODE",
-                description = "Choices are IRQ(0, default), DMA(1) or polling (2)",
-                choices = { "0", "1", "2"},
-                default = "0",
+                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
+                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
+                default = "IRQ_MODE",
                 file = "include/cfg/spi.h"
             },
             {
