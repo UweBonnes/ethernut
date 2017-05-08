@@ -67,6 +67,14 @@ SECTIONS
 	_evtable = .;
     } > SRAM0
 
+    .stack (NOLOAD):
+    {
+        . = ALIGN(8);
+        _stack_start = .;
+        KEEP(*(.stack .stack.*));
+        _stack_end = .;
+    } > SRAM0
+
     .data :
     {
         _sdata = .;
@@ -93,14 +101,6 @@ SECTIONS
         _ebss = .;
     } > SRAM0
 
-    .stack (NOLOAD):
-    {
-        . = ALIGN(8);
-        _stack_start = .;
-        KEEP(*(.stack .stack.*));
-        _stack_end = .;
-    } > SRAM0
-
     .psp_stack (NOLOAD):
     {
         . = ALIGN(8);
@@ -120,6 +120,7 @@ SECTIONS
     } > SRAM0
 */
 
+    __end_rom = _etext +  SIZEOF(.data );
 end = .;
 
 /*

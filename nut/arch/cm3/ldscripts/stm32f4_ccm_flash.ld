@@ -90,6 +90,15 @@ SECTIONS
         PROVIDE (__heap_start = .);
     } > SRAM0
 
+/* STACK at start of CCM, before (ro)data*/
+    .stack (NOLOAD):
+    {
+        . = ALIGN(8);
+        _stack_start = .;
+        KEEP(*(.stack .stack.*));
+        _stack_end = .;
+    } > CCM
+
 /* Constant data in CCM*/
     .rodata : ALIGN_WITH_INPUT
     {
@@ -100,15 +109,6 @@ SECTIONS
         _rodata_end = .;
     } > CCM AT >FLASH0
     _rodata_load = LOADADDR(.rodata);
-
-/* STACK in CCM*/
-    .stack (NOLOAD):
-    {
-        . = ALIGN(8);
-        _stack_start = .;
-        KEEP(*(.stack .stack.*));
-        _stack_end = .;
-    } > CCM
 
     .psp_stack (NOLOAD):
     {

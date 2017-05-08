@@ -377,6 +377,10 @@
 # define GPIO_BRR_BR_0 GPIO_BRR_BR0
 #endif
 
+#if defined(SRAM1_BASE) && !defined(SRAM_BASE)
+#define SRAM_BASE SRAM1_BASE
+#endif
+
 #if defined(RCC_APB1ENR_CANEN) && !defined(RCC_APB1ENR_CAN1EN)
 #define RCC_APB1ENR_CAN1EN RCC_APB1ENR_CANEN
 #endif

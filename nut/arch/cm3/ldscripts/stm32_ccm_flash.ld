@@ -83,6 +83,14 @@ SECTIONS
 
     _etext = .;
 
+    .stack (NOLOAD):
+    {
+        . = ALIGN(8);
+        _stack_start = .;
+        KEEP(*(.stack .stack.*));
+        _stack_end = .;
+    } > SRAM0
+
     .data :
     {
         _sdata = .;
@@ -108,14 +116,6 @@ SECTIONS
         _ramfunc_end = .;
     } > CCM AT >FLASH0
     _ramfunc_load = LOADADDR(.ramfunc);
-
-    .stack (NOLOAD):
-    {
-        . = ALIGN(8);
-        _stack_start = .;
-        KEEP(*(.stack .stack.*));
-        _stack_end = .;
-    } > SRAM0
 
     .bss (NOLOAD):
     {

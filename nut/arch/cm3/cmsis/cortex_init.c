@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2012 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
- * Copyright (C) 2015-2016 by Uwe Bonnes
+ * Copyright (C) 2015-2017 by Uwe Bonnes
  *                            <bon@elektron.ikp.physik.tu-darmstadt.de>
  *
  * All rights reserved.
@@ -130,7 +130,7 @@ static void IntUsagefaultHandler(void *arg) __attribute__ ((naked));
 #endif
 __attribute__ ((section(".isr_vector")))
 #if defined(NUTDEBUG_RAM)
-void (* g_pfnVectors[NUM_INTERRUPTS])(void*) =
+void (* g_pfnVectors[NUM_INTERRUPTS + 3])(void*) =
 #else
 void (* const g_pfnVectors[])(void *) =
 #endif
@@ -146,6 +146,14 @@ void (* const g_pfnVectors[])(void *) =
     0,                   /* Reserved */
     0,                   /* Reserved */
     0,                   /* Reserved */
+#if defined(NUTDEBUG_RAM)
+    [11 ... (NUM_INTERRUPTS - 1)] = IntDefaultHandler,
+    /* Marker that Stm32BootloaderCheck can evaluate. */
+    [NUM_INTERRUPTS + 0] = (void (*)(void *))0xb007da7a,
+    [NUM_INTERRUPTS + 1] = (void (*)(void *))0xb007da7a,
+    /* Marker if program in RAM is started initialy or by warm reset.*/
+    [NUM_INTERRUPTS + 2] = (void (*)(void *))0xdeadda7a,
+#endif
 };
 
 /*!
@@ -318,27 +326,52 @@ void Cortex_RegisterInt(IRQn_Type int_id, void (*pfnHandler)(void*))
 
 
 /*!
- * \brief CortexM3 Initialization.
+ * \brief Plain C-Code CortexM3 Initialization.
  *
- * This function copies over the data segment from flash to ram
- * and fills the bss segment with 0.
+ * If running from flash, This function copies over the data segment from
+ * flash to ram. On STM32, handle RODATA and RAMFUNC.
+ *
+ * If running from ram, if data at _sdata_magic is 0xdeadda7a, copy data from
+ * _sdata to _sdatacopy, otherwise  copy from  _sdatacopy to _sdata.
+ *
+ * Clear bss to 0.
  */
 static void Cortex_MemInit(void)
 {
     register uint32_t *src, *dst, *end;
     register uint32_t fill = 0;
-
-    /*
-     * Plain C-Code Cortex Init
-     */
-
+#if defined(NUTDEBUG_RAM)
+    volatile uint32_t *ram_data_magic =
+        (volatile uint32_t *)&g_pfnRAMVectors[NUM_INTERRUPTS + 2];
+    if (*ram_data_magic == 0xdeadda7a) {
+        /* Save a copy of initialized r/w data at _edata.
+        * Run on first restart after writing program.*/
+        src = (uint32_t*)&_sdata;
+        end = (uint32_t*)&_edata;
+        dst = (uint32_t*)&_edata;
+        for (; src < end;) {
+            *dst++ = *src++;
+        }
+        *ram_data_magic = 0;
+    } else {
+        /* Initialize r/w data with saved values.
+         * Run after warm reset. */
+        src = (uint32_t*)&_edata;
+        end = (uint32_t*)&_edata;
+        dst = (uint32_t*)&_sdata;
+        for (; dst < end;) {
+            *dst++ = *src++;
+        }
+        *ram_data_magic ++;
+    }
+#else
     /* Copy the data segment initializers from flash to SRAM. */
     src = (uint32_t*)&_etext;
     end = (uint32_t*)&_edata;
     for(dst = (uint32_t*)&_sdata; dst < end;) {
         *dst++ = *src++;
     }
-#if defined(MCU_STM32)
+# if defined(MCU_STM32)
 /* Use LOADADRR() in the linker script to determine where data
  * is stored in FLASH! Otherwise section alignment and flash
  * data alignment will easily disagree!
@@ -359,8 +392,8 @@ extern void * _ramfunc_load;      /* Start of RAMFUNC data in FLASH0 */
     for (dst = (uint32_t*)&_ramfunc_start; dst < end;) {
         *dst++ = *src++;
     }
+# endif
 #endif
-
     /* Fill the bss segment with 0x00 */
     end = (uint32_t*)&_ebss;
     for( dst = (uint32_t*)&_sbss; dst < end; )
@@ -373,8 +406,9 @@ extern void * _ramfunc_load;      /* Start of RAMFUNC data in FLASH0 */
 
 static void Cortex_IntInit(void)
 {
-    int int_id;
 
+#ifndef NUTDEBUG_RAM
+    int int_id;
 #if       (__CORTEX_M >= 0x03)
     /* Disable exceptions */
         SCB->SHCSR &= ~(SCB_SHCSR_USGFAULTENA_Msk |
@@ -384,13 +418,11 @@ static void Cortex_IntInit(void)
     /* Disable SysTick interrupt */
     SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 
-#ifndef NUTDEBUG_RAM
     /* Copy Stackpointer to RAM vector table */
     g_pfnRAMVectors[0] = (void(*)(void*))g_pfnVectors[0];
 
     /* Copy Reset vector to RAM vector table */
     g_pfnRAMVectors[1] = (void(*)(void*))g_pfnVectors[1];
-#endif
 
     /* Set the exception handler */
     g_pfnRAMVectors[2] = &IntNmiHandler;
@@ -432,6 +464,7 @@ static void Cortex_IntInit(void)
         NVIC_DisableIRQ(int_id);
         g_pfnRAMVectors[int_id] = &IntDefaultHandler;
     }
+#endif
 
     /* Basic interrupt system setup */
     //SCB->AIRCR = (0x05fa0000|SCB_AIRCR_PRIGROUP0);

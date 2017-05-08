@@ -2,6 +2,9 @@
  *
  * stm32_ram.ld - linker script for Nut/OS on Cortex-M STM32, Code in RAM
  *
+ * Compile with NUTDEBUG_RAM
+ * Provide area for copy of initialized r/w data
+ *
  *****************************************************************************/
 
 ENTRY(NutInit)
@@ -26,23 +29,31 @@ _ramfunc_start = 0;
 _ramfunc_end   = 0;
 _ramfunc_load  = 0;
 _ccm_used      = 1;
+_end_rom       = 0x08000000;
 
 SECTIONS
 {
-    .bootloader (NOLOAD):
+    .isr :
     {
-	. = bootloader_offset;
+        _svect = .;
+        KEEP(*(.isr_vector))
+        _evect = .;
+    } > SRAM0
+
+    .stack (NOLOAD):
+    {
+        . = ALIGN(8);
+        _stack_start = .;
+        KEEP(*(.stack .stack.*));
+        _stack_end = .;
     } > SRAM0
 
     .text :
     {
-	    . = ALIGN(4);
-        _svect = .;
-        KEEP(*(.isr_vector))
-        _evect = .;
         *(.nutinit)
         *(.text .text.* .gnu.linkonce.t.*)
         *(.rodata .rodata* .gnu.linkonce.r.*)
+	*(.ramfunc);
         *(.glue_7t)
         *(.glue_7)
 	*(.gcc_except_table)
@@ -56,23 +67,37 @@ SECTIONS
         __exidx_end = .;
     } > SRAM0
 
-    .data : AT (_etext)
+    _etext = .;
+    .data :
     {
+	. = ALIGN(4);
         _sdata = .;
         *(.data .data.* .gnu.linkonce.d.*)
-	. = ALIGN(4);
-	*(.ramfunc);
-	. = ALIGN(4);
         _edata = .;
+        . += _edata - _sdata;
+        _ecopy = .;
+    } > SRAM0
+
+
+    .bss (NOLOAD):
+    {
+	. = ALIGN(4);
+        _sbss = .;
+        *(.bss .bss.* .gnu.linkonce.b.*)
+        *(COMMON)
+        . = ALIGN(4);
+        _ebss = .;
     } > SRAM0
 
     .preinit_array : {
+        . = ALIGN(4);
         PROVIDE_HIDDEN (__preinit_array_start = .);
         KEEP (*(.preinit_array*))
         PROVIDE_HIDDEN (__preinit_array_end = .);
     } > SRAM0
 
     .init_array : {
+        . = ALIGN(4);
         PROVIDE_HIDDEN (__init_array_start = .);
         KEEP (*(SORT(.init_array.*)))
         KEEP (*(.init_array*))
@@ -80,29 +105,11 @@ SECTIONS
     } > SRAM0
 
     .fini_array : {
+        . = ALIGN(4);
         PROVIDE_HIDDEN (__fini_array_start = .);
         KEEP (*(SORT(.fini_array.*)))
         KEEP (*(.fini_array*))
             PROVIDE_HIDDEN (__fini_array_end = .);
-    } > SRAM0
-
-    _etext = .;
-
-    /* Initialized data is stored above the data section, as
-     * section size is only known after section has been allocated!
-     */
-    .data_storage :
-    {
-	. += SIZEOF( .data);
-    } > SRAM0
-
-    .bss (NOLOAD):
-    {
-        _sbss = .;
-        *(.bss .bss.* .gnu.linkonce.b.*)
-        *(COMMON)
-        . = ALIGN(4);
-        _ebss = .;
     } > SRAM0
 
     .stack (NOLOAD):

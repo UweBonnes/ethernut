@@ -87,6 +87,15 @@ SECTIONS{
 	    _evtable = .;
     } > SRAM0
 
+/* STACK direct after vtable, before (ro)data*/
+    .stack (NOLOAD):
+    {
+        . = ALIGN(8);
+        _stack_start = .;
+        KEEP(*(.stack .stack.*));
+        _stack_end = .;
+    } > SRAM0
+
     .data : AT (_etext)
     {
         _sdata = .;
@@ -104,14 +113,6 @@ SECTIONS{
         *(COMMON)
         . = ALIGN(4);
         _ebss = .;
-    } > SRAM0
-
-    .stack (NOLOAD):
-    {
-        . = ALIGN(8);
-        _stack_start = .;
-        KEEP(*(.stack .stack.*));
-        _stack_end = .;
     } > SRAM0
 
     .psp_stack (NOLOAD):
