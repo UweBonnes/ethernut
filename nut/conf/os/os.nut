@@ -151,6 +151,16 @@ nutos =
         options =
         {
             {
+                macro = "NUT_BOOT_FUNCTION",
+                brief = "Boot Function",
+                description = "This function is given for the reset entry vecor.\n"..
+                              "Default is NutInit\n"..
+                              "The function must be declarated as int function(void).",
+                flavor = "booldata",
+                file = "include/cfg/os.h",
+                provides = {"NUT_BOOT_FUNCTION"},
+            },
+            {
                 macro = "HEARTBEAT_IDLE_PORT",
                 brief = "Idle Heartbeat Port",
                 description = "If a valid Port/Pin combination is given, set that Pin high when  "..

@@ -90,15 +90,6 @@ nutarch_cm3 =
         options =
         {
             {
-                macro = "NUT_BOOT_FUNCTION",
-                brief = "Boot Function",
-                description = "This function is given for the reset entry vecor.\n"..
-                              "Default is NutInit\n"..
-                              "The function must be declarated as int function(void).",
-                flavor = "booldata",
-                file = "include/cfg/arch.h"
-            },
-            {
                 macro = "MSP_STACK_SIZE",
                 brief = "Main Stack Size",
                 description = "Number of bytes reserved for interrupt stack\n"..
