@@ -208,6 +208,9 @@
 #elif defined(F7_DISCOVERY)
 #include <arch/cm3/board/f7_discovery.h>
 #define BOARDNAME "F7_DISCOVERY"
+#elif defined(F723_DISCOVERY)
+#include <arch/cm3/board/f723_discovery.h>
+#define BOARDNAME "F723_DISCOVERY"
 #elif defined(F769_DISCOVERY)
 #include <arch/cm3/board/f769_discovery.h>
 #define BOARDNAME "F769_DISCOVERY"

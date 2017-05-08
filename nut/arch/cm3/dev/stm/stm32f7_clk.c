@@ -181,11 +181,11 @@
 #  endif
 
 # if (STM32_OVERDRIVE == ENABLE)
-#  define APB1_MAX  45000000
-#  define APB2_MAX  90000000
-#else
 #  define APB1_MAX  54000000
 #  define APB2_MAX 108000000
+#else
+#  define APB1_MAX  45000000
+#  define APB2_MAX  90000000
 # endif
 #endif
 

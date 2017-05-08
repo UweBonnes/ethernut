@@ -69,7 +69,7 @@
 
 #ifndef DEV_UART
 #include <dev/usartstm32.h>
-#define DEV_UART devUsartStm32_1
+#define DEV_UART devUsartStm32_6
 #endif
 #ifndef DEV_UART_NAME
 #define DEV_UART_NAME  devUsartStm32_6.dev_name

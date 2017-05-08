@@ -1028,7 +1028,7 @@ typedef struct
 #define RCC_BASE              (AHB1PERIPH_BASE + 0x3800U)
 #define FLASH_R_BASE          (AHB1PERIPH_BASE + 0x3C00U)
 #define UID_BASE              0x1FF0F420U                   /*!< Unique device ID register base address */
-#define FLASHSIZE_BASE        0x1FF0F442U                   /*!< FLASH Size register base address */
+#define FLASHSIZE_BASE        0x1FF07A22U                   /*!< FLASH Size register base address */
 #define PACKAGE_BASE          0x1FFF7BF0U                   /*!< Package size register base address */
 /* Legacy define */
 #define PACKAGESIZE_BASE      PACKAGE_BASE
