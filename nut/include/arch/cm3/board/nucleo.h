@@ -110,4 +110,8 @@
 # define SW1_PIN  13
 #endif
 
+#ifndef SW1_ACTIVE_LOW
+# define SW1_ACTIVE_LOW
+#endif
+
 #define HAS_ARDUINO_CONNECTOR

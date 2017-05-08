@@ -79,8 +79,8 @@
 
 /* Blue user button */
 #ifndef SW1_PORT
-# define SW1_PORT NUTGPIO_PORTC
+# define SW1_PORT NUTGPIO_PORTA
 #endif
 #ifndef SW1_PIN
-# define SW1_PIN  13
+# define SW1_PIN  0
 #endif
