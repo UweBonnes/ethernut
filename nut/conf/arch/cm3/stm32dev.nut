@@ -657,6 +657,58 @@ nutarch_cm3_stm32_devices =
         },
     },
     --
+    -- STM32 I2C1 Hardware V1 TWI
+    --
+    {
+        name = "nutarch_cm3_stm32_twi_v1",
+        brief = "I2C1 V1 TWI",
+        description = "TWI support for STM32 I2C1 V1",
+        requires = { "HW_I2C_STM32V1", "HW_I2C1_STM32" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_twi.c",
+            "cm3/dev/stm/stm32_twi1.c",
+        },
+    },
+    -- STM32 I2C2 Hardware V1 TWI
+    --
+    {
+        name = "nutarch_cm3_stm32_twi_v2",
+        brief = "I2C2 V1 TWI",
+        description = "TWI support for STM32 I2C2 V1",
+        requires = { "HW_I2C_STM32V1", "HW_I2C2_STM32" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_twi.c",
+            "cm3/dev/stm/stm32_twi2.c",
+        },
+    },
+    --
+    -- STM32 I2C Hardware V1
+    --
+    {
+        name = "nutarch_cm3_stm32_spi_v1",
+        brief = "STM32 SPI V1 Controller",
+        description = "Generic Suport for STM32 I2C V1",
+        requires = { "HW_I2C_STM32V1" },
+        sources =
+        {
+            "cm3/dev/stm/stm32_i2cbus_v1.c",
+        },
+    },
+    --
+    -- STM32 I2C Hardware V2
+    --
+    {
+        name = "nutarch_cm3_stm32_spi_v2",
+        brief = "STM32 SPI V2 Controller",
+        description = "Generic Suport for STM32 I2C V2",
+        requires = { "HW_I2C_STMV32" },
+        sources = {
+            "cm3/dev/stm/stm32_i2cbus_v2.c",
+        },
+    },
+    --
     -- STM32F0 Combined USART IRQ
     --
     {

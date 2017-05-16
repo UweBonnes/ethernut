@@ -72,6 +72,7 @@ nutarch_cm3_stm32l1 =
                     "HW_ADC1_STM32",
                     "HW_COMP_STM32",
                     "HW_DAC_STM32",
+                    "HW_I2C_STM32V2",
                     "HW_I2C1_STM32",
                     "HW_I2C2_STM32",
                     "HW_PVD_STM32",

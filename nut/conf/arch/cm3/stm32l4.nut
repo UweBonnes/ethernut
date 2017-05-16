@@ -75,8 +75,9 @@ nutarch_cm3_stm32l4 =
                     "HW_DMA2_STM32L4",
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
-                    "HW_I2C1_STM32V2",
-                    "HW_I2C3_STM32V2",
+                    "HW_I2C_STM32V2",
+                    "HW_I2C1_STM32",
+                    "HW_I2C3_STM32",
                     "HW_LPUART1_STM32",
                     "HW_RNG_STM32",
                     "HW_SPI1_STM32",
@@ -110,7 +111,7 @@ nutarch_cm3_stm32l4 =
                 requires = {"HW_MCU_STM32L45"},
                 provides =
                 {
-                    "HW_I2C2_STM32V2",
+                    "HW_I2C2_STM32",
                     "HW_TIM1_TIM15_TIM16_STM32",
                     "HW_TIM3_STM32",
                     "HW_USART3_STM32",
@@ -126,7 +127,7 @@ nutarch_cm3_stm32l4 =
                 requires = {"HW_MCU_STM32L47"},
                 provides =
                 {
-                    "HW_I2C2_STM32V2",
+                    "HW_I2C2_STM32",
                     "HW_TIM1_TIM15_TIM16_TIM17_STM32",
                     "HW_SPI2_STM32",
                     "HW_TIM3_STM32",
@@ -147,7 +148,7 @@ nutarch_cm3_stm32l4 =
                 requires = {"HW_MCU_STM32L431"},
                 provides =
                 {
-                    "HW_I2C2_STM32V2",
+                    "HW_I2C2_STM32",
                     "HW_SPI2_STM32",
                     "HW_USART3_STM32",
                 },
@@ -173,7 +174,7 @@ nutarch_cm3_stm32l4 =
                 requires = {"HW_MCU_STM32L433"},
                 provides =
                 {
-                    "HW_I2C2_STM32V2",
+                    "HW_I2C2_STM32",
                     "HW_SPI2_STM32",
                     "HW_USART3_STM32",
                     "HW_USB_STM32",
@@ -202,7 +203,7 @@ nutarch_cm3_stm32l4 =
                 requires = {"HW_MCU_STM32L443"},
                 provides =
                 {
-                    "HW_I2C2_STM32V2",
+                    "HW_I2C2_STM32",
                     "HW_SPI2_STM32",
                     "HW_USART3_STM32",
                     "HW_USB_STM32",

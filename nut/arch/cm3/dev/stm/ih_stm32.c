@@ -129,7 +129,7 @@ CREATE_HANDLER(TWI1_EV,       I2C1_EV,  NUT_IRQPRI_DEF);     // I2C 1 Data/Event
 CREATE_HANDLER(TWI1_ER,       I2C1_ER,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
 #endif
 
-#if defined(HW_I2C2_STM32) || defined(HW_I2C2_STM32V2)
+#if defined(HW_I2C2_STM32)
 #if defined (MCU_STM32L0) || defined (MCU_STM32F0)
 CREATE_HANDLER(TWI2_EV,       I2C2,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
 #else
@@ -138,8 +138,12 @@ CREATE_HANDLER(TWI2_ER,       I2C2_ER,  NUT_IRQPRI_DEF);     // I2C 1 Error
 #endif
 #endif
 #if defined(HW_I2C3_STM32)
+# if defined (MCU_STM32L0) || defined (MCU_STM32F0)
+CREATE_HANDLER(TWI3_EV,      I2C3,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
+# else
 CREATE_HANDLER(TWI3_EV,       I2C3_EV,  NUT_IRQPRI_DEF);     // I2C 2 Error
 CREATE_HANDLER(TWI3_ER,       I2C3_ER,  NUT_IRQPRI_DEF);     // I2C 2 Error
+# endif
 #endif
 #if defined(HW_USB_CAN1_STM32)
 CREATE_HANDLER(CAN1_TX,       USB_HP_CAN1_TX,  NUT_IRQPRI_DEF);  // CAN 1 TX

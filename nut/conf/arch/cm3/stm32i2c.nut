@@ -291,19 +291,14 @@ nutarch_cm3_stm32_i2c_devices =
     --
     -- ******************************************
     --
-    -- STM32F I2C Bus 1 Configuration
+    -- STM32 I2C Bus 1 Configuration
     --
     {
         name = "nutarch_cm3_stm32f_i2c1",
-        brief = "STM32F I2C Bus 1 Controller",
-        description = "STM32F hardware I2C support.",
-        requires = { "HW_I2C1_STM32" , "I2C1_PINCONFIG" },
+        brief = "STM32 I2C Bus 1 Controller",
+        description = "STM32 hardware I2C1 support.",
+        requires = { "HW_I2C1_STM32" },
         provides = { "DEV_TWI" },
-        sources =
-        {
-            "cm3/dev/stm/stm32_twi1.c",
-            "cm3/dev/stm/stm32_twi.c"
-        },
         options =
         {
             {
@@ -330,20 +325,15 @@ nutarch_cm3_stm32_i2c_devices =
     },
 
     --
-    -- STM32F I2C Bus 2 Configuration
+    -- STM32 I2C Bus 2 Configuration
     --
     {
         name = "nutarch_cm3_stm32f_i2c2",
-        brief = "STM32F I2C Bus 2 Controller",
-        description = "STM32F hardware I2C support.\n\n This bus cannot be remapped on F1/L1. Pins used are:\n"..
+        brief = "STM32 I2C Bus 2 Controller",
+        description = "STM32 hardware I2C support.\n\n This bus cannot be remapped on F1/L1. Pins used are:\n"..
                       "SCL PB10\nSDA PB11\n",
-        requires = { "HW_I2C2_STM32" , "I2C2_PINCONFIG"  },
+        requires = { "HW_I2C2_STM32" },
         provides = { "DEV_TWI" },
-        sources =
-        {
-            "cm3/dev/stm/stm32_twi2.c",
-            "cm3/dev/stm/stm32_twi.c"
-        },
         options =
         {
             {
@@ -367,111 +357,11 @@ nutarch_cm3_stm32_i2c_devices =
         }
     },
 
-    --
-    -- STM32F I2C V1 Bus 1 Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32_i2c1_v1",
-        brief = "STM32 I2C Bus 1 on F1/2/4 and L1",
-        description = "STM32F hardware I2C V1 support.",
-        requires = { "HW_I2C1_STM32" },
-        provides = { "I2CBUS_CONTROLLER" , "I2C1_PINCONFIG" },
-        sources =
-        {
-            "cm3/dev/stm/stm32_i2cbus_v1.c",
-        },
-    },
-    --
-    -- STM32F I2C Bus 2 Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32_i2c2_v1",
-        brief = "STM32 I2C Bus 1 on F3",
-        description = "STM32F hardware I2C V1 support.",
-        requires = { "HW_I2C2_STM32" },
-        provides = { "I2CBUS_CONTROLLER" , "I2C2_PINCONFIG" },
-        sources =
-        {
-            "cm3/dev/stm/stm32_i2cbus_v1.c",
-        },
-    },
-    --
-    -- STM32F I2C V1 Bus 3 Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32_i2c3_v1",
-        brief = "STM32 I2C3 V1",
-        description = "STM32 hardware I2C3 V1 support.",
-        requires = { "HW_I2C3_STM32" },
-        provides = { "I2CBUS_CONTROLLER" , "I2C3_PINCONFIG" },
-        sources =
-        {
-            "cm3/dev/stm/stm32_i2cbus_v1.c",
-        },
-    },
-    --
-    --
-    -- STM32 I2C V2 Bus 1 Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32_i2c1_v2",
-        brief = "STM32 I2C Bus 1 on F3",
-        description = "STM32F hardware I2C V2 support.",
-        requires = { "HW_I2C1_STM32V2" },
-        provides = { "I2CBUS_CONTROLLER" , "I2C1_PINCONFIG" },
-        sources =
-        {
-            "cm3/dev/stm/stm32_i2cbus_v2.c",
-        },
-    },
-    --
-    -- STM3F I2C V2 Bus 2 Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32_i2c2_v2",
-        brief = "STM32 I2C Bus 2 on F3",
-        description = "STM32F hardware I2C2 V2 support.",
-        requires = { "HW_I2C2_STM32V2" },
-        provides = { "I2CBUS_CONTROLLER" , "I2C2_PINCONFIG"  },
-        sources =
-        {
-            "cm3/dev/stm/stm32_i2cbus_v2.c",
-        },
-     },
-    --
-    -- STM3F I2C V2 Bus 3 Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32_i2c3_v2",
-        brief = "STM32 I2C Bus 3 on F3",
-        description = "STM32 hardware I2C3 V2 support.",
-        requires = { "HW_I2C3_STM32V2" },
-        provides = { "I2CBUS_CONTROLLER" , "I2C3_PINCONFIG"  },
-        sources =
-        {
-            "cm3/dev/stm/stm32_i2cbus_v2.c",
-        },
-     },
-    --
-    -- STM3 I2C V2 Bus 4 Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32_i2c4_v2",
-        brief = "STM32 I2C Bus 4 on F3",
-        description = "STM32 hardware I2C4 V2 support.",
-        requires = { "HW_I2C4_STM32V2" },
-        provides = { "I2CBUS_CONTROLLER" , "I2C4_PINCONFIG"  },
-        sources =
-        {
-            "cm3/dev/stm/stm32_i2cbus_v2.c",
-        },
-     },
      -- I2C Pin Configuration
      {
         name = "nutarch_cm3_stm32_i2c1_pin",
         brief = "STM32 I2C1 Pin mappings",
         description = "STM32 I2C1 Pin mappings",
-        requires = { "I2C1_PINCONFIG" },
         options =
         {
             {
@@ -530,7 +420,6 @@ nutarch_cm3_stm32_i2c_devices =
         name = "nutarch_cm3_stm32_i2c2_pin",
         brief = "STM32 I2C2 Pin mappings",
         description = "STM32 I2C2 Pin mappings",
-        requires = { "I2C2_PINCONFIG" },
         options =
         {
             {
@@ -572,12 +461,11 @@ nutarch_cm3_stm32_i2c_devices =
             },
          }
     },
-    -- I2C3 only available on F43/F43 so long
      {
         name = "nutarch_cm3_stm32_i2c3_pin",
         brief = "STM32 I2C3 Pin mappings",
         description = "STM32 I2C3 Pin mappings",
-        requires = { "I2C3_PINCONFIG" },
+        requires = { "HW_I2C3_STM32" },
         options =
         {
             {
@@ -612,12 +500,11 @@ nutarch_cm3_stm32_i2c_devices =
             }
          }
     },
-    -- I2C4 only available on F7 so long
-     {
+    {
         name = "nutarch_cm3_stm32_i2c4_pin",
         brief = "STM32 I2C4 Pin mappings",
         description = "STM32 I2C4 Pin mappings",
-        requires = { "I2C4_PINCONFIG" },
+        requires = { "HW_I2C4_STM32" },
         options =
         {
             {
