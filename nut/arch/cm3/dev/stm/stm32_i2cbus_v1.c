@@ -259,7 +259,19 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     I2Cx->CR1 |= I2C_CR1_START;
     rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
     I2Cx->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITBUFEN | I2C_CR2_ITERREN);
-    while (I2Cx->SR2 & I2C_SR2_BUSY);
+    if (!rc && (I2Cx->SR2 & I2C_SR2_BUSY)) {
+        /* Wait some time until busy is released!*/
+        int i;
+        for (i = 0; (I2Cx->SR2 & I2C_SR2_BUSY) && (i < slave->slave_timeout);
+             i++) {
+            /* There is no interrupt for I2C peripheral getting idle.
+             * Use Nutsleep*/
+            NutSleep(1);
+        }
+        if (i >= slave->slave_timeout) {
+            rc = -1;
+        }
+    }
     if(icb->errors)
     {
         I2Cx->CR1 |= I2C_CR1_STOP;
