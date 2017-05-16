@@ -180,8 +180,8 @@ void NutComponentModel::saveComponentOptions( QTextStream& stream, NUTCOMPONENT*
 						free( flavor );
 					if ( flavorString.startsWith( "bool" ) )
 						stream << opts->nco_name << " = \"\"\n";
-					else
-						qWarning( qPrintable(QString("Not saving %1 flavor %2").arg(opts->nco_name).arg(flavorString)) );
+					//else
+                                        //qWarning( qPrintable(QString("Not saving %1 flavor %2").arg(opts->nco_name).arg(flavorString)) );
 				}
 				else
 				{
