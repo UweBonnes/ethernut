@@ -59,6 +59,9 @@ nutarch_cm3_stm32_family =
         brief = "STM32F0",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F0" },
         description = "ST Microelectronics STM32 F0 Series",
+        provides = {
+           "HW_EEPROM_EMUL_STM32",
+        },
         sources = {
            "cm3/dev/stm/stm32f30_clk.c",
            "cm3/dev/stm/stm32f1_3_flash.c",
@@ -71,6 +74,9 @@ nutarch_cm3_stm32_family =
         brief = "STM32F1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F1" },
         description = "ST Microelectronics STM32 F1 Series",
+        provides = {
+           "HW_EEPROM_EMUL_STM32",
+        },
         sources = {
            "cm3/dev/stm/stm32f1_rtc.c",
            "cm3/dev/stm/stm32f1_backup.c",
@@ -96,8 +102,9 @@ nutarch_cm3_stm32_family =
         provides = {
             "HW_DMA1_STM32F1",
             "HW_DMA_COMBINED_IRQ_STM32",
-            "HW_DMA_CSELR_STM32"
-        },
+            "HW_DMA_CSELR_STM32",
+            "HW_EEPROM_STM32",
+         },
          makedefs = {
                   "MCU=cortex-m0plus",
         },
@@ -111,7 +118,8 @@ nutarch_cm3_stm32_family =
         provides = {
             "HW_DMA2_STM32F1",
             "HW_DMA2_7CH_STM32",
-            "HW_DMA_CSELR_STM32"
+            "HW_DMA_CSELR_STM32",
+            "HW_EEPROM_EMUL_STM32",
         },
         sources = {
             "cm3/dev/stm/stm32l4_clk.c",
@@ -126,7 +134,10 @@ nutarch_cm3_stm32_family =
         name = "nutarch_cm3_stm32l1",
         brief = "STM32L1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L1" },
-        description = "ST Microelectronics STM32 F1 Series",
+        description = "ST Microelectronics STM32 L1 Series",
+        provides = {
+            "HW_EEPROM_STM32",
+        },
         sources = {
            "cm3/dev/stm/stm32l1_clk.c",
            "cm3/dev/stm/stm32l1_eeprom.c",
@@ -143,6 +154,9 @@ nutarch_cm3_stm32_family =
         brief = "STM32F2",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F2" },
         description = "ST Microelectronics STM32 F2 Series",
+        provides = {
+           "HW_EEPROM_EMUL_STM32",
+        },
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
         makedefs = { "MCU=cortex-m3"},
         script = "arch/cm3/stm32f2.nut"
@@ -151,6 +165,9 @@ nutarch_cm3_stm32_family =
         name = "nutarch_cm3_stm32f3",
         brief = "STM32F3",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F3" },
+        provides = {
+           "HW_EEPROM_EMUL_STM32",
+        },
         description = "ST Microelectronics STM32 F3 Series",
         sources = {
             "cm3/dev/stm/stm32f30_clk.c",
@@ -164,6 +181,9 @@ nutarch_cm3_stm32_family =
         brief = "STM32F4",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F4" },
         description = "ST Microelectronics STM32 F4 Series",
+        provides = {
+           "HW_EEPROM_EMUL_STM32",
+        },
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
         makedefs = { "MCU=cortex-m4"},
         script = "arch/cm3/stm32f4.nut"
@@ -172,6 +192,9 @@ nutarch_cm3_stm32_family =
         name = "nutarch_cm3_stm32f7",
         brief = "STM32F7",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F7" },
+        provides = {
+           "HW_EEPROM_EMUL_STM32",
+        },
         description = "ST Microelectronics STM32 F4 Series",
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
         makedefs = { "MCU=cortex-m7"},

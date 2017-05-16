@@ -1,5 +1,6 @@
 --
 -- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2014-2017 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -31,201 +32,26 @@
 --
 -- Operating system functions
 --
--- $Log$
--- Revision 1.54  2009/02/13 14:46:19  haraldkipp
--- Using the VS10xx driver as a template for redesign.
 --
--- Revision 1.53  2009/02/06 15:48:08  haraldkipp
--- New audio driver for VLSI chips uses the SPI bus.
---
--- Revision 1.52  2009/01/30 08:57:16  haraldkipp
--- Added auto detected VS10xx.
--- Default audio decoder reset recover times changed to 0.
---
--- Revision 1.51  2009/01/19 10:38:54  haraldkipp
--- Configuration of the AT45D non-volatile memory support was not useable.
---
--- Revision 1.50  2009/01/18 16:44:07  haraldkipp
--- Added GPIO based bit banging SPI bus driver.
---
--- Revision 1.49  2009/01/09 17:59:05  haraldkipp
--- Added target independent AT45D block device drivers and non-volatile
--- memory support based on the new bus controllers.
---
--- Revision 1.48  2008/12/24 14:52:10  thiagocorrea
--- Improve Serial Bit Bang drivers dependency check in nutconf.
---
--- Revision 1.47  2008/10/23 08:52:20  haraldkipp
--- New software SPI MMC routines added.
---
--- Revision 1.46  2008/10/05 16:56:15  haraldkipp
--- Added Helix audio device.
---
--- Revision 1.45  2008/10/03 11:31:27  haraldkipp
--- Added TWI support for the AT91SAM9260.
---
--- Revision 1.44  2008/09/23 07:26:51  haraldkipp
--- Made early watchdog setting configurable.
---
--- Revision 1.43  2008/09/02 14:27:15  haraldkipp
--- Added platform independent reset functions.
--- Disabled the old vs1001k driver.
---
--- Revision 1.42  2008/08/28 16:11:31  haraldkipp
--- Fixed bitbanging SPI for ARM targets.
---
--- Revision 1.41  2008/08/28 11:07:06  haraldkipp
--- Added platform independant driver for LAN91 chips, currently LAN91C111
--- only. This is also the first Ethernet driver with ioctl support.
---
--- Revision 1.40  2008/07/29 07:30:57  haraldkipp
--- Added VS1053B.
---
--- Revision 1.39  2008/07/09 14:25:06  haraldkipp
--- Made EEPROM_PAGE_SIZE configurable. Does it really make sense?
---
--- Revision 1.38  2008/02/15 16:55:43  haraldkipp
--- Added support for VS1033/53 codec.
---
--- Revision 1.37  2007/08/30 12:15:06  haraldkipp
--- Configurable MMC timings.
---
--- Revision 1.36  2007/04/12 08:57:19  haraldkipp
--- New VS10XX decoder support. It will replace the old VS1001K driver, but
--- hasn't been tested for this chip yet. For the time being, please add the
--- vs10xx.c to your application code when using the VS1011E.
--- New API added, which allows to program external AVR devices via SPI.
--- Configurable SPI support added. Polled hardware SPI only, which is
--- currently limited to AVR. Header files are available for up to 4 software
--- SPI devices, but the API routines had been implemented for device 0 only.
---
--- Revision 1.35  2007/03/22 08:23:41  haraldkipp
--- Added the user (green) LED settings for Ethernut 3.0.
---
--- Revision 1.34  2007/02/15 16:17:27  haraldkipp
--- Configurable port bits for bit-banging I2C. Should work now on all
--- AT91 MCUs.
---
--- Revision 1.33  2006/10/05 17:16:50  haraldkipp
--- Hardware independant RTC layer added.
---
--- Revision 1.32  2006/09/29 12:41:55  haraldkipp
--- Added support for AT45 serial DataFlash memory chips. Currently limited
--- to AT91 builds.
---
--- Revision 1.31  2006/08/05 12:00:39  haraldkipp
--- Added clock settings for Ethernut 3.0 Rev-E.
---
--- Revision 1.30  2006/06/30 22:08:23  christianwelzel
--- DS1307 RTC Driver added.
---
--- Revision 1.29  2006/06/28 17:22:34  haraldkipp
--- Make it compile for AT91SAM7X256.
---
--- Revision 1.28  2006/06/28 14:31:55  haraldkipp
--- Null device added to Configurator build.
---
--- Revision 1.27  2006/05/25 09:13:23  haraldkipp
--- Platform independent watchdog API added.
---
--- Revision 1.26  2006/04/07 12:26:59  haraldkipp
--- Removing requirement for non-volatile hardware solves link problem
--- if no such hardware is available.
---
--- Revision 1.25  2006/02/23 15:42:26  haraldkipp
--- MMC low level bit banging SPI added.
---
--- Revision 1.24  2006/01/23 17:29:14  haraldkipp
--- X1226/X1286 EEPROM now available for system configuration storage.
---
--- Revision 1.23  2006/01/22 17:35:22  haraldkipp
--- Baudrate calculation for Ethernut 3 failed if MCU Clock was not specified.
---
--- Revision 1.22  2006/01/05 16:49:06  haraldkipp
--- Mulimedia Card Block Device Driver added.
--- Programmable Logic Device added, which supports the CPLD
--- implementation of the Ethernut 3 design.
--- New options added for CY2239x support.
---
--- Revision 1.21  2005/10/24 09:54:55  haraldkipp
--- New i2C bit banging driver.
--- New Xicor RTC driver.
--- New Cypress programmable clock driver.
---
--- Revision 1.20  2005/10/04 05:48:11  hwmaier
--- Added CAN driver for AT90CAN128
---
--- Revision 1.19  2005/07/26 15:41:06  haraldkipp
--- All target dependent code is has been moved to a new library named
--- libnutarch. Each platform got its own script.
---
--- Revision 1.18  2005/05/27 13:51:07  olereinhardt
--- Added new Display sizes for hd44780 and hd44780_bus
--- Ports used for display connection still need's to be added.
---
--- Revision 1.17  2005/04/05 17:44:56  haraldkipp
--- Made stack space configurable.
---
--- Revision 1.16  2005/02/21 00:56:59  hwmaier
--- New CAN int vectors ivect35.c and ivect36 added, removed "makedefs" entry for RTL_IRQ_RISING_EDGE.
---
--- Revision 1.15  2005/02/19 22:47:54  hwmaier
--- no message
---
--- Revision 1.14  2005/02/07 19:05:25  haraldkipp
--- ATmega 103 compile errors fixed
---
--- Revision 1.13  2005/02/02 19:46:53  haraldkipp
--- Port configuration was completely broken, because no AVRPORT values
--- had been defined for the preprocessor. To fix this without modifying
--- too many sourcefiles we change the name of AVR port config file and
--- include this new file in the old avr.h.
---
--- Revision 1.12  2005/01/22 19:22:42  haraldkipp
--- Changed AVR port configuration names from PORTx to AVRPORTx.
--- Removed uartspi devices.
---
--- Revision 1.11  2004/12/17 15:31:28  haraldkipp
--- Support of rising edge interrupts for hardware w/o inverter gate.
--- Fixed compilation issue for hardware with RTL reset port.
--- Thanks to FOCUS Software Engineering Pty Ltd.
---
--- Revision 1.10  2004/11/24 14:48:34  haraldkipp
--- crt/crt.nut
---
--- Revision 1.9  2004/10/03 18:39:12  haraldkipp
--- GBA debug output on screen
---
--- Revision 1.8  2004/09/25 15:43:54  drsung
--- Light change for separate interrupt stack. Now it depends also
--- on macro HW_MCU_AVR.
---
--- Revision 1.7  2004/09/22 08:21:43  haraldkipp
--- No ATmega103 support for LAN91C111. Is there any hardware?
--- List of devices sorted by platform.
--- Separate IRQ stack for AVR is configurable.
--- Configurable ports for digital I/O shift register.
--- Configurable handshake ports for AVR USART.
---
--- Revision 1.6  2004/09/07 19:11:15  haraldkipp
--- Simplified IRQ handling to get it done for EB40A
---
--- Revision 1.5  2004/09/01 14:04:57  haraldkipp
--- Added UART handshake and EEPROM emulation port bits
---
--- Revision 1.4  2004/08/18 16:05:38  haraldkipp
--- Use consistent directory structure
---
--- Revision 1.3  2004/08/18 13:46:09  haraldkipp
--- Fine with avr-gcc
---
--- Revision 1.2  2004/08/03 15:09:31  haraldkipp
--- Another change of everything
---
--- Revision 1.1  2004/06/07 16:35:53  haraldkipp
--- First release
---
---
+function ConfOsExclusivity()
+    return
+        {
+            "NUT_CONFIG_AT24",
+            "NUT_CONFIG_X12RTC",
+            "NUT_CONFIG_AT45D",
+            "NUT_CONFIG_AT45DB",
+            "NUT_CONFIG_AT49BV",
+            "NUT_CONFIG_AT91EFC",
+	    "NUT_CONFIG_AVR32EFC",
+            "NUT_CONFIG_STM32_IAP",
+            "NUT_CONFIG_STM32_BACKUP_REG",
+            "NUT_CONFIG_STM32_BACKUP_MEM",
+            "NUT_CONFIG_STM32_EEPROM",
+            "NUT_CONFIG_LPC177x_8x_EEPROM",
+            "NUT_CONFIG_LPC17xx_IAP",
+            "NUT_CONFIG_X12RTC",
+        }
+end
 
 nutdev =
 {
@@ -860,49 +686,18 @@ nutdev =
                 description = "If enabled, the Atmel AT45D DataFlash is used for non-volatile memory."..
                               "Additionally specify the chip index as 0 for the first, 1 for the second etc.\n\n"..
                               "For the AVR family the on-chip EEPROM is used by default.",
-                provides = { "DEV_NVMEM", "DEV_NVMEM_AT45D" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_AT45D", "CONFOS_NVMEM" },
                 flavor = "booldata",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-		    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
-                default = "0",
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
                 macro = "NUT_CONFIG_AT45DB",
                 brief = "Atmel AT45DB DataFlash",
                 description = "Deprecated, uses old SPI routines.",
-                provides = { "DEV_NVMEM", "DEV_NVMEM_AT45DB" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_AT45DB", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-		    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                     "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -910,24 +705,9 @@ nutdev =
                 brief = "Atmel AT49BV NOR Flash",
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in this chip.",
-                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -936,24 +716,9 @@ nutdev =
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in on-chip flash memory.",
                 requires = { "HW_EFC_AT91" },
-                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -962,24 +727,9 @@ nutdev =
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in on-chip flash memory.",
                 requires = { "HW_EFC_AVR32" },
-                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -987,24 +737,10 @@ nutdev =
                 brief = "STM32 On-Chip Flash",
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in last sector of on-chip flash memory.",
-                requires = { "HW_FLASH_STM32" },
-                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                requires = { "HW_EEPROM_EMUL_STM32" },
+                provides = { "DEV_NVMEM", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-	            "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -1015,23 +751,9 @@ nutdev =
                               "Data will be valid after reset, as long as "..
                               "Backup Domain is powered.",
                 requires = {"HW_STM32_BACKUP_REG"},
-                provides = {"DEV_NVMEM"},
+                provides = {"DEV_NVMEM", "CONFOS_NVMEM"},
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -1042,24 +764,10 @@ nutdev =
                               "Data will be valid after reset, as long as "..
                               "Backup Domain is powered.",
                 requires = {"HW_BKPSRAM_STM32"},
-                provides = {"DEV_NVMEM"},
+                provides = {"DEV_NVMEM", "CONFOS_NVMEM"},
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-		    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
-                file = "include/cfg/eeprom.h"
+                exclusivity = function() return ConfOsExclusivity() end,
+               file = "include/cfg/eeprom.h"
             },
             {
                 macro = "NUT_CONFIG_STM32_EEPROM",
@@ -1067,24 +775,9 @@ nutdev =
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in on-chip eeprom memory.",
                 requires = { "HW_EEPROM_STM32" },
-                provides = { "DEV_NVMEM" },
+                provides = { "DEV_NVMEM", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -1093,24 +786,9 @@ nutdev =
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in on-chip eeprom memory.",
                 requires = { "HW_EEPROM_LPC177x_8x" },
-                provides = { "DEV_NVMEM" },
+                provides = { "DEV_NVMEM", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -1118,82 +796,46 @@ nutdev =
                 brief = "LPC17xx On-Chip Flash",
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in on-chip flash memory.",
-                requires = { "HW_FLASH_LPC17xx" },
+                requires = { "HW_FLASH_LPC17xx", "CONFOS_NVMEM" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
                 macro = "NUT_CONFIG_X12RTC",
                 brief = "Intersil X12x6 EEPROM",
                 description = "If enabled, the EEPROM on the Intersil X1226/X1286 chip is used for non-volatile memory.",
-                provides = { "DEV_NVMEM" },
+                provides = { "DEV_NVMEM", "CONFOS_NVMEM" },
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
                 macro = "NUT_CONFIG_AT24",
                 brief = "Standard EEPROM",
                 description = "If enabled, a standard EEPROM chip is used for non-volatile memory.",
-                provides = { "DEV_NVMEM", "DEV_NVMEM_I2C" },
+                provides = { "DEV_NVMEM", "NUT_CONFIG_AT24", "CONFOS_NVMEM"},
                 flavor = "boolean",
-                exclusivity =
-                {
-                    "NUT_CONFIG_AT24",
-                    "NUT_CONFIG_X12RTC",
-                    "NUT_CONFIG_AT45D",
-                    "NUT_CONFIG_AT45DB",
-                    "NUT_CONFIG_AT49BV",
-                    "NUT_CONFIG_AT91EFC",
-                    "NUT_CONFIG_AVR32EFC",
-                    "NUT_CONFIG_STM32_IAP",
-                    "NUT_CONFIG_STM32_BACKUP_REG",
-                    "NUT_CONFIG_STM32_BACKUP_MEM",
-                    "NUT_CONFIG_STM32_EEPROM",
-                    "NUT_CONFIG_LPC177x_8x_EEPROM",
-                    "NUT_CONFIG_LPC17xx_IAP"
-                },
+                exclusivity = function() return ConfOsExclusivity() end,
                 file = "include/cfg/eeprom.h"
             },
             {
                 macro = "NUT_CONFIG_AT24_ADR",
                 brief = "EEPROM Bus address",
                 description = "Address of the EEPROM on the I2C Bus.",
-                requires = { "DEV_NVMEM_I2C" },
+                requires = { "NUT_CONFIG_AT24" },
                 default = "0x50",
                 file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFOS_NVMEM",
+                brief = "(Semi-)Permanent ConfOs storage",
+                description = "Confos Parameters are perststant to reset."..
+                            "Load Confos Parameters at startup.",
+                requires = { "CONFOS_NVMEM" },
+                default = "1",
+                file = "include/cfg/os.h"
             },
             {
                 macro = "NUT_CONFIG_AT45D_CS",
