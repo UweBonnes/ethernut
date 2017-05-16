@@ -201,42 +201,6 @@ nutarch_cm3_stm32_family =
         script = "arch/cm3/stm32f7.nut"
     },
     {
-        name = "nutarch_cm3_stm32_pll",
-        brief = "Clock settings",
-        description = "Clock settings",
-        requires = { "HW_MCU_STM32" },
-        script = "arch/cm3/stm32pll.nut"
-    },
-    {
-        name = "nutarch_cm3_stm32_usart_devices",
-        brief = "U(S)ART devices",
-        description = "STM32 U(S)ART devices.",
-        requires = { "HW_MCU_STM32" },
-        script = "arch/cm3/stm32usart.nut"
-    },
-    {
-        name = "nutarch_cm3_stm32_i2c_devices",
-        brief = "I2C devices",
-        description = "STM32 I2C devices.",
-        requires = { "HW_MCU_STM32" },
-        script = "arch/cm3/stm32i2c.nut"
-    },
-    {
-        name = "nutarch_cm3_stm32_spi_devices",
-        brief = "SPI devices",
-        description = "STM32 SPI devices.",
-        requires = { "HW_MCU_STM32" },
-        sources  = { "cm3/dev/stm/stm32_spi_cb.c" },
-        script = "arch/cm3/stm32spi.nut"
-    },
-    {
-        name = "nutarch_cm3_stm32_timer_devices",
-        brief = "Timer devices",
-        description = "STM32 Timer availability and devices using timers",
-        requires = { "HW_MCU_STM32" },
-        script = "arch/cm3/stm32timer.nut"
-    },
-    {
         name = "nutarch_cm3_stm32_devices",
         brief = "Other devices",
         description = "Other devices of the STM32 families",

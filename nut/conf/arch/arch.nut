@@ -2208,5 +2208,41 @@ nutarch =
         requires = { "HW_EMU_LINUX" },
         script = "arch/unix.nut"
     },
-
+-- Target specific devices
+    {
+        name = "nutarch_cm3_stm32_pll",
+        brief = "Clock settings",
+        description = "Clock settings",
+        requires = { "HW_MCU_STM32" },
+        script = "arch/cm3/stm32pll.nut"
+    },
+    {
+        name = "nutarch_cm3_stm32_usart_devices",
+        brief = "STM32 U(S)ART devices",
+        description = "STM32 U(S)ART devices.",
+        requires = { "HW_MCU_STM32" },
+        script = "arch/cm3/stm32usart.nut"
+    },
+    {
+        name = "nutarch_cm3_stm32_i2c_devices",
+        brief = "STM32 I2C devices",
+        description = "STM32 I2C devices.",
+        requires = { "HW_MCU_STM32" },
+        script = "arch/cm3/stm32i2c.nut"
+    },
+    {
+        name = "nutarch_cm3_stm32_spi_devices",
+        brief = "STM32 SPI devices",
+        description = "STM32 SPI devices.",
+        requires = { "HW_MCU_STM32" },
+        sources  = { "cm3/dev/stm/stm32_spi_cb.c" },
+        script = "arch/cm3/stm32spi.nut"
+    },
+    {
+        name = "nutarch_cm3_stm32_timer_devices",
+        brief = "Stm32 Timer devices",
+        description = "STM32 Timer availability and devices using timers",
+        requires = { "HW_MCU_STM32" },
+        script = "arch/cm3/stm32timer.nut"
+    },
 }
