@@ -50,14 +50,16 @@ nutarch_cm3 =
             {
                 macro = "MCU_CM3",
                 brief = "Cortex-M Family",
-                default = 1,
+                description = {"CPU is M0/M0+/M3 or M4 device."},
+                default = "1",
                 requires = { "HW_MCU_CM3" },
                 file = "include/cfg/arch.h"
             },
             {
                 macro = "MCU_CM7",
                 brief = "Cortex-M7 Core",
-                default = 1,
+                description = {"CPU is M7 device."},
+                default = "1",
                 requires = { "HW_MCU_CM7" },
                 file = "include/cfg/arch.h"
             }
@@ -75,10 +77,8 @@ nutarch_cm3 =
                       "- Stack sizes.",
         requires = { "HW_MCU_CM3" },
         provides = {
-           "DEV_IRQ_CM3",
            "NUT_OSTIMER_DEV",
            "NUT_CONTEXT_SWITCH",
-           "DEV_IRQ_CM3",
         },
         sources = {
             "cm3/cmsis/cortex_init.c",
@@ -93,7 +93,7 @@ nutarch_cm3 =
                 macro = "MSP_STACK_SIZE",
                 brief = "Main Stack Size",
                 description = "Number of bytes reserved for interrupt stack\n"..
-                              "Default is 128 words.\n\n"..
+                              "Default (unchecked) is 128 words.\n\n"..
                               "This stack is used in flat mode, i.e. the thread mode the CPU uses with Nut/OS.\n"..
                               "The stack is needed for any operation and function call while Nut/OS startup.\n",
                 flavor = "booldata",
@@ -103,7 +103,7 @@ nutarch_cm3 =
                 macro = "PSP_STACK_SIZE",
                 brief = "Process Stack Size",
                 description = "Number of bytes reserved for process stack\n"..
-                              "Default is 32 words.\n\n"..
+                              "Default (unchecked) is 32 words.\n\n"..
                               "The process stack is actually not used in Nut/OS but may be used for faster task switching "..
                               "in a later release. So beware of modifications.",
                 flavor = "booldata",
@@ -123,17 +123,19 @@ nutarch_cm3 =
         {
             {
                 macro = "MCU_USE_CORTEX_FPU",
-                brief = "Enable single precission FPU support",
+                brief = "FPU single precission",
+                description = "CPU has FPU with single precission.",
                 requires = {"HW_MCU_FPU"},
-                flavor = "boolean",
+                default = "1",
                 file = "include/cfg/arch.h",
                 makedefs = { "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv4-sp-d16" }
             },
             {
                 macro = "MCU_USE_CORTEX_DFPU",
-                brief = "Enable double precession FPU support",
+                brief = "FPU double precission",
+                description = "CPU has FPU with double precission.",
                 requires = {"HW_MCU_DFPU"},
-                flavor = "boolean",
+                default = "1",
                 file = "include/cfg/arch.h",
                 makedefs = { "FPUFLAGS=-mfloat-abi=hard -mfpu=fpv5-d16" }
             },
