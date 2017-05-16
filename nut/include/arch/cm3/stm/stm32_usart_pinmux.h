@@ -232,6 +232,12 @@
 #  define USART4_CTS_AF  8
 #  define USART4_RTS_AF  8
 #  define USART4_CK_AF   -1
+# elif  defined(MCU_STM32L0_CAT5)
+#  define USART4_RX_AF   6
+#  define USART4_TX_AF   6
+#  define USART4_CTS_AF  6
+#  define USART4_RTS_AF  6
+#  define USART4_CK_AF   6
 # else
 #  define USART4_RX_AF   7
 #  define USART4_TX_AF   7
@@ -309,6 +315,12 @@
 #  define USART5_RTS_AF  8
 #  define USART5_CTS_AF  8
 #  define USART5_CK_AF   -1
+# elif defined(MCU_STM32L0_CAT5)
+#  define USART5_TX_AF   ((USART5_TX == PC12) ? 2 : 6)
+#  define USART5_RX_AF   6
+#  define USART5_RTS_AF  6
+#  define USART5_CTS_AF  6
+#  define USART5_CK_AF   6
 # endif
 
 /* USART6 */
@@ -359,12 +371,29 @@
 # endif
 
 /* LPUART1 */
-# if defined(MCU_STM32L0)
-/* FIXME: Check for special cases*/
-#  define LPUART1_TX_AF 4
-#  define LPUART1_RX_AF  4
-#  define LPUART1_CTS_AF -1
-#  define LPUART1_RTS_AF -1
+# if defined(MCU_STM32L0_CAT1) || defined(MCU_STM32L0_CAT2)
+#  define LPUART1_TX_AF  6
+#  define LPUART1_RX_AF  6
+#  define LPUART1_CTS_AF ((LPUART1_CTS == PA06)? 4 : 6)
+#  define LPUART1_RTS_AF ((LPUART1_RTS == PB01)? 4 : 6)
+#  define LPUART1_CK_AF  -1
+# elif defined(MCU_STM32L0_CAT3)
+#  define LPUART1_TX_AF  ((LPUART1_TX  == PC04) ? 2 : ((LPUART1_TX  == PC10) ? 0 : 4))
+#  define LPUART1_RX_AF  ((LPUART1_RX  == PC05) ? 2 : ((LPUART1_RX  == PC11) ? 0 : 4))
+#  define LPUART1_CTS_AF 4
+#  define LPUART1_RTS_AF ((LPUART1_RTS == PB12) ? 2 : ((LPUART1_RTS == PD02) ? 0 : 4))
+#  define LPUART1_CK_AF  -1
+# elif defined(MCU_STM32L0_CAT5)
+#  define LPUART1_TX_AF  ((LPUART1_TX  == PD08) ? 0 : ((LPUART1_TX  == PC10) ? 0 : ((LPUART1_TX  == PC04) ? 2 : ((LPUART1_TX  == PB11) ? 7 : ((LPUART1_TX  == PB10) ? 4 : 6)))))
+#  define LPUART1_RX_AF  ((LPUART1_RX  == PD09) ? 0 : ((LPUART1_RX  == PC11) ? 0 : ((LPUART1_RX  == PC05) ? 2 : ((LPUART1_RX  == PB10) ? 7 : ((LPUART1_RX  == PB11) ? 4 : 6)))))
+#  define LPUART1_CTS_AF ((LPUART1_CTS == PD11) ? 0 : 4)
+#  define LPUART1_RTS_AF ((LPUART1_RTS == PD12) ? 0 : ((LPUART1_RTS == PD02) ? 0 : ((LPUART1_RTS == PB12) ? 2 : 4 )))
+#  define LPUART1_CK_AF  -1
+# elif defined(MCU_STM32L4)
+#  define LPUART1_TX_AF  8
+#  define LPUART1_RX_AF  8
+#  define LPUART1_CTS_AF 8
+#  define LPUART1_RTS_AF 8
 #  define LPUART1_CK_AF  -1
 # endif
 #endif
