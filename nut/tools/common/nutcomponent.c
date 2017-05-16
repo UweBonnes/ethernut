@@ -3510,7 +3510,7 @@ int main(int argc, char **argv)
     NUTREPOSITORY *repo;
     NUTCOMPONENT *root;
 
-    while((option = getopt(argc, argv, "a:b:c:i:j:l:m:p:s:r:u:v?")) != EOF) {
+    while((option = getopt(argc, argv, "a:b:c:i:j:l:m:p:qs:r:u:v?")) != EOF) {
         switch(option) {
         case 'a':
             app_dir = realpath(optarg, NULL);
@@ -3600,8 +3600,10 @@ int main(int argc, char **argv)
         dirc = strdup(conf_name);
         user_dir = strdup(dirname(dirc));
     }
-    printf("src_dir = %s\n", src_dir);
-    printf("user_dir = %s\n", user_dir);
+    if (!quiet) {
+        printf("src_dir = %s\n", src_dir);
+        printf("user_dir = %s\n", user_dir);
+    }
     if (!repo_name) {
         repo_name = malloc(strlen(src_dir) +
                            strlen ("/conf/repository.nut") +1);
