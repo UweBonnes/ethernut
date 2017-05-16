@@ -41,6 +41,7 @@ int main( int argc, char** argv )
 
 	app.setOrganizationName("egnite");
 	app.setApplicationName("QNutConf");
+        app.setStyle("windows");
 
 	MainWindow window;
 	window.show();
