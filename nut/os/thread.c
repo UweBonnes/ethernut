@@ -105,7 +105,7 @@ NUTTHREADINFO * nutThreadList;
 
 NUTTHREADINFO * runQueue;
 
-volatile int16_t total_pending;
+volatile int total_pending;
 
 void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 {
