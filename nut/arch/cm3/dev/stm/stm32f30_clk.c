@@ -303,10 +303,10 @@ static void SystemCoreClockUpdate(void)
         case RCC_CFGR_PLLSRC_HSE_PREDIV:
             tmp = HSE_VALUE;
             break;
+#endif
         }
         tmp = (tmp / prediv) * pllmull;
         break;
-#endif
     }
     default:
         tmp = HSI_VALUE;
