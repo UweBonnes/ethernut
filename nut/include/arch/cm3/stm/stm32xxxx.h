@@ -1,7 +1,7 @@
 #ifndef _STM32XXXX_H_
 #define _STM32XXXX_H_
 /*
- * Copyright (C) 2012-2016 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2017 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -47,7 +47,7 @@
 # elif defined(STM32F030x8)
 #  include <arch/cm3/stm/vendor/stm32f030x8.h>
 # elif defined(STM32F030xC)
-#  include <arch/cm3/stm/vendor/stm32f030xC.h>
+#  include <arch/cm3/stm/vendor/stm32f030xc.h>
 # elif defined(STM32F031x6)
 #  include <arch/cm3/stm/vendor/stm32f031x6.h>
 # elif defined(STM32F038xx)
