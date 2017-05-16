@@ -214,6 +214,7 @@ nutarch_cm3 =
             "cm3/dev/stm/stm32_gpio.c",
             "cm3/dev/stm/stm32_gpioirq.c",
             "cm3/dev/stm/ih_stm32.c",
+            "cm3/dev/stm/stm32_timer.c",
     },
         options =
         {

@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2015 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de.
+-- Copyright (C) 2015-2017 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -803,16 +803,6 @@ nutarch_cm3_stm32_timer_devices =
                 file = "include/cfg/qenc.h",
             },
         },
-    },
-     --
-    -- STM32 Timers Helper Functions
-    --
-    {
-        name = "nutarch_cm3_stm32_timer_helper",
-        brief = "STM32 Timer Helper functions",
-        description = "STM32 Timer helper functions.",
-        provides = { "HW_TIM_STM32_HELPER" },
-        sources = { "cm3/dev/stm/stm32_timer.c" },
     },
     --
     -- STM32 PWMs using hardware timer
