@@ -180,6 +180,13 @@ nuttools =
             makedefs = {"TOOLCHAIN=cm3-gcc", "ADDLIBS = -lnutc"}
         },
         {
+            brief = "Newlib for Cortex-M",
+            description = "Use Newlib instead of nanolib for Cortex. Results in larger binaries.",
+            macro = "CORTEX_NEWLIB",
+            flavor = "boolean",
+            makedefs = {"CORTEX_NEWLIB=1"},
+        },
+        {
             brief = "GCC for AVR",
             description = "GNU Compiler Collection for ARM including avr-libc.",
             --  "TOOL_CXX" disabled due to problems with avr-libc eeprom.h.

@@ -38,7 +38,7 @@
 include $(top_srcdir)/app/Makerules.all
 
 %.elf: $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) -Wl,--start-group $(LIBS) $(ADDLIBS) -Wl,--end-group -o $@
+	$(CC) $(OBJS) $(LDFLAGS) -Wl,--start-group $(LIBS) $(ADDLIBS) $(SPECS) -Wl,--end-group -o $@
 
 %.hex: %.elf
 	$(BIN) $(BINFLAGS) -O ihex $< $@
