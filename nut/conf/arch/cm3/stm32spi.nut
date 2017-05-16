@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2015 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de.
+-- Copyright (C) 2015-2017 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -129,12 +129,6 @@ function GetSpi2Nss()
     end
     return { "PIN_NONE", "PB12", "PB09" }
 end
-function GetSpi2NssDefault()
-    if c_is_provided("HW_MCU_STM32F37") then
-        return "PB09"
-    end
-    return "PB12"
-end
 --
 function GetSpi2Sck()
     if c_is_provided("HW_MCU_STM32L1") then
@@ -174,12 +168,6 @@ function GetSpi2Sck()
         return { "PB13", "PB10", "PD01" }
     end
     return { "PB13", "PB10" }
-end
-function GetSpi2SckDefault()
-    if c_is_provided("HW_MCU_STM32F37") then
-        return "PB08"
-    end
-    return "PB13"
 end
 function GetSpi2Miso()
     if c_is_provided("HW_MCU_STM32L0") then
@@ -369,7 +357,6 @@ function GetSpi4Mosi()
     end
     return { "PE06", "PE14"}
 end
-
 --
 --
 -- Retrieve SPI5 pins available on the device.
@@ -380,23 +367,11 @@ function GetSpi5Nss()
     end
     return {"PIN_NONE", "PF06", "PH05"}
 end
-function GetSpi5NssDefault()
-    if c_is_provided("W_MCU_STM32F411") then
-        return "PB01"
-    end
-    return "PF06"
-end
 function GetSpi5Sck()
     if c_is_provided("W_MCU_STM32F411") then
         return {"PB00", "PE02", "PE12"}
     end
     return {"PF07", "PH06"}
-end
-function GetSpi5SckDefault()
-    if c_is_provided("W_MCU_STM32F411") then
-        return "PB00"
-    end
-    return "PF07"
 end
 function GetSpi5Miso()
     if c_is_provided("W_MCU_STM32F411") then
@@ -404,23 +379,28 @@ function GetSpi5Miso()
     end
     return {"PF08", "PH07"}
 end
-function GetSpi5MisoDefault()
-    if c_is_provided("W_MCU_STM32F411") then
-        return "PA12"
-    end
-    return "PF08"
-end
 function GetSpi5Mosi()
     if c_is_provided("W_MCU_STM32F411") then
         return {"PA10", "PB08", "PE06", "PE14"}
     end
     return {"PF09", "PF11"}
 end
-function GetSpi5MosiDefault()
-    if c_is_provided("W_MCU_STM32F411") then
-        return "PA10"
-    end
-    return "PF09"
+
+--
+--
+-- Retrieve SPI6 pins available on the device.
+--
+function GetSpi6Nss()
+   return {"PIN_NONE", "PG08"}
+end
+function GetSpi6Sck()
+    return {"PG13"}
+end
+function GetSpi6Miso()
+    return {"PG12"}
+end
+function GetSpi6Mosi()
+    return {"PG14"}
 end
 
 -- SPI1 TX
@@ -436,13 +416,7 @@ function GetSpi1TxDmaChoices()
         end
     return {"DMA1_CH3", "DMA_NONE"}
 end
-function GetSpi1TxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM3 | DMA_CHANNEL3)"
-        end
-    return "DMA1_CH3"
-end
--- SPI1 RX
+-- SPI1 RX_DMA
 function GetSpi1RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL2 | DMA_STREAM0 | DMA_CHANNEL3)",
@@ -454,14 +428,8 @@ function GetSpi1RxDmaChoices()
         end
     return {"DMA1_CH2", "DMA_NONE"}
 end
-function GetSpi1RxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM0 | DMA_CHANNEL3)"
-        end
-    return "DMA1_CH2"
-end
 
--- SPI2 TX
+-- SPI2 TX_DMA
 --
 -- FIXME: STM32F07  may remap SPI2 DMA
 --
@@ -472,13 +440,7 @@ function GetSpi2TxDmaChoices()
         end
     return {"DMA1_CH5", "DMA_NONE"}
 end
-function GetSpi2TxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL1 | DMA_STREAM4 | DMA_CHANNEL0)"
-        end
-    return "DMA1_CH5"
-end
---SPI2 RX
+--SPI2 RX_DMA
 function GetSpi2RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL0)",
@@ -486,14 +448,8 @@ function GetSpi2RxDmaChoices()
         end
     return {"DMA1_CH4", "DMA_NONE"}
 end
-function GetSpi2RxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL0)"
-        end
-    return "DMA1_CH4"
-end
 
--- SPI3 TX
+-- SPI3 TX_DMA
 function GetSpi3TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL0)",
@@ -502,13 +458,7 @@ function GetSpi3TxDmaChoices()
         end
     return {"DMA2_CH2", "DMA_NONE"}
 end
-function GetSpi3TxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL1 | DMA_STREAM5 | DMA_CHANNEL0)"
-        end
-    return "DMA2_CH2"
-end
--- SPI3 RX
+-- SPI3 RX_DMA
 function GetSpi3RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM0 | DMA_CHANNEL0)",
@@ -517,14 +467,8 @@ function GetSpi3RxDmaChoices()
         end
     return {"DMA2_CH1", "DMA_NONE"}
 end
-function GetSpi3RxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM0 | DMA_CHANNEL3)"
-        end
-    return "DMA2_CH1"
-end
 
--- SPI4 TX
+-- SPI4 TX_DMA
 function GetSpi4TxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL2 | DMA_STREAM1 | DMA_CHANNEL4)",
@@ -533,13 +477,7 @@ function GetSpi4TxDmaChoices()
         end
     return {"DMA2_CH5", "DMA_NONE"}
 end
-function GetSpi4TxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM1 | DMA_CHANNEL4)"
-        end
-    return "DMA2_CH5"
-end
--- SPI4 RX
+-- SPI4 RX_DMA
 function GetSpi4RxDmaChoices()
     if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM0 | DMA_CHANNEL4)",
@@ -548,14 +486,8 @@ function GetSpi4RxDmaChoices()
         end
     return {"DMA2_CH4", "DMA_NONE"}
 end
-function GetSpi4RxDmaDefault()
-    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM0 | DMA_CHANNEL4)"
-        end
-    return "DMA2_CH4"
-end
 
--- SPI5 TX
+-- SPI5 TX_DMA
 function GetSpi5TxDmaChoices()
 --    if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL2 | DMA_STREAM4 | DMA_CHANNEL2)",
@@ -564,13 +496,7 @@ function GetSpi5TxDmaChoices()
 --        end
 --    return {"DMA2_CH5", "DMA_NONE"}
 end
-function GetSpi5TxDmaDefault()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM4 | DMA_CHANNEL2)"
---        end
---    return "DMA2_CH5"
-end
--- SPI5 RX
+-- SPI5 RX_DMA
 function GetSpi5RxDmaChoices()
 --    if c_is_provided("HW_DMA_STM32F2") then
         return {"(DMA_CONTROL1 | DMA_STREAM3 | DMA_CHANNEL2)",
@@ -579,40 +505,181 @@ function GetSpi5RxDmaChoices()
 --        end
 --    return {"DMA2_CH4", "DMA_NONE"}
 end
-function GetSpi5RxDmaDefault()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM3 | DMA_CHANNEL2)"
---        end
---    return "DMA2_CH4"
+
+-- SPI6 TX_DMA
+function GetSpi6TxDmaChoices()
+    return
+        {"(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL1)", "DMA_NONE"}
+end
+--SPI6 RX_DMA
+function GetSpi6RxDmaChoices()
+    return
+        {"(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL1)", "DMA_NONE"}
 end
 
--- SPI6 TX
-function GetSpi6TxDmaChoices()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return {"(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL1)",
-                "DMA_NONE"}
---        end
---    return "DMA1_CH5"
-end
-function GetSpi6TxDmaDefault()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM5 | DMA_CHANNEL1)"
---        end
---    return "DMA1_CH5"
-end
---SPI6 RX
-function GetSpi6RxDmaChoices()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return {"(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL1)",
-                "DMA_NONE"}
---        end
---    return "DMA1_CH4"
-end
-function GetSpi6RxDmaDefault()
---    if c_is_provided("HW_DMA_STM32F2") then
-        return "(DMA_CONTROL2 | DMA_STREAM6 | DMA_CHANNEL1)"
---        end
---    return "DMA1_CH4"
+function SpiDevice(SPIX, DEVICE_FLAG, SRCX, REMAP_FLAG, REMAP_CHOICE,
+         NSS_FLAG, NSS_REQ, NSS_CHOICE,
+         SCK_CHOICE,
+         MISO_CHOICE,
+         MOSI_CHOICE,
+         TX_DMA_CHOICES,
+         RX_DMA_CHOICES
+         )
+    return
+    {
+        name = function() return 'nutarch_cm3_stm32_' .. SPIX ;end,
+        brief = function() return 'STM32 ' .. SPIX .. ' Bus Controller' ;end,
+        description = function() return SPIX ..
+            ' Controller with up to four Chip select line.' ;end,
+        requires = function() return DEVICE_FLAG ;end,
+        provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
+        sources =  function() return SRCX ;end,
+        options =
+        {
+            {
+                macro = function() return SPIX .. '_REMAP';end,
+                brief = "Use Alternate Pins",
+                description = function() return REMAP_CHOICE ;end,
+                requires = function() return REMAP_FLAG ;end,
+                type = "enumerated",
+                choices = {"0", "1"},
+                default = "0",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_SPEED' ; end,
+                brief = function() return SPIX .. 'Pin speed' ; end,
+                description = function() return PinSpeedDesc() end,
+                choices = function() return GetPinSpeedChoices() end,
+                type = "enumerated",
+                default = "GPIO_MED",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_CS0' ; end,
+                brief = function() return SPIX .. ' CS0 Gpio' ; end,
+                description = function() return
+                    "Choice of " .. SPIX .. "CS0 Gpio.\n"..
+                    "Default is first NSS pin.\n"..
+                    "Use PIN_NONE if no CS is required.\n"; end,
+                type = "enumerated",
+                choices = function() return NSS_CHOICE() ; end,
+                default = function() return NSS_CHOICE()[2] ; end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_CS1' ; end,
+                brief = function() return SPIX .. ' CS1 Gpio' ; end,
+                description = function() return
+                'Choose ' .. SPIX .. ' CS1. Use PIN_NONE is unused.' ; end,
+                default = "PIN_NONE",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_CS2' ; end,
+                brief = function() return SPIX .. ' CS2 Gpio' ; end,
+                description = function() return
+                'Choose ' .. SPIX .. ' CS2. Use PIN_NONE is unused.' ; end,
+                default = "PIN_NONE",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_CS3' ; end,
+                brief = function() return SPIX .. ' CS3 Gpio' ; end,
+                description = function() return
+                   'Choose ' .. SPIX .. ' CS3. Use PIN_NONE is unused.' ; end,
+                default = "PIN_NONE",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_USE_NSS' ; end,
+                brief = "Use NSS",
+                description = "Use Hardware NSS for SPI. Default off.",
+                provides = function() return NSS_FLAG; end,
+                flavor = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = function() return SPIX .. '_NSS' ; end,
+                brief = function() return SPIX .. ' NSS Pins' ; end,
+                description = function() return
+                    'Choice of ' .. SPIX .. ' NSS Pins' ; end,
+                requires = function() return NSS_REQ; end,
+                type = "enumerated",
+                choices = function() return NSS_CHOICE end,
+                default = "PIN_NONE",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_SCK' ; end,
+                brief = function() return SPIX .. ' SCK Pin' ; end,
+                description = function() return
+                   'Choice of ' .. SPIX .. ' SCK Pins.' ; end,
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() return SCK_CHOICE() ; end,
+                default = function() return SCK_CHOICE()[1] ; end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_MISO' ; end,
+                brief = function() return SPIX .. ' MISO Pin' ; end,
+                description = function() return
+                   'Choice of ' .. SPIX .. ' MISO Pins.' ; end,
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() return MISO_CHOICE() ; end,
+                default = function() return MISO_CHOICE()[1] ; end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_MOSI' ; end,
+                brief = function() return SPIX .. ' MOSI Pin' ; end,
+                description = function() return
+                   'Choice of ' .. SPIX .. ' MOSI Pins.' ; end,
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function() return MOSI_CHOICE() ; end,
+                default = function() return MOSI_CHOICE()[1] ; end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_MODE' ; end,
+                brief = function() return SPIX .. ' MODE Pin' ; end,
+                description = function() return
+                   'Choice of ' .. SPIX .. ' IRQ_MODE(default),'..
+                   ' DMA_MODE or POLLING_MODE' ; end,
+                type = "enumerated",
+                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
+                default = "IRQ_MODE",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_DMA_TX' ; end,
+                brief = function() return SPIX .. '_DMA_TX' ; end,
+                description = function() return
+                   'Select ' .. SPIX .. ' TX DMA.\n'..
+                   'Take care for collisions!\n'..
+                   'Use DMA_NONE to disable even with xDMA_MODE.' ; end,
+                type = "enumerated",
+                choices = function() return TX_DMA_CHOICES() ; end,
+                default = function() return TX_DMA_CHOICES()[1] ; end,
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = function() return SPIX .. '_DMA_RX' ; end,
+                brief = function() return SPIX .. '_DMA_RX' ; end,
+                description = function() return
+                   'Select ' .. SPIX .. ' RX DMA.\n'..
+                   'Take care for collisions!\n'..
+                   'Use DMA_NONE to disable.' ; end,
+                type = "enumerated",
+                choices = function() return RX_DMA_CHOICES() ; end,
+                default = function() return RX_DMA_CHOICES()[1] ; end,
+                file = "include/cfg/spi.h"
+            },
+        },
+    }
 end
 
 nutarch_cm3_stm32_spi_devices =
@@ -623,834 +690,187 @@ nutarch_cm3_stm32_spi_devices =
     --
     -- ******************************************
     --
-    -- STM32F SPI1 Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f_spi1",
-        brief = "STM32 SPI1 Bus Controller",
-        description = "First SPI Controller with up to four Chip select line.",
-        requires = { "HW_SPI1_STM32" },
-        provides = { "SPIBUS_CONTROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi1.c" },
-        options =
-        {
-            {
-                macro = "SPI1_REMAP",
-                brief = "Use Alternate Pins",
-                description = "Choose SPI1 Pin remap. Default = 0 means no remap.\n\n"..
-                              "Default 0 Pin Mapping is:\n NSS PA04\n SCK PA05\n MISO PA06\n MOSI PA07\n"..
-                              "Remap   1 Pin Mapping is:\n NSS PA15\n SCK PB03\n MISO PB04\n MOSI PB05\n",
-                requires = { "HW_GPIO_STM32V1" },
-                type = "enumerated",
-                choices = {"0", "1"},
-                default = "0",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_SPEED",
-                brief = "Pin speed setting for SPI1 device",
-                description = function() return PinSpeedDesc() end,
-                choices = function() return GetPinSpeedChoices() end,
-                type = "enumerated",
-                default = "GPIO_MED",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_USE_NSS",
-                brief = "Use SPI1 NSS on F1",
-                description = "Use SPI1  Hardware NSS on F1. Default off.",
-                requires = { "HW_GPIO_STM32V1" },
-                flavor = "booldata",
-                file = "include/cfg/uart.h"
-            },
-            {
-                macro = "SPI1_CS0",
-                brief = "SPI1 CS0 Gpio",
-                description = "Choice of SPI1 CS0 Gpio.\n"..
-                              "Default is default NSS pin.\n"..
-                              "Use PIN_NONE if no CS is required.\n",
-                type = "enumerated",
-                choices = {"PIN_NONE", "PA04"},
-                default = "PA04",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_CS1",
-                brief = "SPI1 CS1 Gpio",
-                description = "Choice of SPI1 CS1 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_CS2",
-                brief = "SPI1 CS2 Gpio",
-                description = "Choice of SPI1 CS2 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_CS3",
-                brief = "SPI1 CS3 Gpio",
-                description = "Choice of SPI1 CS3 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_NSS",
-                brief = "SPI1 NSS Pins",
-                description = "Choice of SPI1 NSS Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi1Nss() end,
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_SCK",
-                brief = "SPI1 SCK Pins",
-                description = "Choice of SPI1 SCK Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi1Sck() end,
-                default = "PA05",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_MISO",
-                brief = "SPI1 MISO Pins",
-                description = "Choice of SPI1 MISO Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi1Miso() end,
-                default = "PA06",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_MOSI",
-                brief = "SPI1 MOSI Pins",
-                description = "Choice of SPI1 MOSI Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi1Mosi() end,
-                default = "PA07",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_I2S_MODE",
-                brief = "I2S Mode (First Controller)",
-                description = "If enabled, the controller will transfer I2S data.\n\n"..
-                              "Under development.",
-                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_DMA_TX",
-                brief = "Select SPI1 TX DMA",
-                description = "Select SPI1 TX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi1TxDmaChoices() end,
-                default = function() return GetSpi1TxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_DMA_RX",
-                brief = "Select SPI1 RX DMA.",
-                description = "Select SPI1 RX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi1RxDmaChoices() end,
-                default = function() return GetSpi1RxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI1_MODE",
-                brief = "Select SPIBUS 1 MODE",
-                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
-                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
-                default = "IRQ_MODE",
-                file = "include/cfg/spi.h"
-            },
-        },
-    },
+    SpiDevice(
+        "SPI1",
 
+        { "HW_SPI1_STM32" },
+
+        { "cm3/dev/stm/stm32_spi1.c" },
+
+        { "HW_GPIO_STM32V1"},
+
+        "Choose SPI1 Pin remap. Default = 0 means no remap.\n\n"..
+        "Default 0 Pin Mapping is:\n"..
+        "NSS PA04\nSCK PA05\nMISO PA06\nMOSI PA07\n"..
+        "Remap   1 Pin Mapping is:\n" ..
+        "NSS PA15\nSCK PB03\nMISO PB04\nMOSI PB05\n",
+
+        { "SPI1_USE_NSS" },
+
+        { "HW_GPIO_STM32V2", "SPI1_USE_NSS" },
+
+        GetSpi1Nss,
+
+        GetSpi1Sck,
+
+        GetSpi1Miso,
+
+        GetSpi1Mosi,
+
+        GetSpi1TxDmaChoices,
+
+        GetSpi1RxDmaChoices
+    ),
     --
     -- STM32F SPI2 Interface
     --
-    {
-        name = "nutarch_cm3_stm32f_spi2",
-        brief = "STM32F SPI2 Bus Controller",
-        description = "Second SPI Controller with up to four Chip select line.",
-        requires = { "HW_SPI2_STM32" },
-        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi2.c" },
-        options =
-        {
--- No Remap of SPI2 on F1
-            {
-                macro = "SPI2_SPEED",
-                brief = "Pin speed setting for SPI1 device",
-                description = function() return PinSpeedDesc() end,
-                choices = function() return GetPinSpeedChoices() end,
-                type = "enumerated",
-                default = "GPIO_MED",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS0",
-                brief = "SPI2 CS0 Gpio",
-                description = "Choice of SPI2 CS0 Gpio.\n"..
-                              "Default is default NSS pin.\n",
-                              "Use PIN_NONE if no CS is required.\n",
-                default = function() return GetSpi2NssDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS1",
-                brief = "SPI2 CS1 Gpio",
-                description = "Choice of SPI2 CS1 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS2",
-                brief = "SPI2 CS2 Gpio",
-                description = "Choice of SPI2 CS2 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_CS3",
-                brief = "SPI2 CS3 Gpio",
-                description = "Choice of SPI2 CS3 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_NSS",
-                brief = "SPI2 NSS Pins",
-                description = "Choice of SPI2 NSS Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi2Nss() end,
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_SCK",
-                brief = "SPI2 SCK Pins",
-                description = "Choice of SPI2 SCK Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi2Sck() end,
-                default = function() return GetSpi2SckDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_MISO",
-                brief = "SPI2 MISO Pins",
-                description = "Choice of SPI2 MISO Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi2Miso() end,
-                default = "PB14",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_MOSI",
-                brief = "SPI2 MOSI Pins",
-                description = "Choice of SPI2 MOSI Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi2Mosi() end,
-                default = "PB15",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_I2S_MODE",
-                brief = "I2S Mode (Second Controller)",
-                description = "If enabled, the controller will transfer I2S data.\n\n"..
-                              "Under development.",
-                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_MODE",
-                brief = "Select SPIBUS 2 MODE",
-                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
-                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
-                default = "IRQ_MODE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_DMA_TX",
-                brief = "Select SPI2 TX DMA",
-                description = "Select SPI2 TX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi2TxDmaChoices() end,
-                default = function() return GetSpi2TxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI2_DMA_RX",
-                brief = "Select SPI2 RX DMA.",
-                description = "Select SPI2 RX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi2RxDmaChoices() end,
-                default = function() return GetSpi2RxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-        }
-    },
+    SpiDevice(
+        "SPI2",
 
+        { "HW_SPI2_STM32" },
+
+        { "cm3/dev/stm/stm32_spi2.c" },
+
+        { "NOT_AVAILVABLE" },
+
+        "",
+
+        { "SPI2_USE_NSS" },
+
+        { "HW_GPIO_STM32V2", "SPI2_USE_NSS" },
+
+        GetSpi2Nss,
+
+        GetSpi2Sck,
+
+        GetSpi2Miso,
+
+        GetSpi2Mosi,
+
+        GetSpi2TxDmaChoices,
+
+        GetSpi2RxDmaChoices
+    ),
     --
     -- STM32F SPI3 Interface
     --
-    {
-        name = "nutarch_cm3_stm32f_spi3",
-        brief = "STM32F SPI3 Bus Controller",
-        description = "3. SPI Controller with up to four Chip select line.",
-        requires = { "HW_SPI3_STM32" },
-        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi3.c" },
-        options =
-        {
-            {
-                macro = "SPI3_REMAP",
-                brief = "Use SPI3 Alternate Pins",
-                description = "Choose SPI3 Pin remap. Default = 0 means no remap.\n\n"..
-                              "Default 0 Pin Mapping is:\n NSS PA15\n SCK PB03\n MISO PB04\n MOSI PB05\n"..
-                              "Remap   1 Pin Mapping is:\n NSS PA04\n SCK PC10\n MISO PC11\n MOSI PC12\n",
-                requires = { "HW_GPIO_STM32V1" },
-                type = "enumerated",
-                choices = {"0", "1"},
-                default = "0",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_SPEED",
-                brief = "Pin speed setting for SPI1 device",
-                description = function() return PinSpeedDesc() end,
-                choices = function() return GetPinSpeedChoices() end,
-                type = "enumerated",
-                default = "GPIO_MED",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS0",
-                brief = "SPI3 CS0 Gpio",
-                description = "Choice of SPI3 CS0 Gpio.\n"..
-                              "Default is default NSS pin.\n",
-                              "Use PIN_NONE if no CS is required.\n",
-                default = "PA04",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS1",
-                brief = "SPI3 CS1 Gpio",
-                description = "Choice of SPI3 CS1 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS2",
-                brief = "SPI3 CS2 Gpio",
-                description = "Choice of SPI3 CS2 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_CS3",
-                brief = "SPI3 CS3 Gpio",
-                description = "Choice of SPI3 CS3 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_NSS",
-                brief = "SPI3 NSS Pins",
-                description = "Choice of SPI3 NSS Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi3Nss() end,
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_SCK",
-                brief = "SPI3 SCK Pins",
-                description = "Choice of SPI3 SCK Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi3Sck() end,
-                default = "PB03",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_MISO",
-                brief = "SPI3 MISO Pins",
-                description = "Choice of SPI3 MISO Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi3Miso() end,
-                default = "PB04",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_MOSI",
-                brief = "SPI3 MOSI Pins",
-                description = "Choice of SPI3 MOSI Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi3Mosi() end,
-                default = "PB05",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_I2S_MODE",
-                brief = "I2S Mode (Third Controller)",
-                description = "If enabled, the controller will transfer I2S data.\n\n"..
-                              "Under development.",
-                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_MODE",
-                brief = "Select SPIBUS 3 MODE",
-                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
-                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
-                default = "IRQ_MODE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_DMA_TX",
-                brief = "Select SPI3 TX DMA",
-                description = "Select SPI3 TX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi3TxDmaChoices() end,
-                default = function() return GetSpi3TxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI3_DMA_RX",
-                brief = "Select SPI3 RX DMA.",
-                description = "Select SPI3 rX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi3RxDmaChoices() end,
-                default = function() return GetSpi3RxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-        },
-    },
+    SpiDevice(
+        "SPI3",
 
+        { "HW_SPI3_STM32" },
+
+        { "cm3/dev/stm/stm32_spi3.c" },
+
+        { "HW_GPIO_STM32V1" },
+
+        "Choose SPI3 Pin remap. Default = 0 means no remap.\n\n"..
+        "Default 0 Pin Mapping is:\n NSS PA15\n SCK PB03\n MISO PB04\n MOSI PB05\n"..
+        "Remap   1 Pin Mapping is:\n NSS PA04\n SCK PC10\n MISO PC11\n MOSI PC12\n",
+
+        { "SPI3_USE_NSS" },
+
+        { "HW_GPIO_STM32V2", "SPI3_USE_NSS" },
+
+        GetSpi3Nss,
+
+        GetSpi3Sck,
+
+        GetSpi3Miso,
+
+        GetSpi3Mosi,
+
+        GetSpi3TxDmaChoices,
+
+        GetSpi3RxDmaChoices
+    ),
     --
     -- STM32F SPI4 Interface
     --
-    {
-        name = "nutarch_cm3_stm32f_spi4",
-        brief = "STM32F SPI4 Bus Controller",
-        description = "STM32 SPI4 Bus Controller",
-        requires = { "HW_SPI4_STM32" },
-        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi4.c" },
-        options =
-        {
--- Not available on F1, so no global remap
-            {
-                macro = "SPI4_SPEED",
-                brief = "Pin speed setting for SPI1 device",
-                description = function() return PinSpeedDesc() end,
-                choices = function() return GetPinSpeedChoices() end,
-                type = "enumerated",
-                default = "GPIO_MED",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS0",
-                brief = "SPI4 CS0 Gpio",
-                description = "Choice of SPI4 CS0 Gpio.\n"..
-                              "Default is default NSS pin.\n",
-                              "Use PIN_NONE if no CS is required.\n",
-                default = "PE04",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS1",
-                brief = "SPI4 CS1 Gpio",
-                description = "Choice of SPI4 CS1 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS2",
-                brief = "SPI4 CS2 Gpio",
-                description = "Choice of SPI4 CS2 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_CS3",
-                brief = "SPI4 CS3 Gpio",
-                description = "Choice of SPI4 CS3 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_NSS",
-                brief = "SPI4 NSS Pins",
-                description = "Choice of SPI4 NSS Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi4Nss() end,
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_SCK",
-                brief = "SPI4 SCK Pins",
-                description = "Choice of SPI4 SCK Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi4Sck() end,
-                default = "PE03",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_MISO",
-                brief = "SPI4 MISO Pins",
-                description = "Choice of SPI4 MISO Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi4Miso() end,
-                default = "PE05",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_MOSI",
-                brief = "SPI4 MOSI Pins",
-                description = "Choice of SPI4 MOSI Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi4Mosi() end,
-                default = "PE06",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_I2S_MODE",
-                brief = "I2S Mode (Third Controller)",
-                description = "If enabled, the controller will transfer I2S data.\n\n"..
-                              "Under development.",
-                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_MODE",
-                brief = "Select SPIBUS 4 MODE",
-                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
-                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
-                default = "IRQ_MODE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_DMA_TX",
-                brief = "Select SPI4 TX DMA",
-                description = "Select SPI4 TX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi4TxDmaChoices() end,
-                default = function() return GetSpi4TxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI4_DMA_RX",
-                brief = "Select SPI4 RX DMA.",
-                description = "Select SPI4 RX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi4RxDmaChoices() end,
-                default = function() return GetSpi4RxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-        },
-    },
+    SpiDevice(
+        "SPI4",
 
-    --
-    -- STM32F SPI5 Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f_spi5",
-        brief = "STM32F SPI5 Bus Controller",
-        description = "STM32F SPI5 Bus Controller",
-        requires = { "HW_SPI5_STM32" },
-        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi5.c" },
-        options =
-        {
--- Not available on F1, so no global remap
-            {
-                macro = "SPI5_SPEED",
-                brief = "Pin speed setting for SPI1 device",
-                description = function() return PinSpeedDesc() end,
-                choices = function() return GetPinSpeedChoices() end,
-                type = "enumerated",
-                default = "GPIO_MED",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS0",
-                brief = "SPI5 CS0 Gpio",
-                description = "Choice of SPI5 CS0 Gpio.\n"..
-                              "Default is default NSS pin.\n",
-                              "Use PIN_NONE if no CS is required.\n",
-                default = function() return GetSpi5NssDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS1",
-                brief = "SPI5 CS1 Gpio",
-                description = "Choice of SPI5 CS1 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS2",
-                brief = "SPI5 CS2 Gpio",
-                description = "Choice of SPI5 CS2 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_CS3",
-                brief = "SPI5 CS3 Gpio",
-                description = "Choice of SPI5 CS3 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_NSS",
-                brief = "SPI5 NSS Pins",
-                description = "Choice of SPI5 NSS Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi5Nss() end,
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_SCK",
-                brief = "SPI5 SCK Pins",
-                description = "Choice of SPI5 SCK Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi5Sck() end,
-                default = function() return GetSpi5SckDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_MISO",
-                brief = "SPI5 MISO Pins",
-                description = "Choice of SPI5 MISO Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi5Miso() end,
-                default = function() return GetSpi5MisoDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_MOSI",
-                brief = "SPI5 MOSI Pins",
-                description = "Choice of SPI5 MOSI Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                choices = function() return GetSpi5Mosi() end,
-                default = function() return GetSpi5MosiDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_I2S_MODE",
-                brief = "I2S Mode (Third Controller)",
-                description = "If enabled, the controller will transfer I2S data.\n\n"..
-                              "Under development.",
-                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_MODE",
-                brief = "Select SPIBUS 5 MODE",
-                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
-                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
-                default = "IRQ_MODE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_DMA_TX",
-                brief = "Select SPI5 TX DMA.",
-                description = "Select SPI5 TX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi5TxDmaChoices() end,
-                default = function() return GetSpi5TxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI5_DMA_RX",
-                brief = "Select SPI5 RX DMA.",
-                description = "Select SPI5 RX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi5RxDmaChoices() end,
-                default = function() return GetSpi5RxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-        },
-    },
+        { "HW_SPI4_STM32" },
 
+        { "cm3/dev/stm/stm32_spi4.c" },
+
+        { "NOT_AVAILVABLE" },
+
+        "",
+
+        { "SPI4_USE_NSS" },
+
+        { "HW_GPIO_STM32V2", "SPI4_USE_NSS" },
+
+        GetSpi4Nss,
+
+        GetSpi4Sck,
+
+        GetSpi4Miso,
+
+        GetSpi4Mosi,
+
+        GetSpi4TxDmaChoices,
+
+        GetSpi4RxDmaChoices
+    ),
+    --
+    -- STM32 SPI5 Interface
+    --
+    SpiDevice(
+        "SPI5",
+
+        { "HW_SPI5_STM32" },
+
+        { "cm3/dev/stm/stm32_spi5.c" },
+
+        { "NOT_AVAILVABLE" },
+
+        "",
+
+        { "SPI5_USE_NSS" },
+
+        { "HW_GPIO_STM32V2", "SPI5_USE_NSS" },
+
+        GetSpi5Nss,
+
+        GetSpi5Sck,
+
+        GetSpi5Miso,
+
+        GetSpi5Mosi,
+
+        GetSpi5TxDmaChoices,
+
+        GetSpi5RxDmaChoices
+    ),
     --
     -- STM32F SPI6 Interface
     --
-    {
-        name = "nutarch_cm3_stm32f_spi6",
-        brief = "STM32F SPI6 Bus Controller",
-        description = "STM32F SPI6 Bus Controller",
-        requires = { "HW_SPI6_STM32" },
-        provides = { "SPIBUS_CONTRROLLER", "HW_SPI_STM32" },
-        sources =  { "cm3/dev/stm/stm32_spi6.c" },
-        options =
-        {
--- Not available on F1, so no global remap
-            {
-                macro = "SPI6_SPEED",
-                brief = "Pin speed setting for SPI1 device",
-                description = function() return PinSpeedDesc() end,
-                choices = function() return GetPinSpeedChoices() end,
-                type = "enumerated",
-                default = "GPIO_MED",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS0",
-                brief = "SPI6 CS0 Gpio",
-                description = "Choice of SPI6 CS0 Gpio.\n"..
-                              "Default is default NSS pin.\n",
-                              "Use PIN_NONE if no CS is required.\n",
-                default = "PG08",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS1",
-                brief = "SPI6 CS1 Gpio",
-                description = "Choice of SPI6 CS1 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS2",
-                brief = "SPI6 CS2 Gpio",
-                description = "Choice of SPI6 CS2 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_CS3",
-                brief = "SPI6 CS3 Gpio",
-                description = "Choice of SPI6 CS3 Gpio.",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_NSS",
-                brief = "SPI6 NSS Pins",
-                description = "Choice of SPI6 NSS Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                default = "PIN_NONE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_SCK",
-                brief = "SPI6 SCK Pins",
-                description = "Choice of SPI6 SCK Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                default = "PG13",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_MISO",
-                brief = "SPI6 MISO Pins",
-                description = "Choice of SPI6 MISO Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                default = "PG12",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_MOSI",
-                brief = "SPI6 MOSI Pins",
-                description = "Choice of SPI6 MOSI Pins",
-                requires = { "HW_GPIO_STM32V2" },
-                type = "enumerated",
-                default = "PG14",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_I2S_MODE",
-                brief = "I2S Mode (Third Controller)",
-                description = "If enabled, the controller will transfer I2S data.\n\n"..
-                              "Under development.",
-                requires = { "NOT_AVAILABLE" },
-                flavor = "boolean",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_MODE",
-                brief = "Select SPIBUS 6 MODE",
-                description = "Choices are IRQ_MODE(default), DMA_MODE or POLLING_MODE",
-                choices = {"IRQ_MODE", "DMA_MODE", "POLLING_MODE"},
-                default = "IRQ_MODE",
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_DMA_TX",
-                brief = "Select SPI6 TX DMA.",
-                description = "Select SPI6 TX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                type = "enumerated",
-                choices = function() return GetSpi6TxDmaChoices() end,
-                default = function() return GetSpi6TxDmaDefault() end,
-                file = "include/cfg/spi.h"
-            },
-            {
-                macro = "SPI6_DMA_RX",
-                brief = "Select SPI6 RX DMA.",
-                description = "Select SPI6 RX DMA.\n"..
-                              "Take care for collisions!\n"..
-                              "Use DMA_NONE to disable.",
-                choices = function() return GetSpi6RxDmaChoices() end,
-                default = function() return GetSpi6RxDmaDefault() end,
-                type = "enumerated",
-                file = "include/cfg/spi.h"
-            },
-        },
-    },
+    SpiDevice(
+        "SPI6",
+
+        { "HW_SPI6_STM32" },
+
+        { "cm3/dev/stm/stm32_spi6.c" },
+
+        { "NOT_AVAILVABLE" },
+
+        "",
+
+        { "SPI6_USE_NSS" },
+
+        { "HW_GPIO_STM32V2", "SPI6_USE_NSS" },
+
+        GetSpi6Nss,
+
+        GetSpi6Sck,
+
+        GetSpi6Miso,
+
+        GetSpi6Mosi,
+
+        GetSpi6TxDmaChoices,
+
+        GetSpi6RxDmaChoices
+    ),
 }
