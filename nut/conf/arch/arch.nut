@@ -1278,7 +1278,7 @@ nutarch =
                 description = "STM32F401 256 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                requires = {  },
+                requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
@@ -1296,7 +1296,7 @@ nutarch =
                 description = "STM32F401 512 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                requires = {  },
+                requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
@@ -1314,7 +1314,7 @@ nutarch =
                 description = "STM32F405 with FSMC.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
-                requires = {  },
+                requires = { "TOOL_CC_CM3" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_CM3",
