@@ -784,12 +784,31 @@ nutarch_cm3_stm32_devices =
         },
     },
     --
+    -- STM32F0 Combined USART IRQ
+    --
+    {
+        name = "nutarch_cm3_stm32f0_combined_irq",
+        brief = "STM32F0 USART IRQ separation",
+        description = "IRQ Separation for F0 devices with combined USART IRQ",
+        requires = {"HW_COMBINED_IRQ_STM32F0"},
+        sources = {"cm3/dev/stm/stm32f0_combined_irq.c"},
+    },
+    --
+    -- STM32L0 Combined IRQ
+    --
+    {
+        name = "nutarch_cm3_stm32l0_combined_irq",
+        brief = "STM32L0 IRQ separation",
+        description = "IRQ Separation for L0 devices with combined IRQS",
+        requires = {"HW_COMBINED_IRQ_STM32L0"},
+        sources = {"cm3/dev/stm/stm32l0_combined_irq.c"},
+    },
+    --
     -- STM32 Signal handler
     {
         name = "nutarch_cm3_stm32_sig",
         brief = "List of additional devices",
         description = "Helper to create the sig_DEVXX entries.\n\n"..
-                      "USART1, SPI1 and I2c are avaible on all devices.\n"..
                       "No User configuration needed here.\n",
         sources = { "cm3/dev/stm/ih_stm32.c"},
         options =
@@ -874,15 +893,6 @@ nutarch_cm3_stm32_devices =
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
-            },
-            {
-                macro = "HW_USART_COMBINED_IRQ_STM32",
-                brief = "STM32F0 Devices with combined DMA IRQ",
-                description = "STM32F0 Devices with combined DMA IRQ",
-                requires = { "HW_USART_COMBINED_IRQ_STM32" },
-                default = "1",
-                type = "integer",
-                file = "include/cfg/uart.h"
             },
             {
                 macro = "HW_PVD_STM32",
@@ -1020,6 +1030,72 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_USART3_4_STM32",
+                brief = "USART3_4 Availability",
+                description = "USART3_4 Availability on F0",
+                requires = {"HW_USART3_4_STM32"},
+                default = "1",
+                provides = {
+                    "HW_USART3_STM32",
+                    "HW_USART4_STM32",
+                    "HW_COMBINED_IRQ_STM32F0",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                },
+               type = "integer",
+               file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART4_5_STM32",
+                brief = "USART4_5 Availability",
+                description = "USART4_5 Availability on L0",
+                requires = {"HW_USART4_5_STM32"},
+                default = "1",
+                provides = {
+                    "HW_USART4_STM32",
+                    "HW_USART5_STM32",
+                    "HW_COMBINED_IRQ_STM32L0",
+                    "HW_COMBINED_IRQ_STM32",
+                },
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART3_6_STM32",
+                brief = "USART3_6 Availability",
+                description = "USART3_6 Availability on F0",
+                requires = {"HW_USART3_6_STM32"},
+                default = "1",
+                provides = {
+                    "HW_USART3_STM32",
+                    "HW_USART4_STM32",
+                    "HW_USART5_STM32",
+                    "HW_USART6_STM32",
+                    "HW_COMBINED_IRQ_STM32F0",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                },
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART3_8_STM32",
+                brief = "USART3_8 Availability",
+                description = "USART3_8 Availability on F0",
+                requires = {"HW_USART3_8_STM32"},
+                default = "1",
+                provides = {
+                    "HW_USART3_STM32",
+                    "HW_USART4_STM32",
+                    "HW_USART5_STM32",
+                    "HW_USART6_STM32",
+                    "HW_USART7_STM32",
+                    "HW_USART8_STM32",
+                    "HW_COMBINED_IRQ_STM32F0",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                },
+                type = "integer",
+                file = "include/cfg/devices.h",
+            },
+            {
                 macro = "HW_RNG_LPUART1_STM32",
                 brief = "STM32 LPUSART/RNG separation",
                 description = "Separate LPUART and RNG",
@@ -1027,16 +1103,110 @@ nutarch_cm3_stm32_devices =
                 provides = {
                     "HW_LPUART1_STM32",
                     "HW_RNG_STM32",
+                    "HW_COMBINED_IRQ_STM32L0",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                    "HW_LPUART1_COMBINED_IRQ_STM32",
+                    "HW_RNG_COMBINED_IRQ_STM32",
                 },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_AES_LPUART1_STM32",
+                brief = "STM32 LPUSART/AES separation",
+                description = "Separate LPUART and AES",
+                requires = {"HW_AES_LPUART1_STM32"},
+                provides = {
+                    "HW_LPUART1_STM32",
+                    "HW_AES_STM32",
+                    "HW_COMBINED_IRQ_STM32L0",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                    "HW_LPUART1_COMBINED_IRQ_STM32",
+                    "HW_AES_COMBINED_IRQ_STM32",
+                },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_AES_RNG_LPUART1_STM32",
+                brief = "STM32 LPUSART/RNG/AES separation",
+                description = "Separate LPUART and RNG",
+                requires = {"HW_AES_RNG_LPUART1_STM32"},
+                provides = {
+                    "HW_LPUART1_STM32",
+                    "HW_RNG_STM32",
+                    "HW_AES_STM32",
+                    "HW_COMBINED_IRQ_STM32L0",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                    "HW_LPUART1_COMBINED_IRQ_STM32",
+                    "HW_RNG_COMBINED_IRQ_STM32",
+                    "HW_AES_COMBINED_IRQ_STM32",
+                },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART_COMBINED_IRQ_STM32",
+                brief = "STM32 Devices with combined USART IRQ",
+                description = "STM32 Devices with combined UART IRQ",
+                requires = { "HW_USART_COMBINED_IRQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h",
+            },
+            {
                 macro = "HW_LPUART1_STM32",
                 brief = "LPUART1 Availability",
                 description = "LPUART1 Availability",
                 requires = { "HW_LPUART1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_LPUART1_COMBINED_IRQ_STM32",
+                brief = "LPUART1 Availability",
+                description = "LPUART1 Availability",
+                requires = { "HW_LPUART1_COMBINED_IRQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RNG_STM32",
+                brief = "RNG Availability",
+                description = "RNG Availability",
+                requires = { "HW_RNG_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RNG_COMBINED_IRQ_STM32",
+                brief = "RNG Availability",
+                description = "RNG Availability",
+                requires = { "HW_RNG_COMBINED_IRQ_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_AES_STM32",
+                brief = "AES Availability",
+                description = "AES Availability",
+                requires = {"HW_AES_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_AES_COMBINED_IRQ_STM32",
+                brief = "AES Availability",
+                description = "AES Availability",
+                requires = {"HW_AES_COMBINED_IRQ_STM32"},
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
@@ -1600,5 +1770,5 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/arch.h"
             },
         }
-    }
+    },
 }

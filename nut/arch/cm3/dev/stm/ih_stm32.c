@@ -188,57 +188,53 @@ CREATE_HANDLER(USB_WAKE,      USBWakeUp,   NUT_IRQPRI_DEF);  // USB Wake Priorit
 #if defined(HW_USART1_STM32)
 CREATE_HANDLER(USART1,        USART1,          NUT_IRQPRI_DEF);  // USART 1
 #endif
-#if defined(MCU_STM32F0)
-CREATE_HANDLER(USART2,        USART2,          NUT_IRQPRI_DEF);  // USART 2
-# if   defined(USART3_8_COMBINED_IRQ)
-CREATE_HANDLER(USART_GROUP,   USART3_8,        NUT_IRQPRI_DEF);  // USART 2
-# elif defined(USART3_6_COMBINED_IRQ)
-CREATE_HANDLER(USART_GROUP,   USART3_6,        NUT_IRQPRI_DEF);  // USART 2
-# elif defined(USART3_4_COMBINED_IRQ)
-CREATE_HANDLER(USART_GROUP,   USART3_4,        NUT_IRQPRI_DEF);  // USART 2
-# endif
-#else
 #if defined(HW_USART2_STM32)
 CREATE_HANDLER(USART2,        USART2,          NUT_IRQPRI_DEF);  // USART 2
 #endif
-#if defined(HW_USART3_STM32)
+#if defined(HW_USART3_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART3,        USART3,          NUT_IRQPRI_DEF);  // USART 3
 #endif
-#if defined(HW_UART4_STM32)
+#if defined(HW_UART4_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART4,        UART4,           NUT_IRQPRI_DEF);  // UART 4
 #endif
-#if defined(HW_USART4_STM32)
+#if defined(HW_USART4_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART4,        USART4,          NUT_IRQPRI_DEF);  // USART 4
 #endif
-#if defined(HW_USART3_4_STM32)
-CREATE_HANDLER(USART3_4,      UART3_4,         NUT_IRQPRI_DEF);  // UART 3/4 combined
-#endif
-#if defined(HW_UART5_STM32)
+#if defined(HW_UART5_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART5,        UART5,           NUT_IRQPRI_DEF);  // UART 5
 #endif
-#if defined(HW_USART5_STM32)
+#if defined(HW_USART5_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART5,        USART5,          NUT_IRQPRI_DEF);  // USART 5
 #endif
-#if defined(HW_USART6_STM32)
+#if defined(HW_USART6_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART6,        USART6,          NUT_IRQPRI_DEF);  // USART 6
 #endif
-#if defined(HW_UART7_STM32)
+#if defined(HW_UART7_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART7,        UART7,          NUT_IRQPRI_DEF);  // UART 7
 #endif
-#if defined(HW_USART7_STM32)
-CREATE_HANDLER(USART7,        USART7,         NUT_IRQPRI_DEF);  // USART 7
-#endif
-#if defined(HW_UART8_STM32)
+#if defined(HW_UART8_STM32) && !defined(HW_USART_COMBINED_IRQ_STM32)
 CREATE_HANDLER(USART8,        UART8,          NUT_IRQPRI_DEF);  // UART 8
 #endif
-#if defined(HW_USART8_STM32)
-CREATE_HANDLER(USART8,        USART8,         NUT_IRQPRI_DEF);  // UART 8
+
+#if   defined(HW_USART3_8_STM32)
+CREATE_HANDLER(USART_GROUP,   USART3_8,        NUT_IRQPRI_DEF);  // USART3_8
+# elif defined(HW_USART3_6_STM32)
+CREATE_HANDLER(USART_GROUP,   USART3_6,        NUT_IRQPRI_DEF);  // USART3_6
+# elif defined(HW_USART3_4_STM32)
+CREATE_HANDLER(USART_GROUP,   USART3_4,        NUT_IRQPRI_DEF);  // USART3_4
+# endif
+#if defined(HW_USART4_5_STM32)
+CREATE_HANDLER(USART4_5,      USART4_5,        NUT_IRQPRI_DEF);  // UART 4/5 combined
 #endif
-#if defined(HW_RNG_LPUART1_STM32)
-CREATE_HANDLER(LPUART1,       RNG_LPUART1,    NUT_IRQPRI_DEF);  // LPUART1/RNG
-#elif defined(HW_LPUART1_STM32)
+#if defined(HW_LPUART1_STM32) && !defined(HW_LPUART1_COMBINED_IRQ_STM32)
 CREATE_HANDLER(LPUART1,       LPUART1,        NUT_IRQPRI_DEF);  // LPUART1
 #endif
+#if defined(HW_RNG_LPUART1_STM32)
+CREATE_HANDLER(LPUART1_GROUP, RNG_LPUART1,    NUT_IRQPRI_DEF);  // LPUART1/RNG
+#elif defined(HW_AES_LPUART1_STM32)
+CREATE_HANDLER(LPUART1_GROUP, AES_LPUART1,    NUT_IRQPRI_DEF);  // LPUART1/RNG
+#elif defined(HW_AES_RNG_LPUART1_STM32)
+CREATE_HANDLER(LPUART1_GROUP, AES_RNG_LPUART1, NUT_IRQPRI_DEF);  // LPUART1/RNG
 #endif
 
 #if defined (MCU_STM32L0)
@@ -420,13 +416,10 @@ CREATE_HANDLER(SDADC2,         SDADC2,       NUT_IRQPRI_DEF);
 CREATE_HANDLER(SDADC3,         SDADC3,       NUT_IRQPRI_DEF);
 #endif
 
-#if defined(HW_HASH_STM32)
+#if defined(HW_HASH_STM32) && !defined(HW_HASH_COMBINED_IRQ_STM32)
 CREATE_HANDLER(HASH,            HASH,         NUT_IRQPRI_DEF);
 #endif
 
-#if defined(HW_RNG_STM32)
-CREATE_HANDLER(RNG,             HASH_RNG,     NUT_IRQPRI_DEF);
-#endif
 #if defined(HW_HASH_RNG_STM32)
 CREATE_HANDLER(HASH_RNG,        HASH_RNG,     NUT_IRQPRI_DEF);
 #endif
@@ -473,4 +466,29 @@ CREATE_HANDLER(CEC,             CEC,          NUT_IRQPRI_DEF);
 
 #if defined( __FPU_PRESENT)
 CREATE_HANDLER(FPU,             FPU,          NUT_IRQPRI_DEF);
+#endif
+
+#if !defined(HW_USART_COMBINED_IRQ_STM32)
+IRQ_HANDLER *Stm32UsartInstallHandler(int nr, IRQ_HANDLER *sig)
+{
+    NutIrqEnable(sig);
+    return sig;
+}
+#endif
+
+#if defined(HW_RNG_STM32) && !defined(HW_RNG_COMBINED_IRQ_STM32)
+CREATE_HANDLER(RNG,             RNG,          NUT_IRQPRI_DEF);
+IRQ_HANDLER *Stm32RngInstallHandler(IRQ_HANDLER *sig)
+{
+    NutIrqEnable(sig);
+    return sig;
+}
+#endif
+#if defined(HW_AES_STM32) && !defined(HW_AES_COMBINED_IRQ_STM32)
+CREATE_HANDLER(AES,       AES,        NUT_IRQPRI_DEF);  // AES
+IRQ_HANDLER *Stm32AesInstallHandler(IRQ_HANDLER *sig)
+{
+    NutIrqEnable(sig);
+    return sig;
+}
 #endif

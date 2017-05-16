@@ -1,8 +1,10 @@
-#ifndef _STM32_USARTIRQ_H_
-#define _STM32_USARTIRQ_H_
+#ifndef _STM32_UART_H_
+#define _STM32_UART_H_
 
 /*
- * Copyright (C) 2015, Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
+ * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2017 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,24 +36,17 @@
  *
  */
 
-# if defined(HW_USART_COMBINED_IRQ_STM32)
-typedef struct _usart_signal USART_SIGNAL;
-struct _usart_signal {
-    uint8_t usart_nr;
-    USART_TypeDef *usart;
-    void (*usart_handler) (void *);
-    void *usart_arg;
-    USART_SIGNAL *next;
-};
-#define USART2SIG(x) sig_USART_GROUP
-#else
-# define USART_SIGNAL IRQ_HANDLER
-#define USART2SIG(USART) (sig_ ##USART)
+/*
+ * \verbatim
+ * $Id$
+ * \endverbatim
+ */
+
+#if defined(MCU_STM32L0) || defined(MCU_STM32L4)
+# define STM32_LPUART1_INDEX 5
 #endif
 
-extern USART_SIGNAL *Stm32UsartCreateHandler(
-    int usart_nr, USART_TypeDef *usart, IRQ_HANDLER *irq);
-extern int Stm32UsartRegisterHandler(
-    USART_SIGNAL* signal, void (*handler) (void *),void *arg,
-    int usart_nr, IRQ_HANDLER *irq);
+extern IRQ_HANDLER *Stm32UsartInstallHandler(int nr, IRQ_HANDLER *sig);
+extern IRQ_HANDLER *Stm32RngInstallHandler(IRQ_HANDLER *sig);
+
 #endif

@@ -882,73 +882,6 @@ nutarch_cm3_stm32_usart_devices =
         }
     },
     --
-    -- STM32F0 Combined USART Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f0_usart_combined",
-        brief = "STM32FO Combined Usart",
-        description = "STM32FO Combined Usart IRQ Separation Helpers",
-        requires = { "HW_MCU_STM32F0" },
-        options =
-        {
-            {
-                macro = "USART3_4_COMBINED_IRQ",
-                brief = "STM32F07 USART3_4 Combined Usart",
-                description = "STM32FO7 Combined Usart3_4 IRQ Separation Helpers",
-                type = "integer",
-                default = 1,
-                requires = { "HW_USART3_4_STM32" },
-                provides = {
-                    "HW_USART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_USART4_STM32",
-                    "HW_USART_COMBINED_IRQ_STM32",
-                },
-                file = "include/cfg/devices.h",
-            },
-            {
-                macro = "USART3_6_COMBINED_IRQ",
-                brief = "STM32F030xC USART3_6 Combined Usart ",
-                description = "STM32FO30xC Combined Usart3_6 IRQ Separation Helpers",
-                type = "integer",
-                default = 1,
-                requires = { "HW_USART3_6_STM32" },
-                provides = {
-                    "HW_USART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_USART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_USART5_STM32",
-                    "HW_USART6_STM32",
-                    "HW_USART_COMBINED_IRQ_STM32",
-                },
-                file = "include/cfg/devices.h"
-            },
-            {
-                macro = "USART3_8_COMBINED_IRQ",
-                brief = "STM32F09 USART3_8 Combined Usart ",
-                description = "STM32FO9 Combined Usart3_8 IRQ Separation Helpers",
-                type = "integer",
-                default = 1,
-                requires = { "HW_USART3_8_STM32" },
-                provides = {
-                    "HW_USART3_STM32",
-                    "HW_UART4_STM32",
-                    "HW_USART4_STM32",
-                    "HW_UART5_STM32",
-                    "HW_USART5_STM32",
-                    "HW_USART6_STM32",
-                    "HW_UART7_STM32",
-                    "HW_USART7_STM32",
-                    "HW_UART8_STM32",
-                    "HW_USART8_STM32",
-                    "HW_USART_COMBINED_IRQ_STM32",
-                },
-                file = "include/cfg/devices.h"
-            },
-        },
-    },
-    --
     -- STM32F USART1 Interface
     --
     {
@@ -967,7 +900,6 @@ nutarch_cm3_stm32_usart_devices =
         },
         sources =
         {
-            "cm3/dev/stm/stm32_usartirq.c",
             "cm3/dev/stm/stm32_usart1.c",
         },
         options =
@@ -1284,7 +1216,6 @@ nutarch_cm3_stm32_usart_devices =
         },
         sources =
         {
-            "cm3/dev/stm/stm32_usartirq.c",
             "cm3/dev/stm/stm32_usart2.c",
         },
         options =

@@ -59,6 +59,7 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_usart_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include <arch/cm3/stm/stm32_uart.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
 /*!
@@ -258,7 +259,7 @@ static void  StmUsartClkEnable(int enable)
 #define USARTn      USART1
 #define USARTnBase  USART1_BASE
 #define USARTclk    BASE2CLKSRC(USART1_BASE)
-#define USARTnSIG   sig_USART1
+#define USARTnSIG   &sig_USART1
 #define UART_DR_PTR (uint32_t*)(USARTnBase+4)
 
 #define DcbUSART    dcb_usart1

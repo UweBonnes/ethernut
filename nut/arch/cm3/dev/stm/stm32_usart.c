@@ -47,9 +47,8 @@
 
 #include <dev/irqreg.h>
 #include <dev/usart.h>
-#include <arch/cm3/stm/stm32_usart.h>
 #include <arch/cm3/stm/stm32_dma.h>
-#include <arch/cm3/stm/stm32_usartirq.h>
+#include <arch/cm3/stm/stm32_usart.h>
 
 #if defined(USART_RDR_RDR)
 #define USARTN_RDR (USARTn->RDR)
@@ -263,7 +262,7 @@ static void Stm32UsartDmaRxIrq(void* arg)
 #endif
 #endif
 
-USART_SIGNAL *usart_sig;
+IRQ_HANDLER *usart_sig;
 
 /*
  * \brief USARTn transmitter ready interrupt handler.
@@ -1293,12 +1292,11 @@ static int Stm32UsartInit(void)
     /*
      * Register receive and transmit interrupts.
      */
-    usart_sig = Stm32UsartCreateHandler(USARTidx, USARTn, &USARTnSIG);
+    usart_sig = Stm32UsartInstallHandler(USARTidx, USARTnSIG);
     if (!usart_sig)
         return -1;
 
-    res = Stm32UsartRegisterHandler(
-        usart_sig, Stm32UsartInterrupt, &DcbUSART,USARTidx, &USARTnSIG);
+    res = NutRegisterIrqHandler(usart_sig, Stm32UsartInterrupt, &DcbUSART);
     if (res) {
         return -1;
     }
@@ -1385,7 +1383,7 @@ static int Stm32UsartDeinit(void)
     USARTn->CR1 = 0;
 
     /* Deregister receive and transmit interrupts. */
-    Stm32UsartRegisterHandler(usart_sig, 0, 0, USARTidx, &USARTnSIG);
+    NutRegisterIrqHandler(usart_sig, 0, 0);
 
     /* Reset UART. */
     StmUsartClkEnable(0);

@@ -79,11 +79,13 @@ extern IRQ_HANDLER sig_USART2;      // USART 2
 extern IRQ_HANDLER sig_USART3;      // USART 3
 extern IRQ_HANDLER sig_USART4;      // USART 4
 extern IRQ_HANDLER sig_USART5;      // USART 5
+extern IRQ_HANDLER sig_USART4_5;    // Combined USART4-5 on L0 Cat.5
 extern IRQ_HANDLER sig_USART6;      // USART 6
 extern IRQ_HANDLER sig_USART7;      // USART 7
 extern IRQ_HANDLER sig_USART8;      // USART 8
 extern IRQ_HANDLER sig_LPUART1;     // LPUART 1
-extern IRQ_HANDLER sig_USART_GROUP; // Combined USART3-[4/6/8] on F0
+extern IRQ_HANDLER sig_USART_GROUP; // Combined LPUART1/RNG/AES on L0
+extern IRQ_HANDLER sig_LPUART1_GROUP; // Combined USART3-[4/6/8] on F0
 extern IRQ_HANDLER sig_OTG_FS;      // USB OTG on F2/F4
 /* On F30, USB interrupt is remapped from CAN on startup. On F1, beside
    communication line devices, USB and CAN can't be used together*/
@@ -173,4 +175,11 @@ extern IRQ_HANDLER sig_ADC1;
 extern IRQ_HANDLER sig_ADC2;
 extern IRQ_HANDLER sig_ADC3;
 extern IRQ_HANDLER sig_ADC4;
+
+extern IRQ_HANDLER sig_RNG;
+extern IRQ_HANDLER sig_AES;
+extern IRQ_HANDLER sig_HASH;
+
+extern IRQ_HANDLER *Stm32RngInstallHandler(IRQ_HANDLER *sig);
+
 #endif
