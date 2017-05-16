@@ -65,16 +65,12 @@ nutarch_cm3_stm32l4 =
                 provides =
                 {
 -- Todo: FLASH_WRPROT
-                    "HW_RCC_STM32L",
                     "HW_VOS_STM32",
                     "HW_ICACHE_STM32",
                     "HW_DCACHE_STM32",
 --                   "HW_CAN1_STM32",  TODO: Can Timing
                     "HW_RTC_STM32_V2",
-                    "HW_FLASH_STM32L4",
                     "HW_GPIO_STM32V2",
-                    "HW_CRC32_STM32",
-                    "DEV_IRQ_STM32",
                     "HW_DMA1_STM32F1",
                     "HW_DMA2_STM32L4",
                     "HW_EXTI04_STM32",

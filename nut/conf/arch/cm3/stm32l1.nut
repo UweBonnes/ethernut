@@ -1,5 +1,5 @@
 --
---  * Copyright (C) 2011-2015
+--  * Copyright (C) 2011-2017
 --               Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -63,13 +63,9 @@ nutarch_cm3_stm32l1 =
                 {
                     "HW_VOS_STM32",
                     "HW_RCC_STM32L",
-                    "HW_FLASH_STM32L",
-                    "HW_EEPROM_STM32",
                     "HW_GPIO_STM32L_0_1",
                     "HW_GPIO_STM32V2",
-                    "HW_CRC32_STM32",
-                    "DEV_IRQ_STM32",
-                    "HW_DMA1_STM32F1",
+                     "HW_DMA1_STM32F1",
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
                     "HW_EXTI1510_STM32",

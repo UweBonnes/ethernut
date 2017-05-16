@@ -196,9 +196,23 @@ nutarch_cm3 =
         requires = { "HW_MCU_STM32" },
         description = "ST Microelectronics STM32 Series",
         script = "arch/cm3/stm32fam.nut",
+        provides = {
+            "HW_FLASH",
+            "HW_FLASH_STM32",
+            "DEV_RTC",
+            "HW_STM32_BACKUP_REG",
+            "DEV_CRC",
+        },
         sources = {
             "cm3/dev/stm/system_stm32.c",
-        },
+            "cm3/dev/stm/stm32_wdt.c",
+            "cm3/dev/stm/stm32_reset.c",
+            "cm3/dev/stm/stm32_signature.c",
+            "cm3/dev/stm/stm32_crc.c",
+            "cm3/dev/stm/stm32_gpio.c",
+            "cm3/dev/stm/stm32_gpioirq.c",
+            "cm3/dev/stm/ih_stm32.c",
+    },
         options =
         {
             {

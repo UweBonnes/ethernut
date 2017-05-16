@@ -68,13 +68,10 @@ nutarch_cm3_stm32f7 =
                 {
                     "HW_VOS_STM32",
                     "HW_OVERDRIVE_STM32",
-                    "HW_HSI16_STM32F",
                     "HW_FLASH_STM32F2_4",
                     "HW_GPIO_STM32V2",
                     "HW_BKPSRAM_STM32",
-                    "HW_CRC32_STM32",
                     "HW_CAN1_STM32",
-                    "DEV_IRQ_STM32",
                     "HW_DMA_STM32F2",
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",

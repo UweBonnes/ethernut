@@ -60,6 +60,13 @@
 -- STM32F105                      Connectivity line -> stm32f105xc.h
 -- STM32F107                      Connectivity line -> stm32f107xc.h
 
+function GetF1ClockHandler()
+    if c_is_provided("HW_MCU_STM32F100") then
+        return {"cm3/dev/stm/stm32f30_clk.c"}
+    end
+    return {"cm3/dev/stm/stm32f1_clk.c"}
+end
+
 nutarch_cm3_stm32f1 =
 {
 
@@ -69,6 +76,7 @@ nutarch_cm3_stm32f1 =
     {
         name = "nutarch_cm3_stm32f1_family",
         brief = "MCU F1 Family",
+        sources = function() return GetF1ClockHandler() end,
         options =
         {
             {
@@ -77,16 +85,10 @@ nutarch_cm3_stm32f1 =
                 description = "Provides STM32F1 common peripherals.",
                 default = 1,
                 provides = {
-                        "HW_HSI8_STM32F",
-                        "HW_RTC_STM32F1",
-                        "HW_FLASH_STM32F1_3",
                         "HW_GPIO_STM32V1",
-                        "HW_CRC32_STM32",
-                        "DEV_IRQ_STM32",
                         "HW_EXTI04_STM32",
                         "HW_EXTI95_STM32",
                         "HW_EXTI1510_STM32",
-                        "HW_WWDG_STM32",
                         "HW_DMA1_STM32F1",
                         "HW_I2C1_STM32",
                         "HW_PVD_STM32",
@@ -461,26 +463,5 @@ nutarch_cm3_stm32f1 =
         sources = { "cm3/dev/stm/stm32f1_flash.c" },
     },
 
-    -- ***********************************
-    --
-    -- STM32F Device Drivers
-    --
-    -- ***********************************
-
-    --
-    -- STM32F1 GPIO Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f1_gpio",
-        brief = "STM32F1 GPIO",
-        description = "Generic port I/O API for STM32F1.",
-        requires = { "HW_MCU_STM32", "HW_GPIO_STM32V1" },
-        provides = { "HW_GPIO" };
-        sources = {
-                "cm3/dev/stm/stm32_gpio.c",
-                "cm3/dev/stm/stm32_gpio_v1.c",
-                "cm3/dev/stm/stm32_gpioirq.c",
-        }
-    },
 }
 

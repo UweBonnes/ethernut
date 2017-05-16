@@ -44,20 +44,7 @@ nutarch_cm3_stm32_devices =
     --
     -- ***********************************
 
-    -- STM32F10x RTC
-    --
-    {
-        name = "nutarch_cm3_stm32f10x_rtc",
-        brief = "STM32F1 RTC Driver",
-        description = "STM32F1 RTC driver.",
-        requires = { "HW_RTC_STM32F1" },
-        provides = { "DEV_RTC", "HW_STM32_BACKUP_REG"},
-        sources = {
-           "cm3/dev/stm/stm32f1_rtc.c",
-           "cm3/dev/stm/stm32f1_backup.c"
-        },
-    },
-    -- STM32 RTC V2
+   -- STM32 RTC V2
     --
     {
         name = "nutarch_cm3_stm32v2_rtc",
@@ -87,29 +74,6 @@ nutarch_cm3_stm32_devices =
     },
 
     --
-    -- Stm32 Common devices
-    --
-    {
-        name = "nutarch_cm3_stm32_common",
-        brief = "STM32 common devices",
-        description = "Sources for all families listed here.",
-        sources = {
-            "cm3/dev/stm/stm32_wdt.c",
-            "cm3/dev/stm/stm32_reset.c",
-        }
-    },
-    --
-    -- STM32 Flash Interface F1 and F3
-    --
-    {
-        name = "nutarch_cm3_stm32f1_3_flash",
-        brief = "Flash and parameter access",
-        description = "Generic flash and parameter storage interface.",
-        requires = { "HW_FLASH_STM32F1_3" },
-        provides = { "HW_FLASH", "HW_FLASH_STM32" };
-        sources = { "cm3/dev/stm/stm32f1_3_flash.c"}
-    },
-    --
     -- STM32 Flash Interface on STM32L0 and STM32L1
     --
     {
@@ -117,8 +81,6 @@ nutarch_cm3_stm32_devices =
         brief = "Flash access",
         description = "STM32L0 and STM32L1 generic flash interface.",
         requires = { "HW_FLASH_STM32L" },
-        provides = { "HW_FLASH", "HW_FLASH_STM32" },
-        sources = { "cm3/dev/stm/stm32l1_flash.c"},
         options =
         {
             {
@@ -131,29 +93,7 @@ nutarch_cm3_stm32_devices =
              },
         }
     },
-    --
-    -- STM32 Flash Interface on STM32L4
-    --
-    {
-        name = "nutarch_cm3_stm32l4_flash",
-        brief = "Flash access",
-        description = "STM32L4 flash interface.",
-        requires = { "HW_FLASH_STM32L4" },
-        provides = { "HW_FLASH", "HW_FLASH_STM32" },
-        sources = { "cm3/dev/stm/stm32l4_flash.c"},
-    },
-    --
-    -- STM32 EEPROM Interface on STM32L0 and STM32L1
-    --
-    {
-        name = "nutarch_cm3_stm32_eeprom",
-        brief = "EEPROM access",
-        description = "STM32L0 and STM32L1 EEPROM interface.",
-        requires = { "HW_EEPROM_STM32" },
-        provides = { "DEV_NVMEM" };
-        sources = { "cm3/dev/stm/stm32l1_eeprom.c"}
-    },
-     --
+      --
     -- STM32 Flash Interface F2 and F4
     --
     {
@@ -161,7 +101,6 @@ nutarch_cm3_stm32_devices =
         brief = "Flash and parameter access",
         description = "Generic flash and parameter storage interface.",
         requires = { "HW_FLASH_STM32F2_4" },
-        provides = { "HW_FLASH", "HW_FLASH_STM32" };
         sources = { "cm3/dev/stm/stm32f2_4_flash.c"},
         options =
         {
@@ -198,9 +137,7 @@ nutarch_cm3_stm32_devices =
         requires = { "HW_GPIO_STM32V2" },
         provides = { "HW_GPIO_V2", "HW_GPIO" },
         sources = {
-                "cm3/dev/stm/stm32_gpio.c",
                 "cm3/dev/stm/stm32_gpio_v2.c",
-                "cm3/dev/stm/stm32_gpioirq.c"
         },
         options =
         {
@@ -225,18 +162,6 @@ nutarch_cm3_stm32_devices =
         provides = { "HW_CEC_STM32" },
     },
     --
-    --
-    -- STM32 Unique ID
-    --
-    {
-        name = "nutarch_cm3_stm32_uidc",
-        brief = "STM32 Unique ID",
-        description = "Access to unique ID.",
-        sources = {
-           "cm3/dev/stm/stm32_signature.c",
-        },
-    },
-      --
     -- STM32F EMAC Configuration
     --
     {
@@ -615,18 +540,6 @@ nutarch_cm3_stm32_devices =
     },
 
     --
-    -- STM32F CRC Configuration
-    --
-    {
-        name = "nutarch_cm3_stm32f_crc",
-        brief = "STM32F CRC32 Generator",
-        description = "hardware CRC32 Generator support for STM32F.",
-        requires = { "HW_CRC32_STM32" },
-        provides = { "DEV_CRC" },
-        sources = { "cm3/dev/stm/stm32_crc.c" },
-    },
-
-    --
     -- STM32F ADC Configuration
     --
     {
@@ -662,46 +575,6 @@ nutarch_cm3_stm32_devices =
         sources = { "cm3/dev/stm/stm32_lcd16seg.c" },
     },
 
-    --
-    -- STM32F I2S Audio Device Interface
-    --
-    {
-        name = "nutarch_cm3_stm32f_tlv320",
-        brief = "TLV320 DAC",
-        requires = { "HW_EXT_CALYPSO" },
-        provides = { "HW_AUDIO_DAC" },
-        sources = { "arm/dev/tlv320dac.c" },
-    },
-
-
-    --
-    -- STM32L0 DMA Interface
-    --
-    {
-        name = "nutarch_cm3_stm32L0_dma",
-        brief = "STM32F0 DMA1  Controller",
-        description = "Generic DMA1 Support for L0",
-        requires = { "HW_MCU_STM32", "HW_DMA1_STM32L0" },
-        provides = {
-            "HW_DMA1_STM32F1",
-            "HW_DMA_COMBINED_IRQ_STM32",
-            "HW_DMA_CSELR_STM32"
-        },
-    },
-    --
-    -- STM32L4 DMA2 Interface
-    --
-    {
-        name = "nutarch_cm3_stm32L4_dma2",
-        brief = "STM32L4 DMA2  Controller",
-        description = "Generic DMA2 Support for L4",
-        requires = { "HW_MCU_STM32", "HW_DMA2_STM32L4" },
-        provides = {
-            "HW_DMA2_STM32F1",
-            "HW_DMA2_7CH_STM32",
-            "HW_DMA_CSELR_STM32"
-        },
-    },
     --
     -- STM32F0 DMA Interface
     --
@@ -810,7 +683,6 @@ nutarch_cm3_stm32_devices =
         brief = "List of additional devices",
         description = "Helper to create the sig_DEVXX entries.\n\n"..
                       "No User configuration needed here.\n",
-        sources = { "cm3/dev/stm/ih_stm32.c"},
         options =
         {
             {

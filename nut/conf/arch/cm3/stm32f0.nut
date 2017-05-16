@@ -1,5 +1,5 @@
 --
---  * Copyright (C) 2014-2015
+--  * Copyright (C) 2014-2015, 2017
 --             by Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -65,14 +65,10 @@ nutarch_cm3_stm32f0 =
                 provides = {
                     "HW_HSI8_STM32F",
                     "HW_RTC_STM32_V2",
-                    "HW_FLASH_STM32F1_3",
                     "HW_GPIO_STM32V2",
-                    "HW_CRC32_STM32V2",
-                    "DEV_IRQ_STM32",
                     "HW_EXTI01_STM32",
                     "HW_EXTI23_STM32",
                     "HW_EXTI415_STM32",
-                    "HW_WWDG_STM32",
                     "HW_I2C1_STM32V2",
                     "HW_SPI1_STM32",
                     "HW_USART_STM32V2",

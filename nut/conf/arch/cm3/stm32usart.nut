@@ -78,7 +78,7 @@ function GetStmUsarts()
     if c_is_provided("HW_MCU_STM32F1_CL") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5" }
     end
-    if c_is_provided("HW_MCU_STM32F2x") then
+    if c_is_provided("HW_MCU_STM32F2") then
         return { "", "USART1", "USART2", "USART3", "USART4", "USART5", "USART6" }
     end
     if c_is_provided("HW_MCU_STM32F301x8") then
@@ -1512,7 +1512,7 @@ nutarch_cm3_stm32_usart_devices =
         brief = "STM32 USART3 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                   "functions for the generic driver framework.",
-        requires = { "HW_USART3_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_USART3_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -1821,7 +1821,7 @@ nutarch_cm3_stm32_usart_devices =
         brief = "STM32 UART4 Driver",
         description = "Hardware specific UART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART4_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_UART4_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -2091,7 +2091,7 @@ nutarch_cm3_stm32_usart_devices =
         brief = "STM32 UART5 Driver",
         description = "Hardware specific UART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART5_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_UART5_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -2359,7 +2359,7 @@ nutarch_cm3_stm32_usart_devices =
         brief = "STM32 USART6 Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_USART6_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_USART6_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides =
         {
             "DEV_UART",
@@ -2627,7 +2627,7 @@ nutarch_cm3_stm32_usart_devices =
     {
         name = "nutarch_cm3_stm32_devices_lpuart",
         brief = "STM32 LPUART1 Driver",
-        requires = { "HW_LPUART1_STM32", "DEV_IRQ_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_LPUART1_STM32", "NUT_EVENT", "CRT_HEAPMEM" },
          options =
         {
             {

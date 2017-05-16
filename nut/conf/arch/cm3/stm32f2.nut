@@ -61,12 +61,9 @@ nutarch_cm3_stm32f2 =
                 {
                     "HW_ICACHE_STM32",
                     "HW_DCACHE_STM32",
-                    "HW_HSI16_STM32F",
                     "HW_BKPSRAM_STM32",
                     "HW_FLASH_STM32F2_4",
                     "HW_GPIO_STM32V2",
-                    "HW_CRC32_STM32",
-                    "DEV_IRQ_STM32",
                     "HW_EXTI04_STM32",
                     "HW_EXTI95_STM32",
                     "HW_EXTI1510_STM32",

@@ -1,6 +1,7 @@
 --
 -- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
--- Copyright (C) 2011-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+-- Copyright (C) 2011-2015, 2017 Uwe Bonnes
+--                         (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -48,13 +49,6 @@
 -- defines "STM32F429xx", as this is the same define as used by STM Cube
 -- to include the vendor header.
 
-function GetF1ClockHandler()
-    if c_is_provided("HW_MCU_STM32F100") then
-        return {"cm3/dev/stm/stm32f30_clk.c"}
-    end
-    return {"cm3/dev/stm/stm32f1_clk.c"}
-end
-
 nutarch_cm3_stm32_family =
 {
     --
@@ -65,7 +59,10 @@ nutarch_cm3_stm32_family =
         brief = "STM32F0",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F0" },
         description = "ST Microelectronics STM32 F0 Series",
-        sources = { "cm3/dev/stm/stm32f30_clk.c"},
+        sources = {
+           "cm3/dev/stm/stm32f30_clk.c",
+           "cm3/dev/stm/stm32f1_3_flash.c",
+        },
         makedefs = {"MCU=cortex-m0"},
         script = "arch/cm3/stm32f0.nut"
     },
@@ -74,7 +71,12 @@ nutarch_cm3_stm32_family =
         brief = "STM32F1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F1" },
         description = "ST Microelectronics STM32 F1 Series",
-        sources = function() return GetF1ClockHandler() end,
+        sources = {
+           "cm3/dev/stm/stm32f1_rtc.c",
+           "cm3/dev/stm/stm32f1_backup.c",
+           "cm3/dev/stm/stm32f1_3_flash.c",
+           "cm3/dev/stm/stm32_gpio_v1.c",
+        },
         makedefs = {
             "MCU=cortex-m3",
             "MFIX=-mfix-cortex-m3-ldrd",
@@ -86,8 +88,17 @@ nutarch_cm3_stm32_family =
         brief = "STM32L0",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L0" },
         description = "ST Microelectronics STM32 L0 Series",
-        sources = { "cm3/dev/stm/stm32l1_clk.c" },
-        makedefs = {
+        sources = {
+           "cm3/dev/stm/stm32l1_clk.c",
+           "cm3/dev/stm/stm32l1_eeprom.c",
+           "cm3/dev/stm/stm32l1_flash.c",
+        },
+        provides = {
+            "HW_DMA1_STM32F1",
+            "HW_DMA_COMBINED_IRQ_STM32",
+            "HW_DMA_CSELR_STM32"
+        },
+         makedefs = {
                   "MCU=cortex-m0plus",
         },
         script = "arch/cm3/stm32l0.nut"
@@ -97,7 +108,15 @@ nutarch_cm3_stm32_family =
         brief = "STM32L4",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L4" },
         description = "ST Microelectronics STM32 L4 Series",
-        sources = { "cm3/dev/stm/stm32l4_clk.c" },
+        provides = {
+            "HW_DMA2_STM32F1",
+            "HW_DMA2_7CH_STM32",
+            "HW_DMA_CSELR_STM32"
+        },
+        sources = {
+            "cm3/dev/stm/stm32l4_clk.c",
+            "cm3/dev/stm/stm32l4_flash.c",
+        },
         makedefs = {
                   "MCU=cortex-m4",
         },
@@ -108,7 +127,11 @@ nutarch_cm3_stm32_family =
         brief = "STM32L1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L1" },
         description = "ST Microelectronics STM32 F1 Series",
-        sources = { "cm3/dev/stm/stm32l1_clk.c" },
+        sources = {
+           "cm3/dev/stm/stm32l1_clk.c",
+           "cm3/dev/stm/stm32l1_eeprom.c",
+           "cm3/dev/stm/stm32l1_flash.c",
+        },
         makedefs = {
                   "MCU=cortex-m3",
                   "MFIX=-mfix-cortex-m3-ldrd",
@@ -129,7 +152,10 @@ nutarch_cm3_stm32_family =
         brief = "STM32F3",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F3" },
         description = "ST Microelectronics STM32 F3 Series",
-        sources = { "cm3/dev/stm/stm32f30_clk.c"},
+        sources = {
+            "cm3/dev/stm/stm32f30_clk.c",
+            "cm3/dev/stm/stm32f1_3_flash.c",
+        },
         makedefs = { "MCU=cortex-m4"},
         script = "arch/cm3/stm32f3.nut"
     },
