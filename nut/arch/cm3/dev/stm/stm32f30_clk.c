@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 by Uwe Bonnes
+ * Copyright (C) 2013-2017 by Uwe Bonnes
  *                                (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -36,6 +36,14 @@
 /*!
  * \file arch/cm3/dev/stm/stm32f30_clk.c
  * \brief Clock handling for F3, F0 and F100 (not F101/2/3/5/7!)
+ *
+ * Type       | HSE Range | HSEPREDIV | HSIDIV2 | PLLDIV | PLLMULT
+ * F100       | 4..24     | 1..16     |    X    |   -    | 2..16
+ * F03/5      | 4..32     | 1..16     |    x    |   -    | 2..16
+ * F04/7/9    | 4..32     |    -      |    -    | 1..16  | 2..16
+ * F37        | 4..32     | 1..16     |    x    |   -    | 2..16
+ * F3x6/8/B/C | 4..32     | (1)2..16  |    x    |   -    | 2..16
+ * F3xD/E     | 4..32     |    -      |    -    | 1..16  | 2..16
  *
  * \verbatim
  * $Id$
@@ -75,16 +83,12 @@
 
 /* Equalize missing STM32F100 register bits (F100 handled here!)*/
 #if defined(RCC_CFGR2_PREDIV1) && !defined(RCC_CFGR2_PREDIV)
-#define RCC_CFGR2_PREDIV   RCC_CFGR2_PREDIV1
-#define RCC_CFGR2_PREDIV_0 RCC_CFGR2_PREDIV1_0
+# define RCC_CFGR2_PREDIV   RCC_CFGR2_PREDIV1
+# define RCC_CFGR2_PREDIV_0 RCC_CFGR2_PREDIV1_0
 #endif
 #if defined(RCC_CFGR_PLLMULL) && !defined(RCC_CFGR_PLLMUL)
-#define RCC_CFGR_PLLMUL   RCC_CFGR_PLLMULL
-#define RCC_CFGR_PLLMUL_0 RCC_CFGR_PLLMULL_0
-#endif
-#if defined(RCC_CFGR_PLLSRC) && !defined(RCC_CFGR_PLLSRC_HSI_DIV2)
-# define RCC_CFGR_PLLSRC_HSI_DIV2   0
-# define RCC_CFGR_PLLSRC_HSE_PREDIV RCC_CFGR_PLLSRC
+# define RCC_CFGR_PLLMUL   RCC_CFGR_PLLMULL
+# define RCC_CFGR_PLLMUL_0 RCC_CFGR_PLLMULL_0
 #endif
 
 /* Prepare system limits*/
@@ -289,16 +293,20 @@ static void SystemCoreClockUpdate(void)
             tmp = HSI_VALUE;
             break;
 #endif
+#if defined(RCC_CFGR_PLLSRC_HSI_DIV2)
         case RCC_CFGR_PLLSRC_HSI_DIV2:
             tmp = HSI_VALUE;
             prediv = 2;
             break;
+#endif
+#if defined(RCC_CFGR_PLLSRC_HSE_PREDIV)
         case RCC_CFGR_PLLSRC_HSE_PREDIV:
             tmp = HSE_VALUE;
             break;
         }
         tmp = (tmp / prediv) * pllmull;
         break;
+#endif
     }
     default:
         tmp = HSI_VALUE;
@@ -350,9 +358,11 @@ static int SetPllClockSource( int src)
     cfgr  = RCC->CFGR;
     cfgr &= ~(RCC_CFGR_PLLMUL | RCC_CFGR_PLLSRC);
     cfgr |= (PLLCLK_MULT - 2) * RCC_CFGR_PLLMUL_0;
+#if defined(RCC_CFGR_PLLSRC_HSE_PREDIV)
     if (src == PLLCLK_HSE) {
         cfgr |=  RCC_CFGR_PLLSRC_HSE_PREDIV;
     }
+#endif
     RCC->CFGR = cfgr;
     return 0;
 }
