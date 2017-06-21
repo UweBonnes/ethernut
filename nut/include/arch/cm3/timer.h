@@ -73,8 +73,8 @@
  * with the  preprocessor. enums always resolve to 0 in the preprocessor!
  */
 # if defined(MCU_STM32F0)
-/* AHB_CLK, APB1, APB1_TIM, SYSCLK */
-#  define NUT_HWCLK_MAX 4
+/* AHB_CLK, APB1, APB1_TIM, SYSCLK, HSI, LSE */
+#  define NUT_HWCLK_MAX 6
 # elif defined(MCU_STM32F3)
 /* AHB_CLK, APB1, APB1_TIM, APB2, APB2_TIM, SYSCLK, PLLCLK */
 #  define NUT_HWCLK_MAX 7
