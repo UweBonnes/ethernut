@@ -108,9 +108,9 @@
 # define EMAC_GPIO_SPEED        GPIO_CFG_SPEED_HIGH
 #else
 # ifdef PHY_MODE_MII
-#  define EMAC_GPIO_SPEED       GPIO_CFG_SPEED_MED
-# else
 #  define EMAC_GPIO_SPEED       GPIO_CFG_SPEED_FAST
+# else
+#  define EMAC_GPIO_SPEED       GPIO_CFG_SPEED_HIGH
 # endif
 #endif
 
