@@ -39,8 +39,9 @@
 -- arch.nut deciphers this as
 -- - architecture (CM3)
 -- - vendor iImplementation (MCU_STM32)
--- - vendor family (MCU_STM32F4)
--- - vendor subfamily (MCU_STM32F42) if applicable
+-- - vendor family (e.g MCU_STM32F4, "serie" in stmcufinder notation)
+-- - vendor subfamily (e.g.MCU_STM32F42, "line in stmcufinder notation)
+     if applicable
 -- - and the device (MCU_STM32F429).
 -- Stm32f4.nut adds the devices in all F4,
 -- devices in common in F427/429/437/439 and finally the specific

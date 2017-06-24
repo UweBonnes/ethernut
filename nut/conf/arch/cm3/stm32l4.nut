@@ -1,5 +1,5 @@
 --
---  * Copyright (C) 2015
+--  * Copyright (C) 2015 - 2017
 --               Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -92,7 +92,7 @@ nutarch_cm3_stm32l4 =
                 file = "include/cfg/arch.h",
             },
             {
-                macro = "HW_MCU_STM32_L43",
+                macro = "MCU_STM32L43",
                 brief = "STM32L43x/44x.",
                 description = "Provides common devices in L43x/L44x",
                 default = 1,
@@ -104,7 +104,7 @@ nutarch_cm3_stm32l4 =
                 file = "include/cfg/arch.h",
             },
             {
-                macro = "HW_MCU_STM32_L45",
+                macro = "MCU_STM32L45",
                 brief = "STM32L45x/46x.",
                 description = "Provides common devices in L45x/L46x",
                 default = 1,
@@ -120,7 +120,7 @@ nutarch_cm3_stm32l4 =
                 file = "include/cfg/arch.h",
             },
             {
-                macro = "HW_MCU_STM32_L47",
+                macro = "MCU_STM32L47",
                 brief = "STM32L47x/48x.",
                 description = "Provides common devices in L47x/L48x",
                 default = 1,
@@ -132,7 +132,7 @@ nutarch_cm3_stm32l4 =
                     "HW_SPI2_STM32",
                     "HW_TIM3_STM32",
                     "HW_TIM4_STM32",
-                    "HW_TIM5_STM32",
+                    "HW_TIM5_32BIT_STM32",
                     "HW_TIM8_STM32",
                     "HW_USART3_STM32",
                     "HW_UART4_STM32",
