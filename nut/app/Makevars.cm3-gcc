@@ -43,9 +43,7 @@ LDFLAGS = $(MCFLAGS) -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).ma
 ifdef ITCM_LENGTH
       LDFLAGS+= -Wl,--defsym=itcm_length=$(ITCM_LENGTH)
 endif
-ifdef BOOTLOADER_RESERVED
-      LDFLAGS+= -Wl,--defsym=flash0_length=$(BOOTLOADER_RESERVED)
-else ifdef FLASH0_LENGTH
+ifdef FLASH0_LENGTH
       LDFLAGS+= -Wl,--defsym=flash0_length=$(FLASH0_LENGTH)
 endif
 ifdef CCM_LENGTH
@@ -66,10 +64,4 @@ ifdef RAM2_LENGTH
       LDFLAGS+= -Wl,--defsym=ram2_length=$(RAM2_LENGTH)
 else
       LDFLAGS+= -Wl,--defsym=ram2_length=0
-endif
-
-ifdef BOOTLOADER_OFFSET
-        LDFLAGS+= -Wl,--defsym=bootloader_offset=$(BOOTLOADER_OFFSET)
-else
-        LDFLAGS+= -Wl,--defsym=bootloader_offset=0
 endif

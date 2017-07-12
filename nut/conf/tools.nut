@@ -278,24 +278,6 @@ nuttools =
                 exclusivity = { "LDSCRIPT", "LLDSCRIPT" },
             },
             {
-                macro = "BOOTLOADER_RESERVED",
-                brief = "Flash Bootloader reserved",
-                description = "Space in flash allocated for bootloader",
-                requires = { "TOOL_GCC" },
-                file = "include/cfg/arch.h",
-                exclusivity = {"BOOTLOADER_OFFSET"},
-            },
-            {
-                macro = "BOOTLOADER_OFFSET",
-                brief = "Bootloader Offset",
-                description = "Offset of application code in flash.",
-                requires = { "TOOL_GCC" },
-                exclusivity = {"BOOTLOADER_RESERVED"},
-                makedefs = { "BOOTLOADER_OFFSET",
-                             "HWDEF+=-DBOOTLOADER_OFFSET=$(BOOTLOADER_OFFSET)"
-                },
-            },
-            {
                 brief = "arm-elf",
                 description = "Old binary format",
                 requires = { "TOOL_CC_ARM" },

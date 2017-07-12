@@ -34,7 +34,7 @@ SECTIONS
 {
     .bootloader (NOLOAD):
     {
-        . = bootloader_offset;
+        . = DEFINED(bootloader_offset) ? bootloader_offset : 0;
     } > FLASH0
 
     .itcmtext :

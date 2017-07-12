@@ -29,7 +29,7 @@ _ramfunc_start = 0;
 _ramfunc_end   = 0;
 _ramfunc_load  = 0;
 _ccm_used      = 1;
-_end_rom       = 0x08000000;
+__end_rom      = 0x08000000 + DEFINED(bootloader_offset) ? bootloader_offset : 0;
 
 SECTIONS
 {
