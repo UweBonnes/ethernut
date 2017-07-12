@@ -131,7 +131,8 @@
 --
 --
 
-toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "CM3_GCC", "CM3_GCC_NOLIBC", "LINUX_GCC", "ICCAVR", "ICCARM", "M68K_GCC_CS"}
+toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "CM3_GCC", "CM3_GCC_NEWLIB",
+                "CM3_GCC_NANOLIB", "LINUX_GCC", "ICCAVR", "ICCARM", "M68K_GCC_CS"}
 gcc_output_format = {"ARMELF", "ARMEABI"}
 nuttools =
 {
@@ -159,32 +160,40 @@ nuttools =
             makedefs = {"TOOLCHAIN=arm-gcc", "ADDLIBS = -lnutc" }
         },
         {
-            brief = "GCC for CortexM",
-            description = "GNU Compiler Collection for ARM CortexM including libc.",
-            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_ARMLIB" },
-            macro = "CM3_GCC",
-            flavor = "boolean",
-            exclusivity = toolchain_names,
-            file = "include/cfg/arch.h",
-            makedefs = {"TOOLCHAIN=cm3-gcc"}
-        },
-        {
             brief = "GCC for CortexM (no libc)",
-            description = "GNU Compiler Collection for ARM CortexM excluding libc."..
+            description = "GNU Compiler Collection for ARM CortexM using Nut/OS provided libc.\n"..
                           "Nut/OS provides all required C standard functions.",
             provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
-            macro = "CM3_GCC_NOLIBC",
+            macro = "CM3_GCC",
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
             makedefs = {"TOOLCHAIN=cm3-gcc", "ADDLIBS = -lnutc"}
         },
         {
-            brief = "Newlib for Cortex-M",
-            description = "Use Newlib instead of nanolib for Cortex. Results in larger binaries.",
-            macro = "CORTEX_NEWLIB",
+            brief = "GCC for CortexM (newlib)",
+            description = "GNU Compiler Collection for ARM CortexM including newlib libc.\n"..
+                        "Newlib is provided by most toolchains.\n"..
+                        "It provides best coverage but needs most flash space.\n"..
+                        "Incompatibilities regarding FPU compile options may arise!",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX"},
+            macro = "CM3_GCC_NEWLIB",
             flavor = "boolean",
-            makedefs = {"CORTEX_NEWLIB=1"},
+            exclusivity = toolchain_names,
+            file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=cm3-gcc"}
+        },
+        {
+            brief = "GCC for CortexM (nanolib)",
+            description = "GNU Compiler Collection for ARM CortexM including nanolib libc.\n"..
+                          "Nanolib is only provided with recent toolchains and needs least space.\n"..
+                          "Incompatibilities regarding FPU compile options may arise!",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_ARMLIB" },
+            macro = "CM3_GCC_NANOLIB",
+            flavor = "boolean",
+            exclusivity = toolchain_names,
+            file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=cm3-gcc", "ADDLIBS = -specs=nano.specs"}
         },
         {
             brief = "GCC for AVR",

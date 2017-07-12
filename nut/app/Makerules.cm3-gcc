@@ -34,9 +34,5 @@
 #
 # $Id$
 #
-ifndef CORTEX_NEWLIB
-   SPECS=-specs=nano.specs
-endif
-
 include $(top_srcdir)/Makerules.cm3-gcc
 include $(top_srcdir)/app/Makerules.gcc
