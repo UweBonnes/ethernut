@@ -86,7 +86,7 @@ CREATE_HANDLER(RCC,           RCC_CRS,  NUT_IRQPRI_DEF);    /* RCC global */
 #else
 CREATE_HANDLER(RCC,           RCC,      NUT_IRQPRI_DEF);    /* RCC global */
 #endif
-#if defined(HW_RTC_STM32F1) || defined(MCU_STM32F0) || defined(MCU_STM32L0)
+#if defined(MCU_STM32F1) || defined(MCU_STM32F0) || defined(MCU_STM32L0)
 CREATE_HANDLER(RTC,           RTC,      NUT_IRQPRI_DEF);    // Real Time Clock
 #elif defined(HW_RTC_STM32_V2)
 CREATE_HANDLER(RTC,           RTC_Alarm,NUT_IRQPRI_DEF);    // Real Time Clock

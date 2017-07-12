@@ -738,10 +738,10 @@ nutarch_cm3_stm32_devices =
         options =
         {
             {
-                macro = "HW_RTC_STM32F1",
+                macro = "HW_RTC_STM32V1",
                 brief = "RTC V1 Availability",
                 description = "RTC V1 Availability",
-                requires = { "HW_RTC_STM32F1" },
+                requires = { "HW_MCU_STM32F1" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
