@@ -195,6 +195,7 @@ nutarch_cm3_stm32_family =
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F7" },
         provides = {
            "HW_EEPROM_EMUL_STM32",
+           "HW_MCU_CM7",
         },
         description = "ST Microelectronics STM32 F4 Series",
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
