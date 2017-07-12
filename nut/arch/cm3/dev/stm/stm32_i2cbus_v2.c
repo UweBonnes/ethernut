@@ -481,7 +481,7 @@ NUTI2C_BUS i2cBus1Stm32 = {
     NULL        /* bus_mutex */
 };
 
-#if defined(HW_I2C2_STM32V2)
+#if defined(HW_I2C2_STM32)
 static const STM32_I2C_HW i2c2_hw = {
     .icb_base  = I2C2_BASE,
     .sda       = I2C2_SDA,

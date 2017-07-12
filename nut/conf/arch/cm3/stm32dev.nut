@@ -703,7 +703,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32_spi_v2",
         brief = "STM32 SPI V2 Controller",
         description = "Generic Suport for STM32 I2C V2",
-        requires = { "HW_I2C_STMV32" },
+        requires = { "HW_I2C_STM32V2" },
         sources = {
             "cm3/dev/stm/stm32_i2cbus_v2.c",
         },
