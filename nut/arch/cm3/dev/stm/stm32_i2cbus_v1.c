@@ -90,11 +90,11 @@ typedef struct _STM32_I2C_HW{
     /*! \brief SDA Pinmux. */
     const uint8_t sda_af;
     /*! \brief SCL_PIN. */
-    const uint32_t scl;
+    const nutgpio_t scl;
     /*! \brief SCL Pinmux. */
     const uint8_t scl_af;
     /*! \brief SMBA_PIN. */
-    const uint32_t smba;
+    const nutgpio_t smba;
     /*! \brief SMBA Pinmux. */
     const uint8_t smba_af;
 }STM32_I2C_HW;
@@ -510,11 +510,22 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
 }
 static const STM32_I2C_HW i2c1_hw = {
     .icb_base = I2C1_BASE,
+#if defined(MCU_STM32F1)
+    .smba     = PB05,
+# if I2C1_REMAP_I2C == 1
+    .sda      = PB09,
+    .scl      = PB08,
+# else
+    .sda      = PB07,
+    .scl      = PB06,
+# endif
+#else
     .sda      = I2C1_SDA,
-    .sda_af   = I2C1_SDA_AF,
     .scl      = I2C1_SCL,
-    .scl_af   = I2C1_SCL_AF,
     .smba     = I2C1_SMBA,
+#endif
+    .sda_af   = I2C1_SDA_AF,
+    .scl_af   = I2C1_SCL_AF,
     .smba_af  = I2C1_SMBA_AF,
 };
 
@@ -541,11 +552,17 @@ NUTI2C_BUS i2cBus1Stm32 = {
 #if defined(I2C2_BASE)
 static const STM32_I2C_HW i2c2_hw = {
     .icb_base = I2C2_BASE,
+#if defined(MCU_STM32F1)
+    .sda      = PB11,
+    .scl      = PB10,
+    .smba     = PB12,
+#else
     .sda      = I2C2_SDA,
-    .sda_af   = I2C2_SDA_AF,
     .scl      = I2C2_SCL,
-    .scl_af   = I2C2_SCL_AF,
     .smba     = I2C2_SMBA,
+#endif
+    .sda_af   = I2C2_SDA_AF,
+    .scl_af   = I2C2_SCL_AF,
     .smba_af  = I2C2_SMBA_AF,
 };
 
