@@ -72,6 +72,39 @@
 #define strdup _strdup
 #define unlink _unlink
 
+/* strndup.c
+ *
+ */
+
+/* Written by Niels Möller <nisse@lysator.liu.se>
+ *
+ * This file is hereby placed in the public domain.
+ */
+
+char *strndup (const char *s, size_t size)
+{
+  char *r;
+  char *end = memchr(s, 0, size);
+
+  if (end)
+    /* Length + 1 */
+    size = end - s + 1;
+
+  r = malloc(size);
+
+  if (size)
+    {
+      memcpy(r, s, size-1);
+      r[size-1] = '\0';
+    }
+  return r;
+}
+
+#ifndef PATH_MAX
+# define PATH_MAX _MAX_PATH
+#endif
+#define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
+
 #else
 
 #include <unistd.h>

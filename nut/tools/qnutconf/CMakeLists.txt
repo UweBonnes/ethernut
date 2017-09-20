@@ -6,7 +6,7 @@ if (DEFINED ENV{QTDIR})
 endif ()
 
 project(qnutconf)
-if (CMAKE_COMPILER_IS_GNUCC)
+if ((CMAKE_COMPILER_IS_GNUCC) AND NOT (${MINGW}) )
   set( CMAKE_C_FLAGS   "-fstack-protector -fstack-protector-all" )
 endif ()
 
@@ -14,7 +14,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5Widgets)
+find_package(Qt5Widgets REQUIRED)
 #find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Lua)
 
