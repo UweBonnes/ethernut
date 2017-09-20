@@ -1185,7 +1185,7 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART1_SPEED",
+                macro = "USART1_PIN_SPEED",
                 brief = "Pin speed setting for USART1 device",
                 description = function() return PinSpeedDesc() end,
                 choices = function() return GetPinSpeedChoices() end,
@@ -1493,7 +1493,7 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART2_SPEED",
+                macro = "USART2_PIN_SPEED",
                 brief = "Pin speed setting for USART2 device",
                 description = function() return PinSpeedDesc() end,
                 choices = function() return GetPinSpeedChoices() end,
@@ -1802,7 +1802,7 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART3_SPEED",
+                macro = "USART3_PIN_SPEED",
                 brief = "Pin speed setting for USART3 device",
                 description = function() return PinSpeedDesc() end,
                 choices = function() return GetPinSpeedChoices() end,
@@ -2072,7 +2072,7 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART4_SPEED",
+                macro = "USART4_PIN_SPEED",
                 brief = "Pin speed setting for U(S)ART4 device",
                 description = function() return PinSpeedDesc() end,
                 choices = function() return GetPinSpeedChoices() end,
@@ -2341,7 +2341,7 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART5_SPEED",
+                macro = "USART5_PIN_SPEED",
                 brief = "Pin speed setting for U(S)ART5 device",
                 description = function() return PinSpeedDesc() end,
                 choices = function() return GetPinSpeedChoices() end,
@@ -2612,7 +2612,7 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "USART6_SPEED",
+                macro = "USART6_PIN_SPEED",
                 brief = "Pin speed setting for USART6 device",
                 description = function() return PinSpeedDesc() end,
                 choices = function() return GetPinSpeedChoices() end,
@@ -2873,7 +2873,7 @@ nutarch_cm3_stm32_usart_devices =
                 file = "include/cfg/uart.h"
             },
             {
-                macro = "LPUART1_SPEED",
+                macro = "LPUART1_PIN_SPEED",
                 brief = "Pin speed setting for LPUART1 device",
                 description = function() return PinSpeedDesc() end,
                 choices = function() return GetPinSpeedChoices() end,
