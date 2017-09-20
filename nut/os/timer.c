@@ -311,6 +311,9 @@ SIGNAL( SIG_TIMER )
 void NutTimerIntr(void *arg)
 #endif
 {
+#if defined(HOOK_SYSTEM_TIMER)
+    SystemTimerFunction(arg);
+#endif
     nut_ticks++;
 
 #ifndef NUT_USE_OLD_TIME_API

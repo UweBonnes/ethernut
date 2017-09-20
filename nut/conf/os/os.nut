@@ -432,6 +432,15 @@ nutos =
         options =
         {
             {
+                macro = "HOOK_SYSTEM_TIMER",
+                brief = "Hook into the system timer",
+                description = "User function called at the start of the system timer.\n\n"..
+                            "DO NOT USED blocking or long functions!\n"..
+                            "If checked, provide a function void SystemTimerFunction(void *arg)",
+                flavor = "booldata",
+                file = "include/cfg/os.h"
+            },
+            {
                 macro = "NUT_CPU_FREQ",
                 brief = "Fixed MCU clock",
                 description = "Frequency of the MCU clock. On some boards the system is able "..
