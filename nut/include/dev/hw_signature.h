@@ -46,6 +46,8 @@
 #   define UNIQUE_ID_REG 0x1ffff7ac
 #  elif defined(MCU_STM32F4)
 #   define UNIQUE_ID_REG 0x1fff7a10
+#  elif defined(MCU_STM32F72)
+#   define UNIQUE_ID_REG 0x1ff07a22
 #  elif defined(MCU_STM32F7)
 #   define UNIQUE_ID_REG 0x1ff0f420
 #  elif defined(MCU_STM32L0)
