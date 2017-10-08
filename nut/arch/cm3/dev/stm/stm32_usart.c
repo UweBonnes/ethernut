@@ -848,7 +848,7 @@ static uint8_t Stm32UsartGetStopBits(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int Stm32UsartSetStopBits(uint8_t bits)
+static int Stm32UsartSetStopBits(uint8_t bits)
 {
     int rc = 0;
     uint32_t val = USARTn->CR2 & ~USART_CR2_STOP;
@@ -1034,7 +1034,7 @@ static int Stm32UsartSetStatus(uint32_t flags)
  * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER,
  *         \ref UART_NCLOCK and \ref UART_HIGHSPEED.
  */
-uint8_t Stm32UsartGetClockMode(void)
+static uint8_t Stm32UsartGetClockMode(void)
 {
     return 0;
 }
