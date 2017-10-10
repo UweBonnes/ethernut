@@ -126,7 +126,7 @@ int Stm32BkupRegSave(unsigned int pos, const void *data, size_t len)
     uint32_t *bkp= (uint32_t *)&BKP->DR1;
 
 
-    if ((!data) || (pos + len > RTC_BKP_NUMBER)) {
+    if ((!data) || (pos + len > RTC_BKP_NUMBER * 2)) {
         return -1;
     }
     RCC->APB1ENR |= RCC_APB1ENR_BKPEN;
