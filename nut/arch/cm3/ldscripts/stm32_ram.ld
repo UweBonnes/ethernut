@@ -14,7 +14,8 @@ SRAM2_START = SRAM1_START + ram1_length;
 
 MEMORY
 {
-    SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = ram0_length
+    FLASH0 (rx) : ORIGIN = 0x08000000,  LENGTH = flash0_length
+    SRAM0 (rwx) : ORIGIN = 0x20000000,  LENGTH = ram0_length
     SRAM1 (rwx) : ORIGIN = SRAM1_START, LENGTH = ram1_length
     SRAM2 (rwx) : ORIGIN = SRAM2_START, LENGTH = ram2_length
 }
@@ -28,11 +29,17 @@ _rodata_load   = 0;
 _ramfunc_start = 0;
 _ramfunc_end   = 0;
 _ramfunc_load  = 0;
-_ccm_used      = 1;
-__end_rom      = 0x08000000 + DEFINED(bootloader_offset) ? bootloader_offset : 0;
+_ccm_used      = 0;
+;
 
 SECTIONS
 {
+    .bootloader (NOLOAD):
+    {
+        . = DEFINED(bootloader_offset) ? bootloader_offset : 0;
+        __end_rom = .;
+    } > FLASH0
+
     .isr :
     {
         _svect = .;
