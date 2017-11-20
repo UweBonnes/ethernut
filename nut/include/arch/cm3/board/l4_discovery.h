@@ -74,3 +74,11 @@
 #ifndef LED2_PIN
 # define LED2_PIN 2
 #endif
+
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTA
+#endif
+
+#ifndef SW1_PIN
+# define SW1_PIN 0
+#endif
