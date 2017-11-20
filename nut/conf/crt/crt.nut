@@ -80,6 +80,19 @@
 --
 --
 
+local function get_tzoffset()
+  local now = os.time()
+  return os.difftime(now, os.time(os.date("!*t", now))) / 60
+end
+
+local function is_daylight()
+  local time = os.date("*t", now)
+  if (time.isdst == 1) then
+     return -60
+  end
+  return 0
+end
+
 nutcrt =
 {
     --
@@ -330,17 +343,19 @@ nutcrt =
                 macro = "CRT_TIMEZONE",
                 brief = "Default Timezone",
                 description = "Timezone Offset in Minutes. "..
-                            "E.g. EST = -300. Default: -300.",
-                default = "-300",
+                            "Default is system timezone offset at "..
+                            "configuration time.",
+                default = function() return get_tzoffset() end,
                 type = "integer",
                 file = "include/cfg/crt.h"
              },
              {
                 macro = "CRT_DAYLIGHT",
                 brief = "Dayligh saving enabled",
-                description = "Daylight saving offset in minutes. "..
-                            "Default: -60 (daylight savings enabled).",
-                default = "-60",
+                description = "Daylight saving offset in minutes\n\n"..
+                            "Default is system daylight setting at "..
+                            "configuration time.",
+                default = function() return is_daylight() end,
                 type = "integer",
                 file = "include/cfg/crt.h"
              }
