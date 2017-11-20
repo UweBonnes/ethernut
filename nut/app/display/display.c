@@ -44,6 +44,7 @@
 #include <io.h>
 
 #include <dev/term.h>
+#include <dev/gpio.h>
 
 #include <pro/rfctime.h>
 #include <cfg/crt.h>
@@ -55,13 +56,21 @@ static const char banner[] = "\nDisplay on "
 # define DEV_DISPLAY DEV_CONSOLE
 #endif
 
+#if defined(SW1_PORT) && defined(SW1_PIN)
+# define SW_INIT() GpioPinConfigSet(SW1_PORT, SW1_PIN, GPIO_CFG_INPUT)
+# define SW_GET() GpioPinGet(SW1_PORT, SW1_PIN)
+#else
+# define SW_INIT()
+# define SW_GET() 0
+#endif
 static int SetRtc(time_t *now)
 {
     int res;
     struct _tm gmt;
     gmtime_r(now, &gmt);
     res = NutRtcSetTime(&gmt);
-    /* Set system time from RTC*/
+    /* Set system time from RTC when RTC is not yet initialized or
+       the SW1 button is active.*/
     if (NutRtcGetTime(&gmt) == 0) {
         time_t now = _mkgmtime(&gmt);
         if (now != -1) {
@@ -82,7 +91,7 @@ NUTRTC *RTC_Init(void)
         return 0;
     }
     NutRtcGetStatus(&rtc_stat);
-    if (rtc_stat & RTC_STATUS_PF) {
+    if ((rtc_stat & RTC_STATUS_PF) || SW_GET()){
         SetRtc(&now);
     }
     else {
@@ -109,6 +118,7 @@ int main(void)
     int n_digits;
 
     NutRegisterDevice(&DEV_DISPLAY, 0, 0);
+    SW_INIT();
     lcd = fopen(DEV_DISPLAY.dev_name, "r+");
     /* Find number of display digits.*/
     memset(&win_size, 0, sizeof(WINSIZE));
@@ -128,6 +138,7 @@ int main(void)
         while (1) {
             struct _tm rtctime;
             if (NutRtcGetTime(&rtctime) == 0) {
+                /* Display time in UTC */
                 fprintf(lcd, "%2d:%02d:%02d\n", rtctime.tm_hour,
                         rtctime.tm_min, rtctime.tm_sec);
             }
