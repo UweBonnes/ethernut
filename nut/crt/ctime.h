@@ -54,8 +54,8 @@
 #define _LEAP_YEAR_ADJUST  17L  /* Leap years 1900 - 1970 */
 #define _MAX_YEAR          138L /* 2038 is the max year */
 
-extern int _lpdays[];
-extern int _days[];
+extern const int16_t _lpdays[];
+extern const int16_t _days[];
 extern tm _tb;
 
 int _isindst(tm * tb);

@@ -74,10 +74,10 @@ tm _tb;
 /*      static arrays used by gmtime to determine date and time
 *       values. Shows days from being of year.
 ***************************************************************/
-int _lpdays[] = {
+const int16_t _lpdays[] = {
     -1, 30, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
 };
-int _days[] = {
+const int16_t _days[] = {
     -1, 30, 58, 89, 119, 150, 180, 211, 242, 272, 303, 333, 364
 };
 
@@ -102,7 +102,7 @@ int gmtime_r(const time_t * timer, tm * ptm)
     time_t ctimer = *timer;     /* var to calculate with */
     uint8_t isleapyear = 0;     /* current year is leap year */
     uint32_t tmptimer;
-    int *mdays;                 /* pointer to _numdayslp or _numdays */
+    const int16_t *mdays;       /* pointer to _numdayslp or _numdays */
 
     if (ptm == NULL)            /* check pointer */
         return -1;
