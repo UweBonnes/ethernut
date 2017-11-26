@@ -524,6 +524,7 @@ nutos =
                       "for the host name and one last byte, which is always zero.\n\n"..
                       "The length of the host name is configurable.",
         provides = { "NUT_OSCONFIG" },
+        requires = {"DEV_NVMEM"},
         sources = { "confos.c" },
         options =
         {
