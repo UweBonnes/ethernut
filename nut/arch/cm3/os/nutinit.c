@@ -191,7 +191,9 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
 #endif
     /* Read OS configuration from non-volatile memory. We can't do this
     ** earlier, because the low level driver may be interrupt driven. */
+#if defined(CONFOS_NVMEM)
     NutLoadConfig();
+#endif
 
 #ifdef NUT_INIT_MAIN
     NutMainInit();
