@@ -891,5 +891,17 @@ extern void NutMainInit(void);
 typedef void (*NutIdleCallback)(void);
 extern NutIdleCallback NutRegisterIdleCallback(NutIdleCallback func);
 
+#if defined(SW1_PORT) && defined(SW1_PIN)
+# define SW1_INIT() GpioPinConfigSet(SW1_PORT, SW1_PIN, GPIO_CFG_INPUT)
+# if defined(SW1_ACTIVE_LOW)
+#  define SW1_GET() ((GpioPinGet(SW1_PORT, SW1_PIN))? 0 : 1)
+# else
+#  define SW1_GET() GpioPinGet(SW1_PORT, SW1_PIN)
+# endif
+#else
+# define SW1_INIT()
+# define SW1_GET() 0
+#endif
+
 #endif
 

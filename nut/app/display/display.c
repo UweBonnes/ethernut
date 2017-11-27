@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2013-2016 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-2017 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -34,6 +34,12 @@
 
 /*!
  * $Id$
+ *
+ * Display RTC time as UTC.
+ *
+ * If SW1 is pressed or RTC time is invalid, set RTC
+ * with system time when compiling display.c. Otherwise
+ * use time from RTC.
  */
 
 #include <dev/board.h>
@@ -56,13 +62,6 @@ static const char banner[] = "\nDisplay on "
 # define DEV_DISPLAY DEV_CONSOLE
 #endif
 
-#if defined(SW1_PORT) && defined(SW1_PIN)
-# define SW_INIT() GpioPinConfigSet(SW1_PORT, SW1_PIN, GPIO_CFG_INPUT)
-# define SW_GET() GpioPinGet(SW1_PORT, SW1_PIN)
-#else
-# define SW_INIT()
-# define SW_GET() 0
-#endif
 static int SetRtc(time_t *now)
 {
     int res;
@@ -91,7 +90,7 @@ NUTRTC *RTC_Init(void)
         return 0;
     }
     NutRtcGetStatus(&rtc_stat);
-    if ((rtc_stat & RTC_STATUS_PF) || SW_GET()){
+    if ((rtc_stat & RTC_STATUS_PF) || SW1_GET()){
         SetRtc(&now);
     }
     else {
@@ -118,7 +117,7 @@ int main(void)
     int n_digits;
 
     NutRegisterDevice(&DEV_DISPLAY, 0, 0);
-    SW_INIT();
+    SW1_INIT();
     lcd = fopen(DEV_DISPLAY.dev_name, "r+");
     /* Find number of display digits.*/
     memset(&win_size, 0, sizeof(WINSIZE));
