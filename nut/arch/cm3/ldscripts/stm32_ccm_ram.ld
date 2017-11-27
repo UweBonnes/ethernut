@@ -46,7 +46,7 @@ SECTIONS{
         _evect = .;
      } > REMAP AT > SRAM0
 
-   .text :
+   .text : ALIGN_WITH_INPUT
     {
         *(.nutinit)
         *(.text .text.* .gnu.linkonce.t.*)
@@ -58,26 +58,30 @@ SECTIONS{
     } > REMAP AT > SRAM0
 
     /* .ARM.exidx is sorted, so has to go in its own output section. */
-    .exidx : {
+    .exidx : ALIGN_WITH_INPUT
+    {
         __exidx_start = .;
         *(..exidx* .gnu.linkonce.armexidx.*)
         __exidx_end = .;
     } > REMAP AT > SRAM0
 
-    .preinit_array : {
+    .preinit_array : ALIGN_WITH_INPUT
+    {
         PROVIDE_HIDDEN (__preinit_array_start = .);
         KEEP (*(.preinit_array*))
         PROVIDE_HIDDEN (__preinit_array_end = .);
     } > REMAP AT > SRAM0
 
-    .init_array : {
+    .init_array : ALIGN_WITH_INPUT
+    {
         PROVIDE_HIDDEN (__init_array_start = .);
         KEEP (*(SORT(.init_array.*)))
         KEEP (*(.init_array*))
         PROVIDE_HIDDEN (__init_array_end = .);
     } > REMAP AT > SRAM0
 
-    .fini_array : {
+    .fini_array : ALIGN_WITH_INPUT
+    {
         PROVIDE_HIDDEN (__fini_array_start = .);
         KEEP (*(SORT(.fini_array.*)))
         KEEP (*(.fini_array*))
