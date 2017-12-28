@@ -146,10 +146,10 @@
  * \brief Device Control Block for 7-Segment Display
  */
 typedef struct {
-    uint_fast8_t  digit[SEG7_DIGITS]; /*!< Buffer for Display content */
-    uint_fast8_t  dip;        /*!< Actual cursor position */
-    uint_fast8_t  freg;      /*!< mirror of internal feature control register */
-    uint_fast8_t  icmd;      /*!< internal driver control register */
+    uint8_t  digit[SEG7_DIGITS]; /*!< Buffer for Display content */
+    uint8_t  dip;        /*!< Actual cursor position */
+    uint8_t  freg;      /*!< mirror of internal feature control register */
+    uint8_t  icmd;      /*!< internal driver control register */
 } DCB_7SEG;
 
 /*********************************************************************************
