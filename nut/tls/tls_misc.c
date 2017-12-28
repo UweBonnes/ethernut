@@ -89,9 +89,11 @@ int get_file(const char *filename, uint8_t **buf)
 void RNG_initialize()
 {
     /* start of with a stack to copy across */
-    int i;
-    memcpy(entropy_pool, &i, ENTROPY_POOL_SIZE);
-    srand((unsigned int)&i);
+    int i ;
+    srand((unsigned int)&entropy_pool);
+    for (i = ENTROPY_POOL_SIZE; i >= 0; i--) {
+        entropy_pool[i] = rand();
+    }
 }
 
 /**
