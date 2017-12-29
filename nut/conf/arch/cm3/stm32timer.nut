@@ -830,7 +830,7 @@ nutarch_cm3_stm32_timer_devices =
                               "Negative numbers x indicate CHxN.\n"..
                               "Check for availability on selected device.",
                 type = "enumerated",
-                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
+                choices = { "1", "2", "3", "4", "-1", "-2", "-3" },
                 file = "include/cfg/pwm.h",
             },
             {
@@ -865,7 +865,7 @@ nutarch_cm3_stm32_timer_devices =
                               "Negative numbers x indicate CHxN.\n"..
                               "Check for availability on selected device.",
                 type = "enumerated",
-                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
+                choices = { "1", "2", "3", "4", "-1", "-2", "-3" },
                 file = "include/cfg/pwm.h",
             },
             {
@@ -1007,7 +1007,7 @@ nutarch_cm3_stm32_timer_devices =
                               "Check for availability!",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI1_TX"},
-                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
+                choices = { "1", "2", "3", "4", "-1", "-2", "-3" },
                 file = "include/cfg/owi.h",
             },
             {
@@ -1082,7 +1082,7 @@ nutarch_cm3_stm32_timer_devices =
                             "Check for availability!",
                 type = "enumerated",
                 requires = {"STM32TIM_OWI2_TX"},
-                choices = { "1", "2", "3", "4", "5", "6", "-1", "-2", "-3" },
+                choices = { "1", "2", "3", "4", "-1", "-2", "-3" },
                 file = "include/cfg/owi.h",
             },
             {
