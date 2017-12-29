@@ -441,10 +441,9 @@ nutcrt =
             {
                 macro = "CRT_UNSETENV_POSIX",
                 brief = "Posix compatible unsetenv",
-                description = "Enable posix compatible definition of unsetenv. Newlib since version "..
-                              "1.17.0 declares unsetenv returning int. Older versions are declared "..
-                              "as void function. This will help to avoid compilation errors because "..
-                              "of incompatible declarations.",
+                description = "Enable posix compatible definition of unsetenv\n"..
+                              "Use if automatic detection fails and unsetenv() "..
+                              "shows an error with return type int vs. void.",
                 flavor = "boolean",
                 file = "include/cfg/crt.h"
             }

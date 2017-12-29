@@ -152,25 +152,34 @@ int setenv(const char *name, const char *value, int force)
     return 0;
 }
 
-
-
+#if defined(CRT_UNSETENV_POSIX)
+# define RET_TRUE 0
+# define RET_FALSE -1
+# define RET_TYPE int
+#else
+# define RET_TRUE
+# define RET_FALSE
+# define RET_TYPE void
+#endif
 /*!
  * \brief Remove an environment variable.
  *
  * \param name Points to a string, which is the name of the variable to
  *             be removed.
+ * Newlib before 1.17.0 defined the return type as void, while posix
+ * uses int. We evaluate the newlib version and CRT_UNSETENV_POSIX
+ * from the configuration as fallback.
  *
  * \return 0 upon successful completion. Otherwise, -1 is returned and
  *         errno is set to indicate the error.
  */
-#ifdef CRT_UNSETENV_POSIX
-int unsetenv(const char *name)
+RET_TYPE unsetenv(const char *name)
 {
     NUTENVIRONMENT *envp;
 
     if ((envp = findenv(name)) == NULL) {
         errno = ENOENT;
-        return -1;
+        return RET_FALSE;
     }
     if (envp->env_prev) {
         envp->env_prev->env_next = envp->env_next;
@@ -186,34 +195,5 @@ int unsetenv(const char *name)
     free(envp);
 
     save_env();
-    return 0;
+    return RET_TRUE;
 }
-
-
-#else
-
-void unsetenv(const char *name)
-{
-    NUTENVIRONMENT *envp;
-
-    if ((envp = findenv(name)) == NULL) {
-        errno = ENOENT;
-        return;
-    }
-    if (envp->env_prev) {
-        envp->env_prev->env_next = envp->env_next;
-    }
-    if (envp->env_next) {
-    envp->env_next->env_prev = envp->env_prev;
-    }
-    if (nut_environ == envp) {
-    nut_environ = envp->env_next;
-    }
-    free(envp->env_name);
-    free(envp->env_value);
-    free(envp);
-
-    save_env();
-}
-
-#endif

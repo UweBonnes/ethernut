@@ -64,21 +64,13 @@ extern char *getenv(const char *name);
 extern int setenv(const char *name, const char *value, int force);
 extern void unsetenv(const char *name);
 extern int putenv(const char *string);
-#endif
-
-#if defined (__CROSSWORKS_ARM)
-
-#include <cfg/crt.h>
-
-extern int setenv(const char *name, const char *value, int force);
-extern int putenv(char *string);
-
-#ifdef CRT_UNSETENV_POSIX
-extern int unsetenv(const char *name);
 #else
-extern void unsetenv(const char *name);
+# if defined(__NEWLIB__) && defined(__NEWLIB_MINOR__)
+#  if __NEWLIB__ > 1 || ( __NEWLIB__ == 1 && __NEWLIB_MINOR__ > 16)
+#   if !defined(CRT_UNSETENV_POSIX)
+#    define CRT_UNSETENV_POSIX
+#   endif
+#  endif
+# endif
 #endif
-
-#endif /* (__CROSSWORKS_ARM) */
-
 #endif
