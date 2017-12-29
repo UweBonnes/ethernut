@@ -3599,9 +3599,7 @@ int main(int argc, char **argv)
             goto cleanup;
     }
     if (src_dir == NULL) {
-        char *p, *q;
-        char *board_name_c;
-        char *board_name;
+        char *p;
         /* translate to unix slash as path delimiter. */
         for (p = conf_name; *p != 0; p++) {
             if (*p == '\\') {
@@ -3622,22 +3620,16 @@ int main(int argc, char **argv)
         }
         src_dir = strndup(conf_name, p - conf_name + 4);
         if (!user_dir) {
-            user_dir = strndup(conf_name, p - conf_name);
-            board_name_c = strdup(conf_name);
-            board_name = basename(board_name_c);
+            char *q, *board_name;
+            user_dir = strdup(conf_name);
+            board_name = basename(user_dir);
             q = strrchr(board_name, '.');
             if (q) {
                 *q = 0;
             }
-            user_dir = malloc( p - conf_name + 1 + strlen(board_name) + 1);
-            if (!user_dir) {
-                rc = 1;
-                goto cleanup;
-            }
-            strncpy(user_dir, conf_name, p - conf_name);
-            strcat(user_dir, "/");
+            p = strstr(user_dir, "/nut/conf/");
+            *(p + 1) = 0;
             strcat(user_dir, board_name);
-            free(board_name_c);
         }
     } else if (!user_dir) {
         dirc = strdup(conf_name);
