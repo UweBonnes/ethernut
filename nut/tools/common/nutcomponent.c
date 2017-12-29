@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008-2012 by egnite GmbH
  * Copyright (C) 2004-2007 by egnite Software GmbH
- * Copyright (C) 2016 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2016, 2017 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -86,16 +86,20 @@ char *strndup (const char *s, size_t size)
   char *r;
   char *end = memchr(s, 0, size);
 
-  if (end)
-    /* Length + 1 */
-    size = end - s + 1;
+  if (end) {
+    size = end - s ;
+  }
 
-  r = malloc(size);
+  /* The strndup() function copies at most n bytes.  If s is longer than
+   * size, only size bytes are copied, and a terminating  null byte ('\0')
+   * is added.
+   */
+  r = malloc(size + 1);
 
   if (size)
     {
-      memcpy(r, s, size-1);
-      r[size-1] = '\0';
+      memcpy(r, s, size);
+      r[size] = '\0';
     }
   return r;
 }
