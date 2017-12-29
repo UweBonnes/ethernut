@@ -16,10 +16,10 @@ endif()
 
 MESSAGE(STATUS "LUA_INCLUDE_DIR " ${LUA_INCLUDE_DIR} )
 
-if (WIN32)
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include/win32 ${LUA_INCLUDE_DIR})
-endif(WIN32)
+if (MSVC)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include/win32)
+endif(MSVC)
+include_directories(${LUA_INCLUDE_DIR})
 
 # Put cpp files here
 set(NUTCONF_SRCS

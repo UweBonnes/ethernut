@@ -59,12 +59,12 @@
 #include <libgen.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #if defined(_MSC_VER) || defined( __MINGW32__ )
 
 #include <io.h>
 #include <direct.h>
-#include "dirent.h"
 #define mkdir(P, M) _mkdir(P)
 #define access _access
 #define strcasecmp _stricmp
@@ -112,7 +112,6 @@ char *strndup (const char *s, size_t size)
 #else
 
 #include <unistd.h>
-#include <dirent.h>
 #include <errno.h>
 
 #endif
