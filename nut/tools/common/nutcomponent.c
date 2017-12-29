@@ -3602,6 +3602,12 @@ int main(int argc, char **argv)
         char *p, *q;
         char *board_name_c;
         char *board_name;
+        /* translate to unix slash as path delimiter. */
+        for (p = conf_name; *p != 0; p++) {
+            if (*p == '\\') {
+                *p = '/';
+            }
+        }
         /* Look if the .conf file is inside the Nut/OS tree.
          * If no, at least src_dir must be provided.*/
         p = strstr(conf_name, "/nut/conf/");
