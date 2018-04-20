@@ -1677,6 +1677,26 @@ nutarch =
                            }
             },
             {
+                macro = "MCU_STM32F303xD",
+                brief = "STM STM32F303 384 kB",
+                description = "STM32F303 with 384 kB.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F30",
+                    "HW_MCU_STM32F303_HD",
+                },
+                makedefs = { "FLASH0_LENGTH=384K",
+                             "RAM0_LENGTH=64K",
+                             "CCM_LENGTH=16K",
+                           }
+            },
+            {
                 macro = "MCU_STM32F303xE",
                 brief = "STM STM32F303 512 kB",
                 description = "STM32F303 with 512 kB.",
