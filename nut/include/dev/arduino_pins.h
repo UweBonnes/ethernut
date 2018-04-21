@@ -135,6 +135,75 @@
 #  define ARDUINO_D15  PB08
 # endif
 
+#elif PLATFORM == NUCLEO64P
+# if !defined(ARDUINO_A0)
+#  define ARDUINO_A0   PA00
+# endif
+# if !defined(ARDUINO_A1)
+#  define ARDUINO_A1   PA01
+# endif
+# if !defined(ARDUINO_A2)
+#  define ARDUINO_A2   PC03
+# endif
+# if !defined(ARDUINO_A3)
+#  define ARDUINO_A3   PC02
+# endif
+# if !defined(ARDUINO_A4)
+#  define ARDUINO_A4   PC01
+# endif
+# if !defined(ARDUINO_A5)
+#  define ARDUINO_A5   PC00
+# endif
+
+# if !defined(ARDUINO_D0)
+#  define ARDUINO_D0   PA03
+# endif
+# if !defined(ARDUINO_D1)
+#  define ARDUINO_D1   PA02
+# endif
+# if !defined(ARDUINO_D2)
+#  define ARDUINO_D2   PA12
+# endif
+# if !defined(ARDUINO_D3)
+#  define ARDUINO_D3   PB03
+# endif
+# if !defined(ARDUINO_D4)
+#  define ARDUINO_D4   PB05
+# endif
+# if !defined(ARDUINO_D5)
+#  define ARDUINO_D5   PA15
+# endif
+# if !defined(ARDUINO_D6)
+#  define ARDUINO_D6   PB10
+# endif
+# if !defined(ARDUINO_D7)
+#  define ARDUINO_D7   PC07
+# endif
+# if !defined(ARDUINO_D8)
+#  define ARDUINO_D8   PB06
+# endif
+# if !defined(ARDUINO_D9)
+#  define ARDUINO_D9   PA08
+# endif
+# if !defined(ARDUINO_D10)
+#  define ARDUINO_D10  PA11
+# endif
+# if !defined(ARDUINO_D11)
+#  define ARDUINO_D11 PB15
+# endif
+# if !defined(ARDUINO_D12)
+#  define ARDUINO_D12 PB14
+# endif
+# if !defined(ARDUINO_D13)
+#  define ARDUINO_D13 PB13
+# endif
+# if !defined(ARDUINO_D14)
+#  define ARDUINO_D14  PB07
+# endif
+# if !defined(ARDUINO_D15)
+#  define ARDUINO_D15  PB08
+# endif
+
 #elif PLATFORM == NUCLEO32
 # if !defined(ARDUINO_A0)
 #  define ARDUINO_A0   PA00

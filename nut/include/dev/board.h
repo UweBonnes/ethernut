@@ -295,6 +295,8 @@
 #elif defined(NUCLEO)
 #include <arch/cm3/board/nucleo.h>
 #define BOARDNAME "NUCLEO"
+#elif defined(NUCLEO64P)
+#include <arch/cm3/board/nucleo64p.h>
 #elif defined(NUCLEO32)
 #include <arch/cm3/board/nucleo32.h>
 #define BOARDNAME "NUCLEO32"

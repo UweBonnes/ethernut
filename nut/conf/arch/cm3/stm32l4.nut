@@ -40,11 +40,9 @@
 -- STM32L4 Family
 -- *****************************************************************************
 --
--- rm0351: L476
--- rm0392: L471
--- rm0392: L432/L442/L452/L462
--- rm0394: L431/L422/L443
--- rm0395: L4x5
+-- rm0351: L4x[5|6]
+-- rm0392: L4x1 (L471)
+-- rm0394: L[43|44|45|46]x
 
 nutarch_cm3_stm32l4 =
 {
@@ -84,7 +82,6 @@ nutarch_cm3_stm32l4 =
                     "HW_SPI3_STM32",
                     "HW_TIM2_32BIT_STM32",
                     "HW_TIM6_DAC_STM32",
-                    "HW_TIM7_STM32",
                     "HW_USART_STM32V2",
                     "HW_USART1_STM32",
                     "HW_USART2_STM32",
@@ -99,19 +96,22 @@ nutarch_cm3_stm32l4 =
                 requires = {"HW_MCU_STM32L43"},
                 provides =
                 {
-                   "HW_TIM1_TIM15_TIM16_STM32",
+                    "HW_TIM7_STM32",
+                    "HW_TIM1_TIM15_TIM16_STM32",
                 },
                 file = "include/cfg/arch.h",
             },
             {
                 macro = "MCU_STM32L45",
-                brief = "STM32L45x/46x.",
+                brief = "STM32L45x/46x with DFSDM.",
                 description = "Provides common devices in L45x/L46x",
                 default = 1,
                 requires = {"HW_MCU_STM32L45"},
                 provides =
                 {
                     "HW_I2C2_STM32",
+                    "HW_I2C4_STM32",
+                    "HW_SPI2_STM32",
                     "HW_TIM1_TIM15_TIM16_STM32",
                     "HW_TIM3_STM32",
                     "HW_USART3_STM32",
@@ -209,6 +209,22 @@ nutarch_cm3_stm32l4 =
                     "HW_USB_STM32",
                     "HW_LCD_STM32",
                     "HW_AES_STM32",
+                 },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "STM32L452xx",
+                brief = "STM32L452 256/512 kB.",
+                description = "Provides vendor header for STM32L452.",
+                default = 1,
+                requires = {"HW_MCU_STM32L452"},
+                provides =
+                {
+                    "HW_I2C2_STM32",
+                    "HW_SPI2_STM32",
+                    "HW_USART3_STM32",
+                    "HW_UART4_STM32",
+                    "HW_USB_STM32",
                  },
                 file = "include/cfg/arch.h",
             },
