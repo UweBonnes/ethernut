@@ -61,11 +61,13 @@ struct _STM32_PWM_HW {
     /*! \brief Used timer. */
     TIM_TypeDef *const pwm_timer;
 #if defined(MCU_STM32F1)
-    /*! \brief F1 pin remapping. Set by user if needed.*/
+    /*! \brief Remap register, prepared by stm32timertran.*/
     volatile uint32_t *const remap_reg;
-    /*! \brief Remap mask on F1.  Set by user if needed.*/
+    /*! \brief Remap mask, prepared by stm32timertran.*/
     const uint32_t remap_mask;
-    /*! \brief Remap value on F1.  Set by user if needed.*/
+    /*! \brief Remap shift, prepared by stm32timertrand.*/
+    const uint32_t remap_shift;
+    /*! \brief Remap value on F1. Set by user if needed in configuration.*/
     const uint32_t remap_value;
 #endif
 #if defined(MCU_STM32F3)
@@ -126,7 +128,7 @@ int Stm32PwmInit(
     uint32_t mapr;
     mapr =  *hw->remap_reg;
     mapr &= ~hw->remap_mask;
-    mapr |= (hw->remap_value & hw->remap_mask);
+    mapr |= ((hw->remap_value << hw->remap_shift) & hw->remap_mask);
     *hw->remap_reg = mapr;
 #endif
     Stm32GpioConfigSet(hw->pwm_pin, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT,
@@ -187,9 +189,10 @@ uint32_t Stm32PwmGetClock(NUTPWM *pwm_dev)
 static const STM32_PWM_HW Stm32Pwm0Hw = {
     .pwm_timer       = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined(MCU_STM32F1)
-    .remap_reg       = &AFIO->STM32_REMAP_REG,
-    .remap_mask      = STM32TIMER_REMAP_SHIFT,
-    .remap_value     = TIM_ID2REMAP(STM32_PWM0_TIMER_ID),
+    .remap_reg       = &STM32TIMER_REMAP_REG,
+    .remap_mask      = STM32TIMER_REMAP_MASK,
+    .remap_shift     = STM32TIMER_REMAP_SHIFT,
+    .remap_value     = STM32TIMER_REMAP_VALUE,
 #endif
 #if defined(STM32TIMER_SW)
     .pll_sw          = STM32TIMER_SW,
@@ -220,9 +223,10 @@ NUTPWM Stm32Pwm0Tim = {
 static const STM32_PWM_HW Stm32Pwm1Hw = {
     .pwm_timer       = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined(MCU_STM32F1)
-    .remap_reg       = &AFIO->STM32_REMAP_REG,
-    .remap_mask      = STM32TIMER_REMAP_SHIFT,
-    .remap_value     = TIM_ID2REMAP(STM32_PWM1_TIMER_ID),
+    .remap_reg       = &STM32TIMER_REMAP_REG,
+    .remap_mask      = STM32TIMER_REMAP_MASK,
+    .remap_shift     = STM32TIMER_REMAP_SHIFT,
+    .remap_value     = STM32TIMER_REMAP_VALUE,
 #endif
 #if defined(STM32TIMER_SW)
     .pll_sw          = STM32TIMER_SW,

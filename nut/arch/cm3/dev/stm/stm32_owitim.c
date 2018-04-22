@@ -369,7 +369,7 @@ int Stm32TimOwiSetup(NUTOWIBUS *bus)
     uint32_t mapr;
     mapr =  *hw->remap_reg;
     mapr &= ~hw->remap_mask;
-    mapr |= (hw->remap_value & hw->remap_mask);
+    mapr |= ((hw->remap_value <<  hw->remap_shift )& hw->remap_mask);
     *hw->remap_reg = mapr;
 #endif
     if (hw->owi_tx_pin != PIN_NONE) {
@@ -409,7 +409,8 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
 #if defined(MCU_STM32F1)
     .remap_reg       = &STM32TIMER_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_MASK,
-    .remap_value     = 0,
+    .remap_shift     = STM32TIMER_REMAP_SHIFT,
+    .remap_value     = STM32TIMER_REMAP_VALUE,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
     .enable_mask     = STM32TIMER_MASK,
@@ -481,7 +482,8 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
 #if defined(MCU_STM32F1)
     .remap_reg       = &STM32TIMER_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_MASK,
-    .remap_value     = 0,
+    .remap_shift     = STM32TIMER_REMAP_SHIFT,
+    .remap_value     = STM32TIMER_REMAP_VALUE,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
     .enable_mask     = STM32TIMER_MASK,
@@ -553,7 +555,8 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
 #if defined(MCU_STM32F1)
     .remap_reg       = &STM32TIMER_REMAP_REG,
     .remap_mask      = STM32TIMER_REMAP_MASK,
-    .remap_value     = 0,
+    .remap_shift     = STM32TIMER_REMAP_SHIFT,
+    .remap_value     = STM32TIMER_REMAP_VALUE,
 #endif
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
     .enable_mask     = STM32TIMER_MASK,

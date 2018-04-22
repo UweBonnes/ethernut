@@ -97,22 +97,6 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_clk.h>
 
-/* We can't use token pasting here */
-#define TIM_ID2REMAP(x) (                                       \
-        (x ==  1) ? STM32F1_TIM1_REMAP:                         \
-        (x ==  2) ? STM32F1_TIM2_REMAP:                         \
-        (x ==  3) ? STM32F1_TIM3_REMAP:                         \
-        (x ==  4) ? STM32F1_TIM4_REMAP:                         \
-        (x ==  5) ? STM32F1_TIM5_REMAP:                         \
-        (x ==  9) ? STM32F1_TIM9_REMAP:                         \
-        (x == 10) ? STM32F1_TIM10_REMAP:                        \
-        (x == 11) ? STM32F1_TIM11_REMAP:                        \
-        (x == 12) ? STM32F1_TIM12_REMAP:                        \
-        (x == 13) ? STM32F1_TIM13_REMAP:                        \
-        (x == 14) ? STM32F1_TIM14_REMAP:                        \
-        (x == 15) ? STM32F1_TIM15_REMAP:                        \
-        (x == 16) ? STM32F1_TIM16_REMAP: STM32F1_TIM17_REMAP)
-
 /* In the Cube headers, smaller devices that don't have GPIOX don't
  * defined that GPIOX_BASE. This confused out heuristic!
  */

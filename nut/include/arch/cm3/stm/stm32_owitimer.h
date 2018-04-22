@@ -87,11 +87,13 @@ struct _STM32_OWIBUS_TIMER_HW {
     /*! \brief Clock index of timer*/
     const clock_index_t clk_idx;
 #if defined(MCU_STM32F1)
-    /*! \brief F1 pin remapping. Set by user if needed.*/
+    /*! \brief Remap register, prepared by stm32timertran.*/
     volatile uint32_t *const remap_reg;
-    /*! \brief Remap mask on F1.  Set by user if needed.*/
+    /*! \brief Remap mask, prepared by stm32timertran.*/
     const uint32_t remap_mask;
-    /*! \brief Remap value on F1.  Set by user if needed.*/
+    /*! \brief Remap shift, prepared by stm32timertrand.*/
+    const uint32_t remap_shift;
+    /*! \brief Remap value on F1. Set by user if needed in configuration.*/
     const uint32_t remap_value;
 #endif
     /*| \brief Device Clock enable register */
