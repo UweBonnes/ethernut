@@ -191,12 +191,10 @@ int Stm32Qenc16Get(NUTQENC *qenc_dev)
     int16_t diff;
 
     info = (STM32_QENC_INFO *)qenc_dev->qenc_info;
-    NutEnterCritical();
     actual_value =  *info->counter;
     diff = actual_value - info->last_value;
     info->last_value = actual_value;
     info->value += diff;
-    NutExitCritical();
     return info->value;
 }
 
