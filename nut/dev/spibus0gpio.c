@@ -369,6 +369,8 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
 /*!
  * \brief Transfer data on the SPI bus.
  *
+ * With xlen = 0, the status of the MISO line is returned.
+ *
  * A device must have been selected by calling GpioSpi0Select().
  *
  * \param node  Specifies the SPI bus node.
@@ -378,7 +380,7 @@ static void SpiMode3Transfer(GSPIREG *gspi, const uint8_t *txbuf, uint8_t *rxbuf
  *              data is discarded.
  * \param xlen  Number of bytes to transfer.
  *
- * \return Always 0.
+ * \return Status of Miso with xlen == 0, 0 else.
  */
 int GpioSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
@@ -389,6 +391,15 @@ int GpioSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int x
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_stat != NULL);
+    /* Sanity check and query MISO. */
+    if (xlen == 0) {
+#if defined(SBBI0_MISO_BIT)
+        return (GpioPinGet(SBBI0_MISO_PORT, SBBI0_MISO_BIT))? 1 : -1;
+#else
+        return 0;
+#endif
+    }
+
     gspi = (GSPIREG *)node->node_stat;
     half_duplex = (node->node_mode & SPI_MODE_HALFDUPLEX);
     lsb         = (node->node_mode & SPI_MODE_LSB);

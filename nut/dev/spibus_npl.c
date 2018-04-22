@@ -248,6 +248,8 @@ int NplSpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int
     /* Sanity check. */
     NUTASSERT(node != NULL);
 
+    /* FIXME: Return status of MISO with xlen == 0! */
+
     while (xlen--) {
         if (txp) {
             txc = *txp++;

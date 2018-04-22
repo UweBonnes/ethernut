@@ -243,6 +243,8 @@ static void AvrSpi0Interrupt(void *arg)
  * When using double buffered interrupt mode, then the transfer may
  * be still in progress when returning from this function.
  *
+ * With xlen = 0, the status of the MISO line is returned.
+ *
  * \param node Specifies the SPI bus node.
  * \param txbuf Pointer to the transmit buffer. If NULL, undetermined
  *              byte values are transmitted.
@@ -250,7 +252,8 @@ static void AvrSpi0Interrupt(void *arg)
  *              data is discarded.
  * \param xlen  Number of bytes to transfer.
  *
- * \return Always 0.
+ * \return     With xlen == 0: 1 for MISO reading high, -1 for reading low,
+ *             0 in all other cases.
  */
 int AvrSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
@@ -259,6 +262,9 @@ int AvrSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xl
     /* Sanity check. */
     NUTASSERT(node != NULL);
 
+    if (xlen == 0) {
+        return (bit_is_set(PINB, 3))? 1 : -1; /* Return MISO state*/
+    }
 #ifdef SPIBUS0_POLLING_MODE
     /*
      * Polling mode.

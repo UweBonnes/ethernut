@@ -296,7 +296,7 @@ static int Lpc17xxSpiBusNodeInit(NUTSPINODE * node)
  *              data is discarded.
  * \param xlen  Number of bytes to transfer.
  *
- * \return Always 0.
+ * \return Status of Miso with xlen == 0, 0 else.
  */
 static int Lpc17xxSpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
@@ -311,6 +311,9 @@ static int Lpc17xxSpiBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxb
     unsigned char *tx = (unsigned char*) txbuf;
     unsigned char *rx = (unsigned char*) rxbuf;
 
+    if (xlen == 0) {
+        return (GpioPinGet(SPIBUS_MISO_PORT, SPIBUS_MISO_PIN)) ? 1 : -1;
+    }
     while (xlen-- > 0) {
         unsigned char b = tx ? (*tx++) : 0xff;
 

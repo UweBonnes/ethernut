@@ -479,6 +479,7 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
  *
  * A device must have been selected by calling At91SpiSelect().
  *
+ *
  * \param node  Specifies the SPI bus node.
  * \param txbuf Pointer to the transmit buffer. If NULL, undetermined
  *              byte values are transmitted.
@@ -486,7 +487,7 @@ static int Stm32SpiBusNodeInit(NUTSPINODE * node)
  *              data is discarded.
  * \param xlen  Number of bytes to transfer.
  *
- * \return Always 0.
+ * \return  With xlen == 0, return 1 for MISO high, -1 for MISO low, 0 else.
  */
 static int Stm32SpiBusTransfer
     (NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
@@ -496,8 +497,9 @@ static int Stm32SpiBusTransfer
     int rx_only;
 
     /* Sanity check. */
-    if (xlen == 0)
-        return 0;
+    if (xlen == 0) {
+        return (Stm32GpioGet(SPI_MISO)) ? 1 : -1;
+    }
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
 

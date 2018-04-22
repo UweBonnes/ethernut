@@ -247,6 +247,8 @@ int At91SpiBusPollTransfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, in
     NUTASSERT(node->node_bus->bus_base != 0);
     base = node->node_bus->bus_base;
 
+    /* FIXME: Return status of MISO with xlen == 0! */
+
     while (xlen--) {
         if (txp) {
             b = *txp++;

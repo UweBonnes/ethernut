@@ -354,6 +354,8 @@ int At91SpiBus1Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int x
     NUTASSERT(node->node_bus->bus_base != 0);
     base = node->node_bus->bus_base;
 
+    /* FIXME: Return status of MISO with xlen == 0! */
+
     if (xlen) {
         spi1_txp = (uint8_t *) txbuf;
         spi1_rxp = (uint8_t *) rxbuf;

@@ -195,6 +195,8 @@ static void SscSpiBus0WriteRead(const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
  */
 static int SscSpiBus0Transfer(NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
 {
+    /* FIXME: Return status of MISO with xlen == 0! */
+
     if (xlen < 32) {
         if (txbuf) {
             if (rxbuf) {
