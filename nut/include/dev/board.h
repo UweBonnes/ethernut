@@ -553,6 +553,15 @@
 #define RTC_CHIP rtcStm32
 #endif
 
+#if !defined(DEF_OWIBUS)
+# include <cfg/owi.h>
+# if defined(STM32TIM_OWI0_TIMER_ID) && defined(STM32TIM_OWI0_CHANNEL)\
+    && defined(STM32TIM_OWI0_GPIO)
+#  include <arch/cm3/stm/owibus_stm32tim.h>
+#  define DEF_OWIBUS owiBus0Stm32Tim
+# endif
+#endif
+
 #elif defined(__NUT_EMULATION__)
 /*
  * UART devices for the UNIX emulation.
@@ -884,6 +893,18 @@
 # undef DEV_DISPLAY_NAME
 # define DEV_DISPLAY DEV_CONSOLE
 # define DEV_DISPLAY_NAME DEV_CONSOLE_NAME
+#endif
+
+#if !defined(DEF_OWIBUS)
+# include <cfg/owi.h>
+# include <cfg/arch/stm32pio.h>
+# if defined(OWI0_UART)
+#  include <dev/owibus.h>
+#  define DEF_OWIBUS owiBus0Uart
+# elif defined(OWI0_PORT) && defined(OWI0_PIN)
+#  include <dev/owibus.h>
+#  define DEF_OWIBUS owiBus0Gpio
+# endif
 #endif
 
 extern void NutBoardInit(void);
