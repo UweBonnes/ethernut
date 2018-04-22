@@ -202,12 +202,5 @@ nutarch_cm3_stm32_family =
         makedefs = { "MCU=cortex-m7"},
         script = "arch/cm3/stm32f7.nut"
     },
-    {
-        name = "nutarch_cm3_stm32_devices",
-        brief = "Other devices",
-        description = "Other devices of the STM32 families",
-        requires = { "HW_MCU_STM32" },
-        script = "arch/cm3/stm32dev.nut"
-    },
 }
 
