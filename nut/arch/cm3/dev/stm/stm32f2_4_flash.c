@@ -42,10 +42,6 @@
 #include <sys/heap.h>
 #include <dev/iap_flash.h>
 
-#if !defined(FLASHSIZE_BASE)
-# define FLASHSIZE_BASE  0x1fff7A22
-#endif
-
 #if defined(STM32F413xx)
 #define MAX_SECTOR_IN_BANK 16
 #else
