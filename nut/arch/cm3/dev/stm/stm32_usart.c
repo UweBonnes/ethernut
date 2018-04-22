@@ -1309,7 +1309,6 @@ static int Stm32UsartInit(void)
     Stm32GpioConfigSet( USART_RX,  GPIO_CFG_PERIPHAL,                   USART_RX_AF );
     Stm32GpioConfigSet( USART_CTS, GPIO_CFG_PERIPHAL,                   USART_CTS_AF);
     Stm32GpioConfigSet( USART_RTS, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, USART_RTS_AF);
-    Stm32GpioConfigSet( USART_CK,  GPIO_CFG_PERIPHAL,                   USART_CK_AF );
 
     /*
      *   USART Communication Init
