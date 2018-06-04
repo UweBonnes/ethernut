@@ -144,7 +144,7 @@ const char *HttpResponseText(int code)
     int i;
 
     for (i = 0; i < (int)HTTP_NUM_RESPONSES; i++) {
-        if (code >= response_list[i].rs_code) {
+        if (code == response_list[i].rs_code) {
             break;
         }
     }
