@@ -77,7 +77,9 @@ static void SendIgmpMessage(NUTDEVICE * dev, uint8_t type, uint32_t ip_addr)
     igmp->igmp_cksum = 0;
     igmp->igmp_cksum = NutIpChkSum(0, nb->nb_tp.vp, nb->nb_tp.sz);
 
-    NutIpOutput(IPPROTO_IGMP, INADDR_ALLRPTS_GROUP, nb);
+    if (NutIpOutput(IPPROTO_IGMP, INADDR_ALLRPTS_GROUP, nb) == 0) {
+        NutNetBufFree(nb);
+    }
 }
 
 void NutIgmpJoinGroup(NUTDEVICE * dev, uint32_t ip_addr)
