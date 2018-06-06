@@ -588,7 +588,7 @@ static void PollingTransfer(
 }
 
 /*!
- * \brief Transfer data on the SPI bus using single buffered interrupt mode.
+ * \brief Transfer data on the SPI bus using node specific mode.
  *
  * A device must have been selected by calling SpiSelect().
  *
@@ -599,7 +599,7 @@ static void PollingTransfer(
  *              data is discarded.
  * \param xlen  Number of bytes to transfer.
  *
- * \return Always 0.
+ * \return  With xlen == 0, return 1 for MISO high, -1 for MISO low, 0 else.
  */
 static int Stm32SpiCbTransfer
     (NUTSPINODE * node, const void *txbuf, void *rxbuf, int xlen)
@@ -612,7 +612,7 @@ static int Stm32SpiCbTransfer
     if (xlen == 0) {
         const STM32_SPI_ICB *bus_icb;
         bus_icb = (STM32_SPI_ICB *)node->node_bus->bus_icb;
-        return Stm32GpioGet(bus_icb->miso);
+        return Stm32GpioGet(bus_icb->miso) ? 1 : -1;
     }
 
     bus = node->node_bus;
