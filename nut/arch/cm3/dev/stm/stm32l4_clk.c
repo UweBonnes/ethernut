@@ -98,11 +98,11 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 #elif (PLLCLK_SOURCE == PLLCLK_MSI)
 /* Use rounded MSI value here to keep calculation below easy */
 # define PLLCLK_IN 4000000
-# undef MSI_RANGE
-# define MSI_RANGE MSI_4M
 #else
 # define PLLCLK_IN 0
 #endif
+#undef MSI_RANGE
+#define MSI_RANGE MSI_4M
 
 #if (SYSCLK_SOURCE == SYSCLK_PLL)
 /* 7 < PLL_MULT < 87
