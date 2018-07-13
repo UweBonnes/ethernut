@@ -51,22 +51,6 @@
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_clk.h>
 
-#if !defined(RTC_BKP_NUMBER)
-# if defined(RTC_BKP0R)
-#  if !defined(RTC_BKP5R)
-#   define RTC_BKP_NUMBER    5
-#  elif !defined(RTC_BKP10R)
-#   define RTC_BKP_NUMBER   10
-#  elif !defined(RTC_BKP16R)
-#   define RTC_BKP_NUMBER   16
-#  elif !defined(RTC_BKP20R)
-#   define RTC_BKP_NUMBER   20
-#  elif defined(RTC_BKP31R)
-#   define RTC_BKP_NUMBER   32
-#  endif
-# endif
-#endif
-
 #if defined(RTC_BKP_NUMBER) && !defined(RTC_BKP_BYTES)
 # define RTC_BKP_BYTES (RTC_BKP_NUMBER * 4)
 
