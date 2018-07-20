@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32f767xx.h
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    30-December-2016
   * @brief   CMSIS Cortex-M7 Device Peripheral Access Layer Header File.
   *
   *          This file contains:
@@ -173,10 +171,10 @@ typedef enum
   I2C4_EV_IRQn                = 95,     /*!< I2C4 Event Interrupt                                              */
   I2C4_ER_IRQn                = 96,     /*!< I2C4 Error Interrupt                                              */
   SPDIF_RX_IRQn               = 97,     /*!< SPDIF-RX global Interrupt                                         */
-  DFSDM1_FLT0_IRQn	          = 99,     /*!< DFSDM1 Filter 0 global Interrupt                                  */
-  DFSDM1_FLT1_IRQn	          = 100,    /*!< DFSDM1 Filter 1 global Interrupt                                  */
-  DFSDM1_FLT2_IRQn	          = 101,    /*!< DFSDM1 Filter 2 global Interrupt                                  */
-  DFSDM1_FLT3_IRQn	          = 102,    /*!< DFSDM1 Filter 3 global Interrupt                                  */
+  DFSDM1_FLT0_IRQn            = 99,     /*!< DFSDM1 Filter 0 global Interrupt                                  */
+  DFSDM1_FLT1_IRQn            = 100,    /*!< DFSDM1 Filter 1 global Interrupt                                  */
+  DFSDM1_FLT2_IRQn            = 101,    /*!< DFSDM1 Filter 2 global Interrupt                                  */
+  DFSDM1_FLT3_IRQn            = 102,    /*!< DFSDM1 Filter 3 global Interrupt                                  */
   SDMMC2_IRQn                 = 103,    /*!< SDMMC2 global Interrupt                                           */
   CAN3_TX_IRQn                = 104,    /*!< CAN3 TX Interrupt                                                 */
   CAN3_RX0_IRQn               = 105,    /*!< CAN3 RX0 Interrupt                                                */
@@ -201,9 +199,8 @@ typedef enum
 #define __FPU_PRESENT             1       /*!< FPU present                                   */
 #define __ICACHE_PRESENT          1       /*!< CM7 instruction cache present                 */
 #define __DCACHE_PRESENT          1       /*!< CM7 data cache present                        */
-#include <arch/cm3/core_cm7.h>            /*!< Cortex-M7 processor and core peripherals      */
 
-
+#include <arch/cm3/core_cm7.h>            /* Cortex-M7 processor and core peripherals */
 #include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 

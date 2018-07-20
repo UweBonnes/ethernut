@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32f722xx.h
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    30-December-2016
   * @brief   CMSIS Cortex-M7 Device Peripheral Access Layer Header File.
   *
   *          This file contains:
@@ -178,9 +176,8 @@ typedef enum
 #define __FPU_PRESENT             1       /*!< FPU present                                   */
 #define __ICACHE_PRESENT          1       /*!< CM7 instruction cache present                 */
 #define __DCACHE_PRESENT          1       /*!< CM7 data cache present                        */
-#include <arch/cm3/core_cm7.h>            /*!< Cortex-M7 processor and core peripherals      */
 
-
+#include <arch/cm3/core_cm7.h>            /* Cortex-M7 processor and core peripherals */
 #include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
@@ -1027,7 +1024,7 @@ typedef struct
 #define CRC_BASE              (AHB1PERIPH_BASE + 0x3000U)
 #define RCC_BASE              (AHB1PERIPH_BASE + 0x3800U)
 #define FLASH_R_BASE          (AHB1PERIPH_BASE + 0x3C00U)
-#define UID_BASE              0x1FF0F420U                   /*!< Unique device ID register base address */
+#define UID_BASE              0x1FF07A10U                   /*!< Unique device ID register base address */
 #define FLASHSIZE_BASE        0x1FF07A22U                   /*!< FLASH Size register base address */
 #define PACKAGE_BASE          0x1FFF7BF0U                   /*!< Package size register base address */
 /* Legacy define */
