@@ -125,7 +125,6 @@ SECTIONS
         . = ALIGN(4);
         _ebss = .;
         . = ALIGN(8);
-        PROVIDE (__heap_start = .);
     } > SRAM0
 
     .psp_stack (NOLOAD):
@@ -134,6 +133,7 @@ SECTIONS
         _pspstack_start = .;
         KEEP(*(.psp_stack .psp_stack.*));
         _pspstack_end = .;
+        PROVIDE (__heap_start = .);
     } > SRAM0
 
 /*
