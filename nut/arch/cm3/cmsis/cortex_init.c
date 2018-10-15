@@ -400,7 +400,17 @@ extern void * _ramfunc_load;      /* Start of RAMFUNC data in FLASH0 */
     {
         *dst++ = fill;
     }
-
+#if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
+    end = (uint32_t*)&_pspstack_end;
+    for (dst = (uint32_t*)&_pspstack_start; dst < end; )
+    {
+        *dst++ = 0xdeadbeef;
+    }
+    for (volatile uint32_t *vdst =  pspStack;
+         vdst < &pspStack[PSP_STACK_SIZE]; ) {
+        *vdst++ = 0xdeadbeef;
+    }
+#endif
     __set_PSP((uint32_t)&_pspstack_end);
 }
 
