@@ -51,8 +51,6 @@
 #include <sys/heap.h>
 #include <sys/thread.h>
 
-#define NUTDEBUG_CHECK_STACKMIN
-#define NUTDEBUG_CHECK_STACK
 /* For M0, push, pop, ldr etc only work on r0-r7
  * push{<list>} stores highest register at highest stack address
  * pop{<list>}  pops highest register from highest stack address
