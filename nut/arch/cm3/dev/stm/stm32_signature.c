@@ -35,25 +35,28 @@
 #include <dev/hw_signature.h>
 
 #if !defined(MCU_STM32F030)
+/*!
+ * \brief Get a (hopefully) unique MAC id from the hardware ID
+ *
+ * \param mac Mac Address to fill in
+ *
+ * As first 3 byte we use the Egnite OUI, the other 3 byte are
+ * the bytes of the 3 unique ID words xored together.
+ *.
+ */
 void Stm32GetUniquePrivateMac(void* mac)
 {
-    uint32_t id_w;
-    uint16_t  id, *mac_p;
+    uint8_t  *id, *mac_p;
 
-    mac_p = (uint16_t *) mac;
-    id_w = *(uint32_t *) UNIQUE_ID_REG_L;
-    id = (id_w & 0xffff) ^ (id_w >> 16);
-    id &= 0xff00;
-    id |= 0x0002;
-    *mac_p = id;
-    mac_p++;
-    id_w = *(uint32_t *) UNIQUE_ID_REG_M;
-    id = (id_w & 0xffff) ^ (id_w >> 16);
-    *mac_p = id;
-    mac_p++;
-    id_w = *(uint32_t *) UNIQUE_ID_REG_H;
-    id = (id_w & 0xffff) ^ (id_w >> 16);
-    *mac_p = id;
-    mac_p++;
+    mac_p = (uint8_t *) mac;
+    mac_p[0] = 0;
+    mac_p[1] = 6;
+    mac_p[2] = 0x98;
+    id = (uint8_t *) UNIQUE_ID_REG_H;
+    mac_p[3] = id[0] ^ id[1] ^ id[2] ^ id[3];
+    id = (uint8_t *) UNIQUE_ID_REG_M;
+    mac_p[4] = id[0] ^ id[1] ^ id[2] ^ id[3];
+    id = (uint8_t *) UNIQUE_ID_REG_L;
+    mac_p[5] = id[0] ^ id[1] ^ id[2] ^ id[3];
 }
 #endif
