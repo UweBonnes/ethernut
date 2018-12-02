@@ -98,6 +98,7 @@ all:
 	-$(MAKE) -C i2ctest
 	-$(MAKE) -C inetq
 	-$(MAKE) -C inetq
+	-$(MAKE) -C iperf2_server
 	-$(MAKE) -C jtagtest
 	-$(MAKE) -C logtime
 	-$(MAKE) -C lua
@@ -134,7 +135,8 @@ install:
 	-$(MAKE) -C icmp-udp install
 	-$(MAKE) -C i2ctest install
 	-$(MAKE) -C inetq install
-	-$(MAKE) -C jtagtest
+	-$(MAKE) -C iperf2_server install
+	-$(MAKE) -C jtagtest install
 	-$(MAKE) -C logtime install
 	-$(MAKE) -C lua install
 	-$(MAKE) -C mdnsd_uhttp install
@@ -170,7 +172,8 @@ clean:
 	-$(MAKE) -C i2ctest clean
 	-$(MAKE) -C icmp-udp clean
 	-$(MAKE) -C inetq clean
-	-$(MAKE) -C jtagtest
+	-$(MAKE) -C iperf2_server clean
+	-$(MAKE) -C jtagtest clean
 	-$(MAKE) -C logtime clean
 	-$(MAKE) -C lua clean
 	-$(MAKE) -C mdnsd_uhttp clean
