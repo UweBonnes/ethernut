@@ -167,4 +167,5 @@ void Stm32TimerConfig(
 #define Stm32TimerStart(x)        x->CR1 |= TIM_CR1_CEN
 #define Stm32TimerStop(x)         x->CR1 &= ~TIM_CR1_CEN
 uint32_t Stm32TimerGetClock(TIM_TypeDef *tim);
+void Stm32InvalidateClockCache(void);
 #endif

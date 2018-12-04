@@ -688,3 +688,13 @@ done:
     PWR_CR &= ~PWR_CR_DBP;
     return res;
 }
+
+/*!
+ * \brief Invalidate clock frequency cache
+ *
+ * Next call to NutClockGet() will revalidate the cache
+ */
+void Stm32InvalidateClockCache(void)
+{
+    sys_clock = 0;
+}
