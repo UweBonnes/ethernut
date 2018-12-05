@@ -131,8 +131,10 @@
 --
 --
 
-toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "CM3_GCC", "CM3_GCC_NEWLIB",
-                "CM3_GCC_NANOLIB", "LINUX_GCC", "ICCAVR", "ICCARM", "M68K_GCC_CS"}
+toolchain_names = {
+"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC","CM3_GCC", "CM3_GCCDBG",
+"CM3_GCC_NEWLIB", "CM3_GCC_NANOLIB", "LINUX_GCC", "ICCAVR", "ICCARM",
+"M68K_GCC_CS"}
 gcc_output_format = {"ARMELF", "ARMEABI"}
 nuttools =
 {
@@ -171,6 +173,17 @@ nuttools =
             makedefs = {"TOOLCHAIN=cm3-gcc", "ADDLIBS = -lnutc"}
         },
         {
+            brief = "GCC Debug for CortexM (no libc)",
+            description = "Debug build with GCC for ARM CortexM using Nut/OS provided libc.\n"..
+                          "Nut/OS provides all required C standard functions.",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
+            macro = "CM3_GCCDBG",
+            flavor = "boolean",
+            exclusivity = toolchain_names,
+            file = "include/cfg/arch.h",
+            makedefs = {"TOOLCHAIN=cm3-gccdbg", "ADDLIBS = -lnutc"}
+        },
+         {
             brief = "GCC for CortexM (newlib)",
             description = "GNU Compiler Collection for ARM CortexM including newlib libc.\n"..
                         "Newlib is provided by most toolchains.\n"..
