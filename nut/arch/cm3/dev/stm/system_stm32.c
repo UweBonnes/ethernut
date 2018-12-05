@@ -192,6 +192,9 @@ void SystemInit (void)
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 #endif
     GpioSetAnalogDefault();
+#if defined(PWR_CR2_IOSV) && !defined(STM32_VDDIO2_ISOLATION_USER)
+    PWR->CR2 |= PWR_CR2_IOSV;
+#endif
 #if defined(PWR_CSR_BRE) && !defined(BACKUP_REGULATOR_OFF)
     PWR_CR |= PWR_CR_DBP;
     PWR->CSR |= PWR_CSR_BRE;

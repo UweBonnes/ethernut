@@ -729,6 +729,29 @@ nutarch_cm3_stm32_devices =
         sources = {"cm3/dev/stm/stm32l0_combined_irq.c"},
     },
     --
+    -- STM32 VDDIO Isolation control
+    --
+    {
+        name = "nutarch_cm3_stm32_vddio2_isolation",
+        brief = "STM32 VDDIO2 Isolation",
+        description = "Control VDDIO2 Isolation",
+        requires = {"HW_VDDIO2_ISOLATION_STM32"},
+        options =
+        {
+            {
+                macro = "STM32_VDDIO2_ISOLATION_USER",
+                brief = "STM32 VDDIO2 Isolation User Control",
+                description = "User control of VDDIO2 isolation\n\n"..
+                            "If enabled, VDDIO2 isolation conntrol is "..
+                            "left to user.\nOtherwise VDDIO2 isolation "..
+                            "is removed during system startup.\n",
+                provides = {"STM32_VDDIO2_ISOLATION_USER"},
+                flavor = "boolean",
+                file = "include/cfg/devices.h",
+            },
+        }
+    },
+    --
     -- STM32 Signal handler
     {
         name = "nutarch_cm3_stm32_sig",
