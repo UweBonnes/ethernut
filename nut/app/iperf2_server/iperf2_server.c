@@ -43,6 +43,7 @@
 
 #include <dev/board.h>
 #include <dev/hw_signature.h>
+#include <dev/reset.h>
 #include <sys/version.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
@@ -55,7 +56,8 @@
 /*=======================================================================*/
 
 #define MY_MAC    "\x00\x06\x98\x30\x00\x35"
-#define MY_IPADDR "10.0.1.200"
+/* Define MY_IPADDR for fixed address or undefine for DHCP! */
+//#define MY_IPADDR "192.168.2.200"
 #define MY_IPMASK "255.255.255.0"
 #define MY_IPGATE "0.0.0.0"
 
@@ -70,8 +72,8 @@
 
 #endif /* IPERF_SERVICE_STACK */
 
-/* Default Iperf3 port */
-#define IPERF_TCP_PORT        5201
+/* Default Iperf2 port */
+#define IPERF_TCP_PORT        5001
 
 /*=======================================================================*/
 /*  Definition of all local Data                                         */
@@ -170,15 +172,13 @@ THREAD(IperfTask, arg)
 /*************************************************************************/
 int main (void)
 {
+    int res;
 #if defined(UNIQUE_PRIVATE_MAC)
     uint8_t  mac[6];
     UNIQUE_PRIVATE_MAC(mac);
 #else
     uint8_t  mac[] = MY_MAC;
 #endif
-    uint32_t ip_addr = inet_addr(MY_IPADDR);
-    uint32_t ip_mask = inet_addr(MY_IPMASK);
-    uint32_t ip_gate = inet_addr(MY_IPGATE);
     uint32_t baud = 115200;
     uint8_t  i;
 
@@ -200,23 +200,43 @@ int main (void)
     }
 
     printf("Configure %s...", DEV_ETHER_NAME);
-    if (NutNetIfConfig(DEV_ETHER_NAME, mac, ip_addr, ip_mask) == 0)
-    {
-       /* Without DHCP we had to set the default gateway manually.*/
+#if defined(MY_IPADDR)
+    uint32_t ip_addr = inet_addr(MY_IPADDR);
+    uint32_t ip_mask = inet_addr(MY_IPMASK);
+    uint32_t ip_gate = inet_addr(MY_IPGATE);
+    res = NutNetIfConfig(DEV_ETHER_NAME, mac, ip_addr, ip_mask);
+    if (!res) {
+        printf(" IP %s", inet_ntoa(ip_addr));
+       /* Without DHCP we have to set the default gateway manually.*/
        if(ip_gate)
        {
           printf("hard coded gate...");
           NutIpRouteAdd(0, 0, ip_gate, &DEV_ETHER);
        }
-       puts("OK");
     }
-    else
-    {
-       puts("failed");
+    if (!res) {
+        puts("OK");
+    } else  {
+        puts("failed");
     }
-    printf("%s ready\n", inet_ntoa(ip_addr));
+#else
+#include <pro/dhcp.h>
+#include <sys/confnet.h>
+    res = NutDhcpIfConfig(DEV_ETHER_NAME, 0, 34000);
+    if (res) {
+        puts("# Can't connect to ethernet");
+    }
+    res = NutDhcpError(DEV_ETHER_NAME);
+    if (res) {
+        puts("\n# Hit F76x ethernet errata, rebooting!");
+        NutSleep(10);
+        NutReset();
+    }
+    NutSleep(1);
+    printf("\n%s OK\n", inet_ntoa(confnet.cdn_ip_addr));
+#endif
 
-
+    printf("Listening of port %d\n", IPERF_TCP_PORT);
     /*
      * Start four Iperf threads.
      */
