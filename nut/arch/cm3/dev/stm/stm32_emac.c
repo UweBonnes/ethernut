@@ -779,7 +779,25 @@ THREAD(EmacRxThread, arg)
     outr(&(ETH->DMASR), ((unsigned int)inr(&(ETH->DMASR))) | 0x0001E7FF);
     NutIrqEnable(&sig_EMAC);
 
+#if !defined(PHY_MODE_MII) & defined(MCU_STM32F76)
+    uint16_t rev = DBGMCU->IDCODE >> 16;
+#endif
     for (;;) {
+#if !defined(PHY_MODE_MII) & defined(MCU_STM32F76)
+        if (rev == 0x1000) {
+            if (ETH->MMCRFCECR > 10) {
+                /* ETH received too many packets with CRC errors.
+                 * Reset RMII */
+                EMPRINTF("RMI reset");
+                SYSCFG->PMC &= ~SYSCFG_PMC_MII_RMII_SEL;
+                SYSCFG->PMC |= SYSCFG_PMC_MII_RMII_SEL;
+                ETH->MMCCR |= ETH_MMCCR_CR;
+            } else if ((ETH->MMCRFCECR == 0) && (ETH->MMCRGUFCR > 0)) {
+                EMPRINTF("RMI success");
+                rev = 0;
+            }
+        }
+#endif
         /*
          * Wait for the arrival of new packets or poll the receiver
          * every two seconds.
@@ -998,6 +1016,15 @@ int EmacInit(NUTDEVICE * dev)
  #ifdef STM32F10X_CL
     CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
  #else
+    uint16_t rev = DBGMCU->IDCODE >> 16;
+#  if defined(MCU_STM32F76)
+/* Handle STM32F76 Rev. A with RMII errata.
+   DBG_SLEEP must be set. RMII seem to start better with DBG_SLEEP
+   already set!*/
+    if (rev == 0x1000) {
+        DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP;
+    }
+#  endif
     CM3BBSET(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII));
  #endif
 #endif
