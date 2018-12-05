@@ -199,12 +199,12 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
         return -1;
     }
 
-    PHPRINTF("NPCtl(0x%x, 0x%04x)\n", ctl, p16);
+    PHPRINTF("NPCtl(0x%x, 0x%04x),", ctl, p16);
 
     /* Execute standard ioctl function */
     bmcr = phyr( PHY_BMCR);
 
-    PHPRINTF("  bmcr=0x%04x\n", bmcr);
+    PHPRINTF(" enter bmcr=0x%04x,", bmcr);
 
     switch (ctl)
     {
@@ -345,23 +345,27 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
                         uint16_t tempreg;
 
                         /* entry in table found */
-                        PHPRINTF("  Reading status of known phy\n");
+                        PHPRINTF(" Reading status of known phy:");
 
                         tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].reg);
                         if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_10M].mask) {
                             *par |= PHY_STATUS_10M;
+                            PHPRINTF(" 10M,")
                         }
                         tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].reg);
                         if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_100M].mask) {
                             *par |= PHY_STATUS_100M;
+                            PHPRINTF(" 100M,")
                         }
                         tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].reg);
                         if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_1000M].mask) {
                             *par |= PHY_STATUS_1000M;
+                            PHPRINTF(" 1000M,")
                         }
                         tempreg = phyr(phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].reg);
                         if(tempreg & phy_status_descr[count].phy_bit_descr[PHY_BIT_DESCR_DUPLX].mask) {
                             *par |= PHY_STATUS_FULLDUPLEX;
+                            PHPRINTF(" Duplex,")
                         }
                     }
                     else {
@@ -414,7 +418,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
             break;
     }
 
-    PHPRINTF("  bmcr=0x%04x, rc=%d, par=%x\n", bmcr, rc, (unsigned int) *par);
+    PHPRINTF(" bmcr=0x%04x, rc=%d, par=%x\n", bmcr, rc, (unsigned int) *par);
     return rc;
 }
 
