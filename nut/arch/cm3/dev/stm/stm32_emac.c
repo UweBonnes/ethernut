@@ -779,11 +779,11 @@ THREAD(EmacRxThread, arg)
     outr(&(ETH->DMASR), ((unsigned int)inr(&(ETH->DMASR))) | 0x0001E7FF);
     NutIrqEnable(&sig_EMAC);
 
-#if !defined(PHY_MODE_MII) & defined(MCU_STM32F76)
+#if !defined(PHY_MODE_MII) && defined(MCU_STM32F76)
     uint16_t rev = DBGMCU->IDCODE >> 16;
 #endif
     for (;;) {
-#if !defined(PHY_MODE_MII) & defined(MCU_STM32F76)
+#if !defined(PHY_MODE_MII) && defined(MCU_STM32F76)
         if (rev == 0x1000) {
             if (ETH->MMCRFCECR > 10) {
                 /* ETH received too many packets with CRC errors.
@@ -1016,11 +1016,11 @@ int EmacInit(NUTDEVICE * dev)
  #ifdef STM32F10X_CL
     CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
  #else
-    uint16_t rev = DBGMCU->IDCODE >> 16;
 #  if defined(MCU_STM32F76)
 /* Handle STM32F76 Rev. A with RMII errata.
    DBG_SLEEP must be set. RMII seem to start better with DBG_SLEEP
    already set!*/
+    uint16_t rev = DBGMCU->IDCODE >> 16;
     if (rev == 0x1000) {
         DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP;
     }
