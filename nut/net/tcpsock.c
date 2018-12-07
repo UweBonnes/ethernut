@@ -637,6 +637,12 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
             return 0;
     }
 
+    /* Check for terminated connection with empty buffer */
+    if ((sock->so_state != TCPS_ESTABLISHED) && (NULL == sock->so_rx_buf)) {
+        sock->so_last_error = ENOTCONN;
+        return -1;
+    }
+
     if (size > sock->so_rx_cnt - sock->so_rd_cnt)
         size = sock->so_rx_cnt - sock->so_rd_cnt;
     if (size) {
