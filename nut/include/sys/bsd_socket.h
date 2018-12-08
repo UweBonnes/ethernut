@@ -1,5 +1,5 @@
 /**************************************************************************
-*  Copyright (c) 2014 by Michael Fischer (www.emb4fun.de).
+*  Copyright (c) 2014-2018 by Michael Fischer (www.emb4fun.de).
 *  All rights reserved.
 *
 *  Some parts are from the original BSD source, therefor:
@@ -36,9 +36,11 @@
 ***************************************************************************
 *  History:
 *
-*  26.01.2014  mifi  First Version
-*  27.01.2014  mifi  More comments and connect added
-*  28.01.2014  mifi  Backlog functionality added
+*  26.01.2014  mifi  First Version.
+*  27.01.2014  mifi  More comments and connect added.
+*  28.01.2014  mifi  Backlog functionality added.
+*  02.02.2014  mifi  Added support for setsockopt IP_ADD_MEMBERSHIP and
+*                    IP_DROP_MEMBERSHIP.
 **************************************************************************/
 #if !defined(__BSD_SOCKET_H__)
 #define __BSD_SOCKET_H__
@@ -47,8 +49,8 @@
 *  Includes
 **************************************************************************/
 #include <stdint.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
 
 /**************************************************************************
 *  All Structures and Common Constants
@@ -75,6 +77,13 @@
 
 
 /*
+ * Options for use with [gs]etsockopt at the IP level.
+ */
+#define IP_ADD_MEMBERSHIP  12    /* ip_mreq; add an IP group membership */
+#define IP_DROP_MEMBERSHIP 13    /* ip_mreq; drop an IP group membership */
+
+
+/*
  * sockaddr
  */
 struct sockaddr 
@@ -90,6 +99,15 @@ struct sockaddr
 struct in_addr 
 {
    uint32_t s_addr;
+};
+
+/*
+ * Argument structure for IP_ADD_MEMBERSHIP and IP_DROP_MEMBERSHIP.
+ */
+struct ip_mreq 
+{
+   struct in_addr imr_multiaddr;    /* IP multicast address of group */
+   struct in_addr imr_interface;    /* local IP address of interface */
 };
 
 /*
@@ -114,7 +132,7 @@ typedef int32_t   socket_t;
 **************************************************************************/
 
 /**************************************************************************
-*  Funtions Definitions
+*  Functions Definitions
 **************************************************************************/
 
 /*
@@ -168,4 +186,5 @@ int      getsockopt (socket_t sock, int level, int optname, void *optval, int op
 int      setsockopt (socket_t sock, int level, int optname, void *optval, int optlen);
 
 #endif /* !__BSD_SOCKET_H__ */
+
 /*** EOF ***/

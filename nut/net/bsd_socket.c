@@ -1,5 +1,5 @@
 /**************************************************************************
-*  Copyright (c) 2014 by Michael Fischer (www.emb4fun.de).
+*  Copyright (c) 2014-2018 by Michael Fischer (www.emb4fun.de).
 *  All rights reserved.
 *
 *  Some parts are from the original BSD source, therefor:
@@ -44,6 +44,8 @@
 *                    - Added support for setsockopt IP_ADD_MEMBERSHIP and
 *                      IP_DROP_MEMBERSHIP.
 *  04.02.2014  mifi  Corrected backlog functionality.
+*  21.04.2018  mifi  Remove LINT warnings.
+*  20.06.2018  mifi  Corrected bug in accept.
 **************************************************************************/
 #define __BSD_SOCKET_C__
 
@@ -55,6 +57,8 @@
 #include <stdint.h>
 
 #include <net/if_var.h>
+#include <sys/heap.h>
+#include <sys/timer.h>
 #include <sys/semaphore.h>
 #include <sys/bsd_socket.h>
 #include <sys/socket.h>
@@ -75,8 +79,8 @@ typedef struct _bsd_socket_
    uint32_t             udp_rcv_timeo;    /* Used by NutUdpReceiveFrom */
    struct _bsd_socket_ *listen;           /* Used by accept */
    
-   TCPSOCKET           *nut_tcp_sock;     /* Handle to the NutNET TCP socket */
-   UDPSOCKET           *nut_udp_sock;     /* Handle to the NutNET USP socket */
+   TCPSOCKET           *nut_tcp_sock;     /* Handle to the Nut/Net TCP socket */
+   UDPSOCKET           *nut_udp_sock;     /* Handle to the Nut/Net USP socket */
 } bsd_socket_t;
 
 
@@ -117,12 +121,12 @@ socket_t socket (int domain, int type, int proto)
       {
          case SOCK_STREAM:
          {
-            /* Create a NutNET socket */
+            /* Create a Nut/Net socket */
             tcp_sock = NutTcpCreateSocket();
             if (tcp_sock != NULL)
             {
                /* Get memory for the wrapper */
-               bsd_sock = (bsd_socket_t*)malloc(sizeof(bsd_socket_t));
+               bsd_sock = (bsd_socket_t*)NutHeapAlloc(sizeof(bsd_socket_t));
                if (bsd_sock != NULL)
                {
                   /* Clear the memory first */
@@ -135,7 +139,7 @@ socket_t socket (int domain, int type, int proto)
                }
                else
                {
-                  /* No memory for the wrapper available, close NutNET socket */
+                  /* No memory for the wrapper available, close Nut/Net socket */
                   NutTcpCloseSocket(tcp_sock);
                }
             }
@@ -144,12 +148,12 @@ socket_t socket (int domain, int type, int proto)
          
          case SOCK_DGRAM:
          {
-            /* Create a NutNET socket withg port 0 first, will be changed by bind */
+            /* Create a Nut/Net socket withg port 0 first, will be changed by bind */
             udp_sock = NutUdpCreateSocket(0);
             if (udp_sock != NULL)
             {
                /* Get memory for the wrapper */
-               bsd_sock = (bsd_socket_t*)malloc(sizeof(bsd_socket_t));
+               bsd_sock = (bsd_socket_t*)NutHeapAlloc(sizeof(bsd_socket_t));
                if (bsd_sock != NULL)
                {
                   /* Clear the memory first */
@@ -162,7 +166,7 @@ socket_t socket (int domain, int type, int proto)
                }
                else
                {
-                  /* No memory for the wrapper available, close NutNET socket */
+                  /* No memory for the wrapper available, close Nut/Net socket */
                   NutUdpDestroySocket(udp_sock);
                }
             }         
@@ -207,7 +211,7 @@ int closesocket (socket_t sock)
          /* Check if the socket was not closed before */
          if (bsd_sock->nut_tcp_sock != NULL)
          {
-            /* Close NutNET socket */
+            /* Close Nut/Net socket */
             rc = NutTcpCloseSocket(bsd_sock->nut_tcp_sock);
          }
          
@@ -238,7 +242,7 @@ int closesocket (socket_t sock)
          bsd_sock->nut_tcp_sock = NULL;
          
          /* Free the wrapper memory */   
-         free(bsd_sock);
+         NutHeapFree(bsd_sock);
          break;
       } /* SOCK_STREAM */
       
@@ -247,12 +251,12 @@ int closesocket (socket_t sock)
          /* Check if the socket was not closed before */
          if (bsd_sock->nut_udp_sock != NULL)
          {
-            /* Close NutNET socket */
+            /* Close Nut/Net socket */
             rc = NutUdpDestroySocket(bsd_sock->nut_udp_sock);
          }   
          
          /* Free the wrapper memory */
-         free(bsd_sock);
+         NutHeapFree(bsd_sock);
          break;
       } /* SOCK_DGRAM */
       
@@ -305,10 +309,10 @@ int bind (socket_t sock, struct sockaddr *addr, int addr_len)
 {
    int                 rc = -1;
    bsd_socket_t       *bsd_sock = (bsd_socket_t*)sock;
-   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;
+   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;   /*lint !e740*/
    
    /* Check for correct length */
-   if (sizeof(struct sockaddr_in) == addr_len)
+   if ((int)sizeof(struct sockaddr_in) == addr_len)
    {
       /* Store port info for later use, e.g. accept */
       bsd_sock->port = ntohs(addr_in->sin_port);
@@ -357,7 +361,14 @@ int listen (socket_t sock, int backlog)
       /* Create backlog semaphore */
       NutSemInit(&bsd_sock->backlog_sem, (short)backlog);
       
-      rc = 0;
+      /*
+       * The Nut/Net socket itself is not needed anymore,
+       * because it is only a listen socket.
+       */
+      rc = NutTcpCloseSocket(bsd_sock->nut_tcp_sock); 
+      bsd_sock->nut_tcp_sock = NULL;
+      
+      rc = 0;  /*lint !e838*/
    }   
    
    return(rc);
@@ -377,7 +388,7 @@ socket_t accept (socket_t sock, struct sockaddr *addr, int *addr_len)
    int                 rc;
    socket_t            ClientSocket = -1;
    bsd_socket_t       *bsd_sock_listen = (bsd_socket_t*)sock;
-   struct sockaddr_in *addr_in     = (struct sockaddr_in*)addr;
+   struct sockaddr_in *addr_in         = (struct sockaddr_in*)addr;  /*lint !e740*/
    bsd_socket_t       *bsd_sock_client;
    
    /* accept is not supported for UDP */
@@ -387,10 +398,10 @@ socket_t accept (socket_t sock, struct sockaddr *addr, int *addr_len)
    }
 
    /* Check for correct length */   
-   if (sizeof(struct sockaddr_in) == *addr_len)
+   if ((int)sizeof(struct sockaddr_in) == *addr_len)
    {
       /* Clear addr, and set default values */
-      memset(addr, 0x00, *addr_len);
+      memset(addr, 0x00, (size_t)*addr_len);
       addr_in->sin_family = AF_INET; 
       addr_in->sin_len    = sizeof(struct sockaddr_in);
       
@@ -412,8 +423,8 @@ socket_t accept (socket_t sock, struct sockaddr *addr, int *addr_len)
          if (0 == rc)
          {
             /* Set address information of the remote side */
-            addr_in->sin_port        = bsd_sock_listen->nut_tcp_sock->so_remote_port;
-            addr_in->sin_addr.s_addr = bsd_sock_listen->nut_tcp_sock->so_remote_addr;
+            addr_in->sin_port        = bsd_sock_client->nut_tcp_sock->so_remote_port;
+            addr_in->sin_addr.s_addr = bsd_sock_client->nut_tcp_sock->so_remote_addr;
          }
          else
          {
@@ -441,7 +452,7 @@ int connect (socket_t sock, struct sockaddr *addr, int addr_len)
 {
    int                 rc = -1;
    bsd_socket_t       *bsd_sock = (bsd_socket_t*)sock;
-   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;
+   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;   /*lint !e740*/
    uint32_t            remote_addr;
    uint16_t            remote_port;
    
@@ -452,7 +463,7 @@ int connect (socket_t sock, struct sockaddr *addr, int addr_len)
    }
    
    /* Check for correct length */   
-   if (sizeof(struct sockaddr_in) == addr_len)
+   if ((int)sizeof(struct sockaddr_in) == addr_len)
    {
       remote_addr = addr_in->sin_addr.s_addr;
       remote_port = htons(addr_in->sin_port);
@@ -486,6 +497,19 @@ int recv (socket_t sock, void *data, size_t len, int flags)
       return(-1);
    }
    
+   
+#if 0 /* Moved inside NutTcpReceive */ 
+   /*
+    * In case of the first receive it could be possible
+    * that the TCP connection is not still in state TCPS_ESTABLISHED.
+    * Therefore give the connection some time.
+    */
+   if (bsd_sock->nut_tcp_sock->so_state < TCPS_ESTABLISHED)
+   {
+      OSSemaWait(&bsd_sock->nut_tcp_sock->so_rx_tq, 10);
+   }
+#endif   
+   
    /* Receive data on a connected TCP socket */
    rc = NutTcpReceive(bsd_sock->nut_tcp_sock, data, (int)len);
    
@@ -505,7 +529,7 @@ int recvfrom (socket_t sock, void *data, size_t len, int flags, struct sockaddr 
 {
    int                 rc = -1;
    bsd_socket_t       *bsd_sock = (bsd_socket_t*)sock;
-   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;
+   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;   /*lint !e740*/
    uint32_t            remote_addr;
    uint16_t            remote_port;
 
@@ -518,14 +542,15 @@ int recvfrom (socket_t sock, void *data, size_t len, int flags, struct sockaddr 
    }
 
    /* Check for correct length */   
-   if (sizeof(struct sockaddr_in) == *addr_len)
+   if ((int)sizeof(struct sockaddr_in) == *addr_len)
    {
       /* Clear addr, and set default values */
-      memset(addr, 0x00, *addr_len);
+      memset(addr, 0x00, (size_t)*addr_len);
       addr_in->sin_family = AF_INET; 
       addr_in->sin_len    = sizeof(struct sockaddr_in);
 
       /* Receive a UDP datagram */
+      remote_port = 0;
       rc = NutUdpReceiveFrom(bsd_sock->nut_udp_sock, &remote_addr, &remote_port,
                              data, (int)len, bsd_sock->udp_rcv_timeo);
       if (rc > 0)
@@ -550,7 +575,7 @@ int recvfrom (socket_t sock, void *data, size_t len, int flags, struct sockaddr 
 /*************************************************************************/
 int send (socket_t sock, void *data, size_t len, int flags)
 {
-   int           rc = 0;
+   int           rc;
    bsd_socket_t *bsd_sock = (bsd_socket_t*)sock;
    
    (void)flags;
@@ -559,6 +584,16 @@ int send (socket_t sock, void *data, size_t len, int flags)
    if (SOCK_DGRAM == bsd_sock->type)
    {
       return(-1);
+   }
+   
+   /*
+    * In case of the first send it could be possible
+    * that the TCP connection is not still in state TCPS_ESTABLISHED.
+    * Therefore give the connection some time.
+    */
+   if (bsd_sock->nut_tcp_sock->so_state < TCPS_ESTABLISHED)
+   {
+      NutSleep(2);   
    }
    
    /* Send data on a connected TCP socket */
@@ -580,20 +615,20 @@ int sendto (socket_t sock, void *data, size_t len, int flags, struct sockaddr *a
 {
    int                 rc = -1;
    bsd_socket_t       *bsd_sock = (bsd_socket_t*)sock;
-   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;
+   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;   /*lint !e740*/
    uint32_t            remote_addr;
    uint16_t            remote_port;
 
    (void)flags;
    
-   /* recvfrom is not supported for TCP */
+   /* sendto is not supported for TCP */
    if (SOCK_STREAM == bsd_sock->type)
    {
       return(-1);
    }
 
    /* Check for correct length */   
-   if (sizeof(struct sockaddr_in) == addr_len)
+   if ((int)sizeof(struct sockaddr_in) == addr_len)
    {
       remote_addr = addr_in->sin_addr.s_addr;
       remote_port = htons(addr_in->sin_port);
@@ -623,13 +658,13 @@ int getsockname (socket_t sock, struct sockaddr *addr, int *addr_len)
 {
    int                 rc = -1;
    bsd_socket_t       *bsd_sock = (bsd_socket_t*)sock;
-   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;
+   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;   /*lint !e740*/
 
    /* Check for correct length */   
-   if (sizeof(struct sockaddr_in) == *addr_len)
+   if ((int)sizeof(struct sockaddr_in) == *addr_len)
    {
       /* Clear address info first  */
-      memset(addr, 0x00, *addr_len);
+      memset(addr, 0x00, (size_t)*addr_len);
       
       /* Set local address information */
       addr_in->sin_len         = sizeof(struct sockaddr_in);
@@ -656,13 +691,13 @@ int getpeername (socket_t sock, struct sockaddr *addr, int *addr_len)
 {
    int                 rc = -1;
    bsd_socket_t       *bsd_sock = (bsd_socket_t*)sock;
-   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;
+   struct sockaddr_in *addr_in  = (struct sockaddr_in*)addr;   /*lint !e740*/
 
    /* Check for correct length */   
-   if (sizeof(struct sockaddr_in) == *addr_len)
+   if ((int)sizeof(struct sockaddr_in) == *addr_len)
    {
       /* Clear address info first  */
-      memset(addr, 0x00, *addr_len);
+      memset(addr, 0x00, (size_t)*addr_len);
 
       /* Set remote address information */
       addr_in->sin_len         = sizeof(struct sockaddr_in);
@@ -698,7 +733,7 @@ int getsockopt (socket_t sock, int level, int optname, void *optval, int optlen)
          case SO_ERROR:    /* Last error is available for TCP and UDP */
          {
             /* Get the last error information, and clear it */
-            if ((optval != NULL) && (sizeof(int) == optlen))
+            if ((optval != NULL) && ((int)sizeof(int) == optlen))
             {
                /* Last error */
                *((int*)optval) = NutTcpError(bsd_sock->nut_tcp_sock);
@@ -725,7 +760,7 @@ int getsockopt (socket_t sock, int level, int optname, void *optval, int optlen)
                if (SO_RCVTIMEO == optname)   /* <= special case, receive timeout */
                {
                   /* Yes, receive timeout, check optval and optlen */
-                  if ((optval != NULL) && (sizeof(uint32_t) == optlen))
+                  if ((optval != NULL) && ((int)sizeof(uint32_t) == optlen))
                   {
                      /* Get requested information */
                      *((uint32_t*)optval) = bsd_sock->udp_rcv_timeo;
@@ -775,7 +810,7 @@ int setsockopt (socket_t sock, int level, int optname, void *optval, int optlen)
          if (SO_RCVTIMEO == optname)
          {
             /* Yes, receive timeout, check optval and optlen */
-            if ((optval != NULL) && (sizeof(uint32_t) == optlen))
+            if ((optval != NULL) && ((int)sizeof(uint32_t) == optlen))
             {
                /* Set requested information */
                bsd_sock->udp_rcv_timeo = *((uint32_t*)optval);
@@ -799,7 +834,7 @@ int setsockopt (socket_t sock, int level, int optname, void *optval, int optlen)
          {
             struct ip_mreq *mreq; 
             
-            if ((optlen == sizeof(struct ip_mreq)) && (optval != NULL))
+            if ((optlen == (int)sizeof(struct ip_mreq)) && (optval != NULL))
             {
                mreq = (struct ip_mreq *)optval;
                rc = NutNetIfAddMcastAddr("eth0", mreq->imr_multiaddr.s_addr);
@@ -811,7 +846,7 @@ int setsockopt (socket_t sock, int level, int optname, void *optval, int optlen)
          {
             struct ip_mreq *mreq; 
             
-            if ((optlen == sizeof(struct ip_mreq)) && (optval != NULL))
+            if ((optlen == (int)sizeof(struct ip_mreq)) && (optval != NULL))
             {
                mreq = (struct ip_mreq *)optval;
                rc = NutNetIfDelMcastAddr("eth0", mreq->imr_multiaddr.s_addr);
