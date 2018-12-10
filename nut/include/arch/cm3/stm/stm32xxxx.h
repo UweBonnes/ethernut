@@ -131,9 +131,6 @@
 # elif defined(STM32L053xx)
 #  include <arch/cm3/stm/vendor/stm32l053xx.h>
 #  define MCU_STM32L0_CAT3
-# elif defined(STM32L061xx)
-#  include <arch/cm3/stm/vendor/stm32l061xx.h>
-#  define MCU_STM32L0_CAT3
 # elif defined(STM32L062xx)
 #  include <arch/cm3/stm/vendor/stm32l062xx.h>
 #  define MCU_STM32L0_CAT3

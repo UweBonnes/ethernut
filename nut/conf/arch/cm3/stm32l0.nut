@@ -222,22 +222,6 @@ nutarch_cm3_stm32l0 =
                 file = "include/cfg/arch.h"
             },
             {
-                macro = "STM32L061xx",
-                brief = "STM32L061 32/64 kB.",
-                description = "Provides vendor header for STM32L061 32/64 kB and additional devices.",
-                default = 1,
-                requires = { "HW_MCU_STM32L061" },
-                provides =
-                {
-                    "HW_TIM6_STM32",
-                    "HW_TIM22_STM32",
-                    "HW_I2C2_STM32",
-                    "HW_SPI2_STM32",
-                    "HW_USART1_STM32",
-                    "HW_AES_LPUART1_STM32",
-                },
-            },
-            {
                 macro = "STM32L062xx",
                 brief = "STM32L062 32/64 kB.",
                 description = "Provides vendor header for STM32L062 32/64 kB and additional devices.",
