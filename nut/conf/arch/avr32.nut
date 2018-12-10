@@ -368,19 +368,6 @@ nutarch_avr32 =
     },
 
     --
-    -- Board Initialization
-    --
-    {
-        name = "nutarch_avr32_bs",
-        brief = "Board Support",
-        sources =
-            function()
-                return { "avr32/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
-            end,
-        requires = { "HW_BOARD_SUPPORT" },
-    },
-
-    --
     -- Context Switching
     --
     {

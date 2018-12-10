@@ -160,6 +160,24 @@
 --
 --
 
+function GetArch()
+    if c_is_provided("HW_MCU_AVR") then
+        return "AVR"
+    elseif c_is_provided("HW_MCU_AVR32") then
+        return "AVR32"
+    elseif c_is_provided("HW_MCU_ARM") then
+        return "ARM"
+    elseif c_is_provided("HW_MCU_ARM") then
+        return "ARM"
+    elseif c_is_provided("HW_MCU_CM3") then
+        return "CM3"
+    elseif c_is_provided("HW_MCU_M68K") then
+        return "M68K"
+    else
+         return "UNKNOWN"
+    end
+end
+
 nutarch =
 {
     {
@@ -2204,44 +2222,83 @@ nutarch =
         brief = "ARM",
         requires = { "HW_MCU_ARM" },
         provides = { "ARM_SEMIHOSTING" };
-        script = "arch/arm.nut"
+        script = "arch/arm.nut",
+        makedefs = {"ARCH=arm"},
     },
     {
         name = "nutarch_cm3",
         brief = "CM3",
         requires = { "HW_MCU_CM3" },
         provides = { "ARM_SEMIHOSTING" };
-        script = "arch/cm3.nut"
+        script = "arch/cm3.nut",
+        makedefs = {"ARCH=cm3"},
     },
     {
         name = "nutarch_avr",
         brief = "AVR",
         requires = { "HW_MCU_AVR" },
-        script = "arch/avr.nut"
+        script = "arch/avr.nut",
+        makedefs = {"ARCH=avr"},
     },
     {
         name = "nutarch_avr32",
         brief = "AVR32",
         requires = { "HW_MCU_AVR32" },
-        script = "arch/avr32.nut"
+        script = "arch/avr32.nut",
+        makedefs = {"ARCH=avr32"},
     },
     {
         name = "nutarch_h8300h",
         brief = "H8/300H",
         requires = { "HW_MCU_H8300" },
-        script = "arch/h8300h.nut"
+        script = "arch/h8300h.nut",
+        makedefs = {"ARCH=h8300h"},
     },
     {
         name = "nutarch_m68k",
         brief = "M68K",
         requires = { "HW_MCU_M68K" },
-        script = "arch/m68k.nut"
+        script = "arch/m68k.nut",
+        makedefs = {"ARCH=m68k"},
     },
     {
         name = "nutarch_unix",
         brief = "Linux Emulator",
         requires = { "HW_EMU_LINUX" },
-        script = "arch/unix.nut"
+        script = "arch/unix.nut",
+        makedefs = {"ARCH=unix"},
+    },
+    --
+    -- Board Initialization
+    --
+    {
+        name = "nutarch_cm3_board",
+        brief = "Basic Board Support",
+        options =
+        {
+            {
+                macro = "ARCH",
+                brief = "ARCH Macro",
+                description = "String identifying the CPU architecture.",
+                flavor = "booldata",
+                default = function() return GetArch() end,
+                makedefs = {"ARCH"},
+            },
+         },
+         makedefs =
+            function()
+                return { "HWDEF += -DBOARD=\"<arch/" ..string.lower(c_macro_edit("ARCH"))..
+                       "/board/"..string.lower(c_macro_edit("PLATFORM"))..".h>\"" };
+            end,
+    },
+    {
+        name = "nutarch_cm3_bs",
+        brief = "Board Support",
+        sources =
+            function()
+                return { string.lower(c_macro_edit("ARCH")).."/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
+            end,
+        requires = { "HW_BOARD_SUPPORT" },
     },
 -- Target specific devices
     {

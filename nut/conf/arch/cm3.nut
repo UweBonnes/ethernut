@@ -177,19 +177,6 @@ nutarch_cm3 =
     },
 
     --
-    -- Board Initialization
-    --
-    {
-        name = "nutarch_cm3_bs",
-        brief = "Board Support",
-        sources =
-            function()
-                return { "cm3/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
-            end,
-        requires = { "HW_BOARD_SUPPORT" },
-    },
-
-    --
     -- Cortex Based Cpu Directory
     --
     {

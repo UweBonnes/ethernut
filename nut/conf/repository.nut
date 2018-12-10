@@ -397,7 +397,10 @@ repository =
                 provides = { "HW_TARGET_BOARD" },
                 flavor = "booldata",
                 file = "include/cfg/arch.h",
-                makedefs = { "PLATFORM", "HWDEF+=-D$(PLATFORM)" }
+                makedefs =
+                   function()
+                      return { "PLATFORM", "HWDEF+=-D$(PLATFORM)", "HWDEF += -DBOARDNAME=\\\"" ..string.upper(c_macro_edit("PLATFORM")).. "\\\"" };
+                   end
             },
             {
                 macro = "PLATFORM_SUB",

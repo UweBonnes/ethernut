@@ -42,19 +42,6 @@
 nutarch_m68k =
 {
     --
-    -- Board Initialization
-    --
-    {
-        name = "nutarch_m68k_bs",
-        brief = "Board Support",
-        sources =
-            function()
-                return { "m68k/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
-            end,
-        requires = { "HW_BOARD_SUPPORT" },
-    },
-    
-	--
     -- M68K MCU Directory
     --
 	{

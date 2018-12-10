@@ -420,19 +420,6 @@ nutarch_arm =
     },
 
     --
-    -- Board Initialization
-    --
-    {
-        name = "nutarch_arm_bs",
-        brief = "Board Support",
-        sources =
-            function()
-                return { "arm/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
-            end,
-        requires = { "HW_BOARD_SUPPORT" },
-    },
-
-    --
     -- Context Switching
     --
     {
