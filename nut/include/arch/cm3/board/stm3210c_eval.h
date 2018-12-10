@@ -45,6 +45,45 @@
 #error Do not include this file directly. Use dev/board.h instead.
 #endif
 
+/* RED LED */
+#ifndef LED1_PORT
+#define LED1_PORT NUTGPIO_PORTD
+#endif
+#ifndef LED1_PIN
+#define LED1_PIN 7
+#endif
+
+/* ORANGE LED */
+#ifndef LED2_PORT
+#define LED2_PORT NUTGPIO_PORTD
+#endif
+#ifndef LED2_PIN
+#define LED2_PIN 13
+#endif
+
+/* RED LED */
+#ifndef LED3_PORT
+#define LED3_PORT NUTGPIO_PORTD
+#endif
+#ifndef LED3_PIN
+#define LED3_PIN 3
+#endif
+
+/* BLUE LED */
+#ifndef LED4_PORT
+#define LED4_PORT NUTGPIO_PORTD
+#endif
+#ifndef LED4_PIN
+#define LED4_PIN 4
+#endif
+
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTA
+#endif
+#ifndef SW1_PIN
+# define SW1_PIN  0
+#endif
+
 #ifndef DEV_DEBUG
 #include <dev/usartstm32.h>
 #define DEV_DEBUG       devUsartStm32_2

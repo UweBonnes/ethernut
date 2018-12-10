@@ -85,4 +85,12 @@
 #  define LED1_PIN 3
 #endif
 
+/* Dummy SW1 definition.*/
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTB
+#endif
+#ifndef SW1_PIN
+# define SW1_PIN  8
+#endif
+
 #define HAS_ARDUINO_CONNECTOR

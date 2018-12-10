@@ -44,32 +44,19 @@
 #define LED1_PORT NUTGPIO_PORTB
 #endif
 #ifndef LED1_PIN
-#define LED1_PIN 13
+#define LED1_PIN 2
 #endif
 
-#ifndef LED2_PORT
-#define LED2_PORT NUTGPIO_PORTB
+/* No switch. Dummy definition.*/
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTD
 #endif
-#ifndef LED2_PIN
-#define LED2_PIN 11
-#endif
-
-#ifndef LED3_PORT
-#define LED3_PORT NUTGPIO_PORTA
-#endif
-#ifndef LED3_PIN
-#define LED3_PIN 6
-#endif
-
-#ifndef LED4_PORT
-#define LED4_PORT NUTGPIO_PORTA
-#endif
-#ifndef LED4_PIN
-#define LED4_PIN 8
+#ifndef SW1_PIN
+# define SW1_PIN  1
 #endif
 
 #ifndef OWI_PORT
-#define OWI_PORT NUTGPIO_PORTC
+#define OWI_PORT NUTGPIO_PORT
 #endif
 #ifndef OWI_PIN
 #define OWI_PIN  6

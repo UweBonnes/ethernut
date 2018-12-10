@@ -41,6 +41,27 @@
  * \endverbatim
  */
 
+#ifndef LED1_PORT
+#define LED1_PORT NUTGPIO_PORTB
+#endif
+#ifndef LED1_PIN
+#define LED1_PIN 7
+#endif
+
+#ifndef LED2_PORT
+#define LED2_PORT NUTGPIO_PORTB
+#endif
+#ifndef LED2_PIN
+#define LED2_PIN 6
+#endif
+
+#ifndef SW1_PORT
+# define SW1_PORT NUTGPIO_PORTA
+#endif
+#ifndef SW1_PIN
+# define SW1_PIN  0
+#endif
+
 #ifndef DEV_UART
 #include <dev/semihosting.h>
 #define DEV_UART devSemihosting

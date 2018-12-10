@@ -924,6 +924,8 @@ extern NutIdleCallback NutRegisterIdleCallback(NutIdleCallback func);
 #else
 # define SW1_INIT()
 # define SW1_GET() 0
+//# define SW1_PORT 0
+//# define SW1_PIN 0
 #endif
 
 #endif
