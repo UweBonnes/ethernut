@@ -2285,11 +2285,6 @@ nutarch =
                 makedefs = {"ARCH"},
             },
          },
-         makedefs =
-            function()
-                return { "HWDEF += -DBOARD=\"<arch/" ..string.lower(c_macro_edit("ARCH"))..
-                       "/board/"..string.lower(c_macro_edit("PLATFORM"))..".h>\"" };
-            end,
     },
     {
         name = "nutarch_cm3_bs",
@@ -2298,7 +2293,7 @@ nutarch =
             function()
                 return { string.lower(c_macro_edit("ARCH")).."/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
             end,
-        requires = { "HW_BOARD_SUPPORT" },
+        requires = {"HW_TARGET_BOARD", "HW_BOARD_SUPPORT" },
     },
 -- Target specific devices
     {

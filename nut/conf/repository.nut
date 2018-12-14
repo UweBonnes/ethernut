@@ -399,8 +399,12 @@ repository =
                 file = "include/cfg/arch.h",
                 makedefs =
                    function()
-                      return { "PLATFORM", "HWDEF+=-D$(PLATFORM)", "HWDEF += -DBOARDNAME=\\\"" ..string.upper(c_macro_edit("PLATFORM")).. "\\\"" };
-                   end
+                      return {
+                                "HWDEF += -DBOARDNAME=\\\"" ..string.upper(c_macro_edit("PLATFORM")).. "\\\"",
+                                "HWDEF += -DBOARD=\"<arch/" ..string.lower(c_macro_edit("ARCH"))..
+                                   "/board/"..string.lower(c_macro_edit("PLATFORM"))..".h>\""
+                             }
+                             end,
             },
             {
                 macro = "PLATFORM_SUB",
