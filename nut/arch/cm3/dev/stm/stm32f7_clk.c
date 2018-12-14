@@ -62,7 +62,11 @@
 
 /* VCO limits for F2/F4/F7*/
 # define PLLVCO_MAX      432000000
-# define PLLVCO_MIN      192000000
+# if defined(MCU_STM32F2) || defined(MCU_STM32F7) || defined(MCU_STM32F401)
+#  define PLLVCO_MIN      192000000
+# else
+#  define PLLVCO_MIN      100000000
+# endif
 
 /* Prepare system linits */
 
@@ -72,13 +76,13 @@
 #elif (STM32_SUPPLY_MINIMUM >= 2400)
 # define FLASH_BASE_FREQ  24000000
 #elif (STM32_SUPPLY_MINIMUM >= 2100)
-# if defined(MCU_STM32F2)
+# if defined(MCU_STM32F2) || defined(MCU_STM32F401) || defined(MCU_STM32F41)
 #  define FLASH_BASE_FREQ  18000000
 # else
 #  define FLASH_BASE_FREQ  22000000
 # endif
 #else
-# if defined(MCU_STM32F2)
+# if defined(MCU_STM32F2) || defined(MCU_STM32F401) || defined(MCU_STM32F41)
 #  define FLASH_BASE_FREQ  16000000
 # else
 #  define FLASH_BASE_FREQ  20000000
@@ -197,7 +201,7 @@
 #  define SYSCLK_FREQ SYSCLK_MAX
 # endif
 /* Check partial missing values */
-#elif defined(PLLCLK_PREDIV) || defined(PLLCLK_MULT) || defined(PLLCLK_DIV)
+#elif !defined(PLLCLK_PREDIV) || !defined(PLLCLK_MULT) || !defined(PLLCLK_DIV)
 # warning Please provide all 3 PLL factors
 #endif
 
@@ -453,8 +457,12 @@ static int SetSysClockSource(int src)
      /* Powerscale is only activated with PLL as system source */
     uint32_t pwr_cr;
     pwr_cr = PWR_CR;
-    pwr_cr &= PWR_CR_VOS;
-    pwr_cr |= ((~STM32_POWERSCALE & PWR_CR_VOS) * PWR_CR_VOS_0);
+    pwr_cr &= ~PWR_CR_VOS;
+    switch (STM32_POWERSCALE) {
+    case 1:  pwr_cr |= PWR_CR_VOS; break;
+    case 2:  pwr_cr |= 2 * PWR_CR_VOS_0; break;
+    case 3:  pwr_cr |= 1 * PWR_CR_VOS_0;
+    }
     PWR_CR = pwr_cr;
 #endif
 
