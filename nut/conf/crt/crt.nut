@@ -345,7 +345,7 @@ nutcrt =
                 description = "Timezone Offset in Minutes. "..
                             "Default is system timezone offset at "..
                             "configuration time.",
-                default = function() return get_tzoffset() end,
+                default = function() return math.floor(get_tzoffset()) end,
                 type = "integer",
                 file = "include/cfg/crt.h"
              },
