@@ -168,7 +168,6 @@ typedef enum
   SPI5_IRQn                   = 85,     /*!< SPI5 global Interrupt                                             */
   FMPI2C1_EV_IRQn             = 95,     /*!< FMPI2C1 Event Interrupt                                           */
   FMPI2C1_ER_IRQn             = 96,     /*!< FMPI2C1 Error Interrupt                                           */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

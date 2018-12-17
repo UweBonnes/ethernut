@@ -182,7 +182,6 @@ typedef enum
   LTDC_IRQn                   = 88,     /*!< LTDC global Interrupt                                              */
   LTDC_ER_IRQn                = 89,     /*!< LTDC Error global Interrupt                                        */
   DMA2D_IRQn                  = 90,     /*!< DMA2D global Interrupt                                            */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

@@ -168,7 +168,6 @@ typedef enum
   OTG_HS_WKUP_IRQn            = 76,     /*!< USB OTG HS Wakeup through EXTI interrupt                          */
   OTG_HS_IRQn                 = 77,     /*!< USB OTG HS global interrupt                                       */
   FPU_IRQn                    = 81,     /*!< FPU global interrupt                                              */
-  IRQn_MAX
 } IRQn_Type;
 /* Legacy define */
 #define  HASH_RNG_IRQn      RNG_IRQn

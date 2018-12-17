@@ -70,7 +70,7 @@
 #define EMPRINTF(args,...)
 #endif
 
-#ifdef STM32F10X_CL /* STM32F1 */
+#if defined(MCU_STM32F1_CL)
 /* None remappable EMAC pins */
 # define  EMAC_MDC                   PC01
 # define  EMAC_MDIO                  PA02
@@ -84,7 +84,7 @@
 # define  EMAC_MII_CRS               PA00
 # define  EMAC_MII_COL               PA03
 # define  EMAC_RX_ER                 PB10
-/* PPS is defined at configurator level*/
+# define  EMAC_PPS                   PB05
 /* Remappable pins */
 # ifdef EMAC_REMAP_ENABLE
 #  define EMAC_MII_RX_DV_RMII_CRS_DV PD08
@@ -99,12 +99,22 @@
 #  define EMAC_RXD2                  PB00
 #  define EMAC_RXD3                  PB01
 # endif
+/* Missing things.*/
+# define  GPIO_AF_ETH                0
+# define  GPIO_AF_MCO                0
+# define  RCC_CFGR_MCO1              0
+# define  RCC_CFGR_MCO1PRE           0
+# define  RCC_CFGR_MCO1_1            0
+/* Name differences */
+# define  ETH_MACMIIAR_CR_Div16  ETH_MACMIIAR_CR_DIV16
+# define  ETH_MACMIIAR_CR_Div26  ETH_MACMIIAR_CR_DIV26
+# define  ETH_MACMIIAR_CR_Div42  ETH_MACMIIAR_CR_DIV42
 #endif
 /*
  * For the benefit of EMC the GPIO is run at the lowest speed
  * required to operate. For RMII this is 50 MHz for MII 25 MHz.
  */
-#if defined(STM32F10X_CL)
+#if defined(MCU_STM32F1_CL)
 # define EMAC_GPIO_SPEED        GPIO_CFG_SPEED_HIGH
 #else
 # ifdef PHY_MODE_MII
@@ -349,7 +359,7 @@ static int EmacReset(void)
     uint32_t phy = 0;
     int link_wait;
 
-#ifdef STM32F10X_CL
+#if defined(MCU_STM32F1_CL)
     /* force reset emac */
     RCC->AHBRSTR |= RCC_AHBRSTR_ETHMACRST;
 
@@ -933,24 +943,21 @@ int EmacInit(NUTDEVICE * dev)
         mii_clk_range = ETH_MACMIIAR_CR_Div26;
     } else if (ahb_clock < 100000000LL) {
         mii_clk_range = ETH_MACMIIAR_CR_Div42;
-#if defined(ETH_MACMIIAR_CR_Div102)
+#if defined(ETH_MACMIIAR_CR_Div62)
     } else if (ahb_clock < 150000000LL) {
         mii_clk_range = ETH_MACMIIAR_CR_Div62;
+#endif
+#if defined(ETH_MACMIIAR_CR_Div102)
     } else  {
         mii_clk_range = ETH_MACMIIAR_CR_Div102;
-    }
-#else
-    } else  {
-        mii_clk_range = ETH_MACMIIAR_CR_Div62;
-    }
 #endif
-
+    }
     /* Register interrupt handler. */
     if (NutRegisterIrqHandler(&sig_EMAC, EmacInterrupt, dev)) {
         return -1;
     }
 
-#ifdef STM32F10X_CL /* STM32F1 */
+#if defined(MCU_STM32F1_CL) /* STM32F1 */
     /* disable clocks for MAC */
     RCC->AHBENR &= ~(RCC_AHBENR_ETHMACEN | RCC_AHBENR_ETHMACTXEN |
                      RCC_AHBENR_ETHMACRXEN);
@@ -1006,14 +1013,14 @@ int EmacInit(NUTDEVICE * dev)
 
 #ifdef PHY_MODE_MII
     /* switch to MII mode */
- #ifdef STM32F10X_CL
+# if defined(MCU_STM32F1_CL)
     CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
  #else
     CM3BBCLR(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII));
  #endif
 #else
     /* switch to RMII mode */
- #ifdef STM32F10X_CL
+# if defined(MCU_STM32F1_CL)
     CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
  #else
 #  if defined(MCU_STM32F76)

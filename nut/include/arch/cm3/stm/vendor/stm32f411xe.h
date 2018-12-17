@@ -148,7 +148,6 @@ typedef enum
   FPU_IRQn                    = 81,     /*!< FPU global interrupt                                              */
   SPI4_IRQn                   = 84,     /*!< SPI4 global Interrupt                                             */
   SPI5_IRQn                   = 85,     /*!< SPI5 global Interrupt                                             */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

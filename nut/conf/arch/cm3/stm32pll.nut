@@ -208,7 +208,7 @@ function GetSysClockFrequencyDesc()
                "Voltage scaling/Overdrive\t1, on\t1, off\t2, on\t2, off\t3\n"..
                "SYSCLK_FREQ (MHz)\t0 .. 180\t0 .. 168\t0 .. 168\t0 .. 144\t0 .. 120"
     end
-    if c_is_provided("HW_MCU_STM32F44") then
+    if c_is_provided("HW_MCU_STM32F446xx") then
         return "System clock target frequency with SYSCLK_PLL selected.\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "\thighest possible value.\n\n"..
@@ -249,7 +249,7 @@ function GetSysClkSrc()
     if c_is_provided("HW_RCC_STM32L") then
         return {"SYSCLK_MSI", "SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
     end
-    if c_is_provided("HW_MCU_STM32F44") then
+    if c_is_provided("HW_MCU_STM32F446xx") then
         return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL", "SYSCLK_PLLR"}
     end
     return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
@@ -268,7 +268,7 @@ function GetSysClockSourceDesc()
               "\tSelect PLL source with PLLCLK_SOURCE.\n\n"..
               "Default is SYSCLK_PLL."
     end
-    if c_is_provided("HW_MCU_STM32F44") then
+    if c_is_provided("HW_MCU_STM32F446xx") then
 -- F44x: Choice from two outputs of the PLL
        return "Select where SYSCLK should get its clock from.\n\n"..
               "SYSCLK_HSI is internal 16 MHz oscillator.\n"..
@@ -588,7 +588,7 @@ function GetLseDriveLevel()
     if c_is_provided("HW_MCU_STM32F411") then
         return { "0" , "1"}
     end
-    if c_is_provided("HW_MCU_STM32F44") then
+    if c_is_provided("HW_MCU_STM32F446xx") then
         return { "0" , "1"}
     end
     if c_is_provided("HW_MCU_STM32F46") then
@@ -698,7 +698,7 @@ function GetPowerScaleRegisterDesc()
                "3\t144/144 MHz\n"..
                "Default register setting is 1."
     end
-    if c_is_provided("HW_MCU_STM32F44") then
+    if c_is_provided("HW_MCU_STM32F446xx") then
         return "Select Power Scale register value:\n"..
                "Power scale\tfmax Overdrive off/on\n"..
                "1\t168/180 MHz\n"..

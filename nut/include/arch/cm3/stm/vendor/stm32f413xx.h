@@ -185,7 +185,6 @@ typedef enum
   DFSDM2_FLT1_IRQn            = 99,     /*!< DFSDM2 Filter 1 global Interrupt                                  */
   DFSDM2_FLT2_IRQn            = 100,    /*!< DFSDM2 Filter 2 global Interrupt                                  */
   DFSDM2_FLT3_IRQn            = 101,    /*!< DFSDM2 Filter 3 global Interrupt                                  */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

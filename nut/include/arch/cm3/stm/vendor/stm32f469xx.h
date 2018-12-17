@@ -183,7 +183,6 @@ typedef enum
   DMA2D_IRQn                  = 90,     /*!< DMA2D global Interrupt                                            */
   QUADSPI_IRQn                = 91,     /*!< QUADSPI global Interrupt                                          */
   DSI_IRQn                    = 92,     /*!< DSI global Interrupt                                              */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

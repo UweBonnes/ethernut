@@ -162,6 +162,15 @@ nutarch_cm3_stm32_devices =
         provides = { "HW_CEC_STM32" },
     },
     --
+    -- STM32 emacs for generated device transistion
+    --
+    {
+        name = "nutarch_cm3_stm32_emac",
+        brief = "EMAC transition",
+        requires = {"HW_ETH_STM32"},
+        provides = {"HW_EMAC_STM32"},
+    },
+    --
     -- STM32F EMAC Configuration
     --
     {
