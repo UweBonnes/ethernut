@@ -57,8 +57,6 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_usart_pinmux.h>
-#include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_uart.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
@@ -141,15 +139,14 @@ static void Stm32F1UsartRemap(void)
 # define  Stm32F1UsartRemap()
 #endif
 
-#define USART_TX  USART1_TX
-#define USART_RX  USART1_RX
-#define USART_CTS USART1_CTS
-#define USART_RTS USART1_RTS
-
-#define USART_TX_AF  USART1_TX_AF
-#define USART_RX_AF  USART1_RX_AF
-#define USART_CTS_AF USART1_CTS_AF
-#define USART_RTS_AF USART1_RTS_AF
+#define UARTx_TX       USART1_TX
+#define UARTx_TX_FUNC  UART1_TX_FUNC
+#define UARTx_RX       USART1_RX
+#define UARTx_RX_FUNC  UART1_RX_FUNC
+#define UARTx_CTS      USART1_CTS
+#define UARTx_CTS_FUNC USART1_CTS_FUNC
+#define UARTx_RTS      USART1_RTS
+#define UARTx_RTS_FUNC UART1_RTS_FUNC
 
 #ifdef USART1_HARDWARE_HANDSHAKE
 #define RTS_GPIO_PORT   NUTGPIO_PORTA

@@ -57,7 +57,6 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_usart_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_uart.h>
 #include <arch/cm3/stm/stm32_usart.h>
@@ -133,43 +132,14 @@ NUTDEVICE devUsartStm32_6 = {
 
 # define  Stm32F1UsartRemap()
 
-#define USART_TX  USART6_TX
-#define USART_RX  USART6_RX
-#define USART_CTS USART6_CTS
-#define USART_RTS USART6_RTS
-
-#define USART_TX_AF  USART6_TX_AF
-#define USART_RX_AF  USART6_RX_AF
-#define USART_CTS_AF USART6_CTS_AF
-#define USART_RTS_AF USART6_RTS_AF
-
-#ifdef USART6_HARDWARE_HANDSHAKE
- #define CTS_GPIO_PORT    NUTGPIO_PORTG
- #if !defined(USART6_CTS_PIN) || USART6_CTS_PIN  == 13
-  #define CTS_GPIO_PIN      13
- #elif USART6_RX_PIN == 15
-  #define CTS_GPIO_PIN     15
- #else
-  #warning "Illegal USART6 CTS pin assignement"
- #endif
- #define RTS_GPIO_PORT    NUTGPIO_PORTG
- #if !defined(USART6_RTS_PIN) || USART6_RTS_PIN == 8
- #define RTS_GPIO_PIN      8
- #elif USART6_RTS_PIN == 12
-  #define RTS_GPIO_PIN     12
- #else
-  #warning "Illegal USART6 RTS pin assignement"
- #endif
-#endif /* USART6_HARDWARE_HANDSHAKE */
-#if !defined(USART6_CK_PIN) || USART6_CK_PIN == 8
- #define CK_GPIO_PORT    NUTGPIO_PORTC
- #define CK_GPIO_PIN      8
-#elif USART6_CK_PIN == 7
- #define CK_GPIO_PORT    NUTGPIO_PORTG
- #define CK_GPIO_PIN     9
-#else
- #warning "Illegal USART6 CK pin assignement"
-#endif
+#define UARTx_TX       USART6_TX
+#define UARTx_TX_FUNC  UART6_TX_FUNC
+#define UARTx_RX       USART6_RX
+#define UARTx_RX_FUNC  UART6_RX_FUNC
+#define UARTx_CTS      USART6_CTS
+#define UARTx_CTS_FUNC USART6_CTS_FUNC
+#define UARTx_RTS      USART6_RTS
+#define UARTx_RTS_FUNC UART6_RTS_FUNC
 
 #ifdef USART6_RS485_CTRL
 #define USART_485_CTRL

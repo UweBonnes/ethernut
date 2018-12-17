@@ -54,6 +54,16 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#if SPI_SCK_AF == AF_NO_SUCH_PINFUNC
+# warning Bad SCK assignment
+#endif
+#if SPI_MISO_AF == AF_NO_SUCH_PINFUNC
+# warning Bad MISO assignment
+#endif
+#if SPI_MOSI_AF == AF_NO_SUCH_PINFUNC
+# warning Bad MOSI assignment
+#endif
+
 /* Warn user about change in configuration */
 #if defined(SPIBUS1_MODE) || defined(SPIBUS2_MODE) || defined(SPIBUS3_MODE) ||\
     defined(SPIBUS4_MODE) || defined(SPIBUS5_MODE) || defined(SPIBUS6_MODE)

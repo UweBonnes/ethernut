@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2015 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2017 by Uwe Bonnes
+ *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,8 +20,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,48 +31,52 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
-#if !defined(_STM32_CAN_PINMUX_H_)
-# define _STM32_CAN_PINMUX_H_
 
-#if defined(_DEV_PINS_H_)
-# warning Include Pinmux before arch/cm3/stm/stm32_gpio.h
-#endif
+#include <sys/nutdebug.h>
 
-# if defined(MCU_STM32F1)
-/* AF definition only to keep the compiler happy*/
-#  define CAN1_RX_AF 9
-#  define CAN1_TX_AF 9
-#  define CAN2_RX_AF 9
-#  define CAN2_TX_AF 9
-#  if   (CAN1_REMAP == 3)
-#   define CAN1_RX PD00
-#   define CAN1_TX PD01
-#  elif (CAN1_REMAP == 1)
-#   define CAN1_RX PB08
-#   define CAN1_TX PB09
-#  else
-#   define CAN1_RX PA11
-#   define CAN1_TX PA12
-#  endif
-#  if   (CAN2_REMAP == 1)
-#   define CAN2_RX PB12
-#   define CAN2_TX PB13
-#  else
-#   define CAN2_RX PB05
-#   define CAN2_TX PB06
-#  endif
-# elif defined(MCU_STM32F0)
-#  define CAN1_RX_AF 4
-#  define CAN1_TX_AF 4
-# elif defined(MCU_STM32F3)
-#  define CAN1_RX_AF ((CAN1_RX == PD00) ? 7 : 9)
-#  define CAN1_TX_AF ((CAN1_TX == PD01) ? 7 : 9)
-# else
-#  define CAN1_RX_AF 9
-#  define CAN1_TX_AF 9
-#  define CAN2_RX_AF 9
-#  define CAN2_TX_AF 9
-# endif
-#endif
+#include <arch/cm3.h>
+
+#include <arch/cm3/timer.h>
+#include <arch/cm3/stm/stm32_clk.h>
+#include <cfg/clock.h>
+#include <dev/rtc.h>
+#include <dev/irqreg.h>
+
+#include <arch/cm3/stm/stm32xxxx.h>
+
+#define HSI64_VALUE 64000000
+
+/* Define PLL Input Clock */
+# define PLLCLK_IN (HSI64_VALUE / 8)
+
+/* VCO limits for H7*/
+# define PLLVCO_MAX      836000000
+# define PLLVCO_MIN      192000000
+
+//static uint32_t sys_clock;
+//static uint8_t clk_shift[HWCLK_SYS];
+
+uint32_t Stm32ClockGet(clock_index_t idx)
+{
+    (void) idx;
+    return HSI64_VALUE;
+}
+
+/*!
+ * \brief  Configures the System clock source: HSI, HSE or PLL.
+ * \note   This function should be used only with SYSCLK == HSI or
+ * \note   HSE and peripheralks clocks disabled
+ * \param  src is one of SYSCLK_HSE, SYSCLK_HSI or SYSCLK_PLL.
+ * \return 0 if selected clock is running else -1.
+ */
+static int SetSysClockSource(int src)
+{
+    (void) src;
+    return 0;
+}
+
+int SetSysClock(void)
+{
+    return SetSysClockSource(SYSCLK_SOURCE);
+}

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2012-1016 by Uwe Bonnes
+ * Copyright (C) 2012-1017 by Uwe Bonnes
  *                               (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
+% *
  * For additional information see http://www.ethernut.de/
  *
  */
@@ -47,7 +47,6 @@
 #include <dev/spibus.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_dma.h>
 #include <arch/cm3/stm/stm32_spi.h>
@@ -79,9 +78,9 @@ void Stm32F1SpiRemap(void)
 #define SPI_MISO    SPI3_MISO
 #define SPI_MOSI    SPI3_MOSI
 
-#define SPI_SCK_AF  SPI3_SCK_AF
-#define SPI_MISO_AF SPI3_MISO_AF
-#define SPI_MOSI_AF SPI3_MOSI_AF
+#define SPI_SCK_AF  PINMUX(SPI3_SCK,  SPI3_SCK_FUNC)
+#define SPI_MISO_AF PINMUX(SPI3_MISO, SPI3_MISO_FUNC)
+#define SPI_MOSI_AF PINMUX(SPI3_MOSI, SPI3_MOSI_FUNC)
 
 #define SPI_DEV 3
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI3EN))

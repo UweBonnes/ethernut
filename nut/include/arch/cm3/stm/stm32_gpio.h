@@ -162,6 +162,8 @@ GPIO_TypeDef *const stm32_port_nr2gpio[STM32_NR_GPIO];
 
 #define GPIO_AF_EVENTOUT GPIO_AD_F
 
+#define AF_PIN_NONE        -1
+#define AF_NO_SUCH_PINFUNC -2
 #if defined(RCC_APB2ENR_AFIOEN)
 void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_t GPIO_AF) {};
 #else

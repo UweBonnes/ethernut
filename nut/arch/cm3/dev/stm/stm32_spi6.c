@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2014 by Uwe Bonnes.
+ * Copyright (C) 2014-2017 by Uwe Bonnes.
+ *                            (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -46,7 +47,6 @@
 #include <dev/spibus.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_spi.h>
 #include <dev/irqreg.h>
@@ -69,9 +69,9 @@
 #define SPI_MISO    SPI6_MISO
 #define SPI_MOSI    SPI6_MOSI
 
-#define SPI_SCK_AF  SPI6_SCK_AF
-#define SPI_MISO_AF SPI6_MISO_AF
-#define SPI_MOSI_AF SPI6_MOSI_AF
+#define SPI_SCK_AF  PINMUX(SPI6_SCK,  SPI6_SCK_FUNC)
+#define SPI_MISO_AF PINMUX(SPI6_MISO, SPI6_MISO_FUNC)
+#define SPI_MOSI_AF PINMUX(SPI6_MOSI, SPI6_MOSI_FUNC)
 
 #define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI6EN))
 #define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB2ENR, _BI32(RCC_APB2ENR_SPI6EN))

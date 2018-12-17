@@ -333,7 +333,7 @@ function GetSpi4Sck()
         return { "PE02", "PE12", "PB13"}
     end
     if c_is_provided("HW_MCU_STM32F446") then
-        return { "PE04", "PE11", "PG11"}
+        return { "PE02", "PE11", "PG11"}
     end
     return { "PE02", "PE12"}
 end
@@ -362,28 +362,85 @@ end
 -- Retrieve SPI5 pins available on the device.
 --
 function GetSpi5Nss()
-    if c_is_provided("W_MCU_STM32F411") then
-        return {"PIN_NONE", "PB01", "PE04", "PE11"}
+    local a = {}
+    if c_is_provided("HW_MCU_STM32F41") then
+        table.insert (a, "PB01")
+        if not c_is_provided("HW_MCU_STM32F410") then
+            table.insert (a, "PE04")
+            table.insert (a, "PE11")
+        end
+    elseif c_is_provided("HW_MCU_STM32F42") or c_is_provided("HW_MCU_STM32F46")
+        or c_is_provided("HW_MCU_STM32F7") or c_is_provided("HW_MCU_STM32h7")
+        then
+        table.insert (a, "PF06")
+        table.insert (a, "PH05")
+        if c_is_provided("HW_MCU_STM32H7") then
+            table.insert (a, "PK01")
+        end
     end
-    return {"PIN_NONE", "PF06", "PH05"}
+    table.insert (a, "PIN_NONE")
+    return a
 end
 function GetSpi5Sck()
-    if c_is_provided("W_MCU_STM32F411") then
-        return {"PB00", "PE02", "PE12"}
+    local a = {}
+    if c_is_provided("HW_MCU_STM32F41") then
+        table.insert (a, "PB00")
+        if not c_is_provided("HW_MCU_STM32F410") then
+            table.insert (a, "PE02")
+            table.insert (a, "PE12")
+        end
+    elseif c_is_provided("HW_MCU_STM32F42") or c_is_provided("HW_MCU_STM32F46")
+        or c_is_provided("HW_MCU_STM32F7") or c_is_provided("HW_MCU_STM32h7")
+        then
+        table.insert (a, "PF07")
+        table.insert (a, "PH06")
+        if c_is_provided("HW_MCU_STM32H7") then
+            table.insert (a, "PK00")
+        end
     end
-    return {"PF07", "PH06"}
+    table.insert (a, "PIN_NONE")
+    return a
 end
 function GetSpi5Miso()
-    if c_is_provided("W_MCU_STM32F411") then
-        return {"PA12", "PE05", "PE13"}
+    local a = {}
+    if c_is_provided("HW_MCU_STM32F41") then
+        table.insert (a, "PA12")
+        if not c_is_provided("HW_MCU_STM32F410") then
+            table.insert (a, "PE05")
+            table.insert (a, "PE13")
+        end
+    elseif c_is_provided("HW_MCU_STM32F42") or c_is_provided("HW_MCU_STM32F46")
+        or c_is_provided("HW_MCU_STM32F7") or c_is_provided("HW_MCU_STM32h7")
+        then
+        table.insert (a, "PF08")
+        table.insert (a, "PH07")
+        if c_is_provided("HW_MCU_STM32H7") then
+            table.insert (a, "PJ11")
+        end
     end
-    return {"PF08", "PH07"}
+    table.insert (a, "PIN_NONE")
+    return a
 end
 function GetSpi5Mosi()
-    if c_is_provided("W_MCU_STM32F411") then
-        return {"PA10", "PB08", "PE06", "PE14"}
+    local a = {}
+    if c_is_provided("HW_MCU_STM32F41") then
+        table.insert (a, "PA10")
+        table.insert (a, "PB08")
+        if not c_is_provided("HW_MCU_STM32F410") then
+            table.insert (a, "PE06")
+            table.insert (a, "PE14")
+        end
+    elseif c_is_provided("HW_MCU_STM32F42") or c_is_provided("HW_MCU_STM32F46")
+        or c_is_provided("HW_MCU_STM32F7") or c_is_provided("HW_MCU_STM32h7")
+        then
+        table.insert (a, "PF09")
+        table.insert (a, "PF11")
+        if c_is_provided("HW_MCU_STM32H7") then
+            table.insert (a, "PJ10")
+        end
     end
-    return {"PF09", "PF11"}
+    table.insert (a, "PIN_NONE")
+    return a
 end
 
 --
@@ -564,7 +621,7 @@ function SpiDevice(SPIX, DEVICE_FLAG, SRCX, REMAP_FLAG, REMAP_CHOICE,
                     "Use PIN_NONE if no CS is required.\n"; end,
                 type = "enumerated",
                 choices = function() return NSS_CHOICE() ; end,
-                default = function() return NSS_CHOICE()[2] ; end,
+                default = function() return NSS_CHOICE()[1] ; end,
                 file = "include/cfg/spi.h"
             },
             {

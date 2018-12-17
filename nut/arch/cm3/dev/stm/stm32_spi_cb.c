@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015-2016
+ *  Copyright (C) 2015-2017
  *               Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,6 @@
 #include <dev/gpio.h>
 #include <dev/spibus.h>
 
-#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_dma.h>
@@ -686,6 +685,20 @@ static int Stm32SpiCbTransfer
 }
 
 #if defined(HW_SPI1_STM32)
+
+# define SPI1_SCK_AF  PINMUX(SPI1_SCK, SPI1_SCK_FUNC)
+# if  SPI1_SCK_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI1_SCK assignment
+# endif
+# define SPI1_MOSI_AF  PINMUX(SPI1_MOSI, SPI1_MOSI_FUNC)
+# if  SPI1_MOSI_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI1_MOSI assignment
+# endif
+# define SPI1_MISO_AF PINMUX(SPI1_MISO, SPI1_MISO_FUNC)
+# if  SPI1_MISO_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI1_MISO assignment
+# endif
+
 STM32_SPI_ICB Stm32Spi1Icb = {
     .transfer_mode = SPI1_MODE,
     .device_pin_speed = SPI1_SPEED,
@@ -732,6 +745,20 @@ NUTSPIBUS spiBus1Stm32Cb = {
 #endif
 
 #if defined(HW_SPI2_STM32)
+
+# define SPI2_SCK_AF  PINMUX(SPI2_SCK, SPI2_SCK_FUNC)
+# if  SPI2_SCK_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI2_SCK assignment
+# endif
+# define SPI2_MOSI_AF  PINMUX(SPI2_MOSI, SPI2_MOSI_FUNC)
+# if  SPI2_MOSI_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI2_MOSI assignment
+# endif
+# define SPI2_MISO_AF PINMUX(SPI2_MISO, SPI2_MISO_FUNC)
+# if  SPI2_MISO_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI2_MISO assignment
+# endif
+
 STM32_SPI_ICB Stm32Spi2Icb = {
     .transfer_mode = SPI2_MODE,
     .device_pin_speed = SPI2_SPEED,
@@ -778,6 +805,20 @@ NUTSPIBUS spiBus2Stm32Cb = {
 #endif
 
 #if defined(HW_SPI3_STM32)
+
+# define SPI3_SCK_AF  PINMUX(SPI3_SCK, SPI3_SCK_FUNC)
+# if  SPI3_SCK_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI3_SCK assignment
+# endif
+# define SPI3_MOSI_AF  PINMUX(SPI3_MOSI, SPI3_MOSI_FUNC)
+# if  SPI3_MOSI_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI3_MOSI assignment
+# endif
+# define SPI3_MISO_AF PINMUX(SPI3_MISO, SPI3_MISO_FUNC)
+# if  SPI3_MISO_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI3_MISO assignment
+# endif
+
 STM32_SPI_ICB Stm32Spi3Icb = {
      .transfer_mode = SPI3_MODE,
      .device_pin_speed = SPI3_SPEED,
@@ -824,6 +865,20 @@ NUTSPIBUS spiBus3Stm32Cb = {
 #endif
 
 #if defined(HW_SPI4_STM32)
+
+# define SPI4_SCK_AF  PINMUX(SPI4_SCK, SPI4_SCK_FUNC)
+# if  SPI4_SCK_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI4_SCK assignment
+# endif
+# define SPI4_MOSI_AF  PINMUX(SPI4_MOSI, SPI4_MOSI_FUNC)
+# if  SPI4_MOSI_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI4_MOSI assignment
+# endif
+# define SPI4_MISO_AF PINMUX(SPI4_MISO, SPI4_MISO_FUNC)
+# if  SPI4_MISO_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI4_MISO assignment
+# endif
+
 STM32_SPI_ICB Stm32Spi4Icb = {
      .transfer_mode = SPI4_MODE,
      .device_pin_speed = SPI4_SPEED,
@@ -861,6 +916,20 @@ NUTSPIBUS spiBus4Stm32Cb = {
 #endif
 
 #if defined(HW_SPI5_STM32)
+
+# define SPI5_SCK_AF  PINMUX(SPI5_SCK, SPI5_SCK_FUNC)
+# if  SPI5_SCK_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI5_SCK assignment
+# endif
+# define SPI5_MOSI_AF  PINMUX(SPI5_MOSI, SPI5_MOSI_FUNC)
+# if  SPI5_MOSI_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI5_MOSI assignment
+# endif
+# define SPI5_MISO_AF PINMUX(SPI5_MISO, SPI5_MISO_FUNC)
+# if  SPI5_MISO_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI5_MISO assignment
+# endif
+
 STM32_SPI_ICB Stm32Spi5Icb = {
      .transfer_mode = SPI5_MODE,
      .device_pin_speed = SPI5_SPEED,
@@ -873,9 +942,9 @@ STM32_SPI_ICB Stm32Spi5Icb = {
     .sck = SPI5_SCK,
     .sck_af = SPI5_SCK_AF,
     .mosi = SPI5_MOSI,
-    .mosi_af = SPI5_MOSI_AF,
+    .mosi_af =  SPI5_MOSI_AF,
     .miso = SPI5_MISO,
-    .miso_af = SPI5_MISO_AF,
+    .miso_af =  SPI5_MISO_AF,
     .cs[0] = SPI5_CS0,
     .cs[1] = SPI5_CS1,
     .cs[2] = SPI5_CS2,
@@ -898,6 +967,20 @@ NUTSPIBUS spiBus5Stm32Cb = {
 #endif
 
 #if defined(HW_SPI6_STM32)
+
+# define SPI6_SCK_AF  PINMUX(SPI6_SCK, SPI6_SCK_FUNC)
+# if  SPI6_SCK_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI6_SCK assignment
+# endif
+# define SPI6_MOSI_AF  PINMUX(SPI6_MOSI, SPI6_MOSI_FUNC)
+# if  SPI6_MOSI_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI6_MOSI assignment
+# endif
+# define SPI6_MISO_AF PINMUX(SPI6_MISO, SPI6_MISO_FUNC)
+# if  SPI6_MISO_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD SPI6_MISO assignment
+# endif
+
 STM32_SPI_ICB Stm32Spi6Icb = {
      .transfer_mode = SPI6_MODE,
      .device_pin_speed = SPI6_SPEED,

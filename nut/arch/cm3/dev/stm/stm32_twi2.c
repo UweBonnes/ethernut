@@ -61,13 +61,25 @@
 #include <dev/twif.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_i2c_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_twi.h>
 
 #ifdef I2CBUS2_DEFAULT_SPEED
 #define I2C_DEFAULT_SPEED
 #else
+#endif
+
+#define I2C2_SDA_AF  PINMUX(I2C2_SDA, I2C2_SDA_FUNC)
+#if  I2C2_SDA_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C2_SDA assignment
+#endif
+#define I2C2_SCL_AF  PINMUX(I2C2_SCL, I2C2_SCL_FUNC)
+#if  I2C2_SCL_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C2_SCL assignment
+#endif
+#define I2C2_SMBA_AF PINMUX(I2C2_SMBA, I2C2_SMBA_FUNC)
+#if  I2C2_SMBA_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C2_SMBA assignment
 #endif
 
 int Stm32I2cBus2Recover( void)

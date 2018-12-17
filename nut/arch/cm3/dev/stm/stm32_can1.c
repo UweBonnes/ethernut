@@ -55,9 +55,17 @@
 #include <dev/canbus.h>
 
 #include <arch/cm3.h>
-#include <arch/cm3/stm/stm32_can_pinmux.h>
 #include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+
+#define CAN1_RX_AF PINMUX(CAN1_RX, CAN1_RX_FUNC)
+# if  CAN1_RX_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD CAN1_TX assignment
+# endif
+#define CAN1_TX_AF PINMUX(CAN1_TX, CAN1_TX_FUNC)
+# if  CAN1_TX_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD CAN1_TX assignment
+# endif
 
 /*!
  * \brief Processor specific Hardware Initiliaization

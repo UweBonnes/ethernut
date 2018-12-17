@@ -63,7 +63,6 @@
 #include <arch/cm3.h>
 #include <dev/gpio.h>
 #include <cfg/twi.h>
-#include <arch/cm3/stm/stm32_i2c_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_irqreg.h>
 #include <dev/i2cbus.h>
@@ -451,13 +450,27 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
     return ret;
 }
 
+#define I2C1_SDA_AF  PINMUX(I2C1_SDA, I2C1_SDA_FUNC)
+
+# if  I2C1_SDA_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C1_SDA assignment
+# endif
+# define I2C1_SCL_AF  PINMUX(I2C1_SCL, I2C1_SCL_FUNC)
+# if  I2C1_SCL_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C1_SCL assignment
+# endif
+# define I2C1_SMBA_AF PINMUX(I2C1_SMBA, I2C1_SMBA_FUNC)
+# if  I2C1_SMBA_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C1_SMBA assignment
+# endif
+
 static const STM32_I2C_HW i2c1_hw = {
     .icb_base  = I2C1_BASE,
     .sda       = I2C1_SDA,
-    .sda_af    = I2C1_SDA_AF,
     .scl       = I2C1_SCL,
-    .scl_af    = I2C1_SCL_AF,
     .smba      = I2C1_SMBA,
+    .sda_af    = I2C1_SDA_AF,
+    .scl_af    = I2C1_SCL_AF,
     .smba_af   = I2C1_SMBA_AF,
 };
 
@@ -482,14 +495,33 @@ NUTI2C_BUS i2cBus1Stm32 = {
 };
 
 #if defined(HW_I2C2_STM32)
+
+# define I2C2_SDA_AF  PINMUX(I2C2_SDA, I2C2_SDA_FUNC)
+# if  I2C2_SDA_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C2_SDA assignment
+# endif
+# define I2C2_SCL_AF  PINMUX(I2C2_SCL, I2C2_SCL_FUNC)
+# if  I2C2_SCL_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C2_SCL assignment
+# endif
+# if defined( I2C2_SMBA_FUNC)
+#  define I2C2_SMBA_AF PINMUX(I2C2_SMBA, I2C2_SMBA_FUNC)
+#  if  I2C2_SMBA_AF == AF_NO_SUCH_PINFUNC
+#   warning BAD I2C2_SMBA assignment
+#  endif
+# endif
+
 static const STM32_I2C_HW i2c2_hw = {
     .icb_base  = I2C2_BASE,
     .sda       = I2C2_SDA,
-    .sda_af    = I2C2_SDA_AF,
     .scl       = I2C2_SCL,
-    .scl_af    = I2C2_SCL_AF,
     .smba      = I2C2_SMBA,
+    .sda_af    = I2C2_SDA_AF,
+    .scl_af    = I2C2_SCL_AF,
+# if defined( I2C2_SMBA_FUNC)
+    /* e.g. STM32F091 has no I2C2_SMBA pin. */
     .smba_af   = I2C2_SMBA_AF,
+#endif
 };
 
 static STM32_I2CCB i2c2cb = {

@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2014-2015 by Uwe Bonnes.
+ * Copyright (C) 2014-2017 by Uwe Bonnes
+ *                          (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -46,7 +47,6 @@
 #include <dev/spibus.h>
 #include <dev/gpio.h>
 
-#include <arch/cm3/stm/stm32_spi_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_spi.h>
 #include <dev/irqreg.h>
@@ -74,9 +74,9 @@
 #define SPI_MISO    SPI4_MISO
 #define SPI_MOSI    SPI4_MOSI
 
-#define SPI_SCK_AF  SPI4_SCK_AF
-#define SPI_MISO_AF SPI4_MISO_AF
-#define SPI_MOSI_AF SPI4_MOSI_AF
+#define SPI_SCK_AF  PINMUX(SPI4_SCK,  SPI4_SCK_FUNC)
+#define SPI_MISO_AF PINMUX(SPI4_MISO, SPI4_MISO_FUNC)
+#define SPI_MOSI_AF PINMUX(SPI4_MOSI, SPI4_MOSI_FUNC)
 
 #if !defined(SPI4_MODE)
 #define SPIBUS_MODE IRQ_MODE

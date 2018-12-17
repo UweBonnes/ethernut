@@ -60,10 +60,22 @@
 #include <dev/twif.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_i2c_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_twi.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+
+#define I2C1_SDA_AF  PINMUX(I2C1_SDA, I2C1_SDA_FUNC)
+#if  I2C1_SDA_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C1_SDA assignment
+#endif
+#define I2C1_SCL_AF  PINMUX(I2C1_SCL, I2C1_SCL_FUNC)
+#if  I2C1_SCL_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C1_SCL assignment
+#endif
+#define I2C1_SMBA_AF PINMUX(I2C1_SMBA, I2C1_SMBA_FUNC)
+#if  I2C1_SMBA_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C1_SMBA assignment
+#endif
 
 /*!
  * \brief Unlock a broken slave by clocking 8 SCL pulses manually.

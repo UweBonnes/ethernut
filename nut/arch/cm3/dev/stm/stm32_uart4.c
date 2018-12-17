@@ -56,7 +56,6 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_usart_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_uart.h>
 #include <arch/cm3/stm/stm32_usart.h>
@@ -148,15 +147,14 @@ NUTDEVICE devUartStm32_4 = {
  */
 # define  Stm32F1UsartRemap()
 
-#define USART_TX  USART4_TX
-#define USART_RX  USART4_RX
-#define USART_CTS USART4_CTS
-#define USART_RTS USART4_RTS
-
-#define USART_TX_AF  USART4_TX_AF
-#define USART_RX_AF  USART4_RX_AF
-#define USART_CTS_AF USART4_CTS_AF
-#define USART_RTS_AF USART4_RTS_AF
+#define UARTx_TX       USART4_TX
+#define UARTx_TX_FUNC  UART4_TX_FUNC
+#define UARTx_RX       USART4_RX
+#define UARTx_RX_FUNC  UART4_RX_FUNC
+#define UARTx_CTS      USART4_CTS
+#define UARTx_CTS_FUNC USART4_CTS_FUNC
+#define UARTx_RTS      USART4_RTS
+#define UARTx_RTS_FUNC UART4_RTS_FUNC
 
 #ifdef UART4_RS485_CTRL
 #define USART_485_CTRL

@@ -56,7 +56,6 @@
 #include <dev/usart.h>
 
 #include <arch/cm3/stm/stm32xxxx.h>
-#include <arch/cm3/stm/stm32_usart_pinmux.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_uart.h>
 #include <arch/cm3/stm/stm32_usart.h>
@@ -143,15 +142,14 @@ static void Stm32F1UsartRemap(void)
 # define  Stm32F1UsartRemap()
 #endif
 
-#define USART_TX  USART3_TX
-#define USART_RX  USART3_RX
-#define USART_CTS USART3_CTS
-#define USART_RTS USART3_RTS
-
-#define USART_TX_AF  USART3_TX_AF
-#define USART_RX_AF  USART3_RX_AF
-#define USART_CTS_AF USART3_CTS_AF
-#define USART_RTS_AF USART3_RTS_AF
+#define UARTx_TX       USART3_TX
+#define UARTx_TX_FUNC  UART3_TX_FUNC
+#define UARTx_RX       USART3_RX
+#define UARTx_RX_FUNC  UART3_RX_FUNC
+#define UARTx_CTS      USART3_CTS
+#define UARTx_CTS_FUNC USART3_CTS_FUNC
+#define UARTx_RTS      USART3_RTS
+#define UARTx_RTS_FUNC UART3_RTS_FUNC
 
 #ifdef USART3_RS485_CTRL
 #define USART_485_CTRL

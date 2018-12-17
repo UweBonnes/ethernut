@@ -50,6 +50,27 @@
 #include <arch/cm3/stm/stm32_dma.h>
 #include <arch/cm3/stm/stm32_usart.h>
 
+#include <arch/cm3/stm/stm32_gpio.h>
+#define UART_TX_AF  PINMUX(UARTx_TX,  UARTx_TX_FUNC)
+#if UART_TX_AF == AF_NO_SUCH_PINFUNC
+# warning Bad TX pin assignment
+#endif
+
+#define UART_RX_AF  PINMUX(UARTx_RX,  UARTx_RX_FUNC)
+#if UART_RX_AF == AF_NO_SUCH_PINFUNC
+# warning Bad CTS pin assignment
+#endif
+
+#define UART_CTS_AF PINMUX(UARTx_CTS, UARTx_CTS_FUNC)
+#if UART_CTS_AF == AF_NO_SUCH_PINFUNC
+# warning Bad CTS pin assignment
+#endif
+
+#define UART_RTS_AF PINMUX(UARTx_RTS, UARTx_RTS_FUNC)
+#if UART_RTS_AF == AF_NO_SUCH_PINFUNC
+# warning Bad RTS pin assignment
+#endif
+
 #if defined(USART_RDR_RDR)
 #define USARTN_RDR (USARTn->RDR)
 #define USARTN_TDR (USARTn->TDR)
@@ -1305,10 +1326,14 @@ static int Stm32UsartInit(void)
      * We rely on the same value for RCC_APBxENR_USARTxEN and RCC_APBxRSTR_USARTxRST*/
     StmUsartClkEnable(1);
     Stm32F1UsartRemap();
-    Stm32GpioConfigSet( USART_TX,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, USART_TX_AF );
-    Stm32GpioConfigSet( USART_RX,  GPIO_CFG_PERIPHAL,                   USART_RX_AF );
-    Stm32GpioConfigSet( USART_CTS, GPIO_CFG_PERIPHAL,                   USART_CTS_AF);
-    Stm32GpioConfigSet( USART_RTS, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, USART_RTS_AF);
+    Stm32GpioConfigSet( UARTx_TX,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, UART_TX_AF );
+    Stm32GpioConfigSet( UARTx_RX,  GPIO_CFG_PERIPHAL,                   UART_RX_AF );
+#if defined(USART_CTS_AF)
+    Stm32GpioConfigSet( UARTx_CTS, GPIO_CFG_PERIPHAL,                   UART_CTS_AF);
+    Stm32GpioConfigSet( UARTx_RTS, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, UART_RTS_AF);
+#else
+/* Fixme: Handle RTS/CTS with GPIO! */
+#endif
 
     /*
      *   USART Communication Init
