@@ -42,12 +42,26 @@
  */
 #define BOARDNAME "NUCLEO144"
 
-#ifndef LED1_PORT
+/* Board variants*/
+#define MB1137 0
+#define MB1312 1
+
+#if PLATFORM_SUB == MB1312
+# ifndef LED1_PORT
+/* Green: SB124 on, SB123 off -> PC7, with  SB124 off, SB123 on -> PA05*/
+#  define LED1_PORT NUTGPIO_PORTC
+# endif
+# ifndef LED1_PIN
+#  define LED1_PIN 7
+# endif
+#else
+# ifndef LED1_PORT
 /* Green: SB120 on, SB119 off -> PB00, with  SB120 off, SB119 on -> PA05*/
-#define LED1_PORT NUTGPIO_PORTB
-#endif
+#  define LED1_PORT NUTGPIO_PORTB
+# endif
 #ifndef LED1_PIN
-#define LED1_PIN 0
+#  define LED1_PIN 0
+# endif
 #endif
 
 #ifndef LED2_PORT
