@@ -1163,6 +1163,23 @@ nutarch =
                              "RAM0_LENGTH=8K" },
             },
             {
+                macro = "MCU_STM32L072xB",
+                brief = "STM STM32L072xB",
+                description = "STM32L072 128 kB",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32L0",
+                    "HW_MCU_STM32L072",
+                },
+                makedefs = { "FLASH0_LENGTH=128K",
+                             "RAM0_LENGTH=20K" },
+            },
+            {
                 macro = "MCU_STM32L073xZ",
                 brief = "STM STM32L073xZ",
                 description = "STM32L073 192 kB",
