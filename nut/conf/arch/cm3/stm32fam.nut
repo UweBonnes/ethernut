@@ -168,16 +168,57 @@ nutarch_cm3_stm32_family =
         name = "nutarch_cm3_stm32f3",
         brief = "STM32F3",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F3" },
-        provides = {
-           "HW_EEPROM_EMUL_STM32",
-        },
         description = "ST Microelectronics STM32 F3 Series",
         sources = {
             "cm3/dev/stm/stm32f30_clk.c",
             "cm3/dev/stm/stm32f1_3_flash.c",
         },
-        makedefs = { "MCU=cortex-m4"},
-        script = "arch/cm3/stm32f3.nut"
+        makedefs = { "MCU=cortex-m4", "FLASH_PAGE_SIZE=2048"},
+        script = "arch/cm3/generated/stm32f3.nut",
+        options =
+        {
+            {
+               macro = "MCU_STM32F3",
+               brief = "STM32F3 family",
+               description = "Common devices in all STM32F3",
+               default = 1,
+               provides =
+               {
+                   "HW_EEPROM_EMUL_STM32",
+                   "HW_GPIO_STM32V2",
+                   "HW_DMA1_STM32F1",
+                   "HW_I2C_STM32V2",
+                   "HW_USART_STM32V2",
+                   "HW_RTC_STM32_V2",
+                   "HW_MCU_FPU",
+               },
+               file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F30",
+                brief = "STM32F30 family",
+                requires = {"HW_MCU_STM32F30"},
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F37",
+                brief = "STM32F37x family",
+                description = "STM32F37x subfamily",
+                requires = { "HW_MCU_STM32F37" },
+                default = 1,
+                provides = {"HW_HSI8_DIV2_STM32"},
+            },
+            {
+                macro = "STM32F3_USB_REMAP",
+                brief = "Separate CAN/USB IRQ",
+                description = "Separate CAN/USB interrupts i startup",
+                requires = {HW_USBWAKEUP_RMP_STM32},
+                default = 1,
+                provides = {"HW_CAN_STM32"},
+                file = "include/cfg/arch.h"
+            },
+        }
     },
     {
         name = "nutarch_cm3_stm32f4",

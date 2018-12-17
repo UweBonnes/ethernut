@@ -604,6 +604,13 @@ nutarch_cm3_stm32_devices =
             "HW_DMA_CSELR_STM32"
         },
     },
+    {
+        name = "nutarch_cm3_stm32f3_dma2",
+        brief = "STM32F2 DMA 2Controller",
+        description = "Provides DMA2 if available on F3",
+        requires = {"HW_DMA2_CHANNEL5_STM32"},
+        provides = {"HW_DMA2_STM32F1"},
+    },
     --
     -- STM32F1/L1 DMA Interface
     --

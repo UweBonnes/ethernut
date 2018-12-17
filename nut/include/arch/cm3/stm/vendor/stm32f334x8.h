@@ -144,7 +144,6 @@ typedef enum
   HRTIM1_TIME_IRQn            = 72,     /*!< HRTIM Timer E global Interrupt                                    */
   HRTIM1_FLT_IRQn             = 73,     /*!< HRTIM Fault global Interrupt                                      */
   FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

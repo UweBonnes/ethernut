@@ -158,7 +158,6 @@ typedef enum
   USBWakeUp_IRQn              = 76,     /*!< USB Wakeup Interrupt                                              */
   TIM19_IRQn                  = 78,     /*!< TIM19 global Interrupt                                            */
   FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

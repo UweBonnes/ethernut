@@ -154,7 +154,6 @@ typedef enum
   COMP_IRQn                   = 64,     /*!< COMP1 and COMP2 global Interrupt                                  */
   TIM19_IRQn                  = 78,     /*!< TIM19 global Interrupt                                            */
   FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

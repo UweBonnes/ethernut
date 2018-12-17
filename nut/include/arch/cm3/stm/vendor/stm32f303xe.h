@@ -168,7 +168,6 @@ typedef enum
   TIM20_CC_IRQn               = 80,     /*!< TIM20 Capture Compare Interrupt                                    */
   FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
   SPI4_IRQn                   = 84,     /*!< SPI4 global Interrupt                                             */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

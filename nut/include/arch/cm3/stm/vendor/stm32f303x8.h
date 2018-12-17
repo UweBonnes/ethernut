@@ -137,7 +137,6 @@ typedef enum
   COMP2_IRQn                  = 64,     /*!< COMP2 global Interrupt via EXTI Line22                            */
   COMP4_6_IRQn                = 65,     /*!< COMP4 and COMP6 global Interrupt via EXTI Line30 and 32           */
   FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
-  IRQn_MAX
 } IRQn_Type;
 
 /**

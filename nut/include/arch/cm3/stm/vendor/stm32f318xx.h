@@ -135,7 +135,6 @@ typedef enum
   I2C3_EV_IRQn                = 72,     /*!< I2C3 Event Interrupt & EXTI Line27 Interrupt (I2C3 wakeup)        */
   I2C3_ER_IRQn                = 73,     /*!< I2C3 Error Interrupt                                              */
   FPU_IRQn                    = 81,     /*!< Floating point Interrupt                                          */
-  IRQn_MAX
 } IRQn_Type;
 
 /**
