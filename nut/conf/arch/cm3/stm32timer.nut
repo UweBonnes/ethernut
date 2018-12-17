@@ -37,484 +37,132 @@
 --
 function GetStmTimers32bit()
 -- Devices with no 32-bit Timer
-    if c_is_provided("HW_MCU_STM32F030x6") then
-        return { "" }
+   local list = {}
+    if c_is_provided("HW_TIM2_32BIT_STM32") then
+        table.insert(list, "2")
     end
-    if c_is_provided("HW_MCU_STM32F030x8") then
-        return { "" }
+    if c_is_provided("HW_TIM5_32BIT_STM32") then
+        table.insert(list, "5")
     end
-    if c_is_provided("HW_MCU_STM32F030xC") then
-        return { "" }
-    end
-    if c_is_provided("HW_MCU_STM32F070x6") then
-        return { "" }
-    end
-    if c_is_provided("HW_MCU_STM32F070xB") then
-        return { "" }
-    end
--- Devices with 2 32-bit timer
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "2", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F4") then
-        return { "2", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return { "2", "5"}
-    end
--- Default is one 32-Bit timer
-    return { "2"}
+    return list
 end
 
 --
 -- Retrieve Timer with at least one output channel
 --
 function GetStmTimers1Ch()
-    if c_is_provided("HW_MCU_STM32F030x6") then
-        return { "", "1" , "3", "14" , "16", "17" }
+   local list = {}
+    if c_is_provided("HW_TIM1_STM32") then
+       table.insert(list,  "1")
     end
-    if c_is_provided("HW_MCU_STM32F030x8") then
-        return { "", "1" , "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM2_STM32") then
+       table.insert(list,  "2")
     end
-    if c_is_provided("HW_MCU_STM32F030xC") then
-        return { "", "1" , "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM3_STM32") then
+       table.insert(list,  "3")
     end
-    if c_is_provided("HW_MCU_STM32F031x6") then
-        return { "", "1" , "2", "3", "14" , "16", "17" }
+    if c_is_provided("HW_TIM4_STM32") then
+       table.insert(list,  "4")
     end
-    if c_is_provided("HW_MCU_STM32F038xx") then
-        return { "", "1" , "2", "3", "14" , "16", "17" }
+    if c_is_provided("HW_TIM5_STM32") then
+       table.insert(list,  "5")
     end
-    if c_is_provided("HW_MCU_STM32F042x6") then
-        return { "", "1" , "2", "3", "14" , "16", "17" }
+    if c_is_provided("HW_TIM8_STM32") then
+       table.insert(list,  "8")
     end
-    if c_is_provided("HW_MCU_STM32F048xx") then
-        return { "", "1" , "2", "3", "14" , "16", "17" }
+    if c_is_provided("HW_TIM9_STM32") then
+       table.insert(list,  "9")
     end
-    if c_is_provided("HW_MCU_STM32F051x8") then
-        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM10_STM32") then
+       table.insert(list,  "10")
     end
-    if c_is_provided("HW_MCU_STM32F058xx") then
-        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM11_STM32") then
+       table.insert(list,  "11")
     end
-    if c_is_provided("HW_MCU_STM32F070x6") then
-        return { "", "1" , "3", "14" , "16", "17" }
+    if c_is_provided("HW_TIM12_STM32") then
+       table.insert(list,  "12")
     end
-    if c_is_provided("HW_MCU_STM32F070xB") then
-        return { "", "1" , "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM13_STM32") then
+       table.insert(list,  "13")
     end
-    if c_is_provided("HW_MCU_STM32F071xB") then
-        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM14_STM32") then
+       table.insert(list,  "14")
     end
-    if c_is_provided("HW_MCU_STM32F072xB") then
-        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM15_STM32") then
+       table.insert(list,  "15")
     end
-    if c_is_provided("HW_MCU_STM32F078xx") then
-        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM16_STM32") then
+       table.insert(list,  "16")
     end
-    if c_is_provided("HW_MCU_STM32F091xC") then
-        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM17_STM32") then
+       table.insert(list,  "17")
     end
-    if c_is_provided("HW_MCU_STM32F098xx") then
-        return { "", "1" , "2", "3", "14" , "15", "16", "17" }
+    if c_is_provided("HW_TIM18_STM32") then
+       table.insert(list,  "18")
     end
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "", "1" , "2", "3", "4", "5", "8", "9", "10", "11", "12" , "13" , "14" }
+    if c_is_provided("HW_TIM19_STM32") then
+       table.insert(list,  "19")
     end
-    if c_is_provided("HW_MCU_STM32F301x8") then
-        return { "", "1", "2",                                       "15", "16", "17"                  }
+    if c_is_provided("HW_TIM20_STM32") then
+       table.insert(list,  "20")
     end
-    if c_is_provided("HW_MCU_STM32F302_LD") then
-        return { "", "1", "2",                                       "15", "16", "17"                  }
+    if c_is_provided("HW_TIM21_STM32") then
+       table.insert(list,  "21")
     end
-    if c_is_provided("HW_MCU_STM32F302_MD") then
-        return { "", "1", "2", "3", "4",                             "15", "16", "17"                  }
+    if c_is_provided("HW_TIM22_STM32") then
+       table.insert(list,  "22")
     end
-    if c_is_provided("HW_MCU_STM32F302_HD") then
-        return { "", "1", "2", "3", "4",                             "15", "16", "17"                  }
-    end
-    if c_is_provided("HW_MCU_STM32F303_LD") then
-        return { "", "1", "2", "3",                                  "15", "16", "17"                  }
-    end
-    if c_is_provided("HW_MCU_STM32F303_MD") then
-        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17"                  }
-    end
-    if c_is_provided("HW_MCU_STM32F303_HD") then
-        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17",             "20"}
-    end
-    if c_is_provided("HW_MCU_STM32F318xx") then
-        return { "", "1", "2",                                       "15", "16", "17"                  }
-    end
-    if c_is_provided("HW_MCU_STM32F328xx") then
-        return { "", "1", "2", "3",                                  "15", "16", "17"                  }
-    end
-    if c_is_provided("HW_MCU_STM32F334x8") then
-        return { "", "1", "2", "3",                                  "15", "16", "17"                  }
-    end
-    if c_is_provided("HW_MCU_STM32F358xx") then
-        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17"                  }
-    end
-    if c_is_provided("HW_MCU_STM32F373_MD") then
-        return { "",      "2", "3", "4", "5",      "12", "13", "14", "15", "16", "17", "18", "19",     }
-    end
-    if c_is_provided("HW_MCU_STM32F378xx") then
-        return { "",      "2", "3", "4", "5",      "12", "13", "14", "15", "16", "17", "18", "19",     }
-    end
-    if c_is_provided("HW_MCU_STM32F398xx") then
-        return { "", "1", "2", "3", "4",      "8",                   "15", "16", "17",             "20"}
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return { "", "1", "2", "3", "4", "5", "9", "10", "11"}
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return { "", "1", "2", "3", "4", "5", "9", "10", "11"}
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "10", "11", "12", "13", "14"}
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "10", "11", "12", "13", "14"}
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "10", "11", "12", "13", "14"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "10", "11", "12", "13", "14"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_MD") then
-        return { "", "2", "3", "4", "9", "10", "11"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_MDP") then
-        return { "", "2", "3", "4", "5", "9", "10", "11"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_HD") then
-        return { "", "2", "3", "4", "5", "9", "10", "11"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return { "", "1", "2", "3", "4", "5", "8", "15", "16", "17"}
-    end
-    if c_is_provided("HW_MCU_STM32L0") then
-        return { "", "2", "3", "21", "22"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_XL") then
-        return { "", "2", "3", "4", "5", "9", "10", "11"}
-    end
---  For all other devices return all known values for now
-    return { "", "1", "2", "3", "4", "5", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"}
+    return list
 end
 
 --
 -- Retrieve Timer with at least two channels.
 --
 function GetStmTimers2Ch()
--- List timers with at least two channels
--- List of all known timers with two channels min:
--- {"", "1", "2", "3", "4", "5", "8", "9", "12", "15", "16", "17", "19"}
-    if c_is_provided("HW_MCU_STM32F030x6") then
-        return { "", "1" , "3",  "16", "17" }
+   local list = {}
+    if c_is_provided("HW_TIM1_STM32") then
+       table.insert(list,  "1")
     end
-    if c_is_provided("HW_MCU_STM32F030x8") then
-        return { "", "1" , "3",   "16", "17" }
+    if c_is_provided("HW_TIM2_STM32") then
+       table.insert(list,  "2")
     end
-    if c_is_provided("HW_MCU_STM32F030xC") then
-        return { "", "1" , "3",   "16", "17" }
+    if c_is_provided("HW_TIM3_STM32") then
+       table.insert(list,  "3")
     end
-    if c_is_provided("HW_MCU_STM32F031x6") then
-        return { "", "1" , "2", "3",  "16", "17" }
+    if c_is_provided("HW_TIM4_STM32") then
+       table.insert(list,  "4")
     end
-    if c_is_provided("HW_MCU_STM32F038xx") then
-        return { "", "1" , "2", "3",  "16", "17" }
+    if c_is_provided("HW_TIM5_STM32") then
+       table.insert(list,  "5")
     end
-    if c_is_provided("HW_MCU_STM32F042x6") then
-        return { "", "1" , "2", "3",  "16", "17" }
+    if c_is_provided("HW_TIM8_STM32") then
+       table.insert(list,  "8")
     end
-    if c_is_provided("HW_MCU_STM32F048xx") then
-        return { "", "1" , "2", "3",  "16", "17" }
+    if c_is_provided("HW_TIM9_STM32") then
+       table.insert(list,  "9")
     end
-    if c_is_provided("HW_MCU_STM32F051x8") then
-        return { "", "1" , "2", "3",   "16", "17" }
+    if c_is_provided("HW_TIM12_STM32") then
+       table.insert(list,  "12")
     end
-    if c_is_provided("HW_MCU_STM32F058xx") then
-        return { "", "1" , "2", "3",   "16", "17" }
+    if c_is_provided("HW_TIM15_STM32") then
+       table.insert(list,  "15")
     end
-    if c_is_provided("HW_MCU_STM32F070x6") then
-        return { "", "1" , "3",  "16", "17" }
+    if c_is_provided("HW_TIM18_STM32") then
+       table.insert(list,  "18")
     end
-    if c_is_provided("HW_MCU_STM32F070xB") then
-        return { "", "1" , "3",   "16", "17" }
+    if c_is_provided("HW_TIM19_STM32") then
+       table.insert(list,  "19")
     end
-    if c_is_provided("HW_MCU_STM32F071xB") then
-        return { "", "1" , "2", "3",   "16", "17" }
+    if c_is_provided("HW_TIM20_STM32") then
+       table.insert(list,  "20")
     end
-    if c_is_provided("HW_MCU_STM32F072xB") then
-        return { "", "1" , "2", "3",   "16", "17" }
+    if c_is_provided("HW_TIM21_STM32") then
+       table.insert(list,  "21")
     end
-    if c_is_provided("HW_MCU_STM32F078xx") then
-        return { "", "1" , "2", "3",   "16", "17" }
+    if c_is_provided("HW_TIM22_STM32") then
+       table.insert(list,  "22")
     end
-    if c_is_provided("HW_MCU_STM32F091xC") then
-        return { "", "1" , "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F098xx") then
-        return { "", "1" , "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F10X_LD") then
-        return { "", "1", "2", "3"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_LD_VL") then
-        return { "", "1", "2", "3"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_MD") then
-        return { "", "1", "2", "3", "4"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_MD_VL") then
-        return { "", "1", "2", "3", "4"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_HD") then
-        return { "", "1", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_HD_VL") then
-        return { "", "1", "2", "3", "4", "5", "12"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_XL") then
-        return { "", "1", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_CL") then
-        return { "", "1", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
-    end
-    if c_is_provided("HW_MCU_STM32F301x8") then
-        return { "", "1", "2",                           "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F302_LD") then
-        return { "", "1", "2",                           "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F302_MD") then
-        return { "", "1", "2", "3", "4",                 "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F302_HD") then
-        return { "", "1", "2", "3", "4",                 "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F303_LD") then
-        return { "", "1", "2", "3",                      "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F303_MD") then
-        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F303_HD") then
-        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17",      "20"}
-    end
-    if c_is_provided("HW_MCU_STM32F318xx") then
-        return { "", "1", "2",                           "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F328xx") then
-        return { "", "1", "2", "3",                      "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F334x8") then
-        return { "", "1", "2", "3",                      "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F358xx") then
-        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17"           }
-    end
-    if c_is_provided("HW_MCU_STM32F373_MD") then
-        return { "",      "2", "3", "4", "5",      "12", "15", "16", "17", "19"      }
-    end
-    if c_is_provided("HW_MCU_STM32F378xx") then
-        return { "",      "2", "3", "4", "5",      "12", "15", "16", "17", "19"      }
-    end
-    if c_is_provided("HW_MCU_STM32F398xx") then
-        return { "", "1", "2", "3", "4",      "8",       "15", "16", "17",      "20"}
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return { "", "1", "2", "3", "4", "5", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return { "", "1", "2", "3", "4", "5", "9", "10", "11"}
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return { "", "1", "2", "3", "4", "5", "8", "9", "12"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_MD") then
-        return { "", "2", "3", "4", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_MDP") then
-        return { "", "2", "3", "4", "5", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_HD") then
-        return { "", "2", "3", "4", "5", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_XL") then
-        return { "", "2", "3", "4", "5", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return { "", "1", "2", "3", "4", "5", "8", "15", "16", "17"}
-    end
-    if c_is_provided("HW_MCU_STM32L0") then
-        return { "", "2", "3", "21", "22"}
-    end
-end
-
---
--- Retrieve Timer with at least two channels and available interrupt.
---
-function GetStmTimers2ChIrq()
--- List timers with at least two channels and a seperated interrupt
--- List of timers with two channels min:
--- {"", "1", "2", "3", "4", "5", "8", "9", "12", "16", "17", "19"}
--- TIM1/TIM8/TIM9/TIM12/TIM16/TIM17 with seperated/coupled interrupts on most devices
--- and so not usable yet
-    if c_is_provided("HW_MCU_STM32F030x6") then
-        return { "",  "3",  "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F030x8") then
-        return { "",  "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F030xC") then
-        return { "",  "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F031x6") then
-        return { "",  "2", "3",  "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F038xx") then
-        return { "",  "2", "3",  "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F042x6") then
-        return { "",  "2", "3",  "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F048xx") then
-        return { "",  "2", "3",  "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F051x8") then
-        return { "",  "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F058xx") then
-        return { "",  "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F070x6") then
-        return { "",  "3",  "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F070xB") then
-        return { "",  "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F071xB") then
-        return { "",  "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F072xB") then
-        return { "",  "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F078xx") then
-        return { "",  "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F091xC") then
-        return { "",  "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F098xx") then
-        return { "",  "2", "3",   "16", "17" }
-    end
-    if c_is_provided("HW_MCU_STM32F10X_LD") then
-        return { "", "2", "3"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_LD_VL") then
-        return { "", "2", "3"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_MD") then
-        return { "", "2", "3", "4"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_MD_VL") then
-        return { "", "2", "3", "4"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_HD") then
-        return { "", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_HD_VL") then
-        return { "", "2", "3", "4", "5", "12"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_XL") then
-        return { "", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F10X_CL") then
-        return { "", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F301x8") then
-        return { "", "2",                               }
-    end
-    if c_is_provided("HW_MCU_STM32F302_LD") then
-        return { "", "2",                               }
-    end
-    if c_is_provided("HW_MCU_STM32F302_MD") then
-        return { "", "2", "3", "4",                     }
-    end
-    if c_is_provided("HW_MCU_STM32F302_HD") then
-        return { "", "2", "3", "4",                     }
-    end
-    if c_is_provided("HW_MCU_STM32F303_LD") then
-        return { "", "2", "3",                          }
-    end
-    if c_is_provided("HW_MCU_STM32F303_MD") then
-        return { "", "2", "3", "4",                     }
-    end
-    if c_is_provided("HW_MCU_STM32F303_HD") then
-        return { "", "2", "3", "4",                     }
-    end
-    if c_is_provided("HW_MCU_STM32F318xx") then
-        return { "", "2",                               }
-    end
-    if c_is_provided("HW_MCU_STM32F328xx") then
-        return { "", "2", "3",                          }
-    end
-    if c_is_provided("HW_MCU_STM32F334x8") then
-        return { "", "2", "3",                          }
-    end
-    if c_is_provided("HW_MCU_STM32F358xx") then
-        return { "", "2", "3", "4",                     }
-    end
-    if c_is_provided("HW_MCU_STM32F373_MD") then
-        return { "",      "2", "3", "4", "5", "12", "19"}
-    end
-    if c_is_provided("HW_MCU_STM32F378xx") then
-        return { "",      "2", "3", "4", "5", "12", "19"}
-    end
-    if c_is_provided("HW_MCU_STM32F398xx") then
-        return { "", "2", "3", "4",                     }
-    end
-    if c_is_provided("HW_MCU_STM32F4") then
-        return { "", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return { "", "2", "3", "4", "5"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_MD") then
-        return { "", "2", "3", "4", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_MDP") then
-        return { "", "2", "3", "4", "5", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_HD") then
-        return { "", "2", "3", "4", "5", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L1_XL") then
-        return { "", "2", "3", "4", "5", "9"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return { "", "1", "2", "3", "4", "5", "8"}
-    end
-    if c_is_provided("HW_MCU_STM32L0") then
-        return { "", "2", "3", "21", "22"}
-    end
+    return list
 end
 
 nutarch_cm3_stm32_timer_devices =
@@ -903,7 +551,7 @@ nutarch_cm3_stm32_timer_devices =
                                "Requires at least dual channel!\n"..
                               "Check for availability on selected device.",
                 type = "enumerated",
-                choices = function() return GetStmTimers2ChIrq() end,
+                choices = function() return GetStmTimers2Ch() end,
                 file = "include/cfg/owi.h",
             },
             {
@@ -978,7 +626,7 @@ nutarch_cm3_stm32_timer_devices =
                               "Requires at least dual channel!\n"..
                               "Check for availability on selected device.",
                 type = "enumerated",
-                choices = function() return GetStmTimers2ChIrq() end,
+                choices = function() return GetStmTimers2Ch() end,
                 file = "include/cfg/owi.h",
             },
             {
@@ -1053,7 +701,7 @@ nutarch_cm3_stm32_timer_devices =
                               "Requires at least dual channel!\n"..
                               "Check for availability on selected device.",
                 type = "enumerated",
-                choices = function() return GetStmTimers2ChIrq() end,
+                choices = function() return GetStmTimers2Ch() end,
                 file = "include/cfg/owi.h",
             },
             {
