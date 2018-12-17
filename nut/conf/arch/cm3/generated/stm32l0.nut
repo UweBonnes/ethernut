@@ -13,6 +13,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_457",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -40,7 +41,11 @@ nutarch_cm3_stm32l0 =
                "HW_LPUART1_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=30",
+               "HWDEF += -DSTM32DIE=457",
+            },
          },
          {
             macro = "STM32L021xx",
@@ -48,6 +53,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_457",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -75,7 +81,11 @@ nutarch_cm3_stm32l0 =
                "HW_AES_LPUART1_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=30",
+               "HWDEF += -DSTM32DIE=457",
+            },
          },
          {
             macro = "STM32L031xx",
@@ -83,6 +93,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_425",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -111,7 +122,11 @@ nutarch_cm3_stm32l0 =
                "HW_LPUART1_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=30",
+               "HWDEF += -DSTM32DIE=425",
+            },
          },
          {
             macro = "STM32L041xx",
@@ -119,6 +134,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_425",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -147,7 +163,11 @@ nutarch_cm3_stm32l0 =
                "HW_AES_LPUART1_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=30",
+               "HWDEF += -DSTM32DIE=425",
+            },
          },
          {
             macro = "STM32L051xx",
@@ -155,6 +175,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_417",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -188,7 +209,11 @@ nutarch_cm3_stm32l0 =
                "HW_LPUART1_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=30",
+               "HWDEF += -DSTM32DIE=417",
+            },
          },
          {
             macro = "STM32L052xx",
@@ -196,6 +221,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_417",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -232,7 +258,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=417",
+            },
          },
          {
             macro = "STM32L053xx",
@@ -240,6 +270,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_417",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -277,48 +308,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
-         },
-         {
-            macro = "STM32L061xx",
-            requires = {"HW_MCU_STM32L061xx"},
-            default = 1,
-            provides =
+            makedefs =
             {
-               "HW_NONMASKABLEINT_STM32",
-               "HW_HARDFAULT_STM32",
-               "HW_SVC_STM32",
-               "HW_PENDSV_STM32",
-               "HW_SYSTICK_STM32",
-               "HW_WWDG_STM32",
-               "HW_PVD_STM32",
-               "HW_RTC_STM32",
-               "HW_FLASH_STM32",
-               "HW_RCC_STM32",
-               "HW_EXTI0_1_STM32",
-               "HW_EXTI2_3_STM32",
-               "HW_EXTI4_15_STM32",
-               "HW_DMA1_CHANNEL1_STM32",
-               "HW_DMA1_CHANNEL2_3_STM32",
-               "HW_DMA1_CHANNEL4_5_6_7_STM32",
-               "HW_ADC1_COMP_STM32",
-               "HW_LPTIM1_STM32",
-               "HW_TIM2_STM32",
-               "HW_TIM6_STM32",
-               "HW_TIM21_STM32",
-               "HW_TIM22_STM32",
-               "HW_I2C1_STM32",
-               "HW_I2C2_STM32",
-               "HW_SPI1_STM32",
-               "HW_SPI2_STM32",
-               "HW_USART1_STM32",
-               "HW_UART1_STM32",
-               "HW_USART2_STM32",
-               "HW_UART2_STM32",
-               "HW_AES_LPUART1_STM32",
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=417",
             },
-            file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
          },
          {
             macro = "STM32L062xx",
@@ -326,6 +320,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_417",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -362,7 +357,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=417",
+            },
          },
          {
             macro = "STM32L063xx",
@@ -370,6 +369,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_417",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -407,7 +407,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=417",
+            },
          },
          {
             macro = "STM32L071xx",
@@ -415,6 +419,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_447",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -453,7 +458,11 @@ nutarch_cm3_stm32l0 =
                "HW_LPUART1_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=30",
+               "HWDEF += -DSTM32DIE=447",
+            },
          },
          {
             macro = "STM32L072xx",
@@ -461,6 +470,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_447",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -502,7 +512,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=447",
+            },
          },
          {
             macro = "STM32L073xx",
@@ -510,6 +524,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_447",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -552,7 +567,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=447",
+            },
          },
          {
             macro = "STM32L081xx",
@@ -560,6 +579,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_447",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -598,7 +618,11 @@ nutarch_cm3_stm32l0 =
                "HW_AES_LPUART1_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=30"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=30",
+               "HWDEF += -DSTM32DIE=447",
+            },
          },
          {
             macro = "STM32L082xx",
@@ -606,6 +630,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_447",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -647,7 +672,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=447",
+            },
          },
          {
             macro = "STM32L083xx",
@@ -655,6 +684,7 @@ nutarch_cm3_stm32l0 =
             default = 1,
             provides =
             {
+               "HW_MCU_STM32_DIE_447",
                "HW_NONMASKABLEINT_STM32",
                "HW_HARDFAULT_STM32",
                "HW_SVC_STM32",
@@ -697,7 +727,11 @@ nutarch_cm3_stm32l0 =
                "HW_USB_STM32",
             },
             file = "include/cfg/arch.h",
-            makedefs = {"UCPFLAGS+=-DIRQn_MAX=32"},
+            makedefs =
+            {
+               "UCPFLAGS+=-DIRQn_MAX=32",
+               "HWDEF += -DSTM32DIE=447",
+            },
          },
       }
    }

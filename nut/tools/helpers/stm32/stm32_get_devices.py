@@ -4,8 +4,56 @@ import argparse
 import time
 import os
 import sys
+import glob
 
-def generate(name, headerfile, luafile):
+def finddie(devicename, dbpath):
+    mcu_files = "%s/mcu/%s*" % (dbpath, devicename[0:9])
+    files = glob.glob(mcu_files)
+    matched_file = ""
+    last_file = ""
+    for myfile in files:
+        filename = myfile.split('/')[-1]
+        if "xx" in devicename :
+            matched_file = myfile
+            break
+        elif  "STM32F41" in devicename and devicename[9] in "crtvz":
+            # Exception for F41[0|1|2|3] devices
+            matched_file = myfile
+            break
+        elif len(devicename) == len("stm32l162xca"):
+            # exception for STM32L1???a.h headers
+            if devicename[10] in filename[:-6] and devicename[11].upper() == filename[-5] :
+                matched_file = myfile
+                break
+        elif devicename[10] == 'x':
+            # exception for STM32L1??xdh.h headers
+            if devicename[9] in filename[0:-6]:
+                matched_file = myfile
+                break
+        else:
+            if devicename[10] in filename[0:-6]:
+                matched_file = myfile
+                break
+    try:
+        xml = open(matched_file, 'r', encoding='utf-8', errors='ignore')
+    except:
+        print("Failed to open mcufile %s, search %s" % (matched_file, mcu_files))
+        return
+    iterator = iter(xml)
+    die = ""
+    while True:
+        try:
+            line = next(iterator)
+        except:
+            break;
+        if "<Die>" in line:
+            die = line.partition("<Die>")[2].partition("</Die>")[0]
+            break;
+        if die != "":
+            break;
+    return die.partition("DIE")[2]
+
+def generate(name, headerfile, luafile, dbpath):
     devicestring = name.partition('.')[0]
     devicename = "%s%s%s" % (devicestring[0:9].upper(), devicestring[9],
                              devicestring[10:].upper())
@@ -17,11 +65,13 @@ def generate(name, headerfile, luafile):
         print("Failed to open headerfile %s" % headerfile)
     timerdevice = [0] * 30
     luafile.write("         {\n")
+    die = finddie(devicename, dbpath)
     luafile.write("            macro = \"%s\",\n" % devicename)
     luafile.write("            requires = {\"HW_MCU_%s\"},\n" % devicename)
     luafile.write("            default = 1,\n")
     luafile.write("            provides =\n")
     luafile.write("            {\n")
+    luafile.write("               \"HW_MCU_STM32_DIE_%s\",\n" % die)
     iterator = iter(headerdata)
     num_irq = 0;
     while True:
@@ -90,7 +140,11 @@ def generate(name, headerfile, luafile):
 
     luafile.write("            },\n")
     luafile.write("            file = \"include/cfg/arch.h\",\n")
-    luafile.write("            makedefs = {\"UCPFLAGS+=-DIRQn_MAX=%d\"},\n" % (num_irq + 1))
+    luafile.write("            makedefs =\n")
+    luafile.write("            {\n")
+    luafile.write("               \"UCPFLAGS+=-DIRQn_MAX=%d\",\n" % (num_irq + 1))
+    luafile.write("               \"HWDEF += -DSTM32DIE=%s\",\n" % die)
+    luafile.write("            },\n")
     luafile.write("         },\n")
     headerdata.close()
 
@@ -100,7 +154,10 @@ if __name__ == "__main__":
     nutpath = "%s/../../../../" % os.path.dirname(os.path.realpath(sys.argv[0]))
     nutpath = os.path.realpath(nutpath)
     dirpath = "%s/nut/include/arch/cm3/stm/vendor/" % nutpath
-    print(dirpath)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dbpath", nargs='?', help="STM32CubeMX databank path", default="/devel/STM32CubeMX/db")
+    args = parser.parse_args()
+    print("Headerpath %s, Databank Path %s" % (dirpath, args.dbpath))
     familylist = {"l0", "l1", "l4", "f0", "f1", "f2", "f3", "f4", "f7", "h7"}
     for (dirpath, dnames, filenames) in os.walk(dirpath):
         f.extend(filenames)
@@ -125,7 +182,7 @@ if __name__ == "__main__":
             devicename = "stm32%s" % family
             if devicename in f and ".h" in f:
                 filename = "%s%s" % (dirpath, f)
-                generate(f, filename, luafile)
+                generate(f, filename, luafile, args.dbpath)
         luafile.write("      }\n")
         luafile.write("   }\n")
         luafile.write("}\n")
