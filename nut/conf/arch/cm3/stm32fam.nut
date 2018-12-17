@@ -118,20 +118,64 @@ nutarch_cm3_stm32_family =
         brief = "STM32L4",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L4" },
         description = "ST Microelectronics STM32 L4 Series",
-        provides = {
-            "HW_DMA2_STM32F1",
-            "HW_DMA2_7CH_STM32",
-            "HW_DMA_CSELR_STM32",
-            "HW_EEPROM_EMUL_STM32",
-        },
         sources = {
             "cm3/dev/stm/stm32l4_clk.c",
             "cm3/dev/stm/stm32l4_flash.c",
         },
-        makedefs = {
-                  "MCU=cortex-m4",
-        },
-        script = "arch/cm3/stm32l4.nut"
+        makedefs = {"MCU=cortex-m4"},
+        script = "arch/cm3/generated/stm32l4.nut",
+        options =
+        {
+            {
+                macro = "MCU_STM32L4",
+                brief = "STM32L4 common devices",
+                description = "Provides devices common in all STM32L4 devices.",
+                default = 1,
+                provides =
+                {
+                   "HW_DMA2_STM32F1",
+                   "HW_DMA2_7CH_STM32",
+                   "HW_RCC_STM32L",
+                   "HW_DMA_CSELR_STM32",
+                   "HW_EEPROM_EMUL_STM32",
+-- Todo: FLASH_WRPROT
+                    "HW_VOS_STM32",
+                    "HW_ICACHE_STM32",
+                    "HW_DCACHE_STM32",
+--                   "HW_CAN1_STM32",  TODO: Can Timing
+                    "HW_RTC_STM32_V2",
+                    "HW_GPIO_STM32V2",
+                    "HW_DMA1_STM32F1",
+                    "HW_DMA2_STM32L4",
+                    "HW_I2C_STM32V2",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "MCU_STM32L43",
+                brief = "STM32L43x/44x.",
+                description = "Provides common devices in L43x/L44x",
+                default = 1,
+                requires = {"HW_MCU_STM32L43"},
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "MCU_STM32L45",
+                brief = "STM32L45x/46x with DFSDM.",
+                description = "Provides common devices in L45x/L46x",
+                default = 1,
+                requires = {"HW_MCU_STM32L45"},
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "MCU_STM32L47",
+                brief = "STM32L47x/48x.",
+                description = "Provides common devices in L47x/L48x",
+                default = 1,
+                requires = {"HW_MCU_STM32L47"},
+                file = "include/cfg/arch.h",
+            },
+         }
     },
     {
         name = "nutarch_cm3_stm32l1",

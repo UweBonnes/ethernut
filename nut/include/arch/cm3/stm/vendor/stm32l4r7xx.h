@@ -180,7 +180,6 @@ typedef enum
   LTDC_ER_IRQn                = 92,     /*!< LTDC Error global Interrupt                                       */
   GFXMMU_IRQn                 = 93,     /*!< GFXMMU global error interrupt                                     */
   DMAMUX1_OVR_IRQn            = 94,     /*!< DMAMUX1 overrun global interrupt                                  */
-  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**

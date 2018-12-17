@@ -183,7 +183,6 @@ typedef enum
   CAN2_RX1_IRQn               = 88,     /*!< CAN2 RX1 interrupt                                                */
   CAN2_SCE_IRQn               = 89,     /*!< CAN2 SCE interrupt                                                */
   DMA2D_IRQn                  = 90,     /*!< DMA2D global interrupt                                            */
-  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**

@@ -160,7 +160,6 @@ typedef enum
   CRS_IRQn                    = 82,     /*!< CRS global interrupt                                              */
   I2C4_EV_IRQn                = 83,     /*!< I2C4 Event interrupt                                              */
   I2C4_ER_IRQn                = 84,     /*!< I2C4 Error interrupt                                              */
-  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**

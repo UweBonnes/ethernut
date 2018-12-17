@@ -172,7 +172,6 @@ typedef enum
   TSC_IRQn                    = 77,     /*!< Touch Sense Controller global interrupt                           */
   RNG_IRQn                    = 80,     /*!< RNG global interrupt                                              */
   FPU_IRQn                    = 81,     /*!< FPU global interrupt                                              */
-  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**

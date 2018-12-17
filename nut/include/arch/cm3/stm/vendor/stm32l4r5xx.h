@@ -177,7 +177,6 @@ typedef enum
   DCMI_IRQn                   = 85,     /*!< DCMI global interrupt                                             */
   DMA2D_IRQn                  = 90,     /*!< DMA2D global interrupt                                            */
   DMAMUX1_OVR_IRQn            = 94,     /*!< DMAMUX1 overrun global interrupt                                  */
-  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**
