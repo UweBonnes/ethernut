@@ -1,7 +1,7 @@
 #ifndef _STM32XXXX_H_
 #define _STM32XXXX_H_
 /*
- * Copyright (C) 2012-2017 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2018 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,7 +51,7 @@
 # elif defined(STM32F031x6)
 #  include <arch/cm3/stm/vendor/stm32f031x6.h>
 # elif defined(STM32F038xx)
-#  include <arch/cm3/stm/vendor/stm32f031x6.h>
+#  include <arch/cm3/stm/vendor/stm32f038xx.h>
 # elif defined(STM32F042x6)
 #  include <arch/cm3/stm/vendor/stm32f042x6.h>
 # elif defined(STM32F048xx)
@@ -62,8 +62,6 @@
 #  include <arch/cm3/stm/vendor/stm32f058xx.h>
 # elif defined(STM32F070x6)
 #  include <arch/cm3/stm/vendor/stm32f070x6.h>
-# elif defined(STM32F070x8)
-#  include <arch/cm3/stm/vendor/stm32f070x8.h>
 # elif defined(STM32F070xB)
 #  include <arch/cm3/stm/vendor/stm32f070xb.h>
 # elif defined(STM32F071xB)
@@ -85,19 +83,22 @@
 # elif defined(STM32F100xE)
 #  include <arch/cm3/stm/vendor/stm32f100xe.h>
 # elif defined(STM32F101x6)
-#  include <arch/cm3/stm/vendor/stm32f101x8.h>
+#  include <arch/cm3/stm/vendor/stm32f101x6.h>
 # elif defined(STM32F101xB)
 #  include <arch/cm3/stm/vendor/stm32f101xb.h>
 # elif defined(STM32F101xE)
 #  include <arch/cm3/stm/vendor/stm32f101xe.h>
+# elif defined(STM32F101xG)
+#  include <arch/cm3/stm/vendor/stm32f101xg.h>
 # elif defined(STM32F102x6)
 #  include <arch/cm3/stm/vendor/stm32f102x6.h>
 # elif defined(STM32F102xB)
 #  include <arch/cm3/stm/vendor/stm32f102xb.h>
 # elif defined(STM32F101xG)
+#  warn Does it exist
 #  include <arch/cm3/stm/vendor/stm32f101xg.h>
-# elif defined(STM32F103x8)
-#  include <arch/cm3/stm/vendor/stm32f103x8.h>
+# elif defined(STM32F103x6)
+#  include <arch/cm3/stm/vendor/stm32f103x6.h>
 # elif defined(STM32F103xB)
 #  include <arch/cm3/stm/vendor/stm32f103xb.h>
 # elif defined(STM32F103xE)
@@ -108,6 +109,8 @@
 #  include <arch/cm3/stm/vendor/stm32f105xc.h>
 # elif defined(STM32F107xC)
 #  include <arch/cm3/stm/vendor/stm32f107xc.h>
+# else
+#  warning Unhandled F1 device
 # endif
 #elif defined(MCU_STM32L0)
 # if   defined(STM32L011xx)
@@ -118,7 +121,7 @@
 #  define MCU_STM32L0_CAT1
 # elif defined(STM32L031xx)
 #  include <arch/cm3/stm/vendor/stm32l031xx.h>
-#  define MCU_STM32L0_CAT2
+#  define MCU_STM32L0_CAT1
 # elif defined(STM32L041xx)
 #  include <arch/cm3/stm/vendor/stm32l041xx.h>
 #  define MCU_STM32L0_CAT2
@@ -134,7 +137,7 @@
 # elif defined(STM32L062xx)
 #  include <arch/cm3/stm/vendor/stm32l062xx.h>
 #  define MCU_STM32L0_CAT3
-# elif defined(STM32L063xx)
+ elif defined(STM32L063xx)
 #  include <arch/cm3/stm/vendor/stm32l063xx.h>
 #  define MCU_STM32L0_CAT3
 # elif defined(STM32L071xx)
@@ -148,12 +151,15 @@
 #  define MCU_STM32L0_CAT5
 # elif defined(STM32L081xx)
 #  include <arch/cm3/stm/vendor/stm32l081xx.h>
-# elif defined(STM32L082xx)
 #  define MCU_STM32L0_CAT5
+# elif defined(STM32L082xx)
 #  include <arch/cm3/stm/vendor/stm32l082xx.h>
+#  define MCU_STM32L0_CAT5
 # elif defined(STM32L083xx)
 #  include <arch/cm3/stm/vendor/stm32l083xx.h>
 #  define MCU_STM32L0_CAT5
+# else
+#  warning Unhandled L0 device
 # endif
 #elif defined(MCU_STM32L1)
 # if   defined(STM32L100xB)
@@ -200,7 +206,9 @@
 #  include <arch/cm3/stm/vendor/stm32l162xdx.h>
 # elif defined(STM32L162xE)
 #  include <arch/cm3/stm/vendor/stm32l162xe.h>
-#endif
+# else
+#  warning Unhandled L1 device
+# endif
 #elif defined(MCU_STM32L4)
 # if   defined(STM32L431xx)
 #  include <arch/cm3/stm/vendor/stm32l431xx.h>
@@ -244,6 +252,8 @@
 #  include <arch/cm3/stm/vendor/stm32l4s7xx.h>
 # elif defined(STM32L4S9xx)
 #  include <arch/cm3/stm/vendor/stm32l4r9xx.h>
+# else
+#  warning Unhandled L4 device
 # endif
 #elif defined(MCU_STM32F2)
 /**
@@ -257,17 +267,17 @@
                                       |(__CMSIS_DEVICE_HAL_VERSION_SUB1 << 16)\
                                       |(__CMSIS_DEVICE_HAL_VERSION_SUB2 << 8 )\
                                       |(__CMSIS_DEVICE_HAL_VERSION_RC))
-#if defined(STM32F205xx)
-#include <arch/cm3/stm/vendor/stm32f205xx.h>
-#elif defined(STM32F215xx)
-#include  <arch/cm3/stm/vendor/stm32f215xx.h>
-#elif defined(STM32F207xx)
-#include  <arch/cm3/stm/vendor/stm32f207xx.h>
-#elif defined(STM32F217xx)
-#include  <arch/cm3/stm/vendor/stm32f217xx.h>
-#else
-#warning "Unknown STM32F2 family"
-#endif
+# if defined(STM32F205xx)
+#  include <arch/cm3/stm/vendor/stm32f205xx.h>
+# elif defined(STM32F215xx)
+#  include  <arch/cm3/stm/vendor/stm32f215xx.h>
+# elif defined(STM32F207xx)
+#  include  <arch/cm3/stm/vendor/stm32f207xx.h>
+# elif defined(STM32F217xx)
+#  include  <arch/cm3/stm/vendor/stm32f217xx.h>
+# else
+#  warning "Unknown STM32F2 family"
+# endif
 #elif defined(MCU_STM32F3)
 # if   defined(STM32F301x8)
 #  include <arch/cm3/stm/vendor/stm32f301x8.h>
@@ -295,11 +305,10 @@
 #  include <arch/cm3/stm/vendor/stm32f373xc.h>
 # elif defined(STM32F378xx)
 #  include <arch/cm3/stm/vendor/stm32f378xx.h>
-# elif defined(STM32F379xx)
+# elif defined(STM32F398xx)
 #  include <arch/cm3/stm/vendor/stm32f398xx.h>
 # else
 #  warning "Unhandled STM32F3 device"
-# end
 # endif
 #elif defined(MCU_STM32F4)
 # if defined(STM32F401xC)
@@ -332,6 +341,8 @@
 #  include <arch/cm3/stm/vendor/stm32f415xx.h>
 # elif defined(STM32F417xx)
 #  include <arch/cm3/stm/vendor/stm32f417xx.h>
+# elif defined(STM32F423xx)
+#  include <arch/cm3/stm/vendor/stm32f423xx.h>
 # elif defined(STM32F427xx)
 #  include <arch/cm3/stm/vendor/stm32f427xx.h>
 # elif defined(STM32F429xx)
@@ -380,11 +391,14 @@
 # elif defined(STM32F779xx)
 #  include <arch/cm3/stm/vendor/stm32f779xx.h>
 # else
-#  warning "Unknown STM32F7 family"
+#  warning "Unhandled STM32F7 device "
 # endif
 #else
-#warning "Unknown STM32 family"
+# warning "Unknown STM32 family"
 #endif
+
+ /* Include Die specific GPIO and ID  information.*/
+#include <arch/cm3/stm/generated/stm32_mcus.h>
 
 /* Equalize name changes in newer header versions.*/
 #if !defined(FLASH_PECR_FIX) && defined(FLASH_PECR_FTDW)

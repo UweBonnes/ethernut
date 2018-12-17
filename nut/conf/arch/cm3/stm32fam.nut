@@ -1,6 +1,6 @@
 --
 -- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
--- Copyright (C) 2011-2015, 2017 Uwe Bonnes
+-- Copyright (C) 2011-2018 Uwe Bonnes
 --                         (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,8 @@
 -- All internal defines start in MCU_, only the final clause for the STM32F429
 -- defines "STM32F429xx", as this is the same define as used by STM Cube
 -- to include the vendor header.
+
+dofile(c_repo_path().."/arch/cm3/generated/stm32pinlist.nut")
 
 nutarch_cm3_stm32_family =
 {
