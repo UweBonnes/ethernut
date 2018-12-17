@@ -251,14 +251,32 @@ nutarch_cm3_stm32_family =
         brief = "STM32F2",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F2" },
         description = "ST Microelectronics STM32 F2 Series",
-        provides = {
-           "HW_EEPROM_EMUL_STM32",
-        },
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
         makedefs = { "MCU=cortex-m3"},
-        script = "arch/cm3/stm32f2.nut"
-    },
-    {
+        script = "arch/cm3/generated/stm32f2.nut",
+        options =
+        {
+            {
+                macro = "MCU_STM32F2",
+                brief = "STM32F2",
+                description = "Common devices in STM32F2 family.",
+                default = 1,
+                provides =
+                {
+                    "HW_EEPROM_EMUL_STM32",
+                    "HW_ICACHE_STM32",
+                    "HW_DCACHE_STM32",
+                    "HW_FLASH_STM32F2_4",
+                    "HW_GPIO_STM32V2",
+                    "HW_DMA_STM32F2",
+                    "HW_I2C_STM32V1",
+                    "HW_RTC_STM32_V2",
+                },
+                file = "include/cfg/arch.h"
+            },
+        }
+     },
+     {
         name = "nutarch_cm3_stm32f3",
         brief = "STM32F3",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F3" },
