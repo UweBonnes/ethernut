@@ -265,8 +265,8 @@ if __name__ == "__main__":
         else:
             mcufile.write("# include <arch/cm3/stm/generated/%s_pinmux.h>\n" %
                           mcu.gpio.lower())
-            #        mcufile.write("# include <arch/cm3/stm/generated/%s_dma.h>\n" %
-            #mcu.dma.lower())
+        mcufile.write("# include <arch/cm3/stm/generated/%s_dma.h>\n" %
+                      mcu.dma.lower())
         last_mcu = mcu.mcu
         elsestring = "elif"
     mcufile.write("#endif\n\n#endif\n")
