@@ -33,50 +33,19 @@
 # if !defined(__UNIQUE_ID_H__)
 #  define __UNIQUE_ID_H__
 
-#include <cfg/arch.h>
-
-# if defined(MCU_STM32) && !defined(MCU_STM32F030)
-#  if defined(MCU_STM32F0)
-#   define UNIQUE_ID_REG 0x1ffff7ac
-#  elif defined(MCU_STM32F1)
-#   define UNIQUE_ID_REG 0x1ffff7e8
-#  elif defined(MCU_STM32F2)
-#   define UNIQUE_ID_REG 0x1fff7a10
-#  elif defined(MCU_STM32F3)
-#   define UNIQUE_ID_REG 0x1ffff7ac
-#  elif defined(MCU_STM32F4)
-#   define UNIQUE_ID_REG 0x1fff7a10
-#  elif defined(MCU_STM32F72)
-#   define UNIQUE_ID_REG 0x1ff07a22
-#  elif defined(MCU_STM32F7)
-#   define UNIQUE_ID_REG 0x1ff0f420
-#  elif defined(MCU_STM32L0)
-#   define UNIQUE_ID_REG 0x1ff8007c
-#  elif defined(MCU_STM32L1)
-#   if defined(MCU_STM32L1_CAT1) || defined(MCU_STM32L1_CAT2)
-#    define UNIQUE_ID_REG_L 0x1ff80050
-#    define UNIQUE_ID_REG_M 0x1ff80054
-#    define UNIQUE_ID_REG_H 0x1ff80064
-#   else
-#    define UNIQUE_ID_REG_L 0x1ff800D0
-#    define UNIQUE_ID_REG_M 0x1ff800D4
-#    define UNIQUE_ID_REG_H 0x1ff800E4
-#   endif
-#  elif defined(MCU_STM32L4)
-#   define UNIQUE_ID_REG 0x1fff7590
-#  else
-#   warning UNIQUE_ID_REG unhandled STM32 family
-#  endif
-#
-#  if defined(UNIQUE_ID_REG)
-#   define UNIQUE_ID_REG_L (UNIQUE_ID_REG + 0)
-#   define UNIQUE_ID_REG_M (UNIQUE_ID_REG + 4)
-#   define UNIQUE_ID_REG_H (UNIQUE_ID_REG + 8)
-#  endif
+#if defined(UID_BASE)
+# if defined(MCU_STM32L1)
+#  define UNIQUE_ID_REG_L (UID_BASE + 0)
+#  define UNIQUE_ID_REG_M (UID_BASE + 4)
+#  define UNIQUE_ID_REG_H (UID_BASE + 14)
+# else
+#  define UNIQUE_ID_REG_L (UID_BASE + 0)
+#  define UNIQUE_ID_REG_M (UID_BASE + 4)
+#  define UNIQUE_ID_REG_H (UID_BASE + 8)
 # endif
 
-# if defined(UNIQUE_ID_REG_L)
 extern void Stm32GetUniquePrivateMac(void * mac);
-#  define UNIQUE_PRIVATE_MAC(x) Stm32GetUniquePrivateMac(x)
-# endif
+# define UNIQUE_PRIVATE_MAC(x) Stm32GetUniquePrivateMac(x)
+#endif
+
 #endif

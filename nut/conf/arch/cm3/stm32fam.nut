@@ -207,9 +207,6 @@ nutarch_cm3_stm32_family =
         brief = "STM32L1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L1" },
         description = "ST Microelectronics STM32 L1 Series",
-        provides = {
-            "HW_EEPROM_STM32",
-        },
         sources = {
            "cm3/dev/stm/stm32l1_clk.c",
            "cm3/dev/stm/stm32l1_eeprom.c",
@@ -219,7 +216,35 @@ nutarch_cm3_stm32_family =
                   "MCU=cortex-m3",
                   "MFIX=-mfix-cortex-m3-ldrd",
         },
-        script = "arch/cm3/stm32l1.nut"
+        script = "arch/cm3/generated/stm32l1.nut",
+        options =
+        {
+            {
+                macro = "MCU_STM32L1",
+                brief = "Provides devices available in all STM32L1 devices",
+                default = 1,
+                provides =
+                {
+                    "HW_EEPROM_STM32",
+                    "HW_VOS_STM32",
+                    "HW_RCC_STM32L",
+                    "HW_GPIO_STM32L_0_1",
+                    "HW_GPIO_STM32V2",
+                    "HW_DMA1_STM32F1",
+                    "HW_I2C_STM32V1",
+                    "HW_RTC_STM32_V2",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "MCU_STM32L1_CAT1",
+                brief = "STM32L1 Cat1.",
+                description = "Additional devices in STM32L1 Cat 1 Devices.",
+                default = 1,
+                requires = { "HW_MCU_STM32_DIE_416" },
+                file = "include/cfg/arch.h",
+            },
+        }
     },
     {
         name = "nutarch_cm3_stm32f2",

@@ -32,9 +32,10 @@
  */
 #include <stdint.h>
 #include <cfg/arch.h>
+#include <arch/cm3/stm/stm32xxxx.h>
 #include <dev/hw_signature.h>
 
-#if !defined(MCU_STM32F030)
+#if defined(UID_BASE)
 /*!
  * \brief Get a (hopefully) unique MAC id from the hardware ID
  *

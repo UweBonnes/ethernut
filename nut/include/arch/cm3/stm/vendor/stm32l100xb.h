@@ -143,7 +143,6 @@ typedef enum
   USB_FS_WKUP_IRQn            = 42,     /*!< USB FS WakeUp from suspend through EXTI Line Interrupt  */
   TIM6_IRQn                   = 43,     /*!< TIM6 global Interrupt                                   */
   TIM7_IRQn                   = 44,     /*!< TIM7 global Interrupt                                   */
-  IRQn_MAX                              /*!< Total number of interrupts                              */
 } IRQn_Type;
 
 /**
