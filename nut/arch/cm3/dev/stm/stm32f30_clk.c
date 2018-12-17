@@ -96,7 +96,7 @@
 #if   defined(MCU_STM32F0)
 # define SYSCLK_MAX     48000000
 # define APB1_MAX       48000000
-#elif defined(MCU_STM32F100)
+#elif defined(MCU_STM32F1)
 # define SYSCLK_MAX     24000000
 # define APB1_MAX       24000000
 #elif defined(MCU_STM32F3)

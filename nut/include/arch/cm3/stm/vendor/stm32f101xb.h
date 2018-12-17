@@ -132,7 +132,6 @@ typedef enum
   USART3_IRQn                 = 39,     /*!< USART3 global Interrupt                              */
   EXTI15_10_IRQn              = 40,     /*!< External Line[15:10] Interrupts                      */
   RTC_Alarm_IRQn              = 41,     /*!< RTC Alarm through EXTI Line Interrupt                */
-  IRQn_MAX                              /*!< Total number of interrupts                           */
 } IRQn_Type;
 
 /**

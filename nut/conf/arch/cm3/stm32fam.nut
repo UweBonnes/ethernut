@@ -52,6 +52,23 @@
 
 dofile(c_repo_path().."/arch/cm3/generated/stm32pinlist.nut")
 
+function GetF1Files()
+   local a =
+      {
+         "cm3/dev/stm/stm32f1_rtc.c",
+         "cm3/dev/stm/stm32f1_backup.c",
+         "cm3/dev/stm/stm32f1_3_flash.c",
+         "cm3/dev/stm/stm32_gpio_v1.c",
+      }
+   if c_is_provided("HW_MCU_STM32F100") then
+      table.insert(a, "cm3/dev/stm/stm32f30_clk.c")
+   else
+      table.insert(a, "cm3/dev/stm/stm32f1_clk.c")
+   end
+   return a
+end
+
+
 nutarch_cm3_stm32_family =
 {
     --
@@ -108,20 +125,44 @@ nutarch_cm3_stm32_family =
         brief = "STM32F1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F1" },
         description = "ST Microelectronics STM32 F1 Series",
-        provides = {
-           "HW_EEPROM_EMUL_STM32",
-        },
-        sources = {
-           "cm3/dev/stm/stm32f1_rtc.c",
-           "cm3/dev/stm/stm32f1_backup.c",
-           "cm3/dev/stm/stm32f1_3_flash.c",
-           "cm3/dev/stm/stm32_gpio_v1.c",
-        },
+        sources = function() return GetF1Files() end,
         makedefs = {
             "MCU=cortex-m3",
             "MFIX=-mfix-cortex-m3-ldrd",
         },
-        script = "arch/cm3/stm32f1.nut"
+        script = "arch/cm3/generated/stm32f1.nut",
+        options =
+        {
+            {
+                macro = "MCU_STM32F1",
+                brief = "STM32F1",
+                description = "STM32F1 family device.",
+                default = 1,
+                provides = {
+                   "HW_EEPROM_EMUL_STM32",
+                   "HW_GPIO_STM32V1",
+                   "HW_DMA1_STM32F1",
+                   "HW_I2C_STM32V1",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F101",
+                brief = "STM32F101 Series",
+                description = "STM32F101 variants, running at 24 MHz.",
+                requires = {"HW_MCU_STM32F101"},
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F102",
+                brief = "STM32F102 Series",
+                description = "STM32F102 variants, running at 36 MHz..",
+                requires = {"HW_MCU_STM32F102"},
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+        }
     },
     {
         name = "nutarch_cm3_stm32l0",

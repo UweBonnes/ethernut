@@ -1015,9 +1015,14 @@ nutarch =
                 makedefs = { "FLASH0_LENGTH=256K",
                              "RAM0_LENGTH=32K" },
             },
-             --
+            --
             -- STM STM32F10X SERIES CONTROLLER
             --
+            -- The same die is packaged with different numbers
+            -- and is specifyed for different speed
+            -- HW_MCU_STM32F100 is for F100 with clock tree configuration.
+            -- (HW_)MCU_STM32F10(1|2) is for different MCU speed
+            -- HW_MCU_STM32F1_CL is for CL devices clock tree configuration.
             {
                 macro = "MCU_STM32F100xB",
                 brief = "STM STM32F100 128 kB",
@@ -1031,9 +1036,8 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F1",
-                    "HW_MCU_STM32F1_MD",
                     "HW_MCU_STM32F100",
-                    "HW_MCU_STM32F100_MD"
+                    "HW_MCU_STM32F100xB"
                 },
                 makedefs = { "FLASH0_LENGTH=128K",
                              "RAM0_LENGTH=16K" },
@@ -1051,16 +1055,14 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F1",
-                    "HW_MCU_STM32F1_MD",
-                    "HW_MCU_STM32F103",
-                    "HW_MCU_STM32F103_MD"
+                    "HW_MCU_STM32F103xB",
                 },
                 makedefs = { "FLASH0_LENGTH=128K",
                              "RAM0_LENGTH=20K" },
             },
             {
                 macro = "MCU_STM32F103xC",
-                brief = "STM STM32F103 257 kB",
+                brief = "STM STM32F103 256 kB",
                 description = "STM STM32F103 256 kB.",
                 flavor = "boolean",
                 exclusivity = mcu_names,
@@ -1071,9 +1073,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F1",
-                    "HW_MCU_STM32F1_HD",
-                    "HW_MCU_STM32F103",
-                    "HW_MCU_STM32F103_HD"
+                    "HW_MCU_STM32F103xC"
                 },
                 makedefs = { "FLASH0_LENGTH=256K",
                              "RAM0_LENGTH=48K" },
@@ -1091,9 +1091,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F1",
-                    "HW_MCU_STM32F1_HD",
-                    "HW_MCU_STM32F103",
-                    "HW_MCU_STM32F103_HD"
+                    "HW_MCU_STM32F103xE"
                 },
                 makedefs = { "FLASH0_LENGTH=512K",
                              "RAM0_LENGTH=64K" },
@@ -1111,9 +1109,7 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F1",
-                    "HW_MCU_STM32F1_XL",
-                    "HW_MCU_STM32F103",
-                    "HW_MCU_STM32F103_XL"
+                    "HW_MCU_STM32F103xF"
                 },
                 makedefs = { "FLASH0_LENGTH=1024K",
                              "RAM0_LENGTH=96K" },
@@ -1132,7 +1128,7 @@ nutarch =
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F1",
                     "HW_MCU_STM32F1_CL",
-                    "HW_MCU_STM32F107",
+                    "HW_MCU_STM32F107xC",
                 },
                 makedefs = { "FLASH0_LENGTH=256K",
                              "RAM0_LENGTH=64K" },

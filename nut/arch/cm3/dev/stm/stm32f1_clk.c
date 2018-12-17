@@ -53,7 +53,7 @@
 
 #define HSI_VALUE 8000000
 
-#if defined(MCU_STM32F1_CL)
+#if defined(RCC_PLL2_SUPPORT)
 # define HSE_MAX  25000000
 #else
 # define HSE_MAX  16000000
@@ -69,7 +69,7 @@
 # define APB1_MAX       24000000
 #else
 # if(SYSCLK_SOURCE == SYSCLK_PLL) && (PLLCLK_SOURCE == PLLCLK_HSI)
-#  if defined(MCU_STM32F1_CL)
+#  if defined(RCC_PLL2_SUPPORT)
 #   define SYSCLK_MAX   36000000
 #  else
 #   define SYSCLK_MAX   64000000
@@ -101,12 +101,12 @@
 # endif
 #endif
 
-#if defined(MCU_STM32F1_CL)
+#if defined(RCC_PLL2_SUPPORT)
 # if !defined(PLL2CLK_PREDIV) && !defined(PLL2CLK_MULT) &&      \
     !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT)
 #  undef PLLCLK_SOURCE
 #  if ((PLLCLK_IN % 5000000) == 0) && ((SYSCLK_FREQ % 8000000) == 0)
-/* Values From STM32F105xx datasheet*/
+/* Values From STM32F1_CLxx datasheet*/
 #   define PLLCLK_SOURCE     PLLCLK_HSE_PLL2
 #   define PLL2CLK_PREDIV    (PLLCLK_IN / 5000000)
 #   define PLL2CLK_MULT      8
@@ -167,7 +167,7 @@
 #define PLL2CLK_MULT 8
 #endif
 #if !defined(PLLCLK_MULT)
-# if defined(MCU_STM32F1_CL)
+# if defined(RCC_PLL2_SUPPORT)
 # define PLLCLK_MULT   4
 #else
 # define PLLCLK_MULT   2
@@ -176,7 +176,7 @@
 
 #if (SYSCLK_SOURCE == SYSCLK_PLL)
 /* Check PLL factors */
-# if defined(MCU_STM32F1_CL)
+# if defined(RCC_PLL2_SUPPORT)
 #  if (PLL2CLK_PREDIV < 1) || (PLL2CLK_PREDIV > 16)
 #   warning PLL2CLK_PREDIV wrong
 #  elif (PLL2CLK_MULT < 8) || ((PLL2CLK_MULT > 14) && (PLL2CLK_MULT != 16) && (PLL2CLK_MULT != 20))

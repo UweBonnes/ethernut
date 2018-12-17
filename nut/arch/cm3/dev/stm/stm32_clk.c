@@ -78,7 +78,7 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 # if !defined(PLLCLK_DIV)
 #  define PLLCLK_DIV 1
 # endif
-# if defined(MCU_STM32F1_CL)
+# if defined(RCC_PLL2_SUPPORT)
 #  define SYSCLK_RES ((((PLLCLK_IN / PLL2CLK_PREDIV) * PLL2CLK_MULT) / PLLCLK_PREDIV) * PLLCLK_MULT)
 # else
 #  define SYSCLK_RES (((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) / PLLCLK_DIV)
@@ -137,7 +137,7 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 #pragma message "SYSCLK_SOURCE = " XSTR(SYSCLK_SOURCE)
 #pragma message "SYSCLK_FREQ   = " XSTR(SYSCLK_FREQ)
 #pragma message "PLLCLK_IN     = " XSTR(PLLCLK_IN)
-# if defined(MCU_STM32F1_CL)
+# if defined(RCC_PLL2_SUPPORT)
 #pragma message "PLL2CLK_PREDIV= " XSTR(PLL2CLK_PREDIV)
 #pragma message "PLL2CLK_MULT  = " XSTR(PLL2CLK_MULT)
 # endif

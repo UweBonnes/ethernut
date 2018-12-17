@@ -154,7 +154,6 @@ typedef enum
   DMA2_Channel5_IRQn          = 60,     /*!< DMA2 Channel 5 global Interrupt (DMA2 Channel 5 is
                                              mapped at position 60 only if the MISC_REMAP bit in
                                              the AFIO_MAPR2 register is set)                      */
-  IRQn_MAX                              /*!< Total number of interrupts                           */
 } IRQn_Type;
 
 /**

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2012, 2013, 2017 Uwe Bonnes
+ * Copyright (C) 2012, 2013, 2017-18 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,8 +57,7 @@ uint32_t program_end_raw;
 #  define FLASH_BANK1_END 0x08007fff
 # endif
 #elif defined(MCU_STM32F1)
-# if defined (MCU_STM32F1_HD) || defined (MCU_STM32F1_HD_VL) ||\
-    defined (MCU_STM32F1_CL) || defined(MCU_STM32F1_XL)
+# if (FLASH_BANK1_END >  0x0803FFFFU)
 #  define FLASH_PAGE_SHIFT 11
 # else
 #  define FLASH_PAGE_SHIFT 10
@@ -150,7 +149,7 @@ static FLASH_Status FLASH_GetStatus(void)
         rs = FLASH_BUSY;
     FLASH->SR =  FLASH_SR_EOP | FLASH_SR_WRPRTERR | FLASH_SR_PGERR;
 
-#if defined(MCU_STM32F1_XL)
+#if defined(FLASH_CR2_PG)
     /* Decode the Flash Status */
     if (FLASH->SR2 & FLASH_SR_WRPRTERR)
         rs |= FLASH_ERROR_WRP;
@@ -158,7 +157,7 @@ static FLASH_Status FLASH_GetStatus(void)
         rs |= FLASH_ERROR_PG;
     else if (FLASH->SR2 & FLASH_SR_BSY)
         rs |= FLASH_BUSY;
-#endif /* MCU_STM32F1_XL */
+#endif
 
      /* Return the Flash Status */
     return rs;
@@ -214,7 +213,7 @@ static FLASH_Status FlashErasePage(uint32_t mem)
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
     if(rs == FLASH_COMPLETE) {
-#if defined(MCU_STM32F1_XL)
+#if defined(FLASH_CR2_PG)
         if ((current_page / FLASH_PAGE_SIZE) >255) {
             FLASH->CR2 = FLASH_CR_PER;
             FLASH->AR2 = mem;
@@ -294,7 +293,7 @@ static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
         FLASH->KEYR = FLASH_KEY2;
         rs = FLASH->CR & FLASH_CR_LOCK;
     }
-#if defined(MCU_STM32F1_XL)
+#if defined(FLASH_CR2_PG)
     if (((uint32_t)dst + len - FLASH_BASE)/FLASH_PAGE_SIZE > 255) {
         FLASH->KEYR2 = FLASH_KEY1;
         FLASH->KEYR2 = FLASH_KEY2;
@@ -347,7 +346,7 @@ static FLASH_Status FlashWrite( void* dst, const void* src, size_t len,
             goto done;
         if (((uint32_t)wptr -FLASH_BASE)/FLASH_PAGE_SIZE <256)
             FLASH->CR = FLASH_CR_PG;
-#if defined(MCU_STM32F1_XL)
+#if defined(FLASH_CR2_PG)
         else
             FLASH->CR2 = FLASH_CR_PG;
 #endif
@@ -410,7 +409,7 @@ cmp_err:
 done:
     /* Lock the FLASH again */
     FLASH->CR = FLASH_CR_LOCK;
-#if defined(MCU_STM32F1_XL)
+#if defined(FLASH_CR2_PG)
     FLASH->CR2 = FLASH_CR_LOCK;
 #endif
     return rs;
@@ -559,7 +558,8 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
         /* If one high page is write protected, protect all high pages*/
         else if (ena) wrpr &= ~0x80000000;
     }
-#if defined (MCU_STM32F1_LD) || defined (MCU_STM32F1_LD_VL)
+/*FIXME: Algo need to be re-evaluated!*/
+#if defined (MCU_STM32) || (FLASH_BANK1_END <= 0x08007FFFU)
     for(i = 0; i < 1 && rs == FLASH_COMPLETE; i++)
 #else
     for(i = 0; i < 4 && rs == FLASH_COMPLETE; i++)

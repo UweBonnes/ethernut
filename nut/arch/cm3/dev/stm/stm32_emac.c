@@ -70,7 +70,7 @@
 #define EMPRINTF(args,...)
 #endif
 
-#if defined(MCU_STM32F1_CL)
+#if defined(MCU_STM32F1)
 /* None remappable EMAC pins */
 # define  EMAC_MDC                   PC01
 # define  EMAC_MDIO                  PA02
@@ -114,7 +114,7 @@
  * For the benefit of EMC the GPIO is run at the lowest speed
  * required to operate. For RMII this is 50 MHz for MII 25 MHz.
  */
-#if defined(MCU_STM32F1_CL)
+#if defined(MCU_STM32F1)
 # define EMAC_GPIO_SPEED        GPIO_CFG_SPEED_HIGH
 #else
 # ifdef PHY_MODE_MII
@@ -359,7 +359,7 @@ static int EmacReset(void)
     uint32_t phy = 0;
     int link_wait;
 
-#if defined(MCU_STM32F1_CL)
+#if defined(MCU_STM32F1)
     /* force reset emac */
     RCC->AHBRSTR |= RCC_AHBRSTR_ETHMACRST;
 
@@ -957,7 +957,7 @@ int EmacInit(NUTDEVICE * dev)
         return -1;
     }
 
-#if defined(MCU_STM32F1_CL) /* STM32F1 */
+#if defined(MCU_STM32F1)
     /* disable clocks for MAC */
     RCC->AHBENR &= ~(RCC_AHBENR_ETHMACEN | RCC_AHBENR_ETHMACTXEN |
                      RCC_AHBENR_ETHMACRXEN);
@@ -1013,14 +1013,14 @@ int EmacInit(NUTDEVICE * dev)
 
 #ifdef PHY_MODE_MII
     /* switch to MII mode */
-# if defined(MCU_STM32F1_CL)
+#if defined(MCU_STM32F1)
     CM3BBCLR(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
  #else
     CM3BBCLR(SYSCFG_BASE, SYSCFG_TypeDef, PMC, _BI32(SYSCFG_PMC_MII_RMII));
  #endif
 #else
     /* switch to RMII mode */
-# if defined(MCU_STM32F1_CL)
+#if defined(MCU_STM32F1)
     CM3BBSET(AFIO_BASE, AFIO_TypeDef, MAPR, _BI32(AFIO_MAPR_MII_RMII_SEL));
  #else
 #  if defined(MCU_STM32F76)
@@ -1036,7 +1036,7 @@ int EmacInit(NUTDEVICE * dev)
  #endif
 #endif
 
-    /* Start the receiver thread. */
+    /* Start the receilver thread. */
     if (NutThreadCreate("emacrx", EmacRxThread, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
