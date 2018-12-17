@@ -272,6 +272,15 @@ nutarch_cm3_stm32_family =
                 requires = {"HW_MCU_STM32L47"},
                 file = "include/cfg/arch.h",
             },
+            {
+                macro = "MCU_STM32L4R",
+                brief = "STM32L4Rx/4Sx.",
+                description = "Provides common features for L4Rx/L4Sx",
+                default = 1,
+                requires = {"HW_MCU_STM32L4R"},
+                provides = {"HW_OVERDRIVE_STM32"},
+                file = "include/cfg/arch.h",
+            },
          }
     },
     {

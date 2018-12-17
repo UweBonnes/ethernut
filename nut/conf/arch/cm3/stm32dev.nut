@@ -628,6 +628,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F1/L1 DMA1 Controller",
         description = "Generic DMA Support for F1/L1",
         requires = { "HW_MCU_STM32", "HW_DMA1_STM32F1" },
+        disablers = {"HW_DMAMUX1_OVR_STM32"},
         provides = { "HW_DMA1_F1" },
         sources = {
             "cm3/dev/stm/stm32f1_dma.c",
