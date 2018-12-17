@@ -102,16 +102,41 @@ nutarch_cm3_stm32_family =
            "cm3/dev/stm/stm32l1_eeprom.c",
            "cm3/dev/stm/stm32l1_flash.c",
         },
-        provides = {
-            "HW_DMA1_STM32F1",
-            "HW_DMA_COMBINED_IRQ_STM32",
-            "HW_DMA_CSELR_STM32",
-            "HW_EEPROM_STM32",
-         },
-         makedefs = {
-                  "MCU=cortex-m0plus",
-        },
-        script = "arch/cm3/stm32l0.nut"
+        makedefs = {"MCU=cortex-m0plus"},
+        script = "arch/cm3/generated/stm32l0.nut",
+        options =
+        {
+            {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32L0",
+                brief = "STM32L0 common devices",
+                description = "Provides devices common in all STM32L0 devices.",
+                default = 1,
+                provides =
+                {
+                    "HW_DMA1_STM32F1",
+                    "HW_DMA_COMBINED_IRQ_STM32",
+                    "HW_DMA_CSELR_STM32",
+                    "HW_EEPROM_STM32",
+                    "HW_RCC_STM32L",
+-- Todo: FLASH_WRPROT
+                    "HW_VOS_STM32",
+                    "HW_RTC_STM32_V2",
+                    "HW_GPIO_STM32L_0_1",
+                    "HW_GPIO_STM32V2",
+                    "HW_USART_STM32V2",
+                    "HW_DMA1_STM32L0",
+                    "HW_I2C_STM32V2",
+                },
+                file = "include/cfg/arch.h",
+            },
+        }
     },
     {
         name = "nutarch_cm3_stm32l4",

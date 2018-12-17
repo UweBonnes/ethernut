@@ -123,7 +123,6 @@ typedef enum
   USART1_IRQn                 = 27,     /*!< USART1 Interrupt                                        */
   USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                        */
   AES_LPUART1_IRQn            = 29,     /*!< AES and LPUART1 Interrupts                              */
-  IRQn_MAX,                             /*!< Total number of interrupts                              */
 } IRQn_Type;
 
 /**

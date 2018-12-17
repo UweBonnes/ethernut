@@ -115,7 +115,6 @@ typedef enum
   SPI1_IRQn                   = 25,     /*!< SPI1 Interrupt                                          */
   USART2_IRQn                 = 28,     /*!< USART2 Interrupt                                        */
   LPUART1_IRQn                = 29,     /*!< LPUART1 Interrupt                                       */
-  IRQn_MAX,                             /*!< Total number of interrupts                              */
 } IRQn_Type;
 
 /**

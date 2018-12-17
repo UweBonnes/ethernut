@@ -53,39 +53,16 @@
 
 uint32_t program_end_raw;
 
-#if defined(MCU_STM32L1)
-/*Sectors are the unit for write protection, pages for erase */
-# define FLASH_PAGE_SIZE    (1<<8)
-# define FLASH_PAGE_MASK    0xffffff00
+#if defined (MCU_STM32L1)
 # define FLASH_PAGE_SHIFT   8
-
-# if defined (MCU_STM32L1_CAT3)
-static uint32_t pagelist[32]; /* 256 k*/
-# elif defined (MCU_STM32L1_CAT4) ||  defined (MCU_STM32L1_CAT6) /* 384k*/
-static uint32_t pagelist[48]; /* 384k*/
-# elif defined (MCU_STM32L1_CAT5)
-static uint32_t pagelist[64]; /* 512 k*/
-# else
-static uint32_t pagelist[16]; /* Up to 128 k*/
-# endif
 #elif defined(MCU_STM32L0)
-/*Sectors are the unit for write protection, pages for erase */
-# define FLASH_PAGE_SIZE    (1<<7)
-# define FLASH_PAGE_MASK    0xffffff80
 # define FLASH_PAGE_SHIFT   7
-
-# if   defined (MCU_STM32L0_CAT1) /*  16 k*/
-static uint32_t pagelist[ 4];
-# elif defined (MCU_STM32L0_CAT2) /*  32 k*/
-static uint32_t pagelist[ 8];
-# elif defined (MCU_STM32L0_CAT3) /*  64 k*/
-static uint32_t pagelist[16];
-# elif defined (MCU_STM32L0_CAT5) /* 192 k*/
-static uint32_t pagelist[48];
-# endif
 #else
-#warning Unhandled family
+# warning Unhandled family
 #endif
+
+/*Sectors are the unit for write protection, pages for erase */
+static uint32_t pagelist[FLASH_PAGES_WORDS];
 
 #if defined(FLASH_WRPR_WRP) && !defined( FLASH_WRPR1_WRP)
 # define FLASH_WRPR (FLASH->WRPR)

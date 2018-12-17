@@ -51,19 +51,18 @@
 #define ERASED_PATTERN_32  0xffffffff
 #define ERASED_PATTERN_64  -1LL
 
-#define FLASH_PAGE_SHIFT   11
-#define FLASH_PAGE_SIZE    (1 << FLASH_PAGE_SHIFT)
-#define FLASH_PAGE_MASK    (~(FLASH_PAGE_SIZE - 1))
-
 uint32_t program_end_raw;
 
+# define FLASH_PAGE_SHIFT 11
 #if defined(FLASH_OPTR_DUALBANK)
-static uint32_t pagelist[16];
+# define FLASH_SIZE (1 << 20)
 static uint8_t bank_split;
 #else
-static uint32_t pagelist[4];
+# define FLASH_SIZE (1 << 18)
 static const uint8_t bank_split = 0xff;
 #endif
+
+static uint32_t pagelist[FLASH_PAGES_WORDS];
 
 #define FLASH_KEY1 0x45670123L
 #define FLASH_KEY2 0xCDEF89ABL

@@ -44,42 +44,43 @@
 #include <dev/iap_flash.h>
 
 uint32_t program_end_raw;
-
 #if defined (MCU_STM32F0)
+/* FIXME: Woraround for headers using (uint32_t) in #define! */
+# undef FLASH_BANK1_END
 # if  defined(STM32F030xC) ||  defined(STM32F070xB) || \
     defined(STM32F071xB) || defined(STM32F072xB) || defined(STM32F078xx) || \
     defined(STM32F091xC) || defined(STM32F098xx)
-#  define FLASH_PAGE_SIZE (1 << 11)
+#  define FLASH_PAGE_SHIFT 11
+#  define FLASH_BANK1_END 0x08008000
 # else
-#  define FLASH_PAGE_SIZE 1024
-# endif
-# if  defined(STM32F030xC) || defined(STM32F091xC)
-static uint32_t pagelist[4];
-# else
-/* Lets waste one word here. So no need to break down further*/
-static uint32_t pagelist[2];
+#  define FLASH_PAGE_SHIFT 10
+#  define FLASH_BANK1_END 0x08007fff
 # endif
 #elif defined(MCU_STM32F1)
-# if defined (MCU_STM32F1_LD) || defined (MCU_STM32F1_LD_VL)
-#  define FLASH_PAGE_SIZE 1024
-   static uint32_t pagelist[1];
-# elif defined (MCU_STM32F1_MD) || defined(MCU_STM32F1_MD_VL)
-#  define FLASH_PAGE_SIZE 1024
-   static uint32_t pagelist[4];
-# elif defined (MCU_STM32F1_HD) || defined (MCU_STM32F1_HD_VL) ||\
-    defined (MCU_STM32F1_CL)
-#  define FLASH_PAGE_SIZE 2048
-   static uint32_t pagelist[8];
-# elif defined(MCU_STM32F1_XL)
-#  define FLASH_PAGE_SIZE 2048
-   static uint32_t pagelist[16];
+# if defined (MCU_STM32F1_HD) || defined (MCU_STM32F1_HD_VL) ||\
+    defined (MCU_STM32F1_CL) || defined(MCU_STM32F1_XL)
+#  define FLASH_PAGE_SHIFT 11
+# else
+#  define FLASH_PAGE_SHIFT 10
 # endif
 #elif defined(MCU_STM32F3)
-# define FLASH_PAGE_SIZE 2048
-  static uint32_t pagelist[4];
+# define FLASH_PAGE_SHIFT 11
+# if defined(STM32F301x8) || defined(STM32F302x8) || defined(STM32F303x8) || \
+    defined(STM32F318x8) || defined(STM32F328x8) || defined(STM32F334x8) || \
+    defined(STM32F358x8) || defined(STM32F378x8) || defined(STM32F394x8)
+# define FLASH_SIZE (1 << 15)
+# elif defined(STM32F302xC) || defined(STM32F303xC) || defined(STM32F373xC)
+# define FLASH_SIZE (1 << 18)
+# elif defined(STM32F302xE) || defined(STM32F303xE)
+# define FLASH_SIZE (1 << 19)
+# else
+#  warning Unknown STM32f3 Type
+# endif
 #else
 # warning Unknown STM32 Type
 #endif
+
+static uint32_t pagelist[FLASH_PAGES_WORDS];
 
 #define ERASED_PATTERN_16 0xffff
 #define FLASH_ACCESS_SIZE 2

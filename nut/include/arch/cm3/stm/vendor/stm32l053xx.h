@@ -122,7 +122,6 @@ typedef enum
   RNG_LPUART1_IRQn            = 29,     /*!< RNG and LPUART1 Interrupts                              */
   LCD_IRQn                    = 30,     /*!< LCD Interrupt                                           */
   USB_IRQn                    = 31,     /*!< USB global Interrupt                                    */
-  IRQn_MAX,                             /*!< Total number of interrupts                              */
 } IRQn_Type;
 
 /**

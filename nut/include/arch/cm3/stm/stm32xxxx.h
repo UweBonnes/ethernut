@@ -400,6 +400,21 @@
  /* Include Die specific GPIO and ID  information.*/
 #include <arch/cm3/stm/generated/stm32_mcus.h>
 
+/* Amount of flash available over all banks.*/
+#if !defined(FLASH_END) && defined(FLASH_BANK2_END)
+# define FLASH_END FLASH_BANK2_END
+#endif
+#if !defined(FLASH_END) && defined(FLASH_BANK1_END)
+# define FLASH_END FLASH_BANK1_END
+#endif
+#if defined(FLASH_END) && !defined(FLASH_SIZE)
+# define FLASH_SIZE (FLASH_END + 1 - FLASH_BASE)
+#endif
+#define FLASH_PAGE_SIZE (1 << FLASH_PAGE_SHIFT)
+#define FLASH_PAGE_MASK (~(FLASH_PAGE_SIZE - 1))
+#define FLASH_PAGES_BITS (FLASH_SIZE / FLASH_PAGE_SIZE)
+#define FLASH_PAGES_WORDS (FLASH_PAGES_BITS / 32)
+
 /* Equalize name changes in newer header versions.*/
 #if !defined(FLASH_PECR_FIX) && defined(FLASH_PECR_FTDW)
 # define FLASH_PECR_FIX FLASH_PECR_FTDW
