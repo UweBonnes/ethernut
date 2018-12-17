@@ -215,6 +215,10 @@ char *strndup (const char *s, size_t size)
  */
 #define TKN_EXCLUSIVITY "exclusivity"
 
+/*! \brief List of provision that disable item
+ */
+#define TKN_DISABLERS "disablers"
+
 static int errsts;
 static char errtxt[1024];
 
@@ -2000,6 +2004,18 @@ char **GetComponentRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 }
 
 /*!
+ * \brief Get the provisions that disable a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
+char **GetComponentDisablers(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentTableValues(ls, comp, TKN_DISABLERS);
+}
+
+/*!
  * \brief Get the provisions of a component.
  *
  * \param repo Pointer to the repository information.
@@ -2141,6 +2157,18 @@ char **GetOptionProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     lua_State *ls = (lua_State *)(repo->nr_ls);
 
     return GetOptionTableValues(ls, comp, name, TKN_PROVIDES);
+}
+
+/*!
+ * \brief Get the provisions that diable a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
+char **GetOptionDisablers(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionTableValues(ls, comp, name, TKN_DISABLERS);
 }
 
 /*!
@@ -2345,9 +2373,27 @@ static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMP
     NUTCOMPONENTOPTION *opts;
 
     while (compo) {
+        int cdisabled = 0;
+        char **cdisablers = GetComponentDisablers(repo, compo);
+
+        if (cdisablers) {
+            for (i = 0; cdisablers[i]; i++) {
+                if ((cdisabled = (StringTableSearch(provisions, cdisablers[i])) >= 0)) {
+                    break;
+                }
+            }
+            for (i = 0; cdisablers[i]; i++) {
+                free(cdisablers[i]);
+            }
+            free(cdisablers);
+        }
+        if (cdisabled) {
+            compo->nc_enabled = 0;
+            compo = compo->nc_nxt;
+            continue;
+        }
         int cprovided = 1;
         char **crequires = GetComponentRequirements(repo, compo);
-
         if(crequires) {
             for (i = 0; crequires[i]; i++) {
                 if ((cprovided = (StringTableSearch(provisions, crequires[i])) >= 0) == 0) {
@@ -2367,8 +2413,25 @@ static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMP
         if (cprovided) {
             opts = compo->nc_opts;
             while (opts) {
+                int odisabled = 0;
+                char **odisablers = GetOptionDisablers(repo, compo, opts->nco_name);
+                if (odisablers) {
+                   for (i = 0; odisablers[i]; i++) {
+                        if ((odisabled = (StringTableSearch(provisions, odisablers[i])) >= 0)) {
+                            break;
+                        }
+                    }
+                    for (i = 0; odisablers[i]; i++) {
+                        free(odisablers[i]);
+                    }
+                    free(odisablers);
+                }
+                if (odisabled) {
+                    opts->nco_enabled = 0;
+                    opts = opts->nco_nxt;
+                    continue;
+                }
                 int oprovided = 1;
-
                 char **orequires = GetOptionRequirements(repo, compo, opts->nco_name);
                 if (orequires) {
                     for (i = 0; orequires[i]; i++) {
