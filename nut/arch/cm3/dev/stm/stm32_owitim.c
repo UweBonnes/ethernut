@@ -402,6 +402,10 @@ int Stm32TimOwiSetup(NUTOWIBUS *bus)
 # define STM32TIMER_ID STM32TIM_OWI0_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
 # define CC_EXCHANGE_CHANNEL (((STM32TIM_OWI0_CHANNEL - 1) ^ 1) + 1)
+#define OWI0_PIN_AF  TIMERMUX(STM32TIM_OWI0_GPIO, STM32TIM_OWI0_TIMER_ID, STM32TIM_OWI0_CHANNEL)
+# if  OWI0_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32TIM_OWI0_GPIO assignment
+# endif
 static const STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
     .owi_base        = STM32TIMER_BASE,
     .owi_irq         = &STM32TIMER_SIG,
@@ -416,11 +420,15 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
     .enable_mask     = STM32TIMER_MASK,
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
     .owi_pin         = STM32TIM_OWI0_GPIO,
-    .owi_pin_af      = STM32TIMER_AF(STM32TIM_OWI0_GPIO),
+    .owi_pin_af      = OWI0_PIN_AF,
 #if defined(STM32TIM_OWI0_TX_GPIO)
+#define OWI0_TX_PIN_AF  TIMERMUX(STM32TIM_OWI0_TX_GPIO, STM32TIM_OWI0_TIMER_ID, CC_EXCHANGE_CHANNEL)
+# if  OWI0_TX_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32TIM_OWI0_TX_GPIO assignment
+# endif
     .owi_rx_channel  = STM32TIM_OWI0_CHANNEL,
     .owi_tx_pin      = STM32TIM_OWI0_TX_GPIO,
-    .owi_tx_pin_af   = STM32TIMER_AF(STM32TIM_OWI0_TX_GPIO),
+    .owi_tx_pin_af   = OWI0_TX_PIN_AF,
     .owi_tx_channel  = STM32TIM_OWI0_TX_CHANNEL,
     .owi_tx_invert   = STM32TIM_OWI0_TX_TRUE,
 #else
@@ -475,6 +483,10 @@ NUTOWIBUS owiBus0Stm32Tim = {
 # define STM32TIMER_ID STM32TIM_OWI1_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
 # define CC_EXCHANGE_CHANNEL (((STM32TIM_OWI1_CHANNEL - 1) ^ 1) + 1)
+#define OWI1_PIN_AF  TIMERMUX(STM32TIM_OWI1_GPIO, STM32TIM_OWI1_TIMER_ID, STM32TIM_OWI1_CHANNEL)
+# if  OWI1_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32TIM_OWI1_GPIO assignment
+# endif
 static const STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
     .owi_base        = STM32TIMER_BASE,
     .owi_irq         = &STM32TIMER_SIG,
@@ -489,11 +501,15 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
     .enable_mask     = STM32TIMER_MASK,
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
     .owi_pin         = STM32TIM_OWI1_GPIO,
-    .owi_pin_af      = STM32TIMER_AF(STM32TIM_OWI1_GPIO),
+    .owi_pin_af      = OWI1_PIN_AF,
 #if defined(STM32TIM_OWI1_TX_GPIO)
+#define OWI1_TX_PIN_AF  TIMERMUX(STM32TIM_OWI1_TX_GPIO, STM32TIM_OWI1_TIMER_ID, CC_EXCHANGE_CHANNEL)
+# if  OWI1_TX_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32TIM_OWI1_TX_GPIO assignment
+# endif
     .owi_rx_channel  = STM32TIM_OWI1_CHANNEL,
     .owi_tx_pin      = STM32TIM_OWI1_TX_GPIO,
-    .owi_tx_pin_af   = STM32TIMER_AF(STM32TIM_OWI1_TX_GPIO),
+    .owi_tx_pin_af   = OWI1_TX_PIN_AF,
     .owi_tx_channel  = STM32TIM_OWI1_TX_CHANNEL,
     .owi_tx_invert   = STM32TIM_OWI1_TX_TRUE,
 #else
@@ -548,6 +564,10 @@ NUTOWIBUS owiBus1Stm32Tim = {
 # define STM32TIMER_ID STM32TIM_OWI2_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
 # define CC_EXCHANGE_CHANNEL (((STM32TIM_OWI2_CHANNEL - 1) ^ 1) + 1)
+#define OWI2_PIN_AF  TIMERMUX(STM32TIM_OWI2_GPIO, STM32TIM_OWI2_TIMER_ID, STM32TIM_OWI2_CHANNEL)
+# if  OWI2_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32TIM_OWI2_GPIO assignment
+# endif
 static const STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
     .owi_base        = STM32TIMER_BASE,
     .owi_irq         = &STM32TIMER_SIG,
@@ -562,11 +582,15 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
     .enable_mask     = STM32TIMER_MASK,
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
     .owi_pin         = STM32TIM_OWI2_GPIO,
-    .owi_pin_af      = STM32TIMER_AF(STM32TIM_OWI2_GPIO),
+    .owi_pin_af      = OWI2_PIN_AF ,
 #if defined(STM32TIM_OWI2_TX_GPIO)
+#define OWI2_TX_PIN_AF  TIMERMUX(STM32TIM_OWI2_TX_GPIO, STM32TIM_OWI2_TIMER_ID, CC_EXCHANGE_CHANNEL)
+# if  OWI2_TX_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32TIM_OWI2_TX_GPIO assignment
+# endif
     .owi_rx_channel  = STM32TIM_OWI2_CHANNEL,
     .owi_tx_pin      = STM32TIM_OWI2_TX_GPIO,
-    .owi_tx_pin_af   = STM32TIMER_AF(STM32TIM_OWI2_TX_GPIO),
+    .owi_tx_pin_af   = OWI2_TX_PIN_AF,
     .owi_tx_channel  = STM32TIM_OWI2_TX_CHANNEL,
     .owi_tx_invert   = STM32TIM_OWI2_TX_TRUE,
 #else

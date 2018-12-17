@@ -764,13 +764,13 @@ nutarch_cm3_stm32_timer_devices =
             {
                 macro = "STM32_QENC0_I_GPIO",
                 brief = "STM32 Quadrature Encoder I input gpio",
-                description = "STM32 Quadrature Encoder I input port. Can by TI1 or TI2",
+                description = "STM32 Quadrature Encoder I input port. Must be on TI1.",
                 file = "include/cfg/qenc.h",
             },
             {
                 macro = "STM32_QENC0_Q_GPIO",
                 brief = "STM32 Quadrature Encoder Q input gpio",
-                description = "STM32 Quadrature Encoder I input pin. Can by TI1 or TI2",
+                description = "STM32 Quadrature Encoder I input pin. Must be on TI2",
                 file = "include/cfg/qenc.h",
             },
             {

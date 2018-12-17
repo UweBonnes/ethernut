@@ -182,7 +182,10 @@ uint32_t Stm32PwmGetClock(NUTPWM *pwm_dev)
 
 #if defined(STM32_PWM0) && defined(STM32_PWM0_TIMER_CHANNEL)   \
     && defined(STM32_PWM0_TIMER_ID)
-
+#define PWM0_PIN_AF  TIMERMUX(STM32_PWM0, STM32_PWM0_TIMER_ID, STM32_PWM0_TIMER_CHANNEL)
+# if  PWM0_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32_PWM0 assignment
+# endif
 # undef  STM32TIMER_ID
 # define STM32TIMER_ID STM32_PWM0_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
@@ -203,7 +206,7 @@ static const STM32_PWM_HW Stm32Pwm0Hw = {
     .ccr             = CCR_REG(STM32TIMER_BASE, STM32_PWM0_TIMER_CHANNEL),
     .pwm_channel     = STM32_PWM0_TIMER_CHANNEL,
     .pwm_pin         = STM32_PWM0,
-    .pwm_pin_af      = STM32TIMER_AF(STM32_PWM0),
+    .pwm_pin_af      = PWM0_PIN_AF,
 };
 
 NUTPWM Stm32Pwm0Tim = {
@@ -217,6 +220,10 @@ NUTPWM Stm32Pwm0Tim = {
 
 #if defined(STM32_PWM1) && defined(STM32_PWM1_TIMER_CHANNEL)   \
     && defined(STM32_PWM1_TIMER_ID)
+#define PWM1_PIN_AF  TIMERMUX(STM32_PWM1, STM32_PWM1_TIMER_ID, STM32_PWM1_TIMER_CHANNEL)
+# if  PWM1_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32_PWM1 assignment
+# endif
 # undef  STM32TIMER_ID
 # define STM32TIMER_ID STM32_PWM1_TIMER_ID
 # include <arch/cm3/stm/stm32timertran.h>
@@ -234,7 +241,7 @@ static const STM32_PWM_HW Stm32Pwm1Hw = {
     .enable_reg      = BASE2TIM_ENR(STM32TIMER_BASE),
     .enable_mask     = STM32TIMER_MASK,
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
-    .pwm_pin_af      = STM32TIMER_AF(STM32_PWM1),
+    .pwm_pin_af      = PWM1_PIN_AF,
     .ccr             = (volatile uint32_t*) (
         STM32TIMER_BASE + offsetof(TIM_TypeDef, CCR1) +
         ((sizeof(uint32_t)) * (STM32_PWM1_TIMER_CHANNEL - 1))),

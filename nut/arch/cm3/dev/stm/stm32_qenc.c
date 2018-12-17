@@ -114,7 +114,7 @@ typedef struct _STM32_QENC_INFO STM32_QENC_INFO;
 struct _STM32_QENC_INFO {
     const STM32_QENC_HW *hw;
     volatile uint32_t   *counter;
-    volatile int        value;
+    volatile int32_t    value;
     volatile int16_t    last_value;
 };
 
@@ -228,6 +228,14 @@ void Stm32QencSet(NUTQENC *qenc_dev, int value)
 /* Only compile code if needed defines are given*/
 #if defined(STM32_QENC0_I_GPIO) && defined(STM32_QENC0_Q_GPIO) && \
     defined(STM32_QENC0_TIMER_ID)
+#define QENC0_I_PIN_AF  TIMERMUX(STM32_QENC0_I_GPIO, STM32_QENC0_TIMER_ID, 1)
+# if  QENC0_I_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32_QENC0_I_GPIO assignment
+# endif
+#define QENC0_Q_PIN_AF  TIMERMUX(STM32_QENC0_Q_GPIO, STM32_QENC0_TIMER_ID, 2)
+# if  QENC0_Q_PIN_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD  STM32_QENC0_Q_GPIO assignment
+# endif
 #undef STM32TIMER_ID
 #define STM32TIMER_ID STM32_QENC0_TIMER_ID
 #include <arch/cm3/stm/stm32timertran.h>
@@ -242,9 +250,9 @@ static const STM32_QENC_HW Stm32Qenc0Hw = {
     .enable_mask     = STM32TIMER_MASK,
     .reset_reg       = BASE2TIM_RSTR(STM32TIMER_BASE),
     .qenc_i_pin      = STM32_QENC0_I_GPIO,
-    .qenc_i_pin_af   = STM32TIMER_AF(STM32_QENC0_I_GPIO),
+    .qenc_i_pin_af   = QENC0_I_PIN_AF,
     .qenc_q_pin      = STM32_QENC0_Q_GPIO,
-    .qenc_q_pin_af   = STM32TIMER_AF(STM32_QENC0_Q_GPIO),
+    .qenc_q_pin_af   = QENC0_Q_PIN_AF,
 #if defined(STM32_QENC0_INDEX_GPIO)
     .qenc_index_pin  = STM32_QENC0_INDEX_GPIO,
 #else
