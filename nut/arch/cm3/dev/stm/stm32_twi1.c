@@ -59,7 +59,7 @@
 #include <dev/gpio.h>
 #include <dev/twif.h>
 
-#include <arch/cm3/stm/stm32xxxx.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_twi.h>
 #include <arch/cm3/stm/stm32_gpio.h>

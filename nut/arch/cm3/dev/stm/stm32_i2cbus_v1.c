@@ -67,6 +67,7 @@
 #include <arch/cm3.h>
 #include <dev/gpio.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_clk.h>
 #include <arch/cm3/stm/stm32_irqreg.h>
 #include <dev/i2cbus.h>

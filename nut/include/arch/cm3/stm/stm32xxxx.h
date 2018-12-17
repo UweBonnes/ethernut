@@ -47,9 +47,6 @@
 # warning "Unknown STM32 family"
 #endif
 
- /* Include Die specific GPIO and ID  information.*/
-#include <arch/cm3/stm/generated/stm32_mcus.h>
-
 /* Amount of flash available over all banks.*/
 #if !defined(FLASH_END) && defined(FLASH_BANK2_END)
 # define FLASH_END FLASH_BANK2_END

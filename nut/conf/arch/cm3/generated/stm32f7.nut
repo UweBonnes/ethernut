@@ -135,6 +135,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=104",
                "HWDEF += -DSTM32DIE=452",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f722xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f72x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f722_dma.h>\"",
             },
          },
          {
@@ -265,6 +267,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=104",
                "HWDEF += -DSTM32DIE=452",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f723xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f72x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f722_dma.h>\"",
             },
          },
          {
@@ -396,6 +400,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=104",
                "HWDEF += -DSTM32DIE=452",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f730xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f72x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f722_dma.h>\"",
             },
          },
          {
@@ -527,6 +533,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=104",
                "HWDEF += -DSTM32DIE=452",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f732xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f72x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f722_dma.h>\"",
             },
          },
          {
@@ -658,6 +666,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=104",
                "HWDEF += -DSTM32DIE=452",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f733xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f72x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f722_dma.h>\"",
             },
          },
          {
@@ -799,6 +809,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=98",
                "HWDEF += -DSTM32DIE=449",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f745xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f746_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -942,6 +954,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=98",
                "HWDEF += -DSTM32DIE=449",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f746xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f746_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -1086,6 +1100,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=98",
                "HWDEF += -DSTM32DIE=449",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f750xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f746_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -1230,6 +1246,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=98",
                "HWDEF += -DSTM32DIE=449",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f756xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f746_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -1381,6 +1399,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=110",
                "HWDEF += -DSTM32DIE=451",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f765xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f76x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -1535,6 +1555,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=110",
                "HWDEF += -DSTM32DIE=451",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f767xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f76x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -1690,6 +1712,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=110",
                "HWDEF += -DSTM32DIE=451",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f769xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f76x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -1845,6 +1869,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=110",
                "HWDEF += -DSTM32DIE=451",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f777xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f76x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
          {
@@ -2001,6 +2027,8 @@ nutarch_cm3_stm32f7 =
                "UCPFLAGS+=-DIRQn_MAX=110",
                "HWDEF += -DSTM32DIE=451",
                "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32f779xx.h>\"",
+               "HWDEF += -DPINMUXHEADER=\"<arch/cm3/stm/generated/stm32f76x_pinmux.h>\"",
+               "HWDEF += -DDMACHANNELHEADER=\"<arch/cm3/stm/generated/stm32f777_dma.h>\"",
             },
          },
       }

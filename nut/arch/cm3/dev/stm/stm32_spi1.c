@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2014-17 Uwe Bonnes.
+ * Copyright (C) 2014-18 Uwe Bonnes.
  *                       (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_dma.h>
 #include <arch/cm3/stm/stm32_spi.h>
 #include <dev/irqreg.h>

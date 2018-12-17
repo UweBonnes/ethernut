@@ -64,6 +64,7 @@
 #include <dev/gpio.h>
 #include <cfg/twi.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_irqreg.h>
 #include <dev/i2cbus.h>
 #include <cfg/devices.h>

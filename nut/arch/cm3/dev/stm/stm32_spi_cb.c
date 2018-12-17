@@ -57,8 +57,8 @@
 #include <dev/gpio.h>
 #include <dev/spibus.h>
 
-#include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_dma.h>
 #include <arch/cm3/stm/stm32_clk.h>
 #include <arch/cm3/stm/stm32_spi_cb.h>

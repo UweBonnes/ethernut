@@ -55,7 +55,7 @@
 #include <dev/gpio.h>
 #include <dev/usart.h>
 
-#include <arch/cm3/stm/stm32xxxx.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_gpio.h>
 #include <arch/cm3/stm/stm32_uart.h>
 #include <arch/cm3/stm/stm32_usart.h>

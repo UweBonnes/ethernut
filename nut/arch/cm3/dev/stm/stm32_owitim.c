@@ -63,6 +63,7 @@
 #include <dev/gpio.h>
 #include <arch/cm3.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_timer.h>
 #include <cfg/owi.h>
 #include <arch/cm3/stm/stm32_owitimer.h>

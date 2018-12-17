@@ -55,8 +55,8 @@
 #include <dev/canbus.h>
 
 #include <arch/cm3.h>
-#include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 
 #define CAN1_RX_AF PINMUX(CAN1_RX, CAN1_RX_FUNC)
 # if  CAN1_RX_AF == AF_NO_SUCH_PINFUNC

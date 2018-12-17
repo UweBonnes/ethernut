@@ -57,11 +57,11 @@
 
 #include <sys/atom.h>
 
-#include <arch/cm3/stm/stm32xxxx.h>
 #include <cfg/qenc.h>
 #include <dev/gpio.h>
 #include <dev/qenc.h>
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_timer.h>
 
 /*!

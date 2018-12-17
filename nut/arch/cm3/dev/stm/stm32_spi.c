@@ -47,7 +47,6 @@
  * \endverbatim
  */
 
-#include <arch/cm3/stm/stm32xxxx.h>
 #include <dev/spibus_stm32.h>
 #include <sys/nutdebug.h>
 

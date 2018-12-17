@@ -58,7 +58,6 @@
 #include <dev/phy.h>
 #include <dev/pins.h>
 
-#include <arch/cm3/stm/stm32xxxx.h>
 #include <arch/cm3/stm/stm32_clk.h>
 #include <arch/cm3/stm/stm32_gpio.h>
 

@@ -48,6 +48,7 @@
 #include <dev/gpio.h>
 
 #include <arch/cm3/stm/stm32_gpio.h>
+#include PINMUXHEADER
 #include <arch/cm3/stm/stm32_spi.h>
 #include <dev/irqreg.h>
 #include <sys/event.h>

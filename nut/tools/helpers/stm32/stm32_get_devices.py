@@ -41,6 +41,8 @@ def finddie(devicename, dbpath):
         return
     iterator = iter(xml)
     die = ""
+    gpio_device = ""
+    dma_device = ""
     while True:
         try:
             line = next(iterator)
@@ -48,10 +50,12 @@ def finddie(devicename, dbpath):
             break;
         if "<Die>" in line:
             die = line.partition("<Die>")[2].partition("</Die>")[0]
-            break;
-        if die != "":
-            break;
-    return die.partition("DIE")[2]
+            die = die.partition("DIE")[2]
+        if "<IP ConfigFile=\"GPIO-" in line:
+            gpio_device = line.partition("Version=\"")[2].partition("_gpio")[0]
+        if "<IP ConfigFile=\"DMA-" in line:
+            dma_device = line.partition("Version=\"")[2].partition("_dma")[0]
+    return dma_device, gpio_device, die
 
 def generate(name, headerfile, luafile, dbpath):
     devicestring = name.partition('.')[0]
@@ -65,7 +69,7 @@ def generate(name, headerfile, luafile, dbpath):
         print("Failed to open headerfile %s" % headerfile)
     timerdevice = [0] * 30
     luafile.write("         {\n")
-    die = finddie(devicename, dbpath)
+    dma_device, gpio_device, die = finddie(devicename, dbpath)
     luafile.write("            macro = \"%s\",\n" % devicename)
     luafile.write("            requires = {\"HW_MCU_%s\"},\n" % devicename)
     luafile.write("            default = 1,\n")
@@ -145,6 +149,11 @@ def generate(name, headerfile, luafile, dbpath):
     luafile.write("               \"UCPFLAGS+=-DIRQn_MAX=%d\",\n" % (num_irq + 1))
     luafile.write("               \"HWDEF += -DSTM32DIE=%s\",\n" % die)
     luafile.write("               \"HWDEF += -DVENDOR=\\\"<arch/cm3/stm/vendor/%s.h>\\\"\",\n" % devicename.lower())
+    if "STM32F1" in devicename:
+        luafile.write("               \"HWDEF += -DPINMUXHEADER=\\\"<arch/cm3/stm/stm32f1_pinremap.h>\\\"\",\n")
+    else:
+        luafile.write("               \"HWDEF += -DPINMUXHEADER=\\\"<arch/cm3/stm/generated/%s_pinmux.h>\\\"\",\n" % gpio_device.lower())
+    luafile.write("               \"HWDEF += -DDMACHANNELHEADER=\\\"<arch/cm3/stm/generated/%s_dma.h>\\\"\",\n" % dma_device.lower())
     luafile.write("            },\n")
     luafile.write("         },\n")
     headerdata.close()
