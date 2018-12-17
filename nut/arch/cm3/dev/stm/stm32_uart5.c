@@ -181,12 +181,21 @@ NUTDEVICE devUartStm32_5 = {
  */
 static void  StmUsartClkEnable(int enable)
 {
+#if defined(RCC_APB1LENR_UART4EN)
+    if (enable)
+        RCC->APB1LENR |= RCC_APB1LENR_UART5EN;
+    RCC->APB1LRSTR |= RCC_APB1LRSTR_UART5RST;
+    RCC->APB1LRSTR &= ~RCC_APB1LRSTR_UART5RST;
+    if (!enable)
+        RCC->APB1LENR &= ~RCC_APB1LENR_UART5EN;
+#else
     if (enable)
         RCC->APB1ENR |= RCC_APB1ENR_UART5EN;
     RCC->APB1RSTR |= RCC_APB1RSTR_UART5RST;
     RCC->APB1RSTR &= ~RCC_APB1RSTR_UART5RST;
     if (!enable)
         RCC->APB1ENR &= ~RCC_APB1ENR_UART5EN;
+#endif
 }
 
 #ifdef UART5_INIT_BAUDRATE

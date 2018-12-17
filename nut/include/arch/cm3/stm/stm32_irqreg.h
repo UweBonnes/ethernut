@@ -130,6 +130,15 @@ extern IRQ_HANDLER sig_DMA2_STREAM5;    // DMA Controller 2 Stream 5
 extern IRQ_HANDLER sig_DMA2_STREAM6;    // DMA Controller 2 Stream 6
 extern IRQ_HANDLER sig_DMA2_STREAM7;    // DMA Controller 2 Stream 7
 
+extern IRQ_HANDLER sig_BDMA_Channel0;    // BDMA Controller Stream 0
+extern IRQ_HANDLER sig_BDMA_Channel1;    // BDMA Controller Stream 1
+extern IRQ_HANDLER sig_BDMA_Channel2;    // BDMA Controller Stream 2
+extern IRQ_HANDLER sig_BDMA_Channel3;    // BDMA Controller Stream 3
+extern IRQ_HANDLER sig_BDMA_Channel4;    // BDMA Controller Stream 4
+extern IRQ_HANDLER sig_BDMA_Channel5;    // BDMA Controller Stream 5
+extern IRQ_HANDLER sig_BDMA_Channel6;    // BDMA Controller Stream 6
+extern IRQ_HANDLER sig_BDMA_Channel7;    // BDMA Controller Stream 7
+
 extern IRQ_HANDLER sig_EMAC;        // Ethernet global interrupt
 
 extern IRQ_HANDLER sig_TIM1_BRK;

@@ -551,5 +551,45 @@ nutarch_cm3_stm32_family =
              },
          }
     },
+    {
+        name = "nutarch_cm3_stm32h7",
+        brief = "STM32H7",
+        requires = {"HW_MCU_STM32H7"},
+        description = "ST Microelectronics STM32 H7 Series",
+        sources = {
+            "cm3/dev/stm/stm32h7_clk.c",
+            "cm3/dev/stm/stm32h7_flash.c",
+        },
+        makedefs = {"MCU=cortex-m7"},
+        script = "arch/cm3/generated/stm32h7.nut",
+        options =
+        {
+            {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32H7",
+                brief = "STM32H7 Devices",
+                description = "Provide devices available in all STM32F7xx devices",
+                default = 1,
+                provides =
+                {
+                    "HW_EEPROM_EMUL_STM32",
+                    "HW_MCU_CM7",
+                    "HW_VOS_STM32",
+                    "HW_OVERDRIVE_STM32",
+                    "HW_GPIO_STM32V2",
+                    "HW_I2C_STM32V2",
+                    "HW_USART_STM32V2",
+                },
+                file = "include/cfg/arch.h",
+                makedefs = {"ITCM_LENGTH=64k", "RAM0_LENGTH=128K"}
+            },
+        },
+    },
 }
 

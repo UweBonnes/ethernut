@@ -129,6 +129,8 @@ void CRC_Init(void)
     RCC->AHBENR |= RCC_AHBENR_CRCEN;
 #elif defined(RCC_AHB1ENR_CRCEN)
     RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
+#elif defined(RCC_AHB4ENR_CRCEN)
+    RCC->AHB4ENR |= RCC_AHB4ENR_CRCEN;
 #else
 #warning "Unknown STM32 family"
 #endif

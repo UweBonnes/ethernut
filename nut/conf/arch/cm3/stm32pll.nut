@@ -246,15 +246,24 @@ end
 --
 -- Retrieve SYSCLK available on the device.
 --
-function GetSysClkSrc()
+function GetSysClockSrc()
     if c_is_provided("HW_RCC_STM32L") then
         return {"SYSCLK_MSI", "SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
     end
     if c_is_provided("HW_MCU_STM32F446xx") then
         return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL", "SYSCLK_PLLR"}
+    elseif c_is_provided("HW_MCU_STM32H7") then
+        return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL", "SYSCLK_CSI"}
     else
         return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
     end
+end
+
+function GetSysClockDefault()
+    if c_is_provided("HW_MCU_STM32H7") then
+        return "SYSCLK_HSI"
+    end
+    return "SYSCLK_PLL"
 end
 
 --
@@ -322,6 +331,15 @@ function GetSysClockSourceDesc()
               "PLLCLK_MSI is internal multi-speed oscillator.\n"..
               "\tSelect MSI Frequency with MSI_RANGE.\n\n"..
               "Default is SYSCLK_PLL."
+    end
+    if c_is_provided("HW_MCU_STM32H7") then
+       return "Select where SYSCLK should get its clock from.\n\n"..
+              "SYSCLK_HSI is internal 64 MHz oscillator.\n"..
+              "SYSCLK_CSI is internal 4 MHz oscillator..\n"..
+              "SYSCLK_HSE is external oscillator or crystal input.\n"..
+              "SYSCLK_PLL is internal PLL output.\n"..
+              "\tSelect PLL source with PLLCLK_SOURCE.\n"..
+              "Default is SYSCLK_HSI."
     end
     return "Unhandled case"
 end
@@ -420,6 +438,14 @@ function GetHseValueDesc()
                "Allowed values:\n"..
                "External input at OSCIN\t: 1 .. 50 Mhz\n"..
                "External resonator\t: 4 .. 26 MHz\n"..
+               "Typical Values is 8 MHz.\n\n"..
+               "Default is undefined. This will turn off HSE.\n"
+    end
+    if c_is_provided("HW_MCU_STM32H7") then
+        return "Value of the external crystal or clock input in Hertz.\n"..
+               "Allowed values:\n"..
+               "External input at OSCIN\t: 4 .. 50 Mhz\n"..
+               "External resonator\t: 4 .. 48 MHz\n"..
                "Typical Values is 8 MHz.\n\n"..
                "Default is undefined. This will turn off HSE.\n"
     end
@@ -723,6 +749,13 @@ function GetPowerScaleRegisterDesc()
                "2\t168/180 MHz\n"..
                "3\t144/144 MHz\n"..
                "Default register setting is 1."
+    elseif c_is_provided("HW_MCU_STM32H7") then
+        return "Select Core voltage scaling:\n"..
+               "Range\tV core\tfmax\n"..
+               "1\t1.2 Volt\t400 MHz\n"..
+               "2\t1.1 Volt\t300 MHz\n"..
+               "3\t1.0 Volt\t200 MHz\n"..
+               "Default register setting is 3."
     else
         return "Unhandled"
     end
@@ -749,10 +782,13 @@ function GetFlashPrefetchDefault()
 end
 
 function GetPowerScaleRegisterDefault()
-    if c_is_provided("HW_MCU_STM32F401") then
+    if c_is_provided("HW_MCU_STM32H7") then
+        return "3"
+    elseif c_is_provided("HW_MCU_STM32F401") then
         return "2"
+    else
+        return "1"
     end
-    return "1"
 end
 
 nutarch_cm3_stm32_pll =
@@ -767,8 +803,8 @@ nutarch_cm3_stm32_pll =
             brief = "System clock source",
             description =function() return GetSysClockSourceDesc() end,
             type = "enumerated",
-            choices = function() return GetSysClkSrc() end,
-            default = "SYSCLK_PLL",
+            choices = function() return GetSysClockSrc() end,
+            default = function() return GetSysClockDefault() end,
             file = "include/cfg/clock.h"
         },
         {

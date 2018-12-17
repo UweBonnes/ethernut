@@ -74,6 +74,9 @@ const uint16_t ospeed_values[4] =
 #elif defined (MCU_STM32F7)
 const uint16_t ospeed_values[4] =
 {2000000 >> 16, 25000000 >> 16, 50000000 >> 16, 100000000 >> 16};
+#elif defined (MCU_STM32H7)
+const uint16_t ospeed_values[4] =
+{16000000 >> 16, 110000000 >> 16, 166000000 >> 16, 220000000 >> 16};
 #else
 #warning "Unknown STM32 family"
 #endif
@@ -438,7 +441,14 @@ int Stm32GpioSet(nutgpio_t gpio_pin, int value)
             gpio_nr = gpio_pin >> 8;
         gpio = stm32_port_nr2gpio[gpio_nr];
         NUTASSERT(IS_GPIO_ALL_INSTANCE(gpio));
-#if defined(GPIO_BRR_BR_0)
+#if defined(MCU_STM32H7)
+/* H7 spitted BSSR in BSSRL and BSSRH withe the headers V1.3 */
+        if (value) {
+            gpio->BSRRL = 1 << pin_nr;
+        } else {
+            gpio->BSRRH = 1 << pin_nr;
+        }
+#elif defined(GPIO_BRR_BR_0)
 /* F0/F1/F3/L0/L4 have explicit BRR register */
         if (value) {
             gpio->BSRR = 1 << pin_nr;

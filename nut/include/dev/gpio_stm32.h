@@ -178,16 +178,23 @@ extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
 extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 
-#define GpioPinSetHigh(bank, bit)   (CM3REG((bank), GPIO_TypeDef, BSRR ) = (1<<(bit)))
-#define GpioPortSetHigh(bank, mask) (CM3REG((bank), GPIO_TypeDef, BSRR) = mask)
-#if defined(GPIO_BRR_BR_0)
-/* F0/F1/F3/L0/L4 have explicit BRR register */
-# define GpioPinSetLow(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BRR )  = (1<<(bit)))
-# define GpioPortSetLow(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BRR ) = mask)
+#if defined(MCU_STM32H7)
+# define GpioPinSetHigh(bank, bit)   (CM3REG((bank), GPIO_TypeDef, BSRRL) = (1<<(bit)))
+# define GpioPortSetHigh(bank, mask) (CM3REG((bank), GPIO_TypeDef, BSRRL) = mask)
+# define GpioPinSetLow(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BSRRH)  = (1<<(bit)))
+# define GpioPortSetLow(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BSRRH) = mask)
 #else
+# define GpioPinSetHigh(bank, bit)   (CM3REG((bank), GPIO_TypeDef, BSRR ) = (1<<(bit)))
+# define GpioPortSetHigh(bank, mask) (CM3REG((bank), GPIO_TypeDef, BSRR) = mask)
+# if defined(GPIO_BRR_BR_0)
+/* F0/F1/F3/L0/L4 have explicit BRR register */
+#  define GpioPinSetLow(bank, bit)    (CM3REG((bank), GPIO_TypeDef, BRR )  = (1<<(bit)))
+#  define GpioPortSetLow(bank, mask)  (CM3REG((bank), GPIO_TypeDef, BRR ) = mask)
+# else
 /* L1/F2/F4/F7 have only BSRR */
-# define GpioPinSetLow(bank, bit)    (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = (1 << (bit)))
-# define GpioPortSetLow(bank, mask)  (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = mask)
+#  define GpioPinSetLow(bank, bit)    (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = (1 << (bit)))
+#  define GpioPortSetLow(bank, mask)  (((volatile uint16_t*)((bank) + offsetof(GPIO_TypeDef, BSRR)))[1] = mask)
+# endif
 #endif
 
 #if defined(MCU_STM32F0) ||defined(MCU_STM32F3) || defined(MCU_STM32L4)
@@ -226,6 +233,8 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHBENR, (((bank-GPIOA_BASE)>>10) +17))
 #elif defined(MCU_STM32L4)
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB2ENR,(  bank-GPIOA_BASE)>>10)
+#elif defined(MCU_STM32H7)
+#define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB4ENR,(  bank-GPIOA_BASE)>>10)
 #else
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR,(  bank-GPIOA_BASE)>>10)
 #endif

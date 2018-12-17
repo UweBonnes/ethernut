@@ -178,6 +178,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32F EMAC Driver",
         description = "LAN driver for STM32Fxx7xx.",
         requires = { "HW_EMAC_STM32", "NUT_EVENT", "NUT_TIMER" },
+        disablers = {"HW_MCU_STM32H7"},
         provides = { "NET_MAC" },
         sources = {
            "cm3/dev/stm/stm32_emac.c",

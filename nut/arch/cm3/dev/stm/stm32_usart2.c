@@ -212,12 +212,21 @@ static void Stm32F1UsartRemap(void)
 
 static void  StmUsartClkEnable(int enable)
 {
+#if defined(RCC_APB1LENR_USART2EN)
+    if (enable)
+        RCC->APB1LENR |= RCC_APB1LENR_USART2EN;
+    RCC->APB1LRSTR |= RCC_APB1LRSTR_USART2RST;
+    RCC->APB1LRSTR &= ~RCC_APB1LRSTR_USART2RST;
+    if (!enable)
+        RCC->APB1LENR &= ~RCC_APB1LENR_USART2EN;
+#else
     if (enable)
         RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
     RCC->APB1RSTR |= RCC_APB1RSTR_USART2RST;
     RCC->APB1RSTR &= ~RCC_APB1RSTR_USART2RST;
     if (!enable)
         RCC->APB1ENR &= ~RCC_APB1ENR_USART2EN;
+#endif
 }
 
 #ifdef USART2_INIT_BAUDRATE

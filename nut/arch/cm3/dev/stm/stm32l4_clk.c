@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 by Uwe Bonnes
+ * Copyright (C) 2015-2018 by Uwe Bonnes
  *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.

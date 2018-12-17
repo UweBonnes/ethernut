@@ -185,12 +185,14 @@ void SystemInit (void)
     RCC->AHB1ENR &= ~RCC_AHB1ENR_DMA2EN;
 #endif
 
-    /* During setup, PWR is needed in multiple places.
+#if defined(RCC_APB1ENR_PWREN)
+   /* During setup, PWR is needed in multiple places.
      * Unconditionally enable it here.
      * If current consumption of PWR is a concern, application
      * should disable PWR after setup on it's own risk.
      */
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+#endif
     /* Global enable AFIO/SYSCFG clock, as these clock might
      * be used at several places.
      * If current consumption of AFIO/SYSCFG is a concern,
@@ -202,6 +204,8 @@ void SystemInit (void)
 #endif
 #if defined(RCC_APB2ENR_AFIOEN)
     RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+#elif defined(RCC_APB4ENR_SYSCFGEN)
+    RCC->APB4ENR |= RCC_APB4ENR_SYSCFGEN;
 #else
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 #endif
@@ -254,7 +258,12 @@ void SystemInit (void)
 #if defined(STM32F3_USB_REMAP) && defined(SYSCFG_CFGR1_USB_IT_RMP)
     SYSCFG->CFGR1 |= SYSCFG_CFGR1_USB_IT_RMP;
 #endif
-
+#if defined(MCU_STM32H7)
+    /* Change  the switch matrix read issuing capability to 1 for
+     *the AXI SRAM target (Target 7) */
+  *((__IO uint32_t*)0x51008108) = 0x000000001;
+  RCC->AHB2ENR |= (RCC_AHB2ENR_D2SRAM1EN);
+#endif
 }
 
 /**

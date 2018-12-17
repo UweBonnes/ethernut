@@ -181,12 +181,21 @@ NUTDEVICE devUartStm32_4 = {
  */
 static void  StmUsartClkEnable(int enable)
 {
+#if defined(RCC_APB1LENR_UART4EN)
+    if (enable)
+        RCC->APB1LENR |= RCC_APB1LENR_UART4EN;
+    RCC->APB1LRSTR |= RCC_APB1LRSTR_UART4RST;
+    RCC->APB1LRSTR &= ~RCC_APB1LRSTR_UART4RST;
+    if (!enable)
+        RCC->APB1LENR &= ~RCC_APB1LENR_UART4EN;
+#else
     if (enable)
         RCC->APB1ENR |= RCC_APB1ENR_UART4EN;
     RCC->APB1RSTR |= RCC_APB1RSTR_UART4RST;
     RCC->APB1RSTR &= ~RCC_APB1RSTR_UART4RST;
     if (!enable)
         RCC->APB1ENR &= ~RCC_APB1ENR_UART4EN;
+#endif
 }
 
 #ifdef UART4_INIT_BAUDRATE

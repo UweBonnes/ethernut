@@ -42,8 +42,8 @@
  * \endverbatim
  */
 
-#if defined(MCU_STM32L0) || defined(MCU_STM32L4)
-# define STM32_LPUART1_INDEX 5
+#if defined(MCU_STM32L0) || defined(MCU_STM32L4) || defined(MCU_STM32H7)
+# define STM32_LPUART1_INDEX 10
 #endif
 
 extern IRQ_HANDLER *Stm32UsartInstallHandler(int nr, IRQ_HANDLER *sig);

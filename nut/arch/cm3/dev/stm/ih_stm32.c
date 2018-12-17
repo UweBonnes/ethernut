@@ -306,6 +306,16 @@ CREATE_HANDLER(DMA2_STREAM6, DMA2_Stream6,    NUT_IRQPRI_DEF); // DMA Controller
 CREATE_HANDLER(DMA2_STREAM7, DMA2_Stream7,    NUT_IRQPRI_DEF); // DMA Controller 1 Stream 7
 #endif
 
+#if defined (MCU_STM32H7)
+CREATE_HANDLER(BDMA_Channel0, BDMA_Channel0,    NUT_IRQPRI_DEF); // BDMA Controller Channel 1
+CREATE_HANDLER(BDMA_Channel1, BDMA_Channel1,    NUT_IRQPRI_DEF); // BDMA Controller Channel 1
+CREATE_HANDLER(BDMA_Channel2, BDMA_Channel2,    NUT_IRQPRI_DEF); // BDMA Controller Channel 2
+CREATE_HANDLER(BDMA_Channel3, BDMA_Channel3,    NUT_IRQPRI_DEF); // BDMA Controller Channel 3
+CREATE_HANDLER(BDMA_Channel4, BDMA_Channel4,    NUT_IRQPRI_DEF); // BDMA Controller Channel 4
+CREATE_HANDLER(BDMA_Channel5, BDMA_Channel5,    NUT_IRQPRI_DEF); // BDMA Controller Channel 5
+CREATE_HANDLER(BDMA_Channel6, BDMA_Channel6,    NUT_IRQPRI_DEF); // BDMA Controller Channel 6
+CREATE_HANDLER(BDMA_Channel7, BDMA_Channel7,    NUT_IRQPRI_DEF); // BDMA Controller Stream 7
+#endif
 #if defined(HW_EMAC_STM32)
 CREATE_HANDLER(EMAC,          ETH,          NUT_IRQPRI_DEF);     // Ethernet global interrupt
 CREATE_HANDLER(EMAC_WAKE,     ETH_WKUP,     NUT_IRQPRI_DEF);     // Ethernet global interrupt

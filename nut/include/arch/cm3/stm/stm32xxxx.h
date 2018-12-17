@@ -228,11 +228,20 @@
 # define EXTI_IMR  (EXTI->IMR1)
 # define EXTI_FTSR (EXTI->FTSR1)
 # define EXTI_RTSR (EXTI->RTSR1)
+#elif defined(EXTI_D1_BASE) /* STM32H7*/
+# define EXTI_PR   (EXTI_D1->PR1)
+# define EXTI_IMR  (EXTI_D1->IMR1)
+# define EXTI_FTSR (EXTI->FTSR1)
+# define EXTI_RTSR (EXTI->RTSR1)
 #else
 # define EXTI_PR   (EXTI->PR)
 # define EXTI_IMR  (EXTI->IMR)
 # define EXTI_FTSR (EXTI->FTSR)
 # define EXTI_RTSR (EXTI->RTSR)
+#endif
+
+#if defined(IWDG_KR_KEY) && !defined(IWDG_KR)
+# define IWDG_KR IWDG_KR_KEY
 #endif
 
 extern int Stm32ResetCause(void);

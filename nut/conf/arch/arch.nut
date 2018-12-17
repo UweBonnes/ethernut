@@ -1655,6 +1655,24 @@ nutarch =
                 makedefs = {"FLASH0_LENGTH=2048K"}
             },
             {
+                macro = "MCU_STM32H743xI",
+                brief = "STM STM32H743 2 MB",
+                description = "STM32H743xI.",
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+                exclusivity = mcu_names,
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32H7",
+                    "HW_MCU_STM32H74",
+                    "HW_MCU_STM32H743xx",
+                },
+                makedefs = {"FLASH0_LENGTH=2048K"}
+            },
+            {
                 macro = "MCU_STM32F205xC",
                 brief = "STM STM32F205 256 kB",
                 description = "STM32F205 256 kb with FSMC.",
@@ -2367,6 +2385,7 @@ nutarch =
         brief = "STM32 SPI devices",
         description = "STM32 SPI devices.",
         requires = { "HW_MCU_STM32" },
+        disablers = {"HW_MCU_STM32H7"},
         sources  = { "cm3/dev/stm/stm32_spi_cb.c" },
         script = "arch/cm3/stm32spi.nut"
     },

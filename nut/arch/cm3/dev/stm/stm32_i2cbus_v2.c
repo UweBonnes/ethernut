@@ -448,6 +448,12 @@ static const STM32_I2C_HW i2c1_hw = {
     .enable_mask = RCC_APB1ENR1_I2C1EN,
     .reset_reg   = &RCC->APB1RSTR1,
     .reset_mask  = RCC_APB1RSTR1_I2C1RST,
+#elif defined(RCC_APB1LENR_I2C1EN)
+/* H7*/
+    .enable_reg  = &RCC->APB1LENR,
+    .enable_mask = RCC_APB1LENR_I2C1EN,
+    .reset_reg   = &RCC->APB1LRSTR,
+    .reset_mask  = RCC_APB1LRSTR_I2C1RST,
 #else
     .enable_reg  = &RCC->APB1ENR,
     .enable_mask = RCC_APB1ENR_I2C1EN,
@@ -509,6 +515,12 @@ static const STM32_I2C_HW i2c2_hw = {
     .enable_mask = RCC_APB1ENR1_I2C2EN,
     .reset_reg   = &RCC->APB1RSTR1,
     .reset_mask  = RCC_APB1RSTR1_I2C2RST,
+#elif defined(RCC_APB1LENR_I2C2EN)
+/* H7*/
+    .enable_reg  = &RCC->APB1LENR,
+    .enable_mask = RCC_APB1LENR_I2C2EN,
+    .reset_reg   = &RCC->APB1LRSTR,
+    .reset_mask  = RCC_APB1LRSTR_I2C2RST,
 #else
     .enable_reg  = &RCC->APB1ENR,
     .enable_mask = RCC_APB1ENR_I2C2EN,

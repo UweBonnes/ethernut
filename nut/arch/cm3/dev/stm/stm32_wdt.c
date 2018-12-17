@@ -61,6 +61,10 @@
 #else
 # define LSI_VALUE 32000
 #endif
+#if defined(IWDG1) && !defined(IWDG)
+# define IWDG IWDG1
+#endif
+
 /*!
  * \brief Start the STM32 hardware independent watch dog timer.
  *
@@ -82,7 +86,7 @@ uint32_t Stm32WatchDogStart(uint32_t ms, uint32_t xmode)
     int i;
     uint16_t reload;
     uint32_t actual_ms;
-
+    IWDG_TypeDef *iwdg = (IWDG_TypeDef *)IWDG;
     while(!(RCC->CSR & RCC_CSR_LSIRDY)) {
         RCC->CSR |= RCC_CSR_LSION;
     }
@@ -101,12 +105,12 @@ uint32_t Stm32WatchDogStart(uint32_t ms, uint32_t xmode)
         }
     }
     actual_ms = (reload << i) / (LSI_VALUE / 1000);
-    IWDG->KR = 0x0000cccc;
-    IWDG->KR = 0x00005555;
-    IWDG->PR =  i - 2;
-    IWDG->RLR = reload;
-    while(IWDG->SR) {}
-    IWDG->KR = 0x0000aaaa;
+    iwdg->KR = 0x0000cccc;
+    iwdg->KR = 0x00005555;
+    iwdg->PR =  i - 2;
+    iwdg->RLR = reload;
+    while(iwdg->SR) {}
+    iwdg->KR = 0x0000aaaa;
     return actual_ms;
 }
 /*!
@@ -117,7 +121,8 @@ uint32_t Stm32WatchDogStart(uint32_t ms, uint32_t xmode)
  */
 void Stm32WatchDogRestart(void)
 {
-     IWDG->KR = 0x0000aaaa;
+    IWDG_TypeDef *iwdg = (IWDG_TypeDef *)IWDG;
+    iwdg->KR = 0x0000aaaa;
 }
 
 /*!

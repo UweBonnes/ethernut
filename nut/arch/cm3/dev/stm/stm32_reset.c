@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2016 by Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2016,2017 by Uwe Bonnes
+ *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -46,6 +47,7 @@
  */
 int Stm32ResetCause(void)
 {
+#if !defined(RCC_RSR_BORRSTF)
     uint32_t csr;
     int flags;
 
@@ -96,4 +98,28 @@ int Stm32ResetCause(void)
     }
     RCC->CSR |= RCC_CSR_RMVF;
     return (flags) ? flags : NUT_RSTTYP_UNKNOWN;
+#else
+    uint32_t rsr;
+    int flags;
+
+    rsr = RCC->RSR;
+    flags = 0;
+    if        (rsr & RCC_RSR_WWDG1RSTF)  {
+        flags |= NUT_RSTTYP_WWATCHDOG;
+    } else  if (rsr & RCC_RSR_SFTRSTF)  {
+        flags |= NUT_RSTTYP_SOFTWARE;
+    } else if (rsr & RCC_RSR_LPWRRSTF) {
+        flags |= NUT_RSTTYP_LOWPOWER;
+    } else if (rsr & RCC_RSR_IWDG1RSTF)  {
+        flags |= NUT_RSTTYP_WATCHDOG;
+    } else if (rsr & RCC_RSR_PINRSTF)   {
+        flags |= NUT_RSTTYP_EXTERNAL;
+    } else if (rsr & RCC_RSR_BORRSTF)   {
+        flags |= NUT_RSTTYP_BROWNOUT;
+    } else if (rsr & RCC_RSR_PORRSTF)   {
+        flags |= NUT_RSTTYP_POWERUP;
+    }
+    RCC->RSR |= RCC_RSR_RMVF;
+    return (flags) ? flags : NUT_RSTTYP_UNKNOWN;
+#endif
 }
