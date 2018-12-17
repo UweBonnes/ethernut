@@ -1,4 +1,4 @@
-/* Do not edit! Generated automatically from /opt/stm/STM32CubeMX/db/mcu.*/
+/* Do not edit! Generated automatically from /devel/cubemx/db/mcu.*/
 
 #if !defined(_STM32_MCUS_H_)
 # define _STM32_MCUS_H_

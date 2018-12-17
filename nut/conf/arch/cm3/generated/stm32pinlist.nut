@@ -1,4 +1,4 @@
--- Do not edit! Generated automatically from data at /opt/stm/STM32CubeMX/db/mcu*/
+-- Do not edit! Generated automatically from data at /devel/cubemx/db/mcu*/
 
 function GetCan1Rx()
   if     c_is_provided("HW_MCU_STM32_DIE_445")	then return {"PA11", "PB08", "PIN_NONE"}

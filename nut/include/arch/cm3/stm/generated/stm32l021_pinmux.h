@@ -1,5 +1,5 @@
 /* Do not edit!
- * Generated from /opt/stm/STM32CubeMX/db/mcu/IPGPIO-STM32L021_gpio_v1_0_Modes.xml*/
+ * Generated from /devel/cubemx/db/mcu/IPGPIO-STM32L021_gpio_v1_0_Modes.xml*/
 
 #if !defined(_STM32L021_PINMUX_H_)
 # define _STM32L021_PINMUX_H_

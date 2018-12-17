@@ -135,7 +135,7 @@ if __name__ == "__main__":
     print("Give the full path to the .../STM32CubeMX/db/mcu directory as argument.")
     print("Run in .../<nutos>/nut/include/arch/cm3/stm/generated>.")
     parser = argparse.ArgumentParser()
-    parser.add_argument("dirpath", nargs='?', help="Directory to parse", default="/opt/stm/STM32CubeMX/db/mcu")
+    parser.add_argument("dirpath", nargs='?', help="Directory to parse", default="/devel/cubemx/db/mcu")
     args = parser.parse_args()
     print("Looking in %s" % args.dirpath)
     mcunames = []

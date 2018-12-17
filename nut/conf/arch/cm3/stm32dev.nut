@@ -189,53 +189,46 @@ nutarch_cm3_stm32_devices =
 --List all Pins, even if there are no alternate pins
             {
                 macro = "EMAC_TX_EN",
-                description = "Choice of STM32 EMAC TX_EN pins\n"..
-                              "Possible pins: PB11, PG11.\n"..
-                              "Default: PB11\n",
+                description = "Choice of STM32 EMAC TX_EN pins",
                 requires = { "HW_GPIO_STM32V2" },
-                default = "PB11",
                 type = "enumerated",
-                choices = { "PB11", "PG11" },
+                choices = function ()return GetEthTxEn(); end,
+                default = function ()return GetEthTxEn()[1]; end,
                 file = "include/cfg/dev.h"
             },
             {
                 macro = "EMAC_TXD0",
-                description = "Choice of STM32 EMAC TXD0 pins\n"..
-                               "Possible pins: PB12, PG13.\n"..
-                               "Default: PB12\n",
+                description = "Choice of STM32 EMAC TXD0 pins",
                 requires = { "HW_GPIO_STM32V2" },
-                default = "PB12",
                 type = "enumerated",
-                choices = { "PB12", "PG13" },
+                choices = function ()return GetEthTxd0(); end,
+                default = function ()return GetEthTxd0()[1]; end,
                 file = "include/cfg/dev.h"
             },
             {
                 macro = "EMAC_TXD1",
-                description = "Choice of STM32 EMAC TXD1 pins\n"..
-                               "Possible pins: PB13, PG14.\n"..
-                               "Default: PB13\n",
+                description = "Choice of STM32 EMAC TXD1 pin",
                 requires = { "HW_GPIO_STM32V2" },
-                default = "PB13",
                 type = "enumerated",
-                choices = { "PB13", "PG14" },
+                choices = function ()return GetEthTxd1(); end,
+                default = function ()return GetEthTxd1()[1]; end,
                 file = "include/cfg/dev.h"
             },
             {
                 macro = "EMAC_TXD2",
                 description = "STM32 EMAC TXD2 pins\n",
                 requires = { "HW_GPIO_STM32V2", "PHY_MODE_MII" },
-                default = "PC02",
+                choices = function ()return GetEthTxd2(); end,
+                default = function ()return GetEthTxd2()[1]; end,
                 file = "include/cfg/dev.h"
             },
             {
                 macro = "EMAC_TXD3",
-                description = "Choice of STM32 EMAC TXD3 pins\n"..
-                               "Possible pins: PB08, PE02.\n"..
-                               "Default: PB08\n",
-                 requires = { "HW_GPIO_STM32V2" , "PHY_MODE_MII" },
-                default = "PB08",
+                description = "Choice of STM32 EMAC TXD3 pins",
+                requires = { "HW_GPIO_STM32V2" , "PHY_MODE_MII" },
                 type = "enumerated",
-                choices = { "PB08", "PE02" },
+                choices = function ()return GetEthTxd3(); end,
+                default = function ()return GetEthTxd3()[1]; end,
                 file = "include/cfg/dev.h"
             },
             {
@@ -472,21 +465,21 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "CAN1_TX",
                 brief = "CAN1 TX Pin selection",
-                description = "Choose CAN1 TX Pin, Default: PA12",
+                description = "Choose CAN1 TX Pin",
                 requires = { "HW_GPIO_STM32V2" },
-                default = "PA12",
                 type = "enumerated",
-                choices = { "PA12", "PB09", "PD01", "PH13" },
+                choices = function ()return GetCan1Tx(); end,
+                default = function ()return GetCan1Tx()[1]; end,
                 file = "include/cfg/can_dev.h"
             },
             {
                 macro = "CAN1_RX",
                 brief = "CAN1 RX Pin selection",
-                description = "Choose CAN1 RX Pin, Default: PA11",
+                description = "Choose CAN1 RX Pin",
                 requires = { "HW_GPIO_STM32V2" },
-                default = "PA11",
                 type = "enumerated",
-                choices = { "PA11", "PB08", "PD00", "PI00" },
+                choices = function ()return GetCan1Rx(); end,
+                default = function ()return GetCan1Rx()[1]; end,
                 file = "include/cfg/can_dev.h"
             }
         }
@@ -519,21 +512,21 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "CAN2_TX",
                 brief = "CAN2 TX Pin selection",
-                description = "Choose CAN2 TX Pin, Default: PB13",
+                description = "Choose CAN2 TX Pin",
                 requires = { "HW_GPIO_STM32V2" },
-                default = "PB13",
                 type = "enumerated",
-                choices = { "PB13", "PB06" },
+                choices = function ()return GetCan2Tx(); end,
+                default = function ()return GetCan2Tx()[1]; end,
                 file = "include/cfg/can_dev.h"
             },
             {
                 macro = "CAN2_RX",
                 brief = "CAN2 RX Pin selection",
-                description = "Choose CAN2 RX Pin, Default: PB12",
+                description = "Choose CAN2 RX Pin",
                 requires = { "HW_GPIO_STM32V2" },
-                default = "PB12",
                 type = "enumerated",
-                choices = { "PB12", "PB05" },
+                choices = function ()return GetCan2Rx(); end,
+                default = function ()return GetCan2Rx()[1]; end,
                 file = "include/cfg/can_dev.h"
             }
         }
@@ -687,8 +680,8 @@ nutarch_cm3_stm32_devices =
     -- STM32 I2C Hardware V1
     --
     {
-        name = "nutarch_cm3_stm32_spi_v1",
-        brief = "STM32 SPI V1 Controller",
+        name = "nutarch_cm3_stm32_i2c_v1",
+        brief = "STM32 I2C V1 Controller",
         description = "Generic Suport for STM32 I2C V1",
         requires = { "HW_I2C_STM32V1" },
         sources =
@@ -700,8 +693,8 @@ nutarch_cm3_stm32_devices =
     -- STM32 I2C Hardware V2
     --
     {
-        name = "nutarch_cm3_stm32_spi_v2",
-        brief = "STM32 SPI V2 Controller",
+        name = "nutarch_cm3_stm32_i2c_v2",
+        brief = "STM32 I2C V2 Controller",
         description = "Generic Suport for STM32 I2C V2",
         requires = { "HW_I2C_STM32V2" },
         sources = {

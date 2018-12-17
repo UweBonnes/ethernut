@@ -191,6 +191,7 @@ nutarch_cm3 =
             "DEV_RTC",
             "HW_STM32_BACKUP_REG",
             "DEV_CRC",
+            "DEV_UART_SPECIFIC",
         },
         sources = {
             "cm3/dev/stm/system_stm32.c",

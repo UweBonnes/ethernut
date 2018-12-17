@@ -29,260 +29,6 @@
 --
 -- For additional information see http://www.ethernut.de/
 
---
---
--- Retrieve I2C1 pins available on the device.
---
-function GetI2c1Sda()
-    if c_is_provided("HW_MCU_STM32F0") then
-        return { "PB07", "PB09", "PF00", "PA10", "PB11", "PA12", "PB14", "PF07"}
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return { "PB07", "PB09", "PA14"  }
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "PB07", "PB09", "PC07", "PD13", "PD15", "PF15"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return { "PB07", "PB09", "PG13"}
-    end
-    return { "PA07", "PA09" }
-end
-function GetI2c1Scl()
-    if c_is_provided("HW_MCU_STM32F0") then
-        return { "PB06", "PB08", "PF01", "PA09", "PB10", "PA11", "PB13", "PF06" }
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return { "PB06", "PB08", "PA15" }
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "PB06", "PB08", "PC06", "PD12", "PD14", "PF14"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return { "PB06", "PB08", "PG14"}
-    end
-    return { "PA06", "PA08" }
-end
-function GetI2c1Smba()
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "PIN_NONE", "PB05", "PD11", "PF13"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return { "PB05", "PG15"}
-    end
-    return { "PIN_NONE", "PB05" }
-end
-
---
--- Retrieve I2C2 pins available on the device.
---
-function GetI2c2Sda()
-    if c_is_provided("HW_MCU_STM32L0") then
-        return { "PB11", "PB14"}
-    end
-    if c_is_provided("HW_MCU_STM32L1") then
-        return "PB11"
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return {"PB11", "PB14", "PF00"}
-    end
-    if c_is_provided("HW_MCU_STM32F0") then
-        return { "PB11", "PB14", "PA12"}
-    end
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "PB11", "PF00", "PH05"}
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return { "PA10", "PF00", "PF07" }
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return { "PB11", "PB03" }
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return { "PB11", "PB03" , "PB09" }
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
-        return { "PB11", "PF00" , "PH05" }
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return { "PB11", "PF00" , "PH05" }
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "PB11", "PB03" , "PC12" , "PF00"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return {"PB11", "PF00", "PH05"}
-    end
-end
-function GetI2c2SdaDefault()
-    if c_is_provided("HW_MCU_STM32F3") then
-        return "PA10"
-    end
-    return "PB11"
-end
-function GetI2c2Scl()
-    if c_is_provided("HW_MCU_STM32L0") then
-        return { "PB10", "PB13"}
-    end
-    if c_is_provided("HW_MCU_STM32L1") then
-        return "PB10"
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return {"PB10", "PB13", "PF01"}
-    end
-    if c_is_provided("HW_MCU_STM32F0") then
-        return { "PB10", "PB13", "PA11"}
-    end
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "PB10", "PF01", "PH04"}
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return { "PA09", "PF01", "PF06" }
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return "PB10"
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return "PB10"
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
-        return { "PB10", "PF01" , "PH04" }
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return { "PB10", "PF01" , "PH04" }
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "PB10", "PF01"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return {"PB10", "PF01", "PH05"}
-    end
-end
-function GetI2c2SclDefault()
-    if c_is_provided("HW_MCU_STM32F3") then
-        return "PA09"
-    end
-    return "PB10"
-end
-function GetI2c2Smba()
-    if c_is_provided("HW_MCU_STM32L0") then
-        return { "PIN_NONE", "PB12"}
-    end
-    if c_is_provided("HW_MCU_STM32L1") then
-        return { "PIN_NONE", "PB12"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return {"PB12", "PF02"}
-    end
-    if c_is_provided("HW_MCU_STM32F0") then
-        return "PIN_NONE"
-    end
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "PIN_NONE", "PB12", "PF02", "PH06"}
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return { "PIN_NONE" , "PA08", "PB12", "PF02" }
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return "PB12"
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return "PB12"
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
-        return { "PB12", "PF02" , "PH06" }
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return { "PB12", "PF02" , "PH06" }
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "PB12", "PF02"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return {"PB12", "PF02", "PH06"}
-    end
-end
---
--- Retrieve I2C3 pins available on the device.
---
-function GetI2c3Sda()
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "PC09", "PH08"}
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return { "PC09", "PB05"}
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return { "PC09", "PB04"}
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return { "PC09", "PB04", "PB08"}
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
-        return { "PC09", "PH08"}
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return { "PC09", "PH08"}
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return { "PC09", "PB04"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return {"PC09", "PH08"}
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return { "PC01", "PG08"}
-    end
-end
-function GetI2c3Scl()
-    if c_is_provided("HW_MCU_STM32F2") then
-        return { "PA08", "PH07"}
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
-        return "PA08"
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return "PA08"
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return "PA08"
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
-        return { "PA08", "PH07"}
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return { "PA08", "PH07"}
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return "PA08"
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
-        return { "PA08", "PH07"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return { "PC00", "PG07"}
-    end
-end
-function GetI2c3Smba()
-    if c_is_provided("HW_MCU_STM32F2") then
-        return {"PIN_NONE", "PA08" }
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
-        return {"PIN_NONE", "PA08" }
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
-        return {"PIN_NONE", "PA08" }
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
-        return {"PIN_NONE", "PA08" , "PH09"}
-    end
-    if c_is_provided("HW_MCU_STM32F446") then
-        return {"PIN_NONE", "PA08", "PA09"}
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
-        return {"PIN_NONE", "PB02", "PG06"}
-    end
-end
 nutarch_cm3_stm32_i2c_devices =
 {
     -- ******************************************
@@ -390,8 +136,8 @@ nutarch_cm3_stm32_i2c_devices =
                 requires = { "HW_GPIO_STM32V2" },
                 description = "Choose I2C1 SDA according to availability.",
                 type = "enumerated",
-                default = "PB07",
-                choices = function() return GetI2c1Sda() end,
+                default = function() return GetI2c1Sda()[1]; end,
+                choices = function() return GetI2c1Sda(); end,
                 file = "include/cfg/twi.h"
             },
             {
@@ -400,18 +146,18 @@ nutarch_cm3_stm32_i2c_devices =
                 requires = { "HW_GPIO_STM32V2" },
                 description = "Choose I2C1 SCL Pin according to availability.",
                 type = "enumerated",
-                default = "PB06",
-                choices = function() return GetI2c1Scl() end,
+                default = function() return GetI2c1Scl()[1]; end,
+                choices = function() return GetI2c1Scl(); end,
                 file = "include/cfg/twi.h"
             },
             {
                 macro = "I2C1_SMBA",
-                brief = "I2C1 SCL GPIO",
+                brief = "I2C1 SMBA GPIO",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C1 SMBA PA5 or -1 to not use SMBA.",
-                default = "PIN_NONE",
+                description = "Default is PIN_NONE to not use SMBA.",
                 type = "enumerated",
-                choices = function() return GetI2c1Smba() end,
+                default = "PIN_NONE",
+                choices = function() return GetI2c1Smba(); end,
                 file = "include/cfg/twi.h"
             }
          }
@@ -426,29 +172,30 @@ nutarch_cm3_stm32_i2c_devices =
                 macro = "I2C2_SDA",
                 brief = "I2C2 SDA",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C2 SDA according to availability. Default: PA10 on F3, PB11 else.",
+                description = "Choose I2C2 SDA according to availability.",
                 type = "enumerated",
-                default = function() return GetI2c2SdaDefault() end,
-                choices = function() return GetI2c2Sda() end,
+                default = function() return GetI2c2Sda()[1]; end,
+                choices = function() return GetI2c2Sda(); end,
                 file = "include/cfg/twi.h"
             },
             {
                 macro = "I2C2_SCL",
                 brief = "I2C2 SCL",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C2 SCL Pin according to availability. Default: PA9 on F3, PB10 else.",
+                description = "Choose I2C2 SCL Pin according to availability.",
                 type = "enumerated",
-                choices = function() return GetI2c2Scl() end,
-                default = function() return GetI2c2SclDefault() end,
+                choices = function() return GetI2c2Scl(); end,
+                default = function() return GetI2c2Scl()[1]; end,
                 file = "include/cfg/twi.h"
             },
             {
                 macro = "I2C2_SMBA",
                 brief = "I2C2 SMBA",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C2 SMBA Pin according to availability. Choose -1 to not use SMBA.",
+                description = "Default is PIN_NONE to not use SMBA.",
+                type = "enumerated",
                 default = "PIN_NONE",
-                choices = function() return GetI2c2Smba() end,
+                choices = function() return GetI2c2Smba(); end,
                 file = "include/cfg/twi.h"
             },
             {
@@ -472,9 +219,9 @@ nutarch_cm3_stm32_i2c_devices =
                 macro = "I2C3_SDA",
                 brief = "I2C3 SDA",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C3 SDA according to availability. Default: PC09",
+                description = "Choose I2C3 SDA according to availability.",
                 type = "enumerated",
-                default = "PC09",
+                default = function() return GetI2c3Sda()[1] end,
                 choices = function() return GetI2c3Sda() end,
                 file = "include/cfg/twi.h"
             },
@@ -482,9 +229,9 @@ nutarch_cm3_stm32_i2c_devices =
                 macro = "I2C3_SCL",
                 brief = "I2C3 SCL",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C3 SCL Pin according to availability. Default: PA08.",
+                description = "Choose I2C3 SCL Pin according to availability.",
                 type = "enumerated",
-                default = "PA08",
+                default = function() return GetI2c3Scl()[1] end,
                 choices = function() return GetI2c3Scl() end,
                 file = "include/cfg/twi.h"
             },
@@ -492,15 +239,15 @@ nutarch_cm3_stm32_i2c_devices =
                 macro = "I2C3_SMBA",
                 brief = "I2C3 SMBA",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C3 SMBA Pin according to availability. Default: PIN_NONE to not use SMBA.",
+                description = "Default is PIN_NONE to not use SMBA.",
                 type = "enumerated",
                 default = "PIN_NONE",
-                choices = function() return GetI2c3Smba() end,
+                choices = function() return GetI2c2Smba(); end,
                 file = "include/cfg/twi.h"
-            }
+            },
          }
     },
-    {
+   {
         name = "nutarch_cm3_stm32_i2c4_pin",
         brief = "STM32 I2C4 Pin mappings",
         description = "STM32 I2C4 Pin mappings",
@@ -511,9 +258,9 @@ nutarch_cm3_stm32_i2c_devices =
                 macro = "I2C4_SDA",
                 brief = "I2C4 SDA",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C4 SDA according to availability. Default: PC09",
+                description = "Choose I2C4 SDA according to availability.",
                 type = "enumerated",
-                default = "PC09",
+                default = function() return GetI2c4Sda()[1] end,
                 choices = function() return GetI2c4Sda() end,
                 file = "include/cfg/twi.h"
             },
@@ -521,9 +268,9 @@ nutarch_cm3_stm32_i2c_devices =
                 macro = "I2C4_SCL",
                 brief = "I2C4 SCL",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C4 SCL Pin according to availability. Default: PA08.",
+                description = "Choose I2C4 SCL Pin according to availability.",
                 type = "enumerated",
-                default = "PA08",
+                default = function() return GetI2c4Scl()[1] end,
                 choices = function() return GetI2c4Scl() end,
                 file = "include/cfg/twi.h"
             },
@@ -531,7 +278,7 @@ nutarch_cm3_stm32_i2c_devices =
                 macro = "I2C4_SMBA",
                 brief = "I2C4 SMBA",
                 requires = { "HW_GPIO_STM32V2" },
-                description = "Choose I2C4 SMBA Pin according to availability. Default: PIN_NONE to not use SMBA.",
+                description = "Default is PIN_NONE to not use SMBA.",
                 type = "enumerated",
                 default = "PIN_NONE",
                 choices = function() return GetI2c4Smba() end,
