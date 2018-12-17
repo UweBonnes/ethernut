@@ -23,12 +23,14 @@ def generate(name, headerfile, luafile):
     luafile.write("            provides =\n")
     luafile.write("            {\n")
     iterator = iter(headerdata)
+    num_irq = 0;
     while True:
         try:
             line = next(iterator)
         except:
             break
         if "_IRQn" in line and "= " in line and "interrupt" in line.lower():
+            num_irq = int(line.partition('= ')[2].partition(',')[0].partition(' ')[0])
             if not line or line[0] == '\n':
                 continue
             device = line.partition('_IRQn')[0].strip().upper()
@@ -88,6 +90,7 @@ def generate(name, headerfile, luafile):
 
     luafile.write("            },\n")
     luafile.write("            file = \"include/cfg/arch.h\",\n")
+    luafile.write("            makedefs = {\"UCPFLAGS+=-DIRQn_MAX=%d\"},\n" % (num_irq + 1))
     luafile.write("         },\n")
     headerdata.close()
 

@@ -99,6 +99,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=83"},
          },
          {
             macro = "STM32L432xx",
@@ -186,6 +187,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=83"},
          },
          {
             macro = "STM32L433xx",
@@ -281,6 +283,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=83"},
          },
          {
             macro = "STM32L442xx",
@@ -369,6 +372,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=83"},
          },
          {
             macro = "STM32L443xx",
@@ -465,6 +469,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=83"},
          },
          {
             macro = "STM32L451xx",
@@ -563,6 +568,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=85"},
          },
          {
             macro = "STM32L452xx",
@@ -662,6 +668,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=85"},
          },
          {
             macro = "STM32L462xx",
@@ -762,6 +769,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM2_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=85"},
          },
          {
             macro = "STM32L471xx",
@@ -874,6 +882,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=82"},
          },
          {
             macro = "STM32L475xx",
@@ -987,6 +996,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=82"},
          },
          {
             macro = "STM32L476xx",
@@ -1101,6 +1111,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=82"},
          },
          {
             macro = "STM32L485xx",
@@ -1215,6 +1226,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=82"},
          },
          {
             macro = "STM32L486xx",
@@ -1330,6 +1342,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=82"},
          },
          {
             macro = "STM32L496xx",
@@ -1454,6 +1467,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=91"},
          },
          {
             macro = "STM32L4A6xx",
@@ -1579,6 +1593,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=91"},
          },
          {
             macro = "STM32L4R5xx",
@@ -1698,6 +1713,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=95"},
          },
          {
             macro = "STM32L4R7xx",
@@ -1820,6 +1836,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=95"},
          },
          {
             macro = "STM32L4R9xx",
@@ -1943,6 +1960,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=95"},
          },
          {
             macro = "STM32L4S5xx",
@@ -2063,6 +2081,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=95"},
          },
          {
             macro = "STM32L4S7xx",
@@ -2186,6 +2205,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=95"},
          },
          {
             macro = "STM32L4S9xx",
@@ -2310,6 +2330,7 @@ nutarch_cm3_stm32l4 =
                "HW_TIM5_32BIT_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=95"},
          },
       }
    }

@@ -75,6 +75,7 @@ nutarch_cm3_stm32f1 =
                "HW_TIM7_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=56"},
          },
          {
             macro = "STM32F100xE",
@@ -157,6 +158,7 @@ nutarch_cm3_stm32f1 =
                "HW_DMA2_CHANNEL5_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=61"},
          },
          {
             macro = "STM32F101x6",
@@ -207,6 +209,7 @@ nutarch_cm3_stm32f1 =
                "HW_RTC_ALARM_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=42"},
          },
          {
             macro = "STM32F101xB",
@@ -264,6 +267,7 @@ nutarch_cm3_stm32f1 =
                "HW_RTC_ALARM_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=42"},
          },
          {
             macro = "STM32F101xE",
@@ -332,6 +336,7 @@ nutarch_cm3_stm32f1 =
                "HW_DMA2_CHANNEL4_5_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=60"},
          },
          {
             macro = "STM32F101xG",
@@ -406,6 +411,7 @@ nutarch_cm3_stm32f1 =
                "HW_DMA2_CHANNEL4_5_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=60"},
          },
          {
             macro = "STM32F102x6",
@@ -457,6 +463,7 @@ nutarch_cm3_stm32f1 =
                "HW_USBWAKEUP_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=43"},
          },
          {
             macro = "STM32F102xB",
@@ -515,6 +522,7 @@ nutarch_cm3_stm32f1 =
                "HW_USBWAKEUP_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=43"},
          },
          {
             macro = "STM32F103x6",
@@ -575,6 +583,7 @@ nutarch_cm3_stm32f1 =
                "HW_USBWAKEUP_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=43"},
          },
          {
             macro = "STM32F103xB",
@@ -642,6 +651,7 @@ nutarch_cm3_stm32f1 =
                "HW_USBWAKEUP_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=43"},
          },
          {
             macro = "STM32F103xE",
@@ -727,6 +737,7 @@ nutarch_cm3_stm32f1 =
                "HW_DMA2_CHANNEL4_5_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=60"},
          },
          {
             macro = "STM32F103xG",
@@ -818,6 +829,7 @@ nutarch_cm3_stm32f1 =
                "HW_DMA2_CHANNEL4_5_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=60"},
          },
          {
             macro = "STM32F105xC",
@@ -901,6 +913,7 @@ nutarch_cm3_stm32f1 =
                "HW_OTG_FS_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=68"},
          },
          {
             macro = "STM32F107xC",
@@ -986,6 +999,7 @@ nutarch_cm3_stm32f1 =
                "HW_OTG_FS_STM32",
             },
             file = "include/cfg/arch.h",
+            makedefs = {"UCPFLAGS+=-DIRQn_MAX=68"},
          },
       }
    }
