@@ -17,8 +17,7 @@ function GetSysClockFrequencyDesc()
                "PLL input (range)\t2 .. 24\n"..
                "PLL output(range)\t2 .. 32\n"..
                "SYSCLK_FREQ\t\t0 .. 32"
-    end
-    if c_is_provided("HW_MCU_STM32L1") then
+    elseif c_is_provided("HW_MCU_STM32L1") then
         return "System clock target frequency with SYSCLK_PLL selected.\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "\thighest possible value.\n\n"..
@@ -30,8 +29,21 @@ function GetSysClockFrequencyDesc()
                "PLL input (range)\t2 .. 24\n"..
                "PLL output(range)\t2 .. 32\n"..
                "SYSCLK_FREQ (max)\t0 .. 32"
-    end
-    if c_is_provided("HW_MCU_STM32L4") then
+    elseif c_is_provided("HW_MCU_STM32L4R") then
+        return "System clock target frequency with SYSCLK_PLL selected.\n"..
+               "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
+               "\thighest possible value.\n\n"..
+               "If in doubt, leave undefined!\n\n"..
+               "With SYSCLK_FREQ given, User must set usefull values for:\n"..
+               " - PLLCLK_PREDIV\t: Division factor at Pll input.\n"..
+               " - PLLCLK_MULT\t: Pll multiplier factor.\n"..
+               " - PLLCLK_DIV\t\t: PLL VCO output division factor.\n\n"..
+               "Value (MHz)\t\tRange1\tRange1 Boost\tRange2\n"..
+               "PLL input (range)\t2.66 .. 16\t2.66 .. 16\t2.66..16\n"..
+               "PLL VCO output(range)\t64 .. 344\t64 .. 344\t64 .. 128\n"..
+               "PLLR output(range)\t8 .. 80\t8 .. 120\t8 .. 26\n"..
+               "SYSCLK_FREQ\t\t0 .. 80\t0 .. 120\t0 .. 26"
+    elseif c_is_provided("HW_MCU_STM32L4") then
         return "System clock target frequency with SYSCLK_PLL selected.\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "\thighest possible value.\n\n"..
@@ -45,8 +57,7 @@ function GetSysClockFrequencyDesc()
                "PLL VCO output(range)\t64 .. 344\t64 .. 128\n"..
                "PLLR output(range)\t8 .. 80\t8 .. 26\n"..
                "SYSCLK_FREQ\t\t0 .. 80\t0 .. 26"
-    end
-    if c_is_provided("HW_MCU_STM32F0") then
+    elseif c_is_provided("HW_MCU_STM32F0") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -56,8 +67,7 @@ function GetSysClockFrequencyDesc()
                " - PLLCLK_MULT\t: Pll multiplier factor.\n\n"..
                "Value (MHz)\t\tRange1\n"..
                "SYSCLK_FREQ (max)\t16 .. 48"
-    end
-    if c_is_provided("HW_RCC_STM32F1_CL") then
+    elseif c_is_provided("HW_RCC_STM32F1_CL") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -73,8 +83,7 @@ function GetSysClockFrequencyDesc()
                "PLL2 output (range)\t40 .. 74\n"..
                "PLL input (range)\t3 .. 12\n"..
                "SYSCLK_FREQ (max)\t18 .. 72"
-    end
-    if c_is_provided("HW_MCU_STM32F100") then
+    elseif c_is_provided("HW_MCU_STM32F100") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -85,8 +94,7 @@ function GetSysClockFrequencyDesc()
                "Value (MHz)\t\tRange1\n"..
                "PLL input (range)\t1 .. 24\n"..
                "SYSCLK_FREQ (max)\t16 .. 24"
-    end
-    if c_is_provided("HW_MCU_STM32F101") then
+    elseif c_is_provided("HW_MCU_STM32F101") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -97,8 +105,7 @@ function GetSysClockFrequencyDesc()
                "Value (MHz)\t\tRange1\n"..
                "PLL input (range)\t1 .. 25\n"..
                "SYSCLK_FREQ (max)\t16 .. 36"
-    end
-    if c_is_provided("HW_MCU_STM32F102") then
+    elseif c_is_provided("HW_MCU_STM32F102") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -109,8 +116,7 @@ function GetSysClockFrequencyDesc()
                "Value (MHz)\t\tRange1\n"..
                "SYSCLK_FREQ (max)\t16 .. 48\n"..
                "PLL input (range)\t1 .. 25"
-    end
-    if c_is_provided("HW_MCU_STM32F103") then
+    elseif c_is_provided("HW_MCU_STM32F103") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -121,8 +127,7 @@ function GetSysClockFrequencyDesc()
                "Value (MHz)\t\tRange1\n"..
                "PLL input (range)\t1 .. 25\n"..
                "SYSCLK_FREQ (max)\t16 .. 72"
-    end
-    if c_is_provided("HW_MCU_STM32F2") then
+    elseif c_is_provided("HW_MCU_STM32F2") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -135,8 +140,7 @@ function GetSysClockFrequencyDesc()
                "PLL input (range)\t0.95 .. 2.10\n"..
                "PLL VCO output(range)\t192 .. 432\n"..
                "SYSCLK_FREQ (max)\t24 .. 120"
-    end
-    if c_is_provided("HW_MCU_STM32F3") then
+    elseif c_is_provided("HW_MCU_STM32F3") then
         return "System clock target frequency with SYSCLK_PLL selected.\n\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "highest possible value.\n\n"..
@@ -147,8 +151,7 @@ function GetSysClockFrequencyDesc()
                "Value (MHz)\t\tRange1\n"..
                "PLL input (range)\t1 .. 24\n"..
                "SYSCLK_FREQ (max)\t16 .. 72"
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
+    elseif c_is_provided("HW_MCU_STM32F401") then
         return "System clock target frequency with SYSCLK_PLL selected.\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "\thighest possible value.\n\n"..
@@ -162,8 +165,7 @@ function GetSysClockFrequencyDesc()
                "PLL output (MHz)\t24 .. 84\n\n"..
                "Voltage scaling\t2\t3\n"..
                "SYSCLK_FREQ (MHz)\t0 .. 84\t0 .. 60"
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
+    elseif c_is_provided("HW_MCU_STM32F411") then
         return "System clock target frequency with SYSCLK_PLL selected.\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "\thighest possible value.\n\n"..
@@ -192,8 +194,7 @@ function GetSysClockFrequencyDesc()
                "PLL output (MHz)\t24 .. 168\n\n"..
                "Voltage scaling\t1\t0\n"..
                "SYSCLK_FREQ (MHz)\t0 .. 168\t0 .. 144"
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
+    elseif c_is_provided("HW_MCU_STM32F42") then
         return "System clock target frequency with SYSCLK_PLL selected.\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "\thighest possible value.\n\n"..
@@ -223,8 +224,7 @@ function GetSysClockFrequencyDesc()
                "PLL output (MHz)\t24 .. 180\n\n"..
                "Voltage scaling/Overdrive\t1, on\t1, off\t2, on\t2, off\t3\n"..
                "SYSCLK_FREQ (MHz)\t0 .. 180\t0 .. 168\t0 .. 168\t0 .. 144\t0 .. 120"
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
+    elseif c_is_provided("HW_MCU_STM32F7") then
         return "System clock target frequency with SYSCLK_PLL selected.\n"..
                "With SYSCLK_FREQ undefined, setup will try to reach the\n"..
                "\thighest possible value.\n\n"..
@@ -238,8 +238,9 @@ function GetSysClockFrequencyDesc()
                "PLL output (MHz)\t24 .. 180\n\n"..
                "Voltage scaling/Overdrive\t1, on\t1, off\t2, on\t2, off\t3\n"..
                "SYSCLK_FREQ (MHz)\t0 .. 216\t0 .. 180\t0 .. 180\t0 .. 168\t0 .. 144"
+    else
+        return "Unhandled"
     end
-    return "Unhandled"
 end
 
 --
@@ -251,8 +252,9 @@ function GetSysClkSrc()
     end
     if c_is_provided("HW_MCU_STM32F446xx") then
         return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL", "SYSCLK_PLLR"}
+    else
+        return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
     end
-    return {"SYSCLK_HSI", "SYSCLK_HSE", "SYSCLK_PLL"}
 end
 
 --
@@ -333,7 +335,7 @@ function GetHseValueDesc()
     if c_is_provided("HW_MCU_STM32L4") then
         return "Value of the external crystal or clock input in Hertz.\n"..
                "Allowed values:\n"..
-               "External input at OSCIN (Range 1)\t: 0 .. 46 Mhz\n"..
+               "External input at OSCIN (Range 1)\t: 0 .. 48 Mhz\n"..
                "External input at OSCIN (Range 2)\t: 0 .. 26 Mhz\n"..
                "External resonator\t\t: 4 .. 48 MHz\n"..
                "Typical Values is 8 MHz.\n\n"..
@@ -651,30 +653,34 @@ function GetMsiRangeDefault()
 end
 
 function GetPowerScaleRegisterDesc()
-    if c_is_provided("HW_MCU_STM32L4") then
+    if c_is_provided("HW_MCU_STM32L4R") then
+        return "Select Core voltage scaling:\n"..
+               "Range\tV core\tfmax\n"..
+               "1(Overdrive)\t1.28 Volt\t120 MHz\n"..
+               "1\t1.2 Volt\t80 MHz\n"..
+               "2\t1.0 Volt\t26 MHz\n"..
+               "Default register setting is 1, Overdrive(Boost) enabled."
+    elseif c_is_provided("HW_MCU_STM32L4") then
         return "Select Core voltage scaling:\n"..
                "Range\tV core\tfmax\n"..
                "1\t1.2 Volt\t80 MHz\n"..
                "2\t1.0 Volt\t26 MHz\n"..
                "Default register setting is 1."
-    end
-    if c_is_provided("HW_RCC_STM32L") then
+    elseif c_is_provided("HW_RCC_STM32L") then
         return "Select Core voltage scaling:\n"..
                "Range\tV core\tV supply(min\tfmax\n"..
                "1\t1.8 Volt\t1.71 Volt\t32 MHz\n"..
                "2\t1.5 Volt\t1.65 Volt\t16 MHz\n"..
                "3\t1.2 Volt\t1.65 Volt\t4.2 MHz\n"..
                "Default register is 1."
-    end
-    if c_is_provided("HW_MCU_STM32F401") then
+    elseif c_is_provided("HW_MCU_STM32F401") then
         return "Select Power Scale:\n"..
                "Power Scale\tfmax\n"..
                "2\t84 MHz\n"..
                "3\t60 MHz\n"..
                "Default register setting is 2.\n"..
                "With PLL off, Power scale is 3 independant from register value."
-    end
-    if c_is_provided("HW_MCU_STM32F411") then
+    elseif c_is_provided("HW_MCU_STM32F411") then
         return "Select Power Scale:\n"..
                "Power Scale\tfmax\n"..
                "1\t100 MHz\n"..
@@ -682,15 +688,13 @@ function GetPowerScaleRegisterDesc()
                "3\t64 MHz\n"..
                "Default is 1.\n"..
                "With PLL off, Power scale is 3 independant from register value."
-    end
-    if c_is_provided("HW_MCU_STM32F40") then
+    elseif c_is_provided("HW_MCU_STM32F40") then
         return "Select Power Scale:\n"..
                "Power scale\tfmax\n"..
                "1\t168 MHz\n"..
                "2\t144 MHz\n"..
                "Default register setting is 1."
-    end
-    if c_is_provided("HW_MCU_STM32F42") then
+    elseif c_is_provided("HW_MCU_STM32F42") then
         return "Select Power Scale:\n"..
                "Power scale\tfmax Overdrive off/on\n"..
                "1\t168/180 MHz\n"..
@@ -705,24 +709,23 @@ function GetPowerScaleRegisterDesc()
                "2\t144/168 MHz\n"..
                "3\t120/120 MHz\n"..
                "Default register setting is 1."
-    end
-    if c_is_provided("HW_MCU_STM32F46") then
+    elseif c_is_provided("HW_MCU_STM32F46") then
         return "Select Power Scale register value:\n"..
                "Power scale\tfmax Overdrive off/on\n"..
                "1\t168/180 MHz\n"..
                "2\t144/168 MHz\n"..
                "3\t120/120 MHz\n"..
                "Default register setting is 1."
-    end
-    if c_is_provided("HW_MCU_STM32F7") then
+    elseif c_is_provided("HW_MCU_STM32F7") then
         return "Select Power Scale:\n"..
                "Power scale\tfmax Overdrive off/on\n"..
                "1\t180/216 MHz\n"..
                "2\t168/180 MHz\n"..
                "3\t144/144 MHz\n"..
                "Default register setting is 1."
+    else
+        return "Unhandled"
     end
-    return "Unhandled"
 end
 
 function GetPowerScaleRegister()

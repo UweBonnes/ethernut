@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 by Uwe Bonnes
+ * Copyright (C) 2015-2017 by Uwe Bonnes
  *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -71,17 +71,40 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 };
 
 /* Prepare system limits*/
-#if   (STM32_POWERSCALE == 1)
+#if defined(MCU_STM32L4R)
+# define PLLMULT_MAX           127
+# define PLLIN_MIN         2660000
+# if   (STM32_POWERSCALE == 1)
 /* Give some tolerance to that MSI_32M use 1 WS and MSI_48M 2 WS*/
-# define FLASH_BASE_FREQ 16007000
-# define SYSCLK_MAX      80000000
-# define PLLVCO_MAX     344000000
-#elif (STM32_POWERSCALE == 2)
-# define FLASH_BASE_FREQ  6000000
-# define SYSCLK_MAX      26000000
-# define PLLVCO_MAX     128000000
+#  define FLASH_BASE_FREQ 20000000
+#  if STM32_OVERDRIVE == ENABLE
+#   define SYSCLK_MAX    120000000
+#  else
+#   define SYSCLK_MAX     80000000
+#  endif
+#  define PLLVCO_MAX     344000000
+# elif (STM32_POWERSCALE == 2)
+#  define FLASH_BASE_FREQ  8000000
+#  define SYSCLK_MAX      26000000
+#  define PLLVCO_MAX     128000000
+# else
+#  warning Invalid STM32_POWERSCALE
+# endif
 #else
-# warning Invalid STM32_POWERSCALE
+# define PLLMULT_MAX            86
+# define PLLIN_MIN         4000000
+# if   (STM32_POWERSCALE == 1)
+/* Give some tolerance to that MSI_32M use 1 WS and MSI_48M 2 WS*/
+#  define FLASH_BASE_FREQ 16007000
+#  define SYSCLK_MAX      80000000
+#  define PLLVCO_MAX     344000000
+# elif (STM32_POWERSCALE == 2)
+#  define FLASH_BASE_FREQ  6000000
+#  define SYSCLK_MAX      26000000
+#  define PLLVCO_MAX     128000000
+# else
+#   warning Invalid STM32_POWERSCALE
+# endif
 #endif
 
 #define PCLK1_MAX   SYSCLK_MAX
@@ -105,47 +128,56 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 #define MSI_RANGE MSI_4M
 
 #if (SYSCLK_SOURCE == SYSCLK_PLL)
-/* 7 < PLL_MULT < 87
+/* 7 < PLL_MULT < PLLMULT_MAX
  * 0 < PLL_PREDIV < 9
- * 0 < PLLCLK_DIV /2 < 3
+ * 0 < (PLLCLK_DIV / 2) < 5
  */
-# if !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT) && !defined(PLLCLK_DIV)
-#  if (STM32_POWERSCALE == 1)
-#   if defined(SYSCLK_FREQ)
-#    if (SYSCLK_FREQ != 80000000)
-#     warning Only 80 MHz accepted without PLL factors given
-#    endif
+# if !defined(SYSCLK_FREQ) && !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT) && !defined(PLLCLK_DIV)
+#  define SYSCLK_FREQ SYSCLK_MAX
+#  if (SYSCLK_FREQ == 120000000)
+     /* 240 MHz PLL output */
+#   if   ((PLLCLK_IN % 8000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
+#    define PLLCLK_MULT   30
+#    define PLLCLK_DIV     2
+#   elif ((PLLCLK_IN % 6000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
+#    define PLLCLK_MULT   40
+#    define PLLCLK_DIV     2
+#   elif ((PLLCLK_IN % 5000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#    define PLLCLK_MULT   48
+#    define PLLCLK_DIV     2
+#   elif ((PLLCLK_IN % 4000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#    define PLLCLK_MULT   60
+#    define PLLCLK_DIV     2
 #   else
-#    define SYSCLK_FREQ 80000000
+#    warning Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV to reach 80 MHz
 #   endif
+#  elif (SYSCLK_FREQ == 80000000)
 /* 160 MHz PLL output */
 #   if   ((PLLCLK_IN % 8000000) == 0)
 #    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
 #    define PLLCLK_MULT   20
 #    define PLLCLK_DIV     2
+#   elif ((PLLCLK_IN % 4000000) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#    define PLLCLK_MULT   40
+#    define PLLCLK_DIV     2
+/*   6 MHz PLL Input, 144 MHz PLL VCO, 72 MHz PLL R output */
 #   elif ((PLLCLK_IN % 6000000) == 0)
 #    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
-#    define PLLCLK_MULT   25
+#    define PLLCLK_MULT   24
 #    define PLLCLK_DIV     2
 #   elif ((PLLCLK_IN % 5000000) == 0)
 #    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
 #    define PLLCLK_MULT   32
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 4000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
-#    define PLLCLK_MULT   40
-#    define PLLCLK_DIV     2
 #   else
 #    warning Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV to reach 80 MHz
 #   endif
-#  elif (STM32_VRANGE == 2)
-#   if defined(SYSCLK_FREQ)
-#    if (SYSCLK_FREQ != 26000000))
-#     warning Only 26 MHz accepted without PLL factors given
-#    endif
-#   else
-#    define SYSCLK_FREQ 26000000
-#   endif
+#  elif (SYSCLK_FREQ == 26000000)
 /*  8 MHz PLL Input, 104 MHz PLL VCO, 26 MHz PLL R output */
 #   if   ((PLLCLK_IN % 8000000) == 0)
 #    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
@@ -176,7 +208,7 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 #   endif
 #  endif
 # endif
-# if   (PLLCLK_IN / PLLCLK_PREDIV) < 4000000
+# if   (PLLCLK_IN / PLLCLK_PREDIV) < PLLIN_MIN
 #  warning PLL Input frequency too low
 # elif (PLLCLK_IN / PLLCLK_PREDIV) > 16000000
 #  warning PLL Input frequency too high
@@ -203,9 +235,9 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 /* Check PLL factors */
 #if  (PLLCLK_PREDIV < 1) || (PLLCLK_PREDIV > 8)
 # warning Wrong PLLCLK_PREDIV
-#elif (PLLCLK_MULT < 8) || (PLLCLK_MULT > 86)
+#elif (PLLCLK_MULT < 8) || (PLLCLK_MULT > PLLMULT_MAX)
 # warning Wrong PLLCLK_MULT
-#elif (PLLCLK_DIV < 2) || ((PLLCLK_DIV % 2) || (PLLCLK_DIV / 2) > 3)
+#elif (PLLCLK_DIV < 2) || (PLLCLK_DIV % 2) || (PLLCLK_DIV > 8)
 # warning Wrong PLLCLK_DIV
 #endif
 
@@ -427,6 +459,40 @@ static int SetPllClockSource(int src)
     return rc;
 }
 
+static void SetVos(uint32_t frequency)
+{
+    uint32_t cr = PWR->CR1;
+    cr &= ~(PWR_CR1_VOS);
+    if (frequency < 26000000) {
+        cr |= 2 * PWR_CR1_VOS_0;
+    } else {
+        cr |= 1 * PWR_CR1_VOS_0;
+    }
+    PWR->CR1 = cr;
+    /* Wait until VOSF is ready. */
+    while (PWR->SR2 & PWR_SR2_VOSF);
+}
+
+static void SetLatency(uint32_t value)
+{
+    uint32_t flash_acr;
+    flash_acr = FLASH->ACR;
+    flash_acr &= ~FLASH_ACR_LATENCY;
+    flash_acr |= value;
+    FLASH->ACR = flash_acr;
+}
+
+static void SetR1Mode(uint32_t frequency)
+{
+#if defined(MCU_STM32L4R)
+    if (frequency > 80000000) {
+        PWR->CR5 &= ~PWR_CR5_R1MODE;
+    } else {
+        PWR->CR5 |=  PWR_CR5_R1MODE;
+    }
+#endif
+}
+
 /*!
  * \brief  Configures the System clock source: MSI, HSI, HS or PLL.
  * \note   This function should be used only after reset.
@@ -436,20 +502,13 @@ static int SetPllClockSource(int src)
 static int SetSysClockSource(int src)
 {
     int rc = -1;
-    uint32_t cr;
     uint32_t old_latency, new_latency, new_sysclk;
 
     /* Set up RTC clock source and eventually LSE and LSI */
     SetRtcClockSource(RTCCLK_SOURCE);
-
-    /* Set voltage scaling*/
-    cr = PWR->CR1;
-    cr &= ~(PWR_CR1_VOS);
-    cr |= STM32_POWERSCALE * PWR_CR1_VOS_0;
-    PWR->CR1 = cr;
-
-    /* Set Latency*/
+    SystemCoreClockUpdate();
     old_latency = FLASH->ACR & FLASH_ACR_LATENCY;
+    /* Get new sys_clockk*/
     switch (src) {
     case (SYSCLK_MSI):
         new_sysclk = MSI_FREQUENCY[MSI_RANGE];
@@ -466,25 +525,42 @@ static int SetSysClockSource(int src)
     }
     new_latency = (new_sysclk - 1)/ FLASH_BASE_FREQ;
 
+#if defined(MCU_STM32L4R)
+    uint32_t cfgr = RCC->CFGR;
+    cfgr &= ~RCC_CFGR_HPRE_Msk;
+    cfgr |= RCC_CFGR_HPRE_3;
+    RCC->CFGR = cfgr;
+    int i;
+    for (i = 0; i < sys_clock >> 21; i++) {
+        /* Wait at least 1 us. NutDelay() is not yet set up!*/
+        RCC->CFGR = cfgr;
+    }
+#endif
+    if (sys_clock < new_sysclk) {
+        SetR1Mode(new_sysclk);
+        SetVos(new_sysclk);
+    }
     if (new_latency > old_latency) {
-        uint32_t flash_acr;
-        flash_acr = FLASH->ACR;
-        flash_acr &= ~FLASH_ACR_LATENCY;
-        flash_acr |= new_latency;
-        FLASH->ACR = flash_acr;
+        SetLatency(new_latency);
+    }
+    rc = SwitchSystemClock(src);
+    if (sys_clock > new_sysclk) {
+        SetR1Mode(new_sysclk);
+        SetVos(new_sysclk);
+    }
+    if (new_latency < old_latency) {
+        SetLatency(new_latency);
     }
     CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_PRFTEN), FLASH_PREFETCH);
     CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_ICEN),   FLASH_ICACHE);
     CM3BBSETVAL(FLASH_R_BASE, FLASH_TypeDef, ACR, _BI32(FLASH_ACR_DCEN),   FLASH_DCACHE);
-    SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
-    rc = SwitchSystemClock(src);
-    if (new_latency < old_latency) {
-        uint32_t flash_acr;
-        flash_acr = FLASH->ACR;
-        flash_acr &= ~FLASH_ACR_LATENCY;
-        flash_acr |= new_latency;
-        FLASH->ACR = flash_acr;
+#if defined(MCU_STM32L4R)
+    for (i = 0; i < new_sysclk >> 21; i++) {
+        /* Wait at least 1 us. NutDelay() is not yet set up!*/
+        cfgr = RCC->CFGR;
     }
+#endif
+    SetBusDividers(AHB_DIV, APB1_DIV, APB2_DIV);
     /* Update core clock information */
     SystemCoreClockUpdate();
     if (LSE_VALUE) {
