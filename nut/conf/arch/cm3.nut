@@ -148,7 +148,7 @@ nutarch_cm3 =
         name = "nutarch_cm7_cache",
         brief = "Cache Support (Cortex M7)",
         description = "Cortex M7 I/D cache setting";
-        requires = { "HW_MCU_CM7" },
+        requires = {"HW_MCU_CM7"},
         options =
         {
             {
@@ -157,6 +157,7 @@ nutarch_cm3 =
                 description = "Enable Instruction cache for AXIM Bus access.\n\n"..
                          "For Instruction access above 0x00300000.\n"..
                          "Default is enabled\n",
+                requires = {"HW_ICACHE_CM7"},
                 type = "enumerated",
                 choices =  {"ENABLE", "DISABLE"},
                 default = "ENABLE",
@@ -168,6 +169,7 @@ nutarch_cm3 =
                 description = "Enable Data cache for AXIM Bus access.\n\n"..
                          "For Data access outside DTCM range.\n"..
                          "Default is enabled\n",
+                requires = {"HW_DCACHE_CM7"},
                 type = "enumerated",
                 choices =  {"ENABLE", "DISABLE"},
                 default = "ENABLE",
