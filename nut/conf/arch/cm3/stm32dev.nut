@@ -1228,6 +1228,47 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_TIM1_BRK_STM32",
+                brief = "TIM1_BRK_STM32 IRQ",
+                requires = {"HW_TIM1_BRK_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_BRK_UP_TRG_COM_STM32",
+                brief = "TIM1_BRK_UP_TRG_COM_STM32 IRQ",
+                requires = {"HW_TIM1_BRK_UP_TRG_COM_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_BRK_TIM9_STM32",
+                brief = "TIM1/9/10/11 combined interrupts",
+                requires = {"HW_TIM1_BRK_TIM9_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+             {
+                macro = "HW_TIM1_BRK_TIM15_STM32",
+                brief = "TIM1/15/16/17 combined interrupts",
+                description = "TIM1 Availability",
+                requires = {"HW_TIM1_BRK_TIM15_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_BRK_UP_TRG_COM_STM32",
+                brief = "TIM1 BRK/UP/TRG/COM IRQ",
+                requires = {"HW_TIM1_BRK_UP_TRG_COM_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_TIM1_STM32",
                 brief = "TIM1 Availability",
                 description = "TIM1 Availability",
@@ -1241,6 +1282,14 @@ nutarch_cm3_stm32_devices =
                 brief = "TIM2 Availability",
                 description = "TIM2 Availability",
                 requires = { "HW_TIM2_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM2_32BIT_STM32",
+                brief = "TIM2 32 bit",
+                requires = {"HW_TIM2_32BIT_STM32"},
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
@@ -1273,10 +1322,35 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_TIM5_32BIT_STM32",
+                brief = "TIM5 32 bit",
+                requires = {"HW_TIM5_32BIT_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_TIM6_STM32",
                 brief = "TIM6 Availability",
                 description = "TIM6 Availability",
                 requires = { "HW_TIM6_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM6_DAC1_STM32",
+                brief = "TIM6/DAC1 IRQ",
+                requires = {"HW_TIM6_DAC1_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM6_DAC_STM32",
+                brief = "TIM6_DAC Availability",
+                description = "TIM6_DAC Availability",
+                requires = { "HW_TIM6_DAC_STM32" },
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
@@ -1290,11 +1364,35 @@ nutarch_cm3_stm32_devices =
                 type = "integer",
                 file = "include/cfg/devices.h"
             },
+             {
+                macro = "HW_TIM7_DAC2_STM32",
+                brief = "TIM7 /DAC2 IRQ",
+                requires = {"HW_TIM7_DAC2_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
             {
                 macro = "HW_TIM8_STM32",
                 brief = "TIM8 Availability",
                 description = "TIM8 Availability",
                 requires = { "HW_TIM8_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM8_BRK_STM32",
+                brief = "TIM8_TRG_COM_IRQ",
+                requires = {"HW_TIM8_BRK_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM8_BRK_TIM12_STM32",
+                brief = "TIM8_BRK_TIM12_IRQ",
+                requires = {"HW_TIM8_BRK_TIM12_STM32"},
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
@@ -1381,10 +1479,62 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_TIM18_DAC2_STM32",
+                brief = "TIM18/DAC2 IRQ",
+                requires = {"HW_TIM18_DAC1_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_TIM19_STM32",
                 brief = "TIM19 Availability",
                 description = "TIM19 Availability",
                 requires = { "HW_TIM19_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM20_BRK_STM32",
+                brief = "TIM20 BRK IRQ",
+                requires = {"HW_TIM20_BRK_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM21_STM32",
+                brief = "TIM21 Availability",
+                description = "TIM21 Availability",
+                requires = {"HW_TIM21_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM22_STM32",
+                brief = "TIM22 Availability",
+                description = "TIM22 Availability",
+                requires = { "HW_TIM22_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_LPTIM1_STM32",
+                brief = "LPTIM1 Availability",
+                description = "LPTIM1 Availability",
+                requires = {"HW_LPTIM1_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_LPTIM2_STM32",
+                brief = "LPTIM2 Availability",
+                description = "LPTIM2 Availability",
+                requires = {"HW_LPTIM2_STM32"},
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
