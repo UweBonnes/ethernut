@@ -296,14 +296,67 @@ nutarch_cm3_stm32_family =
         name = "nutarch_cm3_stm32f7",
         brief = "STM32F7",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F7" },
-        provides = {
-           "HW_EEPROM_EMUL_STM32",
-           "HW_MCU_CM7",
-        },
         description = "ST Microelectronics STM32 F4 Series",
         sources = { "cm3/dev/stm/stm32f7_clk.c" },
         makedefs = { "MCU=cortex-m7"},
-        script = "arch/cm3/stm32f7.nut"
+        script = "arch/cm3/generated/stm32f7.nut",
+        options =
+        {
+            {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F7",
+                brief = "STM32F7 Devices",
+                description = "Provide devices available in all STM32F7xx devices",
+                default = 1,
+                provides =
+                {
+                    "HW_EEPROM_EMUL_STM32",
+                    "HW_MCU_CM7",
+                    "HW_VOS_STM32",
+                    "HW_OVERDRIVE_STM32",
+                    "HW_FLASH_STM32F2_4",
+                    "HW_GPIO_STM32V2",
+                    "HW_DMA_STM32F2",
+                    "HW_I2C_STM32V2",
+                    "HW_USART_STM32V2",
+                },
+                file = "include/cfg/arch.h",
+                makedefs = {"ITCM_LENGTH=16k", "RAM2_LENGTH=16K"}
+            },
+            {
+                macro = "MCU_STM32F72",
+                brief = "STM32F72 family, 256/512, 256 kB Ram",
+                description = "STM32F72 family with single precision FPU.",
+                requires = {"HW_MCU_STM32F72"},
+                default = 1,
+                file = "include/cfg/arch.h",
+                makedefs = {"RAM0_LENGTH=64k", "RAM1_LENGTH=176K", "RAM2_LENGHT = 16k"}
+            },
+            {
+                macro = "MCU_STM32F74",
+                brief = "STM32F745 family, 512/1024 kB flash, 320 kB Ram",
+                description = "STM32F74 family with single precision FPU.",
+                requires = {"HW_MCU_STM32F74"},
+                default = 1,
+                file = "include/cfg/arch.h",
+                makedefs = {"RAM0_LENGTH=64k", "RAM1_LENGTH=240K"}
+             },
+             {
+                macro = "MCU_STM32F76",
+                brief = "STM32F76 family 1024/2048 KB flash, 512 kB ram",
+                description = "STM32F76 family with double precision FPU.",
+                requires = { "HW_MCU_STM32F76" },
+                default = 1,
+                file = "include/cfg/arch.h",
+                makedefs = {"RAM0_LENGTH=128k", "RAM1_LENGTH=368K"}
+             },
+         }
     },
 }
 

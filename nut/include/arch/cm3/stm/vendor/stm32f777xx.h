@@ -183,7 +183,6 @@ typedef enum
   CAN3_SCE_IRQn               = 107,    /*!< CAN3 SCE Interrupt                                                */
   JPEG_IRQn                   = 108,    /*!< JPEG global Interrupt                                             */
   MDIOS_IRQn                  = 109,    /*!< MDIO Slave global Interrupt                                       */
-  IRQn_MAX                              /*!< Total number of interrupts                                        */
 } IRQn_Type;
 
 /**

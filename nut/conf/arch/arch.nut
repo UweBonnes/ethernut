@@ -1583,7 +1583,7 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F72",
                     "HW_MCU_STM32_DIE_452",
-                    "HW_MCU_STM32F723",
+                    "HW_MCU_STM32F723xx",
                 },
                 makedefs = { "FLASH0_LENGTH=512K"},
             },
@@ -1602,7 +1602,7 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F74",
                     "HW_MCU_STM32_DIE_449",
-                    "HW_MCU_STM32F746",
+                    "HW_MCU_STM32F746xx",
                 },
                 makedefs = {"FLASH0_LENGTH=1024K"}
             },
@@ -1621,7 +1621,7 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F74",
                     "HW_MCU_STM32_DIE_449",
-                    "HW_MCU_STM32F746",
+                    "HW_MCU_STM32F756xx",
                 },
                 makedefs = {"FLASH0_LENGTH=1024K"}
             },
@@ -1640,7 +1640,7 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F76",
                     "HW_MCU_STM32_DIE_451",
-                    "HW_MCU_STM32F767",
+                    "HW_MCU_STM32F767xx",
                 },
                 makedefs = {"FLASH0_LENGTH=2048K"}
             },
@@ -1659,7 +1659,7 @@ nutarch =
                     "HW_MCU_STM32F7",
                     "HW_MCU_STM32F76",
                     "HW_MCU_STM32_DIE_451",
-                    "HW_MCU_STM32F769",
+                    "HW_MCU_STM32F769xx",
                 },
                 makedefs = {"FLASH0_LENGTH=2048K"}
             },
