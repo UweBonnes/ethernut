@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2013-2018 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * All rights reserved.
  *
@@ -76,8 +76,6 @@
  * \brief Constant local data of the STM32 I2C hardware.
  */
 typedef struct _STM32_I2C_HW{
-    /*! \brief Register base. */
-    const uptr_t icb_base;
     /*! \brief SDA_PIN. */
     const nutgpio_t sda;
      /*! \brief SDA Pinmux. */
@@ -90,6 +88,14 @@ typedef struct _STM32_I2C_HW{
     const nutgpio_t smba;
     /*! \brief SMBA PinMux. */
     const uint8_t smba_af;
+    /*! \brief Enable Register. */
+    volatile uint32_t * const enable_reg;
+    /*! \brief Enable mask. */
+    const uint32_t enable_mask;
+    /*! \brief Reset Register. */
+    volatile uint32_t *const reset_reg;
+    /*! \brief reset mask. */
+    const uint32_t reset_mask;
 }STM32_I2C_HW;
 
 /*!
@@ -97,6 +103,7 @@ typedef struct _STM32_I2C_HW{
  */
 typedef struct _STM32_I2CCB {
     const STM32_I2C_HW *hw;
+    I2C_TypeDef *icb_i2c;
     IRQ_HANDLER *icb_sig_ev;
     /*! \brief System error handler. */
     IRQ_HANDLER *icb_sig_er;
@@ -114,14 +121,12 @@ static void I2cEventBusIrqHandler(void *arg)
 {
     STM32_I2CCB *icb = (STM32_I2CCB *) arg;
     NUTI2C_MSG *msg = icb->icb_msg;
-    I2C_TypeDef *i2c;
     uint32_t cr2;
 
-    i2c = (I2C_TypeDef *) icb->hw->icb_base;
-    cr2 = i2c->CR2;
+    cr2 = icb->icb_i2c->CR2;
 
     /* TX parts*/
-    if ((i2c->ISR & I2C_ISR_TCR) && !(cr2 & I2C_CR2_RD_WRN))
+    if ((icb->icb_i2c->ISR & I2C_ISR_TCR) && !(cr2 & I2C_CR2_RD_WRN))
     {
         uint32_t txbytes_left = msg->msg_wlen - msg->msg_widx;
         if (txbytes_left <= 0xff)
@@ -130,30 +135,30 @@ static void I2cEventBusIrqHandler(void *arg)
             cr2 |= txbytes_left << 16;
         }
         /* else I2C_CR2_NBYTES and I2C_CR2_RELOAD already set*/
-        i2c->CR2 = cr2; /* Write to NBYTES clears TCR*/
+        icb->icb_i2c->CR2 = cr2; /* Write to NBYTES clears TCR*/
     }
-    if ((i2c->ISR & I2C_ISR_TC) && !(cr2 & I2C_CR2_RD_WRN))
+    if ((icb->icb_i2c->ISR & I2C_ISR_TC) && !(cr2 & I2C_CR2_RD_WRN))
     {
-        i2c->CR1 &= ~I2C_CR1_TXIE;
+        icb->icb_i2c->CR1 &= ~I2C_CR1_TXIE;
         cr2 &= ~I2C_CR2_NBYTES;
         if (msg->msg_rsiz == 0) /* No read transaction, stop after write*/
         {
-            i2c->CR2 = cr2 | I2C_CR2_STOP  ;
+            icb->icb_i2c->CR2 = cr2 | I2C_CR2_STOP  ;
         }
         else
         {
-            i2c->CR1 |= I2C_CR1_RXIE;
+            icb->icb_i2c->CR1 |= I2C_CR1_RXIE;
             cr2 |= I2C_CR2_RD_WRN | msg->msg_rsiz << 16;
-            i2c->CR2 = cr2 | I2C_CR2_START  ;
+            icb->icb_i2c->CR2 = cr2 | I2C_CR2_START  ;
         }
     }
-    if ((i2c->ISR & I2C_ISR_TXIS) && !(cr2 & I2C_CR2_RD_WRN))
+    if ((icb->icb_i2c->ISR & I2C_ISR_TXIS) && !(cr2 & I2C_CR2_RD_WRN))
     {
-        i2c->TXDR = msg->msg_wdat[msg->msg_widx];
+        icb->icb_i2c->TXDR = msg->msg_wdat[msg->msg_widx];
         msg->msg_widx++;
     }
     /* RX parts*/
-    if ((i2c->ISR & I2C_ISR_TCR) && (cr2 & I2C_CR2_RD_WRN))
+    if ((icb->icb_i2c->ISR & I2C_ISR_TCR) && (cr2 & I2C_CR2_RD_WRN))
     {
         uint32_t rxbytes_left = msg->msg_rsiz - msg->msg_ridx;
         if (rxbytes_left <= 0xff)
@@ -162,36 +167,36 @@ static void I2cEventBusIrqHandler(void *arg)
             cr2 |= rxbytes_left << 16;
         }
         /* else I2C_CR2_NBYTES and I2C_CR2_RELOAD already set*/
-        i2c->CR2 = cr2; /* Write to NBYTES clears TCR*/
+        icb->icb_i2c->CR2 = cr2; /* Write to NBYTES clears TCR*/
     }
-    if ((i2c->ISR & I2C_ISR_TC) && (cr2 & I2C_CR2_RD_WRN))
+    if ((icb->icb_i2c->ISR & I2C_ISR_TC) && (cr2 & I2C_CR2_RD_WRN))
     {
-        i2c->CR1 &= ~(I2C_CR1_TCIE | I2C_CR1_RXIE);
-        i2c->CR2 = cr2 | I2C_CR2_STOP  ;
+        icb->icb_i2c->CR1 &= ~(I2C_CR1_TCIE | I2C_CR1_RXIE);
+        icb->icb_i2c->CR2 = cr2 | I2C_CR2_STOP  ;
     }
-    if ((i2c->ISR & I2C_ISR_RXNE) && (cr2 & I2C_CR2_RD_WRN))
+    if ((icb->icb_i2c->ISR & I2C_ISR_RXNE) && (cr2 & I2C_CR2_RD_WRN))
     {
-        msg->msg_rdat[msg->msg_ridx] = i2c->RXDR;
+        msg->msg_rdat[msg->msg_ridx] = icb->icb_i2c->RXDR;
         msg->msg_ridx++;
         if (msg->msg_ridx == msg->msg_rsiz) {
             /* No more RX Interrupts*/
-            i2c->CR1 &= ~I2C_CR1_RXIE;
+            icb->icb_i2c->CR1 &= ~I2C_CR1_RXIE;
             /* Generate Stop at end of byte */
-            i2c->CR2 |=  I2C_CR2_STOP;
+            icb->icb_i2c->CR2 |=  I2C_CR2_STOP;
         }
     }
-    if (i2c->ISR & I2C_ISR_STOPF)
+    if (icb->icb_i2c->ISR & I2C_ISR_STOPF)
     {
-        i2c->CR1 &= ~I2C_CR1_STOPIE;
-        i2c->ICR |=  I2C_ICR_STOPCF;
+        icb->icb_i2c->CR1 &= ~I2C_CR1_STOPIE;
+        icb->icb_i2c->ICR |=  I2C_ICR_STOPCF;
         NutEventPostFromIrq(&icb->icb_queue);
     }
-    if (i2c->ISR & I2C_ISR_NACKF)
+    if (icb->icb_i2c->ISR & I2C_ISR_NACKF)
     {
         /* Save error, but only exit through STOPF */
         icb->errors |= I2C_ISR_NACKF;
-        i2c->CR1 &= ~I2C_CR1_NACKIE;
-        i2c->ICR |=  I2C_ICR_NACKCF;
+        icb->icb_i2c->CR1 &= ~I2C_CR1_NACKIE;
+        icb->icb_i2c->ICR |=  I2C_ICR_NACKCF;
     }
 #if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
 
@@ -203,23 +208,21 @@ static void I2cEventBusIrqHandler(void *arg)
 static void I2cErrorBusIrqHandler(void *arg)
 {
     STM32_I2CCB *icb = (STM32_I2CCB *) arg;
-    I2C_TypeDef *i2c;
 
     /* Fixme: More error handling! */
-    i2c = (I2C_TypeDef *) icb->hw->icb_base;
 #endif
-    if (i2c->ISR & I2C_ISR_ALERT)
-        i2c->ICR |= I2C_ICR_ALERTCF;
-    if (i2c->ISR & I2C_ISR_PECERR)
-        i2c->ICR |= I2C_ICR_PECCF;
-    if (i2c->ISR & I2C_ISR_OVR)
-        i2c->ICR |= I2C_ICR_OVRCF;
-    if (i2c->ISR & I2C_ISR_ARLO)
-        i2c->ICR |= I2C_ICR_ARLOCF;
-    if (i2c->ISR & I2C_ISR_BERR)
-        i2c->ICR |= I2C_ICR_BERRCF;
-    if (i2c->ISR & I2C_ISR_TIMEOUT)
-        i2c->ICR |= I2C_ICR_TIMOUTCF;
+    if (icb->icb_i2c->ISR & I2C_ISR_ALERT)
+        icb->icb_i2c->ICR |= I2C_ICR_ALERTCF;
+    if (icb->icb_i2c->ISR & I2C_ISR_PECERR)
+        icb->icb_i2c->ICR |= I2C_ICR_PECCF;
+    if (icb->icb_i2c->ISR & I2C_ISR_OVR)
+        icb->icb_i2c->ICR |= I2C_ICR_OVRCF;
+    if (icb->icb_i2c->ISR & I2C_ISR_ARLO)
+        icb->icb_i2c->ICR |= I2C_ICR_ARLOCF;
+    if (icb->icb_i2c->ISR & I2C_ISR_BERR)
+        icb->icb_i2c->ICR |= I2C_ICR_BERRCF;
+    if (icb->icb_i2c->ISR & I2C_ISR_TIMEOUT)
+        icb->icb_i2c->ICR |= I2C_ICR_TIMOUTCF;
 }
 
 /*!
@@ -232,7 +235,6 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
 {
     NUTI2C_BUS *bus;
     STM32_I2CCB *icb;
-    I2C_TypeDef *i2c;
     uint32_t cr2;
     int rc = 0;
 
@@ -242,8 +244,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     icb = (STM32_I2CCB *) bus->bus_icb;
     icb->icb_msg = msg;
     icb->errors = 0;
-    i2c = (I2C_TypeDef *) icb->hw->icb_base;
-    cr2 = i2c->CR2;
+    cr2 = icb->icb_i2c->CR2;
     cr2 &= 0xf8000000; /* Clean out */
     cr2 |= slave->slave_address << 1;
     msg->msg_widx = 0;
@@ -251,7 +252,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     /* are there bytes to write? */
     if (msg->msg_wlen)
     {
-        i2c->CR1 |= I2C_CR1_TXIE | I2C_CR1_TCIE | I2C_CR1_STOPIE | I2C_CR1_NACKIE;
+        icb->icb_i2c->CR1 |= I2C_CR1_TXIE | I2C_CR1_TCIE | I2C_CR1_STOPIE | I2C_CR1_NACKIE;
         if (msg->msg_wlen > 0xff)
             cr2 |= I2C_CR2_NBYTES | I2C_CR2_RELOAD;
         else
@@ -259,13 +260,13 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     }
     else if (msg->msg_rsiz)
     {
-        i2c->CR1 |= I2C_CR1_RXIE | I2C_CR1_STOPIE  | I2C_CR1_NACKIE;
+        icb->icb_i2c->CR1 |= I2C_CR1_RXIE | I2C_CR1_STOPIE  | I2C_CR1_NACKIE;
         if (msg->msg_rsiz > 0xff)
             cr2 |= I2C_CR2_RD_WRN | I2C_CR2_NBYTES | I2C_CR2_RELOAD;
         else
             cr2 |= I2C_CR2_RD_WRN | msg->msg_rsiz << 16;
     }
-    i2c->CR2 = cr2 | I2C_CR2_START;
+    icb->icb_i2c->CR2 = cr2 | I2C_CR2_START;
     rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
     if ((icb->errors) || (rc))
         msg->msg_ridx = -1;
@@ -274,6 +275,9 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
 
 static int checkpin_and_config(STM32_I2CCB *icb)
 {
+    if (!icb) {
+        return -1;
+    }
     Stm32GpioConfigSet(
         icb->hw->sda, GPIO_CFG_OUTPUT| GPIO_CFG_PERIPHAL|
         GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP | GPIO_CFG_SPEED_FAST,
@@ -286,37 +290,10 @@ static int checkpin_and_config(STM32_I2CCB *icb)
         icb->hw->smba, GPIO_CFG_OUTPUT | GPIO_CFG_PERIPHAL|
         GPIO_CFG_MULTIDRIVE| GPIO_CFG_PULLUP |GPIO_CFG_SPEED_FAST,
         icb->hw->smba_af);
-    if (icb->hw->icb_base == I2C1_BASE)
-    {
-        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_I2C1EN));
-        /* Use HSI clock*/
-#if defined(RCC_CFGR3_I2C1SW)
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, CFGR3,    _BI32(RCC_CFGR3_I2C1SW));
-#endif
-        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB1ENR_I2C1EN));
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C1RST));
-    }
-#if defined(I2C2_BASE)
-    else if (icb->hw->icb_base == I2C2_BASE)
-    {
-        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C2RST));
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_I2C2EN));
-        /* Use HSI clock*/
-#if defined(RCC_CFGR3_I2C2SW)
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, CFGR3,    _BI32(RCC_CFGR3_I2C2SW));
-#endif
-        CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR,  _BI32(RCC_APB1ENR_I2C2EN));
-        CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_I2C2RST));
-    }
-#endif
-#if defined(I2C3_BASE)
-    else if (icb->hw->icb_base == I2C3_BASE)
-    {
-    }
-#endif
-    else
-        return -1;
+    *icb->hw->reset_reg  |=  icb->hw->reset_mask;
+    *icb->hw->enable_reg |=  icb->hw->enable_mask;
+    *icb->hw->reset_reg  &= ~icb->hw->reset_mask;
+    /* HSI is default clock.*/
     return 0;
 }
 
@@ -336,13 +313,11 @@ static int I2cBusConf(NUTI2C_BUS *bus)
     STM32_I2CCB *icb;
     long rate;
     uint32_t timing;
-    I2C_TypeDef *i2c;
 
     /* Check parameters. */
     NUTASSERT(bus != NULL);
     NUTASSERT(bus->bus_icb != NULL);
     icb = (STM32_I2CCB *) bus->bus_icb;
-    i2c = (I2C_TypeDef*) icb->hw->icb_base;
 
     /* Get requested rate or use the default. */
     rate = bus->bus_rate;
@@ -361,12 +336,12 @@ static int I2cBusConf(NUTI2C_BUS *bus)
         timing = 0x1 <<28 |0x4 << 20 | 0x2 << 16| 0x23 << 8 | 0x27 << 0;
     else
         timing = 0x1 <<28 |0x4 << 20 | 0x2 << 16| 0xc3 << 8 | 0xc7 << 0;
-    if ((i2c->TIMINGR & 0xf0ffffff) != timing)
+    if ((icb->icb_i2c->TIMINGR & 0xf0ffffff) != timing)
     {
         /* Disable I2C and set new timing */
-        while(i2c->CR1 & I2C_CR1_PE)
-            i2c->CR1 &= ~I2C_CR1_PE;
-        i2c->TIMINGR = timing;
+        while(icb->icb_i2c->CR1 & I2C_CR1_PE)
+            icb->icb_i2c->CR1 &= ~I2C_CR1_PE;
+        icb->icb_i2c->TIMINGR = timing;
     }
 
     return 0;
@@ -387,7 +362,6 @@ static int I2cBusConf(NUTI2C_BUS *bus)
  */
 static int I2cBusInit(NUTI2C_BUS *bus)
 {
-    I2C_TypeDef *i2c;
     STM32_I2CCB *icb;
 
     icb = (STM32_I2CCB *) bus->bus_icb;
@@ -398,8 +372,7 @@ static int I2cBusInit(NUTI2C_BUS *bus)
     if (I2cBusConf(bus)) {
         return -1;
     }
-    i2c = (I2C_TypeDef*) icb->hw->icb_base;
-    i2c->CR1 |= I2C_CR1_PE;
+    icb->icb_i2c->CR1 |= I2C_CR1_PE;
     if (NutRegisterIrqHandler(icb->icb_sig_ev, I2cEventBusIrqHandler, icb))
         return -1;
     NutIrqEnable(icb->icb_sig_ev);
@@ -427,7 +400,6 @@ static int I2cBusInit(NUTI2C_BUS *bus)
 static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
 {
     STM32_I2CCB *icb;
-    I2C_TypeDef *i2c;
     int ret;
 
     if ((bus->bus_flags & I2C_BF_INITIALIZED) == 0) {
@@ -437,10 +409,9 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
             return res;
     }
     icb = (STM32_I2CCB *) bus->bus_icb;
-    i2c = (I2C_TypeDef*) icb->hw->icb_base;
     icb->errors = 0;
-    i2c->CR1 |= I2C_CR1_NACKIE |I2C_CR1_STOPIE;
-    i2c->CR2 = I2C_CR2_AUTOEND | 0*I2C_CR2_NBYTES| I2C_CR2_STOP |
+    icb->icb_i2c->CR1 |= I2C_CR1_NACKIE |I2C_CR1_STOPIE;
+    icb->icb_i2c->CR2 = I2C_CR2_AUTOEND | 0*I2C_CR2_NBYTES| I2C_CR2_STOP |
         I2C_CR2_START| 0*I2C_CR2_ADD10 | 0* I2C_CR2_RD_WRN |sla<<1;
     NutEventWait(&icb->icb_queue, 10);
     if (icb->errors & I2C_ISR_NACKF)
@@ -452,30 +423,41 @@ static int I2cBusProbe(NUTI2C_BUS *bus, int sla)
 
 #define I2C1_SDA_AF  PINMUX(I2C1_SDA, I2C1_SDA_FUNC)
 
-# if  I2C1_SDA_AF == AF_NO_SUCH_PINFUNC
-#  warning BAD I2C1_SDA assignment
-# endif
-# define I2C1_SCL_AF  PINMUX(I2C1_SCL, I2C1_SCL_FUNC)
-# if  I2C1_SCL_AF == AF_NO_SUCH_PINFUNC
-#  warning BAD I2C1_SCL assignment
-# endif
-# define I2C1_SMBA_AF PINMUX(I2C1_SMBA, I2C1_SMBA_FUNC)
-# if  I2C1_SMBA_AF == AF_NO_SUCH_PINFUNC
-#  warning BAD I2C1_SMBA assignment
-# endif
+#if  I2C1_SDA_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C1_SDA assignment
+#endif
+#define I2C1_SCL_AF  PINMUX(I2C1_SCL, I2C1_SCL_FUNC)
+#if  I2C1_SCL_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C1_SCL assignment
+#endif
+#define I2C1_SMBA_AF PINMUX(I2C1_SMBA, I2C1_SMBA_FUNC)
+#if  I2C1_SMBA_AF == AF_NO_SUCH_PINFUNC
+# warning BAD I2C1_SMBA assignment
+#endif
 
 static const STM32_I2C_HW i2c1_hw = {
-    .icb_base  = I2C1_BASE,
     .sda       = I2C1_SDA,
     .scl       = I2C1_SCL,
     .smba      = I2C1_SMBA,
     .sda_af    = I2C1_SDA_AF,
     .scl_af    = I2C1_SCL_AF,
     .smba_af   = I2C1_SMBA_AF,
+#if defined(RCC_APB1ENR1_I2C1EN)
+    .enable_reg  = &RCC->APB1ENR1,
+    .enable_mask = RCC_APB1ENR1_I2C1EN,
+    .reset_reg   = &RCC->APB1RSTR1,
+    .reset_mask  = RCC_APB1RSTR1_I2C1RST,
+#else
+    .enable_reg  = &RCC->APB1ENR,
+    .enable_mask = RCC_APB1ENR_I2C1EN,
+    .reset_reg   = &RCC->APB1RSTR,
+    .reset_mask  = RCC_APB1RSTR_I2C1RST,
+#endif
 };
 
 static STM32_I2CCB i2c1cb = {
     .hw         = &i2c1_hw,
+    .icb_i2c    = I2C1,
     .icb_sig_ev = &sig_TWI1_EV,
 #if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
     .icb_sig_er = &sig_TWI1_ER,
@@ -512,7 +494,6 @@ NUTI2C_BUS i2cBus1Stm32 = {
 # endif
 
 static const STM32_I2C_HW i2c2_hw = {
-    .icb_base  = I2C2_BASE,
     .sda       = I2C2_SDA,
     .scl       = I2C2_SCL,
     .smba      = I2C2_SMBA,
@@ -521,19 +502,170 @@ static const STM32_I2C_HW i2c2_hw = {
 # if defined( I2C2_SMBA_FUNC)
     /* e.g. STM32F091 has no I2C2_SMBA pin. */
     .smba_af   = I2C2_SMBA_AF,
+# endif
+#if defined(RCC_APB1ENR1_I2C2EN)
+    .enable_reg  = &RCC->APB1ENR1,
+    .enable_mask = RCC_APB1ENR1_I2C2EN,
+    .reset_reg   = &RCC->APB1RSTR1,
+    .reset_mask  = RCC_APB1RSTR1_I2C2RST,
+#else
+    .enable_reg  = &RCC->APB1ENR,
+    .enable_mask = RCC_APB1ENR_I2C2EN,
+    .reset_reg   = &RCC->APB1RSTR,
+    .reset_mask  = RCC_APB1RSTR_I2C2RST,
 #endif
 };
 
 static STM32_I2CCB i2c2cb = {
     .hw         = &i2c2_hw,
+    .icb_i2c    = I2C2,
     .icb_sig_ev = &sig_TWI2_EV,
-#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
     .icb_sig_er = &sig_TWI2_ER,
-#endif
+# endif
 };
 
 NUTI2C_BUS i2cBus2Stm32 = {
     &i2c2cb,    /* bus_icb */
+    I2cBusInit, /* bus_init */
+    I2cBusConf, /* bus_configure */
+    I2cBusProbe,/* bus_probe */
+    I2cBusTran, /* bus_transceive */
+    100,        /* bus_timeout */
+    0,          /* bus_rate */
+    0,          /* bus_flags */
+    NULL        /* bus_mutex */
+};
+#endif
+
+#if defined(HW_I2C3_STM32)
+
+# define I2C3_SDA_AF  PINMUX(I2C3_SDA, I2C3_SDA_FUNC)
+# if  I2C3_SDA_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C3_SDA assignment
+# endif
+# define I2C3_SCL_AF  PINMUX(I2C3_SCL, I2C3_SCL_FUNC)
+# if  I2C3_SCL_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C3_SCL assignment
+# endif
+# if defined( I2C3_SMBA_FUNC)
+#  define I2C3_SMBA_AF PINMUX(I2C3_SMBA, I2C3_SMBA_FUNC)
+#  if  I2C3_SMBA_AF == AF_NO_SUCH_PINFUNC
+#   warning BAD I2C3_SMBA assignment
+#  endif
+# endif
+
+static const STM32_I2C_HW i2c3_hw = {
+    .sda       = I2C3_SDA,
+    .scl       = I2C3_SCL,
+    .smba      = I2C3_SMBA,
+    .sda_af    = I2C3_SDA_AF,
+    .scl_af    = I2C3_SCL_AF,
+# if defined( I2C3_SMBA_FUNC)
+    /* e.g. STM32F091 has no I2C3_SMBA pin. */
+    .smba_af   = I2C3_SMBA_AF,
+# endif
+#if defined(RCC_APB1ENR1_I2C3EN)
+/* STM32L4 */
+    .enable_reg  = &RCC->APB1ENR1,
+    .enable_mask = RCC_APB1ENR1_I2C3EN,
+    .reset_reg   = &RCC->APB1RSTR1,
+    .reset_mask  = RCC_APB1RSTR1_I2C3RST,
+#elif defined(RCC_APB1LENR_I2C3EN)
+/* H7*/
+    .enable_reg  = &RCC->APB1LENR,
+    .enable_mask = RCC_APB1LENR_I2C3EN,
+    .reset_reg   = &RCC->APB1LRSTR,
+    .reset_mask  = RCC_APB1LRSTR_I2C3RST,
+#else
+    .enable_reg  = &RCC->APB1ENR,
+    .enable_mask = RCC_APB1ENR_I2C3EN,
+    .reset_reg   = &RCC->APB1RSTR,
+    .reset_mask  = RCC_APB1RSTR_I2C3RST,
+#endif
+};
+
+static STM32_I2CCB i2c3cb = {
+    .hw         = &i2c3_hw,
+    .icb_i2c    = I2C3,
+    .icb_sig_ev = &sig_TWI3_EV,
+# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+    .icb_sig_er = &sig_TWI3_ER,
+# endif
+};
+
+NUTI2C_BUS i2cBus3Stm32 = {
+    &i2c3cb,    /* bus_icb */
+    I2cBusInit, /* bus_init */
+    I2cBusConf, /* bus_configure */
+    I2cBusProbe,/* bus_probe */
+    I2cBusTran, /* bus_transceive */
+    100,        /* bus_timeout */
+    0,          /* bus_rate */
+    0,          /* bus_flags */
+    NULL        /* bus_mutex */
+};
+#endif
+
+#if defined(HW_I2C4_STM32)
+
+# define I2C4_SDA_AF  PINMUX(I2C4_SDA, I2C4_SDA_FUNC)
+# if  I2C4_SDA_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C4_SDA assignment
+# endif
+# define I2C4_SCL_AF  PINMUX(I2C4_SCL, I2C4_SCL_FUNC)
+# if  I2C4_SCL_AF == AF_NO_SUCH_PINFUNC
+#  warning BAD I2C4_SCL assignment
+# endif
+# if defined( I2C4_SMBA_FUNC)
+#  define I2C4_SMBA_AF PINMUX(I2C4_SMBA, I2C4_SMBA_FUNC)
+#  if  I2C4_SMBA_AF == AF_NO_SUCH_PINFUNC
+#   warning BAD I2C4_SMBA assignment
+#  endif
+# endif
+
+static const STM32_I2C_HW i2c4_hw = {
+    .sda       = I2C4_SDA,
+    .scl       = I2C4_SCL,
+    .smba      = I2C4_SMBA,
+    .sda_af    = I2C4_SDA_AF,
+    .scl_af    = I2C4_SCL_AF,
+# if defined( I2C4_SMBA_FUNC)
+    /* e.g. STM32F091 has no I2C4_SMBA pin. */
+    .smba_af   = I2C4_SMBA_AF,
+# endif
+#if defined(RCC_APB1ENR_I2C4EN)
+/* STM32F76*/
+    .enable_reg  = &RCC->APB1ENR,
+    .enable_mask = RCC_APB1ENR_I2C4EN,
+    .reset_reg   = &RCC->APB1RSTR,
+    .reset_mask  = RCC_APB1RSTR_I2C4RST,
+#elif defined(RCC_APB1EN2_I2C4EN)
+ /* STM32L4*/
+    .enable_reg  = &RCC->APB1ENR2,
+    .enable_mask = RCC_APB1ENR2_I2C4EN,
+    .reset_reg   = &RCC->APB1RSTR2,
+    .reset_mask  = RCC_APB1RSTR2_I2C4RST,
+#elif defined(RCC_APB4ENR_I2C4EN)
+ /* STM32H7*/
+    .enable_reg  = &RCC->APB4ENR,
+    .enable_mask = RCC_APB4ENR_I2C4EN,
+    .reset_reg   = &RCC->APB4RSTR,
+    .reset_mask  = RCC_APB4RSTR_I2C4RST,
+#endif
+};
+
+static STM32_I2CCB i2c4cb = {
+    .hw         = &i2c4_hw,
+    .icb_i2c    = I2C4,
+    .icb_sig_ev = &sig_TWI4_EV,
+# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+    .icb_sig_er = &sig_TWI4_ER,
+# endif
+};
+
+NUTI2C_BUS i2cBus4Stm32 = {
+    &i2c4cb,    /* bus_icb */
     I2cBusInit, /* bus_init */
     I2cBusConf, /* bus_configure */
     I2cBusProbe,/* bus_probe */

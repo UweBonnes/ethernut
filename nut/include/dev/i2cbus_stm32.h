@@ -48,5 +48,7 @@
 
 extern NUTI2C_BUS i2cBus1Stm32;
 extern NUTI2C_BUS i2cBus2Stm32;
+extern NUTI2C_BUS i2cBus3Stm32;
+extern NUTI2C_BUS i2cBus4Stm32;
 
 #endif
