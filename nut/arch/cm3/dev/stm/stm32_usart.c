@@ -662,6 +662,9 @@ static uint32_t Stm32UsartGetSpeed(void)
 
     clk = NutClockGet(USARTclk);
     brr = USARTn->BRR;
+#if USARTidx > 15
+    return ((clk * 16) / brr) * 16;
+#else
     if (USART_CR1_OVER8 && (USARTn->CR1 & USART_CR1_OVER8))
     {
         uint32_t frac;
@@ -671,6 +674,7 @@ static uint32_t Stm32UsartGetSpeed(void)
         brr |= frac;
     }
     return clk / brr;
+#endif
 }
 
 /*!
@@ -687,14 +691,22 @@ static int Stm32UsartSetSpeed(uint32_t rate)
 {
     uint32_t apbclock;
     uint32_t divider;
-    uint32_t cr1;
 
     Stm32UsartDisable();
 
     apbclock = NutClockGet(USARTclk);
 
+#if USARTidx > 15
+#define STM32_LPUART1_MAX_DIV ((1 << 20) - 1)
+        divider = ((apbclock * 16) / rate) * 16; /* care for overflow */
+        if (divider < 0x300) {
+            divider = 0x300;
+        } else if (divider > STM32_LPUART1_MAX_DIV) {
+            divider = STM32_LPUART1_MAX_DIV;
+        }
+#else
     divider = (2 * apbclock) / rate;
-    cr1 = USARTn->CR1;
+    uint32_t cr1 = USARTn->CR1;
 
     if ((divider > 0x20) || (USART_CR1_OVER8 == 0)) {
         cr1 &= ~USART_CR1_OVER8;
@@ -713,6 +725,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
         divider |= remainder >> 1;
     }
     USARTn->CR1 = cr1;
+#endif
     /* Write to USART BRR */
     USARTn->BRR = divider;
 

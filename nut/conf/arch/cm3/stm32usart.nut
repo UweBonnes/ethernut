@@ -908,7 +908,7 @@ nutarch_cm3_stm32_usart_devices =
         {"HW_GPIO_STM32V1", "HW_LPUSART1_STM32"},
         {"HW_GPIO_STM32V2", "HW_LPUSART1_STM32"},
         {"HW_LPUART1_STM32"},
-        "",
+        {"cm3/dev/stm/stm32_lpuart1.c"},
         "No remap",
         "0",
         GetLpuart1Tx,

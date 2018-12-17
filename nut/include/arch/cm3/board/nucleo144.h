@@ -88,12 +88,22 @@
 # define SW1_PIN  13
 #endif
 
-#ifndef DEV_UART
-#define DEV_UART devUsartStm32_3
-#include <dev/usartstm32.h>
-#endif
-#ifndef DEV_UART_NAME
-#define DEV_UART_NAME  devUsartStm32_3.dev_name
+#if PLATFORM_SUB == MB1312
+# ifndef DEV_UART
+#  define DEV_UART devLpuartStm32_1
+#  include <dev/usartstm32.h>
+# endif
+# ifndef DEV_UART_NAME
+#  define DEV_UART_NAME  devLpuartStm32_1.dev_name
+# endif
+#else
+# ifndef DEV_UART
+#  define DEV_UART devUsartStm32_3
+#  include <dev/usartstm32.h>
+# endif
+# ifndef DEV_UART_NAME
+#  define DEV_UART_NAME  devUsartStm32_3.dev_name
+# endif
 #endif
 
 #ifndef DEV_I2CBUS

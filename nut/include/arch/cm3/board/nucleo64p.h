@@ -48,11 +48,11 @@
 
 /* LPUART is on same pins as USART2, but not yet supported.*/
 #ifndef DEV_CONSOLE
-#define DEV_CONSOLE devUsartStm32_2
+#define DEV_CONSOLE devLpuartStm32_1
 #endif
 
 #ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
+#define DEV_CONSOLE_NAME devLpuartStm32_1.dev_name
 #endif
 
 /* LED1 collides with Chip select for VL6180 X-Nucleo-IJP01A1 !*/
