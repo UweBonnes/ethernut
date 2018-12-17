@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013, 2015-1027 by Uwe Bonnes
+ * Copyright (C) 2013, 2015 - 2018 by Uwe Bonnes
  *                              <bon@elektron.ikp.physik.tu-darmstadt.de>
  *
  * All rights reserved.
@@ -170,6 +170,20 @@ void SystemInit (void)
      * Bootloader might have set exotic modes.
      */
     SCB->SCR = 0;
+    /* Disable DMA block, as bootloader might have initialized it.
+       New DMA code needs DMA unclocked on entry!*/
+#if defined(RCC_AHBENR_DMA1EN)
+    RCC->AHBENR &= ~RCC_AHBENR_DMA1EN;
+#endif
+#if defined(RCC_AHBENR_DMA2EN)
+    RCC->AHBENR &= ~RCC_AHBENR_DMA2EN;
+#endif
+#if defined(RCC_AHB1ENR_DMA1EN)
+    RCC->AHB1ENR &= ~RCC_AHB1ENR_DMA1EN;
+#endif
+#if defined(RCC_AHB1ENR_DMA2EN)
+    RCC->AHB1ENR &= ~RCC_AHB1ENR_DMA2EN;
+#endif
 
     /* During setup, PWR is needed in multiple places.
      * Unconditionally enable it here.
