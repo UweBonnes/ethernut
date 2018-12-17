@@ -144,6 +144,7 @@ def generate(name, headerfile, luafile, dbpath):
     luafile.write("            {\n")
     luafile.write("               \"UCPFLAGS+=-DIRQn_MAX=%d\",\n" % (num_irq + 1))
     luafile.write("               \"HWDEF += -DSTM32DIE=%s\",\n" % die)
+    luafile.write("               \"HWDEF += -DVENDOR=\\\"<arch/cm3/stm/vendor/%s.h>\\\"\",\n" % devicename.lower())
     luafile.write("            },\n")
     luafile.write("         },\n")
     headerdata.close()

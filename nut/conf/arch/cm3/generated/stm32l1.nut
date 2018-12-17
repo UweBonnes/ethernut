@@ -79,6 +79,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=45",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l100xb.h>\"",
             },
          },
          {
@@ -153,6 +154,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=45",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l100xba.h>\"",
             },
          },
          {
@@ -234,6 +236,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l100xc.h>\"",
             },
          },
          {
@@ -307,6 +310,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=45",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l151xb.h>\"",
             },
          },
          {
@@ -380,6 +384,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=45",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l151xba.h>\"",
             },
          },
          {
@@ -462,6 +467,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l151xc.h>\"",
             },
          },
          {
@@ -544,6 +550,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l151xca.h>\"",
             },
          },
          {
@@ -629,6 +636,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=436",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l151xd.h>\"",
             },
          },
          {
@@ -713,6 +721,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=437",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l151xdx.h>\"",
             },
          },
          {
@@ -797,6 +806,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=437",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l151xe.h>\"",
             },
          },
          {
@@ -871,6 +881,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=45",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l152xb.h>\"",
             },
          },
          {
@@ -945,6 +956,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=45",
                "HWDEF += -DSTM32DIE=429",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l152xba.h>\"",
             },
          },
          {
@@ -1028,6 +1040,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=436",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l152xc.h>\"",
             },
          },
          {
@@ -1111,6 +1124,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=436",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l152xca.h>\"",
             },
          },
          {
@@ -1197,6 +1211,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=436",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l152xd.h>\"",
             },
          },
          {
@@ -1282,6 +1297,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=437",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l152xdx.h>\"",
             },
          },
          {
@@ -1367,6 +1383,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=437",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l152xe.h>\"",
             },
          },
          {
@@ -1451,6 +1468,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=427",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l162xc.h>\"",
             },
          },
          {
@@ -1535,6 +1553,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=436",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l162xca.h>\"",
             },
          },
          {
@@ -1622,6 +1641,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=436",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l162xd.h>\"",
             },
          },
          {
@@ -1708,6 +1728,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=437",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l162xdx.h>\"",
             },
          },
          {
@@ -1794,6 +1815,7 @@ nutarch_cm3_stm32l1 =
             {
                "UCPFLAGS+=-DIRQn_MAX=57",
                "HWDEF += -DSTM32DIE=437",
+               "HWDEF += -DVENDOR=\"<arch/cm3/stm/vendor/stm32l162xe.h>\"",
             },
          },
       }
