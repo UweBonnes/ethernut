@@ -120,7 +120,6 @@ typedef enum
   USART1_IRQn                 = 27,     /*!< USART1 global Interrupt & EXTI Line25 Interrupt (USART1 wakeup) */
   USART2_IRQn                 = 28,     /*!< USART2 global Interrupt & EXTI Line26 Interrupt (USART2 wakeup) */
   USART3_6_IRQn               = 29,     /*!< USART3 to USART6 global Interrupt                               */
-  IRQn_MAX                              /*!< Total number of interrupts                                      */
 } IRQn_Type;
 
 /**

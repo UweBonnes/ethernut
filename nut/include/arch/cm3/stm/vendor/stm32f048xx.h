@@ -120,7 +120,6 @@ typedef enum
   USART2_IRQn                 = 28,     /*!< USART2 global Interrupt                                         */
   CEC_CAN_IRQn                = 30,     /*!< CEC and CAN global Interrupts & EXTI Line27 Interrupt           */
   USB_IRQn                    = 31,     /*!< USB global Interrupt  & EXTI Line18 Interrupt                   */
-  IRQn_MAX                              /*!< Total number of interrupts                                      */
 } IRQn_Type;
 
 /**

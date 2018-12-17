@@ -118,7 +118,6 @@ typedef enum
   SPI2_IRQn                   = 26,     /*!< SPI2 global Interrupt                                           */
   USART1_IRQn                 = 27,      /*!< USART1 global Interrupt                                        */
   USART2_IRQn                 = 28,     /*!< USART2 global Interrupt                                         */
-  IRQn_MAX                              /*!< Total number of interrupts                                      */
 } IRQn_Type;
 
 /**

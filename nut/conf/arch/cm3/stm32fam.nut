@@ -62,15 +62,46 @@ nutarch_cm3_stm32_family =
         brief = "STM32F0",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32F0" },
         description = "ST Microelectronics STM32 F0 Series",
-        provides = {
-           "HW_EEPROM_EMUL_STM32",
-        },
         sources = {
            "cm3/dev/stm/stm32f30_clk.c",
            "cm3/dev/stm/stm32f1_3_flash.c",
         },
         makedefs = {"MCU=cortex-m0"},
-        script = "arch/cm3/stm32f0.nut"
+        script = "arch/cm3/generated/stm32f0.nut",
+        options =
+        {
+            {
+                macro = "MCU_STM32F0",
+                brief = "STM32F0",
+                description = "Devices available in all STM32F0 devices",
+                default = 1,
+                provides = {
+                    "HW_EEPROM_EMUL_STM32",
+                    "HW_HSI8_STM32F",
+                    "HW_RTC_STM32_V2",
+                    "HW_GPIO_STM32V2",
+                    "HW_I2C_STM32V2",
+                    "HW_USART_STM32V2",
+                },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_STM32F09",
+                brief = "STM32F09",
+                description = "DMA on STM32F09 differs.",
+                requires = {"HW_MCU_STM32F09"},
+                type = "integer",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
+        }
     },
     {
         name = "nutarch_cm3_stm32f1",
