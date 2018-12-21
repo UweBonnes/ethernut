@@ -176,6 +176,8 @@ static void _putpad(int _putb(int fd, const void *, size_t), int fd, const char 
 #define LONGLONG    0x20    /* long long integer*/
 #define UNSIGNED    0x40    /* unsigned integer*/
 
+/* va_arg(...) fetches at least an integer argument from the stack.
+ * int may be 2 byte on AVR8, 4 Bytes or more.*/
 #ifdef STDIO_64_BIT
 #define ULTYPE uint64_t
 #define LLTYPE long long
@@ -309,6 +311,11 @@ int _putf(int _putb(int, const void *, size_t),
                 }
                 else
                     flags |= LONGINT;
+            }
+            else if (ch == 'h') { /* Ignore */
+                if(*fmt == 'h') {
+                    ch = *fmt++;
+                }
             }
             else if (ch == 'z') {
                 if (sizeof(size_t) > sizeof(int)) {
