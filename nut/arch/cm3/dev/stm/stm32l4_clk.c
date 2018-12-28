@@ -354,7 +354,7 @@ static void SystemCoreClockUpdate(void)
 /*!
  * \brief Control MSI clock.
  *
- * \param  ena 0 disable clock, any other value enable it.
+ * \param  Range  MSI_OFF to switch off or MSI_RANGEx
  * \return 0 on success, -1 on MSI start failed.
  */
 static msi_range_t CtlMsiClock(msi_range_t range)
