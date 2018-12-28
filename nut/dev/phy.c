@@ -517,9 +517,9 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
             break;
         }
     }
-    if(count>=length)
+    if(count>=length) {
         PHPRINTF("Unknown tranceiver ");
-
+    }
     PHPRINTF("PHY OUI=0x%08lx\n", phydcb->oui);
     NutPhySetDefault();
 
