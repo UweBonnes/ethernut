@@ -170,10 +170,12 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	m_multipleConfigs = settings.value("settings/multipleconfig").toBool();
 	m_configFileName = settings.value("settings/configFileName").toString();
 
-        basePath = basePath + "/" + baseName;
-	m_buildPath = settings.value("buildPath", basePath + "/nutbld").toString();
+	basePath = basePath + "/" + baseName;
+	m_buildPath = basePath + "/nutbld";
+	settings.value("buildPath", m_buildPath);
 	m_installPath = settings.value("installPath").toString();
-	m_appDir = settings.value("applicationDirectory", basePath + "/nutapp").toString();
+	m_appDir = basePath + "/nutapp";
+	settings.value("applicationDirectory", m_appDir);
 
 	QString defaultToolPath;
 #if defined( Q_OS_WIN32 )
