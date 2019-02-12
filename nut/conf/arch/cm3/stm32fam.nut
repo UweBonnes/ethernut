@@ -245,6 +245,7 @@ nutarch_cm3_stm32_family =
                     "HW_DMA1_STM32F1",
                     "HW_DMA2_STM32L4",
                     "HW_I2C_STM32V2",
+                    "HW_USART_STM32V2",
                 },
                 file = "include/cfg/arch.h",
             },
