@@ -268,12 +268,12 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     ** are all hacks and could be done in a more general way. */
     SystemInit();
 
+    /* Load data segment into ram, clear bss segment, initialize stacks... */
+    Cortex_Start();
+
     /* Configure the System clock frequency, HCLK, PCLK2 and PCLK1 prescalers */
     /* Configure the Flash Latency cycles and enable prefetch buffer */
     SetSysClock();
-
-    /* Load data segment into ram, clear bss segment, initialize stacks... */
-    Cortex_Start();
 
 /* Call static constructors*/
     __libc_init_array();
