@@ -51,6 +51,7 @@ nutarch_cm3_stm32_devices =
         brief = "STM32 RTC Driver V2",
         description = "STM32 RTC driver V2.",
         requires = { "HW_RTC_STM32_V2" },
+        disablers = {"HW_MCU_STM32L412xx"},
         provides = { "DEV_RTC", "HW_STM32_BACKUP_REG"},
         sources = { "cm3/dev/stm/stm32_rtc_v2.c" , "cm3/dev/stm/stm32_backup.c" },
         options =

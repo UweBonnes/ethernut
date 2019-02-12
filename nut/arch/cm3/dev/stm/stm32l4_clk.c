@@ -45,6 +45,10 @@
 
 #include <arch/cm3/stm/stm32xxxx.h>
 
+#if !defined(RCC_PLLCFGR_PLLP)
+# define RCC_PLLCFGR_PLLP 0
+#endif
+
 /* Prepare some defaults if configuration is incomplete */
 
 #define MSI_DEFAULT MSI_4M
