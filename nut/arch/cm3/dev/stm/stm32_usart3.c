@@ -149,27 +149,11 @@ static void Stm32F1UsartRemap(void)
 #define UARTx_CTS      USART3_CTS
 #define UARTx_CTS_FUNC USART3_CTS_FUNC
 #define UARTx_RTS      USART3_RTS
-#define UARTx_RTS_FUNC UART3_RTS_FUNC
-
-#ifdef USART3_RS485_CTRL
-#define USART_485_CTRL
-#ifdef USART3_485DE_INV
-#define USART_485DE_INV
-#endif
-#ifdef USART3_485RE_INV
-#define USART_485RE_INV
-#endif
-#if defined(USART3_485DE_PORT) && defined(USART3_485DE_PIN)
-#define DE_GPIO_BASE  GPIO_ID2GPIO(USART3_485DE_PORT)
-#define DE_GPIO_PORT  USART3_485DE_PORT
-#define DE_GPIO_PIN   USART3_485DE_PIN
-#endif
-#if defined(USART3_485RE_PORT) && defined(USART3_485RE_PIN)
-#define NRE_GPIO_BASE  GPIO_ID2GPIO(USART3_485RE_PORT)
-#define NRE_GPIO_PORT  USART3_485RE_PORT
-#define NRE_GPIO_PIN   USART3_485RE_PIN
-#endif
-#endif /* USART3_RS485_CTRL */
+#define UARTx_RTS_FUNC USART3_RTS_FUNC
+#define UARTx_DE       USART3_DE
+#define UARTx_DE_INV   USART3_DE_INV
+#define UARTx_NRE      USART3_NRE
+#define UARTx_NRE_INV  USART3_NRE_INV
 
 /*!
  * \brief USART3 base configuration.

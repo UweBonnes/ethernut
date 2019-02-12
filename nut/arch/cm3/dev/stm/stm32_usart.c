@@ -209,50 +209,36 @@ static uint_fast8_t flow_control;
  */
 static uint_fast8_t hdpx_control;
 
-#ifdef USART_485_CTRL
-/*!
- * \brief Handles local echo for RS485.
- *
- */
-static uint_fast8_t rs485_control;
-#endif /* #ifdef USART_485_CTRL */
-
-
-#if defined(DE_GPIO_PORT) && defined(DE_GPIO_PIN)
+#if UARTx_DE == ENABLE && UART_RTS_AF < 0
 /*!
  * \brief Definition of RS485 DE switching functions.
  */
-#ifdef USART_4485DE_INV
-#define Rs485DE_L() GpioPinSetHigh(DE_GPIO_PORT, DE_GPIO_PIN)
-#define Rs485DE_H() GpioPinSetLow(DE_GPIO_PORT, DE_GPIO_PIN)
+# ifdef UARTx_DE_INV
+#  define Rs485DePassive() Stm32GpioSet(UARTx_RTS, 1)
+#  define Rs485DeActive() Stm32GpioSet(UARTx_RTS, 0)
+# else
+#  define Rs485DePassive() Stm32GpioSet(UARTx_RTS, 0)
+#  define Rs485DeActive() Stm32GpioSet(UARTx_RTS, 1)
+# endif
 #else
-#define Rs485DE_L() GpioPinSetLow(DE_GPIO_PORT, DE_GPIO_PIN)
-#define Rs485DE_H() GpioPinSetHigh(DE_GPIO_PORT, DE_GPIO_PIN)
-#endif
-#else
-#define Rs485DE_L()
-#define Rs485DE_H()
+# define Rs485DePassive()
+# define Rs485DeActive()
 #endif
 
-#if defined(NRE_GPIO_PORT) && defined(NRE_GPIO_PIN)
-/*!
- * \brief Definition of RS485 NRE switching functions.
- */
-// TODO: Figure out fastest way for switching signals
-//#define Rs485NRE_L() NRE_GPIO_BASE->BRR=_BV(NRE_GPIO_PIN)
-//#define Rs485NRE_H() NRE_GPIO_BASE->BSRR=_BV(NRE_GPIO_PIN)
-#ifdef USART_4485RE_INV
-#define Rs485NRE_L() GpioPinSetHigh(NRE_GPIO_PORT, NRE_GPIO_PIN)
-#define Rs485NRE_H() if( rs485_control == 0) \
-    GpioPinSetLow(NRE_GPIO_PORT, NRE_GPIO_PIN)
+#if UARTx_NRE != PIN_NONE
+static uint_fast8_t rs485_control;
+# if UARTx_NRE_INV
+#  define Rs485NreActive() Stm32GpioSet(UARTx_NRE, 1)
+#  define Rs485NrePassive() if( rs485_control == 0)  \
+        Stm32GpioSet(UARTx_NRE, 0)
+# else
+#  define Rs485NreActive() Stm32GpioSet(UARTx_NRE, 1)
+#  define Rs485NrePassive() if( rs485_control == 0)  \
+        Stm32GpioSet(UARTx_NRE, 1)
+# endif
 #else
-#define Rs485NRE_L() GpioPinSetLow(NRE_GPIO_PORT, NRE_GPIO_PIN)
-#define Rs485NRE_H() if( rs485_control == 0) \
-    GpioPinSetHigh(NRE_GPIO_PORT, NRE_GPIO_PIN)
-#endif
-#else
-#define Rs485NRE_L()
-#define Rs485NRE_H()
+# define Rs485NreActive()
+# define Rs485NrePassive()
 #endif
 
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
@@ -544,8 +530,8 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         rbf->rbf_cnt = 0;
 
         /* Switch to receiver mode. */
-        Rs485DE_L();    /* Disable Sender */
-        Rs485NRE_L();   /* Enable Receiver */
+        Rs485DePassive();    /* Disable Sender */
+        Rs485NreActive();   /* Enable Receiver */
         NutEventPostFromIrq(&rbf->rbf_que);
         NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_WRITE);
         return;
@@ -557,8 +543,8 @@ static void Stm32UsartTxComplete(RINGBUF * rbf)
         USARTn->CR1 &= ~(USART_CR1_TCIE|USART_CR1_TXEIE);
 
         /* Switch to receiver mode. */
-        Rs485DE_L();    /* Disable Sender */
-        Rs485NRE_L();   /* Enable Receiver */
+        Rs485DePassive();    /* Disable Sender */
+        Rs485NreActive();   /* Enable Receiver */
 
         /* Clear pending TX-Complete Status */
         CLEAR_TC();
@@ -1117,7 +1103,7 @@ static uint32_t Stm32UsartGetFlowControl(void)
         rc &= ~USART_MF_HALFDUPLEX;
     }
 
-#if defined( USART_485_CTRL)
+#if UARTx_NRE != PIN_NONE
     if (rs485_control) {
         rc |= USART_MF_LOCALECHO;
     } else {
@@ -1215,12 +1201,12 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         Stm32UsartEnable();
     }
 
-#if defined( USART_485_CTRL)
+#if UARTx_NRE != PIN_NONE
     /* Control local echo mode:
      * Established by keeping /RE low while DE high. */
     if (flags & USART_MF_LOCALECHO) {
         rs485_control = 1;
-        Rs485NRE_L();
+        Rs485NreActive();
     }
     else if (rs485_control) {
         rs485_control = 0;
@@ -1265,8 +1251,8 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
  */
 static void Stm32UsartTxStart(void)
 {
-    Rs485DE_H();    /* Enable Sender */
-    Rs485NRE_H();   /* Disable Receiver */
+    Rs485DeActive();    /* Enable Sender */
+    Rs485NrePassive();   /* Disable Receiver */
 
     if( hdpx_control) {
         /* Disable Receiver if half-duplex */
@@ -1341,13 +1327,20 @@ static int Stm32UsartInit(void)
     Stm32F1UsartRemap();
     Stm32GpioConfigSet( UARTx_TX,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, UART_TX_AF );
     Stm32GpioConfigSet( UARTx_RX,  GPIO_CFG_PERIPHAL,                   UART_RX_AF );
-#if defined(USART_CTS_AF)
+#if (UART_CTS_AF >= 0)
     Stm32GpioConfigSet( UARTx_CTS, GPIO_CFG_PERIPHAL,                   UART_CTS_AF);
+#else
+/* Fixme: Handle CTS with GPIO! */
+#endif
+#if (UART_RTS_AF >= 0)
     Stm32GpioConfigSet( UARTx_RTS, GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, UART_RTS_AF);
 #else
-/* Fixme: Handle RTS/CTS with GPIO! */
+    Stm32GpioConfigSet( UARTx_RTS, GPIO_CFG_OUTPUT, 0);
 #endif
-
+#if UARTx_NRE != PIN_NONE
+    Stm32GpioConfigSet( UARTx_NRE, GPIO_CFG_OUTPUT,0 );
+    Rs485NreActive();
+#endif
     /*
      *   USART Communication Init
      */
@@ -1383,6 +1376,14 @@ static int Stm32UsartInit(void)
 
 #ifdef USART_HARDWARE_HDX
     cr3 |= USART_CR3_HDSEL;
+#endif
+#if (UART_RTS_AF >= 0)
+# if UARTx_DE == ENABLE
+    cr3 |= USART_CR3_DEM;
+# endif
+# if UARTx_DE_INV == ENABLE
+    cr3 |= USART_CR3_DEP;
+# endif
 #endif
     USARTn->CR3 = cr3;
 

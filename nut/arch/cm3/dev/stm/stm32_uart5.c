@@ -155,26 +155,10 @@ NUTDEVICE devUartStm32_5 = {
 #define UARTx_CTS_FUNC USART5_CTS_FUNC
 #define UARTx_RTS      USART5_RTS
 #define UARTx_RTS_FUNC UART5_RTS_FUNC
-
-#ifdef UART5_RS485_CTRL
-#define USART_485_CTRL
-#ifdef UART5_485RE_INV
-#define USART_4485RE_INV
-#endif
-#ifdef UART5_485DE_INV
-#define USART_4485DE_INV
-#endif
-#if defined(UART5_485DE_PORT) && defined(UART5_485DE_PIN)
-#define DE_GPIO_BASE  GPIO_ID2GPIO(UART5_485DE_PORT)
-#define DE_GPIO_PORT  UART5_485DE_PORT
-#define DE_GPIO_PIN   UART5_485DE_PIN
-#endif
-#if defined(UART5_485RE_PORT) && defined(UART5_485RE_PIN)
-#define NRE_GPIO_BASE  GPIO_ID2GPIO(UART5_485RE_PORT)
-#define NRE_GPIO_PORT  UART5_485RE_PORT
-#define NRE_GPIO_PIN   UART5_485RE_PIN
-#endif
-#endif /* UART5_RS485_CTRL */
+#define UARTx_DE       USART5_DE
+#define UARTx_DE_INV   USART5_DE_INV
+#define UARTx_NRE      USART5_NRE
+#define UARTx_NRE_INV  USART5_NRE_INV
 
 /*!
  * \brief UART5 base configuration.

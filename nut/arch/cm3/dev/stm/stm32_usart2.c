@@ -147,64 +147,11 @@ static void Stm32F1UsartRemap(void)
 #define UARTx_CTS      USART2_CTS
 #define UARTx_CTS_FUNC USART2_CTS_FUNC
 #define UARTx_RTS      USART2_RTS
-#define UARTx_RTS_FUNC UART2_RTS_FUNC
-
-#ifdef USART2_HARDWARE_HANDSHAKE
- #if !defined(USART2_CTS_PIN)
-  #if defined(USART2_REMAP_USART)
-   #define CTS_GPIO_PORT  NUTGPIO_PORTD
-   #define CTS_GPIO_PIN   3
-  #else
-   #define CTS_GPIO_PORT  NUTGPIO_PORTA
-   #define CTS_GPIO_PIN   0
-  #endif
- #elif USART2_CTS_PIN == 3
-  #define CTS_GPIO_PORT  NUTGPIO_PORTD
-  #define CTS_GPIO_PIN   3
- #elif USART2_CTS_PIN == 0
-   #define CTS_GPIO_PORT  NUTGPIO_PORTA
-   #define CTS_GPIO_PIN   0
- #else
-  #warning "Illegal USART2 CTS pin assignement"
- #endif
- #if !defined(USART2_RTS_PIN)
-  #if defined(USART2_REMAP_USART)
-   #define RTS_GPIO_PORT  NUTGPIO_PORTD
-   #define RTS_GPIO_PIN   4
-  #else
-   #define RTS_GPIO_PORT  NUTGPIO_PORTA
-   #define RTS_GPIO_PIN   1
-  #endif
- #elif USART2_CTS_PIN == 4
-  #define RTS_GPIO_PORT  NUTGPIO_PORTD
-  #define RTS_GPIO_PIN   4
- #elif USART2_CTS_PIN == 1
-  #define RTS_GPIO_PORT  NUTGPIO_PORTA
-  #define RTS_GPIO_PIN   1
- #else
-  #warning "Illegal USART2 RTS pin assignement"
- #endif
-#endif
-
-#ifdef USART2_RS485_CTRL
-#define USART_485_CTRL
-#ifdef USART2_485RE_INV
-#define USART_4485RE_INV
-#endif
-#ifdef USART2_485DE_INV
-#define USART_4485DE_INV
-#endif
-#if defined(USART2_485DE_PORT) && defined(USART2_485DE_PIN)
-#define DE_GPIO_BASE  GPIO_ID2GPIO(USART2_485DE_PORT)
-#define DE_GPIO_PORT  USART2_485DE_PORT
-#define DE_GPIO_PIN   USART2_485DE_PIN
-#endif
-#if defined(USART2_485RE_PORT) && defined(USART2_485RE_PIN)
-#define NRE_GPIO_BASE  GPIO_ID2GPIO(USART2_485RE_PORT)
-#define NRE_GPIO_PORT  USART2_485RE_PORT
-#define NRE_GPIO_PIN   USART2_485RE_PIN
-#endif
-#endif /* USART2_RS485_CTRL */
+#define UARTx_RTS_FUNC USART2_RTS_FUNC
+#define UARTx_DE       USART2_DE
+#define UARTx_DE_INV   USART2_DE_INV
+#define UARTx_NRE      USART2_NRE
+#define UARTx_NRE_INV  USART2_NRE_INV
 
 /*!
  * \brief USART2 base configuration.

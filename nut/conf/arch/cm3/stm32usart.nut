@@ -433,7 +433,6 @@ return
                 macro = function() return USARTX .. '_USE_RTS'; end,
                 brief = function() return 'Use ' ..USARTX.. ' RTS'; end,
                 description = function() return 'Use RTS Flow control on ' ..USARTX; end,
-                requires = { "HW_GPIO_STM32V1" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"
             },
@@ -441,7 +440,6 @@ return
                 macro = function() return USARTX .. '_USE_CTS'; end,
                 brief = function() return 'Use ' ..USARTX.. ' CTS'; end,
                 description = function() return 'Use CTS Flow control on ' ..USARTX; end,
-                requires = { "HW_GPIO_STM32V1" },
                 flavor = "booldata",
                 file = "include/cfg/uart.h"
             },
@@ -457,9 +455,17 @@ return
                 macro = function() return USARTX .. '_RTS'; end,
                 brief = function() return USARTX .. ' RTS Pin selection'; end,
                 description = function() return 'Choose ' ..USARTX.. ' RTS Pin. Use PIN_NONE if no RTS Flow is needed.'; end,
-                requires = {"HW_GPIO_STM32V2"},
                 type = "enumerated",
                 choices = function() return RTS_CHOICE(); end,
+                default = "PIN_NONE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = function() return USARTX .. '_NRE'; end,
+                brief = function() return USARTX .. ' Receiver enable Pin selection'; end,
+                description = "Select Receiver enable output.\n\n"..
+                            "Select Polarity with USARTx_NRE_INV.\n"..
+                            "Defaults to PIN_NONE (no NRE needed)",
                 default = "PIN_NONE",
                 file = "include/cfg/uart.h"
             },
@@ -467,7 +473,6 @@ return
                 macro = function() return USARTX .. '_CTS'; end,
                 brief = function() return USARTX .. ' CTS Pin selection'; end,
                 description = function() return 'Choose ' ..USARTX.. ' CTS Pin. Use PIN_NONE if no CTS Flow is needed.'; end,
-                requires = {"HW_GPIO_STM32V2"},
                 type = "enumerated",
                 choices = function() return CTS_CHOICE(); end,
                 default = "PIN_NONE",
@@ -476,9 +481,8 @@ return
             {
                 macro = function() return USARTX .. '_DE'; end,
                 brief = function() return USARTX .. ' Driver enable function on RTS'; end,
-                description = "Enable Driver enable output ob RTS pin. If enabled, needs RTS pin selected.",
-                requires = {"HW_GPIO_STM32V2"},
-                type = "enumerated",
+                description = "Enable Driver enable output on RTS pin. If enabled, needs RTS pin selected.",
+               type = "enumerated",
                 choices = {"DISABLE", "ENABLE"},
                 default = "DISABLE",
                 file = "include/cfg/uart.h"
@@ -536,8 +540,18 @@ return
                 macro = function() return USARTX .. '_DE_INV'; end,
                 brief = function() return USARTX .. ' invert driver enable level.'; end,
                 description = function() return USARTX .. ' invert driver enable level.\n\n'..
-                              'Default is DISABLE for normal level'; end,
-                requires = {"HW_USART_STM32V2"},
+                              'Default is DISABLE for active high level'; end,
+                type = "enumerated",
+                choices = {"DISABLE", "ENABLE"},
+                default = "DISABLE",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = function() return USARTX .. '_NRE_INV'; end,
+                brief = function() return USARTX .. ' invert receiver enable level.'; end,
+                description = 'Invert receiver enable level.\n\n'..
+                              'Requires NRE Pin selected.\n'..
+                              'Default is DISABLE for activel low level',
                 type = "enumerated",
                 choices = {"DISABLE", "ENABLE"},
                 default = "DISABLE",
