@@ -45,6 +45,7 @@
 #include <cfg/os.h>
 #include <cfg/arch.h>
 #include <dev/board.h>
+#include <dev/gpio.h>
 
 #include <sys/thread.h>
 #include <sys/timer.h>
@@ -69,6 +70,39 @@ static void TimerCallback(HANDLE timer, void *arg)
     NutEventPostAsync(arg);
 }
 
+/*
+ * Demonstrate Nut/OS one-shot timer.
+ *
+ * One-shot timers will call the callback function once and then stop
+ * the timer automatically.
+ *
+ * Note that this function also demonstrates event timeouts.
+ */
+NUTTIMERINFO tn;
+static void InfoReuseDemo(void)
+{
+    HANDLE e = NULL;
+    HANDLE handle = (HANDLE)&tn;
+    NutTimerHandleStart(handle, 50, TimerCallback, &e, TM_ONESHOT);
+    GpioPinConfigSet(LED1_PORT, LED1_PIN, GPIO_CFG_OUTPUT);
+    int i = 0;
+    printf("InfoReuseDemo ");
+    while (i < 50) {
+        int res = NutEventWait(&e, 1000);
+        if (res) {
+            puts("failed!");
+            break;
+        }
+        putchar('.');
+        GpioPinSet(LED1_PORT, LED1_PIN, !GpioPinGet(LED1_PORT, LED1_PIN));
+        NutTimerHandleStart(handle, 50, TimerCallback, &e, TM_ONESHOT);
+        i++;
+    }
+    /* Stop pending timer or crash happens when
+       Callback happens after this function has vanished. */
+    NutTimerStop(handle);
+    puts("succeeded.");
+}
 /*
  * Demonstrate Nut/OS one-shot timer.
  *
@@ -193,6 +227,7 @@ int main(void)
     /*
      * Run the demos.
      */
+    InfoReuseDemo();
     OneShotDemo(10);
     PeriodicDemo(2);
     DelayDemo();
