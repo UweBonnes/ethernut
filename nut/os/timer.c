@@ -250,6 +250,9 @@ static struct timeval   timeStart;
 
 /*!
  * \brief Double linked list of all system timers.
+ *
+ * Entries are listen in ascending order. Entries to triger first come first.
+ * tn_ticks_left is only stored as difference to sum of all preceeding entry!
  */
 NUTTIMERINFO *nutTimerList;
 
@@ -275,8 +278,6 @@ volatile struct timeval system_time = {0, 0};
  */
 uint32_t systick_us = 0;
 #endif
-
-// volatile uint32_t nut_tick_dist[32];
 
 static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 
@@ -324,7 +325,6 @@ void NutTimerIntr(void *arg)
     }
 #endif
 
-    // nut_tick_dist[TCNT0]++;
 #ifdef NUTDEBUG_CHECK_STACKMIN
     if((nut_ticks % 1000) == 0) {
         NUTTHREADINFO *tdp = NutThreadStackCheck(NUTDEBUG_CHECK_STACKMIN);
@@ -505,6 +505,9 @@ void NutDelay(uint8_t ms)
 /*!
  * \brief Insert a new timer in the global timer list.
  *
+ * Timers are sorted in acsending order. Timers expiring first is first in list.
+ * tn_ticks_left only stores the difference to the sum of all previous entries.
+ *
  * Applications should not call this function.
  *
  * \param tn Pointer to the timer structure to insert.
@@ -520,6 +523,8 @@ void NutTimerInsert(NUTTIMERINFO * tn)
     tn->tn_prev = NULL;
     for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
         if (tn->tn_ticks_left < tnp->tn_ticks_left) {
+            /* Compare smaller guarantees that new entry with same value
+             * as existing entry will expire after the existing entry. */
             tnp->tn_ticks_left -= tn->tn_ticks_left;
             break;
         }
@@ -653,7 +658,8 @@ NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *),
  *
  * \param ticks    Specifies the timer interval in system ticks.
  * \param callback Identifies the function to be called on each
- *                 timer interval.
+ *                 timer interval. Callback happens in the context
+ *                 of thread switching.
  * \param arg      The argument passed to the callback function.
  * \param flags    If set to TM_ONESHOT, the timer will be stopped
  *                 after the first interval. Set to 0 for periodic
@@ -693,7 +699,8 @@ HANDLE NutTimerStartTicks(uint32_t ticks, void (*callback) (HANDLE, void *), voi
  *                 resolution is limited to the granularity of the system
  *                 timer.
  * \param callback Identifies the function to be called on each
- *                 timer interval.
+ *                 timer interval. Callback happens in the context
+ *                 of thread switching.
  * \param arg      The argument passed to the callback function.
  * \param flags    If set to TM_ONESHOT, the timer will be stopped
  *                 after the first interval. Set to 0 for periodic
@@ -758,7 +765,7 @@ void NutSleep(uint32_t ms)
  *
  * Only periodic timers need to be stopped. One-shot timers
  * are automatically stopped by the timer management after
- * ther first timer interval. Anyway, long running one-shot
+ * their first timer interval. Anyway, long running one-shot
  * timers may be stopped to release the occupied memory.
  *
  * \param handle Identifies the timer to be stopped. This handle must
