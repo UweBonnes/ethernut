@@ -250,6 +250,11 @@ static struct timeval   timeStart;
 
 /*!
  * \brief Double linked list of all system timers.
+ */
+#define TM_HAS_OWN_STRUCT  0x80000000
+
+/*!
+ * \brief Double linked list of all system timers.
  *
  * Entries are listen in ascending order. Entries to triger first come first.
  * tn_ticks_left is only stored as difference to sum of all preceeding entry!
@@ -584,10 +589,12 @@ void NutTimerProcessElapsed(void)
             if (nutTimerList) {
                 nutTimerList->tn_prev = NULL;
             }
-            if ((tn->tn_ticks_left = tn->tn_ticks) == 0) {
-                NutHeapFree(tn);
-            }
-            else {
+            tn->tn_ticks_left = tn->tn_ticks;
+            if (tn->tn_ticks_left == 0) {
+                if (!(tn->tn_flags & TM_HAS_OWN_STRUCT)) {
+                    NutHeapFree(tn);
+                }
+            } else {
                 // re-insert
                 NutTimerInsert(tn);
             }
@@ -601,6 +608,7 @@ void NutTimerProcessElapsed(void)
  * Applications should not call this function.
  *
  * \param ticks    Specifies the timer interval in system ticks.
+ *                 Must be smaller than 0x80000000
  * \param callback Identifies the function to be called on each
  *                 timer interval.
  * \param arg      The argument passed to the callback function.
@@ -708,6 +716,72 @@ HANDLE NutTimerStartTicks(uint32_t ticks, void (*callback) (HANDLE, void *), voi
 HANDLE NutTimerStart(uint32_t ms, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
 {
         return NutTimerStartTicks(NutTimerMillisToTicks(ms), callback, arg, flags);
+}
+
+/*!
+ * \brief Start a system timer with given NUTTIMERINFO.
+ *
+ * The function returns immediately, while the timer runs
+ * asynchronously in the background.
+ *
+ * The timer counts for a specified number of milliseconds,
+ * then calls the callback routine with a given argument.
+ *
+ * Even after the timer elapsed, the callback function is not executed
+ * before the currently running thread is ready to give up the CPU. Thus,
+ * system timers may not fulfill the required accuracy. For precise or
+ * high resolution timing, native timer interrupt routines are a better
+ * choice.
+ *
+ * \param handle   Handle, pointer to a NUTTIMERINFO struct provided by caller.
+ * \param ms       Specifies the timer interval in milliseconds. The
+ *                 resolution is limited to the granularity of the system
+ *                 timer.
+ * \param callback Identifies the function to be called on each
+ *                 timer interval. Callback happens in the context
+ *                 of thread switching.
+ * \param arg      The argument passed to the callback function.
+ * \param flags    If set to TM_ONESHOT, the timer will be stopped
+ *                 after the first interval. Set to 0 for periodic
+ *                 timers.
+ *
+ * \return Timer handle if successfull, 0 otherwise. The handle
+ *         may be used to stop the timer by calling TimerStop.
+ */
+void NutTimerHandleStart(HANDLE handle, uint32_t ms, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
+{
+   if (handle && callback) {
+       NUTTIMERINFO *tn = (NUTTIMERINFO *) handle;
+       uint32_t ticks = NutTimerMillisToTicks(ms);
+       NUTTIMERINFO *tnp;
+       for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
+           if (tnp == tn) {
+               /* Remove, if already in list*/
+               if (tnp->tn_prev) {
+                   tnp->tn_prev->tn_next = tnp->tn_next;
+               }
+               else {
+                   nutTimerList = tnp->tn_next;
+               }
+               if (tnp->tn_next) {
+                   tnp->tn_next->tn_prev = tnp->tn_prev;
+                   tnp->tn_next->tn_ticks_left += tnp->tn_ticks_left;
+               }
+               break;
+           }
+       }
+       tn->tn_ticks_left = ticks + NutGetTickCount() - nut_ticks_resume;
+       if (flags & TM_ONESHOT) {
+           tn->tn_ticks = 0;
+       } else {
+           tn->tn_ticks = ticks;
+       }
+       tn->tn_callback = callback;
+       tn->tn_arg = arg;
+       tn->tn_flags |= TM_HAS_OWN_STRUCT;
+       /* Add the timer to the list. */
+       NutTimerInsert(tn);
+    }
 }
 
 /*!

@@ -139,6 +139,9 @@ struct _NUTTIMERINFO {
     /*! \brief Decremented by one on each system tick intervall.
      */
     uint32_t tn_ticks_left;
+    /*! \brief Flags
+     *   TM_HAS_OWN_STRUCT: Timer struct is user provided */
+    uint32_t tn_flags;
     /*! \brief Callback function.
      */
     void (*tn_callback)(HANDLE, void *);
@@ -155,7 +158,8 @@ extern NUTTIMERINFO* nutTimerList;
 extern volatile struct timeval system_time;
 
 
-#define TM_ONESHOT  0x01
+#define TM_CONTINUOS   0x00
+#define TM_ONESHOT     0x01
 
 #define NUT_CACHE_LVALID        0x80000000UL
 
@@ -192,6 +196,7 @@ extern uint32_t NutGetSeconds(void);
 extern uint32_t NutGetMillis(void);
 
 extern HANDLE NutTimerStart(uint32_t ms, void (*callback)(HANDLE, void *), void *arg, uint8_t flags);
+extern void NutTimerHandleStart(HANDLE handle, uint32_t ms, void (*callback)(HANDLE, void *), void *arg, uint8_t flags);
 extern HANDLE NutTimerStartTicks(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags);
 extern void NutTimerStop(HANDLE handle);
 
