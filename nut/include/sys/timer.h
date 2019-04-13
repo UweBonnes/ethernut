@@ -178,8 +178,6 @@ extern void SystemTimerFunction(void *arg);
 #endif
 extern void NutTimerIntr(void *arg);
 extern void NutTimerInit(void);
-extern NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags);
-extern void NutTimerInsert(NUTTIMERINFO * tn);
 extern void NutTimerProcessElapsed(void);
 
 /*

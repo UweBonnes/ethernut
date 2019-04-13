@@ -511,10 +511,8 @@ void NutDelay(uint8_t ms)
  * Applications should not call this function.
  *
  * \param tn Pointer to the timer structure to insert.
- *
- * \todo Make this local function static.
  */
-void NutTimerInsert(NUTTIMERINFO * tn)
+static void NutTimerInsert(NUTTIMERINFO * tn)
 {
     NUTTIMERINFO *tnp;
 
@@ -613,10 +611,8 @@ void NutTimerProcessElapsed(void)
  * \return Timer handle if successfull, 0 otherwise. The handle
  *         may be used to release the timer by calling TimerStop.
  *
- * \todo Make this local function static or directly integrate it into
- *       NutTimerStartTicks().
  */
-NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
+static NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
 {
     NUTTIMERINFO *tn;
 
