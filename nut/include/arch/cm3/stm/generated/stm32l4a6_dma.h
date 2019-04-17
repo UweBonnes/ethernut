@@ -15,9 +15,9 @@
                             {DMA2_Channel5_BASE, &sig_DMA2_CH5  , DMA_IRQ_SINGLE, DMA_REQUEST_6 }, {}}
 #define DMA_AES_OUT        {{DMA2_Channel2_BASE, &sig_DMA2_CH2  , DMA_IRQ_SINGLE, DMA_REQUEST_6 },\
                             {DMA2_Channel3_BASE, &sig_DMA2_CH3  , DMA_IRQ_SINGLE, DMA_REQUEST_6 }, {}}
-#define DMA_DAC_CH1        {{DMA1_Channel3_BASE, &sig_DMA1_CH3  , DMA_IRQ_SINGLE, 0             },\
+#define DMA_DAC_CH1        {{DMA1_Channel3_BASE, &sig_DMA1_CH3  , DMA_IRQ_SINGLE, DMA_REQUEST_3 },\
                             {DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_3 }, {}}
-#define DMA_DAC_CH2        {{DMA1_Channel4_BASE, &sig_DMA1_CH4  , DMA_IRQ_SINGLE, 0             },\
+#define DMA_DAC_CH2        {{DMA1_Channel4_BASE, &sig_DMA1_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_3 },\
                             {DMA2_Channel5_BASE, &sig_DMA2_CH5  , DMA_IRQ_SINGLE, DMA_REQUEST_3 }, {}}
 #define DMA_DCMI           {{DMA2_Channel5_BASE, &sig_DMA2_CH5  , DMA_IRQ_SINGLE, DMA_REQUEST_4 },\
                             {DMA2_Channel6_BASE, &sig_DMA2_CH6  , DMA_IRQ_SINGLE, 0             }, {}}
@@ -50,11 +50,11 @@
                             {DMA2_Channel3_BASE, &sig_DMA2_CH3  , DMA_IRQ_SINGLE, DMA_REQUEST_1 }, {}}
 #define DMA_SAI2_B         {{DMA1_Channel7_BASE, &sig_DMA1_CH7  , DMA_IRQ_SINGLE, DMA_REQUEST_1 },\
                             {DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_1 }, {}}
-#define DMA_SDMMC1         {{DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC1         {{DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_7 },\
                             {DMA2_Channel5_BASE, &sig_DMA2_CH5  , DMA_IRQ_SINGLE, DMA_REQUEST_7 }, {}}
-#define DMA_SDMMC1_RX      {{DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC1_RX      {{DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_7 },\
                             {DMA2_Channel5_BASE, &sig_DMA2_CH5  , DMA_IRQ_SINGLE, DMA_REQUEST_7 }, {}}
-#define DMA_SDMMC1_TX      {{DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC1_TX      {{DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_7 },\
                             {DMA2_Channel5_BASE, &sig_DMA2_CH5  , DMA_IRQ_SINGLE, DMA_REQUEST_7 }, {}}
 #define DMA_SPI1_RX        {{DMA1_Channel2_BASE, &sig_DMA1_CH2  , DMA_IRQ_SINGLE, DMA_REQUEST_1 },\
                             {DMA2_Channel3_BASE, &sig_DMA2_CH3  , DMA_IRQ_SINGLE, 0             }, {}}
@@ -106,9 +106,9 @@
 #define DMA_TIM5_COM       {{DMA2_Channel1_BASE, &sig_DMA2_CH1  , DMA_IRQ_SINGLE, DMA_REQUEST_5 }, {}}
 #define DMA_TIM5_TRIG      {{DMA2_Channel1_BASE, &sig_DMA2_CH1  , DMA_IRQ_SINGLE, DMA_REQUEST_5 }, {}}
 #define DMA_TIM5_UP        {{DMA2_Channel2_BASE, &sig_DMA2_CH2  , DMA_IRQ_SINGLE, DMA_REQUEST_5 }, {}}
-#define DMA_TIM6_UP        {{DMA1_Channel3_BASE, &sig_DMA1_CH3  , DMA_IRQ_SINGLE, 0             },\
+#define DMA_TIM6_UP        {{DMA1_Channel3_BASE, &sig_DMA1_CH3  , DMA_IRQ_SINGLE, DMA_REQUEST_3 },\
                             {DMA2_Channel4_BASE, &sig_DMA2_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_3 }, {}}
-#define DMA_TIM7_UP        {{DMA1_Channel4_BASE, &sig_DMA1_CH4  , DMA_IRQ_SINGLE, 0             },\
+#define DMA_TIM7_UP        {{DMA1_Channel4_BASE, &sig_DMA1_CH4  , DMA_IRQ_SINGLE, DMA_REQUEST_3 },\
                             {DMA2_Channel5_BASE, &sig_DMA2_CH5  , DMA_IRQ_SINGLE, DMA_REQUEST_3 }, {}}
 #define DMA_TIM8_CH1       {{DMA2_Channel6_BASE, &sig_DMA2_CH6  , DMA_IRQ_SINGLE, DMA_REQUEST_7 }, {}}
 #define DMA_TIM8_CH2       {{DMA2_Channel7_BASE, &sig_DMA2_CH7  , DMA_IRQ_SINGLE, DMA_REQUEST_7 }, {}}

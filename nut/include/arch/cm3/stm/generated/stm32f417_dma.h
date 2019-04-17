@@ -32,11 +32,11 @@
 #define DMA_I2S3_EXT_RX    {{DMA1_Stream0_BASE, &sig_DMA1_STREAM0, DMA_IRQ_SINGLE, DMA_CHANNEL_3 },\
                             {DMA1_Stream2_BASE, &sig_DMA1_STREAM2, DMA_IRQ_SINGLE, DMA_CHANNEL_2 }, {}}
 #define DMA_I2S3_EXT_TX    {{DMA1_Stream5_BASE, &sig_DMA1_STREAM5, DMA_IRQ_SINGLE, DMA_CHANNEL_2 }, {}}
-#define DMA_SDIO           {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDIO           {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, DMA_CHANNEL_4 },\
                             {DMA2_Stream6_BASE, &sig_DMA2_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_4 }, {}}
-#define DMA_SDIO_RX        {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDIO_RX        {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, DMA_CHANNEL_4 },\
                             {DMA2_Stream6_BASE, &sig_DMA2_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_4 }, {}}
-#define DMA_SDIO_TX        {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDIO_TX        {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, DMA_CHANNEL_4 },\
                             {DMA2_Stream6_BASE, &sig_DMA2_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_4 }, {}}
 #define DMA_SPI1_RX        {{DMA2_Stream0_BASE, &sig_DMA2_STREAM0, DMA_IRQ_SINGLE, DMA_CHANNEL_3 },\
                             {DMA2_Stream2_BASE, &sig_DMA2_STREAM2, DMA_IRQ_SINGLE, DMA_CHANNEL_3 }, {}}

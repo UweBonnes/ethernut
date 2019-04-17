@@ -61,17 +61,17 @@
 #define DMA_SAI2_B         {{DMA2_Stream1_BASE, &sig_DMA2_STREAM1, DMA_IRQ_SINGLE, DMA_CHANNEL_10},\
                             {DMA2_Stream6_BASE, &sig_DMA2_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_3 },\
                             {DMA2_Stream7_BASE, &sig_DMA2_STREAM7, DMA_IRQ_SINGLE, DMA_CHANNEL_0 }, {}}
-#define DMA_SDMMC1         {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC1         {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, DMA_CHANNEL_4 },\
                             {DMA2_Stream6_BASE, &sig_DMA2_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_4 }, {}}
-#define DMA_SDMMC1_RX      {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC1_RX      {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, DMA_CHANNEL_4 },\
                             {DMA2_Stream6_BASE, &sig_DMA2_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_4 }, {}}
-#define DMA_SDMMC1_TX      {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC1_TX      {{DMA2_Stream3_BASE, &sig_DMA2_STREAM3, DMA_IRQ_SINGLE, DMA_CHANNEL_4 },\
                             {DMA2_Stream6_BASE, &sig_DMA2_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_4 }, {}}
-#define DMA_SDMMC2         {{DMA2_Stream0_BASE, &sig_DMA2_STREAM0, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC2         {{DMA2_Stream0_BASE, &sig_DMA2_STREAM0, DMA_IRQ_SINGLE, DMA_CHANNEL_11},\
                             {DMA2_Stream5_BASE, &sig_DMA2_STREAM5, DMA_IRQ_SINGLE, DMA_CHANNEL_11}, {}}
-#define DMA_SDMMC2_RX      {{DMA2_Stream0_BASE, &sig_DMA2_STREAM0, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC2_RX      {{DMA2_Stream0_BASE, &sig_DMA2_STREAM0, DMA_IRQ_SINGLE, DMA_CHANNEL_11},\
                             {DMA2_Stream5_BASE, &sig_DMA2_STREAM5, DMA_IRQ_SINGLE, DMA_CHANNEL_11}, {}}
-#define DMA_SDMMC2_TX      {{DMA2_Stream0_BASE, &sig_DMA2_STREAM0, DMA_IRQ_SINGLE, 0             },\
+#define DMA_SDMMC2_TX      {{DMA2_Stream0_BASE, &sig_DMA2_STREAM0, DMA_IRQ_SINGLE, DMA_CHANNEL_11},\
                             {DMA2_Stream5_BASE, &sig_DMA2_STREAM5, DMA_IRQ_SINGLE, DMA_CHANNEL_11}, {}}
 #define DMA_SPDIF_RX_CS    {{DMA1_Stream6_BASE, &sig_DMA1_STREAM6, DMA_IRQ_SINGLE, DMA_CHANNEL_0 }, {}}
 #define DMA_SPDIF_RX_DT    {{DMA1_Stream1_BASE, &sig_DMA1_STREAM1, DMA_IRQ_SINGLE, DMA_CHANNEL_0 }, {}}

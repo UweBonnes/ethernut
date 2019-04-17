@@ -35,7 +35,7 @@ if __name__ == "__main__":
     dma_version = 0
     for mcu in mcunames:
         if mcu.startswith("DMA-STM32") and ".xml" in mcu:
-            if "DMA-STM32H7" in mcu :
+            if "DMA-STM32H7" in mcu or "DMA-STM32MP157" in mcu:
                 continue
             try:
                 path = "%s/%s" % (args.dirpath, mcu)
@@ -130,6 +130,10 @@ if __name__ == "__main__":
                                 sel = "DMA_%s" % name.split('_')[-1]
                                 break
                             elif name == request.name :
+                                sel = request.request
+                                break
+                            elif "Conflict" in name and val == request.name :
+                                # Handle name with conflict tag (SDIO, SDMMC(STM32F7), DAC(STM32L4R))
                                 sel = request.request
                                 break
                         if remaps:
