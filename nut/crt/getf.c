@@ -122,6 +122,7 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
 
     uint8_t cf;                 /* Character from format. */
     uint8_t ch;                 /* Character from input. */
+    uint8_t sign;               /* Character from input. */
     size_t width;               /* Field width. */
     uint8_t flags;              /* CF_ flags. */
     uint8_t ct;                 /* CT_ conversion type. */
@@ -208,6 +209,7 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
          * Determine the types.
          */
         base = 10;
+        sign = 0;
         ct = CT_INT;
         switch (cf) {
         case '\0':
@@ -218,7 +220,11 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
         case 'c':
             ct = CT_CHAR;
             break;
+        case 'd':
+            sign = 1;
+            break;
         case 'i':
+            sign = 1;
             base = 0;
             break;
         case 'u':
@@ -365,21 +371,39 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
                 return acnt;
 
             if ((flags & CF_SUPPRESS) == 0) {
-                long long res;
+                if (sign) {
+                    long long res;
 
-                *cp = 0;
-                res = strtoll(buf, 0, base);
-                if (flags & CF_LONGLONG)
-                    *va_arg(ap, long long *) = res;
-                else if (flags & CF_LONG)
-                    *va_arg(ap, long *) = res;
-                else if (hcnt == 1)
-                    *va_arg(ap, short *) = res;
-                else if (hcnt)
-                    *va_arg(ap, char *) = res;
-                else
-                    *va_arg(ap, int *) = res;
-                acnt++;
+                    *cp = 0;
+                    res = strtoll(buf, 0, base);
+                    if (flags & CF_LONGLONG)
+                        *va_arg(ap, long long *) = res;
+                    else if (flags & CF_LONG)
+                        *va_arg(ap, long *) = res;
+                    else if (hcnt == 1)
+                        *va_arg(ap, short *) = res;
+                    else if (hcnt)
+                        *va_arg(ap, char *) = res;
+                    else
+                        *va_arg(ap, int *) = res;
+                    acnt++;
+                } else {
+                    unsigned long long res;
+
+                    *cp = 0;
+                    res = strtoull(buf, 0, base);
+                    if (flags & CF_LONGLONG)
+                        *va_arg(ap, unsigned long long *) = res;
+                    else if (flags & CF_LONG)
+                        *va_arg(ap, unsigned long *) = res;
+                    else if (hcnt == 1)
+                        *va_arg(ap, unsigned short *) = res;
+                    else if (hcnt)
+                        *va_arg(ap, char *) = res;
+                    else
+                        *va_arg(ap, unsigned int *) = res;
+                    acnt++;
+                }
             }
             ccnt++;
         }
