@@ -446,7 +446,12 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
 
                 *cp = 0;
                 res = strtod(buf, 0);
-                *va_arg(ap, double *) = res;
+                if (flags & CF_LONGLONG)
+                    *va_arg(ap, long double *) = res;
+                else if (flags & CF_LONG)
+                    *va_arg(ap, double *) = res;
+                else
+                    *va_arg(ap, float *) = res;
                 acnt++;
             }
             ccnt++;
