@@ -94,6 +94,7 @@
 #define CF_NZDIGITS 0x20    /* no zero digits detected */
 #define CF_DPTOK    0x10    /* (float) decimal point is still legal */
 #define CF_EXPOK    0x20    /* (float) exponent (e+3, etc) still legal */
+#define CF_LONGLONG 0x80    /* 1: long long or long double */
 
 /*
  * Conversion types.
@@ -128,7 +129,7 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
     uint8_t ccnt = 0;           /* Number of conversions. */
     uint8_t acnt = 0;           /* Number of fields assigned. */
     uint8_t hcnt;               /* Number of 'half' specifiers. */
-    char buf[16];               /* Temporary buffer. */
+    char buf[25];               /* Temporary buffer, up to 0xffffffffffffffff = 01777777777777777777777\0/. */
     char *cp;                   /* Temporary pointer. */
     uint8_t ch_ready = 0;       /* Character available from previous peek
                                    This is necessary as a hack to get around a missing ungetc */
@@ -187,9 +188,13 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
         for (;;) {
             if (cf == '*')
                 flags |= CF_SUPPRESS;
-            else if (cf == 'l')
-                flags |= CF_LONG;
-            else if (cf == 'h')
+            else if (cf == 'l') {
+                if (flags & CF_LONG) {
+                    flags |= CF_LONGLONG;
+                } else {
+                    flags |= CF_LONG;
+                }
+            } else if (cf == 'h')
                 hcnt++;
             else if (cf >= '0' && cf <= '9')
                 width = width * 10 + cf - '0';
@@ -360,11 +365,13 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
                 return acnt;
 
             if ((flags & CF_SUPPRESS) == 0) {
-                uint32_t res;
+                long long res;
 
                 *cp = 0;
-                res = strtol(buf, 0, base);
-                if (flags & CF_LONG)
+                res = strtoll(buf, 0, base);
+                if (flags & CF_LONGLONG)
+                    *va_arg(ap, long long *) = res;
+                else if (flags & CF_LONG)
                     *va_arg(ap, long *) = res;
                 else if (hcnt == 1)
                     *va_arg(ap, short *) = res;
