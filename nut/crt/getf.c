@@ -195,7 +195,9 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
                 } else {
                     flags |= CF_LONG;
                 }
-            } else if (cf == 'h')
+            } else if (cf == 'L')
+                flags |= CF_LONGLONG;
+            else if (cf == 'h')
                 hcnt++;
             else if (cf >= '0' && cf <= '9')
                 width = width * 10 + cf - '0';
