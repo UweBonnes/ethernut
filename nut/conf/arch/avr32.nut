@@ -432,6 +432,7 @@ nutarch_avr32 =
 			"avr32/dev/ih_tc0.c",
 			"avr32/dev/ih_gpio0.c",
 			"avr32/dev/ih_gpio1.c",
+			"avr32/dev/ih_gpio2.c",
             "avr32/dev/ih_nmi.c",
             "avr32/dev/ihndlr.c",
         },
@@ -604,7 +605,7 @@ nutarch_avr32 =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART_SPECIFIC" },
+        provides = { "DEV_UART_SPECIFIC", "DEV_UART0_GPIO_RTS", "DEV_UART0_GPIO_CTS" },
         sources =
         {
             "avr32/dev/usart0.c",
@@ -665,7 +666,7 @@ nutarch_avr32 =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART_SPECIFIC" },
+        provides = { "DEV_UART_SPECIFIC", "DEV_UART1_GPIO_RTS", "DEV_UART1_GPIO_CTS" },
         sources =
         {
             "avr32/dev/usart1.c",
@@ -726,7 +727,7 @@ nutarch_avr32 =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "HW_UART2_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART_SPECIFIC" },
+        provides = { "DEV_UART_SPECIFIC", "DEV_UART2_GPIO_RTS", "DEV_UART2_GPIO_CTS" },
         sources =
         {
             "avr32/dev/usart2.c",
@@ -787,7 +788,7 @@ nutarch_avr32 =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "HW_UART3_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART_SPECIFIC" },
+        provides = { "DEV_UART_SPECIFIC", "DEV_UART3_GPIO_RTS", "DEV_UART3_GPIO_CTS" },
         sources =
         {
             "avr32/dev/usart3.c",
