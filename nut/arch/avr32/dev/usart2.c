@@ -43,6 +43,7 @@
 #include <cfg/arch.h>
 #include <cfg/uart.h>
 #include <cfg/arch/gpio.h>
+#include <cfg/arch/avr32pio.h>
 
 #include <string.h>
 
@@ -113,17 +114,17 @@ static USARTDCB dcb_usart2 = {
 };
 
 /*!
- * \name Avr32 USART1 Device
+ * \name Avr32 USART2 Device
  */
 /*@{*/
 /*!
- * \brief USART1 device information structure.
+ * \brief USART2 device information structure.
  *
  * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using the serial communication
- * driver of the Avr32's on-chip USART1.
+ * driver of the Avr32's on-chip USART2.
  *
- * The device is named \b uart1.
+ * The device is named \b uart2.
  *
  * \showinitializer
  */
@@ -189,6 +190,25 @@ NUTDEVICE devUsartAvr322 = {
 #  define USART_RX_FUNCTION   AVR32_USART2_RXD_0_FUNCTION
 #  define USART_TX_PIN        AVR32_USART2_TXD_0_PIN
 #  define USART_TX_FUNCTION   AVR32_USART2_TXD_0_FUNCTION
+# endif
+#endif
+
+#if defined( UART2_RTS_BIT )
+#define UART_RTS_BIT UART2_RTS_BIT
+#define UART_RTS_PORT UART2_RTS_PIO_ID
+#endif
+
+#if defined( UART2_CTS_BIT )
+#define UART_CTS_BIT UART2_CTS_BIT
+#define UART_CTS_PORT UART2_CTS_PIO_ID
+# if UART2_CTS_PIO_ID == PIOA_ID
+#  define UART_CTS_SIGNAL sig_GPIO
+# elif UART2_CTS_PIO_ID == PIOB_ID
+#  define UART_CTS_SIGNAL sig_GPIO1
+# elif UART2_CTS_PIO_ID == PIOC_ID
+#  define UART_CTS_SIGNAL sig_GPIO2
+# elif UART2_CTS_PIO_ID == PIOD_ID
+#  define UART_CTS_SIGNAL sig_GPIO3
 # endif
 #endif
 

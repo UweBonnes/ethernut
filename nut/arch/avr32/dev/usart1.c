@@ -191,4 +191,21 @@ NUTDEVICE devUsartAvr321 = {
 # endif
 #endif
 
+#if defined( UART1_RTS_BIT )
+#define UART_RTS_BIT UART1_RTS_BIT
+#define UART_RTS_PORT UART1_RTS_PIO_ID
+#endif
+
+#if defined( UART1_CTS_BIT )
+#define UART_CTS_BIT UART1_CTS_BIT
+#define UART_CTS_PORT UART1_CTS_PIO_ID
+# if UART1_CTS_PIO_ID == PIOA_ID
+#  define UART_CTS_SIGNAL sig_GPIO
+# elif UART1_CTS_PIO_ID == PIOB_ID
+#  define UART_CTS_SIGNAL sig_GPIO1
+# elif UART1_CTS_PIO_ID == PIOC_ID
+#  define UART_CTS_SIGNAL sig_GPIO2
+# endif
+#endif
+
 #include "usart.c"

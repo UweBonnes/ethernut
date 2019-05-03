@@ -151,7 +151,7 @@ static uint_fast8_t cts_sense;
 static void Avr32UsartCts(void *arg)
 {
     /* Enable transmit interrupt. */
-    //sbi(UCSRnB, UDRIE);
+	outr(USARTn_BASE + AVR32_USART_IER, AVR32_USART_IER_TXRDY_MASK);
     /* Disable CTS sense interrupt. */
     //cbi(EIMSK, UART_CTS_BIT);
 }
@@ -224,7 +224,7 @@ static void Avr32UsartTxReady(RINGBUF * rbf)
          * If CTS has been disabled, we disable the transmit interrupts
          * and return without sending anything.
          */
-        if (cts_sense && bit_is_set(UART_CTS_PIN, UART_CTS_BIT)) {
+		if (cts_sense && GpioPinGet(UART_CTS_PORT, UART_CTS_BIT)) {
 			usart->idr = AVR32_USART_IDR_TXRDY_MASK;
 			usart->csr;
             return;
@@ -276,13 +276,17 @@ static void Avr32UsartTxReady(RINGBUF * rbf)
  *
  * \param rbf Pointer to the receiver ring buffer.
  */
-
+#define UART_READMULTIBYTE
 static void Avr32UsartRxReady(RINGBUF * rbf)
 {
     register size_t cnt;
     register uint8_t ch;
 	volatile avr32_usart_t* usart = (avr32_usart_t*)USARTn_BASE;
 
+#ifdef UART_READMULTIBYTE
+    register uint8_t postEvent = 0;
+    do {
+#endif
     /*
      * We read the received character as early as possible to avoid overflows
      * caused by interrupt latency.
@@ -323,21 +327,15 @@ static void Avr32UsartRxReady(RINGBUF * rbf)
         return;
     }
 
-    /*
-     * Store the character and increment and the ring buffer pointer.
-     */
-    *rbf->rbf_head++ = ch;
-    if (rbf->rbf_head == rbf->rbf_last) {
-        rbf->rbf_head = rbf->rbf_start;
-    }
-
-    /* Update the ring buffer counter. */
-    rbf->rbf_cnt = ++cnt;
-
     /* Wake up waiting threads if this is the first byte in the buffer. */
-    if (cnt == 1) {
-        NutEventPostFromIrq(&rbf->rbf_que);
-		NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
+    if (cnt++ == 0) {
+#ifdef UART_READMULTIBYTE
+            // we do this later, to get the other bytes in time..
+            postEvent = 1;
+#else
+            NutEventPostFromIrq(&rbf->rbf_que);
+            NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
+#endif    
     }
 
     /*
@@ -363,9 +361,31 @@ static void Avr32UsartRxReady(RINGBUF * rbf)
      * buffered bytes is above this mark, then disable RTS.
      */
     else if (rts_control && cnt >= rbf->rbf_hwm) {
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
+		GpioPinSetLow(UART_RTS_PORT, UART_RTS_BIT);
     }
 #endif
+
+    /*
+     * Store the character and increment and the ring buffer pointer.
+     */
+    *rbf->rbf_head++ = ch;
+    if (rbf->rbf_head == rbf->rbf_last) {
+        rbf->rbf_head = rbf->rbf_start;
+    }
+
+    /* Update the ring buffer counter. */
+    rbf->rbf_cnt = cnt;
+
+#ifdef UART_READMULTIBYTE
+    } while ( (usart->csr & AVR32_USART_CSR_RXRDY_MASK) != 0 ); // byte in buffer?
+
+    // Eventually post event to wake thread
+    if (postEvent) {
+        NutEventPostFromIrq(&rbf->rbf_que);
+        NutSelectWakeupFromIrq(rbf->wq_list, WQ_FLAG_READ);
+    }
+#endif
+
 }
 
 /*!
@@ -408,7 +428,6 @@ static void Avr32UsartEnable(void)
 
     /* Enable UART receiver and transmitter interrupts. */
 	usart->ier = AVR32_USART_IER_RXRDY_MASK | AVR32_USART_IER_TXRDY_MASK;
-    //NutIrqEnable(&SIG_UART);
 
 #ifdef UART_HDX_BIT
     if (hdx_control) {
@@ -572,7 +591,11 @@ static uint8_t Avr32UsartGetParity(void)
     if (usart->mr & AVR32_USART_MR_MODE9_MASK) {
         val = 9;
     } else {
-		switch( usart->MR.par ) {
+#if AVR32_USART_FEATURES == 0x000000f8
+		switch (usart->MR.usart_mode.par) {
+#else
+		switch (usart->MR.par) {
+#endif
 		case AVR32_USART_MR_PAR_ODD:
 			val = 1;
 			break;
@@ -603,15 +626,15 @@ static int Avr32UsartSetParity(uint8_t mode)
 
     Avr32UsartDisable();
     switch (mode) {
-    case 0:
-		usart->MR.par = AVR32_USART_MR_PAR_NONE;
-        break;
-    case 1:
-		usart->MR.par = AVR32_USART_MR_PAR_ODD;
-        break;
-    case 2:
-		usart->MR.par = AVR32_USART_MR_PAR_EVEN;
-        break;
+#if AVR32_USART_FEATURES == 0x000000f8
+	case 0:		usart->MR.usart_mode.par = AVR32_USART_MR_PAR_NONE;        break;
+	case 1:		usart->MR.usart_mode.par = AVR32_USART_MR_PAR_ODD;         break;
+	case 2:		usart->MR.usart_mode.par = AVR32_USART_MR_PAR_EVEN;        break;
+#else
+	case 0:		usart->MR.par = AVR32_USART_MR_PAR_NONE;        break;
+	case 1:		usart->MR.par = AVR32_USART_MR_PAR_ODD;         break;
+	case 2:		usart->MR.par = AVR32_USART_MR_PAR_EVEN;        break;
+#endif
     }
     Avr32UsartEnable();
 
@@ -661,15 +684,15 @@ static int Avr32UsartSetStopBits(uint8_t bits)
 
     Avr32UsartDisable();
     switch (bits) {
-    case 1:
-		usart->MR.nbstop = AVR32_USART_MR_NBSTOP_1;
-        break;
-    case 2:
-		usart->MR.nbstop = AVR32_USART_MR_NBSTOP_2;
-        break;
-    case 3:
-		usart->MR.nbstop = AVR32_USART_MR_NBSTOP_1_5;
-        break;
+#if AVR32_USART_FEATURES == 0x000000f8
+	case 1:		usart->MR.usart_mode.nbstop = AVR32_USART_MR_NBSTOP_1;        break;
+	case 2:		usart->MR.usart_mode.nbstop = AVR32_USART_MR_NBSTOP_2;        break;
+	case 3:		usart->MR.usart_mode.nbstop = AVR32_USART_MR_NBSTOP_1_5;      break;
+#else
+	case 1:		usart->MR.nbstop = AVR32_USART_MR_NBSTOP_1;        break;
+    case 2:		usart->MR.nbstop = AVR32_USART_MR_NBSTOP_2;        break;
+    case 3:		usart->MR.nbstop = AVR32_USART_MR_NBSTOP_1_5;      break;
+#endif
     }
     Avr32UsartEnable();
 
@@ -724,7 +747,7 @@ static uint32_t Avr32UsartGetStatus(void)
      * Determine hardware handshake control status.
      */
 #if defined(UART_RTS_BIT)
-    if (bit_is_set(UART_RTS_PORT, UART_RTS_BIT)) {
+    if (GpioPinGet(UART_RTS_PORT, UART_RTS_BIT)) {
         rc |= UART_RTSDISABLED;
         if (rts_control) {
             rc |= UART_RXDISABLED;
@@ -740,7 +763,7 @@ static uint32_t Avr32UsartGetStatus(void)
      * Determine hardware handshake sense status.
      */
 #ifdef UART_CTS_BIT
-    if (bit_is_set(UART_CTS_PIN, UART_CTS_BIT)) {
+	if (GpioPinGet(UART_CTS_PORT, UART_CTS_BIT)) {
         rc |= UART_CTSDISABLED;
         if (cts_sense) {
             rc |= UART_RXDISABLED;
@@ -849,17 +872,17 @@ static int Avr32UsartSetStatus(uint32_t flags)
     /* Manually controlled via GPIO. */
     if (rts_control) {
         if (flags & UART_RXDISABLED) {
-            sbi(UART_RTS_PORT, UART_RTS_BIT);
+			GpioPinSetHigh(UART_RTS_PORT, UART_RTS_BIT);
         }
         if (flags & UART_RXENABLED) {
-            cbi(UART_RTS_PORT, UART_RTS_BIT);
+			GpioPinSetLow(UART_RTS_PORT, UART_RTS_BIT);
         }
     }
     if (flags & UART_RTSDISABLED) {
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
+		GpioPinSetHigh(UART_RTS_PORT, UART_RTS_BIT);
     }
     if (flags & UART_RTSENABLED) {
-        cbi(UART_RTS_PORT, UART_RTS_BIT);
+		GpioPinSetLow(UART_RTS_PORT, UART_RTS_BIT);
     }
 #elif defined(US_MODE_HWHANDSHAKE)
     /* Build in hardware. */
@@ -1041,14 +1064,14 @@ static int Avr32UsartSetFlowControl(uint32_t flags)
      */
     if (flags & USART_MF_RTSCONTROL) {
 #if defined(UART_RTS_BIT)
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
-        sbi(UART_RTS_DDR, UART_RTS_BIT);
+		GpioPinSetLow(UART_RTS_PORT, UART_RTS_BIT);
         rts_control = 1;
 #endif
-    } else if (rts_control) {
+	}
+	else if (rts_control) {
         rts_control = 0;
 #if defined(UART_RTS_BIT)
-        cbi(UART_RTS_DDR, UART_RTS_BIT);
+		GpioPinSetLow(UART_RTS_PORT, UART_RTS_BIT);
 #endif
     }
 
@@ -1058,11 +1081,10 @@ static int Avr32UsartSetFlowControl(uint32_t flags)
     if (flags & USART_MF_CTSSENSE) {
 #if defined(UART_CTS_BIT)
         /* Register CTS sense interrupt. */
-        if (NutRegisterIrqHandler(&UART_CTS_SIGNAL, Avr32UsartCts, 0)) {
+		GpioPinConfigSet(UART_CTS_PORT, UART_CTS_BIT, GPIO_CFG_PULLUP);
+		if (GpioRegisterIrqHandler(&UART_CTS_SIGNAL, UART_CTS_BIT, Avr32UsartCts, 0)) {
             return -1;
         }
-        sbi(UART_CTS_PORT, UART_CTS_BIT);
-        cbi(UART_CTS_DDR, UART_CTS_BIT);
         cts_sense = 1;
 #elif defined(US_MODE_HWHANDSHAKE)
         outr(USARTn_BASE + AVR32_USART_MR, inr(USARTn_BASE + AVR32_USART_MR) | (AVR32_USART_MR_MODE_HARDWARE << AVR32_USART_MR_MODE_OFFSET) );
@@ -1072,8 +1094,7 @@ static int Avr32UsartSetFlowControl(uint32_t flags)
     } else if (cts_sense) {
 #if defined(UART_CTS_BIT)
         /* Deregister CTS sense interrupt. */
-        NutRegisterIrqHandler(&UART_CTS_SIGNAL, 0, 0);
-        cbi(UART_CTS_DDR, UART_CTS_BIT);
+		GpioRegisterIrqHandler(&UART_CTS_SIGNAL, UART_CTS_BIT, NULL, 0);
 #elif defined(US_MODE_HWHANDSHAKE)
         outr(USARTn_BASE + AVR32_USART_MR, inr(USARTn_BASE + AVR32_USART_MR) | (AVR32_USART_MR_MODE_NORMAL << AVR32_USART_MR_MODE_OFFSET) );
         rts_control = 0;
@@ -1160,7 +1181,7 @@ static void Avr32UsartRxStart(void)
 #ifdef UART_RTS_BIT
     if (rts_control) {
         /* Enable RTS. */
-        cbi(UART_RTS_PORT, UART_RTS_BIT);
+		GpioPinSetLow(UART_RTS_PORT, UART_RTS_BIT);
     }
 #endif
 }
@@ -1215,6 +1236,12 @@ static int Avr32UsartInit(void)
 	usart->mr |= AVR32_USART_MR_CHMODE_NORMAL << AVR32_USART_MR_CHMODE_OFFSET; // Normal Mode
 	usart->mr |= AVR32_USART_MR_NBSTOP_1 << AVR32_USART_MR_NBSTOP_OFFSET; // 1 Stop bit
 
+
+#ifdef UART_RTS_BIT
+	GpioPinConfigSet(UART_RTS_PORT, UART_RTS_BIT, GPIO_CFG_OUTPUT);
+	GpioPinSetLow(UART_RTS_PORT, UART_RTS_BIT);
+#endif
+
     /* Setup baudrate and enable input and output. */
 
     return Avr32UsartSetSpeed( USART_INITSPEED );
@@ -1267,16 +1294,14 @@ static int Avr32UsartDeinit(void)
 #ifdef UART_CTS_BIT
     if (cts_sense) {
         cts_sense = 0;
-        cbi(UART_CTS_DDR, UART_CTS_BIT);
         /* Deregister CTS sense interrupt. */
-        NutRegisterIrqHandler(&UART_CTS_SIGNAL, 0, 0);
+		GpioRegisterIrqHandler(&UART_CTS_SIGNAL, UART_CTS_BIT, NULL, 0);
     }
 #endif
 
 #ifdef UART_RTS_BIT
     if (rts_control) {
         rts_control = 0;
-        cbi(UART_RTS_DDR, UART_RTS_BIT);
     }
 #endif
 

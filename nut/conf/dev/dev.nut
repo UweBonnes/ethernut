@@ -468,6 +468,254 @@ nutdev =
                 file = function() return GetGpioHeaderPath() end
             },
             {
+                macro = "UART2_RXTX_ONLY",
+                brief = "USART2 Receive/Transmit Only",
+                description = "When selected, the driver will not use any built-in hardware handshake.\n\n"..
+                              "Select this option, if you want to use hardware handshake via GPIO or if "..
+                              "the target specific UART0 driver doesn't support built-in hardware handshake.",
+                flavor = "boolean",
+                exclusivity = { "UART2_RXTX_ONLY", "UART2_HARDWARE_HANDSHAKE", "UART2_MODEM_CONTROL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART2_HARDWARE_HANDSHAKE",
+                brief = "USART2 Hardware Handshake",
+                description = "When selected, the driver will support built-in RTS/CTS hardware handshake. "..
+                              "This includes half duplex mode, using RTS for direction control.\n\n"..
+                              "Make sure, that the related peripheral pins are available.\n\n"..
+                              "Do not select this option if you want to use hardware handshake "..
+                              "via GPIO pins.",
+                flavor = "boolean",
+                exclusivity = { "UART2_RXTX_ONLY", "UART2_HARDWARE_HANDSHAKE", "UART2_MODEM_CONTROL" },
+                requires = { "HW_UART2_RTSCTS" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART2_MODEM_CONTROL",
+                brief = "USART2 Full Modem Control",
+                description = "When selected, the driver will support built-in full modem control. "..
+                              "This includes RTS/CTS handshake and half duplex mode.\n\n"..
+                              "Make sure, that all related peripheral pins are available.\n\n"..
+                              "Do not select this option if you want to use modem control "..
+                              "via GPIO pins.",
+                flavor = "boolean",
+                exclusivity = { "UART2_RXTX_ONLY", "UART2_HARDWARE_HANDSHAKE", "UART2_MODEM_CONTROL" },
+                requires = { "HW_UART2_MODEM" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART2_INIT_BAUDRATE",
+                brief = "USART2 Initial Baudrate",
+                description = "Default is 115200. Currently supported on the AT91 driver only.",
+                requires = { "HW_MCU_AT91" },
+                flavor = "integer",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART2_RTS_BIT",
+                brief = "USART2 RTS Port Bit",
+                description = "Port bit used for RTS handshake output. If enabled, "..
+                              "the driver provides RTS transmit handshake via GPIO.\n\n"..
+                              "Do not activate this option if you want to use the "..
+                              "UART's built-in hardware handshake.",
+                provides = { "UART2_RTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART2_RTS_PIO_ID",
+                brief = "USART2 RTS Port",
+                description = "ID of the port used for RTS handshake output.",
+                requires = { "UART2_RTS_BIT", "DEV_UART2_GPIO_RTS" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART2_RTS_FLIP_BIT",
+                brief = "USART2 RTS Bit Inverted",
+                description = "If enabled, the RTS output will be inverted.",
+                requires = { "UART2_RTS_BIT", "DEV_UART2_GPIO_RTS" },
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART2_CTS_BIT",
+                brief = "USART2 CTS Port Bit",
+                description = "Port bit used for CTS handshake input. If enabled, "..
+                              "the driver provides CTS transmit handshake via GPIO.\n\n"..
+                              "Do not activate this option if you want to use the "..
+                              "UART's built-in hardware handshake.",
+                requires = { "DEV_UART2_GPIO_CTS" },
+                provides = { "UART2_CTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART2_CTS_PIO_ID",
+                brief = "USART2 CTS Port",
+                description = "ID of the port used for CTS handshake output.",
+                requires = { "UART2_CTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART2_HDX_PIO_ID",
+                brief = "USART2 Half Duplex Port",
+                description = "ID of the port used for UART2 half duplex control output.",
+                requires = { "UART2_HDX_BIT", "DEV_UART2_GPIO_HDX" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART2_HDX_FLIP_BIT",
+                brief = "USART2 Half Duplex Bit Inverted",
+                description = "If enabled, the half duplex control output will be inverted.",
+                requires = { "UART2_HDX_BIT", "DEV_UART2_GPIO_HDX" },
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART3_RXTX_ONLY",
+                brief = "USART3 Receive/Transmit Only",
+                description = "When selected, the driver will not use any built-in hardware handshake.\n\n"..
+                              "Select this option, if you want to use hardware handshake via GPIO or if "..
+                              "the target specific UART0 driver doesn't support built-in hardware handshake.",
+                flavor = "boolean",
+                exclusivity = { "UART3_RXTX_ONLY", "UART3_HARDWARE_HANDSHAKE", "UART3_MODEM_CONTROL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART3_HARDWARE_HANDSHAKE",
+                brief = "USART3 Hardware Handshake",
+                description = "When selected, the driver will support built-in RTS/CTS hardware handshake. "..
+                              "This includes half duplex mode, using RTS for direction control.\n\n"..
+                              "Make sure, that the related peripheral pins are available.\n\n"..
+                              "Do not select this option if you want to use hardware handshake "..
+                              "via GPIO pins.",
+                flavor = "boolean",
+                exclusivity = { "UART3_RXTX_ONLY", "UART3_HARDWARE_HANDSHAKE", "UART3_MODEM_CONTROL" },
+                requires = { "HW_UART3_RTSCTS" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART3_MODEM_CONTROL",
+                brief = "USART3 Full Modem Control",
+                description = "When selected, the driver will support built-in full modem control. "..
+                              "This includes RTS/CTS handshake and half duplex mode.\n\n"..
+                              "Make sure, that all related peripheral pins are available.\n\n"..
+                              "Do not select this option if you want to use modem control "..
+                              "via GPIO pins.",
+                flavor = "boolean",
+                exclusivity = { "UART3_RXTX_ONLY", "UART3_HARDWARE_HANDSHAKE", "UART3_MODEM_CONTROL" },
+                requires = { "HW_UART3_MODEM" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART3_INIT_BAUDRATE",
+                brief = "USART3 Initial Baudrate",
+                description = "Default is 115200. Currently supported on the AT91 driver only.",
+                requires = { "HW_MCU_AT91" },
+                flavor = "integer",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART3_RTS_BIT",
+                brief = "USART3 RTS Port Bit",
+                description = "Port bit used for RTS handshake output. If enabled, "..
+                              "the driver provides RTS transmit handshake via GPIO.\n\n"..
+                              "Do not activate this option if you want to use the "..
+                              "UART's built-in hardware handshake.",
+                provides = { "UART3_RTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART3_RTS_PIO_ID",
+                brief = "USART3 RTS Port",
+                description = "ID of the port used for RTS handshake output.",
+                requires = { "UART3_RTS_BIT", "DEV_UART3_GPIO_RTS" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART3_RTS_FLIP_BIT",
+                brief = "USART3 RTS Bit Inverted",
+                description = "If enabled, the RTS output will be inverted.",
+                requires = { "UART3_RTS_BIT", "DEV_UART3_GPIO_RTS" },
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART3_CTS_BIT",
+                brief = "USART3 CTS Port Bit",
+                description = "Port bit used for CTS handshake input. If enabled, "..
+                              "the driver provides CTS transmit handshake via GPIO.\n\n"..
+                              "Do not activate this option if you want to use the "..
+                              "UART's built-in hardware handshake.",
+                requires = { "DEV_UART3_GPIO_CTS" },
+                provides = { "UART3_CTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART3_CTS_PIO_ID",
+                brief = "USART3 CTS Port",
+                description = "ID of the port used for CTS handshake output.",
+                requires = { "UART3_CTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART3_HDX_BIT",
+                brief = "USART3 Half Duplex Bit",
+                description = "Bit number of UART3 half duplex control output. If enabled, "..
+                              "the driver provides RS-485 half duplex mode control via GPIO."..
+                              "Do not activate this option if you want to use the "..
+                              "UART's built-in hardware handshake.",
+                provides = { "UART3_HDX_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UART3_HDX_PIO_ID",
+                brief = "USART3 Half Duplex Port",
+                description = "ID of the port used for UART3 half duplex control output.",
+                requires = { "UART3_HDX_BIT", "DEV_UART3_GPIO_HDX" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+
+            {
+                macro = "UART3_HDX_FLIP_BIT",
+                brief = "USART3 Half Duplex Bit Inverted",
+                description = "If enabled, the half duplex control output will be inverted.",
+                requires = { "UART3_HDX_BIT", "DEV_UART3_GPIO_HDX" },
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
                 macro = "UARTD_RXTX_ONLY",
                 brief = "DBGU Receive/Transmit Only",
                 description = "When selected, the driver will not use any built-in hardware handshake.\n\n"..

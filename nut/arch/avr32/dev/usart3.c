@@ -43,6 +43,7 @@
 #include <cfg/arch.h>
 #include <cfg/uart.h>
 #include <cfg/arch/gpio.h>
+#include <cfg/arch/avr32pio.h>
 
 #include <string.h>
 
@@ -189,6 +190,23 @@ NUTDEVICE devUsartAvr323 = {
 #  define USART_RX_FUNCTION   AVR32_USART3_RXD_0_FUNCTION
 #  define USART_TX_PIN        AVR32_USART3_TXD_0_PIN
 #  define USART_TX_FUNCTION   AVR32_USART3_TXD_0_FUNCTION
+# endif
+#endif
+
+#if defined( UART3_RTS_BIT )
+#define UART_RTS_BIT UART3_RTS_BIT
+#define UART_RTS_PORT UART3_RTS_PIO_ID
+#endif
+
+#if defined( UART3_CTS_BIT )
+#define UART_CTS_BIT UART3_CTS_BIT
+#define UART_CTS_PORT UART3_CTS_PIO_ID
+# if UART3_CTS_PIO_ID == PIOA_ID
+#  define UART_CTS_SIGNAL sig_GPIO
+# elif UART3_CTS_PIO_ID == PIOB_ID
+#  define UART_CTS_SIGNAL sig_GPIO1
+# elif UART3_CTS_PIO_ID == PIOC_ID
+#  define UART_CTS_SIGNAL sig_GPIO2
 # endif
 #endif
 
