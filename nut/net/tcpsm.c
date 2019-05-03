@@ -1943,8 +1943,8 @@ int NutTcpAbortSocket(TCPSOCKET * sock, uint16_t last_error)
     NutEventBroadcast(&sock->so_ac_tq);
     /* Check if we had a timeout on NutTcpConnect(). In this case there is no
        need for a notification of the select wait queues.
-     */
-    if (!((current_state == TCPS_SYN_SENT) && (last_error == ETIMEDOUT))) {
+    */
+    if (!(current_state == TCPS_SYN_SENT)) {
         /* Wake up all running selects on this socket */
         NutSelectWakeup(sock->so_rx_wq_list, WQ_FLAG_READ);
         NutSelectWakeup(sock->so_tx_wq_list, WQ_FLAG_WRITE);
