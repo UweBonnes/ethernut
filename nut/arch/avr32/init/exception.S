@@ -142,7 +142,7 @@ _handle_NMI:
     .org  0x014
     // Instruction Address.
 _handle_Instruction_Address:
-    rjmp $
+    rjmp _exceptionLocationHandler
 
     .org  0x018
     // ITLB Protection.
@@ -157,7 +157,7 @@ _handle_Breakpoint:
     .org  0x020
     // Illegal Opcode.
 _handle_Illegal_Opcode:
-    rjmp $
+    rjmp _exceptionLocationHandler
 
     .org  0x024
     // Unimplemented Instruction.
@@ -225,6 +225,15 @@ _handle_Supervisor_Call:
     rjmp $
 
 
+// Load Exception Cause to R10 and offending instruction address to R9
+_exceptionLocationHandler:
+	popm R8-R9
+	mfsr R10, AVR32_ECR
+	rol  R10
+	rol  R10
+_haltexec:
+	rjmp _haltexec
+	
 /*
  * Interrupt support.
  * The interrupt controller must provide the offset address relative to EVBA.
