@@ -58,8 +58,9 @@
 
 /*
  * Basic Set Register Map:
- * This register map is valid for all manufactureres and chip.
+ * This register map is valid for all manufacturers and chip.
  * Though some bits might not be supported.
+ * Conforms with 802.3 - 2008 Section 2 22.2.4
  */
 #define PHY_BMCR        0x00    /* Basic Mode Control Register */
 #define PHY_BMSR        0x01    /* Basic Mode Status Register */
@@ -69,6 +70,9 @@
 #define PHY_ANLP        0x05    /* Auto-Negotiation Link Partner Advertisement Register */
 #define PHY_ANER        0x06    /* Auto-Negotiation Expansion Register */
 #define PHY_ANTR        0x07    /* Auto-Negotiation Next Page TX Register */
+#define PHY_MMD_CTRL    0x0d    /* MMD Access Control Register */
+#define PHY_MMD_DATA    0x0e    /* MMD Access Data Register */
+
 
 /*
  * Basic Mode Control Register Options
@@ -79,7 +83,7 @@
 #define PHY_BMCR_ANEG   0x1000  /* 1: Enable Auto-Negotiation. */
 #define PHY_BMCR_PDWN   0x0800  /* 1: Power Down Enabled. */
 #define PHY_BMCR_ISO    0x0400  /* 1: Isolate PHY from MII interface, only MDIO is still available. */
-#define PHY_BMCR_ANST   0x0200  /* 1: Restart Auto-Negotiation, flips to 0 if successfull. */
+#define PHY_BMCR_ANST   0x0200  /* 1: Restart Auto-Negotiation, flips to 0 if successful. */
 #define PHY_BMCR_DUPX   0x0100  /* 1: Enable Full Duplex Operation. */
 #define PHYSET_COLTEST  0x0080  /* 1: Collision test enabled. */
 
@@ -92,7 +96,7 @@
 #define PHY_BMSR_C100HD 0x2000  /* PR/O: Chip supports 100BASE-TX Half Duplex mode */
 #define PHY_BMSR_C10FD  0x1000  /* PR/O: Chip supports 10BASE-TX Full Duplex mode */
 #define PHY_BMSR_C10HD  0x0800  /* PR/O: Chip supports 10BASE-TX Half Duplex mode */
-#define PHY_BMSR_CPRE   0x0040  /* PR/O: Chip supports MDIO preamble supression mode */
+#define PHY_BMSR_CPRE   0x0040  /* PR/O: Chip supports MDIO preamble suppression mode */
 #define PHY_BMSR_CANEG  0x0008  /* PR/O: Chip supports Auto-Negotiation */
 #define PHY_BMSR_CEXT   0x0001  /* PR/O: Chip supports extended MDIO registers */
 #define PHY_BMSR_CMSK   0xF849  /* Mask for chip capabilities */
@@ -103,6 +107,9 @@
 #define PHY_BMSR_LNK    0x0004  /* R/O: 1: Link established */
 #define PHY_BMSR_JAB    0x0002  /* R/O: 1: Jabber condition detected */
 #define PHY_BMSR_SMSK   0x0036  /* Mask for chip status */
+
+/* Auto Negotiation Status */
+#define PHY_ANER_ANEGABLE 0x0001 /* Link partner Auto-Negotiation able */
 
 
 #define phyw( reg, val) phydcb->mdiow( reg, val)
@@ -164,6 +171,7 @@ phy_status_descr_t phy_status_descr[] = {
     // Table approach does not work as 10BASET and 100BASET
     // status share the same bit. Special treatment in NutPhyCtl required.
     { DP83848,   { {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0} } },
+    { DP83822,   { {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0} } },
 };
 
 /*!
@@ -174,6 +182,21 @@ phy_status_descr_t phy_status_descr[] = {
  * \return 0 on fail or status register of PHY.
  */
 #define NutPhyGetStatus(void) phyr( PHY_BMSR))
+
+void phyWriteIndirect( uint16_t address, uint16_t data ) {
+    phyw( PHY_MMD_CTRL, 0x1F );
+    phyw( PHY_MMD_DATA, address );
+    phyw( PHY_MMD_CTRL, 0x4000 | 0x1F );
+    phyw( PHY_MMD_DATA, data);
+}
+
+uint16_t phyReadIndirect( uint16_t address ) {
+    phyw( PHY_MMD_CTRL, 0x1F );
+    phyw( PHY_MMD_DATA, address );
+    phyw( PHY_MMD_CTRL, 0x4000 | 0x1F );
+    return phyr( PHY_MMD_DATA );
+}
+
 
 /*!
  * \brief Control PHY Options
@@ -240,7 +263,7 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
                 bmcr |= PHY_BMCR_SPEED;
                 phyw( PHY_BMCR, bmcr);
             } else
-            if (p16==10) {
+            if (p16 == 10) {
                 bmcr &= ~PHY_BMCR_SPEED;
                 phyw( PHY_BMCR, bmcr);
             } else {
@@ -292,17 +315,28 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
             break;
 
         case PHY_GET_LINK:
-            *par = (uint32_t)(phyr(PHY_BMSR)&PHY_BMSR_LNK);
+            bmsr = phyr(PHY_BMSR);
+            if ( !(bmsr & PHY_BMSR_LNK) )
+                bmsr = phyr(PHY_BMSR);
+            *par = (uint32_t)(bmsr&PHY_BMSR_LNK);
             break;
 
         case PHY_GET_STATUS:
+
+            /* Double read BMSR, according to Texas support it is necessary */
             bmsr = phyr(PHY_BMSR);
+            if ( !(bmsr & PHY_BMSR_LNK) )
+                bmsr = phyr(PHY_BMSR);
+
             /* only return a value different to zero if link is true */
             if (bmsr & PHY_BMSR_LNK) {
                 int count, length;
 
-                *par =  PHY_STATUS_HAS_LINK |
-                        ((bmsr & PHY_BMSR_ANEG) ? PHY_STATUS_AUTONEG_OK : 0);
+                *par =  PHY_STATUS_HAS_LINK;
+                if ( phyr(PHY_ANER) & PHY_ANER_ANEGABLE )
+                    *par |= ((bmsr & PHY_BMSR_ANEG) ? PHY_STATUS_AUTONEG_OK : 0);
+                else
+                    *par |= PHY_STATUS_AUTONEG_OK;
 
 /*              KS8721 needs different interpretation of bits */
                 if (phydcb->oui == KS8721)
@@ -318,9 +352,9 @@ int NutPhyCtl( uint16_t ctl, uint32_t *par)
                     case 6: *par |= PHY_STATUS_100M | PHY_STATUS_FULLDUPLEX; break;
                     }
                 }
-                /* Same for the DP83848, table approach does not work as
+                /* Same for the DP83848/DP83822, table approach does not work as
                    10BASET and 100BASET status share the same bit */
-                else if (phydcb->oui == DP83848)
+                else if (phydcb->oui == DP83848 || phydcb->oui == DP83822)
                 {
                    uint16_t tempreg;
                    tempreg = phyr(0x10);
@@ -470,8 +504,8 @@ void NutPhySetDefault(void)
  * Model/Revision registers of the PHY.
  *
  * \param  mda id the PHY's address on the MDIO interface bus of the EMAC.
- * \param  mdiow Function provided by EMAC driver to write PHY regisers.
- * \param  mdior Function provided by EMAC driver to read PHY regisers.
+ * \param  mdiow Function provided by EMAC driver to write PHY registers.
+ * \param  mdior Function provided by EMAC driver to read PHY registers.
  *
  * \return 0 on success, -1 on communication failure.
  */
@@ -479,7 +513,8 @@ void NutPhySetDefault(void)
 int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdior)(uint8_t))
 {
     uint16_t temp1 = 0, temp2 = 0;
-    uint_fast16_t count, length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
+    uint_fast16_t count;
+    const uint_fast16_t length = sizeof(phy_status_descr) / sizeof(phy_status_descr[0]);
 
     PHPRINTF("NRP(%u, %p, %p)\n", mda, mdiow, mdior);
 
@@ -520,6 +555,23 @@ int NutRegisterPhy( uint8_t mda, void(*mdiow)(uint8_t, uint16_t), uint16_t(*mdio
     if(count>=length) {
         PHPRINTF("Unknown tranceiver ");
     }
+    /* Initialize PHY */
+    if ( phydcb->oui == DP83822 ) {
+        #if PHY_LED0_MODE == PHY_LED_LINK_MODE
+            // Default value
+        #elif PHY_LED0_MODE == PHY_LED_LINK_BLINK_MODE
+            phyw(0x19, phyr(0x19) & ~_BV(5) );
+        #endif
+        
+        #if PHY_LED3_MODE == PHY_LED_LINK_MODE
+            phyWriteIndirect(0x462, _BV(8) );
+            phyWriteIndirect(0x460, phyReadIndirect(0x460) & 0xFF0F );
+        #elif PHY_LED3_MODE == PHY_LED_LINK_BLINK_MODE
+            phyWriteIndirect(0x462, _BV(8) );
+            phyWriteIndirect(0x460, (phyReadIndirect(0x460) & 0xFF0F) | _BV(7) );
+        #endif
+    }
+    
     PHPRINTF("PHY OUI=0x%08lx\n", phydcb->oui);
     NutPhySetDefault();
 

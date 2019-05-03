@@ -2514,7 +2514,8 @@ nutdev =
                               "DM9000: 0x0181B8C0 (EIR)\n"..
                               "DM9000A: 0x0181B8A0\n"..
                               "DM9000B: 0x0181B8B0\n"..
-                              "National Semiconductors\n"..
+                              "Texas Instruments (National Semiconductors)\n"..
+                              "DP83822: 0x2000A240\n"..
                               "DP83838: 0x20005C90 (EVK1100, EVK1105)\n"..
                               "DP83848: 0x20005CA0\n"..
                               "Micrel\n"..
@@ -2538,6 +2539,7 @@ nutdev =
                     "DM9000",
                     "DM9000A",
                     "DM9000B",
+                    "DP83822",
                     "DP83838",
                     "DP83848",
                     "KS8721",
@@ -2581,6 +2583,36 @@ nutdev =
                 description = "Use MII mode for the phy, default is RMII mode",
                 flavor = "boolean",
                 provides = { "PHY_MODE_MII" },
+                file = "include/cfg/phycfg.h"
+            },
+            {
+                macro = "PHY_LED0_MODE",
+                brief = "PHY LED0 Operation Mode",
+                description = "Select behavior for LED0 pin. Applies to DP83822.\n"..
+                              "PHY_LED_LINK_MODE - Active when LINK OK\n"..
+                              "PHY_LED_LINK_BLINK_MODE - Active when LINK OK and Blink on TX/RX Activity",
+                type = "enumerated",
+                choices =
+                {
+                    "PHY_LED_DEFAULT",
+                    "PHY_LED_LINK_MODE",
+                    "PHY_LED_LINK_BLINK_MODE"
+                },
+                file = "include/cfg/phycfg.h"
+            },
+            {
+                macro = "PHY_LED3_MODE",
+                brief = "PHY LED3 Operation Mode",
+                description = "Select behavior for LED0 pin. Applies to DP83822.\n"..
+                              "PHY_LED_LINK_MODE - Active when LINK OK\n"..
+                              "PHY_LED_LINK_BLINK_MODE - Active when LINK OK and Blink on TX/RX Activity",
+                type = "enumerated",
+                choices =
+                {
+                    "PHY_LED_DEFAULT",
+                    "PHY_LED_LINK_MODE",
+                    "PHY_LED_LINK_BLINK_MODE"
+                },
                 file = "include/cfg/phycfg.h"
             },
             {

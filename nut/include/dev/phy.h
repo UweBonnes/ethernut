@@ -61,9 +61,11 @@
 #define DM9000A     0x0181B8A0  /* nn. same as DM9161A */
 #define DM9000B     0x0181B8B0  /* nn. same as DM9161B */
 
-/* National Semiconductor PHY tranceiver */
+/* Texas (National Semiconductor) PHY tranceiver */
 #define DP83848     0x20005C90  /* EVK1100, EVK1105, STM3210C-EVAL, STM3220G-EVAL */
 #define DP83849     0x20005CA0
+#define DP83822		0x2000A240
+
 
 /* Micrel PHY tranceiver */
 #define KS8721      0x00221610  /* Olimex SAM7-EX256 */
@@ -124,8 +126,12 @@
 #define PHY_GET_REGVAL      0x0103  /* Read value of register (par>>16) from the phy */
 #define PHY_SET_REGVAL      0x0104  /* Write value (par & 0xFFFF) to register (par>>16) of the phy */
 
+#define PHY_LED_DEFAULT 0
+#define PHY_LED_LINK_MODE 1
+#define PHY_LED_LINK_BLINK_MODE 2
+
 /*
- * Physical Layer Tranceiver - Device Control Block
+ * Physical Layer Transceiver - Device Control Block
  *
  */
 typedef struct _PHYDCB PHYDCB;
