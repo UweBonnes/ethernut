@@ -232,7 +232,7 @@ static uint_fast8_t rs485_control;
 #  define Rs485NrePassive() if( rs485_control == 0)  \
         Stm32GpioSet(UARTx_NRE, 0)
 # else
-#  define Rs485NreActive() Stm32GpioSet(UARTx_NRE, 1)
+#  define Rs485NreActive() Stm32GpioSet(UARTx_NRE, 0)
 #  define Rs485NrePassive() if( rs485_control == 0)  \
         Stm32GpioSet(UARTx_NRE, 1)
 # endif
