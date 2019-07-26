@@ -1326,7 +1326,6 @@ static int Stm32UsartInit(void)
     StmUsartClkEnable(1);
     Stm32F1UsartRemap();
     Stm32GpioConfigSet( UARTx_TX,  GPIO_CFG_PERIPHAL | GPIO_CFG_OUTPUT, UART_TX_AF );
-    Stm32GpioConfigSet( UARTx_RX,  GPIO_CFG_PERIPHAL,                   UART_RX_AF );
 #if (UART_CTS_AF >= 0)
     Stm32GpioConfigSet( UARTx_CTS, GPIO_CFG_PERIPHAL,                   UART_CTS_AF);
 #else
@@ -1340,7 +1339,12 @@ static int Stm32UsartInit(void)
 #if UARTx_NRE != PIN_NONE
     Stm32GpioConfigSet( UARTx_NRE, GPIO_CFG_OUTPUT,0 );
     Rs485NreActive();
+# define RX_GPIO_CFG (GPIO_CFG_PERIPHAL | GPIO_CFG_PULLUP)
+#else
+# define RX_GPIO_CFG GPIO_CFG_PERIPHAL
 #endif
+    /* Fixme: Should Rs485Nre(Active|Passive) (un)set for power reasons? */
+    Stm32GpioConfigSet( UARTx_RX, RX_GPIO_CFG, UART_RX_AF );
     /*
      *   USART Communication Init
      */
