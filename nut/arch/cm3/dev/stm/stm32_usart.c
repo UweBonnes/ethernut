@@ -125,6 +125,9 @@
 #if !defined(USART_CR1_OVER8)
 # define USART_CR1_OVER8 0
 #endif
+#if !defined(USART_CR1_M0) && defined(USART_CR1_M)
+# define USART_CR1_M0 USART_CR1_M
+#endif
 #if defined(UART_DMA_TXCHANNEL) || defined(UART_DMA_RXCHANNEL)
 #include <arch/cm3/stm/stm32_dma.h>
 #endif
@@ -630,7 +633,7 @@ static void Stm32UsartDisable(void)
     /* Wait until all bits had been shifted out. */
     while(!TXE_SET);
     /* Disable USART. */
-    USARTn->CR1 &= ~(USART_CR1_TE|USART_CR1_RE);
+    USARTn->CR1 &= ~(USART_CR1_TE | USART_CR1_RE | USART_CR1_UE);
 }
 
 /*!
@@ -729,7 +732,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
  */
 static uint8_t Stm32UsartGetDataBits(void)
 {
-    uint32_t val = USARTn->CR1 & USART_CR1_M;
+    uint32_t val = USARTn->CR1 & USART_CR1_M0;
 
     if (val) {
         val = 9;
@@ -754,10 +757,10 @@ static int Stm32UsartSetDataBits(uint8_t bits)
 
     switch( bits) {
         case 8:
-            val &= ~USART_CR1_M;
+            val &= ~USART_CR1_M0;
             break;
         case 9:
-            val |= USART_CR1_M;
+            val |= USART_CR1_M0;
             break;
         default:
             return -1;
