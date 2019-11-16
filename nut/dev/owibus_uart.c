@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012/2014/2015 by Uwe Bonnes
+ * Copyright (C) 2012/2014/2015, 2017 by Uwe Bonnes
  *                                    (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -78,7 +78,7 @@ int Uart_OwiSetup(NUTOWIBUS *bus)
     if (owcb->uart_fd) {
         return OWI_SUCCESS;
     }
-    res = NutRegisterDevice(owcb->uart, owcb->base, 0);
+    res = NutRegisterDevice(owcb->uart, 0, 0);
     if (res ) {
         return OWI_INVALID_HW;
     }
@@ -88,6 +88,15 @@ int Uart_OwiSetup(NUTOWIBUS *bus)
         return OWI_INVALID_HW;
     }
 
+    if (owcb->owimode) {
+        uint32_t mode = 1;
+        int res;
+        res = _ioctl(uart_fd, UART_SETOWIMODE, &mode);
+        res |= _ioctl(uart_fd, UART_GETOWIMODE, &mode);
+        if (res || (mode == 0)) {
+            return OWI_INVALID_HW;
+        }
+    }
     _ioctl(uart_fd, UART_SETREADTIMEOUT, &timeout);
     _ioctl(uart_fd, UART_SETSTOPBITS, &stopbits);
 
@@ -270,15 +279,13 @@ int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
     return OWI_SUCCESS;
 }
 
-#if 0
-/* OWI0_UART needs to be resolved here. This would require to
- * include all files declaring possible usart NUTDEVICEs...
- */
-# if defined(OWI0_UART)
+#if defined(OWI0_UART)
+extern NUTDEVICE OWI0_UART;
 static NUTOWIINFO_UART owcb0 = {
-    OWI0_UART,          /*!< \brief Uart to use, e.g, set by configurator */
-    0,                  /*!< \brief Base settings of UART */
-    0                   /*!< \brief File descriptor */
+    .uart = &OWI0_UART,
+#if defined(OWI0_UART_HALFDUPLEX)
+    .owimode = -1,
+#endif
 };
 NUTOWIBUS owiBus0Uart = {
     (uintptr_t )&owcb0, /*!< \brief OWIBUSBUS::owibus_info */
@@ -288,6 +295,5 @@ NUTOWIBUS owiBus0Uart = {
     Uart_OwiReadBlock,  /*!< \brief OWIBUSBUS::OwiReadBlock */
     Uart_OwiWriteBlock  /*!< \brief OWIBUSBUS::OwiWriteBlock */
  };
-# endif
 #endif
 /*@}*/

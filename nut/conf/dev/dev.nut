@@ -2205,6 +2205,15 @@ nutdev =
                 file = "include/cfg/owi.h",
 
             },
+            {
+                macro = "OWI0_UART_HALFDUPLEX",
+                brief = "OWI0_UART_HALFDUPLEX",
+                description = "Choose if OWI Pin is only connected to TX\n\n"..
+                            "Hardware must support this mode.",
+                file = "include/cfg/owi.h",
+                flavor = "boolean",
+
+            },
         }
     },
 

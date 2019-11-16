@@ -1176,15 +1176,8 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR1 &= ~USART_CR1_UE;
         USARTn->CR3 |= USART_CR3_HDSEL;
         /* Set Alternate function, open drain, Pull up */
-#if defined(TX_GPIO_PORT)
-#if defined(MCU_STM32F1)
-        CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4);
-#elif defined(MCU_STM32L0)
-        CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPD0_0) + TX_GPIO_PIN * 2);
-#else
-        CM3BBSET(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
-#endif
-#endif
+        Stm32GpioConfigSet(
+            UARTx_TX, GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE, UART_TX_AF );
         Stm32UsartEnable();
     }
     else {
@@ -1192,15 +1185,8 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR1 &= ~USART_CR1_UE;
         USARTn->CR3 &= ~USART_CR3_HDSEL;
         /* Set Alternate function, push-pull */
-#if defined(TX_GPIO_PORT)
-#if defined(MCU_STM32F1)
-        CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, CRL, _BI32(GPIO_CRL_CNF0_0) + TX_GPIO_PIN * 4) ;
-#elif defined(MCU_STM32L0)
-        CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPD0_0) + TX_GPIO_PIN * 2);
-#else
-        CM3BBCLR(TX_GPIO_PORT, GPIO_TypeDef, PUPDR, _BI32(GPIO_PUPDR_PUPDR0_0) + TX_GPIO_PIN * 2);
-#endif
-#endif
+        Stm32GpioConfigSet(
+            UARTx_TX, GPIO_CFG_PERIPHAL, UART_TX_AF );
         Stm32UsartEnable();
     }
 

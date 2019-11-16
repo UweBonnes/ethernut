@@ -535,7 +535,7 @@
  *
  * If device supports, Rx is connected internally to TX, TX is set to
  * multidrive and TX is pulled up. Ioctl may succeed even when pull-up
- * is not realized. Contrary to
+ * is not realized.
  * Contrary to half duplex mode, receiver is active during transmit.
  *
  * The configuration parameter must be a pointer to a uint32_t variable,

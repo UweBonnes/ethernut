@@ -1,7 +1,7 @@
 #ifndef _OWI_UART_H_
 #define _OWI_UART_H_
 /*
- * Copyright (C) 2012/14, 2016 by Uwe Bonnes
+ * Copyright (C) 2012/14, 2016, 2017 by Uwe Bonnes
  *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -76,8 +76,8 @@
 struct _NUTOWIINFO_UART {
     /*!< \brief UART device. */
     NUTDEVICE *uart;
-    /*!< \brief UART alternate hardware settings. */
-    uintptr_t base;
+    /*!< \brief Special UART settings. */
+    int owimode;
     /*!< \brief UART file. */
     int uart_fd;
 };
