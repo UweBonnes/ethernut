@@ -170,7 +170,7 @@
 /*!
  * \brief Receiver error flags.
  */
-static uint16_t rx_errors;
+static uint32_t rx_errors;
 
 /*!
  * \brief Transmit address frame, if not zero.
@@ -417,8 +417,6 @@ static void Stm32UsartRxReady(RINGBUF * rbf)
      */
     ch = USARTN_RDR;
 
-    /* Collect receiver errors. */
-    rx_errors |= USARTN_ISR & (USART_ISR_ORE | USART_ISR_NE | USART_ISR_FE | USART_ISR_PE);
 
 #if defined(UART_XONXOFF_CONTROL)
     /*
@@ -909,20 +907,18 @@ static int Stm32UsartSetStopBits(uint8_t bits)
 static uint32_t Stm32UsartGetStatus(void)
 {
     uint32_t rc = 0;
-#if defined(US_MODE_HWHANDSHAKE)
-    uint32_t csr = USARTN_ISR;
-#endif
+    uint32_t isr = USARTN_ISR;
 
     /*
      * Set receiver error flags.
      */
-    if ((rx_errors & USART_ISR_FE) != 0) {
+    if ((isr & USART_ISR_FE) != 0) {
         rc |= UART_FRAMINGERROR;
     }
-    if ((rx_errors & USART_ISR_ORE) != 0) {
+    if (((rx_errors & USART_ISR_ORE) != 0) || (isr & USART_ISR_ORE)) {
         rc |= UART_OVERRUNERROR;
     }
-    if ((rx_errors & USART_ISR_PE) != 0) {
+    if ((isr & USART_ISR_PE) != 0) {
         rc |= UART_PARITYERROR;
     }
 
@@ -1035,6 +1031,7 @@ static int Stm32UsartSetStatus(uint32_t flags)
      */
     if (flags & UART_ERRORS) {
         CLEAR_ERRS();
+        rx_errors = 0;
         USARTN_RDR;
     }
 
