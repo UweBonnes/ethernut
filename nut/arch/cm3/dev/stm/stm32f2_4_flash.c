@@ -101,9 +101,12 @@ static const uint8_t sector2start[MAX_SECTOR_IN_BANK] = {
 /*! \brief Size of the configuration area.
  *
  * During write operations a buffer with this size is allocated
- * from heap and may cause memory problems with large sectors.
+ * from heap and may cause memory problems with large FLASH_CONF_SIZE.
  * Thus, this value may be less than the size of the configuration
- * sector, in which case the rest of the sector is unused.
+ * sector. When write to an already written area in the conf page is
+ * requested, the content of the old page with the updated values is
+ * written to the either the next conf page, invalidating the old page or
+ * after erasing of the sectorto the first page.
  *
  * Currently only 1 sector can be used for system configurations.
  */
@@ -112,7 +115,7 @@ static const uint8_t sector2start[MAX_SECTOR_IN_BANK] = {
 #elif  ((FLASH_CONF_SIZE != 256) && (FLASH_CONF_SIZE != 512) && \
         (FLASH_CONF_SIZE != 1024) && (FLASH_CONF_SIZE != 2048) && \
         (FLASH_CONF_SIZE != 4096) && (FLASH_CONF_SIZE != 8192))
-#error FLASH_CONF_SIZE has to be either 256 (default) or 512, 1/2/4/8 k
+#error FLASH_CONF_SIZE has to be power of 2
 #endif
 
 /*!
@@ -616,6 +619,32 @@ FLASH_Status IapFlashWrite(void* dst, const void* src, size_t len,
 }
 
 /*!
+ * \brief Find the Conf sector
+ * Look at last position in each conf page.
+ *
+ * \param flash_conf_sector Sector with conf pages.
+ *
+ * \return page index of active conf page, -1 if no valid sector
+ */
+ static int Stm32FlashFindConfSector(void *flash_conf_sector)
+{
+    int conf_page = 0;
+    uint32_t *marker = (uint32_t*)
+        (flash_conf_sector + FLASH_CONF_SIZE  - sizeof(ERASED_PATTERN_32));
+    /* Find configuration page in CONF_SECTOR. Check limit before
+    * memory access!*/
+    while ((conf_page < (8 * sectorsize / FLASH_CONF_SIZE)) &&
+           (*marker !=  ERASED_PATTERN_32) ) {
+        conf_page++;
+        marker += FLASH_CONF_SIZE / 4;
+    }
+    if (conf_page >= (8 * sectorsize / FLASH_CONF_SIZE)) {
+         conf_page = -1;
+        }
+    return conf_page;
+}
+
+/*!
  * \brief Nut/OS specific handling for parameters in FLASH.
  *
  * This function enables to read system specific parameters
@@ -636,11 +665,7 @@ FLASH_Status IapFlashWrite(void* dst, const void* src, size_t len,
  */
 FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
 {
-    uint16_t conf_page = 0;
     void *flash_conf_sector = (void*)FLASH_BASE + flashsize - 8 * sectorsize;
-    uint32_t *marker = (uint32_t*)
-        (flash_conf_sector + FLASH_CONF_SIZE  - sizeof(ERASED_PATTERN_32));
-
     if (len == 0) {
         return FLASH_COMPLETE;
     }
@@ -648,14 +673,8 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
     if (pos + len + sizeof(ERASED_PATTERN_32) > FLASH_CONF_SIZE) {
         return FLASH_BOUNDARY;
     }
-
-    /* Find configuration page in CONF_SECTOR*/
-    while ((*marker !=  ERASED_PATTERN_32) &&
-           (conf_page < (8 * sectorsize / FLASH_CONF_SIZE))) {
-        conf_page++;
-        marker += FLASH_CONF_SIZE / 4;
-    }
-    if (*marker !=  ERASED_PATTERN_32) {
+    int conf_page = Stm32FlashFindConfSector(flash_conf_sector);
+    if (conf_page < 0) {
         /* no page sizes unit in CONF_SECTOR has a valid mark.
          * Erase Sector and return page 0 as result. */
         int rs;
@@ -700,10 +719,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     FLASH_Status rs = 0;
     uint8_t *buffer;
     uint8_t *mem;
-    uint16_t conf_page = 0;
     void* flash_conf_sector = (void*)FLASH_BASE + flashsize - 8 * sectorsize;
-    uint32_t *marker = (uint32_t*)
-        (flash_conf_sector + FLASH_CONF_SIZE  - sizeof(ERASED_PATTERN_32));
     int i;
     FLASH_ERASE_MODE mode;
     uint32_t indicator;
@@ -715,13 +731,8 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
     if (pos + len + sizeof(ERASED_PATTERN_32) > FLASH_CONF_SIZE) {
         return FLASH_CONF_OVERFLOW;
     }
-    /* Find configuration page in CONF_SECTOR*/
-    while ((*marker !=  ERASED_PATTERN_32) &&
-           (conf_page < (8 * sectorsize / FLASH_CONF_SIZE))) {
-        conf_page++;
-        marker += FLASH_CONF_SIZE / 4;
-    }
-    if (*marker !=  ERASED_PATTERN_32) {
+    int conf_page = Stm32FlashFindConfSector(flash_conf_sector);
+    if (conf_page < 0) {
         /* no page sizes unit in CONF_SECTOR has a valid mark
          * Erase Sector sector by flagging FLASH_ERASE_ALWAYS
          * and write to page 0*/
