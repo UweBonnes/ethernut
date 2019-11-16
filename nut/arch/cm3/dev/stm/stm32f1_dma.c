@@ -174,19 +174,19 @@ void DMA_Init(void)
 
         /* Clear pending interrupts in DMA 1 ISR */
         DMA1->IFCR = 0xFFFFFFFF;
-#if defined(STM_HAS_DMA2) && defined(RCC_AHBENR_DMA2EN)
-        if ((RCC->AHBENR & RCC_AHBENR_DMA2EN ) == 0) {
-            RCC->AHBENR |= RCC_AHBENR_DMA2EN;
-            /* Clear pending interrupts in DMA 2 ISR */
-            DMA2->IFCR = 0xFFFFFFFF;
-        }
+    }
+#if defined(RCC_AHBENR_DMA2EN)
+    if ((RCC->AHBENR & RCC_AHBENR_DMA2EN ) == 0) {
+        RCC->AHBENR |= RCC_AHBENR_DMA2EN;
+        /* Clear pending interrupts in DMA 2 ISR */
+        DMA2->IFCR = 0xFFFFFFFF;
+    }
 #endif
-        /* Clear interrupt related flags in channels */
-        for (i = 0; i < DMA_COUNT; i++) {
-            channel = DmaTab[i].dma_ch;
-            channel->CCR = 0;
-            DMA_ClearFlag(i,0xf);
-        }
+    /* Clear interrupt related flags in channels */
+    for (i = 0; i < DMA_COUNT; i++) {
+        channel = DmaTab[i].dma_ch;
+        channel->CCR = 0;
+        DMA_ClearFlag(i,0xf);
     }
 }
 
