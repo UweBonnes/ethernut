@@ -83,11 +83,7 @@ static inline void OwiTimerStart(STM32_OWIBUS_TIMER_INFO *info)
 {
     uint16_t ccmr_value, ccmr_force;
 
-#if defined (MCU_CM_NO_BITBAND)
-    *info->timer_egr |= TIM_EGR_UG;
-#else
-    *info->timer_egr = 1;
-#endif
+    info->timer->EGR = TIM_EGR_UG;
     NutEnterCritical();
     ccmr_value = *info->ccmr;
     ccmr_force = ccmr_value & info->ccmr_mask;
@@ -444,11 +440,8 @@ static STM32_OWIBUS_TIMER_INFO Stm32Owi0TimInfo = {
     .owi_hw = &Stm32Owi0TimHw,
     .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined (MCU_CM_NO_BITBAND)
-    .timer_egr = &(((TIM_TypeDef *) STM32TIMER_BASE)->EGR),
     .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
 #else
-    .timer_egr = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, EGR,
-                           _BI32(TIM_EGR_UG)),
     .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
                            _BI32(TIM_CR1_CEN)),
 #endif
@@ -525,11 +518,8 @@ static STM32_OWIBUS_TIMER_INFO Stm32Owi1TimInfo = {
     .owi_hw = &Stm32Owi1TimHw,
     .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined (MCU_CM_NO_BITBAND)
-    .timer_egr = &(((TIM_TypeDef *) STM32TIMER_BASE)->EGR),
     .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
 #else
-    .timer_egr = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, EGR,
-                           _BI32(TIM_EGR_UG)),
     .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
                            _BI32(TIM_CR1_CEN)),
 #endif
@@ -606,11 +596,8 @@ static STM32_OWIBUS_TIMER_INFO Stm32Owi2TimInfo = {
     .owi_hw = &Stm32Owi2TimHw,
     .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
 #if defined (MCU_CM_NO_BITBAND)
-    .timer_egr = &(((TIM_TypeDef *) STM32TIMER_BASE)->EGR),
     .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
 #else
-    .timer_egr = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, EGR,
-                           _BI32(TIM_EGR_UG)),
     .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
                            _BI32(TIM_CR1_CEN)),
 #endif
