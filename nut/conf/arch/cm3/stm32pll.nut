@@ -578,6 +578,9 @@ end
 --
 function GetPllClkSrcDefault()
     if c_is_provided("HW_MCU_STM32L4") then
+        if c_is_provided("HSE_VALUE") then
+            return "PLLCLK_HSE"
+        end
         if c_is_provided("LSE_VALUE") then
             return "PLLCLK_MSI"
         end
