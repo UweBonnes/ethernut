@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-15 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2013-18 Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -173,5 +173,7 @@ void GPIO_PinAFConfig(nutgpio_port_t GPIOx, nutgpio_pin_t GPIO_PinSource, uint8_
 extern int Stm32GpioConfigSet(nutgpio_t gpio,  uint32_t flags, uint32_t af);
 extern int Stm32GpioSet(nutgpio_t gpio, int value);
 extern int Stm32GpioGet(nutgpio_t gpio);
+extern GPIO_SIGNAL *Stm32GpioCreateIrqHandler(
+    nutgpio_t gpio, void (*handler) (void *), void *arg);
 
 #endif

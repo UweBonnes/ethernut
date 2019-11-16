@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 by Uwe Bonnes
+ * Copyright (C) 2014-2018 by Uwe Bonnes
  *                                (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -48,6 +48,7 @@
 #include <cfg/arch/gpio.h>
 
 #include <sys/nutdebug.h>
+#include <dev/pins.h>
 
 /*!
  * \brief Common interrupt routine dedicated EXTI interrupts.
@@ -91,7 +92,7 @@ static void ExtiSharedIsr(void *arg) {
 }
 
 /*!
- * \brief Create a GPIO signal.
+ * \brief Create a GPIO signal from port and pin.
  *
  * The following code fragment registers an interrupt handler which is
  * called on each change of bit 4 of the first GPIO port:
@@ -127,6 +128,59 @@ GPIO_SIGNAL *GpioCreateIrqHandler(nutgpio_port_t port, nutgpio_pin_t bit, void (
 {
     GPIO_SIGNAL *sig;
     int port_nr = (port - GPIOA_BASE) >> 10;
+    sig = malloc(sizeof(GPIO_SIGNAL));
+    if (sig) {
+        int rc;
+        sig->ios_port = port_nr;
+        sig->ios_pin  = bit;
+        sig->sig_next = NULL;
+        rc = GpioRegisterIrqHandler(sig, bit, handler, arg);
+        if (rc) {
+            free(sig);
+            return 0;
+        }
+    }
+    return sig;
+}
+
+/*!
+ * \brief Create a GPIO signal from encoder gpio.
+ *
+ * The following code fragment registers an interrupt handler which is
+ * called on each change of bit 4 of the first GPIO port:
+ * \code
+ * #include <dev/gpio.h>
+ *
+ * static void PinChange(void *arg)
+ * {
+ *     ...
+ * }
+ *
+ * {
+ *     GPIO_SIGNAL *sig;
+ *     ...
+ *     Stm32GpioPinConfigSet(PA04, GPIO_CFG_PULLUP);
+ *     sig = Stm32GpioCreateIrqHandler(PA04, PinChange, NULL);
+ *     if (sig) {
+ *         GpioIrqEnable(sig, PA04 & 0xf);
+ *         GpioIrqSetMode(sig, PA04 & 0xf, NUT_IRQMODE_RISINGEDGE);
+ *     ...
+ * }
+ * \endcode
+ *
+ * \param gpio    Encoded Pin
+ * \param handler This routine will be called by Nut/OS, when the specified
+ *                pin changes its state.
+ * \param arg     Argument to be passed to the interrupt handler routine.
+ *
+ * \return
+ */
+GPIO_SIGNAL *Stm32GpioCreateIrqHandler(nutgpio_t gpio,
+                                       void (*handler) (void *), void *arg)
+{
+    GPIO_SIGNAL *sig;
+    int port_nr = (gpio >> 8 ) - 1;
+    int bit = gpio & 0xf;
     sig = malloc(sizeof(GPIO_SIGNAL));
     if (sig) {
         int rc;
