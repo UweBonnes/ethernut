@@ -374,9 +374,22 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
 
             if ((flags & CF_SUPPRESS) == 0) {
                 if (sign) {
-                    long long res;
-
                     *cp = 0;
+#if defined( __AVR_ARCH__)
+                    long res;
+                    res = strtol(buf, 0, base);
+                    if (flags & CF_LONGLONG)
+                        *va_arg(ap, long long *) = res;
+                    else if (flags & CF_LONG)
+                        *va_arg(ap, long *) = res;
+                    else if (hcnt == 1)
+                        *va_arg(ap, short *) = res;
+                    else if (hcnt)
+                        *va_arg(ap, char *) = res;
+                    else
+                        *va_arg(ap, int *) = res;
+#else
+                    long long res;
                     res = strtoll(buf, 0, base);
                     if (flags & CF_LONGLONG)
                         *va_arg(ap, long long *) = res;
@@ -388,11 +401,25 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
                         *va_arg(ap, char *) = res;
                     else
                         *va_arg(ap, int *) = res;
+#endif
                     acnt++;
                 } else {
-                    unsigned long long res;
-
                     *cp = 0;
+#if defined( __AVR_ARCH__)
+                    unsigned long res;
+                    res = strtoul(buf, 0, base);
+                    if (flags & CF_LONGLONG)
+                        *va_arg(ap, unsigned long long *) = res;
+                    else if (flags & CF_LONG)
+                        *va_arg(ap, unsigned long *) = res;
+                    else if (hcnt == 1)
+                        *va_arg(ap, unsigned short *) = res;
+                    else if (hcnt)
+                        *va_arg(ap, char *) = res;
+                    else
+                        *va_arg(ap, unsigned int *) = res;
+#else
+                    unsigned long long res;
                     res = strtoull(buf, 0, base);
                     if (flags & CF_LONGLONG)
                         *va_arg(ap, unsigned long long *) = res;
@@ -404,6 +431,7 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
                         *va_arg(ap, char *) = res;
                     else
                         *va_arg(ap, unsigned int *) = res;
+#endif
                     acnt++;
                 }
             }
