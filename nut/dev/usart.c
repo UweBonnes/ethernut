@@ -306,6 +306,9 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
  * The current thread will be blocked until all characters up to a
  * specified count have been written or until a timeout occurred.
  *
+ * FIXME: This routine returns immediate after the last byte is or was
+ *        written. It does not wait until the transmission is over!
+ *
  * \param  dcb   Pointer to the device's control block structure.
  * \param  added Number of bytes to add to the ring buffer counter. The
  *               characters must have been added without updating the
