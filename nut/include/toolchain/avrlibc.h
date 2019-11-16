@@ -126,7 +126,9 @@
 #ifndef sbi
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
-#if __AVR_LIBC_VERSION__ >= 10800UL
+#if defined(__FLASH)
+# define prog_char const __flash char
+#elif __AVR_LIBC_VERSION__ >= 10800UL
 typedef const char PROGMEM prog_char;
 #endif
 #ifndef PGM_P
