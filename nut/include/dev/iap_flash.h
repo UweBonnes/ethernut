@@ -70,6 +70,7 @@ extern size_t IapFlashEnd(void);
 extern size_t IapProgramEnd(void);
 extern size_t IapPageSize(size_t addr);
 extern void FlashUntouch(void);
+extern uint32_t FlashAlignment(void);
 #else
 #define IapFlashWrite(x, y, z, xy)          FLASH_NOT_IMPLEMENTED
 #define IapFlashWriteProtect(dst, len, ena) FLASH_NOT_IMPLEMENTED
@@ -77,6 +78,7 @@ extern void FlashUntouch(void);
 #define IapProgramEnd() 0
 #define IapPageSize(x) 0
 #define FlashUntouch()
+#define FlashAlignment(x) 0
 #endif
 /* Most flash has a erased value of 0xffffffff. Use configurator to
  * indicate else

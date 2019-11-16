@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 - 2017 Uwe Bonnes
+ * Copyright (C) 2015 - 2019 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,8 +35,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <sys/heap.h>
 #include <sys/nutdebug.h>
+#include <sys/atom.h>
 
 #include <cfg/arch.h>
 #include <cfg/eeprom.h>
@@ -48,8 +48,7 @@
 #warning "STM32 family has no STM32L4 compatible FLASH/EEPROM"
 #endif
 
-#define ERASED_PATTERN_32  0xffffffff
-#define ERASED_PATTERN_64  -1LL
+#define ERASED_PATTERN_64  ((uint64_t)FLASH_ERASED_PATTERN32 << 32 |FLASH_ERASED_PATTERN32)
 
 uint32_t program_end_raw;
 
@@ -77,6 +76,8 @@ static uint32_t pagelist[FLASH_PAGES_WORDS];
 #  warning Only up to 512 byte config space supported
 # endif
 #endif
+
+#define FLASH_ALIGNMENT 7
 
 void FlashUntouch(void)
 {
@@ -168,13 +169,17 @@ static FLASH_Status FLASH_GetStatus(void)
 
     /* Decode the Flash Status
      * Check BSY last, so maybe it has completed meanwhile*/
-    if (FLASH->SR & pg_mask) {
-        rs = FLASH_ERROR_PG;
-    } else if (FLASH->SR & FLASH_SR_WRPERR) {
-        rs = FLASH_ERROR_WRP;
-    } else if (FLASH->SR & FLASH_SR_BSY) {
-        rs = FLASH_BUSY;
+    uint32_t sr = FLASH->SR;
+    if (sr & pg_mask) {
+        rs |= FLASH_ERROR_PG;
     }
+    if (sr & FLASH_SR_WRPERR) {
+        rs |= FLASH_ERROR_WRP;
+    }
+    if (sr & FLASH_SR_BSY) {
+        rs |= FLASH_BUSY;
+    }
+    FLASH->SR = sr; /* Clear Errors */
     /* Return the Flash Status */
     return rs;
 }
@@ -234,11 +239,18 @@ static FLASH_Status FlashErasePage(uint16_t sector)
             FLASH->CR = cr;
             FLASH->CR = cr | FLASH_CR_STRT;
             rs = FlashWaitReady();
+            /* D-Cache was filled with page empty check above.
+             * Reset D-Cache so that compare gets good data.*/
+            uint32_t acr = FLASH->ACR;
+            FLASH->ACR = acr & ~FLASH_ACR_DCEN;
+            FLASH->ACR |= FLASH_ACR_DCRST;
+            FLASH->ACR = acr;
             if (rs != FLASH_COMPLETE) {
                 return rs;
             }
         }
     }
+    FLASH->CR = 0;
     if (rs != FLASH_COMPLETE ) {
         pagelist[sector / 32] &= ~(1 <<(sector % 32));
     } else {
@@ -266,12 +278,17 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     uint16_t sector, sector_start, sector_end;
     uint64_t *wptr = (uint64_t *)dst;
     const uint64_t *rptr = (const uint64_t *)src;
-    uint32_t length = len;
 
     if (len == 0) {
         return FLASH_COMPLETE;
     }
-    if (((uint32_t)dst & 7 ) || (len & 7)) {
+    if ((uint32_t)dst & FLASH_ALIGNMENT ) {
+        return FLASH_ERR_ALIGNMENT;
+    }
+    if ((mode == FLASH_ERASE_NEVER) && (len & FLASH_ALIGNMENT)) {
+        /* Check length only when no erase was performed.
+         * Otherwise extent even as we write garbage.
+         * We can not overwrite in any case.*/
         return FLASH_ERR_ALIGNMENT;
     }
     /* Check top boundary */
@@ -391,34 +408,32 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     wptr = (uint64_t *)dst;
     rptr = (const uint64_t *)src;
     rs = FlashWaitReady();
-
-    FLASH->CR = FLASH_CR_PG;
+    NutEnterCritical();
+    FLASH->CR = FLASH_CR_PG; /* Start memory programming.*/
+    uint32_t length = (len + FLASH_ALIGNMENT) & ~FLASH_ALIGNMENT;
     while ((length) && (rs == FLASH_COMPLETE)) {
-        /* Check for same data*/
+        /* Check for same data. Care for D-Cache in page erase.*/
         if (*wptr != *rptr) {
             *wptr = *rptr;
             rs = FlashWaitReady();
-/*
- * RM0351 tells to wait for EOP after enabling EOPIE.
- * Is this really needed?
-            if (rs == FLASH_SR_EOP) {
-                FLASH->SR = rs;
-                rs = FlashWaitReady();
-                continue;
-            } else {
-                rs = FLASH_ERROR_PG;
-                goto done;
+            if ((rs != FLASH_COMPLETE) || (*wptr != *rptr)){
+                /* FIXME: Programming failed*/
+                if (*wptr == ERASED_PATTERN_64) { /* Try again */
+                    *wptr = *rptr;
+                    rs = FlashWaitReady();
+                }
             }
-*/
         }
         wptr++;
         rptr++;
         length -= 8;
     }
-
+    FLASH->CR = 0; /* Stop memory programming.*/
+    NutExitCritical();
     /* Check the written data */
     wptr = (uint64_t *)dst;
     rptr = (const uint64_t *)src;
+    length = (len + FLASH_ALIGNMENT) & ~FLASH_ALIGNMENT;
     while (length) {
         if (*wptr != *rptr) {
             rs = FLASH_COMPARE;
@@ -426,6 +441,7 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
         }
         wptr++;
         rptr++;
+        length -= 8;
     }
     rs = FLASH_COMPLETE;
 done:
