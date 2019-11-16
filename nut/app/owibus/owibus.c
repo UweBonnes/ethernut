@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013, 2016 Uwe Bonnes.
+ * Copyright (C) 2012, 2013, 2016, 2017 Uwe Bonnes.
  *                               (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -37,11 +37,17 @@
  * \file app/owibus/owibus.c
  * \brief Example access to a DS18B20.
  *
- * The Onewire device needs to be connected to a port pin with pull-up
- * or the uart with TX low driving RX low and TX high not touching RX
- *
- * STM32 UART can do that by itself, with RX connected internal to TX
- * and TX driven Tristate
+ * The Onewire device needs to be connected to
+ * - a port pin driven OC with pull-up when using owiBusXGpio
+ * - on Stm32 a timer input pin from a 2 channel timer when
+ *   using owiBusXStm32Tim
+ * - a Uart
+ * -- RX and TX connected to RX with a none-inverting OC driver
+ * -- RX and TX connected in parallel when TX can be driven inverted and as OC,
+ *    as on STM32
+ * -- to TX when the UART driver knows OWIMODE:
+ *    RX connected internal to TX, TX driven OC and RX active during TX,
+ *    as on STM32. Newer STM32 UART IP may also swap TX and RX.
  *
  * \verbatim
  */
@@ -107,8 +113,9 @@ int main(void)
 
     freopen(DEV_CONSOLE.dev_name, "w", stdout);
     fprintf(stdout, banner);
-
-
+    uint32_t clk =  NutGetCpuClock();
+    fprintf(uart, "Running at %3ld.%06ld MHz\n",  clk / 1000000,
+            clk % 1000000);
     res = OwiInit(&DEF_OWIBUS);
     if(res)
     {
@@ -123,13 +130,31 @@ int main(void)
                            (i) ? hid[i - 1] : hid[0], hid[i]);
         if(res)
         {
-            printf("OwiRomSearch failed\n");
+            printf("OwiRomSearch failed: %d\n", res);
             while(1)
                 NutSleep(10);
         }
+        char *type;
+        switch (hid[i][0]) {
+        case W1_THERM_DS1825:
+            type = "DS1825";
+            break;
+        case W1_THERM_DS18B20:
+            type = "DS18B20";
+            break;
+        case W1_THERM_DS18S20:
+            type = "DS18S20";
+            break;
+        case W1_THERM_MAX3185X:
+            type = "MAX3185X";
+            break;
+        default:
+            type = "Unknown";
+        }
         fprintf(stdout,
-                "Hardware ID of device %d: %02x%02x%02x%02x%02x%02x%02x%02x\n",
-                i,
+                "Hardware ID of device %d (%s), diff %02x: "
+                "%02x%02x%02x%02x%02x%02x%02x%02x\n",
+                i, type, diff,
                 hid[i][7], hid[i][6], hid[i][5], hid[i][4],
                 hid[i][3], hid[i][2], hid[i][1], hid[i][0]);
         i++;
@@ -141,9 +166,8 @@ int main(void)
         if (res)
             printf("OwiCommand convert_t error %d\n", res);
         NutSleep(1000);
-        printf("%4d: ", run++);
+        printf("\n%4d: ", run++);
         for (i = 0; i < num_devices; i++) {
-            int status = 0;
             int position = -1;
             int j = 0;
             int32_t xcelsius = 0;
@@ -159,6 +183,9 @@ int main(void)
                 printf("Device %d: OwiReadBlock error %d\n", i, res);
             }
             switch (hid[i][0]) {
+            case W1_THERM_DS1825:
+                position = raw[4] & 0xf;
+                /* fall through*/
             case W1_THERM_DS18B20:
                 xcelsius = (raw[1] & 0x80)? 0xffff0000: 0;
                 xcelsius |= ((raw[1] << 8) | raw[0]);
@@ -169,38 +196,49 @@ int main(void)
                 xcelsius |= ((raw[1] << 8) | raw[0]);
                 xcelsius *= 5000;
                 break;
-            case W1_THERM_DS1825:
+            case W1_THERM_MAX3185X:
                 xcelsius = (raw[3] & 0x80)? 0xfffff000: 0;
                 xcelsius |= ((raw[3] << 4) | (raw[2] >> 4));
                 xcelsius *= 625;
-                status = raw[2] & 7;
                 position = raw[4] & 0xf;
+                if (raw[0] & 1) { /* Fault detected. */
+                    int status = 0;
+                    status = raw[2] & 7;
+                    switch (status) {
+                    case 0:
+                        printf(" Okay");
+                        break;
+                    case 1:
+                        printf(" Open");
+                        break;
+                    case 2:
+                        printf(" SGND");
+                        break;
+                    case 4:
+                        printf(" SVDD");
+                        break;
+                    default:
+                        printf(" MULT");
+                    }
+                } else { /* Get Thermocouple temperature.*/
+                    int32_t extcelsius = 0;
+                    extcelsius = (raw[1] & 0x80)? 0xfffff000: 0;
+                    extcelsius |= ((raw[1] << 8) | (raw[0] & 0xfc));
+                    extcelsius *= 625;
+                    printf("%4ld.%04ld ",
+                           extcelsius / 10000,
+                           ((extcelsius < 0)
+                            ? -extcelsius : extcelsius) % 10000);
+                }
                 break;
             }
             if (position >= 0) {
                 printf(" P%02d:", position);
             }
-            switch (status) {
-            case 0:
-                printf(" Okay");
-                break;
-            case 1:
-                printf(" Open");
-                break;
-            case 2:
-                printf(" SGND");
-                break;
-            case 3:
-                printf(" SVDD");
-                break;
-            default:
-                printf(" MULT");
-            }
             printf("%4ld.%04ld ",
                    xcelsius / 10000,
                    ((xcelsius < 0) ? -xcelsius : xcelsius) % 10000);
         }
-        putchar('\n');
     }
     return 0;
 }
