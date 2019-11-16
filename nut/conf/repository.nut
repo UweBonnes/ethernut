@@ -515,6 +515,13 @@ repository =
         }
     },
     {
+        name = "nutboard",
+        brief = "Board",
+        description = "Setup for experimental boards.",
+        disablers = {"HW_TARGET_BOARD"},
+        script = "board.nut"
+    },
+    {
         name = "nuttools",
         brief = "Tools",
         description = "Tool selection.",
