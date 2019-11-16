@@ -99,8 +99,19 @@ nutfs =
         brief = "UROM",
         provides = { "NUT_FS", "NUT_FS_READ" },
         description = "Read only.",
+        options =
+        {
+            {
+                macro = "CRUROM",
+                brief = "CRUROM binary",
+                description = "Where to find the UROM binary.",
+                type = "enumerated",
+                choices = {"$(top_srcdir)/tools/crurom/crurom", "crurom"},
+                default = "$(top_srcdir)/tools/crurom/crurom",
+                makedefs = {"CRUROM"},
+            },
+         },
         sources = { "uromfs.c" },
-        makedefs = { "CRUROM=crurom" }
     },
     {
         name = "nutfs_uflashfs",
