@@ -84,13 +84,13 @@ static inline void OwiTimerStart(STM32_OWIBUS_TIMER_INFO *info)
     uint16_t ccmr_value, ccmr_force;
 
     info->timer->EGR = TIM_EGR_UG;
-    NutEnterCritical();
     ccmr_value = *info->ccmr;
     ccmr_force = ccmr_value & info->ccmr_mask;
     ccmr_force = ccmr_force | info->ccmr_force;
+    NutEnterCritical();
     *info->ccmr = ccmr_force;
-    *info->ccmr = ccmr_value;
     info->timer->CR1 |= TIM_CR1_CEN;
+    *info->ccmr = ccmr_value;
     NutExitCritical();
 }
 
