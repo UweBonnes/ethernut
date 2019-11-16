@@ -50,6 +50,7 @@
 
 /*! \brief Parameter table of known DataFlash types. */
 AT25DF_INFO at25df_info[] = {
+    {12,  512, 4096, 256, 0x46, 0x02}, /* AT25DF161  - 2MB */
     {12, 1024, 4096, 256, 0x47, 0x00}, /* AT25DF321  - 4MB */
     {12, 1024, 4096, 256, 0x47, 0x01}, /* AT25DF321A - 4MB */
     {12, 2048, 4096, 256, 0x48, 0x00}, /* AT25DF641  - 8MB */
