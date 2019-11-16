@@ -486,11 +486,6 @@ static void AvrUsartDisable(void)
     NutExitCritical();
 
     /*
-     * Allow incoming or outgoing character to finish.
-     */
-    NutDelay(10);
-
-    /*
      * Disable USART transmit and receive.
      */
     cbi(UCSRnB, RXEN);
