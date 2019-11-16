@@ -154,6 +154,9 @@ static int OwiSearch(NUTOWIBUS *bus, uint8_t *diff, const uint8_t command,
     }
     for (i = 0; i < 64; i++) {
         res = bus->OwiReadBlock(bus, &bit, 2); /* Read bit and complement.*/
+        if (res) {
+            return OWI_DATA_ERROR;
+        }
         switch (bit) {
         case 1:
         case 2:
