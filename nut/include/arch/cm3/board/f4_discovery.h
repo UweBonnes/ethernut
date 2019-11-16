@@ -147,3 +147,8 @@
 #  endif
 # endif
 #endif
+
+#if !defined(DEF_OWIBUS)
+# include <arch/cm3/stm/owibus_stm32tim.h>
+# define DEF_OWIBUS owiBus0Stm32Tim
+#endif

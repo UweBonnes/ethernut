@@ -132,8 +132,6 @@ struct _STM32_OWIBUS_TIMER_INFO {
     const STM32_OWIBUS_TIMER_HW *owi_hw;
     /*! \brief Used timer. */
     TIM_TypeDef *timer;
-    /*! \brief (Bitband) Register for Update generation. */
-    volatile uint32_t *const timer_egr;
      /*! \brief (Bitband) Register for Counter start. */
     volatile uint32_t *const timer_cr1;
      /*! \brief Timer Register to set output active length on next update. */
