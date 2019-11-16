@@ -694,7 +694,7 @@ static int Stm32UsartSetSpeed(uint32_t rate)
             divider = STM32_LPUART1_MAX_DIV;
         }
 #else
-    divider = (2 * apbclock) / rate;
+    divider = (2 * apbclock + rate) / rate;
     uint32_t cr1 = USARTn->CR1;
 
     if ((divider > 0x20) || (USART_CR1_OVER8 == 0)) {
