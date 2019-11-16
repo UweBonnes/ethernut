@@ -63,53 +63,47 @@ void Stm32TimerConfig(
     TIM_SLAVE_MODE    slave_mode,
     TIM_MASTER_MODE1  master_mode1)
 {
-    uint32_t smcr;
-    int i;
-
     if (master_mode1 > TIM_MASTER_MODE1_NONE) {
         uint32_t cr2;
         cr2 = tim->CR2;
         cr2 &= ~TIM_CR2_MMS;
-        cr2 |= (master_mode1 * TIM_CR2_MMS_0) & TIM_CR2_MMS;
+        cr2 |= (master_mode1 << TIM_CR2_MMS_Pos) & TIM_CR2_MMS;
         tim->CR2 = cr2;
     }
 
-    i = 0;
+    uint32_t smcr = 0;
     if (trg_sel > TIM_TRG_SELECTION_ETR8) {
+        /* Handle inverted external trigger polarity*/
         trg_sel -= 4;
         smcr = TIM_SMCR_ETP;
     }
-    else
-        smcr = 0;
-    switch(trg_sel) {
-    case TIM_TRG_SELECTION_NONE: break;
-    case TIM_TRG_SELECTION_ETR8: i++;
-    case TIM_TRG_SELECTION_ETR4: i++;
-    case TIM_TRG_SELECTION_ETR2: i++;
-    default:
-        smcr |= i * TIM_SMCR_ETPS_0;
-        smcr |= (trg_sel * TIM_SMCR_TS_0) & TIM_SMCR_TS;
+    if (trg_sel > TIM_TRG_SELECTION_ETR) {
+        /* Handle external trigger filter.*/
+        smcr |= (trg_sel - TIM_TRG_SELECTION_ETR) << TIM_SMCR_ETPS_Pos;
+        trg_sel = TIM_TRG_SELECTION_ETR;
     }
+    /* Do trigger selection.*/
+    smcr |= (trg_sel << TIM_SMCR_TS_Pos) & TIM_SMCR_TS;
 
     switch(clk_mode) {
     case TIM_CLK_MODE_ETR:
-        smcr = smcr | TIM_SMCR_ECE;
+        smcr |= TIM_SMCR_ECE;
         /* Fall through to treat like internal clock mode */
     case TIM_CLK_MODE_CKINT:
         switch(slave_mode){
 #if defined(TIM_SMCR_SMS_3)
         case TIM_SLAVE_MODE_TRG_RESET_CNT:
-            smcr = smcr | TIM_SMCR_SMS_3;
+            smcr |= TIM_SMCR_SMS_3;
             break;
 #endif
-        default: smcr = smcr | ((slave_mode * TIM_SMCR_SMS_0) & TIM_SMCR_SMS);
+        default: smcr |= ((slave_mode << TIM_SMCR_SMS_Pos) & TIM_SMCR_SMS);
         }
         break;
     case TIM_CLK_MODE_TI1:
-        smcr = smcr | 7 * TIM_SMCR_SMS_0 | 5 * TIM_SMCR_TS_0;
+        smcr |= (7 << TIM_SMCR_SMS_Pos) | (5 << TIM_SMCR_TS_Pos);
         break;
     case TIM_CLK_MODE_TI2:
-        smcr = smcr | 7 * TIM_SMCR_SMS_0 | 6 * TIM_SMCR_TS_0;
+        smcr |= (7 << TIM_SMCR_SMS_Pos) | (6 << TIM_SMCR_TS_Pos);
         break;
     }
     tim->SMCR = smcr;
@@ -171,10 +165,10 @@ int Stm32TimerChannelConfig(
             fout = fout - TIM_CC_FROZEN_DIRECT;
         }
         /* Set output function. */
-        tmp |= (fout  * TIM_CCMR1_OC1M_0);
+        tmp |= (fout << TIM_CCMR1_OC1M_Pos);
     } else {
         /* Set Input Capture Filter and function*/
-        tmp = (filter * TIM_CCMR1_IC1F_0) | (fin);
+        tmp = (filter << TIM_CCMR1_IC1F_Pos) | (fin << TIM_CCMR1_CC1S_Pos);
     }
     switch (ch) {
     case 0:
@@ -183,7 +177,7 @@ int Stm32TimerChannelConfig(
         break;
     case 1:
         tim->CCMR1 &= 0x0100ff;
-        tim->CCMR1 |= tmp << 8;
+        tim->CCMR1 |= tmp << TIM_CCMR1_CC2S_Pos;
         break;
     case 2:
         tim->CCMR2 &= 0x100ff00;
@@ -191,7 +185,7 @@ int Stm32TimerChannelConfig(
         break;
     case 3:
         tim->CCMR2 &= 0x0100ff;
-        tim->CCMR2 |= tmp << 8;
+        tim->CCMR2 |= tmp << TIM_CCMR2_CC4S_Pos;
         break;
 #if defined(TIM_CCMR3_OC5M)
     case 4:
@@ -209,7 +203,7 @@ int Stm32TimerChannelConfig(
     channel_index =  ch * 4;
     ccer = tim->CCER;
     ccer &= ~( 0xf << channel_index);
-    tmp = TIM_CCER_CC1E + polarity * TIM_CCER_CC1P;
+    tmp = TIM_CCER_CC1E + (polarity << TIM_CCER_CC1P_Pos);
     if (channel < 0) {
         tmp = tmp << 2;
     }
