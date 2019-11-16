@@ -171,6 +171,7 @@ int main(void)
             int position = -1;
             int j = 0;
             int32_t xcelsius = 0;
+            uint16_t raw_data;
             res = OwiCommand(&DEF_OWIBUS, OWI_READ, hid[i]);
             if (res) {
                 printf("Device %d: OwiCommand read error %d\n", i, res);
@@ -187,8 +188,15 @@ int main(void)
                 position = raw[4] & 0xf;
                 /* fall through*/
             case W1_THERM_DS18B20:
+                printf("Raw %02x %02x\n", raw[1], raw[0]);
+        fprintf(stdout,
+                "Hardware ID of device %d, hid %02x: "
+                "%02x%02x%02x%02x%02x%02x%02x%02x\n",
+                i, diff,
+                hid[i][7], hid[i][6], hid[i][5], hid[i][4],
+                hid[i][3], hid[i][2], hid[i][1], hid[i][0]);
                 xcelsius = (raw[1] & 0x80)? 0xffff0000: 0;
-                xcelsius |= ((raw[1] << 8) | raw[0]);
+                xcelsius |= ((raw[1] << 4) | raw[0] >> 4);
                 xcelsius *= 625;
                 break;
             case W1_THERM_DS18S20:
