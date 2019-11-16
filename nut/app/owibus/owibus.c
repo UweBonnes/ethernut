@@ -144,7 +144,7 @@ int main(void)
         printf("%4d: ", run++);
         for (i = 0; i < num_devices; i++) {
             int status = 0;
-            int position = 0;
+            int position = -1;
             int j = 0;
             int32_t xcelsius = 0;
             res = OwiCommand(&DEF_OWIBUS, OWI_READ, hid[i]);
@@ -177,7 +177,9 @@ int main(void)
                 position = raw[4] & 0xf;
                 break;
             }
-            printf(" P%02d:", position);
+            if (position >= 0) {
+                printf(" P%02d:", position);
+            }
             switch (status) {
             case 0:
                 printf(" Okay");
