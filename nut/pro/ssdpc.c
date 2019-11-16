@@ -213,7 +213,7 @@ int SsdpDiscoverDevices(const char *target, int_fast8_t mxwait)
         HttpuAddHeader(s, "Host", ct_239_255_255_250, ":1900", NULL);
         HttpuAddHeader(s, "MAN", "\"ssdp:discover\"", NULL);
         {
-            char valbuf[4];
+            char valbuf[5];
             sprintf(valbuf, "%d", mxwait);
             HttpuAddHeader(s, "MX", valbuf, NULL);
         }
