@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2012 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
- * Copyright (C) 2015-2017 by Uwe Bonnes
+ * Copyright (C) 2015-2017, 2019 by Uwe Bonnes
  *                            <bon@elektron.ikp.physik.tu-darmstadt.de>
  *
  * All rights reserved.
@@ -68,9 +68,11 @@
 
 #ifndef NUT_BOOT_FUNCTION
 #define NUT_BOOT_FUNCTION NutInit
+#else
+extern void NutInit(void);
 #endif
 
-extern void NUT_BOOT_FUNCTION(void *);
+extern void NUT_BOOT_FUNCTION(void);
 
 /*!
  * \brief CortexM3 MSP processor stack.
@@ -136,7 +138,7 @@ void (* const g_pfnVectors[])(void *) =
 #endif
 {
     (void (*)(void *))((uint32_t)mspStack + sizeof(mspStack)), /* Initial Stack Pointer */
-    NUT_BOOT_FUNCTION,   /* Reset_Handler */
+    (void (*)(void *))NUT_BOOT_FUNCTION,   /* Reset_Handler */
     IntNmiHandler,       /* NMI_Handler */
     IntHardfaultHandler, /* HardFault_Handler */
     IntMemfaultHandler,  /* MemManage_Handler */
@@ -171,9 +173,14 @@ void (* const g_pfnVectors[])(void *) =
 #define g_pfnRAMVectors g_pfnVectors
 #else
 static __attribute__((section(".vtable")))
+# if  NUT_BOOT_FUNCTION != NutInit
+/* Allocate space for some signature to decide if to run bootloader or
+ * application.*/
+void (*volatile g_pfnRAMVectors[NUM_INTERRUPTS + 2])(void*);
+# else
 void (*volatile g_pfnRAMVectors[NUM_INTERRUPTS])(void*);
+# endif
 #endif
-
 
 /*!
  * \brief CortexM3 memory pointers
@@ -497,6 +504,38 @@ static void Cortex_IntInit(void)
 #endif
 #endif
     __enable_irq();
+}
+
+#define BOOTSWITCH_SIG0 0xb00710ad
+#define BOOTSWITCH_SIG1 0xb00720ad
+
+void Cortex_TestBootSwitch(int force)
+{
+    if (force) {
+        Cortex_SetBootSwitch(0);
+        NutInit();
+    }
+    uint32_t *bootsignature;
+    bootsignature = (uint32_t *) (g_pfnRAMVectors + NUM_INTERRUPTS);
+    /* Check Bootloader Signature */
+    if ((bootsignature[0] == BOOTSWITCH_SIG0) &&
+        (bootsignature[1] == BOOTSWITCH_SIG1)) {
+        Cortex_SetBootSwitch(0);
+        NutInit();
+    }
+}
+
+void Cortex_SetBootSwitch(int set)
+{
+    uint32_t *bootsignature;
+    bootsignature = (uint32_t *) (g_pfnRAMVectors + NUM_INTERRUPTS);
+    if (set) {
+        bootsignature[0] = BOOTSWITCH_SIG0;
+        bootsignature[1] = BOOTSWITCH_SIG1;
+    } else {
+        bootsignature[0] = 0;
+        bootsignature[1] = 0;
+    }
 }
 
 /*!

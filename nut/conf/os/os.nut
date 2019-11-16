@@ -155,8 +155,9 @@ nutos =
                 brief = "Boot Function",
                 description = "This function is given for the reset entry vecor.\n"..
                               "Default is NutInit\n"..
-                              "The function must be declarated as int function(void).",
+                              "The function must be declarated as void function(void).",
                 flavor = "booldata",
+                requires = { "HW_MCU_CM3" },
                 file = "include/cfg/os.h",
                 provides = {"NUT_BOOT_FUNCTION"},
             },

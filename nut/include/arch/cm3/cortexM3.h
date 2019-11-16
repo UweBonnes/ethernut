@@ -71,6 +71,8 @@ extern void (* const g_pfnVectors[])(void *);
 extern void Cortex_RegisterInt(IRQn_Type int_id, void (*pfnHandler)(void*));
 extern int  Cortex_ResetCause(void);
 extern void Cortex_Start(void);
+extern void Cortex_SetBootSwitch(int set);
+extern void Cortex_TestBootSwitch(int force);
 
 /*! \addtogroup xgNutArchCm3 */
 /*@{*/
