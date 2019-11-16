@@ -86,7 +86,7 @@ static uint16_t lcd_base = 0x0000;
 #endif
 #endif
 
-#define LCD_DELAY       asm volatile ("nop"); asm volatile ("nop")
+#define LCD_DELAY  do {asm volatile ("nop"); asm volatile ("nop");} while(0)
 
 
 /*!
