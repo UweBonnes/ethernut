@@ -385,7 +385,10 @@ repository =
     {
         name = "nutinfo",
         brief = "Hardware Platform",
-        description = "Board specific settings.",
+        description = "Board specific settings.\n\n"..
+        "For additional hardware plugged to an existing board, add\n"..
+        "dofile(\"<full path to existing .conf file>\")\n"..
+        "and add the additional items\n",
         options =
         {
             {
