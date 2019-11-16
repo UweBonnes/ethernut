@@ -90,11 +90,7 @@ static inline void OwiTimerStart(STM32_OWIBUS_TIMER_INFO *info)
     ccmr_force = ccmr_force | info->ccmr_force;
     *info->ccmr = ccmr_force;
     *info->ccmr = ccmr_value;
-#if defined (MCU_CM_NO_BITBAND)
-    *info->timer_cr1 |= TIM_CR1_CEN;
-#else
-    *info->timer_cr1 = 1;
-#endif
+    info->timer->CR1 |= TIM_CR1_CEN;
     NutExitCritical();
 }
 
@@ -439,12 +435,6 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi0TimHw = {
 static STM32_OWIBUS_TIMER_INFO Stm32Owi0TimInfo = {
     .owi_hw = &Stm32Owi0TimHw,
     .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
-#if defined (MCU_CM_NO_BITBAND)
-    .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
-#else
-    .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
-                           _BI32(TIM_CR1_CEN)),
-#endif
 #if defined(STM32TIM_OWI0_TX_GPIO)
     .ccr_capture = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI0_CHANNEL),
     .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI0_TX_CHANNEL),
@@ -517,12 +507,6 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi1TimHw = {
 static STM32_OWIBUS_TIMER_INFO Stm32Owi1TimInfo = {
     .owi_hw = &Stm32Owi1TimHw,
     .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
-#if defined (MCU_CM_NO_BITBAND)
-    .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
-#else
-    .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
-                           _BI32(TIM_CR1_CEN)),
-#endif
 #if defined(STM32TIM_OWI1_TX_GPIO)
     .ccr_capture = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI1_CHANNEL),
     .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI1_TX_CHANNEL),
@@ -595,12 +579,6 @@ static const STM32_OWIBUS_TIMER_HW Stm32Owi2TimHw = {
 static STM32_OWIBUS_TIMER_INFO Stm32Owi2TimInfo = {
     .owi_hw = &Stm32Owi2TimHw,
     .timer  = (TIM_TypeDef *) STM32TIMER_BASE,
-#if defined (MCU_CM_NO_BITBAND)
-    .timer_cr1 = &(((TIM_TypeDef *) STM32TIMER_BASE)->CR1),
-#else
-    .timer_cr1 = CM3BBADDR(STM32TIMER_BASE, TIM_TypeDef, CR1,
-                           _BI32(TIM_CR1_CEN)),
-#endif
 #if defined(STM32TIM_OWI2_TX_GPIO)
     .ccr_capture = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI2_CHANNEL),
     .ccr_pulse   = CCR_REG  (STM32TIMER_BASE, STM32TIM_OWI2_TX_CHANNEL),
