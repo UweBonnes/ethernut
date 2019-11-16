@@ -195,7 +195,14 @@ int Uart_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len)
         _write(owcb->uart_fd, tx_rx_data, j);
         _write(owcb->uart_fd, NULL, 0); /* Flush output */
         len -= j;
-#if defined(OWI_DEBUG)
+#define UART_BAD_FLUSH
+/* FIXME!
+*  The Flush implementation in dev/usart.h can return before
+*  the last tx byte is written. This hapens when flush is called
+*  after the last byte was written to the tx register. This is always
+*  the case with one byte writes.
+*  Fixing needs introduction of a flush handle to all low lever drivers!*/
+#if defined(OWI_DEBUG) || defined(UART_BAD_FLUSH)
         k = j;
         uint8_t *p = tx_rx_data;
         while (k) {
@@ -206,11 +213,13 @@ int Uart_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len)
             k -= res;
             p += res;
         }
+# if defined(OWI_DEBUG)
         printf("j %d tx_data :", j);
         for (k = 0; k < j; k++) {
             printf(" %02x",tx_rx_data[k]);
         }
         puts("");
+# endif
 #else
         _read(owcb->uart_fd, NULL, 0); /* Drain receive buffer. */
 
