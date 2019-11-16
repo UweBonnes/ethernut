@@ -41,7 +41,9 @@
  * $Id$
  * \endverbatim
  */
-
+#if defined(OWI_DEBUG)
+# include <stdio.h>
+#endif
 #include <cfg/arch.h>
 #include <cfg/owi.h>
 #include <stdint.h>
@@ -173,7 +175,6 @@ int Uart_OwiRWBit(NUTOWIBUS *bus, uint_fast8_t bit)
  */
 int Uart_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len)
 {
-    int res;
     int i;
 #define OWI_BLOCK
 #if defined(OWI_BLOCK)
@@ -184,30 +185,41 @@ int Uart_OwiWriteBlock(NUTOWIBUS *bus, const uint8_t *data, uint_fast8_t len)
     while(len) {
         uint8_t temp;
         int j, k;
+        j = (len > 8)? 8: len;
 
-        if (len > 8) {
-            j = 8;
-        } else {
-            j = len;
-        }
         temp = data[i];
         for (k = 0; k < j; k++) {
-            if (temp & (1 << k)) {
-                tx_rx_data[k] =OWI_UART_WRITE_ONE;
-            } else {
-                tx_rx_data[k] =OWI_UART_WRITE_ZERO;
-            }
+            tx_rx_data[k] = (temp & (1 << k)) ?
+                OWI_UART_WRITE_ONE : OWI_UART_WRITE_ZERO;
         }
         _write(owcb->uart_fd, tx_rx_data, j);
-        res = _read(owcb->uart_fd, tx_rx_data, j);
-        if (res != j) {
-            return OWI_HW_ERROR;
-        }
-        i++;
+        _write(owcb->uart_fd, NULL, 0); /* Flush output */
         len -= j;
+#if defined(OWI_DEBUG)
+        k = j;
+        uint8_t *p = tx_rx_data;
+        while (k) {
+            int res = _read(owcb->uart_fd, p, k);
+            if (res < 1) {
+                return OWI_HW_ERROR;
+            }
+            k -= res;
+            p += res;
+        }
+        printf("j %d tx_data :", j);
+        for (k = 0; k < j; k++) {
+            printf(" %02x",tx_rx_data[k]);
+        }
+        puts("");
+#else
+        _read(owcb->uart_fd, NULL, 0); /* Drain receive buffer. */
+
+#endif
+        i++;
     }
 #else
     for (i = 0; i < len; i++) {
+        int res;
         res = Uart_OwiRWBit(bus, data[i >> 3] & (1 << (i & 0x7)));
         if (res < 0) {
             return OWI_HW_ERROR;
@@ -235,33 +247,41 @@ int Uart_OwiReadBlock(NUTOWIBUS *bus, uint8_t *data, uint_fast8_t len)
     static const char owi_ones[8] PROGMEM = {
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
     };
-    uint8_t rec_data[8];
-
     i = 0;
-    while(len) {
-        int j, k;
-        uint8_t temp;
-
-        temp = 0;
-        if (len > 8) {
-            j = 8;
-        } else {
-            j = len;
-        }
+    while (len) {
+        uint8_t temp = 0;
+        int j = (len > 8)? 8 : len;
+        uint8_t rx_data[8], *p = rx_data;
+        int read = 0;
+        int k = j;
 #ifdef __HARVARD_ARCH__
         _write_P(owcb->uart_fd, owi_ones, j);
 #else
         _write(owcb->uart_fd, owi_ones, j);
 #endif
-        res = _read(owcb->uart_fd,rec_data, j);
-        if (res != j) {
-            return OWI_HW_ERROR;
-        }
-        for(k = 0; k < j; k++ ) {
-            if (rec_data[k] & OWI_UART_READ_ONE) {
-                temp |= 1 << k;
+        while (read < j) {
+            res = _read(owcb->uart_fd, p, k);
+            if (res < 1) {
+                return OWI_HW_ERROR;
+            } else {
+                k -= res;
+                p += res;
+                while (res) {
+                    if (rx_data[read] & OWI_UART_READ_ONE) {
+                        temp |= 1 << read;
+                    }
+                    read++;
+                    res--;
+                }
             }
         }
+#if defined(OWI_DEBUG)
+        printf("j %d rx_data", j);
+        for (k = 0; k < j; k++) {
+            printf(" %02x", rx_data[k]);
+        }
+        puts("");
+#endif
         data[i] = temp;
         i++;
         len -= j;
