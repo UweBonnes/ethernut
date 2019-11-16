@@ -119,14 +119,6 @@ SECTIONS
             PROVIDE_HIDDEN (__fini_array_end = .);
     } > SRAM0
 
-    .stack (NOLOAD):
-    {
-        . = ALIGN(8);
-        _stack_start = .;
-        KEEP(*(.stack .stack.*));
-        _stack_end = .;
-    } > SRAM0
-
     .psp_stack (NOLOAD):
     {
         . = ALIGN(8);
