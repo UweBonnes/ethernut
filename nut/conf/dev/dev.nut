@@ -144,6 +144,13 @@ nutdev =
                 file = "include/cfg/uart.h"
             },
             {
+                macro = "USART_NO_COMMON_BAUDRATE",
+                brief = "Per Device USART Speed",
+                description = "Check if Baudrate it defined per device",
+                flavor = "boolean",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "UART0_INIT_BAUDRATE",
                 brief = "USART0 Initial Baudrate",
                 description = "Default is 115200. Currently supported on the AT91 driver only.",
