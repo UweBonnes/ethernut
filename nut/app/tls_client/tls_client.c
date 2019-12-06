@@ -95,6 +95,10 @@
 #include "cert.h"
 #include "private_key.h"
 
+#if !defined(TLS_SSL_ENABLE_CLIENT)
+# pragma message "TLS_SSL_ENABLE_CLIENT not selected in configuration"
+#endif
+
 #if !defined(TLS_SSL_CERT_VERIFICATION)
 int ssl_verify_cert(const SSL *ssl)
 {
@@ -105,14 +109,12 @@ int ssl_verify_cert(const SSL *ssl)
 
 const char * ssl_get_cert_dn(const SSL *ssl, int component)
 {
-    printf("%s", unsupported_str);
-    return NULL;
+    return unsupported_str;
 }
 
 const char * ssl_get_cert_subject_alt_dnsname(const SSL *ssl, int index)
 {
-    printf("%s", unsupported_str);
-    return NULL;
+    return unsupported_str;
 }
 SSL * ssl_client_new(SSL_CTX *ssl_ctx, int client_fd,
                  const uint8_t *session_id, uint8_t sess_id_size)
