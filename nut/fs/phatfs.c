@@ -696,7 +696,10 @@ int PhatFileWrite(NUTFILE * nfp, const void *buffer, int len)
          * are never updated in a PHAT file system.
          */
         if ((fcb->f_dirent.dent_attr & PHAT_FATTR_DIR) == 0) {
-            GetDosTimeStamp(&fcb->f_dirent.dent_mtime, &fcb->f_dirent.dent_mdate);
+            uint16_t time, date;
+            GetDosTimeStamp(&time, &date);
+            fcb->f_dirent.dent_mtime = time;
+            fcb->f_dirent.dent_mdate = date;
             fcb->f_dirent.dent_adate = fcb->f_dirent.dent_mdate;
             fcb->f_dirent.dent_attr |= PHAT_FATTR_ARCHIV;
             if(fcb->f_dirent.dent_fsize < fcb->f_pos) {

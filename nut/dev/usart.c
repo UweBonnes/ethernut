@@ -58,8 +58,6 @@
 
 #include <fcntl.h>
 
-#include <cfg/uart.h>
-
 /*
  * Not nice because stdio already defined them. But in order to save memory,
  * we do the whole buffering and including stdio here would be more weird.
@@ -96,12 +94,14 @@ int UsartInit(NUTDEVICE * dev)
 
     /* Initialize the low level hardware driver. */
     rc = (*dcb->dcb_init) ();
-#if !defined(USART_NO_COMMON_BAUDRATE)
     if (rc == 0) {
+        uint32_t speed = (*dcb->dcb_get_speed)();
+        if (!speed || (speed == -1)) {
+            speed = USART_INITSPEED;
+        }
         /* Ignore errors on initial configuration. */
-        (*dcb->dcb_set_speed) (USART_INITSPEED);
+        (*dcb->dcb_set_speed) (speed);
     }
-#endif
     /* Initialise the fflush mutex to signalled state */
     NutEventPost(&dcb->dcb_tx_rbf.flush_mutex);
     return rc;

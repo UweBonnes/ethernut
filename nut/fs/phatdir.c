@@ -473,7 +473,10 @@ static int PhatDirEntryRelease(NUTFILE * ndp, uint32_t pos, int lfncnt)
 int PhatDirEntryCreate(NUTFILE * ndp, const char *name, int acc, PHATDIRENT * dirent)
 {
     dirent->dent_attr = (uint8_t) acc;
-    GetDosTimeStamp(&dirent->dent_ctime, &dirent->dent_cdate);
+    uint16_t time, date;
+    GetDosTimeStamp(&time, &date);
+    dirent->dent_ctime = time;
+    dirent->dent_cdate = date;
     dirent->dent_adate = dirent->dent_cdate;
     dirent->dent_mtime = dirent->dent_ctime;
     dirent->dent_mdate = dirent->dent_cdate;
