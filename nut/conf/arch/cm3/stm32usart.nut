@@ -627,6 +627,13 @@ return
                 file = "include/cfg/uart.h"
             },
             {
+                macro = function() return USARTX .. '_HDX_MODE'; end,
+                brief = "Use half duplex mode",
+                description = "Start the UART in half duplex mode.",
+                type = "booldata",
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = function() return USARTX .. '_INIT_TX_BUFSIZE'; end,
                 brief = "Initial size of TX buffer",
                 description = "Bytes used for TX buffer.\n"..

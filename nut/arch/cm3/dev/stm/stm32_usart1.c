@@ -152,6 +152,9 @@ static void Stm32F1UsartRemap(void)
 #define UARTx_DE_INV   USART1_DE_INV
 #define UARTx_NRE      USART1_NRE
 #define UARTx_NRE_INV  USART1_NRE_INV
+#if defined(USART1_HDX_MODE)
+# define UART_HDX_MODE
+#endif
 
 /*!
  * \brief USART1 base configuration.

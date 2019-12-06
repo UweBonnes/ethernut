@@ -159,6 +159,9 @@ NUTDEVICE devUartStm32_5 = {
 #define UARTx_DE_INV   USART5_DE_INV
 #define UARTx_NRE      USART5_NRE
 #define UARTx_NRE_INV  USART5_NRE_INV
+#if defined(USART5_HDX_MODE)
+# define UARTx_HDX_MODE
+#endif
 
 /*!
  * \brief UART5 base configuration.

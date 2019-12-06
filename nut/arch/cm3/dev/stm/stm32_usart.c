@@ -1364,7 +1364,7 @@ static int Stm32UsartInit(void)
     cr3 |= USART_CR3_IREN;
 #endif
 
-#ifdef USART_HARDWARE_HDX
+#ifdef UARTx_HDX_MODE
     cr3 |= USART_CR3_HDSEL;
 #endif
 #if (UART_RTS_AF >= 0)

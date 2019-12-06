@@ -159,6 +159,9 @@ NUTDEVICE devUartStm32_4 = {
 #define UARTx_DE_INV   USART4_DE_INV
 #define UARTx_NRE      USART4_NRE
 #define UARTx_NRE_INV  USART4_NRE_INV
+#if defined(USART4_HDX_MODE)
+# define UARTx_HDX_MODE
+#endif
 
 /*!
  * \brief UART4 base configuration.

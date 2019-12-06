@@ -144,6 +144,9 @@ NUTDEVICE devUsartStm32_6 = {
 #define UARTx_DE_INV   USART6_DE_INV
 #define UARTx_NRE      USART6_NRE
 #define UARTx_NRE_INV  USART6_NRE_INV
+#if defined(USART6_HDX_MODE)
+# define UARTx_HDX_MODE
+#endif
 
 /*!
  * \brief USART6 base configuration.
