@@ -506,6 +506,8 @@ static void Cortex_IntInit(void)
     __enable_irq();
 }
 
+# if  NUT_BOOT_FUNCTION != NutInit
+
 #define BOOTSWITCH_SIG0 0xb00710ad
 #define BOOTSWITCH_SIG1 0xb00720ad
 
@@ -537,6 +539,8 @@ void Cortex_SetBootSwitch(int set)
         bootsignature[1] = 0;
     }
 }
+
+#endif
 
 /*!
  * \brief CortexM3 Startup.
