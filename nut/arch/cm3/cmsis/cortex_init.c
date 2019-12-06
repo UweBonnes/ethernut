@@ -70,6 +70,7 @@
 #define NUT_BOOT_FUNCTION NutInit
 #else
 extern void NutInit(void);
+# define ROOM_FOR_SIGNATURE
 #endif
 
 extern void NUT_BOOT_FUNCTION(void);
@@ -173,7 +174,7 @@ void (* const g_pfnVectors[])(void *) =
 #define g_pfnRAMVectors g_pfnVectors
 #else
 static __attribute__((section(".vtable")))
-# if  NUT_BOOT_FUNCTION != NutInit
+# if  defined(ROOM_FOR_SIGNATURE)
 /* Allocate space for some signature to decide if to run bootloader or
  * application.*/
 void (*volatile g_pfnRAMVectors[NUM_INTERRUPTS + 2])(void*);
@@ -506,7 +507,7 @@ static void Cortex_IntInit(void)
     __enable_irq();
 }
 
-# if  NUT_BOOT_FUNCTION != NutInit
+# if  defined(ROOM_FOR_SIGNATURE)
 
 #define BOOTSWITCH_SIG0 0xb00710ad
 #define BOOTSWITCH_SIG1 0xb00720ad
