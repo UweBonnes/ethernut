@@ -186,7 +186,7 @@ static void  StmUsartClkEnable(int enable)
 }
 
 #ifdef UART4_INIT_BAUDRATE
-#define USART_INIT_BAUTRATE UART4_INIT_BAUDRATE
+#define USART_INIT_BAUDRATE UART4_INIT_BAUDRATE
 #endif
 
 #undef USART_HWFLOWCTRL

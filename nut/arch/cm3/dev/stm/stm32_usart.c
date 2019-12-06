@@ -163,8 +163,8 @@
 #endif
 
 /* USART default speed if not preset by nutconfig */
-#ifndef USART_INIT_BAUTRATE
-#define USART_INIT_BAUTRATE USART_INITSPEED
+#ifndef USART_INIT_BAUDRATE
+#define USART_INIT_BAUDRATE USART_INITSPEED
 #endif
 
 /*!
@@ -1378,7 +1378,7 @@ static int Stm32UsartInit(void)
     USARTn->CR3 = cr3;
 
     /* USART configuration */
-    Stm32UsartSetSpeed(USART_INIT_BAUTRATE);
+    Stm32UsartSetSpeed(USART_INIT_BAUDRATE);
     Stm32UsartSetDataBits(8);
     Stm32UsartSetStopBits(2);
     Stm32UsartSetParity(0);
