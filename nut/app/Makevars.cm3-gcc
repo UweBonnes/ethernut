@@ -39,29 +39,4 @@
 include $(top_srcdir)/app/Makevars.gcc
 
 # set linker options
-LDFLAGS = $(MCFLAGS) -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--gc-sections -L$(LIBDIR)
-ifdef ITCM_LENGTH
-      LDFLAGS+= -Wl,--defsym=itcm_length=$(ITCM_LENGTH)
-endif
-ifdef FLASH0_LENGTH
-      LDFLAGS+= -Wl,--defsym=flash0_length=$(FLASH0_LENGTH)
-endif
-ifdef CCM_LENGTH
-      LDFLAGS+= -Wl,--defsym=ccm_length=$(CCM_LENGTH)
-else
-      LDFLAGS+= -Wl,--defsym=ccm_length=0
-endif
-ifdef RAM0_LENGTH
-      LDFLAGS+= -Wl,--defsym=ram0_length=$(RAM0_LENGTH)
-endif
-
-ifdef RAM1_LENGTH
-      LDFLAGS+= -Wl,--defsym=ram1_length=$(RAM1_LENGTH)
-else
-      LDFLAGS+= -Wl,--defsym=ram1_length=0
-endif
-ifdef RAM2_LENGTH
-      LDFLAGS+= -Wl,--defsym=ram2_length=$(RAM2_LENGTH)
-else
-      LDFLAGS+= -Wl,--defsym=ram2_length=0
-endif
+LDFLAGS += $(MCFLAGS) -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--gc-sections -L$(LIBDIR)
