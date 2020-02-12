@@ -148,7 +148,6 @@ typedef enum
   */
 
 #include <arch/cm3/core_cm3.h>
-#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

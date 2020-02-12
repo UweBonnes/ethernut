@@ -245,6 +245,7 @@
 #endif
 
 extern int Stm32ResetCause(void);
+extern void SystemInit (void);
 
 /* Allow readable values in the configurator, but avoid
  * name clash when STM libraries are used too.

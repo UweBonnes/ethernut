@@ -202,7 +202,6 @@ typedef enum
 #define __DCACHE_PRESENT          1       /*!< CM7 data cache present                        */
 
 #include <arch/cm3/core_cm7.h>            /* Cortex-M7 processor and core peripherals */
-#include <arch/cm3/stm/system_stm32.h>
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures

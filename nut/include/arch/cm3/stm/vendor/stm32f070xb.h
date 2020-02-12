@@ -128,7 +128,6 @@ typedef enum
   */
 
 #include <arch/cm3/core_cm0.h>            /* Cortex-M0 processor and core peripherals */
-#include <arch/cm3/stm/system_stm32.h>    /* STM32F0xx System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
