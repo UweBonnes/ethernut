@@ -679,23 +679,19 @@ static int Stm32CanBusInit( NUTCANBUS *bus)
     __IO uint32_t *CANBBx = bus->bb_base;
     uint32_t wait_ack = 0;
 
-    if (!(bus->sig_tx_irq)) { /* for the companion, we only check that CAN1/2 is clock */
+    if (!(bus->sig_tx_irq))
+    { /* for the companion, we only check that CAN1/2 is clock */
         if (bus->bus_base == CAN1_BASE) {
             rc = CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN1EN));
-            CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
-            CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN1RST));
-        } else {
 #ifdef RCC_APB1ENR_CAN2EN
+        } else {
             rc = CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_CAN2EN));
-            CM3BBSET(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST));
-            CM3BBCLR(RCC_BASE, RCC_TypeDef, APB1RSTR, _BI32(RCC_APB1RSTR_CAN2RST));
 #endif
         }
-        if (rc) {
+        if (rc)
             return 0;
-        } else {
+        else
             return CAN_NO_COMPANION;
-        }
     }
 
     /* If bus has hardware init function, call it. */
