@@ -39,6 +39,7 @@ nutarch_cm3_stm32l0 =
                "HW_USART2_STM32",
                "HW_UART2_STM32",
                "HW_LPUART1_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -82,6 +83,7 @@ nutarch_cm3_stm32l0 =
                "HW_USART2_STM32",
                "HW_UART2_STM32",
                "HW_AES_LPUART1_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -126,6 +128,7 @@ nutarch_cm3_stm32l0 =
                "HW_USART2_STM32",
                "HW_UART2_STM32",
                "HW_LPUART1_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -170,6 +173,7 @@ nutarch_cm3_stm32l0 =
                "HW_USART2_STM32",
                "HW_UART2_STM32",
                "HW_AES_LPUART1_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -219,6 +223,7 @@ nutarch_cm3_stm32l0 =
                "HW_USART2_STM32",
                "HW_UART2_STM32",
                "HW_LPUART1_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -271,6 +276,7 @@ nutarch_cm3_stm32l0 =
                "HW_UART2_STM32",
                "HW_RNG_LPUART1_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -324,6 +330,7 @@ nutarch_cm3_stm32l0 =
                "HW_RNG_LPUART1_STM32",
                "HW_LCD_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -376,6 +383,7 @@ nutarch_cm3_stm32l0 =
                "HW_UART2_STM32",
                "HW_AES_RNG_LPUART1_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -429,6 +437,7 @@ nutarch_cm3_stm32l0 =
                "HW_AES_RNG_LPUART1_STM32",
                "HW_LCD_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -483,6 +492,7 @@ nutarch_cm3_stm32l0 =
                "HW_USART2_STM32",
                "HW_UART2_STM32",
                "HW_LPUART1_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -540,6 +550,7 @@ nutarch_cm3_stm32l0 =
                "HW_UART2_STM32",
                "HW_RNG_LPUART1_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -598,6 +609,7 @@ nutarch_cm3_stm32l0 =
                "HW_RNG_LPUART1_STM32",
                "HW_LCD_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -652,6 +664,7 @@ nutarch_cm3_stm32l0 =
                "HW_USART2_STM32",
                "HW_UART2_STM32",
                "HW_AES_LPUART1_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -709,6 +722,7 @@ nutarch_cm3_stm32l0 =
                "HW_UART2_STM32",
                "HW_AES_RNG_LPUART1_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =
@@ -767,6 +781,7 @@ nutarch_cm3_stm32l0 =
                "HW_AES_RNG_LPUART1_STM32",
                "HW_LCD_STM32",
                "HW_USB_STM32",
+               "HW_UART_AUTOBAUD",
             },
             file = "include/cfg/arch.h",
             makedefs =

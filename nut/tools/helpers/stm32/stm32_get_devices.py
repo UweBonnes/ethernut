@@ -118,6 +118,10 @@ def generate(name, headerfile, luafile, dbpath):
             elif "I2C" in device and "_EV" in device:
                 device = device.replace("_EV", "")
                 luafile.write("               \"HW_%s_STM32\",\n" % device)
+        elif "#define USART_CR1_FIFOEN_Pos" in line:
+            luafile.write("               \"HW_UART_FIFO_STM32\",\n")
+        elif "#define USART_CR2_ABREN_Pos" in line:
+            luafile.write("               \"HW_UART_AUTOBAUD\",\n")
         elif "#define BKPSRAM_BASE" in line:
             luafile.write("               \"HW_BKPSRAM_STM32\",\n")
         elif "#define PWR_CR2_IOSV " in line:

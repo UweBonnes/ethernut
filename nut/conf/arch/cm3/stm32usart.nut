@@ -676,6 +676,33 @@ nutarch_cm3_stm32_usart_devices =
     -- ******************************************
     --
     --
+    --
+    -- STM32 UART Features
+    --
+    {
+        name = "nutarch_cm3_stm32_uart_feature",
+        brief = "Uart features.",
+        description = "Stm32 family specific UART features.",
+        options =
+        {
+            {
+                macro = "HW_UART_AUTOBAUD",
+                brief = "Autobaud feature",
+                description = "USART Hardware has autobaud feature",
+                requires = {"HW_UART_AUTOBAUD"},
+                default = 1,
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "HW_UART_FIFO_STM32",
+                brief = "Uart Fifo",
+                description = "USART Hardware has fifo feature",
+                requires = {"HW_UART_FIFO_STM32"},
+                default = 1,
+                file = "include/cfg/uart.h"
+            },
+        }
+    },
     -- STM32 DEBUG Macro (Low-Level Debug UART definition)
     --
     {
