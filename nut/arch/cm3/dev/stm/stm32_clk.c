@@ -416,8 +416,7 @@ static int CtlHsiClock(int ena)
   */
 static void SetRtcClockSource(int source)
 {
-    int bd_change = 0;
-    if (LSI_ON) {
+    if (LSI_ON || (source == RTCCLK_LSI)) {
         RCC->CSR |= RCC_CSR_LSION;
     } else {
         RCC->CSR &= ~RCC_CSR_LSION;
@@ -425,26 +424,26 @@ static void SetRtcClockSource(int source)
     if (source == RTCCLK_KEEP) {
         return;
     }
-    if ((source == RTCCLK_NONE) && (RCC_BDCR & RCC_BDCR_RTCEN) ){
-        bd_change = 1;
-    } else if (((RCC_BDCR & RCC_BDCR_LSEON) && (LSE_VALUE == 0)) ||
-               ((RCC_BDCR & RCC_BDCR_LSEBYP) && LSE_BYPASS)      ||
-               ((source * RCC_BDCR_RTCSEL_0) != (RCC_BDCR & RCC_BDCR_RTCSEL)) ||
-               ((LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) !=
-                (RCC_BDCR & RCC_BDCR_LSEDRV))) {
-        bd_change = 1;
+    if (((RCC_BDCR & RCC_BDCR_LSERDY) && (LSE_VALUE))                    &&
+        ((RCC_BDCR & RCC_BDCR_LSEBYP) == (LSE_BYPASS * RCC_BDCR_LSEBYP))     &&
+        ((RCC_BDCR & RCC_BDCR_RTCSEL) == (source * RCC_BDCR_RTCSEL_0))       &&
+        ((RCC_BDCR & RCC_BDCR_LSEDRV) == (LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0))) {
+        return;
     }
     /* Enable backup domain access*/
     PWR_CR |= PWR_CR_DBP;
-    if (bd_change) {
-       /* Backup Domain protected bits need to be reset by BDRST. */
-        RCC_BDCR = RCC_BDCR_BDRST;
+    /* Backup Domain protected RTCSEL bits need to be reset by BDRST. */
+    RCC->BDCR = RCC_BDCR_BDRST;
+    uint32_t bdcr =
+        (source * RCC_BDCR_RTCSEL_0) |
+        (LSE_BYPASS * RCC_BDCR_LSEBYP) |
+        (LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) |
+        (LSE_VALUE)? RCC_BDCR_LSEON : 0;
+    RCC->BDCR = bdcr;
+    /* W/o this wait with external LSE, LSERDY stayed low on a L412*/
+    if (LSE_VALUE) {
+        while (!(RCC_BDCR & RCC_BDCR_LSERDY));
     }
-    RCC_BDCR =
-        source * RCC_BDCR_RTCSEL_0 |
-        ((LSE_VALUE)? RCC_BDCR_LSEON : 0) |
-        LSE_BYPASS * RCC_BDCR_LSEBYP |
-        LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0;
     PWR_CR &= ~PWR_CR_DBP;
 }
 
