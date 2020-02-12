@@ -315,7 +315,7 @@ nutarch_cm3_stm32_family =
 -- Todo: FLASH_WRPROT
                     "HW_VOS_STM32",
                     "HW_ICACHE_STM32",
---                    "HW_RTC_STM32_V2",
+                    "HW_RTC_STM32_V2",
                     "HW_GPIO_STM32V2",
                     "HW_DMA1_STM32F1",
                     "HW_I2C_STM32V2",

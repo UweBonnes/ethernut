@@ -98,6 +98,12 @@
 #define RCC_APB1ENR_DAC1EN RCC_APB1ENR_DACEN
 #endif
 
+# if defined(DBG_CR_DBG_STOP) && ! defined(DBGMCU_CR_DBG_STOP)
+#  define DBGMCU_CR (DBG->CR)
+# else
+#  define DBGMCU_CR (DBGMCU->CR)
+# endif
+
 # if !defined(PWR_CR_DBP) && defined (PWR_CR1_DBP)
 #  define PWR_CR_DBP   PWR_CR1_DBP
 #  define PWR_CR_VOS   PWR_CR1_VOS

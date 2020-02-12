@@ -900,6 +900,51 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_RTC_STM32",
+                brief = "RTC IRQ Availability",
+                description = "RTC IRQ Standalone",
+                requires = { "HW_RTC_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RTC_ALARM_STM32",
+                brief = "RTC IRQ Alarm Availability",
+                description = "RTC IRQ Alarm Standalone",
+                requires = { "HW_RTC_ALARM_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RTC_TAMP_STM32",
+                brief = "RTC IRQ TAMP Availability",
+                description = "RTC TAMP IRQ",
+                requires = { "HW_RTC_TAMP_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RTC_TAMP_LSECSS_STM32",
+                brief = "RTC IRQ/TAMP/LSESEC Availability",
+                description = "RTC LSE Security IRQ",
+                requires = { "HW_RTC_TAMP_LSECSS_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_RTC_WKUP_STM32",
+                brief = "RTC WKUP IRQ Availability",
+                description = "RTC Wakeup IRQ",
+                requires = { "HW_RTC_WKUP_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_DMA1_STM32F1",
                 brief = "DMA1 Availability",
                 description = "7 Channel DMA1 on F1/L1/F3",

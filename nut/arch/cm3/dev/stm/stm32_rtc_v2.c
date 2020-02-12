@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 by Uwe Bonnes
+ * Copyright (C) 2013-2017, 2019-2020 by Uwe Bonnes
  *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,20 +54,22 @@
 #include <string.h>
 #include <time.h>
 
-#if defined(RTC_ICSR_ALRAWF)
+#if defined(RTC_ICSR_ALRAWF) && !defined(RTC_ISR_ALRAWF)
 /* What did ST people smoke to rename the register and move bits for Stm32G? */
 # define RTC_ISR (RTC->ICSR)
 # define RTC_ISR_ALRAWF RTC_ICSR_ALRAWF
-# define RTC_ISR_ALRBWF RTC_ICSR_ALRBWF
+# if defined(RTC_ICSR_ALRBWF) && !defined(RTC_ISR_ALRBWF)
+#  define RTC_ISR_ALRBWF RTC_ICSR_ALRBWF
+# endif
 # define RTC_ISR_INIT   RTC_ICSR_INIT
 # define RTC_ISR_INITF  RTC_ICSR_INITF
 # define RTC_ISR_INITS  RTC_ICSR_INITS
 # define RTC_ISR_RSF    RTC_ICSR_RSF
 
 # define IS_ALARMA (RTC->SR & RTC_SR_ALRAF)
-# define CLEAR_ALARMA() (RTC->SR &= ~RTC_SR_ALRAF)
+# define CLEAR_ALARMA() (RTC->SCR = RTC_SCR_CALRAF)
 # define IS_ALARMB (RTC->SR & RTC_SR_ALRBF)
-# define CLEAR_ALARMB() (RTC->SR &= ~RTC_SR_ALRBF)
+# define CLEAR_ALARMB() (RTC->SCR = RTC_SCR_CALRBF)
 #else
 # define RTC_ISR (RTC->ISR)
 # define IS_ALARMA (RTC->ISR & RTC_ISR_ALRAF)
@@ -76,7 +78,7 @@
 # define CLEAR_ALARMB() (RTC->ISR &= ~RTC_ISR_ALRBF)
 #endif
 
-/* L0 has only one Alarm channel*/
+/* L0/G0 has only one Alarm channel*/
 #if defined (RTC_ISR_ALRBF) || defined(RTC_SR_ALRBF)
 # define NUM_ALARMS 2
 #else
@@ -94,24 +96,15 @@
 # define EXTI_RTC_LINE 17
 #endif
 
-#if defined(MCU_STM32L0) || defined(MCU_STM32L4) || defined(MCU_STM32F07) || defined(MCU_STM32F09) || defined(MCU_STM32G4)
-# define EXTI_RTC_WAKEUP 20
-#elif defined(MCU_STM32L1) || defined(MCU_STM32F1) || defined(MCU_STM32F2) || defined(MCU_STM32F3)
-# define EXTI_RTC_WAKEUP 17
+#if defined(MCU_STM32G0)
+# define EXTI_RTC_WAKEUP 19
 #elif defined(MCU_STM32F4) || defined(MCU_STM32F7)
 # define EXTI_RTC_WAKEUP 22
+#else
+# define EXTI_RTC_WAKEUP 20
 #endif
 
 # define RTC_STATUS_MASK  (RTC_STATUS_HAS_QUEUE | RTC_STATUS_INACCURATE)
-
-/* STM CMSIS definition  RTC_PRER_PREDIV_S has (uint32_t) marker and so can
- * not be used for math in preprocessor.*/
-#if defined(MCU_STM32F2) || defined(STM32L100xB) || defined(STM32L151xB) || defined(STM32L152xB)
-/* 13 bit on some older devices */
-# define SYNC_MAX 0x1fff
-#else
-# define SYNC_MAX 0x7fff
-#endif
 
 #if RTCCLK_SOURCE == RTCCLK_HSE
 /* Handle HSE as RTC clock */
@@ -164,7 +157,7 @@
 #endif
 
 /* Check if RTC_SYNC and RTC_ASYNC for overflow */
-#if RTC_SYNC > SYNC_MAX
+#if RTC_SYNC > RTC_PRER_PREDIV_S_Msk
 # warning RTC_SYNC is too large
 #endif
 #define RTC_ASYNC_VAL ( RTC_ASYNC * 0x10000)
@@ -217,6 +210,8 @@ static void Stm32RtcInterrupt(void *arg)
     stm32_rtc_dcb *dcb = (stm32_rtc_dcb *)rtc->dcb;
 
     int do_alert = 0;
+    /* Allow RTC Write Access. At least needed by G0.*/
+    PWR_CR |= PWR_CR_DBP;
     if (IS_ALARMA) {
         dcb->flags |= RTC_STATUS_AL0;
         /* Clear pending interrupt */
@@ -232,11 +227,14 @@ static void Stm32RtcInterrupt(void *arg)
     }
 #endif
     if(do_alert) {
-        /* Clear Pending EXTI RTC Interrupt*/
+#if !defined(EXTI_RPR1_RPIF0)
+        /* Clear Pending EXTI RTC Interrupt. Not needed on G0*/
         EXTI_PR =  (1 << EXTI_RTC_LINE);
+#endif
         /* Signal alarm event queue */
         NutEventPostFromIrq(&rtc->alarm);
     }
+    PWR_CR &= ~PWR_CR_DBP;
 }
 /*!
  * \brief Get status of the STM32 V2 hardware clock.
@@ -591,13 +589,19 @@ int Stm32RtcInit(NUTRTC *rtc)
 #if RTCCLK_SOURCE == RTCCLK_NONE
     return -1;
 #else
+#if defined(RCC_APBENR1_RTCAPBEN)
+    /* Explicit enable register access on G0*/
+    RCC->APBENR1 |= RCC_APBENR1_RTCAPBEN;
+#endif
     if (NutRegisterIrqHandler(&sig_RTC, Stm32RtcInterrupt, rtc) != 0)
         return -1;
     /* Alarm Interrupt is on EXTI RTC Line, Rising Edge */
-    EXTI_PR   =  (1 << EXTI_RTC_LINE);
-    EXTI_IMR  |= (1 << EXTI_RTC_LINE);
+#if !defined(EXTI_RPR1_RPIF0)
+    EXTI_PR    =  (1 << EXTI_RTC_LINE);
     EXTI_RTSR |=  (1 << EXTI_RTC_LINE);
     EXTI_FTSR &= ~(1 << EXTI_RTC_LINE);
+#endif
+    EXTI_IMR  |=  (1 << EXTI_RTC_LINE);
     NutIrqEnable(&sig_RTC);
     rtc->dcb   = &rtc_dcb;
     rtc->alarm = NULL;
