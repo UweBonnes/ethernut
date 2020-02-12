@@ -23,7 +23,7 @@
 #define DCMI_D8_FUNC             16
 #define DCMI_D9_FUNC             17
 #define DCMI_HSYNC_FUNC          18
-#define DCMI_PIXCK_FUNC          19
+#define DCMI_PIXCLK_FUNC         19
 #define DCMI_VSYNC_FUNC          20
 #define ETH_COL_FUNC             21
 #define ETH_CRS_FUNC             22
@@ -415,7 +415,7 @@
 	((gpio == PA06) && (func == TIM8_BKIN_FUNC           )) ?  3 : \
 	((gpio == PA06) && (func == SPI1_MISO_FUNC           )) ?  5 : \
 	((gpio == PA06) && (func == TIM13_CH1_FUNC           )) ?  9 : \
-	((gpio == PA06) && (func == DCMI_PIXCK_FUNC          )) ? 13 : \
+	((gpio == PA06) && (func == DCMI_PIXCLK_FUNC         )) ? 13 : \
 	((gpio == PA06) && (func == LTDC_G2_FUNC             )) ? 14 : \
 	((gpio == PA07) && (func == TIM1_CH1N_FUNC           )) ?  1 : \
 	((gpio == PA07) && (func == TIM3_CH2_FUNC            )) ?  2 : \

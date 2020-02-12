@@ -285,6 +285,64 @@ nutarch_cm3_stm32_family =
          }
     },
     {
+        name = "nutarch_cm3_stm32g4",
+        brief = "STM32G4",
+        requires = { "HW_MCU_STM32G4" },
+        description = "ST Microelectronics STM32 G4 Series",
+        sources = {
+            "cm3/dev/stm/stm32l4_clk.c",
+            "cm3/dev/stm/stm32l4_flash.c",
+        },
+        makedefs = {"MCU=cortex-m4"},
+        script = "arch/cm3/generated/stm32g4.nut",
+        options =
+        {
+            {
+                macro = "MCU_STM32G4",
+                brief = "STM32G4 common devices",
+                description = "Provides devices common in all STM32G4 devices.",
+                default = 1,
+                provides =
+                {
+                   "HW_DMA2_STM32F1",
+                   "HW_DMA2_7CH_STM32",
+                   "HW_RCC_STM32L",
+                   "HW_EEPROM_EMUL_STM32",
+-- Todo: FLASH_WRPROT
+                    "HW_VOS_STM32",
+                    "HW_ICACHE_STM32",
+                    "HW_DCACHE_STM32",
+--                   "HW_CAN1_STM32",  TODO: Can Timing
+                    "HW_RTC_STM32_V2",
+                    "HW_GPIO_STM32V2",
+                    "HW_DMA1_STM32F1",
+                    "HW_DMA2_STM32L4",
+                    "HW_I2C_STM32V2",
+                    "HW_USART_STM32V2",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "MCU_STM32G43",
+                brief = "STM32G43x/44x.",
+                description = "Provides common devices in G43x/G44x",
+                default = 1,
+                requires = {"HW_MCU_STM32G43"},
+                file = "include/cfg/arch.h",
+                makedefs = {"RAM0_LENGTH=16k", "RAM1_LENGTH=6K", "RAM2_LENGHT = 10k"}
+            },
+            {
+                macro = "MCU_STM32G47",
+                brief = "STM32G47x/48x.",
+                description = "Provides common devices in G47x/G48x",
+                default = 1,
+                requires = {"HW_MCU_STM32G47"},
+                file = "include/cfg/arch.h",
+                makedefs = {"RAM0_LENGTH=80k", "RAM1_LENGTH=16K", "RAM2_LENGHT = 32k"}
+            },
+         }
+    },
+    {
         name = "nutarch_cm3_stm32l1",
         brief = "STM32L1",
         requires = { "HW_MCU_STM32", "HW_MCU_STM32L1" },
