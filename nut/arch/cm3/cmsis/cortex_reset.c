@@ -50,13 +50,3 @@ void Cortex_Reset(void)
 {
     NVIC_SystemReset();
 }
-
-int Cortex_ResetCause(void)
-{
-#if defined(MCU_STM32)
-    return Stm32ResetCause();
-#else
-    return NUT_RSTTYP_UNKNOWN;
-#endif
-}
-

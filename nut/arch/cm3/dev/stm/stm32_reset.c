@@ -44,82 +44,86 @@
 
 /*!
  * \brief Find cause of Reset.
+ *
+ * Ordering is important, PINRSTF is always set!
+ * Only evaluate PINRSTF as last item.
+ *
+ * H7: RSR versus CSR
+ * L4: No PORRSTF, handle BORRSTF as PORRSTF
  */
-int Stm32ResetCause(void)
+NUT_RSTTYP NutResetCause(void)
 {
-#if !defined(RCC_RSR_BORRSTF)
-    uint32_t csr;
-    int flags;
-
-    csr = RCC->CSR;
-    flags = 0;
-    if        (csr & RCC_CSR_WWDGRSTF)  {
-        flags |= NUT_RSTTYP_WWATCHDOG;
-    } else  if (csr & RCC_CSR_SFTRSTF)  {
-        flags |= NUT_RSTTYP_SOFTWARE;
+#if defined(RCC_CSR_RMVF)
+# if !defined(RCC_CSR_PORRSTF)
+#  define RCC_CSR_PORRSTF RCC_CSR_BORRSTF
+# endif
+    uint32_t csr = RCC->CSR;
+    if (csr & RCC_CSR_PORRSTF)   {
+        return NUT_RSTTYP_POWERUP;
+    } else if (csr & (RCC_CSR_WWDGRSTF | RCC_CSR_IWDGRSTF))  {
+        return NUT_RSTTYP_WATCHDOG;
     } else if (csr & RCC_CSR_LPWRRSTF) {
-        flags |= NUT_RSTTYP_LOWPOWER;
-#if defined(RCC_CSR_WDGRSTF)
-    } else if (csr & RCC_CSR_WDGRSTF)  {
-        flags |= NUT_RSTTYP_WATCHDOG;
-#endif
-#if defined(RCC_CSR_IWDGRSTF)
-    } else if (csr & RCC_CSR_IWDGRSTF)  {
-        flags |= NUT_RSTTYP_WATCHDOG;
-#endif
-#if defined(RCC_CSR_PINRSTF)
-    } else if (csr & RCC_CSR_PINRSTF)   {
-        flags |= NUT_RSTTYP_EXTERNAL;
-#endif
-#if defined(RCC_CSR_PADRSTF)
-    } else if (csr & RCC_CSR_PADRSTF)   {
-        flags |= NUT_RSTTYP_EXTERNAL;
-#endif
-#if defined(RCC_CSR_FWRSTF)
-    } else if (csr & RCC_CSR_FWRSTF)    {
-        flags |= NUT_RSTTYP_FIREWALL;
-#endif
-#if defined(RCC_CSR_OBLRST)
-    } else if (csr & RCC_CSR_OBLRSTF)   {
-        flags |= NUT_RSTTYP_OPTIONLOADER;
-#endif
-#if defined(RCC_CSR_V18PWRSTF)
-    } else if (csr & RCC_CSR_V18PWRSTF) {
-        flags |= NUT_RSTTYP_COREPOWER;
-#endif
-#if defined(RCC_CSR_BORRSTF)
+        return  NUT_RSTTYP_LOWPOWER;
+    } else  if (csr & RCC_CSR_SFTRSTF)  {
+        return NUT_RSTTYP_SOFTWARE;
+# if defined(RCC_CSR_BORRSTF)
     } else if (csr & RCC_CSR_BORRSTF)   {
-        flags |= NUT_RSTTYP_BROWNOUT;
-#endif
-#if defined(RCC_CSR_PORRSTF)
-    } else if (csr & RCC_CSR_PORRSTF)   {
-        flags |= NUT_RSTTYP_POWERUP;
-#endif
+        return  NUT_RSTTYP_BROWNOUT;
+# endif
+# if defined(RCC_CSR_OBLRSTF)
+    } else if (csr & RCC_CSR_OBLRSTF)   {
+        return  NUT_RSTTYP_OPTIONLOADER;
+# endif
+# if defined(RCC_CSR_V18PWRSTF)
+    } else if (csr & RCC_CSR_V18PWRSTF) {
+        return  NUT_RSTTYP_COREPOWER;
+# endif
+# if defined(RCC_CSR_FWRSTF)
+    } else if (csr & RCC_CSR_FWRSTF)    {
+        return  NUT_RSTTYP_FIREWALL;
+# endif
+    } else if (csr & RCC_CSR_PINRSTF)   {
+        return  NUT_RSTTYP_EXTERNAL;
     }
-    RCC->CSR |= RCC_CSR_RMVF;
-    return (flags) ? flags : NUT_RSTTYP_UNKNOWN;
 #else
-    uint32_t rsr;
-    int flags;
-
-    rsr = RCC->RSR;
-    flags = 0;
-    if        (rsr & RCC_RSR_WWDG1RSTF)  {
-        flags |= NUT_RSTTYP_WWATCHDOG;
+    uint32_t rsr = RCC->RSR;
+    if        (rsr & RCC_RSR_WDG1RSTF)  {
+        return  NUT_RSTTYP_WATCHDOG;
     } else  if (rsr & RCC_RSR_SFTRSTF)  {
-        flags |= NUT_RSTTYP_SOFTWARE;
+        return  NUT_RSTTYP_SOFTWARE;
     } else if (rsr & RCC_RSR_LPWRRSTF) {
-        flags |= NUT_RSTTYP_LOWPOWER;
+        return  NUT_RSTTYP_LOWPOWER;
     } else if (rsr & RCC_RSR_IWDG1RSTF)  {
-        flags |= NUT_RSTTYP_WATCHDOG;
+        return  NUT_RSTTYP_WATCHDOG;
     } else if (rsr & RCC_RSR_PINRSTF)   {
-        flags |= NUT_RSTTYP_EXTERNAL;
+        return  NUT_RSTTYP_EXTERNAL;
     } else if (rsr & RCC_RSR_BORRSTF)   {
-        flags |= NUT_RSTTYP_BROWNOUT;
+        return  NUT_RSTTYP_BROWNOUT;
     } else if (rsr & RCC_RSR_PORRSTF)   {
-        flags |= NUT_RSTTYP_POWERUP;
+        return  NUT_RSTTYP_POWERUP;
     }
+#endif
+    return NUT_RSTTYP_UNKNOWN;
+}
+
+/*!
+ * \brief Clear reset cause
+ *
+ * Typically Reset cause is queried early during boot with
+ * static ram storage not yet initialized.
+ * So keep the register value and only clear it when the cause
+ * has been read out in the user code.
+ *
+ * If reset cause is evaluated, active clear must be done,
+ * as reset cause is not cleared by reset and so may
+ * accumulate
+ */
+
+void NutResetCauseClear(void)
+{
+#if defined(RCC_CSR_RMVF)
+    RCC->CSR |= RCC_CSR_RMVF;
+#else
     RCC->RSR |= RCC_RSR_RMVF;
-    return (flags) ? flags : NUT_RSTTYP_UNKNOWN;
 #endif
 }

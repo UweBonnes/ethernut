@@ -38,7 +38,7 @@ void Mcf5225x_Reset(void)
     MCF_RCM_RCR |= MCF_RCM_RCR_SOFTRST;
 }
 
-int Mcf5225x_ResetCause(void)
+NUT_RSTTYP Mcf5225x_ResetCause(void)
 {
     // TODO: One or more status bits may be set at the same time.
 
@@ -46,9 +46,6 @@ int Mcf5225x_ResetCause(void)
 
     if (rsr & MCF_RCM_RSR_POR)
         return NUT_RSTTYP_POWERUP;
-
-    if (rsr & MCF_RCM_RSR_EXT)
-        return NUT_RSTTYP_EXTERNAL;
 
     if (rsr & MCF_RCM_RSR_BWD)
         return NUT_RSTTYP_BACKUP_WATCHDOG;
@@ -67,6 +64,9 @@ int Mcf5225x_ResetCause(void)
 
     if (rsr & MCF_RCM_RSR_SOFT)
         return NUT_RSTTYP_SOFTWARE;
+
+    if (rsr & MCF_RCM_RSR_EXT)
+        return NUT_RSTTYP_EXTERNAL;
 
     return NUT_RSTTYP_UNKNOWN;
 }

@@ -47,21 +47,28 @@
 #include <compiler.h>
 
 /*!
- * \addtogroup xgReset
+ * \addtogroup xgRese
+ *
+ * There is only on valid reset reason,
+ * but some archs may still return a bitmap
  */
 /*@{*/
 
-#define NUT_RSTTYP_UNKNOWN  0
-#define NUT_RSTTYP_POWERUP  1
-#define NUT_RSTTYP_WATCHDOG 2
-#define NUT_RSTTYP_EXTERNAL 3
-#define NUT_RSTTYP_SOFTWARE 4
-#define NUT_RSTTYP_BROWNOUT 5
-#define NUT_RSTTYP_LOWPOWER  6
-#define NUT_RSTTYP_WWATCHDOG 7
-#define NUT_RSTTYP_COREPOWER 8
-#define NUT_RSTTYP_FIREWALL  9
-#define NUT_RSTTYP_OPTIONLOADER  10
+typedef enum {
+    NUT_RSTTYP_UNKNOWN         = 0,
+    NUT_RSTTYP_POWERUP         = 1,
+    NUT_RSTTYP_WATCHDOG        = 2,
+    NUT_RSTTYP_EXTERNAL        = 4,
+    NUT_RSTTYP_SOFTWARE        = 8,
+    NUT_RSTTYP_BROWNOUT        = 0x10,
+    NUT_RSTTYP_LOWPOWER        = 0x20,
+    NUT_RSTTYP_COREPOWER       = 0x40,
+    NUT_RSTTYP_FIREWALL        = 0x80,
+    NUT_RSTTYP_OPTIONLOADER    = 0x100,
+    NUT_RSTTYP_BACKUP_WATCHDOG = 0x200,
+    NUT_RSTTYP_LOSS_OF_LOCK    = 0x400,
+    NUT_RSTTYP_LOSS_OF_CLOCK   = 0x1000
+}NUT_RSTTYP;
 
 #if defined(MCU_AT91)
 #include <arch/arm/atmel/at91_reset.h>
@@ -74,8 +81,8 @@
 #endif
 
 extern void NutReset(void);
-extern int NutResetCause(void);
-
+extern NUT_RSTTYP NutResetCause(void);
+extern void NutResetCauseClear(void);
 /*@}*/
 
 #endif

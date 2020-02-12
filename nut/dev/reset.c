@@ -77,19 +77,19 @@ void NutReset(void)
  *
  * \return Reset type.
  */
-int NutResetCause(void)
+#if !defined(MCU_STM32)
+NUT_RSTTYP NutResetCause(void)
 {
-#if defined(MCU_AT91)
+# if defined(MCU_AT91)
     return At91ResetCause();
-#elif defined(__AVR32__)
+# elif defined(__AVR32__)
     return Avr32ResetCause();
-#elif defined(__CORTEX__)
-    return Cortex_ResetCause();
-#elif defined(MCU_MCF5225X)
+# elif defined(MCU_MCF5225X)
     return Mcf5225x_ResetCause();
-#elif defined(MCU_MCF51CN)
+# elif defined(MCU_MCF51CN)
     return Mcf51cn_ResetCause();
-#else
+# else
     return NUT_RSTTYP_UNKNOWN;
-#endif
+# endif
 }
+#endif

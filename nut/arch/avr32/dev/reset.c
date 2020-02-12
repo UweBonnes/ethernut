@@ -64,7 +64,7 @@ void Avr32Reset(void)
     }
 }
 
-int Avr32ResetCause(void)
+NUT_RSTTYP Avr32ResetCause(void)
 {
     int rc = NUT_RSTTYP_UNKNOWN;
 

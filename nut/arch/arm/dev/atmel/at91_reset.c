@@ -64,9 +64,9 @@ void At91Reset(void)
 #endif
 }
 
-int At91ResetCause(void)
+NUT_RSTTYP At91ResetCause(void)
 {
-    int rc = NUT_RSTTYP_UNKNOWN;
+    NUT_RSTTYP rc = NUT_RSTTYP_UNKNOWN;
 
 #if defined(RSTC_SR)
     switch (inr(RSTC_SR) & RSTC_RSTTYP) {
