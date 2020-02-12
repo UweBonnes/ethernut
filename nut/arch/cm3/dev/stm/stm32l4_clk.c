@@ -55,25 +55,6 @@
 
 #define HSI_VALUE 16000000
 
-#define NUM_MSI_FREQ 12
-static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
-    /* Values from STM32L476 Rev. 2 datasheet, table 47
-     * Exact values only for MSI PLL on.
-     */
-       98304, /* (   3 * (1 << 15))*/
-      196608, /* (   6 * (1 << 15))*/
-      393216, /* (  12 * (1 << 15))*/
-      786432, /* (  24 * (1 << 15))*/
-     1016808, /* (  31 * (1 << 15))*/
-     1999848, /* (  61 * (1 << 15))*/
-     3997696, /* ( 122 * (1 << 15))*/
-     7995392, /* ( 244 * (1 << 15))*/
-    15990784, /* ( 488 * (1 << 15))*/
-    23986176, /* ( 732 * (1 << 15))*/
-    32014336, /* ( 977 * (1 << 15))*/
-    48005120, /* (1465 * (1 << 15))*/
-};
-
 /* Prepare system limits*/
 #if defined(MCU_STM32L4R)
 # define PLLMULT_MAX           127
@@ -245,7 +226,82 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 # warning Wrong PLLCLK_DIV
 #endif
 
+#define NUM_MSI_FREQ 12
+static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
+    /* Values from STM32L476 Rev. 2 datasheet, table 47
+     * Exact values only for MSI PLL on.
+     */
+       98304, /* (   3 * (1 << 15))*/
+      196608, /* (   6 * (1 << 15))*/
+      393216, /* (  12 * (1 << 15))*/
+      786432, /* (  24 * (1 << 15))*/
+     1016808, /* (  31 * (1 << 15))*/
+     1999848, /* (  61 * (1 << 15))*/
+     3997696, /* ( 122 * (1 << 15))*/
+     7995392, /* ( 244 * (1 << 15))*/
+    15990784, /* ( 488 * (1 << 15))*/
+    23986176, /* ( 732 * (1 << 15))*/
+    32014336, /* ( 977 * (1 << 15))*/
+    48005120, /* (1465 * (1 << 15))*/
+};
+
 static uint32_t msi_clock;
+/* Forward declarations */
+
+static int CtlMsiClock(msi_range_t range);
+/**
+  * @brief  Get Msi Frequency
+  *
+  * @retval MsiFrequency
+  */
+static void MsiFrequencyUpdate(void)
+{
+    if (RCC->CR & RCC_CR_MSIRDY) {
+        uint8_t range;
+        if (RCC->CR & RCC_CR_MSIRGSEL) {
+            range = (RCC->CR & RCC_CR_MSIRANGE) / RCC_CR_MSIRANGE_1;
+        } else {
+            range = (RCC->CSR & RCC_CSR_MSISRANGE) / RCC_CSR_MSISRANGE_1 + 5;
+        }
+        NUTASSERT(range <= NUM_MSI_FREQ);
+        msi_clock = MSI_FREQUENCY[range];
+    } else {
+        msi_clock = 0;
+    }
+}
+/*!
+ * \brief Control MSI clock.
+ *
+ * \param  Range  MSI_OFF to switch off or MSI_RANGEx
+ * \return 0 on success, -1 on MSI start failed.
+ */
+static int CtlMsiClock(msi_range_t range)
+{
+    int res = 0;
+    uint32_t cr;
+
+    cr = RCC->CR;
+    if (range != MSI_OFF) {
+        /* MSIRANGE must NOT be modified when MSI is ON and NOT
+         *  ready (MSION=1 and MSIRDY=0)
+         */
+        while ((RCC_CR & RCC_CR_MSION) && !(RCC_CR & RCC_CR_MSIRDY)) {_NOP();}
+        cr = RCC->CR;
+        cr &= ~RCC_CR_MSIRANGE;
+        cr |= range * RCC_CR_MSIRANGE_1;
+        RCC->CR = cr;
+        cr |= RCC_CR_MSIRGSEL;
+        RCC->CR = cr;
+        cr |= RCC_CR_MSION;
+        RCC->CR = cr;
+    } else {
+        /* Disable MSI clock */
+        RCC->CR &= ~RCC_CR_MSION;
+        res = -1;
+    }
+
+    return res;
+}
 
 /*----------------  Clock Setup Procedure ------------------------------
  *
@@ -281,32 +337,8 @@ static uint32_t msi_clock;
  *
  */
 
-/* Forward declarations */
-static int CtlMsiClock(msi_range_t range);
-
 /* Include common routines*/
 #include "stm32_clk.c"
-
-/**
-  * @brief  Get Msi Frequency
-  *
-  * @retval MsiFrequency
-  */
-static void MsiFrequencyUpdate(void)
-{
-    if (RCC->CR & RCC_CR_MSIRDY) {
-        uint8_t range;
-        if (RCC->CR & RCC_CR_MSIRGSEL) {
-            range = (RCC->CR & RCC_CR_MSIRANGE) / RCC_CR_MSIRANGE_1;
-        } else {
-            range = (RCC->CSR & RCC_CSR_MSISRANGE) / RCC_CSR_MSISRANGE_1 + 5;
-        }
-        NUTASSERT(range <= NUM_MSI_FREQ);
-        msi_clock = MSI_FREQUENCY[range];
-    } else {
-        msi_clock = 0;
-    }
-}
 
 /*!
  * \brief  Update SystemCoreClock according to Clock Register Values
@@ -341,10 +373,10 @@ static void SystemCoreClockUpdate(void)
         r = 2 * (r + 1);
         if ((pllcfgr & RCC_PLLCFGR_PLLSRC) == RCC_PLLCFGR_PLLSRC_HSE) {
             tmp = HSE_VALUE;
-        } else if ((pllcfgr & RCC_PLLCFGR_PLLSRC) == RCC_PLLCFGR_PLLSRC_HSI) {
-            tmp = HSI_VALUE;
-        } else {
+        } else if ((pllcfgr & RCC_PLLCFGR_PLLSRC) == RCC_PLLCFGR_PLLSRC_MSI) {
             tmp = msi_clock;
+        } else {
+            tmp = HSI_VALUE;
         }
         tmp = ((tmp * n) / m) / r;
         break;
@@ -354,40 +386,6 @@ static void SystemCoreClockUpdate(void)
     }
     sys_clock = tmp;
     SetClockShift();
-}
-
-/*!
- * \brief Control MSI clock.
- *
- * \param  Range  MSI_OFF to switch off or MSI_RANGEx
- * \return 0 on success, -1 on MSI start failed.
- */
-static int CtlMsiClock(msi_range_t range)
-{
-    int res = 0;
-    uint32_t cr;
-
-    cr = RCC->CR;
-    if (range != MSI_OFF) {
-        /* MSIRANGE must NOT be modified when MSI is ON and NOT
-         *  ready (MSION=1 and MSIRDY=0)
-         */
-        while ((RCC_CR & RCC_CR_MSION) && !(RCC_CR & RCC_CR_MSIRDY)) {_NOP();}
-        cr = RCC->CR;
-        cr &= ~RCC_CR_MSIRANGE;
-        cr |= range * RCC_CR_MSIRANGE_1;
-        RCC->CR = cr;
-        cr |= RCC_CR_MSIRGSEL;
-        RCC->CR = cr;
-        cr |= RCC_CR_MSION;
-        RCC->CR = cr;
-    } else {
-        /* Disable MSI clock */
-        RCC->CR &= ~RCC_CR_MSION;
-        res = -1;
-    }
-
-    return res;
 }
 
 /*!
