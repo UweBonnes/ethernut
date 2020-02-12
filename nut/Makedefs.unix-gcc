@@ -52,7 +52,6 @@ CP     = cp
 CPFLAGS = -g -Os -Wall -Werror -Wstrict-prototypes $(DEFS)
 
 # Linker options and flags.
-LDFLAGS = -L$(LIBDIR) $(LIBS)
 
 # Assembler options.
 ASFLAGS =  -Wa,-amhls=$(<:.S=.lst) $(DEFS)

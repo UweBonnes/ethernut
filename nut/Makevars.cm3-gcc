@@ -44,7 +44,6 @@ TRGT       ?= arm-none-eabi-
 MCFLAGS    = -mcpu=$(MCU) -mthumb -D__CORTEX__ $(FPUFLAGS)
 
 # CXXFLAGS_OPT = -Os -g3 -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti
-LDFLAGS   = $(MCFLAGS) -g -nostartfiles -L$(LDPATH) -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
 
 CFLAGS_MCU   = $(MCFLAGS) -ffunction-sections -fdata-sections -fomit-frame-pointer $(MFIX)
 CXXFLAGS_MCU = $(CFLAGS_MCU) -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti 

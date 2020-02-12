@@ -60,6 +60,5 @@ CP     = cp
 MCFLAGS = $(MCUOPTS)
 CPFLAGS = $(MCFLAGS) -Os -fomit-frame-pointer -Wall -Werror -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 #CPFLAGS = -g $(MCFLAGS) -O1 -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
-LDFLAGS = $(MCFLAGS) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--relax,--sort-common,--strip-all,--cref -L$(LIBDIR) $(LDDIRS)
 ARFLAGS = rsv
 ASFLAGS = $(MCFLAGS) -DROMSTART $(RUNFLAG) -Wa,-amhls=$(<:.S=.lst) $(DEFS)

@@ -47,6 +47,5 @@ CP  = cp
 AS  = iccavr
 
 CPFLAGS = $(INCFIRST) $(INCPRE). $(INCDIR) $(INCLAST) -e $(DEFS) -l -g -MLongJump -MHasMul -M$(MCU) -Wf-use_elpm
-LDFLAGS = -m -Wl,-Map=$(PROJ).map,--cref
 ARFLAGS = -a
 ASFLAGS = $(INCLAST) -e -l -g -Wa-W -Wa-n

@@ -52,5 +52,4 @@ CP  = cp
 
 CPFLAGS = -I$(INCDIR) -I$(AVR)/include -e $(DEFS) -l -Mavr_$(MCU)
 #CPFLAGS = -I$(INCDIR) -I$(AVR)/include -e $(DEFS) -l -g -Mavr_$(MCU)
-LDFLAGS = -m -Wl,-Map=$(PROJ).map,--cref
 ARFLAGS = -a
