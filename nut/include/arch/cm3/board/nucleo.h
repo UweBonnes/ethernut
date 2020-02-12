@@ -43,27 +43,27 @@
 
 #include <cfg/arch.h>
 
+#if !defined(NUCLEO_ACM_UART)
+# if defined(MCU_STM32G474xE)
+#  define NUCLEO_ACM_UART devLpuartStm32_1
+# else
+#  define NUCLEO_ACM_UART devUsartStm32_2
+# endif
+#endif
+
 #ifndef DEV_UART
-#define DEV_UART devUsartStm32_2
+#define DEV_UART NUCLEO_ACM_UART
 #include <dev/usartstm32.h>
 #endif
 #ifndef DEV_UART_NAME
-#define DEV_UART_NAME  devUsartStm32_2.dev_name
-#endif
-
-#ifndef DEV_DEBUG
-#define DEV_DEBUG devUsartStm32_2
-#endif
-#ifndef DEV_DEBUG_NAME
-#define DEV_DEBUG_NAME  devUsartStm32_2.dev_name
+#define DEV_UART_NAME  NUCLEO_ACM_UART.dev_name
 #endif
 
 #ifndef DEV_CONSOLE
-#define DEV_CONSOLE devUsartStm32_2
+#define DEV_CONSOLE NUCLEO_ACM_UART
 #endif
-
 #ifndef DEV_CONSOLE_NAME
-#define DEV_CONSOLE_NAME devUsartStm32_2.dev_name
+#define DEV_CONSOLE_NAME NUCLEO_ACM_UART.dev_name
 #endif
 
 #ifndef DEV_I2CBUS
