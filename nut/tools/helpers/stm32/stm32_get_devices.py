@@ -172,7 +172,7 @@ if __name__ == "__main__":
     parser.add_argument("dbpath", nargs='?', help="STM32CubeMX databank path", default="/devel/STM32CubeMX/db")
     args = parser.parse_args()
     print("Headerpath %s, Databank Path %s" % (dirpath, args.dbpath))
-    familylist = {"l0", "l1", "l4", "f0", "f1", "f2", "f3", "f4", "f7", "g4", "h7"}
+    familylist = {"l0", "l1", "l4", "f0", "f1", "f2", "f3", "f4", "f7", "g4", "g0", "h7"}
     for (dirpath, dnames, filenames) in os.walk(dirpath):
         f.extend(filenames)
         break
