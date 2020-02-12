@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-17 Uwe Bonnes
+ * Copyright (C) 2013-17, 19 Uwe Bonnes
  *                             (bon@elektron.ikp.physik.tu-darmstadty.de).
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,23 +57,39 @@
    - If the device is only available on some F1 devices, create a configurator
      item with the HW_XXX_STM32 value.
 */
-#if defined(MCU_STM32F0) || defined(MCU_STM32L0)
-CREATE_HANDLER(INTERRUPT0_1,  EXTI0_1,     NUT_IRQPRI_DEF); /* EXTI Line 0 and 1 */
+#if defined(HW_EXTI0_STM32)
+CREATE_HANDLER(INTERRUPT0,    EXTI0,      NUT_IRQPRI_DEF); /* EXTI Line 0  */
+#endif
+#if defined(HW_EXTI0_1_STM32)
+CREATE_HANDLER(INTERRUPT0_1,  EXTI0_1,    NUT_IRQPRI_DEF); /* EXTI Line 0 and 1 */
+#endif
+#if defined(HW_EXTI1_STM32)
+CREATE_HANDLER(INTERRUPT1,    EXTI1,      NUT_IRQPRI_DEF); /* EXTI Line 1 */
+#endif
+#if defined(HW_EXTI2_TSC_STM32)
+CREATE_HANDLER(INTERRUPT2,    EXTI2_TSC,  NUT_IRQPRI_DEF); /* EXTI Line 2 and TSC. FIXME: seperate! */
+#elif defined(HW_EXTI2_STM32)
+CREATE_HANDLER(INTERRUPT2,    EXTI2,      NUT_IRQPRI_DEF); /* EXTI Line 2 */
+#endif
+#if defined(HW_EXTI3_STM32)
+CREATE_HANDLER(INTERRUPT3,    EXTI3,      NUT_IRQPRI_DEF); /* EXTI Line 3 */
+#endif
+#if defined(HW_EXTI2_3_STM32)
 CREATE_HANDLER(INTERRUPT2_3,  EXTI2_3,     NUT_IRQPRI_DEF); /* EXTI Line 2 and 3 */
-CREATE_HANDLER(INTERRUPT4_15, EXTI4_15,    NUT_IRQPRI_DEF); /* EXTI Line 4 to 15 */
-#else
-CREATE_HANDLER(INTERRUPT0,    EXTI0,       NUT_IRQPRI_DEF); /* EXTI Line 0 */
-CREATE_HANDLER(INTERRUPT1,    EXTI1,       NUT_IRQPRI_DEF); /* EXTI Line 1 */
-#if defined(MCU_STM32F3)
-CREATE_HANDLER(INTERRUPT2,    EXTI2_TSC,   NUT_IRQPRI_DEF); /* EXTI Line 2 and Touch controller*/
-#else
-CREATE_HANDLER(INTERRUPT2,    EXTI2,       NUT_IRQPRI_DEF); /* EXTI Line 2 */
 #endif
-CREATE_HANDLER(INTERRUPT3,    EXTI3,       NUT_IRQPRI_DEF); /* EXTI Line 3 */
+#if defined(HW_EXTI4_STM32)
 CREATE_HANDLER(INTERRUPT4,    EXTI4,       NUT_IRQPRI_DEF); /* EXTI Line 4 */
-CREATE_HANDLER(INTERRUPT9_5,  EXTI9_5,     NUT_IRQPRI_DEF); /* EXTI Line 5 to 9 */
-CREATE_HANDLER(INTERRUPT15_10,EXTI15_10,   NUT_IRQPRI_DEF); /* EXTI Line 10 to 15 */
 #endif
+#if defined(HW_EXTI4_15_STM32)
+CREATE_HANDLER(INTERRUPT4_15, EXTI4_15,    NUT_IRQPRI_DEF); /* EXTI Line 4 to 15 */
+#endif
+#if defined(HW_EXTI9_5_STM32)
+CREATE_HANDLER(INTERRUPT9_5,  EXTI9_5,     NUT_IRQPRI_DEF); /* EXTI Line 5 to 9 */
+#endif
+#if defined(HW_EXTI15_10_STM32)
+CREATE_HANDLER(INTERRUPT15_10, EXTI15_10,  NUT_IRQPRI_DEF); /* EXTI Line 10 to 15 */
+#endif
+
 #if defined (HW_PVD_STM32)
 CREATE_HANDLER(PVD,           PVD,      NUT_IRQPRI_DEF);    /* PVD through EXTI */
 #endif
@@ -365,7 +381,7 @@ CREATE_HANDLER(TIM6,          TIM6,     NUT_IRQPRI_DEF);
 CREATE_HANDLER(TIM7,          TIM7_DAC,     NUT_IRQPRI_DEF);
 #elif defined(HW_TIM7_DAC2_STM32)
 CREATE_HANDLER(TIM7_DAC2,     TIM7_DAC2,    NUT_IRQPRI_DEF);
-#else
+#elif defined(HW_TIM7_STM32)
 CREATE_HANDLER(TIM7,          TIM7     ,    NUT_IRQPRI_DEF);
 #endif
 

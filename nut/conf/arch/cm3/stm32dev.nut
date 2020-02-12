@@ -773,6 +773,105 @@ nutarch_cm3_stm32_devices =
         options =
         {
             {
+                macro = "HW_EXTI0_STM32",
+                brief = "EXTI0 Availability",
+                description = "EXTI0 Availability",
+                requires = {"HW_EXTI0_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI0_1_STM32",
+                brief = "Combined EXTI0/1 Availability",
+                description = "Combined EXTI0/1 availability",
+                requires = {"HW_EXTI0_1_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI1_STM32",
+                brief = "EXTI1 Availability",
+                description = "EXTI1 Availability",
+                requires = {"HW_EXTI1_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI2_STM32",
+                brief = "EXTI2 Availability",
+                description = "EXTI2 Availability",
+                requires = {"HW_EXTI2_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI2_TSC_STM32",
+                brief = "EXTI2/TSC Availability",
+                description = "EXTI2/TSC Availability",
+                requires = {"HW_EXTI2_TSC_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI2_3_STM32",
+                brief = "EXTI2-3 Availability",
+                description = "EXTI2-3 Availability",
+                requires = {"HW_EXTI2_3_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI3_STM32",
+                brief = "EXTI3 Availability",
+                description = "EXTI3 Availability",
+                requires = { "HW_EXTI3_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI4_STM32",
+                brief = "EXTI4 Availability",
+                description = "EXTI4 Availability",
+                requires = {"HW_EXTI4_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI4_15_STM32",
+                brief = "EXTI4-15 Availability",
+                description = "EXTI4-15 Availability",
+                requires = { "HW_EXTI4_15_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI9_5_STM32",
+                brief = "EXTI5-9 Availability",
+                description = "EXTI5_9 Availability",
+                requires = {"HW_EXTI9_5_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
+                macro = "HW_EXTI15_10_STM32",
+                brief = "EXTI10-15 Availability",
+                description = "EXTI15_10 Availability",
+                requires = {"HW_EXTI15_10_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+             },
+             {
                 macro = "HW_RTC_STM32V1",
                 brief = "RTC V1 Availability",
                 description = "RTC V1 Availability",
@@ -1009,6 +1108,22 @@ nutarch_cm3_stm32_devices =
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_USART3_4_LPUART1_STM32",
+                brief = "USART3_4_LPUART1 Availability",
+                description = "USART3_4/LPUART1Availability on g0",
+                requires = {"HW_USART3_4_LPUART1_STM32"},
+                default = "1",
+                provides = {
+                    "HW_USART3_STM32",
+                    "HW_USART4_STM32",
+                    "HW_LPUART1_STM32",
+                    "HW_COMBINED_IRQ_STM32L0",
+                    "HW_USART_COMBINED_IRQ_STM32",
+                },
+               type = "integer",
+               file = "include/cfg/devices.h"
             },
             {
                 macro = "HW_USART3_4_STM32",
