@@ -703,7 +703,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
         }
         rs = IapFlashWrite(confdata, (const void*) consolidated,
                            FLASH_CONF_SIZE * 2, FLASH_ERASE_ALWAYS);
-        NutHeapFree(consolidated);
+        free(consolidated);
     }
     return rs;
 }
