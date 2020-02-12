@@ -1383,7 +1383,15 @@ nutarch_cm3_stm32_devices =
                 type = "integer",
                 file = "include/cfg/devices.h"
             },
-             {
+            {
+                macro = "HW_TIM7_DAC_STM32",
+                brief = "TIM7 /DAC34 IRQ",
+                requires = {"HW_TIM7_DAC_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_TIM7_DAC2_STM32",
                 brief = "TIM7 /DAC2 IRQ",
                 requires = {"HW_TIM7_DAC2_STM32"},

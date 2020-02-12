@@ -71,6 +71,9 @@
 # warning Bad RTS pin assignment
 #endif
 
+#if !defined(USART_ICR_NCF) && defined(USART_ICR_NECF)
+# define USART_ICR_NCF USART_ICR_NECF
+#endif
 #if defined(USART_RDR_RDR)
 #define USARTN_RDR (USARTn->RDR)
 #define USARTN_TDR (USARTn->TDR)

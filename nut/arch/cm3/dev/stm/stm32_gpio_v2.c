@@ -77,6 +77,9 @@ const uint16_t ospeed_values[4] =
 #elif defined (MCU_STM32H7)
 const uint16_t ospeed_values[4] =
 {16000000 >> 16, 110000000 >> 16, 166000000 >> 16, 220000000 >> 16};
+#elif defined (MCU_STM32G4)
+const uint16_t ospeed_values[4] =
+{10000000 >> 16, 500000000 >> 16, 100000000 >> 16, 180000000 >> 16};
 #else
 #warning "Unknown STM32 family"
 #endif

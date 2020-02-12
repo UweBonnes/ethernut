@@ -44,10 +44,6 @@
 #include <arch/cm3.h>
 #include <dev/iap_flash.h>
 
-#if !defined(MCU_STM32L4)
-#warning "STM32 family has no STM32L4 compatible FLASH/EEPROM"
-#endif
-
 #define ERASED_PATTERN_64  ((uint64_t)FLASH_ERASED_PATTERN32 << 32 |FLASH_ERASED_PATTERN32)
 
 uint32_t program_end_raw;

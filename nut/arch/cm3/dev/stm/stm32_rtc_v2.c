@@ -54,8 +54,30 @@
 #include <string.h>
 #include <time.h>
 
+#if defined(RTC_ICSR_ALRAWF)
+/* What did ST people smoke to rename the register and move bits for Stm32G? */
+# define RTC_ISR (RTC->ICSR)
+# define RTC_ISR_ALRAWF RTC_ICSR_ALRAWF
+# define RTC_ISR_ALRBWF RTC_ICSR_ALRBWF
+# define RTC_ISR_INIT   RTC_ICSR_INIT
+# define RTC_ISR_INITF  RTC_ICSR_INITF
+# define RTC_ISR_INITS  RTC_ICSR_INITS
+# define RTC_ISR_RSF    RTC_ICSR_RSF
+
+# define IS_ALARMA (RTC->SR & RTC_SR_ALRAF)
+# define CLEAR_ALARMA() (RTC->SR &= ~RTC_SR_ALRAF)
+# define IS_ALARMB (RTC->SR & RTC_SR_ALRBF)
+# define CLEAR_ALARMB() (RTC->SR &= ~RTC_SR_ALRBF)
+#else
+# define RTC_ISR (RTC->ISR)
+# define IS_ALARMA (RTC->ISR & RTC_ISR_ALRAF)
+# define CLEAR_ALARMA() (RTC->ISR &= ~RTC_ISR_ALRAF)
+# define IS_ALARMB (RTC->ISR & RTC_ISR_ALRBF)
+# define CLEAR_ALARMB() (RTC->ISR &= ~RTC_ISR_ALRBF)
+#endif
+
 /* L0 has only one Alarm channel*/
-#if defined (RTC_ISR_ALRBF)
+#if defined (RTC_ISR_ALRBF) || defined(RTC_SR_ALRBF)
 # define NUM_ALARMS 2
 #else
 # define NUM_ALARMS 1
@@ -64,13 +86,15 @@
 # endif
 #endif
 
-#if defined(MCU_STM32L4)
+#if defined(MCU_STM32G0)
+# define EXTI_RTC_LINE 19
+#elif defined(MCU_STM32L4)
 # define EXTI_RTC_LINE 18
 #else
 # define EXTI_RTC_LINE 17
 #endif
 
-#if defined(MCU_STM32L0) || defined(MCU_STM32L4) || defined(MCU_STM32F07) || defined(MCU_STM32F09)
+#if defined(MCU_STM32L0) || defined(MCU_STM32L4) || defined(MCU_STM32F07) || defined(MCU_STM32F09) || defined(MCU_STM32G4)
 # define EXTI_RTC_WAKEUP 20
 #elif defined(MCU_STM32L1) || defined(MCU_STM32F1) || defined(MCU_STM32F2) || defined(MCU_STM32F3)
 # define EXTI_RTC_WAKEUP 17
@@ -193,17 +217,17 @@ static void Stm32RtcInterrupt(void *arg)
     stm32_rtc_dcb *dcb = (stm32_rtc_dcb *)rtc->dcb;
 
     int do_alert = 0;
-    if (RTC->ISR & RTC_ISR_ALRAF) {
+    if (IS_ALARMA) {
         dcb->flags |= RTC_STATUS_AL0;
         /* Clear pending interrupt */
-        RTC->ISR &= ~RTC_ISR_ALRAF;
+        CLEAR_ALARMA();
         do_alert ++;
     }
 #if NUM_ALARMS == 2
-    if (RTC->ISR & RTC_ISR_ALRBF) {
+    if (IS_ALARMB) {
         dcb->flags |= RTC_STATUS_AL1;
         /* Clear pending interrupt */
-        RTC->ISR &= ~RTC_ISR_ALRBF;
+        CLEAR_ALARMB();
         do_alert ++;
     }
 #endif
@@ -228,7 +252,7 @@ static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
 
     stm32_rtc_dcb *dcb = (stm32_rtc_dcb *)rtc->dcb;
     /* Check for power failure */
-    if (!(RTC->ISR & RTC_ISR_INITS)) {
+    if (!(RTC_ISR & RTC_ISR_INITS)) {
         dcb->flags |= RTC_STATUS_PF;
     }
     if (sflags) {
@@ -272,10 +296,10 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
     if (tm)
     {
         uint32_t tr, dr;
-        while ((RTC->ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
+        while ((RTC_ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
         tr = RTC->TR;
         dr = RTC->DR;
-        RTC->ISR &= ~RTC_ISR_RSF;
+        RTC_ISR &= ~RTC_ISR_RSF;
         tm->tm_mday = ((dr >>  0) & 0xf) + (((dr >>  4) & 0x3) * 10);
         tm->tm_mon  = ((dr >>  8) & 0xf) + (((dr >> 12) & 0x1) * 10);
         tm->tm_mon  -= 1; /* Range 0..11 */
@@ -332,7 +356,7 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
     RTC->WPR = 0x53;
 
     /* Stop Clock*/
-    RTC->ISR |= RTC_ISR_INIT;
+    RTC_ISR |= RTC_ISR_INIT;
 
     month = tm->tm_mon +1 ; /* Range 1..12*/
     bcd_date  = (tm->tm_mday % 10);
@@ -349,11 +373,11 @@ int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
     bcd_time |= (tm->tm_min  / 10) << 12;
     bcd_time |= (tm->tm_hour % 10) << 16;
     bcd_time |= (tm->tm_hour / 10) << 20;
-    while (!(RTC->ISR & RTC_ISR_INITF));
+    while (!(RTC_ISR & RTC_ISR_INITF));
     RTC->DR = bcd_date;
     RTC->TR = bcd_time;
     /*enable clock and inhibit RTC write access */
-    RTC->ISR &= ~RTC_ISR_INIT;
+    RTC_ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0;
     PWR_CR &= ~PWR_CR_DBP;
    /* Remove power failure flag after setting time.*/
@@ -534,7 +558,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
     case 0:
         RTC->CR &= ~RTC_CR_ALRAE;
         if (aflags != RTC_ALARM_OFF) {
-            while ((RTC->ISR & RTC_ISR_ALRAWF) != RTC_ISR_ALRAWF);
+            while ((RTC_ISR & RTC_ISR_ALRAWF) != RTC_ISR_ALRAWF);
             RTC->ALRMAR = bcd_alarm;
             RTC->CR |=  RTC_CR_ALRAE;
         }
@@ -543,7 +567,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
     case 1:
         RTC->CR &= ~RTC_CR_ALRBE;
         if (aflags != RTC_ALARM_OFF) {
-            while ((RTC->ISR & RTC_ISR_ALRBWF) != RTC_ISR_ALRBWF);
+            while ((RTC_ISR & RTC_ISR_ALRBWF) != RTC_ISR_ALRBWF);
             RTC->ALRMBR = bcd_alarm;
             RTC->CR |=  RTC_CR_ALRBE;
         }
@@ -590,7 +614,7 @@ int Stm32RtcInit(NUTRTC *rtc)
 #if RTCCLK_SOURCE != RTCCLK_KEEP
     /* Check for valid or changed settings */
     if ((RTC->PRER & 0x007f7fff) == (RTC_SYNC + RTC_ASYNC_VAL)) {
-        if ((RTC->ISR & RTC_ISR_INITS) ==  RTC_ISR_INITS) {
+        if ((RTC_ISR & RTC_ISR_INITS) ==  RTC_ISR_INITS) {
             /* The RTC has been set before. Do not set it*/
             return 0;
         }
@@ -602,8 +626,8 @@ int Stm32RtcInit(NUTRTC *rtc)
     RTC->WPR = 0xca;
     RTC->WPR = 0x53;
 
-    while (!(RTC->ISR & RTC_ISR_INITF)) {
-         RTC->ISR |= RTC_ISR_INIT;
+    while (!(RTC_ISR & RTC_ISR_INITF)) {
+         RTC_ISR |= RTC_ISR_INIT;
     }
 
 #if RTCCLK_SOURCE != RTCCLK_KEEP
@@ -611,7 +635,7 @@ int Stm32RtcInit(NUTRTC *rtc)
 #endif
     /* Enable RTC ALARM A/B Interrupt*/
     RTC->CR |= (RTC_CR_ALRAIE | RTC_CR_ALRBIE);
-    RTC->ISR &= ~RTC_ISR_INIT;
+    RTC_ISR &= ~RTC_ISR_INIT;
     RTC->WPR = 0; /* Disable  RTC Write Access */
     /* Disable Backup domain write access*/
     PWR_CR &= ~PWR_CR_DBP;

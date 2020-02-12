@@ -197,8 +197,8 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 # endif
 #endif
 
-#if defined(MCU_STM32F0) ||defined(MCU_STM32F3) || defined(MCU_STM32L4)
-/* GPIO on AHB2 is outside of bitband region */
+#if GPIOA_BASE > (PERIPH_BASE + 0x10000)
+/* GPIO on AHB2 is outside of 1 MiByte bitband region */
 #define GpioPinGet(bank, bit)        ((CM3REG((bank), GPIO_TypeDef, IDR ) & (1<<(bit)))?1:0)
 #define GpioPinSet(bank, bit, value) ((value)? GpioPinSetHigh(bank, bit): GpioPinSetLow(bank, bit))
 #define GpioPinDrive(bank, bit)      (CM3REG((bank), GPIO_TypeDef, MODER) |=  (1<<((bit)<<1)))
@@ -231,9 +231,9 @@ extern int GpioPortConfigSet(int bank, uint32_t mask, uint32_t flags);
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHBENR, (  bank-GPIOA_BASE)>>10)
 #elif defined(MCU_STM32F0) ||defined(MCU_STM32F3)
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHBENR, (((bank-GPIOA_BASE)>>10) +17))
-#elif defined(MCU_STM32L4)
+#elif defined(RCC_AHB2ENR_GPIOAEN)
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB2ENR,(  bank-GPIOA_BASE)>>10)
-#elif defined(MCU_STM32H7)
+#elif defined(RCC_AHB4ENR_GPIOAEN)
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB4ENR,(  bank-GPIOA_BASE)>>10)
 #else
 #define GpioClkEnable(bank) CM3BBSET(RCC_BASE, RCC_TypeDef, AHB1ENR,(  bank-GPIOA_BASE)>>10)

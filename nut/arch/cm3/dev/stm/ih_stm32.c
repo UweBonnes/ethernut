@@ -263,7 +263,7 @@ CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Contro
 CREATE_HANDLER(DMA_GROUP1, DMA1_Channel2_3,       NUT_IRQPRI_DEF); // DMA Controller 1 Group 1
 CREATE_HANDLER(DMA_GROUP2, DMA1_Channel4_5_6_7,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 2
 # endif
-#elif defined (MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F3) || defined(MCU_STM32L4)
+#elif defined (MCU_STM32F1) || defined(MCU_STM32L1) || defined(MCU_STM32F3) || defined(MCU_STM32L4) || defined(MCU_STM32G4)
 CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA1_CH2,   DMA1_Channel2,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA1_CH3,   DMA1_Channel3,         NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
@@ -360,12 +360,15 @@ CREATE_HANDLER(TIM6_DAC1,     TIM6_DAC,     NUT_IRQPRI_DEF);
 #elif defined(HW_TIM6_STM32)
 CREATE_HANDLER(TIM6,          TIM6,     NUT_IRQPRI_DEF);
 #endif
-#if defined(HW_TIM7_STM32)
-CREATE_HANDLER(TIM7,          TIM7,         NUT_IRQPRI_DEF);
-#endif
-#if defined(HW_TIM7_DAC2_STM32)
+
+#if defined(HW_TIM7_DAC_STM32)
+CREATE_HANDLER(TIM7,          TIM7_DAC,     NUT_IRQPRI_DEF);
+#elif defined(HW_TIM7_DAC2_STM32)
 CREATE_HANDLER(TIM7_DAC2,     TIM7_DAC2,    NUT_IRQPRI_DEF);
+#else
+CREATE_HANDLER(TIM7,          TIM7     ,    NUT_IRQPRI_DEF);
 #endif
+
 #if defined(HW_TIM8_BRK_TIM12_STM32)
 CREATE_HANDLER(TIM8_BRK_TIM12,     TIM8_BRK_TIM12,     NUT_IRQPRI_DEF);
 CREATE_HANDLER(TIM8_UP_TIM13,      TIM8_UP_TIM13,      NUT_IRQPRI_DEF);
