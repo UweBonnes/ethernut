@@ -1901,11 +1901,9 @@ nutarch =
                     "HW_MCU_CM3",
                     "HW_MCU_STM32",
                     "HW_MCU_STM32F3",
-                    "HW_MCU_STM32F30",
+                    "HW_MCU_STM32F33",
                     "HW_MCU_STM32F334x8",
                 },
-                makedefs = { "FLASH0_LENGTH=64K",
-                             "RAM0_LENGTH=16K" },
             },
 -- STM32F373 and STM32F378 are quite similar to each other and quite different
 -- in pinout to other STM32F3, so introduce a subclass

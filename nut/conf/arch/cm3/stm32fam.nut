@@ -518,6 +518,16 @@ nutarch_cm3_stm32_family =
                 file = "include/cfg/arch.h"
             },
             {
+                macro = "MCU_STM32F33",
+                brief = "STM32F33 family",
+                requires = {"HW_MCU_STM32F33"},
+                default = 1,
+                file = "include/cfg/arch.h",
+                makedefs = { "FLASH0_LENGTH=64K",
+                             "RAM0_LENGTH=12K",
+                             "CCM_LENGTH=4K"}
+            },
+            {
                 macro = "MCU_STM32F37",
                 brief = "STM32F37x family",
                 description = "STM32F37x subfamily",
