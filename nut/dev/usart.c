@@ -40,6 +40,7 @@
  */
 
 #include <cfg/crt.h>
+#include <cfg/dev.h>
 
 #include <compiler.h>
 #include <stdlib.h>
@@ -928,6 +929,21 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
             *lvp = 0;
         }
         break;
+
+#if defined(HW_UART_AUTOBAUD)
+    case UART_SETAUTOBAUDMODE:
+        lv &= USART_MF_AUTOBAUD_MMASK;
+        rc = (dcb->dcb_set_flow_control) (lv);
+        if (rc == 0) {
+            dcb->dcb_modeflags = lv;
+        }
+        break;
+    case UART_GETAUTOBAUDMODE:
+        lv = (*dcb->dcb_get_flow_control) ();
+        *lvp = (lv & (USART_MF_AUTOBAUD_MASK | USART_MF_AUTOBAUD_DONE |
+                    USART_MF_AUTOBAUD_ERROR));
+        break;
+#endif
 
     case UART_SETCLOCKMODE:
         rc = (*dcb->dcb_set_clock_mode) (lv);

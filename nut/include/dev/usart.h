@@ -289,6 +289,17 @@ struct _RINGBUF {
 
 #define USART_MF_FLOWMASK       (USART_MF_XONXOFF| USART_MF_HALFDUPLEX|USART_MF_LOCALECHO|USART_MF_BLOCKREAD|USART_MF_BLOCKWRITE| USART_MF_OWIHALFDUPLEX)
 
+#define USART_MF_AUTOBAUD_0     0x04000
+#define USART_MF_AUTOBAUD_M1    0x00000 /*!< Check for 1xxxxxxxx */
+#define USART_MF_AUTOBAUD_M2    0x04000 /*!< Check for 10xxxxxxx */
+#define USART_MF_AUTOBAUD_M3    0x08000 /*!< Check for 0xfe*/
+#define USART_MF_AUTOBAUD_M4    0x0c000 /*!< Check for 0x55*/
+#define USART_MF_AUTOBAUD_OFF   0x1c000
+#define USART_MF_AUTOBAUD_MMASK 0x1c000 /*!< Mask for autobaud modes*/
+#define USART_MF_AUTOBAUD_DONE  0x20000
+#define USART_MF_AUTOBAUD_ERROR 0x40000
+#define USART_MF_AUTOBAUD_MASK  0x7c000
+
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */
 #define USART_SF_DTROFF         0x0004  /*!< Set if DTR line is off. */

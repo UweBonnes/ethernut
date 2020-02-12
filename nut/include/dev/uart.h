@@ -556,6 +556,29 @@
  */
 #define UART_GETOWIMODE        0x0133
 
+/*! \brief UART _ioctl() command code to set the auto baud mode
+ *
+ * If device supports, set the auto_baud mode
+ *
+ * The configuration parameter must be a pointer to a uint32_t variable,
+ * which contains the requested auto baud mode USART_MF_AUTOBAUD_Mx
+ *
+ * With this ioctl, auto baud mode gets activated for one try
+ *
+ * See also \ref UART_GETAUTOBAUDMODE.
+ */
+#define UART_SETAUTOBAUDMODE        0x0134
+
+/*! \brief UART _ioctl() command code to query the auto baud mode and result
+ *
+ * The configuration parameter must be a pointer to a uint32_t variable,
+ * which receives the current auto baud mode  USART_MF_AUTOBAUD_Mx and
+ * flags for done and error
+ *
+ * See also \ref UART_SETAUTOBAUDMODE.
+ */
+#define UART_GETAUTOBAUDMODE        0x0135
+
 /*!
  * \addtogroup xgUARTStatus
  * \brief UART device status flags,

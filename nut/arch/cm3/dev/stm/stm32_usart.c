@@ -1128,7 +1128,19 @@ static uint32_t Stm32UsartGetFlowControl(void)
         rc |= USART_MF_OWIHALFDUPLEX;
     else
         rc &= ~USART_MF_OWIHALFDUPLEX;
-
+#if defined(USART_CR2_ABRMODE_0)
+    uint32_t cr2 = USARTn->CR2;
+    uint32_t abr = (cr2 & USART_CR2_ABRMODE_Msk);
+    abr /= USART_CR2_ABRMODE_0;
+    rc |= abr *USART_MF_AUTOBAUD_0;
+    uint32_t isr = USARTn->ISR;
+    if (isr & USART_ISR_ABRE) {
+        rc |= USART_MF_AUTOBAUD_ERROR;
+    }
+    if (isr & USART_ISR_ABRF) {
+        rc |= USART_MF_AUTOBAUD_DONE;
+    }
+#endif
     return rc;
 }
 
@@ -1224,6 +1236,20 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
     }
 #endif
 
+#if defined(USART_CR2_ABRMODE_0)
+    USARTn->CR2 &= ~(USART_CR2_ABRMODE_Msk | USART_CR2_ABREN);
+    USARTn->RQR |= USART_RQR_ABRRQ;
+    if ((flags & USART_MF_AUTOBAUD_MMASK) != USART_MF_AUTOBAUD_OFF) {
+        uint32_t cr2_mode = flags / USART_MF_AUTOBAUD_0;
+        cr2_mode *= USART_CR2_ABRMODE_0;
+        USARTn->CR2 = cr2_mode | USART_CR2_ABREN;
+        /* Auto baud mode feature may not be available.*/
+        uint32_t cr2 = USARTn->CR2 & (USART_CR2_ABRMODE_Msk | USART_CR2_ABREN);
+        if (cr2 != (cr2_mode | USART_CR2_ABREN)) {
+            return -1;
+        }
+    }
+#endif
     /*
      * Verify the result.
      */
