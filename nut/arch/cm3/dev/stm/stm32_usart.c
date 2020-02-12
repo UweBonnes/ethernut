@@ -1173,8 +1173,14 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
         USARTn->CR1 &= ~USART_CR1_UE;
         USARTn->CR3 |= USART_CR3_HDSEL;
         /* Set Alternate function, open drain, Pull up */
+        uint32_t flags = GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE;
+#if defined(USART_TX_PIN_INV)
+        flags |= GPIO_CFG_PULLDOWN;
+#else
+        flags |= GPIO_CFG_PULLUP;
+#endif
         Stm32GpioConfigSet(
-            UARTx_TX, GPIO_CFG_PERIPHAL | GPIO_CFG_MULTIDRIVE, UART_TX_AF );
+            UARTx_TX, flags, UART_TX_AF );
         Stm32UsartEnable();
     }
     else {
