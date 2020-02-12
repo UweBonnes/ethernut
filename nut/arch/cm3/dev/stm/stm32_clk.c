@@ -437,13 +437,13 @@ static void SetRtcClockSource(int source)
     /* Enable backup domain access*/
     PWR_CR |= PWR_CR_DBP;
     /* Backup Domain protected RTCSEL bits need to be reset by BDRST. */
-    RCC->BDCR = RCC_BDCR_BDRST;
+    RCC_BDCR = RCC_BDCR_BDRST;
     uint32_t bdcr =
         (source * RCC_BDCR_RTCSEL_0) |
         (LSE_BYPASS * RCC_BDCR_LSEBYP) |
         (LSE_DRIVE_LEVEL * RCC_BDCR_LSEDRV_0) |
         (LSE_VALUE)? RCC_BDCR_LSEON : 0;
-    RCC->BDCR = bdcr;
+    RCC_BDCR = bdcr;
     /* W/o this wait with external LSE, LSERDY stayed low on a L412*/
     if (LSE_VALUE) {
         while (!(RCC_BDCR & RCC_BDCR_LSERDY));
