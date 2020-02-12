@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 by Uwe Bonnes
+ * Copyright (C) 2015-2019 by Uwe Bonnes
  *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -122,14 +122,14 @@ static const uint32_t MSI_FREQUENCY[NUM_MSI_FREQ] = {
 # define PLLCLK_IN HSE_VALUE
 #elif (PLLCLK_SOURCE == PLLCLK_HSI)
 # define PLLCLK_IN HSI_VALUE
-#elif (PLLCLK_SOURCE == PLLCLK_MSI)
+#elif (PLLCLK_SOURCE == PLLCLK_MSI) && (SYSCLK_SOURCE == SYSCLK_PLL)
 /* Use rounded MSI value here to keep calculation below easy */
-# define PLLCLK_IN 4000000
+# define PLLCLK_IN 48000000
+# undef MSI_RANGE
+# define MSI_RANGE MSI_48M
 #else
 # define PLLCLK_IN 0
 #endif
-#undef MSI_RANGE
-#define MSI_RANGE MSI_4M
 
 #if (SYSCLK_SOURCE == SYSCLK_PLL)
 /* 7 < PLL_MULT < PLLMULT_MAX
@@ -282,7 +282,7 @@ static uint32_t msi_clock;
  */
 
 /* Forward declarations */
-static msi_range_t CtlMsiClock(msi_range_t range);
+static int CtlMsiClock(msi_range_t range);
 
 /* Include common routines*/
 #include "stm32_clk.c"
@@ -325,6 +325,7 @@ static void SystemCoreClockUpdate(void)
     cfgr = RCC->CFGR & RCC_CFGR_SWS;
     switch (cfgr) {
     case RCC_CFGR_SWS_MSI:
+        MsiFrequencyUpdate();
         tmp = msi_clock;
         break;
     case RCC_CFGR_SWS_HSE:
@@ -361,26 +362,17 @@ static void SystemCoreClockUpdate(void)
  * \param  Range  MSI_OFF to switch off or MSI_RANGEx
  * \return 0 on success, -1 on MSI start failed.
  */
-static msi_range_t CtlMsiClock(msi_range_t range)
+static int CtlMsiClock(msi_range_t range)
 {
-    msi_range_t res;
+    int res = 0;
     uint32_t cr;
 
     cr = RCC->CR;
-    if (cr & RCC_CR_MSIRGSEL) {
-        res = (cr & RCC_CR_MSIRANGE) / RCC_CR_MSIRANGE_1;
-    } else {
-        uint32_t csr;
-
-        csr = RCC->CSR;
-        res = (csr & RCC_CSR_MSISRANGE) >> 8;
-    }
-
     if (range != MSI_OFF) {
         /* MSIRANGE must NOT be modified when MSI is ON and NOT
          *  ready (MSION=1 and MSIRDY=0)
          */
-        while ((RCC_CR & RCC_CR_MSION) && !(RCC_CR & RCC_CR_MSIRDY)) {};
+        while ((RCC_CR & RCC_CR_MSION) && !(RCC_CR & RCC_CR_MSIRDY)) {_NOP();}
         cr = RCC->CR;
         cr &= ~RCC_CR_MSIRANGE;
         cr |= range * RCC_CR_MSIRANGE_1;
@@ -392,6 +384,7 @@ static msi_range_t CtlMsiClock(msi_range_t range)
     } else {
         /* Disable MSI clock */
         RCC->CR &= ~RCC_CR_MSION;
+        res = -1;
     }
 
     return res;
@@ -423,7 +416,10 @@ static int SetPllClockSource(int src)
         }
         break;
     case (PLLCLK_MSI):
-        CtlMsiClock(MSI_4M);
+        rc = CtlMsiClock(MSI_RANGE);
+        if (rc) {
+            return rc;
+        }
         rc = rcc_set_and_wait_rdy_value(
             &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_MSI,
             RCC_CFGR_SWS, RCC_CFGR_SWS_MSI, HSE_STARTUP_TIMEOUT);
@@ -474,7 +470,7 @@ static void SetVos(uint32_t frequency)
     }
     PWR->CR1 = cr;
     /* Wait until VOSF is ready. */
-    while (PWR->SR2 & PWR_SR2_VOSF);
+    while (PWR->SR2 & PWR_SR2_VOSF) {_NOP();}
 }
 
 static void SetLatency(uint32_t value)
@@ -572,7 +568,7 @@ static int SetSysClockSource(int src)
          * This may take up to 2 seconds on a cold start!
          * But neither interrupts nor timers are set up yet,
          * so busy waiting is a resonable choice!*/
-        while (!(RCC_BDCR & RCC_BDCR_LSERDY));
+        while (!(RCC_BDCR & RCC_BDCR_LSERDY)) {_NOP();}
         RCC->CR |= RCC_CR_MSIPLLEN;
     }
     return rc;

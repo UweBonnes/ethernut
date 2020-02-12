@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 by Uwe Bonnes
+ * Copyright (C) 2015-2017, 2019 by Uwe Bonnes
  *                              (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -93,7 +93,11 @@ static const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 #elif (SYSCLK_SOURCE == SYSCLK_HSE)
 # define SYSCLK_RES HSI_VALUE
 #elif (SYSCLK_SOURCE == SYSCLK_MSI)
-# define SYSCLK_RES MSI_2100k
+# if defined(MCU_STM32L1) || defined(MCU_STM32L0)
+#  define SYSCLK_RES MSI_2100k
+# else
+#  define SYSCLK_RES MSI_4M
+# endif
 #else
 # warning SYSCLK_SOURCE undefined or unknown!
 #endif
@@ -520,7 +524,7 @@ static int SwitchSystemClock(int source)
 #endif
 #if defined(RCC_CFGR_SWS_MSI)
     case SYSCLK_MSI:
-        rc = CtlMsiClock(MSI_DEFAULT);
+        rc = CtlMsiClock(MSI_RANGE);
         if (!rc) {
             rc = rcc_set_and_wait_rdy_value(
                 &RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_MSI,
