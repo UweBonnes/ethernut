@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2018 by Uwe Bonnes
+ * Copyright (C) 2014-2020 by Uwe Bonnes
  *                                (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -46,9 +46,32 @@
 #include <cfg/os.h>
 #include <cfg/arch.h>
 #include <cfg/arch/gpio.h>
+#include <cfg/devices.h>
 
 #include <sys/nutdebug.h>
 #include <dev/pins.h>
+
+/* STM32G0 allows to differentiate between rising and falling
+ * edge. This is ignored for now.*/
+
+static uint32_t ExtiGetPending(void)
+{
+#if defined(EXTI_RPR1_RPIF0)
+    return EXTI->RPR1 |  EXTI->FPR1;
+#else
+    return EXTI_PR;
+#endif
+}
+
+static void ExtiClearPending(int pin)
+{
+#if defined(EXTI_RPR1_RPIF0)
+    EXTI->RPR1 = (1 << pin);
+    EXTI->FPR1 = (1 << pin);
+#else
+    EXTI_PR = (1 << pin);
+#endif
+}
 
 /*!
  * \brief Common interrupt routine dedicated EXTI interrupts.
@@ -58,10 +81,10 @@
  */
 static void ExtiIsr(void *arg) {
     GPIO_SIGNAL *signal = (GPIO_SIGNAL *) arg;
-    uint32_t pending = EXTI_PR;
+    uint32_t pending = ExtiGetPending();
     if(pending & (1 << signal->ios_pin)) {
         GPIO_VECTOR *vector = &signal->ios_vector;
-        EXTI_PR = (1 << signal->ios_pin);
+        ExtiClearPending(signal->ios_pin);
         if (vector->iov_handler)
             (vector->iov_handler)(vector->iov_arg);
     }
@@ -77,13 +100,13 @@ static void ExtiIsr(void *arg) {
  */
 static void ExtiSharedIsr(void *arg) {
     GPIO_SIGNAL *signal;
-    uint32_t pending = EXTI_PR;
+    uint32_t pending = ExtiGetPending();
     for (signal = (GPIO_SIGNAL *) arg; signal; signal = signal->sig_next) {
         /* It seems, "pending" is only set for an unmasked IRQ, so no need
            to check here. */
         if (pending & (1 << signal->ios_pin)) {
             GPIO_VECTOR *vector = &signal->ios_vector;
-            EXTI_PR = (1 << signal->ios_pin);
+            ExtiClearPending(signal->ios_pin);
             if (vector->iov_handler)
                 (vector->iov_handler)(vector->iov_arg);
         }
@@ -243,7 +266,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
     int shared;
     int rc = -1;
 
-#if defined(MCU_STM32F0) || defined(MCU_STM32L0)
+#if defined(HW_EXTI0_1_STM32)
     shared = 1;
     if (bit < 2)
         isrhandler = &sig_INTERRUPT0_1;
@@ -293,7 +316,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
             rc = NutRegisterIrqHandler(isrhandler, ExtiIsr, sig);
         if (0 == rc ) {
             /* Clear any pending interrupts and mask */
-            EXTI_PR   =  (1 << bit);
+            ExtiClearPending(bit);
             EXTI_IMR &= ~(1 << bit);
             rc = NutIrqEnable(isrhandler);
         }
@@ -310,7 +333,7 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
             if (NULL == sig_chain->sig_next) {
                 /* We found last slot in chain */
                 /* Clear any pending interrupts and mask */
-                EXTI_PR   =  (1 << bit);
+                ExtiClearPending(bit);
                 EXTI_IMR &= ~(1 << bit);
                 sig_chain->sig_next = sig;
                 rc = 0;
@@ -328,6 +351,8 @@ int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *),
 #if defined(AFIO_BASE)
         /* Any GpioPortConfigSet already enabled the AFIO Clock */
         cr = (uint32_t *)AFIO->EXTICR;
+#elif defined(EXTI_EXTICR1_EXTI0_Pos)
+        cr = (uint32_t *)EXTI->EXTICR;
 #else
         cr = (uint32_t *)SYSCFG->EXTICR;
 #endif

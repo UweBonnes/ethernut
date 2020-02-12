@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Nikolaj Zamotaev. All rights reserved.
- * Copyright (C) 2012-2017 by Uwe Bonnes
+ * Copyright (C) 2012-2018, 2020 by Uwe Bonnes
  *                            (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,8 +76,13 @@
 #define SPI_MOSI_AF PINMUX(SPI2_MOSI, SPI2_MOSI_FUNC)
 
 #define SPI_DEV 2
-#define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
-#define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
+#if defined(RCC_APBENR1_SPI2EN)
+# define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APBENR1, _BI32(RCC_APBENR1_SPI2EN))
+# define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APBENR1, _BI32(RCC_APBENR1_SPI2EN))
+#else
+# define SPI_ENABLE_CLK_SET() CM3BBSET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
+# define SPI_ENABLE_CLK_GET() CM3BBGET(RCC_BASE, RCC_TypeDef, APB1ENR, _BI32(RCC_APB1ENR_SPI2EN))
+#endif
 #define sig_SPI             sig_SPI2
 #define SPI_BASE            SPI2_BASE
 

@@ -4,7 +4,8 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2017 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2017, 2018, 2020 Uwe Bonnes
+ *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,9 +42,10 @@
  * $Id$
  * \endverbatim
  */
+#include <cfg/devices.h>
 
-#if defined(MCU_STM32L0) || defined(MCU_STM32L4) || defined(MCU_STM32H7)
-# define STM32_LPUART1_INDEX 10
+#if defined(HW_LPUART1_STM32)
+# define STM32_LPUART1_INDEX 16
 #endif
 
 extern IRQ_HANDLER *Stm32UsartInstallHandler(int nr, IRQ_HANDLER *sig);

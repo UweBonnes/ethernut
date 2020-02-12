@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-17, 19 Uwe Bonnes
+ * Copyright (C) 2013-17, 2019 - 2020 Uwe Bonnes
  *                             (bon@elektron.ikp.physik.tu-darmstadty.de).
  *
  * Redistribution and use in source and binary forms, with or without
@@ -138,7 +138,7 @@ CREATE_HANDLER(SDIO,          SDIO,     NUT_IRQPRI_DEF);     // SDIO Controller
 CREATE_HANDLER(SAI1,          SAI1,     NUT_IRQPRI_DEF);     // SPI 2 Controller
 #endif
 
-#if defined (MCU_STM32L0) || defined (MCU_STM32F0)
+#if defined (MCU_STM32L0) || defined (MCU_STM32F0) || defined(MCU_STM32G0)
 CREATE_HANDLER(TWI1_EV,       I2C1,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
 #else
 CREATE_HANDLER(TWI1_EV,       I2C1_EV,  NUT_IRQPRI_DEF);     // I2C 1 Data/Event
@@ -146,7 +146,7 @@ CREATE_HANDLER(TWI1_ER,       I2C1_ER,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
 #endif
 
 #if defined(HW_I2C2_STM32)
-#if defined (MCU_STM32L0) || defined (MCU_STM32F0)
+#if defined (MCU_STM32L0) || defined (MCU_STM32F0) || defined(MCU_STM32G0)
 CREATE_HANDLER(TWI2_EV,       I2C2,     NUT_IRQPRI_DEF);     // I2C 1 Data/Event
 #else
 CREATE_HANDLER(TWI2_EV,       I2C2_EV,  NUT_IRQPRI_DEF);     // I2C 2 Data/Event
@@ -244,6 +244,8 @@ CREATE_HANDLER(USART8,        UART8,          NUT_IRQPRI_DEF);  // UART 8
 CREATE_HANDLER(USART_GROUP,   USART3_8,        NUT_IRQPRI_DEF);  // USART3_8
 # elif defined(HW_USART3_6_STM32)
 CREATE_HANDLER(USART_GROUP,   USART3_6,        NUT_IRQPRI_DEF);  // USART3_6
+# elif defined(HW_USART3_4_LPUART1_STM32)
+CREATE_HANDLER(USART_GROUP,   USART3_4_LPUART1, NUT_IRQPRI_DEF);  // USART3_4_LPUART1
 # elif defined(HW_USART3_4_STM32)
 CREATE_HANDLER(USART_GROUP,   USART3_4,        NUT_IRQPRI_DEF);  // USART3_4
 # endif
@@ -265,6 +267,14 @@ CREATE_HANDLER(LPUART1_GROUP, AES_RNG_LPUART1, NUT_IRQPRI_DEF);  // LPUART1/RNG
 CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
 CREATE_HANDLER(DMA_GROUP1, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 1
 CREATE_HANDLER(DMA_GROUP2, DMA1_Channel4_5_6_7,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 2
+#elif defined (MCU_STM32G0)
+CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
+CREATE_HANDLER(DMA_GROUP1, DMA1_Channel2_3    ,   NUT_IRQPRI_DEF); // DMA Controller 1 Group 1
+#  if defined (MCU_STM32G07)
+CREATE_HANDLER(DMA_GROUP2, DMA1_Ch4_7_DMAMUX1_OVR, NUT_IRQPRI_DEF); // DMA Controller 1 Group 2
+#  else
+CREATE_HANDLER(DMA_GROUP2, DMA1_Ch4_5_DMAMUX1_OVR, NUT_IRQPRI_DEF); // DMA Controller 1 Group 2
+# endif
 #elif defined (MCU_STM32F0)
 # if defined(HW_DMA2_STM32F1)
 CREATE_HANDLER(DMA1_CH1,   DMA1_Channel1      ,   NUT_IRQPRI_DEF); // DMA Controller 1 Channel 1
@@ -369,7 +379,10 @@ CREATE_HANDLER(TIM4,          TIM4,         NUT_IRQPRI_DEF);
 #if defined(HW_TIM5_STM32)
 CREATE_HANDLER(TIM5,          TIM5,         NUT_IRQPRI_DEF);
 #endif
-#if defined(HW_TIM6_DAC1_STM32)
+
+#if defined(HW_TIM6_DAC_LPTIM1_STM32)
+CREATE_HANDLER(TIM6_DAC_LPTIM1, TIM6_DAC_LPTIM1,  NUT_IRQPRI_DEF);
+#elif defined(HW_TIM6_DAC1_STM32)
 CREATE_HANDLER(TIM6_DAC1,     TIM6_DAC1,    NUT_IRQPRI_DEF);
 #elif defined(HW_TIM6_DAC_STM32)
 CREATE_HANDLER(TIM6_DAC1,     TIM6_DAC,     NUT_IRQPRI_DEF);
@@ -381,6 +394,8 @@ CREATE_HANDLER(TIM6,          TIM6,     NUT_IRQPRI_DEF);
 CREATE_HANDLER(TIM7,          TIM7_DAC,     NUT_IRQPRI_DEF);
 #elif defined(HW_TIM7_DAC2_STM32)
 CREATE_HANDLER(TIM7_DAC2,     TIM7_DAC2,    NUT_IRQPRI_DEF);
+#elif defined(HW_TIM7_LPTIM2_STM32)
+CREATE_HANDLER(TIM7_LPTIM2,   TIM7_LPTIM2,  NUT_IRQPRI_DEF);
 #elif defined(HW_TIM7_STM32)
 CREATE_HANDLER(TIM7,          TIM7     ,    NUT_IRQPRI_DEF);
 #endif

@@ -741,6 +741,16 @@ nutarch_cm3_stm32_devices =
         sources = {"cm3/dev/stm/stm32l0_combined_irq.c"},
     },
     --
+    -- STM32G0 Combined IRQ
+    --
+    {
+        name = "nutarch_cm3_stm32g0_combined_irq",
+        brief = "STM32G0 IRQ separation",
+        description = "IRQ Separation for G0 devices with combined IRQs",
+        requires = {"HW_COMBINED_IRQ_STM32G0"},
+        sources = {"cm3/dev/stm/stm32g0_combined_irq.c"},
+    },
+    --
     -- STM32 VDDIO Isolation control
     --
     {
@@ -1112,14 +1122,15 @@ nutarch_cm3_stm32_devices =
             {
                 macro = "HW_USART3_4_LPUART1_STM32",
                 brief = "USART3_4_LPUART1 Availability",
-                description = "USART3_4/LPUART1Availability on g0",
+                description = "USART3_4/LPUART1Availability on G0",
                 requires = {"HW_USART3_4_LPUART1_STM32"},
                 default = "1",
                 provides = {
                     "HW_USART3_STM32",
                     "HW_USART4_STM32",
                     "HW_LPUART1_STM32",
-                    "HW_COMBINED_IRQ_STM32L0",
+                    "HW_COMBINED_IRQ_STM32G0",
+                    "HW_LPUART1_COMBINED_IRQ_STM32",
                     "HW_USART_COMBINED_IRQ_STM32",
                 },
                type = "integer",
@@ -1490,6 +1501,15 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_TIM6_DAC_LPTIM1_STM32",
+                brief = "TIM6_DAC /LPTIM1 Availability",
+                description = "TIM6_DAC /LPTIM1 Availability",
+                requires = { "HW_TIM6_DAC_LPTIM1_STM32" },
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_TIM7_STM32",
                 brief = "TIM7 Availability",
                 description = "TIM7 Availability",
@@ -1502,6 +1522,14 @@ nutarch_cm3_stm32_devices =
                 macro = "HW_TIM7_DAC_STM32",
                 brief = "TIM7 /DAC34 IRQ",
                 requires = {"HW_TIM7_DAC_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM7_LPTIM2_STM32",
+                brief = "TIM7 / LPTIM2 IRQ",
+                requires = {"HW_TIM7_LPTIM2_STM32"},
                 default = "1",
                 type = "integer",
                 file = "include/cfg/devices.h"

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
- * Copyright (C) 2011-2015 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2011-2015, 2020 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -77,6 +77,9 @@ const uint16_t ospeed_values[4] =
 #elif defined (MCU_STM32H7)
 const uint16_t ospeed_values[4] =
 {16000000 >> 16, 110000000 >> 16, 166000000 >> 16, 220000000 >> 16};
+#elif defined (MCU_STM32G0)
+const uint16_t ospeed_values[4] =
+{ 3000000 >> 16, 150000000 >> 16,  60000000 >> 16,  80000000 >> 16};
 #elif defined (MCU_STM32G4)
 const uint16_t ospeed_values[4] =
 {10000000 >> 16, 500000000 >> 16, 100000000 >> 16, 180000000 >> 16};

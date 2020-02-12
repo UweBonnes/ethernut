@@ -3,6 +3,8 @@
 
 /*
  * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2012-2018, 2020 Uwe Bonnes
+ *                           (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -160,8 +162,10 @@ extern IRQ_HANDLER sig_TIM5;
 extern IRQ_HANDLER sig_TIM6;
 extern IRQ_HANDLER sig_TIM6_DAC;
 extern IRQ_HANDLER sig_TIM6_DAC1;
+extern IRQ_HANDLER sig_TIM6_DAC_LPTIM1;
 extern IRQ_HANDLER sig_TIM7;
 extern IRQ_HANDLER sig_TIM7_DAC2;
+extern IRQ_HANDLER sig_TIM7_LPTIM2;
 extern IRQ_HANDLER sig_TIM8_BRK;
 extern IRQ_HANDLER sig_TIM8_BRK_TIM12;
 extern IRQ_HANDLER sig_TIM8_CC;

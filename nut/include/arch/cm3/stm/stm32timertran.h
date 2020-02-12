@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013, 2015-17 by Uwe Bonnes
+ * Copyright (C) 2013, 2015-2020 by Uwe Bonnes
  *                             (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * All rights reserved.
@@ -273,6 +273,8 @@
 #define STM32TIMER_MASK RCC_APB1ENR_TIM7EN
 #if defined(HW_TIM7_DAC2_STM32)
 # define STM32TIMER_SIG sig_TIM7_DAC2
+#elif defined(HW_TIM7_LPTIM2_STM32)
+# define STM32TIMER_SIG sig_TIM7_LPTIM2
 #else
 # define STM32TIMER_SIG sig_TIM7
 #endif

@@ -1,7 +1,7 @@
 #ifndef _STM32XXXX_H_
 #define _STM32XXXX_H_
 /*
- * Copyright (C) 2012-2018 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
+ * Copyright (C) 2012-2020 Uwe Bonnes (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -70,6 +70,11 @@
 /* Equalize names in a common place. Even recent CUBE uses "random" names.*/
 #if defined(GPIO_BRR_BR0) && !defined(GPIO_BRR_BR_0) && !defined(MCU_STM32F4)
 # define GPIO_BRR_BR_0 GPIO_BRR_BR0
+#endif
+
+#if defined(GPIO_BSRR_BR0) && !defined(GPIO_BSRR_BR_0)
+# define GPIO_BSRR_BR_0 GPIO_BSRR_BR0
+# define GPIO_BSRR_BS_0 GPIO_BSRR_BS0
 #endif
 
 #if defined(SRAM1_BASE) && !defined(SRAM_BASE)
@@ -165,8 +170,30 @@
 #  define RCC_CR (RCC->CR)
 # endif
 
+# if !defined(RCC_CFGR_SW_HSE) && defined(RCC_CFGR_SW_Msk)
+#  define RCC_CFGR_SW_HSI 0
+#  define RCC_CFGR_SW_HSE 1
+#  define RCC_CFGR_SW_PLL 2
+#  define RCC_CFGR_SW_LSI 3
+#  define RCC_CFGR_SW_LSE 4
+# endif
+
+#if !defined(RCC_CFGR_PPRE2)
+# define RCC_CFGR_PPRE2   0
+# define RCC_CFGR_PPRE2_0 1
+#endif
+
+#if defined( RCC_CFGR_PPRE) && !defined( RCC_CFGR_PPRE1)
+# define RCC_CFGR_PPRE1   RCC_CFGR_PPRE
+# define RCC_CFGR_PPRE1_0 RCC_CFGR_PPRE_0
+#endif
+
 # if !defined(FLASH_SR_PGSERR) && defined(FLASH_SR_ERSERR)
 #  define FLASH_SR_PGSERR FLASH_SR_ERSERR
+# endif
+
+# if !defined(FLASH_SR_BSY) && defined(FLASH_SR_BSY1)
+#  define FLASH_SR_BSY FLASH_SR_BSY1
 # endif
 
 #if defined(RCC_APB1ENR1_TIM2EN_Pos)
@@ -214,16 +241,53 @@
 # define AHBENR AHB1ENR
 # define RCC_AHBENR_DMA1EN RCC_AHB1ENR_DMA1EN
 # define RCC_AHBENR_DMA2EN RCC_AHB1ENR_DMA2EN
-
-# if defined(USART_CR1_TXEIE_TXFNFIE) && !defined(USART_CR1_TXEIE)
-#  define USART_CR1_TXEIE  USART_CR1_TXEIE_TXFNFIE
-#  define USART_CR1_RXNEIE USART_CR1_RXNEIE_RXFNEIE
-#  define USART_ISR_TXE    USART_ISR_TXE_TXFNF
-#  define USART_ISR_RXNE   USART_ISR_RXNE_RXFNE
-# endif
 #endif
 
-#if defined(EXTI_PR1_PIF0) && !defined(EXTI_PR_PR0)
+#if !defined(RCC_APB1ENR_TIM2EN) && defined(RCC_APBENR1_TIM2EN_Pos)
+# define APB1ENR APBENR1
+# define RCC_APB1ENR_TIM2EN   RCC_APBENR1_TIM2EN
+# define RCC_APB1ENR_TIM3EN   RCC_APBENR1_TIM3EN
+# define RCC_APB1ENR_TIM6EN   RCC_APBENR1_TIM6EN
+# define RCC_APB1ENR_TIM7EN   RCC_APBENR1_TIM7EN
+# define RCC_APB1ENR_SPI2EN   RCC_APBENR1_SPI2EN
+# define RCC_APB1ENR_SPI3EN   RCC_APBENR1_SPI3EN
+# define RCC_APB1ENR_USART2EN RCC_APBENR1_USART2EN
+# define RCC_APB1ENR_USART3EN RCC_APBENR1_USART3EN
+# define RCC_APB1ENR_UART4EN  RCC_APBENR1_USART4EN
+# define RCC_APB1ENR_I2C1EN   RCC_APBENR1_I2C1EN
+# define RCC_APB1ENR_I2C2EN   RCC_APBENR1_I2C2EN
+# define RCC_APB1ENR_PWREN    RCC_APBENR1_PWREN
+# define RCC_APB1ENR_DAC1EN   RCC_APBENR1_DAC1EN
+
+# define APB1RSTR APBRSTR1
+# define RCC_APB1RSTR_TIM2RST   RCC_APBRSTR1_TIM2RST
+# define RCC_APB1RSTR_TIM3RST   RCC_APBRSTR1_TIM3RST
+# define RCC_APB1RSTR_TIM6RST   RCC_APBRSTR1_TIM6RST
+# define RCC_APB1RSTR_TIM7RST   RCC_APBRSTR1_TIM7RST
+# define RCC_APB1RSTR_SPI2RST   RCC_APBRSTR1_SPI2RST
+# define RCC_APB1RSTR_SPI3RST   RCC_APBRSTR1_SPI3RST
+# define RCC_APB1RSTR_USART2RST RCC_APBRSTR1_USART2RST
+# define RCC_APB1RSTR_USART3RST RCC_APBRSTR1_USART3RST
+# define RCC_APB1RSTR_UART4RST  RCC_APBRSTR1_USART4RST
+# define RCC_APB1RSTR_I2C1RST   RCC_APBRSTR1_I2C1RST
+# define RCC_APB1RSTR_I2C2RST   RCC_APBRSTR1_I2C2RST
+# define RCC_APB1RSTR_PWRRST    RCC_APBRSTR1_PWRRST
+# define RCC_APB1RSTR_DAC1RST   RCC_APBRSTR1_DAC1RST
+
+#endif
+
+#if defined(USART_CR1_TXEIE_TXFNFIE) && !defined(USART_CR1_TXEIE)
+# define USART_CR1_TXEIE  USART_CR1_TXEIE_TXFNFIE
+# define USART_CR1_RXNEIE USART_CR1_RXNEIE_RXFNEIE
+# define USART_ISR_TXE    USART_ISR_TXE_TXFNF
+# define USART_ISR_RXNE   USART_ISR_RXNE_RXFNE
+#endif
+
+#if defined(EXTI_RPR1_RPIF0) && !defined(EXTI_PR_PR0)
+# define EXTI_IMR  (EXTI->IMR1)
+# define EXTI_FTSR (EXTI->FTSR1)
+# define EXTI_RTSR (EXTI->RTSR1)
+#elif defined(EXTI_PR1_PIF0) && !defined(EXTI_PR_PR0)
 # define EXTI_PR   (EXTI->PR1)
 # define EXTI_IMR  (EXTI->IMR1)
 # define EXTI_FTSR (EXTI->FTSR1)

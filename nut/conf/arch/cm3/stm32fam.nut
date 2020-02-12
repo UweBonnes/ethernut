@@ -1,6 +1,6 @@
 --
 -- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
--- Copyright (C) 2011-2018 Uwe Bonnes
+-- Copyright (C) 2011-2020 Uwe Bonnes
 --                         (bon@elektron.ikp.physik.tu-darmstadt.de)
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -290,13 +290,20 @@ nutarch_cm3_stm32_family =
         requires = {"HW_MCU_STM32G0"},
         description = "ST Microelectronics STM32 G0 Series",
         sources = {
-            "cm3/dev/stm/stm32l4_clk.c",
+            "cm3/dev/stm/stm32g0_clk.c",
             "cm3/dev/stm/stm32l4_flash.c",
         },
-        makedefs = {"MCU=cortex-m4"},
+        makedefs = {"MCU=cortex-m0plus"},
         script = "arch/cm3/generated/stm32g0.nut",
         options =
         {
+            {
+                macro = "MCU_CM_NO_BITBAND",
+                brief = "No Bitbanding",
+                description = "Selected family has no bitband support",
+                default = 1,
+                file = "include/cfg/arch.h"
+            },
             {
                 macro = "MCU_STM32G0",
                 brief = "STM32G0 common devices",
@@ -308,7 +315,7 @@ nutarch_cm3_stm32_family =
 -- Todo: FLASH_WRPROT
                     "HW_VOS_STM32",
                     "HW_ICACHE_STM32",
-                    "HW_RTC_STM32_V2",
+--                    "HW_RTC_STM32_V2",
                     "HW_GPIO_STM32V2",
                     "HW_DMA1_STM32F1",
                     "HW_I2C_STM32V2",

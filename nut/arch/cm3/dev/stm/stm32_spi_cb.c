@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015-2017
+ *  Copyright (C) 2015-2018, 2020
  *               Uwe Bonnes(bon@elektron.ikp.physik.tu-darmstadt.de).
  *
  * Redistribution and use in source and binary forms, with or without
@@ -707,8 +707,13 @@ STM32_SPI_ICB Stm32Spi1Icb = {
     .remap_mask = AFIO_MAPR_SPI1_REMAP,
     .remap_value = SPI1_REMAP * AFIO_MAPR_SPI1_REMAP,
 #endif
+#if defined(RCC_APBENR2_SPI1EN)
+    .enable_reg = &RCC->APBENR2,
+    .enable_mask = RCC_APBENR2_SPI1EN,
+#else
     .enable_reg = &RCC->APB2ENR,
     .enable_mask = RCC_APB2ENR_SPI1EN,
+#endif
     .dma_tx_irq = DMA_CH2IRQ_P(SPI1_DMA_TX),
     .dma_rx_irq = DMA_CH2IRQ_P(SPI1_DMA_RX),
     .dma_tx = SPI1_DMA_TX,
@@ -767,8 +772,13 @@ STM32_SPI_ICB Stm32Spi2Icb = {
     .remap_mask = 0,
     .remap_value = 0,
 #endif
+#if defined(RCC_APBENR1_SPI2EN)
+    .enable_reg = &RCC->APBENR1,
+    .enable_mask = RCC_APBENR1_SPI2EN,
+#else
     .enable_reg = &RCC->APB1ENR,
     .enable_mask = RCC_APB1ENR_SPI2EN,
+#endif
     .dma_tx_irq = DMA_CH2IRQ_P(SPI2_DMA_TX),
     .dma_rx_irq = DMA_CH2IRQ_P(SPI2_DMA_RX),
     .dma_tx = SPI2_DMA_TX,

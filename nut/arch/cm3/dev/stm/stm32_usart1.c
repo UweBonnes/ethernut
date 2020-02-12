@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2015 Uwe Bonnes bon@elektron.ikp,physik.tu-darmdstadt.de
+ * Copyright (C) 2012-2020 Uwe Bonnes bon@elektron.ikp,physik.tu-darmdstadt.de
  *
  * All rights reserved.
  *
@@ -161,12 +161,21 @@ static void Stm32F1UsartRemap(void)
  */
 static void  StmUsartClkEnable(int enable)
 {
+#if defined(RCC_APBENR2_USART1EN)
+    if (enable)
+        RCC->APBENR2 |= RCC_APBENR2_USART1EN;
+    RCC->APBRSTR2 |= RCC_APBRSTR2_USART1RST;
+    RCC->APBRSTR2 &= ~RCC_APBRSTR2_USART1RST;
+    if (!enable)
+        RCC->APBENR2 &= ~RCC_APBENR2_USART1EN;
+#else
     if (enable)
         RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
     RCC->APB2RSTR |= RCC_APB2RSTR_USART1RST;
     RCC->APB2RSTR &= ~RCC_APB2RSTR_USART1RST;
     if (!enable)
         RCC->APB2ENR &= ~RCC_APB2ENR_USART1EN;
+#endif
 }
 
 #ifdef USART1_INIT_BAUDRATE

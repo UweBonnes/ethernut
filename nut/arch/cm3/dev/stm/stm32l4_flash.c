@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 - 2019 Uwe Bonnes
+ * Copyright (C) 2015 - 2020 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -244,12 +244,14 @@ static FLASH_Status FlashErasePage(int sector)
             FLASH->CR = cr;
             FLASH->CR = cr | FLASH_CR_STRT;
             rs = FlashWaitReady();
+#if defined(FLASH_ACR_DCEN)
             /* D-Cache was filled with page empty check above.
              * Reset D-Cache so that compare gets good data.*/
             uint32_t acr = FLASH->ACR;
             FLASH->ACR = acr & ~FLASH_ACR_DCEN;
             FLASH->ACR |= FLASH_ACR_DCRST;
             FLASH->ACR = acr;
+#endif
             if (rs != FLASH_COMPLETE) {
                 return rs;
             }

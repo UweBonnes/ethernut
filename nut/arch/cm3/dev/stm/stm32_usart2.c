@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2012-2020 Uwe Bonnes bon@elektron.ikp,physik.tu-darmdstadt.de
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -162,7 +163,14 @@ static void Stm32F1UsartRemap(void)
 
 static void  StmUsartClkEnable(int enable)
 {
-#if defined(RCC_APB1LENR_USART2EN)
+#if defined(RCC_APBENR1_USART2EN)
+    if (enable)
+        RCC->APBENR1 |= RCC_APBENR1_USART2EN;
+    RCC->APBRSTR1 |= RCC_APBRSTR1_USART2RST;
+    RCC->APBRSTR1 &= ~RCC_APBRSTR1_USART2RST;
+    if (!enable)
+        RCC->APBENR1 &= ~RCC_APBENR1_USART2EN;
+#elif defined(RCC_APB1LENR_USART2EN)
     if (enable)
         RCC->APB1LENR |= RCC_APB1LENR_USART2EN;
     RCC->APB1LRSTR |= RCC_APB1LRSTR_USART2RST;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2017, 2018 Uwe Bonnes bon@elektron.ikp,physik.tu-darmdstadt.de
+ * Copyright (C) 2017-2020 Uwe Bonnes bon@elektron.ikp,physik.tu-darmdstadt.de
  *
  * All rights reserved.
  *
@@ -153,6 +153,13 @@ static void  StmUsartClkEnable(int enable)
     RCC->APB1RSTR2 &= ~RCC_APB1RSTR2_LPUART1RST;
     if (!enable)
         RCC->APB1ENR2 &= ~RCC_APB1ENR2_LPUART1EN;
+#elif defined(RCC_APBENR1_LPUART1EN)
+    if (enable)
+        RCC->APBENR1 |= RCC_APBENR1_LPUART1EN;
+    RCC->APBRSTR1 |= RCC_APBRSTR1_LPUART1RST;
+    RCC->APBRSTR1 &= ~RCC_APBRSTR1_LPUART1RST;
+    if (!enable)
+        RCC->APBENR1 &= ~RCC_APBENR1_LPUART1EN;
 #elif defined(RCC_APB4ENR_LPUART1EN)
     if (enable)
         RCC->APB4ENR |= RCC_APB4ENR_LPUART1EN;
