@@ -110,8 +110,14 @@
 # define SW1_PIN  13
 #endif
 
-#ifndef SW1_ACTIVE_LOW
-# define SW1_ACTIVE_LOW
+#if defined(MCU_STM32G474xE)
+# ifndef SW1_ACTIVE_LOW
+#  define SW1_ACTIVE_HIGH
+# endif
+#else
+# ifndef SW1_ACTIVE_HIGH
+#  define SW1_ACTIVE_LOW
+# endif
 #endif
 
 #define HAS_ARDUINO_CONNECTOR
