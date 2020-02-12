@@ -1709,6 +1709,24 @@ nutarch =
                 makedefs = {"FLASH0_LENGTH=512k"}
             },
             {
+                macro = "MCU_STM32G071xB",
+                brief = "STM STM32G071",
+                description = "STM32G0.",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32G0",
+                    "HW_MCU_STM32G07",
+                    "HW_MCU_STM32G071xx",
+                },
+                makedefs = {"FLASH0_LENGTH=128k"}
+            },
+            {
                 macro = "MCU_STM32H743xI",
                 brief = "STM STM32H743 2 MB",
                 description = "STM32H743xI.",

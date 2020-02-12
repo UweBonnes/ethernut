@@ -285,6 +285,63 @@ nutarch_cm3_stm32_family =
          }
     },
     {
+        name = "nutarch_cm3_stm32g0",
+        brief = "STM32G0",
+        requires = {"HW_MCU_STM32G0"},
+        description = "ST Microelectronics STM32 G0 Series",
+        sources = {
+            "cm3/dev/stm/stm32l4_clk.c",
+            "cm3/dev/stm/stm32l4_flash.c",
+        },
+        makedefs = {"MCU=cortex-m4"},
+        script = "arch/cm3/generated/stm32g0.nut",
+        options =
+        {
+            {
+                macro = "MCU_STM32G0",
+                brief = "STM32G0 common devices",
+                description = "Provides devices common in all STM32G0 devices.",
+                default = 1,
+                provides =
+                {
+                   "HW_EEPROM_EMUL_STM32",
+-- Todo: FLASH_WRPROT
+                    "HW_VOS_STM32",
+                    "HW_ICACHE_STM32",
+                    "HW_RTC_STM32_V2",
+                    "HW_GPIO_STM32V2",
+                    "HW_DMA1_STM32F1",
+                    "HW_I2C_STM32V2",
+                    "HW_USART_STM32V2",
+                },
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "MCU_STM32G03",
+                brief = "STM32G03x/04x.",
+                description = "Provides common devices in G03x/G04x",
+                default = 1,
+                requires = {"HW_MCU_STM32G03"},
+                file = "include/cfg/arch.h",
+                makedefs = {
+                   "RAM0_LENGTH=8k",
+                },
+            },
+            {
+                macro = "MCU_STM32G07",
+                brief = "STM32G07x/08x.",
+                description = "Provides common devices in G07x/G08x",
+                default = 1,
+                requires = {"HW_MCU_STM32G07"},
+                file = "include/cfg/arch.h",
+                makedefs = {
+                   "RAM0_LENGTH=32k",
+-- FIXME: Dfferentiate between ECC and non-ECC enabled state.
+                },
+            },
+         }
+    },
+    {
         name = "nutarch_cm3_stm32g4",
         brief = "STM32G4",
         requires = { "HW_MCU_STM32G4" },
