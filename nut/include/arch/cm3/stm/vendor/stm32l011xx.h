@@ -492,14 +492,14 @@ typedef struct
 /** @addtogroup Peripheral_memory_map
   * @{
   */
-#define FLASH_BASE             ((uint32_t)0x08000000U) /*!< FLASH base address in the alias region */
-#define FLASH_END              ((uint32_t)0x08003FFFU) /*!< FLASH end address in the alias region */
-#define DATA_EEPROM_BASE       ((uint32_t)0x08080000U) /*!< DATA_EEPROM base address in the alias region */
-#define DATA_EEPROM_END        ((uint32_t)0x080801FFU) /*!< DATA EEPROM end address in the alias region */
-#define SRAM_BASE              ((uint32_t)0x20000000U) /*!< SRAM base address in the alias region */
-#define SRAM_SIZE_MAX          ((uint32_t)0x00000800U) /*!< maximum SRAM size (up to 2KBytes) */
+#define FLASH_BASE             (          0x08000000U) /*!< FLASH base address in the alias region */
+#define FLASH_END              (          0x08003FFFU) /*!< FLASH end address in the alias region */
+#define DATA_EEPROM_BASE       (          0x08080000U) /*!< DATA_EEPROM base address in the alias region */
+#define DATA_EEPROM_END        (          0x080801FFU) /*!< DATA EEPROM end address in the alias region */
+#define SRAM_BASE              (          0x20000000U) /*!< SRAM base address in the alias region */
+#define SRAM_SIZE_MAX          (          0x00000800U) /*!< maximum SRAM size (up to 2KBytes) */
 
-#define PERIPH_BASE            ((uint32_t)0x40000000U) /*!< Peripheral base address in the alias region */
+#define PERIPH_BASE            (          0x40000000U) /*!< Peripheral base address in the alias region */
 
 /*!< Peripheral memory map */
 #define APBPERIPH_BASE        PERIPH_BASE
@@ -538,9 +538,9 @@ typedef struct
 
 #define RCC_BASE              (AHBPERIPH_BASE + 0x00001000U)
 #define FLASH_R_BASE          (AHBPERIPH_BASE + 0x00002000U) /*!< FLASH registers base address */
-#define OB_BASE               ((uint32_t)0x1FF80000U)        /*!< FLASH Option Bytes base address */
-#define FLASHSIZE_BASE        ((uint32_t)0x1FF8007CU)        /*!< FLASH Size register base address */
-#define UID_BASE              ((uint32_t)0x1FF80050U)        /*!< Unique device ID register base address  */
+#define OB_BASE               (          0x1FF80000U)        /*!< FLASH Option Bytes base address */
+#define FLASHSIZE_BASE        (          0x1FF8007CU)        /*!< FLASH Size register base address */
+#define UID_BASE              (          0x1FF80050U)        /*!< Unique device ID register base address  */
 #define CRC_BASE              (AHBPERIPH_BASE + 0x00003000U)
 
 #define GPIOA_BASE            (IOPPERIPH_BASE + 0x00000000U)

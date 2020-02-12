@@ -13341,19 +13341,19 @@ typedef struct {
 #define TAMP_CR2_TAMP3TRG            TAMP_CR2_TAMP3TRG_Msk
 
 /********************  Bits definition for TAMP_FLTCR register  ***************/
-#define TAMP_FLTCR_TAMPFREQ_0        ((uint32_t)0x00000001)
-#define TAMP_FLTCR_TAMPFREQ_1        ((uint32_t)0x00000002)
-#define TAMP_FLTCR_TAMPFREQ_2        ((uint32_t)0x00000004)
+#define TAMP_FLTCR_TAMPFREQ_0        (          0x00000001)
+#define TAMP_FLTCR_TAMPFREQ_1        (          0x00000002)
+#define TAMP_FLTCR_TAMPFREQ_2        (          0x00000004)
 #define TAMP_FLTCR_TAMPFREQ_Pos      (0U)
 #define TAMP_FLTCR_TAMPFREQ_Msk      (0x7UL << TAMP_FLTCR_TAMPFREQ_Pos)        /*!< 0x00000007 */
 #define TAMP_FLTCR_TAMPFREQ          TAMP_FLTCR_TAMPFREQ_Msk
-#define TAMP_FLTCR_TAMPFLT_0         ((uint32_t)0x00000008)
-#define TAMP_FLTCR_TAMPFLT_1         ((uint32_t)0x00000010)
+#define TAMP_FLTCR_TAMPFLT_0         (          0x00000008)
+#define TAMP_FLTCR_TAMPFLT_1         (          0x00000010)
 #define TAMP_FLTCR_TAMPFLT_Pos       (3U)
 #define TAMP_FLTCR_TAMPFLT_Msk       (0x3UL << TAMP_FLTCR_TAMPFLT_Pos)         /*!< 0x00000018 */
 #define TAMP_FLTCR_TAMPFLT           TAMP_FLTCR_TAMPFLT_Msk
-#define TAMP_FLTCR_TAMPPRCH_0        ((uint32_t)0x00000020)
-#define TAMP_FLTCR_TAMPPRCH_1        ((uint32_t)0x00000040)
+#define TAMP_FLTCR_TAMPPRCH_0        (          0x00000020)
+#define TAMP_FLTCR_TAMPPRCH_1        (          0x00000040)
 #define TAMP_FLTCR_TAMPPRCH_Pos      (5U)
 #define TAMP_FLTCR_TAMPPRCH_Msk      (0x3UL << TAMP_FLTCR_TAMPPRCH_Pos)        /*!< 0x00000060 */
 #define TAMP_FLTCR_TAMPPRCH          TAMP_FLTCR_TAMPPRCH_Msk

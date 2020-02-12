@@ -10305,104 +10305,104 @@ typedef struct
 /*                                                                            */
 /******************************************************************************/
 /*******************  Bit definition for AES_CR register  *********************/
-#define  AES_CR_EN                           ((uint32_t)0x00000001U)        /*!< AES Enable */
-#define  AES_CR_DATATYPE                     ((uint32_t)0x00000006U)        /*!< Data type selection */
-#define  AES_CR_DATATYPE_0                   ((uint32_t)0x00000002U)        /*!< Bit 0 */
-#define  AES_CR_DATATYPE_1                   ((uint32_t)0x00000004U)        /*!< Bit 1 */
+#define  AES_CR_EN                           (          0x00000001U)        /*!< AES Enable */
+#define  AES_CR_DATATYPE                     (          0x00000006U)        /*!< Data type selection */
+#define  AES_CR_DATATYPE_0                   (          0x00000002U)        /*!< Bit 0 */
+#define  AES_CR_DATATYPE_1                   (          0x00000004U)        /*!< Bit 1 */
 
-#define  AES_CR_MODE                         ((uint32_t)0x00000018U)        /*!< AES Mode Of Operation */
-#define  AES_CR_MODE_0                       ((uint32_t)0x00000008U)        /*!< Bit 0 */
-#define  AES_CR_MODE_1                       ((uint32_t)0x00000010U)        /*!< Bit 1 */
+#define  AES_CR_MODE                         (          0x00000018U)        /*!< AES Mode Of Operation */
+#define  AES_CR_MODE_0                       (          0x00000008U)        /*!< Bit 0 */
+#define  AES_CR_MODE_1                       (          0x00000010U)        /*!< Bit 1 */
 
-#define  AES_CR_CHMOD                        ((uint32_t)0x00010060U)        /*!< AES Chaining Mode */
-#define  AES_CR_CHMOD_0                      ((uint32_t)0x00000020U)        /*!< Bit 0 */
-#define  AES_CR_CHMOD_1                      ((uint32_t)0x00000040U)        /*!< Bit 1 */
-#define  AES_CR_CHMOD_2                      ((uint32_t)0x00010000U)        /*!< Bit 2 */
+#define  AES_CR_CHMOD                        (          0x00010060U)        /*!< AES Chaining Mode */
+#define  AES_CR_CHMOD_0                      (          0x00000020U)        /*!< Bit 0 */
+#define  AES_CR_CHMOD_1                      (          0x00000040U)        /*!< Bit 1 */
+#define  AES_CR_CHMOD_2                      (          0x00010000U)        /*!< Bit 2 */
 
-#define  AES_CR_CCFC                         ((uint32_t)0x00000080U)        /*!< Computation Complete Flag Clear */
-#define  AES_CR_ERRC                         ((uint32_t)0x00000100U)        /*!< Error Clear */
-#define  AES_CR_CCFIE                        ((uint32_t)0x00000200U)        /*!< Computation Complete Flag Interrupt Enable */
-#define  AES_CR_ERRIE                        ((uint32_t)0x00000400U)        /*!< Error Interrupt Enable */
-#define  AES_CR_DMAINEN                      ((uint32_t)0x00000800U)        /*!< Enable data input phase DMA management  */
-#define  AES_CR_DMAOUTEN                     ((uint32_t)0x00001000U)        /*!< Enable data output phase DMA management */
+#define  AES_CR_CCFC                         (          0x00000080U)        /*!< Computation Complete Flag Clear */
+#define  AES_CR_ERRC                         (          0x00000100U)        /*!< Error Clear */
+#define  AES_CR_CCFIE                        (          0x00000200U)        /*!< Computation Complete Flag Interrupt Enable */
+#define  AES_CR_ERRIE                        (          0x00000400U)        /*!< Error Interrupt Enable */
+#define  AES_CR_DMAINEN                      (          0x00000800U)        /*!< Enable data input phase DMA management  */
+#define  AES_CR_DMAOUTEN                     (          0x00001000U)        /*!< Enable data output phase DMA management */
 
-#define  AES_CR_GCMPH                         ((uint32_t)0x00006000U)        /*!< GCM Phase */
-#define  AES_CR_GCMPH_0                       ((uint32_t)0x00002000U)        /*!< Bit 0 */
-#define  AES_CR_GCMPH_1                       ((uint32_t)0x00004000U)        /*!< Bit 1 */
+#define  AES_CR_GCMPH                         (          0x00006000U)        /*!< GCM Phase */
+#define  AES_CR_GCMPH_0                       (          0x00002000U)        /*!< Bit 0 */
+#define  AES_CR_GCMPH_1                       (          0x00004000U)        /*!< Bit 1 */
 
-#define  AES_CR_KEYSIZE                       ((uint32_t)0x00040000U)        /*!< Key size selection */
+#define  AES_CR_KEYSIZE                       (          0x00040000U)        /*!< Key size selection */
 
 /*******************  Bit definition for AES_SR register  *********************/
-#define  AES_SR_CCF                          ((uint32_t)0x00000001U)        /*!< Computation Complete Flag */
-#define  AES_SR_RDERR                        ((uint32_t)0x00000002U)        /*!< Read Error Flag */
-#define  AES_SR_WRERR                        ((uint32_t)0x00000004U)        /*!< Write Error Flag */
-#define  AES_SR_BUSY                         ((uint32_t)0x00000008U)        /*!< Busy Flag */
+#define  AES_SR_CCF                          (          0x00000001U)        /*!< Computation Complete Flag */
+#define  AES_SR_RDERR                        (          0x00000002U)        /*!< Read Error Flag */
+#define  AES_SR_WRERR                        (          0x00000004U)        /*!< Write Error Flag */
+#define  AES_SR_BUSY                         (          0x00000008U)        /*!< Busy Flag */
 
 /*******************  Bit definition for AES_DINR register  *******************/
-#define  AES_DINR                            ((uint32_t)0xFFFFFFFFU)        /*!< AES Data Input Register */
+#define  AES_DINR                            (          0xFFFFFFFFU)        /*!< AES Data Input Register */
 
 /*******************  Bit definition for AES_DOUTR register  ******************/
-#define  AES_DOUTR                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Data Output Register */
+#define  AES_DOUTR                           (          0xFFFFFFFFU)        /*!< AES Data Output Register */
 
 /*******************  Bit definition for AES_KEYR0 register  ******************/
-#define  AES_KEYR0                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 0 */
+#define  AES_KEYR0                           (          0xFFFFFFFFU)        /*!< AES Key Register 0 */
 
 /*******************  Bit definition for AES_KEYR1 register  ******************/
-#define  AES_KEYR1                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 1 */
+#define  AES_KEYR1                           (          0xFFFFFFFFU)        /*!< AES Key Register 1 */
 
 /*******************  Bit definition for AES_KEYR2 register  ******************/
-#define  AES_KEYR2                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 2 */
+#define  AES_KEYR2                           (          0xFFFFFFFFU)        /*!< AES Key Register 2 */
 
 /*******************  Bit definition for AES_KEYR3 register  ******************/
-#define  AES_KEYR3                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 3 */
+#define  AES_KEYR3                           (          0xFFFFFFFFU)        /*!< AES Key Register 3 */
 
 /*******************  Bit definition for AES_KEYR4 register  ******************/
-#define  AES_KEYR4                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 4 */
+#define  AES_KEYR4                           (          0xFFFFFFFFU)        /*!< AES Key Register 4 */
 
 /*******************  Bit definition for AES_KEYR5 register  ******************/
-#define  AES_KEYR5                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 5 */
+#define  AES_KEYR5                           (          0xFFFFFFFFU)        /*!< AES Key Register 5 */
 
 /*******************  Bit definition for AES_KEYR6 register  ******************/
-#define  AES_KEYR6                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 6 */
+#define  AES_KEYR6                           (          0xFFFFFFFFU)        /*!< AES Key Register 6 */
 
 /*******************  Bit definition for AES_KEYR7 register  ******************/
-#define  AES_KEYR7                           ((uint32_t)0xFFFFFFFFU)        /*!< AES Key Register 7 */
+#define  AES_KEYR7                           (          0xFFFFFFFFU)        /*!< AES Key Register 7 */
 
 /*******************  Bit definition for AES_IVR0 register   ******************/
-#define  AES_IVR0                            ((uint32_t)0xFFFFFFFFU)        /*!< AES Initialization Vector Register 0 */
+#define  AES_IVR0                            (          0xFFFFFFFFU)        /*!< AES Initialization Vector Register 0 */
 
 /*******************  Bit definition for AES_IVR1 register   ******************/
-#define  AES_IVR1                            ((uint32_t)0xFFFFFFFFU)        /*!< AES Initialization Vector Register 1 */
+#define  AES_IVR1                            (          0xFFFFFFFFU)        /*!< AES Initialization Vector Register 1 */
 
 /*******************  Bit definition for AES_IVR2 register   ******************/
-#define  AES_IVR2                            ((uint32_t)0xFFFFFFFFU)        /*!< AES Initialization Vector Register 2 */
+#define  AES_IVR2                            (          0xFFFFFFFFU)        /*!< AES Initialization Vector Register 2 */
 
 /*******************  Bit definition for AES_IVR3 register   ******************/
-#define  AES_IVR3                            ((uint32_t)0xFFFFFFFFU)        /*!< AES Initialization Vector Register 3 */
+#define  AES_IVR3                            (          0xFFFFFFFFU)        /*!< AES Initialization Vector Register 3 */
 
 /*******************  Bit definition for AES_SUSP0R register  ******************/
-#define  AES_SUSP0R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 0 */
+#define  AES_SUSP0R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 0 */
 
 /*******************  Bit definition for AES_SUSP1R register  ******************/
-#define  AES_SUSP1R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 1 */
+#define  AES_SUSP1R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 1 */
 
 /*******************  Bit definition for AES_SUSP2R register  ******************/
-#define  AES_SUSP2R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 2 */
+#define  AES_SUSP2R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 2 */
 
 /*******************  Bit definition for AES_SUSP3R register  ******************/
-#define  AES_SUSP3R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 3 */
+#define  AES_SUSP3R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 3 */
 
 /*******************  Bit definition for AES_SUSP4R register  ******************/
-#define  AES_SUSP4R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 4 */
+#define  AES_SUSP4R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 4 */
 
 /*******************  Bit definition for AES_SUSP5R register  ******************/
-#define  AES_SUSP5R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 5 */
+#define  AES_SUSP5R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 5 */
 
 /*******************  Bit definition for AES_SUSP6R register  ******************/
-#define  AES_SUSP6R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 6 */
+#define  AES_SUSP6R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 6 */
 
 /*******************  Bit definition for AES_SUSP7R register  ******************/
-#define  AES_SUSP7R                          ((uint32_t)0xFFFFFFFFU)        /*!< AES Suspend registers 7 */
+#define  AES_SUSP7R                          (          0xFFFFFFFFU)        /*!< AES Suspend registers 7 */
 
 /******************************************************************************/
 /*                                                                            */
