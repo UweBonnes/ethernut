@@ -44,20 +44,24 @@
 #include <arch/cm3.h>
 #include <dev/iap_flash.h>
 
-#define ERASED_PATTERN_64  ((uint64_t)FLASH_ERASED_PATTERN32 << 32 |FLASH_ERASED_PATTERN32)
+#define ERASED_PATTERN_64  ((uint64_t)FLASH_ERASED_PATTERN32 << 32 | FLASH_ERASED_PATTERN32)
 
 uint32_t program_end_raw;
 
-# define FLASH_PAGE_SHIFT 11
-#if defined(FLASH_OPTR_DUALBANK)
-# define FLASH_SIZE (1 << 20)
-static uint8_t bank_split;
-#else
-# define FLASH_SIZE (1 << 18)
-static const uint8_t bank_split = 0xff;
-#endif
+static uint8_t flash_page_shift = 11;
+static uint16_t flash_size;
+#undef FLASH_PAGE_MASK
+#define FLASH_PAGE_MASK ((1 << flash_page_shift) -1)
+#undef FLASH_PAGE_SIZE
+#define FLASH_PAGE_SIZE  (1 << flash_page_shift)
 
-static uint32_t pagelist[FLASH_PAGES_WORDS];
+#define MAX_PAGES_IN_BANK_MASK (FLASH_CR_PNB_Msk >> FLASH_CR_PNB_Pos)
+#if defined(FLASH_CR_BKER)
+# define NUM_PAGES (2 * (MAX_PAGES_IN_BANK_MASK + 1))
+#else
+# define NUM_PAGES      (MAX_PAGES_IN_BANK_MASK + 1)
+#endif
+static uint32_t pagelist[NUM_PAGES / 32];
 
 #define FLASH_KEY1 0x45670123L
 #define FLASH_KEY2 0xCDEF89ABL
@@ -75,8 +79,25 @@ static uint32_t pagelist[FLASH_PAGES_WORDS];
 
 #define FLASH_ALIGNMENT 7
 
+/* Called from init. */
 void FlashUntouch(void)
 {
+    flash_size = (*(__I uint16_t *) FLASHSIZE_BASE & 0xfff);
+#if defined(FLASH_OPTR_DBANK)
+# if defined(FLASH_OPTR_DB1M)
+    if (!(FLASH->OPTR & FLASH_OPTR_DBANK)) {
+        flash_page_shift = 13;
+    } else {
+        flash_page_shift = 12;
+    }
+# else
+    if (!(FLASH->OPTR & FLASH_OPTR_DBANK)) {
+        flash_page_shift = 12;
+    } else {
+        flash_page_shift = 11;
+    }
+# endif
+#endif
     memset(pagelist, 0, sizeof(pagelist));
 }
 
@@ -84,8 +105,8 @@ static uint32_t FlashEnd(void)
 {
     uint32_t size;
     /* Early silicon has only 12 valid bits for the flash size*/
-    size = (*(__I uint16_t *) FLASHSIZE_BASE & 0xfff) * 1024;
-    return FLASH_BASE + size - 1;
+    size = flash_size * 1024;
+    return FLASH_BASE + size;
 }
 
 size_t IapFlashEnd(void)
@@ -96,7 +117,7 @@ size_t IapFlashEnd(void)
 /* Always reserve space for a full parameter set*/
     prog_flash_end -= FLASH_PAGE_SIZE;
 #endif
-    return prog_flash_end;
+    return prog_flash_end - 1;
 }
 
 /*!
@@ -110,7 +131,7 @@ extern size_t __end_rom;
 size_t IapProgramEnd(void)
 {
     size_t program_end = (size_t)&__end_rom;
-    program_end +=  FLASH_PAGE_SIZE - 1;
+    program_end +=  FLASH_PAGE_MASK;
     program_end &=  FLASH_PAGE_MASK;
     return program_end;
 }
@@ -125,20 +146,6 @@ size_t IapPageSize(size_t addr)
 {
     return FLASH_PAGE_SIZE;
 }
-
-#if defined(FLASH_OPTR_DUALBANK)
-/* Look for bank split on 256/512 kiB devices*/
-static void BankSplit(void)
-{
-    uint16_t size;
-    size = *(__I uint16_t *) FLASHSIZE_BASE * 1024;
-    if ((size < 1024) && (FLASH->OPTR & FLASH_OPTR_DUALBANK)) {
-        bank_split = size/2 - 1;
-    } else {
-        bank_split = 0xff;
-    }
-}
-#endif
 
 /*!
   * \brief  Unlocks the FLASH Program Erase Controller.
@@ -206,19 +213,19 @@ static FLASH_Status FlashWaitReady(void)
  *
  * \return FLASH Status: FLASH_COMPLETE or appropriate error.
  */
-static FLASH_Status FlashErasePage(uint16_t sector)
+static FLASH_Status FlashErasePage(int sector)
 {
     FLASH_Status rs = FLASH_COMPLETE;
     uint64_t *content;
     int i;
 
-    content = (uint64_t*)((sector << FLASH_PAGE_SHIFT) + FLASH_BASE);
+    content = (uint64_t*)((sector << flash_page_shift) + FLASH_BASE);
     /* Check, if page really needs erase */
-    for (i = 0; i < (FLASH_PAGE_SIZE / 8) ; i++) {
+    for (i = 0; i < (1 << (flash_page_shift - 3)) ; i++) {
         if (content[i] != ERASED_PATTERN_64)
             break;
     }
-    if ( i >= (FLASH_PAGE_SIZE / 8)) {
+    if ( i >= (1 << (flash_page_shift -3))) {
         rs = FLASH_COMPLETE;
     } else {
         /* Wait for last operation to be completed */
@@ -226,12 +233,14 @@ static FLASH_Status FlashErasePage(uint16_t sector)
         if (rs == FLASH_COMPLETE) {
             uint32_t cr;
 
-            cr = FLASH_CR_PER | ((sector & bank_split) << 3);
-#if defined(FLASH_OPTR_DUALBANK)
-            if (sector > bank_split) {
+            cr = FLASH_CR_PER | ((sector & MAX_PAGES_IN_BANK_MASK) << 3);
+            if (sector > MAX_PAGES_IN_BANK_MASK) {
+#if defined(FLASH_CR_BKER)
                 cr |= FLASH_CR_BKER;
-            }
+ #else
+                return FLASH_ERROR_PG;
 #endif
+            }
             FLASH->CR = cr;
             FLASH->CR = cr | FLASH_CR_STRT;
             rs = FlashWaitReady();
@@ -293,16 +302,10 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
         return FLASH_BOUNDARY;
     }
 
-#if defined(FLASH_OPTR_DUALBANK)
-    if (bank_split == 0) {
-        BankSplit();
-    }
-#endif
-
     /* Check for write protected sectors */
-    sector_start = ((uint32_t)dst - FLASH_BASE) >> FLASH_PAGE_SHIFT;
-    sector_end = ((uint32_t)dst + len - FLASH_BASE - 1) >> FLASH_PAGE_SHIFT;
-    if (sector_end <= bank_split) {
+    sector_start = ((uint32_t)dst - FLASH_BASE) >> flash_page_shift;
+    sector_end = ((uint32_t)dst + len - FLASH_BASE - 1) >> flash_page_shift;
+    if (sector_end <= MAX_PAGES_IN_BANK_MASK) {
         uint8_t area1a_start;
         uint8_t area1a_end;
         uint8_t area1b_start;
@@ -317,15 +320,15 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
             rs = FLASH_ERROR_WRP;
             goto done;
         }
-#if defined(FLASH_OPTR_DUALBANK)
-    } else if (sector_start > bank_split) {
+#if defined(FLASH_CR_BKER)
+    } else if (sector_start > MAX_PAGES_IN_BANK_MASK) {
         uint8_t area2a_start;
         uint8_t area2a_end;
         uint8_t area2b_start;
         uint8_t area2b_end;
 
-        sector_start &= bank_split;
-        sector_end &= bank_split;
+        sector_start &= MAX_PAGES_IN_BANK_MASK;
+        sector_end &= MAX_PAGES_IN_BANK_MASK;
         area2a_start =  FLASH->WRP2AR & FLASH_WRP2AR_WRP2A_STRT;
         area2a_end   = (FLASH->WRP2AR & FLASH_WRP2AR_WRP2A_END) >> 16;
         area2b_start =  FLASH->WRP2BR & FLASH_WRP2BR_WRP2B_STRT;
@@ -361,8 +364,8 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
             goto done;
         }
 
-        sector_start &= bank_split;
-        sector_end &= bank_split;
+        sector_start &= MAX_PAGES_IN_BANK_MASK;
+        sector_end &= MAX_PAGES_IN_BANK_MASK;
         if (((area2a_start <= sector_end) && (area2a_start <= area2a_end)) ||
             ((area2b_start <= sector_end) && (area2b_start <= area2b_end))) {
             rs = FLASH_ERROR_WRP;
@@ -385,8 +388,8 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     }
 
     /* Erase related pages*/
-    sector_start = ((uint32_t)dst - FLASH_BASE) >> FLASH_PAGE_SHIFT;
-    sector_end = ((uint32_t)dst + len - FLASH_BASE - 1) >> FLASH_PAGE_SHIFT;
+    sector_start = ((uint32_t)dst - FLASH_BASE) >> flash_page_shift;
+    sector_end = ((uint32_t)dst + len - FLASH_BASE - 1) >> flash_page_shift;
     for (sector = sector_start; sector <= sector_end; sector ++) {
         int page_was_touched;
 
@@ -404,12 +407,12 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     wptr = (uint64_t *)dst;
     rptr = (const uint64_t *)src;
     rs = FlashWaitReady();
+    uint32_t length = (len + FLASH_ALIGNMENT) & ~FLASH_ALIGNMENT;
     NutEnterCritical();
     FLASH->CR = FLASH_CR_PG; /* Start memory programming.*/
-    uint32_t length = (len + FLASH_ALIGNMENT) & ~FLASH_ALIGNMENT;
     while ((length) && (rs == FLASH_COMPLETE)) {
         /* Check for same data. Care for D-Cache in page erase.*/
-        if (*wptr != *rptr) {
+        if (1 || (*wptr != *rptr)) {
             *wptr = *rptr;
             rs = FlashWaitReady();
             if ((rs != FLASH_COMPLETE) || (*wptr != *rptr)){
@@ -426,6 +429,9 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     }
     FLASH->CR = 0; /* Stop memory programming.*/
     NutExitCritical();
+    if (rs != FLASH_COMPLETE) {
+        return rs;
+    }
     /* Check the written data */
     wptr = (uint64_t *)dst;
     rptr = (const uint64_t *)src;
