@@ -54,8 +54,11 @@
 NUT_RSTTYP NutResetCause(void)
 {
 #if defined(RCC_CSR_RMVF)
-# if !defined(RCC_CSR_PORRSTF)
+# if !defined(RCC_CSR_PORRSTF) && defined RCC_CSR_BORRSTF
 #  define RCC_CSR_PORRSTF RCC_CSR_BORRSTF
+# endif
+# if !defined(RCC_CSR_PORRSTF) && defined RCC_CSR_PWRRSTF
+#  define RCC_CSR_PORRSTF RCC_CSR_PWRRSTF
 # endif
     uint32_t csr = RCC->CSR;
     if (csr & RCC_CSR_PORRSTF)   {
