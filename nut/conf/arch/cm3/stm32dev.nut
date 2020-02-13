@@ -415,42 +415,40 @@ nutarch_cm3_stm32_devices =
     --
     {
         name = "nutarch_cm3_stm32f_usb_can1",
-        brief = "STM32F CAN 1",
+        brief = "STM32F3 USB/CAN1",
         description = "CAN support for STM32F.\n\n"..
                       "CAN bus shares pins and interrupts with USB bus!\n"..
                       "You cannot use them together!",
-        requires = { "HW_USB_CAN1_STM32" },
+        requires = { "HW_USB_HP_CAN_TX_STM32" },
         provides = { "CAN1_STM32" }
     },
     {
         name = "nutarch_cm3_stm32f_usb_can",
-        brief = "STM32F CAN",
+        brief = "STM32F USB/CAN device",
         description = "CAN support for STM32F.\n\n"..
-                      "CAN bus shares pins and interrupts with USB bus!\n"..
+                      "CAN bus shares resources with USB bus!\n"..
                       "You cannot use them together!",
-        requires = { "HW_USB_CAN_STM32" },
+        requires = { "HW_USB_HP_CAN1_TX_STM32" },
         provides = { "CAN1_STM32" }
     },
     {
         name = "nutarch_cm3_stm32f_can",
-        brief = "STM32F CAN",
+        brief = "STM32 CAN device",
         description = "CAN support for STM32F.",
-        requires = { "HW_CAN_STM32" },
+        requires = { "HW_CAN_TX_STM32" },
+        provides = { "CAN1_STM32" }
+    },
+    {
+        name = "nutarch_cm3_stm32_can1_tx",
+        brief = "STM32 CAN1 device",
+        description = "CAN support for STM32F.",
+        requires = { "HW_CAN1_TX_STM32" },
         provides = { "CAN1_STM32" }
     },
     {
         name = "nutarch_cm3_stm32_can1",
-        brief = "STM32F CAN",
-        description = "CAN support for STM32F.",
-        requires = { "HW_CAN1_STM32" },
-        provides = { "CAN1_STM32" }
-    },
-    {
-        name = "nutarch_cm3_stm32f_can1",
-        brief = "STM32F CAN 1",
-        description = "CAN support for STM32F.\n\n"..
-                      "On some devices this bus shares pins and interrupts with USB bus!\n"..
-                      "You cannot use them together!",
+        brief = "STM32 CAN1 support",
+        description = "CAN1 support for STM32.",
         requires = { "CAN1_STM32" },
         provides = { "DEV_CANBUS" },
         sources =
@@ -499,7 +497,7 @@ nutarch_cm3_stm32_devices =
         name = "nutarch_cm3_stm32f_can2",
         brief = "STM32F CAN 2",
         description = "CAN Bus 2 support for STM32F.",
-        requires = { "HW_CAN2_STM32" },
+        requires = { "HW_CAN2_TX_STM32" },
         provides = { "DEV_CANBUS" },
         sources =
         {
@@ -539,7 +537,55 @@ nutarch_cm3_stm32_devices =
                 choices = function ()return GetCan2Rx(); end,
                 default = function ()return GetCan2Rx()[1]; end,
                 file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "CAN2_ACCEPTANCE_FILTERS",
+                brief = "CAN1/2 Filter split",
+                description = "Select CAN1/2 Filter split\n\n"..
+                              "Dual CAN devices have 28 filter banks.\n"..
+                              "Default split is 14",
+                type = "enumerated",
+                choices = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
+                "20", "21", "22", "23", "24", "25", "26", "27", "28" },
+                default = "14",
+                file = "include/cfg/can_dev.h"
             }
+        }
+    },
+    {
+        name = "nutarch_cm3_stm32f_can3",
+        brief = "STM32 CAN 3",
+        description = "CAN Bus 3 support for STM32F.",
+        requires = { "HW_CAN3_TX_STM32" },
+        provides = { "DEV_CANBUS" },
+        sources =
+        {
+--            "cm3/dev/stm/stm32_can.c",
+--            "cm3/dev/stm/stm32_can2.c",
+        },
+        options =
+        {
+            {
+                macro = "CAN3_TX",
+                brief = "CAN3 TX Pin selection",
+                description = "Choose CAN3 TX Pin",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function ()return GetCan3Tx(); end,
+                default = function ()return GetCan3Tx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "CAN3_RX",
+                brief = "CAN3 RX Pin selection",
+                description = "Choose CAN3 RX Pin",
+                requires = { "HW_GPIO_STM32V2" },
+                type = "enumerated",
+                choices = function ()return GetCan3Rx(); end,
+                default = function ()return GetCan3Rx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            },
         }
     },
 

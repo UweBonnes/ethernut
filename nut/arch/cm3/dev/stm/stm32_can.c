@@ -203,7 +203,8 @@ static void STMCanErrorInterrupt( void *arg)
  * \param filter
  * @return 0 if filter could be inserted in the list, CANRESULT else
  *
- * The Filter registers belong to CAN1
+ * Multiple CAN incarnations come as dual device implementations
+ * Can[2*n + 0] carries the filter
  *
  * Filter may be exact 29 bit match(29 E), 29 bit with mask (29M), exact 16 bit (16E) and
  * 11 bit with mask (16M)
@@ -219,34 +220,34 @@ static void STMCanErrorInterrupt( void *arg)
  */
 int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
 {
-    int i, index_start, max_index;
-    uint32_t mode = CAN1->FM1R;
-    uint32_t scale = CAN1->FS1R;
-    uint32_t assignment = CAN1->FFA1R;
-    uint32_t activation = CAN1->FA1R;
+    CAN_TypeDef *CANx = (CAN_TypeDef*)bus->bus_base;
+#if defined(CAN2_BASE)
+    if (bus->bus_base == CAN2_BASE) CANx = CAN1;
+#endif
+    uint32_t mode = CANx->FM1R;
+    uint32_t scale = CANx->FS1R;
+    uint32_t assignment = CANx->FFA1R;
+    uint32_t activation = CANx->FA1R;
     int fifo = (bus->sig_tx_irq)?0:1; /* FIFO1 is reveive only*/
 
-    if (bus->bus_base == CAN1_BASE)
-    {
-        index_start = 0;
-        max_index = (CAN1->FMR)>>8 & 0x3f;
+    int index_start = 0;
+    int  max_index = (CANx->FMR)>>8 & 0x3f;
+#if defined(CAN2_BASE)
+    if (bus->bus_base == CAN2_BASE) { /* No CAN4 yet */
+        index_start = (CANx->FMR)>>8 & 0x3f;
+        max_index = sizeof(CANx->sFilterRegister)/sizeof(CANx->sFilterRegister[0]);
     }
-    else
-    {
-        index_start = (CAN1->FMR)>>8 & 0x3f;
-        max_index = sizeof(CAN1->sFilterRegister)/sizeof(CAN1->sFilterRegister[0]);
-    }
+#endif
 
     if(filter->mask == FILTER_EXPLICIT) /* Explicit*/
     {
         if ((filter-> id) > 0xffff) /* 29 E*/
         {
             uint32_t id_29 =   (filter->id   << 3) | ((filter->id_ext)?4:0) | ((filter->id_rtr)?  2:0);
-            for(i=index_start; i<max_index; i++)
-            {
+            for(int i = index_start; i<max_index; i++) {
                 if (!(activation & (1<<i)))
                 {
-                    CAN_FilterRegister_TypeDef *free_entry = &(CAN1->sFilterRegister[i]);
+                    CAN_FilterRegister_TypeDef *free_entry = &(CANx->sFilterRegister[i]);
                     free_entry->FR1 = id_29;
                     free_entry->FR2 = 0xffffffff;
                     activation |= (1<<i);
@@ -263,10 +264,10 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
                         (      scale & (1<<i)))
                     /* Entry matches type and may have space */
                 {
-                    CAN_FilterRegister_TypeDef *partial_entry = &(CAN1->sFilterRegister[i]);
+                    CAN_FilterRegister_TypeDef *partial_entry = &(CANx->sFilterRegister[i]);
                     if (partial_entry->FR2 == 0xffffffff)
                     {
-                        CAN1->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
+                        CANx->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
                         partial_entry->FR2 = id_29;
                         goto flt_success;
                     }
@@ -276,11 +277,10 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
         else
         {
             uint16_t id_16 = ((filter->id >>16) & 0x7) |((filter->id  & 0x7ff)  << 5) | ((filter->id_ext  )?8:0) | ((filter->id_rtr  )?  0x10:0);
-            for(i=index_start; i<max_index; i++)
-            {
+            for(int i = index_start; i < max_index; i++) {
                 if (!(activation & (1<<i)))
                 {
-                    CAN_FilterRegister_TypeDef *free_entry = &(CAN1->sFilterRegister[i]);
+                    CAN_FilterRegister_TypeDef *free_entry = &(CANx->sFilterRegister[i]);
                     free_entry->FR1 = 0xffff0000 | id_16;
                     free_entry->FR2 = 0xffffffff;
                     activation |= (1<<i);
@@ -298,23 +298,23 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
                     /* Entry matches type and may have space */
                 {
                     /* Only (32 bit) word access to CAN Registers allowed! */
-                    CAN_FilterRegister_TypeDef *partial_entry = &(CAN1->sFilterRegister[i]);
+                    CAN_FilterRegister_TypeDef *partial_entry = &(CANx->sFilterRegister[i]);
                     if ((partial_entry->FR1 & 0xffff0000) == 0xffff0000)
                     {
-                        CAN1->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
+                        CANx->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
                         partial_entry->FR1 &= 0x0000ffff;
                         partial_entry->FR1 |= (id_16 <<16);
                         goto flt_success;
                     }
                     else if (partial_entry->FR2 == 0xffffffff)
                     {
-                        CAN1->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
+                        CANx->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
                         partial_entry->FR2 = 0xffff0000 | id_16;
                         goto flt_success;
                     }
                     else if ((partial_entry->FR2 & 0xffff0000) == 0xffff0000)
                     {
-                        CAN1->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
+                        CANx->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
                         partial_entry->FR2 &= 0x0000ffff;
                         partial_entry->FR2 |= (id_16 <<16);
                         goto flt_success;
@@ -325,12 +325,11 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
     }
     else if ((filter->mask > 0xffff) || /*29M*/
              ((!filter->mask) && filter->id_ext && filter->mask_ext)) /* All extended frames */ {
-        for(i=index_start; i<max_index; i++)
-        {
+        for(int i = index_start; i < max_index; i++) {
             /* find first free entry */
             if (!(activation & (1<<i)))
             {
-                CAN_FilterRegister_TypeDef *free_entry = &(CAN1->sFilterRegister[i]);
+                CAN_FilterRegister_TypeDef *free_entry = &(CANx->sFilterRegister[i]);
                 uint32_t id_29   = (filter->id   << 3) | ((filter->id_ext  )?4:0) | ((filter->id_rtr  )?2:0);
                 uint32_t mask_29 = (filter->mask << 3) | ((filter->mask_ext)?4:0) | ((filter->mask_rtr)?2:0);
                 free_entry->FR1 = id_29;
@@ -348,11 +347,10 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
     } else { /* 16 M or all non-extended Frames*/
         uint16_t id_16   =  ((filter->id  >>16) & 0x7) |((filter->id  & 0x7ff)  << 5) | ((filter->id_ext  )?8:0) | ((filter->id_rtr  )?  0x10:0);
         uint16_t mask_16 =  ((filter->mask>>16) & 0x7) |((filter->mask& 0x7ff)  << 5) | ((filter->mask_ext)?8:0) | ((filter->mask_rtr)?  0x10:0);
-        for(i=index_start; i<max_index; i++)
-        {
+        for(int i=index_start; i < max_index; i++) {
             if (!(activation & (1<<i)))
             {
-                CAN_FilterRegister_TypeDef *free_entry = &(CAN1->sFilterRegister[i]);
+                CAN_FilterRegister_TypeDef *free_entry = &(CANx->sFilterRegister[i]);
                 free_entry->FR1 = (mask_16 << 16) | id_16;
                 free_entry->FR2 = 0xffffffff;
                 activation |= (1<<i);
@@ -370,10 +368,10 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
                     !(      scale & (1<<i)))
                 /* Entry matches type and may have space */
             {
-                CAN_FilterRegister_TypeDef *partial_entry = &(CAN1->sFilterRegister[i]);
+                CAN_FilterRegister_TypeDef *partial_entry = &(CANx->sFilterRegister[i]);
                 if (partial_entry->FR2 == 0xffffffff)
                 {
-                    CAN1->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
+                    CANx->FA1R = (activation & ~(1<<i)); /* Mark entry for writing */
                     partial_entry->FR2 =  (mask_16 << 16) |id_16;
                     goto flt_success;
                  }
@@ -382,12 +380,12 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
     }
     return CAN_ILLEGAL_MOB;
 flt_success:
-    CAN1->FMR = CAN_FMR_FINIT;
-    CAN1->FM1R = mode;
-    CAN1->FS1R = scale;
-    CAN1->FFA1R = assignment;
-    CAN1->FA1R = activation;
-    CAN1->FMR = 0;
+    CANx->FMR = CAN_FMR_FINIT;
+    CANx->FM1R = mode;
+    CANx->FS1R = scale;
+    CANx->FFA1R = assignment;
+    CANx->FA1R = activation;
+    CANx->FMR = 0;
     return 0;
 }
 
