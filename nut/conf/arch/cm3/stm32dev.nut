@@ -590,6 +590,106 @@ nutarch_cm3_stm32_devices =
     },
 
     --
+    -- STM32F FDCAN Configuration
+    --
+    {
+        name = "nutarch_cm3_stm32_fdcan1",
+        brief = "STM32 FDCAN1 support",
+        description = "FDCAN1 support for STM32.",
+        requires = { "HW_FDCAN1_IT1_STM32" },
+        provides = { "DEV_CANBUS", "DEV_FDCANBUS" },
+        sources =
+        {
+--            "cm3/dev/stm/stm32_fdcan.c",
+        },
+        options =
+        {
+            {
+                macro = "FDCAN1_TX",
+                brief = "FDCAN1 TX Pin selection",
+                description = "Choose FDCAN1 TX Pin",
+                type = "enumerated",
+                choices = function ()return GetFdcan1Tx(); end,
+                default = function ()return GetFdcan1Tx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "FDCAN1_RX",
+                brief = "FDCAN1 RX Pin selection",
+                description = "Choose FDCAN1 RX Pin",
+                type = "enumerated",
+                choices = function ()return GetFdcan1Rx(); end,
+                default = function ()return GetFdcan1Rx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            }
+        }
+    },
+    {
+        name = "nutarch_cm3_stm32_fdcan2",
+        brief = "STM32 FDCAN 2",
+        description = "FDCAN Bus 2 support for STM32.",
+        requires = { "HW_FDCAN2_TX_STM32" },
+        provides = { "DEV_FDCANBUS" },
+        sources =
+        {
+--            "cm3/dev/stm/stm32_fdcan.c",
+        },
+        options =
+        {
+            {
+                macro = "FDCAN2_TX",
+                brief = "FDCAN2 TX Pin selection",
+                description = "Choose FDCAN2 TX Pin",
+                type = "enumerated",
+                choices = function ()return GetFdcan2Tx(); end,
+                default = function ()return GetFdcan2Tx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "FDCAN2_RX",
+                brief = "FDCAN2 RX Pin selection",
+                description = "Choose FDCAN2 RX Pin",
+                type = "enumerated",
+                choices = function ()return GetFdcan2Rx(); end,
+                default = function ()return GetFdcan2Rx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            },
+        }
+    },
+    {
+        name = "nutarch_cm3_stm32_fdcan3",
+        brief = "STM32 FDCAN 3",
+        description = "FDCAN Bus 3 support for STM32.",
+        requires = { "HW_FDCAN3_TX_STM32" },
+        provides = { "DEV_FDCANBUS" },
+        sources =
+        {
+--            "cm3/dev/stm/stm32_fdcan.c",
+        },
+        options =
+        {
+            {
+                macro = "FDCAN3_TX",
+                brief = "FDCAN3 TX Pin selection",
+                description = "Choose FDCAN3 TX Pin",
+                type = "enumerated",
+                choices = function ()return GetFdcan3Tx(); end,
+                default = function ()return GetFdcan3Tx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            },
+            {
+                macro = "FDCAN3_RX",
+                brief = "FDCAN3 RX Pin selection",
+                description = "Choose CAN3 RX Pin",
+                type = "enumerated",
+                choices = function ()return GetFdcan3Rx(); end,
+                default = function ()return GetFdcan3Rx()[1]; end,
+                file = "include/cfg/can_dev.h"
+            },
+        }
+    },
+
+    --
     -- STM32F ADC Configuration
     --
     {
