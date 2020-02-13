@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
- * Copyright (C) 2012-2014 by Uwe Bonnes
+ * Copyright (C) 2012-2014, 2020 by Uwe Bonnes
  *                          (bon@elektron.ikp.physik.tu-darmstadt.de)
  *
  *
@@ -323,8 +323,8 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
             }
         }
     }
-    else if (filter->mask > 0xffff) /* 29 M*/
-    {
+    else if ((filter->mask > 0xffff) || /*29M*/
+             ((!filter->mask) && filter->id_ext && filter->mask_ext)) /* All extended frames */ {
         for(i=index_start; i<max_index; i++)
         {
             /* find first free entry */
@@ -345,9 +345,7 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
                 goto flt_success;
             }
         }
-    }
-    else
-    {
+    } else { /* 16 M or all non-extended Frames*/
         uint16_t id_16   =  ((filter->id  >>16) & 0x7) |((filter->id  & 0x7ff)  << 5) | ((filter->id_ext  )?8:0) | ((filter->id_rtr  )?  0x10:0);
         uint16_t mask_16 =  ((filter->mask>>16) & 0x7) |((filter->mask& 0x7ff)  << 5) | ((filter->mask_ext)?8:0) | ((filter->mask_rtr)?  0x10:0);
         for(i=index_start; i<max_index; i++)
@@ -384,10 +382,12 @@ int CanAddFilter( NUTCANBUS *bus, CANFILTER *filter)
     }
     return CAN_ILLEGAL_MOB;
 flt_success:
+    CAN1->FMR = CAN_FMR_FINIT;
     CAN1->FM1R = mode;
     CAN1->FS1R = scale;
     CAN1->FFA1R = assignment;
     CAN1->FA1R = activation;
+    CAN1->FMR = 0;
     return 0;
 }
 
