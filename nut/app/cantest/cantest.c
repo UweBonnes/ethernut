@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2013 Uwe Bonnes, bon@elektron.ikp.physik.tu-darmstadt.de
+ * Copyright (C) 2013, 2020 Uwe Bonnes, bon@elektron.ikp.physik.tu-darmstadt.de
  *
  * All rights reserved.
  *
@@ -56,9 +56,6 @@
 
 static char *banner = "\nNut/OS CANTEST Sample " __DATE__ " " __TIME__"\n";
 
-#define MASTER 0
-#define SLAVE  1
-
 #if defined(DEV_CANBUS)
 THREAD(service_thread, arg)
 {
@@ -93,23 +90,22 @@ THREAD(service_thread, arg)
                    CanGetCounter(&DEV_CANBUS, CAN_OVERRUNS));
             printf("MASTER CAN_ERRORS %d\n",
                    CanGetCounter(&DEV_CANBUS, CAN_ERROR));
-
 #if defined(DEV_CANBUS_SLAVE)
-            printf(" SLAVE CAN_RX_FRAMES %d\n",
+            printf(" COMPANION CAN_RX_FRAMES %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_RX_FRAMES));
-            printf(" SLAVE CAN_TX_FRAMES %d\n",
+            printf(" COMPANION CAN_TX_FRAMES %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_TX_FRAMES));
-            printf(" SLAVE CAN_INTERRUPTS %d\n",
+            printf(" COMPANION CAN_INTERRUPTS %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_INTERRUPTS));
-            printf(" SLAVE CAN_RX_INTERRUPTS %d\n",
+            printf(" COMPANION CAN_RX_INTERRUPTS %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_RX_INTERRUPTS));
-            printf(" SLAVE CAN_TX_INTERRUPTS %d\n",
+            printf(" COMPANION CAN_TX_INTERRUPTS %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_TX_INTERRUPTS));
-            printf(" SLAVE CAN_SCE_INTERRUPTS %d\n",
+            printf(" COMPANION CAN_SCE_INTERRUPTS %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_SCE_INTERRUPTS));
-            printf(" SLAVE CAN_OVERRUNS %d\n",
+            printf(" COMPANION CAN_OVERRUNS %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_OVERRUNS));
-            printf(" SLAVE CAN_ERRORS %d\n",
+            printf(" COMPANION CAN_ERRORS %d\n",
                    CanGetCounter(&DEV_CANBUS_SLAVE, CAN_ERROR));
 #endif
             break;
@@ -139,15 +135,16 @@ THREAD(service_thread, arg)
     }
 }
 
-void print_frame(int type)
+void print_frame(NUTCANBUS *bus)
 {
     int res, i;
     CANFRAME data;
 
-    res = CanInput((type)?&DEV_CANBUS_SLAVE:&DEV_CANBUS, &data);
+    res = CanInput(bus, &data);
     if (res)
     {
-        printf("CanInput %s failed %d\n", (type)?" SLAVE":"MASTER", res);
+        printf("CanInput %s failed %d\n",
+               (bus->sig_tx_irq)? "Master" : "Companion", res);
         while(1) NutSleep(100);
     }
     if (data.ext)
@@ -155,7 +152,7 @@ void print_frame(int type)
     else
         printf("ID      %03lx", data.id);
     printf("%s len %2d%4s%4s",
-           (type)?"  SLAVE ":" MASTER ",
+           (bus->sig_tx_irq)? "Master" : "Companion",
            data.len,
            (data.ext)?" ext":"    ",
            (data.rtr)?" rtr":"    ");
@@ -173,7 +170,7 @@ THREAD(service_thread, arg)
     while(1)
         NutSleep(1);
 }
-void print_frame(int type)
+void print_frame(NUTCANBUS *bus)
 {
 }
 #endif
@@ -226,36 +223,40 @@ int main(void)
     filter.id_ext = 1;
     res = CanAddFilter(&DEV_CANBUS, &filter);
     if (res) {
-        printf("CanAddFilter Slave failed %d\n", res);
+        printf("CanAddFilter Companion failed %d\n", res);
         while(1) NutSleep(100);
     }
 
+    CANFRAME tx = {0};
+    CanOutput(&DEV_CANBUS, &tx);
+    tx.len = 1;
+    tx.byte[0]++;
+    CanOutput(&DEV_CANBUS, &tx);
+    CanEnableRx(&DEV_CANBUS);
 #if defined(DEV_CANBUS_SLAVE)
     res = NutRegisterCanBus( &DEV_CANBUS_SLAVE, -1);
     if (res) {
         printf("NutRegisterCanBus compaignon failed %d\n", res);
         while(1) NutSleep(100);
+    } else {
+        puts("NutRegisterCanBus compaignon succeeded");
     }
-
     /* Receive standard frame with any address on Slave*/
+    filter.mask_ext = 1;
     filter.id_ext = 0;
     res = CanAddFilter(&DEV_CANBUS_SLAVE, &filter);
     if (res) {
         printf("CanAddFilter Master failed %d\n", res);
         while(1) NutSleep(100);
     }
-#endif
-
-    CanEnableRx(&DEV_CANBUS);
-#if defined(DEV_CANBUS_SLAVE)
     CanEnableRx(&DEV_CANBUS_SLAVE);
 #endif
     for (;;) {
         if(CanRxAvail(&DEV_CANBUS))
-           print_frame(MASTER);
+           print_frame(&DEV_CANBUS);
 #if defined(DEV_CANBUS_SLAVE)
         if(CanRxAvail(&DEV_CANBUS_SLAVE))
-           print_frame(SLAVE);
+           print_frame(&DEV_CANBUS_SLAVE);
 #endif
         NutSleep(100);
     }
