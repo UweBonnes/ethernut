@@ -199,7 +199,7 @@ static void I2cEventBusIrqHandler(void *arg)
         icb->icb_i2c->CR1 &= ~I2C_CR1_NACKIE;
         icb->icb_i2c->ICR |=  I2C_ICR_NACKCF;
     }
-#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0) && !defined(MCU_STM32G0)
 
 }
 
@@ -377,7 +377,7 @@ static int I2cBusInit(NUTI2C_BUS *bus)
     if (NutRegisterIrqHandler(icb->icb_sig_ev, I2cEventBusIrqHandler, icb))
         return -1;
     NutIrqEnable(icb->icb_sig_ev);
-#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0) && !defined(MCU_STM32G0)
     if (NutRegisterIrqHandler(icb->icb_sig_er, I2cErrorBusIrqHandler, icb))
         return -1;
     NutIrqDisable(icb->icb_sig_er);
@@ -466,7 +466,7 @@ static STM32_I2CCB i2c1cb = {
     .hw         = &i2c1_hw,
     .icb_i2c    = I2C1,
     .icb_sig_ev = &sig_TWI1_EV,
-#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+#if !defined(MCU_STM32F0) && !defined(MCU_STM32L0) && !defined(MCU_STM32G0)
     .icb_sig_er = &sig_TWI1_ER,
 #endif
 };
@@ -533,7 +533,7 @@ static STM32_I2CCB i2c2cb = {
     .hw         = &i2c2_hw,
     .icb_i2c    = I2C2,
     .icb_sig_ev = &sig_TWI2_EV,
-# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0) && !defined(MCU_STM32G0)
     .icb_sig_er = &sig_TWI2_ER,
 # endif
 };
@@ -602,7 +602,7 @@ static STM32_I2CCB i2c3cb = {
     .hw         = &i2c3_hw,
     .icb_i2c    = I2C3,
     .icb_sig_ev = &sig_TWI3_EV,
-# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0) && !defined(MCU_STM32G0)
     .icb_sig_er = &sig_TWI3_ER,
 # endif
 };
@@ -672,7 +672,7 @@ static STM32_I2CCB i2c4cb = {
     .hw         = &i2c4_hw,
     .icb_i2c    = I2C4,
     .icb_sig_ev = &sig_TWI4_EV,
-# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0)
+# if !defined(MCU_STM32F0) && !defined(MCU_STM32L0) && !defined(MCU_STM32G0)
     .icb_sig_er = &sig_TWI4_ER,
 # endif
 };
