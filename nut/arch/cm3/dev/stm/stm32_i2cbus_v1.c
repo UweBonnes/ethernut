@@ -225,6 +225,10 @@ static void I2cErrorBusIrqHandler(void *arg)
             errors &= ~I2C_SR1_ARLO;
         }
     }
+    if (errors & I2C_SR1_AF) {
+        /* seen when polling SHT21 for data on no hold master mode*/
+        icb->errors |= I2C_SR1_AF;
+    }
     I2Cx->SR1 = 0;
     NutEventPostFromIrq(&icb->icb_queue);
 
@@ -259,7 +263,7 @@ static int I2cBusTran(NUTI2C_SLAVE *slave, NUTI2C_MSG *msg)
     I2Cx->CR1 |= I2C_CR1_START;
     rc = NutEventWait(&icb->icb_queue, slave->slave_timeout);
     I2Cx->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITBUFEN | I2C_CR2_ITERREN);
-    if (!rc && (I2Cx->SR2 & I2C_SR2_BUSY)) {
+    if (!rc && !icb->errors && (I2Cx->SR2 & I2C_SR2_BUSY)) {
         /* Wait some time until busy is released!*/
         int i;
         for (i = 0; (I2Cx->SR2 & I2C_SR2_BUSY) && (i < slave->slave_timeout);
