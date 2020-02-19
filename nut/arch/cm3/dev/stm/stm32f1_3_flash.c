@@ -582,7 +582,8 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
 
 /*!
  * \brief Find the Conf sector
- * Look at last position in each conf page.
+ * Look at last position in each conf page. Last position must
+ * have erased value.
  *
  * \param flash_conf_sector Sector with conf pages.
  *
@@ -595,14 +596,13 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
         (flash_conf_sector + FLASH_CONF_SIZE - FLASH_ACCESS_SIZE);
     /* Find configuration page in CONF_SECTOR. Check limit before
     * memory access!*/
-    while ((conf_page < FLASH_PAGE_SIZE / FLASH_CONF_SIZE) &&
-           (*marker !=  ERASED_PATTERN_16)) {
+    while (*marker !=  ERASED_PATTERN_16) {
         conf_page++;
-        marker += FLASH_PAGE_SIZE / FLASH_ACCESS_SIZE;
-    }
-    if (conf_page >= FLASH_PAGE_SIZE / FLASH_CONF_SIZE) {
-         conf_page = -1;
+        if (conf_page >= FLASH_PAGE_SIZE / FLASH_CONF_SIZE) {
+            return -1;
         }
+        marker += FLASH_CONF_SIZE / FLASH_ACCESS_SIZE;
+    }
     return conf_page;
 }
 
