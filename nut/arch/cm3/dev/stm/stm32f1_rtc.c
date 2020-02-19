@@ -135,7 +135,7 @@ static int Stm32RtcGetAlarm(NUTRTC *rtc, int idx, struct _tm *tm, int *aflags)
     Stm32RtcDbpRst();
     time = RTC->ALRL | (RTC->ALRH << 16);
     if (tm) {
-        localtime_r(&time, tm);
+        gmtime_r(&time, tm);
     }
     if (aflags) {
         uint32_t flags;
@@ -182,7 +182,7 @@ static int Stm32RtcSetAlarm(NUTRTC *rtc, int idx, const struct _tm *tm, int afla
             return -1;
         }
     } else {
-        time = mktime((struct _tm *)tm);
+        time = _mkgmtime((struct _tm *)tm);
     }
     Stm32RtcDbpSet();
     Stm32RtcRtoffPoll();
@@ -293,7 +293,7 @@ static int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
     Stm32RtcSync();
     Stm32RtcDbpRst();
     time=((RTC->CNTL|(RTC->CNTH<<16)));
-    localtime_r(&time,tm);
+    gmtime_r(&time, tm);
     return 0;
 }
 
@@ -313,7 +313,7 @@ static int Stm32RtcSetClock(NUTRTC *rtc, const struct _tm *tm)
    if (!tm) {
        return -1;
    }
-   time = mktime((struct _tm *)tm);
+   time = _mkgmtime((struct _tm *)tm);
    Stm32RtcDbpSet();
    Stm32RtcRtoffPoll();
    rtc_crl[_BI32(RTC_CRL_CNF)] = 1;
