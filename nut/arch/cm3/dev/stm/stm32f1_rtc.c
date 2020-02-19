@@ -249,6 +249,20 @@ static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
     if (time == 0xffffffff) {
         dcb->status |= RTC_STATUS_PF;
     }
+    /* If Wakeup happened, check if RTC Alarm caused wakeup.
+     * RTC Interrupt flag is not set in stop mode!
+     */
+    if (PWR->CSR & PWR_CSR_WUF) {
+        uint32_t rtc, alarm;
+        rtc   = ((RTC->CNTH & 0xffff) << 16) ||  (RTC->CNTL & 0xffff);
+        alarm = ((RTC->ALRH & 0xffff) << 16) ||  (RTC->ALRL & 0xffff);
+        if ((alarm ) && (rtc >= alarm)) {
+            /* Wakeup probably was caused by RTC. Set status and reset flags.*/
+            dcb->status |= RTC_STATUS_AL0;
+            PWR->CR |= PWR_CR_CWUF;
+            EXTI_PR =  (1 << EXTI_RTC_LINE);
+        }
+    }
     if (sflags) {
         *sflags = dcb->status;
         res = 0;
