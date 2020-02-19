@@ -372,6 +372,7 @@ nutarch_cm3_stm32_family =
                    "HW_DMA2_7CH_STM32",
                    "HW_RCC_STM32L",
                    "HW_EEPROM_EMUL_STM32",
+                    "HW_OVERDRIVE_STM32",
 -- Todo: FLASH_WRPROT
                     "HW_VOS_STM32",
                     "HW_ICACHE_STM32",
