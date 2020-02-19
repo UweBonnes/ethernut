@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013, 2015 - 2017 Uwe Bonnes
+ * Copyright (C) 2012, 2013, 2015 - 2018 Uwe Bonnes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,10 +56,10 @@ static const uint8_t sector2mult[MAX_SECTOR_IN_BANK] = {
 #endif
 };
 /* How many smallest sectors fit up to the selected sector */
-static const uint8_t sector2start[MAX_SECTOR_IN_BANK] = {
-    0,  1,  2,  3,  4,  8, 16, 24, 32, 40, 48, 56,
+static const uint8_t sector2start[MAX_SECTOR_IN_BANK + 1] = {
+    0,  1,  2,  3,  4,  8, 16, 24, 32, 40, 48, 56, 64
 #if defined(STM32F413xx)
-    64, 72, 80, 88
+    , 72, 80, 88
 #endif
 };
 
@@ -125,7 +125,7 @@ static uint32_t sectorlist;
 static uint32_t flashsize;
 static uint32_t sectorsize; /* Size of smallest sector.*/
 static int      is_dual_bank;
-static int      has_gap;
+static int      bank_split;
 
 /*!
  *\brief FlashUntouch
@@ -142,20 +142,18 @@ void FlashUntouch(void)
     flashsize = *(uint16_t*)FLASHSIZE_BASE << 10;
     sectorsize = 1 << 14;
     is_dual_bank = 0;
-    has_gap = 0;
+    bank_split = MAX_SECTOR_IN_BANK;
 #if defined(FLASH_OPTCR_DB1M)
-    is_dual_bank = (FLASH->OPTCR & FLASH_OPTCR_DB1M)? 1 : 0;
-    has_gap = 1;
-#elif defined(MCU_STM32F7)
-# if defined(FLASH_OPTCR_nDBANK)
+    if (flashsize > 0x100000) {
+        is_dual_bank = 1;
+    } else if (FLASH->OPTCR & FLASH_OPTCR_DB1M) {
+        is_dual_bank = 1;
+        bank_split = 8;
+    }
+#elif defined(FLASH_OPTCR_nDBANK)
     is_dual_bank = (FLASH->OPTCR & FLASH_OPTCR_nDBANK)? 0 : 1;
-# endif
     if (is_dual_bank == 0) {
         sectorsize = 1 << 15;
-    } else {
-        if (flashsize == 0x100000) {
-            has_gap = 1;
-        }
     }
 #endif
 }
@@ -174,47 +172,50 @@ static FLASH_Status FLASH_Unlock(void)
 
 /*!
  *\brief Calculate sector number and sector length form address
+ * Second bank starts at sector 16!
  * \param Addr Address
  *
  * \return Sector Number
  */
 static uint32_t FlashAddr2Sector(void* Addr)
 {
-    uint32_t sector;
+    uint32_t res = 0;
     uint32_t offset = (uint32_t)Addr - FLASH_BASE;
+    uint32_t sector = offset /sectorsize;
+    int i;
 
-    if (offset < (4 * sectorsize)) {
-        sector = offset / sectorsize;
-    } else if (offset < 8 * sectorsize) {
-        sector = 4;
-#if defined(FLASH_OPTCR_DB1M) || defined(FLASH_OPTCR_nDBANK)
-    } else if (is_dual_bank) {
-        if (has_gap) {
-            /* 1M Byte devices in dual bank mode have a gap in sector count.*/
-            if (offset < 32 * sectorsize) {
-                sector = offset / (8 * sectorsize) + 4;
-            } else {
-                offset = offset - 32 * sectorsize;
-            }
-        } else {
-            if (offset < 64 * sectorsize) {
-                sector = offset / (8 * sectorsize) + 4;
-            } else {
-                offset = offset - 64 * sectorsize;
-            }
+    if (is_dual_bank)  {
+        if (sector >= sector2start[bank_split]) {
+            res = 16;
+            sector -= sector2start[bank_split];
         }
-        if (offset < 4 * sectorsize) {
-            sector = offset / sectorsize + 12;
-        } else if (offset < 8 * sectorsize) {
-            sector = 16;
-        } else {
-            sector = offset / (8 * sectorsize) + 16;
-        }
-#endif
-    } else {
-        sector = offset / (8 * sectorsize) + 4;
     }
-    return sector;
+    for (i = 0; i <= sizeof(sector2start); i++) {
+        if (sector <= sector2start[i]) {
+            res += i;
+            break;
+        }
+    }
+    return res;
+}
+
+/*!
+ *\brief Calculate address from sectors
+ * Second bank starts at sector 16!
+ * \param sector Sector
+ *
+ * \return Addr Adress
+ */
+static uint32_t FlashSector2Addr(int sector)
+{
+    uint32_t res = 0;
+
+    if (sector >= 16) {
+        res = sector2start[bank_split];
+    }
+    res += sector2start[sector % 16];
+    res *= sectorsize;
+    return res;
 }
 
 /*!
@@ -271,39 +272,22 @@ static FLASH_Status FlashEraseSector(uint32_t sector)
     uint32_t flash_cr = FLASH_CR_SER;
     FLASH_Status rs = FLASH_COMPLETE;
 
-    int i;
-    uint32_t *addr;
+    uint32_t addr;
+    uint64_t *data, *end;
     int size;
-    uint32_t offset = 0;
 
-#if defined(FLASH_OPTCR_DB1M) || defined(FLASH_OPTCR_nBANK)
-    /* On STM32F42x/F43x/F46x with 1 MiByte, a dual bank option is available.
-     * When mapped, sectors 7..11 and 19.. 23 are not used and sector 12
-     * starts at offset 0x80000 instead of 0x100000.
-     * All STM32F76x/77x can be configured for dual bank.
-     * On 1 MiByte Devices, sectors 7..11 and 19.. 23 are not used and sector 12
-     * starts at offset 0x80000 instead of 0x100000. */
-    if (sector > 11) {
-        if (has_gap) {
-            offset = 32 * sectorsize;
-        } else {
-            offset = 64 * sectorsize;
-        }
-        flash_cr |= FLASH_CR_SNB_4;
-        sector = sector - 12;
-    }
-#endif
-    addr = (uint32_t *)(FLASH_BASE + offset +
-                        (sector2start[sector] * sectorsize));
+    addr = FLASH_BASE + FlashSector2Addr(sector);
 
-    size = sector2mult[sector] * sectorsize;
+    size = sector2mult[sector % 16] * sectorsize;
     /* Check if sector is already erased by reading DWORDS*/
-    for (i = 0; i < size / 4 ; i++) {
-        if (addr[i] != ERASED_PATTERN_32) {
+    data = (uint64_t*) addr;
+    end =  (uint64_t*) (addr + size);
+    for (; data < end ; ) {
+        if (*data++ != -1LL) {
             break;
         }
     }
-    if (i >= size) {
+    if (data >= end) {
         goto erase_done;
     }
     /* Wait for last operation to be completed */
@@ -360,7 +344,6 @@ static FLASH_Status FlashWrite(void* dst, const void* src, size_t len,
     FLASH_Status rs = FLASH_COMPLETE;
     uint32_t sector_start, sector_end;
     int i;
-    uint32_t optcr = FLASH->OPTCR;
     void *wptr = dst;
     const void *rptr = src;
     uint32_t length = len;
@@ -382,48 +365,59 @@ static FLASH_Status FlashWrite(void* dst, const void* src, size_t len,
     /* Check for write protected sectors */
     sector_start = FlashAddr2Sector(dst);
     sector_end = FlashAddr2Sector(dst + len - 1);
-#if defined(MCU_STM32F7)
-    for (i = sector_start; i <= sector_end; i++) {
-        int j;
-        if (has_gap && (i > 7) && (i < 12)) {
-            /* Skip not available sectors on 1 MiB dual boot devices*/
-            continue;
-        }
-        if (is_dual_bank) {
-            j = i / 2;
-        } else {
-            j = i;
-        }
-        if ((optcr & (1 << (j + _BI32(FLASH_OPTCR_nWRP_0)))) == 0) {
+#if defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+    if (sector_end >= 16) {
+        uint32_t optcr = FLASH->OPTCR1;
+        uint32_t bank2_start = (sector_start < 16) ? 16 : sector_start;
+        for (i = bank2_start;  i <= sector_end; i++) {
+            uint32_t bit = 1 << (i - 16 + FLASH_OPTCR_nWRP_Pos);
+            if ((optcr & bit) == 0) {
                 return FLASH_ERROR_WRP;
+            }
+        }
+        sector_end = bank_split - 1;
+    }
+    uint32_t optcr = FLASH->OPTCR;
+# if defined(STM32F413xx)
+    if (sector_end >= bank_split - 2) {
+        if (optcr & FLASH_OPTCR_nWRP_14) {
+            return FLASH_ERROR_WRP;
         }
     }
-#else
+    sector_end -= 2;
+# endif
     for (i = sector_start; i <= sector_end; i++) {
-        if (i < MAX_SECTOR_IN_BANK) {
-            if (has_gap && (i > 7)) {
-                /* Skip not available sectors on 1 MiB dual boot devices*/
-                continue;
-            }
-# if defined(STM32F413xx)
-/* Sector 14 and 15 are protected together!*/
-            if ((i == 15) && ((optcr & FLASH_OPTCR_nWRP_14) == 0)) {
-                return FLASH_ERROR_WRP;
-            } else {
-                break;
-            }
-# endif
-            if ((optcr & (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)))) == 0) {
+        uint32_t bit = 1 << (i + FLASH_OPTCR_nWRP_Pos);
+        if ((optcr & bit) == 0) {
+            return FLASH_ERROR_WRP;
+        }
+    }
+#elif defined(MCU_STM32F7)
+    uint32_t optcr = FLASH->OPTCR;
+    if (!is_dual_bank) {
+        for (i = sector_start; i <= sector_end; i++) {
+            uint32_t bit = 1 << (i + FLASH_OPTCR_nWRP_Pos);
+            if ((optcr & bit) == 0) {
                 return FLASH_ERROR_WRP;
             }
-        } else {
-# if defined(FLASH_OPTCR1_nWRP)
-            int j = i - 12;
-            uint32_t optcr1 = FLASH->OPTCR1;
-            if ((optcr1 & (1 << (j + _BI32(FLASH_OPTCR1_nWRP_0)))) == 0) {
-                return FLASH_ERROR_WRP;
+        }
+    } else {
+        /* Each bit protects two sectors! */
+        if (sector_end >= 16) {
+            int bank2_start = (sector_start < 16) ? 16 : sector_start;
+            for (i = bank2_start;  i <= sector_end; i = i + 2) {
+                uint32_t bit  = 1 << ((i - 16 + bank_split) / 2 * FLASH_OPTCR_nWRP_Pos);
+                if ((optcr & bit) == 0) {
+                    return FLASH_ERROR_WRP;
+                }
             }
-# endif
+            sector_end = bank_split - 1;
+            for (i = sector_start; i <= sector_end; i = i + 2) {
+                uint32_t bit  = 1 << (i / 2 + FLASH_OPTCR_nWRP_Pos);
+                if ((optcr & bit) == 0) {
+                    return FLASH_ERROR_WRP;
+            }
+            }
         }
     }
 #endif
@@ -439,7 +433,7 @@ static FLASH_Status FlashWrite(void* dst, const void* src, size_t len,
     }
     while ((length) && (rs == FLASH_COMPLETE)) {
         uint32_t sector_nr = FlashAddr2Sector(wptr);
-        uint32_t sector_length = sector2mult[sector_nr % MAX_SECTOR_IN_BANK] << 12;
+        uint32_t sector_length = sector2mult[sector_nr % 16] * sectorsize;
         uint32_t current_length = length;
 
         if (((uint32_t)wptr & (sector_length -1)) + length > sector_length) {
@@ -741,7 +735,6 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, void *data,
         /* Return success or fault code */
         return rs;
     }
-
     /* Check if target area is erased.
      * It seems no C standard function provides this functionality!
      */
@@ -823,6 +816,9 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
 #if defined(NUT_CONFIG_STM32_IAP)
     flash_end_addr -= 8 * sectorsize;
 #endif
+#if defined(FLASH_OPTCR_DB1M)
+    uint32_t optcr1;
+#endif
     /* Check boundaries */
     if ((((uint32_t)dst + len) > flash_end_addr) ||
         ((uint32_t)dst < FLASH_BASE)) {
@@ -843,75 +839,60 @@ FLASH_Status IapFlashWriteProtect(void *dst, size_t len, int ena)
     if (optcr & FLASH_OPTCR_OPTLOCK) {
         return FLASH_ERROR_PG;
     }
+#if defined(FLASH_OPTCR_DB1M)
+    optcr1 = FLASH->OPTCR1;
+    if (optcr1 & FLASH_OPTCR_OPTLOCK) {
+        return FLASH_ERROR_PG;
+    }
+#endif
     sector_start = FlashAddr2Sector(dst);
     sector_end = FlashAddr2Sector(dst + len -1);
-#if defined(MCU_STM32F7)
-    for (i = sector_start; i <= sector_end; i++) {
-        int j;
-
-        if (has_gap && (i > 7) && (i < 12)) {
-            continue;
+#if defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+    if (sector_end >= 16) {
+        uint32_t bank2_start = (sector_start < 16) ? 16 : sector_start;
+        for (i = bank2_start; i <= sector_end; i++) {
+            uint32_t bit = 1 << (i - 15 + FLASH_OPTCR_nWRP_Pos);
+            optcr |= bit;
         }
-        if (is_dual_bank) {
-        /* In Dual Bank mode, only two consecutive sectors can be protected */
-        /* FIXME: Check if adjacent sectors toggle! */
-            j = i / 2;
-        } else {
-            j = i;
-        }
-        if (ena) {
-            optcr &= ~(1 << (j + _BI32(FLASH_OPTCR_nWRP_0)));
-        } else {
-            optcr |=  (1 << (j + _BI32(FLASH_OPTCR_nWRP_0)));
-        }
+        sector_end = bank_split - 1;
     }
-#else
-    for (i = sector_start; i <= sector_end; i++) {
-        if (i < MAX_SECTOR_IN_BANK) {
-            /* Skip not available sectors on 1 MiBB dual boot devices*/
-            if ((has_gap) && i > 7) {
-                continue;
-            }
 # if defined(STM32F413xx)
-/* Sector 14 and 15 are protected together!
- *  FIXME: Check for disjunct protection request on Sector 14/15!
- */
-            if (i == 15) {
-                if (ena) {
-                    optcr &= ~FLASH_OPTCR_nWRP_14;
-                } else {
-                    optcr |=  FLASH_OPTCR_nWRP_14;
-                }
-            } else {
-                if (ena) {
-                    optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
-                } else {
-                    optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
-                }
-            }
-# else
-            if (ena) {
-                optcr &= ~(1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
-            } else {
-                optcr |=  (1 << (i + _BI32(FLASH_OPTCR_nWRP_0)));
-            }
-#endif
-        } else {
-# if defined(FLASH_OPTCR1_nWRP)
-            int j = i - 12;
-            uint32_t optcr1 = FLASH->OPTCR1;
-
-            if (ena) {
-                optcr1 &= ~(1 << (j + _BI32(FLASH_OPTCR1_nWRP_0)));
-            } else {
-                optcr1 |=  (1 << (j + _BI32(FLASH_OPTCR1_nWRP_0)));
-            }
-            FLASH->OPTCR1 = optcr1;
+    if (sector_end >- bank_split - 2) {
+        optcr |= FLASH_OPTCR_nWRP_14;
+    }
 # endif
+    for (i = sector_start; i < sector_end; i++) {
+        uint32_t bit = 1 << (i - 15 + FLASH_OPTCR_nWRP_Pos);
+        optcr |= bit;
+    }
+# elif defined(MCU_STM32F7)
+    if (!is_dual_bank) {
+        for (i = sector_start; i <= sector_end; i++) {
+            uint32_t bit = 1 << (i + FLASH_OPTCR_nWRP_Pos);
+            optcr |= bit;
+        }
+    } else {
+        /* Each bit protects two sectors! */
+        if (sector_end >= 16) {
+            int bank2_start = (sector_start < 16) ? 16 : sector_start;
+            for (i = bank2_start;  i <= sector_end; i = i + 2) {
+                uint32_t bit  = 1 << ((i - 16 + bank_split) / 2 * FLASH_OPTCR_nWRP_Pos);
+                optcr |= bit;
+            }
+        }
+        sector_end = bank_split - 1;
+        for (i = sector_start; i <= sector_end; i = i + 2) {
+            uint32_t bit  = 1 << (i / 2 + FLASH_OPTCR_nWRP_Pos);
+            if ((optcr & bit) == 0) {
+                return FLASH_ERROR_WRP;
+            }
         }
     }
-#endif
+# endif
     FLASH->OPTCR = optcr;
+#if defined(FLASH_OPTCR_DB1M)
+    FLASH->OPTCR1 = optcr1;
+#endif
     FLASH->OPTCR = optcr |FLASH_OPTCR_OPTSTRT;
     /* Wait for last operation to be completed */
     rs = FlashWaitReady();
