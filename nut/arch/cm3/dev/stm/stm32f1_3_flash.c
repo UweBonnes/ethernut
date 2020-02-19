@@ -435,9 +435,7 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
                             FLASH_ERASE_MODE mode)
 {
     size_t iap_flash_end = FlashEnd();
-#if defined(NUT_CONFIG_STM32_IAP) && FLASH_CONF_SIZE > FLASH_PAGE_SIZE
-    iap_flash_end -= FLASH_CONF_SIZE ;
-#elif defined(NUT_CONFIG_STM32_IAP)
+#if defined(NUT_CONFIG_STM32_IAP)
     iap_flash_end -= FLASH_PAGE_SIZE ;
 #endif
     if (len == 0)
@@ -632,37 +630,23 @@ FLASH_Status Stm32FlashParamRead(uint32_t pos, void *data, size_t len)
 
     if (FLASH_CONF_SIZE > FLASH_PAGE_SIZE)
         return FLASH_ERR_CONF_LAYOUT;
-#if defined(FLASH_CONF_SIZE) && (FLASH_CONF_SIZE << 1) <= FLASH_PAGE_SIZE
-/* More than one FLASH_CONF_SIZE sectors fit into one FLASH_PAGE_SIZE */
-
     if (len == 0)
         return FLASH_COMPLETE;
-
     /* Check boundaries */
     if (pos + len + FLASH_ACCESS_SIZE > FLASH_CONF_SIZE)
     {
         return FLASH_CONF_OVERFLOW;
     }
     int conf_page = Stm32FlashFindConfSector(flash_conf_sector);
-    if (conf_page < 0)
+    if (conf_page < 0) {
         /* no page sizes unit in CONF_SECTOR has a valid mark */
-        return FLASH_ERR_CONF_LAYOUT;
-
-    memcpy( data, (uint8_t *)((uint8_t*)flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos), len);
-#else
-    /* FLASH_CONF size and FLASH page size are the same */
-    if (len == 0)
-        return FLASH_COMPLETE;
-
-    /* Check boundaries */
-    if (pos + len > FLASH_PAGE_SIZE)
-    {
-        return FLASH_CONF_OVERFLOW;
+        int rs =FlashErasePage((uint32_t)flash_conf_sector);
+        if (rs) {
+            return rs;
+        }
+        conf_page = 0;
     }
-
-    memcpy( data, (uint8_t *)((uint8_t*)flash_conf_sector + pos), len);
-#endif
-
+    memcpy( data, (uint8_t *)((uint8_t*)flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos), len);
     /* Return success or fault code */
     return FLASH_COMPLETE;
 }
@@ -692,22 +676,16 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, const void *data,
     uint8_t *buffer;
     int i;
     uint8_t  *mem, *src;
-    if(FLASH_CONF_SIZE > FLASH_PAGE_SIZE)
-        return FLASH_ERR_CONF_LAYOUT;
-#if defined(FLASH_CONF_SIZE) && (FLASH_CONF_SIZE << 1) <= FLASH_PAGE_SIZE
-/* More than one FLASH_CONF_SIZE sectors fit into one FLASH_PAGE_SIZE */
     FLASH_ERASE_MODE mode;
     void* flash_conf_sector = (void*)(FlashEnd() & FLASH_PAGE_MASK);
 
     if (len == 0)
         return FLASH_COMPLETE;
-
     /* Check top boundaries */
     if (pos + len + FLASH_ACCESS_SIZE > FLASH_CONF_SIZE)
     {
         return FLASH_BOUNDARY;
     }
-
     int conf_page = Stm32FlashFindConfSector(flash_conf_sector);
     if (conf_page < 0) {
         /* no page sizes unit in CONF_SECTOR has a valid mark */
@@ -720,8 +698,7 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, const void *data,
         /* Return success or fault code */
         return rs;
     }
-
-    /* Check if target area is erased.
+    /* Check if target area is erased or data did not change.
      * It seems no C standard function provides this functionality!
      */
     mem = (uint8_t*) (flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos);
@@ -730,15 +707,15 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, const void *data,
         if ((mem[i] != 0xff) && (mem[i] != src[i]))
             break;
     }
+    /* Check if content needs no update. */
+    if (memcmp(flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos, data, len) == 0) {
+        return FLASH_COMPLETE;
+    }
     if (i >= len) {
         /* Needed area is erased, simply write the data to the requested area*/
         rs = FlashWrite( flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos, data, len, FLASH_ERASE_NEVER);
         return rs;
     }
-
-    /* Check if content needs no update. */
-    if (memcmp(flash_conf_sector + conf_page * FLASH_CONF_SIZE + pos, data, len) == 0)
-        return FLASH_COMPLETE;
 
     /* Save configuration page in RAM and write updated data to next configuration page,
      * eventually erasing the sector wrapping to the first page
@@ -754,53 +731,16 @@ FLASH_Status Stm32FlashParamWrite(unsigned int pos, const void *data,
     /* Overwrite new data region*/
     memcpy (buffer + pos, data, len);
     conf_page++;
-    mode = FLASH_ERASE_NEVER;
     if (conf_page < FLASH_PAGE_SIZE/FLASH_CONF_SIZE) {
         uint16_t indicator = (uint16_t)~ERASED_PATTERN_16;
+        mode = FLASH_ERASE_NEVER;
         rs = FlashWrite( flash_conf_sector + conf_page * FLASH_CONF_SIZE - sizeof(indicator),
-                         &indicator, sizeof(indicator), FLASH_ERASE_NEVER);
-    }
-    else {
-         /* All pages used, mark the sector as not yet erases to force erase*/
-        FlashUntouch();
+                         &indicator, sizeof(indicator), mode);
+    } else {
         conf_page = 0;
         mode = FLASH_ERASE_ALWAYS;
     }
     rs = FlashWrite( flash_conf_sector + conf_page * FLASH_CONF_SIZE , buffer, FLASH_CONF_SIZE, mode);
-#else
-    /* FLASH_CONF size and FLASH page size are the same */
-    /* Check top boundaries */
-    if (pos + len > FLASH_PAGE_SIZE)
-    {
-        return FLASH_BOUNDARY;
-    }
-    /* Check if target area is erased.
-     * It seems no C standard function provides this functionality!
-     */
-    mem = (uint8_t*) (flash_conf_sector + pos);
-    src = (uint8_t*) data;
-    for (i = 0; i < len; i++) {
-        if ((mem[i] != 0xff) && (mem[i] != src[i]))
-            break;
-    }
-    if (i >= len) {
-        /* Needed area is erased, simply write the data to the requested area*/
-        rs = FlashWrite( flash_conf_sector + pos, data, len, FLASH_ERASE_NEVER);
-        return rs;
-    }
-    buffer = NutHeapAlloc(FLASH_CONF_SIZE);
-    if (buffer == NULL)
-    {
-        /* Not enough memory */
-        return FLASH_OUT_OF_MEMORY;
-    }
-    /* Get the content of the whole config page*/
-    memcpy( buffer, flash_conf_sector , FLASH_PAGE_SIZE);
-    /* Overwrite new data region*/
-    memcpy (buffer + pos, data, len);
-    rs = FlashWrite( flash_conf_sector, buffer, FLASH_PAGE_SIZE, FLASH_ERASE_ALWAYS);
-
-#endif
     NutHeapFree(buffer);
     /* Return success or fault code */
     return rs;
