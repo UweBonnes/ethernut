@@ -92,6 +92,8 @@ static void Stm32RtcDbpRst(void)
 /*!
  * \brief Wait for RTC to sync.
  *
+ * Call before reading RTC_CNT, RTC_ALR, (RTC_DIV ?) or RTC_PRL
+ *
  * \param none
  */
 static void Stm32RtcSync(void)
@@ -100,6 +102,13 @@ static void Stm32RtcSync(void)
     while (rtc_crl[_BI32(RTC_CRL_RSF)] == 0);
 }
 
+/*!
+ * \brief Wait for last RTC write done.
+ *
+ * Call before writing RTC registers
+ *
+ * \param none
+ */
 static void Stm32RtcRtoffPoll(void)
 {
     while(rtc_crl[_BI32(RTC_CRL_RTOFF)] == 0);
@@ -347,7 +356,7 @@ static int Stm32RtcInit(NUTRTC *rtc)
         return res;
     }
     dcb->status = RTC_STATUS_HAS_QUEUE;
-    if ((RCC_BDCR & RCC_BDCR_RTCSEL) != (RTCCLK_LSE * RCC_BDCR_RTCSEL_0)) {
+    if ((RCC->BDCR & RCC_BDCR_RTCSEL) != (RTCCLK_LSE * RCC_BDCR_RTCSEL_0)) {
         dcb->status |= RTC_STATUS_INACCURATE;
     }
     if (!(RCC->BDCR & RCC_BDCR_RTCEN)) {
@@ -379,16 +388,20 @@ static int Stm32RtcInit(NUTRTC *rtc)
     uint32_t source;
     source = (RCC->BDCR & RCC_BDCR_RTCSEL) / RCC_BDCR_RTCSEL_0;
     if ((RCC->BDCR & RCC_BDCR_RTCEN) && (RTCCLK_SOURCE == source)  &&
-        (prediv!= 0) && ((RTC->CNTL) || (RTC->CNTH))) {
-        rc = 0;
+        (prediv!= 0)) {
+        if (dcb->status == RTC_STATUS_HAS_QUEUE) {
+            /* RTC is already running withe the right settings.
+             * Do not change RTC_CNT and leave it to the application
+             * to enentually change CNT.
+             */
+            return 0;
+        }
     }
     Stm32RtcRtoffPoll();
     rtc_crl[_BI32(RTC_CRL_CNF)] = 1;
     RTC->CRH  = RTC_CRH_ALRIE;
     RTC->PRLL = RTC_PREDIV & 0xffff;
     RTC->PRLH = RTC_PREDIV >> 16;
-    RTC->CNTL = 0;
-    RTC->CNTH = 1; /*1 january 1970 */
     RTC->ALRL = 0;
     RTC->ALRH = 0;
     rtc_crl[_BI32(RTC_CRL_CNF)] = 0;
