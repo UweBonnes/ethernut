@@ -86,8 +86,9 @@ local function get_tzoffset()
 end
 
 local function is_daylight()
+  local now = os.time()
   local time = os.date("*t", now)
-  if (time.isdst == 1) then
+  if (time.isdst) then
      return -60
   end
   return 0

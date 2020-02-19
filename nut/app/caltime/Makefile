@@ -47,9 +47,8 @@ HWDEF += -DUSE_LINE_EDITOR
 # want this, then comment the next line.
 HWDEF += -DUSE_BUILD_TIME
 
-# Set your local time zone. By default Nut/OS uses +5.
-#HWDEF += -DUSE_TIME_ZONE=-1
-
+# Uncomment to use other zone offset than configured. E.g. EST is +5 * 60.
+# HWDEF += -DUSE_TIME_ZONE=300
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
