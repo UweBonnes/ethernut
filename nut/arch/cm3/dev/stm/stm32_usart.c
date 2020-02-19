@@ -1,6 +1,9 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
+ * Copyright (C) 2012 - 2020 by Uwe Bonnes
+ *                        (bon@elektron.ikp.physik.tu-darmstadt.de
+ *
  *
  * All rights reserved.
  *
@@ -1242,7 +1245,8 @@ static int Stm32UsartSetFlowControl(uint32_t flags)
 #if defined(USART_CR2_ABRMODE_0)
     USARTn->CR2 &= ~(USART_CR2_ABRMODE_Msk | USART_CR2_ABREN);
     USARTn->RQR |= USART_RQR_ABRRQ;
-    if ((flags & USART_MF_AUTOBAUD_MMASK) != USART_MF_AUTOBAUD_OFF) {
+    uint32_t abr_flags = flags & USART_MF_AUTOBAUD_MMASK;
+    if (abr_flags && (abr_flags != USART_MF_AUTOBAUD_OFF)) {
         uint32_t cr2_mode = flags / USART_MF_AUTOBAUD_0;
         cr2_mode *= USART_CR2_ABRMODE_0;
         USARTn->CR2 = cr2_mode | USART_CR2_ABREN;
