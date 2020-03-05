@@ -159,15 +159,19 @@ int NutIpRouteDel(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev)
 {
     int rc = -1;
     RTENTRY **rtpp;
-    RTENTRY *rte;
 
-    for (rtpp = &rteList; *rtpp; *rtpp = (*rtpp)->rt_next) {
-        rte = *rtpp;
+    rtpp = &rteList;
+    while (*rtpp) {
+        RTENTRY *rte = *rtpp;
 
         if (rte->rt_ip == ip && rte->rt_mask == mask && rte->rt_gateway == gate && rte->rt_dev == dev) {
+            /* Remove this entry from list and free this entry.*/
             *rtpp = rte->rt_next;
             free(rte);
             rc = 0;
+        } else {
+            /* Follow linked list.*/
+            rtpp = &rte->rt_next;
         }
     }
     return rc;
