@@ -1,0 +1,1 @@
+libgcc_s_seh-1, libstdc++-6, libQt5Core, libQt5Gui and libQt5Widgets are needed.
