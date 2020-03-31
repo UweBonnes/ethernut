@@ -202,10 +202,12 @@ int Stm32TimerChannelConfig(
     /* Clear CC1NP/CC1P */
     channel_index =  ch * 4;
     ccer = tim->CCER;
-    ccer &= ~( 0xf << channel_index);
-    tmp = TIM_CCER_CC1E + (polarity << TIM_CCER_CC1P_Pos);
-    if (channel < 0) {
-        tmp = tmp << 2;
+    if (channel < 0 ) {
+        ccer &= ~(0xc << channel_index);
+        tmp = TIM_CCER_CC1NE + (polarity << TIM_CCER_CC1NP_Pos);
+    } else {
+        ccer &= ~(0x3 << channel_index);
+        tmp = TIM_CCER_CC1E  + (polarity << TIM_CCER_CC1P_Pos);
     }
     tmp <<= channel_index;
     ccer |= tmp;
