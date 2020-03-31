@@ -3574,16 +3574,14 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
 char *GetRealPath(char* path)
 {
     char fullpath[PATH_MAX +1], *p;
-    int len;
-    if ((path[0] == '/') || (path[1] == ':'))
-        p = path;
-    else {
-        getcwd(fullpath, PATH_MAX);
-        len = strlen(fullpath);
-        if (fullpath[len -1] != '/');
-        strncat(fullpath, "/", PATH_MAX - len);
-        len++;
-        p = strncat(fullpath, path, PATH_MAX - len);
+    p = realpath(path, fullpath);
+    if (!p) {
+        return NULL;
+    }
+    for (int i = 0; i < strlen(p); i++) {
+        if (p[i] == '\\') {
+            p[i] = '/';
+        }
     }
     return strdup(p);
 }
@@ -3612,22 +3610,22 @@ int main(int argc, char **argv)
     while((option = getopt(argc, argv, "a:b:c:i:j:l:m:p:qs:r:u:v?")) != EOF) {
         switch(option) {
         case 'a':
-            app_dir = realpath(optarg, NULL);
+            app_dir = GetRealPath(optarg);
             if (!app_dir) {
                 app_dir = strdup(optarg);
             }
             break;
         case 'b':
-            bld_dir = realpath(optarg, NULL);
+            bld_dir = GetRealPath(optarg);
             if (!bld_dir) {
                 bld_dir = strdup(optarg);
             }
             break;
         case 'c':
-            conf_name = realpath(optarg, NULL);
+            conf_name = GetRealPath(optarg);
             break;
         case 'l':
-            lib_dir = realpath(optarg, NULL);
+            lib_dir = GetRealPath(optarg);
             if (!lib_dir) {
                 lib_dir = strdup(optarg);
             }
@@ -3636,13 +3634,13 @@ int main(int argc, char **argv)
             quiet = 1;
             break;
         case 's':
-            src_dir = realpath(optarg, NULL);
+            src_dir = GetRealPath(optarg);
             break;
         case 'r':
-            repo_name = realpath(optarg, NULL);
+            repo_name = GetRealPath(optarg);
             break;
         case 'u':
-            user_dir = realpath(optarg, NULL);
+            user_dir = GetRealPath(optarg);
             if (!user_dir) {
                 user_dir = strdup(optarg);
             }
