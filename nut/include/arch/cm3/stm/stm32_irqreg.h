@@ -195,6 +195,15 @@ extern IRQ_HANDLER sig_RNG;
 extern IRQ_HANDLER sig_AES;
 extern IRQ_HANDLER sig_HASH;
 
+extern IRQ_HANDLER sig_HRTIM1_Master;
+extern IRQ_HANDLER sig_HRTIM1_TIMA;
+extern IRQ_HANDLER sig_HRTIM1_TIMB;
+extern IRQ_HANDLER sig_HRTIM1_TIMC;
+extern IRQ_HANDLER sig_HRTIM1_TIMD;
+extern IRQ_HANDLER sig_HRTIM1_TIME;
+extern IRQ_HANDLER sig_HRTIM1_TIMF;
+extern IRQ_HANDLER sig_HRTIM1_FLT;
+
 extern IRQ_HANDLER *Stm32RngInstallHandler(IRQ_HANDLER *sig);
 
 #endif
