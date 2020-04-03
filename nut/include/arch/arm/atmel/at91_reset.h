@@ -36,7 +36,7 @@
 
 /*!
  * \file arch/arm/at91_reset.h
- * \brief AT91 system reset.
+ * \brief Header for (legacy) reset functions
  *
  * \verbatim
  * $Id$
@@ -45,7 +45,6 @@
 
 #include <compiler.h>
 
-extern void At91Reset(void);
-extern int At91ResetCause(void);
-
+#define At91Reset() NutReset()
+#define At91ResetCause() NutResetCause()
 #endif /* _ARCH_ARM_AT91_RESET_H_ */

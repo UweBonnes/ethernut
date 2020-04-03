@@ -64,7 +64,7 @@ void At91Reset(void)
 #endif
 }
 
-NUT_RSTTYP At91ResetCause(void)
+NUT_RSTTYP ResetCause(void)
 {
     NUT_RSTTYP rc = NUT_RSTTYP_UNKNOWN;
 
