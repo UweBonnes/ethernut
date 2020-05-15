@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 by Ole Reinhardt (ole.reinhardt@embedded-it.de)
+ * Copyright (C) 2020 by Uwe Bonnes (bon@elektron.ikp.,physik.tu-darmstadt.de)
  *
  * All rights reserved.
  *
@@ -413,5 +414,6 @@ void RAMFUNC CortexRegDump(uint32_t *arg, int exception_type, uint32_t *fp)
     DebugPrint("\n\nHalted...");
     
     __asm("BKPT #0\n") ; // Break into the debugger
-    while(1);
+    while(1)
+        _NOP();
 }

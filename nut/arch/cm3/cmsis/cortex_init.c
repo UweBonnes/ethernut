@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
  * Copyright (C) 2012 by Ole Reinhardt <ole.reinhardt@embedded-it.de>
- * Copyright (C) 2015-2017, 2019 by Uwe Bonnes
+ * Copyright (C) 2015-2017, 2019-2020 by Uwe Bonnes
  *                            <bon@elektron.ikp.physik.tu-darmstadt.de>
  *
  * All rights reserved.
@@ -212,7 +212,8 @@ static RAMFUNC void IntDefaultHandler(void *arg)
 
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
-    while(1);
+    while(1)
+        _NOP();
 #endif
 }
 
@@ -231,7 +232,8 @@ static RAMFUNC void IntNmiHandler(void *arg)
     JUMP_REGDUMP(1);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
-    while(1);
+    while(1)
+        _NOP();
 #endif
 }
 
@@ -247,7 +249,8 @@ static RAMFUNC void IntHardfaultHandler(void *arg)
     JUMP_REGDUMP(2);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
-    while(1);
+    while(1)
+       _NOP() ;
 #endif
 }
 
@@ -265,7 +268,8 @@ static RAMFUNC void IntMemfaultHandler(void *arg)
     JUMP_REGDUMP(3);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
-    while(1);
+    while(1)
+        _NOP();
 #endif
 }
 
@@ -283,7 +287,8 @@ RAMFUNC void IntBusfaultHandler(void *arg)
     JUMP_REGDUMP(4);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
-    while(1);
+    while(1)
+        _NOP();
 #endif
 }
 
@@ -300,7 +305,8 @@ static RAMFUNC void IntUsagefaultHandler(void *arg)
     JUMP_REGDUMP(5);
 #else
     __asm("BKPT #0\n") ; // Break into the debugger
-    while(1);
+    while(1)
+        _NOP();
 #endif
 }
 #endif
