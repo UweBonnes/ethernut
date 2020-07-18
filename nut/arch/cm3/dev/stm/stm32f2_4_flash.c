@@ -366,17 +366,19 @@ static FLASH_Status FlashWrite(void* dst, const void* src, size_t len,
     sector_start = FlashAddr2Sector(dst);
     sector_end = FlashAddr2Sector(dst + len - 1);
 #if defined(MCU_STM32F2) ||defined(MCU_STM32F4)
+# if defined(FLASH_OPTCR1_nWRP_Pos)
     if (sector_end >= 16) {
         uint32_t optcr = FLASH->OPTCR1;
         uint32_t bank2_start = (sector_start < 16) ? 16 : sector_start;
         for (i = bank2_start;  i <= sector_end; i++) {
-            uint32_t bit = 1 << (i - 16 + FLASH_OPTCR_nWRP_Pos);
+            uint32_t bit = 1 << (i - 16 + FLASH_OPTCR1_nWRP_Pos);
             if ((optcr & bit) == 0) {
                 return FLASH_ERROR_WRP;
             }
         }
         sector_end = bank_split - 1;
     }
+# endif
     uint32_t optcr = FLASH->OPTCR;
 # if defined(STM32F413xx)
     if (sector_end >= bank_split - 2) {
