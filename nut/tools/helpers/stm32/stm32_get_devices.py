@@ -78,6 +78,7 @@ def generate(name, headerfile, luafile, dbpath):
     luafile.write("               \"HW_MCU_STM32_DIE_%s\",\n" % die)
     iterator = iter(headerdata)
     num_irq = 0;
+    has_auto_baud = False
     while True:
         try:
             line = next(iterator)
@@ -120,8 +121,6 @@ def generate(name, headerfile, luafile, dbpath):
                 luafile.write("               \"HW_%s_STM32\",\n" % device)
         elif "#define USART_CR1_FIFOEN_Pos" in line:
             luafile.write("               \"HW_UART_FIFO_STM32\",\n")
-        elif "#define USART_CR2_ABREN_Pos" in line:
-            luafile.write("               \"HW_UART_AUTOBAUD\",\n")
         elif "#define BKPSRAM_BASE" in line:
             luafile.write("               \"HW_BKPSRAM_STM32\",\n")
         elif "#define PWR_CR2_IOSV " in line:
@@ -145,7 +144,32 @@ def generate(name, headerfile, luafile, dbpath):
                         break
                 else:
                     break
+        elif "#define IS_USART_AUTOBAUDRATE_DETECTION_INSTANCE" in line:
+            while True:
+                if "0U" in line :
+                    break
+                if "USART" in line and "== " in line:
+                    usart = line.split("== ")[1]
+                    usart = usart.split(")")[0]
+                    luafile.write("               \"HW_%s_AUTOBAUD\",\n" % usart)
+                    usart = usart.replace("USART", "UART")
+                    luafile.write("               \"HW_%s_AUTOBAUD\",\n" % usart)
+                    has_auto_baud = True
+                elif "UART" in line and "== " in line:
+                    uart = line.split("== ")[1]
+                    uart = uart.split(")")[0]
+                    luafile.write("               \"HW_%s_AUTOBAUD\",\n" % uart)
+                    has_auto_baud = True
+                if "\\" in line:
+                    try:
+                        line = next(iterator)
+                    except:
+                        break
+                else:
+                    break
 
+    if (has_auto_baud):
+        luafile.write("               \"HW_UART_AUTOBAUD\",\n")
     luafile.write("            },\n")
     luafile.write("            file = \"include/cfg/arch.h\",\n")
     luafile.write("            makedefs =\n")
