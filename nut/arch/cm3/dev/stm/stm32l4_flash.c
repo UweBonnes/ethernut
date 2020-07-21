@@ -292,10 +292,9 @@ FLASH_Status IapFlashWrite( void* dst, const void* src, size_t len,
     if ((uint32_t)dst & FLASH_ALIGNMENT ) {
         return FLASH_ERR_ALIGNMENT;
     }
-    if ((mode == FLASH_ERASE_NEVER) && (len & FLASH_ALIGNMENT)) {
-        /* Check length only when no erase was performed.
-         * Otherwise extent even as we write garbage.
-         * We can not overwrite in any case.*/
+    if (src && (len & FLASH_ALIGNMENT)) {
+        /* Check alignment only when writing.
+         * FIXME: Align when writing to erase memory!*/
         return FLASH_ERR_ALIGNMENT;
     }
     /* Check top boundary */
