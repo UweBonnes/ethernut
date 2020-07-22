@@ -717,6 +717,10 @@ static int Stm32UsartSetSpeed(uint32_t rate)
         divider &= ~0xf;
         divider |= remainder >> 1;
     }
+#if (UART_RTS_AF >= 0) && (UARTx_DE == ENABLE) && defined(USART_CR1_DEAT_Pos)
+    /* Allow 1 or 2  bittime enable time */
+    cr1 |= 16 << USART_CR1_DEAT_Pos;
+#endif
     USARTn->CR1 = cr1;
 #endif
     /* Write to USART BRR */
