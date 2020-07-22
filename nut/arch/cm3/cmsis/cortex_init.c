@@ -70,7 +70,9 @@
 #define NUT_BOOT_FUNCTION NutInit
 #else
 extern void NutInit(void);
-# define ROOM_FOR_SIGNATURE
+# ifndef NUT_BOOT_SIGNATURE
+#  define NUT_BOOT_SIGNATURE
+#  endif
 #endif
 
 extern void NUT_BOOT_FUNCTION(void);
@@ -174,7 +176,7 @@ void (* const g_pfnVectors[])(void *) =
 #define g_pfnRAMVectors g_pfnVectors
 #else
 static __attribute__((section(".vtable")))
-# if  defined(ROOM_FOR_SIGNATURE)
+# if  defined(NUT_BOOT_SIGNATURE)
 /* Allocate space for some signature to decide if to run bootloader or
  * application.*/
 void (*volatile g_pfnRAMVectors[NUM_INTERRUPTS + 2])(void*);
@@ -513,11 +515,10 @@ static void Cortex_IntInit(void)
     __enable_irq();
 }
 
-# if  defined(ROOM_FOR_SIGNATURE)
-
 #define BOOTSWITCH_SIG0 0xb00710ad
 #define BOOTSWITCH_SIG1 0xb00720ad
 
+# if  defined(NUT_BOOT_SIGNATURE)
 void Cortex_TestBootSwitch(int force)
 {
     if (force) {
@@ -537,7 +538,7 @@ void Cortex_TestBootSwitch(int force)
 void Cortex_SetBootSwitch(int set)
 {
     uint32_t *bootsignature;
-    bootsignature = (uint32_t *) (g_pfnRAMVectors + NUM_INTERRUPTS);
+    bootsignature = &((uint32_t *)g_pfnRAMVectors)[NUM_INTERRUPTS];
     if (set) {
         bootsignature[0] = BOOTSWITCH_SIG0;
         bootsignature[1] = BOOTSWITCH_SIG1;
@@ -546,7 +547,6 @@ void Cortex_SetBootSwitch(int set)
         bootsignature[1] = 0;
     }
 }
-
 #endif
 
 /*!

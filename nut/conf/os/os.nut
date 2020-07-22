@@ -162,6 +162,15 @@ nutos =
                 provides = {"NUT_BOOT_FUNCTION"},
             },
             {
+                macro = "NUT_BOOT_SIGNATURE",
+                brief = "Signature storage",
+                description = "Provide space in vtable for a boot signature.\n\n"..
+                "Vtable is in uninitialized RAM and so can be used for\n"..
+                "communication between user program and bootloader\n",
+                flavor = "booldata",
+                file = "include/cfg/os.h",
+            },
+            {
                 macro = "HEARTBEAT_IDLE_PORT",
                 brief = "Idle Heartbeat Port",
                 description = "If a valid Port/Pin combination is given, set that Pin high when  "..
