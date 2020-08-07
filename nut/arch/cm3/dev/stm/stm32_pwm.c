@@ -162,23 +162,24 @@ unsigned int Stm32PwmGet(NUTPWM *pwm_dev)
 /* Return Timer Clock*/
 uint32_t Stm32PwmGetClock(NUTPWM *pwm_dev)
 {
+    STM32_PWM_HW *hw = (STM32_PWM_HW *) pwm_dev->hw;
+
+    uint32_t timer_base = (uint32_t)hw->pwm_timer;
     uint32_t clk;
 #if defined(MCU_STM32F3)
     uint32_t cfgr3;
-    STM32_PWM_HW *hw;
 
-    hw = (STM32_PWM_HW *) pwm_dev->hw;
     cfgr3 = RCC->CFGR3;
     if (cfgr3 & hw->pll_sw) {
         clk = Stm32ClockGet(HWCLK_CPU);
         clk *= 2;
     } else {
-        clk = BASE2TCLKSRC((uint32_t)hw);
+        clk = BASE2TCLKSRC(timer_base);
     }
 #else
-    clk = BASE2TCLKSRC((uint32_t)pwm_dev->hw);
+    clk = BASE2TCLKSRC(timer_base);
 #endif
-    return clk;
+    return NutArchClockGet(clk);
 }
 
 #if defined(STM32_PWM0) && defined(STM32_PWM0_TIMER_CHANNEL)   \
