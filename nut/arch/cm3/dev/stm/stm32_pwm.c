@@ -164,7 +164,8 @@ uint32_t Stm32PwmGetClock(NUTPWM *pwm_dev)
 {
     STM32_PWM_HW *hw = (STM32_PWM_HW *) pwm_dev->hw;
 
-    uint32_t timer_base = (uint32_t)hw->pwm_timer;
+    uint32_t timer_base __attribute__((unused));
+    timer_base = (uint32_t)hw->pwm_timer;
     uint32_t clk;
 #if defined(MCU_STM32F3)
     uint32_t cfgr3;
