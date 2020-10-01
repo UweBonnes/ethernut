@@ -90,7 +90,7 @@ NUT_RSTTYP NutResetCause(void)
     }
 #else
     uint32_t rsr = RCC->RSR;
-    if        (rsr & RCC_RSR_WDG1RSTF)  {
+    if        (rsr & RCC_RSR_WWDG1RSTF)  {
         return  NUT_RSTTYP_WATCHDOG;
     } else  if (rsr & RCC_RSR_SFTRSTF)  {
         return  NUT_RSTTYP_SOFTWARE;
