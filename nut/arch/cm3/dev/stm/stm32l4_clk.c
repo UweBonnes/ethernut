@@ -536,6 +536,18 @@ static void SetVos(uint32_t frequency)
     while (PWR->SR2 & PWR_SR2_VOSF) {_NOP();}
 }
 
+/* Set or stop Low power run mode */
+static void SetLpMode(uint32_t frequency)
+{
+    if (frequency > 2000000) {
+	PWR->CR1 &= ~(PWR_CR1_LPR);
+	/* Wait until normal regulator is ready. */
+	while (PWR->SR2 & PWR_SR2_REGLPF) {_NOP();}
+    } else {
+        PWR->CR1 |= PWR_CR1_LPR;
+    }
+}
+
 static void SetLatency(uint32_t value)
 {
     uint32_t flash_acr;
@@ -604,6 +616,7 @@ static int SetSysClockSource(int src)
     if (sys_clock < new_sysclk) {
         SetR1Mode(new_sysclk);
         SetVos(new_sysclk);
+	SetLpMode(new_sysclk);
     }
     if (new_latency > old_latency) {
         SetLatency(new_latency);
@@ -612,6 +625,7 @@ static int SetSysClockSource(int src)
     if (sys_clock > new_sysclk) {
         SetR1Mode(new_sysclk);
         SetVos(new_sysclk);
+	SetLpMode(new_sysclk);
     }
     if (new_latency < old_latency) {
         SetLatency(new_latency);
