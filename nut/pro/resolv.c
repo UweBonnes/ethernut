@@ -165,24 +165,39 @@ static uint16_t ScanLong(uint8_t * cp, uint32_t * val)
     return 4;
 }
 
-static uint16_t ScanName(uint8_t * cp, uint8_t ** npp)
+static uint16_t ScanName(uint8_t * cp, uint8_t ** npp, uint16_t maxlen)
 {
     uint8_t len;
     uint16_t rc;
     uint8_t *np;
+    uint16_t maxlen2;
 
     if (*npp) {
         free(*npp);
         *npp = 0;
     }
 
+    if (maxlen < 1) {
+        return 1;
+    }
+
     if ((*cp & 0xC0) == 0xC0)
         return 2;
 
-    rc = strlen((char *) cp) + 1;
+    rc = strnlen((char *) cp, maxlen) + 1;
+    if (rc > maxlen) {
+        return rc;
+    }
     np = *npp = malloc(rc);
     len = *cp++;
+    maxlen2 = rc - 1;
     while (len) {
+        if (len + 1 > maxlen2) {
+            free(np);
+            *npp = NULL;
+            return maxlen + 1;
+        }
+        maxlen -= len + 1;
         while (len--)
             *np++ = *cp++;
         if ((len = *cp++) != 0)
@@ -283,11 +298,14 @@ static uint16_t EncodeDnsQuestion(uint8_t * buf, DNSQUESTION * doq)
     return rc;
 }
 
-static uint16_t DecodeDnsQuestion(DNSQUESTION * doq, uint8_t * buf)
+static uint16_t DecodeDnsQuestion(DNSQUESTION * doq, uint8_t * buf, uint16_t maxlen)
 {
     uint16_t rc;
 
-    rc = ScanName(buf, &doq->doq_name);
+    rc = ScanName(buf, &doq->doq_name, maxlen);
+    if (rc + 4 > maxlen) {
+        return maxlen + 1;
+    }
     rc += ScanShort(buf + rc, &doq->doq_type);
     rc += ScanShort(buf + rc, &doq->doq_class);
 
@@ -312,15 +330,22 @@ static void ReleaseDnsResource(DNSRESOURCE * dor)
     }
 }
 
-static uint16_t DecodeDnsResource(DNSRESOURCE * dor, uint8_t * buf)
+static uint16_t DecodeDnsResource(DNSRESOURCE * dor, uint8_t * buf, uint16_t maxlen)
 {
     uint16_t rc;
 
-    rc = ScanName(buf, &dor->dor_name);
+    rc = ScanName(buf, &dor->dor_name, maxlen);
+    if (rc + 10 > maxlen) {
+        return maxlen + 1;
+    }
     rc += ScanShort(buf + rc, &dor->dor_type);
     rc += ScanShort(buf + rc, &dor->dor_class);
     rc += ScanLong(buf + rc, &dor->dor_ttl);
     rc += ScanShort(buf + rc, &dor->dor_len);
+    if (rc + (uint32_t)dor->dor_len > (uint32_t)maxlen) {
+        dor->dor_len = 0;
+        return maxlen + 1;
+    }
     rc += ScanBinary(buf + rc, &dor->dor_data, dor->dor_len);
 
     return rc;
@@ -405,6 +430,7 @@ uint32_t NutDnsGetResource(const uint8_t * hostname, const uint16_t type)
     uint32_t ip = 0;
     uint8_t *pkt;
     uint16_t len;
+    uint16_t maxlen;
     uint16_t id = 0;
     UDPSOCKET *sock;
     DNSHEADER *doh = 0;
@@ -466,6 +492,7 @@ uint32_t NutDnsGetResource(const uint8_t * hostname, const uint16_t type)
             n = NutUdpReceiveFrom(sock, &raddr, &rport, pkt, 512, 1000);
             if (n <= 0)
                 break;
+            maxlen = n;
             if (n > 12) {
                 len = DecodeDnsHeader(doh, pkt);
 #ifdef NUTDEBUG
@@ -480,7 +507,10 @@ uint32_t NutDnsGetResource(const uint8_t * hostname, const uint16_t type)
          * Decode the answer.
          */
         if (len && doh->doh_quests == 1) {
-            len += DecodeDnsQuestion(doq, pkt + len);
+            len += DecodeDnsQuestion(doq, pkt + len, maxlen - len);
+            if (len > maxlen) {
+                break;
+            }
 #ifdef NUTDEBUG
             //DumpDnsQuestion(doq);
 #endif
@@ -489,7 +519,10 @@ uint32_t NutDnsGetResource(const uint8_t * hostname, const uint16_t type)
             else {
                 for (n = 1; n <= (int) doh->doh_answers; n++) {
                     dor = CreateDnsResource(dor);
-                    len += DecodeDnsResource(dor, pkt + len);
+                    len += DecodeDnsResource(dor, pkt + len, maxlen - len);
+                    if (len > maxlen) {
+                        break;
+                    }
 #ifdef NUTDEBUG
                     //DumpDnsResource(dor);
 #endif
@@ -526,6 +559,7 @@ uint8_t NutDnsGetResourceAll(const uint8_t * hostname, const uint16_t type, uint
     uint8_t n_ip;
     uint8_t *pkt;
     uint16_t len;
+    uint16_t maxlen;
     uint16_t id = 0;
     UDPSOCKET *sock;
     DNSHEADER *doh = 0;
@@ -591,6 +625,7 @@ uint8_t NutDnsGetResourceAll(const uint8_t * hostname, const uint16_t type, uint
             n = NutUdpReceiveFrom(sock, &raddr, &rport, pkt, 512, 1000);
             if (n <= 0)
                 break;
+            maxlen = n;
             if (n > 12) {
                 len = DecodeDnsHeader(doh, pkt);
 #ifdef NUTDEBUG
@@ -605,7 +640,10 @@ uint8_t NutDnsGetResourceAll(const uint8_t * hostname, const uint16_t type, uint
          * Decode the answer.
          */
         if (len && doh->doh_quests == 1) {
-            len += DecodeDnsQuestion(doq, pkt + len);
+            len += DecodeDnsQuestion(doq, pkt + len, maxlen - len);
+            if (len > maxlen) {
+                break;
+            }
 #ifdef NUTDEBUG
             //DumpDnsQuestion(doq);
 #endif
@@ -615,7 +653,10 @@ uint8_t NutDnsGetResourceAll(const uint8_t * hostname, const uint16_t type, uint
                 n_ip = 0;
                 for (n = 1; n <= (int) doh->doh_answers; n++) {
                     dor = CreateDnsResource(dor);
-                    len += DecodeDnsResource(dor, pkt + len);
+                    len += DecodeDnsResource(dor, pkt + len, maxlen - len);
+                    if (len > maxlen) {
+                        break;
+                    }
 #ifdef NUTDEBUG
                     //DumpDnsResource(dor);
 #endif
