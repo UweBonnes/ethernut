@@ -1174,7 +1174,7 @@ int Lpc17xxEmacInit(NUTDEVICE * dev)
     /* Allocate DMA buffer from heap. Make sure it is 128 byte alligned */
     emac_dma_buffer = malloc(EMAC_DMA_BUFFER_SIZE + 128);
     /* Align the buffer to a 128 byte boundary */
-    emac_dma_buffer_base = ((uintptr_t)emac_dma_buffer + 128) & (~128L);
+    emac_dma_buffer_base = ((uintptr_t)emac_dma_buffer + 128) & (~127L);
 #endif
 
     SysCtlPeripheralClkEnable(CLKPWR_PCONP_PCENET);
