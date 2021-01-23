@@ -409,6 +409,7 @@ repository =
                    function()
                       return {
                                 "HWDEF += -DBOARDNAME=\\\"" ..string.upper(c_macro_edit("PLATFORM")).. "\\\"",
+                                "HWDEF += -D" ..string.upper(c_macro_edit("PLATFORM")),
                                 "HWDEF += -DBOARD=\"<arch/" ..string.lower(c_macro_edit("ARCH"))..
                                    "/board/"..string.lower(c_macro_edit("PLATFORM"))..".h>\""
                              }
