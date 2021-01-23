@@ -51,15 +51,7 @@
 #endif
 #include <cfg/arch.h>
 
-#define NUCLEO         1
-#define NUCLEO64P      2
-#define NUCLEO32       3
-#define NUCLEO144      4
-#define F7_DISCOVERY   5
-#define F469_DISCOVERY 6
-
-
-#if PLATFORM == NUCLEO
+#if defined(NUCLEO)
 # if !defined(ARDUINO_A0)
 #  define ARDUINO_A0   PA00
 # endif
@@ -142,7 +134,7 @@
 #  define ARDUINO_D15  PB08
 # endif
 
-#elif PLATFORM == NUCLEO64P
+#elif defined(NUCLEO64P)
 # if !defined(ARDUINO_A0)
 #  define ARDUINO_A0   PA00
 # endif
@@ -211,7 +203,7 @@
 #  define ARDUINO_D15  PB08
 # endif
 
-#elif PLATFORM == NUCLEO32
+#elif defined(NUCLEO32)
 # if !defined(ARDUINO_A0)
 #  define ARDUINO_A0   PA00
 # endif
@@ -276,7 +268,7 @@
 #  define ARDUINO_D12  PB04
 # endif
 
-#elif PLATFORM == NUCLEO144
+#elif defined(NUCLEO144)
 # if !defined(ARDUINO_A0)
 #  define ARDUINO_A0   PA03
 # endif
@@ -366,7 +358,7 @@
 #  define ARDUINO_D15  PB08
 # endif
 
-#elif PLATFORM == F7_DISCOVERY
+#elif defined(F7_DISCOVERY)
 # if !defined(ARDUINO_A0)
 #  define ARDUINO_A0   PA00
 # endif
@@ -435,7 +427,7 @@
 #  define ARDUINO_D15  PB08
 # endif
 
-#elif PLATFORM == F469_DISCOVERY
+#elif defined(F469_DISCOVERY)
 # if !defined(ARDUINO_A0)
 #  define ARDUINO_A0   PB01
 # endif

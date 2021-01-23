@@ -98,7 +98,7 @@
 #define LCD_AF -1
 #endif
 
-#if PLATFORM == L1_DISCOVERY
+#if defined(L1_DISCOVERY)
 /* An 24 segment, 4 common LCD display is connected on this board*/
 const nutgpio_t lcd_pins[] = {
     PA01, PA02, PA03, PB03, PB04, PB05, PB10, PB11,
@@ -166,7 +166,7 @@ const nutgpio_t lcd_pins[] = {
                  (0 * LCD_FCR_BLINK_0) | (1 *  LCD_FCR_BLINKF_0) |      \
                  (4 * LCD_FCR_CC_0) | (9 * LCD_FCR_DEAD_0) | \
                  (4 * LCD_FCR_PON_0))
-#elif PLATFORM == L4_DISCOVERY
+#elif defined(L4_DISCOVERY)
 /* An 24 segment, 4 common LCD display is connected on this board*/
 const nutgpio_t lcd_pins[] = {
     PA08, PA09, PA10, PB09, PA07, PC05, PB01, PB13,

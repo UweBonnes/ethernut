@@ -42,9 +42,6 @@
  */
 
 #include <cfg/arch.h>
-#ifndef BOARDNAME
-# define BOARDNAME "NUCLEO"
-#endif
 
 /* LPUART is on same pins as USART2, but not yet supported.*/
 #ifndef DEV_CONSOLE

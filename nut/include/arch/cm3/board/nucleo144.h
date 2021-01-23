@@ -40,8 +40,6 @@
  * $Id$
  * \endverbatim
  */
-#define BOARDNAME "NUCLEO144"
-
 /* Board variants*/
 #define MB1137 0
 #define MB1312 1
