@@ -394,7 +394,7 @@ nutarch_cm3_stm32_family =
                 default = 1,
                 requires = {"HW_MCU_STM32G43"},
                 file = "include/cfg/arch.h",
-                makedefs = {"RAM0_LENGTH=16k", "RAM1_LENGTH=6K", "RAM2_LENGHT = 10k"}
+                makedefs = {"RAM0_LENGTH=16k", "RAM1_LENGTH=6K", "CCM_LENGTH = 10k"}
             },
             {
                 macro = "MCU_STM32G47",
@@ -403,7 +403,7 @@ nutarch_cm3_stm32_family =
                 default = 1,
                 requires = {"HW_MCU_STM32G47"},
                 file = "include/cfg/arch.h",
-                makedefs = {"RAM0_LENGTH=80k", "RAM1_LENGTH=16K", "RAM2_LENGHT = 32k"}
+                makedefs = {"RAM0_LENGTH=80k", "RAM1_LENGTH=16K", "CCM_LENGTH = 32k"}
             },
          }
     },
@@ -663,7 +663,7 @@ nutarch_cm3_stm32_family =
                 requires = {"HW_MCU_STM32F72"},
                 default = 1,
                 file = "include/cfg/arch.h",
-                makedefs = {"RAM0_LENGTH=64k", "RAM1_LENGTH=176K", "RAM2_LENGHT = 16k"}
+                makedefs = {"RAM0_LENGTH=64k", "RAM1_LENGTH=176K", "RAM2_LENGTH = 16k"}
             },
             {
                 macro = "MCU_STM32F74",
