@@ -53,7 +53,14 @@
 
 #include "nut_io.h"
 
-#include <string.h>
+#if defined(NUTCRT_TINYPRINT)
+int vsprintf(char *buffer, const char *fmt, va_list ap)
+{
+    int vsnprintf_(char* buffer, size_t count, const char* format, va_list va);
+    return vsnprintf_(buffer, -1, fmt, ap);
+}
+#else
+# include <string.h>
 
 /*!
  * \addtogroup xgCrtStdio
@@ -93,5 +100,6 @@ int vsprintf(char *buffer, const char *fmt, va_list ap)
 
     return rc;
 }
+#endif
 
 /*@}*/

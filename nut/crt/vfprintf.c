@@ -68,12 +68,19 @@
  */
 int vfprintf(FILE * stream, const char *fmt, va_list ap)
 {
+#if defined(NUTCRT_TINYPRINT)
+    char buffer[BUFSIZ];
+    int rc = vsnprintf(buffer, BUFSIZ, fmt, ap);
+    _write(stream->iob_fd, buffer, rc);
+    return rc;
+#else
     NUTASSERT(stream != NULL);
     return _putf(_write,
 #ifdef __HARVARD_ARCH__
                  _write_P,
 #endif
                  stream->iob_fd, fmt, ap);
+#endif
 }
 
 /*@}*/

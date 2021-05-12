@@ -144,8 +144,39 @@ nutcrt =
         provides = { "CRT_WRITE" },
         sources =
         {
-            "putf.c",
             "write.c"
+        }
+    },
+    {
+        name = "nutcrt_putf",
+        brief = "Low Level Write",
+        description = "Use dtoa(equivalent) provided by compiler suite.",
+        requires = { "DEV_WRITE", "CRT_FILE" },
+        disablers = {"CRT_TINYPRINT"},
+        sources =
+        {
+            "putf.c",
+        }
+    },
+    {
+        name = "nutcrt_tinyprint",
+        brief = "self-contained printf routine",
+        description = "A printf / sprintf Implementation for Embedded Systems\n"..
+        "\thttps://github.com/essele/printf",
+        requires = { "DEV_WRITE", "CRT_FILE", "TOOL_CC_CM3" },
+        provides = { "CRT_TINYPRINT" },
+        default = 1,
+        sources =
+        {
+            "tiny_printf.c",
+        },
+        options =
+        {
+           {
+              macro="NUTCRT_TINYPRINT",
+              default = 1,
+              file = "include/cfg/crt.h",
+           }
         }
     },
     {
@@ -193,6 +224,15 @@ nutcrt =
                 macro = "STDIO_FLOATING_POINT",
                 brief = "Floating point",
                 description = "Enables floating point support for standard input/output.",
+                flavor = "boolean",
+                provides = { "FLOATING_POINT_IO" },
+                file = "include/cfg/crt.h"
+            },
+            {
+                macro = "PRINTF_DISABLE_SUPPORT_FLOAT",
+                requires = {"CM3_GCC", "TOOL_NOLIBC"},
+                disablers = {"STDIO_FLOATING_POINT"},
+                brief = "TinyPrint no float",
                 flavor = "boolean",
                 provides = { "FLOATING_POINT_IO" },
                 file = "include/cfg/crt.h"
