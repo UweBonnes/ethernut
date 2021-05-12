@@ -241,7 +241,7 @@ THREAD(ATTRIBUTE_NUTINIT_SECTION NutIdle, arg)
  * not using precompiled nutinit.o in the user makefile could perhaps
  * do the trick, with code guarded by #if defined (__cplusplus)
  */
-extern void __libc_init_array(void);
+//extern void __libc_init_array(void);
 /* Empty definitio n for _init needed with the -nostartfiles option.*/
 void _init(void){};
 
@@ -278,7 +278,7 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     SetSysClock();
 
 /* Call static constructors*/
-    __libc_init_array();
+//    __libc_init_array();
 
 #ifdef EARLY_STDIO_DEV
     /* We may optionally initialize stdout as early as possible.

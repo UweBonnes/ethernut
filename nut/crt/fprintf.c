@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
  *
@@ -70,12 +71,20 @@ int fprintf(FILE * stream, const char *fmt, ...)
     int rc;
     va_list ap;
 
+#if defined(NUTNUTCRT_TINYPRINT)
+    char buffer[BUFSIZ];
+    va_start(ap, fmt);
+    rc = vsnprintf(buffer, BUFSIZ, fmt, ap);
+    va_end(ap);
+    _write(stream->iob_fd, buffer, rc);
+#else
     NUTASSERT(fmt != NULL);
 
     va_start(ap, fmt);
     rc = vfprintf(stream, fmt, ap);
     va_end(ap);
 
+#endif
     return rc;
 }
 

@@ -53,6 +53,13 @@
 
 #include "nut_io.h"
 
+#if defined(NUTCRT_TINYPRINT)
+int vsnprintf_(char *buffer, size_t size, const char *fmt, va_list ap);
+int vsnprintf(char *buffer, size_t size, const char *fmt, va_list ap)
+{
+    return vsnprintf_(buffer, size, fmt, ap);
+}
+#else
 #include <string.h>
 
 #define min(a, b) ((a)<(b)?(a):(b))
@@ -108,5 +115,5 @@ int vsnprintf(char *buffer, size_t size, const char *fmt, va_list ap)
 
     return rc;
 }
-
+#endif
 /*@}*/

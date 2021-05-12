@@ -46,16 +46,20 @@
  */
 /*@{*/
 
+#if defined(NUTCRT_TINYPRINT)
+int vsnprintf_(char* buffer, size_t count, const char* format, va_list va);
+#else
 /* Dummy function for calculating the output length. */
 static int _nputb(int fd, const void *buffer, size_t count)
 {
     return count;
 }
-#ifdef __HARVARD_ARCH__
+# ifdef __HARVARD_ARCH__
 static int _nputb_P(int fd, PGM_P buffer_P, size_t count)
 {
     return count;
 }
+# endif
 #endif
 /*!
  * \brief Write argument list to a string using a given format.
@@ -81,11 +85,15 @@ int vasprintf(char **strp, const char *fmt, va_list ap)
     NUTASSERT(fmt != NULL);
 
     /* Determine the length of the output string. */
+#if defined(NUTCRT_TINYPRINT)
+    rc = vsnprintf_(NULL, -1, fmt, ap);
+#else
     rc = _putf(_nputb,
-#ifdef __HARVARD_ARCH__
+# ifdef __HARVARD_ARCH__
                _nputb_P,
-#endif
+# endif
                0, fmt, ap);
+#endif
     if (rc >= 0) {
         *strp = (char *) malloc(rc + 1);
         if (*strp) {
