@@ -132,8 +132,8 @@
 --
 
 toolchain_names = {
-"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC","CM3_GCC", "CM3_GCCDBG",
-"CM3_GCC_NEWLIB", "CM3_GCC_NANOLIB", "LINUX_GCC", "ICCAVR", "ICCARM",
+"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "CM3_GCC", "CM3_GCCDBG",
+"CM3_GCC_NEWLIB", "CM3_GCC_NOLIBC", "LINUX_GCC", "ICCAVR", "ICCARM",
 "M68K_GCC_CS"}
 gcc_output_format = {"ARMELF", "ARMEABI"}
 nuttools =
@@ -162,51 +162,59 @@ nuttools =
             makedefs = {"TOOLCHAIN=arm-gcc", "ADDLIBS = -lnutc" }
         },
         {
-            brief = "GCC for CortexM (no libc)",
-            description = "GNU Compiler Collection for ARM CortexM using Nut/OS provided libc.\n"..
-                          "Nut/OS provides all required C standard functions.",
-            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
+            brief = "GCC for CortexM (Nanolib)",
+            description = "GNU Compiler Collection for ARM CortexM using Newlib/Nano.",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX" },
             macro = "CM3_GCC",
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = {"TOOLCHAIN=cm3-gcc", "ADDLIBS = -lnutc"}
+            makedefs =
+            {
+                "TOOLCHAIN=cm3-gcc",
+                "ADDLIBS = -specs=nosys.specs -specs=nano.specs",
+            }
         },
         {
-            brief = "GCC Debug for CortexM (no libc)",
-            description = "Debug build with GCC for ARM CortexM using Nut/OS provided libc.\n"..
-                          "Nut/OS provides all required C standard functions.",
-            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
+            brief = "GCC Debug for CortexM (Nanolib)",
+            description = "Debug build with GCC for ARM CortexM using Newlib/Nano.",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX" },
             macro = "CM3_GCCDBG",
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
             makedefs = {"TOOLCHAIN=cm3-gccdbg", "ADDLIBS = -lnutc"}
         },
-         {
+        {
             brief = "GCC for CortexM (newlib)",
             description = "GNU Compiler Collection for ARM CortexM including newlib libc.\n"..
                         "Newlib is provided by most toolchains.\n"..
-                        "It provides best coverage but needs most flash space.\n"..
-                        "Incompatibilities regarding FPU compile options may arise!",
+                        "It provides best coverage but needs most flash space.",
             provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX"},
             macro = "CM3_GCC_NEWLIB",
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = {"TOOLCHAIN=cm3-gcc"}
+            makedefs =
+            {
+                "TOOLCHAIN=cm3-gcc",
+                "ADDLIBS = -specs=nosys.specs"
+            }
         },
         {
-            brief = "GCC for CortexM (nanolib)",
-            description = "GNU Compiler Collection for ARM CortexM including nanolib libc.\n"..
-                          "Nanolib is only provided with recent toolchains and needs least space.\n"..
-                          "Incompatibilities regarding FPU compile options may arise!",
-            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_ARMLIB" },
+            brief = "GCC for CortexM (nolibc)",
+            description = "GNU Compiler Collection for ARM CortexM w/o external libs.\n"..
+                          "Missing functions may happem!",
+            provides = { "TOOL_CC_CM3", "TOOL_GCC", "TOOL_CXX", "TOOL_ARMLIB", "TOOL_NOLIBC" },
             macro = "CM3_GCC_NANOLIB",
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
-            makedefs = {"TOOLCHAIN=cm3-gcc", "ADDLIBS = -specs=nano.specs"}
+            makedefs =
+            {
+                "TOOLCHAIN=cm3-gcc",
+                "ADDLIBS = -nostdlib -lgcc -lnutc"
+            }
         },
         {
             brief = "GCC for AVR",
