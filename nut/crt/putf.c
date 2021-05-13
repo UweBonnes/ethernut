@@ -125,6 +125,11 @@
  */
 extern char *_sbrk(size_t nbytes);
 char *(*sbrk_force)(size_t) = _sbrk;
+extern void __assert_func(const char *file, int line, const char *func,
+                         const char *failedexpr);
+# if !defined(__assert_func_force)
+void *(__assert_func_force) = __assert_func;
+# endif
 #endif
 #endif                          /* STDIO_FLOATING_POINT */
 

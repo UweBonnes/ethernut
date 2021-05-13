@@ -152,7 +152,7 @@ nutcrt =
         brief = "Low Level Write",
         description = "Use dtoa(equivalent) provided by compiler suite.",
         requires = { "DEV_WRITE", "CRT_FILE" },
-        disablers = {"CRT_TINYPRINT"},
+        disablers = {"NUTCRT_TINYPRINT"},
         sources =
         {
             "putf.c",
@@ -163,8 +163,9 @@ nutcrt =
         brief = "self-contained printf routine",
         description = "A printf / sprintf Implementation for Embedded Systems\n"..
         "\thttps://github.com/essele/printf",
-        requires = { "DEV_WRITE", "CRT_FILE", "TOOL_CC_CM3" },
-        provides = { "CRT_TINYPRINT" },
+        requires = { "DEV_WRITE", "CRT_FILE", "TOOL_NOLIBC"},
+        disables = {"TOOL_CC_AVR"},
+        provides = { "NUTCRT_TINYPRINT" },
         default = 1,
         sources =
         {
@@ -230,7 +231,7 @@ nutcrt =
             },
             {
                 macro = "PRINTF_DISABLE_SUPPORT_FLOAT",
-                requires = {"CM3_GCC", "TOOL_NOLIBC"},
+                requires = {"NUTCRT_TINYPRINT"},
                 disablers = {"STDIO_FLOATING_POINT"},
                 brief = "TinyPrint no float",
                 flavor = "boolean",
@@ -404,12 +405,12 @@ nutcrt =
     },
 
     --
-    -- Date and time
+    -- Misc
     --
     {
-        name = "nutcrt_errno",
+        name = "nutcrt_misc",
         brief = "Global errno",
-        sources = { "errno.c" }
+        sources = { "errno.c", "assert.c" }
     },
 
     --
