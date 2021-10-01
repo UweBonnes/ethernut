@@ -79,6 +79,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 
 #if defined(NUTCRT_TINYPRINT) && defined(__arm__)
@@ -120,6 +121,87 @@ void *(__assert_func_force) = __assert_func;
 #define CT_STRING   2       /* %s conversion */
 #define CT_INT      3       /* integer, i.e., strtoq or strtouq */
 #define CT_FLOAT    4       /* floating, i.e., strtod */
+
+double strtod_simple(const char* str, char** endptr)
+{
+    double result = 0.0;
+    char signedResult = '\0';
+    char signedExponent = '\0';
+    int decimals = 0;
+    bool isExponent = false;
+    bool hasExponent = false;
+    bool hasResult = false;
+    // exponent is logically int but is coded as double so that its eventual
+    // overflow detection can be the same as for double result
+    double exponent = 0;
+    char c;
+
+    for (; '\0' != (c = *str); ++str) {
+        if ((c >= '0') && (c <= '9')) {
+            int digit = c - '0';
+            if (isExponent) {
+                exponent = (10 * exponent) + digit;
+                hasExponent = true;
+            } else if (decimals == 0) {
+                result = (10 * result) + digit;
+                hasResult = true;
+            } else {
+                result += (double)digit / decimals;
+                decimals *= 10;
+            }
+            continue;
+        }
+
+        if (c == '.') {
+            if (!hasResult) break; // don't allow leading '.'
+            if (isExponent) break; // don't allow decimal places in exponent
+            if (decimals != 0) break; // this is the 2nd time we've found a '.'
+
+            decimals = 10;
+            continue;
+        }
+
+        if ((c == '-') || (c == '+')) {
+            if (isExponent) {
+                if (signedExponent || (exponent != 0)) break;
+                else signedExponent = c;
+            } else {
+                if (signedResult || (result != 0)) break;
+                else signedResult = c;
+            }
+            continue;
+        }
+
+        if (c == 'E') {
+            if (!hasResult) break; // don't allow leading 'E'
+            if (isExponent) break;
+            else isExponent = true;
+            continue;
+        }
+
+        break; // unexpected character
+    }
+
+    if (isExponent && !hasExponent) {
+        while (*str != 'E')
+            --str;
+    }
+
+    if (!hasResult && signedResult)
+	--str;
+
+    if (endptr)
+	*endptr = (char*)str;
+
+    for (; exponent != 0; --exponent) {
+        if (signedExponent == '-') result /= 10;
+        else result *= 10;
+    }
+
+    if (signedResult == '-' && result != 0)
+	result = -result;
+    return result;
+}
 
 /*!
  * \brief Read formatted data using a given input function.
@@ -257,7 +339,6 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
             flags |= CF_PFXOK;
             base = 16;
             break;
-#ifdef STDIO_FLOATING_POINT
         case 'e':
         case 'f':
         case 'F':
@@ -265,8 +346,7 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
         case 'G':
             ct = CT_FLOAT;
             break;
-#endif
-        }
+       }
 
         /*
          * Process characters.
@@ -454,7 +534,6 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
             }
             ccnt++;
         }
-#ifdef STDIO_FLOATING_POINT
         else if (ct == CT_FLOAT) {
             if (width == 0 || width > sizeof(buf) - 1)
                 width = sizeof(buf) - 1;
@@ -490,7 +569,11 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
                 double res;
 
                 *cp = 0;
+#ifdef STDIO_FLOATING_POINT
                 res = strtod(buf, 0);
+#else
+		res = strtod_simple(buf, 0);
+#endif                          /* STDIO_FLOATING_POINT */
                 if (flags & CF_LONGLONG)
                     *va_arg(ap, long double *) = res;
                 else if (flags & CF_LONG)
@@ -501,7 +584,6 @@ int _getf(int _getb(int, void *, size_t), int fd, const char *fmt, va_list ap)
             }
             ccnt++;
         }
-#endif                          /* STDIO_FLOATING_POINT */
     }
 }
 
