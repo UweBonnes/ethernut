@@ -53,59 +53,59 @@
 
 #define MSI_DEFAULT MSI_4M
 
-#define HSI_VALUE 16000000
+#define HSI_VALUE (16*1000*1000)
 
 /* Prepare system limits*/
 #if defined(MCU_STM32G4)
 # define PLLMULT_MAX           127
-# define PLLIN_MIN         2660000
+# define PLLIN_MIN         (2660*1000)
 # if   (STM32_POWERSCALE == 1)
 /* Give some tolerance to that MSI_32M use 1 WS and MSI_48M 2 WS*/
-#  define FLASH_BASE_FREQ 20000000
+#  define FLASH_BASE_FREQ (20*1000*1000)
 #  if STM32_OVERDRIVE == ENABLE
-#   define SYSCLK_MAX    170000000
+#   define SYSCLK_MAX    (170*1000*1000)
 #  else
-#   define SYSCLK_MAX    150000000
+#   define SYSCLK_MAX    (150*1000*1000)
 #  endif
-#  define PLLVCO_MAX     344000000
+#  define PLLVCO_MAX     (344*1000*1000)
 # elif (STM32_POWERSCALE == 2)
-#  define FLASH_BASE_FREQ  8000000
-#  define SYSCLK_MAX      26000000
-#  define PLLVCO_MAX     128000000
+#  define FLASH_BASE_FREQ  (8*1000*1000)
+#  define SYSCLK_MAX      (26*1000*1000)
+#  define PLLVCO_MAX     (128*1000*1000)
 # else
 #  warning Invalid STM32_POWERSCALE
 # endif
 #elif defined(MCU_STM32L4R)
 # define PLLMULT_MAX           127
-# define PLLIN_MIN         2660000
+# define PLLIN_MIN         (2660*1000)
 # if   (STM32_POWERSCALE == 1)
 /* Give some tolerance to that MSI_32M use 1 WS and MSI_48M 2 WS*/
-#  define FLASH_BASE_FREQ 20000000
+#  define FLASH_BASE_FREQ (20*1000*1000)
 #  if STM32_OVERDRIVE == ENABLE
-#   define SYSCLK_MAX    120000000
+#   define SYSCLK_MAX    (120*1000*1000)
 #  else
-#   define SYSCLK_MAX     80000000
+#   define SYSCLK_MAX     (80*1000*1000)
 #  endif
-#  define PLLVCO_MAX     344000000
+#  define PLLVCO_MAX     (344*1000*1000)
 # elif (STM32_POWERSCALE == 2)
-#  define FLASH_BASE_FREQ  8000000
-#  define SYSCLK_MAX      26000000
-#  define PLLVCO_MAX     128000000
+#  define FLASH_BASE_FREQ  (8*1000*1000)
+#  define SYSCLK_MAX      (26*1000*1000)
+#  define PLLVCO_MAX     (128*1000*1000)
 # else
 #  warning Invalid STM32_POWERSCALE
 # endif
 #else
 # define PLLMULT_MAX            86
-# define PLLIN_MIN         4000000
+# define PLLIN_MIN         (4*1000*1000)
 # if   (STM32_POWERSCALE == 1)
 /* Give some tolerance to that MSI_32M use 1 WS and MSI_48M 2 WS*/
-#  define FLASH_BASE_FREQ 16007000
-#  define SYSCLK_MAX      80000000
-#  define PLLVCO_MAX     344000000
+#  define FLASH_BASE_FREQ (  16007*1000)
+#  define SYSCLK_MAX      (80*1000*1000)
+#  define PLLVCO_MAX     (344*1000*1000)
 # elif (STM32_POWERSCALE == 2)
-#  define FLASH_BASE_FREQ  6000000
-#  define SYSCLK_MAX      26000000
-#  define PLLVCO_MAX     128000000
+#  define FLASH_BASE_FREQ  (6*1000*1000)
+#  define SYSCLK_MAX      (26*1000*1000)
+#  define PLLVCO_MAX     (128*1000*1000)
 # else
 #   warning Invalid STM32_POWERSCALE
 # endif
@@ -116,7 +116,7 @@
 
 /* Define PLL Input Clock */
 #if (PLLCLK_SOURCE == PLLCLK_HSE)
-# if (HSE_VALUE < 1000000)
+# if (HSE_VALUE < 1000*1000)
 #  warning HSE_VALUE not given or too low!
 # endif
 # define PLLCLK_IN HSE_VALUE
@@ -124,7 +124,7 @@
 # define PLLCLK_IN HSI_VALUE
 #elif (PLLCLK_SOURCE == PLLCLK_MSI) && (SYSCLK_SOURCE == SYSCLK_PLL)
 /* Use rounded MSI value here to keep calculation below easy */
-# define PLLCLK_IN 48000000
+# define PLLCLK_IN (48*1000*1000)
 # undef MSI_RANGE
 # define MSI_RANGE MSI_48M
 #else
@@ -136,109 +136,111 @@
  * 0 < PLL_PREDIV < 9
  * 0 < (PLLCLK_DIV / 2) < 5
  */
-# if !defined(SYSCLK_FREQ) && !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT) && !defined(PLLCLK_DIV)
+# if !defined(SYSCLK_FREQ)
 #  define SYSCLK_FREQ SYSCLK_MAX
-#  if (SYSCLK_FREQ == 170000000)
+# endif
+# if !defined(PLLCLK_PREDIV) && !defined(PLLCLK_MULT) && !defined(PLLCLK_DIV)
+#  if (SYSCLK_FREQ == (170*1000*1000))
      /* 340 MHz PLL output. 8 and 6 MHz PLL input would require fractional PLL.*/
-#   if ((PLLCLK_IN % 5000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#   if ((PLLCLK_IN % (5*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (5*1000*1000))
 #    define PLLCLK_MULT   68
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 4000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#   elif ((PLLCLK_IN % (4*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (4*1000*1000))
 #    define PLLCLK_MULT   85
 #    define PLLCLK_DIV     2
 #   else
 #    warning Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV to reach 170 MHz
 #   endif
-#  elif (SYSCLK_FREQ == 150000000)
+#  elif (SYSCLK_FREQ == (150*1000*1000))
      /* 300 MHz PLL output.  8 MHz PLL input would require fractional PLL.*/
-#   if   ((PLLCLK_IN % 12000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 12000000)
+#   if   ((PLLCLK_IN % (12*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (12*1000*1000))
 #    define PLLCLK_MULT   25
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 6000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
+#   elif ((PLLCLK_IN % (6*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (6*1000*1000))
 #    define PLLCLK_MULT   50
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 5000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#   elif ((PLLCLK_IN % (5*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (5*1000*1000))
 #    define PLLCLK_MULT   60
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 4000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#   elif ((PLLCLK_IN % (4*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (4*1000*1000))
 #    define PLLCLK_MULT   75
 #    define PLLCLK_DIV     2
 #   else
 #    warning Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV to reach 80 MHz
 #   endif
-#  elif (SYSCLK_FREQ == 120000000)
+#  elif (SYSCLK_FREQ == (120*1000*1000))
      /* 240 MHz PLL output */
-#   if   ((PLLCLK_IN % 8000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
+#   if   ((PLLCLK_IN % (8*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (8*1000*1000))
 #    define PLLCLK_MULT   30
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 6000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
+#   elif ((PLLCLK_IN % (6*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (6*1000*1000))
 #    define PLLCLK_MULT   40
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 5000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#   elif ((PLLCLK_IN % (5*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (5*1000*1000))
 #    define PLLCLK_MULT   48
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 4000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#   elif ((PLLCLK_IN % (4*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (4*1000*1000))
 #    define PLLCLK_MULT   60
 #    define PLLCLK_DIV     2
 #   else
 #    warning Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV to reach 80 MHz
 #   endif
-#  elif (SYSCLK_FREQ == 80000000)
+#  elif (SYSCLK_FREQ == (80*1000*1000))
 /* 160 MHz PLL output */
-#   if   ((PLLCLK_IN % 8000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
+#   if   ((PLLCLK_IN % (8*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (8*1000*1000))
 #    define PLLCLK_MULT   20
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 4000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#   elif ((PLLCLK_IN % (4*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (4*1000*1000))
 #    define PLLCLK_MULT   40
 #    define PLLCLK_DIV     2
 /*   6 MHz PLL Input, 144 MHz PLL VCO, 72 MHz PLL R output */
-#   elif ((PLLCLK_IN % 6000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
+#   elif ((PLLCLK_IN % (6*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (6*1000*1000))
 #    define PLLCLK_MULT   24
 #    define PLLCLK_DIV     2
-#   elif ((PLLCLK_IN % 5000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#   elif ((PLLCLK_IN % (5*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (5*1000*1000))
 #    define PLLCLK_MULT   32
 #    define PLLCLK_DIV     2
 #   else
 #    warning Provide PLLCLK_PREDIV, PLLCLK_MULT and PLLCLK_DIV to reach 80 MHz
 #   endif
-#  elif (SYSCLK_FREQ == 26000000)
+#  elif (SYSCLK_FREQ == (26*1000*1000))
 /*  8 MHz PLL Input, 104 MHz PLL VCO, 26 MHz PLL R output */
-#   if   ((PLLCLK_IN % 8000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 8000000)
+#   if   ((PLLCLK_IN % (8*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (8*1000*1000))
 #    define PLLCLK_MULT   13
 #    define PLLCLK_DIV     4
 /*  7 MHz PLL Input, 98 MHz PLL VCO, 24,5 MHz PLL R output */
-#   elif ((PLLCLK_IN % 7000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 7000000)
+#   elif ((PLLCLK_IN % (7*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (7*1000*1000))
 #    define PLLCLK_MULT   14
 #    define PLLCLK_DIV     4
 /*  6 MHz PLL Input, 96 MHz PLL VCO, 24 MHz PLL R output */
-#   elif ((PLLCLK_IN % 6000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 6000000)
+#   elif ((PLLCLK_IN % (6*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (6*1000*1000))
 #    define PLLCLK_MULT   16
 #    define PLLCLK_DIV     4
 /*  5 MHz PLL Input, 100 MHz PLL VCO, 25 MHz PLL R output */
-#   elif ((PLLCLK_IN % 5000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 5000000)
+#   elif ((PLLCLK_IN % (5*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (5*1000*1000))
 #    define PLLCLK_MULT   20
 #    define PLLCLK_DIV     4
 /*  4 MHz PLL Input, 104 MHz PLL VCO, 26 MHz PLL R output */
-#   elif ((PLLCLK_IN % 4000000) == 0)
-#    define PLLCLK_PREDIV (PLLCLK_IN / 4000000)
+#   elif ((PLLCLK_IN % (4*1000*1000)) == 0)
+#    define PLLCLK_PREDIV (PLLCLK_IN / (4*1000*1000))
 #    define PLLCLK_MULT   26
 #    define PLLCLK_DIV     4
 #   else
@@ -248,9 +250,9 @@
 # endif
 # if   (PLLCLK_IN / PLLCLK_PREDIV) < PLLIN_MIN
 #  warning PLL Input frequency too low
-# elif (PLLCLK_IN / PLLCLK_PREDIV) > 16000000
+# elif (PLLCLK_IN / PLLCLK_PREDIV) > (16*1000*1000)
 #  warning PLL Input frequency too high
-# elif ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) < 64000000
+# elif ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) < (64*1000*1000)
 #  warning PLL VCO frequency too low
 # elif ((PLLCLK_IN / PLLCLK_PREDIV) * PLLCLK_MULT) > PLLVCO_MAX
 #  warning PLL VCO frequency too high
@@ -526,7 +528,7 @@ static void SetVos(uint32_t frequency)
 {
     uint32_t cr = PWR->CR1;
     cr &= ~(PWR_CR1_VOS);
-    if (frequency < 26000000) {
+    if (frequency < (26*1000*1000)) {
         cr |= 2 * PWR_CR1_VOS_0;
     } else {
         cr |= 1 * PWR_CR1_VOS_0;
@@ -539,7 +541,7 @@ static void SetVos(uint32_t frequency)
 /* Set or stop Low power run mode */
 static void SetLpMode(uint32_t frequency)
 {
-    if (frequency > 2000000) {
+    if (frequency > (2*1000*1000)) {
 	PWR->CR1 &= ~(PWR_CR1_LPR);
 	/* Wait until normal regulator is ready. */
 	while (PWR->SR2 & PWR_SR2_REGLPF) {_NOP();}
@@ -560,7 +562,7 @@ static void SetLatency(uint32_t value)
 static void SetR1Mode(uint32_t frequency)
 {
 #if defined(MCU_STM32L4R)
-    if (frequency > 80000000) {
+    if (frequency > (80*1000*1000)) {
         PWR->CR5 &= ~PWR_CR5_R1MODE;
     } else {
         PWR->CR5 |=  PWR_CR5_R1MODE;
