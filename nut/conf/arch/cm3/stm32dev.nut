@@ -720,8 +720,8 @@ nutarch_cm3_stm32_devices =
     {
         name = "nutarch_cm3_stm32_lcd",
         brief = "LCD glass driver",
-        description = "Driver for LCD glass display.\n",
-        requires = { "HW_LCD_STM32" },
+        description = "Driver for LCD glass display.",
+        requires = { "HW_LCD_STM32", "LCD_16SEGMENT"},
         sources = { "cm3/dev/stm/stm32_lcd16seg.c" },
     },
 

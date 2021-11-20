@@ -2306,6 +2306,20 @@ nutdev =
     },
 
     {
+        name = "nutdev_LCD_16SEGMENT",
+        brief = "16 Segment LCD",
+        description = "Board provides a 16 Segment LCD.",
+        options =
+        {
+            {
+                macro = "LCD_16SEGMENT",
+                flavor = "boolean",
+                provides = {"LCD_16SEGMENT"}
+             }
+         }
+    },
+
+    {
         name = "nutdev_spi_lcd_st7565r",
         brief = "ST7565R / C12832A1Z LCD Controller framebuffer driver",
         description = "LCD framebuffer driver for LCD C12832A1Z with ST7565R controller."..
