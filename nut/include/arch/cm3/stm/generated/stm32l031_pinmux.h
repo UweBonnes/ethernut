@@ -55,9 +55,14 @@
 
 # define PINMUX(gpio, func) ((gpio == PIN_NONE) ? AF_PIN_NONE : 	\
 	((gpio == PA00) && (func == LPTIM1_IN1_FUNC          )) ?  1 : \
+	((gpio == PA00) && (func == LPTIM1_IN1_FUNC          )) ?  1 : \
+	((gpio == PA00) && (func == TIM2_CH1_FUNC            )) ?  2 : \
 	((gpio == PA00) && (func == TIM2_CH1_FUNC            )) ?  2 : \
 	((gpio == PA00) && (func == USART2_CTS_FUNC          )) ?  4 : \
+	((gpio == PA00) && (func == USART2_CTS_FUNC          )) ?  4 : \
 	((gpio == PA00) && (func == TIM2_ETR_FUNC            )) ?  5 : \
+	((gpio == PA00) && (func == TIM2_ETR_FUNC            )) ?  5 : \
+	((gpio == PA00) && (func == COMP1_OUT_FUNC           )) ?  7 : \
 	((gpio == PA00) && (func == COMP1_OUT_FUNC           )) ?  7 : \
 	((gpio == PA01) && (func == EVENTOUT_FUNC            )) ?  0 : \
 	((gpio == PA01) && (func == LPTIM1_IN2_FUNC          )) ?  1 : \
@@ -186,6 +191,7 @@
 	AF_NO_SUCH_PINFUNC)
 
 # define TIMERMUX(gpio, timer_nr, channel_nr) ((gpio == PIN_NONE) ? AF_PIN_NONE : 	\
+	((gpio == PA00) && (timer_nr ==  2) && (channel_nr ==  1)) ?  2 : \
 	((gpio == PA00) && (timer_nr ==  2) && (channel_nr ==  1)) ?  2 : \
 	((gpio == PA01) && (timer_nr ==  2) && (channel_nr ==  2)) ?  2 : \
 	((gpio == PA02) && (timer_nr == 21) && (channel_nr ==  1)) ?  0 : \
