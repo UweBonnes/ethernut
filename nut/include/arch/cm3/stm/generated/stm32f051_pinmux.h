@@ -270,7 +270,7 @@
 	((gpio == PB15) && (func == TIM15_CH1N_FUNC          )) ?  3 : \
 	((gpio == PC06) && (func == TIM3_CH1_FUNC            )) ?  0 : \
 	((gpio == PC07) && (func == TIM3_CH2_FUNC            )) ?  0 : \
-	((gpio == PC08) && (func == TIM3_CH3_FUNC            )) ?  1 : \
+	((gpio == PC08) && (func == TIM3_CH3_FUNC            )) ?  0 : \
 	((gpio == PC09) && (func == TIM3_CH4_FUNC            )) ?  0 : \
 	((gpio == PD02) && (func == TIM3_ETR_FUNC            )) ?  0 : \
 	AF_NO_SUCH_PINFUNC)
@@ -317,7 +317,7 @@
 	((gpio == PB15) && (timer_nr == 15) && (channel_nr == -1)) ?  3 : \
 	((gpio == PC06) && (timer_nr ==  3) && (channel_nr ==  1)) ?  0 : \
 	((gpio == PC07) && (timer_nr ==  3) && (channel_nr ==  2)) ?  0 : \
-	((gpio == PC08) && (timer_nr ==  3) && (channel_nr ==  3)) ?  1 : \
+	((gpio == PC08) && (timer_nr ==  3) && (channel_nr ==  3)) ?  0 : \
 	((gpio == PC09) && (timer_nr ==  3) && (channel_nr ==  4)) ?  0 : \
 	AF_NO_SUCH_PINFUNC)
 #endif

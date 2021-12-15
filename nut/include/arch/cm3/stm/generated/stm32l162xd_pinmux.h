@@ -639,6 +639,7 @@
 	((gpio == PE06) && (func == RTC_TAMP3_FUNC           )) ?  0 : \
 	((gpio == PE06) && (func == SYS_TRACED3_FUNC         )) ?  0 : \
 	((gpio == PE06) && (func == SYS_WKUP3_FUNC           )) ?  0 : \
+	((gpio == PE06) && (func == TIM9_CH2_FUNC            )) ?  3 : \
 	((gpio == PE06) && (func == TIMX_IC3_FUNC            )) ? 14 : \
 	((gpio == PE07) && (func == FSMC_D4_FUNC             )) ? 12 : \
 	((gpio == PE07) && (func == FSMC_DA4_FUNC            )) ? 12 : \
@@ -770,6 +771,7 @@
 	((gpio == PE03) && (timer_nr ==  3) && (channel_nr ==  1)) ?  2 : \
 	((gpio == PE04) && (timer_nr ==  3) && (channel_nr ==  2)) ?  2 : \
 	((gpio == PE05) && (timer_nr ==  9) && (channel_nr ==  1)) ?  3 : \
+	((gpio == PE06) && (timer_nr ==  9) && (channel_nr ==  2)) ?  3 : \
 	((gpio == PE09) && (timer_nr ==  2) && (channel_nr ==  1)) ?  1 : \
 	((gpio == PE10) && (timer_nr ==  2) && (channel_nr ==  2)) ?  1 : \
 	((gpio == PE11) && (timer_nr ==  2) && (channel_nr ==  3)) ?  1 : \
