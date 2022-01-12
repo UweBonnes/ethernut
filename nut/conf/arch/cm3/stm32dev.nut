@@ -1609,6 +1609,62 @@ nutarch_cm3_stm32_devices =
                 file = "include/cfg/devices.h"
             },
             {
+                macro = "HW_TIM1_UP_STM32",
+                brief = "TIM1_UP_STM32 IRQ",
+                requires = {"HW_TIM1_UP_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_UP_TIM10_STM32",
+                brief = "TIM1_UP_TIM10_STM32 IRQ",
+                requires = {"HW_TIM1_UP_TIM10_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_UP_TIM16_STM32",
+                brief = "TIM1_UP_TIM16_STM32 IRQ",
+                requires = {"HW_TIM1_UP_TIM16_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_TRG_COM_TIM11_STM32",
+                brief = "TIM1_TRG_COM_TIM11_STM32",
+                requires = {"HW_TIM1_TRG_COM_TIM11_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_TRG_COM_TIM17_STM32",
+                brief = "TIM1_TRG_COM_TIM17_STM32",
+                requires = {"HW_TIM1_TRG_COM_TIM17_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_TRG_COM",
+                brief = "TIM1_TRG_STM32",
+                requires = {"HW_TIM1_TRG_COM_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
+                macro = "HW_TIM1_CC_COM",
+                brief = "TIM1_CC_COMSTM32",
+                requires = {"HW_TIM1_CC_STM32"},
+                default = "1",
+                type = "integer",
+                file = "include/cfg/devices.h"
+            },
+            {
                 macro = "HW_TIM1_STM32",
                 brief = "TIM1 Availability",
                 description = "TIM1 Availability",
