@@ -1262,15 +1262,6 @@ int basic_read(SSL *ssl, uint8_t **in_data)
     if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
         return SSL_CLOSE_NOTIFY;
 
-    uint32_t avail = 0;
-    NutTcpDeviceIOCtl((TCPSOCKET *) ssl->client_fd, IOCTL_GETINBUFCOUNT,
-                      &avail);
-    if (avail < ssl->need_bytes) {
-        /* allow another thread to receive data from network*/
-        NutThreadYield();
-        return SSL_OK;
-    }
-
     read_len = NutTcpReceive ((TCPSOCKET *)ssl->client_fd, &buf[ssl->bm_read_index],
                             ssl->need_bytes-ssl->got_bytes);
 
