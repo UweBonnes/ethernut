@@ -640,6 +640,7 @@ static NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, v
 
         /* Set callback and callback argument. */
         tn->tn_callback = callback;
+        tn->tn_flags = 0;
         tn->tn_arg = arg;
     }
     return tn;
