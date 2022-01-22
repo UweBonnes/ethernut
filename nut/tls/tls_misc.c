@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2015, Cameron Rich
+ * Copyright (c) 2007-2019, Cameron Rich
  *
  * All rights reserved.
  *
@@ -122,7 +122,7 @@ int get_random(int num_rand_bytes, uint8_t *rand_data)
 {
     /* The method we use when we've got nothing better. Use RC4, time
        and a couple of random seeds to generate a random sequence */
-    RC4_CTX rng_ctx;
+    AES_CTX rng_ctx;
     struct timeval tv;
     MD5_CTX rng_digest_ctx;
     uint8_t digest[MD5_SIZE];
@@ -141,10 +141,10 @@ int get_random(int num_rand_bytes, uint8_t *rand_data)
     MD5_Final(digest, &rng_digest_ctx);
 
     /* come up with the random sequence */
-    RC4_setup(&rng_ctx, digest, MD5_SIZE); /* use as a key */
+    AES_set_key(&rng_ctx, digest, (const uint8_t *)ep, AES_MODE_128); /* use as a key */
     memcpy(rand_data, entropy_pool, num_rand_bytes < ENTROPY_POOL_SIZE ?
                 num_rand_bytes : ENTROPY_POOL_SIZE);
-    RC4_crypt(&rng_ctx, rand_data, rand_data, num_rand_bytes);
+    AES_cbc_encrypt(&rng_ctx, rand_data, rand_data, num_rand_bytes);
 
     /* move things along */
     for (i = ENTROPY_POOL_SIZE-1; i >= MD5_SIZE ; i--)

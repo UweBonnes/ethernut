@@ -156,9 +156,12 @@ int RSA_decrypt(const RSA_CTX *ctx, const uint8_t *in_data,
 
     /* decrypt */
     dat_bi = bi_import(ctx->bi_ctx, in_data, byte_size);
-
+#ifdef TLS_SSL_CERT_VERIFICATION
     decrypted_bi = is_decryption ?  /* decrypt or verify? */
             RSA_private(ctx, dat_bi) : RSA_public(ctx, dat_bi);
+#else   /* always a decryption */
+    decrypted_bi = RSA_private(ctx, dat_bi);
+#endif
 
     /* convert to a normal block */
     bi_export(ctx->bi_ctx, decrypted_bi, block, byte_size);
@@ -166,6 +169,7 @@ int RSA_decrypt(const RSA_CTX *ctx, const uint8_t *in_data,
     if (block[i++] != 0)             /* leading 0? */
         return -1;
 
+#ifdef TLS_SSL_CERT_VERIFICATION
     if (is_decryption == 0) /* PKCS1.5 signing pads with "0xff"s */
     {
         if (block[i++] != 0x01)     /* BT correct? */
@@ -175,6 +179,7 @@ int RSA_decrypt(const RSA_CTX *ctx, const uint8_t *in_data,
             pad_count++;
     }
     else                    /* PKCS1.5 encryption padding is random */
+#endif
     {
         if (block[i++] != 0x02)     /* BT correct? */
             return -1;
@@ -210,6 +215,7 @@ bigint *RSA_private(const RSA_CTX *c, bigint *bi_msg)
 #endif
 }
 
+#ifdef TLS_SSL_FULL_MODE
 /**
  * Used for diagnostics.
  */
@@ -224,7 +230,9 @@ void RSA_print(const RSA_CTX *rsa_ctx)
     bi_print("Public Key", rsa_ctx->e);
     bi_print("Private Key", rsa_ctx->d);
 }
+#endif
 
+#if defined(TLS_SSL_CERT_VERIFICATION) || defined(TLS_SSL_GENERATE_X509_CERT)
 /**
  * Performs c = m^e mod n
  */
@@ -273,3 +281,5 @@ int RSA_encrypt(const RSA_CTX *ctx, const uint8_t *in_data, uint16_t in_len,
     bi_clear_cache(ctx->bi_ctx);
     return byte_size;
 }
+
+#endif  /* TLS_SSL_CERT_VERIFICATION */

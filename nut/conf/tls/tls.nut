@@ -141,7 +141,7 @@ nuttls =
             {
                 macro = "TLS_SSL_PROT_LOW",
                 brief = "Low security mode",
-                description = "Chooses the cipher in the order of RC4-SHA, AES128-SHA, AES256-SHA.\n\n"..
+                description = "Chooses the cipher in the order of AES128-SHA, AES128-SHA256, AES256-SHA256.\n\n"..
                               "This will use the fastest cipher(s) but at the expense of security. ",
                 flavor = "boolean",
                 exclusivity = tls_protocol_preference,
@@ -150,7 +150,7 @@ nuttls =
             {
                 macro = "TLS_SSL_PROT_MEDIUM",
                 brief = "Medium security mode",
-                description = "Chooses the cipher in the order of AES128-SHA, AES256-SHA, RC4-SHA.\n\n"..
+                description = "Chooses the cipher in the order of AES128-SHA256, AES256-SHA256, AES128-SHA.\n\n"..
                               "This mode is a balance between speed and security and is the default. ",
                 flavor = "boolean",
                 exclusivity = tls_protocol_preference,
@@ -159,27 +159,12 @@ nuttls =
             {
                 macro = "TLS_SSL_PROT_HIGH",
                 brief = "High security mode",
-                description = "Chooses the cipher in the order of AES256-SHA, AES128-SHA, RC4-SHA.\n\n"..
+                description = "Chooses the cipher in the order of AES256-SHA256, AES128-SHA256, AES128-SHA.\n\n"..
                               "This will use the strongest cipher(s) at the cost of speed. ",
                 flavor = "boolean",
                 exclusivity = tls_protocol_preference,
                 file = "include/cfg/tls.h",
             },
-            {
-                macro = "TLS_SSL_ENABLE_V23_HANDSHAKE",
-                brief = "Enable v23 Handshake",
-                description = "Some browsers use the v23 handshake client hello message "..
-                              "(an SSL2 format message which all SSL servers can understand). "..
-                              "It may be used if SSL2 is enabled in the browser.\n\n"..
-                              "Since this feature takes a kB or so, this feature may be disabled - at "..
-                              "the risk of making it incompatible with some browsers (IE6 is ok, "..
-                              "Firefox 1.5 and below use it).\n\n"..
-                              "Disable if backwards compatibility is not an issue (i.e. the client is "..
-                              "always using TLS1.0)",
-                flavor = "boolean",
-                file = "include/cfg/tls.h",
-            },
-
         },
     },
     {

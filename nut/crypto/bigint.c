@@ -628,6 +628,7 @@ bigint *bi_import(BI_CTX *ctx, const uint8_t *data, int size)
     return trim(biR);
 }
 
+#ifdef TLS_SSL_FULL_MODE
 /**
  * @brief The testharness uses this code to import text hex-streams and
  * convert them into bigints.
@@ -681,6 +682,7 @@ void bi_print(const char *label, bigint *x)
 
     printf("\n");
 }
+#endif
 
 /**
  * @brief Take a bigint and convert it into a byte sequence.
@@ -1412,6 +1414,7 @@ bigint *bi_mod_power(BI_CTX *ctx, bigint *bi, bigint *biexp)
 #endif
 }
 
+#ifdef TLS_SSL_CERT_VERIFICATION
 /**
  * @brief Perform a modular exponentiation using a temporary modulus.
  *
@@ -1447,6 +1450,7 @@ bigint *bi_mod_power2(BI_CTX *ctx, bigint *bi, bigint *bim, bigint *biexp)
     bi_free(ctx, biexp);
     return biR;
 }
+#endif
 
 #ifdef CRYPTO_BIGINT_CRT
 /**

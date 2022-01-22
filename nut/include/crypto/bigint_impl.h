@@ -85,7 +85,7 @@ struct _bigint
     struct _bigint* next;       /**< The next bigint in the cache. */
     short size;                 /**< The number of components in this bigint. */
     short max_comps;            /**< The heapsize allocated for this bigint */
-    int32_t refs;                   /**< An internal reference count. */
+    int32_t refs;               /**< An internal reference count. */
     comp* comps;                /**< A ptr to the actual component data */
 };
 

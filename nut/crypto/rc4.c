@@ -36,6 +36,9 @@
 #include <string.h>
 #include <crypto/crypto.h>
 
+/* only used for PKCS12 now */
+#ifdef TLS_SSL_USE_PKCS12
+
 /**
  * Get ready for an encrypt/decrypt operation
  */
@@ -89,3 +92,5 @@ void RC4_crypt(RC4_CTX *ctx, const uint8_t *msg, uint8_t *out, int length)
     ctx->x = x;
     ctx->y = y;
 }
+
+#endif

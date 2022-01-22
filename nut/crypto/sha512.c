@@ -188,9 +188,7 @@ void SHA512_Update(SHA512_CTX *ctx, const uint8_t * msg, int len)
 */
 void SHA512_Final(uint8_t *digest, SHA512_CTX *ctx)
 {
-#if !defined(__AVR__)
     int i;
-#endif
     size_t paddingSize;
     uint64_t totalSize;
 
@@ -211,21 +209,11 @@ void SHA512_Final(uint8_t *digest, SHA512_CTX *ctx)
     SHA512_Process(ctx);
 
     // Convert from host byte order to big-endian byte order
-#if !defined(__AVR__)
-    for (i = 0; i < 8; i++) {
-         ctx->h_dig.h[i] = be64toh(ctx->h_dig.h[i]);
-    }
-#else
-    ctx->h_dig.h[0] = be64toh(ctx->h_dig.h[0]);
-    ctx->h_dig.h[1] = be64toh(ctx->h_dig.h[1]);
-    ctx->h_dig.h[2] = be64toh(ctx->h_dig.h[2]);
-    ctx->h_dig.h[3] = be64toh(ctx->h_dig.h[3]);
-    ctx->h_dig.h[4] = be64toh(ctx->h_dig.h[4]);
-    ctx->h_dig.h[5] = be64toh(ctx->h_dig.h[5]);
-    ctx->h_dig.h[6] = be64toh(ctx->h_dig.h[6]);
-    ctx->h_dig.h[7] = be64toh(ctx->h_dig.h[7]);
-#endif
+    for (i = 0; i < 8; i++)
+        ctx->h_dig.h[i] = be64toh(ctx->h_dig.h[i]);
+ 
     // Copy the resulting digest
     if (digest != NULL)
-         memcpy(digest, ctx->h_dig.digest, SHA512_SIZE);
+        memcpy(digest, ctx->h_dig.digest, SHA512_SIZE);
 }
+ 

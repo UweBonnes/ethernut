@@ -51,6 +51,7 @@ extern "C" {
 #endif
 
 #include <cfg/crypto.h>
+#include <cfg/tls.h>
 #include <crypto/bigint_impl.h>
 #include <crypto/bigint.h>
 
@@ -172,7 +173,6 @@ void SHA384_Init(SHA384_CTX *c);
 void SHA384_Update(SHA384_CTX *, const uint8_t *input, int len);
 void SHA384_Final(uint8_t *digest, SHA384_CTX *);
 
-
 /**************************************************************************
  * MD5 declarations
  **************************************************************************/
@@ -196,6 +196,8 @@ void MD5_Final(uint8_t *digest, MD5_CTX *);
 extern void hmac_md5(const uint8_t *msg, int length, const uint8_t *key,
         int key_len, uint8_t *digest);
 extern void hmac_sha1(const uint8_t *msg, int length, const uint8_t *key,
+        int key_len, uint8_t *digest);
+extern void hmac_sha256(const uint8_t *msg, int length, const uint8_t *key, 
         int key_len, uint8_t *digest);
 
 /**************************************************************************
@@ -237,12 +239,14 @@ extern void RSA_free(RSA_CTX *ctx);
 extern int RSA_decrypt(const RSA_CTX *ctx, const uint8_t *in_data, uint8_t *out_data,
         int out_len, int is_decryption);
 extern bigint *RSA_private(const RSA_CTX *c, bigint *bi_msg);
+
 extern bigint *RSA_sign_verify(BI_CTX *ctx, const uint8_t *sig, int sig_len,
         bigint *modulus, bigint *pub_exp);
 extern bigint *RSA_public(const RSA_CTX * c, bigint *bi_msg);
 extern int RSA_encrypt(const RSA_CTX *ctx, const uint8_t *in_data, uint16_t in_len,
         uint8_t *out_data, int is_signing);
 extern void RSA_print(const RSA_CTX *ctx);
+
 
 /**************************************************************************
  * RNG declarations
