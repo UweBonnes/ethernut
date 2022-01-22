@@ -91,7 +91,7 @@ void RNG_initialize()
     /* start of with a stack to copy across */
     int i ;
     srand((unsigned int)&entropy_pool);
-    for (i = ENTROPY_POOL_SIZE; i >= 0; i--) {
+    for (i = 0; i < ENTROPY_POOL_SIZE; i++) {
         entropy_pool[i] = rand();
     }
 }
