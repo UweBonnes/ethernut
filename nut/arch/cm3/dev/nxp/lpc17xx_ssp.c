@@ -447,13 +447,13 @@ static int Lpc17xxSspBusTransfer(NUTSPINODE * node, const void *txbuf, void *rxb
     NUTASSERT(node->node_bus->bus_base != 0);
     base = (LPC_SSP_TypeDef*) node->node_bus->bus_base;
     if (xlen == 0) {
-        if (base == LPC_SSP0_BASE) {
+        if (node->node_bus->bus_base == LPC_SSP0_BASE) {
             return  (GpioPinGet(SSP0BUS_MISO_PORT, SSP0BUS_MISO_PIN)) ? 1 : -1;
 #if defined(LPC_SSP2_BASE)
         } else if (node->node_bus->bus_base == LPC_SSP2_BASE) {
             return  (GpioPinGet(SSP1BUS_MISO_PORT, SSP1BUS_MISO_PIN)) ? 1 : -1;
 #endif
-        } else if (base == LPC_SSP1_BASE) {
+        } else if (node->node_bus->bus_base == LPC_SSP1_BASE) {
             return  (GpioPinGet(SSP1BUS_MISO_PORT, SSP1BUS_MISO_PIN)) ? 1 : -1;
         }
     }
