@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <memdebug.h>
 #include <tls/ssl.h>
 
 static int do_obj(SSL_CTX *ssl_ctx, int obj_type,

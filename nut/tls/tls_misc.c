@@ -37,6 +37,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <io.h>
+#include <memdebug.h>
 #include <sys/time.h>
 #include <tls/ssl.h>
 

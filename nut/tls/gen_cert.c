@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <memdebug.h>
 #include <tls/ssl.h>
 
 /**

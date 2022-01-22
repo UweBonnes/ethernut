@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <memdebug.h>
 #include <sys/time.h>
 #include <tls/ssl.h>
 

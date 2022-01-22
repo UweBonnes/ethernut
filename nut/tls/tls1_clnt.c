@@ -32,6 +32,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+#include <memdebug.h>
 #include <sys/timer.h>
 #include <sys/socket.h>
 #include <tls/ssl.h>

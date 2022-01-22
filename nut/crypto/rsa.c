@@ -37,6 +37,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+#include <memdebug.h>
 #include <crypto/crypto.h>
 
 void RSA_priv_key_new(RSA_CTX **ctx,

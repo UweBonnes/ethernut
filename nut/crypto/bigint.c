@@ -64,6 +64,7 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
+#include <memdebug.h>
 #include <time.h>
 #include <sys/nutdebug.h>
 #include <crypto/bigint.h>

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 #include <time.h>
 #include <crypto/crypto.h>
 #include <tls/ssl.h>

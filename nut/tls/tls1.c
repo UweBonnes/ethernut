@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <memdebug.h>
 #include <io.h>
 #include <sys/socket.h>
 #include <sys/thread.h>

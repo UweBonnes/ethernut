@@ -62,6 +62,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <memdebug.h>
 #include <tls/ssl.h>
 
 /* all commented out if not used */
