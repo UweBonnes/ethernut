@@ -466,6 +466,34 @@ nutarch_cm3_lpc177x_8x_lpc407x_8x=
     },
 
     --
+    -- LPC177x_8x TIMER Interface
+    --
+    {
+        name = "nutarch_cm3_lpc177x_8x_timer",
+        brief = "LPC177x_8x TIMER Driver",
+        description = "Low level Timer interface for LPC177x_8x",
+        requires = { "HW_TIMER_LPC177x_8x" },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_timer.c",
+        },
+    },
+
+    --
+    -- LPC177x_8x PWM Interface
+    --
+    {
+        name = "nutarch_cm3_lpc177x_8x_pwm",
+        brief = "LPC177x_8x PWM Driver",
+        description = "Low level PWM interface for LPC177x_8x",
+        requires = { "HW_PWM_LPC177x_8x" },
+        sources =
+        {
+            "cm3/dev/nxp/lpc177x_8x_pwm.c",
+        },
+    },
+
+    --
     -- LPC17xx I2C Controller 0, 1, 2
     --
     {

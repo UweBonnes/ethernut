@@ -57,6 +57,10 @@ extern IRQ_HANDLER sig_EINT0;       // External interrupt 0
 extern IRQ_HANDLER sig_EINT1;       // External interrupt 1
 extern IRQ_HANDLER sig_EINT2;       // External interrupt 2
 extern IRQ_HANDLER sig_EINT3;       // External interrupt 3
+extern IRQ_HANDLER sig_TIM0;        // Timer 0
+extern IRQ_HANDLER sig_TIM1;        // Timer 1
+extern IRQ_HANDLER sig_TIM2;        // Timer 2
+extern IRQ_HANDLER sig_TIM3;        // Timer 3
 
 #define sig_INTERRUPT0 sig_EINT0
 #define sig_INTERRUPT1 sig_EINT1

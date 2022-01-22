@@ -79,4 +79,9 @@ CREATE_HANDLER(EINT1,         EINT1,      NUT_IRQPRI_DEF);    /* General Purpose
 CREATE_HANDLER(EINT2,         EINT2,      NUT_IRQPRI_DEF);    /* General Purpose DMA Controller */
 CREATE_HANDLER(EINT3,         EINT3,      NUT_IRQPRI_DEF);    /* General Purpose DMA Controller */
 
+CREATE_HANDLER(TIM0,          TIMER0,     NUT_IRQPRI_DEF);    /* Timer 0 */
+CREATE_HANDLER(TIM1,          TIMER1,     NUT_IRQPRI_DEF);    /* Timer 1 */
+CREATE_HANDLER(TIM2,          TIMER2,     NUT_IRQPRI_DEF);    /* Timer 2 */
+CREATE_HANDLER(TIM3,          TIMER3,     NUT_IRQPRI_DEF);    /* Timer 3 */
+
 
