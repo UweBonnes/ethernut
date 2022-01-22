@@ -1134,8 +1134,10 @@ int send_packet(SSL *ssl, uint8_t protocol, const uint8_t *in, int length)
             uint8_t iv_size = ssl->cipher_info->iv_size;
             uint8_t *t_buf = malloc(msg_length + iv_size);
             memcpy(t_buf + iv_size, ssl->bm_data, msg_length);
-            if (get_random(iv_size, t_buf) < 0)
+            if (get_random(iv_size, t_buf) < 0) {
+                free(t_buf);
                 return SSL_NOT_OK;
+            }
 
             msg_length += iv_size;
             memcpy(ssl->bm_data, t_buf, msg_length);
