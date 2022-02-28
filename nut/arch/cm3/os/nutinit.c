@@ -311,7 +311,12 @@ static const uint32_t stack_end = (uint32_t)&_stack_end;
     NutBoardInit();
 #endif
     /* Initialize our heap memory. */
+#if defined(NUT_CUSTOM_HEAP_INIT)
+    extern void NutCustomHeapInit(void);
+    NutCustomHeapInit();
+#else
     NutHeapAdd(HEAP_START, HEAP_SIZE & ~3);
+#endif
 
     /* Initialize caches just before starting main, at least after load phase.
      *  E.g. see DM00169764, 4.2 Tips

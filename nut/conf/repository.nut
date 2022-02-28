@@ -448,6 +448,18 @@ repository =
                 file = "include/cfg/arch.h",
             },
             {
+                macro = "NUT_CUSTOM_HEAP_INIT",
+                brief = "Custom Heap Setup",
+                description = "If selected, a board specific heap initialization function "..
+                      "is called before system initialization. At this time the C runtime "..
+                      "is basically available and all global and static variables "..
+                      "are set. However, kernel services like memory management, "..
+                      "timers, threads etc. are not available in this stage.\n\n"..
+                      "void NutHeapInit(void) must be provided by the user code.",
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+            },
+            {
                 macro = "NUT_INIT_IDLE",
                 brief = "Idle Initialization",
                 description = "If selected, a board specific initialization function "..
