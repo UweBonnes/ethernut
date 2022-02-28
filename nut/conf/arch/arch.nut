@@ -1888,6 +1888,27 @@ nutarch =
                            }
             },
             {
+                macro = "MCU_STM32F303xCD",
+                brief = "STM STM32F303 for 256/384",
+                description = "STM32F303 compile time restricted to 256/32 kB",
+		flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_CM3" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_CM3",
+                    "HW_MCU_STM32",
+                    "HW_MCU_STM32F3",
+                    "HW_MCU_STM32F30",
+                    "HW_MCU_STM32F303xE",
+                },
+                makedefs = { "FLASH0_LENGTH=256K",
+                             "RAM0_LENGTH=40K",
+                             "CCM_LENGTH=8K",
+                           }
+            },
+            {
                 macro = "MCU_STM32F303xE",
                 brief = "STM STM32F303 512 kB",
                 description = "STM32F303 with 512 kB.",
