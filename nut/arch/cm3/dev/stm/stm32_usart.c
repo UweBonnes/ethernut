@@ -278,7 +278,7 @@ static void Stm32UsartDmaRxIrq(void* arg)
 #endif
 #endif
 
-IRQ_HANDLER *usart_sig;
+static IRQ_HANDLER *usart_sig;
 
 /*
  * \brief USARTn transmitter ready interrupt handler.
