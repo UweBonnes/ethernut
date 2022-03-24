@@ -222,7 +222,7 @@ static uint_fast8_t hdpx_control;
 /*!
  * \brief Definition of RS485 DE switching functions.
  */
-# ifdef UARTx_DE_INV
+# if UARTx_DE_INV == ENABLE
 #  define Rs485DePassive() Stm32GpioSet(UARTx_RTS, 1)
 #  define Rs485DeActive() Stm32GpioSet(UARTx_RTS, 0)
 # else
