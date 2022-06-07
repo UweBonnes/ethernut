@@ -30,7 +30,7 @@ You can then use the following commands:
 # Example
 > arm-none-eabi-gdb-py *elf
 Reading symbols from gpio.elf...done.
-(gdb) source ~/devel/ethernut_sf/nut/tools/gdb/nutos.py
+(gdb) source ~/devel/ethernut/nut/tools/gdb/nutos.py
 Interrupt handler!
 [New thread 'main']
 [New thread 'idle']
