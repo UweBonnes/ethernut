@@ -167,6 +167,7 @@ void DMA_Init(void)
 {
     uint8_t i;
     DMA_Channel_TypeDef *channel;
+    int first = 7, last = 7;
 
     if ((RCC->AHBENR & RCC_AHBENR_DMA1EN ) == 0) {
         /* Enable DMA clocks */
@@ -174,16 +175,18 @@ void DMA_Init(void)
 
         /* Clear pending interrupts in DMA 1 ISR */
         DMA1->IFCR = 0xFFFFFFFF;
+	first = 0;
     }
 #if defined(RCC_AHBENR_DMA2EN)
     if ((RCC->AHBENR & RCC_AHBENR_DMA2EN ) == 0) {
         RCC->AHBENR |= RCC_AHBENR_DMA2EN;
         /* Clear pending interrupts in DMA 2 ISR */
         DMA2->IFCR = 0xFFFFFFFF;
+	last = DMA_COUNT;
     }
 #endif
     /* Clear interrupt related flags in channels */
-    for (i = 0; i < DMA_COUNT; i++) {
+    for (i = first; i < last; i++) {
         channel = DmaTab[i].dma_ch;
         channel->CCR = 0;
         DMA_ClearFlag(i,0xf);
