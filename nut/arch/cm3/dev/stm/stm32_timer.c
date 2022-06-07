@@ -83,8 +83,9 @@ void Stm32TimerConfig(
         trg_sel = TIM_TRG_SELECTION_ETR;
     }
     /* Do trigger selection.*/
-    smcr |= (trg_sel << TIM_SMCR_TS_Pos) & TIM_SMCR_TS;
-
+    if (trg_sel > TIM_TRG_SELECTION_NONE) {
+	smcr |= (trg_sel << TIM_SMCR_TS_Pos) & TIM_SMCR_TS;
+    }
     switch(clk_mode) {
     case TIM_CLK_MODE_ETR:
         smcr |= TIM_SMCR_ECE;
