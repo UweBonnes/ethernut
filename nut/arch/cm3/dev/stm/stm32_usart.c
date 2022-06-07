@@ -70,9 +70,7 @@
 #endif
 
 #define UART_RTS_AF PINMUX(UARTx_RTS, UARTx_RTS_FUNC)
-#if UART_RTS_AF == AF_NO_SUCH_PINFUNC
-# warning Bad RTS pin assignment
-#endif
+/* No warning as UART driver enable may be mapped here*/
 
 #if !defined(USART_ICR_NCF) && defined(USART_ICR_NECF)
 # define USART_ICR_NCF USART_ICR_NECF
