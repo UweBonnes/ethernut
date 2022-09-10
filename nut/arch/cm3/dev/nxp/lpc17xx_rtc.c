@@ -319,7 +319,7 @@ static int Lpc17xxRtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int Lpc17xxRtcClearStatus(NUTRTC *rtc, uint32_t sflags)
+static int Lpc17xxRtcClearStatus(NUTRTC *rtc, const uint32_t sflags)
 {
     ((lpc17xx_rtc_dcb *)rtc->dcb)->flags &= ~sflags;
 

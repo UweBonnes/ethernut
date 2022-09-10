@@ -107,7 +107,7 @@ extern int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags);
 extern int NutRtcSetAlarm(int idx, const struct _tm *tm, int aflags);
 
 extern int NutRtcGetStatus(uint32_t *sflags);
-extern int NutRtcClearStatus(uint32_t sflags);
+extern int NutRtcClearStatus(const uint32_t sflags);
 
 extern HANDLE *NutRtcGetHandle(void);
 
