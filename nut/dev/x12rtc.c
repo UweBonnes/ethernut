@@ -439,7 +439,7 @@ int X12RtcGetStatus(NUTRTC *rtc, uint32_t *sflgs)
  *
  * \return Always 0.
  */
-int X12RtcClearStatus(NUTRTC *rtc, uint32_t sflgs)
+int X12RtcClearStatus(NUTRTC *rtc, const uint32_t sflgs)
 {
     rtc_status &= ~sflgs;
 

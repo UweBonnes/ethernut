@@ -242,7 +242,7 @@ int PcfRtcGetStatus(NUTRTC *rtc, uint32_t *sflgs)
  *
  * \return Always 0.
  */
-int PcfRtcClearStatus(NUTRTC *rtc, uint32_t sflgs)
+int PcfRtcClearStatus(NUTRTC *rtc, const uint32_t sflgs)
 {
     rtc_status &= ~sflgs;
 

@@ -279,12 +279,11 @@ static int Stm32RtcGetStatus(NUTRTC *rtc, uint32_t *sflags)
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int Stm32RtcClearStatus(NUTRTC *rtc, uint32_t sflags)
+static int Stm32RtcClearStatus(NUTRTC *rtc, const uint32_t sflags)
 {
     stm32_rtcv1_dcb *dcb = (stm32_rtcv1_dcb *)rtc->dcb;
     /* Don't reset persistant flags*/
-    sflags &= ~RTC_STATUS_MASK;
-    dcb->status &= ~sflags;
+    dcb->status &= ~(sflags & ~RTC_STATUS_MASK);
     return 0;
 }
 

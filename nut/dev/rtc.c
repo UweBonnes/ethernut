@@ -186,7 +186,7 @@ int NutRtcGetStatus(uint32_t * sflags)
  *
  * \return Always 0.
  */
-int NutRtcClearStatus(uint32_t sflags)
+int NutRtcClearStatus(const uint32_t sflags)
 {
     if (reg_rtc && reg_rtc->rtc_clrstatus) {
         return (*reg_rtc->rtc_clrstatus) (reg_rtc, sflags);
