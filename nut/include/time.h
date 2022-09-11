@@ -87,14 +87,14 @@ typedef struct _tm tm;
  * \brief structure to store a date/time value.
  *
  * The structure tm stores a complete date and time combination. The granularity
- * is one second.
+ * is at least one second.
  *
  * \note The range of \b tm_mon is from 0 (January) to 11 (December).\n
  *       \b tm_year holds the year since 1900, for example value 103 means year 2003.
  */
 struct _tm {
     int tm_sec;                 /*!< \brief seconds after the minute - [0,59] */
-    int tm_min;                 /*!< \brief minutes after the hour - [0,59] */
+    int tm_min;                 /*!< \brief minutes #after the hour - [0,59] */
     int tm_hour;                /*!< \brief hours since midnight - [0,23] */
     int tm_mday;                /*!< \brief day of the month - [1,31] */
     int tm_mon;                 /*!< \brief months since January - [0,11] */
@@ -102,6 +102,8 @@ struct _tm {
     int tm_wday;                /*!< \brief days since Sunday - [0,6] */
     int tm_yday;                /*!< \brief days since January 1 - [0,365] */
     int tm_isdst;               /*!< \brief daylight savings time flag */
+#define TM_NSEC
+    int tm_nsec;                /*!< \brief nanoseconds after the second */
 };
 
 /*!

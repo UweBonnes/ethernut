@@ -224,6 +224,9 @@ static time_t _make_time_t(tm * tb, int ultflag)
         /***** HERE: tmptm1 holds number of elapsed seconds, adjusted *****/
         /*****       for local time if requested                      *****/
 
+#if defined(TM_NSEC)
+    tbtemp->tm_nsec = tb->tm_nsec;
+#endif
     *tb = *tbtemp;
     return (time_t) tmptm1;
 

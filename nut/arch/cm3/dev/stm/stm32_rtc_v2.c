@@ -295,6 +295,7 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
     {
         uint32_t tr, dr;
         while ((RTC_ISR & RTC_ISR_RSF) != RTC_ISR_RSF);
+        uint32_t ssr = RTC->SSR;
         tr = RTC->TR;
         dr = RTC->DR;
         RTC_ISR &= ~RTC_ISR_RSF;
@@ -311,6 +312,9 @@ int Stm32RtcGetClock(NUTRTC *rtc, struct _tm *tm)
         tm->tm_wday = ((dr >> 13) & 0x7);
         if (tm->tm_wday == 7) {
             tm->tm_wday = 0; /* RTC wday = 7 (sunday) is tm_wday =  0. */
+        }
+        if (ssr) {
+            tm->tm_nsec = ((uint64_t)RTC_SYNC - ssr) * (1000 * 1000 * 1000) / (RTC_SYNC * 1);
         }
         tm->tm_yday = 0/*FIXME*/;
         tm->tm_isdst = 0; /*FIXME*/
