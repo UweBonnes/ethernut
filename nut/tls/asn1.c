@@ -75,21 +75,6 @@ static const uint8_t sig_sha512[] =
     0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03
 };
 
-static const uint8_t sig_subject_alt_name[] =
-{
-    0x55, 0x1d, 0x11
-};
-
-static const uint8_t sig_basic_constraints[] =
-{
-    0x55, 0x1d, 0x13
-};
-
-static const uint8_t sig_key_usage[] =
-{
-    0x55, 0x1d, 0x0f
-};
-
 /* CN, O, OU, L, C, ST */
 static const uint8_t g_dn_types[] = { 3, 10, 11, 7, 6, 8 };
 
@@ -662,6 +647,11 @@ int asn1_find_oid(const uint8_t* cert, int* offset,
     return 0;
 }
 
+static const uint8_t sig_subject_alt_name[] =
+{
+    0x55, 0x1d, 0x11
+};
+
 int asn1_is_subject_alt_name(const uint8_t *cert, int offset)
 {
     if (asn1_find_oid(cert, &offset, sig_subject_alt_name,
@@ -673,6 +663,11 @@ int asn1_is_subject_alt_name(const uint8_t *cert, int offset)
     return 0;
 }
 
+static const uint8_t sig_basic_constraints[] =
+{
+    0x55, 0x1d, 0x13
+};
+
 int asn1_is_basic_constraints(const uint8_t *cert, int offset)
 {
     if (asn1_find_oid(cert, &offset, sig_basic_constraints, 
@@ -683,6 +678,11 @@ int asn1_is_basic_constraints(const uint8_t *cert, int offset)
 
     return 0;
 }
+
+static const uint8_t sig_key_usage[] =
+{
+    0x55, 0x1d, 0x0f
+};
 
 int asn1_is_key_usage(const uint8_t *cert, int offset)
 {
