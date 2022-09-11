@@ -72,7 +72,7 @@
 # define STM32_NR_GPIO  4
 #endif
 
-GPIO_TypeDef *const stm32_port_nr2gpio[STM32_NR_GPIO];
+extern GPIO_TypeDef *const stm32_port_nr2gpio[];
 
 /* STM32 Remapping defines for L1/F2/3/4*/
 #define GPIO_Mode_IN 0
