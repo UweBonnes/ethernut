@@ -156,13 +156,13 @@ void NutSelectManageWq(WQLIST **wq_list, HANDLE *wq, int flags, select_cmd_t cmd
 
                 break;
             case SELECT_CMD_CLEANUP:
-                /* Cleanup the waitqueu list of the device, remove our entry which is matched by it's address */
+                /* Cleanup the wait queue list of the device, remove our entry which is matched by it's address */
                 wl_entry = NULL;
 
                 /* Wait queue list processing should be done atomic */
                 NutEnterCritical();
                 wl_tmp = wq_list;
-                /* Iterate through the waitqueue list */
+                /* Iterate through the wait queue list */
                 while (*wl_tmp) {
                     /* Check if we found 'our' entry */
                     if ((*wl_tmp)->wq == wq) {
@@ -171,12 +171,12 @@ void NutSelectManageWq(WQLIST **wq_list, HANDLE *wq, int flags, select_cmd_t cmd
                         *wl_tmp = (*wl_tmp)->next;
                         break;
                     } else {
-                        /* Move forward to the next entry */
-                        *wl_tmp = (*wl_tmp)->next;
+                        /* Skip to the next list entry */
+                        wl_tmp = &(*wl_tmp)->next;
                     }
                 }
                 NutExitCritical();
-                /* Free the allocated memeory of the list entry */
+                /* Free allocated memory of the list entry */
                 if (wl_entry) {
                     free(wl_entry);
                 }
