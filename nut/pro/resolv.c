@@ -193,7 +193,7 @@ static uint16_t ScanName(uint8_t * cp, uint8_t ** npp, uint16_t maxlen)
     maxlen2 = rc - 1;
     while (len) {
         if (len + 1 > maxlen2) {
-            free(np);
+            free(*npp);
             *npp = NULL;
             return maxlen + 1;
         }
